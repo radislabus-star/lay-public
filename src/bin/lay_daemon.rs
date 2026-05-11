@@ -86,6 +86,7 @@ const MODIFIER_RELEASE_ROUNDS: usize = 2;
 const MODIFIER_RELEASE_PACE_MS: u64 = 3;
 const LAYOUT_POLL_INTERVAL_MS: u64 = 250;
 static DBUS_CONNECTION: OnceLock<Mutex<Option<zbus::blocking::Connection>>> = OnceLock::new();
+static AUTO_LAYOUT_BACKEND_HINT: OnceLock<Option<LayoutBackend>> = OnceLock::new();
 
 // ─── Config ─────────────────────────────────────────────────
 
@@ -98,7 +99,17 @@ fn active_correction_engine() -> CorrectionEngine {
 }
 
 fn active_layout_backend() -> LayoutBackend {
-    LayConfig::load().active_layout_backend()
+    let config = LayConfig::load();
+    let backend = config.active_layout_backend();
+    let configured = config.layout_backend.trim().to_ascii_lowercase();
+    if configured != "auto" || backend != LayoutBackend::Gnome {
+        return backend;
+    }
+
+    if let Some(hint) = *AUTO_LAYOUT_BACKEND_HINT.get_or_init(detect_auto_layout_backend_hint) {
+        return hint;
+    }
+    backend
 }
 
 fn active_auto_replace() -> bool {
@@ -184,7 +195,7 @@ fn main() -> std::io::Result<()> {
         }
     ));
     let startup_cfg = LayConfig::load();
-    let startup_backend = startup_cfg.active_layout_backend();
+    let startup_backend = active_layout_backend();
     log(&format!(
         "► layout backend: {} (config={})",
         startup_backend.label(),
@@ -281,7 +292,7 @@ fn listen_keyboard(
     log(&format!(
         "► config: mode={} backend={} replace_words={} auto_replace={} typing_assist={} auto_switch_layout={} lem2={} lem3={} trigger={} tap={}ms window={}ms debounce={}ms",
         cfg.mode,
-        cfg.active_layout_backend().label(),
+        active_layout_backend().label(),
         cfg.replace_words,
         cfg.auto_replace,
         cfg.typing_assist,
@@ -1412,7 +1423,7 @@ fn read_current_layout_gnome_is_ru() -> Result<bool, String> {
 
 fn read_current_layout_kde_is_ru() -> Result<bool, String> {
     let qdbus = find_qdbus_command().ok_or_else(|| "qdbus/qdbus6 not found".to_string())?;
-    let layout = run_command_capture(qdbus, &["org.kde.keyboard", "/Layouts", "getCurrentLayout"])?;
+    let layout = read_current_kde_layout(qdbus)?;
     Ok(is_ru_layout_id(&layout))
 }
 
@@ -1605,15 +1616,106 @@ fn switch_to_gnome_layout(
 
 fn switch_to_kde_layout(layout_id: &str, target_is_ru: bool) -> Result<(), String> {
     let qdbus = find_qdbus_command().ok_or_else(|| "qdbus/qdbus6 not found".to_string())?;
-    run_command_capture(
-        qdbus,
-        &["org.kde.keyboard", "/Layouts", "setLayout", layout_id],
-    )?;
+    match kde_layout_index(qdbus, layout_id) {
+        Ok(index) => {
+            let index = index.to_string();
+            run_command_capture(
+                qdbus,
+                &["org.kde.keyboard", "/Layouts", "setLayout", &index],
+            )?;
+        }
+        Err(index_error) => {
+            log(&format!(
+                "⚠ KDE indexed layout lookup failed ({index_error}); trying legacy setLayout"
+            ));
+            run_command_capture(
+                qdbus,
+                &["org.kde.keyboard", "/Layouts", "setLayout", layout_id],
+            )?;
+        }
+    }
     if verify_current_layout(target_is_ru) {
         Ok(())
     } else {
         Err("KDE layout verify failed".to_string())
     }
+}
+
+fn read_current_kde_layout(qdbus: &str) -> Result<String, String> {
+    if let Ok(index) = run_command_capture(qdbus, &["org.kde.keyboard", "/Layouts", "getLayout"]) {
+        let index = index
+            .trim()
+            .parse::<usize>()
+            .map_err(|e| format!("cannot parse KDE layout index {index:?}: {e}"))?;
+        let layouts = kde_layout_ids(qdbus)?;
+        return layouts
+            .get(index)
+            .cloned()
+            .ok_or_else(|| format!("KDE layout index {index} out of range: {layouts:?}"));
+    }
+
+    run_command_capture(qdbus, &["org.kde.keyboard", "/Layouts", "getCurrentLayout"])
+        .map(|layout| normalize_layout_id(&layout))
+}
+
+fn kde_layout_index(qdbus: &str, layout_id: &str) -> Result<usize, String> {
+    let target = normalize_layout_id(layout_id);
+    let layouts = kde_layout_ids(qdbus)?;
+    layouts
+        .iter()
+        .position(|layout| normalize_layout_id(layout) == target)
+        .ok_or_else(|| format!("KDE layout {target:?} not found in {layouts:?}"))
+}
+
+fn kde_layout_ids(qdbus: &str) -> Result<Vec<String>, String> {
+    let output = run_command_capture(
+        qdbus,
+        &[
+            "--literal",
+            "org.kde.keyboard",
+            "/Layouts",
+            "getLayoutsList",
+        ],
+    )?;
+    let layouts = parse_kde_layouts_list(&output);
+    if layouts.is_empty() {
+        Err(format!("cannot parse KDE layouts: {output}"))
+    } else {
+        Ok(layouts)
+    }
+}
+
+fn parse_kde_layouts_list(output: &str) -> Vec<String> {
+    output
+        .split("(sss)")
+        .skip(1)
+        .filter_map(|entry| first_quoted_string(entry).map(|layout| normalize_layout_id(&layout)))
+        .collect()
+}
+
+fn first_quoted_string(input: &str) -> Option<String> {
+    let mut chars = input.chars();
+    for ch in chars.by_ref() {
+        if ch == '"' {
+            break;
+        }
+    }
+
+    let mut out = String::new();
+    let mut escaped = false;
+    for ch in chars {
+        if escaped {
+            out.push(ch);
+            escaped = false;
+            continue;
+        }
+        match ch {
+            '\\' => escaped = true,
+            '"' => return Some(out),
+            _ => out.push(ch),
+        }
+    }
+    None
 }
 
 fn switch_to_x11_layout(layout_id: &str, target_is_ru: bool) -> Result<(), String> {
@@ -1845,6 +1947,16 @@ fn find_qdbus_command() -> Option<&'static str> {
     ["qdbus6", "qdbus-qt6", "qdbus"]
         .into_iter()
         .find(|cmd| command_exists(cmd))
+}
+
+fn detect_auto_layout_backend_hint() -> Option<LayoutBackend> {
+    let qdbus = find_qdbus_command()?;
+    if run_command_capture(qdbus, &["org.kde.keyboard", "/Layouts", "getLayout"]).is_ok()
+        || run_command_capture(qdbus, &["org.kde.keyboard", "/Layouts", "getCurrentLayout"]).is_ok()
+    {
+        return Some(LayoutBackend::Kde);
+    }
+    None
 }
 
 fn read_x11_layout() -> Result<String, String> {
@@ -2550,6 +2662,20 @@ mod tests {
         assert_eq!(
             parse_current_layout_from_list("('0:xkb:us,1:xkb:ru*',)"),
             Some("ru".to_string())
+        );
+    }
+
+    #[test]
+    fn parses_kde6_layout_list_reply() {
+        let reply = r#"[Argument: a(sss) {[Argument: (sss) "us", "", "English (US)"], [Argument: (sss) "ru", "", "Russian"]}]"#;
+        assert_eq!(parse_kde_layouts_list(reply), vec!["us", "ru"]);
+    }
+
+    #[test]
+    fn parses_first_quoted_string_with_escapes() {
+        assert_eq!(
+            first_quoted_string(r#" "us\"intl", "", "English" "#),
+            Some(r#"us"intl"#.to_string())
         );
     }
 

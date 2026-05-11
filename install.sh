@@ -29,6 +29,29 @@ else
 fi
 
 echo ""
+echo "=== uinput permissions (нужно для обратной печати) ==="
+UINPUT_RULE='/etc/udev/rules.d/99-lay-uinput.rules'
+UINPUT_RULE_TEXT='KERNEL=="uinput", MODE="0660", GROUP="input", OPTIONS+="static_node=uinput"'
+if [ -e /dev/uinput ] && [ -w /dev/uinput ]; then
+    echo "✓ /dev/uinput доступен"
+else
+    echo "→ настраиваю /dev/uinput для группы input..."
+    printf '%s\n' "$UINPUT_RULE_TEXT" | sudo tee "$UINPUT_RULE" >/dev/null
+    sudo modprobe uinput 2>/dev/null || true
+    sudo udevadm control --reload-rules 2>/dev/null || true
+    sudo udevadm trigger --subsystem-match=misc 2>/dev/null || true
+    if [ -e /dev/uinput ]; then
+        sudo chgrp input /dev/uinput 2>/dev/null || true
+        sudo chmod 0660 /dev/uinput 2>/dev/null || true
+    fi
+    if [ -e /dev/uinput ] && [ -w /dev/uinput ]; then
+        echo "✓ /dev/uinput доступен"
+    else
+        echo "⚠ /dev/uinput пока недоступен; нужен перелогин или перезагрузка"
+    fi
+fi
+
+echo ""
 echo "=== системные зависимости ==="
 need_install=()
 for pkg in libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip; do
@@ -36,6 +59,12 @@ for pkg in libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip; do
         need_install+=("$pkg")
     fi
 done
+desktop_hint="${XDG_CURRENT_DESKTOP:-}:${DESKTOP_SESSION:-}"
+if ! command -v qdbus6 >/dev/null && {
+    printf '%s' "$desktop_hint" | grep -Eiq 'kde|plasma' || pgrep -x plasmashell >/dev/null 2>&1
+}; then
+    need_install+=("qdbus-qt6")
+fi
 if [ ${#need_install[@]} -gt 0 ]; then
     echo "ставим: ${need_install[*]}"
     sudo apt-get install -y "${need_install[@]}"

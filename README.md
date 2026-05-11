@@ -180,15 +180,16 @@ gnome-extensions enable lay@radislabus-star.github.io
 - Wayland-сессия
 - Rust 1.75+
 - доступ к `/dev/input` через группу `input`
-- поддержка `uinput`
+- доступный `/dev/uinput` для обратной печати
 
 Для экспериментального KDE backend нужен `qdbus` или `qdbus6`. Для
 экспериментального X11 backend лучше иметь `xkb-switch`; без него используется
 fallback через `setxkbmap`, который может менять текущую XKB-конфигурацию
 грубее, чем специализированные tools.
 
-Установщик может добавить текущего пользователя в группу `input`, но это
-начинает работать только после нового входа в систему.
+Установщик может добавить текущего пользователя в группу `input` и поставить
+udev-правило для `/dev/uinput`, но группа начинает работать только после нового
+входа в систему.
 
 ### CLI
 
@@ -498,8 +499,8 @@ cd ~/projects/lay
 bash install.sh
 ```
 
-After installation, log out and log back in so the `input` group and GNOME
-extension are picked up.
+After installation, log out and log back in so the `input` group, `/dev/uinput`
+permissions, and GNOME extension are picked up.
 
 Update an existing git install:
 
