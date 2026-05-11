@@ -19,7 +19,7 @@ import {getInputSourceManager} from 'resource:///org/gnome/shell/ui/status/keybo
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
-const APP_VERSION = '0.1.135';
+const APP_VERSION = '0.1.136';
 const APP_DESCRIPTION = 'Double Shift layout rescue for Linux/GNOME Wayland';
 const APP_RELEASE_DATE = '2026-05-12';
 const APP_LICENSE = 'MIT';
@@ -52,6 +52,7 @@ const TYPING_RULES = [
     {id: 'personal_phrase', label: 'Правила: фраза'},
     {id: 'personal_token', label: 'Правила: слово'},
     {id: 'duplicate_layout_prefix', label: 'Лишняя первая буква'},
+    {id: 'mixed_script_layout', label: 'Смешанный ввод'},
     {id: 'layout_technical', label: 'Тех. токены'},
     {id: 'layout_ru_to_en', label: 'RU → EN'},
     {id: 'layout_en_to_ru', label: 'EN → RU'},

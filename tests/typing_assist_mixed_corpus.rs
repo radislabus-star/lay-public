@@ -100,6 +100,7 @@ fn forum_like_mixed_sentences_preserve_spaces_and_terms() {
             "тут я вно вижу что good test должен остаться ",
             "тут явно вижу что good test должен остаться ",
         ),
+        ("ОБYJDB CRBK lay ", "ОБНОВИ СКИЛ lay "),
     ];
 
     for (input, expected) in cases {

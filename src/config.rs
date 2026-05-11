@@ -8,30 +8,32 @@ use crate::desktop::{resolve_layout_backend, LayoutBackend};
 
 pub const CONFIG_PATH: &str = ".config/lay/config.json";
 
-pub const DEFAULT_TYPING_ASSIST_RULES: [(&str, i32); 19] = [
+pub const DEFAULT_TYPING_ASSIST_RULES: [(&str, i32); 20] = [
     ("moved_prefix_pair", 10),
     ("split_word_pair", 20),
     ("visual_b", 30),
     ("personal_phrase", 40),
     ("personal_token", 50),
     ("duplicate_layout_prefix", 60),
-    ("layout_technical", 70),
-    ("layout_ru_to_en", 80),
-    ("layout_en_to_ru", 90),
-    ("cyrillic_case", 100),
-    ("hard_sign", 110),
-    ("adjacent_transposition", 120),
-    ("repeated_letter", 130),
-    ("single_letter_substitution", 140),
-    ("verb_ending", 150),
-    ("vowel_confusion", 160),
-    ("extra_letters", 170),
-    ("missing_letter", 180),
-    ("glued_phrase", 190),
+    ("mixed_script_layout", 70),
+    ("layout_technical", 80),
+    ("layout_ru_to_en", 90),
+    ("layout_en_to_ru", 100),
+    ("cyrillic_case", 110),
+    ("hard_sign", 120),
+    ("adjacent_transposition", 130),
+    ("repeated_letter", 140),
+    ("single_letter_substitution", 150),
+    ("verb_ending", 160),
+    ("vowel_confusion", 170),
+    ("extra_letters", 180),
+    ("missing_letter", 190),
+    ("glued_phrase", 200),
 ];
 
 pub const LAYOUT_ONLY_TYPING_ASSIST_RULES: &[&str] = &[
     "duplicate_layout_prefix",
+    "mixed_script_layout",
     "layout_technical",
     "layout_ru_to_en",
     "layout_en_to_ru",

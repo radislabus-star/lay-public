@@ -69,6 +69,8 @@ const COMMON_RUSSIAN_WORDS: &[&str] = &[
     "надо",
     "можно",
     "нужно",
+    "скил",
+    "скилл",
     "очень",
     "буду",
     "будешь",
@@ -132,6 +134,20 @@ pub fn apply_typing_assist(text: &str, allow_layout_auto: bool) -> Option<String
     apply_typing_assist_with_pipeline(text, allow_layout_auto, &pipeline)
 }
 
+pub fn warm_up() {
+    let _ = replacement_rules().len();
+    let _ = promoted_replacement_rules()
+        .lock()
+        .map(|rules| rules.len())
+        .unwrap_or_default();
+    let _ = english_dictionary().len();
+    let _ = russian_dictionary().len();
+    let _ = russian_short_dictionary().len();
+    let _ = russian_tiny_dictionary().len();
+    let _ = russian_generated_form_dictionary().len();
+    crate::ngram::warm_up();
+}
+
 pub fn apply_typing_assist_with_pipeline(
     text: &str,
     allow_layout_auto: bool,
@@ -182,6 +198,15 @@ fn apply_typing_assist_rule(
             token_trailing,
             correct_duplicate_layout_prefix_on_ascii_token,
         ),
+        "mixed_script_layout" if allow_layout_auto => crate::llm::repair_mixed_script(core)
+            .or_else(|| {
+                word_rule(
+                    word,
+                    token_leading,
+                    token_trailing,
+                    crate::llm::repair_mixed_script,
+                )
+            }),
         "layout_technical" => word_rule(
             word,
             token_leading,
@@ -268,7 +293,7 @@ fn word_rule(
 }
 
 fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
-    if !is_plain_ascii_layout_token(token) || is_protected_ascii_layout_token(token) {
+    if !is_plain_ascii_layout_token(token) {
         return None;
     }
 
@@ -292,9 +317,17 @@ fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
     if !is_known_russian_layout_autoswitch_word(&converted_lower) {
         return None;
     }
+    if is_protected_ascii_layout_token(token)
+        && is_known_english_layout_autoswitch_word(&original_word.to_ascii_lowercase())
+    {
+        return None;
+    }
 
     let normalized_word = apply_word_case(original_word, &converted_lower);
     let normalized = format!("{converted_leading}{normalized_word}{converted_trailing}");
+    if is_protected_ascii_layout_token(token) {
+        return lem_prefers_layout_candidate(original_word, &normalized_word).then_some(normalized);
+    }
     match crate::llm::choose_token_hybrid(original_word, &normalized_word) {
         Ok(Some(choice)) if choice == normalized_word => Some(normalized),
         Ok(Some(choice)) if choice == original_word => {

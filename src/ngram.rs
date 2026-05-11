@@ -148,6 +148,11 @@ pub fn en_score(text: &str) -> f64 {
     en_model().score_text(text)
 }
 
+pub fn warm_up() {
+    let _ = ru_score("проверка");
+    let _ = en_score("check");
+}
+
 pub fn build_ru_model_from_sources() -> CharNgramModel {
     let mut words = Vec::new();
     words.extend(load_hunspell_words(RU_HUNSPELL, Lang::Ru));

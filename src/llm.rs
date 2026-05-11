@@ -55,6 +55,8 @@ const COMMON_RUSSIAN_WORDS: &[&str] = &[
     "надо",
     "можно",
     "нужно",
+    "скил",
+    "скилл",
     "очень",
     "буду",
     "будешь",
@@ -983,7 +985,13 @@ fn should_repair_trailing_latin_as_ru(token: &str, candidate: &str) -> bool {
 
     let prefix_len = prefix.chars().count();
     let tail_len = latin_tail.chars().count();
-    if prefix_len < 3 || !(2..=4).contains(&tail_len) {
+    let short_upper_prefix = prefix_len >= 2
+        && tail_len >= 4
+        && token
+            .chars()
+            .filter(|ch| ch.is_alphabetic())
+            .all(char::is_uppercase);
+    if (prefix_len < 3 && !short_upper_prefix) || !(2..=4).contains(&tail_len) {
         return false;
     }
 
@@ -1131,6 +1139,7 @@ mod tests {
             repair_mixed_script("ПРОВTHM WORD"),
             Some("ПРОВЕРЬ WORD".to_string())
         );
+        assert_eq!(repair_mixed_script("ОБYJDB"), Some("ОБНОВИ".to_string()));
     }
 
     #[test]

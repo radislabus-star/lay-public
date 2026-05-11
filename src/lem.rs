@@ -39,6 +39,8 @@ const COMMON_RUSSIAN_WORDS: &[&str] = &[
     "надо",
     "можно",
     "нужно",
+    "скил",
+    "скилл",
     "очень",
     "буду",
     "будешь",
@@ -80,6 +82,17 @@ where
     I: IntoIterator<Item = String>,
 {
     rank_candidates(typed, candidates).into_iter().next()
+}
+
+pub fn warm_up() {
+    let _ = ru_words().len();
+    let _ = en_words().len();
+    crate::ngram::warm_up();
+    let _ = rank_candidates(
+        "проверка KDE",
+        ["проверка KDE".to_string(), "проверка ЛВУ".to_string()],
+    )
+    .len();
 }
 
 fn score_candidate(typed: &str, candidate: String) -> ScoredCandidate {

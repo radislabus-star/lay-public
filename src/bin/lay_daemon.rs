@@ -190,10 +190,24 @@ fn main() -> std::io::Result<()> {
         startup_backend.label(),
         startup_cfg.layout_backend
     ));
-    if !args.detect_only && startup_cfg.active_correction_engine() == CorrectionEngine::Smart {
-        std::thread::spawn(|| match lay::llm::warm_up() {
-            Ok(()) => log("► smart engine: модель прогрета заранее"),
-            Err(e) => log(&format!("⚠ smart engine warmup failed: {e}")),
+    let warm_smart = startup_cfg.active_correction_engine() == CorrectionEngine::Smart;
+    let warm_typing_assist = startup_cfg.typing_assist;
+    if !args.detect_only && (warm_smart || warm_typing_assist) {
+        std::thread::spawn(move || {
+            let started_at = Instant::now();
+            lay::ngram::warm_up();
+            lay::lem::warm_up();
+            lay::typing_assist::warm_up();
+            if warm_smart {
+                match lay::llm::warm_up() {
+                    Ok(()) => log("► smart engine: модель прогрета заранее"),
+                    Err(e) => log(&format!("⚠ smart engine warmup failed: {e}")),
+                }
+            }
+            log(&format!(
+                "► dictionaries/ngram/LEM warmed in {}ms",
+                started_at.elapsed().as_millis()
+            ));
         });
     }
 
@@ -4487,6 +4501,14 @@ mod tests {
             apply_typing_assist("Lfdfq ", true),
             Some("Давай ".to_string())
         );
+        assert_eq!(
+            apply_typing_assist("ОБYJDB ", true),
+            Some("ОБНОВИ ".to_string())
+        );
+        assert_eq!(
+            apply_typing_assist("CRBK ", true),
+            Some("СКИЛ ".to_string())
+        );
         assert_eq!(apply_typing_assist("кгы ", true), Some("rus ".to_string()));
         assert_eq!(apply_typing_assist("утп ", true), Some("eng ".to_string()));
         assert_eq!(
@@ -4627,6 +4649,12 @@ mod tests {
                 input: format!("{prefix_cyrillic}{technical_ascii} "),
                 expected: format!("{technical_ascii} "),
                 allow_layout_auto: false,
+            },
+            Case {
+                id: "mixed_script_layout",
+                input: "ОБYJDB ".to_string(),
+                expected: "ОБНОВИ ".to_string(),
+                allow_layout_auto: true,
             },
             Case {
                 id: "layout_technical",
