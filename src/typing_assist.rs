@@ -188,12 +188,16 @@ fn apply_typing_assist_rule(
             token_trailing,
             correct_wrong_layout_ascii_technical_token,
         ),
-        "layout_ru_to_en" if allow_layout_auto => word_rule(
-            word,
-            token_leading,
-            token_trailing,
-            correct_wrong_layout_cyrillic_word,
-        ),
+        "layout_ru_to_en" if allow_layout_auto => {
+            correct_wrong_layout_cyrillic_word(core).or_else(|| {
+                word_rule(
+                    word,
+                    token_leading,
+                    token_trailing,
+                    correct_wrong_layout_cyrillic_word,
+                )
+            })
+        }
         "layout_en_to_ru" if allow_layout_auto => {
             if let Some(replacement) = correct_wrong_layout_ascii_word(core) {
                 Some(replacement)
@@ -268,21 +272,35 @@ fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
         return None;
     }
 
-    let converted = crate::dict::convert(token, crate::dict::Direction::Us2Ru);
-    if converted == token || !is_cyrillic_word(&converted) {
+    let (_, original_word, _) = split_word_punctuation(token);
+    if original_word.is_empty() {
         return None;
     }
 
-    let converted_lower = converted.to_lowercase();
+    let converted = crate::dict::convert(token, crate::dict::Direction::Us2Ru);
+    if converted == token {
+        return None;
+    }
+
+    let (converted_leading, converted_word, converted_trailing) =
+        split_word_punctuation(&converted);
+    if converted_word.is_empty() || !is_cyrillic_word(converted_word) {
+        return None;
+    }
+
+    let converted_lower = converted_word.to_lowercase();
     if !is_known_russian_layout_autoswitch_word(&converted_lower) {
         return None;
     }
 
-    match crate::llm::choose_token_hybrid(token, &converted) {
-        Ok(Some(choice)) if choice == converted => Some(converted),
-        Ok(Some(choice)) if choice == token => allow_short_layout_word(token, &converted_lower)
-            .then(|| apply_word_case(token, &converted_lower)),
-        _ => Some(apply_word_case(token, &converted_lower)),
+    let normalized_word = apply_word_case(original_word, &converted_lower);
+    let normalized = format!("{converted_leading}{normalized_word}{converted_trailing}");
+    match crate::llm::choose_token_hybrid(original_word, &normalized_word) {
+        Ok(Some(choice)) if choice == normalized_word => Some(normalized),
+        Ok(Some(choice)) if choice == original_word => {
+            allow_short_layout_word(original_word, &converted_lower).then_some(normalized)
+        }
+        _ => Some(normalized),
     }
 }
 
@@ -297,21 +315,33 @@ fn correct_wrong_layout_cyrillic_word(token: &str) -> Option<String> {
         return None;
     }
 
-    let original_lower = token.to_lowercase();
+    let (_, original_word, _) = split_word_punctuation(token);
+    if original_word.is_empty() {
+        return None;
+    }
+
+    let original_lower = original_word.to_lowercase();
     if is_known_russian_layout_autoswitch_word(&original_lower) {
         return None;
     }
 
     let converted = crate::dict::convert(token, crate::dict::Direction::Ru2Us);
-    if converted == token || !is_plain_ascii_word_candidate(&converted) {
+    if converted == token {
         return None;
     }
 
-    english_layout_autoswitch_candidates(&converted)
+    let (converted_leading, converted_word, converted_trailing) =
+        split_word_punctuation(&converted);
+    if converted_word.is_empty() || !is_plain_ascii_word_candidate(converted_word) {
+        return None;
+    }
+
+    english_layout_autoswitch_candidates(converted_word)
         .into_iter()
         .find_map(|candidate_lower| {
-            let candidate = apply_word_case(token, &candidate_lower);
-            lem_prefers_layout_candidate(token, &candidate).then_some(candidate)
+            let candidate_word = apply_word_case(original_word, &candidate_lower);
+            let candidate = format!("{converted_leading}{candidate_word}{converted_trailing}");
+            lem_prefers_layout_candidate(original_word, &candidate_word).then_some(candidate)
         })
 }
 
@@ -352,16 +382,44 @@ fn lem_prefers_layout_candidate(typed: &str, candidate: &str) -> bool {
 }
 
 fn is_plain_cyrillic_layout_token(token: &str) -> bool {
-    token.chars().any(is_cyrillic_letter) && token.chars().all(is_cyrillic_letter)
+    token.chars().any(is_cyrillic_letter)
+        && token.chars().all(|ch| {
+            is_cyrillic_letter(ch)
+                || matches!(
+                    ch,
+                    ',' | '.' | '!' | '?' | ':' | ';' | '$' | '%' | '&' | '#' | '@' | '-' | '_'
+                )
+        })
 }
 
 fn is_plain_ascii_layout_token(token: &str) -> bool {
     token.is_ascii()
         && token.chars().any(|ch| ch.is_ascii_alphabetic())
         && !token.chars().any(|ch| ch.is_ascii_digit())
-        && token
-            .chars()
-            .all(|ch| ch.is_ascii_alphabetic() || matches!(ch, ',' | ';' | '\'' | '[' | ']' | '`'))
+        && token.chars().all(|ch| {
+            ch.is_ascii_alphabetic()
+                || matches!(
+                    ch,
+                    ',' | ';'
+                        | '\''
+                        | '['
+                        | ']'
+                        | '`'
+                        | '.'
+                        | '/'
+                        | '?'
+                        | '!'
+                        | ':'
+                        | '$'
+                        | '%'
+                        | '^'
+                        | '&'
+                        | '#'
+                        | '@'
+                        | '-'
+                        | '_'
+                )
+        })
 }
 
 fn is_protected_ascii_layout_token(token: &str) -> bool {

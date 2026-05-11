@@ -1,4 +1,5 @@
 use lay::config::{default_typing_assist_pipeline, TypingAssistRuleConfig};
+use lay::dict::{convert, Direction};
 use lay::typing_assist::{
     apply_typing_assist_with_pipeline, split_edge_whitespace, split_ws_segments,
 };
@@ -62,6 +63,14 @@ fn simulate_space_triggered_typing_assist(input: &str, allow_layout_auto: bool) 
         }
     }
     text
+}
+
+fn ru_text_typed_in_us_layout(text: &str) -> String {
+    convert(text, Direction::Ru2Us)
+}
+
+fn en_text_typed_in_ru_layout(text: &str) -> String {
+    convert(text, Direction::Us2Ru)
 }
 
 #[test]
@@ -178,6 +187,74 @@ fn forum_like_clean_mixed_sentences_do_not_get_rewritten() {
             simulate_space_triggered_typing_assist(input, true),
             input,
             "clean sentence was changed: {input:?}"
+        );
+    }
+}
+
+#[test]
+fn opposite_layout_russian_sentence_with_symbols_is_corrected_word_by_word() {
+    let cases = [
+        "только, могу? не; работает 100% это нормально! ",
+        "Давай: это тест? работает; можно 50% дальше. ",
+    ];
+
+    for expected in cases {
+        let input = ru_text_typed_in_us_layout(expected);
+        assert_eq!(
+            simulate_space_triggered_typing_assist(&input, true),
+            expected,
+            "input={input:?}"
+        );
+    }
+}
+
+#[test]
+fn opposite_layout_english_commands_with_symbols_are_corrected_word_by_word() {
+    let cases = [
+        "git status; echo files 100% ",
+        "terminal files? rus; eng 50% ",
+    ];
+
+    for expected in cases {
+        let input = en_text_typed_in_ru_layout(expected);
+        assert_eq!(
+            simulate_space_triggered_typing_assist(&input, true),
+            expected,
+            "input={input:?}"
+        );
+    }
+}
+
+#[test]
+fn every_word_can_be_opposite_layout_inside_one_mixed_sentence() {
+    let input = format!(
+        "{} {} {} {} {} ",
+        ru_text_typed_in_us_layout("только,"),
+        en_text_typed_in_ru_layout("git"),
+        ru_text_typed_in_us_layout("работает?"),
+        en_text_typed_in_ru_layout("status;"),
+        ru_text_typed_in_us_layout("это")
+    );
+
+    assert_eq!(
+        simulate_space_triggered_typing_assist(&input, true),
+        "только, git работает? status; это "
+    );
+}
+
+#[test]
+fn clean_shell_like_commands_and_symbols_are_not_rewritten() {
+    let cases = [
+        "git status; echo hello? files 100% ",
+        "ls -la | grep test && echo 100% ",
+        "curl -I https://example.com/path?x=1; echo ok ",
+    ];
+
+    for input in cases {
+        assert_eq!(
+            simulate_space_triggered_typing_assist(input, true),
+            input,
+            "command-like text was changed: {input:?}"
         );
     }
 }
