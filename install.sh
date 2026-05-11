@@ -30,17 +30,63 @@ fi
 
 echo ""
 echo "=== системные зависимости ==="
-need_install=()
-for pkg in libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip; do
-    if ! dpkg -l "$pkg" 2>/dev/null | grep -q '^ii'; then
-        need_install+=("$pkg")
-    fi
-done
-if [ ${#need_install[@]} -gt 0 ]; then
-    echo "ставим: ${need_install[*]}"
-    sudo apt-get install -y "${need_install[@]}"
+# 1. Определяем менеджер пакетов и соответствующие пакеты
+if command -v apt-get &>/dev/null; then
+    PM="apt"
+    PKGS=("libxcb1" "libxcb-shape0" "libxcb-xfixes0" "wl-clipboard" "xclip")
+elif command -v pacman &>/dev/null; then
+    PM="pacman"
+    PKGS=("libxcb" "wl-clipboard" "xclip")
+elif command -v dnf &>/dev/null || command -v yum &>/dev/null; then
+    PM="dnf"
+    [ ! -x "$(command -v dnf)" ] && PM="yum"
+    PKGS=("libxcb" "wl-clipboard" "xclip")
 else
-    echo "✓ все пакеты уже стоят"
+    echo "Ошибка: Менеджер пакетов не найден (поддерживаются apt, pacman, dnf/yum)"
+    exit 1
+fi
+
+need_install=()
+
+# 2. Проверка установленных пакетов
+echo "Проверка пакетов для $PM..."
+for pkg in "${PKGS[@]}"; do
+    case $PM in
+        apt)
+            if ! dpkg -l "$pkg" 2>/dev/null | grep -q '^ii'; then
+                need_install+=("$pkg")
+            fi
+            ;;
+        pacman)
+            if ! pacman -Qi "$pkg" &>/dev/null; then
+                need_install+=("$pkg")
+            fi
+            ;;
+        dnf|yum)
+            if ! rpm -q "$pkg" &>/dev/null; then
+                need_install+=("$pkg")
+            fi
+            ;;
+    esac
+done
+
+# 3. Установка
+if [ ${#need_install[@]} -gt 0 ]; then
+    echo "Ставим: ${need_install[*]}"
+    case $PM in
+        apt)
+            sudo apt-get update
+            sudo apt-get install -y "${need_install[@]}"
+            ;;
+        pacman)
+            sudo pacman -Sy --needed --noconfirm "${need_install[@]}"
+            ;;
+        dnf|yum)
+            sudo $PM install -y "${need_install[@]}"
+            ;;
+    esac
+else
+    echo "✓ Все пакеты уже установлены"
 fi
 
 echo ""
