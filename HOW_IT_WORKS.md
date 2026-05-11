@@ -17,6 +17,35 @@
 
 ---
 
+## Shared Core
+
+Код разделяется на общее ядро и desktop-интеграции.
+
+Общее ядро:
+
+- `src/core.rs` — стабильный facade для будущих frontend-ов;
+- `src/config.rs` — единая схема настроек для daemon, GNOME tray и будущего KDE tray;
+- `src/correction.rs` — общий контракт результата исправления;
+- `src/desktop.rs` — выбор `gnome` / `kde` / `x11`, нормализация layout-id;
+- `src/dict.rs` — физическая RU/EN конвертация клавиш;
+- `src/keyboard.rs` — keycode-события, word split, replay-decision, US/RU mapping и text→uinput runs;
+- `src/word_buffer.rs` — история текущего/предыдущих слов, replay-toggle и pending feedback;
+- `src/lem.rs` и `src/ngram.rs` — scoring готовых кандидатов;
+- `src/quality.rs` — лёгкие эвристики качества текста;
+- `src/text_edit.rs` — минимальный план замены текста без лишней перепечатки.
+
+Desktop-адаптеры:
+
+- GNOME: Shell extension, tray, DBus bridge, `inputSources[i].activate()`;
+- KDE/Plasma: должен быть отдельный adapter поверх того же ядра;
+- X11: отдельный backend через X11 tools, где они доступны.
+
+Цель такого разделения: не смешивать GNOME Shell API с логикой исправления
+текста. Ядро должно быть переиспользуемым, а GNOME/KDE должны отличаться только
+слоем интеграции с окружением рабочего стола.
+
+---
+
 ## lay-daemon — как работает двойной Shift
 
 ### Общий поток

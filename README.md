@@ -60,6 +60,12 @@ GNOME Wayland окружении, третьи решали задачу не т
 и backend-слой для переключения раскладки. GNOME backend использует маленькое
 расширение GNOME Shell; KDE и X11 backend добавлены как экспериментальные.
 
+Внутренняя архитектура теперь разделена на общее ядро и desktop-интеграции:
+`lay::core` содержит конвертацию раскладки, LEM/ngram scoring и правила
+определения backend; GNOME Shell extension остаётся отдельной оболочкой для
+трея, DBus bridge и активации раскладки. KDE/Plasma должен подключаться к тому
+же ядру через отдельный adapter, а не копировать GNOME-код.
+
 ### Возможности
 
 - Двойной Shift исправляет последнее слово, набранное не в той раскладке.
@@ -262,6 +268,25 @@ extension/lay@radislabus-star.github.io/
 То есть `lay` не вставляет “готовое слово” из облака или буфера. Он повторяет
 те же физические клавиши уже под другой раскладкой. Поэтому `Ghbdtn` становится
 `Привет`.
+
+Общая логика живёт в библиотеке:
+
+```text
+src/core.rs       общий facade для frontend-ов
+src/config.rs     единая схема config для daemon/tray/frontend-ов
+src/correction.rs общий результат исправления: replay или вставка текста
+src/desktop.rs    определение GNOME/KDE/X11 backend и layout-id helpers
+src/dict.rs       RU/EN keyboard mapping
+src/keyboard.rs   keycode-события, word split, replay-decision, US/RU mapping и text→uinput runs
+src/word_buffer.rs история текущего/предыдущих слов, replay-toggle и feedback для обучения
+src/lem.rs        арбитр кандидатов
+src/ngram.rs      локальный scorer естественности
+src/text_edit.rs  минимальный план замены текста без лишней перепечатки
+```
+
+Desktop-специфичная часть остаётся отдельно: GNOME использует Shell extension,
+а KDE/Plasma требует отдельный adapter для трея, переключения раскладки и
+fallback-вставки текста.
 
 ### Помощь при наборе
 

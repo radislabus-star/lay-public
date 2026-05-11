@@ -63,11 +63,7 @@ const COMMON_RUSSIAN_WORDS: &[&str] = &[
     "будете",
     "будут",
 ];
-const CHOICE_PROMPT_PREFIX: &str = "Choose the normal text, not keyboard-layout garbage.\n\
-A hello B руддщ => A\n\
-A руддщ B hello => B\n\
-A ghbdtn B привет => B\n\
-A привет B ghbdtn => A\n";
+const CHOICE_PROMPT_PREFIX: &str = "Choose the more natural text. One option may be typed in the wrong keyboard layout. Answer only A or B.\n";
 #[derive(Serialize)]
 struct Request<'a> {
     model: &'a str,
@@ -231,7 +227,7 @@ pub fn warm_up() -> Result<(), Box<dyn std::error::Error>> {
     match configured_llm_backend().as_str() {
         "direct" | "gguf" | "llama.cpp" => warm_up_direct(),
         "off" | "none" | "disabled" => Ok(()),
-        _ => choose_candidate("hello", "руддщ").map(|_| ()),
+        _ => choose_candidate("A", "B").map(|_| ()),
     }
 }
 

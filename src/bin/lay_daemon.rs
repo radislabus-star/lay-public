@@ -1,10 +1,10 @@
-//! lay-daemon — Caramba/Punto-style для GNOME Wayland.
+//! lay-daemon — Caramba/Punto-style keyboard daemon for Linux desktops.
 //!
 //! Базовый replay-принцип: запоминаем физические нажатия клавиш и при двойном
 //! Shift:
 //!   1) стираем последнее слово через uinput Backspace × N,
-//!   2) переключаем раскладку через GNOME Shell extension,
-//!   3) повторяем те же физические клавиши через uinput — gnome-shell сам
+//!   2) переключаем раскладку через выбранный desktop backend,
+//!   3) повторяем те же физические клавиши через uinput — рабочее окружение
 //!      интерпретирует их в новой раскладке.
 //!
 //! Этот replay core не требует словарной конвертации. Smart/typing-assist
@@ -13,13 +13,36 @@
 
 use clap::Parser;
 use evdev::{uinput::VirtualDevice, AttributeSet, Device, EventType, InputEvent, KeyCode};
+#[cfg(test)]
+use lay::config::{default_typing_assist_pipeline, DEFAULT_TYPING_ASSIST_RULES};
+use lay::config::{
+    normalize_typing_assist_pipeline, typing_assist_pipeline_for_auto_replace, CorrectionEngine,
+    LayConfig, TypingAssistRuleConfig,
+};
+use lay::correction::Correction;
+#[cfg(test)]
+use lay::desktop::resolve_layout_backend;
+use lay::desktop::{is_ru_layout_id, normalize_layout_id, parse_setxkbmap_layout, LayoutBackend};
+#[cfg(test)]
+use lay::keyboard::map_opposite_events;
+use lay::keyboard::{
+    is_cyrillic_letter, is_typing_key, keycode_to_ru_char, keycode_to_us_char,
+    map_events_to_layout, map_original_events, mixed_visual_latin_word_target_layout,
+    original_event_char, preferred_layout_for_text, replay_layout_decision, split_event_words,
+    text_to_uinput_runs, KeyEvent,
+};
+#[cfg(test)]
+use lay::keyboard::{is_layout_decision_key, ReplayLayoutDecision};
+#[cfg(test)]
+use lay::text_edit::plan_text_replacement;
+use lay::text_edit::{plan_committed_tail_replacement, TextReplacement};
+use lay::word_buffer::{PendingAutoUndo, UserLearningCorrection, WordBuffer, MAX_REPLACE_WORDS};
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::io::Write;
 use std::process::Command;
 use std::sync::{Mutex, OnceLock};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
-const CONFIG_PATH: &str = ".config/lay/config.json"; // относительно $HOME
 const REPLACEMENTS_PATH: &str = ".config/lay/replacements.json"; // относительно $HOME
 const PROTECTED_WORDS_PATH: &str = ".config/lay/protected_words.txt"; // относительно $HOME
 const LEARN_LOG_PATH: &str = ".local/share/lay/corrections.jsonl"; // относительно $HOME
@@ -37,6 +60,7 @@ const TEXT_REPLACE_BACKSPACE_PACE_MS: u64 = 1;
 const TEXT_REPLACE_BACKSPACE_SETTLE_MS: u64 = 16;
 const TEXT_INSERT_KEY_PACE_MS: u64 = 2;
 const TEXT_INSERT_SPACE_SETTLE_MS: u64 = 8;
+const LAYOUT_SWITCH_SETTLE_MS: u64 = 12;
 const MODIFIER_RELEASE_ROUNDS: usize = 2;
 const MODIFIER_RELEASE_PACE_MS: u64 = 3;
 const LAYOUT_POLL_INTERVAL_MS: u64 = 250;
@@ -54,8 +78,6 @@ const NGRAM_MOVED_PREFIX_MARGIN: f64 = 0.5;
 const NGRAM_MOVED_PREFIX_RIGHT_MARGIN: f64 = 5.0;
 const NGRAM_GLUED_SPLIT_MARGIN: f64 = -0.25;
 const LEM_LAYOUT_AUTOSWITCH_MARGIN: f64 = 0.25;
-const LEARNING_FEEDBACK_MAX_AGE_SECS: u64 = 30;
-const MAX_REPLACE_WORDS: usize = 8;
 const RU_ALPHABET: [char; 33] = [
     'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с',
     'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я',
@@ -98,200 +120,12 @@ const COMMON_RUSSIAN_WORDS: &[&str] = &[
 ];
 static DBUS_CONNECTION: OnceLock<Mutex<Option<zbus::blocking::Connection>>> = OnceLock::new();
 
-// ─── Config ─────────────────────────────────────────────────
-
-const DEFAULT_TYPING_ASSIST_RULES: [(&str, i32); 19] = [
-    ("moved_prefix_pair", 10),
-    ("split_word_pair", 20),
-    ("visual_b", 30),
-    ("personal_phrase", 40),
-    ("personal_token", 50),
-    ("duplicate_layout_prefix", 60),
-    ("layout_technical", 70),
-    ("layout_ru_to_en", 80),
-    ("layout_en_to_ru", 90),
-    ("cyrillic_case", 100),
-    ("hard_sign", 110),
-    ("adjacent_transposition", 120),
-    ("repeated_letter", 130),
-    ("single_letter_substitution", 140),
-    ("verb_ending", 150),
-    ("vowel_confusion", 160),
-    ("extra_letters", 170),
-    ("missing_letter", 180),
-    ("glued_phrase", 190),
-];
-const LAYOUT_ONLY_TYPING_ASSIST_RULES: &[&str] = &[
-    "duplicate_layout_prefix",
-    "layout_technical",
-    "layout_ru_to_en",
-    "layout_en_to_ru",
-];
 const COMMON_SHORT_ENGLISH_LAYOUT_WORDS: &[&str] = &[
     "api", "css", "cpu", "eng", "git", "gpu", "json", "llm", "md", "pdf", "ram", "rus", "sql",
     "ssd", "ssh", "usb", "zip",
 ];
 
-#[derive(Debug, Clone, serde::Deserialize)]
-struct TypingAssistRuleConfig {
-    id: String,
-    #[serde(default = "default_rule_enabled")]
-    enabled: bool,
-    #[serde(default)]
-    priority: i32,
-}
-
-fn default_rule_enabled() -> bool {
-    true
-}
-
-fn default_typing_assist_pipeline() -> Vec<TypingAssistRuleConfig> {
-    DEFAULT_TYPING_ASSIST_RULES
-        .iter()
-        .map(|(id, priority)| TypingAssistRuleConfig {
-            id: (*id).to_string(),
-            enabled: true,
-            priority: *priority,
-        })
-        .collect()
-}
-
-#[derive(Debug, Clone, serde::Deserialize)]
-#[serde(default)]
-struct LayConfig {
-    /// Legacy field: simple | llm. New UI writes correction_engine instead.
-    mode: String,
-    /// Engine for double-Shift correction: replay | smart.
-    correction_engine: Option<String>,
-    /// Layout backend: auto | gnome | kde | x11.
-    layout_backend: String,
-    /// Триггер: double-* | caps-lock | single-*
-    trigger: String,
-    /// Максимальная длительность каждого тапа (мс)
-    tap_max_ms: u64,
-    /// Окно между двумя тапами (мс)
-    shift_window_ms: u64,
-    /// Дебаунс после конвертации (мс)
-    debounce_ms: u64,
-    /// Сколько последних слов менять: 1..3 независимо от engine.
-    replace_words: usize,
-    /// Точные персональные автоподмены после обычной перекладки.
-    auto_replace: bool,
-    /// Безопасная помощь при наборе после пробела: только точные правила.
-    typing_assist: bool,
-    /// После автоматической помощи при наборе оставлять активной раскладку результата.
-    auto_switch_layout: bool,
-    /// Использовать LEM-арбитр для smart-хвоста из двух слов.
-    lem_2_words: bool,
-    /// Использовать LEM-арбитр для smart-хвоста из трех и более слов.
-    lem_3_words: bool,
-    /// Конвейер правил помощи при наборе: id + enabled + priority.
-    #[serde(default = "default_typing_assist_pipeline")]
-    typing_assist_pipeline: Vec<TypingAssistRuleConfig>,
-    /// Локальный opt-in лог исправлений для будущего обучения.
-    learning_log: bool,
-}
-
-impl Default for LayConfig {
-    fn default() -> Self {
-        Self {
-            mode: "simple".into(),
-            correction_engine: None,
-            layout_backend: "auto".into(),
-            trigger: "double-lshift".into(),
-            tap_max_ms: 200,
-            shift_window_ms: 250,
-            debounce_ms: 50,
-            replace_words: 1,
-            auto_replace: false,
-            typing_assist: false,
-            auto_switch_layout: true,
-            lem_2_words: true,
-            lem_3_words: true,
-            typing_assist_pipeline: default_typing_assist_pipeline(),
-            learning_log: false,
-        }
-    }
-}
-
-impl LayConfig {
-    fn load() -> Self {
-        let home = std::env::var("HOME").unwrap_or_default();
-        let path = format!("{}/{}", home, CONFIG_PATH);
-        match std::fs::read_to_string(&path) {
-            Ok(s) => serde_json::from_str(&s).unwrap_or_else(|e| {
-                eprintln!("[lay-daemon] config parse error: {e}, using defaults");
-                Self::default()
-            }),
-            Err(_) => Self::default(), // файл не существует — дефолты
-        }
-    }
-
-    fn active_replace_words(&self) -> usize {
-        self.replace_words.clamp(1, 3)
-    }
-
-    fn active_correction_engine(&self) -> CorrectionEngine {
-        match self.correction_engine.as_deref() {
-            Some("smart") => CorrectionEngine::Smart,
-            Some("replay") => CorrectionEngine::Replay,
-            // Compatibility with configs written before correction_engine existed.
-            _ if self.mode == "llm" => CorrectionEngine::Smart,
-            _ => CorrectionEngine::Replay,
-        }
-    }
-
-    fn active_layout_backend(&self) -> LayoutBackend {
-        resolve_layout_backend(
-            &self.layout_backend,
-            std::env::var("XDG_CURRENT_DESKTOP").ok().as_deref(),
-            std::env::var("DESKTOP_SESSION").ok().as_deref(),
-            std::env::var("XDG_SESSION_TYPE").ok().as_deref(),
-        )
-    }
-
-    fn active_typing_assist_pipeline(&self) -> Vec<TypingAssistRuleConfig> {
-        normalize_typing_assist_pipeline(&self.typing_assist_pipeline)
-    }
-
-    fn lem_enabled_for_scope(&self, word_count: usize) -> bool {
-        match word_count {
-            0 | 1 => false,
-            2 => self.lem_2_words,
-            _ => self.lem_3_words,
-        }
-    }
-}
-
-fn normalize_typing_assist_pipeline(
-    configured: &[TypingAssistRuleConfig],
-) -> Vec<TypingAssistRuleConfig> {
-    let mut rules = default_typing_assist_pipeline();
-    for saved in configured {
-        if let Some(rule) = rules.iter_mut().find(|rule| rule.id == saved.id) {
-            rule.enabled = saved.enabled;
-            if saved.priority > 0 {
-                rule.priority = saved.priority;
-            }
-        }
-    }
-    rules.sort_by(|a, b| a.priority.cmp(&b.priority).then_with(|| a.id.cmp(&b.id)));
-    rules
-}
-
-fn typing_assist_pipeline_for_auto_replace(
-    auto_replace: bool,
-    configured: &[TypingAssistRuleConfig],
-) -> Vec<TypingAssistRuleConfig> {
-    let mut rules = normalize_typing_assist_pipeline(configured);
-    if !auto_replace {
-        for rule in &mut rules {
-            rule.enabled =
-                rule.enabled && LAYOUT_ONLY_TYPING_ASSIST_RULES.contains(&rule.id.as_str());
-        }
-    }
-    rules
-}
+// ─── Config ─────────────────────────────────────────────────
 
 fn active_replace_words() -> usize {
     LayConfig::load().active_replace_words()
@@ -361,93 +195,12 @@ struct Args {
     debug_log: bool,
 }
 
-#[derive(Clone, Copy, Debug)]
-struct KeyEvent {
-    keycode: u16,
-    shift: bool,
-    layout_is_ru: bool,
-}
-
 struct ExecutingGuard<'a>(&'a mut bool);
 
 impl Drop for ExecutingGuard<'_> {
     fn drop(&mut self) {
         *self.0 = false;
     }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum CorrectionEngine {
-    Replay,
-    Smart,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum LayoutBackend {
-    Gnome,
-    Kde,
-    X11,
-}
-
-impl LayoutBackend {
-    fn label(self) -> &'static str {
-        match self {
-            Self::Gnome => "gnome",
-            Self::Kde => "kde",
-            Self::X11 => "x11",
-        }
-    }
-}
-
-fn resolve_layout_backend(
-    configured: &str,
-    desktop: Option<&str>,
-    session: Option<&str>,
-    session_type: Option<&str>,
-) -> LayoutBackend {
-    match configured.trim().to_ascii_lowercase().as_str() {
-        "gnome" => return LayoutBackend::Gnome,
-        "kde" | "plasma" => return LayoutBackend::Kde,
-        "x11" | "xorg" => return LayoutBackend::X11,
-        _ => {}
-    }
-
-    let desktop = format!(
-        "{}:{}",
-        desktop.unwrap_or_default(),
-        session.unwrap_or_default()
-    )
-    .to_ascii_lowercase();
-    if desktop.contains("kde") || desktop.contains("plasma") {
-        return LayoutBackend::Kde;
-    }
-    if desktop.contains("gnome") {
-        return LayoutBackend::Gnome;
-    }
-    if session_type.is_some_and(|value| value.eq_ignore_ascii_case("x11")) {
-        return LayoutBackend::X11;
-    }
-    LayoutBackend::Gnome
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-enum Correction {
-    ReplayAll,
-    InsertText(String),
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct TextReplacement {
-    move_left: u32,
-    backspaces: u32,
-    insert: String,
-    move_right: u32,
-}
-
-#[derive(Debug, Clone)]
-struct TextInputRun {
-    target_is_ru: bool,
-    events: Vec<KeyEvent>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -603,7 +356,7 @@ fn listen_keyboard(
     let mut clear_on_next_typing: bool = false;
     // Перекрёстный счёт: считаем ВСЕ typing-events (press+repeat) с момента
     // последнего пробела/границы, независимо от accept-фильтра. На DOUBLE
-    // сравниваем с buffer.current.len() — должны совпасть. Если нет —
+    // сравниваем с buffer.current_len() — должны совпасть. Если нет —
     // видно где autorepeat терялся.
     let mut events_since_word_start: u32 = 0;
 
@@ -660,7 +413,7 @@ fn listen_keyboard(
                                     && last_double_at
                                         .map_or(true, |d| d.elapsed() >= debounce_window)
                                 {
-                                    let buf_count = buffer.current.len() as u32;
+                                    let buf_count = buffer.current_len() as u32;
                                     log(&format!(
                                         "═ CROSS-CHECK: buffer={} events={}{}",
                                         buf_count,
@@ -713,7 +466,7 @@ fn listen_keyboard(
                         continue;
                     }
                 }
-                let buf_count = buffer.current.len() as u32;
+                let buf_count = buffer.current_len() as u32;
                 log(&format!(
                     "═ CROSS-CHECK: buffer.current={} events={}{}",
                     buf_count,
@@ -807,7 +560,7 @@ fn listen_keyboard(
                         let held = now.duration_since(second_press);
                         if held <= shift_tap_max {
                             // DOUBLE SHIFT! press→release→press→release ✓
-                            let buf_count = buffer.current.len() as u32;
+                            let buf_count = buffer.current_len() as u32;
                             log(&format!(
                                 "═ CROSS-CHECK: buffer.current={} events_since_word_start={}{}",
                                 buf_count,
@@ -877,7 +630,7 @@ fn listen_keyboard(
                 continue;
             }
 
-            if should_ignore_buffer_key(key, &shift_state, buffer.current.is_empty()) {
+            if should_ignore_buffer_key(key, &shift_state, buffer.current_is_empty()) {
                 if verbose {
                     log(&format!("· key {code} ignored for buffer (shortcut/noise)"));
                 }
@@ -899,8 +652,8 @@ fn listen_keyboard(
                     if verbose {
                         log(&format!(
                             "· space, history={:?}, current={:?}",
-                            buffer.prev_words.len(),
-                            buffer.current.len()
+                            buffer.prev_words_len(),
+                            buffer.current_len()
                         ));
                     }
                 }
@@ -934,14 +687,14 @@ fn listen_keyboard(
                     events_since_word_start = 0;
                     clear_on_next_typing = false;
                 }
-                let starts_new_word = buffer.current.is_empty();
+                let starts_new_word = buffer.current_is_empty();
                 // Перекрёстный счёт — увеличиваем НА КАЖДОЕ press/repeat
                 // независимо от accept-фильтра.
                 events_since_word_start += 1;
                 // v=2 (autorepeat) — добавляем ТОЛЬКО если это repeat той же
                 // клавиши что была последней. Иначе чужой repeat ломал бы счёт.
                 let accept = if value == 2 {
-                    matches!(buffer.current.last(), Some(last) if last.keycode == code)
+                    buffer.current_last_keycode() == Some(code)
                 } else {
                     true
                 };
@@ -973,7 +726,7 @@ fn listen_keyboard(
                     log(&format!(
                         "· key {code} v={value} shift={} → current={} events={events_since_word_start}",
                         shift_state.any(),
-                        buffer.current.len()
+                        buffer.current_len()
                     ));
                 }
             }
@@ -1044,452 +797,6 @@ enum DShiftState {
     },
 }
 
-// ─── WordBuffer ─────────────────────────────────────────────
-
-struct WordBuffer {
-    current: Vec<KeyEvent>,
-    prev_words: Vec<Vec<KeyEvent>>,
-    prev_had_trailing_space: bool,
-    replay_toggle_ready: bool,
-    pending_learning: Option<PendingLearningCorrection>,
-    pending_auto_undo: Option<PendingAutoUndo>,
-    last_input: Instant,
-}
-
-#[derive(Debug, Clone)]
-struct PendingAutoUndo {
-    lay_kind: String,
-    original: String,
-    replacement: String,
-    replace_words: usize,
-    words: usize,
-    started_at: Instant,
-}
-
-#[derive(Debug, Clone)]
-struct PendingLearningCorrection {
-    lay_kind: String,
-    lay_from: String,
-    lay_to: String,
-    replace_words: usize,
-    words: usize,
-    started_at: Instant,
-    deleted_chars: u32,
-    typed: Vec<KeyEvent>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct UserLearningCorrection {
-    lay_kind: String,
-    lay_from: String,
-    lay_to: String,
-    from: String,
-    to: String,
-    replace_words: usize,
-    words: usize,
-}
-
-impl WordBuffer {
-    fn new() -> Self {
-        Self {
-            current: Vec::with_capacity(32),
-            prev_words: Vec::with_capacity(MAX_REPLACE_WORDS),
-            prev_had_trailing_space: false,
-            replay_toggle_ready: false,
-            pending_learning: None,
-            pending_auto_undo: None,
-            last_input: Instant::now(),
-        }
-    }
-    fn push(&mut self, e: KeyEvent) {
-        self.current.push(e);
-        self.prev_had_trailing_space = false;
-        self.replay_toggle_ready = false;
-        self.pending_auto_undo = None;
-        self.last_input = Instant::now();
-    }
-    fn handle_space(&mut self) {
-        if !self.current.is_empty() {
-            self.prev_words.push(std::mem::take(&mut self.current));
-            if self.prev_words.len() > MAX_REPLACE_WORDS {
-                self.prev_words.remove(0);
-            }
-            self.prev_had_trailing_space = true;
-        }
-        self.last_input = Instant::now();
-    }
-    fn reset_all(&mut self) {
-        self.current.clear();
-        self.prev_words.clear();
-        self.prev_had_trailing_space = false;
-        self.replay_toggle_ready = false;
-        self.pending_auto_undo = None;
-        self.last_input = Instant::now();
-    }
-    fn is_empty(&self) -> bool {
-        self.current.is_empty() && self.prev_words.is_empty()
-    }
-
-    fn last_completed_words_events(&self, count: usize) -> Option<Vec<KeyEvent>> {
-        if !self.prev_had_trailing_space || count == 0 || self.prev_words.len() < count {
-            return None;
-        }
-
-        let mut events = Vec::new();
-        for word in self.prev_words.iter().skip(self.prev_words.len() - count) {
-            if !events.is_empty() {
-                events.push(KeyEvent {
-                    keycode: KeyCode::KEY_SPACE.code(),
-                    shift: false,
-                    layout_is_ru: false,
-                });
-            }
-            events.extend(word.iter().copied());
-        }
-        events.push(KeyEvent {
-            keycode: KeyCode::KEY_SPACE.code(),
-            shift: false,
-            layout_is_ru: false,
-        });
-        Some(events)
-    }
-
-    fn mark_replayed_layout(&mut self, replace_words: usize, layout_is_ru: bool) {
-        let replace_words = replace_words.clamp(1, MAX_REPLACE_WORDS);
-        if !self.current.is_empty() {
-            let take_prev = replace_words.saturating_sub(1).min(self.prev_words.len());
-            let first_prev = self.prev_words.len() - take_prev;
-            for word in self.prev_words.iter_mut().skip(first_prev) {
-                mark_word_layout(word, layout_is_ru);
-            }
-            mark_word_layout(&mut self.current, layout_is_ru);
-        } else if self.prev_had_trailing_space && !self.prev_words.is_empty() {
-            let take_prev = replace_words.min(self.prev_words.len());
-            let first_prev = self.prev_words.len() - take_prev;
-            for word in self.prev_words.iter_mut().skip(first_prev) {
-                mark_word_layout(word, layout_is_ru);
-            }
-        }
-        self.replay_toggle_ready = true;
-    }
-
-    fn replay_toggle_ready(&self) -> bool {
-        self.replay_toggle_ready
-    }
-
-    fn remember_inserted_tail_for_replay(
-        &mut self,
-        original_events: &[KeyEvent],
-        plan: &TextReplacement,
-        inserted_layout_is_ru: bool,
-    ) -> bool {
-        if plan.move_right != 0 || plan.insert.is_empty() {
-            return false;
-        }
-
-        let replaced_len = plan.backspaces as usize;
-        if replaced_len == 0 || replaced_len > original_events.len() {
-            return false;
-        }
-
-        let start = original_events.len() - replaced_len;
-        let mut tail = original_events[start..].to_vec();
-        if tail.is_empty()
-            || tail
-                .iter()
-                .any(|ev| ev.keycode == KeyCode::KEY_SPACE.code())
-        {
-            return false;
-        }
-
-        mark_word_layout(&mut tail, inserted_layout_is_ru);
-        if map_original_events(&tail) != plan.insert {
-            return false;
-        }
-
-        self.current = tail;
-        self.prev_words.clear();
-        self.prev_had_trailing_space = false;
-        self.replay_toggle_ready = true;
-        self.last_input = Instant::now();
-        true
-    }
-
-    fn remember_inserted_last_word_for_replay(
-        &mut self,
-        original_events: &[KeyEvent],
-        plan: &TextReplacement,
-    ) -> bool {
-        if plan.move_right != 0 || plan.insert.trim().is_empty() {
-            return false;
-        }
-
-        let Some(inserted_word) = plan.insert.split_whitespace().next_back() else {
-            return false;
-        };
-        if inserted_word.is_empty() {
-            return false;
-        }
-
-        let Some(words) = split_event_words(original_events) else {
-            return false;
-        };
-        for word in words.iter().rev() {
-            for target_is_ru in [false, true] {
-                if map_events_to_layout(word, target_is_ru) != inserted_word {
-                    continue;
-                }
-
-                let mut tail = (*word).to_vec();
-                mark_word_layout(&mut tail, target_is_ru);
-                self.current = tail;
-                self.prev_words.clear();
-                self.prev_had_trailing_space = false;
-                self.replay_toggle_ready = true;
-                self.last_input = Instant::now();
-                return true;
-            }
-        }
-
-        false
-    }
-
-    fn remember_replacement_last_word_for_replay(
-        &mut self,
-        original_events: &[KeyEvent],
-        plan: &TextReplacement,
-        replacement: &str,
-    ) -> bool {
-        if plan.move_right != 0 || plan.backspaces == 0 {
-            return false;
-        }
-
-        let Some(inserted_word) = replacement.split_whitespace().next_back() else {
-            return false;
-        };
-        if inserted_word.is_empty() {
-            return false;
-        }
-
-        let Some(words) = split_event_words(original_events) else {
-            return false;
-        };
-        for word in words.iter().rev() {
-            for target_is_ru in [false, true] {
-                if map_events_to_layout(word, target_is_ru) != inserted_word {
-                    continue;
-                }
-
-                let mut tail = (*word).to_vec();
-                mark_word_layout(&mut tail, target_is_ru);
-                self.prev_words.clear();
-                if replacement
-                    .chars()
-                    .next_back()
-                    .is_some_and(char::is_whitespace)
-                {
-                    self.current.clear();
-                    self.prev_words.push(tail);
-                    self.prev_had_trailing_space = true;
-                } else {
-                    self.current = tail;
-                    self.prev_had_trailing_space = false;
-                }
-                self.replay_toggle_ready = true;
-                self.last_input = Instant::now();
-                return true;
-            }
-        }
-
-        false
-    }
-
-    fn remember_pending_learning_correction(
-        &mut self,
-        lay_kind: &str,
-        lay_from: &str,
-        lay_to: &str,
-        replace_words: usize,
-        words: usize,
-    ) {
-        if lay_from == lay_to || lay_from.trim().is_empty() || lay_to.trim().is_empty() {
-            self.pending_learning = None;
-            return;
-        }
-
-        self.pending_learning = Some(PendingLearningCorrection {
-            lay_kind: lay_kind.to_string(),
-            lay_from: lay_from.to_string(),
-            lay_to: lay_to.to_string(),
-            replace_words,
-            words,
-            started_at: Instant::now(),
-            deleted_chars: 0,
-            typed: Vec::new(),
-        });
-    }
-
-    fn remember_pending_auto_undo(
-        &mut self,
-        lay_kind: &str,
-        original: &str,
-        replacement: &str,
-        replace_words: usize,
-        words: usize,
-    ) {
-        if original == replacement || original.trim().is_empty() || replacement.trim().is_empty() {
-            self.pending_auto_undo = None;
-            return;
-        }
-
-        self.pending_auto_undo = Some(PendingAutoUndo {
-            lay_kind: lay_kind.to_string(),
-            original: original.to_string(),
-            replacement: replacement.to_string(),
-            replace_words,
-            words,
-            started_at: Instant::now(),
-        });
-    }
-
-    fn take_pending_auto_undo(&mut self) -> Option<PendingAutoUndo> {
-        let undo = self.pending_auto_undo.take()?;
-        if undo.started_at.elapsed() > Duration::from_secs(LEARNING_FEEDBACK_MAX_AGE_SECS) {
-            return None;
-        }
-        Some(undo)
-    }
-
-    fn note_learning_backspace(&mut self) {
-        let Some(pending) = self.pending_learning.as_mut() else {
-            return;
-        };
-        if pending.started_at.elapsed() > Duration::from_secs(LEARNING_FEEDBACK_MAX_AGE_SECS) {
-            self.pending_learning = None;
-            return;
-        }
-        pending.deleted_chars = pending.deleted_chars.saturating_add(1);
-        pending.typed.clear();
-    }
-
-    fn note_learning_typed(&mut self, event: KeyEvent) {
-        let Some(pending) = self.pending_learning.as_mut() else {
-            return;
-        };
-        if pending.started_at.elapsed() > Duration::from_secs(LEARNING_FEEDBACK_MAX_AGE_SECS) {
-            self.pending_learning = None;
-            return;
-        }
-        if pending.deleted_chars == 0 {
-            self.pending_learning = None;
-            return;
-        }
-        pending.typed.push(event);
-    }
-
-    fn take_user_learning_correction(
-        &mut self,
-        include_trailing_space: bool,
-    ) -> Option<UserLearningCorrection> {
-        let pending = self.pending_learning.take()?;
-        if pending.deleted_chars == 0 || pending.typed.is_empty() {
-            return None;
-        }
-
-        let from = tail_chars(&pending.lay_to, pending.deleted_chars as usize);
-        let mut to = map_original_events(&pending.typed);
-        let lay_to_ends_with_space = pending
-            .lay_to
-            .chars()
-            .next_back()
-            .is_some_and(char::is_whitespace);
-        if include_trailing_space && lay_to_ends_with_space {
-            to.push(' ');
-        }
-
-        if from == to || from.trim().is_empty() || to.trim().is_empty() {
-            return None;
-        }
-
-        Some(UserLearningCorrection {
-            lay_kind: pending.lay_kind,
-            lay_from: pending.lay_from,
-            lay_to: pending.lay_to,
-            from,
-            to,
-            replace_words: pending.replace_words,
-            words: pending.words,
-        })
-    }
-
-    /// Что ре-печатать при двойном Shift и сколько backspaces.
-    fn what_to_replay(&self, replace_words: usize) -> Option<(Vec<KeyEvent>, u32)> {
-        let replace_words = replace_words.clamp(1, MAX_REPLACE_WORDS);
-        if !self.current.is_empty() {
-            let take_prev = replace_words.saturating_sub(1).min(self.prev_words.len());
-            let mut events = Vec::new();
-            for word in self
-                .prev_words
-                .iter()
-                .skip(self.prev_words.len() - take_prev)
-            {
-                if !events.is_empty() {
-                    events.push(KeyEvent {
-                        keycode: KeyCode::KEY_SPACE.code(),
-                        shift: false,
-                        layout_is_ru: false,
-                    });
-                }
-                events.extend(word.iter().copied());
-            }
-            if !events.is_empty() {
-                events.push(KeyEvent {
-                    keycode: KeyCode::KEY_SPACE.code(),
-                    shift: false,
-                    layout_is_ru: false,
-                });
-            }
-            events.extend(self.current.iter().copied());
-            let n = events.len() as u32;
-            Some((events, n))
-        } else if self.prev_had_trailing_space && !self.prev_words.is_empty() {
-            let take_prev = replace_words.min(self.prev_words.len());
-            let mut events = Vec::new();
-            for word in self
-                .prev_words
-                .iter()
-                .skip(self.prev_words.len() - take_prev)
-            {
-                if !events.is_empty() {
-                    events.push(KeyEvent {
-                        keycode: KeyCode::KEY_SPACE.code(),
-                        shift: false,
-                        layout_is_ru: false,
-                    });
-                }
-                events.extend(word.iter().copied());
-            }
-            events.push(KeyEvent {
-                keycode: KeyCode::KEY_SPACE.code(),
-                shift: false,
-                layout_is_ru: false,
-            });
-            let n = events.len() as u32;
-            Some((events, n))
-        } else {
-            None
-        }
-    }
-}
-
-fn mark_word_layout(word: &mut [KeyEvent], layout_is_ru: bool) {
-    for event in word {
-        if is_typing_key(KeyCode::new(event.keycode)) {
-            event.layout_is_ru = layout_is_ru;
-        }
-    }
-}
-
 // ─── Word boundary детекция ─────────────────────────────────
 
 fn is_hard_boundary(key: KeyCode) -> bool {
@@ -1509,61 +816,6 @@ fn is_hard_boundary(key: KeyCode) -> bool {
             | K::KEY_PAGEDOWN
             | K::KEY_BACKSPACE
             | K::KEY_DELETE
-    )
-}
-
-/// Клавиша которая порождает символ в текстовом поле (с учётом раскладки).
-fn is_typing_key(key: KeyCode) -> bool {
-    use KeyCode as K;
-    matches!(
-        key,
-        K::KEY_A
-            | K::KEY_B
-            | K::KEY_C
-            | K::KEY_D
-            | K::KEY_E
-            | K::KEY_F
-            | K::KEY_G
-            | K::KEY_H
-            | K::KEY_I
-            | K::KEY_J
-            | K::KEY_K
-            | K::KEY_L
-            | K::KEY_M
-            | K::KEY_N
-            | K::KEY_O
-            | K::KEY_P
-            | K::KEY_Q
-            | K::KEY_R
-            | K::KEY_S
-            | K::KEY_T
-            | K::KEY_U
-            | K::KEY_V
-            | K::KEY_W
-            | K::KEY_X
-            | K::KEY_Y
-            | K::KEY_Z
-            | K::KEY_1
-            | K::KEY_2
-            | K::KEY_3
-            | K::KEY_4
-            | K::KEY_5
-            | K::KEY_6
-            | K::KEY_7
-            | K::KEY_8
-            | K::KEY_9
-            | K::KEY_0
-            | K::KEY_SEMICOLON
-            | K::KEY_APOSTROPHE
-            | K::KEY_COMMA
-            | K::KEY_DOT
-            | K::KEY_LEFTBRACE
-            | K::KEY_RIGHTBRACE
-            | K::KEY_GRAVE
-            | K::KEY_SLASH
-            | K::KEY_BACKSLASH
-            | K::KEY_MINUS
-            | K::KEY_EQUAL
     )
 }
 
@@ -1965,7 +1217,7 @@ fn handle_pending_auto_undo(
         replace_words: undo.replace_words,
         words: undo.words,
     });
-    buf.pending_learning = None;
+    buf.clear_pending_learning();
     buf.reset_all();
     log(&format!(
         "✓ done: auto-undo {:?} → {:?} за {}ms",
@@ -2219,319 +1471,6 @@ fn parse_current_layout_from_list(layouts: &str) -> Option<String> {
     })
 }
 
-/// Преобразует keycode + shift в RU-символ (йцукен раскладка).
-/// Используется когда current_layout = RU (1) — буфер keycodes
-/// представляет реально набранную кириллицу.
-fn keycode_to_ru_char(keycode: u16, shift: bool) -> Option<char> {
-    use KeyCode as K;
-    let key = KeyCode::new(keycode);
-    let lower = match key {
-        K::KEY_Q => Some('й'),
-        K::KEY_W => Some('ц'),
-        K::KEY_E => Some('у'),
-        K::KEY_R => Some('к'),
-        K::KEY_T => Some('е'),
-        K::KEY_Y => Some('н'),
-        K::KEY_U => Some('г'),
-        K::KEY_I => Some('ш'),
-        K::KEY_O => Some('щ'),
-        K::KEY_P => Some('з'),
-        K::KEY_LEFTBRACE => Some('х'),
-        K::KEY_RIGHTBRACE => Some('ъ'),
-        K::KEY_A => Some('ф'),
-        K::KEY_S => Some('ы'),
-        K::KEY_D => Some('в'),
-        K::KEY_F => Some('а'),
-        K::KEY_G => Some('п'),
-        K::KEY_H => Some('р'),
-        K::KEY_J => Some('о'),
-        K::KEY_K => Some('л'),
-        K::KEY_L => Some('д'),
-        K::KEY_SEMICOLON => Some('ж'),
-        K::KEY_APOSTROPHE => Some('э'),
-        K::KEY_Z => Some('я'),
-        K::KEY_X => Some('ч'),
-        K::KEY_C => Some('с'),
-        K::KEY_V => Some('м'),
-        K::KEY_B => Some('и'),
-        K::KEY_N => Some('т'),
-        K::KEY_M => Some('ь'),
-        K::KEY_COMMA => Some('б'),
-        K::KEY_DOT => Some('ю'),
-        K::KEY_GRAVE => Some('ё'),
-        K::KEY_SLASH => Some('.'),
-        K::KEY_1 => Some('1'),
-        K::KEY_2 => Some('2'),
-        K::KEY_3 => Some('3'),
-        K::KEY_4 => Some('4'),
-        K::KEY_5 => Some('5'),
-        K::KEY_6 => Some('6'),
-        K::KEY_7 => Some('7'),
-        K::KEY_8 => Some('8'),
-        K::KEY_9 => Some('9'),
-        K::KEY_0 => Some('0'),
-        K::KEY_MINUS => Some('-'),
-        K::KEY_SPACE => Some(' '),
-        _ => None,
-    }?;
-    if shift && lower.is_alphabetic() {
-        lower.to_uppercase().next()
-    } else {
-        Some(lower)
-    }
-}
-
-/// Преобразует keycode + shift в US-символ (для прогона через словарь dict).
-fn keycode_to_us_char(keycode: u16, shift: bool) -> Option<char> {
-    use KeyCode as K;
-    let key = KeyCode::new(keycode);
-    let lower = match key {
-        K::KEY_A => Some('a'),
-        K::KEY_B => Some('b'),
-        K::KEY_C => Some('c'),
-        K::KEY_D => Some('d'),
-        K::KEY_E => Some('e'),
-        K::KEY_F => Some('f'),
-        K::KEY_G => Some('g'),
-        K::KEY_H => Some('h'),
-        K::KEY_I => Some('i'),
-        K::KEY_J => Some('j'),
-        K::KEY_K => Some('k'),
-        K::KEY_L => Some('l'),
-        K::KEY_M => Some('m'),
-        K::KEY_N => Some('n'),
-        K::KEY_O => Some('o'),
-        K::KEY_P => Some('p'),
-        K::KEY_Q => Some('q'),
-        K::KEY_R => Some('r'),
-        K::KEY_S => Some('s'),
-        K::KEY_T => Some('t'),
-        K::KEY_U => Some('u'),
-        K::KEY_V => Some('v'),
-        K::KEY_W => Some('w'),
-        K::KEY_X => Some('x'),
-        K::KEY_Y => Some('y'),
-        K::KEY_Z => Some('z'),
-        K::KEY_1 => Some('1'),
-        K::KEY_2 => Some('2'),
-        K::KEY_3 => Some('3'),
-        K::KEY_4 => Some('4'),
-        K::KEY_5 => Some('5'),
-        K::KEY_6 => Some('6'),
-        K::KEY_7 => Some('7'),
-        K::KEY_8 => Some('8'),
-        K::KEY_9 => Some('9'),
-        K::KEY_0 => Some('0'),
-        K::KEY_SEMICOLON => Some(';'),
-        K::KEY_APOSTROPHE => Some('\''),
-        K::KEY_COMMA => Some(','),
-        K::KEY_DOT => Some('.'),
-        K::KEY_LEFTBRACE => Some('['),
-        K::KEY_RIGHTBRACE => Some(']'),
-        K::KEY_GRAVE => Some('`'),
-        K::KEY_SLASH => Some('/'),
-        K::KEY_BACKSLASH => Some('\\'),
-        K::KEY_MINUS => Some('-'),
-        K::KEY_EQUAL => Some('='),
-        K::KEY_SPACE => Some(' '),
-        _ => None,
-    }?;
-    if shift && lower.is_alphabetic() {
-        lower.to_uppercase().next()
-    } else {
-        Some(lower)
-    }
-}
-
-fn char_to_layout_key_event(ch: char, current_is_ru: bool) -> Option<(bool, KeyEvent)> {
-    if is_cyrillic_letter(ch) {
-        return char_to_ru_key_event(ch).map(|event| (true, event));
-    }
-    if ch.is_ascii_alphabetic() {
-        return char_to_us_key_event(ch).map(|event| (false, event));
-    }
-    if current_is_ru {
-        if let Some(event) = char_to_ru_key_event(ch) {
-            return Some((true, event));
-        }
-    }
-    if let Some(event) = char_to_us_key_event(ch) {
-        return Some((false, event));
-    }
-    char_to_ru_key_event(ch).map(|event| (true, event))
-}
-
-fn char_to_ru_key_event(ch: char) -> Option<KeyEvent> {
-    use KeyCode as K;
-    let mut chars = ch.to_lowercase();
-    let lower = chars.next()?;
-    if chars.next().is_some() {
-        return None;
-    }
-    let shift = ch.is_uppercase();
-    let (key, force_shift) = match lower {
-        'й' => (K::KEY_Q, false),
-        'ц' => (K::KEY_W, false),
-        'у' => (K::KEY_E, false),
-        'к' => (K::KEY_R, false),
-        'е' => (K::KEY_T, false),
-        'н' => (K::KEY_Y, false),
-        'г' => (K::KEY_U, false),
-        'ш' => (K::KEY_I, false),
-        'щ' => (K::KEY_O, false),
-        'з' => (K::KEY_P, false),
-        'х' => (K::KEY_LEFTBRACE, false),
-        'ъ' => (K::KEY_RIGHTBRACE, false),
-        'ф' => (K::KEY_A, false),
-        'ы' => (K::KEY_S, false),
-        'в' => (K::KEY_D, false),
-        'а' => (K::KEY_F, false),
-        'п' => (K::KEY_G, false),
-        'р' => (K::KEY_H, false),
-        'о' => (K::KEY_J, false),
-        'л' => (K::KEY_K, false),
-        'д' => (K::KEY_L, false),
-        'ж' => (K::KEY_SEMICOLON, false),
-        'э' => (K::KEY_APOSTROPHE, false),
-        'я' => (K::KEY_Z, false),
-        'ч' => (K::KEY_X, false),
-        'с' => (K::KEY_C, false),
-        'м' => (K::KEY_V, false),
-        'и' => (K::KEY_B, false),
-        'т' => (K::KEY_N, false),
-        'ь' => (K::KEY_M, false),
-        'б' => (K::KEY_COMMA, false),
-        'ю' => (K::KEY_DOT, false),
-        'ё' => (K::KEY_GRAVE, false),
-        '1' => (K::KEY_1, false),
-        '2' => (K::KEY_2, false),
-        '3' => (K::KEY_3, false),
-        '4' => (K::KEY_4, false),
-        '5' => (K::KEY_5, false),
-        '6' => (K::KEY_6, false),
-        '7' => (K::KEY_7, false),
-        '8' => (K::KEY_8, false),
-        '9' => (K::KEY_9, false),
-        '0' => (K::KEY_0, false),
-        '-' => (K::KEY_MINUS, false),
-        '.' => (K::KEY_SLASH, false),
-        ',' => (K::KEY_SLASH, true),
-        ' ' => (K::KEY_SPACE, false),
-        _ => return None,
-    };
-
-    Some(KeyEvent {
-        keycode: key.code(),
-        shift: shift || force_shift,
-        layout_is_ru: true,
-    })
-}
-
-fn char_to_us_key_event(ch: char) -> Option<KeyEvent> {
-    use KeyCode as K;
-    let (key, shift) = match ch {
-        'a' | 'A' => (K::KEY_A, ch.is_uppercase()),
-        'b' | 'B' => (K::KEY_B, ch.is_uppercase()),
-        'c' | 'C' => (K::KEY_C, ch.is_uppercase()),
-        'd' | 'D' => (K::KEY_D, ch.is_uppercase()),
-        'e' | 'E' => (K::KEY_E, ch.is_uppercase()),
-        'f' | 'F' => (K::KEY_F, ch.is_uppercase()),
-        'g' | 'G' => (K::KEY_G, ch.is_uppercase()),
-        'h' | 'H' => (K::KEY_H, ch.is_uppercase()),
-        'i' | 'I' => (K::KEY_I, ch.is_uppercase()),
-        'j' | 'J' => (K::KEY_J, ch.is_uppercase()),
-        'k' | 'K' => (K::KEY_K, ch.is_uppercase()),
-        'l' | 'L' => (K::KEY_L, ch.is_uppercase()),
-        'm' | 'M' => (K::KEY_M, ch.is_uppercase()),
-        'n' | 'N' => (K::KEY_N, ch.is_uppercase()),
-        'o' | 'O' => (K::KEY_O, ch.is_uppercase()),
-        'p' | 'P' => (K::KEY_P, ch.is_uppercase()),
-        'q' | 'Q' => (K::KEY_Q, ch.is_uppercase()),
-        'r' | 'R' => (K::KEY_R, ch.is_uppercase()),
-        's' | 'S' => (K::KEY_S, ch.is_uppercase()),
-        't' | 'T' => (K::KEY_T, ch.is_uppercase()),
-        'u' | 'U' => (K::KEY_U, ch.is_uppercase()),
-        'v' | 'V' => (K::KEY_V, ch.is_uppercase()),
-        'w' | 'W' => (K::KEY_W, ch.is_uppercase()),
-        'x' | 'X' => (K::KEY_X, ch.is_uppercase()),
-        'y' | 'Y' => (K::KEY_Y, ch.is_uppercase()),
-        'z' | 'Z' => (K::KEY_Z, ch.is_uppercase()),
-        '1' => (K::KEY_1, false),
-        '2' => (K::KEY_2, false),
-        '3' => (K::KEY_3, false),
-        '4' => (K::KEY_4, false),
-        '5' => (K::KEY_5, false),
-        '6' => (K::KEY_6, false),
-        '7' => (K::KEY_7, false),
-        '8' => (K::KEY_8, false),
-        '9' => (K::KEY_9, false),
-        '0' => (K::KEY_0, false),
-        '!' => (K::KEY_1, true),
-        '@' => (K::KEY_2, true),
-        '#' => (K::KEY_3, true),
-        '$' => (K::KEY_4, true),
-        '%' => (K::KEY_5, true),
-        '^' => (K::KEY_6, true),
-        '&' => (K::KEY_7, true),
-        '*' => (K::KEY_8, true),
-        '(' => (K::KEY_9, true),
-        ')' => (K::KEY_0, true),
-        ';' => (K::KEY_SEMICOLON, false),
-        ':' => (K::KEY_SEMICOLON, true),
-        '\'' => (K::KEY_APOSTROPHE, false),
-        '"' => (K::KEY_APOSTROPHE, true),
-        ',' => (K::KEY_COMMA, false),
-        '<' => (K::KEY_COMMA, true),
-        '.' => (K::KEY_DOT, false),
-        '>' => (K::KEY_DOT, true),
-        '[' => (K::KEY_LEFTBRACE, false),
-        '{' => (K::KEY_LEFTBRACE, true),
-        ']' => (K::KEY_RIGHTBRACE, false),
-        '}' => (K::KEY_RIGHTBRACE, true),
-        '`' => (K::KEY_GRAVE, false),
-        '~' => (K::KEY_GRAVE, true),
-        '/' => (K::KEY_SLASH, false),
-        '?' => (K::KEY_SLASH, true),
-        '\\' => (K::KEY_BACKSLASH, false),
-        '|' => (K::KEY_BACKSLASH, true),
-        '-' => (K::KEY_MINUS, false),
-        '_' => (K::KEY_MINUS, true),
-        '=' => (K::KEY_EQUAL, false),
-        '+' => (K::KEY_EQUAL, true),
-        ' ' => (K::KEY_SPACE, false),
-        _ => return None,
-    };
-
-    Some(KeyEvent {
-        keycode: key.code(),
-        shift,
-        layout_is_ru: false,
-    })
-}
-
-fn text_to_uinput_runs(text: &str, fallback_is_ru: bool) -> Option<Vec<TextInputRun>> {
-    let mut runs: Vec<TextInputRun> = Vec::new();
-    let mut current_is_ru = preferred_layout_for_text(text, fallback_is_ru);
-
-    for ch in text.chars() {
-        let (target_is_ru, event) = char_to_layout_key_event(ch, current_is_ru)?;
-        current_is_ru = target_is_ru;
-        if let Some(run) = runs
-            .last_mut()
-            .filter(|run| run.target_is_ru == target_is_ru)
-        {
-            run.events.push(event);
-        } else {
-            runs.push(TextInputRun {
-                target_is_ru,
-                events: vec![event],
-            });
-        }
-    }
-
-    Some(runs)
-}
-
 // ─── uinput re-typing ──────────────────────────────────────
 
 fn make_virtual_keyboard() -> std::io::Result<VirtualDevice> {
@@ -2697,7 +1636,10 @@ fn switch_to_x11_layout(layout_id: &str, target_is_ru: bool) -> Result<(), Strin
 
 fn switch_to_target_layout(target_is_ru: bool) -> Result<&'static str, String> {
     let (layout_id, ibus_engine) = target_layout(target_is_ru);
-    switch_to_layout(layout_id, ibus_engine, target_is_ru).map(|()| layout_id)
+    switch_to_layout(layout_id, ibus_engine, target_is_ru).map(|()| {
+        settle_after_layout_switch();
+        layout_id
+    })
 }
 
 fn target_layout(target_is_ru: bool) -> (&'static str, &'static str) {
@@ -2716,6 +1658,10 @@ fn verify_current_layout(target_is_ru: bool) -> bool {
         std::thread::sleep(Duration::from_millis(10));
     }
     false
+}
+
+fn settle_after_layout_switch() {
+    std::thread::sleep(Duration::from_millis(LAYOUT_SWITCH_SETTLE_MS));
 }
 
 fn call_type_text(text: &str) -> Result<String, String> {
@@ -2918,30 +1864,6 @@ fn read_x11_layout() -> Result<String, String> {
     parse_setxkbmap_layout(&query).ok_or_else(|| format!("cannot parse setxkbmap output: {query}"))
 }
 
-fn parse_setxkbmap_layout(output: &str) -> Option<String> {
-    output.lines().find_map(|line| {
-        let (key, value) = line.split_once(':')?;
-        (key.trim() == "layout")
-            .then(|| normalize_layout_id(value.split(',').next().unwrap_or(value)))
-    })
-}
-
-fn normalize_layout_id(layout: &str) -> String {
-    let trimmed = layout.trim();
-    if let Some(rest) = trimmed.strip_prefix("xkb:") {
-        return rest.split(':').next().unwrap_or("").to_ascii_lowercase();
-    }
-    trimmed
-        .split([':', ' ', '\t', '\n'])
-        .next()
-        .unwrap_or("")
-        .to_ascii_lowercase()
-}
-
-fn is_ru_layout_id(layout: &str) -> bool {
-    normalize_layout_id(layout) == "ru"
-}
-
 // ─── Поиск устройства клавиатуры ────────────────────────────
 
 fn find_all_keyboards() -> std::io::Result<Vec<std::path::PathBuf>> {
@@ -3020,67 +1942,6 @@ fn should_expand_auto_replace_context(buf: &WordBuffer) -> bool {
         return false;
     };
     contains_visual_b_word(&map_original_events(&events))
-}
-
-fn map_original_events(events: &[KeyEvent]) -> String {
-    events
-        .iter()
-        .filter_map(|ev| {
-            if ev.layout_is_ru {
-                keycode_to_ru_char(ev.keycode, ev.shift)
-            } else {
-                keycode_to_us_char(ev.keycode, ev.shift)
-            }
-        })
-        .collect()
-}
-
-#[cfg(test)]
-fn map_opposite_events(events: &[KeyEvent]) -> String {
-    events
-        .iter()
-        .filter_map(|ev| {
-            if ev.layout_is_ru {
-                keycode_to_us_char(ev.keycode, ev.shift)
-            } else {
-                keycode_to_ru_char(ev.keycode, ev.shift)
-            }
-        })
-        .collect()
-}
-
-fn map_events_to_layout(events: &[KeyEvent], target_is_ru: bool) -> String {
-    events
-        .iter()
-        .filter_map(|ev| {
-            if target_is_ru {
-                keycode_to_ru_char(ev.keycode, ev.shift)
-            } else {
-                keycode_to_us_char(ev.keycode, ev.shift)
-            }
-        })
-        .collect()
-}
-
-fn preferred_layout_for_text(text: &str, fallback_is_ru: bool) -> bool {
-    text.chars()
-        .rev()
-        .find_map(|ch| {
-            if matches!(ch, 'А'..='я' | 'ё' | 'Ё') {
-                Some(true)
-            } else if ch.is_ascii_alphabetic() {
-                Some(false)
-            } else {
-                None
-            }
-        })
-        .unwrap_or(fallback_is_ru)
-}
-
-fn tail_chars(text: &str, n: usize) -> String {
-    let chars: Vec<char> = text.chars().collect();
-    let start = chars.len().saturating_sub(n);
-    chars[start..].iter().collect()
 }
 
 fn apply_auto_replace(original: &str, target: &str) -> Option<String> {
@@ -4282,40 +3143,6 @@ fn push_unique_string(out: &mut Vec<String>, value: String) {
     }
 }
 
-fn split_event_words(events: &[KeyEvent]) -> Option<Vec<&[KeyEvent]>> {
-    if events.is_empty() {
-        return None;
-    }
-
-    let end = if events
-        .last()
-        .is_some_and(|event| event.keycode == KeyCode::KEY_SPACE.code())
-    {
-        events.len().saturating_sub(1)
-    } else {
-        events.len()
-    };
-    if end == 0 {
-        return None;
-    }
-
-    let mut words = Vec::new();
-    let mut start = 0;
-    for (idx, event) in events.iter().take(end).enumerate() {
-        if event.keycode == KeyCode::KEY_SPACE.code() {
-            if start < idx {
-                words.push(&events[start..idx]);
-            }
-            start = idx + 1;
-        }
-    }
-    if start < end {
-        words.push(&events[start..end]);
-    }
-
-    (!words.is_empty()).then_some(words)
-}
-
 fn decide_completed_scope_word(word: &[KeyEvent]) -> String {
     let original = map_original_events(word);
     if let Some(repaired) = correct_duplicate_layout_prefix_on_ascii_token(&original) {
@@ -4602,66 +3429,6 @@ fn is_known_russian_verb_form(word: &str) -> bool {
     })
 }
 
-fn mixed_visual_latin_word_target_layout(word: &[KeyEvent]) -> Option<bool> {
-    if word.is_empty()
-        || word
-            .iter()
-            .any(|event| event.keycode == KeyCode::KEY_SPACE.code())
-    {
-        return None;
-    }
-
-    let first_layout = word.first()?.layout_is_ru;
-    if word.iter().all(|event| event.layout_is_ru == first_layout) {
-        return None;
-    }
-
-    let mut latin_count = 0usize;
-    let mut same_key_homoglyph_count = 0usize;
-    let mut other_cyrillic_count = 0usize;
-
-    for event in word {
-        let ch = original_event_char(event)?;
-        if ch.is_ascii_alphabetic() {
-            latin_count += 1;
-        } else if is_cyrillic_letter(ch) {
-            if same_key_latin_cyrillic_homoglyph(event) {
-                same_key_homoglyph_count += 1;
-            } else {
-                other_cyrillic_count += 1;
-            }
-        }
-    }
-
-    if latin_count >= 2 && same_key_homoglyph_count > 0 && other_cyrillic_count == 0 {
-        Some(true)
-    } else {
-        None
-    }
-}
-
-fn original_event_char(event: &KeyEvent) -> Option<char> {
-    if event.layout_is_ru {
-        keycode_to_ru_char(event.keycode, event.shift)
-    } else {
-        keycode_to_us_char(event.keycode, event.shift)
-    }
-}
-
-fn same_key_latin_cyrillic_homoglyph(event: &KeyEvent) -> bool {
-    matches!(
-        (
-            keycode_to_us_char(event.keycode, event.shift),
-            keycode_to_ru_char(event.keycode, event.shift),
-        ),
-        (Some('c' | 'C'), Some('с' | 'С'))
-    )
-}
-
-fn is_cyrillic_letter(ch: char) -> bool {
-    matches!(ch, 'А'..='я' | 'ё' | 'Ё')
-}
-
 fn normalize_mixed_word_to_last_layout(word: &[KeyEvent]) -> Option<String> {
     let target_is_ru = word.last()?.layout_is_ru;
     if word.iter().all(|event| event.layout_is_ru == target_is_ru) {
@@ -4704,107 +3471,6 @@ fn push_with_overlap(out: &mut String, next: &str) {
         })
         .unwrap_or(0);
     out.push_str(&next_chars[overlap..].iter().collect::<String>());
-}
-
-fn plan_text_replacement(original: &str, replacement: &str) -> Option<TextReplacement> {
-    plan_text_replacement_with_options(original, replacement, true)
-}
-
-fn plan_committed_tail_replacement(original: &str, replacement: &str) -> Option<TextReplacement> {
-    let original_ends_with_space = original
-        .chars()
-        .next_back()
-        .is_some_and(char::is_whitespace);
-    let replacement_ends_with_space = replacement
-        .chars()
-        .next_back()
-        .is_some_and(char::is_whitespace);
-    if !original_ends_with_space || !replacement_ends_with_space {
-        return plan_text_replacement(original, replacement);
-    }
-
-    plan_text_replacement_with_options(original, replacement, false)
-}
-
-fn plan_text_replacement_with_options(
-    original: &str,
-    replacement: &str,
-    keep_trailing_whitespace_suffix: bool,
-) -> Option<TextReplacement> {
-    if original == replacement {
-        return None;
-    }
-
-    let original_chars: Vec<char> = original.chars().collect();
-    let replacement_chars: Vec<char> = replacement.chars().collect();
-
-    let mut prefix = 0;
-    while prefix < original_chars.len()
-        && prefix < replacement_chars.len()
-        && original_chars[prefix] == replacement_chars[prefix]
-    {
-        prefix += 1;
-    }
-
-    let mut suffix = 0;
-    while suffix < original_chars.len().saturating_sub(prefix)
-        && suffix < replacement_chars.len().saturating_sub(prefix)
-        && original_chars[original_chars.len() - 1 - suffix]
-            == replacement_chars[replacement_chars.len() - 1 - suffix]
-    {
-        if !keep_trailing_whitespace_suffix
-            && original_chars[original_chars.len() - 1 - suffix].is_whitespace()
-        {
-            break;
-        }
-        suffix += 1;
-    }
-
-    let original_end = original_chars.len() - suffix;
-    let replacement_end = replacement_chars.len() - suffix;
-    let backspaces = original_end.saturating_sub(prefix) as u32;
-    let insert: String = replacement_chars[prefix..replacement_end].iter().collect();
-
-    if backspaces == 0 && insert.is_empty() {
-        return None;
-    }
-
-    Some(TextReplacement {
-        move_left: suffix as u32,
-        backspaces,
-        insert,
-        move_right: suffix as u32,
-    })
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct ReplayLayoutDecision {
-    target_is_ru: bool,
-    mixed_layouts: bool,
-}
-
-fn replay_layout_decision(events: &[KeyEvent]) -> ReplayLayoutDecision {
-    let typed_layouts: Vec<bool> = events
-        .iter()
-        .filter(|ev| is_layout_decision_key(KeyCode::new(ev.keycode)))
-        .map(|ev| ev.layout_is_ru)
-        .collect();
-    let first_layout = typed_layouts.first().copied().unwrap_or(false);
-    let last_layout = typed_layouts.last().copied().unwrap_or(first_layout);
-    let mixed_layouts = typed_layouts.iter().any(|layout| *layout != first_layout);
-    let target_is_ru = if mixed_layouts {
-        mixed_visual_latin_word_target_layout(events).unwrap_or(last_layout)
-    } else {
-        !first_layout
-    };
-    ReplayLayoutDecision {
-        target_is_ru,
-        mixed_layouts,
-    }
-}
-
-fn is_layout_decision_key(key: KeyCode) -> bool {
-    is_typing_key(key) && key != KeyCode::KEY_SPACE
 }
 
 fn best_unique_ngram_candidate<I>(original: &str, candidates: I, min_margin: f64) -> Option<String>
@@ -5168,7 +3834,7 @@ fn russian_generated_form_dictionary() -> &'static HashSet<String> {
         load_hunspell_generated_forms_min_len(
             "/usr/share/hunspell/ru_RU.dic",
             "/usr/share/hunspell/ru_RU.aff",
-            5,
+            4,
         )
         .unwrap_or_else(|e| {
             log(&format!("⚠ ru generated forms load failed: {e}"));
@@ -6042,10 +4708,13 @@ mod tests {
         let plan = plan_committed_tail_replacement(&original, replacement).expect("replacement");
 
         assert!(buffer.remember_replacement_last_word_for_replay(&events, &plan, replacement));
-        assert!(buffer.current.is_empty());
-        assert!(buffer.prev_had_trailing_space);
-        assert_eq!(buffer.prev_words.len(), 1);
-        assert_eq!(map_original_events(&buffer.prev_words[0]), "и");
+        assert!(buffer.current_is_empty());
+        assert!(buffer.prev_had_trailing_space());
+        assert_eq!(buffer.prev_words_len(), 1);
+        assert_eq!(
+            map_original_events(buffer.prev_word_events(0).expect("prev word")),
+            "и"
+        );
 
         push_text_as_layout(&mut buffer, "слово", true);
         let (tail, _) = buffer.what_to_replay(2).expect("two-word tail");
@@ -6494,7 +5163,7 @@ mod tests {
         ] {
             let mut modifiers = ShiftState::default();
             modifiers.update(KeyCode::KEY_LEFTSHIFT, i32::from(shift));
-            if !should_ignore_buffer_key(key, &modifiers, buffer.current.is_empty()) {
+            if !should_ignore_buffer_key(key, &modifiers, buffer.current_is_empty()) {
                 buffer.push(key_event(key, shift));
             }
         }
@@ -7621,6 +6290,23 @@ mod tests {
     }
 
     #[test]
+    fn single_word_wrong_layout_replay_target_is_opposite_layout() {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(&mut buffer, "ltkfq", false);
+        let (events, backspaces) = buffer.what_to_replay(1).expect("single word");
+        let decision = replay_layout_decision(&events);
+
+        assert_eq!(backspaces, 5);
+        assert_eq!(map_original_events(&events), "ltkfq");
+        assert!(decision.target_is_ru);
+        assert_eq!(map_target_events(&events, decision.target_is_ru), "делай");
+        assert_eq!(
+            decide_correction("ltkfq", "делай", CorrectionEngine::Smart),
+            Correction::ReplayAll
+        );
+    }
+
+    #[test]
     fn smart_decision_replays_single_cyrillic_acronym_as_manual_toggle() {
         let events = [
             KeyEvent {
@@ -8063,6 +6749,7 @@ mod tests {
     fn russian_suffix_forms_are_known_candidates() {
         assert!(is_known_russian_word_or_form("препаратов"));
         assert!(is_known_russian_word_or_form("кнопками"));
+        assert!(is_known_russian_word_or_form("могу"));
         assert!(is_known_russian_word_or_form("помогу"));
         assert!(is_known_russian_word_or_form("видишь"));
         assert!(is_known_russian_word_or_form("значит"));
@@ -8075,6 +6762,10 @@ mod tests {
         assert_eq!(
             apply_typing_assist("njkmrj ", true),
             Some("только ".to_string())
+        );
+        assert_eq!(
+            apply_typing_assist("vjue ", true),
+            Some("могу ".to_string())
         );
         assert_eq!(apply_typing_assist("yt ", true), Some("не ".to_string()));
         assert_eq!(
