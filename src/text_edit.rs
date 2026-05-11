@@ -25,19 +25,26 @@ pub fn plan_committed_tail_replacement(
     original: &str,
     replacement: &str,
 ) -> Option<TextReplacement> {
-    let original_ends_with_space = original
-        .chars()
-        .next_back()
-        .is_some_and(char::is_whitespace);
-    let replacement_ends_with_space = replacement
-        .chars()
-        .next_back()
-        .is_some_and(char::is_whitespace);
-    if !original_ends_with_space || !replacement_ends_with_space {
-        return plan_text_replacement(original, replacement);
-    }
+    // After-space corrections run while the user's typed separator is already
+    // present in the target field. Keep that trailing whitespace in place when
+    // possible instead of deleting and retyping it; this avoids races where a
+    // fast replacement loses the boundary and glues the next word.
+    plan_text_replacement(original, replacement)
+}
 
-    plan_text_replacement_with_options(original, replacement, false)
+pub fn ensure_committed_tail_spacing(original: &str, mut replacement: String) -> String {
+    let Some(original_last) = original.chars().next_back() else {
+        return replacement;
+    };
+    if original_last.is_whitespace()
+        && !replacement
+            .chars()
+            .next_back()
+            .is_some_and(char::is_whitespace)
+    {
+        replacement.push(original_last);
+    }
+    replacement
 }
 
 fn plan_text_replacement_with_options(
@@ -95,6 +102,19 @@ fn plan_text_replacement_with_options(
 mod tests {
     use super::*;
 
+    fn apply_plan(original: &str, plan: &TextReplacement) -> String {
+        let mut chars: Vec<char> = original.chars().collect();
+        let mut cursor = chars.len().saturating_sub(plan.move_left as usize);
+        let delete_start = cursor.saturating_sub(plan.backspaces as usize);
+        chars.splice(delete_start..cursor, plan.insert.chars());
+        cursor = delete_start + plan.insert.chars().count();
+        cursor = (cursor + plan.move_right as usize).min(chars.len());
+        chars[..cursor]
+            .iter()
+            .chain(chars[cursor..].iter())
+            .collect()
+    }
+
     #[test]
     fn plans_minimal_two_word_prefix_and_suffix_edits() {
         assert_eq!(
@@ -118,24 +138,50 @@ mod tests {
     }
 
     #[test]
-    fn committed_tail_plan_reinserts_trailing_space() {
+    fn committed_tail_plan_preserves_trailing_space_boundary() {
         assert_eq!(
             plan_committed_tail_replacement("double b ", "double и "),
             Some(TextReplacement {
-                move_left: 0,
-                backspaces: 2,
-                insert: "и ".to_string(),
-                move_right: 0,
+                move_left: 1,
+                backspaces: 1,
+                insert: "и".to_string(),
+                move_right: 1,
             })
         );
         assert_eq!(
             plan_committed_tail_replacement("чтобы точнр ", "чтобы точно "),
             Some(TextReplacement {
-                move_left: 0,
-                backspaces: 2,
-                insert: "о ".to_string(),
-                move_right: 0,
+                move_left: 1,
+                backspaces: 1,
+                insert: "о".to_string(),
+                move_right: 1,
             })
+        );
+    }
+
+    #[test]
+    fn committed_tail_sentence_plans_keep_space_with_mixed_language_text() {
+        for (original, replacement) in [
+            ("пишу README и double b ", "пишу README и double и "),
+            ("дальше буду точнр ", "дальше буду точно "),
+            ("API работает нормальнр ", "API работает нормально "),
+        ] {
+            let plan = plan_committed_tail_replacement(original, replacement).expect("replacement");
+            assert_eq!(apply_plan(original, &plan), replacement);
+            assert_eq!(original.ends_with(' '), replacement.ends_with(' '));
+            assert_eq!(plan.move_right, 1, "space boundary must stay on screen");
+        }
+    }
+
+    #[test]
+    fn committed_tail_spacing_is_restored_before_planning() {
+        assert_eq!(
+            ensure_committed_tail_spacing("double b ", "double и".to_string()),
+            "double и "
+        );
+        assert_eq!(
+            ensure_committed_tail_spacing("plain", "plain".to_string()),
+            "plain"
         );
     }
 

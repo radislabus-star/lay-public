@@ -262,7 +262,15 @@ impl WordBuffer {
         plan: &TextReplacement,
         replacement: &str,
     ) -> bool {
-        if plan.move_right != 0 || plan.backspaces == 0 {
+        if plan.backspaces == 0 {
+            return false;
+        }
+        let trailing_ws_chars = replacement
+            .chars()
+            .rev()
+            .take_while(|ch| ch.is_whitespace())
+            .count() as u32;
+        if plan.move_right != 0 && plan.move_right != trailing_ws_chars {
             return false;
         }
 

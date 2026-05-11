@@ -35,7 +35,9 @@ use lay::keyboard::{
 use lay::keyboard::{is_layout_decision_key, ReplayLayoutDecision};
 #[cfg(test)]
 use lay::text_edit::plan_text_replacement;
-use lay::text_edit::{plan_committed_tail_replacement, TextReplacement};
+use lay::text_edit::{
+    ensure_committed_tail_spacing, plan_committed_tail_replacement, TextReplacement,
+};
 use lay::word_buffer::{PendingAutoUndo, UserLearningCorrection, WordBuffer, MAX_REPLACE_WORDS};
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::io::Write;
@@ -58,6 +60,7 @@ const TEXT_REPLACE_KEY_PACE_MS: u64 = 1;
 const TEXT_REPLACE_BACKSPACE_DOWN_MS: u64 = 1;
 const TEXT_REPLACE_BACKSPACE_PACE_MS: u64 = 1;
 const TEXT_REPLACE_BACKSPACE_SETTLE_MS: u64 = 16;
+const TYPING_ASSIST_SPACE_COMMIT_SETTLE_MS: u64 = 8;
 const TEXT_INSERT_KEY_PACE_MS: u64 = 2;
 const TEXT_INSERT_SPACE_SETTLE_MS: u64 = 8;
 const LAYOUT_SWITCH_SETTLE_MS: u64 = 12;
@@ -849,6 +852,7 @@ fn handle_typing_assist_after_space(
         let original = map_original_events(&events);
         let replacement =
             apply_typing_assist_with_pipeline(&original, allow_layout_auto, &pipeline)?;
+        let replacement = ensure_committed_tail_spacing(&original, replacement);
         Some((events, original, replacement))
     });
     let Some((events, original, replacement)) = correction else {
@@ -868,6 +872,13 @@ fn handle_typing_assist_after_space(
     }
 
     let original_layout = read_current_layout_is_ru().ok();
+    if original
+        .chars()
+        .next_back()
+        .is_some_and(char::is_whitespace)
+    {
+        std::thread::sleep(Duration::from_millis(TYPING_ASSIST_SPACE_COMMIT_SETTLE_MS));
+    }
     let plan = plan_committed_tail_replacement(&original, &replacement).unwrap_or_else(|| {
         TextReplacement {
             move_left: 0,
@@ -2831,6 +2842,9 @@ fn correct_extra_letters(word: &str) -> Option<String> {
     if lower.ends_with("тся") {
         return None;
     }
+    if missing_letter_candidate_exists(word, &lower) {
+        return None;
+    }
 
     best_unique_known_ngram_candidate(
         word,
@@ -2920,6 +2934,21 @@ fn correct_missing_letter(word: &str) -> Option<String> {
         generate_missing_letter_candidates(&lower),
         NGRAM_MISSING_LETTER_MARGIN,
     )
+}
+
+fn missing_letter_candidate_exists(word: &str, lower: &str) -> bool {
+    best_unique_dictionary_candidate(
+        word,
+        generate_missing_letter_candidates(lower),
+        NGRAM_DICT_MISSING_LETTER_MARGIN,
+    )
+    .is_some()
+        || best_unique_ngram_candidate(
+            word,
+            generate_missing_letter_candidates(lower),
+            NGRAM_MISSING_LETTER_MARGIN,
+        )
+        .is_some()
 }
 
 fn are_ru_keyboard_neighbors(a: char, b: char) -> bool {
@@ -3518,11 +3547,10 @@ where
     I: IntoIterator<Item = String>,
 {
     let lower = original.to_lowercase();
-    let dict = russian_dictionary();
     let mut found: Option<String> = None;
 
     for candidate in candidates {
-        if candidate == lower || !dict.contains(&candidate) {
+        if candidate == lower || !is_known_russian_word_or_form(&candidate) {
             continue;
         }
         if lay::ngram::ru_candidate_margin(&candidate, &lower) < min_margin {
@@ -4676,13 +4704,13 @@ mod tests {
     }
 
     #[test]
-    fn committed_tail_plan_reinserts_trailing_space_after_short_replacement() {
+    fn committed_tail_plan_preserves_typed_trailing_space_after_short_replacement() {
         let plan = plan_committed_tail_replacement("double b ", "double и ").expect("replacement");
 
-        assert_eq!(plan.move_left, 0);
-        assert_eq!(plan.backspaces, 2);
-        assert_eq!(plan.insert, "и ");
-        assert_eq!(plan.move_right, 0);
+        assert_eq!(plan.move_left, 1);
+        assert_eq!(plan.backspaces, 1);
+        assert_eq!(plan.insert, "и");
+        assert_eq!(plan.move_right, 1);
     }
 
     #[test]
@@ -4690,10 +4718,10 @@ mod tests {
         let plan =
             plan_committed_tail_replacement("чтобы точнр ", "чтобы точно ").expect("replacement");
 
-        assert_eq!(plan.move_left, 0);
-        assert_eq!(plan.backspaces, 2);
-        assert_eq!(plan.insert, "о ");
-        assert_eq!(plan.move_right, 0);
+        assert_eq!(plan.move_left, 1);
+        assert_eq!(plan.backspaces, 1);
+        assert_eq!(plan.insert, "о");
+        assert_eq!(plan.move_right, 1);
     }
 
     #[test]
@@ -7315,6 +7343,41 @@ mod tests {
             apply_typing_assist_exact("исправленнно "),
             Some("исправлено ".to_string())
         );
+    }
+
+    #[test]
+    fn extra_letter_rule_defers_to_missing_letter_candidates() {
+        let mut words: Vec<String> = russian_generated_form_dictionary()
+            .iter()
+            .filter(|word| (7..=12).contains(&word.chars().count()))
+            .cloned()
+            .collect();
+        words.sort();
+
+        let mut checked = 0usize;
+        'outer: for word in words {
+            let chars: Vec<char> = word.chars().collect();
+            for idx in 1..chars.len().saturating_sub(1) {
+                let mut typo_chars = chars.clone();
+                typo_chars.remove(idx);
+                let typo: String = typo_chars.into_iter().collect();
+                if typo.chars().count() < 6 || is_known_russian_word_or_form(&typo) {
+                    continue;
+                }
+                if correct_missing_letter(&typo).as_deref() != Some(word.as_str()) {
+                    continue;
+                }
+
+                assert_eq!(correct_extra_letters(&typo), None, "typo={typo:?}");
+                checked += 1;
+                if checked >= 12 {
+                    break 'outer;
+                }
+                break;
+            }
+        }
+
+        assert!(checked >= 12, "checked={checked}");
     }
 
     #[test]
