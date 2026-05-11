@@ -5061,6 +5061,14 @@ mod tests {
             Some("можно я ".to_string())
         );
         assert_eq!(
+            apply_typing_assist_exact("неработает "),
+            Some("не работает ".to_string())
+        );
+        assert_eq!(
+            apply_typing_assist_exact("Неработает, "),
+            Some("Не работает, ".to_string())
+        );
+        assert_eq!(
             apply_typing_assist_exact("будуя "),
             Some("буду я ".to_string())
         );

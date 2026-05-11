@@ -729,9 +729,41 @@ fn is_confident_glued_phrase_split(left: &str, right: &str) -> bool {
         || (right.chars().count() == 1
             && left.chars().count() >= 4
             && is_single_letter_russian_pronoun(right))
+        || (left.chars().count() <= 3
+            && right.chars().count() >= 4
+            && is_short_russian_function_word(left)
+            && is_known_russian_phrase_part(right))
         || (left.chars().count() >= 4
             && right.chars().count() >= 4
             && is_known_russian_adverb_o_form(right))
+}
+
+fn looks_like_short_function_word_glued_to_known_word(word: &str) -> bool {
+    let char_len = word.chars().count();
+    if char_len < 5 {
+        return false;
+    }
+
+    for split_at in word.char_indices().skip(1).map(|(idx, _)| idx) {
+        let (left, right) = word.split_at(split_at);
+        let left_len = left.chars().count();
+        let right_len = right.chars().count();
+        if left_len > 3 {
+            break;
+        }
+        if right_len < 4 {
+            continue;
+        }
+        if is_short_russian_function_word(left) && is_known_russian_phrase_part(right) {
+            return true;
+        }
+    }
+    false
+}
+
+fn is_short_russian_function_word(word: &str) -> bool {
+    word.chars().count() <= 3
+        && (is_one_letter_russian_function_word(word) || COMMON_RUSSIAN_WORDS.contains(&word))
 }
 
 pub fn should_keep_plain_cyrillic_before_ascii_technical(original: &str, converted: &str) -> bool {
@@ -1083,6 +1115,9 @@ pub fn correct_extra_letters(word: &str) -> Option<String> {
         return None;
     }
     if lower.ends_with("тся") {
+        return None;
+    }
+    if looks_like_short_function_word_glued_to_known_word(&lower) {
         return None;
     }
     if missing_letter_candidate_exists(word, &lower) {
