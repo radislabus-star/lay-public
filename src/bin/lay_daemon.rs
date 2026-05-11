@@ -1570,12 +1570,19 @@ fn switch_to_gnome_layout(
     ibus_engine: &str,
     target_is_ru: bool,
 ) -> Result<(), String> {
-    if !call_activate_layout(layout_id)? {
-        return Err("ActivateLayout returned false".to_string());
-    }
+    let activate_error = match call_activate_layout(layout_id) {
+        Ok(true) => None,
+        Ok(false) => Some("ActivateLayout returned false".to_string()),
+        Err(error) => Some(error),
+    };
 
     let ibus_error = switch_ibus_engine(ibus_engine).err();
     if verify_current_layout(target_is_ru) {
+        if let Some(error) = activate_error {
+            log(&format!(
+                "⚠ ActivateLayout failed, ibus layout verified: {error}"
+            ));
+        }
         if let Some(error) = ibus_error {
             log(&format!(
                 "⚠ SetGlobalEngine failed, GNOME layout verified: {error}"
@@ -1584,9 +1591,15 @@ fn switch_to_gnome_layout(
         return Ok(());
     }
 
-    Err(match ibus_error {
-        Some(error) => format!("SetGlobalEngine failed: {error}; layout verify failed"),
-        None => "layout verify failed".to_string(),
+    Err(match (activate_error, ibus_error) {
+        (Some(activate), Some(ibus)) => {
+            format!("ActivateLayout failed: {activate}; SetGlobalEngine failed: {ibus}; layout verify failed")
+        }
+        (Some(activate), None) => {
+            format!("ActivateLayout failed: {activate}; layout verify failed")
+        }
+        (None, Some(ibus)) => format!("SetGlobalEngine failed: {ibus}; layout verify failed"),
+        (None, None) => "layout verify failed".to_string(),
     })
 }
 
