@@ -8,8 +8,16 @@
 
 Напечатал слово не в той раскладке? Нажми **Shift два раза** и продолжай писать.
 
+Установить:
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
+```
+
+Обновить уже установленный `lay`:
+
+```bash
+cd ~/projects/lay && bash update.sh
 ```
 
 [![Rust](https://img.shields.io/badge/Rust-1.75+-orange?logo=rust)](https://www.rust-lang.org/)
@@ -127,15 +135,18 @@ bash install.sh
 
 ### Обновление
 
-Если `lay` установлен из git-копии, обновление одной командой:
+Если `lay` уже установлен стандартным способом в `~/projects/lay`, обновление
+одной командой:
 
 ```bash
-cd ~/projects/lay
-bash update.sh
+cd ~/projects/lay && bash update.sh
 ```
 
 Скрипт делает `git pull --ff-only`, пересобирает release-бинарники, обновляет
 GNOME extension и перезапускает `lay-daemon`.
+
+Для KDE/X11 используется та же команда. GNOME extension там не нужен, но
+`update.sh` всё равно обновит бинарники и перезапустит `lay-daemon`.
 
 ### Extension ZIP
 
@@ -493,8 +504,7 @@ extension are picked up.
 Update an existing git install:
 
 ```bash
-cd ~/projects/lay
-bash update.sh
+cd ~/projects/lay && bash update.sh
 ```
 
 Extension ZIP for manual install or extensions.gnome.org upload:

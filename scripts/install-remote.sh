@@ -74,6 +74,11 @@ main() {
     echo "=== install lay ==="
     cd "$INSTALL_DIR"
     bash install.sh
+
+    echo ""
+    echo "=== update command ==="
+    echo "To update later:"
+    echo "  cd \"$INSTALL_DIR\" && bash update.sh"
 }
 
 main "$@"
