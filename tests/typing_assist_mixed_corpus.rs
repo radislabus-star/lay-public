@@ -112,6 +112,36 @@ fn forum_like_mixed_sentences_preserve_spaces_and_terms() {
 }
 
 #[test]
+fn live_user_sentences_keep_spaces_after_typing_assist() {
+    let cases = [
+        (
+            "я пишу мои слова мои предложения чтобыточно проверить дальше ",
+            "я пишу мои слова мои предложения чтобы точно проверить дальше ",
+        ),
+        (
+            "нужно проверить когдая пишу быстро ",
+            "нужно проверить когда я пишу быстро ",
+        ),
+        (
+            "сейчас думаю тако й пример работает ",
+            "сейчас думаю такой пример работает ",
+        ),
+        (
+            "я тут вижу что пробел не должен липнуть ",
+            "я тут вижу что пробел не должен липнуть ",
+        ),
+    ];
+
+    for (input, expected) in cases {
+        let got = simulate_space_triggered_typing_assist(input, true);
+        assert_eq!(got, expected, "input={input:?}");
+        assert!(!got.contains("чтобыточно"));
+        assert!(!got.contains("когдая"));
+        assert!(!got.contains("тако й"));
+    }
+}
+
+#[test]
 fn forum_like_mixed_matrix_keeps_boundaries_after_layout_autofix() {
     let prefixes = [
         "проверяю",

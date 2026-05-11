@@ -174,6 +174,23 @@ mod tests {
     }
 
     #[test]
+    fn committed_tail_split_word_plan_inserts_only_missing_space() {
+        let plan =
+            plan_committed_tail_replacement("чтобыточно ", "чтобы точно ").expect("replacement");
+
+        assert_eq!(
+            plan,
+            TextReplacement {
+                move_left: 6,
+                backspaces: 0,
+                insert: " ".to_string(),
+                move_right: 6,
+            }
+        );
+        assert_eq!(apply_plan("чтобыточно ", &plan), "чтобы точно ");
+    }
+
+    #[test]
     fn committed_tail_spacing_is_restored_before_planning() {
         assert_eq!(
             ensure_committed_tail_spacing("double b ", "double и".to_string()),

@@ -3786,6 +3786,48 @@ mod tests {
     }
 
     #[test]
+    fn scoped_tail_keeps_good_russian_context_and_flips_current_acronym() {
+        let cases = [
+            ("ВСЁ", "ДЕЛАЙ", "ЛВУ", "KDE"),
+            ("НУЖНО", "ДЕЛАТЬ", "ТЕАЫ", "NTFS"),
+            ("ПРОСТО", "ДЕЛАЙ", "СЗГ", "CPU"),
+        ];
+
+        for (left1, left2, typed_tail, expected_tail) in cases {
+            let mut buffer = WordBuffer::new();
+            push_text_as_layout(&mut buffer, left1, true);
+            buffer.handle_space();
+            push_text_as_layout(&mut buffer, left2, true);
+            buffer.handle_space();
+            push_text_as_layout(&mut buffer, typed_tail, true);
+
+            let (events, _) = buffer.what_to_replay(3).expect("three-word tail");
+            let original = map_original_events(&events);
+            let expected = format!("{left1} {left2} {expected_tail}");
+
+            assert_eq!(
+                decide_scoped_tail_correction_with_lem(&events, true),
+                Some(expected.clone()),
+                "original={original:?}"
+            );
+            assert_eq!(
+                decide_scoped_tail_correction(&events),
+                Some(expected.clone()),
+                "original={original:?}"
+            );
+            assert_eq!(
+                plan_text_replacement(&original, &expected),
+                Some(TextReplacement {
+                    move_left: 0,
+                    backspaces: typed_tail.chars().count() as u32,
+                    insert: expected_tail.to_string(),
+                    move_right: 0,
+                })
+            );
+        }
+    }
+
+    #[test]
     fn scoped_tail_converts_apostrophe_layout_word_as_letter() {
         let mut buffer = WordBuffer::new();
         push_text_as_layout(&mut buffer, "'nj", false);

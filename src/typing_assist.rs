@@ -1353,7 +1353,7 @@ fn scoped_word_lem_options(
         push_unique_string(&mut out, repaired.trim().to_string());
     }
     let flipped = flip_word_events(word);
-    if is_plausible_completed_scope_flip(&flipped) {
+    if should_offer_completed_scope_flip(&original, &flipped) {
         push_unique_string(&mut out, flipped);
     }
     out
@@ -1366,8 +1366,48 @@ fn confident_completed_scope_repair(original: &str) -> Option<String> {
         .or_else(|| correct_wrong_layout_ascii_word(original))
 }
 
-fn is_plausible_completed_scope_flip(flipped: &str) -> bool {
-    flipped.chars().any(|ch| ch.is_alphabetic())
+fn should_offer_completed_scope_flip(original: &str, flipped: &str) -> bool {
+    if stable_completed_scope_original(original) {
+        return false;
+    }
+
+    let (_, flipped_word, _) = split_word_punctuation(flipped);
+    if flipped_word.is_empty() {
+        return false;
+    }
+
+    let flipped_lower = flipped_word.to_lowercase();
+    if is_cyrillic_word(flipped_word) {
+        return is_known_russian_layout_autoswitch_word(&flipped_lower);
+    }
+
+    if flipped_word.is_ascii() {
+        return is_known_english_layout_autoswitch_word(&flipped_word.to_ascii_lowercase())
+            || is_ascii_technical_token(flipped);
+    }
+
+    false
+}
+
+fn stable_completed_scope_original(original: &str) -> bool {
+    let (_, word, _) = split_word_punctuation(original);
+    if word.is_empty() {
+        return false;
+    }
+
+    let lower = word.to_lowercase();
+    if is_cyrillic_word(word) {
+        return is_known_russian_layout_autoswitch_word(&lower);
+    }
+
+    if word.is_ascii() {
+        let ascii_lower = word.to_ascii_lowercase();
+        return is_protected_ascii_layout_token(word)
+            || is_ascii_technical_token(original)
+            || is_known_english_layout_autoswitch_word(&ascii_lower);
+    }
+
+    false
 }
 
 fn build_phrase_candidates(
