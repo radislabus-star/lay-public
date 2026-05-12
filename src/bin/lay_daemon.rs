@@ -359,6 +359,7 @@ fn listen_keyboard(
     // начнёт печатать НОВОЕ слово — нужно сбросить буфер чтобы новое слово
     // не приклеилось к предыдущему.
     let mut clear_on_next_typing: bool = false;
+    let mut suppress_next_typing_assist_after_manual_replay: bool = false;
     // Перекрёстный счёт: считаем ВСЕ typing-events (press+repeat) с момента
     // последнего пробела/границы, независимо от accept-фильтра. На DOUBLE
     // сравниваем с buffer.current_len() — должны совпасть. Если нет —
@@ -482,16 +483,20 @@ fn listen_keyboard(
                                     let replace_words = active_replace_words();
                                     let engine = active_correction_engine();
                                     let auto_replace = active_auto_replace();
-                                    if let Some(is_ru) = handle_double_shift(
+                                    let correction_result = handle_double_shift(
                                         &mut buffer,
                                         replace_words,
                                         engine,
                                         auto_replace,
                                         g.as_mut(),
                                         &mut executing,
-                                    ) {
+                                    );
+                                    if let Some(is_ru) = correction_result {
                                         current_layout_is_ru = is_ru;
                                         last_layout_poll = Instant::now();
+                                    }
+                                    if correction_result.is_some() {
+                                        suppress_next_typing_assist_after_manual_replay = true;
                                     }
                                     drop(g);
                                     last_double_at = Some(Instant::now());
@@ -535,16 +540,20 @@ fn listen_keyboard(
                 let replace_words = active_replace_words();
                 let engine = active_correction_engine();
                 let auto_replace = active_auto_replace();
-                if let Some(is_ru) = handle_double_shift(
+                let correction_result = handle_double_shift(
                     &mut buffer,
                     replace_words,
                     engine,
                     auto_replace,
                     g.as_mut(),
                     &mut executing,
-                ) {
+                );
+                if let Some(is_ru) = correction_result {
                     current_layout_is_ru = is_ru;
                     last_layout_poll = Instant::now();
+                }
+                if correction_result.is_some() {
+                    suppress_next_typing_assist_after_manual_replay = true;
                 }
                 drop(g);
                 dshift_state = DShiftState::Idle;
@@ -629,16 +638,20 @@ fn listen_keyboard(
                             let replace_words = active_replace_words();
                             let engine = active_correction_engine();
                             let auto_replace = active_auto_replace();
-                            if let Some(is_ru) = handle_double_shift(
+                            let correction_result = handle_double_shift(
                                 &mut buffer,
                                 replace_words,
                                 engine,
                                 auto_replace,
                                 g.as_mut(),
                                 &mut executing,
-                            ) {
+                            );
+                            if let Some(is_ru) = correction_result {
                                 current_layout_is_ru = is_ru;
                                 last_layout_poll = Instant::now();
+                            }
+                            if correction_result.is_some() {
+                                suppress_next_typing_assist_after_manual_replay = true;
                             }
                             drop(g);
                             dshift_state = DShiftState::Idle;
@@ -699,7 +712,10 @@ fn listen_keyboard(
                     }
                     buffer.handle_space();
                     events_since_word_start = 0;
-                    if active_typing_assist() {
+                    if should_schedule_typing_assist_after_space(
+                        active_typing_assist(),
+                        &mut suppress_next_typing_assist_after_manual_replay,
+                    ) {
                         pending_typing_assist_after_space = Some(Instant::now());
                     }
                     if verbose {
@@ -740,6 +756,7 @@ fn listen_keyboard(
                     buffer.reset_all();
                     events_since_word_start = 0;
                     clear_on_next_typing = false;
+                    suppress_next_typing_assist_after_manual_replay = false;
                 }
                 let starts_new_word = buffer.current_is_empty();
                 // Перекрёстный счёт — увеличиваем НА КАЖДОЕ press/repeat
@@ -955,6 +972,17 @@ fn should_ignore_buffer_key(key: KeyCode, modifiers: &ShiftState, current_empty:
     }
 
     current_empty && is_leading_non_word_symbol_key(key, modifiers.any())
+}
+
+fn should_schedule_typing_assist_after_space(active: bool, suppress_once: &mut bool) -> bool {
+    if !active {
+        return false;
+    }
+    if *suppress_once {
+        *suppress_once = false;
+        return false;
+    }
+    true
 }
 
 fn is_leading_non_word_symbol_key(key: KeyCode, _shift: bool) -> bool {
@@ -2931,6 +2959,25 @@ mod tests {
         assert!(!should_force_replay_for_short_fragment("ghb"));
         assert!(!should_force_replay_for_short_fragment("a b"));
         assert!(!should_force_replay_for_short_fragment(""));
+    }
+
+    #[test]
+    fn typing_assist_after_space_is_suppressed_once_after_manual_replay() {
+        let mut suppress_once = true;
+
+        assert!(!should_schedule_typing_assist_after_space(
+            true,
+            &mut suppress_once
+        ));
+        assert!(!suppress_once);
+        assert!(should_schedule_typing_assist_after_space(
+            true,
+            &mut suppress_once
+        ));
+        assert!(!should_schedule_typing_assist_after_space(
+            false,
+            &mut suppress_once
+        ));
     }
 
     #[test]
