@@ -1511,6 +1511,9 @@ fn push_unique_string(out: &mut Vec<String>, value: String) {
 
 pub fn decide_completed_scope_word(word: &[KeyEvent]) -> String {
     let original = map_original_events(word);
+    if is_single_cyrillic_completed_scope_word(&original) {
+        return original;
+    }
     if let Some(repaired) = correct_duplicate_layout_prefix_on_ascii_token(&original) {
         return repaired;
     }
@@ -1533,6 +1536,15 @@ pub fn decide_completed_scope_word(word: &[KeyEvent]) -> String {
         Ok(Some(text)) if !text.trim().is_empty() => text,
         Ok(_) | Err(_) => original,
     }
+}
+
+fn is_single_cyrillic_completed_scope_word(word: &str) -> bool {
+    let (_, core, _) = split_word_punctuation(word);
+    let mut chars = core.chars();
+    matches!(
+        (chars.next(), chars.next()),
+        (Some(ch), None) if is_cyrillic_letter(ch)
+    )
 }
 
 fn flip_word_events(word: &[KeyEvent]) -> String {
