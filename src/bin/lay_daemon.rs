@@ -98,6 +98,9 @@ const HOST_FOCUS_IGNORE_HINTS: &[&str] = &[
     "virtualbox machine",
     "virtualboxvm",
     "qemu-system",
+    "lay-kde-test spice",
+    "lay-kde-spice-viewer-clipboard",
+    "spice clipboard",
 ];
 static DBUS_CONNECTION: OnceLock<Mutex<Option<zbus::blocking::Connection>>> = OnceLock::new();
 static AUTO_LAYOUT_BACKEND_HINT: OnceLock<Option<LayoutBackend>> = OnceLock::new();
@@ -2169,11 +2172,10 @@ fn find_all_keyboards() -> std::io::Result<Vec<std::path::PathBuf>> {
         if let Ok(dev) = Device::open(&path) {
             if let Some(keys) = dev.supported_keys() {
                 if keys.contains(KeyCode::KEY_LEFTSHIFT) && keys.contains(KeyCode::KEY_A) {
-                    // НЕ слушаем наше СОБСТВЕННОЕ uinput устройство (feedback loop).
-                    // Имя точно "lay-virtual-keyboard" — другие "lay-*" (например тестер)
-                    // должны подхватываться.
+                    // НЕ слушаем наши/служебные uinput-устройства: это не железная
+                    // клавиатура, а источник фантомных повторов в VM/desktop-тестах.
                     let name = dev.name().unwrap_or("").to_string();
-                    if name == "lay-virtual-keyboard" {
+                    if should_ignore_keyboard_device_name(&name) {
                         continue;
                     }
                     found.push(path);
@@ -2188,6 +2190,10 @@ fn find_all_keyboards() -> std::io::Result<Vec<std::path::PathBuf>> {
         ));
     }
     Ok(found)
+}
+
+fn should_ignore_keyboard_device_name(name: &str) -> bool {
+    matches!(name, "lay-virtual-keyboard" | "ydotoold virtual device")
 }
 
 // ─── Лог ────────────────────────────────────────────────────
@@ -2996,8 +3002,22 @@ mod tests {
         assert!(focused_window_json_is_ignored(
             r#"{"appId":"remote-viewer.desktop","wmClass":"remote-viewer","title":"SPICE display"}"#
         ));
+        assert!(focused_window_json_is_ignored(
+            r#"{"appId":"python3","wmClass":"python3","title":"lay-kde-test SPICE clipboard ON"}"#
+        ));
         assert!(!focused_window_json_is_ignored(
             r#"{"appId":"org.gnome.Terminal.desktop","wmClass":"org.gnome.Terminal","title":"Terminal"}"#
+        ));
+    }
+
+    #[test]
+    fn keyboard_discovery_ignores_service_virtual_devices() {
+        assert!(should_ignore_keyboard_device_name("lay-virtual-keyboard"));
+        assert!(should_ignore_keyboard_device_name(
+            "ydotoold virtual device"
+        ));
+        assert!(!should_ignore_keyboard_device_name(
+            "AT Translated Set 2 keyboard"
         ));
     }
 
