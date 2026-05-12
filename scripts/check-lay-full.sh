@@ -17,6 +17,10 @@ echo "== node --check GNOME extension =="
 node --check extension/lay@radislabus-star.github.io/lay-impl.js
 node --check extension/lay@radislabus-star.github.io/extension.js
 
+echo "== python compile KDE tray =="
+python3 -m py_compile scripts/lay-kde-tray.py
+bash -n install.sh update.sh scripts/install-remote.sh
+
 echo "== cargo build --release --bins =="
 cargo build --release --bins
 

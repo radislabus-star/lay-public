@@ -1,0 +1,15 @@
+[Unit]
+Description=lay — KDE/Plasma tray frontend
+After=graphical-session.target lay-daemon.service
+Wants=lay-daemon.service
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/lay-kde-tray
+Restart=on-failure
+RestartSec=2
+Environment="QT_QPA_PLATFORM=wayland;xcb"
+
+[Install]
+WantedBy=default.target

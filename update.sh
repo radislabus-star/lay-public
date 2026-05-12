@@ -35,6 +35,9 @@ if command -v gnome-extensions >/dev/null 2>&1; then
     fi
 fi
 systemctl --user restart lay-daemon || true
+if systemctl --user list-unit-files 'lay-kde-tray.service' --no-legend 2>/dev/null | grep -q lay-kde-tray; then
+    systemctl --user restart lay-kde-tray.service || true
+fi
 
 echo ""
 echo "✓ lay обновлён"

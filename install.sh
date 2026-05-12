@@ -5,6 +5,11 @@ set -eu
 DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$DIR"
 
+is_kde_session() {
+    desktop_hint="${XDG_CURRENT_DESKTOP:-}:${XDG_SESSION_DESKTOP:-}:${DESKTOP_SESSION:-}"
+    printf '%s' "$desktop_hint" | grep -Eiq 'kde|plasma' || pgrep -x plasmashell >/dev/null 2>&1
+}
+
 echo "=== проверка cargo ==="
 if ! command -v cargo >/dev/null; then
     if [ -f "$HOME/.cargo/env" ]; then
@@ -59,11 +64,12 @@ for pkg in libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip; do
         need_install+=("$pkg")
     fi
 done
-desktop_hint="${XDG_CURRENT_DESKTOP:-}:${DESKTOP_SESSION:-}"
-if ! command -v qdbus6 >/dev/null && {
-    printf '%s' "$desktop_hint" | grep -Eiq 'kde|plasma' || pgrep -x plasmashell >/dev/null 2>&1
-}; then
-    need_install+=("qdbus-qt6")
+if is_kde_session; then
+    for pkg in qdbus-qt6 python3-pyqt6 libxcb-cursor0; do
+        if ! dpkg -l "$pkg" 2>/dev/null | grep -q '^ii'; then
+            need_install+=("$pkg")
+        fi
+    done
 fi
 if [ ${#need_install[@]} -gt 0 ]; then
     echo "ставим: ${need_install[*]}"
@@ -94,17 +100,30 @@ mkdir -p ~/.local/bin
 ln -sf "$DIR/target/release/lay" ~/.local/bin/lay
 ln -sf "$DIR/target/release/lay-daemon" ~/.local/bin/lay-daemon
 ln -sf "$DIR/target/release/lay-ngram-corpus" ~/.local/bin/lay-ngram-corpus
+ln -sf "$DIR/scripts/lay-kde-tray.py" ~/.local/bin/lay-kde-tray
 echo "✓ lay        → ~/.local/bin/lay"
 echo "✓ lay-daemon → ~/.local/bin/lay-daemon"
 echo "✓ lay-ngram-corpus → ~/.local/bin/lay-ngram-corpus"
+echo "✓ lay-kde-tray → ~/.local/bin/lay-kde-tray"
 
 echo ""
 echo "=== systemd unit для lay-daemon ==="
 mkdir -p ~/.config/systemd/user
 cp "$DIR/systemd/lay-daemon.service" ~/.config/systemd/user/lay-daemon.service
+cp "$DIR/systemd/lay-kde-tray.service" ~/.config/systemd/user/lay-kde-tray.service
 systemctl --user daemon-reload
 systemctl --user enable lay-daemon
 echo "✓ lay-daemon.service установлен и включён"
+if is_kde_session; then
+    systemctl --user enable lay-kde-tray.service
+    systemctl --user restart lay-kde-tray.service || {
+        echo "⚠ lay-kde-tray.service не стартовал сразу; он запустится при новом входе в KDE"
+    }
+    echo "✓ lay-kde-tray.service установлен для KDE"
+else
+    systemctl --user disable lay-kde-tray.service >/dev/null 2>&1 || true
+    echo "ℹ KDE tray service установлен, но не включён вне KDE"
+fi
 
 echo ""
 echo "=== GNOME Shell extension ==="
@@ -141,8 +160,8 @@ echo ""
 echo "╔══════════════════════════════════════════╗"
 echo "║  Установка завершена!                    ║"
 echo "║                                          ║"
-echo "║  Перелогинься в GNOME чтобы:             ║"
-echo "║  • extension загрузился (EN/RU в трее)   ║"
+echo "║  Перелогинься в desktop-сессию чтобы:    ║"
+echo "║  • GNOME/KDE tray загрузился             ║"
 echo "║  • lay-daemon запустился автоматически   ║"
 echo "║                                          ║"
 echo "║  Двойной Shift = конвертировать слово    ║"

@@ -66,20 +66,22 @@ GNOME Wayland окружении, третьи решали задачу не т
 
 Основная проверенная среда сейчас **GNOME Wayland**. Внутри: Rust, evdev/uinput
 и backend-слой для переключения раскладки. GNOME backend использует маленькое
-расширение GNOME Shell; KDE и X11 backend добавлены как экспериментальные.
+расширение GNOME Shell; KDE backend и отдельный Plasma tray добавлены как
+экспериментальные, X11 backend пока тоже экспериментальный.
 
 Внутренняя архитектура теперь разделена на общее ядро и desktop-интеграции:
 `lay::core` содержит конвертацию раскладки, LEM/ngram scoring и правила
 определения backend; GNOME Shell extension остаётся отдельной оболочкой для
-трея, DBus bridge и активации раскладки. KDE/Plasma должен подключаться к тому
-же ядру через отдельный adapter, а не копировать GNOME-код.
+GNOME-трея, DBus bridge и активации раскладки. KDE/Plasma использует отдельный
+`lay-kde-tray`, который читает тот же config и управляет тем же daemon.
 
 ### Возможности
 
 - Двойной Shift исправляет последнее слово, набранное не в той раскладке.
 - Работает прямо в приложениях, без копирования текста через буфер обмена.
 - Поддерживает GNOME Wayland через маленькое Shell-расширение.
-- Имеет экспериментальные backend-режимы для KDE и X11.
+- Имеет экспериментальный KDE/Plasma tray и backend через `qdbus6`.
+- Имеет экспериментальный backend-режим для X11.
 - Есть быстрый CLI для конвертации текста из терминала.
 - Есть аккуратная помощь при наборе после пробела.
 - Есть точная автоподмена по пользовательскому словарю.
@@ -97,7 +99,8 @@ KDE и X11 backend появились после обсуждения на Linux
 экспериментальными:
 
 - `layout_backend = "gnome"`: GNOME Shell extension + DBus bridge.
-- `layout_backend = "kde"`: `qdbus/qdbus6 org.kde.keyboard /Layouts setLayout`.
+- `layout_backend = "kde"`: `qdbus/qdbus6 org.kde.keyboard /Layouts setLayout`
+  и отдельный `lay-kde-tray`.
 - `layout_backend = "x11"`: `xkb-switch`, `xkblayout-state` или fallback
   `setxkbmap`.
 
@@ -129,7 +132,7 @@ bash install.sh
 ```
 
 После установки выйди из сессии и зайди снова. Это нужно, чтобы применились
-группа `input` и расширение GNOME.
+группа `input`, GNOME extension или KDE tray.
 
 Потом набери слово не в той раскладке и нажми **Shift два раза**.
 
@@ -146,7 +149,8 @@ cd ~/projects/lay && bash update.sh
 GNOME extension и перезапускает `lay-daemon`.
 
 Для KDE/X11 используется та же команда. GNOME extension там не нужен, но
-`update.sh` всё равно обновит бинарники и перезапустит `lay-daemon`.
+`update.sh` всё равно обновит бинарники и перезапустит `lay-daemon`. В KDE он
+также перезапустит `lay-kde-tray.service`, если сервис установлен.
 
 ### Extension ZIP
 
@@ -176,13 +180,14 @@ gnome-extensions enable lay@radislabus-star.github.io
 ### Требования
 
 - Linux
-- GNOME Shell 45, 46, 47 или 50
+- GNOME Shell 45, 46, 47 или 50 либо KDE Plasma 6 для экспериментального KDE mode
 - Wayland-сессия
 - Rust 1.75+
 - доступ к `/dev/input` через группу `input`
 - доступный `/dev/uinput` для обратной печати
 
-Для экспериментального KDE backend нужен `qdbus` или `qdbus6`. Для
+Для экспериментального KDE backend нужен `qdbus` или `qdbus6`; для KDE tray
+нужен `python3-pyqt6`. Установщик ставит эти пакеты в Plasma-сессии. Для
 экспериментального X11 backend лучше иметь `xkb-switch`; без него используется
 fallback через `setxkbmap`, который может менять текущую XKB-конфигурацию
 грубее, чем специализированные tools.
@@ -241,6 +246,32 @@ extension/lay@radislabus-star.github.io/
 ~/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/
 ```
 
+### KDE/Plasma tray
+
+В KDE используется отдельный frontend:
+
+```text
+scripts/lay-kde-tray.py
+systemd/lay-kde-tray.service
+```
+
+Установленная команда:
+
+```bash
+~/.local/bin/lay-kde-tray --status
+systemctl --user status lay-kde-tray --no-pager
+```
+
+Tray читает и пишет тот же файл:
+
+```text
+~/.config/lay/config.json
+```
+
+Через меню KDE можно включать/выключать daemon, `Smart correction`, область
+1/2/3 слова, `Typing assist`, `Auto-replace`, `Auto-switch layout`,
+`Remember corrections` и LEM-арбитр.
+
 ### Меню в трее
 
 Меню держит основной сценарий коротким:
@@ -271,7 +302,8 @@ extension/lay@radislabus-star.github.io/
                         Backspace x длина слова
                                   |
                                   v
-                 GNOME extension переключает раскладку
+                 desktop backend переключает раскладку
+                 GNOME extension или KDE qdbus6
                                   |
                                   v
                     uinput повторяет исходные keycode
@@ -297,8 +329,8 @@ src/text_edit.rs  минимальный план замены текста бе
 ```
 
 Desktop-специфичная часть остаётся отдельно: GNOME использует Shell extension,
-а KDE/Plasma требует отдельный adapter для трея, переключения раскладки и
-fallback-вставки текста.
+KDE/Plasma использует `lay-kde-tray`, а daemon выбирает backend для
+переключения раскладки.
 
 ### Помощь при наборе
 
