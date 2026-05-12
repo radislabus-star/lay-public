@@ -21,7 +21,7 @@ const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-const APP_VERSION = '0.1.147';
+const APP_VERSION = '0.1.148';
 const APP_DESCRIPTION = 'Помощник RU/EN раскладки по двойному Shift';
 const APP_RELEASE_DATE = '2026-05-12';
 const APP_LICENSE = 'MIT';
@@ -231,28 +231,28 @@ function startUpdate() {
             Gio.Subprocess.new(
                 ['kgx', '--working-directory', PROJECT_DIR, '--', 'bash', '-lc', updateCommand],
                 Gio.SubprocessFlags.NONE);
-            return [true, `Открыт терминал. Лог: ${UPDATE_LOG_PATH}`];
+            return [true, `Проверка открыта в терминале. Лог: ${UPDATE_LOG_PATH}`];
         }
         if (terminal === 'gnome-terminal') {
             Gio.Subprocess.new(
                 ['gnome-terminal', '--working-directory', PROJECT_DIR, '--', 'bash', '-lc', updateCommand],
                 Gio.SubprocessFlags.NONE);
-            return [true, `Открыт терминал. Лог: ${UPDATE_LOG_PATH}`];
+            return [true, `Проверка открыта в терминале. Лог: ${UPDATE_LOG_PATH}`];
         }
         if (terminal === 'konsole') {
             Gio.Subprocess.new(
                 ['konsole', '--workdir', PROJECT_DIR, '-e', 'bash', '-lc', updateCommand],
                 Gio.SubprocessFlags.NONE);
-            return [true, `Открыт терминал. Лог: ${UPDATE_LOG_PATH}`];
+            return [true, `Проверка открыта в терминале. Лог: ${UPDATE_LOG_PATH}`];
         }
         if (terminal === 'xterm') {
             Gio.Subprocess.new(['xterm', '-e', 'bash', '-lc', updateCommand], Gio.SubprocessFlags.NONE);
-            return [true, `Открыт терминал. Лог: ${UPDATE_LOG_PATH}`];
+            return [true, `Проверка открыта в терминале. Лог: ${UPDATE_LOG_PATH}`];
         }
 
         const backgroundCommand = 'cd ' + projectArg + ' && bash update.sh > ' + logArg + ' 2>&1';
         Gio.Subprocess.new(['bash', '-lc', backgroundCommand], Gio.SubprocessFlags.NONE);
-        return [true, `Терминал не найден, запущено в фоне. Лог: ${UPDATE_LOG_PATH}`];
+        return [true, `Терминал не найден, проверка запущена в фоне. Лог: ${UPDATE_LOG_PATH}`];
     } catch(e) {
         return [false, String(e)];
     }
@@ -984,7 +984,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _updateItem() {
-        const item = new PopupMenu.PopupMenuItem('Обновить lay');
+        const item = new PopupMenu.PopupMenuItem('Проверить обновления');
         item.connect('activate', () => this._runUpdate());
         return item;
     }
@@ -1159,7 +1159,7 @@ class LayIndicator extends PanelMenu.Button {
 
     _runUpdate() {
         const [ok, message] = startUpdate();
-        this._notify(ok ? 'Обновление запущено' : 'Обновление не запущено', message, !ok);
+        this._notify(ok ? 'Проверка обновлений запущена' : 'Проверка не запущена', message, !ok);
     }
 
     _notify(title, message, isError = false) {

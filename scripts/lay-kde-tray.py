@@ -101,25 +101,25 @@ def start_update() -> tuple[bool, str]:
                 ["konsole", "--workdir", str(PROJECT_DIR), "-e", "bash", "-lc", update_command],
                 start_new_session=True,
             )
-            return True, f"Открыт терминал. Лог: {UPDATE_LOG_PATH}"
+            return True, f"Проверка открыта в терминале. Лог: {UPDATE_LOG_PATH}"
         if terminal == "kgx":
             subprocess.Popen(
                 ["kgx", "--working-directory", str(PROJECT_DIR), "--", "bash", "-lc", update_command],
                 start_new_session=True,
             )
-            return True, f"Открыт терминал. Лог: {UPDATE_LOG_PATH}"
+            return True, f"Проверка открыта в терминале. Лог: {UPDATE_LOG_PATH}"
         if terminal == "gnome-terminal":
             subprocess.Popen(
                 ["gnome-terminal", "--working-directory", str(PROJECT_DIR), "--", "bash", "-lc", update_command],
                 start_new_session=True,
             )
-            return True, f"Открыт терминал. Лог: {UPDATE_LOG_PATH}"
+            return True, f"Проверка открыта в терминале. Лог: {UPDATE_LOG_PATH}"
         if terminal == "xterm":
             subprocess.Popen(
                 ["xterm", "-e", "bash", "-lc", update_command],
                 start_new_session=True,
             )
-            return True, f"Открыт терминал. Лог: {UPDATE_LOG_PATH}"
+            return True, f"Проверка открыта в терминале. Лог: {UPDATE_LOG_PATH}"
 
         background_command = (
             f"cd {project_arg} && "
@@ -131,7 +131,7 @@ def start_update() -> tuple[bool, str]:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        return True, f"Терминал не найден, запущено в фоне. Лог: {UPDATE_LOG_PATH}"
+        return True, f"Терминал не найден, проверка запущена в фоне. Лог: {UPDATE_LOG_PATH}"
     except Exception as exc:
         return False, str(exc)
 
@@ -261,7 +261,7 @@ def main() -> int:
             restart.triggered.connect(lambda: self.run_service_action("restart"))
             self.menu.addAction(restart)
 
-            update = QAction("Обновить lay", self.menu)
+            update = QAction("Проверить обновления", self.menu)
             update.triggered.connect(self.run_update)
             self.menu.addAction(update)
             self.menu.addSeparator()
@@ -361,7 +361,7 @@ def main() -> int:
             if ok:
                 self.tray.showMessage(
                     "lay",
-                    f"Обновление запущено.\n{message}",
+                    f"Проверка обновлений запущена.\n{message}",
                     QSystemTrayIcon.MessageIcon.Information,
                     2500,
                 )
