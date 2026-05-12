@@ -8,6 +8,10 @@
 //!   lay-test-input scenario1   — печатает "ghbvth" + двойной Shift
 //!   lay-test-input ghbdtn_shift — печатает "ghbdtn" + двойной Shift
 //!   lay-test-input ghbdtn_enter — печатает "ghbdtn" + двойной Shift + Enter
+//!   lay-test-input ru_p_enter — печатает "п" в RU + Enter
+//!   lay-test-input g_to_ru_enter — печатает "g" + двойной Shift + Enter
+//!   lay-test-input ru_p_to_g_enter — печатает "п" + двойной Shift + Enter
+//!   lay-test-input ru_p_toggle2_enter — печатает "п" + двойной Shift × 2 + Enter
 //!   lay-test-input ctrl_plus_ghbdtn_enter — жмёт Ctrl+Shift+=, затем "ghbdtn" + двойной Shift + Enter
 //!   lay-test-input dhtvz_toggle_enter — печатает "dhtvz" + двойной Shift × 2 + Enter
 //!   lay-test-input dhtvz_toggle3_enter — печатает "dhtvz" + двойной Shift × 3 + Enter
@@ -139,6 +143,33 @@ fn main() -> std::io::Result<()> {
             sleep(Duration::from_millis(800));
             if scenario == "ghbdtn_enter" {
                 tap(&mut dev, KeyCode::KEY_ENTER.code())?;
+            }
+            eprintln!("[test] сценарий {scenario} отправлен");
+        }
+        "ru_p_enter" => {
+            activate_layout("ru");
+            sleep(Duration::from_millis(250));
+            tap(&mut dev, KeyCode::KEY_G.code())?;
+            sleep(Duration::from_millis(250));
+            tap(&mut dev, KeyCode::KEY_ENTER.code())?;
+            eprintln!("[test] сценарий ru_p_enter отправлен");
+        }
+        "g_to_ru_enter" => {
+            activate_layout("us");
+            sleep(Duration::from_millis(250));
+            tap(&mut dev, KeyCode::KEY_G.code())?;
+            double_shift_enter(&mut dev, 900)?;
+            eprintln!("[test] сценарий g_to_ru_enter отправлен");
+        }
+        "ru_p_to_g_enter" | "ru_p_toggle2_enter" => {
+            activate_layout("ru");
+            sleep(Duration::from_millis(250));
+            tap(&mut dev, KeyCode::KEY_G.code())?;
+            if scenario == "ru_p_toggle2_enter" {
+                double_shift(&mut dev, 900)?;
+                double_shift_enter(&mut dev, 900)?;
+            } else {
+                double_shift_enter(&mut dev, 900)?;
             }
             eprintln!("[test] сценарий {scenario} отправлен");
         }

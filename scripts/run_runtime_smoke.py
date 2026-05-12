@@ -34,6 +34,7 @@ CASES = {
     "ghbdtn_enter": Case("ghbdtn_enter", "привет"),
     "ctrl_plus_ghbdtn_enter": Case("ctrl_plus_ghbdtn_enter", "привет"),
     "dhtvz_toggle_enter": Case("dhtvz_toggle_enter", "dhtvz"),
+    "g_to_ru_enter": Case("g_to_ru_enter", "п"),
     "good_ntrcn_enter": Case("good_ntrcn_enter", "good текст"),
     "good_text_enter": Case("good_text_enter", "good текст"),
     "good_vshgidu_enter": Case("good_vshgidu_enter", "good Double"),
@@ -45,6 +46,9 @@ CASES = {
     "no_ne_ty_enter": Case("no_ne_ty_enter", "но не ты", start_layout="ru"),
     "preparatov_typo_enter": Case("preparatov_typo_enter", "препаратов"),
     "proverka_ntrcn_enter": Case("proverka_ntrcn_enter", "проверка текст"),
+    "ru_p_enter": Case("ru_p_enter", "п", start_layout="ru"),
+    "ru_p_to_g_enter": Case("ru_p_to_g_enter", "g", start_layout="ru"),
+    "ru_p_toggle2_enter": Case("ru_p_toggle2_enter", "п", start_layout="ru"),
     "vyvodim_dva_enter": Case("vyvodim_dva_enter", "выводим два"),
     "wifi_ye_enter": Case("wifi_ye_enter", "wi-fi ну"),
 }

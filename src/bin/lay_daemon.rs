@@ -86,9 +86,23 @@ const LAYOUT_SWITCH_SETTLE_MS: u64 = 12;
 const MODIFIER_RELEASE_ROUNDS: usize = 2;
 const MODIFIER_RELEASE_PACE_MS: u64 = 3;
 const LAYOUT_POLL_INTERVAL_MS: u64 = 250;
+const FOCUS_IGNORE_POLL_INTERVAL_MS: u64 = 500;
+const HOST_FOCUS_IGNORE_HINTS: &[&str] = &[
+    "org.virt-manager.virt-manager",
+    "virt-manager",
+    "remote-viewer",
+    "virt-viewer",
+    "spicy",
+    "org.gnome.boxes",
+    "gnome-boxes",
+    "virtualbox machine",
+    "virtualboxvm",
+    "qemu-system",
+];
 static DBUS_CONNECTION: OnceLock<Mutex<Option<zbus::blocking::Connection>>> = OnceLock::new();
 static AUTO_LAYOUT_BACKEND_HINT: OnceLock<Option<LayoutBackend>> = OnceLock::new();
 static TYPING_ASSIST_RUNTIME_READY: AtomicBool = AtomicBool::new(false);
+static FOCUS_INFO_UNAVAILABLE: AtomicBool = AtomicBool::new(false);
 
 // ─── Config ─────────────────────────────────────────────────
 
@@ -348,11 +362,25 @@ fn listen_keyboard(
     // видно где autorepeat терялся.
     let mut events_since_word_start: u32 = 0;
     let mut pending_typing_assist_after_space: Option<Instant> = None;
+    let mut focus_ignored = false;
+    let mut last_focus_ignore_poll =
+        Instant::now() - Duration::from_millis(FOCUS_IGNORE_POLL_INTERVAL_MS);
 
     loop {
         let events: Vec<InputEvent> = match device.fetch_events() {
             Ok(events) => events.collect(),
             Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                update_focus_ignore_state(
+                    &mut focus_ignored,
+                    &mut last_focus_ignore_poll,
+                    &mut buffer,
+                    &mut pending_typing_assist_after_space,
+                    &mut events_since_word_start,
+                );
+                if focus_ignored {
+                    std::thread::sleep(Duration::from_millis(5));
+                    continue;
+                }
                 if pending_typing_assist_after_space.is_some_and(|scheduled_at| {
                     scheduled_at.elapsed() >= Duration::from_millis(TYPING_ASSIST_IDLE_DELAY_MS)
                 }) {
@@ -367,6 +395,19 @@ fn listen_keyboard(
             }
             Err(e) => return Err(e),
         };
+
+        update_focus_ignore_state(
+            &mut focus_ignored,
+            &mut last_focus_ignore_poll,
+            &mut buffer,
+            &mut pending_typing_assist_after_space,
+            &mut events_since_word_start,
+        );
+        if focus_ignored {
+            shift_state = ShiftState::default();
+            dshift_state = DShiftState::Idle;
+            continue;
+        }
 
         for event in events {
             if event.event_type() != EventType::KEY {
@@ -742,6 +783,82 @@ fn listen_keyboard(
             }
         }
     }
+}
+
+fn update_focus_ignore_state(
+    focus_ignored: &mut bool,
+    last_poll: &mut Instant,
+    buffer: &mut WordBuffer,
+    pending_typing_assist_after_space: &mut Option<Instant>,
+    events_since_word_start: &mut u32,
+) {
+    if active_layout_backend() != LayoutBackend::Gnome
+        || last_poll.elapsed() < Duration::from_millis(FOCUS_IGNORE_POLL_INTERVAL_MS)
+    {
+        return;
+    }
+    *last_poll = Instant::now();
+
+    let ignored = focused_window_should_be_ignored();
+    if ignored != *focus_ignored {
+        if ignored {
+            log("► focused window ignored: VM/remote viewer, host lay paused");
+        } else {
+            log("► focused window accepted: host lay resumed");
+        }
+    }
+    if ignored {
+        buffer.reset_all();
+        *pending_typing_assist_after_space = None;
+        *events_since_word_start = 0;
+    }
+    *focus_ignored = ignored;
+}
+
+fn focused_window_should_be_ignored() -> bool {
+    if FOCUS_INFO_UNAVAILABLE.load(Ordering::Relaxed) {
+        return false;
+    }
+    match call_focused_window_info() {
+        Ok(json) => focused_window_json_is_ignored(&json),
+        Err(error) => {
+            FOCUS_INFO_UNAVAILABLE.store(true, Ordering::Relaxed);
+            log(&format!(
+                "⚠ FocusedWindowInfo unavailable, host focus guard disabled: {error}"
+            ));
+            false
+        }
+    }
+}
+
+fn focused_window_json_is_ignored(json: &str) -> bool {
+    let haystack = focused_window_haystack(json);
+    HOST_FOCUS_IGNORE_HINTS
+        .iter()
+        .any(|hint| haystack.contains(&hint.to_ascii_lowercase()))
+}
+
+fn focused_window_haystack(json: &str) -> String {
+    let value = match serde_json::from_str::<serde_json::Value>(json) {
+        Ok(value) => value,
+        Err(_) => return json.to_ascii_lowercase(),
+    };
+    let mut parts = Vec::new();
+    if let Some(object) = value.as_object() {
+        for key in [
+            "appId",
+            "wmClass",
+            "wmClassInstance",
+            "label",
+            "title",
+            "value",
+        ] {
+            if let Some(text) = object.get(key).and_then(|item| item.as_str()) {
+                parts.push(text);
+            }
+        }
+    }
+    parts.join(" ").to_ascii_lowercase()
 }
 
 #[derive(Default)]
@@ -1601,6 +1718,20 @@ fn call_activate_layout(id: &str) -> Result<bool, String> {
     })
 }
 
+fn call_focused_window_info() -> Result<String, String> {
+    if active_layout_backend() != LayoutBackend::Gnome {
+        return Err("FocusedWindowInfo is available only through the GNOME backend".to_string());
+    }
+    call_dbus_focused_window_info().or_else(|fast_error| {
+        reset_dbus_connection();
+        log(&format!(
+            "⚠ DBus fast FocusedWindowInfo failed: {fast_error}; fallback gdbus"
+        ));
+        let reply = run_gdbus(&format!("{DBUS_INTERFACE}.FocusedWindowInfo"), &[])?;
+        parse_gdbus_string(&reply).ok_or_else(|| format!("не распарсил FocusedWindowInfo: {reply}"))
+    })
+}
+
 fn switch_to_layout(layout_id: &str, ibus_engine: &str, target_is_ru: bool) -> Result<(), String> {
     match active_layout_backend() {
         LayoutBackend::Gnome => switch_to_gnome_layout(layout_id, ibus_engine, target_is_ru),
@@ -1920,6 +2051,22 @@ fn call_dbus_list_layouts() -> Result<String, String> {
             DBUS_PATH,
             Some(DBUS_INTERFACE),
             "ListLayouts",
+            &(),
+        )
+        .map_err(|e| e.to_string())?;
+    reply
+        .body()
+        .deserialize::<String>()
+        .map_err(|e| e.to_string())
+}
+
+fn call_dbus_focused_window_info() -> Result<String, String> {
+    let reply = dbus_connection()?
+        .call_method(
+            Some(DBUS_DEST),
+            DBUS_PATH,
+            Some(DBUS_INTERFACE),
+            "FocusedWindowInfo",
             &(),
         )
         .map_err(|e| e.to_string())?;
@@ -2839,6 +2986,19 @@ mod tests {
         assert_eq!(normalize_layout_id("xkb:ru::rus"), "ru");
         assert!(is_ru_layout_id("xkb:ru"));
         assert!(!is_ru_layout_id("xkb:us"));
+    }
+
+    #[test]
+    fn host_focus_ignore_detects_vm_windows() {
+        assert!(focused_window_json_is_ignored(
+            r#"{"appId":"org.virt-manager.virt-manager","wmClass":"virt-manager","title":"KDE VM"}"#
+        ));
+        assert!(focused_window_json_is_ignored(
+            r#"{"appId":"remote-viewer.desktop","wmClass":"remote-viewer","title":"SPICE display"}"#
+        ));
+        assert!(!focused_window_json_is_ignored(
+            r#"{"appId":"org.gnome.Terminal.desktop","wmClass":"org.gnome.Terminal","title":"Terminal"}"#
+        ));
     }
 
     #[test]

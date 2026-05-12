@@ -21,7 +21,7 @@ const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-const APP_VERSION = '0.1.142';
+const APP_VERSION = '0.1.143';
 const APP_DESCRIPTION = 'Помощник RU/EN раскладки по двойному Shift';
 const APP_RELEASE_DATE = '2026-05-12';
 const APP_LICENSE = 'MIT';
@@ -317,13 +317,14 @@ function focusedWindowInfo() {
     const appName = String(app?.get_name?.() ?? '').trim();
     const wmClass = String(win.get_wm_class?.() ?? '').trim();
     const wmClassInstance = String(win.get_wm_class_instance?.() ?? '').trim();
+    const title = String(win.get_title?.() ?? '').trim();
 
     if (appId)
-        return {kind: 'app_id', value: appId, label: appName || appId, appId, wmClass, wmClassInstance};
+        return {kind: 'app_id', value: appId, label: appName || appId, appId, wmClass, wmClassInstance, title};
     if (wmClass)
-        return {kind: 'wm_class', value: wmClass, label: wmClass, appId, wmClass, wmClassInstance};
+        return {kind: 'wm_class', value: wmClass, label: wmClass, appId, wmClass, wmClassInstance, title};
     if (wmClassInstance)
-        return {kind: 'wm_class_instance', value: wmClassInstance, label: wmClassInstance, appId, wmClass, wmClassInstance};
+        return {kind: 'wm_class_instance', value: wmClassInstance, label: wmClassInstance, appId, wmClass, wmClassInstance, title};
     return null;
 }
 
@@ -341,6 +342,7 @@ const DBUS_XML = `
     <method name="CurrentLayout"><arg name="id" direction="out" type="s"/></method>
     <method name="NextLayout"><arg name="success" direction="out" type="b"/></method>
     <method name="ListLayouts"><arg name="layouts" direction="out" type="s"/></method>
+    <method name="FocusedWindowInfo"><arg name="json" direction="out" type="s"/></method>
   </interface>
 </node>`;
 
@@ -400,6 +402,11 @@ class LayDaemonService {
                 .map(i=>`${i}:${mgr.inputSources[i].type}:${mgr.inputSources[i].id}${mgr.inputSources[i].id===mgr.currentSource.id?'*':''}`)
                 .join(',');
         } catch(e) { return 'error:'+e; }
+    }
+    FocusedWindowInfo() {
+        try {
+            return JSON.stringify(focusedWindowInfo() ?? {});
+        } catch(e) { return '{}'; }
     }
 }
 
