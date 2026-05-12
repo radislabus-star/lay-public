@@ -38,6 +38,9 @@ systemctl --user restart lay-daemon || true
 if systemctl --user list-unit-files 'lay-kde-tray.service' --no-legend 2>/dev/null | grep -q lay-kde-tray; then
     systemctl --user restart lay-kde-tray.service || true
 fi
+if systemctl --user is-enabled --quiet lay-host-vm-guard.service 2>/dev/null; then
+    systemctl --user restart lay-host-vm-guard.service || true
+fi
 
 echo ""
 echo "✓ lay обновлён"

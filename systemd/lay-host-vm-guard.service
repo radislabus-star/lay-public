@@ -1,0 +1,12 @@
+[Unit]
+Description=lay host VM guard
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/lay-host-vm-guard
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

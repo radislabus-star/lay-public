@@ -101,16 +101,19 @@ ln -sf "$DIR/target/release/lay" ~/.local/bin/lay
 ln -sf "$DIR/target/release/lay-daemon" ~/.local/bin/lay-daemon
 ln -sf "$DIR/target/release/lay-ngram-corpus" ~/.local/bin/lay-ngram-corpus
 ln -sf "$DIR/scripts/lay-kde-tray.py" ~/.local/bin/lay-kde-tray
+ln -sf "$DIR/scripts/lay-host-vm-guard.sh" ~/.local/bin/lay-host-vm-guard
 echo "✓ lay        → ~/.local/bin/lay"
 echo "✓ lay-daemon → ~/.local/bin/lay-daemon"
 echo "✓ lay-ngram-corpus → ~/.local/bin/lay-ngram-corpus"
 echo "✓ lay-kde-tray → ~/.local/bin/lay-kde-tray"
+echo "✓ lay-host-vm-guard → ~/.local/bin/lay-host-vm-guard"
 
 echo ""
 echo "=== systemd unit для lay-daemon ==="
 mkdir -p ~/.config/systemd/user
 cp "$DIR/systemd/lay-daemon.service" ~/.config/systemd/user/lay-daemon.service
 cp "$DIR/systemd/lay-kde-tray.service" ~/.config/systemd/user/lay-kde-tray.service
+cp "$DIR/systemd/lay-host-vm-guard.service" ~/.config/systemd/user/lay-host-vm-guard.service
 systemctl --user daemon-reload
 systemctl --user enable lay-daemon
 echo "✓ lay-daemon.service установлен и включён"
@@ -123,6 +126,13 @@ if is_kde_session; then
 else
     systemctl --user disable lay-kde-tray.service >/dev/null 2>&1 || true
     echo "ℹ KDE tray service установлен, но не включён вне KDE"
+fi
+if systemctl --user is-enabled --quiet lay-host-vm-guard.service 2>/dev/null; then
+    systemctl --user restart lay-host-vm-guard.service || true
+    echo "✓ lay-host-vm-guard.service обновлён и перезапущен"
+else
+    echo "ℹ VM guard установлен, но не включён автоматически"
+    echo "  для тестов VM: systemctl --user enable --now lay-host-vm-guard.service"
 fi
 
 echo ""

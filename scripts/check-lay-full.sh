@@ -19,7 +19,7 @@ node --check extension/lay@radislabus-star.github.io/extension.js
 
 echo "== python compile KDE tray =="
 python3 -m py_compile scripts/lay-kde-tray.py
-bash -n install.sh update.sh scripts/install-remote.sh
+bash -n install.sh update.sh scripts/install-remote.sh scripts/lay-host-vm-guard.sh
 
 echo "== cargo build --release --bins =="
 cargo build --release --bins
