@@ -42,6 +42,7 @@ CASES = {
     "mixed_coke_toggle3_enter": Case("mixed_coke_toggle3_enter", "слово кока-колу"),
     "n_teper_mixed_enter": Case("n_teper_mixed_enter", "Теперь"),
     "auto_switch_words_enter": Case("auto_switch_words_enter", "только не работает"),
+    "no_ne_ty_enter": Case("no_ne_ty_enter", "но не ты", start_layout="ru"),
     "preparatov_typo_enter": Case("preparatov_typo_enter", "препаратов"),
     "proverka_ntrcn_enter": Case("proverka_ntrcn_enter", "проверка текст"),
     "vyvodim_dva_enter": Case("vyvodim_dva_enter", "выводим два"),
@@ -66,7 +67,7 @@ def main() -> int:
     parser.add_argument("--no-build", action="store_true")
     args = parser.parse_args()
 
-    require_command("zenity")
+    dialog = choose_dialog_command()
     require_command("gdbus")
     input_bin = ensure_binary(args.input_bin, "lay-test-input", args.no_build)
     daemon_bin = None if args.use_system_daemon else ensure_binary(args.daemon_bin, "lay-daemon", args.no_build)
@@ -78,6 +79,7 @@ def main() -> int:
             case,
             input_bin,
             daemon_bin,
+            dialog,
             args.focus_delay,
             args.timeout,
             args.daemon_debug,
@@ -94,6 +96,13 @@ def main() -> int:
 def require_command(name: str) -> None:
     if shutil.which(name) is None:
         raise SystemExit(f"required command not found: {name}")
+
+
+def choose_dialog_command() -> str:
+    for name in ("zenity", "kdialog"):
+        if shutil.which(name) is not None:
+            return name
+    raise SystemExit("required command not found: zenity or kdialog")
 
 
 def ensure_binary(path: Path, bin_name: str, no_build: bool) -> Path:
@@ -115,22 +124,14 @@ def run_case(
     case: Case,
     input_bin: Path,
     daemon_bin: Path | None,
+    dialog: str,
     focus_delay: float,
     timeout: float,
     daemon_debug: bool,
 ) -> tuple[bool, str, str]:
     activate_layout(case.start_layout)
-    zenity = subprocess.Popen(
-        [
-            "zenity",
-            "--entry",
-            "--title",
-            f"Lay runtime smoke: {case.name}",
-            "--text",
-            f"Runtime smoke: {case.name}",
-            "--width",
-            "520",
-        ],
+    dialog_proc = subprocess.Popen(
+        dialog_args(dialog, case),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
@@ -153,11 +154,11 @@ def run_case(
         device_path = sender.stdout.readline().strip()
         if not device_path.startswith("/dev/input/event"):
             sender.kill()
-            stdout, stderr = zenity.communicate(timeout=1)
+            stdout, stderr = dialog_proc.communicate(timeout=1)
             return False, stdout.strip(), f"invalid test device path: {device_path!r}\nsender stderr:\n{stderr}"
         if not wait_for_device_access(Path(device_path), timeout=3.0):
             sender.kill()
-            stdout, stderr = zenity.communicate(timeout=1)
+            stdout, stderr = dialog_proc.communicate(timeout=1)
             return False, stdout.strip(), f"test device is not readable: {device_path}"
         daemon_args = [str(daemon_bin), "--device", device_path]
         if daemon_debug:
@@ -179,11 +180,11 @@ def run_case(
         sender_stderr += "\nsender timeout"
 
     try:
-        stdout, stderr = zenity.communicate(timeout=timeout)
+        stdout, stderr = dialog_proc.communicate(timeout=timeout)
     except subprocess.TimeoutExpired:
-        zenity.kill()
-        stdout, stderr = zenity.communicate()
-        stderr += "\nzenity timeout"
+        dialog_proc.kill()
+        stdout, stderr = dialog_proc.communicate()
+        stderr += f"\n{dialog} timeout"
 
     if daemon is not None:
         daemon.terminate()
@@ -197,8 +198,8 @@ def run_case(
     details = []
     if sender.returncode != 0:
         details.append(f"sender exited {sender.returncode}")
-    if zenity.returncode != 0:
-        details.append(f"zenity exited {zenity.returncode}")
+    if dialog_proc.returncode != 0:
+        details.append(f"{dialog} exited {dialog_proc.returncode}")
     if device_path:
         details.append(f"device: {device_path}")
     if sender_stdout:
@@ -210,9 +211,33 @@ def run_case(
     if daemon is not None and daemon.returncode not in {None, 0, -15}:
         details.append(f"daemon exited {daemon.returncode}")
     if stderr:
-        details.append(f"zenity stderr:\n{stderr}")
+        details.append(f"{dialog} stderr:\n{stderr}")
 
-    return got == case.expected and sender.returncode == 0 and zenity.returncode == 0, got, "\n".join(details)
+    return got == case.expected and sender.returncode == 0 and dialog_proc.returncode == 0, got, "\n".join(details)
+
+
+def dialog_args(dialog: str, case: Case) -> list[str]:
+    if dialog == "zenity":
+        return [
+            "zenity",
+            "--entry",
+            "--title",
+            f"Lay runtime smoke: {case.name}",
+            "--text",
+            f"Runtime smoke: {case.name}",
+            "--width",
+            "520",
+        ]
+    if dialog == "kdialog":
+        return [
+            "kdialog",
+            "--title",
+            f"Lay runtime smoke: {case.name}",
+            "--inputbox",
+            f"Runtime smoke: {case.name}",
+            "",
+        ]
+    raise ValueError(f"unsupported dialog: {dialog}")
 
 
 def dict_env() -> dict[str, str]:
@@ -229,6 +254,9 @@ def wait_for_device_access(path: Path, timeout: float) -> bool:
 
 
 def activate_layout(layout: str) -> None:
+    if activate_layout_kde(layout):
+        return
+
     subprocess.run(
         [
             "gdbus",
@@ -251,6 +279,51 @@ def activate_layout(layout: str) -> None:
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
+
+
+def activate_layout_kde(layout: str) -> bool:
+    qdbus = shutil.which("qdbus6") or shutil.which("qdbus-qt6") or shutil.which("qdbus")
+    if qdbus is None:
+        return False
+
+    index = kde_layout_index(qdbus, layout)
+    if index is None:
+        return False
+
+    return (
+        subprocess.run(
+            [qdbus, "org.kde.keyboard", "/Layouts", "setLayout", str(index)],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        ).returncode
+        == 0
+    )
+
+
+def kde_layout_index(qdbus: str, layout: str) -> int | None:
+    out = subprocess.run(
+        [qdbus, "--literal", "org.kde.keyboard", "/Layouts", "getLayoutsList"],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if out.returncode != 0:
+        return None
+
+    layouts: list[str] = []
+    for chunk in out.stdout.split("[Argument: (sss)")[1:]:
+        first = chunk.find('"')
+        if first < 0:
+            continue
+        second = chunk.find('"', first + 1)
+        if second < 0:
+            continue
+        layouts.append(chunk[first + 1 : second])
+
+    try:
+        return layouts.index(layout)
+    except ValueError:
+        return None
 
 
 def indent(text: str) -> str:

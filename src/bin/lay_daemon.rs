@@ -47,14 +47,13 @@ use lay::typing_assist::{
 };
 #[cfg(test)]
 use lay::typing_assist::{
-    apply_typing_assist, apply_typing_assist_exact, are_ru_keyboard_neighbors,
-    correct_duplicate_layout_prefix_on_ascii_token, correct_extra_letters, correct_missing_letter,
-    correct_wrong_layout_ascii_technical_token, decide_completed_scope_word,
-    decide_scoped_tail_correction, decide_scoped_tail_correction_with_lem,
-    is_ascii_technical_token, promoted_replacement_for_token,
-    repair_cyrillic_prefix_before_ascii_tail, russian_generated_form_dictionary,
-    scoped_tail_lem_candidates, should_keep_plain_cyrillic_before_ascii_technical,
-    split_edge_whitespace, split_ws_segments,
+    are_ru_keyboard_neighbors, correct_duplicate_layout_prefix_on_ascii_token,
+    correct_extra_letters, correct_missing_letter, correct_wrong_layout_ascii_technical_token,
+    decide_completed_scope_word, decide_scoped_tail_correction,
+    decide_scoped_tail_correction_with_lem, is_ascii_technical_token,
+    promoted_replacement_for_token, repair_cyrillic_prefix_before_ascii_tail,
+    russian_generated_form_dictionary, scoped_tail_lem_candidates,
+    should_keep_plain_cyrillic_before_ascii_technical, split_edge_whitespace, split_ws_segments,
 };
 use lay::word_buffer::{PendingAutoUndo, UserLearningCorrection, WordBuffer};
 use std::collections::BTreeMap;
@@ -62,6 +61,7 @@ use std::collections::BTreeMap;
 use std::collections::HashSet;
 use std::io::Write;
 use std::process::Command;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Mutex, OnceLock};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
@@ -76,8 +76,9 @@ const BACKSPACE_PACE_MS: u64 = 2;
 const BACKSPACE_SETTLE_MS: u64 = 16;
 const TEXT_REPLACE_KEY_PACE_MS: u64 = 1;
 const TEXT_REPLACE_BACKSPACE_DOWN_MS: u64 = 1;
-const TEXT_REPLACE_BACKSPACE_PACE_MS: u64 = 1;
+const TEXT_REPLACE_BACKSPACE_PACE_MS: u64 = 2;
 const TEXT_REPLACE_BACKSPACE_SETTLE_MS: u64 = 16;
+const TYPING_ASSIST_IDLE_DELAY_MS: u64 = 90;
 const TYPING_ASSIST_SPACE_COMMIT_SETTLE_MS: u64 = 8;
 const TEXT_INSERT_KEY_PACE_MS: u64 = 2;
 const TEXT_INSERT_SPACE_SETTLE_MS: u64 = 8;
@@ -87,6 +88,7 @@ const MODIFIER_RELEASE_PACE_MS: u64 = 3;
 const LAYOUT_POLL_INTERVAL_MS: u64 = 250;
 static DBUS_CONNECTION: OnceLock<Mutex<Option<zbus::blocking::Connection>>> = OnceLock::new();
 static AUTO_LAYOUT_BACKEND_HINT: OnceLock<Option<LayoutBackend>> = OnceLock::new();
+static TYPING_ASSIST_RUNTIME_READY: AtomicBool = AtomicBool::new(false);
 
 // ─── Config ─────────────────────────────────────────────────
 
@@ -209,6 +211,7 @@ fn main() -> std::io::Result<()> {
             lay::ngram::warm_up();
             lay::lem::warm_up();
             lay::typing_assist::warm_up();
+            TYPING_ASSIST_RUNTIME_READY.store(true, Ordering::Relaxed);
             if warm_smart {
                 match lay::llm::warm_up() {
                     Ok(()) => log("► smart engine: модель прогрета заранее"),
@@ -220,6 +223,8 @@ fn main() -> std::io::Result<()> {
                 started_at.elapsed().as_millis()
             ));
         });
+    } else {
+        TYPING_ASSIST_RUNTIME_READY.store(true, Ordering::Relaxed);
     }
 
     // GNOME backend uses the Shell extension for layout activation and TypeText fallback.
@@ -285,6 +290,7 @@ fn listen_keyboard(
     cfg: LayConfig,
 ) -> std::io::Result<()> {
     let mut device = Device::open(&device_path)?;
+    device.set_nonblocking(true)?;
     log(&format!(
         "► слушаю: {device_path:?} имя={:?}",
         device.name().unwrap_or("?")
@@ -341,9 +347,28 @@ fn listen_keyboard(
     // сравниваем с buffer.current_len() — должны совпасть. Если нет —
     // видно где autorepeat терялся.
     let mut events_since_word_start: u32 = 0;
+    let mut pending_typing_assist_after_space: Option<Instant> = None;
 
     loop {
-        for event in device.fetch_events()? {
+        let events: Vec<InputEvent> = match device.fetch_events() {
+            Ok(events) => events.collect(),
+            Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                if pending_typing_assist_after_space.is_some_and(|scheduled_at| {
+                    scheduled_at.elapsed() >= Duration::from_millis(TYPING_ASSIST_IDLE_DELAY_MS)
+                }) {
+                    pending_typing_assist_after_space = None;
+                    if active_typing_assist() {
+                        let mut g = virtual_kbd.lock().unwrap();
+                        handle_typing_assist_after_space(&mut buffer, g.as_mut(), &mut executing);
+                    }
+                }
+                std::thread::sleep(Duration::from_millis(5));
+                continue;
+            }
+            Err(e) => return Err(e),
+        };
+
+        for event in events {
             if event.event_type() != EventType::KEY {
                 continue;
             }
@@ -366,6 +391,9 @@ fn listen_keyboard(
 
             // ─── modifier tracking ────────────────────────────
             shift_state.update(key, value);
+            if value == 1 && key != KeyCode::KEY_SPACE {
+                pending_typing_assist_after_space = None;
+            }
 
             // ═══ FSM: press→release→press→release = DOUBLE TRIGGER ════
             // RShift и RAlt не участвуют в FSM
@@ -628,8 +656,7 @@ fn listen_keyboard(
                     buffer.handle_space();
                     events_since_word_start = 0;
                     if active_typing_assist() {
-                        let mut g = virtual_kbd.lock().unwrap();
-                        handle_typing_assist_after_space(&mut buffer, g.as_mut(), &mut executing);
+                        pending_typing_assist_after_space = Some(Instant::now());
                     }
                     if verbose {
                         log(&format!(
@@ -654,6 +681,7 @@ fn listen_keyboard(
                         }
                     }
                     buffer.reset_all();
+                    pending_typing_assist_after_space = None;
                     events_since_word_start = 0;
                     if verbose {
                         log(&format!("· reset (граница: {key:?})"));
@@ -820,6 +848,11 @@ fn handle_typing_assist_after_space(
     virtual_kbd: Option<&mut VirtualDevice>,
     executing: &mut bool,
 ) {
+    if !TYPING_ASSIST_RUNTIME_READY.load(Ordering::Relaxed) {
+        log("· typing-assist skipped: warmup pending");
+        return;
+    }
+
     let started_at = Instant::now();
     let allow_layout_auto = active_auto_switch_layout();
     #[cfg(test)]
@@ -2366,6 +2399,40 @@ fn keep_last_jsonl_lines(content: &str, max_lines: usize) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::Once;
+
+    fn seed_test_replacements() {
+        static ONCE: Once = Once::new();
+        ONCE.call_once(|| {
+            for (from, to) in [
+                ("подлючись", "подключись"),
+                ("надйи", "найди"),
+                ("нуда", "ну да"),
+                ("вчем", "в чем"),
+                ("можн", "можно"),
+                ("дльше", "дальше"),
+                ("дальг", "дальше"),
+                ("првильно", "правильно"),
+            ] {
+                remember_promoted_replacement(from, to);
+            }
+        });
+    }
+
+    fn apply_typing_assist_exact(text: &str) -> Option<String> {
+        seed_test_replacements();
+        lay::typing_assist::apply_typing_assist_exact(text)
+    }
+
+    fn apply_typing_assist(text: &str, allow_layout_auto: bool) -> Option<String> {
+        seed_test_replacements();
+        lay::typing_assist::apply_typing_assist(text, allow_layout_auto)
+    }
+
+    fn apply_auto_replace(original: &str, target: &str) -> Option<String> {
+        seed_test_replacements();
+        lay::typing_assist::apply_auto_replace(original, target)
+    }
 
     fn key_event(key: KeyCode, layout_is_ru: bool) -> KeyEvent {
         KeyEvent {
@@ -5072,6 +5139,9 @@ mod tests {
             apply_typing_assist_exact("будуя "),
             Some("буду я ".to_string())
         );
+        assert_eq!(apply_typing_assist_exact("но не "), None);
+        assert_eq!(apply_typing_assist_exact("не ты "), None);
+        assert_eq!(apply_typing_assist_exact("ноне ты "), None);
         assert_eq!(apply_typing_assist_exact("машина "), None);
         assert_eq!(apply_typing_assist_exact("земля "), None);
         assert_eq!(apply_typing_assist_exact("какая "), None);

@@ -19,8 +19,10 @@ import {getInputSourceManager} from 'resource:///org/gnome/shell/ui/status/keybo
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
-const APP_VERSION = '0.1.141';
-const APP_DESCRIPTION = 'Double Shift layout rescue for Linux/GNOME Wayland';
+const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
+const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
+const APP_VERSION = '0.1.142';
+const APP_DESCRIPTION = 'Помощник RU/EN раскладки по двойному Shift';
 const APP_RELEASE_DATE = '2026-05-12';
 const APP_LICENSE = 'MIT';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
@@ -198,6 +200,62 @@ function stopDaemon() {
 }
 function daemonCommand(action) {
     try { Gio.Subprocess.new(['systemctl','--user',action,'lay-daemon'], Gio.SubprocessFlags.NONE); } catch(e) {}
+}
+function firstExistingCommand(names) {
+    for (const name of names)
+        if (GLib.find_program_in_path(name))
+            return name;
+    return null;
+}
+function shellQuote(value) {
+    return "'" + String(value).replaceAll("'", "'\"'\"'") + "'";
+}
+function startUpdate() {
+    const updateScript = PROJECT_DIR + '/update.sh';
+    if (!GLib.file_test(updateScript, GLib.FileTest.EXISTS))
+        return [false, `Не найден update.sh: ${updateScript}`];
+
+    try { GLib.mkdir_with_parents(GLib.path_get_dirname(UPDATE_LOG_PATH), 0o755); } catch(e) {}
+    const projectArg = shellQuote(PROJECT_DIR);
+    const logArg = shellQuote(UPDATE_LOG_PATH);
+    const updateCommand = 'cd ' + projectArg + ' && '
+        + 'bash update.sh 2>&1 | tee ' + logArg + '; '
+        + 'code=${PIPESTATUS[0]}; '
+        + 'printf "\\nЛог: %s\\n\\n" ' + logArg + '; '
+        + 'read -r -p "Нажми Enter, чтобы закрыть окно..."; '
+        + 'exit ${code}';
+
+    const terminal = firstExistingCommand(['kgx', 'gnome-terminal', 'konsole', 'xterm']);
+    try {
+        if (terminal === 'kgx') {
+            Gio.Subprocess.new(
+                ['kgx', '--working-directory', PROJECT_DIR, '--', 'bash', '-lc', updateCommand],
+                Gio.SubprocessFlags.NONE);
+            return [true, `Открыт терминал. Лог: ${UPDATE_LOG_PATH}`];
+        }
+        if (terminal === 'gnome-terminal') {
+            Gio.Subprocess.new(
+                ['gnome-terminal', '--working-directory', PROJECT_DIR, '--', 'bash', '-lc', updateCommand],
+                Gio.SubprocessFlags.NONE);
+            return [true, `Открыт терминал. Лог: ${UPDATE_LOG_PATH}`];
+        }
+        if (terminal === 'konsole') {
+            Gio.Subprocess.new(
+                ['konsole', '--workdir', PROJECT_DIR, '-e', 'bash', '-lc', updateCommand],
+                Gio.SubprocessFlags.NONE);
+            return [true, `Открыт терминал. Лог: ${UPDATE_LOG_PATH}`];
+        }
+        if (terminal === 'xterm') {
+            Gio.Subprocess.new(['xterm', '-e', 'bash', '-lc', updateCommand], Gio.SubprocessFlags.NONE);
+            return [true, `Открыт терминал. Лог: ${UPDATE_LOG_PATH}`];
+        }
+
+        const backgroundCommand = 'cd ' + projectArg + ' && bash update.sh > ' + logArg + ' 2>&1';
+        Gio.Subprocess.new(['bash', '-lc', backgroundCommand], Gio.SubprocessFlags.NONE);
+        return [true, `Терминал не найден, запущено в фоне. Лог: ${UPDATE_LOG_PATH}`];
+    } catch(e) {
+        return [false, String(e)];
+    }
 }
 function openUri(uri) {
     try {
@@ -455,6 +513,7 @@ class LayIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this._triggerMenu());
         this.menu.addMenuItem(this._timingMenu());
         this.menu.addMenuItem(this._daemonSwitchItem());
+        this.menu.addMenuItem(this._updateItem());
         this.menu.addMenuItem(this._aboutMenu());
 
         this._refreshSelections();
@@ -508,7 +567,7 @@ class LayIndicator extends PanelMenu.Button {
             this._saveAndRefresh();
             if (restart) {
                 restartDaemon();
-                this._setDaemonBusy('restarting...');
+                this._setDaemonBusy('перезапуск...');
                 this._scheduleStatusRefreshes();
             }
         });
@@ -907,13 +966,19 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _daemonSwitchItem() {
-        const item = new PopupMenu.PopupSwitchMenuItem('Daemon', false, {});
+        const item = new PopupMenu.PopupSwitchMenuItem('Демон включён', false, {});
         item.connect('toggled', (_item, state) => {
             if (this._updatingDaemonSwitch)
                 return;
             this._toggleDaemonService(state);
         });
         this._daemonSwitch = item;
+        return item;
+    }
+
+    _updateItem() {
+        const item = new PopupMenu.PopupMenuItem('Обновить lay');
+        item.connect('activate', () => this._runUpdate());
         return item;
     }
 
@@ -1068,7 +1133,7 @@ class LayIndicator extends PanelMenu.Button {
         this._cfg.trigger = id;
         this._saveAndRefresh();
         restartDaemon();
-        this._setDaemonBusy('restarting...');
+        this._setDaemonBusy('перезапуск...');
         this._scheduleStatusRefreshes();
     }
 
@@ -1077,12 +1142,28 @@ class LayIndicator extends PanelMenu.Button {
             shouldStart = this._daemonActive === false;
         if (shouldStart) {
             startDaemon();
-            this._setDaemonBusy('starting...');
+            this._setDaemonBusy('запуск...');
         } else {
             stopDaemon();
-            this._setDaemonBusy('stopping...');
+            this._setDaemonBusy('остановка...');
         }
         this._scheduleStatusRefreshes();
+    }
+
+    _runUpdate() {
+        const [ok, message] = startUpdate();
+        this._notify(ok ? 'Обновление запущено' : 'Обновление не запущено', message, !ok);
+    }
+
+    _notify(title, message, isError = false) {
+        try {
+            if (isError && Main.notifyError)
+                Main.notifyError('lay', `${title}\n${message}`);
+            else
+                Main.notify('lay', `${title}\n${message}`);
+        } catch(e) {
+            log(`[lay-extension] ${title}: ${message}`);
+        }
     }
 
     _setButtonActive(button, active) {
@@ -1155,7 +1236,7 @@ class LayIndicator extends PanelMenu.Button {
                     const [, out] = proc.communicate_utf8_finish(res);
                     const ok = out.trim() === 'active';
                     this._daemonActive = ok;
-                    this._statusLabel.text = ok ? 'daemon active' : 'daemon stopped';
+                    this._statusLabel.text = ok ? 'демон работает' : 'демон остановлен';
                     this._setDaemonStatus(ok);
                     this._refreshDaemonAction(ok);
                 } catch(e) {}

@@ -131,6 +131,10 @@ fn live_user_sentences_keep_spaces_after_typing_assist() {
             "я тут вижу что пробел не должен липнуть ",
             "я тут вижу что пробел не должен липнуть ",
         ),
+        (
+            "ошибка в наборе но не ты должен остаться ",
+            "ошибка в наборе но не ты должен остаться ",
+        ),
     ];
 
     for (input, expected) in cases {
@@ -139,6 +143,8 @@ fn live_user_sentences_keep_spaces_after_typing_assist() {
         assert!(!got.contains("чтобыточно"));
         assert!(!got.contains("когдая"));
         assert!(!got.contains("тако й"));
+        assert!(!got.contains("нонеты"));
+        assert!(!got.contains("ноне ты"));
     }
 }
 

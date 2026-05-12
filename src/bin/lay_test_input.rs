@@ -22,6 +22,7 @@
 //!   lay-test-input wifi_ye_enter — печатает "wi-fi ye" + двойной Shift + Enter
 //!   lay-test-input auto_switch_words_enter — печатает "njkmrj yt hf,jnftn" через пробелы + Enter
 //!   lay-test-input preparatov_typo_enter — печатает "перпаратов" + Space + Enter
+//!   lay-test-input no_ne_ty_enter — печатает "но не ты" с паузами после пробелов + Enter
 //!   lay-test-input vyvodim_dva_enter — печатает "dsdjlbv ldf" + двойной Shift + Enter
 //!   lay-test-input mixed_coke_enter — печатает "слово кjrf-rjke" + двойной Shift + Enter
 //!   lay-test-input mixed_coke_toggle3_enter — печатает "слово кjrf-rjke" + двойной Shift × 3 + Enter
@@ -510,6 +511,30 @@ fn main() -> std::io::Result<()> {
             tap(&mut dev, KeyCode::KEY_ENTER.code())?;
             eprintln!("[test] сценарий preparatov_typo_enter отправлен");
         }
+        "no_ne_ty_enter" => {
+            activate_layout("ru");
+            sleep(Duration::from_millis(250));
+            tap_keys(
+                &mut dev,
+                &[KeyCode::KEY_Y, KeyCode::KEY_J, KeyCode::KEY_SPACE],
+                35,
+            )?;
+            sleep(Duration::from_millis(260));
+            tap_keys(
+                &mut dev,
+                &[KeyCode::KEY_Y, KeyCode::KEY_T, KeyCode::KEY_SPACE],
+                35,
+            )?;
+            sleep(Duration::from_millis(260));
+            tap_keys(
+                &mut dev,
+                &[KeyCode::KEY_N, KeyCode::KEY_S, KeyCode::KEY_SPACE],
+                35,
+            )?;
+            sleep(Duration::from_millis(650));
+            tap(&mut dev, KeyCode::KEY_ENTER.code())?;
+            eprintln!("[test] сценарий no_ne_ty_enter отправлен");
+        }
         "vyvodim_dva_enter" => {
             activate_layout("us");
             sleep(Duration::from_millis(250));
@@ -609,6 +634,10 @@ fn type_mixed_coke_tail(dev: &mut VirtualDevice) -> std::io::Result<()> {
 }
 
 fn activate_layout(id: &str) {
+    if activate_layout_kde(id) {
+        return;
+    }
+
     let _ = Command::new("gdbus")
         .args([
             "call",
@@ -634,6 +663,71 @@ fn activate_layout(id: &str) {
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .status();
+}
+
+fn activate_layout_kde(id: &str) -> bool {
+    let Some(qdbus) = find_qdbus_command() else {
+        return false;
+    };
+    let Some(index) = kde_layout_index(qdbus, id) else {
+        return false;
+    };
+    Command::new(qdbus)
+        .args([
+            "org.kde.keyboard",
+            "/Layouts",
+            "setLayout",
+            &index.to_string(),
+        ])
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .is_ok_and(|status| status.success())
+}
+
+fn find_qdbus_command() -> Option<&'static str> {
+    ["qdbus6", "qdbus-qt6", "qdbus"]
+        .into_iter()
+        .find(|cmd| command_exists(cmd))
+}
+
+fn command_exists(command: &str) -> bool {
+    let Some(paths) = env::var_os("PATH") else {
+        return false;
+    };
+    env::split_paths(&paths).any(|dir| dir.join(command).is_file())
+}
+
+fn kde_layout_index(qdbus: &str, id: &str) -> Option<usize> {
+    let out = Command::new(qdbus)
+        .args([
+            "--literal",
+            "org.kde.keyboard",
+            "/Layouts",
+            "getLayoutsList",
+        ])
+        .output()
+        .ok()?;
+    if !out.status.success() {
+        return None;
+    }
+    let text = String::from_utf8_lossy(&out.stdout);
+    parse_kde_layouts_list(&text)
+        .into_iter()
+        .position(|layout| layout == id)
+}
+
+fn parse_kde_layouts_list(output: &str) -> Vec<String> {
+    output
+        .split("[Argument: (sss)")
+        .skip(1)
+        .filter_map(|chunk| {
+            let first = chunk.find('"')?;
+            let rest = &chunk[first + 1..];
+            let second = rest.find('"')?;
+            Some(rest[..second].to_string())
+        })
+        .collect()
 }
 
 fn tap(dev: &mut VirtualDevice, code: u16) -> std::io::Result<()> {

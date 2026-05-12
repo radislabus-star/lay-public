@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -18,6 +18,8 @@ from typing import Any
 
 
 CONFIG_PATH = Path.home() / ".config" / "lay" / "config.json"
+PROJECT_DIR = Path(__file__).resolve().parents[1]
+UPDATE_LOG_PATH = Path.home() / ".local" / "state" / "lay" / "update.log"
 CONFIG_DEFAULTS: dict[str, Any] = {
     "mode": "simple",
     "correction_engine": "smart",
@@ -75,16 +77,86 @@ def service_action(action: str) -> bool:
     return run_cmd(["systemctl", "--user", action, "lay-daemon.service"]).returncode == 0
 
 
+def start_update() -> tuple[bool, str]:
+    update_script = PROJECT_DIR / "update.sh"
+    if not update_script.exists():
+        return False, f"Не найден update.sh: {update_script}"
+    UPDATE_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    project_arg = shell_quote(str(PROJECT_DIR))
+    log_arg = shell_quote(str(UPDATE_LOG_PATH))
+
+    update_command = (
+        f"cd {project_arg} && "
+        f"bash update.sh 2>&1 | tee {log_arg}; "
+        "code=${PIPESTATUS[0]}; "
+        f"printf '\\nЛог: %s\\n\\n' {log_arg}; "
+        "read -r -p 'Нажми Enter, чтобы закрыть окно...'; "
+        "exit ${code}"
+    )
+
+    terminal = first_existing_command(["konsole", "kgx", "gnome-terminal", "xterm"])
+    try:
+        if terminal == "konsole":
+            subprocess.Popen(
+                ["konsole", "--workdir", str(PROJECT_DIR), "-e", "bash", "-lc", update_command],
+                start_new_session=True,
+            )
+            return True, f"Открыт терминал. Лог: {UPDATE_LOG_PATH}"
+        if terminal == "kgx":
+            subprocess.Popen(
+                ["kgx", "--working-directory", str(PROJECT_DIR), "--", "bash", "-lc", update_command],
+                start_new_session=True,
+            )
+            return True, f"Открыт терминал. Лог: {UPDATE_LOG_PATH}"
+        if terminal == "gnome-terminal":
+            subprocess.Popen(
+                ["gnome-terminal", "--working-directory", str(PROJECT_DIR), "--", "bash", "-lc", update_command],
+                start_new_session=True,
+            )
+            return True, f"Открыт терминал. Лог: {UPDATE_LOG_PATH}"
+        if terminal == "xterm":
+            subprocess.Popen(
+                ["xterm", "-e", "bash", "-lc", update_command],
+                start_new_session=True,
+            )
+            return True, f"Открыт терминал. Лог: {UPDATE_LOG_PATH}"
+
+        background_command = (
+            f"cd {project_arg} && "
+            f"bash update.sh > {log_arg} 2>&1"
+        )
+        subprocess.Popen(
+            ["bash", "-lc", background_command],
+            start_new_session=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        return True, f"Терминал не найден, запущено в фоне. Лог: {UPDATE_LOG_PATH}"
+    except Exception as exc:
+        return False, str(exc)
+
+
+def first_existing_command(names: list[str]) -> str | None:
+    for name in names:
+        if shutil.which(name):
+            return name
+    return None
+
+
+def shell_quote(value: str) -> str:
+    return "'" + value.replace("'", "'\"'\"'") + "'"
+
+
 def config_status_text() -> str:
     cfg = load_config()
     return (
         f"{lay_version()}\n"
-        f"daemon={'active' if daemon_active() else 'stopped'}\n"
-        f"engine={cfg.get('correction_engine') or cfg.get('mode')}\n"
-        f"scope={cfg.get('replace_words')}\n"
-        f"typing_assist={bool(cfg.get('typing_assist'))}\n"
-        f"auto_replace={bool(cfg.get('auto_replace'))}\n"
-        f"config={CONFIG_PATH}"
+        f"демон={'работает' if daemon_active() else 'остановлен'}\n"
+        f"режим={cfg.get('correction_engine') or cfg.get('mode')}\n"
+        f"область={cfg.get('replace_words')}\n"
+        f"помощь_при_наборе={bool(cfg.get('typing_assist'))}\n"
+        f"автоподмена={bool(cfg.get('auto_replace'))}\n"
+        f"конфиг={CONFIG_PATH}"
     )
 
 
@@ -158,58 +230,65 @@ def main() -> int:
             self.tray.setIcon(self.make_icon(active))
             self.tray.setToolTip(
                 "lay\n"
-                f"Daemon: {'active' if active else 'stopped'}\n"
-                f"Mode: {cfg.get('correction_engine') or cfg.get('mode')}\n"
-                f"Scope: {cfg.get('replace_words')}"
+                f"Демон: {'работает' if active else 'остановлен'}\n"
+                f"Режим: {self.engine_label(cfg)}\n"
+                f"Область: {cfg.get('replace_words')} сл."
             )
 
         def rebuild_menu(self) -> None:
             cfg = load_config()
             self.menu.clear()
 
-            title = QAction(f"Lay KDE Tray  {lay_version()}", self.menu)
+            title = QAction(f"Lay для KDE  {lay_version()}", self.menu)
             title.setEnabled(False)
             self.menu.addAction(title)
 
-            status = QAction(f"Daemon: {'active' if daemon_active() else 'stopped'}", self.menu)
+            status = QAction(
+                f"Демон: {'работает' if daemon_active() else 'остановлен'}",
+                self.menu,
+            )
             status.setEnabled(False)
             self.menu.addAction(status)
             self.menu.addSeparator()
 
-            daemon_toggle = QAction("Daemon active", self.menu)
+            daemon_toggle = QAction("Демон включён", self.menu)
             daemon_toggle.setCheckable(True)
             daemon_toggle.setChecked(daemon_active())
             daemon_toggle.triggered.connect(lambda checked: self.set_daemon(checked))
             self.menu.addAction(daemon_toggle)
 
-            restart = QAction("Restart daemon", self.menu)
+            restart = QAction("Перезапустить демон", self.menu)
             restart.triggered.connect(lambda: self.run_service_action("restart"))
             self.menu.addAction(restart)
+
+            update = QAction("Обновить lay", self.menu)
+            update.triggered.connect(self.run_update)
+            self.menu.addAction(update)
             self.menu.addSeparator()
 
-            smart = QAction("Smart correction", self.menu)
+            smart = QAction("Умная коррекция", self.menu)
             smart.setCheckable(True)
             smart.setChecked((cfg.get("correction_engine") or cfg.get("mode")) == "smart")
             smart.triggered.connect(lambda checked: self.update_config("correction_engine", "smart" if checked else "replay"))
             self.menu.addAction(smart)
 
-            scope_menu = self.menu.addMenu("Scope")
+            scope_menu = self.menu.addMenu("Область")
             scope_group = QActionGroup(scope_menu)
             scope_group.setExclusive(True)
             for value in (1, 2, 3):
-                action = QAction(f"{value} word{'s' if value > 1 else ''}", scope_menu)
+                action = QAction(self.word_count_label(value), scope_menu)
                 action.setCheckable(True)
                 action.setChecked(int(cfg.get("replace_words", 1)) == value)
                 action.triggered.connect(lambda _checked, chosen=value: self.update_config("replace_words", chosen))
                 scope_group.addAction(action)
                 scope_menu.addAction(action)
 
-            trigger_menu = self.menu.addMenu("Trigger")
+            trigger_menu = self.menu.addMenu("Триггер")
             trigger_group = QActionGroup(trigger_menu)
             trigger_group.setExclusive(True)
             for key, label in (
-                ("double-lshift", "Double left Shift"),
-                ("double-rshift", "Double right Shift"),
+                ("double-lshift", "Двойной левый Shift"),
+                ("double-rshift", "Двойной правый Shift"),
                 ("caps-lock", "Caps Lock"),
             ):
                 action = QAction(label, trigger_menu)
@@ -220,21 +299,21 @@ def main() -> int:
                 trigger_menu.addAction(action)
 
             self.menu.addSeparator()
-            self.add_bool_action("Typing assist", "typing_assist", cfg)
-            self.add_bool_action("Auto-replace", "auto_replace", cfg)
-            self.add_bool_action("Auto-switch layout", "auto_switch_layout", cfg)
-            self.add_bool_action("Remember corrections", "learning_log", cfg)
+            self.add_bool_action("Помощь при наборе", "typing_assist", cfg)
+            self.add_bool_action("Автоподмена", "auto_replace", cfg)
+            self.add_bool_action("Автопереключение раскладки", "auto_switch_layout", cfg)
+            self.add_bool_action("Запоминать правки", "learning_log", cfg)
 
-            advanced = self.menu.addMenu("Arbiter")
-            self.add_bool_action("LEM for 2 words", "lem_2_words", cfg, advanced)
-            self.add_bool_action("LEM for 3 words", "lem_3_words", cfg, advanced)
+            advanced = self.menu.addMenu("Арбитр")
+            self.add_bool_action("LEM для 2 слов", "lem_2_words", cfg, advanced)
+            self.add_bool_action("LEM для 3 слов", "lem_3_words", cfg, advanced)
 
             self.menu.addSeparator()
-            about = QAction("About lay", self.menu)
+            about = QAction("О программе", self.menu)
             about.triggered.connect(self.show_about)
             self.menu.addAction(about)
 
-            quit_action = QAction("Quit tray", self.menu)
+            quit_action = QAction("Закрыть значок", self.menu)
             quit_action.triggered.connect(self.app.quit)
             self.menu.addAction(quit_action)
 
@@ -270,17 +349,33 @@ def main() -> int:
         def run_service_action(self, action: str, notify: bool = True) -> None:
             ok = service_action(action)
             if notify and not ok:
-                QMessageBox.warning(None, "lay", f"systemctl --user {action} lay-daemon.service failed")
+                QMessageBox.warning(
+                    None,
+                    "lay",
+                    f"Не удалось выполнить: systemctl --user {action} lay-daemon.service",
+                )
             self.refresh_status()
+
+        def run_update(self) -> None:
+            ok, message = start_update()
+            if ok:
+                self.tray.showMessage(
+                    "lay",
+                    f"Обновление запущено.\n{message}",
+                    QSystemTrayIcon.MessageIcon.Information,
+                    2500,
+                )
+            else:
+                QMessageBox.warning(None, "lay", f"Не удалось запустить обновление:\n{message}")
 
         def show_about(self) -> None:
             QMessageBox.about(
                 None,
-                "About lay",
+                "О программе",
                 "<b>lay</b><br>"
-                "Double Shift RU/EN layout rescue for Linux desktops.<br><br>"
+                "Помощник для исправления RU/EN раскладки по двойному Shift.<br><br>"
                 f"{lay_version()}<br>"
-                "KDE tray frontend uses the same config and lay-daemon service.<br><br>"
+                "KDE-меню использует тот же config и тот же lay-daemon.<br><br>"
                 'GitHub: <a href="https://github.com/radislabus-star/lay-public">'
                 "https://github.com/radislabus-star/lay-public</a>",
             )
@@ -288,7 +383,25 @@ def main() -> int:
         def on_activated(self, reason: QSystemTrayIcon.ActivationReason) -> None:
             if reason == QSystemTrayIcon.ActivationReason.Trigger:
                 self.rebuild_menu()
-                self.menu.popup(self.tray.geometry().center())
+                self.tray.showMessage(
+                    "lay",
+                    "Меню открывается правым кликом по значку.",
+                    QSystemTrayIcon.MessageIcon.Information,
+                    1200,
+                )
+
+        @staticmethod
+        def word_count_label(value: int) -> str:
+            if value == 1:
+                return "1 слово"
+            if value in (2, 3, 4):
+                return f"{value} слова"
+            return f"{value} слов"
+
+        @staticmethod
+        def engine_label(cfg: dict[str, Any]) -> str:
+            engine = cfg.get("correction_engine") or cfg.get("mode")
+            return "умный" if engine == "smart" else "обычный"
 
     return LayTray().run()
 

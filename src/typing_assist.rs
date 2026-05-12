@@ -804,6 +804,9 @@ fn correct_split_word_pair(text: &str) -> Option<String> {
 
     let left_lower = left.to_lowercase();
     let right_lower = right.to_lowercase();
+    if should_keep_standalone_pair_with_short_right(&left_lower, &right_lower) {
+        return None;
+    }
     if is_known_russian_phrase_part(&left_lower)
         && is_one_letter_russian_function_word(&right_lower)
     {
@@ -830,6 +833,11 @@ fn correct_split_word_pair(text: &str) -> Option<String> {
         apply_word_case(&glued, &lower),
         right_trailing
     ))
+}
+
+fn should_keep_standalone_pair_with_short_right(left: &str, right: &str) -> bool {
+    let right_len = right.chars().count();
+    right_len <= 3 && is_known_russian_phrase_part(left) && is_known_russian_phrase_part(right)
 }
 
 fn can_merge_split_without_dictionary(
