@@ -1632,17 +1632,24 @@ fn is_plausible_cyrillic_hyphenated_word(word: &str) -> bool {
     }
 
     let mut strong_parts = 0usize;
-    for part in parts {
+    for (idx, part) in parts.iter().enumerate() {
         let lower = part.to_lowercase();
         let len = lower.chars().count();
         if len < 2 || !lower.chars().any(is_russian_vowel) {
             return false;
         }
-        if len >= 3 || is_known_cyrillic_hyphen_part(&lower, russian_short_dictionary()) {
+        if len >= 3
+            || is_known_cyrillic_hyphen_part(&lower, russian_short_dictionary())
+            || (idx > 0 && is_russian_hyphen_particle(&lower))
+        {
             strong_parts += 1;
         }
     }
     strong_parts >= 2
+}
+
+fn is_russian_hyphen_particle(part: &str) -> bool {
+    matches!(part, "то" | "либо" | "нибудь" | "ка" | "таки")
 }
 
 fn is_russian_vowel(ch: char) -> bool {

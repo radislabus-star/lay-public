@@ -5,43 +5,81 @@ set -euo pipefail
 REPO_URL="${LAY_REPO_URL:-https://github.com/radislabus-star/lay-public.git}"
 INSTALL_DIR="${LAY_INSTALL_DIR:-$HOME/projects/lay}"
 
-install_apt_packages() {
-    if ! command -v apt-get >/dev/null 2>&1; then
+detect_package_manager() {
+    if command -v apt-get >/dev/null 2>&1; then
+        echo apt
+    elif command -v pacman >/dev/null 2>&1; then
+        echo pacman
+    elif command -v dnf >/dev/null 2>&1; then
+        echo dnf
+    elif command -v yum >/dev/null 2>&1; then
+        echo yum
+    else
+        echo none
+    fi
+}
+
+kde_available() {
+    local desktop_hint="${XDG_CURRENT_DESKTOP:-}:${XDG_SESSION_DESKTOP:-}:${DESKTOP_SESSION:-}"
+    printf '%s' "$desktop_hint" | grep -Eiq 'kde|plasma' \
+        || pgrep -x plasmashell >/dev/null 2>&1 \
+        || command -v plasmashell >/dev/null 2>&1 \
+        || [ -d /usr/share/plasma ]
+}
+
+apt_qdbus_package() {
+    if apt-cache show qdbus-qt6 >/dev/null 2>&1; then
+        echo qdbus-qt6
+    elif apt-cache show qdbus6 >/dev/null 2>&1; then
+        echo qdbus6
+    else
+        echo qdbus
+    fi
+}
+
+install_system_packages() {
+    local pm
+    pm="$(detect_package_manager)"
+    if [ "$pm" = none ]; then
+        echo "No supported package manager found. Install git, curl, build tools and XCB deps manually." >&2
         return
     fi
 
-    local packages=(
-        git
-        curl
-        ca-certificates
-        build-essential
-        pkg-config
-        libxcb1
-        libxcb-shape0
-        libxcb-xfixes0
-        wl-clipboard
-        xclip
-    )
+    local packages=()
+    case "$pm" in
+        apt)
+            packages=(git curl ca-certificates build-essential pkg-config libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip)
+            if kde_available; then
+                packages+=("$(apt_qdbus_package)" python3-pyqt6 libxcb-cursor0)
+            fi
+            ;;
+        pacman)
+            packages=(git curl base-devel pkgconf libxcb wl-clipboard xclip)
+            if kde_available; then
+                packages+=(qt6-tools python-pyqt6 xcb-util-cursor)
+            fi
+            ;;
+        dnf|yum)
+            packages=(git curl gcc gcc-c++ make pkgconf-pkg-config libxcb wl-clipboard xclip)
+            if kde_available; then
+                packages+=(qt6-qttools python3-qt6 xcb-util-cursor)
+            fi
+            ;;
+    esac
 
-    if apt-cache show qdbus-qt6 >/dev/null 2>&1; then
-        packages+=(qdbus-qt6)
-    elif apt-cache show qdbus6 >/dev/null 2>&1; then
-        packages+=(qdbus6)
-    elif apt-cache show qdbus >/dev/null 2>&1; then
-        packages+=(qdbus)
-    fi
-
-    local desktop_hint="${XDG_CURRENT_DESKTOP:-}:${XDG_SESSION_DESKTOP:-}:${DESKTOP_SESSION:-}"
-    if printf '%s' "$desktop_hint" | grep -Eiq 'kde|plasma' \
-        || pgrep -x plasmashell >/dev/null 2>&1 \
-        || command -v plasmashell >/dev/null 2>&1 \
-        || [ -d /usr/share/plasma ]; then
-        packages+=(python3-pyqt6 libxcb-cursor0)
-    fi
-
-    echo "=== apt dependencies ==="
-    sudo apt-get update
-    sudo apt-get install -y "${packages[@]}"
+    echo "=== system dependencies ($pm) ==="
+    case "$pm" in
+        apt)
+            sudo apt-get update
+            sudo apt-get install -y "${packages[@]}"
+            ;;
+        pacman)
+            sudo pacman -Sy --needed --noconfirm "${packages[@]}"
+            ;;
+        dnf|yum)
+            sudo "$pm" install -y "${packages[@]}"
+            ;;
+    esac
 }
 
 install_rust() {
@@ -75,7 +113,7 @@ checkout_repo() {
 }
 
 main() {
-    install_apt_packages
+    install_system_packages
     install_rust
     checkout_repo
 

@@ -21,7 +21,7 @@ const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-const APP_VERSION = '0.1.149';
+const APP_VERSION = '0.1.150';
 const APP_DESCRIPTION = 'Помощник RU/EN раскладки по двойному Shift';
 const APP_RELEASE_DATE = '2026-05-12';
 const APP_LICENSE = 'MIT';
@@ -1348,7 +1348,7 @@ export class LayImpl {
         this._service = new LayDaemonService();
         this._service.enable();
         this._indicator = new LayIndicator();
-        Main.panel.addToStatusArea(`lay-${_uid}`, this._indicator, 0, 'right');
+        Main.panel.addToStatusArea('lay', this._indicator, 0, 'right');
         log('[lay-extension] LayImpl enabled ✓');
     }
 

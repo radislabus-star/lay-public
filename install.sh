@@ -30,6 +30,80 @@ OnlyShowIn=KDE;
 EOF
 }
 
+detect_package_manager() {
+    if command -v apt-get >/dev/null 2>&1; then
+        echo apt
+    elif command -v pacman >/dev/null 2>&1; then
+        echo pacman
+    elif command -v dnf >/dev/null 2>&1; then
+        echo dnf
+    elif command -v yum >/dev/null 2>&1; then
+        echo yum
+    else
+        echo none
+    fi
+}
+
+package_installed() {
+    pm="$1"
+    pkg="$2"
+    case "$pm" in
+        apt) dpkg -l "$pkg" 2>/dev/null | grep -q '^ii' ;;
+        pacman) pacman -Qi "$pkg" >/dev/null 2>&1 ;;
+        dnf|yum) rpm -q "$pkg" >/dev/null 2>&1 ;;
+        *) return 1 ;;
+    esac
+}
+
+install_packages() {
+    pm="$1"
+    shift
+    case "$pm" in
+        apt)
+            sudo apt-get update
+            sudo apt-get install -y "$@"
+            ;;
+        pacman)
+            sudo pacman -Sy --needed --noconfirm "$@"
+            ;;
+        dnf|yum)
+            sudo "$pm" install -y "$@"
+            ;;
+        *)
+            echo "Не найден поддерживаемый менеджер пакетов: apt, pacman, dnf или yum" >&2
+            return 1
+            ;;
+    esac
+}
+
+base_packages_for_pm() {
+    pm="$1"
+    case "$pm" in
+        apt) echo "libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip" ;;
+        pacman) echo "libxcb wl-clipboard xclip" ;;
+        dnf|yum) echo "libxcb wl-clipboard xclip" ;;
+        *) echo "" ;;
+    esac
+}
+
+kde_packages_for_pm() {
+    pm="$1"
+    case "$pm" in
+        apt)
+            if apt-cache show qdbus-qt6 >/dev/null 2>&1; then
+                echo "qdbus-qt6 python3-pyqt6 libxcb-cursor0"
+            elif apt-cache show qdbus6 >/dev/null 2>&1; then
+                echo "qdbus6 python3-pyqt6 libxcb-cursor0"
+            else
+                echo "qdbus python3-pyqt6 libxcb-cursor0"
+            fi
+            ;;
+        pacman) echo "qt6-tools python-pyqt6 xcb-util-cursor" ;;
+        dnf|yum) echo "qt6-qttools python3-qt6 xcb-util-cursor" ;;
+        *) echo "" ;;
+    esac
+}
+
 echo "=== проверка cargo ==="
 if ! command -v cargo >/dev/null; then
     if [ -f "$HOME/.cargo/env" ]; then
@@ -78,22 +152,29 @@ fi
 
 echo ""
 echo "=== системные зависимости ==="
+pm="$(detect_package_manager)"
+if [ "$pm" = none ]; then
+    echo "⚠ менеджер пакетов не найден; пропускаю автоустановку зависимостей"
+    echo "  поддерживаются apt, pacman, dnf и yum"
+else
+    echo "✓ package manager: $pm"
+fi
 need_install=()
-for pkg in libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip; do
-    if ! dpkg -l "$pkg" 2>/dev/null | grep -q '^ii'; then
+for pkg in $(base_packages_for_pm "$pm"); do
+    if ! package_installed "$pm" "$pkg"; then
         need_install+=("$pkg")
     fi
 done
 if is_kde_available; then
-    for pkg in qdbus-qt6 python3-pyqt6 libxcb-cursor0; do
-        if ! dpkg -l "$pkg" 2>/dev/null | grep -q '^ii'; then
+    for pkg in $(kde_packages_for_pm "$pm"); do
+        if ! package_installed "$pm" "$pkg"; then
             need_install+=("$pkg")
         fi
     done
 fi
 if [ ${#need_install[@]} -gt 0 ]; then
     echo "ставим: ${need_install[*]}"
-    sudo apt-get install -y "${need_install[@]}"
+    install_packages "$pm" "${need_install[@]}"
 else
     echo "✓ все пакеты уже стоят"
 fi

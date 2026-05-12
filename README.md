@@ -123,6 +123,11 @@ curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scr
 Она поставит базовые зависимости, Rust, скачает `lay` в `~/projects/lay` и
 запустит `install.sh`.
 
+Установщик умеет ставить системные пакеты через `apt`, `pacman`, `dnf` и `yum`.
+На неподдерживаемом дистрибутиве он не угадывает пакеты сам: поставь Rust,
+git/curl/build tools, XCB, `wl-clipboard` и `xclip` вручную, затем запусти
+`bash install.sh`.
+
 Ручной вариант:
 
 ```bash
@@ -171,6 +176,10 @@ cd ~/projects/lay && bash update.sh
 
 Последние изменения публичной ветки:
 
+- `0.1.150` — исправлены ложные auto-layout с русскими дефисными словами
+  вроде `что-то`; GNOME indicator больше не создаёт timestamp-id вида
+  `lay-177...`; установщик получил поддержку зависимостей для `apt`,
+  `pacman`, `dnf` и `yum`.
 - `0.1.149` — KDE tray теперь ставится через desktop autostart
   `~/.config/autostart/lay-kde-tray.desktop`. Это чинит ситуацию, когда после
   рестарта KDE daemon работает, а значок Lay в трее не появляется.
@@ -222,10 +231,11 @@ gnome-extensions enable lay@radislabus-star.github.io
 - доступный `/dev/uinput` для обратной печати
 
 Для экспериментального KDE backend нужен `qdbus` или `qdbus6`; для KDE tray
-нужен `python3-pyqt6`. Установщик ставит эти пакеты в Plasma-сессии. Для
-экспериментального X11 backend лучше иметь `xkb-switch`; без него используется
-fallback через `setxkbmap`, который может менять текущую XKB-конфигурацию
-грубее, чем специализированные tools.
+нужен PyQt6. Установщик ставит эти пакеты в Plasma-сессии и поддерживает
+Ubuntu/Debian, Arch/Manjaro и Fedora/RHEL-like системы через `apt`, `pacman`,
+`dnf` или `yum`. Для экспериментального X11 backend лучше иметь `xkb-switch`;
+без него используется fallback через `setxkbmap`, который может менять текущую
+XKB-конфигурацию грубее, чем специализированные tools.
 
 Установщик может добавить текущего пользователя в группу `input` и поставить
 udev-правило для `/dev/uinput`, но группа начинает работать только после нового
@@ -287,15 +297,18 @@ extension/lay@radislabus-star.github.io/
 
 ```text
 scripts/lay-kde-tray.py
-systemd/lay-kde-tray.service
+~/.config/autostart/lay-kde-tray.desktop
 ```
 
 Установленная команда:
 
 ```bash
 ~/.local/bin/lay-kde-tray --status
-systemctl --user status lay-kde-tray --no-pager
 ```
+
+После установки KDE tray стартует через desktop autostart вместе с Plasma.
+Отдельный `lay-kde-tray.service` больше не используется как основной механизм
+автозапуска.
 
 Tray читает и пишет тот же файл:
 

@@ -3763,6 +3763,10 @@ mod tests {
 
     #[test]
     fn typing_assist_keeps_natural_cyrillic_hyphen_words() {
+        assert_eq!(apply_typing_assist("что-то ", true), None);
+        assert_eq!(apply_typing_assist("кто-то ", true), None);
+        assert_eq!(apply_typing_assist("где-то ", true), None);
+        assert_eq!(apply_typing_assist("как-то ", true), None);
         assert_eq!(apply_typing_assist("кока-коле ", true), None);
         assert_eq!(apply_typing_assist("код-дэ-вуар ", true), None);
         assert_eq!(
