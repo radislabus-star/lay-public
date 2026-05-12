@@ -10,6 +10,26 @@ is_kde_session() {
     printf '%s' "$desktop_hint" | grep -Eiq 'kde|plasma' || pgrep -x plasmashell >/dev/null 2>&1
 }
 
+is_kde_available() {
+    is_kde_session || command -v plasmashell >/dev/null 2>&1 || [ -d /usr/share/plasma ]
+}
+
+install_kde_autostart() {
+    mkdir -p "$HOME/.config/autostart"
+    cat > "$HOME/.config/autostart/lay-kde-tray.desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=Lay
+Comment=RU/EN layout helper tray
+Exec=$HOME/.local/bin/lay-kde-tray
+Icon=input-keyboard
+Terminal=false
+X-KDE-autostart-after=panel
+X-KDE-autostart-phase=2
+OnlyShowIn=KDE;
+EOF
+}
+
 echo "=== проверка cargo ==="
 if ! command -v cargo >/dev/null; then
     if [ -f "$HOME/.cargo/env" ]; then
@@ -64,7 +84,7 @@ for pkg in libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip; do
         need_install+=("$pkg")
     fi
 done
-if is_kde_session; then
+if is_kde_available; then
     for pkg in qdbus-qt6 python3-pyqt6 libxcb-cursor0; do
         if ! dpkg -l "$pkg" 2>/dev/null | grep -q '^ii'; then
             need_install+=("$pkg")
@@ -117,15 +137,19 @@ cp "$DIR/systemd/lay-host-vm-guard.service" ~/.config/systemd/user/lay-host-vm-g
 systemctl --user daemon-reload
 systemctl --user enable lay-daemon
 echo "✓ lay-daemon.service установлен и включён"
-if is_kde_session; then
-    systemctl --user enable lay-kde-tray.service
-    systemctl --user restart lay-kde-tray.service || {
-        echo "⚠ lay-kde-tray.service не стартовал сразу; он запустится при новом входе в KDE"
-    }
-    echo "✓ lay-kde-tray.service установлен для KDE"
+if is_kde_available; then
+    install_kde_autostart
+    systemctl --user disable lay-kde-tray.service >/dev/null 2>&1 || true
+    if is_kde_session; then
+        pgrep -f "$HOME/.local/bin/lay-kde-tray" >/dev/null 2>&1 || {
+            nohup "$HOME/.local/bin/lay-kde-tray" >/tmp/lay-kde-tray.log 2>&1 &
+        }
+    fi
+    echo "✓ KDE tray autostart установлен: ~/.config/autostart/lay-kde-tray.desktop"
 else
     systemctl --user disable lay-kde-tray.service >/dev/null 2>&1 || true
-    echo "ℹ KDE tray service установлен, но не включён вне KDE"
+    rm -f "$HOME/.config/autostart/lay-kde-tray.desktop"
+    echo "ℹ KDE tray установлен, но autostart отключён вне KDE"
 fi
 if systemctl --user is-enabled --quiet lay-host-vm-guard.service 2>/dev/null; then
     systemctl --user restart lay-host-vm-guard.service || true

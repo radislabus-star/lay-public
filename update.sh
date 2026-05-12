@@ -82,8 +82,15 @@ if command -v gnome-extensions >/dev/null 2>&1; then
     fi
 fi
 systemctl --user restart lay-daemon || true
-if systemctl --user list-unit-files 'lay-kde-tray.service' --no-legend 2>/dev/null | grep -q lay-kde-tray; then
-    systemctl --user restart lay-kde-tray.service || true
+if [ -f "$HOME/.config/autostart/lay-kde-tray.desktop" ]; then
+    pkill -f "$HOME/.local/bin/lay-kde-tray" 2>/dev/null || true
+    desktop_hint="${XDG_CURRENT_DESKTOP:-}:${XDG_SESSION_DESKTOP:-}:${DESKTOP_SESSION:-}"
+    if [ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ] \
+        && { printf '%s' "$desktop_hint" | grep -Eiq 'kde|plasma' || pgrep -x plasmashell >/dev/null 2>&1; }; then
+        nohup "$HOME/.local/bin/lay-kde-tray" >/tmp/lay-kde-tray.log 2>&1 &
+    else
+        echo "ℹ KDE tray обновлён; он стартует при следующем входе в KDE"
+    fi
 fi
 if systemctl --user is-enabled --quiet lay-host-vm-guard.service 2>/dev/null; then
     systemctl --user restart lay-host-vm-guard.service || true

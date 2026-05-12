@@ -32,7 +32,10 @@ install_apt_packages() {
     fi
 
     local desktop_hint="${XDG_CURRENT_DESKTOP:-}:${XDG_SESSION_DESKTOP:-}:${DESKTOP_SESSION:-}"
-    if printf '%s' "$desktop_hint" | grep -Eiq 'kde|plasma' || pgrep -x plasmashell >/dev/null 2>&1; then
+    if printf '%s' "$desktop_hint" | grep -Eiq 'kde|plasma' \
+        || pgrep -x plasmashell >/dev/null 2>&1 \
+        || command -v plasmashell >/dev/null 2>&1 \
+        || [ -d /usr/share/plasma ]; then
         packages+=(python3-pyqt6 libxcb-cursor0)
     fi
 
