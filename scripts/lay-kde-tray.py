@@ -25,6 +25,9 @@ CONFIG_DEFAULTS: dict[str, Any] = {
     "correction_engine": "smart",
     "layout_backend": "auto",
     "trigger": "double-lshift",
+    "force_layout_hotkeys": False,
+    "force_ru_key": "single-rctrl",
+    "force_en_key": "single-ralt",
     "tap_max_ms": 200,
     "shift_window_ms": 250,
     "debounce_ms": 50,
@@ -298,6 +301,11 @@ def main() -> int:
                 trigger_group.addAction(action)
                 trigger_menu.addAction(action)
 
+            force_menu = self.menu.addMenu("Прямой язык")
+            self.add_bool_action("Хоткеи RU / EN", "force_layout_hotkeys", cfg, force_menu)
+            self.add_force_key_menu(force_menu, "RU", "force_ru_key", cfg)
+            self.add_force_key_menu(force_menu, "EN", "force_en_key", cfg)
+
             self.menu.addSeparator()
             self.add_bool_action("Помощь при наборе", "typing_assist", cfg)
             self.add_bool_action("Автоподмена", "auto_replace", cfg)
@@ -333,11 +341,39 @@ def main() -> int:
             action.triggered.connect(lambda checked, config_key=key: self.update_config(config_key, bool(checked)))
             target_menu.addAction(action)
 
+        def add_force_key_menu(
+            self,
+            parent: QMenu,
+            label: str,
+            key: str,
+            cfg: dict[str, Any],
+        ) -> None:
+            menu = parent.addMenu(f"{label}: {self.force_key_label(cfg.get(key))}")
+            group = QActionGroup(menu)
+            group.setExclusive(True)
+            for value, title in (
+                ("single-rctrl", "RCtrl"),
+                ("single-ralt", "RAlt"),
+                ("single-rshift", "RShift"),
+                ("single-pause", "Pause"),
+                ("caps-lock", "Caps Lock"),
+            ):
+                action = QAction(title, menu)
+                action.setCheckable(True)
+                action.setChecked(cfg.get(key) == value)
+                action.triggered.connect(
+                    lambda _checked, config_key=key, chosen=value: self.update_config(config_key, chosen)
+                )
+                group.addAction(action)
+                menu.addAction(action)
+
         def update_config(self, key: str, value: Any) -> None:
             cfg = load_config()
             cfg[key] = value
             if key == "correction_engine":
                 cfg["mode"] = "simple"
+            if cfg.get("force_ru_key") == cfg.get("force_en_key"):
+                cfg["force_layout_hotkeys"] = False
             save_config(cfg)
             self.run_service_action("restart", notify=False)
             self.rebuild_menu()
@@ -402,6 +438,16 @@ def main() -> int:
         def engine_label(cfg: dict[str, Any]) -> str:
             engine = cfg.get("correction_engine") or cfg.get("mode")
             return "умный" if engine == "smart" else "обычный"
+
+        @staticmethod
+        def force_key_label(key: Any) -> str:
+            return {
+                "single-rctrl": "RCtrl",
+                "single-ralt": "RAlt",
+                "single-rshift": "RShift",
+                "single-pause": "Pause",
+                "caps-lock": "Caps Lock",
+            }.get(str(key), "RCtrl")
 
     return LayTray().run()
 

@@ -80,6 +80,10 @@ pub struct LayConfig {
     pub layout_backend: String,
     /// Trigger: double-* | caps-lock | single-*.
     pub trigger: String,
+    /// Optional direct RU/EN hotkeys, independent from the correction trigger.
+    pub force_layout_hotkeys: bool,
+    pub force_ru_key: String,
+    pub force_en_key: String,
     /// Maximum duration of each tap in milliseconds.
     pub tap_max_ms: u64,
     /// Window between two taps in milliseconds.
@@ -112,6 +116,9 @@ impl Default for LayConfig {
             correction_engine: None,
             layout_backend: "auto".into(),
             trigger: "double-lshift".into(),
+            force_layout_hotkeys: false,
+            force_ru_key: "single-rctrl".into(),
+            force_en_key: "single-ralt".into(),
             tap_max_ms: 200,
             shift_window_ms: 250,
             debounce_ms: 50,
@@ -216,6 +223,9 @@ mod tests {
         assert_eq!(cfg.mode, "simple");
         assert_eq!(cfg.active_replace_words(), 1);
         assert_eq!(cfg.active_correction_engine(), CorrectionEngine::Replay);
+        assert!(!cfg.force_layout_hotkeys);
+        assert_eq!(cfg.force_ru_key, "single-rctrl");
+        assert_eq!(cfg.force_en_key, "single-ralt");
         assert!(cfg.auto_switch_layout);
         assert!(cfg.lem_enabled_for_scope(2));
         assert!(cfg.lem_enabled_for_scope(3));

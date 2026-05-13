@@ -21,7 +21,7 @@ const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-const APP_VERSION = '0.1.151';
+const APP_VERSION = '0.1.152';
 const APP_DESCRIPTION = 'Помощник RU/EN раскладки по двойному Shift';
 const APP_RELEASE_DATE = '2026-05-13';
 const APP_LICENSE = 'MIT';
@@ -79,6 +79,9 @@ const DEFAULTS = {
     correction_engine: 'replay',
     layout_backend: 'auto',
     trigger: 'double-lshift',
+    force_layout_hotkeys: false,
+    force_ru_key: 'single-rctrl',
+    force_en_key: 'single-ralt',
     tap_max_ms: 200,
     shift_window_ms: 250,
     debounce_ms: 50,
@@ -462,6 +465,8 @@ class LayIndicator extends PanelMenu.Button {
         this._scopeButtons = {};
         this._triggerButtons = {};
         this._triggerItems = {};
+        this._forceRuItems = {};
+        this._forceEnItems = {};
         this._toggleButtons = {};
         this._statusRefreshIds = [];
         this._cfg.typing_assist_pipeline = normalizeTypingPipeline(this._cfg.typing_assist_pipeline);
@@ -518,6 +523,7 @@ class LayIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this._ptahAlexsMenu());
         this.menu.addMenuItem(this._correctionPipelineMenu());
         this.menu.addMenuItem(this._triggerMenu());
+        this.menu.addMenuItem(this._forceLayoutMenu());
         this.menu.addMenuItem(this._timingMenu());
         this.menu.addMenuItem(this._daemonSwitchItem());
         this.menu.addMenuItem(this._updateItem());
@@ -965,6 +971,40 @@ class LayIndicator extends PanelMenu.Button {
         return item;
     }
 
+    _forceLayoutMenu() {
+        const item = new PopupMenu.PopupSubMenuMenuItem('Прямой язык', false);
+        item.menu.addMenuItem(this._switchItem(
+            'Хоткеи RU / EN',
+            'force_layout_hotkeys',
+            true
+        ));
+        item.menu.addMenuItem(this._forceKeyMenu('RU', 'force_ru_key', this._forceRuItems));
+        item.menu.addMenuItem(this._forceKeyMenu('EN', 'force_en_key', this._forceEnItems));
+        return item;
+    }
+
+    _forceKeyMenu(title, key, target) {
+        const item = new PopupMenu.PopupSubMenuMenuItem(`${title}: ${this._forceKeyLabel(this._cfg[key])}`, false);
+        item._layConfigKey = key;
+        for (const [id, label] of [
+            ['single-rctrl', 'RCtrl'],
+            ['single-ralt', 'RAlt'],
+            ['single-rshift', 'RShift'],
+            ['single-pause', 'Pause'],
+            ['caps-lock', 'CapsLock'],
+        ]) {
+            const row = new PopupMenu.PopupMenuItem(label);
+            row.connect('activate', () => this._setForceKey(key, id));
+            target[id] = row;
+            item.menu.addMenuItem(row);
+        }
+        if (key === 'force_ru_key')
+            this._forceRuMenuItem = item;
+        else
+            this._forceEnMenuItem = item;
+        return item;
+    }
+
     _timingMenu() {
         const item = new PopupMenu.PopupSubMenuMenuItem('Тайминг', false);
         item.menu.addMenuItem(this._timingCompactRow('Тап', 'tap_max_ms', 'мс', [100,150,200,250,300,350,400]));
@@ -1101,6 +1141,10 @@ class LayIndicator extends PanelMenu.Button {
     _refreshSelections() {
         if (this._triggerMenuItem)
             this._triggerMenuItem.label.text = `Триггер: ${this._triggerLabel(this._cfg.trigger)}`;
+        if (this._forceRuMenuItem)
+            this._forceRuMenuItem.label.text = `RU: ${this._forceKeyLabel(this._cfg.force_ru_key)}`;
+        if (this._forceEnMenuItem)
+            this._forceEnMenuItem.label.text = `EN: ${this._forceKeyLabel(this._cfg.force_en_key)}`;
         if (this._aboutConfigLabel)
             this._aboutConfigLabel.text = `Настройки: ${this._aboutConfigText()}`;
         if (this._ptahWindowLabel)
@@ -1114,6 +1158,10 @@ class LayIndicator extends PanelMenu.Button {
             this._setButtonActive(button, id === this._cfg.trigger);
         for (const [id, row] of Object.entries(this._triggerItems ?? {}))
             row.setOrnament(id === this._cfg.trigger ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
+        for (const [id, row] of Object.entries(this._forceRuItems ?? {}))
+            row.setOrnament(id === this._cfg.force_ru_key ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
+        for (const [id, row] of Object.entries(this._forceEnItems ?? {}))
+            row.setOrnament(id === this._cfg.force_en_key ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
         for (const [key, button] of Object.entries(this._toggleButtons ?? {})) {
             if (button.setToggleState)
                 button.setToggleState(!!this._cfg[key]);
@@ -1127,6 +1175,8 @@ class LayIndicator extends PanelMenu.Button {
         this._cfg.correction_engine = this._cfg.correction_engine === 'smart' ? 'smart' : 'replay';
         this._cfg.ptah_alexs_mode = !!this._cfg.ptah_alexs_mode;
         this._cfg.ptah_alexs_rules = normalizePtahRules(this._cfg.ptah_alexs_rules);
+        if (this._cfg.force_ru_key === this._cfg.force_en_key)
+            this._cfg.force_layout_hotkeys = false;
         this._cfg.mode = 'simple';
         this._refreshSelections();
         saveConfig(this._cfg);
@@ -1138,6 +1188,18 @@ class LayIndicator extends PanelMenu.Button {
             return;
         }
         this._cfg.trigger = id;
+        this._saveAndRefresh();
+        restartDaemon();
+        this._setDaemonBusy('перезапуск...');
+        this._scheduleStatusRefreshes();
+    }
+
+    _setForceKey(key, id) {
+        if (this._cfg[key] === id) {
+            this._refreshSelections();
+            return;
+        }
+        this._cfg[key] = id;
         this._saveAndRefresh();
         restartDaemon();
         this._setDaemonBusy('перезапуск...');
@@ -1192,11 +1254,22 @@ class LayIndicator extends PanelMenu.Button {
         }[id] ?? 'Double Shift';
     }
 
+    _forceKeyLabel(id) {
+        return {
+            'single-rctrl': 'RCtrl',
+            'single-ralt': 'RAlt',
+            'single-rshift': 'RShift',
+            'single-pause': 'Pause',
+            'caps-lock': 'CapsLock',
+        }[id] ?? 'RCtrl';
+    }
+
     _aboutConfigText() {
         const autoSwitch = this._cfg.auto_switch_layout ? 'авто-layout' : 'layout вручную';
         const lem = `LEM ${this._cfg.lem_2_words ? '2' : '-'}${this._cfg.lem_3_words ? '/3' : ''}`;
         const ptah = this._cfg.ptah_alexs_mode ? 'ptah on' : 'ptah off';
-        return `${this._engineLabel()} · ${this._cfg.replace_words} сл. · ${lem} · ${autoSwitch} · ${ptah} · ${this._triggerLabel(this._cfg.trigger)}`;
+        const force = this._cfg.force_layout_hotkeys ? 'RU/EN hotkeys' : 'RU/EN off';
+        return `${this._engineLabel()} · ${this._cfg.replace_words} сл. · ${lem} · ${autoSwitch} · ${ptah} · ${force} · ${this._triggerLabel(this._cfg.trigger)}`;
     }
 
     _aboutStatsText() {

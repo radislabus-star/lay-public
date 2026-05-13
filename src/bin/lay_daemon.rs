@@ -320,7 +320,7 @@ fn listen_keyboard(
         device.name().unwrap_or("?")
     ));
     log(&format!(
-        "► config: mode={} backend={} replace_words={} auto_replace={} typing_assist={} auto_switch_layout={} lem2={} lem3={} trigger={} tap={}ms window={}ms debounce={}ms",
+        "► config: mode={} backend={} replace_words={} auto_replace={} typing_assist={} auto_switch_layout={} lem2={} lem3={} trigger={} force_layout={} ru_key={} en_key={} tap={}ms window={}ms debounce={}ms",
         cfg.mode,
         active_layout_backend().label(),
         cfg.replace_words,
@@ -330,6 +330,9 @@ fn listen_keyboard(
         cfg.lem_2_words,
         cfg.lem_3_words,
         cfg.trigger,
+        cfg.force_layout_hotkeys,
+        cfg.force_ru_key,
+        cfg.force_en_key,
         cfg.tap_max_ms,
         cfg.shift_window_ms,
         cfg.debounce_ms
@@ -351,6 +354,15 @@ fn listen_keyboard(
     let is_single_trigger = cfg.trigger.starts_with("single-");
     let mut single_pressed_at: Option<Instant> = None; // когда нажата single-клавиша
     let mut single_other_key = false; // была ли другая клавиша пока держали
+    let force_ru_key = single_hotkey_keycode(&cfg.force_ru_key);
+    let force_en_key = single_hotkey_keycode(&cfg.force_en_key);
+    let force_layout_hotkeys = cfg.force_layout_hotkeys
+        && force_ru_key.is_some()
+        && force_en_key.is_some()
+        && force_ru_key != force_en_key;
+    let mut force_ru_pressed_at: Option<Instant> = None;
+    let mut force_en_pressed_at: Option<Instant> = None;
+    let mut force_other_key = false;
 
     let mut buffer = WordBuffer::new();
     let mut shift_state = ShiftState::default();
@@ -445,6 +457,68 @@ fn listen_keyboard(
             shift_state.update(key, value);
             if value == 1 && key != KeyCode::KEY_SPACE {
                 pending_typing_assist_after_space = None;
+            }
+
+            if force_layout_hotkeys {
+                let force_target = if Some(key) == force_ru_key {
+                    Some(true)
+                } else if Some(key) == force_en_key {
+                    Some(false)
+                } else {
+                    None
+                };
+
+                if let Some(target_is_ru) = force_target {
+                    let pressed_at = if target_is_ru {
+                        &mut force_ru_pressed_at
+                    } else {
+                        &mut force_en_pressed_at
+                    };
+                    match value {
+                        1 => {
+                            *pressed_at = Some(Instant::now());
+                            force_other_key = false;
+                        }
+                        0 => {
+                            if let Some(t) = pressed_at.take() {
+                                let held = t.elapsed();
+                                if !force_other_key
+                                    && held <= shift_tap_max
+                                    && last_double_at
+                                        .map_or(true, |d| d.elapsed() >= debounce_window)
+                                {
+                                    let mut g = virtual_kbd.lock().unwrap();
+                                    let result = handle_force_layout_hotkey(
+                                        target_is_ru,
+                                        &mut buffer,
+                                        g.as_mut(),
+                                        &mut executing,
+                                    );
+                                    if let Some(is_ru) = result {
+                                        current_layout_is_ru = is_ru;
+                                        last_layout_poll = Instant::now();
+                                    }
+                                    drop(g);
+                                    dshift_state = DShiftState::Idle;
+                                    single_pressed_at = None;
+                                    last_double_at = Some(Instant::now());
+                                    clear_on_next_typing = true;
+                                    log(&format!(
+                                        "· force-layout {} fired (held {}ms)",
+                                        if target_is_ru { "RU" } else { "EN" },
+                                        held.as_millis()
+                                    ));
+                                }
+                            }
+                        }
+                        _ => {}
+                    }
+                    continue;
+                } else if value == 1
+                    && (force_ru_pressed_at.is_some() || force_en_pressed_at.is_some())
+                {
+                    force_other_key = true;
+                }
             }
 
             // ═══ FSM: press→release→press→release = DOUBLE TRIGGER ════
@@ -929,6 +1003,20 @@ impl ShiftState {
     }
 }
 
+fn single_hotkey_keycode(id: &str) -> Option<KeyCode> {
+    match id {
+        "single-lshift" => Some(KeyCode::KEY_LEFTSHIFT),
+        "single-rshift" => Some(KeyCode::KEY_RIGHTSHIFT),
+        "single-lctrl" => Some(KeyCode::KEY_LEFTCTRL),
+        "single-rctrl" => Some(KeyCode::KEY_RIGHTCTRL),
+        "single-lalt" => Some(KeyCode::KEY_LEFTALT),
+        "single-ralt" => Some(KeyCode::KEY_RIGHTALT),
+        "single-pause" => Some(KeyCode::KEY_PAUSE),
+        "caps-lock" => Some(KeyCode::KEY_CAPSLOCK),
+        _ => None,
+    }
+}
+
 /// FSM для детекции двойного левого Shift по паттерну press→release→press→release.
 ///
 /// Каждый Shift должен быть именно тапом (≤ tap_max мс).
@@ -997,6 +1085,38 @@ fn is_leading_non_word_symbol_key(key: KeyCode, _shift: bool) -> bool {
 }
 
 // ─── Двойной Shift handler ──────────────────────────────────
+
+fn handle_force_layout_hotkey(
+    target_is_ru: bool,
+    buf: &mut WordBuffer,
+    virtual_kbd: Option<&mut VirtualDevice>,
+    executing: &mut bool,
+) -> Option<bool> {
+    let started_at = Instant::now();
+    *executing = true;
+    let _executing_guard = ExecutingGuard(executing);
+
+    if let Some(kbd) = virtual_kbd {
+        if let Err(e) = release_possible_modifiers(kbd) {
+            log(&format!("⚠ force-layout modifier cleanup failed: {e}"));
+        }
+    }
+
+    match switch_to_target_layout(target_is_ru) {
+        Ok(layout_id) => {
+            buf.reset_all();
+            log(&format!(
+                "✓ force-layout → {layout_id} за {}ms",
+                started_at.elapsed().as_millis()
+            ));
+            Some(target_is_ru)
+        }
+        Err(e) => {
+            log(&format!("⚠ force-layout switch failed: {e}"));
+            None
+        }
+    }
+}
 
 fn handle_typing_assist_after_space(
     buf: &mut WordBuffer,
@@ -3020,6 +3140,24 @@ mod tests {
         assert_eq!(smart.active_replace_words(), 2);
         assert_eq!(simple.active_correction_engine(), CorrectionEngine::Replay);
         assert_eq!(smart.active_correction_engine(), CorrectionEngine::Smart);
+    }
+
+    #[test]
+    fn force_layout_hotkeys_use_single_key_ids_only() {
+        assert_eq!(
+            single_hotkey_keycode("single-rctrl"),
+            Some(KeyCode::KEY_RIGHTCTRL)
+        );
+        assert_eq!(
+            single_hotkey_keycode("single-ralt"),
+            Some(KeyCode::KEY_RIGHTALT)
+        );
+        assert_eq!(
+            single_hotkey_keycode("caps-lock"),
+            Some(KeyCode::KEY_CAPSLOCK)
+        );
+        assert_eq!(single_hotkey_keycode("double-lshift"), None);
+        assert_eq!(single_hotkey_keycode(""), None);
     }
 
     #[test]
