@@ -326,6 +326,9 @@ fn clean_shell_like_commands_and_symbols_are_not_rewritten() {
         "curl -I https://example.com/path?x=1; echo ok ",
         "command -f file.txt && command -r repo && command -c config ",
         "grep --color=auto -n test file.txt ",
+        "git checkout -b feature && git status ",
+        "git branch -D old && git checkout -b new ",
+        "git checkout -b # create branch ",
     ];
 
     for input in cases {

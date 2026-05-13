@@ -391,6 +391,7 @@ fn listen_keyboard(
     let mut events_since_word_start: u32 = 0;
     let mut pending_typing_assist_after_space: Option<Instant> = None;
     let mut focus_ignored = false;
+    let mut ignore_current_token_until_space = false;
     let mut last_focus_ignore_poll =
         Instant::now() - Duration::from_millis(FOCUS_IGNORE_POLL_INTERVAL_MS);
 
@@ -464,6 +465,7 @@ fn listen_keyboard(
             shift_state = ShiftState::default();
             dshift_state = DShiftState::Idle;
             pending_multi_tap = None;
+            ignore_current_token_until_space = false;
             continue;
         }
 
@@ -894,6 +896,31 @@ fn listen_keyboard(
                 continue;
             }
 
+            if ignore_current_token_until_space {
+                if key == KeyCode::KEY_SPACE {
+                    ignore_current_token_until_space = false;
+                    events_since_word_start = 0;
+                    pending_typing_assist_after_space = None;
+                    continue;
+                }
+                if is_hard_boundary(key) {
+                    ignore_current_token_until_space = false;
+                } else if is_typing_key(key) {
+                    if verbose {
+                        log(&format!("· key {code} ignored inside non-word token"));
+                    }
+                    continue;
+                }
+            }
+
+            if should_start_ignored_buffer_token(key, &shift_state, buffer.current_is_empty()) {
+                ignore_current_token_until_space = true;
+                if verbose {
+                    log(&format!("· key {code} starts ignored non-word token"));
+                }
+                continue;
+            }
+
             if should_ignore_buffer_key(key, &shift_state, buffer.current_is_empty()) {
                 if verbose {
                     log(&format!("· key {code} ignored for buffer (shortcut/noise)"));
@@ -939,6 +966,7 @@ fn listen_keyboard(
                     }
                     buffer.reset_all();
                     pending_typing_assist_after_space = None;
+                    ignore_current_token_until_space = false;
                     events_since_word_start = 0;
                     if verbose {
                         log(&format!("· reset (граница: {key:?})"));
@@ -953,6 +981,7 @@ fn listen_keyboard(
                     buffer.reset_all();
                     events_since_word_start = 0;
                     clear_on_next_typing = false;
+                    ignore_current_token_until_space = false;
                     suppress_next_typing_assist_after_manual_replay = false;
                 }
                 let starts_new_word = buffer.current_is_empty();
@@ -1201,6 +1230,14 @@ fn should_ignore_buffer_key(key: KeyCode, modifiers: &ShiftState, current_empty:
         return true;
     }
 
+    should_start_ignored_buffer_token(key, modifiers, current_empty)
+}
+
+fn should_start_ignored_buffer_token(
+    key: KeyCode,
+    modifiers: &ShiftState,
+    current_empty: bool,
+) -> bool {
     current_empty && is_leading_non_word_symbol_key(key, modifiers.any())
 }
 
@@ -3287,6 +3324,39 @@ mod tests {
             false,
             &mut suppress_once
         ));
+    }
+
+    #[test]
+    fn leading_cli_option_token_is_ignored_until_space() {
+        let modifiers = ShiftState::default();
+        let mut buffer = WordBuffer::new();
+
+        let mut ignore_token = should_start_ignored_buffer_token(
+            KeyCode::KEY_MINUS,
+            &modifiers,
+            buffer.current_is_empty(),
+        );
+        assert!(ignore_token);
+
+        assert!(is_typing_key(KeyCode::KEY_B));
+        // The `b` in `-b` must stay out of WordBuffer, otherwise visual-b
+        // typing assist can see a false standalone `b` and turn it into `в`.
+        if !ignore_token {
+            buffer.push(key_event(KeyCode::KEY_B, false));
+        }
+        assert!(buffer.current_is_empty());
+
+        if ignore_token {
+            ignore_token = false;
+        } else {
+            buffer.handle_space();
+        }
+        assert!(!ignore_token);
+        assert!(!buffer.prev_had_trailing_space());
+
+        buffer.push(key_event(KeyCode::KEY_F, false));
+        let (events, _) = buffer.what_to_replay(1).expect("word");
+        assert_eq!(map_original_events(&events), "f");
     }
 
     #[test]
