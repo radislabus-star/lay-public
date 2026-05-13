@@ -1029,7 +1029,7 @@ dependencies = [
 
 [[package]]
 name = "lay"
-version = "0.1.150"
+version = "0.1.151"
 dependencies = [
  "arboard",
  "clap",
@@ -1038,6 +1038,7 @@ dependencies = [
  "serde",
  "serde_json",
  "ureq",
+ "x11rb",
  "zbus",
 ]
 

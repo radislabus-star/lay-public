@@ -101,8 +101,8 @@ KDE и X11 backend появились после обсуждения на Linux
 - `layout_backend = "gnome"`: GNOME Shell extension + DBus bridge.
 - `layout_backend = "kde"`: `qdbus/qdbus6 org.kde.keyboard /Layouts setLayout`
   и отдельный `lay-kde-tray`.
-- `layout_backend = "x11"`: `xkb-switch`, `xkblayout-state` или fallback
-  `setxkbmap`.
+- `layout_backend = "x11"`: native XKB через `x11rb`; shell-tools
+  `xkb-switch`, `xkblayout-state` и `setxkbmap` остаются только fallback.
 
 Другие версии GNOME, дистрибутивы, Sway, Hyprland и раскладки кроме RU/EN могут
 потребовать доработок.
@@ -176,6 +176,9 @@ cd ~/projects/lay && bash update.sh
 
 Последние изменения публичной ветки:
 
+- `0.1.151` — X11 backend теперь сначала использует native XKB через
+  `x11rb`, без запуска `setxkbmap` на каждое исправление. Старые
+  `xkb-switch`/`xkblayout-state`/`setxkbmap` оставлены как fallback.
 - `0.1.150` — исправлены ложные auto-layout с русскими дефисными словами
   вроде `что-то`; GNOME indicator больше не создаёт timestamp-id вида
   `lay-177...`; установщик получил поддержку зависимостей для `apt`,
@@ -233,9 +236,9 @@ gnome-extensions enable lay@radislabus-star.github.io
 Для экспериментального KDE backend нужен `qdbus` или `qdbus6`; для KDE tray
 нужен PyQt6. Установщик ставит эти пакеты в Plasma-сессии и поддерживает
 Ubuntu/Debian, Arch/Manjaro и Fedora/RHEL-like системы через `apt`, `pacman`,
-`dnf` или `yum`. Для экспериментального X11 backend лучше иметь `xkb-switch`;
-без него используется fallback через `setxkbmap`, который может менять текущую
-XKB-конфигурацию грубее, чем специализированные tools.
+`dnf` или `yum`. Экспериментальный X11 backend использует pure-Rust `x11rb`
+для прямых XKB-запросов. Если native XKB недоступен, daemon пробует старые
+fallback tools: `xkb-switch`, `xkblayout-state` и `setxkbmap`.
 
 Установщик может добавить текущего пользователя в группу `input` и поставить
 udev-правило для `/dev/uinput`, но группа начинает работать только после нового
@@ -622,7 +625,8 @@ Supported/tested target:
 Experimental:
 
 - KDE backend via `qdbus/qdbus6 org.kde.keyboard /Layouts setLayout`.
-- X11 backend via `xkb-switch`, `xkblayout-state`, or `setxkbmap` fallback.
+- X11 backend via native XKB (`x11rb`), with `xkb-switch`, `xkblayout-state`,
+  and `setxkbmap` kept as fallback tools.
 - `ptah_alexs` window policy mode for GNOME: force a selected window/app to RU,
   EN, or keep.
 

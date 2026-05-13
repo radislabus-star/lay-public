@@ -1,6 +1,6 @@
 [package]
 name = "lay"
-version = "0.1.150"
+version = "0.1.151"
 edition = "2021"
 description = "Double Shift RU/EN layout rescue for Linux desktops"
 license = "MIT"
@@ -42,6 +42,7 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 evdev = "0.13"
 zbus = "5.15.0"
+x11rb = { version = "0.13", features = ["xkb"] }
 llama_cpp = { version = "0.3.2", optional = true }
 
 [profile.release]

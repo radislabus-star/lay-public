@@ -255,6 +255,13 @@ fn main() -> std::io::Result<()> {
                 log("⚠ работаю в detect-only");
             }
         }
+    } else if !args.detect_only && startup_backend == LayoutBackend::X11 {
+        match lay::x11_layout::ping() {
+            Ok(reply) => log(&format!("► native X11 backend: {reply}")),
+            Err(e) => log(&format!(
+                "⚠ native X11 backend unavailable ({e}); shell fallback remains enabled"
+            )),
+        }
     } else if !args.detect_only {
         log("► GNOME extension ping skipped for non-GNOME layout backend");
     }
@@ -1914,6 +1921,16 @@ fn first_quoted_string(input: &str) -> Option<String> {
 }
 
 fn switch_to_x11_layout(layout_id: &str, target_is_ru: bool) -> Result<(), String> {
+    if let Err(native_error) = lay::x11_layout::lock_layout_id(layout_id) {
+        log(&format!(
+            "⚠ native X11 XKB layout switch failed: {native_error}; fallback shell tools"
+        ));
+    } else if verify_current_layout(target_is_ru) {
+        return Ok(());
+    } else {
+        log("⚠ native X11 XKB layout verify failed; fallback shell tools");
+    }
+
     if command_exists("xkb-switch") {
         run_command_capture("xkb-switch", &["-s", layout_id])?;
     } else {
@@ -2171,6 +2188,10 @@ fn detect_auto_layout_backend_hint() -> Option<LayoutBackend> {
 }
 
 fn read_x11_layout() -> Result<String, String> {
+    if let Ok(layout) = lay::x11_layout::current_layout_id() {
+        return Ok(layout);
+    }
+
     if command_exists("xkb-switch") {
         return run_command_capture("xkb-switch", &[]).map(|layout| normalize_layout_id(&layout));
     }
