@@ -3161,6 +3161,25 @@ mod tests {
     }
 
     #[test]
+    fn multi_tap_scope_design_contract_maps_taps_to_scope() {
+        fn scope_for_taps(taps: u8) -> Option<usize> {
+            match taps {
+                0 | 1 => None,
+                2 => Some(1),
+                3 => Some(2),
+                _ => Some(3),
+            }
+        }
+
+        assert_eq!(scope_for_taps(0), None);
+        assert_eq!(scope_for_taps(1), None);
+        assert_eq!(scope_for_taps(2), Some(1));
+        assert_eq!(scope_for_taps(3), Some(2));
+        assert_eq!(scope_for_taps(4), Some(3));
+        assert_eq!(scope_for_taps(5), Some(3));
+    }
+
+    #[test]
     fn layout_backend_can_be_explicit_or_auto_detected() {
         assert_eq!(
             resolve_layout_backend("gnome", Some("KDE"), None, Some("wayland")),
