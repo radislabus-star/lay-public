@@ -84,6 +84,9 @@ pub struct LayConfig {
     pub force_layout_hotkeys: bool,
     pub force_ru_key: String,
     pub force_en_key: String,
+    /// Optional Shift tap-count scope: 2/3/4 taps => 1/2/3 words.
+    pub multi_tap_scope: bool,
+    pub multi_tap_max_taps: u8,
     /// Maximum duration of each tap in milliseconds.
     pub tap_max_ms: u64,
     /// Window between two taps in milliseconds.
@@ -119,6 +122,8 @@ impl Default for LayConfig {
             force_layout_hotkeys: false,
             force_ru_key: "single-rctrl".into(),
             force_en_key: "single-ralt".into(),
+            multi_tap_scope: false,
+            multi_tap_max_taps: 4,
             tap_max_ms: 200,
             shift_window_ms: 250,
             debounce_ms: 50,
@@ -149,6 +154,10 @@ impl LayConfig {
 
     pub fn active_replace_words(&self) -> usize {
         self.replace_words.clamp(1, 3)
+    }
+
+    pub fn active_multi_tap_max_taps(&self) -> u8 {
+        self.multi_tap_max_taps.clamp(2, 4)
     }
 
     pub fn active_correction_engine(&self) -> CorrectionEngine {
@@ -226,6 +235,8 @@ mod tests {
         assert!(!cfg.force_layout_hotkeys);
         assert_eq!(cfg.force_ru_key, "single-rctrl");
         assert_eq!(cfg.force_en_key, "single-ralt");
+        assert!(!cfg.multi_tap_scope);
+        assert_eq!(cfg.active_multi_tap_max_taps(), 4);
         assert!(cfg.auto_switch_layout);
         assert!(cfg.lem_enabled_for_scope(2));
         assert!(cfg.lem_enabled_for_scope(3));
@@ -243,6 +254,23 @@ mod tests {
         assert!(!cfg.force_layout_hotkeys);
         assert_eq!(cfg.force_ru_key, "single-rctrl");
         assert_eq!(cfg.force_en_key, "single-ralt");
+        assert!(!cfg.multi_tap_scope);
+        assert_eq!(cfg.active_multi_tap_max_taps(), 4);
+    }
+
+    #[test]
+    fn multi_tap_max_taps_is_clamped_to_runtime_range() {
+        let too_low = LayConfig {
+            multi_tap_max_taps: 1,
+            ..LayConfig::default()
+        };
+        let too_high = LayConfig {
+            multi_tap_max_taps: 9,
+            ..LayConfig::default()
+        };
+
+        assert_eq!(too_low.active_multi_tap_max_taps(), 2);
+        assert_eq!(too_high.active_multi_tap_max_taps(), 4);
     }
 
     #[test]

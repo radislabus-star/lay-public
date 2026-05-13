@@ -135,6 +135,10 @@ fn live_user_sentences_keep_spaces_after_typing_assist() {
             "ошибка в наборе но не ты должен остаться ",
             "ошибка в наборе но не ты должен остаться ",
         ),
+        (
+            "изменю параметры и проверю что слова не склеиваются ",
+            "изменю параметры и проверю что слова не склеиваются ",
+        ),
     ];
 
     for (input, expected) in cases {
@@ -145,6 +149,7 @@ fn live_user_sentences_keep_spaces_after_typing_assist() {
         assert!(!got.contains("тако й"));
         assert!(!got.contains("нонеты"));
         assert!(!got.contains("ноне ты"));
+        assert!(!got.contains("изменюпараметры"));
     }
 }
 

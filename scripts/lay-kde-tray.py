@@ -28,6 +28,8 @@ CONFIG_DEFAULTS: dict[str, Any] = {
     "force_layout_hotkeys": False,
     "force_ru_key": "single-rctrl",
     "force_en_key": "single-ralt",
+    "multi_tap_scope": False,
+    "multi_tap_max_taps": 4,
     "tap_max_ms": 200,
     "shift_window_ms": 250,
     "debounce_ms": 50,
@@ -300,6 +302,8 @@ def main() -> int:
                 action.triggered.connect(lambda _checked, chosen=key: self.update_config("trigger", chosen))
                 trigger_group.addAction(action)
                 trigger_menu.addAction(action)
+            trigger_menu.addSeparator()
+            self.add_bool_action("Multi-tap scope", "multi_tap_scope", cfg, trigger_menu)
 
             force_menu = self.menu.addMenu("Прямой язык")
             self.add_bool_action("Хоткеи RU / EN", "force_layout_hotkeys", cfg, force_menu)
@@ -374,6 +378,7 @@ def main() -> int:
                 cfg["mode"] = "simple"
             if cfg.get("force_ru_key") == cfg.get("force_en_key"):
                 cfg["force_layout_hotkeys"] = False
+            cfg["multi_tap_max_taps"] = max(2, min(4, int(cfg.get("multi_tap_max_taps", 4))))
             save_config(cfg)
             self.run_service_action("restart", notify=False)
             self.rebuild_menu()

@@ -21,7 +21,7 @@ const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-const APP_VERSION = '0.1.155';
+const APP_VERSION = '0.1.156';
 const APP_DESCRIPTION = 'Помощник RU/EN раскладки по двойному Shift';
 const APP_RELEASE_DATE = '2026-05-13';
 const APP_LICENSE = 'MIT';
@@ -82,6 +82,8 @@ const DEFAULTS = {
     force_layout_hotkeys: false,
     force_ru_key: 'single-rctrl',
     force_en_key: 'single-ralt',
+    multi_tap_scope: false,
+    multi_tap_max_taps: 4,
     tap_max_ms: 200,
     shift_window_ms: 250,
     debounce_ms: 50,
@@ -968,6 +970,12 @@ class LayIndicator extends PanelMenu.Button {
             this._triggerItems[id] = row;
             item.menu.addMenuItem(row);
         }
+        item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        item.menu.addMenuItem(this._switchItem(
+            'Multi-tap scope',
+            'multi_tap_scope',
+            true
+        ));
         return item;
     }
 
@@ -1177,6 +1185,8 @@ class LayIndicator extends PanelMenu.Button {
         this._cfg.ptah_alexs_rules = normalizePtahRules(this._cfg.ptah_alexs_rules);
         if (this._cfg.force_ru_key === this._cfg.force_en_key)
             this._cfg.force_layout_hotkeys = false;
+        this._cfg.multi_tap_scope = !!this._cfg.multi_tap_scope;
+        this._cfg.multi_tap_max_taps = Math.max(2, Math.min(4, Number(this._cfg.multi_tap_max_taps || 4)));
         this._cfg.mode = 'simple';
         this._refreshSelections();
         saveConfig(this._cfg);
@@ -1269,7 +1279,8 @@ class LayIndicator extends PanelMenu.Button {
         const lem = `LEM ${this._cfg.lem_2_words ? '2' : '-'}${this._cfg.lem_3_words ? '/3' : ''}`;
         const ptah = this._cfg.ptah_alexs_mode ? 'ptah on' : 'ptah off';
         const force = this._cfg.force_layout_hotkeys ? 'RU/EN hotkeys' : 'RU/EN off';
-        return `${this._engineLabel()} · ${this._cfg.replace_words} сл. · ${lem} · ${autoSwitch} · ${ptah} · ${force} · ${this._triggerLabel(this._cfg.trigger)}`;
+        const multi = this._cfg.multi_tap_scope ? 'multi-tap on' : 'multi-tap off';
+        return `${this._engineLabel()} · ${this._cfg.replace_words} сл. · ${lem} · ${autoSwitch} · ${ptah} · ${force} · ${multi} · ${this._triggerLabel(this._cfg.trigger)}`;
     }
 
     _aboutStatsText() {

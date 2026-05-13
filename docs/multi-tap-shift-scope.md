@@ -1,6 +1,6 @@
 # Optional multi-tap Shift scope
 
-Status: design contract, not enabled in runtime.
+Status: implemented as opt-in runtime mode, disabled by default.
 
 ## Goal
 
@@ -22,7 +22,7 @@ This must not make default double Shift slower.
 - Do not wait for extra taps unless the user explicitly enables this mode.
 - Do not enable the mode by default.
 
-## Proposed config
+## Config
 
 ```json
 {

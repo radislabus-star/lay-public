@@ -320,7 +320,7 @@ fn listen_keyboard(
         device.name().unwrap_or("?")
     ));
     log(&format!(
-        "► config: mode={} backend={} replace_words={} auto_replace={} typing_assist={} auto_switch_layout={} lem2={} lem3={} trigger={} force_layout={} ru_key={} en_key={} tap={}ms window={}ms debounce={}ms",
+        "► config: mode={} backend={} replace_words={} auto_replace={} typing_assist={} auto_switch_layout={} lem2={} lem3={} trigger={} force_layout={} ru_key={} en_key={} multi_tap={} max_taps={} tap={}ms window={}ms debounce={}ms",
         cfg.mode,
         active_layout_backend().label(),
         cfg.replace_words,
@@ -333,6 +333,8 @@ fn listen_keyboard(
         cfg.force_layout_hotkeys,
         cfg.force_ru_key,
         cfg.force_en_key,
+        cfg.multi_tap_scope,
+        cfg.active_multi_tap_max_taps(),
         cfg.tap_max_ms,
         cfg.shift_window_ms,
         cfg.debounce_ms
@@ -363,6 +365,9 @@ fn listen_keyboard(
     let mut force_ru_pressed_at: Option<Instant> = None;
     let mut force_en_pressed_at: Option<Instant> = None;
     let mut force_other_key = false;
+    let multi_tap_scope = cfg.multi_tap_scope && !is_caps_trigger && !is_single_trigger;
+    let multi_tap_max_taps = cfg.active_multi_tap_max_taps();
+    let mut pending_multi_tap: Option<MultiTapPending> = None;
 
     let mut buffer = WordBuffer::new();
     let mut shift_state = ShiftState::default();
@@ -404,6 +409,35 @@ fn listen_keyboard(
                     std::thread::sleep(Duration::from_millis(5));
                     continue;
                 }
+                if multi_tap_scope
+                    && pending_multi_tap
+                        .is_some_and(|pending| pending.last_release.elapsed() >= shift_window)
+                {
+                    if let Some(pending) = pending_multi_tap.take() {
+                        let replace_words =
+                            multi_tap_scope_for_taps(pending.tap_count).unwrap_or(1);
+                        let mut g = virtual_kbd.lock().unwrap();
+                        let correction_result = run_manual_correction_with_scope(
+                            &mut buffer,
+                            replace_words,
+                            g.as_mut(),
+                            &mut executing,
+                            events_since_word_start,
+                            "multi-tap timeout",
+                        );
+                        if let Some(is_ru) = correction_result {
+                            current_layout_is_ru = is_ru;
+                            last_layout_poll = Instant::now();
+                        }
+                        if correction_result.is_some() {
+                            suppress_next_typing_assist_after_manual_replay = true;
+                        }
+                        drop(g);
+                        dshift_state = DShiftState::Idle;
+                        last_double_at = Some(Instant::now());
+                        clear_on_next_typing = true;
+                    }
+                }
                 if pending_typing_assist_after_space.is_some_and(|scheduled_at| {
                     scheduled_at.elapsed() >= Duration::from_millis(TYPING_ASSIST_IDLE_DELAY_MS)
                 }) {
@@ -429,6 +463,7 @@ fn listen_keyboard(
         if focus_ignored {
             shift_state = ShiftState::default();
             dshift_state = DShiftState::Idle;
+            pending_multi_tap = None;
             continue;
         }
 
@@ -500,6 +535,7 @@ fn listen_keyboard(
                                     }
                                     drop(g);
                                     dshift_state = DShiftState::Idle;
+                                    pending_multi_tap = None;
                                     single_pressed_at = None;
                                     last_double_at = Some(Instant::now());
                                     clear_on_next_typing = true;
@@ -652,6 +688,19 @@ fn listen_keyboard(
                 }
 
                 let now = Instant::now();
+                if multi_tap_scope
+                    && pending_multi_tap.is_some()
+                    && value == 1
+                    && pending_multi_tap.is_some_and(|pending| {
+                        now.duration_since(pending.last_release) <= shift_window
+                    })
+                {
+                    dshift_state = DShiftState::AdditionalPress { pressed_at: now };
+                    if verbose {
+                        log("· FSM: multi-tap waiting → AdditionalPress");
+                    }
+                    continue;
+                }
                 match (value, dshift_state) {
                     // ── press ──
                     (1, DShiftState::Idle) => {
@@ -704,6 +753,17 @@ fn listen_keyboard(
                         let held = now.duration_since(second_press);
                         if held <= shift_tap_max {
                             // DOUBLE SHIFT! press→release→press→release ✓
+                            if multi_tap_scope {
+                                pending_multi_tap = Some(MultiTapPending {
+                                    tap_count: 2,
+                                    last_release: now,
+                                });
+                                dshift_state = DShiftState::Idle;
+                                if verbose {
+                                    log("· FSM: DOUBLE captured, wait for optional 3rd tap");
+                                }
+                                continue;
+                            }
                             let buf_count = buffer.current_len() as u32;
                             log(&format!(
                                 "═ CROSS-CHECK: buffer.current={} events_since_word_start={}{}",
@@ -750,6 +810,56 @@ fn listen_keyboard(
                             }
                         }
                     }
+                    (0, DShiftState::AdditionalPress { pressed_at }) => {
+                        let held = now.duration_since(pressed_at);
+                        if held <= shift_tap_max {
+                            if let Some(mut pending) = pending_multi_tap.take() {
+                                pending.tap_count = pending.tap_count.saturating_add(1);
+                                if pending.tap_count >= multi_tap_max_taps {
+                                    let replace_words =
+                                        multi_tap_scope_for_taps(pending.tap_count).unwrap_or(3);
+                                    let mut g = virtual_kbd.lock().unwrap();
+                                    let correction_result = run_manual_correction_with_scope(
+                                        &mut buffer,
+                                        replace_words,
+                                        g.as_mut(),
+                                        &mut executing,
+                                        events_since_word_start,
+                                        "multi-tap max",
+                                    );
+                                    if let Some(is_ru) = correction_result {
+                                        current_layout_is_ru = is_ru;
+                                        last_layout_poll = Instant::now();
+                                    }
+                                    if correction_result.is_some() {
+                                        suppress_next_typing_assist_after_manual_replay = true;
+                                    }
+                                    drop(g);
+                                    dshift_state = DShiftState::Idle;
+                                    last_double_at = Some(Instant::now());
+                                    clear_on_next_typing = true;
+                                } else {
+                                    pending.last_release = now;
+                                    pending_multi_tap = Some(pending);
+                                    dshift_state = DShiftState::Idle;
+                                    if verbose {
+                                        log("· FSM: multi-tap captured, wait for next tap");
+                                    }
+                                }
+                            } else {
+                                dshift_state = DShiftState::Idle;
+                            }
+                        } else {
+                            pending_multi_tap = None;
+                            dshift_state = DShiftState::Idle;
+                            if verbose {
+                                log(&format!(
+                                    "· FSM: AdditionalPress → Idle (held {}ms, не тап)",
+                                    held.as_millis()
+                                ));
+                            }
+                        }
+                    }
                     (0, _) => {
                         // release в Idle или WaitingSecond — сброс
                         dshift_state = DShiftState::Idle;
@@ -771,6 +881,12 @@ fn listen_keyboard(
                     log(&format!("· FSM: cancel → Idle (key {code})"));
                 }
                 dshift_state = DShiftState::Idle;
+            }
+            if pending_multi_tap.is_some() && value == 1 {
+                pending_multi_tap = None;
+                if verbose {
+                    log(&format!("· FSM: multi-tap cancel (key {code})"));
+                }
             }
 
             // release не интересен — пропускаем
@@ -1037,6 +1153,25 @@ enum DShiftState {
     SecondPress {
         second_press: Instant,
     },
+    /// Третий/четвёртый тап в optional multi-tap mode.
+    AdditionalPress {
+        pressed_at: Instant,
+    },
+}
+
+#[derive(Debug, Clone, Copy)]
+struct MultiTapPending {
+    tap_count: u8,
+    last_release: Instant,
+}
+
+fn multi_tap_scope_for_taps(taps: u8) -> Option<usize> {
+    match taps {
+        0 | 1 => None,
+        2 => Some(1),
+        3 => Some(2),
+        _ => Some(3),
+    }
 }
 
 // ─── Word boundary детекция ─────────────────────────────────
@@ -1116,6 +1251,39 @@ fn handle_force_layout_hotkey(
             None
         }
     }
+}
+
+fn run_manual_correction_with_scope(
+    buf: &mut WordBuffer,
+    replace_words: usize,
+    virtual_kbd: Option<&mut VirtualDevice>,
+    executing: &mut bool,
+    events_since_word_start: u32,
+    label: &str,
+) -> Option<bool> {
+    let buf_count = buf.current_len() as u32;
+    log(&format!(
+        "═ CROSS-CHECK: buffer.current={} events_since_word_start={}{}",
+        buf_count,
+        events_since_word_start,
+        if buf_count != events_since_word_start {
+            " ⚠ MISMATCH"
+        } else {
+            " ✓"
+        }
+    ));
+    let engine = active_correction_engine();
+    let auto_replace = active_auto_replace();
+    let result = handle_double_shift(
+        buf,
+        replace_words,
+        engine,
+        auto_replace,
+        virtual_kbd,
+        executing,
+    );
+    log(&format!("· {label} fired with scope={replace_words}"));
+    result
 }
 
 fn handle_typing_assist_after_space(
@@ -3162,21 +3330,12 @@ mod tests {
 
     #[test]
     fn multi_tap_scope_design_contract_maps_taps_to_scope() {
-        fn scope_for_taps(taps: u8) -> Option<usize> {
-            match taps {
-                0 | 1 => None,
-                2 => Some(1),
-                3 => Some(2),
-                _ => Some(3),
-            }
-        }
-
-        assert_eq!(scope_for_taps(0), None);
-        assert_eq!(scope_for_taps(1), None);
-        assert_eq!(scope_for_taps(2), Some(1));
-        assert_eq!(scope_for_taps(3), Some(2));
-        assert_eq!(scope_for_taps(4), Some(3));
-        assert_eq!(scope_for_taps(5), Some(3));
+        assert_eq!(multi_tap_scope_for_taps(0), None);
+        assert_eq!(multi_tap_scope_for_taps(1), None);
+        assert_eq!(multi_tap_scope_for_taps(2), Some(1));
+        assert_eq!(multi_tap_scope_for_taps(3), Some(2));
+        assert_eq!(multi_tap_scope_for_taps(4), Some(3));
+        assert_eq!(multi_tap_scope_for_taps(5), Some(3));
     }
 
     #[test]
@@ -5807,6 +5966,8 @@ mod tests {
         assert_eq!(apply_typing_assist_exact("вариантами "), None);
         assert_eq!(apply_typing_assist_exact("страдает "), None);
         assert_eq!(apply_typing_assist_exact("установки "), None);
+        assert_eq!(apply_typing_assist_exact("изменю "), None);
+        assert_eq!(apply_typing_assist_exact("изменю параметры "), None);
     }
 
     #[test]
