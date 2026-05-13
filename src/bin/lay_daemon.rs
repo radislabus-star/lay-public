@@ -5751,6 +5751,9 @@ mod tests {
         assert_eq!(apply_typing_assist_exact("я тут "), None);
         assert_eq!(apply_typing_assist_exact("чтобы точно "), None);
         assert_eq!(apply_typing_assist_exact("хо хо "), None);
+        assert_eq!(apply_typing_assist_exact("про сою "), None);
+        assert_eq!(apply_typing_assist_exact("по делу "), None);
+        assert_eq!(apply_typing_assist_exact("за дело "), None);
     }
 
     #[test]

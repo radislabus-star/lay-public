@@ -782,7 +782,16 @@ fn looks_like_short_function_word_glued_to_known_word(word: &str) -> bool {
 
 fn is_short_russian_function_word(word: &str) -> bool {
     word.chars().count() <= 3
-        && (is_one_letter_russian_function_word(word) || COMMON_RUSSIAN_WORDS.contains(&word))
+        && (is_one_letter_russian_function_word(word)
+            || COMMON_RUSSIAN_WORDS.contains(&word)
+            || is_common_short_russian_preposition(word))
+}
+
+fn is_common_short_russian_preposition(word: &str) -> bool {
+    matches!(
+        word,
+        "без" | "до" | "из" | "над" | "об" | "от" | "под" | "при" | "про"
+    )
 }
 
 pub fn should_keep_plain_cyrillic_before_ascii_technical(original: &str, converted: &str) -> bool {
@@ -826,6 +835,9 @@ fn correct_split_word_pair(text: &str) -> Option<String> {
     if should_keep_standalone_pair_with_short_right(&left_lower, &right_lower) {
         return None;
     }
+    if should_keep_standalone_pair_with_function_left(&left_lower, &right_lower) {
+        return None;
+    }
     if is_known_russian_phrase_part(&left_lower)
         && is_one_letter_russian_function_word(&right_lower)
     {
@@ -857,6 +869,13 @@ fn correct_split_word_pair(text: &str) -> Option<String> {
 fn should_keep_standalone_pair_with_short_right(left: &str, right: &str) -> bool {
     let right_len = right.chars().count();
     right_len <= 3 && is_known_russian_phrase_part(left) && is_known_russian_phrase_part(right)
+}
+
+fn should_keep_standalone_pair_with_function_left(left: &str, right: &str) -> bool {
+    if left == "я" {
+        return false;
+    }
+    is_short_russian_function_word(left) && right.chars().count() >= 2 && is_cyrillic_word(right)
 }
 
 fn can_merge_split_without_dictionary(

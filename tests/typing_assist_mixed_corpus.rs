@@ -139,6 +139,10 @@ fn live_user_sentences_keep_spaces_after_typing_assist() {
             "изменю параметры и проверю что слова не склеиваются ",
             "изменю параметры и проверю что слова не склеиваются ",
         ),
+        (
+            "пишу про сою и проверяю что предлог не липнет ",
+            "пишу про сою и проверяю что предлог не липнет ",
+        ),
     ];
 
     for (input, expected) in cases {
@@ -150,6 +154,7 @@ fn live_user_sentences_keep_spaces_after_typing_assist() {
         assert!(!got.contains("нонеты"));
         assert!(!got.contains("ноне ты"));
         assert!(!got.contains("изменюпараметры"));
+        assert!(!got.contains("просою"));
     }
 }
 
