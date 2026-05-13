@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    name: Rust, tray, and extension checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system dictionaries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y hunspell-ru hunspell-en-us wamerican
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: cargo fmt
+        run: cargo fmt --all --check
+
+      - name: cargo test
+        run: cargo test --all-targets
+
+      - name: cargo clippy
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: GNOME extension syntax
+        run: |
+          node --check extension/lay@radislabus-star.github.io/lay-impl.js
+          node --check extension/lay@radislabus-star.github.io/extension.js
+
+      - name: KDE tray and shell scripts syntax
+        run: |
+          python3 -m py_compile scripts/lay-kde-tray.py
+          bash -n install.sh update.sh scripts/install-remote.sh scripts/lay-host-vm-guard.sh
+
+      - name: release binaries
+        run: cargo build --release --bins
+
+      - name: LEM research probe
+        run: cargo run --quiet --bin lay-lem-research
