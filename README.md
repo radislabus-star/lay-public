@@ -188,6 +188,12 @@ lay-test-input x11-diagnostics
 native XKB через `x11rb` и доступность fallback tools: `xkb-switch`,
 `xkblayout-state`, `setxkbmap`.
 
+Для GitHub issue можно сразу получить готовый блок отчёта:
+
+```bash
+lay-test-input x11-report
+```
+
 Для ручного smoke-test выстави:
 
 ```json
@@ -209,6 +215,9 @@ systemctl --user restart lay-daemon
 
 Последние изменения публичной ветки:
 
+- `0.1.166` — `lay-test-input x11-report` печатает готовый GitHub-ready блок
+  для проверки экспериментального X11 backend: distro/session/backend/tools и
+  поля ручного smoke-test.
 - `0.1.165` — CLI-флаги и похожие токены, начинающиеся с ведущего `-` или
   `+`, больше не попадают в WordBuffer как голая буква. Это закрывает ложную
   автоподмену `git checkout -b`, где `b` могло восприниматься как отдельное

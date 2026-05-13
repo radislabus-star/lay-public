@@ -32,6 +32,7 @@
 //!   lay-test-input mixed_coke_toggle3_enter — печатает "слово кjrf-rjke" + двойной Shift × 3 + Enter
 //!   lay-test-input параллелепипед_long — длинное нижнерегистровое слово + Shift + Enter
 //!   lay-test-input x11-diagnostics — печатает X11/backend diagnostics report
+//!   lay-test-input x11-report — печатает GitHub-ready X11 validation report
 //!   lay-test-input list        — только создаёт kbd и держит, печатает путь
 
 use evdev::{uinput::VirtualDevice, AttributeSet, EventType, InputEvent, KeyCode};
@@ -47,6 +48,10 @@ fn main() -> std::io::Result<()> {
     let scenario = env::args().nth(1).unwrap_or_else(|| "list".to_string());
     if matches!(scenario.as_str(), "x11-diagnostics" | "diagnose-x11") {
         print_x11_diagnostics();
+        return Ok(());
+    }
+    if matches!(scenario.as_str(), "x11-report" | "report-x11") {
+        print_x11_report();
         return Ok(());
     }
 
@@ -757,6 +762,46 @@ fn print_x11_diagnostics() {
     println!("  4. press double Shift; expected: привет");
 }
 
+fn print_x11_report() {
+    let cfg = LayConfig::load();
+    let desktop = env::var("XDG_CURRENT_DESKTOP").unwrap_or_else(|_| "<unset>".into());
+    let session = env::var("DESKTOP_SESSION").unwrap_or_else(|_| "<unset>".into());
+    let session_type = env::var("XDG_SESSION_TYPE").unwrap_or_else(|_| "<unset>".into());
+    let display = env::var("DISPLAY").unwrap_or_else(|_| "<unset>".into());
+    let auto_backend = resolve_layout_backend(
+        "auto",
+        Some(desktop.as_str()),
+        Some(session.as_str()),
+        Some(session_type.as_str()),
+    );
+
+    println!("```text");
+    println!("Distro: {}", os_pretty_name());
+    println!("DE/WM: {desktop}");
+    println!("Session type: {session_type}");
+    println!("Desktop session: {session}");
+    println!("DISPLAY: {display}");
+    println!("lay version: {}", env!("CARGO_PKG_VERSION"));
+    println!("configured layout_backend: {}", cfg.layout_backend);
+    println!(
+        "configured active backend: {}",
+        cfg.active_layout_backend().label()
+    );
+    println!("auto-detected backend: {}", auto_backend.label());
+    println!("native x11rb XKB: {}", native_xkb_summary());
+    println!("xkb-switch: {}", command_summary("xkb-switch", &[]));
+    println!(
+        "xkblayout-state: {}",
+        command_summary("xkblayout-state", &["print", "%s"])
+    );
+    println!("setxkbmap -query: {}", setxkbmap_summary());
+    println!("Input layouts: <fill from your desktop settings if different>");
+    println!("What was typed: ghbdtn");
+    println!("What happened: <fill after manual smoke-test>");
+    println!("Expected result: привет");
+    println!("```");
+}
+
 fn print_command_probe(command: &str, args: &[&str]) {
     if !command_exists(command) {
         println!("{command}: not found");
@@ -765,6 +810,23 @@ fn print_command_probe(command: &str, args: &[&str]) {
     match run_command_capture(command, args) {
         Ok(output) => println!("{command}: OK ({})", one_line(&output)),
         Err(err) => println!("{command}: FAIL ({err})"),
+    }
+}
+
+fn native_xkb_summary() -> String {
+    match lay::x11_layout::ping() {
+        Ok(reply) => format!("OK ({reply})"),
+        Err(err) => format!("FAIL ({err})"),
+    }
+}
+
+fn command_summary(command: &str, args: &[&str]) -> String {
+    if !command_exists(command) {
+        return "not found".to_string();
+    }
+    match run_command_capture(command, args) {
+        Ok(output) => format!("OK ({})", one_line(&output)),
+        Err(err) => format!("FAIL ({err})"),
     }
 }
 
@@ -780,6 +842,29 @@ fn print_setxkbmap_probe() {
         }
         Err(err) => println!("setxkbmap -query: FAIL ({err})"),
     }
+}
+
+fn setxkbmap_summary() -> String {
+    if !command_exists("setxkbmap") {
+        return "not found".to_string();
+    }
+    match run_command_capture("setxkbmap", &["-query"]) {
+        Ok(output) => {
+            let layout = parse_setxkbmap_layout(&output).unwrap_or_else(|| "<unparsed>".into());
+            format!("OK (layout={layout})")
+        }
+        Err(err) => format!("FAIL ({err})"),
+    }
+}
+
+fn os_pretty_name() -> String {
+    let Ok(text) = std::fs::read_to_string("/etc/os-release") else {
+        return "<unknown>".to_string();
+    };
+    text.lines()
+        .find_map(|line| line.strip_prefix("PRETTY_NAME="))
+        .map(|value| value.trim_matches('"').to_string())
+        .unwrap_or_else(|| "<unknown>".to_string())
 }
 
 fn run_command_capture(command: &str, args: &[&str]) -> Result<String, String> {
