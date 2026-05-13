@@ -209,6 +209,9 @@ systemctl --user restart lay-daemon
 
 Последние изменения публичной ветки:
 
+- `0.1.164` — синхронизирован `HOW_IT_WORKS.md` с текущей архитектурой:
+  KDE adapter уже существует, X11 описан как native XKB через `x11rb`, а не
+  как tools-first backend.
 - `0.1.163` — расширен потоковый mixed-corpus regression test: проверяется,
   что пары вида `я язык`, `в версии`, `и идея`, `с системой` не разрезаются
   typing assist после пробела.

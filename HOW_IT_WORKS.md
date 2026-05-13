@@ -37,8 +37,9 @@
 Desktop-адаптеры:
 
 - GNOME: Shell extension, tray, DBus bridge, `inputSources[i].activate()`;
-- KDE/Plasma: должен быть отдельный adapter поверх того же ядра;
-- X11: отдельный backend через X11 tools, где они доступны.
+- KDE/Plasma: отдельный adapter через `qdbus/qdbus6` поверх того же ядра;
+- X11: native XKB backend через `x11rb`; внешние tools используются только
+  как fallback, если native XKB недоступен.
 
 Цель такого разделения: не смешивать GNOME Shell API с логикой исправления
 текста. Ядро должно быть переиспользуемым, а GNOME/KDE должны отличаться только
@@ -148,7 +149,8 @@ DOUBLE SHIFT ✓
 - `auto` — выбрать backend по окружению;
 - `gnome` — GNOME Shell extension + DBus;
 - `kde` — `qdbus/qdbus6 org.kde.keyboard /Layouts setLayout`;
-- `x11` — `xkb-switch`, `xkblayout-state` или fallback через `setxkbmap`.
+- `x11` — сначала native XKB через `x11rb`, затем fallback:
+  `xkb-switch`, `xkblayout-state`, `setxkbmap`.
 
 GNOME Wayland остаётся основной проверенной средой. KDE/X11 backend пока
 экспериментальные и добавлены как отдельный слой, чтобы ядро replay/smart/typing
@@ -336,16 +338,26 @@ debug-log, если он явно включён.
 lay/
 ├── src/
 │   ├── main.rs          — CLI (clap), dict conversion и --smart
+│   ├── config.rs        — config schema для daemon и tray
+│   ├── correction.rs    — общий контракт Correction
+│   ├── core.rs          — публичный facade общего ядра
+│   ├── desktop.rs       — выбор GNOME/KDE/X11 backend
 │   ├── dict.rs          — словарь US↔RU, detect_direction, convert
-│   ├── quality.rs       — legacy/auxiliary quality heuristics
-│   ├── ngram.rs         — char 3-gram scorer для typing assist
+│   ├── keyboard.rs      — key events, word split, replay decision
+│   ├── word_buffer.rs   — история слов и pending feedback
+│   ├── text_edit.rs     — минимальные планы замены текста
+│   ├── typing_assist.rs — правила typing assist и smart-tail
+│   ├── x11_layout.rs    — native XKB backend через x11rb
+│   ├── quality.rs       — auxiliary quality heuristics
+│   ├── ngram.rs         — char 3-gram scorer
 │   ├── llm.rs           — optional model arbiter вокруг готовых кандидатов
 │   └── lem.rs           — lightweight scorer/ranker для готовых вариантов
 │
 ├── src/bin/
 │   ├── lay_daemon.rs        — evdev listener, FSM, layout backend, uinput replay
 │   ├── lay_ngram_corpus.rs  — build/check/cache локального n-gram корпуса
-│   └── lay_lem_research.rs  — локальный stress-test LEM scorer
+│   ├── lay_lem_research.rs  — локальный stress-test LEM scorer
+│   └── lay_test_input.rs    — runtime diagnostics/smoke helper
 │
 └── extension/
     └── lay@radislabus-star.github.io/
