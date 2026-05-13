@@ -163,6 +163,31 @@ fn live_user_sentences_keep_spaces_after_typing_assist() {
 }
 
 #[test]
+fn one_letter_function_words_do_not_steal_next_word_prefix() {
+    let cases = [
+        "я язык",
+        "я явно",
+        "в версии",
+        "в воде",
+        "и идея",
+        "и инструкция",
+        "к команде",
+        "с системой",
+        "у утилиты",
+        "о окне",
+    ];
+
+    for phrase in cases {
+        let input = format!("проверяю {phrase} дальше ");
+        assert_eq!(
+            simulate_space_triggered_typing_assist(&input, true),
+            input,
+            "one-letter function word stole next prefix: {input:?}"
+        );
+    }
+}
+
+#[test]
 fn forum_like_mixed_matrix_keeps_boundaries_after_layout_autofix() {
     let prefixes = [
         "проверяю",
