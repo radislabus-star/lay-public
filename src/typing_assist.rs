@@ -684,6 +684,9 @@ fn correct_glued_russian_phrase(word: &str) -> Option<String> {
         if (right_len < 3 && !short_right_function) || left_len > 8 {
             continue;
         }
+        if short_left_pronoun && !is_standalone_russian_phrase_part(right) {
+            continue;
+        }
         if !is_known_russian_phrase_part(left) || !is_known_russian_phrase_part(right) {
             continue;
         }
@@ -733,6 +736,19 @@ fn is_known_russian_phrase_part(word: &str) -> bool {
         || is_known_russian_adverb_o_form(word)
         || is_known_russian_ka_oblique_form(word)
         || russian_short_dictionary().contains(word)
+}
+
+fn is_standalone_russian_phrase_part(word: &str) -> bool {
+    let len = word.chars().count();
+    if len == 1 {
+        return is_one_letter_russian_function_word(word);
+    }
+    if len <= 3 {
+        return COMMON_RUSSIAN_WORDS.contains(&word);
+    }
+    russian_dictionary().contains(word)
+        || is_known_russian_adverb_o_form(word)
+        || is_known_russian_ka_oblique_form(word)
 }
 
 fn is_one_letter_russian_function_word(word: &str) -> bool {

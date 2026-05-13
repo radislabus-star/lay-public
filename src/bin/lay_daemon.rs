@@ -5805,6 +5805,7 @@ mod tests {
         assert_eq!(apply_typing_assist_exact("идея "), None);
         assert_eq!(apply_typing_assist_exact("синяя "), None);
         assert_eq!(apply_typing_assist_exact("пошли "), None);
+        assert_eq!(apply_typing_assist_exact("язык "), None);
     }
 
     #[test]
