@@ -236,6 +236,16 @@ mod tests {
     }
 
     #[test]
+    fn legacy_config_without_force_hotkeys_gets_safe_defaults() {
+        let cfg: LayConfig =
+            serde_json::from_str(r#"{"mode":"simple","trigger":"double-lshift"}"#).unwrap();
+
+        assert!(!cfg.force_layout_hotkeys);
+        assert_eq!(cfg.force_ru_key, "single-rctrl");
+        assert_eq!(cfg.force_en_key, "single-ralt");
+    }
+
+    #[test]
     fn legacy_llm_mode_maps_to_smart_only_without_explicit_engine() {
         let legacy = LayConfig {
             mode: "llm".into(),
