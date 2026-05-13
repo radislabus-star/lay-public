@@ -293,6 +293,9 @@ fn word_rule(
 }
 
 fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
+    if is_ascii_cli_option_token(token) {
+        return None;
+    }
     if !is_plain_ascii_layout_token(token) {
         return None;
     }
@@ -340,7 +343,23 @@ fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
 fn ascii_layout_prefix_can_be_letter(prefix: &str) -> bool {
     prefix
         .chars()
-        .any(|ch| matches!(ch, '\'' | ';' | '[' | ']' | '`' | ',' | '.'))
+        .any(|ch| matches!(ch, '\'' | ';' | '[' | ']' | '`' | ',' | '.' | '-'))
+}
+
+fn is_ascii_cli_option_token(token: &str) -> bool {
+    let rest = if let Some(rest) = token.strip_prefix("--") {
+        rest
+    } else if let Some(rest) = token.strip_prefix('-') {
+        rest
+    } else {
+        return false;
+    };
+
+    !rest.is_empty()
+        && rest.chars().any(|ch| ch.is_ascii_alphabetic())
+        && rest
+            .chars()
+            .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '-' | '_' | '=' | ':' | '.' | '/'))
 }
 
 fn correct_wrong_layout_cyrillic_word(token: &str) -> Option<String> {

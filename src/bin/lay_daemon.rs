@@ -5244,6 +5244,10 @@ mod tests {
         assert_eq!(apply_typing_assist("API ", true), None);
         assert_eq!(apply_typing_assist("AmoCRM ", true), None);
         assert_eq!(apply_typing_assist("wi-fi ", true), None);
+        assert_eq!(apply_typing_assist("command -f ", true), None);
+        assert_eq!(apply_typing_assist("command -r ", true), None);
+        assert_eq!(apply_typing_assist("command -c ", true), None);
+        assert_eq!(apply_typing_assist("grep --color=auto ", true), None);
     }
 
     #[test]

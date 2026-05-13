@@ -285,6 +285,8 @@ fn clean_shell_like_commands_and_symbols_are_not_rewritten() {
         "git status; echo hello? files 100% ",
         "ls -la | grep test && echo 100% ",
         "curl -I https://example.com/path?x=1; echo ok ",
+        "command -f file.txt && command -r repo && command -c config ",
+        "grep --color=auto -n test file.txt ",
     ];
 
     for input in cases {
