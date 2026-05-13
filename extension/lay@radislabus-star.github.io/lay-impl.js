@@ -21,12 +21,12 @@ const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-const APP_VERSION = '0.1.169';
-const APP_DESCRIPTION = 'Помощник RU/EN раскладки по двойному Shift';
-const APP_RELEASE_DATE = '2026-05-13';
+const APP_VERSION = '0.1.170';
+const APP_DESCRIPTION = 'RU/EN layout helper: double Shift и помощь при наборе';
+const APP_RELEASE_DATE = '2026-05-14';
 const APP_LICENSE = 'MIT';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
-const APP_PLATFORM = 'GNOME Wayland';
+const APP_PLATFORM = 'Linux desktops: GNOME, KDE, Wayland, X11';
 const APP_GNOME_SUPPORT = 'GNOME 45-47, 50';
 const MENU_WIDTH = 360;
 const COMPACT_SUBTITLE_STYLE = 'font-weight:normal; font-size:76%; opacity:180;';
@@ -834,9 +834,33 @@ class LayIndicator extends PanelMenu.Button {
         item.connect('toggled', (_item, state) => {
             this._setTypingRuleEnabled(rule.id, state);
         });
+        item.add_child(this._pipelineGrip());
         item.add_child(this._smallOrderButton('↑', () => this._moveTypingRule(rule.id, -1)));
         item.add_child(this._smallOrderButton('↓', () => this._moveTypingRule(rule.id, 1)));
         return item;
+    }
+
+    _pipelineGrip() {
+        const baseStyle = 'padding:1px 5px; border-radius:6px; min-width:0; opacity:150;';
+        const hoverStyle = baseStyle + 'background-color:rgba(255,255,255,0.10); opacity:255;';
+        const grip = new St.Button({
+            label: '⋮⋮',
+            reactive: true,
+            can_focus: false,
+            style_class: 'button flat',
+            style: baseStyle,
+        });
+        grip.connect('enter-event', () => {
+            grip.style = hoverStyle;
+            return Clutter.EVENT_PROPAGATE;
+        });
+        grip.connect('leave-event', () => {
+            grip.style = baseStyle;
+            return Clutter.EVENT_PROPAGATE;
+        });
+        grip.connect('clicked', () => Clutter.EVENT_STOP);
+        this._attachTooltip(grip, 'Порядок правила: перемещай кнопками ↑ и ↓.');
+        return grip;
     }
 
     _smallOrderButton(label, onClick) {

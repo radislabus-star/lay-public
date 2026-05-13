@@ -152,9 +152,10 @@ DOUBLE SHIFT ✓
 - `x11` — сначала native XKB через `x11rb`, затем fallback:
   `xkb-switch`, `xkblayout-state`, `setxkbmap`.
 
-GNOME Wayland остаётся основной проверенной средой. KDE/X11 backend пока
-экспериментальные и добавлены как отдельный слой, чтобы ядро replay/smart/typing
-assist больше не было жёстко привязано к GNOME.
+GNOME Wayland остаётся основной проверенной средой, но backend-слой уже не
+привязан только к GNOME. KDE Plasma и X11 проверены в нашей тестовой VM и
+используют то же ядро replay/smart/typing assist: KDE через `qdbus/qdbus6`,
+X11 через native XKB backend на `x11rb`.
 
 ### ptah_alexs — жёсткая раскладка по окну
 
@@ -234,7 +235,7 @@ lay --no-llm ...  # legacy-safe: тоже только dict
 `off`, поэтому реальная модель не грузится. Обычный CLI при этом не начинает
 использовать модель сам по себе.
 
-Поддерживаемые экспериментальные backend'ы:
+Поддерживаемые backend'ы:
 
 ```bash
 LAY_LLM_BACKEND=ollama lay --smart "fyukbqcrbq"

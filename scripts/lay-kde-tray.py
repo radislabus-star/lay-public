@@ -414,8 +414,9 @@ def main() -> int:
                 None,
                 "О программе",
                 "<b>lay</b><br>"
-                "Помощник для исправления RU/EN раскладки по двойному Shift.<br><br>"
+                "RU/EN layout helper: double Shift и помощь при наборе.<br><br>"
                 f"{lay_version()}<br>"
+                "Платформы: GNOME, KDE, Wayland, X11.<br>"
                 "KDE-меню использует тот же config и тот же lay-daemon.<br><br>"
                 'GitHub: <a href="https://github.com/radislabus-star/lay-public">'
                 "https://github.com/radislabus-star/lay-public</a>",
