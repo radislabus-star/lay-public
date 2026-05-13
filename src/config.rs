@@ -105,6 +105,18 @@ pub struct LayConfig {
     pub lem_2_words: bool,
     /// Use LEM arbiter for three or more smart-tail words.
     pub lem_3_words: bool,
+    /// Optional model arbiter backend: off | direct | ollama | openai | anthropic.
+    pub llm_backend: String,
+    /// Optional model name for configured backend. API keys stay in env.
+    pub llm_model: String,
+    /// Optional custom Ollama generate endpoint.
+    pub llm_ollama_url: String,
+    /// Optional custom OpenAI-compatible chat completions endpoint.
+    pub llm_openai_url: String,
+    /// Optional custom Anthropic messages endpoint.
+    pub llm_anthropic_url: String,
+    /// Model HTTP timeout in seconds.
+    pub llm_timeout_secs: u64,
     /// Typing-assist rule pipeline: id + enabled + priority.
     #[serde(default = "default_typing_assist_pipeline")]
     pub typing_assist_pipeline: Vec<TypingAssistRuleConfig>,
@@ -133,6 +145,12 @@ impl Default for LayConfig {
             auto_switch_layout: true,
             lem_2_words: true,
             lem_3_words: true,
+            llm_backend: "off".into(),
+            llm_model: "smollm:135m".into(),
+            llm_ollama_url: "http://localhost:11434/api/generate".into(),
+            llm_openai_url: "https://api.openai.com/v1/chat/completions".into(),
+            llm_anthropic_url: "https://api.anthropic.com/v1/messages".into(),
+            llm_timeout_secs: 3,
             typing_assist_pipeline: default_typing_assist_pipeline(),
             learning_log: false,
         }

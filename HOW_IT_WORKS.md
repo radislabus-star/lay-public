@@ -236,9 +236,14 @@ lay --no-llm ...  # legacy-safe: тоже только dict
 
 ```bash
 LAY_LLM_BACKEND=ollama lay --smart "fyukbqcrbq"
+LAY_LLM_BACKEND=openai LAY_OPENAI_API_KEY=... LAY_MODEL=gpt-4o-mini lay --smart "fyukbqcrbq"
+LAY_LLM_BACKEND=anthropic LAY_ANTHROPIC_API_KEY=... LAY_MODEL=claude-3-5-haiku-latest lay --smart "fyukbqcrbq"
 cargo build --release --features direct-llm
 LAY_LLM_BACKEND=direct LAY_GGUF_MODEL=/path/to/model.gguf lay --smart "fyukbqcrbq"
 ```
+
+В `config.json` можно держать `llm_backend`, `llm_model`, backend URLs и
+timeout. API-ключи не читаются из config и должны оставаться только в env.
 
 Объём исправления (`Ещё → 1 слово` / `Ещё → 2 слова`) независим от engine.
 Engine выбирается отдельно:
@@ -355,7 +360,7 @@ lay/
 |----------------------|-------------------------------------------------|
 | `clap`               | CLI парсинг                                     |
 | `arboard`            | Clipboard (Wayland + X11)                      |
-| `ureq`               | optional HTTP backend для Ollama               |
+| `ureq`               | optional HTTP backend для LLM APIs             |
 | `llama_cpp`          | optional direct GGUF backend (`direct-llm`)    |
 | `serde`/`serde_json` | Config, cache и JSON-запросы                   |
 | `zbus`               | DBus-клиент daemon → GNOME Shell extension     |

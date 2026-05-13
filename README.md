@@ -209,6 +209,9 @@ systemctl --user restart lay-daemon
 
 Последние изменения публичной ветки:
 
+- `0.1.158` — optional Smart/LLM arbiter получил настраиваемые backend/url:
+  `ollama`, `direct`, `openai`, `anthropic`. API-ключи читаются только из env,
+  не из `config.json`. По умолчанию backend остаётся `off`.
 - `0.1.157` — `lay-test-input` теперь устанавливается в `~/.local/bin` и умеет
   печатать `x11-diagnostics`: backend, X11 env, native `x11rb` XKB status и
   fallback tools. Это нужно для нормальных отчётов по экспериментальному X11.
@@ -593,6 +596,43 @@ systemctl --user stop lay-daemon
 LAY_LLM_BACKEND=ollama lay --smart "fyukbqcrbq"
 ```
 
+Ollama endpoint можно переопределить:
+
+```bash
+LAY_LLM_BACKEND=ollama \
+LAY_OLLAMA_URL=http://localhost:11434/api/generate \
+lay --smart "fyukbqcrbq"
+```
+
+Внешние API тоже поддержаны, но только явно. Ключи держи в переменных
+окружения, не в `config.json`:
+
+```bash
+LAY_LLM_BACKEND=openai \
+LAY_OPENAI_API_KEY=... \
+LAY_MODEL=gpt-4o-mini \
+lay --smart "fyukbqcrbq"
+
+LAY_LLM_BACKEND=anthropic \
+LAY_ANTHROPIC_API_KEY=... \
+LAY_MODEL=claude-3-5-haiku-latest \
+lay --smart "fyukbqcrbq"
+```
+
+Часть настроек можно положить в `~/.config/lay/config.json`; секреты всё равно
+остаются только в env:
+
+```json
+{
+  "llm_backend": "off",
+  "llm_model": "smollm:135m",
+  "llm_ollama_url": "http://localhost:11434/api/generate",
+  "llm_openai_url": "https://api.openai.com/v1/chat/completions",
+  "llm_anthropic_url": "https://api.anthropic.com/v1/messages",
+  "llm_timeout_secs": 3
+}
+```
+
 Для optional direct GGUF backend:
 
 ```bash
@@ -717,9 +757,12 @@ double-Shift workflow. By default it does not send typed text anywhere, does not
 require a remote model, and does not keep a full keylog. Optional learning logs
 are local and disabled by default.
 
-Experimental Smart/LLM mode exists, but it is not the default product path. The
-default build does not compile direct GGUF support. Use `--features direct-llm`
-and explicit `LAY_LLM_BACKEND=direct` only for local model experiments.
+Experimental Smart/LLM mode exists, but it is not the default product path.
+External providers are used only when `LAY_LLM_BACKEND=openai` or
+`LAY_LLM_BACKEND=anthropic` is set explicitly and the matching API key is
+present in env. The default build does not compile direct GGUF support; use
+`--features direct-llm` and explicit `LAY_LLM_BACKEND=direct` only for local
+model experiments.
 
 ## License
 
