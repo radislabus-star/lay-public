@@ -5971,6 +5971,10 @@ mod tests {
         assert_eq!(apply_typing_assist_exact("установки "), None);
         assert_eq!(apply_typing_assist_exact("изменю "), None);
         assert_eq!(apply_typing_assist_exact("изменю параметры "), None);
+        assert_eq!(apply_typing_assist_exact("нужна "), None);
+        assert_eq!(apply_typing_assist_exact("она нужна "), None);
+        assert_eq!(apply_typing_assist_exact("важна "), None);
+        assert_eq!(apply_typing_assist_exact("важно "), None);
     }
 
     #[test]
