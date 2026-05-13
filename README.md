@@ -174,10 +174,44 @@ cd ~/projects/lay && bash update.sh
 ~/.local/state/lay/update.log
 ```
 
+### X11 diagnostics
+
+X11 backend пока экспериментальный. Если проверяешь его на реальной X11-сессии,
+сначала собери короткий отчёт:
+
+```bash
+lay-test-input x11-diagnostics
+```
+
+Команда не создаёт виртуальную клавиатуру и ничего не печатает в активное окно.
+Она показывает выбранный backend, `XDG_SESSION_TYPE`, `DISPLAY`, состояние
+native XKB через `x11rb` и доступность fallback tools: `xkb-switch`,
+`xkblayout-state`, `setxkbmap`.
+
+Для ручного smoke-test выстави:
+
+```json
+{
+  "layout_backend": "x11"
+}
+```
+
+После этого перезапусти демон:
+
+```bash
+systemctl --user restart lay-daemon
+```
+
+Проверка: набрать `ghbdtn`, нажать Shift два раза, ожидаемый результат —
+`привет`.
+
 ### Что нового
 
 Последние изменения публичной ветки:
 
+- `0.1.157` — `lay-test-input` теперь устанавливается в `~/.local/bin` и умеет
+  печатать `x11-diagnostics`: backend, X11 env, native `x11rb` XKB status и
+  fallback tools. Это нужно для нормальных отчётов по экспериментальному X11.
 - `0.1.156` — optional multi-tap Shift scope включён в runtime за выключенным
   по умолчанию флагом: `2/3/4` тапа выбирают `1/2/3` слова. Default double
   Shift остался мгновенным. Также добавлена регрессия на `изменю параметры`,
@@ -244,7 +278,7 @@ gnome-extensions enable lay@radislabus-star.github.io
 
 - Linux
 - GNOME Shell 45, 46, 47 или 50 либо KDE Plasma 6 для экспериментального KDE mode
-- Wayland-сессия
+- Wayland-сессия для GNOME/KDE; X11 backend отдельно экспериментальный
 - Rust 1.75+
 - доступ к `/dev/input` через группу `input`
 - доступный `/dev/uinput` для обратной печати

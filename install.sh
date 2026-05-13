@@ -200,11 +200,13 @@ echo "=== симлинки в ~/.local/bin/ ==="
 mkdir -p ~/.local/bin
 ln -sf "$DIR/target/release/lay" ~/.local/bin/lay
 ln -sf "$DIR/target/release/lay-daemon" ~/.local/bin/lay-daemon
+ln -sf "$DIR/target/release/lay-test-input" ~/.local/bin/lay-test-input
 ln -sf "$DIR/target/release/lay-ngram-corpus" ~/.local/bin/lay-ngram-corpus
 ln -sf "$DIR/scripts/lay-kde-tray.py" ~/.local/bin/lay-kde-tray
 ln -sf "$DIR/scripts/lay-host-vm-guard.sh" ~/.local/bin/lay-host-vm-guard
 echo "✓ lay        → ~/.local/bin/lay"
 echo "✓ lay-daemon → ~/.local/bin/lay-daemon"
+echo "✓ lay-test-input → ~/.local/bin/lay-test-input"
 echo "✓ lay-ngram-corpus → ~/.local/bin/lay-ngram-corpus"
 echo "✓ lay-kde-tray → ~/.local/bin/lay-kde-tray"
 echo "✓ lay-host-vm-guard → ~/.local/bin/lay-host-vm-guard"

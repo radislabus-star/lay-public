@@ -31,9 +31,12 @@
 //!   lay-test-input mixed_coke_enter — печатает "слово кjrf-rjke" + двойной Shift + Enter
 //!   lay-test-input mixed_coke_toggle3_enter — печатает "слово кjrf-rjke" + двойной Shift × 3 + Enter
 //!   lay-test-input параллелепипед_long — длинное нижнерегистровое слово + Shift + Enter
+//!   lay-test-input x11-diagnostics — печатает X11/backend diagnostics report
 //!   lay-test-input list        — только создаёт kbd и держит, печатает путь
 
 use evdev::{uinput::VirtualDevice, AttributeSet, EventType, InputEvent, KeyCode};
+use lay::config::LayConfig;
+use lay::desktop::{parse_setxkbmap_layout, resolve_layout_backend};
 use std::env;
 use std::io::Write;
 use std::process::{Command, Stdio};
@@ -42,6 +45,10 @@ use std::time::Duration;
 
 fn main() -> std::io::Result<()> {
     let scenario = env::args().nth(1).unwrap_or_else(|| "list".to_string());
+    if matches!(scenario.as_str(), "x11-diagnostics" | "diagnose-x11") {
+        print_x11_diagnostics();
+        return Ok(());
+    }
 
     let mut keys = AttributeSet::new();
     let all = [
@@ -694,6 +701,107 @@ fn activate_layout(id: &str) {
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .status();
+}
+
+fn print_x11_diagnostics() {
+    let cfg = LayConfig::load();
+    let desktop = env::var("XDG_CURRENT_DESKTOP").ok();
+    let session = env::var("DESKTOP_SESSION").ok();
+    let session_type = env::var("XDG_SESSION_TYPE").ok();
+    let display = env::var("DISPLAY").ok();
+    let auto_backend = resolve_layout_backend(
+        "auto",
+        desktop.as_deref(),
+        session.as_deref(),
+        session_type.as_deref(),
+    );
+
+    println!("lay X11 diagnostics");
+    println!("version: {}", env!("CARGO_PKG_VERSION"));
+    println!("configured layout_backend: {}", cfg.layout_backend);
+    println!(
+        "configured active backend: {}",
+        cfg.active_layout_backend().label()
+    );
+    println!("auto-detected backend: {}", auto_backend.label());
+    println!(
+        "env XDG_SESSION_TYPE: {}",
+        session_type.as_deref().unwrap_or("<unset>")
+    );
+    println!(
+        "env XDG_CURRENT_DESKTOP: {}",
+        desktop.as_deref().unwrap_or("<unset>")
+    );
+    println!(
+        "env DESKTOP_SESSION: {}",
+        session.as_deref().unwrap_or("<unset>")
+    );
+    println!("env DISPLAY: {}", display.as_deref().unwrap_or("<unset>"));
+    if session_type.as_deref() != Some("x11") {
+        println!("note: current session is not X11; native XKB may talk to XWayland only");
+    }
+    println!();
+
+    match lay::x11_layout::ping() {
+        Ok(reply) => println!("native x11rb XKB: OK ({reply})"),
+        Err(err) => println!("native x11rb XKB: FAIL ({err})"),
+    }
+    print_command_probe("xkb-switch", &[]);
+    print_command_probe("xkblayout-state", &["print", "%s"]);
+    print_setxkbmap_probe();
+    println!();
+    println!("manual X11 smoke test:");
+    println!("  1. set ~/.config/lay/config.json: layout_backend=\"x11\"");
+    println!("  2. run: systemctl --user restart lay-daemon");
+    println!("  3. type in any text field: ghbdtn");
+    println!("  4. press double Shift; expected: привет");
+}
+
+fn print_command_probe(command: &str, args: &[&str]) {
+    if !command_exists(command) {
+        println!("{command}: not found");
+        return;
+    }
+    match run_command_capture(command, args) {
+        Ok(output) => println!("{command}: OK ({})", one_line(&output)),
+        Err(err) => println!("{command}: FAIL ({err})"),
+    }
+}
+
+fn print_setxkbmap_probe() {
+    if !command_exists("setxkbmap") {
+        println!("setxkbmap -query: not found");
+        return;
+    }
+    match run_command_capture("setxkbmap", &["-query"]) {
+        Ok(output) => {
+            let layout = parse_setxkbmap_layout(&output).unwrap_or_else(|| "<unparsed>".into());
+            println!("setxkbmap -query: OK (layout={layout})");
+        }
+        Err(err) => println!("setxkbmap -query: FAIL ({err})"),
+    }
+}
+
+fn run_command_capture(command: &str, args: &[&str]) -> Result<String, String> {
+    let output = Command::new(command)
+        .args(args)
+        .output()
+        .map_err(|e| format!("spawn {command}: {e}"))?;
+    if !output.status.success() {
+        return Err(format!("exit status {}", output.status));
+    }
+    Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
+}
+
+fn one_line(value: &str) -> String {
+    let compact = value.split_whitespace().collect::<Vec<_>>().join(" ");
+    let mut chars = compact.chars();
+    let head: String = chars.by_ref().take(120).collect();
+    if chars.next().is_some() {
+        format!("{head}...")
+    } else {
+        compact
+    }
 }
 
 fn activate_layout_kde(id: &str) -> bool {
