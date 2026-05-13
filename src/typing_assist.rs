@@ -961,7 +961,10 @@ fn correct_moved_prefix_letter_pair(text: &str) -> Option<String> {
     if let Some(left_last) = left.chars().last() {
         if short_right_is_safe
             && same_letter_ignore_case(left_last, moved)
+            && left.chars().count() > 1
             && is_known_russian_word_or_form(&left.to_lowercase())
+            && crate::ngram::ru_candidate_margin(&right_rest_lower, &right_lower)
+                >= NGRAM_MOVED_PREFIX_RIGHT_MARGIN
         {
             let candidate = format!("{left} {right_rest}");
             if ngram_allows_ru_candidate(&candidate.to_lowercase(), text, NGRAM_MOVED_PREFIX_MARGIN)
