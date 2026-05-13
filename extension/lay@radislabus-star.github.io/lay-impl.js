@@ -332,6 +332,14 @@ function focusedWindowInfo() {
         return {kind: 'wm_class_instance', value: wmClassInstance, label: wmClassInstance, appId, wmClass, wmClassInstance, title};
     return null;
 }
+// Хелпер: создает PopupSwitchMenuItem с предотвращением закрытия меню
+// ВАЖНО: connect('activate') не будет работать, так как мы переназначаем activate на toggle
+function newPopupMenuPopupSwitchMenuItem(text, active, params) {
+    const item = new PopupMenu.PopupSwitchMenuItem(text, active, params);
+    // Предотвращаем закрытие при клике
+    item.activate = () => item.toggle();
+    return item;
+}
 
 // ─── DBus ──────────────────────────────────────────────────
 
@@ -576,7 +584,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _switchItem(label, key, restart = false, tooltip = null) {
-        const item = new PopupMenu.PopupSwitchMenuItem(label, !!this._cfg[key], {});
+        const item = newPopupMenuPopupSwitchMenuItem(label, !!this._cfg[key], {});
         item.connect('toggled', (_item, state) => {
             this._cfg[key] = state;
             this._saveAndRefresh();
@@ -617,7 +625,7 @@ class LayIndicator extends PanelMenu.Button {
 
     _ptahAlexsMenu() {
         const item = new PopupMenu.PopupSubMenuMenuItem('ptah_alexs', false);
-        const mode = new PopupMenu.PopupSwitchMenuItem(
+        const mode = newPopupMenuPopupSwitchMenuItem(
             'Жёстко по окну',
             !!this._cfg.ptah_alexs_mode,
             {}
@@ -820,7 +828,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _pipelineRuleRow(rule, idx) {
-        const item = new PopupMenu.PopupSwitchMenuItem(
+        const item = newPopupMenuPopupSwitchMenuItem(
             `${idx + 1}. ${typingRuleLabel(rule.id)}`,
             rule.enabled,
             {}
@@ -853,7 +861,7 @@ class LayIndicator extends PanelMenu.Button {
             this._cfg.typing_assist_pipeline.map(rule =>
                 rule.id === id ? {...rule, enabled} : rule)
         );
-        this._saveAndRebuildMenu();
+        this._saveAndRefresh();
     }
 
     _moveTypingRule(id, delta) {
@@ -872,9 +880,19 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _saveAndRebuildMenu() {
-        saveConfig(this._cfg);
-        this.menu.removeAll();
-        this._buildMenu();
+      const subs = () => (this.menu._getMenuItems() || [])
+          .filter((m) => m instanceof PopupMenu.PopupSubMenuMenuItem);
+
+      // Находим открытое меню
+      const opened = subs().find((mi) => mi.menu.isOpen)?.label.text;
+
+      // Перестраиваем
+      saveConfig(this._cfg);
+      this.menu.removeAll();
+      this._buildMenu();
+
+      // Переоткрываем меню
+      if (opened) subs().find((m) => m.label.text === opened)?.menu.open();
     }
 
     _attachTooltip(actor, text) {
@@ -966,7 +984,10 @@ class LayIndicator extends PanelMenu.Button {
             ['single-ralt', 'RAlt'],
         ]) {
             const row = new PopupMenu.PopupMenuItem(label);
-            row.connect('activate', () => this._setTrigger(id));
+            row.connect('activate', () => {
+                row.stop_emission_by_name('activate');
+                this._setTrigger(id);
+            });
             this._triggerItems[id] = row;
             item.menu.addMenuItem(row);
         }
@@ -1021,7 +1042,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _daemonSwitchItem() {
-        const item = new PopupMenu.PopupSwitchMenuItem('Демон включён', false, {});
+        const item = newPopupMenuPopupSwitchMenuItem('Демон включён', false, {});
         item.connect('toggled', (_item, state) => {
             if (this._updatingDaemonSwitch)
                 return;
