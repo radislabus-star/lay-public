@@ -3328,35 +3328,34 @@ mod tests {
 
     #[test]
     fn leading_cli_option_token_is_ignored_until_space() {
-        let modifiers = ShiftState::default();
-        let mut buffer = WordBuffer::new();
+        for (leader, leader_shift, token_key, next_word) in [
+            (KeyCode::KEY_MINUS, false, KeyCode::KEY_B, "feature"),
+            (KeyCode::KEY_EQUAL, true, KeyCode::KEY_X, "script"),
+        ] {
+            let mut modifiers = ShiftState::default();
+            modifiers.update(KeyCode::KEY_LEFTSHIFT, i32::from(leader_shift));
+            let mut buffer = WordBuffer::new();
+            let mut ignore_token =
+                should_start_ignored_buffer_token(leader, &modifiers, buffer.current_is_empty());
+            assert!(ignore_token);
 
-        let mut ignore_token = should_start_ignored_buffer_token(
-            KeyCode::KEY_MINUS,
-            &modifiers,
-            buffer.current_is_empty(),
-        );
-        assert!(ignore_token);
+            if !ignore_token {
+                buffer.push(key_event(token_key, false));
+            }
+            assert!(buffer.current_is_empty());
 
-        assert!(is_typing_key(KeyCode::KEY_B));
-        // The `b` in `-b` must stay out of WordBuffer, otherwise visual-b
-        // typing assist can see a false standalone `b` and turn it into `в`.
-        if !ignore_token {
-            buffer.push(key_event(KeyCode::KEY_B, false));
+            if ignore_token {
+                ignore_token = false;
+            } else {
+                buffer.handle_space();
+            }
+            assert!(!ignore_token);
+            assert!(!buffer.prev_had_trailing_space());
+
+            push_text_as_layout(&mut buffer, next_word, false);
+            let (events, _) = buffer.what_to_replay(1).expect("word");
+            assert_eq!(map_original_events(&events), next_word);
         }
-        assert!(buffer.current_is_empty());
-
-        if ignore_token {
-            ignore_token = false;
-        } else {
-            buffer.handle_space();
-        }
-        assert!(!ignore_token);
-        assert!(!buffer.prev_had_trailing_space());
-
-        buffer.push(key_event(KeyCode::KEY_F, false));
-        let (events, _) = buffer.what_to_replay(1).expect("word");
-        assert_eq!(map_original_events(&events), "f");
     }
 
     #[test]
