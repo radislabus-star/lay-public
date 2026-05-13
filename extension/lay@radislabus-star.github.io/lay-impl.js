@@ -21,7 +21,7 @@ const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-const APP_VERSION = '0.1.167';
+const APP_VERSION = '0.1.168';
 const APP_DESCRIPTION = 'Помощник RU/EN раскладки по двойному Shift';
 const APP_RELEASE_DATE = '2026-05-13';
 const APP_LICENSE = 'MIT';
@@ -333,6 +333,14 @@ function focusedWindowInfo() {
     return null;
 }
 
+function persistentSwitchItem(label, active, params = {}) {
+    const item = new PopupMenu.PopupSwitchMenuItem(label, active, params);
+    item.activate = function() {
+        this.toggle();
+    };
+    return item;
+}
+
 // ─── DBus ──────────────────────────────────────────────────
 
 const DBUS_XML = `
@@ -576,7 +584,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _switchItem(label, key, restart = false, tooltip = null) {
-        const item = new PopupMenu.PopupSwitchMenuItem(label, !!this._cfg[key], {});
+        const item = persistentSwitchItem(label, !!this._cfg[key]);
         item.connect('toggled', (_item, state) => {
             this._cfg[key] = state;
             this._saveAndRefresh();
@@ -617,10 +625,9 @@ class LayIndicator extends PanelMenu.Button {
 
     _ptahAlexsMenu() {
         const item = new PopupMenu.PopupSubMenuMenuItem('ptah_alexs', false);
-        const mode = new PopupMenu.PopupSwitchMenuItem(
+        const mode = persistentSwitchItem(
             'Жёстко по окну',
-            !!this._cfg.ptah_alexs_mode,
-            {}
+            !!this._cfg.ptah_alexs_mode
         );
         mode.connect('toggled', (_item, state) => {
             this._cfg.ptah_alexs_mode = state;
@@ -820,10 +827,9 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _pipelineRuleRow(rule, idx) {
-        const item = new PopupMenu.PopupSwitchMenuItem(
+        const item = persistentSwitchItem(
             `${idx + 1}. ${typingRuleLabel(rule.id)}`,
-            rule.enabled,
-            {}
+            rule.enabled
         );
         item.connect('toggled', (_item, state) => {
             this._setTypingRuleEnabled(rule.id, state);
@@ -872,9 +878,33 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _saveAndRebuildMenu() {
+        const openedSubmenus = this._openedSubmenuLabels();
         saveConfig(this._cfg);
         this.menu.removeAll();
         this._buildMenu();
+        this._restoreOpenSubmenus(openedSubmenus);
+    }
+
+    _openedSubmenuLabels() {
+        try {
+            return (this.menu._getMenuItems?.() ?? [])
+                .filter(item => item instanceof PopupMenu.PopupSubMenuMenuItem && item.menu.isOpen)
+                .map(item => item.label.text);
+        } catch(e) {
+            return [];
+        }
+    }
+
+    _restoreOpenSubmenus(labels) {
+        if (!labels.length)
+            return;
+        const wanted = new Set(labels);
+        try {
+            for (const item of this.menu._getMenuItems?.() ?? []) {
+                if (item instanceof PopupMenu.PopupSubMenuMenuItem && wanted.has(item.label.text))
+                    item.menu.open();
+            }
+        } catch(e) {}
     }
 
     _attachTooltip(actor, text) {
@@ -1021,7 +1051,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _daemonSwitchItem() {
-        const item = new PopupMenu.PopupSwitchMenuItem('Демон включён', false, {});
+        const item = persistentSwitchItem('Демон включён', false);
         item.connect('toggled', (_item, state) => {
             if (this._updatingDaemonSwitch)
                 return;
