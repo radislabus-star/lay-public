@@ -1034,6 +1034,7 @@ dependencies = [
  "arboard",
  "clap",
  "evdev",
+ "libc",
  "llama_cpp",
  "serde",
  "serde_json",

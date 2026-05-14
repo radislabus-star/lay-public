@@ -84,6 +84,29 @@ GNOME-трея, DBus bridge и активации раскладки. KDE/Plasma
 - Есть optional multi-tap Shift scope: `2/3/4` тапа могут выбирать `1/2/3`
   слова. Режим выключен по умолчанию.
 
+### Языки, раскладки и словари
+
+Сейчас `lay` рассчитан на пару раскладок **RU/EN**.
+
+Что поддержано:
+
+- физическая конвертация US ↔ RU;
+- русские и английские Hunspell-словари, если они есть в системе;
+- встроенные локальные правила для RU/EN layout-ошибок;
+- char n-gram и LEM-скоринг для коротких RU/EN кандидатов;
+- пользовательские точные правила в `~/.config/lay/replacements.json`;
+- пользовательский защитный список в `~/.config/lay/protected_words.txt`.
+
+Что пока не обещается:
+
+- украинская, немецкая, французская и другие пары раскладок;
+- полноценный грамматический автокорректор;
+- универсальная замена Punto/xneur для всех языков и desktop-окружений;
+- IME/preedit-подсказки прямо внутри поля ввода.
+
+Если нужна другая пара раскладок, лучше открыть issue и приложить конкретные
+примеры: что набрано, что должно получиться, какая раскладка и какой desktop.
+
 ### Сценарии использования и настройки
 
 `lay` можно оставить почти как простой Punto/Caramba-style переключатель, а
@@ -104,6 +127,28 @@ ghbdtn -> привет
 
 Это ручной режим. Он нужен даже тогда, когда автопомощь выключена или не
 уверена.
+
+#### 1a. Только double Shift, без автокоррекции
+
+Если нужна максимально предсказуемая утилита без вмешательства после пробела,
+оставь включённым только ручное исправление:
+
+```json
+{
+  "typing_assist": false,
+  "auto_replace": false,
+  "auto_switch_layout": false
+}
+```
+
+В трее это соответствует выключенным пунктам:
+
+- `Помощь при наборе`;
+- `Автоподмена`;
+- `Авто-layout после пробела`.
+
+Double Shift при этом продолжит работать. Это хороший режим для тех, кто хочет
+только Caramba/Punto-style rescue и не хочет никакой автоматической правки.
 
 #### 2. Исправлять 1, 2 или 3 слова
 
@@ -268,6 +313,28 @@ KDE Plasma и X11 backend также проверены в нашей тесто
 
 Если присылаешь баг-репорт или пример набора, сначала убери приватный текст.
 
+### Похожие проекты и ниша lay
+
+`lay` не пытается объявить себя единственным правильным способом работы с
+раскладками. В Linux уже есть родственные проекты и подходы:
+
+- **xneur** — классический авто-переключатель для X11-сценариев. Исторически
+  важный проект, но текущий `lay` изначально строился вокруг GNOME Wayland,
+  evdev/uinput и ручного double Shift.
+- **easy-switcher** — близкая по боли утилита для переключения/исправления
+  раскладки. `lay` делает упор на локальное replay-поведение, RU/EN smart-tail
+  и tray-настройки для GNOME/KDE.
+- **NSkbd**, **Tapper**, **Mahou** и похожие инструменты закрывают соседние
+  сценарии: хоткеи, layout switching, Windows-подходы или более широкую
+  автоматику.
+- **Punto / Caramba Switcher** — понятный пользовательский ориентир: быстро
+  исправить слово, набранное не в той раскладке. `lay` берёт именно этот
+  рефлекс, но адаптирует его под Linux desktops и ограничения Wayland.
+
+Главная ниша `lay`: лёгкий локальный RU/EN helper, где ручной double Shift
+остаётся главным и предсказуемым действием, а автопомощь можно включать только
+настолько, насколько она не мешает.
+
 ### Установка
 
 Обычная установка ставит всё сразу: Rust-бинарники, user systemd-сервис
@@ -373,8 +440,7 @@ systemctl --user restart lay-daemon
 Последние изменения публичной ветки:
 
 - `0.1.170` — README переписан в продуктовый стиль без авторской истории;
-  добавлен большой раздел сценариев использования и настроек; в меню коррекции
-  добавлены grip-кнопки `⋮⋮` рядом с управлением порядка правил. Публичные
+  добавлен большой раздел сценариев использования и настроек. Публичные
   README/HOW_IT_WORKS синхронизированы со статусом поддержки: проект больше не
   описывается как GNOME Wayland only, KDE Plasma и X11 отмечены как проверенные
   backend'ы с меньшей матрицей покрытия, чем GNOME.
@@ -934,7 +1000,7 @@ Supported/tested target:
 - KDE Plasma 6 through the KDE tray/backend
 - GNOME/KDE Wayland sessions, plus X11 through the X11 backend
 - Rust 1.75+
-- RU/EN layouts
+- RU/EN layouts and dictionaries
 
 Validated with smaller coverage than GNOME:
 
@@ -956,6 +1022,15 @@ lay "руддщ цщкдв"
 echo "ghbdtn" | lay
 # привет
 ```
+
+Language scope: current automatic correction is intentionally RU/EN-focused.
+Other layout pairs are not promised yet. If you need another language pair,
+please open an issue with concrete typed/expected examples and your desktop
+environment.
+
+Manual-only mode: disable `typing_assist`, `auto_replace`, and
+`auto_switch_layout` if you want only the predictable double-Shift rescue
+without automatic corrections after Space.
 
 Privacy summary: `lay-daemon` reads keyboard events locally to provide the
 double-Shift workflow. By default it does not send typed text anywhere, does not

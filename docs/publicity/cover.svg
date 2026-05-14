@@ -21,7 +21,7 @@
 
   <g transform="translate(140 120)">
     <text x="0" y="0" fill="#f5f7fa" font-family="Inter, Cantarell, Arial, sans-serif" font-size="92" font-weight="800">lay</text>
-    <text x="0" y="58" fill="#bfd3c1" font-family="Inter, Cantarell, Arial, sans-serif" font-size="32" font-weight="500">Double Shift layout rescue for GNOME Wayland</text>
+    <text x="0" y="58" fill="#bfd3c1" font-family="Inter, Cantarell, Arial, sans-serif" font-size="32" font-weight="500">Double Shift RU/EN layout rescue for Linux</text>
   </g>
 
   <g transform="translate(170 285)" filter="url(#softShadow)">
@@ -48,4 +48,3 @@
     <text x="0" y="54" fill="#aebbc7" font-family="Inter, Cantarell, Arial, sans-serif" font-size="28">No cloud required for the normal double-Shift path</text>
   </g>
 </svg>
-

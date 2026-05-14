@@ -1,0 +1,57 @@
+name: Feature request
+description: Suggest a lay feature or behavior
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Опишите конкретный сценарий набора. Для lay полезнее всего не абстрактная идея,
+        а пример: что вы печатаете, где мешает текущая логика, каким должно быть поведение.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Какая проблема?
+      placeholder: "Я часто печатаю ..., сейчас приходится ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: desired
+    attributes:
+      label: Какое поведение хочется?
+      placeholder: "Хочу, чтобы lay ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Примеры
+      description: Чем больше коротких typed/expected примеров, тем лучше.
+      placeholder: |
+        typed:
+        expected:
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Область
+      options:
+        - Double Shift
+        - Typing assist
+        - Auto-replace
+        - Layout backend
+        - GNOME tray
+        - KDE tray
+        - X11
+        - Install / update
+        - Documentation
+        - Other
+
+  - type: input
+    id: environment
+    attributes:
+      label: Окружение, если важно
+      placeholder: "GNOME Wayland, KDE Plasma Wayland, X11 WM, ..."

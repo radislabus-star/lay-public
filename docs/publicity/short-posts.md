@@ -2,9 +2,8 @@
 
 ## Russian Telegram / Linux chat
 
-Сделал для себя маленький open-source помощник для GNOME Wayland: `lay`.
-Делюсь с миром — берите, кому тоже не хватает лёгкого double Shift исправления
-слов в RU/EN раскладке.
+`lay` — маленький open-source помощник раскладки для Linux desktops.
+Главный сценарий: лёгкое double Shift исправление слов в RU/EN раскладке.
 
 Сценарий простой: набрал слово не в той RU/EN раскладке, нажал Shift два раза,
 слово перепечаталось в другой раскладке.
@@ -15,30 +14,31 @@ good ntrcn -> good текст
 wi-fi ye   -> wi-fi ну
 ```
 
-Работает локально: Rust daemon + evdev/uinput + маленькое GNOME Shell
-extension для переключения раскладки. Обычный double Shift не использует облако,
-LLM или буфер обмена.
+Работает локально: Rust daemon + evdev/uinput + desktop backend. GNOME
+использует Shell extension, KDE Plasma — отдельный tray и `qdbus6`, X11 —
+native XKB через `x11rb`. Обычный double Shift не использует облако, LLM или
+буфер обмена.
 
-Пока это beta под GNOME Wayland и RU/EN. Делал под свою боль, поэтому особенно
-буду рад коротким воспроизводимым багам от тех, кто тоже много печатает между
-русским и английским.
+Пока это beta под RU/EN. GNOME проверен лучше всего, KDE Plasma и X11 уже
+работают, но матрица чужих систем меньше. Особенно нужны короткие
+воспроизводимые баги от тех, кто много печатает между русским и английским.
 
 GitHub:
 https://github.com/radislabus-star/lay-public
 
 Хабр:
-https://habr.com/ru/sandbox/284260/
+https://habr.com/ru/news/1033522/
 
 ## Published links
 
-- Хабр-песочница: https://habr.com/ru/sandbox/284260/
+- Хабр: https://habr.com/ru/news/1033522/
 - Linux.org.ru: https://www.linux.org.ru/news/opensource/18288596
 - OpenNET: отправлено на модерацию, публичная ссылка появится после проверки.
 
 ## Habr intro teaser
 
-Сделал для себя маленькую утилиту для GNOME Wayland и выкладываю в open source:
-кому нужна лёгкая замена Caramba/Punto-сценария под Linux, берите.
+`lay` — маленькая open-source утилита для Linux desktops: лёгкая замена
+Caramba/Punto-сценария для RU/EN набора.
 
 Главная идея простая: нажимаешь Shift два раза, и слово, набранное не в той
 раскладке, перепечатывается правильно.
@@ -52,8 +52,7 @@ https://habr.com/ru/sandbox/284260/
 
 ## OpenNET / Linux.org.ru style
 
-Сделал для себя и выложил в open source `lay` — лёгкий помощник раскладки для
-GNOME Wayland.
+Выложен в open source `lay` — лёгкий помощник раскладки для Linux desktops.
 
 Что делает: если слово набрано не в той RU/EN раскладке, нажимаешь Shift два
 раза, и оно перепечатывается в другой раскладке. Основной путь локальный, без
@@ -67,11 +66,11 @@ good ntrcn -> good текст
 wi-fi ye   -> wi-fi ну
 ```
 
-Проект beta, делался под личную боль после Caramba на Windows. Если кому надо —
-берите, тестируйте, присылайте короткие воспроизводимые баги.
+Проект beta: GNOME проверен лучше всего, KDE Plasma и X11 уже поддержаны с
+меньшей матрицей покрытия. Нужны короткие воспроизводимые баги.
 
 GitHub:
 https://github.com/radislabus-star/lay-public
 
 Хабр:
-https://habr.com/ru/sandbox/284260/
+https://habr.com/ru/news/1033522/

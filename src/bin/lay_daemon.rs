@@ -60,6 +60,7 @@ use std::collections::BTreeMap;
 #[cfg(test)]
 use std::collections::HashSet;
 use std::io::Write;
+use std::os::fd::{AsRawFd, RawFd};
 use std::process::Command;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Mutex, OnceLock};
@@ -78,15 +79,16 @@ const TEXT_REPLACE_KEY_PACE_MS: u64 = 1;
 const TEXT_REPLACE_BACKSPACE_DOWN_MS: u64 = 1;
 const TEXT_REPLACE_BACKSPACE_PACE_MS: u64 = 2;
 const TEXT_REPLACE_BACKSPACE_SETTLE_MS: u64 = 16;
-const TYPING_ASSIST_IDLE_DELAY_MS: u64 = 90;
+const TYPING_ASSIST_IDLE_DELAY_MS: u64 = 55;
 const TYPING_ASSIST_SPACE_COMMIT_SETTLE_MS: u64 = 8;
-const TEXT_INSERT_KEY_PACE_MS: u64 = 2;
+const TEXT_INSERT_KEY_PACE_MS: u64 = 1;
 const TEXT_INSERT_SPACE_SETTLE_MS: u64 = 8;
 const LAYOUT_SWITCH_SETTLE_MS: u64 = 12;
 const MODIFIER_RELEASE_ROUNDS: usize = 2;
 const MODIFIER_RELEASE_PACE_MS: u64 = 3;
 const LAYOUT_POLL_INTERVAL_MS: u64 = 250;
 const FOCUS_IGNORE_POLL_INTERVAL_MS: u64 = 500;
+const IDLE_EVENT_WAIT_MAX_MS: u64 = 500;
 const HOST_FOCUS_IGNORE_HINTS: &[&str] = &[
     "org.virt-manager.virt-manager",
     "virt-manager",
@@ -315,6 +317,7 @@ fn listen_keyboard(
 ) -> std::io::Result<()> {
     let mut device = Device::open(&device_path)?;
     device.set_nonblocking(true)?;
+    let device_fd = device.as_raw_fd();
     log(&format!(
         "► слушаю: {device_path:?} имя={:?}",
         device.name().unwrap_or("?")
@@ -407,7 +410,15 @@ fn listen_keyboard(
                     &mut events_since_word_start,
                 );
                 if focus_ignored {
-                    std::thread::sleep(Duration::from_millis(5));
+                    wait_for_keyboard_event_or_timeout(
+                        device_fd,
+                        idle_wait_timeout(
+                            pending_multi_tap.as_ref(),
+                            pending_typing_assist_after_space,
+                            last_focus_ignore_poll,
+                            shift_window,
+                        ),
+                    )?;
                     continue;
                 }
                 if multi_tap_scope
@@ -448,7 +459,15 @@ fn listen_keyboard(
                         handle_typing_assist_after_space(&mut buffer, g.as_mut(), &mut executing);
                     }
                 }
-                std::thread::sleep(Duration::from_millis(5));
+                wait_for_keyboard_event_or_timeout(
+                    device_fd,
+                    idle_wait_timeout(
+                        pending_multi_tap.as_ref(),
+                        pending_typing_assist_after_space,
+                        last_focus_ignore_poll,
+                        shift_window,
+                    ),
+                )?;
                 continue;
             }
             Err(e) => return Err(e),
@@ -1059,6 +1078,76 @@ fn update_focus_ignore_state(
         *events_since_word_start = 0;
     }
     *focus_ignored = ignored;
+}
+
+fn wait_for_keyboard_event_or_timeout(fd: RawFd, timeout: Duration) -> std::io::Result<()> {
+    let mut poll_fd = libc::pollfd {
+        fd,
+        events: libc::POLLIN,
+        revents: 0,
+    };
+    let timeout_ms = timeout
+        .max(Duration::from_millis(1))
+        .as_millis()
+        .min(i32::MAX as u128) as i32;
+
+    let rc = unsafe { libc::poll(&mut poll_fd, 1, timeout_ms) };
+    if rc < 0 {
+        let err = std::io::Error::last_os_error();
+        if err.kind() == std::io::ErrorKind::Interrupted {
+            return Ok(());
+        }
+        return Err(err);
+    }
+    Ok(())
+}
+
+fn idle_wait_timeout(
+    pending_multi_tap: Option<&MultiTapPending>,
+    pending_typing_assist_after_space: Option<Instant>,
+    last_focus_ignore_poll: Instant,
+    shift_window: Duration,
+) -> Duration {
+    idle_wait_timeout_at(
+        Instant::now(),
+        pending_multi_tap,
+        pending_typing_assist_after_space,
+        last_focus_ignore_poll,
+        shift_window,
+    )
+}
+
+fn idle_wait_timeout_at(
+    now: Instant,
+    pending_multi_tap: Option<&MultiTapPending>,
+    pending_typing_assist_after_space: Option<Instant>,
+    last_focus_ignore_poll: Instant,
+    shift_window: Duration,
+) -> Duration {
+    let mut wait = Duration::from_millis(IDLE_EVENT_WAIT_MAX_MS);
+
+    if let Some(pending) = pending_multi_tap {
+        wait = wait.min(deadline_remaining(now, pending.last_release, shift_window));
+    }
+    if let Some(scheduled_at) = pending_typing_assist_after_space {
+        wait = wait.min(deadline_remaining(
+            now,
+            scheduled_at,
+            Duration::from_millis(TYPING_ASSIST_IDLE_DELAY_MS),
+        ));
+    }
+    wait.min(deadline_remaining(
+        now,
+        last_focus_ignore_poll,
+        Duration::from_millis(FOCUS_IGNORE_POLL_INTERVAL_MS),
+    ))
+}
+
+fn deadline_remaining(now: Instant, started_at: Instant, delay: Duration) -> Duration {
+    started_at
+        .checked_add(delay)
+        .and_then(|deadline| deadline.checked_duration_since(now))
+        .unwrap_or(Duration::ZERO)
 }
 
 fn focused_window_should_be_ignored() -> bool {
@@ -2109,7 +2198,12 @@ fn switch_to_gnome_layout(
     target_is_ru: bool,
 ) -> Result<(), String> {
     let activate_error = match call_activate_layout(layout_id) {
-        Ok(true) => None,
+        Ok(true) => {
+            if verify_current_layout(target_is_ru) {
+                return Ok(());
+            }
+            Some("ActivateLayout returned true but layout verify failed".to_string())
+        }
         Ok(false) => Some("ActivateLayout returned false".to_string()),
         Err(error) => Some(error),
     };
@@ -2271,6 +2365,9 @@ fn switch_to_x11_layout(layout_id: &str, target_is_ru: bool) -> Result<(), Strin
 
 fn switch_to_target_layout(target_is_ru: bool) -> Result<&'static str, String> {
     let (layout_id, ibus_engine) = target_layout(target_is_ru);
+    if read_current_layout_is_ru().is_ok_and(|current| current == target_is_ru) {
+        return Ok(layout_id);
+    }
     switch_to_layout(layout_id, ibus_engine, target_is_ru).map(|()| {
         settle_after_layout_switch();
         layout_id
@@ -2979,6 +3076,52 @@ mod tests {
         keys.iter()
             .map(|key| key_event(*key, layout_is_ru))
             .collect()
+    }
+
+    #[test]
+    fn idle_wait_uses_long_sleep_when_no_internal_deadlines() {
+        let now = Instant::now();
+
+        assert_eq!(
+            idle_wait_timeout_at(now, None, None, now, Duration::from_millis(120)),
+            Duration::from_millis(IDLE_EVENT_WAIT_MAX_MS)
+        );
+    }
+
+    #[test]
+    fn idle_wait_keeps_multi_tap_and_typing_assist_deadlines_precise() {
+        let now = Instant::now();
+        let pending = MultiTapPending {
+            tap_count: 2,
+            last_release: now - Duration::from_millis(80),
+        };
+
+        assert_eq!(
+            idle_wait_timeout_at(
+                now,
+                Some(&pending),
+                Some(now - Duration::from_millis(40)),
+                now,
+                Duration::from_millis(120)
+            ),
+            Duration::from_millis(15)
+        );
+    }
+
+    #[test]
+    fn idle_wait_returns_zero_when_a_deadline_is_due() {
+        let now = Instant::now();
+
+        assert_eq!(
+            idle_wait_timeout_at(
+                now,
+                None,
+                Some(now - Duration::from_millis(TYPING_ASSIST_IDLE_DELAY_MS)),
+                now,
+                Duration::from_millis(120)
+            ),
+            Duration::ZERO
+        );
     }
 
     fn ascii_hyphen_token_keycodes() -> [KeyCode; 5] {
@@ -4173,8 +4316,10 @@ mod tests {
         assert_eq!(apply_typing_assist("кто-то ", true), None);
         assert_eq!(apply_typing_assist("где-то ", true), None);
         assert_eq!(apply_typing_assist("как-то ", true), None);
+        assert_eq!(apply_typing_assist("из-за ", true), None);
         assert_eq!(apply_typing_assist("кока-коле ", true), None);
         assert_eq!(apply_typing_assist("код-дэ-вуар ", true), None);
+        assert_eq!(correct_wrong_layout_ascii_technical_token("из-за"), None);
         assert_eq!(
             correct_wrong_layout_ascii_technical_token("цш-аш"),
             Some("wi-fi".to_string())
@@ -5801,6 +5946,11 @@ mod tests {
         assert!(are_ru_keyboard_neighbors('з', 'х'));
         assert!(!are_ru_keyboard_neighbors('о', 'ь'));
         assert_eq!(apply_typing_assist_exact("покрыто "), None);
+        assert_eq!(apply_typing_assist_exact("робило "), None);
+        assert_eq!(
+            apply_typing_assist_exact("плозо "),
+            Some("плохо ".to_string())
+        );
     }
 
     #[test]

@@ -834,33 +834,9 @@ class LayIndicator extends PanelMenu.Button {
         item.connect('toggled', (_item, state) => {
             this._setTypingRuleEnabled(rule.id, state);
         });
-        item.add_child(this._pipelineGrip());
         item.add_child(this._smallOrderButton('↑', () => this._moveTypingRule(rule.id, -1)));
         item.add_child(this._smallOrderButton('↓', () => this._moveTypingRule(rule.id, 1)));
         return item;
-    }
-
-    _pipelineGrip() {
-        const baseStyle = 'padding:1px 5px; border-radius:6px; min-width:0; opacity:150;';
-        const hoverStyle = baseStyle + 'background-color:rgba(255,255,255,0.10); opacity:255;';
-        const grip = new St.Button({
-            label: '⋮⋮',
-            reactive: true,
-            can_focus: false,
-            style_class: 'button flat',
-            style: baseStyle,
-        });
-        grip.connect('enter-event', () => {
-            grip.style = hoverStyle;
-            return Clutter.EVENT_PROPAGATE;
-        });
-        grip.connect('leave-event', () => {
-            grip.style = baseStyle;
-            return Clutter.EVENT_PROPAGATE;
-        });
-        grip.connect('clicked', () => Clutter.EVENT_STOP);
-        this._attachTooltip(grip, 'Порядок правила: перемещай кнопками ↑ и ↓.');
-        return grip;
     }
 
     _smallOrderButton(label, onClick) {
@@ -901,9 +877,14 @@ class LayIndicator extends PanelMenu.Button {
         this._saveAndRebuildMenu();
     }
 
+
     _saveAndRebuildMenu() {
-        const openedSubmenus = this._openedSubmenuLabels();
         saveConfig(this._cfg);
+        this._rebuildMenuKeepingOpen();
+    }
+
+    _rebuildMenuKeepingOpen() {
+        const openedSubmenus = this._openedSubmenuLabels();
         this.menu.removeAll();
         this._buildMenu();
         this._restoreOpenSubmenus(openedSubmenus);

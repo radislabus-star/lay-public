@@ -1,0 +1,124 @@
+name: Bug report
+description: Report a reproducible lay bug
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Спасибо за баг-репорт. Пожалуйста, уберите приватный текст из примеров.
+        Лучший баг для lay: короткая строка "набрал / ожидал / получил".
+
+  - type: textarea
+    id: typed
+    attributes:
+      label: Что было набрано?
+      description: Точный минимальный пример. Например, `ghbdtn`, `good ntrcn`, `из-за`.
+      placeholder: "Набрал: ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Что ожидалось?
+      placeholder: "Ожидал: ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Что получилось?
+      placeholder: "Получилось: ..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: trigger
+    attributes:
+      label: Какой сценарий сломался?
+      options:
+        - Double Shift
+        - Typing assist after Space
+        - Auto-replace
+        - Auto-switch layout
+        - Tray / menu
+        - Install / update
+        - KDE tray
+        - X11 backend
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: lay-version
+    attributes:
+      label: Версия lay
+      description: Вывод `lay --version`.
+      placeholder: "lay 0.1.xxx"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: desktop
+    attributes:
+      label: Desktop environment
+      options:
+        - GNOME
+        - KDE Plasma
+        - X11 WM
+        - Sway
+        - Hyprland
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: session
+    attributes:
+      label: Session type
+      options:
+        - Wayland
+        - X11
+        - Unknown
+    validations:
+      required: true
+
+  - type: input
+    id: distro
+    attributes:
+      label: Distro / version
+      placeholder: "Ubuntu 26.04, Fedora 43, Arch, ..."
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Важные настройки
+      description: Можно вставить безопасную часть `~/.config/lay/config.json`.
+      value: |
+        correction_engine:
+        replace_words:
+        typing_assist:
+        auto_replace:
+        auto_switch_layout:
+        lem_2_words:
+        lem_3_words:
+        layout_backend:
+
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Диагностика
+      description: "Для X11 желательно приложить `lay-test-input x11-report`. Для daemon: `systemctl --user status lay-daemon --no-pager`."
+      render: text
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Проверки перед отправкой
+      options:
+        - label: Я убрал приватный текст из примеров.
+          required: true
+        - label: Я проверил, что пример воспроизводится больше одного раза.
+          required: false

@@ -1142,6 +1142,11 @@ fn correct_single_letter_substitution(word: &str) -> Option<String> {
     let chars: Vec<char> = lower.chars().collect();
     let mut found: Option<String> = None;
     for idx in 0..chars.len() {
+        // First-letter substitutions are too ambiguous for automatic correction:
+        // slang, names and dialect forms often differ from dictionary words only there.
+        if idx == 0 {
+            continue;
+        }
         for replacement in RU_ALPHABET {
             if replacement == chars[idx] {
                 continue;
@@ -1205,6 +1210,9 @@ fn correct_vowel_confusion(word: &str) -> Option<String> {
     if is_known_russian_word_or_form(&lower) {
         return None;
     }
+    if looks_like_plausible_russian_past_tense(&lower) {
+        return None;
+    }
 
     best_unique_known_ngram_candidate(
         word,
@@ -1261,6 +1269,9 @@ pub fn correct_missing_letter(word: &str) -> Option<String> {
 
     let lower = word.to_lowercase();
     if is_known_russian_word_or_form(&lower) {
+        return None;
+    }
+    if looks_like_plausible_russian_past_tense(&lower) {
         return None;
     }
 
@@ -1697,6 +1708,7 @@ fn is_plausible_cyrillic_hyphenated_word(word: &str) -> bool {
         }
         if len >= 3
             || is_known_cyrillic_hyphen_part(&lower, russian_short_dictionary())
+            || (idx == 0 && is_common_short_russian_preposition(&lower))
             || (idx > 0 && is_russian_hyphen_particle(&lower))
         {
             strong_parts += 1;
@@ -1732,6 +1744,41 @@ fn is_russian_vowel(ch: char) -> bool {
             | 'Ю'
             | 'Я'
     )
+}
+
+fn looks_like_plausible_russian_past_tense(word: &str) -> bool {
+    const ENDINGS: &[&str] = &[
+        "илась",
+        "ились",
+        "илось",
+        "алась",
+        "ались",
+        "алось",
+        "ила",
+        "или",
+        "ило",
+        "ала",
+        "али",
+        "ало",
+        "ела",
+        "ели",
+        "ело",
+        "ил",
+        "ал",
+        "ел",
+    ];
+
+    ENDINGS.iter().any(|ending| {
+        let Some(stem) = word.strip_suffix(ending) else {
+            return false;
+        };
+        let stem_len = stem.chars().count();
+        stem_len >= 2
+            && stem.chars().any(is_russian_vowel)
+            && stem
+                .chars()
+                .any(|ch| is_cyrillic_letter(ch) && !is_russian_vowel(ch))
+    })
 }
 
 fn is_known_cyrillic_hyphen_part(part: &str, dict: &HashSet<String>) -> bool {
