@@ -8,6 +8,8 @@
 //!   lay-test-input scenario1   — печатает "ghbvth" + двойной Shift
 //!   lay-test-input ghbdtn_shift — печатает "ghbdtn" + двойной Shift
 //!   lay-test-input ghbdtn_enter — печатает "ghbdtn" + двойной Shift + Enter
+//!   lay-test-input ghbdtn_fast_lshift_enter — "ghbdtn" + очень быстрый двойной LShift + Enter
+//!   lay-test-input ghbdtn_extra_lshift_enter — "ghbdtn" + лишние быстрые LShift-тапы + Enter
 //!   lay-test-input ru_p_enter — печатает "п" в RU + Enter
 //!   lay-test-input g_to_ru_enter — печатает "g" + двойной Shift + Enter
 //!   lay-test-input ru_p_to_g_enter — печатает "п" + двойной Shift + Enter
@@ -135,7 +137,10 @@ fn main() -> std::io::Result<()> {
             sleep(Duration::from_millis(500));
             eprintln!("[test] сценарий ghbvth_shift отправлен");
         }
-        "ghbdtn_shift" | "ghbdtn_enter" => {
+        "ghbdtn_shift"
+        | "ghbdtn_enter"
+        | "ghbdtn_fast_lshift_enter"
+        | "ghbdtn_extra_lshift_enter" => {
             // печатает "ghbdtn" потом двойной левый Shift
             for k in [
                 KeyCode::KEY_G,
@@ -149,11 +154,20 @@ fn main() -> std::io::Result<()> {
                 sleep(Duration::from_millis(50));
             }
             sleep(Duration::from_millis(200));
-            tap(&mut dev, KeyCode::KEY_LEFTSHIFT.code())?;
-            sleep(Duration::from_millis(80));
-            tap(&mut dev, KeyCode::KEY_LEFTSHIFT.code())?;
-            sleep(Duration::from_millis(800));
-            if scenario == "ghbdtn_enter" {
+            if scenario == "ghbdtn_fast_lshift_enter" {
+                double_shift_fast(&mut dev, 800)?;
+            } else if scenario == "ghbdtn_extra_lshift_enter" {
+                extra_fast_lshift_taps(&mut dev, 800)?;
+            } else {
+                tap(&mut dev, KeyCode::KEY_LEFTSHIFT.code())?;
+                sleep(Duration::from_millis(80));
+                tap(&mut dev, KeyCode::KEY_LEFTSHIFT.code())?;
+                sleep(Duration::from_millis(800));
+            }
+            if matches!(
+                scenario.as_str(),
+                "ghbdtn_enter" | "ghbdtn_fast_lshift_enter" | "ghbdtn_extra_lshift_enter"
+            ) {
                 tap(&mut dev, KeyCode::KEY_ENTER.code())?;
             }
             eprintln!("[test] сценарий {scenario} отправлен");
@@ -981,6 +995,30 @@ fn double_shift(dev: &mut VirtualDevice, settle_ms: u64) -> std::io::Result<()> 
     sleep(Duration::from_millis(80));
     tap(dev, KeyCode::KEY_LEFTSHIFT.code())?;
     sleep(Duration::from_millis(settle_ms));
+    Ok(())
+}
+
+fn double_shift_fast(dev: &mut VirtualDevice, settle_ms: u64) -> std::io::Result<()> {
+    tap_with_hold(dev, KeyCode::KEY_LEFTSHIFT.code(), 2)?;
+    sleep(Duration::from_millis(8));
+    tap_with_hold(dev, KeyCode::KEY_LEFTSHIFT.code(), 2)?;
+    sleep(Duration::from_millis(settle_ms));
+    Ok(())
+}
+
+fn extra_fast_lshift_taps(dev: &mut VirtualDevice, settle_ms: u64) -> std::io::Result<()> {
+    for _ in 0..4 {
+        tap_with_hold(dev, KeyCode::KEY_LEFTSHIFT.code(), 2)?;
+        sleep(Duration::from_millis(8));
+    }
+    sleep(Duration::from_millis(settle_ms));
+    Ok(())
+}
+
+fn tap_with_hold(dev: &mut VirtualDevice, code: u16, hold_ms: u64) -> std::io::Result<()> {
+    dev.emit(&[InputEvent::new(EventType::KEY.0, code, 1)])?;
+    sleep(Duration::from_millis(hold_ms));
+    dev.emit(&[InputEvent::new(EventType::KEY.0, code, 0)])?;
     Ok(())
 }
 

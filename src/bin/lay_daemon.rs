@@ -86,6 +86,9 @@ const TEXT_INSERT_SPACE_SETTLE_MS: u64 = 8;
 const LAYOUT_SWITCH_SETTLE_MS: u64 = 12;
 const MODIFIER_RELEASE_ROUNDS: usize = 2;
 const MODIFIER_RELEASE_PACE_MS: u64 = 3;
+const MODIFIER_RELEASE_SETTLE_MS: u64 = 4;
+const TRIGGER_RELEASE_SETTLE_MS: u64 = 80;
+const GNOME_NATIVE_REPLACE_EXPERIMENTAL: bool = false;
 const LAYOUT_POLL_INTERVAL_MS: u64 = 250;
 const FOCUS_IGNORE_POLL_INTERVAL_MS: u64 = 500;
 const IDLE_EVENT_WAIT_MAX_MS: u64 = 500;
@@ -445,6 +448,7 @@ fn listen_keyboard(
                             suppress_next_typing_assist_after_manual_replay = true;
                         }
                         drop(g);
+                        shift_state.clear_shifts();
                         dshift_state = DShiftState::Idle;
                         last_double_at = Some(Instant::now());
                         clear_on_next_typing = true;
@@ -555,6 +559,7 @@ fn listen_keyboard(
                                         last_layout_poll = Instant::now();
                                     }
                                     drop(g);
+                                    shift_state.clear_shifts();
                                     dshift_state = DShiftState::Idle;
                                     pending_multi_tap = None;
                                     single_pressed_at = None;
@@ -637,6 +642,7 @@ fn listen_keyboard(
                                         suppress_next_typing_assist_after_manual_replay = true;
                                     }
                                     drop(g);
+                                    shift_state.clear_shifts();
                                     last_double_at = Some(Instant::now());
                                     clear_on_next_typing = true;
                                     log(&format!(
@@ -694,6 +700,7 @@ fn listen_keyboard(
                     suppress_next_typing_assist_after_manual_replay = true;
                 }
                 drop(g);
+                shift_state.clear_shifts();
                 dshift_state = DShiftState::Idle;
                 last_double_at = Some(Instant::now());
                 clear_on_next_typing = true;
@@ -816,6 +823,7 @@ fn listen_keyboard(
                                 suppress_next_typing_assist_after_manual_replay = true;
                             }
                             drop(g);
+                            shift_state.clear_shifts();
                             dshift_state = DShiftState::Idle;
                             last_double_at = Some(Instant::now());
                             clear_on_next_typing = true;
@@ -856,6 +864,7 @@ fn listen_keyboard(
                                         suppress_next_typing_assist_after_manual_replay = true;
                                     }
                                     drop(g);
+                                    shift_state.clear_shifts();
                                     dshift_state = DShiftState::Idle;
                                     last_double_at = Some(Instant::now());
                                     clear_on_next_typing = true;
@@ -1223,6 +1232,11 @@ impl ShiftState {
         }
     }
 
+    fn clear_shifts(&mut self) {
+        self.left = false;
+        self.right = false;
+    }
+
     fn any(&self) -> bool {
         self.left || self.right
     }
@@ -1354,6 +1368,7 @@ fn handle_force_layout_hotkey(
     executing: &mut bool,
 ) -> Option<bool> {
     let started_at = Instant::now();
+    settle_after_physical_trigger_release();
     *executing = true;
     let _executing_guard = ExecutingGuard(executing);
 
@@ -1618,6 +1633,63 @@ fn handle_double_shift(
         }
     }
 
+    if GNOME_NATIVE_REPLACE_EXPERIMENTAL && active_layout_backend() == LayoutBackend::Gnome {
+        let (replace_text, replace_kind) = match &correction {
+            Correction::InsertText(text) if !text.trim().is_empty() => (text.clone(), insert_kind),
+            _ => (mapped_target.clone(), "gnome-replace"),
+        };
+        let replace_target_is_ru = preferred_layout_for_text(&replace_text, target_is_ru);
+        let (layout_id, _) = target_layout(replace_target_is_ru);
+        match call_replace_text(0, n_backspaces, &replace_text, 0, layout_id) {
+            Ok(true) => {
+                if matches!(&correction, Correction::ReplayAll) {
+                    buf.mark_replayed_layout(replace_words, replace_target_is_ru);
+                    if !force_replay_toggle && mapped_orig != replace_text {
+                        append_learning_log(
+                            "layout-replay",
+                            &mapped_orig,
+                            &replace_text,
+                            replace_words,
+                            words_orig,
+                        );
+                    }
+                } else {
+                    let plan = TextReplacement {
+                        move_left: 0,
+                        backspaces: n_backspaces,
+                        insert: replace_text.clone(),
+                        move_right: 0,
+                    };
+                    buf.remember_pending_learning_correction(
+                        replace_kind,
+                        &mapped_orig,
+                        &replace_text,
+                        replace_words,
+                        words_orig,
+                    );
+                    if !buf.remember_replacement_last_word_for_replay(&events, &plan, &replace_text)
+                    {
+                        buf.reset_all();
+                    }
+                }
+                log(&format!(
+                    "  1. GNOME ReplaceText: bs={} insert={:?}",
+                    n_backspaces, replace_text
+                ));
+                log(&format!("  2. layout → {layout_id}"));
+                log(&format!(
+                    "✓ done: {replace_kind}, GNOME-native replace за {}ms",
+                    started_at.elapsed().as_millis()
+                ));
+                return Some(replace_target_is_ru);
+            }
+            Ok(false) => log("⚠ GNOME ReplaceText returned false; fallback to uinput replay"),
+            Err(e) => log(&format!(
+                "⚠ GNOME ReplaceText failed: {e}; fallback to uinput replay"
+            )),
+        }
+    }
+
     let kbd = match virtual_kbd {
         Some(k) => k,
         None => {
@@ -1625,6 +1697,7 @@ fn handle_double_shift(
             return None;
         }
     };
+    settle_after_physical_trigger_release();
     if let Err(e) = release_possible_modifiers(kbd) {
         log(&format!("⚠ modifier cleanup before backspace failed: {e}"));
     }
@@ -1957,6 +2030,7 @@ fn release_possible_modifiers(dev: &mut VirtualDevice) -> std::io::Result<()> {
         dev.emit(&events)?;
         std::thread::sleep(Duration::from_millis(MODIFIER_RELEASE_PACE_MS));
     }
+    std::thread::sleep(Duration::from_millis(MODIFIER_RELEASE_SETTLE_MS));
     Ok(())
 }
 
@@ -2396,6 +2470,10 @@ fn settle_after_layout_switch() {
     std::thread::sleep(Duration::from_millis(LAYOUT_SWITCH_SETTLE_MS));
 }
 
+fn settle_after_physical_trigger_release() {
+    std::thread::sleep(Duration::from_millis(TRIGGER_RELEASE_SETTLE_MS));
+}
+
 fn call_type_text(text: &str) -> Result<String, String> {
     if active_layout_backend() != LayoutBackend::Gnome {
         return Err("TypeText fallback is available only through the GNOME backend".to_string());
@@ -2409,9 +2487,52 @@ fn call_type_text(text: &str) -> Result<String, String> {
     })
 }
 
+fn call_replace_text(
+    move_left: u32,
+    backspaces: u32,
+    text: &str,
+    move_right: u32,
+    layout_id: &str,
+) -> Result<bool, String> {
+    if active_layout_backend() != LayoutBackend::Gnome {
+        return Err("ReplaceText is available only through the GNOME backend".to_string());
+    }
+    call_dbus_replace_text(move_left, backspaces, text, move_right, layout_id).or_else(
+        |fast_error| {
+            reset_dbus_connection();
+            log(&format!(
+                "⚠ DBus fast ReplaceText failed: {fast_error}; fallback gdbus"
+            ));
+            call_replace_text_gdbus(move_left, backspaces, text, move_right, layout_id)
+        },
+    )
+}
+
 fn call_type_text_gdbus(text: &str) -> Result<String, String> {
     let arg = gvariant_string(text);
     run_gdbus(&format!("{DBUS_INTERFACE}.TypeText"), &[&arg])
+}
+
+fn call_replace_text_gdbus(
+    move_left: u32,
+    backspaces: u32,
+    text: &str,
+    move_right: u32,
+    layout_id: &str,
+) -> Result<bool, String> {
+    let text_arg = gvariant_string(text);
+    let layout_arg = gvariant_string(layout_id);
+    let reply = run_gdbus(
+        &format!("{DBUS_INTERFACE}.ReplaceText"),
+        &[
+            &move_left.to_string(),
+            &backspaces.to_string(),
+            &text_arg,
+            &move_right.to_string(),
+            &layout_arg,
+        ],
+    )?;
+    parse_gdbus_bool(&reply).ok_or_else(|| format!("не распарсил ReplaceText: {reply}"))
 }
 
 fn dbus_connection() -> Result<zbus::blocking::Connection, String> {
@@ -2461,6 +2582,28 @@ fn call_dbus_type_text(text: &str) -> Result<String, String> {
         )
         .map_err(|e| e.to_string())?;
     Ok(String::new())
+}
+
+fn call_dbus_replace_text(
+    move_left: u32,
+    backspaces: u32,
+    text: &str,
+    move_right: u32,
+    layout_id: &str,
+) -> Result<bool, String> {
+    let reply = dbus_connection()?
+        .call_method(
+            Some(DBUS_DEST),
+            DBUS_PATH,
+            Some(DBUS_INTERFACE),
+            "ReplaceText",
+            &(move_left, backspaces, text, move_right, layout_id),
+        )
+        .map_err(|e| e.to_string())?;
+    reply
+        .body()
+        .deserialize::<bool>()
+        .map_err(|e| e.to_string())
 }
 
 fn call_dbus_activate_layout(id: &str) -> Result<bool, String> {
@@ -3122,6 +3265,22 @@ mod tests {
             ),
             Duration::ZERO
         );
+    }
+
+    #[test]
+    fn shift_state_cleanup_after_trigger_keeps_shortcuts_but_drops_caps() {
+        let mut state = ShiftState::default();
+        state.update(KeyCode::KEY_LEFTSHIFT, 1);
+        state.update(KeyCode::KEY_RIGHTSHIFT, 1);
+        state.update(KeyCode::KEY_LEFTCTRL, 1);
+
+        assert!(state.any());
+        assert!(state.shortcut_active());
+
+        state.clear_shifts();
+
+        assert!(!state.any());
+        assert!(state.shortcut_active());
     }
 
     fn ascii_hyphen_token_keycodes() -> [KeyCode; 5] {
@@ -5968,6 +6127,7 @@ mod tests {
             Some("Явно, ".to_string())
         );
         assert_eq!(apply_typing_assist_exact("я тут "), None);
+        assert_eq!(apply_typing_assist_exact("мы сами "), None);
         assert_eq!(apply_typing_assist_exact("чтобы точно "), None);
         assert_eq!(apply_typing_assist_exact("хо хо "), None);
         assert_eq!(apply_typing_assist_exact("про сою "), None);

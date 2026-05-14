@@ -21,7 +21,7 @@ const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-const APP_VERSION = '0.1.170';
+const APP_VERSION = '0.1.171';
 const APP_DESCRIPTION = 'RU/EN layout helper: double Shift и помощь при наборе';
 const APP_RELEASE_DATE = '2026-05-14';
 const APP_LICENSE = 'MIT';
@@ -348,6 +348,14 @@ const DBUS_XML = `
   <interface name="io.github.radislabus_star.LayDaemon">
     <method name="Ping"><arg name="reply" direction="out" type="s"/></method>
     <method name="TypeText"><arg name="text" direction="in" type="s"/></method>
+    <method name="ReplaceText">
+      <arg name="move_left" direction="in" type="u"/>
+      <arg name="backspaces" direction="in" type="u"/>
+      <arg name="text" direction="in" type="s"/>
+      <arg name="move_right" direction="in" type="u"/>
+      <arg name="layout_id" direction="in" type="s"/>
+      <arg name="success" direction="out" type="b"/>
+    </method>
     <method name="ActivateLayout">
       <arg name="id" direction="in" type="s"/>
       <arg name="success" direction="out" type="b"/>
@@ -377,6 +385,20 @@ class LayDaemonService {
     TypeText(text) {
         if (Main.inputMethod?.commit) { try { Main.inputMethod.commit(text); return; } catch(e) {} }
         this._typeTextByKeyvals(text);
+    }
+    ReplaceText(moveLeft, backspaces, text, moveRight, layoutId) {
+        try {
+            this._tapKeyval(Clutter.KEY_Left, Number(moveLeft));
+            this._tapKeyval(Clutter.KEY_BackSpace, Number(backspaces));
+            if (layoutId)
+                activateLayoutId(layoutId);
+            this.TypeText(text);
+            this._tapKeyval(Clutter.KEY_Right, Number(moveRight));
+            return true;
+        } catch(e) {
+            log(`[lay-extension] ReplaceText failed: ${e}`);
+            return false;
+        }
     }
     _tapKeyval(keyval, count) {
         for (let i = 0; i < count; i++) {

@@ -32,6 +32,8 @@ class Case:
 
 CASES = {
     "ghbdtn_enter": Case("ghbdtn_enter", "привет"),
+    "ghbdtn_fast_lshift_enter": Case("ghbdtn_fast_lshift_enter", "привет"),
+    "ghbdtn_extra_lshift_enter": Case("ghbdtn_extra_lshift_enter", "привет"),
     "ctrl_plus_ghbdtn_enter": Case("ctrl_plus_ghbdtn_enter", "привет"),
     "dhtvz_toggle_enter": Case("dhtvz_toggle_enter", "dhtvz"),
     "g_to_ru_enter": Case("g_to_ru_enter", "п"),
