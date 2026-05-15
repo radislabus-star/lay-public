@@ -93,6 +93,7 @@ const GNOME_NATIVE_REPLACE_EXPERIMENTAL: bool = false;
 const LAYOUT_POLL_INTERVAL_MS: u64 = 250;
 const FOCUS_IGNORE_POLL_INTERVAL_MS: u64 = 500;
 const IDLE_EVENT_WAIT_MAX_MS: u64 = 500;
+const ENTER_AUTOCORRECT_EXPERIMENT_ENV: &str = "LAY_EXPERIMENTAL_ENTER_AUTOCORRECT";
 const HOST_FOCUS_IGNORE_HINTS: &[&str] = &[
     "org.virt-manager.virt-manager",
     "virt-manager",
@@ -150,7 +151,25 @@ fn active_typing_assist() -> bool {
 }
 
 fn active_enter_autocorrect() -> bool {
-    LayConfig::load().enter_autocorrect
+    let cfg = LayConfig::load();
+    active_enter_autocorrect_from_env(
+        cfg.enter_autocorrect,
+        std::env::var(ENTER_AUTOCORRECT_EXPERIMENT_ENV)
+            .ok()
+            .as_deref(),
+    )
+}
+
+fn active_enter_autocorrect_from_env(config_enabled: bool, env_value: Option<&str>) -> bool {
+    config_enabled
+        && env_value
+            .map(|value| {
+                matches!(
+                    value.trim().to_ascii_lowercase().as_str(),
+                    "1" | "true" | "yes" | "on"
+                )
+            })
+            .unwrap_or(false)
 }
 
 fn active_auto_switch_layout() -> bool {
@@ -275,7 +294,13 @@ fn main() -> std::io::Result<()> {
         startup_cfg.active_text_backend().as_str()
     ));
     let warm_smart = startup_cfg.active_correction_engine() == CorrectionEngine::Smart;
-    let warm_typing_assist = startup_cfg.typing_assist || startup_cfg.enter_autocorrect;
+    let enter_autocorrect_active = active_enter_autocorrect_from_env(
+        startup_cfg.enter_autocorrect,
+        std::env::var(ENTER_AUTOCORRECT_EXPERIMENT_ENV)
+            .ok()
+            .as_deref(),
+    );
+    let warm_typing_assist = startup_cfg.typing_assist || enter_autocorrect_active;
     if !args.detect_only && (warm_smart || warm_typing_assist) {
         std::thread::spawn(move || {
             let started_at = Instant::now();
@@ -382,6 +407,12 @@ fn listen_keyboard(
         "► слушаю: {device_path:?} имя={:?}",
         device.name().unwrap_or("?")
     ));
+    let enter_autocorrect_active = active_enter_autocorrect_from_env(
+        cfg.enter_autocorrect,
+        std::env::var(ENTER_AUTOCORRECT_EXPERIMENT_ENV)
+            .ok()
+            .as_deref(),
+    );
     log(&format!(
         "► config: mode={} backend={} replace_words={} auto_replace={} typing_assist={} enter_autocorrect={} auto_switch_layout={} lem2={} lem3={} trigger={} force_layout={} ru_key={} en_key={} multi_tap={} max_taps={} tap={}ms window={}ms debounce={}ms",
         cfg.mode,
@@ -389,7 +420,7 @@ fn listen_keyboard(
         cfg.replace_words,
         cfg.auto_replace,
         cfg.typing_assist,
-        cfg.enter_autocorrect,
+        enter_autocorrect_active,
         cfg.auto_switch_layout,
         cfg.lem_2_words,
         cfg.lem_3_words,
@@ -3866,6 +3897,10 @@ mod tests {
     fn enter_autocorrect_candidate_is_off_contract_until_enabled_by_config() {
         let cfg = LayConfig::default();
         assert!(!cfg.enter_autocorrect);
+        assert!(!active_enter_autocorrect_from_env(true, None));
+        assert!(!active_enter_autocorrect_from_env(true, Some("0")));
+        assert!(active_enter_autocorrect_from_env(true, Some("1")));
+        assert!(active_enter_autocorrect_from_env(true, Some("true")));
     }
 
     #[test]

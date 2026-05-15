@@ -164,7 +164,6 @@ def config_status_text() -> str:
         f"область={cfg.get('replace_words')}\n"
         f"помощь_при_наборе={bool(cfg.get('typing_assist'))}\n"
         f"автоподмена={bool(cfg.get('auto_replace'))}\n"
-        f"enter_autocorrect={bool(cfg.get('enter_autocorrect'))}\n"
         f"конфиг={CONFIG_PATH}"
     )
 
@@ -317,7 +316,6 @@ def main() -> int:
             self.menu.addSeparator()
             self.add_bool_action("Помощь при наборе", "typing_assist", cfg)
             self.add_bool_action("Автоподмена", "auto_replace", cfg)
-            self.add_bool_action("Исправлять перед Enter", "enter_autocorrect", cfg)
             self.add_bool_action("Автопереключение раскладки", "auto_switch_layout", cfg)
             self.add_bool_action("Запоминать правки", "learning_log", cfg)
 

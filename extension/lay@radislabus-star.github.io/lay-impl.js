@@ -21,7 +21,7 @@ const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-const APP_VERSION = '0.1.173';
+const APP_VERSION = '0.1.174';
 const APP_DESCRIPTION = 'RU/EN layout helper: double Shift и помощь при наборе';
 const APP_RELEASE_DATE = '2026-05-15';
 const APP_LICENSE = 'MIT';
@@ -516,13 +516,6 @@ class LayIndicator extends PanelMenu.Button {
             'auto_replace',
             true,
             AUTO_REPLACE_TOOLTIP
-        ));
-        this.menu.addMenuItem(this._switchItem(
-            'Исправлять перед Enter',
-            'enter_autocorrect',
-            true,
-            'Opt-in режим: при Enter lay пробует исправить текущий хвост перед отправкой.\n'
-                + 'По умолчанию выключено, потому что обычная помощь уже работает после пробела.'
         ));
         this.menu.addMenuItem(this._switchItem(
             'Запоминать правки',

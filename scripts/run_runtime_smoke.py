@@ -183,6 +183,8 @@ def run_case(
             json.dumps(config, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
+        if config.get("enter_autocorrect"):
+            runtime_env["LAY_EXPERIMENTAL_ENTER_AUTOCORRECT"] = "1"
     dialog_proc = subprocess.Popen(
         dialog_args(dialog, case),
         stdout=subprocess.PIPE,
