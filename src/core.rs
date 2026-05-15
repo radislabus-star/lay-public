@@ -25,6 +25,7 @@ pub use crate::ngram::{
     en_score, ru_candidate_is_better, ru_candidate_margin, ru_score, tokenize_text, Lang,
 };
 pub use crate::quality::score as quality_score;
+pub use crate::text_backend::{ImeReplaceRequest, TextBackendPreference};
 pub use crate::text_edit::{
     plan_committed_tail_replacement, plan_text_replacement, tail_chars, TextReplacement,
 };
@@ -114,6 +115,18 @@ mod tests {
         assert!(runs[0].target_is_ru);
         assert!(!runs[1].target_is_ru);
         assert!(preferred_layout_for_text("AmoCRM Я", false));
+    }
+
+    #[test]
+    fn facade_exposes_text_backend_contract() {
+        assert_eq!(
+            TextBackendPreference::parse("ime"),
+            TextBackendPreference::Ime
+        );
+        assert_eq!(
+            ImeReplaceRequest::committed_tail("мы сами ", "мы сами ").backspaces,
+            8
+        );
     }
 
     #[test]

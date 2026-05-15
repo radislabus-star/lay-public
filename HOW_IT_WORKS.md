@@ -111,6 +111,39 @@ sandbox-изолированными приложениями (Flatpak, snap, GN
 системы это **физическая клавиатура**. Получают события все приложения,
 включая sandbox-изолированные.
 
+### Экспериментальный IME backend
+
+`uinput` остаётся production backend, но у него есть принципиальные края:
+compositor может ещё считать Shift активным, приложение может не принять часть
+Backspace, а Wayland-фокус в разных toolkit'ах ведёт себя по-разному.
+
+Правильный путь для атомарной замены текста — input-method слой. Поэтому в
+проект добавлен экспериментальный IBus bridge:
+
+```json
+{
+  "text_backend": "ime"
+}
+```
+
+Схема:
+
+```text
+lay-daemon решил правку
+        |
+        v
+io.github.radislabus_star.LayIme.ReplaceTail(N, text)
+        |
+        v
+IBus.Engine.delete_surrounding_text(-N, N)
+IBus.Engine.commit_text(text)
+```
+
+Этот backend не пытается печатать в чужое окно из GNOME Shell extension. Он
+работает только когда активен IBus engine `Lay IME RU` или `Lay IME US` и приложение
+поддерживает surrounding text. Если bridge не отвечает или не имеет фокуса,
+daemon пишет предупреждение и откатывается на старый uinput-путь.
+
 ### FSM детектора двойного Shift
 
 Простого «два release подряд» недостаточно: если держать Shift для
@@ -315,12 +348,17 @@ Learning log включается только опцией `learning_log`. По
 
 GNOME extension экспортирует session-local DBus bridge для `lay-daemon`.
 Публичными оставлены только методы, которые нужны runtime-пути: `ActivateLayout`,
-`CurrentLayout`, `NextLayout`, `ListLayouts`, `TypeText` и `Ping`.
+`CurrentLayout`, `NextLayout`, `ListLayouts`, `TypeText`, `ReplaceText` и
+`Ping`.
 
-Методы прямого удаления текста (`Backspace`, `ReplaceLastN`) не экспортируются:
-обычная очистка слова делается через uinput внутри daemon. `TypeText` остаётся,
-потому что он нужен для typing assist и fallback-вставки, если GNOME не подтвердил
-переключение раскладки после удаления слова.
+`ReplaceText` оставлен как отключённый эксперимент Shell-side атомарной замены,
+но daemon не использует его по умолчанию: GNOME Shell не является правильным
+слоем для committed-text правки произвольного Wayland-приложения. Для этого
+выделен отдельный `LayIme` IBus bridge.
+
+Обычная очистка слова делается через uinput внутри daemon. `TypeText` остаётся,
+потому что он нужен для fallback-вставки, если GNOME не подтвердил переключение
+раскладки после удаления слова.
 
 DBus внутри user session не является границей безопасности от процессов того же
 пользователя. Если пользователь не доверяет локальным процессам в своей сессии,

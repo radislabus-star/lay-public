@@ -2099,7 +2099,7 @@ fn generate_extra_letter_candidates(lower: &str) -> Vec<String> {
         }
     }
 
-    if chars.len() >= 7 {
+    if chars.len() >= 10 {
         for idx in 0..=chars.len() - 2 {
             if idx + 2 == chars.len() {
                 continue;
@@ -2110,6 +2110,9 @@ fn generate_extra_letter_candidates(lower: &str) -> Vec<String> {
             let mut candidate = String::with_capacity(lower.len());
             candidate.extend(chars[..idx].iter());
             candidate.extend(chars[idx + 2..].iter());
+            if candidate.chars().count() < 8 {
+                continue;
+            }
             if seen.insert(candidate.clone()) {
                 candidates.push(candidate);
             }

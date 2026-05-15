@@ -34,6 +34,7 @@ use lay::keyboard::{
 use lay::keyboard::{
     is_layout_decision_key, map_events_to_layout, split_event_words, ReplayLayoutDecision,
 };
+use lay::text_backend::{ImeReplaceRequest, TextBackendPreference};
 #[cfg(test)]
 use lay::text_edit::plan_text_replacement;
 use lay::text_edit::{
@@ -136,6 +137,10 @@ fn active_layout_backend() -> LayoutBackend {
     backend
 }
 
+fn active_text_backend() -> TextBackendPreference {
+    LayConfig::load().active_text_backend()
+}
+
 fn active_auto_replace() -> bool {
     LayConfig::load().auto_replace
 }
@@ -165,6 +170,9 @@ fn active_typing_assist_pipeline_for_auto_replace() -> Vec<TypingAssistRuleConfi
 const DBUS_PATH: &str = "/io/github/radislabus_star/LayDaemon";
 const DBUS_INTERFACE: &str = "io.github.radislabus_star.LayDaemon";
 const DBUS_DEST: &str = "org.gnome.Shell";
+const IME_DBUS_DEST: &str = "io.github.radislabus_star.LayIme";
+const IME_DBUS_PATH: &str = "/io/github/radislabus_star/LayIme";
+const IME_DBUS_INTERFACE: &str = "io.github.radislabus_star.LayIme";
 
 #[derive(Parser, Debug)]
 #[command(
@@ -192,6 +200,39 @@ struct ExecutingGuard<'a>(&'a mut bool);
 impl Drop for ExecutingGuard<'_> {
     fn drop(&mut self) {
         *self.0 = false;
+    }
+}
+
+struct DeviceGrabGuard<'a> {
+    device: &'a mut Device,
+    active: bool,
+}
+
+impl Drop for DeviceGrabGuard<'_> {
+    fn drop(&mut self) {
+        if self.active {
+            if let Err(e) = self.device.ungrab() {
+                log(&format!("⚠ physical device ungrab failed: {e}"));
+            }
+        }
+    }
+}
+
+fn grab_physical_device_for_correction(device: &mut Device) -> DeviceGrabGuard<'_> {
+    match device.grab() {
+        Ok(()) => DeviceGrabGuard {
+            device,
+            active: true,
+        },
+        Err(e) => {
+            log(&format!(
+                "⚠ physical device grab failed: {e}; continuing without input isolation"
+            ));
+            DeviceGrabGuard {
+                device,
+                active: false,
+            }
+        }
     }
 }
 
@@ -224,6 +265,10 @@ fn main() -> std::io::Result<()> {
         "► layout backend: {} (config={})",
         startup_backend.label(),
         startup_cfg.layout_backend
+    ));
+    log(&format!(
+        "► text backend: {}",
+        startup_cfg.active_text_backend().as_str()
     ));
     let warm_smart = startup_cfg.active_correction_engine() == CorrectionEngine::Smart;
     let warm_typing_assist = startup_cfg.typing_assist;
@@ -269,6 +314,14 @@ fn main() -> std::io::Result<()> {
         }
     } else if !args.detect_only {
         log("► GNOME extension ping skipped for non-GNOME layout backend");
+    }
+    if !args.detect_only && startup_cfg.active_text_backend().should_try_ime() {
+        match call_ime_ping() {
+            Ok(reply) => log(&format!("► IME bridge: {reply}")),
+            Err(e) => log(&format!(
+                "⚠ IME bridge unavailable ({e}); uinput fallback remains enabled"
+            )),
+        }
     }
 
     // Virtual keyboard через uinput для re-typing физических кнопок
@@ -402,8 +455,13 @@ fn listen_keyboard(
         Instant::now() - Duration::from_millis(FOCUS_IGNORE_POLL_INTERVAL_MS);
 
     loop {
-        let events: Vec<InputEvent> = match device.fetch_events() {
-            Ok(events) => events.collect(),
+        let fetched_events = {
+            device
+                .fetch_events()
+                .map(|events| events.collect::<Vec<_>>())
+        };
+        let events: Vec<InputEvent> = match fetched_events {
+            Ok(events) => events,
             Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
                 update_focus_ignore_state(
                     &mut focus_ignored,
@@ -431,6 +489,7 @@ fn listen_keyboard(
                     if let Some(pending) = pending_multi_tap.take() {
                         let replace_words =
                             multi_tap_scope_for_taps(pending.tap_count).unwrap_or(1);
+                        let _physical_grab = grab_physical_device_for_correction(&mut device);
                         let mut g = virtual_kbd.lock().unwrap();
                         let correction_result = run_manual_correction_with_scope(
                             &mut buffer,
@@ -623,6 +682,8 @@ fn listen_keyboard(
                                         }
                                     ));
                                     let mut g = virtual_kbd.lock().unwrap();
+                                    let _physical_grab =
+                                        grab_physical_device_for_correction(&mut device);
                                     let replace_words = active_replace_words();
                                     let engine = active_correction_engine();
                                     let auto_replace = active_auto_replace();
@@ -680,6 +741,7 @@ fn listen_keyboard(
                         " ✓"
                     }
                 ));
+                let _physical_grab = grab_physical_device_for_correction(&mut device);
                 let mut g = virtual_kbd.lock().unwrap();
                 let replace_words = active_replace_words();
                 let engine = active_correction_engine();
@@ -803,6 +865,7 @@ fn listen_keyboard(
                                     " ✓"
                                 }
                             ));
+                            let _physical_grab = grab_physical_device_for_correction(&mut device);
                             let mut g = virtual_kbd.lock().unwrap();
                             let replace_words = active_replace_words();
                             let engine = active_correction_engine();
@@ -847,6 +910,8 @@ fn listen_keyboard(
                                 if pending.tap_count >= multi_tap_max_taps {
                                     let replace_words =
                                         multi_tap_scope_for_taps(pending.tap_count).unwrap_or(3);
+                                    let _physical_grab =
+                                        grab_physical_device_for_correction(&mut device);
                                     let mut g = virtual_kbd.lock().unwrap();
                                     let correction_result = run_manual_correction_with_scope(
                                         &mut buffer,
@@ -1455,6 +1520,52 @@ fn handle_typing_assist_after_space(
         return;
     };
 
+    if should_try_ime_text_backend() {
+        let original_layout = read_current_layout_is_ru().ok();
+        if try_ime_replace_tail(&original, &replacement, "typing-assist").unwrap_or(false) {
+            let target_layout = preferred_layout_for_text(&replacement, true);
+            if active_auto_switch_layout() {
+                match switch_to_target_layout(target_layout) {
+                    Ok(layout_id) => log(&format!("  typing-assist layout → {layout_id}")),
+                    Err(e) => log(&format!("⚠ typing-assist layout switch failed: {e}")),
+                }
+            } else if let Some(layout_is_ru) = original_layout {
+                match switch_to_target_layout(layout_is_ru) {
+                    Ok(layout_id) => log(&format!("  typing-assist layout restored → {layout_id}")),
+                    Err(e) => log(&format!("⚠ typing-assist layout restore failed: {e}")),
+                }
+            }
+            let words = original.split_whitespace().count();
+            buf.remember_pending_learning_correction(
+                "typing-assist",
+                &original,
+                &replacement,
+                words,
+                words,
+            );
+            if !buf.remember_replacement_last_word_for_replay(
+                &events,
+                &TextReplacement {
+                    move_left: 0,
+                    backspaces: original.chars().count() as u32,
+                    insert: replacement.clone(),
+                    move_right: 0,
+                },
+                &replacement,
+            ) {
+                buf.reset_all();
+            }
+            buf.remember_pending_auto_undo("typing-assist", &original, &replacement, words, words);
+            log(&format!(
+                "✓ done: помощь при наборе {:?} → {:?} через IME за {}ms",
+                original,
+                replacement,
+                started_at.elapsed().as_millis()
+            ));
+            return;
+        }
+    }
+
     let Some(kbd) = virtual_kbd else {
         log("⚠ typing-assist: нет uinput device");
         return;
@@ -1630,6 +1741,61 @@ fn handle_double_shift(
                 correction = Correction::InsertText(text);
                 insert_kind = "auto-replace";
             }
+        }
+    }
+
+    if should_try_ime_text_backend() {
+        let (replace_text, replace_kind) = match &correction {
+            Correction::InsertText(text) if !text.trim().is_empty() => (text.clone(), insert_kind),
+            _ => (mapped_target.clone(), "ime-replay"),
+        };
+        let replace_target_is_ru = preferred_layout_for_text(&replace_text, target_is_ru);
+        if try_ime_replace_tail(&mapped_orig, &replace_text, replace_kind).unwrap_or(false) {
+            if matches!(&correction, Correction::ReplayAll) {
+                buf.mark_replayed_layout(replace_words, replace_target_is_ru);
+                if !force_replay_toggle && mapped_orig != replace_text {
+                    append_learning_log(
+                        "layout-replay",
+                        &mapped_orig,
+                        &replace_text,
+                        replace_words,
+                        words_orig,
+                    );
+                }
+            } else {
+                let plan = TextReplacement {
+                    move_left: 0,
+                    backspaces: mapped_orig.chars().count() as u32,
+                    insert: replace_text.clone(),
+                    move_right: 0,
+                };
+                buf.remember_pending_learning_correction(
+                    replace_kind,
+                    &mapped_orig,
+                    &replace_text,
+                    replace_words,
+                    words_orig,
+                );
+                if !buf.remember_replacement_last_word_for_replay(&events, &plan, &replace_text) {
+                    buf.reset_all();
+                }
+            }
+            return match switch_to_target_layout(replace_target_is_ru) {
+                Ok(layout_id) => {
+                    log(&format!("  layout → {layout_id}"));
+                    log(&format!(
+                        "✓ done: {replace_kind}, IME replace-tail за {}ms",
+                        started_at.elapsed().as_millis()
+                    ));
+                    Some(replace_target_is_ru)
+                }
+                Err(e) => {
+                    log(&format!(
+                        "⚠ {replace_kind} IME text committed, layout switch failed: {e}"
+                    ));
+                    None
+                }
+            };
         }
     }
 
@@ -2271,12 +2437,17 @@ fn switch_to_gnome_layout(
     ibus_engine: &str,
     target_is_ru: bool,
 ) -> Result<(), String> {
+    let needs_ime_engine = active_text_backend().should_try_ime();
     let activate_error = match call_activate_layout(layout_id) {
         Ok(true) => {
             if verify_current_layout(target_is_ru) {
-                return Ok(());
+                if !needs_ime_engine {
+                    return Ok(());
+                }
+                None
+            } else {
+                Some("ActivateLayout returned true but layout verify failed".to_string())
             }
-            Some("ActivateLayout returned true but layout verify failed".to_string())
         }
         Ok(false) => Some("ActivateLayout returned false".to_string()),
         Err(error) => Some(error),
@@ -2450,9 +2621,23 @@ fn switch_to_target_layout(target_is_ru: bool) -> Result<&'static str, String> {
 
 fn target_layout(target_is_ru: bool) -> (&'static str, &'static str) {
     if target_is_ru {
-        ("ru", "xkb:ru::rus")
+        (
+            "ru",
+            if active_text_backend().should_try_ime() {
+                "lay-ime-ru"
+            } else {
+                "xkb:ru::rus"
+            },
+        )
     } else {
-        ("us", "xkb:us::eng")
+        (
+            "us",
+            if active_text_backend().should_try_ime() {
+                "lay-ime-us"
+            } else {
+                "xkb:us::eng"
+            },
+        )
     }
 }
 
@@ -2506,6 +2691,71 @@ fn call_replace_text(
             call_replace_text_gdbus(move_left, backspaces, text, move_right, layout_id)
         },
     )
+}
+
+fn should_try_ime_text_backend() -> bool {
+    active_text_backend().should_try_ime()
+}
+
+fn try_ime_replace_tail(original: &str, replacement: &str, kind: &str) -> Result<bool, String> {
+    if !should_try_ime_text_backend() {
+        return Ok(false);
+    }
+    let request = ImeReplaceRequest::committed_tail(original, replacement);
+    if request.is_noop() {
+        return Ok(false);
+    }
+    match call_ime_replace_tail(request.backspaces, &request.text) {
+        Ok(true) => {
+            log(&format!(
+                "  IME replace-tail ({kind}): bs={} insert={:?}",
+                request.backspaces, request.text
+            ));
+            Ok(true)
+        }
+        Ok(false) => {
+            log("⚠ IME replace-tail returned false; fallback to uinput");
+            Ok(false)
+        }
+        Err(e) => {
+            log(&format!(
+                "⚠ IME replace-tail failed: {e}; fallback to uinput"
+            ));
+            Err(e)
+        }
+    }
+}
+
+fn call_ime_ping() -> Result<String, String> {
+    let reply = dbus_connection()?
+        .call_method(
+            Some(IME_DBUS_DEST),
+            IME_DBUS_PATH,
+            Some(IME_DBUS_INTERFACE),
+            "Ping",
+            &(),
+        )
+        .map_err(|e| e.to_string())?;
+    reply
+        .body()
+        .deserialize::<String>()
+        .map_err(|e| e.to_string())
+}
+
+fn call_ime_replace_tail(backspaces: u32, text: &str) -> Result<bool, String> {
+    let reply = dbus_connection()?
+        .call_method(
+            Some(IME_DBUS_DEST),
+            IME_DBUS_PATH,
+            Some(IME_DBUS_INTERFACE),
+            "ReplaceTail",
+            &(backspaces, text),
+        )
+        .map_err(|e| e.to_string())?;
+    reply
+        .body()
+        .deserialize::<bool>()
+        .map_err(|e| e.to_string())
 }
 
 fn call_type_text_gdbus(text: &str) -> Result<String, String> {
@@ -5773,6 +6023,25 @@ mod tests {
     }
 
     #[test]
+    fn typing_assist_auto_replace_pipeline_avoids_risky_deletions() {
+        let pipeline =
+            typing_assist_pipeline_for_auto_replace(true, &default_typing_assist_pipeline());
+
+        assert_eq!(
+            apply_typing_assist_with_pipeline("исправленнно ", false, &pipeline),
+            Some("исправлено ".to_string())
+        );
+        assert_eq!(
+            apply_typing_assist_with_pipeline("кнокопками ", false, &pipeline),
+            None
+        );
+        assert_eq!(
+            apply_typing_assist_with_pipeline("бешанный ", false, &pipeline),
+            None
+        );
+    }
+
+    #[test]
     fn typing_assist_prefers_reflexive_verb_fix_over_extra_letter_guess() {
         assert_eq!(correct_extra_letters("прорватся"), None);
         assert_eq!(
@@ -6356,6 +6625,12 @@ mod tests {
         assert_eq!(apply_typing_assist_exact("она нужна "), None);
         assert_eq!(apply_typing_assist_exact("важна "), None);
         assert_eq!(apply_typing_assist_exact("важно "), None);
+        assert_eq!(apply_typing_assist_exact("банный "), None);
+        assert_eq!(apply_typing_assist_exact("бешанный "), None);
+        assert_eq!(apply_typing_assist_exact("БЕШАННЫЙ "), None);
+        assert_eq!(apply_typing_assist_exact("поения "), None);
+        assert_eq!(apply_typing_assist_exact("автозамена "), None);
+        assert_eq!(apply_typing_assist_exact("агрессивная "), None);
     }
 
     #[test]

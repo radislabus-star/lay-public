@@ -51,6 +51,12 @@ CASES = {
     "ru_p_enter": Case("ru_p_enter", "п", start_layout="ru"),
     "ru_p_to_g_enter": Case("ru_p_to_g_enter", "g", start_layout="ru"),
     "ru_p_toggle2_enter": Case("ru_p_toggle2_enter", "п", start_layout="ru"),
+    "slovo_ru_to_us_fast_lshift_enter": Case(
+        "slovo_ru_to_us_fast_lshift_enter", "ckjdj", start_layout="ru"
+    ),
+    "slovo_ru_to_us_extra_lshift_enter": Case(
+        "slovo_ru_to_us_extra_lshift_enter", "ckjdj", start_layout="ru"
+    ),
     "vyvodim_dva_enter": Case("vyvodim_dva_enter", "выводим два"),
     "wifi_ye_enter": Case("wifi_ye_enter", "wi-fi ну"),
 }
@@ -71,6 +77,11 @@ def main() -> int:
     parser.add_argument("--use-system-daemon", action="store_true")
     parser.add_argument("--daemon-debug", action="store_true")
     parser.add_argument("--no-build", action="store_true")
+    parser.add_argument(
+        "--ime-engine",
+        action="store_true",
+        help="use lay-ime-ru/lay-ime-us IBus engines as the start layout",
+    )
     args = parser.parse_args()
 
     dialog = choose_dialog_command()
@@ -89,6 +100,7 @@ def main() -> int:
             args.focus_delay,
             args.timeout,
             args.daemon_debug,
+            args.ime_engine,
         )
         status = "OK" if ok else "BAD"
         print(f"{status} {case.name}: got={got!r} expected={case.expected!r}")
@@ -134,8 +146,9 @@ def run_case(
     focus_delay: float,
     timeout: float,
     daemon_debug: bool,
+    ime_engine: bool,
 ) -> tuple[bool, str, str]:
-    activate_layout(case.start_layout)
+    activate_layout(case.start_layout, ime_engine)
     dialog_proc = subprocess.Popen(
         dialog_args(dialog, case),
         stdout=subprocess.PIPE,
@@ -259,7 +272,7 @@ def wait_for_device_access(path: Path, timeout: float) -> bool:
     return os.access(path, os.R_OK)
 
 
-def activate_layout(layout: str) -> None:
+def activate_layout(layout: str, ime_engine: bool = False) -> None:
     if activate_layout_kde(layout):
         return
 
@@ -279,7 +292,10 @@ def activate_layout(layout: str) -> None:
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
-    engine = "xkb:ru::rus" if layout == "ru" else "xkb:us::eng"
+    if ime_engine:
+        engine = "lay-ime-ru" if layout == "ru" else "lay-ime-us"
+    else:
+        engine = "xkb:ru::rus" if layout == "ru" else "xkb:us::eng"
     subprocess.run(
         ["ibus", "engine", engine],
         stdout=subprocess.DEVNULL,

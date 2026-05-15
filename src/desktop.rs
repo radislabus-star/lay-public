@@ -72,7 +72,7 @@ pub fn normalize_layout_id(layout: &str) -> String {
 }
 
 pub fn is_ru_layout_id(layout: &str) -> bool {
-    normalize_layout_id(layout) == "ru"
+    matches!(normalize_layout_id(layout).as_str(), "ru" | "lay-ime-ru")
 }
 
 #[cfg(test)]
@@ -116,6 +116,8 @@ mod tests {
         assert_eq!(normalize_layout_id(" ru\n"), "ru");
         assert_eq!(normalize_layout_id("xkb:ru::rus"), "ru");
         assert!(is_ru_layout_id("xkb:ru"));
+        assert!(is_ru_layout_id("lay-ime-ru"));
         assert!(!is_ru_layout_id("xkb:us"));
+        assert!(!is_ru_layout_id("lay-ime-us"));
     }
 }

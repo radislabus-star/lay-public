@@ -21,9 +21,9 @@ const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-const APP_VERSION = '0.1.171';
+const APP_VERSION = '0.1.172';
 const APP_DESCRIPTION = 'RU/EN layout helper: double Shift и помощь при наборе';
-const APP_RELEASE_DATE = '2026-05-14';
+const APP_RELEASE_DATE = '2026-05-15';
 const APP_LICENSE = 'MIT';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_PLATFORM = 'Linux desktops: GNOME, KDE, Wayland, X11';
@@ -78,6 +78,7 @@ const DEFAULTS = {
     mode: 'simple',
     correction_engine: 'replay',
     layout_backend: 'auto',
+    text_backend: 'uinput',
     trigger: 'double-lshift',
     force_layout_hotkeys: false,
     force_ru_key: 'single-rctrl',
@@ -495,6 +496,7 @@ class LayIndicator extends PanelMenu.Button {
         this.menu.box.style = `min-width:${MENU_WIDTH}px; padding:2px 0;`;
         this._engineButtons = {};
         this._scopeButtons = {};
+        this._backendButtons = {};
         this._triggerButtons = {};
         this._triggerItems = {};
         this._forceRuItems = {};
@@ -642,6 +644,19 @@ class LayIndicator extends PanelMenu.Button {
             false,
             LEM_3_TOOLTIP
         ));
+        item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        item.menu.addMenuItem(this._segmentedRow('Вставка', [
+            ['uinput', 'uinput', () => {
+                this._cfg.text_backend = 'uinput';
+                this._saveAndRefresh();
+                restartDaemon();
+            }],
+            ['ime', 'IME', () => {
+                this._cfg.text_backend = 'ime';
+                this._saveAndRefresh();
+                restartDaemon();
+            }],
+        ], this._backendButtons));
         return item;
     }
 
@@ -1219,6 +1234,8 @@ class LayIndicator extends PanelMenu.Button {
             this._setButtonActive(button, id === this._cfg.correction_engine);
         for (const [id, button] of Object.entries(this._scopeButtons ?? {}))
             this._setButtonActive(button, Number(id) === this._cfg.replace_words);
+        for (const [id, button] of Object.entries(this._backendButtons ?? {}))
+            this._setButtonActive(button, id === this._cfg.text_backend);
         for (const [id, button] of Object.entries(this._triggerButtons ?? {}))
             this._setButtonActive(button, id === this._cfg.trigger);
         for (const [id, row] of Object.entries(this._triggerItems ?? {}))
@@ -1238,6 +1255,9 @@ class LayIndicator extends PanelMenu.Button {
     _saveAndRefresh() {
         this._cfg.replace_words = Math.max(1, Math.min(3, this._cfg.replace_words));
         this._cfg.correction_engine = this._cfg.correction_engine === 'smart' ? 'smart' : 'replay';
+        this._cfg.text_backend = ['uinput', 'ime', 'auto'].includes(this._cfg.text_backend)
+            ? this._cfg.text_backend
+            : 'uinput';
         this._cfg.ptah_alexs_mode = !!this._cfg.ptah_alexs_mode;
         this._cfg.ptah_alexs_rules = normalizePtahRules(this._cfg.ptah_alexs_rules);
         if (this._cfg.force_ru_key === this._cfg.force_en_key)
@@ -1337,7 +1357,7 @@ class LayIndicator extends PanelMenu.Button {
         const ptah = this._cfg.ptah_alexs_mode ? 'ptah on' : 'ptah off';
         const force = this._cfg.force_layout_hotkeys ? 'RU/EN hotkeys' : 'RU/EN off';
         const multi = this._cfg.multi_tap_scope ? 'multi-tap on' : 'multi-tap off';
-        return `${this._engineLabel()} · ${this._cfg.replace_words} сл. · ${lem} · ${autoSwitch} · ${ptah} · ${force} · ${multi} · ${this._triggerLabel(this._cfg.trigger)}`;
+        return `${this._engineLabel()} · ${this._cfg.replace_words} сл. · ${lem} · ${this._cfg.text_backend} · ${autoSwitch} · ${ptah} · ${force} · ${multi} · ${this._triggerLabel(this._cfg.trigger)}`;
     }
 
     _aboutStatsText() {

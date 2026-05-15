@@ -14,6 +14,8 @@
 //!   lay-test-input g_to_ru_enter — печатает "g" + двойной Shift + Enter
 //!   lay-test-input ru_p_to_g_enter — печатает "п" + двойной Shift + Enter
 //!   lay-test-input ru_p_toggle2_enter — печатает "п" + двойной Shift × 2 + Enter
+//!   lay-test-input slovo_ru_to_us_fast_lshift_enter — печатает "слово" + быстрый двойной Shift + Enter
+//!   lay-test-input slovo_ru_to_us_extra_lshift_enter — печатает "слово" + лишние быстрые Shift-тапы + Enter
 //!   lay-test-input ctrl_plus_ghbdtn_enter — жмёт Ctrl+Shift+=, затем "ghbdtn" + двойной Shift + Enter
 //!   lay-test-input dhtvz_toggle_enter — печатает "dhtvz" + двойной Shift × 2 + Enter
 //!   lay-test-input dhtvz_toggle3_enter — печатает "dhtvz" + двойной Shift × 3 + Enter
@@ -197,6 +199,28 @@ fn main() -> std::io::Result<()> {
             } else {
                 double_shift_enter(&mut dev, 900)?;
             }
+            eprintln!("[test] сценарий {scenario} отправлен");
+        }
+        "slovo_ru_to_us_fast_lshift_enter" | "slovo_ru_to_us_extra_lshift_enter" => {
+            activate_layout("ru");
+            sleep(Duration::from_millis(250));
+            tap_keys(
+                &mut dev,
+                &[
+                    KeyCode::KEY_C,
+                    KeyCode::KEY_K,
+                    KeyCode::KEY_J,
+                    KeyCode::KEY_D,
+                    KeyCode::KEY_J,
+                ],
+                35,
+            )?;
+            if scenario == "slovo_ru_to_us_extra_lshift_enter" {
+                extra_fast_lshift_taps(&mut dev, 900)?;
+            } else {
+                double_shift_fast(&mut dev, 900)?;
+            }
+            tap(&mut dev, KeyCode::KEY_ENTER.code())?;
             eprintln!("[test] сценарий {scenario} отправлен");
         }
         "ctrl_plus_ghbdtn_enter" => {

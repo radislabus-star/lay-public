@@ -24,6 +24,7 @@ CONFIG_DEFAULTS: dict[str, Any] = {
     "mode": "simple",
     "correction_engine": "smart",
     "layout_backend": "auto",
+    "text_backend": "uinput",
     "trigger": "double-lshift",
     "force_layout_hotkeys": False,
     "force_ru_key": "single-rctrl",
@@ -158,6 +159,7 @@ def config_status_text() -> str:
         f"{lay_version()}\n"
         f"демон={'работает' if daemon_active() else 'остановлен'}\n"
         f"режим={cfg.get('correction_engine') or cfg.get('mode')}\n"
+        f"вставка={cfg.get('text_backend', 'uinput')}\n"
         f"область={cfg.get('replace_words')}\n"
         f"помощь_при_наборе={bool(cfg.get('typing_assist'))}\n"
         f"автоподмена={bool(cfg.get('auto_replace'))}\n"
@@ -319,6 +321,16 @@ def main() -> int:
             advanced = self.menu.addMenu("Арбитр")
             self.add_bool_action("LEM для 2 слов", "lem_2_words", cfg, advanced)
             self.add_bool_action("LEM для 3 слов", "lem_3_words", cfg, advanced)
+            backend_menu = advanced.addMenu("Вставка текста")
+            backend_group = QActionGroup(backend_menu)
+            backend_group.setExclusive(True)
+            for value, label in (("uinput", "uinput"), ("ime", "IME / IBus")):
+                action = QAction(label, backend_menu)
+                action.setCheckable(True)
+                action.setChecked(str(cfg.get("text_backend", "uinput")) == value)
+                action.triggered.connect(lambda _checked, chosen=value: self.update_config("text_backend", chosen))
+                backend_group.addAction(action)
+                backend_menu.addAction(action)
 
             self.menu.addSeparator()
             about = QAction("О программе", self.menu)
@@ -378,6 +390,8 @@ def main() -> int:
                 cfg["mode"] = "simple"
             if cfg.get("force_ru_key") == cfg.get("force_en_key"):
                 cfg["force_layout_hotkeys"] = False
+            if cfg.get("text_backend") not in ("uinput", "ime", "auto"):
+                cfg["text_backend"] = "uinput"
             cfg["multi_tap_max_taps"] = max(2, min(4, int(cfg.get("multi_tap_max_taps", 4))))
             save_config(cfg)
             self.run_service_action("restart", notify=False)

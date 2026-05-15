@@ -17,8 +17,9 @@ echo "== node --check GNOME extension =="
 node --check extension/lay@radislabus-star.github.io/lay-impl.js
 node --check extension/lay@radislabus-star.github.io/extension.js
 
-echo "== python compile KDE tray =="
+echo "== python compile desktop helpers =="
 python3 -m py_compile scripts/lay-kde-tray.py
+python3 -m py_compile scripts/lay-ibus-engine.py
 bash -n install.sh update.sh scripts/install-remote.sh scripts/lay-host-vm-guard.sh
 
 echo "== cargo build --release --bins =="

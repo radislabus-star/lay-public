@@ -79,9 +79,9 @@ install_packages() {
 base_packages_for_pm() {
     pm="$1"
     case "$pm" in
-        apt) echo "libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip" ;;
-        pacman) echo "libxcb wl-clipboard xclip" ;;
-        dnf|yum) echo "libxcb wl-clipboard xclip" ;;
+        apt) echo "libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip ibus gir1.2-ibus-1.0 python3-gi" ;;
+        pacman) echo "libxcb wl-clipboard xclip ibus python-gobject" ;;
+        dnf|yum) echo "libxcb wl-clipboard xclip ibus python3-gobject" ;;
         *) echo "" ;;
     esac
 }
@@ -203,13 +203,28 @@ ln -sf "$DIR/target/release/lay-daemon" ~/.local/bin/lay-daemon
 ln -sf "$DIR/target/release/lay-test-input" ~/.local/bin/lay-test-input
 ln -sf "$DIR/target/release/lay-ngram-corpus" ~/.local/bin/lay-ngram-corpus
 ln -sf "$DIR/scripts/lay-kde-tray.py" ~/.local/bin/lay-kde-tray
+ln -sf "$DIR/scripts/lay-ibus-engine.py" ~/.local/bin/lay-ibus-engine
 ln -sf "$DIR/scripts/lay-host-vm-guard.sh" ~/.local/bin/lay-host-vm-guard
 echo "✓ lay        → ~/.local/bin/lay"
 echo "✓ lay-daemon → ~/.local/bin/lay-daemon"
 echo "✓ lay-test-input → ~/.local/bin/lay-test-input"
 echo "✓ lay-ngram-corpus → ~/.local/bin/lay-ngram-corpus"
 echo "✓ lay-kde-tray → ~/.local/bin/lay-kde-tray"
+echo "✓ lay-ibus-engine → ~/.local/bin/lay-ibus-engine"
 echo "✓ lay-host-vm-guard → ~/.local/bin/lay-host-vm-guard"
+
+echo ""
+echo "=== optional IBus bridge ==="
+mkdir -p "$HOME/.local/share/ibus/component"
+IBUS_COMPONENT_XML="$HOME/.local/share/ibus/component/lay-ime.xml"
+"$HOME/.local/bin/lay-ibus-engine" --xml > "$IBUS_COMPONENT_XML"
+if [ -d /usr/share/ibus/component ] && command -v sudo >/dev/null 2>&1; then
+    sudo cp "$IBUS_COMPONENT_XML" /usr/share/ibus/component/lay-ime.xml 2>/dev/null || true
+    sudo ibus write-cache --system 2>/dev/null || true
+fi
+ibus write-cache 2>/dev/null || true
+echo "✓ IBus component установлен: ~/.local/share/ibus/component/lay-ime.xml"
+echo "  Экспериментальный режим: выбрать Lay IME RU/Lay IME US в IBus и поставить text_backend=ime"
 
 echo ""
 echo "=== systemd unit для lay-daemon ==="

@@ -273,7 +273,34 @@ RU/EN фразах, где простое “перевернуть всё” б
 }
 ```
 
-#### 10. Если не хватает настройки
+#### 10. Экспериментальный IME backend
+
+Обычный production-путь использует `uinput`: `lay` стирает хвост и печатает
+нужный текст как виртуальная клавиатура. Это работает широко, но у такого
+подхода есть естественные края: приложение может не успеть принять Backspace,
+а compositor может ещё держать физический Shift.
+
+В проекте есть экспериментальный IBus/IME bridge. Его цель другая: не
+синтезировать клавиши, а попросить input method удалить committed tail и
+вставить replacement через `delete_surrounding_text + commit_text`.
+
+Включается явно:
+
+```json
+{
+  "text_backend": "ime"
+}
+```
+
+Важно:
+
+- по умолчанию используется `"text_backend": "uinput"`;
+- IME bridge требует активный IBus engine `Lay IME RU` или `Lay IME US`;
+- если bridge недоступен или нет фокуса, daemon откатывается на uinput;
+- режим считается экспериментальным и нужен для испытаний GNOME Wayland
+  приложений, где uinput иногда даёт крайние эффекты.
+
+#### 11. Если не хватает настройки
 
 Проект уже достаточно настраиваемый, но клавиатурные привычки у всех разные.
 Если не хватает режима, backend'а, хоткея или защиты для конкретного сценария,
@@ -307,6 +334,11 @@ KDE Plasma и X11 backend также проверены в нашей тесто
   и отдельный `lay-kde-tray`.
 - `layout_backend = "x11"`: native XKB через `x11rb`; shell-tools
   `xkb-switch`, `xkblayout-state` и `setxkbmap` остаются только fallback.
+- `text_backend = "uinput"`: стабильный способ удаления/вставки через
+  виртуальную клавиатуру.
+- `text_backend = "ime"`: экспериментальный IBus bridge для
+  `delete_surrounding_text + commit_text`; включается вручную и падает обратно
+  на uinput, если bridge не готов.
 
 Другие версии GNOME, дистрибутивы, Sway, Hyprland и раскладки кроме RU/EN могут
 потребовать доработок.
@@ -554,6 +586,7 @@ gnome-extensions enable lay@radislabus-star.github.io
 - Rust 1.75+
 - доступ к `/dev/input` через группу `input`
 - доступный `/dev/uinput` для обратной печати
+- IBus и `python3-gi`, если включаешь экспериментальный `text_backend = "ime"`
 
 Для KDE backend нужен `qdbus` или `qdbus6`; для KDE tray нужен PyQt6.
 Установщик ставит эти пакеты в Plasma-сессии и поддерживает Ubuntu/Debian,
@@ -710,6 +743,7 @@ src/word_buffer.rs история текущего/предыдущих слов
 src/lem.rs        арбитр кандидатов
 src/ngram.rs      локальный scorer естественности
 src/text_edit.rs  минимальный план замены текста без лишней перепечатки
+src/text_backend.rs выбор uinput/IME способа применения готовой правки
 ```
 
 Desktop-специфичная часть остаётся отдельно: GNOME использует Shell extension,

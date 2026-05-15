@@ -12,6 +12,7 @@ pub mod llm;
 pub mod ngram;
 pub mod quality;
 pub mod stats;
+pub mod text_backend;
 pub mod text_edit;
 pub mod typing_assist;
 pub mod word_buffer;

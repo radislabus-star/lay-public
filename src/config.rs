@@ -5,6 +5,7 @@
 //! adapters.
 
 use crate::desktop::{resolve_layout_backend, LayoutBackend};
+use crate::text_backend::TextBackendPreference;
 
 pub const CONFIG_PATH: &str = ".config/lay/config.json";
 
@@ -38,6 +39,8 @@ pub const LAYOUT_ONLY_TYPING_ASSIST_RULES: &[&str] = &[
     "layout_ru_to_en",
     "layout_en_to_ru",
 ];
+
+const LIVE_AUTO_REPLACE_DISABLED_RULES: &[&str] = &["extra_letters"];
 
 #[derive(Debug, Clone, serde::Deserialize)]
 pub struct TypingAssistRuleConfig {
@@ -78,6 +81,8 @@ pub struct LayConfig {
     pub correction_engine: Option<String>,
     /// Layout backend: auto | gnome | kde | x11.
     pub layout_backend: String,
+    /// Text edit backend: uinput | ime | auto.
+    pub text_backend: String,
     /// Trigger: double-* | caps-lock | single-*.
     pub trigger: String,
     /// Optional direct RU/EN hotkeys, independent from the correction trigger.
@@ -130,6 +135,7 @@ impl Default for LayConfig {
             mode: "simple".into(),
             correction_engine: None,
             layout_backend: "auto".into(),
+            text_backend: "uinput".into(),
             trigger: "double-lshift".into(),
             force_layout_hotkeys: false,
             force_ru_key: "single-rctrl".into(),
@@ -197,6 +203,10 @@ impl LayConfig {
         )
     }
 
+    pub fn active_text_backend(&self) -> TextBackendPreference {
+        TextBackendPreference::parse(&self.text_backend)
+    }
+
     pub fn active_typing_assist_pipeline(&self) -> Vec<TypingAssistRuleConfig> {
         normalize_typing_assist_pipeline(&self.typing_assist_pipeline)
     }
@@ -236,6 +246,12 @@ pub fn typing_assist_pipeline_for_auto_replace(
             rule.enabled =
                 rule.enabled && LAYOUT_ONLY_TYPING_ASSIST_RULES.contains(&rule.id.as_str());
         }
+    } else {
+        for rule in &mut rules {
+            if LIVE_AUTO_REPLACE_DISABLED_RULES.contains(&rule.id.as_str()) {
+                rule.enabled = false;
+            }
+        }
     }
     rules
 }
@@ -250,6 +266,7 @@ mod tests {
         assert_eq!(cfg.mode, "simple");
         assert_eq!(cfg.active_replace_words(), 1);
         assert_eq!(cfg.active_correction_engine(), CorrectionEngine::Replay);
+        assert_eq!(cfg.active_text_backend(), TextBackendPreference::Uinput);
         assert!(!cfg.force_layout_hotkeys);
         assert_eq!(cfg.force_ru_key, "single-rctrl");
         assert_eq!(cfg.force_en_key, "single-ralt");
@@ -321,6 +338,20 @@ mod tests {
         assert!(pipeline
             .iter()
             .find(|rule| rule.id == "missing_letter")
+            .is_some_and(|rule| !rule.enabled));
+    }
+
+    #[test]
+    fn auto_replace_on_disables_risky_deletion_rules() {
+        let pipeline =
+            typing_assist_pipeline_for_auto_replace(true, &default_typing_assist_pipeline());
+        assert!(pipeline
+            .iter()
+            .find(|rule| rule.id == "repeated_letter")
+            .is_some_and(|rule| rule.enabled));
+        assert!(pipeline
+            .iter()
+            .find(|rule| rule.id == "extra_letters")
             .is_some_and(|rule| !rule.enabled));
     }
 }
