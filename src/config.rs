@@ -104,6 +104,8 @@ pub struct LayConfig {
     pub auto_replace: bool,
     /// Safe typing assistance after Space.
     pub typing_assist: bool,
+    /// Optional correction attempt on Enter before submitting/sending text.
+    pub enter_autocorrect: bool,
     /// Keep active layout aligned to typing-assist result.
     pub auto_switch_layout: bool,
     /// Use LEM arbiter for a two-word smart tail.
@@ -148,6 +150,7 @@ impl Default for LayConfig {
             replace_words: 1,
             auto_replace: false,
             typing_assist: false,
+            enter_autocorrect: false,
             auto_switch_layout: true,
             lem_2_words: true,
             lem_3_words: true,
@@ -271,6 +274,7 @@ mod tests {
         assert_eq!(cfg.force_ru_key, "single-rctrl");
         assert_eq!(cfg.force_en_key, "single-ralt");
         assert!(!cfg.multi_tap_scope);
+        assert!(!cfg.enter_autocorrect);
         assert_eq!(cfg.active_multi_tap_max_taps(), 4);
         assert!(cfg.auto_switch_layout);
         assert!(cfg.lem_enabled_for_scope(2));

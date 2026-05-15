@@ -10,10 +10,12 @@ from __future__ import annotations
 
 import argparse
 import dataclasses
+import json
 import os
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -28,10 +30,16 @@ class Case:
     name: str
     expected: str
     start_layout: str = "us"
+    config_overrides: dict[str, object] | None = None
 
 
 CASES = {
     "ghbdtn_enter": Case("ghbdtn_enter", "привет"),
+    "ghbdtn_enter_autocorrect": Case(
+        "ghbdtn_enter_autocorrect",
+        "привет",
+        config_overrides={"enter_autocorrect": True},
+    ),
     "ghbdtn_fast_lshift_enter": Case("ghbdtn_fast_lshift_enter", "привет"),
     "ghbdtn_extra_lshift_enter": Case("ghbdtn_extra_lshift_enter", "привет"),
     "ctrl_plus_ghbdtn_enter": Case("ctrl_plus_ghbdtn_enter", "привет"),
@@ -149,6 +157,32 @@ def run_case(
     ime_engine: bool,
 ) -> tuple[bool, str, str]:
     activate_layout(case.start_layout, ime_engine)
+    runtime_env = dict_env()
+    temp_home: tempfile.TemporaryDirectory[str] | None = None
+    if case.config_overrides:
+        if daemon_bin is None:
+            return (
+                False,
+                "",
+                "case needs isolated config; run without --use-system-daemon",
+            )
+        temp_home = tempfile.TemporaryDirectory(prefix="lay-smoke-home-")
+        runtime_env["HOME"] = temp_home.name
+        config_dir = Path(temp_home.name) / ".config" / "lay"
+        config_dir.mkdir(parents=True, exist_ok=True)
+        config = {
+            "mode": "simple",
+            "correction_engine": "replay",
+            "replace_words": 1,
+            "auto_replace": False,
+            "typing_assist": False,
+            "auto_switch_layout": True,
+            **case.config_overrides,
+        }
+        (config_dir / "config.json").write_text(
+            json.dumps(config, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
     dialog_proc = subprocess.Popen(
         dialog_args(dialog, case),
         stdout=subprocess.PIPE,
@@ -188,6 +222,7 @@ def run_case(
             text=True,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.PIPE,
+            env=runtime_env,
         )
         time.sleep(0.8)
 
@@ -231,6 +266,8 @@ def run_case(
         details.append(f"daemon exited {daemon.returncode}")
     if stderr:
         details.append(f"{dialog} stderr:\n{stderr}")
+    if temp_home is not None:
+        temp_home.cleanup()
 
     return got == case.expected and sender.returncode == 0 and dialog_proc.returncode == 0, got, "\n".join(details)
 

@@ -149,6 +149,10 @@ fn active_typing_assist() -> bool {
     LayConfig::load().typing_assist
 }
 
+fn active_enter_autocorrect() -> bool {
+    LayConfig::load().enter_autocorrect
+}
+
 fn active_auto_switch_layout() -> bool {
     LayConfig::load().auto_switch_layout
 }
@@ -271,7 +275,7 @@ fn main() -> std::io::Result<()> {
         startup_cfg.active_text_backend().as_str()
     ));
     let warm_smart = startup_cfg.active_correction_engine() == CorrectionEngine::Smart;
-    let warm_typing_assist = startup_cfg.typing_assist;
+    let warm_typing_assist = startup_cfg.typing_assist || startup_cfg.enter_autocorrect;
     if !args.detect_only && (warm_smart || warm_typing_assist) {
         std::thread::spawn(move || {
             let started_at = Instant::now();
@@ -379,12 +383,13 @@ fn listen_keyboard(
         device.name().unwrap_or("?")
     ));
     log(&format!(
-        "► config: mode={} backend={} replace_words={} auto_replace={} typing_assist={} auto_switch_layout={} lem2={} lem3={} trigger={} force_layout={} ru_key={} en_key={} multi_tap={} max_taps={} tap={}ms window={}ms debounce={}ms",
+        "► config: mode={} backend={} replace_words={} auto_replace={} typing_assist={} enter_autocorrect={} auto_switch_layout={} lem2={} lem3={} trigger={} force_layout={} ru_key={} en_key={} multi_tap={} max_taps={} tap={}ms window={}ms debounce={}ms",
         cfg.mode,
         active_layout_backend().label(),
         cfg.replace_words,
         cfg.auto_replace,
         cfg.typing_assist,
+        cfg.enter_autocorrect,
         cfg.auto_switch_layout,
         cfg.lem_2_words,
         cfg.lem_3_words,
@@ -1050,6 +1055,31 @@ fn listen_keyboard(
             if matches!(key, KeyCode::KEY_BACKSPACE | KeyCode::KEY_DELETE) && value == 1 {
                 buffer.note_learning_backspace();
             }
+            if key == KeyCode::KEY_ENTER
+                && value == 1
+                && active_enter_autocorrect()
+                && !buffer.is_empty()
+            {
+                let _physical_grab = grab_physical_device_for_correction(&mut device);
+                let mut g = virtual_kbd.lock().unwrap();
+                let correction_result = handle_enter_autocorrect(
+                    &mut buffer,
+                    active_replace_words(),
+                    g.as_mut(),
+                    &mut executing,
+                );
+                if let Some(is_ru) = correction_result {
+                    current_layout_is_ru = is_ru;
+                    last_layout_poll = Instant::now();
+                    buffer.reset_all();
+                    pending_typing_assist_after_space = None;
+                    ignore_current_token_until_space = false;
+                    events_since_word_start = 0;
+                    clear_on_next_typing = true;
+                    log("· Enter autocorrect consumed boundary");
+                    continue;
+                }
+            }
             if is_hard_boundary(key) {
                 if value == 1 && !buffer.is_empty() {
                     if !matches!(key, KeyCode::KEY_BACKSPACE | KeyCode::KEY_DELETE) {
@@ -1645,6 +1675,183 @@ fn handle_typing_assist_after_space(
         replacement,
         started_at.elapsed().as_millis()
     ));
+}
+
+fn enter_autocorrect_candidate(
+    buf: &WordBuffer,
+    replace_words: usize,
+    allow_layout_auto: bool,
+    pipeline: &[TypingAssistRuleConfig],
+) -> Option<(Vec<KeyEvent>, String, String)> {
+    let (events, _) = buf.what_to_replay(replace_words)?;
+    let original = map_original_events(&events);
+    if original.trim().is_empty() {
+        return None;
+    }
+
+    let original_has_trailing_space = original
+        .chars()
+        .next_back()
+        .is_some_and(char::is_whitespace);
+    let assist_input = if original_has_trailing_space {
+        original.clone()
+    } else {
+        format!("{original} ")
+    };
+    let mut replacement =
+        apply_typing_assist_with_pipeline(&assist_input, allow_layout_auto, pipeline)?;
+    if original_has_trailing_space {
+        replacement = ensure_committed_tail_spacing(&original, replacement);
+    } else {
+        replacement = replacement.trim_end().to_string();
+    }
+
+    if replacement == original || replacement.trim().is_empty() {
+        None
+    } else {
+        Some((events, original, replacement))
+    }
+}
+
+fn handle_enter_autocorrect(
+    buf: &mut WordBuffer,
+    replace_words: usize,
+    virtual_kbd: Option<&mut VirtualDevice>,
+    executing: &mut bool,
+) -> Option<bool> {
+    if !TYPING_ASSIST_RUNTIME_READY.load(Ordering::Relaxed) {
+        log("· enter-autocorrect skipped: warmup pending");
+        return None;
+    }
+
+    let started_at = Instant::now();
+    let allow_layout_auto = active_auto_switch_layout();
+    #[cfg(test)]
+    let pipeline = default_typing_assist_pipeline();
+    #[cfg(not(test))]
+    let pipeline = active_typing_assist_pipeline_for_auto_replace();
+    let (events, original, replacement) =
+        enter_autocorrect_candidate(buf, replace_words, allow_layout_auto, &pipeline)?;
+
+    if should_try_ime_text_backend() {
+        let original_layout = read_current_layout_is_ru().ok();
+        if try_ime_replace_tail(&original, &replacement, "enter-autocorrect").unwrap_or(false) {
+            let target_layout = preferred_layout_for_text(&replacement, true);
+            if let Some(kbd) = virtual_kbd {
+                if let Err(e) = emit_key_taps_fast(kbd, KeyCode::KEY_ENTER, 1) {
+                    log(&format!("⚠ enter-autocorrect Enter send failed: {e}"));
+                }
+            }
+            if active_auto_switch_layout() {
+                match switch_to_target_layout(target_layout) {
+                    Ok(layout_id) => log(&format!("  enter-autocorrect layout → {layout_id}")),
+                    Err(e) => log(&format!("⚠ enter-autocorrect layout switch failed: {e}")),
+                }
+            } else if let Some(layout_is_ru) = original_layout {
+                match switch_to_target_layout(layout_is_ru) {
+                    Ok(layout_id) => log(&format!(
+                        "  enter-autocorrect layout restored → {layout_id}"
+                    )),
+                    Err(e) => log(&format!("⚠ enter-autocorrect layout restore failed: {e}")),
+                }
+            }
+            log(&format!(
+                "✓ done: Enter autocorrect {:?} → {:?} через IME за {}ms",
+                original,
+                replacement,
+                started_at.elapsed().as_millis()
+            ));
+            return Some(target_layout);
+        }
+    }
+
+    let Some(kbd) = virtual_kbd else {
+        log("⚠ enter-autocorrect: нет uinput device");
+        return None;
+    };
+
+    *executing = true;
+    let _executing_guard = ExecutingGuard(executing);
+
+    if let Err(e) = release_possible_modifiers(kbd) {
+        log(&format!("⚠ enter-autocorrect modifier cleanup failed: {e}"));
+    }
+
+    let original_layout = read_current_layout_is_ru().ok();
+    let plan = plan_committed_tail_replacement(&original, &replacement).unwrap_or_else(|| {
+        TextReplacement {
+            move_left: 0,
+            backspaces: original.chars().count() as u32,
+            insert: replacement.clone(),
+            move_right: 0,
+        }
+    });
+
+    if let Err(e) = apply_text_replacement(kbd, &plan) {
+        log(&format!("⚠ enter-autocorrect minimal replace failed: {e}"));
+        return None;
+    }
+
+    let replacement_layout_is_ru = preferred_layout_for_text(&plan.insert, true);
+    if let Err(e) = insert_text_via_uinput_or_type_text(kbd, &plan.insert, replacement_layout_is_ru)
+    {
+        log(&format!("⚠ enter-autocorrect text insert failed: {e}"));
+        if let Err(e) = emit_key_taps_fast(kbd, KeyCode::KEY_RIGHT, plan.move_right) {
+            log(&format!(
+                "⚠ enter-autocorrect cursor restore failed after insert error: {e}"
+            ));
+        }
+        return None;
+    }
+    if let Err(e) = emit_key_taps_fast(kbd, KeyCode::KEY_RIGHT, plan.move_right) {
+        log(&format!("⚠ enter-autocorrect cursor restore failed: {e}"));
+    }
+
+    let target_layout = preferred_layout_for_text(&replacement, replacement_layout_is_ru);
+    if active_auto_switch_layout() {
+        match switch_to_target_layout(target_layout) {
+            Ok(layout_id) => log(&format!("  enter-autocorrect layout → {layout_id}")),
+            Err(e) => log(&format!("⚠ enter-autocorrect layout switch failed: {e}")),
+        }
+    } else if let Some(layout_is_ru) = original_layout {
+        match switch_to_target_layout(layout_is_ru) {
+            Ok(layout_id) => log(&format!(
+                "  enter-autocorrect layout restored → {layout_id}"
+            )),
+            Err(e) => log(&format!("⚠ enter-autocorrect layout restore failed: {e}")),
+        }
+    }
+
+    if let Err(e) = emit_key_taps_fast(kbd, KeyCode::KEY_ENTER, 1) {
+        log(&format!("⚠ enter-autocorrect Enter send failed: {e}"));
+        return None;
+    }
+
+    let words = original.split_whitespace().count();
+    buf.remember_pending_learning_correction(
+        "enter-autocorrect",
+        &original,
+        &replacement,
+        replace_words,
+        words,
+    );
+    if !buf.remember_replacement_last_word_for_replay(&events, &plan, &replacement) {
+        buf.reset_all();
+    }
+    buf.remember_pending_auto_undo(
+        "enter-autocorrect",
+        &original,
+        &replacement,
+        replace_words,
+        words,
+    );
+    log(&format!(
+        "✓ done: Enter autocorrect {:?} → {:?} за {}ms",
+        original,
+        replacement,
+        started_at.elapsed().as_millis()
+    ));
+    Some(target_layout)
 }
 
 fn handle_double_shift(
@@ -3653,6 +3860,49 @@ mod tests {
         let (tail, _) = buffer.what_to_replay(2).expect("two-word tail");
 
         assert_eq!(map_original_events(&tail), "и слово");
+    }
+
+    #[test]
+    fn enter_autocorrect_candidate_is_off_contract_until_enabled_by_config() {
+        let cfg = LayConfig::default();
+        assert!(!cfg.enter_autocorrect);
+    }
+
+    #[test]
+    fn enter_autocorrect_candidate_fixes_current_wrong_layout_word() {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(&mut buffer, "ghbdtn", false);
+        let pipeline = typing_pipeline_with_only("layout_en_to_ru");
+
+        let (_events, original, replacement) =
+            enter_autocorrect_candidate(&buffer, 1, true, &pipeline).expect("correction");
+
+        assert_eq!(original, "ghbdtn");
+        assert_eq!(replacement, "привет");
+    }
+
+    #[test]
+    fn enter_autocorrect_candidate_keeps_normal_english_word() {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(&mut buffer, "good", false);
+        let pipeline = typing_pipeline_with_only("layout_en_to_ru");
+
+        assert!(enter_autocorrect_candidate(&buffer, 1, true, &pipeline).is_none());
+    }
+
+    #[test]
+    fn enter_autocorrect_candidate_can_use_completed_tail_scope() {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(&mut buffer, "double", false);
+        buffer.handle_space();
+        push_text_as_layout(&mut buffer, "b", false);
+        let pipeline = typing_pipeline_with_only("visual_b");
+
+        let (_events, original, replacement) =
+            enter_autocorrect_candidate(&buffer, 2, true, &pipeline).expect("correction");
+
+        assert_eq!(original, "double b");
+        assert_eq!(replacement, "double и");
     }
 
     fn push_key_events(buffer: &mut WordBuffer, keys: &[(KeyCode, bool)], layout_is_ru: bool) {

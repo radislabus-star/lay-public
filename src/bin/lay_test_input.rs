@@ -8,6 +8,7 @@
 //!   lay-test-input scenario1   — печатает "ghbvth" + двойной Shift
 //!   lay-test-input ghbdtn_shift — печатает "ghbdtn" + двойной Shift
 //!   lay-test-input ghbdtn_enter — печатает "ghbdtn" + двойной Shift + Enter
+//!   lay-test-input ghbdtn_enter_autocorrect — печатает "ghbdtn" + Enter
 //!   lay-test-input ghbdtn_fast_lshift_enter — "ghbdtn" + очень быстрый двойной LShift + Enter
 //!   lay-test-input ghbdtn_extra_lshift_enter — "ghbdtn" + лишние быстрые LShift-тапы + Enter
 //!   lay-test-input ru_p_enter — печатает "п" в RU + Enter
@@ -138,6 +139,24 @@ fn main() -> std::io::Result<()> {
             tap(&mut dev, KeyCode::KEY_LEFTSHIFT.code())?;
             sleep(Duration::from_millis(500));
             eprintln!("[test] сценарий ghbvth_shift отправлен");
+        }
+        "ghbdtn_enter_autocorrect" => {
+            activate_layout("us");
+            sleep(Duration::from_millis(250));
+            for k in [
+                KeyCode::KEY_G,
+                KeyCode::KEY_H,
+                KeyCode::KEY_B,
+                KeyCode::KEY_D,
+                KeyCode::KEY_T,
+                KeyCode::KEY_N,
+            ] {
+                tap(&mut dev, k.code())?;
+                sleep(Duration::from_millis(50));
+            }
+            sleep(Duration::from_millis(200));
+            tap(&mut dev, KeyCode::KEY_ENTER.code())?;
+            eprintln!("[test] сценарий ghbdtn_enter_autocorrect отправлен");
         }
         "ghbdtn_shift"
         | "ghbdtn_enter"
