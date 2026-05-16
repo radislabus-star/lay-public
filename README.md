@@ -474,6 +474,10 @@ systemctl --user restart lay-daemon
 
 Последние изменения публичной ветки:
 
+- `0.1.180` — общий helper для layout switch/restore после text edit. Ветки
+  typing assist и Enter-autocorrect больше не держат четыре копии одной
+  логики: если включено автопереключение, оставляем layout под исправленный
+  текст; если выключено — возвращаем исходную раскладку.
 - `0.1.179` — daemon получил общий uinput edit executor для
   `TextReplacement`: typing assist, Enter-autocorrect и manual smart-replace
   теперь используют один путь вставки текста и восстановления курсора. Также

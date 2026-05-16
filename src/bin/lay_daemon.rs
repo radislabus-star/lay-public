@@ -1592,17 +1592,11 @@ fn handle_typing_assist_after_space(
         let original_layout = read_current_layout_is_ru().ok();
         if try_ime_replace_tail(&original, &replacement, "typing-assist").unwrap_or(false) {
             let target_layout = preferred_layout_for_text(&replacement, true);
-            if active_auto_switch_layout() {
-                match switch_to_target_layout(target_layout) {
-                    Ok(layout_id) => log(&format!("  typing-assist layout → {layout_id}")),
-                    Err(e) => log(&format!("⚠ typing-assist layout switch failed: {e}")),
-                }
-            } else if let Some(layout_is_ru) = original_layout {
-                match switch_to_target_layout(layout_is_ru) {
-                    Ok(layout_id) => log(&format!("  typing-assist layout restored → {layout_id}")),
-                    Err(e) => log(&format!("⚠ typing-assist layout restore failed: {e}")),
-                }
-            }
+            switch_or_restore_layout_after_text_edit(
+                target_layout,
+                original_layout,
+                "typing-assist",
+            );
             let words = original.split_whitespace().count();
             remember_assisted_text_correction(
                 buf,
@@ -1666,17 +1660,7 @@ fn handle_typing_assist_after_space(
                 return;
             }
         };
-    if active_auto_switch_layout() {
-        match switch_to_target_layout(target_layout) {
-            Ok(layout_id) => log(&format!("  typing-assist layout → {layout_id}")),
-            Err(e) => log(&format!("⚠ typing-assist layout switch failed: {e}")),
-        }
-    } else if let Some(layout_is_ru) = original_layout {
-        match switch_to_target_layout(layout_is_ru) {
-            Ok(layout_id) => log(&format!("  typing-assist layout restored → {layout_id}")),
-            Err(e) => log(&format!("⚠ typing-assist layout restore failed: {e}")),
-        }
-    }
+    switch_or_restore_layout_after_text_edit(target_layout, original_layout, "typing-assist");
 
     let words = original.split_whitespace().count();
     remember_assisted_text_correction(
@@ -1761,6 +1745,24 @@ fn remember_assisted_text_correction(
     );
 }
 
+fn switch_or_restore_layout_after_text_edit(
+    target_layout: bool,
+    original_layout: Option<bool>,
+    label: &str,
+) {
+    if active_auto_switch_layout() {
+        match switch_to_target_layout(target_layout) {
+            Ok(layout_id) => log(&format!("  {label} layout → {layout_id}")),
+            Err(e) => log(&format!("⚠ {label} layout switch failed: {e}")),
+        }
+    } else if let Some(layout_is_ru) = original_layout {
+        match switch_to_target_layout(layout_is_ru) {
+            Ok(layout_id) => log(&format!("  {label} layout restored → {layout_id}")),
+            Err(e) => log(&format!("⚠ {label} layout restore failed: {e}")),
+        }
+    }
+}
+
 fn handle_enter_autocorrect(
     buf: &mut WordBuffer,
     replace_words: usize,
@@ -1792,19 +1794,11 @@ fn handle_enter_autocorrect(
                     log(&format!("⚠ enter-autocorrect Enter send failed: {e}"));
                 }
             }
-            if active_auto_switch_layout() {
-                match switch_to_target_layout(target_layout) {
-                    Ok(layout_id) => log(&format!("  enter-autocorrect layout → {layout_id}")),
-                    Err(e) => log(&format!("⚠ enter-autocorrect layout switch failed: {e}")),
-                }
-            } else if let Some(layout_is_ru) = original_layout {
-                match switch_to_target_layout(layout_is_ru) {
-                    Ok(layout_id) => log(&format!(
-                        "  enter-autocorrect layout restored → {layout_id}"
-                    )),
-                    Err(e) => log(&format!("⚠ enter-autocorrect layout restore failed: {e}")),
-                }
-            }
+            switch_or_restore_layout_after_text_edit(
+                target_layout,
+                original_layout,
+                "enter-autocorrect",
+            );
             log(&format!(
                 "✓ done: Enter autocorrect {:?} → {:?} через IME за {}ms",
                 original,
@@ -1844,19 +1838,7 @@ fn handle_enter_autocorrect(
                 return None;
             }
         };
-    if active_auto_switch_layout() {
-        match switch_to_target_layout(target_layout) {
-            Ok(layout_id) => log(&format!("  enter-autocorrect layout → {layout_id}")),
-            Err(e) => log(&format!("⚠ enter-autocorrect layout switch failed: {e}")),
-        }
-    } else if let Some(layout_is_ru) = original_layout {
-        match switch_to_target_layout(layout_is_ru) {
-            Ok(layout_id) => log(&format!(
-                "  enter-autocorrect layout restored → {layout_id}"
-            )),
-            Err(e) => log(&format!("⚠ enter-autocorrect layout restore failed: {e}")),
-        }
-    }
+    switch_or_restore_layout_after_text_edit(target_layout, original_layout, "enter-autocorrect");
 
     if let Err(e) = emit_key_taps_fast(kbd, KeyCode::KEY_ENTER, 1) {
         log(&format!("⚠ enter-autocorrect Enter send failed: {e}"));
