@@ -1944,7 +1944,7 @@ fn handle_double_shift(
         lem_enabled: active_lem_enabled_for_scope(words_orig),
         allow_layout_auto: active_auto_switch_layout(),
     };
-    let correction_action = decode_manual_tail(ManualDecodeRequest {
+    let correction_result = decode_manual_tail(ManualDecodeRequest {
         events: &events,
         original: &mapped_orig,
         converted: &mapped_target,
@@ -1952,8 +1952,9 @@ fn handle_double_shift(
         force_replay: force_replay_toggle,
         auto_replace,
         scoped_options,
-    })
-    .action;
+    });
+    let correction_action = correction_result.action.clone();
+    let correction_edit = correction_result.edit.clone();
 
     if should_try_ime_text_backend() {
         let (replace_text, replace_kind, is_replay) = match &correction_action {
@@ -2094,14 +2095,16 @@ fn handle_double_shift(
         if text.trim().is_empty() || text == mapped_target {
             log("  2. text decision совпал с replay — replay для сохранения toggle");
         } else {
-            let plan = plan_committed_tail_replacement(&mapped_orig, &text).unwrap_or_else(|| {
-                TextReplacement {
+            let plan = correction_edit
+                .as_ref()
+                .map(|edit| edit.plan.clone())
+                .or_else(|| plan_committed_tail_replacement(&mapped_orig, &text))
+                .unwrap_or_else(|| TextReplacement {
                     move_left: 0,
                     backspaces: n_backspaces,
                     insert: text.clone(),
                     move_right: 0,
-                }
-            });
+                });
             if let Err(e) = apply_text_replacement(kbd, &plan) {
                 log(&format!("⚠ {kind} minimal replace failed: {e}"));
                 return None;

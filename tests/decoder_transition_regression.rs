@@ -64,7 +64,7 @@ fn ascii_events(text: &str) -> Vec<KeyEvent> {
         .collect()
 }
 
-fn decode_ascii_tail(text: &str, force_replay: bool) -> DecoderAction {
+fn decode_ascii_tail(text: &str, force_replay: bool) -> lay::decoder::ManualDecodeResult {
     let events = ascii_events(text);
     let original = map_original_events(&events);
     let target_is_ru = replay_layout_decision(&events).target_is_ru;
@@ -89,23 +89,42 @@ fn decode_ascii_tail(text: &str, force_replay: bool) -> DecoderAction {
             allow_layout_auto: true,
         },
     })
-    .action
 }
 
 #[test]
 fn manual_decoder_keeps_single_word_toggle_reversible() {
-    assert_eq!(decode_ascii_tail("good", true), DecoderAction::ReplayAll);
-    assert_eq!(decode_ascii_tail("good", false), DecoderAction::ReplayAll);
-    assert_eq!(decode_ascii_tail("ntrcn", true), DecoderAction::ReplayAll);
+    assert_eq!(
+        decode_ascii_tail("good", true).action,
+        DecoderAction::ReplayAll
+    );
+    assert_eq!(
+        decode_ascii_tail("good", false).action,
+        DecoderAction::ReplayAll
+    );
+    assert_eq!(
+        decode_ascii_tail("ntrcn", true).action,
+        DecoderAction::ReplayAll
+    );
+    assert!(decode_ascii_tail("good", true).edit.is_none());
 }
 
 #[test]
 fn manual_decoder_replaces_only_bad_word_in_mixed_pair() {
+    let decoded = decode_ascii_tail("good ntrcn", false);
     assert_eq!(
-        decode_ascii_tail("good ntrcn", false),
+        decoded.action,
         DecoderAction::ReplaceText {
             replacement: "good текст".to_string(),
             source: CorrectionSource::SmartText,
+        }
+    );
+    assert_eq!(
+        decoded.edit.expect("manual edit").plan,
+        TextReplacement {
+            move_left: 0,
+            backspaces: 5,
+            insert: "текст".to_string(),
+            move_right: 0,
         }
     );
 }
@@ -127,22 +146,42 @@ fn ranked_decoder_exposes_margin_for_mixed_pairs() {
 
 #[test]
 fn ranked_decoder_handles_three_word_tail_without_retyping_good_prefix() {
+    let decoded = decode_ascii_tail("hello good ntrcn", false);
     assert_eq!(
-        decode_ascii_tail("hello good ntrcn", false),
+        decoded.action,
         DecoderAction::ReplaceText {
             replacement: "hello good текст".to_string(),
             source: CorrectionSource::SmartText,
+        }
+    );
+    assert_eq!(
+        decoded.edit.expect("manual edit").plan,
+        TextReplacement {
+            move_left: 0,
+            backspaces: 5,
+            insert: "текст".to_string(),
+            move_right: 0,
         }
     );
 }
 
 #[test]
 fn ranked_decoder_keeps_ascii_context_and_flips_uppercase_current_tail() {
+    let decoded = decode_ascii_tail("делай KDE", false);
     assert_eq!(
-        decode_ascii_tail("делай KDE", false),
+        decoded.action,
         DecoderAction::ReplaceText {
             replacement: "делай ЛВУ".to_string(),
             source: CorrectionSource::SmartText,
+        }
+    );
+    assert_eq!(
+        decoded.edit.expect("manual edit").plan,
+        TextReplacement {
+            move_left: 0,
+            backspaces: 3,
+            insert: "ЛВУ".to_string(),
+            move_right: 0,
         }
     );
 }

@@ -119,6 +119,7 @@ pub struct ManualDecodeRequest<'a> {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ManualDecodeResult {
     pub action: DecoderAction,
+    pub edit: Option<DecoderEditPlan>,
     pub ranked: Option<RankedDecoderDecision>,
 }
 
@@ -167,25 +168,53 @@ fn maybe_apply_auto_replace(
     ranked: Option<RankedDecoderDecision>,
 ) -> ManualDecodeResult {
     if !matches!(action, DecoderAction::ReplayAll) || !request.auto_replace {
-        return ManualDecodeResult { action, ranked };
+        return manual_decode_result(request.original, action, ranked);
     }
 
     let Some(replacement) = apply_auto_replace(request.original, request.converted) else {
-        return ManualDecodeResult { action, ranked };
+        return manual_decode_result(request.original, action, ranked);
     };
 
     if replacement == request.original
         || replacement == request.converted
         || replacement.trim().is_empty()
     {
-        return ManualDecodeResult { action, ranked };
+        return manual_decode_result(request.original, action, ranked);
     }
 
-    ManualDecodeResult {
-        action: DecoderAction::ReplaceText {
+    manual_decode_result(
+        request.original,
+        DecoderAction::ReplaceText {
             replacement,
             source: CorrectionSource::AutoReplace,
         },
+        ranked,
+    )
+}
+
+fn manual_decode_result(
+    original: &str,
+    action: DecoderAction,
+    ranked: Option<RankedDecoderDecision>,
+) -> ManualDecodeResult {
+    let edit = match &action {
+        DecoderAction::ReplaceText {
+            replacement,
+            source,
+        } if !replacement.trim().is_empty() => DecoderEditPlan::committed_tail(
+            CorrectionTrigger::Manual,
+            original,
+            replacement,
+            *source,
+        ),
+        DecoderAction::KeepOriginal
+        | DecoderAction::ReplayAll
+        | DecoderAction::ReplaceText { .. } => None,
+    };
+
+    ManualDecodeResult {
+        action,
+        edit,
         ranked,
     }
 }
@@ -437,6 +466,15 @@ mod tests {
             DecoderAction::ReplaceText {
                 replacement: "good текст".to_string(),
                 source: CorrectionSource::SmartText,
+            }
+        );
+        assert_eq!(
+            result.edit.expect("manual edit").plan,
+            TextReplacement {
+                move_left: 0,
+                backspaces: 5,
+                insert: "текст".to_string(),
+                move_right: 0,
             }
         );
     }
