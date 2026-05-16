@@ -28,7 +28,6 @@ const NGRAM_TRANSPOSE_MARGIN: f64 = -8.0;
 const NGRAM_SPLIT_REJECT_MARGIN: f64 = 0.25;
 const NGRAM_NODICT_SPLIT_REJECT_MARGIN: f64 = 1.0;
 const NGRAM_DICT_MISSING_LETTER_MARGIN: f64 = -8.0;
-const NGRAM_MISSING_LETTER_MARGIN: f64 = 1.5;
 const NGRAM_EXTRA_LETTER_MARGIN: f64 = 0.75;
 const NGRAM_VOWEL_CONFUSION_MARGIN: f64 = -1.0;
 const NGRAM_VERB_ENDING_MARGIN: f64 = -8.0;
@@ -68,6 +67,7 @@ const COMMON_RUSSIAN_WORDS: &[&str] = &[
     "где",
     "или",
     "если",
+    "есть",
     "тут",
     "там",
     "уже",
@@ -277,12 +277,14 @@ fn apply_typing_assist_rule(
         }
         "extra_letters" => word_rule(word, token_leading, token_trailing, correct_extra_letters),
         "missing_letter" => word_rule(word, token_leading, token_trailing, correct_missing_letter),
-        "glued_phrase" => word_rule(
-            word,
-            token_leading,
-            token_trailing,
-            correct_glued_russian_phrase,
-        ),
+        "glued_phrase" => correct_contextual_glued_tail(core).or_else(|| {
+            word_rule(
+                word,
+                token_leading,
+                token_trailing,
+                correct_glued_russian_phrase,
+            )
+        }),
         _ => None,
     }
 }
@@ -723,6 +725,120 @@ fn correct_glued_russian_phrase(word: &str) -> Option<String> {
     Some(apply_phrase_case(word, &candidate))
 }
 
+fn correct_contextual_glued_tail(core: &str) -> Option<String> {
+    let segments = split_ws_segments(core);
+    if segments.len() != 3 || segments[0].1 || !segments[1].1 || segments[2].1 {
+        return None;
+    }
+
+    let (left_leading, left, left_trailing) = split_word_punctuation(segments[0].0);
+    let (right_leading, right, right_trailing) = split_word_punctuation(segments[2].0);
+    if !left_leading.is_empty()
+        || !left_trailing.is_empty()
+        || !right_leading.is_empty()
+        || left.is_empty()
+        || right.is_empty()
+        || !is_cyrillic_word(left)
+        || !is_cyrillic_word(right)
+    {
+        return None;
+    }
+
+    let left_lower = left.to_lowercase();
+    let right_lower = right.to_lowercase();
+    if !is_short_russian_function_word(&left_lower) || !is_known_russian_phrase_part(&left_lower) {
+        return None;
+    }
+
+    let right_len = right_lower.chars().count();
+    if !(6..=18).contains(&right_len) {
+        return None;
+    }
+
+    let mut best: Option<(String, f64)> = None;
+    let mut second_best = f64::NEG_INFINITY;
+    for split_at in right_lower
+        .char_indices()
+        .skip(1)
+        .map(|(idx, _)| idx)
+        .take(right_len.saturating_sub(1))
+    {
+        let (right_left, right_right) = right_lower.split_at(split_at);
+        let right_left_len = right_left.chars().count();
+        let right_right_len = right_right.chars().count();
+
+        if !(2..=4).contains(&right_left_len) || right_right_len < 4 {
+            continue;
+        }
+        if !is_known_russian_phrase_part(right_left)
+            || !is_known_russian_phrase_part(right_right)
+            || !is_contextual_glued_tail_split_shape(&left_lower, right_left, right_right)
+        {
+            continue;
+        }
+
+        let candidate_lower = format!("{left_lower} {right_left} {right_right}");
+        let baseline_lower = format!("{left_lower} {right_lower}");
+        let margin = crate::ngram::ru_candidate_margin(&candidate_lower, &baseline_lower);
+        let score = contextual_glued_tail_split_score(&left_lower, right_left, right_right, margin);
+        if score < 5.0 {
+            continue;
+        }
+
+        match &best {
+            Some((_, best_score)) if score <= *best_score => {
+                second_best = second_best.max(score);
+            }
+            Some((_, best_score)) => {
+                second_best = second_best.max(*best_score);
+                best = Some((format!("{right_left} {right_right}"), score));
+            }
+            None => best = Some((format!("{right_left} {right_right}"), score)),
+        }
+    }
+
+    let (right_replacement_lower, best_score) = best?;
+    if best_score - second_best < 0.75 {
+        return None;
+    }
+
+    let right_replacement = apply_phrase_case(right, &right_replacement_lower);
+    Some(format!(
+        "{}{}{}{}",
+        left, segments[1].0, right_replacement, right_trailing
+    ))
+}
+
+fn is_contextual_glued_tail_split_shape(left: &str, right_left: &str, right_right: &str) -> bool {
+    left.chars().count() <= 3
+        && right_left.chars().count() <= 4
+        && right_right.chars().count() >= 4
+        && (COMMON_RUSSIAN_WORDS.contains(&right_left)
+            || is_common_short_russian_pronoun(right_left)
+            || russian_tiny_dictionary().contains(right_left)
+            || russian_short_dictionary().contains(right_left))
+        && is_known_russian_phrase_part(right_right)
+}
+
+fn contextual_glued_tail_split_score(
+    left: &str,
+    right_left: &str,
+    right_right: &str,
+    ngram_margin: f64,
+) -> f64 {
+    let mut score = (ngram_margin / 10.0).max(-3.0);
+    if is_common_short_russian_preposition(left) || is_one_letter_russian_function_word(left) {
+        score += 1.0;
+    }
+    if is_common_short_russian_pronoun(right_left) {
+        score += 8.0;
+    }
+    if COMMON_RUSSIAN_WORDS.contains(&right_right) {
+        score += 2.0;
+    }
+    score
+}
+
 fn looks_like_word_glued_to_trailing_ya(word: &str) -> bool {
     let Some(left) = word.strip_suffix('я') else {
         return false;
@@ -736,7 +852,8 @@ fn is_known_russian_phrase_part(word: &str) -> bool {
         return is_one_letter_russian_function_word(word);
     }
     if len <= 3 {
-        return russian_tiny_dictionary().contains(word)
+        return is_common_short_russian_pronoun(word)
+            || russian_tiny_dictionary().contains(word)
             || russian_short_dictionary().contains(word);
     }
     is_known_russian_word_or_form(word)
@@ -760,6 +877,24 @@ fn is_standalone_russian_phrase_part(word: &str) -> bool {
 
 fn is_one_letter_russian_function_word(word: &str) -> bool {
     matches!(word, "а" | "в" | "и" | "к" | "о" | "с" | "у" | "я")
+}
+
+fn is_common_short_russian_pronoun(word: &str) -> bool {
+    matches!(
+        word,
+        "нас"
+            | "нам"
+            | "вас"
+            | "вам"
+            | "них"
+            | "ним"
+            | "ней"
+            | "нее"
+            | "неё"
+            | "мне"
+            | "ему"
+            | "ими"
+    )
 }
 
 fn is_single_letter_russian_pronoun(word: &str) -> bool {
@@ -1064,6 +1199,9 @@ fn correct_adjacent_transposition(word: &str) -> Option<String> {
     if is_known_russian_word_or_form(&lower) {
         return None;
     }
+    if missing_letter_candidate_exists(word, &lower) {
+        return None;
+    }
 
     let chars: Vec<char> = lower.chars().collect();
     let mut found: Option<String> = None;
@@ -1092,12 +1230,18 @@ fn correct_adjacent_transposition(word: &str) -> Option<String> {
 }
 
 fn correct_repeated_letter(word: &str) -> Option<String> {
-    if word.chars().count() < 5 || !is_cyrillic_word(word) {
+    if !is_cyrillic_word(word) {
         return None;
     }
 
     let lower = word.to_lowercase();
     if is_known_russian_word_or_form(&lower) {
+        return None;
+    }
+    if let Some(candidate) = correct_short_repeated_function_word(word, &lower) {
+        return Some(candidate);
+    }
+    if word.chars().count() < 5 {
         return None;
     }
 
@@ -1134,6 +1278,59 @@ fn correct_repeated_letter(word: &str) -> Option<String> {
     }
 
     found.map(|candidate| apply_word_case(word, &candidate))
+}
+
+fn correct_short_repeated_function_word(original: &str, lower: &str) -> Option<String> {
+    if !(3..=4).contains(&lower.chars().count()) {
+        return None;
+    }
+
+    let mut found: Option<String> = None;
+    for candidate in repeated_run_deletion_candidates(lower) {
+        if candidate.chars().count() < 2 {
+            continue;
+        }
+        if !is_short_russian_function_word(&candidate) {
+            continue;
+        }
+        if found.is_some() {
+            return None;
+        }
+        found = Some(candidate);
+    }
+
+    found.map(|candidate| apply_word_case(original, &candidate))
+}
+
+fn repeated_run_deletion_candidates(lower: &str) -> Vec<String> {
+    let chars: Vec<char> = lower.chars().collect();
+    let mut seen = HashSet::new();
+    let mut candidates = Vec::new();
+    let mut idx = 0usize;
+
+    while idx < chars.len() {
+        let mut end = idx + 1;
+        while end < chars.len() && chars[end] == chars[idx] {
+            end += 1;
+        }
+
+        let run_len = end - idx;
+        if run_len > 1 {
+            for keep in 1..run_len {
+                let mut candidate = String::with_capacity(lower.len());
+                candidate.extend(chars[..idx].iter());
+                candidate.extend(std::iter::repeat(chars[idx]).take(keep));
+                candidate.extend(chars[end..].iter());
+                if seen.insert(candidate.clone()) {
+                    candidates.push(candidate);
+                }
+            }
+        }
+
+        idx = end;
+    }
+
+    candidates
 }
 
 fn correct_single_letter_substitution(word: &str) -> Option<String> {
@@ -1197,6 +1394,9 @@ pub fn correct_extra_letters(word: &str) -> Option<String> {
     if looks_like_short_function_word_glued_to_known_word(&lower) {
         return None;
     }
+    if let Some(candidate) = correct_invalid_adjective_tail(word, &lower) {
+        return Some(candidate);
+    }
     if missing_letter_candidate_exists(word, &lower) {
         return None;
     }
@@ -1206,6 +1406,16 @@ pub fn correct_extra_letters(word: &str) -> Option<String> {
         generate_extra_letter_candidates(&lower),
         NGRAM_EXTRA_LETTER_MARGIN,
     )
+}
+
+fn correct_invalid_adjective_tail(original: &str, lower: &str) -> Option<String> {
+    let stem = lower
+        .strip_suffix('ы')
+        .or_else(|| lower.strip_suffix('и'))?;
+    if !looks_like_russian_adjective_lemma(stem) || !is_known_russian_word_or_form(stem) {
+        return None;
+    }
+    Some(apply_word_case(original, stem))
 }
 
 fn correct_vowel_confusion(word: &str) -> Option<String> {
@@ -1281,35 +1491,47 @@ pub fn correct_missing_letter(word: &str) -> Option<String> {
     if looks_like_plausible_russian_past_tense(&lower) {
         return None;
     }
-
-    if let Some(candidate) = best_unique_dictionary_candidate(
-        word,
-        generate_missing_letter_candidates(&lower),
-        NGRAM_DICT_MISSING_LETTER_MARGIN,
-    ) {
-        return Some(candidate);
+    if looks_like_prefix_plus_known_russian_word(&lower) {
+        return None;
     }
 
-    best_unique_ngram_candidate(
+    best_ranked_dictionary_candidate(
         word,
-        generate_missing_letter_candidates(&lower),
-        NGRAM_MISSING_LETTER_MARGIN,
+        safe_missing_letter_candidates(&lower),
+        NGRAM_DICT_MISSING_LETTER_MARGIN,
+        0.40,
     )
 }
 
 fn missing_letter_candidate_exists(word: &str, lower: &str) -> bool {
-    best_unique_dictionary_candidate(
-        word,
-        generate_missing_letter_candidates(lower),
-        NGRAM_DICT_MISSING_LETTER_MARGIN,
-    )
-    .is_some()
-        || best_unique_ngram_candidate(
-            word,
-            generate_missing_letter_candidates(lower),
-            NGRAM_MISSING_LETTER_MARGIN,
-        )
-        .is_some()
+    let original_lower = word.to_lowercase();
+    safe_missing_letter_candidates(lower).any(|candidate| {
+        candidate != original_lower
+            && is_known_russian_word_or_form(&candidate)
+            && crate::ngram::ru_candidate_margin(&candidate, &original_lower)
+                >= NGRAM_DICT_MISSING_LETTER_MARGIN
+    })
+}
+
+fn safe_missing_letter_candidates(lower: &str) -> impl Iterator<Item = String> + '_ {
+    generate_missing_letter_candidates(lower)
+        .filter(move |candidate| is_safe_missing_letter_candidate(lower, candidate))
+}
+
+fn is_safe_missing_letter_candidate(lower: &str, candidate: &str) -> bool {
+    if let Some(inserted) = candidate.strip_suffix(lower) {
+        return inserted.chars().count() != 1 || lower.chars().next().is_some_and(is_russian_vowel);
+    }
+
+    true
+}
+
+fn looks_like_prefix_plus_known_russian_word(lower: &str) -> bool {
+    let chars: Vec<char> = lower.chars().collect();
+    (1..=2).any(|prefix_len| {
+        chars.len() > prefix_len + 3
+            && is_known_russian_word_or_form(&chars[prefix_len..].iter().collect::<String>())
+    })
 }
 
 pub fn are_ru_keyboard_neighbors(a: char, b: char) -> bool {
@@ -1446,6 +1668,11 @@ pub fn decide_scoped_tail_correction_with_options(
         }
         if idx + 1 == words.len() && !has_trailing_space {
             out.push_str(&flip_word_events(word));
+        } else if idx + 1 == words.len() {
+            out.push_str(
+                &short_completed_tail_layout_flip(word)
+                    .unwrap_or_else(|| decide_completed_scope_word(word)),
+            );
         } else {
             out.push_str(&decide_completed_scope_word(word));
         }
@@ -1499,6 +1726,9 @@ fn scoped_word_lem_options(
     }
 
     push_unique_string(&mut out, original.clone());
+    if is_short_repeated_completed_scope_word(&original) {
+        return out;
+    }
     push_unique_string(&mut out, decide_completed_scope_word(word));
     if let Some(repaired) = apply_typing_assist(&format!("{original} "), allow_layout_auto) {
         push_unique_string(&mut out, repaired.trim().to_string());
@@ -1538,6 +1768,26 @@ fn should_offer_completed_scope_flip(original: &str, flipped: &str) -> bool {
     }
 
     false
+}
+
+fn short_completed_tail_layout_flip(word: &[KeyEvent]) -> Option<String> {
+    let original = map_original_events(word);
+    let (_, original_word, _) = split_word_punctuation(&original);
+    let original_len = original_word.chars().count();
+    if !(2..=4).contains(&original_len)
+        || !is_cyrillic_word(original_word)
+        || is_known_russian_layout_autoswitch_word(&original_word.to_lowercase())
+    {
+        return None;
+    }
+
+    let flipped = flip_word_events(word);
+    let (_, flipped_word, _) = split_word_punctuation(&flipped);
+    let flipped_len = flipped_word.chars().count();
+    (flipped_word.is_ascii()
+        && (2..=4).contains(&flipped_len)
+        && flipped_word.chars().all(|ch| ch.is_ascii_alphabetic()))
+    .then_some(flipped)
 }
 
 fn stable_completed_scope_original(original: &str) -> bool {
@@ -1589,6 +1839,9 @@ pub fn decide_completed_scope_word(word: &[KeyEvent]) -> String {
     if is_single_cyrillic_completed_scope_word(&original) {
         return original;
     }
+    if is_short_repeated_completed_scope_word(&original) {
+        return original;
+    }
     if let Some(repaired) = correct_duplicate_layout_prefix_on_ascii_token(&original) {
         return repaired;
     }
@@ -1619,6 +1872,16 @@ fn is_single_cyrillic_completed_scope_word(word: &str) -> bool {
     matches!(
         (chars.next(), chars.next()),
         (Some(ch), None) if is_cyrillic_letter(ch)
+    )
+}
+
+fn is_short_repeated_completed_scope_word(original: &str) -> bool {
+    let (_, word, _) = split_word_punctuation(original);
+    let mut chars = word.chars();
+    matches!(
+        (chars.next(), chars.next(), chars.next()),
+        (Some(first), Some(second), None)
+            if first == second && (is_cyrillic_letter(first) || first.is_ascii_alphabetic())
     )
 }
 
@@ -1753,6 +2016,10 @@ fn is_russian_vowel(ch: char) -> bool {
     )
 }
 
+fn is_russian_consonant(ch: char) -> bool {
+    is_cyrillic_letter(ch) && !is_russian_vowel(ch) && !matches!(ch, 'ь' | 'Ь' | 'ъ' | 'Ъ')
+}
+
 fn looks_like_plausible_russian_past_tense(word: &str) -> bool {
     const ENDINGS: &[&str] = &[
         "илась",
@@ -1810,6 +2077,7 @@ pub fn is_known_russian_word_or_form(word: &str) -> bool {
     russian_dictionary().contains(word)
         || russian_generated_form_dictionary().contains(word)
         || is_known_russian_suffix_form(word)
+        || is_known_russian_zero_ending_noun_form(word)
         || is_known_russian_ka_declension_form(word)
         || is_known_russian_verb_form(word)
 }
@@ -1832,12 +2100,30 @@ fn is_known_russian_suffix_form(word: &str) -> bool {
         if stem.chars().count() < 3 {
             return false;
         }
+        if matches!(*suffix, "ы" | "и") && looks_like_russian_adjective_lemma(stem) {
+            return false;
+        }
         if russian_dictionary().contains(stem) {
             return true;
         }
         matches!(*suffix, "ами" | "ями")
             && (russian_short_dictionary().contains(stem)
                 || russian_dictionary().contains(&format!("{stem}о")))
+    })
+}
+
+fn looks_like_russian_adjective_lemma(word: &str) -> bool {
+    word.ends_with("ый") || word.ends_with("ий") || word.ends_with("ой")
+}
+
+fn is_known_russian_zero_ending_noun_form(word: &str) -> bool {
+    if word.chars().count() < 5 || !word.chars().last().is_some_and(is_russian_consonant) {
+        return false;
+    }
+
+    ["а", "я"].iter().any(|suffix| {
+        let lemma = format!("{word}{suffix}");
+        russian_dictionary().contains(&lemma) || russian_short_dictionary().contains(&lemma)
     })
 }
 
@@ -2005,31 +2291,84 @@ where
     Some(apply_word_case(original, &candidate))
 }
 
-fn best_unique_dictionary_candidate<I>(
+fn best_ranked_dictionary_candidate<I>(
     original: &str,
     candidates: I,
     min_margin: f64,
+    min_gap: f64,
 ) -> Option<String>
 where
     I: IntoIterator<Item = String>,
 {
     let lower = original.to_lowercase();
-    let mut found: Option<String> = None;
+    let mut best: Option<(String, f64)> = None;
+    let mut second_best = f64::NEG_INFINITY;
 
     for candidate in candidates {
         if candidate == lower || !is_known_russian_word_or_form(&candidate) {
             continue;
         }
-        if crate::ngram::ru_candidate_margin(&candidate, &lower) < min_margin {
+        let margin = crate::ngram::ru_candidate_margin(&candidate, &lower);
+        if margin < min_margin {
             continue;
         }
-        if found.is_some() {
-            return None;
+        let score = margin + missing_letter_candidate_bonus(&lower, &candidate);
+
+        match &best {
+            Some((_, best_score)) if score <= *best_score => {
+                second_best = second_best.max(score);
+            }
+            Some((_, best_score)) => {
+                second_best = second_best.max(*best_score);
+                best = Some((candidate, score));
+            }
+            None => best = Some((candidate, score)),
         }
-        found = Some(candidate);
     }
 
-    found.map(|candidate| apply_word_case(original, &candidate))
+    let (candidate, best_score) = best?;
+    if best_score - second_best < min_gap {
+        return None;
+    }
+    Some(apply_word_case(original, &candidate))
+}
+
+fn missing_letter_candidate_bonus(lower: &str, candidate: &str) -> f64 {
+    let Some(inserted) = inserted_char_for_missing_letter(lower, candidate) else {
+        return 0.0;
+    };
+    if is_russian_vowel(inserted) {
+        4.0
+    } else {
+        0.0
+    }
+}
+
+fn inserted_char_for_missing_letter(lower: &str, candidate: &str) -> Option<char> {
+    let lower_chars: Vec<char> = lower.chars().collect();
+    let candidate_chars: Vec<char> = candidate.chars().collect();
+    if candidate_chars.len() != lower_chars.len() + 1 {
+        return None;
+    }
+
+    let mut i = 0usize;
+    let mut j = 0usize;
+    let mut inserted = None;
+    while i < lower_chars.len() && j < candidate_chars.len() {
+        if lower_chars[i] == candidate_chars[j] {
+            i += 1;
+            j += 1;
+        } else if inserted.is_none() {
+            inserted = Some(candidate_chars[j]);
+            j += 1;
+        } else {
+            return None;
+        }
+    }
+    if inserted.is_none() && j < candidate_chars.len() {
+        inserted = Some(candidate_chars[j]);
+    }
+    inserted
 }
 
 fn best_unique_known_ngram_candidate<I>(

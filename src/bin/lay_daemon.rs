@@ -3978,6 +3978,16 @@ mod tests {
             KeyCode::KEY_X,
             KeyCode::KEY_Y,
             KeyCode::KEY_Z,
+            KeyCode::KEY_1,
+            KeyCode::KEY_2,
+            KeyCode::KEY_3,
+            KeyCode::KEY_4,
+            KeyCode::KEY_5,
+            KeyCode::KEY_6,
+            KeyCode::KEY_7,
+            KeyCode::KEY_8,
+            KeyCode::KEY_9,
+            KeyCode::KEY_0,
             KeyCode::KEY_SEMICOLON,
             KeyCode::KEY_APOSTROPHE,
             KeyCode::KEY_COMMA,
@@ -3986,7 +3996,9 @@ mod tests {
             KeyCode::KEY_RIGHTBRACE,
             KeyCode::KEY_GRAVE,
             KeyCode::KEY_SLASH,
+            KeyCode::KEY_BACKSLASH,
             KeyCode::KEY_MINUS,
+            KeyCode::KEY_EQUAL,
         ];
 
         for key in KEYS {
@@ -4907,6 +4919,32 @@ mod tests {
     }
 
     #[test]
+    fn scoped_tail_trailing_space_keeps_previous_russian_word_and_flips_completed_tail() {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(&mut buffer, "открывал", true);
+        buffer.handle_space();
+        push_text_as_layout(&mut buffer, "цзы", true);
+        buffer.handle_space();
+
+        let (events, _) = buffer.what_to_replay(2).expect("two-word tail");
+        let original = map_original_events(&events);
+        let replacement =
+            decide_scoped_tail_correction_with_lem(&events, true).expect("smart replacement");
+
+        assert_eq!(original, "открывал цзы ");
+        assert_eq!(replacement, "открывал wps ");
+        assert_eq!(
+            plan_text_replacement(&original, &replacement),
+            Some(TextReplacement {
+                move_left: 1,
+                backspaces: 3,
+                insert: "wps".to_string(),
+                move_right: 1,
+            })
+        );
+    }
+
+    #[test]
     fn scoped_tail_flips_cyrillic_hyphen_technical_token_to_ascii() {
         let mut buffer = WordBuffer::new();
         let left_events = [
@@ -5538,6 +5576,33 @@ mod tests {
     }
 
     #[test]
+    fn scoped_tail_keeps_short_repeated_completed_word_and_flips_current_tail() {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(&mut buffer, "аа", true);
+        buffer.handle_space();
+        push_text_as_layout(&mut buffer, "слово", true);
+        buffer.handle_space();
+        push_text_as_layout(&mut buffer, "вот", true);
+
+        let (events, _) = buffer.what_to_replay(3).expect("three-word tail");
+        let original = map_original_events(&events);
+        let replacement =
+            decide_scoped_tail_correction_with_lem(&events, true).expect("smart replacement");
+
+        assert_eq!(original, "аа слово вот");
+        assert_eq!(replacement, "аа слово djn");
+        assert_eq!(
+            plan_text_replacement(&original, &replacement),
+            Some(TextReplacement {
+                move_left: 0,
+                backspaces: 3,
+                insert: "djn".to_string(),
+                move_right: 0,
+            })
+        );
+    }
+
+    #[test]
     fn scoped_tail_uses_lem_for_two_word_mixed_tail() {
         let mut buffer = WordBuffer::new();
         push_text_as_layout(&mut buffer, "good", false);
@@ -5768,6 +5833,35 @@ mod tests {
         assert_eq!(map_target_events(&events, decision.target_is_ru), "делай");
         assert_eq!(
             decide_correction("ltkfq", "делай", CorrectionEngine::Smart),
+            Correction::ReplayAll
+        );
+    }
+
+    #[test]
+    fn single_currency_tail_replays_ru_semicolon_as_us_dollar() {
+        let mut buffer = WordBuffer::new();
+        push_key_events(
+            &mut buffer,
+            &[
+                (KeyCode::KEY_4, false),
+                (KeyCode::KEY_0, false),
+                (KeyCode::KEY_0, false),
+                (KeyCode::KEY_0, false),
+                (KeyCode::KEY_4, true),
+            ],
+            true,
+        );
+        let (events, backspaces) = buffer.what_to_replay(1).expect("single word");
+        let decision = replay_layout_decision(&events);
+        let original = map_original_events(&events);
+        let target = map_target_events(&events, decision.target_is_ru);
+
+        assert_eq!(backspaces, 5);
+        assert_eq!(original, "4000;");
+        assert!(!decision.target_is_ru);
+        assert_eq!(target, "4000$");
+        assert_eq!(
+            decide_correction(&original, &target, CorrectionEngine::Smart),
             Correction::ReplayAll
         );
     }
@@ -6347,6 +6441,9 @@ mod tests {
         assert_eq!(apply_typing_assist("три ", true), None);
         assert_eq!(apply_typing_assist("раскладок ", true), None);
         assert_eq!(apply_typing_assist("API ", true), None);
+        assert_eq!(apply_typing_assist("BTC ", true), None);
+        assert_eq!(apply_typing_assist("ETH ", true), None);
+        assert_eq!(apply_typing_assist("TRX ", true), None);
         assert_eq!(apply_typing_assist("AmoCRM ", true), None);
         assert_eq!(apply_typing_assist("wi-fi ", true), None);
         assert_eq!(apply_typing_assist("command -f ", true), None);
@@ -6615,6 +6712,8 @@ mod tests {
             apply_typing_assist_exact("иблиотеку "),
             Some("библиотеку ".to_string())
         );
+        assert_eq!(apply_typing_assist_exact("крипта "), None);
+        assert_eq!(apply_typing_assist_exact("Крипта "), None);
     }
 
     #[test]
@@ -6626,6 +6725,14 @@ mod tests {
         assert_eq!(
             apply_typing_assist_exact("работатет "),
             Some("работает ".to_string())
+        );
+        assert_eq!(
+            apply_typing_assist_exact("котром "),
+            Some("котором ".to_string())
+        );
+        assert_eq!(
+            apply_typing_assist_exact("рабоТТА "),
+            Some("работа ".to_string())
         );
         assert_eq!(
             apply_typing_assist_exact("помагу "),
@@ -6650,6 +6757,10 @@ mod tests {
         assert_eq!(
             apply_typing_assist_exact("моЖно "),
             Some("можно ".to_string())
+        );
+        assert_eq!(
+            apply_typing_assist_exact("рабоТА "),
+            Some("работа ".to_string())
         );
         assert_eq!(apply_typing_assist_exact("МОЖНО "), None);
     }
@@ -6686,6 +6797,21 @@ mod tests {
         assert_eq!(apply_typing_assist_exact("хо хо "), None);
         assert_eq!(apply_typing_assist_exact("про сою "), None);
         assert_eq!(apply_typing_assist_exact("по делу "), None);
+        assert_eq!(apply_typing_assist_exact("по любому "), None);
+        assert_eq!(apply_typing_assist_exact("ПО ЛЮБОМУ "), None);
+        assert_eq!(apply_typing_assist_exact("уже по любому "), None);
+        assert_eq!(apply_typing_assist_exact("проблем "), None);
+        assert_eq!(apply_typing_assist_exact("валют "), None);
+        assert_eq!(apply_typing_assist_exact("систем "), None);
+        assert_eq!(apply_typing_assist_exact("ноавый "), None);
+        assert_eq!(apply_typing_assist("ноавый ", true), None);
+        assert_eq!(apply_typing_assist_exact("раработает "), None);
+        assert_eq!(apply_typing_assist_exact("зработает "), None);
+        assert_eq!(apply_typing_assist_exact("новавый "), None);
+        assert_eq!(
+            apply_typing_assist_exact("новыйы "),
+            Some("новый ".to_string())
+        );
         assert_eq!(apply_typing_assist_exact("за дело "), None);
     }
 
@@ -6727,9 +6853,15 @@ mod tests {
             apply_typing_assist_exact("будуя "),
             Some("буду я ".to_string())
         );
+        assert_eq!(
+            apply_typing_assist_exact("у насесть "),
+            Some("у нас есть ".to_string())
+        );
         assert_eq!(apply_typing_assist_exact("но не "), None);
         assert_eq!(apply_typing_assist_exact("не ты "), None);
         assert_eq!(apply_typing_assist_exact("ноне ты "), None);
+        assert_eq!(apply_typing_assist_exact("у насест "), None);
+        assert_eq!(apply_typing_assist_exact("у насилие "), None);
         assert_eq!(apply_typing_assist_exact("машина "), None);
         assert_eq!(apply_typing_assist_exact("земля "), None);
         assert_eq!(apply_typing_assist_exact("какая "), None);
@@ -6840,6 +6972,13 @@ mod tests {
             apply_typing_assist_exact("исправленнно "),
             Some("исправлено ".to_string())
         );
+        assert_eq!(apply_typing_assist_exact("поо "), Some("по ".to_string()));
+        assert_eq!(apply_typing_assist_exact("ПОО "), Some("ПО ".to_string()));
+        assert_eq!(apply_typing_assist_exact("заа "), Some("за ".to_string()));
+        assert_eq!(apply_typing_assist_exact("про "), None);
+        assert_eq!(apply_typing_assist_exact("ии "), None);
+        assert_eq!(apply_typing_assist_exact("яя "), None);
+        assert_eq!(apply_typing_assist_exact("вв "), None);
     }
 
     #[test]

@@ -78,7 +78,60 @@ pub fn is_typing_key(key: KeyCode) -> bool {
 pub fn keycode_to_ru_char(keycode: u16, shift: bool) -> Option<char> {
     use KeyCode as K;
     let key = KeyCode::new(keycode);
-    let lower = match key {
+    if shift {
+        return match key {
+            K::KEY_Q => Some('Й'),
+            K::KEY_W => Some('Ц'),
+            K::KEY_E => Some('У'),
+            K::KEY_R => Some('К'),
+            K::KEY_T => Some('Е'),
+            K::KEY_Y => Some('Н'),
+            K::KEY_U => Some('Г'),
+            K::KEY_I => Some('Ш'),
+            K::KEY_O => Some('Щ'),
+            K::KEY_P => Some('З'),
+            K::KEY_LEFTBRACE => Some('Х'),
+            K::KEY_RIGHTBRACE => Some('Ъ'),
+            K::KEY_A => Some('Ф'),
+            K::KEY_S => Some('Ы'),
+            K::KEY_D => Some('В'),
+            K::KEY_F => Some('А'),
+            K::KEY_G => Some('П'),
+            K::KEY_H => Some('Р'),
+            K::KEY_J => Some('О'),
+            K::KEY_K => Some('Л'),
+            K::KEY_L => Some('Д'),
+            K::KEY_SEMICOLON => Some('Ж'),
+            K::KEY_APOSTROPHE => Some('Э'),
+            K::KEY_Z => Some('Я'),
+            K::KEY_X => Some('Ч'),
+            K::KEY_C => Some('С'),
+            K::KEY_V => Some('М'),
+            K::KEY_B => Some('И'),
+            K::KEY_N => Some('Т'),
+            K::KEY_M => Some('Ь'),
+            K::KEY_COMMA => Some('Б'),
+            K::KEY_DOT => Some('Ю'),
+            K::KEY_GRAVE => Some('Ё'),
+            K::KEY_1 => Some('!'),
+            K::KEY_2 => Some('"'),
+            K::KEY_3 => Some('№'),
+            K::KEY_4 => Some(';'),
+            K::KEY_5 => Some('%'),
+            K::KEY_6 => Some(':'),
+            K::KEY_7 => Some('?'),
+            K::KEY_8 => Some('*'),
+            K::KEY_9 => Some('('),
+            K::KEY_0 => Some(')'),
+            K::KEY_MINUS => Some('_'),
+            K::KEY_EQUAL => Some('+'),
+            K::KEY_SLASH => Some(','),
+            K::KEY_SPACE => Some(' '),
+            _ => None,
+        };
+    }
+
+    match key {
         K::KEY_Q => Some('й'),
         K::KEY_W => Some('ц'),
         K::KEY_E => Some('у'),
@@ -124,13 +177,9 @@ pub fn keycode_to_ru_char(keycode: u16, shift: bool) -> Option<char> {
         K::KEY_9 => Some('9'),
         K::KEY_0 => Some('0'),
         K::KEY_MINUS => Some('-'),
+        K::KEY_EQUAL => Some('='),
         K::KEY_SPACE => Some(' '),
         _ => None,
-    }?;
-    if shift && lower.is_alphabetic() {
-        lower.to_uppercase().next()
-    } else {
-        Some(lower)
     }
 }
 
@@ -138,7 +187,61 @@ pub fn keycode_to_ru_char(keycode: u16, shift: bool) -> Option<char> {
 pub fn keycode_to_us_char(keycode: u16, shift: bool) -> Option<char> {
     use KeyCode as K;
     let key = KeyCode::new(keycode);
-    let lower = match key {
+    if shift {
+        return match key {
+            K::KEY_A => Some('A'),
+            K::KEY_B => Some('B'),
+            K::KEY_C => Some('C'),
+            K::KEY_D => Some('D'),
+            K::KEY_E => Some('E'),
+            K::KEY_F => Some('F'),
+            K::KEY_G => Some('G'),
+            K::KEY_H => Some('H'),
+            K::KEY_I => Some('I'),
+            K::KEY_J => Some('J'),
+            K::KEY_K => Some('K'),
+            K::KEY_L => Some('L'),
+            K::KEY_M => Some('M'),
+            K::KEY_N => Some('N'),
+            K::KEY_O => Some('O'),
+            K::KEY_P => Some('P'),
+            K::KEY_Q => Some('Q'),
+            K::KEY_R => Some('R'),
+            K::KEY_S => Some('S'),
+            K::KEY_T => Some('T'),
+            K::KEY_U => Some('U'),
+            K::KEY_V => Some('V'),
+            K::KEY_W => Some('W'),
+            K::KEY_X => Some('X'),
+            K::KEY_Y => Some('Y'),
+            K::KEY_Z => Some('Z'),
+            K::KEY_1 => Some('!'),
+            K::KEY_2 => Some('@'),
+            K::KEY_3 => Some('#'),
+            K::KEY_4 => Some('$'),
+            K::KEY_5 => Some('%'),
+            K::KEY_6 => Some('^'),
+            K::KEY_7 => Some('&'),
+            K::KEY_8 => Some('*'),
+            K::KEY_9 => Some('('),
+            K::KEY_0 => Some(')'),
+            K::KEY_SEMICOLON => Some(':'),
+            K::KEY_APOSTROPHE => Some('"'),
+            K::KEY_COMMA => Some('<'),
+            K::KEY_DOT => Some('>'),
+            K::KEY_LEFTBRACE => Some('{'),
+            K::KEY_RIGHTBRACE => Some('}'),
+            K::KEY_GRAVE => Some('~'),
+            K::KEY_SLASH => Some('?'),
+            K::KEY_BACKSLASH => Some('|'),
+            K::KEY_MINUS => Some('_'),
+            K::KEY_EQUAL => Some('+'),
+            K::KEY_SPACE => Some(' '),
+            _ => None,
+        };
+    }
+
+    match key {
         K::KEY_A => Some('a'),
         K::KEY_B => Some('b'),
         K::KEY_C => Some('c'),
@@ -188,11 +291,6 @@ pub fn keycode_to_us_char(keycode: u16, shift: bool) -> Option<char> {
         K::KEY_EQUAL => Some('='),
         K::KEY_SPACE => Some(' '),
         _ => None,
-    }?;
-    if shift && lower.is_alphabetic() {
-        lower.to_uppercase().next()
-    } else {
-        Some(lower)
     }
 }
 
@@ -479,7 +577,20 @@ fn char_to_ru_key_event(ch: char) -> Option<KeyEvent> {
         '8' => (K::KEY_8, false),
         '9' => (K::KEY_9, false),
         '0' => (K::KEY_0, false),
+        '!' => (K::KEY_1, true),
+        '"' => (K::KEY_2, true),
+        '№' => (K::KEY_3, true),
+        ';' => (K::KEY_4, true),
+        '%' => (K::KEY_5, true),
+        ':' => (K::KEY_6, true),
+        '?' => (K::KEY_7, true),
+        '*' => (K::KEY_8, true),
+        '(' => (K::KEY_9, true),
+        ')' => (K::KEY_0, true),
         '-' => (K::KEY_MINUS, false),
+        '_' => (K::KEY_MINUS, true),
+        '=' => (K::KEY_EQUAL, false),
+        '+' => (K::KEY_EQUAL, true),
         '.' => (K::KEY_SLASH, false),
         ',' => (K::KEY_SLASH, true),
         ' ' => (K::KEY_SPACE, false),
@@ -587,6 +698,14 @@ mod tests {
         }
     }
 
+    fn ru_event(key: KeyCode, shift: bool) -> KeyEvent {
+        KeyEvent {
+            keycode: key.code(),
+            shift,
+            layout_is_ru: true,
+        }
+    }
+
     #[test]
     fn maps_wrong_layout_word_to_russian_target() {
         let events = [
@@ -600,6 +719,37 @@ mod tests {
         assert_eq!(map_original_events(&events), "ltkfq");
         assert_eq!(map_events_to_layout(&events, true), "делай");
         assert_eq!(map_opposite_events(&events), "делай");
+    }
+
+    #[test]
+    fn maps_shifted_ru_currency_key_to_us_dollar_on_replay() {
+        let events = [
+            ru_event(KeyCode::KEY_4, false),
+            ru_event(KeyCode::KEY_0, false),
+            ru_event(KeyCode::KEY_0, false),
+            ru_event(KeyCode::KEY_0, false),
+            ru_event(KeyCode::KEY_4, true),
+        ];
+
+        assert_eq!(map_original_events(&events), "4000;");
+        assert_eq!(map_events_to_layout(&events, false), "4000$");
+        assert_eq!(map_opposite_events(&events), "4000$");
+        assert_eq!(
+            replay_layout_decision(&events),
+            ReplayLayoutDecision {
+                target_is_ru: false,
+                mixed_layouts: false,
+            }
+        );
+    }
+
+    #[test]
+    fn text_insert_can_type_russian_shifted_punctuation_on_ru_layout() {
+        let runs = text_to_uinput_runs("4000; 50%", true).expect("typable text");
+
+        assert_eq!(runs.len(), 1);
+        assert!(runs[0].target_is_ru);
+        assert_eq!(map_events_to_layout(&runs[0].events, true), "4000; 50%");
     }
 
     #[test]

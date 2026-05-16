@@ -436,7 +436,11 @@ impl WordBuffer {
     }
 
     pub fn what_to_replay(&self, replace_words: usize) -> Option<(Vec<KeyEvent>, u32)> {
-        let replace_words = replace_words.clamp(1, MAX_REPLACE_WORDS);
+        let replace_words = if self.replay_toggle_ready {
+            1
+        } else {
+            replace_words.clamp(1, MAX_REPLACE_WORDS)
+        };
         if !self.current.is_empty() {
             let take_prev = replace_words.saturating_sub(1).min(self.prev_words.len());
             let mut events = Vec::new();
@@ -541,6 +545,58 @@ mod tests {
         assert_eq!(backspaces, 5);
         assert!(decision.target_is_ru);
         assert_eq!(map_events_to_layout(&events, true), "делай");
+    }
+
+    #[test]
+    fn replay_toggle_uses_only_remembered_word_even_with_wider_scope() {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(
+            &mut buffer,
+            &[KeyCode::KEY_A, KeyCode::KEY_B, KeyCode::KEY_C],
+            false,
+        );
+        buffer.handle_space();
+        push_text_as_layout(&mut buffer, &[KeyCode::KEY_L], false);
+
+        buffer.mark_replayed_layout(1, true);
+        let (events, backspaces) = buffer.what_to_replay(3).expect("toggle word");
+
+        assert_eq!(backspaces, 1);
+        assert_eq!(events.len(), 1);
+        assert_eq!(map_original_events(&events), "д");
+        assert!(buffer.replay_toggle_ready());
+    }
+
+    #[test]
+    fn replay_toggle_can_flip_same_word_four_times_with_wider_scope() {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(
+            &mut buffer,
+            &[
+                KeyCode::KEY_G,
+                KeyCode::KEY_O,
+                KeyCode::KEY_O,
+                KeyCode::KEY_D,
+            ],
+            false,
+        );
+
+        for (original, target, target_is_ru) in [
+            ("good", "пщщв", true),
+            ("пщщв", "good", false),
+            ("good", "пщщв", true),
+            ("пщщв", "good", false),
+        ] {
+            let (events, backspaces) = buffer.what_to_replay(3).expect("toggle word");
+            let decision = replay_layout_decision(&events);
+
+            assert_eq!(backspaces, 4);
+            assert_eq!(map_original_events(&events), original);
+            assert_eq!(map_events_to_layout(&events, decision.target_is_ru), target);
+            assert_eq!(decision.target_is_ru, target_is_ru);
+
+            buffer.mark_replayed_layout(3, decision.target_is_ru);
+        }
     }
 
     #[test]

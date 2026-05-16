@@ -20,6 +20,7 @@
 //!   lay-test-input ctrl_plus_ghbdtn_enter — жмёт Ctrl+Shift+=, затем "ghbdtn" + двойной Shift + Enter
 //!   lay-test-input dhtvz_toggle_enter — печатает "dhtvz" + двойной Shift × 2 + Enter
 //!   lay-test-input dhtvz_toggle3_enter — печатает "dhtvz" + двойной Shift × 3 + Enter
+//!   lay-test-input good_toggle4_enter — печатает "good" + двойной Shift × 4 + Enter
 //!   lay-test-input n_teper_mixed_enter — печатает "Nеперь" + двойной Shift + Enter
 //!   lay-test-input scenario2   — печатает "привет" в RU + двойной Shift
 //!   lay-test-input mixed_word — печатает "ghи" + двойной Shift + Enter
@@ -293,6 +294,28 @@ fn main() -> std::io::Result<()> {
             }
             tap(&mut dev, KeyCode::KEY_ENTER.code())?;
             eprintln!("[test] сценарий {scenario} отправлен");
+        }
+        "good_toggle4_enter" => {
+            activate_layout("us");
+            sleep(Duration::from_millis(250));
+            for k in [
+                KeyCode::KEY_G,
+                KeyCode::KEY_O,
+                KeyCode::KEY_O,
+                KeyCode::KEY_D,
+            ] {
+                tap(&mut dev, k.code())?;
+                sleep(Duration::from_millis(50));
+            }
+            for _ in 0..4 {
+                sleep(Duration::from_millis(220));
+                tap(&mut dev, KeyCode::KEY_LEFTSHIFT.code())?;
+                sleep(Duration::from_millis(80));
+                tap(&mut dev, KeyCode::KEY_LEFTSHIFT.code())?;
+                sleep(Duration::from_millis(900));
+            }
+            tap(&mut dev, KeyCode::KEY_ENTER.code())?;
+            eprintln!("[test] сценарий good_toggle4_enter отправлен");
         }
         "n_teper_mixed_enter" => {
             activate_layout("us");
