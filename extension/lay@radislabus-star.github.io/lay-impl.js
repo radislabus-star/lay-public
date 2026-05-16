@@ -504,8 +504,9 @@ const LayIndicator = GObject.registerClass(
 {GTypeName: `LayIndicator_${_uid}`},
 class LayIndicator extends PanelMenu.Button {
 
-    _init() {
+    _init(service = null) {
         super._init(0.0, 'lay');
+        this._service = service;
         this._cfg = loadConfig();
         this._cfg.replace_words = Math.max(1, Math.min(3, this._cfg.replace_words));
         this._cfg.correction_engine = this._cfg.correction_engine === 'smart' ? 'smart' : 'replay';
@@ -747,6 +748,11 @@ class LayIndicator extends PanelMenu.Button {
         }
         item.menu.addMenuItem(this._mutedTextRow(summarizeRecentActions(loadRecentActions(20))));
         item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        const undoable = actions.find(action => action.undo_available);
+        if (undoable) {
+            item.menu.addMenuItem(this._undoRecentActionItem(undoable));
+            item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        }
         for (const action of actions)
             item.menu.addMenuItem(this._recentActionRow(action));
     }
@@ -780,6 +786,30 @@ class LayIndicator extends PanelMenu.Button {
         box.add_child(text);
         item.add_child(box);
         return item;
+    }
+
+    _undoRecentActionItem(action) {
+        const item = new PopupMenu.PopupMenuItem('Откатить последнее');
+        item.connect('activate', () => this._undoRecentAction(action));
+        return item;
+    }
+
+    _undoRecentAction(action) {
+        const from = String(action.from ?? '');
+        const to = String(action.to ?? '');
+        if (!from || !to || from === to) {
+            this._notify('Откат невозможен', 'В последнем действии нет пары from/to.', true);
+            return;
+        }
+        if (Array.from(to).length > 120 || Array.from(from).length > 120) {
+            this._notify('Откат пропущен', 'Слишком длинный фрагмент для безопасного отката из трея.', true);
+            return;
+        }
+        const ok = this._service?.ReplaceText?.(0, Array.from(to).length, from, 0, '') ?? false;
+        if (ok)
+            this._notify('Откат выполнен', `${this._shortActionText(to)} → ${this._shortActionText(from)}`);
+        else
+            this._notify('Откат не сработал', 'GNOME DBus ReplaceText вернул ошибку.', true);
     }
 
     _ptahAlexsMenu() {
@@ -1656,7 +1686,7 @@ export class LayImpl {
     enable() {
         this._service = new LayDaemonService();
         this._service.enable();
-        this._indicator = new LayIndicator();
+        this._indicator = new LayIndicator(this._service);
         Main.panel.addToStatusArea('lay', this._indicator, 0, 'right');
         log('[lay-extension] LayImpl enabled ✓');
     }
