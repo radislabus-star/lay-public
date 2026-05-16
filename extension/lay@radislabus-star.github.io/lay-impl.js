@@ -211,6 +211,38 @@ function loadRecentActions(limit = 5) {
         return [];
     }
 }
+function summarizeRecentActions(actions) {
+    const total = actions.length;
+    if (total === 0)
+        return 'нет действий';
+    const counts = {};
+    let elapsed = 0;
+    let undo = 0;
+    for (const action of actions) {
+        const kind = String(action.kind ?? 'action');
+        counts[kind] = (counts[kind] ?? 0) + 1;
+        elapsed += Number(action.elapsed_ms ?? 0);
+        if (action.undo_available)
+            undo += 1;
+    }
+    const top = Object.entries(counts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([kind, count]) => `${actionKindLabel(kind)}:${count}`)
+        .join(' · ');
+    return `${total} действий · среднее ${Math.round(elapsed / total)}мс · undo ${undo} · ${top}`;
+}
+function actionKindLabel(kind) {
+    return {
+        'layout-replay': 'Double Shift',
+        'smart-text': 'Smart',
+        'auto-replace': 'Автоподмена',
+        'typing-assist': 'Помощь',
+        'enter-autocorrect': 'Enter',
+        'layout-text-fallback': 'Fallback',
+        'auto-undo': 'Undo',
+    }[kind] ?? String(kind ?? 'action');
+}
 function restartDaemon() {
     daemonCommand('restart');
 }
@@ -497,8 +529,10 @@ class LayIndicator extends PanelMenu.Button {
 
         this._buildMenu();
         this.menu.connect('open-state-changed', (_menu, isOpen) => {
-            if (isOpen)
+            if (isOpen) {
                 this._refreshStats();
+                this._refreshRecentActions();
+            }
         });
 
         this._mgr = getInputSourceManager();
@@ -699,14 +733,27 @@ class LayIndicator extends PanelMenu.Button {
 
     _recentActionsMenu() {
         const item = new PopupMenu.PopupSubMenuMenuItem('Последние действия', false);
+        this._recentActionsItem = item;
+        this._populateRecentActionsMenu(item);
+        return item;
+    }
+
+    _populateRecentActionsMenu(item) {
+        item.menu.removeAll();
         const actions = loadRecentActions(5);
         if (actions.length === 0) {
             item.menu.addMenuItem(this._mutedTextRow('пока нет действий'));
-            return item;
+            return;
         }
+        item.menu.addMenuItem(this._mutedTextRow(summarizeRecentActions(loadRecentActions(20))));
+        item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         for (const action of actions)
             item.menu.addMenuItem(this._recentActionRow(action));
-        return item;
+    }
+
+    _refreshRecentActions() {
+        if (this._recentActionsItem)
+            this._populateRecentActionsMenu(this._recentActionsItem);
     }
 
     _recentActionRow(action) {
@@ -1440,15 +1487,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _actionKindLabel(kind) {
-        return {
-            'layout-replay': 'Double Shift',
-            'smart-text': 'Smart',
-            'auto-replace': 'Автоподмена',
-            'typing-assist': 'Помощь',
-            'enter-autocorrect': 'Enter',
-            'layout-text-fallback': 'Fallback',
-            'auto-undo': 'Undo',
-        }[kind] ?? String(kind ?? 'action');
+        return actionKindLabel(kind);
     }
 
     _shortActionText(value) {
@@ -1469,9 +1508,11 @@ class LayIndicator extends PanelMenu.Button {
 
     _aboutStatsText() {
         const stats = loadStats();
+        const actions = summarizeRecentActions(loadRecentActions(20));
         return `LLM ${stats.llm_calls ?? 0}${this._lastTime(stats.last_llm_ts)} · `
             + `правки ${stats.learning_log_entries ?? 0}${this._lastTime(stats.last_learning_ts)} · `
-            + `правил ${stats.promoted_rules ?? 0}${this._lastTime(stats.last_promotion_ts)}`;
+            + `правил ${stats.promoted_rules ?? 0}${this._lastTime(stats.last_promotion_ts)} · `
+            + `действия: ${actions}`;
     }
 
     _refreshStats() {

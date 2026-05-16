@@ -192,6 +192,37 @@ def load_recent_actions(limit: int = 5) -> list[dict[str, Any]]:
     return out
 
 
+def action_kind_label(kind: Any) -> str:
+    return {
+        "layout-replay": "Double Shift",
+        "smart-text": "Smart",
+        "auto-replace": "Автоподмена",
+        "typing-assist": "Помощь",
+        "enter-autocorrect": "Enter",
+        "layout-text-fallback": "Fallback",
+        "auto-undo": "Undo",
+    }.get(str(kind), str(kind or "action"))
+
+
+def recent_actions_summary(actions: list[dict[str, Any]]) -> str:
+    if not actions:
+        return "нет действий"
+    counts: dict[str, int] = {}
+    elapsed = 0
+    undo = 0
+    for item in actions:
+        kind = str(item.get("kind", "action"))
+        counts[kind] = counts.get(kind, 0) + 1
+        elapsed += int(item.get("elapsed_ms", 0) or 0)
+        if item.get("undo_available"):
+            undo += 1
+    top = " · ".join(
+        f"{action_kind_label(kind)}:{count}"
+        for kind, count in sorted(counts.items(), key=lambda pair: pair[1], reverse=True)[:3]
+    )
+    return f"{len(actions)} действий · среднее {round(elapsed / len(actions))}мс · undo {undo} · {top}"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="KDE tray frontend for lay")
     parser.add_argument("--status", action="store_true", help="print daemon/config status and exit")
@@ -378,6 +409,11 @@ def main() -> int:
                 empty = QAction("пока нет действий", recent_menu)
                 empty.setEnabled(False)
                 recent_menu.addAction(empty)
+            else:
+                summary = QAction(recent_actions_summary(load_recent_actions(20)), recent_menu)
+                summary.setEnabled(False)
+                recent_menu.addAction(summary)
+                recent_menu.addSeparator()
             for item in actions:
                 action = QAction(self.recent_action_label(item), recent_menu)
                 action.setEnabled(False)
@@ -514,15 +550,7 @@ def main() -> int:
 
         @staticmethod
         def recent_action_label(item: dict[str, Any]) -> str:
-            kind = {
-                "layout-replay": "Double Shift",
-                "smart-text": "Smart",
-                "auto-replace": "Автоподмена",
-                "typing-assist": "Помощь",
-                "enter-autocorrect": "Enter",
-                "layout-text-fallback": "Fallback",
-                "auto-undo": "Undo",
-            }.get(str(item.get("kind")), str(item.get("kind", "action")))
+            kind = action_kind_label(item.get("kind"))
             left = " ".join(str(item.get("from", "")).split())
             right = " ".join(str(item.get("to", "")).split())
             if len(left) > 24:
