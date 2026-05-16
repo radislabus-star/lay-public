@@ -163,15 +163,17 @@ fn active_enter_autocorrect() -> bool {
 }
 
 fn active_enter_autocorrect_from_env(config_enabled: bool, env_value: Option<&str>) -> bool {
-    config_enabled
-        && env_value
-            .map(|value| {
-                matches!(
-                    value.trim().to_ascii_lowercase().as_str(),
-                    "1" | "true" | "yes" | "on"
-                )
-            })
-            .unwrap_or(false)
+    if !config_enabled {
+        return false;
+    }
+    env_value
+        .map(|value| {
+            matches!(
+                value.trim().to_ascii_lowercase().as_str(),
+                "1" | "true" | "yes" | "on"
+            )
+        })
+        .unwrap_or(true)
 }
 
 fn active_auto_switch_layout() -> bool {
@@ -4102,7 +4104,8 @@ mod tests {
     fn enter_autocorrect_candidate_is_off_contract_until_enabled_by_config() {
         let cfg = LayConfig::default();
         assert!(!cfg.enter_autocorrect);
-        assert!(!active_enter_autocorrect_from_env(true, None));
+        assert!(!active_enter_autocorrect_from_env(false, None));
+        assert!(active_enter_autocorrect_from_env(true, None));
         assert!(!active_enter_autocorrect_from_env(true, Some("0")));
         assert!(active_enter_autocorrect_from_env(true, Some("1")));
         assert!(active_enter_autocorrect_from_env(true, Some("true")));
@@ -4110,15 +4113,18 @@ mod tests {
 
     #[test]
     fn enter_autocorrect_candidate_fixes_current_wrong_layout_word() {
-        let mut buffer = WordBuffer::new();
-        push_text_as_layout(&mut buffer, "ghbdtn", false);
         let pipeline = typing_pipeline_with_only("layout_en_to_ru");
 
-        let (_events, edit) =
-            enter_autocorrect_candidate(&buffer, 1, true, &pipeline).expect("correction");
+        for (input, expected) in [("ghbdtn", "привет"), ("lfkmit", "дальше")] {
+            let mut buffer = WordBuffer::new();
+            push_text_as_layout(&mut buffer, input, false);
 
-        assert_eq!(edit.original, "ghbdtn");
-        assert_eq!(edit.replacement, "привет");
+            let (_events, edit) =
+                enter_autocorrect_candidate(&buffer, 1, true, &pipeline).expect("correction");
+
+            assert_eq!(edit.original, input);
+            assert_eq!(edit.replacement, expected);
+        }
     }
 
     #[test]
@@ -6674,6 +6680,10 @@ mod tests {
         assert_eq!(
             apply_typing_assist("Lfdfq ", true),
             Some("Давай ".to_string())
+        );
+        assert_eq!(
+            apply_typing_assist("lfkmit ", true),
+            Some("дальше ".to_string())
         );
         assert_eq!(
             apply_typing_assist("ОБYJDB ", true),

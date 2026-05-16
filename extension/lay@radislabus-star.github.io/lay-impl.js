@@ -41,6 +41,8 @@ const AUTO_REPLACE_TOOLTIP = 'Когда включено: typo-правки п�
     + 'Когда выключено: остаётся только безопасный авто-layout EN/RU после пробела.';
 const AUTO_SWITCH_TOOLTIP = 'После автоматической помощи при наборе lay оставляет активной\n'
     + 'раскладку исправленного текста. Double Shift переключает раскладку всегда.';
+const ENTER_AUTOCORRECT_TOOLTIP = 'Опционально: перед Enter lay пробует исправить текущий хвост\n'
+    + 'и только потом отправляет Enter. По умолчанию выключено, потому что Enter часто отправляет сообщение.';
 const LEM_2_TOOLTIP = 'LEM-арбитр для двух слов: сравнивает готовые варианты хвоста\n'
     + 'и выбирает более естественный, не генерируя новый текст.';
 const LEM_3_TOOLTIP = 'LEM-арбитр для трех слов и длиннее: нужен для смешанных RU/EN\n'
@@ -244,6 +246,21 @@ function consumeRecentAction(action) {
         log(`[lay-extension] consume recent action failed: ${e}`);
     }
     return false;
+}
+function clearRecentActions() {
+    try {
+        Gio.File.new_for_path(RECENT_ACTIONS_PATH).replace_contents(
+            new TextEncoder().encode(''),
+            null,
+            false,
+            Gio.FileCreateFlags.REPLACE_DESTINATION,
+            null
+        );
+        return true;
+    } catch(e) {
+        log(`[lay-extension] clear recent actions failed: ${e}`);
+        return false;
+    }
 }
 function summarizeRecentActions(actions) {
     const total = actions.length;
@@ -737,6 +754,12 @@ class LayIndicator extends PanelMenu.Button {
             AUTO_SWITCH_TOOLTIP
         ));
         item.menu.addMenuItem(this._switchItem(
+            'Исправлять перед Enter',
+            'enter_autocorrect',
+            true,
+            ENTER_AUTOCORRECT_TOOLTIP
+        ));
+        item.menu.addMenuItem(this._switchItem(
             'LEM: 2 слова',
             'lem_2_words',
             false,
@@ -787,6 +810,8 @@ class LayIndicator extends PanelMenu.Button {
             item.menu.addMenuItem(this._undoRecentActionItem(undoable));
             item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         }
+        item.menu.addMenuItem(this._clearRecentActionsItem());
+        item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         for (const action of actions)
             item.menu.addMenuItem(this._recentActionRow(action));
     }
@@ -819,6 +844,20 @@ class LayIndicator extends PanelMenu.Button {
         box.add_child(title);
         box.add_child(text);
         item.add_child(box);
+        return item;
+    }
+
+    _clearRecentActionsItem() {
+        const item = new PopupMenu.PopupMenuItem('Очистить последние действия');
+        item.connect('activate', () => {
+            if (clearRecentActions()) {
+                this._refreshRecentActions();
+                this._refreshStats();
+                this._notify('Журнал очищен', 'Последние действия удалены.');
+            } else {
+                this._notify('Не удалось очистить', RECENT_ACTIONS_PATH, true);
+            }
+        });
         return item;
     }
 
