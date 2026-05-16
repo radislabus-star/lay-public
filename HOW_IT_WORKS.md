@@ -26,6 +26,8 @@
 - `src/core.rs` — стабильный facade для будущих frontend-ов;
 - `src/config.rs` — единая схема настроек для daemon, GNOME tray и будущего KDE tray;
 - `src/correction.rs` — общий контракт результата исправления;
+- `src/decoder.rs` — единый decision layer: manual double-Shift, typing assist,
+  enter-autocorrect и будущий scorer/decoder выбирают действие, но не печатают;
 - `src/desktop.rs` — выбор `gnome` / `kde` / `x11`, нормализация layout-id;
 - `src/dict.rs` — физическая RU/EN конвертация клавиш;
 - `src/keyboard.rs` — keycode-события, word split, replay-decision, US/RU mapping и text→uinput runs;
@@ -33,6 +35,8 @@
 - `src/lem.rs` и `src/ngram.rs` — scoring готовых кандидатов;
 - `src/quality.rs` — лёгкие эвристики качества текста;
 - `src/text_edit.rs` — минимальный план замены текста без лишней перепечатки.
+- `src/text_backend.rs` — описание возможностей backend: key replay, atomic
+  tail replace, minimal range replace.
 
 Desktop-адаптеры:
 
@@ -75,7 +79,16 @@ Desktop-адаптеры:
                  │ DOUBLE!
                  ▼
   ┌──────────────────────────────────────┐
-  │  handle_double_shift                 │
+  │  decoder                             │
+  │                                      │
+  │  1. Build candidates                 │
+  │  2. Score/arbiter                    │
+  │  3. Return action: ReplayAll или     │
+  │     ReplaceText + source             │
+  └──────────────┬───────────────────────┘
+                 ▼
+  ┌──────────────────────────────────────┐
+  │  backend executor                    │
   │                                      │
   │  1. uinput Backspace × N             │
   │     (стереть слово с экрана)         │
@@ -391,12 +404,14 @@ lay/
 │   ├── main.rs          — CLI (clap), dict conversion и --smart
 │   ├── config.rs        — config schema для daemon и tray
 │   ├── correction.rs    — общий контракт Correction
+│   ├── decoder.rs       — единый decision/edit-plan слой
 │   ├── core.rs          — публичный facade общего ядра
 │   ├── desktop.rs       — выбор GNOME/KDE/X11 backend
 │   ├── dict.rs          — словарь US↔RU, detect_direction, convert
 │   ├── keyboard.rs      — key events, word split, replay decision
 │   ├── word_buffer.rs   — история слов и pending feedback
 │   ├── text_edit.rs     — минимальные планы замены текста
+│   ├── text_backend.rs  — capability-контракт uinput/IME/backend
 │   ├── typing_assist.rs — правила typing assist и smart-tail
 │   ├── x11_layout.rs    — native XKB backend через x11rb
 │   ├── quality.rs       — auxiliary quality heuristics

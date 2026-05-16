@@ -16,6 +16,48 @@ pub enum TextBackendPreference {
     Auto,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TextReplaceCapability {
+    /// Best effort: key taps and backspaces can race with focused apps.
+    KeyReplay,
+    /// A whole tail can be deleted and committed as one backend call.
+    AtomicTailReplace,
+    /// A backend can address a minimal text range around the cursor.
+    MinimalRangeReplace,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct TextBackendCapabilities {
+    pub preference: TextBackendPreference,
+    pub replace: TextReplaceCapability,
+    pub can_switch_layout: bool,
+}
+
+impl TextBackendCapabilities {
+    pub const fn uinput() -> Self {
+        Self {
+            preference: TextBackendPreference::Uinput,
+            replace: TextReplaceCapability::KeyReplay,
+            can_switch_layout: true,
+        }
+    }
+
+    pub const fn ime() -> Self {
+        Self {
+            preference: TextBackendPreference::Ime,
+            replace: TextReplaceCapability::AtomicTailReplace,
+            can_switch_layout: false,
+        }
+    }
+
+    pub fn can_atomic_replace(self) -> bool {
+        matches!(
+            self.replace,
+            TextReplaceCapability::AtomicTailReplace | TextReplaceCapability::MinimalRangeReplace
+        )
+    }
+}
+
 impl TextBackendPreference {
     pub fn parse(value: &str) -> Self {
         match value.trim().to_ascii_lowercase().as_str() {
@@ -91,5 +133,13 @@ mod tests {
         assert_eq!(request.backspaces, 7);
         assert_eq!(request.text, "hello ");
         assert!(!request.is_noop());
+    }
+
+    #[test]
+    fn exposes_backend_capabilities_for_decoder_policy() {
+        assert!(!TextBackendCapabilities::uinput().can_atomic_replace());
+        assert!(TextBackendCapabilities::uinput().can_switch_layout);
+        assert!(TextBackendCapabilities::ime().can_atomic_replace());
+        assert!(!TextBackendCapabilities::ime().can_switch_layout);
     }
 }

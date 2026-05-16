@@ -20,7 +20,12 @@ use lay::config::{
 use lay::config::{
     typing_assist_pipeline_for_auto_replace, CorrectionEngine, LayConfig, TypingAssistRuleConfig,
 };
+#[cfg(test)]
 use lay::correction::Correction;
+use lay::decoder::{
+    decode_enter_autocorrect_tail, decode_manual_tail, decode_typing_assist_tail, CorrectionSource,
+    DecoderAction, DecoderEditPlan, ManualDecodeRequest,
+};
 #[cfg(test)]
 use lay::desktop::resolve_layout_backend;
 use lay::desktop::{is_ru_layout_id, normalize_layout_id, parse_setxkbmap_layout, LayoutBackend};
@@ -37,24 +42,22 @@ use lay::keyboard::{
 use lay::text_backend::{ImeReplaceRequest, TextBackendPreference};
 #[cfg(test)]
 use lay::text_edit::plan_text_replacement;
-use lay::text_edit::{
-    ensure_committed_tail_spacing, plan_committed_tail_replacement, TextReplacement,
-};
-use lay::typing_assist::{
-    apply_auto_replace, apply_typing_assist_with_pipeline, decide_correction,
-    decide_scoped_tail_correction_with_options, effective_replace_words, is_cyrillic_word,
-    is_known_russian_word_or_form, remember_promoted_replacement,
-    should_force_replay_for_short_fragment, ScopedTailOptions, REPLACEMENTS_PATH,
-};
+use lay::text_edit::{plan_committed_tail_replacement, TextReplacement};
 #[cfg(test)]
 use lay::typing_assist::{
-    are_ru_keyboard_neighbors, correct_duplicate_layout_prefix_on_ascii_token,
-    correct_extra_letters, correct_missing_letter, correct_wrong_layout_ascii_technical_token,
-    decide_completed_scope_word, decide_scoped_tail_correction,
-    decide_scoped_tail_correction_with_lem, is_ascii_technical_token,
-    promoted_replacement_for_token, repair_cyrillic_prefix_before_ascii_tail,
-    russian_generated_form_dictionary, scoped_tail_lem_candidates,
-    should_keep_plain_cyrillic_before_ascii_technical, split_edge_whitespace, split_ws_segments,
+    apply_typing_assist_with_pipeline, are_ru_keyboard_neighbors,
+    correct_duplicate_layout_prefix_on_ascii_token, correct_extra_letters, correct_missing_letter,
+    correct_wrong_layout_ascii_technical_token, decide_completed_scope_word, decide_correction,
+    decide_scoped_tail_correction, decide_scoped_tail_correction_with_lem,
+    is_ascii_technical_token, promoted_replacement_for_token,
+    repair_cyrillic_prefix_before_ascii_tail, russian_generated_form_dictionary,
+    scoped_tail_lem_candidates, should_keep_plain_cyrillic_before_ascii_technical,
+    split_edge_whitespace, split_ws_segments,
+};
+use lay::typing_assist::{
+    effective_replace_words, is_cyrillic_word, is_known_russian_word_or_form,
+    remember_promoted_replacement, should_force_replay_for_short_fragment, ScopedTailOptions,
+    REPLACEMENTS_PATH,
 };
 use lay::word_buffer::{PendingAutoUndo, UserLearningCorrection, WordBuffer};
 use std::collections::BTreeMap;
@@ -1571,15 +1574,19 @@ fn handle_typing_assist_after_space(
     let pipeline = active_typing_assist_pipeline_for_auto_replace();
     let correction = [2, 1].into_iter().find_map(|word_count| {
         let events = buf.last_completed_words_events(word_count)?;
-        let original = map_original_events(&events);
-        let replacement =
-            apply_typing_assist_with_pipeline(&original, allow_layout_auto, &pipeline)?;
-        let replacement = ensure_committed_tail_spacing(&original, replacement);
-        Some((events, original, replacement))
+        let edit = decode_typing_assist_tail(
+            &events,
+            allow_layout_auto,
+            &pipeline,
+            CorrectionSource::TypingAssist,
+        )?;
+        Some((events, edit))
     });
-    let Some((events, original, replacement)) = correction else {
+    let Some((events, edit)) = correction else {
         return;
     };
+    let original = edit.original.clone();
+    let replacement = edit.replacement.clone();
 
     if should_try_ime_text_backend() {
         let original_layout = read_current_layout_is_ru().ok();
@@ -1647,14 +1654,7 @@ fn handle_typing_assist_after_space(
     {
         std::thread::sleep(Duration::from_millis(TYPING_ASSIST_SPACE_COMMIT_SETTLE_MS));
     }
-    let plan = plan_committed_tail_replacement(&original, &replacement).unwrap_or_else(|| {
-        TextReplacement {
-            move_left: 0,
-            backspaces: original.chars().count() as u32,
-            insert: replacement.clone(),
-            move_right: 0,
-        }
-    });
+    let plan = edit.plan.clone();
 
     if let Err(e) = apply_text_replacement(kbd, &plan) {
         log(&format!("⚠ typing-assist minimal replace failed: {e}"));
@@ -1713,7 +1713,7 @@ fn enter_autocorrect_candidate(
     replace_words: usize,
     allow_layout_auto: bool,
     pipeline: &[TypingAssistRuleConfig],
-) -> Option<(Vec<KeyEvent>, String, String)> {
+) -> Option<(Vec<KeyEvent>, DecoderEditPlan)> {
     let (events, _) = buf.what_to_replay(replace_words)?;
     let original = map_original_events(&events);
     if original.trim().is_empty() {
@@ -1724,24 +1724,13 @@ fn enter_autocorrect_candidate(
         .chars()
         .next_back()
         .is_some_and(char::is_whitespace);
-    let assist_input = if original_has_trailing_space {
-        original.clone()
-    } else {
-        format!("{original} ")
-    };
-    let mut replacement =
-        apply_typing_assist_with_pipeline(&assist_input, allow_layout_auto, pipeline)?;
-    if original_has_trailing_space {
-        replacement = ensure_committed_tail_spacing(&original, replacement);
-    } else {
-        replacement = replacement.trim_end().to_string();
-    }
-
-    if replacement == original || replacement.trim().is_empty() {
-        None
-    } else {
-        Some((events, original, replacement))
-    }
+    let edit = decode_enter_autocorrect_tail(
+        &events,
+        original_has_trailing_space,
+        allow_layout_auto,
+        pipeline,
+    )?;
+    Some((events, edit))
 }
 
 fn handle_enter_autocorrect(
@@ -1761,8 +1750,10 @@ fn handle_enter_autocorrect(
     let pipeline = default_typing_assist_pipeline();
     #[cfg(not(test))]
     let pipeline = active_typing_assist_pipeline_for_auto_replace();
-    let (events, original, replacement) =
+    let (events, edit) =
         enter_autocorrect_candidate(buf, replace_words, allow_layout_auto, &pipeline)?;
+    let original = edit.original.clone();
+    let replacement = edit.replacement.clone();
 
     if should_try_ime_text_backend() {
         let original_layout = read_current_layout_is_ru().ok();
@@ -1809,14 +1800,7 @@ fn handle_enter_autocorrect(
     }
 
     let original_layout = read_current_layout_is_ru().ok();
-    let plan = plan_committed_tail_replacement(&original, &replacement).unwrap_or_else(|| {
-        TextReplacement {
-            move_left: 0,
-            backspaces: original.chars().count() as u32,
-            insert: replacement.clone(),
-            move_right: 0,
-        }
-    });
+    let plan = edit.plan.clone();
 
     if let Err(e) = apply_text_replacement(kbd, &plan) {
         log(&format!("⚠ enter-autocorrect minimal replace failed: {e}"));
@@ -1953,43 +1937,35 @@ fn handle_double_shift(
     let force_short_replay = should_force_replay_for_short_fragment(&mapped_orig);
     let force_replay_toggle =
         engine == CorrectionEngine::Smart && (buf.replay_toggle_ready() || force_short_replay);
-    let mut correction = if force_replay_toggle {
+    if force_replay_toggle {
         log("  smart: replay без модели");
-        Correction::ReplayAll
-    } else if engine == CorrectionEngine::Smart {
-        let scoped_options = ScopedTailOptions {
-            lem_enabled: active_lem_enabled_for_scope(words_orig),
-            allow_layout_auto: active_auto_switch_layout(),
-        };
-        decide_scoped_tail_correction_with_options(&events, scoped_options)
-            .map(Correction::InsertText)
-            .unwrap_or_else(|| decide_correction(&mapped_orig, &mapped_target, engine))
-    } else {
-        decide_correction(&mapped_orig, &mapped_target, engine)
-    };
-    let mut insert_kind = if matches!(&correction, Correction::InsertText(_)) {
-        "smart-text"
-    } else {
-        "auto-replace"
-    };
-
-    if correction == Correction::ReplayAll && auto_replace {
-        if let Some(text) = apply_auto_replace(&mapped_orig, &mapped_target) {
-            if text != mapped_target && text != mapped_orig {
-                correction = Correction::InsertText(text);
-                insert_kind = "auto-replace";
-            }
-        }
     }
+    let scoped_options = ScopedTailOptions {
+        lem_enabled: active_lem_enabled_for_scope(words_orig),
+        allow_layout_auto: active_auto_switch_layout(),
+    };
+    let correction_action = decode_manual_tail(ManualDecodeRequest {
+        events: &events,
+        original: &mapped_orig,
+        converted: &mapped_target,
+        engine,
+        force_replay: force_replay_toggle,
+        auto_replace,
+        scoped_options,
+    })
+    .action;
 
     if should_try_ime_text_backend() {
-        let (replace_text, replace_kind) = match &correction {
-            Correction::InsertText(text) if !text.trim().is_empty() => (text.clone(), insert_kind),
-            _ => (mapped_target.clone(), "ime-replay"),
+        let (replace_text, replace_kind, is_replay) = match &correction_action {
+            DecoderAction::ReplaceText {
+                replacement,
+                source,
+            } if !replacement.trim().is_empty() => (replacement.clone(), source.log_kind(), false),
+            _ => (mapped_target.clone(), "ime-replay", true),
         };
         let replace_target_is_ru = preferred_layout_for_text(&replace_text, target_is_ru);
         if try_ime_replace_tail(&mapped_orig, &replace_text, replace_kind).unwrap_or(false) {
-            if matches!(&correction, Correction::ReplayAll) {
+            if is_replay {
                 buf.mark_replayed_layout(replace_words, replace_target_is_ru);
                 if !force_replay_toggle && mapped_orig != replace_text {
                     append_learning_log(
@@ -2038,15 +2014,18 @@ fn handle_double_shift(
     }
 
     if GNOME_NATIVE_REPLACE_EXPERIMENTAL && active_layout_backend() == LayoutBackend::Gnome {
-        let (replace_text, replace_kind) = match &correction {
-            Correction::InsertText(text) if !text.trim().is_empty() => (text.clone(), insert_kind),
-            _ => (mapped_target.clone(), "gnome-replace"),
+        let (replace_text, replace_kind, is_replay) = match &correction_action {
+            DecoderAction::ReplaceText {
+                replacement,
+                source,
+            } if !replacement.trim().is_empty() => (replacement.clone(), source.log_kind(), false),
+            _ => (mapped_target.clone(), "gnome-replace", true),
         };
         let replace_target_is_ru = preferred_layout_for_text(&replace_text, target_is_ru);
         let (layout_id, _) = target_layout(replace_target_is_ru);
         match call_replace_text(0, n_backspaces, &replace_text, 0, layout_id) {
             Ok(true) => {
-                if matches!(&correction, Correction::ReplayAll) {
+                if is_replay {
                     buf.mark_replayed_layout(replace_words, replace_target_is_ru);
                     if !force_replay_toggle && mapped_orig != replace_text {
                         append_learning_log(
@@ -2106,8 +2085,12 @@ fn handle_double_shift(
         log(&format!("⚠ modifier cleanup before backspace failed: {e}"));
     }
 
-    if let Correction::InsertText(text) = correction {
-        let kind = insert_kind;
+    if let DecoderAction::ReplaceText {
+        replacement: text,
+        source,
+    } = correction_action
+    {
+        let kind = source.log_kind();
         if text.trim().is_empty() || text == mapped_target {
             log("  2. text decision совпал с replay — replay для сохранения toggle");
         } else {
@@ -3909,11 +3892,11 @@ mod tests {
         push_text_as_layout(&mut buffer, "ghbdtn", false);
         let pipeline = typing_pipeline_with_only("layout_en_to_ru");
 
-        let (_events, original, replacement) =
+        let (_events, edit) =
             enter_autocorrect_candidate(&buffer, 1, true, &pipeline).expect("correction");
 
-        assert_eq!(original, "ghbdtn");
-        assert_eq!(replacement, "привет");
+        assert_eq!(edit.original, "ghbdtn");
+        assert_eq!(edit.replacement, "привет");
     }
 
     #[test]
@@ -3933,11 +3916,11 @@ mod tests {
         push_text_as_layout(&mut buffer, "b", false);
         let pipeline = typing_pipeline_with_only("visual_b");
 
-        let (_events, original, replacement) =
+        let (_events, edit) =
             enter_autocorrect_candidate(&buffer, 2, true, &pipeline).expect("correction");
 
-        assert_eq!(original, "double b");
-        assert_eq!(replacement, "double и");
+        assert_eq!(edit.original, "double b");
+        assert_eq!(edit.replacement, "double и");
     }
 
     fn push_key_events(buffer: &mut WordBuffer, keys: &[(KeyCode, bool)], layout_is_ru: bool) {

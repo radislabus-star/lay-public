@@ -63,11 +63,14 @@ GNOME-only. Внутри: Rust, evdev/uinput и backend-слой для пере
 KDE/Plasma использует отдельный tray и `qdbus6`; X11 backend использует native
 XKB через `x11rb`.
 
-Внутренняя архитектура теперь разделена на общее ядро и desktop-интеграции:
-`lay::core` содержит конвертацию раскладки, LEM/ngram scoring и правила
-определения backend; GNOME Shell extension остаётся отдельной оболочкой для
-GNOME-трея, DBus bridge и активации раскладки. KDE/Plasma использует отдельный
-`lay-kde-tray`, который читает тот же config и управляет тем же daemon.
+Внутренняя архитектура теперь разделена на общее ядро, decoder и
+desktop-интеграции. `lay::core` содержит конвертацию раскладки, LEM/ngram
+scoring, decoder-контракты и правила определения backend; `lay::decoder`
+решает, что делать с хвостом текста: оставить, перепечатать физические клавиши
+или заменить минимальный BAD-диапазон. GNOME Shell extension остаётся отдельной
+оболочкой для GNOME-трея, DBus bridge и активации раскладки. KDE/Plasma
+использует отдельный `lay-kde-tray`, который читает тот же config и управляет
+тем же daemon.
 
 ### Возможности
 
@@ -471,6 +474,11 @@ systemctl --user restart lay-daemon
 
 Последние изменения публичной ветки:
 
+- `0.1.176` — начат переход на явный decoder/edit-plan слой: manual
+  double-Shift, typing assist и Enter-autocorrect теперь используют общий
+  decision contract. Добавлен regression corpus для обратимого single-word
+  toggle, mixed RU/EN пар и пробельных границ. Backend-слой получил
+  capability-контракт для будущего атомарного IME/text replace.
 - `0.1.170` — README переписан в продуктовый стиль без авторской истории;
   добавлен большой раздел сценариев использования и настроек. Публичные
   README/HOW_IT_WORKS синхронизированы со статусом поддержки: проект больше не
@@ -736,6 +744,7 @@ systemctl --user enable --now lay-host-vm-guard.service
 src/core.rs       общий facade для frontend-ов
 src/config.rs     единая схема config для daemon/tray/frontend-ов
 src/correction.rs общий результат исправления: replay или вставка текста
+src/decoder.rs    общий decision layer: manual/typing-assist/enter-autocorrect
 src/desktop.rs    определение GNOME/KDE/X11 backend и layout-id helpers
 src/dict.rs       RU/EN keyboard mapping
 src/keyboard.rs   keycode-события, word split, replay-decision, US/RU mapping и text→uinput runs

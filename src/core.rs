@@ -9,6 +9,10 @@ pub use crate::config::{
     typing_assist_pipeline_for_auto_replace, CorrectionEngine, LayConfig, TypingAssistRuleConfig,
 };
 pub use crate::correction::Correction;
+pub use crate::decoder::{
+    decode_enter_autocorrect_tail, decode_manual_tail, decode_typing_assist_tail, CorrectionSource,
+    CorrectionTrigger, DecoderAction, DecoderEditPlan, ManualDecodeRequest, ManualDecodeResult,
+};
 pub use crate::desktop::{
     is_ru_layout_id, normalize_layout_id, parse_setxkbmap_layout, resolve_layout_backend,
     LayoutBackend,
@@ -25,7 +29,9 @@ pub use crate::ngram::{
     en_score, ru_candidate_is_better, ru_candidate_margin, ru_score, tokenize_text, Lang,
 };
 pub use crate::quality::score as quality_score;
-pub use crate::text_backend::{ImeReplaceRequest, TextBackendPreference};
+pub use crate::text_backend::{
+    ImeReplaceRequest, TextBackendCapabilities, TextBackendPreference, TextReplaceCapability,
+};
 pub use crate::text_edit::{
     plan_committed_tail_replacement, plan_text_replacement, tail_chars, TextReplacement,
 };
@@ -71,6 +77,43 @@ mod tests {
     fn facade_exposes_correction_contract() {
         assert!(Correction::InsertText("Double".to_string()).is_insert_text());
         assert!(!Correction::ReplayAll.is_insert_text());
+    }
+
+    #[test]
+    fn facade_exposes_decoder_contract() {
+        let events = [
+            KeyEvent {
+                keycode: evdev::KeyCode::KEY_G.code(),
+                shift: false,
+                layout_is_ru: false,
+            },
+            KeyEvent {
+                keycode: evdev::KeyCode::KEY_O.code(),
+                shift: false,
+                layout_is_ru: false,
+            },
+            KeyEvent {
+                keycode: evdev::KeyCode::KEY_O.code(),
+                shift: false,
+                layout_is_ru: false,
+            },
+            KeyEvent {
+                keycode: evdev::KeyCode::KEY_D.code(),
+                shift: false,
+                layout_is_ru: false,
+            },
+        ];
+        let result = decode_manual_tail(ManualDecodeRequest {
+            events: &events,
+            original: "good",
+            converted: "пщщв",
+            engine: CorrectionEngine::Smart,
+            force_replay: true,
+            auto_replace: true,
+            scoped_options: crate::typing_assist::ScopedTailOptions::default(),
+        });
+
+        assert_eq!(result.action, DecoderAction::ReplayAll);
     }
 
     #[test]
@@ -126,6 +169,11 @@ mod tests {
         assert_eq!(
             ImeReplaceRequest::committed_tail("мы сами ", "мы сами ").backspaces,
             8
+        );
+        assert!(TextBackendCapabilities::ime().can_atomic_replace());
+        assert_eq!(
+            TextBackendCapabilities::uinput().replace,
+            TextReplaceCapability::KeyReplay
         );
     }
 
