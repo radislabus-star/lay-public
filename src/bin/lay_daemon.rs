@@ -1604,26 +1604,23 @@ fn handle_typing_assist_after_space(
                 }
             }
             let words = original.split_whitespace().count();
-            buf.remember_pending_learning_correction(
-                "typing-assist",
-                &original,
-                &replacement,
-                words,
-                words,
-            );
-            if !buf.remember_replacement_last_word_for_replay(
-                &events,
-                &TextReplacement {
-                    move_left: 0,
-                    backspaces: original.chars().count() as u32,
-                    insert: replacement.clone(),
-                    move_right: 0,
+            remember_assisted_text_correction(
+                buf,
+                AssistedCorrectionMemory {
+                    events: &events,
+                    plan: &TextReplacement {
+                        move_left: 0,
+                        backspaces: original.chars().count() as u32,
+                        insert: replacement.clone(),
+                        move_right: 0,
+                    },
+                    original: &original,
+                    replacement: &replacement,
+                    kind: "typing-assist",
+                    replace_words: words,
+                    words,
                 },
-                &replacement,
-            ) {
-                buf.reset_all();
-            }
-            buf.remember_pending_auto_undo("typing-assist", &original, &replacement, words, words);
+            );
             log(&format!(
                 "✓ done: помощь при наборе {:?} → {:?} через IME за {}ms",
                 original,
@@ -1661,21 +1658,14 @@ fn handle_typing_assist_after_space(
         return;
     }
 
-    let replacement_layout_is_ru = preferred_layout_for_text(&plan.insert, true);
-    if let Err(e) = insert_text_via_uinput_or_type_text(kbd, &plan.insert, replacement_layout_is_ru)
-    {
-        log(&format!("⚠ typing-assist text insert failed: {e}"));
-        if let Err(e) = emit_key_taps_fast(kbd, KeyCode::KEY_RIGHT, plan.move_right) {
-            log(&format!(
-                "⚠ typing-assist cursor restore failed after insert error: {e}"
-            ));
-        }
-        return;
-    }
-    if let Err(e) = emit_key_taps_fast(kbd, KeyCode::KEY_RIGHT, plan.move_right) {
-        log(&format!("⚠ typing-assist cursor restore failed: {e}"));
-    }
-    let target_layout = preferred_layout_for_text(&replacement, replacement_layout_is_ru);
+    let target_layout =
+        match insert_text_for_replacement_plan(kbd, &plan, &replacement, true, "typing-assist") {
+            Ok(layout) => layout,
+            Err(e) => {
+                log(&format!("⚠ typing-assist {e}"));
+                return;
+            }
+        };
     if active_auto_switch_layout() {
         match switch_to_target_layout(target_layout) {
             Ok(layout_id) => log(&format!("  typing-assist layout → {layout_id}")),
@@ -1689,17 +1679,18 @@ fn handle_typing_assist_after_space(
     }
 
     let words = original.split_whitespace().count();
-    buf.remember_pending_learning_correction(
-        "typing-assist",
-        &original,
-        &replacement,
-        words,
-        words,
+    remember_assisted_text_correction(
+        buf,
+        AssistedCorrectionMemory {
+            events: &events,
+            plan: &plan,
+            original: &original,
+            replacement: &replacement,
+            kind: "typing-assist",
+            replace_words: words,
+            words,
+        },
     );
-    if !buf.remember_replacement_last_word_for_replay(&events, &plan, &replacement) {
-        buf.reset_all();
-    }
-    buf.remember_pending_auto_undo("typing-assist", &original, &replacement, words, words);
     log(&format!(
         "✓ done: помощь при наборе {:?} → {:?} за {}ms",
         original,
@@ -1731,6 +1722,43 @@ fn enter_autocorrect_candidate(
         pipeline,
     )?;
     Some((events, edit))
+}
+
+struct AssistedCorrectionMemory<'a> {
+    events: &'a [KeyEvent],
+    plan: &'a TextReplacement,
+    original: &'a str,
+    replacement: &'a str,
+    kind: &'a str,
+    replace_words: usize,
+    words: usize,
+}
+
+fn remember_assisted_text_correction(
+    buf: &mut WordBuffer,
+    correction: AssistedCorrectionMemory<'_>,
+) {
+    buf.remember_pending_learning_correction(
+        correction.kind,
+        correction.original,
+        correction.replacement,
+        correction.replace_words,
+        correction.words,
+    );
+    if !buf.remember_replacement_last_word_for_replay(
+        correction.events,
+        correction.plan,
+        correction.replacement,
+    ) {
+        buf.reset_all();
+    }
+    buf.remember_pending_auto_undo(
+        correction.kind,
+        correction.original,
+        correction.replacement,
+        correction.replace_words,
+        correction.words,
+    );
 }
 
 fn handle_enter_autocorrect(
@@ -1807,22 +1835,15 @@ fn handle_enter_autocorrect(
         return None;
     }
 
-    let replacement_layout_is_ru = preferred_layout_for_text(&plan.insert, true);
-    if let Err(e) = insert_text_via_uinput_or_type_text(kbd, &plan.insert, replacement_layout_is_ru)
-    {
-        log(&format!("⚠ enter-autocorrect text insert failed: {e}"));
-        if let Err(e) = emit_key_taps_fast(kbd, KeyCode::KEY_RIGHT, plan.move_right) {
-            log(&format!(
-                "⚠ enter-autocorrect cursor restore failed after insert error: {e}"
-            ));
-        }
-        return None;
-    }
-    if let Err(e) = emit_key_taps_fast(kbd, KeyCode::KEY_RIGHT, plan.move_right) {
-        log(&format!("⚠ enter-autocorrect cursor restore failed: {e}"));
-    }
-
-    let target_layout = preferred_layout_for_text(&replacement, replacement_layout_is_ru);
+    let target_layout =
+        match insert_text_for_replacement_plan(kbd, &plan, &replacement, true, "enter-autocorrect")
+        {
+            Ok(layout) => layout,
+            Err(e) => {
+                log(&format!("⚠ enter-autocorrect {e}"));
+                return None;
+            }
+        };
     if active_auto_switch_layout() {
         match switch_to_target_layout(target_layout) {
             Ok(layout_id) => log(&format!("  enter-autocorrect layout → {layout_id}")),
@@ -1842,23 +1863,17 @@ fn handle_enter_autocorrect(
         return None;
     }
 
-    let words = original.split_whitespace().count();
-    buf.remember_pending_learning_correction(
-        "enter-autocorrect",
-        &original,
-        &replacement,
-        replace_words,
-        words,
-    );
-    if !buf.remember_replacement_last_word_for_replay(&events, &plan, &replacement) {
-        buf.reset_all();
-    }
-    buf.remember_pending_auto_undo(
-        "enter-autocorrect",
-        &original,
-        &replacement,
-        replace_words,
-        words,
+    remember_assisted_text_correction(
+        buf,
+        AssistedCorrectionMemory {
+            events: &events,
+            plan: &plan,
+            original: &original,
+            replacement: &replacement,
+            kind: "enter-autocorrect",
+            replace_words,
+            words: original.split_whitespace().count(),
+        },
     );
     log(&format!(
         "✓ done: Enter autocorrect {:?} → {:?} за {}ms",
@@ -2108,25 +2123,15 @@ fn handle_double_shift(
             if let Err(e) = apply_text_replacement(kbd, &plan) {
                 log(&format!("⚠ {kind} minimal replace failed: {e}"));
                 return None;
-            } else if let Err(e) = insert_text_via_uinput_or_type_text(
-                kbd,
-                &plan.insert,
-                preferred_layout_for_text(&plan.insert, target_is_ru),
-            ) {
-                log(&format!(
-                    "⚠ {kind} text insert failed after minimal delete: {e}"
-                ));
-                if let Err(e) = emit_key_taps_fast(kbd, KeyCode::KEY_RIGHT, plan.move_right) {
-                    log(&format!(
-                        "⚠ {kind} cursor restore failed after TypeText error: {e}"
-                    ));
-                }
-                return None;
             } else {
-                if let Err(e) = emit_key_taps_fast(kbd, KeyCode::KEY_RIGHT, plan.move_right) {
-                    log(&format!("⚠ {kind} cursor restore failed: {e}"));
-                }
-                let insert_target_is_ru = preferred_layout_for_text(&text, target_is_ru);
+                let insert_target_is_ru =
+                    match insert_text_for_replacement_plan(kbd, &plan, &text, target_is_ru, kind) {
+                        Ok(layout) => layout,
+                        Err(e) => {
+                            log(&format!("⚠ {kind} {e}"));
+                            return None;
+                        }
+                    };
                 let layout_result = switch_to_target_layout(insert_target_is_ru);
                 buf.remember_pending_learning_correction(
                     kind,
@@ -2377,6 +2382,28 @@ fn apply_text_replacement(dev: &mut VirtualDevice, plan: &TextReplacement) -> st
     )?;
     emit_backspaces_for_text_replace(dev, plan.backspaces)?;
     Ok(())
+}
+
+fn insert_text_for_replacement_plan(
+    dev: &mut VirtualDevice,
+    plan: &TextReplacement,
+    replacement: &str,
+    fallback_layout_is_ru: bool,
+    label: &str,
+) -> Result<bool, String> {
+    let insert_layout_is_ru = preferred_layout_for_text(&plan.insert, fallback_layout_is_ru);
+    if let Err(e) = insert_text_via_uinput_or_type_text(dev, &plan.insert, insert_layout_is_ru) {
+        if let Err(restore_error) = emit_key_taps_fast(dev, KeyCode::KEY_RIGHT, plan.move_right) {
+            log(&format!(
+                "⚠ {label} cursor restore failed after insert error: {restore_error}"
+            ));
+        }
+        return Err(format!("text insert failed: {e}"));
+    }
+    if let Err(e) = emit_key_taps_fast(dev, KeyCode::KEY_RIGHT, plan.move_right) {
+        return Err(format!("cursor restore failed: {e}"));
+    }
+    Ok(preferred_layout_for_text(replacement, insert_layout_is_ru))
 }
 
 fn emit_key_taps_fast(dev: &mut VirtualDevice, key: KeyCode, n: u32) -> std::io::Result<()> {

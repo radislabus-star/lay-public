@@ -13,7 +13,7 @@ number from `git rev-list`.
 
 Current publication branch version:
 
-- `0.1.178`
+- `0.1.179`
 
 Do not rely on commit counts. Before publishing or pushing, run the bump script
 or verify the version fields manually.

@@ -474,6 +474,11 @@ systemctl --user restart lay-daemon
 
 Последние изменения публичной ветки:
 
+- `0.1.179` — daemon получил общий uinput edit executor для
+  `TextReplacement`: typing assist, Enter-autocorrect и manual smart-replace
+  теперь используют один путь вставки текста и восстановления курсора. Также
+  общий helper записывает feedback/undo/replay-memory после assisted-правок,
+  чтобы эти ветки не расходились по поведению.
 - `0.1.178` — manual smart decoder теперь возвращает готовый
   `TextReplacement` plan вместе с решением. Daemon больше не пересобирает
   минимальную замену отдельно: один decoder-контракт решает, что менять и какой
