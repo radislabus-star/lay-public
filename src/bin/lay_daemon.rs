@@ -2455,7 +2455,23 @@ fn insert_text_for_replacement_plan(
     if let Err(e) = emit_key_taps_fast(dev, KeyCode::KEY_RIGHT, plan.move_right) {
         return Err(format!("cursor restore failed: {e}"));
     }
-    Ok(preferred_layout_for_text(replacement, insert_layout_is_ru))
+    Ok(layout_after_replacement_plan(
+        plan,
+        replacement,
+        insert_layout_is_ru,
+    ))
+}
+
+fn layout_after_replacement_plan(
+    plan: &TextReplacement,
+    replacement: &str,
+    insert_layout_is_ru: bool,
+) -> bool {
+    if plan.move_right == 0 {
+        insert_layout_is_ru
+    } else {
+        preferred_layout_for_text(replacement, insert_layout_is_ru)
+    }
 }
 
 fn emit_key_taps_fast(dev: &mut VirtualDevice, key: KeyCode, n: u32) -> std::io::Result<()> {
@@ -4797,6 +4813,53 @@ mod tests {
     }
 
     #[test]
+    fn scoped_tail_keeps_good_russian_previous_word_and_flips_current_currency_symbol() {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(&mut buffer, "только", true);
+        buffer.handle_space();
+        push_text_as_layout(&mut buffer, ";", true);
+        let (events, _) = buffer.what_to_replay(2).expect("two-word tail");
+        let original = map_original_events(&events);
+        let target_is_ru = replay_layout_decision(&events).target_is_ru;
+        let replay_target = map_events_to_layout(&events, target_is_ru);
+        let decoded = decode_manual_tail(ManualDecodeRequest {
+            events: &events,
+            original: &original,
+            converted: &replay_target,
+            engine: CorrectionEngine::Smart,
+            force_replay: false,
+            auto_replace: true,
+            scoped_options: ScopedTailOptions {
+                lem_enabled: true,
+                allow_layout_auto: true,
+            },
+        });
+
+        assert_eq!(original, "только ;");
+        assert_eq!(replay_target, "njkmrj $");
+        assert_eq!(
+            decide_scoped_tail_correction(&events),
+            Some("только $".to_string())
+        );
+        assert_eq!(
+            decoded.action,
+            DecoderAction::ReplaceText {
+                replacement: "только $".to_string(),
+                source: CorrectionSource::SmartText,
+            }
+        );
+        assert_eq!(
+            decoded.edit.map(|edit| edit.plan),
+            Some(TextReplacement {
+                move_left: 0,
+                backspaces: 1,
+                insert: "$".to_string(),
+                move_right: 0,
+            })
+        );
+    }
+
+    #[test]
     fn scoped_tail_keeps_completed_ascii_title_word_and_flips_current_latin_keys() {
         let mut buffer = WordBuffer::new();
         let left_events = [
@@ -6101,6 +6164,33 @@ mod tests {
         assert!(preferred_layout_for_text("рка про", false));
         assert!(!preferred_layout_for_text("Главное Double", true));
         assert!(preferred_layout_for_text("AmoCRM Я тут задача", false));
+    }
+
+    #[test]
+    fn minimal_current_tail_insert_keeps_layout_for_inserted_symbol() {
+        let current_tail_plan = TextReplacement {
+            move_left: 0,
+            backspaces: 1,
+            insert: "$".to_string(),
+            move_right: 0,
+        };
+        assert!(!layout_after_replacement_plan(
+            &current_tail_plan,
+            "только $",
+            false
+        ));
+
+        let middle_plan = TextReplacement {
+            move_left: 7,
+            backspaces: 3,
+            insert: "ТУТ".to_string(),
+            move_right: 7,
+        };
+        assert!(!layout_after_replacement_plan(
+            &middle_plan,
+            "ТУТ DOUBLE",
+            true
+        ));
     }
 
     #[test]
