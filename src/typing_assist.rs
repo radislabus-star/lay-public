@@ -1202,6 +1202,9 @@ fn correct_adjacent_transposition(word: &str) -> Option<String> {
     if missing_letter_candidate_exists(word, &lower) {
         return None;
     }
+    if extra_letter_candidate_exists(&lower) {
+        return None;
+    }
 
     let chars: Vec<char> = lower.chars().collect();
     let mut found: Option<String> = None;
@@ -1214,6 +1217,9 @@ fn correct_adjacent_transposition(word: &str) -> Option<String> {
         candidate.swap(idx, idx + 1);
         let candidate: String = candidate.into_iter().collect();
         if !is_known_russian_word_or_form(&candidate) {
+            continue;
+        }
+        if looks_like_known_word_plus_one_letter_function_suffix(&candidate) {
             continue;
         }
         if !ngram_allows_ru_candidate(&candidate, &lower, NGRAM_TRANSPOSE_MARGIN) {
@@ -1342,6 +1348,9 @@ fn correct_single_letter_substitution(word: &str) -> Option<String> {
     if is_known_russian_word_or_form(&lower) {
         return None;
     }
+    if missing_letter_candidate_exists(word, &lower) {
+        return None;
+    }
 
     let chars: Vec<char> = lower.chars().collect();
     let mut found: Option<String> = None;
@@ -1363,6 +1372,9 @@ fn correct_single_letter_substitution(word: &str) -> Option<String> {
             candidate[idx] = replacement;
             let candidate: String = candidate.into_iter().collect();
             if !is_known_russian_word_or_form(&candidate) {
+                continue;
+            }
+            if looks_like_known_word_plus_one_letter_function_suffix(&candidate) {
                 continue;
             }
             if !ngram_allows_ru_candidate(&candidate, &lower, NGRAM_TYPO_REJECT_MARGIN) {
@@ -1511,6 +1523,35 @@ fn missing_letter_candidate_exists(word: &str, lower: &str) -> bool {
             && crate::ngram::ru_candidate_margin(&candidate, &original_lower)
                 >= NGRAM_DICT_MISSING_LETTER_MARGIN
     })
+}
+
+fn extra_letter_candidate_exists(lower: &str) -> bool {
+    generate_extra_letter_candidates(lower)
+        .into_iter()
+        .any(|candidate| {
+            candidate != lower
+                && is_known_russian_word_or_form(&candidate)
+                && crate::ngram::ru_candidate_margin(&candidate, lower) >= NGRAM_EXTRA_LETTER_MARGIN
+        })
+}
+
+fn looks_like_known_word_plus_one_letter_function_suffix(candidate: &str) -> bool {
+    if russian_dictionary().contains(candidate) {
+        return false;
+    }
+    for split_at in candidate.char_indices().skip(1).map(|(idx, _)| idx) {
+        let (left, right) = candidate.split_at(split_at);
+        if right.chars().count() != 1 {
+            continue;
+        }
+        if left.chars().count() < 4 {
+            continue;
+        }
+        if is_known_russian_phrase_part(left) && is_one_letter_russian_function_word(right) {
+            return true;
+        }
+    }
+    false
 }
 
 fn safe_missing_letter_candidates(lower: &str) -> impl Iterator<Item = String> + '_ {

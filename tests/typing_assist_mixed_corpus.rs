@@ -1,4 +1,7 @@
-use lay::config::{default_typing_assist_pipeline, TypingAssistRuleConfig};
+use lay::config::{
+    default_typing_assist_pipeline, typing_assist_pipeline_for_policy, CorrectionSafety,
+    TypingAssistRuleConfig,
+};
 use lay::dict::{convert, Direction};
 use lay::typing_assist::{
     apply_typing_assist_with_pipeline, split_edge_whitespace, split_ws_segments,
@@ -172,6 +175,26 @@ fn live_user_sentences_keep_spaces_after_typing_assist() {
         assert!(!got.contains("изменюпараметры"));
         assert!(!got.contains("просою"));
     }
+}
+
+#[test]
+fn live_journal_false_positive_candidates_are_rejected() {
+    let normal_auto_pipeline = typing_assist_pipeline_for_policy(
+        true,
+        CorrectionSafety::Normal,
+        &default_typing_assist_pipeline(),
+    );
+
+    assert_eq!(
+        apply_typing_assist_with_pipeline("компаниия ", false, &normal_auto_pipeline),
+        Some("компания ".to_string()),
+        "duplicated-letter typo must not be transposed into a word plus orphan function suffix"
+    );
+    assert_eq!(
+        apply_typing_assist_with_pipeline("елать ", false, &normal_auto_pipeline),
+        None,
+        "single-letter substitution must not guess a different dictionary word"
+    );
 }
 
 #[test]
