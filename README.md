@@ -474,6 +474,10 @@ systemctl --user restart lay-daemon
 
 Последние изменения публичной ветки:
 
+- `0.1.182` — общий helper для успешного layout replay. IME-replay,
+  GNOME-native replay и обычный uinput replay теперь одинаково обновляют
+  replay-toggle buffer и learning-log, поэтому эти пути меньше рискуют
+  разъехаться при следующих правках.
 - `0.1.181` — manual smart-replace теперь тоже записывает learning и
   replay-memory через общий helper. IME/GNOME-native/uinput ветки больше не
   дублируют этот код; расширенный fallback для запоминания вставленного хвоста

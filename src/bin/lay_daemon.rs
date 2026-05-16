@@ -1801,6 +1801,28 @@ fn remember_manual_text_correction(
     }
 }
 
+struct LayoutReplayMemory<'a> {
+    replace_words: usize,
+    target_is_ru: bool,
+    force_replay_toggle: bool,
+    original: &'a str,
+    replacement: &'a str,
+    words: usize,
+}
+
+fn remember_layout_replay_success(buf: &mut WordBuffer, replay: LayoutReplayMemory<'_>) {
+    buf.mark_replayed_layout(replay.replace_words, replay.target_is_ru);
+    if !replay.force_replay_toggle && replay.original != replay.replacement {
+        append_learning_log(
+            "layout-replay",
+            replay.original,
+            replay.replacement,
+            replay.replace_words,
+            replay.words,
+        );
+    }
+}
+
 fn handle_enter_autocorrect(
     buf: &mut WordBuffer,
     replace_words: usize,
@@ -2002,16 +2024,17 @@ fn handle_double_shift(
         let replace_target_is_ru = preferred_layout_for_text(&replace_text, target_is_ru);
         if try_ime_replace_tail(&mapped_orig, &replace_text, replace_kind).unwrap_or(false) {
             if is_replay {
-                buf.mark_replayed_layout(replace_words, replace_target_is_ru);
-                if !force_replay_toggle && mapped_orig != replace_text {
-                    append_learning_log(
-                        "layout-replay",
-                        &mapped_orig,
-                        &replace_text,
+                remember_layout_replay_success(
+                    buf,
+                    LayoutReplayMemory {
                         replace_words,
-                        words_orig,
-                    );
-                }
+                        target_is_ru: replace_target_is_ru,
+                        force_replay_toggle,
+                        original: &mapped_orig,
+                        replacement: &replace_text,
+                        words: words_orig,
+                    },
+                );
             } else {
                 let plan = TextReplacement {
                     move_left: 0,
@@ -2065,16 +2088,17 @@ fn handle_double_shift(
         match call_replace_text(0, n_backspaces, &replace_text, 0, layout_id) {
             Ok(true) => {
                 if is_replay {
-                    buf.mark_replayed_layout(replace_words, replace_target_is_ru);
-                    if !force_replay_toggle && mapped_orig != replace_text {
-                        append_learning_log(
-                            "layout-replay",
-                            &mapped_orig,
-                            &replace_text,
+                    remember_layout_replay_success(
+                        buf,
+                        LayoutReplayMemory {
                             replace_words,
-                            words_orig,
-                        );
-                    }
+                            target_is_ru: replace_target_is_ru,
+                            force_replay_toggle,
+                            original: &mapped_orig,
+                            replacement: &replace_text,
+                            words: words_orig,
+                        },
+                    );
                 } else {
                     let plan = TextReplacement {
                         move_left: 0,
@@ -2241,16 +2265,17 @@ fn handle_double_shift(
         log(&format!("⚠ Этап 3 replay failed: {e}"));
         return Some(target_is_ru);
     }
-    buf.mark_replayed_layout(replace_words, target_is_ru);
-    if !force_replay_toggle && mapped_orig != mapped_target {
-        append_learning_log(
-            "layout-replay",
-            &mapped_orig,
-            &mapped_target,
+    remember_layout_replay_success(
+        buf,
+        LayoutReplayMemory {
             replace_words,
-            words_orig,
-        );
-    }
+            target_is_ru,
+            force_replay_toggle,
+            original: &mapped_orig,
+            replacement: &mapped_target,
+            words: words_orig,
+        },
+    );
     log(&format!("  3. uinput replay × {}", events.len()));
 
     log(&format!(
