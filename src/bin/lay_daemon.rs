@@ -7128,6 +7128,7 @@ mod tests {
         assert_eq!(apply_typing_assist_exact("по любому "), None);
         assert_eq!(apply_typing_assist_exact("ПО ЛЮБОМУ "), None);
         assert_eq!(apply_typing_assist_exact("уже по любому "), None);
+        assert_eq!(apply_typing_assist_exact("я ГОДАМИ! "), None);
         assert_eq!(apply_typing_assist_exact("проблем "), None);
         assert_eq!(apply_typing_assist_exact("валют "), None);
         assert_eq!(apply_typing_assist_exact("систем "), None);
@@ -7199,6 +7200,7 @@ mod tests {
         assert_eq!(apply_typing_assist_exact("синяя "), None);
         assert_eq!(apply_typing_assist_exact("пошли "), None);
         assert_eq!(apply_typing_assist_exact("язык "), None);
+        assert_eq!(apply_typing_assist_exact("отточеная "), None);
         assert_eq!(apply_typing_assist_to_text_tail("я язык "), None);
     }
 

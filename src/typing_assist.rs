@@ -685,8 +685,9 @@ fn correct_glued_russian_phrase(word: &str) -> Option<String> {
         let left_len = left.chars().count();
         let right_len = right.chars().count();
         let short_left_pronoun = left_len == 1 && is_single_letter_russian_pronoun(left);
-        let short_right_function =
-            right_len == 1 && left_len >= 4 && is_single_letter_russian_pronoun(right);
+        let short_right_function = right_len == 1
+            && can_split_glued_trailing_ya(left)
+            && is_single_letter_russian_pronoun(right);
         if left_len == 1 && !short_left_pronoun {
             continue;
         }
@@ -694,6 +695,13 @@ fn correct_glued_russian_phrase(word: &str) -> Option<String> {
             continue;
         }
         if short_left_pronoun && !is_standalone_russian_phrase_part(right) {
+            continue;
+        }
+        if !short_left_pronoun
+            && left_len <= 3
+            && is_short_russian_function_word(left)
+            && !is_standalone_russian_phrase_part(right)
+        {
             continue;
         }
         if !is_known_russian_phrase_part(left) || !is_known_russian_phrase_part(right) {
@@ -843,7 +851,7 @@ fn looks_like_word_glued_to_trailing_ya(word: &str) -> bool {
     let Some(left) = word.strip_suffix('я') else {
         return false;
     };
-    left.chars().count() >= 4 && is_known_russian_phrase_part(left)
+    can_split_glued_trailing_ya(left) && is_known_russian_phrase_part(left)
 }
 
 fn is_known_russian_phrase_part(word: &str) -> bool {
@@ -904,7 +912,7 @@ fn is_single_letter_russian_pronoun(word: &str) -> bool {
 fn is_confident_glued_phrase_split(left: &str, right: &str) -> bool {
     (left.chars().count() == 1 && is_single_letter_russian_pronoun(left))
         || (right.chars().count() == 1
-            && left.chars().count() >= 4
+            && can_split_glued_trailing_ya(left)
             && is_single_letter_russian_pronoun(right))
         || (left.chars().count() <= 3
             && right.chars().count() >= 4
@@ -913,6 +921,14 @@ fn is_confident_glued_phrase_split(left: &str, right: &str) -> bool {
         || (left.chars().count() >= 4
             && right.chars().count() >= 4
             && is_known_russian_adverb_o_form(right))
+}
+
+fn can_split_glued_trailing_ya(left: &str) -> bool {
+    let len = left.chars().count();
+    (4..=5).contains(&len)
+        && (COMMON_RUSSIAN_WORDS.contains(&left)
+            || is_known_russian_adverb_o_form(left)
+            || russian_short_dictionary().contains(left))
 }
 
 fn looks_like_short_function_word_glued_to_known_word(word: &str) -> bool {
@@ -990,6 +1006,9 @@ fn correct_split_word_pair(text: &str) -> Option<String> {
 
     let left_lower = left.to_lowercase();
     let right_lower = right.to_lowercase();
+    if is_shouty_cyrillic_word(right) {
+        return None;
+    }
     if should_keep_standalone_pair_with_short_right(&left_lower, &right_lower) {
         return None;
     }
@@ -1022,6 +1041,13 @@ fn correct_split_word_pair(text: &str) -> Option<String> {
         apply_word_case(&glued, &lower),
         right_trailing
     ))
+}
+
+fn is_shouty_cyrillic_word(word: &str) -> bool {
+    let letters: Vec<char> = word.chars().filter(|ch| ch.is_alphabetic()).collect();
+    letters.len() >= 3
+        && letters.iter().all(|ch| is_cyrillic_letter(*ch))
+        && letters.iter().all(|ch| ch.is_uppercase())
 }
 
 fn should_keep_standalone_pair_with_short_right(left: &str, right: &str) -> bool {
