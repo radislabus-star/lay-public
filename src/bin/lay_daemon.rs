@@ -2311,11 +2311,14 @@ fn handle_pending_auto_undo(
         return None;
     }
 
-    let target_is_ru = preferred_layout_for_text(&undo.original, true);
-    if let Err(e) = insert_text_via_uinput_or_type_text(kbd, &plan.insert, target_is_ru) {
-        log(&format!("⚠ auto-undo insert failed: {e}"));
-        return None;
-    }
+    let target_is_ru =
+        match insert_text_for_replacement_plan(kbd, &plan, &undo.original, true, "auto-undo") {
+            Ok(layout) => layout,
+            Err(e) => {
+                log(&format!("⚠ auto-undo {e}"));
+                return None;
+            }
+        };
     match switch_to_target_layout(target_is_ru) {
         Ok(layout_id) => log(&format!("  auto-undo layout → {layout_id}")),
         Err(e) => log(&format!("⚠ auto-undo layout switch failed: {e}")),

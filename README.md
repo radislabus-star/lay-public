@@ -474,6 +474,10 @@ systemctl --user restart lay-daemon
 
 Последние изменения публичной ветки:
 
+- `0.1.183` — auto-undo переведён на общий `TextReplacement` insert helper.
+  Откат автозамены теперь использует тот же путь вставки текста и
+  восстановления курсора, что typing assist, Enter-autocorrect и manual
+  smart-replace.
 - `0.1.182` — общий helper для успешного layout replay. IME-replay,
   GNOME-native replay и обычный uinput replay теперь одинаково обновляют
   replay-toggle buffer и learning-log, поэтому эти пути меньше рискуют
