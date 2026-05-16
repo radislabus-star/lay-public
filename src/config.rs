@@ -41,6 +41,15 @@ pub const LAYOUT_ONLY_TYPING_ASSIST_RULES: &[&str] = &[
 ];
 
 const LIVE_AUTO_REPLACE_DISABLED_RULES: &[&str] = &["extra_letters"];
+const STRICT_CORRECTION_DISABLED_RULES: &[&str] = &[
+    "repeated_letter",
+    "single_letter_substitution",
+    "verb_ending",
+    "vowel_confusion",
+    "extra_letters",
+    "missing_letter",
+    "glued_phrase",
+];
 
 #[derive(Debug, Clone, serde::Deserialize)]
 pub struct TypingAssistRuleConfig {
@@ -70,6 +79,13 @@ pub fn default_typing_assist_pipeline() -> Vec<TypingAssistRuleConfig> {
 pub enum CorrectionEngine {
     Replay,
     Smart,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CorrectionSafety {
+    Strict,
+    Normal,
+    Experimental,
 }
 
 #[derive(Debug, Clone, serde::Deserialize)]
@@ -104,6 +120,8 @@ pub struct LayConfig {
     pub auto_replace: bool,
     /// Safe typing assistance after Space.
     pub typing_assist: bool,
+    /// Typing-assist policy: strict | normal | experimental.
+    pub correction_safety: String,
     /// Optional correction attempt on Enter before submitting/sending text.
     pub enter_autocorrect: bool,
     /// Keep active layout aligned to typing-assist result.
@@ -150,6 +168,7 @@ impl Default for LayConfig {
             replace_words: 1,
             auto_replace: false,
             typing_assist: false,
+            correction_safety: "normal".into(),
             enter_autocorrect: false,
             auto_switch_layout: true,
             lem_2_words: true,
@@ -214,6 +233,14 @@ impl LayConfig {
         normalize_typing_assist_pipeline(&self.typing_assist_pipeline)
     }
 
+    pub fn active_correction_safety(&self) -> CorrectionSafety {
+        match self.correction_safety.trim().to_ascii_lowercase().as_str() {
+            "strict" | "safe" | "ultra-safe" | "ultrasafe" => CorrectionSafety::Strict,
+            "experimental" | "exp" => CorrectionSafety::Experimental,
+            _ => CorrectionSafety::Normal,
+        }
+    }
+
     pub fn lem_enabled_for_scope(&self, word_count: usize) -> bool {
         match word_count {
             0 | 1 => false,
@@ -243,15 +270,30 @@ pub fn typing_assist_pipeline_for_auto_replace(
     auto_replace: bool,
     configured: &[TypingAssistRuleConfig],
 ) -> Vec<TypingAssistRuleConfig> {
+    typing_assist_pipeline_for_policy(auto_replace, CorrectionSafety::Normal, configured)
+}
+
+pub fn typing_assist_pipeline_for_policy(
+    auto_replace: bool,
+    safety: CorrectionSafety,
+    configured: &[TypingAssistRuleConfig],
+) -> Vec<TypingAssistRuleConfig> {
     let mut rules = normalize_typing_assist_pipeline(configured);
     if !auto_replace {
         for rule in &mut rules {
             rule.enabled =
                 rule.enabled && LAYOUT_ONLY_TYPING_ASSIST_RULES.contains(&rule.id.as_str());
         }
-    } else {
+    } else if safety != CorrectionSafety::Experimental {
         for rule in &mut rules {
             if LIVE_AUTO_REPLACE_DISABLED_RULES.contains(&rule.id.as_str()) {
+                rule.enabled = false;
+            }
+        }
+    }
+    if safety == CorrectionSafety::Strict {
+        for rule in &mut rules {
+            if STRICT_CORRECTION_DISABLED_RULES.contains(&rule.id.as_str()) {
                 rule.enabled = false;
             }
         }
@@ -275,6 +317,7 @@ mod tests {
         assert_eq!(cfg.force_en_key, "single-ralt");
         assert!(!cfg.multi_tap_scope);
         assert!(!cfg.enter_autocorrect);
+        assert_eq!(cfg.active_correction_safety(), CorrectionSafety::Normal);
         assert_eq!(cfg.active_multi_tap_max_taps(), 4);
         assert!(cfg.auto_switch_layout);
         assert!(cfg.lem_enabled_for_scope(2));
@@ -357,5 +400,32 @@ mod tests {
             .iter()
             .find(|rule| rule.id == "extra_letters")
             .is_some_and(|rule| !rule.enabled));
+    }
+
+    #[test]
+    fn correction_safety_controls_typing_assist_risk() {
+        let strict = typing_assist_pipeline_for_policy(
+            true,
+            CorrectionSafety::Strict,
+            &default_typing_assist_pipeline(),
+        );
+        assert!(strict
+            .iter()
+            .find(|rule| rule.id == "layout_en_to_ru")
+            .is_some_and(|rule| rule.enabled));
+        assert!(strict
+            .iter()
+            .find(|rule| rule.id == "missing_letter")
+            .is_some_and(|rule| !rule.enabled));
+
+        let experimental = typing_assist_pipeline_for_policy(
+            true,
+            CorrectionSafety::Experimental,
+            &default_typing_assist_pipeline(),
+        );
+        assert!(experimental
+            .iter()
+            .find(|rule| rule.id == "extra_letters")
+            .is_some_and(|rule| rule.enabled));
     }
 }

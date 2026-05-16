@@ -18,6 +18,7 @@ from typing import Any
 
 
 CONFIG_PATH = Path.home() / ".config" / "lay" / "config.json"
+RECENT_ACTIONS_PATH = Path.home() / ".local" / "share" / "lay" / "recent_actions.jsonl"
 PROJECT_DIR = Path(__file__).resolve().parents[1]
 UPDATE_LOG_PATH = Path.home() / ".local" / "state" / "lay" / "update.log"
 CONFIG_DEFAULTS: dict[str, Any] = {
@@ -37,6 +38,7 @@ CONFIG_DEFAULTS: dict[str, Any] = {
     "replace_words": 1,
     "auto_replace": False,
     "typing_assist": False,
+    "correction_safety": "normal",
     "enter_autocorrect": False,
     "auto_switch_layout": True,
     "lem_2_words": True,
@@ -160,12 +162,34 @@ def config_status_text() -> str:
         f"{lay_version()}\n"
         f"демон={'работает' if daemon_active() else 'остановлен'}\n"
         f"режим={cfg.get('correction_engine') or cfg.get('mode')}\n"
+        f"осторожность={cfg.get('correction_safety', 'normal')}\n"
         f"вставка={cfg.get('text_backend', 'uinput')}\n"
         f"область={cfg.get('replace_words')}\n"
         f"помощь_при_наборе={bool(cfg.get('typing_assist'))}\n"
         f"автоподмена={bool(cfg.get('auto_replace'))}\n"
         f"конфиг={CONFIG_PATH}"
     )
+
+
+def load_recent_actions(limit: int = 5) -> list[dict[str, Any]]:
+    try:
+        lines = [
+            line
+            for line in RECENT_ACTIONS_PATH.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+    except Exception:
+        return []
+    out: list[dict[str, Any]] = []
+    for line in lines[-limit:]:
+        try:
+            value = json.loads(line)
+        except Exception:
+            continue
+        if isinstance(value, dict):
+            out.append(value)
+    out.reverse()
+    return out
 
 
 def main() -> int:
@@ -280,6 +304,21 @@ def main() -> int:
             smart.triggered.connect(lambda checked: self.update_config("correction_engine", "smart" if checked else "replay"))
             self.menu.addAction(smart)
 
+            safety_menu = self.menu.addMenu("Осторожность")
+            safety_group = QActionGroup(safety_menu)
+            safety_group.setExclusive(True)
+            for value, label in (
+                ("strict", "Строго"),
+                ("normal", "Норма"),
+                ("experimental", "Экспериментально"),
+            ):
+                action = QAction(label, safety_menu)
+                action.setCheckable(True)
+                action.setChecked(str(cfg.get("correction_safety", "normal")) == value)
+                action.triggered.connect(lambda _checked, chosen=value: self.update_config("correction_safety", chosen))
+                safety_group.addAction(action)
+                safety_menu.addAction(action)
+
             scope_menu = self.menu.addMenu("Область")
             scope_group = QActionGroup(scope_menu)
             scope_group.setExclusive(True)
@@ -332,6 +371,17 @@ def main() -> int:
                 action.triggered.connect(lambda _checked, chosen=value: self.update_config("text_backend", chosen))
                 backend_group.addAction(action)
                 backend_menu.addAction(action)
+
+            recent_menu = self.menu.addMenu("Последние действия")
+            actions = load_recent_actions(5)
+            if not actions:
+                empty = QAction("пока нет действий", recent_menu)
+                empty.setEnabled(False)
+                recent_menu.addAction(empty)
+            for item in actions:
+                action = QAction(self.recent_action_label(item), recent_menu)
+                action.setEnabled(False)
+                recent_menu.addAction(action)
 
             self.menu.addSeparator()
             about = QAction("О программе", self.menu)
@@ -393,6 +443,8 @@ def main() -> int:
                 cfg["force_layout_hotkeys"] = False
             if cfg.get("text_backend") not in ("uinput", "ime", "auto"):
                 cfg["text_backend"] = "uinput"
+            if cfg.get("correction_safety") not in ("strict", "normal", "experimental"):
+                cfg["correction_safety"] = "normal"
             cfg["multi_tap_max_taps"] = max(2, min(4, int(cfg.get("multi_tap_max_taps", 4))))
             save_config(cfg)
             self.run_service_action("restart", notify=False)
@@ -459,6 +511,25 @@ def main() -> int:
         def engine_label(cfg: dict[str, Any]) -> str:
             engine = cfg.get("correction_engine") or cfg.get("mode")
             return "умный" if engine == "smart" else "обычный"
+
+        @staticmethod
+        def recent_action_label(item: dict[str, Any]) -> str:
+            kind = {
+                "layout-replay": "Double Shift",
+                "smart-text": "Smart",
+                "auto-replace": "Автоподмена",
+                "typing-assist": "Помощь",
+                "enter-autocorrect": "Enter",
+                "layout-text-fallback": "Fallback",
+                "auto-undo": "Undo",
+            }.get(str(item.get("kind")), str(item.get("kind", "action")))
+            left = " ".join(str(item.get("from", "")).split())
+            right = " ".join(str(item.get("to", "")).split())
+            if len(left) > 24:
+                left = left[:21] + "..."
+            if len(right) > 24:
+                right = right[:21] + "..."
+            return f"{kind}: {left} → {right} · {int(item.get('elapsed_ms', 0))}мс"
 
         @staticmethod
         def force_key_label(key: Any) -> str:

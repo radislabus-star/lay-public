@@ -19,9 +19,10 @@ import {getInputSourceManager} from 'resource:///org/gnome/shell/ui/status/keybo
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
+const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-const APP_VERSION = '0.1.184';
+const APP_VERSION = '0.1.185';
 const APP_DESCRIPTION = 'RU/EN layout helper: double Shift и помощь при наборе';
 const APP_RELEASE_DATE = '2026-05-17';
 const APP_LICENSE = 'MIT';
@@ -91,6 +92,7 @@ const DEFAULTS = {
     replace_words: 1,
     auto_replace: false,
     typing_assist: false,
+    correction_safety: 'normal',
     enter_autocorrect: false,
     auto_switch_layout: true,
     lem_2_words: true,
@@ -194,6 +196,19 @@ function loadStats() {
         return JSON.parse(new TextDecoder().decode(bytes));
     } catch(e) {
         return {};
+    }
+}
+function loadRecentActions(limit = 5) {
+    try {
+        const [, bytes] = Gio.File.new_for_path(RECENT_ACTIONS_PATH).load_contents(null);
+        return new TextDecoder().decode(bytes)
+            .split('\n')
+            .filter(line => line.trim().length > 0)
+            .slice(-limit)
+            .map(line => JSON.parse(line))
+            .reverse();
+    } catch(e) {
+        return [];
     }
 }
 function restartDaemon() {
@@ -498,6 +513,7 @@ class LayIndicator extends PanelMenu.Button {
         this._engineButtons = {};
         this._scopeButtons = {};
         this._backendButtons = {};
+        this._safetyButtons = {};
         this._triggerButtons = {};
         this._triggerItems = {};
         this._forceRuItems = {};
@@ -555,8 +571,8 @@ class LayIndicator extends PanelMenu.Button {
 
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._arbiterMenu());
+        this.menu.addMenuItem(this._recentActionsMenu());
         this.menu.addMenuItem(this._ptahAlexsMenu());
-        this.menu.addMenuItem(this._correctionPipelineMenu());
         this.menu.addMenuItem(this._triggerMenu());
         this.menu.addMenuItem(this._forceLayoutMenu());
         this.menu.addMenuItem(this._timingMenu());
@@ -627,6 +643,24 @@ class LayIndicator extends PanelMenu.Button {
 
     _arbiterMenu() {
         const item = new PopupMenu.PopupSubMenuMenuItem('Арбитр', false);
+        item.menu.addMenuItem(this._segmentedRow('Осторожность', [
+            ['strict', 'Строго', () => {
+                this._cfg.correction_safety = 'strict';
+                this._saveAndRefresh();
+                restartDaemon();
+            }],
+            ['normal', 'Норма', () => {
+                this._cfg.correction_safety = 'normal';
+                this._saveAndRefresh();
+                restartDaemon();
+            }],
+            ['experimental', 'Эксп.', () => {
+                this._cfg.correction_safety = 'experimental';
+                this._saveAndRefresh();
+                restartDaemon();
+            }],
+        ], this._safetyButtons));
+        item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         item.menu.addMenuItem(this._switchItem(
             'Авто-layout после пробела',
             'auto_switch_layout',
@@ -658,6 +692,46 @@ class LayIndicator extends PanelMenu.Button {
                 restartDaemon();
             }],
         ], this._backendButtons));
+        item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        item.menu.addMenuItem(this._correctionPipelineMenu());
+        return item;
+    }
+
+    _recentActionsMenu() {
+        const item = new PopupMenu.PopupSubMenuMenuItem('Последние действия', false);
+        const actions = loadRecentActions(5);
+        if (actions.length === 0) {
+            item.menu.addMenuItem(this._mutedTextRow('пока нет действий'));
+            return item;
+        }
+        for (const action of actions)
+            item.menu.addMenuItem(this._recentActionRow(action));
+        return item;
+    }
+
+    _recentActionRow(action) {
+        const item = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
+        item.reactive = false;
+        item.can_focus = false;
+        item.style = 'padding:4px 12px;';
+        const box = new St.BoxLayout({
+            vertical: true,
+            x_expand: true,
+            style: 'spacing:2px;',
+        });
+        const title = new St.Label({
+            text: `${this._actionKindLabel(action.kind)} · ${Number(action.elapsed_ms ?? 0)}мс${action.undo_available ? ' · undo' : ''}`,
+            style: 'font-weight:bold; font-size:86%;',
+        });
+        const text = new St.Label({
+            text: `${this._shortActionText(action.from)} → ${this._shortActionText(action.to)}`,
+            style: COMPACT_SUBTITLE_STYLE,
+        });
+        text.clutter_text.line_wrap = true;
+        text.clutter_text.line_wrap_mode = Pango.WrapMode.WORD_CHAR;
+        box.add_child(title);
+        box.add_child(text);
+        item.add_child(box);
         return item;
     }
 
@@ -1237,6 +1311,8 @@ class LayIndicator extends PanelMenu.Button {
             this._setButtonActive(button, Number(id) === this._cfg.replace_words);
         for (const [id, button] of Object.entries(this._backendButtons ?? {}))
             this._setButtonActive(button, id === this._cfg.text_backend);
+        for (const [id, button] of Object.entries(this._safetyButtons ?? {}))
+            this._setButtonActive(button, id === this._cfg.correction_safety);
         for (const [id, button] of Object.entries(this._triggerButtons ?? {}))
             this._setButtonActive(button, id === this._cfg.trigger);
         for (const [id, row] of Object.entries(this._triggerItems ?? {}))
@@ -1259,6 +1335,9 @@ class LayIndicator extends PanelMenu.Button {
         this._cfg.text_backend = ['uinput', 'ime', 'auto'].includes(this._cfg.text_backend)
             ? this._cfg.text_backend
             : 'uinput';
+        this._cfg.correction_safety = ['strict', 'normal', 'experimental'].includes(this._cfg.correction_safety)
+            ? this._cfg.correction_safety
+            : 'normal';
         this._cfg.ptah_alexs_mode = !!this._cfg.ptah_alexs_mode;
         this._cfg.ptah_alexs_rules = normalizePtahRules(this._cfg.ptah_alexs_rules);
         if (this._cfg.force_ru_key === this._cfg.force_en_key)
@@ -1352,13 +1431,40 @@ class LayIndicator extends PanelMenu.Button {
         }[id] ?? 'RCtrl';
     }
 
+    _safetyLabel() {
+        return {
+            strict: 'строго',
+            normal: 'норма',
+            experimental: 'эксп.',
+        }[this._cfg.correction_safety] ?? 'норма';
+    }
+
+    _actionKindLabel(kind) {
+        return {
+            'layout-replay': 'Double Shift',
+            'smart-text': 'Smart',
+            'auto-replace': 'Автоподмена',
+            'typing-assist': 'Помощь',
+            'enter-autocorrect': 'Enter',
+            'layout-text-fallback': 'Fallback',
+            'auto-undo': 'Undo',
+        }[kind] ?? String(kind ?? 'action');
+    }
+
+    _shortActionText(value) {
+        const text = String(value ?? '').replace(/\s+/g, ' ').trim();
+        if (text.length <= 46)
+            return text;
+        return `${text.slice(0, 43)}...`;
+    }
+
     _aboutConfigText() {
         const autoSwitch = this._cfg.auto_switch_layout ? 'авто-layout' : 'layout вручную';
         const lem = `LEM ${this._cfg.lem_2_words ? '2' : '-'}${this._cfg.lem_3_words ? '/3' : ''}`;
         const ptah = this._cfg.ptah_alexs_mode ? 'ptah on' : 'ptah off';
         const force = this._cfg.force_layout_hotkeys ? 'RU/EN hotkeys' : 'RU/EN off';
         const multi = this._cfg.multi_tap_scope ? 'multi-tap on' : 'multi-tap off';
-        return `${this._engineLabel()} · ${this._cfg.replace_words} сл. · ${lem} · ${this._cfg.text_backend} · ${autoSwitch} · ${ptah} · ${force} · ${multi} · ${this._triggerLabel(this._cfg.trigger)}`;
+        return `${this._engineLabel()} · ${this._safetyLabel()} · ${this._cfg.replace_words} сл. · ${lem} · ${this._cfg.text_backend} · ${autoSwitch} · ${ptah} · ${force} · ${multi} · ${this._triggerLabel(this._cfg.trigger)}`;
     }
 
     _aboutStatsText() {

@@ -1,6 +1,7 @@
 //! lay — библиотечная часть. Используется и из `bin/lay` (CLI),
 //! и из `bin/lay-daemon` (фоновый daemon на двойной Shift).
 
+pub mod action_log;
 pub mod config;
 pub mod core;
 pub mod correction;

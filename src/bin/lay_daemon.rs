@@ -15,11 +15,10 @@ use clap::Parser;
 use evdev::{uinput::VirtualDevice, AttributeSet, Device, EventType, InputEvent, KeyCode};
 #[cfg(test)]
 use lay::config::{
-    default_typing_assist_pipeline, normalize_typing_assist_pipeline, DEFAULT_TYPING_ASSIST_RULES,
+    default_typing_assist_pipeline, normalize_typing_assist_pipeline,
+    typing_assist_pipeline_for_auto_replace, DEFAULT_TYPING_ASSIST_RULES,
 };
-use lay::config::{
-    typing_assist_pipeline_for_auto_replace, CorrectionEngine, LayConfig, TypingAssistRuleConfig,
-};
+use lay::config::{CorrectionEngine, LayConfig, TypingAssistRuleConfig};
 #[cfg(test)]
 use lay::correction::Correction;
 use lay::decoder::{
@@ -190,7 +189,31 @@ fn active_lem_enabled_for_scope(word_count: usize) -> bool {
 #[cfg(not(test))]
 fn active_typing_assist_pipeline_for_auto_replace() -> Vec<TypingAssistRuleConfig> {
     let cfg = LayConfig::load();
-    typing_assist_pipeline_for_auto_replace(cfg.auto_replace, &cfg.typing_assist_pipeline)
+    lay::config::typing_assist_pipeline_for_policy(
+        cfg.auto_replace,
+        cfg.active_correction_safety(),
+        &cfg.typing_assist_pipeline,
+    )
+}
+
+fn record_recent_action(
+    kind: &str,
+    from: &str,
+    to: &str,
+    replace_words: usize,
+    words: usize,
+    started_at: Instant,
+    undo_available: bool,
+) {
+    lay::action_log::record_action(
+        kind,
+        from,
+        to,
+        replace_words,
+        words,
+        started_at.elapsed().as_millis(),
+        undo_available,
+    );
 }
 
 const DBUS_PATH: &str = "/io/github/radislabus_star/LayDaemon";
@@ -1615,6 +1638,15 @@ fn handle_typing_assist_after_space(
                     words,
                 },
             );
+            record_recent_action(
+                "typing-assist",
+                &original,
+                &replacement,
+                words,
+                words,
+                started_at,
+                true,
+            );
             log(&format!(
                 "✓ done: помощь при наборе {:?} → {:?} через IME за {}ms",
                 original,
@@ -1674,6 +1706,15 @@ fn handle_typing_assist_after_space(
             replace_words: words,
             words,
         },
+    );
+    record_recent_action(
+        "typing-assist",
+        &original,
+        &replacement,
+        words,
+        words,
+        started_at,
+        true,
     );
     log(&format!(
         "✓ done: помощь при наборе {:?} → {:?} за {}ms",
@@ -1799,6 +1840,13 @@ fn remember_manual_text_correction(
     if !remembered {
         buf.reset_all();
     }
+    buf.remember_pending_auto_undo(
+        correction.kind,
+        correction.original,
+        correction.replacement,
+        correction.replace_words,
+        correction.words,
+    );
 }
 
 struct LayoutReplayMemory<'a> {
@@ -1808,6 +1856,7 @@ struct LayoutReplayMemory<'a> {
     original: &'a str,
     replacement: &'a str,
     words: usize,
+    elapsed_ms: u128,
 }
 
 fn remember_layout_replay_success(buf: &mut WordBuffer, replay: LayoutReplayMemory<'_>) {
@@ -1821,6 +1870,15 @@ fn remember_layout_replay_success(buf: &mut WordBuffer, replay: LayoutReplayMemo
             replay.words,
         );
     }
+    lay::action_log::record_action(
+        "layout-replay",
+        replay.original,
+        replay.replacement,
+        replay.replace_words,
+        replay.words,
+        replay.elapsed_ms,
+        true,
+    );
 }
 
 fn handle_enter_autocorrect(
@@ -1858,6 +1916,15 @@ fn handle_enter_autocorrect(
                 target_layout,
                 original_layout,
                 "enter-autocorrect",
+            );
+            record_recent_action(
+                "enter-autocorrect",
+                &original,
+                &replacement,
+                replace_words,
+                original.split_whitespace().count(),
+                started_at,
+                false,
             );
             log(&format!(
                 "✓ done: Enter autocorrect {:?} → {:?} через IME за {}ms",
@@ -1916,6 +1983,15 @@ fn handle_enter_autocorrect(
             replace_words,
             words: original.split_whitespace().count(),
         },
+    );
+    record_recent_action(
+        "enter-autocorrect",
+        &original,
+        &replacement,
+        replace_words,
+        original.split_whitespace().count(),
+        started_at,
+        true,
     );
     log(&format!(
         "✓ done: Enter autocorrect {:?} → {:?} за {}ms",
@@ -2033,6 +2109,7 @@ fn handle_double_shift(
                         original: &mapped_orig,
                         replacement: &replace_text,
                         words: words_orig,
+                        elapsed_ms: started_at.elapsed().as_millis(),
                     },
                 );
             } else {
@@ -2054,6 +2131,15 @@ fn handle_double_shift(
                         words: words_orig,
                         inserted_layout_is_ru: None,
                     },
+                );
+                record_recent_action(
+                    replace_kind,
+                    &mapped_orig,
+                    &replace_text,
+                    replace_words,
+                    words_orig,
+                    started_at,
+                    true,
                 );
             }
             return match switch_to_target_layout(replace_target_is_ru) {
@@ -2097,6 +2183,7 @@ fn handle_double_shift(
                             original: &mapped_orig,
                             replacement: &replace_text,
                             words: words_orig,
+                            elapsed_ms: started_at.elapsed().as_millis(),
                         },
                     );
                 } else {
@@ -2118,6 +2205,15 @@ fn handle_double_shift(
                             words: words_orig,
                             inserted_layout_is_ru: None,
                         },
+                    );
+                    record_recent_action(
+                        replace_kind,
+                        &mapped_orig,
+                        &replace_text,
+                        replace_words,
+                        words_orig,
+                        started_at,
+                        true,
                     );
                 }
                 log(&format!(
@@ -2198,6 +2294,15 @@ fn handle_double_shift(
                         )),
                     },
                 );
+                record_recent_action(
+                    kind,
+                    &mapped_orig,
+                    &text,
+                    replace_words,
+                    words_orig,
+                    started_at,
+                    true,
+                );
                 log(&format!(
                     "  1. minimal replace: left={} bs={} insert={:?} right={}",
                     plan.move_left, plan.backspaces, plan.insert, plan.move_right
@@ -2249,6 +2354,15 @@ fn handle_double_shift(
                 replace_words,
                 words_orig,
             );
+            record_recent_action(
+                "layout-text-fallback",
+                &mapped_orig,
+                &mapped_target,
+                replace_words,
+                words_orig,
+                started_at,
+                false,
+            );
             buf.reset_all();
             log(&format!(
                 "✓ done: layout fallback text insert за {}ms",
@@ -2274,6 +2388,7 @@ fn handle_double_shift(
             original: &mapped_orig,
             replacement: &mapped_target,
             words: words_orig,
+            elapsed_ms: started_at.elapsed().as_millis(),
         },
     );
     log(&format!("  3. uinput replay × {}", events.len()));
@@ -2333,6 +2448,15 @@ fn handle_pending_auto_undo(
         replace_words: undo.replace_words,
         words: undo.words,
     });
+    record_recent_action(
+        "auto-undo",
+        &undo.replacement,
+        &undo.original,
+        undo.replace_words,
+        undo.words,
+        started_at,
+        false,
+    );
     buf.clear_pending_learning();
     buf.reset_all();
     log(&format!(
@@ -4776,6 +4900,45 @@ mod tests {
         assert!(undo_decision.target_is_ru);
         assert_eq!(map_events_to_layout(&undo_events, true), "текст");
         assert!(buffer.replay_toggle_ready());
+    }
+
+    #[test]
+    fn manual_text_correction_keeps_pending_full_undo() {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(&mut buffer, "good", false);
+        buffer.handle_space();
+        push_text_as_layout(&mut buffer, "ntrcn", false);
+        let (events, _) = buffer.what_to_replay(2).expect("two-word tail");
+        let original = map_original_events(&events);
+        let replacement = "good текст".to_string();
+        let plan = plan_text_replacement(&original, &replacement).expect("minimal plan");
+
+        remember_manual_text_correction(
+            &mut buffer,
+            ManualTextCorrectionMemory {
+                events: &events,
+                plan: &plan,
+                original: &original,
+                replacement: &replacement,
+                kind: "smart-text",
+                replace_words: 2,
+                words: 2,
+                inserted_layout_is_ru: Some(true),
+            },
+        );
+
+        let undo = buffer.take_pending_auto_undo().expect("pending undo");
+        assert_eq!(undo.original, "good ntrcn");
+        assert_eq!(undo.replacement, "good текст");
+        assert_eq!(
+            pending_auto_undo_plan(&undo),
+            TextReplacement {
+                move_left: 0,
+                backspaces: 10,
+                insert: "good ntrcn".to_string(),
+                move_right: 0,
+            }
+        );
     }
 
     #[test]
