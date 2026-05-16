@@ -82,8 +82,9 @@ Desktop-адаптеры:
   │  decoder                             │
   │                                      │
   │  1. Build candidates                 │
-  │  2. Score/arbiter                    │
-  │  3. Return action: ReplayAll или     │
+  │  2. Rank with LEM/ngram              │
+  │  3. Check winner margin              │
+  │  4. Return action: ReplayAll или     │
   │     ReplaceText + source             │
   └──────────────┬───────────────────────┘
                  ▼
@@ -404,7 +405,8 @@ lay/
 │   ├── main.rs          — CLI (clap), dict conversion и --smart
 │   ├── config.rs        — config schema для daemon и tray
 │   ├── correction.rs    — общий контракт Correction
-│   ├── decoder.rs       — единый decision/edit-plan слой
+│   ├── decoder.rs       — единый decision/edit-plan слой, ranked candidates
+│   │                      и margin policy для scoped-tail
 │   ├── core.rs          — публичный facade общего ядра
 │   ├── desktop.rs       — выбор GNOME/KDE/X11 backend
 │   ├── dict.rs          — словарь US↔RU, detect_direction, convert

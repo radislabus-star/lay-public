@@ -474,6 +474,10 @@ systemctl --user restart lay-daemon
 
 Последние изменения публичной ветки:
 
+- `0.1.177` — decoder получил явный ranked-candidate слой: scoped-tail
+  кандидаты ранжируются через LEM/ngram, победитель применяется только при
+  достаточном margin, а tests теперь покрывают 2/3 слова, `KDE -> ЛВУ` в
+  русском контексте и отключение ranked-пути без LEM-флага.
 - `0.1.176` — начат переход на явный decoder/edit-plan слой: manual
   double-Shift, typing assist и Enter-autocorrect теперь используют общий
   decision contract. Добавлен regression corpus для обратимого single-word

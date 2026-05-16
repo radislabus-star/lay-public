@@ -10,8 +10,10 @@ pub use crate::config::{
 };
 pub use crate::correction::Correction;
 pub use crate::decoder::{
-    decode_enter_autocorrect_tail, decode_manual_tail, decode_typing_assist_tail, CorrectionSource,
-    CorrectionTrigger, DecoderAction, DecoderEditPlan, ManualDecodeRequest, ManualDecodeResult,
+    choose_ranked_scoped_tail, decode_enter_autocorrect_tail, decode_manual_tail,
+    decode_typing_assist_tail, rank_scoped_tail_candidates, CorrectionSource, CorrectionTrigger,
+    DecoderAction, DecoderEditPlan, ManualDecodeRequest, ManualDecodeResult,
+    RankedDecoderCandidate, RankedDecoderDecision,
 };
 pub use crate::desktop::{
     is_ru_layout_id, normalize_layout_id, parse_setxkbmap_layout, resolve_layout_backend,

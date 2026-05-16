@@ -7,15 +7,18 @@
 
 use crate::config::{CorrectionEngine, TypingAssistRuleConfig};
 use crate::correction::Correction;
-use crate::keyboard::{map_original_events, KeyEvent};
+use crate::keyboard::{map_original_events, split_event_words, KeyEvent};
+use crate::lem::ScoredCandidate;
 use crate::text_edit::{
     ensure_committed_tail_spacing, plan_committed_tail_replacement, plan_text_replacement,
     TextReplacement,
 };
 use crate::typing_assist::{
     apply_auto_replace, apply_typing_assist_with_pipeline,
-    decide_scoped_tail_correction_with_options, ScopedTailOptions,
+    decide_scoped_tail_correction_with_options, scoped_tail_lem_candidates, ScopedTailOptions,
 };
+
+const MANUAL_SCOPED_TAIL_MIN_MARGIN: f64 = 0.20;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CorrectionTrigger {
@@ -116,27 +119,37 @@ pub struct ManualDecodeRequest<'a> {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ManualDecodeResult {
     pub action: DecoderAction,
+    pub ranked: Option<RankedDecoderDecision>,
 }
 
 pub fn decode_manual_tail(request: ManualDecodeRequest<'_>) -> ManualDecodeResult {
     if request.force_replay || request.engine == CorrectionEngine::Replay {
-        return maybe_apply_auto_replace(request, DecoderAction::ReplayAll);
+        return maybe_apply_auto_replace(request, DecoderAction::ReplayAll, None);
     }
 
+    let mut ranked = None;
     let action = if request.engine == CorrectionEngine::Smart {
-        decide_scoped_tail_correction_with_options(request.events, request.scoped_options)
-            .filter(|text| !text.trim().is_empty())
-            .map(|replacement| DecoderAction::ReplaceText {
-                replacement,
+        if let Some(decision) = choose_ranked_scoped_tail(request.events, request.scoped_options) {
+            ranked = Some(decision.clone());
+            DecoderAction::ReplaceText {
+                replacement: decision.best.text,
                 source: CorrectionSource::SmartText,
-            })
-            .unwrap_or_else(|| {
-                correction_to_action(crate::typing_assist::decide_correction(
-                    request.original,
-                    request.converted,
-                    request.engine,
-                ))
-            })
+            }
+        } else {
+            decide_scoped_tail_correction_with_options(request.events, request.scoped_options)
+                .filter(|text| !text.trim().is_empty())
+                .map(|replacement| DecoderAction::ReplaceText {
+                    replacement,
+                    source: CorrectionSource::SmartText,
+                })
+                .unwrap_or_else(|| {
+                    correction_to_action(crate::typing_assist::decide_correction(
+                        request.original,
+                        request.converted,
+                        request.engine,
+                    ))
+                })
+        }
     } else {
         correction_to_action(crate::typing_assist::decide_correction(
             request.original,
@@ -145,26 +158,27 @@ pub fn decode_manual_tail(request: ManualDecodeRequest<'_>) -> ManualDecodeResul
         ))
     };
 
-    maybe_apply_auto_replace(request, action)
+    maybe_apply_auto_replace(request, action, ranked)
 }
 
 fn maybe_apply_auto_replace(
     request: ManualDecodeRequest<'_>,
     action: DecoderAction,
+    ranked: Option<RankedDecoderDecision>,
 ) -> ManualDecodeResult {
     if !matches!(action, DecoderAction::ReplayAll) || !request.auto_replace {
-        return ManualDecodeResult { action };
+        return ManualDecodeResult { action, ranked };
     }
 
     let Some(replacement) = apply_auto_replace(request.original, request.converted) else {
-        return ManualDecodeResult { action };
+        return ManualDecodeResult { action, ranked };
     };
 
     if replacement == request.original
         || replacement == request.converted
         || replacement.trim().is_empty()
     {
-        return ManualDecodeResult { action };
+        return ManualDecodeResult { action, ranked };
     }
 
     ManualDecodeResult {
@@ -172,6 +186,7 @@ fn maybe_apply_auto_replace(
             replacement,
             source: CorrectionSource::AutoReplace,
         },
+        ranked,
     }
 }
 
@@ -186,6 +201,99 @@ fn correction_to_action(correction: Correction) -> DecoderAction {
             source: CorrectionSource::SmartText,
         },
     }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct RankedDecoderCandidate {
+    pub text: String,
+    pub total: f64,
+    pub language: f64,
+    pub noise: f64,
+    pub edit: f64,
+    pub intervention: f64,
+}
+
+impl From<ScoredCandidate> for RankedDecoderCandidate {
+    fn from(value: ScoredCandidate) -> Self {
+        Self {
+            text: value.text,
+            total: value.total,
+            language: value.language,
+            noise: value.noise,
+            edit: value.edit,
+            intervention: value.intervention,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct RankedDecoderDecision {
+    pub original: String,
+    pub best: RankedDecoderCandidate,
+    pub second: Option<RankedDecoderCandidate>,
+    pub margin: f64,
+}
+
+impl Eq for RankedDecoderDecision {}
+
+impl Eq for RankedDecoderCandidate {}
+
+pub fn rank_scoped_tail_candidates(
+    events: &[KeyEvent],
+    options: ScopedTailOptions,
+) -> Option<RankedDecoderDecision> {
+    if !options.lem_enabled {
+        return None;
+    }
+
+    let words = split_event_words(events)?;
+    if words.len() < 2 {
+        return None;
+    }
+
+    let original = map_original_events(events);
+    let has_trailing_space = events
+        .last()
+        .is_some_and(|event| event.keycode == evdev::KeyCode::KEY_SPACE.code());
+    let candidates =
+        scoped_tail_lem_candidates(&words, !has_trailing_space, options.allow_layout_auto)
+            .into_iter()
+            .map(|candidate| {
+                if has_trailing_space {
+                    format!("{candidate} ")
+                } else {
+                    candidate
+                }
+            });
+    let ranked = crate::lem::rank_candidates(&original, candidates);
+    let mut ranked = ranked.into_iter();
+    let best: RankedDecoderCandidate = ranked.next()?.into();
+    let second = ranked.next().map(RankedDecoderCandidate::from);
+    let margin = second
+        .as_ref()
+        .map(|candidate| best.total - candidate.total)
+        .unwrap_or(f64::INFINITY);
+
+    Some(RankedDecoderDecision {
+        original,
+        best,
+        second,
+        margin,
+    })
+}
+
+pub fn choose_ranked_scoped_tail(
+    events: &[KeyEvent],
+    options: ScopedTailOptions,
+) -> Option<RankedDecoderDecision> {
+    let decision = rank_scoped_tail_candidates(events, options)?;
+    if decision.best.text == decision.original || decision.best.text.trim().is_empty() {
+        return None;
+    }
+    if decision.margin < MANUAL_SCOPED_TAIL_MIN_MARGIN {
+        return None;
+    }
+    Some(decision)
 }
 
 pub fn decode_typing_assist_tail(

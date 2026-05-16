@@ -1,58 +1,65 @@
 use evdev::KeyCode;
 use lay::config::{default_typing_assist_pipeline, CorrectionEngine};
 use lay::decoder::{
-    decode_manual_tail, decode_typing_assist_tail, CorrectionSource, DecoderAction,
-    ManualDecodeRequest,
+    choose_ranked_scoped_tail, decode_manual_tail, decode_typing_assist_tail,
+    rank_scoped_tail_candidates, CorrectionSource, DecoderAction, ManualDecodeRequest,
 };
 use lay::dict::{convert, Direction};
 use lay::keyboard::{map_original_events, replay_layout_decision, KeyEvent};
 use lay::text_edit::TextReplacement;
 use lay::typing_assist::{apply_typing_assist_exact, ScopedTailOptions};
 
-fn ev(keycode: KeyCode, layout_is_ru: bool) -> KeyEvent {
-    KeyEvent {
-        keycode: keycode.code(),
-        shift: false,
-        layout_is_ru,
-    }
-}
-
 fn ascii_events(text: &str) -> Vec<KeyEvent> {
     text.chars()
         .map(|ch| {
-            let key = match ch {
-                'a' | 'A' => KeyCode::KEY_A,
-                'b' | 'B' => KeyCode::KEY_B,
-                'c' | 'C' => KeyCode::KEY_C,
-                'd' | 'D' => KeyCode::KEY_D,
-                'e' | 'E' => KeyCode::KEY_E,
-                'f' | 'F' => KeyCode::KEY_F,
-                'g' | 'G' => KeyCode::KEY_G,
-                'h' | 'H' => KeyCode::KEY_H,
-                'i' | 'I' => KeyCode::KEY_I,
-                'j' | 'J' => KeyCode::KEY_J,
-                'k' | 'K' => KeyCode::KEY_K,
-                'l' | 'L' => KeyCode::KEY_L,
-                'm' | 'M' => KeyCode::KEY_M,
-                'n' | 'N' => KeyCode::KEY_N,
-                'o' | 'O' => KeyCode::KEY_O,
-                'p' | 'P' => KeyCode::KEY_P,
-                'q' | 'Q' => KeyCode::KEY_Q,
-                'r' | 'R' => KeyCode::KEY_R,
-                's' | 'S' => KeyCode::KEY_S,
-                't' | 'T' => KeyCode::KEY_T,
-                'u' | 'U' => KeyCode::KEY_U,
-                'v' | 'V' => KeyCode::KEY_V,
-                'w' | 'W' => KeyCode::KEY_W,
-                'x' | 'X' => KeyCode::KEY_X,
-                'y' | 'Y' => KeyCode::KEY_Y,
-                'z' | 'Z' => KeyCode::KEY_Z,
-                ' ' => KeyCode::KEY_SPACE,
-                '-' => KeyCode::KEY_MINUS,
-                ';' => KeyCode::KEY_SEMICOLON,
+            let (key, layout_is_ru, shift) = match ch {
+                'a'..='z' | 'A'..='Z' => {
+                    let key = match ch.to_ascii_lowercase() {
+                        'a' => KeyCode::KEY_A,
+                        'b' => KeyCode::KEY_B,
+                        'c' => KeyCode::KEY_C,
+                        'd' => KeyCode::KEY_D,
+                        'e' => KeyCode::KEY_E,
+                        'f' => KeyCode::KEY_F,
+                        'g' => KeyCode::KEY_G,
+                        'h' => KeyCode::KEY_H,
+                        'i' => KeyCode::KEY_I,
+                        'j' => KeyCode::KEY_J,
+                        'k' => KeyCode::KEY_K,
+                        'l' => KeyCode::KEY_L,
+                        'm' => KeyCode::KEY_M,
+                        'n' => KeyCode::KEY_N,
+                        'o' => KeyCode::KEY_O,
+                        'p' => KeyCode::KEY_P,
+                        'q' => KeyCode::KEY_Q,
+                        'r' => KeyCode::KEY_R,
+                        's' => KeyCode::KEY_S,
+                        't' => KeyCode::KEY_T,
+                        'u' => KeyCode::KEY_U,
+                        'v' => KeyCode::KEY_V,
+                        'w' => KeyCode::KEY_W,
+                        'x' => KeyCode::KEY_X,
+                        'y' => KeyCode::KEY_Y,
+                        'z' => KeyCode::KEY_Z,
+                        _ => unreachable!(),
+                    };
+                    (key, false, ch.is_ascii_uppercase())
+                }
+                'а' | 'А' => (KeyCode::KEY_F, true, ch.is_uppercase()),
+                'д' | 'Д' => (KeyCode::KEY_L, true, ch.is_uppercase()),
+                'е' | 'Е' => (KeyCode::KEY_T, true, ch.is_uppercase()),
+                'й' | 'Й' => (KeyCode::KEY_Q, true, ch.is_uppercase()),
+                'л' | 'Л' => (KeyCode::KEY_K, true, ch.is_uppercase()),
+                ' ' => (KeyCode::KEY_SPACE, false, false),
+                '-' => (KeyCode::KEY_MINUS, false, false),
+                ';' => (KeyCode::KEY_SEMICOLON, false, false),
                 other => panic!("unsupported test char {other:?}"),
             };
-            ev(key, false)
+            KeyEvent {
+                keycode: key.code(),
+                shift,
+                layout_is_ru,
+            }
         })
         .collect()
 }
@@ -101,6 +108,56 @@ fn manual_decoder_replaces_only_bad_word_in_mixed_pair() {
             source: CorrectionSource::SmartText,
         }
     );
+}
+
+#[test]
+fn ranked_decoder_exposes_margin_for_mixed_pairs() {
+    let events = ascii_events("good ntrcn");
+    let options = ScopedTailOptions {
+        lem_enabled: true,
+        allow_layout_auto: true,
+    };
+    let ranked = rank_scoped_tail_candidates(&events, options).expect("ranked candidates");
+    let chosen = choose_ranked_scoped_tail(&events, options).expect("confident decision");
+
+    assert_eq!(ranked.best.text, "good текст");
+    assert!(ranked.margin > 0.20, "margin was {}", ranked.margin);
+    assert_eq!(chosen.best.text, ranked.best.text);
+}
+
+#[test]
+fn ranked_decoder_handles_three_word_tail_without_retyping_good_prefix() {
+    assert_eq!(
+        decode_ascii_tail("hello good ntrcn", false),
+        DecoderAction::ReplaceText {
+            replacement: "hello good текст".to_string(),
+            source: CorrectionSource::SmartText,
+        }
+    );
+}
+
+#[test]
+fn ranked_decoder_keeps_ascii_context_and_flips_uppercase_current_tail() {
+    assert_eq!(
+        decode_ascii_tail("делай KDE", false),
+        DecoderAction::ReplaceText {
+            replacement: "делай ЛВУ".to_string(),
+            source: CorrectionSource::SmartText,
+        }
+    );
+}
+
+#[test]
+fn ranked_decoder_is_disabled_without_lem_flag() {
+    let events = ascii_events("good ntrcn");
+    assert!(rank_scoped_tail_candidates(
+        &events,
+        ScopedTailOptions {
+            lem_enabled: false,
+            allow_layout_auto: true,
+        }
+    )
+    .is_none());
 }
 
 #[test]
