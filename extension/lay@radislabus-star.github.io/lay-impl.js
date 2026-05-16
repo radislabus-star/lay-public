@@ -211,6 +211,40 @@ function loadRecentActions(limit = 5) {
         return [];
     }
 }
+function sameRecentAction(left, right) {
+    return Number(left?.ts ?? 0) === Number(right?.ts ?? 0)
+        && String(left?.kind ?? '') === String(right?.kind ?? '')
+        && String(left?.from ?? '') === String(right?.from ?? '')
+        && String(left?.to ?? '') === String(right?.to ?? '')
+        && Number(left?.elapsed_ms ?? 0) === Number(right?.elapsed_ms ?? 0);
+}
+function consumeRecentAction(action) {
+    try {
+        const file = Gio.File.new_for_path(RECENT_ACTIONS_PATH);
+        const [, bytes] = file.load_contents(null);
+        const rows = new TextDecoder().decode(bytes)
+            .split('\n')
+            .filter(line => line.trim().length > 0)
+            .map(line => ({line, action: JSON.parse(line)}));
+        for (let idx = rows.length - 1; idx >= 0; idx--) {
+            if (!sameRecentAction(rows[idx].action, action))
+                continue;
+            rows.splice(idx, 1);
+            const text = rows.map(row => row.line).join('\n') + (rows.length > 0 ? '\n' : '');
+            file.replace_contents(
+                new TextEncoder().encode(text),
+                null,
+                false,
+                Gio.FileCreateFlags.REPLACE_DESTINATION,
+                null
+            );
+            return true;
+        }
+    } catch(e) {
+        log(`[lay-extension] consume recent action failed: ${e}`);
+    }
+    return false;
+}
 function summarizeRecentActions(actions) {
     const total = actions.length;
     if (total === 0)
@@ -806,10 +840,14 @@ class LayIndicator extends PanelMenu.Button {
             return;
         }
         const ok = this._service?.ReplaceText?.(0, Array.from(to).length, from, 0, '') ?? false;
-        if (ok)
+        if (ok) {
+            consumeRecentAction(action);
+            this._refreshRecentActions();
+            this._refreshStats();
             this._notify('Откат выполнен', `${this._shortActionText(to)} → ${this._shortActionText(from)}`);
-        else
+        } else {
             this._notify('Откат не сработал', 'GNOME DBus ReplaceText вернул ошибку.', true);
+        }
     }
 
     _ptahAlexsMenu() {
