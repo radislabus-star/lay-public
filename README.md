@@ -474,6 +474,11 @@ systemctl --user restart lay-daemon
 
 Последние изменения публичной ветки:
 
+- `0.1.181` — manual smart-replace теперь тоже записывает learning и
+  replay-memory через общий helper. IME/GNOME-native/uinput ветки больше не
+  дублируют этот код; расширенный fallback для запоминания вставленного хвоста
+  остаётся только в uinput-пути, где он уже был нужен для обратимого
+  double-Shift.
 - `0.1.180` — общий helper для layout switch/restore после text edit. Ветки
   typing assist и Enter-autocorrect больше не держат четыре копии одной
   логики: если включено автопереключение, оставляем layout под исправленный

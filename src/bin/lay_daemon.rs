@@ -1763,6 +1763,44 @@ fn switch_or_restore_layout_after_text_edit(
     }
 }
 
+struct ManualTextCorrectionMemory<'a> {
+    events: &'a [KeyEvent],
+    plan: &'a TextReplacement,
+    original: &'a str,
+    replacement: &'a str,
+    kind: &'a str,
+    replace_words: usize,
+    words: usize,
+    inserted_layout_is_ru: Option<bool>,
+}
+
+fn remember_manual_text_correction(
+    buf: &mut WordBuffer,
+    correction: ManualTextCorrectionMemory<'_>,
+) {
+    buf.remember_pending_learning_correction(
+        correction.kind,
+        correction.original,
+        correction.replacement,
+        correction.replace_words,
+        correction.words,
+    );
+    let remembered = buf.remember_replacement_last_word_for_replay(
+        correction.events,
+        correction.plan,
+        correction.replacement,
+    ) || correction
+        .inserted_layout_is_ru
+        .is_some_and(|layout_is_ru| {
+            buf.remember_inserted_tail_for_replay(correction.events, correction.plan, layout_is_ru)
+        })
+        || (correction.inserted_layout_is_ru.is_some()
+            && buf.remember_inserted_last_word_for_replay(correction.events, correction.plan));
+    if !remembered {
+        buf.reset_all();
+    }
+}
+
 fn handle_enter_autocorrect(
     buf: &mut WordBuffer,
     replace_words: usize,
@@ -1981,16 +2019,19 @@ fn handle_double_shift(
                     insert: replace_text.clone(),
                     move_right: 0,
                 };
-                buf.remember_pending_learning_correction(
-                    replace_kind,
-                    &mapped_orig,
-                    &replace_text,
-                    replace_words,
-                    words_orig,
+                remember_manual_text_correction(
+                    buf,
+                    ManualTextCorrectionMemory {
+                        events: &events,
+                        plan: &plan,
+                        original: &mapped_orig,
+                        replacement: &replace_text,
+                        kind: replace_kind,
+                        replace_words,
+                        words: words_orig,
+                        inserted_layout_is_ru: None,
+                    },
                 );
-                if !buf.remember_replacement_last_word_for_replay(&events, &plan, &replace_text) {
-                    buf.reset_all();
-                }
             }
             return match switch_to_target_layout(replace_target_is_ru) {
                 Ok(layout_id) => {
@@ -2041,17 +2082,19 @@ fn handle_double_shift(
                         insert: replace_text.clone(),
                         move_right: 0,
                     };
-                    buf.remember_pending_learning_correction(
-                        replace_kind,
-                        &mapped_orig,
-                        &replace_text,
-                        replace_words,
-                        words_orig,
+                    remember_manual_text_correction(
+                        buf,
+                        ManualTextCorrectionMemory {
+                            events: &events,
+                            plan: &plan,
+                            original: &mapped_orig,
+                            replacement: &replace_text,
+                            kind: replace_kind,
+                            replace_words,
+                            words: words_orig,
+                            inserted_layout_is_ru: None,
+                        },
                     );
-                    if !buf.remember_replacement_last_word_for_replay(&events, &plan, &replace_text)
-                    {
-                        buf.reset_all();
-                    }
                 }
                 log(&format!(
                     "  1. GNOME ReplaceText: bs={} insert={:?}",
@@ -2115,23 +2158,22 @@ fn handle_double_shift(
                         }
                     };
                 let layout_result = switch_to_target_layout(insert_target_is_ru);
-                buf.remember_pending_learning_correction(
-                    kind,
-                    &mapped_orig,
-                    &text,
-                    replace_words,
-                    words_orig,
+                remember_manual_text_correction(
+                    buf,
+                    ManualTextCorrectionMemory {
+                        events: &events,
+                        plan: &plan,
+                        original: &mapped_orig,
+                        replacement: &text,
+                        kind,
+                        replace_words,
+                        words: words_orig,
+                        inserted_layout_is_ru: Some(preferred_layout_for_text(
+                            &plan.insert,
+                            insert_target_is_ru,
+                        )),
+                    },
                 );
-                if !buf.remember_replacement_last_word_for_replay(&events, &plan, &text)
-                    && !buf.remember_inserted_tail_for_replay(
-                        &events,
-                        &plan,
-                        preferred_layout_for_text(&plan.insert, insert_target_is_ru),
-                    )
-                    && !buf.remember_inserted_last_word_for_replay(&events, &plan)
-                {
-                    buf.reset_all();
-                }
                 log(&format!(
                     "  1. minimal replace: left={} bs={} insert={:?} right={}",
                     plan.move_left, plan.backspaces, plan.insert, plan.move_right
