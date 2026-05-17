@@ -25,11 +25,11 @@ pub fn plan_committed_tail_replacement(
     original: &str,
     replacement: &str,
 ) -> Option<TextReplacement> {
-    // After-space corrections run while the user's typed separator is already
-    // present in the target field. Keep that trailing whitespace in place when
-    // possible instead of deleting and retyping it; this avoids races where a
-    // fast replacement loses the boundary and glues the next word.
-    plan_text_replacement(original, replacement)
+    // After-space corrections run in real GUI fields, where Space may be
+    // committed slightly later than the evdev event. Re-emit the trailing
+    // boundary with the corrected tail instead of moving the cursor across it;
+    // this avoids gluing the next word when an application races the edit.
+    plan_text_replacement_with_options(original, replacement, false)
 }
 
 pub fn ensure_committed_tail_spacing(original: &str, mut replacement: String) -> String {
@@ -138,23 +138,32 @@ mod tests {
     }
 
     #[test]
-    fn committed_tail_plan_preserves_trailing_space_boundary() {
+    fn committed_tail_plan_reemits_trailing_space_boundary() {
         assert_eq!(
             plan_committed_tail_replacement("double b ", "double и "),
             Some(TextReplacement {
-                move_left: 1,
-                backspaces: 1,
-                insert: "и".to_string(),
-                move_right: 1,
+                move_left: 0,
+                backspaces: 2,
+                insert: "и ".to_string(),
+                move_right: 0,
             })
         );
         assert_eq!(
             plan_committed_tail_replacement("чтобы точнр ", "чтобы точно "),
             Some(TextReplacement {
-                move_left: 1,
-                backspaces: 1,
-                insert: "о".to_string(),
-                move_right: 1,
+                move_left: 0,
+                backspaces: 2,
+                insert: "о ".to_string(),
+                move_right: 0,
+            })
+        );
+        assert_eq!(
+            plan_committed_tail_replacement("ОФФИЦИАЛЬНОМ ", "ОФИЦИАЛЬНОМ "),
+            Some(TextReplacement {
+                move_left: 0,
+                backspaces: 11,
+                insert: "ИЦИАЛЬНОМ ".to_string(),
+                move_right: 0,
             })
         );
     }
@@ -169,7 +178,11 @@ mod tests {
             let plan = plan_committed_tail_replacement(original, replacement).expect("replacement");
             assert_eq!(apply_plan(original, &plan), replacement);
             assert_eq!(original.ends_with(' '), replacement.ends_with(' '));
-            assert_eq!(plan.move_right, 1, "space boundary must stay on screen");
+            assert_eq!(plan.move_right, 0, "space boundary must be re-emitted");
+            assert!(
+                plan.insert.ends_with(' '),
+                "space boundary must be part of the inserted text"
+            );
         }
     }
 
@@ -181,10 +194,10 @@ mod tests {
         assert_eq!(
             plan,
             TextReplacement {
-                move_left: 6,
-                backspaces: 0,
-                insert: " ".to_string(),
-                move_right: 6,
+                move_left: 0,
+                backspaces: 6,
+                insert: " точно ".to_string(),
+                move_right: 0,
             }
         );
         assert_eq!(apply_plan("чтобыточно ", &plan), "чтобы точно ");

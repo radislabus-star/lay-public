@@ -480,7 +480,7 @@ mod tests {
     }
 
     #[test]
-    fn typing_assist_decoder_preserves_committed_space_boundary() {
+    fn typing_assist_decoder_reemits_committed_space_boundary() {
         let events = events_for_ascii("double b ");
         let plan = decode_typing_assist_tail(
             &events,
@@ -494,10 +494,10 @@ mod tests {
         assert_eq!(
             plan.plan,
             TextReplacement {
-                move_left: 1,
-                backspaces: 1,
-                insert: "и".to_string(),
-                move_right: 1,
+                move_left: 0,
+                backspaces: 2,
+                insert: "и ".to_string(),
+                move_right: 0,
             }
         );
         assert!(plan.source.needs_undo_checkpoint());

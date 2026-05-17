@@ -4057,10 +4057,10 @@ mod tests {
     fn committed_tail_plan_preserves_typed_trailing_space_after_short_replacement() {
         let plan = plan_committed_tail_replacement("double b ", "double и ").expect("replacement");
 
-        assert_eq!(plan.move_left, 1);
-        assert_eq!(plan.backspaces, 1);
-        assert_eq!(plan.insert, "и");
-        assert_eq!(plan.move_right, 1);
+        assert_eq!(plan.move_left, 0);
+        assert_eq!(plan.backspaces, 2);
+        assert_eq!(plan.insert, "и ");
+        assert_eq!(plan.move_right, 0);
     }
 
     #[test]
@@ -4068,10 +4068,10 @@ mod tests {
         let plan =
             plan_committed_tail_replacement("чтобы точнр ", "чтобы точно ").expect("replacement");
 
-        assert_eq!(plan.move_left, 1);
-        assert_eq!(plan.backspaces, 1);
-        assert_eq!(plan.insert, "о");
-        assert_eq!(plan.move_right, 1);
+        assert_eq!(plan.move_left, 0);
+        assert_eq!(plan.backspaces, 2);
+        assert_eq!(plan.insert, "о ");
+        assert_eq!(plan.move_right, 0);
     }
 
     #[test]
