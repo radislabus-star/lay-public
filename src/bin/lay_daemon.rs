@@ -22,8 +22,9 @@ use lay::config::{CorrectionEngine, LayConfig, TypingAssistRuleConfig};
 #[cfg(test)]
 use lay::correction::Correction;
 use lay::decoder::{
-    decode_enter_autocorrect_tail, decode_manual_tail, decode_typing_assist_tail, CorrectionSource,
-    DecoderAction, DecoderEditPlan, ManualDecodeRequest,
+    decode_enter_autocorrect_tail, decode_manual_tail, decode_typing_assist_current_tail,
+    decode_typing_assist_tail, CorrectionSource, DecoderAction, DecoderEditPlan,
+    ManualDecodeRequest,
 };
 #[cfg(test)]
 use lay::desktop::resolve_layout_backend;
@@ -32,7 +33,8 @@ use lay::desktop::{is_ru_layout_id, normalize_layout_id, parse_setxkbmap_layout,
 use lay::keyboard::map_opposite_events;
 use lay::keyboard::{
     is_cyrillic_letter, is_typing_key, keycode_to_ru_char, keycode_to_us_char, map_original_events,
-    preferred_layout_for_text, replay_layout_decision, text_to_uinput_runs, KeyEvent,
+    original_event_char, preferred_layout_for_text, replay_layout_decision, text_to_uinput_runs,
+    KeyEvent,
 };
 #[cfg(test)]
 use lay::keyboard::{
@@ -1191,16 +1193,19 @@ fn listen_keyboard(
                     }
                     last_layout_poll = Instant::now();
                 }
-                buffer.push(KeyEvent {
+                let typed_event = KeyEvent {
                     keycode: code,
                     shift: shift_state.any(),
                     layout_is_ru: current_layout_is_ru,
-                });
-                buffer.note_learning_typed(KeyEvent {
-                    keycode: code,
-                    shift: shift_state.any(),
-                    layout_is_ru: current_layout_is_ru,
-                });
+                };
+                buffer.push(typed_event);
+                buffer.note_learning_typed(typed_event);
+                if should_schedule_typing_assist_after_sentence_punctuation(
+                    active_typing_assist(),
+                    &typed_event,
+                ) {
+                    pending_typing_assist_after_space = Some(Instant::now());
+                }
                 if verbose {
                     log(&format!(
                         "· key {code} v={value} shift={} → current={} events={events_since_word_start}",
@@ -1509,6 +1514,17 @@ fn should_schedule_typing_assist_after_space(active: bool, suppress_once: &mut b
     true
 }
 
+fn should_schedule_typing_assist_after_sentence_punctuation(
+    active: bool,
+    event: &KeyEvent,
+) -> bool {
+    active && original_event_char(event).is_some_and(is_sentence_commit_punctuation)
+}
+
+fn is_sentence_commit_punctuation(ch: char) -> bool {
+    matches!(ch, '?' | '!')
+}
+
 fn is_leading_non_word_symbol_key(key: KeyCode, _shift: bool) -> bool {
     matches!(key, KeyCode::KEY_EQUAL | KeyCode::KEY_MINUS)
 }
@@ -1597,16 +1613,19 @@ fn handle_typing_assist_after_space(
     let pipeline = default_typing_assist_pipeline();
     #[cfg(not(test))]
     let pipeline = active_typing_assist_pipeline_for_auto_replace();
-    let correction = [2, 1].into_iter().find_map(|word_count| {
-        let events = buf.last_completed_words_events(word_count)?;
-        let edit = decode_typing_assist_tail(
-            &events,
-            allow_layout_auto,
-            &pipeline,
-            CorrectionSource::TypingAssist,
-        )?;
-        Some((events, edit))
-    });
+    let correction = typing_assist_current_tail_candidate(buf, allow_layout_auto, &pipeline)
+        .or_else(|| {
+            [2, 1].into_iter().find_map(|word_count| {
+                let events = buf.last_completed_words_events(word_count)?;
+                let edit = decode_typing_assist_tail(
+                    &events,
+                    allow_layout_auto,
+                    &pipeline,
+                    CorrectionSource::TypingAssist,
+                )?;
+                Some((events, edit))
+            })
+        });
     let Some((events, edit)) = correction else {
         return;
     };
@@ -1724,6 +1743,25 @@ fn handle_typing_assist_after_space(
         replacement,
         started_at.elapsed().as_millis()
     ));
+}
+
+fn typing_assist_current_tail_candidate(
+    buf: &WordBuffer,
+    allow_layout_auto: bool,
+    pipeline: &[TypingAssistRuleConfig],
+) -> Option<(Vec<KeyEvent>, DecoderEditPlan)> {
+    let (events, _) = buf.what_to_replay(1)?;
+    let last = events.last()?;
+    if !original_event_char(last).is_some_and(is_sentence_commit_punctuation) {
+        return None;
+    }
+    let edit = decode_typing_assist_current_tail(
+        &events,
+        allow_layout_auto,
+        pipeline,
+        CorrectionSource::TypingAssist,
+    )?;
+    Some((events, edit))
 }
 
 fn enter_autocorrect_candidate(
@@ -7090,7 +7128,40 @@ mod tests {
             apply_typing_assist_exact("рабоТА "),
             Some("работа ".to_string())
         );
+        assert_eq!(
+            apply_typing_assist_exact("улУЧШИТЬ "),
+            Some("улучшить ".to_string())
+        );
+        assert_eq!(
+            apply_typing_assist_exact("улУЧШИТЬ? "),
+            Some("улучшить? ".to_string())
+        );
         assert_eq!(apply_typing_assist_exact("МОЖНО "), None);
+    }
+
+    #[test]
+    fn typing_assist_repairs_current_word_after_sentence_punctuation() {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(&mut buffer, "улУЧШИТЬ?", true);
+        let pipeline = typing_pipeline_with_only("cyrillic_case");
+
+        let (events, edit) =
+            typing_assist_current_tail_candidate(&buffer, false, &pipeline).expect("correction");
+
+        assert_eq!(map_original_events(&events), "улУЧШИТЬ?");
+        assert_eq!(edit.original, "улУЧШИТЬ?");
+        assert_eq!(edit.replacement, "улучшить?");
+        assert!(edit.plan.backspaces > 0);
+        assert!(!edit.plan.insert.ends_with(' '));
+    }
+
+    #[test]
+    fn typing_assist_does_not_run_current_tail_without_sentence_punctuation() {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(&mut buffer, "улУЧШИТЬ", true);
+        let pipeline = typing_pipeline_with_only("cyrillic_case");
+
+        assert!(typing_assist_current_tail_candidate(&buffer, false, &pipeline).is_none());
     }
 
     #[test]

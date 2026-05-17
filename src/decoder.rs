@@ -24,6 +24,7 @@ const MANUAL_SCOPED_TAIL_MIN_MARGIN: f64 = 0.20;
 pub enum CorrectionTrigger {
     Manual,
     AfterSpace,
+    AfterPunctuation,
     Enter,
 }
 
@@ -89,9 +90,9 @@ impl DecoderEditPlan {
     ) -> Option<Self> {
         let replacement = ensure_committed_tail_spacing(original, replacement.to_string());
         let plan = match trigger {
-            CorrectionTrigger::AfterSpace | CorrectionTrigger::Enter => {
-                plan_committed_tail_replacement(original, &replacement)
-            }
+            CorrectionTrigger::AfterSpace
+            | CorrectionTrigger::AfterPunctuation
+            | CorrectionTrigger::Enter => plan_committed_tail_replacement(original, &replacement),
             CorrectionTrigger::Manual => plan_text_replacement(original, &replacement),
         }?;
 
@@ -339,6 +340,39 @@ pub fn decode_typing_assist_tail(
         &replacement,
         source,
     )
+}
+
+pub fn decode_typing_assist_current_tail(
+    events: &[KeyEvent],
+    allow_layout_auto: bool,
+    pipeline: &[TypingAssistRuleConfig],
+    source: CorrectionSource,
+) -> Option<DecoderEditPlan> {
+    let original = map_original_events(events);
+    if original.trim().is_empty()
+        || original
+            .chars()
+            .next_back()
+            .is_some_and(char::is_whitespace)
+    {
+        return None;
+    }
+
+    let assist_input = format!("{original} ");
+    let replacement =
+        apply_typing_assist_with_pipeline(&assist_input, allow_layout_auto, pipeline)?
+            .trim_end()
+            .to_string();
+    if replacement == original || replacement.trim().is_empty() {
+        None
+    } else {
+        DecoderEditPlan::committed_tail(
+            CorrectionTrigger::AfterPunctuation,
+            &original,
+            &replacement,
+            source,
+        )
+    }
 }
 
 pub fn decode_enter_autocorrect_tail(
