@@ -385,6 +385,9 @@ fn correct_wrong_layout_cyrillic_word(token: &str) -> Option<String> {
     if is_known_russian_layout_autoswitch_word(&original_lower) {
         return None;
     }
+    if has_plausible_russian_typo_candidate(&original_lower) {
+        return None;
+    }
 
     let converted = crate::dict::convert(token, crate::dict::Direction::Ru2Us);
     if converted == token {
@@ -1586,11 +1589,70 @@ fn safe_missing_letter_candidates(lower: &str) -> impl Iterator<Item = String> +
 }
 
 fn is_safe_missing_letter_candidate(lower: &str, candidate: &str) -> bool {
+    if let Some((idx, inserted)) = inserted_char_position_for_missing_letter(lower, candidate) {
+        if idx == lower.chars().count() && !is_russian_vowel(inserted) {
+            return false;
+        }
+    }
     if let Some(inserted) = candidate.strip_suffix(lower) {
         return inserted.chars().count() != 1 || lower.chars().next().is_some_and(is_russian_vowel);
     }
 
     true
+}
+
+fn has_plausible_russian_typo_candidate(lower: &str) -> bool {
+    if lower.chars().count() < 5 || !is_cyrillic_word(lower) || is_known_russian_word_or_form(lower)
+    {
+        return false;
+    }
+
+    safe_missing_letter_candidates(lower).any(|candidate| {
+        candidate != lower
+            && is_known_russian_word_or_form(&candidate)
+            && crate::ngram::ru_candidate_margin(&candidate, lower)
+                >= NGRAM_DICT_MISSING_LETTER_MARGIN
+    }) || generate_vowel_confusion_candidates(lower)
+        .into_iter()
+        .any(|candidate| candidate != lower && is_known_russian_word_or_form(&candidate))
+        || generate_extra_letter_candidates(lower)
+            .into_iter()
+            .any(|candidate| {
+                candidate != lower
+                    && is_known_russian_word_or_form(&candidate)
+                    && crate::ngram::ru_candidate_margin(&candidate, lower)
+                        >= NGRAM_EXTRA_LETTER_MARGIN
+            })
+}
+
+fn inserted_char_position_for_missing_letter(
+    lower: &str,
+    candidate: &str,
+) -> Option<(usize, char)> {
+    let lower_chars: Vec<char> = lower.chars().collect();
+    let candidate_chars: Vec<char> = candidate.chars().collect();
+    if candidate_chars.len() != lower_chars.len() + 1 {
+        return None;
+    }
+
+    let mut i = 0usize;
+    let mut j = 0usize;
+    let mut inserted = None;
+    while i < lower_chars.len() && j < candidate_chars.len() {
+        if lower_chars[i] == candidate_chars[j] {
+            i += 1;
+            j += 1;
+        } else if inserted.is_none() {
+            inserted = Some((i, candidate_chars[j]));
+            j += 1;
+        } else {
+            return None;
+        }
+    }
+    if inserted.is_none() && j < candidate_chars.len() {
+        inserted = Some((i, candidate_chars[j]));
+    }
+    inserted
 }
 
 fn looks_like_prefix_plus_known_russian_word(lower: &str) -> bool {
@@ -2576,6 +2638,7 @@ fn ru_vowel_confusion_replacements(ch: char) -> &'static [char] {
         'о' => &['а'],
         'е' => &['и', 'ё'],
         'и' => &['е'],
+        'у' => &['о'],
         'ё' => &['е'],
         _ => &[],
     }

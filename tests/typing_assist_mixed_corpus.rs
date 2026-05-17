@@ -195,6 +195,21 @@ fn live_journal_false_positive_candidates_are_rejected() {
         None,
         "single-letter substitution must not guess a different dictionary word"
     );
+    assert_eq!(
+        apply_typing_assist_with_pipeline("таможе ", false, &normal_auto_pipeline),
+        None,
+        "missing-letter rule must not append a final consonant to an unfinished-looking word"
+    );
+    assert_eq!(
+        apply_typing_assist_with_pipeline("перекупа ", false, &normal_auto_pipeline),
+        None,
+        "missing-letter rule must not append a final consonant to a plausible standalone form"
+    );
+    assert_eq!(
+        apply_typing_assist_with_pipeline("никуму ", true, &normal_auto_pipeline),
+        Some("никому ".to_string()),
+        "Russian typo candidate must win over accidental RU->EN layout word"
+    );
 }
 
 #[test]
