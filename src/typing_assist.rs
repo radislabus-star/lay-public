@@ -1212,7 +1212,7 @@ fn correct_hard_sign_typo(word: &str) -> Option<String> {
     }
 
     let lower = word.to_lowercase();
-    best_unique_ngram_candidate(
+    best_unique_known_ngram_candidate(
         word,
         generate_hard_sign_candidates(&lower),
         NGRAM_HARD_SIGN_MARGIN,
@@ -2382,42 +2382,6 @@ fn push_with_overlap(out: &mut String, next: &str) {
         })
         .unwrap_or(0);
     out.push_str(&next_chars[overlap..].iter().collect::<String>());
-}
-
-fn best_unique_ngram_candidate<I>(original: &str, candidates: I, min_margin: f64) -> Option<String>
-where
-    I: IntoIterator<Item = String>,
-{
-    let lower = original.to_lowercase();
-    let mut best: Option<(String, f64)> = None;
-    let mut second_best = f64::NEG_INFINITY;
-
-    for candidate in candidates {
-        if candidate == lower || !is_cyrillic_word(&candidate) {
-            continue;
-        }
-        let margin = crate::ngram::ru_candidate_margin(&candidate, &lower);
-        if margin < min_margin {
-            continue;
-        }
-
-        match &best {
-            Some((_, best_margin)) if margin <= *best_margin => {
-                second_best = second_best.max(margin);
-            }
-            Some((_, best_margin)) => {
-                second_best = second_best.max(*best_margin);
-                best = Some((candidate, margin));
-            }
-            None => best = Some((candidate, margin)),
-        }
-    }
-
-    let (candidate, best_margin) = best?;
-    if best_margin - second_best < 0.40 {
-        return None;
-    }
-    Some(apply_word_case(original, &candidate))
 }
 
 fn best_ranked_dictionary_candidate<I>(

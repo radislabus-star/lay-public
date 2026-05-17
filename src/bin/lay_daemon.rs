@@ -7210,6 +7210,7 @@ mod tests {
             apply_typing_assist_exact("Обьясни "),
             Some("Объясни ".to_string())
         );
+        assert_eq!(apply_typing_assist_exact("ОБЬЯСНИШСНИШЬ "), None);
     }
 
     #[test]
