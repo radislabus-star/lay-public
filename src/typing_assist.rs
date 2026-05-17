@@ -707,6 +707,9 @@ fn correct_glued_russian_phrase(word: &str) -> Option<String> {
         {
             continue;
         }
+        if left_len <= 3 && is_common_short_russian_preposition(left) {
+            continue;
+        }
         if !is_known_russian_phrase_part(left) || !is_known_russian_phrase_part(right) {
             continue;
         }
@@ -920,6 +923,7 @@ fn is_confident_glued_phrase_split(left: &str, right: &str) -> bool {
         || (left.chars().count() <= 3
             && right.chars().count() >= 4
             && is_short_russian_function_word(left)
+            && !is_common_short_russian_preposition(left)
             && is_known_russian_phrase_part(right))
         || (left.chars().count() >= 4
             && right.chars().count() >= 4
