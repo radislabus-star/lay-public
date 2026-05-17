@@ -646,10 +646,6 @@ fn listen_keyboard(
 
             // ─── modifier tracking ────────────────────────────
             shift_state.update(key, value);
-            if value == 1 && key != KeyCode::KEY_SPACE {
-                pending_typing_assist_after_space = None;
-            }
-
             if force_layout_hotkeys {
                 let force_target = if Some(key) == force_ru_key {
                     Some(true)
@@ -1105,7 +1101,17 @@ fn listen_keyboard(
                         active_typing_assist(),
                         &mut suppress_next_typing_assist_after_manual_replay,
                     ) {
-                        pending_typing_assist_after_space = Some(Instant::now());
+                        if shift_state.any() {
+                            pending_typing_assist_after_space = Some(Instant::now());
+                        } else {
+                            let mut g = virtual_kbd.lock().unwrap();
+                            handle_typing_assist_after_space(
+                                &mut buffer,
+                                g.as_mut(),
+                                Some(&mut device),
+                                &mut executing,
+                            );
+                        }
                     }
                     if verbose {
                         log(&format!(
