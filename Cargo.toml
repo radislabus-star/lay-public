@@ -1,8 +1,8 @@
 [package]
 name = "lay"
-version = "0.1.189"
+version = "0.1.190"
 edition = "2021"
-description = "Double Shift RU/EN layout rescue for Linux desktops"
+description = "Alpha Double Shift RU/EN layout rescue for Linux desktops"
 license = "MIT"
 repository = "https://github.com/radislabus-star/lay-public"
 readme = "README.md"

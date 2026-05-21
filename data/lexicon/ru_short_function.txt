@@ -1,0 +1,17 @@
+# Short function-like Russian tokens used by language scoring.
+а
+в
+и
+к
+о
+с
+у
+я
+не
+на
+по
+за
+для
+вот
+как
+тоже

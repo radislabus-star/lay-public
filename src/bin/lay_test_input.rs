@@ -20,6 +20,10 @@
 //!   lay-test-input ctrl_plus_ghbdtn_enter — жмёт Ctrl+Shift+=, затем "ghbdtn" + двойной Shift + Enter
 //!   lay-test-input dhtvz_toggle_enter — печатает "dhtvz" + двойной Shift × 2 + Enter
 //!   lay-test-input dhtvz_toggle3_enter — печатает "dhtvz" + двойной Shift × 3 + Enter
+//!   lay-test-input eng_ru_to_us_enter — печатает "утп" в RU + двойной Shift + Enter
+//!   lay-test-input plain_layout_ashdu_space_enter — печатает "ашду" + Space + Enter
+//!   lay-test-input plain_layout_cargo_space_enter — печатает "сфкпщ" + Space + Enter
+//!   lay-test-input plain_layout_abkt_space_enter — печатает "abkt" + Space + Enter
 //!   lay-test-input good_toggle4_enter — печатает "good" + двойной Shift × 4 + Enter
 //!   lay-test-input n_teper_mixed_enter — печатает "Nеперь" + двойной Shift + Enter
 //!   lay-test-input scenario2   — печатает "привет" в RU + двойной Shift
@@ -33,6 +37,11 @@
 //!   lay-test-input auto_switch_words_enter — печатает "njkmrj yt hf,jnftn" через пробелы + Enter
 //!   lay-test-input preparatov_typo_enter — печатает "перпаратов" + Space + Enter
 //!   lay-test-input no_ne_ty_enter — печатает "но не ты" с паузами после пробелов + Enter
+//!   lay-test-input glued_tozhesamoe_next_enter — печатает "тожесамое склено" + Enter
+//!   lay-test-input glued_toesamoe_next_enter — печатает "тоесамое склено" + Enter
+//!   lay-test-input glued_yanebudu_next_enter — печатает "янебуду склено" + Enter
+//!   lay-test-input glued_context_yanebudu_next_enter — печатает "тоже самое янебуду склено" + Enter
+//!   lay-test-input glued_long_phrase_next_enter — печатает "янебудузавастожесамое склено" + Enter
 //!   lay-test-input vyvodim_dva_enter — печатает "dsdjlbv ldf" + двойной Shift + Enter
 //!   lay-test-input mixed_coke_enter — печатает "слово кjrf-rjke" + двойной Shift + Enter
 //!   lay-test-input mixed_coke_toggle3_enter — печатает "слово кjrf-rjke" + двойной Shift × 3 + Enter
@@ -47,8 +56,11 @@ use lay::desktop::{parse_setxkbmap_layout, resolve_layout_backend};
 use std::env;
 use std::io::Write;
 use std::process::{Command, Stdio};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread::sleep;
 use std::time::Duration;
+
+static INITIAL_LAYOUT_ALREADY_SET: AtomicBool = AtomicBool::new(false);
 
 fn main() -> std::io::Result<()> {
     let scenario = env::args().nth(1).unwrap_or_else(|| "list".to_string());
@@ -97,11 +109,11 @@ fn main() -> std::io::Result<()> {
         KeyCode::KEY_MINUS,
         KeyCode::KEY_EQUAL,
         KeyCode::KEY_COMMA,
+        KeyCode::KEY_SEMICOLON,
     ];
     for k in all {
         keys.insert(k);
     }
-
     let mut dev = VirtualDevice::builder()?
         .name("lay-test-virtual-keyboard")
         .with_keys(&keys)?
@@ -316,6 +328,72 @@ fn main() -> std::io::Result<()> {
             }
             tap(&mut dev, KeyCode::KEY_ENTER.code())?;
             eprintln!("[test] сценарий good_toggle4_enter отправлен");
+        }
+        "eng_ru_to_us_enter" => {
+            activate_layout("ru");
+            sleep(Duration::from_millis(250));
+            tap_keys(
+                &mut dev,
+                &[KeyCode::KEY_E, KeyCode::KEY_N, KeyCode::KEY_G],
+                35,
+            )?;
+            double_shift_enter(&mut dev, 900)?;
+            eprintln!("[test] сценарий eng_ru_to_us_enter отправлен");
+        }
+        "plain_layout_ashdu_space_enter" => {
+            activate_layout("ru");
+            sleep(Duration::from_millis(250));
+            tap_keys(
+                &mut dev,
+                &[
+                    KeyCode::KEY_F,
+                    KeyCode::KEY_I,
+                    KeyCode::KEY_L,
+                    KeyCode::KEY_E,
+                    KeyCode::KEY_SPACE,
+                ],
+                35,
+            )?;
+            sleep(Duration::from_millis(650));
+            tap(&mut dev, KeyCode::KEY_ENTER.code())?;
+            eprintln!("[test] сценарий plain_layout_ashdu_space_enter отправлен");
+        }
+        "plain_layout_cargo_space_enter" => {
+            activate_layout("ru");
+            sleep(Duration::from_millis(250));
+            tap_keys(
+                &mut dev,
+                &[
+                    KeyCode::KEY_C,
+                    KeyCode::KEY_A,
+                    KeyCode::KEY_R,
+                    KeyCode::KEY_G,
+                    KeyCode::KEY_O,
+                    KeyCode::KEY_SPACE,
+                ],
+                35,
+            )?;
+            sleep(Duration::from_millis(650));
+            tap(&mut dev, KeyCode::KEY_ENTER.code())?;
+            eprintln!("[test] сценарий plain_layout_cargo_space_enter отправлен");
+        }
+        "plain_layout_abkt_space_enter" => {
+            activate_layout("us");
+            sleep(Duration::from_millis(250));
+            tap_keys(
+                &mut dev,
+                &[
+                    KeyCode::KEY_A,
+                    KeyCode::KEY_B,
+                    KeyCode::KEY_K,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_SPACE,
+                ],
+                35,
+            )?;
+            sleep(Duration::from_millis(650));
+            tap(&mut dev, KeyCode::KEY_ENTER.code())?;
+            eprintln!("[test] сценарий plain_layout_abkt_space_enter отправлен");
         }
         "n_teper_mixed_enter" => {
             activate_layout("us");
@@ -658,6 +736,169 @@ fn main() -> std::io::Result<()> {
             tap(&mut dev, KeyCode::KEY_ENTER.code())?;
             eprintln!("[test] сценарий no_ne_ty_enter отправлен");
         }
+        "glued_tozhesamoe_next_enter" => {
+            activate_layout("ru");
+            sleep(Duration::from_millis(250));
+            tap_keys(
+                &mut dev,
+                &[
+                    KeyCode::KEY_N,
+                    KeyCode::KEY_J,
+                    KeyCode::KEY_SEMICOLON,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_C,
+                    KeyCode::KEY_F,
+                    KeyCode::KEY_V,
+                    KeyCode::KEY_J,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_SPACE,
+                    KeyCode::KEY_C,
+                    KeyCode::KEY_R,
+                    KeyCode::KEY_K,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_Y,
+                    KeyCode::KEY_J,
+                ],
+                18,
+            )?;
+            sleep(Duration::from_millis(650));
+            tap(&mut dev, KeyCode::KEY_ENTER.code())?;
+            eprintln!("[test] сценарий glued_tozhesamoe_next_enter отправлен");
+        }
+        "glued_toesamoe_next_enter" => {
+            activate_layout("ru");
+            sleep(Duration::from_millis(250));
+            tap_keys(
+                &mut dev,
+                &[
+                    KeyCode::KEY_N,
+                    KeyCode::KEY_J,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_C,
+                    KeyCode::KEY_F,
+                    KeyCode::KEY_V,
+                    KeyCode::KEY_J,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_SPACE,
+                    KeyCode::KEY_C,
+                    KeyCode::KEY_R,
+                    KeyCode::KEY_K,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_Y,
+                    KeyCode::KEY_J,
+                ],
+                18,
+            )?;
+            sleep(Duration::from_millis(650));
+            tap(&mut dev, KeyCode::KEY_ENTER.code())?;
+            eprintln!("[test] сценарий glued_toesamoe_next_enter отправлен");
+        }
+        "glued_yanebudu_next_enter" => {
+            activate_layout("ru");
+            sleep(Duration::from_millis(250));
+            tap_keys(
+                &mut dev,
+                &[
+                    KeyCode::KEY_Z,
+                    KeyCode::KEY_Y,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_COMMA,
+                    KeyCode::KEY_E,
+                    KeyCode::KEY_L,
+                    KeyCode::KEY_E,
+                    KeyCode::KEY_SPACE,
+                    KeyCode::KEY_C,
+                    KeyCode::KEY_R,
+                    KeyCode::KEY_K,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_Y,
+                    KeyCode::KEY_J,
+                ],
+                18,
+            )?;
+            sleep(Duration::from_millis(650));
+            tap(&mut dev, KeyCode::KEY_ENTER.code())?;
+            eprintln!("[test] сценарий glued_yanebudu_next_enter отправлен");
+        }
+        "glued_context_yanebudu_next_enter" => {
+            activate_layout("ru");
+            sleep(Duration::from_millis(250));
+            tap_keys(
+                &mut dev,
+                &[
+                    KeyCode::KEY_N,
+                    KeyCode::KEY_J,
+                    KeyCode::KEY_SEMICOLON,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_SPACE,
+                    KeyCode::KEY_C,
+                    KeyCode::KEY_F,
+                    KeyCode::KEY_V,
+                    KeyCode::KEY_J,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_SPACE,
+                    KeyCode::KEY_Z,
+                    KeyCode::KEY_Y,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_COMMA,
+                    KeyCode::KEY_E,
+                    KeyCode::KEY_L,
+                    KeyCode::KEY_E,
+                    KeyCode::KEY_SPACE,
+                    KeyCode::KEY_C,
+                    KeyCode::KEY_R,
+                    KeyCode::KEY_K,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_Y,
+                    KeyCode::KEY_J,
+                ],
+                18,
+            )?;
+            sleep(Duration::from_millis(650));
+            tap(&mut dev, KeyCode::KEY_ENTER.code())?;
+            eprintln!("[test] сценарий glued_context_yanebudu_next_enter отправлен");
+        }
+        "glued_long_phrase_next_enter" => {
+            activate_layout("ru");
+            sleep(Duration::from_millis(250));
+            tap_keys(
+                &mut dev,
+                &[
+                    KeyCode::KEY_Z,
+                    KeyCode::KEY_Y,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_COMMA,
+                    KeyCode::KEY_E,
+                    KeyCode::KEY_L,
+                    KeyCode::KEY_E,
+                    KeyCode::KEY_P,
+                    KeyCode::KEY_F,
+                    KeyCode::KEY_D,
+                    KeyCode::KEY_F,
+                    KeyCode::KEY_C,
+                    KeyCode::KEY_N,
+                    KeyCode::KEY_J,
+                    KeyCode::KEY_SEMICOLON,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_C,
+                    KeyCode::KEY_F,
+                    KeyCode::KEY_V,
+                    KeyCode::KEY_J,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_SPACE,
+                    KeyCode::KEY_C,
+                    KeyCode::KEY_R,
+                    KeyCode::KEY_K,
+                    KeyCode::KEY_T,
+                    KeyCode::KEY_Y,
+                    KeyCode::KEY_J,
+                ],
+                18,
+            )?;
+            sleep(Duration::from_millis(650));
+            tap(&mut dev, KeyCode::KEY_ENTER.code())?;
+            eprintln!("[test] сценарий glued_long_phrase_next_enter отправлен");
+        }
         "vyvodim_dva_enter" => {
             activate_layout("us");
             sleep(Duration::from_millis(250));
@@ -757,6 +998,12 @@ fn type_mixed_coke_tail(dev: &mut VirtualDevice) -> std::io::Result<()> {
 }
 
 fn activate_layout(id: &str) {
+    if env::var("LAY_TEST_INITIAL_LAYOUT").ok().as_deref() == Some(id)
+        && !INITIAL_LAYOUT_ALREADY_SET.swap(true, Ordering::Relaxed)
+    {
+        return;
+    }
+
     if activate_layout_kde(id) {
         return;
     }

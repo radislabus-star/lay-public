@@ -8,7 +8,8 @@ use evdev::KeyCode;
 use std::time::{Duration, Instant};
 
 use crate::keyboard::{
-    map_events_to_layout, map_original_events, mark_word_layout, split_event_words, KeyEvent,
+    map_events_to_layout, map_original_events, mark_word_layout, split_event_words,
+    text_to_key_events, KeyEvent,
 };
 use crate::text_edit::{tail_chars, TextReplacement};
 
@@ -135,7 +136,10 @@ impl WordBuffer {
     }
 
     pub fn last_completed_words_events(&self, count: usize) -> Option<Vec<KeyEvent>> {
-        if !self.prev_had_trailing_space || count == 0 || self.prev_words.len() < count {
+        if (!self.prev_had_trailing_space && self.current.is_empty())
+            || count == 0
+            || self.prev_words.len() < count
+        {
             return None;
         }
 
@@ -262,14 +266,28 @@ impl WordBuffer {
         plan: &TextReplacement,
         replacement: &str,
     ) -> bool {
-        if plan.backspaces == 0 {
-            return false;
-        }
         let trailing_ws_chars = replacement
             .chars()
             .rev()
             .take_while(|ch| ch.is_whitespace())
             .count() as u32;
+        let original = map_original_events(original_events);
+        let original_body_spaces = original
+            .trim_end_matches(char::is_whitespace)
+            .chars()
+            .filter(|ch| ch.is_whitespace())
+            .count();
+        let replacement_body_spaces = replacement
+            .trim_end_matches(char::is_whitespace)
+            .chars()
+            .filter(|ch| ch.is_whitespace())
+            .count();
+        if plan.move_right > trailing_ws_chars && replacement_body_spaces > original_body_spaces {
+            return self.remember_completed_replacement_words_for_replay(replacement);
+        }
+        if plan.backspaces == 0 {
+            return false;
+        }
         if plan.move_right != 0 && plan.move_right != trailing_ws_chars {
             return false;
         }
@@ -280,6 +298,10 @@ impl WordBuffer {
         if inserted_word.is_empty() {
             return false;
         }
+        let replacement_ends_with_space = replacement
+            .chars()
+            .next_back()
+            .is_some_and(char::is_whitespace);
 
         let Some(words) = split_event_words(original_events) else {
             return false;
@@ -292,25 +314,100 @@ impl WordBuffer {
 
                 let mut tail = (*word).to_vec();
                 mark_word_layout(&mut tail, target_is_ru);
-                self.prev_words.clear();
-                if replacement
-                    .chars()
-                    .next_back()
-                    .is_some_and(char::is_whitespace)
-                {
-                    self.current.clear();
-                    self.prev_words.push(tail);
-                    self.prev_had_trailing_space = true;
-                } else {
-                    self.current = tail;
-                    self.prev_had_trailing_space = false;
-                }
-                self.replay_toggle_ready = true;
-                return true;
+                return self.remember_replacement_tail_events(tail, replacement_ends_with_space);
             }
         }
 
-        false
+        let target_layout = crate::keyboard::preferred_layout_for_text(replacement, true);
+        let Some(mut tail) = text_to_key_events(inserted_word, target_layout) else {
+            return false;
+        };
+        mark_word_layout(&mut tail, target_layout);
+        self.remember_replacement_tail_events(tail, replacement_ends_with_space)
+    }
+
+    pub fn remember_completed_replacement_words_for_replay(&mut self, replacement: &str) -> bool {
+        let replacement_ends_with_space = replacement
+            .chars()
+            .next_back()
+            .is_some_and(char::is_whitespace);
+        let mut words = Vec::new();
+
+        for word in replacement.split_whitespace() {
+            let target_layout = crate::keyboard::preferred_layout_for_text(word, true);
+            let Some(mut events) = text_to_key_events(word, target_layout) else {
+                return false;
+            };
+            mark_word_layout(&mut events, target_layout);
+            words.push(events);
+        }
+
+        if words.is_empty() {
+            return false;
+        }
+
+        if words.len() > MAX_REPLACE_WORDS {
+            let keep_from = words.len() - MAX_REPLACE_WORDS;
+            words.drain(0..keep_from);
+        }
+
+        self.prev_words = words;
+        self.prev_had_trailing_space = replacement_ends_with_space;
+        self.replay_toggle_ready = true;
+        true
+    }
+
+    pub fn remember_visible_text_for_correction(&mut self, text: &str) -> bool {
+        let Some(events) =
+            text_to_key_events(text, crate::keyboard::preferred_layout_for_text(text, true))
+        else {
+            return false;
+        };
+        let Some(words) = split_event_words(&events) else {
+            return false;
+        };
+        let text_ends_with_space = text.chars().next_back().is_some_and(char::is_whitespace);
+        let mut owned_words: Vec<Vec<KeyEvent>> = words.iter().map(|word| word.to_vec()).collect();
+
+        if owned_words.len() > MAX_REPLACE_WORDS {
+            let keep_from = owned_words.len() - MAX_REPLACE_WORDS;
+            owned_words.drain(0..keep_from);
+        }
+
+        self.prev_words.clear();
+        self.current.clear();
+        if text_ends_with_space {
+            self.prev_words = owned_words;
+            self.prev_had_trailing_space = true;
+        } else {
+            let Some(current) = owned_words.pop() else {
+                return false;
+            };
+            self.prev_words = owned_words;
+            self.current = current;
+            self.prev_had_trailing_space = false;
+        }
+        self.replay_toggle_ready = false;
+        self.pending_auto_undo = None;
+        true
+    }
+
+    fn remember_replacement_tail_events(
+        &mut self,
+        tail: Vec<KeyEvent>,
+        replacement_ends_with_space: bool,
+    ) -> bool {
+        self.prev_words.clear();
+        if replacement_ends_with_space {
+            self.current.clear();
+            self.prev_words.push(tail);
+            self.prev_had_trailing_space = true;
+        } else {
+            self.current = tail;
+            self.prev_had_trailing_space = false;
+        }
+        self.replay_toggle_ready = true;
+        true
     }
 
     pub fn remember_pending_learning_correction(
@@ -505,142 +602,5 @@ impl Default for WordBuffer {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::keyboard::{map_events_to_layout, map_original_events, replay_layout_decision};
-
-    fn key_event(key: KeyCode, layout_is_ru: bool) -> KeyEvent {
-        KeyEvent {
-            keycode: key.code(),
-            shift: false,
-            layout_is_ru,
-        }
-    }
-
-    fn push_text_as_layout(buffer: &mut WordBuffer, keys: &[KeyCode], layout_is_ru: bool) {
-        for key in keys {
-            buffer.push(key_event(*key, layout_is_ru));
-        }
-    }
-
-    #[test]
-    fn single_word_wrong_layout_replays_opposite_layout() {
-        let mut buffer = WordBuffer::new();
-        push_text_as_layout(
-            &mut buffer,
-            &[
-                KeyCode::KEY_L,
-                KeyCode::KEY_T,
-                KeyCode::KEY_K,
-                KeyCode::KEY_F,
-                KeyCode::KEY_Q,
-            ],
-            false,
-        );
-
-        let (events, backspaces) = buffer.what_to_replay(1).expect("word");
-        let decision = replay_layout_decision(&events);
-
-        assert_eq!(map_original_events(&events), "ltkfq");
-        assert_eq!(backspaces, 5);
-        assert!(decision.target_is_ru);
-        assert_eq!(map_events_to_layout(&events, true), "делай");
-    }
-
-    #[test]
-    fn replay_toggle_uses_only_remembered_word_even_with_wider_scope() {
-        let mut buffer = WordBuffer::new();
-        push_text_as_layout(
-            &mut buffer,
-            &[KeyCode::KEY_A, KeyCode::KEY_B, KeyCode::KEY_C],
-            false,
-        );
-        buffer.handle_space();
-        push_text_as_layout(&mut buffer, &[KeyCode::KEY_L], false);
-
-        buffer.mark_replayed_layout(1, true);
-        let (events, backspaces) = buffer.what_to_replay(3).expect("toggle word");
-
-        assert_eq!(backspaces, 1);
-        assert_eq!(events.len(), 1);
-        assert_eq!(map_original_events(&events), "д");
-        assert!(buffer.replay_toggle_ready());
-    }
-
-    #[test]
-    fn replay_toggle_can_flip_same_word_four_times_with_wider_scope() {
-        let mut buffer = WordBuffer::new();
-        push_text_as_layout(
-            &mut buffer,
-            &[
-                KeyCode::KEY_G,
-                KeyCode::KEY_O,
-                KeyCode::KEY_O,
-                KeyCode::KEY_D,
-            ],
-            false,
-        );
-
-        for (original, target, target_is_ru) in [
-            ("good", "пщщв", true),
-            ("пщщв", "good", false),
-            ("good", "пщщв", true),
-            ("пщщв", "good", false),
-        ] {
-            let (events, backspaces) = buffer.what_to_replay(3).expect("toggle word");
-            let decision = replay_layout_decision(&events);
-
-            assert_eq!(backspaces, 4);
-            assert_eq!(map_original_events(&events), original);
-            assert_eq!(map_events_to_layout(&events, decision.target_is_ru), target);
-            assert_eq!(decision.target_is_ru, target_is_ru);
-
-            buffer.mark_replayed_layout(3, decision.target_is_ru);
-        }
-    }
-
-    #[test]
-    fn completed_two_word_tail_includes_one_space_and_trailing_space() {
-        let mut buffer = WordBuffer::new();
-        push_text_as_layout(&mut buffer, &[KeyCode::KEY_A, KeyCode::KEY_B], false);
-        buffer.handle_space();
-        push_text_as_layout(&mut buffer, &[KeyCode::KEY_C, KeyCode::KEY_D], false);
-        buffer.handle_space();
-
-        let (events, backspaces) = buffer.what_to_replay(2).expect("tail");
-
-        assert_eq!(map_original_events(&events), "ab cd ");
-        assert_eq!(backspaces, 6);
-    }
-
-    #[test]
-    fn learning_feedback_requires_user_delete_and_retype() {
-        let mut buffer = WordBuffer::new();
-        buffer.remember_pending_learning_correction("typing-assist", "смотри ", "смотрин ", 1, 1);
-        buffer.note_learning_typed(key_event(KeyCode::KEY_G, true));
-
-        assert!(buffer.take_user_learning_correction(true).is_none());
-
-        buffer.remember_pending_learning_correction("typing-assist", "смотри ", "смотрин ", 1, 1);
-        for _ in 0.."смотрин ".chars().count() {
-            buffer.note_learning_backspace();
-        }
-        for key in [
-            KeyCode::KEY_C,
-            KeyCode::KEY_V,
-            KeyCode::KEY_J,
-            KeyCode::KEY_N,
-            KeyCode::KEY_H,
-            KeyCode::KEY_B,
-        ] {
-            buffer.note_learning_typed(key_event(key, true));
-        }
-
-        let correction = buffer
-            .take_user_learning_correction(true)
-            .expect("correction");
-
-        assert_eq!(correction.from, "смотрин ");
-        assert_eq!(correction.to, "смотри ");
-    }
-}
+#[path = "word_buffer_tests.rs"]
+mod tests;

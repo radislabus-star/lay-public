@@ -55,12 +55,24 @@ fn apply_typing_assist_to_tail(
 }
 
 fn simulate_space_triggered_typing_assist(input: &str, allow_layout_auto: bool) -> String {
-    let pipeline = default_typing_assist_pipeline();
+    let pipeline = typing_assist_pipeline_for_policy(
+        true,
+        CorrectionSafety::Normal,
+        &default_typing_assist_pipeline(),
+    );
+    simulate_space_triggered_typing_assist_with_pipeline(input, allow_layout_auto, &pipeline)
+}
+
+fn simulate_space_triggered_typing_assist_with_pipeline(
+    input: &str,
+    allow_layout_auto: bool,
+    pipeline: &[TypingAssistRuleConfig],
+) -> String {
     let mut text = String::new();
     for ch in input.chars() {
         text.push(ch);
         if ch.is_whitespace() {
-            if let Some(next) = apply_typing_assist_to_tail(&text, allow_layout_auto, &pipeline) {
+            if let Some(next) = apply_typing_assist_to_tail(&text, allow_layout_auto, pipeline) {
                 text = next;
             }
         }
@@ -81,11 +93,11 @@ fn forum_like_mixed_sentences_preserve_spaces_and_terms() {
     let cases = [
         (
             "сегодня проверяю git status и потом njkmrj тест ",
-            "сегодня проверяю git status и потом только тест ",
+            "сегодня проверяю git status и потом njkmrj тест ",
         ),
         (
             "можно открыть Windows на NTFS и написать Lfdfq дальше ",
-            "можно открыть Windows на NTFS и написать Давай дальше ",
+            "можно открыть Windows на NTFS и написать Lfdfq дальше ",
         ),
         (
             "в терминале еукьштфд работает рядом с API JSON ",
@@ -103,7 +115,7 @@ fn forum_like_mixed_sentences_preserve_spaces_and_terms() {
             "тут я вно вижу что good test должен остаться ",
             "тут явно вижу что good test должен остаться ",
         ),
-        ("ОБYJDB CRBK lay ", "ОБНОВИ СКИЛ lay "),
+        ("ОБYJDB CRBK lay ", "ОБНОВИ CRBK lay "),
     ];
 
     for (input, expected) in cases {
@@ -113,6 +125,42 @@ fn forum_like_mixed_sentences_preserve_spaces_and_terms() {
             "input={input:?}"
         );
     }
+}
+
+#[test]
+fn glued_pronoun_phrase_is_split_without_daemon_rules() {
+    let pipeline = default_typing_assist_pipeline();
+
+    assert_eq!(
+        apply_typing_assist_with_pipeline("онаубыточная ", false, &pipeline),
+        Some("она убыточная ".to_string())
+    );
+    assert_eq!(
+        apply_typing_assist_with_pipeline("ониготовы ", false, &pipeline),
+        Some("они готовы ".to_string())
+    );
+}
+
+#[test]
+fn glued_phrase_split_can_repair_one_safe_internal_part() {
+    let pipeline = typing_assist_pipeline_for_policy(
+        true,
+        CorrectionSafety::Normal,
+        &default_typing_assist_pipeline(),
+    );
+    let expected_left = "проблема";
+    let expected_right = "тут";
+    let input_left = expected_left.replacen('о', "", 1);
+    let input = format!("{input_left}{expected_right} ");
+
+    assert_eq!(
+        apply_typing_assist_with_pipeline(&input, false, &pipeline),
+        Some(format!("{expected_left} {expected_right} "))
+    );
+    assert_eq!(
+        apply_typing_assist_with_pipeline("тоесамое ", false, &pipeline),
+        Some("тоже самое ".to_string())
+    );
 }
 
 #[test]
@@ -159,6 +207,34 @@ fn live_user_sentences_keep_spaces_after_typing_assist() {
             "мы должны помнить что у нас есть право на информацию ",
         ),
         (
+            "вот какпроверка автозамены выглядит сейчас ",
+            "вот как проверка автозамены выглядит сейчас ",
+        ),
+        (
+            "сейчас тожесамое проверяю быстро ",
+            "сейчас тоже самое проверяю быстро ",
+        ),
+        (
+            "проверяю вотэто и самоетоже быстро ",
+            "проверяю вот это и самое тоже быстро ",
+        ),
+        (
+            "я не буду за вас янебудузавас дальше ",
+            "я не буду за вас я не буду за вас дальше ",
+        ),
+        (
+            "проверяю тоже самое янебуду дальше ",
+            "проверяю тоже самое я не буду дальше ",
+        ),
+        (
+            "проверяю тоже самое самое тоже янебудузавастожесамое дальше ",
+            "проверяю тоже самое самое тоже я не буду за вас тоже самое дальше ",
+        ),
+        (
+            "проверяю пока ненаучишьсярезатьслова дальше ",
+            "проверяю пока не научишься резать слова дальше ",
+        ),
+        (
             "пишем тест я язык НАПИШИ дальше ",
             "пишем тест я язык НАПИШИ дальше ",
         ),
@@ -174,6 +250,9 @@ fn live_user_sentences_keep_spaces_after_typing_assist() {
         assert!(!got.contains("ноне ты"));
         assert!(!got.contains("изменюпараметры"));
         assert!(!got.contains("просою"));
+        assert!(!got.contains("какпроверка"));
+        assert!(!got.contains("тожесамое"));
+        assert!(!got.contains("янебудузавас"));
     }
 }
 
@@ -207,9 +286,54 @@ fn live_journal_false_positive_candidates_are_rejected() {
     );
     assert_eq!(
         apply_typing_assist_with_pipeline("никуму ", true, &normal_auto_pipeline),
-        Some("никому ".to_string()),
-        "Russian typo candidate must win over accidental RU->EN layout word"
+        None,
+        "normal live autocorrect should not use vowel-confusion guesses"
     );
+
+    let experimental_auto_pipeline = typing_assist_pipeline_for_policy(
+        true,
+        CorrectionSafety::Experimental,
+        &default_typing_assist_pipeline(),
+    );
+    assert_eq!(
+        apply_typing_assist_with_pipeline("никуму ", true, &experimental_auto_pipeline),
+        Some("никому ".to_string()),
+        "experimental mode may use vowel-confusion guesses"
+    );
+}
+
+#[test]
+fn normal_autocorrect_keeps_safe_rules_and_rejects_aggressive_guesses() {
+    let normal_auto_pipeline = typing_assist_pipeline_for_policy(
+        true,
+        CorrectionSafety::Normal,
+        &default_typing_assist_pipeline(),
+    );
+
+    let safe_cases = [
+        ("кторое ", Some("которое ")),
+        ("очнеь ", Some("очень ")),
+        ("рабоатет ", Some("работает ")),
+        ("перпаратов ", Some("препаратов ")),
+        ("ОФФИЦИАЛЬНОМ ", Some("ОФИЦИАЛЬНОМ ")),
+    ];
+
+    for (input, expected) in safe_cases {
+        assert_eq!(
+            apply_typing_assist_with_pipeline(input, false, &normal_auto_pipeline),
+            expected.map(str::to_string),
+            "safe normal autocorrect case failed: {input:?}"
+        );
+    }
+
+    for input in ["робило ", "банный ", "поения ", "страдает ", "никуму "]
+    {
+        assert_eq!(
+            apply_typing_assist_with_pipeline(input, true, &normal_auto_pipeline),
+            None,
+            "normal autocorrect was too aggressive for {input:?}"
+        );
+    }
 }
 
 #[test]
@@ -238,7 +362,7 @@ fn one_letter_function_words_do_not_steal_next_word_prefix() {
 }
 
 #[test]
-fn forum_like_mixed_matrix_keeps_boundaries_after_layout_autofix() {
+fn forum_like_mixed_matrix_autofixes_ru_to_en_only_and_keeps_boundaries() {
     let prefixes = [
         "проверяю",
         "открываю",
@@ -257,15 +381,15 @@ fn forum_like_mixed_matrix_keeps_boundaries_after_layout_autofix() {
         "git", "status", "Windows", "NTFS", "wi-fi", "API", "JSON", "Linux", "Chrome", "GNOME",
     ];
     let layout_words = [
-        ("njkmrj", "только"),
-        ("vjue", "могу"),
-        ("yt", "не"),
-        ("hf,jnftn", "работает"),
-        ("'nj", "это"),
-        ("ашдуы", "files"),
-        ("еукьштфд", "terminal"),
-        ("кгы", "rus"),
-        ("утп", "eng"),
+        ("njkmrj", None),
+        ("vjue", None),
+        ("yt", None),
+        ("hf,jnftn", None),
+        ("'nj", None),
+        ("ашдуы", Some("files")),
+        ("еукьштфд", Some("terminal")),
+        ("кгы", Some("rus")),
+        ("утп", Some("eng")),
     ];
 
     let mut checked = 0usize;
@@ -279,18 +403,22 @@ fn forum_like_mixed_matrix_keeps_boundaries_after_layout_autofix() {
                 got.contains(&format!(" {term} ")),
                 "english term boundary lost: input={input:?} got={got:?}"
             );
-            assert!(
-                got.contains(&format!(" {expected} ")),
-                "layout word was not fixed: input={input:?} got={got:?}"
-            );
-            assert!(
-                !got.contains(&format!("{term}{expected}")),
-                "words were glued after replacement: input={input:?} got={got:?}"
-            );
-            assert!(
-                !got.contains(&format!("{expected}дальше")),
-                "tail was glued to next word: input={input:?} got={got:?}"
-            );
+            if let Some(expected) = expected {
+                assert!(
+                    got.contains(&format!(" {expected} ")),
+                    "safe RU->EN layout word was not auto-fixed: input={input:?} got={got:?}"
+                );
+                assert!(
+                    !got.contains(&format!("{term}{expected}")),
+                    "words were glued after replacement: input={input:?} got={got:?}"
+                );
+                assert!(
+                    !got.contains(&format!("{expected}дальше")),
+                    "tail was glued to next word: input={input:?} got={got:?}"
+                );
+            } else {
+                assert!(got.contains(&format!(" {typed} ")));
+            }
             checked += 1;
         }
     }
@@ -318,7 +446,7 @@ fn forum_like_clean_mixed_sentences_do_not_get_rewritten() {
 }
 
 #[test]
-fn opposite_layout_russian_sentence_with_symbols_is_corrected_word_by_word() {
+fn normal_mode_does_not_autocorrect_full_opposite_layout_russian_sentence() {
     let cases = [
         "только, могу? не; работает 100% это нормально! ",
         "Давай: это тест? работает; можно 50% дальше. ",
@@ -328,14 +456,14 @@ fn opposite_layout_russian_sentence_with_symbols_is_corrected_word_by_word() {
         let input = ru_text_typed_in_us_layout(expected);
         assert_eq!(
             simulate_space_triggered_typing_assist(&input, true),
-            expected,
+            input,
             "input={input:?}"
         );
     }
 }
 
 #[test]
-fn opposite_layout_english_commands_with_symbols_are_corrected_word_by_word() {
+fn normal_mode_autocorrects_confident_english_typed_in_ru_layout() {
     let cases = [
         "git status; echo files 100% ",
         "terminal files? rus; eng 50% ",
@@ -352,7 +480,7 @@ fn opposite_layout_english_commands_with_symbols_are_corrected_word_by_word() {
 }
 
 #[test]
-fn every_word_can_be_opposite_layout_inside_one_mixed_sentence() {
+fn mixed_sentence_autofixes_ru_to_en_but_leaves_en_to_ru_for_manual_double_shift() {
     let input = format!(
         "{} {} {} {} {} ",
         ru_text_typed_in_us_layout("только,"),
@@ -364,7 +492,7 @@ fn every_word_can_be_opposite_layout_inside_one_mixed_sentence() {
 
     assert_eq!(
         simulate_space_triggered_typing_assist(&input, true),
-        "только, git работает? status; это "
+        "njkmrj? git hf,jnftn& status; 'nj "
     );
 }
 

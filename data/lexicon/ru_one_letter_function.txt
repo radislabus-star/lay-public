@@ -1,0 +1,9 @@
+# One-letter Russian function words.
+а
+в
+и
+к
+о
+с
+у
+я

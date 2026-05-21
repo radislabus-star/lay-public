@@ -7,6 +7,9 @@ cd "$ROOT"
 echo "== cargo fmt --all --check =="
 cargo fmt --all --check
 
+echo "== scripts/check-architecture.sh =="
+scripts/check-architecture.sh
+
 echo "== cargo test --all-targets =="
 cargo test --all-targets
 

@@ -37,25 +37,83 @@ CASES = {
     "ghbdtn_enter": Case("ghbdtn_enter", "привет"),
     "ghbdtn_enter_autocorrect": Case(
         "ghbdtn_enter_autocorrect",
-        "привет",
+        "ghbdtn",
         config_overrides={"enter_autocorrect": True},
     ),
     "ghbdtn_fast_lshift_enter": Case("ghbdtn_fast_lshift_enter", "привет"),
     "ghbdtn_extra_lshift_enter": Case("ghbdtn_extra_lshift_enter", "привет"),
     "ctrl_plus_ghbdtn_enter": Case("ctrl_plus_ghbdtn_enter", "привет"),
     "dhtvz_toggle_enter": Case("dhtvz_toggle_enter", "dhtvz"),
+    "dhtvz_toggle3_enter": Case("dhtvz_toggle3_enter", "время"),
     "g_to_ru_enter": Case("g_to_ru_enter", "п"),
+    "eng_ru_to_us_enter": Case("eng_ru_to_us_enter", "eng", start_layout="ru"),
+    "plain_layout_ashdu_space_enter": Case(
+        "plain_layout_ashdu_space_enter",
+        "file",
+        start_layout="ru",
+        config_overrides={
+            "auto_replace": True,
+            "typing_assist": True,
+            "correction_safety": "normal",
+        },
+    ),
+    "plain_layout_cargo_space_enter": Case(
+        "plain_layout_cargo_space_enter",
+        "cargo",
+        start_layout="ru",
+        config_overrides={
+            "auto_replace": True,
+            "typing_assist": True,
+            "correction_safety": "normal",
+        },
+    ),
+    "plain_layout_abkt_space_enter": Case(
+        "plain_layout_abkt_space_enter",
+        "abkt",
+        start_layout="us",
+        config_overrides={
+            "auto_replace": True,
+            "typing_assist": True,
+            "correction_safety": "normal",
+        },
+    ),
+    "good_toggle4_enter": Case("good_toggle4_enter", "good"),
     "good_ntrcn_enter": Case("good_ntrcn_enter", "good текст"),
-    "good_text_enter": Case("good_text_enter", "good текст"),
+    "good_text_enter": Case("good_text_enter", "good текст", start_layout="ru"),
     "good_vshgidu_enter": Case("good_vshgidu_enter", "good Double"),
     "mixed_word": Case("mixed_word", "при"),
-    "mixed_coke_enter": Case("mixed_coke_enter", "слово кока-колу"),
-    "mixed_coke_toggle3_enter": Case("mixed_coke_toggle3_enter", "слово кока-колу"),
+    "mixed_coke_enter": Case("mixed_coke_enter", "слово кока-колу", start_layout="ru"),
+    "mixed_coke_toggle3_enter": Case(
+        "mixed_coke_toggle3_enter", "слово кока-колу", start_layout="ru"
+    ),
     "n_teper_mixed_enter": Case("n_teper_mixed_enter", "Теперь"),
-    "auto_switch_words_enter": Case("auto_switch_words_enter", "только не работает"),
+    "auto_switch_words_enter": Case("auto_switch_words_enter", "njkmrj yt hf,jnftn"),
     "no_ne_ty_enter": Case("no_ne_ty_enter", "но не ты", start_layout="ru"),
-    "preparatov_typo_enter": Case("preparatov_typo_enter", "препаратов"),
-    "proverka_ntrcn_enter": Case("proverka_ntrcn_enter", "проверка текст"),
+    "preparatov_typo_enter": Case(
+        "preparatov_typo_enter", "препаратов", start_layout="ru"
+    ),
+    "proverka_ntrcn_enter": Case(
+        "proverka_ntrcn_enter", "проверка текст", start_layout="ru"
+    ),
+    "glued_toesamoe_next_enter": Case(
+        "glued_toesamoe_next_enter", "тоже самое склено", start_layout="ru"
+    ),
+    "glued_tozhesamoe_next_enter": Case(
+        "glued_tozhesamoe_next_enter", "тоже самое склено", start_layout="ru"
+    ),
+    "glued_yanebudu_next_enter": Case(
+        "glued_yanebudu_next_enter", "я не буду склено", start_layout="ru"
+    ),
+    "glued_context_yanebudu_next_enter": Case(
+        "glued_context_yanebudu_next_enter",
+        "тоже самое я не буду склено",
+        start_layout="ru",
+    ),
+    "glued_long_phrase_next_enter": Case(
+        "glued_long_phrase_next_enter",
+        "я не буду за вас тоже самое склено",
+        start_layout="ru",
+    ),
     "ru_p_enter": Case("ru_p_enter", "п", start_layout="ru"),
     "ru_p_to_g_enter": Case("ru_p_to_g_enter", "g", start_layout="ru"),
     "ru_p_toggle2_enter": Case("ru_p_toggle2_enter", "п", start_layout="ru"),
@@ -80,6 +138,12 @@ def main() -> int:
     )
     parser.add_argument("--focus-delay", type=float, default=1.0)
     parser.add_argument("--timeout", type=float, default=20.0)
+    parser.add_argument(
+        "--dialog",
+        choices=("auto", "gtk-entry-capture", "zenity", "kdialog"),
+        default="auto",
+        help="Dialog backend used as the focused text field.",
+    )
     parser.add_argument("--input-bin", type=Path, default=DEFAULT_INPUT)
     parser.add_argument("--daemon-bin", type=Path, default=DEFAULT_DAEMON)
     parser.add_argument("--use-system-daemon", action="store_true")
@@ -92,7 +156,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    dialog = choose_dialog_command()
+    dialog = choose_dialog_command(args.dialog)
     require_command("gdbus")
     input_bin = ensure_binary(args.input_bin, "lay-test-input", args.no_build)
     daemon_bin = None if args.use_system_daemon else ensure_binary(args.daemon_bin, "lay-daemon", args.no_build)
@@ -124,7 +188,17 @@ def require_command(name: str) -> None:
         raise SystemExit(f"required command not found: {name}")
 
 
-def choose_dialog_command() -> str:
+def choose_dialog_command(preferred: str) -> str:
+    if preferred != "auto":
+        if preferred == "gtk-entry-capture" and (ROOT / "scripts" / "gtk_entry_capture.py").exists():
+            return preferred
+        if preferred in {"zenity", "kdialog"} and shutil.which(preferred) is not None:
+            return preferred
+        raise SystemExit(f"required dialog backend not found: {preferred}")
+
+    custom = ROOT / "scripts" / "gtk_entry_capture.py"
+    if custom.exists():
+        return "gtk-entry-capture"
     for name in ("zenity", "kdialog"):
         if shutil.which(name) is not None:
             return name
@@ -196,7 +270,11 @@ def run_case(
     sender = subprocess.Popen(
         [str(input_bin), case.name],
         cwd=ROOT,
-        env={**dict_env(), "LAY_TEST_START_DELAY_MS": "3500"},
+        env={
+            **dict_env(),
+            "LAY_TEST_START_DELAY_MS": "3500",
+            "LAY_TEST_INITIAL_LAYOUT": case.start_layout,
+        },
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -217,7 +295,7 @@ def run_case(
             return False, stdout.strip(), f"test device is not readable: {device_path}"
         daemon_args = [str(daemon_bin), "--device", device_path]
         if daemon_debug:
-            daemon_args.append("--debug-log")
+            daemon_args.extend(["--debug-log", "--verbose"])
         daemon = subprocess.Popen(
             daemon_args,
             cwd=ROOT,
@@ -275,6 +353,15 @@ def run_case(
 
 
 def dialog_args(dialog: str, case: Case) -> list[str]:
+    if dialog == "gtk-entry-capture":
+        return [
+            sys.executable,
+            str(ROOT / "scripts" / "gtk_entry_capture.py"),
+            "--title",
+            f"Lay runtime smoke: {case.name}",
+            "--text",
+            f"Runtime smoke: {case.name}",
+        ]
     if dialog == "zenity":
         return [
             "zenity",

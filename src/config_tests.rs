@@ -1,0 +1,149 @@
+use super::*;
+
+#[test]
+fn config_defaults_preserve_public_runtime_behavior() {
+    let cfg = LayConfig::default();
+    assert_eq!(cfg.mode, "simple");
+    assert_eq!(cfg.active_replace_words(), 1);
+    assert_eq!(cfg.active_correction_engine(), CorrectionEngine::Replay);
+    assert_eq!(cfg.active_text_backend(), TextBackendPreference::Uinput);
+    assert!(!cfg.force_layout_hotkeys);
+    assert_eq!(cfg.force_ru_key, "single-rctrl");
+    assert_eq!(cfg.force_en_key, "single-ralt");
+    assert!(!cfg.multi_tap_scope);
+    assert!(!cfg.enter_autocorrect);
+    assert_eq!(cfg.active_correction_safety(), CorrectionSafety::Normal);
+    assert_eq!(cfg.active_multi_tap_max_taps(), 4);
+    assert!(cfg.auto_switch_layout);
+    assert!(cfg.lem_enabled_for_scope(2));
+    assert!(cfg.lem_enabled_for_scope(3));
+    assert_eq!(
+        cfg.active_typing_assist_pipeline().len(),
+        DEFAULT_TYPING_ASSIST_RULES.len()
+    );
+}
+
+#[test]
+fn legacy_config_without_force_hotkeys_gets_safe_defaults() {
+    let cfg: LayConfig =
+        serde_json::from_str(r#"{"mode":"simple","trigger":"double-lshift"}"#).unwrap();
+
+    assert!(!cfg.force_layout_hotkeys);
+    assert_eq!(cfg.force_ru_key, "single-rctrl");
+    assert_eq!(cfg.force_en_key, "single-ralt");
+    assert!(!cfg.multi_tap_scope);
+    assert_eq!(cfg.active_multi_tap_max_taps(), 4);
+}
+
+#[test]
+fn multi_tap_max_taps_is_clamped_to_runtime_range() {
+    let too_low = LayConfig {
+        multi_tap_max_taps: 1,
+        ..LayConfig::default()
+    };
+    let too_high = LayConfig {
+        multi_tap_max_taps: 9,
+        ..LayConfig::default()
+    };
+
+    assert_eq!(too_low.active_multi_tap_max_taps(), 2);
+    assert_eq!(too_high.active_multi_tap_max_taps(), 4);
+}
+
+#[test]
+fn legacy_llm_mode_maps_to_smart_only_without_explicit_engine() {
+    let legacy = LayConfig {
+        mode: "llm".into(),
+        ..LayConfig::default()
+    };
+    let explicit_replay = LayConfig {
+        mode: "llm".into(),
+        correction_engine: Some("replay".into()),
+        ..LayConfig::default()
+    };
+
+    assert_eq!(legacy.active_correction_engine(), CorrectionEngine::Smart);
+    assert_eq!(
+        explicit_replay.active_correction_engine(),
+        CorrectionEngine::Replay
+    );
+}
+
+#[test]
+fn auto_replace_off_keeps_layout_only_rules() {
+    let pipeline =
+        typing_assist_pipeline_for_auto_replace(false, &default_typing_assist_pipeline());
+    assert!(pipeline
+        .iter()
+        .find(|rule| rule.id == "layout_en_to_ru")
+        .is_some_and(|rule| rule.enabled));
+    assert!(pipeline
+        .iter()
+        .find(|rule| rule.id == "missing_letter")
+        .is_some_and(|rule| !rule.enabled));
+}
+
+#[test]
+fn auto_replace_on_disables_risky_deletion_rules() {
+    let pipeline = typing_assist_pipeline_for_auto_replace(true, &default_typing_assist_pipeline());
+    assert!(pipeline
+        .iter()
+        .find(|rule| rule.id == "repeated_letter")
+        .is_some_and(|rule| rule.enabled));
+    assert!(pipeline
+        .iter()
+        .find(|rule| rule.id == "layout_ru_to_en")
+        .is_some_and(|rule| rule.enabled));
+    let risky = "layout_en_to_ru";
+    assert!(
+        pipeline
+            .iter()
+            .find(|rule| rule.id == risky)
+            .is_some_and(|rule| !rule.enabled),
+        "{risky} must not run in normal live autocorrect"
+    );
+    assert!(pipeline
+        .iter()
+        .find(|rule| rule.id == "extra_letters")
+        .is_some_and(|rule| !rule.enabled));
+    for risky in [
+        "single_letter_substitution",
+        "verb_ending",
+        "vowel_confusion",
+    ] {
+        assert!(
+            pipeline
+                .iter()
+                .find(|rule| rule.id == risky)
+                .is_some_and(|rule| !rule.enabled),
+            "{risky} must stay experimental for live autocorrect"
+        );
+    }
+}
+
+#[test]
+fn correction_safety_controls_typing_assist_risk() {
+    let strict = typing_assist_pipeline_for_policy(
+        true,
+        CorrectionSafety::Strict,
+        &default_typing_assist_pipeline(),
+    );
+    assert!(strict
+        .iter()
+        .find(|rule| rule.id == "layout_en_to_ru")
+        .is_some_and(|rule| !rule.enabled));
+    assert!(strict
+        .iter()
+        .find(|rule| rule.id == "missing_letter")
+        .is_some_and(|rule| !rule.enabled));
+
+    let experimental = typing_assist_pipeline_for_policy(
+        true,
+        CorrectionSafety::Experimental,
+        &default_typing_assist_pipeline(),
+    );
+    assert!(experimental
+        .iter()
+        .find(|rule| rule.id == "extra_letters")
+        .is_some_and(|rule| rule.enabled));
+}

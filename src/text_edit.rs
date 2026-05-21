@@ -25,11 +25,61 @@ pub fn plan_committed_tail_replacement(
     original: &str,
     replacement: &str,
 ) -> Option<TextReplacement> {
-    // After-space corrections run in real GUI fields, where Space may be
-    // committed slightly later than the evdev event. Re-emit the trailing
-    // boundary with the corrected tail instead of moving the cursor across it;
-    // this avoids gluing the next word when an application races the edit.
-    plan_text_replacement_with_options(original, replacement, false)
+    if original == replacement {
+        return None;
+    }
+
+    let original_trailing_ws = original
+        .chars()
+        .rev()
+        .take_while(|ch| ch.is_whitespace())
+        .count();
+    let replacement_trailing_ws = replacement
+        .chars()
+        .rev()
+        .take_while(|ch| ch.is_whitespace())
+        .count();
+
+    if original_trailing_ws > 0 && replacement_trailing_ws > 0 {
+        let original_len = original.chars().count();
+        let replacement_len = replacement.chars().count();
+        let original_body: String = original
+            .chars()
+            .take(original_len - original_trailing_ws)
+            .collect();
+        let replacement_body: String = replacement
+            .chars()
+            .take(replacement_len - replacement_trailing_ws)
+            .collect();
+
+        let original_body_spaces = original_body
+            .chars()
+            .filter(|ch| ch.is_whitespace())
+            .count();
+        let replacement_body_spaces = replacement_body
+            .chars()
+            .filter(|ch| ch.is_whitespace())
+            .count();
+
+        if replacement_body_spaces > original_body_spaces {
+            return plan_text_replacement_with_options(original, replacement, true);
+        }
+
+        return Some(TextReplacement {
+            move_left: original_trailing_ws as u32,
+            backspaces: original_len.saturating_sub(original_trailing_ws) as u32,
+            insert: replacement_body,
+            move_right: original_trailing_ws as u32,
+        });
+    }
+
+    // For committed non-whitespace boundaries, replace the full observed tail.
+    Some(TextReplacement {
+        move_left: 0,
+        backspaces: original.chars().count() as u32,
+        insert: replacement.to_string(),
+        move_right: 0,
+    })
 }
 
 pub fn ensure_committed_tail_spacing(original: &str, mut replacement: String) -> String {
@@ -45,6 +95,109 @@ pub fn ensure_committed_tail_spacing(original: &str, mut replacement: String) ->
         replacement.push(original_last);
     }
     replacement
+}
+
+pub fn offset_replacement_plan_for_cursor(
+    plan: &TextReplacement,
+    cursor_offset: u32,
+) -> TextReplacement {
+    if cursor_offset == 0 {
+        return plan.clone();
+    }
+
+    TextReplacement {
+        move_left: plan.move_left.saturating_add(cursor_offset),
+        backspaces: plan.backspaces,
+        insert: plan.insert.clone(),
+        move_right: plan.move_right.saturating_add(cursor_offset),
+    }
+}
+
+pub fn plan_committed_whitespace_insertions(
+    original: &str,
+    replacement: &str,
+    cursor_offset: u32,
+) -> Option<Vec<TextReplacement>> {
+    let original_trailing_ws = original
+        .chars()
+        .rev()
+        .take_while(|ch| ch.is_whitespace())
+        .count();
+    let replacement_trailing_ws = replacement
+        .chars()
+        .rev()
+        .take_while(|ch| ch.is_whitespace())
+        .count();
+
+    if original_trailing_ws == 0 || replacement_trailing_ws == 0 {
+        return None;
+    }
+
+    let original_len = original.chars().count();
+    let replacement_len = replacement.chars().count();
+    let original_body: Vec<char> = original
+        .chars()
+        .take(original_len - original_trailing_ws)
+        .collect();
+    let replacement_body: Vec<char> = replacement
+        .chars()
+        .take(replacement_len - replacement_trailing_ws)
+        .collect();
+
+    let original_compact: String = original_body
+        .iter()
+        .filter(|ch| !ch.is_whitespace())
+        .collect();
+    let replacement_compact: String = replacement_body
+        .iter()
+        .filter(|ch| !ch.is_whitespace())
+        .collect();
+    if original_compact != replacement_compact {
+        return None;
+    }
+
+    let mut original_idx = 0usize;
+    let mut insert_positions = Vec::new();
+    for replacement_ch in replacement_body {
+        if replacement_ch.is_whitespace() {
+            if original_body
+                .get(original_idx)
+                .is_some_and(|ch| ch.is_whitespace())
+            {
+                original_idx += 1;
+            } else {
+                insert_positions.push(original_idx);
+            }
+            continue;
+        }
+
+        if original_body.get(original_idx) != Some(&replacement_ch) {
+            return None;
+        }
+        original_idx += 1;
+    }
+
+    if original_idx != original_body.len() || insert_positions.is_empty() {
+        return None;
+    }
+
+    insert_positions.sort_unstable_by(|a, b| b.cmp(a));
+    let mut inserted_to_right = 0u32;
+    let mut plans = Vec::with_capacity(insert_positions.len());
+    for position in insert_positions {
+        let move_left = (original_len as u32)
+            .saturating_add(cursor_offset)
+            .saturating_add(inserted_to_right)
+            .saturating_sub(position as u32);
+        plans.push(TextReplacement {
+            move_left,
+            backspaces: 0,
+            insert: " ".to_string(),
+            move_right: move_left,
+        });
+        inserted_to_right = inserted_to_right.saturating_add(1);
+    }
+    Some(plans)
 }
 
 fn plan_text_replacement_with_options(
@@ -99,125 +252,5 @@ fn plan_text_replacement_with_options(
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn apply_plan(original: &str, plan: &TextReplacement) -> String {
-        let mut chars: Vec<char> = original.chars().collect();
-        let mut cursor = chars.len().saturating_sub(plan.move_left as usize);
-        let delete_start = cursor.saturating_sub(plan.backspaces as usize);
-        chars.splice(delete_start..cursor, plan.insert.chars());
-        cursor = delete_start + plan.insert.chars().count();
-        cursor = (cursor + plan.move_right as usize).min(chars.len());
-        chars[..cursor]
-            .iter()
-            .chain(chars[cursor..].iter())
-            .collect()
-    }
-
-    #[test]
-    fn plans_minimal_two_word_prefix_and_suffix_edits() {
-        assert_eq!(
-            plan_text_replacement("NEN DOUBLE", "ТУТ DOUBLE"),
-            Some(TextReplacement {
-                move_left: 7,
-                backspaces: 3,
-                insert: "ТУТ".to_string(),
-                move_right: 7,
-            })
-        );
-        assert_eq!(
-            plan_text_replacement("AmoCRM Z тут задача", "AmoCRM Я тут задача"),
-            Some(TextReplacement {
-                move_left: 11,
-                backspaces: 1,
-                insert: "Я".to_string(),
-                move_right: 11,
-            })
-        );
-    }
-
-    #[test]
-    fn committed_tail_plan_reemits_trailing_space_boundary() {
-        assert_eq!(
-            plan_committed_tail_replacement("double b ", "double и "),
-            Some(TextReplacement {
-                move_left: 0,
-                backspaces: 2,
-                insert: "и ".to_string(),
-                move_right: 0,
-            })
-        );
-        assert_eq!(
-            plan_committed_tail_replacement("чтобы точнр ", "чтобы точно "),
-            Some(TextReplacement {
-                move_left: 0,
-                backspaces: 2,
-                insert: "о ".to_string(),
-                move_right: 0,
-            })
-        );
-        assert_eq!(
-            plan_committed_tail_replacement("ОФФИЦИАЛЬНОМ ", "ОФИЦИАЛЬНОМ "),
-            Some(TextReplacement {
-                move_left: 0,
-                backspaces: 11,
-                insert: "ИЦИАЛЬНОМ ".to_string(),
-                move_right: 0,
-            })
-        );
-    }
-
-    #[test]
-    fn committed_tail_sentence_plans_keep_space_with_mixed_language_text() {
-        for (original, replacement) in [
-            ("пишу README и double b ", "пишу README и double и "),
-            ("дальше буду точнр ", "дальше буду точно "),
-            ("API работает нормальнр ", "API работает нормально "),
-        ] {
-            let plan = plan_committed_tail_replacement(original, replacement).expect("replacement");
-            assert_eq!(apply_plan(original, &plan), replacement);
-            assert_eq!(original.ends_with(' '), replacement.ends_with(' '));
-            assert_eq!(plan.move_right, 0, "space boundary must be re-emitted");
-            assert!(
-                plan.insert.ends_with(' '),
-                "space boundary must be part of the inserted text"
-            );
-        }
-    }
-
-    #[test]
-    fn committed_tail_split_word_plan_inserts_only_missing_space() {
-        let plan =
-            plan_committed_tail_replacement("чтобыточно ", "чтобы точно ").expect("replacement");
-
-        assert_eq!(
-            plan,
-            TextReplacement {
-                move_left: 0,
-                backspaces: 6,
-                insert: " точно ".to_string(),
-                move_right: 0,
-            }
-        );
-        assert_eq!(apply_plan("чтобыточно ", &plan), "чтобы точно ");
-    }
-
-    #[test]
-    fn committed_tail_spacing_is_restored_before_planning() {
-        assert_eq!(
-            ensure_committed_tail_spacing("double b ", "double и".to_string()),
-            "double и "
-        );
-        assert_eq!(
-            ensure_committed_tail_spacing("plain", "plain".to_string()),
-            "plain"
-        );
-    }
-
-    #[test]
-    fn tail_chars_returns_unicode_tail() {
-        assert_eq!(tail_chars("привет", 3), "вет");
-        assert_eq!(tail_chars("hi", 10), "hi");
-    }
-}
+#[path = "text_edit_tests.rs"]
+mod tests;

@@ -6,6 +6,10 @@
 
 **Double Shift RU/EN layout rescue for Linux desktops**
 
+**Статус проекта: alpha.** `lay` уже можно использовать каждый день, но это
+ранняя версия: автокоррекция, KDE/X11 backend и edge cases в разных
+приложениях ещё активно оттачиваются.
+
 Напечатал слово не в той раскладке? Нажми **Shift два раза** и продолжай писать.
 
 Установить:
@@ -23,6 +27,7 @@ cd ~/projects/lay && bash update.sh
 [![Rust](https://img.shields.io/badge/Rust-1.75+-orange?logo=rust)](https://www.rust-lang.org/)
 [![GNOME](https://img.shields.io/badge/GNOME-45--47%2C%2050-4A86CF?logo=gnome)](https://gnome.org/)
 [![Wayland](https://img.shields.io/badge/Wayland-native-blue)](https://wayland.freedesktop.org/)
+[![Status](https://img.shields.io/badge/status-alpha-yellow)](#status-alpha)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](#license)
 
 </div>
@@ -30,6 +35,10 @@ cd ~/projects/lay && bash update.sh
 ## Русский
 
 ### Что такое lay
+
+> **Status: alpha.** Проект живой и рабочий, но пока не обещает идеальную
+> автокоррекцию во всех приложениях и desktop-окружениях. Основной стабильный
+> сценарий сейчас — ручное исправление RU/EN раскладки по double Shift.
 
 `lay` — локальный клавиатурный помощник для Linux-пользователей, которые часто
 пишут в двух раскладках, прежде всего **русской и английской**.
@@ -474,6 +483,12 @@ systemctl --user restart lay-daemon
 
 Последние изменения публичной ветки:
 
+- `0.1.190` — начат архитектурный разнос ядра: lexical data вынесены из
+  production-правил в `data/lexicon`, добавлен platform-neutral `engine`
+  для manual correction, а GNOME daemon начал использовать этот общий слой.
+  Также усилен общий split/scoring для склеенных коротких русских слов без
+  добавления частных слов в runtime-код. Normal-режим автозамены стал
+  осторожнее: спорные грамматические догадки оставлены для experimental.
 - `0.1.189` — after-space автозамена больше не теряется при быстром наборе:
   daemon запускает проверку сразу на нажатии пробела, удерживая физический
   ввод на время замены, чтобы пробел в конце сохранился.

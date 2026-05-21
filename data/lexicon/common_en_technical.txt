@@ -1,0 +1,18 @@
+# Short English/technical tokens that should not be treated as random layout noise.
+api
+css
+cpu
+eng
+git
+gpu
+json
+llm
+md
+pdf
+ram
+rus
+sql
+ssd
+ssh
+usb
+zip

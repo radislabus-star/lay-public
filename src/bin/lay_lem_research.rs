@@ -5,9 +5,21 @@
 //! text from noisy layout/typo variants.
 
 use lay::dict::{self, Direction};
+use lay::keyboard::is_cyrillic_letter;
 use lay::ngram;
+use lay::word_recognizer::{
+    is_ascii_technical_or_brand_token, is_mixed_cyrillic_ascii_alpha_token,
+};
 use std::collections::HashSet;
 use std::sync::OnceLock;
+
+#[allow(dead_code)]
+#[path = "../text_metrics.rs"]
+mod text_metrics;
+
+use text_metrics::{
+    common_replacement_span, damerau_levenshtein, normalized_edit_distance, without_whitespace,
+};
 
 const TARGET_CASES: usize = 12_000;
 const RU_HUNSPELL: &str = "/usr/share/hunspell/ru_RU.dic";
@@ -180,13 +192,13 @@ fn token_language_score(token: &str) -> f64 {
     if is_short_russian_function_word(&lower) {
         return -5.5;
     }
-    if is_mixed_plain_alpha(token) {
+    if is_mixed_cyrillic_ascii_alpha_token(token) {
         return -22.0;
     }
     if is_layout_garbage_token(token) {
         return -18.0;
     }
-    if is_ascii_technical_or_brand(token) {
+    if is_ascii_technical_or_brand_token(token) {
         return -5.0;
     }
 
@@ -258,12 +270,6 @@ fn partial_token_flip_cost(typed: &str, candidate: &str) -> Option<f64> {
     (changed > 0).then_some(0.18 + changed as f64 * 0.10)
 }
 
-fn normalized_edit_distance(left: &str, right: &str) -> f64 {
-    let distance = damerau_levenshtein(left, right) as f64;
-    let scale = left.chars().count().max(right.chars().count()).max(1) as f64;
-    distance / scale
-}
-
 fn intervention_penalty(typed: &str, candidate: &str) -> f64 {
     if typed == candidate {
         return 0.0;
@@ -325,10 +331,6 @@ fn structure_bonus(typed: &str, candidate: &str) -> f64 {
     0.0
 }
 
-fn without_whitespace(text: &str) -> String {
-    text.chars().filter(|ch| !ch.is_whitespace()).collect()
-}
-
 fn removes_extra_repeated_letter(typed: &str, candidate: &str) -> bool {
     if typed == candidate || typed.chars().count() <= candidate.chars().count() {
         return false;
@@ -360,26 +362,6 @@ fn keep_valid_source_bonus(typed: &str, candidate: &str) -> f64 {
     }
 }
 
-fn common_replacement_span(left: &str, right: &str) -> usize {
-    let left_chars: Vec<char> = left.chars().collect();
-    let right_chars: Vec<char> = right.chars().collect();
-    let mut prefix = 0usize;
-    while prefix < left_chars.len()
-        && prefix < right_chars.len()
-        && left_chars[prefix] == right_chars[prefix]
-    {
-        prefix += 1;
-    }
-    let mut suffix = 0usize;
-    while suffix < left_chars.len().saturating_sub(prefix)
-        && suffix < right_chars.len().saturating_sub(prefix)
-        && left_chars[left_chars.len() - 1 - suffix] == right_chars[right_chars.len() - 1 - suffix]
-    {
-        suffix += 1;
-    }
-    left_chars.len().saturating_sub(prefix + suffix)
-}
-
 fn flip_tokens(text: &str) -> String {
     text.split_whitespace()
         .map(|token| dict::convert(token, dict::detect_direction(token)))
@@ -396,7 +378,7 @@ fn moved_space_candidates(text: &str) -> Vec<String> {
         if left.chars().count() < 2 || right.chars().count() < 2 {
             continue;
         }
-        if is_ascii_technical_or_brand(left) {
+        if is_ascii_technical_or_brand_token(left) {
             continue;
         }
 
@@ -447,45 +429,6 @@ fn is_short_russian_function_word(token: &str) -> bool {
     )
 }
 
-fn is_ascii_technical_or_brand(token: &str) -> bool {
-    let has_domain_dot = token.split('.').count() >= 2
-        && token
-            .rsplit_once('.')
-            .is_some_and(|(name, tld)| name.chars().count() >= 2 && (2..=4).contains(&tld.len()));
-    let has_hyphenated_ascii = token.split(['-', '_']).count() >= 2
-        && token
-            .split(['-', '_'])
-            .all(|part| part.chars().filter(|ch| ch.is_ascii_alphabetic()).count() >= 2);
-    token.is_ascii()
-        && token.chars().any(|ch| ch.is_ascii_alphabetic())
-        && (has_domain_dot
-            || has_hyphenated_ascii
-            || token
-                .chars()
-                .any(|ch| matches!(ch, '@' | '/' | ':' | '+' | '#'))
-            || is_likely_ascii_brand_token(token))
-}
-
-fn is_likely_ascii_brand_token(token: &str) -> bool {
-    let uppercase_count = token.chars().filter(|ch| ch.is_ascii_uppercase()).count();
-    token.chars().skip(1).any(|ch| ch.is_ascii_uppercase())
-        && (token.chars().count() <= 8 || uppercase_count >= 2)
-}
-
-fn is_mixed_plain_alpha(token: &str) -> bool {
-    let has_ru = token.chars().any(is_cyrillic);
-    let has_en = token.chars().any(|ch| ch.is_ascii_alphabetic());
-    has_ru
-        && has_en
-        && token
-            .chars()
-            .all(|ch| ch.is_alphabetic() || ch == '-' || ch == '\'')
-}
-
-fn is_cyrillic(ch: char) -> bool {
-    matches!(ch, 'А'..='я' | 'ё' | 'Ё')
-}
-
 fn is_known_text(text: &str) -> bool {
     let mut saw_token = false;
     for token in text.split_whitespace().map(trim_token) {
@@ -505,7 +448,9 @@ fn is_plausible_token(token: &str) -> bool {
 }
 
 fn is_plausible_non_layout_token(token: &str) -> bool {
-    is_known_word(token) || is_ascii_technical_or_brand(token) || is_natural_hyphenated_token(token)
+    is_known_word(token)
+        || is_ascii_technical_or_brand_token(token)
+        || is_natural_hyphenated_token(token)
 }
 
 fn is_natural_hyphenated_token(token: &str) -> bool {
@@ -561,7 +506,7 @@ fn lexical_bonus(token: &str) -> f64 {
 
 fn is_layout_garbage_token(token: &str) -> bool {
     if is_known_word(token)
-        || (token.chars().any(is_cyrillic) && is_natural_hyphenated_token(token))
+        || (token.chars().any(is_cyrillic_letter) && is_natural_hyphenated_token(token))
     {
         return false;
     }
@@ -574,7 +519,7 @@ fn is_layout_garbage_token(token: &str) -> bool {
 
 fn is_known_word(token: &str) -> bool {
     let lower = token.to_lowercase();
-    if lower.chars().all(is_cyrillic) {
+    if lower.chars().all(is_cyrillic_letter) {
         return ru_words().contains(&lower) || is_known_ru_form(&lower);
     }
     if lower.chars().all(|ch| ch.is_ascii_alphabetic()) {
@@ -645,7 +590,7 @@ fn ru_words() -> &'static HashSet<String> {
     static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
     WORDS.get_or_init(|| {
         load_hunspell_words(RU_HUNSPELL, |word| {
-            word.chars().count() >= 2 && word.chars().all(is_cyrillic)
+            word.chars().count() >= 2 && word.chars().all(is_cyrillic_letter)
         })
     })
 }
@@ -682,31 +627,6 @@ fn load_hunspell_words(path: &str, keep: fn(&str) -> bool) -> HashSet<String> {
                 .collect()
         })
         .unwrap_or_default()
-}
-
-fn damerau_levenshtein(left: &str, right: &str) -> usize {
-    let a: Vec<char> = left.chars().collect();
-    let b: Vec<char> = right.chars().collect();
-    let mut dp = vec![vec![0usize; b.len() + 1]; a.len() + 1];
-    for (i, row) in dp.iter_mut().enumerate() {
-        row[0] = i;
-    }
-    for (j, cell) in dp[0].iter_mut().enumerate() {
-        *cell = j;
-    }
-    for i in 1..=a.len() {
-        for j in 1..=b.len() {
-            let substitution = usize::from(a[i - 1] != b[j - 1]);
-            let mut best = (dp[i - 1][j] + 1)
-                .min(dp[i][j - 1] + 1)
-                .min(dp[i - 1][j - 1] + substitution);
-            if i > 1 && j > 1 && a[i - 1] == b[j - 2] && a[i - 2] == b[j - 1] {
-                best = best.min(dp[i - 2][j - 2] + 1);
-            }
-            dp[i][j] = best;
-        }
-    }
-    dp[a.len()][b.len()]
 }
 
 fn build_cases(target: usize) -> Vec<Case> {

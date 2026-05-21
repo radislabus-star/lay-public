@@ -1,0 +1,13 @@
+# Short Russian pronoun forms used by split/glue scoring.
+нас
+нам
+вас
+вам
+них
+ним
+ней
+нее
+неё
+мне
+ему
+ими

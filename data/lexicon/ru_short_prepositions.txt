@@ -1,0 +1,10 @@
+# Short Russian prepositions used by split/glue safety gates.
+без
+до
+из
+над
+об
+от
+под
+при
+про
