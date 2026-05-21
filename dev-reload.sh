@@ -29,5 +29,5 @@ else
 fi
 
 sleep 2
-systemctl --user restart lay-daemon
+sudo systemctl restart lay-daemon
 echo "✓ готово"

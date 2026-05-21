@@ -665,7 +665,7 @@ gnome-extensions enable lay@radislabus-star.github.io
 - GNOME Shell 45, 46, 47 или 50 либо KDE Plasma 6
 - Wayland-сессия для GNOME/KDE или X11-сессия для X11 backend
 - Rust 1.75+
-- доступ к `/dev/input` через группу `input`
+- доступ к `/dev/input` через SupplementaryGroups=input (только процесс daemon)
 - доступный `/dev/uinput` для обратной печати
 - IBus и `python3-gi`, если включаешь экспериментальный `text_backend = "ime"`
 
@@ -676,9 +676,9 @@ X11 backend использует pure-Rust `x11rb` для прямых XKB-за�
 XKB недоступен, daemon пробует старые fallback tools: `xkb-switch`,
 `xkblayout-state` и `setxkbmap`.
 
-Установщик может добавить текущего пользователя в группу `input` и поставить
-udev-правило для `/dev/uinput`, но группа начинает работать только после нового
-входа в систему.
+Демон работает как системный сервис с `SupplementaryGroups=input` — только процесс daemon
+имеет доступ к `/dev/input`. Пользователь НЕ добавляется в группу `input`. udev-правило
+настраивает `/dev/uinput` для группы input.
 
 ### CLI
 
@@ -1088,8 +1088,8 @@ cd ~/projects/lay
 bash install.sh
 ```
 
-After installation, log out and log back in so the `input` group, `/dev/uinput`
-permissions, and GNOME extension are picked up.
+After installation, log out and log back in so the GNOME extension and
+`/dev/uinput` permissions are picked up.
 
 Update an existing git install:
 

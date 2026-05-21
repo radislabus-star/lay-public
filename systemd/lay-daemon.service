@@ -4,10 +4,14 @@ After=graphical-session.target
 
 [Service]
 Type=simple
-ExecStart=%h/.local/bin/lay-daemon
-# Для диагностики: добавь --debug-log или -v. Вывод попадёт в journal и может содержать набранный текст.
+SupplementaryGroups=input
+# Пользователь, группа и ExecStart устанавливаются в дроп-ине.
 Restart=on-failure
 RestartSec=3
+
+# Устройства ввода — разрешаем
+BindReadOnlyPaths=/dev/input
+BindPaths=/dev/uinput
 
 [Install]
 WantedBy=default.target

@@ -17,12 +17,12 @@ viewer_running() {
 }
 
 daemon_active() {
-    systemctl --user is-active --quiet lay-daemon.service
+    sudo systemctl is-active --quiet lay-daemon.service
 }
 
 pause_daemon() {
     if daemon_active; then
-        systemctl --user stop lay-daemon.service
+        sudo systemctl stop lay-daemon.service
         printf '%s\n' "paused-by-vm-guard" >"${state_file}"
         echo "lay-host-vm-guard: paused host lay-daemon"
     fi
@@ -30,7 +30,7 @@ pause_daemon() {
 
 resume_daemon() {
     if [ -f "${state_file}" ]; then
-        systemctl --user start lay-daemon.service
+        sudo systemctl start lay-daemon.service
         rm -f "${state_file}"
         echo "lay-host-vm-guard: resumed host lay-daemon"
     fi

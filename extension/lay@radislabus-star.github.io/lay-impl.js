@@ -304,7 +304,7 @@ function stopDaemon() {
     daemonCommand('stop');
 }
 function daemonCommand(action) {
-    try { Gio.Subprocess.new(['systemctl','--user',action,'lay-daemon'], Gio.SubprocessFlags.NONE); } catch(e) {}
+    try { Gio.Subprocess.new(['systemctl',action,'lay-daemon'], Gio.SubprocessFlags.NONE); } catch(e) {}
 }
 function firstExistingCommand(names) {
     for (const name of names)
@@ -1652,7 +1652,7 @@ class LayIndicator extends PanelMenu.Button {
     _refreshStatus() {
         try {
             const p = Gio.Subprocess.new(
-                ['systemctl','--user','is-active','lay-daemon'],
+                ['systemctl','is-active','lay-daemon'],
                 Gio.SubprocessFlags.STDOUT_PIPE);
             p.communicate_utf8_async(null, null, (proc, res) => {
                 try {

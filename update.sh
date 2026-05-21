@@ -81,7 +81,7 @@ if command -v gnome-extensions >/dev/null 2>&1; then
         gnome-extensions enable lay@radislabus-star.github.io 2>/dev/null || true
     fi
 fi
-systemctl --user restart lay-daemon || true
+sudo systemctl restart lay-daemon || true
 if [ -f "$HOME/.config/autostart/lay-kde-tray.desktop" ]; then
     pkill -f "$HOME/.local/bin/lay-kde-tray" 2>/dev/null || true
     desktop_hint="${XDG_CURRENT_DESKTOP:-}:${XDG_SESSION_DESKTOP:-}:${DESKTOP_SESSION:-}"

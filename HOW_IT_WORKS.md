@@ -111,9 +111,12 @@ Desktop-адаптеры:
 способ читать все нажатия — `/dev/input/event*` (evdev), напрямую
 из ядра, до любых Wayland-протоколов.
 
-Требует членства в группе `input`:
+Требует членства в группе `input`. В новой архитектуре daemon работает как системный сервис
+с `SupplementaryGroups=input` — только процесс daemon имеет доступ к `/dev/input`,
+а пользователь не добавляется в группу `input`.
 ```bash
-sudo usermod -aG input $USER
+# Доступ к /dev/input — только для процесса daemon (SupplementaryGroups=input)
+# Пользователь НЕ добавляется в группу input
 ```
 
 ### Почему uinput, а не wtype/xdotool

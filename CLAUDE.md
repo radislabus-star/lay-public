@@ -33,7 +33,7 @@ physical keyboard
 cargo fmt --check
 cargo test
 cargo build --release
-systemctl --user restart lay-daemon
+sudo systemctl restart lay-daemon
 ```
 
 For diagnostics:
@@ -41,5 +41,5 @@ For diagnostics:
 ```bash
 lay-daemon --debug-log
 LAY_DEBUG_LOG=1 lay-daemon
-journalctl --user -u lay-daemon -f
+sudo journalctl -u lay-daemon -f
 ```

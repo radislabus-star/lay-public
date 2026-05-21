@@ -1,5 +1,7 @@
 #!/bin/bash
 # install.sh — собрать и установить lay + lay-daemon + GNOME extension
+# Безопасный режим: daemon работает от текущего пользователя с SupplementaryGroups=input,
+# основной пользователь НЕ добавляется в группу input.
 set -eu
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -118,16 +120,6 @@ fi
 echo "✓ $(rustc --version)"
 
 echo ""
-echo "=== группа input (нужна для evdev) ==="
-if id -nG "$USER" | grep -qw input; then
-    echo "✓ уже в группе input"
-else
-    echo "→ добавляю $USER в группу input..."
-    sudo usermod -aG input "$USER"
-    echo "⚠ нужен перелогин чтобы группа применилась"
-fi
-
-echo ""
 echo "=== uinput permissions (нужно для обратной печати) ==="
 UINPUT_RULE='/etc/udev/rules.d/99-lay-uinput.rules'
 UINPUT_RULE_TEXT='KERNEL=="uinput", MODE="0660", GROUP="input", OPTIONS+="static_node=uinput"'
@@ -227,14 +219,39 @@ echo "✓ IBus component установлен: ~/.local/share/ibus/component/lay
 echo "  Экспериментальный режим: выбрать Lay IME RU/Lay IME US в IBus и поставить text_backend=ime"
 
 echo ""
-echo "=== systemd unit для lay-daemon ==="
-mkdir -p ~/.config/systemd/user
-cp "$DIR/systemd/lay-daemon.service" ~/.config/systemd/user/lay-daemon.service
-cp "$DIR/systemd/lay-kde-tray.service" ~/.config/systemd/user/lay-kde-tray.service
-cp "$DIR/systemd/lay-host-vm-guard.service" ~/.config/systemd/user/lay-host-vm-guard.service
+echo "=== systemd unit для lay-daemon (system, SupplementaryGroups=input) ==="
+
+# Директории для daemon
+mkdir -p "$HOME/.config/lay" "$HOME/.cache/lay" "$HOME/.local/share/lay"
+
+# Systemd сервис — копируем в системную директорию
+sudo mkdir -p /etc/systemd/system
+sudo cp "$DIR/systemd/lay-daemon.service" /etc/systemd/system/lay-daemon.service
+
+# Дроп-ин с user-specific конфигурацией (генерируется динамически)
+sudo mkdir -p /etc/systemd/system/lay-daemon.service.d
+sudo tee /etc/systemd/system/lay-daemon.service.d/paths.conf > /dev/null <<EOF
+[Service]
+User=$USER
+Group=$USER
+ExecStart=$HOME/.local/bin/lay-daemon
+# Для диагностики: добавь --debug-log или -v. Вывод попадёт в journal и может содержать набранный текст.
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$UID/bus
+EOF
+
+# Удаление старого user-level сервиса если был
+rm -f "$HOME/.config/systemd/user/lay-daemon.service" 2>/dev/null || true
+
+sudo systemctl daemon-reload
+sudo systemctl enable lay-daemon.service
+echo "✓ lay-daemon.service установлен и включён (system, SupplementaryGroups=input)"
+
+# User-level сервисы (KDE tray, VM guard)
+mkdir -p "$HOME/.config/systemd/user"
+cp "$DIR/systemd/lay-kde-tray.service" "$HOME/.config/systemd/user/lay-kde-tray.service"
+cp "$DIR/systemd/lay-host-vm-guard.service" "$HOME/.config/systemd/user/lay-host-vm-guard.service"
 systemctl --user daemon-reload
-systemctl --user enable lay-daemon
-echo "✓ lay-daemon.service установлен и включён"
+
 if is_kde_available; then
     install_kde_autostart
     systemctl --user disable lay-kde-tray.service >/dev/null 2>&1 || true
