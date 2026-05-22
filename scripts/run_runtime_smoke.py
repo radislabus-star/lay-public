@@ -88,6 +88,15 @@ CASES = {
     ),
     "n_teper_mixed_enter": Case("n_teper_mixed_enter", "Теперь"),
     "auto_switch_words_enter": Case("auto_switch_words_enter", "njkmrj yt hf,jnftn"),
+    "worked_nj_space_enter": Case(
+        "worked_nj_space_enter",
+        "worked это",
+        config_overrides={
+            "auto_replace": True,
+            "typing_assist": True,
+            "correction_safety": "normal",
+        },
+    ),
     "no_ne_ty_enter": Case("no_ne_ty_enter", "но не ты", start_layout="ru"),
     "preparatov_typo_enter": Case(
         "preparatov_typo_enter", "препаратов", start_layout="ru"

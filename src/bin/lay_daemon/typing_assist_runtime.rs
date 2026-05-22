@@ -40,15 +40,20 @@ pub(super) fn handle_typing_assist_after_space(
         return TypingAssistOutcome::NoCorrection;
     }
 
-    let mut physical_grab = PhysicalInputGrab::new(physical_device);
     let started_at = Instant::now();
     let allow_layout_auto = active_auto_switch_layout();
-    #[cfg(test)]
-    let pipeline = lay::config::default_typing_assist_pipeline();
-    #[cfg(not(test))]
-    let pipeline = active_typing_assist_pipeline_for_auto_replace();
     let correction = [2, 1].into_iter().find_map(|word_count| {
         let events = buf.last_completed_words_events(word_count)?;
+        let context = typing_assist_context_for_completed_tail(buf, word_count, &events);
+        #[cfg(test)]
+        let pipeline = lay::typing_context::typing_assist_pipeline_for_context(
+            true,
+            lay::config::CorrectionSafety::Normal,
+            &lay::config::default_typing_assist_pipeline(),
+            &context,
+        );
+        #[cfg(not(test))]
+        let pipeline = active_typing_assist_pipeline_for_auto_replace(&context);
         let edit = decode_typing_assist_tail(
             &events,
             allow_layout_auto,
@@ -60,6 +65,7 @@ pub(super) fn handle_typing_assist_after_space(
     let Some((events, edit)) = correction else {
         return TypingAssistOutcome::NoCorrection;
     };
+    let mut physical_grab = PhysicalInputGrab::new(physical_device);
     let original = edit.original.clone();
     let replacement = edit.replacement.clone();
     let defer_complex_live_edit = cursor_offset == 0
@@ -268,6 +274,19 @@ fn should_defer_immediate_typing_edit(edit: &DecoderEditPlan) -> bool {
     edit.plan.move_right > 0
         && edit.plan.backspaces > 0
         && edit.plan.insert.chars().any(char::is_whitespace)
+}
+
+fn typing_assist_context_for_completed_tail(
+    buf: &WordBuffer,
+    word_count: usize,
+    events: &[KeyEvent],
+) -> String {
+    if word_count == 1 {
+        if let Some(context_events) = buf.last_completed_words_events(2) {
+            return map_original_events(&context_events);
+        }
+    }
+    map_original_events(events)
 }
 
 struct PhysicalInputGrab<'a> {
@@ -522,10 +541,19 @@ pub(super) fn handle_enter_autocorrect(
 
     let started_at = Instant::now();
     let allow_layout_auto = active_auto_switch_layout();
+    let context = buf
+        .what_to_replay(replace_words)
+        .map(|(events, _)| map_original_events(&events))
+        .unwrap_or_default();
     #[cfg(test)]
-    let pipeline = lay::config::default_typing_assist_pipeline();
+    let pipeline = lay::typing_context::typing_assist_pipeline_for_context(
+        true,
+        lay::config::CorrectionSafety::Normal,
+        &lay::config::default_typing_assist_pipeline(),
+        &context,
+    );
     #[cfg(not(test))]
-    let pipeline = active_typing_assist_pipeline_for_auto_replace();
+    let pipeline = active_typing_assist_pipeline_for_auto_replace(&context);
     let (events, edit) =
         enter_autocorrect_candidate(buf, replace_words, allow_layout_auto, &pipeline)?;
     let original = edit.original.clone();

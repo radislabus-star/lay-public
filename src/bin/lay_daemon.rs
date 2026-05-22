@@ -99,12 +99,13 @@ fn active_lem_enabled_for_scope(word_count: usize) -> bool {
 }
 
 #[cfg(not(test))]
-fn active_typing_assist_pipeline_for_auto_replace() -> Vec<TypingAssistRuleConfig> {
+fn active_typing_assist_pipeline_for_auto_replace(context: &str) -> Vec<TypingAssistRuleConfig> {
     let cfg = LayConfig::load();
-    lay::config::typing_assist_pipeline_for_policy(
+    lay::typing_context::typing_assist_pipeline_for_context(
         cfg.auto_replace,
         cfg.active_correction_safety(),
         &cfg.typing_assist_pipeline,
+        context,
     )
 }
 

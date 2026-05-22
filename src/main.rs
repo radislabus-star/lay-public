@@ -8,7 +8,7 @@ use clap::Parser;
 use std::io::{self, IsTerminal, Read};
 use std::process;
 
-use lay::{config, dict, llm, typing_assist};
+use lay::{config, dict, llm, typing_assist, typing_context};
 
 #[derive(Parser, Debug)]
 #[command(
@@ -73,16 +73,7 @@ fn main() {
 
     if args.explain_correct {
         let cfg = config::LayConfig::load();
-        let pipeline = config::typing_assist_pipeline_for_policy(
-            cfg.auto_replace,
-            cfg.active_correction_safety(),
-            &cfg.typing_assist_pipeline,
-        );
-        let explanation = typing_assist::explain_typing_assist_with_pipeline(
-            &text,
-            cfg.auto_switch_layout,
-            &pipeline,
-        );
+        let explanation = explain_typing_assist_like_runtime(&text, &cfg);
         print_typing_explanation(&explanation);
         return;
     }
@@ -108,6 +99,76 @@ fn main() {
             println!();
         }
     }
+}
+
+fn explain_typing_assist_like_runtime(
+    text: &str,
+    cfg: &config::LayConfig,
+) -> typing_assist::TypingAssistExplanation {
+    let pipeline = typing_context::typing_assist_pipeline_for_context(
+        cfg.auto_replace,
+        cfg.active_correction_safety(),
+        &cfg.typing_assist_pipeline,
+        text,
+    );
+    let whole =
+        typing_assist::explain_typing_assist_with_pipeline(text, cfg.auto_switch_layout, &pipeline);
+    if whole.output.is_some() {
+        return whole;
+    }
+
+    for word_count in [2, 1] {
+        if let Some(explanation) = explain_completed_tail(text, cfg, word_count) {
+            return explanation;
+        }
+    }
+
+    whole
+}
+
+fn explain_completed_tail(
+    text: &str,
+    cfg: &config::LayConfig,
+    word_count: usize,
+) -> Option<typing_assist::TypingAssistExplanation> {
+    let (leading, core, trailing) = typing_assist::split_edge_whitespace(text);
+    let segments = typing_assist::split_ws_segments(core);
+    if segments.len() < 3 {
+        return None;
+    }
+
+    let mut suffix_start = core.len();
+    let mut non_ws_seen = 0;
+    for (segment, is_ws) in segments.iter().rev() {
+        suffix_start -= segment.len();
+        if !is_ws {
+            non_ws_seen += 1;
+            if non_ws_seen == word_count {
+                break;
+            }
+        }
+    }
+    if non_ws_seen != word_count {
+        return None;
+    }
+
+    let mut suffix = String::new();
+    suffix.push_str(leading);
+    suffix.push_str(&core[suffix_start..]);
+    suffix.push_str(trailing);
+
+    let pipeline = typing_context::typing_assist_pipeline_for_context(
+        cfg.auto_replace,
+        cfg.active_correction_safety(),
+        &cfg.typing_assist_pipeline,
+        text,
+    );
+    let explanation = typing_assist::explain_typing_assist_with_pipeline(
+        &suffix,
+        cfg.auto_switch_layout,
+        &pipeline,
+    );
+    explanation.output.is_some().then_some(explanation)
 }
 
 fn print_typing_explanation(explanation: &typing_assist::TypingAssistExplanation) {

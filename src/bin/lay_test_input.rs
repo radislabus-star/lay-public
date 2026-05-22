@@ -35,6 +35,7 @@
 //!   lay-test-input good_text_enter — печатает "пщщв ntrcn" + двойной Shift + Enter
 //!   lay-test-input wifi_ye_enter — печатает "wi-fi ye" + двойной Shift + Enter
 //!   lay-test-input auto_switch_words_enter — печатает "njkmrj yt hf,jnftn" через пробелы + Enter
+//!   lay-test-input worked_nj_space_enter — печатает "worked 'nj" через пробелы + Enter
 //!   lay-test-input preparatov_typo_enter — печатает "перпаратов" + Space + Enter
 //!   lay-test-input no_ne_ty_enter — печатает "но не ты" с паузами после пробелов + Enter
 //!   lay-test-input glued_tozhesamoe_next_enter — печатает "тожесамое склено" + Enter
@@ -110,6 +111,7 @@ fn main() -> std::io::Result<()> {
         KeyCode::KEY_EQUAL,
         KeyCode::KEY_COMMA,
         KeyCode::KEY_SEMICOLON,
+        KeyCode::KEY_APOSTROPHE,
     ];
     for k in all {
         keys.insert(k);
@@ -687,6 +689,30 @@ fn main() -> std::io::Result<()> {
             sleep(Duration::from_millis(650));
             tap(&mut dev, KeyCode::KEY_ENTER.code())?;
             eprintln!("[test] сценарий auto_switch_words_enter отправлен");
+        }
+        "worked_nj_space_enter" => {
+            activate_layout("us");
+            sleep(Duration::from_millis(250));
+            tap_keys(
+                &mut dev,
+                &[
+                    KeyCode::KEY_W,
+                    KeyCode::KEY_O,
+                    KeyCode::KEY_R,
+                    KeyCode::KEY_K,
+                    KeyCode::KEY_E,
+                    KeyCode::KEY_D,
+                    KeyCode::KEY_SPACE,
+                    KeyCode::KEY_APOSTROPHE,
+                    KeyCode::KEY_N,
+                    KeyCode::KEY_J,
+                    KeyCode::KEY_SPACE,
+                ],
+                35,
+            )?;
+            sleep(Duration::from_millis(650));
+            tap(&mut dev, KeyCode::KEY_ENTER.code())?;
+            eprintln!("[test] сценарий worked_nj_space_enter отправлен");
         }
         "preparatov_typo_enter" => {
             activate_layout("ru");

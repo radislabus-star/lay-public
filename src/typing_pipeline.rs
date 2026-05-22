@@ -140,6 +140,9 @@ pub fn explain_typing_assist_with_pipeline(
 }
 
 fn typing_assist_candidate_is_safe(rule_id: &str, original: &str, replacement: &str) -> bool {
+    if rule_id == "contextual_layout_en_to_ru" {
+        return true;
+    }
     if matches!(rule_id, "layout_ru_to_en" | "layout_en_to_ru") {
         return !crate::word_recognizer::is_plain_layout_autocorrect_risky(original, replacement);
     }

@@ -6,13 +6,16 @@ use lay::dict::{convert, Direction};
 use lay::typing_assist::{
     apply_typing_assist_with_pipeline, split_edge_whitespace, split_ws_segments,
 };
+use lay::typing_context::{should_enable_ascii_to_ru_layout, typing_assist_pipeline_for_context};
 
 fn apply_typing_assist_to_tail(
     text: &str,
     allow_layout_auto: bool,
     pipeline: &[TypingAssistRuleConfig],
 ) -> Option<String> {
-    apply_typing_assist_with_pipeline(text, allow_layout_auto, pipeline).or_else(|| {
+    let context_pipeline =
+        typing_assist_pipeline_for_context(true, CorrectionSafety::Normal, pipeline, text);
+    apply_typing_assist_with_pipeline(text, allow_layout_auto, &context_pipeline).or_else(|| {
         let (leading, core, trailing) = split_edge_whitespace(text);
         let segments = split_ws_segments(core);
         if segments.len() < 3 {
@@ -37,7 +40,7 @@ fn apply_typing_assist_to_tail(
 
             let suffix = &core[suffix_start..];
             if let Some(replacement) =
-                apply_typing_assist_with_pipeline(suffix, allow_layout_auto, pipeline)
+                apply_typing_assist_with_pipeline(suffix, allow_layout_auto, &context_pipeline)
             {
                 let mut out = String::with_capacity(text.len().max(replacement.len()));
                 out.push_str(leading);
@@ -55,12 +58,11 @@ fn apply_typing_assist_to_tail(
 }
 
 fn simulate_space_triggered_typing_assist(input: &str, allow_layout_auto: bool) -> String {
-    let pipeline = typing_assist_pipeline_for_policy(
-        true,
-        CorrectionSafety::Normal,
+    simulate_space_triggered_typing_assist_with_pipeline(
+        input,
+        allow_layout_auto,
         &default_typing_assist_pipeline(),
-    );
-    simulate_space_triggered_typing_assist_with_pipeline(input, allow_layout_auto, &pipeline)
+    )
 }
 
 fn simulate_space_triggered_typing_assist_with_pipeline(
@@ -93,11 +95,11 @@ fn forum_like_mixed_sentences_preserve_spaces_and_terms() {
     let cases = [
         (
             "сегодня проверяю git status и потом njkmrj тест ",
-            "сегодня проверяю git status и потом njkmrj тест ",
+            "сегодня проверяю git status и потом только тест ",
         ),
         (
             "можно открыть Windows на NTFS и написать Lfdfq дальше ",
-            "можно открыть Windows на NTFS и написать Lfdfq дальше ",
+            "можно открыть Windows на NTFS и написать Давай дальше ",
         ),
         (
             "в терминале еукьштфд работает рядом с API JSON ",
@@ -116,6 +118,85 @@ fn forum_like_mixed_sentences_preserve_spaces_and_terms() {
             "тут явно вижу что good test должен остаться ",
         ),
         ("ОБYJDB CRBK lay ", "ОБНОВИ CRBK lay "),
+        ("я ghbdtn и потом ckjdf ", "я привет и потом слова "),
+    ];
+
+    for (input, expected) in cases {
+        assert_eq!(
+            simulate_space_triggered_typing_assist(input, true),
+            expected,
+            "input={input:?}"
+        );
+    }
+}
+
+#[test]
+fn dynamic_context_allows_ascii_to_ru_in_russian_sentence() {
+    let pipeline = default_typing_assist_pipeline();
+    assert!(should_enable_ascii_to_ru_layout("проверяю Lfdfq "));
+    let context_pipeline = typing_assist_pipeline_for_context(
+        true,
+        CorrectionSafety::Normal,
+        &pipeline,
+        "проверяю Lfdfq ",
+    );
+    assert!(context_pipeline
+        .iter()
+        .find(|rule| rule.id == "contextual_layout_en_to_ru")
+        .is_some_and(|rule| rule.enabled));
+    assert_eq!(
+        apply_typing_assist_with_pipeline("Lfdfq", true, &context_pipeline),
+        Some("Давай".to_string())
+    );
+    assert_eq!(
+        apply_typing_assist_to_tail("'nj ", true, &pipeline),
+        Some("это ".to_string())
+    );
+    assert_eq!(
+        apply_typing_assist_to_tail("проверяю Lfdfq ", true, &pipeline),
+        Some("проверяю Давай ".to_string())
+    );
+    assert_eq!(
+        apply_typing_assist_to_tail("я ghbdtn ", true, &pipeline),
+        Some("я привет ".to_string())
+    );
+    assert_eq!(
+        apply_typing_assist_to_tail("пишу 'nj ", true, &pipeline),
+        Some("пишу это ".to_string())
+    );
+    assert_eq!(
+        apply_typing_assist_to_tail("worked 'nj ", true, &pipeline),
+        Some("worked это ".to_string())
+    );
+    assert_eq!(
+        apply_typing_assist_to_tail("status; 'nj ", true, &pipeline),
+        None
+    );
+    assert_eq!(
+        apply_typing_assist_to_tail("good ghbdtn ", true, &pipeline),
+        None
+    );
+}
+
+#[test]
+fn alternating_layout_sentences_fix_every_second_word() {
+    let cases = [
+        (
+            "сегодня ghbdtn потом ашду дальше ckjdf снова еукьштфд здесь 'nj ",
+            "сегодня привет потом file дальше слова снова terminal здесь это ",
+        ),
+        (
+            "проверяю Lfdfq и цщкдв затем hf,jnftn рядом ашдуы будет vjue ",
+            "проверяю Давай и world затем работает рядом files будет могу ",
+        ),
+        (
+            "можно njkmrj открыть пщщв потом ytn рядом еукьштфд теперь 'nj ",
+            "можно только открыть good потом нет рядом terminal теперь это ",
+        ),
+        (
+            "тут ckjdf и ашду потом ltkf рядом кгы дальше dctulf ",
+            "тут слова и file потом дела рядом rus дальше всегда ",
+        ),
     ];
 
     for (input, expected) in cases {
@@ -362,7 +443,7 @@ fn one_letter_function_words_do_not_steal_next_word_prefix() {
 }
 
 #[test]
-fn forum_like_mixed_matrix_autofixes_ru_to_en_only_and_keeps_boundaries() {
+fn forum_like_mixed_matrix_autofixes_contextual_layout_words_and_keeps_boundaries() {
     let prefixes = [
         "проверяю",
         "открываю",
@@ -381,11 +462,11 @@ fn forum_like_mixed_matrix_autofixes_ru_to_en_only_and_keeps_boundaries() {
         "git", "status", "Windows", "NTFS", "wi-fi", "API", "JSON", "Linux", "Chrome", "GNOME",
     ];
     let layout_words = [
-        ("njkmrj", None),
-        ("vjue", None),
+        ("njkmrj", Some("только")),
+        ("vjue", Some("могу")),
         ("yt", None),
-        ("hf,jnftn", None),
-        ("'nj", None),
+        ("hf,jnftn", Some("работает")),
+        ("'nj", Some("это")),
         ("ашдуы", Some("files")),
         ("еукьштфд", Some("terminal")),
         ("кгы", Some("rus")),

@@ -97,6 +97,11 @@ static RULES: &[TypingRuleDefinition] = &[
         apply: apply_layout_en_to_ru,
     },
     TypingRuleDefinition {
+        id: "contextual_layout_en_to_ru",
+        family: TypingCandidateFamily::Layout,
+        apply: apply_layout_en_to_ru,
+    },
+    TypingRuleDefinition {
         id: "cyrillic_case",
         family: TypingCandidateFamily::Typo,
         apply: apply_cyrillic_case,
