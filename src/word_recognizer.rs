@@ -8,7 +8,8 @@ use std::sync::OnceLock;
 
 use crate::keyboard::is_cyrillic_letter;
 use crate::lexicon::{
-    is_common_en_technical_word, is_common_ru_word, EN_HUNSPELL, EN_WORDS, RU_HUNSPELL,
+    extend_user_protected_ascii_words, is_common_en_technical_word, is_common_ru_word,
+    is_user_protected_ascii_word, EN_HUNSPELL, EN_WORDS, RU_HUNSPELL,
 };
 use crate::word_reader::split_word_punctuation;
 
@@ -239,7 +240,8 @@ pub fn is_protected_ascii_token(core: &str) -> bool {
         return false;
     }
     core.is_ascii()
-        && (has_domain_like_dot(core)
+        && (is_user_protected_ascii_word(core)
+            || has_domain_like_dot(core)
             || core.contains('@')
             || core.contains("://")
             || core.contains('/')
@@ -355,6 +357,7 @@ fn english_words() -> &'static HashSet<String> {
                     .map(|word| word.to_ascii_lowercase()),
             );
         }
+        extend_user_protected_ascii_words(&mut words, 1);
         words
     })
 }

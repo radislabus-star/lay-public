@@ -22,9 +22,9 @@ const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-const APP_VERSION = '0.1.191';
+const APP_VERSION = '0.1.192';
 const APP_DESCRIPTION = 'Alpha RU/EN layout helper: double Shift и помощь при наборе';
-const APP_RELEASE_DATE = '2026-05-22';
+const APP_RELEASE_DATE = '2026-05-23';
 const APP_LICENSE = 'MIT';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_PLATFORM = 'Linux desktops: GNOME, KDE, Wayland, X11';
@@ -657,6 +657,7 @@ class LayIndicator extends PanelMenu.Button {
 
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._arbiterMenu());
+        this.menu.addMenuItem(this._correctionPipelineMenu());
         this.menu.addMenuItem(this._recentActionsMenu());
         this.menu.addMenuItem(this._ptahAlexsMenu());
         this.menu.addMenuItem(this._triggerMenu());
@@ -784,8 +785,6 @@ class LayIndicator extends PanelMenu.Button {
                 restartDaemon();
             }],
         ], this._backendButtons));
-        item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        item.menu.addMenuItem(this._correctionPipelineMenu());
         return item;
     }
 
@@ -1265,6 +1264,7 @@ class LayIndicator extends PanelMenu.Button {
             ['single-rshift', 'RShift'],
             ['single-rctrl', 'RCtrl'],
             ['single-ralt', 'RAlt'],
+            ['single-pause', 'Pause'],
         ]) {
             const row = new PopupMenu.PopupMenuItem(label);
             row.connect('activate', () => this._setTrigger(id));

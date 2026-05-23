@@ -167,6 +167,15 @@ fn typing_assist_auto_switch_keeps_english_and_protected_ascii() {
 }
 
 #[test]
+fn typing_assist_keeps_user_protected_ascii_words_when_configured() {
+    if std::env::var_os("LAY_TEST_USER_PROTECTED_ASCII").is_none() {
+        return;
+    }
+
+    assert_eq!(apply_typing_assist("vs ", true), None);
+}
+
+#[test]
 fn typing_assist_pipeline_can_disable_rules() {
     let no_en_to_ru = typing_pipeline_with_disabled(&["layout_en_to_ru"]);
     assert_eq!(

@@ -5,6 +5,7 @@
 //! sets so runtime checks stay cheap and platform-neutral.
 
 use std::collections::HashSet;
+use std::path::Path;
 use std::sync::OnceLock;
 
 pub const RU_HUNSPELL: &str = "/usr/share/hunspell/ru_RU.dic";
@@ -37,6 +38,7 @@ pub fn warm_up() {
     let _ = ru_hyphen_particles().len();
     let _ = visual_b_default_replacement();
     let _ = visual_b_after_ascii_replacement();
+    let _ = user_protected_ascii_words().len();
 }
 
 pub fn is_common_ru_word(word: &str) -> bool {
@@ -79,8 +81,37 @@ pub fn visual_b_after_ascii_replacement() -> &'static str {
     first_data_word(VISUAL_B_AFTER_ASCII_DATA)
 }
 
+pub fn is_user_protected_ascii_word(word: &str) -> bool {
+    if !word.is_ascii() {
+        return false;
+    }
+    user_protected_ascii_words().contains(&word.to_ascii_lowercase())
+}
+
+pub fn extend_user_protected_ascii_words(words: &mut HashSet<String>, min_chars: usize) {
+    words.extend(
+        user_protected_ascii_words()
+            .iter()
+            .filter(|word| word.chars().count() >= min_chars)
+            .cloned(),
+    );
+}
+
 pub fn extend_common_ru_words(words: &mut HashSet<String>) {
     words.extend(common_ru_words().iter().cloned());
+}
+
+fn user_protected_ascii_words() -> &'static HashSet<String> {
+    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
+    WORDS.get_or_init(|| {
+        let Some(home) = std::env::var_os("HOME") else {
+            return HashSet::new();
+        };
+        let path = std::path::PathBuf::from(home).join(PROTECTED_WORDS_PATH);
+        load_plain_words(&path)
+            .map(|words| ascii_words_from_iter(words, 1))
+            .unwrap_or_default()
+    })
 }
 
 fn common_ru_words() -> &'static HashSet<String> {
@@ -129,6 +160,39 @@ fn parse_word_data(data: &str) -> HashSet<String> {
         .filter(|line| !line.is_empty() && !line.starts_with('#'))
         .map(str::to_lowercase)
         .collect()
+}
+
+#[cfg(test)]
+pub(crate) fn parse_ascii_word_data(data: &str, min_chars: usize) -> HashSet<String> {
+    ascii_words_from_iter(
+        data.lines()
+            .map(str::trim)
+            .filter(|line| !line.is_empty() && !line.starts_with('#'))
+            .map(str::to_string),
+        min_chars,
+    )
+}
+
+fn ascii_words_from_iter<I>(words: I, min_chars: usize) -> HashSet<String>
+where
+    I: IntoIterator<Item = String>,
+{
+    words
+        .into_iter()
+        .map(|word| word.trim().to_ascii_lowercase())
+        .filter(|word| word.chars().count() >= min_chars)
+        .filter(|word| {
+            word.is_ascii()
+                && word
+                    .chars()
+                    .all(|ch| ch.is_ascii_alphabetic() || ch == '-' || ch == '_')
+        })
+        .collect()
+}
+
+fn load_plain_words(path: &Path) -> std::io::Result<HashSet<String>> {
+    let text = std::fs::read_to_string(path)?;
+    Ok(parse_word_data(&text))
 }
 
 fn first_data_word(data: &'static str) -> &'static str {

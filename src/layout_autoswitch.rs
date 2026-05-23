@@ -8,7 +8,10 @@ use std::collections::HashSet;
 use std::sync::OnceLock;
 
 use crate::keyboard::is_cyrillic_letter;
-use crate::lexicon::{is_common_en_technical_word, is_ru_hyphen_particle, EN_HUNSPELL, EN_WORDS};
+use crate::lexicon::{
+    extend_user_protected_ascii_words, is_common_en_technical_word, is_ru_hyphen_particle,
+    EN_HUNSPELL, EN_WORDS,
+};
 use crate::phrase_lexicon::is_common_short_russian_preposition;
 use crate::ru_typo::has_plausible_russian_typo_candidate;
 use crate::russian_chars::is_russian_vowel;
@@ -382,6 +385,7 @@ fn english_dictionary() -> &'static HashSet<String> {
         if let Ok(extra) = load_ascii_word_list_min_len(EN_WORDS, 4) {
             words.extend(extra);
         }
+        extend_user_protected_ascii_words(&mut words, 1);
         words
     })
 }

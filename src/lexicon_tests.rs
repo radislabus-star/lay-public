@@ -15,3 +15,24 @@ fn lexical_data_loads_without_code_word_lists() {
     assert_eq!(visual_b_after_ascii_replacement(), "и");
     assert!(!is_common_en_technical_word("hello"));
 }
+
+#[test]
+fn protected_ascii_words_parser_keeps_short_user_tokens() {
+    let words = parse_ascii_word_data(
+        r#"
+        # comments are ignored
+        vs
+        WPS
+        AmoCRM
+        привет
+        wi-fi
+        "#,
+        1,
+    );
+
+    assert!(words.contains("vs"));
+    assert!(words.contains("wps"));
+    assert!(words.contains("amocrm"));
+    assert!(words.contains("wi-fi"));
+    assert!(!words.contains("привет"));
+}
