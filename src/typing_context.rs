@@ -10,6 +10,7 @@ use crate::config::{
 };
 use crate::layout_autoswitch::{
     ascii_layout_prefix_can_be_letter, correct_wrong_layout_ascii_word,
+    is_ascii_layout_letter_symbol, is_confident_wrong_layout_ascii_pair,
 };
 use crate::lexicon::is_common_ru_word;
 use crate::word_reader::split_word_punctuation;
@@ -51,13 +52,25 @@ pub fn should_enable_ascii_to_ru_layout(context: &str) -> bool {
         return false;
     };
 
-    if !strong_ascii_to_ru_layout_candidate(last) {
+    let last_strong_layout = strong_ascii_to_ru_layout_candidate(last);
+    let last_clean_layout = clean_ascii_to_ru_layout_candidate(last);
+    let previous_clean_layout = rest
+        .last()
+        .is_some_and(|previous| clean_ascii_to_ru_layout_candidate(previous));
+    let phrase_layout = rest
+        .last()
+        .is_some_and(|previous| is_confident_wrong_layout_ascii_pair(previous, last));
+    if !(last_strong_layout || last_clean_layout && previous_clean_layout || phrase_layout) {
         return false;
     }
 
     let layout_punctuation = has_layout_punctuation_signal(last);
     let previous_allows_contextual_layout = rest.last().is_some_and(|previous| {
         is_russian_context_token(previous)
+            || (last_clean_layout
+                && clean_ascii_to_ru_layout_candidate(previous)
+                && !layout_punctuation)
+            || phrase_layout
             || (layout_punctuation && is_natural_english_context_token(previous))
     });
     let standalone_layout_punctuation = rest.is_empty() && layout_punctuation;
@@ -102,9 +115,23 @@ fn strong_ascii_to_ru_layout_candidate(token: &str) -> bool {
     ascii_layout_prefix_can_be_letter(leading) && is_common_ru_word(&converted_word.to_lowercase())
 }
 
+fn clean_ascii_to_ru_layout_candidate(token: &str) -> bool {
+    if !token.chars().all(|ch| ch.is_ascii_alphabetic()) {
+        return false;
+    }
+    let identity = recognize_token(token);
+    identity.kind == WordKind::PlainWord
+        && identity.script == WordScript::Ascii
+        && !identity.technical
+        && !identity.protected
+        && correct_wrong_layout_ascii_word(token).is_some()
+}
+
 fn has_layout_punctuation_signal(token: &str) -> bool {
     let (leading, _, trailing) = split_word_punctuation(token);
-    ascii_layout_prefix_can_be_letter(leading) || ascii_layout_prefix_can_be_letter(trailing)
+    ascii_layout_prefix_can_be_letter(leading)
+        || ascii_layout_prefix_can_be_letter(trailing)
+        || token.chars().any(is_ascii_layout_letter_symbol)
 }
 
 fn is_russian_context_token(token: &str) -> bool {
@@ -117,7 +144,29 @@ fn is_russian_context_token(token: &str) -> bool {
 }
 
 fn is_natural_english_context_token(token: &str) -> bool {
-    if token.contains([';', '&', '|']) {
+    if token.chars().any(|ch| {
+        matches!(
+            ch,
+            '\'' | ';'
+                | '['
+                | ']'
+                | '`'
+                | ','
+                | '.'
+                | '?'
+                | '!'
+                | ':'
+                | '$'
+                | '%'
+                | '^'
+                | '&'
+                | '|'
+                | '#'
+                | '@'
+                | '/'
+                | '\\'
+        )
+    }) {
         return false;
     }
     let identity = recognize_token(token);

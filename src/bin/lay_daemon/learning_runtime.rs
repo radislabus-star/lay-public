@@ -5,7 +5,6 @@ use lay::typing_assist::{
 };
 use lay::word_buffer::UserLearningCorrection;
 use std::collections::BTreeMap;
-use std::io::Write;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::{active_learning_log, log};
@@ -134,30 +133,17 @@ fn append_learning_entry_to_path(path: &std::path::Path, entry: &LearningEntry<'
         return;
     }
 
-    if let Some(parent) = path.parent() {
-        if let Err(e) = std::fs::create_dir_all(parent) {
-            log(&format!("⚠ learn-log mkdir failed: {e}"));
-            return;
-        }
-    }
-
     let Ok(mut line) = serde_json::to_string(&entry) else {
         return;
     };
     line.push('\n');
 
-    match std::fs::OpenOptions::new()
-        .append(true)
-        .create(true)
-        .open(path)
-    {
-        Ok(mut f) => {
-            if f.write_all(line.as_bytes()).is_ok() {
-                compact_learning_log_if_needed(path);
-                #[cfg(not(test))]
-                lay::stats::record_learning_log_entry(entry.kind);
-                log("  learn-log: correction saved");
-            }
+    match lay::private_file::append_private_text(path, &line) {
+        Ok(()) => {
+            compact_learning_log_if_needed(path);
+            #[cfg(not(test))]
+            lay::stats::record_learning_log_entry(entry.kind);
+            log("  learn-log: correction saved");
         }
         Err(e) => log(&format!("⚠ learn-log open failed: {e}")),
     }
@@ -287,11 +273,8 @@ fn save_learning_candidates(
     path: &std::path::Path,
     candidates: &BTreeMap<String, LearningCandidate>,
 ) -> std::io::Result<()> {
-    if let Some(parent) = path.parent() {
-        std::fs::create_dir_all(parent)?;
-    }
     let text = serde_json::to_string_pretty(candidates).unwrap_or_else(|_| "{}".to_string());
-    std::fs::write(path, format!("{text}\n"))
+    lay::private_file::write_private_text(path, &format!("{text}\n"))
 }
 
 fn add_replacement_rule_to_path(
@@ -314,11 +297,8 @@ fn add_replacement_rule_to_path(
     }
 
     rules.insert(from.to_string(), to.to_string());
-    if let Some(parent) = path.parent() {
-        std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
-    }
     let text = serde_json::to_string_pretty(&rules).map_err(|e| e.to_string())?;
-    std::fs::write(path, format!("{text}\n")).map_err(|e| e.to_string())?;
+    lay::private_file::write_private_text(path, &format!("{text}\n")).map_err(|e| e.to_string())?;
     Ok(true)
 }
 
@@ -334,7 +314,7 @@ fn compact_learning_log_if_needed(path: &std::path::Path) {
         return;
     };
     let compacted = keep_last_jsonl_lines(&content, LEARN_LOG_KEEP_LINES);
-    if std::fs::write(path, compacted).is_ok() {
+    if lay::private_file::write_private_text(path, &compacted).is_ok() {
         log("  learn-log: compacted");
     }
 }

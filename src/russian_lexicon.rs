@@ -156,6 +156,9 @@ fn is_known_russian_suffix_form(word: &str) -> bool {
         if matches!(*suffix, "ы" | "и") && looks_like_russian_adjective_lemma(stem) {
             return false;
         }
+        if is_known_russian_adjective_form(stem, suffix) {
+            return true;
+        }
         if russian_dictionary().contains(stem) {
             return true;
         }
@@ -163,6 +166,44 @@ fn is_known_russian_suffix_form(word: &str) -> bool {
             && (russian_short_dictionary().contains(stem)
                 || russian_dictionary().contains(&format!("{stem}о")))
     })
+}
+
+fn is_known_russian_adjective_form(stem: &str, suffix: &str) -> bool {
+    if stem.chars().count() < 3 {
+        return false;
+    }
+    if !matches!(
+        suffix,
+        "ыми"
+            | "ими"
+            | "ого"
+            | "его"
+            | "ому"
+            | "ему"
+            | "ом"
+            | "ем"
+            | "ой"
+            | "ей"
+            | "ая"
+            | "яя"
+            | "ое"
+            | "ее"
+            | "ые"
+            | "ие"
+    ) {
+        return false;
+    }
+    ["ый", "ий", "ой"]
+        .iter()
+        .any(|ending| russian_dictionary().contains(&format!("{stem}{ending}")))
+        || ["ов", "ев"].iter().any(|suffix| {
+            let Some(noun_stem) = stem.strip_suffix(suffix) else {
+                return false;
+            };
+            noun_stem.chars().count() >= 3
+                && (russian_tiny_dictionary().contains(noun_stem)
+                    || russian_dictionary().contains(noun_stem))
+        })
 }
 
 fn is_known_russian_zero_ending_noun_form(word: &str) -> bool {
@@ -437,3 +478,7 @@ fn load_word_list(path: &std::path::Path) -> std::io::Result<HashSet<String>> {
         .map(str::to_lowercase)
         .collect())
 }
+
+#[cfg(test)]
+#[path = "russian_lexicon_tests.rs"]
+mod tests;

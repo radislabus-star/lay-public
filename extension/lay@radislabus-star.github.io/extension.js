@@ -16,7 +16,9 @@ export default class LayExtension extends Extension {
     enable() {
         const implSrc  = `${this.path}/lay-impl.js`;
         // Уникальный путь = GJS не найдёт в кэше → свежий import
-        this._tmpImpl  = `/tmp/lay-impl-${Date.now()}.js`;
+        const cacheDir = `${GLib.get_user_cache_dir()}/lay`;
+        try { GLib.mkdir_with_parents(cacheDir, 0o700); } catch(e) {}
+        this._tmpImpl  = `${cacheDir}/lay-impl-${Date.now()}.js`;
 
         try {
             const [, bytes] = Gio.File.new_for_path(implSrc).load_contents(null);

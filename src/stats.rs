@@ -47,15 +47,7 @@ fn update(mut apply: impl FnMut(&mut LayStats, u64)) {
     };
     let mut stats = load(&path);
     apply(&mut stats, unix_timestamp());
-    if let Some(parent) = path.parent() {
-        if std::fs::create_dir_all(parent).is_err() {
-            return;
-        }
-    }
-    let Ok(text) = serde_json::to_string_pretty(&stats) else {
-        return;
-    };
-    let _ = std::fs::write(path, format!("{text}\n"));
+    let _ = write_private_stats(&path, &stats);
 }
 
 fn load(path: &std::path::Path) -> LayStats {
@@ -77,3 +69,12 @@ fn unix_timestamp() -> u64 {
         .unwrap_or_default()
         .as_secs()
 }
+
+fn write_private_stats(path: &std::path::Path, stats: &LayStats) -> std::io::Result<()> {
+    let text = serde_json::to_string_pretty(stats)?;
+    crate::private_file::write_private_text(path, &format!("{text}\n"))
+}
+
+#[cfg(test)]
+#[path = "stats_tests.rs"]
+mod tests;

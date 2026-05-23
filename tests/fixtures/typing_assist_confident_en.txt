@@ -1,0 +1,2 @@
+git status; echo files 100%\s
+terminal files? rus; eng 50%\s

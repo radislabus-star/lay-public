@@ -34,10 +34,24 @@
 
 - `lay_daemon.rs` остается оркестратором, без правил коррекции.
 - `daemon_runtime.rs` отвечает только за evdev event loop и делегирует решения.
+- `keyboard_io.rs` отвечает только за `/dev/input` discovery, фильтр
+  виртуальных клавиатур и низкоуровневые helpers вокруг evdev/uinput mutex.
+- `trigger_dispatch.rs` отвечает только за выбор trigger-клавиши и запуск
+  manual correction по configured/scope-trigger, без чтения evdev loop.
+- `boundary_runtime.rs` отвечает только за Space/Enter/hard-boundary runtime:
+  запуск after-space assist, сохранение пробельной границы, Enter-autocorrect
+  и сброс буфера на границах.
+- `typing_key_runtime.rs` отвечает только за обычный typing-key press:
+  обновить layout cache, принять/отфильтровать autorepeat и записать KeyEvent
+  в WordBuffer.
 - `correction_runtime.rs` отвечает только за execution manual correction:
   delete, insert, replay, undo, layout.
 - `typing_assist_runtime.rs` отвечает только за execution typing-assist после
   Space/Enter, но не за словарную логику.
+- `layout_controller.rs` отвечает за общий layout facade, GNOME/DBus/IME
+  bridge и общие shell helpers.
+- `layout_kde.rs` отвечает только за KDE/qdbus layout backend.
+- `layout_x11.rs` отвечает только за X11 XKB/shell-tool layout backend.
 - `word_buffer.rs` отвечает за память хвоста, replay toggle, pending learning и
   pending undo, но не решает, что является хорошим словом.
 - `word_reader.rs` отвечает за примитивное чтение токенов и сегментов.
@@ -81,18 +95,28 @@
 
 ## Текущее дерево ответственности
 
-- `src/bin/lay_daemon.rs` - CLI/daemon bootstrap, 402 строки.
-- `src/bin/lay_daemon/daemon_runtime.rs` - главный evdev loop, 907 строк.
+- `src/bin/lay_daemon.rs` - CLI/daemon bootstrap, 418 строк.
+- `src/bin/lay_daemon/daemon_runtime.rs` - главный evdev loop, 730 строк.
+- `src/bin/lay_daemon/trigger_dispatch.rs` - trigger config и ручной
+  correction dispatch, 79 строк.
+- `src/bin/lay_daemon/boundary_runtime.rs` - Space/Enter/hard-boundary
+  runtime, 206 строк.
+- `src/bin/lay_daemon/typing_key_runtime.rs` - обычные typing-key события,
+  67 строк.
+- `src/bin/lay_daemon/keyboard_io.rs` - `/dev/input` discovery и evdev/uinput
+  helpers, 64 строки.
 - `src/bin/lay_daemon/correction_runtime.rs` - manual correction execution,
-  658 строк.
+  682 строки.
 - `src/bin/lay_daemon/typing_assist_runtime.rs` - typing assist execution,
-  447 строк.
-- `src/bin/lay_daemon/layout_controller.rs` - backend/layout control,
-  739 строк.
-- `src/bin/lay_daemon/text_output.rs` - uinput/DBus text output, 335 строк.
+  685 строк.
+- `src/bin/lay_daemon/layout_controller.rs` - общий layout facade,
+  GNOME/DBus/IME bridge и helpers, 596 строк.
+- `src/bin/lay_daemon/layout_kde.rs` - KDE/qdbus layout backend, 132 строки.
+- `src/bin/lay_daemon/layout_x11.rs` - X11 layout backend, 50 строк.
+- `src/bin/lay_daemon/text_output.rs` - uinput/DBus text output, 331 строка.
 - `src/llm.rs` - optional candidate arbiter facade, 341 строк.
 - `src/mixed_script_repair.rs` - mixed Cyrillic/ASCII token repair,
-  169 строк.
+  189 строк.
 - `src/token_language.rs` - token-level RU/EN recognition, 146 строк.
 - `src/phrase_reader.rs` - phrase/glued/split reader, 481 строк.
 - `src/ru_typo.rs` - Russian word typo rules, 524 строки.
@@ -126,6 +150,14 @@
   ASCII-layout мусор, если внутри есть известный кириллический фрагмент.
 - `lay_daemon.rs` разрезан до bootstrap/оркестратора; runtime вынесен в
   `src/bin/lay_daemon/*`.
+- Trigger config и общий запуск manual correction вынесены в
+  `src/bin/lay_daemon/trigger_dispatch.rs`.
+- Space/Enter/hard-boundary runtime вынесен в
+  `src/bin/lay_daemon/boundary_runtime.rs`.
+- Обычная запись typing-key events вынесена в
+  `src/bin/lay_daemon/typing_key_runtime.rs`.
+- KDE/qdbus backend вынесен в `src/bin/lay_daemon/layout_kde.rs`.
+- X11 backend вынесен в `src/bin/lay_daemon/layout_x11.rs`.
 - `typing_assist.rs` стал совместимым facade; rule order живет в
   `typing_pipeline.rs`, smart-tail в `scoped_tail.rs`.
 - Генерация и scoring русских typo-кандидатов вынесены из `ru_typo.rs`.
@@ -135,7 +167,14 @@
 - Введён `typing_rule_graph.rs`: `typing_pipeline.rs` больше не содержит
   большой `match` по всем правилам.
 - Добавлен explain-контур автозамены: CLI `lay --explain-correct 'текст '`
-  показывает все правила, кандидатов, отказы, победителя и итоговый output.
+  показывает все правила, кандидатов, отказы, победителя, второго кандидата,
+  margin уверенности и итоговый output.
+- `typing_candidate.rs` теперь отдаёт единый `TypingCandidateDecision`:
+  лучший кандидат, второй кандидат, margin и confidence. UI/CLI/runtime должны
+  читать уверенность из этого контракта, а не пересчитывать её локально.
+- `decoder.rs` теперь проверяет edit-plan как инвариант:
+  `original + plan == replacement`, а committed-коррекции обязаны сохранять
+  пробельный разделитель после Space/Enter.
 
 ## Что осталось резать дальше
 
@@ -143,9 +182,12 @@
   `phrase_split.rs`, `glued_phrase.rs`, `moved_prefix.rs`.
 - `ru_typo.rs` при дальнейшем росте разделить на:
   `missing_letter.rs`, `extra_letter.rs`, `transpose.rs`, `substitution.rs`.
-- `daemon_runtime.rs` разделить по обработчикам:
-  modifiers, trigger, typing key, Space, Enter, learning, layout cache.
-- `layout_controller.rs` отделить общий backend API от GNOME/KDE/X11 деталей.
+- `daemon_runtime.rs` дальше разделить по обработчикам:
+  force-layout hotkeys, single trigger, caps trigger, double/multi-tap trigger.
+- Следующий runtime-разрез: вынести modifier/force-layout hotkey handling, не
+  меняя порядок evdev loop.
+- `layout_controller.rs` дальше отделить GNOME/DBus/IME детали от общего
+  layout facade.
 - `lay_test_input.rs` разрезать на scenario registry и низкоуровневый uinput
   driver.
 - Расширить RuleGraph до общего `CorrectionGraph` для manual scoped-tail,
@@ -156,9 +198,17 @@
 ## Проверочный контур
 
 - `scripts/check-lay-full.sh`
+- `scripts/check-lay-audit-50.sh` — 50-pass архитектурный audit без полного
+  release build.
+- `LAY_AUDIT_50=1 scripts/check-lay-full.sh` — строгий полный gate: 50-pass
+  audit + обычный full check.
 - `scripts/run_runtime_smoke.py --no-build` для окна ввода.
 - `cargo test --all-targets`
 - `cargo clippy --all-targets -- -D warnings`
 - `cargo build --release --bins`
 - `cargo run --quiet --bin lay-ngram-corpus -- check-cache`
 - `cargo run --quiet --bin lay-lem-research`
+
+`scripts/check-lay-full.sh` проверяет существующий пользовательский n-gram
+cache, а если cache ещё не создан на чистой машине, собирает временный cache в
+`target/` и проверяет его. CI делает такой же n-gram cache probe явно.

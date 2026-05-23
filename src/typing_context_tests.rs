@@ -3,13 +3,24 @@ use crate::config::{
 };
 use crate::typing_context::{should_enable_ascii_to_ru_layout, typing_assist_pipeline_for_context};
 
+const CONTEXT_ENABLED_CASES: &str = include_str!("../tests/fixtures/typing_context_enabled.txt");
+const CONTEXT_DISABLED_CASES: &str = include_str!("../tests/fixtures/typing_context_disabled.txt");
+
+fn fixture_lines(data: &'static str) -> impl Iterator<Item = String> {
+    data.lines()
+        .filter(|line| !line.trim().is_empty() && !line.starts_with('#'))
+        .map(|line| line.replace("\\s", " "))
+}
+
 #[test]
 fn russian_context_enables_ascii_to_ru_layout_rule() {
+    let mut enabled_cases = fixture_lines(CONTEXT_ENABLED_CASES);
+    let first_context = enabled_cases.next().expect("enabled context fixture");
     let pipeline = typing_assist_pipeline_for_context(
         true,
         CorrectionSafety::Normal,
         &default_typing_assist_pipeline(),
-        "я ghbdtn ",
+        &first_context,
     );
 
     assert!(pipeline
@@ -20,14 +31,10 @@ fn russian_context_enables_ascii_to_ru_layout_rule() {
         .iter()
         .find(|rule| rule.id == "contextual_layout_en_to_ru")
         .is_some_and(|rule| rule.enabled));
-    assert!(should_enable_ascii_to_ru_layout("пишу ckjdf "));
-    assert!(should_enable_ascii_to_ru_layout("проверяю Lfdfq "));
-    assert!(should_enable_ascii_to_ru_layout("'nj "));
-    assert!(should_enable_ascii_to_ru_layout("пишу 'nj "));
-    assert!(should_enable_ascii_to_ru_layout("worked 'nj "));
-    assert!(should_enable_ascii_to_ru_layout(
-        "можно открыть Windows на NTFS и написать Lfdfq "
-    ));
+    assert!(should_enable_ascii_to_ru_layout(&first_context));
+    for context in enabled_cases {
+        assert!(should_enable_ascii_to_ru_layout(&context), "{context:?}");
+    }
 }
 
 #[test]
@@ -42,26 +49,16 @@ fn no_context_or_english_context_keeps_ascii_to_ru_disabled() {
         .find(|rule| rule.id == "layout_en_to_ru")
         .is_some_and(|rule| !rule.enabled));
 
-    for context in [
-        "ghbdtn ",
-        "good ghbdtn ",
-        "status; 'nj ",
-        "git 'nj ",
-        "wi-fi 'nj ",
-        "njkmrj? vjue& yt$ hf,jnftn 100% 'nj ",
-        "я good ",
-        "я WPS ",
-        "я wi-fi ",
-    ] {
+    for context in fixture_lines(CONTEXT_DISABLED_CASES) {
         assert!(
-            !should_enable_ascii_to_ru_layout(context),
+            !should_enable_ascii_to_ru_layout(&context),
             "context={context:?}"
         );
         let pipeline = typing_assist_pipeline_for_context(
             true,
             CorrectionSafety::Normal,
             &default_typing_assist_pipeline(),
-            context,
+            &context,
         );
         assert!(
             pipeline

@@ -57,10 +57,13 @@ fn typing_assist_auto_switch_blocks_plain_layout_words_and_keeps_explicit_cases(
         apply_typing_assist("double b ", true),
         Some("double и ".to_string())
     );
-    assert_eq!(
-        apply_typing_assist_to_text_tail("посмотри я double b "),
-        Some("посмотри я double и ".to_string())
-    );
+    for row in fixture_rows("daemon_typing_assist_tail_cases.tsv") {
+        assert_eq!(row.len(), 2, "tail cases fixture must be TSV");
+        assert_eq!(
+            apply_typing_assist_to_text_tail(&row[0]),
+            Some(row[1].clone())
+        );
+    }
     assert_eq!(
         apply_typing_assist("ашду ", true),
         Some("file ".to_string())
@@ -85,8 +88,10 @@ fn typing_assist_auto_switch_blocks_plain_layout_words_and_keeps_explicit_cases(
         apply_typing_assist("CRBK ", true),
         Some("СКИЛ ".to_string())
     );
-    assert_eq!(apply_typing_assist("кгы ", true), Some("rus ".to_string()));
-    assert_eq!(apply_typing_assist("утп ", true), Some("eng ".to_string()));
+    for row in fixture_rows("daemon_typing_assist_layout_explicit.tsv") {
+        assert_eq!(row.len(), 2, "layout explicit fixture must be TSV");
+        assert_eq!(apply_typing_assist(&row[0], true), Some(row[1].clone()));
+    }
 }
 
 #[test]
@@ -207,7 +212,7 @@ fn typing_assist_pipeline_priority_changes_first_match() {
 #[test]
 fn typing_assist_each_default_rule_has_isolated_positive_case() {
     struct Case {
-        id: &'static str,
+        id: String,
         input: String,
         expected: Option<String>,
         allow_layout_auto: bool,
@@ -218,132 +223,36 @@ fn typing_assist_each_default_rule_has_isolated_positive_case() {
     let technical_cyrillic = lay::dict::convert(&technical_ascii, lay::dict::Direction::Us2Ru);
     let prefix_cyrillic = map_events_to_layout(&[key_event(KeyCode::KEY_W, true)], true);
 
-    let cases = [
+    let mut cases: Vec<Case> = fixture_rows("daemon_typing_assist_default_rule_cases.tsv")
+        .into_iter()
+        .map(|row| {
+            assert_eq!(row.len(), 4, "default rule fixture must be TSV");
+            Case {
+                id: row[0].clone(),
+                input: row[1].clone(),
+                expected: (row[2] != "None").then(|| row[2].clone()),
+                allow_layout_auto: row[3] == "true",
+            }
+        })
+        .collect();
+    cases.extend([
         Case {
-            id: "moved_prefix_pair",
-            input: "расчет ыприблизительные ".to_string(),
-            expected: Some("расчеты приблизительные ".to_string()),
-            allow_layout_auto: false,
-        },
-        Case {
-            id: "split_word_pair",
-            input: "я вно ".to_string(),
-            expected: Some("явно ".to_string()),
-            allow_layout_auto: false,
-        },
-        Case {
-            id: "visual_b",
-            input: "слово b ".to_string(),
-            expected: Some("слово в ".to_string()),
-            allow_layout_auto: false,
-        },
-        Case {
-            id: "personal_phrase",
-            input: "нуда ".to_string(),
-            expected: Some("ну да ".to_string()),
-            allow_layout_auto: false,
-        },
-        Case {
-            id: "personal_token",
-            input: "подлючись. ".to_string(),
-            expected: Some("подключись. ".to_string()),
-            allow_layout_auto: false,
-        },
-        Case {
-            id: "duplicate_layout_prefix",
+            id: "duplicate_layout_prefix".to_string(),
             input: format!("{prefix_cyrillic}{technical_ascii} "),
             expected: Some(format!("{technical_ascii} ")),
             allow_layout_auto: false,
         },
         Case {
-            id: "mixed_script_layout",
-            input: "ОБYJDB ".to_string(),
-            expected: Some("ОБНОВИ ".to_string()),
-            allow_layout_auto: true,
-        },
-        Case {
-            id: "layout_technical",
+            id: "layout_technical".to_string(),
             input: format!("{technical_cyrillic} "),
             expected: Some(format!("{technical_ascii} ")),
             allow_layout_auto: false,
         },
-        Case {
-            id: "layout_ru_to_en",
-            input: "ашду ".to_string(),
-            expected: Some("file ".to_string()),
-            allow_layout_auto: true,
-        },
-        Case {
-            id: "layout_en_to_ru",
-            input: "njkmrj ".to_string(),
-            expected: None,
-            allow_layout_auto: true,
-        },
-        Case {
-            id: "cyrillic_case",
-            input: "МОжно ".to_string(),
-            expected: Some("Можно ".to_string()),
-            allow_layout_auto: false,
-        },
-        Case {
-            id: "hard_sign",
-            input: "Обьясни ".to_string(),
-            expected: Some("Объясни ".to_string()),
-            allow_layout_auto: false,
-        },
-        Case {
-            id: "adjacent_transposition",
-            input: "рабоатет ".to_string(),
-            expected: Some("работает ".to_string()),
-            allow_layout_auto: false,
-        },
-        Case {
-            id: "repeated_letter",
-            input: "исправленно ".to_string(),
-            expected: Some("исправлено ".to_string()),
-            allow_layout_auto: false,
-        },
-        Case {
-            id: "single_letter_substitution",
-            input: "плозо ".to_string(),
-            expected: Some("плохо ".to_string()),
-            allow_layout_auto: false,
-        },
-        Case {
-            id: "verb_ending",
-            input: "прорватся ".to_string(),
-            expected: Some("прорваться ".to_string()),
-            allow_layout_auto: false,
-        },
-        Case {
-            id: "vowel_confusion",
-            input: "помагу ".to_string(),
-            expected: Some("помогу ".to_string()),
-            allow_layout_auto: false,
-        },
-        Case {
-            id: "extra_letters",
-            input: "кнокопками ".to_string(),
-            expected: Some("кнопками ".to_string()),
-            allow_layout_auto: false,
-        },
-        Case {
-            id: "missing_letter",
-            input: "фактческим ".to_string(),
-            expected: Some("фактическим ".to_string()),
-            allow_layout_auto: false,
-        },
-        Case {
-            id: "glued_phrase",
-            input: "когдая ".to_string(),
-            expected: Some("когда я ".to_string()),
-            allow_layout_auto: false,
-        },
-    ];
+    ]);
 
-    let mut covered = HashSet::new();
+    let mut covered: HashSet<String> = HashSet::new();
     for case in cases {
-        let pipeline = typing_pipeline_with_only(case.id);
+        let pipeline = typing_pipeline_with_only(&case.id);
         assert_eq!(
             apply_typing_assist_with_pipeline(&case.input, case.allow_layout_auto, &pipeline),
             case.expected,
@@ -354,47 +263,32 @@ fn typing_assist_each_default_rule_has_isolated_positive_case() {
         covered.insert(case.id);
     }
 
-    let expected: HashSet<&str> = DEFAULT_TYPING_ASSIST_RULES
+    let expected: HashSet<String> = DEFAULT_TYPING_ASSIST_RULES
         .iter()
-        .map(|(id, _)| *id)
+        .map(|(id, _)| (*id).to_string())
         .collect();
     assert_eq!(covered, expected);
 }
 
 #[test]
 fn typing_assist_fixes_adjacent_transposition() {
-    assert_eq!(
-        apply_typing_assist_exact("рабоатет "),
-        Some("работает ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("Проверак "),
-        Some("Проверка ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("перпаратов "),
-        Some("препаратов ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_to_text_tail("сделай понятную таблицу конкретных перпаратов "),
-        Some("сделай понятную таблицу конкретных препаратов ".to_string())
-    );
+    for row in fixture_rows("daemon_typing_assist_transposition.tsv") {
+        assert_eq!(row.len(), 3, "transposition fixture must be TSV");
+        let got = if row[2] == "tail" {
+            apply_typing_assist_to_text_tail(&row[0])
+        } else {
+            apply_typing_assist_exact(&row[0])
+        };
+        assert_eq!(got, Some(row[1].clone()), "input={:?}", row[0]);
+    }
 }
 
 #[test]
 fn typing_assist_fixes_small_glued_words() {
-    assert_eq!(
-        apply_typing_assist_exact("нуда "),
-        Some("ну да ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("вчем "),
-        Some("в чем ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("Вчем, "),
-        Some("В чем, ".to_string())
-    );
+    for row in fixture_rows("daemon_typing_assist_small_glued.tsv") {
+        assert_eq!(row.len(), 2, "small glued fixture must be TSV");
+        assert_eq!(apply_typing_assist_exact(&row[0]), Some(row[1].clone()));
+    }
 }
 
 #[test]
@@ -520,138 +414,44 @@ fn typing_assist_single_letter_typos_only_use_neighbor_keys() {
 
 #[test]
 fn typing_assist_merges_accidental_space_inside_word() {
-    assert_eq!(
-        apply_typing_assist_exact("я вно "),
-        Some("явно ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("тако й "),
-        Some("такой ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("Я вно, "),
-        Some("Явно, ".to_string())
-    );
-    assert_eq!(apply_typing_assist_exact("я тут "), None);
-    assert_eq!(apply_typing_assist_exact("мы сами "), None);
-    assert_eq!(apply_typing_assist_exact("чтобы точно "), None);
-    assert_eq!(apply_typing_assist_exact("хо хо "), None);
-    assert_eq!(apply_typing_assist_exact("про сою "), None);
-    assert_eq!(apply_typing_assist_exact("по делу "), None);
-    assert_eq!(apply_typing_assist_exact("по любому "), None);
-    assert_eq!(apply_typing_assist_exact("ПО ЛЮБОМУ "), None);
-    assert_eq!(apply_typing_assist_exact("уже по любому "), None);
-    assert_eq!(apply_typing_assist_exact("я ГОДАМИ! "), None);
-    assert_eq!(apply_typing_assist_exact("проблем "), None);
-    assert_eq!(apply_typing_assist_exact("валют "), None);
-    assert_eq!(apply_typing_assist_exact("систем "), None);
-    assert_eq!(apply_typing_assist_exact("ноавый "), None);
-    assert_eq!(apply_typing_assist("ноавый ", true), None);
-    assert_eq!(apply_typing_assist_exact("раработает "), None);
-    assert_eq!(apply_typing_assist_exact("зработает "), None);
-    assert_eq!(apply_typing_assist_exact("новавый "), None);
-    assert_eq!(
-        apply_typing_assist_exact("новыйы "),
-        Some("новый ".to_string())
-    );
-    assert_eq!(apply_typing_assist_exact("за дело "), None);
+    for row in fixture_rows("daemon_typing_assist_split_word_fix.tsv") {
+        assert_eq!(row.len(), 2, "split-word fixture must be TSV");
+        assert_eq!(
+            apply_typing_assist_exact(&row[0]),
+            Some(row[1].clone()),
+            "input={:?}",
+            row[0]
+        );
+    }
+    for input in fixture_lines("daemon_typing_assist_split_word_keep.txt") {
+        assert_eq!(apply_typing_assist_exact(&input), None, "input={input:?}");
+    }
+    for input in fixture_lines("daemon_typing_assist_split_word_keep_layout.txt") {
+        assert_eq!(apply_typing_assist(&input, true), None, "input={input:?}");
+    }
 }
 
 #[test]
 fn typing_assist_splits_accidentally_glued_words() {
-    assert_eq!(
-        apply_typing_assist_exact("ятут "),
-        Some("я тут ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("чтобыточно "),
-        Some("чтобы точно ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("когдая "),
-        Some("когда я ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("еслия "),
-        Some("если я ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("тогдая "),
-        Some("тогда я ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("можноя "),
-        Some("можно я ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("неработает "),
-        Some("не работает ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("Неработает, "),
-        Some("Не работает, ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("будуя "),
-        Some("буду я ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("у насесть "),
-        Some("у нас есть ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("какпроверка "),
-        Some("как проверка ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("тожесамое "),
-        Some("тоже самое ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("тоесамое "),
-        Some("тоже самое ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("самоетоже "),
-        Some("самое тоже ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("вотэто "),
-        Some("вот это ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("янебудузавас "),
-        Some("я не буду за вас ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("янебуду "),
-        Some("я не буду ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("янебудузавастожесамое "),
-        Some("я не буду за вас тоже самое ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("ненаучишьсярезатьслова "),
-        Some("не научишься резать слова ".to_string())
-    );
-    assert_eq!(apply_typing_assist_exact("но не "), None);
-    assert_eq!(apply_typing_assist_exact("не ты "), None);
-    assert_eq!(apply_typing_assist_exact("ноне ты "), None);
-    assert_eq!(apply_typing_assist_exact("у насест "), None);
-    assert_eq!(apply_typing_assist_exact("у насилие "), None);
-    assert_eq!(apply_typing_assist_exact("машина "), None);
-    assert_eq!(apply_typing_assist_exact("земля "), None);
-    assert_eq!(apply_typing_assist_exact("какая "), None);
-    assert_eq!(apply_typing_assist_exact("статья "), None);
-    assert_eq!(apply_typing_assist_exact("семья "), None);
-    assert_eq!(apply_typing_assist_exact("идея "), None);
-    assert_eq!(apply_typing_assist_exact("синяя "), None);
-    assert_eq!(apply_typing_assist_exact("пошли "), None);
-    assert_eq!(apply_typing_assist_exact("язык "), None);
-    assert_eq!(apply_typing_assist_exact("изводитель?! "), None);
-    assert_eq!(apply_typing_assist_exact("отточеная "), None);
-    assert_eq!(apply_typing_assist_to_text_tail("я язык "), None);
+    for row in fixture_rows("daemon_typing_assist_glued_split_fix.tsv") {
+        assert_eq!(row.len(), 2, "glued-split fixture must be TSV");
+        assert_eq!(
+            apply_typing_assist_exact(&row[0]),
+            Some(row[1].clone()),
+            "input={:?}",
+            row[0]
+        );
+    }
+    for input in fixture_lines("daemon_typing_assist_glued_split_keep.txt") {
+        assert_eq!(apply_typing_assist_exact(&input), None, "input={input:?}");
+    }
+    for input in fixture_lines("daemon_typing_assist_glued_split_keep_tail.txt") {
+        assert_eq!(
+            apply_typing_assist_to_text_tail(&input),
+            None,
+            "input={input:?}"
+        );
+    }
 }
 
 #[test]
@@ -665,18 +465,18 @@ fn typing_assist_fixes_hard_sign_typos() {
 
 #[test]
 fn typing_assist_moves_letter_from_next_word_back() {
-    assert_eq!(
-        apply_typing_assist_exact("расчет ыприблизительные "),
-        Some("расчеты приблизительные ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("дл япроверки "),
-        Some("для проверки ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_to_text_tail("все расчет ыприблизительные "),
-        Some("все расчеты приблизительные ".to_string())
-    );
+    for row in fixture_rows("daemon_typing_assist_moved_prefix.tsv") {
+        assert_eq!(row.len(), 3, "moved-prefix fixture must be TSV");
+        let input = &row[0];
+        let expected = &row[1];
+        let use_tail = row[2] == "tail";
+        let got = if use_tail {
+            apply_typing_assist_to_text_tail(input)
+        } else {
+            apply_typing_assist_exact(input)
+        };
+        assert_eq!(got, Some(expected.clone()), "input={input:?}");
+    }
 }
 
 #[test]
@@ -739,8 +539,9 @@ fn typing_assist_removes_duplicate_layout_prefix_from_ascii_technical_token() {
 
 #[test]
 fn typing_assist_does_not_move_normal_word_prefixes() {
-    assert_eq!(apply_typing_assist_exact("схеме таможенник "), None);
-    assert_eq!(apply_typing_assist_exact("схема таможженик "), None);
+    for input in fixture_lines("daemon_typing_assist_prefix_keep.txt") {
+        assert_eq!(apply_typing_assist_exact(&input), None, "input={input:?}");
+    }
 }
 
 #[test]
@@ -753,9 +554,10 @@ fn typing_assist_fixes_extra_repeated_letter() {
         apply_typing_assist_exact("исправленнно "),
         Some("исправлено ".to_string())
     );
-    assert_eq!(apply_typing_assist_exact("поо "), Some("по ".to_string()));
-    assert_eq!(apply_typing_assist_exact("ПОО "), Some("ПО ".to_string()));
-    assert_eq!(apply_typing_assist_exact("заа "), Some("за ".to_string()));
+    for row in fixture_rows("daemon_typing_assist_repeated_letter.tsv") {
+        assert_eq!(row.len(), 2, "repeated-letter fixture must be TSV");
+        assert_eq!(apply_typing_assist_exact(&row[0]), Some(row[1].clone()));
+    }
     assert_eq!(apply_typing_assist_exact("про "), None);
     assert_eq!(apply_typing_assist_exact("ии "), None);
     assert_eq!(apply_typing_assist_exact("яя "), None);
@@ -825,9 +627,10 @@ fn typing_assist_keeps_valid_russian_words() {
     assert_eq!(apply_typing_assist_exact("страдает "), None);
     assert_eq!(apply_typing_assist_exact("установки "), None);
     assert_eq!(apply_typing_assist_exact("изменю "), None);
-    assert_eq!(apply_typing_assist_exact("изменю параметры "), None);
+    for input in fixture_lines("daemon_typing_assist_valid_phrase_keep.txt") {
+        assert_eq!(apply_typing_assist_exact(&input), None, "input={input:?}");
+    }
     assert_eq!(apply_typing_assist_exact("нужна "), None);
-    assert_eq!(apply_typing_assist_exact("она нужна "), None);
     assert_eq!(apply_typing_assist_exact("важна "), None);
     assert_eq!(apply_typing_assist_exact("важно "), None);
     assert_eq!(apply_typing_assist_exact("банный "), None);
@@ -842,179 +645,27 @@ fn typing_assist_keeps_valid_russian_words() {
 fn typing_assist_ignores_words_with_digits() {
     assert_eq!(apply_typing_assist_exact("товара7 "), None);
     assert_eq!(apply_typing_assist_exact("привемр7 "), None);
-    assert_eq!(apply_typing_assist_exact("пример? привемр7 "), None);
+    for input in fixture_lines("daemon_typing_assist_digit_phrase_keep.txt") {
+        assert_eq!(apply_typing_assist_exact(&input), None, "input={input:?}");
+    }
 }
 
 #[test]
 fn typing_assist_regression_suite_100_cases() {
-    let should_fix = [
-        ("подлючись ", "подключись "),
-        ("надйи ", "найди "),
-        ("Надйи ", "Найди "),
-        ("нуда ", "ну да "),
-        ("Нуда ", "Ну да "),
-        ("вчем ", "в чем "),
-        ("Вчем, ", "В чем, "),
-        ("можн ", "можно "),
-        ("Можн ", "Можно "),
-        ("МОжно ", "Можно "),
-        ("моЖно ", "можно "),
-        ("дльше ", "дальше "),
-        ("Дльше ", "Дальше "),
-        ("дальг ", "дальше "),
-        ("првильно ", "правильно "),
-        ("Првильно ", "Правильно "),
-        ("рабоатет ", "работает "),
-        ("Рабоатет ", "Работает "),
-        ("Проверак ", "Проверка "),
-        ("ошисбя ", "ошибся "),
-        ("Ошисбя ", "Ошибся "),
-        ("сиправить ", "исправить "),
-        ("Сиправить ", "Исправить "),
-        ("плозо ", "плохо "),
-        ("Плозо ", "Плохо "),
-        ("фактческим ", "фактическим "),
-        ("иблиотеку ", "библиотеку "),
-        ("занчит ", "значит "),
-        ("работатет ", "работает "),
-        ("помагу ", "помогу "),
-        ("видешь ", "видишь "),
-        ("кнокопками ", "кнопками "),
-        ("Обьясни ", "Объясни "),
-        ("исправленно ", "исправлено "),
-        ("Исправленно ", "Исправлено "),
-        ("исправленнно ", "исправлено "),
-        ("я вно ", "явно "),
-        ("Я вно, ", "Явно, "),
-        (
-            "все расчет ыприблизительные ",
-            "все расчеты приблизительные ",
-        ),
-        ("тут я вно ", "тут явно "),
-        ("Но я вно ", "Но явно "),
-        ("подлючись. ", "подключись. "),
-        ("надйи! ", "найди! "),
-        ("можн? ", "можно? "),
-        ("дльше, ", "дальше, "),
-        ("првильно. ", "правильно. "),
-        ("плозо! ", "плохо! "),
-        ("ошисбя, ", "ошибся, "),
-    ];
-
-    for (input, expected) in should_fix {
+    let should_fix = fixture_rows("daemon_typing_assist_regression_fix.tsv");
+    for row in &should_fix {
+        assert_eq!(row.len(), 2, "fix fixture must be TSV");
+        let input = &row[0];
+        let expected = &row[1];
         assert_eq!(
             apply_typing_assist_to_text_tail(input),
-            Some(expected.to_string()),
+            Some(expected.clone()),
             "input={input:?}"
         );
     }
 
-    let should_keep = [
-        "привет ",
-        "проверка ",
-        "работает ",
-        "ошибка ",
-        "ошибся ",
-        "явно ",
-        "ладно ",
-        "можно ",
-        "дальше ",
-        "плохо ",
-        "правильно ",
-        "исправлено ",
-        "исправляет ",
-        "покрыто ",
-        "покрыть ",
-        "слово ",
-        "текст ",
-        "модель ",
-        "режим ",
-        "файл ",
-        "проект ",
-        "тест ",
-        "код ",
-        "корпус ",
-        "кеш ",
-        "лог ",
-        "демон ",
-        "помощник ",
-        "клавиатура ",
-        "раскладка ",
-        "раскладок ",
-        "буфер ",
-        "пробел ",
-        "сейчас ",
-        "потом ",
-        "очень ",
-        "нужно ",
-        "хорошо ",
-        "плохо ",
-        "сделал ",
-        "проверил ",
-        "пишу ",
-        "печатаю ",
-        "быстро ",
-        "медленно ",
-        "нормально ",
-        "отлично ",
-        "давай ",
-        "нет ",
-        "вот ",
-        "это ",
-        "как ",
-        "что ",
-        "если ",
-        "тогда ",
-        "тут ",
-        "там ",
-        "уже ",
-        "ещё ",
-        "не ",
-        "ни ",
-        "хо хо ",
-        "ха ха ",
-        "CPU ",
-        "LLM ",
-        "API ",
-        "МГУ ",
-        "README ",
-        "GitHub ",
-        "WeChat ",
-        "hello ",
-        "world ",
-        "cargo ",
-        "Rust ",
-        "GNOME ",
-        "Wayland ",
-        "Ollama ",
-        "Qwen ",
-        "BitNet ",
-        "smollm ",
-        "conecargo.ru ",
-        "test@example.com ",
-        "https://example.com ",
-        "123 ",
-        "7 ",
-        "b/ ",
-        "и. ",
-        "в магазин ",
-        "в вот ",
-        "машина ",
-        "магазин ",
-        "тестами ",
-        "словами ",
-        "вариантами ",
-        "схеме таможенник ",
-        "схема таможженик ",
-        "пошли ",
-        "пошли в ",
-        "ни фига ",
-        "не фига ",
-        "как говорится ",
-        "ну что же ",
-    ];
-
-    for input in should_keep {
+    let should_keep = fixture_lines("daemon_typing_assist_regression_keep.txt");
+    for input in &should_keep {
         assert_eq!(
             apply_typing_assist_to_text_tail(input),
             None,
@@ -1031,23 +682,14 @@ fn typing_assist_regression_suite_100_cases() {
 
 #[test]
 fn auto_replace_regression_suite() {
-    let cases = [
-        ("перейти b", "gthtqnb b", "перейти в"),
-        ("b ghjcnj", "и просто", "в просто"),
-        ("слово b ", "слово и ", "слово в "),
-        ("b vfufpby ", "и магазин ", "в магазин "),
-        ("b djn", "и вот", "в вот"),
-        (
-            "посмотри я double b",
-            "gjcvjnhb z вщгиду и",
-            "посмотри я double и",
-        ),
-    ];
-
-    for (original, target, expected) in cases {
+    for row in fixture_rows("daemon_auto_replace_regression.tsv") {
+        assert_eq!(row.len(), 3, "auto-replace fixture must be TSV");
+        let original = &row[0];
+        let target = &row[1];
+        let expected = &row[2];
         assert_eq!(
             apply_auto_replace(original, target),
-            Some(expected.to_string()),
+            Some(expected.clone()),
             "original={original:?} target={target:?}"
         );
     }
@@ -1055,16 +697,13 @@ fn auto_replace_regression_suite() {
 
 #[test]
 fn replaces_visual_b_inside_russian_context() {
-    assert_eq!(
-        apply_auto_replace("перейти b", "gthtqnb b"),
-        Some("перейти в".to_string())
-    );
+    let cases = fixture_rows("daemon_auto_replace_visual_b.tsv");
+    let row = &cases[0];
+    assert_eq!(apply_auto_replace(&row[0], &row[1]), Some(row[2].clone()));
     assert_eq!(
         apply_auto_replace("b ghjcnj", "и просто"),
         Some("в просто".to_string())
     );
-    assert_eq!(
-        apply_auto_replace("слово b ", "слово и "),
-        Some("слово в ".to_string())
-    );
+    let row = &cases[1];
+    assert_eq!(apply_auto_replace(&row[0], &row[1]), Some(row[2].clone()));
 }

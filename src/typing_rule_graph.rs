@@ -6,8 +6,8 @@
 
 use crate::layout_autoswitch::{
     ascii_layout_prefix_can_be_letter, correct_duplicate_layout_prefix_on_ascii_token,
-    correct_wrong_layout_ascii_technical_token, correct_wrong_layout_ascii_word,
-    correct_wrong_layout_cyrillic_word,
+    correct_wrong_layout_ascii_phrase, correct_wrong_layout_ascii_technical_token,
+    correct_wrong_layout_ascii_word, correct_wrong_layout_cyrillic_word,
 };
 use crate::phrase_reader::{
     correct_contextual_glued_tail, correct_glued_russian_phrase, correct_moved_prefix_letter_pair,
@@ -201,7 +201,9 @@ fn apply_layout_en_to_ru(ctx: &TypingRuleContext<'_>) -> Option<String> {
     if !ctx.allow_layout_auto {
         return None;
     }
-    if let Some(replacement) = correct_wrong_layout_ascii_word(ctx.core) {
+    if let Some(replacement) = correct_wrong_layout_ascii_phrase(ctx.core)
+        .or_else(|| correct_wrong_layout_ascii_word(ctx.core))
+    {
         Some(replacement)
     } else if ascii_layout_prefix_can_be_letter(ctx.token_leading) {
         None

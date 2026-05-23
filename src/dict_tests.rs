@@ -22,3 +22,9 @@ fn preserves_unknown_chars() {
     // Цифры, пробелы, спецсимволы остаются
     assert_eq!(convert("hello 123!", Direction::Us2Ru), "руддщ 123!");
 }
+
+#[test]
+fn us_shift_punctuation_maps_to_physical_ru_letters() {
+    assert_eq!(convert("<>{}:\"~", Direction::Us2Ru), "БЮХЪЖЭЁ");
+    assert_eq!(convert("БЮХЪЖЭЁ", Direction::Ru2Us), "<>{}:\"~");
+}

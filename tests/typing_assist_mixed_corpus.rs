@@ -8,6 +8,19 @@ use lay::typing_assist::{
 };
 use lay::typing_context::{should_enable_ascii_to_ru_layout, typing_assist_pipeline_for_context};
 
+const FORUM_MIXED_CASES: &str = include_str!("fixtures/typing_assist_forum_mixed.tsv");
+const DYNAMIC_TAIL_CASES: &str = include_str!("fixtures/typing_assist_dynamic_tail.tsv");
+const DYNAMIC_TAIL_NONE_CASES: &str = include_str!("fixtures/typing_assist_dynamic_tail_none.txt");
+const ALTERNATING_CASES: &str = include_str!("fixtures/typing_assist_alternating.tsv");
+const LIVE_SPACING_CASES: &str = include_str!("fixtures/typing_assist_live_spacing.tsv");
+const CLEAN_MIXED_CASES: &str = include_str!("fixtures/typing_assist_clean_mixed.txt");
+const FULL_OPPOSITE_RU_CASES: &str = include_str!("fixtures/typing_assist_full_opposite_ru.txt");
+const CONFIDENT_EN_CASES: &str = include_str!("fixtures/typing_assist_confident_en.txt");
+const FUNCTION_BOUNDARY_CASES: &str =
+    include_str!("fixtures/typing_assist_function_boundaries.txt");
+const FORBIDDEN_FRAGMENTS: &str = include_str!("fixtures/typing_assist_forbidden_fragments.txt");
+const CONTEXT_ENABLED_CASES: &str = include_str!("fixtures/typing_context_enabled.txt");
+
 fn apply_typing_assist_to_tail(
     text: &str,
     allow_layout_auto: bool,
@@ -82,6 +95,16 @@ fn simulate_space_triggered_typing_assist_with_pipeline(
     text
 }
 
+fn assert_preserves_committed_space_boundary(input: &str, expected: &str) {
+    let got = simulate_space_triggered_typing_assist(input, true);
+    assert_eq!(got, expected, "input={input:?}");
+    assert_eq!(
+        input.ends_with(char::is_whitespace),
+        got.ends_with(char::is_whitespace),
+        "space trigger boundary changed: input={input:?} got={got:?}"
+    );
+}
+
 fn ru_text_typed_in_us_layout(text: &str) -> String {
     convert(text, Direction::Ru2Us)
 }
@@ -90,56 +113,42 @@ fn en_text_typed_in_ru_layout(text: &str) -> String {
     convert(text, Direction::Us2Ru)
 }
 
+fn fixture_cases(data: &'static str) -> impl Iterator<Item = (String, String)> {
+    fixture_rows(data).map(|line| {
+        let (input, expected) = line.split_once('\t').expect("fixture row must be TSV");
+        (decode_fixture_field(input), decode_fixture_field(expected))
+    })
+}
+
+fn fixture_lines(data: &'static str) -> impl Iterator<Item = String> {
+    fixture_rows(data).map(decode_fixture_field)
+}
+
+fn fixture_rows(data: &'static str) -> impl Iterator<Item = &'static str> {
+    data.lines()
+        .filter(|line| !line.trim().is_empty() && !line.starts_with('#'))
+}
+
+fn decode_fixture_field(value: &str) -> String {
+    value.replace("\\s", " ")
+}
+
 #[test]
 fn forum_like_mixed_sentences_preserve_spaces_and_terms() {
-    let cases = [
-        (
-            "сегодня проверяю git status и потом njkmrj тест ",
-            "сегодня проверяю git status и потом только тест ",
-        ),
-        (
-            "можно открыть Windows на NTFS и написать Lfdfq дальше ",
-            "можно открыть Windows на NTFS и написать Давай дальше ",
-        ),
-        (
-            "в терминале еукьштфд работает рядом с API JSON ",
-            "в терминале terminal работает рядом с API JSON ",
-        ),
-        (
-            "я смотрю wi-fi и double b прямо в тексте ",
-            "я смотрю wi-fi и double и прямо в тексте ",
-        ),
-        (
-            "это очнеь простой тест для Chrome и GNOME ",
-            "это очень простой тест для Chrome и GNOME ",
-        ),
-        (
-            "тут я вно вижу что good test должен остаться ",
-            "тут явно вижу что good test должен остаться ",
-        ),
-        ("ОБYJDB CRBK lay ", "ОБНОВИ CRBK lay "),
-        ("я ghbdtn и потом ckjdf ", "я привет и потом слова "),
-    ];
-
-    for (input, expected) in cases {
-        assert_eq!(
-            simulate_space_triggered_typing_assist(input, true),
-            expected,
-            "input={input:?}"
-        );
+    for (input, expected) in fixture_cases(FORUM_MIXED_CASES) {
+        assert_preserves_committed_space_boundary(&input, &expected);
     }
 }
 
 #[test]
 fn dynamic_context_allows_ascii_to_ru_in_russian_sentence() {
     let pipeline = default_typing_assist_pipeline();
-    assert!(should_enable_ascii_to_ru_layout("проверяю Lfdfq "));
-    let context_pipeline = typing_assist_pipeline_for_context(
-        true,
-        CorrectionSafety::Normal,
-        &pipeline,
-        "проверяю Lfdfq ",
-    );
+    let context = fixture_lines(CONTEXT_ENABLED_CASES)
+        .find(|line| line.contains("Lfdfq"))
+        .expect("context fixture");
+    assert!(should_enable_ascii_to_ru_layout(&context));
+    let context_pipeline =
+        typing_assist_pipeline_for_context(true, CorrectionSafety::Normal, &pipeline, &context);
     assert!(context_pipeline
         .iter()
         .find(|rule| rule.id == "contextual_layout_en_to_ru")
@@ -148,60 +157,22 @@ fn dynamic_context_allows_ascii_to_ru_in_russian_sentence() {
         apply_typing_assist_with_pipeline("Lfdfq", true, &context_pipeline),
         Some("Давай".to_string())
     );
-    assert_eq!(
-        apply_typing_assist_to_tail("'nj ", true, &pipeline),
-        Some("это ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_to_tail("проверяю Lfdfq ", true, &pipeline),
-        Some("проверяю Давай ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_to_tail("я ghbdtn ", true, &pipeline),
-        Some("я привет ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_to_tail("пишу 'nj ", true, &pipeline),
-        Some("пишу это ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_to_tail("worked 'nj ", true, &pipeline),
-        Some("worked это ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_to_tail("status; 'nj ", true, &pipeline),
-        None
-    );
-    assert_eq!(
-        apply_typing_assist_to_tail("good ghbdtn ", true, &pipeline),
-        None
-    );
+    for (input, expected) in fixture_cases(DYNAMIC_TAIL_CASES) {
+        assert_eq!(
+            apply_typing_assist_to_tail(&input, true, &pipeline),
+            Some(expected)
+        );
+    }
+    for input in fixture_lines(DYNAMIC_TAIL_NONE_CASES) {
+        assert_eq!(apply_typing_assist_to_tail(&input, true, &pipeline), None);
+    }
 }
 
 #[test]
 fn alternating_layout_sentences_fix_every_second_word() {
-    let cases = [
-        (
-            "сегодня ghbdtn потом ашду дальше ckjdf снова еукьштфд здесь 'nj ",
-            "сегодня привет потом file дальше слова снова terminal здесь это ",
-        ),
-        (
-            "проверяю Lfdfq и цщкдв затем hf,jnftn рядом ашдуы будет vjue ",
-            "проверяю Давай и world затем работает рядом files будет могу ",
-        ),
-        (
-            "можно njkmrj открыть пщщв потом ytn рядом еукьштфд теперь 'nj ",
-            "можно только открыть good потом нет рядом terminal теперь это ",
-        ),
-        (
-            "тут ckjdf и ашду потом ltkf рядом кгы дальше dctulf ",
-            "тут слова и file потом дела рядом rus дальше всегда ",
-        ),
-    ];
-
-    for (input, expected) in cases {
+    for (input, expected) in fixture_cases(ALTERNATING_CASES) {
         assert_eq!(
-            simulate_space_triggered_typing_assist(input, true),
+            simulate_space_triggered_typing_assist(&input, true),
             expected,
             "input={input:?}"
         );
@@ -246,94 +217,20 @@ fn glued_phrase_split_can_repair_one_safe_internal_part() {
 
 #[test]
 fn live_user_sentences_keep_spaces_after_typing_assist() {
-    let cases = [
-        (
-            "я пишу мои слова мои предложения чтобыточно проверить дальше ",
-            "я пишу мои слова мои предложения чтобы точно проверить дальше ",
-        ),
-        (
-            "нужно проверить когдая пишу быстро ",
-            "нужно проверить когда я пишу быстро ",
-        ),
-        (
-            "сейчас думаю тако й пример работает ",
-            "сейчас думаю такой пример работает ",
-        ),
-        (
-            "я тут вижу что пробел не должен липнуть ",
-            "я тут вижу что пробел не должен липнуть ",
-        ),
-        (
-            "ошибка в наборе но не ты должен остаться ",
-            "ошибка в наборе но не ты должен остаться ",
-        ),
-        (
-            "изменю параметры и проверю что слова не склеиваются ",
-            "изменю параметры и проверю что слова не склеиваются ",
-        ),
-        (
-            "пишу про сою и проверяю что предлог не липнет ",
-            "пишу про сою и проверяю что предлог не липнет ",
-        ),
-        (
-            "за нас уже по любому и дальше пишем ",
-            "за нас уже по любому и дальше пишем ",
-        ),
-        (
-            "за нас уже поо любому и дальше пишем ",
-            "за нас уже по любому и дальше пишем ",
-        ),
-        (
-            "мы должны помнить что у насесть право на информацию ",
-            "мы должны помнить что у нас есть право на информацию ",
-        ),
-        (
-            "вот какпроверка автозамены выглядит сейчас ",
-            "вот как проверка автозамены выглядит сейчас ",
-        ),
-        (
-            "сейчас тожесамое проверяю быстро ",
-            "сейчас тоже самое проверяю быстро ",
-        ),
-        (
-            "проверяю вотэто и самоетоже быстро ",
-            "проверяю вот это и самое тоже быстро ",
-        ),
-        (
-            "я не буду за вас янебудузавас дальше ",
-            "я не буду за вас я не буду за вас дальше ",
-        ),
-        (
-            "проверяю тоже самое янебуду дальше ",
-            "проверяю тоже самое я не буду дальше ",
-        ),
-        (
-            "проверяю тоже самое самое тоже янебудузавастожесамое дальше ",
-            "проверяю тоже самое самое тоже я не буду за вас тоже самое дальше ",
-        ),
-        (
-            "проверяю пока ненаучишьсярезатьслова дальше ",
-            "проверяю пока не научишься резать слова дальше ",
-        ),
-        (
-            "пишем тест я язык НАПИШИ дальше ",
-            "пишем тест я язык НАПИШИ дальше ",
-        ),
-    ];
-
-    for (input, expected) in cases {
-        let got = simulate_space_triggered_typing_assist(input, true);
+    for (input, expected) in fixture_cases(LIVE_SPACING_CASES) {
+        let got = simulate_space_triggered_typing_assist(&input, true);
         assert_eq!(got, expected, "input={input:?}");
-        assert!(!got.contains("чтобыточно"));
-        assert!(!got.contains("когдая"));
-        assert!(!got.contains("тако й"));
-        assert!(!got.contains("нонеты"));
-        assert!(!got.contains("ноне ты"));
-        assert!(!got.contains("изменюпараметры"));
-        assert!(!got.contains("просою"));
-        assert!(!got.contains("какпроверка"));
-        assert!(!got.contains("тожесамое"));
-        assert!(!got.contains("янебудузавас"));
+        assert_eq!(
+            input.ends_with(char::is_whitespace),
+            got.ends_with(char::is_whitespace),
+            "space trigger boundary changed: input={input:?} got={got:?}"
+        );
+        for fragment in fixture_lines(FORBIDDEN_FRAGMENTS) {
+            assert!(
+                !got.contains(&fragment),
+                "fragment={fragment:?} got={got:?}"
+            );
+        }
     }
 }
 
@@ -369,6 +266,11 @@ fn live_journal_false_positive_candidates_are_rejected() {
         apply_typing_assist_with_pipeline("никуму ", true, &normal_auto_pipeline),
         None,
         "normal live autocorrect should not use vowel-confusion guesses"
+    );
+    assert_eq!(
+        apply_typing_assist_with_pipeline("котовые ", false, &normal_auto_pipeline),
+        None,
+        "known Russian adjective form must not be changed into a different known word"
     );
 
     let experimental_auto_pipeline = typing_assist_pipeline_for_policy(
@@ -419,26 +321,9 @@ fn normal_autocorrect_keeps_safe_rules_and_rejects_aggressive_guesses() {
 
 #[test]
 fn one_letter_function_words_do_not_steal_next_word_prefix() {
-    let cases = [
-        "я язык",
-        "я явно",
-        "в версии",
-        "в воде",
-        "и идея",
-        "и инструкция",
-        "к команде",
-        "с системой",
-        "у утилиты",
-        "о окне",
-    ];
-
-    for phrase in cases {
+    for phrase in fixture_lines(FUNCTION_BOUNDARY_CASES) {
         let input = format!("проверяю {phrase} дальше ");
-        assert_eq!(
-            simulate_space_triggered_typing_assist(&input, true),
-            input,
-            "one-letter function word stole next prefix: {input:?}"
-        );
+        assert_preserves_committed_space_boundary(&input, &input);
     }
 }
 
@@ -509,32 +394,15 @@ fn forum_like_mixed_matrix_autofixes_contextual_layout_words_and_keeps_boundarie
 
 #[test]
 fn forum_like_clean_mixed_sentences_do_not_get_rewritten() {
-    let cases = [
-        "я проверяю git status и Windows NTFS ",
-        "тут good test рядом с русским текстом ",
-        "wi-fi работает и API JSON остаются как есть ",
-        "Chrome GNOME Linux file mode code data ",
-        "это нормальная русская фраза без правки ",
-    ];
-
-    for input in cases {
-        assert_eq!(
-            simulate_space_triggered_typing_assist(input, true),
-            input,
-            "clean sentence was changed: {input:?}"
-        );
+    for input in fixture_lines(CLEAN_MIXED_CASES) {
+        assert_preserves_committed_space_boundary(&input, &input);
     }
 }
 
 #[test]
 fn normal_mode_does_not_autocorrect_full_opposite_layout_russian_sentence() {
-    let cases = [
-        "только, могу? не; работает 100% это нормально! ",
-        "Давай: это тест? работает; можно 50% дальше. ",
-    ];
-
-    for expected in cases {
-        let input = ru_text_typed_in_us_layout(expected);
+    for expected in fixture_lines(FULL_OPPOSITE_RU_CASES) {
+        let input = ru_text_typed_in_us_layout(&expected);
         assert_eq!(
             simulate_space_triggered_typing_assist(&input, true),
             input,
@@ -545,13 +413,8 @@ fn normal_mode_does_not_autocorrect_full_opposite_layout_russian_sentence() {
 
 #[test]
 fn normal_mode_autocorrects_confident_english_typed_in_ru_layout() {
-    let cases = [
-        "git status; echo files 100% ",
-        "terminal files? rus; eng 50% ",
-    ];
-
-    for expected in cases {
-        let input = en_text_typed_in_ru_layout(expected);
+    for expected in fixture_lines(CONFIDENT_EN_CASES) {
+        let input = en_text_typed_in_ru_layout(&expected);
         assert_eq!(
             simulate_space_triggered_typing_assist(&input, true),
             expected,

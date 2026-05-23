@@ -28,25 +28,49 @@ use lay::typing_assist::{
 };
 use lay::word_buffer::{UserLearningCorrection, WordBuffer};
 use std::collections::{BTreeMap, HashSet};
+use std::path::PathBuf;
 use std::sync::Once;
 use std::time::Duration;
 
 fn seed_test_replacements() {
     static ONCE: Once = Once::new();
     ONCE.call_once(|| {
-        for (from, to) in [
-            ("подлючись", "подключись"),
-            ("надйи", "найди"),
-            ("нуда", "ну да"),
-            ("вчем", "в чем"),
-            ("можн", "можно"),
-            ("дльше", "дальше"),
-            ("дальг", "дальше"),
-            ("првильно", "правильно"),
-        ] {
-            remember_promoted_replacement(from, to);
+        for row in fixture_rows("daemon_seed_replacements.tsv") {
+            assert_eq!(row.len(), 2, "seed replacement fixture must be TSV");
+            remember_promoted_replacement(&row[0], &row[1]);
         }
     });
+}
+
+fn fixture_rows(name: &str) -> Vec<Vec<String>> {
+    let path = fixture_path(name);
+    std::fs::read_to_string(&path)
+        .unwrap_or_else(|err| panic!("failed to read fixture {path:?}: {err}"))
+        .lines()
+        .filter(|line| !line.trim().is_empty() && !line.starts_with('#'))
+        .map(|line| line.split('\t').map(decode_fixture_field).collect())
+        .collect()
+}
+
+fn fixture_lines(name: &str) -> Vec<String> {
+    let path = fixture_path(name);
+    std::fs::read_to_string(&path)
+        .unwrap_or_else(|err| panic!("failed to read fixture {path:?}: {err}"))
+        .lines()
+        .filter(|line| !line.trim().is_empty() && !line.starts_with('#'))
+        .map(decode_fixture_field)
+        .collect()
+}
+
+fn fixture_path(name: &str) -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("tests")
+        .join("fixtures")
+        .join(name)
+}
+
+fn decode_fixture_field(value: &str) -> String {
+    value.replace("\\s", " ")
 }
 
 fn apply_typing_assist_exact(text: &str) -> Option<String> {
@@ -190,34 +214,37 @@ fn typing_pipeline_with_first(first: &str) -> Vec<TypingAssistRuleConfig> {
 
 #[test]
 fn text_insert_runs_use_uinput_layout_channels() {
-    let runs = text_to_uinput_runs("Привет Double", true).expect("typable text");
-    assert_eq!(runs.len(), 2);
-    assert!(runs[0].target_is_ru);
-    assert!(!runs[1].target_is_ru);
-    assert_eq!(map_events_to_layout(&runs[0].events, true), "Привет ");
-    assert_eq!(map_events_to_layout(&runs[1].events, false), "Double");
+    for row in fixture_rows("daemon_text_insert_runs.tsv") {
+        assert_eq!(row.len(), 4, "text insert fixture must be TSV");
+        let default_layout_is_ru = row[1] == "ru";
+        if row[2] == "none" {
+            assert!(text_to_uinput_runs(&row[0], default_layout_is_ru).is_none());
+            continue;
+        }
 
-    let runs = text_to_uinput_runs("ну да ", true).expect("typable text");
-    assert_eq!(runs.len(), 1);
-    assert!(runs[0].target_is_ru);
-    assert_eq!(map_events_to_layout(&runs[0].events, true), "ну да ");
-
-    let runs = text_to_uinput_runs("тоже самое ", true).expect("typable text");
-    assert_eq!(runs.len(), 1);
-    assert!(runs[0].target_is_ru);
-    assert_eq!(map_events_to_layout(&runs[0].events, true), "тоже самое ");
-
-    let runs = text_to_uinput_runs("hello world", false).expect("typable text");
-    assert_eq!(runs.len(), 1);
-    assert!(!runs[0].target_is_ru);
-    assert_eq!(map_events_to_layout(&runs[0].events, false), "hello world");
-
-    assert!(text_to_uinput_runs("привет 🙂", true).is_none());
+        let expected_targets: Vec<bool> = row[2].split(',').map(|part| part == "ru").collect();
+        let expected_outputs: Vec<&str> = row[3].split('|').collect();
+        let runs = text_to_uinput_runs(&row[0], default_layout_is_ru).expect("typable text");
+        assert_eq!(runs.len(), expected_targets.len());
+        assert_eq!(runs.len(), expected_outputs.len());
+        for (idx, run) in runs.iter().enumerate() {
+            assert_eq!(run.target_is_ru, expected_targets[idx], "row={row:?}");
+            assert_eq!(
+                map_events_to_layout(&run.events, run.target_is_ru),
+                expected_outputs[idx],
+                "row={row:?}"
+            );
+        }
+    }
 }
 
 #[test]
 fn typing_assist_minimal_plan_keeps_inter_word_space() {
-    let plan = plan_text_replacement("чтобы точнр ", "чтобы точно ").expect("replacement");
+    let row = fixture_rows("daemon_typing_assist_minimal_plan.tsv")
+        .into_iter()
+        .next()
+        .expect("minimal plan fixture");
+    let plan = plan_text_replacement(&row[0], &row[1]).expect("replacement");
 
     assert_eq!(plan.move_left, 1);
     assert_eq!(plan.backspaces, 1);
@@ -254,15 +281,19 @@ fn replacement_memory_keeps_space_boundary_after_i_autofix() {
 #[test]
 fn replacement_memory_synthesizes_last_word_after_glued_phrase_split() {
     let mut buffer = WordBuffer::new();
-    push_text_as_layout(&mut buffer, "тожесамое ", true);
+    let row = fixture_rows("daemon_replacement_memory_glued.tsv")
+        .into_iter()
+        .next()
+        .expect("replacement memory fixture");
+    push_text_as_layout(&mut buffer, &row[0], true);
     let events = buffer
         .last_completed_words_events(1)
         .expect("completed one-word tail");
     let original = map_original_events(&events);
-    let replacement = "тоже самое ";
+    let replacement = &row[1];
     let plan = plan_committed_tail_replacement(&original, replacement).expect("replacement");
 
-    assert_eq!(original, "тожесамое ");
+    assert_eq!(original, row[0]);
     assert_eq!(
         plan,
         TextReplacement {
@@ -278,39 +309,43 @@ fn replacement_memory_synthesizes_last_word_after_glued_phrase_split() {
     assert_eq!(buffer.prev_words_len(), 2);
     assert_eq!(
         map_original_events(buffer.prev_word_events(0).expect("first prev word")),
-        "тоже"
+        row[2]
     );
     assert_eq!(
         map_original_events(buffer.prev_word_events(1).expect("second prev word")),
-        "самое"
+        row[3]
     );
 
-    push_text_as_layout(&mut buffer, "дальше", true);
+    push_text_as_layout(&mut buffer, &row[4], true);
     let (tail, _) = buffer.what_to_replay(2).expect("two-word tail");
-    assert_eq!(map_original_events(&tail), "самое дальше");
+    assert_eq!(map_original_events(&tail), row[5]);
 }
 
 #[test]
 fn replacement_memory_can_update_completed_words_without_dropping_current_word() {
     let mut buffer = WordBuffer::new();
-    push_text_as_layout(&mut buffer, "тожесамое ", true);
-    push_text_as_layout(&mut buffer, "склено", true);
+    let row = fixture_rows("daemon_replacement_memory_completed.tsv")
+        .into_iter()
+        .next()
+        .expect("replacement completed fixture");
+    push_text_as_layout(&mut buffer, &row[0], true);
+    push_text_as_layout(&mut buffer, &row[4], true);
 
-    assert!(buffer.remember_completed_replacement_words_for_replay("тоже самое "));
+    assert!(buffer.remember_completed_replacement_words_for_replay(&row[1]));
     assert_eq!(buffer.prev_words_len(), 2);
     assert!(buffer.prev_had_trailing_space());
     assert_eq!(
         map_original_events(buffer.prev_word_events(0).expect("first prev")),
-        "тоже"
+        row[2]
     );
     assert_eq!(
         map_original_events(buffer.prev_word_events(1).expect("second prev")),
-        "самое"
+        row[3]
     );
     assert_eq!(buffer.current_len(), 6);
 
     let (tail, _) = buffer.what_to_replay(1).expect("current word tail");
-    assert_eq!(map_original_events(&tail), "склено");
+    assert_eq!(map_original_events(&tail), row[4]);
 }
 
 #[test]

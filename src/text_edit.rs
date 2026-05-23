@@ -113,6 +113,30 @@ pub fn offset_replacement_plan_for_cursor(
     }
 }
 
+pub fn apply_replacement_plan_to_text(original: &str, plan: &TextReplacement) -> String {
+    let mut chars: Vec<char> = original.chars().collect();
+    let cursor = chars.len().saturating_sub(plan.move_left as usize);
+    let delete_start = cursor.saturating_sub(plan.backspaces as usize);
+    chars.splice(delete_start..cursor, plan.insert.chars());
+    let cursor = delete_start + plan.insert.chars().count();
+    let _cursor = (cursor + plan.move_right as usize).min(chars.len());
+    chars.into_iter().collect()
+}
+
+pub fn replacement_plan_matches(original: &str, replacement: &str, plan: &TextReplacement) -> bool {
+    apply_replacement_plan_to_text(original, plan) == replacement
+}
+
+pub fn committed_separator_is_preserved(original: &str, replacement: &str) -> bool {
+    let original_last = original.chars().next_back();
+    let replacement_last = replacement.chars().next_back();
+
+    match original_last {
+        Some(ch) if ch.is_whitespace() => replacement_last == Some(ch),
+        _ => true,
+    }
+}
+
 pub fn plan_committed_whitespace_insertions(
     original: &str,
     replacement: &str,

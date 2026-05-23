@@ -197,7 +197,22 @@ fn grab_physical_device_for_correction(device: &mut Device) -> DeviceGrabGuard<'
 mod text_output;
 use text_output::*;
 
+// ─── Keyboard device I/O helpers ──────────────────────────
+
+#[path = "lay_daemon/keyboard_io.rs"]
+mod keyboard_io;
+use keyboard_io::*;
+
 // ─── Daemon runtime orchestration ──────────────────────
+
+#[path = "lay_daemon/trigger_dispatch.rs"]
+mod trigger_dispatch;
+
+#[path = "lay_daemon/boundary_runtime.rs"]
+mod boundary_runtime;
+
+#[path = "lay_daemon/typing_key_runtime.rs"]
+mod typing_key_runtime;
 
 #[path = "lay_daemon/daemon_runtime.rs"]
 mod daemon_runtime;
@@ -360,11 +375,17 @@ use typing_assist_runtime::*;
 
 // ─── Layout, DBus, IME controller ────────────────────────
 
+#[path = "lay_daemon/layout_kde.rs"]
+mod layout_kde;
+
+#[path = "lay_daemon/layout_x11.rs"]
+mod layout_x11;
+
 #[path = "lay_daemon/layout_controller.rs"]
 mod layout_controller;
 use layout_controller::*;
 
-// keyboard discovery lives in lay_daemon/daemon_runtime.rs
+// keyboard discovery lives in lay_daemon/keyboard_io.rs
 
 // ─── Лог ────────────────────────────────────────────────────
 

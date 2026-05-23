@@ -14,7 +14,7 @@ use lay::{config, dict, llm, typing_assist, typing_context};
 #[command(
     name = "lay",
     version,
-    about = "Layout switcher: 'Ye djn ghbvth' → 'Ну вот пример'"
+    about = "Keyboard layout switcher and typing helper"
 )]
 struct Args {
     /// Текст для конвертации (если пусто — читаем stdin или --clipboard).
@@ -202,6 +202,17 @@ fn print_typing_explanation(explanation: &typing_assist::TypingAssistExplanation
             chosen.rule_id, chosen.replacement, chosen.score.total
         ),
         None => println!("chosen: none"),
+    }
+    match (&explanation.second, explanation.margin) {
+        (Some(second), Some(margin)) => println!(
+            "second: {} -> {:?} score={:.3} margin={:.3}",
+            second.rule_id, second.replacement, second.score.total, margin
+        ),
+        (None, Some(margin)) => println!("second: none margin={margin:.3}"),
+        _ => {}
+    }
+    if let Some(confidence) = explanation.confidence(1.0) {
+        println!("confidence: {confidence:?}");
     }
     match &explanation.output {
         Some(output) => println!("output: {:?}", output),

@@ -7,7 +7,9 @@
 use crate::config::{
     default_typing_assist_pipeline, normalize_typing_assist_pipeline, TypingAssistRuleConfig,
 };
-use crate::typing_candidate::{choose_typing_candidate, TypingCandidate};
+use crate::typing_candidate::{
+    classify_typing_confidence, rank_typing_candidates, TypingCandidate, TypingDecisionConfidence,
+};
 use crate::typing_rule_graph::{find_typing_rule, TypingRuleContext};
 use crate::word_reader::{split_edge_whitespace, split_word_punctuation};
 
@@ -43,7 +45,20 @@ pub struct TypingAssistExplanation {
     pub allow_layout_auto: bool,
     pub evaluations: Vec<TypingRuleEvaluation>,
     pub chosen: Option<TypingCandidate>,
+    pub second: Option<TypingCandidate>,
+    pub margin: Option<f64>,
     pub output: Option<String>,
+}
+
+impl TypingAssistExplanation {
+    pub fn confidence(&self, strong_margin: f64) -> Option<TypingDecisionConfidence> {
+        self.chosen.as_ref()?;
+        Some(classify_typing_confidence(
+            self.second.is_some(),
+            self.margin,
+            strong_margin,
+        ))
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -67,6 +82,8 @@ pub fn explain_typing_assist_with_pipeline(
         allow_layout_auto,
         evaluations: Vec::new(),
         chosen: None,
+        second: None,
+        margin: None,
         output: None,
     };
 
@@ -124,9 +141,10 @@ pub fn explain_typing_assist_with_pipeline(
         explanation.evaluations.push(evaluation);
     }
 
-    let Some(chosen) = choose_typing_candidate(candidates) else {
+    let Some(decision) = rank_typing_candidates(candidates) else {
         return explanation;
     };
+    let chosen = decision.best;
 
     let mut out = String::with_capacity(text.len().max(chosen.replacement.len()));
     out.push_str(leading);
@@ -135,6 +153,8 @@ pub fn explain_typing_assist_with_pipeline(
     if out != text {
         explanation.output = Some(out);
     }
+    explanation.second = decision.second;
+    explanation.margin = Some(decision.margin);
     explanation.chosen = Some(chosen);
     explanation
 }

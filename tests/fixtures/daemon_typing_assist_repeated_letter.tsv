@@ -1,0 +1,4 @@
+# input	expected
+поо\s	по\s
+ПОО\s	ПО\s
+заа\s	за\s

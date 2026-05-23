@@ -1,28 +1,33 @@
 use evdev::{uinput::VirtualDevice, Device, EventType, InputEvent, KeyCode};
 use lay::config::LayConfig;
-use lay::keyboard::{is_typing_key, KeyEvent};
+use lay::keyboard::is_typing_key;
 use lay::word_buffer::WordBuffer;
 use std::os::fd::AsRawFd;
+use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
+use super::boundary_runtime::{
+    handle_hard_boundary_if_needed, handle_space_press, note_learning_backspace_if_needed,
+    try_handle_enter_autocorrect, try_handle_space_release, EnterAutocorrectContext,
+    HardBoundaryContext, SpacePressContext, SpaceReleaseContext,
+};
+use super::trigger_dispatch::{
+    apply_manual_correction_result, is_single_trigger_id, run_configured_manual_correction,
+    run_scoped_manual_correction, trigger_key_from_config,
+};
+use super::typing_key_runtime::{handle_typing_key_press, TypingKeyContext};
 use super::{
-    active_auto_replace, active_correction_engine, active_enter_autocorrect,
-    active_enter_autocorrect_from_env, active_layout_backend, active_replace_words,
-    active_typing_assist, append_user_correction_learning_log, grab_physical_device_for_correction,
-    handle_double_shift, handle_enter_autocorrect, handle_force_layout_hotkey,
-    handle_typing_assist_after_space, idle_wait_timeout, is_hard_boundary, log,
-    multi_tap_scope_for_taps, read_current_layout_is_ru, run_manual_correction_with_scope,
-    should_drop_stale_typing_assist_after_space, should_ignore_buffer_key,
-    should_run_typing_assist_on_space_release, should_schedule_typing_assist_after_space,
-    should_start_ignored_buffer_token, single_hotkey_keycode, update_focus_ignore_state,
-    wait_for_keyboard_event_or_timeout, DShiftState, MultiTapPending, ShiftState,
-    TypingAssistOutcome, ENTER_AUTOCORRECT_EXPERIMENT_ENV, FOCUS_IGNORE_POLL_INTERVAL_MS,
-    LAYOUT_POLL_INTERVAL_MS,
+    active_enter_autocorrect_from_env, active_layout_backend, handle_force_layout_hotkey,
+    idle_wait_timeout, is_hard_boundary, lock_virtual_keyboard, log, multi_tap_scope_for_taps,
+    read_current_layout_is_ru, should_ignore_buffer_key, should_start_ignored_buffer_token,
+    single_hotkey_keycode, update_focus_ignore_state, wait_for_keyboard_event_or_timeout,
+    DShiftState, MultiTapPending, ShiftState, ENTER_AUTOCORRECT_EXPERIMENT_ENV,
+    FOCUS_IGNORE_POLL_INTERVAL_MS,
 };
 
 pub(super) fn listen_keyboard(
     device_path: std::path::PathBuf,
-    virtual_kbd: std::sync::Arc<std::sync::Mutex<Option<VirtualDevice>>>,
+    virtual_kbd: Arc<Mutex<Option<VirtualDevice>>>,
     verbose: bool,
     cfg: LayConfig,
 ) -> std::io::Result<()> {
@@ -61,20 +66,10 @@ pub(super) fn listen_keyboard(
         cfg.debounce_ms
     ));
 
-    // Клавиша-триггер из config
-    let trigger_key = match cfg.trigger.as_str() {
-        "double-ctrl" => KeyCode::KEY_LEFTCTRL,
-        "double-alt" => KeyCode::KEY_LEFTALT,
-        "caps-lock" => KeyCode::KEY_CAPSLOCK,
-        "single-rshift" => KeyCode::KEY_RIGHTSHIFT,
-        "single-rctrl" => KeyCode::KEY_RIGHTCTRL,
-        "single-ralt" => KeyCode::KEY_RIGHTALT,
-        "single-pause" => KeyCode::KEY_PAUSE,
-        _ => KeyCode::KEY_LEFTSHIFT, // default: double-lshift
-    };
+    let trigger_key = trigger_key_from_config(&cfg.trigger);
     let is_caps_trigger = cfg.trigger == "caps-lock";
     // Одиночный триггер: нажал и отпустил без других клавиш — конвертация
-    let is_single_trigger = cfg.trigger.starts_with("single-");
+    let is_single_trigger = is_single_trigger_id(&cfg.trigger);
     let mut single_pressed_at: Option<Instant> = None; // когда нажата single-клавиша
     let mut single_other_key = false; // была ли другая клавиша пока держали
     let force_ru_key = single_hotkey_keycode(&cfg.force_ru_key);
@@ -149,24 +144,21 @@ pub(super) fn listen_keyboard(
                     if let Some(pending) = pending_multi_tap.take() {
                         let replace_words =
                             multi_tap_scope_for_taps(pending.tap_count).unwrap_or(1);
-                        let _physical_grab = grab_physical_device_for_correction(&mut device);
-                        let mut g = virtual_kbd.lock().unwrap();
-                        let correction_result = run_manual_correction_with_scope(
+                        let correction_result = run_scoped_manual_correction(
                             &mut buffer,
                             replace_words,
-                            g.as_mut(),
+                            &mut device,
+                            &virtual_kbd,
                             &mut executing,
                             events_since_word_start,
                             "multi-tap timeout",
                         );
-                        if let Some(is_ru) = correction_result {
-                            current_layout_is_ru = is_ru;
-                            last_layout_poll = Instant::now();
-                        }
-                        if correction_result.is_some() {
-                            suppress_next_typing_assist_after_manual_replay = true;
-                        }
-                        drop(g);
+                        apply_manual_correction_result(
+                            correction_result,
+                            &mut current_layout_is_ru,
+                            &mut last_layout_poll,
+                            &mut suppress_next_typing_assist_after_manual_replay,
+                        );
                         shift_state.clear_shifts();
                         dshift_state = DShiftState::Idle;
                         last_double_at = Some(Instant::now());
@@ -252,7 +244,7 @@ pub(super) fn listen_keyboard(
                                     && last_double_at
                                         .map_or(true, |d| d.elapsed() >= debounce_window)
                                 {
-                                    let mut g = virtual_kbd.lock().unwrap();
+                                    let mut g = lock_virtual_keyboard(&virtual_kbd);
                                     let result = handle_force_layout_hotkey(
                                         target_is_ru,
                                         &mut buffer,
@@ -327,28 +319,18 @@ pub(super) fn listen_keyboard(
                                             " ✓"
                                         }
                                     ));
-                                    let mut g = virtual_kbd.lock().unwrap();
-                                    let _physical_grab =
-                                        grab_physical_device_for_correction(&mut device);
-                                    let replace_words = active_replace_words();
-                                    let engine = active_correction_engine();
-                                    let auto_replace = active_auto_replace();
-                                    let correction_result = handle_double_shift(
+                                    let correction_result = run_configured_manual_correction(
                                         &mut buffer,
-                                        replace_words,
-                                        engine,
-                                        auto_replace,
-                                        g.as_mut(),
+                                        &mut device,
+                                        &virtual_kbd,
                                         &mut executing,
                                     );
-                                    if let Some(is_ru) = correction_result {
-                                        current_layout_is_ru = is_ru;
-                                        last_layout_poll = Instant::now();
-                                    }
-                                    if correction_result.is_some() {
-                                        suppress_next_typing_assist_after_manual_replay = true;
-                                    }
-                                    drop(g);
+                                    apply_manual_correction_result(
+                                        correction_result,
+                                        &mut current_layout_is_ru,
+                                        &mut last_layout_poll,
+                                        &mut suppress_next_typing_assist_after_manual_replay,
+                                    );
                                     shift_state.clear_shifts();
                                     last_double_at = Some(Instant::now());
                                     clear_on_next_typing = true;
@@ -387,27 +369,18 @@ pub(super) fn listen_keyboard(
                         " ✓"
                     }
                 ));
-                let _physical_grab = grab_physical_device_for_correction(&mut device);
-                let mut g = virtual_kbd.lock().unwrap();
-                let replace_words = active_replace_words();
-                let engine = active_correction_engine();
-                let auto_replace = active_auto_replace();
-                let correction_result = handle_double_shift(
+                let correction_result = run_configured_manual_correction(
                     &mut buffer,
-                    replace_words,
-                    engine,
-                    auto_replace,
-                    g.as_mut(),
+                    &mut device,
+                    &virtual_kbd,
                     &mut executing,
                 );
-                if let Some(is_ru) = correction_result {
-                    current_layout_is_ru = is_ru;
-                    last_layout_poll = Instant::now();
-                }
-                if correction_result.is_some() {
-                    suppress_next_typing_assist_after_manual_replay = true;
-                }
-                drop(g);
+                apply_manual_correction_result(
+                    correction_result,
+                    &mut current_layout_is_ru,
+                    &mut last_layout_poll,
+                    &mut suppress_next_typing_assist_after_manual_replay,
+                );
                 shift_state.clear_shifts();
                 dshift_state = DShiftState::Idle;
                 last_double_at = Some(Instant::now());
@@ -511,27 +484,18 @@ pub(super) fn listen_keyboard(
                                     " ✓"
                                 }
                             ));
-                            let _physical_grab = grab_physical_device_for_correction(&mut device);
-                            let mut g = virtual_kbd.lock().unwrap();
-                            let replace_words = active_replace_words();
-                            let engine = active_correction_engine();
-                            let auto_replace = active_auto_replace();
-                            let correction_result = handle_double_shift(
+                            let correction_result = run_configured_manual_correction(
                                 &mut buffer,
-                                replace_words,
-                                engine,
-                                auto_replace,
-                                g.as_mut(),
+                                &mut device,
+                                &virtual_kbd,
                                 &mut executing,
                             );
-                            if let Some(is_ru) = correction_result {
-                                current_layout_is_ru = is_ru;
-                                last_layout_poll = Instant::now();
-                            }
-                            if correction_result.is_some() {
-                                suppress_next_typing_assist_after_manual_replay = true;
-                            }
-                            drop(g);
+                            apply_manual_correction_result(
+                                correction_result,
+                                &mut current_layout_is_ru,
+                                &mut last_layout_poll,
+                                &mut suppress_next_typing_assist_after_manual_replay,
+                            );
                             shift_state.clear_shifts();
                             dshift_state = DShiftState::Idle;
                             last_double_at = Some(Instant::now());
@@ -556,25 +520,21 @@ pub(super) fn listen_keyboard(
                                 if pending.tap_count >= multi_tap_max_taps {
                                     let replace_words =
                                         multi_tap_scope_for_taps(pending.tap_count).unwrap_or(3);
-                                    let _physical_grab =
-                                        grab_physical_device_for_correction(&mut device);
-                                    let mut g = virtual_kbd.lock().unwrap();
-                                    let correction_result = run_manual_correction_with_scope(
+                                    let correction_result = run_scoped_manual_correction(
                                         &mut buffer,
                                         replace_words,
-                                        g.as_mut(),
+                                        &mut device,
+                                        &virtual_kbd,
                                         &mut executing,
                                         events_since_word_start,
                                         "multi-tap max",
                                     );
-                                    if let Some(is_ru) = correction_result {
-                                        current_layout_is_ru = is_ru;
-                                        last_layout_poll = Instant::now();
-                                    }
-                                    if correction_result.is_some() {
-                                        suppress_next_typing_assist_after_manual_replay = true;
-                                    }
-                                    drop(g);
+                                    apply_manual_correction_result(
+                                        correction_result,
+                                        &mut current_layout_is_ru,
+                                        &mut last_layout_poll,
+                                        &mut suppress_next_typing_assist_after_manual_replay,
+                                    );
                                     shift_state.clear_shifts();
                                     dshift_state = DShiftState::Idle;
                                     last_double_at = Some(Instant::now());
@@ -630,31 +590,21 @@ pub(super) fn listen_keyboard(
                 }
             }
 
-            if key == KeyCode::KEY_SPACE
-                && value == 0
-                && should_run_typing_assist_on_space_release(
-                    pending_typing_assist_after_space,
-                    active_typing_assist(),
-                    shift_state.any(),
-                    buffer.is_empty(),
-                )
-            {
-                if has_later_typing_press(&events, event_idx) {
-                    if verbose {
-                        log("· typing-assist deferred: next key already queued");
-                    }
-                    continue;
-                }
-                let mut g = virtual_kbd.lock().unwrap();
-                let outcome = handle_typing_assist_after_space(
-                    &mut buffer,
-                    g.as_mut(),
-                    Some(&mut device),
-                    &mut executing,
-                    0,
-                );
-                pending_typing_assist_after_space =
-                    matches!(outcome, TypingAssistOutcome::Deferred);
+            if try_handle_space_release(
+                key,
+                value,
+                SpaceReleaseContext {
+                    events: &events,
+                    event_idx,
+                    buffer: &mut buffer,
+                    device: &mut device,
+                    virtual_kbd: &virtual_kbd,
+                    executing: &mut executing,
+                    pending_typing_assist_after_space: &mut pending_typing_assist_after_space,
+                    shift_state: &shift_state,
+                    verbose,
+                },
+            ) {
                 continue;
             }
 
@@ -707,197 +657,74 @@ pub(super) fn listen_keyboard(
             // ─── пробел: переносим current → prev (только на press) ──
             if key == KeyCode::KEY_SPACE {
                 if value == 1 {
-                    if should_drop_stale_typing_assist_after_space(
-                        pending_typing_assist_after_space,
-                        buffer.current_len(),
-                    ) {
-                        pending_typing_assist_after_space = false;
-                        if verbose {
-                            log("· typing-assist stale previous word skipped behind current word");
-                        }
-                    }
-                    if let Some(correction) = buffer.take_user_learning_correction(true) {
-                        append_user_correction_learning_log(&correction);
-                    }
-                    buffer.handle_space();
-                    events_since_word_start = 0;
-                    if should_schedule_typing_assist_after_space(
-                        active_typing_assist(),
-                        &mut suppress_next_typing_assist_after_manual_replay,
-                    ) {
-                        pending_typing_assist_after_space = true;
-                        if verbose {
-                            log("· typing-assist scheduled after space");
-                        }
-                    }
-                    if verbose {
-                        log(&format!(
-                            "· space, history={:?}, current={:?}",
-                            buffer.prev_words_len(),
-                            buffer.current_len()
-                        ));
-                    }
+                    handle_space_press(SpacePressContext {
+                        buffer: &mut buffer,
+                        pending_typing_assist_after_space: &mut pending_typing_assist_after_space,
+                        events_since_word_start: &mut events_since_word_start,
+                        suppress_next_typing_assist_after_manual_replay:
+                            &mut suppress_next_typing_assist_after_manual_replay,
+                        verbose,
+                    });
                 }
                 continue;
             }
 
             // ─── граница (Enter/Tab/Esc/стрелки/BS/Del) — сброс на press ──
-            if matches!(key, KeyCode::KEY_BACKSPACE | KeyCode::KEY_DELETE) && value == 1 {
-                buffer.note_learning_backspace();
+            note_learning_backspace_if_needed(key, value, &mut buffer);
+            if try_handle_enter_autocorrect(
+                key,
+                value,
+                EnterAutocorrectContext {
+                    buffer: &mut buffer,
+                    device: &mut device,
+                    virtual_kbd: &virtual_kbd,
+                    executing: &mut executing,
+                    current_layout_is_ru: &mut current_layout_is_ru,
+                    last_layout_poll: &mut last_layout_poll,
+                    pending_typing_assist_after_space: &mut pending_typing_assist_after_space,
+                    ignore_current_token_until_space: &mut ignore_current_token_until_space,
+                    events_since_word_start: &mut events_since_word_start,
+                    clear_on_next_typing: &mut clear_on_next_typing,
+                },
+            ) {
+                continue;
             }
-            if key == KeyCode::KEY_ENTER
-                && value == 1
-                && active_enter_autocorrect()
-                && !buffer.is_empty()
-            {
-                let _physical_grab = grab_physical_device_for_correction(&mut device);
-                let mut g = virtual_kbd.lock().unwrap();
-                let correction_result = handle_enter_autocorrect(
-                    &mut buffer,
-                    active_replace_words(),
-                    g.as_mut(),
-                    &mut executing,
-                );
-                if let Some(is_ru) = correction_result {
-                    current_layout_is_ru = is_ru;
-                    last_layout_poll = Instant::now();
-                    buffer.reset_all();
-                    pending_typing_assist_after_space = false;
-                    ignore_current_token_until_space = false;
-                    events_since_word_start = 0;
-                    clear_on_next_typing = true;
-                    log("· Enter autocorrect consumed boundary");
-                    continue;
-                }
-            }
-            if is_hard_boundary(key) {
-                if value == 1 && !buffer.is_empty() {
-                    if pending_typing_assist_after_space
-                        && active_typing_assist()
-                        && !shift_state.any()
-                    {
-                        let cursor_offset = buffer.current_len() as u32;
-                        let mut g = virtual_kbd.lock().unwrap();
-                        let _ = handle_typing_assist_after_space(
-                            &mut buffer,
-                            g.as_mut(),
-                            None,
-                            &mut executing,
-                            cursor_offset,
-                        );
-                    }
-                    if !matches!(key, KeyCode::KEY_BACKSPACE | KeyCode::KEY_DELETE) {
-                        if let Some(correction) = buffer.take_user_learning_correction(false) {
-                            append_user_correction_learning_log(&correction);
-                        }
-                    }
-                    buffer.reset_all();
-                    pending_typing_assist_after_space = false;
-                    ignore_current_token_until_space = false;
-                    events_since_word_start = 0;
-                    if verbose {
-                        log(&format!("· reset (граница: {key:?})"));
-                    }
-                }
+            if handle_hard_boundary_if_needed(
+                key,
+                value,
+                HardBoundaryContext {
+                    buffer: &mut buffer,
+                    virtual_kbd: &virtual_kbd,
+                    executing: &mut executing,
+                    pending_typing_assist_after_space: &mut pending_typing_assist_after_space,
+                    ignore_current_token_until_space: &mut ignore_current_token_until_space,
+                    events_since_word_start: &mut events_since_word_start,
+                    shift_state: &shift_state,
+                    verbose,
+                },
+            ) {
                 continue;
             }
 
             // ─── обычный символ ─────
             if is_typing_key(key) {
-                if clear_on_next_typing {
-                    buffer.reset_all();
-                    events_since_word_start = 0;
-                    clear_on_next_typing = false;
-                    ignore_current_token_until_space = false;
-                    suppress_next_typing_assist_after_manual_replay = false;
-                }
-                let starts_new_word = buffer.current_is_empty();
-                // Перекрёстный счёт — увеличиваем НА КАЖДОЕ press/repeat
-                // независимо от accept-фильтра.
-                events_since_word_start += 1;
-                // v=2 (autorepeat) — добавляем ТОЛЬКО если это repeat той же
-                // клавиши что была последней. Иначе чужой repeat ломал бы счёт.
-                let accept = if value == 2 {
-                    buffer.current_last_keycode() == Some(code)
-                } else {
-                    true
-                };
-                if !accept {
-                    if verbose {
-                        log(&format!("· key {code} v=2 SKIP (autorepeat другой) events={events_since_word_start}"));
-                    }
-                    continue;
-                }
-                if starts_new_word
-                    || last_layout_poll.elapsed() >= Duration::from_millis(LAYOUT_POLL_INTERVAL_MS)
-                {
-                    if let Ok(is_ru) = read_current_layout_is_ru() {
-                        current_layout_is_ru = is_ru;
-                    }
-                    last_layout_poll = Instant::now();
-                }
-                let typed_event = KeyEvent {
-                    keycode: code,
-                    shift: shift_state.any(),
-                    layout_is_ru: current_layout_is_ru,
-                };
-                buffer.push(typed_event);
-                buffer.note_learning_typed(typed_event);
-                if verbose {
-                    log(&format!(
-                        "· key {code} v={value} shift={} → current={} events={events_since_word_start}",
-                        shift_state.any(),
-                        buffer.current_len()
-                    ));
-                }
+                handle_typing_key_press(
+                    code,
+                    value,
+                    TypingKeyContext {
+                        buffer: &mut buffer,
+                        shift_state: &shift_state,
+                        current_layout_is_ru: &mut current_layout_is_ru,
+                        last_layout_poll: &mut last_layout_poll,
+                        events_since_word_start: &mut events_since_word_start,
+                        clear_on_next_typing: &mut clear_on_next_typing,
+                        ignore_current_token_until_space: &mut ignore_current_token_until_space,
+                        suppress_next_typing_assist_after_manual_replay:
+                            &mut suppress_next_typing_assist_after_manual_replay,
+                        verbose,
+                    },
+                );
             }
         }
     }
-}
-
-fn has_later_typing_press(events: &[InputEvent], current_index: usize) -> bool {
-    events.iter().skip(current_index + 1).any(|event| {
-        event.event_type() == EventType::KEY
-            && event.value() == 1
-            && is_typing_key(KeyCode::new(event.code()))
-    })
-}
-
-pub(super) fn find_all_keyboards() -> std::io::Result<Vec<std::path::PathBuf>> {
-    let mut found = Vec::new();
-    for entry in std::fs::read_dir("/dev/input")? {
-        let entry = entry?;
-        let path = entry.path();
-        if !path
-            .file_name()
-            .and_then(|n| n.to_str())
-            .is_some_and(|s| s.starts_with("event"))
-        {
-            continue;
-        }
-        if let Ok(dev) = Device::open(&path) {
-            if let Some(keys) = dev.supported_keys() {
-                if keys.contains(KeyCode::KEY_LEFTSHIFT) && keys.contains(KeyCode::KEY_A) {
-                    // НЕ слушаем наши/служебные uinput-устройства: это не железная
-                    // клавиатура, а источник фантомных повторов в VM/desktop-тестах.
-                    let name = dev.name().unwrap_or("").to_string();
-                    if should_ignore_keyboard_device_name(&name) {
-                        continue;
-                    }
-                    found.push(path);
-                }
-            }
-        }
-    }
-    if found.is_empty() {
-        return Err(std::io::Error::new(
-            std::io::ErrorKind::NotFound,
-            "клавиатура не найдена. Возможно нет группы input — проверь `id`",
-        ));
-    }
-    Ok(found)
-}
-
-pub(super) fn should_ignore_keyboard_device_name(name: &str) -> bool {
-    matches!(name, "lay-virtual-keyboard" | "ydotoold virtual device")
 }

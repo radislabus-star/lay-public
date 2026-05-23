@@ -19,6 +19,14 @@ fn writes_learning_log_as_jsonl() {
     assert_eq!(value["from"], "ghbdtn");
     assert_eq!(value["to"], "привет");
     assert!(value.get("lay_kind").is_none());
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        assert_eq!(
+            std::fs::metadata(&path).unwrap().permissions().mode() & 0o777,
+            0o600
+        );
+    }
 
     let _ = std::fs::remove_dir_all(tmp);
 }
@@ -164,6 +172,22 @@ fn repeated_user_correction_promotes_exact_rule() {
     let rules: BTreeMap<String, String> =
         serde_json::from_str(&std::fs::read_to_string(&replacements).unwrap()).unwrap();
     assert_eq!(rules.get("смотриии"), Some(&"смотри".to_string()));
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        assert_eq!(
+            std::fs::metadata(&candidates).unwrap().permissions().mode() & 0o777,
+            0o600
+        );
+        assert_eq!(
+            std::fs::metadata(&replacements)
+                .unwrap()
+                .permissions()
+                .mode()
+                & 0o777,
+            0o600
+        );
+    }
     assert_eq!(
         promoted_replacement_for_token("Смотриии"),
         Some("Смотри".to_string())

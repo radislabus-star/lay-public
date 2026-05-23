@@ -70,7 +70,10 @@ where
         *guard = Some(Backend::connect()?);
     }
 
-    let result = f(guard.as_ref().expect("backend is initialized"));
+    let Some(backend) = guard.as_ref() else {
+        return Err("X11 backend initialization failed".to_string());
+    };
+    let result = f(backend);
     if result.is_err() {
         *guard = None;
     }

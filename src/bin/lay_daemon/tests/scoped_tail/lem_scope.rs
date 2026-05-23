@@ -166,10 +166,21 @@ fn scoped_tail_keeps_two_russian_words_and_flips_current_english_layout_tail() {
 
     let (events, _) = buffer.what_to_replay(3).expect("three-word tail");
     let original = map_original_events(&events);
+    let words = split_event_words(&events).expect("split words");
+    let candidates = scoped_tail_lem_candidates(&words, true, true);
     let replacement =
         decide_scoped_tail_correction_with_lem(&events, true).expect("smart replacement");
 
     assert_eq!(original, "как котовые ашду");
+    assert!(candidates
+        .iter()
+        .any(|candidate| candidate == "как котовые file"));
+    assert!(
+        !candidates
+            .iter()
+            .any(|candidate| candidate.contains("кротовые")),
+        "stable completed Russian context must not be typo-corrected: {candidates:?}"
+    );
     assert_eq!(replacement, "как котовые file");
     assert_eq!(
         plan_text_replacement(&original, &replacement),
@@ -230,6 +241,86 @@ fn scoped_tail_uses_lem_for_two_word_mixed_tail() {
     assert_eq!(
         decide_scoped_tail_correction_with_lem(&events, true),
         Some("good текст".to_string())
+    );
+}
+
+#[test]
+fn scoped_tail_flips_short_english_layout_pair_in_ascii_context() {
+    let mut buffer = WordBuffer::new();
+    push_text_as_layout(&mut buffer, "file", false);
+    buffer.handle_space();
+    push_text_as_layout(&mut buffer, "щт", true);
+    buffer.handle_space();
+    push_text_as_layout(&mut buffer, "щаа", true);
+
+    let (events, _) = buffer.what_to_replay(3).expect("three-word tail");
+    let words = split_event_words(&events).expect("split words");
+    let candidates = scoped_tail_lem_candidates(&words, true, true);
+
+    assert_eq!(map_original_events(&events), "file щт щаа");
+    assert!(
+        candidates
+            .iter()
+            .any(|candidate| candidate == "file on off"),
+        "short completed layout word must be offered to LEM: {candidates:?}"
+    );
+    assert_eq!(
+        decide_scoped_tail_correction_with_lem(&events, true),
+        Some("file on off".to_string())
+    );
+
+    buffer.handle_space();
+    let (completed_events, _) = buffer.what_to_replay(3).expect("completed tail");
+    assert_eq!(map_original_events(&completed_events), "file щт щаа ");
+    assert_eq!(
+        decide_scoped_tail_correction_with_lem(&completed_events, true),
+        Some("file on off ".to_string())
+    );
+
+    let original = map_original_events(&completed_events);
+    let target_is_ru = replay_layout_decision(&completed_events).target_is_ru;
+    let converted = map_events_to_layout(&completed_events, target_is_ru);
+    let decoded = decode_manual_tail(ManualDecodeRequest {
+        events: &completed_events,
+        original: &original,
+        converted: &converted,
+        engine: CorrectionEngine::Smart,
+        force_replay: false,
+        auto_replace: true,
+        scoped_options: ScopedTailOptions {
+            lem_enabled: true,
+            allow_layout_auto: true,
+        },
+    });
+
+    assert_eq!(
+        decoded.action,
+        DecoderAction::ReplaceText {
+            replacement: "file on off ".to_string(),
+            source: CorrectionSource::SmartText,
+        }
+    );
+}
+
+#[test]
+fn scoped_tail_flips_short_english_layout_pair_without_context() {
+    let mut buffer = WordBuffer::new();
+    push_text_as_layout(&mut buffer, "щт", true);
+    buffer.handle_space();
+    push_text_as_layout(&mut buffer, "щаа", true);
+
+    let (events, _) = buffer.what_to_replay(2).expect("two-word tail");
+    let words = split_event_words(&events).expect("split words");
+    let candidates = scoped_tail_lem_candidates(&words, true, true);
+
+    assert_eq!(map_original_events(&events), "щт щаа");
+    assert!(
+        candidates.iter().any(|candidate| candidate == "on off"),
+        "short completed layout pair must be offered to LEM: {candidates:?}"
+    );
+    assert_eq!(
+        decide_scoped_tail_correction_with_lem(&events, true),
+        Some("on off".to_string())
     );
 }
 

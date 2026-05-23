@@ -1,10 +1,13 @@
-use lay::desktop::{is_ru_layout_id, normalize_layout_id, parse_setxkbmap_layout, LayoutBackend};
+use lay::desktop::{is_ru_layout_id, LayoutBackend};
 use lay::text_backend::ImeReplaceRequest;
 use std::process::Command;
 use std::sync::{Mutex, OnceLock};
 use std::time::Duration;
 
-use super::{active_layout_backend, active_text_backend, log};
+use super::{active_layout_backend, active_text_backend, layout_kde, layout_x11, log};
+
+#[cfg(test)]
+pub(super) use layout_kde::{first_quoted_string, parse_layouts_list as parse_kde_layouts_list};
 
 const DBUS_PATH: &str = "/io/github/radislabus_star/LayDaemon";
 const DBUS_INTERFACE: &str = "io.github.radislabus_star.LayDaemon";
@@ -41,8 +44,8 @@ fn read_ibus_engine() -> Result<String, String> {
 pub(super) fn read_current_layout_is_ru() -> Result<bool, String> {
     match active_layout_backend() {
         LayoutBackend::Gnome => read_current_layout_gnome_is_ru(),
-        LayoutBackend::Kde => read_current_layout_kde_is_ru(),
-        LayoutBackend::X11 => read_current_layout_x11_is_ru(),
+        LayoutBackend::Kde => layout_kde::read_current_layout_is_ru(),
+        LayoutBackend::X11 => layout_x11::read_current_layout_is_ru(),
     }
 }
 
@@ -56,17 +59,6 @@ fn read_current_gnome_shell_layout_is_ru() -> Result<bool, String> {
 
 fn read_current_ibus_layout_is_ru() -> Result<bool, String> {
     read_ibus_engine().map(|engine| is_ru_layout_id(&engine))
-}
-
-fn read_current_layout_kde_is_ru() -> Result<bool, String> {
-    let qdbus = find_qdbus_command().ok_or_else(|| "qdbus/qdbus6 not found".to_string())?;
-    let layout = read_current_kde_layout(qdbus)?;
-    Ok(is_ru_layout_id(&layout))
-}
-
-fn read_current_layout_x11_is_ru() -> Result<bool, String> {
-    let layout = read_x11_layout()?;
-    Ok(is_ru_layout_id(&layout))
 }
 
 pub(super) fn call_list_layouts() -> Result<String, String> {
@@ -148,8 +140,8 @@ pub(super) fn call_focused_window_info() -> Result<String, String> {
 fn switch_to_layout(layout_id: &str, ibus_engine: &str, target_is_ru: bool) -> Result<(), String> {
     match active_layout_backend() {
         LayoutBackend::Gnome => switch_to_gnome_layout(layout_id, ibus_engine, target_is_ru),
-        LayoutBackend::Kde => switch_to_kde_layout(layout_id, target_is_ru),
-        LayoutBackend::X11 => switch_to_x11_layout(layout_id, target_is_ru),
+        LayoutBackend::Kde => layout_kde::switch_to_layout(layout_id, target_is_ru),
+        LayoutBackend::X11 => layout_x11::switch_to_layout(layout_id, target_is_ru),
     }
 }
 
@@ -201,134 +193,6 @@ fn switch_to_gnome_layout(
     })
 }
 
-fn switch_to_kde_layout(layout_id: &str, target_is_ru: bool) -> Result<(), String> {
-    let qdbus = find_qdbus_command().ok_or_else(|| "qdbus/qdbus6 not found".to_string())?;
-    match kde_layout_index(qdbus, layout_id) {
-        Ok(index) => {
-            let index = index.to_string();
-            run_command_capture(
-                qdbus,
-                &["org.kde.keyboard", "/Layouts", "setLayout", &index],
-            )?;
-        }
-        Err(index_error) => {
-            log(&format!(
-                "⚠ KDE indexed layout lookup failed ({index_error}); trying legacy setLayout"
-            ));
-            run_command_capture(
-                qdbus,
-                &["org.kde.keyboard", "/Layouts", "setLayout", layout_id],
-            )?;
-        }
-    }
-    if verify_current_layout(target_is_ru) {
-        Ok(())
-    } else {
-        Err("KDE layout verify failed".to_string())
-    }
-}
-
-fn read_current_kde_layout(qdbus: &str) -> Result<String, String> {
-    if let Ok(index) = run_command_capture(qdbus, &["org.kde.keyboard", "/Layouts", "getLayout"]) {
-        let index = index
-            .trim()
-            .parse::<usize>()
-            .map_err(|e| format!("cannot parse KDE layout index {index:?}: {e}"))?;
-        let layouts = kde_layout_ids(qdbus)?;
-        return layouts
-            .get(index)
-            .cloned()
-            .ok_or_else(|| format!("KDE layout index {index} out of range: {layouts:?}"));
-    }
-
-    run_command_capture(qdbus, &["org.kde.keyboard", "/Layouts", "getCurrentLayout"])
-        .map(|layout| normalize_layout_id(&layout))
-}
-
-fn kde_layout_index(qdbus: &str, layout_id: &str) -> Result<usize, String> {
-    let target = normalize_layout_id(layout_id);
-    let layouts = kde_layout_ids(qdbus)?;
-    layouts
-        .iter()
-        .position(|layout| normalize_layout_id(layout) == target)
-        .ok_or_else(|| format!("KDE layout {target:?} not found in {layouts:?}"))
-}
-
-fn kde_layout_ids(qdbus: &str) -> Result<Vec<String>, String> {
-    let output = run_command_capture(
-        qdbus,
-        &[
-            "--literal",
-            "org.kde.keyboard",
-            "/Layouts",
-            "getLayoutsList",
-        ],
-    )?;
-    let layouts = parse_kde_layouts_list(&output);
-    if layouts.is_empty() {
-        Err(format!("cannot parse KDE layouts: {output}"))
-    } else {
-        Ok(layouts)
-    }
-}
-
-pub(super) fn parse_kde_layouts_list(output: &str) -> Vec<String> {
-    output
-        .split("(sss)")
-        .skip(1)
-        .filter_map(|entry| first_quoted_string(entry).map(|layout| normalize_layout_id(&layout)))
-        .collect()
-}
-
-pub(super) fn first_quoted_string(input: &str) -> Option<String> {
-    let mut chars = input.chars();
-    for ch in chars.by_ref() {
-        if ch == '"' {
-            break;
-        }
-    }
-
-    let mut out = String::new();
-    let mut escaped = false;
-    for ch in chars {
-        if escaped {
-            out.push(ch);
-            escaped = false;
-            continue;
-        }
-        match ch {
-            '\\' => escaped = true,
-            '"' => return Some(out),
-            _ => out.push(ch),
-        }
-    }
-    None
-}
-
-fn switch_to_x11_layout(layout_id: &str, target_is_ru: bool) -> Result<(), String> {
-    if let Err(native_error) = lay::x11_layout::lock_layout_id(layout_id) {
-        log(&format!(
-            "⚠ native X11 XKB layout switch failed: {native_error}; fallback shell tools"
-        ));
-    } else if verify_current_layout(target_is_ru) {
-        return Ok(());
-    } else {
-        log("⚠ native X11 XKB layout verify failed; fallback shell tools");
-    }
-
-    if command_exists("xkb-switch") {
-        run_command_capture("xkb-switch", &["-s", layout_id])?;
-    } else {
-        run_command_capture("setxkbmap", &[layout_id])?;
-    }
-
-    if verify_current_layout(target_is_ru) {
-        Ok(())
-    } else {
-        Err("X11 layout verify failed".to_string())
-    }
-}
-
 pub(super) fn switch_to_target_layout(target_is_ru: bool) -> Result<&'static str, String> {
     let (layout_id, ibus_engine) = target_layout(target_is_ru);
     if active_layout_backend() != LayoutBackend::Gnome
@@ -364,7 +228,7 @@ pub(super) fn target_layout(target_is_ru: bool) -> (&'static str, &'static str) 
     }
 }
 
-fn verify_current_layout(target_is_ru: bool) -> bool {
+pub(super) fn verify_current_layout(target_is_ru: bool) -> bool {
     for _ in 0..5 {
         if read_current_layout_is_ru().is_ok_and(|current| current == target_is_ru) {
             return true;
@@ -705,7 +569,7 @@ fn run_gdbus(method: &str, args: &[&str]) -> Result<String, String> {
     Ok(String::from_utf8_lossy(&out.stdout).trim().to_string())
 }
 
-fn run_command_capture(command: &str, args: &[&str]) -> Result<String, String> {
+pub(super) fn run_command_capture(command: &str, args: &[&str]) -> Result<String, String> {
     let out = Command::new(command)
         .args(args)
         .output()
@@ -719,42 +583,13 @@ fn run_command_capture(command: &str, args: &[&str]) -> Result<String, String> {
     Ok(String::from_utf8_lossy(&out.stdout).trim().to_string())
 }
 
-fn command_exists(command: &str) -> bool {
+pub(super) fn command_exists(command: &str) -> bool {
     let Some(paths) = std::env::var_os("PATH") else {
         return false;
     };
     std::env::split_paths(&paths).any(|dir| dir.join(command).is_file())
 }
 
-fn find_qdbus_command() -> Option<&'static str> {
-    ["qdbus6", "qdbus-qt6", "qdbus"]
-        .into_iter()
-        .find(|cmd| command_exists(cmd))
-}
-
 pub(super) fn detect_auto_layout_backend_hint() -> Option<LayoutBackend> {
-    let qdbus = find_qdbus_command()?;
-    if run_command_capture(qdbus, &["org.kde.keyboard", "/Layouts", "getLayout"]).is_ok()
-        || run_command_capture(qdbus, &["org.kde.keyboard", "/Layouts", "getCurrentLayout"]).is_ok()
-    {
-        return Some(LayoutBackend::Kde);
-    }
-    None
-}
-
-fn read_x11_layout() -> Result<String, String> {
-    if let Ok(layout) = lay::x11_layout::current_layout_id() {
-        return Ok(layout);
-    }
-
-    if command_exists("xkb-switch") {
-        return run_command_capture("xkb-switch", &[]).map(|layout| normalize_layout_id(&layout));
-    }
-    if command_exists("xkblayout-state") {
-        return run_command_capture("xkblayout-state", &["print", "%s"])
-            .map(|layout| normalize_layout_id(&layout));
-    }
-
-    let query = run_command_capture("setxkbmap", &["-query"])?;
-    parse_setxkbmap_layout(&query).ok_or_else(|| format!("cannot parse setxkbmap output: {query}"))
+    layout_kde::detect_auto_backend_hint()
 }

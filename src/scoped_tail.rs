@@ -20,6 +20,7 @@ use crate::layout_autoswitch::{
     is_protected_ascii_layout_token, should_keep_plain_cyrillic_before_ascii_technical,
 };
 use crate::russian_chars::same_letter_ignore_case;
+use crate::token_language::{is_known_en_token, is_known_ru_token};
 use crate::typing_pipeline::apply_typing_assist;
 use crate::typing_replacements::contains_visual_b_word;
 use crate::word_buffer::{WordBuffer, MAX_REPLACE_WORDS};
@@ -218,7 +219,9 @@ fn scoped_word_lem_options(
     }
 
     push_unique_string(&mut out, original.clone());
-    if is_short_repeated_completed_scope_word(&original) {
+    if stable_completed_scope_original(&original)
+        || is_short_repeated_completed_scope_word(&original)
+    {
         return out;
     }
     push_unique_string(&mut out, decide_completed_scope_word(word));
@@ -290,13 +293,14 @@ fn stable_completed_scope_original(original: &str) -> bool {
 
     let lower = word.to_lowercase();
     if is_cyrillic_word(word) {
-        return is_known_russian_layout_autoswitch_word(&lower);
+        return is_known_ru_token(&lower) || is_known_russian_layout_autoswitch_word(&lower);
     }
 
     if word.is_ascii() {
         let ascii_lower = word.to_ascii_lowercase();
         return is_protected_ascii_layout_token(word)
             || is_ascii_technical_token(original)
+            || is_known_en_token(&ascii_lower)
             || is_known_english_layout_autoswitch_word(&ascii_lower);
     }
 

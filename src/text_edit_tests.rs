@@ -1,93 +1,87 @@
 use super::*;
+use std::path::PathBuf;
 
 fn apply_plan(original: &str, plan: &TextReplacement) -> String {
-    let mut chars: Vec<char> = original.chars().collect();
-    let mut cursor = chars.len().saturating_sub(plan.move_left as usize);
-    let delete_start = cursor.saturating_sub(plan.backspaces as usize);
-    chars.splice(delete_start..cursor, plan.insert.chars());
-    cursor = delete_start + plan.insert.chars().count();
-    cursor = (cursor + plan.move_right as usize).min(chars.len());
-    chars[..cursor]
-        .iter()
-        .chain(chars[cursor..].iter())
+    apply_replacement_plan_to_text(original, plan)
+}
+
+fn fixture_rows(name: &str) -> Vec<Vec<String>> {
+    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("tests")
+        .join("fixtures")
+        .join(name);
+    std::fs::read_to_string(&path)
+        .unwrap_or_else(|err| panic!("failed to read fixture {path:?}: {err}"))
+        .lines()
+        .filter(|line| !line.trim().is_empty() && !line.starts_with('#'))
+        .map(|line| {
+            line.split('\t')
+                .map(|field| field.replace("\\s", " "))
+                .collect()
+        })
         .collect()
 }
 
 #[test]
 fn plans_minimal_two_word_prefix_and_suffix_edits() {
-    assert_eq!(
-        plan_text_replacement("NEN DOUBLE", "ТУТ DOUBLE"),
-        Some(TextReplacement {
-            move_left: 7,
-            backspaces: 3,
-            insert: "ТУТ".to_string(),
-            move_right: 7,
-        })
-    );
-    assert_eq!(
-        plan_text_replacement("AmoCRM Z тут задача", "AmoCRM Я тут задача"),
-        Some(TextReplacement {
-            move_left: 11,
-            backspaces: 1,
-            insert: "Я".to_string(),
-            move_right: 11,
-        })
-    );
+    for row in fixture_rows("text_edit_minimal_plan.tsv") {
+        assert_eq!(row.len(), 6, "minimal-plan fixture must be TSV");
+        assert_eq!(
+            plan_text_replacement(&row[0], &row[1]),
+            Some(TextReplacement {
+                move_left: row[2].parse().expect("move_left"),
+                backspaces: row[3].parse().expect("backspaces"),
+                insert: row[4].clone(),
+                move_right: row[5].parse().expect("move_right"),
+            })
+        );
+    }
 }
 
 #[test]
 fn committed_tail_plan_preserves_typed_trailing_space_boundary() {
-    assert_eq!(
-        plan_committed_tail_replacement("double b ", "double и "),
-        Some(TextReplacement {
-            move_left: 1,
-            backspaces: 8,
-            insert: "double и".to_string(),
-            move_right: 1,
-        })
-    );
-    assert_eq!(
-        plan_committed_tail_replacement("чтобы точнр ", "чтобы точно "),
-        Some(TextReplacement {
-            move_left: 1,
-            backspaces: 11,
-            insert: "чтобы точно".to_string(),
-            move_right: 1,
-        })
-    );
-    assert_eq!(
-        plan_committed_tail_replacement("ОФФИЦИАЛЬНОМ ", "ОФИЦИАЛЬНОМ "),
-        Some(TextReplacement {
-            move_left: 1,
-            backspaces: 12,
-            insert: "ОФИЦИАЛЬНОМ".to_string(),
-            move_right: 1,
-        })
-    );
+    for row in fixture_rows("text_edit_committed_tail_boundary.tsv") {
+        assert_eq!(row.len(), 6, "tail-boundary fixture must be TSV");
+        assert_eq!(
+            plan_committed_tail_replacement(&row[0], &row[1]),
+            Some(TextReplacement {
+                move_left: row[2].parse().expect("move_left"),
+                backspaces: row[3].parse().expect("backspaces"),
+                insert: row[4].clone(),
+                move_right: row[5].parse().expect("move_right"),
+            })
+        );
+    }
 }
 
 #[test]
 fn committed_tail_long_word_replaces_whole_body_before_space() {
+    let row = fixture_rows("text_edit_long_word.tsv")
+        .into_iter()
+        .next()
+        .expect("long-word fixture");
+    assert_eq!(row.len(), 6, "long-word fixture must be TSV");
     assert_eq!(
-        plan_committed_tail_replacement("переиспользоватся ", "переиспользоваться "),
+        plan_committed_tail_replacement(&row[0], &row[1]),
         Some(TextReplacement {
-            move_left: 1,
-            backspaces: 17,
-            insert: "переиспользоваться".to_string(),
-            move_right: 1,
+            move_left: row[2].parse().expect("move_left"),
+            backspaces: row[3].parse().expect("backspaces"),
+            insert: row[4].clone(),
+            move_right: row[5].parse().expect("move_right"),
         })
     );
 }
 
 #[test]
 fn committed_tail_sentence_plans_keep_space_with_mixed_language_text() {
-    for (original, replacement) in [
-        ("пишу README и double b ", "пишу README и double и "),
-        ("дальше буду точнр ", "дальше буду точно "),
-        ("API работает нормальнр ", "API работает нормально "),
-    ] {
+    for row in fixture_rows("text_edit_sentence_plans.tsv") {
+        assert_eq!(row.len(), 2, "sentence-plan fixture must be TSV");
+        let original = &row[0];
+        let replacement = &row[1];
         let plan = plan_committed_tail_replacement(original, replacement).expect("replacement");
-        assert_eq!(apply_plan(original, &plan), replacement);
+        assert_eq!(apply_plan(original, &plan), *replacement);
+        assert!(replacement_plan_matches(original, replacement, &plan));
+        assert!(committed_separator_is_preserved(original, replacement));
         assert_eq!(original.ends_with(' '), replacement.ends_with(' '));
         assert_eq!(plan.move_right, 1, "space boundary must be preserved");
         assert!(
@@ -99,35 +93,29 @@ fn committed_tail_sentence_plans_keep_space_with_mixed_language_text() {
 
 #[test]
 fn committed_tail_split_word_plan_inserts_internal_space() {
-    let plan = plan_committed_tail_replacement("чтобыточно ", "чтобы точно ").expect("replacement");
-
-    assert_eq!(
-        plan,
-        TextReplacement {
-            move_left: 6,
-            backspaces: 0,
-            insert: " ".to_string(),
-            move_right: 6,
-        }
-    );
-    assert_eq!(apply_plan("чтобыточно ", &plan), "чтобы точно ");
-
-    let plan = plan_committed_tail_replacement("тожесамое ", "тоже самое ").expect("replacement");
-    assert_eq!(
-        plan,
-        TextReplacement {
-            move_left: 6,
-            backspaces: 0,
-            insert: " ".to_string(),
-            move_right: 6,
-        }
-    );
-    assert_eq!(apply_plan("тожесамое ", &plan), "тоже самое ");
+    for row in fixture_rows("text_edit_split_word_space.tsv") {
+        assert_eq!(row.len(), 2, "split-word fixture must be TSV");
+        let plan = plan_committed_tail_replacement(&row[0], &row[1]).expect("replacement");
+        assert_eq!(
+            plan,
+            TextReplacement {
+                move_left: 6,
+                backspaces: 0,
+                insert: " ".to_string(),
+                move_right: 6,
+            }
+        );
+        assert_eq!(apply_plan(&row[0], &plan), row[1]);
+    }
 }
 
 #[test]
 fn committed_tail_split_word_plan_can_fix_small_typo_near_split() {
-    let plan = plan_committed_tail_replacement("тоесамое ", "тоже самое ").expect("replacement");
+    let row = fixture_rows("text_edit_split_word_typo.tsv")
+        .into_iter()
+        .next()
+        .expect("split-word typo fixture");
+    let plan = plan_committed_tail_replacement(&row[0], &row[1]).expect("replacement");
 
     assert_eq!(
         plan,
@@ -138,12 +126,16 @@ fn committed_tail_split_word_plan_can_fix_small_typo_near_split() {
             move_right: 6,
         }
     );
-    assert_eq!(apply_plan("тоесамое ", &plan), "тоже самое ");
+    assert_eq!(apply_plan(&row[0], &plan), row[1]);
 }
 
 #[test]
 fn committed_tail_non_split_replacement_keeps_existing_space_boundary() {
-    let plan = plan_committed_tail_replacement("тожесамое ", "ТОЖЕСАМОЕ ").expect("replacement");
+    let row = fixture_rows("text_edit_non_split_boundary.tsv")
+        .into_iter()
+        .next()
+        .expect("non-split fixture");
+    let plan = plan_committed_tail_replacement(&row[0], &row[1]).expect("replacement");
 
     assert_eq!(
         plan,
@@ -154,12 +146,16 @@ fn committed_tail_non_split_replacement_keeps_existing_space_boundary() {
             move_right: 1,
         }
     );
-    assert_eq!(apply_plan("тожесамое ", &plan), "ТОЖЕСАМОЕ ");
+    assert_eq!(apply_plan(&row[0], &plan), row[1]);
 }
 
 #[test]
 fn committed_tail_plan_can_be_shifted_behind_current_word() {
-    let base = plan_committed_tail_replacement("тожесамое ", "тоже самое ").expect("replacement");
+    let row = fixture_rows("text_edit_shifted_current.tsv")
+        .into_iter()
+        .next()
+        .expect("shifted fixture");
+    let base = plan_committed_tail_replacement(&row[0], &row[1]).expect("replacement");
     let shifted = offset_replacement_plan_for_cursor(&base, 6);
 
     assert_eq!(
@@ -171,34 +167,35 @@ fn committed_tail_plan_can_be_shifted_behind_current_word() {
             move_right: 12,
         }
     );
-    assert_eq!(
-        apply_plan("тожесамое склено", &shifted),
-        "тоже самое склено"
-    );
+    assert_eq!(apply_plan(&row[2], &shifted), row[3]);
 }
 
 #[test]
 fn committed_tail_space_insertions_handle_many_glued_words() {
-    let plans = plan_committed_whitespace_insertions(
-        "янебудузавастожесамое ",
-        "я не буду за вас тоже самое ",
-        0,
-    )
-    .expect("space insertion plans");
+    let row = fixture_rows("text_edit_many_glued.tsv")
+        .into_iter()
+        .next()
+        .expect("many-glued fixture");
+    let plans =
+        plan_committed_whitespace_insertions(&row[0], &row[1], 0).expect("space insertion plans");
 
-    let mut text = "янебудузавастожесамое ".to_string();
+    let mut text = row[0].clone();
     for plan in &plans {
         text = apply_plan(&text, plan);
     }
-    assert_eq!(text, "я не буду за вас тоже самое ");
+    assert_eq!(text, row[1]);
     assert_eq!(plans.len(), 6);
     assert!(plans.iter().all(|plan| plan.backspaces == 0));
 }
 
 #[test]
 fn committed_tail_space_insertions_can_be_shifted_behind_current_word() {
-    let plans = plan_committed_whitespace_insertions("тожесамое ", "тоже самое ", 6)
-        .expect("space insertion plans");
+    let row = fixture_rows("text_edit_space_insert_shifted.tsv")
+        .into_iter()
+        .next()
+        .expect("space insert shifted fixture");
+    let plans =
+        plan_committed_whitespace_insertions(&row[0], &row[1], 6).expect("space insertion plans");
 
     assert_eq!(
         plans,
@@ -209,31 +206,61 @@ fn committed_tail_space_insertions_can_be_shifted_behind_current_word() {
             move_right: 12,
         }]
     );
-    let mut text = "тожесамое склено".to_string();
+    let mut text = row[2].clone();
     for plan in &plans {
         text = apply_plan(&text, plan);
     }
-    assert_eq!(text, "тоже самое склено");
+    assert_eq!(text, row[3]);
 }
 
 #[test]
 fn committed_tail_space_insertions_reject_real_letter_changes() {
+    let row = fixture_rows("text_edit_reject_letter_change.tsv")
+        .into_iter()
+        .next()
+        .expect("reject fixture");
     assert_eq!(
-        plan_committed_whitespace_insertions("тоесамое ", "тоже самое ", 0),
+        plan_committed_whitespace_insertions(&row[0], &row[1], 0),
         None
     );
 }
 
 #[test]
 fn committed_tail_spacing_is_restored_before_planning() {
-    assert_eq!(
-        ensure_committed_tail_spacing("double b ", "double и".to_string()),
-        "double и "
-    );
-    assert_eq!(
-        ensure_committed_tail_spacing("plain", "plain".to_string()),
-        "plain"
-    );
+    for row in fixture_rows("text_edit_spacing_restore.tsv") {
+        assert_eq!(row.len(), 3, "spacing-restore fixture must be TSV");
+        assert_eq!(
+            ensure_committed_tail_spacing(&row[0], row[1].clone()),
+            row[2]
+        );
+    }
+}
+
+#[test]
+fn committed_separator_contract_detects_eaten_space() {
+    for row in fixture_rows("text_edit_separator_contract.tsv") {
+        assert_eq!(row.len(), 3, "separator-contract fixture must be TSV");
+        assert_eq!(
+            committed_separator_is_preserved(&row[0], &row[1]),
+            row[2] == "true"
+        );
+    }
+}
+
+#[test]
+fn committed_tail_plans_apply_exactly_to_replacement() {
+    for row in fixture_rows("text_edit_tail_plan_exact.tsv") {
+        assert_eq!(row.len(), 2, "tail-plan fixture must be TSV");
+        let original = &row[0];
+        let replacement = &row[1];
+        let plan = plan_committed_tail_replacement(original, replacement)
+            .unwrap_or_else(|| panic!("replacement plan for {original:?}"));
+        assert!(
+            replacement_plan_matches(original, replacement, &plan),
+            "{original:?} -> {replacement:?} via {plan:?}"
+        );
+        assert!(committed_separator_is_preserved(original, replacement));
+    }
 }
 
 #[test]

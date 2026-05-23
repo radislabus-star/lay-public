@@ -7,7 +7,7 @@ use lay::keyboard::{
     keycode_to_ru_char, keycode_to_us_char, preferred_layout_for_text, replay_layout_decision,
     KeyEvent,
 };
-use lay::text_edit::{plan_committed_tail_replacement, TextReplacement};
+use lay::text_edit::{plan_committed_tail_replacement, replacement_plan_matches, TextReplacement};
 use lay::typing_assist::{
     effective_replace_words, should_force_replay_for_short_fragment, ScopedTailOptions,
 };
@@ -425,7 +425,7 @@ pub(super) fn handle_double_shift(
         if text.trim().is_empty() || text == mapped_target {
             log("  2. text decision совпал с replay — replay для сохранения toggle");
         } else {
-            let plan = correction_edit
+            let mut plan = correction_edit
                 .as_ref()
                 .map(|edit| edit.plan.clone())
                 .or_else(|| plan_committed_tail_replacement(&mapped_orig, &text))
@@ -435,6 +435,21 @@ pub(super) fn handle_double_shift(
                     insert: text.clone(),
                     move_right: 0,
                 });
+            if correction_edit
+                .as_ref()
+                .is_some_and(|edit| !edit.plan_matches_replacement())
+                || !replacement_plan_matches(&mapped_orig, &text, &plan)
+            {
+                log(&format!(
+                    "⚠ {kind} plan invariant failed; using full tail replace"
+                ));
+                plan = TextReplacement {
+                    move_left: 0,
+                    backspaces: n_backspaces,
+                    insert: text.clone(),
+                    move_right: 0,
+                };
+            }
             let prepared_insert =
                 match prepare_text_insert_for_replacement_plan(&plan, target_is_ru) {
                     Ok(prepared) => prepared,
@@ -588,6 +603,10 @@ fn handle_pending_auto_undo(
     }
 
     let plan = pending_auto_undo_plan(&undo);
+    if !replacement_plan_matches(&undo.replacement, &undo.original, &plan) {
+        log("⚠ auto-undo skipped before delete: edit plan invariant failed");
+        return None;
+    }
     let prepared_insert = match prepare_text_insert_for_replacement_plan(&plan, true) {
         Ok(prepared) => prepared,
         Err(e) => {

@@ -33,5 +33,13 @@ fn action_log_keeps_only_last_lines() {
     assert!(!text.contains("from-1"));
     assert!(text.contains("from-2"));
     assert!(text.contains("from-4"));
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        assert_eq!(
+            std::fs::metadata(&path).unwrap().permissions().mode() & 0o777,
+            0o600
+        );
+    }
     let _ = std::fs::remove_dir_all(tmp);
 }

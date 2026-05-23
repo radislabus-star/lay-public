@@ -10,7 +10,8 @@ use crate::correction::Correction;
 use crate::keyboard::{map_original_events, split_event_words, KeyEvent};
 use crate::lem::ScoredCandidate;
 use crate::text_edit::{
-    ensure_committed_tail_spacing, plan_committed_tail_replacement, plan_text_replacement,
+    committed_separator_is_preserved, ensure_committed_tail_spacing,
+    plan_committed_tail_replacement, plan_text_replacement, replacement_plan_matches,
     TextReplacement,
 };
 use crate::typing_assist::{
@@ -95,6 +96,19 @@ impl DecoderEditPlan {
             | CorrectionTrigger::Enter => plan_committed_tail_replacement(original, &replacement),
             CorrectionTrigger::Manual => plan_text_replacement(original, &replacement),
         }?;
+        debug_assert!(
+            replacement_plan_matches(original, &replacement, &plan),
+            "decoder edit plan must apply exactly to replacement"
+        );
+        debug_assert!(
+            !matches!(
+                trigger,
+                CorrectionTrigger::AfterSpace
+                    | CorrectionTrigger::AfterPunctuation
+                    | CorrectionTrigger::Enter
+            ) || committed_separator_is_preserved(original, &replacement),
+            "committed correction must preserve typed separator"
+        );
 
         Some(Self {
             trigger,
@@ -103,6 +117,17 @@ impl DecoderEditPlan {
             plan,
             source,
         })
+    }
+
+    pub fn plan_matches_replacement(&self) -> bool {
+        replacement_plan_matches(&self.original, &self.replacement, &self.plan)
+    }
+
+    pub fn preserves_committed_separator(&self) -> bool {
+        if matches!(self.trigger, CorrectionTrigger::Manual) {
+            return true;
+        }
+        committed_separator_is_preserved(&self.original, &self.replacement)
     }
 }
 

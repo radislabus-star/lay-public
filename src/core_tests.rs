@@ -15,18 +15,38 @@ fn facade_exposes_candidate_scoring() {
     let best =
         best_candidate("ghbdtn", ["ghbdtn".to_string(), "привет".to_string()]).expect("candidate");
     assert_eq!(best.text, "привет");
+
+    let decision = rank_typing_candidates([
+        TypingCandidate::new("missing_letter", 10, "кторое ", "которое ".to_string()),
+        TypingCandidate::new("glued_phrase", 200, "кторое ", "к торое ".to_string()),
+    ])
+    .expect("typing decision");
+    assert!(decision.margin.is_finite());
+    assert!(matches!(
+        classify_typing_confidence(true, Some(decision.margin), 0.0),
+        TypingDecisionConfidence::Strong
+    ));
 }
 
 #[test]
 fn facade_exposes_minimal_text_replacement() {
+    let plan = plan_text_replacement("NEN DOUBLE", "ТУТ DOUBLE");
+    let plan = plan.expect("replacement plan");
+    assert!(replacement_plan_matches("NEN DOUBLE", "ТУТ DOUBLE", &plan));
     assert_eq!(
-        plan_text_replacement("NEN DOUBLE", "ТУТ DOUBLE"),
-        Some(TextReplacement {
+        apply_replacement_plan_to_text("NEN DOUBLE", &plan),
+        "ТУТ DOUBLE"
+    );
+    assert!(committed_separator_is_preserved("кторое ", "которое "));
+    assert!(!committed_separator_is_preserved("кторое ", "которое"));
+    assert_eq!(
+        plan,
+        TextReplacement {
             move_left: 7,
             backspaces: 3,
             insert: "ТУТ".to_string(),
             move_right: 7,
-        })
+        }
     );
 }
 

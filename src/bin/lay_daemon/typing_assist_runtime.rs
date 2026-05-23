@@ -200,6 +200,10 @@ pub(super) fn handle_typing_assist_after_space(
         return TypingAssistOutcome::Applied;
     }
     let plan = offset_replacement_plan_for_cursor(&edit.plan, cursor_offset);
+    if cursor_offset == 0 && !edit.plan_matches_replacement() {
+        log("⚠ typing-assist skipped before delete: edit plan invariant failed");
+        return TypingAssistOutcome::NoCorrection;
+    }
 
     log(&format!(
         "  typing-assist plan: left={} bs={} insert={:?} right={}",
@@ -607,6 +611,10 @@ pub(super) fn handle_enter_autocorrect(
 
     let original_layout = read_current_layout_is_ru().ok();
     let plan = edit.plan.clone();
+    if !edit.plan_matches_replacement() {
+        log("⚠ enter-autocorrect skipped before delete: edit plan invariant failed");
+        return None;
+    }
 
     let prepared_insert = match prepare_text_insert_for_replacement_plan(&plan, true) {
         Ok(prepared) => prepared,

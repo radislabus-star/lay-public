@@ -1,0 +1,5 @@
+я проверяю git status и Windows NTFS\s
+тут good test рядом с русским текстом\s
+wi-fi работает и API JSON остаются как есть\s
+Chrome GNOME Linux file mode code data\s
+это нормальная русская фраза без правки\s

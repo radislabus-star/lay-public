@@ -351,7 +351,9 @@ pub fn correct_missing_letter(word: &str) -> Option<String> {
     if looks_like_plausible_russian_past_tense(&lower) {
         return None;
     }
-    if looks_like_prefix_plus_known_russian_word(&lower) {
+    if looks_like_prefix_plus_known_russian_word(&lower)
+        && !vowel_nonverb_missing_letter_candidate_exists(word, &lower)
+    {
         return None;
     }
 
@@ -372,6 +374,47 @@ fn missing_letter_candidate_exists(word: &str, lower: &str) -> bool {
                 + missing_letter_candidate_bonus(&original_lower, &candidate)
                 >= NGRAM_DICT_MISSING_LETTER_MARGIN
     })
+}
+
+fn vowel_nonverb_missing_letter_candidate_exists(word: &str, lower: &str) -> bool {
+    let original_lower = word.to_lowercase();
+    safe_missing_letter_candidates(lower).any(|candidate| {
+        let Some((_, inserted)) = inserted_char_position_for_missing_letter(lower, &candidate)
+        else {
+            return false;
+        };
+        is_russian_vowel(inserted)
+            && !looks_like_present_or_reflexive_verb(&candidate)
+            && candidate != original_lower
+            && is_known_russian_word_or_form(&candidate)
+            && crate::ngram::ru_candidate_margin(&candidate, &original_lower)
+                + missing_letter_candidate_bonus(&original_lower, &candidate)
+                >= NGRAM_DICT_MISSING_LETTER_MARGIN
+    })
+}
+
+fn looks_like_present_or_reflexive_verb(word: &str) -> bool {
+    [
+        "ается",
+        "яется",
+        "уется",
+        "ется",
+        "ются",
+        "ешь",
+        "ишь",
+        "аете",
+        "яете",
+        "ите",
+        "ает",
+        "яет",
+        "ует",
+        "ают",
+        "яют",
+        "ит",
+        "ет",
+    ]
+    .iter()
+    .any(|ending| word.ends_with(ending))
 }
 
 fn extra_letter_candidate_exists(lower: &str) -> bool {

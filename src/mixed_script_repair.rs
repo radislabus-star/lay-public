@@ -15,18 +15,19 @@ pub fn repair_mixed_script(text: &str) -> Option<String> {
         return None;
     }
 
+    let has_mixed_alpha_token = contains_mixed_alpha_token(text);
     let mut out = String::with_capacity(text.len());
     let mut token = String::new();
     for ch in text.chars() {
         if ch.is_alphabetic() {
             token.push(ch);
         } else {
-            push_repaired_token(&mut out, &token);
+            push_repaired_token(&mut out, &token, has_mixed_alpha_token);
             token.clear();
             out.push(ch);
         }
     }
-    push_repaired_token(&mut out, &token);
+    push_repaired_token(&mut out, &token, has_mixed_alpha_token);
 
     if out != text {
         Some(out)
@@ -35,7 +36,26 @@ pub fn repair_mixed_script(text: &str) -> Option<String> {
     }
 }
 
-fn push_repaired_token(out: &mut String, token: &str) {
+fn contains_mixed_alpha_token(text: &str) -> bool {
+    let mut token = String::new();
+    for ch in text.chars() {
+        if ch.is_alphabetic() {
+            token.push(ch);
+        } else {
+            if token_has_cyrillic_and_latin(&token) {
+                return true;
+            }
+            token.clear();
+        }
+    }
+    token_has_cyrillic_and_latin(&token)
+}
+
+fn token_has_cyrillic_and_latin(token: &str) -> bool {
+    has_cyrillic(token) && has_latin(token)
+}
+
+fn push_repaired_token(out: &mut String, token: &str, allow_latin_islands: bool) {
     if token.is_empty() {
         return;
     }
@@ -50,7 +70,7 @@ fn push_repaired_token(out: &mut String, token: &str) {
         } else {
             out.push_str(token);
         }
-    } else if token_has_lat && should_convert_latin_island(token) {
+    } else if allow_latin_islands && token_has_lat && should_convert_latin_island(token) {
         out.push_str(&crate::dict::convert(token, crate::dict::Direction::Us2Ru));
     } else {
         out.push_str(token);

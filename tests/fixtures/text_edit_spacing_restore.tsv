@@ -1,0 +1,3 @@
+# original	replacement	expected
+double\sb\s	double\sи	double\sи\s
+plain	plain	plain

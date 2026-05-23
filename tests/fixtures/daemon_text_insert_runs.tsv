@@ -1,0 +1,6 @@
+# input	default_layout	expected_targets	expected_outputs
+Привет\sDouble	ru	ru,us	Привет\s|Double
+ну\sда\s	ru	ru	ну\sда\s
+тоже\sсамое\s	ru	ru	тоже\sсамое\s
+hello\sworld	us	us	hello\sworld
+привет\s🙂	ru	none	none

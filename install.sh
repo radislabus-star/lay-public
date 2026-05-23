@@ -1,6 +1,6 @@
 #!/bin/bash
 # install.sh — собрать и установить lay + lay-daemon + GNOME extension
-set -eu
+set -euo pipefail
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$DIR"
@@ -187,8 +187,12 @@ echo "✓ lay-daemon: $(ls -lh target/release/lay-daemon | awk '{print $5}')"
 
 echo ""
 echo "=== n-gram cache ==="
-target/release/lay-ngram-corpus cache >/tmp/lay-ngram-cache-install.log 2>&1 || {
-    cat /tmp/lay-ngram-cache-install.log
+LAY_STATE_DIR="$HOME/.local/state/lay"
+mkdir -p "$LAY_STATE_DIR"
+LAY_NGRAM_INSTALL_LOG="$LAY_STATE_DIR/ngram-cache-install.log"
+LAY_KDE_TRAY_LOG="$LAY_STATE_DIR/kde-tray.log"
+target/release/lay-ngram-corpus cache >"$LAY_NGRAM_INSTALL_LOG" 2>&1 || {
+    cat "$LAY_NGRAM_INSTALL_LOG"
     echo "⚠ n-gram cache не собран; daemon соберёт fallback при первом вызове"
 }
 if [ -f "$HOME/.cache/lay/ngram_ru_v1.json" ]; then
@@ -240,7 +244,7 @@ if is_kde_available; then
     systemctl --user disable lay-kde-tray.service >/dev/null 2>&1 || true
     if is_kde_session; then
         pgrep -f "$HOME/.local/bin/lay-kde-tray" >/dev/null 2>&1 || {
-            nohup "$HOME/.local/bin/lay-kde-tray" >/tmp/lay-kde-tray.log 2>&1 &
+            nohup "$HOME/.local/bin/lay-kde-tray" >"$LAY_KDE_TRAY_LOG" 2>&1 &
         }
     fi
     echo "✓ KDE tray autostart установлен: ~/.config/autostart/lay-kde-tray.desktop"

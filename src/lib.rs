@@ -22,6 +22,8 @@ pub(crate) mod phrase_candidates;
 pub(crate) mod phrase_lexicon;
 pub mod phrase_reader;
 pub(crate) mod phrase_score;
+#[doc(hidden)]
+pub mod private_file;
 pub mod quality;
 pub mod ru_typo;
 pub(crate) mod russian_chars;

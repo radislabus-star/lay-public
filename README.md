@@ -332,7 +332,7 @@ https://github.com/radislabus-star/lay-public/issues
 
 ### Статус
 
-Это ранняя публичная beta-версия.
+Это ранняя публичная alpha-версия.
 
 Основная проверенная среда: Ubuntu/GNOME Wayland с RU/EN раскладками.
 Расширение заявляет поддержку GNOME Shell 45, 46, 47 и 50.
@@ -483,6 +483,11 @@ systemctl --user restart lay-daemon
 
 Последние изменения публичной ветки:
 
+- `0.1.193` — усилен общий safety-контракт замены текста: decoder и runtime
+  проверяют, что edit-plan действительно превращает исходный хвост в ожидаемый
+  результат, а after-space/Enter коррекции сохраняют пробельную границу.
+  `lay --explain-correct` теперь показывает второго кандидата, `margin` и
+  `confidence`; full-check и GitHub CI проверяют этот диагностический путь.
 - `0.1.192` — `protected_words.txt` теперь защищает и ASCII-токены, включая
   короткие слова вроде `vs`, а раздел `Коррекция` в GNOME tray снова вынесен
   отдельным пунктом, а не спрятан внутрь `Арбитра`. `Pause` также доступен
@@ -834,6 +839,7 @@ src/keyboard.rs   keycode-события, word split, replay-decision, US/RU map
 src/word_buffer.rs история текущего/предыдущих слов, replay-toggle и feedback для обучения
 src/lem.rs        арбитр кандидатов
 src/ngram.rs      локальный scorer естественности
+src/typing_candidate.rs ranking, margin и confidence для автопомощи
 src/text_edit.rs  минимальный план замены текста без лишней перепечатки
 src/text_backend.rs выбор uinput/IME способа применения готовой правки
 ```
@@ -876,6 +882,16 @@ KDE/Plasma использует `lay-kde-tray`, а daemon выбирает backe
 если слово уверенно похоже на набор в неправильной раскладке, helper заменит
 его и оставит активной раскладку исправленного текста. Ручной double Shift
 переключает раскладку всегда.
+
+Для диагностики решения можно использовать CLI:
+
+```bash
+lay --explain-correct 'кторое '
+```
+
+Вывод показывает все правила, кандидатов, победителя, второго кандидата,
+`margin` и `confidence`. Это помогает понять, почему автопомощь сработала или
+почему она промолчала.
 
 ### Прямое включение RU / EN
 
@@ -959,6 +975,21 @@ double Shift не требует сети, облачных API или удал�
 ```text
 ~/.local/share/lay/corrections.jsonl
 ```
+
+Дополнительные локальные файлы:
+
+```text
+~/.local/share/lay/recent_actions.jsonl
+~/.local/share/lay/learning_candidates.json
+~/.local/share/lay/stats.json
+```
+
+`recent_actions.jsonl` — короткий кольцевой журнал последних успешных действий
+для диагностики в трее. `learning_candidates.json` хранит только кандидаты для
+консервативного повышения повторяющихся правок в точные правила.
+`stats.json` хранит только счётчики и timestamps: вызовы LLM, записи обучения,
+пользовательские исправления и повышенные правила. На Unix эти файлы создаются
+с правами `0600`.
 
 Диагностический вывод тоже выключен по умолчанию. Разработчик может включить
 его явно через `lay-daemon --debug-log` или `LAY_DEBUG_LOG=1`.

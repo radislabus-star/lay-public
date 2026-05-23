@@ -84,10 +84,13 @@ fi
 systemctl --user restart lay-daemon || true
 if [ -f "$HOME/.config/autostart/lay-kde-tray.desktop" ]; then
     pkill -f "$HOME/.local/bin/lay-kde-tray" 2>/dev/null || true
+    lay_state_dir="$HOME/.local/state/lay"
+    mkdir -p "$lay_state_dir"
+    lay_kde_tray_log="$lay_state_dir/kde-tray.log"
     desktop_hint="${XDG_CURRENT_DESKTOP:-}:${XDG_SESSION_DESKTOP:-}:${DESKTOP_SESSION:-}"
     if [ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ] \
         && { printf '%s' "$desktop_hint" | grep -Eiq 'kde|plasma' || pgrep -x plasmashell >/dev/null 2>&1; }; then
-        nohup "$HOME/.local/bin/lay-kde-tray" >/tmp/lay-kde-tray.log 2>&1 &
+        nohup "$HOME/.local/bin/lay-kde-tray" >"$lay_kde_tray_log" 2>&1 &
     else
         echo "ℹ KDE tray обновлён; он стартует при следующем входе в KDE"
     fi

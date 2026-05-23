@@ -1,5 +1,6 @@
 use super::*;
 use crate::config::default_typing_assist_pipeline;
+use crate::text_edit::{committed_separator_is_preserved, replacement_plan_matches};
 use evdev::KeyCode;
 
 fn ev(keycode: KeyCode, layout_is_ru: bool) -> KeyEvent {
@@ -110,6 +111,17 @@ fn typing_assist_decoder_reemits_committed_space_boundary() {
     .expect("assist plan");
 
     assert_eq!(plan.replacement, "double и ");
+    assert!(committed_separator_is_preserved(
+        &plan.original,
+        &plan.replacement
+    ));
+    assert!(replacement_plan_matches(
+        &plan.original,
+        &plan.replacement,
+        &plan.plan
+    ));
+    assert!(plan.plan_matches_replacement());
+    assert!(plan.preserves_committed_separator());
     assert_eq!(
         plan.plan,
         TextReplacement {

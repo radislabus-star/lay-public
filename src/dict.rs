@@ -58,6 +58,16 @@ const PAIRS: &[(char, char)] = &[
     ('`', 'ё'),
 ];
 
+const SHIFT_PAIRS: &[(char, char)] = &[
+    ('{', 'Х'),
+    ('}', 'Ъ'),
+    (':', 'Ж'),
+    ('"', 'Э'),
+    ('<', 'Б'),
+    ('>', 'Ю'),
+    ('~', 'Ё'),
+];
+
 fn build_us_to_ru() -> HashMap<char, char> {
     let mut m = HashMap::with_capacity(PAIRS.len() * 2);
     for &(u, r) in PAIRS {
@@ -72,8 +82,9 @@ fn build_us_to_ru() -> HashMap<char, char> {
             }
         }
     }
-    // ё / Ё → специальный случай
-    m.insert('~', 'Ё');
+    for &(u, r) in SHIFT_PAIRS {
+        m.insert(u, r);
+    }
     m
 }
 
@@ -89,7 +100,9 @@ fn build_ru_to_us() -> HashMap<char, char> {
             }
         }
     }
-    m.insert('Ё', '~');
+    for &(u, r) in SHIFT_PAIRS {
+        m.insert(r, u);
+    }
     m
 }
 

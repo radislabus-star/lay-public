@@ -1,4 +1,22 @@
 use super::*;
+use std::path::PathBuf;
+
+fn fixture_rows(name: &str) -> Vec<Vec<String>> {
+    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("tests")
+        .join("fixtures")
+        .join(name);
+    std::fs::read_to_string(&path)
+        .unwrap_or_else(|err| panic!("failed to read fixture {path:?}: {err}"))
+        .lines()
+        .filter(|line| !line.trim().is_empty() && !line.starts_with('#'))
+        .map(|line| {
+            line.split('\t')
+                .map(|field| field.replace("\\s", " "))
+                .collect()
+        })
+        .collect()
+}
 
 #[test]
 fn parses_letter_choices() {
@@ -66,23 +84,22 @@ fn token_consensus_keeps_protected_ascii_without_model() {
 
 #[test]
 fn repairs_mixed_russian_with_latin_islands() {
-    assert_eq!(
-        repair_mixed_script("добавm d LLM"),
-        Some("добавь в LLM".to_string())
-    );
-    assert_eq!(
-        repair_mixed_script("ПРОВTHM WORD"),
-        Some("ПРОВЕРЬ WORD".to_string())
-    );
-    assert_eq!(repair_mixed_script("ОБYJDB"), Some("ОБНОВИ".to_string()));
+    for row in fixture_rows("llm_mixed_script_repair.tsv") {
+        assert_eq!(row.len(), 2, "mixed-script fixture must be TSV");
+        assert_eq!(repair_mixed_script(&row[0]), Some(row[1].clone()));
+    }
 }
 
 #[test]
 fn does_not_glue_long_latin_tail_to_russian_word() {
-    assert_eq!(repair_mixed_script("проверкаhrf ghj"), None);
+    let row = fixture_rows("llm_no_latin_tail_glue.tsv")
+        .into_iter()
+        .next()
+        .expect("latin-tail fixture");
+    assert_eq!(repair_mixed_script(&row[0]), None);
     assert_eq!(
-        convert_hybrid("проверкаhrf ghj", "ghjdthrfhrf ghj").unwrap(),
-        Some("проверкаhrf ghj".to_string())
+        convert_hybrid(&row[0], &row[1]).unwrap(),
+        Some(row[2].clone())
     );
 }
 
@@ -97,166 +114,188 @@ fn does_not_treat_cyrillic_layout_word_with_latin_tail_as_ascii_brand() {
 
 #[test]
 fn repairs_mixed_ascii_brand_tokens_before_layout_islands() {
-    assert_eq!(
-        repair_mixed_script("AьщСКЬ Z"),
-        Some("AmoCRM Я".to_string())
-    );
-    assert_eq!(
-        repair_mixed_script("AmoСКЬ Z"),
-        Some("AmoCRM Я".to_string())
-    );
+    for row in fixture_rows("llm_mixed_brand_repair.tsv") {
+        assert_eq!(row.len(), 2, "mixed brand fixture must be TSV");
+        assert_eq!(repair_mixed_script(&row[0]), Some(row[1].clone()));
+    }
 }
 
 #[test]
 fn keeps_plain_bilingual_text() {
-    assert_eq!(repair_mixed_script("hello мир"), None);
-    assert_eq!(repair_mixed_script("API для LLM"), None);
+    for row in fixture_rows("llm_plain_bilingual_keep.txt") {
+        assert_eq!(row.len(), 1, "plain bilingual fixture must have one field");
+        assert_eq!(repair_mixed_script(&row[0]), None);
+    }
 }
 
 #[test]
 fn hybrid_keeps_plain_bilingual_text_without_model() {
-    assert_eq!(
-        convert_hybrid("hello мир", "руддщ vbh").unwrap(),
-        Some("hello мир".to_string())
-    );
-    assert_eq!(
-        convert_hybrid("API для LLM", "ФЗШ lkz ДДЬ").unwrap(),
-        Some("API для LLM".to_string())
-    );
+    for row in fixture_rows("llm_hybrid_plain_bilingual.tsv") {
+        assert_eq!(row.len(), 3, "hybrid bilingual fixture must be TSV");
+        assert_eq!(
+            convert_hybrid(&row[0], &row[1]).unwrap(),
+            Some(row[2].clone())
+        );
+    }
 }
 
 #[test]
 fn hybrid_keeps_valid_russian_phrase_without_partial_single_letter_flip() {
+    let row = fixture_rows("llm_hybrid_valid_russian.tsv")
+        .into_iter()
+        .next()
+        .expect("valid russian fixture");
     assert_eq!(
-        convert_hybrid("в доме", "d ljvt").unwrap(),
-        Some("в доме".to_string())
+        convert_hybrid(&row[0], &row[1]).unwrap(),
+        Some(row[2].clone())
     );
 }
 
 #[test]
 fn hybrid_keeps_domain_and_converts_neighbor_word() {
+    let row = fixture_rows("llm_hybrid_domain.tsv")
+        .into_iter()
+        .next()
+        .expect("domain fixture");
     assert_eq!(
-        convert_hybrid("conecargo.ru cj,bhfq", "сщтусфкпщюкг собирай").unwrap(),
-        Some("conecargo.ru собирай".to_string())
+        convert_hybrid(&row[0], &row[1]).unwrap(),
+        Some(row[2].clone())
     );
 }
 
 #[test]
 fn hybrid_keeps_mixed_case_ascii_brand_and_converts_neighbor_letter() {
+    let row = fixture_rows("llm_hybrid_brand.tsv")
+        .into_iter()
+        .next()
+        .expect("brand fixture");
     assert_eq!(
-        convert_hybrid("AmoCRM Z", "ФьщСКЬ Я").unwrap(),
-        Some("AmoCRM Я".to_string())
+        convert_hybrid(&row[0], &row[1]).unwrap(),
+        Some(row[2].clone())
     );
 }
 
 #[test]
 fn tokenwise_hybrid_keeps_good_word_and_converts_bad_neighbor() {
-    let result = choose_mixed_token_candidate(
-        "Главная Вщгиду",
-        "Ukfdyfz Double",
-        |original, _| {
-            Ok(Some(if original == "Главная" {
-                Choice::Original
-            } else {
-                Choice::Converted
-            }))
-        },
-    )
+    let row = fixture_rows("llm_tokenwise_mixed.tsv")
+        .into_iter()
+        .find(|row| row.first().is_some_and(|id| id == "llm_veto"))
+        .expect("tokenwise fixture");
+    let protected = row[3].clone();
+    let result = choose_mixed_token_candidate(&row[1], &row[2], |original, _| {
+        Ok(Some(if original == protected {
+            Choice::Original
+        } else {
+            Choice::Converted
+        }))
+    })
     .unwrap();
 
-    assert_eq!(result, Some("Главная Double".to_string()));
+    assert_eq!(result, Some(row[4].clone()));
 }
 
 #[test]
 fn tokenwise_hybrid_converts_unknown_long_all_caps_neighbor() {
-    let result = choose_mixed_token_candidate(
-        "DOUBLE DUBLE",
-        "ВЩГИДУ ВГИДУ",
-        |original, converted| {
-            panic!("model should not be called for {original:?} -> {converted:?}");
-        },
-    )
+    let row = fixture_rows("llm_tokenwise_mixed.tsv")
+        .into_iter()
+        .find(|row| row.first().is_some_and(|id| id == "all_caps_neighbor"))
+        .expect("tokenwise fixture");
+    let result = choose_mixed_token_candidate(&row[1], &row[2], |original, converted| {
+        panic!("model should not be called for {original:?} -> {converted:?}");
+    })
     .unwrap();
 
-    assert_eq!(result, Some("DOUBLE ВГИДУ".to_string()));
+    assert_eq!(result, Some(row[4].clone()));
 }
 
 #[test]
 fn tokenwise_hybrid_keeps_unknown_all_caps_brand_when_converted_is_garbage() {
-    let result =
-        choose_mixed_token_candidate("AMOCRM Z", "ФЬЩСКЬ Я", |original, converted| {
-            panic!("model should not be called for {original:?} -> {converted:?}");
-        })
-        .unwrap();
+    let row = fixture_rows("llm_tokenwise_mixed.tsv")
+        .into_iter()
+        .find(|row| row.first().is_some_and(|id| id == "all_caps_brand"))
+        .expect("tokenwise fixture");
+    let result = choose_mixed_token_candidate(&row[1], &row[2], |original, converted| {
+        panic!("model should not be called for {original:?} -> {converted:?}");
+    })
+    .unwrap();
 
-    assert_eq!(result, Some("AMOCRM Я".to_string()));
+    assert_eq!(result, Some(row[4].clone()));
 }
 
 #[test]
 fn tokenwise_hybrid_converts_all_obvious_layout_garbage() {
-    let result = choose_mixed_token_candidate("руддщ цщкдв", "hello world", |_, _| {
-        Ok(Some(Choice::Converted))
-    })
-    .unwrap();
+    let row = fixture_rows("llm_tokenwise_mixed.tsv")
+        .into_iter()
+        .find(|row| row.first().is_some_and(|id| id == "all_bad"))
+        .expect("tokenwise fixture");
+    let result =
+        choose_mixed_token_candidate(&row[1], &row[2], |_, _| Ok(Some(Choice::Converted))).unwrap();
 
-    assert_eq!(result, Some("hello world".to_string()));
+    assert_eq!(result, Some(row[4].clone()));
 }
 
 #[test]
 fn tokenwise_hybrid_converts_all_obviously_bad_words_without_model() {
-    let result = choose_mixed_token_candidate(
-        "dsdjlbv ldf",
-        "выводим два",
-        |original, converted| {
-            panic!("model should not be called for {original:?} -> {converted:?}");
-        },
-    )
+    let row = fixture_rows("llm_tokenwise_mixed.tsv")
+        .into_iter()
+        .find(|row| row.first().is_some_and(|id| id == "all_bad_no_model"))
+        .expect("tokenwise fixture");
+    let result = choose_mixed_token_candidate(&row[1], &row[2], |original, converted| {
+        panic!("model should not be called for {original:?} -> {converted:?}");
+    })
     .unwrap();
 
-    assert_eq!(result, Some("выводим два".to_string()));
+    assert_eq!(result, Some(row[4].clone()));
 }
 
 #[test]
 fn tokenwise_hybrid_keeps_all_obviously_good_words_without_model() {
-    let result = choose_mixed_token_candidate(
-        "выводим два",
-        "dsdjlbv ldf",
-        |original, converted| {
-            panic!("model should not be called for {original:?} -> {converted:?}");
-        },
-    )
+    let row = fixture_rows("llm_tokenwise_mixed.tsv")
+        .into_iter()
+        .find(|row| row.first().is_some_and(|id| id == "all_good_no_model"))
+        .expect("tokenwise fixture");
+    let result = choose_mixed_token_candidate(&row[1], &row[2], |original, converted| {
+        panic!("model should not be called for {original:?} -> {converted:?}");
+    })
     .unwrap();
 
-    assert_eq!(result, Some("выводим два".to_string()));
+    assert_eq!(result, Some(row[4].clone()));
 }
 
 #[test]
 fn tokenwise_hybrid_keeps_obviously_good_russian_without_asking_model() {
-    let result = choose_mixed_token_candidate(
-        "Главная Вщгиду",
-        "Ukfdyfz Double",
-        |original, _| {
-            assert_ne!(original, "Главная");
-            Ok(Some(Choice::Converted))
-        },
-    )
+    let row = fixture_rows("llm_tokenwise_mixed.tsv")
+        .into_iter()
+        .find(|row| {
+            row.first()
+                .is_some_and(|id| id == "dictionary_before_model_ru")
+        })
+        .expect("tokenwise fixture");
+    let protected = row[3].clone();
+    let result = choose_mixed_token_candidate(&row[1], &row[2], |original, _| {
+        assert_ne!(original, protected);
+        Ok(Some(Choice::Converted))
+    })
     .unwrap();
 
-    assert_eq!(result, Some("Главная Double".to_string()));
+    assert_eq!(result, Some(row[4].clone()));
 }
 
 #[test]
 fn tokenwise_hybrid_uses_dictionaries_before_model() {
-    let result = choose_mixed_token_candidate(
-        "Главное Вщгиду",
-        "Ukfdyjt Double",
-        |original, converted| {
-            panic!("model should not be called for {original:?} -> {converted:?}");
-        },
-    )
+    let row = fixture_rows("llm_tokenwise_mixed.tsv")
+        .into_iter()
+        .find(|row| {
+            row.first()
+                .is_some_and(|id| id == "dictionary_before_model_main")
+        })
+        .expect("tokenwise fixture");
+    let result = choose_mixed_token_candidate(&row[1], &row[2], |original, converted| {
+        panic!("model should not be called for {original:?} -> {converted:?}");
+    })
     .unwrap();
 
-    assert_eq!(result, Some("Главное Double".to_string()));
+    assert_eq!(result, Some(row[4].clone()));
 }
 
 #[test]
@@ -277,10 +316,14 @@ fn token_hybrid_keeps_good_previous_word_or_converts_bad_one() {
 
 #[test]
 fn tokenwise_hybrid_converts_bad_mixed_layout_neighbor_only() {
-    let result = choose_mixed_token_candidate("рка ghj", "hrf про", |original, converted| {
+    let row = fixture_rows("llm_tokenwise_mixed.tsv")
+        .into_iter()
+        .find(|row| row.first().is_some_and(|id| id == "bad_mixed_neighbor"))
+        .expect("tokenwise fixture");
+    let result = choose_mixed_token_candidate(&row[1], &row[2], |original, converted| {
         panic!("model should not be called for {original:?} -> {converted:?}");
     })
     .unwrap();
 
-    assert_eq!(result, Some("рка про".to_string()));
+    assert_eq!(result, Some(row[4].clone()));
 }

@@ -1,5 +1,6 @@
 use super::{
-    choose_typing_candidate, classify_typing_rule, TypingCandidate, TypingCandidateFamily,
+    choose_typing_candidate, classify_typing_confidence, classify_typing_rule,
+    rank_typing_candidates, TypingCandidate, TypingCandidateFamily, TypingDecisionConfidence,
 };
 
 #[test]
@@ -66,4 +67,56 @@ fn priority_breaks_ties_inside_same_family() {
     .expect("candidate");
 
     assert_eq!(chosen.replacement, "wird");
+}
+
+#[test]
+fn ranked_decision_keeps_second_candidate_and_margin() {
+    let original = "словослитно ";
+    let decision = rank_typing_candidates([
+        TypingCandidate::new("missing_letter", 10, original, "словослитное ".to_string()),
+        TypingCandidate::new("glued_phrase", 200, original, "слово слитно ".to_string()),
+        TypingCandidate::new("hard_sign", 300, original, "словослитноъ ".to_string()),
+    ])
+    .expect("ranked decision");
+
+    assert_eq!(decision.best.rule_id, "missing_letter");
+    assert!(decision.second.is_some());
+    assert!(decision.margin.is_finite());
+    assert!(decision.is_strong(0.0));
+}
+
+#[test]
+fn ranked_decision_classifies_confidence() {
+    let original = "word";
+    let lone = rank_typing_candidates([TypingCandidate::new(
+        "hard_sign",
+        10,
+        original,
+        "ward".to_string(),
+    )])
+    .expect("lone candidate");
+
+    assert_eq!(
+        lone.confidence(1.0),
+        TypingDecisionConfidence::SingleCandidate
+    );
+
+    let close = rank_typing_candidates([
+        TypingCandidate::new("hard_sign", 10, original, "ward".to_string()),
+        TypingCandidate::new("hard_sign", 10, original, "wbrd".to_string()),
+    ])
+    .expect("close candidates");
+
+    assert_eq!(
+        close.confidence(f64::INFINITY),
+        TypingDecisionConfidence::Weak
+    );
+    assert_eq!(
+        classify_typing_confidence(true, Some(2.0), 1.0),
+        TypingDecisionConfidence::Strong
+    );
+    assert_eq!(
+        classify_typing_confidence(true, None, 1.0),
+        TypingDecisionConfidence::Weak
+    );
 }

@@ -4,7 +4,6 @@
 //! is capped to a small number of lines so it cannot grow without bound.
 
 use serde::{Deserialize, Serialize};
-use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -52,23 +51,12 @@ pub fn record_action(
 }
 
 pub fn record_action_to_path(path: &Path, action: &RecentAction<'_>, keep_lines: usize) {
-    if let Some(parent) = path.parent() {
-        if std::fs::create_dir_all(parent).is_err() {
-            return;
-        }
-    }
     let Ok(mut line) = serde_json::to_string(action) else {
         return;
     };
     line.push('\n');
-    if let Ok(mut file) = std::fs::OpenOptions::new()
-        .append(true)
-        .create(true)
-        .open(path)
-    {
-        if file.write_all(line.as_bytes()).is_ok() {
-            compact_action_log(path, keep_lines);
-        }
+    if crate::private_file::append_private_text(path, &line).is_ok() {
+        compact_action_log(path, keep_lines);
     }
 }
 
@@ -89,7 +77,7 @@ fn compact_action_log(path: &Path, keep_lines: usize) {
     }
     let start = lines.len() - keep_lines;
     let compacted = format!("{}\n", lines[start..].join("\n"));
-    let _ = std::fs::write(path, compacted);
+    let _ = crate::private_file::write_private_text(path, &compacted);
 }
 
 fn actions_path() -> Option<PathBuf> {

@@ -9,6 +9,14 @@ cargo fmt --all --check
 
 echo "== scripts/check-architecture.sh =="
 scripts/check-architecture.sh
+for i in $(seq 1 50); do
+  scripts/check-architecture.sh >/dev/null
+done
+echo "architecture guard repeated 50/50 OK"
+if [[ "${LAY_AUDIT_50:-0}" == "1" ]]; then
+  echo "== scripts/check-lay-audit-50.sh =="
+  scripts/check-lay-audit-50.sh
+fi
 
 echo "== cargo test --all-targets =="
 cargo test --all-targets
@@ -17,19 +25,30 @@ echo "== cargo clippy --all-targets -- -D warnings =="
 cargo clippy --all-targets -- -D warnings
 
 echo "== node --check GNOME extension =="
+python3 -m json.tool extension/lay@radislabus-star.github.io/metadata.json >/dev/null
 node --check extension/lay@radislabus-star.github.io/lay-impl.js
 node --check extension/lay@radislabus-star.github.io/extension.js
 
 echo "== python compile desktop helpers =="
-python3 -m py_compile scripts/lay-kde-tray.py
-python3 -m py_compile scripts/lay-ibus-engine.py
-bash -n install.sh update.sh scripts/install-remote.sh scripts/lay-host-vm-guard.sh
+python3 -m py_compile scripts/*.py
+bash -n install.sh update.sh dev-reload.sh scripts/*.sh
+
+echo "== CLI explain smoke =="
+cargo run --quiet --bin lay -- --explain-correct 'кторое ' | grep -F 'confidence:' >/dev/null
 
 echo "== cargo build --release --bins =="
 cargo build --release --bins
 
-echo "== cargo run --quiet --bin lay-ngram-corpus -- check-cache =="
-cargo run --quiet --bin lay-ngram-corpus -- check-cache
+NGRAM_CHECK_CACHE="${LAY_NGRAM_CHECK_CACHE:-${HOME:-}/.cache/lay/ngram_ru_v1.json}"
+if [[ -n "$NGRAM_CHECK_CACHE" && -f "$NGRAM_CHECK_CACHE" ]]; then
+  echo "== cargo run --quiet --bin lay-ngram-corpus -- check-cache =="
+  cargo run --quiet --bin lay-ngram-corpus -- check-cache --cache "$NGRAM_CHECK_CACHE"
+else
+  echo "== cargo run --quiet --bin lay-ngram-corpus -- cache/check-cache target =="
+  NGRAM_CHECK_CACHE="target/lay-full-ngram-ru.json"
+  cargo run --quiet --bin lay-ngram-corpus -- cache --out "$NGRAM_CHECK_CACHE"
+  cargo run --quiet --bin lay-ngram-corpus -- check-cache --cache "$NGRAM_CHECK_CACHE"
+fi
 
 echo "== cargo run --quiet --bin lay-lem-research =="
 cargo run --quiet --bin lay-lem-research

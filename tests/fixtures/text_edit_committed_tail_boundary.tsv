@@ -1,0 +1,4 @@
+# original	replacement	move_left	backspaces	insert	move_right
+double\sb\s	double\sи\s	1	8	double\sи	1
+чтобы\sточнр\s	чтобы\sточно\s	1	11	чтобы\sточно	1
+ОФФИЦИАЛЬНОМ\s	ОФИЦИАЛЬНОМ\s	1	12	ОФИЦИАЛЬНОМ	1

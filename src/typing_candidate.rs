@@ -47,26 +47,93 @@ impl TypingCandidate {
     }
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct TypingCandidateDecision {
+    pub best: TypingCandidate,
+    pub second: Option<TypingCandidate>,
+    pub margin: f64,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TypingDecisionConfidence {
+    SingleCandidate,
+    Strong,
+    Weak,
+}
+
+impl TypingCandidateDecision {
+    pub fn confidence(&self, strong_margin: f64) -> TypingDecisionConfidence {
+        classify_typing_confidence(self.second.is_some(), Some(self.margin), strong_margin)
+    }
+
+    pub fn is_strong(&self, strong_margin: f64) -> bool {
+        !matches!(
+            self.confidence(strong_margin),
+            TypingDecisionConfidence::Weak
+        )
+    }
+}
+
+pub fn classify_typing_confidence(
+    has_second_candidate: bool,
+    margin: Option<f64>,
+    strong_margin: f64,
+) -> TypingDecisionConfidence {
+    if !has_second_candidate {
+        return TypingDecisionConfidence::SingleCandidate;
+    }
+    if margin.is_some_and(|margin| margin >= strong_margin) {
+        TypingDecisionConfidence::Strong
+    } else {
+        TypingDecisionConfidence::Weak
+    }
+}
+
 pub fn choose_typing_candidate<I>(candidates: I) -> Option<TypingCandidate>
 where
     I: IntoIterator<Item = TypingCandidate>,
 {
+    rank_typing_candidates(candidates).map(|decision| decision.best)
+}
+
+pub fn rank_typing_candidates<I>(candidates: I) -> Option<TypingCandidateDecision>
+where
+    I: IntoIterator<Item = TypingCandidate>,
+{
     let mut best: Option<TypingCandidate> = None;
+    let mut second: Option<TypingCandidate> = None;
 
     for candidate in candidates {
         if candidate.replacement.trim().is_empty() {
             continue;
         }
-        let better = match best.as_ref() {
-            Some(current) => candidate_is_better(&candidate, current),
-            None => true,
-        };
-        if better {
+        if best
+            .as_ref()
+            .map(|current| candidate_is_better(&candidate, current))
+            .unwrap_or(true)
+        {
+            second = best;
             best = Some(candidate);
+        } else if second
+            .as_ref()
+            .map(|current| candidate_is_better(&candidate, current))
+            .unwrap_or(true)
+        {
+            second = Some(candidate);
         }
     }
 
-    best
+    let best = best?;
+    let margin = second
+        .as_ref()
+        .map(|candidate| best.score.total - candidate.score.total)
+        .unwrap_or(f64::INFINITY);
+
+    Some(TypingCandidateDecision {
+        best,
+        second,
+        margin,
+    })
 }
 
 pub fn classify_typing_rule(rule_id: &str) -> TypingCandidateFamily {

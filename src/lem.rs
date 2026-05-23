@@ -5,18 +5,16 @@
 
 use crate::dict::{self, Direction};
 use crate::keyboard::is_cyrillic_letter;
-use crate::lexicon::{
-    extend_common_ru_words, is_ru_short_function_word, EN_HUNSPELL, EN_WORDS, RU_HUNSPELL,
-};
+use crate::lexicon::is_ru_short_function_word;
 use crate::ngram;
 use crate::text_metrics::{
     common_replacement_span, damerau_levenshtein, normalized_edit_distance, without_whitespace,
 };
+use crate::token_language::{self, is_known_en_token, is_known_ru_token};
 use crate::word_recognizer::{
     is_ascii_technical_or_brand_token, is_mixed_cyrillic_ascii_alpha_token,
 };
 use std::collections::HashSet;
-use std::sync::OnceLock;
 
 #[derive(Clone, Debug)]
 pub struct ScoredCandidate {
@@ -35,8 +33,8 @@ where
     let mut seen = HashSet::new();
     let mut ranked = Vec::new();
     for candidate in candidates {
-        let candidate = candidate.trim().to_string();
-        if candidate.is_empty() || !seen.insert(candidate.clone()) {
+        let key = candidate.trim().to_string();
+        if key.is_empty() || !seen.insert(key) {
             continue;
         }
         ranked.push(score_candidate(typed, candidate));
@@ -54,8 +52,7 @@ where
 
 pub fn warm_up() {
     crate::lexicon::warm_up();
-    let _ = ru_words().len();
-    let _ = en_words().len();
+    token_language::warm_up();
     crate::ngram::warm_up();
 }
 
@@ -197,7 +194,11 @@ fn intervention_penalty(typed: &str, candidate: &str) -> f64 {
                 && is_known_word(typed_token)
                 && !has_ascii_layout_letter_punctuation(typed_raw)
             {
-                protected_penalty += 2.0;
+                protected_penalty += if is_known_word(candidate_token) {
+                    4.0
+                } else {
+                    2.0
+                };
             }
         }
     }
@@ -388,113 +389,10 @@ fn has_ascii_layout_letter_punctuation(token: &str) -> bool {
 fn is_known_word(token: &str) -> bool {
     let lower = token.to_lowercase();
     if lower.chars().all(is_cyrillic_letter) {
-        return ru_words().contains(&lower) || is_known_ru_form(&lower);
+        return is_known_ru_token(&lower);
     }
     if lower.chars().all(|ch| ch.is_ascii_alphabetic()) {
-        return en_words().contains(&lower);
+        return is_known_en_token(&lower);
     }
     false
-}
-
-fn is_known_ru_form(word: &str) -> bool {
-    if word.chars().count() < 4 {
-        return false;
-    }
-    if let Some(stem) = word.strip_suffix('о') {
-        return ["ый", "ий", "ой"]
-            .iter()
-            .any(|suffix| ru_words().contains(&format!("{stem}{suffix}")));
-    }
-    for suffix in [
-        "ками", "ках", "кой", "ки", "ке", "ку", "ок", "ыми", "ими", "ами", "ями", "ого", "его",
-        "ому", "ему", "ов", "ев", "ей", "ах", "ях", "ам", "ям", "ом", "ем", "ой", "ый", "ий", "ая",
-        "яя", "ое", "ее", "ые", "ие",
-    ] {
-        let Some(stem) = word.strip_suffix(suffix) else {
-            continue;
-        };
-        let min_stem_len = if matches!(suffix, "ками" | "ках" | "кой" | "ки" | "ке" | "ку" | "ок")
-        {
-            3
-        } else {
-            4
-        };
-        if stem.chars().count() >= min_stem_len && ru_words().contains(stem) {
-            return true;
-        }
-        if stem.chars().count() >= min_stem_len && ru_words().contains(&format!("{stem}ка")) {
-            return true;
-        }
-    }
-    for (ending, lemmas) in [
-        ("шу", &["сать"][..]),
-        ("ешь", &["ить", "еть"][..]),
-        ("ишь", &["ить", "еть"]),
-        ("ет", &["ить", "еть"]),
-        ("ит", &["ить", "еть"]),
-        ("ется", &["ться"]),
-        ("ются", &["ться"]),
-        ("ил", &["ить"]),
-        ("ила", &["ить"]),
-        ("или", &["ить"]),
-        ("ал", &["ать"]),
-        ("ала", &["ать"]),
-        ("али", &["ать"]),
-    ] {
-        let Some(stem) = word.strip_suffix(ending) else {
-            continue;
-        };
-        if lemmas
-            .iter()
-            .any(|lemma_suffix| ru_words().contains(&format!("{stem}{lemma_suffix}")))
-        {
-            return true;
-        }
-    }
-    false
-}
-
-fn ru_words() -> &'static HashSet<String> {
-    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
-    WORDS.get_or_init(|| {
-        let mut words = load_hunspell_words(RU_HUNSPELL, |word| {
-            word.chars().count() >= 2 && word.chars().all(is_cyrillic_letter)
-        });
-        extend_common_ru_words(&mut words);
-        words
-    })
-}
-
-fn en_words() -> &'static HashSet<String> {
-    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
-    WORDS.get_or_init(|| {
-        let mut words = load_hunspell_words(EN_HUNSPELL, |word| {
-            word.chars().count() >= 2 && word.chars().all(|ch| ch.is_ascii_alphabetic())
-        });
-        if let Ok(text) = std::fs::read_to_string(EN_WORDS) {
-            words.extend(
-                text.lines()
-                    .map(str::trim)
-                    .map(str::to_lowercase)
-                    .filter(|word| {
-                        word.chars().count() >= 2 && word.chars().all(|ch| ch.is_ascii_alphabetic())
-                    }),
-            );
-        }
-        words
-    })
-}
-
-fn load_hunspell_words(path: &str, keep: fn(&str) -> bool) -> HashSet<String> {
-    std::fs::read_to_string(path)
-        .map(|text| {
-            text.lines()
-                .skip(1)
-                .filter_map(|line| line.split('/').next())
-                .map(str::trim)
-                .map(str::to_lowercase)
-                .filter(|word| keep(word))
-                .collect()
-        })
-        .unwrap_or_default()
 }

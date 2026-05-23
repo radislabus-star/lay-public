@@ -1,0 +1,4 @@
+# original	replacement	preserved
+кторое\s	которое\s	true
+кторое\s	которое	false
+кторое	которое	true

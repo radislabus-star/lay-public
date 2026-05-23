@@ -47,7 +47,13 @@ pub use crate::text_backend::{
     ImeReplaceRequest, TextBackendCapabilities, TextBackendPreference, TextReplaceCapability,
 };
 pub use crate::text_edit::{
-    plan_committed_tail_replacement, plan_text_replacement, tail_chars, TextReplacement,
+    apply_replacement_plan_to_text, committed_separator_is_preserved,
+    plan_committed_tail_replacement, plan_text_replacement, replacement_plan_matches, tail_chars,
+    TextReplacement,
+};
+pub use crate::typing_candidate::{
+    classify_typing_confidence, rank_typing_candidates, TypingCandidate, TypingCandidateDecision,
+    TypingCandidateFamily, TypingCandidateScore, TypingDecisionConfidence,
 };
 pub use crate::word_buffer::{
     PendingAutoUndo, UserLearningCorrection, WordBuffer, MAX_REPLACE_WORDS,

@@ -9,19 +9,23 @@ use std::sync::OnceLock;
 
 use crate::keyboard::is_cyrillic_letter;
 use crate::lexicon::{
-    extend_user_protected_ascii_words, is_common_en_technical_word, is_ru_hyphen_particle,
-    EN_HUNSPELL, EN_WORDS,
+    extend_user_protected_ascii_words, is_common_en_technical_word, is_common_ru_word,
+    is_ru_hyphen_particle, EN_HUNSPELL, EN_WORDS,
 };
 use crate::phrase_lexicon::is_common_short_russian_preposition;
-use crate::ru_typo::has_plausible_russian_typo_candidate;
+use crate::ru_typo::{
+    correct_extra_letters, correct_hard_sign_typo, correct_missing_letter, correct_repeated_letter,
+    has_plausible_russian_typo_candidate,
+};
 use crate::russian_chars::is_russian_vowel;
 use crate::russian_lexicon::{
     is_known_cyrillic_hyphen_part, is_known_russian_adverb_o_form,
-    is_known_russian_ka_oblique_form, is_known_russian_word_or_form, russian_short_dictionary,
-    russian_tiny_dictionary,
+    is_known_russian_ka_oblique_form, is_known_russian_word_or_form, russian_dictionary,
+    russian_short_dictionary, russian_tiny_dictionary,
 };
+use crate::russian_typo_candidates::generate_extra_letter_candidates;
 use crate::text_case::apply_word_case;
-use crate::word_reader::{is_cyrillic_word, split_word_punctuation};
+use crate::word_reader::{is_cyrillic_word, split_word_punctuation, split_ws_segments};
 use crate::word_recognizer::{
     is_ascii_technical_token, is_cli_option_token, is_protected_ascii_token,
 };
@@ -50,8 +54,10 @@ pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
         return None;
     }
 
+    let polished = polish_converted_russian_layout_token(&converted);
+    let converted_token = polished.as_deref().unwrap_or(&converted);
     let (converted_leading, converted_word, converted_trailing) =
-        split_word_punctuation(&converted);
+        split_word_punctuation(converted_token);
     if converted_word.is_empty() || !is_cyrillic_word(converted_word) {
         return None;
     }
@@ -80,10 +86,195 @@ pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
     }
 }
 
+pub(crate) fn correct_wrong_layout_ascii_phrase(text: &str) -> Option<String> {
+    let segments = split_ws_segments(text);
+    let word_count = segments.iter().filter(|(_, is_ws)| !*is_ws).count();
+    if word_count < 2 {
+        return None;
+    }
+
+    let mut converted_words = 0usize;
+    let mut known_converted_words = 0usize;
+    let mut clean_alpha_words = 0usize;
+    let mut has_shift_letter_signal = false;
+    let mut out = String::with_capacity(text.len());
+    for (segment, is_ws) in segments {
+        if is_ws {
+            out.push_str(segment);
+            continue;
+        }
+        let candidate = ascii_phrase_segment_candidate(segment)?;
+        converted_words += 1;
+        if candidate.known {
+            known_converted_words += 1;
+        }
+        if candidate.clean_alpha {
+            clean_alpha_words += 1;
+        }
+        has_shift_letter_signal |= candidate.shift_letter_signal;
+        out.push_str(&candidate.replacement);
+    }
+
+    if converted_words < 2 || out == text {
+        return None;
+    }
+
+    confident_wrong_layout_ascii_phrase(
+        converted_words,
+        known_converted_words,
+        clean_alpha_words,
+        has_shift_letter_signal,
+    )
+    .then_some(out)
+}
+
+pub(crate) fn is_confident_wrong_layout_ascii_pair(first: &str, second: &str) -> bool {
+    let Some(first_candidate) = ascii_phrase_segment_candidate(first) else {
+        return false;
+    };
+    let Some(second_candidate) = ascii_phrase_segment_candidate(second) else {
+        return false;
+    };
+
+    let known_converted_words =
+        usize::from(first_candidate.known) + usize::from(second_candidate.known);
+    let clean_alpha_words =
+        usize::from(first_candidate.clean_alpha) + usize::from(second_candidate.clean_alpha);
+    let has_shift_letter_signal =
+        first_candidate.shift_letter_signal || second_candidate.shift_letter_signal;
+
+    confident_wrong_layout_ascii_phrase(
+        2,
+        known_converted_words,
+        clean_alpha_words,
+        has_shift_letter_signal,
+    )
+}
+
+fn confident_wrong_layout_ascii_phrase(
+    converted_words: usize,
+    known_converted_words: usize,
+    clean_alpha_words: usize,
+    has_shift_letter_signal: bool,
+) -> bool {
+    let all_clean_known =
+        clean_alpha_words == converted_words && known_converted_words == converted_words;
+    let shifted_physical_run = has_shift_letter_signal && known_converted_words > 0;
+    all_clean_known || shifted_physical_run
+}
+
+#[derive(Debug, Clone)]
+struct AsciiPhraseSegmentCandidate {
+    replacement: String,
+    known: bool,
+    clean_alpha: bool,
+    shift_letter_signal: bool,
+}
+
+fn ascii_phrase_segment_candidate(token: &str) -> Option<AsciiPhraseSegmentCandidate> {
+    if is_cli_option_token(token) || !is_plain_ascii_layout_token(token) {
+        return None;
+    }
+
+    let converted = crate::dict::convert(token, crate::dict::Direction::Us2Ru);
+    if converted == token {
+        return None;
+    }
+
+    let (_, converted_word, _) = split_word_punctuation(&converted);
+    if converted_word.is_empty() || !is_cyrillic_word(converted_word) {
+        return None;
+    }
+
+    let converted_lower = converted_word.to_lowercase();
+    let known = is_known_russian_layout_autoswitch_word(&converted_lower);
+    let clean_alpha = token.chars().all(|ch| ch.is_ascii_alphabetic());
+    let shift_letter_signal = has_ascii_shift_letter_signal(token);
+
+    let replacement = if known {
+        let (_, original_word, _) = split_word_punctuation(token);
+        let normalized_word = apply_word_case(original_word, &converted_lower);
+        let (converted_leading, _, converted_trailing) = split_word_punctuation(&converted);
+        format!("{converted_leading}{normalized_word}{converted_trailing}")
+    } else if shift_letter_signal {
+        converted
+    } else {
+        return None;
+    };
+    let replacement = polish_converted_russian_layout_token(&replacement).unwrap_or(replacement);
+    let (_, replacement_word, _) = split_word_punctuation(&replacement);
+    let known = known || is_known_russian_layout_autoswitch_word(&replacement_word.to_lowercase());
+
+    Some(AsciiPhraseSegmentCandidate {
+        replacement,
+        known,
+        clean_alpha,
+        shift_letter_signal,
+    })
+}
+
+fn polish_converted_russian_layout_token(token: &str) -> Option<String> {
+    let (leading, word, trailing) = split_word_punctuation(token);
+    if word.chars().count() < 5 || !is_cyrillic_word(word) {
+        return None;
+    }
+    let lower = word.to_lowercase();
+
+    if let Some(corrected) = correct_common_layout_extra_letter(word) {
+        return Some(format!("{leading}{corrected}{trailing}"));
+    }
+    if is_known_russian_layout_autoswitch_word(&lower) {
+        return None;
+    }
+
+    let corrected = correct_hard_sign_typo(word)
+        .or_else(|| correct_repeated_letter(word))
+        .or_else(|| correct_missing_letter(word))
+        .or_else(|| correct_extra_letters(word))?;
+    if !is_strong_layout_polish_word(&corrected.to_lowercase()) {
+        return None;
+    }
+    Some(format!("{leading}{corrected}{trailing}"))
+}
+
+fn correct_common_layout_extra_letter(word: &str) -> Option<String> {
+    if word.chars().count() < 5 || !is_cyrillic_word(word) {
+        return None;
+    }
+
+    let lower = word.to_lowercase();
+
+    let (candidate, _) = crate::candidate_ranker::choose_best_with_gap(
+        generate_extra_letter_candidates(&lower),
+        0.50,
+        |candidate| {
+            if candidate == &lower || !is_common_ru_word(candidate) {
+                return None;
+            }
+            let mut score = crate::ngram::ru_candidate_margin(candidate, &lower);
+            score += 3.0;
+            Some(score)
+        },
+    )?;
+    Some(apply_word_case(word, &candidate))
+}
+
+fn is_strong_layout_polish_word(word: &str) -> bool {
+    is_common_ru_word(word)
+        || russian_dictionary().contains(word)
+        || russian_short_dictionary().contains(word)
+        || russian_tiny_dictionary().contains(word)
+}
+
 pub(crate) fn ascii_layout_prefix_can_be_letter(prefix: &str) -> bool {
-    prefix
-        .chars()
-        .any(|ch| matches!(ch, '\'' | ';' | '[' | ']' | '`' | ',' | '.' | '-'))
+    prefix.chars().any(is_ascii_layout_letter_symbol)
+}
+
+pub(crate) fn is_ascii_layout_letter_symbol(ch: char) -> bool {
+    matches!(
+        ch,
+        '\'' | ';' | '[' | ']' | '`' | ',' | '.' | '-' | '{' | '}' | ':' | '"' | '<' | '>' | '~'
+    )
 }
 
 pub(crate) fn correct_wrong_layout_cyrillic_word(token: &str) -> Option<String> {
@@ -175,30 +366,25 @@ fn is_plain_ascii_layout_token(token: &str) -> bool {
     token.is_ascii()
         && token.chars().any(|ch| ch.is_ascii_alphabetic())
         && !token.chars().any(|ch| ch.is_ascii_digit())
-        && token.chars().all(|ch| {
-            ch.is_ascii_alphabetic()
-                || matches!(
-                    ch,
-                    ',' | ';'
-                        | '\''
-                        | '['
-                        | ']'
-                        | '`'
-                        | '.'
-                        | '/'
-                        | '?'
-                        | '!'
-                        | ':'
-                        | '$'
-                        | '%'
-                        | '^'
-                        | '&'
-                        | '#'
-                        | '@'
-                        | '-'
-                        | '_'
-                )
-        })
+        && token
+            .chars()
+            .all(|ch| ch.is_ascii_alphabetic() || is_ascii_layout_token_symbol(ch))
+}
+
+fn has_ascii_shift_letter_signal(token: &str) -> bool {
+    token.chars().any(is_ascii_shift_letter_symbol)
+}
+
+pub(crate) fn is_ascii_shift_letter_symbol(ch: char) -> bool {
+    matches!(ch, '{' | '}' | ':' | '"' | '<' | '>' | '~')
+}
+
+fn is_ascii_layout_token_symbol(ch: char) -> bool {
+    is_ascii_layout_letter_symbol(ch)
+        || matches!(
+            ch,
+            '/' | '?' | '!' | '$' | '%' | '^' | '&' | '#' | '@' | '_'
+        )
 }
 
 pub(crate) fn is_protected_ascii_layout_token(token: &str) -> bool {

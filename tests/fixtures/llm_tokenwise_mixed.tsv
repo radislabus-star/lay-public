@@ -1,0 +1,10 @@
+# id	original	converted	protected	expected
+llm_veto	Главная\sВщгиду	Ukfdyfz\sDouble	Главная	Главная\sDouble
+all_bad	руддщ\sцщкдв	hello\sworld		hello\sworld
+all_bad_no_model	dsdjlbv\sldf	выводим\sдва		выводим\sдва
+all_good_no_model	выводим\sдва	dsdjlbv\sldf		выводим\sдва
+dictionary_before_model_ru	Главная\sВщгиду	Ukfdyfz\sDouble	Главная	Главная\sDouble
+dictionary_before_model_main	Главное\sВщгиду	Ukfdyjt\sDouble		Главное\sDouble
+bad_mixed_neighbor	рка\sghj	hrf\sпро		рка\sпро
+all_caps_neighbor	DOUBLE\sDUBLE	ВЩГИДУ\sВГИДУ		DOUBLE\sВГИДУ
+all_caps_brand	AMOCRM\sZ	ФЬЩСКЬ\sЯ		AMOCRM\sЯ
