@@ -1,2 +1,3 @@
 # prefix	tail	expected_context	expected_replacement
 порт port 	gjhn 	порт port gjhn\s	порт\s
+html 	djn 	html djn\s	вот\s

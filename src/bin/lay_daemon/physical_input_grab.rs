@@ -9,6 +9,12 @@ pub(super) struct PhysicalInputGrab<'a> {
     active: bool,
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub(super) struct ForwardedTyping {
+    pub(super) keys: usize,
+    pub(super) spaces: usize,
+}
+
 impl<'a> PhysicalInputGrab<'a> {
     pub(super) fn new(device: Option<&'a mut Device>) -> Self {
         let Some(device) = device else {
@@ -45,17 +51,17 @@ impl<'a> PhysicalInputGrab<'a> {
         buf: &mut WordBuffer,
         layout_is_ru: bool,
         label: &str,
-    ) {
+    ) -> ForwardedTyping {
         if !self.active {
-            return;
+            return ForwardedTyping::default();
         }
 
         let Some(device) = self.device.as_deref_mut() else {
-            return;
+            return ForwardedTyping::default();
         };
 
         let mut shift_active = false;
-        let mut forwarded = 0usize;
+        let mut forwarded = ForwardedTyping::default();
         loop {
             let events = match device.fetch_events() {
                 Ok(events) => events.collect::<Vec<_>>(),
@@ -94,7 +100,7 @@ impl<'a> PhysicalInputGrab<'a> {
                         continue;
                     }
                     buf.handle_space();
-                    forwarded += 1;
+                    forwarded.spaces += 1;
                     continue;
                 }
 
@@ -111,15 +117,17 @@ impl<'a> PhysicalInputGrab<'a> {
                     shift: shift_active,
                     layout_is_ru,
                 });
-                forwarded += 1;
+                forwarded.keys += 1;
             }
         }
 
-        if forwarded > 0 {
+        if forwarded.keys + forwarded.spaces > 0 {
             log(&format!(
-                "· {label} passthrough forwarded {forwarded} queued keys"
+                "· {label} passthrough forwarded {} queued keys, {} spaces",
+                forwarded.keys, forwarded.spaces
             ));
         }
+        forwarded
     }
 }
 

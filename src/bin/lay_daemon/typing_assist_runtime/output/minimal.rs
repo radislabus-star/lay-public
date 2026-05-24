@@ -7,9 +7,11 @@ use std::time::Instant;
 
 use super::super::super::physical_input_grab::PhysicalInputGrab;
 use super::super::super::{
-    active_auto_switch_layout, apply_text_replacement, insert_prepared_text_for_replacement_plan,
-    log, prepare_text_insert_for_replacement_plan, switch_or_restore_layout_after_text_edit,
+    active_auto_switch_layout, active_replace_words, apply_text_replacement,
+    insert_prepared_text_for_replacement_plan, log, prepare_text_insert_for_replacement_plan,
+    switch_or_restore_layout_after_text_edit,
 };
+use super::super::find_typing_assist_correction;
 use super::super::TypingAssistOutcome;
 use super::memory::remember_typing_assist_correction;
 
@@ -31,7 +33,6 @@ pub(crate) fn apply_minimal_typing_replacement(
         log("⚠ typing-assist skipped before delete: edit plan invariant failed");
         return TypingAssistOutcome::NoCorrection;
     }
-
     log(&format!(
         "  typing-assist plan: left={} bs={} insert={:?} right={}",
         plan.move_left, plan.backspaces, plan.insert, plan.move_right
@@ -47,7 +48,6 @@ pub(crate) fn apply_minimal_typing_replacement(
         log(&format!("⚠ typing-assist minimal replace failed: {e}"));
         return TypingAssistOutcome::NoCorrection;
     }
-
     let insert_outcome = match insert_prepared_text_for_replacement_plan(
         kbd,
         &plan,
@@ -61,14 +61,6 @@ pub(crate) fn apply_minimal_typing_replacement(
             return TypingAssistOutcome::NoCorrection;
         }
     };
-    switch_or_restore_layout_after_text_edit(
-        active_auto_switch_layout(),
-        insert_outcome.layout_is_ru,
-        original_layout,
-        "typing-assist",
-        insert_outcome.layout_already_set,
-    );
-    physical_grab.forward_queued_typing(kbd, buf, insert_outcome.layout_is_ru, "typing-assist");
     remember_typing_assist_correction(
         buf,
         events,
@@ -78,11 +70,43 @@ pub(crate) fn apply_minimal_typing_replacement(
         cursor_offset,
         started_at,
     );
+    switch_or_restore_layout_after_text_edit(
+        active_auto_switch_layout(),
+        insert_outcome.layout_is_ru,
+        original_layout,
+        "typing-assist",
+        insert_outcome.layout_already_set,
+    );
+    let forwarded =
+        physical_grab.forward_queued_typing(kbd, buf, insert_outcome.layout_is_ru, "typing-assist");
     log(&format!(
         "✓ done: помощь при наборе {:?} → {:?} за {}ms",
         original,
         replacement,
         started_at.elapsed().as_millis()
     ));
-    TypingAssistOutcome::Applied
+    if forwarded.spaces > 0 {
+        if let Some(next) =
+            find_typing_assist_correction(buf, active_auto_switch_layout(), active_replace_words())
+        {
+            let next_original = next.edit.original.clone();
+            let next_replacement = next.edit.replacement.clone();
+            log("· typing-assist applying queued completed word");
+            return apply_minimal_typing_replacement(
+                buf,
+                &next.events,
+                &next.edit,
+                &next_original,
+                &next_replacement,
+                0,
+                Instant::now(),
+                physical_grab,
+                kbd,
+                original_layout,
+            );
+        }
+    }
+    TypingAssistOutcome::Applied {
+        layout_is_ru: insert_outcome.layout_is_ru,
+    }
 }

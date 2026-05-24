@@ -1,4 +1,5 @@
 use super::*;
+use crate::pending_typing_assist::PendingTypingAssist;
 
 #[test]
 fn deferred_typing_assist_stays_valid_after_next_word_started() {
@@ -16,6 +17,47 @@ fn deferred_typing_assist_stays_valid_after_next_word_started() {
     ));
     assert_eq!(typing_assist_cursor_offset_after_space(0), 0);
     assert_eq!(typing_assist_cursor_offset_after_space(3), 3);
+}
+
+#[test]
+fn pending_typing_assist_waits_for_space_release_before_output() {
+    let mut buffer = WordBuffer::new();
+    push_text_as_layout(&mut buffer, "gjhn", false);
+    buffer.handle_space();
+
+    let correction =
+        find_typing_assist_correction(&buffer, true, 1).expect("prepared completed word");
+    let mut pending = PendingTypingAssist::new(correction);
+
+    assert!(!pending.ready_to_apply());
+    pending.note_visible_char();
+    assert!(!pending.ready_to_apply());
+    pending.note_separator_released();
+    assert!(pending.ready_to_apply());
+}
+
+#[test]
+fn typing_assist_tail_can_read_left_context_without_replacing_it() {
+    let mut buffer = WordBuffer::new();
+    push_text_as_layout(&mut buffer, "css", false);
+    buffer.handle_space();
+    push_text_as_layout(&mut buffer, "b", false);
+    buffer.handle_space();
+
+    let correction =
+        find_typing_assist_correction(&buffer, true, 1).expect("prepared completed word");
+    assert_eq!(map_original_events(&correction.events), "b ");
+    assert_eq!(correction.edit.original, "b ");
+    assert_eq!(correction.edit.replacement, "и ");
+    assert_eq!(
+        correction.edit.plan,
+        TextReplacement {
+            move_left: 0,
+            backspaces: 2,
+            insert: "и ".to_string(),
+            move_right: 0,
+        }
+    );
 }
 
 #[test]
@@ -52,10 +94,10 @@ fn deferred_typing_assist_can_plan_previous_word_behind_current_tail() {
     assert_eq!(
         shifted,
         TextReplacement {
-            move_left: 2,
-            backspaces: 4,
-            insert: "порт".to_string(),
-            move_right: 2,
+            move_left: 1,
+            backspaces: 5,
+            insert: "порт ".to_string(),
+            move_right: 1,
         }
     );
 }
@@ -108,10 +150,10 @@ fn deferred_typing_assist_uses_widest_confident_completed_tail() {
     assert_eq!(
         shifted,
         TextReplacement {
-            move_left: 2,
-            backspaces: 15,
-            insert: "РАБОТА ТЕСТ САМ".to_string(),
-            move_right: 2,
+            move_left: 1,
+            backspaces: 16,
+            insert: "РАБОТА ТЕСТ САМ ".to_string(),
+            move_right: 1,
         }
     );
 }
@@ -140,9 +182,39 @@ fn deferred_typing_assist_respects_single_word_scope() {
     assert_eq!(
         shifted,
         TextReplacement {
+            move_left: 1,
+            backspaces: 5,
+            insert: "порт ".to_string(),
+            move_right: 1,
+        }
+    );
+}
+
+#[test]
+fn deferred_typing_assist_snapshot_survives_extra_space_and_next_word() {
+    let mut buffer = WordBuffer::new();
+    push_text_as_layout(&mut buffer, "порт", true);
+    buffer.handle_space();
+    push_text_as_layout(&mut buffer, "port", false);
+    buffer.handle_space();
+    push_text_as_layout(&mut buffer, "gjhn", false);
+    buffer.handle_space();
+
+    let pending = find_typing_assist_correction(&buffer, true, 1).expect("prepared completed word");
+    assert_eq!(map_original_events(&pending.events), "gjhn ");
+    assert_eq!(pending.edit.original, "gjhn ");
+    assert_eq!(pending.edit.replacement, "порт ");
+
+    buffer.handle_space();
+    push_text_as_layout(&mut buffer, "x", false);
+    let shifted = lay::text_edit::offset_replacement_plan_for_cursor(&pending.edit.plan, 2);
+
+    assert_eq!(
+        shifted,
+        TextReplacement {
             move_left: 2,
-            backspaces: 4,
-            insert: "порт".to_string(),
+            backspaces: 5,
+            insert: "порт ".to_string(),
             move_right: 2,
         }
     );

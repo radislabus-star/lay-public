@@ -5,6 +5,36 @@ fn apply_plan(original: &str, plan: &TextReplacement) -> String {
     apply_replacement_plan_to_text(original, plan)
 }
 
+fn assert_autocorrect_sequence(name: &str) {
+    let rows = fixture_rows(name);
+    let header = rows.first().expect("sequence header fixture");
+    assert!(
+        header.len() >= 4,
+        "sequence header must have at least 4 fields"
+    );
+
+    let mut text = header[0].clone();
+    for row in rows.iter().skip(1) {
+        assert_eq!(row.len(), 2, "sequence step must be original/replacement");
+        text.push_str(&row[0]);
+        let plan = plan_committed_tail_replacement(&row[0], &row[1]).expect("correction");
+        text = apply_plan(&text, &plan);
+    }
+    if let Some(append) = header.get(4) {
+        text.push_str(append);
+    }
+
+    assert_eq!(text, header[1]);
+    assert_eq!(
+        text.matches(' ').count(),
+        header[2].parse::<usize>().expect("spaces")
+    );
+    assert_eq!(
+        text.split_whitespace().count(),
+        header[3].parse::<usize>().expect("words")
+    );
+}
+
 fn fixture_rows(name: &str) -> Vec<Vec<String>> {
     let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("tests")
@@ -41,16 +71,13 @@ fn plans_minimal_two_word_prefix_and_suffix_edits() {
 #[test]
 fn committed_tail_plan_preserves_typed_trailing_space_boundary() {
     for row in fixture_rows("text_edit_committed_tail_boundary.tsv") {
-        assert_eq!(row.len(), 6, "tail-boundary fixture must be TSV");
-        assert_eq!(
-            plan_committed_tail_replacement(&row[0], &row[1]),
-            Some(TextReplacement {
-                move_left: row[2].parse().expect("move_left"),
-                backspaces: row[3].parse().expect("backspaces"),
-                insert: row[4].clone(),
-                move_right: row[5].parse().expect("move_right"),
-            })
-        );
+        assert_eq!(row.len(), 2, "tail-boundary fixture must be TSV");
+        let plan = plan_committed_tail_replacement(&row[0], &row[1]).expect("replacement");
+        assert_eq!(apply_plan(&row[0], &plan), row[1]);
+        assert_eq!(plan.move_left, 0);
+        assert_eq!(plan.backspaces, row[0].chars().count() as u32);
+        assert_eq!(plan.insert, row[1]);
+        assert_eq!(plan.move_right, 0);
     }
 }
 
@@ -60,20 +87,17 @@ fn committed_tail_long_word_replaces_whole_body_before_space() {
         .into_iter()
         .next()
         .expect("long-word fixture");
-    assert_eq!(row.len(), 6, "long-word fixture must be TSV");
-    assert_eq!(
-        plan_committed_tail_replacement(&row[0], &row[1]),
-        Some(TextReplacement {
-            move_left: row[2].parse().expect("move_left"),
-            backspaces: row[3].parse().expect("backspaces"),
-            insert: row[4].clone(),
-            move_right: row[5].parse().expect("move_right"),
-        })
-    );
+    assert_eq!(row.len(), 2, "long-word fixture must be TSV");
+    let plan = plan_committed_tail_replacement(&row[0], &row[1]).expect("replacement");
+    assert_eq!(apply_plan(&row[0], &plan), row[1]);
+    assert_eq!(plan.move_left, 0);
+    assert_eq!(plan.backspaces, row[0].chars().count() as u32);
+    assert_eq!(plan.insert, row[1]);
+    assert_eq!(plan.move_right, 0);
 }
 
 #[test]
-fn committed_tail_sentence_plans_keep_space_with_mixed_language_text() {
+fn committed_tail_sentence_plans_preserve_already_typed_space() {
     for row in fixture_rows("text_edit_sentence_plans.tsv") {
         assert_eq!(row.len(), 2, "sentence-plan fixture must be TSV");
         let original = &row[0];
@@ -83,10 +107,12 @@ fn committed_tail_sentence_plans_keep_space_with_mixed_language_text() {
         assert!(replacement_plan_matches(original, replacement, &plan));
         assert!(committed_separator_is_preserved(original, replacement));
         assert_eq!(original.ends_with(' '), replacement.ends_with(' '));
-        assert_eq!(plan.move_right, 1, "space boundary must be preserved");
+        assert_eq!(plan.move_left, 0);
+        assert_eq!(plan.move_right, 0);
+        assert_eq!(plan.backspaces, original.chars().count() as u32);
         assert!(
-            !plan.insert.ends_with(' '),
-            "space boundary must stay in the field, not be reinserted"
+            plan.insert.ends_with(' '),
+            "committed autocorrect reinserts the typed separator with the replacement"
         );
     }
 }
@@ -99,10 +125,10 @@ fn committed_tail_split_word_plan_inserts_internal_space() {
         assert_eq!(
             plan,
             TextReplacement {
-                move_left: 6,
-                backspaces: 0,
-                insert: " ".to_string(),
-                move_right: 6,
+                move_left: 0,
+                backspaces: row[0].chars().count() as u32,
+                insert: row[1].clone(),
+                move_right: 0,
             }
         );
         assert_eq!(apply_plan(&row[0], &plan), row[1]);
@@ -120,10 +146,10 @@ fn committed_tail_split_word_plan_can_fix_small_typo_near_split() {
     assert_eq!(
         plan,
         TextReplacement {
-            move_left: 6,
-            backspaces: 1,
-            insert: "же ".to_string(),
-            move_right: 6,
+            move_left: 0,
+            backspaces: row[0].chars().count() as u32,
+            insert: row[1].clone(),
+            move_right: 0,
         }
     );
     assert_eq!(apply_plan(&row[0], &plan), row[1]);
@@ -140,10 +166,10 @@ fn committed_tail_non_split_replacement_keeps_existing_space_boundary() {
     assert_eq!(
         plan,
         TextReplacement {
-            move_left: 1,
-            backspaces: 9,
-            insert: "ТОЖЕСАМОЕ".to_string(),
-            move_right: 1,
+            move_left: 0,
+            backspaces: row[0].chars().count() as u32,
+            insert: row[1].clone(),
+            move_right: 0,
         }
     );
     assert_eq!(apply_plan(&row[0], &plan), row[1]);
@@ -161,13 +187,28 @@ fn committed_tail_plan_can_be_shifted_behind_current_word() {
     assert_eq!(
         shifted,
         TextReplacement {
-            move_left: 12,
-            backspaces: 0,
-            insert: " ".to_string(),
-            move_right: 12,
+            move_left: 6,
+            backspaces: row[0].chars().count() as u32,
+            insert: row[1].clone(),
+            move_right: 6,
         }
     );
     assert_eq!(apply_plan(&row[2], &shifted), row[3]);
+}
+
+#[test]
+fn committed_tail_autocorrect_keeps_port_sequence_spaces() {
+    assert_autocorrect_sequence("text_edit_autocorrect_port_sequence.tsv");
+}
+
+#[test]
+fn committed_tail_autocorrect_reinserts_space_before_uncorrected_next_word() {
+    assert_autocorrect_sequence("text_edit_autocorrect_html_next.tsv");
+}
+
+#[test]
+fn committed_tail_autocorrect_keeps_one_space_after_each_replacement() {
+    assert_autocorrect_sequence("text_edit_autocorrect_one_space.tsv");
 }
 
 #[test]

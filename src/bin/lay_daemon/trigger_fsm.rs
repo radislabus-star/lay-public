@@ -183,6 +183,7 @@ pub(super) fn should_run_deferred_typing_assist_after_space(
     pending && active && !shift_active
 }
 
+#[cfg(test)]
 pub(super) fn typing_assist_cursor_offset_after_space(current_len: usize) -> u32 {
     current_len.min(u32::MAX as usize) as u32
 }

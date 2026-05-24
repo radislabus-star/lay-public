@@ -37,9 +37,6 @@ pub(crate) fn try_apply_ime_replacement(
         "typing-assist",
         false,
     );
-    if let Some(kbd) = virtual_kbd.as_deref_mut() {
-        physical_grab.forward_queued_typing(kbd, buf, target_layout, "typing-assist");
-    }
     remember_typing_assist_correction(
         buf,
         events,
@@ -54,11 +51,16 @@ pub(crate) fn try_apply_ime_replacement(
         0,
         started_at,
     );
+    if let Some(kbd) = virtual_kbd.as_deref_mut() {
+        physical_grab.forward_queued_typing(kbd, buf, target_layout, "typing-assist");
+    }
     log(&format!(
         "✓ done: помощь при наборе {:?} → {:?} через IME за {}ms",
         original,
         replacement,
         started_at.elapsed().as_millis()
     ));
-    Some(TypingAssistOutcome::Applied)
+    Some(TypingAssistOutcome::Applied {
+        layout_is_ru: target_layout,
+    })
 }

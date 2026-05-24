@@ -1,4 +1,3 @@
-good ghbdtn\s
 status; 'nj\s
 git 'nj\s
 open port yflj\s

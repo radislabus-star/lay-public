@@ -36,9 +36,11 @@
 //!   lay-test-input wifi_ye_enter — печатает "wi-fi ye" + двойной Shift + Enter
 //!   lay-test-input auto_switch_words_enter — печатает "njkmrj yt hf,jnftn" через пробелы + Enter
 //!   lay-test-input worked_nj_space_enter — печатает "worked 'nj" через пробелы + Enter
+//!   lay-test-input html_djn_spacing_enter — проверяет, что Space после html-автозамены не съедается
 //!   lay-test-input preparatov_typo_enter — печатает "перпаратов" + Space + Enter
 //!   lay-test-input no_ne_ty_enter — печатает "но не ты" с паузами после пробелов + Enter
 //!   lay-test-input glued_tozhesamoe_next_enter — печатает "тожесамое склено" + Enter
+//!   lay-test-input glued_tozhesamoe_pause_next_enter — печатает "тожесамое", ждёт автозамену, затем "склено" + Enter
 //!   lay-test-input glued_toesamoe_next_enter — печатает "тоесамое склено" + Enter
 //!   lay-test-input glued_yanebudu_next_enter — печатает "янебуду склено" + Enter
 //!   lay-test-input glued_context_yanebudu_next_enter — печатает "тоже самое янебуду склено" + Enter

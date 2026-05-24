@@ -1,5 +1,6 @@
 use evdev::KeyCode;
 
+use super::pending_typing_assist::PendingTypingAssist;
 use super::{
     is_hard_boundary, log, should_ignore_buffer_key, should_start_ignored_buffer_token, ShiftState,
 };
@@ -13,7 +14,7 @@ pub(super) fn should_skip_buffer_input(
     current_empty: bool,
     ignore_current_token_until_space: &mut bool,
     events_since_word_start: &mut u32,
-    pending_typing_assist_after_space: &mut bool,
+    pending_typing_assist_after_space: &mut Option<PendingTypingAssist>,
     verbose: bool,
 ) -> bool {
     if shift_state.shortcut_active() && should_ignore_buffer_key(key, shift_state, current_empty) {
@@ -25,7 +26,7 @@ pub(super) fn should_skip_buffer_input(
         if key == KeyCode::KEY_SPACE {
             *ignore_current_token_until_space = false;
             *events_since_word_start = 0;
-            *pending_typing_assist_after_space = false;
+            pending_typing_assist_after_space.take();
             return true;
         }
         if is_hard_boundary(key) {

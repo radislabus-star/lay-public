@@ -4,10 +4,25 @@ use super::input_device::{
     hold_two_tap, tap,
 };
 use evdev::{uinput::VirtualDevice, KeyCode};
+use std::path::Path;
 use std::thread::sleep;
 use std::time::Duration;
 
+#[path = "scenarios/script.rs"]
+mod script;
+#[path = "scenarios/typing.rs"]
+mod typing;
+
+use script::run_script;
+use typing::{double_shift_manual, double_shift_manual_after, type_mixed_coke_tail, type_physical};
+
 pub(crate) fn run_scenario(dev: &mut VirtualDevice, scenario: &str) -> std::io::Result<()> {
+    if let Some(path) = scenario.strip_prefix("script:") {
+        run_script(dev, Path::new(path))?;
+        eprintln!("[test] script-сценарий {path} отправлен");
+        return Ok(());
+    }
+
     match scenario {
         "ghbvth_shift" => {
             type_physical(dev, "ghbvth", 50)?;
@@ -245,6 +260,16 @@ pub(crate) fn run_scenario(dev: &mut VirtualDevice, scenario: &str) -> std::io::
             tap(dev, KeyCode::KEY_ENTER.code())?;
             eprintln!("[test] сценарий worked_nj_space_enter отправлен");
         }
+        "html_djn_spacing_enter" => {
+            activate_layout("ru");
+            sleep(Duration::from_millis(250));
+            type_physical(dev, "html ", 35)?;
+            sleep(Duration::from_millis(650));
+            type_physical(dev, "djn ", 35)?;
+            sleep(Duration::from_millis(650));
+            tap(dev, KeyCode::KEY_ENTER.code())?;
+            eprintln!("[test] сценарий html_djn_spacing_enter отправлен");
+        }
         "preparatov_typo_enter" => {
             activate_layout("ru");
             sleep(Duration::from_millis(250));
@@ -272,6 +297,16 @@ pub(crate) fn run_scenario(dev: &mut VirtualDevice, scenario: &str) -> std::io::
             sleep(Duration::from_millis(650));
             tap(dev, KeyCode::KEY_ENTER.code())?;
             eprintln!("[test] сценарий glued_tozhesamoe_next_enter отправлен");
+        }
+        "glued_tozhesamoe_pause_next_enter" => {
+            activate_layout("ru");
+            sleep(Duration::from_millis(250));
+            type_physical(dev, "nj;tcfvjt ", 18)?;
+            sleep(Duration::from_millis(650));
+            type_physical(dev, "crktyj", 18)?;
+            sleep(Duration::from_millis(650));
+            tap(dev, KeyCode::KEY_ENTER.code())?;
+            eprintln!("[test] сценарий glued_tozhesamoe_pause_next_enter отправлен");
         }
         "glued_toesamoe_next_enter" => {
             activate_layout("ru");
@@ -348,97 +383,5 @@ pub(crate) fn run_scenario(dev: &mut VirtualDevice, scenario: &str) -> std::io::
         }
     }
 
-    Ok(())
-}
-
-fn type_mixed_coke_tail(dev: &mut VirtualDevice) -> std::io::Result<()> {
-    activate_layout("ru");
-    sleep(Duration::from_millis(250));
-    type_physical(dev, "ckjdj r", 35)?;
-    activate_layout("us");
-    sleep(Duration::from_millis(250));
-    type_physical(dev, "jrf-rjke", 35)
-}
-
-fn type_physical(
-    dev: &mut VirtualDevice,
-    physical_text: &str,
-    pause_ms: u64,
-) -> std::io::Result<()> {
-    for ch in physical_text.chars() {
-        tap_physical_char(dev, ch)?;
-        sleep(Duration::from_millis(pause_ms));
-    }
-    Ok(())
-}
-
-fn tap_physical_char(dev: &mut VirtualDevice, ch: char) -> std::io::Result<()> {
-    let (key, shifted) = physical_key_for_char(ch)?;
-    if shifted {
-        hold_tap(dev, KeyCode::KEY_LEFTSHIFT.code(), key.code())
-    } else {
-        tap(dev, key.code())
-    }
-}
-
-fn physical_key_for_char(ch: char) -> std::io::Result<(KeyCode, bool)> {
-    let shifted = ch.is_ascii_uppercase();
-    let key = match ch.to_ascii_lowercase() {
-        'a' => KeyCode::KEY_A,
-        'b' => KeyCode::KEY_B,
-        'c' => KeyCode::KEY_C,
-        'd' => KeyCode::KEY_D,
-        'e' => KeyCode::KEY_E,
-        'f' => KeyCode::KEY_F,
-        'g' => KeyCode::KEY_G,
-        'h' => KeyCode::KEY_H,
-        'i' => KeyCode::KEY_I,
-        'j' => KeyCode::KEY_J,
-        'k' => KeyCode::KEY_K,
-        'l' => KeyCode::KEY_L,
-        'm' => KeyCode::KEY_M,
-        'n' => KeyCode::KEY_N,
-        'o' => KeyCode::KEY_O,
-        'p' => KeyCode::KEY_P,
-        'q' => KeyCode::KEY_Q,
-        'r' => KeyCode::KEY_R,
-        's' => KeyCode::KEY_S,
-        't' => KeyCode::KEY_T,
-        'u' => KeyCode::KEY_U,
-        'v' => KeyCode::KEY_V,
-        'w' => KeyCode::KEY_W,
-        'x' => KeyCode::KEY_X,
-        'y' => KeyCode::KEY_Y,
-        'z' => KeyCode::KEY_Z,
-        ' ' => KeyCode::KEY_SPACE,
-        '-' => KeyCode::KEY_MINUS,
-        '=' => KeyCode::KEY_EQUAL,
-        ',' => KeyCode::KEY_COMMA,
-        ';' => KeyCode::KEY_SEMICOLON,
-        '\'' => KeyCode::KEY_APOSTROPHE,
-        other => {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::InvalidInput,
-                format!("unsupported physical scenario char: {other:?}"),
-            ));
-        }
-    };
-    Ok((key, shifted))
-}
-
-fn double_shift_manual(dev: &mut VirtualDevice, settle_ms: u64) -> std::io::Result<()> {
-    double_shift_manual_after(dev, 200, settle_ms)
-}
-
-fn double_shift_manual_after(
-    dev: &mut VirtualDevice,
-    before_ms: u64,
-    settle_ms: u64,
-) -> std::io::Result<()> {
-    sleep(Duration::from_millis(before_ms));
-    tap(dev, KeyCode::KEY_LEFTSHIFT.code())?;
-    sleep(Duration::from_millis(80));
-    tap(dev, KeyCode::KEY_LEFTSHIFT.code())?;
-    sleep(Duration::from_millis(settle_ms));
     Ok(())
 }

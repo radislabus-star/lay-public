@@ -2,6 +2,7 @@ use lay::config::LayConfig;
 use lay::word_buffer::WordBuffer;
 use std::time::{Duration, Instant};
 
+use super::pending_typing_assist::PendingTypingAssist;
 use super::{
     read_current_layout_is_ru, DShiftState, ForceLayoutHotkeys, MultiTapPending, ShiftState,
     FOCUS_IGNORE_POLL_INTERVAL_MS,
@@ -27,7 +28,7 @@ pub(super) struct DaemonLoopState {
     pub(super) clear_on_next_typing: bool,
     pub(super) suppress_next_typing_assist_after_manual_replay: bool,
     pub(super) events_since_word_start: u32,
-    pub(super) pending_typing_assist_after_space: bool,
+    pub(super) pending_typing_assist_after_space: Option<PendingTypingAssist>,
     pub(super) focus_ignored: bool,
     pub(super) ignore_current_token_until_space: bool,
     pub(super) last_focus_ignore_poll: Instant,
@@ -56,7 +57,7 @@ impl DaemonLoopState {
             clear_on_next_typing: false,
             suppress_next_typing_assist_after_manual_replay: false,
             events_since_word_start: 0,
-            pending_typing_assist_after_space: false,
+            pending_typing_assist_after_space: None,
             focus_ignored: false,
             ignore_current_token_until_space: false,
             last_focus_ignore_poll: now - Duration::from_millis(FOCUS_IGNORE_POLL_INTERVAL_MS),

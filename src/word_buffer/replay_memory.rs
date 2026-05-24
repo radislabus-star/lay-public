@@ -119,10 +119,7 @@ impl WordBuffer {
     }
 
     pub fn remember_completed_replacement_words_for_replay(&mut self, replacement: &str) -> bool {
-        let replacement_ends_with_space = replacement
-            .chars()
-            .next_back()
-            .is_some_and(char::is_whitespace);
+        let replacement_ends_with_space = text_ends_with_space(replacement);
         let Some(mut words) = replacement_word_events(replacement) else {
             return false;
         };
@@ -165,18 +162,24 @@ impl WordBuffer {
         let original_ends_with_space = original_events
             .last()
             .is_some_and(|event| event.keycode == KeyCode::KEY_SPACE.code());
-        let replacement_ends_with_space = replacement
-            .chars()
-            .next_back()
-            .is_some_and(char::is_whitespace);
+        let replacement_ends_with_space = text_ends_with_space(replacement);
 
         if original_ends_with_space {
             if self.prev_words.len() < original_word_count {
                 return false;
             }
+            let current_after_tail = if replacement_ends_with_space && !self.current.is_empty() {
+                Some(std::mem::take(&mut self.current))
+            } else {
+                None
+            };
             truncate_prev_words_suffix(&mut self.prev_words, original_word_count);
             self.current.clear();
             self.remember_replacement_words(replacement_words, replacement_ends_with_space);
+            if let Some(current) = current_after_tail {
+                self.current = current;
+                self.prev_had_trailing_space = false;
+            }
             return true;
         }
 
@@ -198,38 +201,6 @@ impl WordBuffer {
         true
     }
 
-    pub fn remember_visible_text_for_correction(&mut self, text: &str) -> bool {
-        let Some(events) = text_to_key_events(text, preferred_layout_for_text(text, true)) else {
-            return false;
-        };
-        let Some(words) = split_event_words(&events) else {
-            return false;
-        };
-        let text_ends_with_space = text.chars().next_back().is_some_and(char::is_whitespace);
-        let mut owned_words: Vec<Vec<KeyEvent>> = words.iter().map(|word| word.to_vec()).collect();
-
-        if owned_words.len() > MAX_REPLACE_WORDS {
-            let keep_from = owned_words.len() - MAX_REPLACE_WORDS;
-            owned_words.drain(0..keep_from);
-        }
-
-        self.prev_words.clear();
-        self.current.clear();
-        if text_ends_with_space {
-            self.prev_words = owned_words;
-            self.prev_had_trailing_space = true;
-        } else {
-            let Some(current) = owned_words.pop() else {
-                return false;
-            };
-            self.prev_words = owned_words;
-            self.current = current;
-            self.prev_had_trailing_space = false;
-        }
-        self.replay_toggle_ready = false;
-        self.pending_auto_undo = None;
-        true
-    }
     fn remember_replacement_words(
         &mut self,
         mut replacement_words: Vec<Vec<KeyEvent>>,
@@ -276,4 +247,8 @@ fn append_completed_words(prev_words: &mut Vec<Vec<KeyEvent>>, words: Vec<Vec<Ke
         let keep_from = prev_words.len() - MAX_REPLACE_WORDS;
         prev_words.drain(0..keep_from);
     }
+}
+
+fn text_ends_with_space(text: &str) -> bool {
+    text.chars().next_back().is_some_and(char::is_whitespace)
 }

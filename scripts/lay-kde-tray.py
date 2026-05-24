@@ -9,7 +9,9 @@ It intentionally shares the daemon config file instead of duplicating behavior.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -21,6 +23,7 @@ CONFIG_PATH = Path.home() / ".config" / "lay" / "config.json"
 RECENT_ACTIONS_PATH = Path.home() / ".local" / "share" / "lay" / "recent_actions.jsonl"
 PROJECT_DIR = Path(__file__).resolve().parents[1]
 UPDATE_LOG_PATH = Path.home() / ".local" / "state" / "lay" / "update.log"
+TRAY_LOCK_PATH = Path.home() / ".local" / "state" / "lay" / "kde-tray.lock"
 CONFIG_DEFAULTS: dict[str, Any] = {
     "mode": "simple",
     "correction_engine": "smart",
@@ -49,6 +52,18 @@ CONFIG_DEFAULTS: dict[str, Any] = {
 
 def run_cmd(args: list[str]) -> subprocess.CompletedProcess[str]:
     return subprocess.run(args, text=True, capture_output=True, check=False)
+
+
+def acquire_single_instance_lock() -> Any | None:
+    TRAY_LOCK_PATH.parent.mkdir(parents=True, exist_ok=True)
+    lock_file = TRAY_LOCK_PATH.open("w", encoding="utf-8")
+    try:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        return None
+    lock_file.write(str(os.getpid()))
+    lock_file.flush()
+    return lock_file
 
 
 def load_config() -> dict[str, Any]:
@@ -233,7 +248,7 @@ def main() -> int:
 
     try:
         from PyQt6.QtCore import QTimer, Qt
-        from PyQt6.QtGui import QAction, QActionGroup, QColor, QIcon, QPainter, QPixmap
+        from PyQt6.QtGui import QAction, QActionGroup, QColor, QCursor, QIcon, QPainter, QPixmap
         from PyQt6.QtWidgets import QApplication, QMenu, QMessageBox, QSystemTrayIcon
     except Exception as exc:
         print(f"lay-kde-tray: PyQt6 is not available: {exc}", file=sys.stderr)
@@ -250,9 +265,7 @@ def main() -> int:
 
             self.tray = QSystemTrayIcon(self.make_icon(daemon_active()), self.app)
             self.menu = QMenu()
-            self.tray.setContextMenu(self.menu)
             self.tray.activated.connect(self.on_activated)
-            self.menu.aboutToShow.connect(self.rebuild_menu)
 
             self.timer = QTimer()
             self.timer.timeout.connect(self.refresh_status)
@@ -265,15 +278,11 @@ def main() -> int:
             return self.app.exec()
 
         def make_icon(self, active: bool) -> QIcon:
-            theme_icon = QIcon.fromTheme("input-keyboard")
-            if not theme_icon.isNull():
-                return theme_icon
-
             pixmap = QPixmap(48, 48)
             pixmap.fill(Qt.GlobalColor.transparent)
             painter = QPainter(pixmap)
             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-            painter.setBrush(QColor("#202124"))
+            painter.setBrush(QColor("#1f2937"))
             painter.setPen(Qt.PenStyle.NoPen)
             painter.drawRoundedRect(4, 4, 40, 40, 8, 8)
             painter.setBrush(QColor("#2ecc71" if active else "#e74c3c"))
@@ -286,6 +295,10 @@ def main() -> int:
             painter.drawText(pixmap.rect(), Qt.AlignmentFlag.AlignCenter, "L")
             painter.end()
             return QIcon(pixmap)
+
+        def show_menu_at_cursor(self) -> None:
+            self.rebuild_menu()
+            self.menu.popup(QCursor.pos())
 
         def refresh_status(self) -> None:
             active = daemon_active()
@@ -526,14 +539,11 @@ def main() -> int:
             )
 
         def on_activated(self, reason: QSystemTrayIcon.ActivationReason) -> None:
-            if reason == QSystemTrayIcon.ActivationReason.Trigger:
-                self.rebuild_menu()
-                self.tray.showMessage(
-                    "lay",
-                    "Меню открывается правым кликом по значку.",
-                    QSystemTrayIcon.MessageIcon.Information,
-                    1200,
-                )
+            if reason in (
+                QSystemTrayIcon.ActivationReason.Trigger,
+                QSystemTrayIcon.ActivationReason.Context,
+            ):
+                self.show_menu_at_cursor()
 
         @staticmethod
         def word_count_label(value: int) -> str:
@@ -569,6 +579,10 @@ def main() -> int:
                 "caps-lock": "Caps Lock",
             }.get(str(key), "RCtrl")
 
+    lock_file = acquire_single_instance_lock()
+    if lock_file is None:
+        print("lay-kde-tray: already running", file=sys.stderr)
+        return 0
     return LayTray().run()
 
 

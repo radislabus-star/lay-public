@@ -69,5 +69,5 @@ pub(crate) fn try_apply_whitespace_insertions(
         replacement,
         started_at.elapsed().as_millis()
     ));
-    Some(TypingAssistOutcome::Applied)
+    Some(TypingAssistOutcome::Applied { layout_is_ru: true })
 }

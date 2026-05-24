@@ -1,4 +1,4 @@
-use lay::decoder::{decode_typing_assist_tail, CorrectionSource, DecoderEditPlan};
+use lay::decoder::{decode_typing_assist_tail_with_context, CorrectionSource, DecoderEditPlan};
 use lay::keyboard::KeyEvent;
 use lay::typing_context::completed_tail_context;
 use lay::word_buffer::{WordBuffer, MAX_REPLACE_WORDS};
@@ -6,6 +6,7 @@ use lay::word_buffer::{WordBuffer, MAX_REPLACE_WORDS};
 #[cfg(not(test))]
 use super::super::active_typing_assist_pipeline_for_auto_replace;
 
+#[derive(Clone)]
 pub(crate) struct TypingAssistCorrection {
     pub(crate) events: Vec<KeyEvent>,
     pub(crate) edit: DecoderEditPlan,
@@ -30,8 +31,9 @@ pub(crate) fn find_typing_assist_correction(
             );
             #[cfg(not(test))]
             let pipeline = active_typing_assist_pipeline_for_auto_replace(&context);
-            let edit = decode_typing_assist_tail(
+            let edit = decode_typing_assist_tail_with_context(
                 &events,
+                &context,
                 allow_layout_auto,
                 &pipeline,
                 CorrectionSource::TypingAssist,

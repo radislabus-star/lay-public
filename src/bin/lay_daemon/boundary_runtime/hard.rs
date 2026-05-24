@@ -1,17 +1,22 @@
 use evdev::{uinput::VirtualDevice, KeyCode};
 use lay::word_buffer::WordBuffer;
 use std::sync::{Arc, Mutex};
+use std::time::Instant;
 
+use super::super::pending_typing_assist::PendingTypingAssist;
 use super::super::{
-    active_typing_assist, append_user_correction_learning_log, handle_typing_assist_after_space,
-    is_hard_boundary, lock_virtual_keyboard, log, ShiftState,
+    active_typing_assist, append_user_correction_learning_log,
+    apply_prepared_typing_assist_after_space, is_hard_boundary, lock_virtual_keyboard, log,
+    ShiftState, TypingAssistOutcome,
 };
 
 pub(crate) struct HardBoundaryContext<'a> {
     pub(crate) buffer: &'a mut WordBuffer,
     pub(crate) virtual_kbd: &'a Arc<Mutex<Option<VirtualDevice>>>,
     pub(crate) executing: &'a mut bool,
-    pub(crate) pending_typing_assist_after_space: &'a mut bool,
+    pub(crate) pending_typing_assist_after_space: &'a mut Option<PendingTypingAssist>,
+    pub(crate) current_layout_is_ru: &'a mut bool,
+    pub(crate) last_layout_poll: &'a mut Instant,
     pub(crate) ignore_current_token_until_space: &'a mut bool,
     pub(crate) events_since_word_start: &'a mut u32,
     pub(crate) shift_state: &'a ShiftState,
@@ -40,7 +45,7 @@ pub(crate) fn handle_hard_boundary_if_needed(
             }
         }
         ctx.buffer.reset_all();
-        *ctx.pending_typing_assist_after_space = false;
+        ctx.pending_typing_assist_after_space.take();
         *ctx.ignore_current_token_until_space = false;
         *ctx.events_since_word_start = 0;
         if ctx.verbose {
@@ -51,15 +56,26 @@ pub(crate) fn handle_hard_boundary_if_needed(
 }
 
 fn run_pending_typing_assist_before_boundary(ctx: &mut HardBoundaryContext<'_>) {
-    if *ctx.pending_typing_assist_after_space && active_typing_assist() && !ctx.shift_state.any() {
-        let cursor_offset = ctx.buffer.current_len() as u32;
+    if ctx.pending_typing_assist_after_space.is_some()
+        && active_typing_assist()
+        && !ctx.shift_state.any()
+    {
+        let Some(pending) = ctx.pending_typing_assist_after_space.take() else {
+            return;
+        };
+        let (correction, cursor_offset) = pending.into_parts();
         let mut g = lock_virtual_keyboard(ctx.virtual_kbd);
-        let _ = handle_typing_assist_after_space(
+        let outcome = apply_prepared_typing_assist_after_space(
             ctx.buffer,
             g.as_mut(),
             None,
             ctx.executing,
             cursor_offset,
+            correction,
         );
+        if let TypingAssistOutcome::Applied { layout_is_ru } = outcome {
+            *ctx.current_layout_is_ru = layout_is_ru;
+            *ctx.last_layout_poll = Instant::now();
+        }
     }
 }

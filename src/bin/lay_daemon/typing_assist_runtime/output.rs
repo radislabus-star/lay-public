@@ -10,13 +10,10 @@ mod ime;
 mod memory;
 #[path = "output/minimal.rs"]
 mod minimal;
-#[path = "output/whitespace.rs"]
-mod whitespace;
 
 use defer::{defer_complex_edit, should_defer_immediate_typing_edit};
 use ime::try_apply_ime_replacement;
 use minimal::apply_minimal_typing_replacement;
-use whitespace::try_apply_whitespace_insertions;
 
 use super::super::physical_input_grab::PhysicalInputGrab;
 use super::super::{
@@ -90,21 +87,6 @@ pub(crate) fn apply_typing_assist_correction(
     }
 
     let original_layout = read_current_layout_is_ru().ok();
-    if let Some(outcome) = try_apply_whitespace_insertions(
-        buf,
-        &events,
-        &edit,
-        &original,
-        &replacement,
-        cursor_offset,
-        started_at,
-        &mut physical_grab,
-        kbd,
-        original_layout,
-    ) {
-        return outcome;
-    }
-
     apply_minimal_typing_replacement(
         buf,
         &events,

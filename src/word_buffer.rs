@@ -7,6 +7,7 @@
 mod learning;
 mod replay_memory;
 mod replay_scope;
+mod visible_text_memory;
 
 use std::time::Instant;
 

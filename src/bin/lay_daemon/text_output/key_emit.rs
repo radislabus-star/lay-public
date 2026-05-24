@@ -49,17 +49,13 @@ fn replay_keycodes_with_pace(
 
     for ev in events {
         if ev.shift {
-            dev.emit(&[
-                InputEvent::new(EventType::KEY.0, shift_l, 1),
-                InputEvent::new(EventType::KEY.0, ev.keycode, 1),
-                InputEvent::new(EventType::KEY.0, ev.keycode, 0),
-                InputEvent::new(EventType::KEY.0, shift_l, 0),
-            ])?;
+            dev.emit(&[InputEvent::new(EventType::KEY.0, shift_l, 1)])?;
+            dev.emit(&[InputEvent::new(EventType::KEY.0, ev.keycode, 1)])?;
+            dev.emit(&[InputEvent::new(EventType::KEY.0, ev.keycode, 0)])?;
+            dev.emit(&[InputEvent::new(EventType::KEY.0, shift_l, 0)])?;
         } else {
-            dev.emit(&[
-                InputEvent::new(EventType::KEY.0, ev.keycode, 1),
-                InputEvent::new(EventType::KEY.0, ev.keycode, 0),
-            ])?;
+            dev.emit(&[InputEvent::new(EventType::KEY.0, ev.keycode, 1)])?;
+            dev.emit(&[InputEvent::new(EventType::KEY.0, ev.keycode, 0)])?;
         }
         let settle_ms = if ev.keycode == KeyCode::KEY_SPACE.code() && space_settle_ms > 0 {
             space_settle_ms
@@ -87,10 +83,8 @@ pub(super) fn emit_key_taps(
 ) -> std::io::Result<()> {
     let code = key.code();
     for _ in 0..n {
-        dev.emit(&[
-            InputEvent::new(EventType::KEY.0, code, 1),
-            InputEvent::new(EventType::KEY.0, code, 0),
-        ])?;
+        dev.emit(&[InputEvent::new(EventType::KEY.0, code, 1)])?;
+        dev.emit(&[InputEvent::new(EventType::KEY.0, code, 0)])?;
         if pace_ms > 0 {
             std::thread::sleep(Duration::from_millis(pace_ms));
         }

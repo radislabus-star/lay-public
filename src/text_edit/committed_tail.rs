@@ -1,4 +1,3 @@
-use super::diff_plan::plan_text_replacement_with_options;
 use super::types::TextReplacement;
 
 pub fn plan_committed_tail_replacement(
@@ -9,43 +8,6 @@ pub fn plan_committed_tail_replacement(
         return None;
     }
 
-    let original_trailing_ws = trailing_whitespace_chars(original);
-    let replacement_trailing_ws = trailing_whitespace_chars(replacement);
-
-    if original_trailing_ws > 0 && replacement_trailing_ws > 0 {
-        let original_len = original.chars().count();
-        let replacement_len = replacement.chars().count();
-        let original_body: String = original
-            .chars()
-            .take(original_len - original_trailing_ws)
-            .collect();
-        let replacement_body: String = replacement
-            .chars()
-            .take(replacement_len - replacement_trailing_ws)
-            .collect();
-
-        let original_body_spaces = original_body
-            .chars()
-            .filter(|ch| ch.is_whitespace())
-            .count();
-        let replacement_body_spaces = replacement_body
-            .chars()
-            .filter(|ch| ch.is_whitespace())
-            .count();
-
-        if replacement_body_spaces > original_body_spaces {
-            return plan_text_replacement_with_options(original, replacement, true);
-        }
-
-        return Some(TextReplacement {
-            move_left: original_trailing_ws as u32,
-            backspaces: original_len.saturating_sub(original_trailing_ws) as u32,
-            insert: replacement_body,
-            move_right: original_trailing_ws as u32,
-        });
-    }
-
-    // For committed non-whitespace boundaries, replace the full observed tail.
     Some(TextReplacement {
         move_left: 0,
         backspaces: original.chars().count() as u32,

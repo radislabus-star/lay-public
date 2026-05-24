@@ -101,6 +101,8 @@ pub(super) fn listen_keyboard(
                     virtual_kbd: &virtual_kbd,
                     executing: &mut state.executing,
                     pending_typing_assist_after_space: &mut state.pending_typing_assist_after_space,
+                    current_layout_is_ru: &mut state.current_layout_is_ru,
+                    last_layout_poll: &mut state.last_layout_poll,
                     shift_state: &state.shift_state,
                     verbose,
                 }) {
@@ -152,7 +154,7 @@ pub(super) fn listen_keyboard(
             state.shift_state = ShiftState::default();
             state.dshift_state = DShiftState::Idle;
             state.pending_multi_tap = None;
-            state.pending_typing_assist_after_space = false;
+            state.pending_typing_assist_after_space.take();
             state.ignore_current_token_until_space = false;
             continue;
         }
@@ -242,9 +244,6 @@ pub(super) fn listen_keyboard(
                     events: &events,
                     event_idx,
                     buffer: &mut state.buffer,
-                    device: &mut device,
-                    virtual_kbd: &virtual_kbd,
-                    executing: &mut state.executing,
                     pending_typing_assist_after_space: &mut state.pending_typing_assist_after_space,
                     shift_state: &state.shift_state,
                     verbose,
@@ -315,6 +314,8 @@ pub(super) fn listen_keyboard(
                     virtual_kbd: &virtual_kbd,
                     executing: &mut state.executing,
                     pending_typing_assist_after_space: &mut state.pending_typing_assist_after_space,
+                    current_layout_is_ru: &mut state.current_layout_is_ru,
+                    last_layout_poll: &mut state.last_layout_poll,
                     ignore_current_token_until_space: &mut state.ignore_current_token_until_space,
                     events_since_word_start: &mut state.events_since_word_start,
                     shift_state: &state.shift_state,
@@ -326,6 +327,9 @@ pub(super) fn listen_keyboard(
 
             // ─── обычный символ ─────
             if is_typing_key(key) {
+                if let Some(pending) = state.pending_typing_assist_after_space.as_mut() {
+                    pending.note_visible_char();
+                }
                 handle_typing_key_press(
                     code,
                     value,

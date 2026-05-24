@@ -33,6 +33,11 @@ pub fn correct_split_word_pair(text: &str) -> Option<String> {
     if is_shouty_cyrillic_word(right) {
         return None;
     }
+    if crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(left).is_some()
+        || crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(right).is_some()
+    {
+        return None;
+    }
     if should_keep_standalone_pair_with_short_right(&left_lower, &right_lower) {
         return None;
     }

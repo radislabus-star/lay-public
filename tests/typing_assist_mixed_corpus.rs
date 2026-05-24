@@ -368,7 +368,7 @@ fn forum_like_mixed_matrix_autofixes_contextual_layout_words_and_keeps_boundarie
     let layout_words = [
         ("njkmrj", Some("только")),
         ("vjue", Some("могу")),
-        ("yt", None),
+        ("yt", Some("не")),
         ("hf,jnftn", Some("работает")),
         ("'nj", Some("это")),
         ("ашдуы", Some("files")),

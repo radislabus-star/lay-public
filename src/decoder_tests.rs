@@ -129,11 +129,37 @@ fn typing_assist_decoder_reemits_committed_space_boundary() {
     assert_eq!(
         plan.plan,
         TextReplacement {
-            move_left: 1,
-            backspaces: 8,
-            insert: "double и".to_string(),
-            move_right: 1,
+            move_left: 0,
+            backspaces: 9,
+            insert: "double и ".to_string(),
+            move_right: 0,
         }
     );
     assert!(plan.source.needs_undo_checkpoint());
+}
+
+#[test]
+fn typing_assist_context_decoder_keeps_edit_to_last_tail() {
+    let events = events_for_ascii("b ");
+    let plan = decode_typing_assist_tail_with_context(
+        &events,
+        "css b ",
+        true,
+        &default_typing_assist_pipeline(),
+        CorrectionSource::TypingAssist,
+    )
+    .expect("assist plan");
+
+    assert_eq!(plan.original, "b ");
+    assert_eq!(plan.replacement, "и ");
+    assert_eq!(
+        plan.plan,
+        TextReplacement {
+            move_left: 0,
+            backspaces: 2,
+            insert: "и ".to_string(),
+            move_right: 0,
+        }
+    );
+    assert!(plan.preserves_committed_separator());
 }
