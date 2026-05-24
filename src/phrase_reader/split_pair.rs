@@ -7,7 +7,8 @@ use crate::word_reader::{is_cyrillic_word, split_word_punctuation, split_ws_segm
 
 use super::guards::{
     can_merge_split_without_dictionary, is_shouty_cyrillic_word,
-    should_keep_standalone_pair_with_function_left, should_keep_standalone_pair_with_short_right,
+    should_keep_standalone_pair_with_function_left,
+    should_keep_standalone_pair_with_function_right, should_keep_standalone_pair_with_short_right,
 };
 
 pub fn correct_split_word_pair(text: &str) -> Option<String> {
@@ -33,6 +34,9 @@ pub fn correct_split_word_pair(text: &str) -> Option<String> {
         return None;
     }
     if should_keep_standalone_pair_with_short_right(&left_lower, &right_lower) {
+        return None;
+    }
+    if should_keep_standalone_pair_with_function_right(&left_lower, &right_lower) {
         return None;
     }
     if should_keep_standalone_pair_with_function_left(&left_lower, &right_lower) {

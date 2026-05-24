@@ -90,6 +90,13 @@ pub(super) fn should_keep_standalone_pair_with_function_left(left: &str, right: 
     is_short_russian_function_word(left) && right.chars().count() >= 2 && is_cyrillic_word(right)
 }
 
+pub(super) fn should_keep_standalone_pair_with_function_right(left: &str, right: &str) -> bool {
+    right.chars().count() == 1
+        && left.chars().count() >= 4
+        && is_cyrillic_word(left)
+        && is_one_letter_russian_function_word(right)
+}
+
 pub(super) fn can_merge_split_without_dictionary(
     left: &str,
     right: &str,
