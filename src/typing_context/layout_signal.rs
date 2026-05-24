@@ -56,6 +56,10 @@ pub fn should_enable_ascii_to_ru_layout(context: &str) -> bool {
 }
 
 fn strong_ascii_to_ru_layout_candidate(token: &str) -> bool {
+    if strong_shifted_ascii_to_ru_layout_candidate(token) {
+        return true;
+    }
+
     let identity = recognize_token(token);
     if identity.kind != WordKind::PlainWord
         || identity.script != WordScript::Ascii
@@ -75,6 +79,24 @@ fn strong_ascii_to_ru_layout_candidate(token: &str) -> bool {
     let (leading, _, _) = split_word_punctuation(token);
     let (_, converted_word, _) = split_word_punctuation(&converted);
     ascii_layout_prefix_can_be_letter(leading) && is_common_ru_word(&converted_word.to_lowercase())
+}
+
+fn strong_shifted_ascii_to_ru_layout_candidate(token: &str) -> bool {
+    if !token.is_ascii()
+        || token.chars().any(|ch| ch.is_ascii_digit())
+        || !token.chars().any(is_ascii_upper_shift_layout_symbol)
+    {
+        return false;
+    }
+
+    let letters = token.bytes().filter(|byte| byte.is_ascii_alphabetic());
+    letters.clone().count() >= 4
+        && letters.into_iter().all(|byte| byte.is_ascii_uppercase())
+        && correct_wrong_layout_ascii_word(token).is_some()
+}
+
+fn is_ascii_upper_shift_layout_symbol(ch: char) -> bool {
+    matches!(ch, '{' | '}' | ':' | '"' | '<' | '>' | '~')
 }
 
 fn clean_ascii_to_ru_layout_candidate(token: &str) -> bool {

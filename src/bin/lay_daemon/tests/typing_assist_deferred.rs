@@ -59,3 +59,58 @@ fn deferred_typing_assist_can_plan_previous_word_behind_current_tail() {
         }
     );
 }
+
+#[test]
+fn uppercase_shift_layout_word_gets_contextual_candidate() {
+    let input = "HF<JNF ";
+    let pipeline = lay::typing_context::typing_assist_pipeline_for_context(
+        true,
+        lay::config::CorrectionSafety::Normal,
+        &default_typing_assist_pipeline(),
+        input,
+    );
+
+    assert_eq!(
+        apply_typing_assist_with_pipeline(input, true, &pipeline),
+        Some("РАБОТА ".to_string())
+    );
+
+    let leading_shift_input = "<FYRF ";
+    let leading_shift_pipeline = lay::typing_context::typing_assist_pipeline_for_context(
+        true,
+        lay::config::CorrectionSafety::Normal,
+        &default_typing_assist_pipeline(),
+        leading_shift_input,
+    );
+    assert_eq!(
+        apply_typing_assist_with_pipeline(leading_shift_input, true, &leading_shift_pipeline),
+        Some("БАНКА ".to_string())
+    );
+}
+
+#[test]
+fn deferred_typing_assist_uses_widest_confident_completed_tail() {
+    let mut buffer = WordBuffer::new();
+    push_text_as_layout(&mut buffer, "HF<JNF NTCN CFV", false);
+    buffer.handle_space();
+    push_text_as_layout(&mut buffer, "x", false);
+
+    let correction = find_typing_assist_correction(&buffer, true).expect("three-word correction");
+    assert_eq!(map_original_events(&correction.events), "HF<JNF NTCN CFV ");
+    assert_eq!(correction.edit.original, "HF<JNF NTCN CFV ");
+    assert_eq!(correction.edit.replacement, "РАБОТА ТЕСТ САМ ");
+
+    let shifted = lay::text_edit::offset_replacement_plan_for_cursor(
+        &correction.edit.plan,
+        typing_assist_cursor_offset_after_space(buffer.current_len()),
+    );
+    assert_eq!(
+        shifted,
+        TextReplacement {
+            move_left: 2,
+            backspaces: 15,
+            insert: "РАБОТА ТЕСТ САМ".to_string(),
+            move_right: 2,
+        }
+    );
+}

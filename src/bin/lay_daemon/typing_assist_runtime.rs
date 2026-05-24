@@ -8,7 +8,7 @@ mod candidate;
 #[path = "typing_assist_runtime/output.rs"]
 mod output;
 
-use candidate::find_typing_assist_correction;
+pub(crate) use candidate::find_typing_assist_correction;
 use output::{apply_typing_assist_correction, TypingAssistApplyContext};
 
 use super::{active_auto_switch_layout, log, TYPING_ASSIST_RUNTIME_READY};

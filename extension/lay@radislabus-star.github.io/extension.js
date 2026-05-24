@@ -14,7 +14,13 @@ import GLib from 'gi://GLib';
 export default class LayExtension extends Extension {
 
     enable() {
-        const implSrc  = `${this.path}/lay-impl.js`;
+        const extensionPath = this.path ?? this.dir?.get_path();
+        if (!extensionPath) {
+            log('[lay-extension] loader: не удалось определить путь extension');
+            return;
+        }
+
+        const implSrc  = `${extensionPath}/lay-impl.js`;
         // Уникальный путь = GJS не найдёт в кэше → свежий import
         const cacheDir = `${GLib.get_user_cache_dir()}/lay`;
         try { GLib.mkdir_with_parents(cacheDir, 0o700); } catch(e) {}

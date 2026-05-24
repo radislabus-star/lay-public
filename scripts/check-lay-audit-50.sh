@@ -56,7 +56,7 @@ no_runtime_sleep_outside_output() {
 
 gdbus_fallback_only() {
   ! grep -RInE -- 'Command::new\("gdbus"|gdbus call' src \
-    | grep -Ev '(^src/bin/lay_daemon/layout_controller\.rs:|^src/bin/lay_test_input(\.rs|/))'
+    | grep -Ev '(^src/bin/lay_daemon/layout_controller(\.rs|/)|^src/bin/lay_test_input(\.rs|/))'
 }
 
 private_file_open_centralized() {
@@ -70,16 +70,17 @@ chmod_centralized() {
 
 no_clipboard_in_correction_hot_path() {
   ! grep -RInE -- "clipboard|xclip|xsel|wl-copy|wl-paste" src/bin src/*.rs \
-    | grep -Ev '(^src/main\.rs:|^src/bin/lay_daemon/tests\.rs:|^src/bin/lay_daemon/focus_guard\.rs:)'
+    | grep -Ev '(^src/main\.rs:|^src/bin/lay_daemon/tests(\.rs|/)|^src/bin/lay_daemon/focus_guard\.rs:)'
 }
 
 no_runtime_user_phrase_rules() {
-  no_grep "тожесамое|тоесамое|янебуду|какпроверка|онаубыточная|прболематут|робило|банный|поения|перпаратов" \
-    src/typing_replacements.rs \
-    src/typing_rule_graph.rs \
-    src/typing_pipeline.rs \
-    src/ru_typo.rs \
-    src/phrase_reader.rs
+  ! grep -RInE -- \
+    '(token|word|core|original|input|phrase)\s*==\s*"[^"]{3,}"|matches!\([^)]*"[^"]{3,}"' \
+      src/typing_replacements.rs \
+      src/typing_rule_graph.rs \
+      src/typing_pipeline.rs \
+      src/ru_typo.rs \
+      src/phrase_reader.rs
 }
 
 check "architecture guard" bash scripts/check-architecture.sh
@@ -94,9 +95,9 @@ check "no sleeps outside output/layout/test" no_runtime_sleep_outside_output
 check "gdbus fallback only" gdbus_fallback_only
 
 check "split ws single owner" one_owner "fn split_ws_segments" "src/word_reader.rs"
-check "candidate ranking single owner" one_owner "fn rank_typing_candidates" "src/typing_candidate.rs"
-check "layout letter symbol single owner" one_owner "fn is_ascii_layout_letter_symbol" "src/layout_autoswitch.rs"
-check "shift layout symbol single owner" one_owner "fn is_ascii_shift_letter_symbol" "src/layout_autoswitch.rs"
+check "candidate ranking single owner" one_owner "fn rank_typing_candidates" "src/typing_candidate/ranking.rs"
+check "layout letter symbol single owner" one_owner "fn is_ascii_layout_letter_symbol" "src/layout_autoswitch/ascii/symbols.rs"
+check "shift layout symbol single owner" one_owner "fn is_ascii_shift_letter_symbol" "src/layout_autoswitch/ascii/symbols.rs"
 check "private file open centralized" private_file_open_centralized
 check "chmod centralized" chmod_centralized
 check "scoped tail independent from public facade" bash -c '! grep -nF "use crate::typing_assist" src/scoped_tail.rs'

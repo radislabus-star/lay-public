@@ -5,7 +5,8 @@ use super::super::english::is_known_english_layout_autoswitch_word;
 use super::super::score::lem_prefers_layout_candidate;
 use super::candidate::ascii_to_russian_layout_candidate;
 use super::symbols::{
-    is_ascii_layout_token_symbol, is_blocked_ascii_layout_token, is_protected_ascii_layout_token,
+    has_ascii_shift_letter_signal, is_ascii_layout_token_symbol, is_blocked_ascii_layout_token,
+    is_protected_ascii_layout_token,
 };
 
 pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
@@ -23,10 +24,14 @@ pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
         return None;
     }
 
-    let candidate = ascii_to_russian_layout_candidate(token, false)?;
+    let strong_shift_layout = is_standalone_all_caps_shift_layout_token(token);
+    let candidate = ascii_to_russian_layout_candidate(token, strong_shift_layout)?;
     let normalized = candidate.replacement;
     let normalized_word = candidate.word;
     let normalized_lower = normalized_word.to_lowercase();
+    if strong_shift_layout {
+        return Some(normalized);
+    }
     if is_protected_ascii_layout_token(token)
         && is_known_english_layout_autoswitch_word(&original_word.to_ascii_lowercase())
     {
@@ -43,6 +48,18 @@ pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
         }
         _ => Some(normalized),
     }
+}
+
+fn is_standalone_all_caps_shift_layout_token(token: &str) -> bool {
+    if !has_ascii_shift_letter_signal(token) {
+        return false;
+    }
+
+    let letters: Vec<char> = token
+        .chars()
+        .filter(|ch| ch.is_ascii_alphabetic())
+        .collect();
+    letters.len() >= 4 && letters.iter().all(|ch| ch.is_ascii_uppercase())
 }
 
 fn correct_wrong_layout_ascii_word_preserving_trailing_punctuation(token: &str) -> Option<String> {
