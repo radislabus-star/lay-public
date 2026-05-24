@@ -1,0 +1,5 @@
+# class	input	expected
+manual_en_ru_wrong_ru	work\sghbdtn\sfile\sghjdthrf\sterminal\sckjdf\sstatus\shf,jnftn\sproject\slfdfq	work\sпривет\sfile\sпроверка\sterminal\sслова\sstatus\sработает\sproject\sдавай
+manual_ru_en_wrong_en	сегодня\sцщкв\sпотом\sашду\sдальше\sеукьштфд\sздесь\sыефегы\sрядом\sпше\sзгыр	сегодня\sword\sпотом\sfile\sдальше\sterminal\sздесь\sstatus\sрядом\sgit\spush
+manual_explicit_last_word_toggle	сегодня\sword\sпотом\sfile\sдальше\sterminal\sздесь\sstatus\sрядом\sgit	сегодня\sword\sпотом\sfile\sдальше\sterminal\sздесь\sstatus\sрядом\sпше
+manual_layout_punctuation_flip	пишу\sцщкв,\sпотом\sашду;\sдальше\sыефегы?\sрядом\sпше!	пишу\sword?\sпотом\sfile$\sдальше\sstatus&\sрядом\sgit!

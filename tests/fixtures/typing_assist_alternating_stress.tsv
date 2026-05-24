@@ -1,0 +1,6 @@
+# class	input	expected
+clean_keep	сегодня\sword\sпотом\sfile\sдальше\sterminal\sздесь\sstatus\sрядом\sgit\spush\s	сегодня\sword\sпотом\sfile\sдальше\sterminal\sздесь\sstatus\sрядом\sgit\spush\s
+ru_en_wrong_en	сегодня\sцщкв\sпотом\sашду\sдальше\sеукьштфд\sздесь\sыефегы\sрядом\sпше\sзгыр\s	сегодня\sword\sпотом\sfile\sдальше\sterminal\sздесь\sstatus\sрядом\sgit\spush\s
+layout_punctuation_flip	пишу\sцщкв,\sпотом\sашду;\sдальше\sыефегы?\sрядом\sпше!\s	пишу\sword?\sпотом\sfile$\sдальше\sstatus&\sрядом\sgit!\s
+technical_keep	команда\sgit\sstatus\sпотом\scargo\scheck\sрядом\sfile.txt\sи\sAPI\s	команда\sgit\sstatus\sпотом\scargo\scheck\sрядом\sfile.txt\sи\sAPI\s
+long_20_alternating	тут\sцщкв\sи\sашду\sа\sеукьштфд\sно\sыефегы\sпотом\sпше\sдальше\sзгыр\sрядом\sсфкпщ\sздесь\sсрусл\sпосле\sдштгч\sснова\sдфнщге\s	тут\sword\sи\sfile\sа\sterminal\sно\sstatus\sпотом\sgit\sдальше\spush\sрядом\scargo\sздесь\scheck\sпосле\slinux\sснова\slayout\s
