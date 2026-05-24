@@ -8,6 +8,10 @@ fn smart_decision_keeps_good_word_and_converts_bad_neighbor() {
     );
 }
 
+use crate::correction_memory_runtime::{
+    remember_manual_text_correction, ManualTextCorrectionMemory,
+};
+
 #[test]
 fn scoped_tail_keeps_good_previous_word_and_flips_current_fragment() {
     let mut buffer = WordBuffer::new();

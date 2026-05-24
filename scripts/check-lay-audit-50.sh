@@ -51,12 +51,12 @@ max_lines() {
 
 no_runtime_sleep_outside_output() {
   ! grep -RInF -- "thread::sleep" src \
-    | grep -Ev '(^src/bin/lay_daemon/text_output\.rs:|^src/bin/lay_daemon/layout_controller\.rs:|^src/bin/lay_test_input\.rs:)'
+    | grep -Ev '(^src/bin/lay_daemon/text_output(\.rs|/)|^src/bin/lay_daemon/layout_controller\.rs:|^src/bin/lay_test_input(\.rs|/))'
 }
 
 gdbus_fallback_only() {
   ! grep -RInE -- 'Command::new\("gdbus"|gdbus call' src \
-    | grep -Ev '(^src/bin/lay_daemon/layout_controller\.rs:|^src/bin/lay_test_input\.rs:)'
+    | grep -Ev '(^src/bin/lay_daemon/layout_controller\.rs:|^src/bin/lay_test_input(\.rs|/))'
 }
 
 private_file_open_centralized() {
@@ -120,11 +120,11 @@ check "space preservation helper exists" grep -RInF -- "committed_separator_is_p
 check "replacement plan helper exists" grep -RInF -- "apply_replacement_plan_to_text" src
 check "no clipboard in correction hot path" no_clipboard_in_correction_hot_path
 check "no user phrase rules in runtime rule sources" no_runtime_user_phrase_rules
-check "typing rules centralized" grep -RInF -- "static RULES" src/typing_rule_graph.rs
-check "pipeline default centralized" grep -RInF -- "DEFAULT_TYPING_ASSIST_RULES" src/config.rs
-check "layout-only policy exists" grep -RInF -- "LAYOUT_ONLY_TYPING_ASSIST_RULES" src/config.rs
-check "strict policy exists" grep -RInF -- "STRICT_CORRECTION_DISABLED_RULES" src/config.rs
-check "live disabled policy exists" grep -RInF -- "LIVE_AUTO_REPLACE_DISABLED_RULES" src/config.rs
+check "typing rules centralized" grep -RInF -- "static RULES" src/typing_rule_graph
+check "pipeline default centralized" grep -RInF -- "default_typing_assist_rules" src/config
+check "layout-only policy exists" grep -RInF -- "enabled_without_auto_replace" src/typing_rule_graph
+check "strict policy exists" grep -RInF -- "TypingRuleRequiredSafety::Normal" src/typing_rule_graph
+check "experimental policy exists" grep -RInF -- "TypingRuleRequiredSafety::Experimental" src/typing_rule_graph
 
 check "core tests" cargo test -q core --lib
 check "engine tests" cargo test -q engine --lib

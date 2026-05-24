@@ -80,7 +80,7 @@ fn smart_scope_after_trailing_space_keeps_configured_scope() {
 }
 
 #[test]
-fn replay_layout_decision_ignores_inserted_space() {
+fn layout_decision_ignores_inserted_space() {
     let events = [
         key_event(KeyCode::KEY_G, true),
         key_event(KeyCode::KEY_H, true),

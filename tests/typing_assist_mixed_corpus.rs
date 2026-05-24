@@ -12,6 +12,7 @@ const FORUM_MIXED_CASES: &str = include_str!("fixtures/typing_assist_forum_mixed
 const DYNAMIC_TAIL_CASES: &str = include_str!("fixtures/typing_assist_dynamic_tail.tsv");
 const DYNAMIC_TAIL_NONE_CASES: &str = include_str!("fixtures/typing_assist_dynamic_tail_none.txt");
 const ALTERNATING_CASES: &str = include_str!("fixtures/typing_assist_alternating.tsv");
+const BETA_ALTERNATING_CASES: &str = include_str!("fixtures/typing_assist_beta_alternating.tsv");
 const LIVE_SPACING_CASES: &str = include_str!("fixtures/typing_assist_live_spacing.tsv");
 const CLEAN_MIXED_CASES: &str = include_str!("fixtures/typing_assist_clean_mixed.txt");
 const FULL_OPPOSITE_RU_CASES: &str = include_str!("fixtures/typing_assist_full_opposite_ru.txt");
@@ -175,6 +176,24 @@ fn alternating_layout_sentences_fix_every_second_word() {
             simulate_space_triggered_typing_assist(&input, true),
             expected,
             "input={input:?}"
+        );
+    }
+}
+
+#[test]
+fn beta_alternating_layout_sentences_keep_language_boundaries() {
+    for (input, expected) in fixture_cases(BETA_ALTERNATING_CASES) {
+        let got = simulate_space_triggered_typing_assist(&input, true);
+        assert_eq!(got, expected, "input={input:?}");
+        assert_eq!(
+            input.ends_with(char::is_whitespace),
+            got.ends_with(char::is_whitespace),
+            "space trigger boundary changed: input={input:?} got={got:?}"
+        );
+        assert_eq!(
+            expected.split_whitespace().count(),
+            got.split_whitespace().count(),
+            "word boundary count changed: input={input:?} got={got:?}"
         );
     }
 }

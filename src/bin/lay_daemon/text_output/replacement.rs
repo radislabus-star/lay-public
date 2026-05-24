@@ -1,0 +1,115 @@
+use evdev::{uinput::VirtualDevice, KeyCode};
+use lay::keyboard::{preferred_layout_for_text, text_to_uinput_runs, TextInputRun};
+use lay::text_edit::TextReplacement;
+
+use super::super::{log, switch_to_target_layout};
+use super::key_emit::{
+    emit_backspaces_for_text_replace, emit_key_taps, emit_key_taps_fast,
+    replay_text_insert_keycodes,
+};
+
+const TEXT_REPLACE_KEY_PACE_MS: u64 = 1;
+
+#[derive(Debug, Clone)]
+pub(crate) struct PreparedTextInsert {
+    runs: Vec<TextInputRun>,
+    insert_layout_is_ru: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct TextInsertOutcome {
+    pub layout_is_ru: bool,
+    pub layout_already_set: bool,
+}
+
+pub(crate) fn prepare_text_insert_for_replacement_plan(
+    plan: &TextReplacement,
+    fallback_layout_is_ru: bool,
+) -> Result<PreparedTextInsert, String> {
+    let insert_layout_is_ru = preferred_layout_for_text(&plan.insert, fallback_layout_is_ru);
+    let runs = text_to_uinput_runs(&plan.insert, insert_layout_is_ru)
+        .ok_or_else(|| "text insert requires unsafe TypeText fallback".to_string())?;
+    for run in &runs {
+        switch_to_target_layout(run.target_is_ru)
+            .map_err(|e| format!("layout preflight failed before destructive edit: {e}"))?;
+    }
+    Ok(PreparedTextInsert {
+        runs,
+        insert_layout_is_ru,
+    })
+}
+
+pub(crate) fn apply_text_replacement(
+    dev: &mut VirtualDevice,
+    plan: &TextReplacement,
+) -> std::io::Result<()> {
+    emit_key_taps(
+        dev,
+        KeyCode::KEY_LEFT,
+        plan.move_left,
+        TEXT_REPLACE_KEY_PACE_MS,
+    )?;
+    emit_backspaces_for_text_replace(dev, plan.backspaces)?;
+    Ok(())
+}
+
+pub(crate) fn insert_prepared_text_for_replacement_plan(
+    dev: &mut VirtualDevice,
+    plan: &TextReplacement,
+    replacement: &str,
+    prepared: &PreparedTextInsert,
+    label: &str,
+) -> Result<TextInsertOutcome, String> {
+    for run in &prepared.runs {
+        switch_to_target_layout(run.target_is_ru)?;
+        replay_text_insert_keycodes(dev, &run.events).map_err(|e| e.to_string())?;
+    }
+    if let Err(e) = emit_key_taps_fast(dev, KeyCode::KEY_RIGHT, plan.move_right) {
+        return Err(format!("cursor restore failed: {e}"));
+    }
+    log(&format!("  {label} insert backend: prepared uinput replay"));
+    Ok(TextInsertOutcome {
+        layout_is_ru: layout_after_replacement_plan(
+            plan,
+            replacement,
+            prepared.insert_layout_is_ru,
+        ),
+        layout_already_set: true,
+    })
+}
+
+pub(crate) fn switch_or_restore_layout_after_text_edit(
+    auto_switch_layout: bool,
+    target_layout: bool,
+    original_layout: Option<bool>,
+    label: &str,
+    target_layout_already_set: bool,
+) {
+    if auto_switch_layout {
+        if target_layout_already_set {
+            log(&format!("  {label} layout already set by text insert"));
+        } else {
+            match switch_to_target_layout(target_layout) {
+                Ok(layout_id) => log(&format!("  {label} layout -> {layout_id}")),
+                Err(e) => log(&format!("⚠ {label} layout switch failed: {e}")),
+            }
+        }
+    } else if let Some(layout_is_ru) = original_layout {
+        match switch_to_target_layout(layout_is_ru) {
+            Ok(layout_id) => log(&format!("  {label} layout restored -> {layout_id}")),
+            Err(e) => log(&format!("⚠ {label} layout restore failed: {e}")),
+        }
+    }
+}
+
+pub(crate) fn layout_after_replacement_plan(
+    plan: &TextReplacement,
+    replacement: &str,
+    insert_layout_is_ru: bool,
+) -> bool {
+    if plan.move_right == 0 {
+        insert_layout_is_ru
+    } else {
+        preferred_layout_for_text(replacement, insert_layout_is_ru)
+    }
+}

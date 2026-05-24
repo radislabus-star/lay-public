@@ -1,6 +1,10 @@
 use super::*;
-use crate::config::default_typing_assist_pipeline;
-use crate::text_edit::{committed_separator_is_preserved, replacement_plan_matches};
+use crate::config::{default_typing_assist_pipeline, CorrectionEngine};
+use crate::keyboard::KeyEvent;
+use crate::text_edit::{
+    committed_separator_is_preserved, replacement_plan_matches, TextReplacement,
+};
+use crate::typing_assist::ScopedTailOptions;
 use evdev::KeyCode;
 
 fn ev(keycode: KeyCode, layout_is_ru: bool) -> KeyEvent {

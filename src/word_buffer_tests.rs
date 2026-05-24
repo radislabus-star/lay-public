@@ -1,5 +1,6 @@
 use super::*;
 use crate::keyboard::{map_events_to_layout, map_original_events, replay_layout_decision};
+use evdev::KeyCode;
 
 fn key_event(key: KeyCode, layout_is_ru: bool) -> KeyEvent {
     KeyEvent {

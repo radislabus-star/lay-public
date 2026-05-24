@@ -19,7 +19,7 @@ fn config_defaults_preserve_public_runtime_behavior() {
     assert!(cfg.lem_enabled_for_scope(3));
     assert_eq!(
         cfg.active_typing_assist_pipeline().len(),
-        DEFAULT_TYPING_ASSIST_RULES.len()
+        default_typing_assist_rules().len()
     );
 }
 

@@ -1,6 +1,7 @@
 use lay::desktop::{normalize_layout_id, LayoutBackend};
 
-use super::layout_controller::{command_exists, run_command_capture, verify_current_layout};
+use super::command_runtime::{command_exists, run_command_capture};
+use super::layout_controller::verify_current_layout;
 use super::log;
 
 pub(super) fn read_current_layout_is_ru() -> Result<bool, String> {

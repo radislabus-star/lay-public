@@ -1,0 +1,187 @@
+use crate::keyboard::is_cyrillic_letter;
+use crate::word_reader::is_cyrillic_word;
+use std::collections::{HashMap, HashSet};
+use std::path::Path;
+
+pub(super) fn load_hunspell_words_min_len(
+    path: &str,
+    min_chars: usize,
+) -> std::io::Result<HashSet<String>> {
+    let text = std::fs::read_to_string(path)?;
+    let mut words = HashSet::new();
+    for line in text.lines().skip(1) {
+        let word = line.split('/').next().unwrap_or("").trim();
+        if word.chars().count() >= min_chars && is_cyrillic_word(word) {
+            words.insert(word.to_lowercase());
+        }
+    }
+    Ok(words)
+}
+
+struct HunspellSuffixRule {
+    strip: String,
+    add: String,
+    condition: Vec<HunspellConditionToken>,
+}
+
+#[derive(Clone)]
+enum HunspellConditionToken {
+    Literal(char),
+    Class { negated: bool, chars: Vec<char> },
+}
+
+pub(super) fn load_hunspell_generated_forms_min_len(
+    dic_path: &str,
+    aff_path: &str,
+    min_chars: usize,
+) -> std::io::Result<HashSet<String>> {
+    let rules = load_simple_hunspell_suffix_rules(aff_path)?;
+    let text = std::fs::read_to_string(dic_path)?;
+    let mut forms = HashSet::new();
+
+    for line in text.lines().skip(1) {
+        let line = line.trim();
+        let Some((word, flags)) = line.split_once('/') else {
+            continue;
+        };
+        let word = word.trim().to_lowercase();
+        if word.is_empty() {
+            continue;
+        }
+        let flags = flags.split_whitespace().next().unwrap_or("");
+        for flag in flags.chars() {
+            let Some(flag_rules) = rules.get(&flag) else {
+                continue;
+            };
+            for rule in flag_rules {
+                if !hunspell_condition_matches(&word, &rule.condition) {
+                    continue;
+                }
+                let stem = if rule.strip == "0" {
+                    word.as_str()
+                } else if let Some(stem) = word.strip_suffix(&rule.strip) {
+                    stem
+                } else {
+                    continue;
+                };
+                let candidate = if rule.add == "0" {
+                    stem.to_string()
+                } else {
+                    format!("{stem}{}", rule.add)
+                };
+                if candidate.chars().count() >= min_chars && is_cyrillic_word(&candidate) {
+                    forms.insert(candidate);
+                }
+            }
+        }
+    }
+
+    Ok(forms)
+}
+
+fn load_simple_hunspell_suffix_rules(
+    path: &str,
+) -> std::io::Result<HashMap<char, Vec<HunspellSuffixRule>>> {
+    let text = std::fs::read_to_string(path)?;
+    let mut rules: HashMap<char, Vec<HunspellSuffixRule>> = HashMap::new();
+
+    for line in text.lines() {
+        let parts: Vec<&str> = line.split_whitespace().collect();
+        if parts.len() < 5 || parts[0] != "SFX" || parts[3].parse::<usize>().is_ok() {
+            continue;
+        }
+        let Some(flag) = parts[1].chars().next() else {
+            continue;
+        };
+        let Some(condition) = parse_hunspell_suffix_condition(parts[4]) else {
+            continue;
+        };
+        rules.entry(flag).or_default().push(HunspellSuffixRule {
+            strip: parts[2].to_string(),
+            add: parts[3].split('/').next().unwrap_or(parts[3]).to_string(),
+            condition,
+        });
+    }
+
+    Ok(rules)
+}
+
+fn parse_hunspell_suffix_condition(condition: &str) -> Option<Vec<HunspellConditionToken>> {
+    if condition == "." {
+        return Some(Vec::new());
+    }
+
+    let mut tokens = Vec::new();
+    let mut chars = condition.chars().peekable();
+    while let Some(ch) = chars.next() {
+        if ch == '[' {
+            let negated = if chars.peek() == Some(&'^') {
+                chars.next();
+                true
+            } else {
+                false
+            };
+            let mut class_chars = Vec::new();
+            let mut closed = false;
+            for class_ch in chars.by_ref() {
+                if class_ch == ']' {
+                    closed = true;
+                    break;
+                }
+                if !is_cyrillic_letter(class_ch) {
+                    return None;
+                }
+                class_chars.push(class_ch);
+            }
+            if !closed || class_chars.is_empty() {
+                return None;
+            }
+            tokens.push(HunspellConditionToken::Class {
+                negated,
+                chars: class_chars,
+            });
+        } else if is_cyrillic_letter(ch) {
+            tokens.push(HunspellConditionToken::Literal(ch));
+        } else {
+            return None;
+        }
+    }
+
+    (!tokens.is_empty()).then_some(tokens)
+}
+
+fn hunspell_condition_matches(word: &str, condition: &[HunspellConditionToken]) -> bool {
+    if condition.is_empty() {
+        return true;
+    }
+
+    let chars: Vec<char> = word.chars().collect();
+    if chars.len() < condition.len() {
+        return false;
+    }
+    let start = chars.len() - condition.len();
+    condition
+        .iter()
+        .zip(chars[start..].iter().copied())
+        .all(|(token, ch)| match token {
+            HunspellConditionToken::Literal(expected) => *expected == ch,
+            HunspellConditionToken::Class { negated, chars } => {
+                let contains = chars.contains(&ch);
+                if *negated {
+                    !contains
+                } else {
+                    contains
+                }
+            }
+        })
+}
+
+pub(super) fn load_word_list(path: &Path) -> std::io::Result<HashSet<String>> {
+    let text = std::fs::read_to_string(path)?;
+    Ok(text
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty() && !line.starts_with('#'))
+        .map(str::to_lowercase)
+        .collect())
+}

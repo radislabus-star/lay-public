@@ -1,0 +1,100 @@
+use crate::phrase_lexicon::is_known_russian_phrase_part;
+use crate::phrase_score::{NGRAM_MOVED_PREFIX_MARGIN, NGRAM_MOVED_PREFIX_RIGHT_MARGIN};
+use crate::russian_chars::same_letter_ignore_case;
+use crate::russian_lexicon::{
+    is_known_russian_word_or_form, russian_short_dictionary, russian_tiny_dictionary,
+};
+use crate::russian_typo_scoring::ngram_allows_ru_candidate;
+use crate::word_reader::{is_cyrillic_word, split_word_punctuation, split_ws_segments};
+
+use super::guards::is_safe_short_moved_prefix_right;
+
+pub fn correct_moved_prefix_letter_pair(text: &str) -> Option<String> {
+    let segments = split_ws_segments(text);
+    if segments.len() != 3 || segments[0].1 || !segments[1].1 || segments[2].1 {
+        return None;
+    }
+
+    let (left_leading, left, left_trailing) = split_word_punctuation(segments[0].0);
+    let (right_leading, right, right_trailing) = split_word_punctuation(segments[2].0);
+    if !left_leading.is_empty()
+        || !left_trailing.is_empty()
+        || !right_leading.is_empty()
+        || left.is_empty()
+        || right.chars().count() < 2
+    {
+        return None;
+    }
+
+    let mut right_chars = right.chars();
+    let moved = right_chars.next()?;
+    if is_known_russian_word_or_form(&right.to_lowercase()) {
+        return None;
+    }
+    let right_rest: String = right_chars.collect();
+    let left_candidate = format!("{left}{moved}");
+    let candidate = format!("{left_candidate} {right_rest}");
+
+    if !is_cyrillic_word(&left_candidate) || !is_cyrillic_word(&right_rest) {
+        return None;
+    }
+
+    let left_candidate_lower = left_candidate.to_lowercase();
+    let right_rest_lower = right_rest.to_lowercase();
+    let right_lower = right.to_lowercase();
+    let short_right_is_safe = is_safe_short_moved_prefix_right(&right_rest_lower)
+        && !is_known_russian_word_or_form(&right_lower);
+
+    if left_candidate.chars().count() >= 5
+        && short_right_is_safe
+        && is_known_russian_word_or_form(&left_candidate_lower)
+        && ngram_allows_ru_candidate(&candidate.to_lowercase(), text, NGRAM_MOVED_PREFIX_MARGIN)
+    {
+        return Some(format!("{candidate}{right_trailing}"));
+    }
+
+    if let Some(left_last) = left.chars().last() {
+        if short_right_is_safe
+            && same_letter_ignore_case(left_last, moved)
+            && left.chars().count() > 1
+            && is_known_russian_word_or_form(&left.to_lowercase())
+            && crate::ngram::ru_candidate_margin(&right_rest_lower, &right_lower)
+                >= NGRAM_MOVED_PREFIX_RIGHT_MARGIN
+        {
+            let candidate = format!("{left} {right_rest}");
+            if ngram_allows_ru_candidate(&candidate.to_lowercase(), text, NGRAM_MOVED_PREFIX_MARGIN)
+            {
+                return Some(format!("{candidate}{right_trailing}"));
+            }
+        }
+    }
+
+    if left_candidate.chars().count() <= 3
+        && !is_known_russian_word_or_form(&left.to_lowercase())
+        && (russian_tiny_dictionary().contains(&left_candidate_lower)
+            || russian_short_dictionary().contains(&left_candidate_lower))
+        && right_rest.chars().count() >= 5
+        && is_known_russian_phrase_part(&right_rest_lower)
+    {
+        return Some(format!("{candidate}{right_trailing}"));
+    }
+
+    if left_candidate.chars().count() < 5 || right_rest.chars().count() < 5 {
+        return None;
+    }
+    if !is_known_russian_word_or_form(&left_candidate_lower)
+        || !is_known_russian_word_or_form(&right_rest_lower)
+    {
+        return None;
+    }
+    if crate::ngram::ru_candidate_margin(&right_rest_lower, &right_lower)
+        < NGRAM_MOVED_PREFIX_RIGHT_MARGIN
+    {
+        return None;
+    }
+    if !ngram_allows_ru_candidate(&candidate.to_lowercase(), text, NGRAM_MOVED_PREFIX_MARGIN) {
+        return None;
+    }
+
+    Some(format!("{candidate}{right_trailing}"))
+}

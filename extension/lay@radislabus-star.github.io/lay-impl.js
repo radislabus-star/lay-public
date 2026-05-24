@@ -447,6 +447,7 @@ const DBUS_XML = `
 <node>
   <interface name="io.github.radislabus_star.LayDaemon">
     <method name="Ping"><arg name="reply" direction="out" type="s"/></method>
+    <method name="Version"><arg name="version" direction="out" type="s"/></method>
     <method name="TypeText"><arg name="text" direction="in" type="s"/></method>
     <method name="ReplaceText">
       <arg name="move_left" direction="in" type="u"/>
@@ -482,6 +483,7 @@ class LayDaemonService {
         log('[lay-extension] DBus disabled');
     }
     Ping() { return 'pong from lay-extension'; }
+    Version() { return APP_VERSION; }
     TypeText(text) {
         if (Main.inputMethod?.commit) { try { Main.inputMethod.commit(text); return; } catch(e) {} }
         this._typeTextByKeyvals(text);

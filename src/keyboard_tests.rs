@@ -1,4 +1,5 @@
 use super::*;
+use evdev::KeyCode;
 
 fn us_event(key: KeyCode) -> KeyEvent {
     KeyEvent {
@@ -81,7 +82,7 @@ fn splits_text_insert_into_layout_runs() {
 }
 
 #[test]
-fn replay_layout_decision_ignores_space() {
+fn layout_decision_ignores_space() {
     let events = [
         KeyEvent {
             keycode: KeyCode::KEY_A.code(),

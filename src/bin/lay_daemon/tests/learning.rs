@@ -1,4 +1,5 @@
 use super::*;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 #[test]
 fn writes_learning_log_as_jsonl() {

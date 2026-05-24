@@ -4,15 +4,8 @@
 //! Russian/English, and evaluate whole-token sequences. It does not correct or
 //! emit text.
 
-use std::collections::HashSet;
-use std::sync::OnceLock;
-
-use crate::lexicon::{
-    is_ru_one_letter_function_word, is_ru_single_letter_pronoun, EN_HUNSPELL, EN_WORDS,
-};
-use crate::russian_lexicon::{is_known_russian_word_or_form, russian_tiny_dictionary};
 use crate::word_reader::split_ws_segments;
-use crate::word_recognizer::is_protected_ascii_token;
+use crate::word_recognizer::{recognize_token, WordKind, WordScript};
 
 #[derive(Clone, Copy)]
 pub(crate) enum Lang {
@@ -21,25 +14,24 @@ pub(crate) enum Lang {
 }
 
 pub(crate) fn warm_up() {
-    crate::russian_lexicon::warm_up();
-    let _ = en_dictionary().len();
+    crate::word_recognizer::warm_up();
 }
 
 pub(crate) fn is_known_ru_token(token: &str) -> bool {
-    let Some(word) = normalized_token_core(token, Lang::Ru) else {
-        return false;
-    };
-    is_known_ru_word(&word)
+    let identity = recognize_token(token);
+    identity.known_ru
+        && identity.script == WordScript::Cyrillic
+        && matches!(identity.kind, WordKind::PlainWord)
 }
 
 pub(crate) fn is_known_en_token(token: &str) -> bool {
-    if is_protected_ascii_token(token) {
-        return true;
-    }
-    let Some(word) = normalized_token_core(token, Lang::En) else {
-        return false;
-    };
-    en_dictionary().contains(&word)
+    let identity = recognize_token(token);
+    identity.script == WordScript::Ascii
+        && (identity.known_en || identity.protected)
+        && matches!(
+            identity.kind,
+            WordKind::PlainWord | WordKind::TechnicalToken
+        )
 }
 
 pub(crate) fn all_tokens_known(text: &str, lang: Lang) -> bool {
@@ -48,67 +40,31 @@ pub(crate) fn all_tokens_known(text: &str, lang: Lang) -> bool {
         if is_ws {
             continue;
         }
-        let Some(word) = normalized_token_core(segment, lang) else {
+        let identity = recognize_token(segment);
+        if identity.core.is_empty() {
             return false;
-        };
+        }
         found = true;
         let known = match lang {
-            Lang::Ru => is_known_ru_word(&word),
-            Lang::En => en_dictionary().contains(&word),
+            Lang::Ru => {
+                identity.known_ru
+                    && identity.script == WordScript::Cyrillic
+                    && matches!(identity.kind, WordKind::PlainWord)
+            }
+            Lang::En => {
+                identity.script == WordScript::Ascii
+                    && (identity.known_en || identity.protected)
+                    && matches!(
+                        identity.kind,
+                        WordKind::PlainWord | WordKind::TechnicalToken
+                    )
+            }
         };
         if !known {
             return false;
         }
     }
     found
-}
-
-fn normalized_token_core(token: &str, lang: Lang) -> Option<String> {
-    let word = token
-        .trim_matches(|ch: char| !ch.is_alphabetic() && ch != '-')
-        .to_lowercase();
-    if word.is_empty() {
-        return None;
-    }
-
-    let valid = match lang {
-        Lang::Ru => word.chars().all(|ch| matches!(ch, 'а'..='я' | 'ё' | '-')),
-        Lang::En => word.chars().all(|ch| ch.is_ascii_alphabetic() || ch == '-'),
-    };
-    valid.then_some(word)
-}
-
-fn is_known_ru_word(word: &str) -> bool {
-    is_ru_one_letter_function_word(word)
-        || is_ru_single_letter_pronoun(word)
-        || russian_tiny_dictionary().contains(word)
-        || is_known_russian_word_or_form(word)
-}
-
-fn en_dictionary() -> &'static HashSet<String> {
-    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
-    WORDS.get_or_init(|| {
-        let mut words = load_hunspell_words(EN_HUNSPELL, Lang::En).unwrap_or_default();
-        words.extend(load_plain_words(EN_WORDS, Lang::En).unwrap_or_default());
-        words
-    })
-}
-
-fn load_hunspell_words(path: &str, lang: Lang) -> std::io::Result<HashSet<String>> {
-    let text = std::fs::read_to_string(path)?;
-    Ok(text
-        .lines()
-        .skip(1)
-        .filter_map(|line| normalized_token_core(line.split('/').next().unwrap_or(""), lang))
-        .collect())
-}
-
-fn load_plain_words(path: &str, lang: Lang) -> std::io::Result<HashSet<String>> {
-    let text = std::fs::read_to_string(path)?;
-    Ok(text
-        .lines()
-        .filter_map(|line| normalized_token_core(line, lang))
-        .collect())
 }
 
 #[cfg(test)]

@@ -1,11 +1,11 @@
-use crate::config::{default_typing_assist_pipeline, DEFAULT_TYPING_ASSIST_RULES};
+use crate::config::{default_typing_assist_pipeline, default_typing_assist_rules};
 use crate::typing_candidate::TypingDecisionConfidence;
 
 use super::{apply_typing_assist_with_pipeline, explain_typing_assist_with_pipeline};
 
 #[test]
 fn rule_graph_defines_every_default_rule() {
-    for (rule_id, _) in DEFAULT_TYPING_ASSIST_RULES {
+    for (rule_id, _) in default_typing_assist_rules() {
         assert!(
             crate::typing_rule_graph::find_typing_rule(rule_id).is_some(),
             "missing typing rule definition for {rule_id}"
@@ -14,16 +14,14 @@ fn rule_graph_defines_every_default_rule() {
 }
 
 #[test]
-fn default_pipeline_mentions_every_runtime_rule() {
+fn default_pipeline_matches_rule_graph_metadata() {
+    let default_rules = default_typing_assist_rules();
     for rule in crate::typing_rule_graph::typing_rule_definitions() {
-        if rule.id == "contextual_layout_en_to_ru" {
-            continue;
-        }
-        assert!(
-            DEFAULT_TYPING_ASSIST_RULES
-                .iter()
-                .any(|(rule_id, _)| *rule_id == rule.id),
-            "runtime typing rule {} is missing from default config",
+        let in_default = default_rules.iter().any(|(rule_id, _)| *rule_id == rule.id);
+        assert_eq!(
+            in_default,
+            rule.default_priority.is_some(),
+            "default pipeline metadata mismatch for {}",
             rule.id
         );
     }

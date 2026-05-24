@@ -30,4 +30,17 @@ fi
 
 sleep 2
 systemctl --user restart lay-daemon
+LOADED_VERSION="$(
+  gdbus call --session \
+    --dest org.gnome.Shell \
+    --object-path /io/github/radislabus_star/LayDaemon \
+    --method io.github.radislabus_star.LayDaemon.Version 2>/dev/null \
+    | sed -n "s/.*'\([^']*\)'.*/\1/p" \
+    || true
+)"
+if [ -n "$LOADED_VERSION" ]; then
+    echo "✓ загруженная версия extension: $LOADED_VERSION"
+else
+    echo "⚠ не удалось проверить загруженную версию extension через DBus"
+fi
 echo "✓ готово"

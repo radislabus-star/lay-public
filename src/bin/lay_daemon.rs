@@ -13,121 +13,22 @@
 
 use clap::Parser;
 use evdev::Device;
-use lay::config::{CorrectionEngine, LayConfig, TypingAssistRuleConfig};
-use lay::desktop::LayoutBackend;
-use lay::text_backend::TextBackendPreference;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::OnceLock;
-use std::time::{Instant, SystemTime, UNIX_EPOCH};
+use std::sync::atomic::AtomicBool;
 
 const GNOME_NATIVE_REPLACE_EXPERIMENTAL: bool = false;
 const LAYOUT_POLL_INTERVAL_MS: u64 = 250;
 const ENTER_AUTOCORRECT_EXPERIMENT_ENV: &str = "LAY_EXPERIMENTAL_ENTER_AUTOCORRECT";
-static AUTO_LAYOUT_BACKEND_HINT: OnceLock<Option<LayoutBackend>> = OnceLock::new();
 static TYPING_ASSIST_RUNTIME_READY: AtomicBool = AtomicBool::new(false);
 
 // ─── Config ─────────────────────────────────────────────────
 
-fn active_replace_words() -> usize {
-    LayConfig::load().active_replace_words()
-}
+#[path = "lay_daemon/config_runtime.rs"]
+mod config_runtime;
+use config_runtime::*;
 
-fn active_correction_engine() -> CorrectionEngine {
-    LayConfig::load().active_correction_engine()
-}
-
-fn active_layout_backend() -> LayoutBackend {
-    let config = LayConfig::load();
-    let backend = config.active_layout_backend();
-    let configured = config.layout_backend.trim().to_ascii_lowercase();
-    if configured != "auto" || backend != LayoutBackend::Gnome {
-        return backend;
-    }
-
-    if let Some(hint) = *AUTO_LAYOUT_BACKEND_HINT.get_or_init(detect_auto_layout_backend_hint) {
-        return hint;
-    }
-    backend
-}
-
-fn active_text_backend() -> TextBackendPreference {
-    LayConfig::load().active_text_backend()
-}
-
-fn active_auto_replace() -> bool {
-    LayConfig::load().auto_replace
-}
-
-fn active_typing_assist() -> bool {
-    LayConfig::load().typing_assist
-}
-
-fn active_enter_autocorrect() -> bool {
-    let cfg = LayConfig::load();
-    active_enter_autocorrect_from_env(
-        cfg.enter_autocorrect,
-        std::env::var(ENTER_AUTOCORRECT_EXPERIMENT_ENV)
-            .ok()
-            .as_deref(),
-    )
-}
-
-fn active_enter_autocorrect_from_env(config_enabled: bool, env_value: Option<&str>) -> bool {
-    if !config_enabled {
-        return false;
-    }
-    env_value
-        .map(|value| {
-            matches!(
-                value.trim().to_ascii_lowercase().as_str(),
-                "1" | "true" | "yes" | "on"
-            )
-        })
-        .unwrap_or(true)
-}
-
-fn active_auto_switch_layout() -> bool {
-    LayConfig::load().auto_switch_layout
-}
-
-fn active_learning_log() -> bool {
-    LayConfig::load().learning_log
-}
-
-fn active_lem_enabled_for_scope(word_count: usize) -> bool {
-    LayConfig::load().lem_enabled_for_scope(word_count)
-}
-
-#[cfg(not(test))]
-fn active_typing_assist_pipeline_for_auto_replace(context: &str) -> Vec<TypingAssistRuleConfig> {
-    let cfg = LayConfig::load();
-    lay::typing_context::typing_assist_pipeline_for_context(
-        cfg.auto_replace,
-        cfg.active_correction_safety(),
-        &cfg.typing_assist_pipeline,
-        context,
-    )
-}
-
-fn record_recent_action(
-    kind: &str,
-    from: &str,
-    to: &str,
-    replace_words: usize,
-    words: usize,
-    started_at: Instant,
-    undo_available: bool,
-) {
-    lay::action_log::record_action(
-        kind,
-        from,
-        to,
-        replace_words,
-        words,
-        started_at.elapsed().as_millis(),
-        undo_available,
-    );
-}
+#[path = "lay_daemon/action_log_runtime.rs"]
+mod action_log_runtime;
+use action_log_runtime::*;
 
 #[derive(Parser, Debug)]
 #[command(
@@ -208,143 +109,34 @@ use keyboard_io::*;
 #[path = "lay_daemon/trigger_dispatch.rs"]
 mod trigger_dispatch;
 
+#[path = "lay_daemon/manual_trigger_runtime.rs"]
+mod manual_trigger_runtime;
+
 #[path = "lay_daemon/boundary_runtime.rs"]
 mod boundary_runtime;
 
 #[path = "lay_daemon/typing_key_runtime.rs"]
 mod typing_key_runtime;
 
+#[path = "lay_daemon/buffer_filter_runtime.rs"]
+mod buffer_filter_runtime;
+use buffer_filter_runtime::*;
+
 #[path = "lay_daemon/daemon_runtime.rs"]
 mod daemon_runtime;
 use daemon_runtime::*;
 
+#[path = "lay_daemon/daemon_state.rs"]
+mod daemon_state;
+
+#[path = "lay_daemon/startup_runtime.rs"]
+mod startup_runtime;
+use startup_runtime::*;
+
 fn main() -> std::io::Result<()> {
     let args = Args::parse();
     set_log_enabled(args.debug_log || args.verbose || args.detect_only);
-
-    let device_paths: Vec<std::path::PathBuf> = match args.device.clone() {
-        Some(p) => vec![std::path::PathBuf::from(p)],
-        None => find_all_keyboards()?,
-    };
-    log(&format!("► старт, устройства: {device_paths:?}"));
-    log(&format!(
-        "► режим: {}",
-        if args.detect_only {
-            "DETECT-ONLY"
-        } else {
-            "LIVE (DBus + uinput)"
-        }
-    ));
-    let startup_cfg = LayConfig::load();
-    let startup_backend = active_layout_backend();
-    log(&format!(
-        "► layout backend: {} (config={})",
-        startup_backend.label(),
-        startup_cfg.layout_backend
-    ));
-    log(&format!(
-        "► text backend: {}",
-        startup_cfg.active_text_backend().as_str()
-    ));
-    let warm_smart = startup_cfg.active_correction_engine() == CorrectionEngine::Smart;
-    let enter_autocorrect_active = active_enter_autocorrect_from_env(
-        startup_cfg.enter_autocorrect,
-        std::env::var(ENTER_AUTOCORRECT_EXPERIMENT_ENV)
-            .ok()
-            .as_deref(),
-    );
-    let warm_typing_assist = startup_cfg.typing_assist || enter_autocorrect_active;
-    if !args.detect_only && (warm_smart || warm_typing_assist) {
-        std::thread::spawn(move || {
-            let started_at = Instant::now();
-            lay::ngram::warm_up();
-            lay::lem::warm_up();
-            lay::typing_assist::warm_up();
-            TYPING_ASSIST_RUNTIME_READY.store(true, Ordering::Relaxed);
-            if warm_smart {
-                match lay::llm::warm_up() {
-                    Ok(()) => log("► smart engine: модель прогрета заранее"),
-                    Err(e) => log(&format!("⚠ smart engine warmup failed: {e}")),
-                }
-            }
-            log(&format!(
-                "► dictionaries/ngram/LEM warmed in {}ms",
-                started_at.elapsed().as_millis()
-            ));
-        });
-    } else {
-        TYPING_ASSIST_RUNTIME_READY.store(true, Ordering::Relaxed);
-    }
-
-    // GNOME backend uses the Shell extension for layout activation and TypeText fallback.
-    if !args.detect_only && startup_backend == LayoutBackend::Gnome {
-        match call_ping() {
-            Ok(reply) => {
-                log(&format!("► extension: {reply}"));
-            }
-            Err(e) => {
-                log(&format!("⚠ extension не отвечает ({e})"));
-                log("⚠ работаю в detect-only");
-            }
-        }
-    } else if !args.detect_only && startup_backend == LayoutBackend::X11 {
-        match lay::x11_layout::ping() {
-            Ok(reply) => log(&format!("► native X11 backend: {reply}")),
-            Err(e) => log(&format!(
-                "⚠ native X11 backend unavailable ({e}); shell fallback remains enabled"
-            )),
-        }
-    } else if !args.detect_only {
-        log("► GNOME extension ping skipped for non-GNOME layout backend");
-    }
-    if !args.detect_only && startup_cfg.active_text_backend().should_try_ime() {
-        match call_ime_ping() {
-            Ok(reply) => log(&format!("► IME bridge: {reply}")),
-            Err(e) => log(&format!(
-                "⚠ IME bridge unavailable ({e}); uinput fallback remains enabled"
-            )),
-        }
-    }
-
-    // Virtual keyboard через uinput для re-typing физических кнопок
-    let virtual_kbd = if args.detect_only {
-        None
-    } else {
-        match make_virtual_keyboard() {
-            Ok(d) => {
-                log("► uinput virtual keyboard создан");
-                Some(d)
-            }
-            Err(e) => {
-                log(&format!(
-                    "⚠ uinput недоступен ({e}). Re-typing работать не будет"
-                ));
-                None
-            }
-        }
-    };
-
-    // Spawn один тред на каждую клавиатуру. Каждый тред держит свой
-    // буфер и shift_state — клавиатуры независимы, что корректно
-    // (если у пользователя 2 клавиатуры — он печатает на одной).
-    use std::sync::{Arc, Mutex};
-    let virtual_kbd = Arc::new(Mutex::new(virtual_kbd));
-
-    let mut handles = Vec::new();
-    for path in device_paths {
-        let virtual_kbd = Arc::clone(&virtual_kbd);
-        let v = args.verbose;
-        let cfg = LayConfig::load();
-        handles.push(std::thread::spawn(move || {
-            if let Err(e) = listen_keyboard(path, virtual_kbd, v, cfg) {
-                log(&format!("⚠ thread keyboard: {e}"));
-            }
-        }));
-    }
-    for h in handles {
-        let _ = h.join();
-    }
-    Ok(())
+    run_daemon(args.detect_only, args.device, args.verbose)
 }
 
 // keyboard event loop lives in lay_daemon/daemon_runtime.rs
@@ -361,17 +153,40 @@ use focus_guard::*;
 mod trigger_fsm;
 use trigger_fsm::*;
 
+#[path = "lay_daemon/force_layout_hotkeys.rs"]
+mod force_layout_hotkeys;
+use force_layout_hotkeys::*;
+
+#[path = "lay_daemon/manual_trigger_diagnostics.rs"]
+mod manual_trigger_diagnostics;
+use manual_trigger_diagnostics::*;
+
 // ─── Двойной Shift handler ──────────────────────────────────
 
 // ─── Correction runtime orchestration ────────────────────
+
+#[path = "lay_daemon/correction_memory_runtime.rs"]
+mod correction_memory_runtime;
+
+#[path = "lay_daemon/auto_undo_runtime.rs"]
+mod auto_undo_runtime;
+#[cfg(test)]
+use auto_undo_runtime::pending_auto_undo_plan;
 
 #[path = "lay_daemon/correction_runtime.rs"]
 mod correction_runtime;
 use correction_runtime::*;
 
+#[path = "lay_daemon/physical_input_grab.rs"]
+mod physical_input_grab;
+
 #[path = "lay_daemon/typing_assist_runtime.rs"]
 mod typing_assist_runtime;
 use typing_assist_runtime::*;
+
+#[path = "lay_daemon/enter_autocorrect_runtime.rs"]
+mod enter_autocorrect_runtime;
+use enter_autocorrect_runtime::*;
 
 // ─── Layout, DBus, IME controller ────────────────────────
 
@@ -381,6 +196,9 @@ mod layout_kde;
 #[path = "lay_daemon/layout_x11.rs"]
 mod layout_x11;
 
+#[path = "lay_daemon/command_runtime.rs"]
+mod command_runtime;
+
 #[path = "lay_daemon/layout_controller.rs"]
 mod layout_controller;
 use layout_controller::*;
@@ -389,29 +207,9 @@ use layout_controller::*;
 
 // ─── Лог ────────────────────────────────────────────────────
 
-static LOG_ENABLED: OnceLock<bool> = OnceLock::new();
-
-fn set_log_enabled(enabled: bool) {
-    let env_enabled = std::env::var("LAY_DEBUG_LOG")
-        .is_ok_and(|v| matches!(v.as_str(), "1" | "true" | "yes" | "on"));
-    let _ = LOG_ENABLED.set(enabled || env_enabled);
-}
-
-fn log(msg: &str) {
-    if !*LOG_ENABLED.get_or_init(|| {
-        std::env::var("LAY_DEBUG_LOG")
-            .is_ok_and(|v| matches!(v.as_str(), "1" | "true" | "yes" | "on"))
-    }) {
-        return;
-    }
-
-    let ts = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs();
-    let line = format!("[{ts}] {msg}\n");
-    eprint!("{line}");
-}
+#[path = "lay_daemon/log_runtime.rs"]
+mod log_runtime;
+use log_runtime::*;
 
 // ─── Learning log / promotion runtime ──────────────────────
 

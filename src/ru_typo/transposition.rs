@@ -1,0 +1,54 @@
+use crate::russian_lexicon::is_known_russian_word_or_form;
+use crate::russian_typo_scoring::ngram_allows_ru_candidate;
+use crate::text_case::apply_word_case;
+use crate::word_reader::is_cyrillic_word;
+
+use super::extra::extra_letter_candidate_exists;
+use super::guards::looks_like_known_word_plus_one_letter_function_suffix;
+use super::missing::missing_letter_candidate_exists;
+use super::thresholds::NGRAM_TRANSPOSE_MARGIN;
+
+pub(crate) fn correct_adjacent_transposition(word: &str) -> Option<String> {
+    if word.chars().count() < 5 || !is_cyrillic_word(word) {
+        return None;
+    }
+
+    let lower = word.to_lowercase();
+    if is_known_russian_word_or_form(&lower) {
+        return None;
+    }
+    if missing_letter_candidate_exists(word, &lower) {
+        return None;
+    }
+    if extra_letter_candidate_exists(&lower) {
+        return None;
+    }
+
+    let chars: Vec<char> = lower.chars().collect();
+    let mut found: Option<String> = None;
+    for idx in 0..chars.len().saturating_sub(1) {
+        if chars[idx] == chars[idx + 1] {
+            continue;
+        }
+
+        let mut candidate = chars.clone();
+        candidate.swap(idx, idx + 1);
+        let candidate: String = candidate.into_iter().collect();
+        if !is_known_russian_word_or_form(&candidate) {
+            continue;
+        }
+        if looks_like_known_word_plus_one_letter_function_suffix(&candidate) {
+            continue;
+        }
+        if !ngram_allows_ru_candidate(&candidate, &lower, NGRAM_TRANSPOSE_MARGIN) {
+            continue;
+        }
+
+        if found.is_some() {
+            return None;
+        }
+        found = Some(candidate);
+    }
+
+    found.map(|candidate| apply_word_case(word, &candidate))
+}
