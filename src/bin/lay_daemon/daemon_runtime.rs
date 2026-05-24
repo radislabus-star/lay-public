@@ -6,8 +6,9 @@ use std::sync::{Arc, Mutex};
 
 use super::boundary_runtime::{
     handle_hard_boundary_if_needed, handle_space_press, note_learning_backspace_if_needed,
-    try_handle_enter_autocorrect, try_handle_space_release, EnterAutocorrectContext,
-    HardBoundaryContext, SpacePressContext, SpaceReleaseContext,
+    try_handle_deferred_typing_assist, try_handle_enter_autocorrect, try_handle_space_release,
+    DeferredTypingAssistContext, EnterAutocorrectContext, HardBoundaryContext, SpacePressContext,
+    SpaceReleaseContext,
 };
 use super::daemon_state::DaemonLoopState;
 use super::manual_trigger_runtime::{
@@ -92,6 +93,17 @@ pub(super) fn listen_keyboard(
                             state.shift_window,
                         ),
                     )?;
+                    continue;
+                }
+                if try_handle_deferred_typing_assist(DeferredTypingAssistContext {
+                    buffer: &mut state.buffer,
+                    device: &mut device,
+                    virtual_kbd: &virtual_kbd,
+                    executing: &mut state.executing,
+                    pending_typing_assist_after_space: &mut state.pending_typing_assist_after_space,
+                    shift_state: &state.shift_state,
+                    verbose,
+                }) {
                     continue;
                 }
                 if state.multi_tap_scope

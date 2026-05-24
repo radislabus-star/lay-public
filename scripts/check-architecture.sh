@@ -257,6 +257,7 @@ assert_max_lines src/bin/lay_daemon/manual_trigger_runtime/event.rs 280
 assert_max_lines src/bin/lay_daemon/manual_trigger_runtime/fire.rs 70
 assert_max_lines src/bin/lay_daemon/manual_trigger_runtime/timeout.rs 60
 assert_max_lines src/bin/lay_daemon/boundary_runtime.rs 40
+assert_max_lines src/bin/lay_daemon/boundary_runtime/deferred.rs 70
 assert_max_lines src/bin/lay_daemon/boundary_runtime/enter.rs 80
 assert_max_lines src/bin/lay_daemon/boundary_runtime/hard.rs 90
 assert_max_lines src/bin/lay_daemon/boundary_runtime/space.rs 120
@@ -575,6 +576,7 @@ assert_single_owner "fn apply_minimal_typing_replacement" "src/bin/lay_daemon/ty
 assert_single_owner "fn remember_typing_assist_correction" "src/bin/lay_daemon/typing_assist_runtime/output/memory.rs"
 assert_single_owner "fn try_handle_space_release" "src/bin/lay_daemon/boundary_runtime/space.rs"
 assert_single_owner "fn handle_space_press" "src/bin/lay_daemon/boundary_runtime/space.rs"
+assert_single_owner "fn try_handle_deferred_typing_assist" "src/bin/lay_daemon/boundary_runtime/deferred.rs"
 assert_single_owner "fn try_handle_enter_autocorrect" "src/bin/lay_daemon/boundary_runtime/enter.rs"
 assert_single_owner "fn handle_hard_boundary_if_needed" "src/bin/lay_daemon/boundary_runtime/hard.rs"
 assert_single_owner "fn should_skip_buffer_input" "src/bin/lay_daemon/buffer_filter_runtime.rs"

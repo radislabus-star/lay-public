@@ -125,6 +125,8 @@ mod runtime_state;
 mod scoped_tail;
 #[path = "tests/text_output_contract.rs"]
 mod text_output_contract;
+#[path = "tests/typing_assist_deferred.rs"]
+mod typing_assist_deferred;
 #[path = "tests/typing_assist_rules.rs"]
 mod typing_assist_rules;
 

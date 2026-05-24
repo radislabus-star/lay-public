@@ -4,8 +4,7 @@ use std::sync::{Arc, Mutex};
 
 use super::super::{
     active_typing_assist, append_user_correction_learning_log, handle_typing_assist_after_space,
-    has_later_typing_press, lock_virtual_keyboard, log,
-    should_drop_stale_typing_assist_after_space, should_run_typing_assist_on_space_release,
+    has_later_typing_press, lock_virtual_keyboard, log, should_run_typing_assist_on_space_release,
     should_schedule_typing_assist_after_space, ShiftState, TypingAssistOutcome,
 };
 
@@ -66,15 +65,6 @@ pub(crate) struct SpacePressContext<'a> {
 }
 
 pub(crate) fn handle_space_press(ctx: SpacePressContext<'_>) {
-    if should_drop_stale_typing_assist_after_space(
-        *ctx.pending_typing_assist_after_space,
-        ctx.buffer.current_len(),
-    ) {
-        *ctx.pending_typing_assist_after_space = false;
-        if ctx.verbose {
-            log("· typing-assist stale previous word skipped behind current word");
-        }
-    }
     if let Some(correction) = ctx.buffer.take_user_learning_correction(true) {
         append_user_correction_learning_log(&correction);
     }

@@ -166,13 +166,6 @@ pub(super) fn should_schedule_typing_assist_after_space(
     true
 }
 
-pub(super) fn should_drop_stale_typing_assist_after_space(
-    pending: bool,
-    current_len: usize,
-) -> bool {
-    pending && current_len > 0
-}
-
 pub(super) fn should_run_typing_assist_on_space_release(
     pending: bool,
     active: bool,
@@ -180,6 +173,18 @@ pub(super) fn should_run_typing_assist_on_space_release(
     buffer_empty: bool,
 ) -> bool {
     pending && active && !shift_active && !buffer_empty
+}
+
+pub(super) fn should_run_deferred_typing_assist_after_space(
+    pending: bool,
+    active: bool,
+    shift_active: bool,
+) -> bool {
+    pending && active && !shift_active
+}
+
+pub(super) fn typing_assist_cursor_offset_after_space(current_len: usize) -> u32 {
+    current_len.min(u32::MAX as usize) as u32
 }
 
 fn is_leading_non_word_symbol_key(key: KeyCode, _shift: bool) -> bool {

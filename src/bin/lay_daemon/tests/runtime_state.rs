@@ -127,13 +127,6 @@ fn typing_assist_runs_on_space_release_when_pending() {
 }
 
 #[test]
-fn typing_assist_drops_stale_previous_word_when_current_word_started() {
-    assert!(!should_drop_stale_typing_assist_after_space(false, 3));
-    assert!(!should_drop_stale_typing_assist_after_space(true, 0));
-    assert!(should_drop_stale_typing_assist_after_space(true, 3));
-}
-
-#[test]
 fn leading_cli_option_token_is_ignored_until_space() {
     for (leader, leader_shift, token_key, next_word) in [
         (KeyCode::KEY_MINUS, false, KeyCode::KEY_B, "feature"),
