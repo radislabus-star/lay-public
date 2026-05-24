@@ -43,8 +43,8 @@ def draw_frame(line: str, status: str, highlight: str | None = None) -> Image.Im
     draw.rounded_rectangle((80, 330, 1120, 430), radius=18, fill="#1d2a35", outline="#3c5367", width=1)
     draw.text((115, 362), status, font=MONO_SMALL, fill="#d9e7f2")
 
-    draw.text((80, 515), "Сделал для себя. Делюсь с миром. Берите, кому надо.", font=TEXT, fill="#d7dee7")
-    draw.text((80, 555), "GNOME Wayland · RU/EN · локально · без облака", font=TEXT, fill="#91a2b5")
+    draw.text((80, 515), "Double Shift: исправить раскладку прямо в приложении", font=TEXT, fill="#d7dee7")
+    draw.text((80, 555), "RU/EN · GNOME/KDE/X11 · локально · без облака", font=TEXT, fill="#91a2b5")
 
     return image
 
