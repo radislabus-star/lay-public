@@ -54,9 +54,13 @@ fn replacement_memory_keeps_space_boundary_after_i_autofix() {
     assert!(buffer.remember_replacement_last_word_for_replay(&events, &plan, replacement));
     assert!(buffer.current_is_empty());
     assert!(buffer.prev_had_trailing_space());
-    assert_eq!(buffer.prev_words_len(), 1);
+    assert_eq!(buffer.prev_words_len(), 2);
     assert_eq!(
-        map_original_events(buffer.prev_word_events(0).expect("prev word")),
+        map_original_events(buffer.prev_word_events(0).expect("left context")),
+        "double"
+    );
+    assert_eq!(
+        map_original_events(buffer.prev_word_events(1).expect("prev word")),
         "и"
     );
 

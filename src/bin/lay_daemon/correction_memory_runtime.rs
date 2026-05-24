@@ -64,7 +64,7 @@ pub(super) fn remember_assisted_text_correction(
         correction.words,
     );
     let remembered = if correction.cursor_offset > 0 {
-        buf.remember_completed_replacement_words_for_replay(correction.replacement)
+        buf.remember_visible_replacement_tail_for_replay(correction.events, correction.replacement)
     } else {
         buf.remember_replacement_last_word_for_replay(
             correction.events,

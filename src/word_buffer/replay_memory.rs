@@ -107,7 +107,7 @@ impl WordBuffer {
             .filter(|ch| ch.is_whitespace())
             .count();
         if plan.move_right > trailing_ws_chars && replacement_body_spaces > original_body_spaces {
-            return self.remember_completed_replacement_words_for_replay(replacement);
+            return self.remember_visible_replacement_tail_for_replay(original_events, replacement);
         }
         if plan.backspaces == 0 {
             return false;
@@ -115,39 +115,7 @@ impl WordBuffer {
         if plan.move_right != 0 && plan.move_right != trailing_ws_chars {
             return false;
         }
-
-        let Some(inserted_word) = replacement.split_whitespace().next_back() else {
-            return false;
-        };
-        if inserted_word.is_empty() {
-            return false;
-        }
-        let replacement_ends_with_space = replacement
-            .chars()
-            .next_back()
-            .is_some_and(char::is_whitespace);
-
-        let Some(words) = split_event_words(original_events) else {
-            return false;
-        };
-        for word in words.iter().rev() {
-            for target_is_ru in [false, true] {
-                if map_events_to_layout(word, target_is_ru) != inserted_word {
-                    continue;
-                }
-
-                let mut tail = (*word).to_vec();
-                mark_word_layout(&mut tail, target_is_ru);
-                return self.remember_replacement_tail_events(tail, replacement_ends_with_space);
-            }
-        }
-
-        let target_layout = preferred_layout_for_text(replacement, true);
-        let Some(mut tail) = text_to_key_events(inserted_word, target_layout) else {
-            return false;
-        };
-        mark_word_layout(&mut tail, target_layout);
-        self.remember_replacement_tail_events(tail, replacement_ends_with_space)
+        self.remember_visible_replacement_tail_for_replay(original_events, replacement)
     }
 
     pub fn remember_completed_replacement_words_for_replay(&mut self, replacement: &str) -> bool {
@@ -155,16 +123,9 @@ impl WordBuffer {
             .chars()
             .next_back()
             .is_some_and(char::is_whitespace);
-        let mut words = Vec::new();
-
-        for word in replacement.split_whitespace() {
-            let target_layout = preferred_layout_for_text(word, true);
-            let Some(mut events) = text_to_key_events(word, target_layout) else {
-                return false;
-            };
-            mark_word_layout(&mut events, target_layout);
-            words.push(events);
-        }
+        let Some(mut words) = replacement_word_events(replacement) else {
+            return false;
+        };
 
         if words.is_empty() {
             return false;
@@ -178,6 +139,62 @@ impl WordBuffer {
         self.prev_words = words;
         self.prev_had_trailing_space = replacement_ends_with_space;
         self.replay_toggle_ready = true;
+        true
+    }
+
+    pub fn remember_visible_replacement_tail_for_replay(
+        &mut self,
+        original_events: &[KeyEvent],
+        replacement: &str,
+    ) -> bool {
+        let Some(original_words) = split_event_words(original_events) else {
+            return false;
+        };
+        let original_word_count = original_words.len();
+        if original_word_count == 0 {
+            return false;
+        }
+
+        let Some(replacement_words) = replacement_word_events(replacement) else {
+            return false;
+        };
+        if replacement_words.is_empty() {
+            return false;
+        }
+
+        let original_ends_with_space = original_events
+            .last()
+            .is_some_and(|event| event.keycode == KeyCode::KEY_SPACE.code());
+        let replacement_ends_with_space = replacement
+            .chars()
+            .next_back()
+            .is_some_and(char::is_whitespace);
+
+        if original_ends_with_space {
+            if self.prev_words.len() < original_word_count {
+                return false;
+            }
+            truncate_prev_words_suffix(&mut self.prev_words, original_word_count);
+            self.current.clear();
+            self.remember_replacement_words(replacement_words, replacement_ends_with_space);
+            return true;
+        }
+
+        if !self.current.is_empty() {
+            let previous_words_in_tail = original_word_count.saturating_sub(1);
+            if self.prev_words.len() < previous_words_in_tail {
+                return false;
+            }
+            truncate_prev_words_suffix(&mut self.prev_words, previous_words_in_tail);
+            self.remember_replacement_words(replacement_words, replacement_ends_with_space);
+            return true;
+        }
+
+        if self.prev_words.len() < original_word_count {
+            return false;
+        }
+        truncate_prev_words_suffix(&mut self.prev_words, original_word_count);
+        self.remember_replacement_words(replacement_words, replacement_ends_with_space);
         true
     }
 
@@ -213,22 +230,50 @@ impl WordBuffer {
         self.pending_auto_undo = None;
         true
     }
-
-    fn remember_replacement_tail_events(
+    fn remember_replacement_words(
         &mut self,
-        tail: Vec<KeyEvent>,
+        mut replacement_words: Vec<Vec<KeyEvent>>,
         replacement_ends_with_space: bool,
-    ) -> bool {
-        self.prev_words.clear();
+    ) {
         if replacement_ends_with_space {
             self.current.clear();
-            self.prev_words.push(tail);
+            append_completed_words(&mut self.prev_words, replacement_words);
             self.prev_had_trailing_space = true;
         } else {
-            self.current = tail;
+            let current = replacement_words.pop();
+            append_completed_words(&mut self.prev_words, replacement_words);
+            if let Some(current) = current {
+                self.current = current;
+            } else {
+                self.current.clear();
+            }
             self.prev_had_trailing_space = false;
         }
         self.replay_toggle_ready = true;
-        true
+    }
+}
+
+fn replacement_word_events(replacement: &str) -> Option<Vec<Vec<KeyEvent>>> {
+    replacement
+        .split_whitespace()
+        .map(|word| {
+            let target_layout = preferred_layout_for_text(word, true);
+            let mut events = text_to_key_events(word, target_layout)?;
+            mark_word_layout(&mut events, target_layout);
+            Some(events)
+        })
+        .collect()
+}
+
+fn truncate_prev_words_suffix(prev_words: &mut Vec<Vec<KeyEvent>>, count: usize) {
+    let keep = prev_words.len().saturating_sub(count);
+    prev_words.truncate(keep);
+}
+
+fn append_completed_words(prev_words: &mut Vec<Vec<KeyEvent>>, words: Vec<Vec<KeyEvent>>) {
+    prev_words.extend(words);
+    if prev_words.len() > MAX_REPLACE_WORDS {
+        let keep_from = prev_words.len() - MAX_REPLACE_WORDS;
+        prev_words.drain(0..keep_from);
     }
 }

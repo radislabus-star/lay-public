@@ -147,3 +147,41 @@ fn deferred_typing_assist_respects_single_word_scope() {
         }
     );
 }
+
+#[test]
+fn deferred_typing_assist_keeps_left_context_after_previous_autoreplace() {
+    let mut buffer = WordBuffer::new();
+    push_text_as_layout(&mut buffer, "порт", true);
+    buffer.handle_space();
+    push_text_as_layout(&mut buffer, "зщке", true);
+    buffer.handle_space();
+
+    let previous_events = buffer
+        .last_completed_words_events(1)
+        .expect("previous completed word");
+    assert_eq!(map_original_events(&previous_events), "зщке ");
+    assert!(buffer.remember_replacement_last_word_for_replay(
+        &previous_events,
+        &TextReplacement {
+            move_left: 1,
+            backspaces: 4,
+            insert: "port".to_string(),
+            move_right: 1,
+        },
+        "port ",
+    ));
+
+    let context_events = buffer
+        .last_completed_words_events(2)
+        .expect("preserved left context");
+    assert_eq!(map_original_events(&context_events), "порт port ");
+
+    push_text_as_layout(&mut buffer, "gjhn", false);
+    buffer.handle_space();
+    push_text_as_layout(&mut buffer, "x", false);
+
+    let correction =
+        find_typing_assist_correction(&buffer, true, 1).expect("single-word correction");
+    assert_eq!(map_original_events(&correction.events), "gjhn ");
+    assert_eq!(correction.edit.replacement, "порт ");
+}
