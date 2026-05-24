@@ -95,7 +95,8 @@ fn deferred_typing_assist_uses_widest_confident_completed_tail() {
     buffer.handle_space();
     push_text_as_layout(&mut buffer, "x", false);
 
-    let correction = find_typing_assist_correction(&buffer, true).expect("three-word correction");
+    let correction =
+        find_typing_assist_correction(&buffer, true, 3).expect("three-word correction");
     assert_eq!(map_original_events(&correction.events), "HF<JNF NTCN CFV ");
     assert_eq!(correction.edit.original, "HF<JNF NTCN CFV ");
     assert_eq!(correction.edit.replacement, "РАБОТА ТЕСТ САМ ");
@@ -110,6 +111,38 @@ fn deferred_typing_assist_uses_widest_confident_completed_tail() {
             move_left: 2,
             backspaces: 15,
             insert: "РАБОТА ТЕСТ САМ".to_string(),
+            move_right: 2,
+        }
+    );
+}
+
+#[test]
+fn deferred_typing_assist_respects_single_word_scope() {
+    let mut buffer = WordBuffer::new();
+    push_text_as_layout(&mut buffer, "порт", true);
+    buffer.handle_space();
+    push_text_as_layout(&mut buffer, "port", false);
+    buffer.handle_space();
+    push_text_as_layout(&mut buffer, "gjhn", false);
+    buffer.handle_space();
+    push_text_as_layout(&mut buffer, "x", false);
+
+    let correction =
+        find_typing_assist_correction(&buffer, true, 1).expect("single-word correction");
+    assert_eq!(map_original_events(&correction.events), "gjhn ");
+    assert_eq!(correction.edit.original, "gjhn ");
+    assert_eq!(correction.edit.replacement, "порт ");
+
+    let shifted = lay::text_edit::offset_replacement_plan_for_cursor(
+        &correction.edit.plan,
+        typing_assist_cursor_offset_after_space(buffer.current_len()),
+    );
+    assert_eq!(
+        shifted,
+        TextReplacement {
+            move_left: 2,
+            backspaces: 4,
+            insert: "порт".to_string(),
             move_right: 2,
         }
     );

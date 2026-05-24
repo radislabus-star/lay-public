@@ -11,7 +11,7 @@ mod output;
 pub(crate) use candidate::find_typing_assist_correction;
 use output::{apply_typing_assist_correction, TypingAssistApplyContext};
 
-use super::{active_auto_switch_layout, log, TYPING_ASSIST_RUNTIME_READY};
+use super::{active_auto_switch_layout, active_replace_words, log, TYPING_ASSIST_RUNTIME_READY};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum TypingAssistOutcome {
@@ -33,7 +33,9 @@ pub(super) fn handle_typing_assist_after_space(
     }
 
     let started_at = Instant::now();
-    let Some(correction) = find_typing_assist_correction(buf, active_auto_switch_layout()) else {
+    let Some(correction) =
+        find_typing_assist_correction(buf, active_auto_switch_layout(), active_replace_words())
+    else {
         return TypingAssistOutcome::NoCorrection;
     };
 

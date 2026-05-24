@@ -14,8 +14,9 @@ pub(crate) struct TypingAssistCorrection {
 pub(crate) fn find_typing_assist_correction(
     buf: &WordBuffer,
     allow_layout_auto: bool,
+    max_words: usize,
 ) -> Option<TypingAssistCorrection> {
-    completed_tail_scopes(buf)
+    completed_tail_scopes(buf, max_words)
         .into_iter()
         .find_map(|word_count| {
             let events = buf.last_completed_words_events(word_count)?;
@@ -39,7 +40,10 @@ pub(crate) fn find_typing_assist_correction(
         })
 }
 
-fn completed_tail_scopes(buf: &WordBuffer) -> Vec<usize> {
-    let max_scope = buf.prev_words_len().min(MAX_REPLACE_WORDS);
+fn completed_tail_scopes(buf: &WordBuffer, max_words: usize) -> Vec<usize> {
+    let max_scope = buf
+        .prev_words_len()
+        .min(max_words.max(1))
+        .min(MAX_REPLACE_WORDS);
     (1..=max_scope).rev().collect()
 }
