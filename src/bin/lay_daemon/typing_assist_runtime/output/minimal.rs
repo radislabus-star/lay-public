@@ -11,8 +11,7 @@ use super::super::super::{
     insert_prepared_text_for_replacement_plan, log, prepare_text_insert_for_replacement_plan,
     switch_or_restore_layout_after_text_edit,
 };
-use super::super::find_typing_assist_correction;
-use super::super::TypingAssistOutcome;
+use super::super::{find_typing_assist_correction, TypingAssistOutcome};
 use super::memory::remember_typing_assist_correction;
 
 #[allow(clippy::too_many_arguments)]
@@ -89,9 +88,8 @@ pub(crate) fn apply_minimal_typing_replacement(
         if let Some(next) =
             find_typing_assist_correction(buf, active_auto_switch_layout(), active_replace_words())
         {
-            let next_original = next.edit.original.clone();
-            let next_replacement = next.edit.replacement.clone();
-            log("· typing-assist applying queued completed word");
+            let (next_original, next_replacement) =
+                (next.edit.original.clone(), next.edit.replacement.clone());
             return apply_minimal_typing_replacement(
                 buf,
                 &next.events,

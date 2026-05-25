@@ -1,3 +1,4 @@
+use super::diff_plan::plan_text_replacement_with_options;
 use super::types::TextReplacement;
 
 pub fn plan_committed_tail_replacement(
@@ -7,13 +8,7 @@ pub fn plan_committed_tail_replacement(
     if original == replacement {
         return None;
     }
-
-    Some(TextReplacement {
-        move_left: 0,
-        backspaces: original.chars().count() as u32,
-        insert: replacement.to_string(),
-        move_right: 0,
-    })
+    plan_text_replacement_with_options(original, replacement, true)
 }
 
 pub fn ensure_committed_tail_spacing(original: &str, mut replacement: String) -> String {

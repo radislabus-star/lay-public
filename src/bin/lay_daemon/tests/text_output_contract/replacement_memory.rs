@@ -47,10 +47,10 @@ fn replacement_memory_stays_synced_after_html_autofix_and_next_word() {
     assert_eq!(
         html_plan,
         TextReplacement {
-            move_left: 0,
-            backspaces: 5,
-            insert: "html ".to_string(),
-            move_right: 0,
+            move_left: 1,
+            backspaces: 4,
+            insert: "html".to_string(),
+            move_right: 1,
         }
     );
     assert!(buffer.remember_replacement_last_word_for_replay(
@@ -140,10 +140,10 @@ fn replacement_memory_preserves_current_after_deferred_completed_tail() {
     assert_eq!(
         djn_plan,
         TextReplacement {
-            move_left: 0,
-            backspaces: 4,
-            insert: "вот ".to_string(),
-            move_right: 0,
+            move_left: 1,
+            backspaces: 3,
+            insert: "вот".to_string(),
+            move_right: 1,
         }
     );
 }
@@ -165,13 +165,8 @@ fn replacement_memory_synthesizes_last_word_after_glued_phrase_split() {
 
     assert_eq!(original, row[0]);
     assert_eq!(
-        plan,
-        TextReplacement {
-            move_left: 0,
-            backspaces: original.chars().count() as u32,
-            insert: replacement.clone(),
-            move_right: 0,
-        }
+        lay::text_edit::apply_replacement_plan_to_text(&original, &plan),
+        *replacement
     );
     assert!(buffer.remember_replacement_last_word_for_replay(&events, &plan, replacement));
     assert!(buffer.current_is_empty());

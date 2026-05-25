@@ -92,8 +92,8 @@ fn short_alternating_words_30() -> Vec<String> {
         "я", "и", "мы", "ты", "он", "в", "к", "с", "не", "на", "ну", "по", "за", "вот", "это",
     ];
     let en_words = [
-        "git", "api", "css", "cpu", "gpu", "html", "json", "llm", "log", "md", "pdf", "ram",
-        "sql", "ssh", "vpn",
+        "git", "api", "css", "cpu", "gpu", "html", "json", "llm", "log", "md", "pdf", "ram", "sql",
+        "ssh", "vpn",
     ];
 
     let words = ru_words

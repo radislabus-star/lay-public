@@ -129,10 +129,10 @@ fn typing_assist_decoder_reemits_committed_space_boundary() {
     assert_eq!(
         plan.plan,
         TextReplacement {
-            move_left: 0,
-            backspaces: 9,
-            insert: "double и ".to_string(),
-            move_right: 0,
+            move_left: 1,
+            backspaces: 1,
+            insert: "и".to_string(),
+            move_right: 1,
         }
     );
     assert!(plan.source.needs_undo_checkpoint());
@@ -155,10 +155,10 @@ fn typing_assist_context_decoder_keeps_edit_to_last_tail() {
     assert_eq!(
         plan.plan,
         TextReplacement {
-            move_left: 0,
-            backspaces: 2,
-            insert: "и ".to_string(),
-            move_right: 0,
+            move_left: 1,
+            backspaces: 1,
+            insert: "и".to_string(),
+            move_right: 1,
         }
     );
     assert!(plan.preserves_committed_separator());

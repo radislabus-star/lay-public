@@ -18,7 +18,6 @@ pub(crate) struct DeferredTypingAssistContext<'a> {
     pub(crate) last_layout_poll: &'a mut Instant,
     pub(crate) pending_typing_assist_after_space: &'a mut Option<PendingTypingAssist>,
     pub(crate) shift_state: &'a ShiftState,
-    pub(crate) verbose: bool,
 }
 
 pub(crate) fn try_handle_deferred_typing_assist(ctx: DeferredTypingAssistContext<'_>) -> bool {
@@ -30,24 +29,18 @@ pub(crate) fn try_handle_deferred_typing_assist(ctx: DeferredTypingAssistContext
         return false;
     }
 
-    if ctx
-        .pending_typing_assist_after_space
-        .as_ref()
-        .is_some_and(|pending| !pending.ready_to_apply())
-    {
-        return false;
-    }
-
-    let Some(pending) = ctx.pending_typing_assist_after_space.take() else {
+    let Some(pending) = ctx.pending_typing_assist_after_space.as_ref() else {
         return false;
     };
+    if !pending.ready_to_apply() {
+        return false;
+    }
+    let pending = ctx
+        .pending_typing_assist_after_space
+        .take()
+        .expect("checked");
     let (correction, cursor_offset) = pending.into_parts();
     let retry_correction = correction.clone();
-    if ctx.verbose && cursor_offset > 0 {
-        log(&format!(
-            "· typing-assist deferred idle run behind {cursor_offset} chars"
-        ));
-    }
 
     let mut g = lock_virtual_keyboard(ctx.virtual_kbd);
     let outcome = apply_prepared_typing_assist_after_space(

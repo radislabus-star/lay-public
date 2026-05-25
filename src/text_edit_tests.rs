@@ -74,15 +74,16 @@ fn committed_tail_plan_preserves_typed_trailing_space_boundary() {
         assert_eq!(row.len(), 2, "tail-boundary fixture must be TSV");
         let plan = plan_committed_tail_replacement(&row[0], &row[1]).expect("replacement");
         assert_eq!(apply_plan(&row[0], &plan), row[1]);
-        assert_eq!(plan.move_left, 0);
-        assert_eq!(plan.backspaces, row[0].chars().count() as u32);
-        assert_eq!(plan.insert, row[1]);
-        assert_eq!(plan.move_right, 0);
+        assert!(committed_separator_is_preserved(&row[0], &row[1]));
+        assert!(
+            plan.move_right > 0,
+            "committed plan should keep the typed separator on screen when possible"
+        );
     }
 }
 
 #[test]
-fn committed_tail_long_word_replaces_whole_body_before_space() {
+fn committed_tail_long_word_keeps_stable_suffix_before_space() {
     let row = fixture_rows("text_edit_long_word.tsv")
         .into_iter()
         .next()
@@ -90,10 +91,8 @@ fn committed_tail_long_word_replaces_whole_body_before_space() {
     assert_eq!(row.len(), 2, "long-word fixture must be TSV");
     let plan = plan_committed_tail_replacement(&row[0], &row[1]).expect("replacement");
     assert_eq!(apply_plan(&row[0], &plan), row[1]);
-    assert_eq!(plan.move_left, 0);
-    assert_eq!(plan.backspaces, row[0].chars().count() as u32);
-    assert_eq!(plan.insert, row[1]);
-    assert_eq!(plan.move_right, 0);
+    assert!(plan.move_right > 0);
+    assert!(plan.backspaces < row[0].chars().count() as u32);
 }
 
 #[test]
@@ -107,12 +106,9 @@ fn committed_tail_sentence_plans_preserve_already_typed_space() {
         assert!(replacement_plan_matches(original, replacement, &plan));
         assert!(committed_separator_is_preserved(original, replacement));
         assert_eq!(original.ends_with(' '), replacement.ends_with(' '));
-        assert_eq!(plan.move_left, 0);
-        assert_eq!(plan.move_right, 0);
-        assert_eq!(plan.backspaces, original.chars().count() as u32);
         assert!(
-            plan.insert.ends_with(' '),
-            "committed autocorrect reinserts the typed separator with the replacement"
+            plan.move_right > 0,
+            "committed autocorrect keeps already typed suffix text instead of retyping it"
         );
     }
 }
@@ -122,16 +118,11 @@ fn committed_tail_split_word_plan_inserts_internal_space() {
     for row in fixture_rows("text_edit_split_word_space.tsv") {
         assert_eq!(row.len(), 2, "split-word fixture must be TSV");
         let plan = plan_committed_tail_replacement(&row[0], &row[1]).expect("replacement");
-        assert_eq!(
-            plan,
-            TextReplacement {
-                move_left: 0,
-                backspaces: row[0].chars().count() as u32,
-                insert: row[1].clone(),
-                move_right: 0,
-            }
-        );
         assert_eq!(apply_plan(&row[0], &plan), row[1]);
+        assert_eq!(plan.backspaces, 0);
+        assert_eq!(plan.insert, " ");
+        assert!(plan.move_left > 0);
+        assert_eq!(plan.move_left, plan.move_right);
     }
 }
 
@@ -143,16 +134,10 @@ fn committed_tail_split_word_plan_can_fix_small_typo_near_split() {
         .expect("split-word typo fixture");
     let plan = plan_committed_tail_replacement(&row[0], &row[1]).expect("replacement");
 
-    assert_eq!(
-        plan,
-        TextReplacement {
-            move_left: 0,
-            backspaces: row[0].chars().count() as u32,
-            insert: row[1].clone(),
-            move_right: 0,
-        }
-    );
     assert_eq!(apply_plan(&row[0], &plan), row[1]);
+    assert!(plan.move_left > 0);
+    assert_eq!(plan.move_left, plan.move_right);
+    assert!(plan.insert.contains(' '));
 }
 
 #[test]
@@ -163,16 +148,8 @@ fn committed_tail_non_split_replacement_keeps_existing_space_boundary() {
         .expect("non-split fixture");
     let plan = plan_committed_tail_replacement(&row[0], &row[1]).expect("replacement");
 
-    assert_eq!(
-        plan,
-        TextReplacement {
-            move_left: 0,
-            backspaces: row[0].chars().count() as u32,
-            insert: row[1].clone(),
-            move_right: 0,
-        }
-    );
     assert_eq!(apply_plan(&row[0], &plan), row[1]);
+    assert!(plan.move_right > 0);
 }
 
 #[test]
@@ -184,16 +161,25 @@ fn committed_tail_plan_can_be_shifted_behind_current_word() {
     let base = plan_committed_tail_replacement(&row[0], &row[1]).expect("replacement");
     let shifted = offset_replacement_plan_for_cursor(&base, 6);
 
+    assert_eq!(apply_plan(&row[2], &shifted), row[3]);
+    assert_eq!(shifted.move_left, base.move_left + 6);
+    assert_eq!(shifted.move_right, base.move_right + 6);
+}
+
+#[test]
+fn committed_tail_context_edit_does_not_retype_stable_prefix() {
+    let plan = plan_committed_tail_replacement("aa bb x ", "aa bb y ").expect("replacement");
+
     assert_eq!(
-        shifted,
+        plan,
         TextReplacement {
-            move_left: 6,
-            backspaces: row[0].chars().count() as u32,
-            insert: row[1].clone(),
-            move_right: 6,
+            move_left: 1,
+            backspaces: 1,
+            insert: "y".to_string(),
+            move_right: 1,
         }
     );
-    assert_eq!(apply_plan(&row[2], &shifted), row[3]);
+    assert_eq!(apply_plan("aa bb x ", &plan), "aa bb y ");
 }
 
 #[test]

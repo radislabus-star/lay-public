@@ -222,10 +222,10 @@ fn typing_assist_decoder_preserves_space_and_avoids_known_false_splits() {
     assert_eq!(
         plan.plan,
         TextReplacement {
-            move_left: 0,
-            backspaces: 9,
-            insert: "double и ".to_string(),
-            move_right: 0,
+            move_left: 1,
+            backspaces: 1,
+            insert: "и".to_string(),
+            move_right: 1,
         }
     );
 }

@@ -104,7 +104,6 @@ pub(super) fn listen_keyboard(
                     current_layout_is_ru: &mut state.current_layout_is_ru,
                     last_layout_poll: &mut state.last_layout_poll,
                     shift_state: &state.shift_state,
-                    verbose,
                 }) {
                     continue;
                 }
@@ -166,9 +165,6 @@ pub(super) fn listen_keyboard(
             let code = event.code();
             let value = event.value();
             let key = KeyCode::new(code);
-
-            // (тайм-аут очистки буфера убран — буфер чистится только на
-            // явных границах: Enter/Tab/Esc/стрелки/Backspace/Delete)
 
             // ─── флаг выполнения: пока идёт замена — все события в игнор ───
             // Clutter virtual device (TypeText fallback) создаёт evdev-устройство

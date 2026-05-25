@@ -52,10 +52,10 @@ fn typing_assist_tail_can_read_left_context_without_replacing_it() {
     assert_eq!(
         correction.edit.plan,
         TextReplacement {
-            move_left: 0,
-            backspaces: 2,
-            insert: "и ".to_string(),
-            move_right: 0,
+            move_left: 1,
+            backspaces: 1,
+            insert: "и".to_string(),
+            move_right: 1,
         }
     );
 }
@@ -94,10 +94,10 @@ fn deferred_typing_assist_can_plan_previous_word_behind_current_tail() {
     assert_eq!(
         shifted,
         TextReplacement {
-            move_left: 1,
-            backspaces: 5,
-            insert: "порт ".to_string(),
-            move_right: 1,
+            move_left: 2,
+            backspaces: 4,
+            insert: "порт".to_string(),
+            move_right: 2,
         }
     );
 }
@@ -150,10 +150,10 @@ fn deferred_typing_assist_uses_widest_confident_completed_tail() {
     assert_eq!(
         shifted,
         TextReplacement {
-            move_left: 1,
-            backspaces: 16,
-            insert: "РАБОТА ТЕСТ САМ ".to_string(),
-            move_right: 1,
+            move_left: 2,
+            backspaces: 15,
+            insert: "РАБОТА ТЕСТ САМ".to_string(),
+            move_right: 2,
         }
     );
 }
@@ -182,10 +182,10 @@ fn deferred_typing_assist_respects_single_word_scope() {
     assert_eq!(
         shifted,
         TextReplacement {
-            move_left: 1,
-            backspaces: 5,
-            insert: "порт ".to_string(),
-            move_right: 1,
+            move_left: 2,
+            backspaces: 4,
+            insert: "порт".to_string(),
+            move_right: 2,
         }
     );
 }
@@ -212,10 +212,10 @@ fn deferred_typing_assist_snapshot_survives_extra_space_and_next_word() {
     assert_eq!(
         shifted,
         TextReplacement {
-            move_left: 2,
-            backspaces: 5,
-            insert: "порт ".to_string(),
-            move_right: 2,
+            move_left: 3,
+            backspaces: 4,
+            insert: "порт".to_string(),
+            move_right: 3,
         }
     );
 }
