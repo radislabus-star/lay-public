@@ -13,13 +13,19 @@ mod script;
 #[path = "scenarios/typing.rs"]
 mod typing;
 
-use script::run_script;
-use typing::{double_shift_manual, double_shift_manual_after, type_mixed_coke_tail, type_physical};
+use script::{run_script, run_script_text};
+use typing::{double_shift_manual, double_shift_manual_after, type_physical};
 
 pub(crate) fn run_scenario(dev: &mut VirtualDevice, scenario: &str) -> std::io::Result<()> {
     if let Some(path) = scenario.strip_prefix("script:") {
         run_script(dev, Path::new(path))?;
         eprintln!("[test] script-сценарий {path} отправлен");
+        return Ok(());
+    }
+
+    if let Some(script) = builtin_script(scenario) {
+        run_script_text(dev, script, scenario)?;
+        eprintln!("[test] сценарий {scenario} отправлен");
         return Ok(());
     }
 
@@ -196,169 +202,6 @@ pub(crate) fn run_scenario(dev: &mut VirtualDevice, scenario: &str) -> std::io::
             tap(dev, KeyCode::KEY_ENTER.code())?;
             eprintln!("[test] сценарий three_words отправлен");
         }
-        "good_ntrcn_enter" => {
-            activate_layout("us");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "good ntrcn", 35)?;
-            double_shift_enter(dev, 900)?;
-            eprintln!("[test] сценарий good_ntrcn_enter отправлен");
-        }
-        "proverka_ntrcn_enter" => {
-            activate_layout("ru");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "ghjdthrf ", 35)?;
-            activate_layout("us");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "ntrcn", 35)?;
-            double_shift_enter(dev, 900)?;
-            eprintln!("[test] сценарий proverka_ntrcn_enter отправлен");
-        }
-        "good_vshgidu_enter" => {
-            activate_layout("us");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "good ", 35)?;
-            activate_layout("ru");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "Double", 35)?;
-            double_shift_enter(dev, 900)?;
-            eprintln!("[test] сценарий good_vshgidu_enter отправлен");
-        }
-        "good_text_enter" => {
-            activate_layout("ru");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "good ", 35)?;
-            activate_layout("us");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "ntrcn", 35)?;
-            double_shift_enter(dev, 900)?;
-            eprintln!("[test] сценарий good_text_enter отправлен");
-        }
-        "wifi_ye_enter" => {
-            activate_layout("us");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "wi-fi ye", 35)?;
-            double_shift_enter(dev, 900)?;
-            eprintln!("[test] сценарий wifi_ye_enter отправлен");
-        }
-        "auto_switch_words_enter" => {
-            activate_layout("us");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "njkmrj ", 35)?;
-            sleep(Duration::from_millis(450));
-            type_physical(dev, "yt ", 35)?;
-            sleep(Duration::from_millis(450));
-            type_physical(dev, "hf,jnftn ", 35)?;
-            sleep(Duration::from_millis(650));
-            tap(dev, KeyCode::KEY_ENTER.code())?;
-            eprintln!("[test] сценарий auto_switch_words_enter отправлен");
-        }
-        "worked_nj_space_enter" => {
-            activate_layout("us");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "worked 'nj ", 35)?;
-            sleep(Duration::from_millis(650));
-            tap(dev, KeyCode::KEY_ENTER.code())?;
-            eprintln!("[test] сценарий worked_nj_space_enter отправлен");
-        }
-        "html_djn_spacing_enter" => {
-            activate_layout("ru");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "html ", 35)?;
-            sleep(Duration::from_millis(650));
-            type_physical(dev, "djn ", 35)?;
-            sleep(Duration::from_millis(650));
-            tap(dev, KeyCode::KEY_ENTER.code())?;
-            eprintln!("[test] сценарий html_djn_spacing_enter отправлен");
-        }
-        "preparatov_typo_enter" => {
-            activate_layout("ru");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "gthgfhfnjd ", 35)?;
-            sleep(Duration::from_millis(650));
-            tap(dev, KeyCode::KEY_ENTER.code())?;
-            eprintln!("[test] сценарий preparatov_typo_enter отправлен");
-        }
-        "no_ne_ty_enter" => {
-            activate_layout("ru");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "yj ", 35)?;
-            sleep(Duration::from_millis(260));
-            type_physical(dev, "yt ", 35)?;
-            sleep(Duration::from_millis(260));
-            type_physical(dev, "ns ", 35)?;
-            sleep(Duration::from_millis(650));
-            tap(dev, KeyCode::KEY_ENTER.code())?;
-            eprintln!("[test] сценарий no_ne_ty_enter отправлен");
-        }
-        "glued_tozhesamoe_next_enter" => {
-            activate_layout("ru");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "nj;tcfvjt crktyj", 18)?;
-            sleep(Duration::from_millis(650));
-            tap(dev, KeyCode::KEY_ENTER.code())?;
-            eprintln!("[test] сценарий glued_tozhesamoe_next_enter отправлен");
-        }
-        "glued_tozhesamoe_pause_next_enter" => {
-            activate_layout("ru");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "nj;tcfvjt ", 18)?;
-            sleep(Duration::from_millis(650));
-            type_physical(dev, "crktyj", 18)?;
-            sleep(Duration::from_millis(650));
-            tap(dev, KeyCode::KEY_ENTER.code())?;
-            eprintln!("[test] сценарий glued_tozhesamoe_pause_next_enter отправлен");
-        }
-        "glued_toesamoe_next_enter" => {
-            activate_layout("ru");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "njtcfvjt crktyj", 18)?;
-            sleep(Duration::from_millis(650));
-            tap(dev, KeyCode::KEY_ENTER.code())?;
-            eprintln!("[test] сценарий glued_toesamoe_next_enter отправлен");
-        }
-        "glued_yanebudu_next_enter" => {
-            activate_layout("ru");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "zyt,ele crktyj", 18)?;
-            sleep(Duration::from_millis(650));
-            tap(dev, KeyCode::KEY_ENTER.code())?;
-            eprintln!("[test] сценарий glued_yanebudu_next_enter отправлен");
-        }
-        "glued_context_yanebudu_next_enter" => {
-            activate_layout("ru");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "nj;t cfvjt zyt,ele crktyj", 18)?;
-            sleep(Duration::from_millis(650));
-            tap(dev, KeyCode::KEY_ENTER.code())?;
-            eprintln!("[test] сценарий glued_context_yanebudu_next_enter отправлен");
-        }
-        "glued_long_phrase_next_enter" => {
-            activate_layout("ru");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "zyt,elegfdfcnj;tcfvjt crktyj", 18)?;
-            sleep(Duration::from_millis(650));
-            tap(dev, KeyCode::KEY_ENTER.code())?;
-            eprintln!("[test] сценарий glued_long_phrase_next_enter отправлен");
-        }
-        "vyvodim_dva_enter" => {
-            activate_layout("us");
-            sleep(Duration::from_millis(250));
-            type_physical(dev, "dsdjlbv ldf", 35)?;
-            double_shift_enter(dev, 900)?;
-            eprintln!("[test] сценарий vyvodim_dva_enter отправлен");
-        }
-        "mixed_coke_enter" => {
-            type_mixed_coke_tail(dev)?;
-            double_shift_enter(dev, 900)?;
-            eprintln!("[test] сценарий mixed_coke_enter отправлен");
-        }
-        "mixed_coke_toggle3_enter" => {
-            type_mixed_coke_tail(dev)?;
-            double_shift(dev, 900)?;
-            double_shift(dev, 900)?;
-            double_shift_enter(dev, 900)?;
-            eprintln!("[test] сценарий mixed_coke_toggle3_enter отправлен");
-        }
         "mixed_word" => {
             type_physical(dev, "gh", 50)?;
             sleep(Duration::from_millis(120));
@@ -384,4 +227,61 @@ pub(crate) fn run_scenario(dev: &mut VirtualDevice, scenario: &str) -> std::io::
     }
 
     Ok(())
+}
+
+fn builtin_script(scenario: &str) -> Option<&'static str> {
+    match scenario {
+        "good_ntrcn_enter" => Some(include_str!(
+            "../../../data/test_input/good_ntrcn_enter.tsv"
+        )),
+        "proverka_ntrcn_enter" => Some(include_str!(
+            "../../../data/test_input/proverka_ntrcn_enter.tsv"
+        )),
+        "good_vshgidu_enter" => Some(include_str!(
+            "../../../data/test_input/good_vshgidu_enter.tsv"
+        )),
+        "good_text_enter" => Some(include_str!("../../../data/test_input/good_text_enter.tsv")),
+        "wifi_ye_enter" => Some(include_str!("../../../data/test_input/wifi_ye_enter.tsv")),
+        "auto_switch_words_enter" => Some(include_str!(
+            "../../../data/test_input/auto_switch_words_enter.tsv"
+        )),
+        "worked_nj_space_enter" => Some(include_str!(
+            "../../../data/test_input/worked_nj_space_enter.tsv"
+        )),
+        "html_djn_spacing_enter" => Some(include_str!(
+            "../../../data/test_input/html_djn_spacing_enter.tsv"
+        )),
+        "preparatov_typo_enter" => Some(include_str!(
+            "../../../data/test_input/preparatov_typo_enter.tsv"
+        )),
+        "no_ne_ty_enter" => Some(include_str!("../../../data/test_input/no_ne_ty_enter.tsv")),
+        "glued_tozhesamoe_next_enter" => Some(include_str!(
+            "../../../data/test_input/glued_tozhesamoe_next_enter.tsv"
+        )),
+        "glued_tozhesamoe_pause_next_enter" => Some(include_str!(
+            "../../../data/test_input/glued_tozhesamoe_pause_next_enter.tsv"
+        )),
+        "glued_toesamoe_next_enter" => Some(include_str!(
+            "../../../data/test_input/glued_toesamoe_next_enter.tsv"
+        )),
+        "glued_yanebudu_next_enter" => Some(include_str!(
+            "../../../data/test_input/glued_yanebudu_next_enter.tsv"
+        )),
+        "glued_context_yanebudu_next_enter" => Some(include_str!(
+            "../../../data/test_input/glued_context_yanebudu_next_enter.tsv"
+        )),
+        "glued_long_phrase_next_enter" => Some(include_str!(
+            "../../../data/test_input/glued_long_phrase_next_enter.tsv"
+        )),
+        "vyvodim_dva_enter" => Some(include_str!(
+            "../../../data/test_input/vyvodim_dva_enter.tsv"
+        )),
+        "mixed_coke_enter" => Some(include_str!(
+            "../../../data/test_input/mixed_coke_enter.tsv"
+        )),
+        "mixed_coke_toggle3_enter" => Some(include_str!(
+            "../../../data/test_input/mixed_coke_toggle3_enter.tsv"
+        )),
+        _ => None,
+    }
 }

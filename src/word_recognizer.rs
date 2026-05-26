@@ -17,9 +17,9 @@ mod technical;
 pub use identity::{recognize_token, WordIdentity, WordKind, WordLanguage, WordScript};
 pub use risk::{is_plain_layout_autocorrect_risky, is_probably_completed_natural_word};
 pub use technical::{
-    is_ascii_technical_or_brand_token, is_ascii_technical_token, is_cli_option_token,
-    is_mixed_case_ascii_brand, is_mixed_cyrillic_ascii_alpha_token, is_protected_ascii_token,
-    is_upper_ascii_acronym,
+    is_ascii_technical_or_brand_token, is_ascii_technical_token, is_ascii_titlecase_token,
+    is_cli_option_token, is_mixed_case_ascii_brand, is_mixed_cyrillic_ascii_alpha_token,
+    is_protected_ascii_token, is_upper_ascii_acronym,
 };
 
 pub fn warm_up() {

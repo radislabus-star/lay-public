@@ -25,6 +25,8 @@ fn recognizes_plain_words_and_technical_tokens() {
     assert!(acronym.technical);
     assert!(is_protected_ascii_token("AmoCRM"));
     assert!(is_ascii_technical_or_brand_token("AmoCRM"));
+    assert!(is_ascii_titlecase_token("Wechat"));
+    assert!(!is_ascii_titlecase_token("wechat"));
     assert!(is_mixed_cyrillic_ascii_alpha_token("ВщгиDo"));
 }
 

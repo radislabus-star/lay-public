@@ -120,7 +120,44 @@ fn minimal_current_tail_insert_keeps_layout_for_inserted_symbol() {
 }
 
 #[test]
+fn completed_mixed_tail_continues_in_previous_context_layout() {
+    let completed_tail_plan = TextReplacement {
+        move_left: 1,
+        backspaces: 6,
+        insert: "Wechat".to_string(),
+        move_right: 1,
+    };
+    let mixed_context_layout =
+        layout_after_replacement_plan(&completed_tail_plan, "текст в Wechat ", false);
+    let english_context_layout =
+        layout_after_replacement_plan(&completed_tail_plan, "file on off ", false);
+
+    assert!(mixed_context_layout);
+    assert!(!english_context_layout);
+    assert!(!same_layout(mixed_context_layout, false));
+    assert!(same_layout(english_context_layout, false));
+}
+
+#[test]
+fn middle_insert_does_not_claim_insert_layout_is_cursor_layout() {
+    let middle_plan = TextReplacement {
+        move_left: 7,
+        backspaces: 3,
+        insert: "ТУТ".to_string(),
+        move_right: 7,
+    };
+
+    let cursor_layout = layout_after_replacement_plan(&middle_plan, "ТУТ DOUBLE", true);
+    assert!(!cursor_layout);
+    assert!(!same_layout(cursor_layout, true));
+}
+
+#[test]
 fn target_layout_matches_cache_contract() {
     assert_eq!(target_layout(true), ("ru", "xkb:ru::rus"));
     assert_eq!(target_layout(false), ("us", "xkb:us::eng"));
+}
+
+fn same_layout(desired: bool, actual: bool) -> bool {
+    desired == actual
 }

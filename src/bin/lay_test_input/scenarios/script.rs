@@ -9,6 +9,14 @@ use std::time::Duration;
 
 pub(super) fn run_script(dev: &mut VirtualDevice, path: &Path) -> std::io::Result<()> {
     let text = fs::read_to_string(path)?;
+    run_script_text(dev, &text, &path.display().to_string())
+}
+
+pub(super) fn run_script_text(
+    dev: &mut VirtualDevice,
+    text: &str,
+    source_name: &str,
+) -> std::io::Result<()> {
     for (idx, raw_line) in text.lines().enumerate() {
         let line = raw_line.trim();
         if line.is_empty() || line.starts_with('#') {
@@ -20,27 +28,27 @@ pub(super) fn run_script(dev: &mut VirtualDevice, path: &Path) -> std::io::Resul
                 activate_layout(id);
                 sleep(Duration::from_millis(250));
             }
-            ["sleep", ms] => sleep(Duration::from_millis(parse_u64(ms, path, idx)?)),
+            ["sleep", ms] => sleep(Duration::from_millis(parse_u64(ms, source_name, idx)?)),
             ["type", physical_text] => type_physical(dev, &decode_script_text(physical_text), 35)?,
             ["type", physical_text, pause_ms] => type_physical(
                 dev,
                 &decode_script_text(physical_text),
-                parse_u64(pause_ms, path, idx)?,
+                parse_u64(pause_ms, source_name, idx)?,
             )?,
             ["enter"] => tap(dev, KeyCode::KEY_ENTER.code())?,
             ["double_shift"] => double_shift(dev, 900)?,
             ["double_shift_enter"] => double_shift_enter(dev, 900)?,
-            _ => return Err(bad_script_line(path, idx, raw_line)),
+            _ => return Err(bad_script_line(source_name, idx, raw_line)),
         }
     }
     Ok(())
 }
 
-fn parse_u64(value: &str, path: &Path, idx: usize) -> std::io::Result<u64> {
+fn parse_u64(value: &str, source_name: &str, idx: usize) -> std::io::Result<u64> {
     value.parse::<u64>().map_err(|e| {
         std::io::Error::new(
             std::io::ErrorKind::InvalidInput,
-            format!("bad number at {}:{}: {e}", path.display(), idx + 1),
+            format!("bad number at {source_name}:{}: {e}", idx + 1),
         )
     })
 }
@@ -49,13 +57,9 @@ fn decode_script_text(text: &str) -> String {
     text.replace("\\s", " ")
 }
 
-fn bad_script_line(path: &Path, idx: usize, raw_line: &str) -> std::io::Error {
+fn bad_script_line(source_name: &str, idx: usize, raw_line: &str) -> std::io::Error {
     std::io::Error::new(
         std::io::ErrorKind::InvalidInput,
-        format!(
-            "bad script line {} in {}: {raw_line:?}",
-            idx + 1,
-            path.display()
-        ),
+        format!("bad script line {} in {source_name}: {raw_line:?}", idx + 1),
     )
 }

@@ -1,6 +1,14 @@
 use lay::dict::{self, Direction};
 use lay::lem;
 
+const RU_WORDS_DATA: &str = include_str!("../../../data/lem_research/ru_words.txt");
+const EN_WORDS_DATA: &str = include_str!("../../../data/lem_research/en_words.txt");
+const TECH_TOKENS_DATA: &str = include_str!("../../../data/lem_research/tech_tokens.txt");
+const BRAND_TOKENS_DATA: &str = include_str!("../../../data/lem_research/brand_tokens.txt");
+const NATURAL_HYPHEN_WORDS_DATA: &str =
+    include_str!("../../../data/lem_research/natural_hyphen_words.txt");
+const GLUED_SPECIAL_DATA: &str = include_str!("../../../data/lem_research/glued_special.txt");
+
 #[derive(Clone, Debug)]
 pub(crate) struct Case {
     pub(crate) kind: &'static str,
@@ -8,89 +16,60 @@ pub(crate) struct Case {
     pub(crate) expected: String,
 }
 
-const RU_WORDS: &[&str] = &[
-    "привет",
-    "слово",
-    "проверка",
-    "сегодня",
-    "можно",
-    "сделать",
-    "текст",
-    "ошибка",
-    "быстро",
-    "точно",
-    "пишу",
-    "дальше",
-    "работает",
-    "проект",
-    "клавиатура",
-    "раскладка",
-    "помощник",
-    "магазин",
-    "документ",
-    "таблица",
-    "данные",
-    "система",
-    "окно",
-    "фраза",
-    "режим",
-    "демон",
-    "кнопка",
-    "меню",
-    "правильно",
-    "хорошо",
-    "плохо",
-    "новый",
-    "старый",
-    "важно",
-    "сейчас",
-    "потом",
-    "завтра",
-    "вопрос",
-    "ответ",
-    "пример",
-    "тест",
-];
-
-const EN_WORDS: &[&str] = &[
-    "hello", "world", "test", "good", "double", "shift", "linux", "gnome", "wayland", "rust",
-    "cargo", "github", "browser", "window", "file", "system", "model", "score", "layout",
-    "keyboard", "input", "text", "word", "quick", "smart", "safe", "fast", "slow", "open", "close",
-];
-
-const TECH_TOKENS: &[&str] = &[
-    "wi-fi", "API", "AmoCRM", "GitHub", "NTFS", "Linux", "JSON", "USB-C",
-];
-
-const BRAND_TOKENS: &[&str] = &["AmoCRM", "GitHub", "NTFS", "Linux", "JSON", "USB-C"];
-
-const NATURAL_HYPHEN_WORDS: &[&str] = &[
-    "код-дэ-вуар",
-    "пара-пара",
-    "рок-н-ролл",
-    "чек-лист",
-    "тест-кейс",
-    "интернет-магазин",
-];
+struct Corpus {
+    ru_words: Vec<&'static str>,
+    en_words: Vec<&'static str>,
+    tech_tokens: Vec<&'static str>,
+    brand_tokens: Vec<&'static str>,
+    natural_hyphen_words: Vec<&'static str>,
+    glued_special: Vec<&'static str>,
+}
 
 pub(crate) fn build_cases(target: usize) -> Vec<Case> {
+    let corpus = Corpus::load();
     let mut cases = Vec::with_capacity(target);
     for i in 0..target {
-        let mut case = build_case(i);
+        let mut case = build_case(i, &corpus);
         mark_ambiguous_valid_typo_as_keep(&mut case);
         cases.push(case);
     }
     cases
 }
 
-fn build_case(i: usize) -> Case {
-    let ru_a = RU_WORDS[i % RU_WORDS.len()];
-    let ru_b = RU_WORDS[(i * 7 + 3) % RU_WORDS.len()];
-    let en_a = EN_WORDS[(i * 5 + 1) % EN_WORDS.len()];
-    let en_b = EN_WORDS[(i * 11 + 2) % EN_WORDS.len()];
-    let tech = TECH_TOKENS[i % TECH_TOKENS.len()];
-    let brand = BRAND_TOKENS[i % BRAND_TOKENS.len()];
-    let natural_hyphen = NATURAL_HYPHEN_WORDS[i % NATURAL_HYPHEN_WORDS.len()];
+impl Corpus {
+    fn load() -> Self {
+        Self {
+            ru_words: data_words(RU_WORDS_DATA),
+            en_words: data_words(EN_WORDS_DATA),
+            tech_tokens: data_words(TECH_TOKENS_DATA),
+            brand_tokens: data_words(BRAND_TOKENS_DATA),
+            natural_hyphen_words: data_words(NATURAL_HYPHEN_WORDS_DATA),
+            glued_special: data_words(GLUED_SPECIAL_DATA),
+        }
+    }
+}
+
+fn data_words(data: &'static str) -> Vec<&'static str> {
+    let words: Vec<&'static str> = data
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty() && !line.starts_with('#'))
+        .collect();
+    assert!(
+        !words.is_empty(),
+        "LEM research data list must not be empty"
+    );
+    words
+}
+
+fn build_case(i: usize, corpus: &Corpus) -> Case {
+    let ru_a = corpus.ru_words[i % corpus.ru_words.len()];
+    let ru_b = corpus.ru_words[(i * 7 + 3) % corpus.ru_words.len()];
+    let en_a = corpus.en_words[(i * 5 + 1) % corpus.en_words.len()];
+    let en_b = corpus.en_words[(i * 11 + 2) % corpus.en_words.len()];
+    let tech = corpus.tech_tokens[i % corpus.tech_tokens.len()];
+    let brand = corpus.brand_tokens[i % corpus.brand_tokens.len()];
+    let natural_hyphen = corpus.natural_hyphen_words[i % corpus.natural_hyphen_words.len()];
 
     match i % 16 {
         0 => wrong_layout_ru_pair(ru_a, ru_b),
@@ -101,7 +80,7 @@ fn build_case(i: usize) -> Case {
         5 => typo_case("missing_letter", drop_middle(ru_a), ru_a),
         6 => typo_case("extra_letter", duplicate_middle(ru_a), ru_a),
         7 => split_word_case(ru_a, ru_b),
-        8 => glued_words_case(i, ru_a, ru_b),
+        8 => glued_words_case(i, ru_a, ru_b, &corpus.glued_special),
         9 => keep_valid_case(i, ru_a, ru_b, en_a),
         10 => unchanged_pair("technical_keep", tech, ru_a),
         11 => technical_mixed_ru(tech, ru_a),
@@ -177,9 +156,9 @@ fn split_word_case(left: &str, right: &str) -> Case {
     }
 }
 
-fn glued_words_case(i: usize, left: &str, right: &str) -> Case {
+fn glued_words_case(i: usize, left: &str, right: &str, special: &[&'static str]) -> Case {
     let expected = if i % 20 == 8 {
-        "я тут".to_string()
+        special[(i / 20) % special.len()].to_string()
     } else {
         format!("{left} {right}")
     };

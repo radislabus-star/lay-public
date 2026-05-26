@@ -7,6 +7,8 @@ use crate::text_edit::{
 use crate::typing_assist::ScopedTailOptions;
 use evdev::KeyCode;
 
+const MANUAL_LEM_CASES: &str = include_str!("../tests/fixtures/decoder_manual_lem_cases.tsv");
+
 fn ev(keycode: KeyCode, layout_is_ru: bool) -> KeyEvent {
     KeyEvent {
         keycode: keycode.code(),
@@ -104,6 +106,34 @@ fn manual_decoder_uses_smart_tail_for_mixed_two_words() {
 }
 
 #[test]
+fn manual_decoder_lem_fixture_cases_choose_expected_tail() {
+    for (label, original, converted, expected) in manual_lem_fixture_cases() {
+        let events = events_for_ascii(&original);
+        let result = decode_manual_tail(ManualDecodeRequest {
+            events: &events,
+            original: &original,
+            converted: &converted,
+            engine: CorrectionEngine::Smart,
+            force_replay: false,
+            auto_replace: false,
+            scoped_options: ScopedTailOptions {
+                lem_enabled: true,
+                allow_layout_auto: true,
+            },
+        });
+
+        assert_eq!(
+            result.action,
+            DecoderAction::ReplaceText {
+                replacement: expected,
+                source: CorrectionSource::SmartText,
+            },
+            "case={label}"
+        );
+    }
+}
+
+#[test]
 fn typing_assist_decoder_reemits_committed_space_boundary() {
     let events = events_for_ascii("double b ");
     let plan = decode_typing_assist_tail(
@@ -136,6 +166,26 @@ fn typing_assist_decoder_reemits_committed_space_boundary() {
         }
     );
     assert!(plan.source.needs_undo_checkpoint());
+}
+
+fn manual_lem_fixture_cases() -> impl Iterator<Item = (String, String, String, String)> {
+    MANUAL_LEM_CASES
+        .lines()
+        .filter(|line| !line.trim().is_empty() && !line.starts_with('#'))
+        .map(|line| {
+            let fields: Vec<_> = line.split('\t').collect();
+            assert_eq!(fields.len(), 4, "bad decoder manual LEM fixture row");
+            (
+                fields[0].to_string(),
+                decode_fixture_text(fields[1]),
+                decode_fixture_text(fields[2]),
+                decode_fixture_text(fields[3]),
+            )
+        })
+}
+
+fn decode_fixture_text(text: &str) -> String {
+    text.replace("\\s", " ")
 }
 
 #[test]

@@ -68,13 +68,16 @@ pub(crate) fn insert_prepared_text_for_replacement_plan(
         return Err(format!("cursor restore failed: {e}"));
     }
     log(&format!("  {label} insert backend: prepared uinput replay"));
+    let actual_layout_is_ru = prepared
+        .runs
+        .last()
+        .map(|run| run.target_is_ru)
+        .unwrap_or(prepared.insert_layout_is_ru);
+    let layout_is_ru =
+        layout_after_replacement_plan(plan, replacement, prepared.insert_layout_is_ru);
     Ok(TextInsertOutcome {
-        layout_is_ru: layout_after_replacement_plan(
-            plan,
-            replacement,
-            prepared.insert_layout_is_ru,
-        ),
-        layout_already_set: true,
+        layout_is_ru,
+        layout_already_set: actual_layout_is_ru == layout_is_ru,
     })
 }
 
@@ -109,7 +112,21 @@ pub(crate) fn layout_after_replacement_plan(
 ) -> bool {
     if plan.move_right == 0 {
         insert_layout_is_ru
+    } else if replacement
+        .chars()
+        .next_back()
+        .is_some_and(char::is_whitespace)
+    {
+        continuation_layout_after_completed_tail(replacement, insert_layout_is_ru)
     } else {
         preferred_layout_for_text(replacement, insert_layout_is_ru)
     }
+}
+
+fn continuation_layout_after_completed_tail(text: &str, fallback_is_ru: bool) -> bool {
+    text.split_whitespace()
+        .rev()
+        .nth(1)
+        .map(|context| preferred_layout_for_text(context, fallback_is_ru))
+        .unwrap_or_else(|| preferred_layout_for_text(text, fallback_is_ru))
 }

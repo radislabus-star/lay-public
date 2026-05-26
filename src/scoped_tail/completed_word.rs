@@ -7,7 +7,9 @@ use crate::layout_autoswitch::{
 };
 use crate::token_language::{is_known_en_token, is_known_ru_token};
 use crate::word_reader::{is_cyrillic_word, split_word_punctuation};
-use crate::word_recognizer::is_ascii_technical_token;
+use crate::word_recognizer::{
+    is_ascii_technical_or_brand_token, is_ascii_technical_token, is_ascii_titlecase_token,
+};
 
 use super::word_flip::flip_word_events;
 
@@ -47,8 +49,7 @@ pub(super) fn short_completed_tail_layout_flip(word: &[KeyEvent]) -> Option<Stri
     let original = map_original_events(word);
     let (_, original_word, _) = split_word_punctuation(&original);
     let original_len = original_word.chars().count();
-    if !(2..=4).contains(&original_len)
-        || !is_cyrillic_word(original_word)
+    if !is_cyrillic_word(original_word)
         || is_known_russian_layout_autoswitch_word(&original_word.to_lowercase())
     {
         return None;
@@ -57,9 +58,21 @@ pub(super) fn short_completed_tail_layout_flip(word: &[KeyEvent]) -> Option<Stri
     let flipped = flip_word_events(word);
     let (_, flipped_word, _) = split_word_punctuation(&flipped);
     let flipped_len = flipped_word.chars().count();
-    (flipped_word.is_ascii()
+    if !flipped_word.is_ascii() {
+        return None;
+    }
+
+    if (2..=4).contains(&original_len)
         && (2..=4).contains(&flipped_len)
-        && flipped_word.chars().all(|ch| ch.is_ascii_alphabetic()))
+        && flipped_word.chars().all(|ch| ch.is_ascii_alphabetic())
+    {
+        return Some(flipped);
+    }
+
+    (is_known_english_layout_autoswitch_word(&flipped_word.to_ascii_lowercase())
+        || is_ascii_technical_token(flipped_word)
+        || is_ascii_technical_or_brand_token(flipped_word)
+        || is_ascii_titlecase_token(flipped_word))
     .then_some(flipped)
 }
 

@@ -73,6 +73,20 @@ pub fn is_ascii_technical_or_brand_token(core: &str) -> bool {
             || is_mixed_case_ascii_brand(core))
 }
 
+pub fn is_ascii_titlecase_token(core: &str) -> bool {
+    if !core.is_ascii() || !core.chars().all(|ch| ch.is_ascii_alphabetic()) {
+        return false;
+    }
+
+    let mut letters = core.chars();
+    let Some(first) = letters.next() else {
+        return false;
+    };
+    first.is_ascii_uppercase()
+        && core.chars().count() >= 4
+        && letters.all(|ch| ch.is_ascii_lowercase())
+}
+
 pub fn is_upper_ascii_acronym(core: &str) -> bool {
     let letters: Vec<char> = core.chars().filter(|ch| ch.is_ascii_alphabetic()).collect();
     (2..=4).contains(&letters.len()) && letters.iter().all(|ch| ch.is_ascii_uppercase())

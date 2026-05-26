@@ -4,5 +4,7 @@ use super::*;
 mod current_tail;
 #[path = "mixed_context/stale_layout.rs"]
 mod stale_layout;
+#[path = "mixed_context/titlecase_tail.rs"]
+mod titlecase_tail;
 #[path = "mixed_context/trailing_space.rs"]
 mod trailing_space;

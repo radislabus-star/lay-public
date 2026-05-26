@@ -1,0 +1,5 @@
+layout	us
+type	good\s	35
+layout	ru
+type	Double	35
+double_shift_enter

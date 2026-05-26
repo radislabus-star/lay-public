@@ -1,17 +1,7 @@
-use super::super::desktop_probe::activate_layout;
 use super::super::input_device::{hold_tap, tap};
 use evdev::{uinput::VirtualDevice, KeyCode};
 use std::thread::sleep;
 use std::time::Duration;
-
-pub(super) fn type_mixed_coke_tail(dev: &mut VirtualDevice) -> std::io::Result<()> {
-    activate_layout("ru");
-    sleep(Duration::from_millis(250));
-    type_physical(dev, "ckjdj r", 35)?;
-    activate_layout("us");
-    sleep(Duration::from_millis(250));
-    type_physical(dev, "jrf-rjke", 35)
-}
 
 pub(super) fn type_physical(
     dev: &mut VirtualDevice,

@@ -6,7 +6,9 @@ use crate::layout_autoswitch::{
 };
 use crate::typing_pipeline::apply_typing_assist;
 use crate::word_reader::{is_cyrillic_word, split_word_punctuation};
-use crate::word_recognizer::is_ascii_technical_token;
+use crate::word_recognizer::{
+    is_ascii_technical_or_brand_token, is_ascii_technical_token, is_ascii_titlecase_token,
+};
 
 use super::completed_word::{
     decide_completed_scope_word, is_short_repeated_completed_scope_word,
@@ -42,6 +44,7 @@ fn scoped_word_lem_options(
     let original = map_original_events(word);
     let mut out = Vec::new();
     if is_current_tail {
+        push_unique_string(&mut out, original);
         push_unique_string(&mut out, flip_word_events(word));
         return out;
     }
@@ -92,7 +95,9 @@ fn should_offer_completed_scope_flip(original: &str, flipped: &str) -> bool {
 
     if flipped_word.is_ascii() {
         return is_known_english_layout_autoswitch_word(&flipped_word.to_ascii_lowercase())
-            || is_ascii_technical_token(flipped);
+            || is_ascii_technical_token(flipped)
+            || is_ascii_technical_or_brand_token(flipped_word)
+            || is_ascii_titlecase_token(flipped_word);
     }
 
     false
