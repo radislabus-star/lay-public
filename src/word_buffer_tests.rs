@@ -61,6 +61,28 @@ fn replay_toggle_uses_only_remembered_word_even_with_wider_scope() {
 }
 
 #[test]
+fn replay_toggle_reuses_original_multiword_scope_after_replay() {
+    let mut buffer = WordBuffer::new();
+    assert!(buffer.remember_visible_text_for_correction("чем ещё луеен"));
+
+    let (events, backspaces) = buffer.what_to_replay(3).expect("three-word tail");
+    let decision = replay_layout_decision(&events);
+    assert_eq!(map_original_events(&events), "чем ещё луеен");
+    assert_eq!(backspaces, 13);
+    assert!(!decision.target_is_ru);
+    assert_eq!(map_events_to_layout(&events, false), "xtv to` ketty");
+
+    buffer.mark_replayed_layout(3, false);
+
+    let (undo_events, undo_backspaces) = buffer.what_to_replay(3).expect("full undo tail");
+    let undo_decision = replay_layout_decision(&undo_events);
+    assert_eq!(undo_backspaces, 13);
+    assert_eq!(map_original_events(&undo_events), "xtv to` ketty");
+    assert!(undo_decision.target_is_ru);
+    assert_eq!(map_events_to_layout(&undo_events, true), "чем ещё луеен");
+}
+
+#[test]
 fn replay_toggle_can_flip_same_word_four_times_with_wider_scope() {
     let mut buffer = WordBuffer::new();
     push_text_as_layout(

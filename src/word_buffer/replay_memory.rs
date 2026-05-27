@@ -42,7 +42,7 @@ impl WordBuffer {
         self.current = tail;
         self.prev_words.clear();
         self.prev_had_trailing_space = false;
-        self.replay_toggle_ready = true;
+        self.replay_toggle_words = 1;
         true
     }
 
@@ -76,7 +76,7 @@ impl WordBuffer {
                 self.current = tail;
                 self.prev_words.clear();
                 self.prev_had_trailing_space = false;
-                self.replay_toggle_ready = true;
+                self.replay_toggle_words = 1;
                 return true;
             }
         }
@@ -135,7 +135,7 @@ impl WordBuffer {
 
         self.prev_words = words;
         self.prev_had_trailing_space = replacement_ends_with_space;
-        self.replay_toggle_ready = true;
+        self.replay_toggle_words = 1;
         true
     }
 
@@ -220,7 +220,7 @@ impl WordBuffer {
             }
             self.prev_had_trailing_space = false;
         }
-        self.replay_toggle_ready = true;
+        self.replay_toggle_words = 1;
     }
 }
 

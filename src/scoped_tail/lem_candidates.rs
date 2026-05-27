@@ -24,9 +24,11 @@ pub fn scoped_tail_lem_candidates(
     let mut states: Vec<Vec<String>> = Vec::with_capacity(words.len());
     for (idx, word) in words.iter().enumerate() {
         let is_current_tail = last_word_is_current && idx + 1 == words.len();
+        let is_last_completed_tail = !last_word_is_current && idx + 1 == words.len();
         states.push(scoped_word_lem_options(
             word,
             is_current_tail,
+            is_last_completed_tail,
             allow_layout_auto,
         ));
     }
@@ -39,6 +41,7 @@ pub fn scoped_tail_lem_candidates(
 fn scoped_word_lem_options(
     word: &[KeyEvent],
     is_current_tail: bool,
+    is_last_completed_tail: bool,
     allow_layout_auto: bool,
 ) -> Vec<String> {
     let original = map_original_events(word);
@@ -65,10 +68,27 @@ fn scoped_word_lem_options(
         push_unique_string(&mut out, repaired.trim().to_string());
     }
     let flipped = flip_word_events(word);
-    if should_offer_completed_scope_flip(&original, &flipped) {
+    if should_offer_completed_scope_flip(&original, &flipped)
+        || should_offer_explicit_manual_tail_flip(is_last_completed_tail, &original, &flipped)
+    {
         push_unique_string(&mut out, flipped);
     }
     out
+}
+
+fn should_offer_explicit_manual_tail_flip(
+    is_last_completed_tail: bool,
+    original: &str,
+    flipped: &str,
+) -> bool {
+    if !is_last_completed_tail || stable_completed_scope_original(original) {
+        return false;
+    }
+
+    let (_, flipped_word, _) = split_word_punctuation(flipped);
+    !flipped_word.is_empty()
+        && flipped_word.is_ascii()
+        && flipped_word.chars().all(|ch| ch.is_ascii_alphabetic())
 }
 
 fn confident_completed_scope_repair(original: &str) -> Option<String> {

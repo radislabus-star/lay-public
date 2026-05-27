@@ -29,7 +29,7 @@ impl WordBuffer {
             self.current = current;
             self.prev_had_trailing_space = false;
         }
-        self.replay_toggle_ready = false;
+        self.replay_toggle_words = 0;
         self.pending_auto_undo = None;
         true
     }

@@ -38,16 +38,16 @@ impl WordBuffer {
                 mark_word_layout(word, layout_is_ru);
             }
         }
-        self.replay_toggle_ready = true;
+        self.replay_toggle_words = replace_words;
     }
 
     pub fn replay_toggle_ready(&self) -> bool {
-        self.replay_toggle_ready
+        self.replay_toggle_words > 0
     }
 
     pub fn what_to_replay(&self, replace_words: usize) -> Option<(Vec<KeyEvent>, u32)> {
-        let replace_words = if self.replay_toggle_ready {
-            1
+        let replace_words = if self.replay_toggle_words > 0 {
+            self.replay_toggle_words
         } else {
             replace_words.clamp(1, MAX_REPLACE_WORDS)
         };

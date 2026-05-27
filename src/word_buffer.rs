@@ -21,7 +21,7 @@ pub struct WordBuffer {
     current: Vec<KeyEvent>,
     prev_words: Vec<Vec<KeyEvent>>,
     prev_had_trailing_space: bool,
-    replay_toggle_ready: bool,
+    replay_toggle_words: usize,
     pending_learning: Option<PendingLearningCorrection>,
     pending_auto_undo: Option<PendingAutoUndo>,
 }
@@ -66,7 +66,7 @@ impl WordBuffer {
             current: Vec::with_capacity(32),
             prev_words: Vec::with_capacity(MAX_REPLACE_WORDS),
             prev_had_trailing_space: false,
-            replay_toggle_ready: false,
+            replay_toggle_words: 0,
             pending_learning: None,
             pending_auto_undo: None,
         }
@@ -106,7 +106,7 @@ impl WordBuffer {
     pub fn push(&mut self, e: KeyEvent) {
         self.current.push(e);
         self.prev_had_trailing_space = false;
-        self.replay_toggle_ready = false;
+        self.replay_toggle_words = 0;
         self.pending_auto_undo = None;
     }
 
@@ -126,7 +126,7 @@ impl WordBuffer {
         self.current.clear();
         self.prev_words.clear();
         self.prev_had_trailing_space = false;
-        self.replay_toggle_ready = false;
+        self.replay_toggle_words = 0;
         self.pending_auto_undo = None;
     }
 
