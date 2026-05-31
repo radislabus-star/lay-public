@@ -1,0 +1,9 @@
+# id	original	converted	action	replacement
+single_valid_word	DOUBLE	ВЩГИДУ	replay	
+single_wrong_layout	ltkfq	делай	replay	
+two_valid_words	выводим\sдва	dsdjlbv\sldf	replay	
+valid_preposition_phrase	в\sдоме	d\sljvt	replay	
+mixed_neighbor_short	рка\sghj	hrf\sпро	insert	рка\sпро
+mixed_neighbor_word	проверка\sghj	ghjdthrf\sпро	insert	проверка\sпро
+protected_ascii_span	AmoCRM\sЯ	ФьщСКЬ\sZ	replay	
+brand_plus_letter	AmoCRM\sZ\sтут\sзадача	ФьщСКЬ\sЯ\snen\spflfxf	insert	AmoCRM\sЯ\sтут\sзадача

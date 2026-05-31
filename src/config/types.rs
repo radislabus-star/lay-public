@@ -24,6 +24,21 @@ pub enum CorrectionSafety {
     Experimental,
 }
 
+impl CorrectionSafety {
+    pub(crate) fn allows_typing_rule_requirement(
+        self,
+        required: crate::typing_rule_graph::TypingRuleRequiredSafety,
+    ) -> bool {
+        use crate::typing_rule_graph::TypingRuleRequiredSafety;
+
+        match required {
+            TypingRuleRequiredSafety::Strict => true,
+            TypingRuleRequiredSafety::Normal => self != CorrectionSafety::Strict,
+            TypingRuleRequiredSafety::Experimental => self == CorrectionSafety::Experimental,
+        }
+    }
+}
+
 #[derive(Debug, Clone, serde::Deserialize)]
 #[serde(default)]
 pub struct LayConfig {

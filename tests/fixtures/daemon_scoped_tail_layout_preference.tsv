@@ -1,0 +1,4 @@
+# text	fallback_is_ru	expected_is_ru
+рка\sпро	us	true
+Главное\sDouble	ru	false
+AmoCRM\sЯ\sтут\sзадача	us	true

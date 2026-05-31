@@ -1,0 +1,3 @@
+# rule	priority	original	replacement
+missing_letter	10	пример	примера
+personal_token	100	пример	примерно

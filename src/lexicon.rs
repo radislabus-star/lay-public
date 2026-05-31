@@ -8,6 +8,8 @@ use std::collections::HashSet;
 use std::path::Path;
 use std::sync::OnceLock;
 
+use crate::data_lines::data_lines;
+
 pub const RU_HUNSPELL: &str = "/usr/share/hunspell/ru_RU.dic";
 pub const RU_HUNSPELL_AFF: &str = "/usr/share/hunspell/ru_RU.aff";
 pub const EN_HUNSPELL: &str = "/usr/share/hunspell/en_US.dic";
@@ -155,22 +157,12 @@ fn ru_hyphen_particles() -> &'static HashSet<String> {
 }
 
 fn parse_word_data(data: &str) -> HashSet<String> {
-    data.lines()
-        .map(str::trim)
-        .filter(|line| !line.is_empty() && !line.starts_with('#'))
-        .map(str::to_lowercase)
-        .collect()
+    data_lines(data).map(str::to_lowercase).collect()
 }
 
 #[cfg(test)]
 pub(crate) fn parse_ascii_word_data(data: &str, min_chars: usize) -> HashSet<String> {
-    ascii_words_from_iter(
-        data.lines()
-            .map(str::trim)
-            .filter(|line| !line.is_empty() && !line.starts_with('#'))
-            .map(str::to_string),
-        min_chars,
-    )
+    ascii_words_from_iter(data_lines(data).map(str::to_string), min_chars)
 }
 
 fn ascii_words_from_iter<I>(words: I, min_chars: usize) -> HashSet<String>
@@ -196,10 +188,7 @@ fn load_plain_words(path: &Path) -> std::io::Result<HashSet<String>> {
 }
 
 fn first_data_word(data: &'static str) -> &'static str {
-    data.lines()
-        .map(str::trim)
-        .find(|line| !line.is_empty() && !line.starts_with('#'))
-        .unwrap_or("")
+    data_lines(data).next().unwrap_or("")
 }
 
 #[cfg(test)]

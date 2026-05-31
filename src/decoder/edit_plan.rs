@@ -1,7 +1,7 @@
 use crate::text_edit::{
     committed_separator_is_preserved, ensure_committed_tail_spacing,
-    plan_committed_tail_replacement, plan_text_replacement, replacement_plan_matches,
-    TextReplacement,
+    offset_replacement_plan_for_cursor, plan_committed_tail_replacement, plan_text_replacement,
+    replacement_plan_matches, TextReplacement,
 };
 
 use super::types::{CorrectionSource, CorrectionTrigger};
@@ -61,5 +61,15 @@ impl DecoderEditPlan {
             return true;
         }
         committed_separator_is_preserved(&self.original, &self.replacement)
+    }
+
+    pub fn verified_plan_for_cursor(&self, cursor_offset: u32) -> Option<TextReplacement> {
+        if !self.plan_matches_replacement() || !self.preserves_committed_separator() {
+            return None;
+        }
+        Some(offset_replacement_plan_for_cursor(
+            &self.plan,
+            cursor_offset,
+        ))
     }
 }

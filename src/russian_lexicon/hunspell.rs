@@ -3,14 +3,15 @@ use crate::word_reader::is_cyrillic_word;
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
+use crate::data_lines::data_lines;
+
 pub(super) fn load_hunspell_words_min_len(
     path: &str,
     min_chars: usize,
 ) -> std::io::Result<HashSet<String>> {
     let text = std::fs::read_to_string(path)?;
     let mut words = HashSet::new();
-    for line in text.lines().skip(1) {
-        let word = line.split('/').next().unwrap_or("").trim();
+    for (word, _) in hunspell_dic_entries(&text) {
         if word.chars().count() >= min_chars && is_cyrillic_word(word) {
             words.insert(word.to_lowercase());
         }
@@ -39,16 +40,14 @@ pub(super) fn load_hunspell_generated_forms_min_len(
     let text = std::fs::read_to_string(dic_path)?;
     let mut forms = HashSet::new();
 
-    for line in text.lines().skip(1) {
-        let line = line.trim();
-        let Some((word, flags)) = line.split_once('/') else {
+    for (word, flags) in hunspell_dic_entries(&text) {
+        let Some(flags) = flags else {
             continue;
         };
-        let word = word.trim().to_lowercase();
+        let word = word.to_lowercase();
         if word.is_empty() {
             continue;
         }
-        let flags = flags.split_whitespace().next().unwrap_or("");
         for flag in flags.chars() {
             let Some(flag_rules) = rules.get(&flag) else {
                 continue;
@@ -77,6 +76,22 @@ pub(super) fn load_hunspell_generated_forms_min_len(
     }
 
     Ok(forms)
+}
+
+fn hunspell_dic_entries(text: &str) -> impl Iterator<Item = (&str, Option<&str>)> {
+    text.lines().skip(1).map(str::trim).filter_map(|line| {
+        if line.is_empty() {
+            return None;
+        }
+        let (word, flags) = match line.split_once('/') {
+            Some((word, flags)) => (
+                word.trim(),
+                Some(flags.split_whitespace().next().unwrap_or("")),
+            ),
+            None => (line, None),
+        };
+        Some((word, flags))
+    })
 }
 
 fn load_simple_hunspell_suffix_rules(
@@ -178,10 +193,21 @@ fn hunspell_condition_matches(word: &str, condition: &[HunspellConditionToken]) 
 
 pub(super) fn load_word_list(path: &Path) -> std::io::Result<HashSet<String>> {
     let text = std::fs::read_to_string(path)?;
-    Ok(text
-        .lines()
-        .map(str::trim)
-        .filter(|line| !line.is_empty() && !line.starts_with('#'))
-        .map(str::to_lowercase)
-        .collect())
+    Ok(data_lines(&text).map(str::to_lowercase).collect())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::hunspell_dic_entries;
+
+    #[test]
+    fn hunspell_entries_skip_count_header_and_extract_optional_flags() {
+        let entries: Vec<_> =
+            hunspell_dic_entries("3\n слово/AB extra\nтест\n\n дом/CD\n").collect();
+
+        assert_eq!(
+            entries,
+            vec![("слово", Some("AB")), ("тест", None), ("дом", Some("CD"))]
+        );
+    }
 }

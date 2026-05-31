@@ -17,15 +17,13 @@ fn ru_event(key: KeyCode, shift: bool) -> KeyEvent {
     }
 }
 
+fn text_events(text: &str, layout_is_ru: bool) -> Vec<KeyEvent> {
+    text_to_key_events(text, layout_is_ru).expect("keyboard fixture must be typable")
+}
+
 #[test]
 fn maps_wrong_layout_word_to_russian_target() {
-    let events = [
-        us_event(KeyCode::KEY_L),
-        us_event(KeyCode::KEY_T),
-        us_event(KeyCode::KEY_K),
-        us_event(KeyCode::KEY_F),
-        us_event(KeyCode::KEY_Q),
-    ];
+    let events = text_events("ltkfq", false);
 
     assert_eq!(map_original_events(&events), "ltkfq");
     assert_eq!(map_events_to_layout(&events, true), "делай");
@@ -108,20 +106,7 @@ fn layout_decision_ignores_space() {
 
 #[test]
 fn splits_event_words_without_trailing_space_word() {
-    let events = [
-        us_event(KeyCode::KEY_A),
-        KeyEvent {
-            keycode: KeyCode::KEY_SPACE.code(),
-            shift: false,
-            layout_is_ru: false,
-        },
-        us_event(KeyCode::KEY_B),
-        KeyEvent {
-            keycode: KeyCode::KEY_SPACE.code(),
-            shift: false,
-            layout_is_ru: false,
-        },
-    ];
+    let events = text_events("a b ", false);
     let words = split_event_words(&events).expect("words");
 
     assert_eq!(words.len(), 2);

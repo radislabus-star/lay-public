@@ -1,27 +1,41 @@
 use super::*;
 
+fn manual_decision_case(id: &str) -> Vec<String> {
+    fixture_row_by_id("daemon_scoped_tail_manual_decision.tsv", id)
+}
+
+fn expected_correction_action(row: &[String]) -> Correction {
+    assert_eq!(row.len(), 5, "bad fixture row: {row:?}");
+    match row[3].as_str() {
+        "replay" => Correction::ReplayAll,
+        "insert" => Correction::InsertText(row[4].clone()),
+        other => panic!("unknown expected action {other:?}"),
+    }
+}
+
 #[test]
 fn smart_decision_replays_single_valid_word_as_manual_toggle() {
+    let row = manual_decision_case("single_valid_word");
+
     assert_eq!(
-        decide_correction("DOUBLE", "ВЩГИДУ", CorrectionEngine::Smart),
-        Correction::ReplayAll
+        decide_correction(&row[1], &row[2], CorrectionEngine::Smart),
+        expected_correction_action(&row)
     );
 }
 
 #[test]
 fn single_word_wrong_layout_replay_target_is_opposite_layout() {
-    let mut buffer = WordBuffer::new();
-    push_text_as_layout(&mut buffer, "ltkfq", false);
-    let (events, backspaces) = buffer.what_to_replay(1).expect("single word");
+    let (_buffer, events, backspaces) = typed_tail(&[("ltkfq", false)], 1, "single word");
     let decision = replay_layout_decision(&events);
 
     assert_eq!(backspaces, 5);
     assert_eq!(map_original_events(&events), "ltkfq");
     assert!(decision.target_is_ru);
     assert_eq!(map_target_events(&events, decision.target_is_ru), "делай");
+    let row = manual_decision_case("single_wrong_layout");
     assert_eq!(
-        decide_correction("ltkfq", "делай", CorrectionEngine::Smart),
-        Correction::ReplayAll
+        decide_correction(&row[1], &row[2], CorrectionEngine::Smart),
+        expected_correction_action(&row)
     );
 }
 
@@ -57,21 +71,9 @@ fn single_currency_tail_replays_ru_semicolon_as_us_dollar() {
 #[test]
 fn smart_decision_replays_single_cyrillic_acronym_as_manual_toggle() {
     let events = [
-        KeyEvent {
-            keycode: KeyCode::KEY_L.code(),
-            shift: true,
-            layout_is_ru: true,
-        },
-        KeyEvent {
-            keycode: KeyCode::KEY_L.code(),
-            shift: true,
-            layout_is_ru: true,
-        },
-        KeyEvent {
-            keycode: KeyCode::KEY_M.code(),
-            shift: true,
-            layout_is_ru: true,
-        },
+        key_event_with_shift(KeyCode::KEY_L, true, true),
+        key_event_with_shift(KeyCode::KEY_L, true, true),
+        key_event_with_shift(KeyCode::KEY_M, true, true),
     ];
     let decision = replay_layout_decision(&events);
     let original = map_original_events(&events);
@@ -88,48 +90,52 @@ fn smart_decision_replays_single_cyrillic_acronym_as_manual_toggle() {
 
 #[test]
 fn smart_decision_replays_two_valid_words_as_manual_toggle() {
+    let row = manual_decision_case("two_valid_words");
+
     assert_eq!(
-        decide_correction("выводим два", "dsdjlbv ldf", CorrectionEngine::Smart),
-        Correction::ReplayAll
+        decide_correction(&row[1], &row[2], CorrectionEngine::Smart),
+        expected_correction_action(&row)
     );
 }
 
 #[test]
 fn smart_decision_replays_valid_russian_preposition_phrase_as_manual_toggle() {
+    let row = manual_decision_case("valid_preposition_phrase");
+
     assert_eq!(
-        decide_correction("в доме", "d ljvt", CorrectionEngine::Smart),
-        Correction::ReplayAll
+        decide_correction(&row[1], &row[2], CorrectionEngine::Smart),
+        expected_correction_action(&row)
     );
 }
 
 #[test]
 fn smart_decision_converts_mixed_layout_neighbor_only() {
-    assert_eq!(
-        decide_correction("рка ghj", "hrf про", CorrectionEngine::Smart),
-        Correction::InsertText("рка про".to_string())
-    );
-    assert_eq!(
-        decide_correction("проверка ghj", "ghjdthrf про", CorrectionEngine::Smart),
-        Correction::InsertText("проверка про".to_string())
-    );
+    for id in ["mixed_neighbor_short", "mixed_neighbor_word"] {
+        let row = manual_decision_case(id);
+
+        assert_eq!(
+            decide_correction(&row[1], &row[2], CorrectionEngine::Smart),
+            expected_correction_action(&row)
+        );
+    }
 }
 
 #[test]
 fn smart_decision_replays_protected_ascii_span_as_manual_toggle() {
+    let row = manual_decision_case("protected_ascii_span");
+
     assert_eq!(
-        decide_correction("AmoCRM Я", "ФьщСКЬ Z", CorrectionEngine::Smart),
-        Correction::ReplayAll
+        decide_correction(&row[1], &row[2], CorrectionEngine::Smart),
+        expected_correction_action(&row)
     );
 }
 
 #[test]
 fn smart_decision_repairs_brand_plus_letter_inside_larger_tail() {
+    let row = manual_decision_case("brand_plus_letter");
+
     assert_eq!(
-        decide_correction(
-            "AmoCRM Z тут задача",
-            "ФьщСКЬ Я nen pflfxf",
-            CorrectionEngine::Smart
-        ),
-        Correction::InsertText("AmoCRM Я тут задача".to_string())
+        decide_correction(&row[1], &row[2], CorrectionEngine::Smart),
+        expected_correction_action(&row)
     );
 }

@@ -3,6 +3,7 @@ use crate::config::{
 };
 use crate::decoder::{decode_typing_assist_tail, CorrectionSource};
 use crate::keyboard::{text_to_key_events, KeyEvent};
+use crate::typing_assist_test_fixtures::{fixture_lines_from_str, fixture_rows_from_str};
 use crate::typing_context::{
     completed_tail_context, should_enable_ascii_to_ru_layout, typing_assist_pipeline_for_context,
 };
@@ -12,22 +13,6 @@ const CONTEXT_ENABLED_CASES: &str = include_str!("../tests/fixtures/typing_conte
 const CONTEXT_DISABLED_CASES: &str = include_str!("../tests/fixtures/typing_context_disabled.txt");
 const CONTEXT_WINDOW_CASES: &str =
     include_str!("../tests/fixtures/daemon_typing_assist_context_window.tsv");
-
-fn fixture_lines(data: &'static str) -> impl Iterator<Item = String> {
-    data.lines()
-        .filter(|line| !line.trim().is_empty() && !line.starts_with('#'))
-        .map(|line| line.replace("\\s", " "))
-}
-
-fn fixture_rows(data: &'static str) -> impl Iterator<Item = Vec<String>> {
-    data.lines()
-        .filter(|line| !line.trim().is_empty() && !line.starts_with('#'))
-        .map(|line| {
-            line.split('\t')
-                .map(|field| field.replace("\\s", " "))
-                .collect()
-        })
-}
 
 fn push_visible_text(buffer: &mut WordBuffer, text: &str) {
     for segment in text.split_inclusive(' ') {
@@ -53,15 +38,23 @@ fn text_key_events(text: &str, layout_is_ru: bool) -> Vec<KeyEvent> {
     })
 }
 
+fn pipeline_is_sorted(pipeline: &[crate::config::TypingAssistRuleConfig]) -> bool {
+    pipeline.windows(2).all(|pair| {
+        pair[0].priority < pair[1].priority
+            || (pair[0].priority == pair[1].priority && pair[0].id <= pair[1].id)
+    })
+}
+
 #[test]
 fn russian_context_enables_ascii_to_ru_layout_rule() {
-    let mut enabled_cases = fixture_lines(CONTEXT_ENABLED_CASES);
+    let enabled_cases = fixture_lines_from_str(CONTEXT_ENABLED_CASES);
+    let mut enabled_cases = enabled_cases.iter();
     let first_context = enabled_cases.next().expect("enabled context fixture");
     let pipeline = typing_assist_pipeline_for_context(
         true,
         CorrectionSafety::Normal,
         &default_typing_assist_pipeline(),
-        &first_context,
+        first_context,
     );
 
     assert!(pipeline
@@ -72,9 +65,10 @@ fn russian_context_enables_ascii_to_ru_layout_rule() {
         .iter()
         .find(|rule| rule.id == "contextual_layout_en_to_ru")
         .is_some_and(|rule| rule.enabled));
-    assert!(should_enable_ascii_to_ru_layout(&first_context));
+    assert!(pipeline_is_sorted(&pipeline));
+    assert!(should_enable_ascii_to_ru_layout(first_context));
     for context in enabled_cases {
-        assert!(should_enable_ascii_to_ru_layout(&context), "{context:?}");
+        assert!(should_enable_ascii_to_ru_layout(context), "{context:?}");
     }
 }
 
@@ -90,7 +84,7 @@ fn no_context_or_english_context_keeps_ascii_to_ru_disabled() {
         .find(|rule| rule.id == "layout_en_to_ru")
         .is_some_and(|rule| !rule.enabled));
 
-    for context in fixture_lines(CONTEXT_DISABLED_CASES) {
+    for context in fixture_lines_from_str(CONTEXT_DISABLED_CASES) {
         assert!(
             !should_enable_ascii_to_ru_layout(&context),
             "context={context:?}"
@@ -112,6 +106,10 @@ fn no_context_or_english_context_keeps_ascii_to_ru_disabled() {
 
 #[test]
 fn explicit_user_disabled_rule_stays_disabled() {
+    let context = fixture_lines_from_str(CONTEXT_ENABLED_CASES)
+        .into_iter()
+        .next()
+        .expect("enabled context fixture");
     let mut configured = default_typing_assist_pipeline();
     configured
         .iter_mut()
@@ -119,12 +117,8 @@ fn explicit_user_disabled_rule_stays_disabled() {
         .expect("layout_en_to_ru rule")
         .enabled = false;
 
-    let pipeline = typing_assist_pipeline_for_context(
-        true,
-        CorrectionSafety::Normal,
-        &configured,
-        "я ghbdtn ",
-    );
+    let pipeline =
+        typing_assist_pipeline_for_context(true, CorrectionSafety::Normal, &configured, &context);
 
     assert!(pipeline
         .iter()
@@ -133,7 +127,7 @@ fn explicit_user_disabled_rule_stays_disabled() {
 
 #[test]
 fn completed_tail_context_keeps_left_russian_context() {
-    for row in fixture_rows(CONTEXT_WINDOW_CASES) {
+    for row in fixture_rows_from_str(CONTEXT_WINDOW_CASES) {
         assert_eq!(row.len(), 4, "context window fixture must have 4 columns");
 
         let mut buffer = WordBuffer::new();

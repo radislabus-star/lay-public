@@ -25,8 +25,8 @@ pub use crate::typing_pipeline::{
     explain_typing_assist_with_pipeline, warm_up, TypingAssistExplanation, TypingRuleEvaluation,
 };
 pub use crate::typing_replacements::{
-    apply_auto_replace, contains_visual_b_word, promoted_replacement_for_token,
-    remember_promoted_replacement, REPLACEMENTS_PATH,
+    apply_auto_replace, apply_manual_replay_auto_replace, contains_visual_b_word,
+    promoted_replacement_for_token, remember_promoted_replacement, REPLACEMENTS_PATH,
 };
 pub use crate::word_reader::{is_cyrillic_word, split_edge_whitespace, split_ws_segments};
 pub use crate::word_recognizer::is_ascii_technical_token;

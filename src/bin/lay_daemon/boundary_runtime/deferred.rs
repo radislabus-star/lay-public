@@ -35,10 +35,9 @@ pub(crate) fn try_handle_deferred_typing_assist(ctx: DeferredTypingAssistContext
     if !pending.ready_to_apply() {
         return false;
     }
-    let pending = ctx
-        .pending_typing_assist_after_space
-        .take()
-        .expect("checked");
+    let Some(pending) = ctx.pending_typing_assist_after_space.take() else {
+        return false;
+    };
     let (correction, cursor_offset) = pending.into_parts();
     let retry_correction = correction.clone();
 

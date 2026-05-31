@@ -12,8 +12,12 @@ pub fn normalize_typing_assist_pipeline(
             }
         }
     }
-    rules.sort_by(|a, b| a.priority.cmp(&b.priority).then_with(|| a.id.cmp(&b.id)));
+    sort_typing_assist_pipeline(&mut rules);
     rules
+}
+
+pub(crate) fn sort_typing_assist_pipeline(rules: &mut [TypingAssistRuleConfig]) {
+    rules.sort_by(|a, b| a.priority.cmp(&b.priority).then_with(|| a.id.cmp(&b.id)));
 }
 
 pub fn typing_assist_pipeline_for_auto_replace(
@@ -52,11 +56,5 @@ fn apply_auto_replace_policy(
 }
 
 fn rule_allowed_by_safety(id: &str, safety: CorrectionSafety) -> bool {
-    use crate::typing_rule_graph::TypingRuleRequiredSafety;
-
-    match crate::typing_rule_graph::typing_rule_required_safety(id) {
-        TypingRuleRequiredSafety::Strict => true,
-        TypingRuleRequiredSafety::Normal => safety != CorrectionSafety::Strict,
-        TypingRuleRequiredSafety::Experimental => safety == CorrectionSafety::Experimental,
-    }
+    safety.allows_typing_rule_requirement(crate::typing_rule_graph::typing_rule_required_safety(id))
 }

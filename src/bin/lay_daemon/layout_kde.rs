@@ -1,4 +1,4 @@
-use lay::desktop::{normalize_layout_id, LayoutBackend};
+use lay::desktop::{normalize_layout_id, parse_kde_layouts_list, LayoutBackend};
 
 use super::command_runtime::{command_exists, run_command_capture};
 use super::layout_controller::verify_current_layout;
@@ -83,45 +83,12 @@ fn layout_ids(qdbus: &str) -> Result<Vec<String>, String> {
             "getLayoutsList",
         ],
     )?;
-    let layouts = parse_layouts_list(&output);
+    let layouts = parse_kde_layouts_list(&output);
     if layouts.is_empty() {
         Err(format!("cannot parse KDE layouts: {output}"))
     } else {
         Ok(layouts)
     }
-}
-
-pub(super) fn parse_layouts_list(output: &str) -> Vec<String> {
-    output
-        .split("(sss)")
-        .skip(1)
-        .filter_map(|entry| first_quoted_string(entry).map(|layout| normalize_layout_id(&layout)))
-        .collect()
-}
-
-pub(super) fn first_quoted_string(input: &str) -> Option<String> {
-    let mut chars = input.chars();
-    for ch in chars.by_ref() {
-        if ch == '"' {
-            break;
-        }
-    }
-
-    let mut out = String::new();
-    let mut escaped = false;
-    for ch in chars {
-        if escaped {
-            out.push(ch);
-            escaped = false;
-            continue;
-        }
-        match ch {
-            '\\' => escaped = true,
-            '"' => return Some(out),
-            _ => out.push(ch),
-        }
-    }
-    None
 }
 
 fn find_qdbus_command() -> Option<&'static str> {

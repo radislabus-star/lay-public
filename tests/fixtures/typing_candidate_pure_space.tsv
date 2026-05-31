@@ -1,0 +1,3 @@
+# rule	priority	original	replacement
+glued_phrase	100	словослитно\s	слово\sслитно\s
+glued_phrase	100	словослитно\s	слова\sслитно\s

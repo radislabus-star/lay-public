@@ -1,21 +1,8 @@
 use super::*;
-use std::path::PathBuf;
+use crate::typing_assist_test_fixtures::{first_fixture_row, fixture_row_by_id, fixture_rows};
 
-fn fixture_rows(name: &str) -> Vec<Vec<String>> {
-    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("tests")
-        .join("fixtures")
-        .join(name);
-    std::fs::read_to_string(&path)
-        .unwrap_or_else(|err| panic!("failed to read fixture {path:?}: {err}"))
-        .lines()
-        .filter(|line| !line.trim().is_empty() && !line.starts_with('#'))
-        .map(|line| {
-            line.split('\t')
-                .map(|field| field.replace("\\s", " "))
-                .collect()
-        })
-        .collect()
+fn tokenwise_case(id: &str) -> Vec<String> {
+    fixture_row_by_id("llm_tokenwise_mixed.tsv", id)
 }
 
 #[test]
@@ -92,10 +79,7 @@ fn repairs_mixed_russian_with_latin_islands() {
 
 #[test]
 fn does_not_glue_long_latin_tail_to_russian_word() {
-    let row = fixture_rows("llm_no_latin_tail_glue.tsv")
-        .into_iter()
-        .next()
-        .expect("latin-tail fixture");
+    let row = first_fixture_row("llm_no_latin_tail_glue.tsv");
     assert_eq!(repair_mixed_script(&row[0]), None);
     assert_eq!(
         convert_hybrid(&row[0], &row[1]).unwrap(),
@@ -141,10 +125,7 @@ fn hybrid_keeps_plain_bilingual_text_without_model() {
 
 #[test]
 fn hybrid_keeps_valid_russian_phrase_without_partial_single_letter_flip() {
-    let row = fixture_rows("llm_hybrid_valid_russian.tsv")
-        .into_iter()
-        .next()
-        .expect("valid russian fixture");
+    let row = first_fixture_row("llm_hybrid_valid_russian.tsv");
     assert_eq!(
         convert_hybrid(&row[0], &row[1]).unwrap(),
         Some(row[2].clone())
@@ -153,10 +134,7 @@ fn hybrid_keeps_valid_russian_phrase_without_partial_single_letter_flip() {
 
 #[test]
 fn hybrid_keeps_domain_and_converts_neighbor_word() {
-    let row = fixture_rows("llm_hybrid_domain.tsv")
-        .into_iter()
-        .next()
-        .expect("domain fixture");
+    let row = first_fixture_row("llm_hybrid_domain.tsv");
     assert_eq!(
         convert_hybrid(&row[0], &row[1]).unwrap(),
         Some(row[2].clone())
@@ -165,10 +143,7 @@ fn hybrid_keeps_domain_and_converts_neighbor_word() {
 
 #[test]
 fn hybrid_keeps_mixed_case_ascii_brand_and_converts_neighbor_letter() {
-    let row = fixture_rows("llm_hybrid_brand.tsv")
-        .into_iter()
-        .next()
-        .expect("brand fixture");
+    let row = first_fixture_row("llm_hybrid_brand.tsv");
     assert_eq!(
         convert_hybrid(&row[0], &row[1]).unwrap(),
         Some(row[2].clone())
@@ -177,10 +152,7 @@ fn hybrid_keeps_mixed_case_ascii_brand_and_converts_neighbor_letter() {
 
 #[test]
 fn tokenwise_hybrid_keeps_good_word_and_converts_bad_neighbor() {
-    let row = fixture_rows("llm_tokenwise_mixed.tsv")
-        .into_iter()
-        .find(|row| row.first().is_some_and(|id| id == "llm_veto"))
-        .expect("tokenwise fixture");
+    let row = tokenwise_case("llm_veto");
     let protected = row[3].clone();
     let result = choose_mixed_token_candidate(&row[1], &row[2], |original, _| {
         Ok(Some(if original == protected {
@@ -196,10 +168,7 @@ fn tokenwise_hybrid_keeps_good_word_and_converts_bad_neighbor() {
 
 #[test]
 fn tokenwise_hybrid_converts_unknown_long_all_caps_neighbor() {
-    let row = fixture_rows("llm_tokenwise_mixed.tsv")
-        .into_iter()
-        .find(|row| row.first().is_some_and(|id| id == "all_caps_neighbor"))
-        .expect("tokenwise fixture");
+    let row = tokenwise_case("all_caps_neighbor");
     let result = choose_mixed_token_candidate(&row[1], &row[2], |original, converted| {
         panic!("model should not be called for {original:?} -> {converted:?}");
     })
@@ -210,10 +179,7 @@ fn tokenwise_hybrid_converts_unknown_long_all_caps_neighbor() {
 
 #[test]
 fn tokenwise_hybrid_keeps_unknown_all_caps_brand_when_converted_is_garbage() {
-    let row = fixture_rows("llm_tokenwise_mixed.tsv")
-        .into_iter()
-        .find(|row| row.first().is_some_and(|id| id == "all_caps_brand"))
-        .expect("tokenwise fixture");
+    let row = tokenwise_case("all_caps_brand");
     let result = choose_mixed_token_candidate(&row[1], &row[2], |original, converted| {
         panic!("model should not be called for {original:?} -> {converted:?}");
     })
@@ -224,10 +190,7 @@ fn tokenwise_hybrid_keeps_unknown_all_caps_brand_when_converted_is_garbage() {
 
 #[test]
 fn tokenwise_hybrid_converts_all_obvious_layout_garbage() {
-    let row = fixture_rows("llm_tokenwise_mixed.tsv")
-        .into_iter()
-        .find(|row| row.first().is_some_and(|id| id == "all_bad"))
-        .expect("tokenwise fixture");
+    let row = tokenwise_case("all_bad");
     let result =
         choose_mixed_token_candidate(&row[1], &row[2], |_, _| Ok(Some(Choice::Converted))).unwrap();
 
@@ -236,10 +199,7 @@ fn tokenwise_hybrid_converts_all_obvious_layout_garbage() {
 
 #[test]
 fn tokenwise_hybrid_converts_all_obviously_bad_words_without_model() {
-    let row = fixture_rows("llm_tokenwise_mixed.tsv")
-        .into_iter()
-        .find(|row| row.first().is_some_and(|id| id == "all_bad_no_model"))
-        .expect("tokenwise fixture");
+    let row = tokenwise_case("all_bad_no_model");
     let result = choose_mixed_token_candidate(&row[1], &row[2], |original, converted| {
         panic!("model should not be called for {original:?} -> {converted:?}");
     })
@@ -250,10 +210,7 @@ fn tokenwise_hybrid_converts_all_obviously_bad_words_without_model() {
 
 #[test]
 fn tokenwise_hybrid_keeps_all_obviously_good_words_without_model() {
-    let row = fixture_rows("llm_tokenwise_mixed.tsv")
-        .into_iter()
-        .find(|row| row.first().is_some_and(|id| id == "all_good_no_model"))
-        .expect("tokenwise fixture");
+    let row = tokenwise_case("all_good_no_model");
     let result = choose_mixed_token_candidate(&row[1], &row[2], |original, converted| {
         panic!("model should not be called for {original:?} -> {converted:?}");
     })
@@ -264,13 +221,7 @@ fn tokenwise_hybrid_keeps_all_obviously_good_words_without_model() {
 
 #[test]
 fn tokenwise_hybrid_keeps_obviously_good_russian_without_asking_model() {
-    let row = fixture_rows("llm_tokenwise_mixed.tsv")
-        .into_iter()
-        .find(|row| {
-            row.first()
-                .is_some_and(|id| id == "dictionary_before_model_ru")
-        })
-        .expect("tokenwise fixture");
+    let row = tokenwise_case("dictionary_before_model_ru");
     let protected = row[3].clone();
     let result = choose_mixed_token_candidate(&row[1], &row[2], |original, _| {
         assert_ne!(original, protected);
@@ -283,13 +234,7 @@ fn tokenwise_hybrid_keeps_obviously_good_russian_without_asking_model() {
 
 #[test]
 fn tokenwise_hybrid_uses_dictionaries_before_model() {
-    let row = fixture_rows("llm_tokenwise_mixed.tsv")
-        .into_iter()
-        .find(|row| {
-            row.first()
-                .is_some_and(|id| id == "dictionary_before_model_main")
-        })
-        .expect("tokenwise fixture");
+    let row = tokenwise_case("dictionary_before_model_main");
     let result = choose_mixed_token_candidate(&row[1], &row[2], |original, converted| {
         panic!("model should not be called for {original:?} -> {converted:?}");
     })
@@ -316,10 +261,7 @@ fn token_hybrid_keeps_good_previous_word_or_converts_bad_one() {
 
 #[test]
 fn tokenwise_hybrid_converts_bad_mixed_layout_neighbor_only() {
-    let row = fixture_rows("llm_tokenwise_mixed.tsv")
-        .into_iter()
-        .find(|row| row.first().is_some_and(|id| id == "bad_mixed_neighbor"))
-        .expect("tokenwise fixture");
+    let row = tokenwise_case("bad_mixed_neighbor");
     let result = choose_mixed_token_candidate(&row[1], &row[2], |original, converted| {
         panic!("model should not be called for {original:?} -> {converted:?}");
     })

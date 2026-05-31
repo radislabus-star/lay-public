@@ -1,0 +1,6 @@
+# comments are ignored
+vs
+WPS
+AmoCRM
+привет
+wi-fi

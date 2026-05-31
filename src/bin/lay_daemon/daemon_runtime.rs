@@ -10,6 +10,7 @@ use super::boundary_runtime::{
     DeferredTypingAssistContext, EnterAutocorrectContext, HardBoundaryContext, SpacePressContext,
     SpaceReleaseContext,
 };
+use super::buffer_filter_runtime::BufferFilterContext;
 use super::daemon_state::DaemonLoopState;
 use super::manual_trigger_runtime::{
     fire_expired_pending_multi_tap, handle_manual_trigger_event, ManualTriggerEventContext,
@@ -253,16 +254,16 @@ pub(super) fn listen_keyboard(
                 continue;
             }
 
-            if should_skip_buffer_input(
+            if should_skip_buffer_input(BufferFilterContext {
                 key,
                 code,
-                &state.shift_state,
-                state.buffer.current_is_empty(),
-                &mut state.ignore_current_token_until_space,
-                &mut state.events_since_word_start,
-                &mut state.pending_typing_assist_after_space,
+                shift_state: &state.shift_state,
+                current_empty: state.buffer.current_is_empty(),
+                ignore_current_token_until_space: &mut state.ignore_current_token_until_space,
+                events_since_word_start: &mut state.events_since_word_start,
+                pending_typing_assist_after_space: &mut state.pending_typing_assist_after_space,
                 verbose,
-            ) {
+            }) {
                 continue;
             }
 

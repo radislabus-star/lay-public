@@ -1,38 +1,71 @@
 use super::*;
+use crate::typing_assist_test_fixtures::{fixture_lines_from_str, fixture_rows};
 
 #[test]
 fn lexical_data_loads_without_code_word_lists() {
-    assert!(is_common_ru_word("и"));
-    assert!(is_common_ru_word("она"));
-    assert!(is_common_en_technical_word("api"));
-    assert!(is_ru_one_letter_function_word("в"));
-    assert!(is_ru_single_letter_pronoun("я"));
-    assert!(is_ru_short_pronoun("мне"));
-    assert!(is_ru_short_preposition("при"));
-    assert!(is_ru_short_function_word("для"));
-    assert!(is_ru_hyphen_particle("таки"));
-    assert_eq!(visual_b_default_replacement(), "в");
-    assert_eq!(visual_b_after_ascii_replacement(), "и");
-    assert!(!is_common_en_technical_word("hello"));
+    for row in fixture_rows("lexicon_smoke_words.tsv") {
+        assert_eq!(row.len(), 2, "lexicon smoke fixture must be TSV");
+        let kind = row[0].as_str();
+        let word = row[1].as_str();
+        match kind {
+            "common_ru" => assert!(is_common_ru_word(word), "missing common_ru: {word:?}"),
+            "common_en_technical" => assert!(
+                is_common_en_technical_word(word),
+                "missing common_en_technical: {word:?}"
+            ),
+            "ru_one_letter_function" => assert!(
+                is_ru_one_letter_function_word(word),
+                "missing ru_one_letter_function: {word:?}"
+            ),
+            "ru_single_letter_pronoun" => assert!(
+                is_ru_single_letter_pronoun(word),
+                "missing ru_single_letter_pronoun: {word:?}"
+            ),
+            "ru_short_pronoun" => {
+                assert!(
+                    is_ru_short_pronoun(word),
+                    "missing ru_short_pronoun: {word:?}"
+                )
+            }
+            "ru_short_preposition" => assert!(
+                is_ru_short_preposition(word),
+                "missing ru_short_preposition: {word:?}"
+            ),
+            "ru_short_function" => assert!(
+                is_ru_short_function_word(word),
+                "missing ru_short_function: {word:?}"
+            ),
+            "ru_hyphen_particle" => assert!(
+                is_ru_hyphen_particle(word),
+                "missing ru_hyphen_particle: {word:?}"
+            ),
+            "not_common_en_technical" => assert!(
+                !is_common_en_technical_word(word),
+                "unexpected common_en_technical: {word:?}"
+            ),
+            "visual_b_default" => assert_eq!(visual_b_default_replacement(), word),
+            "visual_b_after_ascii" => assert_eq!(visual_b_after_ascii_replacement(), word),
+            other => panic!("unknown lexicon smoke kind: {other}"),
+        }
+    }
 }
 
 #[test]
 fn protected_ascii_words_parser_keeps_short_user_tokens() {
-    let words = parse_ascii_word_data(
-        r#"
-        # comments are ignored
-        vs
-        WPS
-        AmoCRM
-        привет
-        wi-fi
-        "#,
-        1,
-    );
+    let source = include_str!("../tests/fixtures/lexicon_protected_ascii_source.txt");
+    let words = parse_ascii_word_data(source, 1);
 
-    assert!(words.contains("vs"));
-    assert!(words.contains("wps"));
-    assert!(words.contains("amocrm"));
-    assert!(words.contains("wi-fi"));
-    assert!(!words.contains("привет"));
+    for word in fixture_lines_from_str(include_str!(
+        "../tests/fixtures/lexicon_protected_ascii_expected.txt"
+    )) {
+        assert!(words.contains(&word), "missing protected word: {word:?}");
+    }
+    for word in fixture_lines_from_str(include_str!(
+        "../tests/fixtures/lexicon_protected_ascii_rejected.txt"
+    )) {
+        assert!(
+            !words.contains(&word),
+            "unexpected protected word: {word:?}"
+        );
+    }
 }

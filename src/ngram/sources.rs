@@ -1,5 +1,6 @@
 use super::tokenize::normalize_word;
 use super::{CharNgramModel, Lang};
+use crate::data_lines::data_lines;
 
 const RU_HUNSPELL: &str = "/usr/share/hunspell/ru_RU.dic";
 const EN_HUNSPELL: &str = "/usr/share/hunspell/en_US.dic";
@@ -38,9 +39,7 @@ fn load_plain_words(path: &std::path::Path, lang: Lang) -> Vec<String> {
     let Ok(text) = std::fs::read_to_string(path) else {
         return Vec::new();
     };
-    text.lines()
-        .map(str::trim)
-        .filter(|line| !line.is_empty() && !line.starts_with('#'))
+    data_lines(&text)
         .filter_map(|line| normalize_word(line, lang))
         .collect()
 }

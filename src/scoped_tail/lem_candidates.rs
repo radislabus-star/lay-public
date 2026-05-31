@@ -1,17 +1,10 @@
 use crate::keyboard::{map_original_events, KeyEvent};
-use crate::layout_autoswitch::{
-    correct_duplicate_layout_prefix_on_ascii_token, correct_wrong_layout_ascii_technical_token,
-    correct_wrong_layout_ascii_word, is_known_english_layout_autoswitch_word,
-    is_known_russian_layout_autoswitch_word,
-};
 use crate::typing_pipeline::apply_typing_assist;
-use crate::word_reader::{is_cyrillic_word, split_word_punctuation};
-use crate::word_recognizer::{
-    is_ascii_technical_or_brand_token, is_ascii_technical_token, is_ascii_titlecase_token,
-};
+use crate::word_reader::split_word_punctuation;
 
 use super::completed_word::{
-    decide_completed_scope_word, is_short_repeated_completed_scope_word,
+    completed_scope_flip_target_is_known, decide_completed_scope_word,
+    deterministic_completed_scope_repair, is_short_repeated_completed_scope_word,
     stable_completed_scope_original,
 };
 use super::word_flip::flip_word_events;
@@ -93,9 +86,7 @@ fn should_offer_explicit_manual_tail_flip(
 
 fn confident_completed_scope_repair(original: &str) -> Option<String> {
     crate::llm::repair_mixed_script(original)
-        .or_else(|| correct_duplicate_layout_prefix_on_ascii_token(original))
-        .or_else(|| correct_wrong_layout_ascii_technical_token(original))
-        .or_else(|| correct_wrong_layout_ascii_word(original))
+        .or_else(|| deterministic_completed_scope_repair(original))
 }
 
 fn should_offer_completed_scope_flip(original: &str, flipped: &str) -> bool {
@@ -108,19 +99,7 @@ fn should_offer_completed_scope_flip(original: &str, flipped: &str) -> bool {
         return false;
     }
 
-    let flipped_lower = flipped_word.to_lowercase();
-    if is_cyrillic_word(flipped_word) {
-        return is_known_russian_layout_autoswitch_word(&flipped_lower);
-    }
-
-    if flipped_word.is_ascii() {
-        return is_known_english_layout_autoswitch_word(&flipped_word.to_ascii_lowercase())
-            || is_ascii_technical_token(flipped)
-            || is_ascii_technical_or_brand_token(flipped_word)
-            || is_ascii_titlecase_token(flipped_word);
-    }
-
-    false
+    completed_scope_flip_target_is_known(flipped, flipped_word)
 }
 
 fn build_phrase_candidates(

@@ -4,7 +4,7 @@ use crate::layout_autoswitch::{
 };
 use crate::lexicon::{is_common_ru_word, is_ru_short_function_word};
 use crate::word_reader::split_word_punctuation;
-use crate::word_recognizer::{recognize_token, WordKind, WordScript};
+use crate::word_recognizer::recognize_token;
 
 pub(super) fn strong_ascii_to_ru_layout_candidate(token: &str) -> bool {
     if strong_shifted_ascii_to_ru_layout_candidate(token) {
@@ -12,11 +12,7 @@ pub(super) fn strong_ascii_to_ru_layout_candidate(token: &str) -> bool {
     }
 
     let identity = recognize_token(token);
-    if identity.kind != WordKind::PlainWord
-        || identity.script != WordScript::Ascii
-        || identity.technical
-        || identity.protected
-    {
+    if !identity.is_unprotected_plain_ascii_word() {
         return false;
     }
 
@@ -34,11 +30,7 @@ pub(super) fn strong_ascii_to_ru_layout_candidate(token: &str) -> bool {
 
 pub(super) fn contextual_ascii_to_ru_layout_candidate(token: &str) -> bool {
     let identity = recognize_token(token);
-    if identity.kind != WordKind::PlainWord
-        || identity.script != WordScript::Ascii
-        || identity.technical
-        || identity.protected
-    {
+    if !identity.is_unprotected_plain_ascii_word() {
         return false;
     }
 
@@ -66,11 +58,7 @@ pub(super) fn clean_ascii_to_ru_layout_candidate(token: &str) -> bool {
         return false;
     }
     let identity = recognize_token(token);
-    identity.kind == WordKind::PlainWord
-        && identity.script == WordScript::Ascii
-        && !identity.technical
-        && !identity.protected
-        && correct_wrong_layout_ascii_word(token).is_some()
+    identity.is_unprotected_plain_ascii_word() && correct_wrong_layout_ascii_word(token).is_some()
 }
 
 pub(super) fn has_layout_punctuation_signal(token: &str) -> bool {

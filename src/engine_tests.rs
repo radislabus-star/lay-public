@@ -1,31 +1,8 @@
 use super::*;
-use crate::keyboard::KeyEvent;
-use evdev::KeyCode;
+use crate::keyboard::text_to_key_events;
 
 fn ascii_events(text: &str) -> Vec<KeyEvent> {
-    text.chars()
-        .filter_map(|ch| {
-            let key = match ch {
-                'a' => KeyCode::KEY_A,
-                'c' => KeyCode::KEY_C,
-                'd' => KeyCode::KEY_D,
-                'e' => KeyCode::KEY_E,
-                'g' => KeyCode::KEY_G,
-                'n' => KeyCode::KEY_N,
-                'o' => KeyCode::KEY_O,
-                'r' => KeyCode::KEY_R,
-                't' => KeyCode::KEY_T,
-                'x' => KeyCode::KEY_X,
-                ' ' => KeyCode::KEY_SPACE,
-                _ => return None,
-            };
-            Some(KeyEvent {
-                keycode: key.code(),
-                shift: false,
-                layout_is_ru: false,
-            })
-        })
-        .collect()
+    text_to_key_events(text, false).expect("engine fixture must be typable")
 }
 
 #[test]

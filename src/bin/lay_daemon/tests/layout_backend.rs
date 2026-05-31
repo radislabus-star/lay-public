@@ -1,33 +1,6 @@
 use super::*;
 
 #[test]
-fn parses_gdbus_string_tuple() {
-    assert_eq!(parse_gdbus_string("('us',)"), Some("us".to_string()));
-}
-
-#[test]
-fn parses_current_layout_from_list_layouts_reply() {
-    assert_eq!(
-        parse_current_layout_from_list("('0:xkb:us,1:xkb:ru*',)"),
-        Some("ru".to_string())
-    );
-}
-
-#[test]
-fn parses_kde6_layout_list_reply() {
-    let reply = r#"[Argument: a(sss) {[Argument: (sss) "us", "", "English (US)"], [Argument: (sss) "ru", "", "Russian"]}]"#;
-    assert_eq!(parse_kde_layouts_list(reply), vec!["us", "ru"]);
-}
-
-#[test]
-fn parses_first_quoted_string_with_escapes() {
-    assert_eq!(
-        first_quoted_string(r#" "us\"intl", "", "English" "#),
-        Some(r#"us"intl"#.to_string())
-    );
-}
-
-#[test]
 fn force_layout_hotkeys_use_single_key_ids_only() {
     assert_eq!(
         single_hotkey_keycode("single-rctrl"),
@@ -43,46 +16,6 @@ fn force_layout_hotkeys_use_single_key_ids_only() {
     );
     assert_eq!(single_hotkey_keycode("double-lshift"), None);
     assert_eq!(single_hotkey_keycode(""), None);
-}
-
-#[test]
-fn layout_backend_can_be_explicit_or_auto_detected() {
-    assert_eq!(
-        resolve_layout_backend("gnome", Some("KDE"), None, Some("wayland")),
-        LayoutBackend::Gnome
-    );
-    assert_eq!(
-        resolve_layout_backend("kde", Some("GNOME"), None, Some("wayland")),
-        LayoutBackend::Kde
-    );
-    assert_eq!(
-        resolve_layout_backend("x11", Some("GNOME"), None, Some("wayland")),
-        LayoutBackend::X11
-    );
-    assert_eq!(
-        resolve_layout_backend("auto", Some("KDE"), Some("plasma"), Some("wayland")),
-        LayoutBackend::Kde
-    );
-    assert_eq!(
-        resolve_layout_backend("auto", Some("GNOME"), None, Some("wayland")),
-        LayoutBackend::Gnome
-    );
-    assert_eq!(
-        resolve_layout_backend("auto", None, None, Some("x11")),
-        LayoutBackend::X11
-    );
-}
-
-#[test]
-fn parses_x11_layout_tool_output() {
-    assert_eq!(
-        parse_setxkbmap_layout("rules: evdev\nmodel: pc105\nlayout: us,ru\n"),
-        Some("us".to_string())
-    );
-    assert_eq!(normalize_layout_id(" ru\n"), "ru");
-    assert_eq!(normalize_layout_id("xkb:ru::rus"), "ru");
-    assert!(is_ru_layout_id("xkb:ru"));
-    assert!(!is_ru_layout_id("xkb:us"));
 }
 
 #[test]
@@ -110,11 +43,4 @@ fn keyboard_discovery_ignores_service_virtual_devices() {
     assert!(!should_ignore_keyboard_device_name(
         "AT Translated Set 2 keyboard"
     ));
-}
-
-#[test]
-fn parses_gdbus_bool_tuple() {
-    assert_eq!(parse_gdbus_bool("(true,)"), Some(true));
-    assert_eq!(parse_gdbus_bool("(false,)"), Some(false));
-    assert_eq!(parse_gdbus_bool("true"), None);
 }

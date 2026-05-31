@@ -10,6 +10,7 @@ mod promotion;
 
 #[cfg(test)]
 pub(super) use log_file::keep_last_jsonl_lines;
+#[cfg(test)]
 pub(super) use log_file::{
     append_learning_log_to_path, append_user_correction_learning_log_to_path,
 };
@@ -35,7 +36,7 @@ pub(super) fn append_learning_log(
         return;
     };
     let path = std::path::PathBuf::from(home).join(LEARN_LOG_PATH);
-    append_learning_log_to_path(&path, kind, from, to, replace_words, words);
+    log_file::append_learning_log_to_path(&path, kind, from, to, replace_words, words);
 }
 
 pub(super) fn append_user_correction_learning_log(correction: &UserLearningCorrection) {
@@ -47,7 +48,7 @@ pub(super) fn append_user_correction_learning_log(correction: &UserLearningCorre
     };
     let home = std::path::PathBuf::from(home);
     let path = home.join(LEARN_LOG_PATH);
-    append_user_correction_learning_log_to_path(&path, correction);
+    log_file::append_user_correction_learning_log_to_path(&path, correction);
     match promote_user_correction_if_repeated(
         &home.join(LEARN_CANDIDATES_PATH),
         &home.join(REPLACEMENTS_PATH),

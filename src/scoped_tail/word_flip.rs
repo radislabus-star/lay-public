@@ -32,15 +32,7 @@ pub fn repair_cyrillic_prefix_before_ascii_tail(word: &[KeyEvent]) -> Option<Str
         return None;
     }
 
-    let rest = &word[1..];
-    let rest_original: String = rest.iter().filter_map(original_event_char).collect();
-    if rest_original.chars().count() != rest.len()
-        || !rest_original.is_ascii()
-        || !rest_original.chars().any(|ch| ch.is_ascii_alphabetic())
-        || !rest_original
-            .chars()
-            .all(|ch| ch.is_ascii_alphanumeric() || ch == '-')
-    {
+    if !has_ascii_tail_after_cyrillic_prefix(&word[1..]) {
         return None;
     }
 
@@ -63,6 +55,16 @@ pub fn repair_cyrillic_prefix_before_ascii_tail(word: &[KeyEvent]) -> Option<Str
         return None;
     }
     is_cyrillic_hyphenated_word_for_layout(&candidate).then_some(candidate)
+}
+
+fn has_ascii_tail_after_cyrillic_prefix(tail: &[KeyEvent]) -> bool {
+    let tail_original: String = tail.iter().filter_map(original_event_char).collect();
+    tail_original.chars().count() == tail.len()
+        && tail_original.is_ascii()
+        && tail_original.chars().any(|ch| ch.is_ascii_alphabetic())
+        && tail_original
+            .chars()
+            .all(|ch| ch.is_ascii_alphanumeric() || ch == '-')
 }
 
 fn normalize_mixed_word_to_last_layout(word: &[KeyEvent]) -> Option<String> {

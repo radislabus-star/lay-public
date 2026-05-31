@@ -1,0 +1,3 @@
+# id	input	layout	stale_char	stale_layout	suffix	suffix_layout	scope	original	replacement	backspaces	insert
+completed_russian_y_word	протокол\sиспытаний\sСщсф	ru				ru	3	протокол\sиспытаний\sСщсф	протокол\sиспытаний\sCoca	4	Coca
+stale_layout_inside_word	протокол\sиспытани	ru	q	us	\sСщсф	ru	3	протокол\sиспытаниq\sСщсф	протокол\sиспытаний\sCoca	6	й\sCoca

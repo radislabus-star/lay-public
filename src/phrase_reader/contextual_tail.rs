@@ -4,29 +4,18 @@ use crate::phrase_score::{
     contextual_glued_tail_split_score, is_contextual_glued_tail_split_shape,
 };
 use crate::text_case::apply_phrase_case;
-use crate::word_reader::{is_cyrillic_word, split_word_punctuation, split_ws_segments};
+use crate::word_reader::is_cyrillic_word;
+
+use super::guards::read_plain_phrase_pair;
 
 pub fn correct_contextual_glued_tail(core: &str) -> Option<String> {
-    let segments = split_ws_segments(core);
-    if segments.len() != 3 || segments[0].1 || !segments[1].1 || segments[2].1 {
+    let pair = read_plain_phrase_pair(core)?;
+    if !is_cyrillic_word(pair.left) || !is_cyrillic_word(pair.right) {
         return None;
     }
 
-    let (left_leading, left, left_trailing) = split_word_punctuation(segments[0].0);
-    let (right_leading, right, right_trailing) = split_word_punctuation(segments[2].0);
-    if !left_leading.is_empty()
-        || !left_trailing.is_empty()
-        || !right_leading.is_empty()
-        || left.is_empty()
-        || right.is_empty()
-        || !is_cyrillic_word(left)
-        || !is_cyrillic_word(right)
-    {
-        return None;
-    }
-
-    let left_lower = left.to_lowercase();
-    let right_lower = right.to_lowercase();
+    let left_lower = pair.left.to_lowercase();
+    let right_lower = pair.right.to_lowercase();
     if !is_short_russian_function_word(&left_lower) || !is_known_russian_phrase_part(&left_lower) {
         return None;
     }
@@ -71,9 +60,9 @@ pub fn correct_contextual_glued_tail(core: &str) -> Option<String> {
     let ((right_replacement_lower, _), _) =
         choose_best_with_gap(split_candidates, 0.75, |(_, score)| Some(*score))?;
 
-    let right_replacement = apply_phrase_case(right, &right_replacement_lower);
+    let right_replacement = apply_phrase_case(pair.right, &right_replacement_lower);
     Some(format!(
         "{}{}{}{}",
-        left, segments[1].0, right_replacement, right_trailing
+        pair.left, pair.separator, right_replacement, pair.right_trailing
     ))
 }

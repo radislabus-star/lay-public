@@ -1,0 +1,15 @@
+hello\s
+test\s
+good\s
+три\s
+раскладок\s
+API\s
+BTC\s
+ETH\s
+TRX\s
+AmoCRM\s
+wi-fi\s
+command\s-f\s
+command\s-r\s
+command\s-c\s
+grep\s--color=auto\s

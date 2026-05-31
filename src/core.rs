@@ -16,8 +16,8 @@ pub use crate::decoder::{
     RankedDecoderCandidate, RankedDecoderDecision,
 };
 pub use crate::desktop::{
-    is_ru_layout_id, normalize_layout_id, parse_setxkbmap_layout, resolve_layout_backend,
-    LayoutBackend,
+    is_ru_layout_id, normalize_layout_id, parse_kde_layouts_list, parse_setxkbmap_layout,
+    resolve_layout_backend, LayoutBackend,
 };
 pub use crate::dict::{convert, detect_direction, Direction};
 pub use crate::engine::{

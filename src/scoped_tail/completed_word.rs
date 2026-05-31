@@ -21,13 +21,7 @@ pub fn decide_completed_scope_word(word: &[KeyEvent]) -> String {
     if is_short_repeated_completed_scope_word(&original) {
         return original;
     }
-    if let Some(repaired) = correct_duplicate_layout_prefix_on_ascii_token(&original) {
-        return repaired;
-    }
-    if let Some(repaired) = correct_wrong_layout_ascii_technical_token(&original) {
-        return repaired;
-    }
-    if let Some(repaired) = correct_wrong_layout_ascii_word(&original) {
+    if let Some(repaired) = deterministic_completed_scope_repair(&original) {
         return repaired;
     }
     let converted = flip_word_events(word);
@@ -69,11 +63,7 @@ pub(super) fn short_completed_tail_layout_flip(word: &[KeyEvent]) -> Option<Stri
         return Some(flipped);
     }
 
-    (is_known_english_layout_autoswitch_word(&flipped_word.to_ascii_lowercase())
-        || is_ascii_technical_token(flipped_word)
-        || is_ascii_technical_or_brand_token(flipped_word)
-        || is_ascii_titlecase_token(flipped_word))
-    .then_some(flipped)
+    completed_scope_flip_target_is_known(flipped_word, flipped_word).then_some(flipped)
 }
 
 pub(super) fn stable_completed_scope_original(original: &str) -> bool {
@@ -106,6 +96,32 @@ pub(super) fn is_short_repeated_completed_scope_word(original: &str) -> bool {
         (Some(first), Some(second), None)
             if first == second && (is_cyrillic_letter(first) || first.is_ascii_alphabetic())
     )
+}
+
+pub(super) fn deterministic_completed_scope_repair(original: &str) -> Option<String> {
+    correct_duplicate_layout_prefix_on_ascii_token(original)
+        .or_else(|| correct_wrong_layout_ascii_technical_token(original))
+        .or_else(|| correct_wrong_layout_ascii_word(original))
+}
+
+pub(super) fn completed_scope_flip_target_is_known(flipped: &str, flipped_word: &str) -> bool {
+    if flipped_word.is_empty() {
+        return false;
+    }
+
+    let flipped_lower = flipped_word.to_lowercase();
+    if is_cyrillic_word(flipped_word) {
+        return is_known_russian_layout_autoswitch_word(&flipped_lower);
+    }
+
+    if flipped_word.is_ascii() {
+        return is_known_english_layout_autoswitch_word(&flipped_word.to_ascii_lowercase())
+            || is_ascii_technical_token(flipped)
+            || is_ascii_technical_or_brand_token(flipped_word)
+            || is_ascii_titlecase_token(flipped_word);
+    }
+
+    false
 }
 
 fn is_single_cyrillic_completed_scope_word(word: &str) -> bool {

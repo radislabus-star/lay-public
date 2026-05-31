@@ -1,0 +1,4 @@
+# id	input	replacement	backspaces	insert
+mixed_pair	good ntrcn	good текст	5	текст
+three_word_tail	hello good ntrcn	hello good текст	5	текст
+uppercase_current_tail	делай KDE	делай ЛВУ	3	ЛВУ

@@ -2,14 +2,7 @@ use super::*;
 
 #[test]
 fn scoped_tail_uses_lem_for_two_word_mixed_tail() {
-    let mut buffer = WordBuffer::new();
-    push_text_as_layout(&mut buffer, "good", false);
-    buffer.handle_space();
-    for ch in "ntrcn".chars() {
-        buffer.push(text_key_event(ch, false));
-    }
-
-    let (events, _) = buffer.what_to_replay(2).expect("two-word tail");
+    let (_buffer, events, _) = typed_tail(&[("good ntrcn", false)], 2, "two-word tail");
     let words = split_event_words(&events).expect("split words");
     let ranked = lay::lem::rank_candidates(
         &map_original_events(&events),
@@ -26,12 +19,7 @@ fn scoped_tail_uses_lem_for_two_word_mixed_tail() {
 
 #[test]
 fn scoped_tail_flips_short_english_layout_pair_in_ascii_context() {
-    let mut buffer = WordBuffer::new();
-    push_text_as_layout(&mut buffer, "file", false);
-    buffer.handle_space();
-    push_text_as_layout(&mut buffer, "щт", true);
-    buffer.handle_space();
-    push_text_as_layout(&mut buffer, "щаа", true);
+    let mut buffer = typed_buffer(&[("file ", false), ("щт щаа", true)]);
 
     let (events, _) = buffer.what_to_replay(3).expect("three-word tail");
     let words = split_event_words(&events).expect("split words");
@@ -84,12 +72,7 @@ fn scoped_tail_flips_short_english_layout_pair_in_ascii_context() {
 
 #[test]
 fn scoped_tail_flips_short_english_layout_pair_without_context() {
-    let mut buffer = WordBuffer::new();
-    push_text_as_layout(&mut buffer, "щт", true);
-    buffer.handle_space();
-    push_text_as_layout(&mut buffer, "щаа", true);
-
-    let (events, _) = buffer.what_to_replay(2).expect("two-word tail");
+    let (_buffer, events, _) = typed_tail(&[("щт щаа", true)], 2, "two-word tail");
     let words = split_event_words(&events).expect("split words");
     let candidates = scoped_tail_lem_candidates(&words, true, true);
 
@@ -106,19 +89,19 @@ fn scoped_tail_flips_short_english_layout_pair_without_context() {
 
 #[test]
 fn scoped_tail_keeps_good_russian_context_and_flips_current_acronym() {
-    let cases = [
-        ("ВСЁ", "ДЕЛАЙ", "ЛВУ", "KDE"),
-        ("НУЖНО", "ДЕЛАТЬ", "ТЕАЫ", "NTFS"),
-        ("ПРОСТО", "ДЕЛАЙ", "СЗГ", "CPU"),
-    ];
-
-    for (left1, left2, typed_tail, expected_tail) in cases {
-        let mut buffer = WordBuffer::new();
-        push_text_as_layout(&mut buffer, left1, true);
-        buffer.handle_space();
-        push_text_as_layout(&mut buffer, left2, true);
-        buffer.handle_space();
-        push_text_as_layout(&mut buffer, typed_tail, true);
+    for row in fixture_rows("daemon_scoped_tail_acronym_context.tsv") {
+        assert_eq!(row.len(), 4, "bad fixture row: {row:?}");
+        let left1 = &row[0];
+        let left2 = &row[1];
+        let typed_tail = &row[2];
+        let expected_tail = &row[3];
+        let buffer = typed_buffer(&[
+            (left1, true),
+            (" ", true),
+            (left2, true),
+            (" ", true),
+            (typed_tail, true),
+        ]);
 
         let (events, _) = buffer.what_to_replay(3).expect("three-word tail");
         let original = map_original_events(&events);
@@ -136,24 +119,19 @@ fn scoped_tail_keeps_good_russian_context_and_flips_current_acronym() {
         );
         assert_eq!(
             plan_text_replacement(&original, &expected),
-            Some(TextReplacement {
-                move_left: 0,
-                backspaces: typed_tail.chars().count() as u32,
-                insert: expected_tail.to_string(),
-                move_right: 0,
-            })
+            Some(text_replacement(
+                0,
+                typed_tail.chars().count() as u32,
+                expected_tail,
+                0,
+            ))
         );
     }
 }
 
 #[test]
 fn scoped_tail_converts_apostrophe_layout_word_as_letter() {
-    let mut buffer = WordBuffer::new();
-    push_text_as_layout(&mut buffer, "'nj", false);
-    buffer.handle_space();
-    push_text_as_layout(&mut buffer, "ckjdj", false);
-
-    let (events, _) = buffer.what_to_replay(2).expect("two-word tail");
+    let (_buffer, events, _) = typed_tail(&[("'nj ckjdj", false)], 2, "two-word tail");
     let original = map_original_events(&events);
 
     assert_eq!(original, "'nj ckjdj");

@@ -1,0 +1,10 @@
+good
+test
+word
+live
+double
+text
+mode
+file
+code
+data

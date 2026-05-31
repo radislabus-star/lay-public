@@ -6,17 +6,28 @@ use super::{
 };
 use lay::keyboard::is_typing_key;
 
-#[allow(clippy::too_many_arguments)]
-pub(super) fn should_skip_buffer_input(
-    key: KeyCode,
-    code: u16,
-    shift_state: &ShiftState,
-    current_empty: bool,
-    ignore_current_token_until_space: &mut bool,
-    events_since_word_start: &mut u32,
-    pending_typing_assist_after_space: &mut Option<PendingTypingAssist>,
-    verbose: bool,
-) -> bool {
+pub(super) struct BufferFilterContext<'a> {
+    pub(super) key: KeyCode,
+    pub(super) code: u16,
+    pub(super) shift_state: &'a ShiftState,
+    pub(super) current_empty: bool,
+    pub(super) ignore_current_token_until_space: &'a mut bool,
+    pub(super) events_since_word_start: &'a mut u32,
+    pub(super) pending_typing_assist_after_space: &'a mut Option<PendingTypingAssist>,
+    pub(super) verbose: bool,
+}
+
+pub(super) fn should_skip_buffer_input(ctx: BufferFilterContext<'_>) -> bool {
+    let BufferFilterContext {
+        key,
+        code,
+        shift_state,
+        current_empty,
+        ignore_current_token_until_space,
+        events_since_word_start,
+        pending_typing_assist_after_space,
+        verbose,
+    } = ctx;
     if shift_state.shortcut_active() && should_ignore_buffer_key(key, shift_state, current_empty) {
         log_ignored_key(code, verbose);
         return true;

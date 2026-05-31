@@ -51,7 +51,6 @@ pub fn russian_short_dictionary() -> &'static HashSet<String> {
         {
             let mut words = words;
             words.extend(crate::typing_assist_test_fixtures::russian_forms().map(str::to_string));
-            words.insert("пара".to_string());
             extend_common_ru_words(&mut words);
             words
         }
@@ -72,7 +71,6 @@ pub fn russian_tiny_dictionary() -> &'static HashSet<String> {
         {
             let mut words = words;
             words.extend(crate::typing_assist_test_fixtures::russian_forms().map(str::to_string));
-            words.insert("не".to_string());
             extend_common_ru_words(&mut words);
             words
         }

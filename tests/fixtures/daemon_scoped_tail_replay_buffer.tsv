@@ -1,0 +1,4 @@
+# id	input	layout	scope	expected	backspaces	target	space_index
+two_word_replay	ghbdtn\svbh	us	2	ghbdtn\svbh	10	привет\sмир	6
+two_word_trailing_space	gh\svb\s	us	2	gh\svb\s	6		
+smart_scope_trailing_space	короче\sтам\s	ru	2	короче\sтам\s	11		

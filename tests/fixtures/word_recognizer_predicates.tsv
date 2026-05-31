@@ -1,0 +1,10 @@
+# predicate	token	expected
+ascii_technical	wi-fi	true
+ascii_technical_or_brand	wi-fi	true
+ascii_technical_or_brand	file.txt	true
+ascii_technical_or_brand	vty.ghfdbkmyj	false
+protected_ascii	AmoCRM	true
+ascii_technical_or_brand	AmoCRM	true
+ascii_titlecase	Wechat	true
+ascii_titlecase	wechat	false
+mixed_cyrillic_ascii_alpha	ВщгиDo	true

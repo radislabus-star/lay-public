@@ -2,7 +2,7 @@ use crate::config::CorrectionEngine;
 use crate::correction::Correction;
 use crate::keyboard::KeyEvent;
 use crate::typing_assist::{
-    apply_auto_replace, decide_scoped_tail_correction_with_options, ScopedTailOptions,
+    apply_manual_replay_auto_replace, decide_scoped_tail_correction_with_options, ScopedTailOptions,
 };
 
 use super::edit_plan::DecoderEditPlan;
@@ -75,7 +75,8 @@ fn maybe_apply_auto_replace(
         return manual_decode_result(request.original, action, ranked);
     }
 
-    let Some(replacement) = apply_auto_replace(request.original, request.converted) else {
+    let Some(replacement) = apply_manual_replay_auto_replace(request.original, request.converted)
+    else {
         return manual_decode_result(request.original, action, ranked);
     };
 

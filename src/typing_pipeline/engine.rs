@@ -29,16 +29,7 @@ pub fn explain_typing_assist_with_pipeline(
     pipeline: &[TypingAssistRuleConfig],
 ) -> TypingAssistExplanation {
     let (leading, core, trailing) = split_edge_whitespace(text);
-    let mut explanation = TypingAssistExplanation {
-        original: text.to_string(),
-        core: core.to_string(),
-        allow_layout_auto,
-        evaluations: Vec::new(),
-        chosen: None,
-        second: None,
-        margin: None,
-        output: None,
-    };
+    let mut explanation = TypingAssistExplanation::new(text, core, allow_layout_auto);
 
     if core.is_empty() {
         return explanation;
@@ -55,63 +46,39 @@ pub fn explain_typing_assist_with_pipeline(
     let mut candidates = Vec::new();
 
     for rule in typing_rules_for_evaluation(pipeline) {
-        let mut evaluation = TypingRuleEvaluation {
-            id: rule.id.clone(),
-            priority: rule.priority,
-            enabled: rule.enabled,
-            candidate: None,
-            rejected: None,
-        };
+        let evaluation = TypingRuleEvaluation::new(&rule);
 
         if !rule.enabled {
-            evaluation.rejected = Some("disabled".to_string());
-            explanation.evaluations.push(evaluation);
+            explanation.record(evaluation.reject(TypingRuleEvaluation::REJECT_DISABLED));
             continue;
         }
 
         let Some(definition) = find_typing_rule(&rule.id) else {
-            evaluation.rejected = Some("unknown rule".to_string());
-            explanation.evaluations.push(evaluation);
+            explanation.record(evaluation.reject(TypingRuleEvaluation::REJECT_UNKNOWN_RULE));
             continue;
         };
 
         let Some(replacement) = (definition.apply)(&ctx) else {
-            evaluation.rejected = Some("no candidate".to_string());
-            explanation.evaluations.push(evaluation);
+            explanation.record(evaluation.reject(TypingRuleEvaluation::REJECT_NO_CANDIDATE));
             continue;
         };
 
         let candidate = TypingCandidate::new(&rule.id, rule.priority, core, replacement);
-        if !crate::typing_rule_graph::typing_rule_candidate_is_safe(
-            &rule.id,
-            core,
-            &candidate.replacement,
-        ) {
-            evaluation.candidate = Some(candidate);
-            evaluation.rejected = Some("unsafe autocorrect candidate".to_string());
-            explanation.evaluations.push(evaluation);
+        if !candidate.is_safe_for(core) {
+            explanation.record(
+                evaluation
+                    .with_candidate(candidate)
+                    .reject(TypingRuleEvaluation::REJECT_UNSAFE),
+            );
             continue;
         }
 
         candidates.push(candidate.clone());
-        evaluation.candidate = Some(candidate);
-        explanation.evaluations.push(evaluation);
+        explanation.record(evaluation.with_candidate(candidate));
     }
 
     let Some(decision) = rank_typing_candidates(candidates) else {
         return explanation;
     };
-    let chosen = decision.best;
-
-    let mut out = String::with_capacity(text.len().max(chosen.replacement.len()));
-    out.push_str(leading);
-    out.push_str(&chosen.replacement);
-    out.push_str(trailing);
-    if out != text {
-        explanation.output = Some(out);
-    }
-    explanation.second = decision.second;
-    explanation.margin = Some(decision.margin);
-    explanation.chosen = Some(chosen);
-    explanation
+    explanation.with_decision(leading, trailing, decision)
 }

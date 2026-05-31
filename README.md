@@ -7,8 +7,8 @@
 `lay` чинит слово, набранное не в той раскладке: нажал **Shift два раза** и
 продолжил писать.
 
-**Статус: alpha.** Основной сценарий уже рабочий, автопомощь и разные desktop
-edge cases продолжают оттачиваться.
+**Статус: alpha.** Основной сценарий уже рабочий. Главная зона активной
+доводки — автопомощь после пробела и редкие desktop edge cases.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
@@ -113,14 +113,23 @@ good ntrcn -> good текст
 
 Основная проверенная среда: Ubuntu/GNOME Wayland с RU/EN раскладками.
 
+Текущая матрица:
+
+- **GNOME Wayland** — основной и самый зрелый путь.
+- **KDE/Plasma Wayland** — поддерживается, но покрытие меньше.
+- **X11** — есть native XKB backend, проверяется как экспериментальный путь.
+- **Sway/Hyprland/другие WM** — пока не заявлены как поддержанные.
+- **Языки** — текущая цель только RU/EN.
+
 Поддерживаемые backend'ы:
 
 - GNOME: Shell extension, tray и DBus bridge для переключения раскладки;
 - KDE/Plasma: отдельный `lay-kde-tray` и переключение через `qdbus6`;
 - X11: native XKB backend через `x11rb`.
 
-KDE и X11 уже рабочие, но они моложе GNOME-пути. Sway/Hyprland и раскладки
-кроме RU/EN пока не заявлены как готовые.
+KDE и X11 уже рабочие, но они моложе GNOME-пути. Если что-то ломается в KDE,
+X11 или другой сборке Linux, лучше открыть issue с точным примером:
+что набрано, что ожидалось, что получилось.
 
 ## Языки
 
@@ -141,6 +150,22 @@ KDE и X11 уже рабочие, но они моложе GNOME-пути. Sway/
 - полноценная грамматика русского языка;
 - исправление целых абзацев;
 - серые inline-подсказки прямо внутри поля ввода.
+
+## Ограничения
+
+`lay` сознательно работает с коротким хвостом текста, который daemon видел через
+evdev. Это делает основной сценарий быстрым, но задаёт границы:
+
+- не исправляет произвольное слово под курсором после ручного перемещения;
+- не меняет выделенный текст как универсальную функцию;
+- не читает весь текст поля и не знает весь документ;
+- Enter-autocorrect не включён в публичный стабильный UI, потому что evdev/uinput
+  не может гарантировать порядок "исправить хвост, потом отправить Enter" во
+  всех приложениях;
+- IME/preedit и inline-подсказки рассматриваются только как отдельное
+  экспериментальное направление, не как замена текущего быстрого пути;
+- автопомощь после пробела остаётся консервативной: лучше пропустить сомнительный
+  случай, чем самовольно испортить текст.
 
 ## Меню в трее
 
@@ -199,6 +224,7 @@ Shift rescue невозможен. По умолчанию он не отпра�
 Активно оттачиваются:
 
 - автопомощь после пробела;
+- пробелы и границы слов после автозамены;
 - mixed RU/EN сценарии;
 - KDE/X11 edge cases;
 - работа в старых/особых текстовых полях;
@@ -257,8 +283,14 @@ curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scr
 After installation, log out and log back in so the `input` group, `/dev/uinput`
 permissions, and desktop integration are picked up.
 
-Main tested target: GNOME Wayland with RU/EN layouts. KDE/Plasma and X11
-backends exist and work, but have a smaller compatibility matrix than GNOME.
+Main tested target: GNOME Wayland with RU/EN layouts. KDE/Plasma Wayland is
+supported with a smaller compatibility matrix. X11 has a native XKB backend and
+is treated as experimental. Other layouts and non-RU/EN pairs are not supported
+yet.
+
+Known limitations: `lay` works on a short typed tail, not arbitrary selected
+text or the whole document. Enter autocorrect and IME/preedit-style inline
+assistance are experimental directions, not the stable default path.
 
 By default `lay` does not use cloud APIs, does not require an LLM, and does not
 send typed text anywhere.

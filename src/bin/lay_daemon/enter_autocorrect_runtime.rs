@@ -13,8 +13,7 @@ use super::correction_memory_runtime::{
 #[cfg(not(test))]
 use super::active_typing_assist_pipeline_for_auto_replace;
 use super::{
-    active_auto_switch_layout, apply_text_replacement, emit_key_taps_fast,
-    insert_prepared_text_for_replacement_plan, log, prepare_text_insert_for_replacement_plan,
+    active_auto_switch_layout, apply_text_replacement_pipeline, emit_key_taps_fast, log,
     read_current_layout_is_ru, record_recent_action, release_possible_modifiers,
     should_try_ime_text_backend, switch_or_restore_layout_after_text_edit, try_ime_replace_tail,
     ExecutingGuard, TYPING_ASSIST_RUNTIME_READY,
@@ -124,34 +123,21 @@ pub(super) fn handle_enter_autocorrect(
     }
 
     let original_layout = read_current_layout_is_ru().ok();
-    let plan = edit.plan.clone();
-    if !edit.plan_matches_replacement() {
+    let Some(plan) = edit.verified_plan_for_cursor(0) else {
         log("⚠ enter-autocorrect skipped before delete: edit plan invariant failed");
         return None;
-    }
-
-    let prepared_insert = match prepare_text_insert_for_replacement_plan(&plan, true) {
-        Ok(prepared) => prepared,
-        Err(e) => {
-            log(&format!("⚠ enter-autocorrect skipped before delete: {e}"));
-            return None;
-        }
     };
-    if let Err(e) = apply_text_replacement(kbd, &plan) {
-        log(&format!("⚠ enter-autocorrect minimal replace failed: {e}"));
-        return None;
-    }
 
-    let insert_outcome = match insert_prepared_text_for_replacement_plan(
+    let insert_outcome = match apply_text_replacement_pipeline(
         kbd,
         &plan,
         &replacement,
-        &prepared_insert,
+        true,
         "enter-autocorrect",
     ) {
         Ok(outcome) => outcome,
         Err(e) => {
-            log(&format!("⚠ enter-autocorrect {e}"));
+            e.log("enter-autocorrect", "minimal replace failed");
             return None;
         }
     };

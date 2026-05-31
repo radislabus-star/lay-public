@@ -1,0 +1,4 @@
+# id	parts	scope	original	replacement	backspaces	insert	undo_original	undo_backspaces	undo_target
+prefix_ascii_tail	слово@ru|\s@ru|п@ru|gfhf-gfhf@us	2	слово\sпgfhf-gfhf	слово\sппара-пара					
+accusative_hyphen	Иракскую@ru|\s@ru|к@ru|jrf-rjke@us	2	Иракскую\sкjrf-rjke	Иракскую\sкока-колу	8	ока-колу	кока-колу	9	rjrf-rjke
+dative_hyphen	Иракскую@ru|\s@ru|к@ru|jrf-rjkt@us	2	Иракскую\sкjrf-rjkt	Иракскую\sкока-коле	8	ока-коле	кока-коле	9	rjrf-rjkt

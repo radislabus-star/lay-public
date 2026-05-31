@@ -64,11 +64,7 @@ fn marks_current_word_after_replay_for_next_toggle() {
         KeyCode::KEY_V,
         KeyCode::KEY_Z,
     ] {
-        buffer.push(KeyEvent {
-            keycode: key.code(),
-            shift: false,
-            layout_is_ru: false,
-        });
+        buffer.push(key_event(key, false));
     }
 
     buffer.mark_replayed_layout(1, true);
@@ -171,18 +167,10 @@ fn multi_tap_scope_design_contract_maps_taps_to_scope() {
 #[test]
 fn typing_after_replay_clears_toggle_shortcut() {
     let mut buffer = WordBuffer::new();
-    buffer.push(KeyEvent {
-        keycode: KeyCode::KEY_D.code(),
-        shift: false,
-        layout_is_ru: false,
-    });
+    buffer.push(key_event(KeyCode::KEY_D, false));
     buffer.mark_replayed_layout(1, true);
 
-    buffer.push(KeyEvent {
-        keycode: KeyCode::KEY_H.code(),
-        shift: false,
-        layout_is_ru: true,
-    });
+    buffer.push(key_event(KeyCode::KEY_H, true));
 
     assert!(!buffer.replay_toggle_ready());
 }

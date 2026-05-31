@@ -1,0 +1,3 @@
+# rule	priority	original	replacement
+missing_letter	10	словослитно\s	словослитное\s
+glued_phrase	200	словослитно\s	слово\sслитно\s

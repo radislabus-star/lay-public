@@ -1,6 +1,6 @@
 use super::super::trigger_dispatch::{
-    complete_manual_trigger_from_loop, run_configured_manual_correction,
-    run_scoped_manual_correction,
+    complete_manual_trigger, run_configured_manual_correction, run_scoped_manual_correction,
+    ManualTriggerCompletion,
 };
 use super::context::ManualTriggerFireContext;
 
@@ -32,15 +32,18 @@ fn complete_manual_trigger_with_result(
     correction_result: Option<bool>,
     ctx: ManualTriggerFireContext<'_>,
 ) {
-    complete_manual_trigger_from_loop(
+    complete_manual_trigger(
         correction_result,
-        ctx.current_layout_is_ru,
-        ctx.last_layout_poll,
-        ctx.suppress_next_typing_assist_after_manual_replay,
-        ctx.shift_state,
-        ctx.dshift_state,
-        ctx.pending_multi_tap,
-        ctx.last_double_at,
-        ctx.clear_on_next_typing,
+        ManualTriggerCompletion {
+            current_layout_is_ru: ctx.current_layout_is_ru,
+            last_layout_poll: ctx.last_layout_poll,
+            suppress_next_typing_assist_after_manual_replay: ctx
+                .suppress_next_typing_assist_after_manual_replay,
+            shift_state: ctx.shift_state,
+            dshift_state: ctx.dshift_state,
+            pending_multi_tap: ctx.pending_multi_tap,
+            last_double_at: ctx.last_double_at,
+            clear_on_next_typing: ctx.clear_on_next_typing,
+        },
     );
 }

@@ -147,3 +147,19 @@ fn correction_safety_controls_typing_assist_risk() {
         .find(|rule| rule.id == "extra_letters")
         .is_some_and(|rule| rule.enabled));
 }
+
+#[test]
+fn correction_safety_requirement_matrix_is_explicit() {
+    use crate::typing_rule_graph::TypingRuleRequiredSafety;
+
+    assert!(
+        CorrectionSafety::Strict.allows_typing_rule_requirement(TypingRuleRequiredSafety::Strict)
+    );
+    assert!(
+        !CorrectionSafety::Strict.allows_typing_rule_requirement(TypingRuleRequiredSafety::Normal)
+    );
+    assert!(!CorrectionSafety::Normal
+        .allows_typing_rule_requirement(TypingRuleRequiredSafety::Experimental));
+    assert!(CorrectionSafety::Experimental
+        .allows_typing_rule_requirement(TypingRuleRequiredSafety::Experimental));
+}

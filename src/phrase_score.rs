@@ -14,14 +14,31 @@ pub(crate) const NGRAM_MOVED_PREFIX_RIGHT_MARGIN: f64 = 5.0;
 pub(crate) const NGRAM_GLUED_SPLIT_MARGIN: f64 = -0.25;
 pub(crate) const MAX_RU_GLUED_PHRASE_PARTS: usize = 7;
 
+const CONTEXTUAL_NGRAM_SCALE: f64 = 10.0;
+const CONTEXTUAL_NGRAM_FLOOR: f64 = -3.0;
+const CONTEXTUAL_LEFT_FUNCTION_BONUS: f64 = 1.0;
+const CONTEXTUAL_RIGHT_PRONOUN_BONUS: f64 = 8.0;
+const CONTEXTUAL_RIGHT_COMMON_WORD_BONUS: f64 = 2.0;
+
+const MULTIWORD_NGRAM_SCALE: f64 = 15.0;
+const MULTIWORD_NGRAM_FLOOR: f64 = -2.0;
+const MULTIWORD_LONG_PHRASE_BONUS: f64 = 1.0;
+const MULTIWORD_FUNCTION_WITH_STRONG_PARTS_BONUS: f64 = 1.5;
+const MULTIWORD_ONE_LETTER_FUNCTION_BONUS: f64 = 2.0;
+const MULTIWORD_SHORT_PRONOUN_BONUS: f64 = 1.5;
+const MULTIWORD_SHORT_PREPOSITION_BONUS: f64 = 1.5;
+const MULTIWORD_SHORT_FUNCTION_BONUS: f64 = 1.2;
+const MULTIWORD_COMMON_WORD_BONUS: f64 = 1.5;
+const MULTIWORD_STRONG_PART_BONUS: f64 = 2.0;
+
 pub(crate) fn is_contextual_glued_tail_split_shape(
     left: &str,
     right_left: &str,
     right_right: &str,
 ) -> bool {
-    left.chars().count() <= 3
-        && right_left.chars().count() <= 4
-        && right_right.chars().count() >= 4
+    char_len(left) <= 3
+        && char_len(right_left) <= 4
+        && char_len(right_right) >= 4
         && (is_common_ru_word(right_left)
             || is_ru_short_pronoun(right_left)
             || crate::russian_lexicon::russian_tiny_dictionary().contains(right_left)
@@ -35,15 +52,15 @@ pub(crate) fn contextual_glued_tail_split_score(
     right_right: &str,
     ngram_margin: f64,
 ) -> f64 {
-    let mut score = (ngram_margin / 10.0).max(-3.0);
+    let mut score = (ngram_margin / CONTEXTUAL_NGRAM_SCALE).max(CONTEXTUAL_NGRAM_FLOOR);
     if is_common_short_russian_preposition(left) || is_one_letter_russian_function_word(left) {
-        score += 1.0;
+        score += CONTEXTUAL_LEFT_FUNCTION_BONUS;
     }
     if is_ru_short_pronoun(right_left) {
-        score += 8.0;
+        score += CONTEXTUAL_RIGHT_PRONOUN_BONUS;
     }
     if is_common_ru_word(right_right) {
-        score += 2.0;
+        score += CONTEXTUAL_RIGHT_COMMON_WORD_BONUS;
     }
     score
 }
@@ -62,7 +79,7 @@ pub(crate) fn is_confident_multiword_glued_phrase(parts: &[&str]) -> bool {
     let mut strong_parts = 0usize;
     let mut one_letter_parts = 0usize;
     for (idx, part) in parts.iter().enumerate() {
-        let len = part.chars().count();
+        let len = char_len(part);
         if looks_like_incomplete_russian_reflexive_part(part) {
             return false;
         }
@@ -87,7 +104,7 @@ pub(crate) fn is_confident_multiword_glued_phrase(parts: &[&str]) -> bool {
         {
             function_parts += 1;
         }
-        if len >= 4 && is_known_russian_phrase_part(part) {
+        if is_strong_phrase_part(part) {
             strong_parts += 1;
         }
     }
@@ -101,39 +118,39 @@ pub(crate) fn is_confident_multiword_glued_phrase(parts: &[&str]) -> bool {
 }
 
 pub(crate) fn multiword_glued_phrase_score(parts: &[&str], ngram_margin: f64) -> f64 {
-    let mut score = (ngram_margin / 15.0).max(-2.0);
+    let mut score = (ngram_margin / MULTIWORD_NGRAM_SCALE).max(MULTIWORD_NGRAM_FLOOR);
     if parts.len() >= 4 {
-        score += 1.0;
+        score += MULTIWORD_LONG_PHRASE_BONUS;
     }
     let starts_with_function = parts
         .first()
         .is_some_and(|part| is_short_russian_function_word(part));
     let strong_parts = parts
         .iter()
-        .filter(|part| part.chars().count() >= 4 && is_known_russian_phrase_part(part))
+        .filter(|part| is_strong_phrase_part(part))
         .count();
     if starts_with_function && strong_parts >= 2 {
-        score += 1.5;
+        score += MULTIWORD_FUNCTION_WITH_STRONG_PARTS_BONUS;
     }
     for part in parts {
-        let len = part.chars().count();
+        let len = char_len(part);
         if len == 1 && is_one_letter_russian_function_word(part) {
-            score += 2.0;
+            score += MULTIWORD_ONE_LETTER_FUNCTION_BONUS;
         }
         if is_ru_short_pronoun(part) {
-            score += 1.5;
+            score += MULTIWORD_SHORT_PRONOUN_BONUS;
         }
         if is_common_short_russian_preposition(part) {
-            score += 1.5;
+            score += MULTIWORD_SHORT_PREPOSITION_BONUS;
         }
         if is_short_russian_function_word(part) {
-            score += 1.2;
+            score += MULTIWORD_SHORT_FUNCTION_BONUS;
         }
         if is_common_ru_word(part) {
-            score += 1.5;
+            score += MULTIWORD_COMMON_WORD_BONUS;
         }
-        if len >= 4 && is_known_russian_phrase_part(part) {
-            score += 2.0;
+        if is_strong_phrase_part(part) {
+            score += MULTIWORD_STRONG_PART_BONUS;
         }
     }
     score
@@ -143,8 +160,8 @@ fn contains_preferable_merged_russian_part(parts: &[&str]) -> bool {
     parts.windows(2).any(|window| {
         let left = window[0];
         let right = window[1];
-        let left_len = left.chars().count();
-        let right_len = right.chars().count();
+        let left_len = char_len(left);
+        let right_len = char_len(right);
         if left_len > MAX_RU_FUNCTION_GLUE_LEFT_LEN || right_len < 4 {
             return false;
         }
@@ -153,11 +170,19 @@ fn contains_preferable_merged_russian_part(parts: &[&str]) -> bool {
         }
 
         let merged = format!("{left}{right}");
-        merged.chars().count() >= 5 && is_known_russian_phrase_part(&merged)
+        char_len(&merged) >= 5 && is_known_russian_phrase_part(&merged)
     })
 }
 
 fn looks_like_incomplete_russian_reflexive_part(part: &str) -> bool {
-    let len = part.chars().count();
+    let len = char_len(part);
     len >= 6 && (part.ends_with("тьс") || part.ends_with("тс"))
+}
+
+fn is_strong_phrase_part(part: &str) -> bool {
+    char_len(part) >= 4 && is_known_russian_phrase_part(part)
+}
+
+fn char_len(text: &str) -> usize {
+    text.chars().count()
 }

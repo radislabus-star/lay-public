@@ -2,21 +2,13 @@ use crate::phrase_lexicon::looks_like_short_function_word_glued_to_known_word;
 use crate::russian_lexicon::is_known_russian_word_or_form;
 use crate::russian_typo_candidates::generate_extra_letter_candidates;
 use crate::russian_typo_scoring::best_unique_known_ngram_candidate;
-use crate::word_reader::is_cyrillic_word;
 
-use super::guards::correct_invalid_adjective_tail;
+use super::guards::{correct_invalid_adjective_tail, unknown_cyrillic_lower};
 use super::missing::missing_letter_candidate_exists;
 use super::thresholds::NGRAM_EXTRA_LETTER_MARGIN;
 
 pub fn correct_extra_letters(word: &str) -> Option<String> {
-    if word.chars().count() < 6 || !is_cyrillic_word(word) {
-        return None;
-    }
-
-    let lower = word.to_lowercase();
-    if is_known_russian_word_or_form(&lower) {
-        return None;
-    }
+    let lower = unknown_cyrillic_lower(word, 6)?;
     if lower.ends_with("тся") {
         return None;
     }

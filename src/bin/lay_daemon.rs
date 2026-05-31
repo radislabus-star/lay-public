@@ -173,8 +173,6 @@ mod correction_memory_runtime;
 
 #[path = "lay_daemon/auto_undo_runtime.rs"]
 mod auto_undo_runtime;
-#[cfg(test)]
-use auto_undo_runtime::pending_auto_undo_plan;
 
 #[path = "lay_daemon/correction_runtime.rs"]
 mod correction_runtime;

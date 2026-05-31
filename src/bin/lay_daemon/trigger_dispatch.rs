@@ -79,18 +79,21 @@ pub(super) fn apply_manual_correction_result(
     }
 }
 
-struct ManualTriggerCompletion<'a> {
-    current_layout_is_ru: &'a mut bool,
-    last_layout_poll: &'a mut Instant,
-    suppress_next_typing_assist_after_manual_replay: &'a mut bool,
-    shift_state: &'a mut ShiftState,
-    dshift_state: &'a mut DShiftState,
-    pending_multi_tap: &'a mut Option<MultiTapPending>,
-    last_double_at: &'a mut Option<Instant>,
-    clear_on_next_typing: &'a mut bool,
+pub(super) struct ManualTriggerCompletion<'a> {
+    pub(super) current_layout_is_ru: &'a mut bool,
+    pub(super) last_layout_poll: &'a mut Instant,
+    pub(super) suppress_next_typing_assist_after_manual_replay: &'a mut bool,
+    pub(super) shift_state: &'a mut ShiftState,
+    pub(super) dshift_state: &'a mut DShiftState,
+    pub(super) pending_multi_tap: &'a mut Option<MultiTapPending>,
+    pub(super) last_double_at: &'a mut Option<Instant>,
+    pub(super) clear_on_next_typing: &'a mut bool,
 }
 
-fn complete_manual_trigger(correction_result: Option<bool>, ctx: ManualTriggerCompletion<'_>) {
+pub(super) fn complete_manual_trigger(
+    correction_result: Option<bool>,
+    ctx: ManualTriggerCompletion<'_>,
+) {
     apply_manual_correction_result(
         correction_result,
         ctx.current_layout_is_ru,
@@ -102,31 +105,4 @@ fn complete_manual_trigger(correction_result: Option<bool>, ctx: ManualTriggerCo
     *ctx.pending_multi_tap = None;
     *ctx.last_double_at = Some(Instant::now());
     *ctx.clear_on_next_typing = true;
-}
-
-#[allow(clippy::too_many_arguments)]
-pub(super) fn complete_manual_trigger_from_loop(
-    correction_result: Option<bool>,
-    current_layout_is_ru: &mut bool,
-    last_layout_poll: &mut Instant,
-    suppress_next_typing_assist_after_manual_replay: &mut bool,
-    shift_state: &mut ShiftState,
-    dshift_state: &mut DShiftState,
-    pending_multi_tap: &mut Option<MultiTapPending>,
-    last_double_at: &mut Option<Instant>,
-    clear_on_next_typing: &mut bool,
-) {
-    complete_manual_trigger(
-        correction_result,
-        ManualTriggerCompletion {
-            current_layout_is_ru,
-            last_layout_poll,
-            suppress_next_typing_assist_after_manual_replay,
-            shift_state,
-            dshift_state,
-            pending_multi_tap,
-            last_double_at,
-            clear_on_next_typing,
-        },
-    );
 }

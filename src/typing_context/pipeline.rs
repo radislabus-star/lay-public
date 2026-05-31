@@ -1,6 +1,6 @@
 use crate::config::{
-    normalize_typing_assist_pipeline, typing_assist_pipeline_for_policy, CorrectionSafety,
-    TypingAssistRuleConfig,
+    normalize_typing_assist_pipeline, sort_typing_assist_pipeline,
+    typing_assist_pipeline_for_policy, CorrectionSafety, TypingAssistRuleConfig,
 };
 use crate::typing_rule_graph::ids::{CONTEXTUAL_LAYOUT_EN_TO_RU, LAYOUT_EN_TO_RU};
 
@@ -23,7 +23,7 @@ pub fn typing_assist_pipeline_for_context(
             enabled: true,
             priority: contextual_ascii_to_ru_priority(&pipeline),
         });
-        pipeline.sort_by(|a, b| a.priority.cmp(&b.priority).then_with(|| a.id.cmp(&b.id)));
+        sort_typing_assist_pipeline(&mut pipeline);
     }
     pipeline
 }

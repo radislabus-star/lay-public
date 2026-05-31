@@ -1,0 +1,6 @@
+# original	replacement	expected
+ашду	file	false
+ашдуы	files	false
+abkt	филе	true
+njkmrj	только	true
+Lfdfq	Давай	true

@@ -12,6 +12,7 @@ mod types;
 
 pub use crate::text_backend::TextBackendPreference;
 pub use defaults::{default_typing_assist_pipeline, default_typing_assist_rules};
+pub(crate) use pipeline::sort_typing_assist_pipeline;
 pub use pipeline::{
     normalize_typing_assist_pipeline, typing_assist_pipeline_for_auto_replace,
     typing_assist_pipeline_for_policy,

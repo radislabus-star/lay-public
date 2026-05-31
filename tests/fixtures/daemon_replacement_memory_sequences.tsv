@@ -1,0 +1,5 @@
+# id	initial	scope	original	replacement	move_left	backspaces	insert	move_right	prev_len	prev_space	prev0	prev1	next_input	tail
+visual_b_space	double\sb\s	2	double\sb\s	double\sи\s	1	1	и	1	2	true	double	и	слово	и\sслово
+html_first	реьд\s	1	реьд\s	html\s	1	4	html	1	1	true	html			
+html_second	djn\s	1	djn\s	вот\s	1	3	вот	1	2	true	html	вот		html\sвот\s
+deferred_djn	html\sdjn\sx	1	djn\s	вот\s	1	3	вот	1	2	false	html	вот	x	вот\s

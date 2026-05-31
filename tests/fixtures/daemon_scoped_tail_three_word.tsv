@@ -1,0 +1,5 @@
+# id	input	layout	scope	original	replacement	expected_candidate	forbidden_contains	insert	backspaces
+generalizes_mixed_tail	проверка\sв\sВщгиду	ru	3	проверка\sв\sВщгиду	проверка\sв\sDouble			Double	6
+mixed_layout_tail	good\sghbdtn\sntrcn	us	3	good\sghbdtn\sntrcn	good\sпривет\sтекст			текст	5
+stable_ru_context_current_tail	как\sкотовые\sашду	ru	3	как\sкотовые\sашду	как\sкотовые\sfile	как\sкотовые\sfile	кротовые	file	4
+short_repeated_context	аа\sслово\sвот	ru	3	аа\sслово\sвот	аа\sслово\sdjn			djn	3

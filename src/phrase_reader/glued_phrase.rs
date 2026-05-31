@@ -98,6 +98,9 @@ pub fn correct_glued_russian_phrase(word: &str) -> Option<String> {
                 }
 
                 let candidate = format!("{left_candidate} {right_candidate}");
+                if starts_with_multi_letter_preposition_text(&candidate) {
+                    continue;
+                }
                 let margin = crate::ngram::ru_candidate_margin(&candidate, &lower);
                 if repair_cost == 0.0
                     && !is_confident_glued_phrase_split(left, right)
@@ -124,6 +127,9 @@ fn correct_multiword_glued_russian_phrase(lower: &str) -> Option<String> {
 
     let mut scored_candidates = Vec::new();
     for parts in cyrillic_word_segmentations(lower, MAX_RU_GLUED_PHRASE_PARTS) {
+        if starts_with_multi_letter_preposition(&parts) {
+            continue;
+        }
         if !is_confident_multiword_glued_phrase(&parts) {
             continue;
         }
@@ -141,4 +147,16 @@ fn correct_multiword_glued_russian_phrase(lower: &str) -> Option<String> {
     let ((candidate, _), _) =
         choose_best_with_gap(scored_candidates, 0.75, |(_, score)| Some(*score))?;
     Some(candidate)
+}
+
+fn starts_with_multi_letter_preposition(parts: &[&str]) -> bool {
+    parts
+        .first()
+        .is_some_and(|part| part.chars().count() >= 2 && is_common_short_russian_preposition(part))
+}
+
+fn starts_with_multi_letter_preposition_text(text: &str) -> bool {
+    text.split_whitespace()
+        .next()
+        .is_some_and(|part| part.chars().count() >= 2 && is_common_short_russian_preposition(part))
 }

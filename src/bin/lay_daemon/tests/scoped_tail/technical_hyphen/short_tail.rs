@@ -30,12 +30,12 @@ fn scoped_tail_keeps_ascii_hyphen_word_and_flips_current_short_tail() {
             &format!("{completed_original} {current_original}"),
             &format!("{completed_original} {current_target}")
         ),
-        Some(TextReplacement {
-            move_left: 0,
-            backspaces: current_original.chars().count() as u32,
-            insert: current_target,
-            move_right: 0,
-        })
+        Some(text_replacement(
+            0,
+            current_original.chars().count() as u32,
+            current_target,
+            0,
+        ))
     );
 }
 

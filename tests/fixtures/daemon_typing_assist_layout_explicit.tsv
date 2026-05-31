@@ -1,3 +1,9 @@
 # input	expected
 кгы\s	rus\s
 утп\s	eng\s
+ашду\s	file\s
+ашдуы\s	files\s
+еукьштфд\s	terminal\s
+сфкпщ\s	cargo\s
+ОБYJDB\s	ОБНОВИ\s
+CRBK\s	СКИЛ\s

@@ -1,0 +1,2 @@
+# input	allow_layout_auto	expected_output	expected_replacement
+кторое\s	false	которое\s	которое

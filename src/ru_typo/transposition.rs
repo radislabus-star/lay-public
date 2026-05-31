@@ -1,22 +1,16 @@
 use crate::russian_lexicon::is_known_russian_word_or_form;
 use crate::russian_typo_scoring::ngram_allows_ru_candidate;
 use crate::text_case::apply_word_case;
-use crate::word_reader::is_cyrillic_word;
 
 use super::extra::extra_letter_candidate_exists;
-use super::guards::looks_like_known_word_plus_one_letter_function_suffix;
+use super::guards::{
+    looks_like_known_word_plus_one_letter_function_suffix, unknown_cyrillic_lower,
+};
 use super::missing::missing_letter_candidate_exists;
 use super::thresholds::NGRAM_TRANSPOSE_MARGIN;
 
 pub(crate) fn correct_adjacent_transposition(word: &str) -> Option<String> {
-    if word.chars().count() < 5 || !is_cyrillic_word(word) {
-        return None;
-    }
-
-    let lower = word.to_lowercase();
-    if is_known_russian_word_or_form(&lower) {
-        return None;
-    }
+    let lower = unknown_cyrillic_lower(word, 5)?;
     if missing_letter_candidate_exists(word, &lower) {
         return None;
     }

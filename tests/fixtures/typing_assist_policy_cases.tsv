@@ -1,0 +1,12 @@
+# class	safety	input	allow_layout_auto	expected	message
+default_glued_pronoun	default	онаубыточная\s	false	она\sубыточная\s	glued pronoun phrase must split
+default_glued_pronoun	default	ониготовы\s	false	они\sготовы\s	glued pronoun phrase must split
+normal_glued_phrase	normal	прблематут\s	false	проблема\sтут\s	glued phrase may repair one safe internal typo
+normal_glued_phrase	normal	тоесамое\s	false	тоже\sсамое\s	glued phrase split must keep space boundary
+normal_false_positive	normal	компаниия\s	false	компания\s	duplicated-letter typo must not become orphan suffix
+normal_false_positive	normal	елать\s	false	None	single-letter substitution must not guess a different dictionary word
+normal_false_positive	normal	таможе\s	false	None	missing-letter rule must not append a final consonant to unfinished-looking word
+normal_false_positive	normal	перекупа\s	false	None	missing-letter rule must not append a final consonant to plausible standalone form
+normal_false_positive	normal	никуму\s	true	None	normal mode must not use vowel-confusion guesses
+normal_false_positive	normal	котовые\s	false	None	known Russian adjective form must not become a different known word
+experimental_allowed	experimental	никуму\s	true	никому\s	experimental mode may use vowel-confusion guesses

@@ -11,7 +11,7 @@ use super::key_emit::{
 const TEXT_REPLACE_KEY_PACE_MS: u64 = 1;
 
 #[derive(Debug, Clone)]
-pub(crate) struct PreparedTextInsert {
+struct PreparedTextInsert {
     runs: Vec<TextInputRun>,
     insert_layout_is_ru: bool,
 }
@@ -22,7 +22,24 @@ pub(crate) struct TextInsertOutcome {
     pub layout_already_set: bool,
 }
 
-pub(crate) fn prepare_text_insert_for_replacement_plan(
+#[derive(Debug)]
+pub(crate) enum TextReplacementPipelineError {
+    Preflight(String),
+    Delete(std::io::Error),
+    Insert(String),
+}
+
+impl TextReplacementPipelineError {
+    pub(crate) fn log(self, label: &str, delete_failure_label: &str) {
+        match self {
+            Self::Preflight(e) => log(&format!("⚠ {label} skipped before delete: {e}")),
+            Self::Delete(e) => log(&format!("⚠ {label} {delete_failure_label}: {e}")),
+            Self::Insert(e) => log(&format!("⚠ {label} {e}")),
+        }
+    }
+}
+
+fn prepare_text_insert_for_replacement_plan(
     plan: &TextReplacement,
     fallback_layout_is_ru: bool,
 ) -> Result<PreparedTextInsert, String> {
@@ -39,10 +56,7 @@ pub(crate) fn prepare_text_insert_for_replacement_plan(
     })
 }
 
-pub(crate) fn apply_text_replacement(
-    dev: &mut VirtualDevice,
-    plan: &TextReplacement,
-) -> std::io::Result<()> {
+fn apply_text_replacement(dev: &mut VirtualDevice, plan: &TextReplacement) -> std::io::Result<()> {
     emit_key_taps(
         dev,
         KeyCode::KEY_LEFT,
@@ -53,7 +67,21 @@ pub(crate) fn apply_text_replacement(
     Ok(())
 }
 
-pub(crate) fn insert_prepared_text_for_replacement_plan(
+pub(crate) fn apply_text_replacement_pipeline(
+    dev: &mut VirtualDevice,
+    plan: &TextReplacement,
+    replacement: &str,
+    fallback_layout_is_ru: bool,
+    label: &str,
+) -> Result<TextInsertOutcome, TextReplacementPipelineError> {
+    let prepared_insert = prepare_text_insert_for_replacement_plan(plan, fallback_layout_is_ru)
+        .map_err(TextReplacementPipelineError::Preflight)?;
+    apply_text_replacement(dev, plan).map_err(TextReplacementPipelineError::Delete)?;
+    insert_prepared_text_for_replacement_plan(dev, plan, replacement, &prepared_insert, label)
+        .map_err(TextReplacementPipelineError::Insert)
+}
+
+fn insert_prepared_text_for_replacement_plan(
     dev: &mut VirtualDevice,
     plan: &TextReplacement,
     replacement: &str,
@@ -105,7 +133,7 @@ pub(crate) fn switch_or_restore_layout_after_text_edit(
     }
 }
 
-pub(crate) fn layout_after_replacement_plan(
+fn layout_after_replacement_plan(
     plan: &TextReplacement,
     replacement: &str,
     insert_layout_is_ru: bool,
@@ -130,3 +158,7 @@ fn continuation_layout_after_completed_tail(text: &str, fallback_is_ru: bool) ->
         .map(|context| preferred_layout_for_text(context, fallback_is_ru))
         .unwrap_or_else(|| preferred_layout_for_text(text, fallback_is_ru))
 }
+
+#[cfg(test)]
+#[path = "replacement_tests.rs"]
+mod tests;

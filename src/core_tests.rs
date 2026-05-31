@@ -1,4 +1,9 @@
 use super::*;
+use crate::typing_assist_test_fixtures::text_replacement;
+
+fn key_events(text: &str, layout_is_ru: bool) -> Vec<KeyEvent> {
+    text_to_key_events(text, layout_is_ru).expect("core facade fixture must be typable")
+}
 
 #[test]
 fn facade_exposes_layout_conversion_and_backend_detection() {
@@ -39,15 +44,7 @@ fn facade_exposes_minimal_text_replacement() {
     );
     assert!(committed_separator_is_preserved("кторое ", "которое "));
     assert!(!committed_separator_is_preserved("кторое ", "которое"));
-    assert_eq!(
-        plan,
-        TextReplacement {
-            move_left: 7,
-            backspaces: 3,
-            insert: "ТУТ".to_string(),
-            move_right: 7,
-        }
-    );
+    assert_eq!(plan, text_replacement(7, 3, "ТУТ", 7));
 }
 
 #[test]
@@ -58,28 +55,7 @@ fn facade_exposes_correction_contract() {
 
 #[test]
 fn facade_exposes_decoder_contract() {
-    let events = [
-        KeyEvent {
-            keycode: evdev::KeyCode::KEY_G.code(),
-            shift: false,
-            layout_is_ru: false,
-        },
-        KeyEvent {
-            keycode: evdev::KeyCode::KEY_O.code(),
-            shift: false,
-            layout_is_ru: false,
-        },
-        KeyEvent {
-            keycode: evdev::KeyCode::KEY_O.code(),
-            shift: false,
-            layout_is_ru: false,
-        },
-        KeyEvent {
-            keycode: evdev::KeyCode::KEY_D.code(),
-            shift: false,
-            layout_is_ru: false,
-        },
-    ];
+    let events = key_events("good", false);
     let result = decode_manual_tail(ManualDecodeRequest {
         events: &events,
         original: "good",
@@ -95,33 +71,7 @@ fn facade_exposes_decoder_contract() {
 
 #[test]
 fn facade_exposes_physical_keyboard_mapping() {
-    let events = [
-        KeyEvent {
-            keycode: evdev::KeyCode::KEY_L.code(),
-            shift: false,
-            layout_is_ru: false,
-        },
-        KeyEvent {
-            keycode: evdev::KeyCode::KEY_T.code(),
-            shift: false,
-            layout_is_ru: false,
-        },
-        KeyEvent {
-            keycode: evdev::KeyCode::KEY_K.code(),
-            shift: false,
-            layout_is_ru: false,
-        },
-        KeyEvent {
-            keycode: evdev::KeyCode::KEY_F.code(),
-            shift: false,
-            layout_is_ru: false,
-        },
-        KeyEvent {
-            keycode: evdev::KeyCode::KEY_Q.code(),
-            shift: false,
-            layout_is_ru: false,
-        },
-    ];
+    let events = key_events("ltkfq", false);
 
     assert_eq!(map_original_events(&events), "ltkfq");
     assert_eq!(map_events_to_layout(&events, true), "делай");
@@ -156,18 +106,7 @@ fn facade_exposes_text_backend_contract() {
 
 #[test]
 fn facade_exposes_replay_layout_decision() {
-    let events = [
-        KeyEvent {
-            keycode: evdev::KeyCode::KEY_L.code(),
-            shift: false,
-            layout_is_ru: false,
-        },
-        KeyEvent {
-            keycode: evdev::KeyCode::KEY_T.code(),
-            shift: false,
-            layout_is_ru: false,
-        },
-    ];
+    let events = key_events("lt", false);
 
     assert_eq!(
         replay_layout_decision(&events),
@@ -180,23 +119,7 @@ fn facade_exposes_replay_layout_decision() {
 
 #[test]
 fn facade_exposes_word_event_splitting_and_text_tail() {
-    let events = [
-        KeyEvent {
-            keycode: evdev::KeyCode::KEY_A.code(),
-            shift: false,
-            layout_is_ru: false,
-        },
-        KeyEvent {
-            keycode: evdev::KeyCode::KEY_SPACE.code(),
-            shift: false,
-            layout_is_ru: false,
-        },
-        KeyEvent {
-            keycode: evdev::KeyCode::KEY_B.code(),
-            shift: false,
-            layout_is_ru: false,
-        },
-    ];
+    let events = key_events("a b", false);
     let words = split_event_words(&events).expect("words");
 
     assert_eq!(words.len(), 2);
@@ -206,11 +129,7 @@ fn facade_exposes_word_event_splitting_and_text_tail() {
 #[test]
 fn facade_exposes_word_buffer() {
     let mut buffer = WordBuffer::new();
-    buffer.push(KeyEvent {
-        keycode: evdev::KeyCode::KEY_L.code(),
-        shift: false,
-        layout_is_ru: false,
-    });
+    buffer.push(key_events("l", false).remove(0));
 
     let (events, backspaces) = buffer.what_to_replay(MAX_REPLACE_WORDS).expect("tail");
 

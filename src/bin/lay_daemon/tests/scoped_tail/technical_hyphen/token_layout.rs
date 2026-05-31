@@ -43,11 +43,7 @@ fn scoped_tail_flips_cyrillic_hyphen_technical_token_to_ascii() {
 fn scoped_tail_keeps_unknown_previous_word_and_flips_cyrillic_hyphen_technical_token() {
     let mut buffer = WordBuffer::new();
     let left_events = [
-        KeyEvent {
-            keycode: KeyCode::KEY_SEMICOLON.code(),
-            shift: true,
-            layout_is_ru: true,
-        },
+        key_event_with_shift(KeyCode::KEY_SEMICOLON, true, true),
         key_event(KeyCode::KEY_SEMICOLON, true),
         key_event(KeyCode::KEY_SEMICOLON, true),
         key_event(KeyCode::KEY_SEMICOLON, true),

@@ -1,0 +1,2 @@
+# label	initial_parts	previous_events	previous_replacement	move_left	backspaces	insert	move_right	expected_context	next_input	final_events	final_replacement
+left_context_after_autoreplace	порт\sзщке\s@ru	зщке\s	port\s	1	4	port	1	порт\sport\s	gjhn	gjhn\s	порт\s

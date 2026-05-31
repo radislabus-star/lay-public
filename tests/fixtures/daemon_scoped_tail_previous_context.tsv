@@ -1,0 +1,3 @@
+# id	input	layout	scope	expected
+confident_bad_previous	ghbdtn\svbh	us	2	привет\sмир
+unknown_previous	foobar\sghj	us	2	foobar\sпро

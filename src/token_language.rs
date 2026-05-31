@@ -5,7 +5,7 @@
 //! emit text.
 
 use crate::word_reader::split_ws_segments;
-use crate::word_recognizer::{recognize_token, WordKind, WordScript};
+use crate::word_recognizer::recognize_token;
 
 #[derive(Clone, Copy)]
 pub(crate) enum Lang {
@@ -18,20 +18,11 @@ pub(crate) fn warm_up() {
 }
 
 pub(crate) fn is_known_ru_token(token: &str) -> bool {
-    let identity = recognize_token(token);
-    identity.known_ru
-        && identity.script == WordScript::Cyrillic
-        && matches!(identity.kind, WordKind::PlainWord)
+    recognize_token(token).is_known_russian_plain_word()
 }
 
 pub(crate) fn is_known_en_token(token: &str) -> bool {
-    let identity = recognize_token(token);
-    identity.script == WordScript::Ascii
-        && (identity.known_en || identity.protected)
-        && matches!(
-            identity.kind,
-            WordKind::PlainWord | WordKind::TechnicalToken
-        )
+    recognize_token(token).is_known_ascii_or_protected_token()
 }
 
 pub(crate) fn all_tokens_known(text: &str, lang: Lang) -> bool {
@@ -46,19 +37,8 @@ pub(crate) fn all_tokens_known(text: &str, lang: Lang) -> bool {
         }
         found = true;
         let known = match lang {
-            Lang::Ru => {
-                identity.known_ru
-                    && identity.script == WordScript::Cyrillic
-                    && matches!(identity.kind, WordKind::PlainWord)
-            }
-            Lang::En => {
-                identity.script == WordScript::Ascii
-                    && (identity.known_en || identity.protected)
-                    && matches!(
-                        identity.kind,
-                        WordKind::PlainWord | WordKind::TechnicalToken
-                    )
-            }
+            Lang::Ru => identity.is_known_russian_plain_word(),
+            Lang::En => identity.is_known_ascii_or_protected_token(),
         };
         if !known {
             return false;

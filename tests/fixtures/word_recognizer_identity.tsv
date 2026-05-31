@@ -1,0 +1,5 @@
+# token	script	kind	known_ru	known_en	protected	technical
+филе	Cyrillic	PlainWord	true	false	false	false
+file	Ascii	PlainWord	false	true	false	false
+wi-fi	Ascii	TechnicalToken	false	false	false	true
+API	Ascii	TechnicalToken	false	true	true	true

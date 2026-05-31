@@ -1,0 +1,5 @@
+# label	good	bad	min_margin
+missing_letter	правильно	првильно	0.0
+repeated_letter	исправлено	исправленно	-0.50
+accidental_split	явно	я\sвно	-1.00
+neighbor_typo	плохо	плозо	-0.50

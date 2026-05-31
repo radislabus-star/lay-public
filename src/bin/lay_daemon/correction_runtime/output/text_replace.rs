@@ -7,8 +7,7 @@ use super::super::super::correction_memory_runtime::{
     remember_manual_text_correction, ManualTextCorrectionMemory,
 };
 use super::super::super::{
-    apply_text_replacement, insert_prepared_text_for_replacement_plan, log,
-    prepare_text_insert_for_replacement_plan, record_recent_action, switch_to_target_layout,
+    apply_text_replacement_pipeline, log, record_recent_action, switch_to_target_layout,
 };
 use super::context::{ManualOutputCommon, OutputFlow};
 
@@ -30,23 +29,11 @@ pub(crate) fn try_manual_text_replacement(
     }
 
     let plan = manual_text_replacement_plan(ctx, text, kind);
-    let prepared_insert = match prepare_text_insert_for_replacement_plan(&plan, ctx.target_is_ru) {
-        Ok(prepared) => prepared,
-        Err(e) => {
-            log(&format!("⚠ {kind} skipped before delete: {e}"));
-            return OutputFlow::Return(None);
-        }
-    };
-    if let Err(e) = apply_text_replacement(kbd, &plan) {
-        log(&format!("⚠ {kind} minimal replace failed: {e}"));
-        return OutputFlow::Return(None);
-    }
-
     let insert_outcome =
-        match insert_prepared_text_for_replacement_plan(kbd, &plan, text, &prepared_insert, kind) {
+        match apply_text_replacement_pipeline(kbd, &plan, text, ctx.target_is_ru, kind) {
             Ok(outcome) => outcome,
             Err(e) => {
-                log(&format!("⚠ {kind} {e}"));
+                e.log(kind, "minimal replace failed");
                 return OutputFlow::Return(None);
             }
         };

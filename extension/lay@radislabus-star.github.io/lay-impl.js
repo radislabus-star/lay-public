@@ -22,14 +22,17 @@ const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-const APP_VERSION = '0.1.200';
+const APP_VERSION = '0.1.201';
 const APP_DESCRIPTION = 'Alpha RU/EN layout helper: double Shift и помощь при наборе';
-const APP_RELEASE_DATE = '2026-05-28';
+const APP_RELEASE_DATE = '2026-05-31';
 const APP_LICENSE = 'MIT';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_PLATFORM = 'Linux desktops: GNOME, KDE, Wayland, X11';
 const APP_GNOME_SUPPORT = 'GNOME 45-47, 50';
 const MENU_WIDTH = 360;
+const DEFAULT_SCOPE_WORDS = 1;
+const MIN_SCOPE_WORDS = 1;
+const MAX_SCOPE_WORDS = 3;
 const COMPACT_SUBTITLE_STYLE = 'font-weight:normal; font-size:76%; opacity:180;';
 const SEGMENT_BUTTON_STYLE = 'padding:2px 8px; border-radius:6px; min-width:0;';
 const LEARNING_LOG_TOOLTIP = 'Запоминать правки работает в два слоя:\n'
@@ -72,6 +75,28 @@ const TYPING_RULES = [
     {id: 'missing_letter', label: 'Пропущенная буква'},
     {id: 'glued_phrase', label: 'Склейка слов'},
 ];
+const TRIGGER_OPTIONS = [
+    ['double-lshift', 'Double Shift'],
+    ['double-ctrl', 'Ctrl×2'],
+    ['double-alt', 'Alt×2'],
+    ['caps-lock', 'CapsLock'],
+    ['single-rshift', 'RShift'],
+    ['single-rctrl', 'RCtrl'],
+    ['single-ralt', 'RAlt'],
+    ['single-pause', 'Pause'],
+];
+const FORCE_KEY_OPTIONS = [
+    ['single-rctrl', 'RCtrl'],
+    ['single-ralt', 'RAlt'],
+    ['single-rshift', 'RShift'],
+    ['single-pause', 'Pause'],
+    ['caps-lock', 'CapsLock'],
+];
+const SAFETY_OPTIONS = [
+    ['strict', 'строго'],
+    ['normal', 'норма'],
+    ['experimental', 'эксп.'],
+];
 const DEFAULT_TYPING_PIPELINE = TYPING_RULES.map((rule, idx) => ({
     id: rule.id,
     enabled: true,
@@ -91,7 +116,7 @@ const DEFAULTS = {
     tap_max_ms: 200,
     shift_window_ms: 250,
     debounce_ms: 50,
-    replace_words: 1,
+    replace_words: DEFAULT_SCOPE_WORDS,
     auto_replace: false,
     typing_assist: false,
     correction_safety: 'normal',
@@ -109,7 +134,7 @@ function loadConfig() {
     try {
         const [, bytes] = Gio.File.new_for_path(CONFIG_PATH).load_contents(null);
         const parsed = JSON.parse(new TextDecoder().decode(bytes));
-        const cfg = {...DEFAULTS, ...parsed};
+        const cfg = normalizeConfig({...DEFAULTS, ...parsed});
         if (parsed.correction_engine === undefined)
             cfg.correction_engine = parsed.mode === 'llm' ? 'smart' : 'replay';
         cfg.typing_assist_pipeline = normalizeTypingPipeline(parsed.typing_assist_pipeline);
@@ -118,7 +143,7 @@ function loadConfig() {
         return cfg;
     } catch(e) {
         return {
-            ...DEFAULTS,
+            ...normalizeConfig(DEFAULTS),
             typing_assist_pipeline: normalizeTypingPipeline(DEFAULT_TYPING_PIPELINE),
             ptah_alexs_rules: [],
         };
@@ -126,11 +151,41 @@ function loadConfig() {
 }
 function saveConfig(cfg) {
     try { Gio.File.new_for_path(GLib.get_home_dir() + '/.config/lay').make_directory_with_parents(null); } catch(e) {}
+    cfg = normalizeConfig(cfg);
     cfg.typing_assist_pipeline = normalizeTypingPipeline(cfg.typing_assist_pipeline);
     cfg.ptah_alexs_rules = normalizePtahRules(cfg.ptah_alexs_rules);
     const bytes = new TextEncoder().encode(JSON.stringify(cfg, null, 2));
     Gio.File.new_for_path(CONFIG_PATH).replace_contents(
         bytes, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
+}
+function clampNumber(value, min, max, fallback) {
+    const number = Number(value);
+    if (!Number.isFinite(number))
+        return fallback;
+    return Math.max(min, Math.min(max, number));
+}
+function normalizeScope(value) {
+    return clampNumber(value, MIN_SCOPE_WORDS, MAX_SCOPE_WORDS, DEFAULT_SCOPE_WORDS);
+}
+function normalizeChoice(value, allowed, fallback) {
+    return allowed.includes(value) ? value : fallback;
+}
+function normalizeConfig(cfg) {
+    return {
+        ...DEFAULTS,
+        ...cfg,
+        replace_words: normalizeScope(cfg?.replace_words),
+        correction_engine: normalizeChoice(cfg?.correction_engine, ['replay', 'smart'], DEFAULTS.correction_engine),
+        text_backend: normalizeChoice(cfg?.text_backend, ['uinput', 'ime', 'auto'], DEFAULTS.text_backend),
+        correction_safety: normalizeChoice(cfg?.correction_safety, SAFETY_OPTIONS.map(([id]) => id), DEFAULTS.correction_safety),
+        ptah_alexs_mode: !!cfg?.ptah_alexs_mode,
+        multi_tap_scope: !!cfg?.multi_tap_scope,
+        multi_tap_max_taps: clampNumber(cfg?.multi_tap_max_taps, 2, 4, DEFAULTS.multi_tap_max_taps),
+        mode: 'simple',
+    };
+}
+function optionLabel(options, id, fallback) {
+    return options.find(([value]) => value === id)?.[1] ?? fallback;
 }
 function normalizePtahLayout(layout) {
     const id = String(layout ?? '').trim().toLowerCase();
@@ -560,9 +615,7 @@ class LayIndicator extends PanelMenu.Button {
     _init(service = null) {
         super._init(0.0, 'lay');
         this._service = service;
-        this._cfg = loadConfig();
-        this._cfg.replace_words = Math.max(1, Math.min(3, this._cfg.replace_words));
-        this._cfg.correction_engine = this._cfg.correction_engine === 'smart' ? 'smart' : 'replay';
+        this._cfg = normalizeConfig(loadConfig());
 
         this._panelBox = new St.BoxLayout({
             style: 'spacing:4px; padding:0 2px;',
@@ -629,33 +682,8 @@ class LayIndicator extends PanelMenu.Button {
         ));
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-        this.menu.addMenuItem(this._segmentedRow('Режим', [
-            ['replay', 'Replay', () => {
-                this._cfg.correction_engine = 'replay';
-                this._cfg.mode = 'simple';
-                this._saveAndRefresh();
-            }],
-            ['smart', 'Smart', () => {
-                this._cfg.correction_engine = 'smart';
-                this._cfg.mode = 'simple';
-                this._saveAndRefresh();
-            }],
-        ], this._engineButtons));
-
-        this.menu.addMenuItem(this._segmentedRow('Область', [
-            ['1', '1 слово', () => {
-                this._cfg.replace_words = 1;
-                this._saveAndRefresh();
-            }],
-            ['2', '2 слова', () => {
-                this._cfg.replace_words = 2;
-                this._saveAndRefresh();
-            }],
-            ['3', '3 слова', () => {
-                this._cfg.replace_words = 3;
-                this._saveAndRefresh();
-            }],
-        ], this._scopeButtons));
+        this.menu.addMenuItem(this._segmentedRow('Режим', this._engineOptions(), this._engineButtons));
+        this.menu.addMenuItem(this._segmentedRow('Область', this._scopeOptions(), this._scopeButtons));
 
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._arbiterMenu());
@@ -732,23 +760,7 @@ class LayIndicator extends PanelMenu.Button {
 
     _arbiterMenu() {
         const item = new PopupMenu.PopupSubMenuMenuItem('Арбитр', false);
-        item.menu.addMenuItem(this._segmentedRow('Осторожность', [
-            ['strict', 'Строго', () => {
-                this._cfg.correction_safety = 'strict';
-                this._saveAndRefresh();
-                restartDaemon();
-            }],
-            ['normal', 'Норма', () => {
-                this._cfg.correction_safety = 'normal';
-                this._saveAndRefresh();
-                restartDaemon();
-            }],
-            ['experimental', 'Эксп.', () => {
-                this._cfg.correction_safety = 'experimental';
-                this._saveAndRefresh();
-                restartDaemon();
-            }],
-        ], this._safetyButtons));
+        item.menu.addMenuItem(this._segmentedRow('Осторожность', this._safetyOptions(), this._safetyButtons));
         item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         item.menu.addMenuItem(this._switchItem(
             'Авто-layout после пробела',
@@ -775,19 +787,38 @@ class LayIndicator extends PanelMenu.Button {
             LEM_3_TOOLTIP
         ));
         item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        item.menu.addMenuItem(this._segmentedRow('Вставка', [
-            ['uinput', 'uinput', () => {
-                this._cfg.text_backend = 'uinput';
-                this._saveAndRefresh();
-                restartDaemon();
-            }],
-            ['ime', 'IME', () => {
-                this._cfg.text_backend = 'ime';
-                this._saveAndRefresh();
-                restartDaemon();
-            }],
-        ], this._backendButtons));
+        item.menu.addMenuItem(this._segmentedRow('Вставка', this._backendOptions(), this._backendButtons));
         return item;
+    }
+
+    _engineOptions() {
+        return [
+            ['replay', 'Replay', () => this._setConfigValue('correction_engine', 'replay')],
+            ['smart', 'Smart', () => this._setConfigValue('correction_engine', 'smart')],
+        ];
+    }
+
+    _scopeOptions() {
+        return [
+            ['1', '1 слово', () => this._setConfigValue('replace_words', 1)],
+            ['2', '2 слова', () => this._setConfigValue('replace_words', 2)],
+            ['3', '3 слова', () => this._setConfigValue('replace_words', 3)],
+        ];
+    }
+
+    _safetyOptions() {
+        return SAFETY_OPTIONS.map(([id, label]) => [
+            id,
+            label[0].toUpperCase() + label.slice(1),
+            () => this._setConfigValue('correction_safety', id, true),
+        ]);
+    }
+
+    _backendOptions() {
+        return [
+            ['uinput', 'uinput', () => this._setConfigValue('text_backend', 'uinput', true)],
+            ['ime', 'IME', () => this._setConfigValue('text_backend', 'ime', true)],
+        ];
     }
 
     _recentActionsMenu() {
@@ -1258,16 +1289,7 @@ class LayIndicator extends PanelMenu.Button {
     _triggerMenu() {
         const item = new PopupMenu.PopupSubMenuMenuItem('', false);
         this._triggerMenuItem = item;
-        for (const [id, label] of [
-            ['double-lshift', 'Double Shift'],
-            ['double-ctrl', 'Ctrl×2'],
-            ['double-alt', 'Alt×2'],
-            ['caps-lock', 'CapsLock'],
-            ['single-rshift', 'RShift'],
-            ['single-rctrl', 'RCtrl'],
-            ['single-ralt', 'RAlt'],
-            ['single-pause', 'Pause'],
-        ]) {
+        for (const [id, label] of TRIGGER_OPTIONS) {
             const row = new PopupMenu.PopupMenuItem(label);
             row.connect('activate', () => this._setTrigger(id));
             this._triggerItems[id] = row;
@@ -1297,13 +1319,7 @@ class LayIndicator extends PanelMenu.Button {
     _forceKeyMenu(title, key, target) {
         const item = new PopupMenu.PopupSubMenuMenuItem(`${title}: ${this._forceKeyLabel(this._cfg[key])}`, false);
         item._layConfigKey = key;
-        for (const [id, label] of [
-            ['single-rctrl', 'RCtrl'],
-            ['single-ralt', 'RAlt'],
-            ['single-rshift', 'RShift'],
-            ['single-pause', 'Pause'],
-            ['caps-lock', 'CapsLock'],
-        ]) {
+        for (const [id, label] of FORCE_KEY_OPTIONS) {
             const row = new PopupMenu.PopupMenuItem(label);
             row.connect('activate', () => this._setForceKey(key, id));
             target[id] = row;
@@ -1450,6 +1466,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _refreshSelections() {
+        this._cfg = normalizeConfig(this._cfg);
         if (this._triggerMenuItem)
             this._triggerMenuItem.label.text = `Триггер: ${this._triggerLabel(this._cfg.trigger)}`;
         if (this._forceRuMenuItem)
@@ -1486,23 +1503,26 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _saveAndRefresh() {
-        this._cfg.replace_words = Math.max(1, Math.min(3, this._cfg.replace_words));
-        this._cfg.correction_engine = this._cfg.correction_engine === 'smart' ? 'smart' : 'replay';
-        this._cfg.text_backend = ['uinput', 'ime', 'auto'].includes(this._cfg.text_backend)
-            ? this._cfg.text_backend
-            : 'uinput';
-        this._cfg.correction_safety = ['strict', 'normal', 'experimental'].includes(this._cfg.correction_safety)
-            ? this._cfg.correction_safety
-            : 'normal';
-        this._cfg.ptah_alexs_mode = !!this._cfg.ptah_alexs_mode;
+        this._cfg = normalizeConfig(this._cfg);
         this._cfg.ptah_alexs_rules = normalizePtahRules(this._cfg.ptah_alexs_rules);
         if (this._cfg.force_ru_key === this._cfg.force_en_key)
             this._cfg.force_layout_hotkeys = false;
-        this._cfg.multi_tap_scope = !!this._cfg.multi_tap_scope;
-        this._cfg.multi_tap_max_taps = Math.max(2, Math.min(4, Number(this._cfg.multi_tap_max_taps || 4)));
-        this._cfg.mode = 'simple';
         this._refreshSelections();
         saveConfig(this._cfg);
+    }
+
+    _setConfigValue(key, value, restart = false) {
+        if (this._cfg[key] === value) {
+            this._refreshSelections();
+            return;
+        }
+        this._cfg[key] = value;
+        this._saveAndRefresh();
+        if (restart) {
+            restartDaemon();
+            this._setDaemonBusy('перезапуск...');
+            this._scheduleStatusRefreshes();
+        }
     }
 
     _setTrigger(id) {
@@ -1566,33 +1586,15 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _triggerLabel(id) {
-        return {
-            'double-lshift': 'Double Shift',
-            'double-ctrl': 'Ctrl×2',
-            'double-alt': 'Alt×2',
-            'caps-lock': 'CapsLock',
-            'single-rshift': 'RShift',
-            'single-rctrl': 'RCtrl',
-            'single-ralt': 'RAlt',
-        }[id] ?? 'Double Shift';
+        return optionLabel(TRIGGER_OPTIONS, id, 'Double Shift');
     }
 
     _forceKeyLabel(id) {
-        return {
-            'single-rctrl': 'RCtrl',
-            'single-ralt': 'RAlt',
-            'single-rshift': 'RShift',
-            'single-pause': 'Pause',
-            'caps-lock': 'CapsLock',
-        }[id] ?? 'RCtrl';
+        return optionLabel(FORCE_KEY_OPTIONS, id, 'RCtrl');
     }
 
     _safetyLabel() {
-        return {
-            strict: 'строго',
-            normal: 'норма',
-            experimental: 'эксп.',
-        }[this._cfg.correction_safety] ?? 'норма';
+        return optionLabel(SAFETY_OPTIONS, this._cfg.correction_safety, 'норма');
     }
 
     _actionKindLabel(kind) {

@@ -1,0 +1,4 @@
+# original	replacement	expected
+цwi-fi	wi-fi	false
+цш-аш	wi-fi	false
+API	API	false

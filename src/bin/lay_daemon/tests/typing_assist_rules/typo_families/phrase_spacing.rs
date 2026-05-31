@@ -44,11 +44,18 @@ fn typing_assist_splits_accidentally_glued_words() {
 
 #[test]
 fn typing_assist_fixes_hard_sign_typos() {
-    assert_eq!(
-        apply_typing_assist_exact("Обьясни "),
-        Some("Объясни ".to_string())
-    );
-    assert_eq!(apply_typing_assist_exact("ОБЬЯСНИШСНИШЬ "), None);
+    for row in fixture_rows("daemon_typing_assist_hard_sign_fix.tsv") {
+        assert_eq!(row.len(), 2, "hard-sign fixture must be TSV");
+        assert_eq!(
+            apply_typing_assist_exact(&row[0]),
+            Some(row[1].clone()),
+            "input={:?}",
+            row[0]
+        );
+    }
+    for input in fixture_lines("daemon_typing_assist_hard_sign_keep.txt") {
+        assert_eq!(apply_typing_assist_exact(&input), None, "input={input:?}");
+    }
 }
 
 #[test]

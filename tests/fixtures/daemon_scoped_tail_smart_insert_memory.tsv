@@ -1,0 +1,5 @@
+# id	parts	scope	original	replacement	move_left	backspaces	insert	move_right	memory_kind	remember_tail	remember_last	undo_original	undo_backspaces	undo_target_is_ru	undo_target
+current_fragment	в@ru|\s@ru|Вщгиду@ru	2	в\sВщгиду	в\sDouble	0	6	Double	0	none	false	false				
+inserted_tail	Проверка@ru|\s@ru|слова@ru	2	Проверка\sслова	Проверка\sckjdf	0	5	ckjdf	0	inserted_tail	true	false	ckjdf	5	true	слова
+last_word_after_full_tail	пщщв@ru|\s@ru|текст@ru	2	пщщв\sтекст	good\sntrcn	0	10	good\sntrcn	0	last_word	false	true	ntrcn	5	true	текст
+manual_full_undo	good\sntrcn@us	2	good\sntrcn	good\sтекст	0	5	текст	0	smart-text	false	false	good\sntrcn	10		true

@@ -1,0 +1,5 @@
+# id	input	layout	scope	original	replay_target	replacement	backspaces	insert
+good_english_previous	good\sntrcn	us	2	good\sntrcn		good\sтекст		
+currency_symbol	только\s;	ru	2	только\s;	njkmrj\s$	только\s$	1	$
+ascii_title_current	Double\snj;t	us	2	Double\snj;t		Double\sтоже	4	тоже
+single_cyrillic_fragment	й\sСщсф	ru	3	й\sСщсф		й\sCoca	4	Coca

@@ -1,0 +1,10 @@
+git
+status
+Windows
+NTFS
+wi-fi
+API
+JSON
+Linux
+Chrome
+GNOME

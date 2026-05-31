@@ -1,5 +1,5 @@
 use lay::config::LayConfig;
-use lay::desktop::{parse_setxkbmap_layout, resolve_layout_backend};
+use lay::desktop::{parse_kde_layouts_list, parse_setxkbmap_layout, resolve_layout_backend};
 use std::env;
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -275,17 +275,4 @@ fn kde_layout_index(qdbus: &str, id: &str) -> Option<usize> {
     parse_kde_layouts_list(&text)
         .into_iter()
         .position(|layout| layout == id)
-}
-
-fn parse_kde_layouts_list(output: &str) -> Vec<String> {
-    output
-        .split("[Argument: (sss)")
-        .skip(1)
-        .filter_map(|chunk| {
-            let first = chunk.find('"')?;
-            let rest = &chunk[first + 1..];
-            let second = rest.find('"')?;
-            Some(rest[..second].to_string())
-        })
-        .collect()
 }

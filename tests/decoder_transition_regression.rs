@@ -1,67 +1,17 @@
-use evdev::KeyCode;
 use lay::config::{default_typing_assist_pipeline, CorrectionEngine};
 use lay::decoder::{
     choose_ranked_scoped_tail, decode_manual_tail, decode_typing_assist_tail,
     rank_scoped_tail_candidates, CorrectionSource, DecoderAction, ManualDecodeRequest,
 };
 use lay::dict::{convert, Direction};
-use lay::keyboard::{map_original_events, replay_layout_decision, KeyEvent};
-use lay::text_edit::TextReplacement;
+use lay::keyboard::{map_original_events, replay_layout_decision, text_to_key_events, KeyEvent};
 use lay::typing_assist::{apply_typing_assist_exact, ScopedTailOptions};
 
+#[path = "common/mod.rs"]
+mod common;
+
 fn ascii_events(text: &str) -> Vec<KeyEvent> {
-    text.chars()
-        .map(|ch| {
-            let (key, layout_is_ru, shift) = match ch {
-                'a'..='z' | 'A'..='Z' => {
-                    let key = match ch.to_ascii_lowercase() {
-                        'a' => KeyCode::KEY_A,
-                        'b' => KeyCode::KEY_B,
-                        'c' => KeyCode::KEY_C,
-                        'd' => KeyCode::KEY_D,
-                        'e' => KeyCode::KEY_E,
-                        'f' => KeyCode::KEY_F,
-                        'g' => KeyCode::KEY_G,
-                        'h' => KeyCode::KEY_H,
-                        'i' => KeyCode::KEY_I,
-                        'j' => KeyCode::KEY_J,
-                        'k' => KeyCode::KEY_K,
-                        'l' => KeyCode::KEY_L,
-                        'm' => KeyCode::KEY_M,
-                        'n' => KeyCode::KEY_N,
-                        'o' => KeyCode::KEY_O,
-                        'p' => KeyCode::KEY_P,
-                        'q' => KeyCode::KEY_Q,
-                        'r' => KeyCode::KEY_R,
-                        's' => KeyCode::KEY_S,
-                        't' => KeyCode::KEY_T,
-                        'u' => KeyCode::KEY_U,
-                        'v' => KeyCode::KEY_V,
-                        'w' => KeyCode::KEY_W,
-                        'x' => KeyCode::KEY_X,
-                        'y' => KeyCode::KEY_Y,
-                        'z' => KeyCode::KEY_Z,
-                        _ => unreachable!(),
-                    };
-                    (key, false, ch.is_ascii_uppercase())
-                }
-                'а' | 'А' => (KeyCode::KEY_F, true, ch.is_uppercase()),
-                'д' | 'Д' => (KeyCode::KEY_L, true, ch.is_uppercase()),
-                'е' | 'Е' => (KeyCode::KEY_T, true, ch.is_uppercase()),
-                'й' | 'Й' => (KeyCode::KEY_Q, true, ch.is_uppercase()),
-                'л' | 'Л' => (KeyCode::KEY_K, true, ch.is_uppercase()),
-                ' ' => (KeyCode::KEY_SPACE, false, false),
-                '-' => (KeyCode::KEY_MINUS, false, false),
-                ';' => (KeyCode::KEY_SEMICOLON, false, false),
-                other => panic!("unsupported test char {other:?}"),
-            };
-            KeyEvent {
-                keycode: key.code(),
-                shift,
-                layout_is_ru,
-            }
-        })
-        .collect()
+    text_to_key_events(text, false).expect("decoder transition fixture must be typable")
 }
 
 fn decode_ascii_tail(text: &str, force_replay: bool) -> lay::decoder::ManualDecodeResult {
@@ -93,45 +43,51 @@ fn decode_ascii_tail(text: &str, force_replay: bool) -> lay::decoder::ManualDeco
 
 #[test]
 fn manual_decoder_keeps_single_word_toggle_reversible() {
-    assert_eq!(
-        decode_ascii_tail("good", true).action,
-        DecoderAction::ReplayAll
-    );
-    assert_eq!(
-        decode_ascii_tail("good", false).action,
-        DecoderAction::ReplayAll
-    );
-    assert_eq!(
-        decode_ascii_tail("ntrcn", true).action,
-        DecoderAction::ReplayAll
-    );
-    assert!(decode_ascii_tail("good", true).edit.is_none());
+    for row in common::fixture_cols(include_str!(
+        "fixtures/decoder_transition_manual_replay.tsv"
+    )) {
+        assert_eq!(row.len(), 2, "manual replay fixture must be TSV");
+        let force_replay = row[1] == "true";
+        let decoded = decode_ascii_tail(&row[0], force_replay);
+        assert_eq!(
+            decoded.action,
+            DecoderAction::ReplayAll,
+            "input={:?}",
+            row[0]
+        );
+        if force_replay {
+            assert!(decoded.edit.is_none(), "input={:?}", row[0]);
+        }
+    }
 }
 
 #[test]
 fn manual_decoder_replaces_only_bad_word_in_mixed_pair() {
-    let decoded = decode_ascii_tail("good ntrcn", false);
+    let row = common::fixture_row_by_id(
+        include_str!("fixtures/decoder_transition_manual_replace.tsv"),
+        "mixed_pair",
+    );
+    let decoded = decode_ascii_tail(&row[1], false);
     assert_eq!(
         decoded.action,
         DecoderAction::ReplaceText {
-            replacement: "good текст".to_string(),
+            replacement: row[2].clone(),
             source: CorrectionSource::SmartText,
         }
     );
     assert_eq!(
         decoded.edit.expect("manual edit").plan,
-        TextReplacement {
-            move_left: 0,
-            backspaces: 5,
-            insert: "текст".to_string(),
-            move_right: 0,
-        }
+        common::zero_edge_text_replacement(&row, 3, 4)
     );
 }
 
 #[test]
 fn ranked_decoder_exposes_margin_for_mixed_pairs() {
-    let events = ascii_events("good ntrcn");
+    let row = common::fixture_row_by_id(
+        include_str!("fixtures/decoder_transition_manual_replace.tsv"),
+        "mixed_pair",
+    );
+    let events = ascii_events(&row[1]);
     let options = ScopedTailOptions {
         lem_enabled: true,
         allow_layout_auto: true,
@@ -139,56 +95,58 @@ fn ranked_decoder_exposes_margin_for_mixed_pairs() {
     let ranked = rank_scoped_tail_candidates(&events, options).expect("ranked candidates");
     let chosen = choose_ranked_scoped_tail(&events, options).expect("confident decision");
 
-    assert_eq!(ranked.best.text, "good текст");
+    assert_eq!(ranked.best.text, row[2]);
     assert!(ranked.margin > 0.20, "margin was {}", ranked.margin);
     assert_eq!(chosen.best.text, ranked.best.text);
 }
 
 #[test]
 fn ranked_decoder_handles_three_word_tail_without_retyping_good_prefix() {
-    let decoded = decode_ascii_tail("hello good ntrcn", false);
+    let row = common::fixture_row_by_id(
+        include_str!("fixtures/decoder_transition_manual_replace.tsv"),
+        "three_word_tail",
+    );
+    let decoded = decode_ascii_tail(&row[1], false);
     assert_eq!(
         decoded.action,
         DecoderAction::ReplaceText {
-            replacement: "hello good текст".to_string(),
+            replacement: row[2].clone(),
             source: CorrectionSource::SmartText,
         }
     );
     assert_eq!(
         decoded.edit.expect("manual edit").plan,
-        TextReplacement {
-            move_left: 0,
-            backspaces: 5,
-            insert: "текст".to_string(),
-            move_right: 0,
-        }
+        common::zero_edge_text_replacement(&row, 3, 4)
     );
 }
 
 #[test]
 fn ranked_decoder_keeps_ascii_context_and_flips_uppercase_current_tail() {
-    let decoded = decode_ascii_tail("делай KDE", false);
+    let row = common::fixture_row_by_id(
+        include_str!("fixtures/decoder_transition_manual_replace.tsv"),
+        "uppercase_current_tail",
+    );
+    let decoded = decode_ascii_tail(&row[1], false);
     assert_eq!(
         decoded.action,
         DecoderAction::ReplaceText {
-            replacement: "делай ЛВУ".to_string(),
+            replacement: row[2].clone(),
             source: CorrectionSource::SmartText,
         }
     );
     assert_eq!(
         decoded.edit.expect("manual edit").plan,
-        TextReplacement {
-            move_left: 0,
-            backspaces: 3,
-            insert: "ЛВУ".to_string(),
-            move_right: 0,
-        }
+        common::zero_edge_text_replacement(&row, 3, 4)
     );
 }
 
 #[test]
 fn ranked_decoder_is_disabled_without_lem_flag() {
-    let events = ascii_events("good ntrcn");
+    let row = common::fixture_row_by_id(
+        include_str!("fixtures/decoder_transition_manual_replace.tsv"),
+        "mixed_pair",
+    );
+    let events = ascii_events(&row[1]);
     assert!(rank_scoped_tail_candidates(
         &events,
         ScopedTailOptions {
@@ -201,15 +159,23 @@ fn ranked_decoder_is_disabled_without_lem_flag() {
 
 #[test]
 fn typing_assist_decoder_preserves_space_and_avoids_known_false_splits() {
-    assert_eq!(apply_typing_assist_exact("я язык "), None);
-    assert_eq!(apply_typing_assist_exact("про сою "), None);
-    assert_eq!(apply_typing_assist_exact("15р-16р "), None);
-    assert_eq!(
-        apply_typing_assist_exact("у насесть "),
-        Some("у нас есть ".to_string())
-    );
+    for input in common::fixture_lines(include_str!(
+        "fixtures/decoder_transition_typing_assist_keep.txt"
+    )) {
+        assert_eq!(apply_typing_assist_exact(&input), None, "input={input:?}");
+    }
+    for (input, expected) in common::fixture_cases(include_str!(
+        "fixtures/decoder_transition_typing_assist_fix.tsv"
+    )) {
+        assert_eq!(
+            apply_typing_assist_exact(&input),
+            Some(expected),
+            "input={input:?}"
+        );
+    }
 
-    let events = ascii_events("double b ");
+    let row = common::first_fixture_row(include_str!("fixtures/decoder_transition_visual_b.tsv"));
+    let events = ascii_events(&row[0]);
     let plan = decode_typing_assist_tail(
         &events,
         true,
@@ -218,14 +184,6 @@ fn typing_assist_decoder_preserves_space_and_avoids_known_false_splits() {
     )
     .expect("visual b replacement");
 
-    assert_eq!(plan.replacement, "double и ");
-    assert_eq!(
-        plan.plan,
-        TextReplacement {
-            move_left: 1,
-            backspaces: 1,
-            insert: "и".to_string(),
-            move_right: 1,
-        }
-    );
+    assert_eq!(plan.replacement, row[1]);
+    assert_eq!(plan.plan, common::text_replacement(1, 1, &row[2], 1));
 }

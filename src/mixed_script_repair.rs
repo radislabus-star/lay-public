@@ -4,11 +4,10 @@
 //! for example a Latin tail accidentally typed inside a Russian word or a
 //! Cyrillic lookalike prefix glued to an ASCII technical token.
 
+use crate::russian_chars::is_russian_vowel;
 use crate::text_metrics::{has_cyrillic, has_latin, is_cyrillic_char};
 use crate::token_language::is_known_ru_token;
 use crate::word_recognizer::{is_protected_ascii_token, is_upper_ascii_acronym};
-
-const RU_VOWELS: &str = "аеёиоуыэюяАЕЁИОУЫЭЮЯ";
 
 pub fn repair_mixed_script(text: &str) -> Option<String> {
     if !has_cyrillic(text) || !has_latin(text) {
@@ -156,7 +155,7 @@ fn should_repair_trailing_latin_as_ru(token: &str, candidate: &str) -> bool {
         return false;
     }
 
-    let tail_has_vowel = converted_tail.chars().any(|ch| RU_VOWELS.contains(ch));
+    let tail_has_vowel = converted_tail.chars().any(is_russian_vowel);
     if !tail_has_vowel {
         return false;
     }

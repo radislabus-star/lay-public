@@ -1,0 +1,3 @@
+# id	parts	scope	original	replacement
+cyrillic_c_homoglyph	check@us|\s@us|с@ru|hec@us	2	check\sсhec	check\sсрус
+duplicate_ascii_prefix	ц@ru|wi-fi@us|\s@us|ghj@us	2	цwi-fi\sghj	wi-fi\sпро

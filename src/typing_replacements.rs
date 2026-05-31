@@ -22,13 +22,27 @@ pub(crate) fn warm_up() {
 }
 
 pub fn apply_auto_replace(original: &str, target: &str) -> Option<String> {
+    apply_auto_replace_with_visual_b(original, target, true)
+}
+
+pub fn apply_manual_replay_auto_replace(original: &str, target: &str) -> Option<String> {
+    apply_auto_replace_with_visual_b(original, target, false)
+}
+
+fn apply_auto_replace_with_visual_b(
+    original: &str,
+    target: &str,
+    allow_visual_b: bool,
+) -> Option<String> {
     let (target_leading, target_core, target_trailing) = split_edge_whitespace(target);
     if target_core.is_empty() {
         return None;
     }
 
-    if let Some(visual) = replace_visual_b_in_context(original, target) {
-        return Some(visual);
+    if allow_visual_b {
+        if let Some(visual) = replace_visual_b_in_context(original, target) {
+            return Some(visual);
+        }
     }
 
     replacement_for_token(target_core).map(|replacement| {

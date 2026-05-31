@@ -1,30 +1,54 @@
 use super::*;
+use crate::typing_assist_test_fixtures::{fixture_row_by_id, fixture_rows};
 
 #[test]
 fn us_to_ru_basic() {
-    assert_eq!(convert("Ye djn ghbvth", Direction::Us2Ru), "Ну вот пример");
+    assert_convert_fixture("basic_us_to_ru");
 }
 
 #[test]
 fn ru_to_us_basic() {
-    assert_eq!(convert("руддщ цщкдв", Direction::Ru2Us), "hello world");
+    assert_convert_fixture("basic_ru_to_us");
 }
 
 #[test]
 fn detect() {
-    assert_eq!(detect_direction("hello"), Direction::Us2Ru);
-    assert_eq!(detect_direction("привет"), Direction::Ru2Us);
-    assert_eq!(detect_direction("Ye djn ghbvth"), Direction::Us2Ru);
+    for row in fixture_rows("dict_detect.tsv") {
+        assert_eq!(row.len(), 2, "dict detect fixture must be TSV");
+        assert_eq!(
+            detect_direction(&row[0]),
+            parse_direction(&row[1]),
+            "input={:?}",
+            row[0]
+        );
+    }
 }
 
 #[test]
 fn preserves_unknown_chars() {
-    // Цифры, пробелы, спецсимволы остаются
-    assert_eq!(convert("hello 123!", Direction::Us2Ru), "руддщ 123!");
+    assert_convert_fixture("preserves_unknown_chars");
 }
 
 #[test]
 fn us_shift_punctuation_maps_to_physical_ru_letters() {
-    assert_eq!(convert("<>{}:\"~", Direction::Us2Ru), "БЮХЪЖЭЁ");
-    assert_eq!(convert("БЮХЪЖЭЁ", Direction::Ru2Us), "<>{}:\"~");
+    assert_convert_fixture("shift_punctuation_us_to_ru");
+    assert_convert_fixture("shift_punctuation_ru_to_us");
+}
+
+fn assert_convert_fixture(label: &str) {
+    let row = fixture_row_by_id("dict_convert.tsv", label);
+    assert_eq!(row.len(), 4, "dict convert fixture must be TSV");
+    assert_eq!(
+        convert(&row[2], parse_direction(&row[1])),
+        row[3],
+        "label={label}"
+    );
+}
+
+fn parse_direction(value: &str) -> Direction {
+    match value {
+        "Us2Ru" => Direction::Us2Ru,
+        "Ru2Us" => Direction::Ru2Us,
+        other => panic!("unknown dict direction: {other}"),
+    }
 }

@@ -16,8 +16,7 @@ fn enter_autocorrect_candidate_rejects_plain_layout_word_guess() {
     let pipeline = typing_pipeline_with_only("layout_en_to_ru");
 
     for input in ["ghbdtn", "lfkmit"] {
-        let mut buffer = WordBuffer::new();
-        push_text_as_layout(&mut buffer, input, false);
+        let buffer = typed_buffer(&[(input, false)]);
 
         assert!(
             enter_autocorrect_candidate(&buffer, 1, true, &pipeline).is_none(),
@@ -28,8 +27,7 @@ fn enter_autocorrect_candidate_rejects_plain_layout_word_guess() {
 
 #[test]
 fn enter_autocorrect_candidate_keeps_normal_english_word() {
-    let mut buffer = WordBuffer::new();
-    push_text_as_layout(&mut buffer, "good", false);
+    let buffer = typed_buffer(&[("good", false)]);
     let pipeline = typing_pipeline_with_only("layout_en_to_ru");
 
     assert!(enter_autocorrect_candidate(&buffer, 1, true, &pipeline).is_none());
@@ -37,10 +35,7 @@ fn enter_autocorrect_candidate_keeps_normal_english_word() {
 
 #[test]
 fn enter_autocorrect_candidate_can_use_completed_tail_scope() {
-    let mut buffer = WordBuffer::new();
-    push_text_as_layout(&mut buffer, "double", false);
-    buffer.handle_space();
-    push_text_as_layout(&mut buffer, "b", false);
+    let buffer = typed_buffer(&[("double b", false)]);
     let pipeline = typing_pipeline_with_only("visual_b");
 
     let (_events, edit) =

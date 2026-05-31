@@ -10,6 +10,8 @@ mod builders;
 mod definitions;
 #[path = "typing_rule_graph/ids.rs"]
 pub(crate) mod ids;
+#[path = "typing_rule_graph/priorities.rs"]
+mod priorities;
 #[path = "typing_rule_graph/registry.rs"]
 mod registry;
 #[path = "typing_rule_graph/rules.rs"]

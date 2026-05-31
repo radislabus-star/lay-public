@@ -46,6 +46,33 @@ pub struct WordIdentity<'a> {
     pub technical: bool,
 }
 
+impl WordIdentity<'_> {
+    pub fn is_plain_word(&self) -> bool {
+        self.kind == WordKind::PlainWord
+    }
+
+    pub fn is_plain_or_technical(&self) -> bool {
+        matches!(self.kind, WordKind::PlainWord | WordKind::TechnicalToken)
+    }
+
+    pub fn is_known_russian_plain_word(&self) -> bool {
+        self.known_ru && self.script == WordScript::Cyrillic && self.is_plain_word()
+    }
+
+    pub fn is_known_ascii_or_protected_token(&self) -> bool {
+        self.script == WordScript::Ascii
+            && (self.known_en || self.protected)
+            && self.is_plain_or_technical()
+    }
+
+    pub fn is_unprotected_plain_ascii_word(&self) -> bool {
+        self.is_plain_word()
+            && self.script == WordScript::Ascii
+            && !self.technical
+            && !self.protected
+    }
+}
+
 pub fn recognize_token(token: &str) -> WordIdentity<'_> {
     let (_, core, _) = split_word_punctuation(token);
     if core.is_empty() {

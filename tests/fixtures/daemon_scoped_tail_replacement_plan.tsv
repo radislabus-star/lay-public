@@ -1,0 +1,5 @@
+# id	original	replacement	move_left	backspaces	insert	move_right
+good_suffix	NEN\sDOUBLE	ТУТ\sDOUBLE	7	3	ТУТ	7
+good_prefix	Главное\sВщгиду	Главное\sDouble	0	6	Double	0
+single_middle	AmoCRM\sZ\sтут\sзадача	AmoCRM\sЯ\sтут\sзадача	11	1	Я	11
+delete_duplicate_prefix	на\sппредмет	на\sпредмет	6	1		6

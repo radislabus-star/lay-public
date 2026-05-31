@@ -3,30 +3,16 @@ use super::*;
 #[test]
 fn typing_assist_removes_duplicate_layout_prefix_from_ascii_technical_token() {
     let prefix_lower = map_events_to_layout(&[key_event(KeyCode::KEY_W, true)], true);
-    let prefix_upper = map_events_to_layout(
-        &[KeyEvent {
-            keycode: KeyCode::KEY_W.code(),
-            shift: true,
-            layout_is_ru: true,
-        }],
-        true,
-    );
+    let prefix_upper =
+        map_events_to_layout(&[key_event_with_shift(KeyCode::KEY_W, true, true)], true);
     let technical_lower =
         map_events_to_layout(&key_events(&ascii_hyphen_token_keycodes(), false), false);
     let technical_upper = map_events_to_layout(
         &[
-            KeyEvent {
-                keycode: KeyCode::KEY_W.code(),
-                shift: true,
-                layout_is_ru: false,
-            },
+            key_event_with_shift(KeyCode::KEY_W, true, false),
             key_event(KeyCode::KEY_I, false),
             key_event(KeyCode::KEY_MINUS, false),
-            KeyEvent {
-                keycode: KeyCode::KEY_F.code(),
-                shift: true,
-                layout_is_ru: false,
-            },
+            key_event_with_shift(KeyCode::KEY_F, true, false),
             key_event(KeyCode::KEY_I, false),
         ],
         false,

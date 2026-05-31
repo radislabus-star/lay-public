@@ -6,23 +6,15 @@ use crate::russian_typo_candidates::{
 use crate::russian_typo_scoring::{
     best_ranked_dictionary_candidate, missing_letter_candidate_bonus,
 };
-use crate::word_reader::is_cyrillic_word;
 
 use super::guards::{
     looks_like_plausible_russian_past_tense, looks_like_prefix_plus_known_russian_word,
-    looks_like_present_or_reflexive_verb,
+    looks_like_present_or_reflexive_verb, unknown_cyrillic_lower,
 };
 use super::thresholds::NGRAM_DICT_MISSING_LETTER_MARGIN;
 
 pub fn correct_missing_letter(word: &str) -> Option<String> {
-    if word.chars().count() < 6 || !is_cyrillic_word(word) {
-        return None;
-    }
-
-    let lower = word.to_lowercase();
-    if is_known_russian_word_or_form(&lower) {
-        return None;
-    }
+    let lower = unknown_cyrillic_lower(word, 6)?;
     if looks_like_plausible_russian_past_tense(&lower) {
         return None;
     }

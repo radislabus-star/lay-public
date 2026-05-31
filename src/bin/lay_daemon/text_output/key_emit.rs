@@ -62,7 +62,9 @@ fn replay_keycodes_with_pace(
         } else {
             key_pace_ms
         };
-        std::thread::sleep(Duration::from_millis(settle_ms));
+        if settle_ms > 0 {
+            std::thread::sleep(Duration::from_millis(settle_ms));
+        }
     }
     Ok(())
 }

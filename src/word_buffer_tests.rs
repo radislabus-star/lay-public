@@ -1,35 +1,29 @@
 use super::*;
-use crate::keyboard::{map_events_to_layout, map_original_events, replay_layout_decision};
+use crate::keyboard::{
+    map_events_to_layout, map_original_events, replay_layout_decision, text_to_key_events,
+};
+use crate::typing_assist_test_fixtures::{fixture_rows, parse_bool_fixture};
 use evdev::KeyCode;
 
-fn key_event(key: KeyCode, layout_is_ru: bool) -> KeyEvent {
-    KeyEvent {
-        keycode: key.code(),
-        shift: false,
-        layout_is_ru,
+fn push_text_as_layout(buffer: &mut WordBuffer, text: &str, layout_is_ru: bool) {
+    for event in text_events(text, layout_is_ru) {
+        if event.keycode == KeyCode::KEY_SPACE.code() {
+            buffer.handle_space();
+        } else {
+            buffer.push(event);
+        }
     }
 }
 
-fn push_text_as_layout(buffer: &mut WordBuffer, keys: &[KeyCode], layout_is_ru: bool) {
-    for key in keys {
-        buffer.push(key_event(*key, layout_is_ru));
-    }
+fn text_events(text: &str, layout_is_ru: bool) -> Vec<KeyEvent> {
+    text_to_key_events(text, layout_is_ru)
+        .unwrap_or_else(|| panic!("failed to create key events for {text:?}"))
 }
 
 #[test]
 fn single_word_wrong_layout_replays_opposite_layout() {
     let mut buffer = WordBuffer::new();
-    push_text_as_layout(
-        &mut buffer,
-        &[
-            KeyCode::KEY_L,
-            KeyCode::KEY_T,
-            KeyCode::KEY_K,
-            KeyCode::KEY_F,
-            KeyCode::KEY_Q,
-        ],
-        false,
-    );
+    push_text_as_layout(&mut buffer, "ltkfq", false);
 
     let (events, backspaces) = buffer.what_to_replay(1).expect("word");
     let decision = replay_layout_decision(&events);
@@ -43,13 +37,7 @@ fn single_word_wrong_layout_replays_opposite_layout() {
 #[test]
 fn replay_toggle_uses_only_remembered_word_even_with_wider_scope() {
     let mut buffer = WordBuffer::new();
-    push_text_as_layout(
-        &mut buffer,
-        &[KeyCode::KEY_A, KeyCode::KEY_B, KeyCode::KEY_C],
-        false,
-    );
-    buffer.handle_space();
-    push_text_as_layout(&mut buffer, &[KeyCode::KEY_L], false);
+    push_text_as_layout(&mut buffer, "abc l", false);
 
     buffer.mark_replayed_layout(1, true);
     let (events, backspaces) = buffer.what_to_replay(3).expect("toggle word");
@@ -85,29 +73,17 @@ fn replay_toggle_reuses_original_multiword_scope_after_replay() {
 #[test]
 fn replay_toggle_can_flip_same_word_four_times_with_wider_scope() {
     let mut buffer = WordBuffer::new();
-    push_text_as_layout(
-        &mut buffer,
-        &[
-            KeyCode::KEY_G,
-            KeyCode::KEY_O,
-            KeyCode::KEY_O,
-            KeyCode::KEY_D,
-        ],
-        false,
-    );
+    push_text_as_layout(&mut buffer, "good", false);
 
-    for (original, target, target_is_ru) in [
-        ("good", "пщщв", true),
-        ("пщщв", "good", false),
-        ("good", "пщщв", true),
-        ("пщщв", "good", false),
-    ] {
+    for row in fixture_rows("word_buffer_toggle_sequence.tsv") {
+        assert_eq!(row.len(), 3, "word buffer toggle fixture must be TSV");
+        let target_is_ru = parse_bool_fixture(&row[2]);
         let (events, backspaces) = buffer.what_to_replay(3).expect("toggle word");
         let decision = replay_layout_decision(&events);
 
         assert_eq!(backspaces, 4);
-        assert_eq!(map_original_events(&events), original);
-        assert_eq!(map_events_to_layout(&events, decision.target_is_ru), target);
+        assert_eq!(map_original_events(&events), row[0]);
+        assert_eq!(map_events_to_layout(&events, decision.target_is_ru), row[1]);
         assert_eq!(decision.target_is_ru, target_is_ru);
 
         buffer.mark_replayed_layout(3, decision.target_is_ru);
@@ -130,10 +106,7 @@ fn visible_text_after_auto_undo_can_be_corrected_again() {
 #[test]
 fn completed_two_word_tail_includes_one_space_and_trailing_space() {
     let mut buffer = WordBuffer::new();
-    push_text_as_layout(&mut buffer, &[KeyCode::KEY_A, KeyCode::KEY_B], false);
-    buffer.handle_space();
-    push_text_as_layout(&mut buffer, &[KeyCode::KEY_C, KeyCode::KEY_D], false);
-    buffer.handle_space();
+    push_text_as_layout(&mut buffer, "ab cd ", false);
 
     let (events, backspaces) = buffer.what_to_replay(2).expect("tail");
 
@@ -144,9 +117,7 @@ fn completed_two_word_tail_includes_one_space_and_trailing_space() {
 #[test]
 fn completed_tail_remains_readable_while_next_word_is_being_typed() {
     let mut buffer = WordBuffer::new();
-    push_text_as_layout(&mut buffer, &[KeyCode::KEY_A, KeyCode::KEY_B], false);
-    buffer.handle_space();
-    push_text_as_layout(&mut buffer, &[KeyCode::KEY_C], false);
+    push_text_as_layout(&mut buffer, "ab c", false);
 
     let events = buffer
         .last_completed_words_events(1)
@@ -159,7 +130,7 @@ fn completed_tail_remains_readable_while_next_word_is_being_typed() {
 fn learning_feedback_requires_user_delete_and_retype() {
     let mut buffer = WordBuffer::new();
     buffer.remember_pending_learning_correction("typing-assist", "смотри ", "смотрин ", 1, 1);
-    buffer.note_learning_typed(key_event(KeyCode::KEY_G, true));
+    buffer.note_learning_typed(text_events("п", true).remove(0));
 
     assert!(buffer.take_user_learning_correction(true).is_none());
 
@@ -167,15 +138,8 @@ fn learning_feedback_requires_user_delete_and_retype() {
     for _ in 0.."смотрин ".chars().count() {
         buffer.note_learning_backspace();
     }
-    for key in [
-        KeyCode::KEY_C,
-        KeyCode::KEY_V,
-        KeyCode::KEY_J,
-        KeyCode::KEY_N,
-        KeyCode::KEY_H,
-        KeyCode::KEY_B,
-    ] {
-        buffer.note_learning_typed(key_event(key, true));
+    for event in text_events("смотри", true) {
+        buffer.note_learning_typed(event);
     }
 
     let correction = buffer

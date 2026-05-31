@@ -1,0 +1,3 @@
+# input	original	expected_candidate	forbidden_candidate	replacement	insert	backspaces
+чем\sещё\sлуеен	чем\sещё\sлуеен	чем\sещё\sketty	xtv\sto`\sketty	чем\sещё\sketty	ketty	5
+что\sещё\sлуеен	что\sещё\sлуеен			что\sещё\sketty	ketty	5

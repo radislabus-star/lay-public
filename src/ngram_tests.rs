@@ -1,65 +1,52 @@
 use super::*;
+use crate::typing_assist_test_fixtures::{fixture_lines_from_str, fixture_row_by_id, fixture_rows};
 
 fn ru_test_model() -> CharNgramModel {
     CharNgramModel::train(
         Lang::Ru,
-        [
-            "привет",
-            "проверка",
-            "работает",
-            "ошибка",
-            "ошибся",
-            "явно",
-            "ладно",
-            "можно",
-            "дальше",
-            "плохо",
-            "правильно",
-            "исправлено",
-            "исправляет",
-            "текст",
-            "слово",
-        ],
+        fixture_lines_from_str(include_str!("../tests/fixtures/ngram_ru_train_words.txt")),
     )
+}
+
+fn local_score_is_better(label: &str) {
+    let model = ru_test_model();
+    let row = fixture_row_by_id("ngram_local_score_pairs.tsv", label);
+    assert_eq!(row.len(), 3, "local ngram fixture must be TSV");
+    assert!(
+        model.score_text(&row[1]) > model.score_text(&row[2]),
+        "{}={} {}={}",
+        row[1],
+        model.score_text(&row[1]),
+        row[2],
+        model.score_text(&row[2])
+    );
 }
 
 #[test]
 fn scores_good_word_above_transposed_typo() {
-    let model = ru_test_model();
-    assert!(
-        model.score_text("работает") > model.score_text("рабоатет"),
-        "работает={} рабоатет={}",
-        model.score_text("работает"),
-        model.score_text("рабоатет")
-    );
+    local_score_is_better("transposed_typo");
 }
 
 #[test]
 fn scores_common_word_above_rare_transposition() {
-    let model = ru_test_model();
-    assert!(
-        model.score_text("ладно") > model.score_text("ландо"),
-        "ладно={} ландо={}",
-        model.score_text("ладно"),
-        model.score_text("ландо")
-    );
+    local_score_is_better("rare_transposition");
 }
 
 #[test]
 fn scores_merged_word_above_accidental_split() {
-    let model = ru_test_model();
-    assert!(
-        model.score_text("явно") > model.score_text("я вно"),
-        "явно={} я вно={}",
-        model.score_text("явно"),
-        model.score_text("я вно")
-    );
+    local_score_is_better("accidental_split");
 }
 
 #[test]
 fn global_ru_model_can_rank_local_words() {
-    assert!(ru_candidate_is_better("правильно", "првильно", 0.0));
-    assert!(ru_candidate_margin("исправлено", "исправленно") > -0.50);
-    assert!(ru_candidate_margin("явно", "я вно") > -1.00);
-    assert!(ru_candidate_margin("плохо", "плозо") > -0.50);
+    for row in fixture_rows("ngram_global_margin.tsv") {
+        assert_eq!(row.len(), 4, "global ngram fixture must be TSV");
+        let min_margin: f64 = row[3].parse().expect("min margin");
+        assert!(
+            ru_candidate_margin(&row[1], &row[2]) > min_margin,
+            "label={} margin={} min={min_margin}",
+            row[0],
+            ru_candidate_margin(&row[1], &row[2])
+        );
+    }
 }

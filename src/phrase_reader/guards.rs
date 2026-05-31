@@ -9,7 +9,41 @@ use crate::russian_lexicon::{
     is_known_russian_adverb_o_form, is_known_russian_ka_oblique_form, russian_dictionary,
     russian_short_dictionary,
 };
-use crate::word_reader::{is_cyrillic_word, MAX_RU_FUNCTION_GLUE_LEFT_LEN};
+use crate::word_reader::{
+    is_cyrillic_word, split_word_punctuation, split_ws_segments, MAX_RU_FUNCTION_GLUE_LEFT_LEN,
+};
+
+pub(super) struct PlainPhrasePair<'a> {
+    pub left: &'a str,
+    pub separator: &'a str,
+    pub right: &'a str,
+    pub right_trailing: &'a str,
+}
+
+pub(super) fn read_plain_phrase_pair(text: &str) -> Option<PlainPhrasePair<'_>> {
+    let segments = split_ws_segments(text);
+    if segments.len() != 3 || segments[0].1 || !segments[1].1 || segments[2].1 {
+        return None;
+    }
+
+    let (left_leading, left, left_trailing) = split_word_punctuation(segments[0].0);
+    let (right_leading, right, right_trailing) = split_word_punctuation(segments[2].0);
+    if !left_leading.is_empty()
+        || !left_trailing.is_empty()
+        || !right_leading.is_empty()
+        || left.is_empty()
+        || right.is_empty()
+    {
+        return None;
+    }
+
+    Some(PlainPhrasePair {
+        left,
+        separator: segments[1].0,
+        right,
+        right_trailing,
+    })
+}
 
 pub(super) fn looks_like_word_glued_to_trailing_ya(word: &str) -> bool {
     let Some(left) = word.strip_suffix('я') else {
@@ -19,7 +53,7 @@ pub(super) fn looks_like_word_glued_to_trailing_ya(word: &str) -> bool {
 }
 
 pub(super) fn is_standalone_russian_phrase_part(word: &str) -> bool {
-    let len = word.chars().count();
+    let len = char_len(word);
     if len == 1 {
         return is_one_letter_russian_function_word(word);
     }
@@ -39,32 +73,31 @@ pub(super) fn is_single_letter_russian_pronoun(word: &str) -> bool {
 }
 
 pub(super) fn is_confident_glued_phrase_split(left: &str, right: &str) -> bool {
-    (left.chars().count() == 1 && is_single_letter_russian_pronoun(left))
-        || (right.chars().count() == 1
+    let left_len = char_len(left);
+    let right_len = char_len(right);
+
+    (left_len == 1 && is_single_letter_russian_pronoun(left))
+        || (right_len == 1
             && can_split_glued_trailing_ya(left)
             && is_single_letter_russian_pronoun(right))
-        || (left.chars().count() <= MAX_RU_FUNCTION_GLUE_LEFT_LEN
-            && right.chars().count() >= 4
-            && is_short_russian_function_word(left)
-            && !is_common_short_russian_preposition(left)
+        || (left_len <= MAX_RU_FUNCTION_GLUE_LEFT_LEN
+            && right_len >= 4
+            && is_short_non_preposition_function_word(left)
             && is_known_russian_phrase_part(right))
-        || (left.chars().count() <= MAX_RU_FUNCTION_GLUE_LEFT_LEN
-            && right.chars().count() >= 2
-            && is_short_russian_function_word(left)
-            && !is_common_short_russian_preposition(left)
+        || (left_len <= MAX_RU_FUNCTION_GLUE_LEFT_LEN
+            && right_len >= 2
+            && is_short_non_preposition_function_word(left)
             && is_common_ru_word(right))
-        || (left.chars().count() >= 4
-            && right.chars().count() >= 4
-            && is_known_russian_adverb_o_form(right))
-        || (left.chars().count() >= 4
-            && right.chars().count() >= 4
+        || (left_len >= 4 && right_len >= 4 && is_known_russian_adverb_o_form(right))
+        || (left_len >= 4
+            && right_len >= 4
             && is_standalone_russian_phrase_part(left)
             && is_standalone_russian_phrase_part(right)
             && (is_short_russian_function_word(left) || is_short_russian_function_word(right)))
 }
 
 pub(super) fn can_split_glued_trailing_ya(left: &str) -> bool {
-    let len = left.chars().count();
+    let len = char_len(left);
     (4..=5).contains(&len)
         && (is_common_ru_word(left)
             || is_known_russian_adverb_o_form(left)
@@ -79,7 +112,7 @@ pub(super) fn is_shouty_cyrillic_word(word: &str) -> bool {
 }
 
 pub(super) fn should_keep_standalone_pair_with_short_right(left: &str, right: &str) -> bool {
-    let right_len = right.chars().count();
+    let right_len = char_len(right);
     right_len <= 3 && is_known_russian_phrase_part(left) && is_known_russian_phrase_part(right)
 }
 
@@ -87,12 +120,12 @@ pub(super) fn should_keep_standalone_pair_with_function_left(left: &str, right: 
     if is_single_letter_russian_pronoun(left) {
         return false;
     }
-    is_short_russian_function_word(left) && right.chars().count() >= 2 && is_cyrillic_word(right)
+    is_short_russian_function_word(left) && char_len(right) >= 2 && is_cyrillic_word(right)
 }
 
 pub(super) fn should_keep_standalone_pair_with_function_right(left: &str, right: &str) -> bool {
-    right.chars().count() == 1
-        && left.chars().count() >= 4
+    char_len(right) == 1
+        && char_len(left) >= 4
         && is_cyrillic_word(left)
         && is_one_letter_russian_function_word(right)
 }
@@ -103,9 +136,9 @@ pub(super) fn can_merge_split_without_dictionary(
     glued_lower: &str,
     text: &str,
 ) -> bool {
-    let left_len = left.chars().count();
-    let right_len = right.chars().count();
-    let glued_len = glued_lower.chars().count();
+    let left_len = char_len(left);
+    let right_len = char_len(right);
+    let glued_len = char_len(glued_lower);
     if russian_short_dictionary().contains(&right.to_lowercase()) {
         return false;
     }
@@ -118,5 +151,13 @@ pub(super) fn can_merge_split_without_dictionary(
 }
 
 pub(super) fn is_safe_short_moved_prefix_right(word: &str) -> bool {
-    (3..=4).contains(&word.chars().count()) && russian_short_dictionary().contains(word)
+    (3..=4).contains(&char_len(word)) && russian_short_dictionary().contains(word)
+}
+
+fn is_short_non_preposition_function_word(word: &str) -> bool {
+    is_short_russian_function_word(word) && !is_common_short_russian_preposition(word)
+}
+
+fn char_len(text: &str) -> usize {
+    text.chars().count()
 }

@@ -8,7 +8,7 @@ const DBUS_INTERFACE: &str = "io.github.radislabus_star.LayDaemon";
 const DBUS_DEST: &str = "org.gnome.Shell";
 static DBUS_CONNECTION: OnceLock<Mutex<Option<zbus::blocking::Connection>>> = OnceLock::new();
 
-pub(crate) fn call_list_layouts() -> Result<String, String> {
+pub(super) fn call_list_layouts() -> Result<String, String> {
     call_dbus_list_layouts().or_else(|fast_error| {
         reset_dbus_connection();
         log(&format!(
@@ -18,13 +18,13 @@ pub(crate) fn call_list_layouts() -> Result<String, String> {
     })
 }
 
-pub(crate) fn parse_gdbus_string(reply: &str) -> Option<String> {
+fn parse_gdbus_string(reply: &str) -> Option<String> {
     let trimmed = reply.trim();
     let without_tuple = trimmed.strip_prefix("('")?.strip_suffix("',)")?;
     Some(without_tuple.replace("\\'", "'"))
 }
 
-pub(crate) fn parse_gdbus_bool(reply: &str) -> Option<bool> {
+fn parse_gdbus_bool(reply: &str) -> Option<bool> {
     let trimmed = reply.trim();
     match trimmed {
         "(true,)" => Some(true),
@@ -33,7 +33,7 @@ pub(crate) fn parse_gdbus_bool(reply: &str) -> Option<bool> {
     }
 }
 
-pub(crate) fn parse_current_layout_from_list(layouts: &str) -> Option<String> {
+fn parse_current_layout_from_list(layouts: &str) -> Option<String> {
     let list = parse_gdbus_string(layouts).unwrap_or_else(|| layouts.to_string());
     list.split(',').find_map(|entry| {
         let current = entry.strip_suffix('*')?;
@@ -41,7 +41,7 @@ pub(crate) fn parse_current_layout_from_list(layouts: &str) -> Option<String> {
     })
 }
 
-pub(crate) fn call_ping() -> Result<String, String> {
+pub(super) fn call_ping() -> Result<String, String> {
     call_dbus_ping().or_else(|fast_error| {
         reset_dbus_connection();
         log(&format!(
@@ -52,7 +52,7 @@ pub(crate) fn call_ping() -> Result<String, String> {
     })
 }
 
-pub(crate) fn call_activate_layout(id: &str) -> Result<bool, String> {
+pub(super) fn call_activate_layout(id: &str) -> Result<bool, String> {
     call_dbus_activate_layout(id).or_else(|fast_error| {
         reset_dbus_connection();
         log(&format!(
@@ -66,7 +66,7 @@ pub(crate) fn call_activate_layout(id: &str) -> Result<bool, String> {
     })
 }
 
-pub(crate) fn call_focused_window_info() -> Result<String, String> {
+pub(super) fn call_focused_window_info() -> Result<String, String> {
     call_dbus_focused_window_info().or_else(|fast_error| {
         reset_dbus_connection();
         log(&format!(
@@ -77,7 +77,7 @@ pub(crate) fn call_focused_window_info() -> Result<String, String> {
     })
 }
 
-pub(crate) fn call_replace_text(
+pub(super) fn call_replace_text(
     move_left: u32,
     backspaces: u32,
     text: &str,
@@ -95,7 +95,7 @@ pub(crate) fn call_replace_text(
     )
 }
 
-pub(crate) fn call_current_layout() -> Result<String, String> {
+pub(super) fn call_current_layout() -> Result<String, String> {
     call_dbus_current_layout().or_else(|fast_error| {
         reset_dbus_connection();
         log(&format!(
@@ -114,7 +114,7 @@ pub(crate) fn call_current_layout() -> Result<String, String> {
     })
 }
 
-pub(crate) fn dbus_connection() -> Result<zbus::blocking::Connection, String> {
+pub(super) fn dbus_connection() -> Result<zbus::blocking::Connection, String> {
     let cell = DBUS_CONNECTION.get_or_init(|| Mutex::new(None));
     let mut guard = cell.lock().map_err(|e| e.to_string())?;
     if let Some(conn) = guard.as_ref() {
@@ -283,3 +283,7 @@ fn run_gdbus(method: &str, args: &[&str]) -> Result<String, String> {
     }
     Ok(String::from_utf8_lossy(&out.stdout).trim().to_string())
 }
+
+#[cfg(test)]
+#[path = "gnome_dbus_tests.rs"]
+mod tests;

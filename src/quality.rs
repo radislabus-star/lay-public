@@ -7,7 +7,8 @@
 //!
 //! The score is only a plausibility hint, not a production guarantee.
 
-const RU_VOWELS: &str = "аеёиоуыэюяАЕЁИОУЫЭЮЯ";
+use crate::russian_chars::is_russian_vowel;
+
 const EN_VOWELS: &str = "aeiouAEIOU";
 
 /// Доля «правдоподобных» слов в тексте (0..1).
@@ -32,11 +33,7 @@ fn is_plausible_word(word: &str, lang: &str) -> bool {
         return true;
     }
 
-    let vowels = match lang {
-        "ru" => RU_VOWELS,
-        _ => EN_VOWELS,
-    };
-    let vowel_count = word.chars().filter(|c| vowels.contains(*c)).count();
+    let vowel_count = word.chars().filter(|ch| is_lang_vowel(*ch, lang)).count();
 
     // 1. Хотя бы одна гласная (русский: 1 на 6 символов, английский: 1 на 5)
     let min_vowels = match lang {
@@ -51,7 +48,7 @@ fn is_plausible_word(word: &str, lang: &str) -> bool {
     // 2. Нет 4+ согласных подряд
     let mut consonant_streak = 0;
     for c in word.chars() {
-        if c.is_alphabetic() && !vowels.contains(c) {
+        if c.is_alphabetic() && !is_lang_vowel(c, lang) {
             consonant_streak += 1;
             if consonant_streak >= 4 {
                 return false;
@@ -62,6 +59,13 @@ fn is_plausible_word(word: &str, lang: &str) -> bool {
     }
 
     true
+}
+
+fn is_lang_vowel(ch: char, lang: &str) -> bool {
+    match lang {
+        "ru" => is_russian_vowel(ch),
+        _ => EN_VOWELS.contains(ch),
+    }
 }
 
 #[cfg(test)]

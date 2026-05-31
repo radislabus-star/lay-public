@@ -1,0 +1,3 @@
+# rule	priority	original	replacement
+hard_sign	200	word	ward
+hard_sign	10	word	wird

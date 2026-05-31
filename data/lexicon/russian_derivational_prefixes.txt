@@ -1,0 +1,11 @@
+# Russian derivational prefixes used to guard glued-word splitting and forms.
+анти
+вне
+внутри
+квази
+меж
+недо
+пере
+полу
+псевдо
+сверх

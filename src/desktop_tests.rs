@@ -41,3 +41,19 @@ fn parses_x11_layout_tool_output() {
     assert!(!is_ru_layout_id("xkb:us"));
     assert!(!is_ru_layout_id("lay-ime-us"));
 }
+
+#[test]
+fn parses_kde6_layout_list_reply() {
+    let reply = r#"[Argument: a(sss) {[Argument: (sss) "us", "", "English (US)"], [Argument: (sss) "ru", "", "Russian"]}]"#;
+    assert_eq!(parse_kde_layouts_list(reply), vec!["us", "ru"]);
+}
+
+#[test]
+fn parses_kde_layout_list_with_escaped_id() {
+    assert_eq!(
+        first_quoted_string(r#" "us\"intl", "", "English" "#),
+        Some(r#"us"intl"#.to_string())
+    );
+    let reply = r#"[Argument: a(sss) {[Argument: (sss) "xkb:ru::rus", "", "Russian"]}]"#;
+    assert_eq!(parse_kde_layouts_list(reply), vec!["ru"]);
+}

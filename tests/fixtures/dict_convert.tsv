@@ -1,0 +1,6 @@
+# label	direction	input	expected
+basic_us_to_ru	Us2Ru	Ye\sdjn\sghbvth	Ну\sвот\sпример
+basic_ru_to_us	Ru2Us	руддщ\sцщкдв	hello\sworld
+preserves_unknown_chars	Us2Ru	hello\s123!	руддщ\s123!
+shift_punctuation_us_to_ru	Us2Ru	<>{}:"~	БЮХЪЖЭЁ
+shift_punctuation_ru_to_us	Ru2Us	БЮХЪЖЭЁ	<>{}:"~

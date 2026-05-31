@@ -59,6 +59,39 @@ pub fn parse_setxkbmap_layout(output: &str) -> Option<String> {
     })
 }
 
+pub fn parse_kde_layouts_list(output: &str) -> Vec<String> {
+    output
+        .split("(sss)")
+        .skip(1)
+        .filter_map(|entry| first_quoted_string(entry).map(|layout| normalize_layout_id(&layout)))
+        .collect()
+}
+
+fn first_quoted_string(input: &str) -> Option<String> {
+    let mut chars = input.chars();
+    for ch in chars.by_ref() {
+        if ch == '"' {
+            break;
+        }
+    }
+
+    let mut out = String::new();
+    let mut escaped = false;
+    for ch in chars {
+        if escaped {
+            out.push(ch);
+            escaped = false;
+            continue;
+        }
+        match ch {
+            '\\' => escaped = true,
+            '"' => return Some(out),
+            _ => out.push(ch),
+        }
+    }
+    None
+}
+
 pub fn normalize_layout_id(layout: &str) -> String {
     let trimmed = layout.trim();
     if let Some(rest) = trimmed.strip_prefix("xkb:") {

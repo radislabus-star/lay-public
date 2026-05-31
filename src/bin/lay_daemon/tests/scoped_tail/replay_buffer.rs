@@ -1,82 +1,58 @@
 use super::*;
 
+fn replay_buffer_case(id: &str) -> Vec<String> {
+    fixture_row_by_id("daemon_scoped_tail_replay_buffer.tsv", id)
+}
+
 #[test]
 fn two_word_replay_keeps_space_and_backspace_count() {
-    let mut buffer = WordBuffer::new();
-    push_keys(
-        &mut buffer,
-        &[
-            KeyCode::KEY_G,
-            KeyCode::KEY_H,
-            KeyCode::KEY_B,
-            KeyCode::KEY_D,
-            KeyCode::KEY_T,
-            KeyCode::KEY_N,
-        ],
-        false,
-    );
-    buffer.handle_space();
-    push_keys(
-        &mut buffer,
-        &[KeyCode::KEY_V, KeyCode::KEY_B, KeyCode::KEY_H],
-        false,
+    let row = replay_buffer_case("two_word_replay");
+    assert_eq!(row.len(), 8, "bad fixture row: {row:?}");
+    let scope: usize = row[3].parse().expect("scope");
+    let (_buffer, events, backspaces) = typed_tail(
+        &[(&row[1], layout_from_fixture(&row[2]))],
+        scope,
+        "two words are buffered",
     );
 
-    let (events, backspaces) = buffer.what_to_replay(2).expect("two words are buffered");
-
-    assert_eq!(map_original_events(&events), "ghbdtn vbh");
-    assert_eq!(backspaces, 10);
-    assert_eq!(events[6].keycode, KeyCode::KEY_SPACE.code());
-    let decision = replay_layout_decision(&events);
+    assert_eq!(map_original_events(&events), row[4]);
+    assert_eq!(backspaces, row[5].parse::<u32>().expect("backspaces"));
     assert_eq!(
-        map_target_events(&events, decision.target_is_ru),
-        "привет мир"
+        events[row[7].parse::<usize>().expect("space index")].keycode,
+        KeyCode::KEY_SPACE.code()
     );
+    let decision = replay_layout_decision(&events);
+    assert_eq!(map_target_events(&events, decision.target_is_ru), row[6]);
 }
 
 #[test]
 fn two_word_trailing_space_replay_deletes_expected_tail() {
-    let mut buffer = WordBuffer::new();
-    push_keys(&mut buffer, &[KeyCode::KEY_G, KeyCode::KEY_H], false);
-    buffer.handle_space();
-    push_keys(&mut buffer, &[KeyCode::KEY_V, KeyCode::KEY_B], false);
-    buffer.handle_space();
+    let row = replay_buffer_case("two_word_trailing_space");
+    assert_eq!(row.len(), 8, "bad fixture row: {row:?}");
+    let scope: usize = row[3].parse().expect("scope");
+    let (_buffer, events, backspaces) = typed_tail(
+        &[(&row[1], layout_from_fixture(&row[2]))],
+        scope,
+        "two completed words",
+    );
 
-    let (events, backspaces) = buffer.what_to_replay(2).expect("two completed words");
-
-    assert_eq!(map_original_events(&events), "gh vb ");
-    assert_eq!(backspaces, 6);
+    assert_eq!(map_original_events(&events), row[4]);
+    assert_eq!(backspaces, row[5].parse::<u32>().expect("backspaces"));
 }
 
 #[test]
 fn smart_scope_after_trailing_space_keeps_configured_scope() {
-    let mut buffer = WordBuffer::new();
-    push_keys(
-        &mut buffer,
-        &[
-            KeyCode::KEY_R,
-            KeyCode::KEY_J,
-            KeyCode::KEY_H,
-            KeyCode::KEY_J,
-            KeyCode::KEY_X,
-            KeyCode::KEY_T,
-        ],
-        true,
-    );
-    buffer.handle_space();
-    push_keys(
-        &mut buffer,
-        &[KeyCode::KEY_N, KeyCode::KEY_F, KeyCode::KEY_V],
-        true,
-    );
-    buffer.handle_space();
+    let row = replay_buffer_case("smart_scope_trailing_space");
+    assert_eq!(row.len(), 8, "bad fixture row: {row:?}");
+    let configured_scope: usize = row[3].parse().expect("scope");
+    let buffer = typed_buffer(&[(&row[1], layout_from_fixture(&row[2]))]);
 
-    let scope = effective_replace_words(&buffer, 2, CorrectionEngine::Smart, true);
+    let scope = effective_replace_words(&buffer, configured_scope, CorrectionEngine::Smart, true);
     let (events, backspaces) = buffer.what_to_replay(scope).expect("last word is buffered");
 
-    assert_eq!(scope, 2);
-    assert_eq!(map_original_events(&events), "короче там ");
-    assert_eq!(backspaces, 11);
+    assert_eq!(scope, configured_scope);
+    assert_eq!(map_original_events(&events), row[4]);
+    assert_eq!(backspaces, row[5].parse::<u32>().expect("backspaces"));
 }
 
 #[test]

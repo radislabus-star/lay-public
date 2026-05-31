@@ -1,0 +1,4 @@
+# label	good	bad
+transposed_typo	работает	рабоатет
+rare_transposition	ладно	ландо
+accidental_split	явно	я\sвно

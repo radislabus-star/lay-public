@@ -13,7 +13,7 @@ mod minimal;
 
 use defer::{defer_complex_edit, should_defer_immediate_typing_edit};
 use ime::try_apply_ime_replacement;
-use minimal::apply_minimal_typing_replacement;
+use minimal::{apply_minimal_typing_replacement, MinimalTypingReplacementContext};
 
 use super::super::physical_input_grab::PhysicalInputGrab;
 use super::super::{
@@ -87,16 +87,16 @@ pub(crate) fn apply_typing_assist_correction(
     }
 
     let original_layout = read_current_layout_is_ru().ok();
-    apply_minimal_typing_replacement(
+    apply_minimal_typing_replacement(MinimalTypingReplacementContext {
         buf,
-        &events,
-        &edit,
-        &original,
-        &replacement,
+        events: &events,
+        edit: &edit,
+        original: &original,
+        replacement: &replacement,
         cursor_offset,
         started_at,
-        &mut physical_grab,
+        physical_grab: &mut physical_grab,
         kbd,
         original_layout,
-    )
+    })
 }

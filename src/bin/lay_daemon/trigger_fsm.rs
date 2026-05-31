@@ -183,11 +183,6 @@ pub(super) fn should_run_deferred_typing_assist_after_space(
     pending && active && !shift_active
 }
 
-#[cfg(test)]
-pub(super) fn typing_assist_cursor_offset_after_space(current_len: usize) -> u32 {
-    current_len.min(u32::MAX as usize) as u32
-}
-
 fn is_leading_non_word_symbol_key(key: KeyCode, _shift: bool) -> bool {
     matches!(key, KeyCode::KEY_EQUAL | KeyCode::KEY_MINUS)
 }

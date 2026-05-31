@@ -10,14 +10,10 @@ mod ibus_bridge;
 #[path = "layout_controller/ime_bridge.rs"]
 mod ime_bridge;
 
-#[cfg(test)]
-pub(super) use gnome_dbus::{parse_current_layout_from_list, parse_gdbus_bool, parse_gdbus_string};
-
-#[cfg(test)]
-pub(super) use layout_kde::{first_quoted_string, parse_layouts_list as parse_kde_layouts_list};
-
 const LAYOUT_SWITCH_SETTLE_MS: u64 = 12;
 const TRIGGER_RELEASE_SETTLE_MS: u64 = 80;
+const LAYOUT_VERIFY_ATTEMPTS: usize = 5;
+const LAYOUT_VERIFY_POLL_MS: u64 = 10;
 
 pub(super) fn read_current_layout_is_ru() -> Result<bool, String> {
     match active_layout_backend() {
@@ -142,38 +138,44 @@ pub(super) fn target_layout(target_is_ru: bool) -> (&'static str, &'static str) 
 }
 
 pub(super) fn verify_current_layout(target_is_ru: bool) -> bool {
-    for _ in 0..5 {
-        if read_current_layout_is_ru().is_ok_and(|current| current == target_is_ru) {
-            return true;
-        }
-        std::thread::sleep(Duration::from_millis(10));
-    }
-    false
+    verify_layout_with_retry(|| {
+        read_current_layout_is_ru().is_ok_and(|current| current == target_is_ru)
+    })
 }
 
 fn verify_gnome_shell_layout(target_is_ru: bool) -> bool {
-    for _ in 0..5 {
-        if read_current_gnome_shell_layout_is_ru().is_ok_and(|current| current == target_is_ru) {
-            return true;
-        }
-        std::thread::sleep(Duration::from_millis(10));
-    }
-    false
+    verify_layout_with_retry(|| {
+        read_current_gnome_shell_layout_is_ru().is_ok_and(|current| current == target_is_ru)
+    })
 }
 
 fn verify_gnome_layout_stack(target_is_ru: bool) -> bool {
-    for _ in 0..5 {
-        if verify_gnome_layout_stack_once(target_is_ru) {
-            return true;
-        }
-        std::thread::sleep(Duration::from_millis(10));
-    }
-    false
+    verify_layout_with_retry(|| verify_gnome_layout_stack_once(target_is_ru))
 }
 
 fn verify_gnome_layout_stack_once(target_is_ru: bool) -> bool {
     read_current_gnome_shell_layout_is_ru().is_ok_and(|current| current == target_is_ru)
         && read_current_ibus_layout_is_ru().is_ok_and(|current| current == target_is_ru)
+}
+
+fn verify_layout_with_retry(check: impl FnMut() -> bool) -> bool {
+    verify_layout_with_retry_config(LAYOUT_VERIFY_ATTEMPTS, LAYOUT_VERIFY_POLL_MS, check)
+}
+
+fn verify_layout_with_retry_config(
+    attempts: usize,
+    poll_ms: u64,
+    mut check: impl FnMut() -> bool,
+) -> bool {
+    for _ in 0..attempts {
+        if check() {
+            return true;
+        }
+        if poll_ms > 0 {
+            std::thread::sleep(Duration::from_millis(poll_ms));
+        }
+    }
+    false
 }
 
 fn settle_after_layout_switch() {
@@ -215,4 +217,31 @@ pub(super) fn call_ime_ping() -> Result<String, String> {
 
 pub(super) fn detect_auto_layout_backend_hint() -> Option<LayoutBackend> {
     layout_kde::detect_auto_backend_hint()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::verify_layout_with_retry_config;
+
+    #[test]
+    fn verify_layout_retry_stops_after_success() {
+        let mut calls = 0;
+
+        assert!(verify_layout_with_retry_config(5, 0, || {
+            calls += 1;
+            calls == 3
+        }));
+        assert_eq!(calls, 3);
+    }
+
+    #[test]
+    fn verify_layout_retry_uses_all_attempts_on_failure() {
+        let mut calls = 0;
+
+        assert!(!verify_layout_with_retry_config(5, 0, || {
+            calls += 1;
+            false
+        }));
+        assert_eq!(calls, 5);
+    }
 }

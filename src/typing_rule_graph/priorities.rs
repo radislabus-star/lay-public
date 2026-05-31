@@ -1,0 +1,23 @@
+pub(super) const MOVED_PREFIX_PAIR: i32 = 10;
+pub(super) const SPLIT_WORD_PAIR: i32 = 20;
+pub(super) const VISUAL_B: i32 = 30;
+pub(super) const PERSONAL_PHRASE: i32 = 40;
+pub(super) const PERSONAL_TOKEN: i32 = 50;
+pub(super) const DUPLICATE_LAYOUT_PREFIX: i32 = 60;
+pub(super) const MIXED_SCRIPT_LAYOUT: i32 = 70;
+pub(super) const LAYOUT_TECHNICAL: i32 = 80;
+pub(super) const LAYOUT_RU_TO_EN: i32 = 90;
+pub(super) const LAYOUT_EN_TO_RU: i32 = 100;
+pub(super) const CYRILLIC_CASE: i32 = 110;
+pub(super) const HARD_SIGN: i32 = 120;
+pub(super) const ADJACENT_TRANSPOSITION: i32 = 130;
+pub(super) const REPEATED_LETTER: i32 = 140;
+pub(super) const SINGLE_LETTER_SUBSTITUTION: i32 = 150;
+pub(super) const VERB_ENDING: i32 = 160;
+pub(super) const VOWEL_CONFUSION: i32 = 170;
+pub(super) const EXTRA_LETTERS: i32 = 180;
+pub(super) const MISSING_LETTER: i32 = 190;
+pub(super) const GLUED_PHRASE: i32 = 200;
+
+pub(super) const MOVED_PREFIX_PAIR_WEIGHT: f64 = 98.0;
+pub(super) const VERB_ENDING_WEIGHT: f64 = 92.0;

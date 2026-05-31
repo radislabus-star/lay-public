@@ -1,4 +1,5 @@
 use super::*;
+use crate::typing_assist_test_fixtures::{fixture_lines_from_str, fixture_rows};
 
 #[test]
 fn reads_edge_whitespace_and_token_punctuation() {
@@ -16,26 +17,47 @@ fn splits_whitespace_segments_without_losing_boundaries() {
 
 #[test]
 fn reads_cyrillic_glued_word_split_boundaries() {
-    let splits = cyrillic_word_splits("тожесамое");
-    assert!(splits.iter().any(|split| {
-        split.left == "тоже"
-            && split.right == "самое"
-            && split.left_len == 4
-            && split.right_len == 5
-    }));
-    assert!(cyrillic_word_splits("wi-fi").is_empty());
-    assert!(cyrillic_word_splits("пара-пара").is_empty());
+    for row in fixture_rows("word_reader_split_boundaries.tsv") {
+        assert_eq!(row.len(), 5, "split boundary fixture must be TSV");
+        let left_len: usize = row[3].parse().expect("left len");
+        let right_len: usize = row[4].parse().expect("right len");
+        let splits = cyrillic_word_splits(&row[0]);
+        assert!(
+            splits.iter().any(|split| {
+                split.left == row[1]
+                    && split.right == row[2]
+                    && split.left_len == left_len
+                    && split.right_len == right_len
+            }),
+            "missing split for {:?}",
+            row[0]
+        );
+    }
+    for word in fixture_lines_from_str(include_str!(
+        "../tests/fixtures/word_reader_split_reject.txt"
+    )) {
+        assert!(cyrillic_word_splits(&word).is_empty());
+    }
 }
 
 #[test]
 fn reads_multiword_cyrillic_segmentations() {
-    let segmentations = cyrillic_word_segmentations("янебудузавас", 5);
-    assert!(segmentations
-        .iter()
-        .any(|parts| { parts.as_slice() == ["я", "не", "буду", "за", "вас"] }));
-    let segmentations = cyrillic_word_segmentations("янебуду", 7);
-    assert!(segmentations
-        .iter()
-        .any(|parts| { parts.as_slice() == ["я", "не", "буду"] }));
-    assert!(cyrillic_word_segmentations("wi-fi", 5).is_empty());
+    for row in fixture_rows("word_reader_segmentations.tsv") {
+        assert_eq!(row.len(), 3, "segmentation fixture must be TSV");
+        let max_parts: usize = row[1].parse().expect("max parts");
+        let expected = row[2].split('|').collect::<Vec<_>>();
+        let segmentations = cyrillic_word_segmentations(&row[0], max_parts);
+        assert!(
+            segmentations
+                .iter()
+                .any(|parts| parts.iter().copied().eq(expected.iter().copied())),
+            "missing segmentation for {:?}",
+            row[0]
+        );
+    }
+    for row in fixture_rows("word_reader_segmentation_reject.tsv") {
+        assert_eq!(row.len(), 2, "segmentation reject fixture must be TSV");
+        let max_parts: usize = row[1].parse().expect("max parts");
+        assert!(cyrillic_word_segmentations(&row[0], max_parts).is_empty());
+    }
 }

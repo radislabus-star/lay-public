@@ -2,24 +2,7 @@ use super::{
     correct_contextual_glued_tail, correct_glued_russian_phrase, correct_moved_prefix_letter_pair,
     correct_split_word_pair,
 };
-use std::path::PathBuf;
-
-fn fixture_rows(name: &str) -> Vec<Vec<String>> {
-    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("tests")
-        .join("fixtures")
-        .join(name);
-    std::fs::read_to_string(&path)
-        .unwrap_or_else(|err| panic!("failed to read fixture {path:?}: {err}"))
-        .lines()
-        .filter(|line| !line.trim().is_empty() && !line.starts_with('#'))
-        .map(|line| {
-            line.split('\t')
-                .map(|field| field.replace("\\s", " "))
-                .collect()
-        })
-        .collect()
-}
+use crate::typing_assist_test_fixtures::fixture_rows;
 
 #[test]
 fn splits_confident_glued_phrase_without_daemon_runtime() {

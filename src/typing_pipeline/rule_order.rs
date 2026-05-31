@@ -1,4 +1,6 @@
-use crate::config::{normalize_typing_assist_pipeline, TypingAssistRuleConfig};
+use crate::config::{
+    normalize_typing_assist_pipeline, sort_typing_assist_pipeline, TypingAssistRuleConfig,
+};
 
 pub(super) fn typing_rules_for_evaluation(
     pipeline: &[TypingAssistRuleConfig],
@@ -10,6 +12,6 @@ pub(super) fn typing_rules_for_evaluation(
         }
         rules.push(configured.clone());
     }
-    rules.sort_by(|a, b| a.priority.cmp(&b.priority).then_with(|| a.id.cmp(&b.id)));
+    sort_typing_assist_pipeline(&mut rules);
     rules
 }

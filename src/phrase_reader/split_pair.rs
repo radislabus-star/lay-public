@@ -3,38 +3,24 @@ use crate::phrase_score::NGRAM_SPLIT_REJECT_MARGIN;
 use crate::russian_lexicon::is_known_russian_word_or_form;
 use crate::russian_typo_scoring::ngram_allows_ru_candidate;
 use crate::text_case::apply_word_case;
-use crate::word_reader::{is_cyrillic_word, split_word_punctuation, split_ws_segments};
+use crate::word_reader::is_cyrillic_word;
 
 use super::guards::{
-    can_merge_split_without_dictionary, is_shouty_cyrillic_word,
+    can_merge_split_without_dictionary, is_shouty_cyrillic_word, read_plain_phrase_pair,
     should_keep_standalone_pair_with_function_left,
     should_keep_standalone_pair_with_function_right, should_keep_standalone_pair_with_short_right,
 };
 
 pub fn correct_split_word_pair(text: &str) -> Option<String> {
-    let segments = split_ws_segments(text);
-    if segments.len() != 3 || segments[0].1 || !segments[1].1 || segments[2].1 {
-        return None;
-    }
+    let pair = read_plain_phrase_pair(text)?;
 
-    let (left_leading, left, left_trailing) = split_word_punctuation(segments[0].0);
-    let (right_leading, right, right_trailing) = split_word_punctuation(segments[2].0);
-    if !left_leading.is_empty()
-        || !left_trailing.is_empty()
-        || !right_leading.is_empty()
-        || left.is_empty()
-        || right.is_empty()
-    {
+    let left_lower = pair.left.to_lowercase();
+    let right_lower = pair.right.to_lowercase();
+    if is_shouty_cyrillic_word(pair.right) {
         return None;
     }
-
-    let left_lower = left.to_lowercase();
-    let right_lower = right.to_lowercase();
-    if is_shouty_cyrillic_word(right) {
-        return None;
-    }
-    if crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(left).is_some()
-        || crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(right).is_some()
+    if crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(pair.left).is_some()
+        || crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(pair.right).is_some()
     {
         return None;
     }
@@ -53,14 +39,14 @@ pub fn correct_split_word_pair(text: &str) -> Option<String> {
         return None;
     }
 
-    let glued = format!("{left}{right}");
+    let glued = format!("{}{}", pair.left, pair.right);
     if glued.chars().count() < 4 || !is_cyrillic_word(&glued) {
         return None;
     }
 
     let lower = glued.to_lowercase();
     if !is_known_russian_word_or_form(&lower)
-        && !can_merge_split_without_dictionary(left, right, &lower, text)
+        && !can_merge_split_without_dictionary(pair.left, pair.right, &lower, text)
     {
         return None;
     }
@@ -71,6 +57,6 @@ pub fn correct_split_word_pair(text: &str) -> Option<String> {
     Some(format!(
         "{}{}",
         apply_word_case(&glued, &lower),
-        right_trailing
+        pair.right_trailing
     ))
 }

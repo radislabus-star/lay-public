@@ -2,22 +2,13 @@ use super::*;
 
 #[test]
 fn typing_assist_fixes_extra_repeated_letter() {
-    assert_eq!(
-        apply_typing_assist_exact("исправленно "),
-        Some("исправлено ".to_string())
-    );
-    assert_eq!(
-        apply_typing_assist_exact("исправленнно "),
-        Some("исправлено ".to_string())
-    );
     for row in fixture_rows("daemon_typing_assist_repeated_letter.tsv") {
         assert_eq!(row.len(), 2, "repeated-letter fixture must be TSV");
         assert_eq!(apply_typing_assist_exact(&row[0]), Some(row[1].clone()));
     }
-    assert_eq!(apply_typing_assist_exact("про "), None);
-    assert_eq!(apply_typing_assist_exact("ии "), None);
-    assert_eq!(apply_typing_assist_exact("яя "), None);
-    assert_eq!(apply_typing_assist_exact("вв "), None);
+    for input in fixture_lines("daemon_typing_assist_repeated_letter_keep.txt") {
+        assert_eq!(apply_typing_assist_exact(&input), None, "input={input:?}");
+    }
 }
 
 #[test]

@@ -19,20 +19,21 @@ fn typing_assist_converts_wrong_layout_ascii_hyphen_token() {
 
 #[test]
 fn typing_assist_keeps_natural_cyrillic_hyphen_words() {
-    assert_eq!(apply_typing_assist("что-то ", true), None);
-    assert_eq!(apply_typing_assist("кто-то ", true), None);
-    assert_eq!(apply_typing_assist("где-то ", true), None);
-    assert_eq!(apply_typing_assist("как-то ", true), None);
-    assert_eq!(apply_typing_assist("из-за ", true), None);
-    assert_eq!(apply_typing_assist("кока-коле ", true), None);
-    assert_eq!(apply_typing_assist("код-дэ-вуар ", true), None);
-    assert_eq!(apply_typing_assist("чек-лист! ", true), None);
-    assert_eq!(apply_typing_assist("к-лист! ", true), None);
-    assert_eq!(correct_wrong_layout_ascii_technical_token("из-за"), None);
-    assert_eq!(
-        correct_wrong_layout_ascii_technical_token("цш-аш"),
-        Some("wi-fi".to_string())
-    );
-    assert_eq!(correct_wrong_layout_ascii_technical_token("15р-16р"), None);
-    assert_eq!(apply_typing_assist("15р-16р ", true), None);
+    for input in fixture_lines("daemon_typing_assist_natural_hyphen_keep.txt") {
+        assert_eq!(apply_typing_assist(&input, true), None, "input={input:?}");
+    }
+    for row in fixture_rows("daemon_typing_assist_technical_hyphen_token.tsv") {
+        assert_eq!(row.len(), 2, "technical hyphen token fixture must be TSV");
+        let expected = if row[1] == "None" {
+            None
+        } else {
+            Some(row[1].clone())
+        };
+        assert_eq!(
+            correct_wrong_layout_ascii_technical_token(&row[0]),
+            expected,
+            "token={:?}",
+            row[0]
+        );
+    }
 }

@@ -1,6 +1,6 @@
 use crate::keyboard::is_cyrillic_letter;
 use crate::russian_chars::is_russian_vowel;
-use crate::russian_prefixes::DERIVATIONAL_PREFIXES;
+use crate::russian_prefixes::derivational_prefixes;
 use std::collections::HashSet;
 
 use super::{
@@ -149,7 +149,7 @@ fn is_known_russian_ka_declension_form(word: &str) -> bool {
 }
 
 fn is_known_russian_prefixed_form(word: &str) -> bool {
-    DERIVATIONAL_PREFIXES.iter().any(|prefix| {
+    derivational_prefixes().any(|prefix| {
         let Some(rest) = word.strip_prefix(prefix) else {
             return false;
         };

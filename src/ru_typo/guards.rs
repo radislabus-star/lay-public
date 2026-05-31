@@ -4,6 +4,16 @@ use crate::russian_chars::is_russian_vowel;
 use crate::russian_lexicon::{
     is_known_russian_word_or_form, looks_like_russian_adjective_lemma, russian_dictionary,
 };
+use crate::word_reader::is_cyrillic_word;
+
+pub(super) fn unknown_cyrillic_lower(word: &str, min_chars: usize) -> Option<String> {
+    if word.chars().count() < min_chars || !is_cyrillic_word(word) {
+        return None;
+    }
+
+    let lower = word.to_lowercase();
+    (!is_known_russian_word_or_form(&lower)).then_some(lower)
+}
 
 pub(super) fn correct_invalid_adjective_tail(original: &str, lower: &str) -> Option<String> {
     let stem = lower

@@ -1,3 +1,6 @@
+mod common;
+
+use common::fixture_tagged_cases;
 use lay::config::CorrectionEngine;
 use lay::decoder::DecoderAction;
 use lay::engine::{decide_manual_correction, ManualCorrectionInput, ManualCorrectionPolicy};
@@ -38,30 +41,9 @@ fn decode_manual_visible_tail(input: &str) -> String {
     }
 }
 
-fn fixture_rows(data: &'static str) -> impl Iterator<Item = (&'static str, String, String)> {
-    data.lines()
-        .filter(|line| !line.trim().is_empty() && !line.starts_with('#'))
-        .map(|line| {
-            let mut fields = line.split('\t');
-            let class = fields.next().expect("fixture class");
-            let input = fields.next().expect("fixture input");
-            let expected = fields.next().expect("fixture expected");
-            assert!(fields.next().is_none(), "fixture row must have 3 columns");
-            (
-                class,
-                decode_fixture_field(input),
-                decode_fixture_field(expected),
-            )
-        })
-}
-
-fn decode_fixture_field(value: &str) -> String {
-    value.replace("\\s", " ")
-}
-
 #[test]
 fn manual_decoder_alternating_language_cases_choose_tokenwise_tail() {
-    for (class, input, expected) in fixture_rows(DECODER_ALTERNATING_STRESS_CASES) {
+    for (class, input, expected) in fixture_tagged_cases(DECODER_ALTERNATING_STRESS_CASES) {
         let got = decode_manual_visible_tail(&input);
         assert_eq!(got, expected, "class={class} input={input:?}");
         assert_eq!(

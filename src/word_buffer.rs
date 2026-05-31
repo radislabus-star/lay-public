@@ -12,6 +12,7 @@ mod visible_text_memory;
 use std::time::Instant;
 
 use crate::keyboard::KeyEvent;
+use crate::text_edit::TextReplacement;
 
 pub const MAX_REPLACE_WORDS: usize = 8;
 const LEARNING_FEEDBACK_MAX_AGE_SECS: u64 = 30;
@@ -34,6 +35,17 @@ pub struct PendingAutoUndo {
     pub replace_words: usize,
     pub words: usize,
     started_at: Instant,
+}
+
+impl PendingAutoUndo {
+    pub fn replacement_plan(&self) -> TextReplacement {
+        TextReplacement {
+            move_left: 0,
+            backspaces: self.replacement.chars().count() as u32,
+            insert: self.original.clone(),
+            move_right: 0,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
