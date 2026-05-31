@@ -22,7 +22,7 @@ const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-const APP_VERSION = '0.1.201';
+const APP_VERSION = '0.1.202';
 const APP_DESCRIPTION = 'Alpha RU/EN layout helper: double Shift и помощь при наборе';
 const APP_RELEASE_DATE = '2026-05-31';
 const APP_LICENSE = 'MIT';
@@ -473,6 +473,10 @@ function focusedWindowInfo() {
 
     let app = null;
     try { app = Shell.WindowTracker.get_default().get_window_app(win); } catch(e) {}
+    const windowId = String(win.get_id?.() ?? '').trim();
+    const stableSequence = String(win.get_stable_sequence?.() ?? '').trim();
+    const pid = String(win.get_pid?.() ?? '').trim();
+    const description = String(win.get_description?.() ?? '').trim();
     const appId = String(app?.get_id?.() ?? '').trim();
     const appName = String(app?.get_name?.() ?? '').trim();
     const wmClass = String(win.get_wm_class?.() ?? '').trim();
@@ -480,11 +484,11 @@ function focusedWindowInfo() {
     const title = String(win.get_title?.() ?? '').trim();
 
     if (appId)
-        return {kind: 'app_id', value: appId, label: appName || appId, appId, wmClass, wmClassInstance, title};
+        return {kind: 'app_id', value: appId, label: appName || appId, windowId, stableSequence, pid, description, appId, wmClass, wmClassInstance, title};
     if (wmClass)
-        return {kind: 'wm_class', value: wmClass, label: wmClass, appId, wmClass, wmClassInstance, title};
+        return {kind: 'wm_class', value: wmClass, label: wmClass, windowId, stableSequence, pid, description, appId, wmClass, wmClassInstance, title};
     if (wmClassInstance)
-        return {kind: 'wm_class_instance', value: wmClassInstance, label: wmClassInstance, appId, wmClass, wmClassInstance, title};
+        return {kind: 'wm_class_instance', value: wmClassInstance, label: wmClassInstance, windowId, stableSequence, pid, description, appId, wmClass, wmClassInstance, title};
     return null;
 }
 

@@ -20,7 +20,7 @@ use super::trigger_dispatch::{is_single_trigger_id, trigger_key_from_config};
 use super::typing_key_runtime::{handle_typing_key_press, TypingKeyContext};
 use super::{
     active_enter_autocorrect_from_env, active_layout_backend, idle_wait_timeout, log,
-    should_skip_buffer_input, update_focus_ignore_state, wait_for_keyboard_event_or_timeout,
+    poll_focused_window_state, should_skip_buffer_input, wait_for_keyboard_event_or_timeout,
     DShiftState, ForceLayoutHotkeyContext, ShiftState, ENTER_AUTOCORRECT_EXPERIMENT_ENV,
 };
 
@@ -79,12 +79,7 @@ pub(super) fn listen_keyboard(
         let events: Vec<InputEvent> = match fetched_events {
             Ok(events) => events,
             Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
-                update_focus_ignore_state(
-                    &mut state.focus_ignored,
-                    &mut state.last_focus_ignore_poll,
-                    &mut state.buffer,
-                    &mut state.events_since_word_start,
-                );
+                update_focus_state(&mut state);
                 if state.focus_ignored {
                     wait_for_keyboard_event_or_timeout(
                         device_fd,
@@ -144,12 +139,7 @@ pub(super) fn listen_keyboard(
             Err(e) => return Err(e),
         };
 
-        update_focus_ignore_state(
-            &mut state.focus_ignored,
-            &mut state.last_focus_ignore_poll,
-            &mut state.buffer,
-            &mut state.events_since_word_start,
-        );
+        update_focus_state(&mut state);
         if state.focus_ignored {
             state.shift_state = ShiftState::default();
             state.dshift_state = DShiftState::Idle;
@@ -347,4 +337,33 @@ pub(super) fn listen_keyboard(
             }
         }
     }
+}
+
+fn update_focus_state(state: &mut DaemonLoopState) {
+    let Some(focus) = poll_focused_window_state(&mut state.last_focus_ignore_poll) else {
+        return;
+    };
+
+    let identity_changed = state.switch_window_input_state(focus.identity);
+    if identity_changed {
+        log("► focused window changed: switched text tail buffer");
+        state.dshift_state = DShiftState::Idle;
+        state.pending_multi_tap = None;
+    }
+
+    if focus.ignored != state.focus_ignored {
+        if focus.ignored {
+            log("► focused window ignored: VM/remote viewer, host lay paused");
+        } else {
+            log("► focused window accepted: host lay resumed");
+        }
+    }
+
+    if focus.ignored {
+        state.buffer.reset_all();
+        state.events_since_word_start = 0;
+        state.pending_typing_assist_after_space.take();
+        state.ignore_current_token_until_space = false;
+    }
+    state.focus_ignored = focus.ignored;
 }

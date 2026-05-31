@@ -1,4 +1,5 @@
 use super::*;
+use crate::daemon_state::DaemonLoopState;
 
 #[test]
 fn idle_wait_uses_long_sleep_when_no_internal_deadlines() {
@@ -173,4 +174,36 @@ fn typing_after_replay_clears_toggle_shortcut() {
     buffer.push(key_event(KeyCode::KEY_H, true));
 
     assert!(!buffer.replay_toggle_ready());
+}
+
+#[test]
+fn window_input_state_keeps_separate_word_buffers() {
+    let mut state = DaemonLoopState::new(&LayConfig::default(), false, false);
+
+    assert!(state.switch_window_input_state(Some("window-a".to_string())));
+    push_text_as_layout(&mut state.buffer, "ghb", false);
+    assert_eq!(
+        map_original_events(&state.buffer.what_to_replay(1).unwrap().0),
+        "ghb"
+    );
+
+    assert!(state.switch_window_input_state(Some("window-b".to_string())));
+    assert!(state.buffer.current_is_empty());
+    push_text_as_layout(&mut state.buffer, "djn", false);
+    assert_eq!(
+        map_original_events(&state.buffer.what_to_replay(1).unwrap().0),
+        "djn"
+    );
+
+    assert!(state.switch_window_input_state(Some("window-a".to_string())));
+    assert_eq!(
+        map_original_events(&state.buffer.what_to_replay(1).unwrap().0),
+        "ghb"
+    );
+
+    assert!(state.switch_window_input_state(Some("window-b".to_string())));
+    assert_eq!(
+        map_original_events(&state.buffer.what_to_replay(1).unwrap().0),
+        "djn"
+    );
 }

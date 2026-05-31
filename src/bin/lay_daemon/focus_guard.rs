@@ -1,6 +1,5 @@
 use crate::trigger_fsm::MultiTapPending;
 use lay::desktop::LayoutBackend;
-use lay::word_buffer::WordBuffer;
 use std::os::fd::RawFd;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
@@ -26,32 +25,19 @@ const HOST_FOCUS_IGNORE_HINTS: &[&str] = &[
 ];
 static FOCUS_INFO_UNAVAILABLE: AtomicBool = AtomicBool::new(false);
 
-pub(super) fn update_focus_ignore_state(
-    focus_ignored: &mut bool,
-    last_poll: &mut Instant,
-    buffer: &mut WordBuffer,
-    events_since_word_start: &mut u32,
-) {
+pub(super) struct FocusedWindowState {
+    pub(super) ignored: bool,
+    pub(super) identity: Option<String>,
+}
+
+pub(super) fn poll_focused_window_state(last_poll: &mut Instant) -> Option<FocusedWindowState> {
     if active_layout_backend() != LayoutBackend::Gnome
         || last_poll.elapsed() < Duration::from_millis(FOCUS_IGNORE_POLL_INTERVAL_MS)
     {
-        return;
+        return None;
     }
     *last_poll = Instant::now();
-
-    let ignored = focused_window_should_be_ignored();
-    if ignored != *focus_ignored {
-        if ignored {
-            log("► focused window ignored: VM/remote viewer, host lay paused");
-        } else {
-            log("► focused window accepted: host lay resumed");
-        }
-    }
-    if ignored {
-        buffer.reset_all();
-        *events_since_word_start = 0;
-    }
-    *focus_ignored = ignored;
+    focused_window_state()
 }
 
 pub(super) fn wait_for_keyboard_event_or_timeout(
@@ -117,19 +103,57 @@ fn deadline_remaining(now: Instant, started_at: Instant, delay: Duration) -> Dur
         .unwrap_or(Duration::ZERO)
 }
 
-pub(super) fn focused_window_should_be_ignored() -> bool {
+fn focused_window_state() -> Option<FocusedWindowState> {
     if FOCUS_INFO_UNAVAILABLE.load(Ordering::Relaxed) {
-        return false;
+        return None;
     }
     match call_focused_window_info() {
-        Ok(json) => focused_window_json_is_ignored(&json),
+        Ok(json) => Some(FocusedWindowState {
+            ignored: focused_window_json_is_ignored(&json),
+            identity: focused_window_identity_from_json(&json),
+        }),
         Err(error) => {
             FOCUS_INFO_UNAVAILABLE.store(true, Ordering::Relaxed);
             log(&format!(
                 "⚠ FocusedWindowInfo unavailable, host focus guard disabled: {error}"
             ));
-            false
+            None
         }
+    }
+}
+
+pub(super) fn focused_window_identity_from_json(json: &str) -> Option<String> {
+    let value = serde_json::from_str::<serde_json::Value>(json).ok()?;
+    let object = value.as_object()?;
+    for key in ["stableSequence", "windowId"] {
+        if let Some(text) = object.get(key).and_then(|item| item.as_str()) {
+            let text = text.trim();
+            if !text.is_empty() {
+                return Some(format!("gnome-window:{key}:{text}"));
+            }
+        }
+    }
+
+    let mut parts = Vec::new();
+    for key in [
+        "kind",
+        "value",
+        "appId",
+        "wmClass",
+        "wmClassInstance",
+        "title",
+    ] {
+        if let Some(text) = object.get(key).and_then(|item| item.as_str()) {
+            let text = text.trim();
+            if !text.is_empty() {
+                parts.push(text.to_ascii_lowercase());
+            }
+        }
+    }
+    if parts.is_empty() {
+        None
+    } else {
+        Some(format!("gnome-window:fallback:{}", parts.join("\u{1f}")))
     }
 }
 

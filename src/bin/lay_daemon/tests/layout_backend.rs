@@ -35,6 +35,22 @@ fn host_focus_ignore_detects_vm_windows() {
 }
 
 #[test]
+fn focused_window_identity_prefers_gnome_stable_sequence() {
+    assert_eq!(
+        focused_window_identity_from_json(
+            r#"{"stableSequence":"4365","windowId":"3214725164","appId":"google-chrome.desktop","title":"about:blank"}"#
+        ),
+        Some("gnome-window:stableSequence:4365".to_string())
+    );
+    assert_eq!(
+        focused_window_identity_from_json(
+            r#"{"windowId":"3214725164","appId":"google-chrome.desktop","title":"about:blank"}"#
+        ),
+        Some("gnome-window:windowId:3214725164".to_string())
+    );
+}
+
+#[test]
 fn keyboard_discovery_ignores_service_virtual_devices() {
     assert!(should_ignore_keyboard_device_name("lay-virtual-keyboard"));
     assert!(should_ignore_keyboard_device_name(
