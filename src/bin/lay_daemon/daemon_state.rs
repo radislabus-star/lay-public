@@ -31,6 +31,8 @@ pub(super) struct DaemonLoopState {
     pub(super) events_since_word_start: u32,
     pub(super) pending_typing_assist_after_space: Option<PendingTypingAssist>,
     pub(super) focus_ignored: bool,
+    pub(super) focused_window_identity: Option<String>,
+    pub(super) field_context_epoch: u64,
     pub(super) active_window_identity: Option<String>,
     pub(super) window_states: HashMap<String, WindowInputState>,
     pub(super) ignore_current_token_until_space: bool,
@@ -44,6 +46,7 @@ pub(super) struct WindowInputState {
     ignore_current_token_until_space: bool,
     clear_on_next_typing: bool,
     suppress_next_typing_assist_after_manual_replay: bool,
+    saved_at: Instant,
 }
 
 impl WindowInputState {
@@ -56,6 +59,7 @@ impl WindowInputState {
             clear_on_next_typing: state.clear_on_next_typing,
             suppress_next_typing_assist_after_manual_replay: state
                 .suppress_next_typing_assist_after_manual_replay,
+            saved_at: Instant::now(),
         }
     }
 
@@ -95,6 +99,8 @@ impl DaemonLoopState {
             events_since_word_start: 0,
             pending_typing_assist_after_space: None,
             focus_ignored: false,
+            focused_window_identity: None,
+            field_context_epoch: 0,
             active_window_identity: None,
             window_states: HashMap::new(),
             ignore_current_token_until_space: false,
@@ -103,12 +109,28 @@ impl DaemonLoopState {
     }
 
     pub(super) fn switch_window_input_state(&mut self, identity: Option<String>) -> bool {
+        self.focused_window_identity = identity;
+        self.switch_text_context_state()
+    }
+
+    pub(super) fn switch_field_context_epoch(&mut self, epoch: u64) -> bool {
+        if self.field_context_epoch == epoch {
+            return false;
+        }
+        self.field_context_epoch = epoch;
+        self.switch_text_context_state()
+    }
+
+    fn switch_text_context_state(&mut self) -> bool {
+        let identity = self.active_text_context_identity();
         if self.active_window_identity == identity {
             return false;
         }
         if let Some(previous) = self.active_window_identity.take() {
-            let previous_state = WindowInputState::take_from(self);
-            self.window_states.insert(previous, previous_state);
+            if self.should_save_current_text_context() {
+                let previous_state = WindowInputState::take_from(self);
+                self.window_states.insert(previous, previous_state);
+            }
         }
 
         if let Some(current) = identity.clone() {
@@ -124,6 +146,38 @@ impl DaemonLoopState {
             }
         }
         self.active_window_identity = identity;
+        self.prune_window_states();
         true
+    }
+
+    fn active_text_context_identity(&self) -> Option<String> {
+        self.focused_window_identity
+            .as_ref()
+            .map(|window| format!("{window}:field:{}", self.field_context_epoch))
+    }
+
+    fn should_save_current_text_context(&self) -> bool {
+        !self.buffer.current_is_empty()
+            || self.events_since_word_start > 0
+            || self.pending_typing_assist_after_space.is_some()
+            || self.ignore_current_token_until_space
+            || self.clear_on_next_typing
+            || self.suppress_next_typing_assist_after_manual_replay
+    }
+
+    fn prune_window_states(&mut self) {
+        const MAX_SAVED_TEXT_CONTEXTS: usize = 50;
+
+        while self.window_states.len() > MAX_SAVED_TEXT_CONTEXTS {
+            let Some(oldest_key) = self
+                .window_states
+                .iter()
+                .min_by_key(|(_, state)| state.saved_at)
+                .map(|(key, _)| key.clone())
+            else {
+                break;
+            };
+            self.window_states.remove(&oldest_key);
+        }
     }
 }

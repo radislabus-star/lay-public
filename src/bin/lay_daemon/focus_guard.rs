@@ -7,6 +7,7 @@ use std::time::{Duration, Instant};
 use super::{active_layout_backend, call_focused_window_info, log};
 
 pub(super) const FOCUS_IGNORE_POLL_INTERVAL_MS: u64 = 500;
+pub(super) const FOCUS_KEY_EVENT_POLL_INTERVAL_MS: u64 = 50;
 pub(super) const IDLE_EVENT_WAIT_MAX_MS: u64 = 500;
 const HOST_FOCUS_IGNORE_HINTS: &[&str] = &[
     "org.virt-manager.virt-manager",
@@ -31,9 +32,26 @@ pub(super) struct FocusedWindowState {
 }
 
 pub(super) fn poll_focused_window_state(last_poll: &mut Instant) -> Option<FocusedWindowState> {
-    if active_layout_backend() != LayoutBackend::Gnome
-        || last_poll.elapsed() < Duration::from_millis(FOCUS_IGNORE_POLL_INTERVAL_MS)
-    {
+    poll_focused_window_state_after(
+        last_poll,
+        Duration::from_millis(FOCUS_IGNORE_POLL_INTERVAL_MS),
+    )
+}
+
+pub(super) fn poll_focused_window_state_for_key_event(
+    last_poll: &mut Instant,
+) -> Option<FocusedWindowState> {
+    poll_focused_window_state_after(
+        last_poll,
+        Duration::from_millis(FOCUS_KEY_EVENT_POLL_INTERVAL_MS),
+    )
+}
+
+fn poll_focused_window_state_after(
+    last_poll: &mut Instant,
+    min_interval: Duration,
+) -> Option<FocusedWindowState> {
+    if active_layout_backend() != LayoutBackend::Gnome || last_poll.elapsed() < min_interval {
         return None;
     }
     *last_poll = Instant::now();
@@ -125,11 +143,19 @@ fn focused_window_state() -> Option<FocusedWindowState> {
 pub(super) fn focused_window_identity_from_json(json: &str) -> Option<String> {
     let value = serde_json::from_str::<serde_json::Value>(json).ok()?;
     let object = value.as_object()?;
+    let title = json_text_field(object, "title");
+
     for key in ["stableSequence", "windowId"] {
         if let Some(text) = object.get(key).and_then(|item| item.as_str()) {
             let text = text.trim();
             if !text.is_empty() {
-                return Some(format!("gnome-window:{key}:{text}"));
+                let base = format!("gnome-window:{key}:{text}");
+                return Some(match (is_tabbable_app(object), title.as_deref()) {
+                    (true, Some(title)) => {
+                        format!("{base}:tab-title:{}", title.to_ascii_lowercase())
+                    }
+                    _ => base,
+                });
             }
         }
     }
@@ -155,6 +181,40 @@ pub(super) fn focused_window_identity_from_json(json: &str) -> Option<String> {
     } else {
         Some(format!("gnome-window:fallback:{}", parts.join("\u{1f}")))
     }
+}
+
+fn json_text_field(
+    object: &serde_json::Map<String, serde_json::Value>,
+    key: &str,
+) -> Option<String> {
+    object
+        .get(key)
+        .and_then(|item| item.as_str())
+        .map(str::trim)
+        .filter(|text| !text.is_empty())
+        .map(str::to_string)
+}
+
+fn is_tabbable_app(object: &serde_json::Map<String, serde_json::Value>) -> bool {
+    let mut haystack = String::new();
+    for key in ["appId", "wmClass", "wmClassInstance"] {
+        if let Some(text) = object.get(key).and_then(|item| item.as_str()) {
+            haystack.push_str(&text.to_ascii_lowercase());
+            haystack.push(' ');
+        }
+    }
+    [
+        "chrome",
+        "chromium",
+        "firefox",
+        "brave",
+        "vivaldi",
+        "opera",
+        "microsoft-edge",
+        "msedge",
+    ]
+    .iter()
+    .any(|needle| haystack.contains(needle))
 }
 
 pub(super) fn focused_window_json_is_ignored(json: &str) -> bool {

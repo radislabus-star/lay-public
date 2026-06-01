@@ -26,16 +26,7 @@ pub(super) fn has_later_typing_press(events: &[InputEvent], current_index: usize
 
 pub(super) fn find_all_keyboards() -> std::io::Result<Vec<std::path::PathBuf>> {
     let mut found = Vec::new();
-    for entry in std::fs::read_dir("/dev/input")? {
-        let entry = entry?;
-        let path = entry.path();
-        if !path
-            .file_name()
-            .and_then(|n| n.to_str())
-            .is_some_and(|s| s.starts_with("event"))
-        {
-            continue;
-        }
+    for path in input_event_paths()? {
         if let Ok(dev) = Device::open(&path) {
             if let Some(keys) = dev.supported_keys() {
                 if keys.contains(KeyCode::KEY_LEFTSHIFT) && keys.contains(KeyCode::KEY_A) {
@@ -57,6 +48,41 @@ pub(super) fn find_all_keyboards() -> std::io::Result<Vec<std::path::PathBuf>> {
         ));
     }
     Ok(found)
+}
+
+pub(super) fn find_all_pointers() -> std::io::Result<Vec<std::path::PathBuf>> {
+    let mut found = Vec::new();
+    for path in input_event_paths()? {
+        if let Ok(dev) = Device::open(&path) {
+            if let Some(keys) = dev.supported_keys() {
+                if keys.contains(KeyCode::BTN_LEFT) {
+                    let name = dev.name().unwrap_or("").to_string();
+                    if should_ignore_keyboard_device_name(&name) {
+                        continue;
+                    }
+                    found.push(path);
+                }
+            }
+        }
+    }
+    Ok(found)
+}
+
+fn input_event_paths() -> std::io::Result<Vec<std::path::PathBuf>> {
+    let mut paths = Vec::new();
+    for entry in std::fs::read_dir("/dev/input")? {
+        let entry = entry?;
+        let path = entry.path();
+        if !path
+            .file_name()
+            .and_then(|n| n.to_str())
+            .is_some_and(|s| s.starts_with("event"))
+        {
+            continue;
+        }
+        paths.push(path);
+    }
+    Ok(paths)
 }
 
 pub(super) fn should_ignore_keyboard_device_name(name: &str) -> bool {

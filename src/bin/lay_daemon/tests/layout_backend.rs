@@ -40,13 +40,37 @@ fn focused_window_identity_prefers_gnome_stable_sequence() {
         focused_window_identity_from_json(
             r#"{"stableSequence":"4365","windowId":"3214725164","appId":"google-chrome.desktop","title":"about:blank"}"#
         ),
-        Some("gnome-window:stableSequence:4365".to_string())
+        Some("gnome-window:stableSequence:4365:tab-title:about:blank".to_string())
     );
     assert_eq!(
         focused_window_identity_from_json(
             r#"{"windowId":"3214725164","appId":"google-chrome.desktop","title":"about:blank"}"#
         ),
-        Some("gnome-window:windowId:3214725164".to_string())
+        Some("gnome-window:windowId:3214725164:tab-title:about:blank".to_string())
+    );
+}
+
+#[test]
+fn focused_window_identity_separates_browser_tabs() {
+    assert_ne!(
+        focused_window_identity_from_json(
+            r#"{"stableSequence":"4365","appId":"google-chrome.desktop","title":"GitHub"}"#
+        ),
+        focused_window_identity_from_json(
+            r#"{"stableSequence":"4365","appId":"google-chrome.desktop","title":"Habr"}"#
+        )
+    );
+}
+
+#[test]
+fn focused_window_identity_keeps_terminal_window_stable() {
+    assert_eq!(
+        focused_window_identity_from_json(
+            r#"{"stableSequence":"7","appId":"org.gnome.Terminal.desktop","title":"~/projects/lay"}"#
+        ),
+        focused_window_identity_from_json(
+            r#"{"stableSequence":"7","appId":"org.gnome.Terminal.desktop","title":"vim README.md"}"#
+        )
     );
 }
 

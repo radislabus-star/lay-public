@@ -2,6 +2,7 @@ use evdev::{uinput::VirtualDevice, Device, EventType, InputEvent, KeyCode};
 use lay::config::LayConfig;
 use lay::keyboard::is_typing_key;
 use std::os::fd::AsRawFd;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 
 use super::boundary_runtime::{
@@ -16,17 +17,20 @@ use super::manual_trigger_runtime::{
     fire_expired_pending_multi_tap, handle_manual_trigger_event, ManualTriggerEventContext,
     PendingMultiTapTimeoutContext,
 };
+use super::text_context_runtime::should_advance_text_context;
 use super::trigger_dispatch::{is_single_trigger_id, trigger_key_from_config};
 use super::typing_key_runtime::{handle_typing_key_press, TypingKeyContext};
 use super::{
     active_enter_autocorrect_from_env, active_layout_backend, idle_wait_timeout, log,
-    poll_focused_window_state, should_skip_buffer_input, wait_for_keyboard_event_or_timeout,
-    DShiftState, ForceLayoutHotkeyContext, ShiftState, ENTER_AUTOCORRECT_EXPERIMENT_ENV,
+    poll_focused_window_state, poll_focused_window_state_for_key_event, should_skip_buffer_input,
+    wait_for_keyboard_event_or_timeout, DShiftState, ForceLayoutHotkeyContext, ShiftState,
+    ENTER_AUTOCORRECT_EXPERIMENT_ENV,
 };
 
 pub(super) fn listen_keyboard(
     device_path: std::path::PathBuf,
     virtual_kbd: Arc<Mutex<Option<VirtualDevice>>>,
+    field_context_epoch: Arc<AtomicU64>,
     verbose: bool,
     cfg: LayConfig,
 ) -> std::io::Result<()> {
@@ -139,7 +143,8 @@ pub(super) fn listen_keyboard(
             Err(e) => return Err(e),
         };
 
-        update_focus_state(&mut state);
+        update_focus_state_for_key_batch(&events, &mut state);
+        sync_field_context_epoch(&field_context_epoch, &mut state);
         if state.focus_ignored {
             state.shift_state = ShiftState::default();
             state.dshift_state = DShiftState::Idle;
@@ -169,6 +174,12 @@ pub(super) fn listen_keyboard(
 
             // ─── modifier tracking ────────────────────────────
             state.shift_state.update(key, value);
+            if should_advance_text_context(key, value, &state.shift_state) {
+                let epoch = field_context_epoch.fetch_add(1, Ordering::Relaxed) + 1;
+                if state.switch_field_context_epoch(epoch) && verbose {
+                    log("► text context changed: switched field buffer");
+                }
+            }
             if state.force_layout_hotkeys.handle_event(
                 key,
                 value,
@@ -339,11 +350,92 @@ pub(super) fn listen_keyboard(
     }
 }
 
+pub(super) fn listen_pointer(
+    device_path: std::path::PathBuf,
+    field_context_epoch: Arc<AtomicU64>,
+    verbose: bool,
+) -> std::io::Result<()> {
+    let mut device = Device::open(&device_path)?;
+    device.set_nonblocking(true)?;
+    let device_fd = device.as_raw_fd();
+    log(&format!(
+        "► слушаю pointer: {device_path:?} имя={:?}",
+        device.name().unwrap_or("?")
+    ));
+
+    loop {
+        let fetched_events = {
+            device
+                .fetch_events()
+                .map(|events| events.collect::<Vec<_>>())
+        };
+        let events: Vec<InputEvent> = match fetched_events {
+            Ok(events) => events,
+            Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                wait_for_keyboard_event_or_timeout(
+                    device_fd,
+                    std::time::Duration::from_millis(500),
+                )?;
+                continue;
+            }
+            Err(e) => return Err(e),
+        };
+
+        for event in events {
+            if event.event_type() != EventType::KEY || event.value() != 1 {
+                continue;
+            }
+            let key = KeyCode::new(event.code());
+            if matches!(
+                key,
+                KeyCode::BTN_LEFT
+                    | KeyCode::BTN_RIGHT
+                    | KeyCode::BTN_MIDDLE
+                    | KeyCode::BTN_SIDE
+                    | KeyCode::BTN_EXTRA
+                    | KeyCode::BTN_FORWARD
+                    | KeyCode::BTN_BACK
+                    | KeyCode::BTN_TASK
+            ) {
+                let epoch = field_context_epoch.fetch_add(1, Ordering::Relaxed) + 1;
+                if verbose {
+                    log(&format!("► pointer context changed: field epoch {epoch}"));
+                }
+            }
+        }
+    }
+}
+
 fn update_focus_state(state: &mut DaemonLoopState) {
-    let Some(focus) = poll_focused_window_state(&mut state.last_focus_ignore_poll) else {
+    let focus = poll_focused_window_state(&mut state.last_focus_ignore_poll);
+    apply_focus_state(state, focus);
+}
+
+fn update_focus_state_for_key_batch(events: &[InputEvent], state: &mut DaemonLoopState) {
+    let has_key_event = events
+        .iter()
+        .any(|event| event.event_type() == EventType::KEY);
+    let focus = if has_key_event {
+        poll_focused_window_state_for_key_event(&mut state.last_focus_ignore_poll)
+    } else {
+        poll_focused_window_state(&mut state.last_focus_ignore_poll)
+    };
+    apply_focus_state(state, focus);
+}
+
+fn sync_field_context_epoch(field_context_epoch: &AtomicU64, state: &mut DaemonLoopState) {
+    let epoch = field_context_epoch.load(Ordering::Relaxed);
+    if state.switch_field_context_epoch(epoch) {
+        log("► text context changed: switched field buffer");
+        state.dshift_state = DShiftState::Idle;
+        state.pending_multi_tap = None;
+    }
+}
+
+fn apply_focus_state(state: &mut DaemonLoopState, focus: Option<super::FocusedWindowState>) {
+    let Some(focus) = focus else {
         return;
     };
-
     let identity_changed = state.switch_window_input_state(focus.identity);
     if identity_changed {
         log("► focused window changed: switched text tail buffer");

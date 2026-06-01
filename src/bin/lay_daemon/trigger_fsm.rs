@@ -46,6 +46,18 @@ impl ShiftState {
             || self.left_meta
             || self.right_meta
     }
+
+    pub(super) fn ctrl_active(&self) -> bool {
+        self.left_ctrl || self.right_ctrl
+    }
+
+    pub(super) fn alt_active(&self) -> bool {
+        self.left_alt || self.right_alt
+    }
+
+    pub(super) fn meta_active(&self) -> bool {
+        self.left_meta || self.right_meta
+    }
 }
 
 pub(super) fn single_hotkey_keycode(id: &str) -> Option<KeyCode> {

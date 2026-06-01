@@ -118,6 +118,9 @@ mod boundary_runtime;
 #[path = "lay_daemon/typing_key_runtime.rs"]
 mod typing_key_runtime;
 
+#[path = "lay_daemon/text_context_runtime.rs"]
+mod text_context_runtime;
+
 #[path = "lay_daemon/buffer_filter_runtime.rs"]
 mod buffer_filter_runtime;
 use buffer_filter_runtime::*;

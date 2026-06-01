@@ -2,14 +2,14 @@ use evdev::uinput::VirtualDevice;
 use lay::config::{CorrectionEngine, LayConfig};
 use lay::desktop::LayoutBackend;
 use std::path::PathBuf;
-use std::sync::atomic::Ordering;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
 use super::{
     active_enter_autocorrect_from_env, active_layout_backend, call_ime_ping, call_ping,
-    find_all_keyboards, listen_keyboard, log, make_virtual_keyboard,
-    ENTER_AUTOCORRECT_EXPERIMENT_ENV, TYPING_ASSIST_RUNTIME_READY,
+    find_all_keyboards, find_all_pointers, listen_keyboard, listen_pointer, log,
+    make_virtual_keyboard, ENTER_AUTOCORRECT_EXPERIMENT_ENV, TYPING_ASSIST_RUNTIME_READY,
 };
 
 pub(super) fn run_daemon(
@@ -149,12 +149,22 @@ fn spawn_keyboard_threads(
     verbose: bool,
 ) -> std::io::Result<()> {
     let virtual_kbd = Arc::new(Mutex::new(virtual_kbd));
+    let field_context_epoch = Arc::new(AtomicU64::new(0));
     let mut handles = Vec::new();
+    for path in find_all_pointers().unwrap_or_default() {
+        let field_context_epoch = Arc::clone(&field_context_epoch);
+        handles.push(std::thread::spawn(move || {
+            if let Err(e) = listen_pointer(path, field_context_epoch, verbose) {
+                log(&format!("⚠ thread pointer: {e}"));
+            }
+        }));
+    }
     for path in device_paths {
         let virtual_kbd = Arc::clone(&virtual_kbd);
+        let field_context_epoch = Arc::clone(&field_context_epoch);
         let cfg = LayConfig::load();
         handles.push(std::thread::spawn(move || {
-            if let Err(e) = listen_keyboard(path, virtual_kbd, verbose, cfg) {
+            if let Err(e) = listen_keyboard(path, virtual_kbd, field_context_epoch, verbose, cfg) {
                 log(&format!("⚠ thread keyboard: {e}"));
             }
         }));
