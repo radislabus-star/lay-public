@@ -4,12 +4,33 @@ use crate::keyboard::is_cyrillic_letter;
 use crate::ru_typo::has_plausible_russian_typo_candidate;
 use crate::text_case::apply_word_case;
 use crate::word_reader::split_word_punctuation;
+use crate::word_recognizer::{recognize_token, WordScript};
 
 use super::english::{is_known_english_layout_autoswitch_word, is_plain_ascii_word_candidate};
 use super::is_known_russian_layout_autoswitch_word;
 use super::score::lem_prefers_layout_candidate;
 
 pub(crate) fn correct_wrong_layout_cyrillic_word(token: &str) -> Option<String> {
+    correct_wrong_layout_cyrillic_word_with_policy(token, EnglishLayoutPolicy::Strict)
+}
+
+pub(crate) fn correct_wrong_layout_cyrillic_word_experimental(token: &str) -> Option<String> {
+    if correct_wrong_layout_cyrillic_word(token).is_some() {
+        return None;
+    }
+    correct_wrong_layout_cyrillic_word_with_policy(token, EnglishLayoutPolicy::Experimental)
+}
+
+#[derive(Clone, Copy)]
+enum EnglishLayoutPolicy {
+    Strict,
+    Experimental,
+}
+
+fn correct_wrong_layout_cyrillic_word_with_policy(
+    token: &str,
+    policy: EnglishLayoutPolicy,
+) -> Option<String> {
     if !is_plain_cyrillic_layout_token(token) {
         return None;
     }
@@ -38,7 +59,7 @@ pub(crate) fn correct_wrong_layout_cyrillic_word(token: &str) -> Option<String> 
         return None;
     }
 
-    english_layout_autoswitch_candidates(converted_word)
+    english_layout_autoswitch_candidates(converted_word, policy)
         .into_iter()
         .find_map(|candidate_lower| {
             let candidate_word = apply_word_case(original_word, &candidate_lower);
@@ -47,10 +68,16 @@ pub(crate) fn correct_wrong_layout_cyrillic_word(token: &str) -> Option<String> 
         })
 }
 
-fn english_layout_autoswitch_candidates(converted: &str) -> Vec<String> {
+fn english_layout_autoswitch_candidates(
+    converted: &str,
+    policy: EnglishLayoutPolicy,
+) -> Vec<String> {
     let lower = converted.to_ascii_lowercase();
     let mut out = Vec::new();
-    if is_known_english_layout_autoswitch_word(&lower) {
+    if is_known_english_layout_autoswitch_word(&lower)
+        || matches!(policy, EnglishLayoutPolicy::Experimental)
+            && is_known_english_word_for_experimental_layout(&lower)
+    {
         out.push(lower.clone());
     }
 
@@ -65,6 +92,11 @@ fn english_layout_autoswitch_candidates(converted: &str) -> Vec<String> {
     }
 
     out
+}
+
+fn is_known_english_word_for_experimental_layout(word: &str) -> bool {
+    let identity = recognize_token(word);
+    identity.script == WordScript::Ascii && identity.known_en && identity.is_plain_word()
 }
 
 fn is_plain_cyrillic_layout_token(token: &str) -> bool {

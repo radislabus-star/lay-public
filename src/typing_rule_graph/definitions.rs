@@ -85,6 +85,10 @@ pub(super) static RULES: &[TypingRuleDefinition] = &[
         ids::EXPERIMENTAL_LAYOUT_EN_TO_RU,
         rules::apply_layout_en_to_ru,
     ),
+    contextual_layout_rule(
+        ids::EXPERIMENTAL_LAYOUT_RU_TO_EN,
+        rules::apply_layout_ru_to_en_experimental,
+    ),
     rule(
         ids::CYRILLIC_CASE,
         priorities::CYRILLIC_CASE,

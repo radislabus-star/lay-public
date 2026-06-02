@@ -135,6 +135,28 @@ fn experimental_context_accepts_plain_ascii_to_ru_layout_words() {
 }
 
 #[test]
+fn experimental_context_accepts_plain_cyrillic_to_ascii_layout_words() {
+    let pipeline = typing_assist_pipeline_for_context(
+        true,
+        CorrectionSafety::Experimental,
+        &default_typing_assist_pipeline(),
+        "",
+    );
+    assert!(pipeline
+        .iter()
+        .find(|rule| rule.id == "experimental_layout_ru_to_en")
+        .is_some_and(|rule| rule.enabled));
+    assert_eq!(
+        apply_typing_assist_with_pipeline("щт ", true, &pipeline),
+        Some("on ".to_string())
+    );
+    assert_eq!(
+        apply_typing_assist_with_pipeline("щаа ", true, &pipeline),
+        Some("off ".to_string())
+    );
+}
+
+#[test]
 fn alternating_layout_sentences_fix_every_second_word() {
     for (input, expected) in fixture_cases(ALTERNATING_CASES) {
         assert_eq!(

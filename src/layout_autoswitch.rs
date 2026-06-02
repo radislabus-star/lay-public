@@ -30,7 +30,9 @@ pub(crate) use ascii::{
     correct_wrong_layout_ascii_word, is_ascii_layout_letter_symbol,
     is_confident_wrong_layout_ascii_pair, is_protected_ascii_layout_token,
 };
-pub(crate) use cyrillic::correct_wrong_layout_cyrillic_word;
+pub(crate) use cyrillic::{
+    correct_wrong_layout_cyrillic_word, correct_wrong_layout_cyrillic_word_experimental,
+};
 pub(crate) use english::is_known_english_layout_autoswitch_word;
 pub(crate) use hyphen::is_cyrillic_hyphenated_word_for_layout;
 pub use technical::{

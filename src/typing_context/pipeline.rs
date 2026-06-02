@@ -3,7 +3,8 @@ use crate::config::{
     typing_assist_pipeline_for_policy, CorrectionSafety, TypingAssistRuleConfig,
 };
 use crate::typing_rule_graph::ids::{
-    CONTEXTUAL_LAYOUT_EN_TO_RU, EXPERIMENTAL_LAYOUT_EN_TO_RU, LAYOUT_EN_TO_RU,
+    CONTEXTUAL_LAYOUT_EN_TO_RU, EXPERIMENTAL_LAYOUT_EN_TO_RU, EXPERIMENTAL_LAYOUT_RU_TO_EN,
+    LAYOUT_EN_TO_RU, LAYOUT_RU_TO_EN,
 };
 
 use super::layout_signal::should_enable_ascii_to_ru_layout;
@@ -38,6 +39,17 @@ pub fn typing_assist_pipeline_for_context(
         });
         sort_typing_assist_pipeline(&mut pipeline);
     }
+    if auto_replace
+        && safety == CorrectionSafety::Experimental
+        && user_config_allows_rule(configured, LAYOUT_RU_TO_EN)
+    {
+        pipeline.push(TypingAssistRuleConfig {
+            id: EXPERIMENTAL_LAYOUT_RU_TO_EN.to_string(),
+            enabled: true,
+            priority: contextual_ru_to_en_priority(&pipeline),
+        });
+        sort_typing_assist_pipeline(&mut pipeline);
+    }
     pipeline
 }
 
@@ -54,4 +66,12 @@ fn contextual_ascii_to_ru_priority(pipeline: &[TypingAssistRuleConfig]) -> i32 {
         .find(|rule| rule.id == LAYOUT_EN_TO_RU)
         .map(|rule| rule.priority.saturating_sub(1).max(1))
         .unwrap_or(99)
+}
+
+fn contextual_ru_to_en_priority(pipeline: &[TypingAssistRuleConfig]) -> i32 {
+    pipeline
+        .iter()
+        .find(|rule| rule.id == LAYOUT_RU_TO_EN)
+        .map(|rule| rule.priority.saturating_sub(1).max(1))
+        .unwrap_or(89)
 }
