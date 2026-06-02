@@ -2,7 +2,9 @@ use crate::config::{
     normalize_typing_assist_pipeline, sort_typing_assist_pipeline,
     typing_assist_pipeline_for_policy, CorrectionSafety, TypingAssistRuleConfig,
 };
-use crate::typing_rule_graph::ids::{CONTEXTUAL_LAYOUT_EN_TO_RU, LAYOUT_EN_TO_RU};
+use crate::typing_rule_graph::ids::{
+    CONTEXTUAL_LAYOUT_EN_TO_RU, EXPERIMENTAL_LAYOUT_EN_TO_RU, LAYOUT_EN_TO_RU,
+};
 
 use super::layout_signal::should_enable_ascii_to_ru_layout;
 
@@ -20,6 +22,17 @@ pub fn typing_assist_pipeline_for_context(
     {
         pipeline.push(TypingAssistRuleConfig {
             id: CONTEXTUAL_LAYOUT_EN_TO_RU.to_string(),
+            enabled: true,
+            priority: contextual_ascii_to_ru_priority(&pipeline),
+        });
+        sort_typing_assist_pipeline(&mut pipeline);
+    }
+    if auto_replace
+        && safety == CorrectionSafety::Experimental
+        && user_config_allows_rule(configured, LAYOUT_EN_TO_RU)
+    {
+        pipeline.push(TypingAssistRuleConfig {
+            id: EXPERIMENTAL_LAYOUT_EN_TO_RU.to_string(),
             enabled: true,
             priority: contextual_ascii_to_ru_priority(&pipeline),
         });

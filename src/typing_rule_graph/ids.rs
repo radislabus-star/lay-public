@@ -9,6 +9,7 @@ pub(crate) const LAYOUT_TECHNICAL: &str = "layout_technical";
 pub(crate) const LAYOUT_RU_TO_EN: &str = "layout_ru_to_en";
 pub(crate) const LAYOUT_EN_TO_RU: &str = "layout_en_to_ru";
 pub(crate) const CONTEXTUAL_LAYOUT_EN_TO_RU: &str = "contextual_layout_en_to_ru";
+pub(crate) const EXPERIMENTAL_LAYOUT_EN_TO_RU: &str = "experimental_layout_en_to_ru";
 pub(crate) const CYRILLIC_CASE: &str = "cyrillic_case";
 pub(crate) const HARD_SIGN: &str = "hard_sign";
 pub(crate) const ADJACENT_TRANSPOSITION: &str = "adjacent_transposition";

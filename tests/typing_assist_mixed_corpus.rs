@@ -117,6 +117,24 @@ fn dynamic_context_allows_ascii_to_ru_in_russian_sentence() {
 }
 
 #[test]
+fn experimental_context_accepts_plain_ascii_to_ru_layout_words() {
+    let pipeline = typing_assist_pipeline_for_context(
+        true,
+        CorrectionSafety::Experimental,
+        &default_typing_assist_pipeline(),
+        "",
+    );
+    assert!(pipeline
+        .iter()
+        .find(|rule| rule.id == "experimental_layout_en_to_ru")
+        .is_some_and(|rule| rule.enabled));
+    assert_eq!(
+        apply_typing_assist_with_pipeline("djn ", true, &pipeline),
+        Some("вот ".to_string())
+    );
+}
+
+#[test]
 fn alternating_layout_sentences_fix_every_second_word() {
     for (input, expected) in fixture_cases(ALTERNATING_CASES) {
         assert_eq!(
