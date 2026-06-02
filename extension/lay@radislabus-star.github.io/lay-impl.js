@@ -22,7 +22,7 @@ const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-const APP_VERSION = '0.1.203';
+const APP_VERSION = '0.1.204';
 const APP_DESCRIPTION = 'Alpha RU/EN layout helper: double Shift и помощь при наборе';
 const APP_RELEASE_DATE = '2026-06-01';
 const APP_LICENSE = 'MIT';
@@ -96,6 +96,11 @@ const SAFETY_OPTIONS = [
     ['strict', 'строго'],
     ['normal', 'норма'],
     ['experimental', 'эксп.'],
+];
+const SAFETY_STEPS = [
+    {id: 'strict', label: 'Осторожно', value: 0},
+    {id: 'normal', label: 'Норма', value: 1},
+    {id: 'experimental', label: 'Смелее', value: 2},
 ];
 const DEFAULT_TYPING_PIPELINE = TYPING_RULES.map((rule, idx) => ({
     id: rule.id,
@@ -664,6 +669,8 @@ class LayIndicator extends PanelMenu.Button {
         this._forceRuItems = {};
         this._forceEnItems = {};
         this._toggleButtons = {};
+        this._safetySliderLabel = null;
+        this._safetySliderThumbs = [];
         this._statusRefreshIds = [];
         this._cfg.typing_assist_pipeline = normalizeTypingPipeline(this._cfg.typing_assist_pipeline);
 
@@ -688,15 +695,12 @@ class LayIndicator extends PanelMenu.Button {
 
         this.menu.addMenuItem(this._segmentedRow('Режим', this._engineOptions(), this._engineButtons));
         this.menu.addMenuItem(this._segmentedRow('Область', this._scopeOptions(), this._scopeButtons));
+        this.menu.addMenuItem(this._safetySliderRow());
 
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        this.menu.addMenuItem(this._arbiterMenu());
-        this.menu.addMenuItem(this._correctionPipelineMenu());
         this.menu.addMenuItem(this._recentActionsMenu());
-        this.menu.addMenuItem(this._ptahAlexsMenu());
-        this.menu.addMenuItem(this._triggerMenu());
-        this.menu.addMenuItem(this._forceLayoutMenu());
-        this.menu.addMenuItem(this._timingMenu());
+        this.menu.addMenuItem(this._behaviorMenu());
+        this.menu.addMenuItem(this._expertMenu());
         this.menu.addMenuItem(this._daemonSwitchItem());
         this.menu.addMenuItem(this._updateItem());
         this.menu.addMenuItem(this._aboutMenu());
@@ -762,22 +766,38 @@ class LayIndicator extends PanelMenu.Button {
         return item;
     }
 
-    _arbiterMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('Арбитр', false);
-        item.menu.addMenuItem(this._segmentedRow('Осторожность', this._safetyOptions(), this._safetyButtons));
-        item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+    _behaviorMenu() {
+        const item = new PopupMenu.PopupSubMenuMenuItem('Поведение', false);
         item.menu.addMenuItem(this._switchItem(
             'Авто-layout после пробела',
             'auto_switch_layout',
             false,
             AUTO_SWITCH_TOOLTIP
         ));
+        item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         item.menu.addMenuItem(this._switchItem(
             'Исправлять перед Enter',
             'enter_autocorrect',
             true,
             ENTER_AUTOCORRECT_TOOLTIP
         ));
+        return item;
+    }
+
+    _expertMenu() {
+        const item = new PopupMenu.PopupSubMenuMenuItem('Экспертное', false);
+        item.menu.addMenuItem(this._arbiterMenu());
+        item.menu.addMenuItem(this._correctionPipelineMenu());
+        item.menu.addMenuItem(this._ptahAlexsMenu());
+        item.menu.addMenuItem(this._triggerMenu());
+        item.menu.addMenuItem(this._forceLayoutMenu());
+        item.menu.addMenuItem(this._timingMenu());
+        item.menu.addMenuItem(this._backendMenu());
+        return item;
+    }
+
+    _arbiterMenu() {
+        const item = new PopupMenu.PopupSubMenuMenuItem('LEM-арбитр', false);
         item.menu.addMenuItem(this._switchItem(
             'LEM: 2 слова',
             'lem_2_words',
@@ -790,8 +810,6 @@ class LayIndicator extends PanelMenu.Button {
             false,
             LEM_3_TOOLTIP
         ));
-        item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        item.menu.addMenuItem(this._segmentedRow('Вставка', this._backendOptions(), this._backendButtons));
         return item;
     }
 
@@ -823,6 +841,12 @@ class LayIndicator extends PanelMenu.Button {
             ['uinput', 'uinput', () => this._setConfigValue('text_backend', 'uinput', true)],
             ['ime', 'IME', () => this._setConfigValue('text_backend', 'ime', true)],
         ];
+    }
+
+    _backendMenu() {
+        const item = new PopupMenu.PopupSubMenuMenuItem('Канал ввода', false);
+        item.menu.addMenuItem(this._segmentedRow('Канал', this._backendOptions(), this._backendButtons));
+        return item;
     }
 
     _recentActionsMenu() {
@@ -926,7 +950,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _ptahAlexsMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('ptah_alexs', false);
+        const item = new PopupMenu.PopupSubMenuMenuItem('Раскладка по окну', false);
         const mode = persistentSwitchItem(
             'Жёстко по окну',
             !!this._cfg.ptah_alexs_mode
@@ -1122,7 +1146,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _correctionPipelineMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('Коррекция', false);
+        const item = new PopupMenu.PopupSubMenuMenuItem('Правила коррекции', false);
         for (const [idx, rule] of this._cfg.typing_assist_pipeline.entries())
             item.menu.addMenuItem(this._pipelineRuleRow(rule, idx));
         return item;
@@ -1258,6 +1282,73 @@ class LayIndicator extends PanelMenu.Button {
         this._tooltip = null;
     }
 
+    _safetySliderRow() {
+        const item = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
+        item.reactive = false;
+        item.can_focus = false;
+        item.style = 'padding:5px 12px;';
+
+        const box = new St.BoxLayout({
+            vertical: true,
+            x_expand: true,
+            style: 'spacing:4px;',
+        });
+        const titleRow = new St.BoxLayout({
+            x_expand: true,
+            style: 'spacing:8px;',
+        });
+        titleRow.add_child(new St.Label({
+            text: 'Агрессивность',
+            y_align: Clutter.ActorAlign.CENTER,
+            x_expand: true,
+            style: 'font-weight:bold;',
+        }));
+        this._safetySliderLabel = new St.Label({
+            text: this._safetySliderLabelText(),
+            y_align: Clutter.ActorAlign.CENTER,
+            style: COMPACT_SUBTITLE_STYLE,
+        });
+        titleRow.add_child(this._safetySliderLabel);
+        box.add_child(titleRow);
+
+        const track = new St.BoxLayout({
+            x_expand: true,
+            style: 'spacing:4px;',
+        });
+        this._safetySliderThumbs = [];
+        for (const step of SAFETY_STEPS) {
+            const button = new St.Button({
+                label: step.label,
+                reactive: true,
+                can_focus: true,
+                toggle_mode: true,
+                style_class: 'button flat',
+                style: 'padding:2px 8px; border-radius:999px; min-width:0;',
+                x_expand: true,
+            });
+            button.connect('clicked', () => this._setSafetyLevel(step.id));
+            this._safetySliderThumbs.push([step.id, button]);
+            track.add_child(button);
+        }
+        box.add_child(track);
+        item.add_child(box);
+        this._attachTooltip(item,
+            'Настраивает, насколько смело lay исправляет после пробела.\n'
+            + 'Осторожно: только самые безопасные правила.\n'
+            + 'Норма: текущий стабильный режим.\n'
+            + 'Смелее: больше исправлений, выше риск ложной замены.'
+        );
+        return item;
+    }
+
+    _setSafetyLevel(id) {
+        this._setConfigValue('correction_safety', id, true);
+    }
+
+    _safetySliderLabelText() {
+        return SAFETY_STEPS.find(step => step.id === this._cfg.correction_safety)?.label ?? 'Норма';
+    }
+
     _segmentedRow(title, options, target) {
         const item = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
         item.reactive = false;
@@ -1291,7 +1382,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _triggerMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('', false);
+        const item = new PopupMenu.PopupSubMenuMenuItem('Триггер', false);
         this._triggerMenuItem = item;
         for (const [id, label] of TRIGGER_OPTIONS) {
             const row = new PopupMenu.PopupMenuItem(label);
@@ -1481,6 +1572,8 @@ class LayIndicator extends PanelMenu.Button {
             this._aboutConfigLabel.text = `Настройки: ${this._aboutConfigText()}`;
         if (this._ptahWindowLabel)
             this._ptahWindowLabel.text = this._ptahCurrentWindowText();
+        if (this._safetySliderLabel)
+            this._safetySliderLabel.text = this._safetySliderLabelText();
         this._refreshStats();
         for (const [id, button] of Object.entries(this._engineButtons ?? {}))
             this._setButtonActive(button, id === this._cfg.correction_engine);
@@ -1489,6 +1582,8 @@ class LayIndicator extends PanelMenu.Button {
         for (const [id, button] of Object.entries(this._backendButtons ?? {}))
             this._setButtonActive(button, id === this._cfg.text_backend);
         for (const [id, button] of Object.entries(this._safetyButtons ?? {}))
+            this._setButtonActive(button, id === this._cfg.correction_safety);
+        for (const [id, button] of this._safetySliderThumbs ?? [])
             this._setButtonActive(button, id === this._cfg.correction_safety);
         for (const [id, button] of Object.entries(this._triggerButtons ?? {}))
             this._setButtonActive(button, id === this._cfg.trigger);
