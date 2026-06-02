@@ -200,6 +200,9 @@ mod layout_kde;
 #[path = "lay_daemon/layout_x11.rs"]
 mod layout_x11;
 
+#[path = "lay_daemon/layout_niri.rs"]
+mod layout_niri;
+
 #[path = "lay_daemon/command_runtime.rs"]
 mod command_runtime;
 

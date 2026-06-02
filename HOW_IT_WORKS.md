@@ -28,7 +28,7 @@
 - `src/correction.rs` — общий контракт результата исправления;
 - `src/decoder.rs` — единый decision layer: manual double-Shift, typing assist,
   enter-autocorrect и будущий scorer/decoder выбирают действие, но не печатают;
-- `src/desktop.rs` — выбор `gnome` / `kde` / `x11`, нормализация layout-id;
+- `src/desktop.rs` — выбор `gnome` / `kde` / `x11` / `niri`, нормализация layout-id;
 - `src/dict.rs` — физическая RU/EN конвертация клавиш;
 - `src/keyboard.rs` — keycode-события, word split, replay-decision, US/RU mapping и text→uinput runs;
 - `src/word_buffer.rs` — история текущего/предыдущих слов, replay-toggle и pending feedback;
@@ -42,6 +42,7 @@ Desktop-адаптеры:
 
 - GNOME: Shell extension, tray, DBus bridge, `inputSources[i].activate()`;
 - KDE/Plasma: отдельный adapter через `qdbus/qdbus6` поверх того же ядра;
+- Niri: прямой IPC через `niri-ipc` (Unix socket); переключение раскладки через `SwitchLayout`.
 - X11: native XKB backend через `x11rb`; внешние tools используются только
   как fallback, если native XKB недоступен.
 
@@ -196,6 +197,7 @@ DOUBLE SHIFT ✓
 - `auto` — выбрать backend по окружению;
 - `gnome` — GNOME Shell extension + DBus;
 - `kde` — `qdbus/qdbus6 org.kde.keyboard /Layouts setLayout`;
+- `niri` — прямой IPC через `niri-ipc` (Unix socket);
 - `x11` — сначала native XKB через `x11rb`, затем fallback:
   `xkb-switch`, `xkblayout-state`, `setxkbmap`.
 

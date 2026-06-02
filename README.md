@@ -81,7 +81,7 @@ cd ~/projects/lay && bash update.sh
 - **Автоподмена** применяет точные пользовательские правила.
 - **ptah_alexs** жёстко ставит раскладку для выбранных окон.
 - **Прямые RU/EN хоткеи** могут включать конкретную раскладку без toggle.
-- **KDE/X11 backend** есть, но покрытие меньше, чем у GNOME Wayland.
+- **KDE/X11/Niri backend** есть, но покрытие меньше, чем у GNOME Wayland.
 
 Пример Smart-сценария:
 
@@ -118,6 +118,7 @@ good ntrcn -> good текст
 - **GNOME Wayland** — основной и самый зрелый путь.
 - **KDE/Plasma Wayland** — поддерживается, но покрытие меньше.
 - **X11** — есть native XKB backend, проверяется как экспериментальный путь.
+- **Niri Wayland** — поддерживается через прямой IPC (niri-ipc).
 - **Sway/Hyprland/другие WM** — пока не заявлены как поддержанные.
 - **Языки** — текущая цель только RU/EN.
 
@@ -126,6 +127,7 @@ good ntrcn -> good текст
 - GNOME: Shell extension, tray и DBus bridge для переключения раскладки;
 - KDE/Plasma: отдельный `lay-kde-tray` и переключение через `qdbus6`;
 - X11: native XKB backend через `x11rb`.
+- Niri: прямой IPC через `niri-ipc` (Unix socket).
 
 KDE и X11 уже рабочие, но они моложе GNOME-пути. Если что-то ломается в KDE,
 X11 или другой сборке Linux, лучше открыть issue с точным примером:
@@ -283,7 +285,7 @@ curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scr
 After installation, log out and log back in so the `input` group, `/dev/uinput`
 permissions, and desktop integration are picked up.
 
-Main tested target: GNOME Wayland with RU/EN layouts. KDE/Plasma Wayland is
+Main tested target: GNOME Wayland with RU/EN layouts. Niri Wayland is supported through direct IPC (niri-ipc). KDE/Plasma Wayland is
 supported with a smaller compatibility matrix. X11 has a native XKB backend and
 is treated as experimental. Other layouts and non-RU/EN pairs are not supported
 yet.

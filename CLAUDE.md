@@ -2,7 +2,7 @@
 
 ## Project
 
-`lay` is a Caramba/Punto-style layout switcher for GNOME Wayland.
+`lay` is a Caramba/Punto-style layout switcher for Linux (GNOME Wayland, KDE, Niri, X11).
 
 The daemon listens to physical keyboard events through `evdev`, stores recent
 keycodes, and replays them through `uinput` after a manual trigger.

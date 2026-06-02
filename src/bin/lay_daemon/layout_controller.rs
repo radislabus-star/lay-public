@@ -1,7 +1,7 @@
 use lay::desktop::{is_ru_layout_id, LayoutBackend};
 use std::time::Duration;
 
-use super::{active_layout_backend, active_text_backend, layout_kde, layout_x11, log};
+use super::{active_layout_backend, active_text_backend, layout_kde, layout_niri, layout_x11, log};
 
 #[path = "layout_controller/gnome_dbus.rs"]
 mod gnome_dbus;
@@ -20,6 +20,7 @@ pub(super) fn read_current_layout_is_ru() -> Result<bool, String> {
         LayoutBackend::Gnome => read_current_layout_gnome_is_ru(),
         LayoutBackend::Kde => layout_kde::read_current_layout_is_ru(),
         LayoutBackend::X11 => layout_x11::read_current_layout_is_ru(),
+        LayoutBackend::Niri => layout_niri::read_current_layout_is_ru(),
     }
 }
 
@@ -51,6 +52,7 @@ fn switch_to_layout(layout_id: &str, ibus_engine: &str, target_is_ru: bool) -> R
         LayoutBackend::Gnome => switch_to_gnome_layout(layout_id, ibus_engine, target_is_ru),
         LayoutBackend::Kde => layout_kde::switch_to_layout(layout_id, target_is_ru),
         LayoutBackend::X11 => layout_x11::switch_to_layout(layout_id, target_is_ru),
+        LayoutBackend::Niri => layout_niri::switch_to_layout(layout_id, target_is_ru),
     }
 }
 

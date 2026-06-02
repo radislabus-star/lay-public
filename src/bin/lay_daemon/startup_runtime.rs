@@ -8,7 +8,7 @@ use std::time::Instant;
 
 use super::{
     active_enter_autocorrect_from_env, active_layout_backend, call_ime_ping, call_ping,
-    find_all_keyboards, find_all_pointers, listen_keyboard, listen_pointer, log,
+    find_all_keyboards, find_all_pointers, layout_niri, listen_keyboard, listen_pointer, log,
     make_virtual_keyboard, ENTER_AUTOCORRECT_EXPERIMENT_ENV, TYPING_ASSIST_RUNTIME_READY,
 };
 
@@ -113,6 +113,13 @@ fn probe_backends(detect_only: bool, backend: LayoutBackend, cfg: &LayConfig) {
             )),
         },
         LayoutBackend::Kde => log("► GNOME extension ping skipped for non-GNOME layout backend"),
+        LayoutBackend::Niri => match layout_niri::ping() {
+            Ok(reply) => log(&format!("► niri IPC: {reply}")),
+            Err(e) => {
+                log(&format!("⚠ niri IPC не отвечает ({e})"));
+                log("⚠ работаю в detect-only");
+            }
+        },
     }
 
     if cfg.active_text_backend().should_try_ime() {

@@ -23,6 +23,11 @@ pub(super) fn active_layout_backend() -> LayoutBackend {
         return backend;
     }
 
+    // Check for niri environment variable
+    if std::env::var("NIRI_SOCKET").is_ok() {
+        return LayoutBackend::Niri;
+    }
+
     if let Some(hint) = *AUTO_LAYOUT_BACKEND_HINT.get_or_init(detect_auto_layout_backend_hint) {
         return hint;
     }

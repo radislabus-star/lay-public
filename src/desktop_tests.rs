@@ -15,12 +15,20 @@ fn backend_can_be_explicit_or_auto_detected() {
         LayoutBackend::X11
     );
     assert_eq!(
+        resolve_layout_backend("niri", Some("GNOME"), None, Some("wayland")),
+        LayoutBackend::Niri
+    );
+    assert_eq!(
         resolve_layout_backend("auto", Some("KDE"), Some("plasma"), Some("wayland")),
         LayoutBackend::Kde
     );
     assert_eq!(
         resolve_layout_backend("auto", Some("GNOME"), None, Some("wayland")),
         LayoutBackend::Gnome
+    );
+    assert_eq!(
+        resolve_layout_backend("auto", Some("niri"), None, Some("wayland")),
+        LayoutBackend::Niri
     );
     assert_eq!(
         resolve_layout_backend("auto", None, None, Some("x11")),

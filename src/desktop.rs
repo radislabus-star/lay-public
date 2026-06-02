@@ -8,6 +8,7 @@ pub enum LayoutBackend {
     Gnome,
     Kde,
     X11,
+    Niri,
 }
 
 impl LayoutBackend {
@@ -16,6 +17,7 @@ impl LayoutBackend {
             Self::Gnome => "gnome",
             Self::Kde => "kde",
             Self::X11 => "x11",
+            Self::Niri => "niri",
         }
     }
 }
@@ -30,6 +32,7 @@ pub fn resolve_layout_backend(
         "gnome" => return LayoutBackend::Gnome,
         "kde" | "plasma" => return LayoutBackend::Kde,
         "x11" | "xorg" => return LayoutBackend::X11,
+        "niri" => return LayoutBackend::Niri,
         _ => {}
     }
 
@@ -44,6 +47,9 @@ pub fn resolve_layout_backend(
     }
     if desktop.contains("gnome") {
         return LayoutBackend::Gnome;
+    }
+    if desktop.contains("niri") {
+        return LayoutBackend::Niri;
     }
     if session_type.is_some_and(|value| value.eq_ignore_ascii_case("x11")) {
         return LayoutBackend::X11;
