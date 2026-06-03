@@ -112,9 +112,12 @@ fn language_delta(text: &CandidateTextPair<'_>) -> f64 {
     if !text.has_cyrillic() {
         return 0.0;
     }
-    crate::ngram::ru_candidate_margin(text.replacement, text.original)
-        .clamp(LANGUAGE_MARGIN_MIN, LANGUAGE_MARGIN_MAX)
-        * LANGUAGE_MARGIN_WEIGHT
+    let margin = crate::ngram::ru_candidate_margin(text.replacement, text.original);
+    if !margin.is_finite() {
+        return 0.0;
+    }
+
+    margin.clamp(LANGUAGE_MARGIN_MIN, LANGUAGE_MARGIN_MAX) * LANGUAGE_MARGIN_WEIGHT
 }
 
 fn structure_bonus(text: &CandidateTextPair<'_>) -> f64 {

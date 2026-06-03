@@ -1,7 +1,10 @@
 //! Technical-token layout corrections.
 
 use crate::keyboard::is_cyrillic_letter;
-use crate::word_recognizer::is_ascii_technical_token;
+use crate::token_language::is_known_ru_token;
+use crate::word_recognizer::{
+    is_ascii_technical_or_brand_token, is_ascii_technical_token, is_upper_ascii_acronym,
+};
 
 use super::hyphen::{
     has_known_cyrillic_hyphen_fragment, is_cyrillic_hyphenated_word_for_layout,
@@ -36,6 +39,10 @@ pub fn correct_duplicate_layout_prefix_on_ascii_token(token: &str) -> Option<Str
 }
 
 pub fn correct_wrong_layout_ascii_technical_token(token: &str) -> Option<String> {
+    if let Some(repaired) = correct_ascii_prefix_with_ru_layout_tail(token) {
+        return Some(repaired);
+    }
+
     if !token.contains('-') || !is_plain_cyrillic_technical_source(token) {
         return None;
     }
@@ -61,6 +68,33 @@ pub fn correct_wrong_layout_ascii_technical_token(token: &str) -> Option<String>
     } else {
         None
     }
+}
+
+fn correct_ascii_prefix_with_ru_layout_tail(token: &str) -> Option<String> {
+    let (prefix, tail) = token.split_once('-')?;
+    if prefix.is_empty()
+        || tail.is_empty()
+        || tail.contains('-')
+        || !tail.chars().all(|ch| ch.is_ascii_alphabetic())
+    {
+        return None;
+    }
+    if !is_ascii_layout_anchor(prefix) {
+        return None;
+    }
+
+    let converted_tail = crate::dict::convert(tail, crate::dict::Direction::Us2Ru);
+    if converted_tail == tail || !is_known_ru_token(&converted_tail) {
+        return None;
+    }
+
+    Some(format!("{prefix}-{converted_tail}"))
+}
+
+fn is_ascii_layout_anchor(prefix: &str) -> bool {
+    prefix.is_ascii()
+        && prefix.chars().any(|ch| ch.is_ascii_alphabetic())
+        && (is_upper_ascii_acronym(prefix) || is_ascii_technical_or_brand_token(prefix))
 }
 
 pub fn should_keep_plain_cyrillic_before_ascii_technical(original: &str, converted: &str) -> bool {

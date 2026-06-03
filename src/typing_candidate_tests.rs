@@ -86,6 +86,7 @@ fn score_components_are_finite_for_edge_inputs() {
         ("word", "", -1),
         ("словослитно ", "слово слитно ", 100),
         ("ошисбя", "ошибся", 130),
+        ("QR-rjlf", "QR-кода", 80),
     ] {
         let score = score_typing_candidate(original, replacement, "missing_letter", priority);
         assert!(score.total.is_finite(), "total must be finite: {score:?}");
