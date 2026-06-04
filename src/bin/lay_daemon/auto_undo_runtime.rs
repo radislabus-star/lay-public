@@ -34,7 +34,8 @@ pub(super) fn handle_pending_auto_undo(
         return None;
     }
     let insert_outcome =
-        match apply_text_replacement_pipeline(kbd, &plan, &undo.original, true, "auto-undo") {
+        match apply_text_replacement_pipeline(kbd, &plan, &undo.original, true, "auto-undo", false)
+        {
             Ok(outcome) => outcome,
             Err(e) => {
                 e.log("auto-undo", "delete failed");

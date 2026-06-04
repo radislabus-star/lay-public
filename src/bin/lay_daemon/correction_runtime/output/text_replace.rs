@@ -29,14 +29,20 @@ pub(crate) fn try_manual_text_replacement(
     }
 
     let plan = manual_text_replacement_plan(ctx, text, kind);
-    let insert_outcome =
-        match apply_text_replacement_pipeline(kbd, &plan, text, ctx.target_is_ru, kind) {
-            Ok(outcome) => outcome,
-            Err(e) => {
-                e.log(kind, "minimal replace failed");
-                return OutputFlow::Return(None);
-            }
-        };
+    let insert_outcome = match apply_text_replacement_pipeline(
+        kbd,
+        &plan,
+        text,
+        ctx.target_is_ru,
+        kind,
+        ctx.input_isolated,
+    ) {
+        Ok(outcome) => outcome,
+        Err(e) => {
+            e.log(kind, "minimal replace failed");
+            return OutputFlow::Return(None);
+        }
+    };
     let insert_target_is_ru = insert_outcome.layout_is_ru;
     let layout_result = if insert_outcome.layout_already_set {
         Ok("already-set")

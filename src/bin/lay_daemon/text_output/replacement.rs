@@ -1,11 +1,13 @@
 use evdev::{uinput::VirtualDevice, KeyCode};
 use lay::keyboard::{preferred_layout_for_text, text_to_uinput_runs, TextInputRun};
 use lay::text_edit::TextReplacement;
+use std::time::Instant;
 
 use super::super::{log, switch_to_target_layout};
 use super::key_emit::{
-    emit_backspaces_for_text_replace, emit_key_taps, emit_key_taps_fast,
-    replay_text_insert_keycodes,
+    emit_backspaces_for_text_replace, emit_backspaces_for_text_replace_fast, emit_key_taps,
+    emit_key_taps_fast, replay_text_insert_keycodes,
+    replay_text_insert_keycodes_fast_after_modifier_cleanup,
 };
 
 const TEXT_REPLACE_KEY_PACE_MS: u64 = 1;
@@ -56,14 +58,26 @@ fn prepare_text_insert_for_replacement_plan(
     })
 }
 
-fn apply_text_replacement(dev: &mut VirtualDevice, plan: &TextReplacement) -> std::io::Result<()> {
+fn apply_text_replacement(
+    dev: &mut VirtualDevice,
+    plan: &TextReplacement,
+    fast_output: bool,
+) -> std::io::Result<()> {
     emit_key_taps(
         dev,
         KeyCode::KEY_LEFT,
         plan.move_left,
-        TEXT_REPLACE_KEY_PACE_MS,
+        if fast_output {
+            0
+        } else {
+            TEXT_REPLACE_KEY_PACE_MS
+        },
     )?;
-    emit_backspaces_for_text_replace(dev, plan.backspaces)?;
+    if fast_output {
+        emit_backspaces_for_text_replace_fast(dev, plan.backspaces)?;
+    } else {
+        emit_backspaces_for_text_replace(dev, plan.backspaces)?;
+    }
     Ok(())
 }
 
@@ -73,12 +87,35 @@ pub(crate) fn apply_text_replacement_pipeline(
     replacement: &str,
     fallback_layout_is_ru: bool,
     label: &str,
+    fast_output: bool,
 ) -> Result<TextInsertOutcome, TextReplacementPipelineError> {
+    let pipeline_started = Instant::now();
+    let prepare_started = Instant::now();
     let prepared_insert = prepare_text_insert_for_replacement_plan(plan, fallback_layout_is_ru)
         .map_err(TextReplacementPipelineError::Preflight)?;
-    apply_text_replacement(dev, plan).map_err(TextReplacementPipelineError::Delete)?;
-    insert_prepared_text_for_replacement_plan(dev, plan, replacement, &prepared_insert, label)
-        .map_err(TextReplacementPipelineError::Insert)
+    let prepare_ms = prepare_started.elapsed().as_millis();
+    let delete_started = Instant::now();
+    apply_text_replacement(dev, plan, fast_output).map_err(TextReplacementPipelineError::Delete)?;
+    let delete_ms = delete_started.elapsed().as_millis();
+    let insert_started = Instant::now();
+    let outcome = insert_prepared_text_for_replacement_plan(
+        dev,
+        plan,
+        replacement,
+        &prepared_insert,
+        label,
+        fast_output,
+    )
+    .map_err(TextReplacementPipelineError::Insert)?;
+    let insert_ms = insert_started.elapsed().as_millis();
+    log(&format!(
+        "  {label} timing: prepare={}ms delete={}ms insert={}ms pipeline={}ms",
+        prepare_ms,
+        delete_ms,
+        insert_ms,
+        pipeline_started.elapsed().as_millis()
+    ));
+    Ok(outcome)
 }
 
 fn insert_prepared_text_for_replacement_plan(
@@ -87,10 +124,16 @@ fn insert_prepared_text_for_replacement_plan(
     replacement: &str,
     prepared: &PreparedTextInsert,
     label: &str,
+    fast_output: bool,
 ) -> Result<TextInsertOutcome, String> {
     for run in &prepared.runs {
         switch_to_target_layout(run.target_is_ru)?;
-        replay_text_insert_keycodes(dev, &run.events).map_err(|e| e.to_string())?;
+        if fast_output {
+            replay_text_insert_keycodes_fast_after_modifier_cleanup(dev, &run.events)
+                .map_err(|e| e.to_string())?;
+        } else {
+            replay_text_insert_keycodes(dev, &run.events).map_err(|e| e.to_string())?;
+        }
     }
     if let Err(e) = emit_key_taps_fast(dev, KeyCode::KEY_RIGHT, plan.move_right) {
         return Err(format!("cursor restore failed: {e}"));

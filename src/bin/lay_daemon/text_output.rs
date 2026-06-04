@@ -8,7 +8,10 @@ mod modifiers;
 mod replacement;
 
 pub(super) use device::make_virtual_keyboard;
-pub(super) use key_emit::{emit_backspaces, emit_key_taps_fast, replay_keycodes};
+pub(super) use key_emit::{
+    emit_backspaces, emit_backspaces_fast, emit_key_taps_fast, replay_keycodes,
+    replay_keycodes_fast_after_modifier_cleanup,
+};
 pub(super) use modifiers::{release_possible_modifiers, release_possible_modifiers_fast};
 pub(super) use replacement::{
     apply_text_replacement_pipeline, switch_or_restore_layout_after_text_edit,

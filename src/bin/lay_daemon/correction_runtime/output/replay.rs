@@ -1,7 +1,9 @@
 use evdev::uinput::VirtualDevice;
+use std::time::Instant;
 
 use super::super::super::{
-    emit_backspaces, log, replay_keycodes, switch_to_target_layout, target_layout,
+    emit_backspaces, emit_backspaces_fast, log, replay_keycodes,
+    replay_keycodes_fast_after_modifier_cleanup, switch_to_target_layout, target_layout,
 };
 use super::super::memory::{remember_layout_replay_success, LayoutReplayMemory};
 use super::context::ManualOutputCommon;
@@ -10,6 +12,7 @@ pub(crate) fn apply_layout_replay(
     ctx: &mut ManualOutputCommon<'_>,
     kbd: &mut VirtualDevice,
 ) -> Option<bool> {
+    let layout_started = Instant::now();
     let layout_id = match switch_to_target_layout(ctx.target_is_ru) {
         Ok(layout_id) => layout_id,
         Err(e) => {
@@ -20,19 +23,34 @@ pub(crate) fn apply_layout_replay(
             return None;
         }
     };
+    let layout_ms = layout_started.elapsed().as_millis();
 
-    if let Err(e) = emit_backspaces(kbd, ctx.n_backspaces) {
+    let backspace_started = Instant::now();
+    let backspace_result = if ctx.input_isolated {
+        emit_backspaces_fast(kbd, ctx.n_backspaces)
+    } else {
+        emit_backspaces(kbd, ctx.n_backspaces)
+    };
+    if let Err(e) = backspace_result {
         log(&format!("⚠ Этап 2 backspaces failed: {e}"));
         return None;
     }
+    let backspace_ms = backspace_started.elapsed().as_millis();
     log(&format!("  1. layout → {layout_id}"));
     log(&format!("  2. uinput Backspace × {}", ctx.n_backspaces));
     let (_, ibus_engine) = target_layout(ctx.target_is_ru);
 
-    if let Err(e) = replay_keycodes(kbd, ctx.events) {
+    let replay_started = Instant::now();
+    let replay_result = if ctx.input_isolated {
+        replay_keycodes_fast_after_modifier_cleanup(kbd, ctx.events)
+    } else {
+        replay_keycodes(kbd, ctx.events)
+    };
+    if let Err(e) = replay_result {
         log(&format!("⚠ Этап 3 replay failed: {e}"));
         return Some(ctx.target_is_ru);
     }
+    let replay_ms = replay_started.elapsed().as_millis();
     remember_layout_replay_success(
         ctx.buf,
         LayoutReplayMemory {
@@ -46,6 +64,14 @@ pub(crate) fn apply_layout_replay(
         },
     );
     log(&format!("  3. uinput replay × {}", ctx.events.len()));
+    log(&format!(
+        "  timing: layout={}ms backspace={}ms replay={}ms total={}ms input_isolated={}",
+        layout_ms,
+        backspace_ms,
+        replay_ms,
+        ctx.started_at.elapsed().as_millis(),
+        ctx.input_isolated
+    ));
 
     log(&format!(
         "✓ done: раскладка {ibus_engine}, перенабрано {} клавиш за {}ms",

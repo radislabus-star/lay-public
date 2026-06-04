@@ -13,9 +13,22 @@ const TEXT_REPLACE_BACKSPACE_PACE_MS: u64 = 1;
 const TEXT_REPLACE_BACKSPACE_SETTLE_MS: u64 = 1;
 const TEXT_INSERT_KEY_PACE_MS: u64 = 1;
 const TEXT_INSERT_SPACE_SETTLE_MS: u64 = 0;
+const ISOLATED_ZERO_PACE_MAX_EVENTS: usize = 32;
 
 pub(crate) fn replay_keycodes(dev: &mut VirtualDevice, events: &[KeyEvent]) -> std::io::Result<()> {
-    replay_keycodes_with_pace(dev, events, KEY_PACE_MS, 0)
+    replay_keycodes_with_pace(dev, events, KEY_PACE_MS, 0, true)
+}
+
+pub(crate) fn replay_keycodes_fast_after_modifier_cleanup(
+    dev: &mut VirtualDevice,
+    events: &[KeyEvent],
+) -> std::io::Result<()> {
+    let key_pace_ms = if events.len() <= ISOLATED_ZERO_PACE_MAX_EVENTS {
+        0
+    } else {
+        KEY_PACE_MS
+    };
+    replay_keycodes_with_pace(dev, events, key_pace_ms, 0, false)
 }
 
 pub(super) fn replay_text_insert_keycodes(
@@ -27,7 +40,20 @@ pub(super) fn replay_text_insert_keycodes(
         events,
         TEXT_INSERT_KEY_PACE_MS,
         TEXT_INSERT_SPACE_SETTLE_MS,
+        true,
     )
+}
+
+pub(super) fn replay_text_insert_keycodes_fast_after_modifier_cleanup(
+    dev: &mut VirtualDevice,
+    events: &[KeyEvent],
+) -> std::io::Result<()> {
+    let key_pace_ms = if events.len() <= ISOLATED_ZERO_PACE_MAX_EVENTS {
+        0
+    } else {
+        TEXT_INSERT_KEY_PACE_MS
+    };
+    replay_keycodes_with_pace(dev, events, key_pace_ms, 0, false)
 }
 
 fn replay_keycodes_with_pace(
@@ -35,16 +61,19 @@ fn replay_keycodes_with_pace(
     events: &[KeyEvent],
     key_pace_ms: u64,
     space_settle_ms: u64,
+    cleanup_modifiers: bool,
 ) -> std::io::Result<()> {
     let shift_l = KeyCode::KEY_LEFTSHIFT.code();
 
     // Fast double-Shift can leave physical Shift in kernel/Mutter modifier
     // state for a moment. Release modifiers before replay so output is not
     // accidentally capitalized.
-    if key_pace_ms == 0 && space_settle_ms == 0 {
-        release_possible_modifiers_fast(dev)?;
-    } else {
-        release_possible_modifiers(dev)?;
+    if cleanup_modifiers {
+        if key_pace_ms == 0 && space_settle_ms == 0 {
+            release_possible_modifiers_fast(dev)?;
+        } else {
+            release_possible_modifiers(dev)?;
+        }
     }
 
     for ev in events {
@@ -109,6 +138,20 @@ pub(crate) fn emit_backspaces(dev: &mut VirtualDevice, n: u32) -> std::io::Resul
     Ok(())
 }
 
+pub(crate) fn emit_backspaces_fast(dev: &mut VirtualDevice, n: u32) -> std::io::Result<()> {
+    if n as usize > ISOLATED_ZERO_PACE_MAX_EVENTS {
+        return emit_backspaces(dev, n);
+    }
+    let bs = KeyCode::KEY_BACKSPACE.code();
+    for _ in 0..n {
+        dev.emit(&[
+            InputEvent::new(EventType::KEY.0, bs, 1),
+            InputEvent::new(EventType::KEY.0, bs, 0),
+        ])?;
+    }
+    Ok(())
+}
+
 pub(super) fn emit_backspaces_for_text_replace(
     dev: &mut VirtualDevice,
     n: u32,
@@ -121,5 +164,22 @@ pub(super) fn emit_backspaces_for_text_replace(
         std::thread::sleep(Duration::from_millis(TEXT_REPLACE_BACKSPACE_PACE_MS));
     }
     std::thread::sleep(Duration::from_millis(TEXT_REPLACE_BACKSPACE_SETTLE_MS));
+    Ok(())
+}
+
+pub(super) fn emit_backspaces_for_text_replace_fast(
+    dev: &mut VirtualDevice,
+    n: u32,
+) -> std::io::Result<()> {
+    if n as usize > ISOLATED_ZERO_PACE_MAX_EVENTS {
+        return emit_backspaces_for_text_replace(dev, n);
+    }
+    let bs = KeyCode::KEY_BACKSPACE.code();
+    for _ in 0..n {
+        dev.emit(&[
+            InputEvent::new(EventType::KEY.0, bs, 1),
+            InputEvent::new(EventType::KEY.0, bs, 0),
+        ])?;
+    }
     Ok(())
 }

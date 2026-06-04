@@ -134,6 +134,7 @@ pub(super) fn handle_enter_autocorrect(
         &replacement,
         true,
         "enter-autocorrect",
+        false,
     ) {
         Ok(outcome) => outcome,
         Err(e) => {

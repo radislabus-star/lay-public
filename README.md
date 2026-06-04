@@ -44,21 +44,22 @@ curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scr
 По умолчанию double Shift исправляет **1 последнее слово**. Области `2 слова`
 и `3 слова` можно включить отдельно в трее.
 
-## Что нового в 0.1.208
+## Что нового в 0.1.209
 
 - double Shift стал быстрее: если daemon успешно изолировал физическую
-  клавиатуру через evdev grab, защитная задержка перед выводом пропускается;
-- сохранён безопасный fallback: если grab недоступен, старый путь с ожиданием
-  перед replay остаётся;
-- исправлены технические токены вида `ASCII-префикс + дефис + хвост в другой
-  раскладке`, например `QR-rjls` -> `QR-коды`;
-- быстрый manual replay проверен в GNOME и KDE/Plasma VM.
+  клавиатуру через evdev grab, короткие замены выводятся без лишнего pacing;
+- длинные хвосты остаются на paced-пути, чтобы приложения не теряли
+  Backspace/replay события;
+- debug-лог теперь показывает разрез времени по стадиям: layout, delete,
+  insert/replay, total;
+- ускоренный manual replay и typing assist проверены live в GNOME.
 
-Ориентировочные замеры на тестовой машине:
+Ориентировочные live-замеры на тестовой машине:
 
-- GNOME: manual double Shift replay `~95-113 ms`, typing assist `~90-95 ms`;
-- KDE/Plasma VM: manual double Shift replay `~110-130 ms`;
-- до evdev grab-ускорения manual replay часто занимал `~150-220 ms`.
+- GNOME: manual double Shift на 2-3 слова `~40 ms`;
+- GNOME: короткое слово `~53-62 ms`, основной остаток — переключение layout;
+- GNOME: typing assist после пробела `~61-75 ms`;
+- длинный хвост около 240 клавиш остаётся безопасно paced: `~1.1 s`.
 
 ## Быстрый старт
 

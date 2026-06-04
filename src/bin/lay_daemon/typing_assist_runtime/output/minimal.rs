@@ -48,14 +48,21 @@ pub(crate) fn apply_minimal_typing_replacement(
         "  typing-assist plan: left={} bs={} insert={:?} right={}",
         plan.move_left, plan.backspaces, plan.insert, plan.move_right
     ));
-    let insert_outcome =
-        match apply_text_replacement_pipeline(kbd, &plan, replacement, true, "typing-assist") {
-            Ok(outcome) => outcome,
-            Err(e) => {
-                e.log("typing-assist", "minimal replace failed");
-                return TypingAssistOutcome::NoCorrection;
-            }
-        };
+    let fast_output = physical_grab.is_active();
+    let insert_outcome = match apply_text_replacement_pipeline(
+        kbd,
+        &plan,
+        replacement,
+        true,
+        "typing-assist",
+        fast_output,
+    ) {
+        Ok(outcome) => outcome,
+        Err(e) => {
+            e.log("typing-assist", "minimal replace failed");
+            return TypingAssistOutcome::NoCorrection;
+        }
+    };
     remember_typing_assist_correction(
         buf,
         events,
