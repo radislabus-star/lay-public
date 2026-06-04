@@ -429,6 +429,17 @@ function openUri(uri) {
         try { Gio.Subprocess.new(['xdg-open', uri], Gio.SubprocessFlags.NONE); } catch(_e) {}
     }
 }
+function openPreferences() {
+    const runtimePath = `${GLib.get_home_dir()}/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/settings.js`;
+    const projectPath = `${PROJECT_DIR}/extension/lay@radislabus-star.github.io/settings.js`;
+    const scriptPath = GLib.file_test(runtimePath, GLib.FileTest.EXISTS) ? runtimePath : projectPath;
+    try {
+        Gio.Subprocess.new(
+            ['gjs', '-m', scriptPath],
+            Gio.SubprocessFlags.NONE
+        );
+    } catch(_e) {}
+}
 function normalizeLayoutKind(id) {
     const value = String(id ?? '').trim().toLowerCase();
     if (!value)
@@ -678,32 +689,11 @@ class LayIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this._statusItem);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-        this.menu.addMenuItem(this._switchItem('Помощь при наборе', 'typing_assist', true));
-        this.menu.addMenuItem(this._switchItem(
-            'Автоподмена',
-            'auto_replace',
-            true,
-            AUTO_REPLACE_TOOLTIP
-        ));
-        this.menu.addMenuItem(this._switchItem(
-            'Запоминать правки',
-            'learning_log',
-            false,
-            LEARNING_LOG_TOOLTIP
-        ));
-        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-
-        this.menu.addMenuItem(this._segmentedRow('Режим', this._engineOptions(), this._engineButtons));
-        this.menu.addMenuItem(this._segmentedRow('Область', this._scopeOptions(), this._scopeButtons));
-        this.menu.addMenuItem(this._safetySliderRow());
-
-        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        this.menu.addMenuItem(this._preferencesItem());
         this.menu.addMenuItem(this._recentActionsMenu());
-        this.menu.addMenuItem(this._behaviorMenu());
-        this.menu.addMenuItem(this._expertMenu());
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._daemonSwitchItem());
         this.menu.addMenuItem(this._updateItem());
-        this.menu.addMenuItem(this._aboutMenu());
 
         this._refreshSelections();
         this._refreshStatus();
@@ -1448,6 +1438,12 @@ class LayIndicator extends PanelMenu.Button {
     _updateItem() {
         const item = new PopupMenu.PopupMenuItem('Проверить обновления');
         item.connect('activate', () => this._runUpdate());
+        return item;
+    }
+
+    _preferencesItem() {
+        const item = new PopupMenu.PopupMenuItem('Настройки...');
+        item.connect('activate', () => openPreferences());
         return item;
     }
 

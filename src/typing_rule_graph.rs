@@ -11,11 +11,11 @@ mod definitions;
 #[path = "typing_rule_graph/ids.rs"]
 pub(crate) mod ids;
 #[path = "typing_rule_graph/priorities.rs"]
-mod priorities;
+pub(crate) mod priorities;
 #[path = "typing_rule_graph/registry.rs"]
 mod registry;
 #[path = "typing_rule_graph/rules.rs"]
-mod rules;
+pub(crate) mod rules;
 #[path = "typing_rule_graph/types.rs"]
 mod types;
 #[path = "typing_rule_graph/weights.rs"]

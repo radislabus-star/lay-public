@@ -2,6 +2,7 @@ use lay::decoder::{decode_typing_assist_tail_with_context, CorrectionSource, Dec
 use lay::keyboard::KeyEvent;
 use lay::typing_context::completed_tail_context;
 use lay::word_buffer::{WordBuffer, MAX_REPLACE_WORDS};
+use std::time::Instant;
 
 #[cfg(not(test))]
 use super::super::active_typing_assist_pipeline_for_auto_replace;
@@ -20,6 +21,7 @@ pub(crate) fn find_typing_assist_correction(
     completed_tail_scopes(buf, max_words)
         .into_iter()
         .find_map(|word_count| {
+            let started = Instant::now();
             let events = buf.last_completed_words_events(word_count)?;
             let context = completed_tail_context(buf, word_count, &events);
             #[cfg(test)]
@@ -38,6 +40,11 @@ pub(crate) fn find_typing_assist_correction(
                 &pipeline,
                 CorrectionSource::TypingAssist,
             )?;
+            super::super::log(&format!(
+                "  typing-assist decision: scope={} elapsed={}ms",
+                word_count,
+                started.elapsed().as_millis()
+            ));
             Some(TypingAssistCorrection { events, edit })
         })
 }

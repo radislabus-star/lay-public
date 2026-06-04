@@ -10,4 +10,4 @@ pub(crate) use symbols::{
     ascii_layout_prefix_can_be_letter, is_ascii_layout_letter_symbol,
     is_protected_ascii_layout_token,
 };
-pub(crate) use word::correct_wrong_layout_ascii_word;
+pub(crate) use word::{correct_confident_wrong_layout_ascii_word, correct_wrong_layout_ascii_word};

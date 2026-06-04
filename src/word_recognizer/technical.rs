@@ -34,8 +34,10 @@ pub fn is_protected_ascii_token(core: &str) -> bool {
     if !has_ascii_letter(core) {
         return false;
     }
+    let lower = core.to_ascii_lowercase();
     core.is_ascii()
-        && (is_user_protected_ascii_word(core)
+        && (is_common_en_technical_word(&lower)
+            || is_user_protected_ascii_word(core)
             || has_domain_like_dot(core)
             || core.contains('@')
             || core.contains("://")

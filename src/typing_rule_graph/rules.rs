@@ -1,8 +1,8 @@
 use crate::layout_autoswitch::{
-    ascii_layout_prefix_can_be_letter, correct_duplicate_layout_prefix_on_ascii_token,
-    correct_wrong_layout_ascii_phrase, correct_wrong_layout_ascii_technical_token,
-    correct_wrong_layout_ascii_word, correct_wrong_layout_cyrillic_word,
-    correct_wrong_layout_cyrillic_word_experimental,
+    ascii_layout_prefix_can_be_letter, correct_confident_wrong_layout_ascii_word,
+    correct_duplicate_layout_prefix_on_ascii_token, correct_wrong_layout_ascii_phrase,
+    correct_wrong_layout_ascii_technical_token, correct_wrong_layout_ascii_word,
+    correct_wrong_layout_cyrillic_word, correct_wrong_layout_cyrillic_word_experimental,
 };
 use crate::phrase_reader::{
     correct_contextual_glued_tail, correct_glued_russian_phrase, correct_moved_prefix_letter_pair,
@@ -53,6 +53,13 @@ pub(super) fn apply_mixed_script_layout(ctx: &TypingRuleContext<'_>) -> Option<S
 
 pub(super) fn apply_layout_technical(ctx: &TypingRuleContext<'_>) -> Option<String> {
     apply_word_rule(ctx, correct_wrong_layout_ascii_technical_token)
+}
+
+pub(crate) fn apply_fast_layout_en_to_ru(ctx: &TypingRuleContext<'_>) -> Option<String> {
+    if !layout_auto_allowed(ctx) {
+        return None;
+    }
+    apply_core_then_word_rule(ctx, correct_confident_wrong_layout_ascii_word)
 }
 
 pub(super) fn apply_layout_ru_to_en(ctx: &TypingRuleContext<'_>) -> Option<String> {

@@ -6,3 +6,39 @@ grep --color=auto -n test file.txt
 git checkout -b feature && git status 
 git branch -D old && git checkout -b new 
 git checkout -b # create branch 
+cd\s
+ls\s
+rm\s
+cp\s
+mv\s
+ps\s
+su\s
+du\s
+df\s
+pwd\s
+cat\s
+echo\s
+grep\s
+find\s
+sed\s
+awk\s
+tar\s
+ssh\s
+scp\s
+rsync\s
+sudo\s
+chmod\s
+chown\s
+mkdir\s
+rmdir\s
+touch\s
+ln\s
+man\s
+apt\s
+curl\s
+wget\s
+cd ~/projects/lay && git status\s
+cd /tmp && ls -la | grep lay\s
+sudo apt install cargo\s
+find . -type f | xargs grep cd\s
+tar -xf archive.tar && rm archive.tar\s

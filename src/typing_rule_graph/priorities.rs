@@ -6,6 +6,7 @@ pub(super) const PERSONAL_TOKEN: i32 = 50;
 pub(super) const DUPLICATE_LAYOUT_PREFIX: i32 = 60;
 pub(super) const MIXED_SCRIPT_LAYOUT: i32 = 70;
 pub(super) const LAYOUT_TECHNICAL: i32 = 80;
+pub(crate) const FAST_LAYOUT_EN_TO_RU: i32 = 85;
 pub(super) const LAYOUT_RU_TO_EN: i32 = 90;
 pub(super) const LAYOUT_EN_TO_RU: i32 = 100;
 pub(super) const CYRILLIC_CASE: i32 = 110;

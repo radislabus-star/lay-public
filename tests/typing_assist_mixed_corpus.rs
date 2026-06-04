@@ -4,7 +4,7 @@ use lay::config::{
     default_typing_assist_pipeline, typing_assist_pipeline_for_policy, CorrectionSafety,
 };
 use lay::dict::{convert, Direction};
-use lay::typing_assist::apply_typing_assist_with_pipeline;
+use lay::typing_assist::{apply_typing_assist_with_pipeline, explain_typing_assist_with_pipeline};
 use lay::typing_context::{should_enable_ascii_to_ru_layout, typing_assist_pipeline_for_context};
 
 use common::{
@@ -33,6 +33,7 @@ const MIXED_MATRIX_TERMS: &str = include_str!("fixtures/typing_assist_mixed_matr
 const MIXED_MATRIX_LAYOUT_WORDS: &str =
     include_str!("fixtures/typing_assist_mixed_matrix_layout_words.tsv");
 const SHELL_KEEP_CASES: &str = include_str!("fixtures/typing_assist_shell_keep.txt");
+const CLI_COMMAND_CASES: &str = include_str!("fixtures/typing_assist_cli_commands.txt");
 const POLICY_CASES: &str = include_str!("fixtures/typing_assist_policy_cases.tsv");
 
 #[derive(Clone, Copy)]
@@ -131,6 +132,56 @@ fn experimental_context_accepts_plain_ascii_to_ru_layout_words() {
     assert_eq!(
         apply_typing_assist_with_pipeline("djn ", true, &pipeline),
         Some("вот ".to_string())
+    );
+}
+
+#[test]
+fn confident_en_to_ru_layout_words_use_fast_path_without_rewriting_english() {
+    let pipeline = typing_assist_pipeline_for_context(
+        true,
+        CorrectionSafety::Experimental,
+        &default_typing_assist_pipeline(),
+        "",
+    );
+
+    for (input, expected) in [("vj;tn ", "может "), ("djn ", "вот "), ("cegth ", "супер ")]
+    {
+        let explanation = explain_typing_assist_with_pipeline(input, true, &pipeline);
+        assert_eq!(
+            explanation.output.as_deref(),
+            Some(expected),
+            "input={input:?}"
+        );
+        assert_eq!(
+            explanation
+                .chosen
+                .as_ref()
+                .map(|candidate| candidate.rule_id.as_str()),
+            Some("fast_layout_en_to_ru"),
+            "input={input:?}"
+        );
+    }
+
+    for input in ["word ", "file ", "api ", "git "] {
+        let explanation = explain_typing_assist_with_pipeline(input, true, &pipeline);
+        assert_ne!(
+            explanation
+                .chosen
+                .as_ref()
+                .map(|candidate| candidate.rule_id.as_str()),
+            Some("fast_layout_en_to_ru"),
+            "known English token must not use fast EN->RU path: {input:?}"
+        );
+        assert_eq!(explanation.output, None, "input={input:?}");
+    }
+
+    let one_letter = explain_typing_assist_with_pipeline("d ", true, &pipeline);
+    assert_ne!(
+        one_letter
+            .chosen
+            .as_ref()
+            .map(|candidate| candidate.rule_id.as_str()),
+        Some("fast_layout_en_to_ru")
     );
 }
 
@@ -385,6 +436,28 @@ fn clean_shell_like_commands_and_symbols_are_not_rewritten() {
             simulate_space_triggered_typing_assist(&input, true),
             input,
             "command-like text was changed: {input:?}"
+        );
+    }
+}
+
+#[test]
+fn cli_commands_stay_ascii_and_recover_from_ru_layout() {
+    for command in fixture_lines(CLI_COMMAND_CASES) {
+        let ascii = format!("{command} ");
+        assert_eq!(
+            simulate_space_triggered_typing_assist(&ascii, true),
+            ascii,
+            "ASCII CLI command was changed: {command:?}"
+        );
+
+        let typed_ru = convert(&command, Direction::Us2Ru);
+        if typed_ru == command {
+            continue;
+        }
+        assert_eq!(
+            simulate_space_triggered_typing_assist(&format!("{typed_ru} "), true),
+            ascii,
+            "RU-layout CLI command was not restored: {command:?} typed={typed_ru:?}"
         );
     }
 }

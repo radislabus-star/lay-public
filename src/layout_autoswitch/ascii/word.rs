@@ -9,6 +9,31 @@ use super::symbols::{
     is_protected_ascii_layout_token,
 };
 
+pub(crate) fn correct_confident_wrong_layout_ascii_word(token: &str) -> Option<String> {
+    let (_, original_word, _) = split_word_punctuation(token);
+    let original_alpha_len = original_word
+        .chars()
+        .filter(|ch| ch.is_ascii_alphabetic())
+        .count();
+    if original_alpha_len < 3 {
+        return None;
+    }
+
+    let candidate = ascii_to_russian_layout_candidate(token, false)?;
+    if !candidate.known {
+        return None;
+    }
+    if is_protected_ascii_layout_token(token)
+        && is_known_english_layout_autoswitch_word(&original_word.to_ascii_lowercase())
+    {
+        return None;
+    }
+    if candidate.clean_alpha && !lem_prefers_layout_candidate(original_word, &candidate.word) {
+        return None;
+    }
+    Some(candidate.replacement)
+}
+
 pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
     if is_blocked_ascii_layout_token(token) {
         return None;
