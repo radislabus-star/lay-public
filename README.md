@@ -44,6 +44,20 @@ curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scr
 По умолчанию double Shift исправляет **1 последнее слово**. Области `2 слова`
 и `3 слова` можно включить отдельно в трее.
 
+## Что нового в 0.1.210
+
+- KDE backend кэширует `qdbus` и список раскладок вместо повторного запроса на
+  каждый double Shift;
+- короткий KDE replay теперь использует тот же быстрый isolated-output путь,
+  что и GNOME;
+- проверено live в KDE/Plasma X11 VM.
+
+Ориентировочные live-замеры KDE/Plasma VM:
+
+- KDE: короткое слово `~54-67 ms`;
+- KDE: backspace/replay для коротких хвостов `~0-1 ms`;
+- основной остаток в KDE теперь тоже переключение layout.
+
 ## Что нового в 0.1.209
 
 - double Shift стал быстрее: если daemon успешно изолировал физическую

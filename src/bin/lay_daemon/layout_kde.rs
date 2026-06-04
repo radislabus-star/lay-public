@@ -1,8 +1,12 @@
 use lay::desktop::{normalize_layout_id, parse_kde_layouts_list, LayoutBackend};
+use std::sync::OnceLock;
 
 use super::command_runtime::{command_exists, run_command_capture};
 use super::layout_controller::verify_current_layout;
 use super::log;
+
+static QDBUS_COMMAND: OnceLock<Option<&'static str>> = OnceLock::new();
+static LAYOUT_IDS: OnceLock<Vec<String>> = OnceLock::new();
 
 pub(super) fn read_current_layout_is_ru() -> Result<bool, String> {
     let qdbus = find_qdbus_command().ok_or_else(|| "qdbus/qdbus6 not found".to_string())?;
@@ -74,6 +78,10 @@ fn layout_index(qdbus: &str, layout_id: &str) -> Result<usize, String> {
 }
 
 fn layout_ids(qdbus: &str) -> Result<Vec<String>, String> {
+    if let Some(layouts) = LAYOUT_IDS.get() {
+        return Ok(layouts.clone());
+    }
+
     let output = run_command_capture(
         qdbus,
         &[
@@ -87,12 +95,15 @@ fn layout_ids(qdbus: &str) -> Result<Vec<String>, String> {
     if layouts.is_empty() {
         Err(format!("cannot parse KDE layouts: {output}"))
     } else {
+        let _ = LAYOUT_IDS.set(layouts.clone());
         Ok(layouts)
     }
 }
 
 fn find_qdbus_command() -> Option<&'static str> {
-    ["qdbus6", "qdbus-qt6", "qdbus"]
-        .into_iter()
-        .find(|cmd| command_exists(cmd))
+    *QDBUS_COMMAND.get_or_init(|| {
+        ["qdbus6", "qdbus-qt6", "qdbus"]
+            .into_iter()
+            .find(|cmd| command_exists(cmd))
+    })
 }
