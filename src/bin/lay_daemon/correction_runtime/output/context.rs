@@ -17,6 +17,7 @@ pub(crate) struct ManualCorrectionOutputContext<'a> {
     pub(crate) started_at: Instant,
     pub(crate) decision: &'a ManualCorrectionDecision,
     pub(crate) virtual_kbd: Option<&'a mut VirtualDevice>,
+    pub(crate) input_isolated: bool,
 }
 
 pub(crate) struct ManualOutputCommon<'a> {
@@ -31,6 +32,7 @@ pub(crate) struct ManualOutputCommon<'a> {
     pub(crate) force_replay_toggle: bool,
     pub(crate) started_at: Instant,
     pub(crate) decision: &'a ManualCorrectionDecision,
+    pub(crate) input_isolated: bool,
 }
 
 pub(crate) enum OutputFlow {

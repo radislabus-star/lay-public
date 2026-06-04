@@ -33,7 +33,8 @@ pub(super) fn run_configured_manual_correction(
     virtual_kbd: &Arc<Mutex<Option<VirtualDevice>>>,
     executing: &mut bool,
 ) -> Option<bool> {
-    let _physical_grab = grab_physical_device_for_correction(device);
+    let physical_grab = grab_physical_device_for_correction(device);
+    let input_isolated = physical_grab.is_active();
     let mut g = lock_virtual_keyboard(virtual_kbd);
     handle_double_shift(
         buffer,
@@ -42,6 +43,7 @@ pub(super) fn run_configured_manual_correction(
         active_auto_replace(),
         g.as_mut(),
         executing,
+        input_isolated,
     )
 }
 
@@ -54,7 +56,8 @@ pub(super) fn run_scoped_manual_correction(
     events_since_word_start: u32,
     reason: &str,
 ) -> Option<bool> {
-    let _physical_grab = grab_physical_device_for_correction(device);
+    let physical_grab = grab_physical_device_for_correction(device);
+    let input_isolated = physical_grab.is_active();
     let mut g = lock_virtual_keyboard(virtual_kbd);
     run_manual_correction_with_scope(
         buffer,
@@ -63,6 +66,7 @@ pub(super) fn run_scoped_manual_correction(
         executing,
         events_since_word_start,
         reason,
+        input_isolated,
     )
 }
 

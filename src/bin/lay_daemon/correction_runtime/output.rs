@@ -31,6 +31,7 @@ pub(super) fn apply_manual_correction_output(
         started_at,
         decision,
         virtual_kbd,
+        input_isolated,
     } = ctx;
     let mut common = ManualOutputCommon {
         buf,
@@ -44,6 +45,7 @@ pub(super) fn apply_manual_correction_output(
         force_replay_toggle,
         started_at,
         decision,
+        input_isolated,
     };
 
     if let Some(result) = try_ime_replace_output(&mut common) {
@@ -60,9 +62,18 @@ pub(super) fn apply_manual_correction_output(
             return None;
         }
     };
-    settle_after_physical_trigger_release();
-    if let Err(e) = release_possible_modifiers(kbd) {
-        log(&format!("⚠ modifier cleanup before backspace failed: {e}"));
+    if common.input_isolated {
+        log("  input isolated: skip trigger settle");
+        if let Err(e) = super::super::release_possible_modifiers_fast(kbd) {
+            log(&format!(
+                "⚠ fast modifier cleanup before backspace failed: {e}"
+            ));
+        }
+    } else {
+        settle_after_physical_trigger_release();
+        if let Err(e) = release_possible_modifiers(kbd) {
+            log(&format!("⚠ modifier cleanup before backspace failed: {e}"));
+        }
     }
 
     match try_manual_text_replacement(&mut common, kbd) {

@@ -62,6 +62,7 @@ pub(super) fn run_manual_correction_with_scope(
     executing: &mut bool,
     events_since_word_start: u32,
     label: &str,
+    input_isolated: bool,
 ) -> Option<bool> {
     log_manual_trigger_cross_check(buf, events_since_word_start);
     let engine = active_correction_engine();
@@ -73,6 +74,7 @@ pub(super) fn run_manual_correction_with_scope(
         auto_replace,
         virtual_kbd,
         executing,
+        input_isolated,
     );
     log(&format!("· {label} fired with scope={replace_words}"));
     result
@@ -85,6 +87,7 @@ pub(super) fn handle_double_shift(
     auto_replace: bool,
     virtual_kbd: Option<&mut VirtualDevice>,
     executing: &mut bool,
+    input_isolated: bool,
 ) -> Option<bool> {
     let started_at = Instant::now();
     if let Some(undo) = buf.take_pending_auto_undo() {
@@ -158,5 +161,6 @@ pub(super) fn handle_double_shift(
         started_at,
         decision: &correction_result,
         virtual_kbd,
+        input_isolated,
     })
 }

@@ -64,6 +64,12 @@ struct DeviceGrabGuard<'a> {
     active: bool,
 }
 
+impl DeviceGrabGuard<'_> {
+    fn is_active(&self) -> bool {
+        self.active
+    }
+}
+
 impl Drop for DeviceGrabGuard<'_> {
     fn drop(&mut self) {
         if self.active {
