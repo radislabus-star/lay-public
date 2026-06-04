@@ -54,6 +54,12 @@ curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scr
   раскладке`, например `QR-rjls` -> `QR-коды`;
 - быстрый manual replay проверен в GNOME и KDE/Plasma VM.
 
+Ориентировочные замеры на тестовой машине:
+
+- GNOME: manual double Shift replay `~95-113 ms`, typing assist `~90-95 ms`;
+- KDE/Plasma VM: manual double Shift replay `~110-130 ms`;
+- до evdev grab-ускорения manual replay часто занимал `~150-220 ms`.
+
 ## Быстрый старт
 
 Установка одной командой:
