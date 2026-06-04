@@ -55,6 +55,9 @@ fn correct_wrong_layout_cyrillic_word_with_policy(
 
     let (converted_leading, converted_word, converted_trailing) =
         split_word_punctuation(&converted);
+    if !converted_leading.is_empty() {
+        return None;
+    }
     if converted_word.is_empty() || !is_plain_ascii_word_candidate(converted_word) {
         return None;
     }
