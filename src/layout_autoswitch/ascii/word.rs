@@ -1,3 +1,4 @@
+use crate::lexicon::is_user_protected_ascii_word;
 use crate::russian_lexicon::russian_tiny_dictionary;
 use crate::word_reader::split_word_punctuation;
 
@@ -11,6 +12,10 @@ use super::symbols::{
 
 pub(crate) fn correct_confident_wrong_layout_ascii_word(token: &str) -> Option<String> {
     let (_, original_word, _) = split_word_punctuation(token);
+    if is_user_protected_ascii_word(original_word) {
+        return None;
+    }
+
     let original_alpha_len = original_word
         .chars()
         .filter(|ch| ch.is_ascii_alphabetic())
@@ -38,15 +43,19 @@ pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
     if is_blocked_ascii_layout_token(token) {
         return None;
     }
-    if let Some(replacement) =
-        correct_wrong_layout_ascii_word_preserving_trailing_punctuation(token)
-    {
-        return Some(replacement);
-    }
 
     let (_, original_word, _) = split_word_punctuation(token);
     if original_word.is_empty() {
         return None;
+    }
+    if is_user_protected_ascii_word(original_word) {
+        return None;
+    }
+
+    if let Some(replacement) =
+        correct_wrong_layout_ascii_word_preserving_trailing_punctuation(token)
+    {
+        return Some(replacement);
     }
 
     let strong_shift_layout = is_standalone_all_caps_shift_layout_token(token);
@@ -111,6 +120,9 @@ fn correct_wrong_layout_ascii_word_preserving_trailing_punctuation(token: &str) 
 
     let (_, original_word, _) = split_word_punctuation(core);
     if original_word.is_empty() {
+        return None;
+    }
+    if is_user_protected_ascii_word(original_word) {
         return None;
     }
     let normalized = ascii_to_russian_layout_candidate(core, false)?.replacement;

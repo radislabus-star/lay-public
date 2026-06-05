@@ -1,3 +1,7 @@
+use crate::data_lines::data_lines;
+
+const RU_KEYBOARD_ROWS_DATA: &str = include_str!("../../data/lexicon/ru_keyboard_rows.txt");
+
 pub fn are_ru_keyboard_neighbors(a: char, b: char) -> bool {
     let Some((row_a, col_a)) = ru_keyboard_position(a) else {
         return false;
@@ -10,8 +14,7 @@ pub fn are_ru_keyboard_neighbors(a: char, b: char) -> bool {
 }
 
 fn ru_keyboard_position(ch: char) -> Option<(usize, usize)> {
-    const ROWS: [&str; 3] = ["йцукенгшщзхъ", "фывапролджэ", "ячсмитьбю"];
-    ROWS.iter()
+    data_lines(RU_KEYBOARD_ROWS_DATA)
         .enumerate()
         .find_map(|(row, keys)| keys.chars().position(|key| key == ch).map(|col| (row, col)))
 }

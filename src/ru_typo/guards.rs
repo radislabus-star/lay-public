@@ -1,3 +1,4 @@
+use crate::data_lines::data_lines;
 use crate::keyboard::is_cyrillic_letter;
 use crate::phrase_lexicon::{is_known_russian_phrase_part, is_one_letter_russian_function_word};
 use crate::russian_chars::is_russian_vowel;
@@ -5,6 +6,11 @@ use crate::russian_lexicon::{
     is_known_russian_word_or_form, looks_like_russian_adjective_lemma, russian_dictionary,
 };
 use crate::word_reader::is_cyrillic_word;
+
+const PRESENT_OR_REFLEXIVE_ENDINGS_DATA: &str =
+    include_str!("../../data/lexicon/russian_present_or_reflexive_endings.txt");
+const PAST_TENSE_ENDINGS_DATA: &str =
+    include_str!("../../data/lexicon/russian_past_tense_endings.txt");
 
 pub(super) fn unknown_cyrillic_lower(word: &str, min_chars: usize) -> Option<String> {
     if word.chars().count() < min_chars || !is_cyrillic_word(word) {
@@ -26,27 +32,7 @@ pub(super) fn correct_invalid_adjective_tail(original: &str, lower: &str) -> Opt
 }
 
 pub(super) fn looks_like_present_or_reflexive_verb(word: &str) -> bool {
-    [
-        "ается",
-        "яется",
-        "уется",
-        "ется",
-        "ются",
-        "ешь",
-        "ишь",
-        "аете",
-        "яете",
-        "ите",
-        "ает",
-        "яет",
-        "ует",
-        "ают",
-        "яют",
-        "ит",
-        "ет",
-    ]
-    .iter()
-    .any(|ending| word.ends_with(ending))
+    data_lines(PRESENT_OR_REFLEXIVE_ENDINGS_DATA).any(|ending| word.ends_with(ending))
 }
 
 pub(super) fn looks_like_known_word_plus_one_letter_function_suffix(candidate: &str) -> bool {
@@ -77,28 +63,7 @@ pub(super) fn looks_like_prefix_plus_known_russian_word(lower: &str) -> bool {
 }
 
 pub(super) fn looks_like_plausible_russian_past_tense(word: &str) -> bool {
-    const ENDINGS: &[&str] = &[
-        "илась",
-        "ились",
-        "илось",
-        "алась",
-        "ались",
-        "алось",
-        "ила",
-        "или",
-        "ило",
-        "ала",
-        "али",
-        "ало",
-        "ела",
-        "ели",
-        "ело",
-        "ил",
-        "ал",
-        "ел",
-    ];
-
-    ENDINGS.iter().any(|ending| {
+    data_lines(PAST_TENSE_ENDINGS_DATA).any(|ending| {
         let Some(stem) = word.strip_suffix(ending) else {
             return false;
         };

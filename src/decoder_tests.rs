@@ -154,6 +154,30 @@ fn typing_assist_decoder_reemits_committed_space_boundary() {
     assert!(plan.source.needs_undo_checkpoint());
 }
 
+#[test]
+fn committed_decoder_plan_normalizes_replacement_and_preserves_screen_state() {
+    let plan = DecoderEditPlan::committed_tail(
+        CorrectionTrigger::AfterSpace,
+        "aa ",
+        "bb",
+        CorrectionSource::TypingAssist,
+    )
+    .expect("committed plan");
+
+    assert_eq!(plan.replacement, "bb ");
+    assert!(plan.preserves_committed_separator());
+    assert!(plan.plan_matches_replacement());
+    assert!(replacement_plan_matches(
+        &plan.original,
+        &plan.replacement,
+        &plan.plan
+    ));
+    assert_eq!(
+        crate::text_edit::apply_replacement_plan_to_text(&plan.original, &plan.plan),
+        plan.replacement
+    );
+}
+
 fn manual_lem_fixture_cases() -> impl Iterator<Item = (String, String, String, String)> {
     fixture_rows_from_str(MANUAL_LEM_CASES)
         .into_iter()

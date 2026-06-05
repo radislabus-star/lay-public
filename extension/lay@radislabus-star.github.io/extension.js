@@ -1,8 +1,8 @@
 /* extension.js — LOADER (никогда не меняется)
  *
- * Копирует lay-impl.js во временный файл с уникальным именем,
- * чтобы обойти кэш модулей GJS. Это позволяет обновлять код
- * через disable → enable без logout.
+ * Копирует runtime-модули во временную папку с уникальным именем, чтобы
+ * обойти кэш модулей GJS. Это позволяет обновлять код через disable → enable
+ * без logout.
  *
  * GNOME Shell 45, 46, 47, 50 — ES modules
  */
@@ -20,18 +20,29 @@ export default class LayExtension extends Extension {
             return;
         }
 
-        const implSrc  = `${extensionPath}/lay-impl.js`;
-        // Уникальный путь = GJS не найдёт в кэше → свежий import
+        const modules = [
+            'lay-impl.js',
+            'tray_support.js',
+            'dbus_service.js',
+            'recent_actions_menu.js',
+        ];
+
+        // Уникальная папка = GJS не найдёт в кэше → свежий import, а relative
+        // imports внутри lay-impl.js продолжат работать.
         const cacheDir = `${GLib.get_user_cache_dir()}/lay`;
         try { GLib.mkdir_with_parents(cacheDir, 0o700); } catch(e) {}
-        this._tmpImpl  = `${cacheDir}/lay-impl-${Date.now()}.js`;
+        this._tmpDir = `${cacheDir}/extension-${Date.now()}`;
+        this._tmpImpl = `${this._tmpDir}/lay-impl.js`;
 
         try {
-            const [, bytes] = Gio.File.new_for_path(implSrc).load_contents(null);
-            Gio.File.new_for_path(this._tmpImpl).replace_contents(
-                bytes, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
+            GLib.mkdir_with_parents(this._tmpDir, 0o700);
+            for (const name of modules) {
+                const [, bytes] = Gio.File.new_for_path(`${extensionPath}/${name}`).load_contents(null);
+                Gio.File.new_for_path(`${this._tmpDir}/${name}`).replace_contents(
+                    bytes, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
+            }
         } catch(e) {
-            log(`[lay-extension] loader: не удалось скопировать impl: ${e}`);
+            log(`[lay-extension] loader: не удалось скопировать runtime modules: ${e}`);
             return;
         }
 
@@ -46,10 +57,14 @@ export default class LayExtension extends Extension {
         try { this._impl?.disable(); } catch(e) {}
         this._impl = null;
 
-        // Удаляем временный файл
-        if (this._tmpImpl) {
-            try { Gio.File.new_for_path(this._tmpImpl).delete(null); } catch(e) {}
+        // Удаляем временные файлы.
+        if (this._tmpDir) {
+            for (const name of ['lay-impl.js', 'tray_support.js', 'dbus_service.js', 'recent_actions_menu.js']) {
+                try { Gio.File.new_for_path(`${this._tmpDir}/${name}`).delete(null); } catch(e) {}
+            }
+            try { Gio.File.new_for_path(this._tmpDir).delete(null); } catch(e) {}
             this._tmpImpl = null;
+            this._tmpDir = null;
         }
     }
 }

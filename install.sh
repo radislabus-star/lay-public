@@ -265,10 +265,17 @@ echo ""
 echo "=== GNOME Shell extension ==="
 UUID="lay@radislabus-star.github.io"
 DST="$HOME/.local/share/gnome-shell/extensions/$UUID"
+LAY_GJS_CACHE="$HOME/.cache/lay"
 mkdir -p "$DST"
+mkdir -p "$LAY_GJS_CACHE"
 cp "$DIR/extension/$UUID/metadata.json" "$DST/"
-cp "$DIR/extension/$UUID/extension.js" "$DST/"
-cp "$DIR/extension/$UUID/lay-impl.js" "$DST/"
+cp "$DIR/extension/$UUID/"*.js "$DST/"
+for js in "$DIR/extension/$UUID/"*.js; do
+    name="$(basename "$js")"
+    if [ "$name" != "extension.js" ] && [ "$name" != "lay-impl.js" ]; then
+        cp "$js" "$LAY_GJS_CACHE/$name"
+    fi
+done
 gnome-extensions enable "$UUID" 2>/dev/null || true
 echo "✓ extension установлен: $DST"
 

@@ -1,138 +1,307 @@
-# Как это работает
+# Как работает lay
 
-## Задача
+`lay` — локальный помощник ввода для Linux. Его главная задача: исправить
+короткий хвост текста, набранный не в той раскладке, и сделать это без
+clipboard, без облака и без попытки переписывать смысл текста.
 
-На Windows есть Caramba/Punto Switcher: случайно набрал текст в неправильной
-раскладке (`Ye djn ghbvth` вместо `Ну вот пример`), нажимаешь горячую клавишу —
-и слово автоматически конвертируется. На Linux нативного аналога нет
-(xneur умер в 2017, Wayland не поддерживается).
+Главный сценарий:
 
-`lay` решает эту задачу тремя компонентами:
-
-| Компонент            | Что делает                                      |
-|----------------------|-------------------------------------------------|
-| **`lay`**            | CLI: конвертирует текст из аргумента/stdin/clip |
-| **`lay-daemon`**     | Фоновый демон: double Shift в приложениях       |
-| **GNOME extension**  | Tray menu, DBus bridge, активация раскладки     |
-
----
-
-## Shared Core
-
-Код разделяется на общее ядро и desktop-интеграции.
-
-Общее ядро:
-
-- `src/core.rs` — стабильный facade для будущих frontend-ов;
-- `src/config.rs` — единая схема настроек для daemon, GNOME tray и будущего KDE tray;
-- `src/correction.rs` — общий контракт результата исправления;
-- `src/decoder.rs` — единый decision layer: manual double-Shift, typing assist,
-  enter-autocorrect и будущий scorer/decoder выбирают действие, но не печатают;
-- `src/desktop.rs` — выбор `gnome` / `kde` / `x11`, нормализация layout-id;
-- `src/dict.rs` — физическая RU/EN конвертация клавиш;
-- `src/keyboard.rs` — keycode-события, word split, replay-decision, US/RU mapping и text→uinput runs;
-- `src/word_buffer.rs` — история текущего/предыдущих слов, replay-toggle и pending feedback;
-- `src/lem.rs` и `src/ngram.rs` — scoring готовых кандидатов;
-- `src/quality.rs` — лёгкие эвристики качества текста;
-- `src/text_edit.rs` — минимальный план замены текста без лишней перепечатки.
-- `src/text_backend.rs` — описание возможностей backend: key replay, atomic
-  tail replace, minimal range replace.
-
-Desktop-адаптеры:
-
-- GNOME: Shell extension, tray, DBus bridge, `inputSources[i].activate()`;
-- KDE/Plasma: отдельный adapter через `qdbus/qdbus6` поверх того же ядра;
-- X11: native XKB backend через `x11rb`; внешние tools используются только
-  как fallback, если native XKB недоступен.
-
-Цель такого разделения: не смешивать GNOME Shell API с логикой исправления
-текста. Ядро должно быть переиспользуемым, а GNOME/KDE должны отличаться только
-слоем интеграции с окружением рабочего стола.
-
----
-
-## lay-daemon — как работает двойной Shift
-
-### Общий поток
-
-```
-Физическая клавиатура
-        │  evdev (/dev/input/event*)
-        ▼
-  lay-daemon (Rust)
-  ┌──────────────────────────────────────┐
-  │                                      │
-  │  WordBuffer                          │
-  │  Накапливает (keycode, shift, layout)│
-  │  для текущего слова и короткой       │
-  │  истории завершённых слов.           │
-  │  Space переносит current → history.  │
-  │  Полный reset: Enter/Tab/Esc/←→/BS.  │
-  │                                      │
-  │  FSM двойного Shift                  │
-  │  Idle → FirstPress                   │
-  │       → WaitingSecond                │
-  │       → SecondPress                  │
-  │       → DOUBLE SHIFT!                │
-  │                                      │
-  └──────────────┬───────────────────────┘
-                 │ DOUBLE!
-                 ▼
-  ┌──────────────────────────────────────┐
-  │  decoder                             │
-  │                                      │
-  │  1. Build candidates                 │
-  │  2. Rank with LEM/ngram              │
-  │  3. Check winner margin              │
-  │  4. Return action: ReplayAll или     │
-  │     ReplaceText + source             │
-  └──────────────┬───────────────────────┘
-                 ▼
-  ┌──────────────────────────────────────┐
-  │  backend executor                    │
-  │                                      │
-  │  1. uinput Backspace × N             │
-  │     (стереть слово с экрана)         │
-  │                                      │
-  │  2. DBus → GNOME Extension           │
-  │     ActivateLayout('ru'/'us')        │
-  │     SetGlobalEngine (ibus tray)      │
-  │                                      │
-  │  3. uinput replay или minimal insert │
-  │     (те же keycodes → новая          │
-  │      раскладка → другие символы)     │
-  └──────────────────────────────────────┘
+```text
+Набрал:  ghbdtn
+Нажал:   Shift Shift
+Стало:   привет
 ```
 
-### Почему evdev, а не X11/Wayland input grabbing
+Проект сейчас в статусе alpha: GNOME Wayland — основной проверенный путь,
+KDE/Plasma и X11 поддерживаются как более молодые backend-слои.
 
-На **Wayland** приложения полностью изолированы друг от друга по вводу.
-Нет глобального `XGrabKey`, нет `GetKeyboardState`. Единственный
-способ читать все нажатия — `/dev/input/event*` (evdev), напрямую
-из ядра, до любых Wayland-протоколов.
+## Компоненты
 
-Требует членства в группе `input`:
-```bash
-sudo usermod -aG input $USER
+```text
+lay CLI
+  └─ разовая конвертация текста, explain/debug, smart CLI
+
+lay-daemon
+  ├─ слушает физическую клавиатуру через evdev
+  ├─ держит короткий буфер слов
+  ├─ ловит double Shift и другие триггеры
+  ├─ вызывает decoder / typing pipeline
+  └─ выводит исправление через uinput или экспериментальный IME path
+
+Desktop интеграции
+  ├─ GNOME Shell extension: tray, DBus bridge, GNOME layout activation
+  ├─ KDE tray/helper: Plasma menu и qdbus layout backend
+  └─ X11 backend: native XKB через x11rb
 ```
 
-### Почему uinput, а не wtype/xdotool
+`lay-daemon` не читает текст из активного приложения и не копирует его в буфер
+обмена. Он восстанавливает хвост по собственному `WordBuffer`, который
+собирается из физических key events.
 
-`wtype` и `xdotool` работают через протоколы Wayland/X11 и не принимаются
-sandbox-изолированными приложениями (Flatpak, snap, GNOME Terminal и др.).
+## Архитектурный принцип
 
-`uinput` — виртуальное устройство ввода в ядре Linux. С точки зрения
-системы это **физическая клавиатура**. Получают события все приложения,
-включая sandbox-изолированные.
+Код делится на три слоя:
 
-### Экспериментальный IME backend
+```text
+1. Core / decision
+   Распознаёт хвост, строит варианты, выбирает действие.
+   Не знает, что такое GNOME Shell, KDE, DBus или uinput.
 
-`uinput` остаётся production backend, но у него есть принципиальные края:
-compositor может ещё считать Shift активным, приложение может не принять часть
-Backspace, а Wayland-фокус в разных toolkit'ах ведёт себя по-разному.
+2. Runtime / daemon
+   Слушает evdev, ведёт состояние, вызывает core и backend.
+   Не содержит словарных списков и не решает "на глаз".
 
-Правильный путь для атомарной замены текста — input-method слой. Поэтому в
-проект добавлен экспериментальный IBus bridge:
+3. Desktop / output backend
+   Переключает раскладку и выводит готовое действие в приложение.
+   Не принимает лингвистических решений.
+```
+
+Жёсткое правило: runtime-код не должен содержать пользовательские фразы как
+правила. Лексика живёт в `data/lexicon/*`, тестовые сценарии — в
+`tests/fixtures/*` и `data/test_input/*`, пользовательские правила — в
+`~/.config/lay/*`.
+
+## Основные модули ядра
+
+- `src/core.rs` — компактный facade общего ядра.
+- `src/config.rs` — единая схема настроек daemon/tray/CLI.
+- `src/dict.rs` — детерминированная RU/EN keyboard-map конвертация.
+- `src/decoder.rs` — manual double-Shift decision layer.
+- `src/scoped_tail.rs` — выбор и ранжирование хвоста из 1-3 слов.
+- `src/layout_autoswitch.rs` — автоперекладка ASCII↔кириллица.
+- `src/typing_pipeline.rs` — общий pipeline автопомощи после пробела.
+- `src/typing_rule_graph.rs` — список правил, приоритеты и включение правил.
+- `src/typing_candidate.rs` — scoring кандидатов автопомощи.
+- `src/typing_context.rs` — контекст короткого хвоста вокруг слова.
+- `src/phrase_reader.rs` — разбор склеенных/разрезанных русских слов.
+- `src/word_recognizer.rs` — классификация токенов: RU, EN, protected,
+  technical, mixed, number.
+- `src/lexicon.rs` — загрузка словарных данных и пользовательских protected
+  words.
+- `src/ru_typo.rs` — семейства русских опечаток.
+- `src/russian_lexicon.rs` — Hunspell и русские формы.
+- `src/lem.rs` — Layout Error Metric для готовых вариантов.
+- `src/ngram.rs` — char n-gram scorer.
+- `src/text_edit.rs` — минимальные планы замены текста.
+- `src/keyboard.rs` — key events, раскладочная карта и печать текста через
+  uinput-события.
+
+`src/typing_assist.rs` сейчас оставлен тонким публичным фасадом. Основная
+логика уже вынесена в `typing_pipeline`, `typing_rule_graph`,
+`typing_candidate`, `typing_context`, `phrase_reader`, `layout_autoswitch` и
+`ru_typo`.
+
+## Daemon runtime
+
+`src/bin/lay_daemon.rs` — только точка сборки модулей. Поведение разнесено по
+`src/bin/lay_daemon/*`:
+
+- `daemon_runtime.rs` — главный event loop.
+- `daemon_state.rs` — состояние процесса.
+- `keyboard_io.rs` — evdev input.
+- `physical_input_grab.rs` — временная изоляция физической клавиатуры при
+  выводе.
+- `trigger_fsm.rs` и `manual_trigger_runtime.rs` — double Shift / multi-tap FSM.
+- `correction_runtime.rs` — исполнение решения decoder.
+- `text_output.rs` — uinput output contract.
+- `layout_controller.rs` — переключение раскладки через выбранный backend.
+- `layout_kde.rs` — KDE/Plasma через qdbus/qdbus6.
+- `layout_x11.rs` — X11 через native XKB/fallback tools.
+- `focus_guard.rs` — защита буфера между окнами/полями.
+- `pending_typing_assist.rs` — отложенная автопомощь после пробела.
+- `learning_runtime.rs` — feedback и продвижение пользовательских правок.
+- `action_log_runtime.rs` — recent actions для tray.
+- `startup_runtime.rs` — warmup, backend probes, service startup.
+
+Цель такого разреза: daemon не должен снова превращаться в файл на тысячи строк,
+где смешаны ввод, вывод, правила, тесты и desktop-specific код.
+
+## Почему evdev и uinput
+
+На Wayland приложения изолированы. У обычного процесса нет универсального API:
+
+- прочитать, что пользователь набирает в любом окне;
+- получить слово под курсором;
+- атомарно удалить и вставить surrounding text в любом toolkit.
+
+Поэтому `lay-daemon` слушает `/dev/input/event*` через evdev. Это даёт
+физические события клавиатуры до compositor/toolkit.
+
+Для вывода используется `/dev/uinput`: виртуальная клавиатура ядра. Для
+приложения это выглядит как обычный ввод с клавиатуры, поэтому работает шире,
+чем `xdotool`/`wtype`.
+
+Минусы этого пути:
+
+- нужно членство пользователя в группе `input`;
+- нужно право на `/dev/uinput`;
+- вывод не является настоящим committed-text API;
+- старые/особые окна могут терять часть событий, если backend ведёт себя
+  нестандартно.
+
+## Double Shift flow
+
+```text
+evdev key events
+  ↓
+WordBuffer
+  ↓
+trigger_fsm: press/release/press/release
+  ↓
+decoder
+  ├─ replay all
+  ├─ smart minimal replacement
+  └─ keep original
+  ↓
+correction_runtime
+  ├─ при необходимости переключить layout
+  ├─ удалить нужный хвост
+  ├─ вставить/replay исправление
+  └─ синхронизировать WordBuffer с тем, что реально выведено
+```
+
+Ручной double Shift — явная команда пользователя. Поэтому последнее текущее
+слово/фрагмент можно переворачивать даже тогда, когда словарь считает его
+нормальным. Для соседних завершённых слов smart-режим действует осторожнее:
+нормальные слова оставляет, плохие меняет только при уверенном сигнале.
+
+## Typing assist после пробела
+
+Автопомощь работает не на каждую клавишу, а после разделителя:
+
+```text
+пользователь нажал Space
+  ↓
+daemon ждёт release Space
+  ↓
+строится snapshot завершённого хвоста
+  ↓
+typing_pipeline выбирает кандидата
+  ↓
+если кандидат безопасен — замена включает исходный separator
+```
+
+Контракт пробела жёсткий: если пользователь нажал пробел и автозамена
+сработала, итоговая замена обязана вернуть пробел в конец. Пробел не
+“компенсируется” произвольными задержками. Если пробел съеден, ошибка ищется в
+state/replacement contract.
+
+Минимальная проверка этого класса:
+
+```text
+html djn  -> html вот
+```
+
+То есть после исправления первого токена буфер и экран должны оставаться
+синхронными, а следующий токен должен нормально отделяться пробелом.
+
+## Protected words
+
+Файл пользователя:
+
+```text
+~/.config/lay/protected_words.txt
+```
+
+Слова из него являются стоп-сигналом для автоперекладки ASCII→RU. Это не
+“маленький вес” и не подсказка scorer-у. Если пользователь защитил токен,
+pipeline обязан оставить его как есть до любого LEM/LLM/ngram решения.
+
+Пример:
+
+```text
+cd  -> cd
+```
+
+Даже если раскладочная замена `cd -> св` выглядит языково правдоподобной,
+пользовательская защита сильнее scorer-а.
+
+## Smart и LLM
+
+По умолчанию `lay` не является LLM-приложением.
+
+Основной путь:
+
+```text
+keyboard map
+  + dictionaries
+  + protected/technical-token recognizer
+  + LEM/ngram scoring
+  + conservative rule graph
+```
+
+LLM — optional arbiter для уже построенных вариантов. Она не должна свободно
+писать новый текст вместо пользователя. В штатном публичном поведении модель не
+загружается и не нужна для double Shift.
+
+## Desktop backend-и
+
+Настройка:
+
+```json
+{
+  "layout_backend": "auto"
+}
+```
+
+Значения:
+
+- `auto` — выбрать backend по окружению;
+- `gnome` — GNOME Shell extension + DBus bridge;
+- `kde` — Plasma через `qdbus/qdbus6`;
+- `x11` — native XKB через `x11rb` и fallback tools.
+
+GNOME Wayland — самый зрелый путь. KDE/X11 работают через те же core-модули,
+но имеют отдельные desktop edge cases, поэтому остаются менее зрелыми.
+
+## GNOME extension
+
+GNOME extension теперь разделён на модули:
+
+- `extension.js` — loader.
+- `lay-impl.js` — tray indicator и сборка меню.
+- `tray_support.js` — config, stats, update helpers, общие константы.
+- `dbus_service.js` — session-local DBus service и layout helpers.
+- `recent_actions_menu.js` — меню последних исправлений.
+- `prefs.js` / `settings.js` — настройки.
+
+Установщик и dev-reload копируют все `*.js` из extension-директории. CI делает
+`node --check` для всех JS-модулей, чтобы новый файл не выпал из проверки.
+
+## DBus model
+
+GNOME Shell нужен только потому, что именно Shell умеет вызвать
+`inputSources[i].activate()` внутри сессии GNOME Wayland.
+
+Упрощённый путь:
+
+```text
+lay-daemon
+  ↓ zbus session call
+GNOME extension DBus service
+  ↓
+GNOME Shell inputSources[i].activate()
+```
+
+DBus внутри user session не является защитой от процессов того же пользователя.
+Это локальный control channel между daemon и extension.
+
+## Text output
+
+Production path — uinput:
+
+```text
+delete tail with Backspace
+switch layout if needed
+type/replay replacement
+sync WordBuffer
+```
+
+Если daemon успешно изолировал физическую клавиатуру (`evdev grab`), короткий
+вывод можно делать быстрее: собственный виртуальный ввод не смешивается с
+зажатым физическим Shift. Это заменило старую грубую задержку ожидания Shift.
+
+Экспериментальный IME path существует, но не является default:
 
 ```json
 {
@@ -140,338 +309,75 @@ Backspace, а Wayland-фокус в разных toolkit'ах ведёт себ�
 }
 ```
 
-Схема:
+IME нужен для будущего committed-text уровня, но для текущего публичного
+релиза uinput остаётся основным путём.
 
-```text
-lay-daemon решил правку
-        |
-        v
-io.github.radislabus_star.LayIme.ReplaceTail(N, text)
-        |
-        v
-IBus.Engine.delete_surrounding_text(-N, N)
-IBus.Engine.commit_text(text)
-```
+## Learning
 
-Этот backend не пытается печатать в чужое окно из GNOME Shell extension. Он
-работает только когда активен IBus engine `Lay IME RU` или `Lay IME US` и приложение
-поддерживает surrounding text. Если bridge не отвечает или не имеет фокуса,
-daemon пишет предупреждение и откатывается на старый uinput-путь.
+`learning_log` — opt-in.
 
-### FSM детектора двойного Shift
+Что пишется:
 
-Простого «два release подряд» недостаточно: если держать Shift для
-заглавной буквы, а потом отпустить — это тоже release. Нужен полный цикл
-**press → release → press → release**:
+- явные ручные исправления double Shift;
+- user-correction после того, как пользователь удалил результат auto/smart
+  правки и ввёл свой вариант.
 
-```
-Idle
- │ LShift press
- ▼
-FirstPress { pressed_at }
- │ release, удержан ≤ 200ms (тап)      release > 200ms → Idle
- ▼                                      (держали = заглавная буква)
-WaitingSecond { first_release }
- │ LShift press, < 500ms от release    press > 500ms → FirstPress (новый цикл)
- ▼
-SecondPress { second_press }
- │ release, удержан ≤ 200ms (тап)      release > 200ms → Idle
- ▼
-DOUBLE SHIFT ✓
-```
+Что не пишется:
 
-Любая **другая клавиша** в состояниях FirstPress/WaitingSecond → Idle (отмена).
-В состоянии SecondPress — игнорируется (второй Shift уже нажат, ждём release).
+- полный поток набора;
+- clipboard;
+- приватный текст окон;
+- обратные replay-toggle пары, которые только возвращают текст назад.
 
-### Layout backend
+Локальные файлы пишутся приватно (`0600`), где это применимо:
 
-Переключение раскладки вынесено в backend-слой:
+- `~/.local/share/lay/corrections.jsonl`;
+- `~/.local/share/lay/recent_actions.jsonl`;
+- `~/.local/share/lay/learning_candidates.json`;
+- `~/.local/share/lay/stats.json`.
 
-```json
-"layout_backend": "auto"
-```
+## Data files
 
-Поддержанные значения:
+Production runtime не хранит большие списки в `match`/`if` по словам.
 
-- `auto` — выбрать backend по окружению;
-- `gnome` — GNOME Shell extension + DBus;
-- `kde` — `qdbus/qdbus6 org.kde.keyboard /Layouts setLayout`;
-- `x11` — сначала native XKB через `x11rb`, затем fallback:
-  `xkb-switch`, `xkblayout-state`, `setxkbmap`.
+Основные данные:
 
-GNOME Wayland остаётся основной проверенной средой, но backend-слой уже не
-привязан только к GNOME. KDE Plasma и X11 проверены в нашей тестовой VM и
-используют то же ядро replay/smart/typing assist: KDE через `qdbus/qdbus6`,
-X11 через native XKB backend на `x11rb`.
+- `data/lexicon/common_en_technical.txt`;
+- `data/lexicon/common_ru.txt`;
+- `data/lexicon/russian_*`;
+- `data/test_input/builtin_scripts.tsv`;
+- `tests/fixtures/*`.
 
-### ptah_alexs — жёсткая раскладка по окну
+Если нужен новый класс поведения, сначала добавляется общий rule/scorer/guard,
+а конкретная фраза остаётся только в тестах.
 
-`ptah_alexs` реализован в GNOME extension, потому что именно GNOME Shell видит
-активное окно и его app id / wm class. Это не “память последней раскладки”,
-а policy-режим:
+## Test contract
 
-```json
-{
-  "ptah_alexs_mode": true,
-  "ptah_alexs_rules": [
-    {"kind": "app_id", "value": "org.gnome.Terminal.desktop", "layout": "us", "label": "Terminal"}
-  ]
-}
-```
-
-При смене фокуса extension получает `notify::focus-window`, находит правило для
-текущего окна и вызывает `inputSources[i].activate()` для `us` или `ru`. Правило
-`layout = "keep"` означает “это окно не трогать”.
-
-Правила добавляются из трея для текущего активного окна. Заголовок окна не
-используется как ключ по умолчанию, чтобы не сохранять приватный текст из title.
-
-### Почему GNOME Extension всё ещё нужен на GNOME Wayland
-
-На Wayland нет общего API для переключения раскладки извне. `gsettings` меняет
-настройки, но не применяет их к текущей сессии ([Bug #1956916](https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/1956916)).
-Виртуальная эмуляция `Alt+Shift` не регистрируется Mutter как акселератор.
-
-Единственный работающий способ — вызвать `inputSources[i].activate()`
-**внутри GNOME Shell** (GJS). Поэтому есть extension, который экспортирует
-этот вызов через DBus. В горячем пути daemon использует постоянное `zbus`
-соединение, а внешний `gdbus` остаётся только fallback/диагностикой:
-
-```
-lay-daemon → zbus session call → org.gnome.Shell
-                                → extension.js / lay-impl.js
-                                   → inputSources[i].activate()  ✓
-```
-
----
-
-## lay CLI — простая и smart-логика
-
-### Обычный режим — детерминированная конвертация
-
-Каждой клавише QWERTY соответствует ровно одна клавиша ЙЦУКЕН — **биекция**:
-
-```
-q↔й  w↔ц  e↔у  r↔к  t↔е  y↔н  u↔г  i↔ш  o↔щ  p↔з
-a↔ф  s↔ы  d↔в  f↔а  g↔п  h↔р  j↔о  k↔л  l↔д
-z↔я  x↔ч  c↔с  v↔м  b↔и  n↔т  m↔ь
-```
-
-`HashMap<char, char>` + `OnceLock`. Конвертация — микросекунды.
-Обычный CLI не пытается оценивать качество и не зовёт модель:
+Перед push минимальный gate:
 
 ```bash
-lay "ghbdtn"      # привет
-lay --no-llm ...  # legacy-safe: тоже только dict
+cargo fmt --all
+cargo test -q --all-targets
+cargo clippy --all-targets -- -D warnings
+cargo build --release --bins
+git diff --check
+for js in extension/lay@radislabus-star.github.io/*.js; do node --check "$js"; done
+bash -n install.sh update.sh dev-reload.sh scripts/*.sh
 ```
 
-`--threshold` оставлен только как legacy option для совместимости старых
-командных строк; текущий простой CLI его не использует.
+Для KDE/X11 изменений дополнительно:
 
-### Smart режим — optional arbiter
+- clean-copy проверка в VM или отдельной папке;
+- Rust tests/clippy/build на этой копии;
+- smoke CLI/typing-assist кейсы;
+- по возможности ручная проверка tray/backend в живой desktop-сессии.
 
-Модель не является основным путём работы. По умолчанию публичная сборка не
-загружает LLM и не компилирует direct GGUF backend.
+## Known limitations
 
-Простой режим LLM не вызывает. LLM включается только явно:
-- в daemon: через `Ещё → LLM` в tray menu;
-- в CLI: только через флаг `--smart` и выбранный `LAY_LLM_BACKEND`.
-
-`lay-daemon` вызывает `lay::llm::warm_up()` только если стартует с
-`correction_engine = "smart"`. Если `LAY_LLM_BACKEND` не задан, backend равен
-`off`, поэтому реальная модель не грузится. Обычный CLI при этом не начинает
-использовать модель сам по себе.
-
-Поддерживаемые backend'ы:
-
-```bash
-LAY_LLM_BACKEND=ollama lay --smart "fyukbqcrbq"
-LAY_LLM_BACKEND=openai LAY_OPENAI_API_KEY=... LAY_MODEL=gpt-4o-mini lay --smart "fyukbqcrbq"
-LAY_LLM_BACKEND=anthropic LAY_ANTHROPIC_API_KEY=... LAY_MODEL=claude-3-5-haiku-latest lay --smart "fyukbqcrbq"
-cargo build --release --features direct-llm
-LAY_LLM_BACKEND=direct LAY_GGUF_MODEL=/path/to/model.gguf lay --smart "fyukbqcrbq"
-```
-
-В `config.json` можно держать `llm_backend`, `llm_model`, backend URLs и
-timeout. API-ключи не читаются из config и должны оставаться только в env.
-
-Объём исправления (`Ещё → 1 слово` / `Ещё → 2 слова`) независим от engine.
-Engine выбирается отдельно:
-
-- `correction_engine = "replay"`: физический replay выбранного scope;
-- `correction_engine = "smart"`: scoped-tail/tokenwise решение.
-
-Smart mode умеет оставить нормальное первое слово и исправить только плохой
-хвост:
-
-```text
-Главное Вщгиду -> Главное Double
-good ntrcn     -> good текст
-wi-fi ye       -> wi-fi ну
-```
-
-Перед моделью есть быстрый deterministic repair для смешанного текста: если в
-русском слове остались латинские клавиши, они домаппятся в RU, а
-ASCII-акронимы вроде `LLM` сохраняются. Для чистой обычной перекладки
-используется replay-путь, чтобы второй double-Shift мог вернуть текст обратно.
-
-Модель не генерирует исправленный текст с нуля. Код сначала строит
-детерминированные кандидаты (`оригинал` и `US↔RU`), а модель при включённом
-backend выбирает один из них коротким ответом `A`/`B`. Если backend выключен
-или ответ не распознан, используется deterministic fallback.
-
-### Учебный лог
-
-Learning log включается только опцией `learning_log`. По умолчанию в config он
-выключен.
-
-После успешного ручного double-Shift daemon может добавить строку JSONL в
-`~/.local/share/lay/corrections.jsonl`. Пишутся только явные исправления:
-`from`, `to`, `kind`, `replace_words`, `words`, `ts`. Обратный replay-toggle не
-логируется, чтобы не добавлять пары нормального текста в мусорную раскладку.
-
-Для auto/smart исправлений используется другой слой: daemon запоминает
-результат как pending feedback и ждёт, исправит ли его пользователь. Если
-пользователь удалил результат и набрал свой вариант, пишется
-`kind = "user-correction"` с дополнительными полями `lay_kind`, `lay_from`,
-`lay_to`. Повторные безопасные user-correction могут быть повышены в точное
-правило `~/.config/lay/replacements.json`.
-
-Лог ограничен: при размере больше 1 MB файл подрезается до последних 3000 строк.
-
-Соседние локальные файлы тоже пишутся приватно на Unix (`0600`):
-
-- `~/.local/share/lay/recent_actions.jsonl` — короткий журнал последних
-  успешных действий для tray-диагностики;
-- `~/.local/share/lay/learning_candidates.json` — накопленные кандидаты для
-  консервативного повышения в точные правила;
-- `~/.local/share/lay/stats.json` — только счётчики и timestamps, без сырого
-  потока набора.
-
-### Автоподмена простого режима
-
-Если в config включено `auto_replace`, replay-путь после обычной перекладки
-проверяет результат по точным правилам автоподмены. Это не LLM и не fuzzy-поиск:
-правило срабатывает только при точном совпадении слова/фразы. Встроенные правила
-дополняются пользовательским JSON-словарём `~/.config/lay/replacements.json`.
-
-### Автопереключение раскладки
-
-Опция `auto_switch_layout` относится к автоматической помощи при наборе после
-пробела. Когда helper видит уверенное слово, набранное в неправильной
-раскладке, он заменяет его и может оставить активной раскладку исправленного
-текста. Если опция выключена, layout-автоправки не применяются, а после обычной
-автоматической правки daemon возвращает раскладку, которая была активна до
-исправления.
-
-Ручной double Shift не зависит от этой опции: это явная команда пользователя
-переключить выбранный хвост, поэтому раскладка переключается всегда.
-
-### Enter и граница evdev/uinput
-
-Публичный tray не предлагает автокоррекцию по Enter. В текущей evdev/uinput
-архитектуре daemon получает копию события Enter, но не владеет input-method
-цепочкой приложения. Поэтому нельзя гарантировать атомарный порядок “исправить
-хвост, потом отдать Enter приложению” во всех окнах.
-
-В коде оставлен только закрытый экспериментальный контур для разработки:
-`enter_autocorrect = true` в config сработает лишь при переменной окружения
-`LAY_EXPERIMENTAL_ENTER_AUTOCORRECT=1`. Для публичного поведения использовать
-обычную помощь после пробела и ручной double Shift.
-
-### DBus и модель доверия
-
-GNOME extension экспортирует session-local DBus bridge для `lay-daemon`.
-Публичными оставлены только методы, которые нужны runtime-пути: `ActivateLayout`,
-`CurrentLayout`, `NextLayout`, `ListLayouts`, `TypeText`, `ReplaceText` и
-`Ping`.
-
-`ReplaceText` оставлен как отключённый эксперимент Shell-side атомарной замены,
-но daemon не использует его по умолчанию: GNOME Shell не является правильным
-слоем для committed-text правки произвольного Wayland-приложения. Для этого
-выделен отдельный `LayIme` IBus bridge.
-
-Обычная очистка слова делается через uinput внутри daemon. `TypeText` остаётся,
-потому что он нужен для fallback-вставки, если GNOME не подтвердил переключение
-раскладки после удаления слова.
-
-DBus внутри user session не является границей безопасности от процессов того же
-пользователя. Если пользователь не доверяет локальным процессам в своей сессии,
-extension и daemon нужно выключить.
-
-Если переключение раскладки не подтвердилось, daemon не делает blind replay в
-старой раскладке. Он пытается вернуть ожидаемый текст через `TypeText`, не
-обновляет cache активной раскладки и пишет диагностическое событие только в
-debug-log, если он явно включён.
-
----
-
-## Архитектура кода
-
-```
-lay/
-├── src/
-│   ├── main.rs          — CLI (clap), dict conversion и --smart
-│   ├── config.rs        — config schema для daemon и tray
-│   ├── correction.rs    — общий контракт Correction
-│   ├── decoder.rs       — единый decision/edit-plan слой, ranked candidates
-│   │                      и margin policy для scoped-tail
-│   ├── core.rs          — публичный facade общего ядра
-│   ├── desktop.rs       — выбор GNOME/KDE/X11 backend
-│   ├── dict.rs          — словарь US↔RU, detect_direction, convert
-│   ├── keyboard.rs      — key events, word split, replay decision
-│   ├── word_buffer.rs   — история слов и pending feedback
-│   ├── text_edit.rs     — минимальные планы замены текста
-│   ├── text_backend.rs  — capability-контракт uinput/IME/backend
-│   ├── typing_assist.rs — правила typing assist и smart-tail
-│   ├── x11_layout.rs    — native XKB backend через x11rb
-│   ├── quality.rs       — auxiliary quality heuristics
-│   ├── ngram.rs         — char 3-gram scorer
-│   ├── llm.rs           — optional model arbiter вокруг готовых кандидатов
-│   └── lem.rs           — lightweight scorer/ranker для готовых вариантов
-│
-├── src/bin/
-│   ├── lay_daemon.rs        — evdev listener, FSM, layout backend, uinput replay
-│   ├── lay_ngram_corpus.rs  — build/check/cache локального n-gram корпуса
-│   ├── lay_lem_research.rs  — локальный stress-test LEM scorer
-│   └── lay_test_input.rs    — runtime diagnostics/smoke helper
-│
-└── extension/
-    └── lay@radislabus-star.github.io/
-        ├── extension.js — loader
-        ├── lay-impl.js  — DBus service + tray indicator
-        └── metadata.json
-```
-
-## Зависимости CLI
-
-| Crate                | Зачем                                           |
-|----------------------|-------------------------------------------------|
-| `clap`               | CLI парсинг                                     |
-| `arboard`            | Clipboard (Wayland + X11)                      |
-| `ureq`               | optional HTTP backend для LLM APIs             |
-| `llama_cpp`          | optional direct GGUF backend (`direct-llm`)    |
-| `serde`/`serde_json` | Config, cache и JSON-запросы                   |
-| `zbus`               | DBus-клиент daemon → GNOME Shell extension     |
-| `evdev`              | Чтение физической клавиатуры и `evdev::uinput` |
-
-## Профиль release
-
-```toml
-[profile.release]
-opt-level = 3
-lto = true           # link-time optimization
-codegen-units = 1    # медленнее компиляция, быстрее бинарь
-strip = true         # без отладочных символов
-panic = "abort"      # без unwinding
-```
-
-Текущие release-бинарники на проверенной машине:
-
-- `lay` — около 2.6 MB;
-- `lay-daemon` — около 3.8 MB.
-
-## Что не умеет (пока)
-
-- **Дополнительные раскладки** (UK, DE, FR) — добавить таблицы в `dict.rs`
-- **Автоопределение без двойного Shift** — статистический анализ потока
+- Поддержка языков сейчас рассчитана на RU/EN.
+- Слово под курсором без предварительного набора `lay` не читает.
+- Выделенный текст и IME/preedit — отдельная будущая архитектура, не текущий
+  production path.
+- KDE/X11 моложе GNOME Wayland и требуют больше реальных отчётов.
+- Автопомощь после пробела намеренно консервативна: лучше пропустить сомнительную
+  правку, чем испортить нормальный текст.

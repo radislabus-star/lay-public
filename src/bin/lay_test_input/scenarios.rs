@@ -16,6 +16,8 @@ mod typing;
 use script::{run_script, run_script_text};
 use typing::{double_shift_manual, double_shift_manual_after, type_physical};
 
+const BUILTIN_SCRIPTS: &str = include_str!("../../../data/test_input/builtin_scripts.tsv");
+
 pub(crate) fn run_scenario(dev: &mut VirtualDevice, scenario: &str) -> std::io::Result<()> {
     if let Some(path) = scenario.strip_prefix("script:") {
         run_script(dev, Path::new(path))?;
@@ -23,8 +25,8 @@ pub(crate) fn run_scenario(dev: &mut VirtualDevice, scenario: &str) -> std::io::
         return Ok(());
     }
 
-    if let Some(script) = builtin_script(scenario) {
-        run_script_text(dev, script, scenario)?;
+    if let Some(script) = builtin_script(scenario)? {
+        run_script_text(dev, &script, scenario)?;
         eprintln!("[test] сценарий {scenario} отправлен");
         return Ok(());
     }
@@ -229,59 +231,27 @@ pub(crate) fn run_scenario(dev: &mut VirtualDevice, scenario: &str) -> std::io::
     Ok(())
 }
 
-fn builtin_script(scenario: &str) -> Option<&'static str> {
-    match scenario {
-        "good_ntrcn_enter" => Some(include_str!(
-            "../../../data/test_input/good_ntrcn_enter.tsv"
-        )),
-        "proverka_ntrcn_enter" => Some(include_str!(
-            "../../../data/test_input/proverka_ntrcn_enter.tsv"
-        )),
-        "good_vshgidu_enter" => Some(include_str!(
-            "../../../data/test_input/good_vshgidu_enter.tsv"
-        )),
-        "good_text_enter" => Some(include_str!("../../../data/test_input/good_text_enter.tsv")),
-        "wifi_ye_enter" => Some(include_str!("../../../data/test_input/wifi_ye_enter.tsv")),
-        "auto_switch_words_enter" => Some(include_str!(
-            "../../../data/test_input/auto_switch_words_enter.tsv"
-        )),
-        "worked_nj_space_enter" => Some(include_str!(
-            "../../../data/test_input/worked_nj_space_enter.tsv"
-        )),
-        "html_djn_spacing_enter" => Some(include_str!(
-            "../../../data/test_input/html_djn_spacing_enter.tsv"
-        )),
-        "preparatov_typo_enter" => Some(include_str!(
-            "../../../data/test_input/preparatov_typo_enter.tsv"
-        )),
-        "no_ne_ty_enter" => Some(include_str!("../../../data/test_input/no_ne_ty_enter.tsv")),
-        "glued_tozhesamoe_next_enter" => Some(include_str!(
-            "../../../data/test_input/glued_tozhesamoe_next_enter.tsv"
-        )),
-        "glued_tozhesamoe_pause_next_enter" => Some(include_str!(
-            "../../../data/test_input/glued_tozhesamoe_pause_next_enter.tsv"
-        )),
-        "glued_toesamoe_next_enter" => Some(include_str!(
-            "../../../data/test_input/glued_toesamoe_next_enter.tsv"
-        )),
-        "glued_yanebudu_next_enter" => Some(include_str!(
-            "../../../data/test_input/glued_yanebudu_next_enter.tsv"
-        )),
-        "glued_context_yanebudu_next_enter" => Some(include_str!(
-            "../../../data/test_input/glued_context_yanebudu_next_enter.tsv"
-        )),
-        "glued_long_phrase_next_enter" => Some(include_str!(
-            "../../../data/test_input/glued_long_phrase_next_enter.tsv"
-        )),
-        "vyvodim_dva_enter" => Some(include_str!(
-            "../../../data/test_input/vyvodim_dva_enter.tsv"
-        )),
-        "mixed_coke_enter" => Some(include_str!(
-            "../../../data/test_input/mixed_coke_enter.tsv"
-        )),
-        "mixed_coke_toggle3_enter" => Some(include_str!(
-            "../../../data/test_input/mixed_coke_toggle3_enter.tsv"
-        )),
-        _ => None,
+fn builtin_script(scenario: &str) -> std::io::Result<Option<String>> {
+    let Some(file_name) = BUILTIN_SCRIPTS.lines().find_map(|line| {
+        let line = line.trim();
+        if line.is_empty() || line.starts_with('#') {
+            return None;
+        }
+        let (id, file_name) = line.split_once('\t')?;
+        (id == scenario).then_some(file_name)
+    }) else {
+        return Ok(None);
+    };
+
+    if file_name.contains('/') || file_name.contains('\\') || file_name.contains("..") {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidData,
+            format!("bad builtin script path: {file_name}"),
+        ));
     }
+
+    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("data/test_input")
+        .join(file_name);
+    std::fs::read_to_string(path).map(Some)
 }

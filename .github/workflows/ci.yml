@@ -53,8 +53,9 @@ jobs:
       - name: GNOME extension syntax
         run: |
           python3 -m json.tool extension/lay@radislabus-star.github.io/metadata.json >/dev/null
-          node --check extension/lay@radislabus-star.github.io/lay-impl.js
-          node --check extension/lay@radislabus-star.github.io/extension.js
+          for js in extension/lay@radislabus-star.github.io/*.js; do
+            node --check "$js"
+          done
 
       - name: KDE tray and shell scripts syntax
         run: |

@@ -1,5 +1,6 @@
 //! Phrase-level scoring helpers for typing assist.
 
+use crate::data_lines::data_lines;
 use crate::lexicon::{is_common_ru_word, is_ru_short_pronoun, is_ru_single_letter_pronoun};
 use crate::phrase_lexicon::{
     is_common_short_russian_preposition, is_known_russian_phrase_part,
@@ -26,6 +27,8 @@ const MULTIWORD_LONG_PHRASE_BONUS: f64 = 1.0;
 const MULTIWORD_FUNCTION_WITH_STRONG_PARTS_BONUS: f64 = 1.5;
 const MULTIWORD_ONE_LETTER_FUNCTION_BONUS: f64 = 2.0;
 const MULTIWORD_SHORT_PRONOUN_BONUS: f64 = 1.5;
+const INCOMPLETE_REFLEXIVE_PARTS_DATA: &str =
+    include_str!("../data/lexicon/russian_incomplete_reflexive_parts.txt");
 const MULTIWORD_SHORT_PREPOSITION_BONUS: f64 = 1.5;
 const MULTIWORD_SHORT_FUNCTION_BONUS: f64 = 1.2;
 const MULTIWORD_COMMON_WORD_BONUS: f64 = 1.5;
@@ -176,7 +179,7 @@ fn contains_preferable_merged_russian_part(parts: &[&str]) -> bool {
 
 fn looks_like_incomplete_russian_reflexive_part(part: &str) -> bool {
     let len = char_len(part);
-    len >= 6 && (part.ends_with("тьс") || part.ends_with("тс"))
+    len >= 6 && data_lines(INCOMPLETE_REFLEXIVE_PARTS_DATA).any(|suffix| part.ends_with(suffix))
 }
 
 fn is_strong_phrase_part(part: &str) -> bool {
