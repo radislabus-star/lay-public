@@ -203,6 +203,9 @@ use enter_autocorrect_runtime::*;
 #[path = "lay_daemon/layout_kde.rs"]
 mod layout_kde;
 
+#[path = "lay_daemon/layout_niri.rs"]
+mod layout_niri;
+
 #[path = "lay_daemon/layout_x11.rs"]
 mod layout_x11;
 

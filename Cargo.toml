@@ -1,6 +1,6 @@
 [package]
 name = "lay"
-version = "0.1.214"
+version = "0.1.215"
 edition = "2021"
 description = "Alpha Double Shift RU/EN layout rescue for Linux desktops"
 license = "MIT"
@@ -44,6 +44,7 @@ evdev = "0.13"
 zbus = "5.15.0"
 x11rb = { version = "0.13", features = ["xkb"] }
 libc = "0.2"
+niri-ipc = "26"
 llama_cpp = { version = "0.3.2", optional = true }
 
 [profile.release]

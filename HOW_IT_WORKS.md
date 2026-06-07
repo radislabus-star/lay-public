@@ -13,7 +13,7 @@ clipboard, без облака и без попытки переписывать
 ```
 
 Проект сейчас в статусе alpha: GNOME Wayland — основной проверенный путь,
-KDE/Plasma и X11 поддерживаются как более молодые backend-слои.
+KDE/Plasma, Niri и X11 поддерживаются как более молодые backend-слои.
 
 ## Компоненты
 
@@ -31,6 +31,7 @@ lay-daemon
 Desktop интеграции
   ├─ GNOME Shell extension: tray, DBus bridge, GNOME layout activation
   ├─ KDE tray/helper: Plasma menu и qdbus layout backend
+  ├─ Niri backend: прямой IPC через niri-ipc
   └─ X11 backend: native XKB через x11rb
 ```
 
@@ -106,6 +107,7 @@ Desktop интеграции
 - `text_output.rs` — uinput output contract.
 - `layout_controller.rs` — переключение раскладки через выбранный backend.
 - `layout_kde.rs` — KDE/Plasma через qdbus/qdbus6.
+- `layout_niri.rs` — Niri через прямой IPC к compositor socket.
 - `layout_x11.rs` — X11 через native XKB/fallback tools.
 - `focus_guard.rs` — защита буфера между окнами/полями.
 - `pending_typing_assist.rs` — отложенная автопомощь после пробела.
@@ -249,9 +251,10 @@ LLM — optional arbiter для уже построенных вариантов
 - `auto` — выбрать backend по окружению;
 - `gnome` — GNOME Shell extension + DBus bridge;
 - `kde` — Plasma через `qdbus/qdbus6`;
+- `niri` — Niri Wayland через прямой `niri-ipc`;
 - `x11` — native XKB через `x11rb` и fallback tools.
 
-GNOME Wayland — самый зрелый путь. KDE/X11 работают через те же core-модули,
+GNOME Wayland — самый зрелый путь. KDE/Niri/X11 работают через те же core-модули,
 но имеют отдельные desktop edge cases, поэтому остаются менее зрелыми.
 
 ## GNOME extension
@@ -365,7 +368,7 @@ for js in extension/lay@radislabus-star.github.io/*.js; do node --check "$js"; d
 bash -n install.sh update.sh dev-reload.sh scripts/*.sh
 ```
 
-Для KDE/X11 изменений дополнительно:
+Для KDE/Niri/X11 изменений дополнительно:
 
 - clean-copy проверка в VM или отдельной папке;
 - Rust tests/clippy/build на этой копии;
@@ -378,6 +381,6 @@ bash -n install.sh update.sh dev-reload.sh scripts/*.sh
 - Слово под курсором без предварительного набора `lay` не читает.
 - Выделенный текст и IME/preedit — отдельная будущая архитектура, не текущий
   production path.
-- KDE/X11 моложе GNOME Wayland и требуют больше реальных отчётов.
+- KDE/Niri/X11 моложе GNOME Wayland и требуют больше реальных отчётов.
 - Автопомощь после пробела намеренно консервативна: лучше пропустить сомнительную
   правку, чем испортить нормальный текст.

@@ -1,12 +1,13 @@
 //! Desktop/backend helpers shared by daemon frontends.
 //!
-//! GNOME, KDE and X11 use different integration layers, but they still need the
+//! GNOME, KDE, Niri and X11 use different integration layers, but they still need the
 //! same backend selection and layout-id normalization rules.
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LayoutBackend {
     Gnome,
     Kde,
+    Niri,
     X11,
 }
 
@@ -15,6 +16,7 @@ impl LayoutBackend {
         match self {
             Self::Gnome => "gnome",
             Self::Kde => "kde",
+            Self::Niri => "niri",
             Self::X11 => "x11",
         }
     }
@@ -29,6 +31,7 @@ pub fn resolve_layout_backend(
     match configured.trim().to_ascii_lowercase().as_str() {
         "gnome" => return LayoutBackend::Gnome,
         "kde" | "plasma" => return LayoutBackend::Kde,
+        "niri" => return LayoutBackend::Niri,
         "x11" | "xorg" => return LayoutBackend::X11,
         _ => {}
     }
@@ -44,6 +47,9 @@ pub fn resolve_layout_backend(
     }
     if desktop.contains("gnome") {
         return LayoutBackend::Gnome;
+    }
+    if desktop.contains("niri") {
+        return LayoutBackend::Niri;
     }
     if session_type.is_some_and(|value| value.eq_ignore_ascii_case("x11")) {
         return LayoutBackend::X11;

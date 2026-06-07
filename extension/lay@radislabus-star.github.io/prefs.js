@@ -6,8 +6,8 @@ import Gtk from 'gi://Gtk';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.1.214';
-const APP_RELEASE_DATE = '2026-06-05';
+const APP_VERSION = '0.1.215';
+const APP_RELEASE_DATE = '2026-06-07';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 
 const ENGINE_OPTIONS = [
@@ -51,6 +51,7 @@ const LAYOUT_BACKEND_OPTIONS = [
     ['gnome', 'GNOME'],
     ['kde', 'KDE'],
     ['x11', 'X11'],
+    ['niri', 'Niri'],
 ];
 
 const DEFAULTS = {

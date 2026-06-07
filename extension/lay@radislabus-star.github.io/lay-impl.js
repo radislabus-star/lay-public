@@ -43,6 +43,7 @@ import {
     FORCE_KEY_OPTIONS,
     LEM_2_TOOLTIP,
     LEM_3_TOOLTIP,
+    LAYOUT_BACKEND_OPTIONS,
     LEARNING_LOG_TOOLTIP,
     MENU_WIDTH,
     PTAH_ALEXS_TOOLTIP,
@@ -129,6 +130,7 @@ class LayIndicator extends PanelMenu.Button {
         this._engineButtons = {};
         this._scopeButtons = {};
         this._backendButtons = {};
+        this._layoutBackendButtons = {};
         this._safetyButtons = {};
         this._triggerButtons = {};
         this._triggerItems = {};
@@ -288,9 +290,18 @@ class LayIndicator extends PanelMenu.Button {
         ];
     }
 
+    _layoutBackendOptions() {
+        return LAYOUT_BACKEND_OPTIONS.map(([id, label]) => [
+            id,
+            label,
+            () => this._setConfigValue('layout_backend', id, true),
+        ]);
+    }
+
     _backendMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('Канал ввода', false);
-        item.menu.addMenuItem(this._segmentedRow('Канал', this._backendOptions(), this._backendButtons));
+        const item = new PopupMenu.PopupSubMenuMenuItem('Backend', false);
+        item.menu.addMenuItem(this._segmentedRow('Раскладка', this._layoutBackendOptions(), this._layoutBackendButtons));
+        item.menu.addMenuItem(this._segmentedRow('Ввод', this._backendOptions(), this._backendButtons));
         return item;
     }
 
@@ -944,6 +955,8 @@ class LayIndicator extends PanelMenu.Button {
             this._setButtonActive(button, Number(id) === this._cfg.replace_words);
         for (const [id, button] of Object.entries(this._backendButtons ?? {}))
             this._setButtonActive(button, id === this._cfg.text_backend);
+        for (const [id, button] of Object.entries(this._layoutBackendButtons ?? {}))
+            this._setButtonActive(button, id === this._cfg.layout_backend);
         for (const [id, button] of Object.entries(this._safetyButtons ?? {}))
             this._setButtonActive(button, id === this._cfg.correction_safety);
         for (const [id, button] of this._safetySliderThumbs ?? [])
@@ -1076,7 +1089,7 @@ class LayIndicator extends PanelMenu.Button {
         const ptah = this._cfg.ptah_alexs_mode ? 'ptah on' : 'ptah off';
         const force = this._cfg.force_layout_hotkeys ? 'RU/EN hotkeys' : 'RU/EN off';
         const multi = this._cfg.multi_tap_scope ? 'multi-tap on' : 'multi-tap off';
-        return `${this._engineLabel()} · ${this._safetyLabel()} · ${this._cfg.replace_words} сл. · ${lem} · ${this._cfg.text_backend} · ${autoSwitch} · ${ptah} · ${force} · ${multi} · ${this._triggerLabel(this._cfg.trigger)}`;
+        return `${this._engineLabel()} · ${this._safetyLabel()} · ${this._cfg.replace_words} сл. · ${lem} · ${this._cfg.layout_backend}/${this._cfg.text_backend} · ${autoSwitch} · ${ptah} · ${force} · ${multi} · ${this._triggerLabel(this._cfg.trigger)}`;
     }
 
     _aboutStatsText() {
@@ -1118,19 +1131,24 @@ class LayIndicator extends PanelMenu.Button {
     _refreshStatus() {
         try {
             const p = Gio.Subprocess.new(
-                ['systemctl','--user','is-active','lay-daemon'],
-                Gio.SubprocessFlags.STDOUT_PIPE);
-            p.communicate_utf8_async(null, null, (proc, res) => {
+                ['/usr/bin/systemctl', '--user', 'is-active', '--quiet', 'lay-daemon.service'],
+                Gio.SubprocessFlags.NONE);
+            p.wait_check_async(null, (proc, res) => {
                 try {
-                    const [, out] = proc.communicate_utf8_finish(res);
-                    const ok = out.trim() === 'active';
-                    this._daemonActive = ok;
-                    this._statusLabel.text = ok ? 'демон работает' : 'демон остановлен';
-                    this._setDaemonStatus(ok);
-                    this._refreshDaemonAction(ok);
-                } catch(e) {}
+                    this._applyDaemonStatus(proc.wait_check_finish(res));
+                } catch(e) {
+                    this._applyDaemonStatus(false);
+                }
             });
         } catch(e) {}
+    }
+
+    _applyDaemonStatus(active) {
+        this._daemonActive = active;
+        if (this._statusLabel)
+            this._statusLabel.text = active ? 'демон работает' : 'демон остановлен';
+        this._setDaemonStatus(active);
+        this._refreshDaemonAction(active);
     }
 
     _setDaemonBusy(text) {

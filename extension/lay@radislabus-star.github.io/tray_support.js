@@ -6,12 +6,12 @@ export const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 export const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-export const APP_VERSION = '0.1.214';
+export const APP_VERSION = '0.1.215';
 export const APP_DESCRIPTION = 'Alpha RU/EN layout helper: double Shift и помощь при наборе';
-export const APP_RELEASE_DATE = '2026-06-05';
+export const APP_RELEASE_DATE = '2026-06-07';
 export const APP_LICENSE = 'MIT';
 export const APP_URL = 'https://github.com/radislabus-star/lay-public';
-export const APP_PLATFORM = 'Linux desktops: GNOME, KDE, Wayland, X11';
+export const APP_PLATFORM = 'Linux desktops: GNOME, KDE, Niri, Wayland, X11';
 export const APP_GNOME_SUPPORT = 'GNOME 45-47, 50';
 export const MENU_WIDTH = 360;
 export const DEFAULT_SCOPE_WORDS = 1;
@@ -85,6 +85,13 @@ export const SAFETY_STEPS = [
     {id: 'strict', label: 'Осторожно', value: 0},
     {id: 'normal', label: 'Норма', value: 1},
     {id: 'experimental', label: 'Смелее', value: 2},
+];
+export const LAYOUT_BACKEND_OPTIONS = [
+    ['auto', 'auto'],
+    ['gnome', 'GNOME'],
+    ['kde', 'KDE'],
+    ['x11', 'X11'],
+    ['niri', 'Niri'],
 ];
 export const DEFAULT_TYPING_PIPELINE = TYPING_RULES.map((rule, idx) => ({
     id: rule.id,
@@ -165,6 +172,7 @@ export function normalizeConfig(cfg) {
         ...cfg,
         replace_words: normalizeScope(cfg?.replace_words),
         correction_engine: normalizeChoice(cfg?.correction_engine, ['replay', 'smart'], DEFAULTS.correction_engine),
+        layout_backend: normalizeChoice(cfg?.layout_backend, LAYOUT_BACKEND_OPTIONS.map(([id]) => id), DEFAULTS.layout_backend),
         text_backend: normalizeChoice(cfg?.text_backend, ['uinput', 'ime', 'auto'], DEFAULTS.text_backend),
         correction_safety: normalizeChoice(cfg?.correction_safety, SAFETY_OPTIONS.map(([id]) => id), DEFAULTS.correction_safety),
         ptah_alexs_mode: !!cfg?.ptah_alexs_mode,
@@ -348,7 +356,7 @@ export function stopDaemon() {
     daemonCommand('stop');
 }
 export function daemonCommand(action) {
-    try { Gio.Subprocess.new(['systemctl','--user',action,'lay-daemon'], Gio.SubprocessFlags.NONE); } catch(e) {}
+    try { Gio.Subprocess.new(['/usr/bin/systemctl', '--user', action, 'lay-daemon.service'], Gio.SubprocessFlags.NONE); } catch(e) {}
 }
 export function firstExistingCommand(names) {
     for (const name of names)

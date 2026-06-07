@@ -27,7 +27,7 @@
   обычные слова.
 - Задержки не используются как архитектурное решение. Допустимы только
   низкоуровневые uinput pacing-константы в `text_output.rs`.
-- GNOME/KDE/X11 различия изолированы в backend/runtime слоях, а не протекают в
+- GNOME/KDE/Niri/X11 различия изолированы в backend/runtime слоях, а не протекают в
   scoring/typing ядро.
 
 ## Чек-лист рефакторинга
@@ -51,6 +51,7 @@
 - `layout_controller.rs` отвечает за общий layout facade, GNOME/DBus/IME
   bridge и общие shell helpers.
 - `layout_kde.rs` отвечает только за KDE/qdbus layout backend.
+- `layout_niri.rs` отвечает только за Niri/niri-ipc layout backend.
 - `layout_x11.rs` отвечает только за X11 XKB/shell-tool layout backend.
 - `word_buffer.rs` отвечает за память хвоста, replay toggle, pending learning и
   pending undo, но не решает, что является хорошим словом.

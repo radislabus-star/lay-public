@@ -81,10 +81,12 @@ def load_config() -> dict[str, Any]:
 
 def save_config(cfg: dict[str, Any]) -> None:
     CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    CONFIG_PATH.write_text(
+    tmp_path = CONFIG_PATH.with_suffix(CONFIG_PATH.suffix + ".tmp")
+    tmp_path.write_text(
         json.dumps(cfg, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+    tmp_path.replace(CONFIG_PATH)
 
 
 def lay_version() -> str:
@@ -178,6 +180,7 @@ def config_status_text() -> str:
         f"демон={'работает' if daemon_active() else 'остановлен'}\n"
         f"режим={cfg.get('correction_engine') or cfg.get('mode')}\n"
         f"осторожность={cfg.get('correction_safety', 'normal')}\n"
+        f"backend_раскладки={cfg.get('layout_backend', 'auto')}\n"
         f"вставка={cfg.get('text_backend', 'uinput')}\n"
         f"область={cfg.get('replace_words')}\n"
         f"помощь_при_наборе={bool(cfg.get('typing_assist'))}\n"
@@ -265,6 +268,7 @@ def main() -> int:
 
             self.tray = QSystemTrayIcon(self.make_icon(daemon_active()), self.app)
             self.menu = QMenu()
+            self._menu_position = None
             self.tray.activated.connect(self.on_activated)
 
             self.timer = QTimer()
@@ -297,8 +301,13 @@ def main() -> int:
             return QIcon(pixmap)
 
         def show_menu_at_cursor(self) -> None:
+            self._menu_position = QCursor.pos()
             self.rebuild_menu()
-            self.menu.popup(QCursor.pos())
+            self.menu.popup(self._menu_position)
+
+        def reopen_menu(self) -> None:
+            self.rebuild_menu()
+            self.menu.popup(self._menu_position or QCursor.pos())
 
         def refresh_status(self) -> None:
             active = daemon_active()
@@ -308,6 +317,7 @@ def main() -> int:
                 "lay\n"
                 f"Демон: {'работает' if active else 'остановлен'}\n"
                 f"Режим: {self.engine_label(cfg)}\n"
+                f"Backend: {cfg.get('layout_backend', 'auto')}\n"
                 f"Область: {cfg.get('replace_words')} сл."
             )
 
@@ -336,6 +346,8 @@ def main() -> int:
             restart = QAction("Перезапустить демон", self.menu)
             restart.triggered.connect(lambda: self.run_service_action("restart"))
             self.menu.addAction(restart)
+
+            self.add_layout_backend_menu(self.menu, cfg, keep_open=True)
 
             update = QAction("Проверить обновления", self.menu)
             update.triggered.connect(self.run_update)
@@ -457,6 +469,36 @@ def main() -> int:
             action.triggered.connect(lambda checked, config_key=key: self.update_config(config_key, bool(checked)))
             target_menu.addAction(action)
 
+        def add_layout_backend_menu(
+            self,
+            parent: QMenu,
+            cfg: dict[str, Any],
+            keep_open: bool = False,
+        ) -> None:
+            current = str(cfg.get("layout_backend", "auto"))
+            menu = parent.addMenu(f"Среда раскладки: {self.layout_backend_label(current)}")
+            group = QActionGroup(menu)
+            group.setExclusive(True)
+            for value, label in (
+                ("auto", "auto"),
+                ("kde", "KDE/Plasma"),
+                ("x11", "X11"),
+                ("gnome", "GNOME"),
+                ("niri", "Niri (эксп.)"),
+            ):
+                action = QAction(label, menu)
+                action.setCheckable(True)
+                action.setChecked(current == value)
+                action.triggered.connect(
+                    lambda _checked, chosen=value: self.update_config(
+                        "layout_backend",
+                        chosen,
+                        keep_open=keep_open,
+                    )
+                )
+                group.addAction(action)
+                menu.addAction(action)
+
         def add_force_key_menu(
             self,
             parent: QMenu,
@@ -483,7 +525,7 @@ def main() -> int:
                 group.addAction(action)
                 menu.addAction(action)
 
-        def update_config(self, key: str, value: Any) -> None:
+        def update_config(self, key: str, value: Any, keep_open: bool = False) -> None:
             cfg = load_config()
             cfg[key] = value
             if key == "correction_engine":
@@ -492,12 +534,16 @@ def main() -> int:
                 cfg["force_layout_hotkeys"] = False
             if cfg.get("text_backend") not in ("uinput", "ime", "auto"):
                 cfg["text_backend"] = "uinput"
+            if cfg.get("layout_backend") not in ("auto", "gnome", "kde", "x11", "niri"):
+                cfg["layout_backend"] = "auto"
             if cfg.get("correction_safety") not in ("strict", "normal", "experimental"):
                 cfg["correction_safety"] = "normal"
             cfg["multi_tap_max_taps"] = max(2, min(4, int(cfg.get("multi_tap_max_taps", 4))))
             save_config(cfg)
             self.run_service_action("restart", notify=False)
             self.rebuild_menu()
+            if keep_open:
+                QTimer.singleShot(80, self.reopen_menu)
 
         def set_daemon(self, checked: bool) -> None:
             self.run_service_action("start" if checked else "stop")
@@ -578,6 +624,16 @@ def main() -> int:
                 "single-pause": "Pause",
                 "caps-lock": "Caps Lock",
             }.get(str(key), "RCtrl")
+
+        @staticmethod
+        def layout_backend_label(value: Any) -> str:
+            return {
+                "auto": "auto",
+                "gnome": "GNOME",
+                "kde": "KDE/Plasma",
+                "x11": "X11",
+                "niri": "Niri exp",
+            }.get(str(value), "auto")
 
     lock_file = acquire_single_instance_lock()
     if lock_file is None:

@@ -1029,13 +1029,14 @@ dependencies = [
 
 [[package]]
 name = "lay"
-version = "0.1.214"
+version = "0.1.215"
 dependencies = [
  "arboard",
  "clap",
  "evdev",
  "libc",
  "llama_cpp",
+ "niri-ipc",
  "serde",
  "serde_json",
  "ureq",
@@ -1185,6 +1186,16 @@ checksum = "bb85c154ba489f01b25c0d36ae69a87e4a1c73a72631fc6c0eb6dde34a73e44b"
 dependencies = [
  "num-traits",
  "pxfm",
+]
+
+[[package]]
+name = "niri-ipc"
+version = "26.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6a4adbddf4037ce047854d36a60b5bf80a7990b8db2f0a0b9ede7534b0bae09a"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

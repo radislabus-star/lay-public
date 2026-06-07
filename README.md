@@ -44,6 +44,18 @@ curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scr
 По умолчанию double Shift исправляет **1 последнее слово**. Области `2 слова`
 и `3 слова` можно включить отдельно в трее.
 
+## Что нового в 0.1.215
+
+- добавлен Niri layout backend через прямой `niri-ipc`;
+- `auto` стал умнее: в KDE/Plasma VM с nested Niri он выбирает KDE, а не
+  ошибается по старому `NIRI_SOCKET`;
+- в GNOME и KDE tray добавлен ручной выбор среды раскладки:
+  `auto / KDE / X11 / GNOME / Niri`;
+- KDE tray показывает выбор среды в верхнем блоке меню и не закрывается после
+  смены backend;
+- Niri помечен как экспериментальный режим для реальной Niri-сессии, а не как
+  обязательный выбор для KDE + nested Niri.
+
 ## Что нового в 0.1.214
 
 - откатили небезопасную GNOME/uinput speed-оптимизацию, которая в терминале
@@ -144,7 +156,7 @@ cd ~/projects/lay && bash update.sh
 - **Автоподмена** применяет точные пользовательские правила.
 - **ptah_alexs** жёстко ставит раскладку для выбранных окон.
 - **Прямые RU/EN хоткеи** могут включать конкретную раскладку без toggle.
-- **KDE/X11 backend** есть, но покрытие меньше, чем у GNOME Wayland.
+- **KDE/Niri/X11 backend** есть, но покрытие меньше, чем у GNOME Wayland.
 
 Пример Smart-сценария:
 
@@ -164,6 +176,7 @@ good ntrcn -> good текст
   включит;
 - точная автоподмена выключена, пока пользователь сам её не включит;
 - основной вывод идёт через `uinput`;
+- среда раскладки выбирается автоматически: `layout_backend=auto`;
 - сетевые LLM/API не используются.
 
 Настройки хранятся в:
@@ -180,6 +193,8 @@ good ntrcn -> good текст
 
 - **GNOME Wayland** — основной и самый зрелый путь.
 - **KDE/Plasma Wayland** — поддерживается, но покрытие меньше.
+- **Niri Wayland** — есть backend через прямой `niri-ipc`, требует проверки
+  на реальной Niri-сессии.
 - **X11** — есть native XKB backend, проверяется как экспериментальный путь.
 - **Sway/Hyprland/другие WM** — пока не заявлены как поддержанные.
 - **Языки** — текущая цель только RU/EN.
@@ -188,10 +203,16 @@ good ntrcn -> good текст
 
 - GNOME: Shell extension, tray и DBus bridge для переключения раскладки;
 - KDE/Plasma: отдельный `lay-kde-tray` и переключение через `qdbus6`;
+- Niri: прямой IPC через Unix socket и crate `niri-ipc`;
 - X11: native XKB backend через `x11rb`.
 
-KDE и X11 уже рабочие, но они моложе GNOME-пути. Если что-то ломается в KDE,
-X11 или другой сборке Linux, лучше открыть issue с точным примером:
+По умолчанию используется `layout_backend=auto`. Обычно это правильный выбор:
+GNOME выбирает GNOME, KDE/Plasma выбирает KDE, X11 выбирает X11, настоящая Niri
+сессия выбирает Niri. Ручной выбор нужен только для диагностики или нестандартной
+вложенной среды.
+
+KDE, Niri и X11 моложе GNOME-пути. Если что-то ломается в другой сборке Linux,
+лучше открыть issue с точным примером:
 что набрано, что ожидалось, что получилось.
 
 ## Языки
@@ -298,7 +319,7 @@ Shift rescue невозможен. По умолчанию он не отпра�
 - что набрано;
 - что ожидалось;
 - что получилось;
-- GNOME/KDE/X11 и версия системы;
+- GNOME/KDE/Niri/X11 и версия системы;
 - включены ли `Помощь при наборе`, `Автоподмена`, `Smart`, LEM.
 
 Приватный текст перед отправкой лучше заменить на безопасный пример.
@@ -346,10 +367,10 @@ curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scr
 After installation, log out and log back in so the `input` group, `/dev/uinput`
 permissions, and desktop integration are picked up.
 
-Main tested target: GNOME Wayland with RU/EN layouts. KDE/Plasma Wayland is
-supported with a smaller compatibility matrix. X11 has a native XKB backend and
-is treated as experimental. Other layouts and non-RU/EN pairs are not supported
-yet.
+Main tested target: GNOME Wayland with RU/EN layouts. KDE/Plasma Wayland and
+Niri Wayland are supported with a smaller compatibility matrix. X11 has a native
+XKB backend and is treated as experimental. Other layouts and non-RU/EN pairs
+are not supported yet.
 
 Known limitations: `lay` works on a short typed tail, not arbitrary selected
 text or the whole document. Enter autocorrect and IME/preedit-style inline

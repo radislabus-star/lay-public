@@ -19,7 +19,7 @@ pub(super) fn active_layout_backend() -> LayoutBackend {
     let config = LayConfig::load();
     let backend = config.active_layout_backend();
     let configured = config.layout_backend.trim().to_ascii_lowercase();
-    if configured != "auto" || backend != LayoutBackend::Gnome {
+    if configured != "auto" {
         return backend;
     }
 

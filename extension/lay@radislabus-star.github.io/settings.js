@@ -4,8 +4,8 @@ import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.1.214';
-const APP_RELEASE_DATE = '2026-06-05';
+const APP_VERSION = '0.1.215';
+const APP_RELEASE_DATE = '2026-06-07';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 
 const OPTIONS = {
@@ -30,7 +30,7 @@ const OPTIONS = {
         ['caps-lock', 'CapsLock'],
     ],
     text_backend: [['uinput', 'uinput'], ['ime', 'IME'], ['auto', 'auto']],
-    layout_backend: [['auto', 'auto'], ['gnome', 'GNOME'], ['kde', 'KDE'], ['x11', 'X11']],
+    layout_backend: [['auto', 'auto'], ['gnome', 'GNOME'], ['kde', 'KDE'], ['x11', 'X11'], ['niri', 'Niri']],
 };
 
 const DEFAULTS = {
