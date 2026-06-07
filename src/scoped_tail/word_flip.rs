@@ -68,7 +68,7 @@ fn has_ascii_tail_after_cyrillic_prefix(tail: &[KeyEvent]) -> bool {
 }
 
 fn normalize_mixed_word_to_last_layout(word: &[KeyEvent]) -> Option<String> {
-    let target_is_ru = word.last()?.layout_is_ru;
+    let target_is_ru = dominant_mixed_word_layout(word)?;
     if word.iter().all(|event| event.layout_is_ru == target_is_ru) {
         return None;
     }
@@ -88,6 +88,22 @@ fn normalize_mixed_word_to_last_layout(word: &[KeyEvent]) -> Option<String> {
     push_with_overlap(&mut out, &run);
 
     (!out.is_empty()).then_some(out)
+}
+
+fn dominant_mixed_word_layout(word: &[KeyEvent]) -> Option<bool> {
+    let last = word.last()?.layout_is_ru;
+    let (ru, us) = word.iter().fold((0usize, 0usize), |(ru, us), event| {
+        if event.layout_is_ru {
+            (ru + 1, us)
+        } else {
+            (ru, us + 1)
+        }
+    });
+    if ru == us {
+        Some(last)
+    } else {
+        Some(ru > us)
+    }
 }
 
 fn push_with_overlap(out: &mut String, next: &str) {

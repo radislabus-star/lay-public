@@ -2,4 +2,5 @@
 three_completed_with_typo	ljgecntv\s,ele\s@us|ошибатся\s@ru	3	ljgecntv\s,ele\sошибатся\s	допустем\sбуду\sошибаться\s
 live_current_tail	Live\s@us|lbcnhb@us	2	Live\slbcnhb	Live\sдистри
 mixed_current_last_layout	Live\s@us|l@us|дис@ru	2	Live\slдис	Live\sдис
+mixed_single_word_dominant_ru	приве@ru|n@us	1	привеn	привет
 mixed_previous_ru_word	ПРОВ@ru|THM@us|\s@ru|ЦЩКВ@ru	2	ПРОВTHM\sЦЩКВ	ПРОВЕРЬ\sWORD

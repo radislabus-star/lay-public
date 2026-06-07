@@ -81,6 +81,15 @@ pub fn decide_scoped_tail_correction_with_options(
 ) -> Option<String> {
     let words = split_event_words(events)?;
     if words.len() < 2 {
+        if let [word] = words.as_slice() {
+            let original = map_original_events(events);
+            if word_has_mixed_layouts(word) {
+                let replacement = flip_word_events(word);
+                if replacement != original && !replacement.trim().is_empty() {
+                    return Some(replacement);
+                }
+            }
+        }
         return None;
     }
 
@@ -121,6 +130,13 @@ pub fn decide_scoped_tail_correction_with_options(
     } else {
         None
     }
+}
+
+fn word_has_mixed_layouts(word: &[KeyEvent]) -> bool {
+    let Some(first) = word.first().map(|event| event.layout_is_ru) else {
+        return false;
+    };
+    word.iter().any(|event| event.layout_is_ru != first)
 }
 
 pub(crate) fn rank_scoped_tail_lem_candidates(
