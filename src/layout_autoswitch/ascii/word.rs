@@ -48,6 +48,14 @@ pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
     if original_word.is_empty() {
         return None;
     }
+    if original_word
+        .chars()
+        .filter(|ch| ch.is_ascii_alphabetic())
+        .count()
+        < 2
+    {
+        return None;
+    }
     if is_user_protected_ascii_word(original_word) {
         return None;
     }

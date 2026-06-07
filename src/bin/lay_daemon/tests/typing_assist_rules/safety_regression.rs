@@ -77,4 +77,5 @@ fn replaces_visual_b_inside_russian_context() {
             row[1]
         );
     }
+    assert_eq!(apply_typing_assist_exact("b "), None);
 }

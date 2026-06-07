@@ -99,7 +99,7 @@ pub fn remember_promoted_replacement(from: &str, to: &str) {
 }
 
 fn replace_visual_b_in_context(original: &str, target: &str) -> Option<String> {
-    if !contains_visual_b_word(original) {
+    if !contains_visual_b_word(original) || !has_phrase_context(original) {
         return None;
     }
 
@@ -111,7 +111,15 @@ fn replace_visual_b_in_context(original: &str, target: &str) -> Option<String> {
     replace_visual_b_words(original, base)
 }
 
+fn has_phrase_context(text: &str) -> bool {
+    text.split_whitespace().take(2).count() >= 2
+}
+
 pub(crate) fn replace_visual_b_words(original: &str, base: &str) -> Option<String> {
+    if !has_phrase_context(original) {
+        return None;
+    }
+
     let original_segments = split_ws_segments(original);
     let base_segments = split_ws_segments(base);
     if original_segments.len() != base_segments.len() {

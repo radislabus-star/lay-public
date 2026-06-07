@@ -101,6 +101,8 @@ nft
 node
 npm
 npx
+off
+on
 pdf
 ping
 pip

@@ -82,6 +82,9 @@ fn english_layout_autoswitch_candidates(
 ) -> Vec<String> {
     let lower = converted.to_ascii_lowercase();
     let mut out = Vec::new();
+    if is_short_ascii_layout_token(&lower) && !is_common_en_technical_word(&lower) {
+        return out;
+    }
     if is_known_english_layout_autoswitch_word(&lower)
         || matches!(policy, EnglishLayoutPolicy::Experimental)
             && is_known_english_word_for_experimental_layout(&lower)
@@ -100,6 +103,10 @@ fn english_layout_autoswitch_candidates(
     }
 
     out
+}
+
+fn is_short_ascii_layout_token(word: &str) -> bool {
+    word.chars().filter(|ch| ch.is_ascii_alphabetic()).count() <= 2
 }
 
 fn is_known_english_word_for_experimental_layout(word: &str) -> bool {

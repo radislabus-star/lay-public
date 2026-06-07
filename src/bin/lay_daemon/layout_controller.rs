@@ -59,9 +59,13 @@ fn switch_to_gnome_layout(
     ibus_engine: &str,
     target_is_ru: bool,
 ) -> Result<(), String> {
+    let ime_backend = active_text_backend().should_try_ime();
     let activate_error = match gnome_dbus::call_activate_layout(layout_id) {
         Ok(true) => {
             if verify_gnome_shell_layout(target_is_ru) {
+                if !ime_backend {
+                    return Ok(());
+                }
                 None
             } else {
                 Some("ActivateLayout returned true but layout verify failed".to_string())
