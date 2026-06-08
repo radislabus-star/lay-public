@@ -151,9 +151,10 @@ impl DaemonLoopState {
     }
 
     fn active_text_context_identity(&self) -> Option<String> {
-        self.focused_window_identity
-            .as_ref()
-            .map(|window| format!("{window}:field:{}", self.field_context_epoch))
+        Some(match self.focused_window_identity.as_ref() {
+            Some(window) => format!("{window}:field:{}", self.field_context_epoch),
+            None => format!("field:{}", self.field_context_epoch),
+        })
     }
 
     fn should_save_current_text_context(&self) -> bool {
