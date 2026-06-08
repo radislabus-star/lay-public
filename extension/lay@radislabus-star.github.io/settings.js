@@ -4,33 +4,35 @@ import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.1.216';
+const APP_VERSION = '0.1.217';
 const APP_RELEASE_DATE = '2026-06-07';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
+const APP_ICON_NAME = 'input-keyboard-symbolic';
+const HEADER_ICON_SIZE = 16;
 
 const OPTIONS = {
-    correction_engine: [['replay', 'Replay'], ['smart', 'Smart']],
+    correction_engine: [['replay', 'Обычный'], ['smart', 'Умный']],
     replace_words: [['1', '1 слово'], ['2', '2 слова'], ['3', '3 слова']],
     correction_safety: [['strict', 'Осторожно'], ['normal', 'Норма'], ['experimental', 'Смелее']],
     trigger: [
-        ['double-lshift', 'Double Shift'],
-        ['double-ctrl', 'Ctrl x2'],
-        ['double-alt', 'Alt x2'],
+        ['double-lshift', 'Двойной Shift'],
+        ['double-ctrl', 'Двойной Ctrl'],
+        ['double-alt', 'Двойной Alt'],
         ['caps-lock', 'CapsLock'],
-        ['single-rshift', 'RShift'],
-        ['single-rctrl', 'RCtrl'],
-        ['single-ralt', 'RAlt'],
+        ['single-rshift', 'Правый Shift'],
+        ['single-rctrl', 'Правый Ctrl'],
+        ['single-ralt', 'Правый Alt'],
         ['single-pause', 'Pause'],
     ],
     force_key: [
-        ['single-rctrl', 'RCtrl'],
-        ['single-ralt', 'RAlt'],
-        ['single-rshift', 'RShift'],
+        ['single-rctrl', 'Правый Ctrl'],
+        ['single-ralt', 'Правый Alt'],
+        ['single-rshift', 'Правый Shift'],
         ['single-pause', 'Pause'],
         ['caps-lock', 'CapsLock'],
     ],
-    text_backend: [['uinput', 'uinput'], ['ime', 'IME'], ['auto', 'auto']],
-    layout_backend: [['auto', 'auto'], ['gnome', 'GNOME'], ['kde', 'KDE'], ['x11', 'X11'], ['niri', 'Niri']],
+    text_backend: [['uinput', 'Быстрый ввод'], ['ime', 'IME'], ['auto', 'Авто']],
+    layout_backend: [['auto', 'Авто'], ['gnome', 'GNOME'], ['kde', 'KDE'], ['x11', 'X11'], ['niri', 'Niri']],
 };
 
 const DEFAULTS = {
@@ -47,6 +49,7 @@ const DEFAULTS = {
     tap_max_ms: 200,
     shift_window_ms: 250,
     replace_words: 1,
+    typing_assist_words: 2,
     auto_replace: false,
     typing_assist: false,
     correction_safety: 'normal',
@@ -81,6 +84,7 @@ function normalize(cfg) {
         force_en_key: choice(cfg?.force_en_key, OPTIONS.force_key.map(([id]) => id), DEFAULTS.force_en_key),
         correction_safety: choice(cfg?.correction_safety, OPTIONS.correction_safety.map(([id]) => id), DEFAULTS.correction_safety),
         replace_words: number(cfg?.replace_words, 1, 3, DEFAULTS.replace_words),
+        typing_assist_words: number(cfg?.typing_assist_words, 1, 3, DEFAULTS.typing_assist_words),
         multi_tap_max_taps: number(cfg?.multi_tap_max_taps, 2, 4, DEFAULTS.multi_tap_max_taps),
         tap_max_ms: number(cfg?.tap_max_ms, 100, 500, DEFAULTS.tap_max_ms),
         shift_window_ms: number(cfg?.shift_window_ms, 150, 600, DEFAULTS.shift_window_ms),
@@ -154,14 +158,14 @@ class SettingsView {
             this.switchRow('Помощь при наборе', 'typing_assist', true),
             this.switchRow('Автоподмена', 'auto_replace', true),
             this.switchRow('Запоминать правки', 'learning_log', false),
-            this.switchRow('Авто-layout после пробела', 'auto_switch_layout', false),
+            this.switchRow('Автораскладка после пробела', 'auto_switch_layout', false),
             this.comboRow('Режим', 'correction_engine', OPTIONS.correction_engine, false),
             this.comboRow('Область', 'replace_words', OPTIONS.replace_words, false),
             this.comboRow('Осторожность', 'correction_safety', OPTIONS.correction_safety, true),
         ]), 0, 0, 1, 1);
         grid.attach(this.section('Управление', [
             this.comboRow('Триггер', 'trigger', OPTIONS.trigger, true),
-            this.switchRow('Multi-tap scope', 'multi_tap_scope', true),
+            this.switchRow('Несколько нажатий Shift', 'multi_tap_scope', true),
             this.switchRow('Исправлять перед Enter', 'enter_autocorrect', true),
             this.switchRow('Хоткеи RU / EN', 'force_layout_hotkeys', true),
             this.comboRow('RU хоткей', 'force_ru_key', OPTIONS.force_key, true),
@@ -177,7 +181,7 @@ class SettingsView {
             this.switchRow('LEM: 3 слова', 'lem_3_words', false),
             this.switchRow('Раскладка по окну', 'ptah_alexs_mode', false),
             this.comboRow('Канал ввода', 'text_backend', OPTIONS.text_backend, true),
-            this.comboRow('Desktop backend', 'layout_backend', OPTIONS.layout_backend, true),
+            this.comboRow('Среда раскладки', 'layout_backend', OPTIONS.layout_backend, true),
         ]), 1, 1, 1, 1);
 
         root.append(grid);
@@ -281,7 +285,7 @@ class SettingsView {
         inner.append(version);
 
         const description = new Gtk.Label({
-            label: 'RU/EN layout helper',
+            label: 'RU/EN-переключатель',
             xalign: 0,
             hexpand: true,
             wrap: true,
@@ -307,30 +311,47 @@ class SettingsView {
 
 const app = new Adw.Application({
     application_id: 'io.github.radislabus_star.LaySettings',
-    flags: Gio.ApplicationFlags.NON_UNIQUE,
 });
 
+let settingsWindow = null;
+
 app.connect('activate', () => {
+    if (settingsWindow) {
+        settingsWindow.present();
+        return;
+    }
+
     const win = new Adw.ApplicationWindow({
         application: app,
         title: 'Lay',
         default_width: 800,
         default_height: 980,
     });
+    win.set_icon_name(APP_ICON_NAME);
 
     const toolbar = new Adw.ToolbarView();
-    toolbar.add_top_bar(new Adw.HeaderBar({
+    const header = new Adw.HeaderBar({
         title_widget: new Gtk.Label({
             label: 'Lay',
             css_classes: ['heading'],
         }),
+    });
+    header.pack_start(new Gtk.Image({
+        icon_name: APP_ICON_NAME,
+        pixel_size: HEADER_ICON_SIZE,
     }));
+    toolbar.add_top_bar(header);
     toolbar.set_content(new Gtk.ScrolledWindow({
         hscrollbar_policy: Gtk.PolicyType.NEVER,
         vscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
         child: new SettingsView().build(),
     }));
     win.set_content(toolbar);
+    win.connect('close-request', () => {
+        settingsWindow = null;
+        return false;
+    });
+    settingsWindow = win;
     win.present();
 });
 

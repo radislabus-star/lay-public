@@ -10,6 +10,10 @@ impl LayConfig {
         self.replace_words.clamp(1, 3)
     }
 
+    pub fn active_typing_assist_words(&self) -> usize {
+        self.typing_assist_words.clamp(1, 3)
+    }
+
     pub fn active_multi_tap_max_taps(&self) -> u8 {
         self.multi_tap_max_taps.clamp(2, 4)
     }

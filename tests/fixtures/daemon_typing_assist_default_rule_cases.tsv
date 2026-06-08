@@ -6,6 +6,7 @@ personal_phrase	нуда\s	ну\sда\s	false
 personal_token	подлючись.\s	подключись.\s	false
 mixed_script_layout	ОБYJDB\s	ОБНОВИ\s	true
 layout_ru_to_en	ашду\s	file\s	true
+layout_ru_to_en	ьы\s	ms\s	true
 layout_en_to_ru	njkmrj\s	None	true
 cyrillic_case	МОжно\s	Можно\s	false
 hard_sign	Обьясни\s	Объясни\s	false

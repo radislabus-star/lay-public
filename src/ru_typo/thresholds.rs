@@ -1,4 +1,5 @@
 pub(super) const NGRAM_TYPO_REJECT_MARGIN: f64 = 0.25;
+pub(super) const NGRAM_NEIGHBOR_SUBSTITUTION_MARGIN: f64 = -5.0;
 pub(super) const NGRAM_TRANSPOSE_MARGIN: f64 = -8.0;
 pub(super) const NGRAM_DICT_MISSING_LETTER_MARGIN: f64 = -8.0;
 pub(super) const NGRAM_EXTRA_LETTER_MARGIN: f64 = 0.75;

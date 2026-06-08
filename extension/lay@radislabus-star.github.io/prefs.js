@@ -6,13 +6,15 @@ import Gtk from 'gi://Gtk';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.1.216';
+const APP_VERSION = '0.1.217';
 const APP_RELEASE_DATE = '2026-06-07';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
+const APP_ICON_NAME = 'input-keyboard-symbolic';
+const HEADER_ICON_SIZE = 16;
 
 const ENGINE_OPTIONS = [
-    ['replay', 'Replay'],
-    ['smart', 'Smart'],
+    ['replay', 'Обычный'],
+    ['smart', 'Умный'],
 ];
 const SCOPE_OPTIONS = [
     ['1', '1 слово'],
@@ -25,29 +27,29 @@ const SAFETY_OPTIONS = [
     ['experimental', 'Смелее'],
 ];
 const TRIGGER_OPTIONS = [
-    ['double-lshift', 'Double Shift'],
-    ['double-ctrl', 'Ctrl x2'],
-    ['double-alt', 'Alt x2'],
+    ['double-lshift', 'Двойной Shift'],
+    ['double-ctrl', 'Двойной Ctrl'],
+    ['double-alt', 'Двойной Alt'],
     ['caps-lock', 'CapsLock'],
-    ['single-rshift', 'RShift'],
-    ['single-rctrl', 'RCtrl'],
-    ['single-ralt', 'RAlt'],
+    ['single-rshift', 'Правый Shift'],
+    ['single-rctrl', 'Правый Ctrl'],
+    ['single-ralt', 'Правый Alt'],
     ['single-pause', 'Pause'],
 ];
 const FORCE_KEY_OPTIONS = [
-    ['single-rctrl', 'RCtrl'],
-    ['single-ralt', 'RAlt'],
-    ['single-rshift', 'RShift'],
+    ['single-rctrl', 'Правый Ctrl'],
+    ['single-ralt', 'Правый Alt'],
+    ['single-rshift', 'Правый Shift'],
     ['single-pause', 'Pause'],
     ['caps-lock', 'CapsLock'],
 ];
 const BACKEND_OPTIONS = [
-    ['uinput', 'uinput'],
+    ['uinput', 'Быстрый ввод'],
     ['ime', 'IME'],
-    ['auto', 'auto'],
+    ['auto', 'Авто'],
 ];
 const LAYOUT_BACKEND_OPTIONS = [
-    ['auto', 'auto'],
+    ['auto', 'Авто'],
     ['gnome', 'GNOME'],
     ['kde', 'KDE'],
     ['x11', 'X11'],
@@ -69,6 +71,7 @@ const DEFAULTS = {
     shift_window_ms: 250,
     debounce_ms: 50,
     replace_words: 1,
+    typing_assist_words: 2,
     auto_replace: false,
     typing_assist: false,
     correction_safety: 'normal',
@@ -105,6 +108,7 @@ function normalizeConfig(cfg) {
         force_en_key: normalizeChoice(cfg?.force_en_key, FORCE_KEY_OPTIONS.map(([id]) => id), DEFAULTS.force_en_key),
         correction_safety: normalizeChoice(cfg?.correction_safety, SAFETY_OPTIONS.map(([id]) => id), DEFAULTS.correction_safety),
         replace_words: normalizeNumber(cfg?.replace_words, 1, 3, DEFAULTS.replace_words),
+        typing_assist_words: normalizeNumber(cfg?.typing_assist_words, 1, 3, DEFAULTS.typing_assist_words),
         multi_tap_max_taps: normalizeNumber(cfg?.multi_tap_max_taps, 2, 4, DEFAULTS.multi_tap_max_taps),
         tap_max_ms: normalizeNumber(cfg?.tap_max_ms, 100, 500, DEFAULTS.tap_max_ms),
         shift_window_ms: normalizeNumber(cfg?.shift_window_ms, 150, 600, DEFAULTS.shift_window_ms),
@@ -160,7 +164,7 @@ class LayPrefsView {
             this._switchRow('Помощь при наборе', 'typing_assist', true),
             this._switchRow('Автоподмена', 'auto_replace', true),
             this._switchRow('Запоминать правки', 'learning_log', false),
-            this._switchRow('Авто-layout после пробела', 'auto_switch_layout', false),
+            this._switchRow('Автораскладка после пробела', 'auto_switch_layout', false),
             this._comboRow('Режим', 'correction_engine', ENGINE_OPTIONS, false),
             this._comboRow('Область', 'replace_words', SCOPE_OPTIONS, false),
             this._comboRow('Осторожность', 'correction_safety', SAFETY_OPTIONS, true),
@@ -168,7 +172,7 @@ class LayPrefsView {
 
         grid.attach(this._section('Управление', [
             this._comboRow('Триггер', 'trigger', TRIGGER_OPTIONS, true),
-            this._switchRow('Multi-tap scope', 'multi_tap_scope', true),
+            this._switchRow('Несколько нажатий Shift', 'multi_tap_scope', true),
             this._switchRow('Исправлять перед Enter', 'enter_autocorrect', true),
             this._switchRow('Хоткеи RU / EN', 'force_layout_hotkeys', true),
             this._comboRow('RU хоткей', 'force_ru_key', FORCE_KEY_OPTIONS, true),
@@ -180,7 +184,7 @@ class LayPrefsView {
             this._switchRow('LEM: 3 слова', 'lem_3_words', false),
             this._switchRow('Раскладка по окну', 'ptah_alexs_mode', false),
             this._comboRow('Канал ввода', 'text_backend', BACKEND_OPTIONS, true),
-            this._comboRow('Desktop backend', 'layout_backend', LAYOUT_BACKEND_OPTIONS, true),
+            this._comboRow('Среда раскладки', 'layout_backend', LAYOUT_BACKEND_OPTIONS, true),
         ]), 0, 1, 1, 1);
 
         grid.attach(this._section('Тайминг', [
@@ -336,7 +340,7 @@ class LayPrefsView {
             css_classes: ['heading'],
         }));
         inner.append(new Gtk.Label({
-            label: `Дата версии: ${APP_RELEASE_DATE}. RU/EN layout helper для GNOME, KDE, Wayland и X11.`,
+            label: `Дата версии: ${APP_RELEASE_DATE}. RU/EN-переключатель для GNOME, KDE, Wayland и X11.`,
             xalign: 0,
             wrap: true,
             css_classes: ['dim-label'],
@@ -356,10 +360,15 @@ export default class LayPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const page = new Adw.PreferencesPage();
         const group = new Adw.PreferencesGroup();
+        group.set_header_suffix(new Gtk.Image({
+            icon_name: APP_ICON_NAME,
+            pixel_size: HEADER_ICON_SIZE,
+        }));
         group.add(new LayPrefsView().widget());
         page.add(group);
         window.add(page);
         window.set_title('Lay');
+        window.set_icon_name?.(APP_ICON_NAME);
         window.set_default_size(800, 640);
     }
 }

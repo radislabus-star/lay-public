@@ -7,7 +7,9 @@ use std::collections::HashSet;
 
 use crate::candidate_ranker::choose_best_with_gap;
 use crate::russian_chars::is_russian_vowel;
-use crate::russian_lexicon::is_known_russian_word_or_form;
+use crate::russian_lexicon::{
+    is_known_russian_word_or_form, russian_dictionary, russian_short_dictionary,
+};
 use crate::russian_typo_candidates::inserted_char_position_for_missing_letter;
 use crate::text_case::apply_word_case;
 use crate::word_reader::is_cyrillic_word;
@@ -80,7 +82,22 @@ pub(crate) fn missing_letter_candidate_bonus(lower: &str, candidate: &str) -> f6
     };
     if is_russian_vowel(inserted) {
         4.0
+    } else if inserted == 'й' && looks_like_known_y_noun_form(candidate) {
+        12.0
+    } else if inserted == 'й' {
+        2.0
     } else {
         0.0
     }
+}
+
+fn looks_like_known_y_noun_form(candidate: &str) -> bool {
+    ["ом", "ем", "а", "у", "ы", "е"].into_iter().any(|suffix| {
+        let Some(stem) = candidate.strip_suffix(suffix) else {
+            return false;
+        };
+        stem.chars().count() >= 4
+            && stem.contains('й')
+            && (russian_dictionary().contains(stem) || russian_short_dictionary().contains(stem))
+    })
 }

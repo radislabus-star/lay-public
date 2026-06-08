@@ -6,7 +6,7 @@ use std::time::Instant;
 
 use super::super::super::physical_input_grab::PhysicalInputGrab;
 use super::super::super::{
-    active_auto_switch_layout, active_replace_words, apply_text_replacement_pipeline, log,
+    active_auto_switch_layout, active_typing_assist_words, apply_text_replacement_pipeline, log,
     switch_or_restore_layout_after_text_edit,
 };
 use super::super::{find_typing_assist_correction, TypingAssistOutcome};
@@ -88,9 +88,11 @@ pub(crate) fn apply_minimal_typing_replacement(
         started_at.elapsed().as_millis()
     ));
     if forwarded.spaces > 0 {
-        if let Some(next) =
-            find_typing_assist_correction(buf, active_auto_switch_layout(), active_replace_words())
-        {
+        if let Some(next) = find_typing_assist_correction(
+            buf,
+            active_auto_switch_layout(),
+            active_typing_assist_words(),
+        ) {
             let (next_original, next_replacement) =
                 (next.edit.original.clone(), next.edit.replacement.clone());
             return apply_minimal_typing_replacement(MinimalTypingReplacementContext {

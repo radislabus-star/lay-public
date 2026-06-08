@@ -56,6 +56,7 @@ pub struct LayConfig {
     pub shift_window_ms: u64,
     pub debounce_ms: u64,
     pub replace_words: usize,
+    pub typing_assist_words: usize,
     pub auto_replace: bool,
     pub typing_assist: bool,
     pub correction_safety: String,

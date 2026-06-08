@@ -11,6 +11,10 @@ pub(super) fn active_replace_words() -> usize {
     LayConfig::load().active_replace_words()
 }
 
+pub(super) fn active_typing_assist_words() -> usize {
+    LayConfig::load().active_typing_assist_words()
+}
+
 pub(super) fn active_correction_engine() -> CorrectionEngine {
     LayConfig::load().active_correction_engine()
 }

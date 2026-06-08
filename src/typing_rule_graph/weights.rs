@@ -4,6 +4,13 @@ use super::registry::find_typing_rule;
 use super::types::TypingRuleSafety;
 
 pub(crate) fn typing_rule_family_weight(id: &str, family: TypingCandidateFamily) -> f64 {
+    if matches!(
+        id,
+        super::ids::EXPERIMENTAL_LAYOUT_EN_TO_RU | super::ids::EXPERIMENTAL_LAYOUT_RU_TO_EN
+    ) {
+        return 112.0;
+    }
+
     find_typing_rule(id)
         .map(|rule| rule.family_weight)
         .unwrap_or_else(|| default_typing_rule_family_weight(family))

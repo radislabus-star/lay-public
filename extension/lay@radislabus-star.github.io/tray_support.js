@@ -6,28 +6,31 @@ export const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 export const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-export const APP_VERSION = '0.1.216';
-export const APP_DESCRIPTION = 'Alpha RU/EN layout helper: double Shift и помощь при наборе';
+export const APP_VERSION = '0.1.217';
+export const APP_DESCRIPTION = 'Альфа: RU/EN-переключатель по двойному Shift и помощь при наборе';
 export const APP_RELEASE_DATE = '2026-06-07';
 export const APP_LICENSE = 'MIT';
 export const APP_URL = 'https://github.com/radislabus-star/lay-public';
-export const APP_PLATFORM = 'Linux desktops: GNOME, KDE, Niri, Wayland, X11';
+export const APP_PLATFORM = 'Linux: GNOME, KDE, Niri, Wayland, X11';
 export const APP_GNOME_SUPPORT = 'GNOME 45-47, 50';
-export const MENU_WIDTH = 360;
+export const APP_ICON_NAME = 'input-keyboard-symbolic';
+export const PANEL_ICON_SIZE = 14;
+export const MENU_ICON_SIZE = 16;
+export const MENU_WIDTH = 280;
 export const DEFAULT_SCOPE_WORDS = 1;
 export const MIN_SCOPE_WORDS = 1;
 export const MAX_SCOPE_WORDS = 3;
 export const COMPACT_SUBTITLE_STYLE = 'font-weight:normal; font-size:76%; opacity:180;';
-export const SEGMENT_BUTTON_STYLE = 'padding:2px 8px; border-radius:6px; min-width:0;';
+export const SEGMENT_BUTTON_STYLE = 'padding:1px 5px; border-radius:6px; min-width:0;';
 export const LEARNING_LOG_TOOLTIP = 'Запоминать правки работает в два слоя:\n'
     + '• double-Shift пишет факт ручного исправления;\n'
-    + '• после auto/smart lay ждёт до 30 секунд,\n'
+    + '• после авто/умной замены lay ждёт до 30 секунд,\n'
     + '  удалишь ли ты результат и введёшь свой вариант.\n'
     + 'Если удалил и перепечатал — это считается твоей правкой.';
 export const AUTO_REPLACE_TOOLTIP = 'Когда включено: typo-правки после пробела и точные автоподмены.\n'
     + 'Когда выключено: остаётся только безопасный авто-layout EN/RU после пробела.';
 export const AUTO_SWITCH_TOOLTIP = 'После автоматической помощи при наборе lay оставляет активной\n'
-    + 'раскладку исправленного текста. Double Shift переключает раскладку всегда.';
+    + 'раскладку исправленного текста. Двойной Shift переключает раскладку всегда.';
 export const ENTER_AUTOCORRECT_TOOLTIP = 'Опционально: перед Enter lay пробует исправить текущий хвост\n'
     + 'и только потом отправляет Enter. По умолчанию выключено, потому что Enter часто отправляет сообщение.';
 export const LEM_2_TOOLTIP = 'LEM-арбитр для двух слов: сравнивает готовые варианты хвоста\n'
@@ -60,19 +63,19 @@ export const TYPING_RULES = [
     {id: 'glued_phrase', label: 'Склейка слов'},
 ];
 export const TRIGGER_OPTIONS = [
-    ['double-lshift', 'Double Shift'],
-    ['double-ctrl', 'Ctrl×2'],
-    ['double-alt', 'Alt×2'],
+    ['double-lshift', 'Двойной Shift'],
+    ['double-ctrl', 'Двойной Ctrl'],
+    ['double-alt', 'Двойной Alt'],
     ['caps-lock', 'CapsLock'],
-    ['single-rshift', 'RShift'],
-    ['single-rctrl', 'RCtrl'],
-    ['single-ralt', 'RAlt'],
+    ['single-rshift', 'Правый Shift'],
+    ['single-rctrl', 'Правый Ctrl'],
+    ['single-ralt', 'Правый Alt'],
     ['single-pause', 'Pause'],
 ];
 export const FORCE_KEY_OPTIONS = [
-    ['single-rctrl', 'RCtrl'],
-    ['single-ralt', 'RAlt'],
-    ['single-rshift', 'RShift'],
+    ['single-rctrl', 'Правый Ctrl'],
+    ['single-ralt', 'Правый Alt'],
+    ['single-rshift', 'Правый Shift'],
     ['single-pause', 'Pause'],
     ['caps-lock', 'CapsLock'],
 ];
@@ -87,7 +90,7 @@ export const SAFETY_STEPS = [
     {id: 'experimental', label: 'Смелее', value: 2},
 ];
 export const LAYOUT_BACKEND_OPTIONS = [
-    ['auto', 'auto'],
+    ['auto', 'Авто'],
     ['gnome', 'GNOME'],
     ['kde', 'KDE'],
     ['x11', 'X11'],
@@ -113,6 +116,7 @@ export const DEFAULTS = {
     shift_window_ms: 250,
     debounce_ms: 50,
     replace_words: DEFAULT_SCOPE_WORDS,
+    typing_assist_words: 2,
     auto_replace: false,
     typing_assist: false,
     correction_safety: 'normal',
@@ -171,6 +175,7 @@ export function normalizeConfig(cfg) {
         ...DEFAULTS,
         ...cfg,
         replace_words: normalizeScope(cfg?.replace_words),
+        typing_assist_words: normalizeScope(cfg?.typing_assist_words),
         correction_engine: normalizeChoice(cfg?.correction_engine, ['replay', 'smart'], DEFAULTS.correction_engine),
         layout_backend: normalizeChoice(cfg?.layout_backend, LAYOUT_BACKEND_OPTIONS.map(([id]) => id), DEFAULTS.layout_backend),
         text_backend: normalizeChoice(cfg?.text_backend, ['uinput', 'ime', 'auto'], DEFAULTS.text_backend),
@@ -337,13 +342,13 @@ export function summarizeRecentActions(actions) {
 }
 export function actionKindLabel(kind) {
     return {
-        'layout-replay': 'Double Shift',
-        'smart-text': 'Smart',
+        'layout-replay': 'Двойной Shift',
+        'smart-text': 'Умная замена',
         'auto-replace': 'Автоподмена',
         'typing-assist': 'Помощь',
         'enter-autocorrect': 'Enter',
-        'layout-text-fallback': 'Fallback',
-        'auto-undo': 'Undo',
+        'layout-text-fallback': 'Резерв',
+        'auto-undo': 'Откат',
     }[kind] ?? String(kind ?? 'action');
 }
 export function restartDaemon() {

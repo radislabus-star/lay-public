@@ -218,6 +218,14 @@ echo "✓ lay-ibus-engine → ~/.local/bin/lay-ibus-engine"
 echo "✓ lay-host-vm-guard → ~/.local/bin/lay-host-vm-guard"
 
 echo ""
+echo "=== desktop entry для окна настроек ==="
+mkdir -p "$HOME/.local/share/applications"
+sed "s|/home/ubu|$HOME|g" "$DIR/extension/lay-settings.desktop" \
+    > "$HOME/.local/share/applications/io.github.radislabus_star.LaySettings.desktop"
+update-desktop-database "$HOME/.local/share/applications" >/dev/null 2>&1 || true
+echo "✓ settings launcher: ~/.local/share/applications/io.github.radislabus_star.LaySettings.desktop"
+
+echo ""
 echo "=== optional IBus bridge ==="
 mkdir -p "$HOME/.local/share/ibus/component"
 IBUS_COMPONENT_XML="$HOME/.local/share/ibus/component/lay-ime.xml"

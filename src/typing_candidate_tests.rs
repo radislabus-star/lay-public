@@ -79,6 +79,15 @@ fn score_total_is_named_component_sum() {
 }
 
 #[test]
+fn experimental_layout_rules_score_above_normal_layout_rules() {
+    let normal = score_typing_candidate("z ", "я ", "layout_en_to_ru", 100);
+    let experimental = score_typing_candidate("z ", "я ", "experimental_layout_en_to_ru", 99);
+
+    assert!(experimental.family_weight > normal.family_weight);
+    assert!(experimental.total > normal.total);
+}
+
+#[test]
 fn score_components_are_finite_for_edge_inputs() {
     for (original, replacement, priority) in [
         ("", "", 0),

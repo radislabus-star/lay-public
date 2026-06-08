@@ -2,11 +2,12 @@ use crate::layout_autoswitch::{
     ascii_layout_prefix_can_be_letter, correct_confident_wrong_layout_ascii_word,
     correct_duplicate_layout_prefix_on_ascii_token, correct_wrong_layout_ascii_phrase,
     correct_wrong_layout_ascii_technical_token, correct_wrong_layout_ascii_word,
-    correct_wrong_layout_cyrillic_word, correct_wrong_layout_cyrillic_word_experimental,
+    correct_wrong_layout_ascii_word_experimental, correct_wrong_layout_cyrillic_word,
+    correct_wrong_layout_cyrillic_word_experimental,
 };
 use crate::phrase_reader::{
-    correct_contextual_glued_tail, correct_glued_russian_phrase, correct_moved_prefix_letter_pair,
-    correct_split_word_pair,
+    correct_contextual_glued_tail, correct_contextual_known_word_missing_letter,
+    correct_glued_russian_phrase, correct_moved_prefix_letter_pair, correct_split_word_pair,
 };
 use crate::ru_typo::{
     correct_adjacent_transposition, correct_cyrillic_word_case, correct_extra_letters,
@@ -91,6 +92,21 @@ pub(super) fn apply_layout_en_to_ru(ctx: &TypingRuleContext<'_>) -> Option<Strin
     }
 }
 
+pub(super) fn apply_layout_en_to_ru_experimental(ctx: &TypingRuleContext<'_>) -> Option<String> {
+    if !layout_auto_allowed(ctx) {
+        return None;
+    }
+    if let Some(replacement) = correct_wrong_layout_ascii_phrase(ctx.core)
+        .or_else(|| correct_wrong_layout_ascii_word_experimental(ctx.core))
+    {
+        Some(replacement)
+    } else if ascii_layout_prefix_can_be_letter(ctx.token_leading) {
+        None
+    } else {
+        apply_word_rule(ctx, correct_wrong_layout_ascii_word_experimental)
+    }
+}
+
 pub(super) fn apply_cyrillic_case(ctx: &TypingRuleContext<'_>) -> Option<String> {
     apply_word_rule(ctx, correct_cyrillic_word_case)
 }
@@ -124,7 +140,8 @@ pub(super) fn apply_extra_letters(ctx: &TypingRuleContext<'_>) -> Option<String>
 }
 
 pub(super) fn apply_missing_letter(ctx: &TypingRuleContext<'_>) -> Option<String> {
-    apply_word_rule(ctx, correct_missing_letter)
+    correct_contextual_known_word_missing_letter(ctx.core)
+        .or_else(|| apply_word_rule(ctx, correct_missing_letter))
 }
 
 pub(super) fn apply_glued_phrase(ctx: &TypingRuleContext<'_>) -> Option<String> {

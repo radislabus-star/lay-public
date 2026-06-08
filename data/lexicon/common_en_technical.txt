@@ -94,6 +94,7 @@ man
 md
 mkdir
 mount
+ms
 mv
 nano
 netstat

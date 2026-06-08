@@ -25,6 +25,7 @@ const VERB_FORM_ENDINGS_DATA: &str =
 
 pub(crate) fn is_known_russian_form(word: &str) -> bool {
     is_known_russian_suffix_form(word)
+        || is_known_russian_short_accusative_a_form(word)
         || is_known_russian_zero_ending_noun_form(word)
         || is_known_russian_ka_declension_form(word)
         || is_known_russian_prefixed_form(word)
@@ -125,6 +126,17 @@ fn is_known_russian_zero_ending_noun_form(word: &str) -> bool {
         let lemma = format!("{word}{suffix}");
         russian_dictionary().contains(&lemma) || russian_short_dictionary().contains(&lemma)
     })
+}
+
+fn is_known_russian_short_accusative_a_form(word: &str) -> bool {
+    let Some(stem) = word.strip_suffix('у') else {
+        return false;
+    };
+    if stem.chars().count() < 4 {
+        return false;
+    }
+    let lemma = format!("{stem}а");
+    russian_dictionary().contains(&lemma) || russian_short_dictionary().contains(&lemma)
 }
 
 fn is_known_russian_ka_declension_form(word: &str) -> bool {

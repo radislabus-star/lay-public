@@ -31,6 +31,7 @@ import {
 import {
     APP_DESCRIPTION,
     APP_GNOME_SUPPORT,
+    APP_ICON_NAME,
     APP_LICENSE,
     APP_PLATFORM,
     APP_RELEASE_DATE,
@@ -45,7 +46,9 @@ import {
     LEM_3_TOOLTIP,
     LAYOUT_BACKEND_OPTIONS,
     LEARNING_LOG_TOOLTIP,
+    MENU_ICON_SIZE,
     MENU_WIDTH,
+    PANEL_ICON_SIZE,
     PTAH_ALEXS_TOOLTIP,
     SAFETY_OPTIONS,
     SAFETY_STEPS,
@@ -97,7 +100,8 @@ class LayIndicator extends PanelMenu.Button {
             style: 'spacing:4px; padding:0 2px;',
         });
         this._panelIcon = new St.Icon({
-            icon_name: 'input-keyboard-symbolic',
+            icon_name: APP_ICON_NAME,
+            icon_size: PANEL_ICON_SIZE,
             style_class: 'system-status-icon',
             y_align: Clutter.ActorAlign.CENTER,
         });
@@ -160,13 +164,14 @@ class LayIndicator extends PanelMenu.Button {
         const item = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
         item.reactive = false;
         item.can_focus = false;
-        item.style = 'padding:5px 12px 4px 12px;';
+        item.style = 'padding:5px 8px 4px 8px;';
         const card = new St.BoxLayout({
             x_expand: true,
             style: 'spacing:8px;',
         });
         const icon = new St.Icon({
-            icon_name: 'input-keyboard-symbolic',
+            icon_name: APP_ICON_NAME,
+            icon_size: MENU_ICON_SIZE,
             y_align: Clutter.ActorAlign.CENTER,
             style_class: 'popup-menu-icon',
         });
@@ -216,7 +221,7 @@ class LayIndicator extends PanelMenu.Button {
     _behaviorMenu() {
         const item = new PopupMenu.PopupSubMenuMenuItem('Поведение', false);
         item.menu.addMenuItem(this._switchItem(
-            'Авто-layout после пробела',
+            'Автораскладка после пробела',
             'auto_switch_layout',
             false,
             AUTO_SWITCH_TOOLTIP
@@ -262,8 +267,8 @@ class LayIndicator extends PanelMenu.Button {
 
     _engineOptions() {
         return [
-            ['replay', 'Replay', () => this._setConfigValue('correction_engine', 'replay')],
-            ['smart', 'Smart', () => this._setConfigValue('correction_engine', 'smart')],
+            ['replay', 'Обычный', () => this._setConfigValue('correction_engine', 'replay')],
+            ['smart', 'Умный', () => this._setConfigValue('correction_engine', 'smart')],
         ];
     }
 
@@ -285,7 +290,7 @@ class LayIndicator extends PanelMenu.Button {
 
     _backendOptions() {
         return [
-            ['uinput', 'uinput', () => this._setConfigValue('text_backend', 'uinput', true)],
+            ['uinput', 'Быстрый', () => this._setConfigValue('text_backend', 'uinput', true)],
             ['ime', 'IME', () => this._setConfigValue('text_backend', 'ime', true)],
         ];
     }
@@ -299,7 +304,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _backendMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('Backend', false);
+        const item = new PopupMenu.PopupSubMenuMenuItem('Каналы ввода', false);
         item.menu.addMenuItem(this._segmentedRow('Раскладка', this._layoutBackendOptions(), this._layoutBackendButtons));
         item.menu.addMenuItem(this._segmentedRow('Ввод', this._backendOptions(), this._backendButtons));
         return item;
@@ -343,7 +348,7 @@ class LayIndicator extends PanelMenu.Button {
         });
         current.reactive = false;
         current.can_focus = false;
-        current.style = 'padding:3px 12px 2px 12px;';
+        current.style = 'padding:3px 8px 2px 8px;';
         current.add_child(this._ptahWindowLabel);
         item.menu.addMenuItem(current);
 
@@ -366,7 +371,7 @@ class LayIndicator extends PanelMenu.Button {
         const item = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
         item.reactive = false;
         item.can_focus = false;
-        item.style = 'padding:4px 12px;';
+        item.style = 'padding:4px 8px;';
         item.add_child(new St.Label({
             text: 'Текущее окно',
             y_align: Clutter.ActorAlign.CENTER,
@@ -387,7 +392,7 @@ class LayIndicator extends PanelMenu.Button {
         const item = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
         item.reactive = false;
         item.can_focus = false;
-        item.style = 'padding:3px 12px;';
+        item.style = 'padding:3px 8px;';
 
         const label = new St.Label({
             text: `${rule.label} → ${this._ptahLayoutLabel(rule.layout)}`,
@@ -404,7 +409,7 @@ class LayIndicator extends PanelMenu.Button {
         const item = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
         item.reactive = false;
         item.can_focus = false;
-        item.style = 'padding:3px 12px;';
+        item.style = 'padding:3px 8px;';
         item.add_child(new St.Label({
             text,
             style: COMPACT_SUBTITLE_STYLE,
@@ -654,7 +659,7 @@ class LayIndicator extends PanelMenu.Button {
         const item = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
         item.reactive = false;
         item.can_focus = false;
-        item.style = 'padding:5px 12px;';
+        item.style = 'padding:5px 8px;';
 
         const box = new St.BoxLayout({
             vertical: true,
@@ -691,7 +696,7 @@ class LayIndicator extends PanelMenu.Button {
                 can_focus: true,
                 toggle_mode: true,
                 style_class: 'button flat',
-                style: 'padding:2px 8px; border-radius:999px; min-width:0;',
+                style: 'padding:1px 5px; border-radius:999px; min-width:0;',
                 x_expand: true,
             });
             button.connect('clicked', () => this._setSafetyLevel(step.id));
@@ -721,7 +726,7 @@ class LayIndicator extends PanelMenu.Button {
         const item = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
         item.reactive = false;
         item.can_focus = false;
-        item.style = 'padding:4px 12px;';
+        item.style = 'padding:4px 8px;';
 
         const label = new St.Label({
             text: title,
@@ -760,7 +765,7 @@ class LayIndicator extends PanelMenu.Button {
         }
         item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         item.menu.addMenuItem(this._switchItem(
-            'Multi-tap scope',
+            'Несколько нажатий Shift',
             'multi_tap_scope',
             true
         ));
@@ -830,7 +835,7 @@ class LayIndicator extends PanelMenu.Button {
         const block = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
         block.reactive = false;
         block.can_focus = false;
-        block.style = 'padding:8px 12px 10px 12px;';
+        block.style = 'padding:8px 8px 10px 8px;';
 
         const box = new St.BoxLayout({
             vertical: true,
@@ -872,7 +877,7 @@ class LayIndicator extends PanelMenu.Button {
         });
         box.add_child(this._aboutStatsLabel);
         const link = new St.Label({
-            text: APP_URL,
+            text: 'GitHub проекта',
             reactive: true,
             can_focus: true,
             style: `${COMPACT_SUBTITLE_STYLE}; text-decoration: underline;`,
@@ -891,7 +896,7 @@ class LayIndicator extends PanelMenu.Button {
         const item = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
         item.reactive = false;
         item.can_focus = false;
-        item.style = 'padding:4px 12px;';
+        item.style = 'padding:4px 8px;';
         item.add_child(new St.Label({
             text: title,
             y_align: Clutter.ActorAlign.CENTER,
@@ -1061,11 +1066,11 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _triggerLabel(id) {
-        return optionLabel(TRIGGER_OPTIONS, id, 'Double Shift');
+        return optionLabel(TRIGGER_OPTIONS, id, 'Двойной Shift');
     }
 
     _forceKeyLabel(id) {
-        return optionLabel(FORCE_KEY_OPTIONS, id, 'RCtrl');
+        return optionLabel(FORCE_KEY_OPTIONS, id, 'Правый Ctrl');
     }
 
     _safetyLabel() {
@@ -1084,12 +1089,10 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _aboutConfigText() {
-        const autoSwitch = this._cfg.auto_switch_layout ? 'авто-layout' : 'layout вручную';
+        const autoSwitch = this._cfg.auto_switch_layout ? 'авто-раскладка' : 'раскладка вручную';
         const lem = `LEM ${this._cfg.lem_2_words ? '2' : '-'}${this._cfg.lem_3_words ? '/3' : ''}`;
-        const ptah = this._cfg.ptah_alexs_mode ? 'ptah on' : 'ptah off';
-        const force = this._cfg.force_layout_hotkeys ? 'RU/EN hotkeys' : 'RU/EN off';
-        const multi = this._cfg.multi_tap_scope ? 'multi-tap on' : 'multi-tap off';
-        return `${this._engineLabel()} · ${this._safetyLabel()} · ${this._cfg.replace_words} сл. · ${lem} · ${this._cfg.layout_backend}/${this._cfg.text_backend} · ${autoSwitch} · ${ptah} · ${force} · ${multi} · ${this._triggerLabel(this._cfg.trigger)}`;
+        const force = this._cfg.force_layout_hotkeys ? 'RU/EN хоткеи' : 'RU/EN выкл';
+        return `${this._engineLabel()} · ${this._safetyLabel()} · ${this._cfg.replace_words} сл. · ${lem} · ${autoSwitch} · ${force} · ${this._triggerLabel(this._cfg.trigger)}`;
     }
 
     _aboutStatsText() {
@@ -1118,7 +1121,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _engineLabel() {
-        return this._cfg.correction_engine === 'smart' ? 'Smart' : 'Replay';
+        return this._cfg.correction_engine === 'smart' ? 'Умный' : 'Обычный';
     }
 
     _refreshLayout() {

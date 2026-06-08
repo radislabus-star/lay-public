@@ -133,6 +133,29 @@ fn experimental_context_accepts_plain_ascii_to_ru_layout_words() {
         apply_typing_assist_with_pipeline("djn ", true, &pipeline),
         Some("вот ".to_string())
     );
+    assert_eq!(
+        apply_typing_assist_with_pipeline("z ", true, &pipeline),
+        Some("я ".to_string())
+    );
+    assert_eq!(
+        apply_typing_assist_with_pipeline("b ", true, &pipeline),
+        Some("и ".to_string())
+    );
+
+    let normal_pipeline = typing_assist_pipeline_for_context(
+        true,
+        CorrectionSafety::Normal,
+        &default_typing_assist_pipeline(),
+        "",
+    );
+    assert_eq!(
+        apply_typing_assist_with_pipeline("z ", true, &normal_pipeline),
+        None
+    );
+    assert_eq!(
+        apply_typing_assist_with_pipeline("b ", true, &normal_pipeline),
+        None
+    );
 }
 
 #[test]

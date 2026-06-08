@@ -10,6 +10,8 @@ mod contextual_tail;
 mod glued_phrase;
 #[path = "phrase_reader/guards.rs"]
 mod guards;
+#[path = "phrase_reader/known_word_missing.rs"]
+mod known_word_missing;
 #[path = "phrase_reader/moved_prefix.rs"]
 mod moved_prefix;
 #[path = "phrase_reader/split_pair.rs"]
@@ -17,6 +19,7 @@ mod split_pair;
 
 pub use contextual_tail::correct_contextual_glued_tail;
 pub use glued_phrase::correct_glued_russian_phrase;
+pub(crate) use known_word_missing::correct_contextual_known_word_missing_letter;
 pub use moved_prefix::correct_moved_prefix_letter_pair;
 pub use split_pair::correct_split_word_pair;
 

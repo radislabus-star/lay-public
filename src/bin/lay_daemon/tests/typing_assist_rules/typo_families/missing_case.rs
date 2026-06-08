@@ -48,7 +48,9 @@ fn typing_assist_normalizes_accidental_inner_uppercase() {
 #[test]
 fn typing_assist_single_letter_typos_only_use_neighbor_keys() {
     assert!(are_ru_keyboard_neighbors('з', 'х'));
+    assert!(are_ru_keyboard_neighbors('р', 'п'));
     assert!(!are_ru_keyboard_neighbors('о', 'ь'));
+    assert!(is_known_russian_word_or_form("кнопку"));
     for row in fixture_rows("daemon_typing_assist_neighbor_key_fix.tsv") {
         assert_eq!(row.len(), 2, "neighbor-key fixture must be TSV");
         assert_eq!(

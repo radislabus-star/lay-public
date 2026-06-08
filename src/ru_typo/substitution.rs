@@ -7,7 +7,7 @@ use crate::word_reader::is_cyrillic_word;
 use super::guards::looks_like_known_word_plus_one_letter_function_suffix;
 use super::keyboard::are_ru_keyboard_neighbors;
 use super::missing::missing_letter_candidate_exists;
-use super::thresholds::NGRAM_TYPO_REJECT_MARGIN;
+use super::thresholds::NGRAM_NEIGHBOR_SUBSTITUTION_MARGIN;
 
 pub(crate) fn correct_single_letter_substitution(word: &str) -> Option<String> {
     if word.chars().count() < 5 || !is_cyrillic_word(word) {
@@ -47,7 +47,7 @@ pub(crate) fn correct_single_letter_substitution(word: &str) -> Option<String> {
             if looks_like_known_word_plus_one_letter_function_suffix(&candidate) {
                 continue;
             }
-            if !ngram_allows_ru_candidate(&candidate, &lower, NGRAM_TYPO_REJECT_MARGIN) {
+            if !ngram_allows_ru_candidate(&candidate, &lower, NGRAM_NEIGHBOR_SUBSTITUTION_MARGIN) {
                 continue;
             }
 

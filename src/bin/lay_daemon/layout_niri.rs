@@ -49,7 +49,9 @@ pub(super) fn ping() -> Result<String, String> {
 fn fetch_layouts() -> Result<KeyboardLayouts, String> {
     match niri_send(Request::KeyboardLayouts)? {
         Response::KeyboardLayouts(layouts) => Ok(layouts),
-        other => Err(format!("Niri keyboard-layouts unexpected response: {other:?}")),
+        other => Err(format!(
+            "Niri keyboard-layouts unexpected response: {other:?}"
+        )),
     }
 }
 
@@ -70,19 +72,13 @@ fn current_layout_name(layouts: &KeyboardLayouts) -> Option<&str> {
 
 fn choose_layout_index(names: &[String], target_is_ru: bool) -> Option<usize> {
     if target_is_ru {
-        return names
-            .iter()
-            .position(|name| is_russian_layout_name(name));
+        return names.iter().position(|name| is_russian_layout_name(name));
     }
 
     names
         .iter()
         .position(|name| is_english_layout_name(name))
-        .or_else(|| {
-            names
-                .iter()
-                .position(|name| !is_russian_layout_name(name))
-        })
+        .or_else(|| names.iter().position(|name| !is_russian_layout_name(name)))
 }
 
 fn is_russian_layout_name(name: &str) -> bool {

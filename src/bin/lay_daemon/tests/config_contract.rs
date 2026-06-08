@@ -37,6 +37,27 @@ fn config_allows_three_word_scope() {
 }
 
 #[test]
+fn typing_assist_scope_is_independent_from_manual_scope() {
+    let default_cfg = LayConfig::default();
+    assert_eq!(default_cfg.active_replace_words(), 1);
+    assert_eq!(default_cfg.active_typing_assist_words(), 2);
+
+    let custom = LayConfig {
+        replace_words: 1,
+        typing_assist_words: 3,
+        ..LayConfig::default()
+    };
+    assert_eq!(custom.active_replace_words(), 1);
+    assert_eq!(custom.active_typing_assist_words(), 3);
+
+    let too_large = LayConfig {
+        typing_assist_words: 9,
+        ..LayConfig::default()
+    };
+    assert_eq!(too_large.active_typing_assist_words(), 3);
+}
+
+#[test]
 fn auto_switch_layout_is_enabled_by_default() {
     assert!(LayConfig::default().auto_switch_layout);
 }

@@ -39,6 +39,7 @@ CONFIG_DEFAULTS: dict[str, Any] = {
     "shift_window_ms": 250,
     "debounce_ms": 50,
     "replace_words": 1,
+    "typing_assist_words": 2,
     "auto_replace": False,
     "typing_assist": False,
     "correction_safety": "normal",
@@ -212,13 +213,13 @@ def load_recent_actions(limit: int = 5) -> list[dict[str, Any]]:
 
 def action_kind_label(kind: Any) -> str:
     return {
-        "layout-replay": "Double Shift",
-        "smart-text": "Smart",
+        "layout-replay": "Двойной Shift",
+        "smart-text": "Умная замена",
         "auto-replace": "Автоподмена",
         "typing-assist": "Помощь",
         "enter-autocorrect": "Enter",
-        "layout-text-fallback": "Fallback",
-        "auto-undo": "Undo",
+        "layout-text-fallback": "Резерв",
+        "auto-undo": "Откат",
     }.get(str(kind), str(kind or "action"))
 
 
@@ -317,7 +318,7 @@ def main() -> int:
                 "lay\n"
                 f"Демон: {'работает' if active else 'остановлен'}\n"
                 f"Режим: {self.engine_label(cfg)}\n"
-                f"Backend: {cfg.get('layout_backend', 'auto')}\n"
+                f"Среда: {self.layout_backend_label(cfg.get('layout_backend', 'auto'))}\n"
                 f"Область: {cfg.get('replace_words')} сл."
             )
 
@@ -401,7 +402,7 @@ def main() -> int:
                 trigger_group.addAction(action)
                 trigger_menu.addAction(action)
             trigger_menu.addSeparator()
-            self.add_bool_action("Multi-tap scope", "multi_tap_scope", cfg, trigger_menu)
+            self.add_bool_action("Несколько нажатий Shift", "multi_tap_scope", cfg, trigger_menu)
 
             force_menu = self.menu.addMenu("Прямой язык")
             self.add_bool_action("Хоткеи RU / EN", "force_layout_hotkeys", cfg, force_menu)
@@ -420,7 +421,7 @@ def main() -> int:
             backend_menu = advanced.addMenu("Вставка текста")
             backend_group = QActionGroup(backend_menu)
             backend_group.setExclusive(True)
-            for value, label in (("uinput", "uinput"), ("ime", "IME / IBus")):
+            for value, label in (("uinput", "Быстрый ввод"), ("ime", "IME / IBus")):
                 action = QAction(label, backend_menu)
                 action.setCheckable(True)
                 action.setChecked(str(cfg.get("text_backend", "uinput")) == value)
@@ -480,7 +481,7 @@ def main() -> int:
             group = QActionGroup(menu)
             group.setExclusive(True)
             for value, label in (
-                ("auto", "auto"),
+                ("auto", "Авто"),
                 ("kde", "KDE/Plasma"),
                 ("x11", "X11"),
                 ("gnome", "GNOME"),
@@ -510,9 +511,9 @@ def main() -> int:
             group = QActionGroup(menu)
             group.setExclusive(True)
             for value, title in (
-                ("single-rctrl", "RCtrl"),
-                ("single-ralt", "RAlt"),
-                ("single-rshift", "RShift"),
+                ("single-rctrl", "Правый Ctrl"),
+                ("single-ralt", "Правый Alt"),
+                ("single-rshift", "Правый Shift"),
                 ("single-pause", "Pause"),
                 ("caps-lock", "Caps Lock"),
             ):
@@ -576,7 +577,7 @@ def main() -> int:
                 None,
                 "О программе",
                 "<b>lay</b><br>"
-                "RU/EN layout helper: double Shift и помощь при наборе.<br><br>"
+                "RU/EN-переключатель по двойному Shift и помощь при наборе.<br><br>"
                 f"{lay_version()}<br>"
                 "Платформы: GNOME, KDE, Wayland, X11.<br>"
                 "KDE-меню использует тот же config и тот же lay-daemon.<br><br>"
@@ -618,22 +619,22 @@ def main() -> int:
         @staticmethod
         def force_key_label(key: Any) -> str:
             return {
-                "single-rctrl": "RCtrl",
-                "single-ralt": "RAlt",
-                "single-rshift": "RShift",
+                "single-rctrl": "Правый Ctrl",
+                "single-ralt": "Правый Alt",
+                "single-rshift": "Правый Shift",
                 "single-pause": "Pause",
                 "caps-lock": "Caps Lock",
-            }.get(str(key), "RCtrl")
+            }.get(str(key), "Правый Ctrl")
 
         @staticmethod
         def layout_backend_label(value: Any) -> str:
             return {
-                "auto": "auto",
+                "auto": "Авто",
                 "gnome": "GNOME",
                 "kde": "KDE/Plasma",
                 "x11": "X11",
-                "niri": "Niri exp",
-            }.get(str(value), "auto")
+                "niri": "Niri эксп.",
+            }.get(str(value), "Авто")
 
     lock_file = acquire_single_instance_lock()
     if lock_file is None:

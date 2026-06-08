@@ -35,6 +35,7 @@ impl Default for LayConfig {
             shift_window_ms: 250,
             debounce_ms: 50,
             replace_words: 1,
+            typing_assist_words: 2,
             auto_replace: false,
             typing_assist: false,
             correction_safety: "normal".into(),

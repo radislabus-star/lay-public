@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Lay Settings
+Name[ru]=Настройки Lay
+Comment=Configure Lay keyboard helper
+Comment[ru]=Настроить помощник клавиатуры Lay
+Exec=gjs -m /home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/settings.js
+Icon=input-keyboard
+Terminal=false
+Categories=Settings;
+StartupNotify=true
+StartupWMClass=io.github.radislabus_star.LaySettings

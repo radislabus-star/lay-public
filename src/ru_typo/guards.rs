@@ -2,9 +2,7 @@ use crate::data_lines::data_lines;
 use crate::keyboard::is_cyrillic_letter;
 use crate::phrase_lexicon::{is_known_russian_phrase_part, is_one_letter_russian_function_word};
 use crate::russian_chars::is_russian_vowel;
-use crate::russian_lexicon::{
-    is_known_russian_word_or_form, looks_like_russian_adjective_lemma, russian_dictionary,
-};
+use crate::russian_lexicon::{is_known_russian_word_or_form, looks_like_russian_adjective_lemma};
 use crate::word_reader::is_cyrillic_word;
 
 const PRESENT_OR_REFLEXIVE_ENDINGS_DATA: &str =
@@ -36,7 +34,7 @@ pub(super) fn looks_like_present_or_reflexive_verb(word: &str) -> bool {
 }
 
 pub(super) fn looks_like_known_word_plus_one_letter_function_suffix(candidate: &str) -> bool {
-    if russian_dictionary().contains(candidate) {
+    if is_known_russian_word_or_form(candidate) {
         return false;
     }
     for split_at in candidate.char_indices().skip(1).map(|(idx, _)| idx) {
