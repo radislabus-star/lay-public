@@ -1252,7 +1252,6 @@ export class LayImpl {
         this._service.enable();
         this._indicator = new LayIndicator(this._service);
         Main.panel.addToStatusArea('lay', this._indicator, 0, 'right');
-        log('[lay-extension] LayImpl enabled ✓');
     }
 
     disable() {

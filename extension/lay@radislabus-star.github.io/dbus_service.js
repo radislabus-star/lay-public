@@ -112,14 +112,12 @@ export class LayDaemonService {
         this._vdev = seat.create_virtual_device(Clutter.InputDeviceType.KEYBOARD_DEVICE);
         this._dbus = Gio.DBusExportedObject.wrapJSObject(DBUS_XML, this);
         this._dbus.export(Gio.DBus.session, DBUS_PATH);
-        log('[lay-extension] DBus enabled');
     }
 
     disable() {
         this._dbus?.unexport();
         this._dbus = null;
         this._vdev = null;
-        log('[lay-extension] DBus disabled');
     }
 
     Ping() {

@@ -49,7 +49,6 @@ export default class LayExtension extends Extension {
         import(`file://${this._tmpImpl}`).then(mod => {
             this._impl = new mod.LayImpl(this);
             this._impl.enable();
-            log('[lay-extension] impl loaded ✓');
         }).catch(e => log(`[lay-extension] loader import error: ${e}`));
     }
 
