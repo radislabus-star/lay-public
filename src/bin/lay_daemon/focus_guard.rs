@@ -51,10 +51,13 @@ fn poll_focused_window_state_after(
     last_poll: &mut Instant,
     min_interval: Duration,
 ) -> Option<FocusedWindowState> {
-    if active_layout_backend() != LayoutBackend::Gnome || last_poll.elapsed() < min_interval {
+    if last_poll.elapsed() < min_interval {
         return None;
     }
     *last_poll = Instant::now();
+    if active_layout_backend() != LayoutBackend::Gnome {
+        return None;
+    }
     focused_window_state()
 }
 

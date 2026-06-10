@@ -2,11 +2,10 @@ use crate::data_lines::data_lines;
 use crate::keyboard::is_cyrillic_letter;
 use crate::russian_chars::is_russian_vowel;
 use crate::russian_prefixes::derivational_prefixes;
-use std::collections::HashSet;
 
 use super::{
     russian_dictionary, russian_generated_form_dictionary, russian_short_dictionary,
-    russian_tiny_dictionary,
+    russian_tiny_dictionary, WordSet,
 };
 
 const ADJECTIVE_LEMMA_ENDINGS_DATA: &str =
@@ -60,7 +59,7 @@ pub(crate) fn is_known_russian_ka_oblique_form(word: &str) -> bool {
     false
 }
 
-pub(crate) fn is_known_cyrillic_hyphen_part(part: &str, dict: &HashSet<String>) -> bool {
+pub(crate) fn is_known_cyrillic_hyphen_part(part: &str, dict: &WordSet) -> bool {
     let lower = part.to_lowercase();
     dict.contains(&lower)
         || russian_generated_form_dictionary().contains(&lower)
@@ -175,7 +174,7 @@ fn is_known_russian_verb_form(word: &str) -> bool {
     })
 }
 
-fn is_known_short_accusative_a_form(word: &str, dict: &HashSet<String>) -> bool {
+fn is_known_short_accusative_a_form(word: &str, dict: &WordSet) -> bool {
     let Some(stem) = word.strip_suffix('у') else {
         return false;
     };

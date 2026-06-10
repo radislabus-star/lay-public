@@ -1,26 +1,89 @@
 use lay::config::{CorrectionEngine, LayConfig};
 use lay::desktop::LayoutBackend;
 use lay::text_backend::TextBackendPreference;
+#[cfg(not(test))]
+use std::path::PathBuf;
+#[cfg(not(test))]
+use std::sync::Mutex;
 use std::sync::OnceLock;
+#[cfg(not(test))]
+use std::time::{Duration, Instant, SystemTime};
 
 use super::{detect_auto_layout_backend_hint, ENTER_AUTOCORRECT_EXPERIMENT_ENV};
 
 static AUTO_LAYOUT_BACKEND_HINT: OnceLock<Option<LayoutBackend>> = OnceLock::new();
 
+#[cfg(not(test))]
+const CONFIG_CACHE_CHECK_INTERVAL: Duration = Duration::from_millis(250);
+
+#[cfg(not(test))]
+struct CachedLayConfig {
+    config: LayConfig,
+    modified: Option<SystemTime>,
+    checked_at: Instant,
+}
+
+#[cfg(not(test))]
+static CONFIG_CACHE: OnceLock<Mutex<CachedLayConfig>> = OnceLock::new();
+
+fn current_config() -> LayConfig {
+    #[cfg(test)]
+    {
+        LayConfig::load()
+    }
+    #[cfg(not(test))]
+    {
+        let cache = CONFIG_CACHE.get_or_init(|| {
+            Mutex::new(CachedLayConfig {
+                config: LayConfig::load(),
+                modified: config_modified_at(),
+                checked_at: Instant::now(),
+            })
+        });
+        let mut cache = cache
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
+        if cache.checked_at.elapsed() < CONFIG_CACHE_CHECK_INTERVAL {
+            return cache.config.clone();
+        }
+
+        cache.checked_at = Instant::now();
+        let modified = config_modified_at();
+        if modified != cache.modified {
+            cache.config = LayConfig::load();
+            cache.modified = modified;
+        }
+        cache.config.clone()
+    }
+}
+
+#[cfg(not(test))]
+fn config_modified_at() -> Option<SystemTime> {
+    std::fs::metadata(config_path())
+        .and_then(|metadata| metadata.modified())
+        .ok()
+}
+
+#[cfg(not(test))]
+fn config_path() -> PathBuf {
+    let home = std::env::var("HOME").unwrap_or_default();
+    PathBuf::from(home).join(lay::config::CONFIG_PATH)
+}
+
 pub(super) fn active_replace_words() -> usize {
-    LayConfig::load().active_replace_words()
+    current_config().active_replace_words()
 }
 
 pub(super) fn active_typing_assist_words() -> usize {
-    LayConfig::load().active_typing_assist_words()
+    current_config().active_typing_assist_words()
 }
 
 pub(super) fn active_correction_engine() -> CorrectionEngine {
-    LayConfig::load().active_correction_engine()
+    current_config().active_correction_engine()
 }
 
 pub(super) fn active_layout_backend() -> LayoutBackend {
-    let config = LayConfig::load();
+    let config = current_config();
     let backend = config.active_layout_backend();
     let configured = config.layout_backend.trim().to_ascii_lowercase();
     if configured != "auto" {
@@ -34,19 +97,19 @@ pub(super) fn active_layout_backend() -> LayoutBackend {
 }
 
 pub(super) fn active_text_backend() -> TextBackendPreference {
-    LayConfig::load().active_text_backend()
+    current_config().active_text_backend()
 }
 
 pub(super) fn active_auto_replace() -> bool {
-    LayConfig::load().auto_replace
+    current_config().auto_replace
 }
 
 pub(super) fn active_typing_assist() -> bool {
-    LayConfig::load().typing_assist
+    current_config().typing_assist
 }
 
 pub(super) fn active_enter_autocorrect() -> bool {
-    let cfg = LayConfig::load();
+    let cfg = current_config();
     active_enter_autocorrect_from_env(
         cfg.enter_autocorrect,
         std::env::var(ENTER_AUTOCORRECT_EXPERIMENT_ENV)
@@ -73,22 +136,22 @@ pub(super) fn active_enter_autocorrect_from_env(
 }
 
 pub(super) fn active_auto_switch_layout() -> bool {
-    LayConfig::load().auto_switch_layout
+    current_config().auto_switch_layout
 }
 
 pub(super) fn active_learning_log() -> bool {
-    LayConfig::load().learning_log
+    current_config().learning_log
 }
 
 pub(super) fn active_lem_enabled_for_scope(word_count: usize) -> bool {
-    LayConfig::load().lem_enabled_for_scope(word_count)
+    current_config().lem_enabled_for_scope(word_count)
 }
 
 #[cfg(not(test))]
 pub(super) fn active_typing_assist_pipeline_for_auto_replace(
     context: &str,
 ) -> Vec<lay::config::TypingAssistRuleConfig> {
-    let cfg = LayConfig::load();
+    let cfg = current_config();
     lay::typing_context::typing_assist_pipeline_for_context(
         cfg.auto_replace,
         cfg.active_correction_safety(),

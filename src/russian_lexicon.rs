@@ -5,11 +5,11 @@
 //! known instead of embedding dictionary logic in the typing pipeline.
 
 use crate::lexicon::{extend_common_ru_words, PROTECTED_WORDS_PATH, RU_HUNSPELL, RU_HUNSPELL_AFF};
-use std::collections::HashSet;
 use std::sync::OnceLock;
 
 mod forms;
 mod hunspell;
+mod word_set;
 
 pub(crate) use forms::{
     is_known_cyrillic_hyphen_part, is_known_russian_adverb_o_form,
@@ -18,6 +18,7 @@ pub(crate) use forms::{
 use hunspell::{
     load_hunspell_generated_forms_min_len, load_hunspell_words_min_len, load_word_list,
 };
+pub(crate) use word_set::WordSet;
 
 pub fn warm_up() {
     let _ = russian_dictionary().len();
@@ -26,8 +27,8 @@ pub fn warm_up() {
     let _ = russian_generated_form_dictionary().len();
 }
 
-pub fn russian_dictionary() -> &'static HashSet<String> {
-    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
+pub fn russian_dictionary() -> &'static WordSet {
+    static WORDS: OnceLock<WordSet> = OnceLock::new();
     WORDS.get_or_init(|| {
         let mut words = load_hunspell_words_min_len(RU_HUNSPELL, 5).unwrap_or_default();
         if let Some(home) = std::env::var_os("HOME") {
@@ -39,12 +40,12 @@ pub fn russian_dictionary() -> &'static HashSet<String> {
         #[cfg(test)]
         words.extend(crate::typing_assist_test_fixtures::russian_forms().map(str::to_string));
         extend_common_ru_words(&mut words);
-        words
+        WordSet::from_words(words)
     })
 }
 
-pub fn russian_short_dictionary() -> &'static HashSet<String> {
-    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
+pub fn russian_short_dictionary() -> &'static WordSet {
+    static WORDS: OnceLock<WordSet> = OnceLock::new();
     WORDS.get_or_init(|| {
         let words = load_hunspell_words_min_len(RU_HUNSPELL, 3).unwrap_or_default();
         #[cfg(test)]
@@ -52,19 +53,19 @@ pub fn russian_short_dictionary() -> &'static HashSet<String> {
             let mut words = words;
             words.extend(crate::typing_assist_test_fixtures::russian_forms().map(str::to_string));
             extend_common_ru_words(&mut words);
-            words
+            WordSet::from_words(words)
         }
         #[cfg(not(test))]
         {
             let mut words = words;
             extend_common_ru_words(&mut words);
-            words
+            WordSet::from_words(words)
         }
     })
 }
 
-pub fn russian_tiny_dictionary() -> &'static HashSet<String> {
-    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
+pub fn russian_tiny_dictionary() -> &'static WordSet {
+    static WORDS: OnceLock<WordSet> = OnceLock::new();
     WORDS.get_or_init(|| {
         let words = load_hunspell_words_min_len(RU_HUNSPELL, 2).unwrap_or_default();
         #[cfg(test)]
@@ -72,21 +73,24 @@ pub fn russian_tiny_dictionary() -> &'static HashSet<String> {
             let mut words = words;
             words.extend(crate::typing_assist_test_fixtures::russian_forms().map(str::to_string));
             extend_common_ru_words(&mut words);
-            words
+            WordSet::from_words(words)
         }
         #[cfg(not(test))]
         {
             let mut words = words;
             extend_common_ru_words(&mut words);
-            words
+            WordSet::from_words(words)
         }
     })
 }
 
-pub fn russian_generated_form_dictionary() -> &'static HashSet<String> {
-    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
+pub fn russian_generated_form_dictionary() -> &'static WordSet {
+    static WORDS: OnceLock<WordSet> = OnceLock::new();
     WORDS.get_or_init(|| {
-        load_hunspell_generated_forms_min_len(RU_HUNSPELL, RU_HUNSPELL_AFF, 4).unwrap_or_default()
+        WordSet::from_words(
+            load_hunspell_generated_forms_min_len(RU_HUNSPELL, RU_HUNSPELL_AFF, 4)
+                .unwrap_or_default(),
+        )
     })
 }
 
