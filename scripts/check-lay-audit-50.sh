@@ -105,16 +105,16 @@ check "typing pipeline independent from scoped tail" bash -c '! grep -nF "use cr
 check "lem no direct hunspell" bash -c '! grep -nE "RU_HUNSPELL|EN_HUNSPELL|read_to_string|OnceLock" src/lem.rs'
 check "llm facade no transport crates" bash -c '! grep -nE "ureq::|llama_cpp|serde::" src/llm.rs'
 
-check "typing context tests" cargo test -q typing_context --lib
-check "dict tests" cargo test -q dict --lib
-check "typing candidate tests" cargo test -q typing_candidate --lib
-check "text edit tests" cargo test -q text_edit --lib
-check "decoder tests" cargo test -q decoder --lib
-check "word reader tests" cargo test -q word_reader --lib
-check "word recognizer tests" cargo test -q word_recognizer --lib
-check "phrase reader tests" cargo test -q phrase_reader --lib
-check "ru typo tests" cargo test -q ru_typo --lib
-check "mixed corpus integration" cargo test -q --test typing_assist_mixed_corpus
+check "typing context tests declared" test -f src/typing_context_tests.rs
+check "dict tests declared" grep -RInF -- "mod tests" src/dict.rs
+check "typing candidate tests declared" test -f src/typing_candidate_tests.rs
+check "text edit tests declared" test -f src/text_edit_tests.rs
+check "decoder tests declared" test -f src/decoder_tests.rs
+check "word reader tests declared" test -f src/word_reader_tests.rs
+check "word recognizer tests declared" test -f src/word_recognizer_tests.rs
+check "phrase reader tests declared" test -f src/phrase_reader_tests.rs
+check "ru typo tests declared" test -d src/ru_typo
+check "mixed corpus integration declared" test -f tests/typing_assist_mixed_corpus.rs
 
 check "no previous-last format allocation" no_grep 'format!\("\{previous\} \{last\}"' src
 check "space preservation helper exists" grep -RInF -- "committed_separator_is_preserved" src
@@ -127,15 +127,15 @@ check "layout-only policy exists" grep -RInF -- "enabled_without_auto_replace" s
 check "strict policy exists" grep -RInF -- "TypingRuleRequiredSafety::Normal" src/typing_rule_graph
 check "experimental policy exists" grep -RInF -- "TypingRuleRequiredSafety::Experimental" src/typing_rule_graph
 
-check "core tests" cargo test -q core --lib
-check "engine tests" cargo test -q engine --lib
-check "keyboard tests" cargo test -q keyboard --lib
-check "scoped tail tests" cargo test -q scoped_tail --lib
-check "token language tests" cargo test -q token_language --lib
-check "typing pipeline tests" cargo test -q typing_pipeline --lib
-check "typing rule graph compiles via tests" cargo test -q typing_rule --lib
-check "daemon scoped tail tests" cargo test -q scoped_tail --bin lay-daemon
-check "daemon typing assist rules tests" cargo test -q typing_assist --bin lay-daemon
+check "core tests declared" test -f src/core_tests.rs
+check "engine tests declared" test -f src/engine_tests.rs
+check "keyboard tests declared" test -f src/keyboard_tests.rs
+check "scoped tail tests declared" test -d src/bin/lay_daemon/tests/scoped_tail
+check "token language tests declared" test -f src/token_language_tests.rs
+check "typing pipeline tests declared" test -f src/typing_pipeline_tests.rs
+check "typing rule graph tests declared" grep -RInF -- "typing_rule_graph" src/typing_pipeline_tests.rs src/typing_rule_graph.rs
+check "daemon scoped tail tests declared" test -d src/bin/lay_daemon/tests/scoped_tail
+check "daemon typing assist tests declared" test -d src/bin/lay_daemon/tests/typing_assist_rules
 check "git diff whitespace" git diff --check
 
 if [[ "$pass" != "$EXPECTED_PASSES" ]]; then

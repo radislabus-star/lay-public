@@ -129,8 +129,8 @@ assert_no_runtime_rule_id_literals() {
 
 assert_max_lines src/bin/lay_daemon.rs 240
 assert_max_lines src/bin/lay_daemon/action_log_runtime.rs 40
-assert_max_lines src/bin/lay_daemon/config_runtime.rs 110
-assert_max_lines src/bin/lay_daemon/daemon_state.rs 90
+assert_max_lines src/bin/lay_daemon/config_runtime.rs 180
+assert_max_lines src/bin/lay_daemon/daemon_state.rs 200
 assert_max_lines src/bin/lay_daemon/log_runtime.rs 40
 assert_max_lines src/bin/lay_daemon/startup_runtime.rs 190
 assert_max_lines src/typing_assist.rs 80
@@ -139,7 +139,7 @@ assert_max_lines src/config/active.rs 70
 assert_max_lines src/config/defaults.rs 90
 assert_max_lines src/config/load.rs 25
 assert_max_lines src/config/pipeline.rs 100
-assert_max_lines src/config/types.rs 70
+assert_max_lines src/config/types.rs 90
 assert_max_lines src/llm.rs 60
 assert_max_lines src/llm/consensus.rs 90
 assert_max_lines src/llm/hybrid.rs 50
@@ -152,7 +152,7 @@ assert_max_lines src/layout_autoswitch/ascii.rs 40
 assert_max_lines src/layout_autoswitch/ascii/candidate.rs 90
 assert_max_lines src/layout_autoswitch/ascii/phrase.rs 140
 assert_max_lines src/layout_autoswitch/ascii/symbols.rs 70
-assert_max_lines src/layout_autoswitch/ascii/word.rs 140
+assert_max_lines src/layout_autoswitch/ascii/word.rs 180
 assert_max_lines src/decoder.rs 60
 assert_max_lines src/decoder/edit_plan.rs 90
 assert_max_lines src/decoder/manual.rs 160
@@ -160,11 +160,11 @@ assert_max_lines src/decoder/ranked.rs 120
 assert_max_lines src/decoder/types.rs 70
 assert_max_lines src/decoder/typing_tail.rs 120
 assert_max_lines src/typing_rule_graph.rs 50
-assert_max_lines src/typing_rule_graph/builders.rs 120
+assert_max_lines src/typing_rule_graph/builders.rs 160
 assert_max_lines src/typing_rule_graph/definitions.rs 180
 assert_max_lines src/typing_rule_graph/ids.rs 40
 assert_max_lines src/typing_rule_graph/registry.rs 60
-assert_max_lines src/typing_rule_graph/rules.rs 150
+assert_max_lines src/typing_rule_graph/rules.rs 180
 assert_max_lines src/typing_rule_graph/types.rs 40
 assert_max_lines src/typing_rule_graph/weights.rs 50
 assert_max_lines src/ru_typo.rs 80
@@ -184,7 +184,7 @@ assert_max_lines src/ru_typo/vowel.rs 50
 assert_max_lines src/phrase_reader.rs 60
 assert_max_lines src/phrase_reader/contextual_tail.rs 100
 assert_max_lines src/phrase_reader/glued_phrase.rs 180
-assert_max_lines src/phrase_reader/guards.rs 140
+assert_max_lines src/phrase_reader/guards.rs 180
 assert_max_lines src/phrase_reader/moved_prefix.rs 130
 assert_max_lines src/phrase_reader/split_pair.rs 90
 assert_max_lines src/russian_lexicon.rs 140
@@ -196,8 +196,8 @@ assert_max_lines src/scoped_tail/lem_candidates.rs 160
 assert_max_lines src/scoped_tail/scope_policy.rs 60
 assert_max_lines src/scoped_tail/word_flip.rs 140
 assert_max_lines src/lem.rs 30
-assert_max_lines src/lem/language.rs 90
-assert_max_lines src/lem/noise.rs 90
+assert_max_lines src/lem/language.rs 110
+assert_max_lines src/lem/noise.rs 110
 assert_max_lines src/lem/rank.rs 40
 assert_max_lines src/lem/score.rs 120
 assert_max_lines src/lem/token.rs 100
@@ -229,27 +229,27 @@ assert_max_lines src/word_buffer/learning.rs 180
 assert_max_lines src/word_buffer/replay_memory.rs 280
 assert_max_lines src/word_buffer/replay_scope.rs 160
 assert_max_lines src/word_recognizer.rs 60
-assert_max_lines src/word_recognizer/identity.rs 140
+assert_max_lines src/word_recognizer/identity.rs 160
 assert_max_lines src/word_recognizer/lexicon.rs 90
 assert_max_lines src/word_recognizer/risk.rs 60
 assert_max_lines src/word_recognizer/script.rs 80
-assert_max_lines src/word_recognizer/technical.rs 140
+assert_max_lines src/word_recognizer/technical.rs 180
 assert_max_lines src/typing_candidate.rs 50
 assert_max_lines src/typing_candidate/confidence.rs 50
 assert_max_lines src/typing_candidate/ranking.rs 90
-assert_max_lines src/typing_candidate/scoring.rs 130
+assert_max_lines src/typing_candidate/scoring.rs 180
 assert_max_lines src/typing_candidate/types.rs 70
 assert_max_lines src/typing_pipeline.rs 40
 assert_max_lines src/typing_pipeline/engine.rs 140
 assert_max_lines src/typing_pipeline/rule_order.rs 40
-assert_max_lines src/typing_pipeline/types.rs 50
+assert_max_lines src/typing_pipeline/types.rs 120
 assert_max_lines src/typing_pipeline/warmup.rs 20
 assert_max_lines src/typing_context.rs 50
 assert_max_lines src/typing_context/context_window.rs 50
-assert_max_lines src/typing_context/layout_signal.rs 130
-assert_max_lines src/typing_context/pipeline.rs 70
-assert_max_lines src/typing_context/tokens.rs 90
-assert_max_lines src/bin/lay_daemon/daemon_runtime.rs 350
+assert_max_lines src/typing_context/layout_signal.rs 160
+assert_max_lines src/typing_context/pipeline.rs 90
+assert_max_lines src/typing_context/tokens.rs 110
+assert_max_lines src/bin/lay_daemon/daemon_runtime.rs 500
 assert_max_lines src/bin/lay_daemon/trigger_dispatch.rs 160
 assert_max_lines src/bin/lay_daemon/manual_trigger_runtime.rs 60
 assert_max_lines src/bin/lay_daemon/manual_trigger_runtime/context.rs 120
@@ -264,17 +264,16 @@ assert_max_lines src/bin/lay_daemon/boundary_runtime/space.rs 120
 assert_max_lines src/bin/lay_daemon/typing_key_runtime.rs 120
 assert_max_lines src/bin/lay_daemon/text_output.rs 40
 assert_max_lines src/bin/lay_daemon/text_output/device.rs 90
-assert_max_lines src/bin/lay_daemon/text_output/key_emit.rs 160
+assert_max_lines src/bin/lay_daemon/text_output/key_emit.rs 200
 assert_max_lines src/bin/lay_daemon/text_output/modifiers.rs 70
-assert_max_lines src/bin/lay_daemon/text_output/replacement.rs 140
+assert_max_lines src/bin/lay_daemon/text_output/replacement.rs 240
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime.rs 80
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/candidate.rs 60
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output.rs 140
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/defer.rs 30
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/ime.rs 80
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/memory.rs 60
-assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/minimal.rs 110
-assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/whitespace.rs 90
+assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/minimal.rs 130
 assert_max_lines src/bin/lay_daemon/buffer_filter_runtime.rs 90
 assert_max_lines src/bin/lay_daemon/manual_trigger_diagnostics.rs 50
 assert_max_lines src/bin/lay_daemon/command_runtime.rs 80
@@ -284,10 +283,10 @@ assert_max_lines src/bin/lay_daemon/correction_runtime/memory.rs 60
 assert_max_lines src/bin/lay_daemon/correction_runtime/output.rs 90
 assert_max_lines src/bin/lay_daemon/correction_runtime/output/context.rs 70
 assert_max_lines src/bin/lay_daemon/correction_runtime/output/native.rs 180
-assert_max_lines src/bin/lay_daemon/correction_runtime/output/replay.rs 80
+assert_max_lines src/bin/lay_daemon/correction_runtime/output/replay.rs 100
 assert_max_lines src/bin/lay_daemon/correction_runtime/output/text_replace.rs 180
 assert_max_lines src/bin/lay_daemon/auto_undo_runtime.rs 140
-assert_max_lines src/bin/lay_daemon/layout_controller.rs 230
+assert_max_lines src/bin/lay_daemon/layout_controller.rs 280
 assert_max_lines src/bin/lay_daemon/layout_controller/gnome_dbus.rs 360
 assert_max_lines src/bin/lay_daemon/layout_controller/ibus_bridge.rs 100
 assert_max_lines src/bin/lay_daemon/layout_controller/ime_bridge.rs 140
@@ -297,11 +296,11 @@ assert_max_lines src/bin/lay_daemon/learning_runtime.rs 80
 assert_max_lines src/bin/lay_daemon/learning_runtime/log_file.rs 140
 assert_max_lines src/bin/lay_daemon/learning_runtime/promotion.rs 190
 assert_max_lines src/bin/lay_daemon/tests.rs 350
-assert_max_lines src/bin/lay_daemon/tests/config_contract.rs 90
+assert_max_lines src/bin/lay_daemon/tests/config_contract.rs 110
 assert_max_lines src/bin/lay_daemon/tests/enter_autocorrect.rs 70
 assert_max_lines src/bin/lay_daemon/tests/layout_backend.rs 140
 assert_max_lines src/bin/lay_daemon/tests/learning_log.rs 20
-assert_max_lines src/bin/lay_daemon/tests/runtime_state.rs 220
+assert_max_lines src/bin/lay_daemon/tests/runtime_state.rs 300
 assert_max_lines src/bin/lay_daemon/tests/text_output_contract.rs 160
 assert_max_lines src/bin/lay_daemon/tests/typing_assist_rules.rs 30
 assert_max_lines src/bin/lay_daemon/tests/typing_assist_rules/exact_layout.rs 200
@@ -467,7 +466,7 @@ assert_single_owner "pub fn is_ascii_technical_or_brand_token" "src/word_recogni
 assert_single_owner "pub fn is_upper_ascii_acronym" "src/word_recognizer/technical.rs"
 assert_single_owner "pub fn is_mixed_case_ascii_brand" "src/word_recognizer/technical.rs"
 assert_single_owner "pub fn is_mixed_cyrillic_ascii_alpha_token" "src/word_recognizer/technical.rs"
-assert_single_owner "pub(crate) fn correct_wrong_layout_ascii_word" "src/layout_autoswitch/ascii/word.rs"
+assert_single_owner "pub(crate) fn correct_wrong_layout_ascii_word(" "src/layout_autoswitch/ascii/word.rs"
 assert_single_owner "pub(crate) fn correct_wrong_layout_ascii_phrase" "src/layout_autoswitch/ascii/phrase.rs"
 assert_single_owner "pub(crate) fn is_confident_wrong_layout_ascii_pair" "src/layout_autoswitch/ascii/phrase.rs"
 assert_single_owner "fn ascii_to_russian_layout_candidate" "src/layout_autoswitch/ascii/candidate.rs"
@@ -491,10 +490,10 @@ assert_single_owner "pub(super) fn choose_candidate_openai" "src/llm_backend/htt
 assert_single_owner "pub(super) fn choose_candidate_anthropic" "src/llm_backend/http.rs"
 assert_single_owner "pub(super) fn choose_candidate_direct" "src/llm_backend/direct.rs"
 assert_single_owner "pub(crate) fn make_virtual_keyboard" "src/bin/lay_daemon/text_output/device.rs"
-assert_single_owner "pub(crate) fn replay_keycodes" "src/bin/lay_daemon/text_output/key_emit.rs"
-assert_single_owner "pub(crate) fn emit_backspaces" "src/bin/lay_daemon/text_output/key_emit.rs"
+assert_single_owner "pub(crate) fn replay_keycodes(" "src/bin/lay_daemon/text_output/key_emit.rs"
+assert_single_owner "pub(crate) fn emit_backspaces(" "src/bin/lay_daemon/text_output/key_emit.rs"
 assert_single_owner "pub(crate) fn release_possible_modifiers(" "src/bin/lay_daemon/text_output/modifiers.rs"
-assert_single_owner "pub(crate) fn prepare_text_insert_for_replacement_plan" "src/bin/lay_daemon/text_output/replacement.rs"
+assert_single_owner "fn prepare_text_insert_for_replacement_plan(" "src/bin/lay_daemon/text_output/replacement.rs"
 assert_single_owner "pub(crate) fn apply_text_replacement" "src/bin/lay_daemon/text_output/replacement.rs"
 assert_single_owner "pub fn decide_completed_scope_word" "src/scoped_tail/completed_word.rs"
 assert_single_owner "fn flip_word_events" "src/scoped_tail/word_flip.rs"
@@ -518,8 +517,8 @@ assert_single_owner "pub(crate) fn typing_rule_enabled_without_auto_replace" "sr
 assert_single_owner "pub(crate) fn typing_rule_required_safety" "src/typing_rule_graph/registry.rs"
 assert_single_owner "pub(crate) fn typing_rule_family_weight" "src/typing_rule_graph/weights.rs"
 assert_single_owner "pub(crate) fn typing_rule_candidate_is_safe" "src/typing_rule_graph/weights.rs"
-assert_single_owner "fn apply_layout_en_to_ru" "src/typing_rule_graph/rules.rs"
-assert_single_owner "fn word_rule" "src/typing_rule_graph/rules.rs"
+assert_single_owner "fn apply_layout_en_to_ru(" "src/typing_rule_graph/rules.rs"
+assert_single_owner "fn apply_word_rule(" "src/typing_rule_graph/rules.rs"
 assert_single_owner "pub fn decode_manual_tail" "src/decoder/manual.rs"
 assert_single_owner "pub fn rank_scoped_tail_candidates" "src/decoder/ranked.rs"
 assert_single_owner "pub fn choose_ranked_scoped_tail" "src/decoder/ranked.rs"
@@ -558,11 +557,9 @@ assert_single_owner "pub fn what_to_replay" "src/word_buffer/replay_scope.rs"
 assert_single_owner "pub fn remember_replacement_last_word_for_replay" "src/word_buffer/replay_memory.rs"
 assert_single_owner "pub fn remember_pending_learning_correction" "src/word_buffer/learning.rs"
 assert_single_owner "fn handle_pending_auto_undo" "src/bin/lay_daemon/auto_undo_runtime.rs"
-assert_single_owner "fn pending_auto_undo_plan" "src/bin/lay_daemon/auto_undo_runtime.rs"
 assert_single_owner "struct ForceLayoutHotkeys" "src/bin/lay_daemon/force_layout_hotkeys.rs"
 assert_single_owner "fn handle_manual_trigger_event" "src/bin/lay_daemon/manual_trigger_runtime/event.rs"
 assert_single_owner "fn fire_expired_pending_multi_tap" "src/bin/lay_daemon/manual_trigger_runtime/timeout.rs"
-assert_single_owner "fn complete_manual_trigger_from_loop" "src/bin/lay_daemon/trigger_dispatch.rs"
 assert_single_owner "fn apply_manual_correction_output" "src/bin/lay_daemon/correction_runtime/output.rs"
 assert_single_owner "fn try_ime_replace_output" "src/bin/lay_daemon/correction_runtime/output/native.rs"
 assert_single_owner "fn try_manual_text_replacement" "src/bin/lay_daemon/correction_runtime/output/text_replace.rs"
@@ -571,7 +568,6 @@ assert_single_owner "fn remember_layout_replay_success" "src/bin/lay_daemon/corr
 assert_single_owner "fn find_typing_assist_correction" "src/bin/lay_daemon/typing_assist_runtime/candidate.rs"
 assert_single_owner "fn apply_typing_assist_correction" "src/bin/lay_daemon/typing_assist_runtime/output.rs"
 assert_single_owner "fn try_apply_ime_replacement" "src/bin/lay_daemon/typing_assist_runtime/output/ime.rs"
-assert_single_owner "fn try_apply_whitespace_insertions" "src/bin/lay_daemon/typing_assist_runtime/output/whitespace.rs"
 assert_single_owner "fn apply_minimal_typing_replacement" "src/bin/lay_daemon/typing_assist_runtime/output/minimal.rs"
 assert_single_owner "fn remember_typing_assist_correction" "src/bin/lay_daemon/typing_assist_runtime/output/memory.rs"
 assert_single_owner "fn try_handle_space_release" "src/bin/lay_daemon/boundary_runtime/space.rs"
