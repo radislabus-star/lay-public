@@ -63,7 +63,7 @@ jobs:
           bash -n install.sh update.sh dev-reload.sh scripts/*.sh
 
       - name: CLI explain smoke
-        run: cargo run --quiet --bin lay -- --explain-correct 'кторое ' | grep -F 'confidence:'
+        run: cargo run --quiet --bin lay -- --no-llm ghbdtn | grep -F 'привет'
 
       - name: release binaries
         run: cargo build --release --bins

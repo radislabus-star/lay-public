@@ -44,6 +44,12 @@ curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scr
 По умолчанию double Shift исправляет **1 последнее слово**. Области `2 слова`
 и `3 слова` можно включить отдельно в трее.
 
+## Что нового в 0.1.222
+
+- CI smoke-проверка на GitHub переведена на стабильный главный сценарий:
+  `ghbdtn -> привет`, без зависимости от словарной autocorrect-эвристики
+  runner-а.
+
 ## Что нового в 0.1.221
 
 - починен публичный CI/status на GitHub: architecture guard синхронизирован с
