@@ -178,6 +178,7 @@ vim
 vpn
 wait
 wc
+wechat
 wget
 which
 while
