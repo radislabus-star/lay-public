@@ -116,6 +116,10 @@ pub(super) fn should_keep_standalone_pair_with_short_right(left: &str, right: &s
     right_len <= 3 && is_known_russian_phrase_part(left) && is_known_russian_phrase_part(right)
 }
 
+pub(super) fn should_keep_standalone_known_pair(left: &str, right: &str) -> bool {
+    is_known_russian_phrase_part(left) && is_known_russian_phrase_part(right)
+}
+
 pub(super) fn should_keep_standalone_pair_with_function_left(left: &str, right: &str) -> bool {
     if is_single_letter_russian_pronoun(left) {
         return false;
