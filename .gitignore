@@ -12,3 +12,5 @@ __pycache__/
 /corpus/*.arpa
 /corpus/*.bin
 /corpus/*.model
+/data/neural_arbiter/dataset.tsv
+/docs/research/neural-arbiter-results.md

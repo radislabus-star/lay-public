@@ -17,5 +17,6 @@ single_letter_substitution	плозо\s	плохо\s	false
 verb_ending	прорватся\s	прорваться\s	false
 vowel_confusion	помагу\s	помогу\s	false
 extra_letters	кнокопками\s	кнопками\s	false
+extra_letters	ыпроверить\s	проверить\s	false
 missing_letter	фактческим\s	фактическим\s	false
 glued_phrase	когдая\s	когда\sя\s	false

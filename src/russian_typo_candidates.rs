@@ -65,7 +65,7 @@ pub(crate) fn generate_extra_letter_candidates(lower: &str) -> Vec<String> {
     let mut candidates = Vec::new();
 
     for idx in 0..chars.len() {
-        if is_russian_vowel(chars[idx]) {
+        if idx != 0 && is_russian_vowel(chars[idx]) {
             continue;
         }
         let mut candidate = String::with_capacity(lower.len());

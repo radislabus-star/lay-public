@@ -1,0 +1,56 @@
+# original	expected	reason
+# Layout rescue: English typed while RU layout is active.
+пше\s	git\s	ru_layout_to_technical_en
+реьд\s	html\s	ru_layout_to_technical_en
+фзш\s	api\s	ru_layout_to_technical_en
+мзт\s	vpn\s	ru_layout_to_technical_en
+зщке\s	port\s	ru_layout_to_technical_en
+згыр\s	push\s	ru_layout_to_technical_en
+цусрфе\s	wechat\s	ru_layout_to_technical_en
+еудупкфь\s	telegram\s	ru_layout_to_technical_en
+сркщьу\s	chrome\s	ru_layout_to_technical_en
+ашду\s	file\s	ru_layout_to_technical_en
+
+# Layout rescue: Russian typed while EN layout is active.
+ghbdtn\s	привет\s	en_layout_to_ru
+djn\s	вот\s	en_layout_to_ru
+lfdfq\s	давай\s	en_layout_to_ru
+vj;tn\s	может\s	en_layout_to_ru
+ckjdf\s	слова\s	en_layout_to_ru
+hf,jnftn\s	работает\s	en_layout_to_ru
+'nj\s	это\s	en_layout_to_ru
+yt\s	не\s	en_layout_to_ru
+vjq\s	мой\s	en_layout_to_ru
+ns\s	ты\s	en_layout_to_ru
+
+# Keep valid mixed technical text.
+git\sstatus\s	git\sstatus\s	technical_keep
+html\sapi\s	html\sapi\s	technical_keep
+vpn\sport\s	vpn\sport\s	technical_keep
+file\sjson\s	file\sjson\s	technical_keep
+telegram\schrome\s	telegram\schrome\s	technical_keep
+wechat\sfile\s	wechat\sfile\s	technical_keep
+
+# Keep valid Russian phrases that could be glued into real or plausible words.
+у\sнас\sесть\s	у\sнас\sесть\s	keep_russian_phrase
+нас\sесть\s	нас\sесть\s	keep_russian_phrase
+я\sтут\s	я\sтут\s	keep_russian_phrase
+мы\sтам\s	мы\sтам\s	keep_russian_phrase
+слов\sи\s	слов\sи\s	keep_russian_phrase
+по\sделу\s	по\sделу\s	keep_russian_phrase
+
+# Split glued Russian words/phrases.
+у\sнасесть\s	у\sнас\sесть\s	split_glued_phrase
+когдая\s	когда\sя\s	split_glued_phrase
+онаубыточная\s	она\sубыточная\s	split_glued_phrase
+ониготовы\s	они\sготовы\s	split_glued_phrase
+тоесамое\s	тоже\sсамое\s	split_glued_phrase
+прблематут\s	проблема\sтут\s	split_glued_phrase
+
+# Typo repair.
+рабоатет\s	работает\s	ru_typo
+прорватся\s	прорваться\s	ru_typo
+фактческим\s	фактическим\s	ru_typo
+помагу\s	помогу\s	ru_typo
+кнокопками\s	кнопками\s	ru_typo
+исправленно\s	исправлено\s	ru_typo
