@@ -62,6 +62,8 @@ pub struct LayConfig {
     pub correction_safety: String,
     pub enter_autocorrect: bool,
     pub auto_switch_layout: bool,
+    pub microbrain: bool,
+    pub nanda_autocorrect: bool,
     pub lem_2_words: bool,
     pub lem_3_words: bool,
     pub llm_backend: String,

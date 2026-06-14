@@ -23,6 +23,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = ROOT / "target/release/lay-test-input"
 DEFAULT_DAEMON = ROOT / "target/release/lay-daemon"
+SHORT_ALT_50_EXPECTED = (
+    "я git и api мы css ты cpu он gpu в html к json с llm не log на md ну pdf "
+    "по ram за sql вот ssh это vpn да go как in дом up мир to код on тут off "
+    "там file для test при push ход bash"
+)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -97,6 +102,19 @@ CASES = {
             "correction_safety": "normal",
         },
     ),
+    "html_djn_spacing_enter": Case(
+        "html_djn_spacing_enter",
+        "html вот",
+        start_layout="ru",
+        config_overrides={
+            "auto_replace": True,
+            "typing_assist": True,
+            "correction_safety": "experimental",
+            "auto_switch_layout": True,
+            "nanda_autocorrect": True,
+            "typing_assist_words": 2,
+        },
+    ),
     "no_ne_ty_enter": Case("no_ne_ty_enter", "но не ты", start_layout="ru"),
     "preparatov_typo_enter": Case(
         "preparatov_typo_enter", "препаратов", start_layout="ru"
@@ -134,6 +152,43 @@ CASES = {
     ),
     "vyvodim_dva_enter": Case("vyvodim_dva_enter", "выводим два"),
     "wifi_ye_enter": Case("wifi_ye_enter", "wi-fi ну"),
+    "short_alt_ru_wrong_us_enter": Case(
+        "short_alt_ru_wrong_us_enter",
+        SHORT_ALT_50_EXPECTED,
+        config_overrides={
+            "auto_replace": True,
+            "typing_assist": True,
+            "correction_safety": "experimental",
+            "auto_switch_layout": True,
+            "nanda_autocorrect": True,
+            "typing_assist_words": 2,
+        },
+    ),
+    "short_alt_en_wrong_ru_enter": Case(
+        "short_alt_en_wrong_ru_enter",
+        SHORT_ALT_50_EXPECTED,
+        start_layout="ru",
+        config_overrides={
+            "auto_replace": True,
+            "typing_assist": True,
+            "correction_safety": "experimental",
+            "auto_switch_layout": True,
+            "nanda_autocorrect": True,
+            "typing_assist_words": 2,
+        },
+    ),
+    "short_alt_all_wrong_enter": Case(
+        "short_alt_all_wrong_enter",
+        SHORT_ALT_50_EXPECTED,
+        config_overrides={
+            "auto_replace": True,
+            "typing_assist": True,
+            "correction_safety": "experimental",
+            "auto_switch_layout": True,
+            "nanda_autocorrect": True,
+            "typing_assist_words": 2,
+        },
+    ),
 }
 
 
@@ -250,9 +305,10 @@ def run_case(
                 "case needs isolated config; run without --use-system-daemon",
             )
         temp_home = tempfile.TemporaryDirectory(prefix="lay-smoke-home-")
-        runtime_env["HOME"] = temp_home.name
         config_dir = Path(temp_home.name) / ".config" / "lay"
         config_dir.mkdir(parents=True, exist_ok=True)
+        config_path = config_dir / "config.json"
+        runtime_env["LAY_CONFIG_PATH"] = str(config_path)
         config = {
             "mode": "simple",
             "correction_engine": "replay",
@@ -262,7 +318,7 @@ def run_case(
             "auto_switch_layout": True,
             **case.config_overrides,
         }
-        (config_dir / "config.json").write_text(
+        config_path.write_text(
             json.dumps(config, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )

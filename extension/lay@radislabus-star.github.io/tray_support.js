@@ -6,13 +6,14 @@ export const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 export const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-export const APP_VERSION = '0.1.222';
+export const APP_VERSION = '0.1.229';
 export const APP_DESCRIPTION = 'Альфа: RU/EN-переключатель по двойному Shift и помощь при наборе';
 export const APP_RELEASE_DATE = '2026-06-11';
 export const APP_LICENSE = 'MIT';
 export const APP_URL = 'https://github.com/radislabus-star/lay-public';
 export const APP_PLATFORM = 'Linux: GNOME, KDE, Niri, Wayland, X11';
 export const APP_GNOME_SUPPORT = 'GNOME 45-47, 50';
+export const NANDA_EXPERT_CELL = 'Клетка: 64 КБ · активно авто';
 export const APP_ICON_NAME = 'input-keyboard-symbolic';
 export const PANEL_ICON_SIZE = 14;
 export const MENU_ICON_SIZE = 16;
@@ -37,6 +38,9 @@ export const LEM_2_TOOLTIP = 'LEM-арбитр для двух слов: сра�
     + 'и выбирает более естественный, не генерируя новый текст.';
 export const LEM_3_TOOLTIP = 'LEM-арбитр для трех слов и длиннее: нужен для смешанных RU/EN\n'
     + 'фраз, где соседние слова помогают понять раскладку.';
+export const NANDA_TOOLTIP = 'Экспериментально: Nanda расширяет набор кандидатов автоподмены\n'
+    + 'и выбирает лучший по скорингу. Не генерирует свободный текст,\n'
+    + 'а предсказывает только среди layout/typo/split-вариантов.';
 export const PTAH_ALEXS_TOOLTIP = 'Жёсткая раскладка по окну: при фокусе окна lay ставит\n'
     + 'заданную раскладку, а не вспоминает последнюю случайную.';
 export const PTAH_RULE_LIMIT = 80;
@@ -122,6 +126,8 @@ export const DEFAULTS = {
     correction_safety: 'normal',
     enter_autocorrect: false,
     auto_switch_layout: true,
+    microbrain: false,
+    nanda_autocorrect: false,
     lem_2_words: true,
     lem_3_words: true,
     ptah_alexs_mode: false,
@@ -181,6 +187,8 @@ export function normalizeConfig(cfg) {
         text_backend: normalizeChoice(cfg?.text_backend, ['uinput', 'ime', 'auto'], DEFAULTS.text_backend),
         correction_safety: normalizeChoice(cfg?.correction_safety, SAFETY_OPTIONS.map(([id]) => id), DEFAULTS.correction_safety),
         ptah_alexs_mode: !!cfg?.ptah_alexs_mode,
+        microbrain: !!cfg?.microbrain || !!cfg?.nanda_autocorrect,
+        nanda_autocorrect: !!cfg?.nanda_autocorrect || !!cfg?.microbrain,
         multi_tap_scope: !!cfg?.multi_tap_scope,
         multi_tap_max_taps: clampNumber(cfg?.multi_tap_max_taps, 2, 4, DEFAULTS.multi_tap_max_taps),
         mode: 'simple',
@@ -255,6 +263,22 @@ export function loadStats() {
         return JSON.parse(new TextDecoder().decode(bytes));
     } catch(e) {
         return {};
+    }
+}
+export function loadNandaProfileText() {
+    const layBin = `${GLib.get_home_dir()}/.local/bin/lay`;
+    if (!GLib.file_test(layBin, GLib.FileTest.EXISTS))
+        return NANDA_EXPERT_CELL;
+    try {
+        const proc = Gio.Subprocess.new(
+            [layBin, '--nanda-profile'],
+            Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE
+        );
+        const [, stdout] = proc.communicate_utf8(null, null);
+        const text = String(stdout ?? '').trim();
+        return text || NANDA_EXPERT_CELL;
+    } catch(e) {
+        return NANDA_EXPERT_CELL;
     }
 }
 export function loadRecentActions(limit = 5) {

@@ -15,6 +15,8 @@ fn config_defaults_preserve_public_runtime_behavior() {
     assert_eq!(cfg.active_correction_safety(), CorrectionSafety::Normal);
     assert_eq!(cfg.active_multi_tap_max_taps(), 4);
     assert!(cfg.auto_switch_layout);
+    assert!(!cfg.microbrain);
+    assert!(!cfg.nanda_autocorrect);
     assert!(cfg.lem_enabled_for_scope(2));
     assert!(cfg.lem_enabled_for_scope(3));
     assert_eq!(

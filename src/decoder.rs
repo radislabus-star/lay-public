@@ -26,7 +26,7 @@ pub use types::{CorrectionSource, CorrectionTrigger, DecoderAction};
 
 pub use typing_tail::{
     decode_enter_autocorrect_tail, decode_typing_assist_current_tail, decode_typing_assist_tail,
-    decode_typing_assist_tail_with_context,
+    decode_typing_assist_tail_with_context, decode_typing_assist_tail_with_context_and_nanda,
 };
 
 #[cfg(test)]

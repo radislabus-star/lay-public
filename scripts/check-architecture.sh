@@ -159,6 +159,8 @@ assert_max_lines src/decoder/manual.rs 160
 assert_max_lines src/decoder/ranked.rs 120
 assert_max_lines src/decoder/types.rs 70
 assert_max_lines src/decoder/typing_tail.rs 120
+assert_max_lines src/decoder/punctuation.rs 90
+assert_max_lines src/typing_pipeline/candidates.rs 120
 assert_max_lines src/typing_rule_graph.rs 50
 assert_max_lines src/typing_rule_graph/builders.rs 160
 assert_max_lines src/typing_rule_graph/definitions.rs 180
@@ -218,6 +220,8 @@ assert_max_lines src/keyboard/text_input.rs 30
 assert_max_lines src/keyboard/text_input/ru_emit.rs 100
 assert_max_lines src/keyboard/text_input/runs.rs 70
 assert_max_lines src/keyboard/text_input/script.rs 40
+assert_max_lines src/bin/lay_daemon/typing_assist_runtime/decoder.rs 90
+assert_max_lines src/bin/lay_daemon/tests/field_context.rs 120
 assert_max_lines src/keyboard/text_input/us_emit.rs 100
 assert_max_lines src/keyboard/event_words.rs 30
 assert_max_lines src/keyboard/event_words/decision.rs 60
@@ -523,8 +527,8 @@ assert_single_owner "pub fn decode_manual_tail" "src/decoder/manual.rs"
 assert_single_owner "pub fn rank_scoped_tail_candidates" "src/decoder/ranked.rs"
 assert_single_owner "pub fn choose_ranked_scoped_tail" "src/decoder/ranked.rs"
 assert_single_owner "pub fn decode_typing_assist_tail(" "src/decoder/typing_tail.rs"
-assert_single_owner "pub fn decode_typing_assist_current_tail" "src/decoder/typing_tail.rs"
-assert_single_owner "pub fn decode_enter_autocorrect_tail" "src/decoder/typing_tail.rs"
+assert_single_owner "pub fn decode_typing_assist_current_tail" "src/decoder/punctuation.rs"
+assert_single_owner "pub fn decode_enter_autocorrect_tail" "src/decoder/punctuation.rs"
 assert_single_owner "fn plan_matches_replacement" "src/decoder/edit_plan.rs"
 assert_single_owner "fn is_typing_key" "src/keyboard/keymap/typing_key.rs"
 assert_single_owner "fn keycode_to_ru_char" "src/keyboard/keymap/ru_char.rs"

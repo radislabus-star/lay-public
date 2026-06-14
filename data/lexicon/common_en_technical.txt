@@ -75,6 +75,7 @@ history
 html
 htop
 if
+in
 ip
 jobs
 journalctl
@@ -96,6 +97,7 @@ mkdir
 mount
 ms
 mv
+nanda
 nano
 netstat
 nft
@@ -113,6 +115,7 @@ pnpm
 popd
 printf
 ps
+push
 pushd
 pwd
 python
@@ -160,6 +163,7 @@ times
 tmux
 top
 touch
+to
 tr
 trap
 true
@@ -172,6 +176,7 @@ unalias
 uniq
 unset
 until
+up
 unzip
 usb
 vim

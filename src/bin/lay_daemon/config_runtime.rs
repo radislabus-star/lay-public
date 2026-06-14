@@ -2,8 +2,6 @@ use lay::config::{CorrectionEngine, LayConfig};
 use lay::desktop::LayoutBackend;
 use lay::text_backend::TextBackendPreference;
 #[cfg(not(test))]
-use std::path::PathBuf;
-#[cfg(not(test))]
 use std::sync::Mutex;
 use std::sync::OnceLock;
 #[cfg(not(test))]
@@ -59,15 +57,9 @@ fn current_config() -> LayConfig {
 
 #[cfg(not(test))]
 fn config_modified_at() -> Option<SystemTime> {
-    std::fs::metadata(config_path())
+    std::fs::metadata(lay::config::config_path())
         .and_then(|metadata| metadata.modified())
         .ok()
-}
-
-#[cfg(not(test))]
-fn config_path() -> PathBuf {
-    let home = std::env::var("HOME").unwrap_or_default();
-    PathBuf::from(home).join(lay::config::CONFIG_PATH)
 }
 
 pub(super) fn active_replace_words() -> usize {
@@ -139,6 +131,12 @@ pub(super) fn active_auto_switch_layout() -> bool {
     current_config().auto_switch_layout
 }
 
+#[cfg(not(test))]
+pub(super) fn active_nanda_autocorrect() -> bool {
+    let cfg = current_config();
+    cfg.microbrain || cfg.nanda_autocorrect
+}
+
 pub(super) fn active_learning_log() -> bool {
     current_config().learning_log
 }
@@ -152,9 +150,14 @@ pub(super) fn active_typing_assist_pipeline_for_auto_replace(
     context: &str,
 ) -> Vec<lay::config::TypingAssistRuleConfig> {
     let cfg = current_config();
+    let safety = if (cfg.microbrain || cfg.nanda_autocorrect) && cfg.auto_replace {
+        lay::config::CorrectionSafety::Experimental
+    } else {
+        cfg.active_correction_safety()
+    };
     lay::typing_context::typing_assist_pipeline_for_context(
         cfg.auto_replace,
-        cfg.active_correction_safety(),
+        safety,
         &cfg.typing_assist_pipeline,
         context,
     )

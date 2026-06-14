@@ -10,7 +10,9 @@ from __future__ import annotations
 
 import argparse
 import fcntl
+import html
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -94,6 +96,18 @@ def lay_version() -> str:
     out = run_cmd([str(Path.home() / ".local" / "bin" / "lay"), "--version"])
     text = (out.stdout or out.stderr).strip()
     return text or "lay"
+
+
+def nanda_profile_text() -> str:
+    out = run_cmd([str(Path.home() / ".local" / "bin" / "lay"), "--nanda-profile"])
+    text = (out.stdout or out.stderr).strip()
+    return text or "Клетка: 64 КБ · активно авто"
+
+
+def nanda_status_text() -> str:
+    out = run_cmd([str(Path.home() / ".local" / "bin" / "lay"), "--nanda-status"])
+    text = (out.stdout or out.stderr).strip()
+    return text or "NANDA: статус недоступен"
 
 
 def daemon_active() -> bool:
@@ -186,6 +200,7 @@ def config_status_text() -> str:
         f"область={cfg.get('replace_words')}\n"
         f"помощь_при_наборе={bool(cfg.get('typing_assist'))}\n"
         f"автоподмена={bool(cfg.get('auto_replace'))}\n"
+        f"nanda={nanda_profile_text()}\n"
         f"конфиг={CONFIG_PATH}"
     )
 
@@ -253,10 +268,68 @@ def main() -> int:
     try:
         from PyQt6.QtCore import QTimer, Qt
         from PyQt6.QtGui import QAction, QActionGroup, QColor, QCursor, QIcon, QPainter, QPixmap
-        from PyQt6.QtWidgets import QApplication, QMenu, QMessageBox, QSystemTrayIcon
+        from PyQt6.QtWidgets import QApplication, QDialog, QLabel, QMenu, QMessageBox, QScrollArea, QSystemTrayIcon, QVBoxLayout, QWidget
     except Exception as exc:
         print(f"lay-kde-tray: PyQt6 is not available: {exc}", file=sys.stderr)
         return 1
+
+    class NandaWaveWidget(QWidget):
+        def __init__(self) -> None:
+            super().__init__()
+            self.setMinimumHeight(230)
+
+        def paintEvent(self, _event: Any) -> None:
+            painter = QPainter(self)
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            width = max(1, self.width())
+            height = max(1, self.height())
+            waves = [
+                ("генератор", 1.0, 0.00, QColor(46, 140, 242)),
+                ("раскладка", 1.6, 0.72, QColor(51, 191, 107)),
+                ("защита", 2.1, 1.35, QColor(237, 115, 64)),
+                ("контекст", 1.25, 2.00, QColor(163, 115, 242)),
+                ("память", 1.8, 2.65, QColor(242, 173, 64)),
+                ("сетка", 0.7, 3.10, QColor(26, 178, 198)),
+            ]
+
+            painter.fillRect(0, 0, width, height, QColor(20, 24, 28, 12))
+            painter.setPen(QColor(80, 80, 80, 45))
+            for y in range(28, height - 24, 28):
+                painter.drawLine(18, y, width - 18, y)
+
+            left = 72
+            right = width - 18
+            span = max(1, right - left)
+            mid = height / 2 + 8
+
+            for index, (name, freq, phase, color) in enumerate(waves):
+                base = 36 + index * 26
+                color.setAlpha(190)
+                painter.setPen(color)
+                previous: tuple[int, int] | None = None
+                for x in range(span + 1):
+                    t = x / span
+                    y = base + math.sin(t * math.pi * 2 * freq + phase) * 8
+                    point = (left + x, int(y))
+                    if previous is not None:
+                        painter.drawLine(previous[0], previous[1], point[0], point[1])
+                    previous = point
+                painter.setPen(QColor(35, 35, 35, 220))
+                painter.drawText(12, base + 4, name)
+
+            painter.setPen(QColor(5, 5, 5, 230))
+            previous = None
+            for x in range(span + 1):
+                t = x / span
+                total = sum(math.sin(t * math.pi * 2 * freq + phase) for _, freq, phase, _ in waves)
+                y = mid + total / len(waves) * 28
+                point = (left + x, int(y))
+                if previous is not None:
+                    painter.drawLine(previous[0], previous[1], point[0], point[1])
+                    painter.drawLine(previous[0], previous[1] + 1, point[0], point[1] + 1)
+                previous = point
+            painter.drawText(12, height - 12, "несущая мода ансамбля")
+            painter.end()
 
     class LayTray:
         def __init__(self) -> None:
@@ -446,6 +519,10 @@ def main() -> int:
                 recent_menu.addAction(action)
 
             self.menu.addSeparator()
+            nanda = QAction("NANDA ячейки", self.menu)
+            nanda.triggered.connect(self.show_nanda)
+            self.menu.addAction(nanda)
+
             about = QAction("О программе", self.menu)
             about.triggered.connect(self.show_about)
             self.menu.addAction(about)
@@ -584,6 +661,48 @@ def main() -> int:
                 'GitHub: <a href="https://github.com/radislabus-star/lay-public">'
                 "https://github.com/radislabus-star/lay-public</a>",
             )
+
+        def show_nanda(self) -> None:
+            dialog = QDialog()
+            dialog.setWindowTitle("NANDA")
+            dialog.resize(580, 640)
+            layout = QVBoxLayout(dialog)
+
+            title = QLabel("<b>NANDA — клеточный слой автокоррекции</b>")
+            title.setWordWrap(True)
+            layout.addWidget(title)
+
+            intro = QLabel(
+                "NANDA не является большой LLM. Это набор маленьких ячеек, которые рождают "
+                "варианты, оценивают риск, защищают технические слова и согласуют решение перед вставкой."
+            )
+            intro.setWordWrap(True)
+            layout.addWidget(intro)
+
+            layout.addWidget(QLabel("<b>Волновая схема</b>"))
+            layout.addWidget(NandaWaveWidget())
+
+            details = QLabel(
+                "<b>Профиль</b><br>"
+                f"{html.escape(nanda_profile_text())}<br><br>"
+                "<b>Ячейки и роли</b><br>"
+                f"{html.escape(nanda_status_text()).replace(chr(10), '<br>')}<br><br>"
+                "<b>Принцип</b><br>"
+                "Генератор предлагает исправления, защитные ячейки гасят опасные варианты, "
+                "сетка согласования пропускает только устойчивое решение. Если согласия нет, "
+                "lay ничего не меняет."
+            )
+            details.setTextFormat(Qt.TextFormat.RichText)
+            details.setWordWrap(True)
+            scroll = QScrollArea()
+            scroll.setWidgetResizable(True)
+            holder = QWidget()
+            holder_layout = QVBoxLayout(holder)
+            holder_layout.addWidget(details)
+            scroll.setWidget(holder)
+            layout.addWidget(scroll)
+
+            dialog.exec()
 
         def on_activated(self, reason: QSystemTrayIcon.ActivationReason) -> None:
             if reason in (

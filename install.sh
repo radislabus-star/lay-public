@@ -76,6 +76,45 @@ install_packages() {
     esac
 }
 
+cleanup_legacy_ollama() {
+    if [ "${LAY_KEEP_OLLAMA:-0}" = "1" ]; then
+        echo "ℹ LAY_KEEP_OLLAMA=1 — legacy Ollama cleanup пропущен"
+        return
+    fi
+
+    found=0
+    if command -v ollama >/dev/null 2>&1; then
+        found=1
+    fi
+    if systemctl list-unit-files 'ollama.service' --no-pager 2>/dev/null | grep -q '^ollama.service'; then
+        found=1
+    fi
+    if [ -d /usr/share/ollama ] || [ -d "$HOME/.ollama" ]; then
+        found=1
+    fi
+    if [ "$found" = "0" ]; then
+        echo "✓ legacy Ollama не найдена"
+        return
+    fi
+
+    echo "→ удаляю legacy Ollama из старых lay-установок..."
+    systemctl --user stop ollama.service >/dev/null 2>&1 || true
+    systemctl --user disable ollama.service >/dev/null 2>&1 || true
+    sudo systemctl stop ollama.service >/dev/null 2>&1 || true
+    sudo systemctl disable ollama.service >/dev/null 2>&1 || true
+
+    if [ -f /etc/systemd/system/ollama.service ]; then
+        sudo rm -f /etc/systemd/system/ollama.service
+    fi
+    sudo rm -f /etc/systemd/system/default.target.wants/ollama.service
+    sudo systemctl daemon-reload >/dev/null 2>&1 || true
+
+    sudo rm -f /usr/local/bin/ollama /usr/bin/ollama
+    sudo rm -rf /usr/share/ollama /var/lib/ollama
+    rm -rf "$HOME/.ollama"
+    echo "✓ legacy Ollama удалена; lay теперь работает через deterministic/NANDA pipeline"
+}
+
 base_packages_for_pm() {
     pm="$1"
     case "$pm" in
@@ -149,6 +188,10 @@ else
         echo "⚠ /dev/uinput пока недоступен; нужен перелогин или перезагрузка"
     fi
 fi
+
+echo ""
+echo "=== legacy Ollama cleanup ==="
+cleanup_legacy_ollama
 
 echo ""
 echo "=== системные зависимости ==="
@@ -286,21 +329,6 @@ for js in "$DIR/extension/$UUID/"*.js; do
 done
 gnome-extensions enable "$UUID" 2>/dev/null || true
 echo "✓ extension установлен: $DST"
-
-echo ""
-echo "=== optional LLM backends ==="
-echo "По умолчанию lay не требует Ollama/GGUF и не загружает модель."
-if command -v ollama >/dev/null; then
-    echo "✓ ollama: $(ollama --version 2>/dev/null | head -1)"
-    if ollama list 2>/dev/null | grep -q "smollm:135m"; then
-        echo "✓ optional модель smollm:135m уже есть"
-    else
-        echo "ℹ optional LLM режим не установлен"
-        echo "  если нужен эксперимент: ollama pull smollm:135m"
-    fi
-else
-    echo "ℹ ollama не установлен; это нормально для обычного double Shift"
-fi
 
 echo ""
 echo "=== быстрый тест CLI ==="

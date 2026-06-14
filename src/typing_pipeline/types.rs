@@ -1,4 +1,5 @@
 use crate::config::TypingAssistRuleConfig;
+use crate::microbrain::MicroDecisionTrace;
 use crate::typing_candidate::{
     classify_typing_confidence, TypingCandidate, TypingCandidateDecision, TypingDecisionConfidence,
 };
@@ -13,6 +14,7 @@ pub struct TypingAssistExplanation {
     pub second: Option<TypingCandidate>,
     pub margin: Option<f64>,
     pub output: Option<String>,
+    pub microbrain: Option<MicroDecisionTrace>,
 }
 
 impl TypingAssistExplanation {
@@ -26,6 +28,7 @@ impl TypingAssistExplanation {
             second: None,
             margin: None,
             output: None,
+            microbrain: None,
         }
     }
 
@@ -50,6 +53,11 @@ impl TypingAssistExplanation {
         self.second = decision.second;
         self.margin = Some(decision.margin);
         self.chosen = Some(chosen);
+        self
+    }
+
+    pub(crate) fn with_microbrain(mut self, trace: MicroDecisionTrace) -> Self {
+        self.microbrain = Some(trace);
         self
     }
 

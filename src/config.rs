@@ -20,6 +20,15 @@ pub use pipeline::{
 pub use types::{CorrectionEngine, CorrectionSafety, LayConfig, TypingAssistRuleConfig};
 
 pub const CONFIG_PATH: &str = ".config/lay/config.json";
+pub const CONFIG_PATH_ENV: &str = "LAY_CONFIG_PATH";
+
+pub fn config_path() -> std::path::PathBuf {
+    if let Ok(path) = std::env::var(CONFIG_PATH_ENV) {
+        return std::path::PathBuf::from(path);
+    }
+    let home = std::env::var("HOME").unwrap_or_default();
+    std::path::PathBuf::from(home).join(CONFIG_PATH)
+}
 
 #[cfg(test)]
 #[path = "config_tests.rs"]

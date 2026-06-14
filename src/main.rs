@@ -8,7 +8,7 @@ use clap::Parser;
 use std::io::{self, IsTerminal, Read};
 use std::process;
 
-use lay::{config, dict, llm, typing_assist, typing_context};
+use lay::{config, dict, llm, microbrain, nanda_profile, typing_assist, typing_context};
 
 #[derive(Parser, Debug)]
 #[command(
@@ -43,10 +43,38 @@ struct Args {
     /// Объяснить решение автокоррекции after-space для текста.
     #[arg(long)]
     explain_correct: bool,
+
+    /// Включить экспериментальный microbrain/NANDA scorer для --explain-correct.
+    #[arg(long)]
+    microbrain: bool,
+
+    /// Отключить microbrain-эксперта для ablation, можно указать несколько раз.
+    #[arg(long)]
+    disable_expert: Vec<String>,
+
+    /// Показать CPU/cache профиль для NANDA Expert64.
+    #[arg(long)]
+    nanda_profile: bool,
+
+    /// Показать подробное состояние NANDA Expert64.
+    #[arg(long)]
+    nanda_status: bool,
 }
 
 fn main() {
     let args = Args::parse();
+
+    if args.nanda_profile {
+        println!(
+            "{}",
+            nanda_profile::NandaCpuProfile::detect().compact_text()
+        );
+        return;
+    }
+    if args.nanda_status {
+        println!("{}", microbrain::nanda_status_text());
+        return;
+    }
 
     let text = if args.clipboard {
         match read_clipboard() {
@@ -72,8 +100,11 @@ fn main() {
     }
 
     if args.explain_correct {
-        let cfg = config::LayConfig::load();
-        let explanation = explain_typing_assist_like_runtime(&text, &cfg);
+        let mut cfg = config::LayConfig::load();
+        if args.microbrain {
+            cfg.microbrain = true;
+        }
+        let explanation = explain_typing_assist_like_runtime(&text, &cfg, &args.disable_expert);
         print_typing_explanation(&explanation);
         return;
     }
@@ -104,21 +135,21 @@ fn main() {
 fn explain_typing_assist_like_runtime(
     text: &str,
     cfg: &config::LayConfig,
+    disabled_experts: &[String],
 ) -> typing_assist::TypingAssistExplanation {
     let pipeline = typing_context::typing_assist_pipeline_for_context(
         cfg.auto_replace,
-        cfg.active_correction_safety(),
+        active_typing_safety(cfg),
         &cfg.typing_assist_pipeline,
         text,
     );
-    let whole =
-        typing_assist::explain_typing_assist_with_pipeline(text, cfg.auto_switch_layout, &pipeline);
+    let whole = explain_typing_assist_runtime(text, cfg, &pipeline, disabled_experts);
     if whole.output.is_some() {
         return whole;
     }
 
     for word_count in [2, 1] {
-        if let Some(explanation) = explain_completed_tail(text, cfg, word_count) {
+        if let Some(explanation) = explain_completed_tail(text, cfg, word_count, disabled_experts) {
             return explanation;
         }
     }
@@ -130,6 +161,7 @@ fn explain_completed_tail(
     text: &str,
     cfg: &config::LayConfig,
     word_count: usize,
+    disabled_experts: &[String],
 ) -> Option<typing_assist::TypingAssistExplanation> {
     let (leading, core, trailing) = typing_assist::split_edge_whitespace(text);
     let segments = typing_assist::split_ws_segments(core);
@@ -159,16 +191,39 @@ fn explain_completed_tail(
 
     let pipeline = typing_context::typing_assist_pipeline_for_context(
         cfg.auto_replace,
-        cfg.active_correction_safety(),
+        active_typing_safety(cfg),
         &cfg.typing_assist_pipeline,
         text,
     );
-    let explanation = typing_assist::explain_typing_assist_with_pipeline(
-        &suffix,
-        cfg.auto_switch_layout,
-        &pipeline,
-    );
+    let explanation = explain_typing_assist_runtime(&suffix, cfg, &pipeline, disabled_experts);
     explanation.output.is_some().then_some(explanation)
+}
+
+fn active_typing_safety(cfg: &config::LayConfig) -> config::CorrectionSafety {
+    if (cfg.microbrain || cfg.nanda_autocorrect) && cfg.auto_replace {
+        config::CorrectionSafety::Experimental
+    } else {
+        cfg.active_correction_safety()
+    }
+}
+
+fn explain_typing_assist_runtime(
+    text: &str,
+    cfg: &config::LayConfig,
+    pipeline: &[config::TypingAssistRuleConfig],
+    disabled_experts: &[String],
+) -> typing_assist::TypingAssistExplanation {
+    if cfg.microbrain || cfg.nanda_autocorrect {
+        let options = microbrain::MicrobrainOptions::with_disabled(disabled_experts);
+        typing_assist::explain_typing_assist_with_microbrain_options(
+            text,
+            cfg.auto_switch_layout,
+            pipeline,
+            &options,
+        )
+    } else {
+        typing_assist::explain_typing_assist_with_pipeline(text, cfg.auto_switch_layout, pipeline)
+    }
 }
 
 fn print_typing_explanation(explanation: &typing_assist::TypingAssistExplanation) {
@@ -217,6 +272,41 @@ fn print_typing_explanation(explanation: &typing_assist::TypingAssistExplanation
     match &explanation.output {
         Some(output) => println!("output: {:?}", output),
         None => println!("output: none"),
+    }
+    if let Some(trace) = &explanation.microbrain {
+        println!("microbrain:");
+        println!("  chosen: {:?}", trace.chosen);
+        println!("  no_raw_secret_text: {}", trace.no_raw_secret_text);
+        if !trace.disabled_experts.is_empty() {
+            println!("  disabled_experts: {:?}", trace.disabled_experts);
+        }
+        if !trace.generated.is_empty() {
+            println!("  generated:");
+            for generated in &trace.generated {
+                println!(
+                    "    {:?} source={} action={:?} reason={}",
+                    generated.text, generated.source, generated.action, generated.reason_code
+                );
+            }
+        }
+        for candidate in &trace.candidates {
+            println!(
+                "  candidate {:?} source={} action={:?} confidence={:.3}",
+                candidate.candidate, candidate.source, candidate.action, candidate.confidence
+            );
+            for score in &candidate.expert_scores {
+                println!(
+                    "    {} {:.3} {}",
+                    score.expert, score.confidence, score.reason_code
+                );
+            }
+            for tick in &candidate.mesh_ticks {
+                println!(
+                    "    mesh tick={} confidence={:.3} coherence={:.3} reason={}",
+                    tick.tick, tick.confidence, tick.board.coherence, tick.reason_code
+                );
+            }
+        }
     }
 }
 

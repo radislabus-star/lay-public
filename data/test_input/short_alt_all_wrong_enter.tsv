@@ -1,0 +1,203 @@
+# generated from tests/fixtures/typing_assist_short_alternating_pairs.tsv
+layout	us	40
+type	z	20
+space
+sleep	8
+layout	ru	40
+type	git	20
+space
+sleep	8
+layout	us	40
+type	b	20
+space
+sleep	8
+layout	ru	40
+type	api	20
+space
+sleep	8
+layout	us	40
+type	vs	20
+space
+sleep	8
+layout	ru	40
+type	css	20
+space
+sleep	8
+layout	us	40
+type	ns	20
+space
+sleep	8
+layout	ru	40
+type	cpu	20
+space
+sleep	8
+layout	us	40
+type	jy	20
+space
+sleep	8
+layout	ru	40
+type	gpu	20
+space
+sleep	8
+layout	us	40
+type	d	20
+space
+sleep	8
+layout	ru	40
+type	html	20
+space
+sleep	8
+layout	us	40
+type	r	20
+space
+sleep	8
+layout	ru	40
+type	json	20
+space
+sleep	8
+layout	us	40
+type	c	20
+space
+sleep	8
+layout	ru	40
+type	llm	20
+space
+sleep	8
+layout	us	40
+type	yt	20
+space
+sleep	8
+layout	ru	40
+type	log	20
+space
+sleep	8
+layout	us	40
+type	yf	20
+space
+sleep	8
+layout	ru	40
+type	md	20
+space
+sleep	8
+layout	us	40
+type	ye	20
+space
+sleep	8
+layout	ru	40
+type	pdf	20
+space
+sleep	8
+layout	us	40
+type	gj	20
+space
+sleep	8
+layout	ru	40
+type	ram	20
+space
+sleep	8
+layout	us	40
+type	pf	20
+space
+sleep	8
+layout	ru	40
+type	sql	20
+space
+sleep	8
+layout	us	40
+type	djn	20
+space
+sleep	8
+layout	ru	40
+type	ssh	20
+space
+sleep	8
+layout	us	40
+type	'nj	20
+space
+sleep	8
+layout	ru	40
+type	vpn	20
+space
+sleep	8
+layout	us	40
+type	lf	20
+space
+sleep	8
+layout	ru	40
+type	go	20
+space
+sleep	8
+layout	us	40
+type	rfr	20
+space
+sleep	8
+layout	ru	40
+type	in	20
+space
+sleep	8
+layout	us	40
+type	ljv	20
+space
+sleep	8
+layout	ru	40
+type	up	20
+space
+sleep	8
+layout	us	40
+type	vbh	20
+space
+sleep	8
+layout	ru	40
+type	to	20
+space
+sleep	8
+layout	us	40
+type	rjl	20
+space
+sleep	8
+layout	ru	40
+type	on	20
+space
+sleep	8
+layout	us	40
+type	nen	20
+space
+sleep	8
+layout	ru	40
+type	off	20
+space
+sleep	8
+layout	us	40
+type	nfv	20
+space
+sleep	8
+layout	ru	40
+type	file	20
+space
+sleep	8
+layout	us	40
+type	lkz	20
+space
+sleep	8
+layout	ru	40
+type	test	20
+space
+sleep	8
+layout	us	40
+type	ghb	20
+space
+sleep	8
+layout	ru	40
+type	push	20
+space
+sleep	8
+layout	us	40
+type	[jl	20
+space
+sleep	8
+layout	ru	40
+type	bash	20
+space
+sleep	8
+sleep	1000
+enter

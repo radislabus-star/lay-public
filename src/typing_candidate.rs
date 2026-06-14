@@ -5,6 +5,8 @@
 
 #[path = "typing_candidate/confidence.rs"]
 mod confidence;
+#[path = "typing_candidate/nanda.rs"]
+mod nanda;
 #[path = "typing_candidate/ranking.rs"]
 mod ranking;
 #[path = "typing_candidate/scoring.rs"]
@@ -13,6 +15,7 @@ mod scoring;
 mod types;
 
 pub use confidence::classify_typing_confidence;
+pub use nanda::{rank_with_microbrain, rank_with_microbrain_trace, rank_with_nanda};
 pub use ranking::{choose_typing_candidate, rank_typing_candidates};
 pub use scoring::{classify_typing_rule, score_typing_candidate};
 pub use types::{

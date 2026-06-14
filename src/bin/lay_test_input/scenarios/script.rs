@@ -28,6 +28,14 @@ pub(super) fn run_script_text(
                 activate_layout(id);
                 sleep(Duration::from_millis(250));
             }
+            ["layout", id, settle_ms] => {
+                activate_layout(id);
+                sleep(Duration::from_millis(parse_u64(
+                    settle_ms,
+                    source_name,
+                    idx,
+                )?));
+            }
             ["sleep", ms] => sleep(Duration::from_millis(parse_u64(ms, source_name, idx)?)),
             ["type", physical_text] => type_physical(dev, &decode_script_text(physical_text), 35)?,
             ["type", physical_text, pause_ms] => type_physical(
@@ -35,6 +43,7 @@ pub(super) fn run_script_text(
                 &decode_script_text(physical_text),
                 parse_u64(pause_ms, source_name, idx)?,
             )?,
+            ["space"] => tap(dev, KeyCode::KEY_SPACE.code())?,
             ["enter"] => tap(dev, KeyCode::KEY_ENTER.code())?,
             ["double_shift"] => double_shift(dev, 900)?,
             ["double_shift_enter"] => double_shift_enter(dev, 900)?,

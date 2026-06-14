@@ -63,6 +63,12 @@ fn auto_switch_layout_is_enabled_by_default() {
 }
 
 #[test]
+fn nanda_autocorrect_is_opt_in() {
+    assert!(!LayConfig::default().microbrain);
+    assert!(!LayConfig::default().nanda_autocorrect);
+}
+
+#[test]
 fn lem_scope_flags_are_enabled_by_default() {
     let cfg = LayConfig::default();
     assert!(!cfg.lem_enabled_for_scope(1));

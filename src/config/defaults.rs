@@ -41,6 +41,8 @@ impl Default for LayConfig {
             correction_safety: "normal".into(),
             enter_autocorrect: false,
             auto_switch_layout: true,
+            microbrain: false,
+            nanda_autocorrect: false,
             lem_2_words: true,
             lem_3_words: true,
             llm_backend: "off".into(),

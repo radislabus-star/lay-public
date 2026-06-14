@@ -1,11 +1,10 @@
-use lay::decoder::{decode_typing_assist_tail_with_context, CorrectionSource, DecoderEditPlan};
+mod decoder;
+
+use decoder::{decode_completed_tail, nanda_enabled};
+use lay::decoder::DecoderEditPlan;
 use lay::keyboard::KeyEvent;
-use lay::typing_context::completed_tail_context;
 use lay::word_buffer::{WordBuffer, MAX_REPLACE_WORDS};
 use std::time::Instant;
-
-#[cfg(not(test))]
-use super::super::active_typing_assist_pipeline_for_auto_replace;
 
 #[derive(Clone)]
 pub(crate) struct TypingAssistCorrection {
@@ -23,26 +22,12 @@ pub(crate) fn find_typing_assist_correction(
         .find_map(|word_count| {
             let started = Instant::now();
             let events = buf.last_completed_words_events(word_count)?;
-            let context = completed_tail_context(buf, word_count, &events);
-            #[cfg(test)]
-            let pipeline = lay::typing_context::typing_assist_pipeline_for_context(
-                true,
-                lay::config::CorrectionSafety::Normal,
-                &lay::config::default_typing_assist_pipeline(),
-                &context,
-            );
-            #[cfg(not(test))]
-            let pipeline = active_typing_assist_pipeline_for_auto_replace(&context);
-            let edit = decode_typing_assist_tail_with_context(
-                &events,
-                &context,
-                allow_layout_auto,
-                &pipeline,
-                CorrectionSource::TypingAssist,
-            )?;
+            let nanda_enabled = nanda_enabled();
+            let edit = decode_completed_tail(buf, word_count, &events, allow_layout_auto)?;
             super::super::log(&format!(
-                "  typing-assist decision: scope={} elapsed={}ms",
+                "  typing-assist decision: scope={} nanda={} elapsed={}ms",
                 word_count,
+                nanda_enabled,
                 started.elapsed().as_millis()
             ));
             Some(TypingAssistCorrection { events, edit })

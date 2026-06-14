@@ -1,5 +1,5 @@
 use super::*;
-use crate::daemon_state::DaemonLoopState;
+use crate::boundary_runtime::{handle_hard_boundary_if_needed, HardBoundaryContext};
 
 #[test]
 fn idle_wait_uses_long_sleep_when_no_internal_deadlines() {
@@ -124,6 +124,50 @@ fn typing_assist_runs_on_space_release_when_pending() {
 }
 
 #[test]
+fn edit_navigation_boundaries_reset_word_buffer_before_next_autocorrect() {
+    for key in [
+        KeyCode::KEY_BACKSPACE,
+        KeyCode::KEY_DELETE,
+        KeyCode::KEY_LEFT,
+    ] {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(&mut buffer, "свло", true);
+        assert!(!buffer.is_empty(), "precondition key={key:?}");
+
+        let virtual_kbd = std::sync::Arc::new(std::sync::Mutex::new(None));
+        let mut executing = false;
+        let mut pending_typing_assist_after_space = None;
+        let mut current_layout_is_ru = true;
+        let mut last_layout_poll = Instant::now();
+        let mut ignore_current_token_until_space = false;
+        let mut events_since_word_start = 0;
+        let shift_state = ShiftState::default();
+
+        assert!(handle_hard_boundary_if_needed(
+            key,
+            1,
+            HardBoundaryContext {
+                buffer: &mut buffer,
+                virtual_kbd: &virtual_kbd,
+                executing: &mut executing,
+                pending_typing_assist_after_space: &mut pending_typing_assist_after_space,
+                current_layout_is_ru: &mut current_layout_is_ru,
+                last_layout_poll: &mut last_layout_poll,
+                ignore_current_token_until_space: &mut ignore_current_token_until_space,
+                events_since_word_start: &mut events_since_word_start,
+                shift_state: &shift_state,
+                verbose: false,
+            },
+        ));
+
+        assert!(buffer.is_empty(), "buffer survived key={key:?}");
+        assert!(pending_typing_assist_after_space.is_none());
+        assert!(!ignore_current_token_until_space);
+        assert_eq!(events_since_word_start, 0);
+    }
+}
+
+#[test]
 fn leading_cli_option_token_is_ignored_until_space() {
     for (leader, leader_shift, token_key, next_word) in [
         (KeyCode::KEY_MINUS, false, KeyCode::KEY_B, "feature"),
@@ -174,100 +218,4 @@ fn typing_after_replay_clears_toggle_shortcut() {
     buffer.push(key_event(KeyCode::KEY_H, true));
 
     assert!(!buffer.replay_toggle_ready());
-}
-
-#[test]
-fn window_input_state_keeps_separate_word_buffers() {
-    let mut state = DaemonLoopState::new(&LayConfig::default(), false, false);
-
-    assert!(state.switch_window_input_state(Some("window-a".to_string())));
-    push_text_as_layout(&mut state.buffer, "ghb", false);
-    assert_eq!(
-        map_original_events(&state.buffer.what_to_replay(1).unwrap().0),
-        "ghb"
-    );
-
-    assert!(state.switch_window_input_state(Some("window-b".to_string())));
-    assert!(state.buffer.current_is_empty());
-    push_text_as_layout(&mut state.buffer, "djn", false);
-    assert_eq!(
-        map_original_events(&state.buffer.what_to_replay(1).unwrap().0),
-        "djn"
-    );
-
-    assert!(state.switch_window_input_state(Some("window-a".to_string())));
-    assert_eq!(
-        map_original_events(&state.buffer.what_to_replay(1).unwrap().0),
-        "ghb"
-    );
-
-    assert!(state.switch_window_input_state(Some("window-b".to_string())));
-    assert_eq!(
-        map_original_events(&state.buffer.what_to_replay(1).unwrap().0),
-        "djn"
-    );
-}
-
-#[test]
-fn text_field_context_keeps_unfinished_words_separate_inside_same_window() {
-    let mut state = DaemonLoopState::new(&LayConfig::default(), false, false);
-
-    assert!(state.switch_window_input_state(Some("browser-window".to_string())));
-    push_text_as_layout(&mut state.buffer, "file", false);
-    assert_eq!(
-        map_original_events(&state.buffer.what_to_replay(1).unwrap().0),
-        "file"
-    );
-
-    assert!(state.switch_field_context_epoch(1));
-    assert!(state.buffer.current_is_empty());
-    push_text_as_layout(&mut state.buffer, "djn", false);
-    assert_eq!(
-        map_original_events(&state.buffer.what_to_replay(1).unwrap().0),
-        "djn"
-    );
-}
-
-#[test]
-fn text_field_context_separates_fields_without_window_identity() {
-    let mut state = DaemonLoopState::new(&LayConfig::default(), false, false);
-
-    push_text_as_layout(&mut state.buffer, "qwe", false);
-    assert_eq!(
-        map_original_events(&state.buffer.what_to_replay(1).unwrap().0),
-        "qwe"
-    );
-
-    assert!(state.switch_field_context_epoch(1));
-    assert!(state.buffer.current_is_empty());
-    push_text_as_layout(&mut state.buffer, "qwe", false);
-    assert_eq!(
-        map_original_events(&state.buffer.what_to_replay(1).unwrap().0),
-        "qwe"
-    );
-}
-
-#[test]
-fn text_field_context_does_not_accumulate_empty_slots() {
-    let mut state = DaemonLoopState::new(&LayConfig::default(), false, false);
-
-    assert!(state.switch_window_input_state(Some("browser-window".to_string())));
-    for epoch in 1..80 {
-        state.switch_field_context_epoch(epoch);
-    }
-
-    assert!(state.window_states.is_empty());
-}
-
-#[test]
-fn text_field_context_prunes_old_saved_slots() {
-    let mut state = DaemonLoopState::new(&LayConfig::default(), false, false);
-
-    assert!(state.switch_window_input_state(Some("browser-window".to_string())));
-    for epoch in 1..80 {
-        push_text_as_layout(&mut state.buffer, "x", false);
-        state.switch_field_context_epoch(epoch);
-    }
-
-    assert!(state.window_states.len() <= 50);
 }

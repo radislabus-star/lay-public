@@ -83,12 +83,16 @@ pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
     if is_protected_ascii_layout_token(token) {
         return lem_prefers_layout_candidate(original_word, &normalized_word).then_some(normalized);
     }
-    match crate::llm::choose_token_hybrid(original_word, &normalized_word) {
-        Ok(Some(choice)) if choice == normalized_word => Some(normalized),
-        Ok(Some(choice)) if choice == original_word => {
-            allow_short_layout_word(original_word, &normalized_lower).then_some(normalized)
-        }
-        _ => Some(normalized),
+    if crate::microbrain::accepts_candidate(
+        original_word,
+        &normalized_word,
+        crate::microbrain::MicroAction::LayoutEnToRu,
+        "nanda_layout_autoswitch",
+    ) || allow_short_layout_word(original_word, &normalized_lower)
+    {
+        Some(normalized)
+    } else {
+        None
     }
 }
 

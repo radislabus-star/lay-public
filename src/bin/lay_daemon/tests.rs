@@ -40,6 +40,8 @@ use typing_assist_harness::*;
 mod config_contract;
 #[path = "tests/enter_autocorrect.rs"]
 mod enter_autocorrect;
+#[path = "tests/field_context.rs"]
+mod field_context;
 #[path = "tests/layout_backend.rs"]
 mod layout_backend;
 #[path = "tests/learning.rs"]

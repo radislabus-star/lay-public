@@ -17,6 +17,10 @@ pub fn append_private_text(path: &Path, text: &str) -> std::io::Result<()> {
 }
 
 pub fn write_private_text(path: &Path, text: &str) -> std::io::Result<()> {
+    write_private_bytes(path, text.as_bytes())
+}
+
+pub fn write_private_bytes(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
     ensure_parent(path)?;
     let mut options = std::fs::OpenOptions::new();
     options.write(true).create(true).truncate(true);
@@ -24,7 +28,7 @@ pub fn write_private_text(path: &Path, text: &str) -> std::io::Result<()> {
     options.mode(0o600);
     let mut file = options.open(path)?;
     restrict_file_permissions(path);
-    file.write_all(text.as_bytes())
+    file.write_all(bytes)
 }
 
 fn ensure_parent(path: &Path) -> std::io::Result<()> {

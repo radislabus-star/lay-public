@@ -6,6 +6,7 @@ personal_phrase	нуда\s	ну\sда\s	false
 personal_token	подлючись.\s	подключись.\s	false
 mixed_script_layout	ОБYJDB\s	ОБНОВИ\s	true
 layout_ru_to_en	ашду\s	file\s	true
+layout_ru_to_en	тфтвф\s	nanda\s	true
 layout_ru_to_en	ьы\s	ms\s	true
 layout_ru_to_en	цусрфе\s	wechat\s	true
 layout_en_to_ru	njkmrj\s	None	true

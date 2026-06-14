@@ -1,10 +1,10 @@
 use crate::config::{default_typing_assist_pipeline, TypingAssistRuleConfig};
-use crate::typing_candidate::{rank_typing_candidates, TypingCandidate, TypingCandidateDecision};
-use crate::typing_rule_graph::{find_typing_rule, ids, priorities, rules, TypingRuleContext};
-use crate::word_reader::{split_edge_whitespace, split_word_punctuation};
+use crate::microbrain::MicrobrainOptions;
+use crate::typing_candidate::{rank_typing_candidates, rank_with_microbrain_trace};
+use crate::word_reader::split_edge_whitespace;
 
-use super::rule_order::typing_rules_for_evaluation;
-use super::types::{TypingAssistExplanation, TypingRuleEvaluation};
+use super::candidates::evaluate_rule_candidates;
+use super::types::TypingAssistExplanation;
 
 pub fn apply_typing_assist_exact(text: &str) -> Option<String> {
     apply_typing_assist_with_pipeline(text, false, &default_typing_assist_pipeline())
@@ -23,103 +23,83 @@ pub fn apply_typing_assist_with_pipeline(
     explain_typing_assist_with_pipeline(text, allow_layout_auto, pipeline).output
 }
 
+pub fn apply_typing_assist_with_nanda(
+    text: &str,
+    allow_layout_auto: bool,
+    pipeline: &[TypingAssistRuleConfig],
+) -> Option<String> {
+    explain_typing_assist_with_nanda(text, allow_layout_auto, pipeline).output
+}
+
 pub fn explain_typing_assist_with_pipeline(
     text: &str,
     allow_layout_auto: bool,
     pipeline: &[TypingAssistRuleConfig],
 ) -> TypingAssistExplanation {
+    explain_typing_assist_impl(text, allow_layout_auto, pipeline, None)
+}
+
+pub fn explain_typing_assist_with_nanda(
+    text: &str,
+    allow_layout_auto: bool,
+    pipeline: &[TypingAssistRuleConfig],
+) -> TypingAssistExplanation {
+    explain_typing_assist_impl(
+        text,
+        allow_layout_auto,
+        pipeline,
+        Some(&MicrobrainOptions::default()),
+    )
+}
+
+pub fn explain_typing_assist_with_microbrain_options(
+    text: &str,
+    allow_layout_auto: bool,
+    pipeline: &[TypingAssistRuleConfig],
+    options: &MicrobrainOptions,
+) -> TypingAssistExplanation {
+    explain_typing_assist_impl(text, allow_layout_auto, pipeline, Some(options))
+}
+
+fn explain_typing_assist_impl(
+    text: &str,
+    allow_layout_auto: bool,
+    pipeline: &[TypingAssistRuleConfig],
+    microbrain_options: Option<&MicrobrainOptions>,
+) -> TypingAssistExplanation {
     let (leading, core, trailing) = split_edge_whitespace(text);
-    let mut explanation = TypingAssistExplanation::new(text, core, allow_layout_auto);
+    let explanation = TypingAssistExplanation::new(text, core, allow_layout_auto);
 
     if core.is_empty() {
         return explanation;
     }
 
-    let (token_leading, word, token_trailing) = split_word_punctuation(core);
-    let ctx = TypingRuleContext {
+    let collected = evaluate_rule_candidates(
+        explanation,
         core,
-        word,
-        token_leading,
-        token_trailing,
         allow_layout_auto,
-    };
-
-    if fast_en_to_ru_allowed(pipeline) {
-        if let Some(replacement) = confident_en_to_ru_decision(&ctx) {
-            let rule = TypingAssistRuleConfig {
-                id: ids::FAST_LAYOUT_EN_TO_RU.to_string(),
-                enabled: true,
-                priority: priorities::FAST_LAYOUT_EN_TO_RU,
-            };
-            let candidate = TypingCandidate::new(
-                ids::FAST_LAYOUT_EN_TO_RU,
-                priorities::FAST_LAYOUT_EN_TO_RU,
-                core,
-                replacement,
-            );
-            explanation.record(TypingRuleEvaluation::new(&rule).with_candidate(candidate.clone()));
-            return explanation.with_decision(
-                leading,
-                trailing,
-                TypingCandidateDecision {
-                    best: candidate,
-                    second: None,
-                    margin: f64::INFINITY,
-                },
-            );
-        }
+        pipeline,
+        microbrain_options.is_some(),
+    );
+    let explanation = collected.explanation;
+    let candidates = collected.candidates;
+    if let Some(decision) = collected.immediate_decision {
+        return explanation.with_decision(leading, trailing, decision);
     }
 
-    let mut candidates = Vec::new();
-
-    for rule in typing_rules_for_evaluation(pipeline) {
-        let evaluation = TypingRuleEvaluation::new(&rule);
-
-        if !rule.enabled {
-            explanation.record(evaluation.reject(TypingRuleEvaluation::REJECT_DISABLED));
-            continue;
-        }
-
-        let Some(definition) = find_typing_rule(&rule.id) else {
-            explanation.record(evaluation.reject(TypingRuleEvaluation::REJECT_UNKNOWN_RULE));
-            continue;
+    if let Some(options) = microbrain_options {
+        let (decision, trace) = rank_with_microbrain_trace(core, candidates, options);
+        let explanation = if let Some(decision) = decision {
+            explanation.with_decision(leading, trailing, decision)
+        } else {
+            explanation
         };
-
-        let Some(replacement) = (definition.apply)(&ctx) else {
-            explanation.record(evaluation.reject(TypingRuleEvaluation::REJECT_NO_CANDIDATE));
-            continue;
-        };
-
-        let candidate = TypingCandidate::new(&rule.id, rule.priority, core, replacement);
-        if !candidate.is_safe_for(core) {
-            explanation.record(
-                evaluation
-                    .with_candidate(candidate)
-                    .reject(TypingRuleEvaluation::REJECT_UNSAFE),
-            );
-            continue;
-        }
-
-        candidates.push(candidate.clone());
-        explanation.record(evaluation.with_candidate(candidate));
+        return explanation.with_microbrain(trace);
     }
 
-    let Some(decision) = rank_typing_candidates(candidates) else {
+    let decision = rank_typing_candidates(candidates);
+    let Some(decision) = decision else {
         return explanation;
     };
     explanation.with_decision(leading, trailing, decision)
-}
-
-fn confident_en_to_ru_decision(ctx: &TypingRuleContext<'_>) -> Option<String> {
-    rules::apply_fast_layout_en_to_ru(ctx)
-}
-
-fn fast_en_to_ru_allowed(pipeline: &[TypingAssistRuleConfig]) -> bool {
-    pipeline.iter().any(|rule| {
-        rule.enabled
-            && matches!(
-                rule.id.as_str(),
-                ids::CONTEXTUAL_LAYOUT_EN_TO_RU | ids::EXPERIMENTAL_LAYOUT_EN_TO_RU
-            )
-    })
 }

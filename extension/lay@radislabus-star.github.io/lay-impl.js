@@ -48,6 +48,8 @@ import {
     LEARNING_LOG_TOOLTIP,
     MENU_ICON_SIZE,
     MENU_WIDTH,
+    NANDA_EXPERT_CELL,
+    NANDA_TOOLTIP,
     PANEL_ICON_SIZE,
     PTAH_ALEXS_TOOLTIP,
     SAFETY_OPTIONS,
@@ -56,6 +58,7 @@ import {
     TRIGGER_OPTIONS,
     actionKindLabel,
     loadConfig,
+    loadNandaProfileText,
     loadRecentActions,
     loadStats,
     normalizeConfig,
@@ -152,6 +155,7 @@ class LayIndicator extends PanelMenu.Button {
 
         this.menu.addMenuItem(this._preferencesItem());
         this.menu.addMenuItem(this._recentActionsMenu());
+        this.menu.addMenuItem(this._arbiterMenu());
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._daemonSwitchItem());
         this.menu.addMenuItem(this._updateItem());
@@ -249,7 +253,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _arbiterMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('LEM-арбитр', false);
+        const item = new PopupMenu.PopupSubMenuMenuItem('Арбитры', false);
         item.menu.addMenuItem(this._switchItem(
             'LEM: 2 слова',
             'lem_2_words',
@@ -876,6 +880,10 @@ class LayIndicator extends PanelMenu.Button {
             style: COMPACT_SUBTITLE_STYLE,
         });
         box.add_child(this._aboutStatsLabel);
+        box.add_child(new St.Label({
+            text: `NANDA: ${loadNandaProfileText()}`,
+            style: COMPACT_SUBTITLE_STYLE,
+        }));
         const link = new St.Label({
             text: 'GitHub проекта',
             reactive: true,

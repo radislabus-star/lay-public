@@ -6,11 +6,47 @@ import Gtk from 'gi://Gtk';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.1.222';
+const APP_VERSION = '0.1.229';
 const APP_RELEASE_DATE = '2026-06-11';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
 const HEADER_ICON_SIZE = 16;
+const NANDA_EXPERT_CELL = 'Клетка: 64 КБ · активно авто';
+const NANDA_STATUS_FALLBACK = 'NANDA: статус недоступен';
+
+function loadNandaProfileText() {
+    const layBin = `${GLib.get_home_dir()}/.local/bin/lay`;
+    if (!GLib.file_test(layBin, GLib.FileTest.EXISTS))
+        return NANDA_EXPERT_CELL;
+    try {
+        const proc = Gio.Subprocess.new(
+            [layBin, '--nanda-profile'],
+            Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE
+        );
+        const [, stdout] = proc.communicate_utf8(null, null);
+        const text = String(stdout ?? '').trim();
+        return text || NANDA_EXPERT_CELL;
+    } catch(e) {
+        return NANDA_EXPERT_CELL;
+    }
+}
+
+function loadNandaStatusText() {
+    const layBin = `${GLib.get_home_dir()}/.local/bin/lay`;
+    if (!GLib.file_test(layBin, GLib.FileTest.EXISTS))
+        return NANDA_STATUS_FALLBACK;
+    try {
+        const proc = Gio.Subprocess.new(
+            [layBin, '--nanda-status'],
+            Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE
+        );
+        const [, stdout] = proc.communicate_utf8(null, null);
+        const text = String(stdout ?? '').trim();
+        return text || NANDA_STATUS_FALLBACK;
+    } catch(e) {
+        return NANDA_STATUS_FALLBACK;
+    }
+}
 
 const ENGINE_OPTIONS = [
     ['replay', 'Обычный'],
@@ -77,6 +113,8 @@ const DEFAULTS = {
     correction_safety: 'normal',
     enter_autocorrect: false,
     auto_switch_layout: true,
+    microbrain: false,
+    nanda_autocorrect: false,
     lem_2_words: true,
     lem_3_words: true,
     ptah_alexs_mode: false,
@@ -112,6 +150,8 @@ function normalizeConfig(cfg) {
         multi_tap_max_taps: normalizeNumber(cfg?.multi_tap_max_taps, 2, 4, DEFAULTS.multi_tap_max_taps),
         tap_max_ms: normalizeNumber(cfg?.tap_max_ms, 100, 500, DEFAULTS.tap_max_ms),
         shift_window_ms: normalizeNumber(cfg?.shift_window_ms, 150, 600, DEFAULTS.shift_window_ms),
+        microbrain: !!cfg?.microbrain || !!cfg?.nanda_autocorrect,
+        nanda_autocorrect: !!cfg?.nanda_autocorrect || !!cfg?.microbrain,
     };
 }
 
@@ -182,6 +222,7 @@ class LayPrefsView {
         grid.attach(this._section('Арбитры и каналы', [
             this._switchRow('LEM: 2 слова', 'lem_2_words', false),
             this._switchRow('LEM: 3 слова', 'lem_3_words', false),
+            this._buttonRow('NANDA ячейки', 'Открыть', () => this._showNandaWindow()),
             this._switchRow('Раскладка по окну', 'ptah_alexs_mode', false),
             this._comboRow('Канал ввода', 'text_backend', BACKEND_OPTIONS, true),
             this._comboRow('Среда раскладки', 'layout_backend', LAYOUT_BACKEND_OPTIONS, true),
@@ -259,6 +300,23 @@ class LayPrefsView {
         return this._row(label, toggle);
     }
 
+    _infoRow(label, value) {
+        const text = new Gtk.Label({
+            label: value,
+            xalign: 0,
+            wrap: true,
+            max_width_chars: 34,
+            css_classes: ['dim-label'],
+        });
+        return this._row(label, text);
+    }
+
+    _buttonRow(label, buttonLabel, callback) {
+        const button = new Gtk.Button({label: buttonLabel});
+        button.connect('clicked', callback);
+        return this._row(label, button);
+    }
+
     _comboRow(label, key, options, needsRestart) {
         const combo = new Gtk.ComboBoxText();
         let active = 0;
@@ -313,6 +371,168 @@ class LayPrefsView {
             }));
         }
         return this._row(label, box);
+    }
+
+    _nandaWavePanel() {
+        const waves = [
+            ['генератор', 1.0, 0.00, [0.18, 0.55, 0.95]],
+            ['раскладка', 1.6, 0.72, [0.20, 0.75, 0.42]],
+            ['защита', 2.1, 1.35, [0.93, 0.45, 0.25]],
+            ['контекст', 1.25, 2.00, [0.64, 0.45, 0.95]],
+            ['память', 1.8, 2.65, [0.95, 0.68, 0.25]],
+            ['сетка', 0.7, 3.10, [0.10, 0.70, 0.78]],
+        ];
+        const area = new Gtk.DrawingArea({
+            hexpand: true,
+            height_request: 230,
+        });
+        area.set_content_width(520);
+        area.set_content_height(230);
+        area.set_draw_func((_area, cr, width, height) => {
+            cr.setSourceRGBA(0.08, 0.09, 0.10, 0.04);
+            cr.paint();
+
+            cr.setLineWidth(1);
+            cr.setSourceRGBA(0.45, 0.45, 0.45, 0.18);
+            for (let y = 28; y < height - 24; y += 28) {
+                cr.moveTo(18, y);
+                cr.lineTo(width - 18, y);
+                cr.stroke();
+            }
+
+            const left = 72;
+            const right = width - 18;
+            const span = Math.max(1, right - left);
+            const mid = height / 2 + 8;
+
+            for (let i = 0; i < waves.length; i++) {
+                const [name, freq, phase, color] = waves[i];
+                const base = 36 + i * 26;
+                cr.setSourceRGBA(color[0], color[1], color[2], 0.72);
+                cr.setLineWidth(1.5);
+                for (let x = 0; x <= span; x++) {
+                    const t = x / span;
+                    const y = base + Math.sin(t * Math.PI * 2 * freq + phase) * 8;
+                    if (x === 0)
+                        cr.moveTo(left + x, y);
+                    else
+                        cr.lineTo(left + x, y);
+                }
+                cr.stroke();
+
+                cr.setSourceRGBA(0.20, 0.20, 0.20, 0.82);
+                cr.selectFontFace('Sans', 0, 0);
+                cr.setFontSize(10);
+                cr.moveTo(12, base + 4);
+                cr.showText(name);
+            }
+
+            cr.setSourceRGBA(0.02, 0.02, 0.02, 0.88);
+            cr.setLineWidth(3.2);
+            for (let x = 0; x <= span; x++) {
+                const t = x / span;
+                let sum = 0;
+                for (const [, freq, phase] of waves)
+                    sum += Math.sin(t * Math.PI * 2 * freq + phase);
+                const y = mid + sum / waves.length * 28;
+                if (x === 0)
+                    cr.moveTo(left + x, y);
+                else
+                    cr.lineTo(left + x, y);
+            }
+            cr.stroke();
+
+            cr.setSourceRGBA(0.02, 0.02, 0.02, 0.88);
+            cr.setFontSize(11);
+            cr.moveTo(12, height - 12);
+            cr.showText('несущая мода ансамбля');
+        });
+        return new Gtk.Frame({child: area});
+    }
+
+    _showNandaWindow() {
+        if (this._nandaWindow) {
+            this._nandaWindow.present();
+            return;
+        }
+
+        const window = new Gtk.Window({
+            title: 'NANDA',
+            default_width: 560,
+            default_height: 560,
+        });
+        this._nandaWindow = window;
+        window.connect('close-request', () => {
+            this._nandaWindow = null;
+            return false;
+        });
+
+        const scroll = new Gtk.ScrolledWindow({
+            hscrollbar_policy: Gtk.PolicyType.NEVER,
+            vscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
+        });
+        const inner = new Gtk.Box({
+            orientation: Gtk.Orientation.VERTICAL,
+            spacing: 12,
+            margin_top: 16,
+            margin_bottom: 16,
+            margin_start: 16,
+            margin_end: 16,
+        });
+
+        inner.append(new Gtk.Label({
+            label: 'NANDA — клеточный слой автокоррекции',
+            xalign: 0,
+            wrap: true,
+            css_classes: ['heading'],
+        }));
+        inner.append(new Gtk.Label({
+            label: 'NANDA не является большой LLM. Это набор маленьких ячеек, которые рождают варианты, оценивают риск, защищают технические слова и согласуют решение перед вставкой.',
+            xalign: 0,
+            wrap: true,
+            max_width_chars: 72,
+            css_classes: ['dim-label'],
+        }));
+
+        const switchList = new Gtk.ListBox({
+            selection_mode: Gtk.SelectionMode.NONE,
+            css_classes: ['boxed-list'],
+        });
+        switchList.append(this._switchRow('Автокоррекция NANDA', 'nanda_autocorrect', false));
+        inner.append(switchList);
+
+        inner.append(new Gtk.Label({label: 'Профиль', xalign: 0, css_classes: ['heading']}));
+        inner.append(new Gtk.Label({
+            label: loadNandaProfileText(),
+            xalign: 0,
+            wrap: true,
+            max_width_chars: 64,
+            css_classes: ['dim-label'],
+        }));
+
+        inner.append(new Gtk.Label({label: 'Волновая схема', xalign: 0, css_classes: ['heading']}));
+        inner.append(this._nandaWavePanel());
+
+        inner.append(new Gtk.Label({label: 'Ячейки и роли', xalign: 0, css_classes: ['heading']}));
+        inner.append(new Gtk.Label({
+            label: loadNandaStatusText(),
+            xalign: 0,
+            wrap: true,
+            selectable: true,
+            max_width_chars: 72,
+            css_classes: ['dim-label'],
+        }));
+        inner.append(new Gtk.Label({
+            label: 'Принцип: генератор предлагает исправления, защитные ячейки гасят опасные варианты, сетка согласования пропускает только устойчивое решение. Если согласия нет, lay ничего не меняет.',
+            xalign: 0,
+            wrap: true,
+            max_width_chars: 72,
+            css_classes: ['dim-label'],
+        }));
+
+        scroll.set_child(inner);
+        window.set_child(scroll);
+        window.present();
     }
 
     _aboutBox() {

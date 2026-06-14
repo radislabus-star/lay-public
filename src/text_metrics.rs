@@ -12,7 +12,7 @@ pub(crate) fn is_cyrillic_char(ch: char) -> bool {
     matches!(ch, 'А'..='я' | 'ё' | 'Ё')
 }
 
-pub(crate) fn without_whitespace(text: &str) -> String {
+pub fn without_whitespace(text: &str) -> String {
     text.chars().filter(|ch| !ch.is_whitespace()).collect()
 }
 
