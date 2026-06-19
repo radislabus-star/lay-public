@@ -1,4 +1,3 @@
-use evdev::uinput::VirtualDevice;
 use lay::config::CorrectionEngine;
 use lay::engine::{decide_manual_correction, ManualCorrectionInput, ManualCorrectionPolicy};
 use lay::keyboard::{
@@ -8,73 +7,26 @@ use lay::keyboard::{
 use lay::typing_assist::{
     effective_replace_words, should_force_replay_for_short_fragment, ScopedTailOptions,
 };
-use lay::word_buffer::WordBuffer;
 use std::time::Instant;
 
 use super::auto_undo_runtime::handle_pending_auto_undo;
-use super::physical_input_grab::PhysicalInputGrab;
 use super::{
     active_auto_switch_layout, active_lem_enabled_for_scope, log, log_manual_trigger_cross_check,
-    read_current_layout_is_ru, release_possible_modifiers, settle_after_physical_trigger_release,
-    switch_to_target_layout, ExecutingGuard,
+    read_current_layout_is_ru, ExecutingGuard,
 };
 
+#[path = "correction_runtime/force_layout.rs"]
+mod force_layout;
 #[path = "correction_runtime/memory.rs"]
 mod memory;
-
 #[path = "correction_runtime/output.rs"]
 mod output;
 use output::{apply_manual_correction_output, ManualCorrectionOutputContext};
+#[path = "correction_runtime/request.rs"]
+mod request;
 
-pub(super) struct ManualCorrectionRequest<'a, 'grab> {
-    pub(super) buf: &'a mut WordBuffer,
-    pub(super) replace_words: usize,
-    pub(super) engine: CorrectionEngine,
-    pub(super) auto_replace: bool,
-    pub(super) virtual_kbd: Option<&'a mut VirtualDevice>,
-    pub(super) executing: &'a mut bool,
-    pub(super) input_isolated: bool,
-    pub(super) physical_grab: Option<&'a mut PhysicalInputGrab<'grab>>,
-}
-
-pub(super) struct ScopedManualCorrectionRequest<'a, 'grab> {
-    pub(super) manual: ManualCorrectionRequest<'a, 'grab>,
-    pub(super) events_since_word_start: u32,
-    pub(super) label: &'a str,
-}
-
-pub(super) fn handle_force_layout_hotkey(
-    target_is_ru: bool,
-    buf: &mut WordBuffer,
-    virtual_kbd: Option<&mut VirtualDevice>,
-    executing: &mut bool,
-) -> Option<bool> {
-    let started_at = Instant::now();
-    settle_after_physical_trigger_release();
-    *executing = true;
-    let _executing_guard = ExecutingGuard(executing);
-
-    if let Some(kbd) = virtual_kbd {
-        if let Err(e) = release_possible_modifiers(kbd) {
-            log(&format!("⚠ force-layout modifier cleanup failed: {e}"));
-        }
-    }
-
-    match switch_to_target_layout(target_is_ru) {
-        Ok(layout_id) => {
-            buf.reset_all();
-            log(&format!(
-                "✓ force-layout → {layout_id} за {}ms",
-                started_at.elapsed().as_millis()
-            ));
-            Some(target_is_ru)
-        }
-        Err(e) => {
-            log(&format!("⚠ force-layout switch failed: {e}"));
-            None
-        }
-    }
-}
+pub(super) use force_layout::handle_force_layout_hotkey;
+pub(super) use request::{ManualCorrectionRequest, ScopedManualCorrectionRequest};
 
 pub(super) fn run_manual_correction_with_scope(
     req: ScopedManualCorrectionRequest<'_, '_>,

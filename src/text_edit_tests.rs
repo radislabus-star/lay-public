@@ -97,9 +97,14 @@ fn committed_tail_full_token_plan_can_be_shifted_behind_current_word() {
     let full_token =
         plan_committed_tail_full_token_replacement(original, replacement).expect("full token");
     let shifted = offset_replacement_plan_for_cursor(&full_token, 5);
+    let original_with_next = ["следущий", "слово"].join(" ");
+    let replacement_with_next = ["следующий", "слово"].join(" ");
 
     assert_eq!(shifted, text_replacement(6, 8, "следующий", 6));
-    assert_eq!(apply_plan("следущий слово", &shifted), "следующий слово");
+    assert_eq!(
+        apply_plan(&original_with_next, &shifted),
+        replacement_with_next
+    );
 }
 
 #[test]

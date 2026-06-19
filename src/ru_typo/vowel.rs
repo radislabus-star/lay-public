@@ -6,11 +6,15 @@ use crate::word_reader::is_cyrillic_word;
 use super::guards::looks_like_plausible_russian_past_tense;
 use super::thresholds::NGRAM_VOWEL_CONFUSION_MARGIN;
 
+#[path = "vowel/past_tense.rs"]
+mod past_tense;
+use past_tense::has_same_simple_past_tense_tail;
+
 pub(crate) fn correct_vowel_confusion(word: &str) -> Option<String> {
     correct_vowel_confusion_impl(word, false)
 }
 
-pub(crate) fn correct_vowel_confusion_contextual_past_tense(word: &str) -> Option<String> {
+pub(crate) fn correct_contextual_past_tense_vowel_confusion(word: &str) -> Option<String> {
     correct_vowel_confusion_impl(word, true)
 }
 
@@ -41,27 +45,4 @@ fn vowel_confusion_past_tense_candidate_exists(lower: &str, candidates: &[String
             && has_same_simple_past_tense_tail(lower, candidate)
             && crate::ngram::ru_candidate_margin(candidate, lower) >= NGRAM_VOWEL_CONFUSION_MARGIN
     })
-}
-
-fn has_same_simple_past_tense_tail(left: &str, right: &str) -> bool {
-    [
-        "ился",
-        "илась",
-        "ились",
-        "илось",
-        "ался",
-        "алась",
-        "ались",
-        "алось",
-        "ила",
-        "или",
-        "ило",
-        "ил",
-        "ала",
-        "али",
-        "ало",
-        "ал",
-    ]
-    .iter()
-    .any(|tail| left.ends_with(tail) && right.ends_with(tail))
 }

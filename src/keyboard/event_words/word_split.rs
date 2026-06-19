@@ -10,7 +10,6 @@ pub fn mark_word_layout(word: &mut [KeyEvent], layout_is_ru: bool) {
         }
     }
 }
-
 pub fn mark_single_current_word_layout_if_stale(
     events: &mut [KeyEvent],
     current_layout_is_ru: bool,
@@ -22,7 +21,6 @@ pub fn mark_single_current_word_layout_if_stale(
     {
         return false;
     }
-
     let mut typing_layouts = events
         .iter()
         .filter(|event| is_typing_key(KeyCode::new(event.keycode)))
@@ -43,10 +41,10 @@ pub fn split_event_words(events: &[KeyEvent]) -> Option<Vec<&[KeyEvent]>> {
         return None;
     }
 
-    let end = if events
+    let ends_with_space = events
         .last()
-        .is_some_and(|event| event.keycode == KeyCode::KEY_SPACE.code())
-    {
+        .is_some_and(|event| event.keycode == KeyCode::KEY_SPACE.code());
+    let end = if ends_with_space {
         events.len().saturating_sub(1)
     } else {
         events.len()
@@ -54,7 +52,6 @@ pub fn split_event_words(events: &[KeyEvent]) -> Option<Vec<&[KeyEvent]>> {
     if end == 0 {
         return None;
     }
-
     let mut words = Vec::new();
     let mut start = 0;
     for (idx, event) in events.iter().take(end).enumerate() {
@@ -68,6 +65,5 @@ pub fn split_event_words(events: &[KeyEvent]) -> Option<Vec<&[KeyEvent]>> {
     if start < end {
         words.push(&events[start..end]);
     }
-
     (!words.is_empty()).then_some(words)
 }

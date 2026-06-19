@@ -10,17 +10,22 @@ use crate::phrase_reader::{
     correct_glued_russian_phrase, correct_moved_prefix_letter_pair, correct_split_word_pair,
 };
 use crate::ru_typo::{
-    correct_adjacent_transposition, correct_cyrillic_word_case, correct_extra_letters,
-    correct_extra_letters_after_layout, correct_hard_sign_typo, correct_missing_letter,
-    correct_repeated_letter, correct_single_letter_substitution, correct_verb_ending_confusion,
-    correct_vowel_confusion, correct_vowel_confusion_contextual_past_tense,
+    correct_adjacent_transposition, correct_contextual_past_tense_vowel_confusion,
+    correct_cyrillic_word_case, correct_extra_letters, correct_hard_sign_typo,
+    correct_missing_letter, correct_repeated_letter, correct_single_letter_substitution,
+    correct_verb_ending_confusion, correct_vowel_confusion,
 };
 use crate::typing_replacements::{replace_visual_b_words, replacement_for_token};
-use crate::word_reader::{is_cyrillic_word, split_word_punctuation};
 
 use super::types::TypingRuleContext;
 
-type TextRule = fn(&str) -> Option<String>;
+#[path = "rules/helpers.rs"]
+mod helpers;
+use helpers::TextRule;
+use helpers::{
+    apply_core_then_word_rule, apply_short_left_word_rule, apply_token_word_rule,
+    cleanup_extra_letters_after_ru_layout, layout_auto_allowed,
+};
 
 pub(super) fn apply_moved_prefix_pair(ctx: &TypingRuleContext<'_>) -> Option<String> {
     correct_moved_prefix_letter_pair(ctx.core)
@@ -137,7 +142,7 @@ pub(super) fn apply_verb_ending(ctx: &TypingRuleContext<'_>) -> Option<String> {
 }
 
 pub(super) fn apply_vowel_confusion(ctx: &TypingRuleContext<'_>) -> Option<String> {
-    apply_short_left_word_rule(ctx, correct_vowel_confusion_contextual_past_tense)
+    apply_short_left_word_rule(ctx, correct_contextual_past_tense_vowel_confusion)
         .or_else(|| apply_word_rule(ctx, correct_vowel_confusion))
 }
 
@@ -156,54 +161,6 @@ pub(super) fn apply_glued_phrase(ctx: &TypingRuleContext<'_>) -> Option<String> 
         .or_else(|| apply_word_rule(ctx, correct_glued_russian_phrase))
 }
 
-fn layout_auto_allowed(ctx: &TypingRuleContext<'_>) -> bool {
-    ctx.allow_layout_auto
-}
-
-fn apply_core_then_word_rule(ctx: &TypingRuleContext<'_>, rule: TextRule) -> Option<String> {
-    rule(ctx.core).or_else(|| apply_word_rule(ctx, rule))
-}
-
-fn apply_short_left_word_rule(ctx: &TypingRuleContext<'_>, rule: TextRule) -> Option<String> {
-    let parts: Vec<&str> = ctx.core.split_whitespace().collect();
-    if parts.len() != 2 {
-        return None;
-    }
-    if !crate::phrase_lexicon::is_short_russian_function_word(&parts[0].to_lowercase()) {
-        return None;
-    }
-    let replacement = rule(parts[1])?;
-    (replacement != parts[1]).then(|| format!("{} {}", parts[0], replacement))
-}
-
 fn apply_word_rule(ctx: &TypingRuleContext<'_>, rule: TextRule) -> Option<String> {
-    if ctx.word.is_empty() {
-        return None;
-    }
-    rule(ctx.word)
-        .map(|replacement| format!("{}{}{}", ctx.token_leading, replacement, ctx.token_trailing))
-}
-
-fn cleanup_extra_letters_after_ru_layout(text: &str) -> String {
-    let mut changed = false;
-    let repaired = text
-        .split_whitespace()
-        .map(|part| {
-            let (leading, word, trailing) = split_word_punctuation(part);
-            if word.is_empty() || !is_cyrillic_word(word) {
-                return part.to_string();
-            }
-            let Some(replacement) = correct_extra_letters_after_layout(word) else {
-                return part.to_string();
-            };
-            changed = true;
-            format!("{leading}{replacement}{trailing}")
-        })
-        .collect::<Vec<_>>()
-        .join(" ");
-    if changed {
-        repaired
-    } else {
-        text.to_string()
-    }
+    apply_token_word_rule(ctx, rule)
 }

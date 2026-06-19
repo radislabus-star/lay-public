@@ -31,7 +31,7 @@ mod vowel;
 
 pub(crate) use case_rule::correct_cyrillic_word_case;
 pub(crate) use coverage::has_plausible_russian_typo_candidate;
-pub use extra::{correct_extra_letters, correct_extra_letters_after_layout};
+pub use extra::{correct_extra_letters, repair_extra_letters_after_layout};
 pub(crate) use hard_sign::correct_hard_sign_typo;
 pub use keyboard::are_ru_keyboard_neighbors;
 pub use missing::correct_missing_letter;
@@ -40,4 +40,4 @@ pub(crate) use repeated::correct_repeated_letter;
 pub(crate) use substitution::correct_single_letter_substitution;
 pub(crate) use transposition::correct_adjacent_transposition;
 pub(crate) use verb::correct_verb_ending_confusion;
-pub(crate) use vowel::{correct_vowel_confusion, correct_vowel_confusion_contextual_past_tense};
+pub(crate) use vowel::{correct_contextual_past_tense_vowel_confusion, correct_vowel_confusion};

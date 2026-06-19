@@ -1,25 +1,15 @@
-use evdev::{uinput::VirtualDevice, Device};
-use lay::word_buffer::WordBuffer;
-use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
-use super::super::pending_typing_assist::PendingTypingAssist;
 use super::super::{
     active_typing_assist, apply_prepared_typing_assist_after_space,
     focused_ime_engine_handles_typing, lock_virtual_keyboard, log,
-    should_run_deferred_typing_assist_after_space, ShiftState, TypingAssistOutcome,
+    pending_typing_assist::PendingTypingAssist, should_run_deferred_typing_assist_after_space,
+    TypingAssistOutcome,
 };
 
-pub(crate) struct DeferredTypingAssistContext<'a> {
-    pub(crate) buffer: &'a mut WordBuffer,
-    pub(crate) device: &'a mut Device,
-    pub(crate) virtual_kbd: &'a Arc<Mutex<Option<VirtualDevice>>>,
-    pub(crate) executing: &'a mut bool,
-    pub(crate) current_layout_is_ru: &'a mut bool,
-    pub(crate) last_layout_poll: &'a mut Instant,
-    pub(crate) pending_typing_assist_after_space: &'a mut Option<PendingTypingAssist>,
-    pub(crate) shift_state: &'a ShiftState,
-}
+#[path = "deferred/context.rs"]
+mod context;
+pub(crate) use context::DeferredTypingAssistContext;
 
 pub(crate) fn try_handle_deferred_typing_assist(ctx: DeferredTypingAssistContext<'_>) -> bool {
     if ctx.pending_typing_assist_after_space.is_some() && focused_ime_engine_handles_typing() {
@@ -46,7 +36,6 @@ pub(crate) fn try_handle_deferred_typing_assist(ctx: DeferredTypingAssistContext
     };
     let (correction, cursor_offset) = pending.into_parts();
     let retry_correction = correction.clone();
-
     let mut g = lock_virtual_keyboard(ctx.virtual_kbd);
     let outcome = apply_prepared_typing_assist_after_space(
         ctx.buffer,
