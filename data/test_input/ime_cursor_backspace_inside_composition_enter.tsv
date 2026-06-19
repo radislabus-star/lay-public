@@ -1,0 +1,8 @@
+type	abcd
+sleep	120
+left
+sleep	80
+backspace
+sleep	80
+type	x
+enter

@@ -175,4 +175,15 @@ CASES = {
     "ime_prefix_proverka_ghjdthrf_alt_enter": Case(
         "ime_prefix_proverka_ghjdthrf_alt_enter", "проверка проверка"
     ),
+    "ime_ctrl_a_passthrough_enter": Case("ime_ctrl_a_passthrough_enter", "x"),
+    "ime_ctrl_l_passthrough_enter": Case("ime_ctrl_l_passthrough_enter", "abcx"),
+    "ime_alt_left_right_passthrough_enter": Case(
+        "ime_alt_left_right_passthrough_enter", "abcx"
+    ),
+    "ime_cursor_backspace_inside_composition_enter": Case(
+        "ime_cursor_backspace_inside_composition_enter", "abxd"
+    ),
+    "ime_backspace_after_shift_commit_enter": Case(
+        "ime_backspace_after_shift_commit_enter", "проверк"
+    ),
 }

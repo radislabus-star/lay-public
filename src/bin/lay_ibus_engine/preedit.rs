@@ -205,6 +205,9 @@ impl LayIbusEngine {
     }
 
     fn precognition_suffix_candidates(&self) -> Vec<String> {
+        if !self.precognition_preedit_enabled() {
+            return Vec::new();
+        }
         if self.composition_has_pending_autocorrect() {
             return Vec::new();
         }
@@ -292,7 +295,7 @@ impl LayIbusEngine {
 
     fn precognition_preedit_enabled(&self) -> bool {
         self.config.nanda_precognition
-            || self.config.active_text_backend() == TextBackendPreference::Ime
+            && self.config.active_text_backend() == TextBackendPreference::Ime
     }
 
     fn probe_suffix_if_tail_is_ready(&self) -> Option<String> {
@@ -378,6 +381,7 @@ mod tests {
             true,
             true,
             LayConfig {
+                text_backend: "ime".to_string(),
                 nanda_precognition: true,
                 ..LayConfig::default()
             },
@@ -396,6 +400,7 @@ mod tests {
             true,
             true,
             LayConfig {
+                text_backend: "ime".to_string(),
                 nanda_precognition: true,
                 correction_safety: "normal".to_string(),
                 ..LayConfig::default()
@@ -415,6 +420,7 @@ mod tests {
             true,
             true,
             LayConfig {
+                text_backend: "ime".to_string(),
                 nanda_precognition: true,
                 correction_safety: "normal".to_string(),
                 ..LayConfig::default()
@@ -437,6 +443,7 @@ mod tests {
             true,
             true,
             LayConfig {
+                text_backend: "ime".to_string(),
                 nanda_precognition: true,
                 correction_safety: "normal".to_string(),
                 ..LayConfig::default()
@@ -460,6 +467,7 @@ mod tests {
             true,
             true,
             LayConfig {
+                text_backend: "ime".to_string(),
                 nanda_precognition: true,
                 ..LayConfig::default()
             },
@@ -501,6 +509,7 @@ mod tests {
             true,
             true,
             LayConfig {
+                text_backend: "ime".to_string(),
                 nanda_precognition: true,
                 correction_safety: "normal".to_string(),
                 ..LayConfig::default()
@@ -524,6 +533,7 @@ mod tests {
             true,
             true,
             LayConfig {
+                text_backend: "ime".to_string(),
                 nanda_precognition: true,
                 correction_safety: "strict".to_string(),
                 ..LayConfig::default()
@@ -546,6 +556,7 @@ mod tests {
             true,
             true,
             LayConfig {
+                text_backend: "ime".to_string(),
                 nanda_precognition: true,
                 correction_safety: "experimental".to_string(),
                 ..LayConfig::default()
@@ -565,6 +576,7 @@ mod tests {
             true,
             true,
             LayConfig {
+                text_backend: "ime".to_string(),
                 nanda_precognition: true,
                 correction_safety: "experimental".to_string(),
                 ..LayConfig::default()
@@ -596,7 +608,7 @@ mod tests {
     }
 
     #[test]
-    fn ime_backend_enables_probe_preedit_without_separate_flag() {
+    fn ime_backend_without_precognition_does_not_enable_probe_preedit() {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
             Arc::new(Mutex::new(Default::default())),
@@ -609,11 +621,8 @@ mod tests {
             },
         );
         engine.tail_buffer = "ab".to_string();
-        assert!(engine.precognition_preedit_enabled());
-        assert_eq!(
-            engine.precognition_suffix().as_deref(),
-            Some(PREEDIT_PROBE_SYMBOL)
-        );
+        assert!(!engine.precognition_preedit_enabled());
+        assert_eq!(engine.precognition_suffix(), None);
     }
 
     #[test]

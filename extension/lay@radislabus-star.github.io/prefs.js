@@ -219,13 +219,15 @@ function normalizeNumber(value, min, max, fallback) {
 }
 
 function normalizeConfig(cfg) {
+    const textBackend = normalizeChoice(cfg?.text_backend, BACKEND_OPTIONS.map(([id]) => id), DEFAULTS.text_backend);
     return {
         ...DEFAULTS,
         ...cfg,
         mode: 'simple',
         correction_engine: normalizeChoice(cfg?.correction_engine, ['replay', 'smart'], DEFAULTS.correction_engine),
         layout_backend: normalizeChoice(cfg?.layout_backend, LAYOUT_BACKEND_OPTIONS.map(([id]) => id), DEFAULTS.layout_backend),
-        text_backend: normalizeChoice(cfg?.text_backend, BACKEND_OPTIONS.map(([id]) => id), DEFAULTS.text_backend),
+        text_backend: textBackend,
+        nanda_precognition: textBackend === 'ime',
         trigger: normalizeChoice(cfg?.trigger, TRIGGER_OPTIONS.map(([id]) => id), DEFAULTS.trigger),
         force_ru_key: normalizeChoice(cfg?.force_ru_key, FORCE_KEY_OPTIONS.map(([id]) => id), DEFAULTS.force_ru_key),
         force_en_key: normalizeChoice(cfg?.force_en_key, FORCE_KEY_OPTIONS.map(([id]) => id), DEFAULTS.force_en_key),
@@ -318,10 +320,9 @@ class LayPrefsView {
             this._switchRow('LEM: 2 слова', 'lem_2_words', false),
             this._switchRow('LEM: 3 слова', 'lem_3_words', false),
             this._switchRow('Автокоррекция NANDA', 'nanda_autocorrect', false),
-            this._inlinePreeditRow('Серые подсказки (IME)', true),
             this._buttonRow('NANDA ячейки', 'Открыть', () => this._showNandaWindow()),
             this._switchRow('Раскладка по окну', 'ptah_alexs_mode', false),
-            this._comboRow('Канал ввода', 'text_backend', BACKEND_OPTIONS, true),
+            this._comboRow('Режим ввода', 'text_backend', BACKEND_OPTIONS, true),
             this._comboRow('Среда раскладки', 'layout_backend', LAYOUT_BACKEND_OPTIONS, true),
         ]), 0, 1, 1, 1);
 
@@ -410,24 +411,6 @@ class LayPrefsView {
         return this._row(label, toggle);
     }
 
-    _inlinePreeditRow(label, needsRestart) {
-        const toggle = new Gtk.Switch({
-            active: !!this._cfg.nanda_precognition && this._cfg.text_backend === 'ime',
-        });
-        toggle.connect('notify::active', () => {
-            this._cfg.nanda_precognition = toggle.active;
-            if (toggle.active)
-                this._cfg.text_backend = 'ime';
-            else
-                this._cfg.text_backend = 'uinput';
-            saveConfig(this._cfg);
-            applyInputChannel(this._cfg.text_backend);
-            if (needsRestart)
-                restartDaemon();
-        });
-        return this._row(label, toggle);
-    }
-
     _infoRow(label, value) {
         const text = new Gtk.Label({
             label: value,
@@ -461,8 +444,8 @@ class LayPrefsView {
             if (!id)
                 return;
             this._cfg[key] = /^\d+$/.test(id) ? Number(id) : id;
-            if (key === 'text_backend' && id !== 'ime')
-                this._cfg.nanda_precognition = false;
+            if (key === 'text_backend')
+                this._cfg.nanda_precognition = id === 'ime';
             saveConfig(this._cfg);
             if (key === 'text_backend')
                 applyInputChannel(id);

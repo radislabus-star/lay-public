@@ -4,7 +4,7 @@ use zbus::object_server::SignalEmitter;
 use zbus::zvariant::Value;
 
 use super::engine::LayIbusEngine;
-use super::protocol::{is_key_press, is_shift_key};
+use super::protocol::{is_accept_completion_with_space_key, is_key_press, is_shift_key};
 use super::trace;
 
 #[interface(name = "org.freedesktop.IBus.Engine")]
@@ -20,6 +20,14 @@ impl LayIbusEngine {
         if !self.managed_input {
             return Ok(false);
         }
+        if !self.live_composition_enabled() {
+            if self.has_live_composition_state() {
+                self.reset_for_ibus_focus_change();
+                self.clear_preedit(&emitter).await?;
+            }
+            trace::record_key("composition_disabled", keyval, keycode, false, None, 0, 0);
+            return Ok(false);
+        }
         if is_shift_key(keyval) {
             let pressed = is_key_press(state);
             self.shift_active = pressed;
@@ -29,11 +37,29 @@ impl LayIbusEngine {
             }
             return self.handle_shift_release(&emitter).await;
         }
+        if is_accept_completion_with_space_key(keyval) {
+            let pressed = is_key_press(state);
+            if pressed {
+                self.alt_completion_active = true;
+                self.alt_used_as_modifier = false;
+                return Ok(false);
+            }
+            if self.alt_completion_active && !self.alt_used_as_modifier {
+                self.alt_completion_active = false;
+                return self.accept_completion_with_space(&emitter).await;
+            }
+            self.alt_completion_active = false;
+            self.alt_used_as_modifier = false;
+            return Ok(false);
+        }
         if !is_key_press(state) {
             return Ok(false);
         }
         if self.shift_active {
             self.shift_used_as_modifier = true;
+        }
+        if self.alt_completion_active {
+            self.alt_used_as_modifier = true;
         }
         self.process_pressed_key(&emitter, keyval, keycode, state)
             .await

@@ -605,6 +605,7 @@ def main() -> int:
             restart.triggered.connect(lambda: self.run_service_action("restart"))
             self.menu.addAction(restart)
 
+            self.add_input_backend_menu(self.menu, cfg, keep_open=True)
             self.add_layout_backend_menu(self.menu, cfg, keep_open=True)
 
             update = QAction("Проверить обновления", self.menu)
@@ -631,7 +632,6 @@ def main() -> int:
 
             self.menu.addSeparator()
             self.add_bool_action("Автокоррекция NANDA", "nanda_autocorrect", cfg)
-            self.add_inline_preedit_action(cfg)
             nanda = QAction("NANDA ячейки", self.menu)
             nanda.triggered.connect(self.show_nanda)
             self.menu.addAction(nanda)
@@ -675,19 +675,33 @@ def main() -> int:
             save_config(cfg)
             self.rebuild_menu()
 
-        def add_inline_preedit_action(self, cfg: dict[str, Any]) -> None:
-            action = QAction("Серые подсказки", self.menu)
-            action.setCheckable(True)
-            action.setChecked(bool(cfg.get("nanda_precognition")))
-            action.triggered.connect(lambda checked: self.update_inline_preedit(bool(checked)))
-            self.menu.addAction(action)
-
-        def update_inline_preedit(self, enabled: bool) -> None:
-            cfg = load_config()
-            cfg["nanda_precognition"] = enabled
-            save_config(cfg)
-            self.run_service_action("restart", notify=False)
-            self.rebuild_menu()
+        def add_input_backend_menu(
+            self,
+            parent: QMenu,
+            cfg: dict[str, Any],
+            keep_open: bool = False,
+        ) -> None:
+            current = str(cfg.get("text_backend", "uinput"))
+            menu = parent.addMenu(f"Режим ввода: {self.input_backend_label(current)}")
+            group = QActionGroup(menu)
+            group.setExclusive(True)
+            for value, label in (
+                ("uinput", "Быстрый ввод"),
+                ("ime", "IME, эксперимент"),
+                ("auto", "Авто"),
+            ):
+                action = QAction(label, menu)
+                action.setCheckable(True)
+                action.setChecked(current == value)
+                action.triggered.connect(
+                    lambda _checked, chosen=value: self.update_config(
+                        "text_backend",
+                        chosen,
+                        keep_open=keep_open,
+                    )
+                )
+                group.addAction(action)
+                menu.addAction(action)
 
         def add_layout_backend_menu(
             self,
@@ -750,6 +764,8 @@ def main() -> int:
             cfg[key] = value
             if key == "correction_engine":
                 cfg["mode"] = "simple"
+            if key == "text_backend":
+                cfg["nanda_precognition"] = value == "ime"
             if cfg.get("force_ru_key") == cfg.get("force_en_key"):
                 cfg["force_layout_hotkeys"] = False
             if cfg.get("text_backend") not in ("uinput", "ime", "auto"):
@@ -893,6 +909,14 @@ def main() -> int:
                 "x11": "X11",
                 "niri": "Niri эксп.",
             }.get(str(value), "Авто")
+
+        @staticmethod
+        def input_backend_label(value: Any) -> str:
+            return {
+                "uinput": "Быстрый ввод",
+                "ime": "IME, эксперимент",
+                "auto": "Авто",
+            }.get(str(value), "Быстрый ввод")
 
     lock_file = acquire_single_instance_lock()
     if lock_file is None:

@@ -1,4 +1,5 @@
 use std::process::Command;
+use std::thread;
 
 use lay::keyboard::preferred_layout_for_text;
 
@@ -18,14 +19,13 @@ impl LayIbusEngine {
             return;
         }
         let target_engine = ime_engine_for_layout(target_is_ru);
-        let result = Command::new("ibus")
-            .args(["engine", target_engine])
-            .status();
-        let ok = result.as_ref().is_ok_and(|status| status.success());
-        if ok {
-            self.layout_is_ru = target_is_ru;
-        }
-        trace::record_layout_sync(target_is_ru, target_engine, ok);
+        thread::spawn(move || {
+            let result = Command::new("timeout")
+                .args(["0.7s", "ibus", "engine", target_engine])
+                .status();
+            let ok = result.as_ref().is_ok_and(|status| status.success());
+            trace::record_layout_sync(target_is_ru, target_engine, ok);
+        });
     }
 }
 

@@ -1,0 +1,6 @@
+type	abc
+sleep	120
+ctrl_a
+sleep	120
+type	x
+enter

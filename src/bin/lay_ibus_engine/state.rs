@@ -32,6 +32,8 @@ impl LayIbusEngine {
             layout_is_ru,
             shift_active: false,
             shift_used_as_modifier: false,
+            alt_completion_active: false,
+            alt_used_as_modifier: false,
             last_shift_release_at: None,
             last_commit_at: None,
             managed_input,
@@ -51,6 +53,8 @@ impl LayIbusEngine {
         self.preedit_dirty = false;
         self.last_shift_release_at = None;
         self.shift_used_as_modifier = false;
+        self.alt_completion_active = false;
+        self.alt_used_as_modifier = false;
         if !preserve_tail {
             self.tail_buffer.clear();
             self.preedit_fast.reset();

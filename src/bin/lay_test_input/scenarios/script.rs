@@ -1,5 +1,5 @@
 use super::super::desktop_probe::activate_layout;
-use super::super::input_device::{double_alt, double_shift, double_shift_enter, tap};
+use super::super::input_device::{double_alt, double_shift, double_shift_enter, hold_tap, tap};
 use super::typing::type_physical;
 use evdev::{uinput::VirtualDevice, KeyCode};
 use std::fs;
@@ -50,6 +50,12 @@ pub(super) fn run_script_text(
             ["up"] => tap(dev, KeyCode::KEY_UP.code())?,
             ["down"] => tap(dev, KeyCode::KEY_DOWN.code())?,
             ["backspace"] => tap(dev, KeyCode::KEY_BACKSPACE.code())?,
+            ["ctrl_a"] => hold_tap(dev, KeyCode::KEY_LEFTCTRL.code(), KeyCode::KEY_A.code())?,
+            ["ctrl_l"] => hold_tap(dev, KeyCode::KEY_LEFTCTRL.code(), KeyCode::KEY_L.code())?,
+            ["ctrl_c"] => hold_tap(dev, KeyCode::KEY_LEFTCTRL.code(), KeyCode::KEY_C.code())?,
+            ["ctrl_v"] => hold_tap(dev, KeyCode::KEY_LEFTCTRL.code(), KeyCode::KEY_V.code())?,
+            ["alt_left"] => hold_tap(dev, KeyCode::KEY_LEFTALT.code(), KeyCode::KEY_LEFT.code())?,
+            ["alt_right"] => hold_tap(dev, KeyCode::KEY_LEFTALT.code(), KeyCode::KEY_RIGHT.code())?,
             ["double_shift"] => double_shift(dev, 900)?,
             ["double_shift_enter"] => double_shift_enter(dev, 900)?,
             ["double_alt"] => double_alt(dev, 900)?,

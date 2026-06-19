@@ -195,13 +195,15 @@ function number(value, min, max, fallback) {
 }
 
 function normalize(cfg) {
+    const textBackend = choice(cfg?.text_backend, OPTIONS.text_backend.map(([id]) => id), DEFAULTS.text_backend);
     return {
         ...DEFAULTS,
         ...cfg,
         mode: 'simple',
         correction_engine: choice(cfg?.correction_engine, OPTIONS.correction_engine.map(([id]) => id), DEFAULTS.correction_engine),
         layout_backend: choice(cfg?.layout_backend, OPTIONS.layout_backend.map(([id]) => id), DEFAULTS.layout_backend),
-        text_backend: choice(cfg?.text_backend, OPTIONS.text_backend.map(([id]) => id), DEFAULTS.text_backend),
+        text_backend: textBackend,
+        nanda_precognition: textBackend === 'ime',
         trigger: choice(cfg?.trigger, OPTIONS.trigger.map(([id]) => id), DEFAULTS.trigger),
         force_ru_key: choice(cfg?.force_ru_key, OPTIONS.force_key.map(([id]) => id), DEFAULTS.force_ru_key),
         force_en_key: choice(cfg?.force_en_key, OPTIONS.force_key.map(([id]) => id), DEFAULTS.force_en_key),
@@ -315,10 +317,9 @@ class SettingsView {
             this.switchRow('LEM: 2 слова', 'lem_2_words', false),
             this.switchRow('LEM: 3 слова', 'lem_3_words', false),
             this.switchRow('Автокоррекция NANDA', 'nanda_autocorrect', false),
-            this.inlinePreeditRow('Серые подсказки (IME)', true),
             this.buttonRow('NANDA ячейки', 'Открыть', () => this.showNandaWindow()),
             this.switchRow('Раскладка по окну', 'ptah_alexs_mode', false),
-            this.comboRow('Канал ввода', 'text_backend', OPTIONS.text_backend, true),
+            this.comboRow('Режим ввода', 'text_backend', OPTIONS.text_backend, true),
             this.comboRow('Среда раскладки', 'layout_backend', OPTIONS.layout_backend, true),
         ]), 1, 1, 1, 1);
 
@@ -357,24 +358,6 @@ class SettingsView {
             this.cfg.nanda_trace = sw.active;
             this.cfg.nanda_trace_text = sw.active;
             saveConfig(this.cfg);
-        });
-        return optionRow(label, sw);
-    }
-
-    inlinePreeditRow(label, needsRestart) {
-        const sw = new Gtk.Switch({
-            active: !!this.cfg.nanda_precognition && this.cfg.text_backend === 'ime',
-        });
-        sw.connect('notify::active', () => {
-            this.cfg.nanda_precognition = sw.active;
-            if (sw.active)
-                this.cfg.text_backend = 'ime';
-            else
-                this.cfg.text_backend = 'uinput';
-            saveConfig(this.cfg);
-            applyInputChannel(this.cfg.text_backend);
-            if (needsRestart)
-                restartDaemon();
         });
         return optionRow(label, sw);
     }
@@ -533,8 +516,8 @@ class SettingsView {
         combo.connect('changed', () => {
             const id = combo.get_active_id();
             this.cfg[key] = /^\d+$/.test(id) ? Number(id) : id;
-            if (key === 'text_backend' && id !== 'ime')
-                this.cfg.nanda_precognition = false;
+            if (key === 'text_backend')
+                this.cfg.nanda_precognition = id === 'ime';
             saveConfig(this.cfg);
             if (key === 'text_backend')
                 applyInputChannel(id);

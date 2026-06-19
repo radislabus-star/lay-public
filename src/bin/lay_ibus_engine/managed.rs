@@ -4,8 +4,8 @@ use zbus::object_server::SignalEmitter;
 use super::composition_commit::ActiveCompositionCommit;
 use super::engine::LayIbusEngine;
 use super::protocol::{
-    has_command_modifier, is_accept_completion_with_space_key, KEY_BACKSPACE, KEY_DOWN, KEY_ENTER,
-    KEY_KP_ENTER, KEY_LEFT, KEY_RIGHT, KEY_SPACE, KEY_TAB, KEY_UP,
+    has_command_modifier, KEY_BACKSPACE, KEY_DOWN, KEY_ENTER, KEY_KP_ENTER, KEY_LEFT, KEY_RIGHT,
+    KEY_SPACE, KEY_TAB, KEY_UP,
 };
 
 impl LayIbusEngine {
@@ -73,11 +73,6 @@ impl LayIbusEngine {
             self.trace_key("tab", keyval, keycode, handled, None);
             return Ok(handled);
         }
-        if is_accept_completion_with_space_key(keyval) {
-            let handled = self.accept_completion(emitter, true).await?;
-            self.trace_key("alt_accept", keyval, keycode, handled, None);
-            return Ok(handled);
-        }
         if has_command_modifier(state) {
             self.trace_key("command_passthrough", keyval, keycode, false, None);
             return Ok(false);
@@ -86,11 +81,8 @@ impl LayIbusEngine {
             if !self.buffer.is_empty() {
                 self.commit_active_composition(emitter, ActiveCompositionCommit::plain())
                     .await?;
-                Self::forward_key_event(emitter, keyval, keycode, state)
-                    .await
-                    .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-                self.trace_key("enter_forward", keyval, keycode, true, None);
-                return Ok(true);
+                self.trace_key("enter_commit_passthrough", keyval, keycode, false, None);
+                return Ok(false);
             }
             self.tail_buffer.clear();
             self.preedit_fast.reset();
@@ -157,6 +149,15 @@ impl LayIbusEngine {
         )
         .await?;
         Ok(true)
+    }
+
+    pub(super) async fn accept_completion_with_space(
+        &mut self,
+        emitter: &SignalEmitter<'_>,
+    ) -> fdo::Result<bool> {
+        let handled = self.accept_completion(emitter, true).await?;
+        self.trace_key("alt_accept", 0, 0, handled, None);
+        Ok(handled)
     }
 }
 

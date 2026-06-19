@@ -1,0 +1,8 @@
+type	abc
+sleep	120
+alt_left
+sleep	120
+alt_right
+sleep	120
+type	x
+enter

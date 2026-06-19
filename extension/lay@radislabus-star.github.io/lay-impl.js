@@ -235,26 +235,6 @@ class LayIndicator extends PanelMenu.Button {
         return item;
     }
 
-    _inlinePreeditItem() {
-        const active = !!this._cfg.nanda_precognition && this._cfg.text_backend === 'ime';
-        const item = persistentSwitchItem('Серые подсказки (IME)', active);
-        item.connect('toggled', (_item, state) => {
-            this._cfg.nanda_precognition = !!state;
-            if (state)
-                this._cfg.text_backend = 'ime';
-            else
-                this._cfg.text_backend = 'uinput';
-            this._saveAndRefresh();
-            applyInputChannel(this._cfg.text_backend);
-            restartDaemon();
-            this._setDaemonBusy('перезапуск...');
-            this._scheduleStatusRefreshes();
-        });
-        this._attachTooltip(item, 'Inline-подсказки работают только через экспериментальный IME-канал. Быстрый uinput выводит текст без серого preedit.');
-        this._inlinePreeditSwitch = item;
-        return item;
-    }
-
     _behaviorMenu() {
         const item = new PopupMenu.PopupSubMenuMenuItem('Поведение', false);
         item.menu.addMenuItem(this._switchItem(
@@ -318,7 +298,6 @@ class LayIndicator extends PanelMenu.Button {
             false,
             LEM_3_TOOLTIP
         ));
-        item.menu.addMenuItem(this._inlinePreeditItem());
         return item;
     }
 
@@ -361,7 +340,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _backendMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('Каналы ввода', false);
+        const item = new PopupMenu.PopupSubMenuMenuItem('Режим ввода', false);
         item.menu.addMenuItem(this._segmentedRow('Раскладка', this._layoutBackendOptions(), this._layoutBackendButtons));
         item.menu.addMenuItem(this._segmentedRow('Ввод', this._backendOptions(), this._backendButtons));
         return item;
@@ -1017,10 +996,6 @@ class LayIndicator extends PanelMenu.Button {
             this._setButtonActive(button, Number(id) === this._cfg.replace_words);
         for (const [id, button] of Object.entries(this._backendButtons ?? {}))
             this._setButtonActive(button, id === this._cfg.text_backend);
-        if (this._inlinePreeditSwitch?.setToggleState)
-            this._inlinePreeditSwitch.setToggleState(
-                !!this._cfg.nanda_precognition && this._cfg.text_backend === 'ime'
-            );
         for (const [id, button] of Object.entries(this._layoutBackendButtons ?? {}))
             this._setButtonActive(button, id === this._cfg.layout_backend);
         for (const [id, button] of Object.entries(this._safetyButtons ?? {}))
@@ -1073,8 +1048,7 @@ class LayIndicator extends PanelMenu.Button {
             return;
         }
         this._cfg.text_backend = value;
-        if (value !== 'ime')
-            this._cfg.nanda_precognition = false;
+        this._cfg.nanda_precognition = value === 'ime';
         this._saveAndRefresh();
         applyInputChannel(value);
         restartDaemon();

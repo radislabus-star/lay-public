@@ -9,6 +9,7 @@ use super::trace;
 pub(super) struct ActiveCompositionCommit {
     with_space: bool,
     suffix: String,
+    sync_layout: bool,
 }
 
 impl ActiveCompositionCommit {
@@ -16,6 +17,7 @@ impl ActiveCompositionCommit {
         Self {
             with_space: false,
             suffix: String::new(),
+            sync_layout: false,
         }
     }
 
@@ -23,11 +25,16 @@ impl ActiveCompositionCommit {
         Self {
             with_space: true,
             suffix: String::new(),
+            sync_layout: true,
         }
     }
 
     pub(super) fn with_completion(suffix: String, with_space: bool) -> Self {
-        Self { with_space, suffix }
+        Self {
+            with_space,
+            suffix,
+            sync_layout: false,
+        }
     }
 }
 
@@ -37,8 +44,13 @@ impl LayIbusEngine {
         emitter: &SignalEmitter<'_>,
         request: ActiveCompositionCommit,
     ) -> fdo::Result<()> {
-        self.commit_active_composition_with_suffix(emitter, request.with_space, &request.suffix)
-            .await
+        self.commit_active_composition_with_suffix(
+            emitter,
+            request.with_space,
+            &request.suffix,
+            request.sync_layout,
+        )
+        .await
     }
 
     /// Finalizes the currently active IME preedit composition.
@@ -51,6 +63,7 @@ impl LayIbusEngine {
         emitter: &SignalEmitter<'_>,
         with_space: bool,
         suffix: &str,
+        sync_layout: bool,
     ) -> fdo::Result<()> {
         let started_at = Instant::now();
         let clear_started_at = Instant::now();
@@ -75,7 +88,9 @@ impl LayIbusEngine {
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         let output_ms = output_started_at.elapsed().as_micros() as u64;
-        self.sync_layout_after_committed_text(&text);
+        if sync_layout {
+            self.sync_layout_after_committed_text(&text);
+        }
         self.sync_tail_after_active_composition_commit(&text);
         self.last_commit_at = Some(Instant::now());
         trace::record_ime_commit(

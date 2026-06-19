@@ -69,6 +69,11 @@ fn smart_insert_layout_follows_result_text_tail() {
 
 #[test]
 fn target_layout_matches_cache_contract() {
-    assert_eq!(target_layout(true), ("ru", "xkb:ru::rus"));
-    assert_eq!(target_layout(false), ("us", "xkb:us::eng"));
+    let (ru_engine, us_engine) = if active_text_backend().should_try_ime() {
+        ("lay-ime-ru", "lay-ime-us")
+    } else {
+        ("xkb:ru::rus", "xkb:us::eng")
+    };
+    assert_eq!(target_layout(true), ("ru", ru_engine));
+    assert_eq!(target_layout(false), ("us", us_engine));
 }

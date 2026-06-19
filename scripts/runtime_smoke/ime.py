@@ -94,5 +94,6 @@ def write_managed_ime_config(path: Path) -> None:
         "correction_safety": "experimental",
         "auto_switch_layout": True,
         "text_backend": "ime",
+        "nanda_precognition": True,
     }
     path.write_text(json.dumps(config, ensure_ascii=False, indent=2), encoding="utf-8")

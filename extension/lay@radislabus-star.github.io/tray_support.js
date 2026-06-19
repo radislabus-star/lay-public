@@ -179,6 +179,7 @@ export function normalizeChoice(value, allowed, fallback) {
     return allowed.includes(value) ? value : fallback;
 }
 export function normalizeConfig(cfg) {
+    const textBackend = normalizeChoice(cfg?.text_backend, ['uinput', 'ime', 'auto'], DEFAULTS.text_backend);
     return {
         ...DEFAULTS,
         ...cfg,
@@ -186,7 +187,8 @@ export function normalizeConfig(cfg) {
         typing_assist_words: normalizeScope(cfg?.typing_assist_words),
         correction_engine: normalizeChoice(cfg?.correction_engine, ['replay', 'smart'], DEFAULTS.correction_engine),
         layout_backend: normalizeChoice(cfg?.layout_backend, LAYOUT_BACKEND_OPTIONS.map(([id]) => id), DEFAULTS.layout_backend),
-        text_backend: normalizeChoice(cfg?.text_backend, ['uinput', 'ime', 'auto'], DEFAULTS.text_backend),
+        text_backend: textBackend,
+        nanda_precognition: textBackend === 'ime',
         correction_safety: normalizeChoice(cfg?.correction_safety, SAFETY_OPTIONS.map(([id]) => id), DEFAULTS.correction_safety),
         ptah_alexs_mode: !!cfg?.ptah_alexs_mode,
         multi_tap_scope: !!cfg?.multi_tap_scope,

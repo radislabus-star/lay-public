@@ -4,16 +4,16 @@ use super::engine::LayIbusEngine;
 
 impl LayIbusEngine {
     pub(super) fn physical_char(&self, keyval: u32, keycode: u32) -> Option<char> {
-        if let Some(ch) = x11_keysym_char(keyval) {
-            return Some(ch);
-        }
-        let keycode = keycode.try_into().ok()?;
-        if self.layout_is_ru {
-            keycode_to_ru_char(keycode, self.shift_active)
-        } else {
-            keycode_to_us_char(keycode, self.shift_active)
-        }
-        .filter(|ch| is_committable_char(*ch))
+        let mapped = keycode.try_into().ok().and_then(|keycode| {
+            if self.layout_is_ru {
+                keycode_to_ru_char(keycode, self.shift_active)
+            } else {
+                keycode_to_us_char(keycode, self.shift_active)
+            }
+        });
+        mapped
+            .filter(|ch| is_committable_char(*ch))
+            .or_else(|| x11_keysym_char(keyval))
     }
 
     pub(super) fn double_shift_replacement(&self, text: &str) -> String {
@@ -136,13 +136,15 @@ mod tests {
     }
 
     #[test]
-    fn physical_char_prefers_ibus_keyval_over_stale_layout_flag() {
+    fn physical_char_uses_selected_ime_engine_layout_before_client_keyval() {
         let mut engine = engine();
-        assert_eq!(engine.physical_char(0x06d7, 32), Some('в'));
+        assert_eq!(engine.physical_char(0x06d7, 32), Some('d'));
         engine.layout_is_ru = true;
-        assert_eq!(engine.physical_char('d' as u32, 32), Some('d'));
+        assert_eq!(engine.physical_char('d' as u32, 32), Some('в'));
+        engine.shift_active = true;
         assert_eq!(engine.physical_char(0x06f7, 32), Some('В'));
-        assert_eq!(engine.physical_char(0x06a3, 49), Some('ё'));
+        engine.shift_active = false;
+        assert_eq!(engine.physical_char(0x06a3, 0), Some('ё'));
         assert_eq!(engine.physical_char(0x0100_0432, 32), Some('в'));
     }
 }
