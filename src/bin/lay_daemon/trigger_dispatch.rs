@@ -8,7 +8,8 @@ use crate::pending_typing_assist::PendingTypingAssist;
 use super::physical_input_grab::PhysicalInputGrab;
 use super::{
     active_auto_replace, active_correction_engine, active_replace_words, handle_double_shift,
-    lock_virtual_keyboard, run_manual_correction_with_scope,
+    lock_virtual_keyboard, run_manual_correction_with_scope, ManualCorrectionRequest,
+    ScopedManualCorrectionRequest,
 };
 use super::{DShiftState, MultiTapPending, ShiftState};
 
@@ -38,16 +39,16 @@ pub(super) fn run_configured_manual_correction(
     let mut physical_grab = PhysicalInputGrab::new(Some(device));
     let input_isolated = physical_grab.is_active();
     let mut g = lock_virtual_keyboard(virtual_kbd);
-    handle_double_shift(
-        buffer,
-        active_replace_words(),
-        active_correction_engine(),
-        active_auto_replace(),
-        g.as_mut(),
+    handle_double_shift(ManualCorrectionRequest {
+        buf: buffer,
+        replace_words: active_replace_words(),
+        engine: active_correction_engine(),
+        auto_replace: active_auto_replace(),
+        virtual_kbd: g.as_mut(),
         executing,
         input_isolated,
-        Some(&mut physical_grab),
-    )
+        physical_grab: Some(&mut physical_grab),
+    })
 }
 
 pub(super) fn run_scoped_manual_correction(
@@ -62,16 +63,20 @@ pub(super) fn run_scoped_manual_correction(
     let mut physical_grab = PhysicalInputGrab::new(Some(device));
     let input_isolated = physical_grab.is_active();
     let mut g = lock_virtual_keyboard(virtual_kbd);
-    run_manual_correction_with_scope(
-        buffer,
-        replace_words,
-        g.as_mut(),
-        executing,
+    run_manual_correction_with_scope(ScopedManualCorrectionRequest {
+        manual: ManualCorrectionRequest {
+            buf: buffer,
+            replace_words,
+            engine: active_correction_engine(),
+            auto_replace: active_auto_replace(),
+            virtual_kbd: g.as_mut(),
+            executing,
+            input_isolated,
+            physical_grab: Some(&mut physical_grab),
+        },
         events_since_word_start,
-        reason,
-        input_isolated,
-        Some(&mut physical_grab),
-    )
+        label: reason,
+    })
 }
 
 pub(super) fn apply_manual_correction_result(

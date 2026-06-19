@@ -6,6 +6,7 @@ pub(crate) mod candidate_ranker;
 pub mod config;
 pub mod core;
 pub mod correction;
+pub mod correction_core;
 pub(crate) mod data_lines;
 pub mod decoder;
 pub mod desktop;

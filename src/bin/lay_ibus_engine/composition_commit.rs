@@ -5,6 +5,7 @@ use zbus::object_server::SignalEmitter;
 use super::engine::LayIbusEngine;
 use super::text::make_ibus_text;
 use super::trace;
+use lay::correction_core::{decide_text_correction, CorrectionMode, CorrectionRequest};
 
 pub(super) struct ActiveCompositionCommit {
     with_space: bool,
@@ -163,23 +164,8 @@ impl LayIbusEngine {
     }
 
     fn deterministic_autocorrect_text(&self, text: &str) -> Option<String> {
-        if !(self.config.auto_replace
-            || self.config.typing_assist
-            || self.config.auto_switch_layout)
-        {
-            return None;
-        }
-        let pipeline = lay::typing_context::typing_assist_pipeline_for_context(
-            self.config.auto_replace,
-            self.config.active_correction_safety(),
-            &self.config.typing_assist_pipeline,
-            text,
-        );
-        lay::typing_assist::apply_typing_assist_with_pipeline(
-            text,
-            self.config.auto_switch_layout,
-            &pipeline,
-        )
+        decide_text_correction(self.correction_request(text, CorrectionMode::DeterministicOnly))
+            .map(|decision| decision.replacement)
     }
 
     fn nanda_committed_tail_context_replacement(&self, text: &str) -> Option<String> {
@@ -197,11 +183,25 @@ impl LayIbusEngine {
     }
 
     fn nanda_autocorrect_text(&self, text: &str) -> Option<String> {
-        if !self.config.nanda_autocorrect {
-            return None;
+        decide_text_correction(self.correction_request(text, CorrectionMode::NandaOnly))
+            .map(|decision| decision.replacement)
+    }
+
+    fn correction_request<'a>(
+        &'a self,
+        text: &'a str,
+        mode: CorrectionMode,
+    ) -> CorrectionRequest<'a> {
+        CorrectionRequest {
+            text,
+            auto_replace: self.config.auto_replace,
+            typing_assist: self.config.typing_assist,
+            auto_switch_layout: self.config.auto_switch_layout,
+            correction_safety: self.config.active_correction_safety(),
+            typing_assist_pipeline: &self.config.typing_assist_pipeline,
+            nanda_autocorrect: self.config.nanda_autocorrect,
+            mode,
         }
-        let output = lay::nanda_wave::run_wave_trace(text).output()?.to_string();
-        (output != text).then_some(output)
     }
 
     fn sync_tail_after_active_composition_commit(&mut self, text: &str) {

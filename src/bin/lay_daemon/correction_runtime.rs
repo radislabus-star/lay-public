@@ -14,10 +14,9 @@ use std::time::Instant;
 use super::auto_undo_runtime::handle_pending_auto_undo;
 use super::physical_input_grab::PhysicalInputGrab;
 use super::{
-    active_auto_replace, active_auto_switch_layout, active_correction_engine,
-    active_lem_enabled_for_scope, log, log_manual_trigger_cross_check, read_current_layout_is_ru,
-    release_possible_modifiers, settle_after_physical_trigger_release, switch_to_target_layout,
-    ExecutingGuard,
+    active_auto_switch_layout, active_lem_enabled_for_scope, log, log_manual_trigger_cross_check,
+    read_current_layout_is_ru, release_possible_modifiers, settle_after_physical_trigger_release,
+    switch_to_target_layout, ExecutingGuard,
 };
 
 #[path = "correction_runtime/memory.rs"]
@@ -26,6 +25,23 @@ mod memory;
 #[path = "correction_runtime/output.rs"]
 mod output;
 use output::{apply_manual_correction_output, ManualCorrectionOutputContext};
+
+pub(super) struct ManualCorrectionRequest<'a, 'grab> {
+    pub(super) buf: &'a mut WordBuffer,
+    pub(super) replace_words: usize,
+    pub(super) engine: CorrectionEngine,
+    pub(super) auto_replace: bool,
+    pub(super) virtual_kbd: Option<&'a mut VirtualDevice>,
+    pub(super) executing: &'a mut bool,
+    pub(super) input_isolated: bool,
+    pub(super) physical_grab: Option<&'a mut PhysicalInputGrab<'grab>>,
+}
+
+pub(super) struct ScopedManualCorrectionRequest<'a, 'grab> {
+    pub(super) manual: ManualCorrectionRequest<'a, 'grab>,
+    pub(super) events_since_word_start: u32,
+    pub(super) label: &'a str,
+}
 
 pub(super) fn handle_force_layout_hotkey(
     target_is_ru: bool,
@@ -61,19 +77,27 @@ pub(super) fn handle_force_layout_hotkey(
 }
 
 pub(super) fn run_manual_correction_with_scope(
-    buf: &mut WordBuffer,
-    replace_words: usize,
-    virtual_kbd: Option<&mut VirtualDevice>,
-    executing: &mut bool,
-    events_since_word_start: u32,
-    label: &str,
-    input_isolated: bool,
-    physical_grab: Option<&mut PhysicalInputGrab<'_>>,
+    req: ScopedManualCorrectionRequest<'_, '_>,
 ) -> Option<bool> {
-    log_manual_trigger_cross_check(buf, events_since_word_start);
-    let engine = active_correction_engine();
-    let auto_replace = active_auto_replace();
-    let result = handle_double_shift(
+    let label = req.label;
+    let replace_words = req.manual.replace_words;
+    log_manual_trigger_cross_check(req.manual.buf, req.events_since_word_start);
+    let result = handle_double_shift(ManualCorrectionRequest {
+        buf: req.manual.buf,
+        replace_words,
+        engine: req.manual.engine,
+        auto_replace: req.manual.auto_replace,
+        virtual_kbd: req.manual.virtual_kbd,
+        executing: req.manual.executing,
+        input_isolated: req.manual.input_isolated,
+        physical_grab: req.manual.physical_grab,
+    });
+    log(&format!("· {label} fired with scope={replace_words}"));
+    result
+}
+
+pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Option<bool> {
+    let ManualCorrectionRequest {
         buf,
         replace_words,
         engine,
@@ -82,21 +106,7 @@ pub(super) fn run_manual_correction_with_scope(
         executing,
         input_isolated,
         physical_grab,
-    );
-    log(&format!("· {label} fired with scope={replace_words}"));
-    result
-}
-
-pub(super) fn handle_double_shift(
-    buf: &mut WordBuffer,
-    replace_words: usize,
-    engine: CorrectionEngine,
-    auto_replace: bool,
-    virtual_kbd: Option<&mut VirtualDevice>,
-    executing: &mut bool,
-    input_isolated: bool,
-    physical_grab: Option<&mut PhysicalInputGrab<'_>>,
-) -> Option<bool> {
+    } = req;
     let started_at = Instant::now();
     if let Some(undo) = buf.take_pending_auto_undo() {
         return handle_pending_auto_undo(buf, undo, virtual_kbd, executing, started_at);
