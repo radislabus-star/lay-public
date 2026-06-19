@@ -1,0 +1,8 @@
+layout	us	300
+type	djn	25
+space
+sleep	180
+double_shift
+sleep	300
+type	file	25
+enter

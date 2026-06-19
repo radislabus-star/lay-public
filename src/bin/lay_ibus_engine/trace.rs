@@ -13,7 +13,7 @@ struct TraceConfigCache {
 static TRACE_CONFIG: Mutex<Option<TraceConfigCache>> = Mutex::new(None);
 
 pub(crate) fn record(line: impl AsRef<str>) {
-    if !debug_enabled_cached() {
+    if !enabled() {
         return;
     }
     let path = trace_path();
@@ -29,7 +29,7 @@ pub(crate) fn record_key(
     tail_chars: usize,
     preedit_chars: usize,
 ) {
-    if !debug_enabled_cached() {
+    if !enabled() {
         return;
     }
     let decoded = decoded
@@ -47,7 +47,7 @@ pub(crate) fn record_preedit(
     cursor_pos: u32,
     text: Option<&str>,
 ) {
-    if !debug_enabled_cached() {
+    if !enabled() {
         return;
     }
     let text = text.map(json_string).unwrap_or_else(|| "null".to_string());
@@ -57,7 +57,7 @@ pub(crate) fn record_preedit(
 }
 
 pub(crate) fn record_cursor_location(x: i32, y: i32, w: i32, h: i32) {
-    if !debug_enabled_cached() {
+    if !enabled() {
         return;
     }
     write_record(format!(
@@ -66,7 +66,7 @@ pub(crate) fn record_cursor_location(x: i32, y: i32, w: i32, h: i32) {
 }
 
 pub(crate) fn record_ime_commit(decision_us: u64, clear_us: u64, output_us: u64, elapsed_us: u64) {
-    if !debug_enabled_cached() {
+    if !enabled() {
         return;
     }
     write_record(format!(
@@ -75,12 +75,31 @@ pub(crate) fn record_ime_commit(decision_us: u64, clear_us: u64, output_us: u64,
 }
 
 pub(crate) fn record_layout_sync(target_is_ru: bool, engine: &str, ok: bool) {
-    if !debug_enabled_cached() {
+    if !enabled() {
         return;
     }
     write_record(format!(
         r#"{{"kind":"ibus_layout_sync","target_is_ru":{target_is_ru},"engine":"{engine}","ok":{ok}}}"#
     ));
+}
+
+pub(crate) fn record_precognition_timing(
+    total_us: u64,
+    ascii_us: u64,
+    ru_us: u64,
+    semantic_us: u64,
+    candidates: usize,
+) {
+    if !enabled() {
+        return;
+    }
+    write_record(format!(
+        r#"{{"kind":"ibus_precognition_timing","total_us":{total_us},"ascii_us":{ascii_us},"ru_us":{ru_us},"semantic_us":{semantic_us},"candidates":{candidates}}}"#
+    ));
+}
+
+pub(crate) fn enabled() -> bool {
+    debug_enabled_cached()
 }
 
 fn write_record(line: impl AsRef<str>) {

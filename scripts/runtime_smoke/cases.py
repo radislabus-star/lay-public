@@ -175,13 +175,25 @@ CASES = {
     "ime_prefix_proverka_ghjdthrf_alt_enter": Case(
         "ime_prefix_proverka_ghjdthrf_alt_enter", "проверка проверка"
     ),
-    "ime_ctrl_a_passthrough_enter": Case("ime_ctrl_a_passthrough_enter", "x"),
-    "ime_ctrl_l_passthrough_enter": Case("ime_ctrl_l_passthrough_enter", "abcx"),
+    "ime_ctrl_a_passthrough_enter": Case(
+        "ime_ctrl_a_passthrough_enter", "ч", start_layout="ru"
+    ),
+    "ime_ctrl_l_passthrough_enter": Case(
+        "ime_ctrl_l_passthrough_enter", "фисч", start_layout="ru"
+    ),
+    "ime_quote_nj_space_enter": Case("ime_quote_nj_space_enter", "это"),
+    "ime_lfdfq_space_enter": Case("ime_lfdfq_space_enter", "давай"),
+    "ime_autocorrect_en_ru_double_shift_back_layout_enter": Case(
+        "ime_autocorrect_en_ru_double_shift_back_layout_enter", "djn file"
+    ),
+    "ime_prefix_prov_completion_alt_enter": Case(
+        "ime_prefix_prov_completion_alt_enter", "проверка", start_layout="ru"
+    ),
     "ime_alt_left_right_passthrough_enter": Case(
-        "ime_alt_left_right_passthrough_enter", "abcx"
+        "ime_alt_left_right_passthrough_enter", "фисч", start_layout="ru"
     ),
     "ime_cursor_backspace_inside_composition_enter": Case(
-        "ime_cursor_backspace_inside_composition_enter", "abxd"
+        "ime_cursor_backspace_inside_composition_enter", "фичв", start_layout="ru"
     ),
     "ime_backspace_after_shift_commit_enter": Case(
         "ime_backspace_after_shift_commit_enter", "проверк"

@@ -28,6 +28,7 @@ impl LayIbusEngine {
             self.rebuild_preedit_fast_from_tail();
         }
         trim_committed_tail_buffer(&mut self.tail_buffer);
+        self.publish_tail_handoff();
     }
 
     pub(super) fn replace_last_tail_token_text(&mut self, replacement: &str, fallback_len: usize) {
@@ -43,11 +44,18 @@ impl LayIbusEngine {
         self.tail_buffer.replace_range(start..end, replacement);
     }
 
-    fn rebuild_preedit_fast_from_tail(&mut self) {
+    pub(super) fn rebuild_preedit_fast_from_tail(&mut self) {
         self.preedit_fast.reset();
         for ch in self.last_tail_token_text().chars() {
             self.preedit_fast.push(ch);
         }
+    }
+
+    pub(super) fn publish_tail_handoff(&self) {
+        let Ok(mut state) = self.shared.lock() else {
+            return;
+        };
+        state.handoff_tail_buffer = self.tail_buffer.clone();
     }
 }
 

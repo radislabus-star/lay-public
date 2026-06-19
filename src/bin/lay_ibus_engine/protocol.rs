@@ -45,6 +45,7 @@ pub(crate) fn has_command_modifier(state: u32) -> bool {
 #[derive(Debug, Default)]
 pub(crate) struct SharedState {
     pub(crate) active_path: Option<String>,
+    pub(crate) handoff_tail_buffer: String,
     pub(crate) next_engine_id: u32,
 }
 

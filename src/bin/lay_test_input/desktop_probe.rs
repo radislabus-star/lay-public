@@ -8,12 +8,6 @@ use std::time::{Duration, Instant};
 static INITIAL_LAYOUT_ALREADY_SET: AtomicBool = AtomicBool::new(false);
 
 pub(crate) fn activate_layout(id: &str) {
-    if env::var("LAY_TEST_INITIAL_LAYOUT").ok().as_deref() == Some(id)
-        && !INITIAL_LAYOUT_ALREADY_SET.swap(true, Ordering::Relaxed)
-    {
-        return;
-    }
-
     if env::var("LAY_TEST_IME_ENGINE")
         .ok()
         .is_some_and(|value| matches!(value.as_str(), "1" | "true" | "yes" | "on"))
@@ -23,6 +17,12 @@ pub(crate) fn activate_layout(id: &str) {
         } else {
             "lay-ime-us"
         });
+        return;
+    }
+
+    if env::var("LAY_TEST_INITIAL_LAYOUT").ok().as_deref() == Some(id)
+        && !INITIAL_LAYOUT_ALREADY_SET.swap(true, Ordering::Relaxed)
+    {
         return;
     }
 

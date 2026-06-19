@@ -153,8 +153,7 @@ fn known_ru_token(word: &str) -> bool {
 }
 
 fn negative_prefix_repair(original: &str, candidate: &str, distance: usize) -> bool {
-    distance >= 2
-        && distance <= 3
+    (2..=3).contains(&distance)
         && original.starts_with("не")
         && candidate.starts_with("не")
         && original.chars().count().abs_diff(candidate.chars().count()) <= 3

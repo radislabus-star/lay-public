@@ -19,12 +19,14 @@ impl LayIbusEngine {
             return Ok(true);
         }
         self.backspace_committed_tail_only();
+        self.update_precognition_preedit(emitter).await?;
         Ok(false)
     }
 
     pub(super) fn backspace_committed_tail_only(&mut self) {
         self.tail_buffer.pop();
         self.preedit_fast.backspace();
+        self.publish_tail_handoff();
     }
 
     pub(super) async fn move_composition_cursor(
@@ -50,10 +52,14 @@ impl LayIbusEngine {
         emitter: &SignalEmitter<'_>,
         keyval: u32,
     ) -> fdo::Result<bool> {
-        if self.buffer.is_empty() {
-            return Ok(false);
-        }
         let step = if keyval == KEY_UP { -1 } else { 1 };
+        if self.buffer.is_empty() {
+            if !self.cycle_precognition_candidate(step) {
+                return Ok(false);
+            }
+            self.update_precognition_preedit(emitter).await?;
+            return Ok(true);
+        }
         if !self.cycle_precognition_candidate(step) {
             return Ok(false);
         }

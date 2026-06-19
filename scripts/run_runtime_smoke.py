@@ -322,11 +322,21 @@ def wait_for_device_access(path: Path, timeout: float) -> bool:
 def activate_layout(layout: str, ime_engine: bool = False) -> None:
     if ime_engine:
         engine = "lay-ime-ru" if layout == "ru" else "lay-ime-us"
-        subprocess.run(
-            ["ibus", "engine", engine],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
+        for _ in range(8):
+            subprocess.run(
+                ["ibus", "engine", engine],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            current = subprocess.run(
+                ["ibus", "engine"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                text=True,
+            )
+            if current.stdout.strip() == engine:
+                return
+            time.sleep(0.15)
         return
 
     if activate_layout_kde(layout):

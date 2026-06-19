@@ -1,4 +1,5 @@
 use lay::text_backend::TextBackendPreference;
+use std::time::Instant;
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
@@ -8,6 +9,7 @@ use super::trace;
 
 const PREEDIT_TAIL_LIMIT: usize = 160;
 const PREEDIT_TOKEN_LIMIT: usize = 32;
+#[cfg(test)]
 const PREEDIT_PROBE_SYMBOL: &str = "*";
 const PREEDIT_MODE_CLEAR: u32 = 0;
 
@@ -71,30 +73,35 @@ impl LayIbusEngine {
         if !self.precognition_preedit_enabled() {
             return self.clear_preedit(emitter).await;
         }
-        let Some(suffix) = self.precognition_suffix() else {
+        self.refresh_precognition_candidates();
+        let Some(suffix) = self
+            .preedit_candidates
+            .get(self.preedit_candidate_index)
+            .cloned()
+        else {
             return self.clear_preedit(emitter).await;
         };
         self.preedit_suffix = suffix;
-        let (preedit_text, cursor_pos) = ("".to_string(), 0);
+        let (preedit_text, cursor_pos) = self.inactive_preedit_payload();
         trace::record_preedit(
             "show",
-            false,
+            true,
             preedit_text.chars().count(),
             cursor_pos,
             Some(&preedit_text),
         );
+        Self::show_preedit_text(emitter)
+            .await
+            .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         Self::update_preedit_text(
             emitter,
             make_preedit_ibus_text(preedit_text),
             cursor_pos,
-            false,
+            true,
             PREEDIT_MODE_CLEAR,
         )
         .await
         .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        Self::hide_preedit_text(emitter)
-            .await
-            .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         Ok(())
     }
 
@@ -162,6 +169,15 @@ impl LayIbusEngine {
         self.precognition_suffix_candidates().into_iter().next()
     }
 
+    fn inactive_preedit_payload(&self) -> (String, u32) {
+        let suffix = if self.preedit_suffix == "*" {
+            String::new()
+        } else {
+            self.preedit_suffix.clone()
+        };
+        (suffix, 0)
+    }
+
     fn composition_preedit_payload(&mut self) -> (String, u32) {
         self.preedit_suffix.clear();
         let text = self.buffer.clone();
@@ -211,17 +227,37 @@ impl LayIbusEngine {
         if self.composition_has_pending_autocorrect() {
             return Vec::new();
         }
-        let mut candidates = Vec::new();
+        let timing_enabled = trace::enabled();
+        let total_started = timing_enabled.then(Instant::now);
+        let mut candidates = Vec::with_capacity(3);
+
+        let ascii_started = timing_enabled.then(Instant::now);
         push_unique_suffix(
             &mut candidates,
             self.preedit_fast
                 .ascii_suffix(self.precognition_max_suffix_chars()),
         );
+        let ascii_us = elapsed_us(ascii_started);
+
+        let ru_started = timing_enabled.then(Instant::now);
         push_unique_suffix(&mut candidates, self.lexical_ru_suffix());
+        let ru_us = elapsed_us(ru_started);
+
+        let semantic_started = timing_enabled.then(Instant::now);
         for suffix in self.semantic_phrase_suffixes() {
             push_unique_suffix(&mut candidates, Some(suffix));
         }
-        push_unique_suffix(&mut candidates, self.probe_suffix_if_tail_is_ready());
+        let semantic_us = elapsed_us(semantic_started);
+
+        if let Some(started) = total_started {
+            trace::record_precognition_timing(
+                started.elapsed().as_micros() as u64,
+                ascii_us,
+                ru_us,
+                semantic_us,
+                candidates.len(),
+            );
+        }
         candidates
     }
 
@@ -278,14 +314,20 @@ impl LayIbusEngine {
         if tail.chars().count() < 6 {
             return Vec::new();
         }
-        lay::nanda_wave::context_wave::semantic_word_candidates(tail)
+
+        // Preedit can only show text after the cursor. Full-token typo repair
+        // belongs to Space autocorrect; running it here burns latency and cannot
+        // produce a right-side suffix for the current token.
+        let Some(wave) = lay::nanda_wave::context_wave::context_wave_for_tail(tail) else {
+            return Vec::new();
+        };
+        lay::nanda_wave::context_wave::candidate_interferences(&wave)
             .into_iter()
-            .filter(|candidate| {
-                candidate.source == lay::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE
-                    && candidate.energy - candidate.risk >= 0.58
-            })
+            .take(3)
+            .filter(|candidate| candidate.projection >= 0.22)
             .filter_map(|candidate| {
-                let suffix = candidate.text.strip_prefix(tail)?;
+                let text = format!("{}{}", wave.prefix, candidate.candidate);
+                let suffix = text.strip_prefix(tail)?;
                 (!suffix.is_empty()
                     && suffix.chars().count() <= self.precognition_max_suffix_chars())
                 .then(|| suffix.to_string())
@@ -298,45 +340,23 @@ impl LayIbusEngine {
             && self.config.active_text_backend() == TextBackendPreference::Ime
     }
 
-    fn probe_suffix_if_tail_is_ready(&self) -> Option<String> {
-        let tail = self.tail_buffer.trim_end();
-        if tail.chars().count() < 2 {
-            return None;
-        }
-        Some(PREEDIT_PROBE_SYMBOL.to_string())
-    }
-
     pub(super) fn push_tail_char(&mut self, ch: char) {
         self.tail_buffer.push(ch);
         self.preedit_fast.push(ch);
         trim_tail_buffer(&mut self.tail_buffer);
+        self.publish_tail_handoff();
     }
 
     #[cfg(test)]
     fn preedit_text_for_client(&self) -> (String, u32) {
-        let anchor = if self.preedit_suffix == PREEDIT_PROBE_SYMBOL {
-            None
-        } else {
-            self.tail_buffer.chars().last()
-        };
-        let visible_suffix = if self.preedit_suffix == PREEDIT_PROBE_SYMBOL {
-            ""
-        } else {
-            self.preedit_suffix.as_str()
-        };
-        let mut text =
-            String::with_capacity(anchor.map(char::len_utf8).unwrap_or(0) + visible_suffix.len());
-        if let Some(anchor) = anchor {
-            text.push(anchor);
-        }
-        text.push_str(visible_suffix);
-        let cursor_pos = if anchor.is_some() {
-            1
-        } else {
-            text.chars().count() as u32
-        };
-        (text, cursor_pos)
+        self.inactive_preedit_payload()
     }
+}
+
+fn elapsed_us(started: Option<Instant>) -> u64 {
+    started
+        .map(|started| started.elapsed().as_micros() as u64)
+        .unwrap_or(0)
 }
 
 fn push_unique_suffix(candidates: &mut Vec<String>, suffix: Option<String>) {
@@ -429,10 +449,7 @@ mod tests {
         for ch in "следую".chars() {
             engine.push_tail_char(ch);
         }
-        assert_eq!(
-            engine.precognition_suffix().as_deref(),
-            Some(PREEDIT_PROBE_SYMBOL)
-        );
+        assert_eq!(engine.precognition_suffix(), None);
     }
 
     #[test]
@@ -519,10 +536,7 @@ mod tests {
         {
             engine.push_tail_char(ch);
         }
-        assert_eq!(
-            engine.precognition_suffix().as_deref(),
-            Some(PREEDIT_PROBE_SYMBOL)
-        );
+        assert_eq!(engine.precognition_suffix().as_deref(), None);
     }
 
     #[test]
@@ -542,10 +556,7 @@ mod tests {
         for ch in "пров".chars() {
             engine.push_tail_char(ch);
         }
-        assert_eq!(
-            engine.precognition_suffix().as_deref(),
-            Some(PREEDIT_PROBE_SYMBOL)
-        );
+        assert_eq!(engine.precognition_suffix().as_deref(), None);
     }
 
     #[test]
@@ -651,7 +662,7 @@ mod tests {
         );
         engine.tail_buffer = "при".to_string();
         engine.preedit_suffix = "вет".to_string();
-        assert_eq!(engine.preedit_text_for_client(), ("ивет".to_string(), 1));
+        assert_eq!(engine.preedit_text_for_client(), ("вет".to_string(), 0));
     }
 
     #[test]
@@ -666,7 +677,75 @@ mod tests {
         engine.tail_buffer = "проверк".to_string();
         engine.preedit_suffix = "а".to_string();
 
-        assert_eq!(engine.preedit_text_for_client(), ("ка".to_string(), 1));
+        assert_eq!(engine.preedit_text_for_client(), ("а".to_string(), 0));
+    }
+
+    #[test]
+    fn precognition_candidate_generation_stays_under_budget() {
+        let samples = [
+            "пр",
+            "пров",
+            "file",
+            "html d",
+            "На улице опять идёт д",
+            "смотрим что будет происходить когда при",
+        ];
+        let mut timings = Vec::new();
+        for sample in samples {
+            let mut engine = LayIbusEngine::new(
+                "/test".to_string(),
+                Arc::new(Mutex::new(Default::default())),
+                true,
+                true,
+                LayConfig {
+                    text_backend: "ime".to_string(),
+                    nanda_precognition: true,
+                    correction_safety: "experimental".to_string(),
+                    ..LayConfig::default()
+                },
+            );
+            for ch in sample.chars() {
+                engine.push_tail_char(ch);
+            }
+            for _ in 0..20 {
+                engine.refresh_precognition_candidates();
+            }
+            for _ in 0..2000 {
+                let started = Instant::now();
+                engine.refresh_precognition_candidates();
+                timings.push(started.elapsed().as_micros() as u64);
+            }
+        }
+        timings.sort_unstable();
+        let p50 = percentile(&timings, 50);
+        let p90 = percentile(&timings, 90);
+        let p99 = percentile(&timings, 99);
+        let max = *timings.last().unwrap_or(&0);
+        eprintln!(
+            "precognition candidate generation: n={} p50={}us p90={}us p99={}us max={}us",
+            timings.len(),
+            p50,
+            p90,
+            p99,
+            max
+        );
+        let p90_budget_us = if cfg!(debug_assertions) {
+            50_000
+        } else {
+            10_000
+        };
+        assert!(
+            p90 <= p90_budget_us,
+            "p90={p90}us exceeds budget {p90_budget_us}us"
+        );
+    }
+
+    fn percentile(values: &[u64], percentile: usize) -> u64 {
+        if values.is_empty() {
+            return 0;
+        }
+        let idx = ((values.len() - 1) * percentile) / 100;
+        values[idx]
     }
 
     #[test]

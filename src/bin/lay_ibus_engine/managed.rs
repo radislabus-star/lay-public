@@ -86,11 +86,28 @@ impl LayIbusEngine {
             }
             self.tail_buffer.clear();
             self.preedit_fast.reset();
+            self.publish_tail_handoff();
             self.clear_preedit(emitter).await?;
             self.trace_key("enter", keyval, keycode, false, None);
             return Ok(false);
         }
         if keyval == KEY_SPACE {
+            if self.buffer.is_empty() {
+                if self.autocorrect_committed_tail_space(emitter).await? {
+                    self.trace_key(
+                        "space_committed_tail_autocorrect",
+                        keyval,
+                        keycode,
+                        true,
+                        Some(' '),
+                    );
+                    return Ok(true);
+                }
+                self.push_tail_char(' ');
+                self.update_precognition_preedit(emitter).await?;
+                self.trace_key("space_passthrough", keyval, keycode, false, Some(' '));
+                return Ok(false);
+            }
             let handled = self.commit_space(emitter).await?;
             self.trace_key("space", keyval, keycode, handled, Some(' '));
             return Ok(handled);
@@ -106,13 +123,15 @@ impl LayIbusEngine {
                 self.clear_preedit(emitter).await?;
                 self.tail_buffer.clear();
                 self.preedit_fast.reset();
+                self.publish_tail_handoff();
             }
             self.trace_key("non_printable", keyval, keycode, false, None);
             return Ok(false);
         };
-        if self.buffer.is_empty() && !can_start_ime_composition(ch) {
-            self.trace_key("printable_passthrough", keyval, keycode, false, Some(ch));
-            return Ok(false);
+        if self.buffer.is_empty() {
+            self.commit_managed_passthrough_char(emitter, ch).await?;
+            self.trace_key("printable_managed_commit", keyval, keycode, true, Some(ch));
+            return Ok(true);
         }
         self.insert_composition_char(ch);
         self.update_composition_preedit(emitter).await?;
@@ -127,71 +146,5 @@ impl LayIbusEngine {
         self.commit_active_composition(emitter, ActiveCompositionCommit::with_space())
             .await?;
         Ok(true)
-    }
-
-    async fn accept_completion(
-        &mut self,
-        emitter: &SignalEmitter<'_>,
-        with_space: bool,
-    ) -> fdo::Result<bool> {
-        if self.buffer.is_empty() {
-            return self.accept_stuck_tail(emitter, with_space).await;
-        }
-
-        let suffix = self.selected_visible_completion_suffix();
-        if suffix.is_empty() && !with_space {
-            return Ok(false);
-        }
-
-        self.commit_active_composition(
-            emitter,
-            ActiveCompositionCommit::with_completion(suffix, with_space),
-        )
-        .await?;
-        Ok(true)
-    }
-
-    pub(super) async fn accept_completion_with_space(
-        &mut self,
-        emitter: &SignalEmitter<'_>,
-    ) -> fdo::Result<bool> {
-        let handled = self.accept_completion(emitter, true).await?;
-        self.trace_key("alt_accept", 0, 0, handled, None);
-        Ok(handled)
-    }
-}
-
-fn can_start_ime_composition(ch: char) -> bool {
-    ch.is_alphabetic() || is_ru_letter_punctuation_key(ch)
-}
-
-fn is_ru_letter_punctuation_key(ch: char) -> bool {
-    matches!(
-        ch,
-        '`' | '~' | '[' | '{' | ']' | '}' | ';' | ':' | '\'' | '"' | ',' | '<' | '.' | '>'
-    )
-}
-
-#[cfg(test)]
-mod tests {
-    use super::can_start_ime_composition;
-
-    #[test]
-    fn ime_starts_on_letters_and_ru_letter_punctuation_keys() {
-        assert!(can_start_ime_composition('n'));
-        assert!(can_start_ime_composition('т'));
-        assert!(can_start_ime_composition('\''));
-        assert!(can_start_ime_composition('['));
-        assert!(can_start_ime_composition(';'));
-        assert!(can_start_ime_composition(','));
-    }
-
-    #[test]
-    fn ime_does_not_start_on_plain_special_symbols() {
-        for ch in [
-            '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=', '/', '?', '\\', '|',
-        ] {
-            assert!(!can_start_ime_composition(ch), "{ch}");
-        }
     }
 }

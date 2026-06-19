@@ -16,12 +16,17 @@ impl LayIbusEngine {
         config: LayConfig,
     ) -> Self {
         warm_runtime(&config);
-        Self {
+        let handoff_tail_buffer = shared
+            .lock()
+            .expect("lay ime state poisoned")
+            .handoff_tail_buffer
+            .clone();
+        let mut engine = Self {
             path,
             shared,
             buffer: String::new(),
             composition_cursor: 0,
-            tail_buffer: String::new(),
+            tail_buffer: handoff_tail_buffer,
             preedit_suffix: String::new(),
             preedit_candidates: Vec::new(),
             preedit_candidate_index: 0,
@@ -38,7 +43,9 @@ impl LayIbusEngine {
             last_commit_at: None,
             managed_input,
             config,
-        }
+        };
+        engine.rebuild_preedit_fast_from_tail();
+        engine
     }
 
     pub(super) fn reset_for_ibus_focus_change(&mut self) {
@@ -58,6 +65,7 @@ impl LayIbusEngine {
         if !preserve_tail {
             self.tail_buffer.clear();
             self.preedit_fast.reset();
+            self.publish_tail_handoff();
         }
     }
 
@@ -101,6 +109,7 @@ impl LayIbusEngine {
         for ch in text.chars() {
             self.preedit_fast.push(ch);
         }
+        self.publish_tail_handoff();
         self.buffer.clear();
         self.composition_cursor = 0;
         self.preedit_candidates.clear();

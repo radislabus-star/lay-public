@@ -1,6 +1,3 @@
-use std::process::Command;
-use std::thread;
-
 use lay::keyboard::preferred_layout_for_text;
 
 use super::engine::LayIbusEngine;
@@ -16,16 +13,29 @@ impl LayIbusEngine {
         }
         let target_is_ru = preferred_layout_for_text(text, self.layout_is_ru);
         if target_is_ru == self.layout_is_ru {
+            self.publish_tail_handoff();
             return;
         }
+        self.layout_is_ru = target_is_ru;
+        self.publish_tail_handoff();
         let target_engine = ime_engine_for_layout(target_is_ru);
-        thread::spawn(move || {
-            let result = Command::new("timeout")
-                .args(["0.7s", "ibus", "engine", target_engine])
-                .status();
-            let ok = result.as_ref().is_ok_and(|status| status.success());
-            trace::record_layout_sync(target_is_ru, target_engine, ok);
-        });
+        trace::record_layout_sync(target_is_ru, target_engine, true);
+    }
+
+    pub(super) fn sync_layout_after_manual_toggle(&mut self, text: &str) {
+        if !self.config.auto_switch_layout {
+            return;
+        }
+        let target_is_ru = preferred_layout_for_text(text, self.layout_is_ru);
+        if target_is_ru {
+            self.publish_tail_handoff();
+            return;
+        }
+        if self.layout_is_ru {
+            self.layout_is_ru = false;
+        }
+        self.publish_tail_handoff();
+        trace::record_layout_sync(false, ime_engine_for_layout(false), true);
     }
 }
 
