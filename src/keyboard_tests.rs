@@ -130,3 +130,28 @@ fn marks_only_typing_keys_layout() {
     assert!(events[0].layout_is_ru);
     assert!(!events[1].layout_is_ru);
 }
+
+#[test]
+fn resyncs_single_current_word_layout_before_manual_replay() {
+    let mut events = text_events("nanda", false);
+
+    assert_eq!(map_original_events(&events), "nanda");
+    assert!(mark_single_current_word_layout_if_stale(&mut events, true));
+    assert_eq!(map_original_events(&events), "тфтвф");
+    assert_eq!(
+        map_events_to_layout(&events, replay_layout_decision(&events).target_is_ru),
+        "nanda"
+    );
+}
+
+#[test]
+fn does_not_resync_completed_or_mixed_tail_layout() {
+    let mut completed = text_events("nanda ", false);
+    let mut mixed = vec![us_event(KeyCode::KEY_N), ru_event(KeyCode::KEY_A, false)];
+
+    assert!(!mark_single_current_word_layout_if_stale(
+        &mut completed,
+        true
+    ));
+    assert!(!mark_single_current_word_layout_if_stale(&mut mixed, true));
+}

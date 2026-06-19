@@ -11,11 +11,12 @@ use crate::phrase_reader::{
 };
 use crate::ru_typo::{
     correct_adjacent_transposition, correct_cyrillic_word_case, correct_extra_letters,
-    correct_hard_sign_typo, correct_missing_letter, correct_repeated_letter,
-    correct_single_letter_substitution, correct_verb_ending_confusion, correct_vowel_confusion,
-    correct_vowel_confusion_contextual_past_tense,
+    correct_extra_letters_after_layout, correct_hard_sign_typo, correct_missing_letter,
+    correct_repeated_letter, correct_single_letter_substitution, correct_verb_ending_confusion,
+    correct_vowel_confusion, correct_vowel_confusion_contextual_past_tense,
 };
 use crate::typing_replacements::{replace_visual_b_words, replacement_for_token};
+use crate::word_reader::{is_cyrillic_word, split_word_punctuation};
 
 use super::types::TypingRuleContext;
 
@@ -62,6 +63,7 @@ pub(crate) fn apply_fast_layout_en_to_ru(ctx: &TypingRuleContext<'_>) -> Option<
         return None;
     }
     apply_core_then_word_rule(ctx, correct_confident_wrong_layout_ascii_word)
+        .map(|replacement| cleanup_extra_letters_after_ru_layout(&replacement))
 }
 
 pub(super) fn apply_layout_ru_to_en(ctx: &TypingRuleContext<'_>) -> Option<String> {
@@ -85,11 +87,12 @@ pub(super) fn apply_layout_en_to_ru(ctx: &TypingRuleContext<'_>) -> Option<Strin
     if let Some(replacement) = correct_wrong_layout_ascii_phrase(ctx.core)
         .or_else(|| correct_wrong_layout_ascii_word(ctx.core))
     {
-        Some(replacement)
+        Some(cleanup_extra_letters_after_ru_layout(&replacement))
     } else if ascii_layout_prefix_can_be_letter(ctx.token_leading) {
         None
     } else {
         apply_word_rule(ctx, correct_wrong_layout_ascii_word)
+            .map(|replacement| cleanup_extra_letters_after_ru_layout(&replacement))
     }
 }
 
@@ -100,11 +103,12 @@ pub(super) fn apply_layout_en_to_ru_experimental(ctx: &TypingRuleContext<'_>) ->
     if let Some(replacement) = correct_wrong_layout_ascii_phrase(ctx.core)
         .or_else(|| correct_wrong_layout_ascii_word_experimental(ctx.core))
     {
-        Some(replacement)
+        Some(cleanup_extra_letters_after_ru_layout(&replacement))
     } else if ascii_layout_prefix_can_be_letter(ctx.token_leading) {
         None
     } else {
         apply_word_rule(ctx, correct_wrong_layout_ascii_word_experimental)
+            .map(|replacement| cleanup_extra_letters_after_ru_layout(&replacement))
     }
 }
 
@@ -178,4 +182,28 @@ fn apply_word_rule(ctx: &TypingRuleContext<'_>, rule: TextRule) -> Option<String
     }
     rule(ctx.word)
         .map(|replacement| format!("{}{}{}", ctx.token_leading, replacement, ctx.token_trailing))
+}
+
+fn cleanup_extra_letters_after_ru_layout(text: &str) -> String {
+    let mut changed = false;
+    let repaired = text
+        .split_whitespace()
+        .map(|part| {
+            let (leading, word, trailing) = split_word_punctuation(part);
+            if word.is_empty() || !is_cyrillic_word(word) {
+                return part.to_string();
+            }
+            let Some(replacement) = correct_extra_letters_after_layout(word) else {
+                return part.to_string();
+            };
+            changed = true;
+            format!("{leading}{replacement}{trailing}")
+        })
+        .collect::<Vec<_>>()
+        .join(" ");
+    if changed {
+        repaired
+    } else {
+        text.to_string()
+    }
 }

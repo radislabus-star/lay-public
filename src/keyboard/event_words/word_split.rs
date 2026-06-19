@@ -11,6 +11,33 @@ pub fn mark_word_layout(word: &mut [KeyEvent], layout_is_ru: bool) {
     }
 }
 
+pub fn mark_single_current_word_layout_if_stale(
+    events: &mut [KeyEvent],
+    current_layout_is_ru: bool,
+) -> bool {
+    if events.is_empty()
+        || events
+            .iter()
+            .any(|event| event.keycode == KeyCode::KEY_SPACE.code())
+    {
+        return false;
+    }
+
+    let mut typing_layouts = events
+        .iter()
+        .filter(|event| is_typing_key(KeyCode::new(event.keycode)))
+        .map(|event| event.layout_is_ru);
+    let Some(first_layout) = typing_layouts.next() else {
+        return false;
+    };
+    if first_layout == current_layout_is_ru || typing_layouts.any(|layout| layout != first_layout) {
+        return false;
+    }
+
+    mark_word_layout(events, current_layout_is_ru);
+    true
+}
+
 pub fn split_event_words(events: &[KeyEvent]) -> Option<Vec<&[KeyEvent]>> {
     if events.is_empty() {
         return None;

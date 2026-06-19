@@ -1,7 +1,10 @@
 use evdev::uinput::VirtualDevice;
 use lay::config::CorrectionEngine;
 use lay::engine::{decide_manual_correction, ManualCorrectionInput, ManualCorrectionPolicy};
-use lay::keyboard::{map_events_to_layout, map_original_events, replay_layout_decision};
+use lay::keyboard::{
+    map_events_to_layout, map_original_events, mark_single_current_word_layout_if_stale,
+    replay_layout_decision,
+};
 use lay::typing_assist::{
     effective_replace_words, should_force_replay_for_short_fragment, ScopedTailOptions,
 };
@@ -12,8 +15,9 @@ use super::auto_undo_runtime::handle_pending_auto_undo;
 use super::physical_input_grab::PhysicalInputGrab;
 use super::{
     active_auto_replace, active_auto_switch_layout, active_correction_engine,
-    active_lem_enabled_for_scope, log, log_manual_trigger_cross_check, release_possible_modifiers,
-    settle_after_physical_trigger_release, switch_to_target_layout, ExecutingGuard,
+    active_lem_enabled_for_scope, log, log_manual_trigger_cross_check, read_current_layout_is_ru,
+    release_possible_modifiers, settle_after_physical_trigger_release, switch_to_target_layout,
+    ExecutingGuard,
 };
 
 #[path = "correction_runtime/memory.rs"]
@@ -99,12 +103,21 @@ pub(super) fn handle_double_shift(
     }
 
     let replace_words = effective_replace_words(buf, replace_words, engine, auto_replace);
-    let Some((events, n_backspaces)) = buf.what_to_replay(replace_words) else {
+    let Some((mut events, n_backspaces)) = buf.what_to_replay(replace_words) else {
         log("👆 двойной Shift, но буфер пуст");
         return None;
     };
     *executing = true; // блокируем Shift events на время выполнения
     let _executing_guard = ExecutingGuard(executing);
+
+    if let Ok(current_layout_is_ru) = read_current_layout_is_ru() {
+        if mark_single_current_word_layout_if_stale(&mut events, current_layout_is_ru) {
+            log(&format!(
+                "· manual tail layout resynced to {} before replay",
+                if current_layout_is_ru { "ru" } else { "us" }
+            ));
+        }
+    }
 
     let layout_decision = replay_layout_decision(&events);
     let target_is_ru = layout_decision.target_is_ru;

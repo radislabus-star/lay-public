@@ -22,8 +22,9 @@ mod text_input;
 
 pub use event_words::{
     is_layout_decision_key, map_events_to_layout, map_opposite_events, map_original_events,
-    mark_word_layout, mixed_visual_latin_word_target_layout, original_event_char,
-    replay_layout_decision, split_event_words, ReplayLayoutDecision,
+    mark_single_current_word_layout_if_stale, mark_word_layout,
+    mixed_visual_latin_word_target_layout, original_event_char, replay_layout_decision,
+    split_event_words, ReplayLayoutDecision,
 };
 pub use keymap::{is_typing_key, keycode_to_ru_char, keycode_to_us_char};
 pub use text_input::{

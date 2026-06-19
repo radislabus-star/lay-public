@@ -180,6 +180,9 @@ pub(crate) fn contains_preferable_merged_russian_part(parts: &[&str]) -> bool {
         let right_len = char_len(right);
         if left_len > MAX_RU_FUNCTION_GLUE_LEFT_LEN || right_len < 4 {
             let merged = format!("{left}{right}");
+            if right_len == 1 && is_one_letter_russian_function_word(right) {
+                return is_known_russian_phrase_part(&merged);
+            }
             return is_short_russian_function_word(left)
                 && char_len(&merged) >= 4
                 && is_known_russian_phrase_part(&merged);

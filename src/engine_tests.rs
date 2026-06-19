@@ -5,6 +5,10 @@ fn ascii_events(text: &str) -> Vec<KeyEvent> {
     text_to_key_events(text, false).expect("engine fixture must be typable")
 }
 
+fn ru_events(text: &str) -> Vec<KeyEvent> {
+    text_to_key_events(text, true).expect("engine fixture must be typable")
+}
+
 #[test]
 fn manual_engine_is_platform_neutral_for_replay() {
     let events = ascii_events("good");
@@ -50,4 +54,28 @@ fn manual_engine_keeps_good_prefix_for_smart_text() {
     assert_eq!(decision.output_text, "good текст");
     assert!(decision.output_target_is_ru);
     assert!(decision.edit.is_some());
+}
+
+#[test]
+fn manual_engine_replays_single_cyrillic_layout_word_to_ascii() {
+    let events = ru_events("тфтвф");
+    let decision = decide_manual_correction(
+        ManualCorrectionInput {
+            events: &events,
+            original: "тфтвф",
+            converted: "nanda",
+        },
+        ManualCorrectionPolicy {
+            engine: CorrectionEngine::Smart,
+            force_replay: false,
+            auto_replace: true,
+            scoped_options: ScopedTailOptions {
+                lem_enabled: true,
+                allow_layout_auto: true,
+            },
+        },
+    );
+
+    assert_eq!(decision.output_text, "nanda");
+    assert!(!decision.output_target_is_ru);
 }

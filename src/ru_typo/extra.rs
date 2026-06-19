@@ -1,8 +1,10 @@
 use crate::data_lines::data_lines;
+use crate::lexicon::is_common_ru_word;
 use crate::phrase_lexicon::looks_like_short_function_word_glued_to_known_word;
 use crate::russian_lexicon::is_known_russian_word_or_form;
 use crate::russian_typo_candidates::generate_extra_letter_candidates;
-use crate::russian_typo_scoring::best_unique_known_ngram_candidate;
+use crate::text_case::apply_word_case;
+use crate::word_reader::is_cyrillic_word;
 
 use super::guards::{
     correct_invalid_adjective_tail, looks_like_plausible_russian_past_tense, unknown_cyrillic_lower,
@@ -27,12 +29,15 @@ pub fn correct_extra_letters(word: &str) -> Option<String> {
     if missing_letter_candidate_exists(word, &lower) {
         return None;
     }
+    best_extra_letter_candidate(word, safe_extra_letter_candidates(&lower))
+}
 
-    best_unique_known_ngram_candidate(
-        word,
-        safe_extra_letter_candidates(&lower),
-        NGRAM_EXTRA_LETTER_MARGIN,
-    )
+pub fn correct_extra_letters_after_layout(word: &str) -> Option<String> {
+    if word.chars().count() < 5 || !crate::word_reader::is_cyrillic_word(word) {
+        return None;
+    }
+    let lower = word.to_lowercase();
+    best_common_extra_letter_candidate(word, safe_extra_letter_candidates(&lower))
 }
 
 fn reflexive_confusion_sources() -> impl Iterator<Item = &'static str> {
@@ -60,6 +65,45 @@ fn safe_extra_letter_candidates(lower: &str) -> Vec<String> {
         .collect()
 }
 
+fn best_extra_letter_candidate(original: &str, candidates: Vec<String>) -> Option<String> {
+    let lower = original.to_lowercase();
+    let mut found = None;
+    for candidate in candidates {
+        if candidate == lower
+            || !is_cyrillic_word(&candidate)
+            || !(is_known_russian_word_or_form(&candidate) || is_common_ru_word(&candidate))
+        {
+            continue;
+        }
+        if crate::ngram::ru_candidate_margin(&candidate, &lower) < NGRAM_EXTRA_LETTER_MARGIN {
+            continue;
+        }
+        if found.is_some() {
+            return None;
+        }
+        found = Some(candidate);
+    }
+    found.map(|candidate| apply_word_case(original, &candidate))
+}
+
+fn best_common_extra_letter_candidate(original: &str, candidates: Vec<String>) -> Option<String> {
+    let lower = original.to_lowercase();
+    let mut found = None;
+    for candidate in candidates {
+        if candidate == lower || !is_cyrillic_word(&candidate) || !is_common_ru_word(&candidate) {
+            continue;
+        }
+        if crate::ngram::ru_candidate_margin(&candidate, &lower) < NGRAM_EXTRA_LETTER_MARGIN {
+            continue;
+        }
+        if found.is_some() {
+            return None;
+        }
+        found = Some(candidate);
+    }
+    found.map(|candidate| apply_word_case(original, &candidate))
+}
+
 fn looks_like_unsafe_first_letter_deletion(lower: &str, candidate: &str) -> bool {
     let chars = lower.chars().collect::<Vec<_>>();
     if chars.len() < 2 || candidate != chars[1..].iter().collect::<String>() {
@@ -76,4 +120,17 @@ fn looks_like_unsafe_present_tail_deletion(lower: &str, candidate: &str) -> bool
         && PRESENT_TAILS
             .iter()
             .any(|tail| lower.ends_with(tail) && candidate.ends_with(tail))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::correct_extra_letters_after_layout;
+
+    #[test]
+    fn layout_cleanup_can_repair_common_ru_word_outside_morphology_dictionary() {
+        assert_eq!(
+            correct_extra_letters_after_layout("стразу"),
+            Some("сразу".to_string())
+        );
+    }
 }
