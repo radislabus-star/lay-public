@@ -100,7 +100,56 @@ impl LayIbusEngine {
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         self.push_tail_char(ch);
+        if self
+            .promote_committed_tail_to_composition_if_candidate(emitter)
+            .await?
+        {
+            return Ok(());
+        }
         self.update_precognition_preedit(emitter).await
+    }
+
+    async fn promote_committed_tail_to_composition_if_candidate(
+        &mut self,
+        emitter: &SignalEmitter<'_>,
+    ) -> fdo::Result<bool> {
+        if !self.committed_tail_promotion_allowed() {
+            return Ok(false);
+        }
+        self.refresh_precognition_candidates();
+        if self.selected_visible_completion_suffix().is_empty() {
+            return Ok(false);
+        }
+        let token = self.last_tail_token_text();
+        let token_chars = token.chars().count();
+        if token_chars < 2 || token != self.preedit_fast.token() {
+            return Ok(false);
+        }
+        self.erase_committed_tail_chars(emitter, token_chars as u32)
+            .await?;
+        self.buffer = token;
+        self.composition_cursor = self.buffer.chars().count();
+        self.update_composition_preedit(emitter).await?;
+        Ok(true)
+    }
+
+    async fn erase_committed_tail_chars(
+        &self,
+        emitter: &SignalEmitter<'_>,
+        count: u32,
+    ) -> fdo::Result<()> {
+        if count == 0 {
+            return Ok(());
+        }
+        if self.cursor_cell_width > 0 {
+            Self::commit_text(emitter, make_ibus_text("\u{7f}".repeat(count as usize)))
+                .await
+                .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+            return Ok(());
+        }
+        Self::delete_surrounding_text(emitter, -(count as i32), count)
+            .await
+            .map_err(|e| fdo::Error::Failed(e.to_string()))
     }
 
     /// Finalizes the currently active IME preedit composition.
@@ -150,6 +199,10 @@ impl LayIbusEngine {
             started_at.elapsed().as_micros() as u64,
         );
         Ok(())
+    }
+
+    fn committed_tail_promotion_allowed(&self) -> bool {
+        self.buffer.is_empty() && self.surrounding_text_supported
     }
 
     pub(super) fn autocorrect_active_composition_text(&self, text: &str) -> Option<String> {
@@ -228,9 +281,25 @@ mod tests {
                 auto_switch_layout: true,
                 correction_safety: "experimental".to_string(),
                 nanda_autocorrect: true,
+                nanda_precognition: true,
                 ..LayConfig::default()
             },
         )
+    }
+
+    #[test]
+    fn terminal_like_client_does_not_promote_committed_tail_to_composition() {
+        let mut engine = engine();
+        engine.surrounding_text_supported = false;
+        for ch in "пров".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(!engine.selected_visible_completion_suffix().is_empty());
+        assert!(!engine.committed_tail_promotion_allowed());
+        engine.surrounding_text_supported = true;
+        assert!(engine.committed_tail_promotion_allowed());
     }
 
     #[test]

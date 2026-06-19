@@ -179,9 +179,17 @@ impl LayIbusEngine {
     }
 
     fn composition_preedit_payload(&mut self) -> (String, u32) {
-        self.preedit_suffix.clear();
-        let text = self.buffer.clone();
         let cursor_pos = self.composition_cursor.min(self.buffer.chars().count()) as u32;
+        let suffix = if cursor_pos as usize == self.buffer.chars().count()
+            && !self.composition_has_pending_autocorrect()
+        {
+            self.selected_visible_completion_suffix()
+        } else {
+            String::new()
+        };
+        self.preedit_suffix = suffix.clone();
+        let mut text = self.buffer.clone();
+        text.push_str(&suffix);
         (text, cursor_pos)
     }
 
@@ -453,7 +461,7 @@ mod tests {
     }
 
     #[test]
-    fn composition_preedit_keeps_candidate_out_of_visible_state() {
+    fn composition_preedit_shows_candidate_suffix_after_cursor() {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
             Arc::new(Mutex::new(Default::default())),
@@ -466,13 +474,41 @@ mod tests {
                 ..LayConfig::default()
             },
         );
-        engine.buffer = "пров".to_string();
+        for ch in "пров".chars() {
+            engine.insert_composition_char(ch);
+        }
         engine.composition_cursor = engine.buffer.chars().count();
-        engine.preedit_suffix = "ерка".to_string();
+        engine.refresh_precognition_candidates();
         let (text, cursor_pos) = engine.composition_preedit_payload();
 
-        assert_eq!(text, "пров");
+        assert_eq!(text, "проверка");
         assert_eq!(cursor_pos, 4);
+        assert_eq!(engine.preedit_suffix, "ерка");
+    }
+
+    #[test]
+    fn composition_preedit_suppresses_suffix_when_autocorrect_is_pending() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                auto_replace: true,
+                typing_assist: true,
+                nanda_precognition: true,
+                correction_safety: "normal".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        engine.buffer = "следущий".to_string();
+        engine.composition_cursor = engine.buffer.chars().count();
+        engine.preedit_suffix = "ий".to_string();
+        let (text, cursor_pos) = engine.composition_preedit_payload();
+
+        assert_eq!(text, "следущий");
+        assert_eq!(cursor_pos, 8);
         assert!(engine.preedit_suffix.is_empty());
     }
 
