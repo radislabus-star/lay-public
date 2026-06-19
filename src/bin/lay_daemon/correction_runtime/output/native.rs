@@ -14,7 +14,15 @@ use super::super::super::{
 use super::super::memory::{remember_layout_replay_success, LayoutReplayMemory};
 use super::context::ManualOutputCommon;
 
-pub(crate) fn try_ime_replace_output(ctx: &mut ManualOutputCommon<'_>) -> Option<Option<bool>> {
+pub(crate) struct NativeReplaceOutput {
+    pub(crate) result: Option<bool>,
+    pub(crate) layout_is_ru: bool,
+    pub(crate) trailing_spaces: usize,
+}
+
+pub(crate) fn try_ime_replace_output(
+    ctx: &mut ManualOutputCommon<'_>,
+) -> Option<NativeReplaceOutput> {
     if !should_try_ime_text_backend() {
         return None;
     }
@@ -31,7 +39,7 @@ pub(crate) fn try_ime_replace_output(ctx: &mut ManualOutputCommon<'_>) -> Option
         replace_target_is_ru,
         is_replay,
     );
-    Some(match switch_to_target_layout(replace_target_is_ru) {
+    let result = match switch_to_target_layout(replace_target_is_ru) {
         Ok(layout_id) => {
             log(&format!("  layout → {layout_id}"));
             log(&format!(
@@ -46,12 +54,17 @@ pub(crate) fn try_ime_replace_output(ctx: &mut ManualOutputCommon<'_>) -> Option
             ));
             None
         }
+    };
+    Some(NativeReplaceOutput {
+        result,
+        layout_is_ru: replace_target_is_ru,
+        trailing_spaces: trailing_space_count(&replace_text),
     })
 }
 
 pub(crate) fn try_gnome_native_replace_output(
     ctx: &mut ManualOutputCommon<'_>,
-) -> Option<Option<bool>> {
+) -> Option<NativeReplaceOutput> {
     if !(GNOME_NATIVE_REPLACE_EXPERIMENTAL && active_layout_backend() == LayoutBackend::Gnome) {
         return None;
     }
@@ -76,7 +89,11 @@ pub(crate) fn try_gnome_native_replace_output(
                 "✓ done: {replace_kind}, GNOME-native replace за {}ms",
                 ctx.started_at.elapsed().as_millis()
             ));
-            Some(Some(replace_target_is_ru))
+            Some(NativeReplaceOutput {
+                result: Some(replace_target_is_ru),
+                layout_is_ru: replace_target_is_ru,
+                trailing_spaces: trailing_space_count(&replace_text),
+            })
         }
         Ok(false) => {
             log("⚠ GNOME ReplaceText returned false; fallback to uinput replay");
@@ -154,4 +171,8 @@ fn remember_native_replace(
             true,
         );
     }
+}
+
+fn trailing_space_count(text: &str) -> usize {
+    text.chars().rev().take_while(|ch| *ch == ' ').count()
 }

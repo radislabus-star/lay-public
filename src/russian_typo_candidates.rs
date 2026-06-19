@@ -110,7 +110,7 @@ pub(crate) fn generate_vowel_confusion_candidates(lower: &str) -> Vec<String> {
     let mut seen = HashSet::new();
     let mut candidates = Vec::new();
 
-    for idx in 0..chars.len() {
+    for idx in 1..chars.len() {
         for replacement in ru_vowel_confusion_replacements(chars[idx]).iter().copied() {
             let mut candidate = chars.clone();
             candidate[idx] = replacement;

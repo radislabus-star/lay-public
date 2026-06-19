@@ -1,0 +1,160 @@
+use zbus::fdo;
+use zbus::object_server::SignalEmitter;
+
+use super::engine::LayIbusEngine;
+use super::protocol::{KEY_LEFT, KEY_RIGHT, KEY_UP};
+
+impl LayIbusEngine {
+    pub(super) async fn backspace(&mut self, emitter: &SignalEmitter<'_>) -> fdo::Result<bool> {
+        self.preedit_dirty = false;
+        if !self.buffer.is_empty() {
+            if self.composition_cursor == 0 {
+                return Ok(true);
+            }
+            let byte_idx = char_to_byte_idx(&self.buffer, self.composition_cursor - 1);
+            self.buffer.remove(byte_idx);
+            self.composition_cursor -= 1;
+            self.sync_tail_from_composition();
+            self.update_composition_preedit(emitter).await?;
+            return Ok(true);
+        }
+        self.backspace_committed_tail_only();
+        Ok(false)
+    }
+
+    pub(super) fn backspace_committed_tail_only(&mut self) {
+        self.tail_buffer.pop();
+        self.preedit_fast.backspace();
+    }
+
+    pub(super) async fn move_composition_cursor(
+        &mut self,
+        emitter: &SignalEmitter<'_>,
+        keyval: u32,
+    ) -> fdo::Result<bool> {
+        if self.buffer.is_empty() {
+            return Ok(false);
+        }
+        let len = self.buffer.chars().count();
+        match keyval {
+            KEY_LEFT if self.composition_cursor > 0 => self.composition_cursor -= 1,
+            KEY_RIGHT if self.composition_cursor < len => self.composition_cursor += 1,
+            _ => {}
+        }
+        self.update_composition_preedit(emitter).await?;
+        Ok(true)
+    }
+
+    pub(super) async fn select_precognition_candidate(
+        &mut self,
+        emitter: &SignalEmitter<'_>,
+        keyval: u32,
+    ) -> fdo::Result<bool> {
+        if self.buffer.is_empty() {
+            return Ok(false);
+        }
+        let step = if keyval == KEY_UP { -1 } else { 1 };
+        if !self.cycle_precognition_candidate(step) {
+            return Ok(false);
+        }
+        self.update_composition_preedit(emitter).await?;
+        Ok(true)
+    }
+
+    pub(super) fn insert_composition_char(&mut self, ch: char) {
+        let len = self.buffer.chars().count();
+        self.composition_cursor = self.composition_cursor.min(len);
+        if self.composition_cursor == len {
+            self.buffer.push(ch);
+            self.composition_cursor += 1;
+            self.push_tail_char(ch);
+            return;
+        }
+        let byte_idx = char_to_byte_idx(&self.buffer, self.composition_cursor);
+        self.buffer.insert(byte_idx, ch);
+        self.composition_cursor += 1;
+        self.sync_tail_from_composition();
+    }
+
+    pub(super) fn sync_tail_from_composition(&mut self) {
+        let replacement = self.buffer.clone();
+        self.replace_last_tail_token_text(&replacement, 0);
+        self.preedit_fast.reset();
+        for ch in self.buffer.chars() {
+            self.preedit_fast.push(ch);
+        }
+    }
+}
+
+fn char_to_byte_idx(text: &str, char_idx: usize) -> usize {
+    text.char_indices()
+        .nth(char_idx)
+        .map(|(idx, _)| idx)
+        .unwrap_or(text.len())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{char_to_byte_idx, LayIbusEngine};
+    use lay::config::LayConfig;
+    use std::sync::{Arc, Mutex};
+
+    fn engine() -> LayIbusEngine {
+        LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            false,
+            true,
+            LayConfig::default(),
+        )
+    }
+
+    #[test]
+    fn composition_cursor_edits_inside_buffer_without_committing() {
+        let mut engine = engine();
+        for ch in "abc".chars() {
+            engine.insert_composition_char(ch);
+        }
+        assert_eq!(engine.buffer, "abc");
+        assert_eq!(engine.composition_cursor, 3);
+        engine.composition_cursor -= 1;
+        engine.insert_composition_char('X');
+        assert_eq!(engine.buffer, "abXc");
+        assert_eq!(engine.composition_cursor, 3);
+        let byte_idx = char_to_byte_idx(&engine.buffer, engine.composition_cursor - 1);
+        engine.buffer.remove(byte_idx);
+        engine.composition_cursor -= 1;
+        engine.sync_tail_from_composition();
+        assert_eq!(engine.buffer, "abc");
+        assert_eq!(engine.composition_cursor, 2);
+        assert_eq!(engine.tail_buffer, "abc");
+    }
+
+    #[test]
+    fn composition_cursor_backspace_edits_before_cursor() {
+        let mut engine = engine();
+        for ch in "abcd".chars() {
+            engine.insert_composition_char(ch);
+        }
+        engine.composition_cursor = 2;
+        let byte_idx = char_to_byte_idx(&engine.buffer, engine.composition_cursor - 1);
+        engine.buffer.remove(byte_idx);
+        engine.composition_cursor -= 1;
+        engine.sync_tail_from_composition();
+        assert_eq!(engine.buffer, "acd");
+        assert_eq!(engine.composition_cursor, 1);
+        assert_eq!(engine.tail_buffer, "acd");
+    }
+
+    #[test]
+    fn empty_composition_backspace_updates_memory_but_stays_unhandled() {
+        let mut engine = engine();
+        for ch in "тест".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.backspace_committed_tail_only();
+        assert_eq!(engine.buffer, "");
+        assert_eq!(engine.tail_buffer, "тес");
+        assert_eq!(engine.preedit_fast.token(), "тес");
+    }
+}

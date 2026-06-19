@@ -35,6 +35,17 @@ fn single_word_wrong_layout_replays_opposite_layout() {
 }
 
 #[test]
+fn visible_tail_text_reads_completed_words_and_current_token() {
+    let mut buffer = WordBuffer::new();
+    push_text_as_layout(&mut buffer, "html djn api аш", false);
+
+    assert_eq!(
+        buffer.visible_tail_text(4).as_deref(),
+        Some("html djn api аш")
+    );
+}
+
+#[test]
 fn replay_toggle_uses_only_remembered_word_even_with_wider_scope() {
     let mut buffer = WordBuffer::new();
     push_text_as_layout(&mut buffer, "abc l", false);
@@ -101,6 +112,27 @@ fn visible_text_after_auto_undo_can_be_corrected_again() {
 
     assert_eq!(map_original_events(&events), "слово кjrf-rjke");
     assert_eq!(backspaces, 15);
+}
+
+#[test]
+fn immediate_double_shift_after_layout_autofix_is_consumed_once() {
+    let mut buffer = WordBuffer::new();
+
+    buffer.remember_pending_auto_layout_guard("нашем дфн ", "нашем lay ");
+
+    assert!(buffer.should_consume_auto_layout_replay_guard("lay ", "дфн "));
+    assert!(!buffer.should_consume_auto_layout_replay_guard("lay ", "дфн "));
+}
+
+#[test]
+fn auto_layout_replay_guard_only_matches_pure_single_word_layout_pair() {
+    let mut buffer = WordBuffer::new();
+
+    buffer.remember_pending_auto_layout_guard("word one ", "word two ");
+    assert!(!buffer.should_consume_auto_layout_replay_guard("two ", "one "));
+
+    buffer.remember_pending_auto_layout_guard("то пше ", "то git ");
+    assert!(buffer.should_consume_auto_layout_replay_guard("git ", "пше "));
 }
 
 #[test]

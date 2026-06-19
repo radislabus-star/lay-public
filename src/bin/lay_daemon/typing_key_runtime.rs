@@ -2,7 +2,10 @@ use lay::keyboard::KeyEvent;
 use lay::word_buffer::WordBuffer;
 use std::time::{Duration, Instant};
 
-use super::{log, read_current_layout_is_ru, ShiftState, LAYOUT_POLL_INTERVAL_MS};
+use super::{
+    log, read_current_layout_is_ru, record_precognition_tick_if_enabled,
+    sync_ime_engine_to_current_layout, ShiftState, LAYOUT_POLL_INTERVAL_MS,
+};
 
 pub(super) struct TypingKeyContext<'a> {
     pub(super) buffer: &'a mut WordBuffer,
@@ -46,6 +49,7 @@ pub(super) fn handle_typing_key_press(code: u16, value: i32, ctx: TypingKeyConte
     {
         if let Ok(is_ru) = read_current_layout_is_ru() {
             *ctx.current_layout_is_ru = is_ru;
+            sync_ime_engine_to_current_layout(is_ru);
         }
         *ctx.last_layout_poll = Instant::now();
     }
@@ -56,6 +60,7 @@ pub(super) fn handle_typing_key_press(code: u16, value: i32, ctx: TypingKeyConte
     };
     ctx.buffer.push(typed_event);
     ctx.buffer.note_learning_typed(typed_event);
+    record_precognition_tick_if_enabled("key", ctx.buffer);
     if ctx.verbose {
         log(&format!(
             "· key {code} v={value} shift={} → current={} events={}",

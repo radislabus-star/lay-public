@@ -117,6 +117,18 @@ pub(super) fn switch_to_target_layout(target_is_ru: bool) -> Result<&'static str
     })
 }
 
+pub(super) fn sync_ime_engine_to_current_layout(current_is_ru: bool) {
+    if !active_text_backend().should_try_ime() || active_layout_backend() != LayoutBackend::Gnome {
+        return;
+    }
+    let (_, ibus_engine) = target_layout(current_is_ru);
+    if let Err(error) = ibus_bridge::ensure_engine(ibus_engine, current_is_ru) {
+        log(&format!(
+            "⚠ IME engine sync failed for {ibus_engine}: {error}"
+        ));
+    }
+}
+
 pub(super) fn target_layout(target_is_ru: bool) -> (&'static str, &'static str) {
     if target_is_ru {
         (
@@ -215,6 +227,10 @@ pub(super) fn try_ime_replace_tail(
 
 pub(super) fn call_ime_ping() -> Result<String, String> {
     ime_bridge::call_ping()
+}
+
+pub(super) fn focused_ime_engine_handles_typing() -> bool {
+    active_text_backend().should_try_ime() && ime_bridge::focused().unwrap_or(false)
 }
 
 pub(super) fn detect_auto_layout_backend_hint() -> Option<LayoutBackend> {

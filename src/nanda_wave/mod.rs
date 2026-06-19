@@ -1,0 +1,27 @@
+pub mod cell32;
+pub mod context;
+pub mod context_wave;
+pub mod eval;
+pub mod feedback;
+pub mod journal;
+mod journal_record;
+pub mod l1;
+pub mod l2;
+pub mod l3;
+pub mod learned;
+pub mod mode;
+pub mod options;
+pub mod packet;
+pub mod pattern_memory;
+pub mod pattern_wave;
+pub mod precognition;
+pub mod resonance_memory;
+pub mod signal;
+pub mod structural_relation;
+pub mod trace;
+
+pub use eval::{evaluate_wave, evaluate_wave_with_options, WaveEvalResult, WaveEvalStats};
+pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
+pub use options::WaveOptions;
+pub use signal::{ActiveMode, LayerTrace, WaveDecision, WavePacket, WaveTrace, WordCandidate};
+pub use trace::{run_wave_trace, run_wave_trace_with_options};

@@ -37,6 +37,12 @@ fn single_word_wrong_layout_replay_target_is_opposite_layout() {
         decide_correction(&row[1], &row[2], CorrectionEngine::Smart),
         expected_correction_action(&row)
     );
+
+    let row = manual_decision_case("single_wrong_layout_ru_to_en");
+    assert_eq!(
+        decide_correction(&row[1], &row[2], CorrectionEngine::Smart),
+        expected_correction_action(&row)
+    );
 }
 
 #[test]

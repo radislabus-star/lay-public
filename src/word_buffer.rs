@@ -4,6 +4,7 @@
 //! small state machine around "current word", completed words, replay toggles
 //! and pending user-learning feedback.
 
+mod auto_layout_guard;
 mod learning;
 mod replay_memory;
 mod replay_scope;
@@ -15,6 +16,7 @@ use crate::keyboard::KeyEvent;
 use crate::text_edit::TextReplacement;
 
 pub const MAX_REPLACE_WORDS: usize = 8;
+pub const MAX_HISTORY_WORDS: usize = 32;
 const LEARNING_FEEDBACK_MAX_AGE_SECS: u64 = 30;
 
 #[derive(Debug)]
@@ -25,6 +27,7 @@ pub struct WordBuffer {
     replay_toggle_words: usize,
     pending_learning: Option<PendingLearningCorrection>,
     pending_auto_undo: Option<PendingAutoUndo>,
+    pending_auto_layout_guard: Option<PendingAutoLayoutGuard>,
 }
 
 #[derive(Debug, Clone)]
@@ -60,6 +63,13 @@ struct PendingLearningCorrection {
     typed: Vec<KeyEvent>,
 }
 
+#[derive(Debug, Clone)]
+struct PendingAutoLayoutGuard {
+    original_word: String,
+    replacement_word: String,
+    started_at: Instant,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UserLearningCorrection {
     pub lay_kind: String,
@@ -81,6 +91,7 @@ impl WordBuffer {
             replay_toggle_words: 0,
             pending_learning: None,
             pending_auto_undo: None,
+            pending_auto_layout_guard: None,
         }
     }
 
@@ -120,13 +131,14 @@ impl WordBuffer {
         self.prev_had_trailing_space = false;
         self.replay_toggle_words = 0;
         self.pending_auto_undo = None;
+        self.pending_auto_layout_guard = None;
     }
 
     #[inline]
     pub fn handle_space(&mut self) {
         if !self.current.is_empty() {
             self.prev_words.push(std::mem::take(&mut self.current));
-            if self.prev_words.len() > MAX_REPLACE_WORDS {
+            if self.prev_words.len() > MAX_HISTORY_WORDS {
                 self.prev_words.remove(0);
             }
             self.prev_had_trailing_space = true;
@@ -140,6 +152,7 @@ impl WordBuffer {
         self.prev_had_trailing_space = false;
         self.replay_toggle_words = 0;
         self.pending_auto_undo = None;
+        self.pending_auto_layout_guard = None;
     }
 
     #[inline]

@@ -76,6 +76,33 @@ fn committed_tail_long_word_keeps_stable_suffix_before_space() {
 }
 
 #[test]
+fn committed_tail_full_token_plan_avoids_middle_edit_for_ime_autocorrect() {
+    let original = "следущий ";
+    let replacement = "следующий ";
+    let minimal = plan_committed_tail_replacement(original, replacement).expect("minimal");
+    let full_token =
+        plan_committed_tail_full_token_replacement(original, replacement).expect("full token");
+
+    assert_eq!(apply_plan(original, &minimal), replacement);
+    assert_eq!(minimal.move_left, 4);
+    assert_eq!(minimal.insert, "ю");
+    assert_eq!(apply_plan(original, &full_token), replacement);
+    assert_eq!(full_token, text_replacement(1, 8, "следующий", 1));
+}
+
+#[test]
+fn committed_tail_full_token_plan_can_be_shifted_behind_current_word() {
+    let original = "следущий ";
+    let replacement = "следующий ";
+    let full_token =
+        plan_committed_tail_full_token_replacement(original, replacement).expect("full token");
+    let shifted = offset_replacement_plan_for_cursor(&full_token, 5);
+
+    assert_eq!(shifted, text_replacement(6, 8, "следующий", 6));
+    assert_eq!(apply_plan("следущий слово", &shifted), "следующий слово");
+}
+
+#[test]
 fn committed_tail_sentence_plans_preserve_already_typed_space() {
     for row in fixture_rows("text_edit_sentence_plans.tsv") {
         assert_eq!(row.len(), 2, "sentence-plan fixture must be TSV");
@@ -135,6 +162,18 @@ fn committed_tail_plan_can_be_shifted_behind_current_word() {
     assert_eq!(apply_plan(&row[2], &shifted), row[3]);
     assert_eq!(shifted.move_left, base.move_left + 6);
     assert_eq!(shifted.move_right, base.move_right + 6);
+}
+
+#[test]
+fn committed_tail_layout_word_shifted_behind_current_russian_context() {
+    let row = first_fixture_row("text_edit_shifted_layout_tail.tsv");
+    let base = plan_committed_tail_replacement(&row[0], &row[1]).expect("replacement");
+    let cursor_offset = row[4].parse().expect("cursor_offset");
+    let shifted = offset_replacement_plan_for_cursor(&base, cursor_offset);
+
+    assert_eq!(apply_plan(&row[2], &shifted), row[3]);
+    assert_eq!(shifted.move_left, base.move_left + cursor_offset);
+    assert_eq!(shifted.move_right, base.move_right + cursor_offset);
 }
 
 #[test]

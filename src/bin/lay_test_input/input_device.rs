@@ -33,9 +33,15 @@ pub(crate) fn build_virtual_keyboard() -> std::io::Result<VirtualDevice> {
         KeyCode::KEY_Z,
         KeyCode::KEY_SPACE,
         KeyCode::KEY_LEFTSHIFT,
+        KeyCode::KEY_LEFTALT,
+        KeyCode::KEY_RIGHTALT,
         KeyCode::KEY_LEFTCTRL,
         KeyCode::KEY_BACKSPACE,
         KeyCode::KEY_ENTER,
+        KeyCode::KEY_LEFT,
+        KeyCode::KEY_RIGHT,
+        KeyCode::KEY_UP,
+        KeyCode::KEY_DOWN,
         KeyCode::KEY_0,
         KeyCode::KEY_1,
         KeyCode::KEY_2,
@@ -85,6 +91,15 @@ pub(crate) fn double_shift(dev: &mut VirtualDevice, settle_ms: u64) -> std::io::
     tap(dev, KeyCode::KEY_LEFTSHIFT.code())?;
     sleep(Duration::from_millis(80));
     tap(dev, KeyCode::KEY_LEFTSHIFT.code())?;
+    sleep(Duration::from_millis(settle_ms));
+    Ok(())
+}
+
+pub(crate) fn double_alt(dev: &mut VirtualDevice, settle_ms: u64) -> std::io::Result<()> {
+    sleep(Duration::from_millis(220));
+    tap(dev, KeyCode::KEY_LEFTALT.code())?;
+    sleep(Duration::from_millis(80));
+    tap(dev, KeyCode::KEY_LEFTALT.code())?;
     sleep(Duration::from_millis(settle_ms));
     Ok(())
 }

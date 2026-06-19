@@ -1,0 +1,80 @@
+# original	expected	label
+djn\s	вот\s	layout
+ghbdtn\s	привет\s	layout
+gjhn\s	порт\s	layout
+html djn\s	html вот\s	layout_context
+порт port gjhn\s	порт port порт\s	layout_context
+git checkout -b test\s	git checkout -b test\s	veto
+api token\s	api token\s	veto
+vpn config\s	vpn config\s	veto
+wechat\s	wechat\s	keep
+file\s	file\s	keep
+у насесть\s	у нас есть\s	split
+янебуду\s	я не буду\s	split
+тожесамое\s	тоже самое\s	split
+кторое\s	которое\s	typo
+прболема\s	проблема\s	typo
+перпаратов\s	препаратов\s	typo
+фразы связанности\s	фразовой связности\s	grammar
+клетка моды\s	клетка моды\s	keep
+NANDA клетка\s	NANDA клетка\s	keep
+Nande клетка\s	NANDA клетка\s	grammar
+вот djn\s	вот вот\s	layout_context
+мы gjhn\s	мы порт\s	layout_context
+я file\s	я file\s	keep
+api djn\s	api djn\s	veto
+git djn\s	git djn\s	veto
+cd test\s	cd test\s	veto
+ssh key\s	ssh key\s	veto
+docker run\s	docker run\s	veto
+html djn api\s	html вот api\s	layout_context
+онаубыточная\s	она убыточная\s	split
+ониготовы\s	они готовы\s	split
+какпроверка\s	как проверка\s	split
+слови\s	слов и\s	split
+ктороый\s	который\s	typo
+рабоатет\s	работает\s	typo
+использоватся\s	использоваться\s	typo
+фраза связанности\s	фразовой связности\s	grammar
+русская фраза связанности\s	русская фразовая связность\s	grammar
+система автокрекции\s	система автокоррекции\s	typo
+protected token\s	protected token\s	protected
+NANDA wave\s	NANDA wave\s	keep
+QR-rjlf\s	QR-кода\s	layout
+цусрфе\s	wechat\s	layout
+wechat\s	wechat\s	protected
+тест Ghjljkbv file\s	тест Ghjljkbv file\s	keep
+Помогу мне\s	Помоги мне\s	grammar
+пркогниция\s	прекогниция\s	typo
+растравлять\s	расставлять\s	typo
+грамотно исправляй\s	грамотно: исправляй\s	punctuation
+русский запятые\s	русский. Запятые\s	punctuation
+бери ты их\s	бери их\s	grammar
+атозамена\s	автозамена\s	typo
+испрть\s	исправить\s	typo
+ошбки\s	ошибки\s	typo
+что бы видит\s	чтобы видеть\s	grammar
+приимущестов\s	преимущество\s	typo
+есть приимущестов\s	есть преимущество\s	grammar
+прикогницей\s	прекогницией\s	typo
+включено прикогницей\s	включенной прекогницией\s	grammar
+с включено прикогницей\s	с включенной прекогницией\s	grammar
+исправленый\s	исправленный\s	typo
+исправленый текст\s	исправленный текст\s	grammar
+не исправленый текст\s	неисправленный текст\s	grammar
+вобще\s	вообще\s	typo
+вобще L3 работает\s	вообще L3 работает\s	grammar
+боле\s	более\s	typo
+высокопными\s	высокопарными\s	typo
+это невидные\s	это невалидные\s	typo
+высокопными словами\s	высокопарными словами\s	grammar
+начну писать боле высокопными словам\s	начну писать более высокопарными словами\s	grammar
+сколько мне нужна вот так текста\s	сколько мне нужно вот так текста\s	grammar
+много тут ошибка\s	много тут ошибок\s	grammar
+первые которые\s	первые которые\s	keep
+такие условие\s	такие условие\s	keep
+другие перемнные\s	другие перемнные\s	keep
+обратил внимание\s	обратил внимание\s	keep
+срабатывает переварачивание\s	срабатывает переварачивание\s	keep
+он проверит\s	он проверит\s	keep
+твой проверил\s	твой проверил\s	keep

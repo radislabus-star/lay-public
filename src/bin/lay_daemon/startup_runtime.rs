@@ -9,7 +9,8 @@ use std::time::Instant;
 use super::{
     active_enter_autocorrect_from_env, active_layout_backend, call_ime_ping, call_ping,
     find_all_keyboards, find_all_pointers, layout_niri, listen_keyboard, listen_pointer, log,
-    make_virtual_keyboard, ENTER_AUTOCORRECT_EXPERIMENT_ENV, TYPING_ASSIST_RUNTIME_READY,
+    make_virtual_keyboard, startup_sanitize, ENTER_AUTOCORRECT_EXPERIMENT_ENV,
+    TYPING_ASSIST_RUNTIME_READY,
 };
 
 pub(super) fn run_daemon(
@@ -23,6 +24,7 @@ pub(super) fn run_daemon(
     let startup_cfg = LayConfig::load();
     let startup_backend = active_layout_backend();
     log_startup_backends(&startup_cfg, startup_backend);
+    startup_sanitize::sanitize_user_replacements();
     warm_runtime_if_needed(detect_only, &startup_cfg);
     probe_backends(detect_only, startup_backend, &startup_cfg);
 
@@ -39,14 +41,12 @@ fn keyboard_device_paths(device: Option<String>) -> std::io::Result<Vec<PathBuf>
 
 fn log_startup_mode(device_paths: &[PathBuf], detect_only: bool) {
     log(&format!("► старт, устройства: {device_paths:?}"));
-    log(&format!(
-        "► режим: {}",
-        if detect_only {
-            "DETECT-ONLY"
-        } else {
-            "LIVE (DBus + uinput)"
-        }
-    ));
+    let mode = if detect_only {
+        "DETECT-ONLY"
+    } else {
+        "LIVE (DBus + uinput)"
+    };
+    log(&format!("► режим: {mode}"));
 }
 
 fn log_startup_backends(cfg: &LayConfig, backend: LayoutBackend) {

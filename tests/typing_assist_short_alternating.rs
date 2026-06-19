@@ -3,11 +3,12 @@ mod common;
 use common::{assert_same_boundaries, fixture_rows};
 use lay::config::{default_typing_assist_pipeline, CorrectionSafety};
 use lay::dict::{convert, Direction};
-use lay::microbrain::MicrobrainOptions;
 use lay::typing_assist::{
-    explain_typing_assist_with_microbrain_options, split_edge_whitespace, split_ws_segments,
+    explain_typing_assist_with_pipeline, split_edge_whitespace, split_ws_segments,
 };
 use lay::typing_context::typing_assist_pipeline_for_context;
+
+const RU_TO_EN_SYNTHETIC: &str = include_str!("fixtures/typing_assist_ru_to_en_synthetic.txt");
 
 fn join_with_trailing_space(words: &[String]) -> String {
     let mut out = words.join(" ");
@@ -27,7 +28,7 @@ fn simulate_experimental_typing_assist(input: &str) -> String {
                 &configured,
                 &text,
             );
-            if let Some(next) = apply_nanda_typing_assist_to_tail(&text, true, &pipeline) {
+            if let Some(next) = apply_typing_assist_to_tail(&text, true, &pipeline) {
                 text = next;
             }
         }
@@ -35,63 +36,53 @@ fn simulate_experimental_typing_assist(input: &str) -> String {
     text
 }
 
-fn apply_nanda_typing_assist_to_tail(
+fn apply_typing_assist_to_tail(
     text: &str,
     allow_layout_auto: bool,
     pipeline: &[lay::config::TypingAssistRuleConfig],
 ) -> Option<String> {
-    explain_typing_assist_with_microbrain_options(
-        text,
-        allow_layout_auto,
-        pipeline,
-        &MicrobrainOptions::default(),
-    )
-    .output
-    .or_else(|| {
-        let (leading, core, trailing) = split_edge_whitespace(text);
-        let segments = split_ws_segments(core);
-        if segments.len() < 3 {
-            return None;
-        }
+    explain_typing_assist_with_pipeline(text, allow_layout_auto, pipeline)
+        .output
+        .or_else(|| {
+            let (leading, core, trailing) = split_edge_whitespace(text);
+            let segments = split_ws_segments(core);
+            if segments.len() < 3 {
+                return None;
+            }
 
-        for word_count in [1, 2] {
-            let mut suffix_start = core.len();
-            let mut non_ws_seen = 0;
-            for (segment, is_ws) in segments.iter().rev() {
-                suffix_start -= segment.len();
-                if !is_ws {
-                    non_ws_seen += 1;
-                    if non_ws_seen == word_count {
-                        break;
+            for word_count in [1, 2] {
+                let mut suffix_start = core.len();
+                let mut non_ws_seen = 0;
+                for (segment, is_ws) in segments.iter().rev() {
+                    suffix_start -= segment.len();
+                    if !is_ws {
+                        non_ws_seen += 1;
+                        if non_ws_seen == word_count {
+                            break;
+                        }
+                    }
+                }
+                if non_ws_seen != word_count {
+                    continue;
+                }
+
+                let suffix = &core[suffix_start..];
+                if let Some(replacement) =
+                    explain_typing_assist_with_pipeline(suffix, allow_layout_auto, pipeline).output
+                {
+                    let mut out = String::with_capacity(text.len().max(replacement.len()));
+                    out.push_str(leading);
+                    out.push_str(&core[..suffix_start]);
+                    out.push_str(&replacement);
+                    out.push_str(trailing);
+                    if out != text {
+                        return Some(out);
                     }
                 }
             }
-            if non_ws_seen != word_count {
-                continue;
-            }
 
-            let suffix = &core[suffix_start..];
-            if let Some(replacement) = explain_typing_assist_with_microbrain_options(
-                suffix,
-                allow_layout_auto,
-                pipeline,
-                &MicrobrainOptions::default(),
-            )
-            .output
-            {
-                let mut out = String::with_capacity(text.len().max(replacement.len()));
-                out.push_str(leading);
-                out.push_str(&core[..suffix_start]);
-                out.push_str(&replacement);
-                out.push_str(trailing);
-                if out != text {
-                    return Some(out);
-                }
-            }
-        }
-
-        None
-    })
+            None
+        })
 }
 
 fn short_alternating_words_50() -> Vec<String> {
@@ -168,4 +159,22 @@ fn short_russian_words_typed_in_us_layout_are_recovered_between_english_words() 
 
     assert_eq!(got, expected, "input={input:?}");
     assert_same_boundaries(&got, &expected);
+}
+
+#[test]
+fn synthetic_ru_to_en_technical_tokens_are_recovered() {
+    let configured = default_typing_assist_pipeline();
+    for token in fixture_rows(RU_TO_EN_SYNTHETIC) {
+        let input = convert(token, Direction::Us2Ru) + " ";
+        let expected = format!("{token} ");
+        let pipeline = typing_assist_pipeline_for_context(
+            true,
+            CorrectionSafety::Experimental,
+            &configured,
+            &input,
+        );
+        let got = apply_typing_assist_to_tail(&input, true, &pipeline);
+
+        assert_eq!(got.as_deref(), Some(expected.as_str()), "token={token:?}");
+    }
 }

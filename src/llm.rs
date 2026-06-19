@@ -7,6 +7,7 @@
 
 mod consensus;
 mod hybrid;
+mod latin_b_context;
 mod token_choice;
 mod tokenwise;
 

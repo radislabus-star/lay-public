@@ -1,7 +1,7 @@
 use crate::keyboard::{map_original_events, KeyEvent};
 use crate::word_buffer::WordBuffer;
 
-const COMPLETED_TAIL_CONTEXT_WORDS: usize = 4;
+const COMPLETED_TAIL_CONTEXT_WORDS: usize = 24;
 
 pub fn completed_tail_context(
     buf: &WordBuffer,

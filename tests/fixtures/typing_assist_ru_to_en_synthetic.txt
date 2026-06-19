@@ -1,0 +1,21 @@
+# English technical tokens that must be recoverable when typed in RU layout.
+api
+bash
+css
+file
+git
+go
+html
+json
+lay
+log
+md
+nanda
+node
+port
+push
+rust
+ssh
+test
+vpn
+wechat

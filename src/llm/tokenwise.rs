@@ -1,3 +1,4 @@
+use super::latin_b_context::should_keep_latin_b_context;
 use super::token_choice::obvious_token_choice;
 use crate::llm_backend::Choice;
 use crate::word_reader::split_ws_segments;
@@ -9,20 +10,22 @@ pub(super) fn keep_protected_ascii_tokens(original: &str, converted: &str) -> Op
     if original_segments.len() != converted_segments.len() {
         return None;
     }
-
     let mut protected_count = 0;
     let mut converted_count = 0;
     let mut out = String::with_capacity(original.len().max(converted.len()));
-
-    for ((orig, orig_ws), (conv, conv_ws)) in
-        original_segments.iter().zip(converted_segments.iter())
+    for (idx, ((orig, orig_ws), (conv, conv_ws))) in original_segments
+        .iter()
+        .zip(converted_segments.iter())
+        .enumerate()
     {
         if orig_ws != conv_ws {
             return None;
         }
         if *orig_ws {
             out.push_str(orig);
-        } else if is_protected_ascii_token(orig) {
+        } else if should_keep_latin_b_context(&original_segments, idx)
+            || is_protected_ascii_token(orig)
+        {
             protected_count += 1;
             out.push_str(orig);
         } else {
@@ -58,15 +61,15 @@ where
     if original_segments.len() != converted_segments.len() {
         return Ok(None);
     }
-
     let mut word_count = 0;
     let mut kept_original = false;
     let mut used_converted = false;
     let mut used_chooser = false;
     let mut out = String::with_capacity(original.len().max(converted.len()));
-
-    for ((orig, orig_ws), (conv, conv_ws)) in
-        original_segments.iter().zip(converted_segments.iter())
+    for (idx, ((orig, orig_ws), (conv, conv_ws))) in original_segments
+        .iter()
+        .zip(converted_segments.iter())
+        .enumerate()
     {
         if orig_ws != conv_ws {
             return Ok(None);
@@ -75,18 +78,20 @@ where
             out.push_str(orig);
             continue;
         }
-
         word_count += 1;
         if orig == conv {
             out.push_str(orig);
             continue;
         }
-
-        let choice = match obvious_token_choice(orig, conv) {
-            Some(choice) => Some(choice),
-            None => {
-                used_chooser = true;
-                chooser(orig, conv)?
+        let choice = if should_keep_latin_b_context(&original_segments, idx) {
+            Some(Choice::Original)
+        } else {
+            match obvious_token_choice(orig, conv) {
+                Some(choice) => Some(choice),
+                None => {
+                    used_chooser = true;
+                    chooser(orig, conv)?
+                }
             }
         };
 
@@ -102,7 +107,6 @@ where
             None => return Ok(None),
         }
     }
-
     let deterministic_choice = word_count > 0 && !used_chooser;
     let mixed_choice =
         word_count >= 2 && kept_original && used_converted && out != original && out != converted;

@@ -1,6 +1,7 @@
 use lay::keyboard::is_cyrillic_letter;
 use lay::typing_assist::{
     is_cyrillic_word, is_known_russian_word_or_form, remember_promoted_replacement,
+    safe_promoted_replacement,
 };
 use lay::word_buffer::UserLearningCorrection;
 use std::collections::BTreeMap;
@@ -115,6 +116,9 @@ fn normalizable_learning_rule(correction: &UserLearningCorrection) -> Option<(St
         return None;
     }
     if is_known_russian_word_or_form(&from_lower) {
+        return None;
+    }
+    if !safe_promoted_replacement(&from_lower, &to_lower) {
         return None;
     }
 

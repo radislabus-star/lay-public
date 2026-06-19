@@ -3,6 +3,8 @@ use lay::word_buffer::WordBuffer;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
+use crate::pending_typing_assist::PendingTypingAssist;
+
 use super::super::{DShiftState, MultiTapPending, ShiftState};
 
 pub(crate) struct PendingMultiTapTimeoutContext<'a> {
@@ -13,6 +15,7 @@ pub(crate) struct PendingMultiTapTimeoutContext<'a> {
     pub(crate) current_layout_is_ru: &'a mut bool,
     pub(crate) last_layout_poll: &'a mut Instant,
     pub(crate) suppress_next_typing_assist_after_manual_replay: &'a mut bool,
+    pub(crate) pending_typing_assist_after_space: &'a mut Option<PendingTypingAssist>,
     pub(crate) shift_state: &'a mut ShiftState,
     pub(crate) dshift_state: &'a mut DShiftState,
     pub(crate) pending_multi_tap: &'a mut Option<MultiTapPending>,
@@ -43,6 +46,7 @@ pub(crate) struct ManualTriggerEventContext<'a> {
     pub(crate) current_layout_is_ru: &'a mut bool,
     pub(crate) last_layout_poll: &'a mut Instant,
     pub(crate) suppress_next_typing_assist_after_manual_replay: &'a mut bool,
+    pub(crate) pending_typing_assist_after_space: &'a mut Option<PendingTypingAssist>,
     pub(crate) shift_state: &'a mut ShiftState,
     pub(crate) dshift_state: &'a mut DShiftState,
     pub(crate) pending_multi_tap: &'a mut Option<MultiTapPending>,
@@ -60,6 +64,7 @@ pub(crate) struct ManualTriggerFireContext<'a> {
     pub(crate) current_layout_is_ru: &'a mut bool,
     pub(crate) last_layout_poll: &'a mut Instant,
     pub(crate) suppress_next_typing_assist_after_manual_replay: &'a mut bool,
+    pub(crate) pending_typing_assist_after_space: &'a mut Option<PendingTypingAssist>,
     pub(crate) shift_state: &'a mut ShiftState,
     pub(crate) dshift_state: &'a mut DShiftState,
     pub(crate) pending_multi_tap: &'a mut Option<MultiTapPending>,
@@ -78,6 +83,7 @@ impl<'a> ManualTriggerEventContext<'a> {
             last_layout_poll: self.last_layout_poll,
             suppress_next_typing_assist_after_manual_replay: self
                 .suppress_next_typing_assist_after_manual_replay,
+            pending_typing_assist_after_space: self.pending_typing_assist_after_space,
             shift_state: self.shift_state,
             dshift_state: self.dshift_state,
             pending_multi_tap: self.pending_multi_tap,

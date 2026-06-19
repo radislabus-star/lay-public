@@ -52,11 +52,11 @@ fn polish_converted_russian_layout_token(token: &str) -> Option<String> {
     }
     let lower = word.to_lowercase();
 
-    if let Some(corrected) = correct_common_layout_extra_letter(word) {
-        return Some(format!("{leading}{corrected}{trailing}"));
-    }
     if is_known_russian_layout_autoswitch_word(&lower) {
         return None;
+    }
+    if let Some(corrected) = correct_common_layout_extra_letter(word) {
+        return Some(format!("{leading}{corrected}{trailing}"));
     }
 
     let corrected = correct_hard_sign_typo(word)

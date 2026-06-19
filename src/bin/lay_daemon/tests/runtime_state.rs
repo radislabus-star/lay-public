@@ -1,5 +1,7 @@
 use super::*;
 use crate::boundary_runtime::{handle_hard_boundary_if_needed, HardBoundaryContext};
+use crate::pending_typing_assist::PendingTypingAssist;
+use crate::trigger_dispatch::apply_manual_correction_result;
 
 #[test]
 fn idle_wait_uses_long_sleep_when_no_internal_deadlines() {
@@ -105,6 +107,52 @@ fn typing_assist_after_space_is_suppressed_once_after_manual_replay() {
 }
 
 #[test]
+fn successful_manual_replay_clears_already_pending_typing_assist() {
+    let buffer = typed_buffer_from_semicolon_fixture("djn @us");
+    let correction =
+        find_typing_assist_correction(&buffer, true, 1).expect("pending correction exists");
+    let mut pending = Some(PendingTypingAssist::new(correction));
+    let mut current_layout_is_ru = true;
+    let mut last_layout_poll = Instant::now() - Duration::from_secs(10);
+    let mut suppress_once = false;
+
+    apply_manual_correction_result(
+        Some(false),
+        &mut current_layout_is_ru,
+        &mut last_layout_poll,
+        &mut suppress_once,
+        &mut pending,
+    );
+
+    assert!(!current_layout_is_ru);
+    assert!(suppress_once);
+    assert!(pending.is_none());
+}
+
+#[test]
+fn failed_manual_replay_keeps_already_pending_typing_assist() {
+    let buffer = typed_buffer_from_semicolon_fixture("djn @us");
+    let correction =
+        find_typing_assist_correction(&buffer, true, 1).expect("pending correction exists");
+    let mut pending = Some(PendingTypingAssist::new(correction));
+    let mut current_layout_is_ru = true;
+    let mut last_layout_poll = Instant::now() - Duration::from_secs(10);
+    let mut suppress_once = false;
+
+    apply_manual_correction_result(
+        None,
+        &mut current_layout_is_ru,
+        &mut last_layout_poll,
+        &mut suppress_once,
+        &mut pending,
+    );
+
+    assert!(current_layout_is_ru);
+    assert!(!suppress_once);
+    assert!(pending.is_some());
+}
+
+#[test]
 fn typing_assist_runs_on_space_release_when_pending() {
     assert!(should_run_typing_assist_on_space_release(
         true, true, false, false
@@ -134,28 +182,18 @@ fn edit_navigation_boundaries_reset_word_buffer_before_next_autocorrect() {
         push_text_as_layout(&mut buffer, "свло", true);
         assert!(!buffer.is_empty(), "precondition key={key:?}");
 
-        let virtual_kbd = std::sync::Arc::new(std::sync::Mutex::new(None));
-        let mut executing = false;
         let mut pending_typing_assist_after_space = None;
-        let mut current_layout_is_ru = true;
-        let mut last_layout_poll = Instant::now();
         let mut ignore_current_token_until_space = false;
         let mut events_since_word_start = 0;
-        let shift_state = ShiftState::default();
 
         assert!(handle_hard_boundary_if_needed(
             key,
             1,
             HardBoundaryContext {
                 buffer: &mut buffer,
-                virtual_kbd: &virtual_kbd,
-                executing: &mut executing,
                 pending_typing_assist_after_space: &mut pending_typing_assist_after_space,
-                current_layout_is_ru: &mut current_layout_is_ru,
-                last_layout_poll: &mut last_layout_poll,
                 ignore_current_token_until_space: &mut ignore_current_token_until_space,
                 events_since_word_start: &mut events_since_word_start,
-                shift_state: &shift_state,
                 verbose: false,
             },
         ));

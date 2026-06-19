@@ -13,6 +13,7 @@ use crate::ru_typo::{
     correct_adjacent_transposition, correct_cyrillic_word_case, correct_extra_letters,
     correct_hard_sign_typo, correct_missing_letter, correct_repeated_letter,
     correct_single_letter_substitution, correct_verb_ending_confusion, correct_vowel_confusion,
+    correct_vowel_confusion_contextual_past_tense,
 };
 use crate::typing_replacements::{replace_visual_b_words, replacement_for_token};
 
@@ -132,7 +133,8 @@ pub(super) fn apply_verb_ending(ctx: &TypingRuleContext<'_>) -> Option<String> {
 }
 
 pub(super) fn apply_vowel_confusion(ctx: &TypingRuleContext<'_>) -> Option<String> {
-    apply_word_rule(ctx, correct_vowel_confusion)
+    apply_short_left_word_rule(ctx, correct_vowel_confusion_contextual_past_tense)
+        .or_else(|| apply_word_rule(ctx, correct_vowel_confusion))
 }
 
 pub(super) fn apply_extra_letters(ctx: &TypingRuleContext<'_>) -> Option<String> {
@@ -141,6 +143,7 @@ pub(super) fn apply_extra_letters(ctx: &TypingRuleContext<'_>) -> Option<String>
 
 pub(super) fn apply_missing_letter(ctx: &TypingRuleContext<'_>) -> Option<String> {
     correct_contextual_known_word_missing_letter(ctx.core)
+        .or_else(|| apply_short_left_word_rule(ctx, correct_missing_letter))
         .or_else(|| apply_word_rule(ctx, correct_missing_letter))
 }
 
@@ -155,6 +158,18 @@ fn layout_auto_allowed(ctx: &TypingRuleContext<'_>) -> bool {
 
 fn apply_core_then_word_rule(ctx: &TypingRuleContext<'_>, rule: TextRule) -> Option<String> {
     rule(ctx.core).or_else(|| apply_word_rule(ctx, rule))
+}
+
+fn apply_short_left_word_rule(ctx: &TypingRuleContext<'_>, rule: TextRule) -> Option<String> {
+    let parts: Vec<&str> = ctx.core.split_whitespace().collect();
+    if parts.len() != 2 {
+        return None;
+    }
+    if !crate::phrase_lexicon::is_short_russian_function_word(&parts[0].to_lowercase()) {
+        return None;
+    }
+    let replacement = rule(parts[1])?;
+    (replacement != parts[1]).then(|| format!("{} {}", parts[0], replacement))
 }
 
 fn apply_word_rule(ctx: &TypingRuleContext<'_>, rule: TextRule) -> Option<String> {

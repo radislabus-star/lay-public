@@ -6,8 +6,8 @@ use crate::phrase_lexicon::{
     is_short_russian_function_word,
 };
 use crate::phrase_score::{
-    is_confident_multiword_glued_phrase, multiword_glued_phrase_score, MAX_RU_GLUED_PHRASE_PARTS,
-    NGRAM_GLUED_SPLIT_MARGIN,
+    contains_preferable_merged_russian_part, is_confident_multiword_glued_phrase,
+    multiword_glued_phrase_score, MAX_RU_GLUED_PHRASE_PARTS, NGRAM_GLUED_SPLIT_MARGIN,
 };
 use crate::russian_lexicon::{
     is_known_russian_word_or_form, russian_dictionary, russian_generated_form_dictionary,
@@ -130,7 +130,10 @@ fn correct_multiword_glued_russian_phrase(lower: &str) -> Option<String> {
         if starts_with_multi_letter_preposition(&parts) {
             continue;
         }
-        if !is_confident_multiword_glued_phrase(&parts) {
+        if contains_preferable_merged_russian_part(&parts) {
+            continue;
+        }
+        if !is_confident_multiword_glued_phrase(&parts) && !is_function_chain_glued_phrase(&parts) {
             continue;
         }
 
@@ -147,6 +150,20 @@ fn correct_multiword_glued_russian_phrase(lower: &str) -> Option<String> {
     let ((candidate, _), _) =
         choose_best_with_gap(scored_candidates, 0.75, |(_, score)| Some(*score))?;
     Some(candidate)
+}
+
+fn is_function_chain_glued_phrase(parts: &[&str]) -> bool {
+    if parts.len() != 3 {
+        return false;
+    }
+    let [left, middle, right] = parts else {
+        return false;
+    };
+    left.chars().count() >= 2
+        && middle == &"и"
+        && is_short_russian_function_word(left)
+        && right.chars().count() >= 3
+        && is_known_russian_phrase_part(right)
 }
 
 fn starts_with_multi_letter_preposition(parts: &[&str]) -> bool {

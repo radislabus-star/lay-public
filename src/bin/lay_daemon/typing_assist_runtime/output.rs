@@ -10,14 +10,20 @@ mod ime;
 mod memory;
 #[path = "output/minimal.rs"]
 mod minimal;
+#[path = "output/nanda_trace.rs"]
+mod nanda_trace;
+#[path = "output/queued.rs"]
+mod queued;
 
 use defer::{defer_complex_edit, should_defer_immediate_typing_edit};
-use ime::try_apply_ime_replacement;
+use ime::{try_apply_ime_replacement, ImeTypingReplacementContext};
+use memory::TypingAssistTiming;
 use minimal::{apply_minimal_typing_replacement, MinimalTypingReplacementContext};
 
 use super::super::physical_input_grab::PhysicalInputGrab;
 use super::super::{
-    log, read_current_layout_is_ru, release_possible_modifiers_fast, ExecutingGuard,
+    active_text_backend, log, read_current_layout_is_ru, release_possible_modifiers_fast,
+    ExecutingGuard,
 };
 use super::candidate::TypingAssistCorrection;
 use super::TypingAssistOutcome;
@@ -47,22 +53,29 @@ pub(crate) fn apply_typing_assist_correction(
     let mut physical_grab = PhysicalInputGrab::new(physical_device);
     let events = correction.events;
     let edit = correction.edit;
+    let rule_id = correction.rule_id;
+    let timing = TypingAssistTiming {
+        decision_ms: correction.decision_ms,
+        started_at,
+    };
     let original = edit.original.clone();
     let replacement = edit.replacement.clone();
+    let prefer_full_token_plan = active_text_backend().should_try_ime();
     let defer_complex_live_edit = cursor_offset == 0
         && !physical_grab.is_active()
         && should_defer_immediate_typing_edit(&edit);
 
     if cursor_offset == 0 {
-        if let Some(outcome) = try_apply_ime_replacement(
+        if let Some(outcome) = try_apply_ime_replacement(ImeTypingReplacementContext {
             buf,
-            &mut virtual_kbd,
-            &mut physical_grab,
-            &events,
-            &original,
-            &replacement,
-            started_at,
-        ) {
+            virtual_kbd: &mut virtual_kbd,
+            physical_grab: &mut physical_grab,
+            events: &events,
+            original: &original,
+            replacement: &replacement,
+            rule_id: rule_id.as_deref(),
+            timing,
+        }) {
             return outcome;
         }
         if defer_complex_live_edit {
@@ -93,10 +106,12 @@ pub(crate) fn apply_typing_assist_correction(
         edit: &edit,
         original: &original,
         replacement: &replacement,
+        rule_id: rule_id.as_deref(),
         cursor_offset,
-        started_at,
+        timing,
         physical_grab: &mut physical_grab,
         kbd,
         original_layout,
+        prefer_full_token_plan,
     })
 }

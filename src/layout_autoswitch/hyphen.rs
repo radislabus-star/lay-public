@@ -66,7 +66,19 @@ fn is_russian_hyphen_particle(part: &str) -> bool {
 pub(super) fn is_plain_cyrillic_technical_source(token: &str) -> bool {
     token.chars().any(is_cyrillic_letter)
         && !token.chars().any(|ch| ch.is_ascii_alphabetic())
+        && !is_vowel_bearing_cyrillic_hyphen_token(token)
         && token.chars().all(|ch| {
             is_cyrillic_letter(ch) || ch.is_ascii_digit() || matches!(ch, '-' | '_' | '.')
         })
+}
+
+fn is_vowel_bearing_cyrillic_hyphen_token(token: &str) -> bool {
+    if !token.contains('-') || !is_cyrillic_word(token) {
+        return false;
+    }
+    let mut parts = token.split('-').peekable();
+    if parts.peek().is_none() {
+        return false;
+    }
+    parts.all(|part| !part.is_empty() && part.chars().any(is_russian_vowel))
 }

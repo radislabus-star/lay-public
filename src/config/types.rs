@@ -62,8 +62,6 @@ pub struct LayConfig {
     pub correction_safety: String,
     pub enter_autocorrect: bool,
     pub auto_switch_layout: bool,
-    pub microbrain: bool,
-    pub nanda_autocorrect: bool,
     pub lem_2_words: bool,
     pub lem_3_words: bool,
     pub llm_backend: String,
@@ -74,5 +72,10 @@ pub struct LayConfig {
     pub llm_timeout_secs: u64,
     #[serde(default = "super::defaults::default_typing_assist_pipeline")]
     pub typing_assist_pipeline: Vec<TypingAssistRuleConfig>,
+    pub debug_action_log: bool,
     pub learning_log: bool,
+    pub nanda_autocorrect: bool,
+    pub nanda_trace: bool,
+    pub nanda_trace_text: bool,
+    pub nanda_precognition: bool,
 }

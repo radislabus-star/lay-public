@@ -1,4 +1,5 @@
 use super::*;
+use crate::boundary_runtime::{handle_hard_boundary_if_needed, HardBoundaryContext};
 use crate::pending_typing_assist::PendingTypingAssist;
 
 fn deferred_case(label: &str) -> Vec<String> {
@@ -53,6 +54,34 @@ fn pending_typing_assist_waits_for_space_release_before_output() {
     assert!(!pending.ready_to_apply());
     pending.note_separator_released();
     assert!(pending.ready_to_apply());
+}
+
+#[test]
+fn hard_boundary_drops_pending_typing_assist_without_unsafe_output() {
+    let row = deferred_case("space_release");
+    let mut buffer = typed_buffer_from_semicolon_fixture(&row[1]);
+    let correction =
+        find_typing_assist_correction(&buffer, true, 1).expect("prepared completed word");
+    let mut pending = Some(PendingTypingAssist::new(correction));
+    let mut ignore_current_token_until_space = false;
+    let mut events_since_word_start = 3;
+
+    assert!(handle_hard_boundary_if_needed(
+        KeyCode::KEY_ENTER,
+        1,
+        HardBoundaryContext {
+            buffer: &mut buffer,
+            pending_typing_assist_after_space: &mut pending,
+            ignore_current_token_until_space: &mut ignore_current_token_until_space,
+            events_since_word_start: &mut events_since_word_start,
+            verbose: false,
+        },
+    ));
+
+    assert!(pending.is_none());
+    assert!(buffer.is_empty());
+    assert_eq!(events_since_word_start, 0);
+    assert!(!ignore_current_token_until_space);
 }
 
 #[test]

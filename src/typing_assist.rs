@@ -4,6 +4,8 @@
 //! `scoped_tail`. This facade preserves the old API surface for CLI, tests and
 //! daemon modules.
 
+mod auto_undo;
+
 pub use crate::layout_autoswitch::{
     correct_duplicate_layout_prefix_on_ascii_token, correct_wrong_layout_ascii_technical_token,
     should_keep_plain_cyrillic_before_ascii_technical,
@@ -21,14 +23,16 @@ pub use crate::scoped_tail::{
     should_force_replay_for_short_fragment, ScopedTailOptions,
 };
 pub use crate::typing_pipeline::{
-    apply_typing_assist, apply_typing_assist_exact, apply_typing_assist_with_nanda,
-    apply_typing_assist_with_pipeline, explain_typing_assist_with_microbrain_options,
-    explain_typing_assist_with_nanda, explain_typing_assist_with_pipeline, warm_up,
-    TypingAssistExplanation, TypingRuleEvaluation,
+    apply_typing_assist, apply_typing_assist_exact, apply_typing_assist_with_pipeline,
+    explain_typing_assist_with_pipeline, warm_up, TypingAssistExplanation, TypingRuleEvaluation,
 };
 pub use crate::typing_replacements::{
     apply_auto_replace, apply_manual_replay_auto_replace, contains_visual_b_word,
-    promoted_replacement_for_token, remember_promoted_replacement, REPLACEMENTS_PATH,
+    promoted_replacement_for_token, remember_promoted_replacement, safe_promoted_replacement,
+    REPLACEMENTS_PATH,
 };
 pub use crate::word_reader::{is_cyrillic_word, split_edge_whitespace, split_ws_segments};
 pub use crate::word_recognizer::is_ascii_technical_token;
+pub use auto_undo::{
+    typing_correction_should_skip_auto_undo, typing_rule_should_skip_auto_undo, NANDA_WAVE_RULE_ID,
+};

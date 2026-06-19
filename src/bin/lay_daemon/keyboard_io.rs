@@ -86,5 +86,8 @@ fn input_event_paths() -> std::io::Result<Vec<std::path::PathBuf>> {
 }
 
 pub(super) fn should_ignore_keyboard_device_name(name: &str) -> bool {
-    matches!(name, "lay-virtual-keyboard" | "ydotoold virtual device")
+    matches!(
+        name,
+        "lay-virtual-keyboard" | "lay-ime-virtual-keyboard" | "ydotoold virtual device"
+    )
 }

@@ -11,41 +11,123 @@ const APP_RELEASE_DATE = '2026-06-11';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
 const HEADER_ICON_SIZE = 16;
-const NANDA_EXPERT_CELL = 'Клетка: 64 КБ · активно авто';
-const NANDA_STATUS_FALLBACK = 'NANDA: статус недоступен';
+const NANDA_WAVE_STATUS_FALLBACK = {
+    kind: 'nanda_wave_status_unavailable',
+    source: 'fallback',
+    error: 'lay-nanda-wave-eval --status-json недоступен',
+    cell: {},
+    gate: {},
+    zones: [
+        {id: 'sensors', label: 'Сенсоры', layer: 'L1'},
+        {id: 'candidates', label: 'Кандидаты', layer: 'L2'},
+        {id: 'consensus', label: 'Согласование', layer: 'L3'},
+    ],
+    cells: [],
+    ablation: [],
+};
 
-function loadNandaProfileText() {
-    const layBin = `${GLib.get_home_dir()}/.local/bin/lay`;
-    if (!GLib.file_test(layBin, GLib.FileTest.EXISTS))
-        return NANDA_EXPERT_CELL;
-    try {
-        const proc = Gio.Subprocess.new(
-            [layBin, '--nanda-profile'],
-            Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE
-        );
-        const [, stdout] = proc.communicate_utf8(null, null);
-        const text = String(stdout ?? '').trim();
-        return text || NANDA_EXPERT_CELL;
-    } catch(e) {
-        return NANDA_EXPERT_CELL;
+function loadNandaWaveStatus() {
+    const bins = [
+        `${GLib.get_home_dir()}/.local/bin/lay-nanda-wave-eval`,
+        `${GLib.get_home_dir()}/projects/lay/target/release/lay-nanda-wave-eval`,
+    ];
+    for (const bin of bins) {
+        if (!GLib.file_test(bin, GLib.FileTest.EXISTS))
+            continue;
+        try {
+            const proc = Gio.Subprocess.new(
+                [bin, '--status-json'],
+                Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE
+            );
+            const [, stdout] = proc.communicate_utf8(null, null);
+            const status = JSON.parse(String(stdout ?? '').trim());
+            if (status && status.kind === 'nanda_wave_status')
+                return status;
+        } catch(e) {}
     }
+    return NANDA_WAVE_STATUS_FALLBACK;
 }
 
-function loadNandaStatusText() {
-    const layBin = `${GLib.get_home_dir()}/.local/bin/lay`;
-    if (!GLib.file_test(layBin, GLib.FileTest.EXISTS))
-        return NANDA_STATUS_FALLBACK;
-    try {
-        const proc = Gio.Subprocess.new(
-            [layBin, '--nanda-status'],
-            Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE
-        );
-        const [, stdout] = proc.communicate_utf8(null, null);
-        const text = String(stdout ?? '').trim();
-        return text || NANDA_STATUS_FALLBACK;
-    } catch(e) {
-        return NANDA_STATUS_FALLBACK;
-    }
+function cellVisualLabel(name) {
+    return {
+        Utf8Cell32: 'UTF-8',
+        ScriptCell32: 'Письмо',
+        KeyboardCell32: 'Клавиши',
+        BoundaryCell32: 'Границы',
+        LayoutWordCell32: 'Раскладка',
+        TechTokenCell32: 'Тех. токен',
+        TechnicalContextCell32: 'Защита',
+        PhraseCell32: 'Фраза',
+        GrammarCell32: 'Грамматика',
+        MeshConsensusCell32: 'Mesh',
+    }[name] ?? name;
+}
+
+function percent(ok, total) {
+    if (!Number.isFinite(ok) || !Number.isFinite(total) || total <= 0)
+        return 'н/д';
+    return `${(ok / total * 100).toFixed(1)}%`;
+}
+
+function nandaStatusLine(status) {
+    if (status.kind !== 'nanda_wave_status')
+        return status.error ?? 'статус недоступен';
+    const gate = status.gate ?? {};
+    return `${gate.promotion_status ?? 'unknown'} / ${gate.mode_status ?? 'unknown'}`;
+}
+
+function nandaPassportText(status) {
+    const cell = status.cell ?? {};
+    const gate = status.gate ?? {};
+    const cells = Array.isArray(status.cells) ? status.cells : [];
+    const ablation = Array.isArray(status.ablation) ? status.ablation : [];
+    const candidateStats = Array.isArray(status.candidate_stats) ? status.candidate_stats : [];
+    const scoreboard = status.cell_scoreboard && Array.isArray(status.cell_scoreboard.cells)
+        ? status.cell_scoreboard
+        : {records: 0, cells: []};
+    const lines = [
+        'Паспорт NANDA клеток',
+        '',
+        `Источник: ${status.source ?? 'неизвестно'}`,
+        `Статус: ${nandaStatusLine(status)}`,
+        `Сгенерировано: ${status.generated_at_unix ?? 'нет данных'}`,
+        '',
+        'Размер клетки',
+        `  ${cell.name ?? 'NandaCell32v0'}: ${cell.bytes ? Math.round(cell.bytes / 1024) : '?'} КБ`,
+        `  Mode: ${cell.mode_bytes ?? '?'} Б`,
+        `  Мод в клетке: ${cell.modes ?? '?'}`,
+        `  Top-K выход: ${cell.top_k ?? '?'}`,
+        `  Sparse probes: ${cell.sparse_probes ?? '?'}`,
+        '',
+        'Последний real-suite',
+        `  cases:         ${gate.cases ?? '?'}${gate.sampled ? ` / ${gate.full_cases ?? '?'} sample` : ''}`,
+        `  baseline:      ${gate.baseline_ok ?? '?'} / ${gate.cases ?? '?'} · ${percent(gate.baseline_ok, gate.cases)}`,
+        `  NANDA Wave:    ${gate.wave_ok ?? '?'} / ${gate.cases ?? '?'} · ${percent(gate.wave_ok, gate.cases)}`,
+        `  changed:       ${gate.wave_changed ?? '?'}`,
+        `  worsened:      ${gate.worsened_vs_baseline ?? '?'}`,
+        '',
+        'Ячейки',
+    ];
+    if (cells.length === 0)
+        lines.push('  данных нет');
+    for (const item of cells)
+        lines.push(`  ${item.layer ?? '?'} ${item.label ?? item.name}: ${item.role ?? ''} · delta ${item.delta ?? 0} · ${item.alive ? 'живая' : 'след 0'}`);
+    lines.push('', 'Кандидаты');
+    if (candidateStats.length === 0)
+        lines.push('  данных нет');
+    for (const item of candidateStats)
+        lines.push(`  ${item.source ?? '?'}: родила ${item.generated ?? 0}, приняла ${item.accepted ?? 0}, veto ${item.vetoed ?? 0}, keep ${item.kept ?? 0}`);
+    lines.push('', `Журнал клеток: ${scoreboard.records ?? 0} записей`);
+    if (scoreboard.cells.length === 0)
+        lines.push('  данных нет');
+    for (const item of scoreboard.cells)
+        lines.push(`  ${cellVisualLabel(item.cell)}: ${item.status ?? 'н/д'} · приняла ${item.accepted ?? 0}, veto ${item.vetoed ?? 0}, ok ${item.ok ?? 0}, bad ${item.bad ?? 0}`);
+    lines.push('', 'Ablation');
+    if (ablation.length === 0)
+        lines.push('  данных нет');
+    for (const item of ablation)
+        lines.push(`  без ${item.cell}: ${item.ok}/${item.cases}, delta ${Number(item.delta ?? 0) >= 0 ? '+' : ''}${item.delta ?? 0}`);
+    return lines.join('\n');
 }
 
 const ENGINE_OPTIONS = [
@@ -81,7 +163,7 @@ const FORCE_KEY_OPTIONS = [
 ];
 const BACKEND_OPTIONS = [
     ['uinput', 'Быстрый ввод'],
-    ['ime', 'IME'],
+    ['ime', 'IME, эксперимент'],
     ['auto', 'Авто'],
 ];
 const LAYOUT_BACKEND_OPTIONS = [
@@ -113,13 +195,16 @@ const DEFAULTS = {
     correction_safety: 'normal',
     enter_autocorrect: false,
     auto_switch_layout: true,
-    microbrain: false,
-    nanda_autocorrect: false,
     lem_2_words: true,
     lem_3_words: true,
     ptah_alexs_mode: false,
     ptah_alexs_rules: [],
+    debug_action_log: false,
     learning_log: false,
+    nanda_autocorrect: false,
+    nanda_trace: false,
+    nanda_trace_text: false,
+    nanda_precognition: false,
 };
 
 function normalizeChoice(value, allowed, fallback) {
@@ -150,8 +235,6 @@ function normalizeConfig(cfg) {
         multi_tap_max_taps: normalizeNumber(cfg?.multi_tap_max_taps, 2, 4, DEFAULTS.multi_tap_max_taps),
         tap_max_ms: normalizeNumber(cfg?.tap_max_ms, 100, 500, DEFAULTS.tap_max_ms),
         shift_window_ms: normalizeNumber(cfg?.shift_window_ms, 150, 600, DEFAULTS.shift_window_ms),
-        microbrain: !!cfg?.microbrain || !!cfg?.nanda_autocorrect,
-        nanda_autocorrect: !!cfg?.nanda_autocorrect || !!cfg?.microbrain,
     };
 }
 
@@ -176,6 +259,17 @@ function saveConfig(cfg) {
 function restartDaemon() {
     try {
         Gio.Subprocess.new(['systemctl', '--user', 'restart', 'lay-daemon'], Gio.SubprocessFlags.NONE);
+    } catch(e) {}
+}
+
+function applyInputChannel(channel) {
+    if (!['ime', 'uinput', 'auto'].includes(channel))
+        return;
+    try {
+        Gio.Subprocess.new(
+            [GLib.get_home_dir() + '/.local/bin/lay-runtime-control', 'channel', channel],
+            Gio.SubprocessFlags.NONE
+        );
     } catch(e) {}
 }
 
@@ -204,6 +298,7 @@ class LayPrefsView {
             this._switchRow('Помощь при наборе', 'typing_assist', true),
             this._switchRow('Автоподмена', 'auto_replace', true),
             this._switchRow('Запоминать правки', 'learning_log', false),
+            this._debugLogsRow('Журнал отладки lay'),
             this._switchRow('Автораскладка после пробела', 'auto_switch_layout', false),
             this._comboRow('Режим', 'correction_engine', ENGINE_OPTIONS, false),
             this._comboRow('Область', 'replace_words', SCOPE_OPTIONS, false),
@@ -222,6 +317,8 @@ class LayPrefsView {
         grid.attach(this._section('Арбитры и каналы', [
             this._switchRow('LEM: 2 слова', 'lem_2_words', false),
             this._switchRow('LEM: 3 слова', 'lem_3_words', false),
+            this._switchRow('Автокоррекция NANDA', 'nanda_autocorrect', false),
+            this._inlinePreeditRow('Серые подсказки (IME)', true),
             this._buttonRow('NANDA ячейки', 'Открыть', () => this._showNandaWindow()),
             this._switchRow('Раскладка по окну', 'ptah_alexs_mode', false),
             this._comboRow('Канал ввода', 'text_backend', BACKEND_OPTIONS, true),
@@ -300,6 +397,37 @@ class LayPrefsView {
         return this._row(label, toggle);
     }
 
+    _debugLogsRow(label) {
+        const toggle = new Gtk.Switch({
+            active: !!this._cfg.debug_action_log,
+        });
+        toggle.connect('notify::active', () => {
+            this._cfg.debug_action_log = toggle.active;
+            this._cfg.nanda_trace = toggle.active;
+            this._cfg.nanda_trace_text = toggle.active;
+            saveConfig(this._cfg);
+        });
+        return this._row(label, toggle);
+    }
+
+    _inlinePreeditRow(label, needsRestart) {
+        const toggle = new Gtk.Switch({
+            active: !!this._cfg.nanda_precognition && this._cfg.text_backend === 'ime',
+        });
+        toggle.connect('notify::active', () => {
+            this._cfg.nanda_precognition = toggle.active;
+            if (toggle.active)
+                this._cfg.text_backend = 'ime';
+            else
+                this._cfg.text_backend = 'uinput';
+            saveConfig(this._cfg);
+            applyInputChannel(this._cfg.text_backend);
+            if (needsRestart)
+                restartDaemon();
+        });
+        return this._row(label, toggle);
+    }
+
     _infoRow(label, value) {
         const text = new Gtk.Label({
             label: value,
@@ -333,7 +461,11 @@ class LayPrefsView {
             if (!id)
                 return;
             this._cfg[key] = /^\d+$/.test(id) ? Number(id) : id;
+            if (key === 'text_backend' && id !== 'ime')
+                this._cfg.nanda_precognition = false;
             saveConfig(this._cfg);
+            if (key === 'text_backend')
+                applyInputChannel(id);
             if (needsRestart)
                 restartDaemon();
         });
@@ -373,46 +505,67 @@ class LayPrefsView {
         return this._row(label, box);
     }
 
-    _nandaWavePanel() {
-        const waves = [
-            ['генератор', 1.0, 0.00, [0.18, 0.55, 0.95]],
-            ['раскладка', 1.6, 0.72, [0.20, 0.75, 0.42]],
-            ['защита', 2.1, 1.35, [0.93, 0.45, 0.25]],
-            ['контекст', 1.25, 2.00, [0.64, 0.45, 0.95]],
-            ['память', 1.8, 2.65, [0.95, 0.68, 0.25]],
-            ['сетка', 0.7, 3.10, [0.10, 0.70, 0.78]],
-        ];
+    _nandaWavePanel(status) {
+        const zones = status.zones ?? NANDA_WAVE_STATUS_FALLBACK.zones;
+        const cells = Array.isArray(status.cells) ? status.cells : [];
         const area = new Gtk.DrawingArea({
             hexpand: true,
-            height_request: 230,
+            height_request: 500,
         });
-        area.set_content_width(520);
-        area.set_content_height(230);
+        area.set_content_width(620);
+        area.set_content_height(500);
         area.set_draw_func((_area, cr, width, height) => {
             cr.setSourceRGBA(0.08, 0.09, 0.10, 0.04);
             cr.paint();
 
-            cr.setLineWidth(1);
-            cr.setSourceRGBA(0.45, 0.45, 0.45, 0.18);
-            for (let y = 28; y < height - 24; y += 28) {
-                cr.moveTo(18, y);
-                cr.lineTo(width - 18, y);
+            const laneDefaults = {
+                sensors: ['Сенсоры', 82, 0.16, 0.42, 0.85],
+                candidates: ['Кандидаты', 240, 0.18, 0.68, 0.34],
+                consensus: ['Согласование', 392, 0.86, 0.48, 0.20],
+            };
+            const laneMap = new Map();
+            for (const zone of zones) {
+                const fallback = laneDefaults[zone.id] ?? laneDefaults.consensus;
+                laneMap.set(zone.id, [zone.label ?? fallback[0], fallback[1], fallback[2], fallback[3], fallback[4]]);
+            }
+            for (const [id, value] of Object.entries(laneDefaults)) {
+                if (!laneMap.has(id))
+                    laneMap.set(id, value);
+            }
+            const left = 190;
+            const right = width - 24;
+            const span = Math.max(1, right - left);
+
+            cr.selectFontFace('Sans', 0, 0);
+            for (const [name, y, r, g, b] of laneMap.values()) {
+                cr.setSourceRGBA(r, g, b, 0.08);
+                cr.rectangle(10, y - 66, width - 20, 132);
+                cr.fill();
+                cr.setSourceRGBA(r, g, b, 0.28);
+                cr.setLineWidth(1);
+                cr.rectangle(10, y - 66, width - 20, 132);
                 cr.stroke();
+                cr.setSourceRGBA(0.08, 0.08, 0.08, 0.82);
+                cr.setFontSize(16);
+                cr.moveTo(22, y - 44);
+                cr.showText(name);
             }
 
-            const left = 72;
-            const right = width - 18;
-            const span = Math.max(1, right - left);
-            const mid = height / 2 + 8;
-
-            for (let i = 0; i < waves.length; i++) {
-                const [name, freq, phase, color] = waves[i];
-                const base = 36 + i * 26;
-                cr.setSourceRGBA(color[0], color[1], color[2], 0.72);
-                cr.setLineWidth(1.5);
+            for (const cell of cells) {
+                const zone = cell.zone ?? (cell.layer === 'L1' ? 'sensors' : cell.layer === 'L2' ? 'candidates' : 'consensus');
+                const lane = (laneMap.get(zone) ?? laneMap.get('consensus'))[1];
+                const peers = cells.filter(item => (item.zone ?? (item.layer === 'L1' ? 'sensors' : item.layer === 'L2' ? 'candidates' : 'consensus')) === zone);
+                const index = Math.max(0, peers.findIndex(item => item.name === cell.name));
+                const step = zone === 'sensors' ? 38 : zone === 'candidates' ? 48 : 42;
+                const offset = (index - (peers.length - 1) / 2) * step;
+                const y0 = lane + offset;
+                const active = !!cell.alive || Number(cell.delta ?? 0) !== 0;
+                cr.setSourceRGBA(active ? 0.06 : 0.28, active ? 0.44 : 0.32, active ? 0.88 : 0.38, active ? 0.86 : 0.52);
+                cr.setLineWidth(active ? 2.2 : 1.2);
                 for (let x = 0; x <= span; x++) {
                     const t = x / span;
-                    const y = base + Math.sin(t * Math.PI * 2 * freq + phase) * 8;
+                    const freq = cell.layer === 'L1' ? 7.0 : cell.layer === 'L2' ? 10.0 : 5.8;
+                    const y = y0 + Math.sin(t * Math.PI * 2 * freq + Number(cell.phase ?? 0))   * (1.4 + Number(cell.amp ?? 0.25) * 1.8);
                     if (x === 0)
                         cr.moveTo(left + x, y);
                     else
@@ -420,21 +573,25 @@ class LayPrefsView {
                 }
                 cr.stroke();
 
-                cr.setSourceRGBA(0.20, 0.20, 0.20, 0.82);
-                cr.selectFontFace('Sans', 0, 0);
+                cr.setSourceRGBA(0.06, 0.06, 0.06, 0.88);
+                cr.setFontSize(12);
+                cr.moveTo(left, y0 - 10);
+                cr.showText(`${cell.label ?? cellVisualLabel(cell.name)} · ${Number(cell.delta ?? 0) === 0 ? 'след 0' : `живая ${cell.delta}`}`);
                 cr.setFontSize(10);
-                cr.moveTo(12, base + 4);
-                cr.showText(name);
+                cr.setSourceRGBA(0.18, 0.18, 0.18, 0.70);
+                cr.moveTo(left, y0 + 13);
+                cr.showText(String(cell.role ?? ''));
             }
 
+            const mid = height - 52;
             cr.setSourceRGBA(0.02, 0.02, 0.02, 0.88);
-            cr.setLineWidth(3.2);
+            cr.setLineWidth(3.0);
             for (let x = 0; x <= span; x++) {
                 const t = x / span;
                 let sum = 0;
-                for (const [, freq, phase] of waves)
-                    sum += Math.sin(t * Math.PI * 2 * freq + phase);
-                const y = mid + sum / waves.length * 28;
+                for (const cell of cells)
+                    sum += Math.sin(t * Math.PI * 2 * (cell.layer === 'L2' ? 10.0 : cell.layer === 'L1' ? 7.0 : 5.8) + Number(cell.phase ?? 0)) * Number(cell.amp ?? 0.25);
+                const y = mid + sum / Math.max(1, cells.length)  * 9;
                 if (x === 0)
                     cr.moveTo(left + x, y);
                 else
@@ -444,10 +601,32 @@ class LayPrefsView {
 
             cr.setSourceRGBA(0.02, 0.02, 0.02, 0.88);
             cr.setFontSize(11);
-            cr.moveTo(12, height - 12);
-            cr.showText('несущая мода ансамбля');
+            cr.moveTo(18, height - 50);
+            cr.showText('несущая');
+            cr.moveTo(18, height - 34);
+            cr.showText('мода');
+            cr.moveTo(18, height - 18);
+            cr.showText('ансамбля');
         });
         return new Gtk.Frame({child: area});
+    }
+
+    _nandaPassportPanel(status) {
+        const label = new Gtk.Label({
+            label: `<tt>${GLib.markup_escape_text(nandaPassportText(status), -1)}</tt>`,
+            use_markup: true,
+            xalign: 0,
+            wrap: false,
+            selectable: true,
+            css_classes: ['dim-label'],
+        });
+        const viewport = new Gtk.ScrolledWindow({
+            hscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
+            vscrollbar_policy: Gtk.PolicyType.NEVER,
+            min_content_height: 520,
+        });
+        viewport.set_child(label);
+        return new Gtk.Frame({child: viewport});
     }
 
     _showNandaWindow() {
@@ -458,8 +637,8 @@ class LayPrefsView {
 
         const window = new Gtk.Window({
             title: 'NANDA',
-            default_width: 560,
-            default_height: 560,
+            default_width: 520,
+            default_height: 360,
         });
         this._nandaWindow = window;
         window.connect('close-request', () => {
@@ -481,55 +660,34 @@ class LayPrefsView {
         });
 
         inner.append(new Gtk.Label({
-            label: 'NANDA — клеточный слой автокоррекции',
+            label: 'NANDA',
             xalign: 0,
             wrap: true,
             css_classes: ['heading'],
         }));
         inner.append(new Gtk.Label({
-            label: 'NANDA не является большой LLM. Это набор маленьких ячеек, которые рождают варианты, оценивают риск, защищают технические слова и согласуют решение перед вставкой.',
+            label: 'Экспериментальный локальный слой автокоррекции. NANDA смотрит на хвост ввода, рождает варианты исправления и пропускает их через защитные проверки перед заменой текста.',
             xalign: 0,
             wrap: true,
-            max_width_chars: 72,
+            max_width_chars: 58,
             css_classes: ['dim-label'],
         }));
-
-        const switchList = new Gtk.ListBox({
-            selection_mode: Gtk.SelectionMode.NONE,
-            css_classes: ['boxed-list'],
-        });
-        switchList.append(this._switchRow('Автокоррекция NANDA', 'nanda_autocorrect', false));
-        inner.append(switchList);
-
-        inner.append(new Gtk.Label({label: 'Профиль', xalign: 0, css_classes: ['heading']}));
+        inner.append(new Gtk.Label({label: 'Как использовать', xalign: 0, css_classes: ['heading']}));
         inner.append(new Gtk.Label({
-            label: loadNandaProfileText(),
+            label: 'Включи “Автокоррекция NANDA”, если хочешь тестировать этот слой в живом вводе. “Журнал отладки lay” нужен только для разбора ошибок.',
             xalign: 0,
             wrap: true,
-            max_width_chars: 64,
+            max_width_chars: 58,
             css_classes: ['dim-label'],
         }));
-
-        inner.append(new Gtk.Label({label: 'Волновая схема', xalign: 0, css_classes: ['heading']}));
-        inner.append(this._nandaWavePanel());
-
-        inner.append(new Gtk.Label({label: 'Ячейки и роли', xalign: 0, css_classes: ['heading']}));
+        inner.append(new Gtk.Label({label: 'Важно', xalign: 0, css_classes: ['heading']}));
         inner.append(new Gtk.Label({
-            label: loadNandaStatusText(),
+            label: 'NANDA не печатает напрямую в окна и не является внешней LLM. Она только помогает выбрать исправление; сама вставка всё равно идёт через безопасный pipeline lay.',
             xalign: 0,
             wrap: true,
-            selectable: true,
-            max_width_chars: 72,
+            max_width_chars: 58,
             css_classes: ['dim-label'],
         }));
-        inner.append(new Gtk.Label({
-            label: 'Принцип: генератор предлагает исправления, защитные ячейки гасят опасные варианты, сетка согласования пропускает только устойчивое решение. Если согласия нет, lay ничего не меняет.',
-            xalign: 0,
-            wrap: true,
-            max_width_chars: 72,
-            css_classes: ['dim-label'],
-        }));
-
         scroll.set_child(inner);
         window.set_child(scroll);
         window.present();

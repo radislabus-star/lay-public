@@ -18,6 +18,9 @@ pub(crate) fn is_known_russian_phrase_part(word: &str) -> bool {
     if len == 1 {
         return is_one_letter_russian_function_word(word);
     }
+    if is_ru_short_function_word(word) {
+        return true;
+    }
     if len <= MAX_RU_FUNCTION_GLUE_LEFT_LEN && is_short_russian_function_word(word) {
         return true;
     }
@@ -38,11 +41,11 @@ pub(crate) fn is_one_letter_russian_function_word(word: &str) -> bool {
 }
 
 pub(crate) fn is_short_russian_function_word(word: &str) -> bool {
-    word.chars().count() <= MAX_RU_FUNCTION_GLUE_LEFT_LEN
-        && (is_one_letter_russian_function_word(word)
-            || is_common_ru_word(word)
-            || is_ru_short_function_word(word)
-            || is_common_short_russian_preposition(word))
+    is_ru_short_function_word(word)
+        || (word.chars().count() <= MAX_RU_FUNCTION_GLUE_LEFT_LEN
+            && (is_one_letter_russian_function_word(word)
+                || is_common_ru_word(word)
+                || is_common_short_russian_preposition(word)))
 }
 
 pub(crate) fn is_common_short_russian_preposition(word: &str) -> bool {

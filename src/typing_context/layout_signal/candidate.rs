@@ -1,3 +1,4 @@
+use crate::dict::{convert, Direction};
 use crate::layout_autoswitch::{
     ascii_layout_prefix_can_be_letter, correct_wrong_layout_ascii_word,
     is_ascii_layout_letter_symbol,
@@ -34,11 +35,9 @@ pub(super) fn contextual_ascii_to_ru_layout_candidate(token: &str) -> bool {
         return false;
     }
 
-    let Some(converted) = correct_wrong_layout_ascii_word(token) else {
+    let Some(converted_lower) = converted_layout_word_lower(token) else {
         return false;
     };
-    let (_, converted_word, _) = split_word_punctuation(&converted);
-    let converted_lower = converted_word.to_lowercase();
     if converted_lower.is_empty() {
         return false;
     }
@@ -94,4 +93,12 @@ fn strong_shifted_ascii_to_ru_layout_candidate(token: &str) -> bool {
 
 fn is_ascii_upper_shift_layout_symbol(ch: char) -> bool {
     matches!(ch, '{' | '}' | ':' | '"' | '<' | '>' | '~')
+}
+
+fn converted_layout_word_lower(token: &str) -> Option<String> {
+    let (_, word, _) = split_word_punctuation(token);
+    if word.is_empty() || !word.chars().all(|ch| ch.is_ascii_alphabetic()) {
+        return None;
+    }
+    Some(convert(word, Direction::Us2Ru).to_lowercase())
 }

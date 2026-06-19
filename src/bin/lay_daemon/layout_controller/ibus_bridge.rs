@@ -9,6 +9,9 @@ pub(super) fn read_current_layout_is_ru() -> Result<bool, String> {
 }
 
 pub(super) fn ensure_engine(ibus_engine: &str, target_is_ru: bool) -> Result<(), String> {
+    if read_engine().is_ok_and(|engine| engine == ibus_engine) {
+        return Ok(());
+    }
     let already_target = read_current_layout_is_ru().is_ok_and(|current| current == target_is_ru);
     if let Err(error) = switch_engine(ibus_engine) {
         if already_target {

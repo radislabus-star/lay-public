@@ -23,6 +23,7 @@ pub(crate) fn fire_expired_pending_multi_tap(ctx: PendingMultiTapTimeoutContext<
                 last_layout_poll: ctx.last_layout_poll,
                 suppress_next_typing_assist_after_manual_replay: ctx
                     .suppress_next_typing_assist_after_manual_replay,
+                pending_typing_assist_after_space: ctx.pending_typing_assist_after_space,
                 shift_state: ctx.shift_state,
                 dshift_state: ctx.dshift_state,
                 pending_multi_tap: ctx.pending_multi_tap,

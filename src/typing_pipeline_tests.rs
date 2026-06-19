@@ -1,16 +1,12 @@
 use crate::config::{
     default_typing_assist_pipeline, default_typing_assist_rules, CorrectionSafety,
 };
-use crate::microbrain::MicrobrainOptions;
 use crate::typing_assist_test_fixtures::{fixture_rows, parse_bool_fixture, single_fixture_row};
 use crate::typing_candidate::TypingDecisionConfidence;
 use crate::typing_pipeline::TypingRuleEvaluation;
 use std::collections::HashSet;
 
-use super::{
-    apply_typing_assist_with_nanda, apply_typing_assist_with_pipeline,
-    explain_typing_assist_with_microbrain_options, explain_typing_assist_with_pipeline,
-};
+use super::{apply_typing_assist_with_pipeline, explain_typing_assist_with_pipeline};
 
 #[test]
 fn rule_graph_defines_every_default_rule() {
@@ -23,7 +19,7 @@ fn rule_graph_defines_every_default_rule() {
 }
 
 #[test]
-fn nanda_predictor_uses_experimental_candidates_for_autocorrect() {
+fn experimental_pipeline_uses_layout_candidates_for_autocorrect() {
     let pipeline = crate::typing_context::typing_assist_pipeline_for_context(
         true,
         CorrectionSafety::Experimental,
@@ -32,13 +28,13 @@ fn nanda_predictor_uses_experimental_candidates_for_autocorrect() {
     );
 
     assert_eq!(
-        apply_typing_assist_with_nanda("djn ", true, &pipeline),
+        apply_typing_assist_with_pipeline("djn ", true, &pipeline),
         Some("вот ".to_string())
     );
 }
 
 #[test]
-fn nanda_predictor_keeps_normal_word_boundary_pairs() {
+fn experimental_pipeline_keeps_normal_word_boundary_pairs() {
     let pipeline = crate::typing_context::typing_assist_pipeline_for_context(
         true,
         CorrectionSafety::Experimental,
@@ -47,67 +43,9 @@ fn nanda_predictor_keeps_normal_word_boundary_pairs() {
     );
 
     assert_eq!(
-        apply_typing_assist_with_nanda("слов и ", true, &pipeline),
+        apply_typing_assist_with_pipeline("слов и ", true, &pipeline),
         None
     );
-}
-
-#[test]
-fn microbrain_contract_scores_existing_safe_candidates_only() {
-    let cases = [
-        ("цусрфе ", Some("wechat ")),
-        ("wechat ", None),
-        ("ghbdtn ", Some("привет ")),
-        ("git checkout -b test ", None),
-    ];
-
-    for (input, expected) in cases {
-        let pipeline = crate::typing_context::typing_assist_pipeline_for_context(
-            true,
-            CorrectionSafety::Experimental,
-            &default_typing_assist_pipeline(),
-            input,
-        );
-        let explanation = explain_typing_assist_with_microbrain_options(
-            input,
-            true,
-            &pipeline,
-            &MicrobrainOptions::default(),
-        );
-        assert_eq!(explanation.output.as_deref(), expected, "input={input:?}");
-        if expected.is_some() {
-            let trace = explanation
-                .microbrain
-                .as_ref()
-                .expect("microbrain trace for accepted candidate");
-            assert!(trace.no_raw_secret_text);
-            assert_eq!(trace.chosen.as_deref(), expected.map(str::trim));
-        }
-    }
-}
-
-#[test]
-fn microbrain_explain_keeps_negative_trace() {
-    let input = "ыприблизительные ";
-    let pipeline = crate::typing_context::typing_assist_pipeline_for_context(
-        true,
-        CorrectionSafety::Experimental,
-        &default_typing_assist_pipeline(),
-        input,
-    );
-    let explanation = explain_typing_assist_with_microbrain_options(
-        input,
-        true,
-        &pipeline,
-        &MicrobrainOptions::default(),
-    );
-    assert_eq!(explanation.output, None);
-    let trace = explanation
-        .microbrain
-        .as_ref()
-        .expect("negative microbrain trace");
-    assert_eq!(trace.chosen, None);
-    assert!(!trace.candidates.is_empty());
 }
 
 #[test]

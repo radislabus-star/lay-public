@@ -9,6 +9,7 @@ use lay::word_buffer::WordBuffer;
 use std::time::Instant;
 
 use super::auto_undo_runtime::handle_pending_auto_undo;
+use super::physical_input_grab::PhysicalInputGrab;
 use super::{
     active_auto_replace, active_auto_switch_layout, active_correction_engine,
     active_lem_enabled_for_scope, log, log_manual_trigger_cross_check, release_possible_modifiers,
@@ -63,6 +64,7 @@ pub(super) fn run_manual_correction_with_scope(
     events_since_word_start: u32,
     label: &str,
     input_isolated: bool,
+    physical_grab: Option<&mut PhysicalInputGrab<'_>>,
 ) -> Option<bool> {
     log_manual_trigger_cross_check(buf, events_since_word_start);
     let engine = active_correction_engine();
@@ -75,6 +77,7 @@ pub(super) fn run_manual_correction_with_scope(
         virtual_kbd,
         executing,
         input_isolated,
+        physical_grab,
     );
     log(&format!("· {label} fired with scope={replace_words}"));
     result
@@ -88,6 +91,7 @@ pub(super) fn handle_double_shift(
     virtual_kbd: Option<&mut VirtualDevice>,
     executing: &mut bool,
     input_isolated: bool,
+    physical_grab: Option<&mut PhysicalInputGrab<'_>>,
 ) -> Option<bool> {
     let started_at = Instant::now();
     if let Some(undo) = buf.take_pending_auto_undo() {
@@ -121,6 +125,10 @@ pub(super) fn handle_double_shift(
 
     if mapped_target.is_empty() {
         log("⚠ mapped_target пуст — не вставляем");
+        return None;
+    }
+    if buf.should_consume_auto_layout_replay_guard(&mapped_orig, &mapped_target) {
+        log("· double Shift consumed: layout word was already fixed by auto-replace");
         return None;
     }
     // ═══ АЛГОРИТМ: decision layer → backspace → replay/text insert ═══
@@ -161,6 +169,7 @@ pub(super) fn handle_double_shift(
         started_at,
         decision: &correction_result,
         virtual_kbd,
+        physical_grab,
         input_isolated,
     })
 }

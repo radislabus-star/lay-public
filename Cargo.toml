@@ -35,16 +35,20 @@ name = "lay-lem-research"
 path = "src/bin/lay_lem_research.rs"
 
 [[bin]]
-name = "lay-nanda-train"
-path = "src/bin/lay_nanda_train.rs"
+name = "lay-nanda-wave-eval"
+path = "src/bin/lay_nanda_wave_eval.rs"
 
 [[bin]]
-name = "lay-nanda-eval"
-path = "src/bin/lay_nanda_eval.rs"
+name = "lay-nanda-dataset"
+path = "src/bin/lay_nanda_dataset.rs"
 
 [[bin]]
-name = "lay-nanda-loop"
-path = "src/bin/lay_nanda_loop.rs"
+name = "lay-nanda-wave-train"
+path = "src/bin/lay_nanda_wave_train.rs"
+
+[[bin]]
+name = "lay-ibus-engine"
+path = "src/bin/lay_ibus_engine.rs"
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }

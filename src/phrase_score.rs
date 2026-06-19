@@ -33,6 +33,7 @@ const MULTIWORD_SHORT_PREPOSITION_BONUS: f64 = 1.5;
 const MULTIWORD_SHORT_FUNCTION_BONUS: f64 = 1.2;
 const MULTIWORD_COMMON_WORD_BONUS: f64 = 1.5;
 const MULTIWORD_STRONG_PART_BONUS: f64 = 2.0;
+const MULTIWORD_FUNCTION_CHAIN_BONUS: f64 = 6.0;
 
 pub(crate) fn is_contextual_glued_tail_split_shape(
     left: &str,
@@ -116,7 +117,11 @@ pub(crate) fn is_confident_multiword_glued_phrase(parts: &[&str]) -> bool {
         return false;
     }
 
-    (function_parts >= 2 && strong_parts >= 1)
+    let last_is_known_word = parts
+        .last()
+        .is_some_and(|part| char_len(part) >= 3 && is_known_russian_phrase_part(part));
+
+    (function_parts >= 2 && (strong_parts >= 1 || last_is_known_word))
         || (parts.len() >= 3 && function_parts >= 1 && strong_parts >= 2)
 }
 
@@ -134,6 +139,14 @@ pub(crate) fn multiword_glued_phrase_score(parts: &[&str], ngram_margin: f64) ->
         .count();
     if starts_with_function && strong_parts >= 2 {
         score += MULTIWORD_FUNCTION_WITH_STRONG_PARTS_BONUS;
+    }
+    if parts.len() >= 3
+        && parts
+            .iter()
+            .take(parts.len().saturating_sub(1))
+            .all(|part| is_short_russian_function_word(part))
+    {
+        score += MULTIWORD_FUNCTION_CHAIN_BONUS;
     }
     for part in parts {
         let len = char_len(part);
@@ -159,14 +172,17 @@ pub(crate) fn multiword_glued_phrase_score(parts: &[&str], ngram_margin: f64) ->
     score
 }
 
-fn contains_preferable_merged_russian_part(parts: &[&str]) -> bool {
+pub(crate) fn contains_preferable_merged_russian_part(parts: &[&str]) -> bool {
     parts.windows(2).any(|window| {
         let left = window[0];
         let right = window[1];
         let left_len = char_len(left);
         let right_len = char_len(right);
         if left_len > MAX_RU_FUNCTION_GLUE_LEFT_LEN || right_len < 4 {
-            return false;
+            let merged = format!("{left}{right}");
+            return is_short_russian_function_word(left)
+                && char_len(&merged) >= 4
+                && is_known_russian_phrase_part(&merged);
         }
         if !is_short_russian_function_word(left) {
             return false;

@@ -1,0 +1,3 @@
+# Greeting words are valid at phrase starts, but risky as generic mid-sentence
+# prefix completions.
+привет

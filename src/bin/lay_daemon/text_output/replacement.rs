@@ -16,6 +16,7 @@ const TEXT_REPLACE_KEY_PACE_MS: u64 = 1;
 struct PreparedTextInsert {
     runs: Vec<TextInputRun>,
     insert_layout_is_ru: bool,
+    preflight_final_layout_is_ru: Option<bool>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -48,13 +49,16 @@ fn prepare_text_insert_for_replacement_plan(
     let insert_layout_is_ru = preferred_layout_for_text(&plan.insert, fallback_layout_is_ru);
     let runs = text_to_uinput_runs(&plan.insert, insert_layout_is_ru)
         .ok_or_else(|| "text insert requires unsafe TypeText fallback".to_string())?;
+    let mut preflight_final_layout_is_ru = None;
     for run in &runs {
         switch_to_target_layout(run.target_is_ru)
             .map_err(|e| format!("layout preflight failed before destructive edit: {e}"))?;
+        preflight_final_layout_is_ru = Some(run.target_is_ru);
     }
     Ok(PreparedTextInsert {
         runs,
         insert_layout_is_ru,
+        preflight_final_layout_is_ru,
     })
 }
 
@@ -126,8 +130,12 @@ fn insert_prepared_text_for_replacement_plan(
     label: &str,
     fast_output: bool,
 ) -> Result<TextInsertOutcome, String> {
+    let mut current_layout = prepared.preflight_final_layout_is_ru;
     for run in &prepared.runs {
-        switch_to_target_layout(run.target_is_ru)?;
+        if current_layout != Some(run.target_is_ru) {
+            switch_to_target_layout(run.target_is_ru)?;
+            current_layout = Some(run.target_is_ru);
+        }
         if fast_output {
             replay_text_insert_keycodes_fast_after_modifier_cleanup(dev, &run.events)
                 .map_err(|e| e.to_string())?;

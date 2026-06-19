@@ -15,7 +15,9 @@ use super::thresholds::NGRAM_DICT_MISSING_LETTER_MARGIN;
 
 pub fn correct_missing_letter(word: &str) -> Option<String> {
     let lower = unknown_cyrillic_lower(word, 6)?;
-    if looks_like_plausible_russian_past_tense(&lower) {
+    if looks_like_plausible_russian_past_tense(&lower)
+        && !missing_letter_candidate_exists(word, &lower)
+    {
         return None;
     }
     if looks_like_prefix_plus_known_russian_word(&lower)
@@ -67,6 +69,9 @@ pub(crate) fn safe_missing_letter_candidates(lower: &str) -> impl Iterator<Item 
 
 fn is_safe_missing_letter_candidate(lower: &str, candidate: &str) -> bool {
     if let Some((idx, inserted)) = inserted_char_position_for_missing_letter(lower, candidate) {
+        if is_risky_vowel_insert_into_verb_tail(lower, inserted) {
+            return false;
+        }
         if idx == lower.chars().count() {
             return is_russian_vowel(inserted)
                 && lower
@@ -80,4 +85,13 @@ fn is_safe_missing_letter_candidate(lower: &str, candidate: &str) -> bool {
     }
 
     true
+}
+
+fn is_risky_vowel_insert_into_verb_tail(lower: &str, inserted: char) -> bool {
+    is_russian_vowel(inserted)
+        && [
+            "аешь", "яешь", "еешь", "оешь", "уешь", "ешь", "ишь", "еет", "ает", "яет", "ует",
+        ]
+        .iter()
+        .any(|tail| lower.ends_with(tail))
 }

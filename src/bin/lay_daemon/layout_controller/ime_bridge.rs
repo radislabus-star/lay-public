@@ -8,7 +8,7 @@ const IME_DBUS_PATH: &str = "/io/github/radislabus_star/LayIme";
 const IME_DBUS_INTERFACE: &str = "io.github.radislabus_star.LayIme";
 
 pub(super) fn should_try_text_backend() -> bool {
-    active_text_backend().should_try_ime()
+    active_text_backend().should_try_ime() && std::env::var_os("LAY_IME_REPLACE").is_some()
 }
 
 pub(super) fn try_replace_tail(
@@ -32,7 +32,7 @@ pub(super) fn try_replace_tail(
             Ok(true)
         }
         Ok(false) => {
-            log("⚠ IME replace-tail returned false; fallback to uinput");
+            log("⚠ IME replace-tail unavailable/no surrounding text; fallback to uinput");
             Ok(false)
         }
         Err(e) => {
@@ -57,6 +57,22 @@ pub(super) fn call_ping() -> Result<String, String> {
     reply
         .body()
         .deserialize::<String>()
+        .map_err(|e| e.to_string())
+}
+
+pub(super) fn focused() -> Result<bool, String> {
+    let reply = dbus_connection()?
+        .call_method(
+            Some(IME_DBUS_DEST),
+            IME_DBUS_PATH,
+            Some(IME_DBUS_INTERFACE),
+            "Focused",
+            &(),
+        )
+        .map_err(|e| e.to_string())?;
+    reply
+        .body()
+        .deserialize::<bool>()
         .map_err(|e| e.to_string())
 }
 

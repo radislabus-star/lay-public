@@ -30,6 +30,10 @@ use config_runtime::*;
 mod action_log_runtime;
 use action_log_runtime::*;
 
+#[path = "lay_daemon/nanda_precognition_runtime.rs"]
+mod nanda_precognition_runtime;
+use nanda_precognition_runtime::*;
+
 #[derive(Parser, Debug)]
 #[command(
     name = "lay-daemon",
@@ -62,12 +66,6 @@ impl Drop for ExecutingGuard<'_> {
 struct DeviceGrabGuard<'a> {
     device: &'a mut Device,
     active: bool,
-}
-
-impl DeviceGrabGuard<'_> {
-    fn is_active(&self) -> bool {
-        self.active
-    }
 }
 
 impl Drop for DeviceGrabGuard<'_> {
@@ -145,13 +143,14 @@ mod pending_typing_assist;
 mod startup_runtime;
 use startup_runtime::*;
 
+#[path = "lay_daemon/startup_sanitize.rs"]
+mod startup_sanitize;
+
 fn main() -> std::io::Result<()> {
     let args = Args::parse();
     set_log_enabled(args.debug_log || args.verbose || args.detect_only);
     run_daemon(args.detect_only, args.device, args.verbose)
 }
-
-// keyboard event loop lives in lay_daemon/daemon_runtime.rs
 
 // ─── Focus guard / event wait timing ─────────────────────
 
@@ -215,8 +214,6 @@ mod command_runtime;
 #[path = "lay_daemon/layout_controller.rs"]
 mod layout_controller;
 use layout_controller::*;
-
-// keyboard discovery lives in lay_daemon/keyboard_io.rs
 
 // ─── Лог ────────────────────────────────────────────────────
 

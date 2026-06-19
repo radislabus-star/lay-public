@@ -2,6 +2,8 @@
 mod context;
 #[path = "output/native.rs"]
 mod native;
+#[path = "output/native_stage.rs"]
+mod native_stage;
 #[path = "output/replay.rs"]
 mod replay;
 #[path = "output/text_replace.rs"]
@@ -9,14 +11,14 @@ mod text_replace;
 
 pub(super) use self::context::ManualCorrectionOutputContext;
 use self::context::{ManualOutputCommon, OutputFlow};
-use self::native::{try_gnome_native_replace_output, try_ime_replace_output};
+use self::native_stage::try_native_output_stage;
 use self::replay::apply_layout_replay;
 use self::text_replace::try_manual_text_replacement;
 
 use super::super::{log, release_possible_modifiers, settle_after_physical_trigger_release};
 
 pub(super) fn apply_manual_correction_output(
-    ctx: ManualCorrectionOutputContext<'_>,
+    ctx: ManualCorrectionOutputContext<'_, '_>,
 ) -> Option<bool> {
     let ManualCorrectionOutputContext {
         buf,
@@ -31,6 +33,7 @@ pub(super) fn apply_manual_correction_output(
         started_at,
         decision,
         virtual_kbd,
+        physical_grab,
         input_isolated,
     } = ctx;
     let mut common = ManualOutputCommon {
@@ -48,10 +51,11 @@ pub(super) fn apply_manual_correction_output(
         input_isolated,
     };
 
-    if let Some(result) = try_ime_replace_output(&mut common) {
-        return result;
-    }
-    if let Some(result) = try_gnome_native_replace_output(&mut common) {
+    let mut virtual_kbd = virtual_kbd;
+    let mut physical_grab = physical_grab;
+
+    if let Some(result) = try_native_output_stage(&mut common, &mut virtual_kbd, &mut physical_grab)
+    {
         return result;
     }
 

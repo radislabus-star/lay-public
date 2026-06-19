@@ -121,6 +121,8 @@ pub(super) fn listen_keyboard(
                         last_layout_poll: &mut state.last_layout_poll,
                         suppress_next_typing_assist_after_manual_replay: &mut state
                             .suppress_next_typing_assist_after_manual_replay,
+                        pending_typing_assist_after_space: &mut state
+                            .pending_typing_assist_after_space,
                         shift_state: &mut state.shift_state,
                         dshift_state: &mut state.dshift_state,
                         pending_multi_tap: &mut state.pending_multi_tap,
@@ -224,6 +226,7 @@ pub(super) fn listen_keyboard(
                 last_layout_poll: &mut state.last_layout_poll,
                 suppress_next_typing_assist_after_manual_replay: &mut state
                     .suppress_next_typing_assist_after_manual_replay,
+                pending_typing_assist_after_space: &mut state.pending_typing_assist_after_space,
                 shift_state: &mut state.shift_state,
                 dshift_state: &mut state.dshift_state,
                 pending_multi_tap: &mut state.pending_multi_tap,
@@ -309,14 +312,9 @@ pub(super) fn listen_keyboard(
                 value,
                 HardBoundaryContext {
                     buffer: &mut state.buffer,
-                    virtual_kbd: &virtual_kbd,
-                    executing: &mut state.executing,
                     pending_typing_assist_after_space: &mut state.pending_typing_assist_after_space,
-                    current_layout_is_ru: &mut state.current_layout_is_ru,
-                    last_layout_poll: &mut state.last_layout_poll,
                     ignore_current_token_until_space: &mut state.ignore_current_token_until_space,
                     events_since_word_start: &mut state.events_since_word_start,
-                    shift_state: &state.shift_state,
                     verbose,
                 },
             ) {

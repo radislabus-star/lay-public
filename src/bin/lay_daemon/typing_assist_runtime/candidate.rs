@@ -1,6 +1,6 @@
 mod decoder;
 
-use decoder::{decode_completed_tail, nanda_enabled};
+use decoder::decode_completed_tail;
 use lay::decoder::DecoderEditPlan;
 use lay::keyboard::KeyEvent;
 use lay::word_buffer::{WordBuffer, MAX_REPLACE_WORDS};
@@ -10,6 +10,8 @@ use std::time::Instant;
 pub(crate) struct TypingAssistCorrection {
     pub(crate) events: Vec<KeyEvent>,
     pub(crate) edit: DecoderEditPlan,
+    pub(crate) rule_id: Option<String>,
+    pub(crate) decision_ms: u128,
 }
 
 pub(crate) fn find_typing_assist_correction(
@@ -22,15 +24,18 @@ pub(crate) fn find_typing_assist_correction(
         .find_map(|word_count| {
             let started = Instant::now();
             let events = buf.last_completed_words_events(word_count)?;
-            let nanda_enabled = nanda_enabled();
-            let edit = decode_completed_tail(buf, word_count, &events, allow_layout_auto)?;
+            let decoded = decode_completed_tail(buf, word_count, &events, allow_layout_auto)?;
+            let decision_ms = started.elapsed().as_millis();
             super::super::log(&format!(
-                "  typing-assist decision: scope={} nanda={} elapsed={}ms",
-                word_count,
-                nanda_enabled,
-                started.elapsed().as_millis()
+                "  typing-assist decision: scope={} elapsed={}ms",
+                word_count, decision_ms
             ));
-            Some(TypingAssistCorrection { events, edit })
+            Some(TypingAssistCorrection {
+                events,
+                edit: decoded.edit,
+                rule_id: decoded.rule_id,
+                decision_ms,
+            })
         })
 }
 

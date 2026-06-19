@@ -51,6 +51,7 @@ impl<'a> PhysicalInputGrab<'a> {
         buf: &mut WordBuffer,
         layout_is_ru: bool,
         label: &str,
+        mut skip_spaces: usize,
     ) -> ForwardedTyping {
         if !self.active {
             return ForwardedTyping::default();
@@ -95,6 +96,10 @@ impl<'a> PhysicalInputGrab<'a> {
                 }
 
                 if key == KeyCode::KEY_SPACE {
+                    if skip_spaces > 0 {
+                        skip_spaces -= 1;
+                        continue;
+                    }
                     if let Err(e) = emit_key_taps_fast(virtual_kbd, KeyCode::KEY_SPACE, 1) {
                         log(&format!("⚠ {label} passthrough space failed: {e}"));
                         continue;

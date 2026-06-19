@@ -1,5 +1,5 @@
 use super::super::desktop_probe::activate_layout;
-use super::super::input_device::{double_shift, double_shift_enter, tap};
+use super::super::input_device::{double_alt, double_shift, double_shift_enter, tap};
 use super::typing::type_physical;
 use evdev::{uinput::VirtualDevice, KeyCode};
 use std::fs;
@@ -45,8 +45,14 @@ pub(super) fn run_script_text(
             )?,
             ["space"] => tap(dev, KeyCode::KEY_SPACE.code())?,
             ["enter"] => tap(dev, KeyCode::KEY_ENTER.code())?,
+            ["left"] => tap(dev, KeyCode::KEY_LEFT.code())?,
+            ["right"] => tap(dev, KeyCode::KEY_RIGHT.code())?,
+            ["up"] => tap(dev, KeyCode::KEY_UP.code())?,
+            ["down"] => tap(dev, KeyCode::KEY_DOWN.code())?,
+            ["backspace"] => tap(dev, KeyCode::KEY_BACKSPACE.code())?,
             ["double_shift"] => double_shift(dev, 900)?,
             ["double_shift_enter"] => double_shift_enter(dev, 900)?,
+            ["double_alt"] => double_alt(dev, 900)?,
             _ => return Err(bad_script_line(source_name, idx, raw_line)),
         }
     }

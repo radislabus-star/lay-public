@@ -57,6 +57,9 @@ pub(super) fn is_standalone_russian_phrase_part(word: &str) -> bool {
     if len == 1 {
         return is_one_letter_russian_function_word(word);
     }
+    if is_short_russian_function_word(word) {
+        return true;
+    }
     if len <= MAX_RU_FUNCTION_GLUE_LEFT_LEN && is_short_russian_function_word(word) {
         return true;
     }
@@ -89,6 +92,10 @@ pub(super) fn is_confident_glued_phrase_split(left: &str, right: &str) -> bool {
             && is_short_non_preposition_function_word(left)
             && is_common_ru_word(right))
         || (left_len >= 4 && right_len >= 4 && is_known_russian_adverb_o_form(right))
+        || (left_len >= 4
+            && right_len >= 2
+            && is_standalone_russian_phrase_part(left)
+            && is_short_russian_function_word(right))
         || (left_len >= 4
             && right_len >= 4
             && is_standalone_russian_phrase_part(left)

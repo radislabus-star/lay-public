@@ -12,6 +12,8 @@ use super::{detect_auto_layout_backend_hint, ENTER_AUTOCORRECT_EXPERIMENT_ENV};
 static AUTO_LAYOUT_BACKEND_HINT: OnceLock<Option<LayoutBackend>> = OnceLock::new();
 
 #[cfg(not(test))]
+// Runtime settings cache only. Live NANDA diagnostics are served by
+// lay-nanda-wave-eval --status-json and must not depend on this polling loop.
 const CONFIG_CACHE_CHECK_INTERVAL: Duration = Duration::from_millis(250);
 
 #[cfg(not(test))]
@@ -131,14 +133,28 @@ pub(super) fn active_auto_switch_layout() -> bool {
     current_config().auto_switch_layout
 }
 
-#[cfg(not(test))]
-pub(super) fn active_nanda_autocorrect() -> bool {
-    let cfg = current_config();
-    cfg.microbrain || cfg.nanda_autocorrect
-}
-
 pub(super) fn active_learning_log() -> bool {
     current_config().learning_log
+}
+
+pub(super) fn active_nanda_trace() -> bool {
+    current_config().debug_action_log
+}
+
+pub(super) fn active_nanda_trace_text() -> bool {
+    current_config().debug_action_log
+}
+
+pub(super) fn active_nanda_precognition() -> bool {
+    let cfg = current_config();
+    cfg.debug_action_log
+        && cfg.nanda_precognition
+        && cfg.active_text_backend() == TextBackendPreference::Ime
+}
+
+#[cfg(not(test))]
+pub(super) fn active_nanda_autocorrect() -> bool {
+    current_config().nanda_autocorrect
 }
 
 pub(super) fn active_lem_enabled_for_scope(word_count: usize) -> bool {
@@ -150,11 +166,7 @@ pub(super) fn active_typing_assist_pipeline_for_auto_replace(
     context: &str,
 ) -> Vec<lay::config::TypingAssistRuleConfig> {
     let cfg = current_config();
-    let safety = if (cfg.microbrain || cfg.nanda_autocorrect) && cfg.auto_replace {
-        lay::config::CorrectionSafety::Experimental
-    } else {
-        cfg.active_correction_safety()
-    };
+    let safety = cfg.active_correction_safety();
     lay::typing_context::typing_assist_pipeline_for_context(
         cfg.auto_replace,
         safety,

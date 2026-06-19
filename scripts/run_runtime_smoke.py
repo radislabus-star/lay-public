@@ -9,7 +9,6 @@ the text returned by the dialog after Enter.
 from __future__ import annotations
 
 import argparse
-import dataclasses
 import json
 import os
 import shutil
@@ -17,179 +16,17 @@ import subprocess
 import sys
 import tempfile
 import time
+from contextlib import nullcontext
 from pathlib import Path
+
+from runtime_smoke.cases import CASES, Case
+from runtime_smoke.ime import managed_ime_session
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = ROOT / "target/release/lay-test-input"
 DEFAULT_DAEMON = ROOT / "target/release/lay-daemon"
-SHORT_ALT_50_EXPECTED = (
-    "я git и api мы css ты cpu он gpu в html к json с llm не log на md ну pdf "
-    "по ram за sql вот ssh это vpn да go как in дом up мир to код on тут off "
-    "там file для test при push ход bash"
-)
-
-
-@dataclasses.dataclass(frozen=True)
-class Case:
-    name: str
-    expected: str
-    start_layout: str = "us"
-    config_overrides: dict[str, object] | None = None
-
-
-CASES = {
-    "ghbdtn_enter": Case("ghbdtn_enter", "привет"),
-    "ghbdtn_enter_autocorrect": Case(
-        "ghbdtn_enter_autocorrect",
-        "ghbdtn",
-        config_overrides={"enter_autocorrect": True},
-    ),
-    "ghbdtn_fast_lshift_enter": Case("ghbdtn_fast_lshift_enter", "привет"),
-    "ghbdtn_extra_lshift_enter": Case("ghbdtn_extra_lshift_enter", "привет"),
-    "ctrl_plus_ghbdtn_enter": Case("ctrl_plus_ghbdtn_enter", "привет"),
-    "dhtvz_toggle_enter": Case("dhtvz_toggle_enter", "dhtvz"),
-    "dhtvz_toggle3_enter": Case("dhtvz_toggle3_enter", "время"),
-    "g_to_ru_enter": Case("g_to_ru_enter", "п"),
-    "eng_ru_to_us_enter": Case("eng_ru_to_us_enter", "eng", start_layout="ru"),
-    "plain_layout_ashdu_space_enter": Case(
-        "plain_layout_ashdu_space_enter",
-        "file",
-        start_layout="ru",
-        config_overrides={
-            "auto_replace": True,
-            "typing_assist": True,
-            "correction_safety": "normal",
-        },
-    ),
-    "plain_layout_cargo_space_enter": Case(
-        "plain_layout_cargo_space_enter",
-        "cargo",
-        start_layout="ru",
-        config_overrides={
-            "auto_replace": True,
-            "typing_assist": True,
-            "correction_safety": "normal",
-        },
-    ),
-    "plain_layout_abkt_space_enter": Case(
-        "plain_layout_abkt_space_enter",
-        "abkt",
-        start_layout="us",
-        config_overrides={
-            "auto_replace": True,
-            "typing_assist": True,
-            "correction_safety": "normal",
-        },
-    ),
-    "good_toggle4_enter": Case("good_toggle4_enter", "good"),
-    "good_ntrcn_enter": Case("good_ntrcn_enter", "good текст"),
-    "good_text_enter": Case("good_text_enter", "good текст", start_layout="ru"),
-    "good_vshgidu_enter": Case("good_vshgidu_enter", "good Double"),
-    "mixed_word": Case("mixed_word", "при"),
-    "mixed_coke_enter": Case("mixed_coke_enter", "слово кока-колу", start_layout="ru"),
-    "mixed_coke_toggle3_enter": Case(
-        "mixed_coke_toggle3_enter", "слово кока-колу", start_layout="ru"
-    ),
-    "n_teper_mixed_enter": Case("n_teper_mixed_enter", "Теперь"),
-    "auto_switch_words_enter": Case("auto_switch_words_enter", "njkmrj yt hf,jnftn"),
-    "worked_nj_space_enter": Case(
-        "worked_nj_space_enter",
-        "worked это",
-        config_overrides={
-            "auto_replace": True,
-            "typing_assist": True,
-            "correction_safety": "normal",
-        },
-    ),
-    "html_djn_spacing_enter": Case(
-        "html_djn_spacing_enter",
-        "html вот",
-        start_layout="ru",
-        config_overrides={
-            "auto_replace": True,
-            "typing_assist": True,
-            "correction_safety": "experimental",
-            "auto_switch_layout": True,
-            "nanda_autocorrect": True,
-            "typing_assist_words": 2,
-        },
-    ),
-    "no_ne_ty_enter": Case("no_ne_ty_enter", "но не ты", start_layout="ru"),
-    "preparatov_typo_enter": Case(
-        "preparatov_typo_enter", "препаратов", start_layout="ru"
-    ),
-    "proverka_ntrcn_enter": Case(
-        "proverka_ntrcn_enter", "проверка текст", start_layout="ru"
-    ),
-    "glued_toesamoe_next_enter": Case(
-        "glued_toesamoe_next_enter", "тоже самое склено", start_layout="ru"
-    ),
-    "glued_tozhesamoe_next_enter": Case(
-        "glued_tozhesamoe_next_enter", "тоже самое склено", start_layout="ru"
-    ),
-    "glued_yanebudu_next_enter": Case(
-        "glued_yanebudu_next_enter", "я не буду склено", start_layout="ru"
-    ),
-    "glued_context_yanebudu_next_enter": Case(
-        "glued_context_yanebudu_next_enter",
-        "тоже самое я не буду склено",
-        start_layout="ru",
-    ),
-    "glued_long_phrase_next_enter": Case(
-        "glued_long_phrase_next_enter",
-        "я не буду за вас тоже самое склено",
-        start_layout="ru",
-    ),
-    "ru_p_enter": Case("ru_p_enter", "п", start_layout="ru"),
-    "ru_p_to_g_enter": Case("ru_p_to_g_enter", "g", start_layout="ru"),
-    "ru_p_toggle2_enter": Case("ru_p_toggle2_enter", "п", start_layout="ru"),
-    "slovo_ru_to_us_fast_lshift_enter": Case(
-        "slovo_ru_to_us_fast_lshift_enter", "ckjdj", start_layout="ru"
-    ),
-    "slovo_ru_to_us_extra_lshift_enter": Case(
-        "slovo_ru_to_us_extra_lshift_enter", "ckjdj", start_layout="ru"
-    ),
-    "vyvodim_dva_enter": Case("vyvodim_dva_enter", "выводим два"),
-    "wifi_ye_enter": Case("wifi_ye_enter", "wi-fi ну"),
-    "short_alt_ru_wrong_us_enter": Case(
-        "short_alt_ru_wrong_us_enter",
-        SHORT_ALT_50_EXPECTED,
-        config_overrides={
-            "auto_replace": True,
-            "typing_assist": True,
-            "correction_safety": "experimental",
-            "auto_switch_layout": True,
-            "nanda_autocorrect": True,
-            "typing_assist_words": 2,
-        },
-    ),
-    "short_alt_en_wrong_ru_enter": Case(
-        "short_alt_en_wrong_ru_enter",
-        SHORT_ALT_50_EXPECTED,
-        start_layout="ru",
-        config_overrides={
-            "auto_replace": True,
-            "typing_assist": True,
-            "correction_safety": "experimental",
-            "auto_switch_layout": True,
-            "nanda_autocorrect": True,
-            "typing_assist_words": 2,
-        },
-    ),
-    "short_alt_all_wrong_enter": Case(
-        "short_alt_all_wrong_enter",
-        SHORT_ALT_50_EXPECTED,
-        config_overrides={
-            "auto_replace": True,
-            "typing_assist": True,
-            "correction_safety": "experimental",
-            "auto_switch_layout": True,
-            "nanda_autocorrect": True,
-            "typing_assist_words": 2,
-        },
-    ),
-}
+DEFAULT_IBUS_ENGINE = ROOT / "target/release/lay-ibus-engine"
 
 
 def main() -> int:
@@ -210,6 +47,7 @@ def main() -> int:
     )
     parser.add_argument("--input-bin", type=Path, default=DEFAULT_INPUT)
     parser.add_argument("--daemon-bin", type=Path, default=DEFAULT_DAEMON)
+    parser.add_argument("--ibus-engine-bin", type=Path, default=DEFAULT_IBUS_ENGINE)
     parser.add_argument("--use-system-daemon", action="store_true")
     parser.add_argument("--daemon-debug", action="store_true")
     parser.add_argument("--no-build", action="store_true")
@@ -218,31 +56,46 @@ def main() -> int:
         action="store_true",
         help="use lay-ime-ru/lay-ime-us IBus engines as the start layout",
     )
+    parser.add_argument(
+        "--ime-managed",
+        action="store_true",
+        help="run Rust lay IBus engine in managed mode for this test and restore daemon after",
+    )
     args = parser.parse_args()
 
     dialog = choose_dialog_command(args.dialog)
     require_command("gdbus")
+    if args.ime_managed:
+        require_command("ibus")
     input_bin = ensure_binary(args.input_bin, "lay-test-input", args.no_build)
     daemon_bin = None if args.use_system_daemon else ensure_binary(args.daemon_bin, "lay-daemon", args.no_build)
+    ibus_engine_bin = None
+    if args.ime_managed:
+        ibus_engine_bin = ensure_binary(args.ibus_engine_bin, "lay-ibus-engine", args.no_build)
+        daemon_bin = None
 
     selected = [CASES[name] for name in (args.case or sorted(CASES))]
     failures = 0
-    for case in selected:
-        ok, got, detail = run_case(
-            case,
-            input_bin,
-            daemon_bin,
-            dialog,
-            args.focus_delay,
-            args.timeout,
-            args.daemon_debug,
-            args.ime_engine,
-        )
-        status = "OK" if ok else "BAD"
-        print(f"{status} {case.name}: got={got!r} expected={case.expected!r}")
-        if detail:
-            print(indent(detail.rstrip()))
-        failures += 0 if ok else 1
+    ime_context = (
+        managed_ime_session(ROOT, ibus_engine_bin) if args.ime_managed else nullcontext()
+    )
+    with ime_context:
+        for case in selected:
+            ok, got, detail = run_case(
+                case,
+                input_bin,
+                daemon_bin,
+                dialog,
+                args.focus_delay,
+                args.timeout,
+                args.daemon_debug,
+                args.ime_engine or args.ime_managed,
+            )
+            status = "OK" if ok else "BAD"
+            print(f"{status} {case.name}: got={got!r} expected={case.expected!r}")
+            if detail:
+                print(indent(detail.rstrip()))
+            failures += 0 if ok else 1
 
     return 1 if failures else 0
 
@@ -332,14 +185,17 @@ def run_case(
     )
     time.sleep(focus_delay)
 
+    sender_env = {
+        **dict_env(),
+        "LAY_TEST_START_DELAY_MS": "3500",
+        "LAY_TEST_INITIAL_LAYOUT": case.start_layout,
+    }
+    if ime_engine:
+        sender_env["LAY_TEST_IME_ENGINE"] = "1"
     sender = subprocess.Popen(
         [str(input_bin), case.name],
         cwd=ROOT,
-        env={
-            **dict_env(),
-            "LAY_TEST_START_DELAY_MS": "3500",
-            "LAY_TEST_INITIAL_LAYOUT": case.start_layout,
-        },
+        env=sender_env,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -464,6 +320,15 @@ def wait_for_device_access(path: Path, timeout: float) -> bool:
 
 
 def activate_layout(layout: str, ime_engine: bool = False) -> None:
+    if ime_engine:
+        engine = "lay-ime-ru" if layout == "ru" else "lay-ime-us"
+        subprocess.run(
+            ["ibus", "engine", engine],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        return
+
     if activate_layout_kde(layout):
         return
 
@@ -483,10 +348,7 @@ def activate_layout(layout: str, ime_engine: bool = False) -> None:
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
-    if ime_engine:
-        engine = "lay-ime-ru" if layout == "ru" else "lay-ime-us"
-    else:
-        engine = "xkb:ru::rus" if layout == "ru" else "xkb:us::eng"
+    engine = "xkb:ru::rus" if layout == "ru" else "xkb:us::eng"
     subprocess.run(
         ["ibus", "engine", engine],
         stdout=subprocess.DEVNULL,

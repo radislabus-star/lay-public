@@ -40,4 +40,4 @@ pub(crate) use repeated::correct_repeated_letter;
 pub(crate) use substitution::correct_single_letter_substitution;
 pub(crate) use transposition::correct_adjacent_transposition;
 pub(crate) use verb::correct_verb_ending_confusion;
-pub(crate) use vowel::correct_vowel_confusion;
+pub(crate) use vowel::{correct_vowel_confusion, correct_vowel_confusion_contextual_past_tense};

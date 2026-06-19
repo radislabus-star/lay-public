@@ -82,6 +82,7 @@ journalctl
 jq
 json
 kill
+lay
 less
 let
 llm

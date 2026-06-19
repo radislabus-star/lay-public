@@ -19,6 +19,10 @@ pub struct RecentAction<'a> {
     pub replace_words: usize,
     pub words: usize,
     pub elapsed_ms: u128,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub decision_ms: Option<u128>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub output_ms: Option<u128>,
     pub undo_available: bool,
 }
 
@@ -31,7 +35,35 @@ pub fn record_action(
     elapsed_ms: u128,
     undo_available: bool,
 ) {
+    record_action_with_stages(
+        kind,
+        from,
+        to,
+        replace_words,
+        words,
+        elapsed_ms,
+        None,
+        None,
+        undo_available,
+    );
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn record_action_with_stages(
+    kind: &str,
+    from: &str,
+    to: &str,
+    replace_words: usize,
+    words: usize,
+    elapsed_ms: u128,
+    decision_ms: Option<u128>,
+    output_ms: Option<u128>,
+    undo_available: bool,
+) {
     if from == to || from.trim().is_empty() || to.trim().is_empty() {
+        return;
+    }
+    if !crate::config::LayConfig::load().debug_action_log {
         return;
     }
     let Some(path) = actions_path() else {
@@ -45,6 +77,8 @@ pub fn record_action(
         replace_words,
         words,
         elapsed_ms,
+        decision_ms,
+        output_ms,
         undo_available,
     };
     record_action_to_path(&path, &action, KEEP_LINES);

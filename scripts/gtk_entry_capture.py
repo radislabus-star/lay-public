@@ -34,7 +34,13 @@ class EntryCapture(Gtk.Application):
         entry = Gtk.Entry()
 
         def done(_entry: Gtk.Entry) -> None:
-            print(_entry.get_text(), flush=True)
+            if self._show_position:
+                print(
+                    f"{_entry.get_text()}\tpos={_entry.get_position()}",
+                    flush=True,
+                )
+            else:
+                print(_entry.get_text(), flush=True)
             self.quit()
 
         entry.connect("activate", done)
@@ -54,8 +60,11 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--title", default="Lay runtime smoke")
     parser.add_argument("--text", default="Runtime smoke")
+    parser.add_argument("--show-position", action="store_true")
     args = parser.parse_args()
-    return EntryCapture(args.title, args.text).run([])
+    app = EntryCapture(args.title, args.text)
+    app._show_position = args.show_position
+    return app.run([])
 
 
 if __name__ == "__main__":

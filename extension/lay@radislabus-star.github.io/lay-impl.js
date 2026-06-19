@@ -40,6 +40,7 @@ import {
     AUTO_REPLACE_TOOLTIP,
     AUTO_SWITCH_TOOLTIP,
     COMPACT_SUBTITLE_STYLE,
+    DEBUG_ACTION_LOG_TOOLTIP,
     ENTER_AUTOCORRECT_TOOLTIP,
     FORCE_KEY_OPTIONS,
     LEM_2_TOOLTIP,
@@ -48,8 +49,6 @@ import {
     LEARNING_LOG_TOOLTIP,
     MENU_ICON_SIZE,
     MENU_WIDTH,
-    NANDA_EXPERT_CELL,
-    NANDA_TOOLTIP,
     PANEL_ICON_SIZE,
     PTAH_ALEXS_TOOLTIP,
     SAFETY_OPTIONS,
@@ -58,7 +57,6 @@ import {
     TRIGGER_OPTIONS,
     actionKindLabel,
     loadConfig,
-    loadNandaProfileText,
     loadRecentActions,
     loadStats,
     normalizeConfig,
@@ -66,6 +64,7 @@ import {
     normalizeTypingPipeline,
     openPreferences,
     openUri,
+    applyInputChannel,
     optionLabel,
     restartDaemon,
     saveConfig,
@@ -155,10 +154,11 @@ class LayIndicator extends PanelMenu.Button {
 
         this.menu.addMenuItem(this._preferencesItem());
         this.menu.addMenuItem(this._recentActionsMenu());
-        this.menu.addMenuItem(this._arbiterMenu());
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._daemonSwitchItem());
         this.menu.addMenuItem(this._updateItem());
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        this.menu.addMenuItem(this._aboutMenu());
 
         this._refreshSelections();
         this._refreshStatus();
@@ -222,8 +222,60 @@ class LayIndicator extends PanelMenu.Button {
         return item;
     }
 
+    _debugLogsItem() {
+        const item = persistentSwitchItem('Журнал отладки lay', !!this._cfg.debug_action_log);
+        item.connect('toggled', (_item, state) => {
+            this._cfg.debug_action_log = state;
+            this._cfg.nanda_trace = state;
+            this._cfg.nanda_trace_text = state;
+            this._saveAndRefresh();
+        });
+        this._attachTooltip(item, DEBUG_ACTION_LOG_TOOLTIP);
+        this._toggleButtons.debug_action_log = item;
+        return item;
+    }
+
+    _inlinePreeditItem() {
+        const active = !!this._cfg.nanda_precognition && this._cfg.text_backend === 'ime';
+        const item = persistentSwitchItem('Серые подсказки (IME)', active);
+        item.connect('toggled', (_item, state) => {
+            this._cfg.nanda_precognition = !!state;
+            if (state)
+                this._cfg.text_backend = 'ime';
+            else
+                this._cfg.text_backend = 'uinput';
+            this._saveAndRefresh();
+            applyInputChannel(this._cfg.text_backend);
+            restartDaemon();
+            this._setDaemonBusy('перезапуск...');
+            this._scheduleStatusRefreshes();
+        });
+        this._attachTooltip(item, 'Inline-подсказки работают только через экспериментальный IME-канал. Быстрый uinput выводит текст без серого preedit.');
+        this._inlinePreeditSwitch = item;
+        return item;
+    }
+
     _behaviorMenu() {
         const item = new PopupMenu.PopupSubMenuMenuItem('Поведение', false);
+        item.menu.addMenuItem(this._switchItem(
+            'Помощь при наборе',
+            'typing_assist',
+            true
+        ));
+        item.menu.addMenuItem(this._switchItem(
+            'Автоподмена',
+            'auto_replace',
+            true,
+            AUTO_REPLACE_TOOLTIP
+        ));
+        item.menu.addMenuItem(this._switchItem(
+            'Запоминать правки',
+            'learning_log',
+            false,
+            LEARNING_LOG_TOOLTIP
+        ));
+        item.menu.addMenuItem(this._debugLogsItem());
+        item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         item.menu.addMenuItem(this._switchItem(
             'Автораскладка после пробела',
             'auto_switch_layout',
@@ -266,6 +318,7 @@ class LayIndicator extends PanelMenu.Button {
             false,
             LEM_3_TOOLTIP
         ));
+        item.menu.addMenuItem(this._inlinePreeditItem());
         return item;
     }
 
@@ -294,8 +347,8 @@ class LayIndicator extends PanelMenu.Button {
 
     _backendOptions() {
         return [
-            ['uinput', 'Быстрый', () => this._setConfigValue('text_backend', 'uinput', true)],
-            ['ime', 'IME', () => this._setConfigValue('text_backend', 'ime', true)],
+            ['uinput', 'Быстрый', () => this._setTextBackend('uinput')],
+            ['ime', 'IME, эксперимент', () => this._setTextBackend('ime')],
         ];
     }
 
@@ -880,10 +933,6 @@ class LayIndicator extends PanelMenu.Button {
             style: COMPACT_SUBTITLE_STYLE,
         });
         box.add_child(this._aboutStatsLabel);
-        box.add_child(new St.Label({
-            text: `NANDA: ${loadNandaProfileText()}`,
-            style: COMPACT_SUBTITLE_STYLE,
-        }));
         const link = new St.Label({
             text: 'GitHub проекта',
             reactive: true,
@@ -968,6 +1017,10 @@ class LayIndicator extends PanelMenu.Button {
             this._setButtonActive(button, Number(id) === this._cfg.replace_words);
         for (const [id, button] of Object.entries(this._backendButtons ?? {}))
             this._setButtonActive(button, id === this._cfg.text_backend);
+        if (this._inlinePreeditSwitch?.setToggleState)
+            this._inlinePreeditSwitch.setToggleState(
+                !!this._cfg.nanda_precognition && this._cfg.text_backend === 'ime'
+            );
         for (const [id, button] of Object.entries(this._layoutBackendButtons ?? {}))
             this._setButtonActive(button, id === this._cfg.layout_backend);
         for (const [id, button] of Object.entries(this._safetyButtons ?? {}))
@@ -1011,6 +1064,22 @@ class LayIndicator extends PanelMenu.Button {
             this._setDaemonBusy('перезапуск...');
             this._scheduleStatusRefreshes();
         }
+    }
+
+    _setTextBackend(value) {
+        if (this._cfg.text_backend === value) {
+            this._refreshSelections();
+            applyInputChannel(value);
+            return;
+        }
+        this._cfg.text_backend = value;
+        if (value !== 'ime')
+            this._cfg.nanda_precognition = false;
+        this._saveAndRefresh();
+        applyInputChannel(value);
+        restartDaemon();
+        this._setDaemonBusy('перезапуск...');
+        this._scheduleStatusRefreshes();
     }
 
     _setTrigger(id) {

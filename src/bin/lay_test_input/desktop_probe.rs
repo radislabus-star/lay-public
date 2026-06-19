@@ -3,6 +3,7 @@ use lay::desktop::{parse_kde_layouts_list, parse_setxkbmap_layout, resolve_layou
 use std::env;
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::time::{Duration, Instant};
 
 static INITIAL_LAYOUT_ALREADY_SET: AtomicBool = AtomicBool::new(false);
 
@@ -10,6 +11,18 @@ pub(crate) fn activate_layout(id: &str) {
     if env::var("LAY_TEST_INITIAL_LAYOUT").ok().as_deref() == Some(id)
         && !INITIAL_LAYOUT_ALREADY_SET.swap(true, Ordering::Relaxed)
     {
+        return;
+    }
+
+    if env::var("LAY_TEST_IME_ENGINE")
+        .ok()
+        .is_some_and(|value| matches!(value.as_str(), "1" | "true" | "yes" | "on"))
+    {
+        activate_ibus_engine(if id == "ru" {
+            "lay-ime-ru"
+        } else {
+            "lay-ime-us"
+        });
         return;
     }
 
@@ -37,11 +50,30 @@ pub(crate) fn activate_layout(id: &str) {
     } else {
         "xkb:us::eng"
     };
+    activate_ibus_engine(engine);
+}
+
+fn activate_ibus_engine(engine: &str) {
     let _ = Command::new("ibus")
         .args(["engine", engine])
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .status();
+    let deadline = Instant::now() + Duration::from_millis(800);
+    while Instant::now() < deadline {
+        if active_ibus_engine().as_deref() == Some(engine) {
+            return;
+        }
+        std::thread::sleep(Duration::from_millis(20));
+    }
+}
+
+fn active_ibus_engine() -> Option<String> {
+    let output = Command::new("ibus").arg("engine").output().ok()?;
+    if !output.status.success() {
+        return None;
+    }
+    Some(String::from_utf8_lossy(&output.stdout).trim().to_string())
 }
 
 pub(crate) fn print_x11_diagnostics() {

@@ -1,5 +1,6 @@
 use lay::keyboard::KeyEvent;
 use lay::text_edit::TextReplacement;
+use lay::typing_assist::typing_correction_should_skip_auto_undo;
 use lay::word_buffer::WordBuffer;
 
 pub(super) struct ManualTextCorrectionMemory<'a> {
@@ -47,6 +48,7 @@ pub(super) struct AssistedCorrectionMemory<'a> {
     pub(super) original: &'a str,
     pub(super) replacement: &'a str,
     pub(super) kind: &'a str,
+    pub(super) rule_id: Option<&'a str>,
     pub(super) replace_words: usize,
     pub(super) words: usize,
     pub(super) cursor_offset: u32,
@@ -75,7 +77,15 @@ pub(super) fn remember_assisted_text_correction(
     if !remembered && correction.cursor_offset == 0 {
         buf.reset_all();
     }
-    remember_pending_auto_undo(buf, &correction);
+    if typing_correction_should_skip_auto_undo(
+        correction.rule_id,
+        correction.original(),
+        correction.replacement(),
+    ) {
+        buf.remember_pending_auto_layout_guard(correction.original(), correction.replacement());
+    } else {
+        remember_pending_auto_undo(buf, &correction);
+    }
 }
 
 trait PendingUndoCorrection {

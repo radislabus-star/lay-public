@@ -4,7 +4,9 @@ use lay::keyboard::KeyEvent;
 use lay::word_buffer::WordBuffer;
 use std::time::Instant;
 
-pub(crate) struct ManualCorrectionOutputContext<'a> {
+use super::super::super::physical_input_grab::PhysicalInputGrab;
+
+pub(crate) struct ManualCorrectionOutputContext<'a, 'grab> {
     pub(crate) buf: &'a mut WordBuffer,
     pub(crate) events: &'a [KeyEvent],
     pub(crate) mapped_orig: &'a str,
@@ -17,6 +19,7 @@ pub(crate) struct ManualCorrectionOutputContext<'a> {
     pub(crate) started_at: Instant,
     pub(crate) decision: &'a ManualCorrectionDecision,
     pub(crate) virtual_kbd: Option<&'a mut VirtualDevice>,
+    pub(crate) physical_grab: Option<&'a mut PhysicalInputGrab<'grab>>,
     pub(crate) input_isolated: bool,
 }
 

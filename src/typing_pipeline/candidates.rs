@@ -17,7 +17,7 @@ pub(super) fn evaluate_rule_candidates(
     core: &str,
     allow_layout_auto: bool,
     pipeline: &[TypingAssistRuleConfig],
-    keep_fast_candidate_for_microbrain: bool,
+    keep_fast_candidate_for_late_ranking: bool,
 ) -> CandidateEvaluation {
     let (token_leading, word, token_trailing) = split_word_punctuation(core);
     let ctx = TypingRuleContext {
@@ -43,7 +43,7 @@ pub(super) fn evaluate_rule_candidates(
                 replacement,
             );
             explanation.record(TypingRuleEvaluation::new(&rule).with_candidate(candidate.clone()));
-            if !keep_fast_candidate_for_microbrain {
+            if !keep_fast_candidate_for_late_ranking {
                 return CandidateEvaluation {
                     explanation,
                     candidates,

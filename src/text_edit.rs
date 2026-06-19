@@ -14,7 +14,8 @@ mod types;
 
 pub use committed_tail::{
     committed_separator_is_preserved, ensure_committed_tail_spacing,
-    plan_committed_tail_replacement, plan_committed_whitespace_insertions,
+    plan_committed_tail_full_token_replacement, plan_committed_tail_replacement,
+    plan_committed_whitespace_insertions,
 };
 pub use cursor::offset_replacement_plan_for_cursor;
 pub use diff_plan::{

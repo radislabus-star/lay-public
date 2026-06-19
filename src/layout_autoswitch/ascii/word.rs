@@ -1,3 +1,4 @@
+use crate::lexicon::is_common_ru_word;
 use crate::lexicon::is_user_protected_ascii_word;
 use crate::russian_lexicon::russian_tiny_dictionary;
 use crate::word_reader::split_word_punctuation;
@@ -83,12 +84,8 @@ pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
     if is_protected_ascii_layout_token(token) {
         return lem_prefers_layout_candidate(original_word, &normalized_word).then_some(normalized);
     }
-    if crate::microbrain::accepts_candidate(
-        original_word,
-        &normalized_word,
-        crate::microbrain::MicroAction::LayoutEnToRu,
-        "nanda_layout_autoswitch",
-    ) || allow_short_layout_word(original_word, &normalized_lower)
+    if allow_short_layout_word(original_word, &normalized_lower)
+        || is_common_ru_word(&normalized_lower)
     {
         Some(normalized)
     } else {
@@ -109,6 +106,9 @@ fn correct_single_letter_layout_word(token: &str) -> Option<String> {
     let mut letters = original_word.chars();
     let letter = letters.next()?;
     if letters.next().is_some() || !letter.is_ascii_alphabetic() {
+        return None;
+    }
+    if letter.is_ascii_uppercase() {
         return None;
     }
     if is_user_protected_ascii_word(original_word) {

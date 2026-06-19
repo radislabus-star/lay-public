@@ -85,6 +85,9 @@ fn english_layout_autoswitch_candidates(
     if is_short_ascii_layout_token(&lower) && !is_common_en_technical_word(&lower) {
         return out;
     }
+    if is_short_plain_dictionary_fragment(&lower) && !is_common_en_technical_word(&lower) {
+        return out;
+    }
     if is_known_english_layout_autoswitch_word(&lower)
         || matches!(policy, EnglishLayoutPolicy::Experimental)
             && is_known_english_word_for_experimental_layout(&lower)
@@ -109,6 +112,10 @@ fn is_short_ascii_layout_token(word: &str) -> bool {
     word.chars().filter(|ch| ch.is_ascii_alphabetic()).count() <= 2
 }
 
+fn is_short_plain_dictionary_fragment(word: &str) -> bool {
+    word.chars().filter(|ch| ch.is_ascii_alphabetic()).count() == 3
+}
+
 fn is_known_english_word_for_experimental_layout(word: &str) -> bool {
     let identity = recognize_token(word);
     identity.script == WordScript::Ascii && identity.known_en && identity.is_plain_word()
@@ -124,4 +131,23 @@ fn is_plain_cyrillic_layout_token(token: &str) -> bool {
                     ',' | '.' | '!' | '?' | ':' | ';' | '$' | '%' | '&' | '#' | '@' | '-' | '_'
                 )
         })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::correct_wrong_layout_cyrillic_word;
+
+    #[test]
+    fn short_plain_dictionary_fragments_do_not_autoswitch_to_english() {
+        assert_eq!(correct_wrong_layout_cyrillic_word("щдф"), None);
+        assert_eq!(correct_wrong_layout_cyrillic_word("сщла"), None);
+        assert_eq!(
+            correct_wrong_layout_cyrillic_word("сщдф"),
+            Some("cola".to_string())
+        );
+        assert_eq!(
+            correct_wrong_layout_cyrillic_word("дфн"),
+            Some("lay".to_string())
+        );
+    }
 }

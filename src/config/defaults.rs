@@ -41,8 +41,6 @@ impl Default for LayConfig {
             correction_safety: "normal".into(),
             enter_autocorrect: false,
             auto_switch_layout: true,
-            microbrain: false,
-            nanda_autocorrect: false,
             lem_2_words: true,
             lem_3_words: true,
             llm_backend: "off".into(),
@@ -52,7 +50,12 @@ impl Default for LayConfig {
             llm_anthropic_url: "https://api.anthropic.com/v1/messages".into(),
             llm_timeout_secs: 3,
             typing_assist_pipeline: default_typing_assist_pipeline(),
+            debug_action_log: false,
             learning_log: false,
+            nanda_autocorrect: false,
+            nanda_trace: false,
+            nanda_trace_text: false,
+            nanda_precognition: false,
         }
     }
 }

@@ -1,0 +1,515 @@
+group_id	context	original	candidate	operation	label	source	reason
+generated:0000:layout		djn 	вот 	layout	1	data/nanda_wave_synthetic_cases.tsv	layout
+generated:0000:layout		djn 	djn 	keep	0	data/nanda_wave_synthetic_cases.tsv	layout
+generated:0000:layout		djn 	djn	glue	0	data/nanda_wave_synthetic_cases.tsv	layout
+generated:0001:layout		ghbdtn 	привет 	layout	1	data/nanda_wave_synthetic_cases.tsv	layout
+generated:0001:layout		ghbdtn 	ghbdtn 	keep	0	data/nanda_wave_synthetic_cases.tsv	layout
+generated:0001:layout		ghbdtn 	ghbdtn	glue	0	data/nanda_wave_synthetic_cases.tsv	layout
+generated:0002:layout		gjhn 	порт 	layout	1	data/nanda_wave_synthetic_cases.tsv	layout
+generated:0002:layout		gjhn 	gjhn 	keep	0	data/nanda_wave_synthetic_cases.tsv	layout
+generated:0002:layout		gjhn 	gjhn	glue	0	data/nanda_wave_synthetic_cases.tsv	layout
+generated:0003:layout_context		html djn 	html вот 	layout	1	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0003:layout_context		html djn 	html djn 	keep	0	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0003:layout_context		html djn 	реьд вот 	layout	0	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0003:layout_context		html djn 	htmldjn	glue	0	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0004:layout_context		порт port gjhn 	порт port порт 	layout	1	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0004:layout_context		порт port gjhn 	порт port gjhn 	keep	0	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0004:layout_context		порт port gjhn 	gjhn port gjhn 	layout	0	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0004:layout_context		порт port gjhn 	порт зщке порт 	layout	0	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0004:layout_context		порт port gjhn 	портportgjhn	glue	0	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0005:veto		git checkout -b test 	git checkout -b test 	keep	1	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0005:veto		git checkout -b test 	пше сруслщге -и еуые 	layout	0	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0005:veto		git checkout -b test 	gitcheckout-btest	glue	0	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0006:veto		api token 	api token 	keep	1	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0006:veto		api token 	фзш ещлут 	layout	0	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0006:veto		api token 	apitoken	glue	0	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0007:veto		vpn config 	vpn config 	keep	1	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0007:veto		vpn config 	мзт сщташп 	layout	0	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0007:veto		vpn config 	vpnconfig	glue	0	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0008:keep		wechat 	wechat 	keep	1	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0008:keep		wechat 	цусрфе 	layout	0	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0008:keep		wechat 	wechat	glue	0	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0009:keep		file 	file 	keep	1	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0009:keep		file 	ашду 	layout	0	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0009:keep		file 	file	glue	0	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0010:split		у насесть 	у нас есть 	split	1	data/nanda_wave_synthetic_cases.tsv	split
+generated:0010:split		у насесть 	у насесть 	keep	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0010:split		у насесть 	e yfctcnm 	layout	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0010:split		у насесть 	унасесть	glue	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0011:split		янебуду 	я не буду 	split	1	data/nanda_wave_synthetic_cases.tsv	split
+generated:0011:split		янебуду 	янебуду 	keep	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0011:split		янебуду 	zyt,ele 	layout	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0011:split		янебуду 	янебуду	glue	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0012:split		тожесамое 	тоже самое 	split	1	data/nanda_wave_synthetic_cases.tsv	split
+generated:0012:split		тожесамое 	тожесамое 	keep	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0012:split		тожесамое 	nj;tcfvjt 	layout	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0012:split		тожесамое 	тожесамое	glue	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0013:typo		кторое 	которое 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0013:typo		кторое 	кторое 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0013:typo		кторое 	rnjhjt 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0013:typo		кторое 	кторое	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0014:typo		прболема 	проблема 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0014:typo		прболема 	прболема 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0014:typo		прболема 	gh,jktvf 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0014:typo		прболема 	прболема	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0015:typo		перпаратов 	препаратов 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0015:typo		перпаратов 	перпаратов 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0015:typo		перпаратов 	gthgfhfnjd 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0015:typo		перпаратов 	перпаратов	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0016:grammar		фразы связанности 	фразовой связности 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0016:grammar		фразы связанности 	фразы связанности 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0016:grammar		фразы связанности 	ahfps cdzpfyyjcnb 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0016:grammar		фразы связанности 	фразысвязанности	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0017:keep		клетка моды 	клетка моды 	keep	1	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0017:keep		клетка моды 	rktnrf vjls 	layout	0	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0017:keep		клетка моды 	клеткамоды	glue	0	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0018:keep		NANDA клетка 	NANDA клетка 	keep	1	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0018:keep		NANDA клетка 	NANDA rktnrf 	layout	0	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0018:keep		NANDA клетка 	ТФТВФ клетка 	layout	0	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0018:keep		NANDA клетка 	NANDAклетка	glue	0	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0019:grammar		Nande клетка 	NANDA клетка 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0019:grammar		Nande клетка 	Nande клетка 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0019:grammar		Nande клетка 	Nande rktnrf 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0019:grammar		Nande клетка 	Тфтву клетка 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0019:grammar		Nande клетка 	Nandeклетка	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0020:layout_context		вот djn 	вот вот 	layout	1	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0020:layout_context		вот djn 	вот djn 	keep	0	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0020:layout_context		вот djn 	djn djn 	layout	0	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0020:layout_context		вот djn 	вотdjn	glue	0	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0021:layout_context		мы gjhn 	мы порт 	layout	1	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0021:layout_context		мы gjhn 	мы gjhn 	keep	0	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0021:layout_context		мы gjhn 	vs gjhn 	layout	0	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0021:layout_context		мы gjhn 	мыgjhn	glue	0	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0022:keep		я file 	я file 	keep	1	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0022:keep		я file 	z file 	layout	0	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0022:keep		я file 	я ашду 	layout	0	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0022:keep		я file 	яfile	glue	0	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0023:veto		api djn 	api djn 	keep	1	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0023:veto		api djn 	фзш вот 	layout	0	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0023:veto		api djn 	apidjn	glue	0	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0024:veto		git djn 	git djn 	keep	1	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0024:veto		git djn 	пше вот 	layout	0	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0024:veto		git djn 	gitdjn	glue	0	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0025:veto		cd test 	cd test 	keep	1	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0025:veto		cd test 	св еуые 	layout	0	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0025:veto		cd test 	cdtest	glue	0	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0026:veto		ssh key 	ssh key 	keep	1	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0026:veto		ssh key 	ыыр лун 	layout	0	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0026:veto		ssh key 	sshkey	glue	0	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0027:veto		docker run 	docker run 	keep	1	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0027:veto		docker run 	вщслук кгт 	layout	0	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0027:veto		docker run 	dockerrun	glue	0	data/nanda_wave_synthetic_cases.tsv	veto
+generated:0028:layout_context		html djn api 	html вот api 	layout	1	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0028:layout_context		html djn api 	html djn api 	keep	0	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0028:layout_context		html djn api 	реьд вот фзш 	layout	0	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0028:layout_context		html djn api 	htmldjnapi	glue	0	data/nanda_wave_synthetic_cases.tsv	layout_context
+generated:0029:split		онаубыточная 	она убыточная 	split	1	data/nanda_wave_synthetic_cases.tsv	split
+generated:0029:split		онаубыточная 	онаубыточная 	keep	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0029:split		онаубыточная 	jyfe,snjxyfz 	layout	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0029:split		онаубыточная 	онаубыточная	glue	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0030:split		ониготовы 	они готовы 	split	1	data/nanda_wave_synthetic_cases.tsv	split
+generated:0030:split		ониготовы 	ониготовы 	keep	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0030:split		ониготовы 	jybujnjds 	layout	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0030:split		ониготовы 	ониготовы	glue	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0031:split		какпроверка 	как проверка 	split	1	data/nanda_wave_synthetic_cases.tsv	split
+generated:0031:split		какпроверка 	какпроверка 	keep	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0031:split		какпроверка 	rfrghjdthrf 	layout	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0031:split		какпроверка 	какпроверка	glue	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0032:split		слови 	слов и 	split	1	data/nanda_wave_synthetic_cases.tsv	split
+generated:0032:split		слови 	слови 	keep	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0032:split		слови 	ckjdb 	layout	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0032:split		слови 	слови	glue	0	data/nanda_wave_synthetic_cases.tsv	split
+generated:0033:typo		ктороый 	который 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0033:typo		ктороый 	ктороый 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0033:typo		ктороый 	rnjhjsq 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0033:typo		ктороый 	ктороый	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0034:typo		рабоатет 	работает 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0034:typo		рабоатет 	рабоатет 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0034:typo		рабоатет 	hf,jfntn 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0034:typo		рабоатет 	рабоатет	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0035:typo		использоватся 	использоваться 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0035:typo		использоватся 	использоватся 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0035:typo		использоватся 	bcgjkmpjdfncz 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0035:typo		использоватся 	использоватся	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0036:grammar		фраза связанности 	фразовой связности 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0036:grammar		фраза связанности 	фраза связанности 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0036:grammar		фраза связанности 	ahfpf cdzpfyyjcnb 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0036:grammar		фраза связанности 	фразасвязанности	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0037:grammar		русская фраза связанности 	русская фразовая связность 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0037:grammar		русская фраза связанности 	русская фраза связанности 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0037:grammar		русская фраза связанности 	heccrfz ahfpf cdzpfyyjcnb 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0037:grammar		русская фраза связанности 	русскаяфразасвязанности	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0038:typo		система автокрекции 	система автокоррекции 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0038:typo		система автокрекции 	система автокрекции 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0038:typo		система автокрекции 	cbcntvf fdnjrhtrwbb 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0038:typo		система автокрекции 	системаавтокрекции	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0039:protected		protected token 	protected token 	keep	1	data/nanda_wave_synthetic_cases.tsv	protected
+generated:0039:protected		protected token 	зкщеусеув ещлут 	layout	0	data/nanda_wave_synthetic_cases.tsv	protected
+generated:0039:protected		protected token 	protectedtoken	glue	0	data/nanda_wave_synthetic_cases.tsv	protected
+generated:0040:keep		NANDA wave 	NANDA wave 	keep	1	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0040:keep		NANDA wave 	ТФТВФ цфму 	layout	0	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0040:keep		NANDA wave 	NANDAwave	glue	0	data/nanda_wave_synthetic_cases.tsv	keep
+generated:0041:layout		QR-rjlf 	QR-кода 	layout	1	data/nanda_wave_synthetic_cases.tsv	layout
+generated:0041:layout		QR-rjlf 	QR-rjlf 	keep	0	data/nanda_wave_synthetic_cases.tsv	layout
+generated:0041:layout		QR-rjlf 	ЙК-кода 	layout	0	data/nanda_wave_synthetic_cases.tsv	layout
+generated:0041:layout		QR-rjlf 	QR-rjlf	glue	0	data/nanda_wave_synthetic_cases.tsv	layout
+generated:0042:layout		цусрфе 	wechat 	layout	1	data/nanda_wave_synthetic_cases.tsv	layout
+generated:0042:layout		цусрфе 	цусрфе 	keep	0	data/nanda_wave_synthetic_cases.tsv	layout
+generated:0042:layout		цусрфе 	цусрфе	glue	0	data/nanda_wave_synthetic_cases.tsv	layout
+generated:0043:grammar		Помогу мне 	Помоги мне 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0043:grammar		Помогу мне 	Помогу мне 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0043:grammar		Помогу мне 	Gjvjue vyt 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0043:grammar		Помогу мне 	Помогумне	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0044:typo		пркогниция 	прекогниция 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0044:typo		пркогниция 	пркогниция 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0044:typo		пркогниция 	ghrjuybwbz 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0044:typo		пркогниция 	пркогниция	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0045:typo		растравлять 	расставлять 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0045:typo		растравлять 	растравлять 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0045:typo		растравлять 	hfcnhfdkznm 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0045:typo		растравлять 	растравлять	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0046:punctuation		грамотно исправляй 	грамотно: исправляй 	layout	1	data/nanda_wave_synthetic_cases.tsv	punctuation
+generated:0046:punctuation		грамотно исправляй 	грамотно исправляй 	keep	0	data/nanda_wave_synthetic_cases.tsv	punctuation
+generated:0046:punctuation		грамотно исправляй 	uhfvjnyj bcghfdkzq 	layout	0	data/nanda_wave_synthetic_cases.tsv	punctuation
+generated:0046:punctuation		грамотно исправляй 	грамотноисправляй	glue	0	data/nanda_wave_synthetic_cases.tsv	punctuation
+generated:0047:punctuation		русский запятые 	русский. Запятые 	layout	1	data/nanda_wave_synthetic_cases.tsv	punctuation
+generated:0047:punctuation		русский запятые 	русский запятые 	keep	0	data/nanda_wave_synthetic_cases.tsv	punctuation
+generated:0047:punctuation		русский запятые 	heccrbq pfgznst 	layout	0	data/nanda_wave_synthetic_cases.tsv	punctuation
+generated:0047:punctuation		русский запятые 	русскийзапятые	glue	0	data/nanda_wave_synthetic_cases.tsv	punctuation
+generated:0048:grammar		бери ты их 	бери их 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0048:grammar		бери ты их 	бери ты их 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0048:grammar		бери ты их 	,thb ns b[ 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0048:grammar		бери ты их 	беритыих	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0049:typo		атозамена 	автозамена 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0049:typo		атозамена 	атозамена 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0049:typo		атозамена 	fnjpfvtyf 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0049:typo		атозамена 	атозамена	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0050:typo		испрть 	исправить 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0050:typo		испрть 	испрть 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0050:typo		испрть 	bcghnm 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0050:typo		испрть 	испрть	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0051:typo		ошбки 	ошибки 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0051:typo		ошбки 	ошбки 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0051:typo		ошбки 	ji,rb 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0051:typo		ошбки 	ошбки	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0052:grammar		что бы видит 	чтобы видеть 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0052:grammar		что бы видит 	что бы видит 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0052:grammar		что бы видит 	xnj ,s dblbn 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0052:grammar		что бы видит 	чтобывидит	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0053:typo		приимущестов 	преимущество 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0053:typo		приимущестов 	приимущестов 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0053:typo		приимущестов 	ghbbveotcnjd 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0053:typo		приимущестов 	приимущестов	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0054:grammar		есть приимущестов 	есть преимущество 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0054:grammar		есть приимущестов 	есть приимущестов 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0054:grammar		есть приимущестов 	tcnm ghbbveotcnjd 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0054:grammar		есть приимущестов 	естьприимущестов	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0055:typo		прикогницей 	прекогницией 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0055:typo		прикогницей 	прикогницей 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0055:typo		прикогницей 	ghbrjuybwtq 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0055:typo		прикогницей 	прикогницей	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0056:grammar		включено прикогницей 	включенной прекогницией 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0056:grammar		включено прикогницей 	включено прикогницей 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0056:grammar		включено прикогницей 	drk.xtyj ghbrjuybwtq 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0056:grammar		включено прикогницей 	включеноприкогницей	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0057:grammar		с включено прикогницей 	с включенной прекогницией 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0057:grammar		с включено прикогницей 	с включено прикогницей 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0057:grammar		с включено прикогницей 	c drk.xtyj ghbrjuybwtq 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0057:grammar		с включено прикогницей 	свключеноприкогницей	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0058:typo		исправленый 	исправленный 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0058:typo		исправленый 	исправленый 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0058:typo		исправленый 	bcghfdktysq 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0058:typo		исправленый 	исправленый	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0059:grammar		исправленый текст 	исправленный текст 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0059:grammar		исправленый текст 	исправленый текст 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0059:grammar		исправленый текст 	bcghfdktysq ntrcn 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0059:grammar		исправленый текст 	исправленыйтекст	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0060:grammar		не исправленый текст 	неисправленный текст 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0060:grammar		не исправленый текст 	не исправленый текст 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0060:grammar		не исправленый текст 	yt bcghfdktysq ntrcn 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0060:grammar		не исправленый текст 	неисправленыйтекст	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0061:typo		вобще 	вообще 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0061:typo		вобще 	вобще 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0061:typo		вобще 	dj,ot 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0061:typo		вобще 	вобще	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0062:grammar		вобще L3 работает 	вообще L3 работает 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0062:grammar		вобще L3 работает 	вобще L3 работает 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0062:grammar		вобще L3 работает 	dj,ot L3 hf,jnftn 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0062:grammar		вобще L3 работает 	вобще Д3 работает 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0062:grammar		вобще L3 работает 	вобщеL3работает	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0063:typo		боле 	более 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0063:typo		боле 	боле 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0063:typo		боле 	,jkt 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0063:typo		боле 	боле	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0064:typo		высокопными 	высокопарными 	typo	1	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0064:typo		высокопными 	высокопными 	keep	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0064:typo		высокопными 	dscjrjgysvb 	layout	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0064:typo		высокопными 	высокопными	glue	0	data/nanda_wave_synthetic_cases.tsv	typo
+generated:0065:grammar		высокопными словами 	высокопарными словами 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0065:grammar		высокопными словами 	высокопными словами 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0065:grammar		высокопными словами 	dscjrjgysvb ckjdfvb 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0065:grammar		высокопными словами 	высокопнымисловами	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0066:grammar		начну писать боле высокопными словам 	начну писать более высокопарными словами 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0066:grammar		начну писать боле высокопными словам 	начну писать боле высокопными словам 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0066:grammar		начну писать боле высокопными словам 	yfxye gbcfnm ,jkt dscjrjgysvb ckjdfv 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0066:grammar		начну писать боле высокопными словам 	начнуписатьболевысокопнымисловам	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0067:grammar		сколько мне нужна вот так текста 	сколько мне нужно вот так текста 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0067:grammar		сколько мне нужна вот так текста 	сколько мне нужна вот так текста 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0067:grammar		сколько мне нужна вот так текста 	crjkmrj vyt ye;yf djn nfr ntrcnf 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0067:grammar		сколько мне нужна вот так текста 	сколькомненужнавоттактекста	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0068:grammar		много тут ошибка 	много тут ошибок 	typo	1	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0068:grammar		много тут ошибка 	много тут ошибка 	keep	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0068:grammar		много тут ошибка 	vyjuj nen jib,rf 	layout	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0068:grammar		много тут ошибка 	многотутошибка	glue	0	data/nanda_wave_synthetic_cases.tsv	grammar
+generated:0069:short_alternating_ru_wrong_0		z git b api vs css ns cpu jy gpu d html r json c llm yt log yf md ye pdf gj ram 	я git и api мы css ты cpu он gpu в html к json с llm не log на md ну pdf по ram 	layout	1	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_ru_wrong_0
+generated:0069:short_alternating_ru_wrong_0		z git b api vs css ns cpu jy gpu d html r json c llm yt log yf md ye pdf gj ram 	z git b api vs css ns cpu jy gpu d html r json c llm yt log yf md ye pdf gj ram 	keep	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_ru_wrong_0
+generated:0069:short_alternating_ru_wrong_0		z git b api vs css ns cpu jy gpu d html r json c llm yt log yf md ye pdf gj ram 	я пше и фзш мы сыы ты сзг он пзг в реьд к оыщт с ддь не дщп на ьв ну зва по кфь 	layout	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_ru_wrong_0
+generated:0069:short_alternating_ru_wrong_0		z git b api vs css ns cpu jy gpu d html r json c llm yt log yf md ye pdf gj ram 	zgitbapivscssnscpujygpudhtmlrjsoncllmytlogyfmdyepdfgjram	glue	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_ru_wrong_0
+generated:0070:short_alternating_en_wrong_0		я пше и фзш мы сыы ты сзг он пзг в реьд к оыщт с ддь не дщп на ьв ну зва по кфь 	я git и api мы css ты cpu он gpu в html к json с llm не log на md ну pdf по ram 	layout	1	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_en_wrong_0
+generated:0070:short_alternating_en_wrong_0		я пше и фзш мы сыы ты сзг он пзг в реьд к оыщт с ддь не дщп на ьв ну зва по кфь 	я пше и фзш мы сыы ты сзг он пзг в реьд к оыщт с ддь не дщп на ьв ну зва по кфь 	keep	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_en_wrong_0
+generated:0070:short_alternating_en_wrong_0		я пше и фзш мы сыы ты сзг он пзг в реьд к оыщт с ддь не дщп на ьв ну зва по кфь 	z git b api vs css ns cpu jy gpu d html r json c llm yt log yf md ye pdf gj ram 	layout	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_en_wrong_0
+generated:0070:short_alternating_en_wrong_0		я пше и фзш мы сыы ты сзг он пзг в реьд к оыщт с ддь не дщп на ьв ну зва по кфь 	япшеифзшмысыытысзгонпзгвреьдкоыщтсддьнедщпнаьвнузвапокфь	glue	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_en_wrong_0
+generated:0071:short_alternating_all_wrong_0		z пше b фзш vs сыы ns сзг jy пзг d реьд r оыщт c ддь yt дщп yf ьв ye зва gj кфь 	я git и api мы css ты cpu он gpu в html к json с llm не log на md ну pdf по ram 	layout	1	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_all_wrong_0
+generated:0071:short_alternating_all_wrong_0		z пше b фзш vs сыы ns сзг jy пзг d реьд r оыщт c ддь yt дщп yf ьв ye зва gj кфь 	z пше b фзш vs сыы ns сзг jy пзг d реьд r оыщт c ддь yt дщп yf ьв ye зва gj кфь 	keep	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_all_wrong_0
+generated:0071:short_alternating_all_wrong_0		z пше b фзш vs сыы ns сзг jy пзг d реьд r оыщт c ддь yt дщп yf ьв ye зва gj кфь 	z git b api vs css ns cpu jy gpu d html r json c llm yt log yf md ye pdf gj ram 	layout	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_all_wrong_0
+generated:0071:short_alternating_all_wrong_0		z пше b фзш vs сыы ns сзг jy пзг d реьд r оыщт c ддь yt дщп yf ьв ye зва gj кфь 	я пше и фзш мы сыы ты сзг он пзг в реьд к оыщт с ддь не дщп на ьв ну зва по кфь 	layout	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_all_wrong_0
+generated:0071:short_alternating_all_wrong_0		z пше b фзш vs сыы ns сзг jy пзг d реьд r оыщт c ддь yt дщп yf ьв ye зва gj кфь 	zпшеbфзшvsсыыnsсзгjyпзгdреьдrоыщтcддьytдщпyfьвyeзваgjкфь	glue	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_all_wrong_0
+generated:0072:short_alternating_ru_wrong_1		pf sql djn ssh 'nj vpn lf go rfr in ljv up vbh to rjl on nen off nfv file lkz test ghb push 	за sql вот ssh это vpn да go как in дом up мир to код on тут off там file для test при push 	layout	1	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_ru_wrong_1
+generated:0072:short_alternating_ru_wrong_1		pf sql djn ssh 'nj vpn lf go rfr in ljv up vbh to rjl on nen off nfv file lkz test ghb push 	pf sql djn ssh 'nj vpn lf go rfr in ljv up vbh to rjl on nen off nfv file lkz test ghb push 	keep	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_ru_wrong_1
+generated:0072:short_alternating_ru_wrong_1		pf sql djn ssh 'nj vpn lf go rfr in ljv up vbh to rjl on nen off nfv file lkz test ghb push 	за ыйд вот ыыр это мзт да пщ как шт дом гз мир ещ код щт тут щаа там ашду для еуые при згыр 	layout	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_ru_wrong_1
+generated:0072:short_alternating_ru_wrong_1		pf sql djn ssh 'nj vpn lf go rfr in ljv up vbh to rjl on nen off nfv file lkz test ghb push 	pfsqldjnssh'njvpnlfgorfrinljvupvbhtorjlonnenoffnfvfilelkztestghbpush	glue	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_ru_wrong_1
+generated:0073:short_alternating_en_wrong_1		за ыйд вот ыыр это мзт да пщ как шт дом гз мир ещ код щт тут щаа там ашду для еуые при згыр 	за sql вот ssh это vpn да go как in дом up мир to код on тут off там file для test при push 	layout	1	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_en_wrong_1
+generated:0073:short_alternating_en_wrong_1		за ыйд вот ыыр это мзт да пщ как шт дом гз мир ещ код щт тут щаа там ашду для еуые при згыр 	за ыйд вот ыыр это мзт да пщ как шт дом гз мир ещ код щт тут щаа там ашду для еуые при згыр 	keep	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_en_wrong_1
+generated:0073:short_alternating_en_wrong_1		за ыйд вот ыыр это мзт да пщ как шт дом гз мир ещ код щт тут щаа там ашду для еуые при згыр 	pf sql djn ssh 'nj vpn lf go rfr in ljv up vbh to rjl on nen off nfv file lkz test ghb push 	layout	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_en_wrong_1
+generated:0073:short_alternating_en_wrong_1		за ыйд вот ыыр это мзт да пщ как шт дом гз мир ещ код щт тут щаа там ашду для еуые при згыр 	заыйдвотыырэтомзтдапщкакштдомгзмирещкодщттутщаатамашдудляеуыепризгыр	glue	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_en_wrong_1
+generated:0074:short_alternating_all_wrong_1		pf ыйд djn ыыр 'nj мзт lf пщ rfr шт ljv гз vbh ещ rjl щт nen щаа nfv ашду lkz еуые ghb згыр 	за sql вот ssh это vpn да go как in дом up мир to код on тут off там file для test при push 	layout	1	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_all_wrong_1
+generated:0074:short_alternating_all_wrong_1		pf ыйд djn ыыр 'nj мзт lf пщ rfr шт ljv гз vbh ещ rjl щт nen щаа nfv ашду lkz еуые ghb згыр 	pf ыйд djn ыыр 'nj мзт lf пщ rfr шт ljv гз vbh ещ rjl щт nen щаа nfv ашду lkz еуые ghb згыр 	keep	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_all_wrong_1
+generated:0074:short_alternating_all_wrong_1		pf ыйд djn ыыр 'nj мзт lf пщ rfr шт ljv гз vbh ещ rjl щт nen щаа nfv ашду lkz еуые ghb згыр 	pf sql djn ssh 'nj vpn lf go rfr in ljv up vbh to rjl on nen off nfv file lkz test ghb push 	layout	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_all_wrong_1
+generated:0074:short_alternating_all_wrong_1		pf ыйд djn ыыр 'nj мзт lf пщ rfr шт ljv гз vbh ещ rjl щт nen щаа nfv ашду lkz еуые ghb згыр 	за ыйд вот ыыр это мзт да пщ как шт дом гз мир ещ код щт тут щаа там ашду для еуые при згыр 	layout	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_all_wrong_1
+generated:0074:short_alternating_all_wrong_1		pf ыйд djn ыыр 'nj мзт lf пщ rfr шт ljv гз vbh ещ rjl щт nen щаа nfv ашду lkz еуые ghb згыр 	pfыйдdjnыыр'njмзтlfпщrfrштljvгзvbhещrjlщтnenщааnfvашдуlkzеуыеghbзгыр	glue	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_all_wrong_1
+generated:0075:short_alternating_ru_wrong_2		[jl bash 	ход bash 	layout	1	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_ru_wrong_2
+generated:0075:short_alternating_ru_wrong_2		[jl bash 	[jl bash 	keep	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_ru_wrong_2
+generated:0075:short_alternating_ru_wrong_2		[jl bash 	ход ифыр 	layout	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_ru_wrong_2
+generated:0075:short_alternating_ru_wrong_2		[jl bash 	[jlbash	glue	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_ru_wrong_2
+generated:0076:short_alternating_en_wrong_2		ход ифыр 	ход bash 	layout	1	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_en_wrong_2
+generated:0076:short_alternating_en_wrong_2		ход ифыр 	ход ифыр 	keep	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_en_wrong_2
+generated:0076:short_alternating_en_wrong_2		ход ифыр 	[jl bash 	layout	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_en_wrong_2
+generated:0076:short_alternating_en_wrong_2		ход ифыр 	ходифыр	glue	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_en_wrong_2
+generated:0077:short_alternating_all_wrong_2		[jl ифыр 	ход bash 	layout	1	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_all_wrong_2
+generated:0077:short_alternating_all_wrong_2		[jl ифыр 	[jl ифыр 	keep	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_all_wrong_2
+generated:0077:short_alternating_all_wrong_2		[jl ифыр 	[jl bash 	layout	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_all_wrong_2
+generated:0077:short_alternating_all_wrong_2		[jl ифыр 	ход ифыр 	layout	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_all_wrong_2
+generated:0077:short_alternating_all_wrong_2		[jl ифыр 	[jlифыр	glue	0	tests/fixtures/typing_assist_short_alternating_pairs.tsv	short_alternating_all_wrong_2
+generated:0078:technical_ru_layout		фзш 	api 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0078:technical_ru_layout		фзш 	фзш 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0078:technical_ru_layout		фзш 	фзш	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0079:technical_ru_layout		ифыр 	bash 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0079:technical_ru_layout		ифыр 	ифыр 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0079:technical_ru_layout		ифыр 	ифыр	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0080:technical_ru_layout		сыы 	css 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0080:technical_ru_layout		сыы 	сыы 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0080:technical_ru_layout		сыы 	сыы	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0081:technical_ru_layout		ашду 	file 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0081:technical_ru_layout		ашду 	ашду 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0081:technical_ru_layout		ашду 	ашду	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0082:technical_ru_layout		пше 	git 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0082:technical_ru_layout		пше 	пше 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0082:technical_ru_layout		пше 	пше	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0083:technical_ru_layout		пщ 	go 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0083:technical_ru_layout		пщ 	пщ 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0083:technical_ru_layout		пщ 	пщ	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0084:technical_ru_layout		реьд 	html 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0084:technical_ru_layout		реьд 	реьд 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0084:technical_ru_layout		реьд 	реьд	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0085:technical_ru_layout		оыщт 	json 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0085:technical_ru_layout		оыщт 	оыщт 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0085:technical_ru_layout		оыщт 	оыщт	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0086:technical_ru_layout		дфн 	lay 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0086:technical_ru_layout		дфн 	дфн 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0086:technical_ru_layout		дфн 	дфн	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0087:technical_ru_layout		дщп 	log 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0087:technical_ru_layout		дщп 	дщп 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0087:technical_ru_layout		дщп 	дщп	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0088:technical_ru_layout		ьв 	md 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0088:technical_ru_layout		ьв 	ьв 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0088:technical_ru_layout		ьв 	ьв	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0089:technical_ru_layout		тфтвф 	nanda 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0089:technical_ru_layout		тфтвф 	тфтвф 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0089:technical_ru_layout		тфтвф 	тфтвф	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0090:technical_ru_layout		тщву 	node 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0090:technical_ru_layout		тщву 	тщву 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0090:technical_ru_layout		тщву 	тщву	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0091:technical_ru_layout		зщке 	port 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0091:technical_ru_layout		зщке 	зщке 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0091:technical_ru_layout		зщке 	зщке	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0092:technical_ru_layout		згыр 	push 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0092:technical_ru_layout		згыр 	згыр 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0092:technical_ru_layout		згыр 	згыр	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0093:technical_ru_layout		кгые 	rust 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0093:technical_ru_layout		кгые 	кгые 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0093:technical_ru_layout		кгые 	кгые	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0094:technical_ru_layout		ыыр 	ssh 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0094:technical_ru_layout		ыыр 	ыыр 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0094:technical_ru_layout		ыыр 	ыыр	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0095:technical_ru_layout		еуые 	test 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0095:technical_ru_layout		еуые 	еуые 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0095:technical_ru_layout		еуые 	еуые	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0096:technical_ru_layout		мзт 	vpn 	layout	1	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0096:technical_ru_layout		мзт 	мзт 	keep	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0096:technical_ru_layout		мзт 	мзт	glue	0	tests/fixtures/typing_assist_ru_to_en_synthetic.txt	technical_ru_layout
+generated:0097:clean_mixed_keep		я проверяю git status и Windows NTFS 	я проверяю git status и Windows NTFS 	keep	1	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0097:clean_mixed_keep		я проверяю git status и Windows NTFS 	z ghjdthz. git status b Windows NTFS 	layout	0	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0097:clean_mixed_keep		я проверяю git status и Windows NTFS 	я проверяю пше ыефегы и Цштвщцы ТЕАЫ 	layout	0	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0097:clean_mixed_keep		я проверяю git status и Windows NTFS 	япроверяюgitstatusиWindowsNTFS	glue	0	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0098:clean_mixed_keep		тут good test рядом с русским текстом 	тут good test рядом с русским текстом 	keep	1	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0098:clean_mixed_keep		тут good test рядом с русским текстом 	nen good test hzljv c heccrbv ntrcnjv 	layout	0	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0098:clean_mixed_keep		тут good test рядом с русским текстом 	тут пщщв еуые рядом с русским текстом 	layout	0	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0098:clean_mixed_keep		тут good test рядом с русским текстом 	тутgoodtestрядомсрусскимтекстом	glue	0	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0099:clean_mixed_keep		wi-fi работает и API JSON остаются как есть 	wi-fi работает и API JSON остаются как есть 	keep	1	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0099:clean_mixed_keep		wi-fi работает и API JSON остаются как есть 	wi-fi hf,jnftn b API JSON jcnf.ncz rfr tcnm 	layout	0	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0099:clean_mixed_keep		wi-fi работает и API JSON остаются как есть 	цш-аш работает и ФЗШ ОЫЩТ остаются как есть 	layout	0	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0099:clean_mixed_keep		wi-fi работает и API JSON остаются как есть 	wi-fiработаетиAPIJSONостаютсякакесть	glue	0	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0100:clean_mixed_keep		Chrome GNOME Linux file mode code data 	Chrome GNOME Linux file mode code data 	keep	1	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0100:clean_mixed_keep		Chrome GNOME Linux file mode code data 	Сркщьу ПТЩЬУ Дштгч ашду ьщву сщву вфеф 	layout	0	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0100:clean_mixed_keep		Chrome GNOME Linux file mode code data 	ChromeGNOMELinuxfilemodecodedata	glue	0	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0101:clean_mixed_keep		это нормальная русская фраза без правки 	это нормальная русская фраза без правки 	keep	1	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0101:clean_mixed_keep		это нормальная русская фраза без правки 	'nj yjhvfkmyfz heccrfz ahfpf ,tp ghfdrb 	layout	0	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0101:clean_mixed_keep		это нормальная русская фраза без правки 	этонормальнаярусскаяфразабезправки	glue	0	tests/fixtures/typing_assist_clean_mixed.txt	clean_mixed_keep
+generated:0102:shell_keep		git status; echo hello? files 100%	git status; echo hello? files 100%	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0102:shell_keep		git status; echo hello? files 100%	git status$ echo hello& files 100%	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0102:shell_keep		git status; echo hello? files 100%	пше ыефегыж усрщ руддщ, ашдуы 100%	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0102:shell_keep		git status; echo hello? files 100%	gitstatus;echohello?files100%	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0103:shell_keep		ls -la | grep test && echo 100%	ls -la | grep test && echo 100%	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0103:shell_keep		ls -la | grep test && echo 100%	ды -дф | пкуз еуые ?? усрщ 100%	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0103:shell_keep		ls -la | grep test && echo 100%	ls-la|greptest&&echo100%	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0104:shell_keep		curl -I https://example.com/path?x=1; echo ok	curl -I https://example.com/path?x=1; echo ok	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0104:shell_keep		curl -I https://example.com/path?x=1; echo ok	curl -I https^//example/com/path&x=1$ echo ok	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0104:shell_keep		curl -I https://example.com/path?x=1; echo ok	сгкд -Ш реезыЖ..учфьздуюсщь.зфер,ч=1ж усрщ щл	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0104:shell_keep		curl -I https://example.com/path?x=1; echo ok	curl-Ihttps://example.com/path?x=1;echook	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0105:shell_keep		command -f file.txt && command -r repo && command -c config	command -f file.txt && command -r repo && command -c config	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0105:shell_keep		command -f file.txt && command -r repo && command -c config	command -f file/txt && command -r repo && command -c config	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0105:shell_keep		command -f file.txt && command -r repo && command -c config	сщььфтв -а ашдуюече ?? сщььфтв -к кузщ ?? сщььфтв -с сщташп	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0105:shell_keep		command -f file.txt && command -r repo && command -c config	command-ffile.txt&&command-rrepo&&command-cconfig	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0106:shell_keep		grep --color=auto -n test file.txt	grep --color=auto -n test file.txt	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0106:shell_keep		grep --color=auto -n test file.txt	grep --color=auto -n test file/txt	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0106:shell_keep		grep --color=auto -n test file.txt	пкуз --сщдщк=фгещ -т еуые ашдуюече	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0106:shell_keep		grep --color=auto -n test file.txt	grep--color=auto-ntestfile.txt	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0107:shell_keep		git checkout -b feature && git status	git checkout -b feature && git status	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0107:shell_keep		git checkout -b feature && git status	пше сруслщге -и ауфегку ?? пше ыефегы	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0107:shell_keep		git checkout -b feature && git status	gitcheckout-bfeature&&gitstatus	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0108:shell_keep		git branch -D old && git checkout -b new	git branch -D old && git checkout -b new	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0108:shell_keep		git branch -D old && git checkout -b new	пше икфтср -В щдв ?? пше сруслщге -и туц	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0108:shell_keep		git branch -D old && git checkout -b new	gitbranch-Dold&&gitcheckout-bnew	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0109:shell_keep		git checkout -b # create branch	git checkout -b # create branch	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0109:shell_keep		git checkout -b # create branch	пше сруслщге -и № скуфеу икфтср	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0109:shell_keep		git checkout -b # create branch	gitcheckout-b#createbranch	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0110:shell_keep		cd 	cd 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0110:shell_keep		cd 	св 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0110:shell_keep		cd 	cd	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0111:shell_keep		ls 	ls 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0111:shell_keep		ls 	ды 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0111:shell_keep		ls 	ls	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0112:shell_keep		rm 	rm 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0112:shell_keep		rm 	кь 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0112:shell_keep		rm 	rm	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0113:shell_keep		cp 	cp 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0113:shell_keep		cp 	сз 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0113:shell_keep		cp 	cp	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0114:shell_keep		mv 	mv 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0114:shell_keep		mv 	ьм 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0114:shell_keep		mv 	mv	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0115:shell_keep		ps 	ps 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0115:shell_keep		ps 	зы 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0115:shell_keep		ps 	ps	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0116:shell_keep		su 	su 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0116:shell_keep		su 	ыг 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0116:shell_keep		su 	su	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0117:shell_keep		du 	du 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0117:shell_keep		du 	вг 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0117:shell_keep		du 	du	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0118:shell_keep		df 	df 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0118:shell_keep		df 	ва 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0118:shell_keep		df 	df	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0119:shell_keep		pwd 	pwd 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0119:shell_keep		pwd 	зцв 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0119:shell_keep		pwd 	pwd	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0120:shell_keep		cat 	cat 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0120:shell_keep		cat 	сфе 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0120:shell_keep		cat 	cat	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0121:shell_keep		echo 	echo 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0121:shell_keep		echo 	усрщ 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0121:shell_keep		echo 	echo	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0122:shell_keep		grep 	grep 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0122:shell_keep		grep 	пкуз 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0122:shell_keep		grep 	grep	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0123:shell_keep		find 	find 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0123:shell_keep		find 	аштв 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0123:shell_keep		find 	find	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0124:shell_keep		sed 	sed 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0124:shell_keep		sed 	ыув 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0124:shell_keep		sed 	sed	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0125:shell_keep		awk 	awk 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0125:shell_keep		awk 	фцл 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0125:shell_keep		awk 	awk	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0126:shell_keep		tar 	tar 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0126:shell_keep		tar 	ефк 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0126:shell_keep		tar 	tar	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0127:shell_keep		ssh 	ssh 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0127:shell_keep		ssh 	ыыр 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0127:shell_keep		ssh 	ssh	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0128:shell_keep		scp 	scp 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0128:shell_keep		scp 	ысз 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0128:shell_keep		scp 	scp	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0129:shell_keep		rsync 	rsync 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0129:shell_keep		rsync 	кынтс 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0129:shell_keep		rsync 	rsync	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0130:shell_keep		sudo 	sudo 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0130:shell_keep		sudo 	ыгвщ 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0130:shell_keep		sudo 	sudo	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0131:shell_keep		chmod 	chmod 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0131:shell_keep		chmod 	срьщв 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0131:shell_keep		chmod 	chmod	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0132:shell_keep		chown 	chown 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0132:shell_keep		chown 	срщцт 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0132:shell_keep		chown 	chown	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0133:shell_keep		mkdir 	mkdir 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0133:shell_keep		mkdir 	ьлвшк 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0133:shell_keep		mkdir 	mkdir	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0134:shell_keep		rmdir 	rmdir 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0134:shell_keep		rmdir 	кьвшк 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0134:shell_keep		rmdir 	rmdir	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0135:shell_keep		touch 	touch 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0135:shell_keep		touch 	ещгср 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0135:shell_keep		touch 	touch	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0136:shell_keep		ln 	ln 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0136:shell_keep		ln 	дт 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0136:shell_keep		ln 	ln	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0137:shell_keep		man 	man 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0137:shell_keep		man 	ьфт 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0137:shell_keep		man 	man	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0138:shell_keep		apt 	apt 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0138:shell_keep		apt 	фзе 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0138:shell_keep		apt 	apt	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0139:shell_keep		curl 	curl 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0139:shell_keep		curl 	сгкд 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0139:shell_keep		curl 	curl	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0140:shell_keep		wget 	wget 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0140:shell_keep		wget 	цпуе 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0140:shell_keep		wget 	wget	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0141:shell_keep		cd ~/projects/lay && git status 	cd ~/projects/lay && git status 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0141:shell_keep		cd ~/projects/lay && git status 	св Ё.зкщоусеы.дфн ?? пше ыефегы 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0141:shell_keep		cd ~/projects/lay && git status 	cd~/projects/lay&&gitstatus	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0142:shell_keep		cd /tmp && ls -la | grep lay 	cd /tmp && ls -la | grep lay 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0142:shell_keep		cd /tmp && ls -la | grep lay 	св .еьз ?? ды -дф | пкуз дфн 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0142:shell_keep		cd /tmp && ls -la | grep lay 	cd/tmp&&ls-la|greplay	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0143:shell_keep		sudo apt install cargo 	sudo apt install cargo 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0143:shell_keep		sudo apt install cargo 	ыгвщ фзе штыефдд сфкпщ 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0143:shell_keep		sudo apt install cargo 	sudoaptinstallcargo	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0144:shell_keep		find . -type f | xargs grep cd 	find . -type f | xargs grep cd 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0144:shell_keep		find . -type f | xargs grep cd 	find / -type f | xargs grep cd 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0144:shell_keep		find . -type f | xargs grep cd 	аштв ю -ензу а | чфкпы пкуз св 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0144:shell_keep		find . -type f | xargs grep cd 	find.-typef|xargsgrepcd	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0145:shell_keep		tar -xf archive.tar && rm archive.tar 	tar -xf archive.tar && rm archive.tar 	keep	1	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0145:shell_keep		tar -xf archive.tar && rm archive.tar 	tar -xf archive/tar && rm archive/tar 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0145:shell_keep		tar -xf archive.tar && rm archive.tar 	ефк -ча фксршмуюефк ?? кь фксршмуюефк 	layout	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep
+generated:0145:shell_keep		tar -xf archive.tar && rm archive.tar 	tar-xfarchive.tar&&rmarchive.tar	glue	0	tests/fixtures/typing_assist_shell_keep.txt	shell_keep

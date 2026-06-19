@@ -11,9 +11,8 @@ mod types;
 mod warmup;
 
 pub use engine::{
-    apply_typing_assist, apply_typing_assist_exact, apply_typing_assist_with_nanda,
-    apply_typing_assist_with_pipeline, explain_typing_assist_with_microbrain_options,
-    explain_typing_assist_with_nanda, explain_typing_assist_with_pipeline,
+    apply_typing_assist, apply_typing_assist_exact, apply_typing_assist_with_pipeline,
+    explain_typing_assist_with_pipeline,
 };
 pub use types::{TypingAssistExplanation, TypingRuleEvaluation};
 pub use warmup::warm_up;

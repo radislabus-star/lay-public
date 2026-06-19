@@ -1,16 +1,19 @@
 use evdev::uinput::VirtualDevice;
-use lay::decoder::DecoderEditPlan;
+use lay::decoder::{CorrectionTrigger, DecoderEditPlan};
 use lay::keyboard::KeyEvent;
 use lay::word_buffer::WordBuffer;
 use std::time::Instant;
 
 use super::super::super::physical_input_grab::PhysicalInputGrab;
 use super::super::super::{
-    active_auto_switch_layout, active_typing_assist_words, apply_text_replacement_pipeline, log,
+    active_auto_switch_layout, apply_text_replacement_pipeline, log,
     switch_or_restore_layout_after_text_edit,
 };
-use super::super::{find_typing_assist_correction, TypingAssistOutcome};
-use super::memory::remember_typing_assist_correction;
+use super::super::TypingAssistOutcome;
+use super::memory::{
+    remember_typing_assist_correction, TypingAssistMemoryContext, TypingAssistTiming,
+};
+use super::queued::next_correction_after_forwarded_spaces;
 
 pub(crate) struct MinimalTypingReplacementContext<'a, 'grab> {
     pub(crate) buf: &'a mut WordBuffer,
@@ -18,11 +21,13 @@ pub(crate) struct MinimalTypingReplacementContext<'a, 'grab> {
     pub(crate) edit: &'a DecoderEditPlan,
     pub(crate) original: &'a str,
     pub(crate) replacement: &'a str,
+    pub(crate) rule_id: Option<&'a str>,
     pub(crate) cursor_offset: u32,
-    pub(crate) started_at: Instant,
+    pub(crate) timing: TypingAssistTiming,
     pub(crate) physical_grab: &'a mut PhysicalInputGrab<'grab>,
     pub(crate) kbd: &'a mut VirtualDevice,
     pub(crate) original_layout: Option<bool>,
+    pub(crate) prefer_full_token_plan: bool,
 }
 
 pub(crate) fn apply_minimal_typing_replacement(
@@ -34,13 +39,20 @@ pub(crate) fn apply_minimal_typing_replacement(
         edit,
         original,
         replacement,
+        rule_id,
         cursor_offset,
-        started_at,
+        timing,
         physical_grab,
         kbd,
         original_layout,
+        prefer_full_token_plan,
     } = ctx;
-    let Some(plan) = edit.verified_plan_for_cursor(cursor_offset) else {
+    let plan = if prefer_full_token_plan && matches!(edit.trigger, CorrectionTrigger::AfterSpace) {
+        edit.verified_full_token_plan_for_cursor(cursor_offset)
+    } else {
+        edit.verified_plan_for_cursor(cursor_offset)
+    };
+    let Some(plan) = plan else {
         log("⚠ typing-assist skipped before delete: edit plan invariant failed");
         return TypingAssistOutcome::NoCorrection;
     };
@@ -63,15 +75,16 @@ pub(crate) fn apply_minimal_typing_replacement(
             return TypingAssistOutcome::NoCorrection;
         }
     };
-    remember_typing_assist_correction(
+    remember_typing_assist_correction(TypingAssistMemoryContext {
         buf,
         events,
-        &plan,
+        plan: &plan,
         original,
         replacement,
+        rule_id,
         cursor_offset,
-        started_at,
-    );
+        timing,
+    });
     switch_or_restore_layout_after_text_edit(
         active_auto_switch_layout(),
         insert_outcome.layout_is_ru,
@@ -79,37 +92,45 @@ pub(crate) fn apply_minimal_typing_replacement(
         "typing-assist",
         insert_outcome.layout_already_set,
     );
-    let forwarded =
-        physical_grab.forward_queued_typing(kbd, buf, insert_outcome.layout_is_ru, "typing-assist");
+    let forwarded = physical_grab.forward_queued_typing(
+        kbd,
+        buf,
+        insert_outcome.layout_is_ru,
+        "typing-assist",
+        trailing_space_count(replacement),
+    );
     log(&format!(
         "✓ done: помощь при наборе {:?} → {:?} за {}ms",
         original,
         replacement,
-        started_at.elapsed().as_millis()
+        timing.started_at.elapsed().as_millis()
     ));
-    if forwarded.spaces > 0 {
-        if let Some(next) = find_typing_assist_correction(
+    if let Some(next) = next_correction_after_forwarded_spaces(buf, forwarded.spaces) {
+        let (next_original, next_replacement) =
+            (next.edit.original.clone(), next.edit.replacement.clone());
+        return apply_minimal_typing_replacement(MinimalTypingReplacementContext {
             buf,
-            active_auto_switch_layout(),
-            active_typing_assist_words(),
-        ) {
-            let (next_original, next_replacement) =
-                (next.edit.original.clone(), next.edit.replacement.clone());
-            return apply_minimal_typing_replacement(MinimalTypingReplacementContext {
-                buf,
-                events: &next.events,
-                edit: &next.edit,
-                original: &next_original,
-                replacement: &next_replacement,
-                cursor_offset: 0,
+            events: &next.events,
+            edit: &next.edit,
+            original: &next_original,
+            replacement: &next_replacement,
+            rule_id: next.rule_id.as_deref(),
+            cursor_offset: 0,
+            timing: TypingAssistTiming {
+                decision_ms: next.decision_ms,
                 started_at: Instant::now(),
-                physical_grab,
-                kbd,
-                original_layout,
-            });
-        }
+            },
+            physical_grab,
+            kbd,
+            original_layout,
+            prefer_full_token_plan,
+        });
     }
     TypingAssistOutcome::Applied {
         layout_is_ru: insert_outcome.layout_is_ru,
     }
+}
+
+fn trailing_space_count(text: &str) -> usize {
+    text.chars().rev().take_while(|ch| *ch == ' ').count()
 }

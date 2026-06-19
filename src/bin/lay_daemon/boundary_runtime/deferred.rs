@@ -5,7 +5,8 @@ use std::time::Instant;
 
 use super::super::pending_typing_assist::PendingTypingAssist;
 use super::super::{
-    active_typing_assist, apply_prepared_typing_assist_after_space, lock_virtual_keyboard, log,
+    active_typing_assist, apply_prepared_typing_assist_after_space,
+    focused_ime_engine_handles_typing, lock_virtual_keyboard, log,
     should_run_deferred_typing_assist_after_space, ShiftState, TypingAssistOutcome,
 };
 
@@ -21,6 +22,11 @@ pub(crate) struct DeferredTypingAssistContext<'a> {
 }
 
 pub(crate) fn try_handle_deferred_typing_assist(ctx: DeferredTypingAssistContext<'_>) -> bool {
+    if ctx.pending_typing_assist_after_space.is_some() && focused_ime_engine_handles_typing() {
+        ctx.pending_typing_assist_after_space.take();
+        log("· typing-assist deferred dropped: focused IME engine owns active text");
+        return false;
+    }
     if !should_run_deferred_typing_assist_after_space(
         ctx.pending_typing_assist_after_space.is_some(),
         active_typing_assist(),

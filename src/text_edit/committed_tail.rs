@@ -11,6 +11,44 @@ pub fn plan_committed_tail_replacement(
     plan_text_replacement_with_options(original, replacement, true)
 }
 
+pub fn plan_committed_tail_full_token_replacement(
+    original: &str,
+    replacement: &str,
+) -> Option<TextReplacement> {
+    if original == replacement {
+        return None;
+    }
+    if !committed_separator_is_preserved(original, replacement) {
+        return None;
+    }
+
+    let original_chars: Vec<char> = original.chars().collect();
+    let replacement_chars: Vec<char> = replacement.chars().collect();
+    let original_trailing_ws = trailing_whitespace_chars(original);
+    let replacement_trailing_ws = trailing_whitespace_chars(replacement);
+
+    let original_body_len = original_chars.len().saturating_sub(original_trailing_ws);
+    let replacement_body_len = replacement_chars
+        .len()
+        .saturating_sub(replacement_trailing_ws);
+    if original_body_len == 0 {
+        return None;
+    }
+
+    let original_body: String = original_chars[..original_body_len].iter().collect();
+    let replacement_body: String = replacement_chars[..replacement_body_len].iter().collect();
+    if original_body == replacement_body {
+        return None;
+    }
+
+    Some(TextReplacement {
+        move_left: original_trailing_ws as u32,
+        backspaces: original_body_len as u32,
+        insert: replacement_body,
+        move_right: original_trailing_ws as u32,
+    })
+}
+
 pub fn ensure_committed_tail_spacing(original: &str, mut replacement: String) -> String {
     let Some(original_last) = original.chars().next_back() else {
         return replacement;

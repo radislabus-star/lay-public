@@ -1,6 +1,7 @@
 # id	original	converted	action	replacement
 single_valid_word	DOUBLE	ВЩГИДУ	replay	
 single_wrong_layout	ltkfq	делай	replay	
+single_wrong_layout_ru_to_en	дфн	lay	replay	-
 two_valid_words	выводим\sдва	dsdjlbv\sldf	replay	
 valid_preposition_phrase	в\sдоме	d\sljvt	replay	
 mixed_neighbor_short	рка\sghj	hrf\sпро	insert	рка\sпро

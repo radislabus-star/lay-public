@@ -153,3 +153,17 @@ fn completed_tail_context_keeps_left_russian_context() {
         assert_eq!(edit.replacement, row[3]);
     }
 }
+
+#[test]
+fn completed_tail_context_keeps_sentence_sized_window_for_l3() {
+    let mut buffer = WordBuffer::new();
+    push_visible_text(&mut buffer, "w01 w02 w03 w04 w05 w06 w07 w08 w09 w10 w11 ");
+    push_text_as_layout(&mut buffer, "djn ", false);
+
+    let events = buffer
+        .last_completed_words_events(1)
+        .expect("completed last word");
+    let context = completed_tail_context(&buffer, 1, &events);
+
+    assert_eq!(context, "w01 w02 w03 w04 w05 w06 w07 w08 w09 w10 w11 djn ");
+}

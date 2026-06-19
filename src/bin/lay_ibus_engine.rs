@@ -1,0 +1,60 @@
+use clap::Parser;
+
+#[path = "lay_ibus_engine/args.rs"]
+mod args;
+#[path = "lay_ibus_engine/bridge.rs"]
+mod bridge;
+#[path = "lay_ibus_engine/committed_tail.rs"]
+mod committed_tail;
+#[path = "lay_ibus_engine/composition_commit.rs"]
+mod composition_commit;
+#[path = "lay_ibus_engine/composition_edit.rs"]
+mod composition_edit;
+#[path = "lay_ibus_engine/engine.rs"]
+mod engine;
+#[path = "lay_ibus_engine/factory.rs"]
+mod factory;
+#[path = "lay_ibus_engine/ibus_interface.rs"]
+mod ibus_interface;
+#[path = "lay_ibus_engine/key_decode.rs"]
+mod key_decode;
+#[path = "lay_ibus_engine/key_trace.rs"]
+mod key_trace;
+#[path = "lay_ibus_engine/layout_sync.rs"]
+mod layout_sync;
+#[path = "lay_ibus_engine/managed.rs"]
+mod managed;
+#[path = "lay_ibus_engine/preedit.rs"]
+mod preedit;
+#[path = "lay_ibus_engine/protocol.rs"]
+mod protocol;
+#[path = "lay_ibus_engine/server.rs"]
+mod server;
+#[path = "lay_ibus_engine/state.rs"]
+mod state;
+#[path = "lay_ibus_engine/tail_memory.rs"]
+mod tail_memory;
+#[path = "lay_ibus_engine/text.rs"]
+mod text;
+#[path = "lay_ibus_engine/trace.rs"]
+mod trace;
+#[path = "lay_ibus_engine/xml.rs"]
+mod xml;
+
+use args::Args;
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let args = Args::parse();
+    if args.xml {
+        let exec_path = std::env::var("LAY_IBUS_ENGINE_PATH").unwrap_or_else(|_| {
+            std::env::var("HOME")
+                .map(|home| format!("{home}/.local/bin/lay-ibus-engine"))
+                .unwrap_or_else(|_| "lay-ibus-engine".to_string())
+        });
+        println!("{}", xml::component_xml(&exec_path));
+        return Ok(());
+    }
+    let _ = args.ibus;
+    zbus::block_on(server::run(&args))?;
+    Ok(())
+}

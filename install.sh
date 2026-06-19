@@ -247,17 +247,22 @@ echo "=== симлинки в ~/.local/bin/ ==="
 mkdir -p ~/.local/bin
 ln -sf "$DIR/target/release/lay" ~/.local/bin/lay
 ln -sf "$DIR/target/release/lay-daemon" ~/.local/bin/lay-daemon
+ln -sf "$DIR/target/release/lay-nanda-wave-eval" ~/.local/bin/lay-nanda-wave-eval
 ln -sf "$DIR/target/release/lay-test-input" ~/.local/bin/lay-test-input
 ln -sf "$DIR/target/release/lay-ngram-corpus" ~/.local/bin/lay-ngram-corpus
+ln -sf "$DIR/target/release/lay-ibus-engine" ~/.local/bin/lay-ibus-engine
+ln -sf "$DIR/scripts/lay-runtime-control.sh" ~/.local/bin/lay-runtime-control
 ln -sf "$DIR/scripts/lay-kde-tray.py" ~/.local/bin/lay-kde-tray
-ln -sf "$DIR/scripts/lay-ibus-engine.py" ~/.local/bin/lay-ibus-engine
 ln -sf "$DIR/scripts/lay-host-vm-guard.sh" ~/.local/bin/lay-host-vm-guard
+rm -f ~/.local/bin/lay-nanda-train ~/.local/bin/lay-nanda-eval ~/.local/bin/lay-nanda-loop
 echo "✓ lay        → ~/.local/bin/lay"
 echo "✓ lay-daemon → ~/.local/bin/lay-daemon"
+echo "✓ lay-nanda-wave-eval → ~/.local/bin/lay-nanda-wave-eval"
 echo "✓ lay-test-input → ~/.local/bin/lay-test-input"
 echo "✓ lay-ngram-corpus → ~/.local/bin/lay-ngram-corpus"
 echo "✓ lay-kde-tray → ~/.local/bin/lay-kde-tray"
 echo "✓ lay-ibus-engine → ~/.local/bin/lay-ibus-engine"
+echo "✓ lay-runtime-control → ~/.local/bin/lay-runtime-control"
 echo "✓ lay-host-vm-guard → ~/.local/bin/lay-host-vm-guard"
 
 echo ""
@@ -273,12 +278,15 @@ echo "=== optional IBus bridge ==="
 mkdir -p "$HOME/.local/share/ibus/component"
 IBUS_COMPONENT_XML="$HOME/.local/share/ibus/component/lay-ime.xml"
 "$HOME/.local/bin/lay-ibus-engine" --xml > "$IBUS_COMPONENT_XML"
+rm -f "$HOME/.local/share/ibus/component/lay.xml"
 if [ -d /usr/share/ibus/component ] && command -v sudo >/dev/null 2>&1; then
     sudo cp "$IBUS_COMPONENT_XML" /usr/share/ibus/component/lay-ime.xml 2>/dev/null || true
+    sudo rm -f /usr/share/ibus/component/lay.xml 2>/dev/null || true
     sudo ibus write-cache --system 2>/dev/null || true
 fi
 ibus write-cache 2>/dev/null || true
 echo "✓ IBus component установлен: ~/.local/share/ibus/component/lay-ime.xml"
+echo "✓ старый IBus component lay.xml удалён"
 echo "  Экспериментальный режим: выбрать Lay IME RU/Lay IME US в IBus и поставить text_backend=ime"
 
 echo ""
@@ -288,8 +296,10 @@ cp "$DIR/systemd/lay-daemon.service" ~/.config/systemd/user/lay-daemon.service
 cp "$DIR/systemd/lay-kde-tray.service" ~/.config/systemd/user/lay-kde-tray.service
 cp "$DIR/systemd/lay-host-vm-guard.service" ~/.config/systemd/user/lay-host-vm-guard.service
 systemctl --user daemon-reload
+systemctl --user disable --now lay-ibus-engine.service >/dev/null 2>&1 || true
 systemctl --user enable lay-daemon
 echo "✓ lay-daemon.service установлен и включён"
+echo "✓ старый lay-ibus-engine.service отключён; IME запускает IBus"
 if is_kde_available; then
     install_kde_autostart
     systemctl --user disable lay-kde-tray.service >/dev/null 2>&1 || true
