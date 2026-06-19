@@ -129,6 +129,11 @@ impl LayIbusEngine {
             return Ok(false);
         };
         if self.buffer.is_empty() {
+            if self.cursor_cell_width > 0 {
+                self.observe_terminal_passthrough_char(emitter, ch).await?;
+                self.trace_key("terminal_passthrough", keyval, keycode, false, Some(ch));
+                return Ok(false);
+            }
             self.commit_managed_passthrough_char(emitter, ch).await?;
             self.trace_key("printable_managed_commit", keyval, keycode, true, Some(ch));
             return Ok(true);
