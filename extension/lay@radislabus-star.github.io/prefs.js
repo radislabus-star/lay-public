@@ -6,7 +6,7 @@ import Gtk from 'gi://Gtk';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.1.231';
+const APP_VERSION = '0.1.232';
 const APP_RELEASE_DATE = '2026-06-19';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
@@ -314,7 +314,7 @@ class LayPrefsView {
             this._switchRow('Хоткеи RU / EN', 'force_layout_hotkeys', true),
             this._comboRow('RU хоткей', 'force_ru_key', FORCE_KEY_OPTIONS, true),
             this._comboRow('EN хоткей', 'force_en_key', FORCE_KEY_OPTIONS, true),
-        ]), 1, 0, 1, 1);
+        ]), 0, 1, 1, 1);
 
         grid.attach(this._section('Арбитры и каналы', [
             this._switchRow('LEM: 2 слова', 'lem_2_words', false),
@@ -324,7 +324,7 @@ class LayPrefsView {
             this._switchRow('Раскладка по окну', 'ptah_alexs_mode', false),
             this._comboRow('Режим ввода', 'text_backend', BACKEND_OPTIONS, true),
             this._comboRow('Среда раскладки', 'layout_backend', LAYOUT_BACKEND_OPTIONS, true),
-        ]), 0, 1, 1, 1);
+        ]), 1, 0, 1, 1);
 
         grid.attach(this._section('Тайминг', [
             this._spinRow('Тап', 'tap_max_ms', 'мс', 100, 500, 25, true),

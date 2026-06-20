@@ -4,7 +4,7 @@ import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.1.231';
+const APP_VERSION = '0.1.232';
 const APP_RELEASE_DATE = '2026-06-19';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
@@ -307,7 +307,7 @@ class SettingsView {
             this.switchRow('Хоткеи RU / EN', 'force_layout_hotkeys', true),
             this.comboRow('RU хоткей', 'force_ru_key', OPTIONS.force_key, true),
             this.comboRow('EN хоткей', 'force_en_key', OPTIONS.force_key, true),
-        ]), 1, 0, 1, 1);
+        ]), 1, 1, 1, 1);
         grid.attach(this.section('Тайминг', [
             this.spinRow('Тап', 'tap_max_ms', 'мс', 100, 500, 25, true),
             this.spinRow('Окно Shift', 'shift_window_ms', 'мс', 150, 600, 25, true),
@@ -321,7 +321,7 @@ class SettingsView {
             this.switchRow('Раскладка по окну', 'ptah_alexs_mode', false),
             this.comboRow('Режим ввода', 'text_backend', OPTIONS.text_backend, true),
             this.comboRow('Среда раскладки', 'layout_backend', OPTIONS.layout_backend, true),
-        ]), 1, 1, 1, 1);
+        ]), 1, 0, 1, 1);
 
         root.append(grid);
         root.append(this.about());
