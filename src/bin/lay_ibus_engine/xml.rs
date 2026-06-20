@@ -1,3 +1,12 @@
+pub(crate) fn component_xml_from_env() -> String {
+    let exec_path = std::env::var("LAY_IBUS_ENGINE_PATH").unwrap_or_else(|_| {
+        std::env::var("HOME")
+            .map(|home| format!("{home}/.local/bin/lay-ibus-engine"))
+            .unwrap_or_else(|_| "lay-ibus-engine".to_string())
+    });
+    component_xml(&exec_path)
+}
+
 pub(crate) fn component_xml(exec_path: &str) -> String {
     format!(
         r#"<?xml version="1.0" encoding="utf-8"?>

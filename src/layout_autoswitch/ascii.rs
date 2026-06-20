@@ -2,6 +2,7 @@
 
 mod candidate;
 mod phrase;
+mod punctuation;
 mod symbols;
 mod word;
 
