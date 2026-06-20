@@ -69,7 +69,7 @@ impl LayIbusEngine {
     fn focus_in(&mut self) {
         trace::record(r#"{"kind":"ibus_focus","stage":"focus_in"}"#);
         self.config = lay::config::LayConfig::load();
-        self.clear_surrounding_text_snapshot();
+        self.surrounding_text_supported = false;
         self.shared
             .lock()
             .expect("lay ime state poisoned")
@@ -85,7 +85,7 @@ impl LayIbusEngine {
     fn focus_out(&mut self) {
         trace::record(r#"{"kind":"ibus_focus","stage":"focus_out"}"#);
         self.reset_for_ibus_focus_change();
-        self.clear_surrounding_text_snapshot();
+        self.surrounding_text_supported = false;
         let mut state = self.shared.lock().expect("lay ime state poisoned");
         if state.active_path.as_deref() == Some(self.path.as_str()) {
             state.active_path = None;
@@ -160,8 +160,8 @@ impl LayIbusEngine {
     fn cursor_down(&mut self) {}
 
     #[zbus(name = "SetSurroundingText")]
-    fn set_surrounding_text(&mut self, text: Value<'_>, cursor_pos: u32, anchor_pos: u32) {
-        self.update_surrounding_text(&text, cursor_pos, anchor_pos);
+    fn set_surrounding_text(&mut self, _text: Value<'_>, _cursor_pos: u32, _anchor_pos: u32) {
+        self.surrounding_text_supported = true;
     }
 
     #[zbus(name = "PanelExtensionReceived")]

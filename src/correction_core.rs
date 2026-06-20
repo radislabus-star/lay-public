@@ -40,14 +40,13 @@ pub struct CorrectionDecision {
 }
 
 pub fn decide_text_correction(req: CorrectionRequest<'_>) -> Option<CorrectionDecision> {
-    let decision = match req.mode {
+    match req.mode {
         CorrectionMode::DeterministicOnly => deterministic_text_correction(&req),
         CorrectionMode::NandaOnly => nanda_text_correction(&req),
         CorrectionMode::DeterministicThenNanda => {
             deterministic_text_correction(&req).or_else(|| nanda_text_correction(&req))
         }
-    }?;
-    safe_replacement(req.text, &decision.replacement).then_some(decision)
+    }
 }
 
 fn deterministic_text_correction(req: &CorrectionRequest<'_>) -> Option<CorrectionDecision> {
@@ -81,39 +80,6 @@ fn nanda_text_correction(req: &CorrectionRequest<'_>) -> Option<CorrectionDecisi
         }),
         WaveDecision::Apply { .. } | WaveDecision::Keep { .. } | WaveDecision::Veto { .. } => None,
     }
-}
-
-fn safe_replacement(original: &str, replacement: &str) -> bool {
-    replacement != original && !has_contiguous_mixed_alpha_token(replacement)
-}
-
-fn has_contiguous_mixed_alpha_token(text: &str) -> bool {
-    text.split_whitespace().any(|token| {
-        token
-            .split(|ch: char| !ch.is_alphabetic())
-            .filter(|segment| !segment.is_empty())
-            .any(segment_has_ascii_and_cyrillic)
-    })
-}
-
-fn segment_has_ascii_and_cyrillic(segment: &str) -> bool {
-    let mut has_ascii = false;
-    let mut has_cyrillic = false;
-    for ch in segment.chars() {
-        if ch.is_ascii_alphabetic() {
-            has_ascii = true;
-        } else if is_cyrillic_alpha(ch) {
-            has_cyrillic = true;
-        }
-        if has_ascii && has_cyrillic {
-            return true;
-        }
-    }
-    false
-}
-
-fn is_cyrillic_alpha(ch: char) -> bool {
-    ('а'..='я').contains(&ch) || ('А'..='Я').contains(&ch) || ch == 'ё' || ch == 'Ё'
 }
 
 #[cfg(test)]
@@ -175,18 +141,5 @@ mod tests {
             mode: CorrectionMode::DeterministicThenNanda,
         });
         assert_eq!(decision, None);
-    }
-
-    #[test]
-    fn safe_replacement_rejects_contiguous_mixed_script_words() {
-        assert!(!safe_replacement("don ", "dот "));
-        assert!(!safe_replacement("ghbdtn ", "gривет "));
-        assert!(!safe_replacement("fdnjpfvtyf ", "fавтозамена "));
-    }
-
-    #[test]
-    fn safe_replacement_allows_mixed_language_tokens_split_by_punctuation() {
-        assert!(safe_replacement("QR-rjlf ", "QR-коды "));
-        assert!(safe_replacement("html djn ", "html вот "));
     }
 }

@@ -5,13 +5,6 @@ use super::engine::LayIbusEngine;
 use super::text::make_ibus_text;
 use std::time::Instant;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct CommittedTailPlan {
-    backspaces: u32,
-    replacement: String,
-    original_token: String,
-}
-
 impl LayIbusEngine {
     pub(super) async fn accept_stuck_tail(
         &mut self,
@@ -98,11 +91,10 @@ impl LayIbusEngine {
             if !known_layout_recovery_replacement(&replacement) {
                 continue;
             }
-            let better_than_best = match best.as_ref() {
-                Some((best_score, _, _)) => score > *best_score,
-                None => true,
-            };
-            if better_than_best {
+            if best
+                .as_ref()
+                .is_none_or(|(best_score, _, _)| score > *best_score)
+            {
                 best = Some((score, candidate, replacement));
             }
         }
@@ -116,18 +108,19 @@ impl LayIbusEngine {
         emitter: &SignalEmitter<'_>,
     ) -> fdo::Result<bool> {
         let started_at = Instant::now();
-        let Some(plan) = self.committed_tail_boundary_replacement(true) else {
+        let Some((backspaces, replacement)) = self.committed_tail_boundary_replacement(true) else {
             return Ok(false);
         };
+        let original = self.last_tail_token_text();
         let handled = self
-            .replace_committed_tail(emitter, plan.backspaces, plan.replacement.clone())
+            .replace_committed_tail(emitter, backspaces, replacement.clone())
             .await?;
         if handled {
-            self.sync_layout_after_committed_text(&plan.replacement);
+            self.sync_layout_after_committed_text(&replacement);
             lay::action_log::record_action(
                 "ime-typing-assist",
-                &format!("{} ", plan.original_token),
-                &plan.replacement,
+                &format!("{original} "),
+                &replacement,
                 1,
                 1,
                 started_at.elapsed().as_millis(),
@@ -141,14 +134,15 @@ impl LayIbusEngine {
         &mut self,
         emitter: &SignalEmitter<'_>,
     ) -> fdo::Result<bool> {
-        let Some(plan) = self.committed_tail_boundary_replacement(false) else {
+        let Some((backspaces, replacement)) = self.committed_tail_boundary_replacement(false)
+        else {
             return Ok(false);
         };
         let handled = self
-            .replace_committed_tail(emitter, plan.backspaces, plan.replacement.clone())
+            .replace_committed_tail(emitter, backspaces, replacement.clone())
             .await?;
         if handled {
-            self.sync_layout_after_committed_text(&plan.replacement);
+            self.sync_layout_after_committed_text(&replacement);
         }
         Ok(handled)
     }
@@ -156,12 +150,9 @@ impl LayIbusEngine {
     fn committed_tail_boundary_replacement(
         &self,
         include_separator: bool,
-    ) -> Option<CommittedTailPlan> {
+    ) -> Option<(u32, String)> {
         let token = self.last_tail_token_text();
         if token.is_empty() {
-            return None;
-        }
-        if !self.committed_tail_visible_token_matches(&token) {
             return None;
         }
         let original = format!("{token} ");
@@ -176,56 +167,13 @@ impl LayIbusEngine {
                 .trim_end_matches(char::is_whitespace)
                 .to_string()
         };
-        Some(CommittedTailPlan {
-            backspaces: token.chars().count() as u32,
-            replacement,
-            original_token: token,
-        })
+        Some((token.chars().count() as u32, replacement))
     }
-}
-
-fn missing_initial_prefixes(token: &str) -> impl Iterator<Item = char> {
-    let ascii = token.chars().all(|ch| ch.is_ascii_alphabetic());
-    let prefixes: &'static str = if ascii && token.chars().all(|ch| ch.is_ascii_lowercase()) {
-        "abcdefghijklmnopqrstuvwxyz"
-    } else if ascii && token.chars().all(|ch| ch.is_ascii_uppercase()) {
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    } else if ascii {
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    } else {
-        "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
-    };
-    prefixes.chars()
-}
-
-fn replacement_quality_score(replacement: &str) -> f32 {
-    let has_cyrillic = replacement
-        .chars()
-        .any(|ch| ('а'..='я').contains(&ch) || ('А'..='Я').contains(&ch));
-    let has_ascii = replacement.chars().any(|ch| ch.is_ascii_alphabetic());
-    if has_cyrillic && !has_ascii {
-        lay::quality::score(replacement, "ru")
-    } else if has_ascii && !has_cyrillic {
-        lay::quality::score(replacement, "en")
-    } else {
-        0.0
-    }
-}
-
-fn known_layout_recovery_replacement(replacement: &str) -> bool {
-    let word = replacement.trim().to_lowercase();
-    !word.is_empty()
-        && word
-            .chars()
-            .all(|ch| ('а'..='я').contains(&ch) || ch == 'ё')
-        && (lay::lexicon::is_common_ru_word(&word)
-            || lay::russian_lexicon::is_known_russian_word_or_form(&word))
 }
 
 #[cfg(test)]
 mod tests {
     use super::LayIbusEngine;
-    use crate::text::make_ibus_text;
     use lay::config::LayConfig;
     use std::sync::{Arc, Mutex};
 
@@ -270,11 +218,7 @@ mod tests {
 
         assert_eq!(
             engine.committed_tail_boundary_replacement(false),
-            Some(super::CommittedTailPlan {
-                backspaces: 10,
-                replacement: "автозамена".to_string(),
-                original_token: "fвтозамена".to_string()
-            })
+            Some((10, "автозамена".to_string()))
         );
     }
 
@@ -287,42 +231,7 @@ mod tests {
 
         assert_eq!(
             engine.committed_tail_boundary_replacement(true),
-            Some(super::CommittedTailPlan {
-                backspaces: 11,
-                replacement: "автозамена ".to_string(),
-                original_token: "fавтозамена".to_string()
-            })
-        );
-    }
-
-    #[test]
-    fn committed_tail_boundary_rejects_suffix_when_visible_token_has_prefix() {
-        let mut engine = engine();
-        for ch in "jn".chars() {
-            engine.push_tail_char(ch);
-        }
-        let visible = make_ibus_text("don".to_string());
-        engine.update_surrounding_text(&visible, 3, 3);
-
-        assert_eq!(engine.committed_tail_boundary_replacement(true), None);
-    }
-
-    #[test]
-    fn committed_tail_boundary_allows_matching_visible_token() {
-        let mut engine = engine();
-        for ch in "ghbdtn".chars() {
-            engine.push_tail_char(ch);
-        }
-        let visible = make_ibus_text("ghbdtn".to_string());
-        engine.update_surrounding_text(&visible, 6, 6);
-
-        assert_eq!(
-            engine.committed_tail_boundary_replacement(true),
-            Some(super::CommittedTailPlan {
-                backspaces: 6,
-                replacement: "привет ".to_string(),
-                original_token: "ghbdtn".to_string()
-            })
+            Some((11, "автозамена ".to_string()))
         );
     }
 
@@ -366,4 +275,42 @@ mod tests {
         assert_eq!(backspaces, 3);
         assert_ne!(replacement, "dime");
     }
+}
+
+fn missing_initial_prefixes(token: &str) -> impl Iterator<Item = char> {
+    let ascii = token.chars().all(|ch| ch.is_ascii_alphabetic());
+    let prefixes: &'static str = if ascii && token.chars().all(|ch| ch.is_ascii_lowercase()) {
+        "abcdefghijklmnopqrstuvwxyz"
+    } else if ascii && token.chars().all(|ch| ch.is_ascii_uppercase()) {
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    } else if ascii {
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    } else {
+        "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
+    };
+    prefixes.chars()
+}
+
+fn replacement_quality_score(replacement: &str) -> f32 {
+    let has_cyrillic = replacement
+        .chars()
+        .any(|ch| ('а'..='я').contains(&ch) || ('А'..='Я').contains(&ch));
+    let has_ascii = replacement.chars().any(|ch| ch.is_ascii_alphabetic());
+    if has_cyrillic && !has_ascii {
+        lay::quality::score(replacement, "ru")
+    } else if has_ascii && !has_cyrillic {
+        lay::quality::score(replacement, "en")
+    } else {
+        0.0
+    }
+}
+
+fn known_layout_recovery_replacement(replacement: &str) -> bool {
+    let word = replacement.trim().to_lowercase();
+    !word.is_empty()
+        && word
+            .chars()
+            .all(|ch| ('а'..='я').contains(&ch) || ch == 'ё')
+        && (lay::lexicon::is_common_ru_word(&word)
+            || lay::russian_lexicon::is_known_russian_word_or_form(&word))
 }

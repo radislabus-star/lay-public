@@ -34,7 +34,6 @@ impl LayIbusEngine {
             preedit_dirty: false,
             cursor_cell_width: 0,
             surrounding_text_supported: false,
-            surrounding_text: None,
             layout_is_ru,
             shift_active: false,
             shift_used_as_modifier: false,
@@ -66,7 +65,6 @@ impl LayIbusEngine {
         self.preedit_candidate_index = 0;
         self.preedit_dirty = false;
         self.last_shift_release_at = None;
-        self.clear_surrounding_text_snapshot();
         if !preserve_tail {
             self.last_tail_input_at = None;
             self.word_input_mode = None;

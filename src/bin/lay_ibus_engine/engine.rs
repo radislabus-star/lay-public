@@ -3,7 +3,6 @@ use std::time::{Duration, Instant};
 
 use super::preedit::PreeditFastState;
 use super::protocol::Shared;
-use super::surrounding_text::SurroundingTextSnapshot;
 
 pub(super) const DOUBLE_SHIFT_WINDOW: Duration = Duration::from_millis(650);
 
@@ -26,7 +25,6 @@ pub(crate) struct LayIbusEngine {
     pub(super) preedit_dirty: bool,
     pub(super) cursor_cell_width: i32,
     pub(super) surrounding_text_supported: bool,
-    pub(super) surrounding_text: Option<SurroundingTextSnapshot>,
     pub(super) layout_is_ru: bool,
     pub(super) shift_active: bool,
     pub(super) shift_used_as_modifier: bool,

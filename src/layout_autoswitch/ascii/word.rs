@@ -6,9 +6,9 @@ use crate::word_reader::split_word_punctuation;
 use super::super::english::is_known_english_layout_autoswitch_word;
 use super::super::score::lem_prefers_layout_candidate;
 use super::candidate::ascii_to_russian_layout_candidate;
-use super::punctuation::correct_word_preserving_trailing_punctuation;
 use super::symbols::{
-    has_ascii_shift_letter_signal, is_blocked_ascii_layout_token, is_protected_ascii_layout_token,
+    has_ascii_shift_letter_signal, is_ascii_layout_token_symbol, is_blocked_ascii_layout_token,
+    is_protected_ascii_layout_token,
 };
 
 pub(crate) fn correct_confident_wrong_layout_ascii_word(token: &str) -> Option<String> {
@@ -24,17 +24,14 @@ pub(crate) fn correct_confident_wrong_layout_ascii_word(token: &str) -> Option<S
     if original_alpha_len < 3 {
         return None;
     }
-    if is_protected_ascii_layout_token(token)
-        && is_known_english_layout_autoswitch_word(&original_word.to_ascii_lowercase())
-    {
-        return None;
-    }
-    if let Some(replacement) = correct_word_preserving_trailing_punctuation(token) {
-        return Some(replacement);
-    }
 
     let candidate = ascii_to_russian_layout_candidate(token, false)?;
     if !candidate.known {
+        return None;
+    }
+    if is_protected_ascii_layout_token(token)
+        && is_known_english_layout_autoswitch_word(&original_word.to_ascii_lowercase())
+    {
         return None;
     }
     if candidate.clean_alpha && !lem_prefers_layout_candidate(original_word, &candidate.word) {
@@ -64,7 +61,9 @@ pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
         return None;
     }
 
-    if let Some(replacement) = correct_word_preserving_trailing_punctuation(token) {
+    if let Some(replacement) =
+        correct_wrong_layout_ascii_word_preserving_trailing_punctuation(token)
+    {
         return Some(replacement);
     }
 
@@ -132,6 +131,39 @@ fn is_standalone_all_caps_shift_layout_token(token: &str) -> bool {
     letters.len() >= 4 && letters.iter().all(|ch| ch.is_ascii_uppercase())
 }
 
+fn correct_wrong_layout_ascii_word_preserving_trailing_punctuation(token: &str) -> Option<String> {
+    let trailing_start = token
+        .char_indices()
+        .rev()
+        .find(|(_, ch)| ch.is_ascii_alphanumeric())
+        .map(|(idx, ch)| idx + ch.len_utf8())
+        .unwrap_or(0);
+    if trailing_start == 0 || trailing_start == token.len() {
+        return None;
+    }
+
+    let core = &token[..trailing_start];
+    let trailing = &token[trailing_start..];
+    if !core.chars().any(|ch| ch.is_ascii_alphabetic())
+        || !core
+            .chars()
+            .all(|ch| ch.is_ascii_alphabetic() || is_ascii_layout_token_symbol(ch))
+        || !trailing.chars().all(is_ascii_layout_token_symbol)
+    {
+        return None;
+    }
+
+    let (_, original_word, _) = split_word_punctuation(core);
+    if original_word.is_empty() {
+        return None;
+    }
+    if is_user_protected_ascii_word(original_word) {
+        return None;
+    }
+    let normalized = ascii_to_russian_layout_candidate(core, false)?.replacement;
+    Some(format!("{normalized}{trailing}"))
+}
+
 fn allow_short_layout_word(original: &str, converted_lower: &str) -> bool {
     original
         .chars()
@@ -140,6 +172,3 @@ fn allow_short_layout_word(original: &str, converted_lower: &str) -> bool {
         <= 3
         && russian_tiny_dictionary().contains(converted_lower)
 }
-
-#[cfg(test)]
-mod tests;
