@@ -9,10 +9,6 @@ impl LayIbusEngine {
         last_tail_token(&self.tail_buffer)
     }
 
-    pub(super) fn tail_trailing_whitespace_chars(&self) -> usize {
-        trailing_whitespace_chars(&self.tail_buffer)
-    }
-
     pub(super) fn sync_tail_after_composition_commit(&mut self, text: &str) {
         let trailing_ws = trailing_whitespace_chars(text);
         let committed = text.trim_end_matches(char::is_whitespace);

@@ -19,11 +19,6 @@ impl LayIbusEngine {
     pub(super) fn passthrough_visible_char(&self, keyval: u32, keycode: u32) -> Option<char> {
         x11_keysym_char(keyval).or_else(|| self.physical_char(keyval, keycode))
     }
-
-    pub(super) fn double_shift_replacement(&self, text: &str) -> String {
-        lay::mixed_script_repair::repair_mixed_script(text)
-            .unwrap_or_else(|| lay::dict::convert(text, lay::dict::detect_direction(text)))
-    }
 }
 
 fn is_committable_char(ch: char) -> bool {
@@ -134,9 +129,14 @@ mod tests {
 
     #[test]
     fn double_shift_replacement_repairs_mixed_script_token() {
-        let engine = engine();
-        assert_eq!(engine.double_shift_replacement("ghjdtрrb"), "проверки");
-        assert_eq!(engine.double_shift_replacement("ghjdthrf"), "проверка");
+        assert_eq!(
+            lay::manual_toggle::double_shift_replacement("ghjdtрrb"),
+            "проверки"
+        );
+        assert_eq!(
+            lay::manual_toggle::double_shift_replacement("ghjdthrf"),
+            "проверка"
+        );
     }
 
     #[test]

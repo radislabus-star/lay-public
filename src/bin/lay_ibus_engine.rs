@@ -30,6 +30,8 @@ mod preedit;
 mod protocol;
 #[path = "lay_ibus_engine/server.rs"]
 mod server;
+#[path = "lay_ibus_engine/shift.rs"]
+mod shift;
 #[path = "lay_ibus_engine/state.rs"]
 mod state;
 #[path = "lay_ibus_engine/tail_memory.rs"]
@@ -42,16 +44,10 @@ mod trace;
 mod xml;
 
 use args::Args;
-
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
     if args.xml {
-        let exec_path = std::env::var("LAY_IBUS_ENGINE_PATH").unwrap_or_else(|_| {
-            std::env::var("HOME")
-                .map(|home| format!("{home}/.local/bin/lay-ibus-engine"))
-                .unwrap_or_else(|_| "lay-ibus-engine".to_string())
-        });
-        println!("{}", xml::component_xml(&exec_path));
+        println!("{}", xml::component_xml(&xml::component_exec_path()));
         return Ok(());
     }
     let _ = args.ibus;

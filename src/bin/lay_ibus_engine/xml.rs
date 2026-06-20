@@ -39,3 +39,9 @@ pub(crate) fn component_xml(exec_path: &str) -> String {
         env!("CARGO_PKG_VERSION")
     )
 }
+
+pub(crate) fn component_exec_path() -> String {
+    std::env::var("LAY_IBUS_ENGINE_PATH")
+        .or_else(|_| std::env::var("HOME").map(|home| format!("{home}/.local/bin/lay-ibus-engine")))
+        .unwrap_or_else(|_| "lay-ibus-engine".to_string())
+}

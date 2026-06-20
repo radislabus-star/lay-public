@@ -42,6 +42,7 @@ impl LayIbusEngine {
             last_shift_release_at: None,
             last_commit_at: None,
             last_tail_input_at: None,
+            suppress_next_committed_tail_autocorrect: false,
             word_input_mode: None,
             managed_input,
             config,
@@ -65,6 +66,7 @@ impl LayIbusEngine {
         self.preedit_candidate_index = 0;
         self.preedit_dirty = false;
         self.last_shift_release_at = None;
+        self.suppress_next_committed_tail_autocorrect = false;
         if !preserve_tail {
             self.last_tail_input_at = None;
             self.word_input_mode = None;

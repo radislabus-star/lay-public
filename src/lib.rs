@@ -19,6 +19,7 @@ pub mod lem;
 pub mod lexicon;
 pub mod llm;
 pub(crate) mod llm_backend;
+pub mod manual_toggle;
 pub mod mixed_script_repair;
 pub mod nanda_wave;
 pub mod ngram;

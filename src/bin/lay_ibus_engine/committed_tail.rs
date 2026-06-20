@@ -3,6 +3,7 @@ use zbus::object_server::SignalEmitter;
 
 use super::engine::LayIbusEngine;
 use super::text::make_ibus_text;
+use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, ManualToggleRoute};
 use std::time::Instant;
 
 impl LayIbusEngine {
@@ -39,74 +40,37 @@ impl LayIbusEngine {
         &mut self,
         emitter: &SignalEmitter<'_>,
     ) -> fdo::Result<bool> {
-        let Some((backspaces, mut replacement)) = self.committed_tail_toggle_replacement() else {
+        let Some(plan) = self.committed_tail_toggle_plan() else {
             return Ok(false);
         };
-        let trailing_ws = self.tail_trailing_whitespace_chars();
-        for _ in 0..trailing_ws {
-            replacement.push(' ');
-        }
-        let backspaces = backspaces.saturating_add(trailing_ws as u32);
         let handled = self
-            .replace_committed_tail(emitter, backspaces, replacement.clone())
+            .replace_committed_tail(emitter, plan.backspaces, plan.replacement.clone())
             .await?;
         if handled {
-            self.sync_layout_after_manual_toggle(&replacement);
+            self.suppress_next_committed_tail_autocorrect = plan.suppress_next_autocorrect;
+            self.sync_layout_after_manual_toggle(&plan.replacement);
             self.trace_key("double_shift_committed_tail", 0, 0, true, None);
         }
         Ok(handled)
     }
 
-    fn committed_tail_toggle_replacement(&self) -> Option<(u32, String)> {
-        let token = self.last_tail_token_text();
-        if token.is_empty() {
-            return None;
-        }
-
-        if let Some(recovered) = self.recover_missing_initial_layout_toggle(&token) {
-            return Some(recovered);
-        }
-
-        let converted = self.double_shift_replacement(&token);
-        (converted != token).then(|| (token.chars().count() as u32, converted))
-    }
-
-    fn recover_missing_initial_layout_toggle(&self, token: &str) -> Option<(u32, String)> {
-        if token.chars().count() < 5 || !token.chars().all(char::is_alphabetic) {
-            return None;
-        }
-
-        let normal = self.double_shift_replacement(token);
-        let mut best: Option<(f32, String, String)> = None;
-        for prefix in missing_initial_prefixes(token) {
-            let candidate = format!("{prefix}{token}");
-            let replacement = self.double_shift_replacement(&candidate);
-            if replacement.is_empty() || replacement == candidate || replacement == normal {
-                continue;
-            }
-            let score = replacement_quality_score(&replacement);
-            if score < 0.98 {
-                continue;
-            }
-            if !known_layout_recovery_replacement(&replacement) {
-                continue;
-            }
-            if best
-                .as_ref()
-                .is_none_or(|(best_score, _, _)| score > *best_score)
-            {
-                best = Some((score, candidate, replacement));
-            }
-        }
-
-        let (_, candidate, replacement) = best?;
-        Some((candidate.chars().count() as u32, replacement))
+    fn committed_tail_toggle_plan(&self) -> Option<lay::manual_toggle::ManualTogglePlan> {
+        plan_manual_toggle(ManualToggleRequest {
+            tail: &self.tail_buffer,
+            current_layout_is_ru: self.layout_is_ru,
+            route: ManualToggleRoute::ImeCommittedTail,
+            recover_missing_initial: true,
+            preserve_trailing_whitespace: true,
+        })
     }
 
     pub(super) async fn autocorrect_committed_tail_space(
         &mut self,
         emitter: &SignalEmitter<'_>,
     ) -> fdo::Result<bool> {
+        if self.take_manual_toggle_autocorrect_suppression() {
+            return Ok(false);
+        }
         let started_at = Instant::now();
         let Some((backspaces, replacement)) = self.committed_tail_boundary_replacement(true) else {
             return Ok(false);
@@ -134,6 +98,9 @@ impl LayIbusEngine {
         &mut self,
         emitter: &SignalEmitter<'_>,
     ) -> fdo::Result<bool> {
+        if self.take_manual_toggle_autocorrect_suppression() {
+            return Ok(false);
+        }
         let Some((backspaces, replacement)) = self.committed_tail_boundary_replacement(false)
         else {
             return Ok(false);
@@ -168,6 +135,12 @@ impl LayIbusEngine {
                 .to_string()
         };
         Some((token.chars().count() as u32, replacement))
+    }
+
+    fn take_manual_toggle_autocorrect_suppression(&mut self) -> bool {
+        let suppress = self.suppress_next_committed_tail_autocorrect;
+        self.suppress_next_committed_tail_autocorrect = false;
+        suppress
     }
 }
 
@@ -242,10 +215,9 @@ mod tests {
             engine.push_tail_char(ch);
         }
 
-        assert_eq!(
-            engine.committed_tail_toggle_replacement(),
-            Some((6, "привет".to_string()))
-        );
+        let plan = engine.committed_tail_toggle_plan().expect("toggle plan");
+        assert_eq!(plan.backspaces, 6);
+        assert_eq!(plan.replacement, "привет");
     }
 
     #[test]
@@ -255,10 +227,9 @@ mod tests {
             engine.push_tail_char(ch);
         }
 
-        assert_eq!(
-            engine.committed_tail_toggle_replacement(),
-            Some((10, "автозамена".to_string()))
-        );
+        let plan = engine.committed_tail_toggle_plan().expect("toggle plan");
+        assert_eq!(plan.backspaces, 10);
+        assert_eq!(plan.replacement, "автозамена");
     }
 
     #[test]
@@ -268,49 +239,20 @@ mod tests {
             engine.push_tail_char(ch);
         }
 
-        let (backspaces, replacement) = engine
-            .committed_tail_toggle_replacement()
+        let plan = engine
+            .committed_tail_toggle_plan()
             .expect("plain double shift still toggles the short tail");
 
-        assert_eq!(backspaces, 3);
-        assert_ne!(replacement, "dime");
+        assert_eq!(plan.backspaces, 3);
+        assert_ne!(plan.replacement, "dime");
     }
-}
 
-fn missing_initial_prefixes(token: &str) -> impl Iterator<Item = char> {
-    let ascii = token.chars().all(|ch| ch.is_ascii_alphabetic());
-    let prefixes: &'static str = if ascii && token.chars().all(|ch| ch.is_ascii_lowercase()) {
-        "abcdefghijklmnopqrstuvwxyz"
-    } else if ascii && token.chars().all(|ch| ch.is_ascii_uppercase()) {
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    } else if ascii {
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    } else {
-        "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
-    };
-    prefixes.chars()
-}
+    #[test]
+    fn manual_toggle_suppresses_next_boundary_autocorrect_once() {
+        let mut engine = engine();
+        engine.suppress_next_committed_tail_autocorrect = true;
 
-fn replacement_quality_score(replacement: &str) -> f32 {
-    let has_cyrillic = replacement
-        .chars()
-        .any(|ch| ('а'..='я').contains(&ch) || ('А'..='Я').contains(&ch));
-    let has_ascii = replacement.chars().any(|ch| ch.is_ascii_alphabetic());
-    if has_cyrillic && !has_ascii {
-        lay::quality::score(replacement, "ru")
-    } else if has_ascii && !has_cyrillic {
-        lay::quality::score(replacement, "en")
-    } else {
-        0.0
+        assert!(engine.take_manual_toggle_autocorrect_suppression());
+        assert!(!engine.take_manual_toggle_autocorrect_suppression());
     }
-}
-
-fn known_layout_recovery_replacement(replacement: &str) -> bool {
-    let word = replacement.trim().to_lowercase();
-    !word.is_empty()
-        && word
-            .chars()
-            .all(|ch| ('а'..='я').contains(&ch) || ch == 'ё')
-        && (lay::lexicon::is_common_ru_word(&word)
-            || lay::russian_lexicon::is_known_russian_word_or_form(&word))
 }

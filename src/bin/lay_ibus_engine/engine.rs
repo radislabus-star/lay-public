@@ -33,6 +33,7 @@ pub(crate) struct LayIbusEngine {
     pub(super) last_shift_release_at: Option<Instant>,
     pub(super) last_commit_at: Option<Instant>,
     pub(super) last_tail_input_at: Option<Instant>,
+    pub(super) suppress_next_committed_tail_autocorrect: bool,
     pub(super) word_input_mode: Option<WordInputMode>,
     pub(super) managed_input: bool,
     pub(super) config: LayConfig,
