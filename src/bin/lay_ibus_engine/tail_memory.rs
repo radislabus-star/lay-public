@@ -168,6 +168,27 @@ mod tests {
     }
 
     #[test]
+    fn ibus_soft_reset_preserves_tail_for_manual_toggle() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            false,
+            true,
+            LayConfig::default(),
+        );
+
+        engine.word_input_mode = Some(WordInputMode::ManagedCommit);
+        for ch in "ghbdtn".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.reset_for_ibus_soft_reset();
+
+        assert_eq!(engine.tail_buffer, "ghbdtn");
+        assert_eq!(engine.preedit_fast.token(), "ghbdtn");
+        assert_eq!(engine.word_input_mode, Some(WordInputMode::ManagedCommit));
+    }
+
+    #[test]
     fn whitespace_closes_current_word_input_mode() {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),

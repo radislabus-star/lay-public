@@ -81,6 +81,22 @@ impl LayIbusEngine {
         }
     }
 
+    pub(super) fn reset_for_ibus_soft_reset(&mut self) {
+        self.buffer.clear();
+        self.composition_cursor = 0;
+        self.preedit_suffix.clear();
+        self.preedit_candidates.clear();
+        self.preedit_candidate_index = 0;
+        self.preedit_dirty = false;
+        self.last_shift_release_at = None;
+        self.suppress_next_committed_tail_autocorrect = false;
+        self.shift_used_as_modifier = false;
+        self.alt_completion_active = false;
+        self.alt_used_as_modifier = false;
+        self.rebuild_preedit_fast_from_tail();
+        self.publish_tail_handoff();
+    }
+
     /// Replaces text that has already been committed into the focused client.
     ///
     /// Keep this route separate from active composition commits in

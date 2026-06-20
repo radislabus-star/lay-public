@@ -135,7 +135,7 @@ impl LayIbusEngine {
     #[zbus(name = "Reset")]
     fn reset(&mut self) {
         trace::record(r#"{"kind":"ibus_focus","stage":"reset"}"#);
-        self.reset_for_ibus_focus_change();
+        self.reset_for_ibus_soft_reset();
     }
 
     #[zbus(name = "Enable")]
@@ -144,7 +144,7 @@ impl LayIbusEngine {
     #[zbus(name = "Disable")]
     fn disable(&mut self) {
         trace::record(r#"{"kind":"ibus_focus","stage":"disable"}"#);
-        self.reset();
+        self.reset_for_ibus_soft_reset();
     }
 
     #[zbus(name = "PageUp")]
