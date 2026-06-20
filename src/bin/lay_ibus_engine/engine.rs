@@ -6,6 +6,12 @@ use super::protocol::Shared;
 
 pub(super) const DOUBLE_SHIFT_WINDOW: Duration = Duration::from_millis(650);
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum WordInputMode {
+    ManagedCommit,
+    TerminalPassthrough,
+}
+
 pub(crate) struct LayIbusEngine {
     pub(super) path: String,
     pub(super) shared: Shared,
@@ -26,6 +32,8 @@ pub(crate) struct LayIbusEngine {
     pub(super) alt_used_as_modifier: bool,
     pub(super) last_shift_release_at: Option<Instant>,
     pub(super) last_commit_at: Option<Instant>,
+    pub(super) last_tail_input_at: Option<Instant>,
+    pub(super) word_input_mode: Option<WordInputMode>,
     pub(super) managed_input: bool,
     pub(super) config: LayConfig,
 }

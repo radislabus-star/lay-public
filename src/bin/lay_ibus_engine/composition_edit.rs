@@ -9,7 +9,13 @@ impl LayIbusEngine {
         self.preedit_dirty = false;
         if !self.buffer.is_empty() {
             if self.composition_cursor == 0 {
-                return Ok(true);
+                self.clear_preedit(emitter).await?;
+                self.buffer.clear();
+                self.composition_cursor = 0;
+                self.preedit_suffix.clear();
+                self.preedit_candidates.clear();
+                self.preedit_candidate_index = 0;
+                return Ok(false);
             }
             let byte_idx = char_to_byte_idx(&self.buffer, self.composition_cursor - 1);
             self.buffer.remove(byte_idx);
@@ -26,6 +32,9 @@ impl LayIbusEngine {
     pub(super) fn backspace_committed_tail_only(&mut self) {
         self.tail_buffer.pop();
         self.preedit_fast.backspace();
+        if self.last_tail_token_text().is_empty() {
+            self.word_input_mode = None;
+        }
         self.publish_tail_handoff();
     }
 
@@ -150,6 +159,18 @@ mod tests {
         assert_eq!(engine.buffer, "acd");
         assert_eq!(engine.composition_cursor, 1);
         assert_eq!(engine.tail_buffer, "acd");
+    }
+
+    #[test]
+    fn composition_cursor_at_start_does_not_swallow_backspace() {
+        let mut engine = engine();
+        for ch in "abc".chars() {
+            engine.insert_composition_char(ch);
+        }
+        engine.composition_cursor = 0;
+
+        assert_eq!(engine.buffer, "abc");
+        assert_eq!(engine.composition_cursor, 0);
     }
 
     #[test]

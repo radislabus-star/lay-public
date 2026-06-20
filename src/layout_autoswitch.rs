@@ -16,12 +16,16 @@ use crate::lexicon::is_common_ru_word;
 use crate::ru_typo::{
     correct_extra_letters, correct_hard_sign_typo, correct_missing_letter, correct_repeated_letter,
 };
+use crate::russian_chars::is_russian_vowel;
 use crate::russian_lexicon::{
     is_known_russian_adverb_o_form, is_known_russian_ka_oblique_form,
     is_known_russian_word_or_form, russian_dictionary, russian_short_dictionary,
     russian_tiny_dictionary,
 };
-use crate::russian_typo_candidates::generate_extra_letter_candidates;
+use crate::russian_typo_candidates::{
+    generate_extra_letter_candidates, generate_missing_letter_candidates,
+    inserted_char_position_for_missing_letter,
+};
 use crate::text_case::apply_word_case;
 use crate::word_reader::{is_cyrillic_word, split_word_punctuation};
 
@@ -62,6 +66,7 @@ fn polish_converted_russian_layout_token(token: &str) -> Option<String> {
     let corrected = correct_hard_sign_typo(word)
         .or_else(|| correct_repeated_letter(word))
         .or_else(|| correct_missing_letter(word))
+        .or_else(|| correct_layout_missing_initial_letter(word))
         .or_else(|| correct_extra_letters(word))?;
     if !is_strong_layout_polish_word(&corrected.to_lowercase()) {
         return None;
@@ -85,6 +90,31 @@ fn correct_common_layout_extra_letter(word: &str) -> Option<String> {
             }
             let mut score = crate::ngram::ru_candidate_margin(candidate, &lower);
             score += 3.0;
+            Some(score)
+        },
+    )?;
+    Some(apply_word_case(word, &candidate))
+}
+
+fn correct_layout_missing_initial_letter(word: &str) -> Option<String> {
+    if word.chars().count() < 6 || !is_cyrillic_word(word) {
+        return None;
+    }
+
+    let lower = word.to_lowercase();
+    let (candidate, _) = crate::candidate_ranker::choose_best_with_gap(
+        generate_missing_letter_candidates(&lower).filter(|candidate| {
+            let Some((idx, inserted)) =
+                inserted_char_position_for_missing_letter(&lower, candidate)
+            else {
+                return false;
+            };
+            idx == 0 && is_russian_vowel(inserted) && is_strong_layout_polish_word(candidate)
+        }),
+        0.50,
+        |candidate| {
+            let mut score = crate::ngram::ru_candidate_margin(candidate, &lower);
+            score += 4.0;
             Some(score)
         },
     )?;

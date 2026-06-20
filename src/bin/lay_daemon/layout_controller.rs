@@ -230,7 +230,8 @@ pub(super) fn call_ime_ping() -> Result<String, String> {
 }
 
 pub(super) fn focused_ime_engine_handles_typing() -> bool {
-    active_text_backend().should_try_ime() && ime_bridge::focused().unwrap_or(false)
+    active_text_backend().should_try_ime()
+        && (ime_bridge::focused().unwrap_or(false) || ibus_bridge::current_engine_is_lay_ime())
 }
 
 pub(super) fn detect_auto_layout_backend_hint() -> Option<LayoutBackend> {

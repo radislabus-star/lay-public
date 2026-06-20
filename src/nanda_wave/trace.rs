@@ -2,6 +2,7 @@ use super::feedback::derive_l3_feedback;
 use super::l1::run_l1_with_options;
 use super::l2::{run_l2_refined_with_feedback, run_l2_with_options};
 use super::l3::run_l3_with_options;
+use super::llmwave::derive_llmwave_feedback;
 use super::options::WaveOptions;
 use super::signal::WaveTrace;
 
@@ -13,8 +14,12 @@ pub fn run_wave_trace_with_options(original: &str, options: &WaveOptions) -> Wav
     let l1 = run_l1_with_options(original, options);
     let initial_l2 = run_l2_with_options(original, &l1, options);
     let (mut l3_feedback, feedback) = derive_l3_feedback(original, &initial_l2, options);
+    let (mut llmwave_trace, llmwave_feedback) =
+        derive_llmwave_feedback(original, &initial_l2, options);
+    let feedback = merge_feedback(feedback, llmwave_feedback);
     let l2_candidates = run_l2_refined_with_feedback(original, &l1, options, &feedback);
     let (mut l3, decision) = run_l3_with_options(original, &l2_candidates, options);
+    l3_feedback.append(&mut llmwave_trace);
     l3_feedback.append(&mut l3);
     WaveTrace {
         original: original.to_string(),
@@ -23,6 +28,15 @@ pub fn run_wave_trace_with_options(original: &str, options: &WaveOptions) -> Wav
         l3: l3_feedback,
         decision,
     }
+}
+
+fn merge_feedback(
+    mut left: super::feedback::L3Feedback,
+    mut right: super::feedback::L3Feedback,
+) -> super::feedback::L3Feedback {
+    left.adjustments.append(&mut right.adjustments);
+    left.requests.append(&mut right.requests);
+    left
 }
 
 #[cfg(test)]
@@ -48,5 +62,17 @@ mod tests {
             .support
             .iter()
             .any(|item| item.starts_with("l3-feedback:"))));
+    }
+
+    #[test]
+    fn llmwave_shadow_adds_trace_without_changing_default_decision() {
+        let plain = run_wave_trace("html djn ");
+        let options = WaveOptions::default().with_llmwave_shadow(true);
+        let shadow = run_wave_trace_with_options("html djn ", &options);
+        assert_eq!(plain.decision, shadow.decision);
+        assert!(shadow
+            .l3
+            .iter()
+            .any(|layer| layer.name == crate::nanda_wave::llmwave::LLMWAVE_CELL));
     }
 }

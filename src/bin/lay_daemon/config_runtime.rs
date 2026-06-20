@@ -12,8 +12,6 @@ use super::{detect_auto_layout_backend_hint, ENTER_AUTOCORRECT_EXPERIMENT_ENV};
 static AUTO_LAYOUT_BACKEND_HINT: OnceLock<Option<LayoutBackend>> = OnceLock::new();
 
 #[cfg(not(test))]
-// Runtime settings cache only. Live NANDA diagnostics are served by
-// lay-nanda-wave-eval --status-json and must not depend on this polling loop.
 const CONFIG_CACHE_CHECK_INTERVAL: Duration = Duration::from_millis(250);
 
 #[cfg(not(test))]
@@ -119,14 +117,13 @@ pub(super) fn active_enter_autocorrect_from_env(
     if !config_enabled {
         return false;
     }
-    env_value
-        .map(|value| {
-            matches!(
-                value.trim().to_ascii_lowercase().as_str(),
-                "1" | "true" | "yes" | "on"
-            )
-        })
-        .unwrap_or(true)
+    match env_value {
+        None => true,
+        Some(value) => matches!(
+            value.trim().to_ascii_lowercase().as_str(),
+            "1" | "true" | "yes" | "on"
+        ),
+    }
 }
 
 pub(super) fn active_auto_switch_layout() -> bool {
@@ -143,6 +140,13 @@ pub(super) fn active_nanda_trace() -> bool {
 
 pub(super) fn active_nanda_trace_text() -> bool {
     current_config().debug_action_log
+}
+
+pub(super) fn active_nanda_wave_options() -> lay::nanda_wave::WaveOptions {
+    let cfg = current_config();
+    lay::nanda_wave::WaveOptions::default()
+        .with_llmwave_shadow(cfg.llmwave_shadow)
+        .with_llmwave_apply(cfg.llmwave_shadow && cfg.llmwave_apply)
 }
 
 pub(super) fn active_nanda_precognition() -> bool {

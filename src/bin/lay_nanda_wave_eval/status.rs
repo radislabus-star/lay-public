@@ -1,7 +1,9 @@
 use lay::config::CorrectionSafety;
 use lay::eval_cases::EvalCase;
 use lay::nanda_wave::context::{MAX_CONTEXT_TOKENS, MIN_CONTEXT_TOKENS};
-use lay::nanda_wave::{evaluate_wave, evaluate_wave_with_options, journal, resonance_memory};
+use lay::nanda_wave::{
+    evaluate_wave, evaluate_wave_with_options, journal, llmwave, resonance_memory,
+};
 use lay::nanda_wave::{run_wave_trace_with_options, WaveDecision, WaveOptions};
 use lay::{config, typing_assist, typing_context};
 use serde_json::{json, Value};
@@ -14,7 +16,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::real_suite;
 
-pub(crate) fn print_status_json(refresh: bool) -> io::Result<()> {
+pub(crate) fn print_status_json(refresh: bool, full: bool) -> io::Result<()> {
     let cache = status_cache_path();
     if !refresh {
         if let Ok(text) = fs::read_to_string(&cache) {
@@ -27,7 +29,7 @@ pub(crate) fn print_status_json(refresh: bool) -> io::Result<()> {
             return Ok(());
         }
     }
-    let value = build_status_json(refresh)?;
+    let value = build_status_json(full)?;
     if let Some(parent) = cache.parent() {
         fs::create_dir_all(parent)?;
     }
@@ -114,6 +116,7 @@ fn build_status_json(full: bool) -> io::Result<serde_json::Value> {
     let layer_impact = layer_impact_json(&ablation);
     let scoreboard = journal::load_scoreboard();
     let resonance_memory = resonance_memory::load_resonance_memory();
+    let llmwave_memory = llmwave::load_default_memory();
     Ok(json!({
         "kind": "nanda_wave_status",
         "generated_at_unix": unix_now(),
@@ -150,6 +153,27 @@ fn build_status_json(full: bool) -> io::Result<serde_json::Value> {
                 "other"
             ]
         },
+        "llmwave": {
+            "enabled_by_default": false,
+            "shadow_runtime": false,
+            "apply_runtime": false,
+            "contract": {
+                "model_id": llmwave::contract().model_id,
+                "schema_id": llmwave::contract().schema_id,
+                "tokenizer_id": llmwave::contract().tokenizer_id,
+                "record_bytes": llmwave::contract().record_bytes,
+                "hot_path": llmwave::contract().hot_path
+            },
+            "memory": {
+                "path": llmwave::default_memory_path()
+                    .map(|path| path.display().to_string())
+                    .unwrap_or_else(|| "none".to_string()),
+                "records": llmwave_memory.len(),
+                "vocabulary": llmwave_memory.vocabulary_len(),
+                "loaded": !llmwave_memory.is_empty()
+            },
+            "phrase_probe": llmwave_phrase_probe_json(&llmwave_memory)
+        },
         "zones": [
             {"id": "sensors", "label": "Сенсоры", "layer": "L1"},
             {"id": "candidates", "label": "Кандидаты", "layer": "L2"},
@@ -165,6 +189,25 @@ fn build_status_json(full: bool) -> io::Result<serde_json::Value> {
             json!({"path": source.path, "cases": source.cases})
         }).collect::<Vec<_>>()
     }))
+}
+
+fn llmwave_phrase_probe_json(memory: &llmwave::LlmWaveMemory) -> Vec<serde_json::Value> {
+    ["html", "на улице опять идёт", "я хочу"]
+        .iter()
+        .map(|prefix| {
+            let predictions = memory.predict_phrase(prefix, 3, 3);
+            json!({
+                "prefix": prefix,
+                "predictions": predictions.into_iter().map(|prediction| {
+                    json!({
+                        "text": prediction.text,
+                        "score": prediction.score,
+                        "support": prediction.support
+                    })
+                }).collect::<Vec<_>>()
+            })
+        })
+        .collect()
 }
 
 fn scoreboard_json(scoreboard: &journal::CellScoreboard) -> serde_json::Value {

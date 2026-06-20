@@ -103,6 +103,10 @@ fn starts_with_latin_letter(token: &str) -> bool {
 }
 
 fn repair_mixed_russian_token(token: &str) -> Option<String> {
+    if let Some(repaired) = repair_duplicate_latin_layout_prefix(token) {
+        return Some(repaired);
+    }
+
     let candidate = latin_chars_to_ru(token);
     if candidate == token {
         return None;
@@ -117,6 +121,40 @@ fn repair_mixed_russian_token(token: &str) -> Option<String> {
     }
 
     should_repair_trailing_latin_as_ru(token, &candidate).then_some(candidate)
+}
+
+fn repair_duplicate_latin_layout_prefix(token: &str) -> Option<String> {
+    let mut latin_prefix = String::new();
+    let mut cyrillic_tail = String::new();
+    let mut seen_cyrillic = false;
+
+    for ch in token.chars() {
+        if !seen_cyrillic && ch.is_ascii_alphabetic() {
+            latin_prefix.push(ch);
+        } else if is_cyrillic_char(ch) {
+            seen_cyrillic = true;
+            cyrillic_tail.push(ch);
+        } else {
+            return None;
+        }
+    }
+
+    if latin_prefix.is_empty() || cyrillic_tail.chars().count() < 5 {
+        return None;
+    }
+
+    let converted_prefix = latin_chars_to_ru(&latin_prefix);
+    if converted_prefix == latin_prefix {
+        return None;
+    }
+
+    let tail_lower = cyrillic_tail.to_lowercase();
+    let converted_lower = converted_prefix.to_lowercase();
+    if tail_lower.starts_with(&converted_lower) && is_known_ru_token(&tail_lower) {
+        Some(cyrillic_tail)
+    } else {
+        None
+    }
 }
 
 fn should_repair_trailing_latin_as_ru(token: &str, candidate: &str) -> bool {
@@ -185,4 +223,17 @@ fn latin_chars_to_ru(token: &str) -> String {
             }
         })
         .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::repair_mixed_script;
+
+    #[test]
+    fn repairs_duplicate_latin_layout_prefix_before_russian_word() {
+        assert_eq!(
+            repair_mixed_script("fавтозамена").as_deref(),
+            Some("автозамена")
+        );
+    }
 }

@@ -168,6 +168,7 @@ fn l3_role(name: &str) -> &str {
         "PatternWaveCell32" => "pattern",
         "StructuralRelationCell32" => "relation",
         "L3FeedbackCell32" => "feedback",
+        "LLMWaveCell32" => "memory",
         "PhraseCell32" => "phrase",
         "PhraseForecastCell32" => "forecast",
         "MeshConsensusCell32" => "consensus",

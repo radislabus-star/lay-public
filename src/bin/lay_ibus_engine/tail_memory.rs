@@ -104,8 +104,10 @@ fn trim_committed_tail_buffer(buffer: &mut String) {
 #[cfg(test)]
 mod tests {
     use super::{last_tail_token_range, trailing_whitespace_chars, LayIbusEngine};
+    use crate::engine::WordInputMode;
     use lay::config::LayConfig;
     use std::sync::{Arc, Mutex};
+    use std::time::{Duration, Instant};
 
     #[test]
     fn committed_tail_range_keeps_separator_outside_token() {
@@ -132,5 +134,75 @@ mod tests {
         engine.insert_composition_char('ы');
         assert_eq!(engine.tail_buffer, "печатается ты");
         assert_eq!(engine.preedit_fast.token(), "ты");
+    }
+
+    #[test]
+    fn focus_reset_preserves_just_typed_passthrough_tail() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            false,
+            true,
+            LayConfig::default(),
+        );
+
+        engine.push_tail_char('g');
+        engine.reset_for_ibus_focus_change();
+
+        assert_eq!(engine.tail_buffer, "g");
+        assert_eq!(engine.preedit_fast.token(), "g");
+    }
+
+    #[test]
+    fn focus_reset_clears_stale_passthrough_tail() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            false,
+            true,
+            LayConfig::default(),
+        );
+
+        engine.push_tail_char('g');
+        engine.last_tail_input_at = Some(Instant::now() - Duration::from_millis(900));
+        engine.reset_for_ibus_focus_change();
+
+        assert!(engine.tail_buffer.is_empty());
+        assert_eq!(engine.preedit_fast.token(), "");
+    }
+
+    #[test]
+    fn whitespace_closes_current_word_input_mode() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            false,
+            true,
+            LayConfig::default(),
+        );
+
+        engine.word_input_mode = Some(WordInputMode::ManagedCommit);
+        engine.push_tail_char('a');
+        engine.push_tail_char(' ');
+
+        assert_eq!(engine.word_input_mode, None);
+    }
+
+    #[test]
+    fn fresh_focus_reset_preserves_current_word_input_mode() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            false,
+            true,
+            LayConfig::default(),
+        );
+
+        engine.word_input_mode = Some(WordInputMode::ManagedCommit);
+        engine.push_tail_char('f');
+        engine.reset_for_ibus_focus_change();
+
+        assert_eq!(engine.tail_buffer, "f");
+        assert_eq!(engine.word_input_mode, Some(WordInputMode::ManagedCommit));
     }
 }

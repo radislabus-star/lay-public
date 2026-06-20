@@ -267,4 +267,107 @@ mod tests {
             Some("проверка ")
         );
     }
+
+    #[test]
+    fn committed_tail_autocorrect_handles_ascii_tail_after_russian_context() {
+        let mut engine = engine();
+        for ch in "проверка ghjdthrf".chars() {
+            engine.push_tail_char(ch);
+        }
+
+        assert_eq!(
+            engine
+                .autocorrect_committed_tail_text("ghjdthrf ")
+                .as_deref(),
+            Some("проверка ")
+        );
+    }
+
+    #[test]
+    fn committed_tail_autocorrect_handles_autozamena_layout_word() {
+        let mut engine = engine();
+        for ch in "fdnjpfvtyf".chars() {
+            engine.push_tail_char(ch);
+        }
+
+        assert_eq!(
+            engine
+                .autocorrect_committed_tail_text("fdnjpfvtyf ")
+                .as_deref(),
+            Some("автозамена ")
+        );
+    }
+
+    #[test]
+    fn committed_tail_autocorrect_repairs_layout_word_with_missing_initial_letter() {
+        let mut engine = engine();
+        for ch in "dnjpfvtyf".chars() {
+            engine.push_tail_char(ch);
+        }
+
+        assert_eq!(
+            engine
+                .autocorrect_committed_tail_text("dnjpfvtyf ")
+                .as_deref(),
+            Some("автозамена ")
+        );
+    }
+
+    #[test]
+    fn committed_tail_autocorrect_repairs_autozamena_mixed_prefix() {
+        let mut engine = engine();
+        for ch in "fвтозамена".chars() {
+            engine.push_tail_char(ch);
+        }
+
+        assert_eq!(
+            engine
+                .autocorrect_committed_tail_text("fвтозамена ")
+                .as_deref(),
+            Some("автозамена ")
+        );
+    }
+
+    #[test]
+    fn committed_tail_autocorrect_repairs_duplicate_latin_prefix_before_russian_word() {
+        let mut engine = engine();
+        for ch in "fавтозамена".chars() {
+            engine.push_tail_char(ch);
+        }
+
+        assert_eq!(
+            engine
+                .autocorrect_committed_tail_text("fавтозамена ")
+                .as_deref(),
+            Some("автозамена ")
+        );
+    }
+
+    #[test]
+    fn committed_tail_autocorrect_handles_plain_en_to_ru_layout_words() {
+        let mut engine = engine();
+        for ch in "ghbdtn".chars() {
+            engine.push_tail_char(ch);
+        }
+
+        assert_eq!(
+            engine.autocorrect_committed_tail_text("ghbdtn ").as_deref(),
+            Some("привет ")
+        );
+    }
+
+    #[test]
+    fn committed_tail_autocorrect_keeps_ascii_layout_punctuation_in_token() {
+        let mut engine = engine();
+        for ch in "ghj,ktvf".chars() {
+            engine.push_tail_char(ch);
+        }
+
+        assert_eq!(
+            engine
+                .autocorrect_committed_tail_text("ghj,ktvf ")
+                .as_deref(),
+            Some("проблема ")
+        );
+    }
 }

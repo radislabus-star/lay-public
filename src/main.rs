@@ -233,7 +233,10 @@ fn print_nanda_explanation(text: &str, cfg: &config::LayConfig) {
         println!("nanda: disabled");
         return;
     }
-    let trace = nanda_wave::run_wave_trace(text);
+    let options = nanda_wave::WaveOptions::default()
+        .with_llmwave_shadow(cfg.llmwave_shadow)
+        .with_llmwave_apply(cfg.llmwave_shadow && cfg.llmwave_apply);
+    let trace = nanda_wave::run_wave_trace_with_options(text, &options);
     match trace.decision {
         nanda_wave::WaveDecision::Apply {
             ref text,

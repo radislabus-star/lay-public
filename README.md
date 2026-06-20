@@ -44,6 +44,18 @@ curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scr
 По умолчанию double Shift исправляет **1 последнее слово**. Области `2 слова`
 и `3 слова` можно включить отдельно в трее.
 
+## Что нового в 0.1.231
+
+- IME double Shift восстанавливает потерянную первую layout-букву в
+  терминальном passthrough-хвосте: `hbdtn -> привет`,
+  `dnjpfvtyf -> автозамена`;
+- mixed-script автозамена удаляет дублирующий латинский layout-префикс перед
+  русским словом: `fавтозамена -> автозамена`;
+- NANDA Wave trainer умеет дообучать Cell32-память из успешных live-действий
+  `typing-assist`, `ime-typing-assist`, `layout-replay`, `smart-text`;
+- ручные `user-correction` не попадают в обучение по умолчанию и требуют
+  отдельного opt-in флага.
+
 ## Что нового в 0.1.230
 
 - IME-подсказки больше не переводят уже напечатанный токен в активную

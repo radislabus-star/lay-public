@@ -16,6 +16,10 @@ impl LayIbusEngine {
             .or_else(|| x11_keysym_char(keyval))
     }
 
+    pub(super) fn passthrough_visible_char(&self, keyval: u32, keycode: u32) -> Option<char> {
+        x11_keysym_char(keyval).or_else(|| self.physical_char(keyval, keycode))
+    }
+
     pub(super) fn double_shift_replacement(&self, text: &str) -> String {
         lay::mixed_script_repair::repair_mixed_script(text)
             .unwrap_or_else(|| lay::dict::convert(text, lay::dict::detect_direction(text)))
@@ -146,5 +150,25 @@ mod tests {
         engine.shift_active = false;
         assert_eq!(engine.physical_char(0x06a3, 0), Some('ё'));
         assert_eq!(engine.physical_char(0x0100_0432, 32), Some('в'));
+    }
+
+    #[test]
+    fn passthrough_visible_char_prefers_client_keyval_over_stale_layout() {
+        let mut engine = engine();
+        engine.layout_is_ru = true;
+        assert_eq!(engine.passthrough_visible_char('g' as u32, 34), Some('g'));
+        assert_eq!(engine.passthrough_visible_char(0x06d0, 34), Some('п'));
+    }
+
+    #[test]
+    fn passthrough_visible_char_keeps_ascii_prefix_for_completion_memory() {
+        let mut engine = engine();
+        engine.layout_is_ru = true;
+        let ch = engine
+            .passthrough_visible_char('f' as u32, 33)
+            .expect("visible ascii");
+        engine.push_tail_char(ch);
+        assert_eq!(engine.last_tail_token_text(), "f");
+        assert_eq!(engine.preedit_fast.token(), "f");
     }
 }

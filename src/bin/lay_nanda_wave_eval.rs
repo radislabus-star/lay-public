@@ -1,10 +1,10 @@
 use lay::config::CorrectionSafety;
 use lay::eval_cases::EvalCase;
-use lay::nanda_wave::journal;
 use lay::nanda_wave::{
     evaluate_wave, evaluate_wave_with_options, run_wave_trace_with_options, WaveDecision,
     WaveOptions,
 };
+use lay::nanda_wave::{journal, llmwave};
 use std::collections::BTreeMap;
 use std::env;
 use std::io;
@@ -20,10 +20,34 @@ fn main() -> io::Result<()> {
     if let Some(path) = arg_value(&args, "--learned") {
         env::set_var("LAY_NANDA_WAVE_MEMORY", path);
     }
+    if let Some(path) = arg_value(&args, "--llmwave-memory") {
+        env::set_var("LAY_LLMWAVE_MEMORY", path);
+    }
     let disabled = arg_values(&args, "--disable-cell");
-    let options = WaveOptions::with_disabled(&disabled);
+    let options = WaveOptions::with_disabled(&disabled)
+        .with_llmwave_shadow(args.iter().any(|arg| arg == "--llmwave-shadow"))
+        .with_llmwave_apply(args.iter().any(|arg| arg == "--llmwave-apply"));
+    if let Some(path) = arg_value(&args, "--llmwave-pack-cases") {
+        let Some(out) = arg_value(&args, "--out") else {
+            eprintln!("--llmwave-pack-cases requires --out PATH");
+            return Ok(());
+        };
+        pack_llmwave_cases(path, out)?;
+        return Ok(());
+    }
+    if let Some(path) = arg_value(&args, "--llmwave-pack-text") {
+        let Some(out) = arg_value(&args, "--out") else {
+            eprintln!("--llmwave-pack-text requires --out PATH");
+            return Ok(());
+        };
+        pack_llmwave_text(path, out)?;
+        return Ok(());
+    }
     if args.iter().any(|arg| arg == "--status-json") {
-        status::print_status_json(args.iter().any(|arg| arg == "--refresh-status-json"))?;
+        status::print_status_json(
+            args.iter().any(|arg| arg == "--refresh-status-json"),
+            args.iter().any(|arg| arg == "--full-status-json"),
+        )?;
         return Ok(());
     }
     if let Some(limit) = arg_value(&args, "--recent-traces") {
@@ -86,7 +110,7 @@ fn main() -> io::Result<()> {
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite | --quick-ablation | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite | --quick-ablation | --llmwave-pack-cases PATH --out PATH | --cases PATH"
         );
         return Ok(());
     }
@@ -95,6 +119,39 @@ fn main() -> io::Result<()> {
         cases.extend(lay::eval_cases::read_cases(&PathBuf::from(path))?);
     }
     print_cases("cases", &cases, &options);
+    Ok(())
+}
+
+fn pack_llmwave_cases(path: &str, out: &str) -> io::Result<()> {
+    let cases = lay::eval_cases::read_cases(&PathBuf::from(path))?;
+    let text = cases
+        .iter()
+        .map(|case| case.expected.as_str())
+        .collect::<Vec<_>>()
+        .join("\n");
+    let memory = llmwave::LlmWaveMemory::from_text(&text);
+    llmwave::write_memory_packet(&PathBuf::from(out), &memory)?;
+    println!(
+        "llmwave_pack_cases: input={} output={} records={} record_bytes={}",
+        path,
+        out,
+        memory.len(),
+        llmwave::LLMWAVE_RECORD_BYTES
+    );
+    Ok(())
+}
+
+fn pack_llmwave_text(path: &str, out: &str) -> io::Result<()> {
+    let text = std::fs::read_to_string(path)?;
+    let memory = llmwave::LlmWaveMemory::from_text(&text);
+    llmwave::write_memory_packet(&PathBuf::from(out), &memory)?;
+    println!(
+        "llmwave_pack_text: input={} output={} records={} record_bytes={}",
+        path,
+        out,
+        memory.len(),
+        llmwave::LLMWAVE_RECORD_BYTES
+    );
     Ok(())
 }
 
@@ -207,6 +264,19 @@ fn print_trace(text: &str, options: &WaveOptions, record_trace: bool) {
     println!("L3:");
     for layer in &trace.l3 {
         println!("  {}: {}", layer.name, layer.summary);
+    }
+    if options.llmwave_shadow() || options.llmwave_apply() {
+        let memory = llmwave::load_default_memory();
+        let predictions = memory.predict_phrase(text, 3, 5);
+        if !predictions.is_empty() {
+            println!("L3 phrase predictions:");
+            for prediction in predictions {
+                println!(
+                    "  {:?} score={:.3} support={}",
+                    prediction.text, prediction.score, prediction.support
+                );
+            }
+        }
     }
     match trace.decision {
         WaveDecision::Apply { text, confidence } => {

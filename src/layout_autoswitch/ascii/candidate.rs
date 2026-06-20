@@ -42,6 +42,19 @@ pub(super) fn ascii_to_russian_layout_candidate(
     let known = is_known_russian_layout_autoswitch_word(&converted_lower);
     let shift_letter_signal = has_ascii_shift_letter_signal(token);
     if !(known || allow_shift_fallback && shift_letter_signal) {
+        if let Some(replacement) = polish_converted_russian_layout_token(&converted) {
+            let (_, replacement_word, _) = split_word_punctuation(&replacement);
+            let word = replacement_word.to_string();
+            return Some(AsciiToRussianLayoutCandidate {
+                replacement,
+                word,
+                known: true,
+                clean_alpha: token.chars().all(|ch| ch.is_ascii_alphabetic()),
+                shift_letter_signal,
+            });
+        }
+    }
+    if !(known || allow_shift_fallback && shift_letter_signal) {
         return None;
     }
 

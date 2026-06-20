@@ -1,10 +1,11 @@
-use super::super::super::{active_nanda_trace, active_nanda_trace_text};
+use super::super::super::{active_nanda_trace, active_nanda_trace_text, active_nanda_wave_options};
 
 pub(crate) fn record_nanda_trace_if_enabled(original: &str, replacement: &str) {
     if !active_nanda_trace() {
         return;
     }
-    let trace = lay::nanda_wave::run_wave_trace(original);
+    let options = active_nanda_wave_options();
+    let trace = lay::nanda_wave::run_wave_trace_with_options(original, &options);
     lay::nanda_wave::journal::record_trace_with_text_policy(
         "runtime:typing-assist",
         "typing-assist",

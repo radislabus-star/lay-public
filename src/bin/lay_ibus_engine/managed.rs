@@ -2,7 +2,7 @@ use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
 use super::composition_commit::ActiveCompositionCommit;
-use super::engine::LayIbusEngine;
+use super::engine::{LayIbusEngine, WordInputMode};
 use super::protocol::{
     has_command_modifier, KEY_BACKSPACE, KEY_DOWN, KEY_ENTER, KEY_KP_ENTER, KEY_LEFT, KEY_RIGHT,
     KEY_SPACE, KEY_TAB, KEY_UP,
@@ -84,6 +84,16 @@ impl LayIbusEngine {
                 self.trace_key("enter_commit_passthrough", keyval, keycode, false, None);
                 return Ok(false);
             }
+            if self.autocorrect_committed_tail_enter(emitter).await? {
+                self.trace_key(
+                    "enter_committed_tail_autocorrect",
+                    keyval,
+                    keycode,
+                    false,
+                    None,
+                );
+                return Ok(false);
+            }
             self.tail_buffer.clear();
             self.preedit_fast.reset();
             self.publish_tail_handoff();
@@ -129,9 +139,24 @@ impl LayIbusEngine {
             return Ok(false);
         };
         if self.buffer.is_empty() {
-            if self.cursor_cell_width > 0 {
-                self.observe_terminal_passthrough_char(emitter, ch).await?;
-                self.trace_key("terminal_passthrough", keyval, keycode, false, Some(ch));
+            let mode = *self.word_input_mode.get_or_insert_with(|| {
+                if self.cursor_cell_width > 0 {
+                    WordInputMode::TerminalPassthrough
+                } else {
+                    WordInputMode::ManagedCommit
+                }
+            });
+            if mode == WordInputMode::TerminalPassthrough {
+                let visible_ch = self.passthrough_visible_char(keyval, keycode).unwrap_or(ch);
+                self.observe_terminal_passthrough_char(emitter, visible_ch)
+                    .await?;
+                self.trace_key(
+                    "terminal_passthrough",
+                    keyval,
+                    keycode,
+                    false,
+                    Some(visible_ch),
+                );
                 return Ok(false);
             }
             self.commit_managed_passthrough_char(emitter, ch).await?;

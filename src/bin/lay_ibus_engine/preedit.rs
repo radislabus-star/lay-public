@@ -351,6 +351,10 @@ impl LayIbusEngine {
     pub(super) fn push_tail_char(&mut self, ch: char) {
         self.tail_buffer.push(ch);
         self.preedit_fast.push(ch);
+        self.last_tail_input_at = Some(Instant::now());
+        if ch.is_whitespace() {
+            self.word_input_mode = None;
+        }
         trim_tail_buffer(&mut self.tail_buffer);
         self.publish_tail_handoff();
     }

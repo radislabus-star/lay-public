@@ -56,6 +56,8 @@ impl Default for LayConfig {
             nanda_trace: false,
             nanda_trace_text: false,
             nanda_precognition: false,
+            llmwave_shadow: false,
+            llmwave_apply: false,
         }
     }
 }

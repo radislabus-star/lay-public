@@ -41,6 +41,8 @@ impl LayIbusEngine {
             alt_used_as_modifier: false,
             last_shift_release_at: None,
             last_commit_at: None,
+            last_tail_input_at: None,
+            word_input_mode: None,
             managed_input,
             config,
         };
@@ -49,9 +51,13 @@ impl LayIbusEngine {
     }
 
     pub(super) fn reset_for_ibus_focus_change(&mut self) {
+        let now = Instant::now();
         let preserve_tail = self
             .last_commit_at
-            .is_some_and(|at| Instant::now().duration_since(at) <= Duration::from_millis(700));
+            .is_some_and(|at| now.duration_since(at) <= Duration::from_millis(700))
+            || self
+                .last_tail_input_at
+                .is_some_and(|at| now.duration_since(at) <= Duration::from_millis(700));
         self.buffer.clear();
         self.composition_cursor = 0;
         self.preedit_suffix.clear();
@@ -59,6 +65,10 @@ impl LayIbusEngine {
         self.preedit_candidate_index = 0;
         self.preedit_dirty = false;
         self.last_shift_release_at = None;
+        if !preserve_tail {
+            self.last_tail_input_at = None;
+            self.word_input_mode = None;
+        }
         self.shift_used_as_modifier = false;
         self.alt_completion_active = false;
         self.alt_used_as_modifier = false;
@@ -108,6 +118,9 @@ impl LayIbusEngine {
         self.preedit_fast.reset();
         for ch in text.chars() {
             self.preedit_fast.push(ch);
+        }
+        if text.chars().last().is_some_and(char::is_whitespace) {
+            self.word_input_mode = None;
         }
         self.publish_tail_handoff();
         self.buffer.clear();
