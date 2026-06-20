@@ -72,7 +72,7 @@ impl LayIbusEngine {
     }
 
     fn recover_missing_initial_layout_toggle(&self, token: &str) -> Option<(u32, String)> {
-        if token.chars().count() < 2 || !token.chars().all(char::is_alphabetic) {
+        if token.chars().count() < 5 || !token.chars().all(char::is_alphabetic) {
             return None;
         }
 
@@ -80,16 +80,15 @@ impl LayIbusEngine {
         let mut best: Option<(f32, String, String)> = None;
         for prefix in missing_initial_prefixes(token) {
             let candidate = format!("{prefix}{token}");
-            let original = format!("{candidate} ");
-            let Some(replacement) = self.autocorrect_committed_tail_text(&original) else {
-                continue;
-            };
-            let replacement = replacement.trim_end().to_string();
+            let replacement = self.double_shift_replacement(&candidate);
             if replacement.is_empty() || replacement == candidate || replacement == normal {
                 continue;
             }
             let score = replacement_quality_score(&replacement);
             if score < 0.98 {
+                continue;
+            }
+            if !known_layout_recovery_replacement(&replacement) {
                 continue;
             }
             if best
@@ -261,11 +260,30 @@ mod tests {
             Some((10, "автозамена".to_string()))
         );
     }
+
+    #[test]
+    fn double_shift_does_not_recover_missing_initial_for_short_ascii_tail() {
+        let mut engine = engine();
+        for ch in "в ima".chars() {
+            engine.push_tail_char(ch);
+        }
+
+        let (backspaces, replacement) = engine
+            .committed_tail_toggle_replacement()
+            .expect("plain double shift still toggles the short tail");
+
+        assert_eq!(backspaces, 3);
+        assert_ne!(replacement, "dime");
+    }
 }
 
 fn missing_initial_prefixes(token: &str) -> impl Iterator<Item = char> {
     let ascii = token.chars().all(|ch| ch.is_ascii_alphabetic());
-    let prefixes: &'static str = if ascii {
+    let prefixes: &'static str = if ascii && token.chars().all(|ch| ch.is_ascii_lowercase()) {
+        "abcdefghijklmnopqrstuvwxyz"
+    } else if ascii && token.chars().all(|ch| ch.is_ascii_uppercase()) {
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    } else if ascii {
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     } else {
         "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
@@ -285,4 +303,14 @@ fn replacement_quality_score(replacement: &str) -> f32 {
     } else {
         0.0
     }
+}
+
+fn known_layout_recovery_replacement(replacement: &str) -> bool {
+    let word = replacement.trim().to_lowercase();
+    !word.is_empty()
+        && word
+            .chars()
+            .all(|ch| ('а'..='я').contains(&ch) || ch == 'ё')
+        && (lay::lexicon::is_common_ru_word(&word)
+            || lay::russian_lexicon::is_known_russian_word_or_form(&word))
 }
