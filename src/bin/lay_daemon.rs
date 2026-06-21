@@ -102,6 +102,12 @@ fn grab_physical_device_for_correction(device: &mut Device) -> DeviceGrabGuard<'
 mod text_output;
 use text_output::*;
 
+#[path = "lay_daemon/tail_replace_policy.rs"]
+mod tail_replace_policy;
+
+#[path = "lay_daemon/layout_switch_policy.rs"]
+mod layout_switch_policy;
+
 // ─── Keyboard device I/O helpers ──────────────────────────
 
 #[path = "lay_daemon/keyboard_io.rs"]

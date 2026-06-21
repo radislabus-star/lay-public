@@ -4,7 +4,6 @@
 //! small state machine around "current word", completed words, replay toggles
 //! and pending user-learning feedback.
 
-mod auto_layout_guard;
 mod learning;
 mod replay_memory;
 mod replay_scope;
@@ -27,7 +26,6 @@ pub struct WordBuffer {
     replay_toggle_words: usize,
     pending_learning: Option<PendingLearningCorrection>,
     pending_auto_undo: Option<PendingAutoUndo>,
-    pending_auto_layout_guard: Option<PendingAutoLayoutGuard>,
 }
 
 #[derive(Debug, Clone)]
@@ -63,13 +61,6 @@ struct PendingLearningCorrection {
     typed: Vec<KeyEvent>,
 }
 
-#[derive(Debug, Clone)]
-struct PendingAutoLayoutGuard {
-    original_word: String,
-    replacement_word: String,
-    started_at: Instant,
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UserLearningCorrection {
     pub lay_kind: String,
@@ -91,7 +82,6 @@ impl WordBuffer {
             replay_toggle_words: 0,
             pending_learning: None,
             pending_auto_undo: None,
-            pending_auto_layout_guard: None,
         }
     }
 
@@ -131,7 +121,6 @@ impl WordBuffer {
         self.prev_had_trailing_space = false;
         self.replay_toggle_words = 0;
         self.pending_auto_undo = None;
-        self.pending_auto_layout_guard = None;
     }
 
     #[inline]
@@ -152,7 +141,6 @@ impl WordBuffer {
         self.prev_had_trailing_space = false;
         self.replay_toggle_words = 0;
         self.pending_auto_undo = None;
-        self.pending_auto_layout_guard = None;
     }
 
     #[inline]

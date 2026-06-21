@@ -1,4 +1,5 @@
 use super::engine::LayIbusEngine;
+use std::time::Instant;
 
 impl LayIbusEngine {
     pub(super) fn selected_visible_completion_suffix(&self) -> String {
@@ -52,6 +53,82 @@ impl LayIbusEngine {
             return;
         };
         state.handoff_tail_buffer = self.tail_buffer.clone();
+    }
+
+    pub(super) fn close_committed_tail_field(&mut self) {
+        self.tail_buffer.clear();
+        self.preedit_fast.reset();
+        self.pending_space_committed_tail_replace = None;
+        self.suppress_next_committed_tail_autocorrect = false;
+        self.word_input_mode = None;
+        self.last_tail_input_at = None;
+        self.last_commit_at = None;
+        self.recent_committed_tail_replace = None;
+        let Ok(mut state) = self.shared.lock() else {
+            return;
+        };
+        state.handoff_tail_buffer.clear();
+        state.suppress_next_committed_tail_autocorrect = false;
+        state.preserve_active_path_until = None;
+    }
+
+    pub(super) fn refresh_empty_tail_from_handoff(&mut self) {
+        if !self.tail_buffer.is_empty() {
+            return;
+        }
+        let Ok(state) = self.shared.lock() else {
+            return;
+        };
+        if state.handoff_tail_buffer.is_empty() {
+            return;
+        }
+        self.tail_buffer.clone_from(&state.handoff_tail_buffer);
+        drop(state);
+        self.rebuild_preedit_fast_from_tail();
+    }
+
+    pub(super) fn publish_autocorrect_suppression_handoff(&self) {
+        let Ok(mut state) = self.shared.lock() else {
+            return;
+        };
+        state.suppress_next_committed_tail_autocorrect = true;
+    }
+
+    pub(super) fn take_autocorrect_suppression_handoff(&self) -> bool {
+        let Ok(mut state) = self.shared.lock() else {
+            return false;
+        };
+        let suppress = state.suppress_next_committed_tail_autocorrect;
+        state.suppress_next_committed_tail_autocorrect = false;
+        suppress
+    }
+
+    pub(super) fn clear_autocorrect_suppression_handoff(&self) {
+        let Ok(mut state) = self.shared.lock() else {
+            return;
+        };
+        state.suppress_next_committed_tail_autocorrect = false;
+    }
+
+    pub(super) fn publish_active_path_preserve_handoff(&self, until: Instant) {
+        let Ok(mut state) = self.shared.lock() else {
+            return;
+        };
+        state.preserve_active_path_until = Some(until);
+    }
+
+    pub(super) fn shared_active_path_preserved(&self) -> bool {
+        let Ok(mut state) = self.shared.lock() else {
+            return false;
+        };
+        let Some(until) = state.preserve_active_path_until else {
+            return false;
+        };
+        if Instant::now() <= until {
+            return true;
+        }
+        state.preserve_active_path_until = None;
+        false
     }
 }
 
@@ -186,6 +263,140 @@ mod tests {
         assert_eq!(engine.tail_buffer, "ghbdtn");
         assert_eq!(engine.preedit_fast.token(), "ghbdtn");
         assert_eq!(engine.word_input_mode, Some(WordInputMode::ManagedCommit));
+    }
+
+    #[test]
+    fn ibus_soft_reset_preserves_manual_toggle_autocorrect_suppression() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            false,
+            true,
+            LayConfig::default(),
+        );
+
+        engine.suppress_next_committed_tail_autocorrect = true;
+        engine.reset_for_ibus_soft_reset();
+
+        assert!(engine.suppress_next_committed_tail_autocorrect);
+    }
+
+    #[test]
+    fn focus_reset_without_preserve_clears_shared_autocorrect_suppression() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            shared.clone(),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        engine.publish_autocorrect_suppression_handoff();
+
+        engine.reset_for_ibus_focus_change();
+
+        let state = shared.lock().expect("lay ime state poisoned");
+        assert!(!state.suppress_next_committed_tail_autocorrect);
+    }
+
+    #[test]
+    fn close_committed_tail_field_clears_shared_tail_and_preserve_window() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            shared.clone(),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        engine.tail_buffer = "file проверка".to_string();
+        engine.publish_tail_handoff();
+        engine.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(100));
+
+        engine.close_committed_tail_field();
+
+        let state = shared.lock().expect("lay ime state poisoned");
+        assert!(engine.tail_buffer.is_empty());
+        assert!(state.handoff_tail_buffer.is_empty());
+        assert!(state.preserve_active_path_until.is_none());
+    }
+
+    #[test]
+    fn active_path_preserve_handoff_is_shared_between_engine_objects() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let publisher = LayIbusEngine::new(
+            "/publisher".to_string(),
+            shared.clone(),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        let reader = LayIbusEngine::new(
+            "/reader".to_string(),
+            shared,
+            false,
+            true,
+            LayConfig::default(),
+        );
+
+        publisher.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(100));
+
+        assert!(reader.shared_active_path_preserved());
+    }
+
+    #[test]
+    fn focus_engine_can_refresh_empty_tail_from_shared_handoff() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut publisher = LayIbusEngine::new(
+            "/publisher".to_string(),
+            shared.clone(),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        publisher.tail_buffer = "вот ".to_string();
+        publisher.publish_tail_handoff();
+        let mut reader = LayIbusEngine::new(
+            "/reader".to_string(),
+            shared,
+            true,
+            true,
+            LayConfig::default(),
+        );
+        reader.tail_buffer.clear();
+
+        reader.refresh_empty_tail_from_handoff();
+
+        assert_eq!(reader.tail_buffer, "вот ");
+        assert_eq!(reader.preedit_fast.token(), "вот");
+    }
+
+    #[test]
+    fn empty_focus_reset_does_not_overwrite_preserved_shared_tail() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut publisher = LayIbusEngine::new(
+            "/publisher".to_string(),
+            shared.clone(),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        publisher.tail_buffer = "вот ".to_string();
+        publisher.publish_tail_handoff();
+        publisher.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(100));
+        let mut empty_engine = LayIbusEngine::new(
+            "/empty".to_string(),
+            shared.clone(),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        empty_engine.tail_buffer.clear();
+
+        empty_engine.reset_for_ibus_focus_change();
+
+        let state = shared.lock().expect("lay ime state poisoned");
+        assert_eq!(state.handoff_tail_buffer, "вот ");
     }
 
     #[test]

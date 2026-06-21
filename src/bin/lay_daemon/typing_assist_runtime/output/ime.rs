@@ -1,9 +1,8 @@
-use lay::keyboard::preferred_layout_for_text;
 use std::time::Instant;
 
 use super::super::super::{
-    active_auto_switch_layout, log, read_current_layout_is_ru, should_try_ime_text_backend,
-    switch_or_restore_layout_after_text_edit, try_ime_replace_tail,
+    active_auto_switch_layout, layout_switch_policy, log, read_current_layout_is_ru,
+    should_try_ime_text_backend, switch_or_restore_layout_after_text_edit, try_ime_replace_tail,
 };
 use super::super::TypingAssistOutcome;
 use super::memory::TypingAssistTiming;
@@ -41,9 +40,11 @@ pub(crate) fn try_apply_ime_replacement(
         return None;
     }
 
-    let target_layout = preferred_layout_for_text(replacement, true);
+    let target_layout = layout_switch_policy::target_layout_for_replacement(replacement, true);
+    let force_target_layout =
+        layout_switch_policy::force_target_layout_for_replacement(original, replacement);
     switch_or_restore_layout_after_text_edit(
-        active_auto_switch_layout(),
+        active_auto_switch_layout() || force_target_layout,
         target_layout,
         original_layout,
         "typing-assist",

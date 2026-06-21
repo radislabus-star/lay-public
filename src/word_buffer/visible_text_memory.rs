@@ -65,7 +65,6 @@ impl WordBuffer {
         }
         self.replay_toggle_words = 0;
         self.pending_auto_undo = None;
-        self.pending_auto_layout_guard = None;
         true
     }
 }

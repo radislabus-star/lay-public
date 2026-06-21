@@ -1,11 +1,62 @@
 use lay::config::LayConfig;
+use lay::manual_toggle::VisibleTailSource;
 use std::time::{Duration, Instant};
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
-use super::engine::LayIbusEngine;
+use super::engine::{LayIbusEngine, RecentCommittedTailReplace};
 use super::protocol::Shared;
 use super::text::make_ibus_text;
+use super::trace;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct CommittedTailReplaceRequest {
+    pub(crate) source: VisibleTailSource,
+    pub(crate) backspaces: u32,
+    pub(crate) text: String,
+    pub(crate) suppress_next_autocorrect: bool,
+}
+
+impl CommittedTailReplaceRequest {
+    pub(crate) fn ime_autocorrect(backspaces: u32, text: String) -> Self {
+        Self {
+            source: VisibleTailSource::ImeCommittedTail,
+            backspaces,
+            text,
+            suppress_next_autocorrect: false,
+        }
+    }
+
+    pub(crate) fn ime_manual_toggle(
+        backspaces: u32,
+        text: String,
+        suppress_next_autocorrect: bool,
+    ) -> Self {
+        Self {
+            source: VisibleTailSource::ImeCommittedTail,
+            backspaces,
+            text,
+            suppress_next_autocorrect,
+        }
+    }
+
+    pub(crate) fn daemon_bridge(
+        backspaces: u32,
+        text: String,
+        suppress_next_autocorrect: bool,
+    ) -> Self {
+        Self {
+            source: VisibleTailSource::DaemonWordBuffer,
+            backspaces,
+            text,
+            suppress_next_autocorrect,
+        }
+    }
+
+    fn is_noop(&self) -> bool {
+        self.backspaces == 0 && self.text.is_empty()
+    }
+}
 
 impl LayIbusEngine {
     pub(crate) fn new(
@@ -42,6 +93,8 @@ impl LayIbusEngine {
             last_shift_release_at: None,
             last_commit_at: None,
             last_tail_input_at: None,
+            recent_committed_tail_replace: None,
+            pending_space_committed_tail_replace: None,
             suppress_next_committed_tail_autocorrect: false,
             word_input_mode: None,
             managed_input,
@@ -52,24 +105,22 @@ impl LayIbusEngine {
     }
 
     pub(super) fn reset_for_ibus_focus_change(&mut self) {
-        let now = Instant::now();
-        let preserve_tail = self
-            .last_commit_at
-            .is_some_and(|at| now.duration_since(at) <= Duration::from_millis(700))
-            || self
-                .last_tail_input_at
-                .is_some_and(|at| now.duration_since(at) <= Duration::from_millis(700));
+        let preserve_tail =
+            self.should_preserve_focus_handoff() || self.shared_active_path_preserved();
         self.buffer.clear();
         self.composition_cursor = 0;
         self.preedit_suffix.clear();
         self.preedit_candidates.clear();
         self.preedit_candidate_index = 0;
         self.preedit_dirty = false;
+        self.pending_space_committed_tail_replace = None;
         self.last_shift_release_at = None;
-        self.suppress_next_committed_tail_autocorrect = false;
         if !preserve_tail {
             self.last_tail_input_at = None;
+            self.recent_committed_tail_replace = None;
             self.word_input_mode = None;
+            self.suppress_next_committed_tail_autocorrect = false;
+            self.clear_autocorrect_suppression_handoff();
         }
         self.shift_used_as_modifier = false;
         self.alt_completion_active = false;
@@ -81,6 +132,15 @@ impl LayIbusEngine {
         }
     }
 
+    pub(super) fn should_preserve_focus_handoff(&self) -> bool {
+        let now = Instant::now();
+        self.last_commit_at
+            .is_some_and(|at| now.duration_since(at) <= Duration::from_millis(700))
+            || self
+                .last_tail_input_at
+                .is_some_and(|at| now.duration_since(at) <= Duration::from_millis(700))
+    }
+
     pub(super) fn reset_for_ibus_soft_reset(&mut self) {
         self.buffer.clear();
         self.composition_cursor = 0;
@@ -88,8 +148,9 @@ impl LayIbusEngine {
         self.preedit_candidates.clear();
         self.preedit_candidate_index = 0;
         self.preedit_dirty = false;
+        self.pending_space_committed_tail_replace = None;
         self.last_shift_release_at = None;
-        self.suppress_next_committed_tail_autocorrect = false;
+        self.recent_committed_tail_replace = None;
         self.shift_used_as_modifier = false;
         self.alt_completion_active = false;
         self.alt_used_as_modifier = false;
@@ -106,13 +167,35 @@ impl LayIbusEngine {
     pub(crate) async fn replace_committed_tail(
         &mut self,
         emitter: &SignalEmitter<'_>,
-        backspaces: u32,
-        text: String,
+        request: CommittedTailReplaceRequest,
     ) -> fdo::Result<bool> {
-        if backspaces == 0 && text.is_empty() {
+        if request.is_noop() {
             return Ok(false);
         }
+        let source = request.source;
+        let backspaces = request.backspaces;
+        let suppress_next_autocorrect = request.suppress_next_autocorrect;
+        let text = request.text;
+        let now = Instant::now();
+        self.last_commit_at = Some(now);
+        self.publish_active_path_preserve_handoff(now + Duration::from_millis(700));
+        if suppress_next_autocorrect {
+            self.suppress_next_committed_tail_autocorrect = true;
+            self.publish_autocorrect_suppression_handoff();
+        }
+        if self.should_skip_duplicate_committed_tail_replace(backspaces, &text, now) {
+            trace::record_committed_tail_replace(source, "duplicate_skip", backspaces, &text);
+            return Ok(true);
+        }
         self.clear_preedit(emitter).await?;
+        let output_route = if self.cursor_cell_width > 0 && backspaces > 0 {
+            "terminal_erase_commit"
+        } else if backspaces > 0 {
+            "surrounding_text_delete_commit"
+        } else {
+            "commit"
+        };
+        trace::record_committed_tail_replace(source, output_route, backspaces, &text);
         let commit_text = if self.cursor_cell_width > 0 && backspaces > 0 {
             terminal_erase_prefix(backspaces) + &text
         } else {
@@ -145,8 +228,29 @@ impl LayIbusEngine {
         self.composition_cursor = 0;
         self.preedit_candidates.clear();
         self.preedit_candidate_index = 0;
-        self.last_commit_at = Some(Instant::now());
+        self.recent_committed_tail_replace = Some(RecentCommittedTailReplace {
+            backspaces,
+            text,
+            at: now,
+        });
         Ok(true)
+    }
+
+    fn should_skip_duplicate_committed_tail_replace(
+        &self,
+        backspaces: u32,
+        text: &str,
+        now: Instant,
+    ) -> bool {
+        const DUPLICATE_REPLACE_WINDOW: Duration = Duration::from_millis(900);
+        self.recent_committed_tail_replace
+            .as_ref()
+            .is_some_and(|recent| {
+                recent.backspaces == backspaces
+                    && recent.text == text
+                    && now.duration_since(recent.at) <= DUPLICATE_REPLACE_WINDOW
+                    && self.tail_buffer.ends_with(text)
+            })
     }
 }
 
@@ -160,4 +264,97 @@ fn warm_runtime(config: &LayConfig) {
 
 fn terminal_erase_prefix(count: u32) -> String {
     "\u{7f}".repeat(count as usize)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{CommittedTailReplaceRequest, LayIbusEngine, RecentCommittedTailReplace};
+    use lay::config::LayConfig;
+    use lay::manual_toggle::VisibleTailSource;
+    use std::sync::{Arc, Mutex};
+    use std::time::{Duration, Instant};
+
+    fn engine() -> LayIbusEngine {
+        LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        )
+    }
+
+    #[test]
+    fn daemon_bridge_request_is_not_confused_with_ime_sources() {
+        let request = CommittedTailReplaceRequest::daemon_bridge(6, "привет".to_string(), true);
+
+        assert_eq!(request.source, VisibleTailSource::DaemonWordBuffer);
+        assert_eq!(request.backspaces, 6);
+        assert_eq!(request.text, "привет");
+        assert!(request.suppress_next_autocorrect);
+    }
+
+    #[test]
+    fn ime_manual_toggle_request_keeps_ime_committed_tail_source() {
+        let request = CommittedTailReplaceRequest::ime_manual_toggle(4, "djn ".to_string(), true);
+
+        assert_eq!(request.source, VisibleTailSource::ImeCommittedTail);
+        assert_eq!(request.backspaces, 4);
+        assert_eq!(request.text, "djn ");
+        assert!(request.suppress_next_autocorrect);
+    }
+
+    #[test]
+    fn committed_tail_noop_requires_empty_delete_and_empty_insert() {
+        assert!(CommittedTailReplaceRequest::ime_autocorrect(0, String::new()).is_noop());
+        assert!(!CommittedTailReplaceRequest::ime_autocorrect(1, String::new()).is_noop());
+        assert!(!CommittedTailReplaceRequest::ime_autocorrect(0, "x".to_string()).is_noop());
+    }
+
+    #[test]
+    fn terminal_erase_prefix_is_delete_control_run_only() {
+        assert_eq!(super::terminal_erase_prefix(3), "\u{7f}\u{7f}\u{7f}");
+    }
+
+    #[test]
+    fn duplicate_replace_gate_skips_same_recent_visible_result() {
+        let now = Instant::now();
+        let mut engine = engine();
+        engine.tail_buffer = "ладно ".to_string();
+        engine.recent_committed_tail_replace = Some(RecentCommittedTailReplace {
+            backspaces: 6,
+            text: "ладно ".to_string(),
+            at: now,
+        });
+
+        assert!(engine.should_skip_duplicate_committed_tail_replace(6, "ладно ", now));
+    }
+
+    #[test]
+    fn duplicate_replace_gate_allows_same_edit_for_new_original_tail() {
+        let now = Instant::now();
+        let mut engine = engine();
+        engine.tail_buffer = "ладно kflyj ".to_string();
+        engine.recent_committed_tail_replace = Some(RecentCommittedTailReplace {
+            backspaces: 6,
+            text: "ладно ".to_string(),
+            at: now,
+        });
+
+        assert!(!engine.should_skip_duplicate_committed_tail_replace(6, "ладно ", now));
+    }
+
+    #[test]
+    fn duplicate_replace_gate_expires_quickly() {
+        let now = Instant::now();
+        let mut engine = engine();
+        engine.tail_buffer = "ладно ".to_string();
+        engine.recent_committed_tail_replace = Some(RecentCommittedTailReplace {
+            backspaces: 6,
+            text: "ладно ".to_string(),
+            at: now - Duration::from_millis(901),
+        });
+
+        assert!(!engine.should_skip_duplicate_committed_tail_replace(6, "ладно ", now));
+    }
 }

@@ -102,10 +102,6 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
         log("⚠ mapped_target пуст — не вставляем");
         return None;
     }
-    if buf.should_consume_auto_layout_replay_guard(&mapped_orig, &mapped_target) {
-        log("· double Shift consumed: layout word was already fixed by auto-replace");
-        return None;
-    }
     // ═══ АЛГОРИТМ: decision layer → backspace → replay/text insert ═══
 
     let force_short_replay = should_force_replay_for_short_fragment(&mapped_orig);

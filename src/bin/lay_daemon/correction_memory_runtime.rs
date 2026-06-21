@@ -82,7 +82,9 @@ pub(super) fn remember_assisted_text_correction(
         correction.original(),
         correction.replacement(),
     ) {
-        buf.remember_pending_auto_layout_guard(correction.original(), correction.replacement());
+        // Layout-only typing assists are intentionally not auto-undone on the
+        // next edit, but explicit manual double-Shift remains a real user
+        // command and must use the normal replay path.
     } else {
         remember_pending_auto_undo(buf, &correction);
     }

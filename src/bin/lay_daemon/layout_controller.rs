@@ -25,7 +25,11 @@ pub(super) fn read_current_layout_is_ru() -> Result<bool, String> {
 }
 
 fn read_current_layout_gnome_is_ru() -> Result<bool, String> {
-    read_current_gnome_shell_layout_is_ru().or_else(|_| read_current_ibus_layout_is_ru())
+    if active_text_backend().should_try_ime() {
+        read_current_ibus_layout_is_ru().or_else(|_| read_current_gnome_shell_layout_is_ru())
+    } else {
+        read_current_gnome_shell_layout_is_ru().or_else(|_| read_current_ibus_layout_is_ru())
+    }
 }
 
 fn read_current_gnome_shell_layout_is_ru() -> Result<bool, String> {
@@ -230,8 +234,41 @@ pub(super) fn call_ime_ping() -> Result<String, String> {
 }
 
 pub(super) fn focused_ime_engine_handles_typing() -> bool {
-    active_text_backend().should_try_ime()
-        && (ime_bridge::focused().unwrap_or(false) || ibus_bridge::current_engine_is_lay_ime())
+    if !active_text_backend().should_try_ime() {
+        return false;
+    }
+    match ime_bridge::input_state() {
+        Ok(state) => state.starts_with("active:"),
+        Err(_) => ime_bridge::owns_active_text().unwrap_or(false),
+    }
+}
+
+pub(super) fn focused_ime_engine_handles_boundary_typing() -> bool {
+    focused_ime_engine_handles_typing()
+}
+
+pub(super) fn suppress_next_ime_autocorrect() {
+    if active_text_backend().should_try_ime() {
+        let _ = ime_bridge::suppress_next_autocorrect();
+    }
+}
+
+pub(super) fn try_ime_manual_toggle() -> Result<Option<bool>, String> {
+    if !active_text_backend().should_try_ime() {
+        return Ok(None);
+    }
+    let (handled, target_is_ru) = match ime_bridge::manual_toggle_v2() {
+        Ok(result) => result,
+        Err(_) => {
+            let handled = ime_bridge::manual_toggle()?;
+            return Ok(handled.then_some(read_current_layout_is_ru().unwrap_or(false)));
+        }
+    };
+    if !handled {
+        return Ok(None);
+    }
+    switch_to_target_layout(target_is_ru)?;
+    Ok(Some(target_is_ru))
 }
 
 pub(super) fn detect_auto_layout_backend_hint() -> Option<LayoutBackend> {
@@ -245,28 +282,5 @@ pub(super) fn detect_auto_layout_backend_hint() -> Option<LayoutBackend> {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::verify_layout_with_retry_config;
-
-    #[test]
-    fn verify_layout_retry_stops_after_success() {
-        let mut calls = 0;
-
-        assert!(verify_layout_with_retry_config(5, 0, || {
-            calls += 1;
-            calls == 3
-        }));
-        assert_eq!(calls, 3);
-    }
-
-    #[test]
-    fn verify_layout_retry_uses_all_attempts_on_failure() {
-        let mut calls = 0;
-
-        assert!(!verify_layout_with_retry_config(5, 0, || {
-            calls += 1;
-            false
-        }));
-        assert_eq!(calls, 5);
-    }
-}
+#[path = "layout_controller/tests.rs"]
+mod tests;

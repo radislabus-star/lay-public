@@ -4,6 +4,10 @@ use clap::Parser;
 mod args;
 #[path = "lay_ibus_engine/bridge.rs"]
 mod bridge;
+#[path = "lay_ibus_engine/bridge_actions.rs"]
+mod bridge_actions;
+#[path = "lay_ibus_engine/bridge_policy.rs"]
+mod bridge_policy;
 #[path = "lay_ibus_engine/committed_tail.rs"]
 mod committed_tail;
 #[path = "lay_ibus_engine/composition_commit.rs"]

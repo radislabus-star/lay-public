@@ -4,6 +4,8 @@ mod context;
 mod event;
 #[path = "manual_trigger_runtime/fire.rs"]
 mod fire;
+#[path = "manual_trigger_runtime/ime.rs"]
+mod ime;
 #[path = "manual_trigger_runtime/timeout.rs"]
 mod timeout;
 

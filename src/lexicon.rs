@@ -157,6 +157,10 @@ pub fn extend_common_ru_words(words: &mut HashSet<String>) {
     words.extend(common_ru_words().iter().cloned());
 }
 
+pub fn common_ru_words_iter() -> impl Iterator<Item = &'static str> {
+    common_ru_words_ordered().iter().map(String::as_str)
+}
+
 fn user_protected_ascii_words() -> &'static HashSet<String> {
     static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
     WORDS.get_or_init(|| {

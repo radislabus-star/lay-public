@@ -8,27 +8,85 @@ pub enum ManualToggleRoute {
     ImeCommittedTail,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum VisibleTailSource {
+    DaemonWordBuffer,
+    ImeActiveComposition,
+    ImeCommittedTail,
+}
+
+impl VisibleTailSource {
+    pub fn route(self) -> ManualToggleRoute {
+        match self {
+            Self::DaemonWordBuffer => ManualToggleRoute::Daemon,
+            Self::ImeActiveComposition => ManualToggleRoute::ImeActiveComposition,
+            Self::ImeCommittedTail => ManualToggleRoute::ImeCommittedTail,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct VisibleTail<'a> {
+    pub text: &'a str,
+    pub source: VisibleTailSource,
+}
+
+impl<'a> VisibleTail<'a> {
+    pub fn daemon_word_buffer(text: &'a str) -> Self {
+        Self {
+            text,
+            source: VisibleTailSource::DaemonWordBuffer,
+        }
+    }
+
+    pub fn ime_active_composition(text: &'a str) -> Self {
+        Self {
+            text,
+            source: VisibleTailSource::ImeActiveComposition,
+        }
+    }
+
+    pub fn ime_committed_tail(text: &'a str) -> Self {
+        Self {
+            text,
+            source: VisibleTailSource::ImeCommittedTail,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ManualToggleRequest<'a> {
-    pub tail: &'a str,
+    pub visible_tail: VisibleTail<'a>,
     pub current_layout_is_ru: bool,
-    pub route: ManualToggleRoute,
     pub recover_missing_initial: bool,
     pub preserve_trailing_whitespace: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ManualToggleEditPlan {
+    pub source: VisibleTailSource,
+    pub original_tail: String,
+    pub original_token: String,
+    pub delete_chars: u32,
+    pub insert_text: String,
+    pub target_layout_is_ru: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ManualTogglePlan {
+    pub route: ManualToggleRoute,
     pub backspaces: u32,
     pub replacement: String,
     pub target_layout_is_ru: bool,
     pub suppress_next_autocorrect: bool,
+    pub edit: ManualToggleEditPlan,
 }
 
 pub fn plan_manual_toggle(request: ManualToggleRequest<'_>) -> Option<ManualTogglePlan> {
-    let token = last_tail_token(request.tail)?;
+    let tail = request.visible_tail.text;
+    let token = last_tail_token(tail)?;
     let trailing_ws = if request.preserve_trailing_whitespace {
-        trailing_whitespace_chars(request.tail)
+        trailing_whitespace_chars(tail)
     } else {
         0
     };
@@ -46,16 +104,27 @@ pub fn plan_manual_toggle(request: ManualToggleRequest<'_>) -> Option<ManualTogg
     if replacement == token {
         return None;
     }
+    let original_token = token.to_string();
     for _ in 0..trailing_ws {
         replacement.push(' ');
     }
     backspaces = backspaces.saturating_add(trailing_ws as u32);
+    let target_layout_is_ru = preferred_layout_for_text(&replacement, request.current_layout_is_ru);
 
     Some(ManualTogglePlan {
+        route: request.visible_tail.source.route(),
         backspaces,
-        target_layout_is_ru: preferred_layout_for_text(&replacement, request.current_layout_is_ru),
-        replacement,
+        replacement: replacement.clone(),
+        target_layout_is_ru,
         suppress_next_autocorrect: true,
+        edit: ManualToggleEditPlan {
+            source: request.visible_tail.source,
+            original_tail: tail.to_string(),
+            original_token,
+            delete_chars: backspaces,
+            insert_text: replacement,
+            target_layout_is_ru,
+        },
     })
 }
 
@@ -85,7 +154,7 @@ fn trailing_whitespace_chars(text: &str) -> usize {
 }
 
 fn recover_missing_initial_layout_toggle(token: &str) -> Option<(u32, String)> {
-    if token.chars().count() < 5 || !token.chars().all(char::is_alphabetic) {
+    if token.chars().count() < 4 || !token.chars().all(char::is_alphabetic) {
         return None;
     }
 
@@ -153,13 +222,14 @@ fn known_layout_recovery_replacement(replacement: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{plan_manual_toggle, ManualToggleRequest, ManualToggleRoute};
+    use super::{
+        plan_manual_toggle, ManualToggleRequest, ManualToggleRoute, VisibleTail, VisibleTailSource,
+    };
 
     fn request(tail: &str) -> ManualToggleRequest<'_> {
         ManualToggleRequest {
-            tail,
+            visible_tail: VisibleTail::ime_committed_tail(tail),
             current_layout_is_ru: false,
-            route: ManualToggleRoute::ImeCommittedTail,
             recover_missing_initial: true,
             preserve_trailing_whitespace: true,
         }
@@ -171,6 +241,12 @@ mod tests {
 
         assert_eq!(plan.backspaces, 9);
         assert_eq!(plan.replacement, "hf,jnftn ");
+        assert_eq!(plan.route, ManualToggleRoute::ImeCommittedTail);
+        assert_eq!(plan.edit.source, VisibleTailSource::ImeCommittedTail);
+        assert_eq!(plan.edit.original_tail, "работает ");
+        assert_eq!(plan.edit.original_token, "работает");
+        assert_eq!(plan.edit.delete_chars, 9);
+        assert_eq!(plan.edit.insert_text, "hf,jnftn ");
         assert!(!plan.target_layout_is_ru);
         assert!(plan.suppress_next_autocorrect);
     }
@@ -185,11 +261,19 @@ mod tests {
     }
 
     #[test]
+    fn committed_tail_plan_recovers_four_letter_tail_missing_initial_layout_letter() {
+        let plan = plan_manual_toggle(request("flyj ")).expect("toggle");
+
+        assert_eq!(plan.backspaces, 6);
+        assert_eq!(plan.replacement, "ладно ");
+        assert!(plan.target_layout_is_ru);
+    }
+
+    #[test]
     fn active_composition_plan_does_not_append_separator() {
         let plan = plan_manual_toggle(ManualToggleRequest {
-            tail: "ghbdtn",
+            visible_tail: VisibleTail::ime_active_composition("ghbdtn"),
             current_layout_is_ru: false,
-            route: ManualToggleRoute::ImeActiveComposition,
             recover_missing_initial: false,
             preserve_trailing_whitespace: false,
         })
@@ -197,5 +281,26 @@ mod tests {
 
         assert_eq!(plan.backspaces, 6);
         assert_eq!(plan.replacement, "привет");
+        assert_eq!(plan.route, ManualToggleRoute::ImeActiveComposition);
+        assert_eq!(plan.edit.source, VisibleTailSource::ImeActiveComposition);
+        assert_eq!(plan.edit.delete_chars, 6);
+        assert_eq!(plan.edit.insert_text, "привет");
+    }
+
+    #[test]
+    fn daemon_word_buffer_plan_marks_daemon_source() {
+        let plan = plan_manual_toggle(ManualToggleRequest {
+            visible_tail: VisibleTail::daemon_word_buffer("ghbdtn"),
+            current_layout_is_ru: false,
+            recover_missing_initial: false,
+            preserve_trailing_whitespace: false,
+        })
+        .expect("toggle");
+
+        assert_eq!(plan.edit.source, VisibleTailSource::DaemonWordBuffer);
+        assert_eq!(plan.route, ManualToggleRoute::Daemon);
+        assert_eq!(plan.edit.original_token, "ghbdtn");
+        assert_eq!(plan.edit.delete_chars, 6);
+        assert_eq!(plan.edit.insert_text, "привет");
     }
 }

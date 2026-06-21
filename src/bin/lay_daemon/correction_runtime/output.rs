@@ -15,6 +15,7 @@ use self::native_stage::try_native_output_stage;
 use self::replay::apply_layout_replay;
 use self::text_replace::try_manual_text_replacement;
 
+use super::super::suppress_next_ime_autocorrect;
 use super::super::{log, release_possible_modifiers, settle_after_physical_trigger_release};
 
 pub(super) fn apply_manual_correction_output(
@@ -66,6 +67,7 @@ pub(super) fn apply_manual_correction_output(
             return None;
         }
     };
+    suppress_next_ime_autocorrect();
     if common.input_isolated {
         log("  input isolated: skip trigger settle");
         if let Err(e) = super::super::release_possible_modifiers_fast(kbd) {

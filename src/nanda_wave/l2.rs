@@ -10,6 +10,7 @@ use crate::typing_pipeline::explain_typing_assist_with_pipeline;
 
 use super::context::{TailContext, TokenKind};
 use super::feedback::{apply_l3_feedback, L3Feedback};
+use super::lexical_attractor::{lexical_attractor_candidates, LEXICAL_ATTRACTOR_CELL};
 use super::options::WaveOptions;
 use super::pattern_memory::{apply_pattern_memory, PATTERN_MEMORY_CELL};
 use super::signal::{WavePacket, WordCandidate};
@@ -75,6 +76,11 @@ pub fn run_l2_refined_with_feedback(
     }
     if options.is_enabled("BoundaryCell32") {
         for candidate in boundary_split_candidates(prefix, token, l1, &context) {
+            push_unique_candidate(&mut candidates, candidate);
+        }
+    }
+    if options.is_enabled(LEXICAL_ATTRACTOR_CELL) {
+        for candidate in lexical_attractor_candidates(tail, &context) {
             push_unique_candidate(&mut candidates, candidate);
         }
     }

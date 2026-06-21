@@ -8,6 +8,7 @@ use super::super::super::correction_memory_runtime::{
 };
 use super::super::super::{
     apply_text_replacement_pipeline, log, record_recent_action, switch_to_target_layout,
+    tail_replace_policy,
 };
 use super::context::{ManualOutputCommon, OutputFlow};
 
@@ -115,6 +116,14 @@ fn manual_text_replacement_plan(
     text: &str,
     kind: &'static str,
 ) -> TextReplacement {
+    if tail_replace_policy::full_tail_replace_required(ctx.mapped_orig) {
+        return TextReplacement {
+            move_left: 0,
+            backspaces: ctx.n_backspaces,
+            insert: text.to_string(),
+            move_right: 0,
+        };
+    }
     let mut plan = ctx
         .decision
         .edit

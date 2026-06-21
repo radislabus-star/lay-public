@@ -1,9 +1,11 @@
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
-use super::engine::LayIbusEngine;
+use super::engine::{LayIbusEngine, PendingSpaceCommittedTailReplace};
+use super::state::CommittedTailReplaceRequest;
 use super::text::make_ibus_text;
-use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, ManualToggleRoute};
+use super::trace;
+use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
 use std::time::Instant;
 
 impl LayIbusEngine {
@@ -36,29 +38,35 @@ impl LayIbusEngine {
         }
     }
 
-    pub(super) async fn toggle_committed_tail(
+    pub(super) async fn toggle_committed_tail_target(
         &mut self,
         emitter: &SignalEmitter<'_>,
-    ) -> fdo::Result<bool> {
+    ) -> fdo::Result<Option<bool>> {
         let Some(plan) = self.committed_tail_toggle_plan() else {
-            return Ok(false);
+            return Ok(None);
         };
+        trace::record_manual_toggle_plan(&plan);
         let handled = self
-            .replace_committed_tail(emitter, plan.backspaces, plan.replacement.clone())
+            .replace_committed_tail(
+                emitter,
+                CommittedTailReplaceRequest::ime_manual_toggle(
+                    plan.backspaces,
+                    plan.replacement.clone(),
+                    plan.suppress_next_autocorrect,
+                ),
+            )
             .await?;
         if handled {
-            self.suppress_next_committed_tail_autocorrect = plan.suppress_next_autocorrect;
             self.sync_layout_after_manual_toggle(&plan.replacement);
             self.trace_key("double_shift_committed_tail", 0, 0, true, None);
         }
-        Ok(handled)
+        Ok(handled.then_some(plan.target_layout_is_ru))
     }
 
     fn committed_tail_toggle_plan(&self) -> Option<lay::manual_toggle::ManualTogglePlan> {
         plan_manual_toggle(ManualToggleRequest {
-            tail: &self.tail_buffer,
+            visible_tail: VisibleTail::ime_committed_tail(&self.tail_buffer),
             current_layout_is_ru: self.layout_is_ru,
-            route: ManualToggleRoute::ImeCommittedTail,
             recover_missing_initial: true,
             preserve_trailing_whitespace: true,
         })
@@ -66,28 +74,57 @@ impl LayIbusEngine {
 
     pub(super) async fn autocorrect_committed_tail_space(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        _emitter: &SignalEmitter<'_>,
     ) -> fdo::Result<bool> {
-        if self.take_manual_toggle_autocorrect_suppression() {
+        if !self.prepare_committed_tail_space_autocorrect() {
             return Ok(false);
+        }
+        Ok(true)
+    }
+
+    pub(super) fn prepare_committed_tail_space_autocorrect(&mut self) -> bool {
+        if self.take_manual_toggle_autocorrect_suppression() {
+            return false;
         }
         let started_at = Instant::now();
         let Some((backspaces, replacement)) = self.committed_tail_boundary_replacement(true) else {
-            return Ok(false);
+            return false;
         };
         let original = self.last_tail_token_text();
+        self.pending_space_committed_tail_replace = Some(PendingSpaceCommittedTailReplace {
+            backspaces,
+            replacement,
+            original,
+            started_at,
+        });
+        true
+    }
+
+    pub(super) async fn apply_pending_committed_tail_space_autocorrect(
+        &mut self,
+        emitter: &SignalEmitter<'_>,
+    ) -> fdo::Result<bool> {
+        let Some(pending) = self.pending_space_committed_tail_replace.take() else {
+            return Ok(false);
+        };
         let handled = self
-            .replace_committed_tail(emitter, backspaces, replacement.clone())
+            .replace_committed_tail(
+                emitter,
+                CommittedTailReplaceRequest::ime_autocorrect(
+                    pending.backspaces,
+                    pending.replacement.clone(),
+                ),
+            )
             .await?;
         if handled {
-            self.sync_layout_after_committed_text(&replacement);
+            self.sync_layout_after_committed_text(&pending.replacement);
             lay::action_log::record_action(
                 "ime-typing-assist",
-                &format!("{original} "),
-                &replacement,
+                &format!("{} ", pending.original),
+                &pending.replacement,
                 1,
                 1,
-                started_at.elapsed().as_millis(),
+                pending.started_at.elapsed().as_millis(),
                 true,
             );
         }
@@ -106,7 +143,10 @@ impl LayIbusEngine {
             return Ok(false);
         };
         let handled = self
-            .replace_committed_tail(emitter, backspaces, replacement.clone())
+            .replace_committed_tail(
+                emitter,
+                CommittedTailReplaceRequest::ime_autocorrect(backspaces, replacement.clone()),
+            )
             .await?;
         if handled {
             self.sync_layout_after_committed_text(&replacement);
@@ -138,7 +178,8 @@ impl LayIbusEngine {
     }
 
     fn take_manual_toggle_autocorrect_suppression(&mut self) -> bool {
-        let suppress = self.suppress_next_committed_tail_autocorrect;
+        let suppress = self.suppress_next_committed_tail_autocorrect
+            || self.take_autocorrect_suppression_handoff();
         self.suppress_next_committed_tail_autocorrect = false;
         suppress
     }
@@ -209,50 +250,53 @@ mod tests {
     }
 
     #[test]
-    fn double_shift_recovers_missing_initial_ascii_layout_letter() {
-        let mut engine = engine();
-        for ch in "hbdtn".chars() {
-            engine.push_tail_char(ch);
-        }
-
-        let plan = engine.committed_tail_toggle_plan().expect("toggle plan");
-        assert_eq!(plan.backspaces, 6);
-        assert_eq!(plan.replacement, "привет");
-    }
-
-    #[test]
-    fn double_shift_recovers_missing_initial_autozamena_letter() {
-        let mut engine = engine();
-        for ch in "dnjpfvtyf".chars() {
-            engine.push_tail_char(ch);
-        }
-
-        let plan = engine.committed_tail_toggle_plan().expect("toggle plan");
-        assert_eq!(plan.backspaces, 10);
-        assert_eq!(plan.replacement, "автозамена");
-    }
-
-    #[test]
-    fn double_shift_does_not_recover_missing_initial_for_short_ascii_tail() {
-        let mut engine = engine();
-        for ch in "в ima".chars() {
-            engine.push_tail_char(ch);
-        }
-
-        let plan = engine
-            .committed_tail_toggle_plan()
-            .expect("plain double shift still toggles the short tail");
-
-        assert_eq!(plan.backspaces, 3);
-        assert_ne!(plan.replacement, "dime");
-    }
-
-    #[test]
     fn manual_toggle_suppresses_next_boundary_autocorrect_once() {
         let mut engine = engine();
         engine.suppress_next_committed_tail_autocorrect = true;
 
         assert!(engine.take_manual_toggle_autocorrect_suppression());
         assert!(!engine.take_manual_toggle_autocorrect_suppression());
+    }
+
+    #[test]
+    fn manual_toggle_suppression_survives_engine_handoff() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let engine_a = LayIbusEngine::new(
+            "/test/a".to_string(),
+            Arc::clone(&shared),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        engine_a.publish_autocorrect_suppression_handoff();
+
+        let mut engine_b = LayIbusEngine::new(
+            "/test/b".to_string(),
+            shared,
+            false,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                ..LayConfig::default()
+            },
+        );
+
+        assert!(engine_b.take_manual_toggle_autocorrect_suppression());
+        assert!(!engine_b.take_manual_toggle_autocorrect_suppression());
+    }
+
+    #[test]
+    fn committed_tail_toggle_plan_uses_visible_ime_tail_not_old_daemon_buffer() {
+        let mut engine = engine();
+        engine.tail_buffer.push_str("вот ");
+        engine.layout_is_ru = true;
+
+        let plan = engine.committed_tail_toggle_plan().expect("toggle plan");
+
+        assert_eq!(plan.replacement, "djn ");
+        assert_eq!(plan.backspaces, 4);
     }
 }

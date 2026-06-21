@@ -48,6 +48,7 @@ impl LayIbusEngine {
                 return Ok(false);
             }
             if self.autocorrect_committed_tail_enter(emitter).await? {
+                self.close_committed_tail_field();
                 self.trace_key(
                     "enter_committed_tail_autocorrect",
                     keyval,
@@ -57,25 +58,13 @@ impl LayIbusEngine {
                 );
                 return Ok(false);
             }
-            self.tail_buffer.clear();
-            self.preedit_fast.reset();
-            self.publish_tail_handoff();
+            self.close_committed_tail_field();
             self.clear_preedit(emitter).await?;
             self.trace_key("enter", keyval, keycode, false, None);
             return Ok(false);
         }
         if keyval == KEY_SPACE {
             if self.buffer.is_empty() {
-                if self.autocorrect_committed_tail_space(emitter).await? {
-                    self.trace_key(
-                        "space_committed_tail_autocorrect",
-                        keyval,
-                        keycode,
-                        true,
-                        Some(' '),
-                    );
-                    return Ok(true);
-                }
                 self.push_tail_char(' ');
                 self.update_precognition_preedit(emitter).await?;
                 self.trace_key("space_passthrough", keyval, keycode, false, Some(' '));

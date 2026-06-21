@@ -5,8 +5,8 @@ use std::time::Instant;
 
 use super::{
     append_user_correction_learning_log, apply_text_replacement_pipeline, log,
-    record_recent_action, release_possible_modifiers, switch_or_restore_layout_after_text_edit,
-    ExecutingGuard,
+    record_recent_action, release_possible_modifiers, should_try_ime_text_backend,
+    switch_or_restore_layout_after_text_edit, try_ime_replace_tail, ExecutingGuard,
 };
 
 pub(super) fn handle_pending_auto_undo(
@@ -16,6 +16,27 @@ pub(super) fn handle_pending_auto_undo(
     executing: &mut bool,
     started_at: Instant,
 ) -> Option<bool> {
+    let plan = undo.replacement_plan();
+    if !replacement_plan_matches(&undo.replacement, &undo.original, &plan) {
+        log("⚠ auto-undo skipped before delete: edit plan invariant failed");
+        return None;
+    }
+
+    if should_try_ime_text_backend()
+        && try_ime_replace_tail(&undo.replacement, &undo.original, "auto-undo").unwrap_or(false)
+    {
+        let target_layout = lay::keyboard::preferred_layout_for_text(&undo.original, true);
+        switch_or_restore_layout_after_text_edit(true, target_layout, None, "auto-undo", false);
+        remember_auto_undo(buf, &undo, started_at);
+        log(&format!(
+            "✓ done: auto-undo {:?} → {:?} через IME за {}ms",
+            undo.replacement,
+            undo.original,
+            started_at.elapsed().as_millis()
+        ));
+        return Some(target_layout);
+    }
+
     let Some(kbd) = virtual_kbd else {
         log("⚠ auto-undo: нет uinput device");
         return None;
@@ -28,11 +49,6 @@ pub(super) fn handle_pending_auto_undo(
         log(&format!("⚠ auto-undo modifier cleanup failed: {e}"));
     }
 
-    let plan = undo.replacement_plan();
-    if !replacement_plan_matches(&undo.replacement, &undo.original, &plan) {
-        log("⚠ auto-undo skipped before delete: edit plan invariant failed");
-        return None;
-    }
     let insert_outcome =
         match apply_text_replacement_pipeline(kbd, &plan, &undo.original, true, "auto-undo", false)
         {
@@ -50,6 +66,17 @@ pub(super) fn handle_pending_auto_undo(
         insert_outcome.layout_already_set,
     );
 
+    remember_auto_undo(buf, &undo, started_at);
+    log(&format!(
+        "✓ done: auto-undo {:?} → {:?} за {}ms",
+        undo.replacement,
+        undo.original,
+        started_at.elapsed().as_millis()
+    ));
+    Some(insert_outcome.layout_is_ru)
+}
+
+fn remember_auto_undo(buf: &mut WordBuffer, undo: &PendingAutoUndo, started_at: Instant) {
     append_user_correction_learning_log(&UserLearningCorrection {
         lay_kind: undo.lay_kind.clone(),
         lay_from: undo.original.clone(),
@@ -72,11 +99,4 @@ pub(super) fn handle_pending_auto_undo(
     if !buf.remember_visible_text_for_correction(&undo.original) {
         buf.reset_all();
     }
-    log(&format!(
-        "✓ done: auto-undo {:?} → {:?} за {}ms",
-        undo.replacement,
-        undo.original,
-        started_at.elapsed().as_millis()
-    ));
-    Some(insert_outcome.layout_is_ru)
 }

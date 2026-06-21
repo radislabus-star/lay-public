@@ -9,6 +9,7 @@ pub mod l1;
 pub mod l2;
 pub mod l3;
 pub mod learned;
+pub mod lexical_attractor;
 pub mod llmwave;
 pub mod mode;
 pub mod options;

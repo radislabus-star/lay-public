@@ -99,6 +99,7 @@ impl LayIbusEngine {
         Self::commit_text(emitter, make_ibus_text(ch.to_string()))
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+        self.last_commit_at = Some(Instant::now());
         self.push_tail_char(ch);
         self.update_precognition_preedit(emitter).await
     }

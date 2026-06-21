@@ -1,14 +1,15 @@
+use super::super::focused_ime_engine_handles_typing;
 use super::super::trigger_dispatch::{
     complete_manual_trigger, run_configured_manual_correction, run_scoped_manual_correction,
     ManualTriggerCompletion,
 };
-use super::super::{focused_ime_engine_handles_typing, log};
 use super::context::ManualTriggerFireContext;
+use super::ime::run_ime_manual_toggle;
 
 pub(crate) fn fire_configured_manual_trigger(ctx: ManualTriggerFireContext<'_>) {
     if focused_ime_engine_handles_typing() {
-        log("· manual trigger skipped: focused IME engine owns active text");
-        complete_manual_trigger_with_result(None, ctx);
+        let result = run_ime_manual_toggle();
+        complete_manual_trigger_with_result(result, ctx);
         return;
     }
     let correction_result =
@@ -23,8 +24,8 @@ pub(crate) fn fire_scoped_manual_trigger(
     reason: &str,
 ) {
     if focused_ime_engine_handles_typing() {
-        log("· scoped manual trigger skipped: focused IME engine owns active text");
-        complete_manual_trigger_with_result(None, ctx);
+        let result = run_ime_manual_toggle();
+        complete_manual_trigger_with_result(result, ctx);
         return;
     }
     let correction_result = run_scoped_manual_correction(

@@ -1,7 +1,7 @@
 use evdev::{uinput::VirtualDevice, KeyCode};
 use lay::config::TypingAssistRuleConfig;
 use lay::decoder::{decode_enter_autocorrect_tail, DecoderEditPlan};
-use lay::keyboard::{map_original_events, preferred_layout_for_text, KeyEvent};
+use lay::keyboard::{map_original_events, KeyEvent};
 use lay::word_buffer::WordBuffer;
 use std::sync::atomic::Ordering;
 use std::time::Instant;
@@ -14,10 +14,10 @@ use super::correction_memory_runtime::{
 use super::active_typing_assist_pipeline_for_auto_replace;
 use super::{
     active_auto_switch_layout, apply_text_replacement_pipeline, emit_key_taps_fast,
-    focused_ime_engine_handles_typing, log, read_current_layout_is_ru, record_recent_action,
-    release_possible_modifiers, should_try_ime_text_backend,
-    switch_or_restore_layout_after_text_edit, try_ime_replace_tail, ExecutingGuard,
-    TYPING_ASSIST_RUNTIME_READY,
+    focused_ime_engine_handles_boundary_typing, layout_switch_policy, log,
+    read_current_layout_is_ru, record_recent_action, release_possible_modifiers,
+    should_try_ime_text_backend, switch_or_restore_layout_after_text_edit, try_ime_replace_tail,
+    ExecutingGuard, TYPING_ASSIST_RUNTIME_READY,
 };
 
 pub(super) fn enter_autocorrect_candidate(
@@ -55,8 +55,8 @@ pub(super) fn handle_enter_autocorrect(
         log("· enter-autocorrect skipped: warmup pending");
         return None;
     }
-    if focused_ime_engine_handles_typing() {
-        log("· enter-autocorrect skipped: focused IME engine owns active text");
+    if focused_ime_engine_handles_boundary_typing() {
+        log("· enter-autocorrect skipped: focused IME engine owns boundary text");
         return None;
     }
 
@@ -83,14 +83,17 @@ pub(super) fn handle_enter_autocorrect(
     if should_try_ime_text_backend() {
         let original_layout = read_current_layout_is_ru().ok();
         if try_ime_replace_tail(&original, &replacement, "enter-autocorrect").unwrap_or(false) {
-            let target_layout = preferred_layout_for_text(&replacement, true);
+            let target_layout =
+                layout_switch_policy::target_layout_for_replacement(&replacement, true);
+            let force_target_layout =
+                layout_switch_policy::force_target_layout_for_replacement(&original, &replacement);
             if let Some(kbd) = virtual_kbd {
                 if let Err(e) = emit_key_taps_fast(kbd, KeyCode::KEY_ENTER, 1) {
                     log(&format!("⚠ enter-autocorrect Enter send failed: {e}"));
                 }
             }
             switch_or_restore_layout_after_text_edit(
-                active_auto_switch_layout(),
+                active_auto_switch_layout() || force_target_layout,
                 target_layout,
                 original_layout,
                 "enter-autocorrect",
@@ -147,8 +150,10 @@ pub(super) fn handle_enter_autocorrect(
             return None;
         }
     };
+    let force_target_layout =
+        layout_switch_policy::force_target_layout_for_replacement(&original, &replacement);
     switch_or_restore_layout_after_text_edit(
-        active_auto_switch_layout(),
+        active_auto_switch_layout() || force_target_layout,
         insert_outcome.layout_is_ru,
         original_layout,
         "enter-autocorrect",

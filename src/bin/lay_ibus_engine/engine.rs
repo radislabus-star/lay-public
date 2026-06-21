@@ -1,15 +1,35 @@
 use lay::config::LayConfig;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 use super::preedit::PreeditFastState;
 use super::protocol::Shared;
-
-pub(super) const DOUBLE_SHIFT_WINDOW: Duration = Duration::from_millis(650);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum WordInputMode {
     ManagedCommit,
     TerminalPassthrough,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum ManualToggleAuthority {
+    ImeActiveComposition,
+    ImeCommittedTail,
+    DaemonWordBuffer,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct RecentCommittedTailReplace {
+    pub(super) backspaces: u32,
+    pub(super) text: String,
+    pub(super) at: Instant,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct PendingSpaceCommittedTailReplace {
+    pub(super) backspaces: u32,
+    pub(super) replacement: String,
+    pub(super) original: String,
+    pub(super) started_at: Instant,
 }
 
 pub(crate) struct LayIbusEngine {
@@ -33,6 +53,8 @@ pub(crate) struct LayIbusEngine {
     pub(super) last_shift_release_at: Option<Instant>,
     pub(super) last_commit_at: Option<Instant>,
     pub(super) last_tail_input_at: Option<Instant>,
+    pub(super) recent_committed_tail_replace: Option<RecentCommittedTailReplace>,
+    pub(super) pending_space_committed_tail_replace: Option<PendingSpaceCommittedTailReplace>,
     pub(super) suppress_next_committed_tail_autocorrect: bool,
     pub(super) word_input_mode: Option<WordInputMode>,
     pub(super) managed_input: bool,
@@ -40,6 +62,16 @@ pub(crate) struct LayIbusEngine {
 }
 
 impl LayIbusEngine {
+    pub(super) fn manual_toggle_authority(&self) -> ManualToggleAuthority {
+        if !self.buffer.is_empty() {
+            return ManualToggleAuthority::ImeActiveComposition;
+        }
+        if !self.last_tail_token_text().is_empty() {
+            return ManualToggleAuthority::ImeCommittedTail;
+        }
+        ManualToggleAuthority::DaemonWordBuffer
+    }
+
     pub(super) fn live_composition_enabled(&self) -> bool {
         self.managed_input
             && self.config.nanda_precognition
@@ -56,7 +88,7 @@ impl LayIbusEngine {
 
 #[cfg(test)]
 mod tests {
-    use super::LayIbusEngine;
+    use super::{LayIbusEngine, ManualToggleAuthority};
     use lay::config::LayConfig;
     use std::sync::{Arc, Mutex};
 
@@ -95,5 +127,49 @@ mod tests {
             ..LayConfig::default()
         });
         assert!(!uinput_engine.live_composition_enabled());
+    }
+
+    #[test]
+    fn manual_toggle_uses_daemon_authority_when_ime_does_not_own_composition() {
+        let engine = engine(LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            ..LayConfig::default()
+        });
+
+        assert_eq!(
+            engine.manual_toggle_authority(),
+            ManualToggleAuthority::DaemonWordBuffer
+        );
+    }
+
+    #[test]
+    fn manual_toggle_uses_ime_authority_only_for_active_composition() {
+        let mut engine = engine(LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            ..LayConfig::default()
+        });
+        engine.buffer.push_str("ghbdtn");
+
+        assert_eq!(
+            engine.manual_toggle_authority(),
+            ManualToggleAuthority::ImeActiveComposition
+        );
+    }
+
+    #[test]
+    fn manual_toggle_uses_ime_authority_for_known_committed_tail() {
+        let mut engine = engine(LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            ..LayConfig::default()
+        });
+        engine.tail_buffer.push_str("вот ");
+
+        assert_eq!(
+            engine.manual_toggle_authority(),
+            ManualToggleAuthority::ImeCommittedTail
+        );
     }
 }

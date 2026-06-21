@@ -2,8 +2,8 @@ use lay::decoder::CorrectionTrigger;
 use std::time::Instant;
 
 use super::super::super::{
-    active_auto_switch_layout, apply_text_replacement_pipeline, log,
-    switch_or_restore_layout_after_text_edit,
+    active_auto_switch_layout, apply_text_replacement_pipeline, layout_switch_policy, log,
+    switch_or_restore_layout_after_text_edit, tail_replace_policy,
 };
 use super::super::TypingAssistOutcome;
 use super::memory::{
@@ -32,7 +32,14 @@ pub(crate) fn apply_minimal_typing_replacement(
         original_layout,
         prefer_full_token_plan,
     } = ctx;
-    let plan = if prefer_full_token_plan && matches!(edit.trigger, CorrectionTrigger::AfterSpace) {
+    let plan = if tail_replace_policy::full_tail_replace_required(original) {
+        Some(lay::text_edit::TextReplacement {
+            move_left: 0,
+            backspaces: original.chars().count() as u32,
+            insert: replacement.to_string(),
+            move_right: 0,
+        })
+    } else if prefer_full_token_plan && matches!(edit.trigger, CorrectionTrigger::AfterSpace) {
         edit.verified_full_token_plan_for_cursor(cursor_offset)
     } else {
         edit.verified_plan_for_cursor(cursor_offset)
@@ -70,8 +77,10 @@ pub(crate) fn apply_minimal_typing_replacement(
         cursor_offset,
         timing,
     });
+    let force_target_layout =
+        layout_switch_policy::force_target_layout_for_replacement(original, replacement);
     switch_or_restore_layout_after_text_edit(
-        active_auto_switch_layout(),
+        active_auto_switch_layout() || force_target_layout,
         insert_outcome.layout_is_ru,
         original_layout,
         "typing-assist",

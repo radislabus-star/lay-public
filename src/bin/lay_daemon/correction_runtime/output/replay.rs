@@ -3,7 +3,8 @@ use std::time::Instant;
 
 use super::super::super::{
     emit_backspaces, emit_backspaces_fast, log, replay_keycodes,
-    replay_keycodes_fast_after_modifier_cleanup, switch_to_target_layout, target_layout,
+    replay_keycodes_fast_after_modifier_cleanup, suppress_next_ime_autocorrect,
+    switch_to_target_layout, target_layout,
 };
 use super::super::memory::{remember_layout_replay_success, LayoutReplayMemory};
 use super::context::ManualOutputCommon;
@@ -50,6 +51,7 @@ pub(crate) fn apply_layout_replay(
         log(&format!("⚠ Этап 3 replay failed: {e}"));
         return Some(ctx.target_is_ru);
     }
+    suppress_next_ime_autocorrect();
     let replay_ms = replay_started.elapsed().as_millis();
     remember_layout_replay_success(
         ctx.buf,

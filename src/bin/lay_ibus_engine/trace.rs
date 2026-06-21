@@ -2,6 +2,8 @@ use std::path::PathBuf;
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 
+use lay::manual_toggle::{ManualTogglePlan, ManualToggleRoute, VisibleTailSource};
+
 const TRACE_CONFIG_REFRESH: Duration = Duration::from_millis(250);
 
 #[derive(Debug)]
@@ -83,6 +85,36 @@ pub(crate) fn record_layout_sync(target_is_ru: bool, engine: &str, ok: bool) {
     ));
 }
 
+pub(crate) fn record_manual_toggle_plan(plan: &ManualTogglePlan) {
+    if !enabled() {
+        return;
+    }
+    let route = manual_toggle_route(plan.route);
+    let source = visible_tail_source(plan.edit.source);
+    let original_token = json_string(&plan.edit.original_token);
+    let insert_text = json_string(&plan.edit.insert_text);
+    write_record(format!(
+        r#"{{"kind":"ibus_manual_toggle_plan","route":"{route}","source":"{source}","original_token":{original_token},"delete_chars":{},"insert_text":{insert_text},"target_layout_is_ru":{},"suppress_next_autocorrect":{}}}"#,
+        plan.edit.delete_chars, plan.edit.target_layout_is_ru, plan.suppress_next_autocorrect
+    ));
+}
+
+pub(crate) fn record_committed_tail_replace(
+    source: VisibleTailSource,
+    output_route: &str,
+    backspaces: u32,
+    text: &str,
+) {
+    if !enabled() {
+        return;
+    }
+    let source = visible_tail_source(source);
+    let text = json_string(text);
+    write_record(format!(
+        r#"{{"kind":"ibus_committed_tail_replace","source":"{source}","output_route":"{output_route}","backspaces":{backspaces},"text":{text}}}"#
+    ));
+}
+
 pub(crate) fn record_precognition_timing(
     total_us: u64,
     ascii_us: u64,
@@ -96,6 +128,22 @@ pub(crate) fn record_precognition_timing(
     write_record(format!(
         r#"{{"kind":"ibus_precognition_timing","total_us":{total_us},"ascii_us":{ascii_us},"ru_us":{ru_us},"semantic_us":{semantic_us},"candidates":{candidates}}}"#
     ));
+}
+
+fn visible_tail_source(source: VisibleTailSource) -> &'static str {
+    match source {
+        VisibleTailSource::DaemonWordBuffer => "daemon_word_buffer",
+        VisibleTailSource::ImeActiveComposition => "ime_active_composition",
+        VisibleTailSource::ImeCommittedTail => "ime_committed_tail",
+    }
+}
+
+fn manual_toggle_route(route: ManualToggleRoute) -> &'static str {
+    match route {
+        ManualToggleRoute::Daemon => "daemon",
+        ManualToggleRoute::ImeActiveComposition => "ime_active_composition",
+        ManualToggleRoute::ImeCommittedTail => "ime_committed_tail",
+    }
 }
 
 pub(crate) fn enabled() -> bool {

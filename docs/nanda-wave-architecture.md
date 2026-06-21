@@ -17,6 +17,15 @@ key/text stream
 Runtime integration is allowed only after the eval gate proves that the wave
 path is not worse than the current deterministic/NANDA path.
 
+The target lexical model is defined in
+`docs/nanda-lexical-attractor-model.md`. In short: L2 must not become a plain
+dictionary/prefix lookup with wave-shaped scoring around it. Dictionaries,
+Hunspell, protected words, and exact replacements may bootstrap or guard NANDA,
+but the NANDA lexical memory itself must be a wave-native lexical-attractor
+layer with cold surface-production memory. A number/hash may guide an
+attractor, but visible text must be produced through grapheme, morpheme, copy,
+layout, or byte-fallback routes, not through a `token_id -> string` shortcut.
+
 ## Cell Unit
 
 Canonical cell:
@@ -168,6 +177,23 @@ SpaceGlueCell32
 CaseWordCell32
 UserWordMemoryCell32
 ```
+
+Future L2 work should converge on the lexical-attractor model:
+
+```text
+SurfaceBirthCell32
+OrthographyCell32
+KeyboardWordCell32
+LemmaBindingCell32
+MorphologyCell32
+UsageTraceCell32
+ContextCentroidCell32
+AttractorCleanupCell32
+AntiConfusionCell32
+```
+
+Ordinary word lists and prefix maps are allowed as teachers, bootstrap data, or
+safety guards. They are not the NANDA word memory.
 
 Responsibilities:
 

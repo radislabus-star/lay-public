@@ -8,7 +8,7 @@ const IME_DBUS_PATH: &str = "/io/github/radislabus_star/LayIme";
 const IME_DBUS_INTERFACE: &str = "io.github.radislabus_star.LayIme";
 
 pub(super) fn should_try_text_backend() -> bool {
-    active_text_backend().should_try_ime() && std::env::var_os("LAY_IME_REPLACE").is_some()
+    active_text_backend().should_try_ime()
 }
 
 pub(super) fn try_replace_tail(
@@ -23,7 +23,7 @@ pub(super) fn try_replace_tail(
     if request.is_noop() {
         return Ok(false);
     }
-    match replace_tail(request.backspaces, &request.text) {
+    match replace_tail(request.backspaces, &request.text, kind) {
         Ok(true) => {
             log(&format!(
                 "  IME replace-tail ({kind}): bs={} insert={:?}",
@@ -60,13 +60,13 @@ pub(super) fn call_ping() -> Result<String, String> {
         .map_err(|e| e.to_string())
 }
 
-pub(super) fn focused() -> Result<bool, String> {
+pub(super) fn owns_active_text() -> Result<bool, String> {
     let reply = dbus_connection()?
         .call_method(
             Some(IME_DBUS_DEST),
             IME_DBUS_PATH,
             Some(IME_DBUS_INTERFACE),
-            "Focused",
+            "OwnsActiveText",
             &(),
         )
         .map_err(|e| e.to_string())?;
@@ -76,14 +76,78 @@ pub(super) fn focused() -> Result<bool, String> {
         .map_err(|e| e.to_string())
 }
 
-fn replace_tail(backspaces: u32, text: &str) -> Result<bool, String> {
+pub(super) fn input_state() -> Result<String, String> {
     let reply = dbus_connection()?
         .call_method(
             Some(IME_DBUS_DEST),
             IME_DBUS_PATH,
             Some(IME_DBUS_INTERFACE),
-            "ReplaceTail",
-            &(backspaces, text),
+            "InputState",
+            &(),
+        )
+        .map_err(|e| e.to_string())?;
+    reply
+        .body()
+        .deserialize::<String>()
+        .map_err(|e| e.to_string())
+}
+
+pub(super) fn suppress_next_autocorrect() -> Result<bool, String> {
+    let reply = dbus_connection()?
+        .call_method(
+            Some(IME_DBUS_DEST),
+            IME_DBUS_PATH,
+            Some(IME_DBUS_INTERFACE),
+            "SuppressNextAutocorrect",
+            &(),
+        )
+        .map_err(|e| e.to_string())?;
+    reply
+        .body()
+        .deserialize::<bool>()
+        .map_err(|e| e.to_string())
+}
+
+pub(super) fn manual_toggle() -> Result<bool, String> {
+    let reply = dbus_connection()?
+        .call_method(
+            Some(IME_DBUS_DEST),
+            IME_DBUS_PATH,
+            Some(IME_DBUS_INTERFACE),
+            "ManualToggle",
+            &(),
+        )
+        .map_err(|e| e.to_string())?;
+    reply
+        .body()
+        .deserialize::<bool>()
+        .map_err(|e| e.to_string())
+}
+
+pub(super) fn manual_toggle_v2() -> Result<(bool, bool), String> {
+    let reply = dbus_connection()?
+        .call_method(
+            Some(IME_DBUS_DEST),
+            IME_DBUS_PATH,
+            Some(IME_DBUS_INTERFACE),
+            "ManualToggleV2",
+            &(),
+        )
+        .map_err(|e| e.to_string())?;
+    reply
+        .body()
+        .deserialize::<(bool, bool)>()
+        .map_err(|e| e.to_string())
+}
+
+fn replace_tail(backspaces: u32, text: &str, kind: &str) -> Result<bool, String> {
+    let reply = dbus_connection()?
+        .call_method(
+            Some(IME_DBUS_DEST),
+            IME_DBUS_PATH,
+            Some(IME_DBUS_INTERFACE),
+            "ReplaceTailV2",
+            &(backspaces, text, kind),
         )
         .map_err(|e| e.to_string())?;
     reply

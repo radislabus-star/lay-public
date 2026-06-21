@@ -8,10 +8,6 @@ pub(super) fn read_current_layout_is_ru() -> Result<bool, String> {
     read_engine().map(|engine| is_ru_layout_id(&engine))
 }
 
-pub(super) fn current_engine_is_lay_ime() -> bool {
-    read_engine().is_ok_and(|engine| engine == "lay-ime-ru" || engine == "lay-ime-us")
-}
-
 pub(super) fn ensure_engine(ibus_engine: &str, target_is_ru: bool) -> Result<(), String> {
     if read_engine().is_ok_and(|engine| engine == ibus_engine) {
         return Ok(());

@@ -115,27 +115,6 @@ fn visible_text_after_auto_undo_can_be_corrected_again() {
 }
 
 #[test]
-fn immediate_double_shift_after_layout_autofix_is_consumed_once() {
-    let mut buffer = WordBuffer::new();
-
-    buffer.remember_pending_auto_layout_guard("нашем дфн ", "нашем lay ");
-
-    assert!(buffer.should_consume_auto_layout_replay_guard("lay ", "дфн "));
-    assert!(!buffer.should_consume_auto_layout_replay_guard("lay ", "дфн "));
-}
-
-#[test]
-fn auto_layout_replay_guard_only_matches_pure_single_word_layout_pair() {
-    let mut buffer = WordBuffer::new();
-
-    buffer.remember_pending_auto_layout_guard("word one ", "word two ");
-    assert!(!buffer.should_consume_auto_layout_replay_guard("two ", "one "));
-
-    buffer.remember_pending_auto_layout_guard("то пше ", "то git ");
-    assert!(buffer.should_consume_auto_layout_replay_guard("git ", "пше "));
-}
-
-#[test]
 fn completed_two_word_tail_includes_one_space_and_trailing_space() {
     let mut buffer = WordBuffer::new();
     push_text_as_layout(&mut buffer, "ab cd ", false);

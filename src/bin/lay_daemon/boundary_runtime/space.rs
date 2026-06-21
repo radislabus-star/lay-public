@@ -3,10 +3,11 @@ use lay::word_buffer::WordBuffer;
 
 use super::super::pending_typing_assist::PendingTypingAssist;
 use super::super::{
-    active_typing_assist, append_user_correction_learning_log, focused_ime_engine_handles_typing,
-    has_later_typing_press, log, prepare_typing_assist_after_space,
-    record_precognition_tick_if_enabled, should_run_typing_assist_on_space_release,
-    should_schedule_typing_assist_after_space, ShiftState,
+    active_typing_assist, append_user_correction_learning_log,
+    focused_ime_engine_handles_boundary_typing, has_later_typing_press, log,
+    prepare_typing_assist_after_space, record_precognition_tick_if_enabled,
+    should_run_typing_assist_on_space_release, should_schedule_typing_assist_after_space,
+    ShiftState,
 };
 
 pub(crate) struct SpaceReleaseContext<'a> {
@@ -23,10 +24,12 @@ pub(crate) fn try_handle_space_release(
     value: i32,
     ctx: SpaceReleaseContext<'_>,
 ) -> bool {
-    if ctx.pending_typing_assist_after_space.is_some() && focused_ime_engine_handles_typing() {
+    if ctx.pending_typing_assist_after_space.is_some()
+        && focused_ime_engine_handles_boundary_typing()
+    {
         ctx.pending_typing_assist_after_space.take();
         if ctx.verbose {
-            log("· typing-assist skipped: focused IME engine owns active text");
+            log("· typing-assist skipped: focused IME engine owns boundary text");
         }
         return false;
     }
@@ -78,10 +81,10 @@ pub(crate) fn handle_space_press(ctx: SpacePressContext<'_>) {
         pending.note_visible_char();
     }
     *ctx.events_since_word_start = 0;
-    if focused_ime_engine_handles_typing() {
+    if focused_ime_engine_handles_boundary_typing() {
         ctx.pending_typing_assist_after_space.take();
         if ctx.verbose {
-            log("· typing-assist not scheduled: focused IME engine owns active text");
+            log("· typing-assist not scheduled: focused IME engine owns boundary text");
         }
         return;
     }

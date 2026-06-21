@@ -4,7 +4,7 @@ use zbus::object_server::SignalEmitter;
 use zbus::zvariant::Value;
 
 use super::engine::LayIbusEngine;
-use super::protocol::{is_accept_completion_with_space_key, is_key_press, is_shift_key};
+use super::protocol::{is_accept_completion_with_space_key, is_key_press, is_shift_key, KEY_SPACE};
 use super::trace;
 
 #[interface(name = "org.freedesktop.IBus.Engine")]
@@ -33,9 +33,11 @@ impl LayIbusEngine {
             self.shift_active = pressed;
             if pressed {
                 self.shift_used_as_modifier = false;
-                return Ok(false);
+            } else {
+                self.shift_used_as_modifier = false;
+                self.last_shift_release_at = None;
             }
-            return self.handle_shift_release(&emitter).await;
+            return Ok(false);
         }
         if is_accept_completion_with_space_key(keyval) {
             let pressed = is_key_press(state);
@@ -51,6 +53,11 @@ impl LayIbusEngine {
             self.alt_completion_active = false;
             self.alt_used_as_modifier = false;
             return Ok(false);
+        }
+        if keyval == KEY_SPACE && !is_key_press(state) {
+            return self
+                .apply_pending_committed_tail_space_autocorrect(&emitter)
+                .await;
         }
         if !is_key_press(state) {
             return Ok(false);
@@ -70,6 +77,7 @@ impl LayIbusEngine {
         trace::record(r#"{"kind":"ibus_focus","stage":"focus_in"}"#);
         self.config = lay::config::LayConfig::load();
         self.surrounding_text_supported = false;
+        self.refresh_empty_tail_from_handoff();
         self.shared
             .lock()
             .expect("lay ime state poisoned")
@@ -84,8 +92,13 @@ impl LayIbusEngine {
     #[zbus(name = "FocusOut")]
     fn focus_out(&mut self) {
         trace::record(r#"{"kind":"ibus_focus","stage":"focus_out"}"#);
+        let preserve_active_path =
+            self.should_preserve_focus_handoff() || self.shared_active_path_preserved();
         self.reset_for_ibus_focus_change();
         self.surrounding_text_supported = false;
+        if preserve_active_path {
+            return;
+        }
         let mut state = self.shared.lock().expect("lay ime state poisoned");
         if state.active_path.as_deref() == Some(self.path.as_str()) {
             state.active_path = None;

@@ -1,0 +1,91 @@
+use zbus::fdo;
+
+use super::bridge::LayImeBridge;
+use super::engine::{LayIbusEngine, ManualToggleAuthority};
+use super::state::CommittedTailReplaceRequest;
+
+impl LayImeBridge {
+    pub(super) fn active_path(&self) -> Option<String> {
+        self.shared
+            .lock()
+            .expect("lay ime state poisoned")
+            .active_path
+            .clone()
+    }
+
+    pub(super) async fn input_state_inner(&self) -> fdo::Result<String> {
+        let Some(path) = self.active_path() else {
+            return Ok("passive:no-focus".to_string());
+        };
+        let iface_ref = self
+            .ibus_connection
+            .object_server()
+            .interface::<_, LayIbusEngine>(path.as_str())
+            .await
+            .map_err(|error| fdo::Error::Failed(error.to_string()))?;
+        let engine = iface_ref.get().await;
+        let state = match engine.manual_toggle_authority() {
+            ManualToggleAuthority::ImeActiveComposition => "active:composition",
+            ManualToggleAuthority::ImeCommittedTail => "passive:committed-tail",
+            ManualToggleAuthority::DaemonWordBuffer => "passive:daemon-word-buffer",
+        };
+        Ok(state.to_string())
+    }
+
+    pub(super) async fn replace_tail_inner(
+        &self,
+        backspaces: u32,
+        text: String,
+        suppress_next_autocorrect: bool,
+    ) -> fdo::Result<bool> {
+        if backspaces == 0 && text.is_empty() {
+            return Ok(false);
+        }
+        let Some(path) = self.active_path() else {
+            return Ok(false);
+        };
+        let iface_ref = self
+            .ibus_connection
+            .object_server()
+            .interface::<_, LayIbusEngine>(path.as_str())
+            .await
+            .map_err(|error| fdo::Error::Failed(error.to_string()))?;
+        let emitter = iface_ref.signal_emitter();
+        let mut engine = iface_ref.get_mut().await;
+        engine
+            .replace_committed_tail(
+                emitter,
+                CommittedTailReplaceRequest::daemon_bridge(
+                    backspaces,
+                    text,
+                    suppress_next_autocorrect,
+                ),
+            )
+            .await
+    }
+
+    pub(super) async fn manual_toggle_inner(&self) -> fdo::Result<bool> {
+        Ok(self.manual_toggle_v2_inner().await?.0)
+    }
+
+    pub(super) async fn manual_toggle_v2_inner(&self) -> fdo::Result<(bool, bool)> {
+        let Some(path) = self.active_path() else {
+            return Ok((false, false));
+        };
+        let iface_ref = self
+            .ibus_connection
+            .object_server()
+            .interface::<_, LayIbusEngine>(path.as_str())
+            .await
+            .map_err(|error| fdo::Error::Failed(error.to_string()))?;
+        let emitter = iface_ref.signal_emitter();
+        let mut engine = iface_ref.get_mut().await;
+        engine.refresh_empty_tail_from_handoff();
+        Ok(
+            match engine.manual_toggle_active_text_target(emitter).await? {
+                Some(target_is_ru) => (true, target_is_ru),
+                None => (false, false),
+            },
+        )
+    }
+}

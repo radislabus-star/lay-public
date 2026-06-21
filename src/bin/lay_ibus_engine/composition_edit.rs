@@ -44,6 +44,8 @@ impl LayIbusEngine {
         keyval: u32,
     ) -> fdo::Result<bool> {
         if self.buffer.is_empty() {
+            self.forget_committed_tail_after_passive_cursor_move();
+            self.clear_preedit(emitter).await?;
             return Ok(false);
         }
         let len = self.buffer.chars().count();
@@ -64,6 +66,7 @@ impl LayIbusEngine {
         let step = if keyval == KEY_UP { -1 } else { 1 };
         if self.buffer.is_empty() {
             if !self.cycle_precognition_candidate(step) {
+                self.forget_committed_tail_after_passive_cursor_move();
                 return Ok(false);
             }
             self.update_precognition_preedit(emitter).await?;
@@ -74,6 +77,10 @@ impl LayIbusEngine {
         }
         self.update_composition_preedit(emitter).await?;
         Ok(true)
+    }
+
+    pub(super) fn forget_committed_tail_after_passive_cursor_move(&mut self) {
+        self.close_committed_tail_field();
     }
 
     pub(super) fn insert_composition_char(&mut self, ch: char) {
@@ -183,5 +190,18 @@ mod tests {
         assert_eq!(engine.buffer, "");
         assert_eq!(engine.tail_buffer, "тес");
         assert_eq!(engine.preedit_fast.token(), "тес");
+    }
+
+    #[test]
+    fn passive_cursor_move_forgets_committed_tail() {
+        let mut engine = engine();
+        for ch in "ищем ".chars() {
+            engine.push_tail_char(ch);
+        }
+
+        engine.forget_committed_tail_after_passive_cursor_move();
+
+        assert!(engine.tail_buffer.is_empty());
+        assert!(engine.preedit_fast.token().is_empty());
     }
 }
