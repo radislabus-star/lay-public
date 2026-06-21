@@ -127,7 +127,17 @@ fn action_log_is_disabled_by_default_and_enabled_by_config() {
 
     std::fs::write(&config_path, r#"{"debug_action_log":true}"#).unwrap();
     record_action("typing-assist", "bad", "good", 1, 1, 10, true);
+    wait_for_path(&log_path);
     assert!(log_path.exists());
 
     let _ = std::fs::remove_dir_all(tmp);
+}
+
+fn wait_for_path(path: &std::path::Path) {
+    for _ in 0..20 {
+        if path.exists() {
+            return;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(25));
+    }
 }

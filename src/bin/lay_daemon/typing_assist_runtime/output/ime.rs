@@ -36,13 +36,16 @@ pub(crate) fn try_apply_ime_replacement(
         return None;
     }
     let original_layout = read_current_layout_is_ru().ok();
+    let replace_tail_started = Instant::now();
     if !try_ime_replace_tail(original, replacement, "typing-assist").unwrap_or(false) {
         return None;
     }
+    let replace_tail_ms = replace_tail_started.elapsed().as_millis();
 
     let target_layout = layout_switch_policy::target_layout_for_replacement(replacement, true);
     let force_target_layout =
         layout_switch_policy::force_target_layout_for_replacement(original, replacement);
+    let layout_started = Instant::now();
     switch_or_restore_layout_after_text_edit(
         active_auto_switch_layout() || force_target_layout,
         target_layout,
@@ -50,13 +53,30 @@ pub(crate) fn try_apply_ime_replacement(
         "typing-assist",
         false,
     );
+    let layout_ms = layout_started.elapsed().as_millis();
+    let remember_started = Instant::now();
     remember_ime_typing_correction(buf, events, original, replacement, rule_id, timing);
+    let remember_ms = remember_started.elapsed().as_millis();
+    let forward_started = Instant::now();
     let forwarded_spaces = forward_after_ime_replace(
         virtual_kbd,
         physical_grab,
         buf,
         target_layout,
         trailing_space_count(replacement),
+    );
+    let forward_ms = forward_started.elapsed().as_millis();
+    lay::action_log::record_timing_profile(
+        "typing-assist",
+        "daemon-ime",
+        &[
+            ("decision", timing.decision_ms),
+            ("ime_replace_tail_call", replace_tail_ms),
+            ("layout", layout_ms),
+            ("remember", remember_ms),
+            ("forward", forward_ms),
+            ("total", timing.started_at.elapsed().as_millis()),
+        ],
     );
     log(&format!(
         "✓ done: помощь при наборе {:?} → {:?} через IME за {}ms",

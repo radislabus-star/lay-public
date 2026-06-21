@@ -112,13 +112,25 @@ pub(crate) fn apply_text_replacement_pipeline(
     )
     .map_err(TextReplacementPipelineError::Insert)?;
     let insert_ms = insert_started.elapsed().as_millis();
+    let pipeline_ms = pipeline_started.elapsed().as_millis();
     log(&format!(
         "  {label} timing: prepare={}ms delete={}ms insert={}ms pipeline={}ms",
-        prepare_ms,
-        delete_ms,
-        insert_ms,
-        pipeline_started.elapsed().as_millis()
+        prepare_ms, delete_ms, insert_ms, pipeline_ms
     ));
+    lay::action_log::record_timing_profile(
+        label,
+        if fast_output {
+            "uinput-fast-replace"
+        } else {
+            "uinput-replace"
+        },
+        &[
+            ("prepare", prepare_ms),
+            ("delete", delete_ms),
+            ("insert", insert_ms),
+            ("pipeline", pipeline_ms),
+        ],
+    );
     Ok(outcome)
 }
 

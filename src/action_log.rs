@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const ACTIONS_PATH: &str = ".local/share/lay/recent_actions.jsonl";
-const KEEP_LINES: usize = 20;
+const TIMING_PROFILE_PATH: &str = ".local/share/lay/timing_profile.jsonl";
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct RecentAction<'a> {
@@ -81,7 +81,7 @@ pub fn record_action_with_stages(
         output_ms,
         undo_available,
     };
-    record_action_to_path(&path, &action, KEEP_LINES);
+    record_action_async_to_path(&path, &action);
 }
 
 pub fn record_action_to_path(path: &Path, action: &RecentAction<'_>, keep_lines: usize) {
@@ -91,6 +91,32 @@ pub fn record_action_to_path(path: &Path, action: &RecentAction<'_>, keep_lines:
     line.push('\n');
     if crate::private_file::append_private_text(path, &line).is_ok() {
         compact_action_log(path, keep_lines);
+    }
+}
+
+pub fn record_timing_profile(kind: &str, route: &str, stages: &[(&str, u128)]) {
+    if !crate::config::LayConfig::load().debug_action_log {
+        return;
+    }
+    let Some(path) = home_relative_path(TIMING_PROFILE_PATH) else {
+        return;
+    };
+    let stage_values = stages
+        .iter()
+        .map(|(name, ms)| serde_json::json!({ "name": name, "ms": ms }))
+        .collect::<Vec<_>>();
+    let record = serde_json::json!({
+        "ts": unix_timestamp(),
+        "kind": kind,
+        "route": route,
+        "stages": stage_values,
+    });
+    crate::debug_log::append_private_line(path, record.to_string());
+}
+
+fn record_action_async_to_path(path: &Path, action: &RecentAction<'_>) {
+    if let Ok(line) = serde_json::to_string(action) {
+        crate::debug_log::append_private_line(path.to_path_buf(), line);
     }
 }
 
@@ -115,9 +141,13 @@ fn compact_action_log(path: &Path, keep_lines: usize) {
 }
 
 fn actions_path() -> Option<PathBuf> {
+    home_relative_path(ACTIONS_PATH)
+}
+
+fn home_relative_path(relative: &str) -> Option<PathBuf> {
     std::env::var_os("HOME")
         .map(PathBuf::from)
-        .map(|home| home.join(ACTIONS_PATH))
+        .map(|home| home.join(relative))
 }
 
 fn unix_timestamp() -> u64 {

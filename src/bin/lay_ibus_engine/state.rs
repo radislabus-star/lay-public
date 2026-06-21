@@ -187,7 +187,10 @@ impl LayIbusEngine {
             trace::record_committed_tail_replace(source, "duplicate_skip", backspaces, &text);
             return Ok(true);
         }
+        let total_started = Instant::now();
+        let clear_started = Instant::now();
         self.clear_preedit(emitter).await?;
+        let clear_us = clear_started.elapsed().as_micros();
         let output_route = if self.cursor_cell_width > 0 && backspaces > 0 {
             "terminal_erase_commit"
         } else if backspaces > 0 {
@@ -196,21 +199,27 @@ impl LayIbusEngine {
             "commit"
         };
         trace::record_committed_tail_replace(source, output_route, backspaces, &text);
+        let mut delete_us = 0;
         let commit_text = if self.cursor_cell_width > 0 && backspaces > 0 {
             terminal_erase_prefix(backspaces) + &text
         } else {
+            let delete_started = Instant::now();
             if backspaces > 0 {
                 Self::delete_surrounding_text(emitter, -(backspaces as i32), backspaces)
                     .await
                     .map_err(|e| fdo::Error::Failed(e.to_string()))?;
             }
+            delete_us = delete_started.elapsed().as_micros();
             text.clone()
         };
+        let commit_started = Instant::now();
         if !commit_text.is_empty() {
             Self::commit_text(emitter, make_ibus_text(commit_text))
                 .await
                 .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         }
+        let commit_us = commit_started.elapsed().as_micros();
+        let state_started = Instant::now();
         for _ in 0..backspaces {
             self.tail_buffer.pop();
             self.preedit_fast.backspace();
@@ -228,6 +237,16 @@ impl LayIbusEngine {
         self.composition_cursor = 0;
         self.preedit_candidates.clear();
         self.preedit_candidate_index = 0;
+        let state_us = state_started.elapsed().as_micros();
+        trace::record_committed_tail_replace_timing(
+            source,
+            output_route,
+            clear_us,
+            delete_us,
+            commit_us,
+            state_us,
+            total_started.elapsed().as_micros(),
+        );
         self.recent_committed_tail_replace = Some(RecentCommittedTailReplace {
             backspaces,
             text,

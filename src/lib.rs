@@ -8,6 +8,7 @@ pub mod core;
 pub mod correction;
 pub mod correction_core;
 pub(crate) mod data_lines;
+pub mod debug_log;
 pub mod decoder;
 pub mod desktop;
 pub mod dict;

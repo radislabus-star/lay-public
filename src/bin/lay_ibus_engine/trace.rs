@@ -19,7 +19,7 @@ pub(crate) fn record(line: impl AsRef<str>) {
         return;
     }
     let path = trace_path();
-    let _ = lay::private_file::append_private_text(&path, &format!("{}\n", line.as_ref()));
+    lay::debug_log::append_private_line(path, line.as_ref().to_string());
 }
 
 pub(crate) fn record_key(
@@ -115,6 +115,24 @@ pub(crate) fn record_committed_tail_replace(
     ));
 }
 
+pub(crate) fn record_committed_tail_replace_timing(
+    source: VisibleTailSource,
+    output_route: &str,
+    clear_us: u128,
+    delete_us: u128,
+    commit_us: u128,
+    state_us: u128,
+    total_us: u128,
+) {
+    if !enabled() {
+        return;
+    }
+    let source = visible_tail_source(source);
+    write_record(format!(
+        r#"{{"kind":"ibus_committed_tail_replace_timing","source":"{source}","output_route":"{output_route}","clear_us":{clear_us},"delete_us":{delete_us},"commit_us":{commit_us},"state_us":{state_us},"total_us":{total_us}}}"#
+    ));
+}
+
 pub(crate) fn record_precognition_timing(
     total_us: u64,
     ascii_us: u64,
@@ -152,7 +170,7 @@ pub(crate) fn enabled() -> bool {
 
 fn write_record(line: impl AsRef<str>) {
     let path = trace_path();
-    let _ = lay::private_file::append_private_text(&path, &format!("{}\n", line.as_ref()));
+    lay::debug_log::append_private_line(path, line.as_ref().to_string());
 }
 
 fn debug_enabled_cached() -> bool {
