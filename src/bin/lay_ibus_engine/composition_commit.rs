@@ -74,16 +74,6 @@ impl LayIbusEngine {
             return Ok(false);
         }
 
-        if with_space && !suffix.is_empty() {
-            self.commit_active_composition(
-                emitter,
-                ActiveCompositionCommit::with_completion(suffix, false),
-            )
-            .await?;
-            self.commit_completion_space(emitter).await?;
-            return Ok(true);
-        }
-
         self.commit_active_composition(
             emitter,
             ActiveCompositionCommit::with_completion(suffix, with_space),
@@ -99,18 +89,6 @@ impl LayIbusEngine {
         let handled = self.accept_completion(emitter, true).await?;
         self.trace_key("alt_accept", 0, 0, handled, None);
         Ok(handled)
-    }
-
-    pub(super) async fn commit_completion_space(
-        &mut self,
-        emitter: &SignalEmitter<'_>,
-    ) -> fdo::Result<()> {
-        Self::commit_text(emitter, make_ibus_text(" ".to_string()))
-            .await
-            .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        self.push_tail_char(' ');
-        self.last_commit_at = Some(Instant::now());
-        Ok(())
     }
 
     pub(super) async fn commit_managed_passthrough_char(
@@ -391,17 +369,6 @@ mod tests {
                 .autocorrect_committed_tail_text("ghj,ktvf ")
                 .as_deref(),
             Some("проблема ")
-        );
-    }
-
-    #[test]
-    fn active_composition_autocorrect_preserves_committed_space() {
-        let engine = engine();
-        assert_eq!(
-            engine
-                .autocorrect_active_composition_text("привет ")
-                .as_deref(),
-            None
         );
     }
 }
