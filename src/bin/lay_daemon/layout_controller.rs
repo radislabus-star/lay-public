@@ -11,6 +11,8 @@ mod gnome_dbus;
 mod ibus_bridge;
 #[path = "layout_controller/ime_bridge.rs"]
 mod ime_bridge;
+#[path = "layout_controller/ime_state.rs"]
+mod ime_state;
 
 const LAYOUT_SWITCH_SETTLE_MS: u64 = 12;
 const TRIGGER_RELEASE_SETTLE_MS: u64 = 80;
@@ -240,7 +242,7 @@ pub(super) fn focused_ime_engine_handles_typing() -> bool {
         return false;
     }
     match ime_bridge::input_state() {
-        Ok(state) => state.starts_with("active:"),
+        Ok(state) => ime_state::has_text_authority(&state),
         Err(_) => ime_bridge::owns_active_text().unwrap_or(false),
     }
 }
