@@ -379,4 +379,14 @@ mod tests {
             None
         );
     }
+
+    #[test]
+    fn active_completion_with_space_keeps_tail_separator() {
+        let mut engine = engine();
+        engine.buffer = "пр".to_string();
+        engine.sync_tail_after_active_composition_commit("привет ");
+
+        assert_eq!(engine.tail_buffer, "привет ");
+        assert_eq!(engine.preedit_fast.token(), "");
+    }
 }

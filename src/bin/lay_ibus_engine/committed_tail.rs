@@ -240,6 +240,23 @@ mod tests {
     }
 
     #[test]
+    fn real_space_prepares_pending_committed_tail_autocorrect() {
+        let mut engine = engine();
+        for ch in "fавтозамена".chars() {
+            engine.push_tail_char(ch);
+        }
+
+        assert!(engine.prepare_committed_tail_space_autocorrect());
+        let pending = engine
+            .pending_space_committed_tail_replace
+            .as_ref()
+            .expect("pending replacement");
+        assert_eq!(pending.backspaces, 11);
+        assert_eq!(pending.replacement, "автозамена ");
+        assert_eq!(pending.original, "fавтозамена");
+    }
+
+    #[test]
     fn manual_toggle_suppresses_next_boundary_autocorrect_once() {
         let mut engine = engine();
         engine.suppress_next_committed_tail_autocorrect = true;
