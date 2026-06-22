@@ -16,4 +16,5 @@ pub(super) fn record_precognition_tick_if_enabled(stage: &str, buffer: &WordBuff
         &text,
         active_nanda_trace_text(),
     );
+    lay::nanda_wave::llmwave::record_phrase_experience(stage, &text);
 }

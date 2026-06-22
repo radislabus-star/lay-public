@@ -237,6 +237,7 @@ impl LayIbusEngine {
         self.composition_cursor = 0;
         self.preedit_candidates.clear();
         self.preedit_candidate_index = 0;
+        self.sync_layout_after_committed_text(&text);
         let state_us = state_started.elapsed().as_micros();
         trace::record_committed_tail_replace_timing(
             source,

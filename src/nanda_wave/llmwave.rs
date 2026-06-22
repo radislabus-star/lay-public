@@ -1,8 +1,10 @@
+use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::feedback::{FeedbackAdjustment, L3Feedback};
 use super::options::WaveOptions;
@@ -15,6 +17,9 @@ const HEADER_BYTES: usize = 64;
 const SCHEMA_ID: &str = "lay.llmwave.memory.v1";
 const TOKENIZER_ID: &str = "lay.llmwave.tokenizer.v1";
 const MODEL_ID: &str = "lay.llmwave.l3_shadow.v1";
+const PHRASE_EXPERIENCE_PATH: &str = ".local/share/lay/nanda_wave/phrase_experience.jsonl";
+const MIN_EXPERIENCE_TOKENS: usize = 3;
+const MAX_EXPERIENCE_TOKENS: usize = 12;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LlmWaveContract {
@@ -48,6 +53,15 @@ pub struct LlmWavePhrasePrediction {
     pub score: f32,
     pub support: usize,
     pub tokens: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct LlmWavePhraseExperience {
+    pub kind: String,
+    pub ts: u64,
+    pub stage: String,
+    pub text: String,
+    pub tokens: usize,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -201,9 +215,10 @@ impl LlmWaveMemory {
                 for next in self.next_token_predictions(&item.tokens, beam_width) {
                     let mut tokens = item.tokens.clone();
                     tokens.push(next.text.clone());
+                    let score = combined_phrase_score(item, &next);
                     next_beam.push(LlmWavePhrasePrediction {
                         text: tokens.join(" "),
-                        score: (item.score * next.score).clamp(0.0, 1.0),
+                        score,
                         support: item.support + next.support,
                         tokens,
                     });
@@ -259,6 +274,16 @@ impl LlmWaveMemory {
     }
 }
 
+fn combined_phrase_score(current: &LlmWavePhrasePrediction, next: &LlmWavePhrasePrediction) -> f32 {
+    if current.support == 0 {
+        return next.score;
+    }
+    let current_weight = current.support.max(1) as f32;
+    let next_weight = next.support.max(1) as f32;
+    ((current.score * current_weight + next.score * next_weight) / (current_weight + next_weight))
+        .clamp(0.0, 1.0)
+}
+
 fn ranked_predictions(
     vocabulary: &BTreeMap<u32, String>,
     by_hash: BTreeMap<u32, (f32, usize)>,
@@ -305,15 +330,26 @@ pub fn default_memory_path() -> Option<PathBuf> {
         .map(|home| home.join(".cache/lay/llmwave/phrase_memory.llmw.bin"))
 }
 
+pub fn default_phrase_experience_path() -> Option<PathBuf> {
+    if let Some(path) = std::env::var_os("LAY_LLMWAVE_EXPERIENCE").map(PathBuf::from) {
+        return Some(path);
+    }
+    std::env::var_os("HOME")
+        .map(PathBuf::from)
+        .map(|home| home.join(PHRASE_EXPERIENCE_PATH))
+}
+
 pub fn load_default_memory() -> LlmWaveMemory {
     static MEMORY: OnceLock<LlmWaveMemory> = OnceLock::new();
     MEMORY
-        .get_or_init(|| {
-            default_memory_path()
-                .and_then(|path| read_memory_packet(&path).ok())
-                .unwrap_or_else(LlmWaveMemory::empty)
-        })
+        .get_or_init(|| load_default_memory_uncached())
         .clone()
+}
+
+pub fn load_default_memory_uncached() -> LlmWaveMemory {
+    default_memory_path()
+        .and_then(|path| read_memory_packet(&path).ok())
+        .unwrap_or_else(LlmWaveMemory::empty)
 }
 
 pub fn write_memory_packet(path: &Path, memory: &LlmWaveMemory) -> io::Result<()> {
@@ -322,6 +358,79 @@ pub fn write_memory_packet(path: &Path, memory: &LlmWaveMemory) -> io::Result<()
 
 pub fn read_memory_packet(path: &Path) -> io::Result<LlmWaveMemory> {
     decode_memory(&fs::read(path)?)
+}
+
+pub fn record_phrase_experience(stage: &str, text: &str) {
+    let Some(experience) = phrase_experience(stage, text) else {
+        return;
+    };
+    let Some(path) = default_phrase_experience_path() else {
+        return;
+    };
+    if let Ok(line) = serde_json::to_string(&experience) {
+        crate::debug_log::append_private_line(path, line);
+    }
+}
+
+pub fn load_phrase_experience_text(path: &Path) -> io::Result<String> {
+    Ok(load_phrase_experience(path)?
+        .into_iter()
+        .map(|record| record.text)
+        .collect::<Vec<_>>()
+        .join("\n"))
+}
+
+pub fn load_phrase_experience(path: &Path) -> io::Result<Vec<LlmWavePhraseExperience>> {
+    let text = fs::read_to_string(path)?;
+    let mut records = Vec::new();
+    for line in text.lines().filter(|line| !line.trim().is_empty()) {
+        let Ok(record) = serde_json::from_str::<LlmWavePhraseExperience>(line) else {
+            continue;
+        };
+        if phrase_experience(&record.stage, &record.text).is_some() {
+            records.push(record);
+        }
+    }
+    Ok(records)
+}
+
+fn phrase_experience(stage: &str, text: &str) -> Option<LlmWavePhraseExperience> {
+    if stage != "space" && stage != "enter" {
+        return None;
+    }
+    let normalized = normalize_experience_text(text)?;
+    let tokens = tokenize(&normalized);
+    if !(MIN_EXPERIENCE_TOKENS..=MAX_EXPERIENCE_TOKENS).contains(&tokens.len()) {
+        return None;
+    }
+    Some(LlmWavePhraseExperience {
+        kind: "llmwave_phrase_experience_v1".to_string(),
+        ts: unix_now(),
+        stage: stage.to_string(),
+        text: normalized,
+        tokens: tokens.len(),
+    })
+}
+
+fn normalize_experience_text(text: &str) -> Option<String> {
+    let text = text.split_whitespace().collect::<Vec<_>>().join(" ");
+    if text.is_empty()
+        || text.contains("://")
+        || text.contains('@')
+        || text.contains('=')
+        || text.chars().any(|ch| ch.is_control())
+        || text
+            .split_whitespace()
+            .any(|token| token.starts_with('-') && token.chars().count() > 1)
+    {
+        return None;
+    }
+    let alpha = text.chars().filter(|ch| ch.is_alphabetic()).count();
+    let total = text.chars().filter(|ch| !ch.is_whitespace()).count().max(1);
+    if alpha * 2 < total {
+        return None;
+    }
+    Some(text)
 }
 
 pub fn encode_memory(memory: &LlmWaveMemory) -> Vec<u8> {
@@ -450,6 +559,22 @@ pub fn score_candidates(
     }
 }
 
+pub fn phrase_forecast_candidates(original: &str, memory: &LlmWaveMemory) -> Vec<WordCandidate> {
+    if memory.is_empty() {
+        return Vec::new();
+    }
+    let request = PhraseForecastRequest::from_text(original);
+    if request.prefix_tokens.is_empty() {
+        return Vec::new();
+    }
+    memory
+        .predict_phrase(&request.prefix_text, 6, 8)
+        .into_iter()
+        .filter_map(|prediction| phrase_prediction_to_candidate(original, &request, prediction))
+        .take(4)
+        .collect()
+}
+
 pub fn tokenize(text: &str) -> Vec<String> {
     text.split_whitespace()
         .filter_map(|token| {
@@ -461,6 +586,92 @@ pub fn tokenize(text: &str) -> Vec<String> {
             (!token.is_empty()).then_some(token)
         })
         .collect()
+}
+
+struct PhraseForecastRequest {
+    prefix_text: String,
+    prefix_tokens: Vec<String>,
+    partial_token: String,
+}
+
+impl PhraseForecastRequest {
+    fn from_text(text: &str) -> Self {
+        let trimmed = text.trim_end();
+        if text.ends_with(char::is_whitespace) {
+            return Self {
+                prefix_text: trimmed.to_string(),
+                prefix_tokens: tokenize(trimmed),
+                partial_token: String::new(),
+            };
+        }
+        let Some((prefix, token)) = split_last_token(trimmed) else {
+            return Self {
+                prefix_text: trimmed.to_string(),
+                prefix_tokens: tokenize(trimmed),
+                partial_token: String::new(),
+            };
+        };
+        let prefix_text = prefix.trim_end().to_string();
+        Self {
+            prefix_tokens: tokenize(&prefix_text),
+            prefix_text,
+            partial_token: token.to_lowercase(),
+        }
+    }
+}
+
+fn phrase_prediction_to_candidate(
+    original: &str,
+    request: &PhraseForecastRequest,
+    prediction: LlmWavePhrasePrediction,
+) -> Option<WordCandidate> {
+    if prediction.tokens.len() <= request.prefix_tokens.len() {
+        return None;
+    }
+    let next_token = prediction.tokens.get(request.prefix_tokens.len())?;
+    if !request.partial_token.is_empty() && !next_token.starts_with(&request.partial_token) {
+        return None;
+    }
+    let text = prediction.text.trim().to_string();
+    if text == original.trim_end() || text.chars().count() <= original.trim_end().chars().count() {
+        return None;
+    }
+    let token_count = prediction
+        .tokens
+        .len()
+        .saturating_sub(request.prefix_tokens.len());
+    let completion_shape = if request.partial_token.is_empty() {
+        "next-word"
+    } else {
+        "partial-token"
+    };
+    Some(WordCandidate {
+        text,
+        source: super::context_wave::PHRASE_FORECAST_CELL,
+        energy: (0.52 + prediction.score * 0.34).clamp(0.0, 0.88),
+        risk: (0.28 - prediction.score * 0.08).clamp(0.16, 0.28),
+        support: vec![
+            "llmwave-phrase-forecast".to_string(),
+            format!(
+                "shape={completion_shape} tokens={token_count} support={} original_len={}",
+                prediction.support,
+                original.chars().count()
+            ),
+        ],
+    })
+}
+
+fn split_last_token(text: &str) -> Option<(&str, &str)> {
+    let trimmed = text.trim_end();
+    if trimmed.is_empty() {
+        return None;
+    }
+    let start = trimmed
+        .char_indices()
+        .rev()
+        .find_map(|(idx, ch)| ch.is_whitespace().then_some(idx + ch.len_utf8()))
+        .unwrap_or(0);
+    Some((&trimmed[..start], &trimmed[start..]))
 }
 
 fn report_to_feedback(report: &LlmWaveReport) -> L3Feedback {
@@ -627,6 +838,13 @@ fn hash32(text: &str) -> u32 {
     })
 }
 
+fn unix_now() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs()
+}
+
 #[cfg(test)]
 mod tests {
     use super::super::signal::WordCandidate;
@@ -694,5 +912,50 @@ mod tests {
             .predictions
             .iter()
             .any(|item| item.text.contains("проверить")));
+    }
+
+    #[test]
+    fn phrase_forecast_completes_partial_next_word() {
+        let memory = LlmWaveMemory::from_text(
+            "на улице опять идёт дождь\nна улице опять идёт снег\nя хочу проверить автозамену",
+        );
+        let candidates = phrase_forecast_candidates("на улице опять идёт д", &memory);
+        assert!(candidates.iter().any(|candidate| {
+            candidate.source == super::super::context_wave::PHRASE_FORECAST_CELL
+                && candidate.text == "на улице опять идёт дождь"
+        }));
+        assert!(!candidates
+            .iter()
+            .any(|candidate| candidate.text == "на улице опять идёт дом"));
+    }
+
+    #[test]
+    fn phrase_experience_keeps_only_phrase_boundaries() {
+        assert!(phrase_experience("space", "я хочу проверить режим").is_some());
+        assert!(phrase_experience("key", "я хочу проверить режим").is_none());
+        assert!(phrase_experience("space", "git checkout -b test").is_none());
+        assert!(phrase_experience("space", "https://example.test token").is_none());
+        assert!(phrase_experience("space", "a = b").is_none());
+    }
+
+    #[test]
+    fn phrase_experience_jsonl_loads_training_text() {
+        let tmp =
+            std::env::temp_dir().join(format!("lay-llmwave-exp-{}.jsonl", std::process::id()));
+        let first = phrase_experience("space", "я хочу проверить режим").unwrap();
+        let second = phrase_experience("space", "на улице опять идёт дождь").unwrap();
+        let text = format!(
+            "{}\n{}\nnot-json\n",
+            serde_json::to_string(&first).unwrap(),
+            serde_json::to_string(&second).unwrap()
+        );
+        crate::private_file::write_private_text(&tmp, &text).unwrap();
+
+        let loaded = load_phrase_experience_text(&tmp).unwrap();
+        let _ = std::fs::remove_file(tmp);
+
+        assert!(loaded.contains("я хочу проверить режим"));
+        assert!(loaded.contains("на улице опять идёт дождь"));
+        assert!(!loaded.contains("not-json"));
     }
 }

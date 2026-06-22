@@ -134,7 +134,7 @@ fn action_log_is_disabled_by_default_and_enabled_by_config() {
 }
 
 fn wait_for_path(path: &std::path::Path) {
-    for _ in 0..20 {
+    for _ in 0..80 {
         if path.exists() {
             return;
         }

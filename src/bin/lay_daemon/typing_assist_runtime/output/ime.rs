@@ -1,8 +1,7 @@
 use std::time::Instant;
 
 use super::super::super::{
-    active_auto_switch_layout, layout_switch_policy, log, read_current_layout_is_ru,
-    should_try_ime_text_backend, switch_or_restore_layout_after_text_edit, try_ime_replace_tail,
+    layout_switch_policy, log, should_try_ime_text_backend, try_ime_replace_tail,
 };
 use super::super::TypingAssistOutcome;
 use super::memory::TypingAssistTiming;
@@ -35,7 +34,6 @@ pub(crate) fn try_apply_ime_replacement(
     if !should_try_ime_text_backend() {
         return None;
     }
-    let original_layout = read_current_layout_is_ru().ok();
     let replace_tail_started = Instant::now();
     if !try_ime_replace_tail(original, replacement, "typing-assist").unwrap_or(false) {
         return None;
@@ -43,16 +41,8 @@ pub(crate) fn try_apply_ime_replacement(
     let replace_tail_ms = replace_tail_started.elapsed().as_millis();
 
     let target_layout = layout_switch_policy::target_layout_for_replacement(replacement, true);
-    let force_target_layout =
-        layout_switch_policy::force_target_layout_for_replacement(original, replacement);
     let layout_started = Instant::now();
-    switch_or_restore_layout_after_text_edit(
-        active_auto_switch_layout() || force_target_layout,
-        target_layout,
-        original_layout,
-        "typing-assist",
-        false,
-    );
+    log("  typing-assist layout handled by IME engine");
     let layout_ms = layout_started.elapsed().as_millis();
     let remember_started = Instant::now();
     remember_ime_typing_correction(buf, events, original, replacement, rule_id, timing);
@@ -73,6 +63,7 @@ pub(crate) fn try_apply_ime_replacement(
             ("decision", timing.decision_ms),
             ("ime_replace_tail_call", replace_tail_ms),
             ("layout", layout_ms),
+            ("layout_ime_internal", 1),
             ("remember", remember_ms),
             ("forward", forward_ms),
             ("total", timing.started_at.elapsed().as_millis()),

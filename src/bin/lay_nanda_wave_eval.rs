@@ -15,6 +15,8 @@ mod real_suite;
 #[path = "lay_nanda_wave_eval/status.rs"]
 mod status;
 
+const DEFAULT_LLMWAVE_SEED: &str = "data/nanda_llmwave_seed_phrases.txt";
+
 fn main() -> io::Result<()> {
     let args = env::args().collect::<Vec<_>>();
     if let Some(path) = arg_value(&args, "--learned") {
@@ -41,6 +43,23 @@ fn main() -> io::Result<()> {
             return Ok(());
         };
         pack_llmwave_text(path, out)?;
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--llmwave-pack-live") {
+        let out = arg_value(&args, "--out")
+            .map(PathBuf::from)
+            .or_else(llmwave::default_memory_path)
+            .expect("default llmwave memory path");
+        let seed = arg_value(&args, "--seed").unwrap_or(DEFAULT_LLMWAVE_SEED);
+        pack_llmwave_live(seed, &out)?;
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--llmwave-learning-report") {
+        let seed = arg_value(&args, "--seed").unwrap_or(DEFAULT_LLMWAVE_SEED);
+        let limit = arg_value(&args, "--limit")
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(12);
+        print_llmwave_learning_report(seed, limit)?;
         return Ok(());
     }
     if args.iter().any(|arg| arg == "--status-json") {
@@ -110,7 +129,7 @@ fn main() -> io::Result<()> {
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite | --quick-ablation | --llmwave-pack-cases PATH --out PATH | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite | --quick-ablation | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learning-report | --cases PATH"
         );
         return Ok(());
     }
@@ -153,6 +172,146 @@ fn pack_llmwave_text(path: &str, out: &str) -> io::Result<()> {
         llmwave::LLMWAVE_RECORD_BYTES
     );
     Ok(())
+}
+
+fn pack_llmwave_live(seed: &str, out: &std::path::Path) -> io::Result<()> {
+    let mut parts = Vec::new();
+    if let Ok(text) = std::fs::read_to_string(seed) {
+        parts.push(text);
+    }
+    let live_path = llmwave::default_phrase_experience_path();
+    let live_text = live_path
+        .as_ref()
+        .and_then(|path| llmwave::load_phrase_experience_text(path).ok())
+        .unwrap_or_default();
+    if !live_text.trim().is_empty() {
+        parts.push(live_text);
+    }
+    let text = parts.join("\n");
+    let memory = llmwave::LlmWaveMemory::from_text(&text);
+    llmwave::write_memory_packet(out, &memory)?;
+    println!(
+        "llmwave_pack_live: seed={} live={} output={} records={} vocabulary={} record_bytes={}",
+        seed,
+        live_path
+            .map(|path| path.display().to_string())
+            .unwrap_or_else(|| "none".to_string()),
+        out.display(),
+        memory.len(),
+        memory.vocabulary_len(),
+        llmwave::LLMWAVE_RECORD_BYTES
+    );
+    Ok(())
+}
+
+fn print_llmwave_learning_report(seed: &str, limit: usize) -> io::Result<()> {
+    let seed_text = std::fs::read_to_string(seed).unwrap_or_default();
+    let seed_memory = llmwave::LlmWaveMemory::from_text(&seed_text);
+    let live_path = llmwave::default_phrase_experience_path();
+    let live_records = live_path
+        .as_ref()
+        .and_then(|path| llmwave::load_phrase_experience(path).ok())
+        .unwrap_or_default();
+    let mut live_counts = BTreeMap::<String, usize>::new();
+    for record in &live_records {
+        *live_counts.entry(record.text.clone()).or_default() += 1;
+    }
+    let live_text = live_counts.keys().cloned().collect::<Vec<_>>().join("\n");
+    let combined_memory = llmwave::LlmWaveMemory::from_text(&format!("{seed_text}\n{live_text}"));
+    println!("llmwave_learning_report:");
+    println!("  seed: {seed}");
+    println!(
+        "  live: {}",
+        live_path
+            .map(|path| path.display().to_string())
+            .unwrap_or_else(|| "none".to_string())
+    );
+    println!(
+        "  seed_memory: records={} vocabulary={}",
+        seed_memory.len(),
+        seed_memory.vocabulary_len()
+    );
+    println!(
+        "  combined_memory: records={} vocabulary={}",
+        combined_memory.len(),
+        combined_memory.vocabulary_len()
+    );
+    println!(
+        "  live_experience: records={} unique={}",
+        live_records.len(),
+        live_counts.len()
+    );
+    print_live_phrase_counts(&live_counts, limit);
+    print_prediction_deltas(&seed_memory, &combined_memory, live_counts.keys(), limit);
+    Ok(())
+}
+
+fn print_live_phrase_counts(live_counts: &BTreeMap<String, usize>, limit: usize) {
+    let mut rows = live_counts.iter().collect::<Vec<_>>();
+    rows.sort_by(|left, right| right.1.cmp(left.1).then_with(|| left.0.cmp(right.0)));
+    println!("  learned_phrases:");
+    if rows.is_empty() {
+        println!("    none");
+        return;
+    }
+    for (phrase, count) in rows.into_iter().take(limit) {
+        println!("    count={count} text={phrase:?}");
+    }
+}
+
+fn print_prediction_deltas<'a>(
+    seed_memory: &llmwave::LlmWaveMemory,
+    combined_memory: &llmwave::LlmWaveMemory,
+    live_phrases: impl Iterator<Item = &'a String>,
+    limit: usize,
+) {
+    println!("  prediction_deltas:");
+    let mut printed = 0usize;
+    for phrase in live_phrases {
+        let tokens = llmwave::tokenize(phrase);
+        if tokens.len() < 3 {
+            continue;
+        }
+        for width in (2..=4.min(tokens.len() - 1)).rev() {
+            let prefix = tokens[..width].join(" ");
+            let seed_top = seed_memory.predict_phrase(&prefix, 1, 1).into_iter().next();
+            let combined_top = combined_memory
+                .predict_phrase(&prefix, 1, 1)
+                .into_iter()
+                .next();
+            if prediction_text(&seed_top) == prediction_text(&combined_top) {
+                continue;
+            }
+            println!(
+                "    prefix={prefix:?} seed={} live={}",
+                format_prediction(seed_top.as_ref()),
+                format_prediction(combined_top.as_ref())
+            );
+            printed += 1;
+            break;
+        }
+        if printed >= limit {
+            break;
+        }
+    }
+    if printed == 0 {
+        println!("    none");
+    }
+}
+
+fn prediction_text(prediction: &Option<llmwave::LlmWavePhrasePrediction>) -> Option<&str> {
+    prediction.as_ref().map(|item| item.text.as_str())
+}
+
+fn format_prediction(prediction: Option<&llmwave::LlmWavePhrasePrediction>) -> String {
+    prediction
+        .map(|item| {
+            format!(
+                "{:?} score={:.3} support={}",
+                item.text, item.score, item.support
+            )
+        })
+        .unwrap_or_else(|| "none".to_string())
 }
 
 fn print_recent_traces(limit: usize) {

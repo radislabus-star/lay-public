@@ -109,9 +109,9 @@ fn tail_line_boundary(text: &str, max_bytes: usize) -> usize {
         .char_indices()
         .find_map(|(idx, _)| (idx >= start).then_some(idx))
         .unwrap_or(start);
-    text[start..]
-        .find('\n')
-        .map(|offset| start + offset + 1)
+    text[..=start]
+        .rfind('\n')
+        .map(|idx| idx + 1)
         .unwrap_or(start)
 }
 

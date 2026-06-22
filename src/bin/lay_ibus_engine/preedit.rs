@@ -326,16 +326,33 @@ impl LayIbusEngine {
         // Preedit can only show text after the cursor. Full-token typo repair
         // belongs to Space autocorrect; running it here burns latency and cannot
         // produce a right-side suffix for the current token.
-        let Some(wave) = lay::nanda_wave::context_wave::context_wave_for_tail(tail) else {
-            return Vec::new();
-        };
-        lay::nanda_wave::context_wave::candidate_interferences(&wave)
+        let mut suffixes = Vec::new();
+        if let Some(wave) = lay::nanda_wave::context_wave::context_wave_for_tail(tail) {
+            suffixes.extend(
+                lay::nanda_wave::context_wave::candidate_interferences(&wave)
+                    .into_iter()
+                    .take(3)
+                    .filter(|candidate| candidate.projection >= 0.22)
+                    .filter_map(|candidate| {
+                        let text = format!("{}{}", wave.prefix, candidate.candidate);
+                        let suffix = text.strip_prefix(tail)?;
+                        (!suffix.is_empty()
+                            && suffix.chars().count() <= self.precognition_max_suffix_chars())
+                        .then(|| suffix.to_string())
+                    }),
+            );
+        }
+        suffixes.extend(self.llmwave_phrase_suffixes(tail));
+        suffixes
+    }
+
+    fn llmwave_phrase_suffixes(&self, tail: &str) -> Vec<String> {
+        let memory = lay::nanda_wave::llmwave::load_default_memory();
+        lay::nanda_wave::llmwave::phrase_forecast_candidates(tail, &memory)
             .into_iter()
             .take(3)
-            .filter(|candidate| candidate.projection >= 0.22)
             .filter_map(|candidate| {
-                let text = format!("{}{}", wave.prefix, candidate.candidate);
-                let suffix = text.strip_prefix(tail)?;
+                let suffix = candidate.text.strip_prefix(tail)?;
                 (!suffix.is_empty()
                     && suffix.chars().count() <= self.precognition_max_suffix_chars())
                 .then(|| suffix.to_string())

@@ -97,6 +97,12 @@ pub fn run_l2_refined_with_feedback(
             push_unique_candidate(&mut candidates, candidate);
         }
     }
+    if options.is_enabled(super::context_wave::PHRASE_FORECAST_CELL) && options.llmwave_shadow() {
+        let memory = phrase_forecast_memory();
+        for candidate in super::llmwave::phrase_forecast_candidates(tail, &memory) {
+            push_unique_candidate(&mut candidates, candidate);
+        }
+    }
     if options.is_enabled("GrammarCell32") {
         for candidate in grammar_agreement_candidates(tail, &context, l1) {
             push_unique_candidate(&mut candidates, candidate);
@@ -130,6 +136,16 @@ pub fn run_l2_refined_with_feedback(
             .then_with(|| left.risk.total_cmp(&right.risk))
     });
     candidates
+}
+
+#[cfg(not(test))]
+fn phrase_forecast_memory() -> super::llmwave::LlmWaveMemory {
+    super::llmwave::load_default_memory()
+}
+
+#[cfg(test)]
+fn phrase_forecast_memory() -> super::llmwave::LlmWaveMemory {
+    super::llmwave::load_default_memory_uncached()
 }
 
 fn push_unique_candidate(candidates: &mut Vec<WordCandidate>, candidate: WordCandidate) {
@@ -989,6 +1005,27 @@ mod tests {
         let candidates = run_l2(original, &l1);
         assert!(candidates.iter().any(|candidate| {
             candidate.source == "GrammarCell32" && candidate.text == "расчёт приблизительный"
+        }));
+    }
+
+    #[test]
+    fn l2_exposes_l3_phrase_forecast_candidate_when_llmwave_is_enabled() {
+        let memory = super::super::llmwave::LlmWaveMemory::from_text("на улице опять идёт дождь");
+        let path =
+            std::env::temp_dir().join(format!("lay-l2-llmwave-{}.llmw.bin", std::process::id()));
+        super::super::llmwave::write_memory_packet(&path, &memory).unwrap();
+        std::env::set_var("LAY_LLMWAVE_MEMORY", &path);
+
+        let original = "на улице опять идёт д";
+        let l1 = run_l1(original);
+        let options = crate::nanda_wave::WaveOptions::default().with_llmwave_shadow(true);
+        let candidates = run_l2_with_options(original, &l1, &options);
+        std::env::remove_var("LAY_LLMWAVE_MEMORY");
+        let _ = std::fs::remove_file(path);
+
+        assert!(candidates.iter().any(|candidate| {
+            candidate.source == crate::nanda_wave::context_wave::PHRASE_FORECAST_CELL
+                && candidate.text == "на улице опять идёт дождь"
         }));
     }
 
