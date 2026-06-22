@@ -15,7 +15,7 @@ mod forward;
 mod remember;
 
 pub(crate) use context::ImeTypingReplacementContext;
-use forward::forward_after_ime_replace;
+use forward::{forward_after_ime_replace, trailing_space_count};
 use remember::remember_ime_typing_correction;
 
 pub(crate) fn try_apply_ime_replacement(
@@ -95,8 +95,4 @@ pub(crate) fn try_apply_ime_replacement(
     Some(TypingAssistOutcome::Applied {
         layout_is_ru: target_layout,
     })
-}
-
-fn trailing_space_count(text: &str) -> usize {
-    text.chars().rev().take_while(|ch| *ch == ' ').count()
 }

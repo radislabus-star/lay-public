@@ -14,10 +14,10 @@ use super::correction_memory_runtime::{
 use super::active_typing_assist_pipeline_for_auto_replace;
 use super::{
     active_auto_switch_layout, apply_text_replacement_pipeline, emit_key_taps_fast,
-    focused_ime_engine_handles_boundary_typing, layout_switch_policy, log,
-    read_current_layout_is_ru, record_recent_action, release_possible_modifiers,
-    should_try_ime_text_backend, switch_or_restore_layout_after_text_edit, try_ime_replace_tail,
-    ExecutingGuard, TYPING_ASSIST_RUNTIME_READY,
+    focused_ime_engine_handles_typing, layout_switch_policy, log, read_current_layout_is_ru,
+    record_recent_action, release_possible_modifiers, should_try_ime_text_backend,
+    switch_or_restore_layout_after_text_edit, try_ime_replace_tail, ExecutingGuard,
+    TYPING_ASSIST_RUNTIME_READY,
 };
 
 pub(super) fn enter_autocorrect_candidate(
@@ -55,7 +55,7 @@ pub(super) fn handle_enter_autocorrect(
         log("· enter-autocorrect skipped: warmup pending");
         return None;
     }
-    if focused_ime_engine_handles_boundary_typing() {
+    if focused_ime_engine_handles_typing() {
         log("· enter-autocorrect skipped: focused IME engine owns boundary text");
         return None;
     }

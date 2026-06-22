@@ -1,7 +1,6 @@
 use zbus::fdo;
 use zbus::{interface, Connection};
 
-use super::engine::{LayIbusEngine, ManualToggleAuthority};
 use super::protocol::Shared;
 use crate::bridge_policy::should_suppress_next_autocorrect;
 
@@ -32,17 +31,7 @@ impl LayImeBridge {
 
     #[zbus(name = "OwnsActiveText")]
     async fn owns_active_text(&self) -> fdo::Result<bool> {
-        let Some(path) = self.active_path() else {
-            return Ok(false);
-        };
-        let iface_ref = self
-            .ibus_connection
-            .object_server()
-            .interface::<_, LayIbusEngine>(path.as_str())
-            .await
-            .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        let engine = iface_ref.get().await;
-        Ok(engine.manual_toggle_authority() == ManualToggleAuthority::ImeActiveComposition)
+        self.owns_active_text_inner().await
     }
 
     #[zbus(name = "InputState")]
@@ -52,20 +41,7 @@ impl LayImeBridge {
 
     #[zbus(name = "SuppressNextAutocorrect")]
     async fn suppress_next_autocorrect(&self) -> fdo::Result<bool> {
-        let Some(path) = self.active_path() else {
-            return Ok(false);
-        };
-        let iface_ref = self
-            .ibus_connection
-            .object_server()
-            .interface::<_, LayIbusEngine>(path.as_str())
-            .await
-            .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        let mut engine = iface_ref.get_mut().await;
-        engine.suppress_next_committed_tail_autocorrect = true;
-        engine.publish_autocorrect_suppression_handoff();
-        super::trace::record(r#"{"kind":"ibus_suppress_next_autocorrect","source":"daemon"}"#);
-        Ok(true)
+        self.suppress_next_autocorrect_inner().await
     }
 
     #[zbus(name = "ManualToggle")]

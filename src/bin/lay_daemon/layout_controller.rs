@@ -3,6 +3,8 @@ use std::time::Duration;
 
 use super::{active_layout_backend, active_text_backend, layout_kde, layout_niri, layout_x11, log};
 
+#[path = "layout_controller/backend_hint.rs"]
+mod backend_hint;
 #[path = "layout_controller/gnome_dbus.rs"]
 mod gnome_dbus;
 #[path = "layout_controller/ibus_bridge.rs"]
@@ -243,10 +245,6 @@ pub(super) fn focused_ime_engine_handles_typing() -> bool {
     }
 }
 
-pub(super) fn focused_ime_engine_handles_boundary_typing() -> bool {
-    focused_ime_engine_handles_typing()
-}
-
 pub(super) fn suppress_next_ime_autocorrect() {
     if active_text_backend().should_try_ime() {
         let _ = ime_bridge::suppress_next_autocorrect();
@@ -272,13 +270,7 @@ pub(super) fn try_ime_manual_toggle() -> Result<Option<bool>, String> {
 }
 
 pub(super) fn detect_auto_layout_backend_hint() -> Option<LayoutBackend> {
-    layout_kde::detect_auto_backend_hint().or_else(|| {
-        if std::env::var_os("NIRI_SOCKET").is_some() && layout_niri::ping().is_ok() {
-            Some(LayoutBackend::Niri)
-        } else {
-            None
-        }
-    })
+    backend_hint::detect_auto_layout_backend_hint()
 }
 
 #[cfg(test)]

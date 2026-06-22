@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use super::super::{
     active_typing_assist, apply_prepared_typing_assist_after_space,
-    focused_ime_engine_handles_boundary_typing, lock_virtual_keyboard, log,
+    focused_ime_engine_handles_typing, lock_virtual_keyboard, log,
     pending_typing_assist::PendingTypingAssist, should_run_deferred_typing_assist_after_space,
     TypingAssistOutcome,
 };
@@ -12,9 +12,7 @@ mod context;
 pub(crate) use context::DeferredTypingAssistContext;
 
 pub(crate) fn try_handle_deferred_typing_assist(ctx: DeferredTypingAssistContext<'_>) -> bool {
-    if ctx.pending_typing_assist_after_space.is_some()
-        && focused_ime_engine_handles_boundary_typing()
-    {
+    if ctx.pending_typing_assist_after_space.is_some() && focused_ime_engine_handles_typing() {
         ctx.pending_typing_assist_after_space.take();
         log("· typing-assist deferred dropped: focused IME engine owns boundary text");
         return false;

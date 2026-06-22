@@ -1,4 +1,6 @@
 use lay::text_backend::ImeReplaceRequest;
+use serde::de::DeserializeOwned;
+use zbus::zvariant::Type;
 
 use super::super::{active_text_backend, log};
 use super::gnome_dbus::dbus_connection;
@@ -45,99 +47,43 @@ pub(super) fn try_replace_tail(
 }
 
 pub(super) fn call_ping() -> Result<String, String> {
-    let reply = dbus_connection()?
-        .call_method(
-            Some(IME_DBUS_DEST),
-            IME_DBUS_PATH,
-            Some(IME_DBUS_INTERFACE),
-            "Ping",
-            &(),
-        )
-        .map_err(|e| e.to_string())?;
-    reply
-        .body()
-        .deserialize::<String>()
-        .map_err(|e| e.to_string())
+    call_ime_noarg("Ping")
 }
 
 pub(super) fn owns_active_text() -> Result<bool, String> {
-    let reply = dbus_connection()?
-        .call_method(
-            Some(IME_DBUS_DEST),
-            IME_DBUS_PATH,
-            Some(IME_DBUS_INTERFACE),
-            "OwnsActiveText",
-            &(),
-        )
-        .map_err(|e| e.to_string())?;
-    reply
-        .body()
-        .deserialize::<bool>()
-        .map_err(|e| e.to_string())
+    call_ime_noarg("OwnsActiveText")
 }
 
 pub(super) fn input_state() -> Result<String, String> {
-    let reply = dbus_connection()?
-        .call_method(
-            Some(IME_DBUS_DEST),
-            IME_DBUS_PATH,
-            Some(IME_DBUS_INTERFACE),
-            "InputState",
-            &(),
-        )
-        .map_err(|e| e.to_string())?;
-    reply
-        .body()
-        .deserialize::<String>()
-        .map_err(|e| e.to_string())
+    call_ime_noarg("InputState")
 }
 
 pub(super) fn suppress_next_autocorrect() -> Result<bool, String> {
-    let reply = dbus_connection()?
-        .call_method(
-            Some(IME_DBUS_DEST),
-            IME_DBUS_PATH,
-            Some(IME_DBUS_INTERFACE),
-            "SuppressNextAutocorrect",
-            &(),
-        )
-        .map_err(|e| e.to_string())?;
-    reply
-        .body()
-        .deserialize::<bool>()
-        .map_err(|e| e.to_string())
+    call_ime_noarg("SuppressNextAutocorrect")
 }
 
 pub(super) fn manual_toggle() -> Result<bool, String> {
-    let reply = dbus_connection()?
-        .call_method(
-            Some(IME_DBUS_DEST),
-            IME_DBUS_PATH,
-            Some(IME_DBUS_INTERFACE),
-            "ManualToggle",
-            &(),
-        )
-        .map_err(|e| e.to_string())?;
-    reply
-        .body()
-        .deserialize::<bool>()
-        .map_err(|e| e.to_string())
+    call_ime_noarg("ManualToggle")
 }
 
 pub(super) fn manual_toggle_v2() -> Result<(bool, bool), String> {
+    call_ime_noarg("ManualToggleV2")
+}
+
+fn call_ime_noarg<T>(method: &str) -> Result<T, String>
+where
+    T: DeserializeOwned + Type,
+{
     let reply = dbus_connection()?
         .call_method(
             Some(IME_DBUS_DEST),
             IME_DBUS_PATH,
             Some(IME_DBUS_INTERFACE),
-            "ManualToggleV2",
+            method,
             &(),
         )
         .map_err(|e| e.to_string())?;
-    reply
-        .body()
-        .deserialize::<(bool, bool)>()
-        .map_err(|e| e.to_string())
+    reply.body().deserialize::<T>().map_err(|e| e.to_string())
 }
 
 fn replace_tail(backspaces: u32, text: &str, kind: &str) -> Result<bool, String> {

@@ -17,3 +17,7 @@ pub(super) fn forward_after_ime_replace<'kbd, 'grab>(
         .forward_queued_typing(kbd, buf, target_layout, "typing-assist", skip_spaces)
         .spaces
 }
+
+pub(super) fn trailing_space_count(text: &str) -> usize {
+    text.chars().rev().take_while(|ch| *ch == ' ').count()
+}

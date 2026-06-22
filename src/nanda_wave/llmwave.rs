@@ -341,9 +341,7 @@ pub fn default_phrase_experience_path() -> Option<PathBuf> {
 
 pub fn load_default_memory() -> LlmWaveMemory {
     static MEMORY: OnceLock<LlmWaveMemory> = OnceLock::new();
-    MEMORY
-        .get_or_init(|| load_default_memory_uncached())
-        .clone()
+    MEMORY.get_or_init(load_default_memory_uncached).clone()
 }
 
 pub fn load_default_memory_uncached() -> LlmWaveMemory {

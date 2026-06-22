@@ -1,3 +1,6 @@
+#[cfg(not(test))]
+use std::process::Command;
+
 use lay::keyboard::preferred_layout_for_text;
 
 use super::engine::LayIbusEngine;
@@ -7,29 +10,25 @@ const RU_ENGINE: &str = "lay-ime-ru";
 const US_ENGINE: &str = "lay-ime-us";
 impl LayIbusEngine {
     pub(super) fn sync_layout_after_committed_text(&mut self, text: &str) {
-        if !self.config.auto_switch_layout {
-            return;
-        }
-        let target_is_ru = preferred_layout_for_text(text, self.layout_is_ru);
-        if target_is_ru != self.layout_is_ru {
-            self.layout_is_ru = target_is_ru;
-        }
-        self.publish_tail_handoff();
-        let target_engine = ime_engine_for_layout(target_is_ru);
-        trace::record_layout_sync(target_is_ru, target_engine, true);
+        self.sync_layout_for_text(text);
     }
 
     pub(super) fn sync_layout_after_manual_toggle(&mut self, text: &str) {
+        self.sync_layout_for_text(text);
+    }
+
+    fn sync_layout_for_text(&mut self, text: &str) {
         if !self.config.auto_switch_layout {
             return;
         }
         let target_is_ru = preferred_layout_for_text(text, self.layout_is_ru);
-        if target_is_ru != self.layout_is_ru {
-            self.layout_is_ru = target_is_ru;
-        }
         self.publish_tail_handoff();
         let target_engine = ime_engine_for_layout(target_is_ru);
-        trace::record_layout_sync(target_is_ru, target_engine, true);
+        let ok = switch_active_ime_engine(target_engine).is_ok();
+        if ok {
+            self.layout_is_ru = target_is_ru;
+        }
+        trace::record_layout_sync(target_is_ru, target_engine, ok);
     }
 }
 
@@ -38,6 +37,32 @@ fn ime_engine_for_layout(target_is_ru: bool) -> &'static str {
         RU_ENGINE
     } else {
         US_ENGINE
+    }
+}
+
+fn switch_active_ime_engine(engine: &str) -> Result<(), String> {
+    #[cfg(test)]
+    {
+        let _ = engine;
+        Ok(())
+    }
+
+    #[cfg(not(test))]
+    {
+        let out = Command::new("timeout")
+            .args(["0.12s", "ibus", "engine", engine])
+            .output()
+            .map_err(|error| error.to_string())?;
+        if out.status.success() {
+            Ok(())
+        } else {
+            let stderr = String::from_utf8_lossy(&out.stderr).trim().to_string();
+            Err(if stderr.is_empty() {
+                format!("ibus engine {engine} exited with {}", out.status)
+            } else {
+                stderr
+            })
+        }
     }
 }
 

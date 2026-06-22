@@ -1,30 +1,55 @@
 //! Non-blocking debug log writer for hot typing paths.
 
+#[cfg(not(test))]
 use std::collections::BTreeMap;
 use std::path::PathBuf;
+#[cfg(not(test))]
 use std::sync::mpsc::{self, RecvTimeoutError, Sender};
+#[cfg(not(test))]
 use std::sync::OnceLock;
+#[cfg(not(test))]
 use std::time::Duration;
 
+#[cfg(not(test))]
 const ACTIVE_FLUSH_INTERVAL: Duration = Duration::from_millis(1000);
+#[cfg(not(test))]
 const IDLE_FLUSH_INTERVAL: Duration = Duration::from_millis(5000);
+#[cfg(not(test))]
 const IDLE_AFTER: Duration = Duration::from_millis(10_000);
+#[cfg(not(test))]
 const CHANNEL_CAPACITY_FALLBACK_DROP: usize = 2048;
 const MAX_LOG_BYTES: u64 = 500 * 1024;
 
+#[cfg(not(test))]
 struct DebugLogLine {
     path: PathBuf,
     line: String,
 }
 
+#[cfg(not(test))]
 static DEBUG_LOG_SENDER: OnceLock<Sender<DebugLogLine>> = OnceLock::new();
 
 pub fn append_private_line(path: PathBuf, line: impl Into<String>) {
     let line = line.into();
-    let sender = DEBUG_LOG_SENDER.get_or_init(spawn_debug_log_writer);
-    let _ = sender.send(DebugLogLine { path, line });
+    #[cfg(test)]
+    {
+        let text = if line.ends_with('\n') {
+            line
+        } else {
+            format!("{line}\n")
+        };
+        if crate::private_file::append_private_text(&path, &text).is_ok() {
+            compact_to_max_bytes(&path);
+        }
+    }
+    #[cfg(not(test))]
+    {
+        let sender = DEBUG_LOG_SENDER.get_or_init(spawn_debug_log_writer);
+        let _ = sender.send(DebugLogLine { path, line });
+    }
 }
 
+#[cfg(not(test))]
 fn spawn_debug_log_writer() -> Sender<DebugLogLine> {
     let (sender, receiver) = mpsc::channel::<DebugLogLine>();
     std::thread::Builder::new()
@@ -61,6 +86,7 @@ fn spawn_debug_log_writer() -> Sender<DebugLogLine> {
     sender
 }
 
+#[cfg(not(test))]
 fn flush_interval(last_line_at: std::time::Instant) -> Duration {
     if last_line_at.elapsed() >= IDLE_AFTER {
         IDLE_FLUSH_INTERVAL
@@ -69,6 +95,7 @@ fn flush_interval(last_line_at: std::time::Instant) -> Duration {
     }
 }
 
+#[cfg(not(test))]
 fn push_pending(pending: &mut BTreeMap<PathBuf, String>, line: DebugLogLine) {
     let text = pending.entry(line.path).or_default();
     text.push_str(&line.line);
@@ -77,6 +104,7 @@ fn push_pending(pending: &mut BTreeMap<PathBuf, String>, line: DebugLogLine) {
     }
 }
 
+#[cfg(not(test))]
 fn flush_pending(pending: &mut BTreeMap<PathBuf, String>) {
     for (path, text) in std::mem::take(pending) {
         if crate::private_file::append_private_text(&path, &text).is_ok() {
