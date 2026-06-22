@@ -324,7 +324,8 @@ impl LayIbusEngine {
         if self.config.active_correction_safety() != lay::config::CorrectionSafety::Experimental {
             return Vec::new();
         }
-        let tail = self.tail_buffer.trim_end();
+        let raw_tail = self.tail_buffer.as_str();
+        let tail = raw_tail.trim_end();
         if tail.chars().count() < 6 {
             return Vec::new();
         }
@@ -348,20 +349,26 @@ impl LayIbusEngine {
                     }),
             );
         }
-        suffixes.extend(self.llmwave_phrase_suffixes(tail));
+        suffixes.extend(self.llmwave_phrase_suffixes(raw_tail));
         suffixes
     }
 
     fn llmwave_phrase_suffixes(&self, tail: &str) -> Vec<String> {
         let memory = lay::nanda_wave::llmwave::load_default_memory();
-        lay::nanda_wave::llmwave::phrase_forecast_candidates(tail, &memory)
+        self.llmwave_phrase_suffixes_from_memory(tail, &memory)
+    }
+
+    fn llmwave_phrase_suffixes_from_memory(
+        &self,
+        tail: &str,
+        memory: &lay::nanda_wave::llmwave::LlmWaveMemory,
+    ) -> Vec<String> {
+        let max_suffix_chars = self.precognition_max_suffix_chars();
+        lay::nanda_wave::llmwave::phrase_forecast_candidates(tail, memory)
             .into_iter()
             .take(6)
             .filter_map(|candidate| {
-                let suffix = candidate.text.strip_prefix(tail)?;
-                (!suffix.is_empty()
-                    && suffix.chars().count() <= self.precognition_max_suffix_chars())
-                .then(|| suffix.to_string())
+                phrase_candidate_suffix(tail, &candidate.text, max_suffix_chars)
             })
             .collect()
     }
@@ -402,6 +409,27 @@ fn push_unique_suffix(candidates: &mut Vec<String>, suffix: Option<String>) {
         return;
     }
     candidates.push(suffix);
+}
+
+fn phrase_candidate_suffix(tail: &str, candidate: &str, max_suffix_chars: usize) -> Option<String> {
+    let suffix = candidate.strip_prefix(tail)?;
+    let suffix = if tail.ends_with(char::is_whitespace) {
+        suffix.trim_start_matches(char::is_whitespace)
+    } else {
+        suffix
+    };
+    let suffix = next_word_suffix(suffix)?;
+    (!suffix.is_empty() && suffix.chars().count() <= max_suffix_chars).then_some(suffix)
+}
+
+fn next_word_suffix(suffix: &str) -> Option<String> {
+    let leading_space = suffix.chars().next().is_some_and(char::is_whitespace);
+    let word = suffix.split_whitespace().next()?;
+    if leading_space {
+        Some(format!(" {word}"))
+    } else {
+        Some(word.to_string())
+    }
 }
 
 fn trim_tail_buffer(buffer: &mut String) {
@@ -670,6 +698,45 @@ mod tests {
             engine.push_tail_char(ch);
         }
         assert_eq!(engine.precognition_suffix().as_deref(), Some("ождь"));
+    }
+
+    #[test]
+    fn experimental_precognition_can_suggest_next_word_from_l3_memory_after_space() {
+        let engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        let memory = lay::nanda_wave::llmwave::LlmWaveMemory::from_text(
+            "я хочу проверить подсказки\nя хочу проверить ввод",
+        );
+
+        let suffixes = engine.llmwave_phrase_suffixes_from_memory("я хочу ", &memory);
+
+        assert!(
+            suffixes.iter().any(|suffix| suffix == "проверить"),
+            "expected next-word L2 suffix from L3 memory, got {:?}",
+            suffixes
+        );
+    }
+
+    #[test]
+    fn phrase_candidate_suffix_preserves_word_boundary_before_space() {
+        assert_eq!(
+            phrase_candidate_suffix("я хочу", "я хочу проверить", 24).as_deref(),
+            Some(" проверить")
+        );
+        assert_eq!(
+            phrase_candidate_suffix("я хочу ", "я хочу проверить", 24).as_deref(),
+            Some("проверить")
+        );
     }
 
     #[test]
