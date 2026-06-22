@@ -49,9 +49,8 @@ fn switch_active_ime_engine(engine: &str) -> Result<(), String> {
 
     #[cfg(not(test))]
     {
-        const IBUS_ENGINE_SWITCH_TIMEOUT: &str = "0.6s";
         let out = Command::new("timeout")
-            .args([IBUS_ENGINE_SWITCH_TIMEOUT, "ibus", "engine", engine])
+            .args(["0.12s", "ibus", "engine", engine])
             .output()
             .map_err(|error| error.to_string())?;
         if out.status.success() {
