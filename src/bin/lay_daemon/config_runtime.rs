@@ -9,6 +9,10 @@ use std::time::{Duration, Instant, SystemTime};
 
 use super::{detect_auto_layout_backend_hint, ENTER_AUTOCORRECT_EXPERIMENT_ENV};
 
+#[path = "config_runtime/nanda.rs"]
+mod nanda;
+pub(super) use nanda::active_nanda_wave_options;
+
 static AUTO_LAYOUT_BACKEND_HINT: OnceLock<Option<LayoutBackend>> = OnceLock::new();
 
 #[cfg(not(test))]
@@ -27,7 +31,9 @@ static CONFIG_CACHE: OnceLock<Mutex<CachedLayConfig>> = OnceLock::new();
 fn current_config() -> LayConfig {
     #[cfg(test)]
     {
-        LayConfig::load()
+        let config = LayConfig::load();
+        sync_lem_runtime(&config);
+        config
     }
     #[cfg(not(test))]
     {
@@ -42,6 +48,7 @@ fn current_config() -> LayConfig {
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner());
         if cache.checked_at.elapsed() < CONFIG_CACHE_CHECK_INTERVAL {
+            sync_lem_runtime(&cache.config);
             return cache.config.clone();
         }
 
@@ -51,8 +58,13 @@ fn current_config() -> LayConfig {
             cache.config = LayConfig::load();
             cache.modified = modified;
         }
+        sync_lem_runtime(&cache.config);
         cache.config.clone()
     }
+}
+
+fn sync_lem_runtime(config: &LayConfig) {
+    lay::lem::set_runtime_enabled(config.lem_enabled && config.active_lem_weight() > 0.0);
 }
 
 #[cfg(not(test))]
@@ -138,17 +150,6 @@ pub(super) fn active_nanda_trace() -> bool {
     current_config().debug_action_log
 }
 
-pub(super) fn active_nanda_trace_text() -> bool {
-    current_config().debug_action_log
-}
-
-pub(super) fn active_nanda_wave_options() -> lay::nanda_wave::WaveOptions {
-    let cfg = current_config();
-    lay::nanda_wave::WaveOptions::default()
-        .with_llmwave_shadow(cfg.llmwave_shadow)
-        .with_llmwave_apply(cfg.llmwave_shadow && cfg.llmwave_apply)
-}
-
 pub(super) fn active_nanda_precognition() -> bool {
     let cfg = current_config();
     cfg.debug_action_log
@@ -163,6 +164,10 @@ pub(super) fn active_nanda_autocorrect() -> bool {
 
 pub(super) fn active_lem_enabled_for_scope(word_count: usize) -> bool {
     current_config().lem_enabled_for_scope(word_count)
+}
+
+pub(super) fn active_lem_weight() -> f64 {
+    current_config().active_lem_weight()
 }
 
 #[cfg(not(test))]

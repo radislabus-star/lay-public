@@ -77,6 +77,7 @@ fn manual_decoder_uses_smart_tail_for_mixed_two_words() {
         scoped_options: ScopedTailOptions {
             lem_enabled: true,
             allow_layout_auto: true,
+            lem_weight: 1.0,
         },
     });
 
@@ -107,6 +108,7 @@ fn manual_decoder_lem_fixture_cases_choose_expected_tail() {
             scoped_options: ScopedTailOptions {
                 lem_enabled: true,
                 allow_layout_auto: true,
+                lem_weight: 1.0,
             },
         });
 

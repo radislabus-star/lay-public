@@ -20,12 +20,48 @@ fn config_defaults_preserve_public_runtime_behavior() {
     assert!(!cfg.nanda_trace_text);
     assert!(!cfg.nanda_precognition);
     assert!(!cfg.debug_action_log);
+    assert!(cfg.lem_enabled);
     assert!(cfg.lem_enabled_for_scope(2));
     assert!(cfg.lem_enabled_for_scope(3));
+    assert_eq!(cfg.lem_weight_percent, 80);
+    assert_eq!(cfg.nanda_l2_weight_percent, 20);
+    assert_eq!(cfg.nanda_l3_weight_percent, 8);
+    assert_eq!(cfg.active_lem_weight(), 1.0);
+    assert_eq!(cfg.active_nanda_l2_weight(), 1.0);
+    assert_eq!(cfg.active_nanda_l3_weight(), 1.0);
     assert_eq!(
         cfg.active_typing_assist_pipeline().len(),
         default_typing_assist_rules().len()
     );
+}
+
+#[test]
+fn lem_master_switch_disables_all_lem_scopes_and_weight() {
+    let cfg = LayConfig {
+        lem_enabled: false,
+        lem_2_words: true,
+        lem_3_words: true,
+        lem_weight_percent: 200,
+        ..LayConfig::default()
+    };
+
+    assert!(!cfg.lem_enabled_for_scope(2));
+    assert!(!cfg.lem_enabled_for_scope(3));
+    assert_eq!(cfg.active_lem_weight(), 0.0);
+}
+
+#[test]
+fn influence_weights_are_clamped_to_safe_range() {
+    let cfg = LayConfig {
+        lem_weight_percent: 250,
+        nanda_l2_weight_percent: 201,
+        nanda_l3_weight_percent: 0,
+        ..LayConfig::default()
+    };
+
+    assert_eq!(cfg.active_lem_weight(), 2.5);
+    assert_eq!(cfg.active_nanda_l2_weight(), 10.0);
+    assert_eq!(cfg.active_nanda_l3_weight(), 0.0);
 }
 
 #[test]

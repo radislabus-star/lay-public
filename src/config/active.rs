@@ -53,6 +53,9 @@ impl LayConfig {
     }
 
     pub fn lem_enabled_for_scope(&self, word_count: usize) -> bool {
+        if !self.lem_enabled || self.active_lem_weight() <= 0.0 {
+            return false;
+        }
         match word_count {
             0 | 1 => false,
             2 => self.lem_2_words,

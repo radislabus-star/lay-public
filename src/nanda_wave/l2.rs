@@ -122,6 +122,7 @@ pub fn run_l2_refined_with_feedback(
             });
         }
     }
+    apply_l2_weight(&mut candidates, options);
     candidates.sort_by(|left, right| {
         right
             .energy
@@ -136,6 +137,18 @@ pub fn run_l2_refined_with_feedback(
             .then_with(|| left.risk.total_cmp(&right.risk))
     });
     candidates
+}
+
+fn apply_l2_weight(candidates: &mut [WordCandidate], options: &WaveOptions) {
+    if (options.l2_weight() - 1.0).abs() < f32::EPSILON {
+        return;
+    }
+    for candidate in candidates {
+        candidate.energy = options.scale_l2_energy(candidate.energy);
+        candidate
+            .support
+            .push(format!("l2-weight:{:.2}", options.l2_weight()));
+    }
 }
 
 #[cfg(not(test))]
@@ -873,6 +886,32 @@ mod tests {
         assert!(candidates
             .iter()
             .any(|candidate| candidate.text == "html вот"));
+    }
+
+    #[test]
+    fn l2_weight_scales_candidate_energy() {
+        let original = "html djn ";
+        let l1 = run_l1(original);
+        let normal = run_l2_with_options(original, &l1, &WaveOptions::default());
+        let muted = run_l2_with_options(
+            original,
+            &l1,
+            &WaveOptions::default().with_layer_weights(0.5, 1.0),
+        );
+        let normal_layout = normal
+            .iter()
+            .find(|candidate| candidate.text == "html вот")
+            .expect("normal layout candidate");
+        let muted_layout = muted
+            .iter()
+            .find(|candidate| candidate.text == "html вот")
+            .expect("muted layout candidate");
+
+        assert!(muted_layout.energy < normal_layout.energy);
+        assert!(muted_layout
+            .support
+            .iter()
+            .any(|item| item == "l2-weight:0.50"));
     }
 
     #[test]

@@ -125,8 +125,12 @@ export const DEFAULTS = {
     correction_safety: 'normal',
     enter_autocorrect: false,
     auto_switch_layout: true,
+    lem_enabled: true,
     lem_2_words: true,
     lem_3_words: true,
+    lem_weight_percent: 80,
+    nanda_l2_weight_percent: 20,
+    nanda_l3_weight_percent: 8,
     ptah_alexs_mode: false,
     ptah_alexs_rules: [],
     typing_assist_pipeline: DEFAULT_TYPING_PIPELINE,
@@ -193,6 +197,9 @@ export function normalizeConfig(cfg) {
         ptah_alexs_mode: !!cfg?.ptah_alexs_mode,
         multi_tap_scope: !!cfg?.multi_tap_scope,
         multi_tap_max_taps: clampNumber(cfg?.multi_tap_max_taps, 2, 4, DEFAULTS.multi_tap_max_taps),
+        lem_weight_percent: clampNumber(cfg?.lem_weight_percent, 0, 200, DEFAULTS.lem_weight_percent),
+        nanda_l2_weight_percent: clampNumber(cfg?.nanda_l2_weight_percent, 0, 200, DEFAULTS.nanda_l2_weight_percent),
+        nanda_l3_weight_percent: clampNumber(cfg?.nanda_l3_weight_percent, 0, 200, DEFAULTS.nanda_l3_weight_percent),
         mode: 'simple',
     };
 }

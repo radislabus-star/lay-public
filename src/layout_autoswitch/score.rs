@@ -3,6 +3,9 @@
 const LEM_LAYOUT_AUTOSWITCH_MARGIN: f64 = 0.25;
 
 pub(super) fn lem_prefers_layout_candidate(typed: &str, candidate: &str) -> bool {
+    if !crate::lem::runtime_enabled() {
+        return false;
+    }
     let ranked = crate::lem::rank_candidates(typed, [typed.to_string(), candidate.to_string()]);
     let Some(best) = ranked.first() else {
         return false;

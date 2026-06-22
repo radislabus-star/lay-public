@@ -27,3 +27,8 @@ pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
 pub use options::WaveOptions;
 pub use signal::{ActiveMode, LayerTrace, WaveDecision, WavePacket, WaveTrace, WordCandidate};
 pub use trace::{run_wave_trace, run_wave_trace_with_options};
+
+pub fn warm_up() {
+    context_wave::warm_up();
+    let _ = llmwave::load_default_memory();
+}

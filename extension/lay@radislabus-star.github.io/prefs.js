@@ -195,8 +195,12 @@ const DEFAULTS = {
     correction_safety: 'normal',
     enter_autocorrect: false,
     auto_switch_layout: true,
+    lem_enabled: true,
     lem_2_words: true,
     lem_3_words: true,
+    lem_weight_percent: 80,
+    nanda_l2_weight_percent: 20,
+    nanda_l3_weight_percent: 8,
     ptah_alexs_mode: false,
     ptah_alexs_rules: [],
     debug_action_log: false,
@@ -237,6 +241,9 @@ function normalizeConfig(cfg) {
         multi_tap_max_taps: normalizeNumber(cfg?.multi_tap_max_taps, 2, 4, DEFAULTS.multi_tap_max_taps),
         tap_max_ms: normalizeNumber(cfg?.tap_max_ms, 100, 500, DEFAULTS.tap_max_ms),
         shift_window_ms: normalizeNumber(cfg?.shift_window_ms, 150, 600, DEFAULTS.shift_window_ms),
+        lem_weight_percent: normalizeNumber(cfg?.lem_weight_percent, 0, 200, DEFAULTS.lem_weight_percent),
+        nanda_l2_weight_percent: normalizeNumber(cfg?.nanda_l2_weight_percent, 0, 200, DEFAULTS.nanda_l2_weight_percent),
+        nanda_l3_weight_percent: normalizeNumber(cfg?.nanda_l3_weight_percent, 0, 200, DEFAULTS.nanda_l3_weight_percent),
     };
 }
 
@@ -317,8 +324,12 @@ class LayPrefsView {
         ]), 0, 1, 1, 1);
 
         grid.attach(this._section('Арбитры и каналы', [
+            this._switchRow('Контур LEM', 'lem_enabled', false),
             this._switchRow('LEM: 2 слова', 'lem_2_words', false),
             this._switchRow('LEM: 3 слова', 'lem_3_words', false),
+            this._weightRow('Вес LEM', 'lem_weight_percent', false),
+            this._weightRow('Вес L2 кандидатов', 'nanda_l2_weight_percent', false),
+            this._weightRow('Вес L3 фразы', 'nanda_l3_weight_percent', false),
             this._switchRow('Автокоррекция NANDA', 'nanda_autocorrect', false),
             this._buttonRow('NANDA ячейки', 'Открыть', () => this._showNandaWindow()),
             this._switchRow('Раскладка по окну', 'ptah_alexs_mode', false),
@@ -486,6 +497,23 @@ class LayPrefsView {
             }));
         }
         return this._row(label, box);
+    }
+
+    _weightRow(label, key, needsRestart) {
+        const scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, 200, 5);
+        scale.set_value(Number(this._cfg[key] ?? DEFAULTS[key]));
+        scale.set_digits(0);
+        scale.set_draw_value(true);
+        scale.set_value_pos(Gtk.PositionType.RIGHT);
+        scale.set_size_request(190, -1);
+        scale.hexpand = true;
+        scale.connect('value-changed', () => {
+            this._cfg[key] = Math.round(scale.get_value());
+            saveConfig(this._cfg);
+            if (needsRestart)
+                restartDaemon();
+        });
+        return this._row(label, scale);
     }
 
     _nandaWavePanel(status) {

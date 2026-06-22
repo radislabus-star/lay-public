@@ -368,6 +368,11 @@ pub fn load_default_memory() -> LlmWaveMemory {
     MEMORY.get_or_init(load_default_memory_uncached).clone()
 }
 
+pub fn with_default_memory<T>(f: impl FnOnce(&LlmWaveMemory) -> T) -> T {
+    static MEMORY: OnceLock<LlmWaveMemory> = OnceLock::new();
+    f(MEMORY.get_or_init(load_default_memory_uncached))
+}
+
 pub fn load_default_memory_uncached() -> LlmWaveMemory {
     default_memory_path()
         .and_then(|path| read_memory_packet(&path).ok())
@@ -764,11 +769,16 @@ pub fn phrase_forecast_candidates(original: &str, memory: &LlmWaveMemory) -> Vec
     if request.prefix_tokens.is_empty() {
         return Vec::new();
     }
+    let (steps, beam_width, take) = if request.partial_token.is_empty() {
+        (6, 8, 4)
+    } else {
+        (1, 4, 2)
+    };
     memory
-        .predict_phrase(&request.prefix_text, 6, 8)
+        .predict_phrase(&request.prefix_text, steps, beam_width)
         .into_iter()
         .filter_map(|prediction| phrase_prediction_to_candidate(original, &request, prediction))
-        .take(4)
+        .take(take)
         .collect()
 }
 

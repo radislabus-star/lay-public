@@ -40,8 +40,8 @@ pub fn derive_l3_feedback(
     {
         feedback.adjustments.push(FeedbackAdjustment {
             source: "LayoutWordCell32",
-            energy_delta: 0.04,
-            risk_delta: -0.02,
+            energy_delta: options.scale_l3_delta(0.04),
+            risk_delta: options.scale_l3_delta(-0.02),
             reason: "layout_mode_supported_by_phrase",
         });
     }

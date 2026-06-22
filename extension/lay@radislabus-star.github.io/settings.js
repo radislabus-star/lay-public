@@ -173,8 +173,12 @@ const DEFAULTS = {
     correction_safety: 'normal',
     enter_autocorrect: false,
     auto_switch_layout: true,
+    lem_enabled: true,
     lem_2_words: true,
     lem_3_words: true,
+    lem_weight_percent: 80,
+    nanda_l2_weight_percent: 20,
+    nanda_l3_weight_percent: 8,
     ptah_alexs_mode: false,
     ptah_alexs_rules: [],
     debug_action_log: false,
@@ -213,6 +217,9 @@ function normalize(cfg) {
         multi_tap_max_taps: number(cfg?.multi_tap_max_taps, 2, 4, DEFAULTS.multi_tap_max_taps),
         tap_max_ms: number(cfg?.tap_max_ms, 100, 500, DEFAULTS.tap_max_ms),
         shift_window_ms: number(cfg?.shift_window_ms, 150, 600, DEFAULTS.shift_window_ms),
+        lem_weight_percent: number(cfg?.lem_weight_percent, 0, 200, DEFAULTS.lem_weight_percent),
+        nanda_l2_weight_percent: number(cfg?.nanda_l2_weight_percent, 0, 200, DEFAULTS.nanda_l2_weight_percent),
+        nanda_l3_weight_percent: number(cfg?.nanda_l3_weight_percent, 0, 200, DEFAULTS.nanda_l3_weight_percent),
     };
 }
 
@@ -314,8 +321,12 @@ class SettingsView {
             this.spinRow('Multi-tap максимум', 'multi_tap_max_taps', '', 2, 4, 1, true),
         ]), 0, 1, 1, 1);
         grid.attach(this.section('Арбитры и каналы', [
+            this.switchRow('Контур LEM', 'lem_enabled', false),
             this.switchRow('LEM: 2 слова', 'lem_2_words', false),
             this.switchRow('LEM: 3 слова', 'lem_3_words', false),
+            this.weightRow('Вес LEM', 'lem_weight_percent', false),
+            this.weightRow('Вес L2 кандидатов', 'nanda_l2_weight_percent', false),
+            this.weightRow('Вес L3 фразы', 'nanda_l3_weight_percent', false),
             this.switchRow('Автокоррекция NANDA', 'nanda_autocorrect', false),
             this.buttonRow('NANDA ячейки', 'Открыть', () => this.showNandaWindow()),
             this.switchRow('Раскладка по окну', 'ptah_alexs_mode', false),
@@ -550,6 +561,23 @@ class SettingsView {
         if (suffix)
             box.append(new Gtk.Label({label: suffix, css_classes: ['dim-label']}));
         return optionRow(label, box);
+    }
+
+    weightRow(label, key, needsRestart) {
+        const scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, 200, 5);
+        scale.set_value(Number(this.cfg[key] ?? DEFAULTS[key]));
+        scale.set_digits(0);
+        scale.set_draw_value(true);
+        scale.set_value_pos(Gtk.PositionType.RIGHT);
+        scale.set_size_request(190, -1);
+        scale.hexpand = true;
+        scale.connect('value-changed', () => {
+            this.cfg[key] = Math.round(scale.get_value());
+            saveConfig(this.cfg);
+            if (needsRestart)
+                restartDaemon();
+        });
+        return optionRow(label, scale);
     }
 
     showNandaWindow() {

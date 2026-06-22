@@ -9,6 +9,10 @@ use super::trace;
 
 const PREEDIT_TAIL_LIMIT: usize = 160;
 const PREEDIT_TOKEN_LIMIT: usize = 32;
+const PREEDIT_ASCII_CANDIDATE_LIMIT: usize = 8;
+const PREEDIT_RU_COMMON_CANDIDATE_LIMIT: usize = 10;
+const PREEDIT_RU_WAVE_CANDIDATE_LIMIT: usize = 12;
+const PREEDIT_RU_CANDIDATE_LIMIT: usize = 12;
 #[cfg(test)]
 const PREEDIT_PROBE_SYMBOL: &str = "*";
 const PREEDIT_MODE_CLEAR: u32 = 0;
@@ -45,11 +49,22 @@ impl PreeditFastState {
             return Vec::new();
         }
         if self.token.chars().all(|ch| ch.is_ascii_alphabetic()) {
-            return lay::lexicon::common_en_technical_prefix_completions(
+            let mut suffixes = lay::lexicon::common_en_technical_prefix_completions(
                 &self.token,
                 max_suffix_chars,
                 limit,
             );
+            for suffix in lay::nanda_wave::context_wave::en_word_prefix_completion_suffixes(
+                &self.token,
+                max_suffix_chars,
+                limit,
+            ) {
+                push_unique_suffix(&mut suffixes, Some(suffix));
+                if suffixes.len() >= limit {
+                    break;
+                }
+            }
+            return suffixes;
         }
         Vec::new()
     }
@@ -238,13 +253,13 @@ impl LayIbusEngine {
         }
         let timing_enabled = trace::enabled();
         let total_started = timing_enabled.then(Instant::now);
-        let mut candidates = Vec::with_capacity(8);
+        let mut candidates = Vec::with_capacity(16);
 
         let ascii_started = timing_enabled.then(Instant::now);
-        for suffix in self
-            .preedit_fast
-            .ascii_suffixes(self.precognition_max_suffix_chars(), 4)
-        {
+        for suffix in self.preedit_fast.ascii_suffixes(
+            self.precognition_max_suffix_chars(),
+            PREEDIT_ASCII_CANDIDATE_LIMIT,
+        ) {
             push_unique_suffix(&mut candidates, Some(suffix));
         }
         let ascii_us = elapsed_us(ascii_started);
@@ -291,15 +306,45 @@ impl LayIbusEngine {
             return Vec::new();
         }
         let token_lower = token.to_lowercase();
-        lay::lexicon::common_ru_prefix_completion_words(
+        let mut words = lay::lexicon::common_ru_prefix_completion_words(
             token,
             self.precognition_max_suffix_chars(),
-            6,
-        )
-        .into_iter()
-        .filter(|word| !self.should_veto_lexical_completion(token, word))
-        .filter_map(|word| word.get(token_lower.len()..).map(str::to_string))
-        .collect()
+            PREEDIT_RU_COMMON_CANDIDATE_LIMIT,
+        );
+        let token_chars = token.chars().count();
+        if self.config.active_correction_safety() != lay::config::CorrectionSafety::Strict
+            && token_chars >= 3
+        {
+            let wave_suffixes = if token_chars == 3 {
+                lay::nanda_wave::context_wave::ru_word_prefix_completion_suffixes_if_bucket_at_most(
+                    token,
+                    self.precognition_max_suffix_chars(),
+                    PREEDIT_RU_WAVE_CANDIDATE_LIMIT,
+                    512,
+                )
+            } else {
+                lay::nanda_wave::context_wave::ru_word_prefix_completion_suffixes(
+                    token,
+                    self.precognition_max_suffix_chars(),
+                    PREEDIT_RU_WAVE_CANDIDATE_LIMIT,
+                )
+            };
+            for suffix in wave_suffixes {
+                let word = format!("{token_lower}{suffix}");
+                if words.len() >= PREEDIT_RU_CANDIDATE_LIMIT {
+                    break;
+                }
+                if words.iter().any(|item| item == &word) {
+                    continue;
+                }
+                words.push(word);
+            }
+        }
+        words
+            .into_iter()
+            .filter(|word| !self.should_veto_lexical_completion(token, word))
+            .filter_map(|word| word.strip_prefix(&token_lower).map(str::to_string))
+            .collect()
     }
 
     fn should_veto_lexical_completion(&self, token: &str, word: &str) -> bool {
@@ -349,13 +394,16 @@ impl LayIbusEngine {
                     }),
             );
         }
-        suffixes.extend(self.llmwave_phrase_suffixes(raw_tail));
+        if should_query_llmwave_phrase_suffix(raw_tail) {
+            suffixes.extend(self.llmwave_phrase_suffixes(raw_tail));
+        }
         suffixes
     }
 
     fn llmwave_phrase_suffixes(&self, tail: &str) -> Vec<String> {
-        let memory = lay::nanda_wave::llmwave::load_default_memory();
-        self.llmwave_phrase_suffixes_from_memory(tail, &memory)
+        lay::nanda_wave::llmwave::with_default_memory(|memory| {
+            self.llmwave_phrase_suffixes_from_memory(tail, memory)
+        })
     }
 
     fn llmwave_phrase_suffixes_from_memory(
@@ -420,6 +468,20 @@ fn phrase_candidate_suffix(tail: &str, candidate: &str, max_suffix_chars: usize)
     };
     let suffix = next_word_suffix(suffix)?;
     (!suffix.is_empty() && suffix.chars().count() <= max_suffix_chars).then_some(suffix)
+}
+
+fn should_query_llmwave_phrase_suffix(tail: &str) -> bool {
+    if tail.ends_with(char::is_whitespace) {
+        return true;
+    }
+    let trimmed = tail.trim_end();
+    let Some((left, token)) = trimmed.rsplit_once(char::is_whitespace) else {
+        return false;
+    };
+    let token_chars = token.chars().count();
+    (1..=6).contains(&token_chars)
+        && left.split_whitespace().count() >= 1
+        && token.chars().all(|ch| ch.is_alphabetic())
 }
 
 fn next_word_suffix(suffix: &str) -> Option<String> {
@@ -493,6 +555,89 @@ mod tests {
             engine.push_tail_char(ch);
         }
         assert_eq!(engine.precognition_suffix().as_deref(), Some("ерка"));
+    }
+
+    #[test]
+    fn precognition_uses_large_ru_wave_prefix_memory() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "это неви".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine
+                .preedit_candidates
+                .iter()
+                .any(|suffix| suffix.starts_with('д')),
+            "expected wave-prefix completion for 'неви', got {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
+    fn precognition_allows_narrow_three_letter_ru_wave_prefix() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "это нев".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            !engine.preedit_candidates.is_empty(),
+            "expected narrow wave-prefix completion for 'нев'"
+        );
+    }
+
+    #[test]
+    fn precognition_uses_large_en_wave_prefix_memory() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "this exam".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine
+                .preedit_candidates
+                .iter()
+                .any(|suffix| suffix.starts_with("ple")),
+            "expected English wave-prefix completion for 'exam', got {:?}",
+            engine.preedit_candidates
+        );
     }
 
     #[test]
@@ -723,6 +868,31 @@ mod tests {
         assert!(
             suffixes.iter().any(|suffix| suffix == "проверить"),
             "expected next-word L2 suffix from L3 memory, got {:?}",
+            suffixes
+        );
+    }
+
+    #[test]
+    fn experimental_precognition_keeps_l3_word_after_user_started_it() {
+        let engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        let memory = lay::nanda_wave::llmwave::LlmWaveMemory::from_text("у нас мало слов");
+
+        let suffixes = engine.llmwave_phrase_suffixes_from_memory("у нас мало с", &memory);
+
+        assert!(
+            suffixes.iter().any(|suffix| suffix == "лов"),
+            "expected L3 suffix to survive started next word, got {:?}",
             suffixes
         );
     }

@@ -287,6 +287,11 @@ class LayIndicator extends PanelMenu.Button {
     _arbiterMenu() {
         const item = new PopupMenu.PopupSubMenuMenuItem('Арбитры', false);
         item.menu.addMenuItem(this._switchItem(
+            'Контур LEM',
+            'lem_enabled',
+            false
+        ));
+        item.menu.addMenuItem(this._switchItem(
             'LEM: 2 слова',
             'lem_2_words',
             false,
@@ -1141,9 +1146,12 @@ class LayIndicator extends PanelMenu.Button {
 
     _aboutConfigText() {
         const autoSwitch = this._cfg.auto_switch_layout ? 'авто-раскладка' : 'раскладка вручную';
-        const lem = `LEM ${this._cfg.lem_2_words ? '2' : '-'}${this._cfg.lem_3_words ? '/3' : ''}`;
+        const lem = this._cfg.lem_enabled
+            ? `LEM ${this._cfg.lem_2_words ? '2' : '-'}${this._cfg.lem_3_words ? '/3' : ''}`
+            : 'LEM выкл';
+        const weights = `вес ${this._cfg.lem_weight_percent ?? 80}/${this._cfg.nanda_l2_weight_percent ?? 20}/${this._cfg.nanda_l3_weight_percent ?? 8}`;
         const force = this._cfg.force_layout_hotkeys ? 'RU/EN хоткеи' : 'RU/EN выкл';
-        return `${this._engineLabel()} · ${this._safetyLabel()} · ${this._cfg.replace_words} сл. · ${lem} · ${autoSwitch} · ${force} · ${this._triggerLabel(this._cfg.trigger)}`;
+        return `${this._engineLabel()} · ${this._safetyLabel()} · ${this._cfg.replace_words} сл. · ${lem} · ${weights} · ${autoSwitch} · ${force} · ${this._triggerLabel(this._cfg.trigger)}`;
     }
 
     _aboutStatsText() {

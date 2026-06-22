@@ -30,6 +30,7 @@ fn manual_decoder_keeps_completed_russian_preposition_before_completed_ascii_tai
             scoped_options: ScopedTailOptions {
                 lem_enabled: true,
                 allow_layout_auto: true,
+                lem_weight: 1.0,
             },
         });
 

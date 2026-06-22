@@ -198,13 +198,13 @@ fn adjusted_confidence(
         && candidate.source == super::context_wave::SEMANTIC_WORD_SOURCE
         && super::context_wave::phrase_forecast_summary(original, candidate).is_some()
     {
-        value += 0.08;
+        value += options.scale_l3_delta(0.08);
     }
     if let Some(report) = pattern_report {
-        value += report.boost();
+        value += options.scale_l3_delta(report.boost());
     }
     if let Some(report) = structural_report {
-        value += report.boost();
+        value += options.scale_l3_delta(report.boost());
     }
     value.clamp(0.0, 1.0)
 }
@@ -241,6 +241,26 @@ mod tests {
         };
         let (_trace, decision) = run_l3("html djn ", &[candidate]);
         assert_eq!(decision.output(), Some("html вот "));
+    }
+
+    #[test]
+    fn l3_weight_scales_structural_boosts() {
+        let candidate = WordCandidate {
+            text: "html вот".to_string(),
+            source: "LayoutWordCell32",
+            energy: 0.32,
+            risk: 0.10,
+            support: vec![],
+        };
+        let (_trace, muted) = run_l3_with_options(
+            "html djn ",
+            std::slice::from_ref(&candidate),
+            &WaveOptions::default().with_layer_weights(1.0, 0.0),
+        );
+        let (_trace, normal) =
+            run_l3_with_options("html djn ", &[candidate], &WaveOptions::default());
+
+        assert_ne!(muted, normal);
     }
 
     #[test]

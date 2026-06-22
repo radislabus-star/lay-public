@@ -9,6 +9,7 @@ mod defaults;
 mod load;
 mod pipeline;
 mod types;
+mod weights;
 
 pub use crate::text_backend::TextBackendPreference;
 pub use defaults::{default_typing_assist_pipeline, default_typing_assist_rules};

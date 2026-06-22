@@ -42,6 +42,7 @@ fn scoped_tail_keeps_good_russian_previous_word_and_flips_current_currency_symbo
         scoped_options: ScopedTailOptions {
             lem_enabled: true,
             allow_layout_auto: true,
+            lem_weight: 1.0,
         },
     });
 

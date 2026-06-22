@@ -24,10 +24,11 @@ pub use word_flip::repair_cyrillic_prefix_before_ascii_tail;
 use completed_word::short_completed_tail_layout_flip;
 use word_flip::flip_word_events;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ScopedTailOptions {
     pub lem_enabled: bool,
     pub allow_layout_auto: bool,
+    pub lem_weight: f64,
 }
 
 impl Default for ScopedTailOptions {
@@ -35,6 +36,7 @@ impl Default for ScopedTailOptions {
         Self {
             lem_enabled: false,
             allow_layout_auto: true,
+            lem_weight: 1.0,
         }
     }
 }
@@ -71,6 +73,7 @@ pub fn decide_scoped_tail_correction_with_lem(
         ScopedTailOptions {
             lem_enabled: enabled,
             allow_layout_auto: true,
+            lem_weight: 1.0,
         },
     )
 }
@@ -203,5 +206,5 @@ fn rank_lem_scoped_tail_words(
                     candidate
                 }
             });
-    crate::lem::rank_candidates(original, candidates)
+    crate::lem::rank_candidates_with_language_weight(original, candidates, options.lem_weight)
 }

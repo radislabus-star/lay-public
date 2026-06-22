@@ -86,6 +86,7 @@ fn manual_decoder_keeps_stable_russian_context_before_completed_layout_tail() {
         scoped_options: ScopedTailOptions {
             lem_enabled: true,
             allow_layout_auto: true,
+            lem_weight: 1.0,
         },
     });
 

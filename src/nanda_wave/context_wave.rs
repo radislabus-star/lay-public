@@ -1,15 +1,70 @@
-use std::collections::{BTreeMap, HashSet};
+use std::collections::{HashMap, HashSet};
 use std::sync::OnceLock;
 
-use crate::lexicon::{extend_common_ru_words, is_common_ru_word};
+use crate::keyboard::is_cyrillic_letter;
+use crate::lexicon::{is_common_en_technical_word, is_common_ru_word, EN_HUNSPELL, EN_WORDS};
 use crate::phrase_lexicon::is_known_russian_phrase_part;
-use crate::russian_lexicon::{is_known_russian_word_or_form, russian_tiny_dictionary};
+use crate::russian_lexicon::{
+    is_known_russian_word_or_form, russian_dictionary, russian_generated_form_dictionary,
+    russian_tiny_dictionary,
+};
 use crate::text_metrics::damerau_levenshtein;
 
 use super::signal::WordCandidate;
 
 pub const SEMANTIC_WORD_SOURCE: &str = "SemanticWordCell32";
 pub const PHRASE_FORECAST_CELL: &str = "PhraseForecastCell32";
+const MAX_SEMANTIC_WORD_CANDIDATES: usize = 8;
+const MAX_WAVE_BUCKET_SCAN: usize = 512;
+const MAX_WAVE_POOL: usize = 4096;
+
+pub fn warm_up() {
+    let _ = ru_word_wave_memory().entries.len();
+    let _ = en_word_wave_memory().entries.len();
+}
+
+pub fn ru_word_prefix_completion_suffixes(
+    prefix: &str,
+    max_suffix_chars: usize,
+    limit: usize,
+) -> Vec<String> {
+    word_prefix_completion_suffixes(
+        prefix,
+        max_suffix_chars,
+        limit,
+        None,
+        &ru_word_wave_memory().prefix_index,
+    )
+}
+
+pub fn ru_word_prefix_completion_suffixes_if_bucket_at_most(
+    prefix: &str,
+    max_suffix_chars: usize,
+    limit: usize,
+    max_bucket_entries: usize,
+) -> Vec<String> {
+    word_prefix_completion_suffixes(
+        prefix,
+        max_suffix_chars,
+        limit,
+        Some(max_bucket_entries),
+        &ru_word_wave_memory().prefix_index,
+    )
+}
+
+pub fn en_word_prefix_completion_suffixes(
+    prefix: &str,
+    max_suffix_chars: usize,
+    limit: usize,
+) -> Vec<String> {
+    word_prefix_completion_suffixes(
+        &prefix.to_ascii_lowercase(),
+        max_suffix_chars,
+        limit,
+        None,
+        &en_word_wave_memory().prefix_index,
+    )
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct SemanticWaveMode {
@@ -67,7 +122,10 @@ pub fn semantic_word_candidates(tail: &str) -> Vec<WordCandidate> {
     candidates
         .sort_by(|left, right| (right.energy - right.risk).total_cmp(&(left.energy - left.risk)));
     candidates.dedup_by(|left, right| left.text == right.text);
-    candidates.into_iter().take(3).collect()
+    candidates
+        .into_iter()
+        .take(MAX_SEMANTIC_WORD_CANDIDATES)
+        .collect()
 }
 
 fn nearest_ru_word_candidates(tail: &str) -> Vec<WordCandidate> {
@@ -83,49 +141,138 @@ fn nearest_ru_word_candidates(tail: &str) -> Vec<WordCandidate> {
     if !(4..=18).contains(&len) || is_common_ru_word(&normalized) {
         return Vec::new();
     }
-    let first = normalized.chars().next();
-    let prefix2 = normalized.chars().take(2).collect::<String>();
-    let Some(first) = first else {
+    if normalized.chars().all(|ch| ch.is_ascii_alphabetic()) {
+        return nearest_en_word_candidates(prefix, token, &normalized);
+    }
+    if !normalized.chars().all(is_cyrillic_letter) {
         return Vec::new();
-    };
+    }
+    let query_modes = word_wave_modes(&normalized);
+    let mut seen = HashSet::new();
     let mut pool = Vec::new();
-    for word_len in len.saturating_sub(2)..=len + 2 {
-        if let Some(words) = common_ru_word_index().get(&(first, word_len)) {
-            pool.extend(words.iter());
+    for mode in &query_modes {
+        let Some(bucket) = ru_word_wave_memory().buckets.get(mode) else {
+            continue;
+        };
+        for idx in bucket.iter().take(MAX_WAVE_BUCKET_SCAN) {
+            if seen.insert(*idx) {
+                pool.push(*idx);
+                if pool.len() >= MAX_WAVE_POOL {
+                    break;
+                }
+            }
+        }
+        if pool.len() >= MAX_WAVE_POOL {
+            break;
         }
     }
     let mut ranked = pool
         .into_iter()
         .filter_map(|word| {
-            let distance = damerau_levenshtein(&normalized, word);
-            let word_prefix2 = word.chars().take(2).collect::<String>();
+            let entry = &ru_word_wave_memory().entries[word];
+            if entry.word == normalized || entry.len.abs_diff(len) > 2 {
+                return None;
+            }
+            let distance = damerau_levenshtein(&normalized, &entry.word);
+            let resonance = word_wave_resonance(&normalized, entry, &query_modes);
             let allowed = distance == 1
-                || (len >= 8 && distance == 2 && word_prefix2 == prefix2)
-                || negative_prefix_repair(&normalized, word, distance);
+                || (len >= 7 && distance == 2 && resonance >= 0.42)
+                || (len >= 10 && distance == 3 && resonance >= 0.68)
+                || negative_prefix_repair(&normalized, &entry.word, distance);
             (allowed
-                && !looks_like_suffix_stripping(&normalized, word)
-                && !looks_like_case_vowel_append_drift(&normalized, word)
-                && !looks_like_case_vowel_to_consonant_drift(&normalized, word)
-                && !looks_like_known_form_to_other_known_word_drift(&normalized, word, distance)
-                && !looks_like_known_verb_to_noun_drift(&normalized, word))
-            .then_some((word, distance))
+                && !looks_like_suffix_stripping(&normalized, &entry.word)
+                && !looks_like_case_vowel_append_drift(&normalized, &entry.word)
+                && !looks_like_case_vowel_to_consonant_drift(&normalized, &entry.word)
+                && !looks_like_known_form_to_other_known_word_drift(
+                    &normalized,
+                    &entry.word,
+                    distance,
+                )
+                && !looks_like_known_verb_to_noun_drift(&normalized, &entry.word))
+            .then_some((entry, distance, resonance))
         })
         .collect::<Vec<_>>();
-    ranked.sort_by(|(left, left_distance), (right, right_distance)| {
-        left_distance
-            .cmp(right_distance)
-            .then_with(|| {
-                left.chars()
-                    .count()
-                    .abs_diff(len)
-                    .cmp(&right.chars().count().abs_diff(len))
-            })
-            .then_with(|| left.cmp(right))
-    });
+    ranked.sort_by(
+        |(left, left_distance, left_resonance), (right, right_distance, right_resonance)| {
+            left_distance
+                .cmp(right_distance)
+                .then_with(|| right_resonance.total_cmp(left_resonance))
+                .then_with(|| left.len.abs_diff(len).cmp(&right.len.abs_diff(len)))
+                .then_with(|| left.word.cmp(&right.word))
+        },
+    );
     ranked
         .into_iter()
-        .take(3)
-        .map(|(word, distance)| ru_word_to_candidate(prefix, token, word, distance))
+        .take(MAX_SEMANTIC_WORD_CANDIDATES)
+        .map(|(entry, distance, resonance)| {
+            ru_word_to_candidate(prefix, token, &entry.word, distance, resonance)
+        })
+        .collect()
+}
+
+fn nearest_en_word_candidates(prefix: &str, token: &str, normalized: &str) -> Vec<WordCandidate> {
+    let len = normalized.chars().count();
+    if !(4..=18).contains(&len)
+        || is_common_en_technical_word(normalized)
+        || en_word_wave_memory().known.contains(normalized)
+    {
+        return Vec::new();
+    }
+    let converted = crate::dict::convert(normalized, crate::dict::detect_direction(normalized));
+    if converted != normalized && is_known_russian_word_or_form(&converted) {
+        return Vec::new();
+    }
+
+    let query_modes = word_wave_modes(normalized);
+    let mut seen = HashSet::new();
+    let mut pool = Vec::new();
+    for mode in &query_modes {
+        let Some(bucket) = en_word_wave_memory().buckets.get(mode) else {
+            continue;
+        };
+        for idx in bucket.iter().take(MAX_WAVE_BUCKET_SCAN) {
+            if seen.insert(*idx) {
+                pool.push(*idx);
+                if pool.len() >= MAX_WAVE_POOL {
+                    break;
+                }
+            }
+        }
+        if pool.len() >= MAX_WAVE_POOL {
+            break;
+        }
+    }
+
+    let mut ranked = pool
+        .into_iter()
+        .filter_map(|word| {
+            let entry = &en_word_wave_memory().entries[word];
+            if entry.word == normalized || entry.len.abs_diff(len) > 2 {
+                return None;
+            }
+            let distance = damerau_levenshtein(normalized, &entry.word);
+            let resonance = word_wave_resonance(normalized, entry, &query_modes);
+            let allowed = distance == 1
+                || (len >= 8 && distance == 2 && resonance >= 0.48)
+                || (len >= 11 && distance == 3 && resonance >= 0.72);
+            allowed.then_some((entry, distance, resonance))
+        })
+        .collect::<Vec<_>>();
+    ranked.sort_by(
+        |(left, left_distance, left_resonance), (right, right_distance, right_resonance)| {
+            left_distance
+                .cmp(right_distance)
+                .then_with(|| right_resonance.total_cmp(left_resonance))
+                .then_with(|| left.len.abs_diff(len).cmp(&right.len.abs_diff(len)))
+                .then_with(|| left.word.cmp(&right.word))
+        },
+    );
+    ranked
+        .into_iter()
+        .take(MAX_SEMANTIC_WORD_CANDIDATES)
+        .map(|(entry, distance, resonance)| {
+            en_word_to_candidate(prefix, token, &entry.word, distance, resonance)
+        })
         .collect()
 }
 
@@ -210,45 +357,291 @@ fn is_russian_consonant(ch: char) -> bool {
         )
 }
 
-fn common_ru_words() -> &'static Vec<String> {
-    static WORDS: OnceLock<Vec<String>> = OnceLock::new();
-    WORDS.get_or_init(|| {
-        let mut words = HashSet::new();
-        extend_common_ru_words(&mut words);
-        let mut words = words.into_iter().collect::<Vec<_>>();
-        words.sort();
-        words
-    })
+#[derive(Debug)]
+struct RuWordWaveMemory {
+    entries: Vec<RuWordWaveEntry>,
+    buckets: HashMap<u16, Vec<usize>>,
+    prefix_index: HashMap<String, Vec<String>>,
 }
 
-fn common_ru_word_index() -> &'static BTreeMap<(char, usize), Vec<String>> {
-    static INDEX: OnceLock<BTreeMap<(char, usize), Vec<String>>> = OnceLock::new();
-    INDEX.get_or_init(|| {
-        let mut index = BTreeMap::<(char, usize), Vec<String>>::new();
-        for word in common_ru_words() {
-            let Some(first) = word.chars().next() else {
+#[derive(Debug)]
+struct RuWordWaveEntry {
+    word: String,
+    len: usize,
+    modes: Vec<u16>,
+}
+
+#[derive(Debug)]
+struct EnWordWaveMemory {
+    entries: Vec<RuWordWaveEntry>,
+    buckets: HashMap<u16, Vec<usize>>,
+    prefix_index: HashMap<String, Vec<String>>,
+    known: HashSet<String>,
+}
+
+fn ru_word_wave_memory() -> &'static RuWordWaveMemory {
+    static MEMORY: OnceLock<RuWordWaveMemory> = OnceLock::new();
+    MEMORY.get_or_init(|| {
+        let mut entries = Vec::new();
+        let mut buckets = HashMap::<u16, Vec<usize>>::new();
+        let mut words = russian_dictionary()
+            .iter()
+            .map(|word| normalize_ru(word))
+            .collect::<Vec<_>>();
+        words.extend(
+            russian_generated_form_dictionary()
+                .iter()
+                .map(|word| normalize_ru(word)),
+        );
+        words.sort_by(|left, right| {
+            is_common_ru_word(right)
+                .cmp(&is_common_ru_word(left))
+                .then_with(|| left.chars().count().cmp(&right.chars().count()))
+                .then_with(|| left.cmp(right))
+        });
+        words.dedup();
+        for word in words {
+            let word = normalize_ru(&word);
+            let len = word.chars().count();
+            if !(4..=18).contains(&len) || !word.chars().all(is_cyrillic_letter) {
                 continue;
-            };
-            index
-                .entry((first, word.chars().count()))
-                .or_default()
-                .push(word.clone());
+            }
+            let modes = word_wave_modes(&word);
+            let idx = entries.len();
+            for mode in &modes {
+                buckets.entry(*mode).or_default().push(idx);
+            }
+            entries.push(RuWordWaveEntry { word, len, modes });
         }
-        index
+        let prefix_index = build_prefix_index(&entries);
+        RuWordWaveMemory {
+            entries,
+            buckets,
+            prefix_index,
+        }
     })
 }
 
-fn ru_word_to_candidate(prefix: &str, token: &str, word: &str, distance: usize) -> WordCandidate {
+fn en_word_wave_memory() -> &'static EnWordWaveMemory {
+    static MEMORY: OnceLock<EnWordWaveMemory> = OnceLock::new();
+    MEMORY.get_or_init(|| {
+        let mut known = HashSet::new();
+        extend_english_words_from_hunspell(&mut known, EN_HUNSPELL);
+        extend_english_words_from_plain(&mut known, EN_WORDS);
+        let mut words = known.iter().cloned().collect::<Vec<_>>();
+        words.sort_by(|left, right| {
+            is_common_en_technical_word(right)
+                .cmp(&is_common_en_technical_word(left))
+                .then_with(|| left.chars().count().cmp(&right.chars().count()))
+                .then_with(|| left.cmp(right))
+        });
+        let mut entries = Vec::new();
+        let mut buckets = HashMap::<u16, Vec<usize>>::new();
+        for word in words {
+            let len = word.chars().count();
+            if !(4..=18).contains(&len) {
+                continue;
+            }
+            let modes = word_wave_modes(&word);
+            let idx = entries.len();
+            for mode in &modes {
+                buckets.entry(*mode).or_default().push(idx);
+            }
+            entries.push(RuWordWaveEntry { word, len, modes });
+        }
+        let prefix_index = build_prefix_index(&entries);
+        EnWordWaveMemory {
+            entries,
+            buckets,
+            prefix_index,
+            known,
+        }
+    })
+}
+
+fn build_prefix_index(entries: &[RuWordWaveEntry]) -> HashMap<String, Vec<String>> {
+    let mut index = HashMap::<String, Vec<String>>::new();
+    for entry in entries {
+        for prefix_len in 2..entry.len {
+            let prefix = entry.word.chars().take(prefix_len).collect::<String>();
+            let byte_idx = entry
+                .word
+                .char_indices()
+                .nth(prefix_len)
+                .map(|(idx, _)| idx)
+                .unwrap_or(entry.word.len());
+            let suffix = entry.word[byte_idx..].to_string();
+            if suffix.is_empty() {
+                continue;
+            }
+            index.entry(prefix).or_default().push(suffix);
+        }
+    }
+    index
+}
+
+fn word_prefix_completion_suffixes(
+    prefix: &str,
+    max_suffix_chars: usize,
+    limit: usize,
+    max_bucket_entries: Option<usize>,
+    prefix_index: &HashMap<String, Vec<String>>,
+) -> Vec<String> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let prefix = prefix.trim().to_lowercase();
+    let prefix_len = prefix.chars().count();
+    if prefix_len < 2 {
+        return Vec::new();
+    }
+    let Some(suffixes) = prefix_index.get(&prefix) else {
+        return Vec::new();
+    };
+    if max_bucket_entries.is_some_and(|max| suffixes.len() > max) {
+        return Vec::new();
+    }
+    suffixes
+        .iter()
+        .filter(|suffix| suffix.chars().count() <= max_suffix_chars)
+        .take(limit)
+        .cloned()
+        .collect()
+}
+
+fn extend_english_words_from_hunspell(words: &mut HashSet<String>, path: &str) {
+    let Ok(text) = std::fs::read_to_string(path) else {
+        return;
+    };
+    words.extend(text.lines().skip(1).filter_map(|line| {
+        let word = line
+            .trim()
+            .split_once('/')
+            .map_or(line.trim(), |(word, _)| word);
+        english_word_from_raw(word)
+    }));
+}
+
+fn extend_english_words_from_plain(words: &mut HashSet<String>, path: &str) {
+    let Ok(text) = std::fs::read_to_string(path) else {
+        return;
+    };
+    words.extend(text.lines().filter_map(english_word_from_raw));
+}
+
+fn english_word_from_raw(word: &str) -> Option<String> {
+    let word = word.trim().to_ascii_lowercase();
+    ((4..=18).contains(&word.chars().count())
+        && word.chars().all(|ch| ch.is_ascii_alphabetic() || ch == '-')
+        && word.chars().any(|ch| ch.is_ascii_alphabetic()))
+    .then_some(word)
+}
+
+fn word_wave_resonance(query: &str, entry: &RuWordWaveEntry, query_modes: &[u16]) -> f32 {
+    if query_modes.is_empty() || entry.modes.is_empty() {
+        return 0.0;
+    }
+    let overlap = query_modes
+        .iter()
+        .filter(|mode| entry.modes.binary_search(mode).is_ok())
+        .count() as f32;
+    let mode_energy = overlap / query_modes.len().max(entry.modes.len()) as f32;
+    let len_energy = 1.0 - (query.chars().count().abs_diff(entry.len) as f32 / 6.0).min(1.0);
+    let edge_energy = edge_alignment(query, &entry.word);
+    (mode_energy * mode_energy * 0.56 + len_energy * 0.20 + edge_energy * 0.24).clamp(0.0, 1.0)
+}
+
+fn edge_alignment(query: &str, word: &str) -> f32 {
+    let query_chars = query.chars().collect::<Vec<_>>();
+    let word_chars = word.chars().collect::<Vec<_>>();
+    let first = query_chars
+        .first()
+        .zip(word_chars.first())
+        .is_some_and(|(left, right)| left == right) as u8 as f32;
+    let last = query_chars
+        .last()
+        .zip(word_chars.last())
+        .is_some_and(|(left, right)| left == right) as u8 as f32;
+    (first * 0.55 + last * 0.45).clamp(0.0, 1.0)
+}
+
+fn word_wave_modes(word: &str) -> Vec<u16> {
+    let chars = word.chars().collect::<Vec<_>>();
+    let mut modes = Vec::new();
+    modes.push(word_mode_hash(0x11, word.chars().count() as u32));
+    if let Some(first) = chars.first() {
+        modes.push(word_mode_hash(0x21, *first as u32));
+    }
+    if let Some(last) = chars.last() {
+        modes.push(word_mode_hash(0x22, *last as u32));
+    }
+    for window in chars.windows(2) {
+        modes.push(word_mode_hash(
+            0x31,
+            ((window[0] as u32) << 11) ^ window[1] as u32,
+        ));
+    }
+    for window in chars.windows(3) {
+        modes.push(word_mode_hash(
+            0x41,
+            ((window[0] as u32) << 16) ^ ((window[1] as u32) << 8) ^ window[2] as u32,
+        ));
+    }
+    modes.sort_unstable();
+    modes.dedup();
+    modes
+}
+
+fn word_mode_hash(seed: u32, value: u32) -> u16 {
+    let mut hash = seed.wrapping_mul(0x9E37_79B9) ^ value;
+    hash ^= hash >> 16;
+    hash = hash.wrapping_mul(0x85EB_CA6B);
+    hash ^= hash >> 13;
+    (hash & 0x7FF) as u16
+}
+
+fn ru_word_to_candidate(
+    prefix: &str,
+    token: &str,
+    word: &str,
+    distance: usize,
+    resonance: f32,
+) -> WordCandidate {
     let len = normalize_ru(token).chars().count().max(1);
     let closeness = 1.0 - (distance as f32 / len as f32);
     WordCandidate {
         text: format!("{prefix}{word}"),
         source: SEMANTIC_WORD_SOURCE,
-        energy: (0.58 + closeness * 0.32).clamp(0.0, 0.94),
-        risk: (0.30 - closeness * 0.14).clamp(0.10, 0.30),
+        energy: (0.50 + closeness * 0.24 + resonance * 0.18).clamp(0.0, 0.95),
+        risk: (0.32 - closeness * 0.12 - resonance * 0.06).clamp(0.09, 0.32),
         support: vec![
-            "nearest-ru-word".to_string(),
-            format!("token={token:?} candidate={word:?} distance={distance}"),
+            "ru-word-wave-memory".to_string(),
+            format!(
+                "token={token:?} candidate={word:?} distance={distance} resonance={resonance:.3}"
+            ),
+        ],
+    }
+}
+
+fn en_word_to_candidate(
+    prefix: &str,
+    token: &str,
+    word: &str,
+    distance: usize,
+    resonance: f32,
+) -> WordCandidate {
+    let len = token.chars().count().max(1);
+    let closeness = 1.0 - (distance as f32 / len as f32);
+    WordCandidate {
+        text: format!("{prefix}{word}"),
+        source: SEMANTIC_WORD_SOURCE,
+        energy: (0.44 + closeness * 0.20 + resonance * 0.14).clamp(0.0, 0.82),
+        risk: (0.36 - closeness * 0.08 - resonance * 0.04).clamp(0.18, 0.40),
+        support: vec![
+            "en-word-wave-memory".to_string(),
+            format!(
+                "token={token:?} candidate={word:?} distance={distance} resonance={resonance:.3}"
+            ),
         ],
     }
 }
@@ -534,6 +927,33 @@ mod tests {
         assert!(candidates
             .iter()
             .any(|candidate| candidate.text == "это вообще"));
+    }
+
+    #[test]
+    fn semantic_word_cell_uses_large_ru_wave_memory() {
+        assert!(
+            ru_word_wave_memory().entries.len() >= 100_000,
+            "RU wave memory should be a large lexical source"
+        );
+    }
+
+    #[test]
+    fn semantic_word_cell_uses_large_en_wave_memory() {
+        assert!(
+            en_word_wave_memory().entries.len() >= 100_000,
+            "EN wave memory should combine hunspell and system words"
+        );
+    }
+
+    #[test]
+    fn semantic_word_cell_generates_english_wave_candidate() {
+        let candidates = semantic_word_candidates("this exmaple ");
+        assert!(
+            candidates
+                .iter()
+                .any(|candidate| candidate.text == "this example"),
+            "expected English wave memory candidate, got {candidates:?}"
+        );
     }
 
     #[test]

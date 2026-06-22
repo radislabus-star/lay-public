@@ -58,6 +58,7 @@ fn scoped_tail_flips_short_english_layout_pair_in_ascii_context() {
         scoped_options: ScopedTailOptions {
             lem_enabled: true,
             allow_layout_auto: true,
+            lem_weight: 1.0,
         },
     });
 

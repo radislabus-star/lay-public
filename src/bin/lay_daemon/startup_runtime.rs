@@ -77,6 +77,7 @@ fn warm_runtime_if_needed(detect_only: bool, cfg: &LayConfig) {
             lay::lem::warm_up();
             lay::typing_assist::warm_up();
             TYPING_ASSIST_RUNTIME_READY.store(true, Ordering::Relaxed);
+            lay::nanda_wave::warm_up();
             if warm_smart {
                 match lay::llm::warm_up() {
                     Ok(()) => log("► smart engine: модель прогрета заранее"),

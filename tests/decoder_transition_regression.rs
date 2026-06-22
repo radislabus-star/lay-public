@@ -37,6 +37,7 @@ fn decode_ascii_tail(text: &str, force_replay: bool) -> lay::decoder::ManualDeco
         scoped_options: ScopedTailOptions {
             lem_enabled: true,
             allow_layout_auto: true,
+            lem_weight: 1.0,
         },
     })
 }
@@ -91,6 +92,7 @@ fn ranked_decoder_exposes_margin_for_mixed_pairs() {
     let options = ScopedTailOptions {
         lem_enabled: true,
         allow_layout_auto: true,
+        lem_weight: 1.0,
     };
     let ranked = rank_scoped_tail_candidates(&events, options).expect("ranked candidates");
     let chosen = choose_ranked_scoped_tail(&events, options).expect("confident decision");
@@ -152,6 +154,7 @@ fn ranked_decoder_is_disabled_without_lem_flag() {
         ScopedTailOptions {
             lem_enabled: false,
             allow_layout_auto: true,
+            lem_weight: 1.0,
         }
     )
     .is_none());

@@ -47,6 +47,7 @@ fn manual_engine_keeps_good_prefix_for_smart_text() {
             scoped_options: ScopedTailOptions {
                 lem_enabled: true,
                 allow_layout_auto: true,
+                lem_weight: 1.0,
             },
         },
     );
@@ -72,6 +73,7 @@ fn manual_engine_replays_single_cyrillic_layout_word_to_ascii() {
             scoped_options: ScopedTailOptions {
                 lem_enabled: true,
                 allow_layout_auto: true,
+                lem_weight: 1.0,
             },
         },
     );

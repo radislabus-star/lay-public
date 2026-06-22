@@ -30,6 +30,7 @@ fn decode_manual_visible_tail(input: &str) -> String {
             scoped_options: ScopedTailOptions {
                 lem_enabled: true,
                 allow_layout_auto: true,
+                lem_weight: 1.0,
             },
         },
     );

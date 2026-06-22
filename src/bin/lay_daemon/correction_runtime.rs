@@ -11,8 +11,8 @@ use std::time::Instant;
 
 use super::auto_undo_runtime::handle_pending_auto_undo;
 use super::{
-    active_auto_switch_layout, active_lem_enabled_for_scope, log, log_manual_trigger_cross_check,
-    read_current_layout_is_ru, ExecutingGuard,
+    active_auto_switch_layout, active_lem_enabled_for_scope, active_lem_weight, log,
+    log_manual_trigger_cross_check, read_current_layout_is_ru, ExecutingGuard,
 };
 
 #[path = "correction_runtime/force_layout.rs"]
@@ -113,6 +113,7 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
     let scoped_options = ScopedTailOptions {
         lem_enabled: active_lem_enabled_for_scope(words_orig),
         allow_layout_auto: active_auto_switch_layout(),
+        lem_weight: active_lem_weight(),
     };
     let correction_result = decide_manual_correction(
         ManualCorrectionInput {
