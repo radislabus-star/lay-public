@@ -63,12 +63,25 @@ impl LayIbusEngine {
             if self.accept_stuck_tail(emitter, with_space).await? {
                 return Ok(true);
             }
+            if with_space {
+                return self.autocorrect_committed_tail_space(emitter).await;
+            }
             return Ok(false);
         }
 
         let suffix = self.selected_visible_completion_suffix();
-        if suffix.is_empty() {
-            return Ok(with_space);
+        if suffix.is_empty() && !with_space {
+            return Ok(false);
+        }
+
+        if with_space && !suffix.is_empty() {
+            self.commit_active_composition(
+                emitter,
+                ActiveCompositionCommit::with_completion(suffix, false),
+            )
+            .await?;
+            self.commit_completion_space(emitter).await?;
+            return Ok(true);
         }
 
         self.commit_active_composition(
@@ -86,6 +99,18 @@ impl LayIbusEngine {
         let handled = self.accept_completion(emitter, true).await?;
         self.trace_key("alt_accept", 0, 0, handled, None);
         Ok(handled)
+    }
+
+    pub(super) async fn commit_completion_space(
+        &mut self,
+        emitter: &SignalEmitter<'_>,
+    ) -> fdo::Result<()> {
+        Self::commit_text(emitter, make_ibus_text(" ".to_string()))
+            .await
+            .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+        self.push_tail_char(' ');
+        self.last_commit_at = Some(Instant::now());
+        Ok(())
     }
 
     pub(super) async fn commit_managed_passthrough_char(
