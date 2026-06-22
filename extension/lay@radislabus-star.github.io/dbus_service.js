@@ -11,9 +11,9 @@ export function normalizeLayoutKind(id) {
     const value = String(id ?? '').trim().toLowerCase();
     if (!value)
         return '';
-    if (value === 'ru' || value.includes(':ru') || value.includes('russian') || value.includes('rus'))
+    if (value === 'ru' || value === 'lay-ime-ru' || value.includes(':ru') || value.includes('russian') || value.includes('rus'))
         return 'ru';
-    if (value === 'us' || value === 'en' || value.includes(':us') || value.includes('english') || value.includes('eng'))
+    if (value === 'us' || value === 'en' || value === 'lay-ime-us' || value.includes(':us') || value.includes('english') || value.includes('eng'))
         return 'us';
     return value;
 }
