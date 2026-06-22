@@ -76,21 +76,55 @@ pub fn common_ru_prefix_completion_word(prefix: &str, max_suffix_chars: usize) -
         .cloned()
 }
 
+pub fn common_ru_prefix_completion_words(
+    prefix: &str,
+    max_suffix_chars: usize,
+    limit: usize,
+) -> Vec<String> {
+    let prefix = prefix.trim().to_lowercase();
+    if prefix.is_empty() || limit == 0 {
+        return Vec::new();
+    }
+    common_ru_prefix_index()
+        .get(&prefix)
+        .into_iter()
+        .flatten()
+        .filter(|word| word.chars().count() - prefix.chars().count() <= max_suffix_chars)
+        .take(limit)
+        .cloned()
+        .collect()
+}
+
 pub fn common_en_technical_prefix_completion(
     prefix: &str,
     max_suffix_chars: usize,
 ) -> Option<String> {
+    common_en_technical_prefix_completions(prefix, max_suffix_chars, 1)
+        .into_iter()
+        .next()
+}
+
+pub fn common_en_technical_prefix_completions(
+    prefix: &str,
+    max_suffix_chars: usize,
+    limit: usize,
+) -> Vec<String> {
     let prefix = prefix.trim().to_ascii_lowercase();
-    if prefix.chars().count() < 2 || !prefix.chars().all(|ch| ch.is_ascii_alphabetic()) {
-        return None;
+    if limit == 0
+        || prefix.chars().count() < 2
+        || !prefix.chars().all(|ch| ch.is_ascii_alphabetic())
+    {
+        return Vec::new();
     }
     common_en_technical_prefix_index()
         .get(&prefix)
         .into_iter()
         .flatten()
         .filter_map(|word| word.get(prefix.len()..))
-        .find(|suffix| suffix.chars().count() <= max_suffix_chars)
+        .filter(|suffix| suffix.chars().count() <= max_suffix_chars)
+        .take(limit)
         .map(str::to_string)
+        .collect()
 }
 
 pub fn is_common_en_technical_word(word: &str) -> bool {

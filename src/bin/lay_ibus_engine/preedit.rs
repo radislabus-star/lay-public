@@ -40,17 +40,18 @@ impl PreeditFastState {
         &self.token
     }
 
-    fn ascii_suffix(&self, max_suffix_chars: usize) -> Option<String> {
+    fn ascii_suffixes(&self, max_suffix_chars: usize, limit: usize) -> Vec<String> {
         if self.token.chars().count() < 2 {
-            return None;
+            return Vec::new();
         }
         if self.token.chars().all(|ch| ch.is_ascii_alphabetic()) {
-            return lay::lexicon::common_en_technical_prefix_completion(
+            return lay::lexicon::common_en_technical_prefix_completions(
                 &self.token,
                 max_suffix_chars,
+                limit,
             );
         }
-        None
+        Vec::new()
     }
 }
 
@@ -237,18 +238,21 @@ impl LayIbusEngine {
         }
         let timing_enabled = trace::enabled();
         let total_started = timing_enabled.then(Instant::now);
-        let mut candidates = Vec::with_capacity(3);
+        let mut candidates = Vec::with_capacity(8);
 
         let ascii_started = timing_enabled.then(Instant::now);
-        push_unique_suffix(
-            &mut candidates,
-            self.preedit_fast
-                .ascii_suffix(self.precognition_max_suffix_chars()),
-        );
+        for suffix in self
+            .preedit_fast
+            .ascii_suffixes(self.precognition_max_suffix_chars(), 4)
+        {
+            push_unique_suffix(&mut candidates, Some(suffix));
+        }
         let ascii_us = elapsed_us(ascii_started);
 
         let ru_started = timing_enabled.then(Instant::now);
-        push_unique_suffix(&mut candidates, self.lexical_ru_suffix());
+        for suffix in self.lexical_ru_suffixes() {
+            push_unique_suffix(&mut candidates, Some(suffix));
+        }
         let ru_us = elapsed_us(ru_started);
 
         let semantic_started = timing_enabled.then(Instant::now);
@@ -278,22 +282,24 @@ impl LayIbusEngine {
             .is_some_and(|replacement| replacement.trim_end() != self.buffer.trim_end())
     }
 
-    fn lexical_ru_suffix(&self) -> Option<String> {
+    fn lexical_ru_suffixes(&self) -> Vec<String> {
         let token = self.preedit_fast.token();
         if token.chars().count() < 2 || token.chars().all(|ch| ch.is_ascii_alphabetic()) {
-            return None;
+            return Vec::new();
         }
         if token.chars().count() > 4 {
-            return None;
+            return Vec::new();
         }
-        let word = lay::lexicon::common_ru_prefix_completion_word(
+        let token_lower = token.to_lowercase();
+        lay::lexicon::common_ru_prefix_completion_words(
             token,
             self.precognition_max_suffix_chars(),
-        )?;
-        if self.should_veto_lexical_completion(token, &word) {
-            return None;
-        }
-        word.get(token.to_lowercase().len()..).map(str::to_string)
+            6,
+        )
+        .into_iter()
+        .filter(|word| !self.should_veto_lexical_completion(token, word))
+        .filter_map(|word| word.get(token_lower.len()..).map(str::to_string))
+        .collect()
     }
 
     fn should_veto_lexical_completion(&self, token: &str, word: &str) -> bool {
@@ -331,7 +337,7 @@ impl LayIbusEngine {
             suffixes.extend(
                 lay::nanda_wave::context_wave::candidate_interferences(&wave)
                     .into_iter()
-                    .take(3)
+                    .take(5)
                     .filter(|candidate| candidate.projection >= 0.22)
                     .filter_map(|candidate| {
                         let text = format!("{}{}", wave.prefix, candidate.candidate);
@@ -350,7 +356,7 @@ impl LayIbusEngine {
         let memory = lay::nanda_wave::llmwave::load_default_memory();
         lay::nanda_wave::llmwave::phrase_forecast_candidates(tail, &memory)
             .into_iter()
-            .take(3)
+            .take(6)
             .filter_map(|candidate| {
                 let suffix = candidate.text.strip_prefix(tail)?;
                 (!suffix.is_empty()
@@ -459,6 +465,36 @@ mod tests {
             engine.push_tail_char(ch);
         }
         assert_eq!(engine.precognition_suffix().as_deref(), Some("ерка"));
+    }
+
+    #[test]
+    fn precognition_exposes_multiple_prefix_candidates() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "пр".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(engine.preedit_candidates.len() >= 3);
+        assert!(engine
+            .preedit_candidates
+            .iter()
+            .any(|suffix| suffix == "ивет"));
+        assert!(engine
+            .preedit_candidates
+            .iter()
+            .any(|suffix| suffix == "оверка"));
     }
 
     #[test]
