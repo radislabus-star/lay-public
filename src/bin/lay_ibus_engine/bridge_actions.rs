@@ -3,6 +3,7 @@ use zbus::fdo;
 use super::bridge::LayImeBridge;
 use super::engine::{LayIbusEngine, ManualToggleAuthority};
 use super::state::CommittedTailReplaceRequest;
+use lay::manual_toggle::ImeManualToggleOutcome;
 
 impl LayImeBridge {
     pub(super) fn active_path(&self) -> Option<String> {
@@ -100,8 +101,12 @@ impl LayImeBridge {
     }
 
     pub(super) async fn manual_toggle_v2_inner(&self) -> fdo::Result<(bool, bool)> {
+        Ok(self.manual_toggle_outcome_inner().await?.as_legacy_v2())
+    }
+
+    async fn manual_toggle_outcome_inner(&self) -> fdo::Result<ImeManualToggleOutcome> {
         let Some(path) = self.active_path() else {
-            return Ok((false, false));
+            return Ok(ImeManualToggleOutcome::NotHandled);
         };
         let iface_ref = self
             .ibus_connection
@@ -114,8 +119,8 @@ impl LayImeBridge {
         engine.refresh_empty_tail_from_handoff();
         Ok(
             match engine.manual_toggle_active_text_target(emitter).await? {
-                Some(target_is_ru) => (true, target_is_ru),
-                None => (false, false),
+                Some(target_layout_is_ru) => ImeManualToggleOutcome::handled(target_layout_is_ru),
+                None => ImeManualToggleOutcome::NotHandled,
             },
         )
     }

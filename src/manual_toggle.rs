@@ -82,6 +82,38 @@ pub struct ManualTogglePlan {
     pub edit: ManualToggleEditPlan,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ImeManualToggleOutcome {
+    NotHandled,
+    Handled { target_layout_is_ru: bool },
+}
+
+impl ImeManualToggleOutcome {
+    pub fn handled(target_layout_is_ru: bool) -> Self {
+        Self::Handled {
+            target_layout_is_ru,
+        }
+    }
+
+    pub fn target_layout_is_ru(self) -> Option<bool> {
+        match self {
+            Self::NotHandled => None,
+            Self::Handled {
+                target_layout_is_ru,
+            } => Some(target_layout_is_ru),
+        }
+    }
+
+    pub fn as_legacy_v2(self) -> (bool, bool) {
+        match self {
+            Self::NotHandled => (false, false),
+            Self::Handled {
+                target_layout_is_ru,
+            } => (true, target_layout_is_ru),
+        }
+    }
+}
+
 pub fn plan_manual_toggle(request: ManualToggleRequest<'_>) -> Option<ManualTogglePlan> {
     let tail = request.visible_tail.text;
     let token = last_tail_token(tail)?;
@@ -223,7 +255,8 @@ fn known_layout_recovery_replacement(replacement: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::{
-        plan_manual_toggle, ManualToggleRequest, ManualToggleRoute, VisibleTail, VisibleTailSource,
+        plan_manual_toggle, ImeManualToggleOutcome, ManualToggleRequest, ManualToggleRoute,
+        VisibleTail, VisibleTailSource,
     };
 
     fn request(tail: &str) -> ManualToggleRequest<'_> {
@@ -302,5 +335,21 @@ mod tests {
         assert_eq!(plan.edit.original_token, "ghbdtn");
         assert_eq!(plan.edit.delete_chars, 6);
         assert_eq!(plan.edit.insert_text, "привет");
+    }
+
+    #[test]
+    fn ime_manual_toggle_outcome_keeps_legacy_wire_format_at_the_boundary() {
+        assert_eq!(
+            ImeManualToggleOutcome::NotHandled.target_layout_is_ru(),
+            None
+        );
+        assert_eq!(
+            ImeManualToggleOutcome::NotHandled.as_legacy_v2(),
+            (false, false)
+        );
+
+        let handled = ImeManualToggleOutcome::handled(true);
+        assert_eq!(handled.target_layout_is_ru(), Some(true));
+        assert_eq!(handled.as_legacy_v2(), (true, true));
     }
 }

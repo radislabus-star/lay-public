@@ -1,3 +1,4 @@
+use lay::manual_toggle::ImeManualToggleOutcome;
 use lay::text_backend::ImeReplaceRequest;
 use serde::de::DeserializeOwned;
 use zbus::zvariant::Type;
@@ -66,8 +67,13 @@ pub(super) fn manual_toggle() -> Result<bool, String> {
     call_ime_noarg("ManualToggle")
 }
 
-pub(super) fn manual_toggle_v2() -> Result<(bool, bool), String> {
-    call_ime_noarg("ManualToggleV2")
+pub(super) fn manual_toggle_outcome() -> Result<ImeManualToggleOutcome, String> {
+    let (handled, target_layout_is_ru) = call_ime_noarg::<(bool, bool)>("ManualToggleV2")?;
+    Ok(if handled {
+        ImeManualToggleOutcome::handled(target_layout_is_ru)
+    } else {
+        ImeManualToggleOutcome::NotHandled
+    })
 }
 
 fn call_ime_noarg<T>(method: &str) -> Result<T, String>

@@ -255,16 +255,16 @@ pub(super) fn try_ime_manual_toggle() -> Result<Option<bool>, String> {
     if !active_text_backend().should_try_ime() {
         return Ok(None);
     }
-    let (handled, target_is_ru) = match ime_bridge::manual_toggle_v2() {
-        Ok(result) => result,
+    let target_is_ru = match ime_bridge::manual_toggle_outcome() {
+        Ok(outcome) => outcome.target_layout_is_ru(),
         Err(_) => {
             let handled = ime_bridge::manual_toggle()?;
             return Ok(handled.then_some(read_current_layout_is_ru().unwrap_or(false)));
         }
     };
-    if !handled {
+    let Some(target_is_ru) = target_is_ru else {
         return Ok(None);
-    }
+    };
     switch_to_target_layout(target_is_ru)?;
     Ok(Some(target_is_ru))
 }
