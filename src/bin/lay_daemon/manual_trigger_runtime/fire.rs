@@ -1,4 +1,3 @@
-use super::super::focused_ime_engine_handles_typing;
 use super::super::trigger_dispatch::{
     complete_manual_trigger, run_configured_manual_correction, run_scoped_manual_correction,
     ManualTriggerCompletion,
@@ -7,9 +6,8 @@ use super::context::ManualTriggerFireContext;
 use super::ime::run_ime_manual_toggle;
 
 pub(crate) fn fire_configured_manual_trigger(ctx: ManualTriggerFireContext<'_>) {
-    if focused_ime_engine_handles_typing() {
-        let result = run_ime_manual_toggle();
-        complete_manual_trigger_with_result(result, ctx);
+    if let Some(result) = run_ime_manual_toggle() {
+        complete_manual_trigger_with_result(Some(result), ctx);
         return;
     }
     let correction_result =
@@ -23,9 +21,8 @@ pub(crate) fn fire_scoped_manual_trigger(
     events_since_word_start: u32,
     reason: &str,
 ) {
-    if focused_ime_engine_handles_typing() {
-        let result = run_ime_manual_toggle();
-        complete_manual_trigger_with_result(result, ctx);
+    if let Some(result) = run_ime_manual_toggle() {
+        complete_manual_trigger_with_result(Some(result), ctx);
         return;
     }
     let correction_result = run_scoped_manual_correction(

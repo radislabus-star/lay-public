@@ -32,7 +32,7 @@ impl LayIbusEngine {
             return Ok(handled);
         }
         if keyval == KEY_TAB {
-            let handled = self.accept_completion(emitter, false).await?;
+            let handled = self.accept_completion(emitter, true).await?;
             self.trace_key("tab", keyval, keycode, handled, None);
             return Ok(handled);
         }

@@ -11,6 +11,8 @@ mod gnome_dbus;
 mod ibus_bridge;
 #[path = "layout_controller/ime_bridge.rs"]
 mod ime_bridge;
+#[path = "layout_controller/ime_manual_toggle.rs"]
+mod ime_manual_toggle;
 
 const LAYOUT_SWITCH_SETTLE_MS: u64 = 12;
 const TRIGGER_RELEASE_SETTLE_MS: u64 = 80;
@@ -252,21 +254,7 @@ pub(super) fn suppress_next_ime_autocorrect() {
 }
 
 pub(super) fn try_ime_manual_toggle() -> Result<Option<bool>, String> {
-    if !active_text_backend().should_try_ime() {
-        return Ok(None);
-    }
-    let target_is_ru = match ime_bridge::manual_toggle_outcome() {
-        Ok(outcome) => outcome.target_layout_is_ru(),
-        Err(_) => {
-            let handled = ime_bridge::manual_toggle()?;
-            return Ok(handled.then_some(read_current_layout_is_ru().unwrap_or(false)));
-        }
-    };
-    let Some(target_is_ru) = target_is_ru else {
-        return Ok(None);
-    };
-    switch_to_target_layout(target_is_ru)?;
-    Ok(Some(target_is_ru))
+    ime_manual_toggle::try_manual_toggle(active_text_backend().should_try_ime())
 }
 
 pub(super) fn detect_auto_layout_backend_hint() -> Option<LayoutBackend> {

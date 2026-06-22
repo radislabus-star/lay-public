@@ -1,4 +1,3 @@
-use lay::manual_toggle::ImeManualToggleOutcome;
 use lay::text_backend::ImeReplaceRequest;
 use serde::de::DeserializeOwned;
 use zbus::zvariant::Type;
@@ -59,21 +58,16 @@ pub(super) fn input_state() -> Result<String, String> {
     call_ime_noarg("InputState")
 }
 
+pub(super) fn visible_tail() -> Result<(String, String, bool), String> {
+    call_ime_noarg("VisibleTailV1")
+}
+
 pub(super) fn suppress_next_autocorrect() -> Result<bool, String> {
     call_ime_noarg("SuppressNextAutocorrect")
 }
 
-pub(super) fn manual_toggle() -> Result<bool, String> {
-    call_ime_noarg("ManualToggle")
-}
-
-pub(super) fn manual_toggle_outcome() -> Result<ImeManualToggleOutcome, String> {
-    let (handled, target_layout_is_ru) = call_ime_noarg::<(bool, bool)>("ManualToggleV2")?;
-    Ok(if handled {
-        ImeManualToggleOutcome::handled(target_layout_is_ru)
-    } else {
-        ImeManualToggleOutcome::NotHandled
-    })
+pub(super) fn replace_tail_plan(backspaces: u32, text: &str, kind: &str) -> Result<bool, String> {
+    replace_tail(backspaces, text, kind)
 }
 
 fn call_ime_noarg<T>(method: &str) -> Result<T, String>

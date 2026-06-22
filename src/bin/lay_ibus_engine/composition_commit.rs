@@ -11,6 +11,7 @@ pub(super) struct ActiveCompositionCommit {
     with_space: bool,
     suffix: String,
     sync_layout: bool,
+    autocorrect: bool,
 }
 
 impl ActiveCompositionCommit {
@@ -19,6 +20,7 @@ impl ActiveCompositionCommit {
             with_space: false,
             suffix: String::new(),
             sync_layout: false,
+            autocorrect: false,
         }
     }
 
@@ -27,6 +29,7 @@ impl ActiveCompositionCommit {
             with_space: true,
             suffix: String::new(),
             sync_layout: true,
+            autocorrect: true,
         }
     }
 
@@ -35,6 +38,7 @@ impl ActiveCompositionCommit {
             with_space,
             suffix,
             sync_layout: false,
+            autocorrect: false,
         }
     }
 }
@@ -50,6 +54,7 @@ impl LayIbusEngine {
             request.with_space,
             &request.suffix,
             request.sync_layout,
+            request.autocorrect,
         )
         .await
     }
@@ -63,14 +68,11 @@ impl LayIbusEngine {
             if self.accept_stuck_tail(emitter, with_space).await? {
                 return Ok(true);
             }
-            if with_space {
-                return self.autocorrect_committed_tail_space(emitter).await;
-            }
             return Ok(false);
         }
 
         let suffix = self.selected_visible_completion_suffix();
-        if suffix.is_empty() && !with_space {
+        if suffix.is_empty() {
             return Ok(false);
         }
 
@@ -124,6 +126,7 @@ impl LayIbusEngine {
         with_space: bool,
         suffix: &str,
         sync_layout: bool,
+        autocorrect: bool,
     ) -> fdo::Result<()> {
         let started_at = Instant::now();
         let clear_started_at = Instant::now();
@@ -136,7 +139,7 @@ impl LayIbusEngine {
             text.push(' ');
         }
         let decision_started_at = Instant::now();
-        let text = if with_space {
+        let text = if autocorrect {
             self.autocorrect_active_composition_text(&text)
                 .unwrap_or(text)
         } else {
@@ -253,6 +256,18 @@ mod tests {
                 .as_deref(),
             Some("nanda ")
         );
+    }
+
+    #[test]
+    fn completion_with_space_does_not_trigger_autocorrect() {
+        let completion = super::ActiveCompositionCommit::with_completion("ерка".to_string(), true);
+        assert!(completion.with_space);
+        assert_eq!(completion.suffix, "ерка");
+        assert!(!completion.autocorrect);
+
+        let real_space = super::ActiveCompositionCommit::with_space();
+        assert!(real_space.with_space);
+        assert!(real_space.autocorrect);
     }
 
     #[test]

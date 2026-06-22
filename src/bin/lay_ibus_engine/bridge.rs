@@ -39,6 +39,11 @@ impl LayImeBridge {
         self.input_state_inner().await
     }
 
+    #[zbus(name = "VisibleTailV1")]
+    async fn visible_tail_v1(&self) -> fdo::Result<(String, String, bool)> {
+        self.visible_tail_v1_inner().await
+    }
+
     #[zbus(name = "SuppressNextAutocorrect")]
     async fn suppress_next_autocorrect(&self) -> fdo::Result<bool> {
         self.suppress_next_autocorrect_inner().await

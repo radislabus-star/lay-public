@@ -1,12 +1,11 @@
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
-use super::engine::{LayIbusEngine, PendingSpaceCommittedTailReplace};
+use super::engine::LayIbusEngine;
 use super::state::CommittedTailReplaceRequest;
 use super::text::make_ibus_text;
 use super::trace;
 use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
-use std::time::Instant;
 
 impl LayIbusEngine {
     pub(super) async fn accept_stuck_tail(
@@ -70,34 +69,6 @@ impl LayIbusEngine {
             recover_missing_initial: true,
             preserve_trailing_whitespace: true,
         })
-    }
-
-    pub(super) async fn autocorrect_committed_tail_space(
-        &mut self,
-        _emitter: &SignalEmitter<'_>,
-    ) -> fdo::Result<bool> {
-        if !self.prepare_committed_tail_space_autocorrect() {
-            return Ok(false);
-        }
-        Ok(true)
-    }
-
-    pub(super) fn prepare_committed_tail_space_autocorrect(&mut self) -> bool {
-        if self.take_manual_toggle_autocorrect_suppression() {
-            return false;
-        }
-        let started_at = Instant::now();
-        let Some((backspaces, replacement)) = self.committed_tail_boundary_replacement(true) else {
-            return false;
-        };
-        let original = self.last_tail_token_text();
-        self.pending_space_committed_tail_replace = Some(PendingSpaceCommittedTailReplace {
-            backspaces,
-            replacement,
-            original,
-            started_at,
-        });
-        true
     }
 
     pub(super) async fn apply_pending_committed_tail_space_autocorrect(

@@ -33,6 +33,32 @@ impl LayImeBridge {
         Ok(state.to_string())
     }
 
+    pub(super) async fn visible_tail_v1_inner(&self) -> fdo::Result<(String, String, bool)> {
+        let Some(path) = self.active_path() else {
+            return Ok(("passive:no-focus".to_string(), String::new(), false));
+        };
+        let iface_ref = self
+            .ibus_connection
+            .object_server()
+            .interface::<_, LayIbusEngine>(path.as_str())
+            .await
+            .map_err(|error| fdo::Error::Failed(error.to_string()))?;
+        let mut engine = iface_ref.get_mut().await;
+        engine.refresh_empty_tail_from_handoff();
+        let (state, text) = match engine.manual_toggle_authority() {
+            ManualToggleAuthority::ImeActiveComposition => {
+                ("active:composition", engine.buffer.clone())
+            }
+            ManualToggleAuthority::ImeCommittedTail => {
+                ("passive:committed-tail", engine.tail_buffer.clone())
+            }
+            ManualToggleAuthority::DaemonWordBuffer => {
+                ("passive:daemon-word-buffer", String::new())
+            }
+        };
+        Ok((state.to_string(), text, engine.layout_is_ru))
+    }
+
     pub(super) async fn owns_active_text_inner(&self) -> fdo::Result<bool> {
         let Some(path) = self.active_path() else {
             return Ok(false);
