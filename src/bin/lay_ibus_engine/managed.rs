@@ -65,6 +65,7 @@ impl LayIbusEngine {
         }
         if keyval == KEY_SPACE {
             if self.buffer.is_empty() {
+                self.prepare_committed_tail_space_autocorrect();
                 self.push_tail_char(' ');
                 self.update_precognition_preedit(emitter).await?;
                 self.trace_key("space_passthrough", keyval, keycode, false, Some(' '));

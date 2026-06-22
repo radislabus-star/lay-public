@@ -17,18 +17,18 @@ impl LayIbusEngine {
         if self.tail_buffer.trim().is_empty() {
             return Ok(false);
         }
-        let text = self.selected_visible_completion_suffix();
+        let mut text = self.selected_visible_completion_suffix();
         if text.is_empty() {
             return Ok(false);
+        }
+        if with_space {
+            text.push(' ');
         }
         self.clear_preedit(emitter).await?;
         Self::commit_text(emitter, make_ibus_text(text.clone()))
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         self.sync_tail_after_stuck_completion(&text);
-        if with_space {
-            self.commit_completion_space(emitter).await?;
-        }
         Ok(true)
     }
 
@@ -70,16 +70,6 @@ impl LayIbusEngine {
             recover_missing_initial: true,
             preserve_trailing_whitespace: true,
         })
-    }
-
-    pub(super) async fn autocorrect_committed_tail_space(
-        &mut self,
-        _emitter: &SignalEmitter<'_>,
-    ) -> fdo::Result<bool> {
-        if !self.prepare_committed_tail_space_autocorrect() {
-            return Ok(false);
-        }
-        Ok(true)
     }
 
     pub(super) fn prepare_committed_tail_space_autocorrect(&mut self) -> bool {
