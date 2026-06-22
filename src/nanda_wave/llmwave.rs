@@ -9,6 +9,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use super::feedback::{FeedbackAdjustment, L3Feedback};
 use super::options::WaveOptions;
 use super::signal::{LayerTrace, WordCandidate};
+use crate::russian_chars::is_russian_vowel;
 
 pub const LLMWAVE_CELL: &str = "LLMWaveCell32";
 pub const LLMWAVE_RECORD_BYTES: usize = 32;
@@ -62,6 +63,29 @@ pub struct LlmWavePhraseExperience {
     pub stage: String,
     pub text: String,
     pub tokens: usize,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum PhraseExperienceRejectReason {
+    UnsupportedStage,
+    UnsafeText,
+    TokenCount,
+    DirtyLayout,
+    LowLanguageQuality,
+    UnstableOrNoisy,
+}
+
+impl PhraseExperienceRejectReason {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::UnsupportedStage => "unsupported_stage",
+            Self::UnsafeText => "unsafe_text",
+            Self::TokenCount => "token_count",
+            Self::DirtyLayout => "dirty_layout",
+            Self::LowLanguageQuality => "low_language_quality",
+            Self::UnstableOrNoisy => "unstable_or_noisy",
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -392,16 +416,39 @@ pub fn load_phrase_experience(path: &Path) -> io::Result<Vec<LlmWavePhraseExperi
     Ok(records)
 }
 
+pub fn phrase_experience_rejection_reason(
+    stage: &str,
+    text: &str,
+) -> Option<PhraseExperienceRejectReason> {
+    build_phrase_experience(stage, text).err()
+}
+
 fn phrase_experience(stage: &str, text: &str) -> Option<LlmWavePhraseExperience> {
+    build_phrase_experience(stage, text).ok()
+}
+
+fn build_phrase_experience(
+    stage: &str,
+    text: &str,
+) -> Result<LlmWavePhraseExperience, PhraseExperienceRejectReason> {
     if stage != "space" && stage != "enter" {
-        return None;
+        return Err(PhraseExperienceRejectReason::UnsupportedStage);
     }
     let normalized = normalize_experience_text(text)?;
     let tokens = tokenize(&normalized);
     if !(MIN_EXPERIENCE_TOKENS..=MAX_EXPERIENCE_TOKENS).contains(&tokens.len()) {
-        return None;
+        return Err(PhraseExperienceRejectReason::TokenCount);
     }
-    Some(LlmWavePhraseExperience {
+    if has_dirty_layout_fragment(&normalized, &tokens) {
+        return Err(PhraseExperienceRejectReason::DirtyLayout);
+    }
+    if has_low_language_quality(&normalized, &tokens) {
+        return Err(PhraseExperienceRejectReason::LowLanguageQuality);
+    }
+    if is_unstable_or_noisy_phrase(&normalized) {
+        return Err(PhraseExperienceRejectReason::UnstableOrNoisy);
+    }
+    Ok(LlmWavePhraseExperience {
         kind: "llmwave_phrase_experience_v1".to_string(),
         ts: unix_now(),
         stage: stage.to_string(),
@@ -410,7 +457,7 @@ fn phrase_experience(stage: &str, text: &str) -> Option<LlmWavePhraseExperience>
     })
 }
 
-fn normalize_experience_text(text: &str) -> Option<String> {
+fn normalize_experience_text(text: &str) -> Result<String, PhraseExperienceRejectReason> {
     let text = text.split_whitespace().collect::<Vec<_>>().join(" ");
     if text.is_empty()
         || text.contains("://")
@@ -418,17 +465,169 @@ fn normalize_experience_text(text: &str) -> Option<String> {
         || text.contains('=')
         || text.chars().any(|ch| ch.is_control())
         || text
+            .chars()
+            .next()
+            .is_some_and(|ch| ch.is_ascii_punctuation() || matches!(ch, '…'))
+        || text
             .split_whitespace()
             .any(|token| token.starts_with('-') && token.chars().count() > 1)
     {
-        return None;
+        return Err(PhraseExperienceRejectReason::UnsafeText);
     }
     let alpha = text.chars().filter(|ch| ch.is_alphabetic()).count();
     let total = text.chars().filter(|ch| !ch.is_whitespace()).count().max(1);
     if alpha * 2 < total {
-        return None;
+        return Err(PhraseExperienceRejectReason::LowLanguageQuality);
     }
-    Some(text)
+    Ok(text)
+}
+
+fn has_dirty_layout_fragment(text: &str, tokens: &[String]) -> bool {
+    let has_cyrillic = text.chars().any(is_cyrillic_letter);
+    let dirty_tokens = tokens
+        .iter()
+        .filter(|token| looks_like_layout_garbage_token(token))
+        .count();
+    (has_cyrillic && dirty_tokens > 0) || dirty_tokens >= 2
+}
+
+fn looks_like_layout_garbage_token(token: &str) -> bool {
+    if token.chars().count() < 5 || !token.chars().all(|ch| ch.is_ascii_alphabetic()) {
+        return false;
+    }
+    let lower = token.to_ascii_lowercase();
+    if crate::lexicon::is_common_en_technical_word(&lower)
+        || crate::word_recognizer::is_ascii_technical_or_brand_token(token)
+    {
+        return false;
+    }
+    let converted = crate::dict::convert(token, crate::dict::Direction::Us2Ru);
+    converted != token
+        && converted
+            .chars()
+            .all(|ch| is_cyrillic_letter(ch) || ch == 'ё')
+        && converted.chars().filter(|ch| is_russian_vowel(*ch)).count() >= 2
+}
+
+fn has_low_language_quality(text: &str, tokens: &[String]) -> bool {
+    let alpha = text.chars().filter(|ch| ch.is_alphabetic()).count();
+    let cyrillic = text.chars().filter(|ch| is_cyrillic_letter(*ch)).count();
+    let ascii = text.chars().filter(|ch| ch.is_ascii_alphabetic()).count();
+    if cyrillic > 0 && ascii > 0 && ascii > cyrillic * 2 {
+        return true;
+    }
+    alpha == 0
+        || ends_with_unfinished_short_word(tokens)
+        || tokens.iter().any(|token| has_repeated_letter_run(token, 4))
+        || tokens
+            .iter()
+            .any(|token| looks_like_unstable_unknown_russian_token(token))
+}
+
+fn is_unstable_or_noisy_phrase(text: &str) -> bool {
+    let mut prev = '\0';
+    let mut run = 0_usize;
+    for ch in text.chars() {
+        if matches!(ch, '!' | '?' | '.' | ',' | ';' | ':') && ch == prev {
+            run += 1;
+            if run >= 3 {
+                return true;
+            }
+        } else {
+            prev = ch;
+            run = 1;
+        }
+    }
+    let shouting_tokens = text
+        .split_whitespace()
+        .filter(|token| {
+            let letters = token.chars().filter(|ch| ch.is_alphabetic()).count();
+            letters >= 2 && token.chars().filter(|ch| ch.is_uppercase()).count() == letters
+        })
+        .count();
+    shouting_tokens >= 2
+        || text.split_whitespace().any(|token| {
+            let letters = token.chars().filter(|ch| ch.is_alphabetic()).count();
+            letters >= 3 && token.chars().filter(|ch| ch.is_uppercase()).count() == letters
+        })
+}
+
+fn has_repeated_letter_run(token: &str, limit: usize) -> bool {
+    let mut prev = '\0';
+    let mut run = 0_usize;
+    for ch in token.chars() {
+        if ch == prev {
+            run += 1;
+            if run >= limit {
+                return true;
+            }
+        } else {
+            prev = ch;
+            run = 1;
+        }
+    }
+    false
+}
+
+fn looks_like_unstable_unknown_russian_token(token: &str) -> bool {
+    if token.chars().count() < 6 || !token.chars().all(is_cyrillic_letter) {
+        return false;
+    }
+    if is_known_russian_learning_token(token) {
+        return false;
+    }
+    has_unstable_russian_vowel_bridge(token)
+        || has_repeated_vowel(token)
+        || looks_like_single_letter_glue_to_known_word(token)
+        || crate::ru_typo::has_plausible_russian_typo_candidate(&token.to_lowercase())
+}
+
+fn is_known_russian_learning_token(token: &str) -> bool {
+    let lower = token.to_lowercase();
+    crate::lexicon::is_common_ru_word(&lower)
+        || crate::russian_lexicon::russian_tiny_dictionary().contains(&lower)
+        || crate::russian_lexicon::is_known_russian_word_or_form(&lower)
+}
+
+fn ends_with_unfinished_short_word(tokens: &[String]) -> bool {
+    tokens.last().is_some_and(|token| {
+        let len = token.chars().count();
+        (1..=2).contains(&len) && token.chars().all(is_cyrillic_letter)
+    })
+}
+
+fn looks_like_single_letter_glue_to_known_word(token: &str) -> bool {
+    let mut chars = token.chars();
+    let Some(first) = chars.next() else {
+        return false;
+    };
+    if !is_cyrillic_letter(first) {
+        return false;
+    }
+    let rest = chars.collect::<String>();
+    rest.chars().count() >= 4 && is_known_russian_learning_token(&rest)
+}
+
+fn has_unstable_russian_vowel_bridge(token: &str) -> bool {
+    let lower = token.to_lowercase();
+    ["аей", "еей", "оей", "уей", "ыей", "эей", "яей", "уюю"]
+        .iter()
+        .any(|needle| lower.contains(needle))
+}
+
+fn has_repeated_vowel(token: &str) -> bool {
+    let mut prev = '\0';
+    for ch in token.chars().flat_map(char::to_lowercase) {
+        if ch == prev && is_russian_vowel(ch) {
+            return true;
+        }
+        prev = ch;
+    }
+    false
+}
+
+fn is_cyrillic_letter(ch: char) -> bool {
+    matches!(ch, 'а'..='я' | 'А'..='Я' | 'ё' | 'Ё')
 }
 
 pub fn encode_memory(memory: &LlmWaveMemory) -> Vec<u8> {
@@ -955,5 +1154,52 @@ mod tests {
         assert!(loaded.contains("я хочу проверить режим"));
         assert!(loaded.contains("на улице опять идёт дождь"));
         assert!(!loaded.contains("not-json"));
+    }
+
+    #[test]
+    fn phrase_experience_rejects_dirty_live_layout_fragments() {
+        assert_eq!(
+            phrase_experience_rejection_reason("space", "cjnhblybwf прислала скриншот"),
+            Some(PhraseExperienceRejectReason::DirtyLayout)
+        );
+        assert_eq!(
+            phrase_experience_rejection_reason("space", "ghbdtn lfdfq тут"),
+            Some(PhraseExperienceRejectReason::DirtyLayout)
+        );
+        assert_eq!(
+            phrase_experience_rejection_reason("space", ", он уже там"),
+            Some(PhraseExperienceRejectReason::UnsafeText)
+        );
+        assert_eq!(
+            phrase_experience_rejection_reason("space", "ОПА А тут"),
+            Some(PhraseExperienceRejectReason::UnstableOrNoisy)
+        );
+        assert_eq!(
+            phrase_experience_rejection_reason("space", "Вообще делаей проект рефакторинга"),
+            Some(PhraseExperienceRejectReason::LowLanguageQuality)
+        );
+        assert_eq!(
+            phrase_experience_rejection_reason("space", "Да короче он аможет любые"),
+            Some(PhraseExperienceRejectReason::LowLanguageQuality)
+        );
+        assert_eq!(
+            phrase_experience_rejection_reason("space", "читай что в"),
+            Some(PhraseExperienceRejectReason::LowLanguageQuality)
+        );
+        assert_eq!(
+            phrase_experience_rejection_reason("space", "Давай ей написаем чт"),
+            Some(PhraseExperienceRejectReason::LowLanguageQuality)
+        );
+        assert_eq!(
+            phrase_experience_rejection_reason("space", "Давай ей написем ответ"),
+            Some(PhraseExperienceRejectReason::LowLanguageQuality)
+        );
+    }
+
+    #[test]
+    fn phrase_experience_keeps_mixed_technical_phrases() {
+        assert!(phrase_experience("space", "html api работает").is_some());
+        assert!(phrase_experience("space", "file тоже хорошо").is_some());
+        assert!(phrase_experience("space", "Вообще делай проект рефакторинга").is_some());
     }
 }

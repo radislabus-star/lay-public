@@ -208,6 +208,9 @@ fn print_llmwave_learning_report(seed: &str, limit: usize) -> io::Result<()> {
     let seed_text = std::fs::read_to_string(seed).unwrap_or_default();
     let seed_memory = llmwave::LlmWaveMemory::from_text(&seed_text);
     let live_path = llmwave::default_phrase_experience_path();
+    let live_quality = live_path
+        .as_ref()
+        .and_then(|path| live_phrase_quality_counts(path).ok());
     let live_records = live_path
         .as_ref()
         .and_then(|path| llmwave::load_phrase_experience(path).ok())
@@ -241,9 +244,44 @@ fn print_llmwave_learning_report(seed: &str, limit: usize) -> io::Result<()> {
         live_records.len(),
         live_counts.len()
     );
+    if let Some((accepted, rejected)) = live_quality {
+        println!(
+            "  live_quality: accepted={} rejected={}",
+            accepted,
+            rejected.values().sum::<usize>()
+        );
+        if !rejected.is_empty() {
+            println!("  rejected:");
+            for (reason, count) in rejected {
+                println!("    {reason}={count}");
+            }
+        }
+    }
     print_live_phrase_counts(&live_counts, limit);
     print_prediction_deltas(&seed_memory, &combined_memory, live_counts.keys(), limit);
     Ok(())
+}
+
+fn live_phrase_quality_counts(
+    path: &std::path::Path,
+) -> io::Result<(usize, BTreeMap<String, usize>)> {
+    let text = std::fs::read_to_string(path)?;
+    let mut accepted = 0_usize;
+    let mut rejected = BTreeMap::<String, usize>::new();
+    for line in text.lines().filter(|line| !line.trim().is_empty()) {
+        let Ok(record) = serde_json::from_str::<llmwave::LlmWavePhraseExperience>(line) else {
+            *rejected.entry("invalid_json".to_string()).or_default() += 1;
+            continue;
+        };
+        if let Some(reason) =
+            llmwave::phrase_experience_rejection_reason(&record.stage, &record.text)
+        {
+            *rejected.entry(reason.as_str().to_string()).or_default() += 1;
+        } else {
+            accepted += 1;
+        }
+    }
+    Ok((accepted, rejected))
 }
 
 fn print_live_phrase_counts(live_counts: &BTreeMap<String, usize>, limit: usize) {
