@@ -2,6 +2,9 @@
 set -euo pipefail
 
 CONFIG_PATH="${XDG_CONFIG_HOME:-$HOME/.config}/lay/config.json"
+LAY_DBUS_DEST="org.gnome.Shell"
+LAY_DBUS_PATH="/io/github/radislabus_star/LayDaemon"
+LAY_DBUS_IFACE="io.github.radislabus_star.LayDaemon"
 
 text_backend() {
     python3 - "$CONFIG_PATH" <<'PY'
@@ -21,12 +24,61 @@ select_xkb() {
         || true
 }
 
+activate_gnome_layout() {
+    local layout="${1:?layout required}"
+    timeout 2s gdbus call \
+        --session \
+        --dest "$LAY_DBUS_DEST" \
+        --object-path "$LAY_DBUS_PATH" \
+        --method "$LAY_DBUS_IFACE.ActivateLayout" \
+        "$layout" >/dev/null
+}
+
+current_gnome_layout() {
+    timeout 2s gdbus call \
+        --session \
+        --dest "$LAY_DBUS_DEST" \
+        --object-path "$LAY_DBUS_PATH" \
+        --method "$LAY_DBUS_IFACE.CurrentLayout" \
+        2>/dev/null \
+        | sed -n "s/^('\\(.*\\)',)$/\\1/p"
+}
+
+sync_ibus_engine() {
+    local layout="${1:?layout required}"
+    local attempt
+    for attempt in 1 2 3 4 5; do
+        if timeout 2s ibus engine "$layout" >/dev/null 2>&1; then
+            local engine
+            engine="$(timeout 1s ibus engine 2>/dev/null || true)"
+            if [ "$engine" = "$layout" ]; then
+                return 0
+            fi
+        fi
+        sleep 0.15
+    done
+    return 1
+}
+
+select_lay_ime() {
+    local layout="${1:?layout required}"
+    if activate_gnome_layout "$layout"; then
+        sync_ibus_engine "$layout" || true
+        local current engine
+        current="$(current_gnome_layout || true)"
+        engine="$(timeout 1s ibus engine 2>/dev/null || true)"
+        if [ "$current" = "$layout" ] && [ "$engine" = "$layout" ]; then
+            return 0
+        fi
+    fi
+    sync_ibus_engine "$layout"
+}
+
 start_ime() {
     systemctl --user stop lay-ibus-engine.service >/dev/null 2>&1 || true
     pkill -x lay-ibus-engine || true
-    timeout 2s ibus engine lay-ime-ru \
-        || timeout 2s ibus engine lay-ime-ru \
-        || timeout 2s ibus engine lay-ime-us \
+    select_lay_ime lay-ime-ru \
+        || select_lay_ime lay-ime-us \
         || true
 }
 
@@ -75,6 +127,8 @@ case "${1:-status}" in
         systemctl --user is-active lay-daemon.service || true
         printf 'ime_processes='
         pgrep -c -x lay-ibus-engine || true
+        printf 'gnome_layout='
+        current_gnome_layout || true
         printf 'ibus_engine='
         timeout 1s ibus engine || true
         ;;
