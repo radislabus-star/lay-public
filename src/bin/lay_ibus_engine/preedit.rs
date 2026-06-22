@@ -255,6 +255,12 @@ impl LayIbusEngine {
         let total_started = timing_enabled.then(Instant::now);
         let mut candidates = Vec::with_capacity(16);
 
+        let semantic_started = timing_enabled.then(Instant::now);
+        for suffix in self.semantic_phrase_suffixes() {
+            push_unique_suffix(&mut candidates, Some(suffix));
+        }
+        let semantic_us = elapsed_us(semantic_started);
+
         let ascii_started = timing_enabled.then(Instant::now);
         for suffix in self.preedit_fast.ascii_suffixes(
             self.precognition_max_suffix_chars(),
@@ -269,12 +275,6 @@ impl LayIbusEngine {
             push_unique_suffix(&mut candidates, Some(suffix));
         }
         let ru_us = elapsed_us(ru_started);
-
-        let semantic_started = timing_enabled.then(Instant::now);
-        for suffix in self.semantic_phrase_suffixes() {
-            push_unique_suffix(&mut candidates, Some(suffix));
-        }
-        let semantic_us = elapsed_us(semantic_started);
 
         if let Some(started) = total_started {
             trace::record_precognition_timing(
@@ -893,6 +893,33 @@ mod tests {
         assert!(
             suffixes.iter().any(|suffix| suffix == "лов"),
             "expected L3 suffix to survive started next word, got {:?}",
+            suffixes
+        );
+    }
+
+    #[test]
+    fn experimental_precognition_uses_sentence_context_for_word_ending() {
+        let engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        let memory = lay::nanda_wave::llmwave::LlmWaveMemory::from_text(
+            "я хочу проверить подсказки\nя хочу проверить ввод",
+        );
+
+        let suffixes = engine.llmwave_phrase_suffixes_from_memory("я хочу пров", &memory);
+
+        assert!(
+            suffixes.iter().any(|suffix| suffix == "ерить"),
+            "expected sentence-aware word ending, got {:?}",
             suffixes
         );
     }
