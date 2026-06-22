@@ -17,18 +17,18 @@ impl LayIbusEngine {
         if self.tail_buffer.trim().is_empty() {
             return Ok(false);
         }
-        let mut text = self.selected_visible_completion_suffix();
+        let text = self.selected_visible_completion_suffix();
         if text.is_empty() {
             return Ok(false);
-        }
-        if with_space {
-            text.push(' ');
         }
         self.clear_preedit(emitter).await?;
         Self::commit_text(emitter, make_ibus_text(text.clone()))
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         self.sync_tail_after_stuck_completion(&text);
+        if with_space {
+            self.commit_completion_space(emitter).await?;
+        }
         Ok(true)
     }
 
