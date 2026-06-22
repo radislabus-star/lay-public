@@ -75,6 +75,9 @@ impl LayIbusEngine {
         &mut self,
         emitter: &SignalEmitter<'_>,
     ) -> fdo::Result<bool> {
+        if self.take_manual_toggle_autocorrect_suppression() {
+            return Ok(false);
+        }
         let Some(pending) = self.pending_space_committed_tail_replace.take() else {
             return Ok(false);
         };
@@ -218,6 +221,35 @@ mod tests {
             engine.committed_tail_boundary_replacement(true),
             Some((11, "автозамена ".to_string()))
         );
+    }
+
+    #[test]
+    fn space_boundary_case_autocorrect_replaces_whole_token() {
+        let mut engine = engine();
+        for ch in "АВТОзамена".chars() {
+            engine.push_tail_char(ch);
+        }
+
+        assert_eq!(
+            engine.committed_tail_boundary_replacement(true),
+            Some((10, "Автозамена ".to_string()))
+        );
+    }
+
+    #[test]
+    fn space_boundary_autocorrect_respects_daemon_bridge_suppression() {
+        let mut engine = engine();
+        engine.suppress_next_committed_tail_autocorrect = true;
+        engine.pending_space_committed_tail_replace =
+            Some(super::super::engine::PendingSpaceCommittedTailReplace {
+                original: "АВТОзамена".to_string(),
+                replacement: "Автозамена ".to_string(),
+                backspaces: 10,
+                started_at: std::time::Instant::now(),
+            });
+
+        assert!(engine.take_manual_toggle_autocorrect_suppression());
+        assert!(!engine.take_manual_toggle_autocorrect_suppression());
     }
 
     #[test]

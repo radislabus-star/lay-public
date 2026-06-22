@@ -1,7 +1,8 @@
 use std::time::Instant;
 
 use super::super::super::{
-    layout_switch_policy, log, should_try_ime_text_backend, try_ime_replace_tail,
+    active_auto_switch_layout, layout_switch_policy, log, should_try_ime_text_backend,
+    switch_or_restore_layout_after_text_edit, try_ime_replace_tail,
 };
 use super::super::TypingAssistOutcome;
 use super::memory::TypingAssistTiming;
@@ -13,10 +14,13 @@ mod context;
 mod forward;
 #[path = "ime/remember.rs"]
 mod remember;
+#[path = "ime/timing.rs"]
+mod timing_profile;
 
 pub(crate) use context::ImeTypingReplacementContext;
 use forward::{forward_after_ime_replace, trailing_space_count};
 use remember::remember_ime_typing_correction;
+use timing_profile::record_ime_timing;
 
 pub(crate) fn try_apply_ime_replacement(
     ctx: ImeTypingReplacementContext<'_, '_, '_>,
@@ -42,7 +46,15 @@ pub(crate) fn try_apply_ime_replacement(
 
     let target_layout = layout_switch_policy::target_layout_for_replacement(replacement, true);
     let layout_started = Instant::now();
-    log("  typing-assist layout handled by IME engine");
+    let force_target_layout =
+        layout_switch_policy::force_target_layout_for_replacement(original, replacement);
+    switch_or_restore_layout_after_text_edit(
+        active_auto_switch_layout() || force_target_layout,
+        target_layout,
+        None,
+        "typing-assist",
+        false,
+    );
     let layout_ms = layout_started.elapsed().as_millis();
     let remember_started = Instant::now();
     remember_ime_typing_correction(buf, events, original, replacement, rule_id, timing);
@@ -56,19 +68,7 @@ pub(crate) fn try_apply_ime_replacement(
         trailing_space_count(replacement),
     );
     let forward_ms = forward_started.elapsed().as_millis();
-    lay::action_log::record_timing_profile(
-        "typing-assist",
-        "daemon-ime",
-        &[
-            ("decision", timing.decision_ms),
-            ("ime_replace_tail_call", replace_tail_ms),
-            ("layout", layout_ms),
-            ("layout_ime_internal", 1),
-            ("remember", remember_ms),
-            ("forward", forward_ms),
-            ("total", timing.started_at.elapsed().as_millis()),
-        ],
-    );
+    record_ime_timing(timing, replace_tail_ms, layout_ms, remember_ms, forward_ms);
     log(&format!(
         "✓ done: помощь при наборе {:?} → {:?} через IME за {}ms",
         original,

@@ -1,7 +1,13 @@
 pub(crate) fn should_suppress_next_autocorrect(kind: &str) -> bool {
     matches!(
         kind,
-        "layout-replay" | "smart-text" | "auto-replace" | "ime-replay" | "auto-undo"
+        "layout-replay"
+            | "smart-text"
+            | "auto-replace"
+            | "ime-replay"
+            | "auto-undo"
+            | "typing-assist"
+            | "enter-autocorrect"
     )
 }
 
@@ -21,9 +27,9 @@ mod tests {
     }
 
     #[test]
-    fn boundary_autocorrect_kinds_do_not_suppress_themselves() {
+    fn daemon_boundary_autocorrect_kinds_suppress_inner_ime_repeat() {
         for kind in ["typing-assist", "enter-autocorrect"] {
-            assert!(!super::should_suppress_next_autocorrect(kind), "{kind}");
+            assert!(super::should_suppress_next_autocorrect(kind), "{kind}");
         }
     }
 }
