@@ -29,11 +29,7 @@ pub(super) fn read_current_layout_is_ru() -> Result<bool, String> {
 }
 
 fn read_current_layout_gnome_is_ru() -> Result<bool, String> {
-    if active_text_backend().should_try_ime() {
-        read_current_ibus_layout_is_ru().or_else(|_| read_current_gnome_shell_layout_is_ru())
-    } else {
-        read_current_gnome_shell_layout_is_ru().or_else(|_| read_current_ibus_layout_is_ru())
-    }
+    read_current_gnome_shell_layout_is_ru().or_else(|_| read_current_ibus_layout_is_ru())
 }
 
 fn read_current_gnome_shell_layout_is_ru() -> Result<bool, String> {

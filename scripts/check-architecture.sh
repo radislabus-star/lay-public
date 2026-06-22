@@ -406,6 +406,10 @@ assert_no_import src/bin/lay_daemon.rs \
   "LayConfig" \
   "lay-daemon root must not own config access or startup loading; use config_runtime/startup_runtime"
 
+assert_no_import extension/lay@radislabus-star.github.io/dbus_service.js \
+  "Gio.Subprocess.new(['ibus'" \
+  "GNOME DBus service must not spawn ibus; use IBus.Bus or daemon layout controller"
+
 assert_no_import src/llm.rs \
   "ureq::" \
   "llm.rs must stay a deterministic arbiter facade; model transport belongs in llm_backend"

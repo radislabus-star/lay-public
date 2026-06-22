@@ -1177,7 +1177,7 @@ class LayIndicator extends PanelMenu.Button {
 
     _refreshLayout() {
         try {
-            const isRu = this._mgr.currentSource?.id === 'ru';
+            const isRu = currentLayoutKind() === 'ru';
             this._label.text = isRu ? 'RU' : 'EN';
         } catch(e) { this._label.text = '--'; }
     }
