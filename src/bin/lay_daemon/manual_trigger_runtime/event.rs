@@ -8,9 +8,7 @@ use super::context::ManualTriggerEventContext;
 use super::fire::{fire_configured_manual_trigger, fire_scoped_manual_trigger};
 
 pub(crate) fn handle_manual_trigger_event(mut ctx: ManualTriggerEventContext<'_>) -> bool {
-    if !ctx.is_single_trigger
-        && (ctx.key == KeyCode::KEY_RIGHTSHIFT || ctx.key == KeyCode::KEY_RIGHTALT)
-    {
+    if ignored_side_trigger_key(&ctx) {
         return true;
     }
 
@@ -91,14 +89,7 @@ fn handle_double_or_multi_tap_event(ctx: &mut ManualTriggerEventContext<'_>) -> 
     }
 
     let now = Instant::now();
-    if ctx.multi_tap_scope
-        && ctx.pending_multi_tap.is_some()
-        && ctx.value == 1
-        && ctx
-            .pending_multi_tap
-            .as_ref()
-            .is_some_and(|pending| now.duration_since(pending.last_release) <= ctx.shift_window)
-    {
+    if pending_multi_tap_can_continue(ctx, now) {
         *ctx.dshift_state = DShiftState::AdditionalPress { pressed_at: now };
         if ctx.verbose {
             log("· FSM: multi-tap waiting → AdditionalPress");
@@ -230,6 +221,19 @@ fn handle_additional_multi_tap_release(
     } else {
         *ctx.dshift_state = DShiftState::Idle;
     }
+}
+
+fn ignored_side_trigger_key(ctx: &ManualTriggerEventContext<'_>) -> bool {
+    !ctx.is_single_trigger && matches!(ctx.key, KeyCode::KEY_RIGHTSHIFT | KeyCode::KEY_RIGHTALT)
+}
+
+fn pending_multi_tap_can_continue(ctx: &ManualTriggerEventContext<'_>, now: Instant) -> bool {
+    ctx.multi_tap_scope
+        && ctx.value == 1
+        && ctx
+            .pending_multi_tap
+            .as_ref()
+            .is_some_and(|pending| now.duration_since(pending.last_release) <= ctx.shift_window)
 }
 
 fn cancel_pending_manual_trigger_on_other_key(ctx: &mut ManualTriggerEventContext<'_>) {
