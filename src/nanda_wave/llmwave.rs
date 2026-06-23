@@ -46,6 +46,20 @@ pub struct LlmWaveCandidateScore {
     pub text: String,
     pub score: f32,
     pub support: usize,
+    pub width: usize,
+    pub likelihood: f32,
+    pub prior: f32,
+    pub phase_coherence: f32,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct LlmWaveNextTokenScore {
+    pub score: f32,
+    pub support: usize,
+    pub width: usize,
+    pub likelihood: f32,
+    pub prior: f32,
+    pub phase_coherence: f32,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -197,24 +211,79 @@ impl LlmWaveMemory {
     }
 
     pub fn score_next_token(&self, prefix_tokens: &[String], next_token: &str) -> (f32, usize) {
+        self.score_next_token_report(prefix_tokens, next_token)
+            .map(|score| (score.score, score.support))
+            .unwrap_or((0.0, 0))
+    }
+
+    pub fn score_next_token_report(
+        &self,
+        prefix_tokens: &[String],
+        next_token: &str,
+    ) -> Option<LlmWaveNextTokenScore> {
         if prefix_tokens.is_empty() {
-            return (0.0, 0);
+            return None;
         }
-        let prefix = prefix_hash(prefix_tokens);
         let token = token_hash(prefix_tokens.last().map(String::as_str).unwrap_or_default());
         let next = token_hash(next_token);
-        let mut support = 0_usize;
-        let mut energy = 0.0_f32;
-        for record in self.records.iter().filter(|record| {
-            record.prefix_hash == prefix && record.token_hash == token && record.next_hash == next
-        }) {
-            support += 1;
-            let accepted = f32::from(record.accepted);
-            let rejected = f32::from(record.rejected);
-            let trust = (accepted + 1.0) / (accepted + rejected + 2.0);
-            energy += (f32::from(record.strength.max(0)) / 1024.0).clamp(0.0, 1.0) * trust;
+        let prior = self.next_token_prior(next);
+        for width in (1..=3.min(prefix_tokens.len())).rev() {
+            let start = prefix_tokens.len() - width;
+            let prefix = prefix_hash(&prefix_tokens[start..]);
+            let mut total_energy = 0.0_f32;
+            let mut hit_energy = 0.0_f32;
+            let mut support = 0_usize;
+            let mut phase_sum = 0.0_f32;
+            for record in self
+                .records
+                .iter()
+                .filter(|record| record.prefix_hash == prefix && record.token_hash == token)
+            {
+                let energy = record_energy(record);
+                total_energy += energy;
+                if record.next_hash == next {
+                    hit_energy += energy;
+                    support += 1;
+                    phase_sum += phase_coherence(record.phase);
+                }
+            }
+            if support == 0 || total_energy <= f32::EPSILON {
+                continue;
+            }
+            let likelihood = (hit_energy / total_energy).clamp(0.0, 1.0);
+            let phase_coherence = (phase_sum / support as f32).clamp(0.0, 1.0);
+            let width_confidence = width as f32 / 3.0;
+            let score = (likelihood * 0.64
+                + prior * 0.16
+                + phase_coherence * 0.10
+                + width_confidence * 0.10)
+                .clamp(0.0, 1.0);
+            return Some(LlmWaveNextTokenScore {
+                score,
+                support,
+                width,
+                likelihood,
+                prior,
+                phase_coherence,
+            });
         }
-        (energy.clamp(0.0, 1.0), support)
+        None
+    }
+
+    fn next_token_prior(&self, next: u32) -> f32 {
+        let mut next_energy = 0.0_f32;
+        let mut total_energy = 0.0_f32;
+        for record in &self.records {
+            let energy = record_energy(record);
+            total_energy += energy;
+            if record.next_hash == next {
+                next_energy += energy;
+            }
+        }
+        if total_energy <= f32::EPSILON {
+            return 0.0;
+        }
+        (next_energy / total_energy).clamp(0.0, 1.0)
     }
 
     pub fn predict_phrase(
@@ -296,6 +365,17 @@ impl LlmWaveMemory {
         }
         Vec::new()
     }
+}
+
+fn record_energy(record: &LlmWaveRecord) -> f32 {
+    let accepted = f32::from(record.accepted);
+    let rejected = f32::from(record.rejected);
+    let trust = (accepted + 1.0) / (accepted + rejected + 2.0);
+    (f32::from(record.strength.max(0)) / 1024.0).clamp(0.0, 1.0) * trust
+}
+
+fn phase_coherence(phase: i8) -> f32 {
+    1.0 - (phase.unsigned_abs() as f32 / 128.0).clamp(0.0, 1.0)
 }
 
 fn combined_phrase_score(current: &LlmWavePhrasePrediction, next: &LlmWavePhrasePrediction) -> f32 {
@@ -735,12 +815,16 @@ pub fn score_candidates(
         .filter_map(|candidate| {
             let tokens = tokenize(&candidate.text);
             let (prefix, next) = candidate_prefix_and_next(&original_tokens, &tokens)?;
-            let (score, support) = memory.score_next_token(&prefix, &next);
-            (score > 0.0).then(|| LlmWaveCandidateScore {
+            let report = memory.score_next_token_report(&prefix, &next)?;
+            (report.score > 0.0).then(|| LlmWaveCandidateScore {
                 source: candidate.source,
                 text: candidate.text.clone(),
-                score,
-                support,
+                score: report.score,
+                support: report.support,
+                width: report.width,
+                likelihood: report.likelihood,
+                prior: report.prior,
+                phase_coherence: report.phase_coherence,
             })
         })
         .collect::<Vec<_>>();
@@ -912,8 +996,16 @@ fn report_summary(report: &LlmWaveReport, options: &WaveOptions) -> String {
         .unwrap_or_default();
     match report.top.as_ref() {
         Some(top) => format!(
-            "{mode} records={} top_source={} score={:.3} support={} candidate={:?}{prediction}",
-            report.records, top.source, top.score, top.support, top.text
+            "{mode} records={} top_source={} score={:.3} width={} likelihood={:.3} prior={:.3} phase={:.3} support={} candidate={:?}{prediction}",
+            report.records,
+            top.source,
+            top.score,
+            top.width,
+            top.likelihood,
+            top.prior,
+            top.phase_coherence,
+            top.support,
+            top.text
         ),
         None => format!("{mode} records={} top=none{prediction}", report.records),
     }
@@ -1109,6 +1201,56 @@ mod tests {
         assert!(predictions.iter().any(|item| item.text.ends_with("дождь")));
         assert!(predictions.iter().any(|item| item.text.ends_with("снег")));
         assert!(!predictions.iter().any(|item| item.text.ends_with("дом")));
+    }
+
+    #[test]
+    fn next_token_score_backs_off_to_recent_phrase_modes() {
+        let memory = LlmWaveMemory::from_text(
+            "идёт дом\nна улице опять идёт дождь\nсегодня на улице опять идёт дождь",
+        );
+        let prefix = tokenize("на улице опять идёт");
+        let rain = memory
+            .score_next_token_report(&prefix, "дождь")
+            .expect("rain should be supported by recent phrase modes");
+        let house = memory
+            .score_next_token_report(&prefix, "дом")
+            .expect("short one-token association still exists");
+
+        assert_eq!(rain.width, 3);
+        assert_eq!(house.width, 1);
+        assert!(
+            rain.score > house.score,
+            "longer phrase context must beat short association: rain={rain:?} house={house:?}"
+        );
+    }
+
+    #[test]
+    fn l3_candidate_scoring_uses_long_phrase_context() {
+        let memory = LlmWaveMemory::from_text(
+            "идёт дом\nна улице опять идёт дождь\nсегодня на улице опять идёт дождь",
+        );
+        let candidates = vec![
+            WordCandidate {
+                text: "на улице опять идёт дом".to_string(),
+                source: "PhraseForecastCell32",
+                energy: 0.7,
+                risk: 0.1,
+                support: vec![],
+            },
+            WordCandidate {
+                text: "на улице опять идёт дождь".to_string(),
+                source: "PhraseForecastCell32",
+                energy: 0.7,
+                risk: 0.1,
+                support: vec![],
+            },
+        ];
+        let report = score_candidates("на улице опять идёт д", &candidates, &memory);
+
+        assert_eq!(
+            report.top.as_ref().map(|item| item.text.as_str()),
+            Some("на улице опять идёт дождь")
+        );
     }
 
     #[test]
