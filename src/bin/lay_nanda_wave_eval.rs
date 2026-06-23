@@ -16,6 +16,7 @@ mod real_suite;
 mod status;
 
 const DEFAULT_LLMWAVE_SEED: &str = "data/nanda_llmwave_seed_phrases.txt";
+const DEFAULT_LLMWAVE_LIVE_MIN_COUNT: usize = 2;
 
 fn main() -> io::Result<()> {
     let args = env::args().collect::<Vec<_>>();
@@ -51,7 +52,22 @@ fn main() -> io::Result<()> {
             .or_else(llmwave::default_memory_path)
             .expect("default llmwave memory path");
         let seed = arg_value(&args, "--seed").unwrap_or(DEFAULT_LLMWAVE_SEED);
-        pack_llmwave_live(seed, &out)?;
+        let min_count = live_min_count(&args);
+        pack_llmwave_live(seed, &out, min_count)?;
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--llmwave-learn-live") {
+        let out = arg_value(&args, "--out")
+            .map(PathBuf::from)
+            .or_else(llmwave::default_memory_path)
+            .expect("default llmwave memory path");
+        let seed = arg_value(&args, "--seed").unwrap_or(DEFAULT_LLMWAVE_SEED);
+        let limit = arg_value(&args, "--limit")
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(12);
+        let min_count = live_min_count(&args);
+        pack_llmwave_live(seed, &out, min_count)?;
+        print_llmwave_learning_report(seed, limit, min_count)?;
         return Ok(());
     }
     if args.iter().any(|arg| arg == "--llmwave-learning-report") {
@@ -59,7 +75,7 @@ fn main() -> io::Result<()> {
         let limit = arg_value(&args, "--limit")
             .and_then(|value| value.parse::<usize>().ok())
             .unwrap_or(12);
-        print_llmwave_learning_report(seed, limit)?;
+        print_llmwave_learning_report(seed, limit, live_min_count(&args))?;
         return Ok(());
     }
     if args.iter().any(|arg| arg == "--status-json") {
@@ -129,7 +145,7 @@ fn main() -> io::Result<()> {
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite | --quick-ablation | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learning-report | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite | --quick-ablation | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --cases PATH"
         );
         return Ok(());
     }
@@ -174,16 +190,17 @@ fn pack_llmwave_text(path: &str, out: &str) -> io::Result<()> {
     Ok(())
 }
 
-fn pack_llmwave_live(seed: &str, out: &std::path::Path) -> io::Result<()> {
+fn pack_llmwave_live(seed: &str, out: &std::path::Path, min_count: usize) -> io::Result<()> {
     let mut parts = Vec::new();
     if let Ok(text) = std::fs::read_to_string(seed) {
         parts.push(text);
     }
     let live_path = llmwave::default_phrase_experience_path();
-    let live_text = live_path
+    let live_records = live_path
         .as_ref()
-        .and_then(|path| llmwave::load_phrase_experience_text(path).ok())
+        .and_then(|path| llmwave::load_phrase_experience(path).ok())
         .unwrap_or_default();
+    let live_text = reinforced_live_text(&live_records, min_count);
     if !live_text.trim().is_empty() {
         parts.push(live_text);
     }
@@ -191,11 +208,13 @@ fn pack_llmwave_live(seed: &str, out: &std::path::Path) -> io::Result<()> {
     let memory = llmwave::LlmWaveMemory::from_text(&text);
     llmwave::write_memory_packet(out, &memory)?;
     println!(
-        "llmwave_pack_live: seed={} live={} output={} records={} vocabulary={} record_bytes={}",
+        "llmwave_pack_live: seed={} live={} live_records={} min_count={} output={} records={} vocabulary={} record_bytes={}",
         seed,
         live_path
             .map(|path| path.display().to_string())
             .unwrap_or_else(|| "none".to_string()),
+        live_records.len(),
+        min_count,
         out.display(),
         memory.len(),
         memory.vocabulary_len(),
@@ -204,7 +223,7 @@ fn pack_llmwave_live(seed: &str, out: &std::path::Path) -> io::Result<()> {
     Ok(())
 }
 
-fn print_llmwave_learning_report(seed: &str, limit: usize) -> io::Result<()> {
+fn print_llmwave_learning_report(seed: &str, limit: usize, min_count: usize) -> io::Result<()> {
     let seed_text = std::fs::read_to_string(seed).unwrap_or_default();
     let seed_memory = llmwave::LlmWaveMemory::from_text(&seed_text);
     let live_path = llmwave::default_phrase_experience_path();
@@ -219,7 +238,8 @@ fn print_llmwave_learning_report(seed: &str, limit: usize) -> io::Result<()> {
     for record in &live_records {
         *live_counts.entry(record.text.clone()).or_default() += 1;
     }
-    let live_text = live_counts.keys().cloned().collect::<Vec<_>>().join("\n");
+    let reinforced = reinforced_live_counts(&live_records, min_count);
+    let live_text = reinforced.keys().cloned().collect::<Vec<_>>().join("\n");
     let combined_memory = llmwave::LlmWaveMemory::from_text(&format!("{seed_text}\n{live_text}"));
     println!("llmwave_learning_report:");
     println!("  seed: {seed}");
@@ -240,9 +260,11 @@ fn print_llmwave_learning_report(seed: &str, limit: usize) -> io::Result<()> {
         combined_memory.vocabulary_len()
     );
     println!(
-        "  live_experience: records={} unique={}",
+        "  live_experience: records={} unique={} reinforced={} min_count={}",
         live_records.len(),
-        live_counts.len()
+        live_counts.len(),
+        reinforced.len(),
+        min_count
     );
     if let Some((accepted, rejected)) = live_quality {
         println!(
@@ -257,9 +279,37 @@ fn print_llmwave_learning_report(seed: &str, limit: usize) -> io::Result<()> {
             }
         }
     }
-    print_live_phrase_counts(&live_counts, limit);
-    print_prediction_deltas(&seed_memory, &combined_memory, live_counts.keys(), limit);
+    print_live_phrase_counts(&reinforced, limit);
+    print_learning_deltas(&seed_memory, &combined_memory, reinforced.keys(), limit);
+    print_prediction_deltas(&seed_memory, &combined_memory, reinforced.keys(), limit);
     Ok(())
+}
+
+fn live_min_count(args: &[String]) -> usize {
+    arg_value(args, "--min-live-count")
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(DEFAULT_LLMWAVE_LIVE_MIN_COUNT)
+        .max(1)
+}
+
+fn reinforced_live_text(records: &[llmwave::LlmWavePhraseExperience], min_count: usize) -> String {
+    reinforced_live_counts(records, min_count)
+        .keys()
+        .cloned()
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+fn reinforced_live_counts(
+    records: &[llmwave::LlmWavePhraseExperience],
+    min_count: usize,
+) -> BTreeMap<String, usize> {
+    let mut counts = BTreeMap::<String, usize>::new();
+    for record in records {
+        *counts.entry(record.text.clone()).or_default() += 1;
+    }
+    counts.retain(|_phrase, count| *count >= min_count);
+    counts
 }
 
 fn live_phrase_quality_counts(
@@ -294,6 +344,33 @@ fn print_live_phrase_counts(live_counts: &BTreeMap<String, usize>, limit: usize)
     }
     for (phrase, count) in rows.into_iter().take(limit) {
         println!("    count={count} text={phrase:?}");
+    }
+}
+
+fn print_learning_deltas<'a>(
+    seed_memory: &llmwave::LlmWaveMemory,
+    combined_memory: &llmwave::LlmWaveMemory,
+    live_phrases: impl Iterator<Item = &'a String>,
+    limit: usize,
+) {
+    println!("  l3_learning_deltas:");
+    let phrases = live_phrases.map(String::as_str).collect::<Vec<_>>();
+    let deltas = llmwave::learning_deltas(seed_memory, combined_memory, phrases.into_iter(), limit);
+    if deltas.is_empty() {
+        println!("    none");
+        return;
+    }
+    for delta in deltas {
+        println!(
+            "    prefix={:?} next={:?} seed={:.3} live={:.3} support={} width={} phrase={:?}",
+            delta.prefix,
+            delta.next_token,
+            delta.seed_score,
+            delta.live_score,
+            delta.live_support,
+            delta.width,
+            delta.phrase
+        );
     }
 }
 

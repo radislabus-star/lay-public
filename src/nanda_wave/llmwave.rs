@@ -70,6 +70,17 @@ pub struct LlmWavePhrasePrediction {
     pub tokens: Vec<String>,
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct LlmWaveLearningDelta {
+    pub phrase: String,
+    pub prefix: String,
+    pub next_token: String,
+    pub seed_score: f32,
+    pub live_score: f32,
+    pub live_support: usize,
+    pub width: usize,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct LlmWavePhraseExperience {
     pub kind: String,
@@ -367,6 +378,74 @@ impl LlmWaveMemory {
     }
 }
 
+pub fn learning_deltas<'a>(
+    seed_memory: &LlmWaveMemory,
+    combined_memory: &LlmWaveMemory,
+    live_phrases: impl Iterator<Item = &'a str>,
+    limit: usize,
+) -> Vec<LlmWaveLearningDelta> {
+    let mut deltas = Vec::new();
+    for phrase in live_phrases {
+        if let Some(delta) = strongest_learning_delta(seed_memory, combined_memory, phrase) {
+            deltas.push(delta);
+        }
+    }
+    deltas.sort_by(|left, right| {
+        (right.live_score - right.seed_score)
+            .total_cmp(&(left.live_score - left.seed_score))
+            .then_with(|| right.live_support.cmp(&left.live_support))
+            .then_with(|| left.phrase.cmp(&right.phrase))
+    });
+    deltas.truncate(limit);
+    deltas
+}
+
+fn strongest_learning_delta(
+    seed_memory: &LlmWaveMemory,
+    combined_memory: &LlmWaveMemory,
+    phrase: &str,
+) -> Option<LlmWaveLearningDelta> {
+    let tokens = tokenize(phrase);
+    if tokens.len() < 3 {
+        return None;
+    }
+    let mut best = None::<LlmWaveLearningDelta>;
+    for idx in 1..tokens.len() {
+        let prefix = &tokens[..idx];
+        let next = &tokens[idx];
+        let live = combined_memory.score_next_token_report(prefix, next)?;
+        let seed_score = seed_memory
+            .score_next_token_report(prefix, next)
+            .map(|score| score.score)
+            .unwrap_or(0.0);
+        if live.score <= seed_score + 0.03 || live.support == 0 {
+            continue;
+        }
+        let delta = LlmWaveLearningDelta {
+            phrase: phrase.to_string(),
+            prefix: prefix.join(" "),
+            next_token: next.clone(),
+            seed_score,
+            live_score: live.score,
+            live_support: live.support,
+            width: live.width,
+        };
+        let should_replace = match best.as_ref() {
+            None => true,
+            Some(current) => {
+                let delta_gain = delta.live_score - delta.seed_score;
+                let current_gain = current.live_score - current.seed_score;
+                delta_gain > current_gain
+                    || (delta_gain == current_gain && delta.live_support > current.live_support)
+            }
+        };
+        if should_replace {
+            best = Some(delta);
+        }
+    }
+    best
+}
+
 fn record_energy(record: &LlmWaveRecord) -> f32 {
     let accepted = f32::from(record.accepted);
     let rejected = f32::from(record.rejected);
@@ -527,11 +606,11 @@ fn build_phrase_experience(
     if has_dirty_layout_fragment(&normalized, &tokens) {
         return Err(PhraseExperienceRejectReason::DirtyLayout);
     }
-    if has_low_language_quality(&normalized, &tokens) {
-        return Err(PhraseExperienceRejectReason::LowLanguageQuality);
-    }
     if is_unstable_or_noisy_phrase(&normalized) {
         return Err(PhraseExperienceRejectReason::UnstableOrNoisy);
+    }
+    if has_low_language_quality(&normalized, &tokens) {
+        return Err(PhraseExperienceRejectReason::LowLanguageQuality);
     }
     Ok(LlmWavePhraseExperience {
         kind: "llmwave_phrase_experience_v1".to_string(),
@@ -606,6 +685,9 @@ fn has_low_language_quality(text: &str, tokens: &[String]) -> bool {
         || tokens.iter().any(|token| has_repeated_letter_run(token, 4))
         || tokens
             .iter()
+            .any(|token| looks_like_untrusted_live_learning_token(token))
+        || tokens
+            .iter()
             .any(|token| looks_like_unstable_unknown_russian_token(token))
 }
 
@@ -649,6 +731,79 @@ fn has_repeated_letter_run(token: &str, limit: usize) -> bool {
         } else {
             prev = ch;
             run = 1;
+        }
+    }
+    false
+}
+
+fn looks_like_untrusted_live_learning_token(token: &str) -> bool {
+    let lower = token.to_lowercase();
+    if lower.chars().all(|ch| ch.is_ascii_digit()) {
+        return false;
+    }
+    if lower.chars().all(|ch| ch.is_ascii_alphabetic()) {
+        return !(crate::lexicon::is_common_en_technical_word(&lower)
+            || crate::word_recognizer::is_ascii_technical_or_brand_token(&lower));
+    }
+    if lower.contains('-') {
+        return lower
+            .split('-')
+            .filter(|part| !part.is_empty())
+            .any(looks_like_untrusted_live_learning_token);
+    }
+    if !lower.chars().all(is_cyrillic_letter) {
+        return true;
+    }
+    let len = lower.chars().count();
+    if is_known_russian_learning_token(&lower) {
+        if crate::lexicon::is_common_ru_word(&lower)
+            || (len <= 3 && crate::phrase_lexicon::is_known_russian_phrase_part(&lower))
+            || looks_like_short_russian_imperative(&lower)
+        {
+            return false;
+        }
+        return len <= 5
+            && (crate::ru_typo::has_plausible_russian_typo_candidate(&lower)
+                || has_short_known_insertion_neighbor(&lower));
+    }
+    len <= 5 || crate::ru_typo::has_plausible_russian_typo_candidate(&lower)
+}
+
+fn looks_like_short_russian_imperative(token: &str) -> bool {
+    let len = token.chars().count();
+    (4..=5).contains(&len)
+        && ["ай", "ей", "уй"]
+            .iter()
+            .any(|ending| token.ends_with(ending))
+}
+
+fn has_short_known_insertion_neighbor(token: &str) -> bool {
+    let len = token.chars().count();
+    if !(3..=5).contains(&len) {
+        return false;
+    }
+    let chars = token.chars().collect::<Vec<_>>();
+    let insertions = [
+        'б', 'в', 'г', 'д', 'ж', 'з', 'к', 'л', 'м', 'н', 'п', 'р', 'с', 'т', 'ф', 'х', 'ц', 'ч',
+        'ш', 'щ',
+    ];
+    for idx in 0..=chars.len() {
+        for inserted in insertions {
+            let mut candidate = String::with_capacity(token.len() + inserted.len_utf8());
+            for (char_idx, ch) in chars.iter().enumerate() {
+                if char_idx == idx {
+                    candidate.push(inserted);
+                }
+                candidate.push(*ch);
+            }
+            if idx == chars.len() {
+                candidate.push(inserted);
+            }
+            if candidate != token
+                && crate::russian_lexicon::is_known_russian_word_or_form(&candidate)
+            {
+                return true;
+            }
         }
     }
     false
@@ -1264,6 +1419,29 @@ mod tests {
     }
 
     #[test]
+    fn learning_deltas_show_live_phrase_becoming_l3_route() {
+        let seed = LlmWaveMemory::from_text("на улице опять идёт дождь");
+        let combined = LlmWaveMemory::from_text(
+            "на улице опять идёт дождь\nя хочу проверить автозамену\nя хочу проверить режим",
+        );
+        let deltas = learning_deltas(
+            &seed,
+            &combined,
+            ["я хочу проверить автозамену", "я хочу проверить режим"].into_iter(),
+            4,
+        );
+
+        assert!(
+            deltas.iter().any(|delta| {
+                delta.prefix == "я хочу"
+                    && delta.next_token == "проверить"
+                    && delta.live_score > delta.seed_score
+            }),
+            "expected live phrase to create an L3 prefix->next delta, got {deltas:?}"
+        );
+    }
+
+    #[test]
     fn phrase_forecast_completes_partial_next_word() {
         let memory = LlmWaveMemory::from_text(
             "на улице опять идёт дождь\nна улице опять идёт снег\nя хочу проверить автозамену",
@@ -1344,6 +1522,25 @@ mod tests {
         );
         assert_eq!(
             phrase_experience_rejection_reason("space", "Давай ей написем ответ"),
+            Some(PhraseExperienceRejectReason::LowLanguageQuality)
+        );
+    }
+
+    #[test]
+    fn phrase_experience_rejects_short_live_typo_tokens() {
+        assert_eq!(
+            phrase_experience_rejection_reason(
+                "space",
+                "хорошо ты обучил модель отличные подсказки ты гед"
+            ),
+            Some(PhraseExperienceRejectReason::LowLanguageQuality)
+        );
+        assert_eq!(
+            phrase_experience_rejection_reason("space", "просо из за того что"),
+            Some(PhraseExperienceRejectReason::LowLanguageQuality)
+        );
+        assert_eq!(
+            phrase_experience_rejection_reason("space", "6 страниц нужно како-то софт"),
             Some(PhraseExperienceRejectReason::LowLanguageQuality)
         );
     }
