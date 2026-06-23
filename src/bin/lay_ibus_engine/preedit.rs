@@ -9,6 +9,8 @@ use super::trace;
 const PREEDIT_TAIL_LIMIT: usize = 160;
 const PREEDIT_TOKEN_LIMIT: usize = 32;
 const PREEDIT_ASCII_CANDIDATE_LIMIT: usize = 8;
+const PREEDIT_RU_WAVE_CANDIDATE_LIMIT: usize = 8;
+const PREEDIT_RU_WAVE_SCAN_LIMIT: usize = 24;
 #[cfg(test)]
 const PREEDIT_PROBE_SYMBOL: &str = "*";
 const PREEDIT_MODE_CLEAR: u32 = 0;
@@ -258,6 +260,12 @@ impl LayIbusEngine {
         }
         let semantic_us = elapsed_us(semantic_started);
 
+        let ru_started = timing_enabled.then(Instant::now);
+        for suffix in self.ru_wave_lexical_suffixes() {
+            push_unique_suffix(&mut candidates, Some(suffix));
+        }
+        let ru_us = elapsed_us(ru_started);
+
         let ascii_started = timing_enabled.then(Instant::now);
         for suffix in self.preedit_fast.ascii_suffixes(
             self.precognition_max_suffix_chars(),
@@ -266,8 +274,6 @@ impl LayIbusEngine {
             push_unique_suffix(&mut candidates, Some(suffix));
         }
         let ascii_us = elapsed_us(ascii_started);
-
-        let ru_us = 0;
 
         if let Some(started) = total_started {
             trace::record_precognition_timing(
@@ -333,6 +339,63 @@ impl LayIbusEngine {
         suffixes
     }
 
+    fn ru_wave_lexical_suffixes(&self) -> Vec<String> {
+        if self.config.active_correction_safety() == lay::config::CorrectionSafety::Strict {
+            return Vec::new();
+        }
+        let tail = self.tail_buffer.as_str().trim_end();
+        let Some((prefix, partial)) = split_last_token(tail) else {
+            return Vec::new();
+        };
+        let partial = partial.to_lowercase();
+        let partial_len = partial.chars().count();
+        if !(3..=12).contains(&partial_len)
+            || !partial.chars().all(|ch| matches!(ch, 'а'..='я' | 'ё'))
+            || prefix.split_whitespace().next().is_none()
+        {
+            return Vec::new();
+        }
+
+        let max_bucket_entries = match partial_len {
+            3 => 24,
+            4 => 96,
+            _ => 256,
+        };
+        let max_suffix_chars = self.precognition_max_suffix_chars();
+        let suffixes =
+            lay::nanda_wave::context_wave::ru_word_prefix_completion_suffixes_if_bucket_at_most(
+                &partial,
+                max_suffix_chars,
+                PREEDIT_RU_WAVE_SCAN_LIMIT,
+                max_bucket_entries,
+            );
+        if suffixes.is_empty() {
+            return Vec::new();
+        }
+
+        let prefix_tokens = lay::nanda_wave::llmwave::tokenize(prefix);
+        let mut ranked = suffixes
+            .into_iter()
+            .filter_map(|suffix| {
+                let word = format!("{partial}{suffix}");
+                let score = l3_or_lexical_precognition_score(&prefix_tokens, &word, partial_len)?;
+                Some((suffix, score))
+            })
+            .collect::<Vec<_>>();
+        ranked.sort_by(|left, right| {
+            right
+                .1
+                .total_cmp(&left.1)
+                .then_with(|| left.0.chars().count().cmp(&right.0.chars().count()))
+                .then_with(|| left.0.cmp(&right.0))
+        });
+        ranked
+            .into_iter()
+            .take(PREEDIT_RU_WAVE_CANDIDATE_LIMIT)
+            .map(|(suffix, _score)| suffix)
+            .collect()
+    }
+
     fn llmwave_phrase_suffixes(&self, tail: &str) -> Vec<String> {
         lay::nanda_wave::llmwave::with_default_memory(|memory| {
             self.llmwave_phrase_suffixes_from_memory(tail, memory)
@@ -391,6 +454,19 @@ fn push_unique_suffix(candidates: &mut Vec<String>, suffix: Option<String>) {
     candidates.push(suffix);
 }
 
+fn l3_or_lexical_precognition_score(
+    prefix_tokens: &[String],
+    word: &str,
+    partial_len: usize,
+) -> Option<f32> {
+    lay::nanda_wave::llmwave::with_default_memory(|memory| {
+        if let Some(report) = memory.score_next_token_report(prefix_tokens, word) {
+            return (report.score >= 0.18).then_some((0.62 + report.score * 0.34).clamp(0.0, 1.0));
+        }
+        (partial_len >= 4).then_some((0.28 + partial_len as f32 * 0.035).clamp(0.0, 0.55))
+    })
+}
+
 fn phrase_candidate_suffix(tail: &str, candidate: &str, max_suffix_chars: usize) -> Option<String> {
     let suffix = candidate.strip_prefix(tail)?;
     let suffix = if tail.ends_with(char::is_whitespace) {
@@ -426,6 +502,20 @@ fn next_word_suffix(suffix: &str) -> Option<String> {
     }
 }
 
+fn split_last_token(text: &str) -> Option<(&str, &str)> {
+    let trimmed = text.trim_end();
+    if trimmed.is_empty() {
+        return None;
+    }
+    let start = trimmed
+        .char_indices()
+        .rev()
+        .find_map(|(idx, ch)| ch.is_whitespace().then_some(idx + ch.len_utf8()))
+        .unwrap_or(0);
+    let (prefix, token) = trimmed.split_at(start);
+    (!token.is_empty()).then_some((prefix, token))
+}
+
 fn trim_tail_buffer(buffer: &mut String) {
     trim_tail_buffer_to(buffer, PREEDIT_TAIL_LIMIT);
 }
@@ -451,7 +541,7 @@ mod tests {
     use std::sync::{Arc, Mutex};
 
     #[test]
-    fn generic_russian_prefixes_do_not_generate_precognition() {
+    fn bare_russian_prefixes_do_not_generate_precognition() {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
             Arc::new(Mutex::new(Default::default())),
@@ -464,7 +554,7 @@ mod tests {
                 ..LayConfig::default()
             },
         );
-        for ch in "это нев".chars() {
+        for ch in "нев".chars() {
             engine.push_tail_char(ch);
         }
         engine.refresh_precognition_candidates();
@@ -473,6 +563,64 @@ mod tests {
         assert!(
             engine.preedit_candidates.is_empty(),
             "raw Russian prefix memory leaked into preedit: {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
+    fn russian_wave_lexical_prior_generates_contextual_suffix() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "я хочу пров".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine.preedit_candidates.iter().any(|suffix| {
+                let word = format!("пров{suffix}");
+                word.starts_with("провер") || word.starts_with("прове")
+            }),
+            "expected contextual Russian wave candidates for 'я хочу пров', got {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
+    fn ambiguous_short_russian_prefix_does_not_emit_dictionary_noise() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "я без за".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine
+                .preedit_candidates
+                .iter()
+                .all(|suffix| !format!("за{suffix}").contains("запят")),
+            "ambiguous prefix should not suggest project/chat noise: {:?}",
             engine.preedit_candidates
         );
     }
