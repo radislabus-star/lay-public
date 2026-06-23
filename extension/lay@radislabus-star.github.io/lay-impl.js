@@ -1058,6 +1058,8 @@ class LayIndicator extends PanelMenu.Button {
             return;
         }
         this._cfg.text_backend = value;
+        if (value === 'ime')
+            this._cfg.nanda_precognition = true;
         this._saveAndRefresh();
         applyInputChannel(value);
         restartDaemon();

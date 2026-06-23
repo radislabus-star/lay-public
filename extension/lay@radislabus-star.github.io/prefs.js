@@ -456,6 +456,8 @@ class LayPrefsView {
             if (!id)
                 return;
             this._cfg[key] = /^\d+$/.test(id) ? Number(id) : id;
+            if (key === 'text_backend' && id === 'ime')
+                this._cfg.nanda_precognition = true;
             saveConfig(this._cfg);
             if (key === 'text_backend')
                 applyInputChannel(id);

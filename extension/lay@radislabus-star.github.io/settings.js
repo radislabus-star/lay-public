@@ -528,6 +528,8 @@ class SettingsView {
         combo.connect('changed', () => {
             const id = combo.get_active_id();
             this.cfg[key] = /^\d+$/.test(id) ? Number(id) : id;
+            if (key === 'text_backend' && id === 'ime')
+                this.cfg.nanda_precognition = true;
             saveConfig(this.cfg);
             if (key === 'text_backend')
                 applyInputChannel(id);
