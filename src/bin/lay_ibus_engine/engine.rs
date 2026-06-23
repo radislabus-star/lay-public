@@ -73,9 +73,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn live_composition_enabled(&self) -> bool {
-        self.managed_input
-            && self.config.nanda_precognition
-            && self.config.active_text_backend() == lay::text_backend::TextBackendPreference::Ime
+        self.managed_input && self.config.active_nanda_precognition()
     }
 
     pub(super) fn has_live_composition_state(&self) -> bool {
@@ -127,6 +125,18 @@ mod tests {
             ..LayConfig::default()
         });
         assert!(!uinput_engine.live_composition_enabled());
+    }
+
+    #[test]
+    fn zero_nanda_weights_disable_live_composition_capture() {
+        let engine = engine(LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            nanda_l2_weight_percent: 0,
+            nanda_l3_weight_percent: 0,
+            ..LayConfig::default()
+        });
+        assert!(!engine.live_composition_enabled());
     }
 
     #[test]

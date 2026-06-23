@@ -1,4 +1,3 @@
-use lay::text_backend::TextBackendPreference;
 use std::time::Instant;
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
@@ -422,8 +421,7 @@ impl LayIbusEngine {
     }
 
     fn precognition_preedit_enabled(&self) -> bool {
-        self.config.nanda_precognition
-            && self.config.active_text_backend() == TextBackendPreference::Ime
+        self.config.active_nanda_precognition()
     }
 
     pub(super) fn push_tail_char(&mut self, ch: char) {
@@ -990,6 +988,32 @@ mod tests {
         );
         engine.tail_buffer = "ab".to_string();
         assert!(!engine.precognition_preedit_enabled());
+        assert_eq!(engine.precognition_suffix(), None);
+    }
+
+    #[test]
+    fn ime_backend_with_zero_nanda_weights_does_not_show_precognition() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                nanda_l2_weight_percent: 0,
+                nanda_l3_weight_percent: 0,
+                ..LayConfig::default()
+            },
+        );
+        engine.tail_buffer = "пров".to_string();
+        for ch in "пров".chars() {
+            engine.preedit_fast.push(ch);
+        }
+
+        assert!(!engine.precognition_preedit_enabled());
+        engine.refresh_precognition_candidates();
+        assert!(engine.preedit_candidates.is_empty());
         assert_eq!(engine.precognition_suffix(), None);
     }
 

@@ -192,7 +192,7 @@ export function normalizeConfig(cfg) {
         correction_engine: normalizeChoice(cfg?.correction_engine, ['replay', 'smart'], DEFAULTS.correction_engine),
         layout_backend: normalizeChoice(cfg?.layout_backend, LAYOUT_BACKEND_OPTIONS.map(([id]) => id), DEFAULTS.layout_backend),
         text_backend: textBackend,
-        nanda_precognition: textBackend === 'ime',
+        nanda_precognition: !!cfg?.nanda_precognition,
         correction_safety: normalizeChoice(cfg?.correction_safety, SAFETY_OPTIONS.map(([id]) => id), DEFAULTS.correction_safety),
         ptah_alexs_mode: !!cfg?.ptah_alexs_mode,
         multi_tap_scope: !!cfg?.multi_tap_scope,

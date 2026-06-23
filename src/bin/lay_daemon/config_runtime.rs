@@ -152,9 +152,7 @@ pub(super) fn active_nanda_trace() -> bool {
 
 pub(super) fn active_nanda_precognition() -> bool {
     let cfg = current_config();
-    cfg.debug_action_log
-        && cfg.nanda_precognition
-        && cfg.active_text_backend() == TextBackendPreference::Ime
+    cfg.debug_action_log && cfg.active_nanda_precognition()
 }
 
 #[cfg(not(test))]

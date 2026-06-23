@@ -65,6 +65,30 @@ fn influence_weights_are_clamped_to_safe_range() {
 }
 
 #[test]
+fn nanda_precognition_requires_ime_backend_and_positive_nanda_weight() {
+    let disabled_weights = LayConfig {
+        text_backend: "ime".to_string(),
+        nanda_precognition: true,
+        nanda_l2_weight_percent: 0,
+        nanda_l3_weight_percent: 0,
+        ..LayConfig::default()
+    };
+    assert!(!disabled_weights.active_nanda_precognition());
+
+    let l2_enabled = LayConfig {
+        nanda_l2_weight_percent: 1,
+        ..disabled_weights.clone()
+    };
+    assert!(l2_enabled.active_nanda_precognition());
+
+    let uinput_backend = LayConfig {
+        text_backend: "uinput".to_string(),
+        ..l2_enabled
+    };
+    assert!(!uinput_backend.active_nanda_precognition());
+}
+
+#[test]
 fn legacy_config_without_force_hotkeys_gets_safe_defaults() {
     let cfg: LayConfig =
         serde_json::from_str(r#"{"mode":"simple","trigger":"double-lshift"}"#).unwrap();

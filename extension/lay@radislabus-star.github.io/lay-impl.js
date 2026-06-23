@@ -303,6 +303,11 @@ class LayIndicator extends PanelMenu.Button {
             false,
             LEM_3_TOOLTIP
         ));
+        item.menu.addMenuItem(this._switchItem(
+            'Подсказки NANDA',
+            'nanda_precognition',
+            false
+        ));
         return item;
     }
 
@@ -1053,7 +1058,6 @@ class LayIndicator extends PanelMenu.Button {
             return;
         }
         this._cfg.text_backend = value;
-        this._cfg.nanda_precognition = value === 'ime';
         this._saveAndRefresh();
         applyInputChannel(value);
         restartDaemon();

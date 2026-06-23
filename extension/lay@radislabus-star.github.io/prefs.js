@@ -231,7 +231,7 @@ function normalizeConfig(cfg) {
         correction_engine: normalizeChoice(cfg?.correction_engine, ['replay', 'smart'], DEFAULTS.correction_engine),
         layout_backend: normalizeChoice(cfg?.layout_backend, LAYOUT_BACKEND_OPTIONS.map(([id]) => id), DEFAULTS.layout_backend),
         text_backend: textBackend,
-        nanda_precognition: textBackend === 'ime',
+        nanda_precognition: !!cfg?.nanda_precognition,
         trigger: normalizeChoice(cfg?.trigger, TRIGGER_OPTIONS.map(([id]) => id), DEFAULTS.trigger),
         force_ru_key: normalizeChoice(cfg?.force_ru_key, FORCE_KEY_OPTIONS.map(([id]) => id), DEFAULTS.force_ru_key),
         force_en_key: normalizeChoice(cfg?.force_en_key, FORCE_KEY_OPTIONS.map(([id]) => id), DEFAULTS.force_en_key),
@@ -330,6 +330,7 @@ class LayPrefsView {
             this._weightRow('Вес LEM', 'lem_weight_percent', false),
             this._weightRow('Вес L2 кандидатов', 'nanda_l2_weight_percent', false),
             this._weightRow('Вес L3 фразы', 'nanda_l3_weight_percent', false),
+            this._switchRow('Подсказки NANDA', 'nanda_precognition', false),
             this._switchRow('Автокоррекция NANDA', 'nanda_autocorrect', false),
             this._buttonRow('NANDA ячейки', 'Открыть', () => this._showNandaWindow()),
             this._switchRow('Раскладка по окну', 'ptah_alexs_mode', false),
@@ -455,8 +456,6 @@ class LayPrefsView {
             if (!id)
                 return;
             this._cfg[key] = /^\d+$/.test(id) ? Number(id) : id;
-            if (key === 'text_backend')
-                this._cfg.nanda_precognition = id === 'ime';
             saveConfig(this._cfg);
             if (key === 'text_backend')
                 applyInputChannel(id);
