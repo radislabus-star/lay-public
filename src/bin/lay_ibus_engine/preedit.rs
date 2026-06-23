@@ -9,9 +9,6 @@ use super::trace;
 const PREEDIT_TAIL_LIMIT: usize = 160;
 const PREEDIT_TOKEN_LIMIT: usize = 32;
 const PREEDIT_ASCII_CANDIDATE_LIMIT: usize = 8;
-const PREEDIT_RU_COMMON_CANDIDATE_LIMIT: usize = 10;
-const PREEDIT_RU_WAVE_CANDIDATE_LIMIT: usize = 12;
-const PREEDIT_RU_CANDIDATE_LIMIT: usize = 12;
 #[cfg(test)]
 const PREEDIT_PROBE_SYMBOL: &str = "*";
 const PREEDIT_MODE_CLEAR: u32 = 0;
@@ -39,6 +36,7 @@ impl PreeditFastState {
         self.token.pop();
     }
 
+    #[cfg(test)]
     pub(crate) fn token(&self) -> &str {
         &self.token
     }
@@ -269,11 +267,7 @@ impl LayIbusEngine {
         }
         let ascii_us = elapsed_us(ascii_started);
 
-        let ru_started = timing_enabled.then(Instant::now);
-        for suffix in self.lexical_ru_suffixes() {
-            push_unique_suffix(&mut candidates, Some(suffix));
-        }
-        let ru_us = elapsed_us(ru_started);
+        let ru_us = 0;
 
         if let Some(started) = total_started {
             trace::record_precognition_timing(
@@ -294,66 +288,6 @@ impl LayIbusEngine {
         let original = format!("{} ", self.buffer);
         self.autocorrect_active_composition_text(&original)
             .is_some_and(|replacement| replacement.trim_end() != self.buffer.trim_end())
-    }
-
-    fn lexical_ru_suffixes(&self) -> Vec<String> {
-        let token = self.preedit_fast.token();
-        if token.chars().count() < 2 || token.chars().all(|ch| ch.is_ascii_alphabetic()) {
-            return Vec::new();
-        }
-        if token.chars().count() > 4 {
-            return Vec::new();
-        }
-        let token_lower = token.to_lowercase();
-        let mut words = lay::lexicon::common_ru_prefix_completion_words(
-            token,
-            self.precognition_max_suffix_chars(),
-            PREEDIT_RU_COMMON_CANDIDATE_LIMIT,
-        );
-        let token_chars = token.chars().count();
-        if self.config.active_correction_safety() != lay::config::CorrectionSafety::Strict
-            && token_chars >= 3
-        {
-            let wave_suffixes = if token_chars == 3 {
-                lay::nanda_wave::context_wave::ru_word_prefix_completion_suffixes_if_bucket_at_most(
-                    token,
-                    self.precognition_max_suffix_chars(),
-                    PREEDIT_RU_WAVE_CANDIDATE_LIMIT,
-                    512,
-                )
-            } else {
-                lay::nanda_wave::context_wave::ru_word_prefix_completion_suffixes(
-                    token,
-                    self.precognition_max_suffix_chars(),
-                    PREEDIT_RU_WAVE_CANDIDATE_LIMIT,
-                )
-            };
-            for suffix in wave_suffixes {
-                let word = format!("{token_lower}{suffix}");
-                if words.len() >= PREEDIT_RU_CANDIDATE_LIMIT {
-                    break;
-                }
-                if words.iter().any(|item| item == &word) {
-                    continue;
-                }
-                words.push(word);
-            }
-        }
-        words
-            .into_iter()
-            .filter(|word| !self.should_veto_lexical_completion(token, word))
-            .filter_map(|word| word.strip_prefix(&token_lower).map(str::to_string))
-            .collect()
-    }
-
-    fn should_veto_lexical_completion(&self, token: &str, word: &str) -> bool {
-        let token_len = token.chars().count();
-        let has_left_context = self
-            .tail_buffer
-            .trim_end()
-            .strip_suffix(token)
-            .is_some_and(|left| left.split_whitespace().next().is_some());
-        token_len <= 3 && has_left_context && lay::lexicon::is_ru_greeting_word(word)
     }
 
     fn precognition_max_suffix_chars(&self) -> usize {
@@ -517,75 +451,7 @@ mod tests {
     use std::sync::{Arc, Mutex};
 
     #[test]
-    fn precognition_suffix_uses_fast_prefix_completion_without_wave_trace() {
-        let mut engine = LayIbusEngine::new(
-            "/test".to_string(),
-            Arc::new(Mutex::new(Default::default())),
-            true,
-            true,
-            LayConfig {
-                text_backend: "ime".to_string(),
-                nanda_precognition: true,
-                ..LayConfig::default()
-            },
-        );
-        for ch in "прив".chars() {
-            engine.push_tail_char(ch);
-        }
-        assert_eq!(engine.precognition_suffix().as_deref(), Some("ет"));
-    }
-
-    #[test]
-    fn normal_precognition_can_complete_current_word() {
-        let mut engine = LayIbusEngine::new(
-            "/test".to_string(),
-            Arc::new(Mutex::new(Default::default())),
-            true,
-            true,
-            LayConfig {
-                text_backend: "ime".to_string(),
-                nanda_precognition: true,
-                correction_safety: "normal".to_string(),
-                ..LayConfig::default()
-            },
-        );
-        for ch in "пров".chars() {
-            engine.push_tail_char(ch);
-        }
-        assert_eq!(engine.precognition_suffix().as_deref(), Some("ерка"));
-    }
-
-    #[test]
-    fn precognition_uses_large_ru_wave_prefix_memory() {
-        let mut engine = LayIbusEngine::new(
-            "/test".to_string(),
-            Arc::new(Mutex::new(Default::default())),
-            true,
-            true,
-            LayConfig {
-                text_backend: "ime".to_string(),
-                nanda_precognition: true,
-                correction_safety: "experimental".to_string(),
-                ..LayConfig::default()
-            },
-        );
-        for ch in "это неви".chars() {
-            engine.push_tail_char(ch);
-        }
-        engine.refresh_precognition_candidates();
-
-        assert!(
-            engine
-                .preedit_candidates
-                .iter()
-                .any(|suffix| suffix.starts_with('д')),
-            "expected wave-prefix completion for 'неви', got {:?}",
-            engine.preedit_candidates
-        );
-    }
-
-    #[test]
-    fn precognition_allows_narrow_three_letter_ru_wave_prefix() {
+    fn generic_russian_prefixes_do_not_generate_precognition() {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
             Arc::new(Mutex::new(Default::default())),
@@ -603,9 +469,11 @@ mod tests {
         }
         engine.refresh_precognition_candidates();
 
+        assert_eq!(engine.precognition_suffix(), None);
         assert!(
-            !engine.preedit_candidates.is_empty(),
-            "expected narrow wave-prefix completion for 'нев'"
+            engine.preedit_candidates.is_empty(),
+            "raw Russian prefix memory leaked into preedit: {:?}",
+            engine.preedit_candidates
         );
     }
 
@@ -639,36 +507,6 @@ mod tests {
     }
 
     #[test]
-    fn precognition_exposes_multiple_prefix_candidates() {
-        let mut engine = LayIbusEngine::new(
-            "/test".to_string(),
-            Arc::new(Mutex::new(Default::default())),
-            true,
-            true,
-            LayConfig {
-                text_backend: "ime".to_string(),
-                nanda_precognition: true,
-                correction_safety: "experimental".to_string(),
-                ..LayConfig::default()
-            },
-        );
-        for ch in "пр".chars() {
-            engine.push_tail_char(ch);
-        }
-        engine.refresh_precognition_candidates();
-
-        assert!(engine.preedit_candidates.len() >= 3);
-        assert!(engine
-            .preedit_candidates
-            .iter()
-            .any(|suffix| suffix == "ивет"));
-        assert!(engine
-            .preedit_candidates
-            .iter()
-            .any(|suffix| suffix == "оверка"));
-    }
-
-    #[test]
     fn long_russian_prefix_does_not_hold_inline_suffix() {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
@@ -689,7 +527,7 @@ mod tests {
     }
 
     #[test]
-    fn composition_preedit_shows_candidate_suffix_after_cursor() {
+    fn composition_preedit_does_not_complete_from_raw_russian_prefix() {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
             Arc::new(Mutex::new(Default::default())),
@@ -709,9 +547,9 @@ mod tests {
         engine.refresh_precognition_candidates();
         let (text, cursor_pos) = engine.composition_preedit_payload();
 
-        assert_eq!(text, "проверка");
+        assert_eq!(text, "пров");
         assert_eq!(cursor_pos, 4);
-        assert_eq!(engine.preedit_suffix, "ерка");
+        assert_eq!(engine.preedit_suffix, "");
     }
 
     #[test]
