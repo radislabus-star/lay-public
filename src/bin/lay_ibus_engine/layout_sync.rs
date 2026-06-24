@@ -30,6 +30,21 @@ impl LayIbusEngine {
         }
         trace::record_layout_sync(target_is_ru, target_engine, ok);
     }
+
+    pub(super) fn toggle_layout_from_modifier_hotkey(&mut self) -> bool {
+        let target_is_ru = current_active_ime_layout_is_ru()
+            .map(|current_is_ru| !current_is_ru)
+            .unwrap_or(!self.layout_is_ru);
+        let target_engine = ime_engine_for_layout(target_is_ru);
+        let ok = activate_gnome_layout_for_ime(target_is_ru)
+            .or_else(|_| switch_active_ime_engine(target_engine))
+            .is_ok();
+        if ok {
+            self.layout_is_ru = target_is_ru;
+        }
+        trace::record_layout_sync(target_is_ru, target_engine, ok);
+        ok
+    }
 }
 
 fn ime_engine_for_layout(target_is_ru: bool) -> &'static str {
@@ -66,6 +81,73 @@ fn switch_active_ime_engine(engine: &str) -> Result<(), String> {
     }
 }
 
+fn current_active_ime_layout_is_ru() -> Option<bool> {
+    let engine = read_active_ime_engine()?;
+    if engine == RU_ENGINE {
+        Some(true)
+    } else if engine == US_ENGINE {
+        Some(false)
+    } else {
+        None
+    }
+}
+
+#[cfg(not(test))]
+fn read_active_ime_engine() -> Option<String> {
+    let out = Command::new("timeout")
+        .args(["0.08s", "ibus", "engine"])
+        .output()
+        .ok()?;
+    if !out.status.success() {
+        return None;
+    }
+    Some(String::from_utf8_lossy(&out.stdout).trim().to_string())
+}
+
+#[cfg(test)]
+fn read_active_ime_engine() -> Option<String> {
+    None
+}
+
+fn activate_gnome_layout_for_ime(target_is_ru: bool) -> Result<(), String> {
+    #[cfg(test)]
+    {
+        let _ = target_is_ru;
+        Ok(())
+    }
+
+    #[cfg(not(test))]
+    {
+        let layout_id = if target_is_ru { "ru" } else { "us" };
+        let out = Command::new("timeout")
+            .args([
+                "0.18s",
+                "gdbus",
+                "call",
+                "--session",
+                "--dest",
+                "org.gnome.Shell",
+                "--object-path",
+                "/io/github/radislabus_star/LayDaemon",
+                "--method",
+                "io.github.radislabus_star.LayDaemon.ActivateLayout",
+                layout_id,
+            ])
+            .output()
+            .map_err(|error| error.to_string())?;
+        if out.status.success() && String::from_utf8_lossy(&out.stdout).contains("true") {
+            Ok(())
+        } else {
+            let stderr = String::from_utf8_lossy(&out.stderr).trim().to_string();
+            Err(if stderr.is_empty() {
+                format!("ActivateLayout {layout_id} exited with {}", out.status)
+            } else {
+                stderr
+            })
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::ime_engine_for_layout;
@@ -93,6 +175,22 @@ mod tests {
         assert!(engine.layout_is_ru);
 
         engine.sync_layout_after_manual_toggle("hello ");
+        assert!(!engine.layout_is_ru);
+    }
+
+    #[test]
+    fn modifier_hotkey_toggles_internal_layout_state() {
+        let mut engine = super::LayIbusEngine::new(
+            "/test".to_string(),
+            std::sync::Arc::new(std::sync::Mutex::new(Default::default())),
+            false,
+            true,
+            lay::config::LayConfig::default(),
+        );
+
+        assert!(engine.toggle_layout_from_modifier_hotkey());
+        assert!(engine.layout_is_ru);
+        assert!(engine.toggle_layout_from_modifier_hotkey());
         assert!(!engine.layout_is_ru);
     }
 }

@@ -165,6 +165,10 @@ pub fn double_shift_replacement(text: &str) -> String {
         .unwrap_or_else(|| convert(text, detect_direction(text)))
 }
 
+pub fn recovered_initial_double_shift_replacement(token: &str) -> Option<String> {
+    recover_missing_initial_layout_toggle(token).map(|(_, replacement)| replacement)
+}
+
 fn last_tail_token(tail: &str) -> Option<&str> {
     let end = tail
         .char_indices()
@@ -210,8 +214,8 @@ fn recover_missing_initial_layout_toggle(token: &str) -> Option<(u32, String)> {
         }
     }
 
-    let (_, candidate, replacement) = best?;
-    Some((candidate.chars().count() as u32, replacement))
+    let (_, _, replacement) = best?;
+    Some((token.chars().count() as u32, replacement))
 }
 
 fn missing_initial_prefixes(token: &str) -> impl Iterator<Item = char> {
@@ -288,7 +292,7 @@ mod tests {
     fn committed_tail_plan_recovers_missing_initial_ascii_layout_letter() {
         let plan = plan_manual_toggle(request("hbdtn")).expect("toggle");
 
-        assert_eq!(plan.backspaces, 6);
+        assert_eq!(plan.backspaces, 5);
         assert_eq!(plan.replacement, "привет");
         assert!(plan.target_layout_is_ru);
     }
@@ -297,8 +301,18 @@ mod tests {
     fn committed_tail_plan_recovers_four_letter_tail_missing_initial_layout_letter() {
         let plan = plan_manual_toggle(request("flyj ")).expect("toggle");
 
-        assert_eq!(plan.backspaces, 6);
+        assert_eq!(plan.backspaces, 5);
         assert_eq!(plan.replacement, "ладно ");
+        assert!(plan.target_layout_is_ru);
+    }
+
+    #[test]
+    fn recovered_initial_does_not_delete_separator_before_current_token() {
+        let plan = plan_manual_toggle(request("push ltkfq")).expect("toggle");
+
+        assert_eq!(plan.edit.original_token, "ltkfq");
+        assert_eq!(plan.backspaces, 5);
+        assert_eq!(plan.replacement, "сделай");
         assert!(plan.target_layout_is_ru);
     }
 

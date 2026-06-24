@@ -1,5 +1,6 @@
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
 import Shell from 'gi://Shell';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -26,12 +27,41 @@ export function currentLayoutKind() {
     }
 }
 
+function imeEngineForLayoutKind(kind) {
+    if (kind === 'ru')
+        return 'lay-ime-ru';
+    if (kind === 'us')
+        return 'lay-ime-us';
+    return '';
+}
+
+export function syncIbusEngineForCurrentLayout() {
+    const engine = imeEngineForLayoutKind(currentLayoutKind());
+    if (!engine)
+        return false;
+    try {
+        GLib.spawn_command_line_async(`ibus engine ${engine}`);
+        return true;
+    } catch(e) {
+        log(`[lay-extension] IBus engine sync failed for ${engine}: ${e}`);
+        return false;
+    }
+}
+
+function syncIbusEngineSoon() {
+    GLib.timeout_add(GLib.PRIORITY_DEFAULT, 25, () => {
+        syncIbusEngineForCurrentLayout();
+        return GLib.SOURCE_REMOVE;
+    });
+}
+
 export function activateLayoutId(id) {
     try {
         const mgr = getInputSourceManager();
         for (const i in mgr.inputSources)
             if (mgr.inputSources[i].id === id) {
                 mgr.inputSources[i].activate();
+                syncIbusEngineSoon();
                 return true;
             }
 
@@ -39,6 +69,7 @@ export function activateLayoutId(id) {
         for (const i in mgr.inputSources)
             if (normalizeLayoutKind(mgr.inputSources[i].id) === targetKind) {
                 mgr.inputSources[i].activate();
+                syncIbusEngineSoon();
                 return true;
             }
     } catch(e) {}

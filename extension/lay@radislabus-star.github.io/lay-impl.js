@@ -19,6 +19,7 @@ import {
     activateLayoutId,
     currentLayoutKind,
     focusedWindowInfo,
+    syncIbusEngineForCurrentLayout,
 } from './dbus_service.js';
 import {
     createRecentActionsMenu,
@@ -125,8 +126,12 @@ class LayIndicator extends PanelMenu.Button {
         });
 
         this._mgr = getInputSourceManager();
-        this._srcId = this._mgr.connect('current-source-changed', () => this._refreshLayout());
+        this._srcId = this._mgr.connect('current-source-changed', () => {
+            syncIbusEngineForCurrentLayout();
+            this._refreshLayout();
+        });
         this._focusId = global.display.connect('notify::focus-window', () => this._onFocusWindowChanged());
+        syncIbusEngineForCurrentLayout();
         this._refreshLayout();
         this._schedulePtahApply(80);
     }

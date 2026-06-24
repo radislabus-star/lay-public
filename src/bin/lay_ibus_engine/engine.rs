@@ -1,4 +1,5 @@
 use lay::config::LayConfig;
+use lay::text_backend::TextBackendPreference;
 use std::time::Instant;
 
 use super::preedit::PreeditFastState;
@@ -73,7 +74,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn live_composition_enabled(&self) -> bool {
-        self.managed_input && self.config.active_nanda_precognition()
+        self.managed_input && self.config.active_text_backend() == TextBackendPreference::Ime
     }
 
     pub(super) fn has_live_composition_state(&self) -> bool {
@@ -101,17 +102,17 @@ mod tests {
     }
 
     #[test]
-    fn ime_backend_alone_does_not_capture_plain_typing() {
+    fn ime_backend_enables_live_composition_without_precognition() {
         let engine = engine(LayConfig {
             text_backend: "ime".to_string(),
             nanda_precognition: false,
             ..LayConfig::default()
         });
-        assert!(!engine.live_composition_enabled());
+        assert!(engine.live_composition_enabled());
     }
 
     #[test]
-    fn gray_precognition_enables_live_composition_only_in_ime_backend() {
+    fn ime_backend_enables_live_composition_independently_from_gray_precognition() {
         let ime_engine = engine(LayConfig {
             text_backend: "ime".to_string(),
             nanda_precognition: true,
@@ -128,7 +129,7 @@ mod tests {
     }
 
     #[test]
-    fn zero_nanda_weights_disable_live_composition_capture() {
+    fn zero_nanda_weights_do_not_disable_ime_input_backend() {
         let engine = engine(LayConfig {
             text_backend: "ime".to_string(),
             nanda_precognition: true,
@@ -136,7 +137,8 @@ mod tests {
             nanda_l3_weight_percent: 0,
             ..LayConfig::default()
         });
-        assert!(!engine.live_composition_enabled());
+        assert!(engine.live_composition_enabled());
+        assert!(!engine.config.active_nanda_precognition());
     }
 
     #[test]

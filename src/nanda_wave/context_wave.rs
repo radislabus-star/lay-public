@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::OnceLock;
 
 use crate::keyboard::is_cyrillic_letter;
@@ -17,10 +18,16 @@ pub const PHRASE_FORECAST_CELL: &str = "PhraseForecastCell32";
 const MAX_SEMANTIC_WORD_CANDIDATES: usize = 8;
 const MAX_WAVE_BUCKET_SCAN: usize = 512;
 const MAX_WAVE_POOL: usize = 4096;
+static PREFIX_WAVE_MEMORY_WARM: AtomicBool = AtomicBool::new(false);
 
 pub fn warm_up() {
     let _ = ru_word_wave_memory().entries.len();
     let _ = en_word_wave_memory().entries.len();
+    PREFIX_WAVE_MEMORY_WARM.store(true, Ordering::Release);
+}
+
+pub fn prefix_wave_memory_is_warm() -> bool {
+    PREFIX_WAVE_MEMORY_WARM.load(Ordering::Acquire)
 }
 
 pub fn ru_word_prefix_completion_suffixes(

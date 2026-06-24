@@ -11,6 +11,7 @@ const PREEDIT_TOKEN_LIMIT: usize = 32;
 const PREEDIT_ASCII_CANDIDATE_LIMIT: usize = 8;
 const PREEDIT_RU_WAVE_CANDIDATE_LIMIT: usize = 8;
 const PREEDIT_RU_WAVE_SCAN_LIMIT: usize = 24;
+const PREEDIT_RU_PREFIX_MIN_CHARS: usize = 3;
 #[cfg(test)]
 const PREEDIT_PROBE_SYMBOL: &str = "*";
 const PREEDIT_MODE_CLEAR: u32 = 0;
@@ -53,14 +54,16 @@ impl PreeditFastState {
                 max_suffix_chars,
                 limit,
             );
-            for suffix in lay::nanda_wave::context_wave::en_word_prefix_completion_suffixes(
-                &self.token,
-                max_suffix_chars,
-                limit,
-            ) {
-                push_unique_suffix(&mut suffixes, Some(suffix));
-                if suffixes.len() >= limit {
-                    break;
+            if lay::nanda_wave::context_wave::prefix_wave_memory_is_warm() {
+                for suffix in lay::nanda_wave::context_wave::en_word_prefix_completion_suffixes(
+                    &self.token,
+                    max_suffix_chars,
+                    limit,
+                ) {
+                    push_unique_suffix(&mut suffixes, Some(suffix));
+                    if suffixes.len() >= limit {
+                        break;
+                    }
                 }
             }
             return suffixes;
@@ -333,7 +336,9 @@ impl LayIbusEngine {
                     }),
             );
         }
-        if should_query_llmwave_phrase_suffix(raw_tail) {
+        if should_query_llmwave_phrase_suffix(raw_tail)
+            && lay::nanda_wave::llmwave::default_memory_is_warm()
+        {
             suffixes.extend(self.llmwave_phrase_suffixes(raw_tail));
         }
         suffixes
@@ -349,28 +354,48 @@ impl LayIbusEngine {
         };
         let partial = partial.to_lowercase();
         let partial_len = partial.chars().count();
-        if !(3..=12).contains(&partial_len)
+        if !(PREEDIT_RU_PREFIX_MIN_CHARS..=12).contains(&partial_len)
             || !partial.chars().all(|ch| matches!(ch, 'а'..='я' | 'ё'))
             || prefix.split_whitespace().next().is_none()
         {
             return Vec::new();
         }
 
-        let max_bucket_entries = match partial_len {
-            3 => 24,
-            4 => 96,
-            _ => 256,
-        };
         let max_suffix_chars = self.precognition_max_suffix_chars();
-        let suffixes =
-            lay::nanda_wave::context_wave::ru_word_prefix_completion_suffixes_if_bucket_at_most(
-                &partial,
-                max_suffix_chars,
-                PREEDIT_RU_WAVE_SCAN_LIMIT,
-                max_bucket_entries,
+        let mut suffixes = Vec::new();
+        for word in lay::lexicon::common_ru_prefix_completion_words(
+            &partial,
+            max_suffix_chars,
+            PREEDIT_RU_WAVE_SCAN_LIMIT,
+        ) {
+            push_unique_suffix(
+                &mut suffixes,
+                word.strip_prefix(&partial).map(str::to_string),
             );
-        if suffixes.is_empty() {
-            return Vec::new();
+            if suffixes.len() >= PREEDIT_RU_WAVE_CANDIDATE_LIMIT {
+                break;
+            }
+        }
+
+        if lay::nanda_wave::context_wave::prefix_wave_memory_is_warm() {
+            let max_bucket_entries = match partial_len {
+                0..=3 => 24,
+                4 => 96,
+                _ => 256,
+            };
+            for suffix in
+                lay::nanda_wave::context_wave::ru_word_prefix_completion_suffixes_if_bucket_at_most(
+                    &partial,
+                    max_suffix_chars,
+                    PREEDIT_RU_WAVE_SCAN_LIMIT,
+                    max_bucket_entries,
+                )
+            {
+                push_unique_suffix(&mut suffixes, Some(suffix));
+                if suffixes.len() >= PREEDIT_RU_WAVE_CANDIDATE_LIMIT {
+                    break;
+                }
+            }
         }
 
         let prefix_tokens = lay::nanda_wave::llmwave::tokenize(prefix);
@@ -448,10 +473,25 @@ fn push_unique_suffix(candidates: &mut Vec<String>, suffix: Option<String>) {
     let Some(suffix) = suffix else {
         return;
     };
-    if suffix.is_empty() || candidates.iter().any(|candidate| candidate == &suffix) {
+    if suffix.is_empty()
+        || !is_allowed_visible_completion_suffix(&suffix)
+        || candidates.iter().any(|candidate| candidate == &suffix)
+    {
         return;
     }
     candidates.push(suffix);
+}
+
+fn is_allowed_visible_completion_suffix(suffix: &str) -> bool {
+    let trimmed = suffix.trim();
+    let mut chars = trimmed.chars();
+    let Some(ch) = chars.next() else {
+        return false;
+    };
+    if chars.next().is_some() {
+        return true;
+    }
+    matches!(ch, 'а' | 'в' | 'и' | 'к' | 'о' | 'с' | 'у' | 'I' | 'a')
 }
 
 fn l3_or_lexical_precognition_score(
@@ -459,12 +499,16 @@ fn l3_or_lexical_precognition_score(
     word: &str,
     partial_len: usize,
 ) -> Option<f32> {
-    lay::nanda_wave::llmwave::with_default_memory(|memory| {
-        if let Some(report) = memory.score_next_token_report(prefix_tokens, word) {
-            return (report.score >= 0.18).then_some((0.62 + report.score * 0.34).clamp(0.0, 1.0));
-        }
-        (partial_len >= 4).then_some((0.28 + partial_len as f32 * 0.035).clamp(0.0, 0.55))
-    })
+    if lay::nanda_wave::llmwave::default_memory_is_warm() {
+        return lay::nanda_wave::llmwave::with_default_memory(|memory| {
+            if let Some(report) = memory.score_next_token_report(prefix_tokens, word) {
+                return (report.score >= 0.18)
+                    .then_some((0.62 + report.score * 0.34).clamp(0.0, 1.0));
+            }
+            (partial_len >= 4).then_some((0.28 + partial_len as f32 * 0.035).clamp(0.0, 0.55))
+        });
+    }
+    (partial_len >= 4).then_some((0.28 + partial_len as f32 * 0.035).clamp(0.0, 0.55))
 }
 
 fn phrase_candidate_suffix(tail: &str, candidate: &str, max_suffix_chars: usize) -> Option<String> {
@@ -568,7 +612,7 @@ mod tests {
     }
 
     #[test]
-    fn russian_wave_lexical_prior_generates_contextual_suffix() {
+    fn russian_fast_lexical_prior_generates_contextual_suffix() {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
             Arc::new(Mutex::new(Default::default())),
@@ -626,7 +670,74 @@ mod tests {
     }
 
     #[test]
-    fn precognition_uses_large_en_wave_prefix_memory() {
+    fn short_russian_prefix_stays_fast_without_dropping_valid_candidates() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "ка сло".chars() {
+            engine.push_tail_char(ch);
+        }
+
+        let started = std::time::Instant::now();
+        engine.refresh_precognition_candidates();
+        let elapsed_us = started.elapsed().as_micros();
+
+        assert!(
+            elapsed_us < 5_000,
+            "short prefix 'сло' must stay cheap, took {elapsed_us}us"
+        );
+        assert!(
+            engine
+                .preedit_candidates
+                .iter()
+                .all(|suffix| suffix.chars().count() != 1
+                    || is_allowed_visible_completion_suffix(suffix)),
+            "short prefix candidates must keep the single-letter guard: {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
+    fn four_letter_russian_prefix_can_use_wave_lookup() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "ка слов".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine
+                .preedit_candidates
+                .iter()
+                .all(|suffix| suffix.chars().count() != 1
+                    || is_allowed_visible_completion_suffix(suffix)),
+            "single-letter suffix guard must still apply: {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
+    fn cold_english_wave_memory_does_not_block_precognition() {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
             Arc::new(Mutex::new(Default::default())),
@@ -642,15 +753,13 @@ mod tests {
         for ch in "this exam".chars() {
             engine.push_tail_char(ch);
         }
+        let started = std::time::Instant::now();
         engine.refresh_precognition_candidates();
+        let elapsed_us = started.elapsed().as_micros();
 
         assert!(
-            engine
-                .preedit_candidates
-                .iter()
-                .any(|suffix| suffix.starts_with("ple")),
-            "expected English wave-prefix completion for 'exam', got {:?}",
-            engine.preedit_candidates
+            elapsed_us < 5_000,
+            "cold English wave memory must not block IME, took {elapsed_us}us"
         );
     }
 
@@ -1033,6 +1142,22 @@ mod tests {
     }
 
     #[test]
+    fn preedit_candidates_suppress_noisy_single_letter_suffixes() {
+        let mut candidates = Vec::new();
+
+        push_unique_suffix(&mut candidates, Some("е".to_string()));
+        push_unique_suffix(&mut candidates, Some("щ".to_string()));
+        push_unique_suffix(&mut candidates, Some("и".to_string()));
+        push_unique_suffix(&mut candidates, Some(" в".to_string()));
+        push_unique_suffix(&mut candidates, Some("ет".to_string()));
+
+        assert_eq!(
+            candidates,
+            vec!["и".to_string(), " в".to_string(), "ет".to_string()]
+        );
+    }
+
+    #[test]
     fn preedit_completion_does_not_duplicate_anchor() {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
@@ -1058,6 +1183,7 @@ mod tests {
             "смотрим что будет происходить когда при",
         ];
         let mut timings = Vec::new();
+        let mut sample_max = Vec::new();
         for sample in samples {
             let mut engine = LayIbusEngine::new(
                 "/test".to_string(),
@@ -1077,11 +1203,29 @@ mod tests {
             for _ in 0..20 {
                 engine.refresh_precognition_candidates();
             }
+            let sample_start = timings.len();
             for _ in 0..2000 {
                 let started = Instant::now();
                 engine.refresh_precognition_candidates();
                 timings.push(started.elapsed().as_micros() as u64);
             }
+            let mut local = timings[sample_start..].to_vec();
+            local.sort_unstable();
+            let local_p50 = percentile(&local, 50);
+            let local_p90 = percentile(&local, 90);
+            let local_p99 = percentile(&local, 99);
+            let local_max = *local.last().unwrap_or(&0);
+            eprintln!(
+                "precognition sample {:?}: p50={}us p90={}us p99={}us max={}us candidates={} stages={:?}",
+                sample,
+                local_p50,
+                local_p90,
+                local_p99,
+                local_max,
+                engine.preedit_candidates.len(),
+                measured_precognition_stages(&engine)
+            );
+            sample_max.push((sample, local_max));
         }
         timings.sort_unstable();
         let p50 = percentile(&timings, 50);
@@ -1096,6 +1240,12 @@ mod tests {
             p99,
             max
         );
+        if let Some((sample, sample_max)) = sample_max.iter().max_by_key(|(_, max)| *max) {
+            eprintln!(
+                "precognition worst sample {:?}: max={}us",
+                sample, sample_max
+            );
+        }
         let p90_budget_us = if cfg!(debug_assertions) {
             50_000
         } else {
@@ -1113,6 +1263,29 @@ mod tests {
         }
         let idx = ((values.len() - 1) * percentile) / 100;
         values[idx]
+    }
+
+    fn measured_precognition_stages(engine: &LayIbusEngine) -> Vec<(&'static str, u128, usize)> {
+        let semantic_started = Instant::now();
+        let semantic = engine.semantic_phrase_suffixes();
+        let semantic_us = semantic_started.elapsed().as_micros();
+
+        let ru_started = Instant::now();
+        let ru = engine.ru_wave_lexical_suffixes();
+        let ru_us = ru_started.elapsed().as_micros();
+
+        let ascii_started = Instant::now();
+        let ascii = engine.preedit_fast.ascii_suffixes(
+            engine.precognition_max_suffix_chars(),
+            PREEDIT_ASCII_CANDIDATE_LIMIT,
+        );
+        let ascii_us = ascii_started.elapsed().as_micros();
+
+        vec![
+            ("semantic", semantic_us, semantic.len()),
+            ("ru", ru_us, ru.len()),
+            ("ascii", ascii_us, ascii.len()),
+        ]
     }
 
     #[test]

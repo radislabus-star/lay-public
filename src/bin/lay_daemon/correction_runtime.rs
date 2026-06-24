@@ -4,6 +4,7 @@ use lay::keyboard::{
     map_events_to_layout, map_original_events, mark_single_current_word_layout_if_stale,
     replay_layout_decision,
 };
+use lay::manual_toggle::recovered_initial_double_shift_replacement;
 use lay::typing_assist::{
     effective_replace_words, should_force_replay_for_short_fragment, ScopedTailOptions,
 };
@@ -90,6 +91,12 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
     let chars_orig = mapped_orig.chars().count();
     let chars_target = mapped_target.chars().count();
     let words_orig = mapped_orig.split_whitespace().count();
+    let effective_mapped_target = recovered_initial_manual_toggle_target(
+        &mapped_orig,
+        &mapped_target,
+        words_orig,
+        n_backspaces,
+    );
     let mismatch = chars_orig != events.len() || chars_target != events.len();
     log(&format!(
         "👆 events={} n_bs={n_backspaces} | chars_orig={chars_orig} chars_target={chars_target} words={words_orig} {} mixed={} | orig={mapped_orig:?} → target={mapped_target:?}",
@@ -119,7 +126,7 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
         ManualCorrectionInput {
             events: &events,
             original: &mapped_orig,
-            converted: &mapped_target,
+            converted: &effective_mapped_target,
         },
         ManualCorrectionPolicy {
             engine,
@@ -132,7 +139,7 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
         buf,
         events: &events,
         mapped_orig: &mapped_orig,
-        mapped_target: &mapped_target,
+        mapped_target: &effective_mapped_target,
         target_is_ru,
         n_backspaces,
         replace_words,
@@ -144,4 +151,39 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
         physical_grab,
         input_isolated,
     })
+}
+
+fn recovered_initial_manual_toggle_target(
+    mapped_orig: &str,
+    mapped_target: &str,
+    words_orig: usize,
+    n_backspaces: u32,
+) -> String {
+    if words_orig != 1 || n_backspaces != mapped_orig.chars().count() as u32 {
+        return mapped_target.to_string();
+    }
+    recovered_initial_double_shift_replacement(mapped_orig)
+        .filter(|replacement| replacement != mapped_target)
+        .unwrap_or_else(|| mapped_target.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::recovered_initial_manual_toggle_target;
+
+    #[test]
+    fn daemon_manual_toggle_uses_recovered_initial_target_without_expanding_delete() {
+        assert_eq!(
+            recovered_initial_manual_toggle_target("ltkfq", "делай", 1, 5),
+            "сделай"
+        );
+    }
+
+    #[test]
+    fn daemon_manual_toggle_recovery_does_not_cross_multiword_tail() {
+        assert_eq!(
+            recovered_initial_manual_toggle_target("push ltkfq", "push делай", 2, 11),
+            "push делай"
+        );
+    }
 }

@@ -3,7 +3,7 @@ use lay::word_buffer::WordBuffer;
 use std::time::{Duration, Instant};
 
 use super::{
-    log, read_current_layout_is_ru, record_precognition_tick_if_enabled,
+    active_text_backend, log, read_current_layout_is_ru, record_precognition_tick_if_enabled,
     sync_ime_engine_to_current_layout, ShiftState, LAYOUT_POLL_INTERVAL_MS,
 };
 
@@ -48,8 +48,11 @@ pub(super) fn handle_typing_key_press(code: u16, value: i32, ctx: TypingKeyConte
         || ctx.last_layout_poll.elapsed() >= Duration::from_millis(LAYOUT_POLL_INTERVAL_MS)
     {
         if let Ok(is_ru) = read_current_layout_is_ru() {
+            let layout_changed = *ctx.current_layout_is_ru != is_ru;
             *ctx.current_layout_is_ru = is_ru;
-            sync_ime_engine_to_current_layout(is_ru);
+            if layout_changed || !active_text_backend().should_try_ime() {
+                sync_ime_engine_to_current_layout(is_ru);
+            }
         }
         *ctx.last_layout_poll = Instant::now();
     }

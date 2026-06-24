@@ -23,8 +23,8 @@ use super::typing_key_runtime::{handle_typing_key_press, TypingKeyContext};
 use super::{
     active_enter_autocorrect_from_env, active_layout_backend, idle_wait_timeout, log,
     poll_focused_window_state, poll_focused_window_state_for_key_event, should_skip_buffer_input,
-    wait_for_keyboard_event_or_timeout, DShiftState, ForceLayoutHotkeyContext, ShiftState,
-    ENTER_AUTOCORRECT_EXPERIMENT_ENV,
+    switch_to_target_layout, wait_for_keyboard_event_or_timeout, DShiftState,
+    ForceLayoutHotkeyContext, ShiftState, ENTER_AUTOCORRECT_EXPERIMENT_ENV,
 };
 
 pub(super) fn listen_keyboard(
@@ -176,6 +176,9 @@ pub(super) fn listen_keyboard(
 
             // ─── modifier tracking ────────────────────────────
             state.shift_state.update(key, value);
+            if handle_alt_shift_layout_switch(key, value, &mut state) {
+                continue;
+            }
             if should_advance_text_context(key, value, &state.shift_state) {
                 let epoch = field_context_epoch.fetch_add(1, Ordering::Relaxed) + 1;
                 if state.switch_field_context_epoch(epoch) && verbose {
@@ -345,6 +348,60 @@ pub(super) fn listen_keyboard(
                 );
             }
         }
+    }
+}
+
+fn handle_alt_shift_layout_switch(key: KeyCode, value: i32, state: &mut DaemonLoopState) -> bool {
+    if !matches!(
+        key,
+        KeyCode::KEY_LEFTSHIFT
+            | KeyCode::KEY_RIGHTSHIFT
+            | KeyCode::KEY_LEFTALT
+            | KeyCode::KEY_RIGHTALT
+    ) {
+        return false;
+    }
+
+    if state.shift_state.any() && state.shift_state.alt_active() {
+        if state.alt_shift_layout_before.is_none() {
+            let before = state.current_layout_is_ru;
+            state.alt_shift_layout_before = Some(before);
+            log(&format!(
+                "· alt-shift layout switch pending from {}",
+                if before { "ru" } else { "us" }
+            ));
+        }
+        return true;
+    }
+
+    if value == 0 {
+        let Some(before) = state.alt_shift_layout_before.take() else {
+            return false;
+        };
+        let current = super::read_current_layout_is_ru().unwrap_or(before);
+        let target = alt_shift_target_layout(before, current);
+        match switch_to_target_layout(target) {
+            Ok(layout_id) => {
+                state.current_layout_is_ru = target;
+                state.last_layout_poll = std::time::Instant::now();
+                state.buffer.reset_all();
+                state.pending_typing_assist_after_space.take();
+                state.clear_on_next_typing = true;
+                log(&format!("✓ alt-shift layout → {layout_id}"));
+            }
+            Err(error) => log(&format!("⚠ alt-shift layout switch failed: {error}")),
+        }
+        return true;
+    }
+
+    false
+}
+
+fn alt_shift_target_layout(before: bool, current: bool) -> bool {
+    if current == before {
+        !before
+    } else {
+        current
     }
 }
 

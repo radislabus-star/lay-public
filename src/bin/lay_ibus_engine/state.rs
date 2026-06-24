@@ -9,6 +9,42 @@ use super::protocol::Shared;
 use super::text::make_ibus_text;
 use super::trace;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum CommittedTailOutputProfile {
+    CommitOnly,
+    KittyTerminalErase,
+    WechatSurroundingText,
+    GenericSurroundingText,
+}
+
+impl CommittedTailOutputProfile {
+    fn select(cursor_cell_width: i32, surrounding_text_supported: bool, backspaces: u32) -> Self {
+        if backspaces == 0 {
+            return Self::CommitOnly;
+        }
+        if surrounding_text_supported {
+            return Self::WechatSurroundingText;
+        }
+        if cursor_cell_width > 0 {
+            return Self::KittyTerminalErase;
+        }
+        Self::GenericSurroundingText
+    }
+
+    fn output_route(self) -> &'static str {
+        match self {
+            Self::CommitOnly => "commit",
+            Self::KittyTerminalErase => "kitty_terminal_erase_commit",
+            Self::WechatSurroundingText => "wechat_surrounding_text_delete_commit",
+            Self::GenericSurroundingText => "surrounding_text_delete_commit",
+        }
+    }
+
+    fn uses_terminal_erase(self) -> bool {
+        matches!(self, Self::KittyTerminalErase)
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct CommittedTailReplaceRequest {
     pub(crate) source: VisibleTailSource,
@@ -191,16 +227,15 @@ impl LayIbusEngine {
         let clear_started = Instant::now();
         self.clear_preedit(emitter).await?;
         let clear_us = clear_started.elapsed().as_micros();
-        let output_route = if self.cursor_cell_width > 0 && backspaces > 0 {
-            "terminal_erase_commit"
-        } else if backspaces > 0 {
-            "surrounding_text_delete_commit"
-        } else {
-            "commit"
-        };
+        let output_profile = CommittedTailOutputProfile::select(
+            self.cursor_cell_width,
+            self.surrounding_text_supported,
+            backspaces,
+        );
+        let output_route = output_profile.output_route();
         trace::record_committed_tail_replace(source, output_route, backspaces, &text);
         let mut delete_us = 0;
-        let commit_text = if self.cursor_cell_width > 0 && backspaces > 0 {
+        let commit_text = if output_profile.uses_terminal_erase() {
             terminal_erase_prefix(backspaces) + &text
         } else {
             let delete_started = Instant::now();
@@ -290,7 +325,10 @@ fn terminal_erase_prefix(count: u32) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{CommittedTailReplaceRequest, LayIbusEngine, RecentCommittedTailReplace};
+    use super::{
+        CommittedTailOutputProfile, CommittedTailReplaceRequest, LayIbusEngine,
+        RecentCommittedTailReplace,
+    };
     use lay::config::LayConfig;
     use lay::manual_toggle::VisibleTailSource;
     use std::sync::{Arc, Mutex};
@@ -336,6 +374,36 @@ mod tests {
     #[test]
     fn terminal_erase_prefix_is_delete_control_run_only() {
         assert_eq!(super::terminal_erase_prefix(3), "\u{7f}\u{7f}\u{7f}");
+    }
+
+    #[test]
+    fn kitty_profile_keeps_existing_terminal_erase_route() {
+        let profile = CommittedTailOutputProfile::select(9, false, 7);
+
+        assert_eq!(profile, CommittedTailOutputProfile::KittyTerminalErase);
+        assert_eq!(profile.output_route(), "kitty_terminal_erase_commit");
+        assert!(profile.uses_terminal_erase());
+    }
+
+    #[test]
+    fn wechat_profile_prefers_surrounding_text_over_terminal_erase() {
+        let profile = CommittedTailOutputProfile::select(9, true, 7);
+
+        assert_eq!(profile, CommittedTailOutputProfile::WechatSurroundingText);
+        assert_eq!(
+            profile.output_route(),
+            "wechat_surrounding_text_delete_commit"
+        );
+        assert!(!profile.uses_terminal_erase());
+    }
+
+    #[test]
+    fn plain_commits_do_not_select_delete_profile() {
+        let profile = CommittedTailOutputProfile::select(9, true, 0);
+
+        assert_eq!(profile, CommittedTailOutputProfile::CommitOnly);
+        assert_eq!(profile.output_route(), "commit");
+        assert!(!profile.uses_terminal_erase());
     }
 
     #[test]

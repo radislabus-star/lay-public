@@ -33,6 +33,11 @@ impl LayIbusEngine {
             self.shift_active = pressed;
             if pressed {
                 self.shift_used_as_modifier = false;
+                if self.alt_completion_active {
+                    self.alt_used_as_modifier = true;
+                    self.shift_used_as_modifier = true;
+                    return Ok(self.toggle_layout_from_modifier_hotkey());
+                }
             } else {
                 self.shift_used_as_modifier = false;
                 self.last_shift_release_at = None;
@@ -43,7 +48,11 @@ impl LayIbusEngine {
             let pressed = is_key_press(state);
             if pressed {
                 self.alt_completion_active = true;
-                self.alt_used_as_modifier = false;
+                self.alt_used_as_modifier = self.shift_active;
+                if self.shift_active {
+                    self.shift_used_as_modifier = true;
+                    return Ok(self.toggle_layout_from_modifier_hotkey());
+                }
                 return Ok(false);
             }
             if self.alt_completion_active && !self.alt_used_as_modifier {

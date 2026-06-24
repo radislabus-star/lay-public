@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::OnceLock;
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -522,14 +523,29 @@ pub fn default_phrase_experience_path() -> Option<PathBuf> {
         .map(|home| home.join(PHRASE_EXPERIENCE_PATH))
 }
 
+static DEFAULT_MEMORY: OnceLock<LlmWaveMemory> = OnceLock::new();
+static DEFAULT_MEMORY_WARM: AtomicBool = AtomicBool::new(false);
+
 pub fn load_default_memory() -> LlmWaveMemory {
-    static MEMORY: OnceLock<LlmWaveMemory> = OnceLock::new();
-    MEMORY.get_or_init(load_default_memory_uncached).clone()
+    DEFAULT_MEMORY
+        .get_or_init(|| {
+            let memory = load_default_memory_uncached();
+            DEFAULT_MEMORY_WARM.store(true, Ordering::Release);
+            memory
+        })
+        .clone()
 }
 
 pub fn with_default_memory<T>(f: impl FnOnce(&LlmWaveMemory) -> T) -> T {
-    static MEMORY: OnceLock<LlmWaveMemory> = OnceLock::new();
-    f(MEMORY.get_or_init(load_default_memory_uncached))
+    f(DEFAULT_MEMORY.get_or_init(|| {
+        let memory = load_default_memory_uncached();
+        DEFAULT_MEMORY_WARM.store(true, Ordering::Release);
+        memory
+    }))
+}
+
+pub fn default_memory_is_warm() -> bool {
+    DEFAULT_MEMORY_WARM.load(Ordering::Acquire)
 }
 
 pub fn load_default_memory_uncached() -> LlmWaveMemory {
