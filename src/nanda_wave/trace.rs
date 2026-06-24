@@ -75,4 +75,37 @@ mod tests {
             .iter()
             .any(|layer| layer.name == crate::nanda_wave::llmwave::LLMWAVE_CELL));
     }
+
+    #[test]
+    fn trace_prefers_hidden_boundary_over_single_word_typo() {
+        let trace = run_wave_trace("влогах ");
+        assert_eq!(trace.output(), Some("в логах "));
+        assert!(trace.l2_candidates.iter().any(|candidate| {
+            candidate.source == "BoundaryCell32" && candidate.text == "в логах"
+        }));
+    }
+
+    #[test]
+    fn trace_keeps_single_all_caps_russian_term() {
+        let trace = run_wave_trace("БЕЙСОВКИ ");
+        assert_eq!(trace.output(), None);
+        assert!(trace
+            .l2_candidates
+            .iter()
+            .all(|candidate| candidate.source != "PhraseCell32"));
+    }
+
+    #[test]
+    fn trace_keeps_live_log_semantic_word_drifts() {
+        for original in ["модель генерит ", "окончанием слов "] {
+            let trace = run_wave_trace(original);
+            assert_eq!(trace.output(), None, "original={original:?}: {trace:?}");
+        }
+    }
+
+    #[test]
+    fn trace_still_repairs_clear_semantic_transposition() {
+        let trace = run_wave_trace("делай инстурменты ");
+        assert_eq!(trace.output(), Some("делай инструменты "));
+    }
 }

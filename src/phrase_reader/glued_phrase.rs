@@ -28,6 +28,9 @@ pub fn correct_glued_russian_phrase(word: &str) -> Option<String> {
     }
 
     let lower = word.to_lowercase();
+    if looks_like_single_prefixed_verb(&lower) {
+        return None;
+    }
     if russian_dictionary().contains(&lower)
         || russian_generated_form_dictionary().contains(&lower)
         || (is_known_russian_word_or_form(&lower) && !looks_like_word_glued_to_trailing_ya(&lower))
@@ -176,4 +179,32 @@ fn starts_with_multi_letter_preposition_text(text: &str) -> bool {
     text.split_whitespace()
         .next()
         .is_some_and(|part| part.chars().count() >= 2 && is_common_short_russian_preposition(part))
+}
+
+fn looks_like_single_prefixed_verb(lower: &str) -> bool {
+    const PREFIXES: &[&str] = &[
+        "пере", "недо", "пред", "про", "при", "под", "над", "без", "раз", "рас", "воз", "вос",
+        "до", "за", "на", "от", "по", "вы", "об",
+    ];
+    const VERB_TAILS: &[&str] = &[
+        "ется",
+        "ётся",
+        "атся",
+        "ятся",
+        "уется",
+        "ается",
+        "яется",
+        "ывает",
+        "ивает",
+        "ешь",
+        "ишь",
+        "ает",
+        "яет",
+        "ует",
+        "ит",
+        "ет",
+    ];
+    lower.chars().count() >= 8
+        && PREFIXES.iter().any(|prefix| lower.starts_with(prefix))
+        && VERB_TAILS.iter().any(|tail| lower.ends_with(tail))
 }

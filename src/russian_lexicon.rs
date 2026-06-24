@@ -13,7 +13,8 @@ mod word_set;
 
 pub(crate) use forms::{
     is_known_cyrillic_hyphen_part, is_known_russian_adverb_o_form,
-    is_known_russian_ka_oblique_form, looks_like_russian_adjective_lemma,
+    is_known_russian_ka_oblique_form, ka_oblique_forms_for_prefix,
+    looks_like_russian_adjective_lemma,
 };
 use hunspell::{
     load_hunspell_generated_forms_min_len, load_hunspell_words_min_len, load_word_list,

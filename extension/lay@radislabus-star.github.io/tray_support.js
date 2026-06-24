@@ -140,6 +140,7 @@ export const DEFAULTS = {
     nanda_trace: false,
     nanda_trace_text: false,
     nanda_precognition: false,
+    ime_bracket_candidates: false,
 };
 
 export function loadConfig() {
@@ -193,6 +194,7 @@ export function normalizeConfig(cfg) {
         layout_backend: normalizeChoice(cfg?.layout_backend, LAYOUT_BACKEND_OPTIONS.map(([id]) => id), DEFAULTS.layout_backend),
         text_backend: textBackend,
         nanda_precognition: !!cfg?.nanda_precognition,
+        ime_bracket_candidates: !!cfg?.ime_bracket_candidates,
         correction_safety: normalizeChoice(cfg?.correction_safety, SAFETY_OPTIONS.map(([id]) => id), DEFAULTS.correction_safety),
         ptah_alexs_mode: !!cfg?.ptah_alexs_mode,
         multi_tap_scope: !!cfg?.multi_tap_scope,

@@ -313,6 +313,11 @@ class LayIndicator extends PanelMenu.Button {
             'nanda_precognition',
             false
         ));
+        item.menu.addMenuItem(this._switchItem(
+            'Подсказки в [скобках]',
+            'ime_bracket_candidates',
+            false
+        ));
         return item;
     }
 

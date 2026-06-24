@@ -82,6 +82,7 @@ pub struct LayConfig {
     pub nanda_trace: bool,
     pub nanda_trace_text: bool,
     pub nanda_precognition: bool,
+    pub ime_bracket_candidates: bool,
     pub llmwave_shadow: bool,
     pub llmwave_apply: bool,
 }

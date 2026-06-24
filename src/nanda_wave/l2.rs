@@ -2,8 +2,10 @@ use crate::config::CorrectionSafety;
 use crate::dict::{convert, detect_direction};
 use crate::lexicon::{
     is_common_en_guard_prefix, is_common_en_technical_word, is_common_ru_word,
-    is_ru_short_function_word, visual_b_after_ascii_replacement, visual_b_default_replacement,
+    is_ru_one_letter_function_word, is_ru_short_function_word, visual_b_after_ascii_replacement,
+    visual_b_default_replacement,
 };
+use crate::russian_lexicon::is_known_russian_word_or_form;
 use crate::typing_candidate::TypingCandidateFamily;
 use crate::typing_context;
 use crate::typing_pipeline::explain_typing_assist_with_pipeline;
@@ -275,6 +277,9 @@ fn taught_word_candidate(input: TaughtCandidateInput<'_>) -> Option<WordCandidat
         }
         _ => return None,
     };
+    if source == "PhraseCell32" && unsafe_single_token_phrase_typo(input.original, replacement) {
+        return None;
+    }
     Some(WordCandidate {
         text: replacement.to_string(),
         source,
@@ -697,22 +702,36 @@ fn boundary_split_candidates(
         if left.chars().count() > 2 && right.chars().count() < 3 {
             continue;
         }
-        if !is_common_ru_word(&left) || !is_common_ru_word(&right) {
+        let short_function_boundary =
+            left.chars().count() == 1 && is_ru_one_letter_function_word(&left);
+        let known_left = short_function_boundary || is_common_ru_word(&left);
+        let known_right = is_common_ru_word(&right) || is_known_russian_word_or_form(&right);
+        if !known_left || !known_right {
             continue;
         }
+        let (energy, risk, reason) = if short_function_boundary {
+            (
+                l1_energy(l1, "BoundaryCell32").max(0.99),
+                0.04,
+                "hidden-short-function-boundary",
+            )
+        } else {
+            (
+                l1_energy(l1, "BoundaryCell32").max(0.78),
+                if left.chars().count() <= 2 {
+                    0.18
+                } else {
+                    0.12
+                },
+                "dictionary-split",
+            )
+        };
         candidates.push(WordCandidate {
             text: format!("{prefix}{left} {right}"),
             source: "BoundaryCell32",
-            energy: l1_energy(l1, "BoundaryCell32").max(0.78),
-            risk: if left.chars().count() <= 2 {
-                0.18
-            } else {
-                0.12
-            },
-            support: vec![
-                "dictionary-split".to_string(),
-                format!("left={left:?} right={right:?}"),
-            ],
+            energy,
+            risk,
+            support: vec![reason.to_string(), format!("left={left:?} right={right:?}")],
         });
         if candidates.len() >= 3 {
             break;
@@ -850,6 +869,21 @@ fn normalized_edit_ratio(original: &str, replacement: &str) -> f32 {
 
 fn compact_text(text: &str) -> String {
     text.chars().filter(|ch| !ch.is_whitespace()).collect()
+}
+
+fn unsafe_single_token_phrase_typo(original: &str, replacement: &str) -> bool {
+    let original = original.trim();
+    let replacement = replacement.trim();
+    if original.split_whitespace().count() != 1 || replacement.split_whitespace().count() != 1 {
+        return false;
+    }
+    if original == replacement {
+        return false;
+    }
+    original.chars().count() >= 4
+        && original.chars().all(is_cyrillic_letter)
+        && original.chars().any(char::is_uppercase)
+        && original.chars().all(|ch| !ch.is_lowercase())
 }
 
 fn l1_energy(l1: &[WavePacket], cell: &str) -> f32 {
@@ -1015,6 +1049,37 @@ mod tests {
         assert!(candidates
             .iter()
             .any(|candidate| candidate.text == "она есть"));
+    }
+
+    #[test]
+    fn boundary_cell_recovers_one_letter_function_boundary() {
+        let original = "влогах ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        let split = candidates
+            .iter()
+            .find(|candidate| candidate.text == "в логах")
+            .expect("hidden short function boundary candidate");
+        assert_eq!(split.source, "BoundaryCell32");
+        assert!(
+            split.energy - split.risk > 0.90,
+            "split candidate must outrank single-word typo: {split:?}"
+        );
+    }
+
+    #[test]
+    fn phrase_cell_does_not_rewrite_single_all_caps_russian_terms() {
+        for original in ["БЕЙСОВ ", "БЕЙСОВК ", "БЕЙСОВКИ ", "БЕЙСОВСКИ "]
+        {
+            let l1 = run_l1(original);
+            let candidates = run_l2(original, &l1);
+            assert!(
+                candidates
+                    .iter()
+                    .all(|candidate| candidate.source != "PhraseCell32"),
+                "all-caps term should not get PhraseCell typo candidate: {original:?} -> {candidates:?}"
+            );
+        }
     }
 
     #[test]

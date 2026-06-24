@@ -66,6 +66,39 @@ fn auto_replace_regression_suite() {
 }
 
 #[test]
+fn typing_assist_keeps_live_log_false_positive_words() {
+    for input in [
+        "бейсовских ",
+        "свойств ",
+        "окончанием слов ",
+        "переиспользуется ",
+        "спикок ",
+        "лучшить ",
+    ] {
+        assert_eq!(apply_typing_assist_exact(input), None, "input={input:?}");
+    }
+}
+
+#[test]
+fn typing_assist_keeps_live_log_good_repairs() {
+    for (input, expected) in [
+        ("смтори ", "смотри "),
+        ("спсика ", "списка "),
+        ("дургие ", "другие "),
+        ("нилинейная ", "нелинейная "),
+        ("провблему ", "проблему "),
+        ("спаибо ", "спасибо "),
+        ("свойсва ", "свойства "),
+    ] {
+        assert_eq!(
+            apply_typing_assist_exact(input),
+            Some(expected.to_string()),
+            "input={input:?}"
+        );
+    }
+}
+
+#[test]
 fn replaces_visual_b_inside_russian_context() {
     for row in fixture_rows("daemon_auto_replace_visual_b.tsv") {
         assert_eq!(row.len(), 3, "visual-b fixture must be TSV");

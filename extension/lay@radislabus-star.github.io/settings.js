@@ -187,6 +187,7 @@ const DEFAULTS = {
     nanda_trace: false,
     nanda_trace_text: false,
     nanda_precognition: false,
+    ime_bracket_candidates: false,
 };
 
 function choice(value, allowed, fallback) {
@@ -208,6 +209,7 @@ function normalize(cfg) {
         layout_backend: choice(cfg?.layout_backend, OPTIONS.layout_backend.map(([id]) => id), DEFAULTS.layout_backend),
         text_backend: textBackend,
         nanda_precognition: !!cfg?.nanda_precognition,
+        ime_bracket_candidates: !!cfg?.ime_bracket_candidates,
         trigger: choice(cfg?.trigger, OPTIONS.trigger.map(([id]) => id), DEFAULTS.trigger),
         force_ru_key: choice(cfg?.force_ru_key, OPTIONS.force_key.map(([id]) => id), DEFAULTS.force_ru_key),
         force_en_key: choice(cfg?.force_en_key, OPTIONS.force_key.map(([id]) => id), DEFAULTS.force_en_key),
@@ -328,6 +330,7 @@ class SettingsView {
             this.weightRow('Вес L2 кандидатов', 'nanda_l2_weight_percent', false),
             this.weightRow('Вес L3 фразы', 'nanda_l3_weight_percent', false),
             this.switchRow('Подсказки NANDA', 'nanda_precognition', false),
+            this.switchRow('Подсказки в [скобках]', 'ime_bracket_candidates', false),
             this.switchRow('Автокоррекция NANDA', 'nanda_autocorrect', false),
             this.buttonRow('NANDA ячейки', 'Открыть', () => this.showNandaWindow()),
             this.switchRow('Раскладка по окну', 'ptah_alexs_mode', false),

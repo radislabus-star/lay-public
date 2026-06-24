@@ -5,12 +5,13 @@ use zbus::object_server::SignalEmitter;
 use super::engine::LayIbusEngine;
 use super::text::{make_ibus_text, make_preedit_ibus_text};
 use super::trace;
+use lay::russian_lexicon::is_known_russian_word_or_form;
 
 const PREEDIT_TAIL_LIMIT: usize = 160;
 const PREEDIT_TOKEN_LIMIT: usize = 32;
 const PREEDIT_ASCII_CANDIDATE_LIMIT: usize = 8;
 const PREEDIT_RU_WAVE_CANDIDATE_LIMIT: usize = 8;
-const PREEDIT_RU_WAVE_SCAN_LIMIT: usize = 24;
+const PREEDIT_RU_WAVE_SCAN_LIMIT: usize = 64;
 const PREEDIT_RU_PREFIX_MIN_CHARS: usize = 3;
 #[cfg(test)]
 const PREEDIT_PROBE_SYMBOL: &str = "*";
@@ -193,7 +194,7 @@ impl LayIbusEngine {
         } else {
             self.preedit_suffix.clone()
         };
-        (suffix, 0)
+        (self.visible_precognition_suffix(suffix), 0)
     }
 
     fn composition_preedit_payload(&mut self) -> (String, u32) {
@@ -207,8 +208,15 @@ impl LayIbusEngine {
         };
         self.preedit_suffix = suffix.clone();
         let mut text = self.buffer.clone();
-        text.push_str(&suffix);
+        text.push_str(&self.visible_precognition_suffix(suffix));
         (text, cursor_pos)
+    }
+
+    fn visible_precognition_suffix(&self, suffix: String) -> String {
+        if suffix.is_empty() || !self.config.ime_bracket_candidates {
+            return suffix;
+        }
+        format!("[{suffix}]")
     }
 
     pub(super) fn selected_precognition_suffix(&self) -> Option<String> {
@@ -354,9 +362,11 @@ impl LayIbusEngine {
         };
         let partial = partial.to_lowercase();
         let partial_len = partial.chars().count();
-        if !(PREEDIT_RU_PREFIX_MIN_CHARS..=12).contains(&partial_len)
+        let min_prefix_chars = self.ru_lexical_min_prefix_chars();
+        if !(min_prefix_chars..=12).contains(&partial_len)
             || !partial.chars().all(|ch| matches!(ch, 'а'..='я' | 'ё'))
             || prefix.split_whitespace().next().is_none()
+            || is_known_russian_word_or_form(&partial)
         {
             return Vec::new();
         }
@@ -399,11 +409,18 @@ impl LayIbusEngine {
         }
 
         let prefix_tokens = lay::nanda_wave::llmwave::tokenize(prefix);
+        let allow_short_lexical =
+            self.config.active_correction_safety() == lay::config::CorrectionSafety::Experimental;
         let mut ranked = suffixes
             .into_iter()
             .filter_map(|suffix| {
                 let word = format!("{partial}{suffix}");
-                let score = l3_or_lexical_precognition_score(&prefix_tokens, &word, partial_len)?;
+                let score = l3_or_lexical_precognition_score(
+                    &prefix_tokens,
+                    &word,
+                    partial_len,
+                    allow_short_lexical,
+                )?;
                 Some((suffix, score))
             })
             .collect::<Vec<_>>();
@@ -444,6 +461,14 @@ impl LayIbusEngine {
 
     fn precognition_preedit_enabled(&self) -> bool {
         self.config.active_nanda_precognition()
+    }
+
+    fn ru_lexical_min_prefix_chars(&self) -> usize {
+        if self.config.ime_bracket_candidates {
+            4
+        } else {
+            PREEDIT_RU_PREFIX_MIN_CHARS
+        }
     }
 
     pub(super) fn push_tail_char(&mut self, ch: char) {
@@ -498,17 +523,22 @@ fn l3_or_lexical_precognition_score(
     prefix_tokens: &[String],
     word: &str,
     partial_len: usize,
+    allow_short_lexical: bool,
 ) -> Option<f32> {
+    let min_lexical_prefix = if allow_short_lexical { 3 } else { 4 };
+    let word_len = word.chars().count();
+    let lexical_backoff_allowed = partial_len >= min_lexical_prefix
+        && (partial_len >= 4 || word_len.saturating_sub(partial_len) <= 3);
     if lay::nanda_wave::llmwave::default_memory_is_warm() {
         return lay::nanda_wave::llmwave::with_default_memory(|memory| {
             if let Some(report) = memory.score_next_token_report(prefix_tokens, word) {
                 return (report.score >= 0.18)
                     .then_some((0.62 + report.score * 0.34).clamp(0.0, 1.0));
             }
-            (partial_len >= 4).then_some((0.28 + partial_len as f32 * 0.035).clamp(0.0, 0.55))
+            lexical_backoff_allowed.then_some((0.28 + partial_len as f32 * 0.035).clamp(0.0, 0.55))
         });
     }
-    (partial_len >= 4).then_some((0.28 + partial_len as f32 * 0.035).clamp(0.0, 0.55))
+    lexical_backoff_allowed.then_some((0.28 + partial_len as f32 * 0.035).clamp(0.0, 0.55))
 }
 
 fn phrase_candidate_suffix(tail: &str, candidate: &str, max_suffix_chars: usize) -> Option<String> {
@@ -665,6 +695,89 @@ mod tests {
                 .iter()
                 .all(|suffix| !format!("за{suffix}").contains("запят")),
             "ambiguous prefix should not suggest project/chat noise: {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
+    fn three_letter_russian_prefix_does_not_emit_long_lexical_tail_without_l3() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "интересно инт".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine
+                .preedit_candidates
+                .iter()
+                .all(|suffix| suffix != "алия"),
+            "short prefix must not leak long dictionary-only tails: {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
+    fn bracketed_mode_suppresses_three_letter_russian_lexical_noise() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                ime_bracket_candidates: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "интересно инт".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine.preedit_candidates.is_empty(),
+            "bracket mode must not show weak three-letter Russian guesses: {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
+    fn known_russian_word_does_not_get_extended_by_precognition() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                ime_bracket_candidates: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "просто просто".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine.preedit_candidates.is_empty(),
+            "known word must not be extended by weak suffixes: {:?}",
             engine.preedit_candidates
         );
     }
@@ -896,6 +1009,32 @@ mod tests {
             engine.push_tail_char(ch);
         }
         assert_eq!(engine.precognition_suffix().as_deref(), None);
+    }
+
+    #[test]
+    fn experimental_short_russian_prefix_gets_lexical_candidates() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "смотрим что будет происходить когда при".chars()
+        {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            !engine.preedit_candidates.is_empty(),
+            "experimental L2 should not stay silent for contextual prefix 'при'"
+        );
     }
 
     #[test]
@@ -1139,6 +1278,32 @@ mod tests {
         engine.tail_buffer = "при".to_string();
         engine.preedit_suffix = "вет".to_string();
         assert_eq!(engine.preedit_text_for_client(), ("вет".to_string(), 0));
+    }
+
+    #[test]
+    fn bracketed_precognition_is_display_only() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                ime_bracket_candidates: true,
+                nanda_l2_weight_percent: 200,
+                ..LayConfig::default()
+            },
+        );
+        engine.buffer = "хоро".to_string();
+        engine.composition_cursor = 4;
+        engine.preedit_candidates = vec!["шо".to_string()];
+
+        assert_eq!(
+            engine.composition_preedit_payload(),
+            ("хоро[шо]".to_string(), 4)
+        );
+        assert_eq!(engine.selected_visible_completion_suffix().as_str(), "шо");
     }
 
     #[test]

@@ -59,6 +59,38 @@ pub(crate) fn is_known_russian_ka_oblique_form(word: &str) -> bool {
     false
 }
 
+pub(crate) fn ka_oblique_forms_for_prefix(
+    prefix: &str,
+    min_chars: usize,
+    max_chars: usize,
+    limit: usize,
+) -> Vec<String> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let mut out = Vec::with_capacity(limit.min(32));
+    let lemma_min_chars = min_chars.saturating_sub(2).max(3);
+    for lemma in russian_dictionary().prefix_words(prefix, lemma_min_chars, max_chars, limit) {
+        let Some(stem) = lemma.strip_suffix("ка") else {
+            continue;
+        };
+        if stem.chars().count() < 3 {
+            continue;
+        }
+        for suffix in ka_oblique_suffixes() {
+            let candidate = format!("{stem}{suffix}");
+            let len = candidate.chars().count();
+            if (min_chars..=max_chars).contains(&len) {
+                out.push(candidate);
+                if out.len() >= limit {
+                    return out;
+                }
+            }
+        }
+    }
+    out
+}
+
 pub(crate) fn is_known_cyrillic_hyphen_part(part: &str, dict: &WordSet) -> bool {
     let lower = part.to_lowercase();
     dict.contains(&lower)

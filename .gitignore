@@ -7,6 +7,7 @@ __pycache__/
 .env
 .env.*
 /dist
+/.nanda
 /models
 /corpus/*.txt
 /corpus/*.arpa

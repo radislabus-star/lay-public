@@ -6,8 +6,9 @@ use crate::layout_autoswitch::{
     correct_wrong_layout_cyrillic_word_experimental,
 };
 use crate::phrase_reader::{
-    correct_contextual_glued_tail, correct_contextual_known_word_missing_letter,
-    correct_glued_russian_phrase, correct_moved_prefix_letter_pair, correct_split_word_pair,
+    correct_contextual_fuzzy_pair, correct_contextual_glued_tail,
+    correct_contextual_known_word_missing_letter, correct_glued_russian_phrase,
+    correct_moved_prefix_letter_pair, correct_split_word_pair,
 };
 use crate::ru_typo::{
     correct_adjacent_transposition, correct_contextual_past_tense_vowel_confusion,
@@ -152,6 +153,7 @@ pub(super) fn apply_extra_letters(ctx: &TypingRuleContext<'_>) -> Option<String>
 
 pub(super) fn apply_missing_letter(ctx: &TypingRuleContext<'_>) -> Option<String> {
     correct_contextual_known_word_missing_letter(ctx.core)
+        .or_else(|| correct_contextual_fuzzy_pair(ctx.core))
         .or_else(|| apply_short_left_word_rule(ctx, correct_missing_letter))
         .or_else(|| apply_word_rule(ctx, correct_missing_letter))
 }

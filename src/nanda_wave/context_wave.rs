@@ -187,6 +187,8 @@ fn nearest_ru_word_candidates(tail: &str) -> Vec<WordCandidate> {
                 || (len >= 10 && distance == 3 && resonance >= 0.68)
                 || negative_prefix_repair(&normalized, &entry.word, distance);
             (allowed
+                && !looks_like_short_word_drift(&normalized, &entry.word)
+                && !looks_like_verb_to_nonverb_drift(&normalized, &entry.word)
                 && !looks_like_suffix_stripping(&normalized, &entry.word)
                 && !looks_like_case_vowel_append_drift(&normalized, &entry.word)
                 && !looks_like_case_vowel_to_consonant_drift(&normalized, &entry.word)
@@ -289,6 +291,15 @@ fn looks_like_known_verb_to_noun_drift(original: &str, candidate: &str) -> bool 
         && !has_russian_verb_tail(candidate)
 }
 
+fn looks_like_verb_to_nonverb_drift(original: &str, candidate: &str) -> bool {
+    (has_russian_present_tail(original) && !has_russian_present_tail(candidate))
+        || (has_russian_verb_tail(original) && !has_russian_verb_tail(candidate))
+}
+
+fn looks_like_short_word_drift(original: &str, candidate: &str) -> bool {
+    original.chars().count() <= 4 && candidate.chars().count() <= 5 && original != candidate
+}
+
 fn looks_like_known_form_to_other_known_word_drift(
     original: &str,
     candidate: &str,
@@ -319,6 +330,14 @@ fn has_russian_verb_tail(word: &str) -> bool {
         "ило", "или", "ил", "ено", "ена", "ены", "ает", "яет", "ует",
     ];
     VERB_TAILS.iter().any(|tail| word.ends_with(tail))
+}
+
+fn has_russian_present_tail(word: &str) -> bool {
+    const PRESENT_TAILS: &[&str] = &[
+        "ется", "ётся", "атся", "ятся", "ешь", "ишь", "ете", "ите", "ают", "яют", "уют", "ют",
+        "ут", "ат", "ят", "ает", "яет", "ует", "ет", "ит",
+    ];
+    PRESENT_TAILS.iter().any(|tail| word.ends_with(tail))
 }
 
 fn looks_like_suffix_stripping(original: &str, candidate: &str) -> bool {

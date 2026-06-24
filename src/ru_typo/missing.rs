@@ -73,6 +73,9 @@ fn is_safe_missing_letter_candidate(lower: &str, candidate: &str) -> bool {
             return false;
         }
         if idx == lower.chars().count() {
+            if lower.ends_with("ств") {
+                return false;
+            }
             return is_russian_vowel(inserted)
                 && lower
                     .chars()

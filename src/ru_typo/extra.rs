@@ -25,10 +25,13 @@ pub fn correct_extra_letters(word: &str) -> Option<String> {
     if let Some(candidate) = correct_invalid_adjective_tail(word, &lower) {
         return Some(candidate);
     }
-    if missing_letter_candidate_exists(word, &lower) {
+    let candidate = best_extra_letter_candidate(word, safe_extra_letter_candidates(&lower))?;
+    if missing_letter_candidate_exists(word, &lower)
+        && !looks_like_present_tail_extra_letter_repair(&lower, &candidate.to_lowercase())
+    {
         return None;
     }
-    best_extra_letter_candidate(word, safe_extra_letter_candidates(&lower))
+    Some(candidate)
 }
 
 pub fn repair_extra_letters_after_layout(word: &str) -> Option<String> {
@@ -37,6 +40,15 @@ pub fn repair_extra_letters_after_layout(word: &str) -> Option<String> {
     }
     let lower = word.to_lowercase();
     best_common_extra_letter_candidate(word, safe_extra_letter_candidates(&lower))
+}
+
+fn looks_like_present_tail_extra_letter_repair(lower: &str, candidate: &str) -> bool {
+    const PRESENT_TAILS: &[&str] = &[
+        "ется", "ётся", "атся", "ятся", "ешь", "ишь", "ете", "ите", "ают", "яют", "уют", "ют",
+        "ут", "ат", "ят", "ает", "яет", "ует", "ет", "ит",
+    ];
+    lower.chars().count() == candidate.chars().count() + 1
+        && PRESENT_TAILS.iter().any(|tail| candidate.ends_with(tail))
 }
 
 #[cfg(test)]

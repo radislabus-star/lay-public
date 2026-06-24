@@ -4,6 +4,8 @@
 //! glued words, accidentally split words, and a letter moved into the next
 //! word. Runtime output and daemon state live elsewhere.
 
+#[path = "phrase_reader/contextual_fuzzy.rs"]
+mod contextual_fuzzy;
 #[path = "phrase_reader/contextual_tail.rs"]
 mod contextual_tail;
 #[path = "phrase_reader/glued_phrase.rs"]
@@ -17,6 +19,7 @@ mod moved_prefix;
 #[path = "phrase_reader/split_pair.rs"]
 mod split_pair;
 
+pub(crate) use contextual_fuzzy::correct_contextual_fuzzy_pair;
 pub use contextual_tail::correct_contextual_glued_tail;
 pub use glued_phrase::correct_glued_russian_phrase;
 pub(crate) use known_word_missing::correct_contextual_known_word_missing_letter;

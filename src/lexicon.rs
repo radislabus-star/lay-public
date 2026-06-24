@@ -35,6 +35,7 @@ const VISUAL_B_AFTER_ASCII_DATA: &str = include_str!("../data/lexicon/visual_b_a
 pub fn warm_up() {
     let _ = common_ru_words().len();
     let _ = common_ru_prefix_index().len();
+    let _ = hunspell_ru_words_ordered().len();
     let _ = common_en_technical_words().len();
     let _ = common_en_technical_prefix_index().len();
     let _ = common_en_guard_prefixes().len();
@@ -85,14 +86,29 @@ pub fn common_ru_prefix_completion_words(
     if prefix.is_empty() || limit == 0 {
         return Vec::new();
     }
-    common_ru_prefix_index()
+    let mut words = common_ru_prefix_index()
         .get(&prefix)
         .into_iter()
         .flatten()
         .filter(|word| word.chars().count() - prefix.chars().count() <= max_suffix_chars)
         .take(limit)
         .cloned()
-        .collect()
+        .collect::<Vec<_>>();
+    if words.len() >= limit {
+        return words;
+    }
+
+    let mut seen = words.iter().cloned().collect::<HashSet<_>>();
+    for word in hunspell_ru_prefix_completion_words(&prefix, max_suffix_chars, limit - words.len())
+    {
+        if seen.insert(word.clone()) {
+            words.push(word);
+            if words.len() >= limit {
+                break;
+            }
+        }
+    }
+    words
 }
 
 pub fn common_en_technical_prefix_completion(
@@ -223,6 +239,45 @@ fn common_ru_prefix_index() -> &'static HashMap<String, Vec<String>> {
     INDEX.get_or_init(|| build_prefix_index(common_ru_words_ordered()))
 }
 
+fn hunspell_ru_words_ordered() -> &'static Vec<String> {
+    static WORDS: OnceLock<Vec<String>> = OnceLock::new();
+    WORDS.get_or_init(|| {
+        let Ok(text) = std::fs::read_to_string(RU_HUNSPELL) else {
+            return Vec::new();
+        };
+        let mut words = parse_hunspell_ru_words(&text);
+        words.sort();
+        words.dedup();
+        words
+    })
+}
+
+fn hunspell_ru_prefix_completion_words(
+    prefix: &str,
+    max_suffix_chars: usize,
+    limit: usize,
+) -> Vec<String> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let words = hunspell_ru_words_ordered();
+    let start = words.partition_point(|word| word.as_str() < prefix);
+    let prefix_len = prefix.chars().count();
+    let mut result = Vec::with_capacity(limit.min(8));
+    for word in words.iter().skip(start) {
+        if !word.starts_with(prefix) {
+            break;
+        }
+        if word.chars().count().saturating_sub(prefix_len) <= max_suffix_chars {
+            result.push(word.clone());
+            if result.len() >= limit {
+                break;
+            }
+        }
+    }
+    result
+}
+
 fn common_en_technical_words() -> &'static HashSet<String> {
     static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
     WORDS.get_or_init(|| parse_word_data(COMMON_EN_TECHNICAL_DATA))
@@ -296,6 +351,25 @@ fn ru_greeting_words() -> &'static HashSet<String> {
 
 fn parse_word_data(data: &str) -> HashSet<String> {
     data_lines(data).map(str::to_lowercase).collect()
+}
+
+fn parse_hunspell_ru_words(data: &str) -> Vec<String> {
+    data.lines()
+        .skip(1)
+        .filter_map(|line| line.split('/').next())
+        .map(str::trim)
+        .filter(|word| {
+            let len = word.chars().count();
+            (3..=24).contains(&len)
+                && word.chars().next().is_some_and(char::is_lowercase)
+                && word.chars().all(is_russian_letter)
+        })
+        .map(str::to_lowercase)
+        .collect()
+}
+
+fn is_russian_letter(ch: char) -> bool {
+    matches!(ch, 'а'..='я' | 'ё' | 'А'..='Я' | 'Ё')
 }
 
 #[cfg(test)]

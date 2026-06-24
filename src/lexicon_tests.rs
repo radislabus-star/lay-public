@@ -69,3 +69,36 @@ fn protected_ascii_words_parser_keeps_short_user_tokens() {
         );
     }
 }
+
+#[test]
+fn hunspell_ru_parser_keeps_common_lowercase_words_without_flags() {
+    let words = parse_hunspell_ru_words(
+        "6\n\
+         Пропер/I\n\
+         привет/K\n\
+         следующий/A\n\
+         улучшить/BLRW\n\
+         wi-fi\n\
+         ЧПУ\n\
+         я\n",
+    );
+
+    assert!(words.contains(&"привет".to_string()));
+    assert!(words.contains(&"следующий".to_string()));
+    assert!(words.contains(&"улучшить".to_string()));
+    assert!(!words.contains(&"пропер".to_string()));
+    assert!(!words.contains(&"wi-fi".to_string()));
+    assert!(!words.contains(&"чпу".to_string()));
+    assert!(!words.contains(&"я".to_string()));
+}
+
+#[test]
+fn ru_prefix_completion_uses_system_dictionary_fallback() {
+    let candidates = common_ru_prefix_completion_words("следующ", 16, 16);
+    if std::path::Path::new(RU_HUNSPELL).exists() {
+        assert!(
+            candidates.iter().any(|word| word == "следующий"),
+            "expected Hunspell fallback to offer 'следующий', got {candidates:?}"
+        );
+    }
+}
