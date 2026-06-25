@@ -63,6 +63,17 @@ pub(crate) struct LayIbusEngine {
 }
 
 impl LayIbusEngine {
+    pub(super) fn initial_word_input_mode(&self) -> WordInputMode {
+        if self.cursor_cell_width > 0
+            && self.cursor_cell_width <= 3
+            && !self.surrounding_text_supported
+        {
+            WordInputMode::TerminalPassthrough
+        } else {
+            WordInputMode::ManagedCommit
+        }
+    }
+
     pub(super) fn manual_toggle_authority(&self) -> ManualToggleAuthority {
         if !self.buffer.is_empty() {
             return ManualToggleAuthority::ImeActiveComposition;
@@ -84,6 +95,10 @@ impl LayIbusEngine {
             || self.preedit_dirty
     }
 }
+
+#[cfg(test)]
+#[path = "engine/profile_tests.rs"]
+mod profile_tests;
 
 #[cfg(test)]
 mod tests {

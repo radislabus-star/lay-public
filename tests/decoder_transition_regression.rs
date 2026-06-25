@@ -177,16 +177,16 @@ fn typing_assist_decoder_preserves_space_and_avoids_known_false_splits() {
         );
     }
 
-    let row = common::first_fixture_row(include_str!("fixtures/decoder_transition_visual_b.tsv"));
-    let events = ascii_events(&row[0]);
+    let events = ascii_events("double b ");
     let plan = decode_typing_assist_tail(
         &events,
         true,
         &default_typing_assist_pipeline(),
         CorrectionSource::TypingAssist,
-    )
-    .expect("visual b replacement");
+    );
 
-    assert_eq!(plan.replacement, row[1]);
-    assert_eq!(plan.plan, common::text_replacement(1, 1, &row[2], 1));
+    assert!(
+        plan.is_none(),
+        "lowercase visual b is ambiguous and must wait for phrase context"
+    );
 }

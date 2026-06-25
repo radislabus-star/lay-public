@@ -150,9 +150,9 @@ fn typing_assist_decoder_reemits_committed_space_boundary() {
     assert_eq!(plan.verified_plan_for_cursor(0), Some(plan.plan.clone()));
     assert_eq!(
         plan.verified_plan_for_cursor(3),
-        Some(text_replacement(4, 1, &row[2], 4))
+        Some(text_replacement(4, 10, &row[2], 4))
     );
-    assert_eq!(plan.plan, text_replacement(1, 1, &row[2], 1));
+    assert_eq!(plan.plan, text_replacement(1, 10, &row[2], 1));
     assert!(plan.source.needs_undo_checkpoint());
 }
 

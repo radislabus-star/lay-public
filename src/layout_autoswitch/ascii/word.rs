@@ -95,29 +95,7 @@ pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
 }
 
 pub(crate) fn correct_wrong_layout_ascii_word_experimental(token: &str) -> Option<String> {
-    correct_single_letter_layout_word(token).or_else(|| correct_wrong_layout_ascii_word(token))
-}
-
-fn correct_single_letter_layout_word(token: &str) -> Option<String> {
-    if is_blocked_ascii_layout_token(token) {
-        return None;
-    }
-
-    let (_, original_word, _) = split_word_punctuation(token);
-    let mut letters = original_word.chars();
-    let letter = letters.next()?;
-    if letters.next().is_some() || !letter.is_ascii_alphabetic() {
-        return None;
-    }
-    if letter.is_ascii_uppercase() {
-        return None;
-    }
-    if is_user_protected_ascii_word(original_word) {
-        return None;
-    }
-
-    let candidate = ascii_to_russian_layout_candidate(token, false)?;
-    candidate.known.then_some(candidate.replacement)
+    correct_wrong_layout_ascii_word(token)
 }
 
 fn is_standalone_all_caps_shift_layout_token(token: &str) -> bool {

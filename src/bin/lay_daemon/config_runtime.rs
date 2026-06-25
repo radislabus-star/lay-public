@@ -140,7 +140,7 @@ pub(super) fn active_auto_switch_layout() -> bool {
 }
 
 pub(super) fn active_learning_log() -> bool {
-    current_config().learning_log
+    current_config().debug_action_log && current_config().learning_log
 }
 
 pub(super) fn active_nanda_trace() -> bool {

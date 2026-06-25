@@ -1,7 +1,8 @@
 # id	input	expected	allow_layout_auto
 moved_prefix_pair	расчет\sыприблизительные\s	расчеты\sприблизительные\s	false
 split_word_pair	я\sвно\s	явно\s	false
-visual_b	слово\sb\s	слово\sв\s	false
+visual_b	слово\sB\s	слово\sВ\s	false
+contextual_ru_conjunction_i	чай\sb\sкофе\s	чай\sи\sкофе\s	true
 personal_phrase	нуда\s	ну\sда\s	false
 personal_token	подлючись.\s	подключись.\s	false
 mixed_script_layout	ОБYJDB\s	ОБНОВИ\s	true

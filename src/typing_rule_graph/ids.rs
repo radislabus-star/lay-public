@@ -7,6 +7,7 @@ pub(crate) const DUPLICATE_LAYOUT_PREFIX: &str = "duplicate_layout_prefix";
 pub(crate) const MIXED_SCRIPT_LAYOUT: &str = "mixed_script_layout";
 pub(crate) const LAYOUT_TECHNICAL: &str = "layout_technical";
 pub(crate) const FAST_LAYOUT_EN_TO_RU: &str = "fast_layout_en_to_ru";
+pub(crate) const CONTEXTUAL_RU_CONJUNCTION_I: &str = "contextual_ru_conjunction_i";
 pub(crate) const LAYOUT_RU_TO_EN: &str = "layout_ru_to_en";
 pub(crate) const LAYOUT_EN_TO_RU: &str = "layout_en_to_ru";
 pub(crate) const CONTEXTUAL_LAYOUT_EN_TO_RU: &str = "contextual_layout_en_to_ru";

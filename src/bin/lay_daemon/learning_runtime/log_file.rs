@@ -1,7 +1,7 @@
 use lay::word_buffer::UserLearningCorrection;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use super::{runtime_log, LEARN_LOG_KEEP_LINES, LEARN_LOG_MAX_BYTES};
+use super::{runtime_log, LEARN_LOG_MAX_BYTES};
 
 #[derive(serde::Serialize)]
 struct LearningEntry<'a> {
@@ -97,12 +97,13 @@ fn compact_learning_log_if_needed(path: &std::path::Path) {
     let Ok(content) = std::fs::read_to_string(path) else {
         return;
     };
-    let compacted = keep_last_jsonl_lines(&content, LEARN_LOG_KEEP_LINES);
+    let compacted = keep_jsonl_tail_bytes(&content, LEARN_LOG_MAX_BYTES as usize);
     if lay::private_file::write_private_text(path, &compacted).is_ok() {
         runtime_log("  learn-log: compacted");
     }
 }
 
+#[cfg(test)]
 pub(crate) fn keep_last_jsonl_lines(content: &str, max_lines: usize) -> String {
     let lines: Vec<&str> = content.lines().collect();
     let start = lines.len().saturating_sub(max_lines);
@@ -111,4 +112,29 @@ pub(crate) fn keep_last_jsonl_lines(content: &str, max_lines: usize) -> String {
         out.push('\n');
     }
     out
+}
+
+pub(crate) fn keep_jsonl_tail_bytes(content: &str, max_bytes: usize) -> String {
+    if content.len() <= max_bytes {
+        return content.to_string();
+    }
+    let start = content.len().saturating_sub(max_bytes);
+    let start = content
+        .char_indices()
+        .find_map(|(idx, _)| (idx >= start).then_some(idx))
+        .unwrap_or(start);
+    let keep_from = content[..start]
+        .rfind('\n')
+        .map(|idx| idx + 1)
+        .unwrap_or(start);
+    let tail = &content[keep_from..];
+    if tail.len() <= max_bytes {
+        return tail.to_string();
+    }
+    let hard_start = tail.len().saturating_sub(max_bytes);
+    let hard_start = tail
+        .char_indices()
+        .find_map(|(idx, _)| (idx >= hard_start).then_some(idx))
+        .unwrap_or(hard_start);
+    tail[hard_start..].to_string()
 }

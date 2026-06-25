@@ -137,8 +137,13 @@ fn short_english_words_typed_in_ru_layout_are_recovered_between_russian_words() 
     assert_same_boundaries(&got, &expected);
 }
 
+fn is_single_ascii_letter(word: &str) -> bool {
+    let mut chars = word.chars();
+    chars.next().is_some_and(|ch| ch.is_ascii_alphabetic()) && chars.next().is_none()
+}
+
 #[test]
-fn short_russian_words_typed_in_us_layout_are_recovered_between_english_words() {
+fn short_russian_words_typed_in_us_layout_are_recovered_between_english_words_when_not_ambiguous() {
     let expected_words = short_alternating_words_50();
     let input_words = expected_words
         .iter()
@@ -152,7 +157,20 @@ fn short_russian_words_typed_in_us_layout_are_recovered_between_english_words() 
         })
         .collect::<Vec<_>>();
     let input = join_with_trailing_space(&input_words);
-    let expected = join_with_trailing_space(&expected_words);
+    let expected = expected_words
+        .iter()
+        .enumerate()
+        .map(|(idx, word)| {
+            if idx % 2 == 0 && word.chars().count() == 1 {
+                let typed = convert(word, Direction::Ru2Us);
+                assert!(is_single_ascii_letter(&typed));
+                typed
+            } else {
+                word.clone()
+            }
+        })
+        .collect::<Vec<_>>();
+    let expected = join_with_trailing_space(&expected);
     assert!(input_words.iter().all(|word| word.chars().count() <= 4));
 
     let got = simulate_experimental_typing_assist(&input);

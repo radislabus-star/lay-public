@@ -135,11 +135,11 @@ fn experimental_context_accepts_plain_ascii_to_ru_layout_words() {
     );
     assert_eq!(
         apply_typing_assist_with_pipeline("z ", true, &pipeline),
-        Some("я ".to_string())
+        None
     );
     assert_eq!(
         apply_typing_assist_with_pipeline("b ", true, &pipeline),
-        Some("и ".to_string())
+        None
     );
 
     let normal_pipeline = typing_assist_pipeline_for_context(
@@ -156,6 +156,40 @@ fn experimental_context_accepts_plain_ascii_to_ru_layout_words() {
         apply_typing_assist_with_pipeline("b ", true, &normal_pipeline),
         None
     );
+}
+
+#[test]
+fn contextual_ru_conjunction_i_requires_phrase_support_on_both_sides() {
+    for (input, expected) in [
+        ("чай b кофе ", "чай и кофе "),
+        ("пишу b проверяю ", "пишу и проверяю "),
+        ("быстро b удобно ", "быстро и удобно "),
+        ("проверил file b папку ", "проверил file и папку "),
+    ] {
+        assert_eq!(
+            simulate_space_triggered_typing_assist(input, true),
+            expected,
+            "input={input:?}"
+        );
+    }
+
+    for input in [
+        "b ",
+        "b b ",
+        "c ",
+        "wave c ",
+        "wave b ",
+        "wave b вот ",
+        "api b json ",
+        "git checkout -b test ",
+        "double b прямо ",
+    ] {
+        assert_eq!(
+            simulate_space_triggered_typing_assist(input, true),
+            input,
+            "input={input:?}"
+        );
+    }
 }
 
 #[test]

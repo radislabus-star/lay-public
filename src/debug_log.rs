@@ -31,6 +31,9 @@ static DEBUG_LOG_SENDER: OnceLock<Sender<DebugLogLine>> = OnceLock::new();
 
 pub fn append_private_line(path: PathBuf, line: impl Into<String>) {
     let line = line.into();
+    if !crate::config::LayConfig::load().debug_action_log {
+        return;
+    }
     #[cfg(test)]
     {
         let text = if line.ends_with('\n') {
@@ -106,6 +109,10 @@ fn push_pending(pending: &mut BTreeMap<PathBuf, String>, line: DebugLogLine) {
 
 #[cfg(not(test))]
 fn flush_pending(pending: &mut BTreeMap<PathBuf, String>) {
+    if !crate::config::LayConfig::load().debug_action_log {
+        pending.clear();
+        return;
+    }
     for (path, text) in std::mem::take(pending) {
         if crate::private_file::append_private_text(&path, &text).is_ok() {
             compact_to_max_bytes(&path);
@@ -123,9 +130,25 @@ fn compact_to_max_bytes(path: &PathBuf) {
     let Ok(text) = std::fs::read_to_string(path) else {
         return;
     };
-    let keep_from = tail_line_boundary(&text, MAX_LOG_BYTES as usize);
-    let compacted = &text[keep_from..];
+    let compacted = tail_with_max_bytes(&text, MAX_LOG_BYTES as usize);
     let _ = crate::private_file::write_private_text(path, compacted);
+}
+
+fn tail_with_max_bytes(text: &str, max_bytes: usize) -> &str {
+    if text.len() <= max_bytes {
+        return text;
+    }
+    let keep_from = tail_line_boundary(text, max_bytes);
+    let compacted = &text[keep_from..];
+    if compacted.len() <= max_bytes {
+        return compacted;
+    }
+    let hard_start = compacted.len().saturating_sub(max_bytes);
+    let hard_start = compacted
+        .char_indices()
+        .find_map(|(idx, _)| (idx >= hard_start).then_some(idx))
+        .unwrap_or(hard_start);
+    &compacted[hard_start..]
 }
 
 fn tail_line_boundary(text: &str, max_bytes: usize) -> usize {
@@ -137,7 +160,7 @@ fn tail_line_boundary(text: &str, max_bytes: usize) -> usize {
         .char_indices()
         .find_map(|(idx, _)| (idx >= start).then_some(idx))
         .unwrap_or(start);
-    text[..=start]
+    text[..start]
         .rfind('\n')
         .map(|idx| idx + 1)
         .unwrap_or(start)
@@ -145,12 +168,19 @@ fn tail_line_boundary(text: &str, max_bytes: usize) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use super::tail_line_boundary;
+    use super::{tail_line_boundary, tail_with_max_bytes};
 
     #[test]
     fn tail_boundary_keeps_complete_lines() {
         let text = "one\ntwo\nthree\nfour\n";
         let start = tail_line_boundary(text, 10);
         assert_eq!(&text[start..], "three\nfour\n");
+    }
+
+    #[test]
+    fn tail_with_max_bytes_never_exceeds_limit() {
+        let text = "x".repeat(100);
+        let compacted = tail_with_max_bytes(&text, 10);
+        assert!(compacted.len() <= 10);
     }
 }

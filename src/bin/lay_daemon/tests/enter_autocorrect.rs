@@ -35,12 +35,12 @@ fn enter_autocorrect_candidate_keeps_normal_english_word() {
 
 #[test]
 fn enter_autocorrect_candidate_can_use_completed_tail_scope() {
-    let buffer = typed_buffer(&[("double b", false)]);
+    let buffer = typed_buffer(&[("слово ", true), ("B", false)]);
     let pipeline = typing_pipeline_with_only("visual_b");
 
     let (_events, edit) =
         enter_autocorrect_candidate(&buffer, 2, true, &pipeline).expect("correction");
 
-    assert_eq!(edit.original, "double b");
-    assert_eq!(edit.replacement, "double и");
+    assert_eq!(edit.original, "слово B");
+    assert_eq!(edit.replacement, "слово В");
 }

@@ -64,6 +64,13 @@ pub(super) static RULES: &[TypingRuleDefinition] = &[
         rules::apply_layout_technical,
     ),
     contextual_layout_rule(ids::FAST_LAYOUT_EN_TO_RU, rules::apply_fast_layout_en_to_ru),
+    safety_rule(
+        ids::CONTEXTUAL_RU_CONJUNCTION_I,
+        priorities::CONTEXTUAL_RU_CONJUNCTION_I,
+        TypingCandidateFamily::Layout,
+        TypingRuleRequiredSafety::Normal,
+        rules::apply_contextual_ru_conjunction_i,
+    ),
     layout_only_rule(
         ids::LAYOUT_RU_TO_EN,
         priorities::LAYOUT_RU_TO_EN,

@@ -91,13 +91,8 @@ impl LayIbusEngine {
             return Ok(false);
         };
         if self.buffer.is_empty() {
-            let mode = *self.word_input_mode.get_or_insert({
-                if self.cursor_cell_width > 0 {
-                    WordInputMode::TerminalPassthrough
-                } else {
-                    WordInputMode::ManagedCommit
-                }
-            });
+            let initial_mode = self.initial_word_input_mode();
+            let mode = *self.word_input_mode.get_or_insert(initial_mode);
             if mode == WordInputMode::TerminalPassthrough {
                 let visible_ch = self.passthrough_visible_char(keyval, keycode).unwrap_or(ch);
                 self.observe_terminal_passthrough_char(emitter, visible_ch)

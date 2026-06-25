@@ -13,8 +13,7 @@ pub use super::journal_record::{
 
 const TRACE_PATH: &str = ".local/share/lay/nanda_wave/cell_trace.jsonl";
 const SCOREBOARD_PATH: &str = ".local/share/lay/nanda_wave/cell_scoreboard.json";
-const MAX_TRACE_BYTES: u64 = 2 * 1024 * 1024;
-const KEEP_TRACE_LINES: usize = 2500;
+const MAX_TRACE_BYTES: u64 = 500 * 1024;
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
 pub struct CellScoreboard {
@@ -79,6 +78,25 @@ pub fn record_trace_with_text_policy(
     super::resonance_memory::observe_record(&record);
 }
 
+pub fn record_runtime_trace_with_text_policy(
+    case_id: impl Into<String>,
+    label: impl Into<String>,
+    trace: &WaveTrace,
+    expected: Option<&str>,
+    include_text: bool,
+) {
+    let ts = unix_now();
+    let record = build_trace_record(
+        ts,
+        case_id.into(),
+        label.into(),
+        trace,
+        expected,
+        include_text,
+    );
+    append_trace_nonblocking(&record);
+}
+
 pub fn load_recent_traces(limit: usize) -> Vec<CellTraceRecord> {
     let Some(path) = trace_path() else {
         return Vec::new();
@@ -116,6 +134,15 @@ fn append_trace(record: &CellTraceRecord) {
     }
 }
 
+fn append_trace_nonblocking(record: &CellTraceRecord) {
+    let Some(path) = trace_path() else {
+        return;
+    };
+    if let Ok(text) = serde_json::to_string(record) {
+        crate::debug_log::append_private_line(path, text);
+    }
+}
+
 fn compact_trace_if_needed(path: &std::path::Path) {
     let Ok(metadata) = std::fs::metadata(path) else {
         return;
@@ -126,13 +153,40 @@ fn compact_trace_if_needed(path: &std::path::Path) {
     let Ok(text) = std::fs::read_to_string(path) else {
         return;
     };
-    let lines = text
-        .lines()
-        .rev()
-        .take(KEEP_TRACE_LINES)
-        .collect::<Vec<_>>();
-    let compacted = lines.into_iter().rev().collect::<Vec<_>>().join("\n") + "\n";
-    let _ = crate::private_file::write_private_text(path, &compacted);
+    let compacted = tail_with_max_bytes(&text, MAX_TRACE_BYTES as usize);
+    let _ = crate::private_file::write_private_text(path, compacted);
+}
+
+fn tail_with_max_bytes(text: &str, max_bytes: usize) -> &str {
+    if text.len() <= max_bytes {
+        return text;
+    }
+    let keep_from = tail_line_boundary(text, max_bytes);
+    let compacted = &text[keep_from..];
+    if compacted.len() <= max_bytes {
+        return compacted;
+    }
+    let hard_start = compacted.len().saturating_sub(max_bytes);
+    let hard_start = compacted
+        .char_indices()
+        .find_map(|(idx, _)| (idx >= hard_start).then_some(idx))
+        .unwrap_or(hard_start);
+    &compacted[hard_start..]
+}
+
+fn tail_line_boundary(text: &str, max_bytes: usize) -> usize {
+    if text.len() <= max_bytes {
+        return 0;
+    }
+    let start = text.len().saturating_sub(max_bytes);
+    let start = text
+        .char_indices()
+        .find_map(|(idx, _)| (idx >= start).then_some(idx))
+        .unwrap_or(start);
+    text[..start]
+        .rfind('\n')
+        .map(|idx| idx + 1)
+        .unwrap_or(start)
 }
 
 fn update_scoreboard(record: &CellTraceRecord) {
@@ -181,4 +235,24 @@ fn unix_now() -> u64 {
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
         .as_secs()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{tail_line_boundary, tail_with_max_bytes};
+
+    #[test]
+    fn trace_tail_boundary_keeps_complete_lines_inside_byte_limit() {
+        let text = "one\ntwo\nthree\nfour\n";
+        let start = tail_line_boundary(text, 10);
+        assert_eq!(&text[start..], "three\nfour\n");
+    }
+
+    #[test]
+    fn trace_tail_never_exceeds_byte_limit() {
+        let text = "ж".repeat(100);
+        let compacted = tail_with_max_bytes(&text, 11);
+        assert!(compacted.len() <= 11);
+        assert!(compacted.is_char_boundary(compacted.len()));
+    }
 }

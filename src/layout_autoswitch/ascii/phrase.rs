@@ -1,4 +1,4 @@
-use crate::word_reader::split_ws_segments;
+use crate::word_reader::{split_word_punctuation, split_ws_segments};
 
 use super::candidate::ascii_to_russian_layout_candidate;
 
@@ -12,12 +12,19 @@ pub(crate) fn correct_wrong_layout_ascii_phrase(text: &str) -> Option<String> {
     let mut converted_words = 0usize;
     let mut known_converted_words = 0usize;
     let mut clean_alpha_words = 0usize;
+    let mut single_letter_words = 0usize;
+    let mut multi_letter_words = 0usize;
     let mut has_shift_letter_signal = false;
     let mut out = String::with_capacity(text.len());
     for (segment, is_ws) in segments {
         if is_ws {
             out.push_str(segment);
             continue;
+        }
+        match ascii_alpha_count(segment) {
+            1 => single_letter_words += 1,
+            len if len > 1 => multi_letter_words += 1,
+            _ => {}
         }
         let candidate = ascii_to_russian_layout_candidate(segment, true)?;
         converted_words += 1;
@@ -31,7 +38,7 @@ pub(crate) fn correct_wrong_layout_ascii_phrase(text: &str) -> Option<String> {
         out.push_str(&candidate.replacement);
     }
 
-    if converted_words < 2 || out == text {
+    if converted_words < 2 || out == text || (single_letter_words > 0 && multi_letter_words == 0) {
         return None;
     }
 
@@ -42,6 +49,11 @@ pub(crate) fn correct_wrong_layout_ascii_phrase(text: &str) -> Option<String> {
         has_shift_letter_signal,
     )
     .then_some(out)
+}
+
+fn ascii_alpha_count(token: &str) -> usize {
+    let (_, word, _) = split_word_punctuation(token);
+    word.chars().filter(|ch| ch.is_ascii_alphabetic()).count()
 }
 
 pub(crate) fn is_confident_wrong_layout_ascii_pair(first: &str, second: &str) -> bool {

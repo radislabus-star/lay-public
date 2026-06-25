@@ -9,6 +9,8 @@ mod log_file;
 mod promotion;
 
 #[cfg(test)]
+pub(super) use log_file::keep_jsonl_tail_bytes;
+#[cfg(test)]
 pub(super) use log_file::keep_last_jsonl_lines;
 #[cfg(test)]
 pub(super) use log_file::{
@@ -18,8 +20,7 @@ pub(super) use promotion::{promote_user_correction_if_repeated, LearningPromotio
 
 const LEARN_LOG_PATH: &str = ".local/share/lay/corrections.jsonl";
 const LEARN_CANDIDATES_PATH: &str = ".local/share/lay/learning_candidates.json";
-const LEARN_LOG_MAX_BYTES: u64 = 1024 * 1024;
-const LEARN_LOG_KEEP_LINES: usize = 3000;
+const LEARN_LOG_MAX_BYTES: u64 = 500 * 1024;
 const LEARN_PROMOTION_THRESHOLD: u32 = 2;
 
 pub(super) fn append_learning_log(

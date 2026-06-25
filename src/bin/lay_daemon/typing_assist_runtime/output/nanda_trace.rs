@@ -10,7 +10,7 @@ pub(crate) fn record_nanda_trace_if_enabled(original: &str, replacement: &str) {
     let include_text = active_nanda_trace();
     std::thread::spawn(move || {
         let trace = lay::nanda_wave::run_wave_trace_with_options(&original, &options);
-        lay::nanda_wave::journal::record_trace_with_text_policy(
+        lay::nanda_wave::journal::record_runtime_trace_with_text_policy(
             "runtime:typing-assist",
             "typing-assist",
             &trace,

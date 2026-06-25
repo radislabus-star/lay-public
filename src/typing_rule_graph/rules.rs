@@ -1,9 +1,9 @@
 use crate::layout_autoswitch::{
     ascii_layout_prefix_can_be_letter, correct_confident_wrong_layout_ascii_word,
-    correct_duplicate_layout_prefix_on_ascii_token, correct_wrong_layout_ascii_phrase,
-    correct_wrong_layout_ascii_technical_token, correct_wrong_layout_ascii_word,
-    correct_wrong_layout_ascii_word_experimental, correct_wrong_layout_cyrillic_word,
-    correct_wrong_layout_cyrillic_word_experimental,
+    correct_contextual_ascii_conjunction_i, correct_duplicate_layout_prefix_on_ascii_token,
+    correct_wrong_layout_ascii_phrase, correct_wrong_layout_ascii_technical_token,
+    correct_wrong_layout_ascii_word, correct_wrong_layout_ascii_word_experimental,
+    correct_wrong_layout_cyrillic_word, correct_wrong_layout_cyrillic_word_experimental,
 };
 use crate::phrase_reader::{
     correct_contextual_fuzzy_pair, correct_contextual_glued_tail,
@@ -37,6 +37,9 @@ pub(super) fn apply_split_word_pair(ctx: &TypingRuleContext<'_>) -> Option<Strin
 }
 
 pub(super) fn apply_visual_b(ctx: &TypingRuleContext<'_>) -> Option<String> {
+    if ctx.core.split_whitespace().any(|token| token == "b") {
+        return None;
+    }
     replace_visual_b_words(ctx.core, ctx.core)
 }
 
@@ -70,6 +73,13 @@ pub(crate) fn apply_fast_layout_en_to_ru(ctx: &TypingRuleContext<'_>) -> Option<
     }
     apply_core_then_word_rule(ctx, correct_confident_wrong_layout_ascii_word)
         .map(|replacement| cleanup_extra_letters_after_ru_layout(&replacement))
+}
+
+pub(super) fn apply_contextual_ru_conjunction_i(ctx: &TypingRuleContext<'_>) -> Option<String> {
+    if !layout_auto_allowed(ctx) {
+        return None;
+    }
+    correct_contextual_ascii_conjunction_i(ctx.core)
 }
 
 pub(super) fn apply_layout_ru_to_en(ctx: &TypingRuleContext<'_>) -> Option<String> {

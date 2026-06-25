@@ -1,6 +1,6 @@
 # label	parts	scope	events	original	replacement	cursor_offset	move_left	backspaces	insert	move_right
 space_release	gjhn\s@us	1	gjhn\s	gjhn\s	порт\s	0	1	4	порт	1
-context_visual_b	css\sb\s@us	1	b\s	b\s	и\s	0	1	1	и	1
+context_visual_b	слово\s@ru;B\s@us	1	B\s	B\s	В\s	0	1	1	В	1
 previous_word_behind_current	gjhn\sx@us	1	gjhn\s	gjhn\s	порт\s	1	2	4	порт	2
 uppercase_word	HF<JNF\s	1	HF<JNF\s	HF<JNF\s	РАБОТА\s	0	1	6	РАБОТА	1
 leading_shift_word	<FYRF\s	1	<FYRF\s	<FYRF\s	БАНКА\s	0	1	5	БАНКА	1

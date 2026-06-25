@@ -5,8 +5,6 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use super::{run_wave_trace, WaveDecision, WaveTrace};
 
 const PRECOGNITION_PATH: &str = ".local/share/lay/nanda_wave/precognition.jsonl";
-const MAX_PRECOGNITION_BYTES: u64 = 1024 * 1024;
-const KEEP_PRECOGNITION_LINES: usize = 1200;
 
 #[derive(Debug, Serialize)]
 struct PrecognitionRecord<'a> {
@@ -41,11 +39,10 @@ pub fn record_precognition_tick(stage: &str, text: &str, include_text: bool) {
         return;
     };
     if let Ok(line) = serde_json::to_string(&record) {
-        let _ = crate::private_file::append_private_text(&path, &format!("{line}\n"));
-        compact_if_needed(&path);
+        crate::debug_log::append_private_line(path, line);
     }
     if is_informative_tick(stage, &trace) {
-        super::journal::record_trace_with_text_policy(
+        super::journal::record_runtime_trace_with_text_policy(
             "runtime:precognition",
             format!("precognition:{stage}"),
             &trace,
@@ -95,25 +92,6 @@ fn decision_kind(decision: &WaveDecision) -> &'static str {
         WaveDecision::Keep { .. } => "keep",
         WaveDecision::Veto { .. } => "veto",
     }
-}
-
-fn compact_if_needed(path: &std::path::Path) {
-    let Ok(metadata) = std::fs::metadata(path) else {
-        return;
-    };
-    if metadata.len() <= MAX_PRECOGNITION_BYTES {
-        return;
-    }
-    let Ok(text) = std::fs::read_to_string(path) else {
-        return;
-    };
-    let lines = text
-        .lines()
-        .rev()
-        .take(KEEP_PRECOGNITION_LINES)
-        .collect::<Vec<_>>();
-    let compacted = lines.into_iter().rev().collect::<Vec<_>>().join("\n") + "\n";
-    let _ = crate::private_file::write_private_text(path, &compacted);
 }
 
 fn precognition_path() -> Option<PathBuf> {
