@@ -5,7 +5,8 @@
 
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
 use crate::nanda_wave::{run_wave_trace, WaveDecision};
-use crate::text_metrics::{has_cyrillic, has_latin};
+use crate::text_case::apply_word_case;
+use crate::text_metrics::{damerau_levenshtein, has_cyrillic, has_latin};
 use crate::typing_assist::{explain_typing_assist_with_pipeline, split_ws_segments};
 use crate::typing_context::typing_assist_pipeline_for_context;
 use crate::typing_rule_graph::ids;
@@ -224,7 +225,9 @@ fn deterministic_text_correction(
     );
     let explanation =
         explain_typing_assist_with_pipeline(req.text, req.auto_switch_layout, &pipeline);
-    let replacement = explanation.output?;
+    let Some(replacement) = explanation.output else {
+        return deterministic_composite_text_correction(req, &pipeline);
+    };
     let rule_id = explanation
         .chosen
         .as_ref()
@@ -238,6 +241,124 @@ fn deterministic_text_correction(
         source: CorrectionDecisionSource::Deterministic,
         source_id: rule_id.to_string(),
         error_class,
+        gate,
+    })
+}
+
+fn deterministic_composite_text_correction(
+    req: &CorrectionRequest<'_>,
+    pipeline: &[TypingAssistRuleConfig],
+) -> Option<UnifiedCorrectionCandidate> {
+    layout_then_typo_candidate(req, pipeline).or_else(|| composite_russian_typo_candidate(req))
+}
+
+fn layout_then_typo_candidate(
+    req: &CorrectionRequest<'_>,
+    pipeline: &[TypingAssistRuleConfig],
+) -> Option<UnifiedCorrectionCandidate> {
+    if !req.auto_switch_layout {
+        return None;
+    }
+
+    let (_, core, _) = split_edge_whitespace(req.text);
+    let current_word = last_text_word(core)?;
+    if !looks_like_ascii_layout_word(&current_word) {
+        return None;
+    }
+
+    let converted_word = crate::dict::convert(&current_word, crate::dict::Direction::Us2Ru);
+    if converted_word == current_word || !is_cyrillic_letters_only(&converted_word) {
+        return None;
+    }
+
+    let converted_text = replace_last_text_word(req.text, &converted_word)?;
+    let explanation = explain_typing_assist_with_pipeline(&converted_text, false, pipeline);
+    let final_replacement = explanation.output.unwrap_or_else(|| {
+        if crate::russian_lexicon::is_known_russian_word_or_form(&converted_word) {
+            converted_text.clone()
+        } else {
+            String::new()
+        }
+    });
+    if final_replacement.is_empty() || final_replacement == req.text {
+        return None;
+    }
+    let source_id = explanation
+        .chosen
+        .as_ref()
+        .map(|candidate| format!("layout_then_{}", candidate.rule_id))
+        .unwrap_or_else(|| "layout_then_known_word".to_string());
+    let gate = gate_candidate(
+        req.text,
+        &final_replacement,
+        TypingErrorClass::CompositeTypo,
+    );
+    Some(UnifiedCorrectionCandidate {
+        replacement: final_replacement,
+        source: CorrectionDecisionSource::Deterministic,
+        source_id,
+        error_class: TypingErrorClass::CompositeTypo,
+        gate,
+    })
+}
+
+fn composite_russian_typo_candidate(
+    req: &CorrectionRequest<'_>,
+) -> Option<UnifiedCorrectionCandidate> {
+    if !req.typing_assist && !req.auto_replace {
+        return None;
+    }
+
+    let (_, core, _) = split_edge_whitespace(req.text);
+    let current_word = last_text_word(core)?;
+    if !is_cyrillic_letters_only(&current_word)
+        || crate::russian_lexicon::is_known_russian_word_or_form(&current_word)
+    {
+        return None;
+    }
+
+    let lower = current_word.to_lowercase();
+    let (candidate, _) = crate::candidate_ranker::choose_best_with_gap(
+        crate::ru_typo::fuzzy_known_word_candidates(&lower),
+        0.85,
+        |candidate| {
+            if candidate == &lower
+                || !crate::russian_lexicon::is_known_russian_word_or_form(candidate)
+            {
+                return None;
+            }
+            let distance = damerau_levenshtein(&lower, candidate);
+            if distance == 0 || distance > 3 {
+                return None;
+            }
+            if !loose_original_shape_is_preserved(&lower, candidate) {
+                return None;
+            }
+            let margin = crate::ngram::ru_candidate_margin(candidate, &lower);
+            let inserted = candidate
+                .chars()
+                .count()
+                .saturating_sub(lower.chars().count());
+            if inserted > 1 {
+                return None;
+            }
+            let shape_bonus = inserted as f64 * 8.0;
+            let score = margin + shape_bonus - distance as f64 * 0.35;
+            (score >= 0.0).then_some(score)
+        },
+    )?;
+    let replacement_word = apply_word_case(&current_word, &candidate);
+    let replacement = replace_last_text_word(req.text, &replacement_word)?;
+    if replacement == req.text {
+        return None;
+    }
+
+    let gate = gate_candidate(req.text, &replacement, TypingErrorClass::CompositeTypo);
+    Some(UnifiedCorrectionCandidate {
+        replacement,
+        source: CorrectionDecisionSource::Deterministic,
+        source_id: "composite_ru_typo".to_string(),
+        error_class: TypingErrorClass::CompositeTypo,
         gate,
     })
 }
@@ -276,6 +397,88 @@ fn last_text_word(core: &str) -> Option<String> {
             let (_, word, _) = split_word_punctuation(segment);
             (!word.is_empty()).then(|| word.to_string())
         })
+}
+
+fn replace_last_text_word(text: &str, replacement_word: &str) -> Option<String> {
+    let (leading_ws, core, trailing_ws) = split_edge_whitespace(text);
+    let segments = split_ws_segments(core);
+    let replace_idx = segments
+        .iter()
+        .enumerate()
+        .rev()
+        .find_map(|(idx, (_, is_ws))| (!*is_ws).then_some(idx))?;
+
+    let mut output = String::with_capacity(text.len() + replacement_word.len());
+    output.push_str(leading_ws);
+    for (idx, (segment, _is_ws)) in segments.iter().enumerate() {
+        if idx == replace_idx {
+            let (token_leading, word, token_trailing) = split_word_punctuation(segment);
+            if word.is_empty() {
+                return None;
+            }
+            output.push_str(token_leading);
+            output.push_str(replacement_word);
+            output.push_str(token_trailing);
+        } else {
+            output.push_str(segment);
+        }
+    }
+    output.push_str(trailing_ws);
+    Some(output)
+}
+
+fn looks_like_ascii_layout_word(word: &str) -> bool {
+    word.is_ascii()
+        && word.chars().filter(|ch| ch.is_ascii_alphabetic()).count() >= 3
+        && !word.chars().any(|ch| ch.is_ascii_digit())
+        && word.chars().all(|ch| {
+            ch.is_ascii_alphabetic()
+                || matches!(
+                    ch,
+                    '\'' | ';'
+                        | '['
+                        | ']'
+                        | '`'
+                        | ','
+                        | '.'
+                        | '-'
+                        | '{'
+                        | '}'
+                        | ':'
+                        | '"'
+                        | '<'
+                        | '>'
+                        | '~'
+                )
+        })
+}
+
+fn loose_original_shape_is_preserved(original: &str, candidate: &str) -> bool {
+    if candidate.chars().count() < original.chars().count() {
+        return false;
+    }
+
+    let mut original_chars = original.chars().map(loose_shape_char);
+    let mut needed = original_chars.next();
+    for ch in candidate.chars().map(loose_shape_char) {
+        if needed == Some(ch) {
+            needed = original_chars.next();
+            if needed.is_none() {
+                return true;
+            }
+        }
+    }
+    needed.is_none()
+}
+
+fn loose_shape_char(ch: char) -> char {
+    match ch {
+        'ё' => 'е',
+        'Ё' => 'Е',
+        'щ' => 'ш',
+        'Щ' => 'Ш',
+        other => other,
+    }
 }
 
 fn classify_input_word(word: &str) -> TypingErrorClass {
@@ -456,6 +659,38 @@ mod tests {
             TypingErrorClass::CompositeTypo
         );
         assert_eq!(resolution.decision, None);
+    }
+
+    #[test]
+    fn layout_then_typo_repairs_dirty_wrong_layout_word() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "hf,jfntn ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution.selected.expect("selected candidate");
+        assert_eq!(selected.replacement, "работает ");
+        assert_eq!(selected.source_id, "layout_then_adjacent_transposition");
+        assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn composite_typo_repairs_known_russian_word() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "помшник ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution.selected.expect("selected candidate");
+        assert_eq!(selected.replacement, "помощник ");
+        assert_eq!(selected.source_id, "composite_ru_typo");
+        assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
     }
 
     #[test]
