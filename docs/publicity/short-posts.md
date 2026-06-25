@@ -16,8 +16,8 @@ wi-fi ye   -> wi-fi ну
 
 Работает локально: Rust daemon + evdev/uinput + desktop backend. GNOME
 использует Shell extension, KDE Plasma — отдельный tray и `qdbus6`, X11 —
-native XKB через `x11rb`. Обычный double Shift не использует облако, LLM или
-буфер обмена.
+native XKB через `x11rb`. Есть экспериментальный IME-режим с inline/preedit
+подсказками. Обычный double Shift не использует облако, LLM или буфер обмена.
 
 Пока это alpha под RU/EN. GNOME проверен лучше всего, KDE Plasma и X11 уже
 работают, но матрица чужих систем меньше. Особенно нужны короткие
@@ -67,7 +67,8 @@ wi-fi ye   -> wi-fi ну
 ```
 
 Проект alpha: GNOME проверен лучше всего, KDE Plasma и X11 уже поддержаны с
-меньшей матрицей покрытия. Нужны короткие воспроизводимые баги.
+меньшей матрицей покрытия. IME/preedit пока экспериментальный. Нужны короткие
+воспроизводимые баги.
 
 GitHub:
 https://github.com/radislabus-star/lay-public

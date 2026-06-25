@@ -16,8 +16,12 @@ mod guards;
 mod known_word_missing;
 #[path = "phrase_reader/moved_prefix.rs"]
 mod moved_prefix;
+#[path = "phrase_reader/preposition_guard.rs"]
+mod preposition_guard;
 #[path = "phrase_reader/split_pair.rs"]
 mod split_pair;
+#[path = "phrase_reader/verb_guard.rs"]
+mod verb_guard;
 
 pub(crate) use contextual_fuzzy::correct_contextual_fuzzy_pair;
 pub use contextual_tail::correct_contextual_glued_tail;

@@ -20,6 +20,10 @@ use super::guards::{
     can_split_glued_trailing_ya, is_confident_glued_phrase_split, is_single_letter_russian_pronoun,
     is_standalone_russian_phrase_part, looks_like_word_glued_to_trailing_ya,
 };
+use super::preposition_guard::{
+    starts_with_multi_letter_preposition, starts_with_multi_letter_preposition_text,
+};
+use super::verb_guard::looks_like_single_prefixed_verb;
 
 pub fn correct_glued_russian_phrase(word: &str) -> Option<String> {
     let char_len = word.chars().count();
@@ -167,44 +171,4 @@ fn is_function_chain_glued_phrase(parts: &[&str]) -> bool {
         && is_short_russian_function_word(left)
         && right.chars().count() >= 3
         && is_known_russian_phrase_part(right)
-}
-
-fn starts_with_multi_letter_preposition(parts: &[&str]) -> bool {
-    parts
-        .first()
-        .is_some_and(|part| part.chars().count() >= 2 && is_common_short_russian_preposition(part))
-}
-
-fn starts_with_multi_letter_preposition_text(text: &str) -> bool {
-    text.split_whitespace()
-        .next()
-        .is_some_and(|part| part.chars().count() >= 2 && is_common_short_russian_preposition(part))
-}
-
-fn looks_like_single_prefixed_verb(lower: &str) -> bool {
-    const PREFIXES: &[&str] = &[
-        "пере", "недо", "пред", "про", "при", "под", "над", "без", "раз", "рас", "воз", "вос",
-        "до", "за", "на", "от", "по", "вы", "об",
-    ];
-    const VERB_TAILS: &[&str] = &[
-        "ется",
-        "ётся",
-        "атся",
-        "ятся",
-        "уется",
-        "ается",
-        "яется",
-        "ывает",
-        "ивает",
-        "ешь",
-        "ишь",
-        "ает",
-        "яет",
-        "ует",
-        "ит",
-        "ет",
-    ];
-    lower.chars().count() >= 8
-        && PREFIXES.iter().any(|prefix| lower.starts_with(prefix))
-        && VERB_TAILS.iter().any(|tail| lower.ends_with(tail))
 }

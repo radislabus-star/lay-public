@@ -51,7 +51,6 @@ fn current_config() -> LayConfig {
             sync_lem_runtime(&cache.config);
             return cache.config.clone();
         }
-
         cache.checked_at = Instant::now();
         let modified = config_modified_at();
         if modified != cache.modified {
@@ -93,7 +92,6 @@ pub(super) fn active_layout_backend() -> LayoutBackend {
     if configured != "auto" {
         return backend;
     }
-
     if let Some(hint) = *AUTO_LAYOUT_BACKEND_HINT.get_or_init(detect_auto_layout_backend_hint) {
         return hint;
     }
@@ -113,9 +111,8 @@ pub(super) fn active_typing_assist() -> bool {
 }
 
 pub(super) fn active_enter_autocorrect() -> bool {
-    let cfg = current_config();
     active_enter_autocorrect_from_env(
-        cfg.enter_autocorrect,
+        current_config().enter_autocorrect,
         std::env::var(ENTER_AUTOCORRECT_EXPERIMENT_ENV)
             .ok()
             .as_deref(),

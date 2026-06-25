@@ -18,7 +18,8 @@ wi-fi ye   -> wi-fi ну
 
 - это Linux-замена привычному Caramba/Punto-сценарию;
 - основной путь работает локально, без облака, буфера обмена и LLM;
-- внутри Rust daemon, evdev/uinput и backend-слой для GNOME/KDE/X11;
+- внутри Rust daemon, evdev/uinput, экспериментальный IME/preedit backend и
+  backend-слой для GNOME/KDE/X11;
 - статья разбирает не только `ghbdtn -> привет`, но и реальные пограничные
   случаи: смешанный RU/EN текст, технические токены, два слова, typing assist
   после пробела и ограничения Wayland.

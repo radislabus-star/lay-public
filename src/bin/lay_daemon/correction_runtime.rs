@@ -23,6 +23,9 @@ mod memory;
 #[path = "correction_runtime/output.rs"]
 mod output;
 use output::{apply_manual_correction_output, ManualCorrectionOutputContext};
+#[cfg(test)]
+#[path = "correction_runtime/recovery_tests.rs"]
+mod recovery_tests;
 #[path = "correction_runtime/request.rs"]
 mod request;
 
@@ -165,25 +168,4 @@ fn recovered_initial_manual_toggle_target(
     recovered_initial_double_shift_replacement(mapped_orig)
         .filter(|replacement| replacement != mapped_target)
         .unwrap_or_else(|| mapped_target.to_string())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::recovered_initial_manual_toggle_target;
-
-    #[test]
-    fn daemon_manual_toggle_uses_recovered_initial_target_without_expanding_delete() {
-        assert_eq!(
-            recovered_initial_manual_toggle_target("ltkfq", "делай", 1, 5),
-            "сделай"
-        );
-    }
-
-    #[test]
-    fn daemon_manual_toggle_recovery_does_not_cross_multiword_tail() {
-        assert_eq!(
-            recovered_initial_manual_toggle_target("push ltkfq", "push делай", 2, 11),
-            "push делай"
-        );
-    }
 }

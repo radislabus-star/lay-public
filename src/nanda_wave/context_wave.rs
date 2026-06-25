@@ -1016,11 +1016,11 @@ mod tests {
 
     #[test]
     fn semantic_word_cell_keeps_case_vowel_tail() {
-        let candidates = semantic_word_candidates("для разработчика скила ");
+        let candidates = semantic_word_candidates("для заказа товара ");
         assert!(
             candidates
                 .iter()
-                .all(|candidate| candidate.text != "для разработчика скилл"),
+                .all(|candidate| candidate.text != "для заказа товар"),
             "case-like vowel tail should not drift into a consonant token: {candidates:?}"
         );
     }

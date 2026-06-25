@@ -44,6 +44,16 @@ curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scr
 По умолчанию double Shift исправляет **1 последнее слово**. Области `2 слова`
 и `3 слова` можно включить отдельно в трее.
 
+## Что нового в 0.1.244
+
+- добавлен и документирован экспериментальный IME backend: inline/preedit
+  подсказки, Tab-принятие кандидата и committed-tail замены без clipboard;
+- демо `docs/publicity/demo.gif` обновлено: теперь показывает double Shift,
+  smart-tail, IME-подсказку и автопомощь после пробела;
+- усилены guard-правила автозамены по живым логам: NANDA/L2 больше не должны
+  превращать нормальные фразы в смысловой дрейф вроде `модель генерит -> модель
+  генерал`.
+
 ## Что нового в 0.1.232
 
 - в окне настроек поменяны местами блоки `Управление` и `Арбитры и каналы`,
@@ -341,7 +351,9 @@ KDE, Niri и X11 моложе GNOME-пути. Если что-то ломает�
 - другие пары раскладок;
 - полноценная грамматика русского языка;
 - исправление целых абзацев;
-- серые inline-подсказки прямо внутри поля ввода.
+- универсальные серые подсказки во всех приложениях. Экспериментальный IME
+  backend уже умеет preedit-кандидаты, но это отдельный режим, а не
+  гарантированный путь для каждого текстового поля.
 
 ## NANDA Wave / клеточный мозг
 
@@ -533,8 +545,8 @@ evdev. Это делает основной сценарий быстрым, н�
 - Enter-autocorrect не включён в публичный стабильный UI, потому что evdev/uinput
   не может гарантировать порядок "исправить хвост, потом отправить Enter" во
   всех приложениях;
-- IME/preedit и inline-подсказки рассматриваются только как отдельное
-  экспериментальное направление, не как замена текущего быстрого пути;
+- IME/preedit и inline-подсказки доступны как экспериментальный режим ввода, но
+  не заменяют текущий быстрый uinput-путь;
 - автопомощь после пробела остаётся консервативной: лучше пропустить сомнительный
   случай, чем самовольно испортить текст.
 
@@ -546,6 +558,8 @@ evdev. Это делает основной сценарий быстрым, н�
 - `Автоподмена` — главный рубильник автоматических исправлений после пробела.
 - `NANDA ячейки` — отдельное окно с клеточным Wave-слоем, статусом и ablation.
 - `Режим` — `Replay` или `Smart`.
+- `Режим ввода` — быстрый uinput или экспериментальный IME backend с
+  preedit-кандидатами.
 - `Область` — сколько слов брать для double Shift, по умолчанию `1`.
 - `Арбитр` — LEM и auto-layout настройки.
 - `ptah_alexs` — жёсткая раскладка по окну.
@@ -600,7 +614,7 @@ Shift rescue невозможен. По умолчанию он не отпра�
 - mixed RU/EN сценарии;
 - KDE/X11 edge cases;
 - работа в старых/особых текстовых полях;
-- экспериментальный IME backend.
+- экспериментальный IME backend и preedit-кандидаты в разных приложениях.
 
 Если присылаешь bug report, укажи:
 
@@ -661,8 +675,9 @@ XKB backend and is treated as experimental. Other layouts and non-RU/EN pairs
 are not supported yet.
 
 Known limitations: `lay` works on a short typed tail, not arbitrary selected
-text or the whole document. Enter autocorrect and IME/preedit-style inline
-assistance are experimental directions, not the stable default path.
+text or the whole document. Enter autocorrect is not the stable default path.
+IME/preedit-style inline assistance exists as an experimental input backend, but
+the fast uinput path remains the default.
 
 By default `lay` does not use cloud APIs, does not require an LLM, and does not
 send typed text anywhere.

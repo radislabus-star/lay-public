@@ -7,6 +7,8 @@
 ```text
 lay — лёгкий RU/EN keyboard helper для Linux desktops.
 Главное действие: набрал не в той раскладке -> double Shift -> слово исправлено.
+Дополнительный новый сигнал: экспериментальный IME-режим умеет показывать
+preedit-подсказку прямо в поле ввода.
 ```
 
 ## Файлы
@@ -18,7 +20,8 @@ lay — лёгкий RU/EN keyboard helper для Linux desktops.
 - `platforms-ru.md` — порядок и логика русских площадок.
 - `cover.svg` — редактируемая обложка.
 - `cover.png` — обложка 1600 x 900 для площадок, где SVG неудобен.
-- `demo.gif` — короткое визуальное демо для README/статьи.
+- `demo.gif` — короткое визуальное демо для README/статьи: double Shift,
+  smart-tail, IME/preedit и typing assist.
 
 ## Ник автора
 
