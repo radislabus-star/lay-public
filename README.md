@@ -44,6 +44,17 @@ curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scr
 По умолчанию double Shift исправляет **1 последнее слово**. Области `2 слова`
 и `3 слова` можно включить отдельно в трее.
 
+## Что нового в 0.1.245
+
+- общий рубильник `Журнал отладки действий` теперь реально гасит runtime
+  debug JSONL-журналы, включая NANDA/IME trace;
+- runtime-журналы ограничены кольцевым хвостом 500 KiB, чтобы `cell_trace` и
+  `precognition` не разрастались во время живого набора;
+- добавлен контекстный guard для `b -> и`: замена разрешается только внутри
+  русской фразы с поддержкой слева и справа, без технических/ASCII-барьеров;
+- IME profile-тесты закрепляют различие Kitty terminal passthrough и managed
+  commit для клиентов с surrounding text.
+
 ## Что нового в 0.1.244
 
 - добавлен и документирован экспериментальный IME backend: inline/preedit
