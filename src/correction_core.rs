@@ -13,6 +13,8 @@ use crate::typing_rule_graph::ids;
 use crate::word_reader::{is_cyrillic_letters_only, split_edge_whitespace, split_word_punctuation};
 use crate::word_recognizer::is_ascii_technical_token;
 
+const COMPOSITE_TRANSPOSE_MIN_MARGIN: f64 = -8.0;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CorrectionMode {
     DeterministicOnly,
@@ -317,6 +319,24 @@ fn composite_russian_typo_candidate(
         return None;
     }
 
+    if let Some(replacement_word) = unique_adjacent_transposition_word(&current_word) {
+        let replacement = replace_last_text_word(req.text, &replacement_word)?;
+        if replacement != req.text {
+            let gate = gate_candidate(
+                req.text,
+                &replacement,
+                TypingErrorClass::AdjacentTransposition,
+            );
+            return Some(UnifiedCorrectionCandidate {
+                replacement,
+                source: CorrectionDecisionSource::Deterministic,
+                source_id: ids::ADJACENT_TRANSPOSITION.to_string(),
+                error_class: TypingErrorClass::AdjacentTransposition,
+                gate,
+            });
+        }
+    }
+
     let lower = current_word.to_lowercase();
     let (candidate, _) = crate::candidate_ranker::choose_best_with_gap(
         crate::ru_typo::fuzzy_known_word_candidates(&lower),
@@ -331,7 +351,7 @@ fn composite_russian_typo_candidate(
             if distance == 0 || distance > 3 {
                 return None;
             }
-            if !loose_original_shape_is_preserved(&lower, candidate) {
+            if !compatible_composite_typo_shape(&lower, candidate, distance) {
                 return None;
             }
             let margin = crate::ngram::ru_candidate_margin(candidate, &lower);
@@ -397,6 +417,40 @@ fn last_text_word(core: &str) -> Option<String> {
             let (_, word, _) = split_word_punctuation(segment);
             (!word.is_empty()).then(|| word.to_string())
         })
+}
+
+fn unique_adjacent_transposition_word(word: &str) -> Option<String> {
+    if word.chars().count() < 5 || !is_cyrillic_letters_only(word) {
+        return None;
+    }
+
+    let lower = word.to_lowercase();
+    let chars: Vec<char> = lower.chars().collect();
+    let mut found: Option<String> = None;
+
+    for idx in 0..chars.len().saturating_sub(1) {
+        if chars[idx] == chars[idx + 1] {
+            continue;
+        }
+
+        let mut candidate = chars.clone();
+        candidate.swap(idx, idx + 1);
+        let candidate: String = candidate.into_iter().collect();
+        if candidate == lower || !crate::russian_lexicon::is_known_russian_word_or_form(&candidate)
+        {
+            continue;
+        }
+        if crate::ngram::ru_candidate_margin(&candidate, &lower) < COMPOSITE_TRANSPOSE_MIN_MARGIN {
+            continue;
+        }
+
+        if found.is_some() {
+            return None;
+        }
+        found = Some(candidate);
+    }
+
+    found.map(|candidate| apply_word_case(word, &candidate))
 }
 
 fn replace_last_text_word(text: &str, replacement_word: &str) -> Option<String> {
@@ -469,6 +523,14 @@ fn loose_original_shape_is_preserved(original: &str, candidate: &str) -> bool {
         }
     }
     needed.is_none()
+}
+
+fn compatible_composite_typo_shape(original: &str, candidate: &str, distance: usize) -> bool {
+    if loose_original_shape_is_preserved(original, candidate) {
+        return true;
+    }
+
+    distance == 1 && original.chars().count() == candidate.chars().count()
 }
 
 fn loose_shape_char(ch: char) -> char {
@@ -690,6 +752,25 @@ mod tests {
         assert_eq!(selected.replacement, "помощник ");
         assert_eq!(selected.source_id, "composite_ru_typo");
         assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn composite_typo_repairs_short_adjacent_transposition_in_phrase() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "имеет смылс ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution.selected.expect("selected candidate");
+        assert_eq!(selected.replacement, "имеет смысл ");
+        assert_eq!(selected.source_id, ids::ADJACENT_TRANSPOSITION);
+        assert_eq!(
+            selected.error_class,
+            TypingErrorClass::AdjacentTransposition
+        );
         assert_eq!(selected.gate.action, CandidateGateAction::Apply);
     }
 
