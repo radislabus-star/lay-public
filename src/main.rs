@@ -8,7 +8,7 @@ use clap::Parser;
 use std::io::{self, IsTerminal, Read};
 use std::process;
 
-use lay::{config, dict, llm, nanda_wave, typing_assist, typing_context};
+use lay::{config, correction_core, dict, llm, nanda_wave, typing_assist, typing_context};
 
 #[derive(Parser, Debug)]
 #[command(
@@ -76,6 +76,7 @@ fn main() {
         let explanation = explain_typing_assist_like_runtime(&text, &cfg);
         print_typing_explanation(&explanation);
         print_nanda_explanation(&text, &cfg);
+        print_correction_core_explanation(&text, &cfg);
         return;
     }
 
@@ -250,6 +251,49 @@ fn print_nanda_explanation(text: &str, cfg: &config::LayConfig) {
         nanda_wave::WaveDecision::Veto { ref reason } => {
             println!("nanda: veto {reason}");
         }
+    }
+}
+
+fn print_correction_core_explanation(text: &str, cfg: &config::LayConfig) {
+    let resolution = correction_core::resolve_text_correction(correction_core::CorrectionRequest {
+        text,
+        auto_replace: cfg.auto_replace,
+        typing_assist: cfg.typing_assist,
+        auto_switch_layout: cfg.auto_switch_layout,
+        correction_safety: active_typing_safety(cfg),
+        typing_assist_pipeline: &cfg.typing_assist_pipeline,
+        nanda_autocorrect: cfg.nanda_autocorrect,
+        mode: correction_core::CorrectionMode::DeterministicThenNanda,
+    });
+
+    println!("correction_core:");
+    println!(
+        "  input_class={} word={:?}",
+        resolution.event.input_class.as_str(),
+        resolution.event.current_word
+    );
+    if resolution.candidates.is_empty() {
+        println!("  candidates: none");
+    } else {
+        println!("  candidates:");
+        for candidate in &resolution.candidates {
+            println!(
+                "    source={:?}:{} class={} gate={:?}/{} -> {:?}",
+                candidate.source,
+                candidate.source_id,
+                candidate.error_class.as_str(),
+                candidate.gate.action,
+                candidate.gate.reason,
+                candidate.replacement
+            );
+        }
+    }
+    match &resolution.selected {
+        Some(candidate) => println!(
+            "  selected: {:?}:{} -> {:?}",
+            candidate.source, candidate.source_id, candidate.replacement
+        ),
+        None => println!("  selected: none"),
     }
 }
 

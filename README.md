@@ -44,6 +44,18 @@ curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scr
 По умолчанию double Shift исправляет **1 последнее слово**. Области `2 слова`
 и `3 слова` можно включить отдельно в трее.
 
+## Что нового в 0.2.0
+
+- заложен первый системный слой `Typing Correction Core`: входной текст теперь
+  получает единый паспорт ошибки, класс ошибки, доску кандидатов и gate-решение;
+- deterministic typing-assist и NANDA-кандидаты проходят через общий
+  `CandidateBoard`, вместо разрозненного применения частных правил;
+- добавлены классы ошибок: wrong layout, mixed script, missing/extra/repeated
+  letter, adjacent transposition, composite typo, split/glue, grammar,
+  completion-only, technical/protected token;
+- IME остаётся backend отображения/вставки: новый core не переносит принятие
+  решений в IME и не меняет маршрут видимого preedit.
+
 ## Что нового в 0.1.245
 
 - общий рубильник `Журнал отладки действий` теперь реально гасит runtime

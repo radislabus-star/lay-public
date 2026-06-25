@@ -5,8 +5,12 @@
 
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
 use crate::nanda_wave::{run_wave_trace, WaveDecision};
-use crate::typing_assist::apply_typing_assist_with_pipeline;
+use crate::text_metrics::{has_cyrillic, has_latin};
+use crate::typing_assist::{explain_typing_assist_with_pipeline, split_ws_segments};
 use crate::typing_context::typing_assist_pipeline_for_context;
+use crate::typing_rule_graph::ids;
+use crate::word_reader::{is_cyrillic_letters_only, split_edge_whitespace, split_word_punctuation};
+use crate::word_recognizer::is_ascii_technical_token;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CorrectionMode {
@@ -19,6 +23,90 @@ pub enum CorrectionMode {
 pub enum CorrectionDecisionSource {
     Deterministic,
     Nanda,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TypingErrorClass {
+    WrongLayout,
+    PartialLayout,
+    MixedScript,
+    MissingLetter,
+    ExtraLetter,
+    RepeatedLetter,
+    AdjacentTransposition,
+    LetterSubstitution,
+    CompositeTypo,
+    SplitWord,
+    GluedWords,
+    CaseNoise,
+    GrammarAgreement,
+    CompletionOnly,
+    TechnicalToken,
+    ProtectedToken,
+    Unknown,
+}
+
+impl TypingErrorClass {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::WrongLayout => "wrong_layout",
+            Self::PartialLayout => "partial-layout",
+            Self::MixedScript => "mixed-script",
+            Self::MissingLetter => "missing-letter",
+            Self::ExtraLetter => "extra-letter",
+            Self::RepeatedLetter => "repeated-letter",
+            Self::AdjacentTransposition => "adjacent-transposition",
+            Self::LetterSubstitution => "letter-substitution",
+            Self::CompositeTypo => "composite-typo",
+            Self::SplitWord => "split-word",
+            Self::GluedWords => "glued-words",
+            Self::CaseNoise => "case-noise",
+            Self::GrammarAgreement => "grammar-agreement",
+            Self::CompletionOnly => "completion-only",
+            Self::TechnicalToken => "technical-token",
+            Self::ProtectedToken => "protected-token",
+            Self::Unknown => "unknown",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CandidateGateAction {
+    Apply,
+    SuggestOnly,
+    KeepOriginal,
+    Veto,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CandidateGateDecision {
+    pub action: CandidateGateAction,
+    pub reason: &'static str,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TypingErrorEvent {
+    pub original: String,
+    pub core: String,
+    pub current_word: String,
+    pub input_class: TypingErrorClass,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct UnifiedCorrectionCandidate {
+    pub replacement: String,
+    pub source: CorrectionDecisionSource,
+    pub source_id: String,
+    pub error_class: TypingErrorClass,
+    pub gate: CandidateGateDecision,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct CorrectionResolution {
+    pub event: TypingErrorEvent,
+    pub candidates: Vec<UnifiedCorrectionCandidate>,
+    pub selected: Option<UnifiedCorrectionCandidate>,
+    pub decision: Option<CorrectionDecision>,
 }
 
 #[derive(Debug, Clone)]
@@ -40,16 +128,90 @@ pub struct CorrectionDecision {
 }
 
 pub fn decide_text_correction(req: CorrectionRequest<'_>) -> Option<CorrectionDecision> {
+    resolve_text_correction(req).decision
+}
+
+pub fn resolve_text_correction(req: CorrectionRequest<'_>) -> CorrectionResolution {
+    let mut board = CandidateBoard::new(TypingErrorEvent::from_text(req.text));
+
     match req.mode {
-        CorrectionMode::DeterministicOnly => deterministic_text_correction(&req),
-        CorrectionMode::NandaOnly => nanda_text_correction(&req),
+        CorrectionMode::DeterministicOnly => {
+            board.push(deterministic_text_correction(&req));
+        }
+        CorrectionMode::NandaOnly => {
+            board.push(nanda_text_correction(&req));
+        }
         CorrectionMode::DeterministicThenNanda => {
-            deterministic_text_correction(&req).or_else(|| nanda_text_correction(&req))
+            board.push(deterministic_text_correction(&req));
+            if board.selected_apply_candidate().is_none() {
+                board.push(nanda_text_correction(&req));
+            }
+        }
+    }
+
+    board.into_resolution()
+}
+
+struct CandidateBoard {
+    event: TypingErrorEvent,
+    candidates: Vec<UnifiedCorrectionCandidate>,
+}
+
+impl CandidateBoard {
+    fn new(event: TypingErrorEvent) -> Self {
+        Self {
+            event,
+            candidates: Vec::new(),
+        }
+    }
+
+    fn push(&mut self, candidate: Option<UnifiedCorrectionCandidate>) {
+        if let Some(candidate) = candidate {
+            self.candidates.push(candidate);
+        }
+    }
+
+    fn selected_apply_candidate(&self) -> Option<UnifiedCorrectionCandidate> {
+        self.candidates
+            .iter()
+            .find(|candidate| candidate.gate.action == CandidateGateAction::Apply)
+            .cloned()
+    }
+
+    fn into_resolution(self) -> CorrectionResolution {
+        let selected = self.selected_apply_candidate();
+        let decision = selected.as_ref().map(|candidate| CorrectionDecision {
+            replacement: candidate.replacement.clone(),
+            source: candidate.source,
+        });
+
+        CorrectionResolution {
+            event: self.event,
+            candidates: self.candidates,
+            selected,
+            decision,
         }
     }
 }
 
-fn deterministic_text_correction(req: &CorrectionRequest<'_>) -> Option<CorrectionDecision> {
+impl TypingErrorEvent {
+    fn from_text(text: &str) -> Self {
+        let (_, core, _) = split_edge_whitespace(text);
+        let current_word = last_text_word(core).unwrap_or_default();
+        let input_class = classify_input_word(&current_word);
+
+        Self {
+            original: text.to_string(),
+            core: core.to_string(),
+            current_word,
+            input_class,
+        }
+    }
+}
+
+fn deterministic_text_correction(
+    req: &CorrectionRequest<'_>,
+) -> Option<UnifiedCorrectionCandidate> {
     if !(req.auto_replace || req.typing_assist || req.auto_switch_layout) {
         return None;
     }
@@ -60,26 +222,173 @@ fn deterministic_text_correction(req: &CorrectionRequest<'_>) -> Option<Correcti
         req.typing_assist_pipeline,
         req.text,
     );
-    apply_typing_assist_with_pipeline(req.text, req.auto_switch_layout, &pipeline).map(
-        |replacement| CorrectionDecision {
-            replacement,
-            source: CorrectionDecisionSource::Deterministic,
-        },
-    )
+    let explanation =
+        explain_typing_assist_with_pipeline(req.text, req.auto_switch_layout, &pipeline);
+    let replacement = explanation.output?;
+    let rule_id = explanation
+        .chosen
+        .as_ref()
+        .map(|candidate| candidate.rule_id.as_str())
+        .unwrap_or("deterministic");
+    let error_class = rule_error_class(rule_id);
+    let gate = gate_candidate(req.text, &replacement, error_class);
+
+    Some(UnifiedCorrectionCandidate {
+        replacement,
+        source: CorrectionDecisionSource::Deterministic,
+        source_id: rule_id.to_string(),
+        error_class,
+        gate,
+    })
 }
 
-fn nanda_text_correction(req: &CorrectionRequest<'_>) -> Option<CorrectionDecision> {
+fn nanda_text_correction(req: &CorrectionRequest<'_>) -> Option<UnifiedCorrectionCandidate> {
     if !req.nanda_autocorrect {
         return None;
     }
 
-    match run_wave_trace(req.text).decision {
-        WaveDecision::Apply { text, .. } if text != req.text => Some(CorrectionDecision {
-            replacement: text,
-            source: CorrectionDecisionSource::Nanda,
-        }),
+    let trace = run_wave_trace(req.text);
+    match &trace.decision {
+        WaveDecision::Apply { text, .. } if text != req.text => {
+            let source_id = accepted_wave_source(&trace, text).unwrap_or("NANDA");
+            let error_class = nanda_source_error_class(source_id);
+            let gate = gate_candidate(req.text, text, error_class);
+            Some(UnifiedCorrectionCandidate {
+                replacement: text.clone(),
+                source: CorrectionDecisionSource::Nanda,
+                source_id: source_id.to_string(),
+                error_class,
+                gate,
+            })
+        }
         WaveDecision::Apply { .. } | WaveDecision::Keep { .. } | WaveDecision::Veto { .. } => None,
     }
+}
+
+fn last_text_word(core: &str) -> Option<String> {
+    split_ws_segments(core)
+        .into_iter()
+        .rev()
+        .find_map(|(segment, is_ws)| {
+            if is_ws {
+                return None;
+            }
+            let (_, word, _) = split_word_punctuation(segment);
+            (!word.is_empty()).then(|| word.to_string())
+        })
+}
+
+fn classify_input_word(word: &str) -> TypingErrorClass {
+    if word.is_empty() {
+        return TypingErrorClass::Unknown;
+    }
+    if is_ascii_technical_token(word) {
+        return TypingErrorClass::TechnicalToken;
+    }
+    if has_cyrillic(word) && has_latin(word) {
+        return TypingErrorClass::MixedScript;
+    }
+    if is_cyrillic_letters_only(word)
+        && !crate::russian_lexicon::is_known_russian_word_or_form(word)
+    {
+        return TypingErrorClass::CompositeTypo;
+    }
+    if word.chars().all(|ch| ch.is_ascii_alphabetic()) && word.chars().count() >= 3 {
+        return TypingErrorClass::WrongLayout;
+    }
+    TypingErrorClass::Unknown
+}
+
+fn rule_error_class(rule_id: &str) -> TypingErrorClass {
+    match rule_id {
+        ids::MIXED_SCRIPT_LAYOUT | ids::DUPLICATE_LAYOUT_PREFIX => TypingErrorClass::MixedScript,
+        ids::LAYOUT_TECHNICAL => TypingErrorClass::TechnicalToken,
+        ids::FAST_LAYOUT_EN_TO_RU
+        | ids::CONTEXTUAL_RU_CONJUNCTION_I
+        | ids::LAYOUT_RU_TO_EN
+        | ids::LAYOUT_EN_TO_RU
+        | ids::CONTEXTUAL_LAYOUT_EN_TO_RU
+        | ids::EXPERIMENTAL_LAYOUT_EN_TO_RU
+        | ids::EXPERIMENTAL_LAYOUT_RU_TO_EN
+        | ids::VISUAL_B => TypingErrorClass::WrongLayout,
+        ids::MOVED_PREFIX_PAIR => TypingErrorClass::PartialLayout,
+        ids::SPLIT_WORD_PAIR => TypingErrorClass::SplitWord,
+        ids::CYRILLIC_CASE => TypingErrorClass::CaseNoise,
+        ids::HARD_SIGN | ids::SINGLE_LETTER_SUBSTITUTION | ids::VOWEL_CONFUSION => {
+            TypingErrorClass::LetterSubstitution
+        }
+        ids::ADJACENT_TRANSPOSITION => TypingErrorClass::AdjacentTransposition,
+        ids::REPEATED_LETTER => TypingErrorClass::RepeatedLetter,
+        ids::EXTRA_LETTERS => TypingErrorClass::ExtraLetter,
+        ids::MISSING_LETTER => TypingErrorClass::MissingLetter,
+        ids::VERB_ENDING => TypingErrorClass::GrammarAgreement,
+        ids::GLUED_PHRASE => TypingErrorClass::GluedWords,
+        ids::PERSONAL_PHRASE | ids::PERSONAL_TOKEN => TypingErrorClass::CompositeTypo,
+        _ => TypingErrorClass::Unknown,
+    }
+}
+
+fn nanda_source_error_class(source: &str) -> TypingErrorClass {
+    match source {
+        "LayoutWordCell32" => TypingErrorClass::WrongLayout,
+        "ShortTokenCell32" => TypingErrorClass::PartialLayout,
+        "TechTokenCell32" | "TechnicalContextCell32" => TypingErrorClass::TechnicalToken,
+        "BoundaryCell32" => TypingErrorClass::GluedWords,
+        "GrammarCell32" => TypingErrorClass::GrammarAgreement,
+        "PhraseForecastCell32" | "L2WordAttractorCell32" => TypingErrorClass::CompletionOnly,
+        "CommonRuFixCell32"
+        | "LearnedMemoryCell32"
+        | "PhraseMemoryCell32"
+        | "PhraseCell32"
+        | "SemanticWordCell32" => TypingErrorClass::CompositeTypo,
+        _ => TypingErrorClass::Unknown,
+    }
+}
+
+fn gate_candidate(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+) -> CandidateGateDecision {
+    if original == replacement {
+        return CandidateGateDecision {
+            action: CandidateGateAction::KeepOriginal,
+            reason: "unchanged",
+        };
+    }
+
+    match error_class {
+        TypingErrorClass::TechnicalToken | TypingErrorClass::ProtectedToken => {
+            CandidateGateDecision {
+                action: CandidateGateAction::Veto,
+                reason: "protected_or_technical",
+            }
+        }
+        TypingErrorClass::CompletionOnly => CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "completion_is_not_autocorrect",
+        },
+        TypingErrorClass::Unknown => CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "unknown_error_class",
+        },
+        _ => CandidateGateDecision {
+            action: CandidateGateAction::Apply,
+            reason: "class_allows_apply",
+        },
+    }
+}
+
+fn accepted_wave_source<'a>(
+    trace: &'a crate::nanda_wave::WaveTrace,
+    replacement: &str,
+) -> Option<&'a str> {
+    let trimmed = replacement.trim();
+    trace
+        .l2_candidates
+        .iter()
+        .find(|candidate| candidate.text.trim() == trimmed)
+        .map(|candidate| candidate.source)
 }
 
 #[cfg(test)]
@@ -118,6 +427,38 @@ mod tests {
     }
 
     #[test]
+    fn resolution_routes_missing_letter_through_unified_gate() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "автозаена ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution.selected.expect("selected candidate");
+        assert_eq!(selected.replacement, "автозамена ");
+        assert_eq!(selected.error_class, TypingErrorClass::MissingLetter);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn unknown_russian_shape_is_classified_before_candidate_generation() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "приудишна ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        ));
+
+        assert_eq!(resolution.event.current_word, "приудишна");
+        assert_eq!(
+            resolution.event.input_class,
+            TypingErrorClass::CompositeTypo
+        );
+        assert_eq!(resolution.decision, None);
+    }
+
+    #[test]
     fn nanda_mode_corrects_wave_writer_text() {
         let pipeline = default_typing_assist_pipeline();
         let decision =
@@ -125,6 +466,18 @@ mod tests {
                 .expect("nanda should produce a layout candidate");
         assert_eq!(decision.replacement, "nanda ");
         assert_eq!(decision.source, CorrectionDecisionSource::Nanda);
+    }
+
+    #[test]
+    fn nanda_candidate_also_passes_unified_gate() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution =
+            resolve_text_correction(request("тфтвф ", &pipeline, CorrectionMode::NandaOnly));
+
+        let selected = resolution.selected.expect("selected candidate");
+        assert_eq!(selected.replacement, "nanda ");
+        assert_eq!(selected.error_class, TypingErrorClass::WrongLayout);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
     }
 
     #[test]
