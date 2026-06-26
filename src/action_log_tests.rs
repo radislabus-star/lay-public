@@ -51,6 +51,7 @@ fn action_log_keeps_only_last_lines() {
             elapsed_ms: idx as u128,
             decision_ms: None,
             output_ms: None,
+            input_gate: None,
             undo_available: true,
         };
         record_action_to_path(&path, &action, 3);
@@ -94,6 +95,7 @@ fn action_log_writes_optional_stage_timings() {
         elapsed_ms: 42,
         decision_ms: Some(7),
         output_ms: Some(35),
+        input_gate: None,
         undo_available: true,
     };
     record_action_to_path(&path, &action, 3);
@@ -101,6 +103,50 @@ fn action_log_writes_optional_stage_timings() {
     let text = std::fs::read_to_string(&path).unwrap();
     assert!(text.contains("\"decision_ms\":7"));
     assert!(text.contains("\"output_ms\":35"));
+    let _ = std::fs::remove_dir_all(tmp);
+}
+
+#[test]
+fn action_log_writes_input_gate_trace() {
+    let tmp = std::env::temp_dir().join(format!(
+        "lay-action-log-gate-test-{}",
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos()
+    ));
+    std::fs::create_dir_all(&tmp).unwrap();
+    let path = tmp.join("recent_actions.jsonl");
+
+    let action = RecentAction {
+        ts: 1,
+        kind: "typing-assist",
+        from: "lfdfq ",
+        to: "давай ",
+        replace_words: 1,
+        words: 1,
+        elapsed_ms: 12,
+        decision_ms: Some(3),
+        output_ms: Some(9),
+        input_gate: Some(RecentActionGateTrace {
+            stage: "word_boundary".to_string(),
+            input_class: Some("wrong_layout".to_string()),
+            candidate_count: 1,
+            selected_source: Some("deterministic".to_string()),
+            selected_source_id: Some("exact_layout".to_string()),
+            selected_error_class: Some("wrong_layout".to_string()),
+            selected_gate_action: Some("apply".to_string()),
+            reason: "apply_selected_candidate".to_string(),
+        }),
+        undo_available: true,
+    };
+    record_action_to_path(&path, &action, 3);
+
+    let text = std::fs::read_to_string(&path).unwrap();
+    assert!(text.contains("\"input_gate\""));
+    assert!(text.contains("\"stage\":\"word_boundary\""));
+    assert!(text.contains("\"input_class\":\"wrong_layout\""));
+    assert!(text.contains("\"selected_gate_action\":\"apply\""));
     let _ = std::fs::remove_dir_all(tmp);
 }
 

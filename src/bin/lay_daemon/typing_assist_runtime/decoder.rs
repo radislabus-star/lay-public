@@ -40,6 +40,29 @@ pub(super) fn decode_completed_tail(
 pub(super) struct DecodedCompletedTail {
     pub(super) edit: DecoderEditPlan,
     pub(super) rule_id: Option<String>,
+    pub(super) input_gate: Option<lay::action_log::RecentActionGateTrace>,
+}
+
+impl DecodedCompletedTail {
+    pub(super) fn new(edit: DecoderEditPlan, rule_id: Option<String>) -> Self {
+        Self {
+            edit,
+            rule_id,
+            input_gate: None,
+        }
+    }
+
+    fn with_input_gate(
+        edit: DecoderEditPlan,
+        rule_id: Option<String>,
+        input_gate: Option<lay::action_log::RecentActionGateTrace>,
+    ) -> Self {
+        Self {
+            edit,
+            rule_id,
+            input_gate,
+        }
+    }
 }
 
 fn decode_input_gate_tail(
@@ -97,7 +120,13 @@ fn decode_input_gate_tail(
                 candidate.source_id.clone()
             }
         });
-    Some(DecodedCompletedTail { edit, rule_id })
+    let input_gate = decision
+        .trace
+        .as_ref()
+        .map(lay::action_log::RecentActionGateTrace::from_input_gate);
+    Some(DecodedCompletedTail::with_input_gate(
+        edit, rule_id, input_gate,
+    ))
 }
 
 #[cfg(test)]

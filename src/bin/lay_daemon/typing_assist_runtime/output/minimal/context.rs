@@ -13,6 +13,7 @@ pub(crate) struct MinimalTypingReplacementContext<'a, 'grab> {
     pub(crate) original: &'a str,
     pub(crate) replacement: &'a str,
     pub(crate) rule_id: Option<&'a str>,
+    pub(crate) input_gate: Option<lay::action_log::RecentActionGateTrace>,
     pub(crate) cursor_offset: u32,
     pub(crate) timing: TypingAssistTiming,
     pub(crate) physical_grab: &'a mut PhysicalInputGrab<'grab>,

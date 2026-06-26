@@ -12,6 +12,7 @@ pub(super) fn remember_ime_typing_correction(
     original: &str,
     replacement: &str,
     rule_id: Option<&str>,
+    input_gate: Option<lay::action_log::RecentActionGateTrace>,
     timing: TypingAssistTiming,
 ) {
     let plan = TextReplacement {
@@ -27,6 +28,7 @@ pub(super) fn remember_ime_typing_correction(
         original,
         replacement,
         rule_id,
+        input_gate,
         cursor_offset: 0,
         timing,
     });

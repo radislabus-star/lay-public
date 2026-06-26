@@ -24,10 +24,10 @@ pub(super) fn decode_nanda_memory_tail(
         &replacement,
         CorrectionSource::TypingAssist,
     )?;
-    Some(DecodedCompletedTail {
+    Some(DecodedCompletedTail::new(
         edit,
-        rule_id: Some(NANDA_WAVE_RULE_ID.to_string()),
-    })
+        Some(NANDA_WAVE_RULE_ID.to_string()),
+    ))
 }
 
 fn nanda_context_replacement(context: &str, original: &str) -> Option<String> {

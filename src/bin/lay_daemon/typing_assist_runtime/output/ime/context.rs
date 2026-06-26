@@ -13,5 +13,6 @@ pub(crate) struct ImeTypingReplacementContext<'a, 'kbd, 'grab> {
     pub(crate) original: &'a str,
     pub(crate) replacement: &'a str,
     pub(crate) rule_id: Option<&'a str>,
+    pub(crate) input_gate: Option<lay::action_log::RecentActionGateTrace>,
     pub(crate) timing: TypingAssistTiming,
 }

@@ -54,6 +54,7 @@ pub(crate) fn apply_typing_assist_correction(
     let events = correction.events;
     let edit = correction.edit;
     let rule_id = correction.rule_id;
+    let input_gate = correction.input_gate;
     let timing = TypingAssistTiming {
         decision_ms: correction.decision_ms,
         started_at,
@@ -74,6 +75,7 @@ pub(crate) fn apply_typing_assist_correction(
             original: &original,
             replacement: &replacement,
             rule_id: rule_id.as_deref(),
+            input_gate: input_gate.clone(),
             timing,
         }) {
             return outcome;
@@ -107,6 +109,7 @@ pub(crate) fn apply_typing_assist_correction(
         original: &original,
         replacement: &replacement,
         rule_id: rule_id.as_deref(),
+        input_gate,
         cursor_offset,
         timing,
         physical_grab: &mut physical_grab,

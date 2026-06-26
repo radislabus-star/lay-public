@@ -11,6 +11,7 @@ pub(crate) struct TypingAssistCorrection {
     pub(crate) events: Vec<KeyEvent>,
     pub(crate) edit: DecoderEditPlan,
     pub(crate) rule_id: Option<String>,
+    pub(crate) input_gate: Option<lay::action_log::RecentActionGateTrace>,
     pub(crate) decision_ms: u128,
 }
 
@@ -34,6 +35,7 @@ pub(crate) fn find_typing_assist_correction(
                 events,
                 edit: decoded.edit,
                 rule_id: decoded.rule_id,
+                input_gate: decoded.input_gate,
                 decision_ms,
             })
         })

@@ -33,6 +33,7 @@ pub(crate) fn try_apply_ime_replacement(
         original,
         replacement,
         rule_id,
+        input_gate,
         timing,
     } = ctx;
     if !should_try_ime_text_backend() {
@@ -57,7 +58,15 @@ pub(crate) fn try_apply_ime_replacement(
     );
     let layout_ms = layout_started.elapsed().as_millis();
     let remember_started = Instant::now();
-    remember_ime_typing_correction(buf, events, original, replacement, rule_id, timing);
+    remember_ime_typing_correction(
+        buf,
+        events,
+        original,
+        replacement,
+        rule_id,
+        input_gate,
+        timing,
+    );
     let remember_ms = remember_started.elapsed().as_millis();
     let forward_started = Instant::now();
     let forwarded_spaces = forward_after_ime_replace(
@@ -86,6 +95,7 @@ pub(crate) fn try_apply_ime_replacement(
             original: &next_original,
             replacement: &next_replacement,
             rule_id: next.rule_id.as_deref(),
+            input_gate: next.input_gate,
             timing: TypingAssistTiming {
                 decision_ms: next.decision_ms,
                 started_at: Instant::now(),

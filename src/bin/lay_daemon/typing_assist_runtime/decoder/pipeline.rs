@@ -44,10 +44,10 @@ fn decode_context_tail(
         replacement,
         source,
     )?;
-    Some(DecodedCompletedTail {
+    Some(DecodedCompletedTail::new(
         edit,
-        rule_id: explanation.chosen.map(|candidate| candidate.rule_id),
-    })
+        explanation.chosen.map(|candidate| candidate.rule_id),
+    ))
 }
 
 fn decode_plain_tail(
@@ -64,8 +64,8 @@ fn decode_plain_tail(
         replacement,
         source,
     )?;
-    Some(DecodedCompletedTail {
+    Some(DecodedCompletedTail::new(
         edit,
-        rule_id: explanation.chosen.map(|candidate| candidate.rule_id),
-    })
+        explanation.chosen.map(|candidate| candidate.rule_id),
+    ))
 }

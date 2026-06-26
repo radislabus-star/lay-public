@@ -23,7 +23,49 @@ pub struct RecentAction<'a> {
     pub decision_ms: Option<u128>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub output_ms: Option<u128>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub input_gate: Option<RecentActionGateTrace>,
     pub undo_available: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+pub struct RecentActionGateTrace {
+    pub stage: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub input_class: Option<String>,
+    pub candidate_count: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selected_source: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selected_source_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selected_error_class: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selected_gate_action: Option<String>,
+    pub reason: String,
+}
+
+impl RecentActionGateTrace {
+    pub fn from_input_gate(trace: &crate::input_gate::InputGateDecisionTrace) -> Self {
+        Self {
+            stage: input_gate_stage_name(trace.stage).to_string(),
+            input_class: trace.input_class.map(|class| class.as_str().to_string()),
+            candidate_count: trace.candidate_count,
+            selected_source: trace
+                .selected_source
+                .map(correction_source_name)
+                .map(str::to_string),
+            selected_source_id: trace.selected_source_id.clone(),
+            selected_error_class: trace
+                .selected_error_class
+                .map(|class| class.as_str().to_string()),
+            selected_gate_action: trace
+                .selected_gate_action
+                .map(gate_action_name)
+                .map(str::to_string),
+            reason: trace.reason.to_string(),
+        }
+    }
 }
 
 pub fn record_action(
@@ -60,6 +102,33 @@ pub fn record_action_with_stages(
     output_ms: Option<u128>,
     undo_available: bool,
 ) {
+    record_action_with_stages_and_gate(
+        kind,
+        from,
+        to,
+        replace_words,
+        words,
+        elapsed_ms,
+        decision_ms,
+        output_ms,
+        None,
+        undo_available,
+    );
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn record_action_with_stages_and_gate(
+    kind: &str,
+    from: &str,
+    to: &str,
+    replace_words: usize,
+    words: usize,
+    elapsed_ms: u128,
+    decision_ms: Option<u128>,
+    output_ms: Option<u128>,
+    input_gate: Option<RecentActionGateTrace>,
+    undo_available: bool,
+) {
     if from == to || from.trim().is_empty() || to.trim().is_empty() {
         return;
     }
@@ -79,9 +148,38 @@ pub fn record_action_with_stages(
         elapsed_ms,
         decision_ms,
         output_ms,
+        input_gate,
         undo_available,
     };
     record_action_async_to_path(&path, &action);
+}
+
+fn input_gate_stage_name(stage: crate::input_gate::InputGateStage) -> &'static str {
+    match stage {
+        crate::input_gate::InputGateStage::LiveInput => "live_input",
+        crate::input_gate::InputGateStage::WordBoundary => "word_boundary",
+        crate::input_gate::InputGateStage::ManualToggle => "manual_toggle",
+        crate::input_gate::InputGateStage::CompletionAccept => "completion_accept",
+        crate::input_gate::InputGateStage::FocusOrLayout => "focus_or_layout",
+    }
+}
+
+fn correction_source_name(
+    source: crate::correction_core::CorrectionDecisionSource,
+) -> &'static str {
+    match source {
+        crate::correction_core::CorrectionDecisionSource::Deterministic => "deterministic",
+        crate::correction_core::CorrectionDecisionSource::Nanda => "nanda",
+    }
+}
+
+fn gate_action_name(action: crate::correction_core::CandidateGateAction) -> &'static str {
+    match action {
+        crate::correction_core::CandidateGateAction::Apply => "apply",
+        crate::correction_core::CandidateGateAction::SuggestOnly => "suggest_only",
+        crate::correction_core::CandidateGateAction::KeepOriginal => "keep_original",
+        crate::correction_core::CandidateGateAction::Veto => "veto",
+    }
 }
 
 pub fn record_action_to_path(path: &Path, action: &RecentAction<'_>, keep_lines: usize) {

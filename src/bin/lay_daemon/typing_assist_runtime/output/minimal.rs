@@ -25,6 +25,7 @@ pub(crate) fn apply_minimal_typing_replacement(
         original,
         replacement,
         rule_id,
+        input_gate,
         cursor_offset,
         timing,
         physical_grab,
@@ -74,6 +75,7 @@ pub(crate) fn apply_minimal_typing_replacement(
         original,
         replacement,
         rule_id,
+        input_gate,
         cursor_offset,
         timing,
     });
@@ -109,6 +111,7 @@ pub(crate) fn apply_minimal_typing_replacement(
             original: &next_original,
             replacement: &next_replacement,
             rule_id: next.rule_id.as_deref(),
+            input_gate: next.input_gate,
             cursor_offset: 0,
             timing: TypingAssistTiming {
                 decision_ms: next.decision_ms,

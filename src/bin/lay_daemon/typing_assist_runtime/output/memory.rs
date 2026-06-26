@@ -21,6 +21,7 @@ pub(crate) struct TypingAssistMemoryContext<'a> {
     pub(crate) original: &'a str,
     pub(crate) replacement: &'a str,
     pub(crate) rule_id: Option<&'a str>,
+    pub(crate) input_gate: Option<lay::action_log::RecentActionGateTrace>,
     pub(crate) cursor_offset: u32,
     pub(crate) timing: TypingAssistTiming,
 }
@@ -33,6 +34,7 @@ pub(crate) fn remember_typing_assist_correction(ctx: TypingAssistMemoryContext<'
         original,
         replacement,
         rule_id,
+        input_gate,
         cursor_offset,
         timing,
     } = ctx;
@@ -52,7 +54,7 @@ pub(crate) fn remember_typing_assist_correction(ctx: TypingAssistMemoryContext<'
         },
     );
     let output_ms = timing.started_at.elapsed().as_millis();
-    lay::action_log::record_action_with_stages(
+    lay::action_log::record_action_with_stages_and_gate(
         "typing-assist",
         original,
         replacement,
@@ -61,6 +63,7 @@ pub(crate) fn remember_typing_assist_correction(ctx: TypingAssistMemoryContext<'
         timing.decision_ms + output_ms,
         Some(timing.decision_ms),
         Some(output_ms),
+        input_gate,
         true,
     );
     record_nanda_trace_if_enabled(original, replacement);
