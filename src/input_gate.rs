@@ -60,6 +60,19 @@ pub struct InputGateDecision {
     pub stage: InputGateStage,
     pub action: InputGateAction,
     pub correction: Option<CorrectionResolution>,
+    pub trace: Option<InputGateDecisionTrace>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct InputGateDecisionTrace {
+    pub stage: InputGateStage,
+    pub input_class: Option<TypingErrorClass>,
+    pub candidate_count: usize,
+    pub selected_source: Option<CorrectionDecisionSource>,
+    pub selected_source_id: Option<String>,
+    pub selected_error_class: Option<TypingErrorClass>,
+    pub selected_gate_action: Option<CandidateGateAction>,
+    pub reason: &'static str,
 }
 
 #[derive(Debug, Clone)]
@@ -83,18 +96,30 @@ pub fn decide_input_gate(req: InputGateRequest<'_>) -> InputGateDecision {
             stage: InputGateStage::ManualToggle,
             action: InputGateAction::Observe,
             correction: None,
+            trace: Some(observe_trace(
+                InputGateStage::ManualToggle,
+                "manual_toggle_owned_elsewhere",
+            )),
         },
         InputGateTrigger::TabAccept => InputGateDecision {
             trigger: req.trigger,
             stage: InputGateStage::CompletionAccept,
             action: InputGateAction::Observe,
             correction: None,
+            trace: Some(observe_trace(
+                InputGateStage::CompletionAccept,
+                "completion_accept_owned_elsewhere",
+            )),
         },
         InputGateTrigger::FocusChanged | InputGateTrigger::LayoutChanged => InputGateDecision {
             trigger: req.trigger,
             stage: InputGateStage::FocusOrLayout,
             action: InputGateAction::Observe,
             correction: None,
+            trace: Some(observe_trace(
+                InputGateStage::FocusOrLayout,
+                "state_change_only",
+            )),
         },
         InputGateTrigger::KeyChar
         | InputGateTrigger::Backspace
@@ -103,6 +128,10 @@ pub fn decide_input_gate(req: InputGateRequest<'_>) -> InputGateDecision {
             stage: InputGateStage::LiveInput,
             action: InputGateAction::Observe,
             correction: None,
+            trace: Some(observe_trace(
+                InputGateStage::LiveInput,
+                "live_input_observe_only",
+            )),
         },
     }
 }
@@ -124,8 +153,57 @@ fn decide_word_boundary(req: InputGateRequest<'_>) -> InputGateDecision {
         trigger: req.trigger,
         stage: InputGateStage::WordBoundary,
         action,
+        trace: Some(word_boundary_trace(&resolution)),
         correction: Some(resolution),
     }
+}
+
+fn observe_trace(stage: InputGateStage, reason: &'static str) -> InputGateDecisionTrace {
+    InputGateDecisionTrace {
+        stage,
+        input_class: None,
+        candidate_count: 0,
+        selected_source: None,
+        selected_source_id: None,
+        selected_error_class: None,
+        selected_gate_action: None,
+        reason,
+    }
+}
+
+fn word_boundary_trace(resolution: &CorrectionResolution) -> InputGateDecisionTrace {
+    let selected = resolution.selected.as_ref();
+    InputGateDecisionTrace {
+        stage: InputGateStage::WordBoundary,
+        input_class: Some(resolution.event.input_class),
+        candidate_count: resolution.candidates.len(),
+        selected_source: selected.map(|candidate| candidate.source),
+        selected_source_id: selected.map(|candidate| candidate.source_id.clone()),
+        selected_error_class: selected.map(|candidate| candidate.error_class),
+        selected_gate_action: selected.map(|candidate| candidate.gate.action),
+        reason: word_boundary_trace_reason(resolution),
+    }
+}
+
+fn word_boundary_trace_reason(resolution: &CorrectionResolution) -> &'static str {
+    if resolution.decision.is_some() {
+        return "apply_selected_candidate";
+    }
+    if resolution
+        .candidates
+        .iter()
+        .any(|candidate| candidate.gate.action == CandidateGateAction::SuggestOnly)
+    {
+        return "suggest_only_candidate";
+    }
+    if resolution
+        .candidates
+        .iter()
+        .any(|candidate| candidate.gate.action == CandidateGateAction::Veto)
+    {
+        return "candidate_veto";
+    }
+    "no_candidate"
 }
 
 fn word_boundary_action(resolution: &CorrectionResolution) -> InputGateAction {
@@ -205,6 +283,10 @@ mod tests {
         assert_eq!(decision.stage, InputGateStage::LiveInput);
         assert_eq!(decision.action, InputGateAction::Observe);
         assert!(decision.correction.is_none());
+        assert_eq!(
+            decision.trace.as_ref().map(|trace| trace.reason),
+            Some("live_input_observe_only")
+        );
     }
 
     #[test]
@@ -227,6 +309,18 @@ mod tests {
             selected_error_class(&decision),
             Some(TypingErrorClass::WrongLayout)
         );
+        let trace = decision.trace.as_ref().expect("input gate trace");
+        assert_eq!(trace.candidate_count, 1);
+        assert_eq!(
+            trace.selected_source,
+            Some(CorrectionDecisionSource::Deterministic)
+        );
+        assert_eq!(
+            trace.selected_error_class,
+            Some(TypingErrorClass::WrongLayout)
+        );
+        assert_eq!(trace.selected_gate_action, Some(CandidateGateAction::Apply));
+        assert_eq!(trace.reason, "apply_selected_candidate");
     }
 
     #[test]
@@ -238,6 +332,9 @@ mod tests {
             &pipeline,
         ));
         assert_eq!(decision.action, InputGateAction::KeepOriginal);
+        let trace = decision.trace.as_ref().expect("input gate trace");
+        assert_eq!(trace.reason, "no_candidate");
+        assert_eq!(trace.selected_source, None);
     }
 
     #[test]
@@ -255,5 +352,9 @@ mod tests {
             correction_mode: CorrectionMode::DeterministicThenNanda,
         });
         assert_eq!(decision.action, InputGateAction::KeepOriginal);
+        assert_eq!(
+            decision.trace.as_ref().map(|trace| trace.reason),
+            Some("no_candidate")
+        );
     }
 }
