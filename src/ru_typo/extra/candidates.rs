@@ -3,6 +3,7 @@ use crate::russian_lexicon::is_known_russian_word_or_form;
 use crate::russian_typo_candidates::generate_extra_letter_candidates;
 use crate::russian_typo_scoring::ngram_allows_ru_candidate;
 
+use super::super::guards::rewrites_protected_pattern_term_stem;
 use super::super::thresholds::NGRAM_EXTRA_LETTER_MARGIN;
 
 const REFLEXIVE_CONFUSION_DATA: &str =
@@ -33,6 +34,7 @@ pub(super) fn safe_extra_letter_candidates(lower: &str) -> Vec<String> {
             !looks_like_unsafe_first_letter_deletion(lower, candidate)
                 && !looks_like_unsafe_leading_pair_deletion(lower, candidate)
                 && !looks_like_unsafe_internal_y_deletion(lower, candidate)
+                && !rewrites_protected_pattern_term_stem(lower, candidate)
                 && !looks_like_unsafe_vowel_join_deletion(lower, candidate)
                 && !looks_like_unsafe_chsh_deletion(lower, candidate)
         })

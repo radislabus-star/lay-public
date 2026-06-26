@@ -73,3 +73,11 @@ pub(super) fn looks_like_plausible_russian_past_tense(word: &str) -> bool {
                 .any(|ch| is_cyrillic_letter(ch) && !is_russian_vowel(ch))
     })
 }
+
+pub(crate) fn rewrites_protected_pattern_term_stem(original: &str, candidate: &str) -> bool {
+    is_pattern_term_stem(original) && !is_pattern_term_stem(candidate)
+}
+
+fn is_pattern_term_stem(word: &str) -> bool {
+    word.starts_with("патерн") || word.starts_with("паттерн")
+}

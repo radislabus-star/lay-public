@@ -880,6 +880,11 @@ fn unsafe_single_token_phrase_typo(original: &str, replacement: &str) -> bool {
     if original == replacement {
         return false;
     }
+    let original_lower = original.to_lowercase();
+    let replacement_lower = replacement.to_lowercase();
+    if crate::ru_typo::rewrites_protected_pattern_term_stem(&original_lower, &replacement_lower) {
+        return true;
+    }
     original.chars().count() >= 4
         && original.chars().all(is_cyrillic_letter)
         && original.chars().any(char::is_uppercase)
@@ -1078,6 +1083,30 @@ mod tests {
                     .iter()
                     .all(|candidate| candidate.source != "PhraseCell32"),
                 "all-caps term should not get PhraseCell typo candidate: {original:?} -> {candidates:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn phrase_cell_does_not_delete_n_from_pattern_terms() {
+        for (original, rejected) in [
+            ("патерн ", "патер"),
+            ("патерна ", "патера"),
+            ("патернов ", "патеров"),
+        ] {
+            let l1 = run_l1(original);
+            let candidates = run_l2(original, &l1);
+            assert!(
+                candidates
+                    .iter()
+                    .all(|candidate| candidate.text.trim() != rejected),
+                "pattern-like term should not get n-deletion candidate: {original:?} -> {candidates:?}"
+            );
+            assert!(
+                candidates
+                    .iter()
+                    .all(|candidate| candidate.source != "PhraseCell32"),
+                "pattern-like term should not get PhraseCell typo candidate: {original:?} -> {candidates:?}"
             );
         }
     }

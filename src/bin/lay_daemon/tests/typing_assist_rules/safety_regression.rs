@@ -74,6 +74,9 @@ fn typing_assist_keeps_live_log_false_positive_words() {
         "переиспользуется ",
         "спикок ",
         "лучшить ",
+        "патерн ",
+        "патерна ",
+        "патернов ",
     ] {
         assert_eq!(apply_typing_assist_exact(input), None, "input={input:?}");
     }

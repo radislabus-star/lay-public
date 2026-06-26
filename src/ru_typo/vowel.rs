@@ -3,7 +3,9 @@ use crate::russian_typo_candidates::generate_vowel_confusion_candidates;
 use crate::russian_typo_scoring::best_unique_known_ngram_candidate;
 use crate::word_reader::is_cyrillic_word;
 
-use super::guards::looks_like_plausible_russian_past_tense;
+use super::guards::{
+    looks_like_plausible_russian_past_tense, rewrites_protected_pattern_term_stem,
+};
 use super::thresholds::NGRAM_VOWEL_CONFUSION_MARGIN;
 
 #[path = "vowel/past_tense.rs"]
@@ -27,7 +29,10 @@ fn correct_vowel_confusion_impl(word: &str, allow_safe_past_tense: bool) -> Opti
     if is_known_russian_word_or_form(&lower) {
         return None;
     }
-    let candidates = generate_vowel_confusion_candidates(&lower);
+    let candidates = generate_vowel_confusion_candidates(&lower)
+        .into_iter()
+        .filter(|candidate| !rewrites_protected_pattern_term_stem(&lower, candidate))
+        .collect::<Vec<_>>();
     if looks_like_plausible_russian_past_tense(&lower)
         && (!allow_safe_past_tense
             || !vowel_confusion_past_tense_candidate_exists(&lower, &candidates))
