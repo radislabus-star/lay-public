@@ -71,6 +71,13 @@ pub(super) static RULES: &[TypingRuleDefinition] = &[
         TypingRuleRequiredSafety::Normal,
         rules::apply_contextual_ru_conjunction_i,
     ),
+    safety_rule(
+        ids::CONTEXTUAL_RU_PREPOSITION_V,
+        priorities::CONTEXTUAL_RU_PREPOSITION_V,
+        TypingCandidateFamily::Layout,
+        TypingRuleRequiredSafety::Normal,
+        rules::apply_contextual_ru_preposition_v,
+    ),
     layout_only_rule(
         ids::LAYOUT_RU_TO_EN,
         priorities::LAYOUT_RU_TO_EN,

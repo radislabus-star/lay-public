@@ -570,6 +570,7 @@ fn rule_error_class(rule_id: &str) -> TypingErrorClass {
         ids::LAYOUT_TECHNICAL => TypingErrorClass::TechnicalToken,
         ids::FAST_LAYOUT_EN_TO_RU
         | ids::CONTEXTUAL_RU_CONJUNCTION_I
+        | ids::CONTEXTUAL_RU_PREPOSITION_V
         | ids::LAYOUT_RU_TO_EN
         | ids::LAYOUT_EN_TO_RU
         | ids::CONTEXTUAL_LAYOUT_EN_TO_RU

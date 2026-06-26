@@ -1,9 +1,10 @@
 use crate::layout_autoswitch::{
     ascii_layout_prefix_can_be_letter, correct_confident_wrong_layout_ascii_word,
-    correct_contextual_ascii_conjunction_i, correct_duplicate_layout_prefix_on_ascii_token,
-    correct_wrong_layout_ascii_phrase, correct_wrong_layout_ascii_technical_token,
-    correct_wrong_layout_ascii_word, correct_wrong_layout_ascii_word_experimental,
-    correct_wrong_layout_cyrillic_word, correct_wrong_layout_cyrillic_word_experimental,
+    correct_contextual_ascii_conjunction_i, correct_contextual_ascii_preposition_v,
+    correct_duplicate_layout_prefix_on_ascii_token, correct_wrong_layout_ascii_phrase,
+    correct_wrong_layout_ascii_technical_token, correct_wrong_layout_ascii_word,
+    correct_wrong_layout_ascii_word_experimental, correct_wrong_layout_cyrillic_word,
+    correct_wrong_layout_cyrillic_word_experimental,
 };
 use crate::phrase_reader::{
     correct_contextual_fuzzy_pair, correct_contextual_glued_tail,
@@ -80,6 +81,13 @@ pub(super) fn apply_contextual_ru_conjunction_i(ctx: &TypingRuleContext<'_>) -> 
         return None;
     }
     correct_contextual_ascii_conjunction_i(ctx.core)
+}
+
+pub(super) fn apply_contextual_ru_preposition_v(ctx: &TypingRuleContext<'_>) -> Option<String> {
+    if !layout_auto_allowed(ctx) {
+        return None;
+    }
+    correct_contextual_ascii_preposition_v(ctx.core)
 }
 
 pub(super) fn apply_layout_ru_to_en(ctx: &TypingRuleContext<'_>) -> Option<String> {

@@ -3,6 +3,7 @@ moved_prefix_pair	расчет\sыприблизительные\s	расчет�
 split_word_pair	я\sвно\s	явно\s	false
 visual_b	слово\sB\s	слово\sВ\s	false
 contextual_ru_conjunction_i	чай\sb\sкофе\s	чай\sи\sкофе\s	true
+contextual_ru_preposition_v	читай\scola\sd\swechat\s	читай\scola\sв\swechat\s	true
 personal_phrase	нуда\s	ну\sда\s	false
 personal_token	подлючись.\s	подключись.\s	false
 mixed_script_layout	ОБYJDB\s	ОБНОВИ\s	true

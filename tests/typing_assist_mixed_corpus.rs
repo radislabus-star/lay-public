@@ -193,6 +193,40 @@ fn contextual_ru_conjunction_i_requires_phrase_support_on_both_sides() {
 }
 
 #[test]
+fn contextual_ru_preposition_v_requires_russian_context_and_technical_anchor() {
+    for (input, expected) in [
+        ("читай cola d wechat ", "читай cola в wechat "),
+        ("читай d wechat ", "читай в wechat "),
+        ("проверил file d папку ", "проверил file в папку "),
+        ("пиши d html ", "пиши в html "),
+    ] {
+        assert_eq!(
+            simulate_space_triggered_typing_assist(input, true),
+            expected,
+            "input={input:?}"
+        );
+    }
+
+    for input in [
+        "d ",
+        "читай d ",
+        "wave d wechat ",
+        "api d json ",
+        "git checkout -d test ",
+        "vitamin d дефицит ",
+        "он gpu d html ",
+        "читай d wave ",
+        "double d прямо ",
+    ] {
+        assert_eq!(
+            simulate_space_triggered_typing_assist(input, true),
+            input,
+            "input={input:?}"
+        );
+    }
+}
+
+#[test]
 fn confident_en_to_ru_layout_words_use_fast_path_without_rewriting_english() {
     let pipeline = typing_assist_pipeline_for_context(
         true,
