@@ -14,6 +14,7 @@ pub mod desktop;
 pub mod dict;
 pub mod engine;
 pub mod eval_cases;
+pub mod input_gate;
 pub mod keyboard;
 pub mod layout_autoswitch;
 pub mod lem;

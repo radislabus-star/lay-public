@@ -24,6 +24,10 @@ pub use crate::engine::{
     decide_manual_correction, ManualCorrectionDecision, ManualCorrectionInput,
     ManualCorrectionPolicy,
 };
+pub use crate::input_gate::{
+    decide_input_gate, selected_error_class, InputGateAction, InputGateDecision, InputGateRequest,
+    InputGateStage, InputGateTrigger,
+};
 pub use crate::keyboard::{
     is_typing_key, keycode_to_ru_char, keycode_to_us_char, map_events_to_layout,
     map_opposite_events, map_original_events, mixed_visual_latin_word_target_layout,

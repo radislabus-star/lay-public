@@ -139,6 +139,11 @@ pub(super) fn active_auto_switch_layout() -> bool {
     current_config().auto_switch_layout
 }
 
+#[cfg(not(test))]
+pub(super) fn active_correction_safety() -> lay::config::CorrectionSafety {
+    current_config().active_correction_safety()
+}
+
 pub(super) fn active_learning_log() -> bool {
     current_config().debug_action_log && current_config().learning_log
 }
