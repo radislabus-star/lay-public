@@ -145,7 +145,8 @@ pub(super) fn apply_hard_sign(ctx: &TypingRuleContext<'_>) -> Option<String> {
 }
 
 pub(super) fn apply_adjacent_transposition(ctx: &TypingRuleContext<'_>) -> Option<String> {
-    apply_word_rule(ctx, correct_adjacent_transposition)
+    apply_short_left_word_rule(ctx, correct_adjacent_transposition)
+        .or_else(|| apply_word_rule(ctx, correct_adjacent_transposition))
 }
 
 pub(super) fn apply_repeated_letter(ctx: &TypingRuleContext<'_>) -> Option<String> {

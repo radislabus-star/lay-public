@@ -1,5 +1,6 @@
 use crate::config::TypingAssistRuleConfig;
 use crate::typing_candidate::{TypingCandidate, TypingCandidateDecision};
+use crate::typing_context::syntax_allows_candidate;
 use crate::typing_rule_graph::{find_typing_rule, ids, priorities, rules, TypingRuleContext};
 use crate::word_reader::split_word_punctuation;
 
@@ -73,7 +74,13 @@ pub(super) fn evaluate_rule_candidates(
             continue;
         };
         let candidate = TypingCandidate::new(&rule.id, rule.priority, core, replacement);
-        if candidate.is_safe_for(core) {
+        if !syntax_allows_candidate(core, &candidate.replacement) {
+            explanation.record(
+                evaluation
+                    .with_candidate(candidate)
+                    .reject(TypingRuleEvaluation::REJECT_UNSAFE),
+            );
+        } else if candidate.is_safe_for(core) {
             candidates.push(candidate.clone());
             explanation.record(evaluation.with_candidate(candidate));
         } else {

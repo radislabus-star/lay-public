@@ -84,6 +84,9 @@ fn is_safe_missing_letter_candidate(lower: &str, candidate: &str) -> bool {
         }
     }
     if let Some(inserted) = candidate.strip_suffix(lower) {
+        if inserted == "о" && is_known_russian_word_or_form(candidate) {
+            return true;
+        }
         return inserted.chars().count() != 1 || lower.chars().next().is_some_and(is_russian_vowel);
     }
 

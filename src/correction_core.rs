@@ -8,7 +8,7 @@ use crate::nanda_wave::{run_wave_trace, WaveDecision};
 use crate::text_case::apply_word_case;
 use crate::text_metrics::{damerau_levenshtein, has_cyrillic, has_latin};
 use crate::typing_assist::{explain_typing_assist_with_pipeline, split_ws_segments};
-use crate::typing_context::typing_assist_pipeline_for_context;
+use crate::typing_context::{syntax_allows_candidate, typing_assist_pipeline_for_context};
 use crate::typing_rule_graph::ids;
 use crate::word_reader::{is_cyrillic_letters_only, split_edge_whitespace, split_word_punctuation};
 use crate::word_recognizer::is_ascii_technical_token;
@@ -321,7 +321,7 @@ fn composite_russian_typo_candidate(
 
     if let Some(replacement_word) = unique_adjacent_transposition_word(&current_word) {
         let replacement = replace_last_text_word(req.text, &replacement_word)?;
-        if replacement != req.text {
+        if replacement != req.text && syntax_allows_candidate(req.text, &replacement) {
             let gate = gate_candidate(
                 req.text,
                 &replacement,
@@ -783,6 +783,19 @@ mod tests {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
             "Ладно ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert!(resolution.selected.is_none());
+        assert!(resolution.decision.is_none());
+    }
+
+    #[test]
+    fn future_auxiliary_blocks_non_infinitive_typo_candidate() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "будет несити ",
             &pipeline,
             CorrectionMode::DeterministicOnly,
         ));

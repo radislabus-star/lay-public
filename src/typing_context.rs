@@ -10,12 +10,15 @@ mod context_window;
 mod layout_signal;
 #[path = "typing_context/pipeline.rs"]
 mod pipeline;
+#[path = "typing_context/syntax_guard.rs"]
+mod syntax_guard;
 #[path = "typing_context/tokens.rs"]
 mod tokens;
 
 pub use context_window::completed_tail_context;
 pub use layout_signal::should_enable_ascii_to_ru_layout;
 pub use pipeline::typing_assist_pipeline_for_context;
+pub(crate) use syntax_guard::syntax_allows_candidate;
 
 #[cfg(test)]
 #[path = "typing_context_tests.rs"]

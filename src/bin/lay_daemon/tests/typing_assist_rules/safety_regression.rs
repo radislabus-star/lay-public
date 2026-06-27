@@ -77,9 +77,18 @@ fn typing_assist_keeps_live_log_false_positive_words() {
         "патерн ",
         "патерна ",
         "патернов ",
+        "Сделай ",
+        "будет несити ",
     ] {
         assert_eq!(apply_typing_assist_exact(input), None, "input={input:?}");
     }
+
+    let input = "Проверь Сделай ";
+    assert_eq!(
+        apply_typing_assist_to_text_tail(input),
+        None,
+        "input={input:?}"
+    );
 }
 
 #[test]
