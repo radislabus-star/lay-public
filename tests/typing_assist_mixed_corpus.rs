@@ -165,6 +165,7 @@ fn contextual_ru_conjunction_i_requires_phrase_support_on_both_sides() {
         ("пишу b проверяю ", "пишу и проверяю "),
         ("быстро b удобно ", "быстро и удобно "),
         ("проверил file b папку ", "проверил file и папку "),
+        ("lay b справится ", "lay и справится "),
     ] {
         assert_eq!(
             simulate_space_triggered_typing_assist(input, true),

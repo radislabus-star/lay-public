@@ -22,10 +22,22 @@ pub(crate) fn correct_contextual_ascii_conjunction_i(text: &str) -> Option<Strin
         if !is_ascii_b_conjunction_candidate(segment) {
             continue;
         }
-        if !side_has_russian_phrase_support(&segments, word_indices[..position].iter().rev()) {
+        let left_has_russian =
+            side_has_russian_phrase_support(&segments, word_indices[..position].iter().rev());
+        let left_has_technical =
+            side_has_technical_ascii_anchor(&segments, word_indices[..position].iter().rev());
+        if !left_has_russian && !left_has_technical {
             continue;
         }
         if !side_has_russian_phrase_support(&segments, word_indices[position + 1..].iter()) {
+            continue;
+        }
+        if !left_has_russian
+            && !immediate_right_has_russian_phrase_support(
+                &segments,
+                word_indices.get(position + 1).copied(),
+            )
+        {
             continue;
         }
         if replacement_index.replace(segment_idx).is_some() {
@@ -68,6 +80,35 @@ where
         }
     }
     false
+}
+
+fn side_has_technical_ascii_anchor<'a, I>(segments: &[(&str, bool)], word_indices: I) -> bool
+where
+    I: Iterator<Item = &'a usize>,
+{
+    for (scanned, segment_idx) in word_indices.enumerate() {
+        if scanned >= CONTEXT_SCAN_WORDS {
+            break;
+        }
+        let token = segments[*segment_idx].0;
+        if is_hard_context_barrier(token) {
+            return false;
+        }
+        let identity = recognize_token(token);
+        if identity.script == WordScript::Ascii && identity.technical {
+            return true;
+        }
+    }
+    false
+}
+
+fn immediate_right_has_russian_phrase_support(
+    segments: &[(&str, bool)],
+    segment_idx: Option<usize>,
+) -> bool {
+    segment_idx
+        .map(|idx| is_russian_phrase_support(segments[idx].0))
+        .unwrap_or(false)
 }
 
 fn is_russian_phrase_support(token: &str) -> bool {

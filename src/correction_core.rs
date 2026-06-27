@@ -425,6 +425,9 @@ fn unique_adjacent_transposition_word(word: &str) -> Option<String> {
     }
 
     let lower = word.to_lowercase();
+    if crate::russian_lexicon::is_known_russian_word_or_form(&lower) {
+        return None;
+    }
     let chars: Vec<char> = lower.chars().collect();
     let mut found: Option<String> = None;
 
@@ -773,6 +776,19 @@ mod tests {
             TypingErrorClass::AdjacentTransposition
         );
         assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn adjacent_transposition_keeps_already_known_word() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "Ладно ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert!(resolution.selected.is_none());
+        assert!(resolution.decision.is_none());
     }
 
     #[test]
