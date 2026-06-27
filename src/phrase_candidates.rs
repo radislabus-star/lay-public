@@ -1,7 +1,9 @@
 //! Candidate builders for phrase-level corrections.
 
 use crate::data_lines::data_lines;
-use crate::phrase_lexicon::{is_known_russian_phrase_part, is_short_russian_function_word};
+use crate::phrase_lexicon::{
+    is_common_be_verb_form, is_known_russian_phrase_part, is_short_russian_function_word,
+};
 use crate::ru_typo::{
     correct_adjacent_transposition, correct_hard_sign_typo, correct_missing_letter,
     correct_repeated_letter, safe_missing_letter_candidates,
@@ -48,7 +50,9 @@ pub(crate) fn glued_phrase_part_candidates(part: &str) -> Vec<(String, f64)> {
         }
     }
 
-    out.retain(|(candidate, _)| is_known_russian_phrase_part(candidate));
+    out.retain(|(candidate, _)| {
+        is_known_russian_phrase_part(candidate) || is_common_be_verb_form(candidate)
+    });
     out
 }
 

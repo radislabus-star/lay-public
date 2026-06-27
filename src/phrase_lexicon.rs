@@ -52,6 +52,22 @@ pub(crate) fn is_common_short_russian_preposition(word: &str) -> bool {
     is_ru_short_preposition(word)
 }
 
+pub(crate) fn is_common_be_verb_form(word: &str) -> bool {
+    matches!(
+        word,
+        "был"
+            | "была"
+            | "было"
+            | "были"
+            | "буду"
+            | "будешь"
+            | "будет"
+            | "будем"
+            | "будете"
+            | "будут"
+    )
+}
+
 pub(crate) fn looks_like_short_function_word_glued_to_known_word(word: &str) -> bool {
     let char_len = word.chars().count();
     if char_len < 5 {

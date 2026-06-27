@@ -2,7 +2,7 @@ use crate::candidate_ranker::choose_best_with_gap;
 use crate::keyboard::is_cyrillic_letter;
 use crate::phrase_candidates::glued_phrase_part_candidates;
 use crate::phrase_lexicon::{
-    is_common_short_russian_preposition, is_known_russian_phrase_part,
+    is_common_be_verb_form, is_common_short_russian_preposition, is_known_russian_phrase_part,
     is_short_russian_function_word,
 };
 use crate::phrase_score::{
@@ -74,9 +74,9 @@ pub fn correct_glued_russian_phrase(word: &str) -> Option<String> {
         let left_has_standalone_candidate = left_candidates
             .iter()
             .any(|(candidate, _)| is_standalone_russian_phrase_part(candidate));
-        let right_has_standalone_candidate = right_candidates
-            .iter()
-            .any(|(candidate, _)| is_standalone_russian_phrase_part(candidate));
+        let right_has_standalone_candidate = right_candidates.iter().any(|(candidate, _)| {
+            is_standalone_russian_phrase_part(candidate) || is_common_be_verb_form(candidate)
+        });
         let right_has_known_candidate = right_candidates
             .iter()
             .any(|(candidate, _)| is_known_russian_phrase_part(candidate));
