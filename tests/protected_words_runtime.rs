@@ -38,3 +38,31 @@ fn user_protected_ascii_word_is_not_overridden_by_layout_scoring() {
         "protected token must stay unchanged, got:\n{stdout}"
     );
 }
+
+#[test]
+fn user_protected_cyrillic_word_is_not_overridden_by_technical_ascii() {
+    let home = temp_home();
+    let config = home.join(".config/lay");
+    fs::create_dir_all(&config).expect("create test config dir");
+    fs::write(config.join("protected_words.txt"), "ой\n").expect("write protected words");
+
+    let output = Command::new(env!("CARGO_BIN_EXE_lay"))
+        .env("HOME", &home)
+        .arg("--explain-correct")
+        .arg("ой ")
+        .output()
+        .expect("run lay explain-correct");
+
+    let _ = fs::remove_dir_all(&home);
+
+    assert!(
+        output.status.success(),
+        "lay failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        stdout.contains("output: none"),
+        "protected cyrillic token must stay unchanged, got:\n{stdout}"
+    );
+}

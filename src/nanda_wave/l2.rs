@@ -2,8 +2,8 @@ use crate::config::CorrectionSafety;
 use crate::dict::{convert, detect_direction};
 use crate::lexicon::{
     is_common_en_guard_prefix, is_common_en_technical_word, is_common_ru_word,
-    is_ru_one_letter_function_word, is_ru_short_function_word, visual_b_after_ascii_replacement,
-    visual_b_default_replacement,
+    is_ru_one_letter_function_word, is_ru_short_function_word, is_user_protected_word,
+    visual_b_after_ascii_replacement, visual_b_default_replacement,
 };
 use crate::russian_lexicon::is_known_russian_word_or_form;
 use crate::typing_candidate::TypingCandidateFamily;
@@ -659,6 +659,13 @@ fn layout_candidate_allowed(token: &str, converted: &str) -> bool {
         return true;
     }
     if token_cyrillic && converted_ascii {
+        let token_lower = token.to_lowercase();
+        if is_user_protected_word(&token_lower)
+            || crate::layout_autoswitch::is_known_russian_layout_autoswitch_word(&token_lower)
+            || is_known_russian_word_or_form(&token_lower)
+        {
+            return false;
+        }
         return is_common_en_technical_word(&converted.to_ascii_lowercase());
     }
     false
@@ -691,7 +698,10 @@ fn boundary_split_candidates(
         return Vec::new();
     }
     let normalized = token.to_lowercase();
-    if normalized.chars().count() < 6 || is_common_ru_word(&normalized) {
+    if normalized.chars().count() < 6
+        || is_common_ru_word(&normalized)
+        || is_known_russian_word_or_form(&normalized)
+    {
         return Vec::new();
     }
     let chars = normalized.chars().collect::<Vec<_>>();
@@ -1026,6 +1036,16 @@ mod tests {
     }
 
     #[test]
+    fn layout_word_cell_respects_known_short_russian_words() {
+        let original = "ой ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        assert!(candidates
+            .iter()
+            .all(|candidate| candidate.text != "jq" && candidate.source != "LayoutWordCell32"));
+    }
+
+    #[test]
     fn grammar_cell_keeps_known_plural_forms_after_verbs() {
         let original = "имеет волнистые ";
         let l1 = run_l1(original);
@@ -1054,6 +1074,21 @@ mod tests {
         assert!(candidates
             .iter()
             .any(|candidate| candidate.text == "она есть"));
+    }
+
+    #[test]
+    fn boundary_cell_does_not_split_known_russian_word_forms() {
+        for original in ["упоминай ", "поехал ", "поплыл ", "указать ", "сторона "]
+        {
+            let l1 = run_l1(original);
+            let candidates = run_l2(original, &l1);
+            assert!(
+                candidates
+                    .iter()
+                    .all(|candidate| candidate.source != "BoundaryCell32"),
+                "known word must not become boundary split: {original:?} -> {candidates:?}"
+            );
+        }
     }
 
     #[test]

@@ -130,6 +130,10 @@ fn is_strong_layout_polish_word(word: &str) -> bool {
 }
 
 pub(crate) fn is_known_russian_layout_autoswitch_word(word: &str) -> bool {
+    if crate::lexicon::is_user_protected_word(word) {
+        return true;
+    }
+
     let len = word.chars().filter(|ch| is_cyrillic_letter(*ch)).count();
     if len <= 3 {
         return russian_tiny_dictionary().contains(word);

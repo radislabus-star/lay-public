@@ -56,11 +56,11 @@ fn correct_wrong_layout_cyrillic_word_with_policy(
     }
 
     let converted_lower = converted_word.to_ascii_lowercase();
-    let converted_is_technical = is_common_en_technical_word(&converted_lower);
     let original_lower = original_word.to_lowercase();
-    if !converted_is_technical && is_known_russian_layout_autoswitch_word(&original_lower) {
+    if is_known_russian_layout_autoswitch_word(&original_lower) {
         return None;
     }
+    let converted_is_technical = is_common_en_technical_word(&converted_lower);
     if !converted_is_technical && has_plausible_russian_typo_candidate(&original_lower) {
         return None;
     }
@@ -149,5 +149,10 @@ mod tests {
             correct_wrong_layout_cyrillic_word("дфн"),
             Some("lay".to_string())
         );
+    }
+
+    #[test]
+    fn known_short_russian_word_does_not_lose_to_technical_ascii() {
+        assert_eq!(correct_wrong_layout_cyrillic_word("ой"), None);
     }
 }

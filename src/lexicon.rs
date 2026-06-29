@@ -48,6 +48,7 @@ pub fn warm_up() {
     let _ = ru_greeting_words().len();
     let _ = visual_b_default_replacement();
     let _ = visual_b_after_ascii_replacement();
+    let _ = user_protected_words().len();
     let _ = user_protected_ascii_words().len();
 }
 
@@ -194,6 +195,11 @@ pub fn is_user_protected_ascii_word(word: &str) -> bool {
     user_protected_ascii_words().contains(&word.to_ascii_lowercase())
 }
 
+pub fn is_user_protected_word(word: &str) -> bool {
+    let normalized = word.trim().to_lowercase();
+    !normalized.is_empty() && user_protected_words().contains(&normalized)
+}
+
 pub fn extend_user_protected_ascii_words(words: &mut HashSet<String>, min_chars: usize) {
     words.extend(
         user_protected_ascii_words()
@@ -209,6 +215,25 @@ pub fn extend_common_ru_words(words: &mut HashSet<String>) {
 
 pub fn common_ru_words_iter() -> impl Iterator<Item = &'static str> {
     common_ru_words_ordered().iter().map(String::as_str)
+}
+
+fn user_protected_words() -> &'static HashSet<String> {
+    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
+    WORDS.get_or_init(|| {
+        let Some(home) = std::env::var_os("HOME") else {
+            return HashSet::new();
+        };
+        let path = std::path::PathBuf::from(home).join(PROTECTED_WORDS_PATH);
+        load_plain_words(&path)
+            .map(|words| {
+                words
+                    .into_iter()
+                    .map(|word| word.trim().to_lowercase())
+                    .filter(|word| !word.is_empty())
+                    .collect()
+            })
+            .unwrap_or_default()
+    })
 }
 
 fn user_protected_ascii_words() -> &'static HashSet<String> {
