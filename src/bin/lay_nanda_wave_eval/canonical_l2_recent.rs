@@ -210,6 +210,70 @@ pub(crate) fn print_harvest_summary(args: &[String]) -> io::Result<()> {
     Ok(())
 }
 
+pub(crate) fn replay_harvest(args: &[String]) -> io::Result<()> {
+    let path = super::arg_value(args, "--harvest")
+        .map(PathBuf::from)
+        .or_else(default_harvest_path)
+        .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "HOME is not set"))?;
+    let limit = super::arg_value(args, "--limit")
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(40)
+        .clamp(1, 500);
+    let min_score = super::arg_value(args, "--min-score")
+        .and_then(|value| value.parse::<u32>().ok())
+        .unwrap_or(650);
+    let records = load_harvest_records(&path)?;
+    let mut rows = records
+        .values()
+        .filter(|record| !matches!(record.live_error_class.as_deref(), Some("wrong_layout")))
+        .filter(|record| record.canonical_score.unwrap_or(0) >= min_score)
+        .collect::<Vec<_>>();
+    rows.sort_by(|left, right| {
+        right
+            .canonical_score
+            .unwrap_or(0)
+            .cmp(&left.canonical_score.unwrap_or(0))
+            .then_with(|| left.input.cmp(&right.input))
+    });
+    rows.truncate(limit);
+
+    let mut live_match = 0usize;
+    let mut live_conflict = 0usize;
+    println!("canonical_l2_replay:");
+    println!("  source: {}", path.display());
+    println!("  records: {}", records.len());
+    println!("  min_score: {}", min_score);
+    println!("  rows: {}", rows.len());
+    println!("  live_authority: false");
+    for record in &rows {
+        let simulated = simulate_replace_last_word(&record.from, record.canonical_top.as_deref());
+        let matches_live = normalize_sentence(&simulated) == normalize_sentence(&record.to);
+        if matches_live {
+            live_match += 1;
+        } else {
+            live_conflict += 1;
+        }
+        println!(
+            "    {} => {} | live={} | canonical={}:{} | {}",
+            compact(&record.from),
+            compact(&simulated),
+            compact(&record.to),
+            record.canonical_top.as_deref().unwrap_or("none"),
+            record.canonical_score.unwrap_or(0),
+            if matches_live {
+                "matches_live"
+            } else {
+                "differs_from_live"
+            }
+        );
+    }
+    println!("  summary:");
+    println!("    matches_live: {}", live_match);
+    println!("    differs_from_live: {}", live_conflict);
+
+    Ok(())
+}
+
 #[derive(Default)]
 struct VerdictCounts {
     agrees_live: usize,
@@ -372,6 +436,40 @@ fn normalize_word(text: &str) -> String {
         .collect()
 }
 
+fn normalize_sentence(text: &str) -> String {
+    text.split_whitespace()
+        .map(normalize_word)
+        .filter(|word| !word.is_empty())
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+fn simulate_replace_last_word(text: &str, replacement: Option<&str>) -> String {
+    let Some(replacement) = replacement else {
+        return text.to_string();
+    };
+    let Some((start, end)) = last_word_span(text) else {
+        return text.to_string();
+    };
+    let mut output = String::with_capacity(text.len() + replacement.len());
+    output.push_str(&text[..start]);
+    output.push_str(replacement);
+    output.push_str(&text[end..]);
+    output
+}
+
+fn last_word_span(text: &str) -> Option<(usize, usize)> {
+    let mut end = None;
+    for (idx, ch) in text.char_indices().rev() {
+        if ch.is_alphabetic() || ch == '-' {
+            end.get_or_insert(idx + ch.len_utf8());
+        } else if let Some(end) = end {
+            return Some((idx + ch.len_utf8(), end));
+        }
+    }
+    end.map(|end| (0, end))
+}
+
 fn format_top(candidate: Option<&CanonicalL2Candidate>) -> String {
     candidate
         .map(|candidate| {
@@ -435,5 +533,17 @@ mod tests {
     fn last_word_normalizes_tail() {
         assert_eq!(last_word("ну и что видешь "), "видешь");
         assert_eq!(last_word("html djn "), "djn");
+    }
+
+    #[test]
+    fn simulate_replaces_last_word_only() {
+        assert_eq!(
+            simulate_replace_last_word("сейчас видешь ", Some("видишь")),
+            "сейчас видишь "
+        );
+        assert_eq!(
+            simulate_replace_last_word("в предлажение?!", Some("предложения")),
+            "в предложения?!"
+        );
     }
 }
