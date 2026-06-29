@@ -913,6 +913,9 @@ fn gate_candidate(
             reason: "known_single_word_boundary_split",
         };
     }
+    if let Some(decision) = l3_context_gate(original, replacement, error_class) {
+        return decision;
+    }
 
     match error_class {
         TypingErrorClass::TechnicalToken | TypingErrorClass::ProtectedToken => {
@@ -950,6 +953,26 @@ fn gate_candidate(
             reason: "class_allows_apply",
         },
     }
+}
+
+fn l3_context_gate(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+) -> Option<CandidateGateDecision> {
+    if candidate_over_compresses_word(original, replacement, error_class) {
+        return Some(CandidateGateDecision {
+            action: CandidateGateAction::KeepOriginal,
+            reason: "candidate_over_compresses_word",
+        });
+    }
+    if short_layout_candidate_lacks_phrase_context(original, replacement, error_class) {
+        return Some(CandidateGateDecision {
+            action: CandidateGateAction::KeepOriginal,
+            reason: "short_layout_without_phrase_context",
+        });
+    }
+    None
 }
 
 fn replacement_glues_separate_words_without_boundary_class(
@@ -1009,6 +1032,65 @@ fn boundary_candidate_splits_known_russian_word(
         }
     }
     false
+}
+
+fn candidate_over_compresses_word(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+) -> bool {
+    if matches!(
+        error_class,
+        TypingErrorClass::WrongLayout
+            | TypingErrorClass::PartialLayout
+            | TypingErrorClass::SplitWord
+            | TypingErrorClass::GluedWords
+            | TypingErrorClass::RepeatedLetter
+    ) {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return false;
+    };
+    if !is_cyrillic_letters_only(&original_word) || !is_cyrillic_letters_only(&replacement_word) {
+        return false;
+    }
+    let original_len = original_word.chars().count();
+    let replacement_len = replacement_word.chars().count();
+    original_len >= 6 && replacement_len + 3 <= original_len
+}
+
+fn short_layout_candidate_lacks_phrase_context(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+) -> bool {
+    if !matches!(error_class, TypingErrorClass::PartialLayout) {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return false;
+    };
+    if original_word.chars().count() != 1 || replacement_word.chars().count() != 1 {
+        return false;
+    }
+    let (_, original_core, _) = split_edge_whitespace(original);
+    let previous_words = original_core
+        .split_whitespace()
+        .take(original_core.split_whitespace().count().saturating_sub(1))
+        .collect::<Vec<_>>();
+    let has_cyrillic_context = previous_words.iter().any(|word| has_cyrillic(word));
+    let has_ascii_context = previous_words
+        .iter()
+        .any(|word| word.chars().any(|ch| ch.is_ascii_alphabetic()));
+
+    has_ascii_context && !has_cyrillic_context
 }
 
 fn same_known_russian_token(original: &str, candidate: &str) -> bool {
@@ -1179,6 +1261,51 @@ mod tests {
             TypingErrorClass::CompositeTypo
         );
         assert_eq!(resolution.decision, None);
+    }
+
+    #[test]
+    fn l3_anti_shortcut_blocks_overcompressed_word_candidate() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "патерна ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert_eq!(resolution.decision, None);
+        assert!(resolution.candidates.iter().any(|candidate| {
+            candidate.replacement == "пара "
+                && candidate.gate.action == CandidateGateAction::KeepOriginal
+                && candidate.gate.reason == "candidate_over_compresses_word"
+        }));
+    }
+
+    #[test]
+    fn l3_anti_shortcut_blocks_short_layout_without_phrase_context() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution =
+            resolve_text_correction(request("wave b ", &pipeline, CorrectionMode::NandaOnly));
+
+        assert_eq!(resolution.decision, None);
+        assert!(resolution.candidates.iter().any(|candidate| {
+            candidate.replacement == "wave и "
+                && candidate.gate.action == CandidateGateAction::KeepOriginal
+                && candidate.gate.reason == "short_layout_without_phrase_context"
+        }));
+    }
+
+    #[test]
+    fn russian_phrase_context_still_allows_short_preposition_repair() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "читай cola d wechat ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution.selected.expect("selected candidate");
+        assert_eq!(selected.replacement, "читай cola в wechat ");
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
     }
 
     #[test]

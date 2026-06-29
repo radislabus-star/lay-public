@@ -89,6 +89,12 @@ fi
 if has_file_matching '^src/correction_core\.rs$'; then
   echo "== cargo test correction_core:: --lib =="
   cargo test correction_core:: --lib
+
+  echo "== cargo test input_gate:: --lib =="
+  cargo test input_gate:: --lib
+elif has_file_matching '^src/input_gate\.rs$'; then
+  echo "== cargo test input_gate:: --lib =="
+  cargo test input_gate:: --lib
 fi
 
 if has_file_matching '^src/phrase_reader'; then
