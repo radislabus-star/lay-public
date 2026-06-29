@@ -7,6 +7,8 @@ pub(crate) fn force_target_layout_for_replacement(original: &str, replacement: &
         (original, replacement),
         (ScriptSignal::Ascii, ScriptSignal::Cyrillic)
             | (ScriptSignal::Cyrillic, ScriptSignal::Ascii)
+            | (ScriptSignal::Mixed, ScriptSignal::Ascii)
+            | (ScriptSignal::Mixed, ScriptSignal::Cyrillic)
     )
 }
 
@@ -60,8 +62,13 @@ mod tests {
     }
 
     #[test]
-    fn mixed_replacements_do_not_force_layout_from_policy() {
+    fn mixed_to_clean_script_replacement_forces_target_layout() {
+        assert!(force_target_layout_for_replacement("gривет ", "привет "));
+        assert!(force_target_layout_for_replacement("аpply ", "apply "));
+    }
+
+    #[test]
+    fn mixed_replacements_do_not_force_layout_for_still_mixed_text() {
         assert!(!force_target_layout_for_replacement("djn api ", "вот api "));
-        assert!(!force_target_layout_for_replacement("gривет ", "привет "));
     }
 }
