@@ -1012,6 +1012,17 @@ mod tests {
     }
 
     #[test]
+    fn semantic_word_cell_uses_fuzzy_typo_bridge_for_extra_initial_letter() {
+        let candidates = semantic_word_candidates("на сколько эаффективная ");
+        assert!(
+            candidates
+                .iter()
+                .any(|candidate| candidate.text == "на сколько эффективная"),
+            "expected extra-letter fuzzy repair in L2: {candidates:?}"
+        );
+    }
+
+    #[test]
     fn semantic_word_cell_does_not_rewrite_valid_word_without_context() {
         let candidates = semantic_word_candidates("следующий пукнут ");
         assert!(

@@ -5,8 +5,8 @@ use crate::russian_lexicon::{
     russian_generated_form_dictionary,
 };
 use crate::russian_typo_candidates::{
-    generate_missing_letter_candidates, generate_vowel_confusion_candidates,
-    repeated_run_deletion_candidates, RU_ALPHABET,
+    generate_extra_letter_candidates, generate_missing_letter_candidates,
+    generate_vowel_confusion_candidates, repeated_run_deletion_candidates, RU_ALPHABET,
 };
 use crate::text_metrics::damerau_levenshtein;
 
@@ -82,6 +82,7 @@ fn local_known_typo_candidates(lower: &str) -> Vec<String> {
     let mut out = Vec::new();
     for candidate in generate_missing_letter_candidates(lower)
         .chain(generate_vowel_confusion_candidates(lower))
+        .chain(generate_extra_letter_candidates(lower))
         .chain(generate_adjacent_transposition_candidates(lower))
         .chain(generate_keyboard_neighbor_substitution_candidates(lower))
     {
@@ -167,6 +168,14 @@ mod tests {
         assert!(candidates
             .iter()
             .any(|candidate| candidate == "эксперимент"));
+    }
+
+    #[test]
+    fn fuzzy_known_word_candidates_can_remove_extra_initial_letter() {
+        let candidates = fuzzy_known_word_candidates("эаффективная");
+        assert!(candidates
+            .iter()
+            .any(|candidate| candidate == "эффективная"));
     }
 
     #[test]
