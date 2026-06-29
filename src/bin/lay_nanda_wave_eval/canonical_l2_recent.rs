@@ -274,6 +274,102 @@ pub(crate) fn replay_harvest(args: &[String]) -> io::Result<()> {
     Ok(())
 }
 
+pub(crate) fn replay_harvest_with_morphology(args: &[String]) -> io::Result<()> {
+    let path = super::arg_value(args, "--harvest")
+        .map(PathBuf::from)
+        .or_else(default_harvest_path)
+        .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "HOME is not set"))?;
+    let limit = super::arg_value(args, "--limit")
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(40)
+        .clamp(1, 500);
+    let min_score = super::arg_value(args, "--min-score")
+        .and_then(|value| value.parse::<u32>().ok())
+        .unwrap_or(650);
+    let records = load_harvest_records(&path)?;
+    let words = learned_clean_words(&records)?;
+    let mut rows = records
+        .values()
+        .filter(|record| !matches!(record.live_error_class.as_deref(), Some("wrong_layout")))
+        .filter(|record| record.canonical_score.unwrap_or(0) >= min_score)
+        .collect::<Vec<_>>();
+    rows.sort_by(|left, right| {
+        right
+            .canonical_score
+            .unwrap_or(0)
+            .cmp(&left.canonical_score.unwrap_or(0))
+            .then_with(|| left.input.cmp(&right.input))
+    });
+    rows.truncate(limit);
+
+    let mut raw_match = 0usize;
+    let mut raw_conflict = 0usize;
+    let mut morph_match = 0usize;
+    let mut morph_conflict = 0usize;
+    let mut morph_changed = 0usize;
+    let mut morph_missing = 0usize;
+    println!("canonical_l2_morph_replay:");
+    println!("  source: {}", path.display());
+    println!("  records: {}", records.len());
+    println!("  clean_words: {}", words.len());
+    println!("  learned_from_harvest: true");
+    println!("  replay_isolation: optimistic_same_harvest");
+    println!("  min_score: {}", min_score);
+    println!("  rows: {}", rows.len());
+    println!("  live_authority: false");
+    for record in &rows {
+        let raw_simulated =
+            simulate_replace_last_word(&record.from, record.canonical_top.as_deref());
+        let morph = morphology_candidate(&record.input, record.canonical_top.as_deref(), &words);
+        let morph_simulated = simulate_replace_last_word(&record.from, morph.as_deref());
+        let raw_matches_live = normalize_sentence(&raw_simulated) == normalize_sentence(&record.to);
+        let morph_matches_live =
+            normalize_sentence(&morph_simulated) == normalize_sentence(&record.to);
+        if raw_matches_live {
+            raw_match += 1;
+        } else {
+            raw_conflict += 1;
+        }
+        if morph_matches_live {
+            morph_match += 1;
+        } else {
+            morph_conflict += 1;
+        }
+        if morph.is_none() {
+            morph_missing += 1;
+        }
+        if morph.as_deref() != record.canonical_top.as_deref() {
+            morph_changed += 1;
+        }
+        println!(
+            "    {} => raw:{} => morph:{} | live={} | canonical={}:{} | morph={} | {}",
+            compact(&record.from),
+            compact(&raw_simulated),
+            compact(&morph_simulated),
+            compact(&record.to),
+            record.canonical_top.as_deref().unwrap_or("none"),
+            record.canonical_score.unwrap_or(0),
+            morph.as_deref().unwrap_or("none"),
+            if morph_matches_live {
+                "morph_matches_live"
+            } else if raw_matches_live {
+                "raw_matches_live"
+            } else {
+                "differs_from_live"
+            }
+        );
+    }
+    println!("  summary:");
+    println!("    raw_matches_live: {}", raw_match);
+    println!("    raw_differs_from_live: {}", raw_conflict);
+    println!("    morph_matches_live: {}", morph_match);
+    println!("    morph_differs_from_live: {}", morph_conflict);
+    println!("    morph_changed: {}", morph_changed);
+    println!("    morph_missing: {}", morph_missing);
+
+    Ok(())
+}
+
 #[derive(Default)]
 struct VerdictCounts {
     agrees_live: usize,
@@ -310,6 +406,14 @@ fn clean_words() -> io::Result<Vec<String>> {
         "и", "в", "не", "на", "с", "по", "для", "как", "что", "я", "ты", "мы", "он", "она", "они",
     ] {
         words.insert(word.to_string());
+    }
+    Ok(words.into_iter().collect())
+}
+
+fn learned_clean_words(records: &BTreeMap<String, HarvestRecord>) -> io::Result<Vec<String>> {
+    let mut words = clean_words()?.into_iter().collect::<BTreeSet<_>>();
+    for record in records.values() {
+        collect_words(&record.to, &mut words);
     }
     Ok(words.into_iter().collect())
 }
@@ -444,6 +548,75 @@ fn normalize_sentence(text: &str) -> String {
         .join(" ")
 }
 
+fn morphology_candidate(
+    input: &str,
+    canonical_top: Option<&str>,
+    clean_words: &[String],
+) -> Option<String> {
+    let input = normalize_word(input);
+    let canonical_top = canonical_top.map(normalize_word);
+    if input.is_empty() {
+        return canonical_top;
+    }
+    let input_len = char_len(&input);
+    let max_distance = (input_len / 3 + 1).max(2);
+    let mut best: Option<(i32, String)> = None;
+    for word in clean_words {
+        let word = normalize_word(word);
+        if word.is_empty() || word == input {
+            continue;
+        }
+        let word_len = char_len(&word);
+        if word_len + 2 < input_len || word_len > input_len + 4 {
+            continue;
+        }
+        let input_distance = edit_distance(&input, &word);
+        if input_distance > max_distance {
+            continue;
+        }
+        let canonical_distance = canonical_top
+            .as_deref()
+            .map(|canonical| edit_distance(canonical, &word))
+            .unwrap_or(input_distance);
+        let input_prefix = common_prefix_len(&input, &word);
+        let canonical_prefix = canonical_top
+            .as_deref()
+            .map(|canonical| common_prefix_len(canonical, &word))
+            .unwrap_or(0);
+        if input_prefix < 2 && canonical_prefix < 2 {
+            continue;
+        }
+        let input_suffix = common_suffix_len(&input, &word);
+        let len_delta = input_len.abs_diff(word_len);
+        let mut score = 10_000i32;
+        score -= input_distance as i32 * 1_000;
+        score -= canonical_distance as i32 * 25;
+        score -= len_delta as i32 * 160;
+        score += input_prefix.min(5) as i32 * 120;
+        score += canonical_prefix.min(5) as i32 * 60;
+        score += input_suffix.min(5) as i32 * 80;
+        if canonical_top.as_deref() == Some(word.as_str()) {
+            score += 250;
+        }
+        if canonical_top
+            .as_deref()
+            .is_some_and(|canonical| word.starts_with(canonical) || canonical.starts_with(&word))
+        {
+            score += 120;
+        }
+        let should_replace = match best.as_ref() {
+            Some((best_score, best_word)) => {
+                score > *best_score || score == *best_score && word < *best_word
+            }
+            None => true,
+        };
+        if should_replace {
+            best = Some((score, word));
+        }
+    }
+    best.map(|(_, word)| word).or(canonical_top)
+}
+
 fn simulate_replace_last_word(text: &str, replacement: Option<&str>) -> String {
     let Some(replacement) = replacement else {
         return text.to_string();
@@ -456,6 +629,43 @@ fn simulate_replace_last_word(text: &str, replacement: Option<&str>) -> String {
     output.push_str(replacement);
     output.push_str(&text[end..]);
     output
+}
+
+fn char_len(text: &str) -> usize {
+    text.chars().count()
+}
+
+fn common_prefix_len(left: &str, right: &str) -> usize {
+    left.chars()
+        .zip(right.chars())
+        .take_while(|(left, right)| left == right)
+        .count()
+}
+
+fn common_suffix_len(left: &str, right: &str) -> usize {
+    left.chars()
+        .rev()
+        .zip(right.chars().rev())
+        .take_while(|(left, right)| left == right)
+        .count()
+}
+
+fn edit_distance(left: &str, right: &str) -> usize {
+    let left = left.chars().collect::<Vec<_>>();
+    let right = right.chars().collect::<Vec<_>>();
+    let mut prev = (0..=right.len()).collect::<Vec<_>>();
+    let mut curr = vec![0usize; right.len() + 1];
+    for (left_idx, left_ch) in left.iter().enumerate() {
+        curr[0] = left_idx + 1;
+        for (right_idx, right_ch) in right.iter().enumerate() {
+            let replace_cost = usize::from(left_ch != right_ch);
+            curr[right_idx + 1] = (prev[right_idx + 1] + 1)
+                .min(curr[right_idx] + 1)
+                .min(prev[right_idx] + replace_cost);
+        }
+        std::mem::swap(&mut prev, &mut curr);
+    }
+    prev[right.len()]
 }
 
 fn last_word_span(text: &str) -> Option<(usize, usize)> {
@@ -544,6 +754,36 @@ mod tests {
         assert_eq!(
             simulate_replace_last_word("в предлажение?!", Some("предложения")),
             "в предложения?!"
+        );
+    }
+
+    #[test]
+    fn morphology_replay_recovers_known_forms() {
+        let words = [
+            "предлогами",
+            "предложение",
+            "словарные",
+            "видишь",
+            "правильно",
+        ]
+        .into_iter()
+        .map(str::to_string)
+        .collect::<Vec<_>>();
+        assert_eq!(
+            morphology_candidate("предлгами", Some("предлог"), &words).as_deref(),
+            Some("предлогами")
+        );
+        assert_eq!(
+            morphology_candidate("словарыне", Some("слова"), &words).as_deref(),
+            Some("словарные")
+        );
+        assert_eq!(
+            morphology_candidate("предлажение", Some("предложения"), &words).as_deref(),
+            Some("предложение")
+        );
+        assert_eq!(
+            morphology_candidate("видешь", Some("видишь"), &words).as_deref(),
+            Some("видишь")
         );
     }
 }
