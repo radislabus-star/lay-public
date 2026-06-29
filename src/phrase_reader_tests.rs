@@ -39,6 +39,9 @@ fn merges_accidental_split_word_but_keeps_normal_pair() {
         assert_eq!(row.len(), 1, "split pair keep fixture must have one field");
         assert_eq!(correct_split_word_pair(&row[0]), None);
     }
+    assert_eq!(correct_split_word_pair("реально ое"), None);
+    assert_eq!(correct_split_word_pair("я дам"), None);
+    assert_eq!(correct_split_word_pair("я был"), None);
 }
 
 #[test]

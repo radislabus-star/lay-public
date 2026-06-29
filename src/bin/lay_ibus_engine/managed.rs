@@ -47,17 +47,6 @@ impl LayIbusEngine {
                 self.trace_key("enter_commit_passthrough", keyval, keycode, false, None);
                 return Ok(false);
             }
-            if self.autocorrect_committed_tail_enter(emitter).await? {
-                self.close_committed_tail_field();
-                self.trace_key(
-                    "enter_committed_tail_autocorrect",
-                    keyval,
-                    keycode,
-                    false,
-                    None,
-                );
-                return Ok(false);
-            }
             self.close_committed_tail_field();
             self.clear_preedit(emitter).await?;
             self.trace_key("enter", keyval, keycode, false, None);

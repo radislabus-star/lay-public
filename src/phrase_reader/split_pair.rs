@@ -31,11 +31,21 @@ pub fn correct_split_word_pair(text: &str) -> Option<String> {
     }
 
     let lower = glued.to_lowercase();
+    if left_lower.chars().count() == 1 && !crate::lexicon::is_common_ru_word(&lower) {
+        return None;
+    }
     let glued_candidate = split_word_merge_candidate(&glued, &lower);
     let glued_is_preferable = glued_candidate.as_ref().is_some_and(|(_, lower)| {
         ngram_allows_ru_candidate(lower, text, NGRAM_SPLIT_REJECT_MARGIN)
     });
     if should_keep_standalone_pair_with_short_right(&left_lower, &right_lower) {
+        return None;
+    }
+    if left_lower.chars().count() >= 4
+        && right_lower.chars().count() <= 3
+        && is_known_russian_phrase_part(&left_lower)
+        && !is_known_russian_phrase_part(&right_lower)
+    {
         return None;
     }
     if should_keep_standalone_known_pair(&left_lower, &right_lower)

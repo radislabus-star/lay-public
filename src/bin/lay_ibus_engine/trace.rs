@@ -148,6 +148,15 @@ pub(crate) fn record_precognition_timing(
     ));
 }
 
+pub(crate) fn record_completion_accept(source: &str, suffix_chars: usize, with_space: bool) {
+    if !enabled() {
+        return;
+    }
+    write_record(format!(
+        r#"{{"kind":"ibus_completion_accept","source":"{source}","suffix_chars":{suffix_chars},"with_space":{with_space}}}"#
+    ));
+}
+
 fn visible_tail_source(source: VisibleTailSource) -> &'static str {
     match source {
         VisibleTailSource::DaemonWordBuffer => "daemon_word_buffer",

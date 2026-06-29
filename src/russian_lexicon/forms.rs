@@ -29,6 +29,7 @@ pub(crate) fn is_known_russian_form(word: &str) -> bool {
         || is_known_russian_ka_declension_form(word)
         || is_known_russian_prefixed_form(word)
         || is_known_russian_verb_form(word)
+        || is_known_russian_imperative_i_form(word)
 }
 
 pub(crate) fn is_known_russian_adverb_o_form(word: &str) -> bool {
@@ -204,6 +205,13 @@ fn is_known_russian_verb_form(word: &str) -> bool {
                 .into_iter()
                 .any(|lemma_suffix| russian_dictionary().contains(&format!("{stem}{lemma_suffix}")))
     })
+}
+
+fn is_known_russian_imperative_i_form(word: &str) -> bool {
+    let Some(stem) = word.strip_suffix('и') else {
+        return false;
+    };
+    stem.chars().count() >= 4 && russian_dictionary().contains(&format!("{stem}ить"))
 }
 
 fn is_known_short_accusative_a_form(word: &str, dict: &WordSet) -> bool {

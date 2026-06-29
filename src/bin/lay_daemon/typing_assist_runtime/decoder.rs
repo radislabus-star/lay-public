@@ -88,24 +88,49 @@ fn decode_input_gate_tail(
         nanda_autocorrect: active_nanda_autocorrect_for_gate(),
         correction_mode: lay::correction_core::CorrectionMode::DeterministicThenNanda,
     });
-    let lay::input_gate::InputGateAction::ApplyReplacement { replacement, .. } = decision.action
+    let lay::input_gate::InputGateAction::ApplyReplacement { replacement, .. } = &decision.action
     else {
         return None;
     };
+    let replacement = replacement.clone();
 
-    let replacement_tail = if text_tail == context {
+    let (original_tail, replacement_tail) = if text_tail == context {
         let prefix = context.strip_suffix(&original)?;
         if prefix.is_empty() {
-            replacement.as_str()
+            (original.as_str(), replacement.as_str())
         } else {
-            replacement.strip_prefix(prefix)?
+            let replacement_tail = replacement.strip_prefix(prefix)?;
+            if prefix.ends_with(char::is_whitespace)
+                && replacement_tail.chars().count() > original.chars().count()
+            {
+                let separator = prefix
+                    .chars()
+                    .next_back()
+                    .expect("prefix ends with whitespace");
+                let anchored_original = format!("{separator}{original}");
+                let anchored_replacement = format!("{separator}{replacement_tail}");
+                return build_input_gate_decoded_tail(
+                    decision,
+                    &anchored_original,
+                    &anchored_replacement,
+                );
+            }
+            (original.as_str(), replacement_tail)
         }
     } else {
-        replacement.as_str()
+        (original.as_str(), replacement.as_str())
     };
+    build_input_gate_decoded_tail(decision, original_tail, replacement_tail)
+}
+
+fn build_input_gate_decoded_tail(
+    decision: lay::input_gate::InputGateDecision,
+    original: &str,
+    replacement_tail: &str,
+) -> Option<DecodedCompletedTail> {
     let edit = DecoderEditPlan::committed_tail(
         lay::decoder::CorrectionTrigger::AfterSpace,
-        &original,
+        original,
         replacement_tail,
         CorrectionSource::TypingAssist,
     )?;
@@ -192,4 +217,62 @@ fn active_correction_safety_for_gate() -> lay::config::CorrectionSafety {
 #[cfg(not(test))]
 fn active_correction_safety_for_gate() -> lay::config::CorrectionSafety {
     active_correction_safety()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::decode_completed_tail;
+    use lay::keyboard::{text_to_key_events, KeyEvent};
+    use lay::text_edit::apply_replacement_plan_to_text;
+    use lay::word_buffer::WordBuffer;
+
+    fn push_text_as_layout(buffer: &mut WordBuffer, text: &str, layout_is_ru: bool) {
+        for event in text_events(text, layout_is_ru) {
+            if lay::keyboard::original_event_char(&event) == Some(' ') {
+                buffer.handle_space();
+            } else {
+                buffer.push(event);
+            }
+        }
+    }
+
+    fn text_events(text: &str, layout_is_ru: bool) -> Vec<KeyEvent> {
+        text_to_key_events(text, layout_is_ru).expect("text must map to key events")
+    }
+
+    #[test]
+    fn input_gate_context_tail_keeps_left_space_anchor_for_longer_word_fix() {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(&mut buffer, "я прохоил ", true);
+        let events = buffer
+            .last_completed_words_events(1)
+            .expect("last completed word");
+
+        let decoded = decode_completed_tail(&buffer, 1, &events, true).expect("decoded");
+
+        assert_eq!(decoded.edit.original, " прохоил ");
+        assert_eq!(decoded.edit.replacement, " проходил ");
+        assert_eq!(
+            apply_replacement_plan_to_text(&decoded.edit.original, &decoded.edit.plan),
+            decoded.edit.replacement
+        );
+    }
+
+    #[test]
+    fn input_gate_prefers_effective_for_missing_initial_vowel_tail() {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(&mut buffer, "на сколько ффективная ", true);
+        let events = buffer
+            .last_completed_words_events(1)
+            .expect("last completed word");
+
+        let decoded = decode_completed_tail(&buffer, 1, &events, true).expect("decoded");
+
+        assert_eq!(decoded.edit.original, " ффективная ");
+        assert_eq!(decoded.edit.replacement, " эффективная ");
+        assert_eq!(
+            apply_replacement_plan_to_text(&decoded.edit.original, &decoded.edit.plan),
+            decoded.edit.replacement
+        );
+    }
 }

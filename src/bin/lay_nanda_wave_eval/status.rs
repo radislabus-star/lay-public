@@ -79,6 +79,7 @@ fn refresh_live_status_fields(value: &mut Value) {
     let resonance_memory = resonance_memory::load_resonance_memory();
     value["cell_scoreboard"] = scoreboard_json(&scoreboard);
     value["resonance_memory"] = resonance_memory_json(&resonance_memory);
+    value["preedit_live"] = preedit_live_json();
     value["live_scoreboard_refreshed_at_unix"] = json!(unix_now());
     value["source"] = json!("lay-nanda-wave-eval --status-json (cached gate + live scoreboard)");
 }
@@ -185,10 +186,79 @@ fn build_status_json(full: bool) -> io::Result<serde_json::Value> {
         "candidate_stats": candidate_stats,
         "cell_scoreboard": scoreboard_json(&scoreboard),
         "resonance_memory": resonance_memory_json(&resonance_memory),
+        "preedit_live": preedit_live_json(),
         "sources": suite.sources.iter().map(|source| {
             json!({"path": source.path, "cases": source.cases})
         }).collect::<Vec<_>>()
     }))
+}
+
+#[derive(Debug, Default, Clone, Copy)]
+struct PreeditLiveStats {
+    sessions: usize,
+    accepted: usize,
+    abandoned: usize,
+}
+
+impl PreeditLiveStats {
+    fn acceptance_percent(self) -> Option<f64> {
+        (self.sessions > 0).then(|| self.accepted as f64 / self.sessions as f64 * 100.0)
+    }
+}
+
+fn preedit_live_json() -> serde_json::Value {
+    let text = preedit_trace_path()
+        .and_then(|path| fs::read_to_string(path).ok())
+        .unwrap_or_default();
+    let stats = preedit_live_stats_from_text(&text);
+    json!({
+        "kind": "ime_precognition_live",
+        "sessions": stats.sessions,
+        "accepted": stats.accepted,
+        "abandoned": stats.abandoned,
+        "acceptance_percent": stats.acceptance_percent()
+    })
+}
+
+fn preedit_live_stats_from_text(text: &str) -> PreeditLiveStats {
+    let mut stats = PreeditLiveStats::default();
+    let mut active = false;
+    for line in text.lines() {
+        let Ok(value) = serde_json::from_str::<Value>(line) else {
+            continue;
+        };
+        match value.get("kind").and_then(Value::as_str) {
+            Some("ibus_preedit") => {
+                let stage = value.get("stage").and_then(Value::as_str);
+                let visible = value
+                    .get("visible")
+                    .and_then(Value::as_bool)
+                    .unwrap_or(false);
+                let chars = value.get("chars").and_then(Value::as_u64).unwrap_or(0);
+                if stage == Some("show") && visible && chars > 0 {
+                    if !active {
+                        stats.sessions += 1;
+                        active = true;
+                    }
+                } else if stage == Some("clear") && active {
+                    stats.abandoned += 1;
+                    active = false;
+                }
+            }
+            Some("ibus_completion_accept") => {
+                stats.accepted += 1;
+                active = false;
+            }
+            _ => {}
+        }
+    }
+    stats
+}
+
+fn preedit_trace_path() -> Option<PathBuf> {
+    env::var_os("HOME")
+        .map(PathBuf::from)
+        .map(|home| home.join(".local/share/lay/ibus_engine_debug.jsonl"))
 }
 
 fn llmwave_phrase_probe_json(memory: &llmwave::LlmWaveMemory) -> Vec<serde_json::Value> {
@@ -469,4 +539,28 @@ fn unix_now() -> u64 {
         .duration_since(UNIX_EPOCH)
         .map(|duration| duration.as_secs())
         .unwrap_or(0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::preedit_live_stats_from_text;
+
+    #[test]
+    fn preedit_live_stats_count_sessions_not_each_show() {
+        let text = r#"
+{"kind":"ibus_preedit","stage":"show","visible":true,"chars":2,"cursor_pos":0,"text":"ка"}
+{"kind":"ibus_preedit","stage":"show","visible":true,"chars":1,"cursor_pos":0,"text":"а"}
+{"kind":"ibus_completion_accept","source":"active_composition","suffix_chars":1,"with_space":true}
+{"kind":"ibus_preedit","stage":"clear","visible":false,"chars":0,"cursor_pos":0,"text":null}
+{"kind":"ibus_preedit","stage":"show","visible":true,"chars":3,"cursor_pos":0,"text":"ить"}
+{"kind":"ibus_preedit","stage":"clear","visible":false,"chars":0,"cursor_pos":0,"text":null}
+"#;
+
+        let stats = preedit_live_stats_from_text(text);
+
+        assert_eq!(stats.sessions, 2);
+        assert_eq!(stats.accepted, 1);
+        assert_eq!(stats.abandoned, 1);
+        assert_eq!(stats.acceptance_percent(), Some(50.0));
+    }
 }

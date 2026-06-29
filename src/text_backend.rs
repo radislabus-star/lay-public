@@ -12,7 +12,7 @@ pub enum TextBackendPreference {
     Uinput,
     /// Try an IME bridge first, then let the daemon fall back if unavailable.
     Ime,
-    /// Reserved for a future policy that can auto-detect a healthy IME engine.
+    /// Prefer IME when the managed engine is active; runtime may still fall back.
     Auto,
 }
 
@@ -76,7 +76,7 @@ impl TextBackendPreference {
     }
 
     pub fn should_try_ime(self) -> bool {
-        matches!(self, Self::Ime)
+        matches!(self, Self::Ime | Self::Auto)
     }
 }
 

@@ -1,6 +1,4 @@
 use super::LayConfig;
-use crate::text_backend::TextBackendPreference;
-
 impl LayConfig {
     pub fn active_lem_weight(&self) -> f64 {
         if !self.lem_enabled {
@@ -19,7 +17,7 @@ impl LayConfig {
 
     pub fn active_nanda_precognition(&self) -> bool {
         self.nanda_precognition
-            && self.active_text_backend() == TextBackendPreference::Ime
+            && self.active_text_backend().should_try_ime()
             && (self.active_nanda_l2_weight() > 0.0 || self.active_nanda_l3_weight() > 0.0)
     }
 }

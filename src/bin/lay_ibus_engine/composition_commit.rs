@@ -76,6 +76,7 @@ impl LayIbusEngine {
             return Ok(false);
         }
 
+        trace::record_completion_accept("active_composition", suffix.chars().count(), with_space);
         self.commit_active_composition(
             emitter,
             ActiveCompositionCommit::with_completion(suffix, with_space),
@@ -170,6 +171,7 @@ impl LayIbusEngine {
             .or_else(|| self.nanda_autocorrect_text(text))
     }
 
+    #[cfg(test)]
     pub(super) fn autocorrect_committed_tail_text(&self, text: &str) -> Option<String> {
         self.deterministic_autocorrect_text(text)
             .or_else(|| self.nanda_committed_tail_context_replacement(text))
@@ -181,6 +183,7 @@ impl LayIbusEngine {
             .map(|decision| decision.replacement)
     }
 
+    #[cfg(test)]
     fn nanda_committed_tail_context_replacement(&self, text: &str) -> Option<String> {
         if !self.config.nanda_autocorrect {
             return None;

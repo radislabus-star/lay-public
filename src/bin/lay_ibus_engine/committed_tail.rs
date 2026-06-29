@@ -20,6 +20,8 @@ impl LayIbusEngine {
         if text.is_empty() {
             return Ok(false);
         }
+        let suffix_chars = text.chars().count();
+        trace::record_completion_accept("stuck_tail", suffix_chars, with_space);
         if with_space {
             text.push(' ');
         }
@@ -105,52 +107,6 @@ impl LayIbusEngine {
         Ok(handled)
     }
 
-    pub(super) async fn autocorrect_committed_tail_enter(
-        &mut self,
-        emitter: &SignalEmitter<'_>,
-    ) -> fdo::Result<bool> {
-        if self.take_manual_toggle_autocorrect_suppression() {
-            return Ok(false);
-        }
-        let Some((backspaces, replacement)) = self.committed_tail_boundary_replacement(false)
-        else {
-            return Ok(false);
-        };
-        let handled = self
-            .replace_committed_tail(
-                emitter,
-                CommittedTailReplaceRequest::ime_autocorrect(backspaces, replacement.clone()),
-            )
-            .await?;
-        if handled {
-            self.sync_layout_after_committed_text(&replacement);
-        }
-        Ok(handled)
-    }
-
-    fn committed_tail_boundary_replacement(
-        &self,
-        include_separator: bool,
-    ) -> Option<(u32, String)> {
-        let token = self.last_tail_token_text();
-        if token.is_empty() {
-            return None;
-        }
-        let original = format!("{token} ");
-        let replacement = self.autocorrect_committed_tail_text(&original)?;
-        if replacement == original {
-            return None;
-        }
-        let replacement = if include_separator {
-            replacement
-        } else {
-            replacement
-                .trim_end_matches(char::is_whitespace)
-                .to_string()
-        };
-        Some((token.chars().count() as u32, replacement))
-    }
-
     fn take_manual_toggle_autocorrect_suppression(&mut self) -> bool {
         let suppress = self.suppress_next_committed_tail_autocorrect
             || self.take_autocorrect_suppression_handoff();
@@ -195,45 +151,6 @@ mod tests {
 
         assert_eq!(engine.tail_buffer, "проверка ");
         assert_eq!(engine.preedit_fast.token(), "");
-    }
-
-    #[test]
-    fn enter_boundary_uses_completed_tail_autocorrect_without_inserting_space() {
-        let mut engine = engine();
-        for ch in "fвтозамена".chars() {
-            engine.push_tail_char(ch);
-        }
-
-        assert_eq!(
-            engine.committed_tail_boundary_replacement(false),
-            Some((10, "автозамена".to_string()))
-        );
-    }
-
-    #[test]
-    fn space_boundary_repairs_duplicate_latin_prefix_before_russian_word() {
-        let mut engine = engine();
-        for ch in "fавтозамена".chars() {
-            engine.push_tail_char(ch);
-        }
-
-        assert_eq!(
-            engine.committed_tail_boundary_replacement(true),
-            Some((11, "автозамена ".to_string()))
-        );
-    }
-
-    #[test]
-    fn space_boundary_case_autocorrect_replaces_whole_token() {
-        let mut engine = engine();
-        for ch in "АВТОзамена".chars() {
-            engine.push_tail_char(ch);
-        }
-
-        assert_eq!(
-            engine.committed_tail_boundary_replacement(true),
-            Some((10, "Автозамена ".to_string()))
-        );
     }
 
     #[test]

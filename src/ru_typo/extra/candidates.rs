@@ -37,6 +37,7 @@ pub(super) fn safe_extra_letter_candidates(lower: &str) -> Vec<String> {
                 && !rewrites_protected_pattern_term_stem(lower, candidate)
                 && !looks_like_unsafe_vowel_join_deletion(lower, candidate)
                 && !looks_like_unsafe_chsh_deletion(lower, candidate)
+                && !looks_like_unsafe_final_letter_deletion(lower, candidate)
         })
         .collect()
 }
@@ -79,6 +80,11 @@ fn looks_like_unsafe_leading_pair_deletion(lower: &str, candidate: &str) -> bool
         return false;
     }
     chars[0] != chars[1]
+}
+
+fn looks_like_unsafe_final_letter_deletion(lower: &str, candidate: &str) -> bool {
+    let chars = lower.chars().collect::<Vec<_>>();
+    chars.len() >= 5 && candidate == chars[..chars.len() - 1].iter().collect::<String>()
 }
 
 fn looks_like_unsafe_internal_y_deletion(lower: &str, candidate: &str) -> bool {

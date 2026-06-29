@@ -4,7 +4,7 @@ import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.2.0';
+const APP_VERSION = '0.2.1';
 const APP_RELEASE_DATE = '2026-06-25';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
@@ -80,6 +80,7 @@ function nandaPassportText(status) {
     const cells = Array.isArray(status.cells) ? status.cells : [];
     const ablation = Array.isArray(status.ablation) ? status.ablation : [];
     const candidateStats = Array.isArray(status.candidate_stats) ? status.candidate_stats : [];
+    const preeditLive = status.preedit_live ?? {};
     const scoreboard = status.cell_scoreboard && Array.isArray(status.cell_scoreboard.cells)
         ? status.cell_scoreboard
         : {records: 0, cells: []};
@@ -115,6 +116,12 @@ function nandaPassportText(status) {
         lines.push('  данных нет');
     for (const item of candidateStats)
         lines.push(`  ${item.source ?? '?'}: родила ${item.generated ?? 0}, приняла ${item.accepted ?? 0}, veto ${item.vetoed ?? 0}, keep ${item.kept ?? 0}`);
+    lines.push(
+        '',
+        'IME подсказки',
+        `  Tab/Alt принято: ${preeditLive.accepted ?? 0} / ${preeditLive.sessions ?? 0} · ${percent(preeditLive.accepted, preeditLive.sessions)}`,
+        `  сброшено без принятия: ${preeditLive.abandoned ?? 0}`,
+    );
     lines.push('', `Журнал клеток: ${scoreboard.records ?? 0} записей`);
     if (scoreboard.cells.length === 0)
         lines.push('  данных нет');

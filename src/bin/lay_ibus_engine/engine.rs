@@ -1,5 +1,4 @@
 use lay::config::LayConfig;
-use lay::text_backend::TextBackendPreference;
 use std::time::Instant;
 
 use super::preedit::PreeditFastState;
@@ -85,7 +84,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn live_composition_enabled(&self) -> bool {
-        self.managed_input && self.config.active_text_backend() == TextBackendPreference::Ime
+        self.managed_input && self.config.active_text_backend().should_try_ime()
     }
 
     pub(super) fn has_live_composition_state(&self) -> bool {
@@ -141,6 +140,17 @@ mod tests {
             ..LayConfig::default()
         });
         assert!(!uinput_engine.live_composition_enabled());
+    }
+
+    #[test]
+    fn auto_backend_enables_live_composition_for_running_ibus_engine() {
+        let engine = engine(LayConfig {
+            text_backend: "auto".to_string(),
+            nanda_precognition: true,
+            ..LayConfig::default()
+        });
+        assert!(engine.live_composition_enabled());
+        assert!(engine.config.active_nanda_precognition());
     }
 
     #[test]

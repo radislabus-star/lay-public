@@ -86,6 +86,13 @@ fn nanda_precognition_requires_ime_backend_and_positive_nanda_weight() {
         ..l2_enabled
     };
     assert!(!uinput_backend.active_nanda_precognition());
+
+    let auto_backend = LayConfig {
+        text_backend: "auto".to_string(),
+        nanda_l2_weight_percent: 1,
+        ..disabled_weights
+    };
+    assert!(auto_backend.active_nanda_precognition());
 }
 
 #[test]

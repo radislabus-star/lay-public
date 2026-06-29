@@ -52,7 +52,7 @@ reload_extension() {
     gnome-extensions reload "$UUID"
   else
     gnome-extensions disable "$UUID" 2>/dev/null || true
-    sleep 1
+    sleep 0.2
     gnome-extensions enable "$UUID" 2>/dev/null || true
   fi
 }

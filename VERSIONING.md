@@ -13,18 +13,21 @@ number from `git rev-list`.
 
 Current publication branch version:
 
-- `0.2.0`
+- `0.2.1`
 
 Do not rely on commit counts. Before publishing or pushing, run the bump script
 or verify the version fields manually.
 
-Before each push:
+Before each push or local release:
 
 ```bash
-bash scripts/bump-version-from-git.sh
-cargo test --all-targets
-cargo clippy --all-targets -- -D warnings
-cargo build --release --bins
+scripts/bump-lay-version.sh
+```
+
+If the version was already bumped but the GNOME tray/runtime is stale:
+
+```bash
+scripts/bump-lay-version.sh --sync-only
 ```
 
 The version must be updated in:

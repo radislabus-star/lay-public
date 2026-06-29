@@ -6,8 +6,8 @@ use crate::phrase_lexicon::{
 };
 use crate::phrase_score::NGRAM_NODICT_SPLIT_REJECT_MARGIN;
 use crate::russian_lexicon::{
-    is_known_russian_adverb_o_form, is_known_russian_ka_oblique_form, russian_dictionary,
-    russian_short_dictionary,
+    is_known_russian_adverb_o_form, is_known_russian_ka_oblique_form,
+    is_known_russian_word_or_form, russian_dictionary, russian_short_dictionary,
 };
 use crate::word_reader::{
     is_cyrillic_word, split_word_punctuation, split_ws_segments, MAX_RU_FUNCTION_GLUE_LEFT_LEN,
@@ -128,8 +128,8 @@ pub(super) fn should_keep_standalone_known_pair(left: &str, right: &str) -> bool
 }
 
 pub(super) fn should_keep_standalone_pair_with_function_left(left: &str, right: &str) -> bool {
-    if is_single_letter_russian_pronoun(left) {
-        return false;
+    if char_len(left) == 1 {
+        return is_known_russian_phrase_part(right) || is_known_russian_word_or_form(right);
     }
     is_short_russian_function_word(left) && char_len(right) >= 2 && is_cyrillic_word(right)
 }

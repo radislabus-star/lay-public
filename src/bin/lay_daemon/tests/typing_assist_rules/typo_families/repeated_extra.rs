@@ -45,3 +45,10 @@ fn extra_letter_rule_defers_to_missing_letter_candidates() {
 
     assert!(checked >= 12, "checked={checked}");
 }
+
+#[test]
+fn typing_assist_does_not_shorten_tail_into_other_known_word() {
+    for input in ["пукнут ", "кормус "] {
+        assert_eq!(apply_typing_assist_exact(input), None, "input={input:?}");
+    }
+}

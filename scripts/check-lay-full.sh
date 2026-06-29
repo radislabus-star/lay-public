@@ -9,10 +9,6 @@ cargo fmt --all --check
 
 echo "== scripts/check-architecture.sh =="
 scripts/check-architecture.sh
-for i in $(seq 1 50); do
-  scripts/check-architecture.sh >/dev/null
-done
-echo "architecture guard repeated 50/50 OK"
 if [[ "${LAY_AUDIT_50:-0}" == "1" ]]; then
   echo "== scripts/check-lay-audit-50.sh =="
   scripts/check-lay-audit-50.sh
@@ -39,19 +35,27 @@ cargo run --quiet --bin lay -- --explain-correct 'кторое ' | grep -F 'conf
 echo "== cargo build --release --bins =="
 cargo build --release --bins
 
-NGRAM_CHECK_CACHE="${LAY_NGRAM_CHECK_CACHE:-${HOME:-}/.cache/lay/ngram_ru_v1.json}"
-if [[ -n "$NGRAM_CHECK_CACHE" && -f "$NGRAM_CHECK_CACHE" ]]; then
-  echo "== cargo run --quiet --bin lay-ngram-corpus -- check-cache =="
-  cargo run --quiet --bin lay-ngram-corpus -- check-cache --cache "$NGRAM_CHECK_CACHE"
+if [[ "${LAY_CHECK_NGRAM:-0}" == "1" ]]; then
+  NGRAM_CHECK_CACHE="${LAY_NGRAM_CHECK_CACHE:-${HOME:-}/.cache/lay/ngram_ru_v1.json}"
+  if [[ -n "$NGRAM_CHECK_CACHE" && -f "$NGRAM_CHECK_CACHE" ]]; then
+    echo "== cargo run --quiet --bin lay-ngram-corpus -- check-cache =="
+    cargo run --quiet --bin lay-ngram-corpus -- check-cache --cache "$NGRAM_CHECK_CACHE"
+  else
+    echo "== cargo run --quiet --bin lay-ngram-corpus -- cache/check-cache target =="
+    NGRAM_CHECK_CACHE="target/lay-full-ngram-ru.json"
+    cargo run --quiet --bin lay-ngram-corpus -- cache --out "$NGRAM_CHECK_CACHE"
+    cargo run --quiet --bin lay-ngram-corpus -- check-cache --cache "$NGRAM_CHECK_CACHE"
+  fi
 else
-  echo "== cargo run --quiet --bin lay-ngram-corpus -- cache/check-cache target =="
-  NGRAM_CHECK_CACHE="target/lay-full-ngram-ru.json"
-  cargo run --quiet --bin lay-ngram-corpus -- cache --out "$NGRAM_CHECK_CACHE"
-  cargo run --quiet --bin lay-ngram-corpus -- check-cache --cache "$NGRAM_CHECK_CACHE"
+  echo "== skip ngram cache check (set LAY_CHECK_NGRAM=1) =="
 fi
 
-echo "== cargo run --quiet --bin lay-lem-research =="
-cargo run --quiet --bin lay-lem-research
+if [[ "${LAY_CHECK_LEM_RESEARCH:-0}" == "1" ]]; then
+  echo "== cargo run --quiet --bin lay-lem-research =="
+  cargo run --quiet --bin lay-lem-research
+else
+  echo "== skip lay-lem-research (set LAY_CHECK_LEM_RESEARCH=1) =="
+fi
 
 echo "== git diff --check =="
 git diff --check

@@ -79,6 +79,8 @@ fn typing_assist_keeps_live_log_false_positive_words() {
         "патернов ",
         "Сделай ",
         "будет несити ",
+        "аффективная ",
+        "двойной шифт ",
     ] {
         assert_eq!(apply_typing_assist_exact(input), None, "input={input:?}");
     }

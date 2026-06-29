@@ -14,7 +14,13 @@ echo "GNOME Shell $GNOME_VER"
 echo "→ sync GNOME extension runtime"
 "$(cd "$(dirname "$0")" && pwd)/scripts/check-gnome-extension-runtime.sh" --fix --reload
 
-sleep 2
+for _ in $(seq 1 20); do
+    gdbus call --session \
+        --dest org.gnome.Shell \
+        --object-path /io/github/radislabus_star/LayDaemon \
+        --method io.github.radislabus_star.LayDaemon.Version >/dev/null 2>&1 && break
+    sleep 0.1
+done
 systemctl --user restart lay-daemon
 LOADED_VERSION="$(
     gdbus call --session \

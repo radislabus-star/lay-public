@@ -50,11 +50,17 @@ impl PreeditFastState {
             return Vec::new();
         }
         if self.token.chars().all(|ch| ch.is_ascii_alphabetic()) {
-            let mut suffixes = lay::lexicon::common_en_technical_prefix_completions(
+            let mut suffixes = Vec::new();
+            for suffix in lay::lexicon::common_en_technical_prefix_completions(
                 &self.token,
                 max_suffix_chars,
                 limit,
-            );
+            ) {
+                push_unique_ascii_known_suffix(&mut suffixes, &self.token, suffix);
+                if suffixes.len() >= limit {
+                    break;
+                }
+            }
             if lay::nanda_wave::context_wave::prefix_wave_memory_is_warm() {
                 for suffix in lay::nanda_wave::context_wave::en_word_prefix_completion_suffixes(
                     &self.token,
@@ -362,10 +368,22 @@ impl LayIbusEngine {
         };
         let partial = partial.to_lowercase();
         let partial_len = partial.chars().count();
-        let min_prefix_chars = self.ru_lexical_min_prefix_chars();
+        let has_left_context = prefix.split_whitespace().next().is_some();
+        let min_prefix_chars = if has_left_context {
+            self.ru_lexical_min_prefix_chars()
+        } else if self.config.active_correction_safety()
+            == lay::config::CorrectionSafety::Experimental
+        {
+            PREEDIT_RU_PREFIX_MIN_CHARS
+        } else {
+            self.ru_lexical_min_prefix_chars().max(4)
+        };
         if !(min_prefix_chars..=12).contains(&partial_len)
             || !partial.chars().all(|ch| matches!(ch, 'а'..='я' | 'ё'))
-            || prefix.split_whitespace().next().is_none()
+            || (!has_left_context
+                && self.config.active_correction_safety()
+                    != lay::config::CorrectionSafety::Experimental)
+            || (!has_left_context && is_noisy_first_russian_prefix(&partial))
             || is_known_russian_word_or_form(&partial)
         {
             return Vec::new();
@@ -507,6 +525,21 @@ fn push_unique_suffix(candidates: &mut Vec<String>, suffix: Option<String>) {
     candidates.push(suffix);
 }
 
+fn push_unique_ascii_known_suffix(candidates: &mut Vec<String>, token: &str, suffix: String) {
+    if suffix.is_empty() || candidates.iter().any(|candidate| candidate == &suffix) {
+        return;
+    }
+    let completed = format!("{token}{suffix}").to_ascii_lowercase();
+    let one_ascii_char =
+        suffix.chars().count() == 1 && suffix.chars().all(|ch| ch.is_ascii_alphabetic());
+    if one_ascii_char && !lay::lexicon::is_common_en_technical_word(&completed) {
+        return;
+    }
+    if one_ascii_char || is_allowed_visible_completion_suffix(&suffix) {
+        candidates.push(suffix);
+    }
+}
+
 fn is_allowed_visible_completion_suffix(suffix: &str) -> bool {
     let trimmed = suffix.trim();
     let mut chars = trimmed.chars();
@@ -517,6 +550,10 @@ fn is_allowed_visible_completion_suffix(suffix: &str) -> bool {
         return true;
     }
     matches!(ch, 'а' | 'в' | 'и' | 'к' | 'о' | 'с' | 'у' | 'I' | 'a')
+}
+
+fn is_noisy_first_russian_prefix(prefix: &str) -> bool {
+    matches!(prefix, "нев" | "инт")
 }
 
 fn l3_or_lexical_precognition_score(
@@ -877,6 +914,22 @@ mod tests {
     }
 
     #[test]
+    fn ascii_known_word_completion_allows_single_letter_suffix() {
+        let mut fast = PreeditFastState::default();
+        for ch in "exi".chars() {
+            fast.push(ch);
+        }
+
+        let suffixes = fast.ascii_suffixes(16, 8);
+
+        assert_eq!(suffixes.first().map(String::as_str), Some("t"));
+        assert!(
+            !suffixes.iter().any(|suffix| suffix == "il"),
+            "known technical completion must outrank noisy wave suffixes: {suffixes:?}"
+        );
+    }
+
+    #[test]
     fn long_russian_prefix_does_not_hold_inline_suffix() {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
@@ -1034,6 +1087,91 @@ mod tests {
         assert!(
             !engine.preedit_candidates.is_empty(),
             "experimental L2 should not stay silent for contextual prefix 'при'"
+        );
+    }
+
+    #[test]
+    fn first_russian_word_prefix_gets_precognition_candidate() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "русс".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine
+                .preedit_candidates
+                .iter()
+                .any(|suffix| suffix == "кий" || suffix == "ких"),
+            "first Russian prefix should produce a useful word suffix: {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
+    fn first_active_russian_word_prefix_gets_precognition_candidate_after_four_chars() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "пров".chars() {
+            engine.insert_composition_char(ch);
+        }
+        engine.composition_cursor = engine.buffer.chars().count();
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine.preedit_candidates.iter().any(|suffix| {
+                let word = format!("пров{suffix}");
+                word.starts_with("провер")
+            }),
+            "first active Russian word should produce a useful suffix after four chars: {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
+    fn first_active_russian_word_prefix_gets_precognition_candidate_after_three_chars() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "при".chars() {
+            engine.insert_composition_char(ch);
+        }
+        engine.composition_cursor = engine.buffer.chars().count();
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            !engine.preedit_candidates.is_empty(),
+            "first active Russian word should produce suffixes after three chars"
         );
     }
 
