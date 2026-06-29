@@ -8,6 +8,7 @@ mod journal_record;
 pub mod l1;
 pub mod l2;
 pub mod l3;
+pub(crate) mod l3_phrase_gate;
 pub mod learned;
 pub mod lexical_attractor;
 pub mod llmwave;

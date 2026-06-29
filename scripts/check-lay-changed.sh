@@ -107,6 +107,17 @@ if has_file_matching '^src/ru_typo'; then
   cargo test ru_typo:: --lib
 fi
 
+if has_file_matching '^src/nanda_wave/(l3|l3_phrase_gate)\.rs$'; then
+  echo "== cargo test nanda_wave::l3:: --lib =="
+  cargo test nanda_wave::l3:: --lib
+
+  echo "== cargo test nanda_wave::l3_phrase_gate --lib =="
+  cargo test nanda_wave::l3_phrase_gate --lib
+elif has_file_matching '^src/nanda_wave'; then
+  echo "== cargo test nanda_wave:: --lib =="
+  cargo test nanda_wave:: --lib
+fi
+
 if has_file_matching '^tests/.*\.rs$'; then
   echo "== cargo test changed integration tests =="
   for file in "${files[@]}"; do

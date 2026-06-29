@@ -4,6 +4,7 @@
 //! question: should this completed text be replaced, and by which engine?
 
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
+use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
 use crate::nanda_wave::{run_wave_trace, WaveDecision};
 use crate::russian_typo_candidates::{
     inserted_char_position_for_missing_letter, repeated_run_deletion_candidates,
@@ -960,6 +961,9 @@ fn l3_context_gate(
     replacement: &str,
     error_class: TypingErrorClass,
 ) -> Option<CandidateGateDecision> {
+    if let Some(decision) = l3_phrase_memory_gate(original, replacement, error_class) {
+        return Some(decision);
+    }
     if candidate_over_compresses_word(original, replacement, error_class) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::KeepOriginal,
@@ -973,6 +977,41 @@ fn l3_context_gate(
         });
     }
     None
+}
+
+fn l3_phrase_memory_gate(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+) -> Option<CandidateGateDecision> {
+    if !l3_phrase_memory_applies_to(error_class) {
+        return None;
+    }
+    let report = evaluate_default_candidate(original, replacement)?;
+    match report.decision {
+        L3PhraseGateDecision::Support => Some(CandidateGateDecision {
+            action: CandidateGateAction::Apply,
+            reason: "l3_phrase_memory_support",
+        }),
+        L3PhraseGateDecision::Suppress => Some(CandidateGateDecision {
+            action: CandidateGateAction::KeepOriginal,
+            reason: "l3_phrase_memory_conflict",
+        }),
+        L3PhraseGateDecision::Neutral => None,
+    }
+}
+
+fn l3_phrase_memory_applies_to(error_class: TypingErrorClass) -> bool {
+    matches!(
+        error_class,
+        TypingErrorClass::CompositeTypo
+            | TypingErrorClass::MissingLetter
+            | TypingErrorClass::ExtraLetter
+            | TypingErrorClass::AdjacentTransposition
+            | TypingErrorClass::LetterSubstitution
+            | TypingErrorClass::GrammarAgreement
+            | TypingErrorClass::CompletionOnly
+    )
 }
 
 fn replacement_glues_separate_words_without_boundary_class(
@@ -1287,11 +1326,10 @@ mod tests {
             resolve_text_correction(request("wave b ", &pipeline, CorrectionMode::NandaOnly));
 
         assert_eq!(resolution.decision, None);
-        assert!(resolution.candidates.iter().any(|candidate| {
-            candidate.replacement == "wave и "
-                && candidate.gate.action == CandidateGateAction::KeepOriginal
-                && candidate.gate.reason == "short_layout_without_phrase_context"
-        }));
+        assert!(
+            resolution.candidates.is_empty(),
+            "short layout candidate must be stopped inside NANDA L3 before correction_core: {resolution:?}"
+        );
     }
 
     #[test]

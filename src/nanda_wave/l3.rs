@@ -70,6 +70,22 @@ pub fn run_l3_with_options(
         );
     };
 
+    if short_token_candidate_lacks_phrase_context(original, &candidate.text, candidate.source) {
+        traces.push(LayerTrace {
+            name: "PhraseCell32",
+            summary: format!(
+                "candidate source={} veto=short_layout_without_phrase_context",
+                candidate.source
+            ),
+        });
+        return (
+            traces,
+            WaveDecision::Keep {
+                reason: "short_layout_without_phrase_context",
+            },
+        );
+    }
+
     let structural_report = options
         .is_enabled(STRUCTURAL_RELATION_CELL)
         .then(|| evaluate_structural_relation(original, candidate));
@@ -186,6 +202,51 @@ fn confidence(candidate: &WordCandidate) -> f32 {
     (candidate.energy - candidate.risk).clamp(0.0, 1.0)
 }
 
+fn short_token_candidate_lacks_phrase_context(
+    original: &str,
+    replacement: &str,
+    source: &str,
+) -> bool {
+    if source != "ShortTokenCell32" {
+        return false;
+    }
+    let Some(original_word) = last_token(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_token(replacement) else {
+        return false;
+    };
+    if original_word.chars().count() != 1 || replacement_word.chars().count() != 1 {
+        return false;
+    }
+    let previous_words = original
+        .trim_end()
+        .split_whitespace()
+        .take(
+            original
+                .trim_end()
+                .split_whitespace()
+                .count()
+                .saturating_sub(1),
+        )
+        .collect::<Vec<_>>();
+    let has_cyrillic_context = previous_words
+        .iter()
+        .any(|word| word.chars().any(is_cyrillic_char));
+    let has_ascii_context = previous_words
+        .iter()
+        .any(|word| word.chars().any(|ch| ch.is_ascii_alphabetic()));
+    has_ascii_context && !has_cyrillic_context
+}
+
+fn last_token(text: &str) -> Option<&str> {
+    text.trim_end().split_whitespace().next_back()
+}
+
+fn is_cyrillic_char(ch: char) -> bool {
+    matches!(ch, 'А'..='я' | 'ё' | 'Ё')
+}
+
 fn adjusted_confidence(
     original: &str,
     candidate: &WordCandidate,
@@ -241,6 +302,26 @@ mod tests {
         };
         let (_trace, decision) = run_l3("html djn ", &[candidate]);
         assert_eq!(decision.output(), Some("html вот "));
+    }
+
+    #[test]
+    fn keeps_short_layout_candidate_without_russian_phrase_context() {
+        let candidate = WordCandidate {
+            text: "wave и".to_string(),
+            source: "ShortTokenCell32",
+            energy: 0.9,
+            risk: 0.46,
+            support: vec![],
+        };
+        let (_trace, decision) = run_l3("wave b ", &[candidate]);
+
+        assert_eq!(decision.output(), None);
+        assert_eq!(
+            decision,
+            WaveDecision::Keep {
+                reason: "short_layout_without_phrase_context"
+            }
+        );
     }
 
     #[test]
