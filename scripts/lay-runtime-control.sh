@@ -99,6 +99,7 @@ apply_channel() {
             stop_ime
             ;;
         auto)
+            start_ime
             ;;
         *)
             stop_ime
