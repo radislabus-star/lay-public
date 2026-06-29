@@ -1,32 +1,15 @@
-use lay::nanda_wave::eval::canonical_l1_l2_shadow_report;
+use lay::nanda_wave::eval::{canonical_l1_l2_shadow_report, canonical_l2_candidate_report};
 use std::collections::BTreeSet;
 use std::io;
 
 use super::{arg_values, real_suite};
 
 pub(crate) fn print_report(args: &[String]) -> io::Result<()> {
-    let suite = real_suite::load()?;
-    let mut words = BTreeSet::new();
-    for case in &suite.cases {
-        collect_words(&case.original, &mut words);
-        collect_words(&case.expected, &mut words);
-    }
-    for word in seed_words() {
-        words.insert(word.to_string());
-    }
-
-    let words = words.into_iter().collect::<Vec<_>>();
+    let words = load_words(WordSource::OriginalAndExpected)?;
     let probes = {
         let explicit = arg_values(args, "--probe");
         if explicit.is_empty() {
-            vec![
-                "и".to_string(),
-                "в".to_string(),
-                "не".to_string(),
-                "проверка".to_string(),
-                "автозамена".to_string(),
-                "переворачивает".to_string(),
-            ]
+            default_probes()
         } else {
             explicit
         }
@@ -63,6 +46,80 @@ pub(crate) fn print_report(args: &[String]) -> io::Result<()> {
     }
 
     Ok(())
+}
+
+pub(crate) fn print_candidates(args: &[String]) -> io::Result<()> {
+    let Some(input) = super::arg_value(args, "--canonical-l2-candidates") else {
+        eprintln!("--canonical-l2-candidates requires TEXT");
+        return Ok(());
+    };
+    let limit = super::arg_value(args, "--limit")
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(12)
+        .clamp(1, 50);
+    let words = load_words(WordSource::ExpectedOnly)?;
+    let report = canonical_l2_candidate_report(&words, input, limit);
+
+    println!("canonical_l2_candidates:");
+    println!("  input: {}", report.input);
+    println!("  source: lay real-suite words + seed service words");
+    println!("  words: {}", report.words);
+    println!(
+        "  input_l1: ngrams={} refs={} residual={}",
+        report.l1_ngrams, report.l1_refs, report.l1_residual
+    );
+    println!(
+        "  input_l2: tokens={} motifs={} residual={}",
+        report.l2_tokens, report.l2_motifs, report.l2_residual
+    );
+    println!("  live_authority: false");
+    println!("  candidates:");
+    for candidate in report.candidates {
+        println!(
+            "    {} score={} l1_overlap={} l2_overlap={} motif_overlap={} prefix={}",
+            candidate.word,
+            candidate.score,
+            candidate.l1_overlap,
+            candidate.l2_overlap,
+            candidate.motif_overlap,
+            candidate.prefix_match
+        );
+    }
+
+    Ok(())
+}
+
+#[derive(Clone, Copy)]
+enum WordSource {
+    OriginalAndExpected,
+    ExpectedOnly,
+}
+
+fn load_words(source: WordSource) -> io::Result<Vec<String>> {
+    let suite = real_suite::load()?;
+    let mut words = BTreeSet::new();
+    for case in &suite.cases {
+        if matches!(source, WordSource::OriginalAndExpected) {
+            collect_words(&case.original, &mut words);
+        }
+        collect_words(&case.expected, &mut words);
+    }
+    for word in seed_words() {
+        words.insert(word.to_string());
+    }
+
+    Ok(words.into_iter().collect())
+}
+
+fn default_probes() -> Vec<String> {
+    vec![
+        "и".to_string(),
+        "в".to_string(),
+        "не".to_string(),
+        "проверка".to_string(),
+        "автозамена".to_string(),
+        "переворачивает".to_string(),
+    ]
 }
 
 fn collect_words(text: &str, out: &mut BTreeSet<String>) {

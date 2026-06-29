@@ -103,6 +103,10 @@ fn main() -> io::Result<()> {
         canonical_l1_l2::print_report(&args)?;
         return Ok(());
     }
+    if args.iter().any(|arg| arg == "--canonical-l2-candidates") {
+        canonical_l1_l2::print_candidates(&args)?;
+        return Ok(());
+    }
     if args.iter().any(|arg| arg == "--status-json") {
         status::print_status_json(
             args.iter().any(|arg| arg == "--refresh-status-json"),
@@ -171,7 +175,7 @@ fn main() -> io::Result<()> {
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --canonical-l1-l2-report [--probe WORD] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
         );
         return Ok(());
     }
