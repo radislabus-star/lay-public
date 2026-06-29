@@ -186,37 +186,72 @@ fn nearest_ru_word_candidates(tail: &str) -> Vec<WordCandidate> {
                 || (len >= 7 && distance == 2 && resonance >= 0.42)
                 || (len >= 10 && distance == 3 && resonance >= 0.68)
                 || negative_prefix_repair(&normalized, &entry.word, distance);
-            (allowed
-                && !looks_like_short_word_drift(&normalized, &entry.word)
-                && !looks_like_verb_to_nonverb_drift(&normalized, &entry.word)
-                && !looks_like_suffix_stripping(&normalized, &entry.word)
-                && !looks_like_case_vowel_append_drift(&normalized, &entry.word)
-                && !looks_like_case_vowel_to_consonant_drift(&normalized, &entry.word)
-                && !looks_like_known_form_to_other_known_word_drift(
-                    &normalized,
-                    &entry.word,
-                    distance,
-                )
-                && !looks_like_known_verb_to_noun_drift(&normalized, &entry.word))
-            .then_some((entry, distance, resonance))
+            (allowed && ru_candidate_passes_semantic_guards(&normalized, &entry.word, distance))
+                .then_some((entry.word.clone(), distance, resonance))
         })
         .collect::<Vec<_>>();
+    let ranked_words = ranked
+        .iter()
+        .map(|(word, _distance, _resonance)| word.clone())
+        .collect::<HashSet<_>>();
+    ranked.extend(fuzzy_ru_word_candidates(&normalized).into_iter().filter(
+        |(word, distance, _resonance)| {
+            !ranked_words.contains(word.as_str())
+                && ru_candidate_passes_semantic_guards(&normalized, word, *distance)
+        },
+    ));
     ranked.sort_by(
         |(left, left_distance, left_resonance), (right, right_distance, right_resonance)| {
             left_distance
                 .cmp(right_distance)
+                .then_with(|| is_common_ru_word(right).cmp(&is_common_ru_word(left)))
                 .then_with(|| right_resonance.total_cmp(left_resonance))
-                .then_with(|| left.len.abs_diff(len).cmp(&right.len.abs_diff(len)))
-                .then_with(|| left.word.cmp(&right.word))
+                .then_with(|| {
+                    left.chars()
+                        .count()
+                        .abs_diff(len)
+                        .cmp(&right.chars().count().abs_diff(len))
+                })
+                .then_with(|| left.cmp(right))
         },
     );
     ranked
         .into_iter()
         .take(MAX_SEMANTIC_WORD_CANDIDATES)
-        .map(|(entry, distance, resonance)| {
-            ru_word_to_candidate(prefix, token, &entry.word, distance, resonance)
+        .map(|(word, distance, resonance)| {
+            ru_word_to_candidate(prefix, token, &word, distance, resonance)
         })
         .collect()
+}
+
+fn fuzzy_ru_word_candidates(normalized: &str) -> Vec<(String, usize, f32)> {
+    let query_modes = word_wave_modes(normalized);
+    let mut candidates = crate::ru_typo::fuzzy_known_word_candidates(normalized)
+        .into_iter()
+        .filter_map(|word| {
+            let len = word.chars().count();
+            if !(4..=18).contains(&len) || !word.chars().all(is_cyrillic_letter) {
+                return None;
+            }
+            let distance = damerau_levenshtein(normalized, &word);
+            if distance == 0 || distance > 3 {
+                return None;
+            }
+            let modes = word_wave_modes(&word);
+            let entry = RuWordWaveEntry { word, len, modes };
+            let resonance = word_wave_resonance(normalized, &entry, &query_modes);
+            Some((entry.word, distance, resonance))
+        })
+        .collect::<Vec<_>>();
+    candidates.sort_by(
+        |(left, left_distance, left_resonance), (right, right_distance, right_resonance)| {
+            left_distance
+                .cmp(right_distance)
+                .then_with(|| right_resonance.total_cmp(left_resonance))
+                .then_with(|| left.cmp(right))
+        },
+    );
+    candidates
 }
 
 fn nearest_en_word_candidates(prefix: &str, token: &str, normalized: &str) -> Vec<WordCandidate> {
@@ -289,6 +324,16 @@ fn looks_like_known_verb_to_noun_drift(original: &str, candidate: &str) -> bool 
     is_known_russian_word_or_form(original)
         && has_russian_verb_tail(original)
         && !has_russian_verb_tail(candidate)
+}
+
+fn ru_candidate_passes_semantic_guards(original: &str, candidate: &str, distance: usize) -> bool {
+    !looks_like_short_word_drift(original, candidate)
+        && !looks_like_verb_to_nonverb_drift(original, candidate)
+        && !looks_like_suffix_stripping(original, candidate)
+        && !looks_like_case_vowel_append_drift(original, candidate)
+        && !looks_like_case_vowel_to_consonant_drift(original, candidate)
+        && !looks_like_known_form_to_other_known_word_drift(original, candidate, distance)
+        && !looks_like_known_verb_to_noun_drift(original, candidate)
 }
 
 fn looks_like_verb_to_nonverb_drift(original: &str, candidate: &str) -> bool {
@@ -635,11 +680,12 @@ fn ru_word_to_candidate(
 ) -> WordCandidate {
     let len = normalize_ru(token).chars().count().max(1);
     let closeness = 1.0 - (distance as f32 / len as f32);
+    let common_boost = if is_common_ru_word(word) { 0.055 } else { 0.0 };
     WordCandidate {
         text: format!("{prefix}{word}"),
         source: SEMANTIC_WORD_SOURCE,
-        energy: (0.50 + closeness * 0.24 + resonance * 0.18).clamp(0.0, 0.95),
-        risk: (0.32 - closeness * 0.12 - resonance * 0.06).clamp(0.09, 0.32),
+        energy: (0.50 + closeness * 0.24 + resonance * 0.18 + common_boost).clamp(0.0, 0.95),
+        risk: (0.32 - closeness * 0.12 - resonance * 0.06 - common_boost * 0.35).clamp(0.09, 0.32),
         support: vec![
             "ru-word-wave-memory".to_string(),
             format!(
@@ -953,6 +999,27 @@ mod tests {
         assert!(candidates
             .iter()
             .any(|candidate| candidate.text == "это вообще"));
+    }
+
+    #[test]
+    fn semantic_word_cell_uses_fuzzy_typo_bridge_for_broken_prefix() {
+        let candidates = semantic_word_candidates("где эсперемнт ");
+        assert_eq!(
+            candidates.first().map(|candidate| candidate.text.as_str()),
+            Some("где эксперимент"),
+            "expected common fuzzy repair to outrank rare neighbors: {candidates:?}"
+        );
+    }
+
+    #[test]
+    fn semantic_word_cell_does_not_rewrite_valid_word_without_context() {
+        let candidates = semantic_word_candidates("следующий пукнут ");
+        assert!(
+            candidates
+                .iter()
+                .all(|candidate| candidate.text != "следующий пункт"),
+            "valid Russian form must not become a noun without L3 context: {candidates:?}"
+        );
     }
 
     #[test]
