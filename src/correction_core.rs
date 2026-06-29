@@ -410,6 +410,9 @@ fn composite_russian_typo_candidate(
                 .chars()
                 .count()
                 .saturating_sub(lower.chars().count());
+            if risky_short_initial_insertion(&lower, candidate) {
+                return None;
+            }
             let common_word_recovery = lower.chars().count() >= 7
                 && inserted <= 2
                 && distance <= 3
@@ -801,6 +804,17 @@ fn missing_initial_vowel_before_double_consonant_bonus(original: &str, candidate
     }
 }
 
+fn risky_short_initial_insertion(original: &str, candidate: &str) -> bool {
+    if original.chars().count() > 6 {
+        return false;
+    }
+    let Some((idx, inserted)) = inserted_char_position_for_missing_letter(original, candidate)
+    else {
+        return false;
+    };
+    idx == 0 && (!crate::russian_chars::is_russian_vowel(inserted) || original.chars().count() <= 6)
+}
+
 fn repeated_prefix_typo_shape_is_preserved(original: &str, candidate: &str) -> bool {
     repeated_run_deletion_candidates(original)
         .into_iter()
@@ -914,6 +928,13 @@ fn gate_candidate(
             reason: "known_single_word_boundary_split",
         };
     }
+    if boundary_candidate_splits_to_short_function_and_weak_tail(original, replacement, error_class)
+    {
+        return CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "weak_boundary_split_tail",
+        };
+    }
     if let Some(decision) = l3_context_gate(original, replacement, error_class) {
         return decision;
     }
@@ -968,6 +989,18 @@ fn l3_context_gate(
         return Some(CandidateGateDecision {
             action: CandidateGateAction::KeepOriginal,
             reason: "candidate_over_compresses_word",
+        });
+    }
+    if known_phrase_part_only_grows_by_one_letter(original, replacement, error_class) {
+        return Some(CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "known_phrase_part_one_letter_growth",
+        });
+    }
+    if short_word_only_grows_initial_letter(original, replacement, error_class) {
+        return Some(CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "short_initial_letter_growth",
         });
     }
     if short_layout_candidate_lacks_phrase_context(original, replacement, error_class) {
@@ -1073,6 +1106,53 @@ fn boundary_candidate_splits_known_russian_word(
     false
 }
 
+fn boundary_candidate_splits_to_short_function_and_weak_tail(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+) -> bool {
+    if !matches!(
+        error_class,
+        TypingErrorClass::SplitWord | TypingErrorClass::GluedWords
+    ) {
+        return false;
+    }
+    let (_, original_core, _) = split_edge_whitespace(original);
+    let (_, replacement_core, _) = split_edge_whitespace(replacement);
+    let original_words = original_core.split_whitespace().collect::<Vec<_>>();
+    let replacement_words = replacement_core.split_whitespace().collect::<Vec<_>>();
+    if original_words.is_empty() || replacement_words.len() != original_words.len() + 1 {
+        return false;
+    }
+
+    for original_idx in 0..original_words.len() {
+        let first = replacement_words
+            .get(original_idx)
+            .copied()
+            .unwrap_or_default();
+        let second = replacement_words
+            .get(original_idx + 1)
+            .copied()
+            .unwrap_or_default();
+        let merged = format!("{first}{second}");
+        if !same_cyrillic_token(original_words[original_idx], &merged) {
+            continue;
+        }
+
+        let (_, first_word, _) = split_word_punctuation(first);
+        let (_, second_word, _) = split_word_punctuation(second);
+        let first_lower = first_word.to_lowercase();
+        let second_lower = second_word.to_lowercase();
+        if first_word.chars().count() == 1
+            && crate::phrase_lexicon::is_one_letter_russian_function_word(&first_lower)
+            && !strong_standalone_split_tail(&second_lower)
+        {
+            return true;
+        }
+    }
+    false
+}
+
 fn candidate_over_compresses_word(
     original: &str,
     replacement: &str,
@@ -1100,6 +1180,77 @@ fn candidate_over_compresses_word(
     let original_len = original_word.chars().count();
     let replacement_len = replacement_word.chars().count();
     original_len >= 6 && replacement_len + 3 <= original_len
+}
+
+fn known_phrase_part_only_grows_by_one_letter(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+) -> bool {
+    if !matches!(
+        error_class,
+        TypingErrorClass::MissingLetter
+            | TypingErrorClass::CompositeTypo
+            | TypingErrorClass::LetterSubstitution
+            | TypingErrorClass::GrammarAgreement
+            | TypingErrorClass::AdjacentTransposition
+    ) {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return false;
+    };
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    if !is_cyrillic_letters_only(&original_word)
+        || !is_cyrillic_letters_only(&replacement_word)
+        || original_lower == replacement_lower
+        || !crate::phrase_lexicon::is_known_russian_phrase_part(&original_lower)
+    {
+        return false;
+    }
+
+    inserted_char_position_for_missing_letter(&original_lower, &replacement_lower).is_some()
+}
+
+fn short_word_only_grows_initial_letter(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+) -> bool {
+    if !matches!(
+        error_class,
+        TypingErrorClass::MissingLetter
+            | TypingErrorClass::CompositeTypo
+            | TypingErrorClass::LetterSubstitution
+            | TypingErrorClass::GrammarAgreement
+            | TypingErrorClass::AdjacentTransposition
+    ) {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return false;
+    };
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    if !is_cyrillic_letters_only(&original_word)
+        || !is_cyrillic_letters_only(&replacement_word)
+        || original_lower == replacement_lower
+    {
+        return false;
+    }
+    let Some((idx, _inserted)) =
+        inserted_char_position_for_missing_letter(&original_lower, &replacement_lower)
+    else {
+        return false;
+    };
+    idx == 0 && original_lower.chars().count() <= 6
 }
 
 fn short_layout_candidate_lacks_phrase_context(
@@ -1145,6 +1296,24 @@ fn same_known_russian_token(original: &str, candidate: &str) -> bool {
     let original_lower = original_word.to_lowercase();
     original_lower == candidate_word.to_lowercase()
         && crate::russian_lexicon::is_known_russian_word_or_form(&original_lower)
+}
+
+fn same_cyrillic_token(original: &str, candidate: &str) -> bool {
+    let (_, original_word, _) = split_word_punctuation(original);
+    let (_, candidate_word, _) = split_word_punctuation(candidate);
+    !original_word.is_empty()
+        && !candidate_word.is_empty()
+        && is_cyrillic_letters_only(original_word)
+        && is_cyrillic_letters_only(candidate_word)
+        && original_word.to_lowercase() == candidate_word.to_lowercase()
+}
+
+fn strong_standalone_split_tail(lower: &str) -> bool {
+    lower.chars().count() >= 4
+        && (crate::lexicon::is_common_ru_word(lower)
+            || crate::russian_lexicon::russian_dictionary().contains(lower)
+            || crate::russian_lexicon::is_known_russian_adverb_o_form(lower)
+            || crate::russian_lexicon::is_known_russian_ka_oblique_form(lower))
 }
 
 fn core_word_count(text: &str) -> usize {
@@ -1379,6 +1548,46 @@ mod tests {
     }
 
     #[test]
+    fn composite_typo_rejects_short_initial_consonant_growth() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "давай лушее ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution.selected.expect("safe candidate should remain");
+        assert_eq!(selected.replacement, "давай лучшее ");
+        assert!(!resolution
+            .candidates
+            .iter()
+            .any(|candidate| candidate.replacement == "давай глушее "
+                && candidate.gate.action == CandidateGateAction::Apply));
+    }
+
+    #[test]
+    fn composite_typo_rejects_short_initial_vowel_growth_from_logs() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, forbidden) in [("рина ", "арина "), ("решение задачь ", "решение озадачь ")]
+        {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicOnly,
+            ));
+
+            assert!(
+                resolution
+                    .decision
+                    .as_ref()
+                    .map(|decision| &decision.replacement)
+                    != Some(&forbidden.to_string()),
+                "forbidden candidate auto-applied: {resolution:?}"
+            );
+        }
+    }
+
+    #[test]
     fn composite_typo_recovers_common_word_with_broken_prefix() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
@@ -1427,6 +1636,14 @@ mod tests {
     }
 
     #[test]
+    fn boundary_gate_rejects_short_function_split_with_unknown_tail() {
+        let gate = gate_candidate("со скрина ", "со с крина ", TypingErrorClass::GluedWords);
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "weak_boundary_split_tail");
+    }
+
+    #[test]
     fn composite_typo_repairs_generated_russian_forms() {
         let pipeline = default_typing_assist_pipeline();
         for (input, expected) in [("руских ", "русских "), ("звгрузи ", "загрузи ")]
@@ -1442,6 +1659,42 @@ mod tests {
             assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
             assert_eq!(selected.gate.action, CandidateGateAction::Apply);
         }
+    }
+
+    #[test]
+    fn known_phrase_parts_do_not_autogrow_by_one_letter() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, forbidden) in [
+            ("у меня ", "у меняю "),
+            ("твой ", "тывой "),
+            ("к тебе ", "к требе "),
+            ("Тебе ", "Требе "),
+            ("в план! ", "в плана! "),
+            ("но пока ", "но прока "),
+        ] {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicOnly,
+            ));
+
+            assert_eq!(resolution.decision, None, "input={input:?}");
+            assert!(
+                resolution.candidates.iter().all(|candidate| {
+                    candidate.replacement != forbidden
+                        || candidate.gate.action != CandidateGateAction::Apply
+                }),
+                "forbidden candidate auto-applied: {resolution:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn nanda_candidate_cannot_autogrow_known_phrase_part_either() {
+        let gate = gate_candidate("твой ", "тывой ", TypingErrorClass::CompositeTypo);
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "known_phrase_part_one_letter_growth");
     }
 
     #[test]
