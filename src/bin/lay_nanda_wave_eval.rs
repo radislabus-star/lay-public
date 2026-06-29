@@ -103,6 +103,7 @@ fn main() -> io::Result<()> {
             args.iter()
                 .any(|arg| arg == "--ablation" || arg == "--ensemble-sweep"),
             args.iter().any(|arg| arg == "--show-failures"),
+            args.iter().any(|arg| arg == "--show-worsened"),
             args.iter().any(|arg| arg == "--record-trace"),
         )?;
         return Ok(());
@@ -145,7 +146,7 @@ fn main() -> io::Result<()> {
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite | --quick-ablation | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --cases PATH"
         );
         return Ok(());
     }
@@ -565,6 +566,7 @@ fn print_real_suite(
     options: &WaveOptions,
     ablation: bool,
     show_failures: bool,
+    show_worsened: bool,
     record_trace: bool,
 ) -> io::Result<()> {
     let suite = real_suite::load()?;
@@ -598,7 +600,8 @@ fn print_real_suite(
         .cases
         .iter()
         .zip(baseline.iter())
-        .filter(|(case, base)| base.ok && run_wave_output(&case.original, options) != case.expected)
+        .zip(wave.iter())
+        .filter(|((case, base), wave)| base.ok && wave.output != case.expected)
         .count();
     println!(
         "gate: baseline_ok={baseline_ok}/{} wave_ok={}/{} wave_worsened_vs_baseline={}",
@@ -621,6 +624,9 @@ fn print_real_suite(
     }
     if show_failures {
         print_failures(&suite.cases, &wave);
+    }
+    if show_worsened {
+        print_worsened(&suite.cases, &baseline, &wave);
     }
     Ok(())
 }
@@ -953,12 +959,21 @@ fn print_failures(cases: &[EvalCase], wave: &[lay::nanda_wave::WaveEvalResult]) 
     }
 }
 
-fn run_wave_output(original: &str, options: &WaveOptions) -> String {
-    let trace = run_wave_trace_with_options(original, options);
-    trace
-        .output()
-        .map(ToOwned::to_owned)
-        .unwrap_or_else(|| original.to_string())
+fn print_worsened(
+    cases: &[EvalCase],
+    baseline: &[status::EvalResult],
+    wave: &[lay::nanda_wave::WaveEvalResult],
+) {
+    println!("wave_worsened:");
+    for (idx, ((case, base), wave)) in cases.iter().zip(baseline).zip(wave).enumerate() {
+        if !base.ok || wave.ok {
+            continue;
+        }
+        println!(
+            "  case#{idx} reason={} original={:?} expected={:?} wave={:?}",
+            case.reason, case.original, case.expected, wave.output
+        );
+    }
 }
 
 fn wave_cells() -> &'static [&'static str] {
