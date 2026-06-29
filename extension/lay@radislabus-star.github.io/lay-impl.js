@@ -6,7 +6,6 @@ import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
-import Pango from 'gi://Pango';
 import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -38,23 +37,11 @@ import {
     APP_RELEASE_DATE,
     APP_URL,
     APP_VERSION,
-    AUTO_REPLACE_TOOLTIP,
-    AUTO_SWITCH_TOOLTIP,
     COMPACT_SUBTITLE_STYLE,
-    DEBUG_ACTION_LOG_TOOLTIP,
-    ENTER_AUTOCORRECT_TOOLTIP,
-    FORCE_KEY_OPTIONS,
-    LEM_2_TOOLTIP,
-    LEM_3_TOOLTIP,
-    LAYOUT_BACKEND_OPTIONS,
-    LEARNING_LOG_TOOLTIP,
     MENU_ICON_SIZE,
     MENU_WIDTH,
     PANEL_ICON_SIZE,
-    PTAH_ALEXS_TOOLTIP,
     SAFETY_OPTIONS,
-    SAFETY_STEPS,
-    SEGMENT_BUTTON_STYLE,
     TRIGGER_OPTIONS,
     actionKindLabel,
     loadConfig,
@@ -62,18 +49,13 @@ import {
     loadStats,
     normalizeConfig,
     normalizePtahRules,
-    normalizeTypingPipeline,
     openPreferences,
     openUri,
-    applyInputChannel,
     optionLabel,
-    restartDaemon,
-    saveConfig,
     startDaemon,
     startUpdate,
     stopDaemon,
     summarizeRecentActions,
-    typingRuleLabel,
 } from './tray_support.js';
 
 function persistentSwitchItem(label, active, params = {}) {
@@ -138,20 +120,7 @@ class LayIndicator extends PanelMenu.Button {
 
     _buildMenu() {
         this.menu.box.style = `min-width:${MENU_WIDTH}px; padding:2px 0;`;
-        this._engineButtons = {};
-        this._scopeButtons = {};
-        this._backendButtons = {};
-        this._layoutBackendButtons = {};
-        this._safetyButtons = {};
-        this._triggerButtons = {};
-        this._triggerItems = {};
-        this._forceRuItems = {};
-        this._forceEnItems = {};
-        this._toggleButtons = {};
-        this._safetySliderLabel = null;
-        this._safetySliderThumbs = [];
         this._statusRefreshIds = [];
-        this._cfg.typing_assist_pipeline = normalizeTypingPipeline(this._cfg.typing_assist_pipeline);
 
         this._statusItem = this._headerItem();
         this.menu.addMenuItem(this._statusItem);
@@ -210,162 +179,6 @@ class LayIndicator extends PanelMenu.Button {
         return item;
     }
 
-    _switchItem(label, key, restart = false, tooltip = null) {
-        const item = persistentSwitchItem(label, !!this._cfg[key]);
-        item.connect('toggled', (_item, state) => {
-            this._cfg[key] = state;
-            this._saveAndRefresh();
-            if (restart) {
-                restartDaemon();
-                this._setDaemonBusy('перезапуск...');
-                this._scheduleStatusRefreshes();
-            }
-        });
-        if (tooltip)
-            this._attachTooltip(item, tooltip);
-        this._toggleButtons[key] = item;
-        return item;
-    }
-
-    _debugLogsItem() {
-        const item = persistentSwitchItem('Журнал отладки lay', !!this._cfg.debug_action_log);
-        item.connect('toggled', (_item, state) => {
-            this._cfg.debug_action_log = state;
-            this._cfg.nanda_trace = state;
-            this._cfg.nanda_trace_text = state;
-            this._saveAndRefresh();
-        });
-        this._attachTooltip(item, DEBUG_ACTION_LOG_TOOLTIP);
-        this._toggleButtons.debug_action_log = item;
-        return item;
-    }
-
-    _behaviorMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('Поведение', false);
-        item.menu.addMenuItem(this._switchItem(
-            'Помощь при наборе',
-            'typing_assist',
-            true
-        ));
-        item.menu.addMenuItem(this._switchItem(
-            'Автоподмена',
-            'auto_replace',
-            true,
-            AUTO_REPLACE_TOOLTIP
-        ));
-        item.menu.addMenuItem(this._switchItem(
-            'Запоминать правки',
-            'learning_log',
-            false,
-            LEARNING_LOG_TOOLTIP
-        ));
-        item.menu.addMenuItem(this._debugLogsItem());
-        item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        item.menu.addMenuItem(this._switchItem(
-            'Автораскладка после пробела',
-            'auto_switch_layout',
-            false,
-            AUTO_SWITCH_TOOLTIP
-        ));
-        item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        item.menu.addMenuItem(this._switchItem(
-            'Исправлять перед Enter',
-            'enter_autocorrect',
-            true,
-            ENTER_AUTOCORRECT_TOOLTIP
-        ));
-        return item;
-    }
-
-    _expertMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('Экспертное', false);
-        item.menu.addMenuItem(this._arbiterMenu());
-        item.menu.addMenuItem(this._correctionPipelineMenu());
-        item.menu.addMenuItem(this._ptahAlexsMenu());
-        item.menu.addMenuItem(this._triggerMenu());
-        item.menu.addMenuItem(this._forceLayoutMenu());
-        item.menu.addMenuItem(this._timingMenu());
-        item.menu.addMenuItem(this._backendMenu());
-        return item;
-    }
-
-    _arbiterMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('Арбитры', false);
-        item.menu.addMenuItem(this._switchItem(
-            'Контур LEM',
-            'lem_enabled',
-            false
-        ));
-        item.menu.addMenuItem(this._switchItem(
-            'LEM: 2 слова',
-            'lem_2_words',
-            false,
-            LEM_2_TOOLTIP
-        ));
-        item.menu.addMenuItem(this._switchItem(
-            'LEM: 3 слова',
-            'lem_3_words',
-            false,
-            LEM_3_TOOLTIP
-        ));
-        item.menu.addMenuItem(this._switchItem(
-            'Подсказки NANDA',
-            'nanda_precognition',
-            false
-        ));
-        item.menu.addMenuItem(this._switchItem(
-            'Подсказки в [скобках]',
-            'ime_bracket_candidates',
-            false
-        ));
-        return item;
-    }
-
-    _engineOptions() {
-        return [
-            ['replay', 'Обычный', () => this._setConfigValue('correction_engine', 'replay')],
-            ['smart', 'Умный', () => this._setConfigValue('correction_engine', 'smart')],
-        ];
-    }
-
-    _scopeOptions() {
-        return [
-            ['1', '1 слово', () => this._setConfigValue('replace_words', 1)],
-            ['2', '2 слова', () => this._setConfigValue('replace_words', 2)],
-            ['3', '3 слова', () => this._setConfigValue('replace_words', 3)],
-        ];
-    }
-
-    _safetyOptions() {
-        return SAFETY_OPTIONS.map(([id, label]) => [
-            id,
-            label[0].toUpperCase() + label.slice(1),
-            () => this._setConfigValue('correction_safety', id, true),
-        ]);
-    }
-
-    _backendOptions() {
-        return [
-            ['uinput', 'Быстрый', () => this._setTextBackend('uinput')],
-            ['ime', 'IME, эксперимент', () => this._setTextBackend('ime')],
-        ];
-    }
-
-    _layoutBackendOptions() {
-        return LAYOUT_BACKEND_OPTIONS.map(([id, label]) => [
-            id,
-            label,
-            () => this._setConfigValue('layout_backend', id, true),
-        ]);
-    }
-
-    _backendMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('Режим ввода', false);
-        item.menu.addMenuItem(this._segmentedRow('Раскладка', this._layoutBackendOptions(), this._layoutBackendButtons));
-        item.menu.addMenuItem(this._segmentedRow('Ввод', this._backendOptions(), this._backendButtons));
-        return item;
-    }
-
     _recentActionsMenu() {
         return createRecentActionsMenu(this);
     }
@@ -378,89 +191,6 @@ class LayIndicator extends PanelMenu.Button {
         refreshRecentActions(this);
     }
 
-    _ptahAlexsMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('Раскладка по окну', false);
-        const mode = persistentSwitchItem(
-            'Жёстко по окну',
-            !!this._cfg.ptah_alexs_mode
-        );
-        mode.connect('toggled', (_item, state) => {
-            this._cfg.ptah_alexs_mode = state;
-            this._saveAndRefresh();
-            this._schedulePtahApply(20);
-        });
-        this._toggleButtons.ptah_alexs_mode = mode;
-        this._attachTooltip(mode, PTAH_ALEXS_TOOLTIP);
-        item.menu.addMenuItem(mode);
-
-        this._ptahWindowLabel = new St.Label({
-            text: this._ptahCurrentWindowText(),
-            style: COMPACT_SUBTITLE_STYLE,
-        });
-        const current = new PopupMenu.PopupBaseMenuItem({
-            activate: false,
-            reactive: false,
-            can_focus: false,
-        });
-        current.reactive = false;
-        current.can_focus = false;
-        current.style = 'padding:3px 8px 2px 8px;';
-        current.add_child(this._ptahWindowLabel);
-        item.menu.addMenuItem(current);
-
-        item.menu.addMenuItem(this._ptahAssignRow());
-
-        const rules = normalizePtahRules(this._cfg.ptah_alexs_rules);
-        if (rules.length > 0) {
-            item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-            for (const rule of rules.slice(0, 8))
-                item.menu.addMenuItem(this._ptahRuleRow(rule));
-            if (rules.length > 8)
-                item.menu.addMenuItem(this._mutedTextRow(`ещё правил: ${rules.length - 8}`));
-        } else {
-            item.menu.addMenuItem(this._mutedTextRow('правил пока нет'));
-        }
-        return item;
-    }
-
-    _ptahAssignRow() {
-        const item = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
-        item.reactive = false;
-        item.can_focus = false;
-        item.style = 'padding:4px 8px;';
-        item.add_child(new St.Label({
-            text: 'Текущее окно',
-            y_align: Clutter.ActorAlign.CENTER,
-            x_expand: true,
-            style: 'font-weight:bold;',
-        }));
-
-        const controls = new St.BoxLayout({style: 'spacing:4px;'});
-        controls.add_child(this._textStepButton('EN', () => this._setPtahRuleForFocusedWindow('us')));
-        controls.add_child(this._textStepButton('RU', () => this._setPtahRuleForFocusedWindow('ru')));
-        controls.add_child(this._textStepButton('keep', () => this._setPtahRuleForFocusedWindow('keep')));
-        controls.add_child(this._textStepButton('×', () => this._removePtahRuleForFocusedWindow()));
-        item.add_child(controls);
-        return item;
-    }
-
-    _ptahRuleRow(rule) {
-        const item = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
-        item.reactive = false;
-        item.can_focus = false;
-        item.style = 'padding:3px 8px;';
-
-        const label = new St.Label({
-            text: `${rule.label} → ${this._ptahLayoutLabel(rule.layout)}`,
-            y_align: Clutter.ActorAlign.CENTER,
-            x_expand: true,
-            style: COMPACT_SUBTITLE_STYLE,
-        });
-        item.add_child(label);
-        item.add_child(this._textStepButton('×', () => this._removePtahRule(rule.kind, rule.value)));
-        return item;
-    }
-
     _mutedTextRow(text) {
         const item = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
         item.reactive = false;
@@ -471,58 +201,6 @@ class LayIndicator extends PanelMenu.Button {
             style: COMPACT_SUBTITLE_STYLE,
         }));
         return item;
-    }
-
-    _ptahCurrentWindowText() {
-        const info = focusedWindowInfo();
-        if (!info)
-            return 'текущее окно: не определено';
-        const rule = this._findPtahRule(info);
-        const suffix = rule ? ` → ${this._ptahLayoutLabel(rule.layout)}` : '';
-        return `текущее: ${info.label}${suffix}`;
-    }
-
-    _ptahLayoutLabel(layout) {
-        return {
-            us: 'EN',
-            ru: 'RU',
-            keep: 'не трогать',
-        }[layout] ?? String(layout ?? '');
-    }
-
-    _setPtahRuleForFocusedWindow(layout) {
-        const info = focusedWindowInfo();
-        if (!info)
-            return;
-        const normalized = normalizePtahLayout(layout);
-        if (!normalized)
-            return;
-        const rules = normalizePtahRules(this._cfg.ptah_alexs_rules)
-            .filter(rule => !this._samePtahIdentity(rule, info));
-        rules.push({
-            kind: info.kind,
-            value: info.value,
-            layout: normalized,
-            label: info.label,
-        });
-        this._cfg.ptah_alexs_rules = normalizePtahRules(rules);
-        this._cfg.ptah_alexs_mode = true;
-        this._saveAndRebuildMenu();
-        this._schedulePtahApply(20);
-    }
-
-    _removePtahRuleForFocusedWindow() {
-        const info = focusedWindowInfo();
-        if (!info)
-            return;
-        this._removePtahRule(info.kind, info.value);
-    }
-
-    _removePtahRule(kind, value) {
-        this._cfg.ptah_alexs_rules = normalizePtahRules(this._cfg.ptah_alexs_rules)
-            .filter(rule => !(rule.kind === kind && rule.value.toLowerCase() === String(value).toLowerCase()));
-        this._saveAndRebuildMenu();
-        this._schedulePtahApply(20);
     }
 
     _findPtahRule(info) {
@@ -544,8 +222,6 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _onFocusWindowChanged() {
-        if (this._ptahWindowLabel)
-            this._ptahWindowLabel.text = this._ptahCurrentWindowText();
         this._schedulePtahApply(50);
     }
 
@@ -572,295 +248,6 @@ class LayIndicator extends PanelMenu.Button {
             return;
         if (activateLayoutId(rule.layout))
             this._refreshLayout();
-    }
-
-    _correctionPipelineMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('Правила коррекции', false);
-        for (const [idx, rule] of this._cfg.typing_assist_pipeline.entries())
-            item.menu.addMenuItem(this._pipelineRuleRow(rule, idx));
-        return item;
-    }
-
-    _pipelineRuleRow(rule, idx) {
-        const item = persistentSwitchItem(
-            `${idx + 1}. ${typingRuleLabel(rule.id)}`,
-            rule.enabled
-        );
-        item.connect('toggled', (_item, state) => {
-            this._setTypingRuleEnabled(rule.id, state);
-        });
-        item.add_child(this._smallOrderButton('↑', () => this._moveTypingRule(rule.id, -1)));
-        item.add_child(this._smallOrderButton('↓', () => this._moveTypingRule(rule.id, 1)));
-        return item;
-    }
-
-    _smallOrderButton(label, onClick) {
-        const button = new St.Button({
-            label,
-            reactive: true,
-            can_focus: true,
-            style_class: 'button flat',
-            style: 'padding:1px 6px; border-radius:6px; min-width:0;',
-        });
-        button.connect('clicked', () => {
-            onClick();
-            return Clutter.EVENT_STOP;
-        });
-        return button;
-    }
-
-    _setTypingRuleEnabled(id, enabled) {
-        this._cfg.typing_assist_pipeline = normalizeTypingPipeline(
-            this._cfg.typing_assist_pipeline.map(rule =>
-                rule.id === id ? {...rule, enabled} : rule)
-        );
-        this._saveAndRebuildMenu();
-    }
-
-    _moveTypingRule(id, delta) {
-        const rules = normalizeTypingPipeline(this._cfg.typing_assist_pipeline);
-        const idx = rules.findIndex(rule => rule.id === id);
-        const target = Math.max(0, Math.min(rules.length - 1, idx + delta));
-        if (idx < 0 || target === idx)
-            return;
-        const [rule] = rules.splice(idx, 1);
-        rules.splice(target, 0, rule);
-        this._cfg.typing_assist_pipeline = rules.map((item, order) => ({
-            ...item,
-            priority: (order + 1) * 10,
-        }));
-        this._saveAndRebuildMenu();
-    }
-
-
-    _saveAndRebuildMenu() {
-        saveConfig(this._cfg);
-        this._rebuildMenuKeepingOpen();
-    }
-
-    _rebuildMenuKeepingOpen() {
-        const openedSubmenus = this._openedSubmenuLabels();
-        this.menu.removeAll();
-        this._buildMenu();
-        this._restoreOpenSubmenus(openedSubmenus);
-    }
-
-    _openedSubmenuLabels() {
-        try {
-            return (this.menu._getMenuItems?.() ?? [])
-                .filter(item => item instanceof PopupMenu.PopupSubMenuMenuItem && item.menu.isOpen)
-                .map(item => item.label.text);
-        } catch(e) {
-            return [];
-        }
-    }
-
-    _restoreOpenSubmenus(labels) {
-        if (!labels.length)
-            return;
-        const wanted = new Set(labels);
-        try {
-            for (const item of this.menu._getMenuItems?.() ?? []) {
-                if (item instanceof PopupMenu.PopupSubMenuMenuItem && wanted.has(item.label.text))
-                    item.menu.open();
-            }
-        } catch(e) {}
-    }
-
-    _attachTooltip(actor, text) {
-        actor.connect('enter-event', () => {
-            this._showTooltip(actor, text);
-            return Clutter.EVENT_PROPAGATE;
-        });
-        actor.connect('leave-event', () => {
-            this._hideTooltip();
-            return Clutter.EVENT_PROPAGATE;
-        });
-    }
-
-    _showTooltip(anchor, text) {
-        this._hideTooltip();
-
-        const tooltip = new St.Label({
-            text,
-            style_class: 'dash-label',
-            style: 'padding:8px 10px; border:1px solid rgba(255,255,255,0.28); border-radius:8px;',
-        });
-        tooltip.width = 420;
-        tooltip.clutter_text.line_wrap = true;
-        tooltip.clutter_text.line_wrap_mode = Pango.WrapMode.WORD_CHAR;
-        Main.uiGroup.add_child(tooltip);
-
-        const [x, y] = anchor.get_transformed_position();
-        const [width] = anchor.get_transformed_size();
-        const [, tooltipWidth] = tooltip.get_preferred_width(-1);
-        const [, tooltipHeight] = tooltip.get_preferred_height(tooltipWidth);
-        let tx = x + width + 8;
-        if (tx + tooltipWidth > global.stage.width - 8)
-            tx = Math.max(8, x - tooltipWidth - 8);
-        const ty = Math.max(8, Math.min(y - 2, global.stage.height - tooltipHeight - 8));
-        tooltip.set_position(Math.round(tx), Math.round(ty));
-        tooltip.opacity = 255;
-        this._tooltip = tooltip;
-    }
-
-    _hideTooltip() {
-        if (!this._tooltip)
-            return;
-        this._tooltip.destroy();
-        this._tooltip = null;
-    }
-
-    _safetySliderRow() {
-        const item = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
-        item.reactive = false;
-        item.can_focus = false;
-        item.style = 'padding:5px 8px;';
-
-        const box = new St.BoxLayout({
-            vertical: true,
-            x_expand: true,
-            style: 'spacing:4px;',
-        });
-        const titleRow = new St.BoxLayout({
-            x_expand: true,
-            style: 'spacing:8px;',
-        });
-        titleRow.add_child(new St.Label({
-            text: 'Агрессивность',
-            y_align: Clutter.ActorAlign.CENTER,
-            x_expand: true,
-            style: 'font-weight:bold;',
-        }));
-        this._safetySliderLabel = new St.Label({
-            text: this._safetySliderLabelText(),
-            y_align: Clutter.ActorAlign.CENTER,
-            style: COMPACT_SUBTITLE_STYLE,
-        });
-        titleRow.add_child(this._safetySliderLabel);
-        box.add_child(titleRow);
-
-        const track = new St.BoxLayout({
-            x_expand: true,
-            style: 'spacing:4px;',
-        });
-        this._safetySliderThumbs = [];
-        for (const step of SAFETY_STEPS) {
-            const button = new St.Button({
-                label: step.label,
-                reactive: true,
-                can_focus: true,
-                toggle_mode: true,
-                style_class: 'button flat',
-                style: 'padding:1px 5px; border-radius:999px; min-width:0;',
-                x_expand: true,
-            });
-            button.connect('clicked', () => this._setSafetyLevel(step.id));
-            this._safetySliderThumbs.push([step.id, button]);
-            track.add_child(button);
-        }
-        box.add_child(track);
-        item.add_child(box);
-        this._attachTooltip(item,
-            'Настраивает, насколько смело lay исправляет после пробела.\n'
-            + 'Осторожно: только самые безопасные правила.\n'
-            + 'Норма: текущий стабильный режим.\n'
-            + 'Смелее: больше исправлений, выше риск ложной замены.'
-        );
-        return item;
-    }
-
-    _setSafetyLevel(id) {
-        this._setConfigValue('correction_safety', id, true);
-    }
-
-    _safetySliderLabelText() {
-        return SAFETY_STEPS.find(step => step.id === this._cfg.correction_safety)?.label ?? 'Норма';
-    }
-
-    _segmentedRow(title, options, target) {
-        const item = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
-        item.reactive = false;
-        item.can_focus = false;
-        item.style = 'padding:4px 8px;';
-
-        const label = new St.Label({
-            text: title,
-            y_align: Clutter.ActorAlign.CENTER,
-            x_expand: true,
-            style: 'font-weight:bold;',
-        });
-        item.add_child(label);
-
-        const controls = new St.BoxLayout({style: 'spacing:4px;'});
-        for (const [id, text, onClick] of options) {
-            const button = new St.Button({
-                label: text,
-                reactive: true,
-                can_focus: true,
-                toggle_mode: true,
-                style_class: 'button flat',
-                style: SEGMENT_BUTTON_STYLE,
-            });
-            button.connect('clicked', onClick);
-            target[id] = button;
-            controls.add_child(button);
-        }
-        item.add_child(controls);
-        return item;
-    }
-
-    _triggerMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('Триггер', false);
-        this._triggerMenuItem = item;
-        for (const [id, label] of TRIGGER_OPTIONS) {
-            const row = new PopupMenu.PopupMenuItem(label);
-            row.connect('activate', () => this._setTrigger(id));
-            this._triggerItems[id] = row;
-            item.menu.addMenuItem(row);
-        }
-        item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        item.menu.addMenuItem(this._switchItem(
-            'Несколько нажатий Shift',
-            'multi_tap_scope',
-            true
-        ));
-        return item;
-    }
-
-    _forceLayoutMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('Прямой язык', false);
-        item.menu.addMenuItem(this._switchItem(
-            'Хоткеи RU / EN',
-            'force_layout_hotkeys',
-            true
-        ));
-        item.menu.addMenuItem(this._forceKeyMenu('RU', 'force_ru_key', this._forceRuItems));
-        item.menu.addMenuItem(this._forceKeyMenu('EN', 'force_en_key', this._forceEnItems));
-        return item;
-    }
-
-    _forceKeyMenu(title, key, target) {
-        const item = new PopupMenu.PopupSubMenuMenuItem(`${title}: ${this._forceKeyLabel(this._cfg[key])}`, false);
-        item._layConfigKey = key;
-        for (const [id, label] of FORCE_KEY_OPTIONS) {
-            const row = new PopupMenu.PopupMenuItem(label);
-            row.connect('activate', () => this._setForceKey(key, id));
-            target[id] = row;
-            item.menu.addMenuItem(row);
-        }
-        if (key === 'force_ru_key')
-            this._forceRuMenuItem = item;
-        else
-            this._forceEnMenuItem = item;
-        return item;
-    }
-
-    _timingMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('Тайминг', false);
-        item.menu.addMenuItem(this._timingCompactRow('Тап', 'tap_max_ms', 'мс', [100,150,200,250,300,350,400]));
-        item.menu.addMenuItem(this._timingCompactRow('Окно', 'shift_window_ms', 'мс', [150,200,250,300,400,500]));
-        return item;
     }
 
     _daemonSwitchItem() {
@@ -948,157 +335,11 @@ class LayIndicator extends PanelMenu.Button {
         return item;
     }
 
-    _timingCompactRow(title, key, suffix, steps) {
-        const item = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
-        item.reactive = false;
-        item.can_focus = false;
-        item.style = 'padding:4px 8px;';
-        item.add_child(new St.Label({
-            text: title,
-            y_align: Clutter.ActorAlign.CENTER,
-            x_expand: true,
-        }));
-
-        const value = new St.Label({
-            text: `${this._cfg[key]}${suffix}`,
-            y_align: Clutter.ActorAlign.CENTER,
-            style: 'font-feature-settings:"tnum";',
-        });
-        const controls = new St.BoxLayout({style: 'spacing:4px;'});
-        controls.add_child(this._textStepButton('−', () => this._stepTiming(key, steps, -1, value, suffix)));
-        controls.add_child(value);
-        controls.add_child(this._textStepButton('+', () => this._stepTiming(key, steps, 1, value, suffix)));
-        item.add_child(controls);
-        return item;
-    }
-
-    _textStepButton(label, onClick) {
-        const button = new St.Button({
-            label,
-            reactive: true,
-            can_focus: true,
-            style_class: 'button flat',
-            style: 'padding:1px 7px; border-radius:999px; min-width:0;',
-        });
-        button.connect('clicked', onClick);
-        return button;
-    }
-
-    _stepTiming(key, steps, delta, value, suffix) {
-        const idx = steps.indexOf(this._cfg[key]);
-        const ni = Math.max(0, Math.min(steps.length - 1, idx + delta));
-        if (ni === idx)
-            return;
-        this._cfg[key] = steps[ni];
-        value.text = `${this._cfg[key]}${suffix}`;
-        saveConfig(this._cfg);
-        restartDaemon();
-    }
-
     _refreshSelections() {
         this._cfg = normalizeConfig(this._cfg);
-        if (this._triggerMenuItem)
-            this._triggerMenuItem.label.text = `Триггер: ${this._triggerLabel(this._cfg.trigger)}`;
-        if (this._forceRuMenuItem)
-            this._forceRuMenuItem.label.text = `RU: ${this._forceKeyLabel(this._cfg.force_ru_key)}`;
-        if (this._forceEnMenuItem)
-            this._forceEnMenuItem.label.text = `EN: ${this._forceKeyLabel(this._cfg.force_en_key)}`;
         if (this._aboutConfigLabel)
             this._aboutConfigLabel.text = `Настройки: ${this._aboutConfigText()}`;
-        if (this._ptahWindowLabel)
-            this._ptahWindowLabel.text = this._ptahCurrentWindowText();
-        if (this._safetySliderLabel)
-            this._safetySliderLabel.text = this._safetySliderLabelText();
         this._refreshStats();
-        for (const [id, button] of Object.entries(this._engineButtons ?? {}))
-            this._setButtonActive(button, id === this._cfg.correction_engine);
-        for (const [id, button] of Object.entries(this._scopeButtons ?? {}))
-            this._setButtonActive(button, Number(id) === this._cfg.replace_words);
-        for (const [id, button] of Object.entries(this._backendButtons ?? {}))
-            this._setButtonActive(button, id === this._cfg.text_backend);
-        for (const [id, button] of Object.entries(this._layoutBackendButtons ?? {}))
-            this._setButtonActive(button, id === this._cfg.layout_backend);
-        for (const [id, button] of Object.entries(this._safetyButtons ?? {}))
-            this._setButtonActive(button, id === this._cfg.correction_safety);
-        for (const [id, button] of this._safetySliderThumbs ?? [])
-            this._setButtonActive(button, id === this._cfg.correction_safety);
-        for (const [id, button] of Object.entries(this._triggerButtons ?? {}))
-            this._setButtonActive(button, id === this._cfg.trigger);
-        for (const [id, row] of Object.entries(this._triggerItems ?? {}))
-            row.setOrnament(id === this._cfg.trigger ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
-        for (const [id, row] of Object.entries(this._forceRuItems ?? {}))
-            row.setOrnament(id === this._cfg.force_ru_key ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
-        for (const [id, row] of Object.entries(this._forceEnItems ?? {}))
-            row.setOrnament(id === this._cfg.force_en_key ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
-        for (const [key, button] of Object.entries(this._toggleButtons ?? {})) {
-            if (button.setToggleState)
-                button.setToggleState(!!this._cfg[key]);
-            else
-                this._setButtonActive(button, !!this._cfg[key]);
-        }
-    }
-
-    _saveAndRefresh() {
-        this._cfg = normalizeConfig(this._cfg);
-        this._cfg.ptah_alexs_rules = normalizePtahRules(this._cfg.ptah_alexs_rules);
-        if (this._cfg.force_ru_key === this._cfg.force_en_key)
-            this._cfg.force_layout_hotkeys = false;
-        this._refreshSelections();
-        saveConfig(this._cfg);
-    }
-
-    _setConfigValue(key, value, restart = false) {
-        if (this._cfg[key] === value) {
-            this._refreshSelections();
-            return;
-        }
-        this._cfg[key] = value;
-        this._saveAndRefresh();
-        if (restart) {
-            restartDaemon();
-            this._setDaemonBusy('перезапуск...');
-            this._scheduleStatusRefreshes();
-        }
-    }
-
-    _setTextBackend(value) {
-        if (this._cfg.text_backend === value) {
-            this._refreshSelections();
-            applyInputChannel(value);
-            return;
-        }
-        this._cfg.text_backend = value;
-        if (value === 'ime')
-            this._cfg.nanda_precognition = true;
-        this._saveAndRefresh();
-        applyInputChannel(value);
-        restartDaemon();
-        this._setDaemonBusy('перезапуск...');
-        this._scheduleStatusRefreshes();
-    }
-
-    _setTrigger(id) {
-        if (this._cfg.trigger === id) {
-            this._refreshSelections();
-            return;
-        }
-        this._cfg.trigger = id;
-        this._saveAndRefresh();
-        restartDaemon();
-        this._setDaemonBusy('перезапуск...');
-        this._scheduleStatusRefreshes();
-    }
-
-    _setForceKey(key, id) {
-        if (this._cfg[key] === id) {
-            this._refreshSelections();
-            return;
-        }
-        this._cfg[key] = id;
-        this._saveAndRefresh();
-        restartDaemon();
-        this._setDaemonBusy('перезапуск...');
-        this._scheduleStatusRefreshes();
     }
 
     _toggleDaemonService(shouldStart = null) {
@@ -1130,19 +371,8 @@ class LayIndicator extends PanelMenu.Button {
         }
     }
 
-    _setButtonActive(button, active) {
-        button.set_style_class_name(active ? 'button' : 'button flat');
-        button.style = SEGMENT_BUTTON_STYLE;
-        if (button.set_checked)
-            button.set_checked(active);
-    }
-
     _triggerLabel(id) {
         return optionLabel(TRIGGER_OPTIONS, id, 'Двойной Shift');
-    }
-
-    _forceKeyLabel(id) {
-        return optionLabel(FORCE_KEY_OPTIONS, id, 'Правый Ctrl');
     }
 
     _safetyLabel() {
@@ -1306,7 +536,6 @@ class LayIndicator extends PanelMenu.Button {
     destroy() {
         this._clearStatusRefreshes();
         this._stopStatusBlink();
-        this._hideTooltip();
         if (this._ptahApplyId) {
             GLib.Source.remove(this._ptahApplyId);
             this._ptahApplyId = 0;
