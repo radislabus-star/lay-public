@@ -10,6 +10,8 @@ use std::env;
 use std::io;
 use std::path::PathBuf;
 
+#[path = "lay_nanda_wave_eval/learning_loop.rs"]
+mod learning_loop;
 #[path = "lay_nanda_wave_eval/real_suite.rs"]
 mod real_suite;
 #[path = "lay_nanda_wave_eval/status.rs"]
@@ -76,6 +78,23 @@ fn main() -> io::Result<()> {
             .and_then(|value| value.parse::<usize>().ok())
             .unwrap_or(12);
         print_llmwave_learning_report(seed, limit, live_min_count(&args))?;
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--learning-shadow-report") {
+        let path = correction_learning_log_path(&args)?;
+        let limit = arg_value(&args, "--limit")
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(12);
+        print_correction_learning_report(&path, live_min_count(&args), limit)?;
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--learning-pack-corrections") {
+        let path = correction_learning_log_path(&args)?;
+        let Some(out) = arg_value(&args, "--out") else {
+            eprintln!("--learning-pack-corrections requires --out PATH");
+            return Ok(());
+        };
+        pack_correction_learning(&path, &PathBuf::from(out), live_min_count(&args))?;
         return Ok(());
     }
     if args.iter().any(|arg| arg == "--status-json") {
@@ -146,7 +165,7 @@ fn main() -> io::Result<()> {
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
         );
         return Ok(());
     }
@@ -291,6 +310,80 @@ fn live_min_count(args: &[String]) -> usize {
         .and_then(|value| value.parse::<usize>().ok())
         .unwrap_or(DEFAULT_LLMWAVE_LIVE_MIN_COUNT)
         .max(1)
+}
+
+fn correction_learning_log_path(args: &[String]) -> io::Result<PathBuf> {
+    if let Some(path) = arg_value(args, "--learning-log") {
+        return Ok(PathBuf::from(path));
+    }
+    learning_loop::default_correction_log_path().ok_or_else(|| {
+        io::Error::new(
+            io::ErrorKind::NotFound,
+            "HOME is not set and --learning-log was not provided",
+        )
+    })
+}
+
+fn print_correction_learning_report(
+    path: &std::path::Path,
+    min_count: usize,
+    limit: usize,
+) -> io::Result<()> {
+    let report = learning_loop::learning_shadow_report(path, min_count)?;
+    println!("nanda_correction_learning_shadow:");
+    println!("  input: {}", report.input.display());
+    println!(
+        "  raw_lines={} invalid_lines={} experiences={}",
+        report.raw_lines, report.invalid_lines, report.experiences
+    );
+    println!(
+        "  accepted_signals={} rejected_signals={} min_count={}",
+        report.accepted_signals, report.rejected_signals, report.min_count
+    );
+    println!(
+        "  candidate_entries={} ready_entries={}",
+        report.candidate_entries, report.ready_entries
+    );
+    if !report.by_signal.is_empty() {
+        println!("  by_signal:");
+        for (signal, count) in &report.by_signal {
+            println!("    {signal:?}={count}");
+        }
+    }
+    if !report.ready.is_empty() {
+        println!("  ready:");
+        for entry in report.ready.iter().take(limit) {
+            println!(
+                "    {:?} -> {:?} op={} count={}",
+                entry.original, entry.expected, entry.operation, entry.count
+            );
+        }
+    }
+    if !report.rejected_pairs.is_empty() {
+        println!("  rejected_pairs:");
+        for entry in report.rejected_pairs.iter().take(limit) {
+            println!("    {:?} -> {:?}", entry.original, entry.expected);
+        }
+    }
+    Ok(())
+}
+
+fn pack_correction_learning(
+    input: &std::path::Path,
+    out: &std::path::Path,
+    min_count: usize,
+) -> io::Result<()> {
+    let (report, write) = learning_loop::pack_correction_learning(input, out, min_count)?;
+    println!(
+        "nanda_correction_learning_pack: input={} output={} ready={} encoded={} skipped={} min_count={}",
+        input.display(),
+        out.display(),
+        report.ready_entries,
+        write.encoded,
+        write.skipped,
+        report.min_count
+    );
+    Ok(())
 }
 
 fn reinforced_live_text(records: &[llmwave::LlmWavePhraseExperience], min_count: usize) -> String {
