@@ -10,6 +10,8 @@ use std::env;
 use std::io;
 use std::path::PathBuf;
 
+#[path = "lay_nanda_wave_eval/canonical_l1_l2.rs"]
+mod canonical_l1_l2;
 #[path = "lay_nanda_wave_eval/learning_loop.rs"]
 mod learning_loop;
 #[path = "lay_nanda_wave_eval/real_suite.rs"]
@@ -97,6 +99,10 @@ fn main() -> io::Result<()> {
         pack_correction_learning(&path, &PathBuf::from(out), live_min_count(&args))?;
         return Ok(());
     }
+    if args.iter().any(|arg| arg == "--canonical-l1-l2-report") {
+        canonical_l1_l2::print_report(&args)?;
+        return Ok(());
+    }
     if args.iter().any(|arg| arg == "--status-json") {
         status::print_status_json(
             args.iter().any(|arg| arg == "--refresh-status-json"),
@@ -165,7 +171,7 @@ fn main() -> io::Result<()> {
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --canonical-l1-l2-report [--probe WORD] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
         );
         return Ok(());
     }

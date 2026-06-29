@@ -6,7 +6,9 @@ pub mod feedback;
 pub mod journal;
 mod journal_record;
 pub mod l1;
+mod l1_center_memory;
 pub mod l2;
+mod l2_center_memory;
 pub mod l3;
 pub(crate) mod l3_phrase_gate;
 pub mod learned;
@@ -21,6 +23,7 @@ pub mod precognition;
 pub mod resonance_memory;
 pub mod signal;
 pub mod structural_relation;
+mod surface_wave;
 pub mod trace;
 
 pub use eval::{evaluate_wave, evaluate_wave_with_options, WaveEvalResult, WaveEvalStats};
