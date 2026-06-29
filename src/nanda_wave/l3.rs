@@ -2,6 +2,7 @@ use super::options::WaveOptions;
 use super::pattern_wave::{evaluate_pattern_wave, PATTERN_WAVE_CELL};
 use super::signal::{LayerTrace, WaveDecision, WordCandidate};
 use super::structural_relation::{evaluate_structural_relation, STRUCTURAL_RELATION_CELL};
+use super::{l3_phrase_gate, llmwave};
 
 pub fn run_l3(original: &str, candidates: &[WordCandidate]) -> (Vec<LayerTrace>, WaveDecision) {
     run_l3_with_options(original, candidates, &WaveOptions::default())
@@ -11,6 +12,15 @@ pub fn run_l3_with_options(
     original: &str,
     candidates: &[WordCandidate],
     options: &WaveOptions,
+) -> (Vec<LayerTrace>, WaveDecision) {
+    run_l3_inner(original, candidates, options, None)
+}
+
+fn run_l3_inner(
+    original: &str,
+    candidates: &[WordCandidate],
+    options: &WaveOptions,
+    phrase_memory: Option<&llmwave::LlmWaveMemory>,
 ) -> (Vec<LayerTrace>, WaveDecision) {
     if candidates.is_empty() {
         return (
@@ -28,14 +38,7 @@ pub fn run_l3_with_options(
     let technical_keep = candidates
         .iter()
         .find(|candidate| candidate.source == "TechTokenCell32");
-    let best_apply = candidates
-        .iter()
-        .filter(|candidate| apply_source_enabled(candidate.source, options))
-        .max_by(|left, right| {
-            confidence(left)
-                .total_cmp(&confidence(right))
-                .then_with(|| left.energy.total_cmp(&right.energy))
-        });
+    let best_apply = best_apply_candidate(original, candidates, options, phrase_memory);
 
     if options.is_enabled("TechnicalContextCell32") {
         if let Some(technical) = technical_keep {
@@ -122,19 +125,30 @@ pub fn run_l3_with_options(
         }
     }
 
+    let phrase_report = phrase_gate_report(original, &candidate.text, phrase_memory);
     let confidence = adjusted_confidence(
         original,
         candidate,
         options,
         pattern_report.as_ref(),
         structural_report.as_ref(),
+        phrase_report.as_ref(),
     );
     if options.is_enabled("PhraseCell32") {
+        let phrase_suffix = phrase_report
+            .as_ref()
+            .map(|report| {
+                format!(
+                    " l3_phrase={} score={:.3} support={} width={}",
+                    report.reason, report.score, report.support, report.width
+                )
+            })
+            .unwrap_or_default();
         traces.push(LayerTrace {
             name: "PhraseCell32",
             summary: format!(
-                "candidate source={} energy={:.3} risk={:.3} confidence={:.3}",
-                candidate.source, candidate.energy, candidate.risk, confidence
+                "candidate source={} energy={:.3} risk={:.3} confidence={:.3}{}",
+                candidate.source, candidate.energy, candidate.risk, confidence, phrase_suffix
             ),
         });
     }
@@ -198,8 +212,67 @@ fn apply_source_enabled(source: &str, options: &WaveOptions) -> bool {
     }
 }
 
+fn best_apply_candidate<'a>(
+    original: &str,
+    candidates: &'a [WordCandidate],
+    options: &WaveOptions,
+    phrase_memory: Option<&llmwave::LlmWaveMemory>,
+) -> Option<&'a WordCandidate> {
+    candidates
+        .iter()
+        .filter(|candidate| apply_source_enabled(candidate.source, options))
+        .filter(|candidate| !phrase_gate_suppresses(original, &candidate.text, phrase_memory))
+        .max_by(|left, right| {
+            l3_rank_score(original, left, phrase_memory)
+                .total_cmp(&l3_rank_score(original, right, phrase_memory))
+                .then_with(|| left.energy.total_cmp(&right.energy))
+        })
+}
+
 fn confidence(candidate: &WordCandidate) -> f32 {
     (candidate.energy - candidate.risk).clamp(0.0, 1.0)
+}
+
+fn l3_rank_score(
+    original: &str,
+    candidate: &WordCandidate,
+    phrase_memory: Option<&llmwave::LlmWaveMemory>,
+) -> f32 {
+    let mut value = confidence(candidate);
+    if let Some(report) = phrase_gate_report(original, &candidate.text, phrase_memory) {
+        match report.decision {
+            l3_phrase_gate::L3PhraseGateDecision::Support => {
+                value += (0.18 + report.score * 0.12).clamp(0.18, 0.30);
+            }
+            l3_phrase_gate::L3PhraseGateDecision::Neutral => {}
+            l3_phrase_gate::L3PhraseGateDecision::Suppress => {
+                value -= 1.0;
+            }
+        }
+    }
+    value.clamp(-1.0, 1.0)
+}
+
+fn phrase_gate_suppresses(
+    original: &str,
+    replacement: &str,
+    phrase_memory: Option<&llmwave::LlmWaveMemory>,
+) -> bool {
+    phrase_gate_report(original, replacement, phrase_memory)
+        .is_some_and(|report| report.decision == l3_phrase_gate::L3PhraseGateDecision::Suppress)
+}
+
+fn phrase_gate_report(
+    original: &str,
+    replacement: &str,
+    phrase_memory: Option<&llmwave::LlmWaveMemory>,
+) -> Option<l3_phrase_gate::L3PhraseGateReport> {
+    match phrase_memory {
+        Some(memory) => {
+            l3_phrase_gate::evaluate_candidate_with_memory(original, replacement, memory)
+        }
+        None => l3_phrase_gate::evaluate_default_candidate(original, replacement),
+    }
 }
 
 fn short_token_candidate_lacks_phrase_context(
@@ -253,6 +326,7 @@ fn adjusted_confidence(
     options: &WaveOptions,
     pattern_report: Option<&super::pattern_wave::PatternWaveReport>,
     structural_report: Option<&super::structural_relation::StructuralRelationReport>,
+    phrase_report: Option<&l3_phrase_gate::L3PhraseGateReport>,
 ) -> f32 {
     let mut value = confidence(candidate);
     if options.is_enabled(super::context_wave::PHRASE_FORECAST_CELL)
@@ -266,6 +340,17 @@ fn adjusted_confidence(
     }
     if let Some(report) = structural_report {
         value += options.scale_l3_delta(report.boost());
+    }
+    if let Some(report) = phrase_report {
+        match report.decision {
+            l3_phrase_gate::L3PhraseGateDecision::Support => {
+                value += options.scale_l3_delta(0.10 + report.score * 0.08);
+            }
+            l3_phrase_gate::L3PhraseGateDecision::Neutral => {}
+            l3_phrase_gate::L3PhraseGateDecision::Suppress => {
+                value -= options.scale_l3_delta(0.40);
+            }
+        }
     }
     value.clamp(0.0, 1.0)
 }
@@ -421,6 +506,40 @@ mod tests {
         };
         let (_trace, decision) = run_l3("На улице опять идёт д ", &[candidate]);
         assert_eq!(decision.output(), Some("На улице опять идёт дождь "));
+    }
+
+    #[test]
+    fn l3_phrase_memory_reranks_competing_l2_candidates() {
+        let memory = llmwave::LlmWaveMemory::from_text(
+            "на улице опять идёт дождь\nсегодня на улице опять идёт дождь\nвечером на улице опять идёт дождь\nзавтра на улице опять идёт дождь",
+        );
+        let candidates = vec![
+            WordCandidate {
+                text: "на улице опять идёт дом".to_string(),
+                source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
+                energy: 0.86,
+                risk: 0.06,
+                support: vec![],
+            },
+            WordCandidate {
+                text: "на улице опять идёт дождь".to_string(),
+                source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
+                energy: 0.42,
+                risk: 0.08,
+                support: vec![],
+            },
+        ];
+        let (trace, decision) = run_l3_inner(
+            "на улице опять идёт д ",
+            &candidates,
+            &WaveOptions::default(),
+            Some(&memory),
+        );
+
+        assert_eq!(decision.output(), Some("на улице опять идёт дождь "));
+        assert!(trace
+            .iter()
+            .any(|item| item.summary.contains("l3_phrase=l3_phrase_memory_support")));
     }
 
     #[test]
