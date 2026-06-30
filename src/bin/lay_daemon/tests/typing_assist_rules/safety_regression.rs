@@ -81,6 +81,11 @@ fn typing_assist_keeps_live_log_false_positive_words() {
         "будет несити ",
         "аффективная ",
         "двойной шифт ",
+        "мы грокаем ",
+        "слово грокать ",
+        "ее грокинг ",
+        "тоже грокнулся. ",
+        "с грокалось ",
     ] {
         assert_eq!(apply_typing_assist_exact(input), None, "input={input:?}");
     }

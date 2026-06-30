@@ -4,7 +4,10 @@
 //! into submodules. Correction rules should ask this facade whether a word is
 //! known instead of embedding dictionary logic in the typing pipeline.
 
-use crate::lexicon::{extend_common_ru_words, PROTECTED_WORDS_PATH, RU_HUNSPELL, RU_HUNSPELL_AFF};
+use crate::lexicon::{
+    extend_common_ru_words, extend_ru_technical_loanwords, PROTECTED_WORDS_PATH, RU_HUNSPELL,
+    RU_HUNSPELL_AFF,
+};
 use std::sync::OnceLock;
 
 mod forms;
@@ -41,6 +44,7 @@ pub fn russian_dictionary() -> &'static WordSet {
         #[cfg(test)]
         words.extend(crate::typing_assist_test_fixtures::russian_forms().map(str::to_string));
         extend_common_ru_words(&mut words);
+        extend_ru_technical_loanwords(&mut words);
         WordSet::from_words(words)
     })
 }
@@ -54,12 +58,14 @@ pub fn russian_short_dictionary() -> &'static WordSet {
             let mut words = words;
             words.extend(crate::typing_assist_test_fixtures::russian_forms().map(str::to_string));
             extend_common_ru_words(&mut words);
+            extend_ru_technical_loanwords(&mut words);
             WordSet::from_words(words)
         }
         #[cfg(not(test))]
         {
             let mut words = words;
             extend_common_ru_words(&mut words);
+            extend_ru_technical_loanwords(&mut words);
             WordSet::from_words(words)
         }
     })
@@ -74,12 +80,14 @@ pub fn russian_tiny_dictionary() -> &'static WordSet {
             let mut words = words;
             words.extend(crate::typing_assist_test_fixtures::russian_forms().map(str::to_string));
             extend_common_ru_words(&mut words);
+            extend_ru_technical_loanwords(&mut words);
             WordSet::from_words(words)
         }
         #[cfg(not(test))]
         {
             let mut words = words;
             extend_common_ru_words(&mut words);
+            extend_ru_technical_loanwords(&mut words);
             WordSet::from_words(words)
         }
     })
@@ -99,6 +107,7 @@ pub fn is_known_russian_word_or_form(word: &str) -> bool {
     russian_dictionary().contains(word)
         || russian_generated_form_dictionary().contains(word)
         || forms::is_known_russian_form(word)
+        || crate::lexicon::is_ru_technical_loanword(word)
 }
 
 #[cfg(test)]

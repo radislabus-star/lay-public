@@ -642,12 +642,17 @@ fn split_last_token(text: &str) -> Option<(&str, &str)> {
     if trimmed.is_empty() {
         return None;
     }
-    let start = trimmed
+    let end = trimmed
         .char_indices()
         .rev()
-        .find_map(|(idx, ch)| ch.is_whitespace().then_some(idx + ch.len_utf8()))
+        .find_map(|(idx, ch)| ch.is_alphabetic().then_some(idx + ch.len_utf8()))?;
+    let start = trimmed[..end]
+        .char_indices()
+        .rev()
+        .find_map(|(idx, ch)| (!ch.is_alphabetic()).then_some(idx + ch.len_utf8()))
         .unwrap_or(0);
-    let (prefix, token) = trimmed.split_at(start);
+    let (prefix, rest) = trimmed.split_at(start);
+    let token = &rest[..end - start];
     (!token.is_empty()).then_some((prefix, token))
 }
 
@@ -1165,6 +1170,35 @@ mod tests {
                 .iter()
                 .any(|suffix| suffix == "кий" || suffix == "ких"),
             "first Russian prefix should produce a useful word suffix: {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
+    fn quoted_russian_prefix_gets_precognition_candidate() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "\"писа".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine.preedit_candidates.iter().any(|suffix| {
+                let word = format!("писа{suffix}");
+                word == "писать" || word.starts_with("писа")
+            }),
+            "punctuation before Russian prefix must not silence IME: {:?}",
             engine.preedit_candidates
         );
     }

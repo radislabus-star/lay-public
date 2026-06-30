@@ -1,0 +1,2 @@
+# Stems for Russian-written technical English loanwords.
+грок

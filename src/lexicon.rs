@@ -17,6 +17,12 @@ pub const EN_WORDS: &str = "/usr/share/dict/words";
 pub const PROTECTED_WORDS_PATH: &str = ".config/lay/protected_words.txt";
 
 const COMMON_RU_DATA: &str = include_str!("../data/lexicon/common_ru.txt");
+const RU_TECHNICAL_LOANWORDS_DATA: &str =
+    include_str!("../data/lexicon/ru_technical_loanwords.txt");
+const RU_TECHNICAL_LOANWORD_STEMS_DATA: &str =
+    include_str!("../data/lexicon/ru_technical_loanword_stems.txt");
+const RU_TECHNICAL_LOANWORD_SUFFIXES_DATA: &str =
+    include_str!("../data/lexicon/ru_technical_loanword_suffixes.txt");
 const COMMON_EN_TECHNICAL_DATA: &str = include_str!("../data/lexicon/common_en_technical.txt");
 const COMMON_EN_GUARD_PREFIX_DATA: &str =
     include_str!("../data/lexicon/common_en_guard_prefixes.txt");
@@ -35,6 +41,7 @@ const VISUAL_B_AFTER_ASCII_DATA: &str = include_str!("../data/lexicon/visual_b_a
 pub fn warm_up() {
     let _ = common_ru_words().len();
     let _ = common_ru_prefix_index().len();
+    let _ = ru_technical_loanwords().len();
     let _ = hunspell_ru_words_ordered().len();
     let _ = common_en_technical_words().len();
     let _ = common_en_technical_prefix_index().len();
@@ -54,6 +61,10 @@ pub fn warm_up() {
 
 pub fn is_common_ru_word(word: &str) -> bool {
     common_ru_words().contains(word)
+}
+
+pub fn is_ru_technical_loanword(word: &str) -> bool {
+    ru_technical_loanwords().contains(&word.trim().to_lowercase())
 }
 
 pub fn common_ru_prefix_completion(prefix: &str, max_suffix_chars: usize) -> Option<String> {
@@ -213,6 +224,10 @@ pub fn extend_common_ru_words(words: &mut HashSet<String>) {
     words.extend(common_ru_words().iter().cloned());
 }
 
+pub fn extend_ru_technical_loanwords(words: &mut HashSet<String>) {
+    words.extend(ru_technical_loanwords().iter().cloned());
+}
+
 pub fn common_ru_words_iter() -> impl Iterator<Item = &'static str> {
     common_ru_words_ordered().iter().map(String::as_str)
 }
@@ -252,6 +267,19 @@ fn user_protected_ascii_words() -> &'static HashSet<String> {
 fn common_ru_words() -> &'static HashSet<String> {
     static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
     WORDS.get_or_init(|| parse_word_data(COMMON_RU_DATA))
+}
+
+fn ru_technical_loanwords() -> &'static HashSet<String> {
+    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
+    WORDS.get_or_init(|| {
+        let mut words = parse_word_data(RU_TECHNICAL_LOANWORDS_DATA);
+        for stem in data_lines(RU_TECHNICAL_LOANWORD_STEMS_DATA) {
+            for suffix in data_lines(RU_TECHNICAL_LOANWORD_SUFFIXES_DATA) {
+                words.insert(format!("{stem}{suffix}"));
+            }
+        }
+        words
+    })
 }
 
 fn common_ru_words_ordered() -> &'static Vec<String> {
