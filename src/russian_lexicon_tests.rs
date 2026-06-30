@@ -21,6 +21,16 @@ fn recognizes_russian_technical_loanword_forms() {
         "грокалось",
         "грокингом",
         "гроканье",
+        "пушить",
+        "пушил",
+        "запушил",
+        "запушенный",
+        "бейса",
+        "скилы",
+        "скилами",
+        "тестить",
+        "спектрал",
+        "чате",
     ] {
         assert!(
             is_known_russian_word_or_form(word),

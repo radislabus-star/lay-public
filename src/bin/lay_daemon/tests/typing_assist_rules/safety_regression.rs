@@ -86,6 +86,15 @@ fn typing_assist_keeps_live_log_false_positive_words() {
         "ее грокинг ",
         "тоже грокнулся. ",
         "с грокалось ",
+        "Запушил ",
+        "запушил запушил ",
+        "Теорема Бейса ",
+        "теорию бейса ",
+        "наши скилы ",
+        "нашими скилами ",
+        "можно тестить ",
+        "еще спектрал ",
+        "код на чате ",
     ] {
         assert_eq!(apply_typing_assist_exact(input), None, "input={input:?}");
     }
@@ -108,6 +117,7 @@ fn typing_assist_keeps_live_log_good_repairs() {
         ("провблему ", "проблему "),
         ("спаибо ", "спасибо "),
         ("свойсва ", "свойства "),
+        ("зпаушил ", "запушил "),
     ] {
         assert_eq!(
             apply_typing_assist_exact(input),
