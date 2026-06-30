@@ -19,11 +19,21 @@ const MAX_SEMANTIC_WORD_CANDIDATES: usize = 8;
 const MAX_WAVE_BUCKET_SCAN: usize = 512;
 const MAX_WAVE_POOL: usize = 4096;
 static PREFIX_WAVE_MEMORY_WARM: AtomicBool = AtomicBool::new(false);
+static RU_WORD_WAVE_MEMORY: OnceLock<RuWordWaveMemory> = OnceLock::new();
+static EN_WORD_WAVE_MEMORY: OnceLock<EnWordWaveMemory> = OnceLock::new();
+static RU_WORD_PREFIX_INDEX: OnceLock<HashMap<String, Vec<String>>> = OnceLock::new();
+static EN_WORD_PREFIX_INDEX: OnceLock<HashMap<String, Vec<String>>> = OnceLock::new();
 
 pub fn warm_up() {
     let _ = ru_word_wave_memory().entries.len();
     let _ = en_word_wave_memory().entries.len();
     PREFIX_WAVE_MEMORY_WARM.store(true, Ordering::Release);
+}
+
+pub fn warm_up_prefix_completion_indexes() {
+    warm_up();
+    let _ = ru_word_prefix_index().len();
+    let _ = en_word_prefix_index().len();
 }
 
 pub fn prefix_wave_memory_is_warm() -> bool {
@@ -40,7 +50,7 @@ pub fn ru_word_prefix_completion_suffixes(
         max_suffix_chars,
         limit,
         None,
-        &ru_word_wave_memory().prefix_index,
+        ru_word_prefix_index(),
     )
 }
 
@@ -55,7 +65,7 @@ pub fn ru_word_prefix_completion_suffixes_if_bucket_at_most(
         max_suffix_chars,
         limit,
         Some(max_bucket_entries),
-        &ru_word_wave_memory().prefix_index,
+        ru_word_prefix_index(),
     )
 }
 
@@ -69,7 +79,7 @@ pub fn en_word_prefix_completion_suffixes(
         max_suffix_chars,
         limit,
         None,
-        &en_word_wave_memory().prefix_index,
+        en_word_prefix_index(),
     )
 }
 
@@ -514,7 +524,6 @@ fn is_russian_consonant(ch: char) -> bool {
 struct RuWordWaveMemory {
     entries: Vec<RuWordWaveEntry>,
     buckets: HashMap<u16, Vec<usize>>,
-    prefix_index: HashMap<String, Vec<String>>,
 }
 
 #[derive(Debug)]
@@ -528,13 +537,11 @@ struct RuWordWaveEntry {
 struct EnWordWaveMemory {
     entries: Vec<RuWordWaveEntry>,
     buckets: HashMap<u16, Vec<usize>>,
-    prefix_index: HashMap<String, Vec<String>>,
     known: HashSet<String>,
 }
 
 fn ru_word_wave_memory() -> &'static RuWordWaveMemory {
-    static MEMORY: OnceLock<RuWordWaveMemory> = OnceLock::new();
-    MEMORY.get_or_init(|| {
+    RU_WORD_WAVE_MEMORY.get_or_init(|| {
         let mut entries = Vec::new();
         let mut buckets = HashMap::<u16, Vec<usize>>::new();
         let mut words = russian_dictionary()
@@ -566,18 +573,12 @@ fn ru_word_wave_memory() -> &'static RuWordWaveMemory {
             }
             entries.push(RuWordWaveEntry { word, len, modes });
         }
-        let prefix_index = build_prefix_index(&entries);
-        RuWordWaveMemory {
-            entries,
-            buckets,
-            prefix_index,
-        }
+        RuWordWaveMemory { entries, buckets }
     })
 }
 
 fn en_word_wave_memory() -> &'static EnWordWaveMemory {
-    static MEMORY: OnceLock<EnWordWaveMemory> = OnceLock::new();
-    MEMORY.get_or_init(|| {
+    EN_WORD_WAVE_MEMORY.get_or_init(|| {
         let mut known = HashSet::new();
         extend_english_words_from_hunspell(&mut known, EN_HUNSPELL);
         extend_english_words_from_plain(&mut known, EN_WORDS);
@@ -602,14 +603,20 @@ fn en_word_wave_memory() -> &'static EnWordWaveMemory {
             }
             entries.push(RuWordWaveEntry { word, len, modes });
         }
-        let prefix_index = build_prefix_index(&entries);
         EnWordWaveMemory {
             entries,
             buckets,
-            prefix_index,
             known,
         }
     })
+}
+
+fn ru_word_prefix_index() -> &'static HashMap<String, Vec<String>> {
+    RU_WORD_PREFIX_INDEX.get_or_init(|| build_prefix_index(&ru_word_wave_memory().entries))
+}
+
+fn en_word_prefix_index() -> &'static HashMap<String, Vec<String>> {
+    EN_WORD_PREFIX_INDEX.get_or_init(|| build_prefix_index(&en_word_wave_memory().entries))
 }
 
 fn build_prefix_index(entries: &[RuWordWaveEntry]) -> HashMap<String, Vec<String>> {
@@ -1140,6 +1147,18 @@ mod tests {
             en_word_wave_memory().entries.len() >= 100_000,
             "EN wave memory should combine hunspell and system words"
         );
+    }
+
+    #[test]
+    fn warm_up_does_not_build_prefix_completion_indexes() {
+        if RU_WORD_PREFIX_INDEX.get().is_some() || EN_WORD_PREFIX_INDEX.get().is_some() {
+            return;
+        }
+        warm_up();
+        assert!(RU_WORD_WAVE_MEMORY.get().is_some());
+        assert!(EN_WORD_WAVE_MEMORY.get().is_some());
+        assert!(RU_WORD_PREFIX_INDEX.get().is_none());
+        assert!(EN_WORD_PREFIX_INDEX.get().is_none());
     }
 
     #[test]

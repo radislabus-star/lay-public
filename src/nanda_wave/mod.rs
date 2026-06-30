@@ -65,3 +65,8 @@ pub fn warm_up() {
     context_wave::warm_up();
     let _ = llmwave::load_default_memory();
 }
+
+pub fn warm_up_for_ime() {
+    context_wave::warm_up_prefix_completion_indexes();
+    let _ = llmwave::load_default_memory();
+}

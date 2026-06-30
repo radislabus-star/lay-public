@@ -315,7 +315,11 @@ fn warm_runtime(config: &LayConfig) {
     if config.auto_replace || config.typing_assist || config.auto_switch_layout {
         lay::typing_assist::warm_up();
         lay::lem::warm_up();
-        std::thread::spawn(lay::nanda_wave::warm_up);
+        if config.active_text_backend().should_try_ime() {
+            std::thread::spawn(lay::nanda_wave::warm_up_for_ime);
+        } else {
+            std::thread::spawn(lay::nanda_wave::warm_up);
+        }
     }
 }
 
