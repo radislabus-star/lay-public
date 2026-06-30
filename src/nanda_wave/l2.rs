@@ -868,7 +868,19 @@ fn is_phrase_grammar_candidate(context: &TailContext, original: &str, replacemen
     let Some(last) = context.last() else {
         return false;
     };
-    previous.kind == TokenKind::CyrillicWord && last.kind == TokenKind::CyrillicWord
+    if previous.kind != TokenKind::CyrillicWord || last.kind != TokenKind::CyrillicWord {
+        return false;
+    }
+    let previous = clean_ru_token(&previous.text);
+    let last = clean_ru_token(&last.text);
+    let Some(replacement_last) = replacement
+        .split_whitespace()
+        .next_back()
+        .map(clean_ru_token)
+    else {
+        return false;
+    };
+    agree_adjective_like_tail(&previous, &last).as_deref() == Some(replacement_last.as_str())
 }
 
 fn normalized_edit_ratio(original: &str, replacement: &str) -> f32 {
@@ -1223,6 +1235,20 @@ mod tests {
                     .iter()
                     .all(|candidate| candidate.source != "GrammarCell32"),
                 "neuter noun should not get adjective agreement candidate: {original:?} -> {candidates:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn grammar_cell_keeps_neutral_clause_context() {
+        for original in ["там недоказно ", "что там недоказно "] {
+            let l1 = run_l1(original);
+            let candidates = run_l2(original, &l1);
+            assert!(
+                candidates
+                    .iter()
+                    .all(|candidate| candidate.source != "GrammarCell32"),
+                "neutral clause should not get grammar agreement candidate: {original:?} -> {candidates:?}"
             );
         }
     }

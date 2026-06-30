@@ -29,6 +29,9 @@ fn correct_vowel_confusion_impl(word: &str, allow_safe_past_tense: bool) -> Opti
     if is_known_russian_word_or_form(&lower) {
         return None;
     }
+    if super::missing::missing_letter_candidate_exists(word, &lower) {
+        return None;
+    }
     let candidates = generate_vowel_confusion_candidates(&lower)
         .into_iter()
         .filter(|candidate| !rewrites_protected_pattern_term_stem(&lower, candidate))

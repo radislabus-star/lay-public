@@ -9,12 +9,18 @@ use crate::russian_typo_scoring::{
 
 use super::guards::{
     looks_like_plausible_russian_past_tense, looks_like_prefix_plus_known_russian_word,
-    looks_like_present_or_reflexive_verb, unknown_cyrillic_lower,
+    looks_like_present_or_reflexive_verb,
 };
 use super::thresholds::NGRAM_DICT_MISSING_LETTER_MARGIN;
 
 pub fn correct_missing_letter(word: &str) -> Option<String> {
-    let lower = unknown_cyrillic_lower(word, 6)?;
+    if word.chars().count() < 6 || !crate::word_reader::is_cyrillic_word(word) {
+        return None;
+    }
+    let lower = word.to_lowercase();
+    if is_known_russian_word_or_form(&lower) && !has_common_missing_letter_candidate(&lower) {
+        return None;
+    }
     if looks_like_plausible_russian_past_tense(&lower)
         && !missing_letter_candidate_exists(word, &lower)
     {
@@ -32,6 +38,14 @@ pub fn correct_missing_letter(word: &str) -> Option<String> {
         NGRAM_DICT_MISSING_LETTER_MARGIN,
         0.40,
     )
+}
+
+fn has_common_missing_letter_candidate(lower: &str) -> bool {
+    safe_missing_letter_candidates(lower).any(|candidate| {
+        candidate != lower
+            && crate::lexicon::is_common_ru_word(&candidate)
+            && is_known_russian_word_or_form(&candidate)
+    })
 }
 
 pub(super) fn missing_letter_candidate_exists(word: &str, lower: &str) -> bool {
@@ -100,4 +114,26 @@ fn is_risky_vowel_insert_into_verb_tail(lower: &str, inserted: char) -> bool {
         ]
         .iter()
         .any(|tail| lower.ends_with(tail))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn missing_letter_repairs_known_weak_form_to_common_word() {
+        let candidates = safe_missing_letter_candidates("недоказно").collect::<Vec<_>>();
+        assert!(
+            candidates.iter().any(|candidate| candidate == "недоказано"),
+            "safe missing-letter candidates: {candidates:?}"
+        );
+        assert!(
+            has_common_missing_letter_candidate("недоказно"),
+            "expected common missing-letter candidate"
+        );
+        assert_eq!(
+            correct_missing_letter("недоказно").as_deref(),
+            Some("недоказано")
+        );
+    }
 }

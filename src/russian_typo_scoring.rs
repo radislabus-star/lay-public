@@ -33,7 +33,12 @@ where
             return None;
         }
         let margin = crate::ngram::ru_candidate_margin(candidate, &lower);
-        let score = margin + missing_letter_candidate_bonus(&lower, candidate);
+        let common_bonus = if crate::lexicon::is_common_ru_word(candidate) {
+            12.0
+        } else {
+            0.0
+        };
+        let score = margin + missing_letter_candidate_bonus(&lower, candidate) + common_bonus;
         if score < min_margin {
             return None;
         }

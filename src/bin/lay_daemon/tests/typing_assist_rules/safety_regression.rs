@@ -121,6 +121,8 @@ fn typing_assist_keeps_live_log_good_repairs() {
         ("спаибо ", "спасибо "),
         ("свойсва ", "свойства "),
         ("зпаушил ", "запушил "),
+        ("там недоказно ", "там недоказано "),
+        ("не раотает ", "не работает "),
     ] {
         assert_eq!(
             apply_typing_assist_exact(input),
