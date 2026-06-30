@@ -132,6 +132,7 @@ pub fn record_action_with_stages_and_gate(
     if from == to || from.trim().is_empty() || to.trim().is_empty() {
         return;
     }
+    crate::nanda_wave::record_accepted_fix_usage(from, to);
     if !crate::config::LayConfig::load().debug_action_log {
         return;
     }

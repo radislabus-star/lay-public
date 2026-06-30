@@ -76,12 +76,15 @@ impl LayIbusEngine {
             return Ok(false);
         }
 
+        let accepted_word = format!("{}{}", self.buffer, suffix);
+        let context_tail = self.tail_buffer.clone();
         trace::record_completion_accept("active_composition", suffix.chars().count(), with_space);
         self.commit_active_composition(
             emitter,
             ActiveCompositionCommit::with_completion(suffix, with_space),
         )
         .await?;
+        lay::nanda_wave::record_accepted_ime_usage(&context_tail, &accepted_word);
         Ok(true)
     }
 
@@ -104,7 +107,8 @@ impl LayIbusEngine {
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         self.last_commit_at = Some(Instant::now());
         self.push_tail_char(ch);
-        self.update_precognition_preedit(emitter).await
+        self.preedit_dirty = true;
+        Ok(())
     }
 
     pub(super) async fn observe_terminal_passthrough_char(

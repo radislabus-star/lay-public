@@ -103,7 +103,7 @@ fn changed_next_token(
             ));
         }
     }
-    if replacement_tokens.len() > original_tokens.len() && original_tokens.len() > 0 {
+    if replacement_tokens.len() > original_tokens.len() && !original_tokens.is_empty() {
         return Some((
             replacement_tokens[..original_tokens.len()].to_vec(),
             replacement_tokens[original_tokens.len()].clone(),

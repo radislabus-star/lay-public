@@ -25,12 +25,33 @@ pub mod signal;
 pub mod structural_relation;
 mod surface_wave;
 pub mod trace;
+pub(crate) mod usage_prior;
 
 pub use eval::{evaluate_wave, evaluate_wave_with_options, WaveEvalResult, WaveEvalStats};
 pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
 pub use options::WaveOptions;
 pub use signal::{ActiveMode, LayerTrace, WaveDecision, WavePacket, WaveTrace, WordCandidate};
 pub use trace::{run_wave_trace, run_wave_trace_with_options};
+
+pub fn word_usage_prior(word: &str) -> f32 {
+    usage_prior::word_usage_prior(word)
+}
+
+pub fn context_word_usage_prior(context: &[String], word: &str) -> f32 {
+    usage_prior::context_word_usage_prior(context, word)
+}
+
+pub fn record_typed_tail_usage(tail: &str) {
+    usage_prior::record_typed_tail_if_enabled(tail);
+}
+
+pub fn record_accepted_fix_usage(from: &str, to: &str) {
+    usage_prior::record_accepted_fix_if_enabled(from, to);
+}
+
+pub fn record_accepted_ime_usage(context_tail: &str, accepted_text: &str) {
+    usage_prior::record_accepted_ime_if_enabled(context_tail, accepted_text);
+}
 
 pub fn warm_up() {
     context_wave::warm_up();

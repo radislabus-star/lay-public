@@ -52,3 +52,12 @@ fn typing_assist_does_not_shorten_tail_into_other_known_word() {
         assert_eq!(apply_typing_assist_exact(input), None, "input={input:?}");
     }
 }
+
+#[test]
+fn extra_letter_rule_does_not_eat_glued_function_phrase() {
+    assert_eq!(correct_extra_letters("тоесть"), None);
+    assert_eq!(
+        apply_typing_assist_exact("тоесть "),
+        Some("то есть ".to_string())
+    );
+}

@@ -1,0 +1,481 @@
+use std::collections::HashMap;
+use std::path::{Path, PathBuf};
+use std::sync::{Mutex, OnceLock};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+
+const USAGE_EVENTS_PATH: &str = ".local/share/lay/nanda_wave/word_usage_events.jsonl";
+const LEGACY_USAGE_PRIOR_PATH: &str = ".local/share/lay/learning_candidates.json";
+const USAGE_EVENTS_MAX_BYTES: u64 = 500 * 1024;
+const USAGE_REFRESH_INTERVAL: Duration = Duration::from_millis(1000);
+const CONTEXT_WORDS: usize = 5;
+
+#[derive(Debug, serde::Deserialize)]
+struct LearningCandidate {
+    to: String,
+    count: u32,
+    #[serde(default)]
+    promoted: bool,
+}
+
+#[derive(Debug, Clone, Default, serde::Deserialize, serde::Serialize)]
+struct UsageEvent {
+    ts: u64,
+    kind: UsageEventKind,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    word: Option<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    context: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    from: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    to: Option<String>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+enum UsageEventKind {
+    #[default]
+    Typed,
+    AcceptedFix,
+    AcceptedIme,
+}
+
+#[derive(Debug, Clone, Default)]
+struct UsageCounts {
+    words: HashMap<String, u32>,
+    context_words: HashMap<String, u32>,
+}
+
+#[derive(Debug, Default)]
+struct UsageCache {
+    loaded_at: Option<Instant>,
+    counts: UsageCounts,
+}
+
+pub(crate) fn record_typed_tail_if_enabled(tail: &str) {
+    if !crate::config::LayConfig::load().learning_log {
+        return;
+    }
+    let Some((context, word)) = context_and_last_word(tail) else {
+        return;
+    };
+    append_usage_event(UsageEvent {
+        ts: unix_timestamp(),
+        kind: UsageEventKind::Typed,
+        word: Some(word),
+        context,
+        from: None,
+        to: None,
+    });
+}
+
+pub(crate) fn record_accepted_fix_if_enabled(from: &str, to: &str) {
+    if !crate::config::LayConfig::load().learning_log || from == to {
+        return;
+    }
+    let to_words = normalized_words(to);
+    if to_words.is_empty() {
+        return;
+    }
+    let context = to_words
+        .iter()
+        .rev()
+        .skip(1)
+        .take(CONTEXT_WORDS)
+        .cloned()
+        .collect::<Vec<_>>()
+        .into_iter()
+        .rev()
+        .collect::<Vec<_>>();
+    for word in to_words {
+        append_usage_event(UsageEvent {
+            ts: unix_timestamp(),
+            kind: UsageEventKind::AcceptedFix,
+            word: Some(word),
+            context: context.clone(),
+            from: Some(from.trim().to_string()),
+            to: Some(to.trim().to_string()),
+        });
+    }
+}
+
+pub(crate) fn record_accepted_ime_if_enabled(context_tail: &str, accepted_text: &str) {
+    if !crate::config::LayConfig::load().learning_log {
+        return;
+    }
+    let accepted_words = normalized_words(accepted_text);
+    if accepted_words.is_empty() {
+        return;
+    }
+    let context = normalized_words(context_tail)
+        .into_iter()
+        .rev()
+        .take(CONTEXT_WORDS)
+        .collect::<Vec<_>>()
+        .into_iter()
+        .rev()
+        .collect::<Vec<_>>();
+    for word in accepted_words {
+        append_usage_event(UsageEvent {
+            ts: unix_timestamp(),
+            kind: UsageEventKind::AcceptedIme,
+            word: Some(word),
+            context: context.clone(),
+            from: None,
+            to: Some(accepted_text.trim().to_string()),
+        });
+    }
+}
+
+pub(crate) fn word_usage_prior(word: &str) -> f32 {
+    let lower = normalize_word(word);
+    if lower.is_empty() {
+        return 0.0;
+    }
+    let counts = usage_counts();
+    let Some(count) = counts.words.get(&lower).copied() else {
+        return 0.0;
+    };
+    word_prior_from_count(count)
+}
+
+pub(crate) fn context_word_usage_prior(context: &[String], word: &str) -> f32 {
+    let lower = normalize_word(word);
+    if lower.is_empty() || context.is_empty() {
+        return 0.0;
+    }
+    let context_key = context_key(context);
+    if context_key.is_empty() {
+        return 0.0;
+    }
+    let counts = usage_counts();
+    let key = context_word_key(&context_key, &lower);
+    let Some(count) = counts.context_words.get(&key).copied() else {
+        return 0.0;
+    };
+    ((count as f32 + 1.0).ln() * 0.024).clamp(0.0, 0.12)
+}
+
+fn word_prior_from_count(count: u32) -> f32 {
+    ((count as f32 + 1.0).ln() * 0.018).clamp(0.0, 0.09)
+}
+
+fn usage_counts() -> UsageCounts {
+    static CACHE: OnceLock<Mutex<UsageCache>> = OnceLock::new();
+    let cache = CACHE.get_or_init(|| Mutex::new(UsageCache::default()));
+    let Ok(mut cache) = cache.lock() else {
+        return UsageCounts::default();
+    };
+    if cache
+        .loaded_at
+        .is_some_and(|loaded_at| loaded_at.elapsed() < USAGE_REFRESH_INTERVAL)
+    {
+        return cache.counts.clone();
+    }
+    cache.counts = load_usage_counts();
+    cache.loaded_at = Some(Instant::now());
+    cache.counts.clone()
+}
+
+fn load_usage_counts() -> UsageCounts {
+    let mut counts = UsageCounts::default();
+    if let Some(text) =
+        legacy_usage_prior_path().and_then(|path| std::fs::read_to_string(path).ok())
+    {
+        add_legacy_usage_counts(&mut counts, &text);
+    }
+    if let Some(text) = usage_events_path().and_then(|path| std::fs::read_to_string(path).ok()) {
+        add_usage_event_counts(&mut counts, &text);
+    }
+    counts
+}
+
+fn add_legacy_usage_counts(counts: &mut UsageCounts, text: &str) {
+    for (word, count) in legacy_usage_counts_from_json(text) {
+        *counts.words.entry(word).or_default() = counts
+            .words
+            .get(&word)
+            .copied()
+            .unwrap_or_default()
+            .saturating_add(count);
+    }
+}
+
+fn add_usage_event_counts(counts: &mut UsageCounts, text: &str) {
+    for event in usage_events_from_jsonl(text) {
+        let Some(word) = event.word.as_deref().map(normalize_word) else {
+            continue;
+        };
+        if word.is_empty() {
+            continue;
+        }
+        let weight = match event.kind {
+            UsageEventKind::Typed => 1,
+            UsageEventKind::AcceptedFix => 3,
+            UsageEventKind::AcceptedIme => 2,
+        };
+        *counts.words.entry(word.clone()).or_default() = counts
+            .words
+            .get(&word)
+            .copied()
+            .unwrap_or_default()
+            .saturating_add(weight);
+
+        let context_key = context_key(&event.context);
+        if !context_key.is_empty() {
+            let key = context_word_key(&context_key, &word);
+            *counts.context_words.entry(key).or_default() = counts
+                .context_words
+                .get(&context_word_key(&context_key, &word))
+                .copied()
+                .unwrap_or_default()
+                .saturating_add(weight);
+        }
+    }
+}
+
+fn usage_events_from_jsonl(text: &str) -> impl Iterator<Item = UsageEvent> + '_ {
+    text.lines()
+        .filter(|line| !line.trim().is_empty())
+        .filter_map(|line| serde_json::from_str::<UsageEvent>(line).ok())
+}
+
+fn legacy_usage_counts_from_json(text: &str) -> HashMap<String, u32> {
+    let Ok(records) = serde_json::from_str::<HashMap<String, LearningCandidate>>(text) else {
+        return HashMap::new();
+    };
+    let mut counts = HashMap::<String, u32>::new();
+    for record in records.into_values() {
+        let token = normalized_words(&record.to)
+            .into_iter()
+            .next_back()
+            .unwrap_or_default();
+        if token.is_empty() {
+            continue;
+        }
+        let weight = record
+            .count
+            .saturating_add(if record.promoted { 3 } else { 0 });
+        *counts.entry(token.clone()).or_default() = counts
+            .get(&token)
+            .copied()
+            .unwrap_or_default()
+            .saturating_add(weight);
+    }
+    counts
+}
+
+fn append_usage_event(event: UsageEvent) {
+    let Some(path) = usage_events_path() else {
+        return;
+    };
+    if adjacent_usage_event_is_duplicate(&path, &event) {
+        return;
+    }
+    let Ok(mut line) = serde_json::to_string(&event) else {
+        return;
+    };
+    line.push('\n');
+    if crate::private_file::append_private_text(&path, &line).is_ok() {
+        compact_usage_events_if_needed(&path);
+    }
+}
+
+fn adjacent_usage_event_is_duplicate(path: &Path, event: &UsageEvent) -> bool {
+    let Ok(text) = std::fs::read_to_string(path) else {
+        return false;
+    };
+    let Some(line) = text.lines().rev().find(|line| !line.trim().is_empty()) else {
+        return false;
+    };
+    let Ok(previous) = serde_json::from_str::<UsageEvent>(line) else {
+        return false;
+    };
+    usage_event_payload_eq(&previous, event)
+}
+
+fn usage_event_payload_eq(left: &UsageEvent, right: &UsageEvent) -> bool {
+    left.kind == right.kind
+        && left.word == right.word
+        && left.context == right.context
+        && left.from == right.from
+        && left.to == right.to
+}
+
+fn compact_usage_events_if_needed(path: &Path) {
+    let Ok(meta) = std::fs::metadata(path) else {
+        return;
+    };
+    if meta.len() <= USAGE_EVENTS_MAX_BYTES {
+        return;
+    }
+    let Ok(text) = std::fs::read_to_string(path) else {
+        return;
+    };
+    let compacted = keep_jsonl_tail_bytes(&text, USAGE_EVENTS_MAX_BYTES as usize);
+    let _ = crate::private_file::write_private_text(path, &compacted);
+}
+
+fn keep_jsonl_tail_bytes(content: &str, max_bytes: usize) -> String {
+    if content.len() <= max_bytes {
+        return content.to_string();
+    }
+    let start = content.len().saturating_sub(max_bytes);
+    let start = content
+        .char_indices()
+        .find_map(|(idx, _)| (idx >= start).then_some(idx))
+        .unwrap_or(start);
+    let start = content[..start]
+        .rfind('\n')
+        .map(|idx| idx + 1)
+        .unwrap_or(start);
+    content[start..].to_string()
+}
+
+fn context_and_last_word(text: &str) -> Option<(Vec<String>, String)> {
+    let words = normalized_words(text);
+    let (word, context) = words.split_last()?;
+    let context = context
+        .iter()
+        .rev()
+        .take(CONTEXT_WORDS)
+        .cloned()
+        .collect::<Vec<_>>()
+        .into_iter()
+        .rev()
+        .collect::<Vec<_>>();
+    Some((context, word.clone()))
+}
+
+fn normalized_words(text: &str) -> Vec<String> {
+    text.split_whitespace()
+        .filter_map(|token| {
+            let word = normalize_word(token);
+            (!word.is_empty()).then_some(word)
+        })
+        .collect()
+}
+
+fn normalize_word(word: &str) -> String {
+    let trimmed = word
+        .trim()
+        .trim_matches(|ch: char| !ch.is_alphabetic() && ch != '-');
+    if trimmed.chars().filter(|ch| ch.is_alphabetic()).count() < 2 {
+        return String::new();
+    }
+    trimmed.to_lowercase()
+}
+
+fn context_key(context: &[String]) -> String {
+    context
+        .iter()
+        .rev()
+        .take(CONTEXT_WORDS)
+        .cloned()
+        .collect::<Vec<_>>()
+        .into_iter()
+        .rev()
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+fn context_word_key(context: &str, word: &str) -> String {
+    format!("{context}\u{1f}{word}")
+}
+
+fn usage_events_path() -> Option<PathBuf> {
+    if let Some(path) = std::env::var_os("LAY_NANDA_WORD_USAGE_EVENTS").map(PathBuf::from) {
+        return Some(path);
+    }
+    std::env::var_os("HOME")
+        .map(PathBuf::from)
+        .map(|home| home.join(USAGE_EVENTS_PATH))
+}
+
+fn legacy_usage_prior_path() -> Option<PathBuf> {
+    if let Some(path) = std::env::var_os("LAY_NANDA_USAGE_PRIOR").map(PathBuf::from) {
+        return Some(path);
+    }
+    std::env::var_os("HOME")
+        .map(PathBuf::from)
+        .map(|home| home.join(LEGACY_USAGE_PRIOR_PATH))
+}
+
+fn unix_timestamp() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn legacy_usage_prior_counts_target_words() {
+        let counts = legacy_usage_counts_from_json(
+            r#"{
+                "а\u001fпроверка": {"to":"проверка","count":2,"promoted":false},
+                "б\u001fпроверка": {"to":"проверка","count":1,"promoted":true},
+                "в\u001f": {"to":"","count":99,"promoted":true}
+            }"#,
+        );
+
+        assert_eq!(counts.get("проверка"), Some(&6));
+        assert!(!counts.contains_key(""));
+    }
+
+    #[test]
+    fn usage_events_count_typed_fix_and_ime_words() {
+        let text = r#"{"ts":1,"kind":"typed","word":"дождь","context":["на","улице","идёт"]}
+{"ts":2,"kind":"accepted_fix","word":"дождь","from":"дожть","to":"дождь"}
+{"ts":3,"kind":"accepted_ime","word":"дождь","context":["на","улице","идёт"],"to":"дождь"}
+"#;
+        let mut counts = UsageCounts::default();
+        add_usage_event_counts(&mut counts, text);
+
+        assert_eq!(counts.words.get("дождь"), Some(&6));
+        assert_eq!(
+            counts
+                .context_words
+                .get("на улице идёт\u{1f}дождь")
+                .copied(),
+            Some(3)
+        );
+    }
+
+    #[test]
+    fn adjacent_duplicate_usage_events_ignore_timestamp() {
+        let first = UsageEvent {
+            ts: 1,
+            kind: UsageEventKind::Typed,
+            word: Some("лог".to_string()),
+            context: vec!["смотри".to_string()],
+            from: None,
+            to: None,
+        };
+        let second = UsageEvent {
+            ts: 2,
+            ..first.clone()
+        };
+
+        assert!(usage_event_payload_eq(&first, &second));
+    }
+
+    #[test]
+    fn context_and_last_word_uses_recent_context() {
+        let (context, word) = context_and_last_word("на улице опять идёт дождь ").unwrap();
+
+        assert_eq!(word, "дождь");
+        assert_eq!(context, ["на", "улице", "опять", "идёт"]);
+    }
+
+    #[test]
+    fn tail_compaction_keeps_recent_complete_lines() {
+        let text = "one\ntwo\nthree\nfour\n";
+        let compacted = keep_jsonl_tail_bytes(text, 11);
+
+        assert_eq!(compacted, "three\nfour\n");
+    }
+}

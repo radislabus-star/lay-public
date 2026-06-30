@@ -22,6 +22,8 @@ impl LayIbusEngine {
         }
         let suffix_chars = text.chars().count();
         trace::record_completion_accept("stuck_tail", suffix_chars, with_space);
+        let accepted_word = format!("{}{}", self.last_tail_token_text(), text.trim());
+        let context_tail = self.tail_buffer.clone();
         if with_space {
             text.push(' ');
         }
@@ -29,6 +31,7 @@ impl LayIbusEngine {
         Self::commit_text(emitter, make_ibus_text(text.clone()))
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+        lay::nanda_wave::record_accepted_ime_usage(&context_tail, &accepted_word);
         self.sync_tail_after_stuck_completion(&text);
         Ok(true)
     }

@@ -293,15 +293,8 @@ fn short_token_candidate_lacks_phrase_context(
         return false;
     }
     let previous_words = original
-        .trim_end()
         .split_whitespace()
-        .take(
-            original
-                .trim_end()
-                .split_whitespace()
-                .count()
-                .saturating_sub(1),
-        )
+        .take(original.split_whitespace().count().saturating_sub(1))
         .collect::<Vec<_>>();
     let has_cyrillic_context = previous_words
         .iter()
@@ -313,7 +306,7 @@ fn short_token_candidate_lacks_phrase_context(
 }
 
 fn last_token(text: &str) -> Option<&str> {
-    text.trim_end().split_whitespace().next_back()
+    text.split_whitespace().next_back()
 }
 
 fn is_cyrillic_char(ch: char) -> bool {

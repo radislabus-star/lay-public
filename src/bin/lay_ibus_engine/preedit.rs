@@ -9,10 +9,10 @@ use lay::russian_lexicon::is_known_russian_word_or_form;
 
 const PREEDIT_TAIL_LIMIT: usize = 160;
 const PREEDIT_TOKEN_LIMIT: usize = 32;
-const PREEDIT_ASCII_CANDIDATE_LIMIT: usize = 8;
-const PREEDIT_RU_WAVE_CANDIDATE_LIMIT: usize = 8;
-const PREEDIT_RU_WAVE_SCAN_LIMIT: usize = 64;
-const PREEDIT_RU_PREFIX_MIN_CHARS: usize = 3;
+const PREEDIT_ASCII_CANDIDATE_LIMIT: usize = 12;
+const PREEDIT_RU_WAVE_CANDIDATE_LIMIT: usize = 12;
+const PREEDIT_RU_WAVE_SCAN_LIMIT: usize = 128;
+const PREEDIT_RU_PREFIX_MIN_CHARS: usize = 2;
 #[cfg(test)]
 const PREEDIT_PROBE_SYMBOL: &str = "*";
 const PREEDIT_MODE_CLEAR: u32 = 0;
@@ -383,7 +383,7 @@ impl LayIbusEngine {
             || (!has_left_context
                 && self.config.active_correction_safety()
                     != lay::config::CorrectionSafety::Experimental)
-            || (!has_left_context && is_noisy_first_russian_prefix(&partial))
+            || is_noisy_first_russian_prefix(&partial)
             || is_known_russian_word_or_form(&partial)
         {
             return Vec::new();
@@ -446,7 +446,7 @@ impl LayIbusEngine {
             right
                 .1
                 .total_cmp(&left.1)
-                .then_with(|| left.0.chars().count().cmp(&right.0.chars().count()))
+                .then_with(|| compare_suffix_len_for_prefix(partial_len, &left.0, &right.0))
                 .then_with(|| left.0.cmp(&right.0))
         });
         ranked
@@ -494,7 +494,9 @@ impl LayIbusEngine {
         self.preedit_fast.push(ch);
         self.last_tail_input_at = Some(Instant::now());
         if ch.is_whitespace() {
+            self.preedit_dirty = false;
             self.word_input_mode = None;
+            lay::nanda_wave::record_typed_tail_usage(&self.tail_buffer);
         }
         trim_tail_buffer(&mut self.tail_buffer);
         self.publish_tail_handoff();
@@ -556,26 +558,48 @@ fn is_noisy_first_russian_prefix(prefix: &str) -> bool {
     matches!(prefix, "нев" | "инт")
 }
 
+fn compare_suffix_len_for_prefix(
+    partial_len: usize,
+    left: &str,
+    right: &str,
+) -> std::cmp::Ordering {
+    let left_len = left.chars().count();
+    let right_len = right.chars().count();
+    if partial_len <= 3 {
+        return right_len.cmp(&left_len);
+    }
+    left_len.cmp(&right_len)
+}
+
 fn l3_or_lexical_precognition_score(
     prefix_tokens: &[String],
     word: &str,
     partial_len: usize,
     allow_short_lexical: bool,
 ) -> Option<f32> {
-    let min_lexical_prefix = if allow_short_lexical { 3 } else { 4 };
+    let min_lexical_prefix = if allow_short_lexical { 2 } else { 4 };
     let word_len = word.chars().count();
     let lexical_backoff_allowed = partial_len >= min_lexical_prefix
-        && (partial_len >= 4 || word_len.saturating_sub(partial_len) <= 3);
+        && (partial_len >= 4 || word_len.saturating_sub(partial_len) <= 5);
+    let usage_prior = lay::nanda_wave::word_usage_prior(word);
+    let context_usage_prior = lay::nanda_wave::context_word_usage_prior(prefix_tokens, word);
     if lay::nanda_wave::llmwave::default_memory_is_warm() {
         return lay::nanda_wave::llmwave::with_default_memory(|memory| {
             if let Some(report) = memory.score_next_token_report(prefix_tokens, word) {
-                return (report.score >= 0.18)
-                    .then_some((0.62 + report.score * 0.34).clamp(0.0, 1.0));
+                return (report.score >= 0.18).then_some(
+                    (0.62 + report.score * 0.34 + usage_prior + context_usage_prior)
+                        .clamp(0.0, 1.0),
+                );
             }
-            lexical_backoff_allowed.then_some((0.28 + partial_len as f32 * 0.035).clamp(0.0, 0.55))
+            lexical_backoff_allowed.then_some(
+                (0.28 + partial_len as f32 * 0.035 + usage_prior + context_usage_prior)
+                    .clamp(0.0, 0.70),
+            )
         });
     }
-    lexical_backoff_allowed.then_some((0.28 + partial_len as f32 * 0.035).clamp(0.0, 0.55))
+    lexical_backoff_allowed.then_some(
+        (0.28 + partial_len as f32 * 0.035 + usage_prior + context_usage_prior).clamp(0.0, 0.70),
+    )
 }
 
 fn phrase_candidate_suffix(tail: &str, candidate: &str, max_suffix_chars: usize) -> Option<String> {
@@ -650,6 +674,32 @@ mod tests {
     use super::*;
     use lay::config::LayConfig;
     use std::sync::{Arc, Mutex};
+
+    #[test]
+    fn whitespace_cancels_pending_inactive_preedit_flush() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+
+        engine.push_tail_char('п');
+        engine.preedit_dirty = true;
+        engine.push_tail_char(' ');
+
+        assert!(
+            !engine.preedit_dirty,
+            "word boundary must not resurrect previous word suffix on cursor flush"
+        );
+        assert_eq!(engine.preedit_fast.token(), "");
+    }
 
     #[test]
     fn bare_russian_prefixes_do_not_generate_precognition() {
@@ -1172,6 +1222,63 @@ mod tests {
         assert!(
             !engine.preedit_candidates.is_empty(),
             "first active Russian word should produce suffixes after three chars"
+        );
+    }
+
+    #[test]
+    fn experimental_first_active_russian_word_prefix_gets_bayes_candidates_after_two_chars() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "пр".chars() {
+            engine.insert_composition_char(ch);
+        }
+        engine.composition_cursor = engine.buffer.chars().count();
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            !engine.preedit_candidates.is_empty(),
+            "experimental Bayes-backed IME should not stay silent after two Russian chars"
+        );
+    }
+
+    #[test]
+    fn short_russian_prefix_prefers_informative_suffix_over_tiny_tail() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "мало под".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        let first = engine
+            .preedit_candidates
+            .first()
+            .map(String::as_str)
+            .unwrap_or("");
+        assert!(
+            first.chars().count() > 2,
+            "short Russian prefix should not rank tiny suffix first: {:?}",
+            engine.preedit_candidates
         );
     }
 

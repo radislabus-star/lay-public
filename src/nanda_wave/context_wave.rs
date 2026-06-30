@@ -145,7 +145,7 @@ fn nearest_ru_word_candidates(tail: &str) -> Vec<WordCandidate> {
     }
     let normalized = normalize_ru(token);
     let len = normalized.chars().count();
-    if !(4..=18).contains(&len) || is_common_ru_word(&normalized) {
+    if !(4..=18).contains(&len) || known_ru_token_blocks_semantic_rewrite(&normalized) {
         return Vec::new();
     }
     if normalized.chars().all(|ch| ch.is_ascii_alphabetic()) {
@@ -182,10 +182,8 @@ fn nearest_ru_word_candidates(tail: &str) -> Vec<WordCandidate> {
             }
             let distance = damerau_levenshtein(&normalized, &entry.word);
             let resonance = word_wave_resonance(&normalized, entry, &query_modes);
-            let allowed = distance == 1
-                || (len >= 7 && distance == 2 && resonance >= 0.42)
-                || (len >= 10 && distance == 3 && resonance >= 0.68)
-                || negative_prefix_repair(&normalized, &entry.word, distance);
+            let allowed =
+                semantic_wave_candidate_allowed(&normalized, &entry.word, distance, resonance);
             (allowed && ru_candidate_passes_semantic_guards(&normalized, &entry.word, distance))
                 .then_some((entry.word.clone(), distance, resonance))
         })
@@ -205,6 +203,7 @@ fn nearest_ru_word_candidates(tail: &str) -> Vec<WordCandidate> {
             left_distance
                 .cmp(right_distance)
                 .then_with(|| is_common_ru_word(right).cmp(&is_common_ru_word(left)))
+                .then_with(|| usage_prior(right).total_cmp(&usage_prior(left)))
                 .then_with(|| right_resonance.total_cmp(left_resonance))
                 .then_with(|| {
                     left.chars()
@@ -334,11 +333,92 @@ fn ru_candidate_passes_semantic_guards(original: &str, candidate: &str, distance
         && !looks_like_case_vowel_to_consonant_drift(original, candidate)
         && !looks_like_known_form_to_other_known_word_drift(original, candidate, distance)
         && !looks_like_known_verb_to_noun_drift(original, candidate)
+        && !looks_like_nonverb_to_verb_drift(original, candidate)
+        && !looks_like_short_dense_cluster_drift(original, distance)
+        && !looks_like_short_multi_edit_guess(original, candidate, distance)
+        && !looks_like_reflexive_plus_case_vowel(candidate)
+        && !looks_like_short_y_drop_drift(original, candidate, distance)
+}
+
+fn semantic_wave_candidate_allowed(
+    original: &str,
+    candidate: &str,
+    distance: usize,
+    resonance: f32,
+) -> bool {
+    if negative_prefix_repair(original, candidate, distance) {
+        return true;
+    }
+    if first_char(original) != first_char(candidate) {
+        return false;
+    }
+    if distance >= 2 && has_dense_consonant_cluster(original) {
+        return false;
+    }
+    if !is_common_ru_word(candidate) {
+        return false;
+    }
+    let len = original.chars().count();
+    distance == 1
+        || (len >= 7 && distance == 2 && resonance >= 0.42)
+        || (len >= 10 && distance == 3 && resonance >= 0.68)
+}
+
+fn first_char(word: &str) -> Option<char> {
+    word.chars().next()
+}
+
+fn has_dense_consonant_cluster(word: &str) -> bool {
+    let mut run = 0;
+    for ch in word.chars() {
+        if is_russian_consonant(ch) {
+            run += 1;
+            if run >= 3 {
+                return true;
+            }
+        } else {
+            run = 0;
+        }
+    }
+    false
+}
+
+fn known_ru_token_blocks_semantic_rewrite(word: &str) -> bool {
+    known_ru_token(word) && !(word.starts_with("не") && word.chars().count() >= 7)
 }
 
 fn looks_like_verb_to_nonverb_drift(original: &str, candidate: &str) -> bool {
     (has_russian_present_tail(original) && !has_russian_present_tail(candidate))
         || (has_russian_verb_tail(original) && !has_russian_verb_tail(candidate))
+}
+
+fn looks_like_nonverb_to_verb_drift(original: &str, candidate: &str) -> bool {
+    !has_russian_verb_tail(original) && has_russian_verb_tail(candidate)
+}
+
+fn looks_like_short_dense_cluster_drift(original: &str, distance: usize) -> bool {
+    distance >= 2 && original.chars().count() <= 7 && has_dense_consonant_cluster(original)
+}
+
+fn looks_like_short_multi_edit_guess(original: &str, candidate: &str, distance: usize) -> bool {
+    distance >= 3
+        && original.chars().count() <= 8
+        && !negative_prefix_repair(original, candidate, distance)
+}
+
+fn looks_like_reflexive_plus_case_vowel(candidate: &str) -> bool {
+    [
+        "сяа", "сяу", "сяы", "сяи", "сяо", "сьа", "сьу", "сьы", "сьи", "сьо",
+    ]
+    .iter()
+    .any(|tail| candidate.ends_with(tail))
+}
+
+fn looks_like_short_y_drop_drift(original: &str, candidate: &str, distance: usize) -> bool {
+    distance == 1
+        && original.chars().count() <= 6
+        && original.contains('й')
+        && !candidate.contains('й')
 }
 
 fn looks_like_short_word_drift(original: &str, candidate: &str) -> bool {
@@ -358,6 +438,7 @@ fn looks_like_known_form_to_other_known_word_drift(
 
 fn known_ru_token(word: &str) -> bool {
     is_common_ru_word(word)
+        || is_known_russian_phrase_part(word)
         || is_known_russian_word_or_form(word)
         || russian_tiny_dictionary().contains(word)
 }
@@ -372,7 +453,8 @@ fn negative_prefix_repair(original: &str, candidate: &str, distance: usize) -> b
 fn has_russian_verb_tail(word: &str) -> bool {
     const VERB_TAILS: &[&str] = &[
         "ет", "ит", "ют", "ут", "ат", "ят", "ем", "им", "ешь", "ишь", "ете", "ите", "ал", "ала",
-        "ило", "или", "ил", "ено", "ена", "ены", "ает", "яет", "ует",
+        "ило", "или", "ил", "ено", "ена", "ены", "ает", "яет", "ует", "ёт", "ся", "ыть", "ять",
+        "ыта", "ыто", "ыты", "ята", "ято", "яты",
     ];
     VERB_TAILS.iter().any(|tail| word.ends_with(tail))
 }
@@ -681,18 +763,29 @@ fn ru_word_to_candidate(
     let len = normalize_ru(token).chars().count().max(1);
     let closeness = 1.0 - (distance as f32 / len as f32);
     let common_boost = if is_common_ru_word(word) { 0.055 } else { 0.0 };
+    let usage_boost = usage_prior(word);
     WordCandidate {
         text: format!("{prefix}{word}"),
         source: SEMANTIC_WORD_SOURCE,
-        energy: (0.50 + closeness * 0.24 + resonance * 0.18 + common_boost).clamp(0.0, 0.95),
-        risk: (0.32 - closeness * 0.12 - resonance * 0.06 - common_boost * 0.35).clamp(0.09, 0.32),
+        energy: (0.50 + closeness * 0.24 + resonance * 0.18 + common_boost + usage_boost)
+            .clamp(0.0, 0.95),
+        risk: (0.32
+            - closeness * 0.12
+            - resonance * 0.06
+            - common_boost * 0.35
+            - usage_boost * 0.45)
+            .clamp(0.09, 0.32),
         support: vec![
             "ru-word-wave-memory".to_string(),
             format!(
-                "token={token:?} candidate={word:?} distance={distance} resonance={resonance:.3}"
+                "token={token:?} candidate={word:?} distance={distance} resonance={resonance:.3} usage_prior={usage_boost:.3}"
             ),
         ],
     }
+}
+
+fn usage_prior(word: &str) -> f32 {
+    super::usage_prior::word_usage_prior(word)
 }
 
 fn en_word_to_candidate(
@@ -1117,6 +1210,24 @@ mod tests {
                     .iter()
                     .all(|candidate| candidate.text != forbidden),
                 "known Russian form should not drift into a nearby known word: {original:?} -> {candidates:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn semantic_word_cell_keeps_valid_live_context_tokens() {
+        for original in [
+            "про него ",
+            "у него ",
+            "Дай промпт ",
+            "если датасет ",
+            "а нафига ",
+            "теорию бейса ",
+        ] {
+            let candidates = semantic_word_candidates(original);
+            assert!(
+                candidates.is_empty(),
+                "valid or domain-like live token should not get semantic neighbor candidates: {original:?} -> {candidates:?}"
             );
         }
     }

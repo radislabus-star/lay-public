@@ -18,6 +18,14 @@ fn glued_phrase_defers_to_whole_word_typo_candidate() {
 }
 
 #[test]
+fn splits_short_function_glued_to_be_form() {
+    assert_eq!(
+        correct_glued_russian_phrase("тоесть"),
+        Some("то есть".to_string())
+    );
+}
+
+#[test]
 fn splits_contextual_glued_tail_in_short_phrase() {
     for row in fixture_rows("phrase_reader_contextual_glued.tsv") {
         assert_eq!(row.len(), 2, "contextual glued fixture must be TSV");
