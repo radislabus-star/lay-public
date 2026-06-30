@@ -277,6 +277,9 @@ impl LayIbusEngine {
         let timing_enabled = trace::enabled();
         let total_started = timing_enabled.then(Instant::now);
         let tail = self.tail_buffer.as_str();
+        if is_command_like_long_tail(tail.trim_end()) {
+            return Vec::new();
+        }
         let partial_len = split_last_token(tail.trim_end())
             .map(|(_, token)| token.chars().count())
             .unwrap_or(0);
@@ -626,6 +629,30 @@ fn is_noisy_first_russian_prefix(prefix: &str) -> bool {
     matches!(prefix, "нев" | "инт")
 }
 
+fn is_command_like_long_tail(tail: &str) -> bool {
+    let mut word_count = 0usize;
+    let mut uppercase = 0usize;
+    let mut lowercase = 0usize;
+
+    for token in tail.split_whitespace() {
+        let mut has_alpha = false;
+        for ch in token.chars().filter(|ch| ch.is_alphabetic()) {
+            has_alpha = true;
+            if ch.is_uppercase() {
+                uppercase += 1;
+            }
+            if ch.is_lowercase() {
+                lowercase += 1;
+            }
+        }
+        if has_alpha {
+            word_count += 1;
+        }
+    }
+
+    word_count >= 4 && uppercase >= 12 && uppercase >= lowercase.saturating_mul(2).max(1)
+}
+
 fn compare_suffix_len_for_prefix(
     partial_len: usize,
     left: &str,
@@ -885,6 +912,33 @@ mod tests {
                 .iter()
                 .all(|suffix| !format!("за{suffix}").contains("запят")),
             "ambiguous prefix should not suggest project/chat noise: {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
+    fn long_command_tail_does_not_emit_sentence_precognition() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "ЧИТАЙ ЛОГИ ПРОСТО ЦЕЛЫЕ ПРЕДЛОЖЕНИЯ АВТОКОРРЕКЦИ".chars()
+        {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine.preedit_candidates.is_empty(),
+            "command-like uppercase sentence tail must not get noisy IME suffixes: {:?}",
             engine.preedit_candidates
         );
     }
