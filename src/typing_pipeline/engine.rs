@@ -1,6 +1,7 @@
 use crate::config::{default_typing_assist_pipeline, TypingAssistRuleConfig};
 use crate::typing_candidate::rank_typing_candidates;
-use crate::word_reader::split_edge_whitespace;
+use crate::typing_rule_graph::ids;
+use crate::word_reader::{split_edge_whitespace, split_ws_segments};
 
 use super::candidates::evaluate_rule_candidates;
 use super::types::TypingAssistExplanation;
@@ -38,6 +39,9 @@ pub fn explain_typing_assist_with_pipeline(
     let explanation = collected.explanation;
     let candidates = collected.candidates;
     if let Some(decision) = collected.immediate_decision {
+        if unsafe_word_count_shrink(core, &decision.best.replacement, &decision.best.rule_id) {
+            return explanation;
+        }
         return explanation.with_decision(leading, trailing, decision);
     }
 
@@ -45,5 +49,26 @@ pub fn explain_typing_assist_with_pipeline(
     let Some(decision) = decision else {
         return explanation;
     };
+    if unsafe_word_count_shrink(core, &decision.best.replacement, &decision.best.rule_id) {
+        return explanation;
+    }
     explanation.with_decision(leading, trailing, decision)
+}
+
+fn unsafe_word_count_shrink(original: &str, replacement: &str, rule_id: &str) -> bool {
+    if matches!(
+        rule_id,
+        ids::SPLIT_WORD_PAIR | ids::GLUED_PHRASE | ids::MOVED_PREFIX_PAIR
+    ) {
+        return false;
+    }
+    let original_words = split_ws_segments(original)
+        .into_iter()
+        .filter(|(_, is_ws)| !*is_ws)
+        .count();
+    let replacement_words = split_ws_segments(replacement)
+        .into_iter()
+        .filter(|(_, is_ws)| !*is_ws)
+        .count();
+    original_words >= 2 && replacement_words < original_words
 }

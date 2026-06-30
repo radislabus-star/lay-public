@@ -376,20 +376,27 @@ impl LayIbusEngine {
         // belongs to Space autocorrect; running it here burns latency and cannot
         // produce a right-side suffix for the current token.
         let mut suffixes = Vec::new();
-        if let Some(wave) = lay::nanda_wave::context_wave::context_wave_for_tail(tail) {
-            suffixes.extend(
-                lay::nanda_wave::context_wave::candidate_interferences(&wave)
-                    .into_iter()
-                    .take(5)
-                    .filter(|candidate| candidate.projection >= 0.22)
-                    .filter_map(|candidate| {
-                        let text = format!("{}{}", wave.prefix, candidate.candidate);
-                        let suffix = text.strip_prefix(tail)?;
-                        (!suffix.is_empty()
-                            && suffix.chars().count() <= self.precognition_max_suffix_chars())
-                        .then(|| suffix.to_string())
-                    }),
-            );
+        let context_wave_allowed = split_last_token(tail)
+            .map(|(prefix, token)| {
+                token.chars().count() >= 3 || prefix.split_whitespace().count() >= 3
+            })
+            .unwrap_or_else(|| tail.ends_with(char::is_whitespace));
+        if context_wave_allowed {
+            if let Some(wave) = lay::nanda_wave::context_wave::context_wave_for_tail(tail) {
+                suffixes.extend(
+                    lay::nanda_wave::context_wave::candidate_interferences(&wave)
+                        .into_iter()
+                        .take(5)
+                        .filter(|candidate| candidate.projection >= 0.22)
+                        .filter_map(|candidate| {
+                            let text = format!("{}{}", wave.prefix, candidate.candidate);
+                            let suffix = text.strip_prefix(tail)?;
+                            (!suffix.is_empty()
+                                && suffix.chars().count() <= self.precognition_max_suffix_chars())
+                            .then(|| suffix.to_string())
+                        }),
+                );
+            }
         }
         if should_query_llmwave_phrase_suffix(raw_tail)
             && lay::nanda_wave::llmwave::default_memory_is_warm()
@@ -432,11 +439,15 @@ impl LayIbusEngine {
 
         let max_suffix_chars = self.precognition_max_suffix_chars();
         let mut suffixes = Vec::new();
+        let short_prefix_requires_seed_word = partial_len <= 3;
         for word in lay::lexicon::common_ru_prefix_completion_words(
             &partial,
             max_suffix_chars,
             PREEDIT_RU_WAVE_SCAN_LIMIT,
         ) {
+            if short_prefix_requires_seed_word && !lay::lexicon::is_common_ru_word(&word) {
+                continue;
+            }
             push_unique_suffix(
                 &mut suffixes,
                 word.strip_prefix(&partial).map(str::to_string),
@@ -462,6 +473,12 @@ impl LayIbusEngine {
                     max_bucket_entries,
                 )
             {
+                if short_prefix_requires_seed_word {
+                    let word = format!("{partial}{suffix}");
+                    if !lay::lexicon::is_common_ru_word(&word) {
+                        continue;
+                    }
+                }
                 push_unique_suffix(&mut suffixes, Some(suffix));
                 if suffixes.len() >= PREEDIT_RU_WAVE_CANDIDATE_LIMIT {
                     break;
@@ -941,6 +958,39 @@ mod tests {
             "command-like uppercase sentence tail must not get noisy IME suffixes: {:?}",
             engine.preedit_candidates
         );
+    }
+
+    #[test]
+    fn short_prefixes_do_not_emit_wide_dictionary_noise() {
+        for input in ["про", "прочти л", "прочти ло"] {
+            let mut engine = LayIbusEngine::new(
+                "/test".to_string(),
+                Arc::new(Mutex::new(Default::default())),
+                true,
+                true,
+                LayConfig {
+                    text_backend: "ime".to_string(),
+                    nanda_precognition: true,
+                    correction_safety: "experimental".to_string(),
+                    ..LayConfig::default()
+                },
+            );
+            for ch in input.chars() {
+                engine.push_tail_char(ch);
+            }
+            engine.refresh_precognition_candidates();
+
+            assert!(
+                engine.preedit_candidates.iter().all(|suffix| {
+                    !matches!(
+                        suffix.as_str(),
+                        "авило" | "ахать" | "алина" | "ббизм" | "арифм"
+                    )
+                }),
+                "short prefix {input:?} must not emit wide dictionary noise: {:?}",
+                engine.preedit_candidates
+            );
+        }
     }
 
     #[test]
@@ -1452,7 +1502,7 @@ mod tests {
                 ..LayConfig::default()
             },
         );
-        for ch in "мало под".chars() {
+        for ch in "мало рус".chars() {
             engine.push_tail_char(ch);
         }
         engine.refresh_precognition_candidates();

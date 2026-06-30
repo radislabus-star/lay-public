@@ -4,7 +4,7 @@ use crate::ru_typo::correct_repeated_letter;
 use crate::russian_lexicon::is_known_russian_word_or_form;
 use crate::russian_typo_scoring::ngram_allows_ru_candidate;
 use crate::text_case::apply_word_case;
-use crate::word_reader::is_cyrillic_word;
+use crate::word_reader::{is_cyrillic_letters_only, is_cyrillic_word};
 
 use super::guards::{
     can_merge_split_without_dictionary, is_shouty_cyrillic_word, read_plain_phrase_pair,
@@ -50,6 +50,13 @@ pub fn correct_split_word_pair(text: &str) -> Option<String> {
     }
     if should_keep_standalone_known_pair(&left_lower, &right_lower)
         && (!glued_is_preferable || right_lower.chars().count() <= 4)
+    {
+        return None;
+    }
+    if crate::lexicon::is_ru_short_pronoun(&left_lower)
+        && right_lower.chars().count() >= 4
+        && is_cyrillic_letters_only(&right_lower)
+        && is_known_russian_word_or_form(&right_lower)
     {
         return None;
     }

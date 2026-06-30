@@ -2,7 +2,7 @@ use crate::config::TypingAssistRuleConfig;
 use crate::typing_candidate::{TypingCandidate, TypingCandidateDecision};
 use crate::typing_context::syntax_allows_candidate;
 use crate::typing_rule_graph::{find_typing_rule, ids, priorities, rules, TypingRuleContext};
-use crate::word_reader::split_word_punctuation;
+use crate::word_reader::{split_word_punctuation, split_ws_segments};
 
 use super::rule_order::typing_rules_for_evaluation;
 use super::types::{TypingAssistExplanation, TypingRuleEvaluation};
@@ -74,7 +74,9 @@ pub(super) fn evaluate_rule_candidates(
             continue;
         };
         let candidate = TypingCandidate::new(&rule.id, rule.priority, core, replacement);
-        if !syntax_allows_candidate(core, &candidate.replacement) {
+        if !syntax_allows_candidate(core, &candidate.replacement)
+            || unsafe_word_count_shrink(core, &candidate.replacement, &candidate.rule_id)
+        {
             explanation.record(
                 evaluation
                     .with_candidate(candidate)
@@ -107,4 +109,22 @@ fn fast_en_to_ru_allowed(pipeline: &[TypingAssistRuleConfig]) -> bool {
                 ids::CONTEXTUAL_LAYOUT_EN_TO_RU | ids::EXPERIMENTAL_LAYOUT_EN_TO_RU
             )
     })
+}
+
+fn unsafe_word_count_shrink(original: &str, replacement: &str, rule_id: &str) -> bool {
+    if matches!(
+        rule_id,
+        ids::SPLIT_WORD_PAIR | ids::GLUED_PHRASE | ids::MOVED_PREFIX_PAIR
+    ) {
+        return false;
+    }
+    let original_words = split_ws_segments(original)
+        .into_iter()
+        .filter(|(_, is_ws)| !*is_ws)
+        .count();
+    let replacement_words = split_ws_segments(replacement)
+        .into_iter()
+        .filter(|(_, is_ws)| !*is_ws)
+        .count();
+    original_words >= 2 && replacement_words < original_words
 }
