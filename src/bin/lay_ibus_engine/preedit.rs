@@ -22,6 +22,13 @@ pub(crate) struct PreeditFastState {
     token: String,
 }
 
+#[derive(Debug, Clone)]
+struct RankedPreeditSuffix {
+    suffix: String,
+    score: f32,
+    order: usize,
+}
+
 impl PreeditFastState {
     pub(crate) fn reset(&mut self) {
         self.token.clear();
@@ -269,17 +276,29 @@ impl LayIbusEngine {
         }
         let timing_enabled = trace::enabled();
         let total_started = timing_enabled.then(Instant::now);
+        let tail = self.tail_buffer.as_str();
+        let partial_len = split_last_token(tail.trim_end())
+            .map(|(_, token)| token.chars().count())
+            .unwrap_or(0);
         let mut candidates = Vec::with_capacity(16);
 
         let semantic_started = timing_enabled.then(Instant::now);
         for suffix in self.semantic_phrase_suffixes() {
-            push_unique_suffix(&mut candidates, Some(suffix));
+            push_unique_ranked_suffix(
+                &mut candidates,
+                Some(suffix.clone()),
+                preedit_suffix_bayes_score(tail, &suffix, 0.72),
+            );
         }
         let semantic_us = elapsed_us(semantic_started);
 
         let ru_started = timing_enabled.then(Instant::now);
         for suffix in self.ru_wave_lexical_suffixes() {
-            push_unique_suffix(&mut candidates, Some(suffix));
+            push_unique_ranked_suffix(
+                &mut candidates,
+                Some(suffix.clone()),
+                preedit_suffix_bayes_score(tail, &suffix, 0.48),
+            );
         }
         let ru_us = elapsed_us(ru_started);
 
@@ -288,9 +307,28 @@ impl LayIbusEngine {
             self.precognition_max_suffix_chars(),
             PREEDIT_ASCII_CANDIDATE_LIMIT,
         ) {
-            push_unique_suffix(&mut candidates, Some(suffix));
+            push_unique_ranked_suffix(
+                &mut candidates,
+                Some(suffix.clone()),
+                preedit_suffix_bayes_score(tail, &suffix, 0.80),
+            );
         }
         let ascii_us = elapsed_us(ascii_started);
+
+        candidates.sort_by(|left: &RankedPreeditSuffix, right: &RankedPreeditSuffix| {
+            right
+                .score
+                .total_cmp(&left.score)
+                .then_with(|| left.order.cmp(&right.order))
+                .then_with(|| {
+                    compare_suffix_len_for_prefix(partial_len, &left.suffix, &right.suffix)
+                })
+                .then_with(|| left.suffix.cmp(&right.suffix))
+        });
+        let candidates = candidates
+            .into_iter()
+            .map(|candidate| candidate.suffix)
+            .collect::<Vec<_>>();
 
         if let Some(started) = total_started {
             trace::record_precognition_timing(
@@ -527,6 +565,34 @@ fn push_unique_suffix(candidates: &mut Vec<String>, suffix: Option<String>) {
     candidates.push(suffix);
 }
 
+fn push_unique_ranked_suffix(
+    candidates: &mut Vec<RankedPreeditSuffix>,
+    suffix: Option<String>,
+    score: f32,
+) {
+    let Some(suffix) = suffix else {
+        return;
+    };
+    if suffix.is_empty() || !is_allowed_visible_completion_suffix(&suffix) {
+        return;
+    }
+    if let Some(existing) = candidates
+        .iter_mut()
+        .find(|candidate| candidate.suffix == suffix)
+    {
+        if score > existing.score {
+            existing.score = score;
+        }
+        return;
+    }
+    let order = candidates.len();
+    candidates.push(RankedPreeditSuffix {
+        suffix,
+        score,
+        order,
+    });
+}
+
 fn push_unique_ascii_known_suffix(candidates: &mut Vec<String>, token: &str, suffix: String) {
     if suffix.is_empty() || candidates.iter().any(|candidate| candidate == &suffix) {
         return;
@@ -571,6 +637,36 @@ fn compare_suffix_len_for_prefix(
     left_len.cmp(&right_len)
 }
 
+fn preedit_suffix_bayes_score(tail: &str, suffix: &str, base: f32) -> f32 {
+    let Some((context, word)) = preedit_suffix_context_and_word(tail, suffix) else {
+        return base;
+    };
+    (base
+        + lay::nanda_wave::cached_word_usage_prior(&word)
+        + lay::nanda_wave::cached_context_word_usage_prior(&context, &word))
+    .clamp(0.0, 1.0)
+}
+
+fn preedit_suffix_context_and_word(tail: &str, suffix: &str) -> Option<(Vec<String>, String)> {
+    let tail = tail.trim_end();
+    let suffix_starts_new_word = suffix.chars().next().is_some_and(char::is_whitespace);
+    if suffix_starts_new_word || tail.is_empty() {
+        let word = suffix.split_whitespace().next()?.to_lowercase();
+        let context = lay::nanda_wave::llmwave::tokenize(tail);
+        return Some((context, word));
+    }
+
+    let (prefix, partial) = split_last_token(tail)?;
+    let suffix_word_part = suffix.split_whitespace().next().unwrap_or(suffix);
+    let word = format!(
+        "{}{}",
+        partial.to_lowercase(),
+        suffix_word_part.to_lowercase()
+    );
+    let context = lay::nanda_wave::llmwave::tokenize(prefix);
+    Some((context, word))
+}
+
 fn l3_or_lexical_precognition_score(
     prefix_tokens: &[String],
     word: &str,
@@ -581,8 +677,8 @@ fn l3_or_lexical_precognition_score(
     let word_len = word.chars().count();
     let lexical_backoff_allowed = partial_len >= min_lexical_prefix
         && (partial_len >= 4 || word_len.saturating_sub(partial_len) <= 5);
-    let usage_prior = lay::nanda_wave::word_usage_prior(word);
-    let context_usage_prior = lay::nanda_wave::context_word_usage_prior(prefix_tokens, word);
+    let usage_prior = lay::nanda_wave::cached_word_usage_prior(word);
+    let context_usage_prior = lay::nanda_wave::cached_context_word_usage_prior(prefix_tokens, word);
     if lay::nanda_wave::llmwave::default_memory_is_warm() {
         return lay::nanda_wave::llmwave::with_default_memory(|memory| {
             if let Some(report) = memory.score_next_token_report(prefix_tokens, word) {

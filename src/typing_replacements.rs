@@ -8,6 +8,7 @@ use std::collections::{BTreeMap, HashMap};
 use std::path::Path;
 use std::sync::{Mutex, OnceLock};
 
+use crate::data_lines::data_lines;
 use crate::layout_autoswitch::is_known_english_layout_autoswitch_word;
 use crate::lexicon::{
     is_common_en_technical_word, visual_b_after_ascii_replacement, visual_b_default_replacement,
@@ -17,6 +18,9 @@ use crate::text_case::apply_phrase_case;
 use crate::word_reader::{split_edge_whitespace, split_word_punctuation, split_ws_segments};
 
 pub const REPLACEMENTS_PATH: &str = ".config/lay/replacements.json";
+
+const BUILTIN_REPLACEMENT_RULES_DATA: &str =
+    include_str!("../data/lexicon/builtin_replacements.tsv");
 
 pub(crate) fn warm_up() {
     let _ = replacement_rules().len();
@@ -273,7 +277,7 @@ fn has_cyrillic_text(text: &str) -> bool {
 fn replacement_rules() -> &'static HashMap<String, String> {
     static RULES: OnceLock<HashMap<String, String>> = OnceLock::new();
     RULES.get_or_init(|| {
-        let mut rules = HashMap::new();
+        let mut rules = builtin_replacement_rules();
         #[cfg(test)]
         rules.extend(crate::typing_assist_test_fixtures::replacement_rules());
 
@@ -292,6 +296,14 @@ fn replacement_rules() -> &'static HashMap<String, String> {
 
         rules
     })
+}
+
+fn builtin_replacement_rules() -> HashMap<String, String> {
+    data_lines(BUILTIN_REPLACEMENT_RULES_DATA)
+        .filter_map(|line| line.split_once('\t'))
+        .filter(|(from, to)| safe_promoted_replacement(from, to))
+        .map(|(from, to)| (from.to_string(), to.to_string()))
+        .collect()
 }
 
 pub fn safe_promoted_replacement(from: &str, to: &str) -> bool {

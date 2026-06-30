@@ -161,8 +161,7 @@ fn word_prior_from_count(count: u32) -> f32 {
 }
 
 fn usage_counts() -> UsageCounts {
-    static CACHE: OnceLock<Mutex<UsageCache>> = OnceLock::new();
-    let cache = CACHE.get_or_init(|| Mutex::new(UsageCache::default()));
+    let cache = usage_cache();
     let Ok(mut cache) = cache.lock() else {
         return UsageCounts::default();
     };
@@ -175,6 +174,54 @@ fn usage_counts() -> UsageCounts {
     cache.counts = load_usage_counts();
     cache.loaded_at = Some(Instant::now());
     cache.counts.clone()
+}
+
+pub(crate) fn word_usage_prior_cached(word: &str) -> f32 {
+    let lower = normalize_word(word);
+    if lower.is_empty() {
+        return 0.0;
+    }
+    let counts = cached_usage_counts();
+    counts
+        .words
+        .get(&lower)
+        .copied()
+        .map(word_prior_from_count)
+        .unwrap_or(0.0)
+}
+
+pub(crate) fn context_word_usage_prior_cached(context: &[String], word: &str) -> f32 {
+    let lower = normalize_word(word);
+    if lower.is_empty() || context.is_empty() {
+        return 0.0;
+    }
+    let context_key = context_key(context);
+    if context_key.is_empty() {
+        return 0.0;
+    }
+    let counts = cached_usage_counts();
+    let key = context_word_key(&context_key, &lower);
+    counts
+        .context_words
+        .get(&key)
+        .copied()
+        .map(|count| ((count as f32 + 1.0).ln() * 0.024).clamp(0.0, 0.12))
+        .unwrap_or(0.0)
+}
+
+fn cached_usage_counts() -> UsageCounts {
+    let Ok(cache) = usage_cache().lock() else {
+        return UsageCounts::default();
+    };
+    if cache.loaded_at.is_none() {
+        return UsageCounts::default();
+    }
+    cache.counts.clone()
+}
+
+fn usage_cache() -> &'static Mutex<UsageCache> {
+    static CACHE: OnceLock<Mutex<UsageCache>> = OnceLock::new();
+    CACHE.get_or_init(|| Mutex::new(UsageCache::default()))
 }
 
 fn load_usage_counts() -> UsageCounts {

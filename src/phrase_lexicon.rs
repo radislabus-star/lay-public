@@ -26,6 +26,7 @@ pub(crate) fn is_known_russian_phrase_part(word: &str) -> bool {
     }
     if len <= 3 {
         return is_common_ru_word(word)
+            || crate::lexicon::is_ru_live_protected_word(word)
             || is_common_short_russian_pronoun(word)
             || russian_tiny_dictionary().contains(word)
             || russian_short_dictionary().contains(word);

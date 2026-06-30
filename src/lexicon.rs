@@ -23,6 +23,8 @@ const RU_TECHNICAL_LOANWORD_STEMS_DATA: &str =
     include_str!("../data/lexicon/ru_technical_loanword_stems.txt");
 const RU_TECHNICAL_LOANWORD_SUFFIXES_DATA: &str =
     include_str!("../data/lexicon/ru_technical_loanword_suffixes.txt");
+const RU_LIVE_PROTECTED_WORDS_DATA: &str =
+    include_str!("../data/lexicon/ru_live_protected_words.txt");
 const COMMON_EN_TECHNICAL_DATA: &str = include_str!("../data/lexicon/common_en_technical.txt");
 const COMMON_EN_GUARD_PREFIX_DATA: &str =
     include_str!("../data/lexicon/common_en_guard_prefixes.txt");
@@ -42,6 +44,7 @@ pub fn warm_up() {
     let _ = common_ru_words().len();
     let _ = common_ru_prefix_index().len();
     let _ = ru_technical_loanwords().len();
+    let _ = ru_live_protected_words().len();
     let _ = hunspell_ru_words_ordered().len();
     let _ = common_en_technical_words().len();
     let _ = common_en_technical_prefix_index().len();
@@ -65,6 +68,10 @@ pub fn is_common_ru_word(word: &str) -> bool {
 
 pub fn is_ru_technical_loanword(word: &str) -> bool {
     ru_technical_loanwords().contains(&word.trim().to_lowercase())
+}
+
+pub fn is_ru_live_protected_word(word: &str) -> bool {
+    ru_live_protected_words().contains(&word.trim().to_lowercase())
 }
 
 pub fn common_ru_prefix_completion(prefix: &str, max_suffix_chars: usize) -> Option<String> {
@@ -280,6 +287,11 @@ fn ru_technical_loanwords() -> &'static HashSet<String> {
         }
         words
     })
+}
+
+fn ru_live_protected_words() -> &'static HashSet<String> {
+    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
+    WORDS.get_or_init(|| parse_word_data(RU_LIVE_PROTECTED_WORDS_DATA))
 }
 
 fn common_ru_words_ordered() -> &'static Vec<String> {

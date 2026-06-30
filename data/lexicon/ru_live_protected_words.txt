@@ -1,0 +1,31 @@
+# Live Russian/informal tokens that are valid user text.
+# This protects autocorrect from rewriting slang, profanity, and project words.
+блять
+пиздец
+херня
+херню
+хуевый
+хуевые
+хуево
+хуёво
+че
+чё
+дружочек
+грок
+грокать
+грокаем
+грокался
+грокалось
+грокнулся
+грокинг
+скил
+скилы
+скила
+скилом
+скилами
+запушил
+запушили
+запушить
+запушь
+тестить
+спектрал

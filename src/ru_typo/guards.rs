@@ -16,7 +16,11 @@ pub(super) fn unknown_cyrillic_lower(word: &str, min_chars: usize) -> Option<Str
     }
 
     let lower = word.to_lowercase();
-    (!is_known_russian_word_or_form(&lower)).then_some(lower)
+    if crate::lexicon::is_ru_live_protected_word(&lower) || is_known_russian_word_or_form(&lower) {
+        None
+    } else {
+        Some(lower)
+    }
 }
 
 pub(super) fn correct_invalid_adjective_tail(original: &str, lower: &str) -> Option<String> {

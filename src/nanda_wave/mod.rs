@@ -41,6 +41,14 @@ pub fn context_word_usage_prior(context: &[String], word: &str) -> f32 {
     usage_prior::context_word_usage_prior(context, word)
 }
 
+pub fn cached_word_usage_prior(word: &str) -> f32 {
+    usage_prior::word_usage_prior_cached(word)
+}
+
+pub fn cached_context_word_usage_prior(context: &[String], word: &str) -> f32 {
+    usage_prior::context_word_usage_prior_cached(context, word)
+}
+
 pub fn record_typed_tail_usage(tail: &str) {
     usage_prior::record_typed_tail_if_enabled(tail);
 }

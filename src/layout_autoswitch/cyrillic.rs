@@ -57,10 +57,10 @@ fn correct_wrong_layout_cyrillic_word_with_policy(
 
     let converted_lower = converted_word.to_ascii_lowercase();
     let original_lower = original_word.to_lowercase();
-    if is_known_russian_layout_autoswitch_word(&original_lower) {
+    let converted_is_technical = is_common_en_technical_word(&converted_lower);
+    if is_known_russian_layout_autoswitch_word(&original_lower) && !converted_is_technical {
         return None;
     }
-    let converted_is_technical = is_common_en_technical_word(&converted_lower);
     if !converted_is_technical && has_plausible_russian_typo_candidate(&original_lower) {
         return None;
     }
