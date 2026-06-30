@@ -86,6 +86,9 @@ fn is_safe_missing_letter_candidate(lower: &str, candidate: &str) -> bool {
         if is_risky_vowel_insert_into_verb_tail(lower, inserted) {
             return false;
         }
+        if is_risky_consonant_insert_before_final_verb_tail(lower, idx, inserted) {
+            return false;
+        }
         if idx == lower.chars().count() {
             if lower.ends_with("ств") {
                 return false;
@@ -105,6 +108,18 @@ fn is_safe_missing_letter_candidate(lower: &str, candidate: &str) -> bool {
     }
 
     true
+}
+
+fn is_risky_consonant_insert_before_final_verb_tail(
+    lower: &str,
+    idx: usize,
+    inserted: char,
+) -> bool {
+    !is_russian_vowel(inserted)
+        && ["ти", "ть"].iter().any(|tail| {
+            lower.ends_with(tail)
+                && lower.chars().count().saturating_sub(tail.chars().count()) == idx
+        })
 }
 
 fn is_risky_vowel_insert_into_verb_tail(lower: &str, inserted: char) -> bool {
@@ -135,5 +150,14 @@ mod tests {
             correct_missing_letter("недоказно").as_deref(),
             Some("недоказано")
         );
+    }
+
+    #[test]
+    fn missing_letter_rejects_consonant_insert_before_final_ti_tail() {
+        assert!(
+            !safe_missing_letter_candidates("зачати").any(|candidate| candidate == "зачасти"),
+            "final -ти consonant insertion must not be an autocorrect authority"
+        );
+        assert_eq!(correct_missing_letter("зачати"), None);
     }
 }

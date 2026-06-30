@@ -108,6 +108,8 @@ fn typing_assist_keeps_live_log_false_positive_words() {
         "задачки хуевые ",
         "запушил ",
         "скилами ",
+        "в гугле ",
+        "зачати? ",
     ] {
         assert_eq!(apply_typing_assist_exact(input), None, "input={input:?}");
     }
@@ -144,6 +146,8 @@ fn typing_assist_keeps_live_log_good_repairs() {
         ("вопросики позадовать ", "вопросики позадавать "),
         ("Суша тоде ", "Суша тоже "),
         ("нормальный делеай ", "нормальный делай "),
+        ("за воопрос ", "за вопрос "),
+        ("так готора ", "так готово "),
     ] {
         assert_eq!(
             apply_typing_assist_exact(input),
