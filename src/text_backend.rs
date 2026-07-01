@@ -88,15 +88,33 @@ pub struct ImeReplaceRequest {
 
 impl ImeReplaceRequest {
     pub fn committed_tail(original: &str, replacement: impl Into<String>) -> Self {
-        Self {
-            backspaces: original.chars().count() as u32,
-            text: replacement.into(),
-        }
+        let replacement = replacement.into();
+        let backspaces = committed_tail_suffix_backspaces(original, &replacement);
+        let text = committed_tail_suffix_text(original, &replacement);
+        Self { backspaces, text }
     }
 
     pub fn is_noop(&self) -> bool {
         self.backspaces == 0 && self.text.is_empty()
     }
+}
+
+fn committed_tail_suffix_backspaces(original: &str, replacement: &str) -> u32 {
+    let prefix = committed_tail_common_prefix_chars(original, replacement);
+    original.chars().count().saturating_sub(prefix) as u32
+}
+
+fn committed_tail_suffix_text(original: &str, replacement: &str) -> String {
+    let prefix = committed_tail_common_prefix_chars(original, replacement);
+    replacement.chars().skip(prefix).collect()
+}
+
+fn committed_tail_common_prefix_chars(original: &str, replacement: &str) -> usize {
+    original
+        .chars()
+        .zip(replacement.chars())
+        .take_while(|(left, right)| left == right)
+        .count()
 }
 
 #[cfg(test)]

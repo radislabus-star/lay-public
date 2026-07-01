@@ -40,6 +40,17 @@ fn ime_request_counts_unicode_tail_chars() {
 }
 
 #[test]
+fn ime_request_preserves_stable_context_prefix() {
+    let request = ImeReplaceRequest::committed_tail("ри автозамене ", "ри автозаменае ");
+    assert_eq!(request.backspaces, 2);
+    assert_eq!(request.text, "ае ");
+
+    let request = ImeReplaceRequest::committed_tail("Короче существет ", "Короче существует ");
+    assert_eq!(request.backspaces, 3);
+    assert_eq!(request.text, "ует ");
+}
+
+#[test]
 fn exposes_backend_capabilities_for_decoder_policy() {
     assert!(!TextBackendCapabilities::uinput().can_atomic_replace());
     assert!(TextBackendCapabilities::uinput().can_switch_layout);

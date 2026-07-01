@@ -95,8 +95,10 @@ fn facade_exposes_text_backend_contract() {
     );
     assert_eq!(
         ImeReplaceRequest::committed_tail("мы сами ", "мы сами ").backspaces,
-        8
+        0
     );
+    let request = ImeReplaceRequest::committed_tail("мы сами ", "мы самы ");
+    assert_eq!((request.backspaces, request.text.as_str()), (2, "ы "));
     assert!(TextBackendCapabilities::ime().can_atomic_replace());
     assert_eq!(
         TextBackendCapabilities::uinput().replace,
