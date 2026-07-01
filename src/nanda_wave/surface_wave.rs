@@ -7,6 +7,7 @@
 pub(super) const SURFACE_WAVE_DIM: usize = 4_096;
 pub(super) const SURFACE_WAVE_NGRAM: usize = 4;
 pub(super) const SURFACE_WAVE_TRITS: usize = 3;
+const SURFACE_WAVE_SHORT_TOKEN_IDENTITY_ATOMS: usize = 4;
 pub(super) const SURFACE_WAVE_BYTES: usize =
     SURFACE_WAVE_DIM * std::mem::size_of::<SurfaceWaveLane>();
 
@@ -119,12 +120,26 @@ fn append_boundary_atoms(text: &str, atoms: &mut Vec<SurfaceAtom>) {
         }
 
         let service_token = normalize_service_token(raw_token);
+        append_short_token_identity_atoms(&service_token, atoms);
         if is_service_word(&service_token) {
             atoms.push(SurfaceAtom {
                 position: 0,
                 bytes: encode_service_atom(&service_token),
             });
         }
+    }
+}
+
+fn append_short_token_identity_atoms(token: &str, atoms: &mut Vec<SurfaceAtom>) {
+    if token.is_empty() || token.chars().count() >= SURFACE_WAVE_NGRAM {
+        return;
+    }
+
+    for salt in 0..SURFACE_WAVE_SHORT_TOKEN_IDENTITY_ATOMS {
+        atoms.push(SurfaceAtom {
+            position: 0,
+            bytes: encode_short_token_identity_atom(token, salt as u8),
+        });
     }
 }
 
@@ -261,6 +276,14 @@ fn encode_service_atom(token: &str) -> Vec<u8> {
     bytes
 }
 
+fn encode_short_token_identity_atom(token: &str, salt: u8) -> Vec<u8> {
+    let mut bytes = Vec::with_capacity(10 + token.len());
+    bytes.extend_from_slice(b"\x1Fsid\0");
+    bytes.push(salt);
+    bytes.extend_from_slice(token.as_bytes());
+    bytes
+}
+
 #[must_use]
 pub(super) fn surface_atom_projection(
     position: u64,
@@ -315,5 +338,15 @@ mod tests {
         for word in ["и", "в", "не", "a", "to"] {
             assert!(!surface_atoms(word).is_empty(), "word={word}");
         }
+    }
+
+    #[test]
+    fn short_non_service_words_emit_identity_atoms() {
+        let atoms = surface_atoms("сыч");
+        assert!(
+            atoms.len() >= SURFACE_WAVE_SHORT_TOKEN_IDENTITY_ATOMS,
+            "atoms={atoms:?}"
+        );
+        assert!(SurfaceWave4096::compile("сыч").active_lanes() > 0);
     }
 }

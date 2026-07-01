@@ -9,6 +9,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 const ACTIONS_PATH: &str = ".local/share/lay/recent_actions.jsonl";
 const TIMING_PROFILE_PATH: &str = ".local/share/lay/timing_profile.jsonl";
+const NANDA_DIRTY_TASKS_PATH: &str = ".local/share/lay/nanda_wave/dirty_tasks.jsonl";
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct RecentAction<'a> {
@@ -43,6 +44,18 @@ pub struct RecentActionGateTrace {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub selected_gate_action: Option<String>,
     pub reason: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+struct DirtyTaskRecord<'a> {
+    ts: u64,
+    kind: &'static str,
+    action_kind: &'a str,
+    from: &'a str,
+    to: &'a str,
+    replace_words: usize,
+    words: usize,
+    gate: &'a RecentActionGateTrace,
 }
 
 impl RecentActionGateTrace {
@@ -153,6 +166,7 @@ pub fn record_action_with_stages_and_gate(
         undo_available,
     };
     record_action_async_to_path(&path, &action);
+    record_dirty_task_if_useful(&action);
 }
 
 fn input_gate_stage_name(stage: crate::input_gate::InputGateStage) -> &'static str {
@@ -211,6 +225,34 @@ pub fn record_timing_profile(kind: &str, route: &str, stages: &[(&str, u128)]) {
         "stages": stage_values,
     });
     crate::debug_log::append_private_line(path, record.to_string());
+}
+
+fn record_dirty_task_if_useful(action: &RecentAction<'_>) {
+    let Some(gate) = action.input_gate.as_ref() else {
+        return;
+    };
+    if gate.selected_gate_action.as_deref() != Some("apply") {
+        return;
+    }
+    if gate.selected_source_id.is_none() && gate.selected_source.is_none() {
+        return;
+    }
+    let Some(path) = home_relative_path(NANDA_DIRTY_TASKS_PATH) else {
+        return;
+    };
+    let record = DirtyTaskRecord {
+        ts: action.ts,
+        kind: "lay_dirty_task_v1",
+        action_kind: action.kind,
+        from: action.from,
+        to: action.to,
+        replace_words: action.replace_words,
+        words: action.words,
+        gate,
+    };
+    if let Ok(line) = serde_json::to_string(&record) {
+        crate::debug_log::append_private_line(path, line);
+    }
 }
 
 fn record_action_async_to_path(path: &Path, action: &RecentAction<'_>) {

@@ -16,6 +16,9 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::real_suite;
 
+const L2_SURFACE_MOTIF_CELL: &str = "L2SurfaceMotifCell32";
+const L2_SURFACE_COMPLETION_CELL: &str = "L2SurfaceCompletionCell32";
+
 pub(crate) fn print_status_json(refresh: bool, full: bool) -> io::Result<()> {
     let cache = status_cache_path();
     if !refresh {
@@ -396,6 +399,8 @@ fn candidate_stats_json(cases: &[EvalCase], options: &WaveOptions) -> Vec<serde_
         "PhraseMemoryCell32",
         "UserMemoryCell32",
         "SemanticWordCell32",
+        L2_SURFACE_MOTIF_CELL,
+        L2_SURFACE_COMPLETION_CELL,
     ] {
         stats.entry(source.to_string()).or_default();
     }

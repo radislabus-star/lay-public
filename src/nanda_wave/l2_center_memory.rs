@@ -54,8 +54,10 @@ pub(super) struct L2CenterMemory {
     l1: L1CenterMemory,
     centers: Vec<L2SequenceCenter>,
     center_index: HashMap<Vec<u32>, u32>,
+    source_words: Vec<String>,
     word_records: Vec<L2WordRecord>,
     token_refs: Vec<u32>,
+    token_to_words: HashMap<u32, Vec<usize>>,
     residual_ref_count: usize,
 }
 
@@ -66,6 +68,16 @@ pub(super) struct L2TokenSequence {
     pub(super) motif_refs: usize,
     pub(super) covered_l1_refs: usize,
     pub(super) residual_l1_refs: usize,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(super) struct L2SurfaceCandidate {
+    pub(super) word: String,
+    pub(super) score: u32,
+    pub(super) l1_overlap: usize,
+    pub(super) l2_overlap: usize,
+    pub(super) motif_overlap: usize,
+    pub(super) prefix_match: bool,
 }
 
 impl L2CenterMemory {
@@ -89,13 +101,15 @@ impl L2CenterMemory {
             l1,
             centers,
             center_index,
+            source_words: words.clone(),
             word_records: Vec::with_capacity(words.len()),
             token_refs: Vec::new(),
+            token_to_words: HashMap::new(),
             residual_ref_count: 0,
         };
 
-        for word in &words {
-            memory.encode_train_word(word);
+        for (word_index, word) in words.iter().enumerate() {
+            memory.encode_train_word(word_index, word);
         }
 
         memory
@@ -147,11 +161,105 @@ impl L2CenterMemory {
             + self.residual_ref_count * L2_RESIDUAL_REF_BYTES
     }
 
-    fn encode_train_word(&mut self, word: &str) {
+    #[must_use]
+    pub(super) fn surface_candidates_for_text(
+        &self,
+        text: &str,
+        limit: usize,
+    ) -> Vec<L2SurfaceCandidate> {
+        if limit == 0 {
+            return Vec::new();
+        }
+        let input_norm = normalize_surface(text);
+        if input_norm.is_empty() {
+            return Vec::new();
+        }
+
+        let query_l1 = self.l1.center_sequence_for_word(&input_norm);
+        let query_l2 = self.token_sequence_for_text(&input_norm);
+        if query_l1.center_refs.is_empty() && query_l2.tokens.is_empty() {
+            return Vec::new();
+        }
+
+        let mut word_votes: HashMap<usize, u16> = HashMap::new();
+        for token in unique_tokens(&query_l2.tokens) {
+            let Some(word_ids) = self.token_to_words.get(&token) else {
+                continue;
+            };
+            for word_id in word_ids.iter().copied().take(512) {
+                *word_votes.entry(word_id).or_default() += 1;
+            }
+        }
+
+        let mut candidates = word_votes
+            .into_keys()
+            .filter_map(|word_id| {
+                let word = self.source_words.get(word_id)?;
+                let word_norm = normalize_surface(word);
+                if word_norm.is_empty() || word_norm == input_norm {
+                    return None;
+                }
+                let input_len = input_norm.chars().count();
+                let word_len = word_norm.chars().count();
+                if input_len.abs_diff(word_len) > 4 {
+                    return None;
+                }
+
+                let word_l1 = self.l1.center_sequence_for_word(&word_norm);
+                let word_l2 = self.token_sequence_for_text(&word_norm);
+                let l1_overlap = overlap_count(&query_l1.center_refs, &word_l1.center_refs);
+                let l2_overlap = overlap_count(&query_l2.tokens, &word_l2.tokens);
+                let motif_overlap = overlap_count(
+                    &motif_tokens(&query_l2.tokens),
+                    &motif_tokens(&word_l2.tokens),
+                );
+                let prefix_match =
+                    word_norm.starts_with(&input_norm) || input_norm.starts_with(&word_norm);
+                let score = candidate_score(
+                    input_len,
+                    word_len,
+                    l1_overlap,
+                    l2_overlap,
+                    motif_overlap,
+                    prefix_match,
+                );
+                (score > 0).then_some(L2SurfaceCandidate {
+                    word: word_norm,
+                    score,
+                    l1_overlap,
+                    l2_overlap,
+                    motif_overlap,
+                    prefix_match,
+                })
+            })
+            .collect::<Vec<_>>();
+
+        candidates.sort_by(|left, right| {
+            right
+                .score
+                .cmp(&left.score)
+                .then_with(|| right.motif_overlap.cmp(&left.motif_overlap))
+                .then_with(|| right.l2_overlap.cmp(&left.l2_overlap))
+                .then_with(|| right.l1_overlap.cmp(&left.l1_overlap))
+                .then_with(|| left.word.len().cmp(&right.word.len()))
+                .then_with(|| left.word.cmp(&right.word))
+        });
+        candidates.dedup_by(|left, right| left.word == right.word);
+        candidates.truncate(limit);
+        candidates
+    }
+
+    fn encode_train_word(&mut self, word_index: usize, word: &str) {
         let sequence = self.l1.center_sequence_for_word(word).center_refs;
         let encoded = self.encode_sequence(&sequence);
         let start = self.token_refs.len();
         self.token_refs.extend(encoded.tokens.iter().copied());
+        for token in unique_tokens(&encoded.tokens) {
+            self.token_to_words
+                .entry(token)
+                .or_default()
+                .push(word_index);
+        }
         self.residual_ref_count += encoded.residual_l1_refs;
         self.word_records.push(L2WordRecord {
             source_hash: stable_hash_bytes(word.as_bytes()),
@@ -256,6 +364,69 @@ fn tag_residual_token(center_ref: u32) -> u32 {
     center_ref | L2_RESIDUAL_TAG
 }
 
+fn unique_tokens(tokens: &[u32]) -> Vec<u32> {
+    let mut tokens = tokens.to_vec();
+    tokens.sort_unstable();
+    tokens.dedup();
+    tokens
+}
+
+fn motif_tokens(tokens: &[u32]) -> Vec<u32> {
+    tokens
+        .iter()
+        .copied()
+        .filter(|token| token & L2_RESIDUAL_TAG == 0)
+        .collect()
+}
+
+fn overlap_count(left: &[u32], right: &[u32]) -> usize {
+    let mut left = left.to_vec();
+    let mut right = right.to_vec();
+    left.sort_unstable();
+    right.sort_unstable();
+    let mut count = 0usize;
+    let mut li = 0usize;
+    let mut ri = 0usize;
+    while li < left.len() && ri < right.len() {
+        match left[li].cmp(&right[ri]) {
+            std::cmp::Ordering::Less => li += 1,
+            std::cmp::Ordering::Greater => ri += 1,
+            std::cmp::Ordering::Equal => {
+                count += 1;
+                li += 1;
+                ri += 1;
+            }
+        }
+    }
+    count
+}
+
+fn candidate_score(
+    input_len: usize,
+    word_len: usize,
+    l1_overlap: usize,
+    l2_overlap: usize,
+    motif_overlap: usize,
+    prefix_match: bool,
+) -> u32 {
+    if input_len == 0 {
+        return 0;
+    }
+    let len_gap = input_len.abs_diff(word_len).min(16) as u32;
+    let mut score = l1_overlap as u32 * 24 + l2_overlap as u32 * 48 + motif_overlap as u32 * 120;
+    if prefix_match {
+        score += 180;
+    }
+    score.saturating_sub(len_gap * 8)
+}
+
+fn normalize_surface(text: &str) -> String {
+    text.chars()
+        .filter(|ch| ch.is_alphabetic() || *ch == '-')
+        .flat_map(char::to_lowercase)
+        .collect()
+}
+
 fn stable_hash_u32s(values: &[u32]) -> u64 {
     let mut state = 0x4C32_5345_5155_454Eu64;
     for value in values {
@@ -317,6 +488,14 @@ mod tests {
         let sequence = memory.token_sequence_for_text("проверочную");
         assert!(sequence.l1_ref_count > 0);
         assert!(sequence.motif_refs > 0, "sequence={sequence:?}");
+
+        let candidates = memory.surface_candidates_for_text("проверк", 3);
+        assert!(
+            candidates
+                .iter()
+                .any(|candidate| candidate.word == "проверка"),
+            "candidates={candidates:?}"
+        );
     }
 
     #[test]
@@ -340,5 +519,29 @@ mod tests {
             assert!(sequence.l1_ref_count > 0, "word={word}");
             assert!(!sequence.tokens.is_empty(), "word={word}");
         }
+    }
+
+    #[test]
+    fn l2_center_memory_ranks_surface_typo_candidates() {
+        let words = ["загрузи", "загрузить", "выгрузи", "пункт", "пункты"];
+        let memory = L2CenterMemory::build(
+            words.iter().copied(),
+            L2CenterMemoryConfig {
+                l1_config: L1CenterMemoryConfig {
+                    min_center_support: 1,
+                    ..L1CenterMemoryConfig::default()
+                },
+                motif_len: 2,
+                min_motif_support: 1,
+                ..L2CenterMemoryConfig::default()
+            },
+        );
+
+        let candidates = memory.surface_candidates_for_text("звгрузи", 3);
+        assert_eq!(
+            candidates.first().map(|candidate| candidate.word.as_str()),
+            Some("загрузи"),
+            "candidates={candidates:?}"
+        );
     }
 }

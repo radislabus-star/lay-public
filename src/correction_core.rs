@@ -913,11 +913,14 @@ fn nanda_source_error_class(source: &str) -> TypingErrorClass {
         "TechTokenCell32" | "TechnicalContextCell32" => TypingErrorClass::TechnicalToken,
         "BoundaryCell32" => TypingErrorClass::GluedWords,
         "GrammarCell32" => TypingErrorClass::GrammarAgreement,
-        "PhraseForecastCell32" | "L2WordAttractorCell32" => TypingErrorClass::CompletionOnly,
+        "PhraseForecastCell32" | "L2WordAttractorCell32" | "L2SurfaceCompletionCell32" => {
+            TypingErrorClass::CompletionOnly
+        }
         "CommonRuFixCell32"
         | "LearnedMemoryCell32"
         | "PhraseMemoryCell32"
         | "PhraseCell32"
+        | "L2SurfaceMotifCell32"
         | "SemanticWordCell32" => TypingErrorClass::CompositeTypo,
         _ => TypingErrorClass::Unknown,
     }
@@ -963,6 +966,12 @@ fn gate_candidate_with_source(
             reason: "weak_boundary_split_tail",
         };
     }
+    if error_class == TypingErrorClass::CompletionOnly {
+        return CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "completion_is_not_autocorrect",
+        };
+    }
     if let Some(decision) = l3_context_gate(original, replacement, error_class) {
         return decision;
     }
@@ -985,10 +994,6 @@ fn gate_candidate_with_source(
                 reason: "protected_or_technical",
             }
         }
-        TypingErrorClass::CompletionOnly => CandidateGateDecision {
-            action: CandidateGateAction::SuggestOnly,
-            reason: "completion_is_not_autocorrect",
-        },
         TypingErrorClass::RepeatedLetter | TypingErrorClass::ExtraLetter
             if replacement_last_word_is_unknown_cyrillic(original, replacement) =>
         {
@@ -1124,7 +1129,6 @@ fn l3_phrase_memory_applies_to(error_class: TypingErrorClass) -> bool {
             | TypingErrorClass::AdjacentTransposition
             | TypingErrorClass::LetterSubstitution
             | TypingErrorClass::GrammarAgreement
-            | TypingErrorClass::CompletionOnly
     )
 }
 
@@ -2182,6 +2186,36 @@ mod tests {
         assert_eq!(selected.replacement, "nanda ");
         assert_eq!(selected.error_class, TypingErrorClass::WrongLayout);
         assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn nanda_surface_motif_can_apply_known_typo() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution =
+            resolve_text_correction(request("звгрузи ", &pipeline, CorrectionMode::NandaOnly));
+
+        let selected = resolution.selected.expect("selected candidate");
+        assert_eq!(selected.replacement, "загрузи ");
+        assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
+        assert_eq!(selected.source_id, "L2SurfaceMotifCell32");
+        assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn nanda_surface_completion_is_suggest_only_not_autocorrect() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution =
+            resolve_text_correction(request("делай пров ", &pipeline, CorrectionMode::NandaOnly));
+
+        assert!(resolution.decision.is_none());
+        let completion = resolution
+            .candidates
+            .iter()
+            .find(|candidate| candidate.source_id == "L2SurfaceCompletionCell32")
+            .expect("completion candidate");
+        assert_eq!(completion.error_class, TypingErrorClass::CompletionOnly);
+        assert_eq!(completion.gate.action, CandidateGateAction::SuggestOnly);
     }
 
     #[test]

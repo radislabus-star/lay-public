@@ -177,3 +177,52 @@ fn action_log_is_disabled_by_default_and_enabled_by_config() {
 
     let _ = std::fs::remove_dir_all(tmp);
 }
+
+#[test]
+fn action_log_writes_dirty_task_for_applied_gate() {
+    let _lock = ACTION_LOG_ENV_LOCK.lock().unwrap();
+    let tmp = std::env::temp_dir().join(format!(
+        "lay-action-log-dirty-task-test-{}",
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos()
+    ));
+    let home = tmp.join("home");
+    let config_path = tmp.join("config.json");
+    std::fs::create_dir_all(&home).unwrap();
+    std::fs::write(&config_path, r#"{"debug_action_log":true}"#).unwrap();
+    let _home = EnvGuard::set("HOME", &home);
+    let _config = EnvGuard::set(crate::config::CONFIG_PATH_ENV, &config_path);
+
+    record_action_with_stages_and_gate(
+        "typing-assist",
+        "проверк ",
+        "проверка ",
+        1,
+        1,
+        12,
+        Some(3),
+        Some(9),
+        Some(RecentActionGateTrace {
+            stage: "word_boundary".to_string(),
+            input_class: Some("composite-typo".to_string()),
+            candidate_count: 2,
+            selected_source: Some("nanda".to_string()),
+            selected_source_id: Some("L2SurfaceMotifCell32".to_string()),
+            selected_error_class: Some("composite-typo".to_string()),
+            selected_gate_action: Some("apply".to_string()),
+            reason: "apply_selected_candidate".to_string(),
+        }),
+        true,
+    );
+
+    let path = home.join(NANDA_DIRTY_TASKS_PATH);
+    let text = std::fs::read_to_string(path).unwrap();
+    assert!(text.contains("\"kind\":\"lay_dirty_task_v1\""));
+    assert!(text.contains("\"from\":\"проверк \""));
+    assert!(text.contains("\"to\":\"проверка \""));
+    assert!(text.contains("\"selected_source_id\":\"L2SurfaceMotifCell32\""));
+
+    let _ = std::fs::remove_dir_all(tmp);
+}

@@ -271,6 +271,16 @@ fn typo_surface(token: &str, context: &TailContext) -> Option<String> {
         return None;
     }
     let lower = token.to_lowercase();
+    if token
+        .chars()
+        .all(|ch| !ch.is_alphabetic() || ch.is_uppercase())
+        || crate::lexicon::is_user_protected_word(&lower)
+        || crate::lexicon::is_ru_live_protected_word(&lower)
+        || crate::russian_lexicon::is_known_russian_word_or_form(&lower)
+        || crate::ru_typo::rewrites_protected_pattern_term_stem(&lower, &lower)
+    {
+        return None;
+    }
     for word in crate::lexicon::common_ru_words_iter() {
         if word.chars().count().abs_diff(lower.chars().count()) > 1 {
             continue;

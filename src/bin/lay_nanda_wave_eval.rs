@@ -23,6 +23,8 @@ mod status;
 
 const DEFAULT_LLMWAVE_SEED: &str = "data/nanda_llmwave_seed_phrases.txt";
 const DEFAULT_LLMWAVE_LIVE_MIN_COUNT: usize = 2;
+const L2_SURFACE_MOTIF_CELL: &str = "L2SurfaceMotifCell32";
+const L2_SURFACE_COMPLETION_CELL: &str = "L2SurfaceCompletionCell32";
 
 fn main() -> io::Result<()> {
     let args = env::args().collect::<Vec<_>>();
@@ -197,10 +199,15 @@ fn main() -> io::Result<()> {
         print_layer_impact(&rows);
         return Ok(());
     }
+    if args.iter().any(|arg| arg == "--surface-l2-ablation") {
+        let suite = real_suite::load()?;
+        print_surface_l2_ablation(&status::status_sample_cases(&suite.cases));
+        return Ok(());
+    }
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
         );
         return Ok(());
     }
@@ -831,6 +838,116 @@ fn print_layer_impact(rows: &[AblationRow]) {
     }
 }
 
+fn print_surface_l2_ablation(cases: &[EvalCase]) {
+    let mut cases = cases.to_vec();
+    cases.extend([
+        EvalCase {
+            original: "звгрузи ".to_string(),
+            expected: "загрузи ".to_string(),
+            reason: "surface_l2_probe".to_string(),
+        },
+        EvalCase {
+            original: "делай проверк ".to_string(),
+            expected: "делай проверка ".to_string(),
+            reason: "surface_l2_probe".to_string(),
+        },
+        EvalCase {
+            original: "пукнут ".to_string(),
+            expected: "пукнут ".to_string(),
+            reason: "surface_l2_keep_probe".to_string(),
+        },
+    ]);
+
+    struct Scenario {
+        label: &'static str,
+        disabled: Vec<String>,
+    }
+
+    let scenarios = [
+        Scenario {
+            label: "full",
+            disabled: Vec::new(),
+        },
+        Scenario {
+            label: "without_surface_typo",
+            disabled: vec![L2_SURFACE_MOTIF_CELL.to_string()],
+        },
+        Scenario {
+            label: "without_surface_completion",
+            disabled: vec![L2_SURFACE_COMPLETION_CELL.to_string()],
+        },
+        Scenario {
+            label: "without_surface_l2",
+            disabled: vec![
+                L2_SURFACE_MOTIF_CELL.to_string(),
+                L2_SURFACE_COMPLETION_CELL.to_string(),
+            ],
+        },
+        Scenario {
+            label: "l2_surface_only",
+            disabled: wave_cells()
+                .iter()
+                .filter(|cell| {
+                    **cell != L2_SURFACE_MOTIF_CELL && **cell != L2_SURFACE_COMPLETION_CELL
+                })
+                .map(|cell| (*cell).to_string())
+                .collect(),
+        },
+        Scenario {
+            label: "without_l3_consensus",
+            disabled: [
+                "TechnicalContextCell32",
+                "PhraseForecastCell32",
+                "PatternWaveCell32",
+                "StructuralRelationCell32",
+                "PhraseCell32",
+                "MeshConsensusCell32",
+            ]
+            .iter()
+            .map(|cell| (*cell).to_string())
+            .collect(),
+        },
+    ];
+
+    println!("surface_l2_ablation: cases={}", cases.len());
+    for scenario in scenarios {
+        let options = WaveOptions::with_disabled(&scenario.disabled);
+        let (results, stats) = evaluate_wave_with_options(&cases, &options);
+        let surface_candidates = cases
+            .iter()
+            .map(|case| run_wave_trace_with_options(&case.original, &options))
+            .map(|trace| {
+                trace
+                    .l2_candidates
+                    .iter()
+                    .filter(|candidate| {
+                        candidate.source == L2_SURFACE_MOTIF_CELL
+                            || candidate.source == L2_SURFACE_COMPLETION_CELL
+                    })
+                    .count()
+            })
+            .sum::<usize>();
+        let changed_from_original = results
+            .iter()
+            .zip(&cases)
+            .filter(|(result, case)| result.output != case.original)
+            .count();
+        println!(
+            "  {}: ok={}/{} changed={} surface_candidates={} disabled={}",
+            scenario.label,
+            stats.ok,
+            stats.cases,
+            changed_from_original,
+            surface_candidates,
+            if scenario.disabled.is_empty() {
+                "none".to_string()
+            } else {
+                scenario.disabled.join(",")
+            }
+        );
+    }
+}
+
 fn print_cell_ablation(cases: &[EvalCase], cell: &str, label: &str) {
     let full_options = WaveOptions::default();
     let disabled_options = WaveOptions::with_disabled(&[cell.to_string()]);
@@ -1015,6 +1132,20 @@ fn wave_cell_meta(name: &str) -> WaveCellMeta {
             layer: "L2",
             phase: 2.10,
         },
+        "L2SurfaceMotifCell32" => WaveCellMeta {
+            label: "L2 форма",
+            role: "слово по центрам формы",
+            zone: "candidates",
+            layer: "L2",
+            phase: 2.16,
+        },
+        "L2SurfaceCompletionCell32" => WaveCellMeta {
+            label: "L2 окончание",
+            role: "дописать слово по форме",
+            zone: "candidates",
+            layer: "L2",
+            phase: 2.20,
+        },
         "TechnicalContextCell32" => WaveCellMeta {
             label: "Защита",
             role: "контекст защиты",
@@ -1118,6 +1249,8 @@ fn wave_cells() -> &'static [&'static str] {
         "PhraseMemoryCell32",
         "UserMemoryCell32",
         "SemanticWordCell32",
+        "L2SurfaceMotifCell32",
+        "L2SurfaceCompletionCell32",
         "TechnicalContextCell32",
         "PhraseForecastCell32",
         "PatternWaveCell32",

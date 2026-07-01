@@ -150,11 +150,15 @@ fn is_known_russian_adjective_form(stem: &str, suffix: &str) -> bool {
 }
 
 fn is_known_russian_zero_ending_noun_form(word: &str) -> bool {
-    if word.chars().count() < 5 || !word.chars().last().is_some_and(is_russian_consonant) {
+    let word_len = word.chars().count();
+    if word_len < 4 || !word.chars().last().is_some_and(is_russian_consonant) {
         return false;
     }
 
     zero_noun_suffixes().any(|suffix| {
+        if word_len < 5 && suffix != "о" {
+            return false;
+        }
         let lemma = format!("{word}{suffix}");
         russian_dictionary().contains(&lemma) || russian_short_dictionary().contains(&lemma)
     })

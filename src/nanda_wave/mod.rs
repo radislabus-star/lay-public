@@ -63,10 +63,12 @@ pub fn record_accepted_ime_usage(context_tail: &str, accepted_text: &str) {
 
 pub fn warm_up() {
     context_wave::warm_up();
+    l2::warm_up_surface_motif_memory();
     let _ = llmwave::load_default_memory();
 }
 
 pub fn warm_up_for_ime() {
     context_wave::warm_up_prefix_completion_indexes();
+    l2::warm_up_surface_motif_memory();
     let _ = llmwave::load_default_memory();
 }

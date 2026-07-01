@@ -205,6 +205,12 @@ fn apply_source_enabled(source: &str, options: &WaveOptions) -> bool {
         "CommonRuFixCell32" => options.is_enabled("CommonRuFixCell32"),
         "PhraseMemoryCell32" => options.is_enabled("PhraseMemoryCell32"),
         "UserMemoryCell32" => options.is_enabled("UserMemoryCell32"),
+        source if source == super::l2::L2_SURFACE_MOTIF_CELL => {
+            options.is_enabled(super::l2::L2_SURFACE_MOTIF_CELL)
+        }
+        source if source == super::l2::L2_SURFACE_COMPLETION_CELL => {
+            options.is_enabled(super::l2::L2_SURFACE_COMPLETION_CELL)
+        }
         source if source == super::context_wave::SEMANTIC_WORD_SOURCE => {
             options.is_enabled(super::context_wave::SEMANTIC_WORD_SOURCE)
         }
