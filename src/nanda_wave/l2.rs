@@ -603,6 +603,19 @@ fn surface_motif_word_candidates(
     let fuzzy_authority = crate::ru_typo::fuzzy_known_word_candidates(&normalized);
     let surface_candidates = surface_motif_memory().surface_candidates_for_text(&normalized, 24);
     let mut out = Vec::new();
+    if options.is_enabled(L2_SURFACE_MOTIF_CELL) {
+        if let Some(candidate) = repeated_letter_surface_candidate(
+            prefix,
+            leading,
+            word,
+            trailing,
+            &normalized,
+            l1,
+            context,
+        ) {
+            out.push(candidate);
+        }
+    }
     for candidate in &surface_candidates {
         let candidate_len = candidate.word.chars().count();
         let distance = damerau_levenshtein(&normalized, &candidate.word);
@@ -726,6 +739,46 @@ fn surface_motif_word_candidates(
         }
     }
     out
+}
+
+fn repeated_letter_surface_candidate(
+    prefix: &str,
+    leading: &str,
+    word: &str,
+    trailing: &str,
+    normalized: &str,
+    l1: &[WavePacket],
+    context: &TailContext,
+) -> Option<WordCandidate> {
+    if normalized.chars().count() < 3 || is_common_ru_word(normalized) {
+        return None;
+    }
+    let replacement = crate::ru_typo::correct_repeated_letter(word)?;
+    let replacement_lower = replacement.to_lowercase();
+    if replacement_lower == normalized || !is_known_russian_word_or_form(&replacement_lower) {
+        return None;
+    }
+    let distance = damerau_levenshtein(normalized, &replacement_lower);
+    if distance == 0 || distance > 3 {
+        return None;
+    }
+    Some(surface_motif_candidate(SurfaceMotifCandidateInput {
+        prefix,
+        leading,
+        word,
+        trailing,
+        replacement_lower: &replacement_lower,
+        source: L2_SURFACE_MOTIF_CELL,
+        score: 940,
+        l1_overlap: 0,
+        l2_overlap: 0,
+        motif_overlap: 0,
+        prefix_match: false,
+        distance,
+        risk: 0.08,
+        l1,
+        context,
+    }))
 }
 
 fn surface_motif_typo_has_authority(
@@ -1759,6 +1812,19 @@ mod tests {
         assert!(
             candidates.iter().any(|candidate| {
                 candidate.source == L2_SURFACE_MOTIF_CELL && candidate.text == "загрузи"
+            }),
+            "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn l2_surface_motif_cell_repairs_repeated_letter_all_caps_word() {
+        let original = "ТРУССС ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.source == L2_SURFACE_MOTIF_CELL && candidate.text == "ТРУС"
             }),
             "candidates={candidates:?}"
         );
