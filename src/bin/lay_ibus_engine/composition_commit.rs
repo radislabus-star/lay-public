@@ -5,7 +5,10 @@ use zbus::object_server::SignalEmitter;
 use super::engine::LayIbusEngine;
 use super::text::make_ibus_text;
 use super::trace;
-use lay::correction_core::{decide_text_correction, CorrectionMode, CorrectionRequest};
+use lay::correction_core::CorrectionMode;
+#[cfg(test)]
+use lay::correction_core::{decide_text_correction, CorrectionRequest};
+use lay::input_gate::{decide_input_gate, InputGateAction, InputGateRequest, InputGateTrigger};
 
 pub(super) struct ActiveCompositionCommit {
     with_space: bool,
@@ -171,8 +174,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn autocorrect_active_composition_text(&self, text: &str) -> Option<String> {
-        self.deterministic_autocorrect_text(text)
-            .or_else(|| self.nanda_autocorrect_text(text))
+        self.input_gate_active_composition_text(text)
     }
 
     #[cfg(test)]
@@ -182,6 +184,7 @@ impl LayIbusEngine {
             .or_else(|| self.nanda_autocorrect_text(text))
     }
 
+    #[cfg(test)]
     fn deterministic_autocorrect_text(&self, text: &str) -> Option<String> {
         decide_text_correction(self.correction_request(text, CorrectionMode::DeterministicOnly))
             .map(|decision| decision.replacement)
@@ -202,11 +205,55 @@ impl LayIbusEngine {
             .then(|| output[prefix.len()..].to_string())
     }
 
+    #[cfg(test)]
     fn nanda_autocorrect_text(&self, text: &str) -> Option<String> {
         decide_text_correction(self.correction_request(text, CorrectionMode::NandaOnly))
             .map(|decision| decision.replacement)
     }
 
+    fn input_gate_active_composition_text(&self, text: &str) -> Option<String> {
+        let (gate_text, active_prefix) = self.active_composition_gate_text(text);
+        let decision = decide_input_gate(InputGateRequest {
+            trigger: InputGateTrigger::Space,
+            text_tail: &gate_text,
+            auto_replace: self.config.auto_replace,
+            typing_assist: self.config.typing_assist,
+            auto_switch_layout: self.config.auto_switch_layout,
+            correction_safety: self.config.active_correction_safety(),
+            typing_assist_pipeline: &self.config.typing_assist_pipeline,
+            nanda_autocorrect: self.config.nanda_autocorrect,
+            correction_mode: CorrectionMode::DeterministicThenNanda,
+        });
+        let InputGateAction::ApplyReplacement { replacement, .. } = decision.action else {
+            return None;
+        };
+        if replacement == gate_text {
+            return None;
+        }
+        if active_prefix.is_empty() {
+            return Some(replacement);
+        }
+        replacement
+            .strip_prefix(&active_prefix)
+            .map(|replacement_tail| replacement_tail.to_string())
+    }
+
+    fn active_composition_gate_text(&self, text: &str) -> (String, String) {
+        let active_word = text.trim_end_matches(char::is_whitespace);
+        let visible_tail = self.tail_buffer.trim_end_matches(char::is_whitespace);
+        if active_word.is_empty() {
+            return (text.to_string(), String::new());
+        }
+        let Some(prefix) = visible_tail.strip_suffix(active_word) else {
+            return (text.to_string(), String::new());
+        };
+        if prefix.is_empty() {
+            return (text.to_string(), String::new());
+        }
+        (format!("{prefix}{text}"), prefix.to_string())
+    }
+
+    #[cfg(test)]
     fn correction_request<'a>(
         &'a self,
         text: &'a str,
@@ -262,6 +309,36 @@ mod tests {
                 .autocorrect_active_composition_text("тфтвф ")
                 .as_deref(),
             Some("nanda ")
+        );
+    }
+
+    #[test]
+    fn active_composition_autocorrect_uses_unified_input_gate() {
+        let mut engine = engine();
+        for ch in "я прохоил".chars() {
+            engine.push_tail_char(ch);
+        }
+
+        assert_eq!(
+            engine
+                .autocorrect_active_composition_text("прохоил ")
+                .as_deref(),
+            Some("проходил ")
+        );
+    }
+
+    #[test]
+    fn active_composition_context_replacement_keeps_previous_words_out_of_commit() {
+        let mut engine = engine();
+        for ch in "на сколько ффективная".chars() {
+            engine.push_tail_char(ch);
+        }
+
+        assert_eq!(
+            engine
+                .autocorrect_active_composition_text("ффективная ")
+                .as_deref(),
+            Some("эффективная ")
         );
     }
 
