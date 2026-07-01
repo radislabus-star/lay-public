@@ -2185,6 +2185,39 @@ mod tests {
     }
 
     #[test]
+    fn nanda_corrects_customs_actor_phrase_with_right_anchor() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "Поставщик говорит что цена до склада нашего покупателя но таможен мы! ",
+            &pipeline,
+            CorrectionMode::NandaOnly,
+        ));
+
+        let selected = resolution.selected.expect("selected candidate");
+        assert_eq!(
+            selected.replacement,
+            "Поставщик говорит что цена до склада нашего покупателя но таможим мы! "
+        );
+        assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
+        assert_eq!(selected.source_id, "PhraseCell32");
+        assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn nanda_does_not_correct_customs_actor_phrase_without_right_anchor() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "Поставщик говорит что цена до склада нашего покупателя но таможен ",
+            &pipeline,
+            CorrectionMode::NandaOnly,
+        ));
+
+        assert!(resolution.selected.is_none());
+        assert!(resolution.decision.is_none());
+    }
+
+    #[test]
     fn disabled_runtime_flags_keep_original() {
         let pipeline = default_typing_assist_pipeline();
         let decision = decide_text_correction(CorrectionRequest {

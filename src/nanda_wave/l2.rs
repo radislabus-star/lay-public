@@ -99,6 +99,11 @@ pub fn run_l2_refined_with_feedback(
             push_unique_candidate(&mut candidates, candidate);
         }
     }
+    if options.is_enabled("PhraseCell32") {
+        for candidate in customs_actor_phrase_candidates(tail, &context, l1) {
+            push_unique_candidate(&mut candidates, candidate);
+        }
+    }
     if options.is_enabled(super::context_wave::PHRASE_FORECAST_CELL) && options.llmwave_shadow() {
         let memory = phrase_forecast_memory();
         for candidate in super::llmwave::phrase_forecast_candidates(tail, &memory) {
@@ -526,6 +531,103 @@ fn technical_context_blocks_layout(prefix: &str, token: &str) -> bool {
         return false;
     };
     is_common_en_guard_prefix(&previous.to_ascii_lowercase()) && token.chars().count() >= 3
+}
+
+fn customs_actor_phrase_candidates(
+    tail: &str,
+    context: &TailContext,
+    l1: &[WavePacket],
+) -> Vec<WordCandidate> {
+    if context.has_technical_context() || context.tokens.len() < 4 {
+        return Vec::new();
+    }
+    let Some(previous) = context.previous() else {
+        return Vec::new();
+    };
+    let Some(last) = context.last() else {
+        return Vec::new();
+    };
+    if clean_ru_token(&previous.text) != "таможен" || clean_ru_token(&last.text) != "мы" {
+        return Vec::new();
+    }
+    if !has_customs_actor_context(context) {
+        return Vec::new();
+    }
+    let mut tokens = tail
+        .split_whitespace()
+        .map(str::to_string)
+        .collect::<Vec<_>>();
+    if tokens.len() < 2 {
+        return Vec::new();
+    }
+    let previous_idx = tokens.len() - 2;
+    let Some(replacement) = replace_cyrillic_core(&tokens[previous_idx], "таможим") else {
+        return Vec::new();
+    };
+    tokens[previous_idx] = replacement;
+    vec![WordCandidate {
+        text: tokens.join(" "),
+        source: "PhraseCell32",
+        energy: l1_energy(l1, "ScriptCell32")
+            .max(l1_energy(l1, "BoundaryCell32"))
+            .max(0.88),
+        risk: 0.13,
+        support: {
+            let mut support = candidate_support(l1, context);
+            support.push("customs-actor-phrase".to_string());
+            support.push("previous=таможен last=мы replacement=таможим".to_string());
+            support
+        },
+    }]
+}
+
+fn has_customs_actor_context(context: &TailContext) -> bool {
+    context.tokens.iter().any(|token| {
+        let token = clean_ru_token(&token.text);
+        token.contains("поставщик")
+            || token.contains("цен")
+            || token.contains("склад")
+            || token.contains("покупател")
+            || token.contains("накладн")
+            || token.contains("меркур")
+            || token.contains("логист")
+            || token.contains("достав")
+    })
+}
+
+fn replace_cyrillic_core(token: &str, replacement: &str) -> Option<String> {
+    let start = token.find(is_cyrillic_letter)?;
+    let end = token
+        .char_indices()
+        .rev()
+        .find(|(_idx, ch)| is_cyrillic_letter(*ch))
+        .map(|(idx, ch)| idx + ch.len_utf8())?;
+    if start >= end {
+        return None;
+    }
+    let replacement = if token[start..end]
+        .chars()
+        .next()
+        .is_some_and(char::is_uppercase)
+    {
+        capitalize_first(replacement)
+    } else {
+        replacement.to_string()
+    };
+    Some(format!(
+        "{}{}{}",
+        &token[..start],
+        replacement,
+        &token[end..]
+    ))
+}
+
+fn capitalize_first(word: &str) -> String {
+    let mut chars = word.chars();
+    let Some(first) = chars.next() else {
+        return String::new();
+    };
+    first.to_uppercase().chain(chars).collect()
 }
 
 fn grammar_agreement_candidates(
@@ -1186,6 +1288,38 @@ mod tests {
         assert!(candidates.iter().any(|candidate| {
             candidate.source == "GrammarCell32" && candidate.text == "расчёт приблизительный"
         }));
+    }
+
+    #[test]
+    fn phrase_cell_generates_customs_actor_candidate() {
+        let original = "Поставщик говорит что цена до склада нашего покупателя но таможен мы! ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        assert!(candidates.iter().any(|candidate| {
+            candidate.source == "PhraseCell32"
+                && candidate.text
+                    == "Поставщик говорит что цена до склада нашего покупателя но таможим мы!"
+        }));
+    }
+
+    #[test]
+    fn phrase_cell_does_not_rewrite_customs_actor_without_right_anchor() {
+        let original = "Поставщик говорит что цена до склада нашего покупателя но таможен ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        assert!(candidates
+            .iter()
+            .all(|candidate| !candidate.text.contains("таможим")));
+    }
+
+    #[test]
+    fn phrase_cell_does_not_rewrite_customs_actor_without_domain_context() {
+        let original = "я сказал что странно но таможен мы! ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        assert!(candidates
+            .iter()
+            .all(|candidate| !candidate.text.contains("таможим")));
     }
 
     #[test]
