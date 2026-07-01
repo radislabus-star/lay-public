@@ -1033,9 +1033,6 @@ fn l3_context_gate(
     replacement: &str,
     error_class: TypingErrorClass,
 ) -> Option<CandidateGateDecision> {
-    if let Some(decision) = l3_phrase_memory_gate(original, replacement, error_class) {
-        return Some(decision);
-    }
     if candidate_over_compresses_word(original, replacement, error_class) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::KeepOriginal,
@@ -1089,6 +1086,9 @@ fn l3_context_gate(
             action: CandidateGateAction::KeepOriginal,
             reason: "short_layout_without_phrase_context",
         });
+    }
+    if let Some(decision) = l3_phrase_memory_gate(original, replacement, error_class) {
+        return Some(decision);
     }
     None
 }
@@ -1299,10 +1299,16 @@ fn known_russian_word_rewritten_to_different_known_word(
 
 fn known_russian_autocorrect_token(lower: &str) -> bool {
     crate::lexicon::is_common_ru_word(lower)
+        || crate::lexicon::is_ru_live_protected_word(lower)
         || crate::lexicon::is_user_protected_word(lower)
         || crate::russian_lexicon::is_known_russian_word_or_form(lower)
         || crate::russian_lexicon::is_known_russian_adverb_o_form(lower)
         || crate::russian_lexicon::is_known_russian_ka_oblique_form(lower)
+        || protected_pattern_term_stem(lower)
+}
+
+fn protected_pattern_term_stem(lower: &str) -> bool {
+    lower.starts_with("патерн") || lower.starts_with("паттерн")
 }
 
 fn known_phrase_part_only_grows_by_one_letter(
@@ -2014,6 +2020,33 @@ mod tests {
 
         assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
         assert_eq!(gate.reason, "soft_sign_vowel_drift");
+    }
+
+    #[test]
+    fn nanda_l3_support_cannot_override_live_protected_terms() {
+        let pipeline = default_typing_assist_pipeline();
+        for input in [
+            "это патерн ",
+            "в гугле ",
+            "блять ",
+            "слово грокать ",
+            "тоже грокнулся. ",
+        ] {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicThenNanda,
+            ));
+
+            assert_eq!(resolution.decision, None, "input={input:?}: {resolution:?}");
+            assert!(
+                resolution.candidates.iter().all(|candidate| {
+                    candidate.source != CorrectionDecisionSource::Nanda
+                        || candidate.gate.action != CandidateGateAction::Apply
+                }),
+                "NANDA candidate bypassed hard safety: {resolution:?}"
+            );
+        }
     }
 
     #[test]
