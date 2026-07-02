@@ -6,7 +6,9 @@ REPO_URL="${LAY_REPO_URL:-https://github.com/radislabus-star/lay-public.git}"
 INSTALL_DIR="${LAY_INSTALL_DIR:-$HOME/projects/lay}"
 
 detect_package_manager() {
-    if command -v apt-get >/dev/null 2>&1; then
+    if command -v rpm-ostree >/dev/null 2>&1 && [ -d /run/ostree-booted ]; then
+        echo rpm-ostree
+    elif command -v apt-get >/dev/null 2>&1; then
         echo apt
     elif command -v pacman >/dev/null 2>&1; then
         echo pacman
@@ -37,6 +39,16 @@ apt_qdbus_package() {
     fi
 }
 
+rpm_ostree_dependencies_available() {
+    command -v git >/dev/null 2>&1 \
+        && command -v curl >/dev/null 2>&1 \
+        && command -v gcc >/dev/null 2>&1 \
+        && command -v make >/dev/null 2>&1 \
+        && { command -v pkg-config >/dev/null 2>&1 || command -v pkgconf >/dev/null 2>&1; } \
+        && command -v wl-copy >/dev/null 2>&1 \
+        && command -v xclip >/dev/null 2>&1
+}
+
 install_system_packages() {
     local pm
     pm="$(detect_package_manager)"
@@ -59,6 +71,12 @@ install_system_packages() {
                 packages+=(qt6-tools python-pyqt6 xcb-util-cursor)
             fi
             ;;
+        rpm-ostree)
+            packages=(git curl gcc gcc-c++ make pkgconf-pkg-config libxcb wl-clipboard xclip)
+            if kde_available; then
+                packages+=(qt6-qttools python3-qt6 xcb-util-cursor)
+            fi
+            ;;
         dnf|yum)
             packages=(git curl gcc gcc-c++ make pkgconf-pkg-config libxcb wl-clipboard xclip)
             if kde_available; then
@@ -75,6 +93,21 @@ install_system_packages() {
             ;;
         pacman)
             sudo pacman -Sy --needed --noconfirm "${packages[@]}"
+            ;;
+        rpm-ostree)
+            if rpm_ostree_dependencies_available; then
+                echo "=== system dependencies (rpm-ostree) ==="
+                echo "✓ required build/runtime commands are already available"
+                return
+            fi
+            echo "Detected an rpm-ostree based system, such as Bazzite/Fedora Atomic."
+            echo "System packages must be layered into the next deployment."
+            sudo rpm-ostree install --idempotent -y "${packages[@]}"
+            echo ""
+            echo "rpm-ostree package layering is prepared."
+            echo "Reboot, then run this installer again:"
+            echo "  curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash"
+            exit 0
             ;;
         dnf|yum)
             sudo "$pm" install -y "${packages[@]}"
