@@ -11,7 +11,7 @@ use crate::text_metrics::damerau_levenshtein;
 use crate::typing_candidate::TypingCandidateFamily;
 use crate::typing_context;
 use crate::typing_pipeline::explain_typing_assist_with_pipeline;
-use crate::word_reader::split_word_punctuation;
+use crate::word_reader::{split_word_punctuation, split_ws_segments};
 use std::sync::OnceLock;
 
 use super::context::{TailContext, TokenKind};
@@ -91,6 +91,9 @@ pub fn run_l2_refined_with_feedback(
         for candidate in boundary_split_candidates(prefix, token, l1, &context) {
             push_unique_candidate(&mut candidates, candidate);
         }
+        for candidate in boundary_scan_candidates(tail, l1, &context) {
+            push_unique_candidate(&mut candidates, candidate);
+        }
     }
     if options.is_enabled(LEXICAL_ATTRACTOR_CELL) {
         for candidate in lexical_attractor_candidates(tail, &context) {
@@ -113,6 +116,11 @@ pub fn run_l2_refined_with_feedback(
     if options.is_enabled(L2_SURFACE_MOTIF_CELL) || options.is_enabled(L2_SURFACE_COMPLETION_CELL) {
         for candidate in surface_motif_word_candidates(prefix, token, &context, l1, options) {
             push_unique_candidate(&mut candidates, candidate);
+        }
+        if options.is_enabled(L2_SURFACE_MOTIF_CELL) {
+            for candidate in surface_motif_scan_candidates(tail, l1, &context) {
+                push_unique_candidate(&mut candidates, candidate);
+            }
         }
     }
     if options.is_enabled("PhraseCell32") {
@@ -1367,6 +1375,282 @@ fn boundary_split_candidates(
     candidates
 }
 
+fn boundary_scan_candidates(
+    tail: &str,
+    l1: &[WavePacket],
+    context: &TailContext,
+) -> Vec<WordCandidate> {
+    if context.has_technical_context() {
+        return Vec::new();
+    }
+    let segments = split_ws_segments(tail);
+    if segments.len() < 3 || context.token_count() > 15 {
+        return Vec::new();
+    }
+
+    let mut candidates = Vec::new();
+    for (idx, (segment, is_ws)) in segments.iter().enumerate().rev() {
+        if *is_ws {
+            continue;
+        }
+        let (leading, word, trailing) = split_word_punctuation(segment);
+        if word.is_empty() || !word.chars().all(is_cyrillic_letter) {
+            continue;
+        }
+        let previous = previous_word_segment(&segments, idx);
+        let Some(replacement) = contextual_boundary_replacement_for_word(word, previous)
+            .or_else(|| boundary_replacement_for_word(word))
+        else {
+            continue;
+        };
+        if replacement == word {
+            continue;
+        }
+        let text = replace_segment_word(&segments, idx, leading, &replacement, trailing);
+        candidates.push(WordCandidate {
+            text,
+            source: "BoundaryCell32",
+            energy: l1_energy(l1, "BoundaryCell32").max(0.82),
+            risk: 0.10,
+            support: {
+                let mut support = candidate_support(l1, context);
+                support.push("tail-boundary-scan".to_string());
+                support.push(format!("word={word:?} replacement={replacement:?}"));
+                support
+            },
+        });
+        if candidates.len() >= 4 {
+            return candidates;
+        }
+    }
+
+    for window in word_segment_windows(&segments).into_iter().rev() {
+        let pair_text = format!(
+            "{}{}{}",
+            segments[window.left_idx].0, segments[window.ws_idx].0, segments[window.right_idx].0
+        );
+        let Some(replacement) = crate::phrase_reader::correct_split_word_pair(&pair_text) else {
+            continue;
+        };
+        if replacement == pair_text {
+            continue;
+        }
+        candidates.push(WordCandidate {
+            text: replace_segment_window(
+                &segments,
+                window.left_idx,
+                window.right_idx,
+                &replacement,
+            ),
+            source: "BoundaryCell32",
+            energy: l1_energy(l1, "BoundaryCell32").max(0.80),
+            risk: 0.12,
+            support: {
+                let mut support = candidate_support(l1, context);
+                support.push("tail-split-pair-scan".to_string());
+                support.push(format!("pair={pair_text:?} replacement={replacement:?}"));
+                support
+            },
+        });
+        if candidates.len() >= 4 {
+            break;
+        }
+    }
+
+    candidates
+}
+
+fn boundary_replacement_for_word(word: &str) -> Option<String> {
+    crate::phrase_reader::correct_glued_russian_phrase(word).or_else(|| {
+        let lower = word.to_lowercase();
+        if lower.chars().count() < 6
+            || is_common_ru_word(&lower)
+            || is_known_russian_word_or_form(&lower)
+        {
+            return None;
+        }
+        let chars = lower.chars().collect::<Vec<_>>();
+        for split in 1..chars.len() {
+            let left = chars[..split].iter().collect::<String>();
+            let right = chars[split..].iter().collect::<String>();
+            if left.chars().count() > 2 && right.chars().count() < 3 {
+                continue;
+            }
+            let known_left = (left.chars().count() == 1 && is_ru_one_letter_function_word(&left))
+                || is_common_ru_word(&left);
+            let known_right = is_common_ru_word(&right) || is_known_russian_word_or_form(&right);
+            if known_left && known_right {
+                let replacement = format!("{left} {right}");
+                return Some(apply_word_case(word, &replacement));
+            }
+        }
+        None
+    })
+}
+
+fn contextual_boundary_replacement_for_word(word: &str, previous: Option<&str>) -> Option<String> {
+    let previous = previous?.to_lowercase();
+    if !crate::phrase_lexicon::is_short_russian_function_word(&previous) {
+        return None;
+    }
+
+    let lower = word.to_lowercase();
+    let chars = lower.chars().collect::<Vec<_>>();
+    for split in 1..chars.len() {
+        let left = chars[..split].iter().collect::<String>();
+        let right = chars[split..].iter().collect::<String>();
+        if !crate::lexicon::is_ru_short_pronoun(&left) {
+            continue;
+        }
+        if !(right == "есть" || is_common_ru_word(&right) || is_known_russian_word_or_form(&right))
+        {
+            continue;
+        }
+        let replacement = format!("{left} {right}");
+        return Some(apply_word_case(word, &replacement));
+    }
+    None
+}
+
+fn surface_motif_scan_candidates(
+    tail: &str,
+    l1: &[WavePacket],
+    context: &TailContext,
+) -> Vec<WordCandidate> {
+    if context.has_technical_context() || context.token_count() > 15 {
+        return Vec::new();
+    }
+    let segments = split_ws_segments(tail);
+    if segments.len() < 3 {
+        return Vec::new();
+    }
+    let mut candidates = Vec::new();
+    for (idx, (segment, is_ws)) in segments.iter().enumerate().rev() {
+        if *is_ws {
+            continue;
+        }
+        let (leading, word, trailing) = split_word_punctuation(segment);
+        if word.is_empty() || !word.chars().all(is_cyrillic_letter) {
+            continue;
+        }
+        let Some(replacement) = surface_replacement_for_word(word) else {
+            continue;
+        };
+        if replacement == word {
+            continue;
+        }
+        let lower = word.to_lowercase();
+        let replacement_lower = replacement.to_lowercase();
+        let distance = damerau_levenshtein(&lower, &replacement_lower);
+        if distance == 0 || distance > 3 {
+            continue;
+        }
+        candidates.push(WordCandidate {
+            text: replace_segment_word(&segments, idx, leading, &replacement, trailing),
+            source: L2_SURFACE_MOTIF_CELL,
+            energy: l1_energy(l1, "ScriptCell32").max(0.78),
+            risk: surface_motif_typo_risk(context, distance),
+            support: {
+                let mut support = candidate_support(l1, context);
+                support.push("tail-surface-scan".to_string());
+                support.push(format!(
+                    "word={word:?} replacement={replacement:?} distance={distance}"
+                ));
+                support
+            },
+        });
+        if candidates.len() >= 4 {
+            break;
+        }
+    }
+    candidates
+}
+
+fn surface_replacement_for_word(word: &str) -> Option<String> {
+    crate::ru_typo::correct_repeated_letter(word)
+        .or_else(|| crate::ru_typo::correct_adjacent_transposition(word))
+        .or_else(|| crate::ru_typo::correct_missing_letter(word))
+}
+
+struct SegmentWindow {
+    left_idx: usize,
+    ws_idx: usize,
+    right_idx: usize,
+}
+
+fn word_segment_windows(segments: &[(&str, bool)]) -> Vec<SegmentWindow> {
+    segments
+        .windows(3)
+        .enumerate()
+        .filter_map(|(idx, window)| {
+            let [left, ws, right] = window else {
+                return None;
+            };
+            (!left.1 && ws.1 && !right.1).then_some(SegmentWindow {
+                left_idx: idx,
+                ws_idx: idx + 1,
+                right_idx: idx + 2,
+            })
+        })
+        .collect()
+}
+
+fn replace_segment_word(
+    segments: &[(&str, bool)],
+    target_idx: usize,
+    leading: &str,
+    replacement: &str,
+    trailing: &str,
+) -> String {
+    let mut out = String::new();
+    for (idx, (segment, _)) in segments.iter().enumerate() {
+        if idx == target_idx {
+            out.push_str(leading);
+            out.push_str(replacement);
+            out.push_str(trailing);
+        } else {
+            out.push_str(segment);
+        }
+    }
+    out
+}
+
+fn replace_segment_window(
+    segments: &[(&str, bool)],
+    left_idx: usize,
+    right_idx: usize,
+    replacement: &str,
+) -> String {
+    let mut out = String::new();
+    let mut idx = 0;
+    while idx < segments.len() {
+        if idx == left_idx {
+            out.push_str(replacement);
+            idx = right_idx + 1;
+        } else {
+            out.push_str(segments[idx].0);
+            idx += 1;
+        }
+    }
+    out
+}
+
+fn previous_word_segment<'a>(
+    segments: &'a [(&'a str, bool)],
+    before_idx: usize,
+) -> Option<&'a str> {
+    segments[..before_idx]
+        .iter()
+        .rev()
+        .find_map(|(segment, is_ws)| {
+            if *is_ws {
+                return None;
+            }
+            let (_, word, _) = split_word_punctuation(segment);
+            (!word.is_empty()).then_some(word)
+        })
+}
+
 fn strong_boundary_right_anchor(lower: &str) -> bool {
     lower.chars().count() >= 5
         && (lower.ends_with("ах") || lower.ends_with("ях"))
@@ -1739,6 +2023,49 @@ mod tests {
         assert!(
             split.energy - split.risk > 0.90,
             "split candidate must outrank single-word typo: {split:?}"
+        );
+    }
+
+    #[test]
+    fn boundary_cell_scans_glued_word_inside_tail() {
+        let original = "я пишу мои слова мои предложения чтобыточно проверить дальше ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.source == "BoundaryCell32"
+                    && candidate.text
+                        == "я пишу мои слова мои предложения чтобы точно проверить дальше"
+            }),
+            "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn boundary_cell_scans_split_pair_inside_tail() {
+        let original = "сейчас думаю тако й пример работает ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.source == "BoundaryCell32"
+                    && candidate.text == "сейчас думаю такой пример работает"
+            }),
+            "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn boundary_cell_uses_context_to_split_known_glued_form() {
+        let original = "мы должны помнить что у насесть право на информацию ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.source == "BoundaryCell32"
+                    && candidate.text == "мы должны помнить что у нас есть право на информацию"
+            }),
+            "candidates={candidates:?}"
         );
     }
 
