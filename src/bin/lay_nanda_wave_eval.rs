@@ -204,10 +204,23 @@ fn main() -> io::Result<()> {
         print_surface_l2_ablation(&status::status_sample_cases(&suite.cases));
         return Ok(());
     }
+    if args
+        .iter()
+        .any(|arg| arg == "--ensemble-contribution-report")
+    {
+        let suite = real_suite::load()?;
+        let cases = if args.iter().any(|arg| arg == "--full-suite") {
+            suite.cases.clone()
+        } else {
+            status::status_sample_cases(&suite.cases)
+        };
+        print_ensemble_contribution_report(&cases, suite.cases.len());
+        return Ok(());
+    }
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
         );
         return Ok(());
     }
@@ -946,6 +959,226 @@ fn print_surface_l2_ablation(cases: &[EvalCase]) {
             }
         );
     }
+}
+
+fn print_ensemble_contribution_report(cases: &[EvalCase], full_cases: usize) {
+    let safety = CorrectionSafety::Experimental;
+    let baseline = status::evaluate_deterministic(cases, safety);
+    let baseline_ok = baseline.iter().filter(|result| result.ok).count();
+
+    println!(
+        "ensemble_contribution_report: cases={} full_cases={} sampled={}",
+        cases.len(),
+        full_cases,
+        cases.len() < full_cases
+    );
+    println!(
+        "  deterministic_no_lem_baseline: ok={}/{} {:.1}%",
+        baseline_ok,
+        cases.len(),
+        percent(baseline_ok, cases.len())
+    );
+    println!("  note: live daemon LEM is scoped-tail runtime; this baseline is typing-assist only");
+
+    for scenario in contribution_scenarios() {
+        let report = contribution_report_for_scenario(cases, &baseline, &scenario);
+        print_contribution_report(&report);
+    }
+}
+
+#[derive(Debug, Clone)]
+struct ContributionScenario {
+    label: &'static str,
+    options: WaveOptions,
+}
+
+#[derive(Debug, Clone)]
+struct ContributionReport {
+    label: &'static str,
+    cases: usize,
+    ok: usize,
+    changed: usize,
+    delta_vs_baseline: isize,
+    improved_vs_baseline: usize,
+    worsened_vs_baseline: usize,
+    total_l2_candidates: usize,
+    applied: usize,
+    applied_sources: BTreeMap<String, usize>,
+    disabled: Vec<String>,
+    l2_weight: f32,
+    l3_weight: f32,
+}
+
+fn contribution_scenarios() -> Vec<ContributionScenario> {
+    let l3_disabled = l3_support_cells();
+    let surface_disabled = surface_l2_cells();
+    let l1_sensors = l1_sensor_cells();
+    let surface_only_disabled = wave_cells()
+        .iter()
+        .filter(|cell| {
+            **cell != L2_SURFACE_MOTIF_CELL
+                && **cell != L2_SURFACE_COMPLETION_CELL
+                && **cell != "MeshConsensusCell32"
+                && !l1_sensors.iter().any(|sensor| sensor == *cell)
+        })
+        .map(|cell| (*cell).to_string())
+        .collect::<Vec<_>>();
+
+    vec![
+        ContributionScenario {
+            label: "nanda_full_ensemble",
+            options: WaveOptions::default(),
+        },
+        ContributionScenario {
+            label: "nanda_l2_mesh_only",
+            options: WaveOptions::with_disabled(&l3_disabled).with_layer_weights(1.0, 0.0),
+        },
+        ContributionScenario {
+            label: "nanda_l2_l3_without_surface_l2",
+            options: WaveOptions::with_disabled(&surface_disabled),
+        },
+        ContributionScenario {
+            label: "nanda_surface_l2_only_with_mesh",
+            options: WaveOptions::with_disabled(&surface_only_disabled)
+                .with_layer_weights(1.0, 0.0),
+        },
+    ]
+}
+
+fn l3_support_cells() -> Vec<String> {
+    [
+        "TechnicalContextCell32",
+        "PhraseForecastCell32",
+        "PatternWaveCell32",
+        "StructuralRelationCell32",
+        "PhraseCell32",
+    ]
+    .iter()
+    .map(|cell| (*cell).to_string())
+    .collect()
+}
+
+fn l1_sensor_cells() -> Vec<String> {
+    [
+        "Utf8Cell32",
+        "ScriptCell32",
+        "KeyboardCell32",
+        "BoundaryCell32",
+    ]
+    .iter()
+    .map(|cell| (*cell).to_string())
+    .collect()
+}
+
+fn surface_l2_cells() -> Vec<String> {
+    [L2_SURFACE_MOTIF_CELL, L2_SURFACE_COMPLETION_CELL]
+        .iter()
+        .map(|cell| (*cell).to_string())
+        .collect()
+}
+
+fn contribution_report_for_scenario(
+    cases: &[EvalCase],
+    baseline: &[status::EvalResult],
+    scenario: &ContributionScenario,
+) -> ContributionReport {
+    let mut ok = 0;
+    let mut changed = 0;
+    let mut improved_vs_baseline = 0;
+    let mut worsened_vs_baseline = 0;
+    let mut total_l2_candidates = 0;
+    let mut applied = 0;
+    let mut applied_sources = BTreeMap::new();
+
+    for (case, baseline) in cases.iter().zip(baseline) {
+        let trace = run_wave_trace_with_options(&case.original, &scenario.options);
+        let output = trace
+            .output()
+            .map(ToOwned::to_owned)
+            .unwrap_or_else(|| case.original.clone());
+        let case_ok = output == case.expected;
+        ok += usize::from(case_ok);
+        changed += usize::from(output != case.original);
+        improved_vs_baseline += usize::from(!baseline.ok && case_ok);
+        worsened_vs_baseline += usize::from(baseline.ok && output != case.expected);
+        total_l2_candidates += trace.l2_candidates.len();
+        if let Some(source) = applied_source_for_trace(&trace, &output) {
+            applied += 1;
+            *applied_sources.entry(source.to_string()).or_default() += 1;
+        }
+    }
+
+    let baseline_ok = baseline.iter().filter(|result| result.ok).count();
+    ContributionReport {
+        label: scenario.label,
+        cases: cases.len(),
+        ok,
+        changed,
+        delta_vs_baseline: ok as isize - baseline_ok as isize,
+        improved_vs_baseline,
+        worsened_vs_baseline,
+        total_l2_candidates,
+        applied,
+        applied_sources,
+        disabled: scenario.options.disabled().to_vec(),
+        l2_weight: scenario.options.l2_weight(),
+        l3_weight: scenario.options.l3_weight(),
+    }
+}
+
+fn applied_source_for_trace<'a>(
+    trace: &'a lay::nanda_wave::WaveTrace,
+    output: &str,
+) -> Option<&'a str> {
+    if !matches!(trace.decision, WaveDecision::Apply { .. }) {
+        return None;
+    }
+    let output = output.trim_end();
+    trace
+        .l2_candidates
+        .iter()
+        .find(|candidate| candidate.text == output)
+        .map(|candidate| candidate.source)
+}
+
+fn print_contribution_report(report: &ContributionReport) {
+    let avg_candidates = if report.cases == 0 {
+        0.0
+    } else {
+        report.total_l2_candidates as f64 / report.cases as f64
+    };
+    let sources = if report.applied_sources.is_empty() {
+        "none".to_string()
+    } else {
+        report
+            .applied_sources
+            .iter()
+            .map(|(source, count)| format!("{source}:{count}"))
+            .collect::<Vec<_>>()
+            .join(",")
+    };
+    let disabled = if report.disabled.is_empty() {
+        "none".to_string()
+    } else {
+        report.disabled.join(",")
+    };
+
+    println!(
+        "  {}: ok={}/{} delta_vs_baseline={:+} improved={} worsened={} changed={} applied={} avg_l2_candidates={:.2} l2_weight={:.2} l3_weight={:.2}",
+        report.label,
+        report.ok,
+        report.cases,
+        report.delta_vs_baseline,
+        report.improved_vs_baseline,
+        report.worsened_vs_baseline,
+        report.changed,
+        report.applied,
+        avg_candidates,
+        report.l2_weight,
+        report.l3_weight
+    );
+    println!("    applied_sources: {sources}");
+    println!("    disabled: {disabled}");
 }
 
 fn print_cell_ablation(cases: &[EvalCase], cell: &str, label: &str) {
