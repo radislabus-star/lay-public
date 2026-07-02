@@ -1,9 +1,9 @@
 [package]
 name = "lay"
-version = "0.2.28"
+version = "0.2.29"
 edition = "2021"
 description = "Alpha Double Shift RU/EN layout rescue for Linux desktops"
-license = "MIT"
+license-file = "LICENSE"
 repository = "https://github.com/radislabus-star/lay-public"
 readme = "README.md"
 rust-version = "1.75"

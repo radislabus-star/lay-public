@@ -18,7 +18,7 @@ curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scr
 [![GNOME](https://img.shields.io/badge/GNOME-45--47%2C%2050-4A86CF?logo=gnome)](https://gnome.org/)
 [![Wayland](https://img.shields.io/badge/Wayland-native-blue)](https://wayland.freedesktop.org/)
 [![Status](https://img.shields.io/badge/status-alpha-yellow)](#статус-alpha)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green)](#license)
+[![License: Non-Commercial](https://img.shields.io/badge/License-Non--Commercial-red)](#license)
 
 </div>
 
@@ -707,4 +707,5 @@ send typed text anywhere.
 
 ## License
 
-MIT
+Lay Non-Commercial License v1.0. Commercial use is prohibited without prior
+written permission from the copyright holders. See [LICENSE](LICENSE).
