@@ -154,7 +154,7 @@ fn candidate_risk(
 fn trusted_typo_source(source_id: &str) -> bool {
     matches!(
         source_id,
-        "composite_ru_typo" | "adjacent_transposition" | "missing_letter"
+        "composite_ru_typo" | "adjacent_transposition" | "missing_letter" | "repeated_letter"
     ) || source_id.starts_with("layout_then_")
 }
 

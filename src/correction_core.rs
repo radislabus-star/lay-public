@@ -285,7 +285,57 @@ fn deterministic_composite_text_correction(
     req: &CorrectionRequest<'_>,
     pipeline: &[TypingAssistRuleConfig],
 ) -> Option<UnifiedCorrectionCandidate> {
-    layout_then_typo_candidate(req, pipeline).or_else(|| composite_russian_typo_candidate(req))
+    layout_then_typo_candidate(req, pipeline)
+        .or_else(|| repeated_letter_fallback_candidate(req))
+        .or_else(|| composite_russian_typo_candidate(req))
+}
+
+fn repeated_letter_fallback_candidate(
+    req: &CorrectionRequest<'_>,
+) -> Option<UnifiedCorrectionCandidate> {
+    if !req.typing_assist && !req.auto_replace {
+        return None;
+    }
+    let (_, core, _) = split_edge_whitespace(req.text);
+    let current_word = last_text_word(core)?;
+    let replacement_word = crate::ru_typo::correct_repeated_letter(&current_word)
+        .or_else(|| unique_known_repeated_deletion_word(&current_word))?;
+    let replacement = replace_last_text_word(req.text, &replacement_word)?;
+    if replacement == req.text || !syntax_allows_candidate(req.text, &replacement) {
+        return None;
+    }
+
+    let source_id = ids::REPEATED_LETTER;
+    let gate = gate_candidate_with_source(
+        req.text,
+        &replacement,
+        TypingErrorClass::RepeatedLetter,
+        source_id,
+    );
+    Some(UnifiedCorrectionCandidate {
+        replacement,
+        source: CorrectionDecisionSource::Deterministic,
+        source_id: source_id.to_string(),
+        error_class: TypingErrorClass::RepeatedLetter,
+        gate,
+    })
+}
+
+fn unique_known_repeated_deletion_word(word: &str) -> Option<String> {
+    let lower = word.to_lowercase();
+    let mut candidates = repeated_run_deletion_candidates(&lower)
+        .into_iter()
+        .filter(|candidate| {
+            crate::russian_lexicon::is_known_russian_word_or_form(candidate)
+                || crate::lexicon::is_common_ru_word(candidate)
+        })
+        .collect::<Vec<_>>();
+    candidates.sort();
+    candidates.dedup();
+    let [candidate] = candidates.as_slice() else {
+        return None;
+    };
+    Some(apply_word_case(word, candidate))
 }
 
 fn layout_then_typo_candidate(
@@ -966,6 +1016,12 @@ fn gate_candidate_with_source(
             reason: "weak_boundary_split_tail",
         };
     }
+    if semantic_wave_candidate_lacks_surface_authority(original, replacement, source_id) {
+        return CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "semantic_wave_surface_authority_low",
+        };
+    }
     if error_class == TypingErrorClass::CompletionOnly {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
@@ -1236,6 +1292,71 @@ fn boundary_candidate_splits_to_short_function_and_weak_tail(
         }
     }
     false
+}
+
+fn semantic_wave_candidate_lacks_surface_authority(
+    original: &str,
+    replacement: &str,
+    source_id: &str,
+) -> bool {
+    if source_id != crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return true;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return true;
+    };
+    if !is_cyrillic_letters_only(&original_word) || !is_cyrillic_letters_only(&replacement_word) {
+        return false;
+    }
+
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    let distance = damerau_levenshtein(&original_lower, &replacement_lower);
+    if distance <= 1 {
+        return false;
+    }
+
+    let max_len = original_lower
+        .chars()
+        .count()
+        .max(replacement_lower.chars().count());
+    let original_len = original_lower.chars().count();
+    let replacement_len = replacement_lower.chars().count();
+    if distance >= 2 && original_len == replacement_len {
+        return true;
+    }
+    let prefix = common_prefix_len(&original_lower, &replacement_lower);
+    let known_replacement =
+        crate::russian_lexicon::is_known_russian_word_or_form(&replacement_lower)
+            || crate::lexicon::is_common_ru_word(&replacement_lower);
+    let known_original = crate::russian_lexicon::is_known_russian_word_or_form(&original_lower);
+
+    if distance == 2 && original_len <= 8 && prefix >= 4 && replacement_len <= original_len + 1 {
+        return true;
+    }
+    if distance == 2 && max_len >= 7 && prefix >= 2 && known_replacement {
+        return false;
+    }
+    if distance == 3
+        && original_len >= 9
+        && max_len >= 10
+        && prefix >= 3
+        && known_replacement
+        && !known_original
+    {
+        return false;
+    }
+    true
+}
+
+fn common_prefix_len(left: &str, right: &str) -> usize {
+    left.chars()
+        .zip(right.chars())
+        .take_while(|(left, right)| left == right)
+        .count()
 }
 
 fn candidate_over_compresses_word(
@@ -1611,7 +1732,9 @@ fn replacement_last_word_is_unknown_cyrillic(original: &str, replacement: &str) 
     if original_word == replacement_word || !is_cyrillic_letters_only(&replacement_word) {
         return false;
     }
-    !crate::russian_lexicon::is_known_russian_word_or_form(&replacement_word.to_lowercase())
+    let replacement_lower = replacement_word.to_lowercase();
+    !crate::russian_lexicon::is_known_russian_word_or_form(&replacement_lower)
+        && !crate::lexicon::is_common_ru_word(&replacement_lower)
 }
 
 fn repeated_single_step_has_competing_composite(original: &str, replacement: &str) -> bool {
@@ -2027,6 +2150,32 @@ mod tests {
     }
 
     #[test]
+    fn semantic_word_cell_far_surface_jumps_are_suggest_only() {
+        for (input, replacement) in [
+            ("реально помагаешь ", "реально понимаешь "),
+            ("она спраивтя ", "она спрашивая "),
+        ] {
+            assert!(
+                semantic_wave_candidate_lacks_surface_authority(
+                    input,
+                    replacement,
+                    crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+                ),
+                "semantic helper must reject {input:?} -> {replacement:?}"
+            );
+            let gate = gate_candidate_with_source(
+                input,
+                replacement,
+                TypingErrorClass::CompositeTypo,
+                crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+            );
+
+            assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+            assert_eq!(gate.reason, "semantic_wave_surface_authority_low");
+        }
+    }
+
+    #[test]
     fn nanda_l3_support_cannot_override_live_protected_terms() {
         let pipeline = default_typing_assist_pipeline();
         for input in [
@@ -2097,7 +2246,10 @@ mod tests {
             CorrectionMode::DeterministicOnly,
         ));
 
-        let selected = resolution.selected.expect("selected candidate");
+        let selected = resolution
+            .selected
+            .clone()
+            .unwrap_or_else(|| panic!("selected candidate, resolution={resolution:?}"));
         assert_eq!(selected.replacement, "ТРУС ");
         assert_eq!(selected.source_id, ids::REPEATED_LETTER);
         assert_eq!(selected.error_class, TypingErrorClass::RepeatedLetter);

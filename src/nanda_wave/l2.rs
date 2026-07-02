@@ -1165,7 +1165,9 @@ fn grammar_agreement_candidates(
     }
     let previous = clean_ru_token(&previous.text);
     let last_clean = clean_ru_token(&last.text);
-    let Some(replacement) = agree_adjective_like_tail(&previous, &last_clean) else {
+    let Some(replacement) = preposition_case_completion(&previous, &last_clean)
+        .or_else(|| agree_adjective_like_tail(&previous, &last_clean))
+    else {
         return Vec::new();
     };
     if replacement == last_clean {
@@ -1179,13 +1181,33 @@ fn grammar_agreement_candidates(
         source: "GrammarCell32",
         energy: l1_energy(l1, "ScriptCell32")
             .max(l1_energy(l1, "BoundaryCell32"))
-            .max(0.72),
-        risk: 0.16,
+            .max(0.84),
+        risk: 0.13,
         support: vec![
             "grammar-agreement".to_string(),
             format!("previous={previous:?} last={last_clean:?} replacement={replacement:?}"),
         ],
     }]
+}
+
+fn preposition_case_completion(previous: &str, word: &str) -> Option<String> {
+    if !crate::lexicon::is_ru_short_preposition(previous)
+        && !is_ru_one_letter_function_word(previous)
+    {
+        return None;
+    }
+    if word.chars().count() < 5 || is_common_ru_word(word) || is_known_russian_word_or_form(word) {
+        return None;
+    }
+    let replacement = format!("{word}и");
+    if is_known_russian_word_or_form(&replacement)
+        || is_common_ru_word(&replacement)
+        || word.ends_with("ани")
+        || word.ends_with("ени")
+    {
+        return Some(replacement);
+    }
+    None
 }
 
 fn agree_adjective_like_tail(previous: &str, word: &str) -> Option<String> {
@@ -1339,7 +1361,7 @@ fn boundary_split_candidates(
         {
             continue;
         }
-        let known_left = short_function_boundary || is_common_ru_word(&left);
+        let known_left = short_function_boundary;
         let known_right = is_common_ru_word(&right) || is_known_russian_word_or_form(&right);
         if !known_left || !known_right {
             continue;
@@ -1476,8 +1498,7 @@ fn boundary_replacement_for_word(word: &str) -> Option<String> {
             if left.chars().count() > 2 && right.chars().count() < 3 {
                 continue;
             }
-            let known_left = (left.chars().count() == 1 && is_ru_one_letter_function_word(&left))
-                || is_common_ru_word(&left);
+            let known_left = left.chars().count() == 1 && is_ru_one_letter_function_word(&left);
             let known_right = is_common_ru_word(&right) || is_known_russian_word_or_form(&right);
             if known_left && known_right {
                 let replacement = format!("{left} {right}");
@@ -2027,6 +2048,20 @@ mod tests {
     }
 
     #[test]
+    fn boundary_cell_does_not_split_multi_letter_preposition_guesses() {
+        for original in ["заполни поспорта ", "в задани "] {
+            let l1 = run_l1(original);
+            let candidates = run_l2(original, &l1);
+            assert!(
+                candidates
+                    .iter()
+                    .all(|candidate| candidate.source != "BoundaryCell32"),
+                "multi-letter preposition guesses must not split automatically: {original:?} -> {candidates:?}"
+            );
+        }
+    }
+
+    #[test]
     fn boundary_cell_scans_glued_word_inside_tail() {
         let original = "я пишу мои слова мои предложения чтобыточно проверить дальше ";
         let l1 = run_l1(original);
@@ -2200,6 +2235,16 @@ mod tests {
         let candidates = run_l2(original, &l1);
         assert!(candidates.iter().any(|candidate| {
             candidate.source == "GrammarCell32" && candidate.text == "расчёт приблизительный"
+        }));
+    }
+
+    #[test]
+    fn grammar_cell_completes_preposition_case_tail() {
+        let original = "в задани ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        assert!(candidates.iter().any(|candidate| {
+            candidate.source == "GrammarCell32" && candidate.text == "в задании"
         }));
     }
 

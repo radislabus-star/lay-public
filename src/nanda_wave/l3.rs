@@ -3,6 +3,7 @@ use super::pattern_wave::{evaluate_pattern_wave, PATTERN_WAVE_CELL};
 use super::signal::{LayerTrace, WaveDecision, WordCandidate};
 use super::structural_relation::{evaluate_structural_relation, STRUCTURAL_RELATION_CELL};
 use super::{l3_phrase_gate, llmwave};
+use crate::text_metrics::damerau_levenshtein;
 
 pub fn run_l3(original: &str, candidates: &[WordCandidate]) -> (Vec<LayerTrace>, WaveDecision) {
     run_l3_with_options(original, candidates, &WaveOptions::default())
@@ -227,6 +228,7 @@ fn best_apply_candidate<'a>(
     candidates
         .iter()
         .filter(|candidate| apply_source_enabled(candidate.source, options))
+        .filter(|candidate| !semantic_candidate_lacks_surface_authority(original, candidate))
         .filter(|candidate| !phrase_gate_suppresses(original, &candidate.text, phrase_memory))
         .max_by(|left, right| {
             l3_rank_score(original, left, phrase_memory)
@@ -257,6 +259,69 @@ fn l3_rank_score(
         }
     }
     value.clamp(-1.0, 1.0)
+}
+
+fn semantic_candidate_lacks_surface_authority(original: &str, candidate: &WordCandidate) -> bool {
+    if candidate.source != super::context_wave::SEMANTIC_WORD_SOURCE {
+        return false;
+    }
+    let Some(original_word) = last_token(original) else {
+        return true;
+    };
+    let Some(replacement_word) = last_token(&candidate.text) else {
+        return true;
+    };
+    if !is_cyrillic_word(original_word) || !is_cyrillic_word(replacement_word) {
+        return false;
+    }
+
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    let original_len = original_lower.chars().count();
+    let replacement_len = replacement_lower.chars().count();
+
+    if replacement_len > original_len && replacement_lower.starts_with(&original_lower) {
+        return false;
+    }
+
+    let distance = damerau_levenshtein(&original_lower, &replacement_lower);
+    if distance <= 1 {
+        return false;
+    }
+
+    let max_len = original_len.max(replacement_len);
+    let prefix = common_prefix_len(&original_lower, &replacement_lower);
+    let known_replacement =
+        crate::russian_lexicon::is_known_russian_word_or_form(&replacement_lower)
+            || crate::lexicon::is_common_ru_word(&replacement_lower);
+    let known_original = crate::russian_lexicon::is_known_russian_word_or_form(&original_lower);
+
+    if distance >= 2 && original_len == replacement_len {
+        return true;
+    }
+    if distance == 2 && original_len <= 8 && prefix >= 4 && replacement_len <= original_len + 1 {
+        return true;
+    }
+    if distance == 2 && max_len >= 7 && prefix >= 2 && known_replacement {
+        return false;
+    }
+    if distance == 3
+        && original_len >= 9
+        && max_len >= 10
+        && prefix >= 3
+        && known_replacement
+        && !known_original
+    {
+        return false;
+    }
+    true
+}
+
+fn common_prefix_len(left: &str, right: &str) -> usize {
+    left.chars()
+        .zip(right.chars())
+        .take_while(|(left, right)| left == right)
+        .count()
 }
 
 fn phrase_gate_suppresses(
@@ -317,6 +382,10 @@ fn last_token(text: &str) -> Option<&str> {
 
 fn is_cyrillic_char(ch: char) -> bool {
     matches!(ch, 'А'..='я' | 'ё' | 'Ё')
+}
+
+fn is_cyrillic_word(word: &str) -> bool {
+    !word.is_empty() && word.chars().all(is_cyrillic_char)
 }
 
 fn adjusted_confidence(
@@ -505,6 +574,34 @@ mod tests {
         };
         let (_trace, decision) = run_l3("На улице опять идёт д ", &[candidate]);
         assert_eq!(decision.output(), Some("На улице опять идёт дождь "));
+    }
+
+    #[test]
+    fn semantic_word_candidate_needs_surface_authority() {
+        let candidate = WordCandidate {
+            text: "она спрашивая".to_string(),
+            source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
+            energy: 0.90,
+            risk: 0.10,
+            support: vec![],
+        };
+        let (_trace, decision) = run_l3("она спраивтя ", &[candidate]);
+
+        assert_eq!(decision.output(), None);
+    }
+
+    #[test]
+    fn semantic_word_completion_keeps_l3_authority() {
+        let candidate = WordCandidate {
+            text: "на улице опять идёт дождь".to_string(),
+            source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
+            energy: 0.50,
+            risk: 0.10,
+            support: vec![],
+        };
+        let (_trace, decision) = run_l3("на улице опять идёт д ", &[candidate]);
+
+        assert_eq!(decision.output(), Some("на улице опять идёт дождь "));
     }
 
     #[test]

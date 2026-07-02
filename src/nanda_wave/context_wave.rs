@@ -18,7 +18,7 @@ pub const PHRASE_FORECAST_CELL: &str = "PhraseForecastCell32";
 const MAX_SEMANTIC_WORD_CANDIDATES: usize = 8;
 const MAX_WAVE_BUCKET_SCAN: usize = 512;
 const MAX_WAVE_POOL: usize = 4096;
-static PREFIX_WAVE_MEMORY_WARM: AtomicBool = AtomicBool::new(false);
+static PREFIX_COMPLETION_INDEX_WARM: AtomicBool = AtomicBool::new(false);
 static RU_WORD_WAVE_MEMORY: OnceLock<RuWordWaveMemory> = OnceLock::new();
 static EN_WORD_WAVE_MEMORY: OnceLock<EnWordWaveMemory> = OnceLock::new();
 static RU_WORD_PREFIX_INDEX: OnceLock<HashMap<String, Vec<String>>> = OnceLock::new();
@@ -27,17 +27,17 @@ static EN_WORD_PREFIX_INDEX: OnceLock<HashMap<String, Vec<String>>> = OnceLock::
 pub fn warm_up() {
     let _ = ru_word_wave_memory().entries.len();
     let _ = en_word_wave_memory().entries.len();
-    PREFIX_WAVE_MEMORY_WARM.store(true, Ordering::Release);
 }
 
 pub fn warm_up_prefix_completion_indexes() {
     warm_up();
     let _ = ru_word_prefix_index().len();
     let _ = en_word_prefix_index().len();
+    PREFIX_COMPLETION_INDEX_WARM.store(true, Ordering::Release);
 }
 
 pub fn prefix_wave_memory_is_warm() -> bool {
-    PREFIX_WAVE_MEMORY_WARM.load(Ordering::Acquire)
+    PREFIX_COMPLETION_INDEX_WARM.load(Ordering::Acquire)
 }
 
 pub fn ru_word_prefix_completion_suffixes(
@@ -1159,6 +1159,7 @@ mod tests {
         assert!(EN_WORD_WAVE_MEMORY.get().is_some());
         assert!(RU_WORD_PREFIX_INDEX.get().is_none());
         assert!(EN_WORD_PREFIX_INDEX.get().is_none());
+        assert!(!prefix_wave_memory_is_warm());
     }
 
     #[test]
