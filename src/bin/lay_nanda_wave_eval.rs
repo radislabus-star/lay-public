@@ -217,10 +217,21 @@ fn main() -> io::Result<()> {
         print_ensemble_contribution_report(&cases, suite.cases.len());
         return Ok(());
     }
+    if args.iter().any(|arg| arg == "--l2-candidate-flow-report") {
+        let suite = real_suite::load()?;
+        let cases = if args.iter().any(|arg| arg == "--full-suite") {
+            suite.cases.clone()
+        } else {
+            status::status_sample_cases(&suite.cases)
+        };
+        let show_examples = args.iter().any(|arg| arg == "--show-examples");
+        print_l2_candidate_flow_report(&cases, suite.cases.len(), &options, show_examples);
+        return Ok(());
+    }
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
         );
         return Ok(());
     }
@@ -1179,6 +1190,264 @@ fn print_contribution_report(report: &ContributionReport) {
     );
     println!("    applied_sources: {sources}");
     println!("    disabled: {disabled}");
+}
+
+fn print_l2_candidate_flow_report(
+    cases: &[EvalCase],
+    full_cases: usize,
+    options: &WaveOptions,
+    show_examples: bool,
+) {
+    let dirty_cases = cases
+        .iter()
+        .filter(|case| case.original != case.expected)
+        .collect::<Vec<_>>();
+    let mut stats: BTreeMap<String, L2CandidateFlowStats> = BTreeMap::new();
+    let mut cases_with_l2 = 0usize;
+    let mut no_l2_candidates = 0usize;
+    let mut expected_candidate_present = 0usize;
+    let mut expected_candidate_missing = 0usize;
+    let mut expected_candidate_applied = 0usize;
+    let mut present_but_not_applied = 0usize;
+    let mut nonfinal_apply = 0usize;
+    let mut examples = L2CandidateFlowExamples::default();
+
+    for case in &dirty_cases {
+        let trace = run_wave_trace_with_options(&case.original, options);
+        if trace.l2_candidates.is_empty() {
+            no_l2_candidates += 1;
+            examples.no_l2.push(flow_example(case, &trace, None));
+            continue;
+        }
+        cases_with_l2 += 1;
+
+        for candidate in &trace.l2_candidates {
+            stats
+                .entry(candidate.source.to_string())
+                .or_default()
+                .generated += 1;
+        }
+        if let Some(first) = trace.l2_candidates.first() {
+            stats.entry(first.source.to_string()).or_default().first += 1;
+        }
+
+        let expected_sources = trace
+            .l2_candidates
+            .iter()
+            .filter(|candidate| {
+                candidate_output_for_original(&case.original, &candidate.text) == case.expected
+            })
+            .map(|candidate| candidate.source.to_string())
+            .collect::<Vec<_>>();
+        if expected_sources.is_empty() {
+            expected_candidate_missing += 1;
+            examples
+                .missing_expected
+                .push(flow_example(case, &trace, None));
+        } else {
+            expected_candidate_present += 1;
+            for source in &expected_sources {
+                stats.entry(source.clone()).or_default().expected_present += 1;
+            }
+        }
+
+        match trace.decision {
+            WaveDecision::Apply { ref text, .. } => {
+                let applied_source = applied_source_for_trace(&trace, text);
+                if let Some(source) = applied_source {
+                    stats.entry(source.to_string()).or_default().accepted += 1;
+                }
+                if text == &case.expected {
+                    expected_candidate_applied += 1;
+                } else {
+                    nonfinal_apply += 1;
+                    if let Some(source) = applied_source {
+                        stats.entry(source.to_string()).or_default().nonfinal_apply += 1;
+                    }
+                    examples
+                        .nonfinal_apply
+                        .push(flow_example(case, &trace, Some(text.as_str())));
+                }
+                if text != &case.expected && !expected_sources.is_empty() {
+                    present_but_not_applied += 1;
+                    for source in &expected_sources {
+                        stats
+                            .entry(source.clone())
+                            .or_default()
+                            .expected_present_not_applied += 1;
+                    }
+                    examples.present_not_applied.push(flow_example(
+                        case,
+                        &trace,
+                        Some(text.as_str()),
+                    ));
+                }
+            }
+            WaveDecision::Keep { .. } | WaveDecision::Veto { .. } => {
+                if !expected_sources.is_empty() {
+                    present_but_not_applied += 1;
+                    for source in &expected_sources {
+                        stats
+                            .entry(source.clone())
+                            .or_default()
+                            .expected_present_not_applied += 1;
+                    }
+                    examples
+                        .present_not_applied
+                        .push(flow_example(case, &trace, None));
+                }
+            }
+        }
+    }
+
+    println!(
+        "l2_candidate_flow_report: cases={} full_cases={} sampled={} dirty_cases={}",
+        cases.len(),
+        full_cases,
+        cases.len() < full_cases,
+        dirty_cases.len()
+    );
+    println!("  authority: analysis_only_no_runtime_change");
+    println!("  cases_with_l2_candidates: {cases_with_l2}");
+    println!("  no_l2_candidates: {no_l2_candidates}");
+    println!("  expected_candidate_present: {expected_candidate_present}");
+    println!("  expected_candidate_missing: {expected_candidate_missing}");
+    println!("  expected_candidate_applied: {expected_candidate_applied}");
+    println!("  expected_present_but_not_applied: {present_but_not_applied}");
+    println!("  nonfinal_apply: {nonfinal_apply}");
+    println!(
+        "  note: nonfinal_apply means output != expected; multi-error rows can be partial fixes"
+    );
+    println!("  sources:");
+    for (source, row) in stats {
+        if row.is_empty() {
+            continue;
+        }
+        println!(
+            "    {source}: generated={} first={} expected_present={} expected_present_not_applied={} accepted={} nonfinal_apply={}",
+            row.generated,
+            row.first,
+            row.expected_present,
+            row.expected_present_not_applied,
+            row.accepted,
+            row.nonfinal_apply
+        );
+    }
+    if show_examples {
+        print_flow_examples("no_l2", &examples.no_l2);
+        print_flow_examples("missing_expected", &examples.missing_expected);
+        print_flow_examples("present_not_applied", &examples.present_not_applied);
+        print_flow_examples("nonfinal_apply", &examples.nonfinal_apply);
+    }
+}
+
+#[derive(Debug, Default, Clone)]
+struct L2CandidateFlowStats {
+    generated: usize,
+    first: usize,
+    expected_present: usize,
+    expected_present_not_applied: usize,
+    accepted: usize,
+    nonfinal_apply: usize,
+}
+
+impl L2CandidateFlowStats {
+    fn is_empty(&self) -> bool {
+        self.generated == 0
+            && self.first == 0
+            && self.expected_present == 0
+            && self.expected_present_not_applied == 0
+            && self.accepted == 0
+            && self.nonfinal_apply == 0
+    }
+}
+
+#[derive(Debug, Default)]
+struct L2CandidateFlowExamples {
+    no_l2: Vec<L2CandidateFlowExample>,
+    missing_expected: Vec<L2CandidateFlowExample>,
+    present_not_applied: Vec<L2CandidateFlowExample>,
+    nonfinal_apply: Vec<L2CandidateFlowExample>,
+}
+
+#[derive(Debug, Clone)]
+struct L2CandidateFlowExample {
+    original: String,
+    expected: String,
+    decision: String,
+    output: String,
+    first_candidate: String,
+    top_sources: String,
+}
+
+fn flow_example(
+    case: &EvalCase,
+    trace: &lay::nanda_wave::WaveTrace,
+    output: Option<&str>,
+) -> L2CandidateFlowExample {
+    L2CandidateFlowExample {
+        original: case.original.clone(),
+        expected: case.expected.clone(),
+        decision: decision_label(&trace.decision).to_string(),
+        output: output
+            .map(ToOwned::to_owned)
+            .or_else(|| trace.output().map(ToOwned::to_owned))
+            .unwrap_or_else(|| "keep".to_string()),
+        first_candidate: trace
+            .l2_candidates
+            .first()
+            .map(candidate_short)
+            .unwrap_or_else(|| "none".to_string()),
+        top_sources: trace
+            .l2_candidates
+            .iter()
+            .take(4)
+            .map(|candidate| candidate.source)
+            .collect::<Vec<_>>()
+            .join(","),
+    }
+}
+
+fn print_flow_examples(label: &str, examples: &[L2CandidateFlowExample]) {
+    println!("  examples_{label}:");
+    if examples.is_empty() {
+        println!("    none");
+        return;
+    }
+    for example in examples.iter().take(8) {
+        println!(
+            "    {:?} -> expected {:?} | decision={} output={:?} first={} sources={}",
+            example.original,
+            example.expected,
+            example.decision,
+            example.output,
+            example.first_candidate,
+            example.top_sources
+        );
+    }
+}
+
+fn decision_label(decision: &WaveDecision) -> &'static str {
+    match decision {
+        WaveDecision::Apply { .. } => "apply",
+        WaveDecision::Keep { .. } => "keep",
+        WaveDecision::Veto { .. } => "veto",
+    }
+}
+
+fn candidate_short(candidate: &lay::nanda_wave::WordCandidate) -> String {
+    format!(
+        "{}:{:?}:e{:.2}:r{:.2}",
+        candidate.source, candidate.text, candidate.energy, candidate.risk
+    )
+}
+
+fn candidate_output_for_original(original: &str, candidate: &str) -> String {
+    if original.ends_with(' ') && !candidate.ends_with(' ') {
+        format!("{candidate} ")
+    } else {
+        candidate.to_string()
+    }
 }
 
 fn print_cell_ablation(cases: &[EvalCase], cell: &str, label: &str) {
