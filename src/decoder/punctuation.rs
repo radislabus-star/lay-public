@@ -5,7 +5,6 @@ use crate::decoder::types::{CorrectionSource, CorrectionTrigger};
 use crate::input_gate::{decide_input_gate, InputGateAction, InputGateRequest, InputGateTrigger};
 use crate::keyboard::{map_original_events, KeyEvent};
 use crate::text_edit::ensure_committed_tail_spacing;
-use crate::typing_assist::apply_typing_assist_with_pipeline;
 
 pub fn decode_typing_assist_current_tail(
     events: &[KeyEvent],
@@ -23,10 +22,21 @@ pub fn decode_typing_assist_current_tail(
         return None;
     }
     let assist_input = format!("{original} ");
-    let replacement =
-        apply_typing_assist_with_pipeline(&assist_input, allow_layout_auto, pipeline)?
-            .trim_end()
-            .to_string();
+    let decision = decide_input_gate(InputGateRequest {
+        trigger: InputGateTrigger::Space,
+        text_tail: &assist_input,
+        auto_replace: true,
+        typing_assist: true,
+        auto_switch_layout: allow_layout_auto,
+        correction_safety: CorrectionSafety::Normal,
+        typing_assist_pipeline: pipeline,
+        nanda_autocorrect: false,
+        correction_mode: CorrectionMode::DeterministicOnly,
+    });
+    let InputGateAction::ApplyReplacement { replacement, .. } = decision.action else {
+        return None;
+    };
+    let replacement = replacement.trim_end().to_string();
     changed_committed_tail_plan(
         CorrectionTrigger::AfterPunctuation,
         &original,
