@@ -57,8 +57,22 @@ fn decode_typing_assist_text(
     allow_layout_auto: bool,
     pipeline: &[TypingAssistRuleConfig],
 ) -> Option<String> {
+    decode_input_gate_replacement(
+        InputGateTrigger::Space,
+        text_tail,
+        allow_layout_auto,
+        pipeline,
+    )
+}
+
+fn decode_input_gate_replacement(
+    trigger: InputGateTrigger,
+    text_tail: &str,
+    allow_layout_auto: bool,
+    pipeline: &[TypingAssistRuleConfig],
+) -> Option<String> {
     let decision = decide_input_gate(InputGateRequest {
-        trigger: InputGateTrigger::Space,
+        trigger,
         text_tail,
         auto_replace: true,
         typing_assist: true,

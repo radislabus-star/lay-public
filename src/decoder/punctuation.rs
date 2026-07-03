@@ -1,8 +1,7 @@
-use super::changed_committed_tail_plan;
-use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
-use crate::correction_core::CorrectionMode;
+use super::{changed_committed_tail_plan, decode_input_gate_replacement};
+use crate::config::TypingAssistRuleConfig;
 use crate::decoder::types::{CorrectionSource, CorrectionTrigger};
-use crate::input_gate::{decide_input_gate, InputGateAction, InputGateRequest, InputGateTrigger};
+use crate::input_gate::InputGateTrigger;
 use crate::keyboard::{map_original_events, KeyEvent};
 use crate::text_edit::ensure_committed_tail_spacing;
 
@@ -22,20 +21,12 @@ pub fn decode_typing_assist_current_tail(
         return None;
     }
     let assist_input = format!("{original} ");
-    let decision = decide_input_gate(InputGateRequest {
-        trigger: InputGateTrigger::Space,
-        text_tail: &assist_input,
-        auto_replace: true,
-        typing_assist: true,
-        auto_switch_layout: allow_layout_auto,
-        correction_safety: CorrectionSafety::Normal,
-        typing_assist_pipeline: pipeline,
-        nanda_autocorrect: false,
-        correction_mode: CorrectionMode::DeterministicOnly,
-    });
-    let InputGateAction::ApplyReplacement { replacement, .. } = decision.action else {
-        return None;
-    };
+    let replacement = decode_input_gate_replacement(
+        InputGateTrigger::Space,
+        &assist_input,
+        allow_layout_auto,
+        pipeline,
+    )?;
     let replacement = replacement.trim_end().to_string();
     changed_committed_tail_plan(
         CorrectionTrigger::AfterPunctuation,
@@ -60,23 +51,8 @@ pub fn decode_enter_autocorrect_tail(
     } else {
         format!("{original} ")
     };
-    let decision = decide_input_gate(InputGateRequest {
-        trigger: InputGateTrigger::Enter,
-        text_tail: &assist_input,
-        auto_replace: true,
-        typing_assist: true,
-        auto_switch_layout: false,
-        correction_safety: CorrectionSafety::Normal,
-        typing_assist_pipeline: pipeline,
-        nanda_autocorrect: false,
-        correction_mode: CorrectionMode::DeterministicOnly,
-    });
-    let InputGateAction::ApplyReplacement {
-        mut replacement, ..
-    } = decision.action
-    else {
-        return None;
-    };
+    let mut replacement =
+        decode_input_gate_replacement(InputGateTrigger::Enter, &assist_input, false, pipeline)?;
     if original_has_trailing_space {
         replacement = ensure_committed_tail_spacing(&original, replacement);
     } else {
