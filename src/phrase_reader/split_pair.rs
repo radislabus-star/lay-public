@@ -17,30 +17,21 @@ pub fn correct_split_word_pair(text: &str) -> Option<String> {
 
     let left_lower = pair.left.to_lowercase();
     let right_lower = pair.right.to_lowercase();
-    if is_shouty_cyrillic_word(pair.right) {
-        return None;
-    }
-    if crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(pair.left).is_some()
-        || crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(pair.right).is_some()
-    {
-        return None;
-    }
+    (!is_shouty_cyrillic_word(pair.right)).then_some(())?;
+    (crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(pair.left).is_none()
+        && crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(pair.right).is_none())
+    .then_some(())?;
     let glued = format!("{}{}", pair.left, pair.right);
-    if glued.chars().count() < 4 || !is_cyrillic_word(&glued) {
-        return None;
-    }
+    (glued.chars().count() >= 4 && is_cyrillic_word(&glued)).then_some(())?;
 
     let lower = glued.to_lowercase();
-    if left_lower.chars().count() == 1 && !crate::lexicon::is_common_ru_word(&lower) {
-        return None;
-    }
+    (left_lower.chars().count() != 1 || crate::lexicon::is_common_ru_word(&lower)).then_some(())?;
+    let direct_glued_is_known = is_known_russian_word_or_form(&lower);
     let glued_candidate = split_word_merge_candidate(&glued, &lower);
     let glued_is_preferable = glued_candidate.as_ref().is_some_and(|(_, lower)| {
         ngram_allows_ru_candidate(lower, text, NGRAM_SPLIT_REJECT_MARGIN)
     });
-    if should_keep_standalone_pair_with_short_right(&left_lower, &right_lower) {
-        return None;
-    }
+    (!should_keep_standalone_pair_with_short_right(&left_lower, &right_lower)).then_some(())?;
     if left_lower.chars().count() >= 4
         && right_lower.chars().count() <= 3
         && is_known_russian_phrase_part(&left_lower)
@@ -57,15 +48,12 @@ pub fn correct_split_word_pair(text: &str) -> Option<String> {
         && right_lower.chars().count() >= 4
         && is_cyrillic_letters_only(&right_lower)
         && is_known_russian_word_or_form(&right_lower)
+        && (!direct_glued_is_known || !glued_is_preferable)
     {
         return None;
     }
-    if should_keep_standalone_pair_with_function_right(&left_lower, &right_lower) {
-        return None;
-    }
-    if should_keep_standalone_pair_with_function_left(&left_lower, &right_lower) {
-        return None;
-    }
+    (!should_keep_standalone_pair_with_function_right(&left_lower, &right_lower)).then_some(())?;
+    (!should_keep_standalone_pair_with_function_left(&left_lower, &right_lower)).then_some(())?;
     if is_known_russian_phrase_part(&left_lower)
         && is_one_letter_russian_function_word(&right_lower)
     {
@@ -86,11 +74,9 @@ pub fn correct_split_word_pair(text: &str) -> Option<String> {
     Some(format!("{replacement}{}", pair.right_trailing))
 }
 
+#[rustfmt::skip]
 fn split_word_merge_candidate(original_glued: &str, lower: &str) -> Option<(String, String)> {
-    if is_known_russian_word_or_form(lower) {
-        return Some((apply_word_case(original_glued, lower), lower.to_string()));
-    }
-
+    if is_known_russian_word_or_form(lower) { return Some((apply_word_case(original_glued, lower), lower.to_string())); }
     let repaired = correct_repeated_letter(original_glued)?;
     let repaired_lower = repaired.to_lowercase();
     is_known_russian_word_or_form(&repaired_lower).then_some((repaired, repaired_lower))

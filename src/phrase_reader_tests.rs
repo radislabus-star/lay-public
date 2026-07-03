@@ -14,15 +14,20 @@ fn splits_confident_glued_phrase_without_daemon_runtime() {
 
 #[test]
 fn glued_phrase_defers_to_whole_word_typo_candidate() {
-    assert_eq!(correct_glued_russian_phrase("переиспользоватся"), None);
+    for row in fixture_rows("phrase_reader_glued_keep.txt") {
+        assert_eq!(row.len(), 1, "glued keep fixture must have one field");
+        assert_eq!(correct_glued_russian_phrase(&row[0]), None);
+    }
 }
 
 #[test]
 fn splits_short_function_glued_to_be_form() {
-    assert_eq!(
-        correct_glued_russian_phrase("тоесть"),
-        Some("то есть".to_string())
-    );
+    let row = fixture_rows("phrase_reader_glued_function_words.tsv")
+        .into_iter()
+        .next()
+        .expect("function-word glued fixture");
+    assert_eq!(row.len(), 2, "function-word glued fixture must be TSV");
+    assert_eq!(correct_glued_russian_phrase(&row[0]), Some(row[1].clone()));
 }
 
 #[test]
@@ -47,9 +52,6 @@ fn merges_accidental_split_word_but_keeps_normal_pair() {
         assert_eq!(row.len(), 1, "split pair keep fixture must have one field");
         assert_eq!(correct_split_word_pair(&row[0]), None);
     }
-    assert_eq!(correct_split_word_pair("реально ое"), None);
-    assert_eq!(correct_split_word_pair("я дам"), None);
-    assert_eq!(correct_split_word_pair("я был"), None);
 }
 
 #[test]
