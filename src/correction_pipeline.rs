@@ -14,7 +14,7 @@ use crate::nanda_wave::{run_wave_trace, WaveDecision, WaveTrace};
 /// runtime route is migrated and proven separately.
 fn decide_space_autocorrect(req: InputGateRequest<'_>) -> InputGateDecision {
     CanonicalTextPipeline::decide(PipelineRequest {
-        snapshot: TailSnapshot::new(req.text_tail, req.trigger, TailSnapshotSource::Daemon),
+        snapshot: TailSnapshot::new(req.text_tail, req.trigger),
         auto_replace: req.auto_replace,
         typing_assist: req.typing_assist,
         auto_switch_layout: req.auto_switch_layout,
@@ -27,42 +27,18 @@ fn decide_space_autocorrect(req: InputGateRequest<'_>) -> InputGateDecision {
     .input_gate
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[allow(dead_code)]
-enum TailSnapshotSource {
-    Daemon,
-    Ime,
-    Cli,
-    Test,
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct TailSnapshot {
     text: String,
     trigger: InputGateTrigger,
-    source: TailSnapshotSource,
-    cursor: Option<usize>,
 }
 
 impl TailSnapshot {
-    fn new(text: impl Into<String>, trigger: InputGateTrigger, source: TailSnapshotSource) -> Self {
+    fn new(text: impl Into<String>, trigger: InputGateTrigger) -> Self {
         Self {
             text: text.into(),
             trigger,
-            source,
-            cursor: None,
         }
-    }
-
-    #[allow(dead_code)]
-    fn with_cursor(mut self, cursor: usize) -> Self {
-        self.cursor = Some(cursor);
-        self
-    }
-
-    #[allow(dead_code)]
-    fn active_word(&self) -> Option<&str> {
-        self.text.split_whitespace().next_back()
     }
 }
 
@@ -172,13 +148,6 @@ struct PipelineRequest<'a> {
     nanda_autocorrect: bool,
     correction_mode: CorrectionMode,
     include_l3_report: bool,
-}
-
-#[allow(dead_code)]
-trait OutputBackend {
-    type Error;
-
-    fn apply_edit_plan(&mut self, plan: &EditPlan) -> Result<(), Self::Error>;
 }
 
 struct ErrorGate;
@@ -292,7 +261,7 @@ mod correction_pipeline_tests {
 
     fn request<'a>(text: &str, pipeline: &'a [TypingAssistRuleConfig]) -> PipelineRequest<'a> {
         PipelineRequest {
-            snapshot: TailSnapshot::new(text, InputGateTrigger::Space, TailSnapshotSource::Test),
+            snapshot: TailSnapshot::new(text, InputGateTrigger::Space),
             auto_replace: true,
             typing_assist: true,
             auto_switch_layout: true,
