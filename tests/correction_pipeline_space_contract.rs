@@ -1,8 +1,6 @@
 use lay::config::{default_typing_assist_pipeline, CorrectionSafety};
 use lay::correction_core::{CorrectionDecisionSource, CorrectionMode};
-use lay::decoder::{
-    decode_enter_autocorrect_tail, decode_typing_assist_tail, CorrectionSource,
-};
+use lay::decoder::{decode_enter_autocorrect_tail, decode_typing_assist_tail, CorrectionSource};
 use lay::input_gate::{decide_input_gate, InputGateAction, InputGateRequest, InputGateTrigger};
 use lay::keyboard::text_to_key_events;
 
@@ -77,19 +75,18 @@ fn daemon_space_and_enter_decoders_share_input_gate_replacement_contract() {
             ..
         } = gate.action
         else {
-            panic!("expected gate replacement for {input:?}, got {:?}", gate.action);
+            panic!(
+                "expected gate replacement for {input:?}, got {:?}",
+                gate.action
+            );
         };
         assert_eq!(gate_replacement, expected, "{input:?}");
 
         let events = text_to_key_events(input, layout_is_ru)
             .unwrap_or_else(|| panic!("fixture must map to key events: {input:?}"));
-        let space_plan = decode_typing_assist_tail(
-            &events,
-            true,
-            &pipeline,
-            CorrectionSource::TypingAssist,
-        )
-        .unwrap_or_else(|| panic!("expected daemon space decoder plan for {input:?}"));
+        let space_plan =
+            decode_typing_assist_tail(&events, true, &pipeline, CorrectionSource::TypingAssist)
+                .unwrap_or_else(|| panic!("expected daemon space decoder plan for {input:?}"));
         assert_eq!(space_plan.replacement, gate_replacement, "{input:?}");
         assert!(space_plan.plan_matches_replacement(), "{input:?}");
         assert!(space_plan.preserves_committed_separator(), "{input:?}");

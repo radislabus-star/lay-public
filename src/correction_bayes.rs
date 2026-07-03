@@ -1,4 +1,5 @@
 use crate::text_metrics::damerau_levenshtein;
+use crate::typing_rule_graph::ids;
 use crate::word_reader::{is_cyrillic_letters_only, split_edge_whitespace, split_word_punctuation};
 
 #[derive(Debug, Clone, PartialEq)]
@@ -154,7 +155,10 @@ fn candidate_risk(
 fn trusted_typo_source(source_id: &str) -> bool {
     matches!(
         source_id,
-        "composite_ru_typo" | "adjacent_transposition" | "missing_letter" | "repeated_letter"
+        "composite_ru_typo"
+            | ids::ADJACENT_TRANSPOSITION
+            | ids::MISSING_LETTER
+            | ids::REPEATED_LETTER
     ) || source_id.starts_with("layout_then_")
 }
 
@@ -262,7 +266,7 @@ mod tests {
             "composite-typo",
             "composite_ru_typo",
         );
-        assert_eq!(reason, Some("bayes_low_posterior"));
+        assert_eq!(reason, Some("bayes_high_candidate_risk"));
     }
 
     #[test]
