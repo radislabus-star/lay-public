@@ -287,7 +287,7 @@ fn deterministic_composite_text_correction(
 ) -> Option<UnifiedCorrectionCandidate> {
     layout_then_typo_candidate(req, pipeline)
         .or_else(|| repeated_letter_fallback_candidate(req))
-        .or_else(|| composite_russian_typo_candidate(req))
+        .or_else(|| composite_russian_typo_candidate(req, pipeline))
 }
 
 fn repeated_letter_fallback_candidate(
@@ -391,6 +391,7 @@ fn layout_then_typo_candidate(
 
 fn composite_russian_typo_candidate(
     req: &CorrectionRequest<'_>,
+    pipeline: &[TypingAssistRuleConfig],
 ) -> Option<UnifiedCorrectionCandidate> {
     if !req.typing_assist && !req.auto_replace {
         return None;
@@ -452,7 +453,8 @@ fn composite_russian_typo_candidate(
         }
     }
 
-    let (candidate, _) = crate::candidate_ranker::choose_best_with_gap(
+    let single_step = current_word_rule_candidate(req, pipeline, &current_word);
+    let Some((candidate, _)) = crate::candidate_ranker::choose_best_with_gap(
         crate::ru_typo::fuzzy_known_word_candidates(&lower),
         0.85,
         |candidate| {
@@ -513,7 +515,9 @@ fn composite_russian_typo_candidate(
                 - distance as f64 * 0.35;
             (score >= 0.0).then_some(score)
         },
-    )?;
+    ) else {
+        return single_step;
+    };
     let replacement_word = apply_word_case(&current_word, &candidate);
     let replacement = replace_last_word_and_split_previous_glued(req.text, &replacement_word)
         .or_else(|| replace_last_text_word(req.text, &replacement_word))?;
@@ -531,11 +535,53 @@ fn composite_russian_typo_candidate(
         TypingErrorClass::CompositeTypo,
         source_id,
     );
-    Some(UnifiedCorrectionCandidate {
+    let composite = UnifiedCorrectionCandidate {
         replacement,
         source: CorrectionDecisionSource::Deterministic,
         source_id: source_id.to_string(),
         error_class: TypingErrorClass::CompositeTypo,
+        gate,
+    };
+    if let Some(single_step) = single_step {
+        if !should_prefer_composite_after_repeated_repair(
+            req.text,
+            &single_step.replacement,
+            &composite.replacement,
+        ) {
+            return Some(single_step);
+        }
+    }
+    Some(composite)
+}
+
+fn current_word_rule_candidate(
+    req: &CorrectionRequest<'_>,
+    pipeline: &[TypingAssistRuleConfig],
+    current_word: &str,
+) -> Option<UnifiedCorrectionCandidate> {
+    let current_tail = format!("{current_word} ");
+    let explanation = explain_typing_assist_with_pipeline(&current_tail, false, pipeline);
+    let replacement_tail = explanation.output?;
+    let replacement_word = last_text_word(&replacement_tail)?;
+    if replacement_word == current_word || !is_cyrillic_letters_only(&replacement_word) {
+        return None;
+    }
+    let replacement = replace_last_text_word(req.text, &replacement_word)?;
+    if replacement == req.text || !syntax_allows_candidate(req.text, &replacement) {
+        return None;
+    }
+    let rule_id = explanation
+        .chosen
+        .as_ref()
+        .map(|candidate| candidate.rule_id.as_str())
+        .unwrap_or("current_word_rule");
+    let error_class = rule_error_class(rule_id);
+    let gate = gate_candidate_with_source(req.text, &replacement, error_class, rule_id);
+    Some(UnifiedCorrectionCandidate {
+        replacement,
+        source: CorrectionDecisionSource::Deterministic,
+        source_id: rule_id.to_string(),
+        error_class,
         gate,
     })
 }
@@ -1136,6 +1182,12 @@ fn l3_context_gate(
             reason: "short_same_length_multi_edit_drift",
         });
     }
+    if same_tail_single_consonant_drift(original, replacement, error_class) {
+        return Some(CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "same_tail_single_consonant_drift",
+        });
+    }
     if known_russian_word_rewritten_to_different_known_word(original, replacement, error_class) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
@@ -1654,6 +1706,59 @@ fn short_word_same_length_multi_edit_drift(
         && damerau_levenshtein(&original_lower, &replacement_lower) >= 2
 }
 
+fn same_tail_single_consonant_drift(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+) -> bool {
+    if !matches!(
+        error_class,
+        TypingErrorClass::CompositeTypo | TypingErrorClass::GrammarAgreement
+    ) {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return false;
+    };
+    if !is_cyrillic_letters_only(&original_word) || !is_cyrillic_letters_only(&replacement_word) {
+        return false;
+    }
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    let original_chars = original_lower.chars().collect::<Vec<_>>();
+    let replacement_chars = replacement_lower.chars().collect::<Vec<_>>();
+    if original_chars.len() < 6
+        || original_chars.len() != replacement_chars.len()
+        || damerau_levenshtein(&original_lower, &replacement_lower) != 1
+    {
+        return false;
+    }
+    let diffs = original_chars
+        .iter()
+        .zip(&replacement_chars)
+        .enumerate()
+        .filter(|(_, (left, right))| left != right)
+        .collect::<Vec<_>>();
+    let [(idx, (left, right))] = diffs.as_slice() else {
+        return false;
+    };
+    *idx > 1
+        && *idx + 2 < original_chars.len()
+        && is_russian_consonant(**left)
+        && is_russian_consonant(**right)
+        && original_chars[original_chars.len() - 2..]
+            == replacement_chars[replacement_chars.len() - 2..]
+}
+
+fn is_russian_consonant(ch: char) -> bool {
+    matches!(ch, 'а'..='я' | 'ё')
+        && !crate::russian_chars::is_russian_vowel(ch)
+        && !matches!(ch, 'ь' | 'ъ')
+}
+
 fn short_layout_candidate_lacks_phrase_context(
     original: &str,
     replacement: &str,
@@ -1782,7 +1887,7 @@ fn should_prefer_composite_after_repeated_repair(
         return false;
     }
     if single_word.chars().count() < original_word.chars().count()
-        && composite_word.chars().count() >= original_word.chars().count()
+        && composite_word.chars().count() > original_word.chars().count()
         && damerau_levenshtein(&original_lower, &composite_lower) <= 1
         && crate::russian_lexicon::is_known_russian_word_or_form(&composite_lower)
     {
@@ -1791,6 +1896,7 @@ fn should_prefer_composite_after_repeated_repair(
     repeated_run_deletion_candidates(&original_lower)
         .into_iter()
         .any(|candidate| candidate == single_lower)
+        && composite_word.chars().count() > original_word.chars().count()
         && damerau_levenshtein(&single_lower, &composite_lower) <= 1
         && crate::russian_lexicon::is_known_russian_word_or_form(&composite_lower)
 }
@@ -2018,6 +2124,54 @@ mod tests {
         assert_eq!(selected.source_id, "composite_ru_typo");
         assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
         assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn composite_typo_does_not_jump_over_known_single_step_repair() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "мы отвравим ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution.selected.expect("selected candidate");
+        assert_eq!(selected.replacement, "мы отравим ");
+        assert_ne!(selected.replacement, "мы отвратим ");
+    }
+
+    #[test]
+    fn nanda_semantic_drift_does_not_beat_local_single_step_repair() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "мы отвравим ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        ));
+
+        let selected = resolution.selected.as_ref().expect("selected candidate");
+        assert_eq!(selected.replacement, "мы отравим ");
+        assert!(
+            resolution.candidates.iter().any(|candidate| {
+                candidate.replacement == "мы отвратим "
+                    && candidate.gate.action == CandidateGateAction::SuggestOnly
+                    && candidate.gate.reason == "same_tail_single_consonant_drift"
+            }),
+            "semantic drift candidate must be suggest-only: {resolution:?}"
+        );
+    }
+
+    #[test]
+    fn composite_gate_blocks_same_tail_consonant_semantic_drift() {
+        let decision = gate_candidate_with_source(
+            "будет примать ",
+            "будет придать ",
+            TypingErrorClass::CompositeTypo,
+            crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+        );
+
+        assert_eq!(decision.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(decision.reason, "same_tail_single_consonant_drift");
     }
 
     #[test]
