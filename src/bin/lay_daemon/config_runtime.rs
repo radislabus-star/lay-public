@@ -121,16 +121,13 @@ pub(super) fn active_enter_autocorrect_from_env(
     config_enabled: bool,
     env_value: Option<&str>,
 ) -> bool {
-    if !config_enabled {
-        return false;
-    }
-    match env_value {
-        None => true,
-        Some(value) => matches!(
-            value.trim().to_ascii_lowercase().as_str(),
-            "1" | "true" | "yes" | "on"
-        ),
-    }
+    config_enabled
+        && env_value.map_or(true, |value| {
+            matches!(
+                value.trim().to_ascii_lowercase().as_str(),
+                "1" | "true" | "yes" | "on"
+            )
+        })
 }
 
 pub(super) fn active_auto_switch_layout() -> bool {
