@@ -1,6 +1,3 @@
-use lay::decoder::CorrectionTrigger;
-use std::time::Instant;
-
 use super::super::super::{
     active_auto_switch_layout, apply_text_replacement_pipeline, layout_switch_policy, log,
     switch_or_restore_layout_after_text_edit, tail_replace_policy,
@@ -10,11 +7,12 @@ use super::memory::{
     remember_typing_assist_correction, TypingAssistMemoryContext, TypingAssistTiming,
 };
 use super::queued::next_correction_after_forwarded_spaces;
+use lay::decoder::CorrectionTrigger;
+use std::time::Instant;
 
 #[path = "minimal/context.rs"]
 mod context;
 pub(crate) use context::MinimalTypingReplacementContext;
-
 pub(crate) fn apply_minimal_typing_replacement(
     ctx: MinimalTypingReplacementContext<'_, '_>,
 ) -> TypingAssistOutcome {
@@ -127,7 +125,6 @@ pub(crate) fn apply_minimal_typing_replacement(
         layout_is_ru: insert_outcome.layout_is_ru,
     }
 }
-
 fn trailing_space_count(text: &str) -> usize {
     text.chars().rev().take_while(|ch| *ch == ' ').count()
 }
