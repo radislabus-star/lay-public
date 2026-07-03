@@ -1,5 +1,3 @@
-use std::time::Instant;
-
 use super::super::super::{
     active_auto_switch_layout, layout_switch_policy, log, should_try_ime_text_backend,
     switch_or_restore_layout_after_text_edit, try_ime_replace_tail,
@@ -7,7 +5,6 @@ use super::super::super::{
 use super::super::TypingAssistOutcome;
 use super::memory::TypingAssistTiming;
 use super::queued::next_correction_after_forwarded_spaces;
-
 #[path = "ime/context.rs"]
 mod context;
 #[path = "ime/forward.rs"]
@@ -16,12 +13,10 @@ mod forward;
 mod remember;
 #[path = "ime/timing.rs"]
 mod timing_profile;
-
 pub(crate) use context::ImeTypingReplacementContext;
 use forward::{forward_after_ime_replace, trailing_space_count};
 use remember::remember_ime_typing_correction;
 use timing_profile::record_ime_timing;
-
 pub(crate) fn try_apply_ime_replacement(
     ctx: ImeTypingReplacementContext<'_, '_, '_>,
 ) -> Option<TypingAssistOutcome> {
@@ -39,25 +34,24 @@ pub(crate) fn try_apply_ime_replacement(
     if !should_try_ime_text_backend() {
         return None;
     }
-    let replace_tail_started = Instant::now();
+    let replace_tail_started = std::time::Instant::now();
     if !try_ime_replace_tail(original, replacement, "typing-assist").unwrap_or(false) {
         return None;
     }
     let replace_tail_ms = replace_tail_started.elapsed().as_millis();
-
     let target_layout = layout_switch_policy::target_layout_for_replacement(replacement, true);
-    let layout_started = Instant::now();
-    let force_target_layout =
+    let layout_started = std::time::Instant::now();
+    let force_layout =
         layout_switch_policy::force_target_layout_for_replacement(original, replacement);
     switch_or_restore_layout_after_text_edit(
-        active_auto_switch_layout() || force_target_layout,
+        active_auto_switch_layout() || force_layout,
         target_layout,
         None,
         "typing-assist",
         false,
     );
     let layout_ms = layout_started.elapsed().as_millis();
-    let remember_started = Instant::now();
+    let remember_started = std::time::Instant::now();
     remember_ime_typing_correction(
         buf,
         events,
@@ -68,7 +62,7 @@ pub(crate) fn try_apply_ime_replacement(
         timing,
     );
     let remember_ms = remember_started.elapsed().as_millis();
-    let forward_started = Instant::now();
+    let forward_started = std::time::Instant::now();
     let forwarded_spaces = forward_after_ime_replace(
         virtual_kbd,
         physical_grab,
@@ -85,20 +79,18 @@ pub(crate) fn try_apply_ime_replacement(
         timing.started_at.elapsed().as_millis()
     ));
     if let Some(next) = next_correction_after_forwarded_spaces(buf, forwarded_spaces) {
-        let (next_original, next_replacement) =
-            (next.edit.original.clone(), next.edit.replacement.clone());
         return try_apply_ime_replacement(ImeTypingReplacementContext {
             buf,
             virtual_kbd,
             physical_grab,
             events: &next.events,
-            original: &next_original,
-            replacement: &next_replacement,
+            original: &next.edit.original,
+            replacement: &next.edit.replacement,
             rule_id: next.rule_id.as_deref(),
             input_gate: next.input_gate,
             timing: TypingAssistTiming {
                 decision_ms: next.decision_ms,
-                started_at: Instant::now(),
+                started_at: std::time::Instant::now(),
             },
         });
     }
