@@ -265,10 +265,10 @@ mod correction_pipeline_tests {
             auto_replace: true,
             typing_assist: true,
             auto_switch_layout: true,
-            correction_safety: CorrectionSafety::Experimental,
+            correction_safety: CorrectionSafety::Normal,
             typing_assist_pipeline: pipeline,
-            nanda_autocorrect: true,
-            correction_mode: CorrectionMode::DeterministicThenNanda,
+            nanda_autocorrect: false,
+            correction_mode: CorrectionMode::DeterministicOnly,
             include_l3_report: false,
         }
     }
@@ -283,10 +283,10 @@ mod correction_pipeline_tests {
             auto_replace: true,
             typing_assist: true,
             auto_switch_layout: true,
-            correction_safety: CorrectionSafety::Experimental,
+            correction_safety: CorrectionSafety::Normal,
             typing_assist_pipeline: pipeline,
-            nanda_autocorrect: true,
-            correction_mode: CorrectionMode::DeterministicThenNanda,
+            nanda_autocorrect: false,
+            correction_mode: CorrectionMode::DeterministicOnly,
         })
     }
 
@@ -300,10 +300,10 @@ mod correction_pipeline_tests {
             auto_replace: true,
             typing_assist: true,
             auto_switch_layout: true,
-            correction_safety: CorrectionSafety::Experimental,
+            correction_safety: CorrectionSafety::Normal,
             typing_assist_pipeline: pipeline,
-            nanda_autocorrect: true,
-            correction_mode: CorrectionMode::DeterministicThenNanda,
+            nanda_autocorrect: false,
+            correction_mode: CorrectionMode::DeterministicOnly,
         })
     }
 

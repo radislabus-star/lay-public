@@ -7,18 +7,7 @@ use lay::input_gate::{decide_input_gate, InputGateAction, InputGateRequest, Inpu
 use lay::keyboard::text_to_key_events;
 
 fn decide_space(text_tail: &str) -> lay::input_gate::InputGateDecision {
-    let pipeline = default_typing_assist_pipeline();
-    decide_input_gate(InputGateRequest {
-        trigger: InputGateTrigger::Space,
-        text_tail,
-        auto_replace: true,
-        typing_assist: true,
-        auto_switch_layout: true,
-        correction_safety: CorrectionSafety::Experimental,
-        typing_assist_pipeline: &pipeline,
-        nanda_autocorrect: true,
-        correction_mode: CorrectionMode::DeterministicThenNanda,
-    })
+    decide_space_deterministic(text_tail)
 }
 
 fn decide_space_deterministic(text_tail: &str) -> lay::input_gate::InputGateDecision {
