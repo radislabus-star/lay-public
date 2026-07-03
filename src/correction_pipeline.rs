@@ -266,7 +266,7 @@ mod tests {
     use super::*;
     use crate::config::{default_typing_assist_pipeline, CorrectionSafety, TypingAssistRuleConfig};
     use crate::correction_core::CorrectionMode;
-    use crate::input_gate::InputGateTrigger;
+    use crate::input_gate::{decide_input_gate, InputGateRequest, InputGateTrigger};
 
     fn request<'a>(text: &str, pipeline: &'a [TypingAssistRuleConfig]) -> PipelineRequest<'a> {
         PipelineRequest {
@@ -280,6 +280,20 @@ mod tests {
             correction_mode: CorrectionMode::DeterministicThenNanda,
             include_l3_report: false,
         }
+    }
+
+    fn legacy_gate<'a>(text: &'a str, pipeline: &'a [TypingAssistRuleConfig]) -> InputGateDecision {
+        decide_input_gate(InputGateRequest {
+            trigger: InputGateTrigger::Space,
+            text_tail: text,
+            auto_replace: true,
+            typing_assist: true,
+            auto_switch_layout: true,
+            correction_safety: CorrectionSafety::Experimental,
+            typing_assist_pipeline: pipeline,
+            nanda_autocorrect: true,
+            correction_mode: CorrectionMode::DeterministicThenNanda,
+        })
     }
 
     #[test]
@@ -307,5 +321,55 @@ mod tests {
 
         assert!(report.l3_report.is_some());
         assert!(report.edit_plan.is_none());
+    }
+
+    #[test]
+    fn pipeline_matches_legacy_gate_on_dirty_tails() {
+        let pipeline = default_typing_assist_pipeline();
+        let cases = [
+            "читай логии ",
+            "пукнут ",
+            "звгрузи ",
+            "не посчетал ",
+            "ябыл ",
+            "ghbdtn ",
+            "gkfvz ",
+            "fавтозамена ",
+        ];
+
+        for text in cases {
+            let report = CanonicalTextPipeline::decide(request(text, &pipeline));
+            let legacy = legacy_gate(text, &pipeline);
+
+            assert_eq!(report.input_gate.action, legacy.action, "{text:?}");
+            assert_eq!(report.input_gate.trace, legacy.trace, "{text:?}");
+            assert_eq!(
+                report.input_gate.correction.as_ref().map(|resolution| {
+                    (
+                        resolution.selected.as_ref().map(|candidate| {
+                            (
+                                candidate.replacement.as_str(),
+                                candidate.source,
+                                candidate.error_class,
+                            )
+                        }),
+                        resolution.candidates.len(),
+                    )
+                }),
+                legacy.correction.as_ref().map(|resolution| {
+                    (
+                        resolution.selected.as_ref().map(|candidate| {
+                            (
+                                candidate.replacement.as_str(),
+                                candidate.source,
+                                candidate.error_class,
+                            )
+                        }),
+                        resolution.candidates.len(),
+                    )
+                }),
+                "{text:?}"
+            );
+        }
     }
 }
