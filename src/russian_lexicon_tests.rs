@@ -31,6 +31,10 @@ fn recognizes_russian_technical_loanword_forms() {
         "тестить",
         "спектрал",
         "чате",
+        "коммит",
+        "едит",
+        "лэем",
+        "продакшене",
     ] {
         assert!(
             is_known_russian_word_or_form(word),
@@ -46,4 +50,9 @@ fn generates_ka_oblique_forms_for_prefix_candidates() {
         forms.iter().any(|form| form == "доставкой"),
         "expected доставка -> доставкой in ka oblique forms, got {forms:?}"
     );
+}
+
+#[test]
+fn recognizes_common_live_noun_case_forms() {
+    assert!(is_known_russian_word_or_form("авиапорту"));
 }
