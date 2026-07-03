@@ -17,9 +17,6 @@ pub(super) fn decode_completed_tail(
 ) -> Option<DecodedCompletedTail> {
     let context = completed_tail_context(buf, word_count, events);
     let pipeline = active_pipeline(&context);
-    if let Some(decoded) = decode_input_gate_tail(events, &context, allow_layout_auto, &pipeline) {
-        return Some(decoded);
-    }
     decode_input_gate_tail(events, &context, allow_layout_auto, &pipeline)
 }
 
