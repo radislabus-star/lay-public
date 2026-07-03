@@ -181,25 +181,6 @@ trait OutputBackend {
     fn apply_edit_plan(&mut self, plan: &EditPlan) -> Result<(), Self::Error>;
 }
 
-#[allow(dead_code)]
-struct CandidateEngine;
-
-impl CandidateEngine {
-    #[allow(dead_code)]
-    fn generate(req: &PipelineRequest<'_>) -> CorrectionResolution {
-        crate::correction_core::resolve_text_correction(CorrectionRequest {
-            text: &req.snapshot.text,
-            auto_replace: req.auto_replace,
-            typing_assist: req.typing_assist,
-            auto_switch_layout: req.auto_switch_layout,
-            correction_safety: req.correction_safety,
-            typing_assist_pipeline: req.typing_assist_pipeline,
-            nanda_autocorrect: req.nanda_autocorrect,
-            mode: req.correction_mode,
-        })
-    }
-}
-
 struct ErrorGate;
 
 impl ErrorGate {
@@ -323,28 +304,6 @@ mod correction_pipeline_tests {
         }
     }
 
-    fn legacy_gate<'a>(text: &'a str, pipeline: &'a [TypingAssistRuleConfig]) -> InputGateDecision {
-        let resolution = crate::correction_core::resolve_text_correction(CorrectionRequest {
-            text,
-            auto_replace: true,
-            typing_assist: true,
-            auto_switch_layout: true,
-            correction_safety: CorrectionSafety::Experimental,
-            typing_assist_pipeline: pipeline,
-            nanda_autocorrect: true,
-            mode: CorrectionMode::DeterministicThenNanda,
-        });
-        let action = super::word_boundary_action(&resolution);
-
-        InputGateDecision {
-            trigger: InputGateTrigger::Space,
-            stage: InputGateStage::WordBoundary,
-            action,
-            trace: Some(super::word_boundary_trace(&resolution)),
-            correction: Some(resolution),
-        }
-    }
-
     fn public_input_gate<'a>(
         text: &'a str,
         pipeline: &'a [TypingAssistRuleConfig],
@@ -407,7 +366,7 @@ mod correction_pipeline_tests {
     }
 
     #[test]
-    fn pipeline_matches_legacy_gate_on_dirty_tails() {
+    fn pipeline_matches_public_input_gate_on_dirty_tails() {
         let pipeline = default_typing_assist_pipeline();
         let cases = [
             "читай логии ",
@@ -422,16 +381,13 @@ mod correction_pipeline_tests {
 
         for text in cases {
             let report = CanonicalTextPipeline::decide(request(text, &pipeline));
-            let legacy = legacy_gate(text, &pipeline);
             let public = public_space_gate(text, &pipeline);
             let public_input_gate = public_input_gate(text, &pipeline);
 
-            assert_eq!(report.input_gate.action, legacy.action, "{text:?}");
-            assert_eq!(report.input_gate.trace, legacy.trace, "{text:?}");
-            assert_eq!(public.action, legacy.action, "{text:?}");
-            assert_eq!(public.trace, legacy.trace, "{text:?}");
-            assert_eq!(public_input_gate.action, legacy.action, "{text:?}");
-            assert_eq!(public_input_gate.trace, legacy.trace, "{text:?}");
+            assert_eq!(report.input_gate.action, public.action, "{text:?}");
+            assert_eq!(report.input_gate.trace, public.trace, "{text:?}");
+            assert_eq!(public_input_gate.action, public.action, "{text:?}");
+            assert_eq!(public_input_gate.trace, public.trace, "{text:?}");
             assert_eq!(
                 report.input_gate.correction.as_ref().map(|resolution| {
                     (
@@ -445,7 +401,7 @@ mod correction_pipeline_tests {
                         resolution.candidates.len(),
                     )
                 }),
-                legacy.correction.as_ref().map(|resolution| {
+                public.correction.as_ref().map(|resolution| {
                     (
                         resolution.selected.as_ref().map(|candidate| {
                             (
