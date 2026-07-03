@@ -1,11 +1,12 @@
 use lay::config::{CorrectionEngine, LayConfig};
 use lay::desktop::LayoutBackend;
 use lay::text_backend::TextBackendPreference;
-#[cfg(not(test))]
-use std::sync::Mutex;
 use std::sync::OnceLock;
 #[cfg(not(test))]
-use std::time::{Duration, Instant, SystemTime};
+use std::{
+    sync::Mutex,
+    time::{Duration, Instant, SystemTime},
+};
 
 use super::{detect_auto_layout_backend_hint, ENTER_AUTOCORRECT_EXPERIMENT_ENV};
 
@@ -111,12 +112,9 @@ pub(super) fn active_typing_assist() -> bool {
 }
 
 pub(super) fn active_enter_autocorrect() -> bool {
-    active_enter_autocorrect_from_env(
-        current_config().enter_autocorrect,
-        std::env::var(ENTER_AUTOCORRECT_EXPERIMENT_ENV)
-            .ok()
-            .as_deref(),
-    )
+    let config_enabled = current_config().enter_autocorrect;
+    let env_value = std::env::var(ENTER_AUTOCORRECT_EXPERIMENT_ENV).ok();
+    active_enter_autocorrect_from_env(config_enabled, env_value.as_deref())
 }
 
 pub(super) fn active_enter_autocorrect_from_env(
