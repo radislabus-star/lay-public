@@ -182,15 +182,16 @@ impl LayIbusEngine {
 
     fn input_gate_active_composition_text(&self, text: &str) -> Option<String> {
         let (gate_text, active_prefix) = self.active_composition_gate_text(text);
+        let gate_config = ActiveCompositionGateConfig::from_engine(self);
         let decision = decide_input_gate(InputGateRequest {
             trigger: InputGateTrigger::Space,
             text_tail: &gate_text,
-            auto_replace: self.config.auto_replace,
-            typing_assist: self.config.typing_assist,
-            auto_switch_layout: self.config.auto_switch_layout,
-            correction_safety: self.config.active_correction_safety(),
+            auto_replace: gate_config.auto_replace,
+            typing_assist: gate_config.typing_assist,
+            auto_switch_layout: gate_config.auto_switch_layout,
+            correction_safety: gate_config.correction_safety,
             typing_assist_pipeline: &self.config.typing_assist_pipeline,
-            nanda_autocorrect: self.config.nanda_autocorrect,
+            nanda_autocorrect: gate_config.nanda_autocorrect,
             correction_mode: CorrectionMode::DeterministicThenNanda,
         });
         let InputGateAction::ApplyReplacement { replacement, .. } = decision.action else {
@@ -224,6 +225,27 @@ impl LayIbusEngine {
 
     fn sync_tail_after_active_composition_commit(&mut self, text: &str) {
         self.sync_tail_after_composition_commit(text);
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+struct ActiveCompositionGateConfig {
+    auto_replace: bool,
+    typing_assist: bool,
+    auto_switch_layout: bool,
+    nanda_autocorrect: bool,
+    correction_safety: lay::config::CorrectionSafety,
+}
+
+impl ActiveCompositionGateConfig {
+    fn from_engine(engine: &LayIbusEngine) -> Self {
+        Self {
+            auto_replace: engine.config.auto_replace,
+            typing_assist: engine.config.typing_assist,
+            auto_switch_layout: engine.config.auto_switch_layout,
+            nanda_autocorrect: engine.config.nanda_autocorrect,
+            correction_safety: engine.config.active_correction_safety(),
+        }
     }
 }
 
