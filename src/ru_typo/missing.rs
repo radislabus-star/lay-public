@@ -77,87 +77,11 @@ fn vowel_nonverb_missing_letter_candidate_exists(word: &str, lower: &str) -> boo
 }
 
 pub(crate) fn safe_missing_letter_candidates(lower: &str) -> impl Iterator<Item = String> + '_ {
-    generate_missing_letter_candidates(lower)
-        .filter(move |candidate| is_safe_missing_letter_candidate(lower, candidate))
+    safe_missing_letter_candidates_impl(lower)
 }
 
-fn is_safe_missing_letter_candidate(lower: &str, candidate: &str) -> bool {
-    if let Some((idx, inserted)) = inserted_char_position_for_missing_letter(lower, candidate) {
-        if is_risky_vowel_insert_into_verb_tail(lower, inserted) {
-            return false;
-        }
-        if is_risky_consonant_insert_before_final_verb_tail(lower, idx, inserted) {
-            return false;
-        }
-        if idx == lower.chars().count() {
-            if lower.ends_with("ств") {
-                return false;
-            }
-            return is_russian_vowel(inserted)
-                && lower
-                    .chars()
-                    .last()
-                    .is_some_and(|last| !is_russian_vowel(last));
-        }
-    }
-    if let Some(inserted) = candidate.strip_suffix(lower) {
-        if inserted == "о" && is_known_russian_word_or_form(candidate) {
-            return true;
-        }
-        return inserted.chars().count() != 1 || lower.chars().next().is_some_and(is_russian_vowel);
-    }
-
-    true
-}
-
-fn is_risky_consonant_insert_before_final_verb_tail(
-    lower: &str,
-    idx: usize,
-    inserted: char,
-) -> bool {
-    !is_russian_vowel(inserted)
-        && ["ти", "ть"].iter().any(|tail| {
-            lower.ends_with(tail)
-                && lower.chars().count().saturating_sub(tail.chars().count()) == idx
-        })
-}
-
-fn is_risky_vowel_insert_into_verb_tail(lower: &str, inserted: char) -> bool {
-    is_russian_vowel(inserted)
-        && [
-            "аешь", "яешь", "еешь", "оешь", "уешь", "ешь", "ишь", "еет", "ает", "яет", "ует",
-        ]
-        .iter()
-        .any(|tail| lower.ends_with(tail))
-}
+include!("missing/safety.rs");
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn missing_letter_repairs_known_weak_form_to_common_word() {
-        let candidates = safe_missing_letter_candidates("недоказно").collect::<Vec<_>>();
-        assert!(
-            candidates.iter().any(|candidate| candidate == "недоказано"),
-            "safe missing-letter candidates: {candidates:?}"
-        );
-        assert!(
-            has_common_missing_letter_candidate("недоказно"),
-            "expected common missing-letter candidate"
-        );
-        assert_eq!(
-            correct_missing_letter("недоказно").as_deref(),
-            Some("недоказано")
-        );
-    }
-
-    #[test]
-    fn missing_letter_rejects_consonant_insert_before_final_ti_tail() {
-        assert!(
-            !safe_missing_letter_candidates("зачати").any(|candidate| candidate == "зачасти"),
-            "final -ти consonant insertion must not be an autocorrect authority"
-        );
-        assert_eq!(correct_missing_letter("зачати"), None);
-    }
-}
+#[path = "missing/tests.rs"]
+mod tests;
