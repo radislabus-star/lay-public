@@ -1,6 +1,8 @@
 use super::changed_committed_tail_plan;
-use crate::config::TypingAssistRuleConfig;
+use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
+use crate::correction_core::CorrectionMode;
 use crate::decoder::types::{CorrectionSource, CorrectionTrigger};
+use crate::input_gate::{decide_input_gate, InputGateAction, InputGateRequest, InputGateTrigger};
 use crate::keyboard::{map_original_events, KeyEvent};
 use crate::text_edit::ensure_committed_tail_spacing;
 use crate::typing_assist::apply_typing_assist_with_pipeline;
@@ -36,7 +38,7 @@ pub fn decode_typing_assist_current_tail(
 pub fn decode_enter_autocorrect_tail(
     events: &[KeyEvent],
     original_has_trailing_space: bool,
-    allow_layout_auto: bool,
+    _allow_layout_auto: bool,
     pipeline: &[TypingAssistRuleConfig],
 ) -> Option<super::DecoderEditPlan> {
     let original = map_original_events(events);
@@ -48,8 +50,23 @@ pub fn decode_enter_autocorrect_tail(
     } else {
         format!("{original} ")
     };
-    let mut replacement =
-        apply_typing_assist_with_pipeline(&assist_input, allow_layout_auto, pipeline)?;
+    let decision = decide_input_gate(InputGateRequest {
+        trigger: InputGateTrigger::Enter,
+        text_tail: &assist_input,
+        auto_replace: true,
+        typing_assist: true,
+        auto_switch_layout: false,
+        correction_safety: CorrectionSafety::Normal,
+        typing_assist_pipeline: pipeline,
+        nanda_autocorrect: false,
+        correction_mode: CorrectionMode::DeterministicOnly,
+    });
+    let InputGateAction::ApplyReplacement {
+        mut replacement, ..
+    } = decision.action
+    else {
+        return None;
+    };
     if original_has_trailing_space {
         replacement = ensure_committed_tail_spacing(&original, replacement);
     } else {
