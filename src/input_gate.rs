@@ -6,9 +6,11 @@
 
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
 use crate::correction_core::{
-    resolve_text_correction, CandidateGateAction, CorrectionDecisionSource, CorrectionMode,
-    CorrectionRequest, CorrectionResolution, TypingErrorClass,
+    CandidateGateAction, CorrectionDecisionSource, CorrectionMode, CorrectionRequest,
+    CorrectionResolution, TypingErrorClass,
 };
+
+include!("correction_pipeline.rs");
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum InputGateTrigger {
@@ -90,7 +92,7 @@ pub struct InputGateRequest<'a> {
 
 pub fn decide_input_gate(req: InputGateRequest<'_>) -> InputGateDecision {
     match req.trigger {
-        InputGateTrigger::Space | InputGateTrigger::Enter => decide_word_boundary(req),
+        InputGateTrigger::Space | InputGateTrigger::Enter => decide_space_autocorrect(req),
         InputGateTrigger::DoubleShift => InputGateDecision {
             trigger: req.trigger,
             stage: InputGateStage::ManualToggle,
@@ -133,28 +135,6 @@ pub fn decide_input_gate(req: InputGateRequest<'_>) -> InputGateDecision {
                 "live_input_observe_only",
             )),
         },
-    }
-}
-
-fn decide_word_boundary(req: InputGateRequest<'_>) -> InputGateDecision {
-    let resolution = resolve_text_correction(CorrectionRequest {
-        text: req.text_tail,
-        auto_replace: req.auto_replace,
-        typing_assist: req.typing_assist,
-        auto_switch_layout: req.auto_switch_layout,
-        correction_safety: req.correction_safety,
-        typing_assist_pipeline: req.typing_assist_pipeline,
-        nanda_autocorrect: req.nanda_autocorrect,
-        mode: req.correction_mode,
-    });
-    let action = word_boundary_action(&resolution);
-
-    InputGateDecision {
-        trigger: req.trigger,
-        stage: InputGateStage::WordBoundary,
-        action,
-        trace: Some(word_boundary_trace(&resolution)),
-        correction: Some(resolution),
     }
 }
 

@@ -8,8 +8,6 @@ pub mod core;
 pub mod correction;
 pub(crate) mod correction_bayes;
 pub mod correction_core;
-#[allow(dead_code)]
-mod correction_pipeline;
 pub(crate) mod data_lines;
 pub mod debug_log;
 pub mod decoder;

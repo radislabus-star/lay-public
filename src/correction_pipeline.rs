@@ -1,20 +1,34 @@
-//! Internal canonical text correction pipeline contract.
-//!
-//! This is a staged source-layer contract. It does not change runtime/IME
-//! behavior yet: runtimes will migrate to this boundary only after route guards
-//! prove each output path separately.
+// Internal canonical text correction pipeline contract.
+//
+// This file is included inside `input_gate.rs`, so its entrypoint stays private
+// to the existing public input gate. It does not change runtime/IME output
+// behavior: it only makes Space/Enter flow through the staged pipeline contract.
 
-use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
-use crate::correction_core::{
-    CandidateGateAction, CorrectionDecisionSource, CorrectionMode, CorrectionRequest,
-    CorrectionResolution, TypingErrorClass, UnifiedCorrectionCandidate,
-};
-use crate::input_gate::{
-    decide_input_gate, InputGateAction, InputGateDecision, InputGateRequest, InputGateTrigger,
-};
+use crate::correction_core::UnifiedCorrectionCandidate;
 use crate::nanda_wave::{run_wave_trace, WaveDecision, WaveTrace};
 
+/// Canonical after-space autocorrection entrypoint for runtime callers.
+///
+/// This intentionally exposes only the existing `InputGateRequest` /
+/// `InputGateDecision` contract. Pipeline internals stay private until each
+/// runtime route is migrated and proven separately.
+fn decide_space_autocorrect(req: InputGateRequest<'_>) -> InputGateDecision {
+    CanonicalTextPipeline::decide(PipelineRequest {
+        snapshot: TailSnapshot::new(req.text_tail, req.trigger, TailSnapshotSource::Daemon),
+        auto_replace: req.auto_replace,
+        typing_assist: req.typing_assist,
+        auto_switch_layout: req.auto_switch_layout,
+        correction_safety: req.correction_safety,
+        typing_assist_pipeline: req.typing_assist_pipeline,
+        nanda_autocorrect: req.nanda_autocorrect,
+        correction_mode: req.correction_mode,
+        include_l3_report: false,
+    })
+    .input_gate
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[allow(dead_code)]
 enum TailSnapshotSource {
     Daemon,
     Ime,
@@ -40,11 +54,13 @@ impl TailSnapshot {
         }
     }
 
+    #[allow(dead_code)]
     fn with_cursor(mut self, cursor: usize) -> Self {
         self.cursor = Some(cursor);
         self
     }
 
+    #[allow(dead_code)]
     fn active_word(&self) -> Option<&str> {
         self.text.split_whitespace().next_back()
     }
@@ -158,15 +174,18 @@ struct PipelineRequest<'a> {
     include_l3_report: bool,
 }
 
+#[allow(dead_code)]
 trait OutputBackend {
     type Error;
 
     fn apply_edit_plan(&mut self, plan: &EditPlan) -> Result<(), Self::Error>;
 }
 
+#[allow(dead_code)]
 struct CandidateEngine;
 
 impl CandidateEngine {
+    #[allow(dead_code)]
     fn generate(req: &PipelineRequest<'_>) -> CorrectionResolution {
         crate::correction_core::resolve_text_correction(CorrectionRequest {
             text: &req.snapshot.text,
@@ -185,7 +204,7 @@ struct ErrorGate;
 
 impl ErrorGate {
     fn decide(req: &PipelineRequest<'_>) -> InputGateDecision {
-        decide_input_gate(InputGateRequest {
+        decide_space_autocorrect_gate(InputGateRequest {
             trigger: req.snapshot.trigger,
             text_tail: &req.snapshot.text,
             auto_replace: req.auto_replace,
@@ -196,6 +215,28 @@ impl ErrorGate {
             nanda_autocorrect: req.nanda_autocorrect,
             correction_mode: req.correction_mode,
         })
+    }
+}
+
+fn decide_space_autocorrect_gate(req: InputGateRequest<'_>) -> InputGateDecision {
+    let resolution = crate::correction_core::resolve_text_correction(CorrectionRequest {
+        text: req.text_tail,
+        auto_replace: req.auto_replace,
+        typing_assist: req.typing_assist,
+        auto_switch_layout: req.auto_switch_layout,
+        correction_safety: req.correction_safety,
+        typing_assist_pipeline: req.typing_assist_pipeline,
+        nanda_autocorrect: req.nanda_autocorrect,
+        mode: req.correction_mode,
+    });
+    let action = word_boundary_action(&resolution);
+
+    InputGateDecision {
+        trigger: req.trigger,
+        stage: InputGateStage::WordBoundary,
+        action,
+        trace: Some(word_boundary_trace(&resolution)),
+        correction: Some(resolution),
     }
 }
 
@@ -262,11 +303,11 @@ impl CanonicalTextPipeline {
 }
 
 #[cfg(test)]
-mod tests {
+mod correction_pipeline_tests {
     use super::*;
     use crate::config::{default_typing_assist_pipeline, CorrectionSafety, TypingAssistRuleConfig};
     use crate::correction_core::CorrectionMode;
-    use crate::input_gate::{decide_input_gate, InputGateRequest, InputGateTrigger};
+    use crate::input_gate::{InputGateRequest, InputGateTrigger};
 
     fn request<'a>(text: &str, pipeline: &'a [TypingAssistRuleConfig]) -> PipelineRequest<'a> {
         PipelineRequest {
@@ -283,7 +324,49 @@ mod tests {
     }
 
     fn legacy_gate<'a>(text: &'a str, pipeline: &'a [TypingAssistRuleConfig]) -> InputGateDecision {
-        decide_input_gate(InputGateRequest {
+        let resolution = crate::correction_core::resolve_text_correction(CorrectionRequest {
+            text,
+            auto_replace: true,
+            typing_assist: true,
+            auto_switch_layout: true,
+            correction_safety: CorrectionSafety::Experimental,
+            typing_assist_pipeline: pipeline,
+            nanda_autocorrect: true,
+            mode: CorrectionMode::DeterministicThenNanda,
+        });
+        let action = super::word_boundary_action(&resolution);
+
+        InputGateDecision {
+            trigger: InputGateTrigger::Space,
+            stage: InputGateStage::WordBoundary,
+            action,
+            trace: Some(super::word_boundary_trace(&resolution)),
+            correction: Some(resolution),
+        }
+    }
+
+    fn public_input_gate<'a>(
+        text: &'a str,
+        pipeline: &'a [TypingAssistRuleConfig],
+    ) -> InputGateDecision {
+        crate::input_gate::decide_input_gate(InputGateRequest {
+            trigger: InputGateTrigger::Space,
+            text_tail: text,
+            auto_replace: true,
+            typing_assist: true,
+            auto_switch_layout: true,
+            correction_safety: CorrectionSafety::Experimental,
+            typing_assist_pipeline: pipeline,
+            nanda_autocorrect: true,
+            correction_mode: CorrectionMode::DeterministicThenNanda,
+        })
+    }
+
+    fn public_space_gate<'a>(
+        text: &'a str,
+        pipeline: &'a [TypingAssistRuleConfig],
+    ) -> InputGateDecision {
+        decide_space_autocorrect(InputGateRequest {
             trigger: InputGateTrigger::Space,
             text_tail: text,
             auto_replace: true,
@@ -340,9 +423,15 @@ mod tests {
         for text in cases {
             let report = CanonicalTextPipeline::decide(request(text, &pipeline));
             let legacy = legacy_gate(text, &pipeline);
+            let public = public_space_gate(text, &pipeline);
+            let public_input_gate = public_input_gate(text, &pipeline);
 
             assert_eq!(report.input_gate.action, legacy.action, "{text:?}");
             assert_eq!(report.input_gate.trace, legacy.trace, "{text:?}");
+            assert_eq!(public.action, legacy.action, "{text:?}");
+            assert_eq!(public.trace, legacy.trace, "{text:?}");
+            assert_eq!(public_input_gate.action, legacy.action, "{text:?}");
+            assert_eq!(public_input_gate.trace, legacy.trace, "{text:?}");
             assert_eq!(
                 report.input_gate.correction.as_ref().map(|resolution| {
                     (
