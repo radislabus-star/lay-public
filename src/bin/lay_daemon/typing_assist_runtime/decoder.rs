@@ -57,15 +57,16 @@ fn decode_input_gate_tail(
     } else {
         &original
     };
+    let gate_config = GateRuntimeConfig::active(allow_layout_auto);
     let decision = lay::input_gate::decide_input_gate(lay::input_gate::InputGateRequest {
         trigger: lay::input_gate::InputGateTrigger::Space,
         text_tail,
-        auto_replace: active_auto_replace_for_gate(),
-        typing_assist: active_typing_assist_for_gate(),
-        auto_switch_layout: allow_layout_auto && active_auto_switch_layout_for_gate(),
-        correction_safety: active_correction_safety_for_gate(),
+        auto_replace: gate_config.auto_replace,
+        typing_assist: gate_config.typing_assist,
+        auto_switch_layout: gate_config.auto_switch_layout,
+        correction_safety: gate_config.correction_safety,
         typing_assist_pipeline: pipeline,
-        nanda_autocorrect: active_nanda_autocorrect_for_gate(),
+        nanda_autocorrect: gate_config.nanda_autocorrect,
         correction_mode: lay::correction_core::CorrectionMode::DeterministicThenNanda,
     });
     let lay::input_gate::InputGateAction::ApplyReplacement { replacement, .. } = &decision.action
@@ -132,6 +133,27 @@ fn build_input_gate_decoded_tail(
     Some(DecodedCompletedTail::with_input_gate(
         edit, rule_id, input_gate,
     ))
+}
+
+#[derive(Debug, Clone, Copy)]
+struct GateRuntimeConfig {
+    auto_replace: bool,
+    typing_assist: bool,
+    auto_switch_layout: bool,
+    nanda_autocorrect: bool,
+    correction_safety: lay::config::CorrectionSafety,
+}
+
+impl GateRuntimeConfig {
+    fn active(allow_layout_auto: bool) -> Self {
+        Self {
+            auto_replace: active_auto_replace_for_gate(),
+            typing_assist: active_typing_assist_for_gate(),
+            auto_switch_layout: allow_layout_auto && active_auto_switch_layout_for_gate(),
+            nanda_autocorrect: active_nanda_autocorrect_for_gate(),
+            correction_safety: active_correction_safety_for_gate(),
+        }
+    }
 }
 
 #[cfg(test)]
