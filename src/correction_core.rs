@@ -1843,6 +1843,67 @@ mod tests {
     }
 
     #[test]
+    fn deterministic_mode_corrects_multiword_wrong_layout_tail() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "HF<JNF NTCN CFV ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert_eq!(
+            resolution
+                .decision
+                .as_ref()
+                .map(|decision| decision.replacement.as_str()),
+            Some("РАБОТА ТЕСТ САМ ")
+        );
+        assert_eq!(
+            resolution
+                .selected
+                .as_ref()
+                .map(|candidate| candidate.gate.action),
+            Some(CandidateGateAction::Apply)
+        );
+    }
+
+    #[test]
+    fn deterministic_mode_corrects_multiword_wrong_layout_tail_with_context_pipeline() {
+        let default_pipeline = default_typing_assist_pipeline();
+        let pipeline = crate::typing_context::typing_assist_pipeline_for_context(
+            true,
+            CorrectionSafety::Normal,
+            &default_pipeline,
+            "HF<JNF NTCN CFV ",
+        );
+        let resolution = resolve_text_correction(CorrectionRequest {
+            text: "HF<JNF NTCN CFV ",
+            auto_replace: true,
+            typing_assist: true,
+            auto_switch_layout: true,
+            correction_safety: CorrectionSafety::Normal,
+            typing_assist_pipeline: &pipeline,
+            nanda_autocorrect: false,
+            mode: CorrectionMode::DeterministicOnly,
+        });
+
+        assert_eq!(
+            resolution
+                .decision
+                .as_ref()
+                .map(|decision| decision.replacement.as_str()),
+            Some("РАБОТА ТЕСТ САМ ")
+        );
+        assert_eq!(
+            resolution
+                .selected
+                .as_ref()
+                .map(|candidate| candidate.gate.action),
+            Some(CandidateGateAction::Apply)
+        );
+    }
+
+    #[test]
     fn resolution_routes_missing_letter_through_unified_gate() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(

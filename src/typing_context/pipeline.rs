@@ -54,6 +54,26 @@ pub fn typing_assist_pipeline_for_context(
 }
 
 fn user_config_allows_rule(configured: &[TypingAssistRuleConfig], id: &str) -> bool {
+    if configured.iter().any(|rule| rule.id == id && rule.enabled) {
+        return true;
+    }
+    if id == LAYOUT_EN_TO_RU
+        && configured.iter().any(|rule| {
+            matches!(
+                rule.id.as_str(),
+                CONTEXTUAL_LAYOUT_EN_TO_RU | EXPERIMENTAL_LAYOUT_EN_TO_RU
+            ) && rule.enabled
+        })
+    {
+        return true;
+    }
+    if id == LAYOUT_RU_TO_EN
+        && configured
+            .iter()
+            .any(|rule| rule.id == EXPERIMENTAL_LAYOUT_RU_TO_EN && rule.enabled)
+    {
+        return true;
+    }
     normalize_typing_assist_pipeline(configured)
         .iter()
         .find(|rule| rule.id == id)

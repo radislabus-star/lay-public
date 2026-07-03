@@ -4,11 +4,6 @@ use lay::keyboard::KeyEvent;
 use lay::typing_context::completed_tail_context;
 use lay::word_buffer::WordBuffer;
 
-#[path = "decoder/nanda.rs"]
-mod nanda;
-#[path = "decoder/pipeline.rs"]
-mod pipeline;
-
 #[cfg(not(test))]
 use super::super::super::{
     active_auto_replace, active_auto_switch_layout, active_correction_safety,
@@ -26,14 +21,7 @@ pub(super) fn decode_completed_tail(
     if let Some(decoded) = decode_input_gate_tail(events, &context, allow_layout_auto, &pipeline) {
         return Some(decoded);
     }
-    pipeline::decode_typing_assist_tail_with_context_and_rule(
-        events,
-        &context,
-        allow_layout_auto,
-        &pipeline,
-        CorrectionSource::TypingAssist,
-    )
-    .or_else(|| nanda::decode_nanda_memory_tail(events, &context))
+    None
 }
 
 #[derive(Debug, Clone)]
@@ -44,14 +32,6 @@ pub(super) struct DecodedCompletedTail {
 }
 
 impl DecodedCompletedTail {
-    pub(super) fn new(edit: DecoderEditPlan, rule_id: Option<String>) -> Self {
-        Self {
-            edit,
-            rule_id,
-            input_gate: None,
-        }
-    }
-
     fn with_input_gate(
         edit: DecoderEditPlan,
         rule_id: Option<String>,

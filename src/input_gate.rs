@@ -272,11 +272,17 @@ mod tests {
     #[test]
     fn space_boundary_applies_existing_correction_core_decision() {
         let pipeline = default_typing_assist_pipeline();
-        let decision = decide_input_gate(request_with_pipeline(
-            InputGateTrigger::Space,
-            "lfdfq ",
-            &pipeline,
-        ));
+        let decision = decide_input_gate(InputGateRequest {
+            trigger: InputGateTrigger::Space,
+            text_tail: "lfdfq ",
+            auto_replace: true,
+            typing_assist: true,
+            auto_switch_layout: true,
+            correction_safety: CorrectionSafety::Experimental,
+            typing_assist_pipeline: &pipeline,
+            nanda_autocorrect: false,
+            correction_mode: CorrectionMode::DeterministicOnly,
+        });
         assert_eq!(decision.stage, InputGateStage::WordBoundary);
         assert_eq!(
             decision.action,
