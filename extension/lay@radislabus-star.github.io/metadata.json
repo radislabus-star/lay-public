@@ -1,8 +1,8 @@
 {
     "uuid": "lay@radislabus-star.github.io",
     "name": "Lay Layout Switcher",
-    "version": 40,
-    "version-name": "0.2.40",
+    "version": 41,
+    "version-name": "0.2.41",
     "description": "Alpha GNOME Shell extension для lay-daemon. Показывает EN/RU в трее, переключает раскладку по клику. Минимальный DBus bridge для layout activation и fallback text insert.",
     "shell-version": ["45", "46", "47", "50"],
     "url": "https://github.com/radislabus-star/lay-public"

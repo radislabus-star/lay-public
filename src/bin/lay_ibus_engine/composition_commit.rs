@@ -6,8 +6,6 @@ use super::engine::LayIbusEngine;
 use super::text::make_ibus_text;
 use super::trace;
 use lay::correction_core::CorrectionMode;
-#[cfg(test)]
-use lay::correction_core::{decide_text_correction, CorrectionRequest};
 use lay::input_gate::{decide_input_gate, InputGateAction, InputGateRequest, InputGateTrigger};
 
 pub(super) struct ActiveCompositionCommit {
@@ -179,36 +177,7 @@ impl LayIbusEngine {
 
     #[cfg(test)]
     pub(super) fn autocorrect_committed_tail_text(&self, text: &str) -> Option<String> {
-        self.deterministic_autocorrect_text(text)
-            .or_else(|| self.nanda_committed_tail_context_replacement(text))
-            .or_else(|| self.nanda_autocorrect_text(text))
-    }
-
-    #[cfg(test)]
-    fn deterministic_autocorrect_text(&self, text: &str) -> Option<String> {
-        decide_text_correction(self.correction_request(text, CorrectionMode::DeterministicOnly))
-            .map(|decision| decision.replacement)
-    }
-
-    #[cfg(test)]
-    fn nanda_committed_tail_context_replacement(&self, text: &str) -> Option<String> {
-        if !self.config.nanda_autocorrect {
-            return None;
-        }
-        let context = format!("{} ", self.tail_buffer.trim_end());
-        let prefix = context.strip_suffix(text)?;
-        if prefix.is_empty() {
-            return None;
-        }
-        let output = self.nanda_autocorrect_text(&context)?;
-        (output != context && output.starts_with(prefix))
-            .then(|| output[prefix.len()..].to_string())
-    }
-
-    #[cfg(test)]
-    fn nanda_autocorrect_text(&self, text: &str) -> Option<String> {
-        decide_text_correction(self.correction_request(text, CorrectionMode::NandaOnly))
-            .map(|decision| decision.replacement)
+        self.input_gate_active_composition_text(text)
     }
 
     fn input_gate_active_composition_text(&self, text: &str) -> Option<String> {
@@ -251,24 +220,6 @@ impl LayIbusEngine {
             return (text.to_string(), String::new());
         }
         (format!("{prefix}{text}"), prefix.to_string())
-    }
-
-    #[cfg(test)]
-    fn correction_request<'a>(
-        &'a self,
-        text: &'a str,
-        mode: CorrectionMode,
-    ) -> CorrectionRequest<'a> {
-        CorrectionRequest {
-            text,
-            auto_replace: self.config.auto_replace,
-            typing_assist: self.config.typing_assist,
-            auto_switch_layout: self.config.auto_switch_layout,
-            correction_safety: self.config.active_correction_safety(),
-            typing_assist_pipeline: &self.config.typing_assist_pipeline,
-            nanda_autocorrect: self.config.nanda_autocorrect,
-            mode,
-        }
     }
 
     fn sync_tail_after_active_composition_commit(&mut self, text: &str) {
