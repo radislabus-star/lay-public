@@ -21,36 +21,35 @@ pub fn typing_assist_pipeline_for_context(
         && should_enable_ascii_to_ru_layout(context)
         && user_config_allows_rule(configured, LAYOUT_EN_TO_RU)
     {
-        pipeline.push(TypingAssistRuleConfig {
-            id: CONTEXTUAL_LAYOUT_EN_TO_RU.to_string(),
-            enabled: true,
-            priority: contextual_ascii_to_ru_priority(&pipeline),
-        });
-        sort_typing_assist_pipeline(&mut pipeline);
+        push_contextual_rule(&mut pipeline, CONTEXTUAL_LAYOUT_EN_TO_RU);
     }
     if auto_replace
         && safety == CorrectionSafety::Experimental
         && user_config_allows_rule(configured, LAYOUT_EN_TO_RU)
     {
-        pipeline.push(TypingAssistRuleConfig {
-            id: EXPERIMENTAL_LAYOUT_EN_TO_RU.to_string(),
-            enabled: true,
-            priority: contextual_ascii_to_ru_priority(&pipeline),
-        });
-        sort_typing_assist_pipeline(&mut pipeline);
+        push_contextual_rule(&mut pipeline, EXPERIMENTAL_LAYOUT_EN_TO_RU);
     }
     if auto_replace
         && safety == CorrectionSafety::Experimental
         && user_config_allows_rule(configured, LAYOUT_RU_TO_EN)
     {
-        pipeline.push(TypingAssistRuleConfig {
-            id: EXPERIMENTAL_LAYOUT_RU_TO_EN.to_string(),
-            enabled: true,
-            priority: contextual_ru_to_en_priority(&pipeline),
-        });
-        sort_typing_assist_pipeline(&mut pipeline);
+        push_contextual_rule(&mut pipeline, EXPERIMENTAL_LAYOUT_RU_TO_EN);
     }
     pipeline
+}
+
+fn push_contextual_rule(pipeline: &mut Vec<TypingAssistRuleConfig>, id: &str) {
+    let priority = if id == EXPERIMENTAL_LAYOUT_RU_TO_EN {
+        contextual_priority(pipeline, LAYOUT_RU_TO_EN, 89)
+    } else {
+        contextual_priority(pipeline, LAYOUT_EN_TO_RU, 99)
+    };
+    pipeline.push(TypingAssistRuleConfig {
+        id: id.to_string(),
+        enabled: true,
+        priority,
+    });
+    sort_typing_assist_pipeline(pipeline);
 }
 
 fn user_config_allows_rule(configured: &[TypingAssistRuleConfig], id: &str) -> bool {
@@ -80,18 +79,10 @@ fn user_config_allows_rule(configured: &[TypingAssistRuleConfig], id: &str) -> b
         .is_some_and(|rule| rule.enabled)
 }
 
-fn contextual_ascii_to_ru_priority(pipeline: &[TypingAssistRuleConfig]) -> i32 {
+fn contextual_priority(pipeline: &[TypingAssistRuleConfig], id: &str, fallback: i32) -> i32 {
     pipeline
         .iter()
-        .find(|rule| rule.id == LAYOUT_EN_TO_RU)
+        .find(|rule| rule.id == id)
         .map(|rule| rule.priority.saturating_sub(1).max(1))
-        .unwrap_or(99)
-}
-
-fn contextual_ru_to_en_priority(pipeline: &[TypingAssistRuleConfig]) -> i32 {
-    pipeline
-        .iter()
-        .find(|rule| rule.id == LAYOUT_RU_TO_EN)
-        .map(|rule| rule.priority.saturating_sub(1).max(1))
-        .unwrap_or(89)
+        .unwrap_or(fallback)
 }
