@@ -21,27 +21,19 @@ pub(crate) fn correct_contextual_past_tense_vowel_confusion(word: &str) -> Optio
 }
 
 fn correct_vowel_confusion_impl(word: &str, allow_safe_past_tense: bool) -> Option<String> {
-    if word.chars().count() < 5 || !is_cyrillic_word(word) {
-        return None;
-    }
+    (word.chars().count() >= 5 && is_cyrillic_word(word)).then_some(())?;
 
     let lower = word.to_lowercase();
-    if is_known_russian_word_or_form(&lower) {
-        return None;
-    }
-    if super::missing::missing_letter_candidate_exists(word, &lower) {
-        return None;
-    }
+    (!is_known_russian_word_or_form(&lower)).then_some(())?;
+    (!super::missing::missing_letter_candidate_exists(word, &lower)).then_some(())?;
     let candidates = generate_vowel_confusion_candidates(&lower)
         .into_iter()
         .filter(|candidate| !rewrites_protected_pattern_term_stem(&lower, candidate))
         .collect::<Vec<_>>();
-    if looks_like_plausible_russian_past_tense(&lower)
-        && (!allow_safe_past_tense
-            || !vowel_confusion_past_tense_candidate_exists(&lower, &candidates))
-    {
-        return None;
-    }
+    (!looks_like_plausible_russian_past_tense(&lower)
+        || (allow_safe_past_tense
+            && vowel_confusion_past_tense_candidate_exists(&lower, &candidates)))
+    .then_some(())?;
 
     best_unique_known_ngram_candidate(word, candidates, NGRAM_VOWEL_CONFUSION_MARGIN)
 }
