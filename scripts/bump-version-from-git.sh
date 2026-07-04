@@ -26,8 +26,10 @@ perl -0pi -e "s/export const APP_VERSION = '[^']+';/export const APP_VERSION = '
 perl -0pi -e "s/const APP_VERSION = '[^']+';/const APP_VERSION = '${version}';/" \
   extension/lay@radislabus-star.github.io/settings.js \
   extension/lay@radislabus-star.github.io/prefs.js
-perl -0pi -e "s/const APP_RELEASE_DATE = '[^']+';/const APP_RELEASE_DATE = '${release_date}';/" \
-  extension/lay@radislabus-star.github.io/lay-impl.js
+perl -0pi -e "s/((?:export\s+)?const APP_RELEASE_DATE = ')[^']+(')/\${1}${release_date}\${2}/" \
+  extension/lay@radislabus-star.github.io/tray_support.js \
+  extension/lay@radislabus-star.github.io/settings.js \
+  extension/lay@radislabus-star.github.io/prefs.js
 perl -0pi -e 's/Current publication branch version:\n\n- `[^`]+`/Current publication branch version:\n\n- `'"${version}"'`/' \
   VERSIONING.md
 

@@ -68,6 +68,54 @@ if has_file_matching '^extension/.*\.js$'; then
   done
 fi
 
+if has_file_matching '(^Cargo\.toml$|^Cargo\.lock$|^VERSIONING\.md$|^extension/)'; then
+  echo "== lay version consistency =="
+  python3 - <<'PY'
+import json
+import pathlib
+import re
+import sys
+
+root = pathlib.Path(".")
+cargo = (root / "Cargo.toml").read_text(encoding="utf-8")
+match = re.search(r'^version = "([^"]+)"', cargo, re.M)
+if not match:
+    print("Cargo.toml package version not found", file=sys.stderr)
+    sys.exit(1)
+version = match.group(1)
+
+metadata_path = root / "extension/lay@radislabus-star.github.io/metadata.json"
+metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+metadata_version = metadata.get("version-name")
+if metadata_version != version:
+    print(f"metadata version-name drift: {metadata_version} != {version}", file=sys.stderr)
+    sys.exit(1)
+
+try:
+    patch = int(version.rsplit(".", 1)[1])
+except (IndexError, ValueError):
+    print(f"version has no numeric patch: {version}", file=sys.stderr)
+    sys.exit(1)
+if metadata.get("version") != patch:
+    print(f"metadata numeric version drift: {metadata.get('version')} != {patch}", file=sys.stderr)
+    sys.exit(1)
+
+version_decl = re.compile(r"^(?:export\s+)?const\s+APP_VERSION\s*=\s*['\"]([^'\"]+)['\"]\s*;", re.M)
+date_decl = re.compile(r"^(?:export\s+)?const\s+APP_RELEASE_DATE\s*=\s*['\"]([^'\"]+)['\"]\s*;", re.M)
+release_dates = set()
+for path in sorted((root / "extension/lay@radislabus-star.github.io").glob("*.js")):
+    text = path.read_text(encoding="utf-8")
+    for app_version in version_decl.findall(text):
+        if app_version != version:
+            print(f"{path}: APP_VERSION drift: {app_version} != {version}", file=sys.stderr)
+            sys.exit(1)
+    release_dates.update(date_decl.findall(text))
+if len(release_dates) > 1:
+    print(f"APP_RELEASE_DATE drift: {sorted(release_dates)}", file=sys.stderr)
+    sys.exit(1)
+PY
+fi
+
 if ! has_file_matching '(^src/|^tests/|^data/|^Cargo\.toml$|^Cargo\.lock$)'; then
   echo "== no Rust/data/test changes; changed check OK =="
   exit 0
