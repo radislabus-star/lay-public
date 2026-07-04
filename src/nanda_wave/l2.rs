@@ -12,6 +12,7 @@ use crate::typing_candidate::TypingCandidateFamily;
 use crate::typing_context;
 use crate::typing_pipeline::explain_typing_assist_with_pipeline;
 use crate::word_reader::{split_word_punctuation, split_ws_segments};
+use std::collections::HashSet;
 use std::sync::OnceLock;
 
 use super::context::{TailContext, TokenKind};
@@ -24,6 +25,8 @@ use super::signal::{WavePacket, WordCandidate};
 
 const MAX_LAYOUT_SCAN_CANDIDATES: usize = 4;
 const MAX_TAUGHT_CANDIDATES: usize = 6;
+const L2_RUNTIME_WORD_LIMIT: usize = 1_000;
+const L2_SURFACE_HOT_RU_DATA: &str = include_str!("../../data/lexicon/l2_surface_hot_ru.txt");
 pub(super) const L2_SURFACE_MOTIF_CELL: &str = "L2SurfaceMotifCell32";
 pub(super) const L2_SURFACE_COMPLETION_CELL: &str = "L2SurfaceCompletionCell32";
 
@@ -66,6 +69,22 @@ pub fn run_l2_refined_with_feedback(
     };
     let context = TailContext::from_text(tail);
     let mut candidates = Vec::new();
+    let timing_enabled = std::env::var_os("LAY_NANDA_L2_TIMING").is_some();
+    let mut timing_last = std::time::Instant::now();
+    macro_rules! mark_timing {
+        ($stage:literal) => {
+            if timing_enabled {
+                let now = std::time::Instant::now();
+                eprintln!(
+                    "lay_nanda_l2_timing stage={} elapsed_us={} candidates={}",
+                    $stage,
+                    now.duration_since(timing_last).as_micros(),
+                    candidates.len()
+                );
+                timing_last = now;
+            }
+        };
+    }
     if options.is_enabled("LayoutWordCell32") {
         if let Some(candidate) = layout_candidate(prefix, token, &context, l1) {
             push_unique_candidate(&mut candidates, candidate);
@@ -74,11 +93,13 @@ pub fn run_l2_refined_with_feedback(
             push_unique_candidate(&mut candidates, candidate);
         }
     }
+    mark_timing!("layout");
     if options.is_enabled("ShortTokenCell32") {
         for candidate in short_token_candidates(prefix, token, &context, l1) {
             push_unique_candidate(&mut candidates, candidate);
         }
     }
+    mark_timing!("short-token");
     if options.is_enabled("TechTokenCell32") {
         if let Some(candidate) = technical_keep_candidate(token, l1) {
             push_unique_candidate(&mut candidates, candidate);
@@ -87,7 +108,26 @@ pub fn run_l2_refined_with_feedback(
             push_unique_candidate(&mut candidates, candidate);
         }
     }
-    if options.is_enabled("BoundaryCell32") {
+    mark_timing!("tech-token");
+    let mut has_l2_surface_motif_candidate = false;
+    if options.is_enabled(L2_SURFACE_MOTIF_CELL) || options.is_enabled(L2_SURFACE_COMPLETION_CELL) {
+        for candidate in surface_motif_word_candidates(prefix, token, &context, l1, options) {
+            has_l2_surface_motif_candidate |= candidate.source == L2_SURFACE_MOTIF_CELL;
+            push_unique_candidate(&mut candidates, candidate);
+        }
+        if options.is_enabled(L2_SURFACE_MOTIF_CELL) {
+            for candidate in surface_motif_scan_candidates(tail, l1, &context) {
+                has_l2_surface_motif_candidate |= candidate.source == L2_SURFACE_MOTIF_CELL;
+                push_unique_candidate(&mut candidates, candidate);
+            }
+        }
+    }
+    mark_timing!("surface-motif");
+    let has_explicit_boundary_split = token.chars().all(is_cyrillic_letter)
+        && light_boundary_replacement(&token.to_lowercase()).is_some();
+    if options.is_enabled("BoundaryCell32")
+        && (!has_l2_surface_motif_candidate || has_explicit_boundary_split)
+    {
         for candidate in boundary_split_candidates(prefix, token, l1, &context) {
             push_unique_candidate(&mut candidates, candidate);
         }
@@ -95,11 +135,13 @@ pub fn run_l2_refined_with_feedback(
             push_unique_candidate(&mut candidates, candidate);
         }
     }
+    mark_timing!("boundary");
     if options.is_enabled(LEXICAL_ATTRACTOR_CELL) {
         for candidate in lexical_attractor_candidates(tail, &context) {
             push_unique_candidate(&mut candidates, candidate);
         }
     }
+    mark_timing!("lexical-attractor");
     if memory_cells_enabled(options) {
         for candidate in super::learned::learned_candidates(tail)
             .into_iter()
@@ -108,40 +150,38 @@ pub fn run_l2_refined_with_feedback(
             push_unique_candidate(&mut candidates, candidate);
         }
     }
+    mark_timing!("learned-memory");
     if options.is_enabled(super::context_wave::SEMANTIC_WORD_SOURCE) {
         for candidate in super::context_wave::semantic_word_candidates(tail) {
             push_unique_candidate(&mut candidates, candidate);
         }
     }
-    if options.is_enabled(L2_SURFACE_MOTIF_CELL) || options.is_enabled(L2_SURFACE_COMPLETION_CELL) {
-        for candidate in surface_motif_word_candidates(prefix, token, &context, l1, options) {
-            push_unique_candidate(&mut candidates, candidate);
-        }
-        if options.is_enabled(L2_SURFACE_MOTIF_CELL) {
-            for candidate in surface_motif_scan_candidates(tail, l1, &context) {
-                push_unique_candidate(&mut candidates, candidate);
-            }
-        }
-    }
+    mark_timing!("semantic-word");
     if options.is_enabled("PhraseCell32") {
         for candidate in customs_actor_phrase_candidates(tail, &context, l1) {
             push_unique_candidate(&mut candidates, candidate);
         }
     }
+    mark_timing!("phrase");
     if options.is_enabled(super::context_wave::PHRASE_FORECAST_CELL) && options.llmwave_shadow() {
         let memory = phrase_forecast_memory();
         for candidate in super::llmwave::phrase_forecast_candidates(tail, &memory) {
             push_unique_candidate(&mut candidates, candidate);
         }
     }
+    mark_timing!("phrase-forecast");
     if options.is_enabled("GrammarCell32") {
         for candidate in grammar_agreement_candidates(tail, &context, l1) {
             push_unique_candidate(&mut candidates, candidate);
         }
     }
-    for candidate in taught_candidates(tail, &context, l1, options) {
-        push_unique_candidate(&mut candidates, candidate);
+    mark_timing!("grammar");
+    if should_run_taught_candidates(token, options) {
+        for candidate in taught_candidates(tail, &context, l1, options) {
+            push_unique_candidate(&mut candidates, candidate);
+        }
     }
+    mark_timing!("taught");
     if options.is_enabled(PATTERN_MEMORY_CELL) {
         let report = apply_pattern_memory(tail, &mut candidates);
         if report.applied > 0 {
@@ -153,6 +193,7 @@ pub fn run_l2_refined_with_feedback(
             });
         }
     }
+    mark_timing!("pattern-memory");
     apply_l2_weight(&mut candidates, options);
     candidates.sort_by(|left, right| {
         right
@@ -167,6 +208,10 @@ pub fn run_l2_refined_with_feedback(
             .total_cmp(&left.energy)
             .then_with(|| left.risk.total_cmp(&right.risk))
     });
+    mark_timing!("feedback-sort");
+    if timing_enabled {
+        let _ = timing_last.elapsed();
+    }
     candidates
 }
 
@@ -278,6 +323,16 @@ fn input_source_enabled(source: &str, options: &WaveOptions) -> bool {
         source if source == PATTERN_MEMORY_CELL => false,
         _ => true,
     }
+}
+
+fn should_run_taught_candidates(token: &str, options: &WaveOptions) -> bool {
+    if options.is_enabled(L2_SURFACE_MOTIF_CELL)
+        && token.chars().count() >= 4
+        && token.chars().all(is_cyrillic_letter)
+    {
+        return false;
+    }
+    true
 }
 
 fn taught_word_candidate(input: TaughtCandidateInput<'_>) -> Option<WordCandidate> {
@@ -580,7 +635,7 @@ fn known_short_russian_token_blocks_layout(token: &str) -> bool {
     token.chars().count() <= 3
         && lower.chars().all(is_cyrillic_letter)
         && (is_common_ru_word(&lower)
-            || is_known_russian_word_or_form(&lower)
+            || surface_motif_known_surface(&lower)
             || token.chars().all(is_cyrillic_letter))
 }
 
@@ -608,10 +663,10 @@ fn surface_motif_word_candidates(
         return Vec::new();
     }
 
-    let fuzzy_authority = crate::ru_typo::fuzzy_known_word_candidates(&normalized);
     let surface_candidates = surface_motif_memory().surface_candidates_for_text(&normalized, 24);
+    let empty_fuzzy_authority = Vec::new();
     let mut out = Vec::new();
-    if options.is_enabled(L2_SURFACE_MOTIF_CELL) {
+    if options.is_enabled(L2_SURFACE_MOTIF_CELL) && surface_candidates.is_empty() {
         if let Some(candidate) = repeated_letter_surface_candidate(
             prefix,
             leading,
@@ -638,9 +693,10 @@ fn surface_motif_word_candidates(
                 &candidate.word,
                 candidate.score,
                 &surface_candidates,
-                &fuzzy_authority,
+                &empty_fuzzy_authority,
             )
-            && !fuzzy_surface_candidate_blocked(word, &normalized, &candidate.word)
+            && (!fuzzy_surface_candidate_blocked(word, &normalized, &candidate.word)
+                || repeated_all_caps_surface_allowed(word, &normalized, &candidate.word))
             && surface_motif_typo_allowed(len, distance, candidate.score)
         {
             out.push(surface_motif_candidate(SurfaceMotifCandidateInput {
@@ -691,61 +747,6 @@ fn surface_motif_word_candidates(
             }));
         }
     }
-    if options.is_enabled(L2_SURFACE_MOTIF_CELL)
-        && len >= 5
-        && !is_common_ru_word(&normalized)
-        && !surface_motif_stable_existing_word(&normalized)
-        && out.len() < 8
-    {
-        for candidate_word in crate::ru_typo::fuzzy_known_word_candidates(&normalized) {
-            let candidate_lower = candidate_word.to_lowercase();
-            if candidate_lower == normalized
-                || fuzzy_surface_candidate_blocked(word, &normalized, &candidate_lower)
-                || out.iter().any(|candidate| {
-                    candidate.text == format!("{prefix}{leading}{candidate_word}{trailing}")
-                })
-            {
-                continue;
-            }
-            let distance = damerau_levenshtein(&normalized, &candidate_lower);
-            let score = surface_candidates
-                .iter()
-                .find(|candidate| candidate.word == candidate_lower)
-                .map(|candidate| candidate.score)
-                .unwrap_or_else(|| fuzzy_surface_score(len, distance));
-            if !surface_motif_typo_allowed(len, distance, score)
-                || !surface_motif_typo_has_authority(
-                    &normalized,
-                    &candidate_lower,
-                    score,
-                    &surface_candidates,
-                    &fuzzy_authority,
-                )
-            {
-                continue;
-            }
-            out.push(surface_motif_candidate(SurfaceMotifCandidateInput {
-                prefix,
-                leading,
-                word,
-                trailing,
-                replacement_lower: &candidate_lower,
-                source: L2_SURFACE_MOTIF_CELL,
-                score,
-                l1_overlap: 0,
-                l2_overlap: 0,
-                motif_overlap: 0,
-                prefix_match: false,
-                distance,
-                risk: surface_motif_typo_risk(context, distance),
-                l1,
-                context,
-            }));
-            if out.len() >= 8 {
-                break;
-            }
-        }
-    }
     out
 }
 
@@ -759,6 +760,9 @@ fn repeated_letter_surface_candidate(
     context: &TailContext,
 ) -> Option<WordCandidate> {
     if normalized.chars().count() < 3 || is_common_ru_word(normalized) {
+        return None;
+    }
+    if !has_adjacent_repeated_char(normalized) {
         return None;
     }
     let replacement = crate::ru_typo::correct_repeated_letter(word)?;
@@ -789,6 +793,17 @@ fn repeated_letter_surface_candidate(
     }))
 }
 
+fn has_adjacent_repeated_char(word: &str) -> bool {
+    let mut prev = None;
+    for ch in word.chars() {
+        if prev == Some(ch) {
+            return true;
+        }
+        prev = Some(ch);
+    }
+    false
+}
+
 fn surface_motif_typo_has_authority(
     original: &str,
     candidate: &str,
@@ -797,6 +812,14 @@ fn surface_motif_typo_has_authority(
     fuzzy_authority: &[String],
 ) -> bool {
     let candidate_distance = damerau_levenshtein(original, candidate);
+    let l2_surface_match = surface_candidates
+        .iter()
+        .any(|surface| surface.word == candidate && surface.score == score);
+    if l2_surface_match
+        && surface_motif_typo_allowed(original.chars().count(), candidate_distance, score)
+    {
+        return true;
+    }
     if surface_candidates.is_empty()
         && fuzzy_authority.len() == 1
         && fuzzy_authority
@@ -819,6 +842,18 @@ fn surface_motif_typo_has_authority(
             && other_distance <= candidate_distance
             && other.score.saturating_add(24) >= score
     })
+}
+
+fn repeated_all_caps_surface_allowed(
+    original_word: &str,
+    original_lower: &str,
+    candidate: &str,
+) -> bool {
+    original_word
+        .chars()
+        .all(|ch| !ch.is_alphabetic() || ch.is_uppercase())
+        && has_adjacent_repeated_char(original_lower)
+        && damerau_levenshtein(original_lower, candidate) <= 3
 }
 
 fn fuzzy_surface_candidate_blocked(
@@ -848,7 +883,7 @@ fn surface_motif_stable_existing_word(word: &str) -> bool {
     is_common_ru_word(word)
         || is_user_protected_word(word)
         || is_ru_live_protected_word(word)
-        || (is_known_russian_word_or_form(word) && !russian_zero_a_ya_stem_has_known_lemma(word))
+        || (surface_motif_known_surface(word) && !russian_zero_a_ya_stem_has_known_lemma(word))
         || russian_zero_o_form_has_known_lemma(word)
         || russian_future_ut_form_has_known_infinitive(word)
 }
@@ -856,21 +891,27 @@ fn surface_motif_stable_existing_word(word: &str) -> bool {
 fn russian_zero_a_ya_stem_has_known_lemma(word: &str) -> bool {
     word.chars().count() >= 5
         && word.chars().last().is_some_and(is_russian_consonant_for_l2)
-        && (is_known_russian_word_or_form(&format!("{word}а"))
-            || is_known_russian_word_or_form(&format!("{word}я")))
+        && (surface_motif_known_surface(&format!("{word}а"))
+            || surface_motif_known_surface(&format!("{word}я")))
 }
 
 fn russian_zero_o_form_has_known_lemma(word: &str) -> bool {
     word.chars().count() >= 4
         && word.chars().last().is_some_and(is_russian_consonant_for_l2)
-        && is_known_russian_word_or_form(&format!("{word}о"))
+        && surface_motif_known_surface(&format!("{word}о"))
 }
 
 fn russian_future_ut_form_has_known_infinitive(word: &str) -> bool {
     let Some(stem) = word.strip_suffix("ут") else {
         return false;
     };
-    stem.chars().count() >= 3 && is_known_russian_word_or_form(&format!("{stem}уть"))
+    stem.chars().count() >= 3 && surface_motif_known_surface(&format!("{stem}уть"))
+}
+
+fn surface_motif_known_surface(word: &str) -> bool {
+    is_common_ru_word(word)
+        || is_ru_live_protected_word(word)
+        || runtime_l2_surface_word_set().contains(word)
 }
 
 fn is_russian_consonant_for_l2(ch: char) -> bool {
@@ -1008,12 +1049,9 @@ fn surface_motif_candidate(input: SurfaceMotifCandidateInput<'_>) -> WordCandida
 }
 
 fn surface_motif_typo_allowed(input_len: usize, distance: usize, score: u32) -> bool {
-    distance == 1 || (input_len >= 6 && distance == 2 && score >= 300)
-}
-
-fn fuzzy_surface_score(input_len: usize, distance: usize) -> u32 {
-    let base = 760u32.saturating_sub(distance as u32 * 160);
-    base.saturating_add(input_len.min(12) as u32 * 8)
+    distance == 1
+        || (input_len >= 6 && distance == 2 && score >= 300)
+        || (input_len >= 8 && distance == 3 && score >= 380)
 }
 
 fn surface_motif_typo_risk(context: &TailContext, distance: usize) -> f32 {
@@ -1028,25 +1066,147 @@ fn surface_motif_typo_risk(context: &TailContext, distance: usize) -> f32 {
 fn surface_motif_memory() -> &'static L2CenterMemory {
     static MEMORY: OnceLock<L2CenterMemory> = OnceLock::new();
     MEMORY.get_or_init(|| {
-        let words = crate::lexicon::common_ru_words_iter()
-            .filter(|word| {
-                let len = word.chars().count();
-                (2..=24).contains(&len) && word.chars().all(is_cyrillic_letter)
-            })
-            .collect::<Vec<_>>();
-        L2CenterMemory::build(
-            words,
+        let timing_enabled = std::env::var_os("LAY_NANDA_L2_TIMING").is_some();
+        let started = std::time::Instant::now();
+        let words = runtime_l2_surface_words();
+        if timing_enabled {
+            eprintln!(
+                "lay_nanda_l2_timing stage=surface-bank elapsed_us={} words={}",
+                started.elapsed().as_micros(),
+                words.len()
+            );
+        }
+        let build_started = std::time::Instant::now();
+        let memory = L2CenterMemory::build(
+            words.iter().map(String::as_str),
             L2CenterMemoryConfig {
                 l1_config: super::l1_center_memory::L1CenterMemoryConfig {
                     min_center_support: 1,
-                    max_centers: 50_000,
+                    max_centers: 120_000,
                 },
-                motif_len: 2,
-                min_motif_support: 1,
-                max_motifs: 80_000,
+                motif_len: 3,
+                min_motif_support: 2,
+                max_motifs: 180_000,
             },
-        )
+        );
+        if timing_enabled {
+            eprintln!(
+                "lay_nanda_l2_timing stage=surface-memory-build elapsed_us={} centers={} words={}",
+                build_started.elapsed().as_micros(),
+                memory.center_count(),
+                words.len()
+            );
+        }
+        memory
     })
+}
+
+fn runtime_l2_surface_word_set() -> &'static HashSet<String> {
+    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
+    WORDS.get_or_init(|| runtime_l2_surface_words().into_iter().collect())
+}
+
+fn runtime_l2_surface_words() -> Vec<String> {
+    let mut words = Vec::new();
+    let mut seen = HashSet::new();
+    collect_runtime_l2_words(
+        crate::lexicon::common_ru_words_iter().map(str::to_string),
+        &mut words,
+        &mut seen,
+    );
+    collect_runtime_l2_words(data_words(L2_SURFACE_HOT_RU_DATA), &mut words, &mut seen);
+    collect_runtime_l2_case_words(
+        include_str!("../../data/nanda_wave_synthetic_cases.tsv"),
+        1,
+        &mut words,
+        &mut seen,
+    );
+    collect_runtime_l2_generated_positive_words(
+        include_str!("../../data/nanda_training/generated_cases.tsv"),
+        &mut words,
+        &mut seen,
+    );
+
+    words.sort_by(|left, right| {
+        crate::lexicon::is_common_ru_word(right)
+            .cmp(&crate::lexicon::is_common_ru_word(left))
+            .then_with(|| left.chars().count().cmp(&right.chars().count()))
+            .then_with(|| left.cmp(right))
+    });
+    words.truncate(L2_RUNTIME_WORD_LIMIT);
+    words
+}
+
+fn collect_runtime_l2_words<I>(source: I, words: &mut Vec<String>, seen: &mut HashSet<String>)
+where
+    I: IntoIterator<Item = String>,
+{
+    for word in source {
+        let normalized = word.to_lowercase();
+        let len = normalized.chars().count();
+        if (2..=24).contains(&len)
+            && normalized.chars().all(is_cyrillic_letter)
+            && !crate::lexicon::is_ru_live_protected_word(&normalized)
+            && seen.insert(normalized.clone())
+        {
+            words.push(normalized);
+        }
+    }
+}
+
+fn data_words(data: &str) -> impl Iterator<Item = String> + '_ {
+    data.lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty() && !line.starts_with('#'))
+        .map(str::to_string)
+}
+
+fn collect_runtime_l2_case_words(
+    text: &str,
+    expected_col: usize,
+    words: &mut Vec<String>,
+    seen: &mut HashSet<String>,
+) {
+    for line in text
+        .lines()
+        .filter(|line| !line.trim_start().starts_with('#'))
+    {
+        let cols = line.split('\t').collect::<Vec<_>>();
+        if let Some(expected) = cols.get(expected_col) {
+            collect_runtime_l2_text_words(&decode_fixture_spaces(expected), words, seen);
+        }
+    }
+}
+
+fn collect_runtime_l2_generated_positive_words(
+    text: &str,
+    words: &mut Vec<String>,
+    seen: &mut HashSet<String>,
+) {
+    for line in text.lines().skip(1) {
+        let cols = line.split('\t').collect::<Vec<_>>();
+        if cols.len() >= 6 && cols[5] == "1" {
+            collect_runtime_l2_text_words(&decode_fixture_spaces(cols[3]), words, seen);
+        }
+    }
+}
+
+fn collect_runtime_l2_text_words(text: &str, words: &mut Vec<String>, seen: &mut HashSet<String>) {
+    collect_runtime_l2_words(
+        text.split_whitespace().map(|token| {
+            token
+                .chars()
+                .filter(|ch| ch.is_alphabetic() || *ch == '-')
+                .flat_map(char::to_lowercase)
+                .collect::<String>()
+        }),
+        words,
+        seen,
+    );
+}
+
+fn decode_fixture_spaces(text: &str) -> String {
+    text.replace("\\s", " ")
 }
 
 fn customs_actor_phrase_candidates(
@@ -1300,10 +1460,7 @@ fn layout_candidate_allowed(token: &str, converted: &str) -> bool {
     }
     if token_cyrillic && converted_ascii {
         let token_lower = token.to_lowercase();
-        if is_user_protected_word(&token_lower)
-            || crate::layout_autoswitch::is_known_russian_layout_autoswitch_word(&token_lower)
-            || is_known_russian_word_or_form(&token_lower)
-        {
+        if is_user_protected_word(&token_lower) || surface_motif_known_surface(&token_lower) {
             return false;
         }
         return is_common_en_technical_word(&converted.to_ascii_lowercase());
@@ -1340,12 +1497,45 @@ fn boundary_split_candidates(
     let normalized = token.to_lowercase();
     if normalized.chars().count() < 6
         || is_common_ru_word(&normalized)
-        || is_known_russian_word_or_form(&normalized)
+        || is_ru_live_protected_word(&normalized)
     {
         return Vec::new();
     }
+    if let Some(replacement) = light_boundary_replacement(&normalized) {
+        return vec![WordCandidate {
+            text: format!("{prefix}{}", apply_word_case(token, &replacement)),
+            source: "BoundaryCell32",
+            energy: l1_energy(l1, "BoundaryCell32").max(0.99),
+            risk: 0.04,
+            support: {
+                let mut support = candidate_support(l1, context);
+                support.push("light-boundary-split".to_string());
+                support.push(format!("word={normalized:?} replacement={replacement:?}"));
+                support
+            },
+        }];
+    }
+    if surface_motif_known_surface(&normalized) {
+        return Vec::new();
+    }
+    if let Some(replacement) = crate::phrase_reader::correct_glued_russian_phrase(&normalized) {
+        if replacement != normalized {
+            return vec![WordCandidate {
+                text: format!("{prefix}{}", apply_word_case(token, &replacement)),
+                source: "BoundaryCell32",
+                energy: l1_energy(l1, "BoundaryCell32").max(0.86),
+                risk: 0.08,
+                support: {
+                    let mut support = candidate_support(l1, context);
+                    support.push("direct-glued-phrase-boundary".to_string());
+                    support.push(format!("word={normalized:?} replacement={replacement:?}"));
+                    support
+                },
+            }];
+        }
+    }
     let chars = normalized.chars().collect::<Vec<_>>();
-    let fuzzy_typo_candidates = crate::ru_typo::fuzzy_known_word_candidates(&normalized);
+    let mut fuzzy_typo_candidates: Option<Vec<String>> = None;
     let mut candidates = Vec::new();
     for split in 1..chars.len() {
         let left = chars[..split].iter().collect::<String>();
@@ -1355,14 +1545,19 @@ fn boundary_split_candidates(
         }
         let short_function_boundary =
             left.chars().count() == 1 && is_ru_one_letter_function_word(&left);
+        if short_function_boundary && fuzzy_typo_candidates.is_none() {
+            fuzzy_typo_candidates = Some(crate::ru_typo::fuzzy_known_word_candidates(&normalized));
+        }
         if short_function_boundary
-            && !fuzzy_typo_candidates.is_empty()
+            && fuzzy_typo_candidates
+                .as_ref()
+                .is_some_and(|candidates| !candidates.is_empty())
             && !strong_boundary_right_anchor(&right)
         {
             continue;
         }
         let known_left = short_function_boundary;
-        let known_right = is_common_ru_word(&right) || is_known_russian_word_or_form(&right);
+        let known_right = surface_motif_known_surface(&right);
         if !known_left || !known_right {
             continue;
         }
@@ -1395,6 +1590,25 @@ fn boundary_split_candidates(
         }
     }
     candidates
+}
+
+fn light_boundary_replacement(word: &str) -> Option<String> {
+    let chars = word.chars().collect::<Vec<_>>();
+    for split in 1..chars.len() {
+        let left = chars[..split].iter().collect::<String>();
+        let right = chars[split..].iter().collect::<String>();
+        if left.chars().count() > 3 || right.chars().count() < 3 {
+            continue;
+        }
+        let known_left = is_ru_one_letter_function_word(&left)
+            || crate::lexicon::is_ru_short_pronoun(&left)
+            || is_common_ru_word(&left);
+        let known_right = surface_motif_known_surface(&right);
+        if known_left && known_right {
+            return Some(format!("{left} {right}"));
+        }
+    }
+    None
 }
 
 fn boundary_scan_candidates(
@@ -2150,7 +2364,7 @@ mod tests {
         let candidates = run_l2(original, &l1);
         assert!(candidates
             .iter()
-            .any(|candidate| candidate.source == "PhraseCell32"));
+            .any(|candidate| candidate.source == L2_SURFACE_MOTIF_CELL));
     }
 
     #[test]
@@ -2177,6 +2391,48 @@ mod tests {
             }),
             "candidates={candidates:?}"
         );
+    }
+
+    #[test]
+    fn l2_surface_motif_memory_recovers_missing_letter_without_fuzzy_route() {
+        let candidates = surface_motif_memory().surface_candidates_for_text("звгрузи", 8);
+        assert!(
+            candidates
+                .iter()
+                .any(|candidate| candidate.word == "загрузи"),
+            "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn l2_surface_motif_memory_recovers_common_shadow_words() {
+        for (input, expected) in [("эсперемнт", "эксперимент"), ("ффективная", "эффективная")]
+        {
+            let candidates = surface_motif_memory().surface_candidates_for_text(input, 32);
+            assert!(
+                candidates
+                    .iter()
+                    .any(|candidate| candidate.word == expected),
+                "input={input} expected={expected} candidates={candidates:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn l2_surface_motif_cell_promotes_common_shadow_words() {
+        for (input, expected) in [
+            ("эсперемнт ", "эксперимент"),
+            ("ффективная ", "эффективная"),
+        ] {
+            let l1 = run_l1(input);
+            let candidates = run_l2(input, &l1);
+            assert!(
+                candidates.iter().any(|candidate| {
+                    candidate.source == L2_SURFACE_MOTIF_CELL && candidate.text == expected
+                }),
+                "input={input} expected={expected} candidates={candidates:?}"
+            );
+        }
     }
 
     #[test]

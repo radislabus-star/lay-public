@@ -2,7 +2,7 @@
 //!
 //! L2 consumes L1 center-id sequences and promotes repeated sequence motifs.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use super::l1_center_memory::{L1CenterMemory, L1CenterMemoryConfig, L1_SEQUENCE_REF_BYTES};
 
@@ -53,11 +53,13 @@ pub(super) struct L2WordRecord {
 pub(super) struct L2CenterMemory {
     l1: L1CenterMemory,
     centers: Vec<L2SequenceCenter>,
+    max_center_len: usize,
     center_index: HashMap<Vec<u32>, u32>,
     source_words: Vec<String>,
     word_records: Vec<L2WordRecord>,
     token_refs: Vec<u32>,
     token_to_words: HashMap<u32, Vec<usize>>,
+    length_to_words: HashMap<usize, Vec<usize>>,
     residual_ref_count: usize,
 }
 
@@ -93,6 +95,11 @@ impl L2CenterMemory {
             .map(|word| l1.center_sequence_for_word(word).center_refs)
             .collect::<Vec<_>>();
         let centers = build_l2_centers(&train_sequences, config);
+        let max_center_len = centers
+            .iter()
+            .map(|center| center.l1_center_refs.len())
+            .max()
+            .unwrap_or(0);
         let center_index = centers
             .iter()
             .map(|center| (center.l1_center_refs.clone(), center.id))
@@ -100,11 +107,13 @@ impl L2CenterMemory {
         let mut memory = Self {
             l1,
             centers,
+            max_center_len,
             center_index,
             source_words: words.clone(),
             word_records: Vec::with_capacity(words.len()),
             token_refs: Vec::new(),
             token_to_words: HashMap::new(),
+            length_to_words: HashMap::new(),
             residual_ref_count: 0,
         };
 
@@ -190,9 +199,15 @@ impl L2CenterMemory {
                 *word_votes.entry(word_id).or_default() += 1;
             }
         }
+        let mut candidate_ids = word_votes.into_keys().collect::<HashSet<_>>();
+        if input_len_for_bucket(&input_norm) >= 5 && candidate_ids.len() < limit.saturating_mul(4) {
+            for word_id in self.length_bucket_word_ids(input_len_for_bucket(&input_norm), 2) {
+                candidate_ids.insert(word_id);
+            }
+        }
 
-        let mut candidates = word_votes
-            .into_keys()
+        let mut candidates = candidate_ids
+            .into_iter()
             .filter_map(|word_id| {
                 let word = self.source_words.get(word_id)?;
                 let word_norm = normalize_surface(word);
@@ -213,11 +228,13 @@ impl L2CenterMemory {
                     &motif_tokens(&query_l2.tokens),
                     &motif_tokens(&word_l2.tokens),
                 );
+                let surface_distance = damerau_levenshtein(&input_norm, &word_norm);
                 let prefix_match =
                     word_norm.starts_with(&input_norm) || input_norm.starts_with(&word_norm);
                 let score = candidate_score(
                     input_len,
                     word_len,
+                    surface_distance,
                     l1_overlap,
                     l2_overlap,
                     motif_overlap,
@@ -260,6 +277,11 @@ impl L2CenterMemory {
                 .or_default()
                 .push(word_index);
         }
+        let word_len = normalize_surface(word).chars().count();
+        self.length_to_words
+            .entry(word_len)
+            .or_default()
+            .push(word_index);
         self.residual_ref_count += encoded.residual_l1_refs;
         self.word_records.push(L2WordRecord {
             source_hash: stable_hash_bytes(word.as_bytes()),
@@ -269,6 +291,18 @@ impl L2CenterMemory {
             covered_l1_refs: encoded.covered_l1_refs.min(u16::MAX as usize) as u16,
             residual_l1_refs: encoded.residual_l1_refs.min(u16::MAX as usize) as u16,
         });
+    }
+
+    fn length_bucket_word_ids(&self, input_len: usize, max_gap: usize) -> Vec<usize> {
+        let mut ids = Vec::new();
+        let start = input_len.saturating_sub(max_gap);
+        let end = input_len + max_gap;
+        for len in start..=end {
+            if let Some(word_ids) = self.length_to_words.get(&len) {
+                ids.extend(word_ids.iter().copied());
+            }
+        }
+        ids
     }
 
     fn encode_sequence(&self, sequence: &[u32]) -> EncodedSequence {
@@ -281,13 +315,7 @@ impl L2CenterMemory {
         while index < sequence.len() {
             let remaining = sequence.len() - index;
             if remaining >= 4 {
-                let max_len = self
-                    .centers
-                    .iter()
-                    .map(|center| center.l1_center_refs.len())
-                    .max()
-                    .unwrap_or(0)
-                    .min(remaining);
+                let max_len = self.max_center_len.min(remaining);
                 let mut matched = None;
                 for len in (1..=max_len).rev() {
                     if let Some(id) = self.center_index.get(&sequence[index..index + len]) {
@@ -310,6 +338,10 @@ impl L2CenterMemory {
         }
         encoded
     }
+}
+
+fn input_len_for_bucket(text: &str) -> usize {
+    text.chars().count()
 }
 
 #[derive(Clone, Debug, Default)]
@@ -404,6 +436,7 @@ fn overlap_count(left: &[u32], right: &[u32]) -> usize {
 fn candidate_score(
     input_len: usize,
     word_len: usize,
+    surface_distance: usize,
     l1_overlap: usize,
     l2_overlap: usize,
     motif_overlap: usize,
@@ -414,10 +447,20 @@ fn candidate_score(
     }
     let len_gap = input_len.abs_diff(word_len).min(16) as u32;
     let mut score = l1_overlap as u32 * 24 + l2_overlap as u32 * 48 + motif_overlap as u32 * 120;
+    if input_len >= 5 {
+        let close_distance = if input_len >= 8 {
+            3
+        } else {
+            (input_len / 4).max(2)
+        };
+        if surface_distance <= close_distance {
+            score += 760u32.saturating_sub(surface_distance as u32 * 120);
+        }
+    }
     if prefix_match {
         score += 180;
     }
-    score.saturating_sub(len_gap * 8)
+    score.saturating_sub(len_gap * 8 + surface_distance.min(16) as u32 * 12)
 }
 
 fn normalize_surface(text: &str) -> String {
@@ -425,6 +468,32 @@ fn normalize_surface(text: &str) -> String {
         .filter(|ch| ch.is_alphabetic() || *ch == '-')
         .flat_map(char::to_lowercase)
         .collect()
+}
+
+fn damerau_levenshtein(left: &str, right: &str) -> usize {
+    let left = left.chars().collect::<Vec<_>>();
+    let right = right.chars().collect::<Vec<_>>();
+    let rows = left.len() + 1;
+    let cols = right.len() + 1;
+    let mut dp = vec![vec![0usize; cols]; rows];
+    for (idx, row) in dp.iter_mut().enumerate() {
+        row[0] = idx;
+    }
+    for idx in 0..cols {
+        dp[0][idx] = idx;
+    }
+    for i in 1..rows {
+        for j in 1..cols {
+            let cost = usize::from(left[i - 1] != right[j - 1]);
+            dp[i][j] = (dp[i - 1][j] + 1)
+                .min(dp[i][j - 1] + 1)
+                .min(dp[i - 1][j - 1] + cost);
+            if i > 1 && j > 1 && left[i - 1] == right[j - 2] && left[i - 2] == right[j - 1] {
+                dp[i][j] = dp[i][j].min(dp[i - 2][j - 2] + 1);
+            }
+        }
+    }
+    dp[left.len()][right.len()]
 }
 
 fn stable_hash_u32s(values: &[u32]) -> u64 {

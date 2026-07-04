@@ -11,3 +11,8 @@ are intentionally promoted into a user-visible dictionary or configuration file.
 loanwords that should be treated as valid words. They protect normal mixed tech
 speech from typo rules such as adjacent transposition. The stem/suffix pair is
 for small regular paradigms; do not use it as a broad chat-log dictionary.
+
+`l2_surface_hot_ru.txt` is the hot Russian surface bank for NANDA L2 center
+memory. It is generated from a broad local corpus by balanced first-letter
+sampling, then mixed with curated positive cases at build time. Keep it as
+lexical substrate, not as a place for one-off autocorrect patches.

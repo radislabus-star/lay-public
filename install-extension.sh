@@ -6,6 +6,7 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 UUID="lay@radislabus-star.github.io"
 SRC="$DIR/extension/$UUID"
 DST="$HOME/.local/share/gnome-shell/extensions/$UUID"
+CACHE="$HOME/.cache/lay"
 
 if [ ! -d "$SRC" ]; then
     echo "✗ нет $SRC" >&2
@@ -14,9 +15,15 @@ fi
 
 echo "=== копирую extension → $DST ==="
 mkdir -p "$DST"
+mkdir -p "$CACHE"
 cp -v "$SRC/metadata.json" "$DST/"
-cp -v "$SRC/extension.js" "$DST/"
-cp -v "$SRC/lay-impl.js" "$DST/"
+for js in "$SRC"/*.js; do
+    name="$(basename "$js")"
+    cp -v "$js" "$DST/$name"
+    if [ "$name" != "extension.js" ] && [ "$name" != "lay-impl.js" ]; then
+        cp -v "$js" "$CACHE/$name" 2>/dev/null || true
+    fi
+done
 
 echo ""
 echo "=== gnome-extensions enable ==="

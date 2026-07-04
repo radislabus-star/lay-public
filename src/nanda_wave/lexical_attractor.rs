@@ -276,7 +276,7 @@ fn typo_surface(token: &str, context: &TailContext) -> Option<String> {
         .all(|ch| !ch.is_alphabetic() || ch.is_uppercase())
         || crate::lexicon::is_user_protected_word(&lower)
         || crate::lexicon::is_ru_live_protected_word(&lower)
-        || crate::russian_lexicon::is_known_russian_word_or_form(&lower)
+        || known_surface(&lower)
         || crate::ru_typo::rewrites_protected_pattern_term_stem(&lower, &lower)
     {
         return None;
@@ -299,7 +299,8 @@ fn known_surface(surface: &str) -> bool {
     let lower = surface.to_lowercase();
     crate::lexicon::is_common_ru_word(&lower)
         || crate::lexicon::is_common_en_technical_word(&lower)
-        || crate::russian_lexicon::is_known_russian_word_or_form(&lower)
+        || crate::lexicon::is_ru_technical_loanword(&lower)
+        || crate::lexicon::is_ru_live_protected_word(&lower)
 }
 
 fn grammar_score(surface: &str, context: &TailContext) -> u16 {
