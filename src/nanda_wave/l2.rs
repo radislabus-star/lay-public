@@ -396,9 +396,6 @@ fn layout_candidate(
     if token.chars().count() < 2 {
         return None;
     }
-    if context.token_count() < 2 && token.chars().count() > 3 {
-        return None;
-    }
     if is_common_en_technical_word(&token.to_ascii_lowercase()) {
         return None;
     }
@@ -407,6 +404,12 @@ fn layout_candidate(
     }
     let converted = convert(token, detect_direction(token));
     if converted == token {
+        return None;
+    }
+    if context.token_count() < 2
+        && token.chars().count() > 3
+        && !is_common_en_technical_word(&converted.to_ascii_lowercase())
+    {
         return None;
     }
     if known_short_russian_token_blocks_layout(token)

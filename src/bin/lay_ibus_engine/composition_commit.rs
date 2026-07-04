@@ -161,6 +161,9 @@ impl LayIbusEngine {
             self.sync_layout_after_committed_text(&text);
         }
         self.sync_tail_after_active_composition_commit(&text);
+        if with_space {
+            self.close_precognition_word_boundary();
+        }
         self.last_commit_at = Some(Instant::now());
         trace::record_ime_commit(
             decision_ms,

@@ -1049,6 +1049,34 @@ fn gate_candidate_with_source(
             reason: "word_count_shrink_requires_boundary_class",
         };
     }
+    if boundary_candidate_glues_short_function_tail(original, replacement, error_class) {
+        return CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "unsafe_boundary_glue_short_function_tail",
+        };
+    }
+    if moved_prefix_candidate_eats_known_current_word(original, replacement, source_id) {
+        return CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "moved_prefix_eats_known_current_word",
+        };
+    }
+    if multi_word_candidate_only_completes_last_vowel(original, replacement, error_class) {
+        return CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "unsafe_multi_word_vowel_completion",
+        };
+    }
+    if adjacent_transposition_competes_with_single_letter_boundary(
+        original,
+        replacement,
+        error_class,
+    ) {
+        return CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "single_letter_boundary_beats_transposition",
+        };
+    }
     if boundary_candidate_splits_known_russian_word(original, replacement, error_class) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
@@ -1254,6 +1282,179 @@ fn replacement_glues_separate_words_without_boundary_class(
     let original_words = core_word_count(original);
     let replacement_words = core_word_count(replacement);
     original_words >= 2 && replacement_words < original_words
+}
+
+fn boundary_candidate_glues_short_function_tail(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+) -> bool {
+    if !matches!(
+        error_class,
+        TypingErrorClass::SplitWord | TypingErrorClass::GluedWords
+    ) {
+        return false;
+    }
+    let (_, original_core, _) = split_edge_whitespace(original);
+    let (_, replacement_core, _) = split_edge_whitespace(replacement);
+    let original_words = original_core.split_whitespace().collect::<Vec<_>>();
+    let replacement_words = replacement_core.split_whitespace().collect::<Vec<_>>();
+    if original_words.len() != 2 || replacement_words.len() != 1 {
+        return false;
+    }
+    let left = original_words[0];
+    let right = original_words[1];
+    let merged = replacement_words[0];
+    if !same_cyrillic_token(&format!("{left}{right}"), merged) {
+        return false;
+    }
+    let (_, right_word, _) = split_word_punctuation(right);
+    let right_lower = right_word.to_lowercase();
+    if matches!(right_lower.as_str(), "ся" | "сь") {
+        return false;
+    }
+    right_word.chars().count() <= 3
+        && (crate::phrase_lexicon::is_known_russian_phrase_part(&right_lower)
+            || crate::russian_lexicon::is_known_russian_word_or_form(&right_lower)
+            || crate::lexicon::is_common_ru_word(&right_lower))
+}
+
+fn moved_prefix_candidate_eats_known_current_word(
+    original: &str,
+    replacement: &str,
+    source_id: &str,
+) -> bool {
+    if source_id != ids::MOVED_PREFIX_PAIR {
+        return false;
+    }
+    let (_, original_core, _) = split_edge_whitespace(original);
+    let (_, replacement_core, _) = split_edge_whitespace(replacement);
+    let original_words = original_core.split_whitespace().collect::<Vec<_>>();
+    let replacement_words = replacement_core.split_whitespace().collect::<Vec<_>>();
+    if original_words.len() < 2 || original_words.len() != replacement_words.len() {
+        return false;
+    }
+    let Some((original_last, original_prefix)) = original_words.split_last() else {
+        return false;
+    };
+    let Some((replacement_last, replacement_prefix)) = replacement_words.split_last() else {
+        return false;
+    };
+    if original_prefix != replacement_prefix {
+        return false;
+    }
+    let (_, original_word, _) = split_word_punctuation(original_last);
+    let (_, replacement_word, _) = split_word_punctuation(replacement_last);
+    if !is_cyrillic_letters_only(original_word)
+        || !is_cyrillic_letters_only(replacement_word)
+        || original_word.chars().count() < 4
+    {
+        return false;
+    }
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    let stripped = original_lower.chars().skip(1).collect::<String>();
+    stripped == replacement_lower
+}
+
+fn multi_word_candidate_only_completes_last_vowel(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+) -> bool {
+    if !matches!(
+        error_class,
+        TypingErrorClass::MissingLetter | TypingErrorClass::CompositeTypo
+    ) {
+        return false;
+    }
+    let (_, original_core, _) = split_edge_whitespace(original);
+    let (_, replacement_core, _) = split_edge_whitespace(replacement);
+    let original_words = original_core.split_whitespace().collect::<Vec<_>>();
+    let replacement_words = replacement_core.split_whitespace().collect::<Vec<_>>();
+    if original_words.len() < 2 || original_words.len() != replacement_words.len() {
+        return false;
+    }
+    let Some((original_last, original_prefix)) = original_words.split_last() else {
+        return false;
+    };
+    let Some((replacement_last, replacement_prefix)) = replacement_words.split_last() else {
+        return false;
+    };
+    if original_prefix != replacement_prefix {
+        return false;
+    }
+    let (_, original_word, _) = split_word_punctuation(original_last);
+    let (_, replacement_word, _) = split_word_punctuation(replacement_last);
+    if !is_cyrillic_letters_only(original_word)
+        || !is_cyrillic_letters_only(replacement_word)
+        || original_word.chars().count() < 5
+    {
+        return false;
+    }
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    let Some(suffix) = replacement_lower.strip_prefix(&original_lower) else {
+        return false;
+    };
+    suffix.chars().count() == 1
+        && suffix.chars().next().is_some_and(|ch| {
+            matches!(
+                ch,
+                'а' | 'е' | 'ё' | 'и' | 'о' | 'у' | 'ы' | 'э' | 'ю' | 'я'
+            )
+        })
+}
+
+fn adjacent_transposition_competes_with_single_letter_boundary(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+) -> bool {
+    if error_class != TypingErrorClass::AdjacentTransposition {
+        return false;
+    }
+    let (_, original_core, _) = split_edge_whitespace(original);
+    let (_, replacement_core, _) = split_edge_whitespace(replacement);
+    let original_words = original_core.split_whitespace().collect::<Vec<_>>();
+    let replacement_words = replacement_core.split_whitespace().collect::<Vec<_>>();
+    if original_words.len() < 2 || original_words.len() != replacement_words.len() {
+        return false;
+    }
+    let Some((original_last, original_prefix)) = original_words.split_last() else {
+        return false;
+    };
+    let Some((replacement_last, replacement_prefix)) = replacement_words.split_last() else {
+        return false;
+    };
+    if original_prefix != replacement_prefix {
+        return false;
+    }
+    let (_, original_word, _) = split_word_punctuation(original_last);
+    let (_, replacement_word, _) = split_word_punctuation(replacement_last);
+    if !is_cyrillic_letters_only(original_word)
+        || !is_cyrillic_letters_only(replacement_word)
+        || original_word.chars().count() < 4
+    {
+        return false;
+    }
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    if original_lower == replacement_lower {
+        return false;
+    }
+    let mut chars = original_lower.chars();
+    let Some(preposition) = chars.next() else {
+        return false;
+    };
+    if !matches!(preposition, 'в' | 'к' | 'с') {
+        return false;
+    }
+    let tail = chars.collect::<String>();
+    tail.chars().count() >= 3
+        && (crate::phrase_lexicon::is_known_russian_phrase_part(&tail)
+            || crate::russian_lexicon::is_known_russian_word_or_form(&tail)
+            || crate::lexicon::is_common_ru_word(&tail))
 }
 
 fn boundary_candidate_splits_known_russian_word(
@@ -2450,6 +2651,43 @@ mod tests {
             .candidates
             .iter()
             .any(|candidate| candidate.replacement == "реальное "));
+    }
+
+    #[test]
+    fn live_log_multi_word_drifts_do_not_autoreplace_neighbors() {
+        let pipeline = default_typing_assist_pipeline();
+        for input in ["мете ты ", "тут тоже ", "я позвол ", "мы токенов "]
+        {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicThenNanda,
+            ));
+
+            assert_eq!(
+                resolution.decision, None,
+                "multi-word dirty log case must not auto-apply: {input:?}: {resolution:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn single_letter_boundary_beats_wrong_transposition_candidate() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "посмотреть влогах ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        ));
+
+        let selected = resolution.selected.expect("selected boundary candidate");
+        assert_eq!(selected.replacement, "посмотреть в логах ");
+        assert_eq!(selected.source_id, "BoundaryCell32");
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+        assert!(resolution.candidates.iter().all(|candidate| {
+            candidate.replacement != "посмотреть волгах "
+                || candidate.gate.action != CandidateGateAction::Apply
+        }));
     }
 
     #[test]

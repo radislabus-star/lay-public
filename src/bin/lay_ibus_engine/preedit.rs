@@ -160,6 +160,14 @@ impl LayIbusEngine {
         Ok(())
     }
 
+    pub(super) fn close_precognition_word_boundary(&mut self) {
+        self.preedit_suffix.clear();
+        self.preedit_candidates.clear();
+        self.preedit_candidate_index = 0;
+        self.preedit_dirty = false;
+        self.preedit_fast.reset();
+    }
+
     fn preedit_clear_needed(&self) -> bool {
         !self.buffer.is_empty()
             || !self.preedit_suffix.is_empty()
@@ -554,7 +562,7 @@ impl LayIbusEngine {
         self.preedit_fast.push(ch);
         self.last_tail_input_at = Some(Instant::now());
         if ch.is_whitespace() {
-            self.preedit_dirty = false;
+            self.close_precognition_word_boundary();
             self.word_input_mode = None;
             lay::nanda_wave::record_typed_tail_usage(&self.tail_buffer);
         }
@@ -839,6 +847,9 @@ mod tests {
 
         engine.push_tail_char('п');
         engine.preedit_dirty = true;
+        engine.preedit_suffix = "ривет".to_string();
+        engine.preedit_candidates = vec!["ривет".to_string(), "роект".to_string()];
+        engine.preedit_candidate_index = 1;
         engine.push_tail_char(' ');
 
         assert!(
@@ -846,6 +857,9 @@ mod tests {
             "word boundary must not resurrect previous word suffix on cursor flush"
         );
         assert_eq!(engine.preedit_fast.token(), "");
+        assert!(engine.preedit_suffix.is_empty());
+        assert!(engine.preedit_candidates.is_empty());
+        assert_eq!(engine.preedit_candidate_index, 0);
     }
 
     #[test]
