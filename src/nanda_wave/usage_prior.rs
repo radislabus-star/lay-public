@@ -8,6 +8,7 @@ const LEGACY_USAGE_PRIOR_PATH: &str = ".local/share/lay/learning_candidates.json
 const USAGE_EVENTS_MAX_BYTES: u64 = 500 * 1024;
 const USAGE_REFRESH_INTERVAL: Duration = Duration::from_millis(1000);
 const CONTEXT_WORDS: usize = 5;
+const MIN_CONTEXT_NGRAM: usize = 1;
 
 #[derive(Debug, serde::Deserialize)]
 struct LearningCandidate {
@@ -53,7 +54,7 @@ struct UsageCache {
 }
 
 pub(crate) fn record_typed_tail_if_enabled(tail: &str) {
-    if !crate::config::LayConfig::load().learning_log {
+    if !usage_learning_enabled() {
         return;
     }
     let Some((context, word)) = context_and_last_word(tail) else {
@@ -70,7 +71,7 @@ pub(crate) fn record_typed_tail_if_enabled(tail: &str) {
 }
 
 pub(crate) fn record_accepted_fix_if_enabled(from: &str, to: &str) {
-    if !crate::config::LayConfig::load().learning_log || from == to {
+    if !usage_learning_enabled() || from == to {
         return;
     }
     let to_words = normalized_words(to);
@@ -100,7 +101,7 @@ pub(crate) fn record_accepted_fix_if_enabled(from: &str, to: &str) {
 }
 
 pub(crate) fn record_accepted_ime_if_enabled(context_tail: &str, accepted_text: &str) {
-    if !crate::config::LayConfig::load().learning_log {
+    if !usage_learning_enabled() {
         return;
     }
     let accepted_words = normalized_words(accepted_text);
@@ -144,20 +145,17 @@ pub(crate) fn context_word_usage_prior(context: &[String], word: &str) -> f32 {
     if lower.is_empty() || context.is_empty() {
         return 0.0;
     }
-    let context_key = context_key(context);
-    if context_key.is_empty() {
-        return 0.0;
-    }
     let counts = usage_counts();
-    let key = context_word_key(&context_key, &lower);
-    let Some(count) = counts.context_words.get(&key).copied() else {
-        return 0.0;
-    };
-    ((count as f32 + 1.0).ln() * 0.024).clamp(0.0, 0.12)
+    context_ngram_prior_from_counts(&counts, context, &lower)
 }
 
 fn word_prior_from_count(count: u32) -> f32 {
     ((count as f32 + 1.0).ln() * 0.018).clamp(0.0, 0.09)
+}
+
+fn usage_learning_enabled() -> bool {
+    let config = crate::config::LayConfig::load();
+    config.learning_log || config.nanda_precognition || config.nanda_autocorrect
 }
 
 fn usage_counts() -> UsageCounts {
@@ -195,27 +193,34 @@ pub(crate) fn context_word_usage_prior_cached(context: &[String], word: &str) ->
     if lower.is_empty() || context.is_empty() {
         return 0.0;
     }
-    let context_key = context_key(context);
-    if context_key.is_empty() {
-        return 0.0;
-    }
     let counts = cached_usage_counts();
-    let key = context_word_key(&context_key, &lower);
-    counts
-        .context_words
-        .get(&key)
-        .copied()
-        .map(|count| ((count as f32 + 1.0).ln() * 0.024).clamp(0.0, 0.12))
-        .unwrap_or(0.0)
+    context_ngram_prior_from_counts(&counts, context, &lower)
+}
+
+fn context_ngram_prior_from_counts(counts: &UsageCounts, context: &[String], word: &str) -> f32 {
+    context_ngram_keys(context)
+        .into_iter()
+        .filter_map(|context_key| {
+            let ngram_len = context_key.split_whitespace().count();
+            let key = context_word_key(&context_key, word);
+            counts
+                .context_words
+                .get(&key)
+                .copied()
+                .map(|count| (count, ngram_len))
+        })
+        .map(|(count, ngram_len)| {
+            let ngram_weight = 0.010 + ngram_len as f32 * 0.004;
+            ((count as f32 + 1.0).ln() * ngram_weight).min(0.07)
+        })
+        .sum::<f32>()
+        .clamp(0.0, 0.16)
 }
 
 fn cached_usage_counts() -> UsageCounts {
     let Ok(cache) = usage_cache().lock() else {
         return UsageCounts::default();
     };
-    if cache.loaded_at.is_none() {
-        return UsageCounts::default();
-    }
     cache.counts.clone()
 }
 
@@ -250,34 +255,37 @@ fn add_legacy_usage_counts(counts: &mut UsageCounts, text: &str) {
 
 fn add_usage_event_counts(counts: &mut UsageCounts, text: &str) {
     for event in usage_events_from_jsonl(text) {
-        let Some(word) = event.word.as_deref().map(normalize_word) else {
-            continue;
-        };
-        if word.is_empty() {
-            continue;
-        }
-        let weight = match event.kind {
-            UsageEventKind::Typed => 1,
-            UsageEventKind::AcceptedFix => 3,
-            UsageEventKind::AcceptedIme => 2,
-        };
-        *counts.words.entry(word.clone()).or_default() = counts
-            .words
-            .get(&word)
+        add_usage_event_count(counts, &event);
+    }
+}
+
+fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
+    let Some(word) = event.word.as_deref().map(normalize_word) else {
+        return;
+    };
+    if word.is_empty() {
+        return;
+    }
+    let weight = match event.kind {
+        UsageEventKind::Typed => 1,
+        UsageEventKind::AcceptedFix => 3,
+        UsageEventKind::AcceptedIme => 2,
+    };
+    *counts.words.entry(word.clone()).or_default() = counts
+        .words
+        .get(&word)
+        .copied()
+        .unwrap_or_default()
+        .saturating_add(weight);
+
+    for context_key in context_ngram_keys(&event.context) {
+        let key = context_word_key(&context_key, &word);
+        *counts.context_words.entry(key.clone()).or_default() = counts
+            .context_words
+            .get(&key)
             .copied()
             .unwrap_or_default()
             .saturating_add(weight);
-
-        let context_key = context_key(&event.context);
-        if !context_key.is_empty() {
-            let key = context_word_key(&context_key, &word);
-            *counts.context_words.entry(key).or_default() = counts
-                .context_words
-                .get(&context_word_key(&context_key, &word))
-                .copied()
-                .unwrap_or_default()
-                .saturating_add(weight);
-        }
     }
 }
 
@@ -325,7 +333,19 @@ fn append_usage_event(event: UsageEvent) {
     line.push('\n');
     if crate::private_file::append_private_text(&path, &line).is_ok() {
         compact_usage_events_if_needed(&path);
+        refresh_usage_cache_after_write(&event);
     }
+}
+
+fn refresh_usage_cache_after_write(event: &UsageEvent) {
+    let Ok(mut cache) = usage_cache().lock() else {
+        return;
+    };
+    if cache.loaded_at.is_none() {
+        cache.counts = UsageCounts::default();
+    }
+    add_usage_event_count(&mut cache.counts, event);
+    cache.loaded_at = Some(Instant::now());
 }
 
 fn adjacent_usage_event_is_duplicate(path: &Path, event: &UsageEvent) -> bool {
@@ -413,17 +433,22 @@ fn normalize_word(word: &str) -> String {
     trimmed.to_lowercase()
 }
 
-fn context_key(context: &[String]) -> String {
-    context
+fn context_ngram_keys(context: &[String]) -> Vec<String> {
+    let normalized = context
         .iter()
-        .rev()
-        .take(CONTEXT_WORDS)
-        .cloned()
-        .collect::<Vec<_>>()
-        .into_iter()
-        .rev()
-        .collect::<Vec<_>>()
-        .join(" ")
+        .filter_map(|word| {
+            let word = normalize_word(word);
+            (!word.is_empty()).then_some(word)
+        })
+        .collect::<Vec<_>>();
+    let max_len = normalized.len().min(CONTEXT_WORDS);
+    (MIN_CONTEXT_NGRAM..=max_len)
+        .filter_map(|len| {
+            let start = normalized.len().saturating_sub(len);
+            let key = normalized[start..].join(" ");
+            (!key.is_empty()).then_some(key)
+        })
+        .collect()
 }
 
 fn context_word_key(context: &str, word: &str) -> String {
@@ -490,6 +515,49 @@ mod tests {
                 .copied(),
             Some(3)
         );
+        assert_eq!(
+            counts.context_words.get("идёт\u{1f}дождь").copied(),
+            Some(3)
+        );
+        assert_eq!(
+            counts.context_words.get("улице идёт\u{1f}дождь").copied(),
+            Some(3)
+        );
+    }
+
+    #[test]
+    fn context_ngram_keys_cover_recent_suffixes() {
+        let context = ["на", "улице", "опять", "идёт"].map(String::from);
+
+        assert_eq!(
+            context_ngram_keys(&context),
+            [
+                "идёт",
+                "опять идёт",
+                "улице опять идёт",
+                "на улице опять идёт"
+            ]
+        );
+    }
+
+    #[test]
+    fn context_ngram_prior_scores_partial_context_match() {
+        let mut counts = UsageCounts::default();
+        add_usage_event_counts(
+            &mut counts,
+            r#"{"ts":1,"kind":"accepted_ime","word":"дождь","context":["на","улице","опять","идёт"],"to":"дождь"}
+"#,
+        );
+
+        let close_context = ["вечером", "опять", "идёт"].map(String::from);
+        let far_context = ["в", "другом", "месте"].map(String::from);
+
+        let close_score = context_ngram_prior_from_counts(&counts, &close_context, "дождь");
+        let far_score = context_ngram_prior_from_counts(&counts, &far_context, "дождь");
+
+        assert!(close_score > 0.0);
+        assert_eq!(far_score, 0.0);
+        assert!(close_score > far_score);
     }
 
     #[test]
