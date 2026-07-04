@@ -17,7 +17,7 @@ pub(crate) fn print_report(args: &[String]) -> io::Result<()> {
     let report = canonical_l1_l2_shadow_report(&words, &probes);
 
     println!("canonical_l1_l2_shadow:");
-    println!("  source: lay real-suite words + seed service words");
+    println!("  source: lay real-suite + local lexicon shadow words");
     println!("  words: {}", report.words);
     println!("  l1_centers: {}", report.l1_centers);
     println!("  l1_word_records: {}", report.l1_word_records);
@@ -62,7 +62,7 @@ pub(crate) fn print_candidates(args: &[String]) -> io::Result<()> {
 
     println!("canonical_l2_candidates:");
     println!("  input: {}", report.input);
-    println!("  source: lay real-suite words + seed service words");
+    println!("  source: lay real-suite + local lexicon shadow words");
     println!("  words: {}", report.words);
     println!(
         "  input_l1: ngrams={} refs={} residual={}",
@@ -76,9 +76,10 @@ pub(crate) fn print_candidates(args: &[String]) -> io::Result<()> {
     println!("  candidates:");
     for candidate in report.candidates {
         println!(
-            "    {} score={} l1_overlap={} l2_overlap={} motif_overlap={} prefix={}",
+            "    {} score={} distance={} l1_overlap={} l2_overlap={} motif_overlap={} prefix={}",
             candidate.word,
             candidate.score,
+            surface_distance(input, &candidate.word),
             candidate.l1_overlap,
             candidate.l2_overlap,
             candidate.motif_overlap,
@@ -107,6 +108,7 @@ fn load_words(source: WordSource) -> io::Result<Vec<String>> {
     for word in seed_words() {
         words.insert(word.to_string());
     }
+    collect_shadow_lexicon_words(&mut words);
 
     Ok(words.into_iter().collect())
 }
@@ -135,6 +137,81 @@ fn collect_words(text: &str, out: &mut BTreeSet<String>) {
     }
 }
 
+fn collect_shadow_lexicon_words(out: &mut BTreeSet<String>) {
+    for text in SHADOW_WORD_TEXTS {
+        collect_words(text, out);
+    }
+    collect_synthetic_expected_words(
+        include_str!("../../../data/nanda_wave_synthetic_cases.tsv"),
+        out,
+    );
+    collect_generated_positive_candidates(
+        include_str!("../../../data/nanda_training/generated_cases.tsv"),
+        out,
+    );
+}
+
+fn collect_synthetic_expected_words(text: &str, out: &mut BTreeSet<String>) {
+    for line in text
+        .lines()
+        .filter(|line| !line.trim_start().starts_with('#'))
+    {
+        let cols = line.split('\t').collect::<Vec<_>>();
+        if cols.len() >= 2 {
+            collect_words(&decode_fixture_spaces(cols[1]), out);
+        }
+    }
+}
+
+fn collect_generated_positive_candidates(text: &str, out: &mut BTreeSet<String>) {
+    for line in text.lines().skip(1) {
+        let cols = line.split('\t').collect::<Vec<_>>();
+        if cols.len() >= 6 && cols[5] == "1" {
+            collect_words(&decode_fixture_spaces(cols[3]), out);
+        }
+    }
+}
+
+fn decode_fixture_spaces(text: &str) -> String {
+    text.replace("\\s", " ")
+}
+
+fn surface_distance(left: &str, right: &str) -> usize {
+    edit_distance(&normalize_surface(left), &normalize_surface(right))
+}
+
+fn normalize_surface(text: &str) -> String {
+    text.chars()
+        .filter(|ch| ch.is_alphabetic() || *ch == '-')
+        .flat_map(char::to_lowercase)
+        .collect()
+}
+
+fn edit_distance(left: &str, right: &str) -> usize {
+    let left = left.chars().collect::<Vec<_>>();
+    let right = right.chars().collect::<Vec<_>>();
+    let mut prev = (0..=right.len()).collect::<Vec<_>>();
+    let mut curr = vec![0usize; right.len() + 1];
+    for (left_idx, left_ch) in left.iter().enumerate() {
+        curr[0] = left_idx + 1;
+        for (right_idx, right_ch) in right.iter().enumerate() {
+            let replace_cost = usize::from(left_ch != right_ch);
+            curr[right_idx + 1] = (prev[right_idx + 1] + 1)
+                .min(curr[right_idx] + 1)
+                .min(prev[right_idx] + replace_cost);
+        }
+        std::mem::swap(&mut prev, &mut curr);
+    }
+    prev[right.len()]
+}
+
+const SHADOW_WORD_TEXTS: &[&str] = &[
+    include_str!("../../../data/lem_research/ru_words.txt"),
+    include_str!("../../../data/lexicon/common_ru.txt"),
+    include_str!("../../../tests/fixtures/russian_forms.txt"),
+    include_str!("../../../tests/fixtures/ngram_ru_train_words.txt"),
+];
+
 fn seed_words() -> &'static [&'static str] {
     &[
         "и", "в", "не", "на", "с", "по", "для", "как", "что", "я", "ты", "мы", "он", "она", "они",
@@ -158,5 +235,15 @@ mod tests {
         assert!(words.contains("не"));
         assert!(words.contains("wave"));
         assert!(words.contains("context"));
+    }
+
+    #[test]
+    fn canonical_l2_shadow_words_include_local_lexicon() {
+        let words = load_words(WordSource::ExpectedOnly).expect("candidate words");
+
+        assert!(words.contains(&"эксперимент".to_string()));
+        assert!(words.contains(&"эффективная".to_string()));
+        assert!(words.contains(&"другие".to_string()));
+        assert!(words.contains(&"видеть".to_string()));
     }
 }

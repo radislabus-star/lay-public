@@ -161,11 +161,13 @@ pub fn canonical_l2_candidate_report(
             let l2_overlap = overlap_count(&l2.tokens, &word_l2.tokens);
             let motif_overlap =
                 overlap_count(&motif_tokens(&l2.tokens), &motif_tokens(&word_l2.tokens));
+            let surface_distance = damerau_levenshtein(&input_norm, &word_norm);
             let prefix_match = !input_norm.is_empty()
                 && (word_norm.starts_with(&input_norm) || input_norm.starts_with(&word_norm));
             let score = candidate_score(
                 input_norm.len(),
                 word_norm.len(),
+                surface_distance,
                 l1_overlap,
                 l2_overlap,
                 motif_overlap,
@@ -225,6 +227,7 @@ fn canonical_l2_memory(words: &[String]) -> L2CenterMemory {
 fn candidate_score(
     input_len: usize,
     word_len: usize,
+    surface_distance: usize,
     l1_overlap: usize,
     l2_overlap: usize,
     motif_overlap: usize,
@@ -235,10 +238,16 @@ fn candidate_score(
     }
     let len_gap = input_len.abs_diff(word_len).min(16) as u32;
     let mut score = l1_overlap as u32 * 24 + l2_overlap as u32 * 48 + motif_overlap as u32 * 120;
+    if input_len >= 5 {
+        let close_distance = (input_len / 4).max(2);
+        if surface_distance <= close_distance {
+            score += 760u32.saturating_sub(surface_distance as u32 * 120);
+        }
+    }
     if prefix_match {
         score += 180;
     }
-    score.saturating_sub(len_gap * 8)
+    score.saturating_sub(len_gap * 8 + surface_distance.min(16) as u32 * 12)
 }
 
 fn overlap_count(left: &[u32], right: &[u32]) -> usize {
@@ -261,6 +270,32 @@ fn overlap_count(left: &[u32], right: &[u32]) -> usize {
         }
     }
     count
+}
+
+fn damerau_levenshtein(left: &str, right: &str) -> usize {
+    let left = left.chars().collect::<Vec<_>>();
+    let right = right.chars().collect::<Vec<_>>();
+    let rows = left.len() + 1;
+    let cols = right.len() + 1;
+    let mut dp = vec![vec![0usize; cols]; rows];
+    for (idx, row) in dp.iter_mut().enumerate() {
+        row[0] = idx;
+    }
+    for idx in 0..cols {
+        dp[0][idx] = idx;
+    }
+    for i in 1..rows {
+        for j in 1..cols {
+            let cost = usize::from(left[i - 1] != right[j - 1]);
+            dp[i][j] = (dp[i - 1][j] + 1)
+                .min(dp[i][j - 1] + 1)
+                .min(dp[i - 1][j - 1] + cost);
+            if i > 1 && j > 1 && left[i - 1] == right[j - 2] && left[i - 2] == right[j - 1] {
+                dp[i][j] = dp[i][j].min(dp[i - 2][j - 2] + 1);
+            }
+        }
+    }
+    dp[left.len()][right.len()]
 }
 
 fn motif_tokens(tokens: &[u32]) -> Vec<u32> {
@@ -324,5 +359,19 @@ mod tests {
         assert!(!report.candidates.is_empty());
         assert_eq!(report.candidates[0].word, "проверка");
         assert!(report.candidates[0].score > 0);
+    }
+
+    #[test]
+    fn canonical_l2_candidates_use_surface_distance_as_shadow_signal() {
+        let words = vec![
+            "теперь".to_string(),
+            "проблема".to_string(),
+            "эксперимент".to_string(),
+            "эффективная".to_string(),
+        ];
+        let report = canonical_l2_candidate_report(&words, "эсперемнт", 4);
+
+        assert_eq!(report.candidates[0].word, "эксперимент");
+        assert!(report.candidates[0].score > report.candidates[1].score);
     }
 }

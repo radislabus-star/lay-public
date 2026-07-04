@@ -5,8 +5,6 @@ use std::fs;
 use std::io::{self, Write};
 use std::path::PathBuf;
 
-use super::real_suite;
-
 const RECENT_ACTIONS_PATH: &str = ".local/share/lay/recent_actions.jsonl";
 const HARVEST_PATH: &str = ".local/share/lay/nanda_wave/canonical_l2_harvest.jsonl";
 
@@ -102,7 +100,7 @@ pub(crate) fn print_recent(args: &[String]) -> io::Result<()> {
                 .and_then(|gate| gate.selected_source_id.as_deref())
                 .map(|source_id| format!("/{source_id}"))
                 .unwrap_or_default(),
-            format_top(top),
+            format_top(&input, top),
             verdict
         );
     }
@@ -397,16 +395,18 @@ impl VerdictCounts {
 }
 
 fn clean_words() -> io::Result<Vec<String>> {
-    let suite = real_suite::load()?;
     let mut words = BTreeSet::new();
-    for case in &suite.cases {
-        collect_words(&case.expected, &mut words);
+    for text in SHADOW_WORD_TEXTS {
+        collect_words(text, &mut words);
     }
-    for word in [
-        "и", "в", "не", "на", "с", "по", "для", "как", "что", "я", "ты", "мы", "он", "она", "они",
-    ] {
-        words.insert(word.to_string());
-    }
+    collect_synthetic_expected_words(
+        include_str!("../../../data/nanda_wave_synthetic_cases.tsv"),
+        &mut words,
+    );
+    collect_generated_positive_candidates(
+        include_str!("../../../data/nanda_training/generated_cases.tsv"),
+        &mut words,
+    );
     Ok(words.into_iter().collect())
 }
 
@@ -426,6 +426,38 @@ fn collect_words(text: &str, out: &mut BTreeSet<String>) {
         }
     }
 }
+
+fn collect_synthetic_expected_words(text: &str, out: &mut BTreeSet<String>) {
+    for line in text
+        .lines()
+        .filter(|line| !line.trim_start().starts_with('#'))
+    {
+        let cols = line.split('\t').collect::<Vec<_>>();
+        if cols.len() >= 2 {
+            collect_words(&decode_fixture_spaces(cols[1]), out);
+        }
+    }
+}
+
+fn collect_generated_positive_candidates(text: &str, out: &mut BTreeSet<String>) {
+    for line in text.lines().skip(1) {
+        let cols = line.split('\t').collect::<Vec<_>>();
+        if cols.len() >= 6 && cols[5] == "1" {
+            collect_words(&decode_fixture_spaces(cols[3]), out);
+        }
+    }
+}
+
+fn decode_fixture_spaces(text: &str) -> String {
+    text.replace("\\s", " ")
+}
+
+const SHADOW_WORD_TEXTS: &[&str] = &[
+    include_str!("../../../data/lem_research/ru_words.txt"),
+    include_str!("../../../data/lexicon/common_ru.txt"),
+    include_str!("../../../tests/fixtures/russian_forms.txt"),
+    include_str!("../../../tests/fixtures/ngram_ru_train_words.txt"),
+];
 
 fn load_recent_actions(path: &PathBuf, limit: usize) -> io::Result<Vec<RecentAction>> {
     let text = fs::read_to_string(path)?;
@@ -680,13 +712,14 @@ fn last_word_span(text: &str) -> Option<(usize, usize)> {
     end.map(|end| (0, end))
 }
 
-fn format_top(candidate: Option<&CanonicalL2Candidate>) -> String {
+fn format_top(input: &str, candidate: Option<&CanonicalL2Candidate>) -> String {
     candidate
         .map(|candidate| {
             format!(
-                "{}:{} l1={} l2={} motif={} prefix={}",
+                "{}:{} d={} l1={} l2={} motif={} prefix={}",
                 candidate.word,
                 candidate.score,
+                edit_distance(&normalize_word(input), &normalize_word(&candidate.word)),
                 candidate.l1_overlap,
                 candidate.l2_overlap,
                 candidate.motif_overlap,
