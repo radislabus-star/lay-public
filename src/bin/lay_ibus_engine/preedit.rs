@@ -5,7 +5,6 @@ use zbus::object_server::SignalEmitter;
 use super::engine::LayIbusEngine;
 use super::text::{make_ibus_text, make_preedit_ibus_text};
 use super::trace;
-use lay::russian_lexicon::is_known_russian_word_or_form;
 
 const PREEDIT_TAIL_LIMIT: usize = 160;
 const PREEDIT_TOKEN_LIMIT: usize = 32;
@@ -443,7 +442,7 @@ impl LayIbusEngine {
                 && self.config.active_correction_safety()
                     != lay::config::CorrectionSafety::Experimental)
             || is_noisy_first_russian_prefix(&partial)
-            || is_known_russian_word_or_form(&partial)
+            || is_ime_complete_russian_word(&partial)
         {
             return Vec::new();
         }
@@ -451,7 +450,7 @@ impl LayIbusEngine {
         let max_suffix_chars = self.precognition_max_suffix_chars();
         let mut suffixes = Vec::new();
         let short_prefix_requires_seed_word = partial_len <= 3;
-        for word in lay::lexicon::common_ru_prefix_completion_words(
+        for word in lay::lexicon::ime_ru_prefix_completion_words(
             &partial,
             max_suffix_chars,
             PREEDIT_RU_WAVE_SCAN_LIMIT,
@@ -617,8 +616,8 @@ fn push_unique_ru_known_suffix(
         suffix.chars().count() == 1 && suffix.chars().all(|ch| matches!(ch, 'а'..='я' | 'ё'));
     let strong_single_letter_completion = single_cyrillic
         && partial.chars().count() >= 3
-        && !is_known_russian_word_or_form(partial)
-        && (is_known_russian_word_or_form(word) || lay::lexicon::is_common_ru_word(word));
+        && !is_ime_complete_russian_word(partial)
+        && is_ime_candidate_russian_word(word);
     if strong_single_letter_completion || is_allowed_visible_completion_suffix(&suffix) {
         candidates.push(suffix);
     }
@@ -681,6 +680,14 @@ fn is_allowed_visible_completion_suffix(suffix: &str) -> bool {
 
 fn is_noisy_first_russian_prefix(prefix: &str) -> bool {
     matches!(prefix, "нев" | "инт")
+}
+
+fn is_ime_complete_russian_word(word: &str) -> bool {
+    lay::lexicon::is_common_ru_word(word)
+}
+
+fn is_ime_candidate_russian_word(word: &str) -> bool {
+    lay::lexicon::is_common_ru_word(word) || lay::lexicon::is_ime_hot_ru_word(word)
 }
 
 fn is_command_like_long_tail(tail: &str) -> bool {
@@ -1121,7 +1128,6 @@ mod tests {
 
     #[test]
     fn short_russian_prefix_stays_fast_without_dropping_valid_candidates() {
-        lay::nanda_wave::context_wave::warm_up_prefix_completion_indexes();
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
             Arc::new(Mutex::new(Default::default())),

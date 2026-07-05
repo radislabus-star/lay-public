@@ -311,15 +311,17 @@ impl LayIbusEngine {
 
 fn warm_runtime(config: &LayConfig) {
     lay::lem::set_runtime_enabled(config.lem_enabled && config.active_lem_weight() > 0.0);
-    lay::lexicon::warm_up();
-    if config.auto_replace || config.typing_assist || config.auto_switch_layout {
+    if config.active_text_backend().should_try_ime() {
+        lay::lexicon::warm_up_for_ime();
+    } else {
+        lay::lexicon::warm_up();
+    }
+    if !config.active_text_backend().should_try_ime()
+        && (config.auto_replace || config.typing_assist || config.auto_switch_layout)
+    {
         lay::typing_assist::warm_up();
         lay::lem::warm_up();
-        if config.active_text_backend().should_try_ime() {
-            std::thread::spawn(lay::nanda_wave::warm_up_for_ime);
-        } else {
-            std::thread::spawn(lay::nanda_wave::warm_up);
-        }
+        std::thread::spawn(lay::nanda_wave::warm_up);
     }
 }
 

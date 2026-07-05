@@ -39,6 +39,9 @@ const RU_HYPHEN_PARTICLE_DATA: &str = include_str!("../data/lexicon/ru_hyphen_pa
 const RU_GREETING_WORDS_DATA: &str = include_str!("../data/lexicon/ru_greeting_words.txt");
 const VISUAL_B_DEFAULT_DATA: &str = include_str!("../data/lexicon/visual_b_default.txt");
 const VISUAL_B_AFTER_ASCII_DATA: &str = include_str!("../data/lexicon/visual_b_after_ascii.txt");
+const IME_HOT_RU_DATA: &str = include_str!("../data/lexicon/l2_surface_hot_ru.txt");
+const IME_HOT_PREFIX_BUCKET_LIMIT: usize = 96;
+const IME_HOT_MIN_WORD_CHARS: usize = 4;
 
 pub fn warm_up() {
     let _ = common_ru_words().len();
@@ -62,8 +65,30 @@ pub fn warm_up() {
     let _ = user_protected_ascii_words().len();
 }
 
+pub fn warm_up_for_ime() {
+    let _ = common_ru_words().len();
+    let _ = ime_hot_ru_words().len();
+    let _ = ime_hot_ru_prefix_index().len();
+    let _ = common_en_technical_words().len();
+    let _ = common_en_technical_prefix_index().len();
+    let _ = common_en_guard_prefixes().len();
+    let _ = ru_one_letter_function_words().len();
+    let _ = ru_single_letter_pronouns().len();
+    let _ = ru_short_pronouns().len();
+    let _ = ru_short_prepositions().len();
+    let _ = ru_short_function_words().len();
+    let _ = ru_hyphen_particles().len();
+    let _ = ru_greeting_words().len();
+    let _ = visual_b_default_replacement();
+    let _ = visual_b_after_ascii_replacement();
+}
+
 pub fn is_common_ru_word(word: &str) -> bool {
     common_ru_words().contains(word)
+}
+
+pub fn is_ime_hot_ru_word(word: &str) -> bool {
+    ime_hot_ru_word_set().contains(word)
 }
 
 pub fn is_ru_technical_loanword(word: &str) -> bool {
@@ -136,6 +161,26 @@ pub fn common_ru_prefix_completion_words(
         }
     }
     words
+}
+
+pub fn ime_ru_prefix_completion_words(
+    prefix: &str,
+    max_suffix_chars: usize,
+    limit: usize,
+) -> Vec<String> {
+    let prefix = prefix.trim().to_lowercase();
+    if prefix.is_empty() || limit == 0 {
+        return Vec::new();
+    }
+    let prefix_len = prefix.chars().count();
+    ime_hot_ru_prefix_index()
+        .get(&prefix)
+        .into_iter()
+        .flatten()
+        .filter(|word| word.chars().count().saturating_sub(prefix_len) <= max_suffix_chars)
+        .take(limit)
+        .cloned()
+        .collect()
 }
 
 pub fn common_en_technical_prefix_completion(
@@ -312,6 +357,32 @@ fn common_ru_prefix_index() -> &'static HashMap<String, Vec<String>> {
     INDEX.get_or_init(|| build_prefix_index(common_ru_words_ordered()))
 }
 
+fn ime_hot_ru_words() -> &'static Vec<String> {
+    static WORDS: OnceLock<Vec<String>> = OnceLock::new();
+    WORDS.get_or_init(|| {
+        let mut words = common_ru_words_ordered().clone();
+        words.extend(
+            data_lines(IME_HOT_RU_DATA)
+                .map(str::to_lowercase)
+                .filter(|word| word.chars().count() >= IME_HOT_MIN_WORD_CHARS),
+        );
+        words.sort();
+        words.dedup();
+        words
+    })
+}
+
+fn ime_hot_ru_word_set() -> &'static HashSet<String> {
+    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
+    WORDS.get_or_init(|| ime_hot_ru_words().iter().cloned().collect())
+}
+
+fn ime_hot_ru_prefix_index() -> &'static HashMap<String, Vec<String>> {
+    static INDEX: OnceLock<HashMap<String, Vec<String>>> = OnceLock::new();
+    INDEX
+        .get_or_init(|| build_bounded_prefix_index(ime_hot_ru_words(), IME_HOT_PREFIX_BUCKET_LIMIT))
+}
+
 fn hunspell_ru_words_ordered() -> &'static Vec<String> {
     static WORDS: OnceLock<Vec<String>> = OnceLock::new();
     WORDS.get_or_init(|| {
@@ -377,6 +448,32 @@ fn build_prefix_index(words: &[String]) -> HashMap<String, Vec<String>> {
         for prefix_len in 1..char_count {
             let prefix = word.chars().take(prefix_len).collect::<String>();
             index.entry(prefix).or_default().push(word.clone());
+        }
+    }
+    index
+}
+
+fn build_bounded_prefix_index(
+    words: &[String],
+    bucket_limit: usize,
+) -> HashMap<String, Vec<String>> {
+    let mut ordered = words.to_vec();
+    ordered.sort_by(|left, right| {
+        is_common_ru_word(right)
+            .cmp(&is_common_ru_word(left))
+            .then_with(|| left.chars().count().cmp(&right.chars().count()))
+            .then_with(|| left.cmp(right))
+    });
+
+    let mut index = HashMap::<String, Vec<String>>::new();
+    for word in &ordered {
+        let char_count = word.chars().count();
+        for prefix_len in 1..char_count {
+            let prefix = word.chars().take(prefix_len).collect::<String>();
+            let bucket = index.entry(prefix).or_default();
+            if bucket.len() < bucket_limit {
+                bucket.push(word.clone());
+            }
         }
     }
     index
