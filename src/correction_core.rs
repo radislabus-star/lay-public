@@ -1466,14 +1466,8 @@ fn adjacent_transposition_competes_with_single_letter_boundary(
 fn boundary_candidate_splits_known_russian_word(
     original: &str,
     replacement: &str,
-    error_class: TypingErrorClass,
+    _error_class: TypingErrorClass,
 ) -> bool {
-    if !matches!(
-        error_class,
-        TypingErrorClass::SplitWord | TypingErrorClass::GluedWords
-    ) {
-        return false;
-    }
     let (_, original_core, _) = split_edge_whitespace(original);
     let (_, replacement_core, _) = split_edge_whitespace(replacement);
     let original_words = original_core.split_whitespace().collect::<Vec<_>>();
@@ -2578,6 +2572,19 @@ mod tests {
     #[test]
     fn boundary_gate_does_not_split_known_word_inside_phrase() {
         let gate = gate_candidate("на уровне ", "на у ровне ", TypingErrorClass::GluedWords);
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "known_single_word_boundary_split");
+    }
+
+    #[test]
+    fn boundary_gate_rejects_known_word_split_from_non_boundary_candidate() {
+        let gate = gate_candidate_with_source(
+            "за настройки ",
+            "за нас тройки ",
+            TypingErrorClass::CompositeTypo,
+            crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+        );
 
         assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
         assert_eq!(gate.reason, "known_single_word_boundary_split");
