@@ -24,6 +24,10 @@ pub fn warm_up() {
     let _ = en_model().vocab;
 }
 
+pub fn warm_up_ru() {
+    let _ = ru_model().vocab;
+}
+
 fn ru_model() -> &'static CharNgramModel {
     static MODEL: OnceLock<CharNgramModel> = OnceLock::new();
     MODEL.get_or_init(|| {

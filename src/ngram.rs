@@ -13,7 +13,9 @@ mod tokenize;
 pub use cache::{default_ru_cache_path, load_ru_cache, save_ru_cache};
 pub use model::{CharNgramModel, Lang};
 pub use sources::build_ru_model_from_sources;
-pub use static_models::{en_score, ru_candidate_is_better, ru_candidate_margin, ru_score, warm_up};
+pub use static_models::{
+    en_score, ru_candidate_is_better, ru_candidate_margin, ru_score, warm_up, warm_up_ru,
+};
 pub use tokenize::tokenize_text;
 
 #[cfg(test)]

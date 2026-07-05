@@ -24,7 +24,8 @@ pub use crate::scoped_tail::{
 };
 pub use crate::typing_pipeline::{
     apply_typing_assist, apply_typing_assist_exact, apply_typing_assist_with_pipeline,
-    explain_typing_assist_with_pipeline, warm_up, TypingAssistExplanation, TypingRuleEvaluation,
+    explain_typing_assist_with_pipeline, warm_up, warm_up_hot, TypingAssistExplanation,
+    TypingRuleEvaluation,
 };
 pub use crate::typing_replacements::{
     apply_auto_replace, apply_manual_replay_auto_replace, contains_visual_b_word,

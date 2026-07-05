@@ -9,12 +9,7 @@ fn warm_runtime_if_needed(detect_only: bool, cfg: &LayConfig) {
     if plan.spawn_background {
         std::thread::spawn(move || {
             let started_at = Instant::now();
-            lay::ngram::warm_up();
-            lay::lem::warm_up();
-            lay::typing_assist::warm_up();
-            if plan.warm_nanda {
-                lay::nanda_wave::warm_up();
-            }
+            lay::typing_assist::warm_up_hot();
             TYPING_ASSIST_RUNTIME_READY.store(true, Ordering::Relaxed);
             if plan.warm_smart {
                 match lay::llm::warm_up() {
@@ -23,7 +18,7 @@ fn warm_runtime_if_needed(detect_only: bool, cfg: &LayConfig) {
                 }
             }
             log(&format!(
-                "► dictionaries/ngram/LEM warmed in {}ms",
+                "► hot typing runtime warmed in {}ms; cold lexicon/NANDA memory stays lazy",
                 started_at.elapsed().as_millis()
             ));
         });

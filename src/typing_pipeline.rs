@@ -15,7 +15,7 @@ pub use engine::{
     explain_typing_assist_with_pipeline,
 };
 pub use types::{TypingAssistExplanation, TypingRuleEvaluation};
-pub use warmup::warm_up;
+pub use warmup::{warm_up, warm_up_hot};
 
 #[cfg(test)]
 #[path = "typing_pipeline_tests.rs"]

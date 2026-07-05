@@ -251,6 +251,7 @@ ln -sf "$DIR/target/release/lay-nanda-wave-eval" ~/.local/bin/lay-nanda-wave-eva
 ln -sf "$DIR/target/release/lay-test-input" ~/.local/bin/lay-test-input
 ln -sf "$DIR/target/release/lay-ngram-corpus" ~/.local/bin/lay-ngram-corpus
 ln -sf "$DIR/target/release/lay-ibus-engine" ~/.local/bin/lay-ibus-engine
+ln -sf "$DIR/target/release/lay-memory-report" ~/.local/bin/lay-memory-report
 ln -sf "$DIR/scripts/lay-runtime-control.sh" ~/.local/bin/lay-runtime-control
 ln -sf "$DIR/scripts/lay-kde-tray.py" ~/.local/bin/lay-kde-tray
 ln -sf "$DIR/scripts/lay-host-vm-guard.sh" ~/.local/bin/lay-host-vm-guard
@@ -260,6 +261,7 @@ echo "✓ lay-daemon → ~/.local/bin/lay-daemon"
 echo "✓ lay-nanda-wave-eval → ~/.local/bin/lay-nanda-wave-eval"
 echo "✓ lay-test-input → ~/.local/bin/lay-test-input"
 echo "✓ lay-ngram-corpus → ~/.local/bin/lay-ngram-corpus"
+echo "✓ lay-memory-report → ~/.local/bin/lay-memory-report"
 echo "✓ lay-kde-tray → ~/.local/bin/lay-kde-tray"
 echo "✓ lay-ibus-engine → ~/.local/bin/lay-ibus-engine"
 echo "✓ lay-runtime-control → ~/.local/bin/lay-runtime-control"
