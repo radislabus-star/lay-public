@@ -36,6 +36,8 @@ pub struct RecentActionGateTrace {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub input_class: Option<String>,
     pub candidate_count: usize,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub scoreboard: Option<RecentActionGateScoreboard>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub selected_source: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -45,6 +47,18 @@ pub struct RecentActionGateTrace {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub selected_gate_action: Option<String>,
     pub reason: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+pub struct RecentActionGateScoreboard {
+    pub apply_candidates: usize,
+    pub suggest_only_candidates: usize,
+    pub keep_original_candidates: usize,
+    pub veto_candidates: usize,
+    pub deterministic_candidates: usize,
+    pub nanda_candidates: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selected_bayes_posterior_milli: Option<i16>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -95,6 +109,15 @@ impl RecentActionGateTrace {
             stage: input_gate_stage_name(trace.stage).to_string(),
             input_class: trace.input_class.map(|class| class.as_str().to_string()),
             candidate_count: trace.candidate_count,
+            scoreboard: Some(RecentActionGateScoreboard {
+                apply_candidates: trace.scoreboard.apply_candidates,
+                suggest_only_candidates: trace.scoreboard.suggest_only_candidates,
+                keep_original_candidates: trace.scoreboard.keep_original_candidates,
+                veto_candidates: trace.scoreboard.veto_candidates,
+                deterministic_candidates: trace.scoreboard.deterministic_candidates,
+                nanda_candidates: trace.scoreboard.nanda_candidates,
+                selected_bayes_posterior_milli: trace.scoreboard.selected_bayes_posterior_milli,
+            }),
             selected_source: trace
                 .selected_source
                 .map(correction_source_name)

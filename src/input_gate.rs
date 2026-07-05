@@ -7,7 +7,7 @@
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
 use crate::correction_core::{
     CandidateGateAction, CorrectionDecisionSource, CorrectionMode, CorrectionRequest,
-    CorrectionResolution, TypingErrorClass,
+    CorrectionResolution, CorrectionScoreboard, TypingErrorClass,
 };
 
 include!("correction_pipeline.rs");
@@ -70,11 +70,37 @@ pub struct InputGateDecisionTrace {
     pub stage: InputGateStage,
     pub input_class: Option<TypingErrorClass>,
     pub candidate_count: usize,
+    pub scoreboard: InputGateScoreboard,
     pub selected_source: Option<CorrectionDecisionSource>,
     pub selected_source_id: Option<String>,
     pub selected_error_class: Option<TypingErrorClass>,
     pub selected_gate_action: Option<CandidateGateAction>,
     pub reason: &'static str,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct InputGateScoreboard {
+    pub apply_candidates: usize,
+    pub suggest_only_candidates: usize,
+    pub keep_original_candidates: usize,
+    pub veto_candidates: usize,
+    pub deterministic_candidates: usize,
+    pub nanda_candidates: usize,
+    pub selected_bayes_posterior_milli: Option<i16>,
+}
+
+impl From<CorrectionScoreboard> for InputGateScoreboard {
+    fn from(scoreboard: CorrectionScoreboard) -> Self {
+        Self {
+            apply_candidates: scoreboard.apply_candidates,
+            suggest_only_candidates: scoreboard.suggest_only_candidates,
+            keep_original_candidates: scoreboard.keep_original_candidates,
+            veto_candidates: scoreboard.veto_candidates,
+            deterministic_candidates: scoreboard.deterministic_candidates,
+            nanda_candidates: scoreboard.nanda_candidates,
+            selected_bayes_posterior_milli: scoreboard.selected_bayes_posterior_milli,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -143,6 +169,7 @@ fn observe_trace(stage: InputGateStage, reason: &'static str) -> InputGateDecisi
         stage,
         input_class: None,
         candidate_count: 0,
+        scoreboard: InputGateScoreboard::default(),
         selected_source: None,
         selected_source_id: None,
         selected_error_class: None,
@@ -157,6 +184,7 @@ fn word_boundary_trace(resolution: &CorrectionResolution) -> InputGateDecisionTr
         stage: InputGateStage::WordBoundary,
         input_class: Some(resolution.event.input_class),
         candidate_count: resolution.candidates.len(),
+        scoreboard: resolution.scoreboard.into(),
         selected_source: selected.map(|candidate| candidate.source),
         selected_source_id: selected.map(|candidate| candidate.source_id.clone()),
         selected_error_class: selected.map(|candidate| candidate.error_class),
@@ -297,6 +325,13 @@ mod tests {
         );
         let trace = decision.trace.as_ref().expect("input gate trace");
         assert_eq!(trace.candidate_count, 1);
+        assert_eq!(trace.scoreboard.apply_candidates, 1);
+        assert_eq!(trace.scoreboard.deterministic_candidates, 1);
+        assert_eq!(trace.scoreboard.nanda_candidates, 0);
+        assert!(
+            trace.scoreboard.selected_bayes_posterior_milli.is_some(),
+            "selected candidate should expose Bayes posterior in the input gate scoreboard"
+        );
         assert_eq!(
             trace.selected_source,
             Some(CorrectionDecisionSource::Deterministic)
@@ -341,6 +376,13 @@ mod tests {
         assert_eq!(
             decision.trace.as_ref().map(|trace| trace.reason),
             Some("no_candidate")
+        );
+        assert_eq!(
+            decision
+                .trace
+                .as_ref()
+                .map(|trace| trace.scoreboard.apply_candidates),
+            Some(0)
         );
     }
 }

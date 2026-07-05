@@ -116,6 +116,7 @@ pub struct CorrectionResolution {
     pub candidates: Vec<UnifiedCorrectionCandidate>,
     pub selected: Option<UnifiedCorrectionCandidate>,
     pub decision: Option<CorrectionDecision>,
+    pub scoreboard: CorrectionScoreboard,
 }
 
 #[derive(Debug, Clone)]
@@ -134,6 +135,18 @@ pub struct CorrectionRequest<'a> {
 pub struct CorrectionDecision {
     pub replacement: String,
     pub source: CorrectionDecisionSource,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct CorrectionScoreboard {
+    pub total_candidates: usize,
+    pub apply_candidates: usize,
+    pub suggest_only_candidates: usize,
+    pub keep_original_candidates: usize,
+    pub veto_candidates: usize,
+    pub deterministic_candidates: usize,
+    pub nanda_candidates: usize,
+    pub selected_bayes_posterior_milli: Option<i16>,
 }
 
 pub fn decide_text_correction(req: CorrectionRequest<'_>) -> Option<CorrectionDecision> {
@@ -196,13 +209,55 @@ impl CandidateBoard {
             replacement: candidate.replacement.clone(),
             source: candidate.source,
         });
+        let scoreboard = CorrectionScoreboard::from_candidates(
+            &self.event.original,
+            &self.candidates,
+            selected.as_ref(),
+        );
 
         CorrectionResolution {
             event: self.event,
             candidates: self.candidates,
             selected,
             decision,
+            scoreboard,
         }
+    }
+}
+
+impl CorrectionScoreboard {
+    fn from_candidates(
+        original: &str,
+        candidates: &[UnifiedCorrectionCandidate],
+        selected: Option<&UnifiedCorrectionCandidate>,
+    ) -> Self {
+        let mut scoreboard = Self {
+            total_candidates: candidates.len(),
+            ..Self::default()
+        };
+
+        for candidate in candidates {
+            match candidate.gate.action {
+                CandidateGateAction::Apply => scoreboard.apply_candidates += 1,
+                CandidateGateAction::SuggestOnly => scoreboard.suggest_only_candidates += 1,
+                CandidateGateAction::KeepOriginal => scoreboard.keep_original_candidates += 1,
+                CandidateGateAction::Veto => scoreboard.veto_candidates += 1,
+            }
+            match candidate.source {
+                CorrectionDecisionSource::Deterministic => {
+                    scoreboard.deterministic_candidates += 1;
+                }
+                CorrectionDecisionSource::Nanda => {
+                    scoreboard.nanda_candidates += 1;
+                }
+            }
+        }
+
+        scoreboard.selected_bayes_posterior_milli = selected.map(|candidate| {
+            let posterior = bayes_score_for_candidate(original, candidate).posterior;
+            (posterior * 1000.0).round() as i16
+        });
+        scoreboard
     }
 }
 
@@ -2280,6 +2335,17 @@ mod tests {
         assert_eq!(selected.replacement, "автозамена ");
         assert_eq!(selected.error_class, TypingErrorClass::MissingLetter);
         assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+        assert_eq!(resolution.scoreboard.total_candidates, 1);
+        assert_eq!(resolution.scoreboard.apply_candidates, 1);
+        assert_eq!(resolution.scoreboard.deterministic_candidates, 1);
+        assert_eq!(resolution.scoreboard.nanda_candidates, 0);
+        assert!(
+            resolution
+                .scoreboard
+                .selected_bayes_posterior_milli
+                .is_some(),
+            "selected candidate must expose Bayes posterior"
+        );
     }
 
     #[test]
