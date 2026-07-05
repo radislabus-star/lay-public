@@ -1,6 +1,6 @@
 [package]
 name = "lay"
-version = "0.2.77"
+version = "0.2.78"
 edition = "2021"
 description = "Alpha Double Shift RU/EN layout rescue for Linux desktops"
 license-file = "LICENSE"
@@ -49,6 +49,10 @@ path = "src/bin/lay_nanda_wave_train.rs"
 [[bin]]
 name = "lay-ibus-engine"
 path = "src/bin/lay_ibus_engine.rs"
+
+[[bin]]
+name = "lay-debug-actions"
+path = "src/bin/lay_debug_actions.rs"
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }

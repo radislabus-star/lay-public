@@ -68,6 +68,37 @@ fn build_input_gate_decoded_tail(
         replacement_tail,
         CorrectionSource::TypingAssist,
     )?;
+    let input_gate = decision
+        .trace
+        .as_ref()
+        .map(lay::action_log::RecentActionGateTrace::from_input_gate);
+    let source_id = input_gate
+        .as_ref()
+        .and_then(|trace| trace.selected_source_id.as_deref());
+    let error_class = input_gate
+        .as_ref()
+        .and_then(|trace| trace.selected_error_class.as_deref());
+    let safety = lay::text_edit::autocorrect_edit_safety(
+        original,
+        &edit.replacement,
+        &edit.plan,
+        source_id,
+        error_class,
+    );
+    lay::action_log::record_candidate_before_apply(
+        original,
+        &edit.replacement,
+        &edit.plan,
+        &safety,
+        input_gate.clone(),
+    );
+    if !safety.allow_apply {
+        crate::log(&format!(
+            "· typing-assist blocked by edit-plan safety: reason={} original={:?} replacement={:?}",
+            safety.reason, original, edit.replacement
+        ));
+        return None;
+    }
     let rule_id = decision
         .correction
         .as_ref()
@@ -79,10 +110,6 @@ fn build_input_gate_decoded_tail(
                 candidate.source_id.clone()
             }
         });
-    let input_gate = decision
-        .trace
-        .as_ref()
-        .map(lay::action_log::RecentActionGateTrace::from_input_gate);
     Some(DecodedCompletedTail::with_input_gate(
         edit, rule_id, input_gate,
     ))

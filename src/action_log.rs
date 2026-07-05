@@ -58,6 +58,36 @@ struct DirtyTaskRecord<'a> {
     gate: &'a RecentActionGateTrace,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+struct CandidateBeforeApplyRecord<'a> {
+    ts: u64,
+    kind: &'static str,
+    from: &'a str,
+    to: &'a str,
+    edit_plan: EditPlanRecord<'a>,
+    deleted_text: &'a str,
+    inserted_text: &'a str,
+    deleted_contains_space: bool,
+    inserted_contains_space: bool,
+    insertion_splits_word: bool,
+    word_count_changed: bool,
+    boundary_changed: bool,
+    changes_non_last_word: bool,
+    would_touch_words: usize,
+    safety_allow_apply: bool,
+    safety_reason: &'static str,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    input_gate: Option<RecentActionGateTrace>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+struct EditPlanRecord<'a> {
+    move_left: u32,
+    backspaces: u32,
+    insert: &'a str,
+    move_right: u32,
+}
+
 impl RecentActionGateTrace {
     pub fn from_input_gate(trace: &crate::input_gate::InputGateDecisionTrace) -> Self {
         Self {
@@ -78,6 +108,48 @@ impl RecentActionGateTrace {
                 .map(str::to_string),
             reason: trace.reason.to_string(),
         }
+    }
+}
+
+pub fn record_candidate_before_apply(
+    from: &str,
+    to: &str,
+    plan: &crate::text_edit::TextReplacement,
+    safety: &crate::text_edit::EditPlanSafetyReport,
+    input_gate: Option<RecentActionGateTrace>,
+) {
+    if !crate::config::LayConfig::load().debug_action_log {
+        return;
+    }
+    let Some(path) = actions_path() else {
+        return;
+    };
+    let record = CandidateBeforeApplyRecord {
+        ts: unix_timestamp(),
+        kind: "candidate_before_apply",
+        from,
+        to,
+        edit_plan: EditPlanRecord {
+            move_left: plan.move_left,
+            backspaces: plan.backspaces,
+            insert: &plan.insert,
+            move_right: plan.move_right,
+        },
+        deleted_text: &safety.deleted_text,
+        inserted_text: &safety.inserted_text,
+        deleted_contains_space: safety.deleted_contains_space,
+        inserted_contains_space: safety.inserted_contains_space,
+        insertion_splits_word: safety.insertion_splits_word,
+        word_count_changed: safety.word_count_changed,
+        boundary_changed: safety.boundary_changed,
+        changes_non_last_word: safety.changes_non_last_word,
+        would_touch_words: safety.would_touch_words,
+        safety_allow_apply: safety.allow_apply,
+        safety_reason: safety.reason,
+        input_gate,
+    };
+    if let Ok(line) = serde_json::to_string(&record) {
+        crate::debug_log::append_private_line(path, line);
     }
 }
 
