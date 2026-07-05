@@ -281,6 +281,9 @@ impl LayIbusEngine {
         if self.composition_has_pending_autocorrect() {
             return Vec::new();
         }
+        if self.buffer.is_empty() && self.tail_buffer.ends_with(char::is_whitespace) {
+            return Vec::new();
+        }
         let timing_enabled = trace::enabled();
         let total_started = timing_enabled.then(Instant::now);
         let tail = self.tail_buffer.as_str();
@@ -427,20 +430,9 @@ impl LayIbusEngine {
         let partial = partial.to_lowercase();
         let partial_len = partial.chars().count();
         let has_left_context = prefix.split_whitespace().next().is_some();
-        let min_prefix_chars = if has_left_context {
-            self.ru_lexical_min_prefix_chars()
-        } else if self.config.active_correction_safety()
-            == lay::config::CorrectionSafety::Experimental
-        {
-            PREEDIT_RU_PREFIX_MIN_CHARS
-        } else {
-            self.ru_lexical_min_prefix_chars().max(4)
-        };
+        let min_prefix_chars = self.ru_lexical_min_prefix_chars();
         if !(min_prefix_chars..=12).contains(&partial_len)
             || !partial.chars().all(|ch| matches!(ch, 'а'..='я' | 'ё'))
-            || (!has_left_context
-                && self.config.active_correction_safety()
-                    != lay::config::CorrectionSafety::Experimental)
             || is_noisy_first_russian_prefix(&partial)
             || is_ime_complete_russian_word(&partial)
         {
@@ -500,8 +492,9 @@ impl LayIbusEngine {
         }
 
         let prefix_tokens = lay::nanda_wave::llmwave::tokenize(prefix);
-        let allow_short_lexical =
-            self.config.active_correction_safety() == lay::config::CorrectionSafety::Experimental;
+        let allow_short_lexical = self.config.active_correction_safety()
+            == lay::config::CorrectionSafety::Experimental
+            || !has_left_context;
         let mut ranked = suffixes
             .into_iter()
             .filter_map(|suffix| {
@@ -1257,7 +1250,7 @@ mod tests {
     }
 
     #[test]
-    fn composition_preedit_does_not_complete_from_raw_russian_prefix() {
+    fn normal_composition_preedit_completes_raw_russian_prefix() {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
             Arc::new(Mutex::new(Default::default())),
@@ -1277,9 +1270,38 @@ mod tests {
         engine.refresh_precognition_candidates();
         let (text, cursor_pos) = engine.composition_preedit_payload();
 
-        assert_eq!(text, "пров");
+        assert!(
+            text.starts_with("пров") && text.chars().count() > "пров".chars().count(),
+            "normal IME should show an aggressive completion for raw Russian prefix: {text:?}"
+        );
         assert_eq!(cursor_pos, 4);
-        assert_eq!(engine.preedit_suffix, "");
+        assert!(!engine.preedit_suffix.is_empty());
+    }
+
+    #[test]
+    fn space_boundary_suppresses_inactive_phrase_precognition() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "я хочу ".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine.preedit_candidates.is_empty(),
+            "word boundary must close visible IME suffixes, got {:?}",
+            engine.preedit_candidates
+        );
     }
 
     #[test]
