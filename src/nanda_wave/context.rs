@@ -1,3 +1,4 @@
+use crate::keyboard::is_cyrillic_letter;
 use crate::lexicon::{is_common_en_technical_word, is_common_ru_word};
 
 pub const MAX_CONTEXT_TOKENS: usize = 32;
@@ -133,10 +134,6 @@ fn classify_token(token: &str) -> TokenKind {
         return TokenKind::Mixed;
     }
     TokenKind::Other
-}
-
-fn is_cyrillic_letter(ch: char) -> bool {
-    ('а'..='я').contains(&ch) || ('А'..='Я').contains(&ch) || ch == 'ё' || ch == 'Ё'
 }
 
 #[cfg(test)]

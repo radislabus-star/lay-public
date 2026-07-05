@@ -2,7 +2,8 @@
 
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
-use std::time::{SystemTime, UNIX_EPOCH};
+
+use crate::time::unix_timestamp;
 
 const STATS_PATH: &str = ".local/share/lay/stats.json";
 
@@ -61,13 +62,6 @@ fn stats_path() -> Option<PathBuf> {
     std::env::var_os("HOME")
         .map(PathBuf::from)
         .map(|home| home.join(STATS_PATH))
-}
-
-fn unix_timestamp() -> u64 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs()
 }
 
 fn write_private_stats(path: &std::path::Path, stats: &LayStats) -> std::io::Result<()> {

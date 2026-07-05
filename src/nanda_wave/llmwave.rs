@@ -5,12 +5,14 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::OnceLock;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::feedback::{FeedbackAdjustment, L3Feedback};
 use super::options::WaveOptions;
 use super::signal::{LayerTrace, WordCandidate};
+use crate::keyboard::is_cyrillic_letter;
 use crate::russian_chars::is_russian_vowel;
+use crate::time::unix_timestamp;
+use crate::word_reader::split_last_trimmed_ws_token;
 
 pub const LLMWAVE_CELL: &str = "LLMWaveCell32";
 pub const LLMWAVE_RECORD_BYTES: usize = 32;
@@ -630,7 +632,7 @@ fn build_phrase_experience(
     }
     Ok(LlmWavePhraseExperience {
         kind: "llmwave_phrase_experience_v1".to_string(),
-        ts: unix_now(),
+        ts: unix_timestamp(),
         stage: stage.to_string(),
         text: normalized,
         tokens: tokens.len(),
@@ -882,10 +884,6 @@ fn has_repeated_vowel(token: &str) -> bool {
     false
 }
 
-fn is_cyrillic_letter(ch: char) -> bool {
-    matches!(ch, 'а'..='я' | 'А'..='Я' | 'ё' | 'Ё')
-}
-
 pub fn encode_memory(memory: &LlmWaveMemory) -> Vec<u8> {
     let vocab_bytes = encode_vocabulary(&memory.vocabulary);
     let mut bytes =
@@ -1066,7 +1064,7 @@ impl PhraseForecastRequest {
                 partial_token: String::new(),
             };
         }
-        let Some((prefix, token)) = split_last_token(trimmed) else {
+        let Some((prefix, token)) = split_last_trimmed_ws_token(trimmed) else {
             return Self {
                 prefix_text: trimmed.to_string(),
                 prefix_tokens: tokenize(trimmed),
@@ -1121,19 +1119,6 @@ fn phrase_prediction_to_candidate(
             ),
         ],
     })
-}
-
-fn split_last_token(text: &str) -> Option<(&str, &str)> {
-    let trimmed = text.trim_end();
-    if trimmed.is_empty() {
-        return None;
-    }
-    let start = trimmed
-        .char_indices()
-        .rev()
-        .find_map(|(idx, ch)| ch.is_whitespace().then_some(idx + ch.len_utf8()))
-        .unwrap_or(0);
-    Some((&trimmed[..start], &trimmed[start..]))
 }
 
 fn report_to_feedback(report: &LlmWaveReport) -> L3Feedback {
@@ -1306,13 +1291,6 @@ fn hash32(text: &str) -> u32 {
     text.as_bytes().iter().fold(0x811c_9dc5_u32, |hash, byte| {
         (hash ^ u32::from(*byte)).wrapping_mul(0x0100_0193)
     })
-}
-
-fn unix_now() -> u64 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs()
 }
 
 #[cfg(test)]

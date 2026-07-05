@@ -2,6 +2,8 @@ use std::time::Instant;
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
+use lay::word_reader::split_last_alphabetic_token;
+
 use super::engine::LayIbusEngine;
 use super::text::{make_ibus_text, make_preedit_ibus_text};
 use super::trace;
@@ -290,7 +292,7 @@ impl LayIbusEngine {
         if is_command_like_long_tail(tail.trim_end()) {
             return Vec::new();
         }
-        let partial_len = split_last_token(tail.trim_end())
+        let partial_len = split_last_alphabetic_token(tail.trim_end())
             .map(|(_, token)| token.chars().count())
             .unwrap_or(0);
         let mut candidates = Vec::with_capacity(16);
@@ -344,7 +346,7 @@ impl LayIbusEngine {
             .collect::<Vec<_>>();
 
         if let Some(started) = total_started {
-            let token = split_last_token(tail.trim_end()).map(|(_, token)| token);
+            let token = split_last_alphabetic_token(tail.trim_end()).map(|(_, token)| token);
             trace::record_precognition_timing(
                 started.elapsed().as_micros() as u64,
                 ascii_us,
@@ -389,7 +391,7 @@ impl LayIbusEngine {
         // belongs to Space autocorrect; running it here burns latency and cannot
         // produce a right-side suffix for the current token.
         let mut suffixes = Vec::new();
-        let context_wave_allowed = split_last_token(tail)
+        let context_wave_allowed = split_last_alphabetic_token(tail)
             .map(|(prefix, token)| {
                 token.chars().count() >= 3 || prefix.split_whitespace().count() >= 3
             })
@@ -424,7 +426,7 @@ impl LayIbusEngine {
             return Vec::new();
         }
         let tail = self.tail_buffer.as_str().trim_end();
-        let Some((prefix, partial)) = split_last_token(tail) else {
+        let Some((prefix, partial)) = split_last_alphabetic_token(tail) else {
             return Vec::new();
         };
         let partial = partial.to_lowercase();
@@ -739,7 +741,7 @@ fn preedit_suffix_context_and_word(tail: &str, suffix: &str) -> Option<(Vec<Stri
         return Some((context, word));
     }
 
-    let (prefix, partial) = split_last_token(tail)?;
+    let (prefix, partial) = split_last_alphabetic_token(tail)?;
     let suffix_word_part = suffix.split_whitespace().next().unwrap_or(suffix);
     let word = format!(
         "{}{}",
@@ -814,25 +816,6 @@ fn next_word_suffix(suffix: &str) -> Option<String> {
     } else {
         Some(word.to_string())
     }
-}
-
-fn split_last_token(text: &str) -> Option<(&str, &str)> {
-    let trimmed = text.trim_end();
-    if trimmed.is_empty() {
-        return None;
-    }
-    let end = trimmed
-        .char_indices()
-        .rev()
-        .find_map(|(idx, ch)| ch.is_alphabetic().then_some(idx + ch.len_utf8()))?;
-    let start = trimmed[..end]
-        .char_indices()
-        .rev()
-        .find_map(|(idx, ch)| (!ch.is_alphabetic()).then_some(idx + ch.len_utf8()))
-        .unwrap_or(0);
-    let (prefix, rest) = trimmed.split_at(start);
-    let token = &rest[..end - start];
-    (!token.is_empty()).then_some((prefix, token))
 }
 
 fn trim_tail_buffer(buffer: &mut String) {

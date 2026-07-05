@@ -5,7 +5,8 @@
 
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
-use std::time::{SystemTime, UNIX_EPOCH};
+
+use crate::time::unix_timestamp;
 
 const ACTIONS_PATH: &str = ".local/share/lay/recent_actions.jsonl";
 const TIMING_PROFILE_PATH: &str = ".local/share/lay/timing_profile.jsonl";
@@ -361,13 +362,6 @@ fn home_relative_path(relative: &str) -> Option<PathBuf> {
     std::env::var_os("HOME")
         .map(PathBuf::from)
         .map(|home| home.join(relative))
-}
-
-fn unix_timestamp() -> u64 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs()
 }
 
 #[cfg(test)]

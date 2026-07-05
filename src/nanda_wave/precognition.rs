@@ -1,8 +1,8 @@
 use serde::Serialize;
 use std::path::PathBuf;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::{run_wave_trace, WaveDecision, WaveTrace};
+use crate::time::unix_timestamp;
 
 const PRECOGNITION_PATH: &str = ".local/share/lay/nanda_wave/precognition.jsonl";
 
@@ -64,7 +64,7 @@ fn build_record<'a>(
 ) -> PrecognitionRecord<'a> {
     PrecognitionRecord {
         kind: "nanda_precognition_tick",
-        ts: unix_now(),
+        ts: unix_timestamp(),
         stage,
         original: include_text.then_some(text),
         text_len: text.chars().count(),
@@ -98,13 +98,6 @@ fn precognition_path() -> Option<PathBuf> {
     std::env::var_os("HOME")
         .map(PathBuf::from)
         .map(|home| home.join(PRECOGNITION_PATH))
-}
-
-fn unix_now() -> u64 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs()
 }
 
 #[cfg(test)]

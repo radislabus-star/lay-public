@@ -71,6 +71,43 @@ pub fn split_ws_segments(text: &str) -> Vec<(&str, bool)> {
     segments
 }
 
+pub fn split_last_ws_token(text: &str) -> Option<(&str, &str)> {
+    if text.is_empty() {
+        return None;
+    }
+    let start = text
+        .char_indices()
+        .rev()
+        .find(|(_idx, ch)| ch.is_whitespace())
+        .map(|(idx, ch)| idx + ch.len_utf8())
+        .unwrap_or(0);
+    let (prefix, token) = text.split_at(start);
+    (!token.is_empty()).then_some((prefix, token))
+}
+
+pub fn split_last_trimmed_ws_token(text: &str) -> Option<(&str, &str)> {
+    split_last_ws_token(text.trim_end())
+}
+
+pub fn split_last_alphabetic_token(text: &str) -> Option<(&str, &str)> {
+    let trimmed = text.trim_end();
+    if trimmed.is_empty() {
+        return None;
+    }
+    let end = trimmed
+        .char_indices()
+        .rev()
+        .find_map(|(idx, ch)| ch.is_alphabetic().then_some(idx + ch.len_utf8()))?;
+    let start = trimmed[..end]
+        .char_indices()
+        .rev()
+        .find_map(|(idx, ch)| (!ch.is_alphabetic()).then_some(idx + ch.len_utf8()))
+        .unwrap_or(0);
+    let (prefix, rest) = trimmed.split_at(start);
+    let token = &rest[..end - start];
+    (!token.is_empty()).then_some((prefix, token))
+}
+
 pub fn is_cyrillic_word(word: &str) -> bool {
     word.chars()
         .all(|ch| matches!(ch, 'А'..='я' | 'ё' | 'Ё' | '-'))

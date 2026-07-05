@@ -1,8 +1,9 @@
 use std::collections::BTreeMap;
 use std::path::PathBuf;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 use serde::{Deserialize, Serialize};
+
+use crate::time::unix_timestamp;
 
 use super::journal_record::build_trace_record;
 use super::signal::WaveTrace;
@@ -64,7 +65,7 @@ pub fn record_trace_with_text_policy(
     expected: Option<&str>,
     include_text: bool,
 ) {
-    let ts = unix_now();
+    let ts = unix_timestamp();
     let record = build_trace_record(
         ts,
         case_id.into(),
@@ -85,7 +86,7 @@ pub fn record_runtime_trace_with_text_policy(
     expected: Option<&str>,
     include_text: bool,
 ) {
-    let ts = unix_now();
+    let ts = unix_timestamp();
     let record = build_trace_record(
         ts,
         case_id.into(),
@@ -228,13 +229,6 @@ fn home_path(relative: &str) -> Option<PathBuf> {
     std::env::var_os("HOME")
         .map(PathBuf::from)
         .map(|home| home.join(relative))
-}
-
-fn unix_now() -> u64 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs()
 }
 
 #[cfg(test)]

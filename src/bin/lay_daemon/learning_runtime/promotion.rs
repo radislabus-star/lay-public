@@ -5,7 +5,6 @@ use lay::typing_assist::{
 };
 use lay::word_buffer::UserLearningCorrection;
 use std::collections::BTreeMap;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::{runtime_log, LEARN_PROMOTION_THRESHOLD};
 
@@ -42,7 +41,7 @@ pub(crate) fn promote_user_correction_if_repeated(
         return LearningPromotion::Skipped;
     };
 
-    let now = unix_timestamp();
+    let now = lay::time::unix_timestamp();
     let key = format!("{from}\u{1f}{to}");
     let mut candidates = load_learning_candidates(candidates_path);
     let candidate = candidates.entry(key).or_insert_with(|| LearningCandidate {
@@ -163,11 +162,4 @@ fn add_replacement_rule_to_path(
     let text = serde_json::to_string_pretty(&rules).map_err(|e| e.to_string())?;
     lay::private_file::write_private_text(path, &format!("{text}\n")).map_err(|e| e.to_string())?;
     Ok(true)
-}
-
-fn unix_timestamp() -> u64 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs()
 }

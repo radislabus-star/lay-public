@@ -1,5 +1,6 @@
 use crate::config::CorrectionSafety;
 use crate::dict::{convert, detect_direction};
+use crate::keyboard::is_cyrillic_letter;
 use crate::lexicon::{
     is_common_en_guard_prefix, is_common_en_technical_word, is_common_ru_word,
     is_ru_live_protected_word, is_ru_one_letter_function_word, is_ru_short_function_word,
@@ -11,7 +12,7 @@ use crate::text_metrics::damerau_levenshtein;
 use crate::typing_candidate::TypingCandidateFamily;
 use crate::typing_context;
 use crate::typing_pipeline::explain_typing_assist_with_pipeline;
-use crate::word_reader::{split_word_punctuation, split_ws_segments};
+use crate::word_reader::{split_last_ws_token, split_word_punctuation, split_ws_segments};
 use std::collections::HashSet;
 use std::sync::OnceLock;
 
@@ -64,7 +65,7 @@ pub fn run_l2_refined_with_feedback(
     feedback: &L3Feedback,
 ) -> Vec<WordCandidate> {
     let tail = original.trim_end();
-    let Some((prefix, token)) = split_last_token(tail) else {
+    let Some((prefix, token)) = split_last_ws_token(tail) else {
         return Vec::new();
     };
     let context = TailContext::from_text(tail);
@@ -1336,7 +1337,7 @@ fn grammar_agreement_candidates(
     if replacement == last_clean {
         return Vec::new();
     }
-    let Some((prefix, _token)) = split_last_token(tail.trim_end()) else {
+    let Some((prefix, _token)) = split_last_ws_token(tail.trim_end()) else {
         return Vec::new();
     };
     vec![WordCandidate {
@@ -1469,10 +1470,6 @@ fn layout_candidate_allowed(token: &str, converted: &str) -> bool {
         return is_common_en_technical_word(&converted.to_ascii_lowercase());
     }
     false
-}
-
-fn is_cyrillic_letter(ch: char) -> bool {
-    ('а'..='я').contains(&ch) || ('А'..='Я').contains(&ch) || ch == 'ё' || ch == 'Ё'
 }
 
 fn technical_keep_candidate(token: &str, l1: &[WavePacket]) -> Option<WordCandidate> {
@@ -1922,20 +1919,6 @@ fn looks_like_shell_or_technical_phrase(text: &str) -> bool {
         || text.contains("://")
         || text.contains('/')
         || text.contains('=')
-}
-
-fn split_last_token(text: &str) -> Option<(&str, &str)> {
-    if text.is_empty() {
-        return None;
-    }
-    let start = text
-        .char_indices()
-        .rev()
-        .find(|(_idx, ch)| ch.is_whitespace())
-        .map(|(idx, ch)| idx + ch.len_utf8())
-        .unwrap_or(0);
-    let (prefix, token) = text.split_at(start);
-    (!token.is_empty()).then_some((prefix, token))
 }
 
 fn previous_token(prefix: &str) -> Option<&str> {

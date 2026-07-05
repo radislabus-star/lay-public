@@ -4,6 +4,8 @@
 //! UTF-8 byte 4-grams plus boundary/service atoms. It is deliberately below
 //! semantics and below live IME behavior.
 
+use super::mode::mix64_golden;
+
 pub(super) const SURFACE_WAVE_DIM: usize = 4_096;
 pub(super) const SURFACE_WAVE_NGRAM: usize = 4;
 pub(super) const SURFACE_WAVE_TRITS: usize = 3;
@@ -292,15 +294,15 @@ pub(super) fn surface_atom_projection(
     let seed = stable_hash_with_position(position, atom);
     [
         SurfaceWaveTrit {
-            lane: (mix64(seed) % SURFACE_WAVE_DIM as u64) as u16,
+            lane: (mix64_golden(seed) % SURFACE_WAVE_DIM as u64) as u16,
             value: if seed & 1 == 0 { 1 } else { -1 },
         },
         SurfaceWaveTrit {
-            lane: (mix64(seed ^ 0x9E37_79B9_7F4A_7C15) % SURFACE_WAVE_DIM as u64) as u16,
+            lane: (mix64_golden(seed ^ 0x9E37_79B9_7F4A_7C15) % SURFACE_WAVE_DIM as u64) as u16,
             value: if seed & 2 == 0 { 1 } else { -1 },
         },
         SurfaceWaveTrit {
-            lane: (mix64(seed ^ 0xD1B5_4A32_D192_ED03) % SURFACE_WAVE_DIM as u64) as u16,
+            lane: (mix64_golden(seed ^ 0xD1B5_4A32_D192_ED03) % SURFACE_WAVE_DIM as u64) as u16,
             value: if seed & 4 == 0 { 1 } else { -1 },
         },
     ]
@@ -310,16 +312,9 @@ fn stable_hash_with_position(position: u64, bytes: &[u8]) -> u64 {
     let mut state = 0x5355_5246_4143_4531u64 ^ position.rotate_left(17);
     for byte in bytes {
         state ^= u64::from(*byte).wrapping_mul(0x9E37_79B9_7F4A_7C15);
-        state = mix64(state);
+        state = mix64_golden(state);
     }
-    mix64(state ^ bytes.len() as u64)
-}
-
-fn mix64(mut value: u64) -> u64 {
-    value = value.wrapping_add(0x9E37_79B9_7F4A_7C15);
-    value = (value ^ (value >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
-    value = (value ^ (value >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
-    value ^ (value >> 31)
+    mix64_golden(state ^ bytes.len() as u64)
 }
 
 #[cfg(test)]

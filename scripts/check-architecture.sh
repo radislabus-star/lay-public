@@ -127,6 +127,18 @@ assert_no_runtime_rule_id_literals() {
   fi
 }
 
+assert_single_owner "fn unix_timestamp(" "src/time.rs"
+assert_single_owner "fn is_cyrillic_letter(" "src/keyboard/text_input/script.rs"
+assert_single_owner "fn mix64(" "src/nanda_wave/mode.rs"
+assert_single_owner "fn mix64_golden(" "src/nanda_wave/mode.rs"
+assert_single_owner "fn split_last_ws_token(" "src/word_reader.rs"
+assert_single_owner "fn split_last_trimmed_ws_token(" "src/word_reader.rs"
+assert_single_owner "fn split_last_alphabetic_token(" "src/word_reader.rs"
+if search_fixed "fn split_last_token(" src >"$HIT_FILE"; then
+  cat "$HIT_FILE" >&2
+  error "ambiguous split_last_token helper is forbidden; use explicit word_reader split helpers"
+fi
+
 assert_max_lines src/bin/lay_daemon.rs 240
 assert_max_lines src/bin/lay_daemon/action_log_runtime.rs 40
 assert_max_lines src/bin/lay_daemon/config_runtime.rs 180

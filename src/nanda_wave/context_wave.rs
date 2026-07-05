@@ -10,6 +10,7 @@ use crate::russian_lexicon::{
     russian_tiny_dictionary,
 };
 use crate::text_metrics::damerau_levenshtein;
+use crate::word_reader::split_last_ws_token;
 
 use super::signal::WordCandidate;
 
@@ -147,7 +148,7 @@ pub fn semantic_word_candidates(tail: &str) -> Vec<WordCandidate> {
 
 fn nearest_ru_word_candidates(tail: &str) -> Vec<WordCandidate> {
     let trimmed = tail.trim_end();
-    let Some((prefix, token)) = split_last_token(trimmed) else {
+    let Some((prefix, token)) = split_last_ws_token(trimmed) else {
         return Vec::new();
     };
     if prefix.split_whitespace().next().is_none() {
@@ -833,7 +834,7 @@ pub fn phrase_forecast_summary(original: &str, chosen: &WordCandidate) -> Option
 
 pub fn context_wave_for_tail(tail: &str) -> Option<ContextWave> {
     let trimmed = tail.trim_end();
-    let (prefix, partial_token) = split_last_token(trimmed)?;
+    let (prefix, partial_token) = split_last_ws_token(trimmed)?;
     let lower_prefix = prefix.to_lowercase();
     let lower_partial = partial_token.to_lowercase();
     if !weather_context_is_active(&lower_prefix, &lower_partial) {
@@ -1042,20 +1043,6 @@ fn known_russian_phrase_tail(tail: &str) -> bool {
         && tokens[..tokens.len() - 1]
             .iter()
             .all(|token| is_known_russian_phrase_part(token))
-}
-
-fn split_last_token(text: &str) -> Option<(&str, &str)> {
-    if text.is_empty() {
-        return None;
-    }
-    let start = text
-        .char_indices()
-        .rev()
-        .find(|(_idx, ch)| ch.is_whitespace())
-        .map(|(idx, ch)| idx + ch.len_utf8())
-        .unwrap_or(0);
-    let (prefix, token) = text.split_at(start);
-    (!token.is_empty()).then_some((prefix, token))
 }
 
 #[cfg(test)]

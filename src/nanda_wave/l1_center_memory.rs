@@ -5,6 +5,7 @@
 
 use std::collections::HashMap;
 
+use super::mode::mix64_golden;
 use super::surface_wave::{
     surface_atom_projection, surface_atoms, SurfaceWaveTrit, SURFACE_WAVE_TRITS,
 };
@@ -235,16 +236,9 @@ fn stable_hash(bytes: &[u8]) -> u64 {
     let mut state = 0x4C31_4345_4E54_4552u64;
     for byte in bytes {
         state ^= u64::from(*byte).wrapping_mul(0x9E37_79B9_7F4A_7C15);
-        state = mix64(state);
+        state = mix64_golden(state);
     }
-    mix64(state ^ bytes.len() as u64)
-}
-
-fn mix64(mut value: u64) -> u64 {
-    value = value.wrapping_add(0x9E37_79B9_7F4A_7C15);
-    value = (value ^ (value >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
-    value = (value ^ (value >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
-    value ^ (value >> 31)
+    mix64_golden(state ^ bytes.len() as u64)
 }
 
 #[cfg(test)]

@@ -12,7 +12,6 @@ use std::env;
 use std::fs;
 use std::io;
 use std::path::PathBuf;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::real_suite;
 
@@ -83,7 +82,7 @@ fn refresh_live_status_fields(value: &mut Value) {
     value["cell_scoreboard"] = scoreboard_json(&scoreboard);
     value["resonance_memory"] = resonance_memory_json(&resonance_memory);
     value["preedit_live"] = preedit_live_json();
-    value["live_scoreboard_refreshed_at_unix"] = json!(unix_now());
+    value["live_scoreboard_refreshed_at_unix"] = json!(lay::time::unix_timestamp());
     value["source"] = json!("lay-nanda-wave-eval --status-json (cached gate + live scoreboard)");
 }
 
@@ -123,7 +122,7 @@ fn build_status_json(full: bool) -> io::Result<serde_json::Value> {
     let llmwave_memory = llmwave::load_default_memory();
     Ok(json!({
         "kind": "nanda_wave_status",
-        "generated_at_unix": unix_now(),
+        "generated_at_unix": lay::time::unix_timestamp(),
         "source": "lay-nanda-wave-eval --status-json",
         "cell": {
             "name": "NandaCell32v0",
@@ -537,13 +536,6 @@ fn status_cache_path() -> PathBuf {
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from("."))
         .join(".cache/lay/nanda_wave_status.json")
-}
-
-fn unix_now() -> u64 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map(|duration| duration.as_secs())
-        .unwrap_or(0)
 }
 
 #[cfg(test)]

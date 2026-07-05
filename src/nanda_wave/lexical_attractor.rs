@@ -1,5 +1,7 @@
 use crate::dict::{convert, detect_direction};
+use crate::keyboard::is_cyrillic_letter;
 use crate::text_metrics::damerau_levenshtein;
+use crate::word_reader::split_last_ws_token;
 
 use super::context::TailContext;
 use super::signal::WordCandidate;
@@ -101,7 +103,7 @@ pub fn lexical_attractor_candidates(tail: &str, context: &TailContext) -> Vec<Wo
 }
 
 pub fn lexical_attractor_traces(tail: &str, context: &TailContext) -> Vec<L2WordAttractorTrace> {
-    let Some((prefix, token)) = split_last_token(tail.trim_end()) else {
+    let Some((prefix, token)) = split_last_ws_token(tail.trim_end()) else {
         return Vec::new();
     };
     let mut traces = Vec::new();
@@ -353,24 +355,6 @@ fn surface_suffix(surface: &str) -> &str {
         .nth(2)
         .map(|(idx, _)| &surface[idx..])
         .unwrap_or(surface)
-}
-
-fn split_last_token(text: &str) -> Option<(&str, &str)> {
-    if text.is_empty() {
-        return None;
-    }
-    let start = text
-        .char_indices()
-        .rev()
-        .find(|(_idx, ch)| ch.is_whitespace())
-        .map(|(idx, ch)| idx + ch.len_utf8())
-        .unwrap_or(0);
-    let (prefix, token) = text.split_at(start);
-    (!token.is_empty()).then_some((prefix, token))
-}
-
-fn is_cyrillic_letter(ch: char) -> bool {
-    ('а'..='я').contains(&ch) || ('А'..='Я').contains(&ch) || ch == 'ё' || ch == 'Ё'
 }
 
 fn stable_hash(text: &str) -> u32 {
