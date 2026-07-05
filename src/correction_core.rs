@@ -1174,6 +1174,12 @@ fn l3_context_gate(
             reason: "candidate_over_compresses_word",
         });
     }
+    if candidate_drops_letter_after_one_letter_function_prefix(original, replacement, error_class) {
+        return Some(CandidateGateDecision {
+            action: CandidateGateAction::KeepOriginal,
+            reason: "function_prefix_letter_drop",
+        });
+    }
     if known_phrase_part_only_grows_by_one_letter(original, replacement, error_class) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
@@ -1639,6 +1645,60 @@ fn candidate_over_compresses_word(
     let original_len = original_word.chars().count();
     let replacement_len = replacement_word.chars().count();
     original_len >= 6 && replacement_len + 3 <= original_len
+}
+
+fn candidate_drops_letter_after_one_letter_function_prefix(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+) -> bool {
+    if matches!(
+        error_class,
+        TypingErrorClass::WrongLayout
+            | TypingErrorClass::PartialLayout
+            | TypingErrorClass::SplitWord
+            | TypingErrorClass::GluedWords
+    ) {
+        return false;
+    }
+
+    let (_, original_core, _) = split_edge_whitespace(original);
+    let (_, replacement_core, _) = split_edge_whitespace(replacement);
+    let original_words = original_core.split_whitespace().collect::<Vec<_>>();
+    let replacement_words = replacement_core.split_whitespace().collect::<Vec<_>>();
+    if original_words.len() < 2 || original_words.len() != replacement_words.len() {
+        return false;
+    }
+    let Some((original_last, original_prefix)) = original_words.split_last() else {
+        return false;
+    };
+    let Some((replacement_last, replacement_prefix)) = replacement_words.split_last() else {
+        return false;
+    };
+    if original_prefix != replacement_prefix {
+        return false;
+    }
+
+    let (_, original_word, _) = split_word_punctuation(original_last);
+    let (_, replacement_word, _) = split_word_punctuation(replacement_last);
+    if !is_cyrillic_letters_only(original_word) || !is_cyrillic_letters_only(replacement_word) {
+        return false;
+    }
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    let original_chars = original_lower.chars().collect::<Vec<_>>();
+    if original_chars.len() < 4 || replacement_lower.chars().count() + 1 != original_chars.len() {
+        return false;
+    }
+    let prefix = original_chars[0].to_string();
+    if !crate::phrase_lexicon::is_one_letter_russian_function_word(&prefix) {
+        return false;
+    }
+
+    let compressed = std::iter::once(original_chars[0])
+        .chain(original_chars.iter().skip(2).copied())
+        .collect::<String>();
+    compressed == replacement_lower
 }
 
 fn known_russian_word_rewritten_to_different_known_word(
@@ -2260,6 +2320,19 @@ mod tests {
                 && candidate.gate.action == CandidateGateAction::KeepOriginal
                 && candidate.gate.reason == "candidate_over_compresses_word"
         }));
+    }
+
+    #[test]
+    fn l3_anti_shortcut_blocks_function_prefix_letter_drop_from_logs() {
+        let gate = gate_candidate_with_source(
+            "ответили вчате ",
+            "ответили вате ",
+            TypingErrorClass::CompositeTypo,
+            crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::KeepOriginal);
+        assert_eq!(gate.reason, "function_prefix_letter_drop");
     }
 
     #[test]
