@@ -36,10 +36,12 @@ fn assert_autocorrect_sequence(name: &str) {
 }
 
 fn autocorrect_safety_fixture(case_name: &str) -> Vec<String> {
-    fixture_rows("text_edit_autocorrect_safety.tsv")
+    let mut row = fixture_rows("text_edit_autocorrect_safety.tsv")
         .into_iter()
         .find(|row| row.first().is_some_and(|name| name == case_name))
-        .unwrap_or_else(|| panic!("missing safety fixture case: {case_name}"))
+        .unwrap_or_else(|| panic!("missing safety fixture case: {case_name}"));
+    row.resize(9, String::new());
+    row
 }
 
 #[test]

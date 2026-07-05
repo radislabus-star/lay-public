@@ -160,21 +160,11 @@ fn uppercase_shift_layout_word_gets_contextual_candidate() {
 }
 
 #[test]
-fn deferred_typing_assist_uses_widest_confident_completed_tail() {
+fn deferred_typing_assist_does_not_autocorrect_three_word_tail() {
     let row = deferred_case("wide_three_word_tail");
     let buffer = typed_buffer_from_semicolon_fixture(&row[1]);
 
-    let correction =
-        find_typing_assist_correction(&buffer, true, 3).expect("three-word correction");
-    assert_eq!(map_original_events(&correction.events), row[3]);
-    assert_eq!(correction.edit.original, row[4]);
-    assert_eq!(correction.edit.replacement, row[5]);
-
-    let shifted = lay::text_edit::offset_replacement_plan_for_cursor(
-        &correction.edit.plan,
-        row[6].parse().expect("cursor_offset"),
-    );
-    assert_eq!(shifted, deferred_plan(&row));
+    assert!(find_typing_assist_correction(&buffer, true, 3).is_none());
 }
 
 #[test]

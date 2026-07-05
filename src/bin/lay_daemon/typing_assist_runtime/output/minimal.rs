@@ -47,6 +47,26 @@ pub(crate) fn apply_minimal_typing_replacement(
         log("⚠ typing-assist skipped before delete: edit plan invariant failed");
         return TypingAssistOutcome::NoCorrection;
     };
+    let source_id = input_gate
+        .as_ref()
+        .and_then(|trace| trace.selected_source_id.as_deref());
+    let error_class = input_gate
+        .as_ref()
+        .and_then(|trace| trace.selected_error_class.as_deref());
+    let safety = lay::text_edit::autocorrect_edit_safety(
+        original,
+        replacement,
+        &plan,
+        source_id,
+        error_class,
+    );
+    if !safety.allow_apply {
+        log(&format!(
+            "⚠ typing-assist output blocked by edit-plan safety: reason={} original={:?} replacement={:?}",
+            safety.reason, original, replacement
+        ));
+        return TypingAssistOutcome::NoCorrection;
+    }
     log(&format!(
         "  typing-assist plan: left={} bs={} insert={:?} right={}",
         plan.move_left, plan.backspaces, plan.insert, plan.move_right

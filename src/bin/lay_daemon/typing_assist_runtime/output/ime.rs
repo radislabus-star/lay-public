@@ -15,6 +15,7 @@ mod remember;
 mod timing_profile;
 pub(crate) use context::ImeTypingReplacementContext;
 use forward::{forward_after_ime_replace, trailing_space_count};
+use lay::text_edit::TextReplacement;
 use remember::remember_ime_typing_correction;
 use timing_profile::record_ime_timing;
 pub(crate) fn try_apply_ime_replacement(
@@ -32,6 +33,32 @@ pub(crate) fn try_apply_ime_replacement(
         timing,
     } = ctx;
     if !should_try_ime_text_backend() {
+        return None;
+    }
+    let plan = TextReplacement {
+        move_left: 0,
+        backspaces: original.chars().count() as u32,
+        insert: replacement.to_string(),
+        move_right: 0,
+    };
+    let source_id = input_gate
+        .as_ref()
+        .and_then(|trace| trace.selected_source_id.as_deref());
+    let error_class = input_gate
+        .as_ref()
+        .and_then(|trace| trace.selected_error_class.as_deref());
+    let safety = lay::text_edit::autocorrect_edit_safety(
+        original,
+        replacement,
+        &plan,
+        source_id,
+        error_class,
+    );
+    if !safety.allow_apply {
+        log(&format!(
+            "⚠ typing-assist IME blocked by edit-plan safety: reason={} original={:?} replacement={:?}",
+            safety.reason, original, replacement
+        ));
         return None;
     }
     let replace_tail_started = std::time::Instant::now();

@@ -42,9 +42,26 @@ pub(crate) fn find_typing_assist_correction(
 }
 
 fn completed_tail_scopes(buf: &WordBuffer, max_words: usize) -> Vec<usize> {
-    let max_scope = buf
-        .prev_words_len()
-        .min(max_words.max(1))
-        .min(MAX_REPLACE_WORDS);
-    (1..=max_scope).rev().collect()
+    completed_tail_scopes_from_len(buf.prev_words_len(), max_words)
+}
+
+fn completed_tail_scopes_from_len(prev_words_len: usize, max_words: usize) -> Vec<usize> {
+    let max_scope = prev_words_len.min(max_words.max(1)).min(MAX_REPLACE_WORDS);
+    if max_scope == 0 {
+        Vec::new()
+    } else {
+        vec![1]
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn typing_assist_autocorrect_uses_only_last_completed_word() {
+        assert_eq!(completed_tail_scopes_from_len(0, 3), Vec::<usize>::new());
+        assert_eq!(completed_tail_scopes_from_len(1, 3), vec![1]);
+        assert_eq!(completed_tail_scopes_from_len(3, 3), vec![1]);
+    }
 }
