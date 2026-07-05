@@ -1215,7 +1215,7 @@ fn gate_candidate_with_source(
             reason: "completion_is_not_autocorrect",
         };
     }
-    if let Some(decision) = l3_context_gate(original, replacement, error_class) {
+    if let Some(decision) = l3_context_gate(original, replacement, error_class, source_id) {
         return decision;
     }
     if let Some(reason) = crate::correction_bayes::bayes_suggest_only_reason(
@@ -1280,6 +1280,7 @@ fn l3_context_gate(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
+    source_id: &str,
 ) -> Option<CandidateGateDecision> {
     if candidate_over_compresses_word(original, replacement, error_class) {
         return Some(CandidateGateDecision {
@@ -1345,6 +1346,30 @@ fn l3_context_gate(
         return Some(CandidateGateDecision {
             action: CandidateGateAction::KeepOriginal,
             reason: "short_layout_without_phrase_context",
+        });
+    }
+    if short_cyrillic_word_switches_to_ascii_layout(original, replacement, error_class) {
+        return Some(CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "short_cyrillic_to_ascii_layout",
+        });
+    }
+    if short_nanda_composite_candidate_shrinks_word(original, replacement, error_class, source_id) {
+        return Some(CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "short_nanda_word_shrink",
+        });
+    }
+    if short_nanda_candidate_inserts_internal_vowel(original, replacement, error_class, source_id) {
+        return Some(CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "short_nanda_internal_vowel_growth",
+        });
+    }
+    if nanda_surface_candidate_outputs_unknown_word(original, replacement, error_class, source_id) {
+        return Some(CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "nanda_surface_unknown_word",
         });
     }
     if let Some(decision) = l3_phrase_memory_gate(original, replacement, error_class) {
@@ -2157,6 +2182,124 @@ fn short_layout_candidate_lacks_phrase_context(
     has_ascii_context && !has_cyrillic_context
 }
 
+fn short_cyrillic_word_switches_to_ascii_layout(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+) -> bool {
+    if error_class != TypingErrorClass::WrongLayout {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return false;
+    };
+    original_word.chars().count() <= 2
+        && original_word
+            .chars()
+            .any(|ch| matches!(ch, 'а'..='я' | 'ё' | 'А'..='Я' | 'Ё'))
+        && replacement_word
+            .chars()
+            .all(|ch| ch.is_ascii_alphabetic() || matches!(ch, '`'))
+}
+
+fn short_nanda_composite_candidate_shrinks_word(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    source_id: &str,
+) -> bool {
+    if !matches!(error_class, TypingErrorClass::CompositeTypo)
+        || !matches!(
+            source_id,
+            "L2SurfaceMotifCell32" | "SemanticWordCell32" | "L2WordAttractorCell32"
+        )
+    {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return false;
+    };
+    if !is_cyrillic_letters_only(&original_word) || !is_cyrillic_letters_only(&replacement_word) {
+        return false;
+    }
+    let original_len = original_word.chars().count();
+    let replacement_len = replacement_word.chars().count();
+    original_len <= 4 && replacement_len < original_len
+}
+
+fn nanda_surface_candidate_outputs_unknown_word(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    source_id: &str,
+) -> bool {
+    if !matches!(error_class, TypingErrorClass::CompositeTypo)
+        || !matches!(
+            source_id,
+            "L2SurfaceMotifCell32" | "SemanticWordCell32" | "L2WordAttractorCell32"
+        )
+    {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return false;
+    };
+    if original_word == replacement_word || !is_cyrillic_letters_only(&replacement_word) {
+        return false;
+    }
+    let replacement_lower = replacement_word.to_lowercase();
+    !crate::russian_lexicon::is_known_russian_word_or_form(&replacement_lower)
+        && !crate::lexicon::is_common_ru_word(&replacement_lower)
+        && !crate::phrase_lexicon::is_known_russian_phrase_part(&replacement_lower)
+}
+
+fn short_nanda_candidate_inserts_internal_vowel(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    source_id: &str,
+) -> bool {
+    if !matches!(error_class, TypingErrorClass::CompositeTypo)
+        || !matches!(
+            source_id,
+            "L2SurfaceMotifCell32" | "SemanticWordCell32" | "L2WordAttractorCell32"
+        )
+    {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return false;
+    };
+    if !is_cyrillic_letters_only(&original_word) || !is_cyrillic_letters_only(&replacement_word) {
+        return false;
+    }
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    if original_lower.chars().count() > 6
+        || damerau_levenshtein(&original_lower, &replacement_lower) != 1
+    {
+        return false;
+    }
+    let Some((idx, inserted)) =
+        inserted_char_position_for_missing_letter(&original_lower, &replacement_lower)
+    else {
+        return false;
+    };
+    idx > 0 && crate::russian_chars::is_russian_vowel(inserted)
+}
+
 fn same_known_russian_token(original: &str, candidate: &str) -> bool {
     let (_, original_word, _) = split_word_punctuation(original);
     let (_, candidate_word, _) = split_word_punctuation(candidate);
@@ -2491,6 +2634,20 @@ mod tests {
             }),
             "known Russian word must not autoswitch to ASCII layout: {resolution:?}"
         );
+    }
+
+    #[test]
+    fn short_russian_word_does_not_autoswitch_to_ascii_from_logs() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution =
+            resolve_text_correction(request("ой ", &pipeline, CorrectionMode::DeterministicOnly));
+
+        assert_eq!(resolution.decision, None);
+        assert!(resolution.candidates.iter().any(|candidate| {
+            candidate.replacement == "jq "
+                && candidate.gate.action == CandidateGateAction::SuggestOnly
+                && candidate.gate.reason == "short_cyrillic_to_ascii_layout"
+        }));
     }
 
     #[test]
@@ -2846,6 +3003,32 @@ mod tests {
                 }),
                 "NANDA candidate bypassed hard safety: {resolution:?}"
             );
+        }
+    }
+
+    #[test]
+    fn nanda_surface_candidates_from_logs_are_suggest_only_when_surface_is_weak() {
+        for (input, replacement, reason) in [
+            ("тели ", "тел ", "short_nanda_word_shrink"),
+            (
+                "нас моного ",
+                "нас мюоного ",
+                "short_nanda_internal_vowel_growth",
+            ),
+        ] {
+            let gate = gate_candidate_with_source(
+                input,
+                replacement,
+                TypingErrorClass::CompositeTypo,
+                "L2SurfaceMotifCell32",
+            );
+
+            assert_eq!(
+                gate.action,
+                CandidateGateAction::SuggestOnly,
+                "input={input:?}"
+            );
+            assert_eq!(gate.reason, reason, "input={input:?}");
         }
     }
 

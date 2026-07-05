@@ -62,12 +62,19 @@ fn build_input_gate_decoded_tail(
     original: &str,
     replacement_tail: &str,
 ) -> Option<DecodedCompletedTail> {
-    let edit = DecoderEditPlan::committed_tail(
+    let mut edit = DecoderEditPlan::committed_tail(
         lay::decoder::CorrectionTrigger::AfterSpace,
         original,
         replacement_tail,
         CorrectionSource::TypingAssist,
     )?;
+    if original.split_whitespace().count() == 1
+        && !original.chars().next().is_some_and(char::is_whitespace)
+    {
+        if let Some(full_token_plan) = edit.verified_full_token_plan_for_cursor(0) {
+            edit.plan = full_token_plan;
+        }
+    }
     let input_gate = decision
         .trace
         .as_ref()
