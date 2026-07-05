@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-07-05T00:00:00+03:00",
+  "cleanup": "cargo_target_and_profile_artifacts",
+  "command": "rm -f perf.data && cargo clean",
+  "removed_files_reported_by_cargo": 560106,
+  "removed_size_reported_by_cargo": "273.2GiB",
+  "before_bytes": {
+    "target": 280817128418,
+    "target_debug": 276108361279,
+    "target_release": 4699426333,
+    "tracked_source_data_excluding_git_target_nanda": 57481038
+  },
+  "after_bytes": {
+    "target": 0,
+    "target_debug": 0,
+    "target_release": 0,
+    "tracked_source_data_excluding_git_target_nanda_before_this_report": 57481038
+  },
+  "freed_bytes": {
+    "target": 280817128418,
+    "target_debug": 276108361279,
+    "target_release": 4699426333
+  },
+  "notes": [
+    "Only generated build/profile artifacts were removed.",
+    "Source code, tests, corpus, and runtime configuration were not removed.",
+    "perf.data is now ignored via .gitignore as a generated profiling artifact."
+  ]
+}

@@ -3,6 +3,7 @@
 *.deb
 *.log
 *.jsonl
+perf.data*
 __pycache__/
 .env
 .env.*
