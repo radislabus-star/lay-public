@@ -2,6 +2,7 @@
 //! и из `bin/lay-daemon` (фоновый daemon на двойной Shift).
 
 pub mod action_log;
+pub mod candidate_explanation;
 pub(crate) mod candidate_ranker;
 pub mod config;
 pub mod core;

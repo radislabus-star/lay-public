@@ -197,6 +197,7 @@ assert_single_owner "fn mix64_golden(" "src/nanda_wave/mode.rs"
 assert_single_owner "fn split_last_ws_token(" "src/word_reader.rs"
 assert_single_owner "fn split_last_trimmed_ws_token(" "src/word_reader.rs"
 assert_single_owner "fn split_last_alphabetic_token(" "src/word_reader.rs"
+assert_single_owner "pub struct CandidateExplanation" "src/candidate_explanation.rs"
 assert_single_owner "pub enum LanguageActionOperator" "src/language_action.rs"
 assert_single_owner "pub fn operator_for_candidate(" "src/language_action.rs"
 if search_fixed "fn split_last_token(" src >"$HIT_FILE"; then
@@ -271,6 +272,7 @@ assert_text_mutation_call_owners \
 
 assert_max_lines src/bin/lay_daemon.rs 240
 assert_max_lines src/bin/lay_daemon/action_log_runtime.rs 40
+assert_max_lines src/candidate_explanation.rs 280
 assert_max_lines src/bin/lay_daemon/config_runtime.rs 180
 assert_max_lines src/bin/lay_daemon/daemon_state.rs 200
 assert_max_lines src/bin/lay_daemon/log_runtime.rs 40

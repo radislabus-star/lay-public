@@ -3,6 +3,7 @@
 //! Runtime backends still own output and state. This module only answers one
 //! question: should this completed text be replaced, and by which engine?
 
+use crate::candidate_explanation::{explain_candidate, CandidateExplanation};
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
 use crate::language_action::{operator_for_candidate, proof_for_candidate};
 use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
@@ -159,6 +160,14 @@ pub(crate) struct CorrectionCandidateScoreTrace {
     pub(crate) error_class: TypingErrorClass,
     pub(crate) action_operator: &'static str,
     pub(crate) action_proof: &'static str,
+    pub(crate) edit_shape: &'static str,
+    pub(crate) preservation_milli: i16,
+    pub(crate) lost_mass_milli: i16,
+    pub(crate) added_mass_milli: i16,
+    pub(crate) operator_fit_milli: i16,
+    pub(crate) shortcut_risk_milli: i16,
+    pub(crate) anti_wave_milli: i16,
+    pub(crate) explanation_score_milli: i16,
     pub(crate) gate_action: CandidateGateAction,
     pub(crate) gate_reason: &'static str,
     pub(crate) likelihood_milli: i16,
@@ -217,9 +226,8 @@ impl CandidateBoard {
             .filter(|candidate| candidate.gate.action == CandidateGateAction::Apply)
             .cloned()
             .max_by(|left, right| {
-                bayes_score_for_candidate(&self.event.original, left)
-                    .posterior
-                    .total_cmp(&bayes_score_for_candidate(&self.event.original, right).posterior)
+                candidate_rank_score(&self.event.original, left)
+                    .total_cmp(&candidate_rank_score(&self.event.original, right))
             })
     }
 
@@ -297,6 +305,7 @@ impl CorrectionCandidateScoreTrace {
             .iter()
             .map(|candidate| {
                 let score = bayes_score_for_candidate(original, candidate);
+                let explanation = explanation_for_candidate(original, candidate);
                 Self {
                     replacement: candidate.replacement.clone(),
                     source: candidate.source,
@@ -309,6 +318,14 @@ impl CorrectionCandidateScoreTrace {
                     .as_str(),
                     action_proof: proof_for_candidate(candidate.error_class, &candidate.source_id)
                         .as_str(),
+                    edit_shape: explanation.edit_shape,
+                    preservation_milli: explanation.preservation_milli,
+                    lost_mass_milli: explanation.lost_mass_milli,
+                    added_mass_milli: explanation.added_mass_milli,
+                    operator_fit_milli: explanation.operator_fit_milli,
+                    shortcut_risk_milli: explanation.shortcut_risk_milli,
+                    anti_wave_milli: explanation.anti_wave_milli,
+                    explanation_score_milli: explanation.explanation_score_milli,
                     gate_action: candidate.gate.action,
                     gate_reason: candidate.gate.reason,
                     likelihood_milli: score_to_milli(score.likelihood),
@@ -327,6 +344,24 @@ fn score_to_milli(value: f32) -> i16 {
     (value * 1000.0)
         .round()
         .clamp(i16::MIN as f32, i16::MAX as f32) as i16
+}
+
+fn explanation_for_candidate(
+    original: &str,
+    candidate: &UnifiedCorrectionCandidate,
+) -> CandidateExplanation {
+    explain_candidate(
+        original,
+        &candidate.replacement,
+        candidate.error_class,
+        &candidate.source_id,
+    )
+}
+
+fn candidate_rank_score(original: &str, candidate: &UnifiedCorrectionCandidate) -> f32 {
+    let bayes = bayes_score_for_candidate(original, candidate).posterior;
+    let explanation = explanation_for_candidate(original, candidate);
+    bayes + ((explanation.explanation_score_milli as f32 - 500.0) / 10_000.0)
 }
 
 impl TypingErrorEvent {
@@ -1164,6 +1199,13 @@ fn gate_candidate_with_source(
         return CandidateGateDecision {
             action: CandidateGateAction::KeepOriginal,
             reason: "unchanged",
+        };
+    }
+    let explanation = explain_candidate(original, replacement, error_class, source_id);
+    if explanation.blocks_apply() {
+        return CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "unexplained_signal_loss",
         };
     }
     if replacement_glues_separate_words_without_boundary_class(original, replacement, error_class) {
@@ -2567,6 +2609,45 @@ mod tests {
         assert!(score.selected);
         assert!(score.likelihood_milli > 0);
         assert!(score.posterior_milli > 0);
+    }
+
+    #[test]
+    fn unexplained_signal_loss_blocks_l2_shortcut_candidate() {
+        let gate = gate_candidate_with_source(
+            "тоесть ",
+            "есть ",
+            TypingErrorClass::CompositeTypo,
+            "L2SurfaceMotifCell32",
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "unexplained_signal_loss");
+    }
+
+    #[test]
+    fn boundary_preserving_candidate_survives_explanation_gate() {
+        let gate = gate_candidate_with_source(
+            "тоесть ",
+            "то есть ",
+            TypingErrorClass::CompositeTypo,
+            ids::PERSONAL_PHRASE,
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn split_phrase_candidate_wins_over_l2_shortcut() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "тоесть ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        ));
+
+        let selected = resolution.selected.expect("selected candidate");
+        assert_eq!(selected.replacement, "то есть ");
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
     }
 
     #[test]
