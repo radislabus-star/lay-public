@@ -8,6 +8,7 @@ mod journal_record;
 pub mod l1;
 mod l1_center_memory;
 pub mod l2;
+mod l2_candidate_phase;
 mod l2_center_memory;
 pub mod l3;
 pub(crate) mod l3_phrase_gate;
@@ -52,6 +53,20 @@ pub fn cached_context_word_usage_prior(context: &[String], word: &str) -> f32 {
 
 pub fn l2_surface_words_by_usage(limit: usize) -> Vec<String> {
     usage_prior::l2_surface_words_by_usage(limit)
+}
+
+pub fn default_l2_candidate_phase_memory_path() -> std::path::PathBuf {
+    l2_candidate_phase::default_phase_memory_path()
+}
+
+pub fn write_l2_candidate_phase_memory<I>(
+    path: &std::path::Path,
+    entries: I,
+) -> std::io::Result<usize>
+where
+    I: IntoIterator<Item = (String, String, String, usize)>,
+{
+    l2_candidate_phase::write_phase_memory_from_entries(path, entries)
 }
 
 pub fn usage_debug_summary() -> (u64, usize, usize) {

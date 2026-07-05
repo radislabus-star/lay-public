@@ -25,6 +25,8 @@ fn main() -> io::Result<()> {
     let dataset = arg_path(&args, "--dataset").unwrap_or_else(|| PathBuf::from(DEFAULT_DATASET));
     let out =
         arg_path(&args, "--out").unwrap_or_else(lay::nanda_wave::learned::default_memory_path);
+    let phase_out = arg_path(&args, "--phase-out")
+        .unwrap_or_else(lay::nanda_wave::default_l2_candidate_phase_memory_path);
     let include_live_actions = args.iter().any(|arg| arg == "--include-live-actions");
     let include_user_corrections = args.iter().any(|arg| arg == "--include-user-corrections");
     let mut learned = learn(&dataset)?;
@@ -34,7 +36,8 @@ fn main() -> io::Result<()> {
         LiveLearningReport::default()
     };
     write_memory(&out, &learned)?;
-    print_summary(&dataset, &out, &learned, &live_report);
+    write_phase_memory(&phase_out, &learned)?;
+    print_summary(&dataset, &out, &phase_out, &learned, &live_report);
     Ok(())
 }
 
@@ -222,9 +225,27 @@ fn write_memory(path: &Path, learned: &BTreeMap<String, Learned>) -> io::Result<
     Ok(())
 }
 
+fn write_phase_memory(path: &Path, learned: &BTreeMap<String, Learned>) -> io::Result<()> {
+    let examples = learned
+        .iter()
+        .map(|(original, item)| {
+            (
+                original.clone(),
+                item.expected.clone(),
+                item.operation.clone(),
+                item.count,
+            )
+        })
+        .collect::<Vec<_>>();
+    let bytes = lay::nanda_wave::write_l2_candidate_phase_memory(path, examples)?;
+    println!("l2_candidate_phase_packet: bytes={bytes}");
+    Ok(())
+}
+
 fn print_summary(
     dataset: &Path,
     out: &Path,
+    phase_out: &Path,
     learned: &BTreeMap<String, Learned>,
     live_report: &LiveLearningReport,
 ) {
@@ -238,6 +259,7 @@ fn print_summary(
     }
     println!("dataset: {}", dataset.display());
     println!("out: {}", out.display());
+    println!("phase_out: {}", phase_out.display());
     println!("learned_corrections: {}", learned.len());
     if live_report.read > 0 {
         println!(
