@@ -26,6 +26,7 @@ pub(super) fn enter_autocorrect_candidate(
     allow_layout_auto: bool,
     pipeline: &[TypingAssistRuleConfig],
 ) -> Option<(Vec<KeyEvent>, DecoderEditPlan)> {
+    let replace_words = replace_words.min(1);
     let (events, _) = buf.what_to_replay(replace_words)?;
     let original = map_original_events(&events);
     if original.trim().is_empty() {

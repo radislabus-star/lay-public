@@ -30,6 +30,8 @@ pub fn autocorrect_edit_safety(
         .collect::<String>();
     let inserted_text = plan.insert.clone();
 
+    let original_word_count = original.split_whitespace().count();
+    let multiword_original = original_word_count > 1;
     let deleted_contains_space = deleted_text.chars().any(char::is_whitespace);
     let inserted_contains_space = inserted_text.chars().any(char::is_whitespace);
     let insertion_splits_word =
@@ -53,7 +55,9 @@ pub fn autocorrect_edit_safety(
     let strong_boundary_shape =
         !boundary_changed || layout_phrase || strong_boundary_edit_shape(original, replacement);
 
-    let (allow_apply, reason) = if boundary_changed && !(boundary_proof || layout_phrase) {
+    let (allow_apply, reason) = if multiword_original && !boundary_proof {
+        (false, "unsafe_multiword_autocorrect_scope")
+    } else if boundary_changed && !(boundary_proof || layout_phrase) {
         (false, "unsafe_boundary_edit_without_proof")
     } else if boundary_changed && !strong_boundary_shape {
         (false, "weak_boundary_edit_shape")

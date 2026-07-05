@@ -5,9 +5,11 @@ use std::time::Instant;
 
 use super::super::pending_typing_assist::PendingTypingAssist;
 use super::super::{
-    active_enter_autocorrect, active_replace_words, grab_physical_device_for_correction,
-    handle_enter_autocorrect, lock_virtual_keyboard, log,
+    active_enter_autocorrect, grab_physical_device_for_correction, handle_enter_autocorrect,
+    lock_virtual_keyboard, log,
 };
+
+const ENTER_AUTOCORRECT_WORDS: usize = 1;
 
 pub(crate) struct EnterAutocorrectContext<'a> {
     pub(crate) buffer: &'a mut WordBuffer,
@@ -39,7 +41,7 @@ pub(crate) fn try_handle_enter_autocorrect(
     let mut g = lock_virtual_keyboard(ctx.virtual_kbd);
     let correction_result = handle_enter_autocorrect(
         ctx.buffer,
-        active_replace_words(),
+        ENTER_AUTOCORRECT_WORDS,
         g.as_mut(),
         ctx.executing,
     );

@@ -229,7 +229,7 @@ fn committed_tail_space_insertions_handle_many_glued_words() {
 }
 
 #[test]
-fn autocorrect_safety_allows_plain_previous_word_fix_without_boundary_change() {
+fn autocorrect_safety_blocks_plain_previous_word_fix_without_boundary_proof() {
     let row = autocorrect_safety_fixture("plain_previous_word_fix");
     let original = &row[1];
     let replacement = &row[2];
@@ -237,9 +237,11 @@ fn autocorrect_safety_allows_plain_previous_word_fix_without_boundary_change() {
     let safety =
         autocorrect_edit_safety(original, replacement, &plan, Some(&row[3]), Some(&row[4]));
 
-    assert!(safety.allow_apply);
+    assert!(!safety.allow_apply);
+    assert!(original.split_whitespace().count() > 1);
     assert!(!safety.boundary_changed);
     assert!(safety.changes_non_last_word);
+    assert_eq!(safety.reason, row[8]);
 }
 
 #[test]
@@ -252,6 +254,7 @@ fn autocorrect_safety_blocks_unproven_word_boundary_split() {
         autocorrect_edit_safety(original, replacement, &plan, Some(&row[3]), Some(&row[4]));
 
     assert!(!safety.allow_apply);
+    assert!(original.split_whitespace().count() > 1);
     assert!(safety.boundary_changed);
     assert_eq!(safety.reason, row[8]);
 }
@@ -310,6 +313,7 @@ fn autocorrect_safety_blocks_semantic_left_context_rewrite() {
         autocorrect_edit_safety(original, replacement, &plan, Some(&row[3]), Some(&row[4]));
 
     assert!(!safety.allow_apply);
+    assert!(original.split_whitespace().count() > 1);
     assert!(safety.changes_non_last_word);
     assert_eq!(safety.reason, row[8]);
 }

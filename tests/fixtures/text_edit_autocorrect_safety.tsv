@@ -1,10 +1,10 @@
 # case	original	replacement	source	reason	allow_apply	boundary_changed	changes_non_last_word	expected_reason
-plain_previous_word_fix	обясни\sему\s	объясни\sему\s	composite_ru_typo	composite-typo	true	false	true
-unproven_word_boundary_split	за\sнастройки\s	за\sнас\sтройки\s	SemanticWordCell32	composite-typo	false	true	false	unsafe_boundary_edit_without_proof
+plain_previous_word_fix	обясни\sему\s	объясни\sему\s	composite_ru_typo	composite-typo	false	false	true	unsafe_multiword_autocorrect_scope
+unproven_word_boundary_split	за\sнастройки\s	за\sнас\sтройки\s	SemanticWordCell32	composite-typo	false	true	false	unsafe_multiword_autocorrect_scope
 proven_boundary_split	посмотреть\sвлогах\s	посмотреть\sв\sлогах\s	BoundaryCell32	glued-words	true	true	false
 proven_negative_boundary_split	бокам\sнебыло\s	бокам\sне\sбыло\s	BoundaryCell32	glued-words	true	true	false
 weak_known_word_boundary_split	все\sпозапутано\s	все\sпоза\sпутано\s	BoundaryCell32	glued-words	false	true	false	weak_boundary_edit_shape
 weak_dirty_boundary_split	лту\sперескупу\s	лту\sперсе\sкупу\s	BoundaryCell32	glued-words	false	true	false	weak_boundary_edit_shape
 safe_internal_glued_phrase_repair	прблематут\s	проблема\sтут\s	BoundaryCell32	glued-words	true	true	false
 safe_internal_glued_phrase_transposition	тоесамое\s	тоже\sсамое\s	BoundaryCell32	glued-words	true	true	false
-semantic_left_context_rewrite	обясни\sему\s	объясни\sему\s	SemanticWordCell32	composite-typo	false	false	true	semantic_multiword_left_context_edit
+semantic_left_context_rewrite	обясни\sему\s	объясни\sему\s	SemanticWordCell32	composite-typo	false	false	true	unsafe_multiword_autocorrect_scope
