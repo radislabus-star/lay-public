@@ -127,6 +127,29 @@ assert_no_runtime_rule_id_literals() {
   fi
 }
 
+assert_live_correction_entrypoint_owned_by_input_gate() {
+  local pattern="$1"
+  local hits
+  if command -v rg >/dev/null 2>&1; then
+    hits="$(rg -n --fixed-strings "$pattern" src \
+        --glob '!src/correction_core.rs' \
+        --glob '!src/correction_pipeline.rs' \
+        --glob '!src/input_gate.rs' \
+        --glob '!src/main.rs' \
+        --glob '!src/**/*tests.rs' \
+        --glob '!src/**/tests/**' \
+        --glob '!src/*_tests.rs' || true)"
+  else
+    hits="$(grep -RInF -- "$pattern" src || true)"
+    hits="$(printf '%s\n' "$hits" \
+      | grep -Ev '(^src/correction_core\.rs:|^src/correction_pipeline\.rs:|^src/input_gate\.rs:|^src/main\.rs:|_tests\.rs:|^src/.*/tests/)' || true)"
+  fi
+  if [[ -n "$hits" ]]; then
+    printf '%s\n' "$hits" >&2
+    error "live correction decisions must enter through input_gate, not direct '$pattern' calls"
+  fi
+}
+
 assert_single_owner "fn unix_timestamp(" "src/time.rs"
 assert_single_owner "fn is_cyrillic_letter(" "src/keyboard/text_input/script.rs"
 assert_single_owner "fn mix64(" "src/nanda_wave/mode.rs"
@@ -138,6 +161,8 @@ if search_fixed "fn split_last_token(" src >"$HIT_FILE"; then
   cat "$HIT_FILE" >&2
   error "ambiguous split_last_token helper is forbidden; use explicit word_reader split helpers"
 fi
+assert_live_correction_entrypoint_owned_by_input_gate "resolve_text_correction("
+assert_live_correction_entrypoint_owned_by_input_gate "decide_text_correction("
 
 assert_max_lines src/bin/lay_daemon.rs 240
 assert_max_lines src/bin/lay_daemon/action_log_runtime.rs 40
