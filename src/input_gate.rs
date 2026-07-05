@@ -6,8 +6,8 @@
 
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
 use crate::correction_core::{
-    CandidateGateAction, CorrectionDecisionSource, CorrectionMode, CorrectionRequest,
-    CorrectionResolution, CorrectionScoreboard, TypingErrorClass,
+    CandidateGateAction, CorrectionCandidateScoreTrace, CorrectionDecisionSource, CorrectionMode,
+    CorrectionRequest, CorrectionResolution, CorrectionScoreboard, TypingErrorClass,
 };
 
 include!("correction_pipeline.rs");
@@ -71,11 +71,47 @@ pub struct InputGateDecisionTrace {
     pub input_class: Option<TypingErrorClass>,
     pub candidate_count: usize,
     pub scoreboard: InputGateScoreboard,
+    pub(crate) candidate_scores: Vec<InputGateCandidateScoreTrace>,
     pub selected_source: Option<CorrectionDecisionSource>,
     pub selected_source_id: Option<String>,
     pub selected_error_class: Option<TypingErrorClass>,
     pub selected_gate_action: Option<CandidateGateAction>,
     pub reason: &'static str,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct InputGateCandidateScoreTrace {
+    pub(crate) replacement: String,
+    pub(crate) source: CorrectionDecisionSource,
+    pub(crate) source_id: String,
+    pub(crate) error_class: TypingErrorClass,
+    pub(crate) gate_action: CandidateGateAction,
+    pub(crate) gate_reason: &'static str,
+    pub(crate) likelihood_milli: i16,
+    pub(crate) usage_prior_milli: i16,
+    pub(crate) context_prior_milli: i16,
+    pub(crate) risk_milli: i16,
+    pub(crate) posterior_milli: i16,
+    pub(crate) selected: bool,
+}
+
+impl From<&CorrectionCandidateScoreTrace> for InputGateCandidateScoreTrace {
+    fn from(score: &CorrectionCandidateScoreTrace) -> Self {
+        Self {
+            replacement: score.replacement.clone(),
+            source: score.source,
+            source_id: score.source_id.clone(),
+            error_class: score.error_class,
+            gate_action: score.gate_action,
+            gate_reason: score.gate_reason,
+            likelihood_milli: score.likelihood_milli,
+            usage_prior_milli: score.usage_prior_milli,
+            context_prior_milli: score.context_prior_milli,
+            risk_milli: score.risk_milli,
+            posterior_milli: score.posterior_milli,
+            selected: score.selected,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -170,6 +206,7 @@ fn observe_trace(stage: InputGateStage, reason: &'static str) -> InputGateDecisi
         input_class: None,
         candidate_count: 0,
         scoreboard: InputGateScoreboard::default(),
+        candidate_scores: Vec::new(),
         selected_source: None,
         selected_source_id: None,
         selected_error_class: None,
@@ -185,6 +222,11 @@ fn word_boundary_trace(resolution: &CorrectionResolution) -> InputGateDecisionTr
         input_class: Some(resolution.event.input_class),
         candidate_count: resolution.candidates.len(),
         scoreboard: resolution.scoreboard.into(),
+        candidate_scores: resolution
+            .candidate_scores
+            .iter()
+            .map(InputGateCandidateScoreTrace::from)
+            .collect(),
         selected_source: selected.map(|candidate| candidate.source),
         selected_source_id: selected.map(|candidate| candidate.source_id.clone()),
         selected_error_class: selected.map(|candidate| candidate.error_class),
@@ -332,6 +374,14 @@ mod tests {
             trace.scoreboard.selected_bayes_posterior_milli.is_some(),
             "selected candidate should expose Bayes posterior in the input gate scoreboard"
         );
+        assert_eq!(trace.candidate_scores.len(), 1);
+        let score = &trace.candidate_scores[0];
+        assert_eq!(score.replacement, "давай ");
+        assert_eq!(score.source, CorrectionDecisionSource::Deterministic);
+        assert_eq!(score.error_class, TypingErrorClass::WrongLayout);
+        assert_eq!(score.gate_action, CandidateGateAction::Apply);
+        assert!(score.selected);
+        assert!(score.posterior_milli > 0);
         assert_eq!(
             trace.selected_source,
             Some(CorrectionDecisionSource::Deterministic)

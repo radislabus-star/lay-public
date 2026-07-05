@@ -1,6 +1,9 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::*;
+use crate::config::{default_typing_assist_pipeline, CorrectionSafety};
+use crate::correction_core::CorrectionMode;
+use crate::input_gate::{decide_input_gate, InputGateRequest, InputGateTrigger};
 use std::sync::Mutex;
 
 static ACTION_LOG_ENV_LOCK: Mutex<()> = Mutex::new(());
@@ -135,6 +138,7 @@ fn action_log_writes_input_gate_trace() {
             input_class: Some("wrong_layout".to_string()),
             candidate_count: 1,
             scoreboard: None,
+            candidate_scores: Vec::new(),
             selected_source: Some("deterministic".to_string()),
             selected_source_id: Some("exact_layout".to_string()),
             selected_error_class: Some("wrong_layout".to_string()),
@@ -150,6 +154,57 @@ fn action_log_writes_input_gate_trace() {
     assert!(text.contains("\"stage\":\"word_boundary\""));
     assert!(text.contains("\"input_class\":\"wrong_layout\""));
     assert!(text.contains("\"selected_gate_action\":\"apply\""));
+    let _ = std::fs::remove_dir_all(tmp);
+}
+
+#[test]
+fn action_log_writes_candidate_score_trace_from_input_gate() {
+    let tmp = std::env::temp_dir().join(format!(
+        "lay-action-log-candidate-score-test-{}",
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos()
+    ));
+    std::fs::create_dir_all(&tmp).unwrap();
+    let path = tmp.join("recent_actions.jsonl");
+    let pipeline = default_typing_assist_pipeline();
+    let decision = decide_input_gate(InputGateRequest {
+        trigger: InputGateTrigger::Space,
+        text_tail: "lfdfq ",
+        auto_replace: true,
+        typing_assist: true,
+        auto_switch_layout: true,
+        correction_safety: CorrectionSafety::Experimental,
+        typing_assist_pipeline: &pipeline,
+        nanda_autocorrect: false,
+        correction_mode: CorrectionMode::DeterministicOnly,
+    });
+
+    let action = RecentAction {
+        ts: 1,
+        kind: "typing-assist",
+        from: "lfdfq ",
+        to: "давай ",
+        replace_words: 1,
+        words: 1,
+        elapsed_ms: 12,
+        decision_ms: Some(3),
+        output_ms: Some(9),
+        input_gate: decision
+            .trace
+            .as_ref()
+            .map(RecentActionGateTrace::from_input_gate),
+        undo_available: true,
+    };
+    record_action_to_path(&path, &action, 3);
+
+    let text = std::fs::read_to_string(&path).unwrap();
+    assert!(text.contains("\"candidate_scores\""));
+    assert!(text.contains("\"posterior_milli\""));
+    assert!(text.contains("\"usage_prior_milli\""));
+    assert!(text.contains("\"risk_milli\""));
+    assert!(text.contains("\"selected\":true"));
     let _ = std::fs::remove_dir_all(tmp);
 }
 
@@ -212,6 +267,7 @@ fn action_log_writes_dirty_task_for_applied_gate() {
             input_class: Some("composite-typo".to_string()),
             candidate_count: 2,
             scoreboard: None,
+            candidate_scores: Vec::new(),
             selected_source: Some("nanda".to_string()),
             selected_source_id: Some("L2SurfaceMotifCell32".to_string()),
             selected_error_class: Some("composite-typo".to_string()),

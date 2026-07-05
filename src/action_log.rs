@@ -11,6 +11,7 @@ use crate::time::unix_timestamp;
 const ACTIONS_PATH: &str = ".local/share/lay/recent_actions.jsonl";
 const TIMING_PROFILE_PATH: &str = ".local/share/lay/timing_profile.jsonl";
 const NANDA_DIRTY_TASKS_PATH: &str = ".local/share/lay/nanda_wave/dirty_tasks.jsonl";
+const MAX_LOGGED_CANDIDATE_SCORES: usize = 8;
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct RecentAction<'a> {
@@ -38,6 +39,8 @@ pub struct RecentActionGateTrace {
     pub candidate_count: usize,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scoreboard: Option<RecentActionGateScoreboard>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub(crate) candidate_scores: Vec<RecentActionCandidateScore>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub selected_source: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -47,6 +50,22 @@ pub struct RecentActionGateTrace {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub selected_gate_action: Option<String>,
     pub reason: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+pub(crate) struct RecentActionCandidateScore {
+    pub(crate) replacement: String,
+    pub(crate) source: String,
+    pub(crate) source_id: String,
+    pub(crate) error_class: String,
+    pub(crate) gate_action: String,
+    pub(crate) gate_reason: String,
+    pub(crate) likelihood_milli: i16,
+    pub(crate) usage_prior_milli: i16,
+    pub(crate) context_prior_milli: i16,
+    pub(crate) risk_milli: i16,
+    pub(crate) posterior_milli: i16,
+    pub(crate) selected: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
@@ -118,6 +137,25 @@ impl RecentActionGateTrace {
                 nanda_candidates: trace.scoreboard.nanda_candidates,
                 selected_bayes_posterior_milli: trace.scoreboard.selected_bayes_posterior_milli,
             }),
+            candidate_scores: trace
+                .candidate_scores
+                .iter()
+                .take(MAX_LOGGED_CANDIDATE_SCORES)
+                .map(|score| RecentActionCandidateScore {
+                    replacement: score.replacement.clone(),
+                    source: correction_source_name(score.source).to_string(),
+                    source_id: score.source_id.clone(),
+                    error_class: score.error_class.as_str().to_string(),
+                    gate_action: gate_action_name(score.gate_action).to_string(),
+                    gate_reason: score.gate_reason.to_string(),
+                    likelihood_milli: score.likelihood_milli,
+                    usage_prior_milli: score.usage_prior_milli,
+                    context_prior_milli: score.context_prior_milli,
+                    risk_milli: score.risk_milli,
+                    posterior_milli: score.posterior_milli,
+                    selected: score.selected,
+                })
+                .collect(),
             selected_source: trace
                 .selected_source
                 .map(correction_source_name)

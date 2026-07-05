@@ -117,6 +117,7 @@ pub struct CorrectionResolution {
     pub selected: Option<UnifiedCorrectionCandidate>,
     pub decision: Option<CorrectionDecision>,
     pub scoreboard: CorrectionScoreboard,
+    pub(crate) candidate_scores: Vec<CorrectionCandidateScoreTrace>,
 }
 
 #[derive(Debug, Clone)]
@@ -147,6 +148,22 @@ pub struct CorrectionScoreboard {
     pub deterministic_candidates: usize,
     pub nanda_candidates: usize,
     pub selected_bayes_posterior_milli: Option<i16>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct CorrectionCandidateScoreTrace {
+    pub(crate) replacement: String,
+    pub(crate) source: CorrectionDecisionSource,
+    pub(crate) source_id: String,
+    pub(crate) error_class: TypingErrorClass,
+    pub(crate) gate_action: CandidateGateAction,
+    pub(crate) gate_reason: &'static str,
+    pub(crate) likelihood_milli: i16,
+    pub(crate) usage_prior_milli: i16,
+    pub(crate) context_prior_milli: i16,
+    pub(crate) risk_milli: i16,
+    pub(crate) posterior_milli: i16,
+    pub(crate) selected: bool,
 }
 
 pub fn decide_text_correction(req: CorrectionRequest<'_>) -> Option<CorrectionDecision> {
@@ -214,6 +231,11 @@ impl CandidateBoard {
             &self.candidates,
             selected.as_ref(),
         );
+        let candidate_scores = CorrectionCandidateScoreTrace::from_candidates(
+            &self.event.original,
+            &self.candidates,
+            selected.as_ref(),
+        );
 
         CorrectionResolution {
             event: self.event,
@@ -221,6 +243,7 @@ impl CandidateBoard {
             selected,
             decision,
             scoreboard,
+            candidate_scores,
         }
     }
 }
@@ -259,6 +282,41 @@ impl CorrectionScoreboard {
         });
         scoreboard
     }
+}
+
+impl CorrectionCandidateScoreTrace {
+    fn from_candidates(
+        original: &str,
+        candidates: &[UnifiedCorrectionCandidate],
+        selected: Option<&UnifiedCorrectionCandidate>,
+    ) -> Vec<Self> {
+        candidates
+            .iter()
+            .map(|candidate| {
+                let score = bayes_score_for_candidate(original, candidate);
+                Self {
+                    replacement: candidate.replacement.clone(),
+                    source: candidate.source,
+                    source_id: candidate.source_id.clone(),
+                    error_class: candidate.error_class,
+                    gate_action: candidate.gate.action,
+                    gate_reason: candidate.gate.reason,
+                    likelihood_milli: score_to_milli(score.likelihood),
+                    usage_prior_milli: score_to_milli(score.usage_prior),
+                    context_prior_milli: score_to_milli(score.context_prior),
+                    risk_milli: score_to_milli(score.risk),
+                    posterior_milli: score_to_milli(score.posterior),
+                    selected: selected.is_some_and(|selected| selected == candidate),
+                }
+            })
+            .collect()
+    }
+}
+
+fn score_to_milli(value: f32) -> i16 {
+    (value * 1000.0)
+        .round()
+        .clamp(i16::MIN as f32, i16::MAX as f32) as i16
 }
 
 impl TypingErrorEvent {
@@ -2346,6 +2404,14 @@ mod tests {
                 .is_some(),
             "selected candidate must expose Bayes posterior"
         );
+        assert_eq!(resolution.candidate_scores.len(), 1);
+        let score = &resolution.candidate_scores[0];
+        assert_eq!(score.replacement, "автозамена ");
+        assert_eq!(score.error_class, TypingErrorClass::MissingLetter);
+        assert_eq!(score.gate_action, CandidateGateAction::Apply);
+        assert!(score.selected);
+        assert!(score.likelihood_milli > 0);
+        assert!(score.posterior_milli > 0);
     }
 
     #[test]
