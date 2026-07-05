@@ -268,6 +268,37 @@ fn autocorrect_safety_allows_proven_boundary_split() {
 }
 
 #[test]
+fn autocorrect_safety_requires_strong_boundary_shape() {
+    for case_name in [
+        "proven_negative_boundary_split",
+        "weak_known_word_boundary_split",
+        "weak_dirty_boundary_split",
+        "safe_internal_glued_phrase_repair",
+        "safe_internal_glued_phrase_transposition",
+    ] {
+        let row = autocorrect_safety_fixture(case_name);
+        let original = &row[1];
+        let replacement = &row[2];
+        let plan = plan_committed_tail_replacement(original, replacement).expect("plan");
+        let safety =
+            autocorrect_edit_safety(original, replacement, &plan, Some(&row[3]), Some(&row[4]));
+
+        assert_eq!(
+            safety.allow_apply,
+            row[5].parse::<bool>().expect("allow_apply"),
+            "case={case_name} safety={safety:?}"
+        );
+        assert_eq!(
+            safety.boundary_changed,
+            row[6].parse::<bool>().expect("boundary")
+        );
+        if !row[8].is_empty() {
+            assert_eq!(safety.reason, row[8]);
+        }
+    }
+}
+
+#[test]
 fn autocorrect_safety_blocks_semantic_left_context_rewrite() {
     let row = autocorrect_safety_fixture("semantic_left_context_rewrite");
     let original = &row[1];
