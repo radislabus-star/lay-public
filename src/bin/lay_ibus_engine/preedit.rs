@@ -12,7 +12,6 @@ const PREEDIT_TAIL_LIMIT: usize = 160;
 const PREEDIT_TOKEN_LIMIT: usize = 32;
 const PREEDIT_ASCII_CANDIDATE_LIMIT: usize = 12;
 const PREEDIT_RU_WAVE_CANDIDATE_LIMIT: usize = 12;
-const PREEDIT_RU_WAVE_SCAN_LIMIT: usize = 128;
 const PREEDIT_RU_PREFIX_MIN_CHARS: usize = 2;
 #[cfg(test)]
 const PREEDIT_PROBE_SYMBOL: &str = "*";
@@ -308,7 +307,7 @@ impl LayIbusEngine {
         let semantic_us = elapsed_us(semantic_started);
 
         let ru_started = timing_enabled.then(Instant::now);
-        for suffix in self.ru_wave_lexical_suffixes() {
+        for suffix in self.ru_l2_word_attractor_suffixes() {
             push_unique_ranked_suffix(
                 &mut candidates,
                 Some(suffix.clone()),
@@ -421,7 +420,7 @@ impl LayIbusEngine {
         suffixes
     }
 
-    fn ru_wave_lexical_suffixes(&self) -> Vec<String> {
+    fn ru_l2_word_attractor_suffixes(&self) -> Vec<String> {
         if self.config.active_correction_safety() == lay::config::CorrectionSafety::Strict {
             return Vec::new();
         }
@@ -442,71 +441,53 @@ impl LayIbusEngine {
         }
 
         let max_suffix_chars = self.precognition_max_suffix_chars();
-        let mut suffixes = Vec::new();
-        let short_prefix_requires_seed_word = partial_len <= 3;
-        for word in lay::lexicon::ime_ru_prefix_completion_words(
-            &partial,
-            max_suffix_chars,
-            PREEDIT_RU_WAVE_SCAN_LIMIT,
-        ) {
-            if short_prefix_requires_seed_word && !lay::lexicon::is_common_ru_word(&word) {
-                continue;
-            }
-            push_unique_ru_known_suffix(
-                &mut suffixes,
-                &partial,
-                &word,
-                word.strip_prefix(&partial).map(str::to_string),
-            );
-            if suffixes.len() >= PREEDIT_RU_WAVE_CANDIDATE_LIMIT {
-                break;
-            }
-        }
-
-        if lay::nanda_wave::context_wave::prefix_wave_memory_is_warm()
-            && (partial_len >= 4 || suffixes.is_empty())
-        {
-            let max_bucket_entries = match partial_len {
-                0..=3 => 24,
-                4 => 96,
-                _ => 256,
-            };
-            for suffix in
-                lay::nanda_wave::context_wave::ru_word_prefix_completion_suffixes_if_bucket_at_most(
-                    &partial,
-                    max_suffix_chars,
-                    PREEDIT_RU_WAVE_SCAN_LIMIT,
-                    max_bucket_entries,
-                )
-            {
-                if short_prefix_requires_seed_word {
-                    let word = format!("{partial}{suffix}");
-                    if !lay::lexicon::is_common_ru_word(&word) {
-                        continue;
-                    }
-                }
-                let word = format!("{partial}{suffix}");
-                push_unique_ru_known_suffix(&mut suffixes, &partial, &word, Some(suffix));
-                if suffixes.len() >= PREEDIT_RU_WAVE_CANDIDATE_LIMIT {
-                    break;
-                }
-            }
-        }
-
         let prefix_tokens = lay::nanda_wave::llmwave::tokenize(prefix);
         let allow_short_lexical = self.config.active_correction_safety()
             == lay::config::CorrectionSafety::Experimental
             || !has_left_context;
-        let mut ranked = suffixes
+        let short_prefix_uses_seed = partial_len <= 4;
+        if short_prefix_uses_seed && has_left_context && !allow_short_lexical {
+            return Vec::new();
+        }
+        let whole_word_candidates = if short_prefix_uses_seed {
+            lay::nanda_wave::l2::ime_l2_short_seed_word_candidates(
+                prefix,
+                &partial,
+                PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
+            )
+        } else {
+            lay::nanda_wave::l2::ime_l2_word_candidates(
+                prefix,
+                &partial,
+                PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
+            )
+        };
+        let mut ranked = whole_word_candidates
             .into_iter()
-            .filter_map(|suffix| {
-                let word = format!("{partial}{suffix}");
+            .filter(|candidate| {
+                matches!(
+                    candidate.kind,
+                    lay::nanda_wave::l2::L2ImeWordCandidateKind::Completion
+                )
+            })
+            .filter_map(|candidate| {
+                if short_prefix_uses_seed && !lay::lexicon::is_common_ru_word(&candidate.surface) {
+                    return None;
+                }
+                let suffix = candidate.surface.strip_prefix(&partial)?.to_string();
+                if suffix.chars().count() > max_suffix_chars {
+                    return None;
+                }
                 let score = l3_or_lexical_precognition_score(
                     &prefix_tokens,
-                    &word,
+                    &candidate.surface,
                     partial_len,
                     allow_short_lexical,
-                )?;
+                )
+                .or_else(|| {
+                    allow_short_lexical
+                        .then_some((candidate.score as f32 / 1000.0).clamp(0.0, 0.70))
+                })?;
                 Some((suffix, score))
             })
             .collect::<Vec<_>>();
@@ -595,6 +576,7 @@ fn push_unique_suffix(candidates: &mut Vec<String>, suffix: Option<String>) {
     candidates.push(suffix);
 }
 
+#[cfg(test)]
 fn push_unique_ru_known_suffix(
     candidates: &mut Vec<String>,
     partial: &str,
@@ -681,6 +663,7 @@ fn is_ime_complete_russian_word(word: &str) -> bool {
     lay::lexicon::is_common_ru_word(word)
 }
 
+#[cfg(test)]
 fn is_ime_candidate_russian_word(word: &str) -> bool {
     lay::lexicon::is_common_ru_word(word) || lay::lexicon::is_ime_hot_ru_word(word)
 }
@@ -926,6 +909,35 @@ mod tests {
                 word.starts_with("провер") || word.starts_with("прове")
             }),
             "expected contextual Russian wave candidates for 'я хочу пров', got {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
+    fn ime_precognition_projects_only_l2_completion_words_to_suffixes() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "звгрузи".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine.preedit_candidates.iter().all(|suffix| {
+                let projected = format!("звгрузи{suffix}");
+                projected != "загрузи" && suffix != "агрузи"
+            }),
+            "replacement candidates must not leak into IME as suffix fragments: {:?}",
             engine.preedit_candidates
         );
     }
@@ -1983,7 +1995,7 @@ mod tests {
         let semantic_us = semantic_started.elapsed().as_micros();
 
         let ru_started = Instant::now();
-        let ru = engine.ru_wave_lexical_suffixes();
+        let ru = engine.ru_l2_word_attractor_suffixes();
         let ru_us = ru_started.elapsed().as_micros();
 
         let ascii_started = Instant::now();

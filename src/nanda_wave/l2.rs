@@ -13,7 +13,7 @@ use crate::typing_candidate::TypingCandidateFamily;
 use crate::typing_context;
 use crate::typing_pipeline::explain_typing_assist_with_pipeline;
 use crate::word_reader::{split_last_ws_token, split_word_punctuation, split_ws_segments};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::sync::OnceLock;
 
 use super::context::{TailContext, TokenKind};
@@ -30,6 +30,24 @@ const L2_RUNTIME_WORD_LIMIT: usize = 1_000;
 const L2_SURFACE_HOT_RU_DATA: &str = include_str!("../../data/lexicon/l2_surface_hot_ru.txt");
 pub(super) const L2_SURFACE_MOTIF_CELL: &str = "L2SurfaceMotifCell32";
 pub(super) const L2_SURFACE_COMPLETION_CELL: &str = "L2SurfaceCompletionCell32";
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum L2ImeWordCandidateKind {
+    Completion,
+    Replacement,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct L2ImeWordCandidate {
+    pub surface: String,
+    pub kind: L2ImeWordCandidateKind,
+    pub score: u32,
+    pub l1_overlap: usize,
+    pub l2_overlap: usize,
+    pub motif_overlap: usize,
+    pub usage_prior: f32,
+    pub context_prior: f32,
+}
 
 struct TaughtCandidateInput<'a> {
     original: &'a str,
@@ -56,6 +74,154 @@ pub fn run_l2_with_options(
 
 pub(super) fn warm_up_surface_motif_memory() {
     let _ = surface_motif_memory().center_count();
+}
+
+pub(super) fn warm_up_ime_word_candidate_memory() {
+    warm_up_surface_motif_memory();
+    let _ = l2_short_position_seed_index().len();
+}
+
+pub fn ime_l2_word_candidates(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> Vec<L2ImeWordCandidate> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let normalized = token.to_lowercase();
+    let token_len = normalized.chars().count();
+    if !(2..=18).contains(&token_len) || !normalized.chars().all(is_cyrillic_letter) {
+        return Vec::new();
+    }
+    let context_tokens = super::llmwave::tokenize(context_prefix);
+    let mut candidates = surface_motif_memory()
+        .surface_candidates_for_text(&normalized, limit.saturating_mul(4).max(limit))
+        .into_iter()
+        .map(|candidate| {
+            let candidate_len = candidate.word.chars().count();
+            let kind = if candidate.word.starts_with(&normalized) && candidate_len > token_len {
+                L2ImeWordCandidateKind::Completion
+            } else {
+                L2ImeWordCandidateKind::Replacement
+            };
+            let usage_prior = super::usage_prior::word_usage_prior_cached(&candidate.word);
+            let context_prior = super::usage_prior::context_word_usage_prior_cached(
+                &context_tokens,
+                &candidate.word,
+            );
+            L2ImeWordCandidate {
+                surface: candidate.word,
+                kind,
+                score: candidate.score,
+                l1_overlap: candidate.l1_overlap,
+                l2_overlap: candidate.l2_overlap,
+                motif_overlap: candidate.motif_overlap,
+                usage_prior,
+                context_prior,
+            }
+        })
+        .collect::<Vec<_>>();
+    candidates.sort_by(|left, right| {
+        l2_ime_word_candidate_score(right)
+            .cmp(&l2_ime_word_candidate_score(left))
+            .then_with(|| right.motif_overlap.cmp(&left.motif_overlap))
+            .then_with(|| right.l2_overlap.cmp(&left.l2_overlap))
+            .then_with(|| right.l1_overlap.cmp(&left.l1_overlap))
+            .then_with(|| {
+                left.surface
+                    .chars()
+                    .count()
+                    .cmp(&right.surface.chars().count())
+            })
+            .then_with(|| left.surface.cmp(&right.surface))
+    });
+    candidates.dedup_by(|left, right| left.surface == right.surface);
+    candidates.truncate(limit);
+    candidates
+}
+
+pub fn ime_l2_short_seed_word_candidates(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> Vec<L2ImeWordCandidate> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let normalized = token.to_lowercase();
+    let token_len = normalized.chars().count();
+    if !(2..=4).contains(&token_len) || !normalized.chars().all(is_cyrillic_letter) {
+        return Vec::new();
+    }
+    let Some(words) = l2_short_position_seed_index().get(&normalized) else {
+        return Vec::new();
+    };
+    let context_tokens = super::llmwave::tokenize(context_prefix);
+    words
+        .iter()
+        .take(limit)
+        .map(|word| {
+            let usage_prior = super::usage_prior::word_usage_prior_cached(word);
+            let context_prior =
+                super::usage_prior::context_word_usage_prior_cached(&context_tokens, word);
+            L2ImeWordCandidate {
+                surface: word.clone(),
+                kind: L2ImeWordCandidateKind::Completion,
+                score: 520,
+                l1_overlap: token_len,
+                l2_overlap: 0,
+                motif_overlap: 0,
+                usage_prior,
+                context_prior,
+            }
+        })
+        .collect()
+}
+
+fn l2_short_position_seed_index() -> &'static HashMap<String, Vec<String>> {
+    static INDEX: OnceLock<HashMap<String, Vec<String>>> = OnceLock::new();
+    INDEX.get_or_init(|| {
+        let mut index = HashMap::<String, Vec<String>>::new();
+        for word in runtime_l2_surface_words() {
+            let len = word.chars().count();
+            if !(3..=18).contains(&len) || !word.chars().all(is_cyrillic_letter) {
+                continue;
+            }
+            for prefix_len in 2..=4.min(len.saturating_sub(1)) {
+                let key = word.chars().take(prefix_len).collect::<String>();
+                index.entry(key).or_default().push(word.clone());
+            }
+        }
+        for words in index.values_mut() {
+            words.sort_by(|left, right| {
+                super::usage_prior::word_usage_prior_cached(right)
+                    .total_cmp(&super::usage_prior::word_usage_prior_cached(left))
+                    .then_with(|| {
+                        crate::lexicon::is_common_ru_word(right)
+                            .cmp(&crate::lexicon::is_common_ru_word(left))
+                    })
+                    .then_with(|| left.chars().count().cmp(&right.chars().count()))
+                    .then_with(|| left.cmp(right))
+            });
+            words.truncate(16);
+        }
+        index
+    })
+}
+
+fn l2_ime_word_candidate_score(candidate: &L2ImeWordCandidate) -> u32 {
+    let prior = ((candidate.usage_prior + candidate.context_prior) * 1000.0)
+        .round()
+        .clamp(0.0, 260.0) as u32;
+    let kind_bonus = match candidate.kind {
+        L2ImeWordCandidateKind::Completion => 80,
+        L2ImeWordCandidateKind::Replacement => 0,
+    };
+    candidate
+        .score
+        .saturating_add(prior)
+        .saturating_add(kind_bonus)
 }
 
 pub fn run_l2_refined_with_feedback(
@@ -2387,6 +2553,42 @@ mod tests {
                 .iter()
                 .any(|candidate| candidate.word == "загрузи"),
             "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn ime_l2_word_candidates_return_whole_words_not_suffixes() {
+        let candidates = ime_l2_word_candidates("я хочу ", "пров", 8);
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.kind == L2ImeWordCandidateKind::Completion
+                    && candidate.surface.starts_with("провер")
+            }),
+            "L2 IME candidates must expose complete word surfaces, got {candidates:?}"
+        );
+        assert!(
+            candidates
+                .iter()
+                .all(|candidate| !candidate.surface.starts_with("ер")),
+            "L2 must not return display suffixes as word candidates: {candidates:?}"
+        );
+    }
+
+    #[test]
+    fn ime_l2_word_candidates_keep_replacements_distinct_from_completions() {
+        let candidates = ime_l2_word_candidates("", "звгрузи", 8);
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.kind == L2ImeWordCandidateKind::Replacement
+                    && candidate.surface == "загрузи"
+            }),
+            "noisy input should produce a whole-word replacement candidate, got {candidates:?}"
+        );
+        assert!(
+            candidates
+                .iter()
+                .all(|candidate| candidate.surface != "агрузи"),
+            "replacement candidates must not be converted into suffix fragments: {candidates:?}"
         );
     }
 

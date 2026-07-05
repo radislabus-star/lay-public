@@ -72,3 +72,7 @@ pub fn warm_up_for_ime() {
     l2::warm_up_surface_motif_memory();
     let _ = llmwave::load_default_memory();
 }
+
+pub fn warm_up_l2_for_ime() {
+    l2::warm_up_ime_word_candidate_memory();
+}

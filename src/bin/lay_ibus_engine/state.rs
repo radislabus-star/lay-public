@@ -313,6 +313,9 @@ fn warm_runtime(config: &LayConfig) {
     lay::lem::set_runtime_enabled(config.lem_enabled && config.active_lem_weight() > 0.0);
     if config.active_text_backend().should_try_ime() {
         lay::lexicon::warm_up_for_ime();
+        if config.active_nanda_precognition() {
+            lay::nanda_wave::warm_up_l2_for_ime();
+        }
     } else {
         lay::lexicon::warm_up();
     }
