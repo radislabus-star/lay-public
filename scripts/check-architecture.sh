@@ -150,6 +150,46 @@ assert_live_correction_entrypoint_owned_by_input_gate() {
   fi
 }
 
+assert_text_mutation_call_owners() {
+  local pattern="$1"
+  local reason="$2"
+  shift 2
+  local allowed=("$@")
+  local hits
+  if command -v rg >/dev/null 2>&1; then
+    hits="$(rg -n --fixed-strings "$pattern" src \
+        --glob '!src/**/*tests.rs' \
+        --glob '!src/**/tests/**' \
+        --glob '!src/*_tests.rs' || true)"
+  else
+    hits="$(grep -RInF -- "$pattern" src || true)"
+    hits="$(printf '%s\n' "$hits" \
+      | grep -Ev '(_tests\.rs:|^src/.*/tests/)' || true)"
+  fi
+
+  local filtered=""
+  local line file ok allowed_file
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    file="${line%%:*}"
+    ok=0
+    for allowed_file in "${allowed[@]}"; do
+      if [[ "$file" == "$allowed_file" ]]; then
+        ok=1
+        break
+      fi
+    done
+    if [[ "$ok" == "0" ]]; then
+      filtered+="${line}"$'\n'
+    fi
+  done <<< "$hits"
+
+  if [[ -n "$filtered" ]]; then
+    printf '%s' "$filtered" >&2
+    error "$reason"
+  fi
+}
+
 assert_single_owner "fn unix_timestamp(" "src/time.rs"
 assert_single_owner "fn is_cyrillic_letter(" "src/keyboard/text_input/script.rs"
 assert_single_owner "fn mix64(" "src/nanda_wave/mode.rs"
@@ -157,12 +197,77 @@ assert_single_owner "fn mix64_golden(" "src/nanda_wave/mode.rs"
 assert_single_owner "fn split_last_ws_token(" "src/word_reader.rs"
 assert_single_owner "fn split_last_trimmed_ws_token(" "src/word_reader.rs"
 assert_single_owner "fn split_last_alphabetic_token(" "src/word_reader.rs"
+assert_single_owner "pub enum LanguageActionOperator" "src/language_action.rs"
+assert_single_owner "pub fn operator_for_candidate(" "src/language_action.rs"
 if search_fixed "fn split_last_token(" src >"$HIT_FILE"; then
   cat "$HIT_FILE" >&2
   error "ambiguous split_last_token helper is forbidden; use explicit word_reader split helpers"
 fi
 assert_live_correction_entrypoint_owned_by_input_gate "resolve_text_correction("
 assert_live_correction_entrypoint_owned_by_input_gate "decide_text_correction("
+
+assert_text_mutation_call_owners \
+  "apply_text_replacement_pipeline(" \
+  "direct text replacement must stay inside approved text-edit output owners; route through TextEditAuthority before adding new callers" \
+  src/bin/lay_daemon/text_output/replacement.rs \
+  src/bin/lay_daemon/text_output.rs \
+  src/bin/lay_daemon/typing_assist_runtime/output/minimal.rs \
+  src/bin/lay_daemon/correction_runtime/output/text_replace.rs \
+  src/bin/lay_daemon/enter_autocorrect_runtime.rs \
+  src/bin/lay_daemon/auto_undo_runtime.rs
+
+assert_text_mutation_call_owners \
+  "try_ime_replace_tail(" \
+  "direct IME tail replacement must stay inside approved text-edit output owners; route through TextEditAuthority before adding new callers" \
+  src/bin/lay_daemon/layout_controller.rs \
+  src/bin/lay_daemon/typing_assist_runtime/output/ime.rs \
+  src/bin/lay_daemon/correction_runtime/output/native.rs \
+  src/bin/lay_daemon/enter_autocorrect_runtime.rs \
+  src/bin/lay_daemon/auto_undo_runtime.rs
+
+assert_text_mutation_call_owners \
+  "replace_tail_plan(" \
+  "raw IME replace-tail plans must stay inside manual-toggle bridge owners" \
+  src/bin/lay_daemon/layout_controller/ime_bridge.rs \
+  src/bin/lay_daemon/layout_controller/ime_manual_toggle.rs
+
+assert_text_mutation_call_owners \
+  "try_replace_tail(" \
+  "raw IME replace-tail bridge calls must stay inside layout_controller bridge owners" \
+  src/bin/lay_daemon/layout_controller.rs \
+  src/bin/lay_daemon/layout_controller/ime_bridge.rs
+
+assert_text_mutation_call_owners \
+  "replace_committed_tail(" \
+  "IBus committed-tail replacement must stay inside approved IME backend owners" \
+  src/bin/lay_ibus_engine/state.rs \
+  src/bin/lay_ibus_engine/committed_tail.rs \
+  src/bin/lay_ibus_engine/bridge_actions.rs \
+  src/bin/lay_ibus_engine/composition_commit.rs
+
+assert_text_mutation_call_owners \
+  "commit_active_composition(" \
+  "IBus active composition commits must stay inside approved IME backend owners" \
+  src/bin/lay_ibus_engine/composition_commit.rs \
+  src/bin/lay_ibus_engine/shift.rs \
+  src/bin/lay_ibus_engine/managed.rs
+
+assert_text_mutation_call_owners \
+  "autocorrect_active_composition_text(" \
+  "active-composition autocorrect must stay inside IME composition owner until TextEditAuthority migration" \
+  src/bin/lay_ibus_engine/composition_commit.rs \
+  src/bin/lay_ibus_engine/preedit.rs
+
+assert_text_mutation_call_owners \
+  "autocorrect_committed_tail_text(" \
+  "committed-tail autocorrect must stay inside IME composition owner until TextEditAuthority migration" \
+  src/bin/lay_ibus_engine/composition_commit.rs
+
+assert_text_mutation_call_owners \
+  "apply_pending_committed_tail_space_autocorrect(" \
+  "pending committed-tail autocorrect must stay inside approved IME boundary owners" \
+  src/bin/lay_ibus_engine/committed_tail.rs \
+  src/bin/lay_ibus_engine/ibus_interface.rs
 
 assert_max_lines src/bin/lay_daemon.rs 240
 assert_max_lines src/bin/lay_daemon/action_log_runtime.rs 40

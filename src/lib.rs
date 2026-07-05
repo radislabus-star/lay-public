@@ -17,6 +17,7 @@ pub mod engine;
 pub mod eval_cases;
 pub mod input_gate;
 pub mod keyboard;
+pub mod language_action;
 pub mod layout_autoswitch;
 pub mod lem;
 pub mod lexicon;

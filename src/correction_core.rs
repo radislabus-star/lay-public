@@ -4,6 +4,7 @@
 //! question: should this completed text be replaced, and by which engine?
 
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
+use crate::language_action::{operator_for_candidate, proof_for_candidate};
 use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
 use crate::nanda_wave::{run_wave_trace, WaveDecision};
 use crate::russian_typo_candidates::{
@@ -156,6 +157,8 @@ pub(crate) struct CorrectionCandidateScoreTrace {
     pub(crate) source: CorrectionDecisionSource,
     pub(crate) source_id: String,
     pub(crate) error_class: TypingErrorClass,
+    pub(crate) action_operator: &'static str,
+    pub(crate) action_proof: &'static str,
     pub(crate) gate_action: CandidateGateAction,
     pub(crate) gate_reason: &'static str,
     pub(crate) likelihood_milli: i16,
@@ -299,6 +302,13 @@ impl CorrectionCandidateScoreTrace {
                     source: candidate.source,
                     source_id: candidate.source_id.clone(),
                     error_class: candidate.error_class,
+                    action_operator: operator_for_candidate(
+                        candidate.error_class,
+                        &candidate.source_id,
+                    )
+                    .as_str(),
+                    action_proof: proof_for_candidate(candidate.error_class, &candidate.source_id)
+                        .as_str(),
                     gate_action: candidate.gate.action,
                     gate_reason: candidate.gate.reason,
                     likelihood_milli: score_to_milli(score.likelihood),
@@ -2551,6 +2561,8 @@ mod tests {
         let score = &resolution.candidate_scores[0];
         assert_eq!(score.replacement, "автозамена ");
         assert_eq!(score.error_class, TypingErrorClass::MissingLetter);
+        assert_eq!(score.action_operator, "restore_missing_letter");
+        assert_eq!(score.action_proof, "typo");
         assert_eq!(score.gate_action, CandidateGateAction::Apply);
         assert!(score.selected);
         assert!(score.likelihood_milli > 0);
