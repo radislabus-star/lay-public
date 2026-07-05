@@ -456,8 +456,10 @@ impl LayIbusEngine {
             if short_prefix_requires_seed_word && !lay::lexicon::is_common_ru_word(&word) {
                 continue;
             }
-            push_unique_suffix(
+            push_unique_ru_known_suffix(
                 &mut suffixes,
+                &partial,
+                &word,
                 word.strip_prefix(&partial).map(str::to_string),
             );
             if suffixes.len() >= PREEDIT_RU_WAVE_CANDIDATE_LIMIT {
@@ -487,7 +489,8 @@ impl LayIbusEngine {
                         continue;
                     }
                 }
-                push_unique_suffix(&mut suffixes, Some(suffix));
+                let word = format!("{partial}{suffix}");
+                push_unique_ru_known_suffix(&mut suffixes, &partial, &word, Some(suffix));
                 if suffixes.len() >= PREEDIT_RU_WAVE_CANDIDATE_LIMIT {
                     break;
                 }
@@ -593,6 +596,29 @@ fn push_unique_suffix(candidates: &mut Vec<String>, suffix: Option<String>) {
         return;
     }
     candidates.push(suffix);
+}
+
+fn push_unique_ru_known_suffix(
+    candidates: &mut Vec<String>,
+    partial: &str,
+    word: &str,
+    suffix: Option<String>,
+) {
+    let Some(suffix) = suffix else {
+        return;
+    };
+    if suffix.is_empty() || candidates.iter().any(|candidate| candidate == &suffix) {
+        return;
+    }
+    let single_cyrillic =
+        suffix.chars().count() == 1 && suffix.chars().all(|ch| matches!(ch, 'а'..='я' | 'ё'));
+    let strong_single_letter_completion = single_cyrillic
+        && partial.chars().count() >= 3
+        && !is_known_russian_word_or_form(partial)
+        && (is_known_russian_word_or_form(word) || lay::lexicon::is_common_ru_word(word));
+    if strong_single_letter_completion || is_allowed_visible_completion_suffix(&suffix) {
+        candidates.push(suffix);
+    }
 }
 
 fn push_unique_ranked_suffix(
@@ -1359,6 +1385,17 @@ mod tests {
         assert!(
             !engine.preedit_candidates.is_empty(),
             "experimental L2 should not stay silent for contextual prefix 'при'"
+        );
+    }
+
+    #[test]
+    fn russian_single_letter_case_suffix_can_complete_unknown_prefix() {
+        let mut candidates = Vec::new();
+        push_unique_ru_known_suffix(&mut candidates, "буде", "будет", Some("т".to_string()));
+
+        assert!(
+            candidates.iter().any(|suffix| suffix == "т"),
+            "unknown Russian prefix should allow strong one-letter completion: {candidates:?}"
         );
     }
 

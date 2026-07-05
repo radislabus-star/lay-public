@@ -105,14 +105,22 @@ pub fn common_ru_prefix_completion_words(
     if prefix.is_empty() || limit == 0 {
         return Vec::new();
     }
+    let prefix_len = prefix.chars().count();
     let mut words = common_ru_prefix_index()
         .get(&prefix)
         .into_iter()
         .flatten()
         .filter(|word| word.chars().count() - prefix.chars().count() <= max_suffix_chars)
-        .take(limit)
         .cloned()
         .collect::<Vec<_>>();
+    words.sort_by(|left, right| {
+        left.chars()
+            .count()
+            .saturating_sub(prefix_len)
+            .cmp(&right.chars().count().saturating_sub(prefix_len))
+            .then_with(|| left.cmp(right))
+    });
+    words.truncate(limit);
     if words.len() >= limit {
         return words;
     }

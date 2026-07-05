@@ -102,3 +102,13 @@ fn ru_prefix_completion_uses_system_dictionary_fallback() {
         );
     }
 }
+
+#[test]
+fn ru_prefix_completion_keeps_short_common_suffixes_visible() {
+    let candidates = common_ru_prefix_completion_words("буде", 16, 16);
+
+    assert!(
+        candidates.iter().any(|word| word == "будет"),
+        "short common completion must not be hidden behind longer forms: {candidates:?}"
+    );
+}

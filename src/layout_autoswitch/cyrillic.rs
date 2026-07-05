@@ -1,8 +1,9 @@
 //! Cyrillic-to-ASCII layout autoswitch.
 
 use crate::keyboard::is_cyrillic_letter;
-use crate::lexicon::is_common_en_technical_word;
+use crate::lexicon::{is_common_en_technical_word, is_common_ru_word};
 use crate::ru_typo::has_plausible_russian_typo_candidate;
+use crate::russian_lexicon::is_known_russian_word_or_form;
 use crate::text_case::apply_word_case;
 use crate::word_reader::split_word_punctuation;
 use crate::word_recognizer::{recognize_token, WordScript};
@@ -36,7 +37,7 @@ fn correct_wrong_layout_cyrillic_word_with_policy(
         return None;
     }
 
-    let (_, original_word, _) = split_word_punctuation(token);
+    let (_, original_word, original_trailing) = split_word_punctuation(token);
     if original_word.is_empty() {
         return None;
     }
@@ -58,6 +59,12 @@ fn correct_wrong_layout_cyrillic_word_with_policy(
     let converted_lower = converted_word.to_ascii_lowercase();
     let original_lower = original_word.to_lowercase();
     let converted_is_technical = is_common_en_technical_word(&converted_lower);
+    let layout_generated_trailing = original_trailing.is_empty() && !converted_trailing.is_empty();
+    if (is_known_russian_word_or_form(&original_lower) || is_common_ru_word(&original_lower))
+        && (!converted_is_technical || layout_generated_trailing)
+    {
+        return None;
+    }
     if is_known_russian_layout_autoswitch_word(&original_lower) && !converted_is_technical {
         return None;
     }
@@ -154,5 +161,10 @@ mod tests {
     #[test]
     fn known_short_russian_word_does_not_lose_to_technical_ascii() {
         assert_eq!(correct_wrong_layout_cyrillic_word("ой"), None);
+    }
+
+    #[test]
+    fn known_russian_word_with_yo_does_not_autoswitch_to_ascii() {
+        assert_eq!(correct_wrong_layout_cyrillic_word("ещё"), None);
     }
 }

@@ -2276,6 +2276,25 @@ mod tests {
     }
 
     #[test]
+    fn known_russian_word_with_yo_is_not_layout_switched_to_ascii() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "ещё ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert_eq!(resolution.decision, None);
+        assert!(
+            resolution.candidates.iter().all(|candidate| {
+                candidate.replacement != "to` "
+                    && candidate.gate.action != CandidateGateAction::Apply
+            }),
+            "known Russian word must not autoswitch to ASCII layout: {resolution:?}"
+        );
+    }
+
+    #[test]
     fn russian_phrase_context_still_allows_short_preposition_repair() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
