@@ -139,12 +139,16 @@ pub(crate) fn record_precognition_timing(
     ru_us: u64,
     semantic_us: u64,
     candidates: usize,
+    token: Option<&str>,
+    top: Option<&str>,
 ) {
     if !enabled() {
         return;
     }
+    let token = token.map(json_string).unwrap_or_else(|| "null".to_string());
+    let top = top.map(json_string).unwrap_or_else(|| "null".to_string());
     write_record(format!(
-        r#"{{"kind":"ibus_precognition_timing","total_us":{total_us},"ascii_us":{ascii_us},"ru_us":{ru_us},"semantic_us":{semantic_us},"candidates":{candidates}}}"#
+        r#"{{"kind":"ibus_precognition_timing","total_us":{total_us},"ascii_us":{ascii_us},"ru_us":{ru_us},"semantic_us":{semantic_us},"candidates":{candidates},"token":{token},"top":{top}}}"#
     ));
 }
 

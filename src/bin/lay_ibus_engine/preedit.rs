@@ -342,12 +342,15 @@ impl LayIbusEngine {
             .collect::<Vec<_>>();
 
         if let Some(started) = total_started {
+            let token = split_last_token(tail.trim_end()).map(|(_, token)| token);
             trace::record_precognition_timing(
                 started.elapsed().as_micros() as u64,
                 ascii_us,
                 ru_us,
                 semantic_us,
                 candidates.len(),
+                token,
+                candidates.first().map(String::as_str),
             );
         }
         candidates
