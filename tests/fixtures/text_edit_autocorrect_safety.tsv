@@ -1,0 +1,5 @@
+# case	original	replacement	source	reason	allow_apply	boundary_changed	changes_non_last_word	expected_reason
+plain_previous_word_fix	обясни\sему\s	объясни\sему\s	composite_ru_typo	composite-typo	true	false	true	
+unproven_word_boundary_split	за\sнастройки\s	за\sнас\sтройки\s	SemanticWordCell32	composite-typo	false	true	false	unsafe_boundary_edit_without_proof
+proven_boundary_split	посмотреть\sвлогах\s	посмотреть\sв\sлогах\s	BoundaryCell32	glued-words	true	true	false	
+semantic_left_context_rewrite	обясни\sему\s	объясни\sему\s	SemanticWordCell32	composite-typo	false	false	true	semantic_multiword_left_context_edit

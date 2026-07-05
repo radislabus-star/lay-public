@@ -35,6 +35,13 @@ fn assert_autocorrect_sequence(name: &str) {
     );
 }
 
+fn autocorrect_safety_fixture(case_name: &str) -> Vec<String> {
+    fixture_rows("text_edit_autocorrect_safety.tsv")
+        .into_iter()
+        .find(|row| row.first().is_some_and(|name| name == case_name))
+        .unwrap_or_else(|| panic!("missing safety fixture case: {case_name}"))
+}
+
 #[test]
 fn plans_minimal_two_word_prefix_and_suffix_edits() {
     for row in fixture_rows("text_edit_minimal_plan.tsv") {
@@ -221,16 +228,12 @@ fn committed_tail_space_insertions_handle_many_glued_words() {
 
 #[test]
 fn autocorrect_safety_allows_plain_previous_word_fix_without_boundary_change() {
-    let original = "обясни ему ";
-    let replacement = "объясни ему ";
+    let row = autocorrect_safety_fixture("plain_previous_word_fix");
+    let original = &row[1];
+    let replacement = &row[2];
     let plan = plan_committed_tail_replacement(original, replacement).expect("plan");
-    let safety = autocorrect_edit_safety(
-        original,
-        replacement,
-        &plan,
-        Some("composite_ru_typo"),
-        Some("composite-typo"),
-    );
+    let safety =
+        autocorrect_edit_safety(original, replacement, &plan, Some(&row[3]), Some(&row[4]));
 
     assert!(safety.allow_apply);
     assert!(!safety.boundary_changed);
@@ -239,34 +242,26 @@ fn autocorrect_safety_allows_plain_previous_word_fix_without_boundary_change() {
 
 #[test]
 fn autocorrect_safety_blocks_unproven_word_boundary_split() {
-    let original = "за настройки ";
-    let replacement = "за нас тройки ";
+    let row = autocorrect_safety_fixture("unproven_word_boundary_split");
+    let original = &row[1];
+    let replacement = &row[2];
     let plan = plan_committed_tail_replacement(original, replacement).expect("plan");
-    let safety = autocorrect_edit_safety(
-        original,
-        replacement,
-        &plan,
-        Some("SemanticWordCell32"),
-        Some("composite-typo"),
-    );
+    let safety =
+        autocorrect_edit_safety(original, replacement, &plan, Some(&row[3]), Some(&row[4]));
 
     assert!(!safety.allow_apply);
     assert!(safety.boundary_changed);
-    assert_eq!(safety.reason, "unsafe_boundary_edit_without_proof");
+    assert_eq!(safety.reason, row[8]);
 }
 
 #[test]
 fn autocorrect_safety_allows_proven_boundary_split() {
-    let original = "посмотреть влогах ";
-    let replacement = "посмотреть в логах ";
+    let row = autocorrect_safety_fixture("proven_boundary_split");
+    let original = &row[1];
+    let replacement = &row[2];
     let plan = plan_committed_tail_replacement(original, replacement).expect("plan");
-    let safety = autocorrect_edit_safety(
-        original,
-        replacement,
-        &plan,
-        Some("BoundaryCell32"),
-        Some("glued-words"),
-    );
+    let safety =
+        autocorrect_edit_safety(original, replacement, &plan, Some(&row[3]), Some(&row[4]));
 
     assert!(safety.allow_apply);
     assert!(safety.boundary_changed);
@@ -274,20 +269,16 @@ fn autocorrect_safety_allows_proven_boundary_split() {
 
 #[test]
 fn autocorrect_safety_blocks_semantic_left_context_rewrite() {
-    let original = "обясни ему ";
-    let replacement = "объясни ему ";
+    let row = autocorrect_safety_fixture("semantic_left_context_rewrite");
+    let original = &row[1];
+    let replacement = &row[2];
     let plan = plan_committed_tail_replacement(original, replacement).expect("plan");
-    let safety = autocorrect_edit_safety(
-        original,
-        replacement,
-        &plan,
-        Some("SemanticWordCell32"),
-        Some("composite-typo"),
-    );
+    let safety =
+        autocorrect_edit_safety(original, replacement, &plan, Some(&row[3]), Some(&row[4]));
 
     assert!(!safety.allow_apply);
     assert!(safety.changes_non_last_word);
-    assert_eq!(safety.reason, "semantic_multiword_left_context_edit");
+    assert_eq!(safety.reason, row[8]);
 }
 
 #[test]

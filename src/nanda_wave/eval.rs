@@ -1,4 +1,5 @@
 use crate::eval_cases::EvalCase;
+use crate::text_metrics::damerau_levenshtein;
 
 use super::l1_center_memory::L1CenterMemoryConfig;
 use super::l2_center_memory::{L2CenterMemory, L2CenterMemoryConfig};
@@ -270,32 +271,6 @@ fn overlap_count(left: &[u32], right: &[u32]) -> usize {
         }
     }
     count
-}
-
-fn damerau_levenshtein(left: &str, right: &str) -> usize {
-    let left = left.chars().collect::<Vec<_>>();
-    let right = right.chars().collect::<Vec<_>>();
-    let rows = left.len() + 1;
-    let cols = right.len() + 1;
-    let mut dp = vec![vec![0usize; cols]; rows];
-    for (idx, row) in dp.iter_mut().enumerate() {
-        row[0] = idx;
-    }
-    for idx in 0..cols {
-        dp[0][idx] = idx;
-    }
-    for i in 1..rows {
-        for j in 1..cols {
-            let cost = usize::from(left[i - 1] != right[j - 1]);
-            dp[i][j] = (dp[i - 1][j] + 1)
-                .min(dp[i][j - 1] + 1)
-                .min(dp[i - 1][j - 1] + cost);
-            if i > 1 && j > 1 && left[i - 1] == right[j - 2] && left[i - 2] == right[j - 1] {
-                dp[i][j] = dp[i][j].min(dp[i - 2][j - 2] + 1);
-            }
-        }
-    }
-    dp[left.len()][right.len()]
 }
 
 fn motif_tokens(tokens: &[u32]) -> Vec<u32> {
