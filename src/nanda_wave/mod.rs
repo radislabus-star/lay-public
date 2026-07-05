@@ -23,6 +23,7 @@ pub mod precognition;
 pub mod resonance_memory;
 pub mod signal;
 pub mod structural_relation;
+mod surface_bank;
 mod surface_wave;
 pub mod trace;
 pub(crate) mod usage_prior;
@@ -47,6 +48,25 @@ pub fn cached_word_usage_prior(word: &str) -> f32 {
 
 pub fn cached_context_word_usage_prior(context: &[String], word: &str) -> f32 {
     usage_prior::context_word_usage_prior_cached(context, word)
+}
+
+pub fn l2_surface_words_by_usage(limit: usize) -> Vec<String> {
+    usage_prior::l2_surface_words_by_usage(limit)
+}
+
+pub fn usage_debug_summary() -> (u64, usize, usize) {
+    usage_prior::usage_debug_summary()
+}
+
+pub fn balanced_l2_surface_words<I>(source: I, limit: usize) -> Vec<String>
+where
+    I: IntoIterator<Item = String>,
+{
+    surface_bank::balanced_l2_surface_words(source, limit)
+}
+
+pub fn normalize_l2_surface_word(word: &str) -> Option<String> {
+    surface_bank::normalize_l2_surface_word(word)
 }
 
 pub fn record_typed_tail_usage(tail: &str) {

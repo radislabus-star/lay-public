@@ -5,9 +5,18 @@ use std::time::{Duration, Instant};
 
 use crate::time::unix_timestamp;
 
+#[cfg(not(test))]
 const USAGE_EVENTS_PATH: &str = ".local/share/lay/nanda_wave/word_usage_events.jsonl";
+#[cfg(not(test))]
+const USAGE_COUNTS_PATH: &str = ".local/share/lay/nanda_wave/word_usage_counts.json";
+#[cfg(not(test))]
 const LEGACY_USAGE_PRIOR_PATH: &str = ".local/share/lay/learning_candidates.json";
 const USAGE_EVENTS_MAX_BYTES: u64 = 500 * 1024;
+const USAGE_EVENTS_FULL_REBUILD_MAX_BYTES: u64 = 8 * 1024 * 1024;
+const USAGE_COUNTS_SCHEMA_VERSION: u32 = 3;
+const USAGE_COUNTS_MAX_WORDS: usize = 10_000;
+const USAGE_COUNTS_MAX_ACCEPTED_WORDS: usize = 5_000;
+const USAGE_COUNTS_MAX_CONTEXT_WORDS: usize = 12_000;
 const USAGE_REFRESH_INTERVAL: Duration = Duration::from_millis(1000);
 const CONTEXT_WORDS: usize = 5;
 const MIN_CONTEXT_NGRAM: usize = 1;
@@ -43,10 +52,20 @@ enum UsageEventKind {
     AcceptedIme,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, serde::Deserialize, serde::Serialize)]
 struct UsageCounts {
     words: HashMap<String, u32>,
+    #[serde(default)]
+    accepted_words: HashMap<String, u32>,
     context_words: HashMap<String, u32>,
+}
+
+#[derive(Debug, Clone, Default, serde::Deserialize, serde::Serialize)]
+struct PersistedUsageCounts {
+    #[serde(default)]
+    schema_version: u32,
+    source_len: u64,
+    counts: UsageCounts,
 }
 
 #[derive(Debug, Default)]
@@ -190,6 +209,22 @@ pub(crate) fn word_usage_prior_cached(word: &str) -> f32 {
         .unwrap_or(0.0)
 }
 
+pub(crate) fn accepted_word_usage_count_cached(word: &str) -> u32 {
+    let lower = normalize_word(word);
+    if lower.is_empty() {
+        return 0;
+    }
+    let Ok(cache) = usage_cache().lock() else {
+        return 0;
+    };
+    cache
+        .counts
+        .accepted_words
+        .get(&lower)
+        .copied()
+        .unwrap_or(0)
+}
+
 pub(crate) fn context_word_usage_prior_cached(context: &[String], word: &str) -> f32 {
     let lower = normalize_word(word);
     if lower.is_empty() || context.is_empty() {
@@ -197,6 +232,54 @@ pub(crate) fn context_word_usage_prior_cached(context: &[String], word: &str) ->
     }
     let counts = cached_usage_counts();
     context_ngram_prior_from_counts(&counts, context, &lower)
+}
+
+pub(crate) fn l2_surface_words_by_usage(limit: usize) -> Vec<String> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let counts = refresh_usage_counts_from_disk();
+    let mut words = usage_surface_words_from_counts(counts);
+    words.truncate(limit);
+    words
+}
+
+pub(crate) fn usage_debug_summary() -> (u64, usize, usize) {
+    let text = usage_events_path()
+        .and_then(|path| read_usage_events_text(&path))
+        .unwrap_or_default();
+    let bytes = text.len() as u64;
+    let parsed = usage_events_from_jsonl(&text).count();
+    let counts = load_usage_counts();
+    (bytes, parsed, counts.words.len())
+}
+
+fn refresh_usage_counts_from_disk() -> UsageCounts {
+    let counts = load_usage_counts();
+    if let Ok(mut cache) = usage_cache().lock() {
+        cache.counts = counts.clone();
+        cache.loaded_at = Some(Instant::now());
+    }
+    counts
+}
+
+fn usage_surface_words_from_counts(counts: UsageCounts) -> Vec<String> {
+    let mut words = counts
+        .accepted_words
+        .into_iter()
+        .filter(|(word, count)| {
+            *count >= 2
+                && word.chars().count() >= 2
+                && word.chars().all(|ch| ch.is_alphabetic() || ch == '-')
+        })
+        .collect::<Vec<_>>();
+    words.sort_by(|(left_word, left_count), (right_word, right_count)| {
+        right_count
+            .cmp(left_count)
+            .then_with(|| left_word.chars().count().cmp(&right_word.chars().count()))
+            .then_with(|| left_word.cmp(right_word))
+    });
+    words.into_iter().map(|(word, _)| word).collect()
 }
 
 fn context_ngram_prior_from_counts(counts: &UsageCounts, context: &[String], word: &str) -> f32 {
@@ -238,10 +321,59 @@ fn load_usage_counts() -> UsageCounts {
     {
         add_legacy_usage_counts(&mut counts, &text);
     }
-    if let Some(text) = usage_events_path().and_then(|path| std::fs::read_to_string(path).ok()) {
+    merge_usage_counts(&mut counts, load_usage_event_counts());
+    counts
+}
+
+fn load_usage_event_counts() -> UsageCounts {
+    let Some(path) = usage_events_path() else {
+        return UsageCounts::default();
+    };
+    let source_len = std::fs::metadata(&path)
+        .map(|meta| meta.len())
+        .unwrap_or_default();
+    if let Some(snapshot) = load_usage_counts_snapshot(source_len) {
+        return snapshot;
+    }
+
+    let text = if source_len <= USAGE_EVENTS_FULL_REBUILD_MAX_BYTES {
+        read_full_text_lossy(&path)
+    } else {
+        read_usage_events_text(&path)
+    };
+    let mut counts = UsageCounts::default();
+    if let Some(text) = text {
         add_usage_event_counts(&mut counts, &text);
     }
+    persist_usage_counts_snapshot(&counts, source_len);
     counts
+}
+
+fn merge_usage_counts(target: &mut UsageCounts, source: UsageCounts) {
+    for (word, count) in source.words {
+        *target.words.entry(word).or_default() = target
+            .words
+            .get(&word)
+            .copied()
+            .unwrap_or_default()
+            .saturating_add(count);
+    }
+    for (word, count) in source.accepted_words {
+        *target.accepted_words.entry(word).or_default() = target
+            .accepted_words
+            .get(&word)
+            .copied()
+            .unwrap_or_default()
+            .saturating_add(count);
+    }
+    for (key, count) in source.context_words {
+        *target.context_words.entry(key).or_default() = target
+            .context_words
+            .get(&key)
+            .copied()
+            .unwrap_or_default()
+            .saturating_add(count);
+    }
 }
 
 fn add_legacy_usage_counts(counts: &mut UsageCounts, text: &str) {
@@ -279,6 +411,14 @@ fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
         .copied()
         .unwrap_or_default()
         .saturating_add(weight);
+    if !matches!(event.kind, UsageEventKind::Typed) {
+        *counts.accepted_words.entry(word.clone()).or_default() = counts
+            .accepted_words
+            .get(&word)
+            .copied()
+            .unwrap_or_default()
+            .saturating_add(weight);
+    }
 
     for context_key in context_ngram_keys(&event.context) {
         let key = context_word_key(&context_key, &word);
@@ -326,6 +466,7 @@ fn append_usage_event(event: UsageEvent) {
     let Some(path) = usage_events_path() else {
         return;
     };
+    let _ = usage_counts();
     if adjacent_usage_event_is_duplicate(&path, &event) {
         return;
     }
@@ -336,6 +477,7 @@ fn append_usage_event(event: UsageEvent) {
     if crate::private_file::append_private_text(&path, &line).is_ok() {
         compact_usage_events_if_needed(&path);
         refresh_usage_cache_after_write(&event);
+        persist_cached_usage_counts_snapshot(&path);
     }
 }
 
@@ -351,7 +493,7 @@ fn refresh_usage_cache_after_write(event: &UsageEvent) {
 }
 
 fn adjacent_usage_event_is_duplicate(path: &Path, event: &UsageEvent) -> bool {
-    let Ok(text) = std::fs::read_to_string(path) else {
+    let Some(text) = read_usage_events_text(path) else {
         return false;
     };
     let Some(line) = text.lines().rev().find(|line| !line.trim().is_empty()) else {
@@ -378,11 +520,93 @@ fn compact_usage_events_if_needed(path: &Path) {
     if meta.len() <= USAGE_EVENTS_MAX_BYTES {
         return;
     }
-    let Ok(text) = std::fs::read_to_string(path) else {
+    let Some(text) = read_usage_events_text(path) else {
         return;
     };
     let compacted = keep_jsonl_tail_bytes(&text, USAGE_EVENTS_MAX_BYTES as usize);
     let _ = crate::private_file::write_private_text(path, &compacted);
+}
+
+fn read_usage_events_text(path: &Path) -> Option<String> {
+    read_tail_text_lossy(path, USAGE_EVENTS_MAX_BYTES as usize)
+}
+
+fn read_full_text_lossy(path: &Path) -> Option<String> {
+    let bytes = std::fs::read(path).ok()?;
+    Some(String::from_utf8_lossy(&bytes).into_owned())
+}
+
+fn read_tail_text_lossy(path: &Path, max_bytes: usize) -> Option<String> {
+    let bytes = std::fs::read(path).ok()?;
+    let start = bytes.len().saturating_sub(max_bytes);
+    let text = String::from_utf8_lossy(&bytes[start..]).into_owned();
+    if start == 0 {
+        return Some(text);
+    }
+    Some(
+        text.find('\n')
+            .map(|index| text[index + 1..].to_string())
+            .unwrap_or(text),
+    )
+}
+
+fn load_usage_counts_snapshot(source_len: u64) -> Option<UsageCounts> {
+    let path = usage_counts_path()?;
+    let text = std::fs::read_to_string(path).ok()?;
+    let snapshot = serde_json::from_str::<PersistedUsageCounts>(&text).ok()?;
+    (snapshot.schema_version == USAGE_COUNTS_SCHEMA_VERSION && snapshot.source_len == source_len)
+        .then_some(snapshot.counts)
+}
+
+fn persist_cached_usage_counts_snapshot(events_path: &Path) {
+    let source_len = std::fs::metadata(events_path)
+        .map(|meta| meta.len())
+        .unwrap_or_default();
+    let Ok(cache) = usage_cache().lock() else {
+        return;
+    };
+    persist_usage_counts_snapshot(&cache.counts, source_len);
+}
+
+fn persist_usage_counts_snapshot(counts: &UsageCounts, source_len: u64) {
+    let Some(path) = usage_counts_path() else {
+        return;
+    };
+    let snapshot = PersistedUsageCounts {
+        schema_version: USAGE_COUNTS_SCHEMA_VERSION,
+        source_len,
+        counts: compact_usage_counts_for_persist(counts),
+    };
+    let Ok(mut text) = serde_json::to_string(&snapshot) else {
+        return;
+    };
+    text.push('\n');
+    let _ = crate::private_file::write_private_text(&path, &text);
+}
+
+fn compact_usage_counts_for_persist(counts: &UsageCounts) -> UsageCounts {
+    UsageCounts {
+        words: top_count_entries(&counts.words, USAGE_COUNTS_MAX_WORDS),
+        accepted_words: top_count_entries(&counts.accepted_words, USAGE_COUNTS_MAX_ACCEPTED_WORDS),
+        context_words: top_count_entries(&counts.context_words, USAGE_COUNTS_MAX_CONTEXT_WORDS),
+    }
+}
+
+fn top_count_entries(source: &HashMap<String, u32>, limit: usize) -> HashMap<String, u32> {
+    if source.len() <= limit {
+        return source.clone();
+    }
+    let mut entries = source
+        .iter()
+        .map(|(key, count)| (key.clone(), *count))
+        .collect::<Vec<_>>();
+    entries.sort_by(|(left_key, left_count), (right_key, right_count)| {
+        right_count
+            .cmp(left_count)
+            .then_with(|| left_key.cmp(right_key))
+    });
+    entries.truncate(limit);
+    entries.into_iter().collect()
 }
 
 fn keep_jsonl_tail_bytes(content: &str, max_bytes: usize) -> String {
@@ -461,18 +685,48 @@ fn usage_events_path() -> Option<PathBuf> {
     if let Some(path) = std::env::var_os("LAY_NANDA_WORD_USAGE_EVENTS").map(PathBuf::from) {
         return Some(path);
     }
-    std::env::var_os("HOME")
-        .map(PathBuf::from)
-        .map(|home| home.join(USAGE_EVENTS_PATH))
+    #[cfg(test)]
+    {
+        None
+    }
+    #[cfg(not(test))]
+    {
+        std::env::var_os("HOME")
+            .map(PathBuf::from)
+            .map(|home| home.join(USAGE_EVENTS_PATH))
+    }
+}
+
+fn usage_counts_path() -> Option<PathBuf> {
+    if let Some(path) = std::env::var_os("LAY_NANDA_WORD_USAGE_COUNTS").map(PathBuf::from) {
+        return Some(path);
+    }
+    #[cfg(test)]
+    {
+        None
+    }
+    #[cfg(not(test))]
+    {
+        std::env::var_os("HOME")
+            .map(PathBuf::from)
+            .map(|home| home.join(USAGE_COUNTS_PATH))
+    }
 }
 
 fn legacy_usage_prior_path() -> Option<PathBuf> {
     if let Some(path) = std::env::var_os("LAY_NANDA_USAGE_PRIOR").map(PathBuf::from) {
         return Some(path);
     }
-    std::env::var_os("HOME")
-        .map(PathBuf::from)
-        .map(|home| home.join(LEGACY_USAGE_PRIOR_PATH))
+    #[cfg(test)]
+    {
+        None
+    }
+    #[cfg(not(test))]
+    {
+        std::env::var_os("HOME")
+            .map(PathBuf::from)
+            .map(|home| home.join(LEGACY_USAGE_PRIOR_PATH))
+    }
 }
 
 #[cfg(test)]
@@ -553,6 +807,23 @@ mod tests {
         assert!(close_score > 0.0);
         assert_eq!(far_score, 0.0);
         assert!(close_score > far_score);
+    }
+
+    #[test]
+    fn usage_surface_words_promote_repeated_local_words() {
+        let mut counts = UsageCounts::default();
+        add_usage_event_counts(
+            &mut counts,
+            r#"{"ts":1,"kind":"typed","word":"комитет"}
+{"ts":2,"kind":"accepted_fix","word":"комитет","from":"коммит","to":"комитет"}
+{"ts":3,"kind":"typed","word":"x"}
+"#,
+        );
+
+        let words = usage_surface_words_from_counts(counts);
+
+        assert_eq!(words.first().map(String::as_str), Some("комитет"));
+        assert!(!words.iter().any(|word| word == "x"));
     }
 
     #[test]

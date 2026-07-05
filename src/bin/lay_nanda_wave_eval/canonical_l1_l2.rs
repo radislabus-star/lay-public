@@ -57,13 +57,49 @@ pub(crate) fn print_candidates(args: &[String]) -> io::Result<()> {
         .and_then(|value| value.parse::<usize>().ok())
         .unwrap_or(12)
         .clamp(1, 50);
-    let words = load_words(WordSource::ExpectedOnly)?;
+    let word_limit = super::arg_value(args, "--word-limit")
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(1_000)
+        .clamp(100, 50_000);
+    let words = load_words_limited(WordSource::ExpectedOnly, word_limit)?;
     let report = canonical_l2_candidate_report(&words, input, limit);
 
     println!("canonical_l2_candidates:");
     println!("  input: {}", report.input);
     println!("  source: lay real-suite + local lexicon shadow words");
     println!("  words: {}", report.words);
+    println!("  word_limit: {}", word_limit);
+    if let Some(debug_word) = super::arg_value(args, "--debug-word") {
+        let debug_word = normalize_surface(debug_word);
+        let position = words.iter().position(|word| word == &debug_word);
+        let usage_words = lay::nanda_wave::l2_surface_words_by_usage(1_000);
+        let usage_position = usage_words.iter().position(|word| word == &debug_word);
+        let usage_debug = lay::nanda_wave::usage_debug_summary();
+        let usage_bytes = std::env::var_os("LAY_NANDA_WORD_USAGE_EVENTS")
+            .map(std::path::PathBuf::from)
+            .or_else(|| {
+                std::env::var_os("HOME").map(|home| {
+                    std::path::PathBuf::from(home)
+                        .join(".local/share/lay/nanda_wave/word_usage_events.jsonl")
+                })
+            })
+            .and_then(|path| std::fs::metadata(path).ok())
+            .map(|meta| meta.len())
+            .unwrap_or(0);
+        println!(
+            "  debug_word: {} present={} rank={} usage_present={} usage_rank={} usage_words={} usage_bytes={} usage_debug_bytes={} usage_debug_parsed={} usage_debug_word_counts={}",
+            debug_word,
+            position.is_some(),
+            position.map(|index| index + 1).unwrap_or(0),
+            usage_position.is_some(),
+            usage_position.map(|index| index + 1).unwrap_or(0),
+            usage_words.len(),
+            usage_bytes,
+            usage_debug.0,
+            usage_debug.1,
+            usage_debug.2
+        );
+    }
     println!(
         "  input_l1: ngrams={} refs={} residual={}",
         report.l1_ngrams, report.l1_refs, report.l1_residual
@@ -97,6 +133,10 @@ enum WordSource {
 }
 
 fn load_words(source: WordSource) -> io::Result<Vec<String>> {
+    load_words_limited(source, usize::MAX)
+}
+
+fn load_words_limited(source: WordSource, limit: usize) -> io::Result<Vec<String>> {
     let suite = real_suite::load()?;
     let mut words = BTreeSet::new();
     for case in &suite.cases {
@@ -109,8 +149,12 @@ fn load_words(source: WordSource) -> io::Result<Vec<String>> {
         words.insert(word.to_string());
     }
     collect_shadow_lexicon_words(&mut words);
+    words.extend(lay::nanda_wave::l2_surface_words_by_usage(1_000));
 
-    Ok(words.into_iter().collect())
+    Ok(lay::nanda_wave::balanced_l2_surface_words(
+        words.into_iter().collect::<Vec<_>>(),
+        limit,
+    ))
 }
 
 fn default_probes() -> Vec<String> {
@@ -131,7 +175,7 @@ fn collect_words(text: &str, out: &mut BTreeSet<String>) {
             .filter(|ch| ch.is_alphabetic() || *ch == '-')
             .flat_map(char::to_lowercase)
             .collect::<String>();
-        if !word.is_empty() {
+        if let Some(word) = lay::nanda_wave::normalize_l2_surface_word(&word) {
             out.insert(word);
         }
     }
@@ -208,6 +252,7 @@ fn edit_distance(left: &str, right: &str) -> usize {
 const SHADOW_WORD_TEXTS: &[&str] = &[
     include_str!("../../../data/lem_research/ru_words.txt"),
     include_str!("../../../data/lexicon/common_ru.txt"),
+    include_str!("../../../data/lexicon/l2_surface_hot_ru.txt"),
     include_str!("../../../tests/fixtures/russian_forms.txt"),
     include_str!("../../../tests/fixtures/ngram_ru_train_words.txt"),
 ];

@@ -203,8 +203,10 @@ impl L2CenterMemory {
             }
         }
         let mut candidate_ids = word_votes.into_keys().collect::<HashSet<_>>();
-        if input_len_for_bucket(&input_norm) >= 5 && candidate_ids.len() < limit.saturating_mul(4) {
-            for word_id in self.length_bucket_word_ids(input_len_for_bucket(&input_norm), 2) {
+        let input_len = input_len_for_bucket(&input_norm);
+        if input_len >= 4 {
+            let max_gap = if input_len >= 8 { 3 } else { 2 };
+            for word_id in self.length_bucket_word_ids(input_len, max_gap) {
                 candidate_ids.insert(word_id);
             }
         }
@@ -234,7 +236,7 @@ impl L2CenterMemory {
                 let surface_distance = damerau_levenshtein(&input_norm, &word_norm);
                 let prefix_match =
                     word_norm.starts_with(&input_norm) || input_norm.starts_with(&word_norm);
-                let score = candidate_score(
+                let mut score = candidate_score(
                     input_len,
                     word_len,
                     surface_distance,
@@ -243,6 +245,9 @@ impl L2CenterMemory {
                     motif_overlap,
                     prefix_match,
                 );
+                if score > 0 {
+                    score = score.saturating_add(usage_score_boost(&word_norm));
+                }
                 (score > 0).then_some(L2SurfaceCandidate {
                     word: word_norm,
                     score,
@@ -451,19 +456,22 @@ fn candidate_score(
     let len_gap = input_len.abs_diff(word_len).min(16) as u32;
     let mut score = l1_overlap as u32 * 24 + l2_overlap as u32 * 48 + motif_overlap as u32 * 120;
     if input_len >= 5 {
-        let close_distance = if input_len >= 8 {
-            3
-        } else {
-            (input_len / 4).max(2)
-        };
+        let close_distance = if input_len >= 6 { 3 } else { 2 };
         if surface_distance <= close_distance {
-            score += 760u32.saturating_sub(surface_distance as u32 * 120);
+            score += 1_380u32.saturating_sub(surface_distance as u32 * 260);
+        } else if !prefix_match && motif_overlap == 0 && l2_overlap < 3 {
+            return 0;
         }
     }
     if prefix_match {
         score += 180;
     }
     score.saturating_sub(len_gap * 8 + surface_distance.min(16) as u32 * 12)
+}
+
+fn usage_score_boost(word: &str) -> u32 {
+    let prior = super::usage_prior::word_usage_prior_cached(word);
+    (prior * 2_000.0).round().clamp(0.0, 220.0) as u32
 }
 
 fn normalize_surface(text: &str) -> String {
@@ -562,7 +570,15 @@ mod tests {
 
     #[test]
     fn l2_center_memory_ranks_surface_typo_candidates() {
-        let words = ["загрузи", "загрузить", "выгрузи", "пункт", "пункты"];
+        let words = [
+            "загрузи",
+            "загрузить",
+            "выгрузи",
+            "пункт",
+            "пункты",
+            "комитет",
+            "подготовят",
+        ];
         let memory = L2CenterMemory::build(
             words.iter().copied(),
             L2CenterMemoryConfig {
@@ -580,6 +596,21 @@ mod tests {
         assert_eq!(
             candidates.first().map(|candidate| candidate.word.as_str()),
             Some("загрузи"),
+            "candidates={candidates:?}"
+        );
+
+        let candidates = memory.surface_candidates_for_text("коммит", 3);
+        assert!(
+            candidates
+                .iter()
+                .any(|candidate| candidate.word == "комитет"),
+            "candidates={candidates:?}"
+        );
+
+        let candidates = memory.surface_candidates_for_text("подготовет", 3);
+        assert_eq!(
+            candidates.first().map(|candidate| candidate.word.as_str()),
+            Some("подготовят"),
             "candidates={candidates:?}"
         );
     }

@@ -245,6 +245,10 @@ pub(crate) fn print_phase_coverage(args: &[String]) -> io::Result<()> {
         .and_then(|value| value.parse::<usize>().ok())
         .unwrap_or(12)
         .clamp(1, 50);
+    let word_limit = super::arg_value(args, "--word-limit")
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(1_000)
+        .clamp(100, 50_000);
     let max_examples = super::arg_value(args, "--max-examples")
         .and_then(|value| value.parse::<usize>().ok())
         .unwrap_or(12)
@@ -253,7 +257,7 @@ pub(crate) fn print_phase_coverage(args: &[String]) -> io::Result<()> {
         .map(PathBuf::from)
         .or_else(default_recent_actions_path)
         .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "HOME is not set"))?;
-    let words = clean_words()?;
+    let words = clean_words_limited(word_limit)?;
     let actions = load_recent_actions(&path, limit)?;
     let engine = CanonicalL2CandidateEngine::new(&words);
     let report = phase_coverage_report(&engine, &actions, candidate_limit, max_examples);
@@ -261,6 +265,7 @@ pub(crate) fn print_phase_coverage(args: &[String]) -> io::Result<()> {
     println!("l2_phase_coverage_recent:");
     println!("  source: {}", path.display());
     println!("  clean_words: {}", words.len());
+    println!("  word_limit: {}", word_limit);
     println!("  scanned_rows: {}", actions.len());
     println!("  candidate_limit: {}", candidate_limit);
     println!("  live_authority: false");
@@ -752,6 +757,10 @@ fn percent(part: usize, total: usize) -> f64 {
 }
 
 fn clean_words() -> io::Result<Vec<String>> {
+    clean_words_limited(usize::MAX)
+}
+
+fn clean_words_limited(limit: usize) -> io::Result<Vec<String>> {
     let mut words = BTreeSet::new();
     for text in SHADOW_WORD_TEXTS {
         collect_words(text, &mut words);
@@ -764,7 +773,11 @@ fn clean_words() -> io::Result<Vec<String>> {
         include_str!("../../../data/nanda_training/generated_cases.tsv"),
         &mut words,
     );
-    Ok(words.into_iter().collect())
+    words.extend(lay::nanda_wave::l2_surface_words_by_usage(1_000));
+    Ok(lay::nanda_wave::balanced_l2_surface_words(
+        words.into_iter().collect::<Vec<_>>(),
+        limit,
+    ))
 }
 
 fn learned_clean_words(records: &BTreeMap<String, HarvestRecord>) -> io::Result<Vec<String>> {
@@ -778,7 +791,7 @@ fn learned_clean_words(records: &BTreeMap<String, HarvestRecord>) -> io::Result<
 fn collect_words(text: &str, out: &mut BTreeSet<String>) {
     for token in text.split_whitespace() {
         let word = normalize_word(token);
-        if !word.is_empty() {
+        if let Some(word) = lay::nanda_wave::normalize_l2_surface_word(&word) {
             out.insert(word);
         }
     }
@@ -812,6 +825,7 @@ fn decode_fixture_spaces(text: &str) -> String {
 const SHADOW_WORD_TEXTS: &[&str] = &[
     include_str!("../../../data/lem_research/ru_words.txt"),
     include_str!("../../../data/lexicon/common_ru.txt"),
+    include_str!("../../../data/lexicon/l2_surface_hot_ru.txt"),
     include_str!("../../../tests/fixtures/russian_forms.txt"),
     include_str!("../../../tests/fixtures/ngram_ru_train_words.txt"),
 ];

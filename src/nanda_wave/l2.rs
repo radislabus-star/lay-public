@@ -27,6 +27,7 @@ use super::signal::{WavePacket, WordCandidate};
 const MAX_LAYOUT_SCAN_CANDIDATES: usize = 4;
 const MAX_TAUGHT_CANDIDATES: usize = 6;
 const L2_RUNTIME_WORD_LIMIT: usize = 1_000;
+const L2_USAGE_WORD_LIMIT: usize = 500;
 const L2_SURFACE_HOT_RU_DATA: &str = include_str!("../../data/lexicon/l2_surface_hot_ru.txt");
 pub(super) const L2_SURFACE_MOTIF_CELL: &str = "L2SurfaceMotifCell32";
 pub(super) const L2_SURFACE_COMPLETION_CELL: &str = "L2SurfaceCompletionCell32";
@@ -1285,6 +1286,11 @@ fn runtime_l2_surface_words() -> Vec<String> {
         &mut seen,
     );
     collect_runtime_l2_words(data_words(L2_SURFACE_HOT_RU_DATA), &mut words, &mut seen);
+    collect_runtime_l2_words(
+        super::usage_prior::l2_surface_words_by_usage(L2_USAGE_WORD_LIMIT),
+        &mut words,
+        &mut seen,
+    );
     collect_runtime_l2_case_words(
         include_str!("../../data/nanda_wave_synthetic_cases.tsv"),
         1,
@@ -1297,14 +1303,7 @@ fn runtime_l2_surface_words() -> Vec<String> {
         &mut seen,
     );
 
-    words.sort_by(|left, right| {
-        crate::lexicon::is_common_ru_word(right)
-            .cmp(&crate::lexicon::is_common_ru_word(left))
-            .then_with(|| left.chars().count().cmp(&right.chars().count()))
-            .then_with(|| left.cmp(right))
-    });
-    words.truncate(L2_RUNTIME_WORD_LIMIT);
-    words
+    super::surface_bank::balanced_l2_surface_words(words, L2_RUNTIME_WORD_LIMIT)
 }
 
 fn collect_runtime_l2_words<I>(source: I, words: &mut Vec<String>, seen: &mut HashSet<String>)
@@ -1312,14 +1311,10 @@ where
     I: IntoIterator<Item = String>,
 {
     for word in source {
-        let normalized = word.to_lowercase();
-        let len = normalized.chars().count();
-        if (2..=24).contains(&len)
-            && normalized.chars().all(is_cyrillic_letter)
-            && !crate::lexicon::is_ru_live_protected_word(&normalized)
-            && seen.insert(normalized.clone())
-        {
-            words.push(normalized);
+        if let Some(normalized) = super::surface_bank::normalize_l2_surface_word(&word) {
+            if seen.insert(normalized.clone()) {
+                words.push(normalized);
+            }
         }
     }
 }

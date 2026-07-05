@@ -1,11 +1,9 @@
-use crate::eval_cases::EvalCase;
-use crate::text_metrics::damerau_levenshtein;
-
 use super::l1_center_memory::L1CenterMemoryConfig;
 use super::l2_center_memory::{L2CenterMemory, L2CenterMemoryConfig};
 use super::options::WaveOptions;
 use super::surface_wave::{SurfaceWave4096, SURFACE_WAVE_BYTES};
 use super::trace::run_wave_trace_with_options;
+use crate::eval_cases::EvalCase;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WaveEvalResult {
@@ -73,38 +71,20 @@ pub struct CanonicalL2Candidate {
 pub struct CanonicalL2CandidateEngine {
     words: Vec<String>,
     memory: L2CenterMemory,
-    features: Vec<CanonicalL2WordFeature>,
 }
 
 impl CanonicalL2CandidateEngine {
     pub fn new(words: &[String]) -> Self {
         let memory = canonical_l2_memory(words);
-        let features = canonical_l2_word_features(words, &memory);
         Self {
             words: words.to_vec(),
             memory,
-            features,
         }
     }
 
     pub fn candidate_report(&self, input: &str, limit: usize) -> CanonicalL2CandidateReport {
-        canonical_l2_candidate_report_with_features(
-            self.words.len(),
-            &self.memory,
-            &self.features,
-            input,
-            limit,
-        )
+        canonical_l2_candidate_report_with_memory(self.words.len(), &self.memory, input, limit)
     }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct CanonicalL2WordFeature {
-    word: String,
-    normalized: String,
-    l1_refs: Vec<u32>,
-    l2_tokens: Vec<u32>,
-    motif_tokens: Vec<u32>,
 }
 
 pub fn evaluate_wave(cases: &[EvalCase]) -> (Vec<WaveEvalResult>, WaveEvalStats) {
@@ -185,61 +165,26 @@ pub fn canonical_l2_candidate_report(
     CanonicalL2CandidateEngine::new(words).candidate_report(input, limit)
 }
 
-fn canonical_l2_candidate_report_with_features(
+fn canonical_l2_candidate_report_with_memory(
     words_len: usize,
     memory: &L2CenterMemory,
-    features: &[CanonicalL2WordFeature],
     input: &str,
     limit: usize,
 ) -> CanonicalL2CandidateReport {
     let l1 = memory.l1().center_sequence_for_word(input);
     let l2 = memory.token_sequence_for_text(input);
-    let input_norm = normalize_candidate_surface(input);
-    let input_motifs = motif_tokens(&l2.tokens);
-    let mut candidates = features
-        .iter()
-        .filter_map(|feature| {
-            if feature.normalized.is_empty() || feature.normalized == input_norm {
-                return None;
-            }
-            let l1_overlap = overlap_count(&l1.center_refs, &feature.l1_refs);
-            let l2_overlap = overlap_count(&l2.tokens, &feature.l2_tokens);
-            let motif_overlap = overlap_count(&input_motifs, &feature.motif_tokens);
-            let surface_distance = damerau_levenshtein(&input_norm, &feature.normalized);
-            let prefix_match = !input_norm.is_empty()
-                && (feature.normalized.starts_with(&input_norm)
-                    || input_norm.starts_with(&feature.normalized));
-            let score = candidate_score(
-                input_norm.len(),
-                feature.normalized.len(),
-                surface_distance,
-                l1_overlap,
-                l2_overlap,
-                motif_overlap,
-                prefix_match,
-            );
-            (score > 0).then_some(CanonicalL2Candidate {
-                word: feature.word.clone(),
-                score,
-                l1_overlap,
-                l2_overlap,
-                motif_overlap,
-                prefix_match,
-            })
+    let candidates = memory
+        .surface_candidates_for_text(input, limit)
+        .into_iter()
+        .map(|candidate| CanonicalL2Candidate {
+            word: candidate.word,
+            score: candidate.score,
+            l1_overlap: candidate.l1_overlap,
+            l2_overlap: candidate.l2_overlap,
+            motif_overlap: candidate.motif_overlap,
+            prefix_match: candidate.prefix_match,
         })
         .collect::<Vec<_>>();
-
-    candidates.sort_by(|left, right| {
-        right
-            .score
-            .cmp(&left.score)
-            .then_with(|| right.motif_overlap.cmp(&left.motif_overlap))
-            .then_with(|| right.l2_overlap.cmp(&left.l2_overlap))
-            .then_with(|| right.l1_overlap.cmp(&left.l1_overlap))
-            .then_with(|| left.word.len().cmp(&right.word.len()))
-            .then_with(|| left.word.cmp(&right.word))
-    });
-    candidates.truncate(limit);
 
     CanonicalL2CandidateReport {
         input: input.to_string(),
@@ -252,26 +197,6 @@ fn canonical_l2_candidate_report_with_features(
         l2_residual: l2.residual_l1_refs,
         candidates,
     }
-}
-
-fn canonical_l2_word_features(
-    words: &[String],
-    memory: &L2CenterMemory,
-) -> Vec<CanonicalL2WordFeature> {
-    words
-        .iter()
-        .map(|word| {
-            let l1 = memory.l1().center_sequence_for_word(word);
-            let l2 = memory.token_sequence_for_text(word);
-            CanonicalL2WordFeature {
-                word: word.clone(),
-                normalized: normalize_candidate_surface(word),
-                l1_refs: l1.center_refs,
-                motif_tokens: motif_tokens(&l2.tokens),
-                l2_tokens: l2.tokens,
-            }
-        })
-        .collect()
 }
 
 fn canonical_l2_memory(words: &[String]) -> L2CenterMemory {
@@ -287,69 +212,6 @@ fn canonical_l2_memory(words: &[String]) -> L2CenterMemory {
             ..L2CenterMemoryConfig::default()
         },
     )
-}
-
-fn candidate_score(
-    input_len: usize,
-    word_len: usize,
-    surface_distance: usize,
-    l1_overlap: usize,
-    l2_overlap: usize,
-    motif_overlap: usize,
-    prefix_match: bool,
-) -> u32 {
-    if input_len == 0 {
-        return 0;
-    }
-    let len_gap = input_len.abs_diff(word_len).min(16) as u32;
-    let mut score = l1_overlap as u32 * 24 + l2_overlap as u32 * 48 + motif_overlap as u32 * 120;
-    if input_len >= 5 {
-        let close_distance = (input_len / 4).max(2);
-        if surface_distance <= close_distance {
-            score += 760u32.saturating_sub(surface_distance as u32 * 120);
-        }
-    }
-    if prefix_match {
-        score += 180;
-    }
-    score.saturating_sub(len_gap * 8 + surface_distance.min(16) as u32 * 12)
-}
-
-fn overlap_count(left: &[u32], right: &[u32]) -> usize {
-    let mut left = left.to_vec();
-    let mut right = right.to_vec();
-    left.sort_unstable();
-    right.sort_unstable();
-    let mut count = 0usize;
-    let mut li = 0usize;
-    let mut ri = 0usize;
-    while li < left.len() && ri < right.len() {
-        match left[li].cmp(&right[ri]) {
-            std::cmp::Ordering::Less => li += 1,
-            std::cmp::Ordering::Greater => ri += 1,
-            std::cmp::Ordering::Equal => {
-                count += 1;
-                li += 1;
-                ri += 1;
-            }
-        }
-    }
-    count
-}
-
-fn motif_tokens(tokens: &[u32]) -> Vec<u32> {
-    tokens
-        .iter()
-        .copied()
-        .filter(|token| token & (1 << 31) == 0)
-        .collect()
-}
-
-fn normalize_candidate_surface(text: &str) -> String {
-    text.chars()
-        .filter(|ch| ch.is_alphabetic() || *ch == '-')
-        .flat_map(char::to_lowercase)
-        .collect()
 }
 
 #[cfg(test)]
