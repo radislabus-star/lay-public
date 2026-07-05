@@ -70,6 +70,43 @@ pub struct CanonicalL2Candidate {
     pub prefix_match: bool,
 }
 
+pub struct CanonicalL2CandidateEngine {
+    words: Vec<String>,
+    memory: L2CenterMemory,
+    features: Vec<CanonicalL2WordFeature>,
+}
+
+impl CanonicalL2CandidateEngine {
+    pub fn new(words: &[String]) -> Self {
+        let memory = canonical_l2_memory(words);
+        let features = canonical_l2_word_features(words, &memory);
+        Self {
+            words: words.to_vec(),
+            memory,
+            features,
+        }
+    }
+
+    pub fn candidate_report(&self, input: &str, limit: usize) -> CanonicalL2CandidateReport {
+        canonical_l2_candidate_report_with_features(
+            self.words.len(),
+            &self.memory,
+            &self.features,
+            input,
+            limit,
+        )
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct CanonicalL2WordFeature {
+    word: String,
+    normalized: String,
+    l1_refs: Vec<u32>,
+    l2_tokens: Vec<u32>,
+    motif_tokens: Vec<u32>,
+}
+
 pub fn evaluate_wave(cases: &[EvalCase]) -> (Vec<WaveEvalResult>, WaveEvalStats) {
     evaluate_wave_with_options(cases, &WaveOptions::default())
 }
@@ -145,29 +182,36 @@ pub fn canonical_l2_candidate_report(
     input: &str,
     limit: usize,
 ) -> CanonicalL2CandidateReport {
-    let memory = canonical_l2_memory(words);
+    CanonicalL2CandidateEngine::new(words).candidate_report(input, limit)
+}
+
+fn canonical_l2_candidate_report_with_features(
+    words_len: usize,
+    memory: &L2CenterMemory,
+    features: &[CanonicalL2WordFeature],
+    input: &str,
+    limit: usize,
+) -> CanonicalL2CandidateReport {
     let l1 = memory.l1().center_sequence_for_word(input);
     let l2 = memory.token_sequence_for_text(input);
     let input_norm = normalize_candidate_surface(input);
-    let mut candidates = words
+    let input_motifs = motif_tokens(&l2.tokens);
+    let mut candidates = features
         .iter()
-        .filter_map(|word| {
-            let word_norm = normalize_candidate_surface(word);
-            if word_norm.is_empty() || word_norm == input_norm {
+        .filter_map(|feature| {
+            if feature.normalized.is_empty() || feature.normalized == input_norm {
                 return None;
             }
-            let word_l1 = memory.l1().center_sequence_for_word(word);
-            let word_l2 = memory.token_sequence_for_text(word);
-            let l1_overlap = overlap_count(&l1.center_refs, &word_l1.center_refs);
-            let l2_overlap = overlap_count(&l2.tokens, &word_l2.tokens);
-            let motif_overlap =
-                overlap_count(&motif_tokens(&l2.tokens), &motif_tokens(&word_l2.tokens));
-            let surface_distance = damerau_levenshtein(&input_norm, &word_norm);
+            let l1_overlap = overlap_count(&l1.center_refs, &feature.l1_refs);
+            let l2_overlap = overlap_count(&l2.tokens, &feature.l2_tokens);
+            let motif_overlap = overlap_count(&input_motifs, &feature.motif_tokens);
+            let surface_distance = damerau_levenshtein(&input_norm, &feature.normalized);
             let prefix_match = !input_norm.is_empty()
-                && (word_norm.starts_with(&input_norm) || input_norm.starts_with(&word_norm));
+                && (feature.normalized.starts_with(&input_norm)
+                    || input_norm.starts_with(&feature.normalized));
             let score = candidate_score(
                 input_norm.len(),
-                word_norm.len(),
+                feature.normalized.len(),
                 surface_distance,
                 l1_overlap,
                 l2_overlap,
@@ -175,7 +219,7 @@ pub fn canonical_l2_candidate_report(
                 prefix_match,
             );
             (score > 0).then_some(CanonicalL2Candidate {
-                word: word.clone(),
+                word: feature.word.clone(),
                 score,
                 l1_overlap,
                 l2_overlap,
@@ -199,7 +243,7 @@ pub fn canonical_l2_candidate_report(
 
     CanonicalL2CandidateReport {
         input: input.to_string(),
-        words: words.len(),
+        words: words_len,
         l1_ngrams: l1.ngram_count,
         l1_refs: l1.center_refs.len(),
         l1_residual: l1.residual_ngrams,
@@ -208,6 +252,26 @@ pub fn canonical_l2_candidate_report(
         l2_residual: l2.residual_l1_refs,
         candidates,
     }
+}
+
+fn canonical_l2_word_features(
+    words: &[String],
+    memory: &L2CenterMemory,
+) -> Vec<CanonicalL2WordFeature> {
+    words
+        .iter()
+        .map(|word| {
+            let l1 = memory.l1().center_sequence_for_word(word);
+            let l2 = memory.token_sequence_for_text(word);
+            CanonicalL2WordFeature {
+                word: word.clone(),
+                normalized: normalize_candidate_surface(word),
+                l1_refs: l1.center_refs,
+                motif_tokens: motif_tokens(&l2.tokens),
+                l2_tokens: l2.tokens,
+            }
+        })
+        .collect()
 }
 
 fn canonical_l2_memory(words: &[String]) -> L2CenterMemory {

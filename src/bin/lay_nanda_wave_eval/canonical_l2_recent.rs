@@ -1,4 +1,6 @@
-use lay::nanda_wave::eval::{canonical_l2_candidate_report, CanonicalL2Candidate};
+use lay::nanda_wave::eval::{
+    canonical_l2_candidate_report, CanonicalL2Candidate, CanonicalL2CandidateEngine,
+};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
@@ -18,6 +20,16 @@ struct RecentAction {
     from: String,
     #[serde(default)]
     to: String,
+    #[serde(default)]
+    replace_words: usize,
+    #[serde(default)]
+    words: usize,
+    #[serde(default)]
+    elapsed_ms: u64,
+    #[serde(default)]
+    decision_ms: u64,
+    #[serde(default)]
+    output_ms: u64,
     #[serde(default)]
     input_gate: Option<RecentActionGate>,
 }
@@ -49,6 +61,22 @@ struct RecentActionGate {
     selected_source_id: Option<String>,
     #[serde(default)]
     selected_error_class: Option<String>,
+    #[serde(default)]
+    selected_gate_action: Option<String>,
+    #[serde(default)]
+    candidate_scores: Vec<RecentCandidateScore>,
+}
+
+#[derive(Debug, Deserialize)]
+struct RecentCandidateScore {
+    #[serde(default)]
+    source: String,
+    #[serde(default)]
+    replacement: String,
+    #[serde(default)]
+    gate_action: String,
+    #[serde(default)]
+    selected: bool,
 }
 
 pub(crate) fn print_recent(args: &[String]) -> io::Result<()> {
@@ -204,6 +232,85 @@ pub(crate) fn print_harvest_summary(args: &[String]) -> io::Result<()> {
             record.canonical_score.unwrap_or(0)
         );
     }
+
+    Ok(())
+}
+
+pub(crate) fn print_phase_coverage(args: &[String]) -> io::Result<()> {
+    let limit = super::arg_value(args, "--limit")
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(500)
+        .clamp(1, 5_000);
+    let candidate_limit = super::arg_value(args, "--candidate-limit")
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(12)
+        .clamp(1, 50);
+    let max_examples = super::arg_value(args, "--max-examples")
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(12)
+        .clamp(0, 50);
+    let path = super::arg_value(args, "--recent-actions")
+        .map(PathBuf::from)
+        .or_else(default_recent_actions_path)
+        .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "HOME is not set"))?;
+    let words = clean_words()?;
+    let actions = load_recent_actions(&path, limit)?;
+    let engine = CanonicalL2CandidateEngine::new(&words);
+    let report = phase_coverage_report(&engine, &actions, candidate_limit, max_examples);
+
+    println!("l2_phase_coverage_recent:");
+    println!("  source: {}", path.display());
+    println!("  clean_words: {}", words.len());
+    println!("  scanned_rows: {}", actions.len());
+    println!("  candidate_limit: {}", candidate_limit);
+    println!("  live_authority: false");
+    println!("  verifier: live_applied_recent_actions");
+    println!("  tree:");
+    println!("    all_live_rows: {}", report.all_live_rows);
+    println!("    no_correction_needed: {}", report.no_correction_needed);
+    println!("    live_applied_true: {}", report.live_applied_true);
+    println!("    phase_target_rows: {}", report.phase_target_rows);
+    println!("    layout_route_skip: {}", report.layout_route_skip);
+    println!(
+        "    l2_phase_covered_true: {}",
+        report.l2_phase_covered_true
+    );
+    println!("    l2_top1_true: {}", report.l2_top1_true);
+    println!("    l2_covered_below_top: {}", report.l2_covered_below_top);
+    println!("    l2_phase_missed_true: {}", report.l2_phase_missed_true);
+    println!(
+        "    deterministic_selected: {}",
+        report.deterministic_selected
+    );
+    println!(
+        "    deterministic_but_l2_covered: {}",
+        report.deterministic_but_l2_covered
+    );
+    println!("    nanda_selected: {}", report.nanda_selected);
+    println!("    multiword_touch_rows: {}", report.multiword_touch_rows);
+    println!("    slow_rows_50ms: {}", report.slow_rows_50ms);
+    println!("  coverage:");
+    println!(
+        "    l2_covered_pct: {:.1}",
+        percent(report.l2_phase_covered_true, report.phase_target_rows)
+    );
+    println!(
+        "    l2_top1_pct: {:.1}",
+        percent(report.l2_top1_true, report.phase_target_rows)
+    );
+    println!(
+        "    l2_missed_pct: {:.1}",
+        percent(report.l2_phase_missed_true, report.phase_target_rows)
+    );
+    println!("  phase_missed_examples:");
+    print_examples(&report.phase_missed_examples);
+    println!("  deterministic_l2_covered_examples:");
+    print_examples(&report.deterministic_l2_covered_examples);
+    println!("  risky_multiword_examples:");
+    print_examples(&report.risky_multiword_examples);
+    println!("  slow_examples:");
+    print_examples(&report.slow_examples);
+    println!("  status: {}", report.status());
 
     Ok(())
 }
@@ -391,6 +498,256 @@ impl VerdictCounts {
             "layout_route_skip" => self.layout_route_skip += 1,
             _ => {}
         }
+    }
+}
+
+#[derive(Default)]
+struct PhaseCoverageReport {
+    all_live_rows: usize,
+    no_correction_needed: usize,
+    live_applied_true: usize,
+    phase_target_rows: usize,
+    layout_route_skip: usize,
+    l2_phase_covered_true: usize,
+    l2_top1_true: usize,
+    l2_covered_below_top: usize,
+    l2_phase_missed_true: usize,
+    deterministic_selected: usize,
+    deterministic_but_l2_covered: usize,
+    nanda_selected: usize,
+    multiword_touch_rows: usize,
+    slow_rows_50ms: usize,
+    phase_missed_examples: Vec<CoverageExample>,
+    deterministic_l2_covered_examples: Vec<CoverageExample>,
+    risky_multiword_examples: Vec<CoverageExample>,
+    slow_examples: Vec<CoverageExample>,
+}
+
+impl PhaseCoverageReport {
+    fn status(&self) -> &'static str {
+        if self.phase_target_rows == 0 {
+            return "WATCH-no-phase-target-rows";
+        }
+        if self.l2_phase_missed_true > 0 {
+            "OPEN-phase-center-misses"
+        } else if self.deterministic_but_l2_covered > 0 {
+            "WATCH-l2-covered-but-not-authority"
+        } else {
+            "PASS-covered"
+        }
+    }
+}
+
+#[derive(Clone)]
+struct CoverageExample {
+    from: String,
+    to: String,
+    input: String,
+    expected: String,
+    canonical: String,
+    live_source: String,
+    elapsed_ms: u64,
+    decision_ms: u64,
+    output_ms: u64,
+}
+
+fn phase_coverage_report(
+    engine: &CanonicalL2CandidateEngine,
+    actions: &[RecentAction],
+    candidate_limit: usize,
+    max_examples: usize,
+) -> PhaseCoverageReport {
+    let mut report = PhaseCoverageReport::default();
+    for action in actions {
+        report.all_live_rows += 1;
+        let input = last_word(&action.from);
+        let expected = last_word(&action.to);
+        if input.is_empty() || expected.is_empty() || input == expected {
+            report.no_correction_needed += 1;
+            continue;
+        }
+        report.live_applied_true += 1;
+        let live_source = selected_source(action);
+        if live_source == "deterministic" {
+            report.deterministic_selected += 1;
+        } else if live_source == "nanda" {
+            report.nanda_selected += 1;
+        }
+        if action.replace_words > 1 || action.words > 1 {
+            report.multiword_touch_rows += 1;
+        }
+        if action.elapsed_ms > 50 || action.decision_ms > 50 || action.output_ms > 50 {
+            report.slow_rows_50ms += 1;
+        }
+        let canonical = engine.candidate_report(&input, candidate_limit);
+        let rank = candidate_rank(&canonical.candidates, &expected);
+        let example = coverage_example(action, &input, &expected, &canonical.candidates);
+        if action_error_class(action) == Some("wrong_layout") {
+            report.layout_route_skip += 1;
+            push_limited(
+                &mut report.risky_multiword_examples,
+                example,
+                max_examples,
+                action.replace_words > 1 || action.words > 1,
+            );
+            continue;
+        }
+        report.phase_target_rows += 1;
+        match rank {
+            Some(0) => {
+                report.l2_phase_covered_true += 1;
+                report.l2_top1_true += 1;
+            }
+            Some(_) => {
+                report.l2_phase_covered_true += 1;
+                report.l2_covered_below_top += 1;
+            }
+            None => {
+                report.l2_phase_missed_true += 1;
+                push_limited(
+                    &mut report.phase_missed_examples,
+                    example.clone(),
+                    max_examples,
+                    true,
+                );
+            }
+        }
+        if live_source == "deterministic" && rank.is_some() && has_nanda_apply_candidate(action) {
+            report.deterministic_but_l2_covered += 1;
+            push_limited(
+                &mut report.deterministic_l2_covered_examples,
+                example.clone(),
+                max_examples,
+                true,
+            );
+        }
+        push_limited(
+            &mut report.risky_multiword_examples,
+            example.clone(),
+            max_examples,
+            action.replace_words > 1 || action.words > 1,
+        );
+        push_limited(
+            &mut report.slow_examples,
+            example,
+            max_examples,
+            action.elapsed_ms > 50 || action.decision_ms > 50 || action.output_ms > 50,
+        );
+    }
+    report
+}
+
+fn candidate_rank(candidates: &[CanonicalL2Candidate], expected: &str) -> Option<usize> {
+    let expected = normalize_word(expected);
+    candidates
+        .iter()
+        .position(|candidate| normalize_word(&candidate.word) == expected)
+}
+
+fn coverage_example(
+    action: &RecentAction,
+    input: &str,
+    expected: &str,
+    candidates: &[CanonicalL2Candidate],
+) -> CoverageExample {
+    CoverageExample {
+        from: compact(&action.from),
+        to: compact(&action.to),
+        input: input.to_string(),
+        expected: expected.to_string(),
+        canonical: candidates
+            .iter()
+            .take(5)
+            .map(|candidate| format!("{}:{}", normalize_word(&candidate.word), candidate.score))
+            .collect::<Vec<_>>()
+            .join(", "),
+        live_source: live_route(action),
+        elapsed_ms: action.elapsed_ms,
+        decision_ms: action.decision_ms,
+        output_ms: action.output_ms,
+    }
+}
+
+fn selected_source(action: &RecentAction) -> &str {
+    action
+        .input_gate
+        .as_ref()
+        .and_then(|gate| gate.selected_source.as_deref())
+        .unwrap_or("unknown")
+}
+
+fn action_error_class(action: &RecentAction) -> Option<&str> {
+    action
+        .input_gate
+        .as_ref()
+        .and_then(|gate| gate.selected_error_class.as_deref())
+}
+
+fn has_nanda_apply_candidate(action: &RecentAction) -> bool {
+    action.input_gate.as_ref().is_some_and(|gate| {
+        gate.candidate_scores.iter().any(|candidate| {
+            candidate.source == "nanda"
+                && (candidate.gate_action == "apply" || candidate.selected)
+                && !candidate.replacement.trim().is_empty()
+        })
+    })
+}
+
+fn live_route(action: &RecentAction) -> String {
+    let Some(gate) = action.input_gate.as_ref() else {
+        return action.kind.clone();
+    };
+    let source = gate.selected_source.as_deref().unwrap_or("unknown");
+    let source_id = gate.selected_source_id.as_deref().unwrap_or("unknown");
+    let error_class = gate.selected_error_class.as_deref().unwrap_or("unknown");
+    let gate_action = gate.selected_gate_action.as_deref().unwrap_or("unknown");
+    format!(
+        "{}/{source}/{source_id}/{error_class}/{gate_action}",
+        action.kind
+    )
+}
+
+fn push_limited(
+    examples: &mut Vec<CoverageExample>,
+    example: CoverageExample,
+    max_examples: usize,
+    should_push: bool,
+) {
+    if should_push && examples.len() < max_examples {
+        examples.push(example);
+    }
+}
+
+fn print_examples(examples: &[CoverageExample]) {
+    if examples.is_empty() {
+        println!("    none");
+        return;
+    }
+    for example in examples {
+        println!(
+            "    {} -> {} | input={} expected={} | live={} | canonical=[{}] | ms={}/{}/{}",
+            example.from,
+            example.to,
+            example.input,
+            example.expected,
+            example.live_source,
+            if example.canonical.is_empty() {
+                "none"
+            } else {
+                &example.canonical
+            },
+            example.elapsed_ms,
+            example.decision_ms,
+            example.output_ms
+        );
+    }
+}
+
+fn percent(part: usize, total: usize) -> f64 {
+    if total == 0 {
+        0.0
+    } else {
+        part as f64 * 100.0 / total as f64
     }
 }
 
@@ -818,5 +1175,73 @@ mod tests {
             morphology_candidate("видешь", Some("видишь"), &words).as_deref(),
             Some("видишь")
         );
+    }
+
+    #[test]
+    fn phase_coverage_counts_l2_hits_and_misses() {
+        let words = ["работает", "режим"]
+            .into_iter()
+            .map(str::to_string)
+            .collect::<Vec<_>>();
+        let engine = CanonicalL2CandidateEngine::new(&words);
+        let actions = vec![
+            recent_action(
+                "рабоатет ",
+                "работает ",
+                Some(gate("deterministic", "composite-typo", true)),
+            ),
+            recent_action(
+                "перелючи ",
+                "переключи ",
+                Some(gate("deterministic", "missing-letter", false)),
+            ),
+            recent_action(
+                "ghbdtn ",
+                "привет ",
+                Some(gate("nanda", "wrong_layout", true)),
+            ),
+        ];
+
+        let report = phase_coverage_report(&engine, &actions, 5, 10);
+
+        assert_eq!(report.live_applied_true, 3);
+        assert_eq!(report.layout_route_skip, 1);
+        assert_eq!(report.phase_target_rows, 2);
+        assert_eq!(report.l2_phase_covered_true, 1);
+        assert_eq!(report.l2_phase_missed_true, 1);
+        assert_eq!(report.deterministic_but_l2_covered, 1);
+    }
+
+    fn recent_action(from: &str, to: &str, input_gate: Option<RecentActionGate>) -> RecentAction {
+        RecentAction {
+            ts: 1,
+            kind: "typing-assist".to_string(),
+            from: from.to_string(),
+            to: to.to_string(),
+            replace_words: 1,
+            words: 1,
+            elapsed_ms: 10,
+            decision_ms: 3,
+            output_ms: 7,
+            input_gate,
+        }
+    }
+
+    fn gate(source: &str, error_class: &str, with_nanda_candidate: bool) -> RecentActionGate {
+        RecentActionGate {
+            selected_source: Some(source.to_string()),
+            selected_source_id: Some("test".to_string()),
+            selected_error_class: Some(error_class.to_string()),
+            selected_gate_action: Some("apply".to_string()),
+            candidate_scores: with_nanda_candidate
+                .then(|| RecentCandidateScore {
+                    source: "nanda".to_string(),
+                    replacement: "работает ".to_string(),
+                    gate_action: "apply".to_string(),
+                    selected: source == "nanda",
+                })
+                .into_iter()
+                .collect(),
+        }
     }
 }
