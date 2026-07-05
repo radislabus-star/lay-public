@@ -85,4 +85,7 @@ pub struct LayConfig {
     pub ime_bracket_candidates: bool,
     pub llmwave_shadow: bool,
     pub llmwave_apply: bool,
+    pub nanda_l2_phase_shadow: bool,
+    pub nanda_l2_phase_apply: bool,
+    pub nanda_l3_phase_shadow: bool,
 }

@@ -320,6 +320,110 @@ pub(crate) fn print_phase_coverage(args: &[String]) -> io::Result<()> {
     Ok(())
 }
 
+pub(crate) fn print_candidate_phase_shadow(args: &[String]) -> io::Result<()> {
+    let limit = super::arg_value(args, "--limit")
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(500)
+        .clamp(1, 5_000);
+    let max_examples = super::arg_value(args, "--max-examples")
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(12)
+        .clamp(0, 50);
+    let path = super::arg_value(args, "--recent-actions")
+        .map(PathBuf::from)
+        .or_else(default_recent_actions_path)
+        .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "HOME is not set"))?;
+    let actions = load_recent_actions(&path, limit)?;
+    let mut report = CandidatePhaseShadowReport::default();
+    for action in &actions {
+        report.rows += 1;
+        let input = last_word(&action.from);
+        let expected = last_word(&action.to);
+        if input.is_empty() || expected.is_empty() || input == expected {
+            report.no_change += 1;
+            continue;
+        }
+        let operation = phase_operation_for_action(action);
+        let (loaded, margin, admitted) =
+            lay::nanda_wave::l2_candidate_phase_shadow(&input, &expected, operation);
+        if loaded {
+            report.package_loaded_rows += 1;
+        }
+        report.target_rows += 1;
+        if admitted {
+            report.admitted += 1;
+        } else {
+            report.missed += 1;
+            if report.missed_examples.len() < max_examples {
+                report.missed_examples.push(format!(
+                    "{} -> {} op={} margin={} source={}",
+                    compact(&action.from),
+                    compact(&action.to),
+                    operation,
+                    margin,
+                    live_route(action)
+                ));
+            }
+        }
+    }
+    println!("l2_candidate_phase_shadow_recent:");
+    println!("  source: {}", path.display());
+    println!("  scanned_rows: {}", report.rows);
+    println!("  no_change: {}", report.no_change);
+    println!("  target_rows: {}", report.target_rows);
+    println!("  package_loaded_rows: {}", report.package_loaded_rows);
+    println!("  admitted: {}", report.admitted);
+    println!("  missed: {}", report.missed);
+    println!(
+        "  admitted_pct: {:.1}",
+        percent(report.admitted, report.target_rows)
+    );
+    println!("  missed_examples:");
+    for example in &report.missed_examples {
+        println!("    - {example}");
+    }
+    println!("  status: {}", report.status());
+    Ok(())
+}
+
+#[derive(Default)]
+struct CandidatePhaseShadowReport {
+    rows: usize,
+    no_change: usize,
+    target_rows: usize,
+    package_loaded_rows: usize,
+    admitted: usize,
+    missed: usize,
+    missed_examples: Vec<String>,
+}
+
+impl CandidatePhaseShadowReport {
+    fn status(&self) -> &'static str {
+        if self.target_rows == 0 {
+            "WATCH-no-target-rows"
+        } else if self.package_loaded_rows == 0 {
+            "WATCH-no-phase-package"
+        } else if self.missed > 0 {
+            "OPEN-phase-misses"
+        } else {
+            "PASS-shadow"
+        }
+    }
+}
+
+fn phase_operation_for_action(action: &RecentAction) -> &'static str {
+    match action_error_class(action) {
+        Some("wrong_layout") => "layout",
+        Some("split_glue") | Some("boundary") => "split",
+        Some("completion") => "completion",
+        _ => match selected_source(action) {
+            "layout" => "layout",
+            "boundary" => "split",
+            _ => "typo",
+        },
+    }
+}
+
 pub(crate) fn replay_harvest(args: &[String]) -> io::Result<()> {
     let path = super::arg_value(args, "--harvest")
         .map(PathBuf::from)

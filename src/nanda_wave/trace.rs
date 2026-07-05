@@ -16,6 +16,15 @@ pub fn run_wave_trace_with_options(original: &str, options: &WaveOptions) -> Wav
     let (mut l3_feedback, feedback) = derive_l3_feedback(original, &initial_l2, options);
     let (mut llmwave_trace, llmwave_feedback) =
         derive_llmwave_feedback(original, &initial_l2, options);
+    if options.l3_phase_shadow() {
+        llmwave_trace.push(super::signal::LayerTrace {
+            name: "L3PhaseContextShadow",
+            summary: format!(
+                "status=WATCH-no-package initial_l2_candidates={}",
+                initial_l2.len()
+            ),
+        });
+    }
     let feedback = merge_feedback(feedback, llmwave_feedback);
     let l2_candidates = run_l2_refined_with_feedback(original, &l1, options, &feedback);
     let (mut l3, decision) = run_l3_with_options(original, &l2_candidates, options);
@@ -74,6 +83,17 @@ mod tests {
             .l3
             .iter()
             .any(|layer| layer.name == crate::nanda_wave::llmwave::LLMWAVE_CELL));
+    }
+
+    #[test]
+    fn l3_phase_shadow_is_watch_only_trace() {
+        let plain = run_wave_trace("html djn ");
+        let options = WaveOptions::default().with_l3_phase_shadow(true);
+        let shadow = run_wave_trace_with_options("html djn ", &options);
+        assert_eq!(plain.decision, shadow.decision);
+        assert!(shadow.l3.iter().any(|layer| {
+            layer.name == "L3PhaseContextShadow" && layer.summary.contains("WATCH-no-package")
+        }));
     }
 
     #[test]

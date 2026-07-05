@@ -7,8 +7,10 @@
 
 use std::env;
 use std::f64::consts::TAU;
+use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
+use std::sync::OnceLock;
 
 use super::mode::mix64_golden;
 
@@ -17,6 +19,15 @@ const CELLS: usize = 256;
 const HEADER_BYTES: usize = 12;
 const CELL_BYTES: usize = 16;
 const ADMISSION_THRESHOLD_MICRO: i64 = 50_000;
+
+static DEFAULT_RUNTIME: OnceLock<Option<PhaseRuntime>> = OnceLock::new();
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) struct PhaseShadow {
+    pub(super) package_loaded: bool,
+    pub(super) margin_micro: i64,
+    pub(super) admitted: bool,
+}
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 struct PhaseCell {
@@ -74,6 +85,28 @@ where
     let bytes = runtime.to_bytes();
     crate::private_file::write_private_bytes(path, &bytes)?;
     Ok(bytes.len())
+}
+
+pub(super) fn shadow_admission(original: &str, candidate: &str, operation: &str) -> PhaseShadow {
+    let Some(runtime) = DEFAULT_RUNTIME.get_or_init(load_default_runtime).as_ref() else {
+        return PhaseShadow {
+            package_loaded: false,
+            margin_micro: 0,
+            admitted: false,
+        };
+    };
+    let margin_micro = runtime.admission_margin_micro(original, candidate, operation);
+    PhaseShadow {
+        package_loaded: true,
+        margin_micro,
+        admitted: margin_micro >= ADMISSION_THRESHOLD_MICRO,
+    }
+}
+
+fn load_default_runtime() -> Option<PhaseRuntime> {
+    let path = default_phase_memory_path();
+    let bytes = fs::read(path).ok()?;
+    PhaseRuntime::from_bytes(&bytes).ok()
 }
 
 fn train_phase_runtime<I>(examples: I) -> io::Result<PhaseRuntime>

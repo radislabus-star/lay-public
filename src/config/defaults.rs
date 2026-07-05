@@ -63,6 +63,9 @@ impl Default for LayConfig {
             ime_bracket_candidates: false,
             llmwave_shadow: false,
             llmwave_apply: false,
+            nanda_l2_phase_shadow: true,
+            nanda_l2_phase_apply: false,
+            nanda_l3_phase_shadow: false,
         }
     }
 }

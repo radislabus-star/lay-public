@@ -69,6 +69,15 @@ where
     l2_candidate_phase::write_phase_memory_from_entries(path, entries)
 }
 
+pub fn l2_candidate_phase_shadow(
+    original: &str,
+    candidate: &str,
+    operation: &str,
+) -> (bool, i64, bool) {
+    let shadow = l2_candidate_phase::shadow_admission(original, candidate, operation);
+    (shadow.package_loaded, shadow.margin_micro, shadow.admitted)
+}
+
 pub fn usage_debug_summary() -> (u64, usize, usize) {
     usage_prior::usage_debug_summary()
 }

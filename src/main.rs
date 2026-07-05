@@ -236,7 +236,10 @@ fn print_nanda_explanation(text: &str, cfg: &config::LayConfig) {
     }
     let options = nanda_wave::WaveOptions::default()
         .with_llmwave_shadow(cfg.llmwave_shadow)
-        .with_llmwave_apply(cfg.llmwave_shadow && cfg.llmwave_apply);
+        .with_llmwave_apply(cfg.llmwave_shadow && cfg.llmwave_apply)
+        .with_l2_phase_shadow(cfg.nanda_l2_phase_shadow)
+        .with_l2_phase_apply(cfg.nanda_l2_phase_shadow && cfg.nanda_l2_phase_apply)
+        .with_l3_phase_shadow(cfg.nanda_l3_phase_shadow);
     let trace = nanda_wave::run_wave_trace_with_options(text, &options);
     match trace.decision {
         nanda_wave::WaveDecision::Apply {

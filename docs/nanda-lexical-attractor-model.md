@@ -18,6 +18,59 @@ Existing dictionaries, Hunspell, protected words, and technical word lists may
 remain as teacher/bootstrap/guard systems. They must not be described as the
 NANDA lexical memory itself.
 
+## Meaning Birth Kernel
+
+The lexical model must express the birth of meaning directly, not only as
+candidate scoring.
+
+Core chain:
+
+```text
+frequency trace -> form
+context -> allowed state
+usage -> stable meaning
+```
+
+Or in the fuller project language:
+
+```text
+boundary -> transition mismatch -> surface form -> context-allowed state -> usage trace
+```
+
+For lay this means:
+
+```text
+char/ngram traces do not mean yet;
+they create provisional word form pressure.
+
+phrase/context does not merely rank;
+it decides whether the form is allowed in the current scene.
+
+repeated accepted use does not merely count;
+it deepens the basin that makes the form a stable lexical meaning.
+```
+
+Therefore a word is born only when three layers bind:
+
+```text
+L1/L2 frequency trace:
+  the surface can be formed.
+
+L3 context window:
+  the surface is allowed here.
+
+usage/cleanup attractor:
+  the surface repeatedly settles to the same role.
+```
+
+Short law:
+
+```text
+frequency trace gives form;
+context gives permission;
+usage gives meaning.
+```
+
 ## Word Definition
 
 A word is not a string, hash, or token id.

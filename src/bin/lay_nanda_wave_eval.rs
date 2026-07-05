@@ -34,6 +34,9 @@ fn main() -> io::Result<()> {
     if let Some(path) = arg_value(&args, "--llmwave-memory") {
         env::set_var("LAY_LLMWAVE_MEMORY", path);
     }
+    if let Some(path) = arg_value(&args, "--l2-phase-memory") {
+        env::set_var("LAY_NANDA_L2_PHASE_MEMORY", path);
+    }
     let disabled = arg_values(&args, "--disable-cell");
     let options = WaveOptions::with_disabled(&disabled)
         .with_llmwave_shadow(args.iter().any(|arg| arg == "--llmwave-shadow"))
@@ -117,6 +120,13 @@ fn main() -> io::Result<()> {
     }
     if args.iter().any(|arg| arg == "--l2-phase-coverage-recent") {
         canonical_l2_recent::print_phase_coverage(&args)?;
+        return Ok(());
+    }
+    if args
+        .iter()
+        .any(|arg| arg == "--l2-candidate-phase-shadow-recent")
+    {
+        canonical_l2_recent::print_candidate_phase_shadow(&args)?;
         return Ok(());
     }
     if args.iter().any(|arg| arg == "--canonical-l2-harvest") {
@@ -235,7 +245,7 @@ fn main() -> io::Result<()> {
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --l2-phase-coverage-recent [--limit N] [--candidate-limit N] [--max-examples N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --l2-phase-coverage-recent [--limit N] [--candidate-limit N] [--max-examples N] | --l2-candidate-phase-shadow-recent [--l2-phase-memory PATH] [--limit N] [--max-examples N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
         );
         return Ok(());
     }

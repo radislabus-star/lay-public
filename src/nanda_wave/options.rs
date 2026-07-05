@@ -3,6 +3,9 @@ pub struct WaveOptions {
     disabled: Vec<String>,
     llmwave_shadow: bool,
     llmwave_apply: bool,
+    l2_phase_shadow: bool,
+    l2_phase_apply: bool,
+    l3_phase_shadow: bool,
     l2_weight: f32,
     l3_weight: f32,
 }
@@ -13,6 +16,9 @@ impl Default for WaveOptions {
             disabled: Vec::new(),
             llmwave_shadow: false,
             llmwave_apply: false,
+            l2_phase_shadow: true,
+            l2_phase_apply: false,
+            l3_phase_shadow: false,
             l2_weight: 1.0,
             l3_weight: 1.0,
         }
@@ -25,6 +31,9 @@ impl WaveOptions {
             disabled: disabled.to_vec(),
             llmwave_shadow: false,
             llmwave_apply: false,
+            l2_phase_shadow: true,
+            l2_phase_apply: false,
+            l3_phase_shadow: false,
             l2_weight: 1.0,
             l3_weight: 1.0,
         }
@@ -38,6 +47,22 @@ impl WaveOptions {
     pub fn with_llmwave_apply(mut self, enabled: bool) -> Self {
         self.llmwave_apply = enabled;
         self.llmwave_shadow |= enabled;
+        self
+    }
+
+    pub fn with_l2_phase_shadow(mut self, enabled: bool) -> Self {
+        self.l2_phase_shadow = enabled;
+        self
+    }
+
+    pub fn with_l2_phase_apply(mut self, enabled: bool) -> Self {
+        self.l2_phase_apply = enabled;
+        self.l2_phase_shadow |= enabled;
+        self
+    }
+
+    pub fn with_l3_phase_shadow(mut self, enabled: bool) -> Self {
+        self.l3_phase_shadow = enabled;
         self
     }
 
@@ -61,6 +86,18 @@ impl WaveOptions {
 
     pub fn llmwave_apply(&self) -> bool {
         self.llmwave_apply
+    }
+
+    pub fn l2_phase_shadow(&self) -> bool {
+        self.l2_phase_shadow
+    }
+
+    pub fn l2_phase_apply(&self) -> bool {
+        self.l2_phase_apply
+    }
+
+    pub fn l3_phase_shadow(&self) -> bool {
+        self.l3_phase_shadow
     }
 
     pub fn l2_weight(&self) -> f32 {
@@ -89,6 +126,9 @@ mod tests {
         let options = WaveOptions::default();
         assert_eq!(options.l2_weight(), 1.0);
         assert_eq!(options.l3_weight(), 1.0);
+        assert!(options.l2_phase_shadow());
+        assert!(!options.l2_phase_apply());
+        assert!(!options.l3_phase_shadow());
         assert_eq!(options.scale_l2_energy(0.5), 0.5);
         assert_eq!(options.scale_l3_delta(0.08), 0.08);
     }
@@ -100,5 +140,12 @@ mod tests {
         assert_eq!(options.l3_weight(), 0.0);
         assert_eq!(options.scale_l2_energy(0.75), 1.0);
         assert_eq!(options.scale_l3_delta(0.08), 0.0);
+    }
+
+    #[test]
+    fn phase_apply_enables_phase_shadow() {
+        let options = WaveOptions::default().with_l2_phase_apply(true);
+        assert!(options.l2_phase_shadow());
+        assert!(options.l2_phase_apply());
     }
 }

@@ -26,6 +26,9 @@ fn config_defaults_preserve_public_runtime_behavior() {
     assert_eq!(cfg.lem_weight_percent, 80);
     assert_eq!(cfg.nanda_l2_weight_percent, 20);
     assert_eq!(cfg.nanda_l3_weight_percent, 8);
+    assert!(cfg.nanda_l2_phase_shadow);
+    assert!(!cfg.nanda_l2_phase_apply);
+    assert!(!cfg.nanda_l3_phase_shadow);
     assert_eq!(cfg.active_lem_weight(), 1.0);
     assert_eq!(cfg.active_nanda_l2_weight(), 1.0);
     assert_eq!(cfg.active_nanda_l3_weight(), 1.0);

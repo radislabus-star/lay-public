@@ -6,7 +6,7 @@ import Gtk from 'gi://Gtk';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.2.90';
+const APP_VERSION = '0.2.91';
 const APP_RELEASE_DATE = '2026-07-06';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
@@ -208,6 +208,9 @@ const DEFAULTS = {
     lem_weight_percent: 80,
     nanda_l2_weight_percent: 20,
     nanda_l3_weight_percent: 8,
+    nanda_l2_phase_shadow: true,
+    nanda_l2_phase_apply: false,
+    nanda_l3_phase_shadow: false,
     ptah_alexs_mode: false,
     ptah_alexs_rules: [],
     debug_action_log: false,
@@ -240,6 +243,9 @@ function normalizeConfig(cfg) {
         layout_backend: normalizeChoice(cfg?.layout_backend, LAYOUT_BACKEND_OPTIONS.map(([id]) => id), DEFAULTS.layout_backend),
         text_backend: textBackend,
         nanda_precognition: !!cfg?.nanda_precognition,
+        nanda_l2_phase_shadow: cfg?.nanda_l2_phase_shadow !== false,
+        nanda_l2_phase_apply: !!cfg?.nanda_l2_phase_apply,
+        nanda_l3_phase_shadow: !!cfg?.nanda_l3_phase_shadow,
         ime_bracket_candidates: !!cfg?.ime_bracket_candidates,
         trigger: normalizeChoice(cfg?.trigger, TRIGGER_OPTIONS.map(([id]) => id), DEFAULTS.trigger),
         force_ru_key: normalizeChoice(cfg?.force_ru_key, FORCE_KEY_OPTIONS.map(([id]) => id), DEFAULTS.force_ru_key),
@@ -339,6 +345,9 @@ class LayPrefsView {
             this._weightRow('Вес LEM', 'lem_weight_percent', false),
             this._weightRow('Вес L2 кандидатов', 'nanda_l2_weight_percent', false),
             this._weightRow('Вес L3 фразы', 'nanda_l3_weight_percent', false),
+            this._switchRow('L2 phase shadow', 'nanda_l2_phase_shadow', false),
+            this._switchRow('L2 phase apply', 'nanda_l2_phase_apply', false),
+            this._switchRow('L3 phase shadow', 'nanda_l3_phase_shadow', false),
             this._switchRow('Подсказки NANDA', 'nanda_precognition', false),
             this._switchRow('Подсказки в [скобках]', 'ime_bracket_candidates', false),
             this._switchRow('Автокоррекция NANDA', 'nanda_autocorrect', false),
