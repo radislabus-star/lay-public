@@ -456,16 +456,13 @@ impl LayIbusEngine {
             == lay::config::CorrectionSafety::Experimental
             || !has_left_context;
         let short_prefix_uses_seed = partial_len <= 4;
-        if short_prefix_uses_seed && has_left_context && !allow_short_lexical {
-            return Vec::new();
-        }
         let whole_word_candidates = if short_prefix_uses_seed {
             lay::nanda_wave::candidate_gate::live_completion_candidates(
                 lay::nanda_wave::candidate_gate::LiveCompletionRequest {
                     context_prefix: prefix,
                     partial: &partial,
                     max_suffix_chars,
-                    allow_short_lexical,
+                    allow_short_lexical: true,
                     limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
                 },
             )
@@ -524,11 +521,7 @@ impl LayIbusEngine {
     }
 
     fn ru_lexical_min_prefix_chars(&self) -> usize {
-        if self.config.ime_bracket_candidates {
-            4
-        } else {
-            PREEDIT_RU_PREFIX_MIN_CHARS
-        }
+        PREEDIT_RU_PREFIX_MIN_CHARS
     }
 
     pub(super) fn push_tail_char(&mut self, ch: char) {

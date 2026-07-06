@@ -60,6 +60,7 @@ struct CandidateQualityReport {
     source_counts: BTreeMap<String, usize>,
     error_class_counts: BTreeMap<String, usize>,
     action_kind_counts: BTreeMap<String, usize>,
+    safety_reason_counts: BTreeMap<String, usize>,
     class_counts: BTreeMap<&'static str, usize>,
 }
 
@@ -88,6 +89,15 @@ impl CandidateQualityReport {
             *self
                 .action_kind_counts
                 .entry(action_kind.to_string())
+                .or_default() += 1;
+        }
+    }
+
+    fn add_safety_reason(&mut self, reason: &str) {
+        if !reason.is_empty() {
+            *self
+                .safety_reason_counts
+                .entry(reason.to_string())
                 .or_default() += 1;
         }
     }
@@ -142,6 +152,7 @@ fn report_from_text(text: &str, limit: usize, path: &PathBuf) -> serde_json::Val
             "by_source": report.source_counts
         },
         "edit_actions": report.action_kind_counts,
+        "safety_reasons": report.safety_reason_counts,
         "error_classes": report.error_class_counts,
         "class_counts": report.class_counts,
         "read_as": "diagnostic only; this report does not change runtime decisions"
@@ -181,6 +192,12 @@ fn inspect_edit_plan(report: &mut CandidateQualityReport, value: &Value) {
         if action_kind == "block_unsafe" {
             report.unsafe_edit_plan += 1;
             report.add_class("unsafe_edit_action");
+        }
+    }
+    if let Some(reason) = value.get("safety_reason").and_then(Value::as_str) {
+        report.add_safety_reason(reason);
+        if reason == "low_confidence_boundary_edit" {
+            report.add_class("low_confidence_boundary_edit");
         }
     }
     let safety_allow_apply = value

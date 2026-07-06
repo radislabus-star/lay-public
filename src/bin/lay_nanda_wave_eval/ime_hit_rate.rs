@@ -12,7 +12,7 @@ pub(crate) fn print_json() -> io::Result<()> {
     Ok(())
 }
 
-fn report_json() -> Value {
+pub(crate) fn report_json() -> Value {
     let Some(path) = ibus_debug_path() else {
         return json!({
             "kind": "ime_hit_rate_report",
@@ -42,6 +42,9 @@ struct ImeHitRateReport {
     timing_records: usize,
     candidate_records: usize,
     no_candidate_records: usize,
+    eligible_records: usize,
+    eligible_candidate_records: usize,
+    eligible_no_candidate_records: usize,
     total_us: Vec<u64>,
     ascii_us: Vec<u64>,
     ru_us: Vec<u64>,
@@ -49,7 +52,10 @@ struct ImeHitRateReport {
     candidate_count_sum: u64,
     candidate_count_max: u64,
     no_candidate_tokens: BTreeMap<String, usize>,
+    eligible_no_candidate_tokens: BTreeMap<String, usize>,
     top_candidates: BTreeMap<String, usize>,
+    weak_single_suffix_candidates: BTreeMap<String, usize>,
+    slow_tokens: BTreeMap<String, usize>,
 }
 
 fn report_from_text(text: &str, limit: usize, path: &PathBuf) -> Value {
@@ -87,6 +93,11 @@ fn report_from_text(text: &str, limit: usize, path: &PathBuf) -> Value {
             "no_candidate_records": report.no_candidate_records,
             "candidate_rate_percent": candidate_rate,
             "no_candidate_rate_percent": no_candidate_rate,
+            "eligible_records": report.eligible_records,
+            "eligible_candidate_records": report.eligible_candidate_records,
+            "eligible_no_candidate_records": report.eligible_no_candidate_records,
+            "eligible_candidate_rate_percent": percent(report.eligible_candidate_records, report.eligible_records),
+            "eligible_no_candidate_rate_percent": percent(report.eligible_no_candidate_records, report.eligible_records),
             "candidate_count_avg": average_count(report.candidate_count_sum, report.timing_records),
             "candidate_count_max": report.candidate_count_max
         },
@@ -97,7 +108,10 @@ fn report_from_text(text: &str, limit: usize, path: &PathBuf) -> Value {
             "semantic": percentile_block(&mut report.semantic_us)
         },
         "no_candidate_tokens": top_counts(report.no_candidate_tokens, 12),
+        "eligible_no_candidate_tokens": top_counts(report.eligible_no_candidate_tokens, 12),
         "top_candidates": top_counts(report.top_candidates, 12),
+        "weak_single_suffix_candidates": top_counts(report.weak_single_suffix_candidates, 12),
+        "slow_tokens": top_counts(report.slow_tokens, 12),
         "read_as": "candidate availability and latency from live IME trace; diagnostic only"
     })
 }
@@ -117,26 +131,60 @@ fn inspect_timing(report: &mut ImeHitRateReport, value: &Value) {
     report.semantic_us.push(semantic);
 
     let candidates = value.get("candidates").and_then(Value::as_u64).unwrap_or(0);
+    let token = value.get("token").and_then(Value::as_str).unwrap_or("");
+    let eligible = is_eligible_ru_prefix(token);
+    if eligible {
+        report.eligible_records += 1;
+    }
+    if total >= 10_000 && !token.is_empty() {
+        *report.slow_tokens.entry(token.to_string()).or_default() += 1;
+    }
     report.candidate_count_sum = report.candidate_count_sum.saturating_add(candidates);
     report.candidate_count_max = report.candidate_count_max.max(candidates);
     if candidates == 0 {
         report.no_candidate_records += 1;
-        if let Some(token) = value.get("token").and_then(Value::as_str) {
-            if !token.is_empty() {
-                *report
-                    .no_candidate_tokens
-                    .entry(token.to_string())
-                    .or_default() += 1;
-            }
+        if eligible {
+            report.eligible_no_candidate_records += 1;
+            *report
+                .eligible_no_candidate_tokens
+                .entry(token.to_string())
+                .or_default() += 1;
+        }
+        if !token.is_empty() {
+            *report
+                .no_candidate_tokens
+                .entry(token.to_string())
+                .or_default() += 1;
         }
     } else {
         report.candidate_records += 1;
+        if eligible {
+            report.eligible_candidate_records += 1;
+        }
         if let Some(top) = value.get("top").and_then(Value::as_str) {
             if !top.is_empty() {
                 *report.top_candidates.entry(top.to_string()).or_default() += 1;
+                if is_weak_single_suffix(top) {
+                    *report
+                        .weak_single_suffix_candidates
+                        .entry(top.to_string())
+                        .or_default() += 1;
+                }
             }
         }
     }
+}
+
+fn is_eligible_ru_prefix(token: &str) -> bool {
+    let len = token.chars().count();
+    (2..=18).contains(&len)
+        && token
+            .chars()
+            .all(|ch| matches!(ch, 'а'..='я' | 'ё' | 'А'..='Я' | 'Ё'))
+}
+
+fn is_weak_single_suffix(suffix: &str) -> bool {
+    suffix.chars().count() == 1 && !matches!(suffix, "и" | "я")
 }
 
 fn percentile_block(values: &mut Vec<u64>) -> Value {
@@ -202,6 +250,8 @@ mod tests {
 
         assert_eq!(report["hit_rate"]["candidate_records"], 1);
         assert_eq!(report["hit_rate"]["no_candidate_records"], 1);
+        assert_eq!(report["hit_rate"]["eligible_records"], 2);
+        assert_eq!(report["hit_rate"]["eligible_candidate_records"], 1);
         assert_eq!(report["latency_us"]["total"]["max"], 20);
         assert_eq!(report["top_candidates"][0]["value"], "ерка");
     }

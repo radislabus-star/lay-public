@@ -70,13 +70,14 @@ impl EditAction {
     ) -> Self {
         let from_text = from_text.into();
         let to_text = to_text.into();
-        let safety = autocorrect_edit_safety(
+        let mut safety = autocorrect_edit_safety(
             &from_text,
             &to_text,
             &plan,
             selected_source_id,
             selected_error_class,
         );
+        downgrade_low_confidence_boundary_edit(&mut safety, confidence_milli);
         let kind = classify_planned_replacement(&safety);
         Self {
             kind,
@@ -139,6 +140,20 @@ impl EditAction {
     }
 }
 
+fn downgrade_low_confidence_boundary_edit(
+    safety: &mut EditPlanSafetyReport,
+    confidence_milli: i16,
+) {
+    if !safety.allow_apply || !safety.boundary_changed || !safety.word_count_changed {
+        return;
+    }
+    if confidence_milli >= 500 {
+        return;
+    }
+    safety.allow_apply = false;
+    safety.reason = "low_confidence_boundary_edit";
+}
+
 fn classify_planned_replacement(safety: &EditPlanSafetyReport) -> EditActionKind {
     if !safety.allow_apply {
         return EditActionKind::BlockUnsafe;
@@ -195,5 +210,23 @@ mod tests {
         assert_eq!(action.kind, EditActionKind::BlockUnsafe);
         assert!(!action.allow_apply());
         assert!(action.boundary_changed());
+    }
+
+    #[test]
+    fn low_confidence_boundary_split_blocks_apply() {
+        let plan = plan_text_replacement("принамать ", "перинам ать ").expect("plan");
+        let action = EditAction::planned_replacement(
+            "typing-assist",
+            225,
+            "принамать ",
+            "перинам ать ",
+            plan,
+            Some("BoundaryCell32"),
+            Some("glued-words"),
+        );
+
+        assert_eq!(action.kind, EditActionKind::BlockUnsafe);
+        assert!(!action.allow_apply());
+        assert_eq!(action.safety_reason(), "low_confidence_boundary_edit");
     }
 }

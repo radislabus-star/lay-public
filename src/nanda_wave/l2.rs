@@ -27,10 +27,10 @@ use super::signal::{WavePacket, WordCandidate};
 const MAX_LAYOUT_SCAN_CANDIDATES: usize = 4;
 const MAX_TAUGHT_CANDIDATES: usize = 6;
 const L2_ACTIVE_SOURCE_TARGET: usize = 1_000_000;
-const L2_RUNTIME_WORD_LIMIT: usize = 8_192;
+const L2_RUNTIME_WORD_LIMIT: usize = 16_384;
 const L2_FOUNDATION_SOURCE_LIMIT: usize = 100_000;
 const L2_FOUNDATION_LIVE_SCAN_LIMIT: usize = 100_000;
-const L2_USAGE_WORD_LIMIT: usize = 1_000;
+const L2_USAGE_WORD_LIMIT: usize = 5_000;
 const L2_CASE_WORD_LIMIT: usize = 200;
 const L2_BROAD_PREFIX_SCAN_LIMIT: usize = 384;
 const L2_SURFACE_FOUNDATION_RU_DATA: &str =

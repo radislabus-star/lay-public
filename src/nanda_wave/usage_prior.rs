@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use std::sync::{Mutex, OnceLock};
+use std::sync::{Arc, Mutex, OnceLock};
 use std::time::{Duration, Instant};
 
 use crate::time::unix_timestamp;
@@ -62,7 +62,7 @@ struct UsageCounts {
 
 #[derive(Debug, Clone, Default)]
 pub struct UsagePriorSnapshot {
-    counts: UsageCounts,
+    counts: Arc<UsageCounts>,
 }
 
 impl UsagePriorSnapshot {
@@ -111,7 +111,7 @@ struct PersistedUsageCounts {
 #[derive(Debug, Default)]
 struct UsageCache {
     loaded_at: Option<Instant>,
-    counts: UsageCounts,
+    counts: Arc<UsageCounts>,
 }
 
 pub(crate) fn record_typed_tail_if_enabled(tail: &str) {
@@ -228,11 +228,11 @@ fn usage_counts() -> UsageCounts {
         .loaded_at
         .is_some_and(|loaded_at| loaded_at.elapsed() < USAGE_REFRESH_INTERVAL)
     {
-        return cache.counts.clone();
+        return (*cache.counts).clone();
     }
-    cache.counts = load_usage_counts();
+    cache.counts = Arc::new(load_usage_counts());
     cache.loaded_at = Some(Instant::now());
-    cache.counts.clone()
+    (*cache.counts).clone()
 }
 
 pub(crate) fn word_usage_prior_cached(word: &str) -> f32 {
@@ -303,7 +303,7 @@ pub(crate) fn usage_debug_summary() -> (u64, usize, usize) {
 fn refresh_usage_counts_from_disk() -> UsageCounts {
     let counts = load_usage_counts();
     if let Ok(mut cache) = usage_cache().lock() {
-        cache.counts = counts.clone();
+        cache.counts = Arc::new(counts.clone());
         cache.loaded_at = Some(Instant::now());
     }
     counts
@@ -356,9 +356,9 @@ fn context_ngram_prior_from_counts(counts: &UsageCounts, context: &[String], wor
         .clamp(0.0, 0.24)
 }
 
-fn cached_usage_counts() -> UsageCounts {
+fn cached_usage_counts() -> Arc<UsageCounts> {
     let Ok(cache) = usage_cache().lock() else {
-        return UsageCounts::default();
+        return Arc::new(UsageCounts::default());
     };
     cache.counts.clone()
 }
@@ -540,9 +540,11 @@ fn refresh_usage_cache_after_write(event: &UsageEvent) {
         return;
     };
     if cache.loaded_at.is_none() {
-        cache.counts = UsageCounts::default();
+        cache.counts = Arc::new(UsageCounts::default());
     }
-    add_usage_event_count(&mut cache.counts, event);
+    let mut counts = (*cache.counts).clone();
+    add_usage_event_count(&mut counts, event);
+    cache.counts = Arc::new(counts);
     cache.loaded_at = Some(Instant::now());
 }
 
