@@ -13,6 +13,7 @@ use std::fs;
 use std::io;
 use std::path::PathBuf;
 
+use super::candidate_quality;
 use super::real_suite;
 
 const L2_SURFACE_MOTIF_CELL: &str = "L2SurfaceMotifCell32";
@@ -82,6 +83,7 @@ fn refresh_live_status_fields(value: &mut Value) {
     value["cell_scoreboard"] = scoreboard_json(&scoreboard);
     value["resonance_memory"] = resonance_memory_json(&resonance_memory);
     value["preedit_live"] = preedit_live_json();
+    value["candidate_quality"] = candidate_quality::report_json();
     value["live_scoreboard_refreshed_at_unix"] = json!(lay::time::unix_timestamp());
     value["source"] = json!("lay-nanda-wave-eval --status-json (cached gate + live scoreboard)");
 }
@@ -189,6 +191,7 @@ fn build_status_json(full: bool) -> io::Result<serde_json::Value> {
         "cell_scoreboard": scoreboard_json(&scoreboard),
         "resonance_memory": resonance_memory_json(&resonance_memory),
         "preedit_live": preedit_live_json(),
+        "candidate_quality": candidate_quality::report_json(),
         "sources": suite.sources.iter().map(|source| {
             json!({"path": source.path, "cases": source.cases})
         }).collect::<Vec<_>>()

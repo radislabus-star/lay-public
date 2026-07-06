@@ -10,6 +10,8 @@ use std::env;
 use std::io;
 use std::path::PathBuf;
 
+#[path = "lay_nanda_wave_eval/candidate_quality.rs"]
+mod candidate_quality;
 #[path = "lay_nanda_wave_eval/canonical_l1_l2.rs"]
 mod canonical_l1_l2;
 #[path = "lay_nanda_wave_eval/canonical_l2_recent.rs"]
@@ -153,6 +155,10 @@ fn main() -> io::Result<()> {
             args.iter().any(|arg| arg == "--refresh-status-json"),
             args.iter().any(|arg| arg == "--full-status-json"),
         )?;
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--candidate-quality-report") {
+        candidate_quality::print_json()?;
         return Ok(());
     }
     if let Some(limit) = arg_value(&args, "--recent-traces") {
