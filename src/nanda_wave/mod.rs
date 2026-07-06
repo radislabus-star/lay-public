@@ -9,6 +9,7 @@ mod journal_record;
 pub mod l1;
 mod l1_center_memory;
 pub mod l2;
+mod l2_broad_index;
 mod l2_candidate_phase;
 mod l2_center_memory;
 pub mod l3;

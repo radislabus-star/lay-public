@@ -25,7 +25,7 @@ mod real_suite;
 mod status;
 
 const DEFAULT_LLMWAVE_SEED: &str = "data/nanda_llmwave_seed_phrases.txt";
-const DEFAULT_LLMWAVE_LIVE_MIN_COUNT: usize = 2;
+const DEFAULT_LLMWAVE_LIVE_MIN_COUNT: usize = 1;
 const DEFAULT_LLMWAVE_PROMOTION_MAX_LINES: usize = 500;
 const LLMWAVE_PROMOTION_MIN_POINTS: usize = 100;
 const LLMWAVE_PROMOTION_MIN_RECORDS: usize = 100;

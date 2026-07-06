@@ -140,6 +140,11 @@ impl L2CenterMemory {
     }
 
     #[must_use]
+    pub(super) fn source_word_count(&self) -> usize {
+        self.source_words.len()
+    }
+
+    #[must_use]
     pub(super) fn word_records(&self) -> &[L2WordRecord] {
         &self.word_records
     }

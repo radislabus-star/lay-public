@@ -26,11 +26,13 @@ use super::signal::{WavePacket, WordCandidate};
 
 const MAX_LAYOUT_SCAN_CANDIDATES: usize = 4;
 const MAX_TAUGHT_CANDIDATES: usize = 6;
-const L2_RUNTIME_WORD_LIMIT: usize = 1_800;
-const L2_FOUNDATION_SOURCE_LIMIT: usize = 12_000;
-const L2_FOUNDATION_LIVE_SCAN_LIMIT: usize = 20_000;
-const L2_USAGE_WORD_LIMIT: usize = 200;
+const L2_ACTIVE_SOURCE_TARGET: usize = 1_000_000;
+const L2_RUNTIME_WORD_LIMIT: usize = 8_192;
+const L2_FOUNDATION_SOURCE_LIMIT: usize = 100_000;
+const L2_FOUNDATION_LIVE_SCAN_LIMIT: usize = 100_000;
+const L2_USAGE_WORD_LIMIT: usize = 1_000;
 const L2_CASE_WORD_LIMIT: usize = 200;
+const L2_BROAD_PREFIX_SCAN_LIMIT: usize = 384;
 const L2_SURFACE_FOUNDATION_RU_DATA: &str =
     include_str!("../../data/lexicon/l2_surface_foundation_ru_100k.txt");
 const L2_SURFACE_HOT_RU_DATA: &str = include_str!("../../data/lexicon/l2_surface_hot_ru.txt");
@@ -53,6 +55,23 @@ pub struct L2ImeWordCandidate {
     pub motif_overlap: usize,
     pub usage_prior: f32,
     pub context_prior: f32,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct L2SurfaceMemoryStatus {
+    pub active_source_target: usize,
+    pub hot_center_words: usize,
+    pub hot_center_records: usize,
+    pub hot_center_motifs: usize,
+    pub hot_center_token_refs: usize,
+    pub hot_center_bytes: usize,
+    pub broad_source_words: usize,
+    pub broad_prefix_keys: usize,
+    pub broad_word_refs: usize,
+    pub foundation_source_limit: usize,
+    pub foundation_live_scan_limit: usize,
+    pub generated_forms_loaded: bool,
+    pub generated_forms_words: usize,
 }
 
 struct TaughtCandidateInput<'a> {
@@ -84,7 +103,35 @@ pub(super) fn warm_up_surface_motif_memory() {
 
 pub(super) fn warm_up_ime_word_candidate_memory() {
     warm_up_surface_motif_memory();
+    let _ = broad_prefix_index().stats();
     let _ = l2_short_position_seed_index().len();
+}
+
+pub fn l2_surface_memory_status() -> L2SurfaceMemoryStatus {
+    let hot = surface_motif_memory();
+    let broad = broad_prefix_index().stats();
+    let generated_forms_loaded =
+        crate::russian_lexicon::russian_generated_form_dictionary_is_warm();
+    let generated_forms_words = if generated_forms_loaded {
+        crate::russian_lexicon::russian_generated_form_dictionary().len()
+    } else {
+        0
+    };
+    L2SurfaceMemoryStatus {
+        active_source_target: L2_ACTIVE_SOURCE_TARGET,
+        hot_center_words: hot.source_word_count(),
+        hot_center_records: hot.word_records().len(),
+        hot_center_motifs: hot.center_count(),
+        hot_center_token_refs: hot.token_refs().len(),
+        hot_center_bytes: hot.hot_bytes(),
+        broad_source_words: broad.source_words,
+        broad_prefix_keys: broad.prefix_keys,
+        broad_word_refs: broad.word_refs,
+        foundation_source_limit: L2_FOUNDATION_SOURCE_LIMIT,
+        foundation_live_scan_limit: L2_FOUNDATION_LIVE_SCAN_LIMIT,
+        generated_forms_loaded,
+        generated_forms_words,
+    }
 }
 
 pub fn ime_l2_word_candidates(
@@ -199,11 +246,18 @@ pub fn ime_l2_foundation_prefix_candidates(
         return Vec::new();
     }
     let context_tokens = super::llmwave::tokenize(context_prefix);
-    let mut words = data_words(L2_SURFACE_FOUNDATION_RU_DATA)
-        .take(L2_FOUNDATION_LIVE_SCAN_LIMIT)
-        .filter_map(|word| super::surface_bank::normalize_l2_surface_word(&word))
-        .filter(|word| word.starts_with(&normalized) && word.chars().count() > token_len)
-        .take(limit.saturating_mul(8).max(limit))
+    let mut words = broad_prefix_index()
+        .prefix_candidates(
+            &normalized,
+            token_len + 1,
+            32,
+            limit
+                .saturating_mul(16)
+                .max(L2_BROAD_PREFIX_SCAN_LIMIT)
+                .min(L2_FOUNDATION_LIVE_SCAN_LIMIT),
+        )
+        .into_iter()
+        .map(str::to_string)
         .collect::<Vec<_>>();
     words.sort_by(|left, right| {
         super::usage_prior::word_usage_prior_cached(right)
@@ -1029,7 +1083,6 @@ fn surface_motif_word_candidates(
     }
 
     let surface_candidates = surface_motif_memory().surface_candidates_for_text(&normalized, 24);
-    let empty_fuzzy_authority = Vec::new();
     let mut out = Vec::new();
     if options.is_enabled(L2_SURFACE_MOTIF_CELL) && surface_candidates.is_empty() {
         if let Some(candidate) = repeated_letter_surface_candidate(
@@ -1044,6 +1097,7 @@ fn surface_motif_word_candidates(
             out.push(candidate);
         }
     }
+    let empty_fuzzy_authority = Vec::new();
     for candidate in &surface_candidates {
         let candidate_len = candidate.word.chars().count();
         let distance = damerau_levenshtein(&normalized, &candidate.word);
@@ -1116,6 +1170,53 @@ fn surface_motif_word_candidates(
                 l1,
                 context,
             }));
+        }
+    }
+    if options.is_enabled(L2_SURFACE_MOTIF_CELL)
+        && out.is_empty()
+        && len >= 4
+        && !surface_motif_stable_existing_word(&normalized)
+    {
+        let mut fuzzy_authority = crate::ru_typo::fuzzy_known_word_candidates(&normalized);
+        fuzzy_authority.sort_by(|left, right| {
+            let left_distance = damerau_levenshtein(&normalized, left);
+            let right_distance = damerau_levenshtein(&normalized, right);
+            left_distance
+                .cmp(&right_distance)
+                .then_with(|| left.chars().count().cmp(&right.chars().count()))
+                .then_with(|| left.cmp(right))
+        });
+        for replacement_lower in fuzzy_authority.iter().take(4) {
+            let distance = damerau_levenshtein(&normalized, replacement_lower);
+            let score = 940u32.saturating_sub(distance.min(4) as u32 * 40);
+            if surface_motif_typo_has_authority(
+                &normalized,
+                replacement_lower,
+                score,
+                &surface_candidates,
+                &fuzzy_authority,
+            ) && !fuzzy_surface_candidate_blocked(word, &normalized, replacement_lower)
+                && surface_motif_typo_allowed(&normalized, replacement_lower, len, distance, score)
+            {
+                out.push(surface_motif_candidate(SurfaceMotifCandidateInput {
+                    prefix,
+                    leading,
+                    word,
+                    trailing,
+                    replacement_lower,
+                    source: L2_SURFACE_MOTIF_CELL,
+                    score,
+                    l1_overlap: 0,
+                    l2_overlap: 0,
+                    motif_overlap: 0,
+                    prefix_match: false,
+                    distance,
+                    risk: surface_motif_typo_risk(context, distance),
+                    l1,
+                    context,
+                }));
+                break;
+            }
         }
     }
     out
@@ -1265,7 +1366,8 @@ fn surface_motif_stable_existing_word(word: &str) -> bool {
     is_common_ru_word(word)
         || is_user_protected_word(word)
         || is_ru_live_protected_word(word)
-        || (surface_motif_known_surface(word) && !russian_zero_a_ya_stem_has_known_lemma(word))
+        || (surface_motif_strict_known_surface(word)
+            && !russian_zero_a_ya_stem_has_known_lemma(word))
         || russian_zero_o_form_has_known_lemma(word)
         || russian_future_ut_form_has_known_infinitive(word)
 }
@@ -1291,9 +1393,14 @@ fn russian_future_ut_form_has_known_infinitive(word: &str) -> bool {
 }
 
 fn surface_motif_known_surface(word: &str) -> bool {
+    surface_motif_strict_known_surface(word) || runtime_l2_surface_word_set().contains(word)
+}
+
+fn surface_motif_strict_known_surface(word: &str) -> bool {
     is_common_ru_word(word)
         || is_ru_live_protected_word(word)
-        || runtime_l2_surface_word_set().contains(word)
+        || is_user_protected_word(word)
+        || crate::russian_lexicon::russian_dictionary().contains(word)
 }
 
 fn is_russian_consonant_for_l2(ch: char) -> bool {
@@ -1506,6 +1613,16 @@ fn surface_motif_memory() -> &'static L2CenterMemory {
     })
 }
 
+fn broad_prefix_index() -> &'static super::l2_broad_index::L2BroadPrefixIndex {
+    static INDEX: OnceLock<super::l2_broad_index::L2BroadPrefixIndex> = OnceLock::new();
+    INDEX.get_or_init(|| {
+        super::l2_broad_index::L2BroadPrefixIndex::build(&[
+            L2_SURFACE_FOUNDATION_RU_DATA,
+            L2_SURFACE_HOT_RU_DATA,
+        ])
+    })
+}
+
 fn runtime_l2_surface_word_set() -> &'static HashSet<String> {
     static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
     WORDS.get_or_init(|| runtime_l2_surface_words().into_iter().collect())
@@ -1537,15 +1654,39 @@ fn runtime_l2_surface_words() -> Vec<String> {
         &mut words,
         &mut seen,
     );
-    collect_runtime_l2_training_words(
-        data_words(L2_SURFACE_FOUNDATION_RU_DATA).take(L2_FOUNDATION_SOURCE_LIMIT),
+    fill_balanced_runtime_l2_surface_words(
+        data_words(L2_SURFACE_HOT_RU_DATA)
+            .chain(data_words(L2_SURFACE_FOUNDATION_RU_DATA).take(L2_FOUNDATION_SOURCE_LIMIT)),
+        L2_RUNTIME_WORD_LIMIT,
         &mut words,
         &mut seen,
     );
-    collect_runtime_l2_words(data_words(L2_SURFACE_HOT_RU_DATA), &mut words, &mut seen);
 
     words.truncate(L2_RUNTIME_WORD_LIMIT);
     words
+}
+
+fn fill_balanced_runtime_l2_surface_words<I>(
+    source: I,
+    limit: usize,
+    words: &mut Vec<String>,
+    seen: &mut HashSet<String>,
+) where
+    I: IntoIterator<Item = String>,
+{
+    let remaining = limit.saturating_sub(words.len());
+    if remaining == 0 {
+        return;
+    }
+    for word in super::surface_bank::balanced_l2_surface_words(source, remaining.saturating_mul(3))
+    {
+        if seen.insert(word.clone()) {
+            words.push(word);
+            if words.len() >= limit {
+                break;
+            }
+        }
+    }
 }
 
 fn collect_runtime_l2_training_words<I>(
@@ -1930,6 +2071,9 @@ fn boundary_split_candidates(
     {
         return Vec::new();
     }
+    if surface_motif_known_surface(&normalized) {
+        return Vec::new();
+    }
     if let Some(replacement) = light_boundary_replacement(&normalized) {
         return vec![WordCandidate {
             text: format!("{prefix}{}", apply_word_case(token, &replacement)),
@@ -1943,9 +2087,6 @@ fn boundary_split_candidates(
                 support
             },
         }];
-    }
-    if surface_motif_known_surface(&normalized) {
-        return Vec::new();
     }
     if let Some(replacement) = crate::phrase_reader::correct_glued_russian_phrase(&normalized) {
         if replacement != normalized {
@@ -2023,21 +2164,60 @@ fn boundary_split_candidates(
 
 fn light_boundary_replacement(word: &str) -> Option<String> {
     let chars = word.chars().collect::<Vec<_>>();
+    let mut best = None::<(usize, String)>;
     for split in 1..chars.len() {
         let left = chars[..split].iter().collect::<String>();
         let right = chars[split..].iter().collect::<String>();
         if left.chars().count() > 3 || right.chars().count() < 3 {
             continue;
         }
-        let known_left = is_ru_one_letter_function_word(&left)
-            || crate::lexicon::is_ru_short_pronoun(&left)
-            || is_common_ru_word(&left);
+        if left.chars().count() > 1 && crate::lexicon::is_ru_short_preposition(&left) {
+            continue;
+        }
+        let known_left_function = is_ru_one_letter_function_word(&left);
+        let known_left_pronoun = crate::lexicon::is_ru_short_pronoun(&left);
+        let known_left_common = is_common_ru_word(&left);
+        let known_left = known_left_function || known_left_pronoun || known_left_common;
         let known_right = surface_motif_known_surface(&right);
         if known_left && known_right {
-            return Some(format!("{left} {right}"));
+            let score = boundary_split_score(
+                left.chars().count(),
+                right.chars().count(),
+                known_left_function,
+                known_left_pronoun || known_left_common,
+                is_common_ru_word(&right),
+            );
+            let replacement = format!("{left} {right}");
+            let replace_best = match best.as_ref() {
+                Some((best_score, _)) => score > *best_score,
+                None => true,
+            };
+            if replace_best {
+                best = Some((score, replacement));
+            }
         }
     }
-    None
+    best.map(|(_, replacement)| replacement)
+}
+
+fn boundary_split_score(
+    left_len: usize,
+    right_len: usize,
+    left_function: bool,
+    left_common: bool,
+    right_common: bool,
+) -> usize {
+    let mut score = right_len.min(12);
+    if left_common {
+        score += 20;
+    }
+    if right_common {
+        score += 10;
+    }
+    if left_function {
+        score += 4;
+    }
+    score + left_len.min(4) * 3
 }
 
 fn boundary_scan_candidates(
@@ -2818,6 +2998,32 @@ mod tests {
                 candidate.source == L2_SURFACE_MOTIF_CELL && candidate.text == "пункт"
             }),
             "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn l2_surface_motif_does_not_treat_usage_typo_as_stable_word() {
+        assert!(!surface_motif_stable_existing_word("пукнт"));
+        assert!(!fuzzy_surface_candidate_blocked("пукнт", "пукнт", "пункт"));
+        let fuzzy = crate::ru_typo::fuzzy_known_word_candidates("пукнт");
+        assert!(fuzzy.iter().any(|candidate| candidate == "пункт"));
+        assert!(surface_motif_typo_has_authority(
+            "пукнт",
+            "пункт",
+            900,
+            &[],
+            &fuzzy
+        ));
+        assert!(surface_motif_typo_allowed("пукнт", "пункт", 5, 1, 900));
+        let l1 = run_l1("пукнт");
+        let context = TailContext::from_text("пукнт");
+        let cell_candidates =
+            surface_motif_word_candidates("", "пукнт", &context, &l1, &WaveOptions::default());
+        assert!(
+            cell_candidates
+                .iter()
+                .any(|candidate| candidate.text == "пункт"),
+            "cell_candidates={cell_candidates:?}"
         );
     }
 

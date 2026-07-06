@@ -72,10 +72,7 @@ pub fn live_completion_candidates(
     let has_completion = raw
         .iter()
         .any(|candidate| candidate.kind == L2ImeWordCandidateKind::Completion);
-    let has_strong_replacement = raw.iter().any(|candidate| {
-        candidate.kind == L2ImeWordCandidateKind::Replacement && candidate.score >= 650
-    });
-    if !has_completion && !has_strong_replacement {
+    if !has_completion {
         raw.extend(l2::ime_l2_foundation_prefix_candidates(
             request.context_prefix,
             &partial,

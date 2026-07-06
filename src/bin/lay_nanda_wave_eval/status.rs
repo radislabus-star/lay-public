@@ -4,7 +4,7 @@ use lay::nanda_wave::context::{MAX_CONTEXT_TOKENS, MIN_CONTEXT_TOKENS};
 use lay::nanda_wave::{
     evaluate_wave, evaluate_wave_with_options, journal, llmwave, resonance_memory,
 };
-use lay::nanda_wave::{run_wave_trace_with_options, WaveDecision, WaveOptions};
+use lay::nanda_wave::{l2, run_wave_trace_with_options, WaveDecision, WaveOptions};
 use lay::{config, typing_assist, typing_context};
 use serde_json::{json, Value};
 use std::collections::BTreeMap;
@@ -207,6 +207,7 @@ fn build_status_json(full: bool) -> io::Result<serde_json::Value> {
             },
             "phrase_probe": llmwave_phrase_probe_json(&llmwave_memory)
         },
+        "l2_surface_memory": l2_surface_memory_json(),
         "zones": [
             {"id": "sensors", "label": "Сенсоры", "layer": "L1"},
             {"id": "candidates", "label": "Кандидаты", "layer": "L2"},
@@ -224,6 +225,37 @@ fn build_status_json(full: bool) -> io::Result<serde_json::Value> {
             json!({"path": source.path, "cases": source.cases})
         }).collect::<Vec<_>>()
     }))
+}
+
+fn l2_surface_memory_json() -> serde_json::Value {
+    let status = l2::l2_surface_memory_status();
+    json!({
+        "active_source_target": status.active_source_target,
+        "hot_center": {
+            "words": status.hot_center_words,
+            "records": status.hot_center_records,
+            "motifs": status.hot_center_motifs,
+            "token_refs": status.hot_center_token_refs,
+            "compact_bytes": status.hot_center_bytes
+        },
+        "broad_prefix_readout": {
+            "source_words": status.broad_source_words,
+            "prefix_keys": status.broad_prefix_keys,
+            "word_refs": status.broad_word_refs,
+            "foundation_source_limit": status.foundation_source_limit,
+            "foundation_live_scan_limit": status.foundation_live_scan_limit
+        },
+        "generated_forms": {
+            "loaded": status.generated_forms_loaded,
+            "words": status.generated_forms_words,
+            "authority": "cold lexical source; not promoted into hot L2 center heap"
+        },
+        "contract": {
+            "hot_memory": "L1/L2 centers, token refs and phase-like fingerprints",
+            "surface_text": "materialized only for returned candidates",
+            "million_target": "source/readout budget, not raw Vec<String> in hot path"
+        }
+    })
 }
 
 #[derive(Debug, Default, Clone, Copy)]

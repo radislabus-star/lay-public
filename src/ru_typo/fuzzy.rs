@@ -188,6 +188,15 @@ mod tests {
     }
 
     #[test]
+    fn fuzzy_known_word_candidates_can_recover_adjacent_transposition() {
+        let candidates = fuzzy_known_word_candidates("пукнт");
+        assert!(
+            candidates.iter().any(|candidate| candidate == "пункт"),
+            "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
     fn damerau_counts_adjacent_swap_as_one_edit() {
         assert_eq!(damerau_levenshtein("йо", "ой"), 1);
     }
