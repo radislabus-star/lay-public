@@ -4,7 +4,7 @@ use super::bridge::LayImeBridge;
 use super::engine::{LayIbusEngine, ManualToggleAuthority};
 use super::state::CommittedTailReplaceRequest;
 use lay::manual_toggle::ImeManualToggleOutcome;
-use lay::text_edit::VisibleTailSource;
+use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 
 impl LayImeBridge {
     pub(super) fn active_path(&self) -> Option<String> {
@@ -88,6 +88,7 @@ impl LayImeBridge {
         backspaces: u32,
         text: String,
         suppress_next_autocorrect: bool,
+        expected_original_tail: Option<String>,
     ) -> fdo::Result<bool> {
         if backspaces == 0 && text.is_empty() {
             return Ok(false);
@@ -95,6 +96,14 @@ impl LayImeBridge {
         let Some(path) = self.active_path() else {
             return Ok(false);
         };
+        let expected_tail = expected_original_tail.map(|expected| {
+            VisibleTailSnapshot::new(
+                VisibleTailSource::DaemonWordBuffer,
+                expected,
+                Some(path.clone()),
+                0,
+            )
+        });
         let iface_ref = self
             .ibus_connection
             .object_server()
@@ -103,16 +112,12 @@ impl LayImeBridge {
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let emitter = iface_ref.signal_emitter();
         let mut engine = iface_ref.get_mut().await;
-        engine
-            .replace_committed_tail(
-                emitter,
-                CommittedTailReplaceRequest::daemon_bridge(
-                    backspaces,
-                    text,
-                    suppress_next_autocorrect,
-                ),
-            )
-            .await
+        let mut request =
+            CommittedTailReplaceRequest::daemon_bridge(backspaces, text, suppress_next_autocorrect);
+        if let Some(expected_tail) = expected_tail {
+            request = request.with_expected_tail(expected_tail);
+        }
+        engine.replace_committed_tail(emitter, request).await
     }
 
     pub(super) async fn manual_toggle_inner(&self) -> fdo::Result<bool> {

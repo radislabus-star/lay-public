@@ -116,6 +116,24 @@ pub(crate) fn record_committed_tail_replace(
     ));
 }
 
+pub(crate) fn record_committed_tail_replace_guard(
+    source: VisibleTailSource,
+    reason: &str,
+    backspaces: u32,
+    expected: &str,
+    actual: &str,
+) {
+    if !enabled() {
+        return;
+    }
+    let source = source.source_id();
+    let expected = json_string(expected);
+    let actual = json_string(actual);
+    write_record(format!(
+        r#"{{"kind":"ibus_committed_tail_replace_guard","source":"{source}","reason":"{reason}","backspaces":{backspaces},"expected":{expected},"actual":{actual}}}"#
+    ));
+}
+
 pub(crate) fn record_committed_tail_replace_timing(
     source: VisibleTailSource,
     output_route: &str,

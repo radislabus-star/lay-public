@@ -61,9 +61,63 @@ impl<'a> VisibleTail<'a> {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct VisibleTailSnapshot {
+    pub source: VisibleTailSource,
+    pub expected_suffix: String,
+    pub focus_id: Option<String>,
+    pub epoch: u64,
+}
+
+impl VisibleTailSnapshot {
+    pub fn new(
+        source: VisibleTailSource,
+        expected_suffix: impl Into<String>,
+        focus_id: Option<String>,
+        epoch: u64,
+    ) -> Self {
+        Self {
+            source,
+            expected_suffix: expected_suffix.into(),
+            focus_id,
+            epoch,
+        }
+    }
+
+    pub fn matches_source_and_focus(
+        &self,
+        source: VisibleTailSource,
+        focus_id: Option<&str>,
+    ) -> bool {
+        self.source == source
+            && self
+                .focus_id
+                .as_deref()
+                .map_or(true, |expected| Some(expected) == focus_id)
+    }
+
+    pub fn matches_current_suffix(&self, current_tail: &str, delete_chars: usize) -> bool {
+        if self.expected_suffix.chars().count() != delete_chars {
+            return false;
+        }
+        if current_tail.chars().count() < delete_chars {
+            return false;
+        }
+        tail_suffix(current_tail, delete_chars) == self.expected_suffix
+    }
+}
+
+fn tail_suffix(text: &str, chars: usize) -> String {
+    if chars == 0 {
+        return String::new();
+    }
+    let count = text.chars().count();
+    text.chars().skip(count.saturating_sub(chars)).collect()
+}
+
 #[cfg(test)]
 mod tests {
-    use super::VisibleTailSource;
+    use super::{VisibleTailSnapshot, VisibleTailSource};
 
     #[test]
     fn source_ids_are_stable_for_logs_and_edit_actions() {
@@ -97,5 +151,34 @@ mod tests {
             VisibleTailSource::from_bridge_state("passive:no-focus"),
             None
         );
+    }
+
+    #[test]
+    fn visible_tail_snapshot_matches_expected_delete_suffix() {
+        let snapshot = VisibleTailSnapshot::new(
+            VisibleTailSource::DaemonWordBuffer,
+            "bdtn",
+            Some("/ime/focus".to_string()),
+            0,
+        );
+
+        assert!(snapshot
+            .matches_source_and_focus(VisibleTailSource::DaemonWordBuffer, Some("/ime/focus")));
+        assert!(snapshot.matches_current_suffix("ghbdtn", 4));
+        assert!(!snapshot.matches_current_suffix("ghjdt", 4));
+        assert!(!snapshot.matches_current_suffix("bdtn", 5));
+    }
+
+    #[test]
+    fn visible_tail_snapshot_rejects_wrong_focus() {
+        let snapshot = VisibleTailSnapshot::new(
+            VisibleTailSource::DaemonWordBuffer,
+            "bdtn",
+            Some("/ime/focus-a".to_string()),
+            0,
+        );
+
+        assert!(!snapshot
+            .matches_source_and_focus(VisibleTailSource::DaemonWordBuffer, Some("/ime/focus-b")));
     }
 }

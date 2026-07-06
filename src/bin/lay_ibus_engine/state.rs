@@ -1,6 +1,6 @@
 use lay::config::LayConfig;
-use lay::text_edit::VisibleTailSource;
 use lay::text_edit::{tail_chars, TextReplacement};
+use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 use std::time::{Duration, Instant};
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
@@ -52,6 +52,7 @@ pub(crate) struct CommittedTailReplaceRequest {
     pub(crate) backspaces: u32,
     pub(crate) text: String,
     pub(crate) suppress_next_autocorrect: bool,
+    pub(crate) expected_tail: Option<VisibleTailSnapshot>,
 }
 
 impl CommittedTailReplaceRequest {
@@ -61,6 +62,7 @@ impl CommittedTailReplaceRequest {
             backspaces,
             text,
             suppress_next_autocorrect: false,
+            expected_tail: None,
         }
     }
 
@@ -74,6 +76,7 @@ impl CommittedTailReplaceRequest {
             backspaces,
             text,
             suppress_next_autocorrect,
+            expected_tail: None,
         }
     }
 
@@ -87,11 +90,24 @@ impl CommittedTailReplaceRequest {
             backspaces,
             text,
             suppress_next_autocorrect,
+            expected_tail: None,
         }
+    }
+
+    pub(crate) fn with_expected_tail(mut self, expected_tail: VisibleTailSnapshot) -> Self {
+        self.expected_tail = Some(expected_tail);
+        self
     }
 
     fn is_noop(&self) -> bool {
         self.backspaces == 0 && self.text.is_empty()
+    }
+
+    fn expected_tail_is_current(&self, current_tail: &str, focus_id: Option<&str>) -> bool {
+        self.expected_tail.as_ref().map_or(true, |expected| {
+            expected.matches_source_and_focus(self.source, focus_id)
+                && expected.matches_current_suffix(current_tail, self.backspaces as usize)
+        })
     }
 }
 
@@ -212,8 +228,23 @@ impl LayIbusEngine {
         let source = request.source;
         let backspaces = request.backspaces;
         let suppress_next_autocorrect = request.suppress_next_autocorrect;
-        let text = request.text;
         let original_text = tail_chars(&self.tail_buffer, backspaces as usize);
+        if !request.expected_tail_is_current(&self.tail_buffer, Some(&self.path)) {
+            let expected = request
+                .expected_tail
+                .as_ref()
+                .map(|snapshot| snapshot.expected_suffix.as_str())
+                .unwrap_or("");
+            trace::record_committed_tail_replace_guard(
+                source,
+                "stale_visible_tail",
+                backspaces,
+                expected,
+                &original_text,
+            );
+            return Ok(false);
+        }
+        let text = request.text;
         let plan = TextReplacement {
             move_left: 0,
             backspaces,
@@ -398,6 +429,7 @@ mod tests {
         assert_eq!(request.backspaces, 6);
         assert_eq!(request.text, "привет");
         assert!(request.suppress_next_autocorrect);
+        assert!(request.expected_tail.is_none());
     }
 
     #[test]
@@ -408,6 +440,33 @@ mod tests {
         assert_eq!(request.backspaces, 4);
         assert_eq!(request.text, "djn ");
         assert!(request.suppress_next_autocorrect);
+        assert!(request.expected_tail.is_none());
+    }
+
+    #[test]
+    fn replace_request_accepts_matching_visible_tail_snapshot() {
+        let request = CommittedTailReplaceRequest::daemon_bridge(4, "вет".to_string(), true)
+            .with_expected_tail(lay::text_edit::VisibleTailSnapshot::new(
+                VisibleTailSource::DaemonWordBuffer,
+                "bdtn",
+                Some("/test".to_string()),
+                0,
+            ));
+
+        assert!(request.expected_tail_is_current("ghbdtn", Some("/test")));
+    }
+
+    #[test]
+    fn replace_request_rejects_stale_visible_tail_snapshot() {
+        let request = CommittedTailReplaceRequest::daemon_bridge(4, "вет".to_string(), true)
+            .with_expected_tail(lay::text_edit::VisibleTailSnapshot::new(
+                VisibleTailSource::DaemonWordBuffer,
+                "bdtn",
+                Some("/test".to_string()),
+                0,
+            ));
+
+        assert!(!request.expected_tail_is_current("ghjdt", Some("/test")));
     }
 
     #[test]

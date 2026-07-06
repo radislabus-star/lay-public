@@ -1,4 +1,5 @@
 use lay::text_backend::ImeReplaceRequest;
+use lay::text_edit::tail_chars;
 use serde::de::DeserializeOwned;
 use zbus::zvariant::Type;
 
@@ -25,7 +26,8 @@ pub(super) fn try_replace_tail(
     if request.is_noop() {
         return Ok(false);
     }
-    match replace_tail(request.backspaces, &request.text, kind) {
+    let expected_tail = tail_chars(original, request.backspaces as usize);
+    match replace_tail_checked(request.backspaces, &request.text, kind, &expected_tail) {
         Ok(true) => {
             log(&format!(
                 "  IME replace-tail ({kind}): bs={} insert={:?}",
@@ -66,8 +68,13 @@ pub(super) fn suppress_next_autocorrect() -> Result<bool, String> {
     call_ime_noarg("SuppressNextAutocorrect")
 }
 
-pub(super) fn replace_tail_plan(backspaces: u32, text: &str, kind: &str) -> Result<bool, String> {
-    replace_tail(backspaces, text, kind)
+pub(super) fn replace_tail_plan(
+    backspaces: u32,
+    text: &str,
+    kind: &str,
+    expected_tail: &str,
+) -> Result<bool, String> {
+    replace_tail_checked(backspaces, text, kind, expected_tail)
 }
 
 fn call_ime_noarg<T>(method: &str) -> Result<T, String>
@@ -86,14 +93,19 @@ where
     reply.body().deserialize::<T>().map_err(|e| e.to_string())
 }
 
-fn replace_tail(backspaces: u32, text: &str, kind: &str) -> Result<bool, String> {
+fn replace_tail_checked(
+    backspaces: u32,
+    text: &str,
+    kind: &str,
+    expected_tail: &str,
+) -> Result<bool, String> {
     let reply = dbus_connection()?
         .call_method(
             Some(IME_DBUS_DEST),
             IME_DBUS_PATH,
             Some(IME_DBUS_INTERFACE),
-            "ReplaceTailV2",
-            &(backspaces, text, kind),
+            "ReplaceTailV3",
+            &(backspaces, text, kind, expected_tail),
         )
         .map_err(|e| e.to_string())?;
     reply

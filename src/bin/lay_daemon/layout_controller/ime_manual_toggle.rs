@@ -1,5 +1,5 @@
 use lay::manual_toggle::{plan_manual_toggle, ManualTogglePlan, ManualToggleRequest};
-use lay::text_edit::{VisibleTail, VisibleTailSource};
+use lay::text_edit::{tail_chars, VisibleTail, VisibleTailSource};
 
 use super::{ime_bridge, switch_to_target_layout};
 
@@ -10,7 +10,13 @@ pub(super) fn try_manual_toggle(ime_enabled: bool) -> Result<Option<bool>, Strin
     let Some(plan) = build_plan_from_visible_tail(ime_bridge::visible_tail()?) else {
         return Ok(None);
     };
-    if !ime_bridge::replace_tail_plan(plan.backspaces, &plan.replacement, "ime-manual-toggle")? {
+    let expected_tail = tail_chars(&plan.edit.original_tail, plan.backspaces as usize);
+    if !ime_bridge::replace_tail_plan(
+        plan.backspaces,
+        &plan.replacement,
+        "ime-manual-toggle",
+        &expected_tail,
+    )? {
         return Ok(None);
     }
     switch_to_target_layout(plan.target_layout_is_ru)?;

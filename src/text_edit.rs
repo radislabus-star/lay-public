@@ -36,7 +36,7 @@ pub use gate::{authorize_replacement, authorize_replacement_with_transition};
 pub use mutation::TransitionAudit;
 pub use safety::{autocorrect_edit_safety, EditPlanSafetyReport};
 pub use types::TextReplacement;
-pub use visible_tail::{VisibleTail, VisibleTailSource};
+pub use visible_tail::{VisibleTail, VisibleTailSnapshot, VisibleTailSource};
 
 #[cfg(test)]
 #[path = "text_edit_tests.rs"]
