@@ -229,12 +229,18 @@ fn best_apply_candidate<'a>(
         .iter()
         .filter(|candidate| apply_source_enabled(candidate.source, options))
         .filter(|candidate| !semantic_candidate_lacks_surface_authority(original, candidate))
+        .filter(|candidate| !completion_candidate_lacks_autocorrect_authority(original, candidate))
         .filter(|candidate| !phrase_gate_suppresses(original, &candidate.text, phrase_memory))
-        .max_by(|left, right| {
-            l3_rank_score(original, left, phrase_memory)
-                .total_cmp(&l3_rank_score(original, right, phrase_memory))
-                .then_with(|| left.energy.total_cmp(&right.energy))
+        .fold(None, |best: Option<(&'a WordCandidate, f32)>, candidate| {
+            let score = l3_rank_score(original, candidate, phrase_memory);
+            match best {
+                Some((best_candidate, best_score)) if score <= best_score => {
+                    Some((best_candidate, best_score))
+                }
+                _ => Some((candidate, score)),
+            }
         })
+        .map(|(candidate, _score)| candidate)
 }
 
 fn confidence(candidate: &WordCandidate) -> f32 {
@@ -247,6 +253,7 @@ fn l3_rank_score(
     phrase_memory: Option<&llmwave::LlmWaveMemory>,
 ) -> f32 {
     let mut value = confidence(candidate);
+    value += candidate_usage_context_prior(original, &candidate.text);
     if let Some(report) = phrase_gate_report(original, &candidate.text, phrase_memory) {
         match report.decision {
             l3_phrase_gate::L3PhraseGateDecision::Support => {
@@ -259,6 +266,66 @@ fn l3_rank_score(
         }
     }
     value.clamp(-1.0, 1.0)
+}
+
+fn completion_candidate_lacks_autocorrect_authority(
+    original: &str,
+    candidate: &WordCandidate,
+) -> bool {
+    if candidate.source != super::l2::L2_SURFACE_COMPLETION_CELL {
+        return false;
+    }
+    let Some(original_word) = last_token(original) else {
+        return true;
+    };
+    let Some(replacement_word) = last_token(&candidate.text) else {
+        return true;
+    };
+    if !is_cyrillic_word(original_word) || !is_cyrillic_word(replacement_word) {
+        return true;
+    }
+
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    if !replacement_lower.starts_with(&original_lower) {
+        return true;
+    }
+
+    let original_len = original_lower.chars().count();
+    let context = previous_context_tokens(original);
+    let usage = super::usage_prior::word_usage_prior_cached(&replacement_lower);
+    let context_usage =
+        super::usage_prior::context_word_usage_prior_cached(&context, &replacement_lower);
+    let accepted_count = super::usage_prior::accepted_word_usage_count_cached(&replacement_lower);
+
+    if original_len >= 4 {
+        return false;
+    }
+    if original_len <= 2 {
+        return context_usage < 0.04;
+    }
+
+    accepted_count < 3 && usage < 0.08 && context_usage < 0.03
+}
+
+fn candidate_usage_context_prior(original: &str, replacement: &str) -> f32 {
+    let Some(word) = last_token(replacement) else {
+        return 0.0;
+    };
+    let word = word.to_lowercase();
+    if word.is_empty() {
+        return 0.0;
+    }
+    let context = previous_context_tokens(original);
+    (super::usage_prior::word_usage_prior_cached(&word)
+        + super::usage_prior::context_word_usage_prior_cached(&context, &word))
+    .clamp(0.0, 0.20)
+}
+
+fn previous_context_tokens(text: &str) -> Vec<String> {
+    let mut words = llmwave::tokenize(text);
+    words.pop();
+    words
 }
 
 fn semantic_candidate_lacks_surface_authority(original: &str, candidate: &WordCandidate) -> bool {
@@ -455,6 +522,74 @@ mod tests {
         };
         let (_trace, decision) = run_l3("html djn ", &[candidate]);
         assert_eq!(decision.output(), Some("html вот "));
+    }
+
+    #[test]
+    fn l3_does_not_autocomplete_short_prefix_without_memory_authority() {
+        let candidates = [
+            WordCandidate {
+                text: "Ну давай".to_string(),
+                source: super::super::l2::L2_SURFACE_COMPLETION_CELL,
+                energy: 0.856,
+                risk: 0.060,
+                support: vec![],
+            },
+            WordCandidate {
+                text: "Ну даша".to_string(),
+                source: super::super::l2::L2_SURFACE_COMPLETION_CELL,
+                energy: 0.856,
+                risk: 0.060,
+                support: vec![],
+            },
+        ];
+
+        let (_trace, decision) = run_l3("Ну да ", &candidates);
+
+        assert_eq!(
+            decision,
+            WaveDecision::Keep {
+                reason: "no_layout_candidate"
+            }
+        );
+    }
+
+    #[test]
+    fn l3_keeps_first_equal_candidate_instead_of_last_equal_candidate() {
+        let candidates = [
+            WordCandidate {
+                text: "попаданий".to_string(),
+                source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
+                energy: 0.80,
+                risk: 0.10,
+                support: vec![],
+            },
+            WordCandidate {
+                text: "попадали".to_string(),
+                source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
+                energy: 0.80,
+                risk: 0.10,
+                support: vec![],
+            },
+        ];
+
+        let (_trace, decision) = run_l3("попадани ", &candidates);
+
+        assert_eq!(decision.output(), Some("попаданий "));
+    }
+
+    #[test]
+    fn l3_allows_long_completion_autocorrect() {
+        let candidate = WordCandidate {
+            text: "попаданий".to_string(),
+            source: super::super::l2::L2_SURFACE_COMPLETION_CELL,
+            energy: 0.856,
+            risk: 0.060,
+            support: vec![],
+        };
+
+        let (_trace, decision) = run_l3("попадани ", &[candidate]);
+
+        assert_eq!(decision.output(), Some("попаданий "));
     }
 
     #[test]
