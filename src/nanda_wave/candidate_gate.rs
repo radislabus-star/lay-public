@@ -7,6 +7,7 @@
 use crate::keyboard::is_cyrillic_letter;
 
 use super::l2::{self, L2ImeWordCandidateKind};
+use super::l4_goal_state::{derive_l4_scene_state, L4AllowedAction, L4SceneStateInput};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::OnceLock;
 use std::time::Instant;
@@ -36,6 +37,9 @@ struct LiveCandidateGateStats {
     no_candidate: u64,
     usage_supported: u64,
     l3_supported: u64,
+    l4_suggest: u64,
+    l4_wait: u64,
+    l4_block: u64,
     total_us: u64,
     max_us: u64,
 }
@@ -45,13 +49,13 @@ pub fn live_completion_candidates(
 ) -> Vec<LiveCompletionCandidate> {
     let started = Instant::now();
     if request.limit == 0 || request.max_suffix_chars == 0 {
-        record_live_gate_stats(started, 0, 0, 0, 0);
+        record_live_gate_stats(started, 0, 0, 0, 0, None);
         return Vec::new();
     }
     let partial = request.partial.to_lowercase();
     let partial_len = partial.chars().count();
     if !(2..=18).contains(&partial_len) || !partial.chars().all(is_cyrillic_letter) {
-        record_live_gate_stats(started, 0, 0, 0, 0);
+        record_live_gate_stats(started, 0, 0, 0, 0, None);
         return Vec::new();
     }
 
@@ -89,6 +93,11 @@ pub fn live_completion_candidates(
 
     let raw_count = raw.len();
     let context_tokens = super::llmwave::tokenize(request.context_prefix);
+    let scene_state = derive_l4_scene_state(L4SceneStateInput {
+        context_prefix: request.context_prefix,
+        current_word: &partial,
+        candidate_count: raw_count,
+    });
     let usage_snapshot = super::usage_prior::cached_usage_prior_snapshot();
     let mut usage_supported = 0_u64;
     let mut l3_supported = 0_u64;
@@ -149,7 +158,8 @@ pub fn live_completion_candidates(
                 + (accepted.min(20) as f32 * 0.030)
                 + if common { 0.055 } else { 0.0 }
                 + if hot { 0.045 } else { 0.0 }
-                + (partial_len.min(8) as f32 * 0.018);
+                + (partial_len.min(8) as f32 * 0.018)
+                + live_l4_scene_bias(scene_state.allowed_action, scene_state.confidence);
             let score = l3_score
                 .map(|score| score.max(base_score))
                 .unwrap_or(base_score)
@@ -195,6 +205,7 @@ pub fn live_completion_candidates(
         candidates.len() as u64,
         usage_supported,
         l3_supported,
+        Some(scene_state.allowed_action),
     );
     candidates
 }
@@ -213,6 +224,11 @@ pub fn live_candidate_gate_stats_json() -> serde_json::Value {
         "no_candidate": stats.no_candidate,
         "usage_supported": stats.usage_supported,
         "l3_supported": stats.l3_supported,
+        "l4_scene": {
+            "suggest": stats.l4_suggest,
+            "wait": stats.l4_wait,
+            "block": stats.l4_block,
+        },
         "avg_us": avg_us,
         "max_us": stats.max_us,
     })
@@ -227,6 +243,9 @@ fn live_candidate_gate_stats() -> LiveCandidateGateStats {
         no_candidate: stats.no_candidate.load(Ordering::Relaxed),
         usage_supported: stats.usage_supported.load(Ordering::Relaxed),
         l3_supported: stats.l3_supported.load(Ordering::Relaxed),
+        l4_suggest: stats.l4_suggest.load(Ordering::Relaxed),
+        l4_wait: stats.l4_wait.load(Ordering::Relaxed),
+        l4_block: stats.l4_block.load(Ordering::Relaxed),
         total_us: stats.total_us.load(Ordering::Relaxed),
         max_us: stats.max_us.load(Ordering::Relaxed),
     }
@@ -270,6 +289,7 @@ fn record_live_gate_stats(
     returned_candidates: u64,
     usage_supported: u64,
     l3_supported: u64,
+    l4_action: Option<L4AllowedAction>,
 ) {
     let elapsed_us = started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64;
     let stats = live_stats();
@@ -289,6 +309,18 @@ fn record_live_gate_stats(
     stats
         .l3_supported
         .fetch_add(l3_supported, Ordering::Relaxed);
+    match l4_action {
+        Some(L4AllowedAction::Suggest) => {
+            stats.l4_suggest.fetch_add(1, Ordering::Relaxed);
+        }
+        Some(L4AllowedAction::Wait) => {
+            stats.l4_wait.fetch_add(1, Ordering::Relaxed);
+        }
+        Some(L4AllowedAction::Block) => {
+            stats.l4_block.fetch_add(1, Ordering::Relaxed);
+        }
+        None => {}
+    }
     stats.total_us.fetch_add(elapsed_us, Ordering::Relaxed);
     update_max_atomic(&stats.max_us, elapsed_us);
 }
@@ -306,6 +338,9 @@ struct LiveCandidateGateAtomicStats {
     no_candidate: AtomicU64,
     usage_supported: AtomicU64,
     l3_supported: AtomicU64,
+    l4_suggest: AtomicU64,
+    l4_wait: AtomicU64,
+    l4_block: AtomicU64,
     total_us: AtomicU64,
     max_us: AtomicU64,
 }
@@ -376,6 +411,14 @@ fn live_suffix_has_display_authority(input: LiveSuffixAuthority<'_>) -> bool {
         || input.context_usage >= 0.060
         || input.usage >= 0.095
         || (input.score >= 0.90 && input.structural >= 0.46)
+}
+
+fn live_l4_scene_bias(action: L4AllowedAction, confidence: f32) -> f32 {
+    match action {
+        L4AllowedAction::Suggest => 0.030 * confidence,
+        L4AllowedAction::Wait => -0.020 * confidence,
+        L4AllowedAction::Block => -0.060 * confidence,
+    }
 }
 
 fn structural_support(
