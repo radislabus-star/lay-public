@@ -83,6 +83,9 @@ pub fn operator_for_candidate(
     error_class: TypingErrorClass,
     source_id: &str,
 ) -> LanguageActionOperator {
+    if source_id.starts_with("layout_then_") {
+        return LanguageActionOperator::FixMixedLayout;
+    }
     match error_class {
         TypingErrorClass::WrongLayout => LanguageActionOperator::FlipLayout,
         TypingErrorClass::PartialLayout | TypingErrorClass::MixedScript => {
@@ -108,6 +111,9 @@ pub fn operator_for_candidate(
 }
 
 pub fn proof_for_candidate(error_class: TypingErrorClass, source_id: &str) -> LanguageActionProof {
+    if source_id.starts_with("layout_then_") {
+        return LanguageActionProof::Layout;
+    }
     match error_class {
         TypingErrorClass::WrongLayout | TypingErrorClass::PartialLayout => {
             LanguageActionProof::Layout

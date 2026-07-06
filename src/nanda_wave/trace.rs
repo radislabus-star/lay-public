@@ -2,6 +2,7 @@ use super::feedback::derive_l3_feedback;
 use super::l1::run_l1_with_options;
 use super::l2::{run_l2_refined_with_feedback, run_l2_with_options};
 use super::l3::run_l3_with_options;
+use super::l4_goal_state::derive_l4_goal_state_trace;
 use super::llmwave::derive_llmwave_feedback;
 use super::options::WaveOptions;
 use super::signal::WaveTrace;
@@ -16,6 +17,9 @@ pub fn run_wave_trace_with_options(original: &str, options: &WaveOptions) -> Wav
     let (mut l3_feedback, feedback) = derive_l3_feedback(original, &initial_l2, options);
     let (mut llmwave_trace, llmwave_feedback) =
         derive_llmwave_feedback(original, &initial_l2, options);
+    if let Some(l4_trace) = derive_l4_goal_state_trace(original, options) {
+        llmwave_trace.push(l4_trace);
+    }
     if options.l3_phase_shadow() {
         llmwave_trace.push(super::signal::LayerTrace {
             name: "L3PhaseContextShadow",

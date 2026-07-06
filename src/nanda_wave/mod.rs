@@ -13,6 +13,7 @@ mod l2_candidate_phase;
 mod l2_center_memory;
 pub mod l3;
 pub(crate) mod l3_phrase_gate;
+pub mod l4_goal_state;
 pub mod learned;
 pub mod lexical_attractor;
 pub mod llmwave;

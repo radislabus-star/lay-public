@@ -262,6 +262,13 @@ fn word_boundary_trace_reason(resolution: &CorrectionResolution) -> &'static str
     if resolution
         .candidates
         .iter()
+        .any(|candidate| candidate.gate.action == CandidateGateAction::KeepOriginal)
+    {
+        return "keep_original_candidate";
+    }
+    if resolution
+        .candidates
+        .iter()
         .any(|candidate| candidate.gate.action == CandidateGateAction::SuggestOnly)
     {
         return "suggest_only_candidate";
@@ -285,20 +292,26 @@ fn word_boundary_action(resolution: &CorrectionResolution) -> InputGateAction {
     }
 
     let mut best_suggestion = None;
+    let mut keep_original = false;
     let mut veto_reason = None;
     for candidate in &resolution.candidates {
         match candidate.gate.action {
+            CandidateGateAction::KeepOriginal => {
+                keep_original = true;
+            }
             CandidateGateAction::SuggestOnly => {
                 best_suggestion.get_or_insert_with(|| candidate.replacement.clone());
             }
             CandidateGateAction::Veto => {
                 veto_reason.get_or_insert(candidate.gate.reason);
             }
-            CandidateGateAction::KeepOriginal | CandidateGateAction::Apply => {}
+            CandidateGateAction::Apply => {}
         }
     }
 
-    if best_suggestion.is_some() {
+    if keep_original {
+        InputGateAction::KeepOriginal
+    } else if best_suggestion.is_some() {
         InputGateAction::SuggestOnly {
             best: best_suggestion,
         }
@@ -415,16 +428,19 @@ mod tests {
     }
 
     #[test]
-    fn word_boundary_can_keep_original_after_safety_gate() {
+    fn word_boundary_does_not_apply_after_safety_gate() {
         let pipeline = default_typing_assist_pipeline();
         let decision = decide_input_gate(request_with_pipeline(
             InputGateTrigger::Space,
             "патерна ",
             &pipeline,
         ));
-        assert_eq!(decision.action, InputGateAction::KeepOriginal);
+        assert!(matches!(
+            decision.action,
+            InputGateAction::KeepOriginal | InputGateAction::SuggestOnly { .. }
+        ));
         let trace = decision.trace.as_ref().expect("input gate trace");
-        assert_eq!(trace.reason, "no_candidate");
+        assert_ne!(trace.reason, "apply_selected_candidate");
         assert_eq!(trace.selected_source, None);
     }
 

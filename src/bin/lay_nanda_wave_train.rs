@@ -4,6 +4,7 @@ use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 
+use lay::nanda_wave::llmwave;
 use lay::nanda_wave::packet::{write_learned_packet, LearnedPacketEntry};
 use serde::Deserialize;
 
@@ -22,6 +23,14 @@ struct Learned {
 
 fn main() -> io::Result<()> {
     let args = env::args().collect::<Vec<_>>();
+    if let Some(corpus) = arg_path(&args, "--llmwave-corpus") {
+        let out = arg_path(&args, "--llmwave-out")
+            .or_else(|| arg_path(&args, "--out"))
+            .or_else(llmwave::default_memory_path)
+            .expect("default llmwave memory path");
+        train_llmwave_corpus(&corpus, &out)?;
+        return Ok(());
+    }
     let dataset = arg_path(&args, "--dataset").unwrap_or_else(|| PathBuf::from(DEFAULT_DATASET));
     let out =
         arg_path(&args, "--out").unwrap_or_else(lay::nanda_wave::learned::default_memory_path);
@@ -38,6 +47,23 @@ fn main() -> io::Result<()> {
     write_memory(&out, &learned)?;
     write_phase_memory(&phase_out, &learned)?;
     print_summary(&dataset, &out, &phase_out, &learned, &live_report);
+    Ok(())
+}
+
+fn train_llmwave_corpus(corpus: &Path, out: &Path) -> io::Result<()> {
+    let text = fs::read_to_string(corpus)?;
+    let memory = llmwave::LlmWaveMemory::from_text(&text);
+    llmwave::write_memory_packet(out, &memory)?;
+    let bytes = fs::metadata(out).map(|meta| meta.len()).unwrap_or_default();
+    println!(
+        "llmwave_corpus_train: input={} output={} records={} vocabulary={} bytes={} record_bytes={}",
+        corpus.display(),
+        out.display(),
+        memory.len(),
+        memory.vocabulary_len(),
+        bytes,
+        llmwave::LLMWAVE_RECORD_BYTES
+    );
     Ok(())
 }
 
@@ -300,5 +326,27 @@ mod tests {
     fn user_corrections_are_opt_in_for_training() {
         assert!(!is_learnable_live_kind("user-correction", false));
         assert!(is_learnable_live_kind("user-correction", true));
+    }
+
+    #[test]
+    fn llmwave_corpus_training_writes_phrase_memory_packet() {
+        let dir =
+            std::env::temp_dir().join(format!("lay-llmwave-corpus-train-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).unwrap();
+        let corpus = dir.join("book.txt");
+        let out = dir.join("phrase_memory.llmw.bin");
+        fs::write(
+            &corpus,
+            "на улице опять идёт дождь\nя хочу проверить автозамену\n",
+        )
+        .unwrap();
+
+        train_llmwave_corpus(&corpus, &out).unwrap();
+
+        let memory = llmwave::read_memory_packet(&out).unwrap();
+        assert!(!memory.is_empty());
+        assert!(memory.vocabulary_len() >= 6);
+        let _ = fs::remove_dir_all(&dir);
     }
 }

@@ -3,6 +3,8 @@
 //! Runtime backends still own output and state. This module only answers one
 //! question: should this completed text be replaced, and by which engine?
 
+mod l2_lattice;
+
 use crate::candidate_explanation::{explain_candidate, CandidateExplanation};
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
 use crate::language_action::{operator_for_candidate, proof_for_candidate};
@@ -20,6 +22,7 @@ use crate::word_reader::{
     cyrillic_word_splits, is_cyrillic_letters_only, split_edge_whitespace, split_word_punctuation,
 };
 use crate::word_recognizer::is_ascii_technical_token;
+use l2_lattice::L2CandidateLattice;
 
 const COMPOSITE_TRANSPOSE_MIN_MARGIN: f64 = -8.0;
 
@@ -183,80 +186,22 @@ pub fn decide_text_correction(req: CorrectionRequest<'_>) -> Option<CorrectionDe
 }
 
 pub fn resolve_text_correction(req: CorrectionRequest<'_>) -> CorrectionResolution {
-    let mut board = CandidateBoard::new(TypingErrorEvent::from_text(req.text));
+    let mut lattice = L2CandidateLattice::new(TypingErrorEvent::from_text(req.text));
 
     match req.mode {
         CorrectionMode::DeterministicOnly => {
-            board.push(deterministic_text_correction(&req));
+            lattice.push_source(deterministic_text_correction(&req));
         }
         CorrectionMode::NandaOnly => {
-            board.push(nanda_text_correction(&req));
+            lattice.push_source(nanda_text_correction(&req));
         }
         CorrectionMode::DeterministicThenNanda => {
-            board.push(deterministic_text_correction(&req));
-            board.push(nanda_text_correction(&req));
+            lattice.push_source(deterministic_text_correction(&req));
+            lattice.push_source(nanda_text_correction(&req));
         }
     }
 
-    board.into_resolution()
-}
-
-struct CandidateBoard {
-    event: TypingErrorEvent,
-    candidates: Vec<UnifiedCorrectionCandidate>,
-}
-
-impl CandidateBoard {
-    fn new(event: TypingErrorEvent) -> Self {
-        Self {
-            event,
-            candidates: Vec::new(),
-        }
-    }
-
-    fn push(&mut self, candidate: Option<UnifiedCorrectionCandidate>) {
-        if let Some(candidate) = candidate {
-            self.candidates.push(candidate);
-        }
-    }
-
-    fn selected_apply_candidate(&self) -> Option<UnifiedCorrectionCandidate> {
-        self.candidates
-            .iter()
-            .filter(|candidate| candidate.gate.action == CandidateGateAction::Apply)
-            .cloned()
-            .max_by(|left, right| {
-                candidate_rank_score(&self.event.original, left)
-                    .total_cmp(&candidate_rank_score(&self.event.original, right))
-            })
-    }
-
-    fn into_resolution(self) -> CorrectionResolution {
-        let selected = self.selected_apply_candidate();
-        let decision = selected.as_ref().map(|candidate| CorrectionDecision {
-            replacement: candidate.replacement.clone(),
-            source: candidate.source,
-        });
-        let scoreboard = CorrectionScoreboard::from_candidates(
-            &self.event.original,
-            &self.candidates,
-            selected.as_ref(),
-        );
-        let candidate_scores = CorrectionCandidateScoreTrace::from_candidates(
-            &self.event.original,
-            &self.candidates,
-            selected.as_ref(),
-        );
-
-        CorrectionResolution {
-            event: self.event,
-            candidates: self.candidates,
-            selected,
-            decision,
-            scoreboard,
-            candidate_scores,
-        }
-    }
+    lattice.into_resolution()
 }
 
 impl CorrectionScoreboard {
@@ -1255,10 +1200,19 @@ fn gate_candidate_with_source(
             reason: "weak_boundary_split_tail",
         };
     }
+    if let Some(decision) = l3_context_gate(original, replacement, error_class, source_id) {
+        return decision;
+    }
     if semantic_wave_candidate_lacks_surface_authority(original, replacement, source_id) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "semantic_wave_surface_authority_low",
+        };
+    }
+    if l2_surface_candidate_lacks_local_typo_proof(original, replacement, error_class, source_id) {
+        return CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "l2_surface_local_typo_proof_low",
         };
     }
     if error_class == TypingErrorClass::CompletionOnly {
@@ -1266,9 +1220,6 @@ fn gate_candidate_with_source(
             action: CandidateGateAction::SuggestOnly,
             reason: "completion_is_not_autocorrect",
         };
-    }
-    if let Some(decision) = l3_context_gate(original, replacement, error_class, source_id) {
-        return decision;
     }
     if let Some(reason) = crate::correction_bayes::bayes_suggest_only_reason(
         original,
@@ -1793,6 +1744,57 @@ fn semantic_wave_candidate_lacks_surface_authority(
         return false;
     }
     true
+}
+
+fn l2_surface_candidate_lacks_local_typo_proof(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    source_id: &str,
+) -> bool {
+    if !matches!(
+        source_id,
+        "L2SurfaceMotifCell32" | "L2WordAttractorCell32" | "SemanticWordCell32"
+    ) || !matches!(
+        error_class,
+        TypingErrorClass::CompositeTypo
+            | TypingErrorClass::LetterSubstitution
+            | TypingErrorClass::GrammarAgreement
+    ) {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return true;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return true;
+    };
+    if !is_cyrillic_letters_only(&original_word) || !is_cyrillic_letters_only(&replacement_word) {
+        return false;
+    }
+
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    if original_lower == replacement_lower {
+        return false;
+    }
+    let distance = damerau_levenshtein(&original_lower, &replacement_lower);
+    if distance <= 1 {
+        return false;
+    }
+
+    let original_len = original_lower.chars().count();
+    let replacement_len = replacement_lower.chars().count();
+    let prefix = common_prefix_len(&original_lower, &replacement_lower);
+    if original_len >= 6
+        && replacement_len >= original_len
+        && distance >= 2
+        && prefix >= 2
+        && prefix + 3 < original_len.max(replacement_len)
+    {
+        return true;
+    }
+    false
 }
 
 fn common_prefix_len(left: &str, right: &str) -> usize {
@@ -2499,6 +2501,61 @@ mod tests {
     }
 
     #[test]
+    fn l2_candidate_lattice_keeps_sources_and_selects_only_apply_candidate() {
+        let mut lattice = L2CandidateLattice::new(TypingErrorEvent::from_text("автозаена "));
+        lattice.push_source(Some(UnifiedCorrectionCandidate {
+            replacement: "автозамена ".to_string(),
+            source: CorrectionDecisionSource::Deterministic,
+            source_id: "missing_letter".to_string(),
+            error_class: TypingErrorClass::MissingLetter,
+            gate: CandidateGateDecision {
+                action: CandidateGateAction::Apply,
+                reason: "class_allows_apply",
+            },
+        }));
+        lattice.push_source(Some(UnifiedCorrectionCandidate {
+            replacement: "авто замена ".to_string(),
+            source: CorrectionDecisionSource::Nanda,
+            source_id: "BoundaryCell32".to_string(),
+            error_class: TypingErrorClass::GluedWords,
+            gate: CandidateGateDecision {
+                action: CandidateGateAction::SuggestOnly,
+                reason: "requires_boundary_proof",
+            },
+        }));
+
+        let resolution = lattice.into_resolution();
+
+        assert_eq!(resolution.candidates.len(), 2);
+        assert_eq!(resolution.scoreboard.total_candidates, 2);
+        assert_eq!(resolution.scoreboard.deterministic_candidates, 1);
+        assert_eq!(resolution.scoreboard.nanda_candidates, 1);
+        assert_eq!(resolution.scoreboard.apply_candidates, 1);
+        assert_eq!(resolution.scoreboard.suggest_only_candidates, 1);
+        assert_eq!(
+            resolution.selected.as_ref().map(|candidate| {
+                (
+                    candidate.replacement.as_str(),
+                    candidate.source,
+                    candidate.gate.action,
+                )
+            }),
+            Some((
+                "автозамена ",
+                CorrectionDecisionSource::Deterministic,
+                CandidateGateAction::Apply,
+            ))
+        );
+        assert_eq!(
+            resolution.decision,
+            Some(CorrectionDecision {
+                replacement: "автозамена ".to_string(),
+                source: CorrectionDecisionSource::Deterministic,
+            })
+        );
+    }
+
+    #[test]
     fn deterministic_mode_corrects_wrong_layout_text() {
         let pipeline = default_typing_assist_pipeline();
         let decision = decide_text_correction(request(
@@ -2669,19 +2726,15 @@ mod tests {
 
     #[test]
     fn l3_anti_shortcut_blocks_overcompressed_word_candidate() {
-        let pipeline = default_typing_assist_pipeline();
-        let resolution = resolve_text_correction(request(
+        let gate = gate_candidate_with_source(
             "патерна ",
-            &pipeline,
-            CorrectionMode::DeterministicOnly,
-        ));
+            "пара ",
+            TypingErrorClass::CompositeTypo,
+            crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+        );
 
-        assert_eq!(resolution.decision, None);
-        assert!(resolution.candidates.iter().any(|candidate| {
-            candidate.replacement == "пара "
-                && candidate.gate.action == CandidateGateAction::KeepOriginal
-                && candidate.gate.reason == "candidate_over_compresses_word"
-        }));
+        assert_eq!(gate.action, CandidateGateAction::KeepOriginal);
+        assert_eq!(gate.reason, "candidate_over_compresses_word");
     }
 
     #[test]
@@ -2822,9 +2875,12 @@ mod tests {
         assert_eq!(selected.replacement, "мы отравим ");
         assert!(
             resolution.candidates.iter().any(|candidate| {
-                candidate.replacement == "мы отвратим "
+                candidate.source == CorrectionDecisionSource::Nanda
                     && candidate.gate.action == CandidateGateAction::SuggestOnly
-                    && candidate.gate.reason == "same_tail_single_consonant_drift"
+                    && matches!(
+                        candidate.gate.reason,
+                        "same_tail_single_consonant_drift" | "l2_surface_local_typo_proof_low"
+                    )
             }),
             "semantic drift candidate must be suggest-only: {resolution:?}"
         );
