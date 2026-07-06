@@ -63,6 +63,8 @@ struct CandidateQualityReport {
     arbitration_selected_high_risk: usize,
     arbitration_selected_unsafe_edit: usize,
     arbitration_nanda_extra_context: usize,
+    arbitration_left_context_changed: usize,
+    arbitration_unverified_transition: usize,
     nanda_apply: usize,
     deterministic_apply: usize,
     slow_output: usize,
@@ -165,6 +167,8 @@ fn report_from_text(text: &str, limit: usize, path: &Path) -> serde_json::Value 
             "selected_high_risk": report.arbitration_selected_high_risk,
             "selected_unsafe_edit": report.arbitration_selected_unsafe_edit,
             "nanda_extra_context": report.arbitration_nanda_extra_context,
+            "left_context_changed": report.arbitration_left_context_changed,
+            "unverified_transition": report.arbitration_unverified_transition,
             "read_as": "why the chosen candidate won or should not have won; diagnostic only"
         },
         "source_mix": {
@@ -454,6 +458,23 @@ fn inspect_arbitration(report: &mut CandidateQualityReport, value: &Value, gate:
         report.add_class("arbitration_selected_unsafe_edit");
     }
 
+    let transition_left_context_changed = selected
+        .get("edit_transition_left_context_changed")
+        .and_then(Value::as_bool)
+        .unwrap_or(false);
+    let transition_verified = selected
+        .get("edit_transition_verified")
+        .and_then(Value::as_bool)
+        .unwrap_or(true);
+    if transition_left_context_changed {
+        report.arbitration_left_context_changed += 1;
+        report.add_class("arbitration_left_context_changed");
+    }
+    if transition_left_context_changed && !transition_verified {
+        report.arbitration_unverified_transition += 1;
+        report.add_class("arbitration_unverified_transition");
+    }
+
     let selected_source = selected
         .get("source")
         .and_then(Value::as_str)
@@ -520,8 +541,8 @@ mod tests {
     #[test]
     fn candidate_quality_report_flags_trace_and_boundary_risks() {
         let text = r#"
-{"kind":"candidate_before_apply","action_kind":"replace_last_token","from":"gjhn ","to":"порт ","boundary_changed":false,"changes_non_last_word":false,"word_count_changed":false,"would_touch_words":1,"safety_allow_apply":true,"input_gate":{"selected_source":"deterministic","selected_error_class":"composite-typo","selected_gate_action":"apply","candidate_count":1,"candidate_scores":[{"replacement":"порт port порт ","source":"deterministic","posterior_milli":488,"usage_prior_milli":0,"context_prior_milli":240,"risk_milli":280,"gate_action":"apply","selected":true}]}}
-{"kind":"candidate_before_apply","action_kind":"block_unsafe","from":"одно два ","to":"однотри ","boundary_changed":true,"changes_non_last_word":true,"word_count_changed":true,"would_touch_words":2,"safety_allow_apply":false,"input_gate":{"selected_source":"nanda","selected_error_class":"glued-words","selected_gate_action":"apply","candidate_count":2,"candidate_scores":[{"replacement":"однотри ","source":"nanda","posterior_milli":220,"usage_prior_milli":0,"context_prior_milli":0,"risk_milli":310,"gate_action":"apply","selected":true},{"replacement":"одно два ","source":"deterministic","posterior_milli":500,"usage_prior_milli":0,"context_prior_milli":0,"risk_milli":0,"gate_action":"suggest_only","selected":false}]}}
+{"kind":"candidate_before_apply","action_kind":"replace_last_token","from":"gjhn ","to":"порт ","boundary_changed":false,"changes_non_last_word":false,"word_count_changed":false,"would_touch_words":1,"safety_allow_apply":true,"input_gate":{"selected_source":"deterministic","selected_error_class":"composite-typo","selected_gate_action":"apply","candidate_count":1,"candidate_scores":[{"replacement":"порт port порт ","source":"deterministic","posterior_milli":488,"usage_prior_milli":0,"context_prior_milli":240,"risk_milli":280,"gate_action":"apply","selected":true,"edit_transition_left_context_changed":false,"edit_transition_verified":true}]}}
+{"kind":"candidate_before_apply","action_kind":"block_unsafe","from":"одно два ","to":"однотри ","boundary_changed":true,"changes_non_last_word":true,"word_count_changed":true,"would_touch_words":2,"safety_allow_apply":false,"input_gate":{"selected_source":"nanda","selected_error_class":"glued-words","selected_gate_action":"apply","candidate_count":2,"candidate_scores":[{"replacement":"однотри ","source":"nanda","posterior_milli":220,"usage_prior_milli":0,"context_prior_milli":0,"risk_milli":310,"gate_action":"apply","selected":true,"edit_transition_left_context_changed":true,"edit_transition_verified":false},{"replacement":"одно два ","source":"deterministic","posterior_milli":500,"usage_prior_milli":0,"context_prior_milli":0,"risk_milli":0,"gate_action":"suggest_only","selected":false,"edit_transition_left_context_changed":false,"edit_transition_verified":true}]}}
 "#;
 
         let report = report_from_text(text, 20, &PathBuf::from("recent.jsonl"));
@@ -543,5 +564,7 @@ mod tests {
         assert_eq!(report["candidate_arbitration"]["selected_low_posterior"], 1);
         assert_eq!(report["candidate_arbitration"]["selected_high_risk"], 1);
         assert_eq!(report["candidate_arbitration"]["selected_unsafe_edit"], 1);
+        assert_eq!(report["candidate_arbitration"]["left_context_changed"], 1);
+        assert_eq!(report["candidate_arbitration"]["unverified_transition"], 1);
     }
 }

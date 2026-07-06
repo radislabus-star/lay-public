@@ -3,6 +3,7 @@
 //! Runtime backends still own output and state. This module only answers one
 //! question: should this completed text be replaced, and by which engine?
 
+mod edit_transition;
 mod l2_lattice;
 
 use crate::candidate_explanation::{explain_candidate, CandidateExplanation};
@@ -21,7 +22,7 @@ use crate::typing_context::{syntax_allows_candidate, typing_assist_pipeline_for_
 use crate::typing_rule_graph::ids;
 use crate::word_reader::{
     cyrillic_word_splits, is_cyrillic_letters_only, last_text_word, replace_last_text_word,
-    split_edge_whitespace, split_last_trimmed_ws_token, split_word_punctuation,
+    split_edge_whitespace, split_word_punctuation,
 };
 use crate::word_recognizer::is_ascii_technical_token;
 use l2_lattice::L2CandidateLattice;
@@ -183,6 +184,11 @@ pub(crate) struct CorrectionCandidateScoreTrace {
     pub(crate) error_class: TypingErrorClass,
     pub(crate) action_operator: &'static str,
     pub(crate) action_proof: &'static str,
+    pub(crate) edit_transition_operator: &'static str,
+    pub(crate) edit_transition_proof: &'static str,
+    pub(crate) edit_transition_verified: bool,
+    pub(crate) edit_transition_left_context_changed: bool,
+    pub(crate) edit_transition_changed_tokens: usize,
     pub(crate) edit_shape: &'static str,
     pub(crate) preservation_milli: i16,
     pub(crate) lost_mass_milli: i16,
@@ -378,6 +384,12 @@ impl CorrectionCandidateScoreTrace {
             .map(|candidate| {
                 let score = bayes_score_for_candidate(original, candidate);
                 let explanation = explanation_for_candidate(original, candidate);
+                let transition = edit_transition::prove_edit_transition(
+                    original,
+                    &candidate.replacement,
+                    candidate.error_class,
+                    &candidate.source_id,
+                );
                 Self {
                     replacement: candidate.replacement.clone(),
                     source: candidate.source,
@@ -390,6 +402,11 @@ impl CorrectionCandidateScoreTrace {
                     .as_str(),
                     action_proof: proof_for_candidate(candidate.error_class, &candidate.source_id)
                         .as_str(),
+                    edit_transition_operator: transition.operator.as_str(),
+                    edit_transition_proof: transition.language_proof.as_str(),
+                    edit_transition_verified: transition.verified,
+                    edit_transition_left_context_changed: transition.left_context_changed,
+                    edit_transition_changed_tokens: transition.changed_tokens,
                     edit_shape: explanation.edit_shape,
                     preservation_milli: explanation.preservation_milli,
                     lost_mass_milli: explanation.lost_mass_milli,
@@ -1286,15 +1303,13 @@ fn gate_candidate_with_source(
             reason: "weak_boundary_split_tail",
         };
     }
-    if candidate_changes_left_context_without_operator(
-        original,
-        replacement,
-        error_class,
-        source_id,
-    ) {
+    if let Some(reason) =
+        edit_transition::prove_edit_transition(original, replacement, error_class, source_id)
+            .reject_apply_reason()
+    {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
-            reason: "extra_context_requires_operator_proof",
+            reason,
         };
     }
     if let Some(decision) = l3_context_gate(original, replacement, error_class, source_id) {
@@ -1362,151 +1377,6 @@ fn gate_candidate_with_source(
             reason: "class_allows_apply",
         },
     }
-}
-
-fn candidate_changes_left_context_without_operator(
-    original: &str,
-    replacement: &str,
-    error_class: TypingErrorClass,
-    source_id: &str,
-) -> bool {
-    let Some((original_prefix, _)) = split_last_trimmed_ws_token(original) else {
-        return false;
-    };
-    let Some((replacement_prefix, _)) = split_last_trimmed_ws_token(replacement) else {
-        return false;
-    };
-    if original_prefix == replacement_prefix {
-        return false;
-    }
-
-    match correction_source_contract::source_role(source_id) {
-        CorrectionSourceRole::Layout => {
-            !layout_operator_may_rewrite_whole_tail(original, replacement, error_class)
-        }
-        CorrectionSourceRole::Boundary => {
-            !boundary_operator_may_shift_word_boundary(original, replacement, error_class)
-        }
-        CorrectionSourceRole::L3Context => {
-            !phrase_context_operator_may_rewrite_one_token(original, replacement, source_id)
-        }
-        CorrectionSourceRole::DeterministicTypo => {
-            !deterministic_typo_may_split_previous_glued_word(original, replacement)
-        }
-        CorrectionSourceRole::Completion
-        | CorrectionSourceRole::L2Surface
-        | CorrectionSourceRole::Technical => true,
-        CorrectionSourceRole::Unknown => false,
-    }
-}
-
-fn layout_operator_may_rewrite_whole_tail(
-    original: &str,
-    replacement: &str,
-    error_class: TypingErrorClass,
-) -> bool {
-    if !matches!(
-        error_class,
-        TypingErrorClass::WrongLayout
-            | TypingErrorClass::PartialLayout
-            | TypingErrorClass::MixedScript
-    ) {
-        return false;
-    }
-    let (_, original_core, _) = split_edge_whitespace(original);
-    let (_, replacement_core, _) = split_edge_whitespace(replacement);
-    let original_words = original_core.split_whitespace().collect::<Vec<_>>();
-    let replacement_words = replacement_core.split_whitespace().collect::<Vec<_>>();
-    original_words.len() >= 2 && original_words.len() == replacement_words.len()
-}
-
-fn boundary_operator_may_shift_word_boundary(
-    original: &str,
-    replacement: &str,
-    error_class: TypingErrorClass,
-) -> bool {
-    if !matches!(
-        error_class,
-        TypingErrorClass::SplitWord | TypingErrorClass::GluedWords
-    ) {
-        return false;
-    }
-    let (_, original_core, _) = split_edge_whitespace(original);
-    let (_, replacement_core, _) = split_edge_whitespace(replacement);
-    let original_words = original_core.split_whitespace().count();
-    let replacement_words = replacement_core.split_whitespace().count();
-    if original_words == 0 || replacement_words == 0 {
-        return false;
-    }
-    original_words.abs_diff(replacement_words) == 1
-        && original_words.max(replacement_words) <= original_words.min(replacement_words) + 1
-}
-
-fn phrase_context_operator_may_rewrite_one_token(
-    original: &str,
-    replacement: &str,
-    source_id: &str,
-) -> bool {
-    if source_id != "PhraseCell32" {
-        return false;
-    }
-    let (_, original_core, _) = split_edge_whitespace(original);
-    let (_, replacement_core, _) = split_edge_whitespace(replacement);
-    let original_words = original_core.split_whitespace().collect::<Vec<_>>();
-    let replacement_words = replacement_core.split_whitespace().collect::<Vec<_>>();
-    if original_words.len() < 2 || original_words.len() != replacement_words.len() {
-        return false;
-    }
-    original_words
-        .iter()
-        .zip(replacement_words.iter())
-        .filter(|(left, right)| left != right)
-        .count()
-        == 1
-}
-
-fn deterministic_typo_may_split_previous_glued_word(original: &str, replacement: &str) -> bool {
-    let (_, original_core, _) = split_edge_whitespace(original);
-    let (_, replacement_core, _) = split_edge_whitespace(replacement);
-    let original_words = original_core.split_whitespace().collect::<Vec<_>>();
-    let replacement_words = replacement_core.split_whitespace().collect::<Vec<_>>();
-    if original_words.is_empty() || replacement_words.len() != original_words.len() + 1 {
-        return false;
-    }
-
-    for split_idx in 0..original_words.len() {
-        let Some(left) = replacement_words.get(split_idx) else {
-            continue;
-        };
-        let Some(right) = replacement_words.get(split_idx + 1) else {
-            continue;
-        };
-        let merged = format!("{left}{right}");
-        if !same_cyrillic_token(original_words[split_idx], &merged) {
-            continue;
-        }
-        if original_words[..split_idx] != replacement_words[..split_idx] {
-            continue;
-        }
-        let original_after = &original_words[split_idx + 1..];
-        let replacement_after = &replacement_words[split_idx + 2..];
-        if original_after.len() != replacement_after.len() {
-            continue;
-        }
-        let changed_after = original_after
-            .iter()
-            .zip(replacement_after.iter())
-            .enumerate()
-            .filter(|(_, (left, right))| left != right)
-            .map(|(idx, _)| idx)
-            .collect::<Vec<_>>();
-        if changed_after.is_empty()
-            || changed_after.as_slice() == [original_after.len().saturating_sub(1)]
-        {
-            return true;
-        }
-    }
-    false
 }
 
 fn bayes_score_for_candidate(
@@ -1694,7 +1564,7 @@ fn boundary_candidate_glues_short_function_tail(
     let left = original_words[0];
     let right = original_words[1];
     let merged = replacement_words[0];
-    if !same_cyrillic_token(&format!("{left}{right}"), merged) {
+    if !edit_transition::same_cyrillic_token(&format!("{left}{right}"), merged) {
         return false;
     }
     let (_, right_word, _) = split_word_punctuation(right);
@@ -1912,7 +1782,7 @@ fn boundary_candidate_splits_to_short_function_and_weak_tail(
             .copied()
             .unwrap_or_default();
         let merged = format!("{first}{second}");
-        if !same_cyrillic_token(original_word, &merged) {
+        if !edit_transition::same_cyrillic_token(original_word, &merged) {
             continue;
         }
 
@@ -2601,16 +2471,6 @@ fn same_known_russian_token(original: &str, candidate: &str) -> bool {
         && crate::russian_lexicon::is_known_russian_word_or_form(&original_lower)
 }
 
-fn same_cyrillic_token(original: &str, candidate: &str) -> bool {
-    let (_, original_word, _) = split_word_punctuation(original);
-    let (_, candidate_word, _) = split_word_punctuation(candidate);
-    !original_word.is_empty()
-        && !candidate_word.is_empty()
-        && is_cyrillic_letters_only(original_word)
-        && is_cyrillic_letters_only(candidate_word)
-        && original_word.to_lowercase() == candidate_word.to_lowercase()
-}
-
 fn strong_standalone_split_tail(lower: &str) -> bool {
     lower.chars().count() >= 4
         && (crate::lexicon::is_common_ru_word(lower)
@@ -2942,7 +2802,7 @@ mod tests {
         );
 
         assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
-        assert_eq!(gate.reason, "extra_context_requires_operator_proof");
+        assert_eq!(gate.reason, "edit_transition_not_verified");
     }
 
     #[test]
@@ -2954,7 +2814,7 @@ mod tests {
             "L2SurfaceMotifCell32",
         );
 
-        assert_ne!(gate.reason, "extra_context_requires_operator_proof");
+        assert_ne!(gate.reason, "edit_transition_not_verified");
     }
 
     #[test]
@@ -2967,7 +2827,7 @@ mod tests {
         );
 
         assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
-        assert_eq!(gate.reason, "extra_context_requires_operator_proof");
+        assert_eq!(gate.reason, "edit_transition_not_verified");
     }
 
     #[test]
