@@ -1,7 +1,8 @@
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
-use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
+use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest};
+use lay::text_edit::VisibleTail;
 
 use super::composition_commit::ActiveCompositionCommit;
 use super::engine::{LayIbusEngine, ManualToggleAuthority};

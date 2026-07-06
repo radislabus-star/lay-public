@@ -19,6 +19,8 @@ mod mutation;
 mod safety;
 #[path = "text_edit/types.rs"]
 mod types;
+#[path = "text_edit/visible_tail.rs"]
+mod visible_tail;
 
 pub use action::{EditAction, EditActionKind};
 pub use committed_tail::{
@@ -34,6 +36,7 @@ pub use gate::{authorize_replacement, authorize_replacement_with_transition};
 pub use mutation::TransitionAudit;
 pub use safety::{autocorrect_edit_safety, EditPlanSafetyReport};
 pub use types::TextReplacement;
+pub use visible_tail::{VisibleTail, VisibleTailSource};
 
 #[cfg(test)]
 #[path = "text_edit_tests.rs"]

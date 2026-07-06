@@ -4,6 +4,7 @@ use super::bridge::LayImeBridge;
 use super::engine::{LayIbusEngine, ManualToggleAuthority};
 use super::state::CommittedTailReplaceRequest;
 use lay::manual_toggle::ImeManualToggleOutcome;
+use lay::text_edit::VisibleTailSource;
 
 impl LayImeBridge {
     pub(super) fn active_path(&self) -> Option<String> {
@@ -25,12 +26,9 @@ impl LayImeBridge {
             .await
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let engine = iface_ref.get().await;
-        let state = match engine.manual_toggle_authority() {
-            ManualToggleAuthority::ImeActiveComposition => "active:composition",
-            ManualToggleAuthority::ImeCommittedTail => "passive:committed-tail",
-            ManualToggleAuthority::DaemonWordBuffer => "passive:daemon-word-buffer",
-        };
-        Ok(state.to_string())
+        Ok(tail_source_for_authority(engine.manual_toggle_authority())
+            .bridge_state()
+            .to_string())
     }
 
     pub(super) async fn visible_tail_v1_inner(&self) -> fdo::Result<(String, String, bool)> {
@@ -45,18 +43,13 @@ impl LayImeBridge {
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let mut engine = iface_ref.get_mut().await;
         engine.refresh_empty_tail_from_handoff();
-        let (state, text) = match engine.manual_toggle_authority() {
-            ManualToggleAuthority::ImeActiveComposition => {
-                ("active:composition", engine.buffer.clone())
-            }
-            ManualToggleAuthority::ImeCommittedTail => {
-                ("passive:committed-tail", engine.tail_buffer.clone())
-            }
-            ManualToggleAuthority::DaemonWordBuffer => {
-                ("passive:daemon-word-buffer", String::new())
-            }
+        let source = tail_source_for_authority(engine.manual_toggle_authority());
+        let text = match source {
+            VisibleTailSource::ImeActiveComposition => engine.buffer.clone(),
+            VisibleTailSource::ImeCommittedTail => engine.tail_buffer.clone(),
+            VisibleTailSource::DaemonWordBuffer => String::new(),
         };
-        Ok((state.to_string(), text, engine.layout_is_ru))
+        Ok((source.bridge_state().to_string(), text, engine.layout_is_ru))
     }
 
     pub(super) async fn owns_active_text_inner(&self) -> fdo::Result<bool> {
@@ -149,5 +142,13 @@ impl LayImeBridge {
                 None => ImeManualToggleOutcome::NotHandled,
             },
         )
+    }
+}
+
+fn tail_source_for_authority(authority: ManualToggleAuthority) -> VisibleTailSource {
+    match authority {
+        ManualToggleAuthority::ImeActiveComposition => VisibleTailSource::ImeActiveComposition,
+        ManualToggleAuthority::ImeCommittedTail => VisibleTailSource::ImeCommittedTail,
+        ManualToggleAuthority::DaemonWordBuffer => VisibleTailSource::DaemonWordBuffer,
     }
 }

@@ -1,16 +1,10 @@
 use crate::dict::{convert, detect_direction};
 use crate::keyboard::preferred_layout_for_text;
+pub use crate::text_edit::{VisibleTail, VisibleTailSource};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ManualToggleRoute {
     Daemon,
-    ImeActiveComposition,
-    ImeCommittedTail,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum VisibleTailSource {
-    DaemonWordBuffer,
     ImeActiveComposition,
     ImeCommittedTail,
 }
@@ -21,35 +15,6 @@ impl VisibleTailSource {
             Self::DaemonWordBuffer => ManualToggleRoute::Daemon,
             Self::ImeActiveComposition => ManualToggleRoute::ImeActiveComposition,
             Self::ImeCommittedTail => ManualToggleRoute::ImeCommittedTail,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct VisibleTail<'a> {
-    pub text: &'a str,
-    pub source: VisibleTailSource,
-}
-
-impl<'a> VisibleTail<'a> {
-    pub fn daemon_word_buffer(text: &'a str) -> Self {
-        Self {
-            text,
-            source: VisibleTailSource::DaemonWordBuffer,
-        }
-    }
-
-    pub fn ime_active_composition(text: &'a str) -> Self {
-        Self {
-            text,
-            source: VisibleTailSource::ImeActiveComposition,
-        }
-    }
-
-    pub fn ime_committed_tail(text: &'a str) -> Self {
-        Self {
-            text,
-            source: VisibleTailSource::ImeCommittedTail,
         }
     }
 }

@@ -2,7 +2,8 @@ use std::path::PathBuf;
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 
-use lay::manual_toggle::{ManualTogglePlan, ManualToggleRoute, VisibleTailSource};
+use lay::manual_toggle::{ManualTogglePlan, ManualToggleRoute};
+use lay::text_edit::VisibleTailSource;
 
 const TRACE_CONFIG_REFRESH: Duration = Duration::from_millis(250);
 
@@ -90,7 +91,7 @@ pub(crate) fn record_manual_toggle_plan(plan: &ManualTogglePlan) {
         return;
     }
     let route = manual_toggle_route(plan.route);
-    let source = visible_tail_source(plan.edit.source);
+    let source = plan.edit.source.source_id();
     let original_token = json_string(&plan.edit.original_token);
     let insert_text = json_string(&plan.edit.insert_text);
     write_record(format!(
@@ -108,7 +109,7 @@ pub(crate) fn record_committed_tail_replace(
     if !enabled() {
         return;
     }
-    let source = visible_tail_source(source);
+    let source = source.source_id();
     let text = json_string(text);
     write_record(format!(
         r#"{{"kind":"ibus_committed_tail_replace","source":"{source}","output_route":"{output_route}","backspaces":{backspaces},"text":{text}}}"#
@@ -127,7 +128,7 @@ pub(crate) fn record_committed_tail_replace_timing(
     if !enabled() {
         return;
     }
-    let source = visible_tail_source(source);
+    let source = source.source_id();
     write_record(format!(
         r#"{{"kind":"ibus_committed_tail_replace_timing","source":"{source}","output_route":"{output_route}","clear_us":{clear_us},"delete_us":{delete_us},"commit_us":{commit_us},"state_us":{state_us},"total_us":{total_us}}}"#
     ));
@@ -159,14 +160,6 @@ pub(crate) fn record_completion_accept(source: &str, suffix_chars: usize, with_s
     write_record(format!(
         r#"{{"kind":"ibus_completion_accept","source":"{source}","suffix_chars":{suffix_chars},"with_space":{with_space}}}"#
     ));
-}
-
-fn visible_tail_source(source: VisibleTailSource) -> &'static str {
-    match source {
-        VisibleTailSource::DaemonWordBuffer => "daemon_word_buffer",
-        VisibleTailSource::ImeActiveComposition => "ime_active_composition",
-        VisibleTailSource::ImeCommittedTail => "ime_committed_tail",
-    }
 }
 
 fn manual_toggle_route(route: ManualToggleRoute) -> &'static str {

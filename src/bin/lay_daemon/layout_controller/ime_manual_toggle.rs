@@ -1,4 +1,5 @@
-use lay::manual_toggle::{plan_manual_toggle, ManualTogglePlan, ManualToggleRequest, VisibleTail};
+use lay::manual_toggle::{plan_manual_toggle, ManualTogglePlan, ManualToggleRequest};
+use lay::text_edit::{VisibleTail, VisibleTailSource};
 
 use super::{ime_bridge, switch_to_target_layout};
 
@@ -19,20 +20,27 @@ pub(super) fn try_manual_toggle(ime_enabled: bool) -> Result<Option<bool>, Strin
 fn build_plan_from_visible_tail(
     (state, text, layout_is_ru): (String, String, bool),
 ) -> Option<ManualTogglePlan> {
-    let request = match state.as_str() {
-        "active:composition" => ManualToggleRequest {
-            visible_tail: VisibleTail::ime_active_composition(&text),
+    let source = VisibleTailSource::from_bridge_state(&state)?;
+    let request = match source {
+        VisibleTailSource::ImeActiveComposition => ManualToggleRequest {
+            visible_tail: VisibleTail {
+                text: &text,
+                source,
+            },
             current_layout_is_ru: layout_is_ru,
             recover_missing_initial: false,
             preserve_trailing_whitespace: false,
         },
-        "passive:committed-tail" => ManualToggleRequest {
-            visible_tail: VisibleTail::ime_committed_tail(&text),
+        VisibleTailSource::ImeCommittedTail => ManualToggleRequest {
+            visible_tail: VisibleTail {
+                text: &text,
+                source,
+            },
             current_layout_is_ru: layout_is_ru,
             recover_missing_initial: true,
             preserve_trailing_whitespace: true,
         },
-        _ => return None,
+        VisibleTailSource::DaemonWordBuffer => return None,
     };
     plan_manual_toggle(request)
 }

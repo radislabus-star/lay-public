@@ -1,5 +1,5 @@
 use lay::config::LayConfig;
-use lay::manual_toggle::VisibleTailSource;
+use lay::text_edit::VisibleTailSource;
 use lay::text_edit::{tail_chars, TextReplacement};
 use std::time::{Duration, Instant};
 use zbus::fdo;
@@ -226,7 +226,7 @@ impl LayIbusEngine {
             &original_text,
             &text,
             plan,
-            Some(committed_tail_source_id(source)),
+            Some(source.source_id()),
             None,
         );
         lay::action_log::record_candidate_edit_action_before_apply(&edit_action, None);
@@ -362,14 +362,6 @@ fn warm_runtime(config: &LayConfig) {
             lay::lem::warm_up();
             std::thread::spawn(lay::nanda_wave::warm_up);
         }
-    }
-}
-
-fn committed_tail_source_id(source: VisibleTailSource) -> &'static str {
-    match source {
-        VisibleTailSource::DaemonWordBuffer => "daemon_word_buffer",
-        VisibleTailSource::ImeActiveComposition => "ime_active_composition",
-        VisibleTailSource::ImeCommittedTail => "ime_committed_tail",
     }
 }
 
