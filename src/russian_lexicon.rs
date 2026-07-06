@@ -24,6 +24,8 @@ use hunspell::{
 };
 pub(crate) use word_set::WordSet;
 
+static RUSSIAN_GENERATED_FORMS: OnceLock<WordSet> = OnceLock::new();
+
 pub fn warm_up() {
     let _ = russian_dictionary().len();
     let _ = russian_short_dictionary().len();
@@ -94,13 +96,16 @@ pub fn russian_tiny_dictionary() -> &'static WordSet {
 }
 
 pub fn russian_generated_form_dictionary() -> &'static WordSet {
-    static WORDS: OnceLock<WordSet> = OnceLock::new();
-    WORDS.get_or_init(|| {
+    RUSSIAN_GENERATED_FORMS.get_or_init(|| {
         WordSet::from_words(
             load_hunspell_generated_forms_min_len(RU_HUNSPELL, RU_HUNSPELL_AFF, 4)
                 .unwrap_or_default(),
         )
     })
+}
+
+pub fn russian_generated_form_dictionary_is_warm() -> bool {
+    RUSSIAN_GENERATED_FORMS.get().is_some()
 }
 
 pub fn is_known_russian_word_or_form(word: &str) -> bool {

@@ -26,8 +26,13 @@ use super::signal::{WavePacket, WordCandidate};
 
 const MAX_LAYOUT_SCAN_CANDIDATES: usize = 4;
 const MAX_TAUGHT_CANDIDATES: usize = 6;
-const L2_RUNTIME_WORD_LIMIT: usize = 1_000;
-const L2_USAGE_WORD_LIMIT: usize = 500;
+const L2_RUNTIME_WORD_LIMIT: usize = 1_800;
+const L2_FOUNDATION_SOURCE_LIMIT: usize = 12_000;
+const L2_FOUNDATION_LIVE_SCAN_LIMIT: usize = 20_000;
+const L2_USAGE_WORD_LIMIT: usize = 200;
+const L2_CASE_WORD_LIMIT: usize = 200;
+const L2_SURFACE_FOUNDATION_RU_DATA: &str =
+    include_str!("../../data/lexicon/l2_surface_foundation_ru_100k.txt");
 const L2_SURFACE_HOT_RU_DATA: &str = include_str!("../../data/lexicon/l2_surface_hot_ru.txt");
 pub(super) const L2_SURFACE_MOTIF_CELL: &str = "L2SurfaceMotifCell32";
 pub(super) const L2_SURFACE_COMPLETION_CELL: &str = "L2SurfaceCompletionCell32";
@@ -163,13 +168,133 @@ pub fn ime_l2_short_seed_word_candidates(
         .iter()
         .take(limit)
         .map(|word| {
-            let usage_prior = super::usage_prior::word_usage_prior_cached(word);
+            let usage_prior = super::usage_prior::word_usage_prior_cached(&word);
             let context_prior =
-                super::usage_prior::context_word_usage_prior_cached(&context_tokens, word);
+                super::usage_prior::context_word_usage_prior_cached(&context_tokens, &word);
             L2ImeWordCandidate {
                 surface: word.clone(),
                 kind: L2ImeWordCandidateKind::Completion,
                 score: 520,
+                l1_overlap: token_len,
+                l2_overlap: 0,
+                motif_overlap: 0,
+                usage_prior,
+                context_prior,
+            }
+        })
+        .collect()
+}
+
+pub fn ime_l2_foundation_prefix_candidates(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> Vec<L2ImeWordCandidate> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let normalized = token.to_lowercase();
+    let token_len = normalized.chars().count();
+    if !(2..=18).contains(&token_len) || !normalized.chars().all(is_cyrillic_letter) {
+        return Vec::new();
+    }
+    let context_tokens = super::llmwave::tokenize(context_prefix);
+    let mut words = data_words(L2_SURFACE_FOUNDATION_RU_DATA)
+        .take(L2_FOUNDATION_LIVE_SCAN_LIMIT)
+        .filter_map(|word| super::surface_bank::normalize_l2_surface_word(&word))
+        .filter(|word| word.starts_with(&normalized) && word.chars().count() > token_len)
+        .take(limit.saturating_mul(8).max(limit))
+        .collect::<Vec<_>>();
+    words.sort_by(|left, right| {
+        super::usage_prior::word_usage_prior_cached(right)
+            .total_cmp(&super::usage_prior::word_usage_prior_cached(left))
+            .then_with(|| {
+                super::usage_prior::context_word_usage_prior_cached(&context_tokens, right)
+                    .total_cmp(&super::usage_prior::context_word_usage_prior_cached(
+                        &context_tokens,
+                        left,
+                    ))
+            })
+            .then_with(|| {
+                crate::lexicon::is_common_ru_word(right)
+                    .cmp(&crate::lexicon::is_common_ru_word(left))
+            })
+            .then_with(|| left.chars().count().cmp(&right.chars().count()))
+            .then_with(|| left.cmp(right))
+    });
+    words.truncate(limit);
+    words
+        .into_iter()
+        .map(|word| {
+            let usage_prior = super::usage_prior::word_usage_prior_cached(&word);
+            let context_prior =
+                super::usage_prior::context_word_usage_prior_cached(&context_tokens, &word);
+            L2ImeWordCandidate {
+                surface: word,
+                kind: L2ImeWordCandidateKind::Completion,
+                score: 610,
+                l1_overlap: token_len,
+                l2_overlap: 0,
+                motif_overlap: 0,
+                usage_prior,
+                context_prior,
+            }
+        })
+        .collect()
+}
+
+pub fn ime_l2_generated_form_prefix_candidates(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> Vec<L2ImeWordCandidate> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let normalized = token.to_lowercase();
+    let token_len = normalized.chars().count();
+    if !(3..=18).contains(&token_len) || !normalized.chars().all(is_cyrillic_letter) {
+        return Vec::new();
+    }
+    if !crate::russian_lexicon::russian_generated_form_dictionary_is_warm() {
+        return Vec::new();
+    }
+    let max_len = (token_len + 12).min(32);
+    let mut words = crate::russian_lexicon::russian_generated_form_dictionary().prefix_words(
+        &normalized,
+        token_len + 1,
+        max_len,
+        limit.saturating_mul(4).max(limit),
+    );
+    let context_tokens = super::llmwave::tokenize(context_prefix);
+    words.sort_by(|left, right| {
+        super::usage_prior::word_usage_prior_cached(right)
+            .total_cmp(&super::usage_prior::word_usage_prior_cached(left))
+            .then_with(|| {
+                super::usage_prior::context_word_usage_prior_cached(&context_tokens, right)
+                    .total_cmp(&super::usage_prior::context_word_usage_prior_cached(
+                        &context_tokens,
+                        left,
+                    ))
+            })
+            .then_with(|| {
+                crate::lexicon::is_common_ru_word(right)
+                    .cmp(&crate::lexicon::is_common_ru_word(left))
+            })
+            .then_with(|| left.chars().count().cmp(&right.chars().count()))
+            .then_with(|| left.cmp(right))
+    });
+    words.truncate(limit);
+    words
+        .into_iter()
+        .map(|word| {
+            let usage_prior = super::usage_prior::word_usage_prior_cached(&word);
+            let context_prior =
+                super::usage_prior::context_word_usage_prior_cached(&context_tokens, &word);
+            L2ImeWordCandidate {
+                surface: word,
+                kind: L2ImeWordCandidateKind::Completion,
+                score: 650,
                 l1_overlap: token_len,
                 l2_overlap: 0,
                 motif_overlap: 0,
@@ -277,8 +402,16 @@ pub fn run_l2_refined_with_feedback(
         }
     }
     mark_timing!("tech-token");
+    let boundary_scan = if options.is_enabled("BoundaryCell32") {
+        boundary_scan_candidates(tail, l1, &context)
+    } else {
+        Vec::new()
+    };
     let mut has_l2_surface_motif_candidate = false;
-    if options.is_enabled(L2_SURFACE_MOTIF_CELL) || options.is_enabled(L2_SURFACE_COMPLETION_CELL) {
+    if boundary_scan.is_empty()
+        && (options.is_enabled(L2_SURFACE_MOTIF_CELL)
+            || options.is_enabled(L2_SURFACE_COMPLETION_CELL))
+    {
         for candidate in surface_motif_word_candidates(prefix, token, &context, l1, options) {
             has_l2_surface_motif_candidate |= candidate.source == L2_SURFACE_MOTIF_CELL;
             push_unique_candidate(&mut candidates, candidate);
@@ -293,13 +426,13 @@ pub fn run_l2_refined_with_feedback(
     mark_timing!("surface-motif");
     let has_explicit_boundary_split = token.chars().all(is_cyrillic_letter)
         && light_boundary_replacement(&token.to_lowercase()).is_some();
-    if options.is_enabled("BoundaryCell32")
-        && (!has_l2_surface_motif_candidate || has_explicit_boundary_split)
-    {
-        for candidate in boundary_split_candidates(prefix, token, l1, &context) {
-            push_unique_candidate(&mut candidates, candidate);
+    if options.is_enabled("BoundaryCell32") {
+        if !has_l2_surface_motif_candidate || has_explicit_boundary_split {
+            for candidate in boundary_split_candidates(prefix, token, l1, &context) {
+                push_unique_candidate(&mut candidates, candidate);
+            }
         }
-        for candidate in boundary_scan_candidates(tail, l1, &context) {
+        for candidate in boundary_scan {
             push_unique_candidate(&mut candidates, candidate);
         }
     }
@@ -929,7 +1062,13 @@ fn surface_motif_word_candidates(
             )
             && (!fuzzy_surface_candidate_blocked(word, &normalized, &candidate.word)
                 || repeated_all_caps_surface_allowed(word, &normalized, &candidate.word))
-            && surface_motif_typo_allowed(len, distance, candidate.score)
+            && surface_motif_typo_allowed(
+                &normalized,
+                &candidate.word,
+                len,
+                distance,
+                candidate.score,
+            )
         {
             out.push(surface_motif_candidate(SurfaceMotifCandidateInput {
                 prefix,
@@ -1048,7 +1187,13 @@ fn surface_motif_typo_has_authority(
         .iter()
         .any(|surface| surface.word == candidate && surface.score == score);
     if l2_surface_match
-        && surface_motif_typo_allowed(original.chars().count(), candidate_distance, score)
+        && surface_motif_typo_allowed(
+            original,
+            candidate,
+            original.chars().count(),
+            candidate_distance,
+            score,
+        )
     {
         return true;
     }
@@ -1070,8 +1215,13 @@ fn surface_motif_typo_has_authority(
             return false;
         }
         let other_distance = damerau_levenshtein(original, &other.word);
-        surface_motif_typo_allowed(original_len, other_distance, other.score)
-            && other_distance <= candidate_distance
+        surface_motif_typo_allowed(
+            original,
+            &other.word,
+            original_len,
+            other_distance,
+            other.score,
+        ) && other_distance <= candidate_distance
             && other.score.saturating_add(24) >= score
     })
 }
@@ -1280,10 +1430,33 @@ fn surface_motif_candidate(input: SurfaceMotifCandidateInput<'_>) -> WordCandida
     }
 }
 
-fn surface_motif_typo_allowed(input_len: usize, distance: usize, score: u32) -> bool {
+fn surface_motif_typo_allowed(
+    input: &str,
+    candidate: &str,
+    input_len: usize,
+    distance: usize,
+    score: u32,
+) -> bool {
     distance == 1
+        || is_single_adjacent_transposition(input, candidate)
         || (input_len >= 6 && distance == 2 && score >= 300)
         || (input_len >= 8 && distance == 3 && score >= 380)
+}
+
+fn is_single_adjacent_transposition(input: &str, candidate: &str) -> bool {
+    let mut left = input.chars().collect::<Vec<_>>();
+    let right = candidate.chars().collect::<Vec<_>>();
+    if left.len() != right.len() || left.len() < 2 || left == right {
+        return false;
+    }
+    for index in 0..left.len() - 1 {
+        left.swap(index, index + 1);
+        if left == right {
+            return true;
+        }
+        left.swap(index, index + 1);
+    }
+    false
 }
 
 fn surface_motif_typo_risk(context: &TailContext, distance: usize) -> f32 {
@@ -1313,12 +1486,12 @@ fn surface_motif_memory() -> &'static L2CenterMemory {
             words.iter().map(String::as_str),
             L2CenterMemoryConfig {
                 l1_config: super::l1_center_memory::L1CenterMemoryConfig {
-                    min_center_support: 1,
-                    max_centers: 120_000,
+                    min_center_support: 2,
+                    max_centers: 48_000,
                 },
                 motif_len: 3,
                 min_motif_support: 2,
-                max_motifs: 180_000,
+                max_motifs: 64_000,
             },
         );
         if timing_enabled {
@@ -1342,12 +1515,6 @@ fn runtime_l2_surface_words() -> Vec<String> {
     let mut words = Vec::new();
     let mut seen = HashSet::new();
     collect_runtime_l2_words(
-        crate::lexicon::common_ru_words_iter().map(str::to_string),
-        &mut words,
-        &mut seen,
-    );
-    collect_runtime_l2_words(data_words(L2_SURFACE_HOT_RU_DATA), &mut words, &mut seen);
-    collect_runtime_l2_words(
         super::usage_prior::l2_surface_words_by_usage(L2_USAGE_WORD_LIMIT),
         &mut words,
         &mut seen,
@@ -1355,16 +1522,46 @@ fn runtime_l2_surface_words() -> Vec<String> {
     collect_runtime_l2_case_words(
         include_str!("../../data/nanda_wave_synthetic_cases.tsv"),
         1,
+        L2_CASE_WORD_LIMIT,
         &mut words,
         &mut seen,
     );
     collect_runtime_l2_generated_positive_words(
         include_str!("../../data/nanda_training/generated_cases.tsv"),
+        L2_CASE_WORD_LIMIT,
         &mut words,
         &mut seen,
     );
+    collect_runtime_l2_training_words(
+        crate::lexicon::common_ru_words_iter().map(str::to_string),
+        &mut words,
+        &mut seen,
+    );
+    collect_runtime_l2_training_words(
+        data_words(L2_SURFACE_FOUNDATION_RU_DATA).take(L2_FOUNDATION_SOURCE_LIMIT),
+        &mut words,
+        &mut seen,
+    );
+    collect_runtime_l2_words(data_words(L2_SURFACE_HOT_RU_DATA), &mut words, &mut seen);
 
-    super::surface_bank::balanced_l2_surface_words(words, L2_RUNTIME_WORD_LIMIT)
+    words.truncate(L2_RUNTIME_WORD_LIMIT);
+    words
+}
+
+fn collect_runtime_l2_training_words<I>(
+    source: I,
+    words: &mut Vec<String>,
+    seen: &mut HashSet<String>,
+) where
+    I: IntoIterator<Item = String>,
+{
+    for word in source {
+        if let Some(normalized) = super::surface_bank::normalize_l2_training_surface_word(&word) {
+            if seen.insert(normalized.clone()) {
+                words.push(normalized);
+            }
+        }
+    }
 }
 
 fn collect_runtime_l2_words<I>(source: I, words: &mut Vec<String>, seen: &mut HashSet<String>)
@@ -1390,13 +1587,18 @@ fn data_words(data: &str) -> impl Iterator<Item = String> + '_ {
 fn collect_runtime_l2_case_words(
     text: &str,
     expected_col: usize,
+    max_new_words: usize,
     words: &mut Vec<String>,
     seen: &mut HashSet<String>,
 ) {
+    let start_len = words.len();
     for line in text
         .lines()
         .filter(|line| !line.trim_start().starts_with('#'))
     {
+        if words.len().saturating_sub(start_len) >= max_new_words {
+            break;
+        }
         let cols = line.split('\t').collect::<Vec<_>>();
         if let Some(expected) = cols.get(expected_col) {
             collect_runtime_l2_text_words(&decode_fixture_spaces(expected), words, seen);
@@ -1406,10 +1608,15 @@ fn collect_runtime_l2_case_words(
 
 fn collect_runtime_l2_generated_positive_words(
     text: &str,
+    max_new_words: usize,
     words: &mut Vec<String>,
     seen: &mut HashSet<String>,
 ) {
+    let start_len = words.len();
     for line in text.lines().skip(1) {
+        if words.len().saturating_sub(start_len) >= max_new_words {
+            break;
+        }
         let cols = line.split('\t').collect::<Vec<_>>();
         if cols.len() >= 6 && cols[5] == "1" {
             collect_runtime_l2_text_words(&decode_fixture_spaces(cols[3]), words, seen);
@@ -2596,6 +2803,19 @@ mod tests {
         assert!(
             candidates.iter().any(|candidate| {
                 candidate.source == L2_SURFACE_MOTIF_CELL && candidate.text == "загрузи"
+            }),
+            "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn l2_surface_motif_cell_recovers_adjacent_transposition() {
+        let original = "пукнт ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.source == L2_SURFACE_MOTIF_CELL && candidate.text == "пункт"
             }),
             "candidates={candidates:?}"
         );

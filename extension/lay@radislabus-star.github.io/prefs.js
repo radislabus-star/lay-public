@@ -6,7 +6,7 @@ import Gtk from 'gi://Gtk';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.2.94';
+const APP_VERSION = '0.2.98';
 const APP_RELEASE_DATE = '2026-07-06';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
@@ -137,15 +137,6 @@ function nandaPassportText(status) {
     return lines.join('\n');
 }
 
-const ENGINE_OPTIONS = [
-    ['replay', 'Обычный'],
-    ['smart', 'Умный'],
-];
-const SCOPE_OPTIONS = [
-    ['1', '1 слово'],
-    ['2', '2 слова'],
-    ['3', '3 слова'],
-];
 const SAFETY_OPTIONS = [
     ['strict', 'Осторожно'],
     ['normal', 'Норма'],
@@ -170,7 +161,7 @@ const FORCE_KEY_OPTIONS = [
 ];
 const BACKEND_OPTIONS = [
     ['uinput', 'Быстрый ввод'],
-    ['ime', 'IME, эксперимент'],
+    ['ime', 'IME-подсказки'],
     ['auto', 'Авто'],
 ];
 const LAYOUT_BACKEND_OPTIONS = [
@@ -324,8 +315,6 @@ class LayPrefsView {
             this._switchRow('Запоминать правки', 'learning_log', false),
             this._debugLogsRow('Журнал отладки lay'),
             this._switchRow('Автораскладка после пробела', 'auto_switch_layout', false),
-            this._comboRow('Режим', 'correction_engine', ENGINE_OPTIONS, false),
-            this._comboRow('Область', 'replace_words', SCOPE_OPTIONS, false),
             this._comboRow('Осторожность', 'correction_safety', SAFETY_OPTIONS, true),
         ]), 0, 0, 1, 1);
 
@@ -338,23 +327,15 @@ class LayPrefsView {
             this._comboRow('EN хоткей', 'force_en_key', FORCE_KEY_OPTIONS, true),
         ]), 0, 1, 1, 1);
 
-        grid.attach(this._section('Арбитры и каналы', [
+        grid.attach(this._section('Кандидаты и ввод', [
+            this._comboRow('Режим ввода', 'text_backend', BACKEND_OPTIONS, true),
             this._switchRow('Контур LEM', 'lem_enabled', false),
-            this._switchRow('LEM: 2 слова', 'lem_2_words', false),
-            this._switchRow('LEM: 3 слова', 'lem_3_words', false),
             this._weightRow('Вес LEM', 'lem_weight_percent', false),
             this._weightRow('Вес L2 кандидатов', 'nanda_l2_weight_percent', false),
             this._weightRow('Вес L3 фразы', 'nanda_l3_weight_percent', false),
-            this._switchRow('L2 phase shadow', 'nanda_l2_phase_shadow', false),
-            this._switchRow('L2 phase apply', 'nanda_l2_phase_apply', false),
-            this._switchRow('L3 phase shadow', 'nanda_l3_phase_shadow', false),
-            this._switchRow('Подсказки NANDA', 'nanda_precognition', false),
             this._switchRow('Подсказки в [скобках]', 'ime_bracket_candidates', false),
-            this._switchRow('Автокоррекция NANDA', 'nanda_autocorrect', false),
             this._buttonRow('NANDA ячейки', 'Открыть', () => this._showNandaWindow()),
             this._switchRow('Раскладка по окну', 'ptah_alexs_mode', false),
-            this._comboRow('Режим ввода', 'text_backend', BACKEND_OPTIONS, true),
-            this._comboRow('Среда раскладки', 'layout_backend', LAYOUT_BACKEND_OPTIONS, true),
         ]), 1, 0, 1, 1);
 
         grid.attach(this._section('Тайминг', [
@@ -475,8 +456,8 @@ class LayPrefsView {
             if (!id)
                 return;
             this._cfg[key] = /^\d+$/.test(id) ? Number(id) : id;
-            if (key === 'text_backend' && id === 'ime')
-                this._cfg.nanda_precognition = true;
+            if (key === 'text_backend')
+                this._cfg.nanda_precognition = id !== 'uinput';
             saveConfig(this._cfg);
             if (key === 'text_backend')
                 applyInputChannel(id);
@@ -705,7 +686,7 @@ class LayPrefsView {
         }));
         inner.append(new Gtk.Label({label: 'Как использовать', xalign: 0, css_classes: ['heading']}));
         inner.append(new Gtk.Label({
-            label: 'Включи “Автокоррекция NANDA”, если хочешь тестировать этот слой в живом вводе. “Журнал отладки lay” нужен только для разбора ошибок.',
+            label: 'Для живых подсказок выбери “Режим ввода: IME-подсказки”. “Журнал отладки lay” нужен только для разбора ошибок.',
             xalign: 0,
             wrap: true,
             max_width_chars: 58,

@@ -68,12 +68,8 @@ fn build_input_gate_decoded_tail(
         replacement_tail,
         CorrectionSource::TypingAssist,
     )?;
-    if original.split_whitespace().count() == 1
-        && !original.chars().next().is_some_and(char::is_whitespace)
-    {
-        if let Some(full_token_plan) = edit.verified_full_token_plan_for_cursor(0) {
-            edit.plan = full_token_plan;
-        }
+    if let Some(full_token_plan) = edit.verified_full_token_plan_for_cursor(0) {
+        edit.plan = full_token_plan;
     }
     let input_gate = decision
         .trace

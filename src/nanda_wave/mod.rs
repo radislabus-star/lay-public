@@ -1,3 +1,4 @@
+pub mod candidate_gate;
 pub mod cell32;
 pub mod context;
 pub mod context_wave;

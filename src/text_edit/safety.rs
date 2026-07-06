@@ -34,16 +34,21 @@ pub fn autocorrect_edit_safety(
     let multiword_original = original_word_count > 1;
     let deleted_contains_space = deleted_text.chars().any(char::is_whitespace);
     let inserted_contains_space = inserted_text.chars().any(char::is_whitespace);
+    let deleted_core_contains_space = core_contains_space(&deleted_text);
+    let inserted_core_contains_space = core_contains_space(&inserted_text);
     let insertion_splits_word =
         inserted_contains_space && insertion_point_is_inside_word(&original_chars, delete_start);
     let word_count_changed =
         original.split_whitespace().count() != replacement.split_whitespace().count();
     let boundary_changed = word_count_changed
-        || deleted_contains_space
-        || inserted_contains_space
+        || deleted_core_contains_space
+        || inserted_core_contains_space
         || insertion_splits_word;
     let changes_non_last_word = changed_non_last_word(original, replacement);
     let would_touch_words = touched_word_count(&original_chars, delete_start, cursor);
+    let trailing_ws = trailing_whitespace_chars(original);
+    let rewrites_inside_committed_tail =
+        (plan.backspaces > 0 || !plan.insert.is_empty()) && plan.move_left as usize > trailing_ws;
 
     let boundary_proof = boundary_proof_source(selected_source_id, selected_error_class);
     let layout_phrase = selected_error_class == Some("wrong_layout");
@@ -57,6 +62,8 @@ pub fn autocorrect_edit_safety(
 
     let (allow_apply, reason) = if multiword_original && !boundary_proof {
         (false, "unsafe_multiword_autocorrect_scope")
+    } else if rewrites_inside_committed_tail && !(boundary_proof || layout_phrase) {
+        (false, "unsafe_middle_suffix_autocorrect_plan")
     } else if boundary_changed && !(boundary_proof || layout_phrase) {
         (false, "unsafe_boundary_edit_without_proof")
     } else if boundary_changed && !strong_boundary_shape {
@@ -199,4 +206,17 @@ fn touched_word_count(chars: &[char], start: usize, end: usize) -> usize {
         }
     }
     count
+}
+
+fn trailing_whitespace_chars(text: &str) -> usize {
+    text.chars()
+        .rev()
+        .take_while(|ch| ch.is_whitespace())
+        .count()
+}
+
+fn core_contains_space(text: &str) -> bool {
+    text.trim_matches(char::is_whitespace)
+        .chars()
+        .any(char::is_whitespace)
 }

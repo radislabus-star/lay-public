@@ -22,8 +22,7 @@ use minimal::{apply_minimal_typing_replacement, MinimalTypingReplacementContext}
 
 use super::super::physical_input_grab::PhysicalInputGrab;
 use super::super::{
-    active_text_backend, log, read_current_layout_is_ru, release_possible_modifiers_fast,
-    ExecutingGuard,
+    log, read_current_layout_is_ru, release_possible_modifiers_fast, ExecutingGuard,
 };
 use super::candidate::TypingAssistCorrection;
 use super::TypingAssistOutcome;
@@ -61,7 +60,7 @@ pub(crate) fn apply_typing_assist_correction(
     };
     let original = edit.original.clone();
     let replacement = edit.replacement.clone();
-    let prefer_full_token_plan = active_text_backend().should_try_ime();
+    let prefer_full_token_plan = true;
     let defer_complex_live_edit = cursor_offset == 0
         && !physical_grab.is_active()
         && should_defer_immediate_typing_edit(&edit);

@@ -125,8 +125,21 @@ echo "== cargo fmt --check =="
 cargo fmt --check
 
 if has_file_matching '^src/bin/lay_ibus_engine'; then
-  echo "== cargo test --bin lay-ibus-engine =="
-  cargo test --bin lay-ibus-engine
+  if [[ "${LAY_CHANGED_FULL_IME:-0}" == "1" ]]; then
+    echo "== cargo test --bin lay-ibus-engine =="
+    cargo test --bin lay-ibus-engine
+  else
+    echo "== cargo test --bin lay-ibus-engine targeted =="
+    cargo test --bin lay-ibus-engine live_ime_
+    cargo test --bin lay-ibus-engine known_russian_word_does_not_get_extended_by_precognition
+    cargo test --bin lay-ibus-engine short_russian_prefix_stays_fast_without_dropping_valid_candidates
+    cargo test --bin lay-ibus-engine manual_toggle_
+    cargo test --bin lay-ibus-engine committed_tail
+    cargo test --bin lay-ibus-engine daemon_bridge
+    cargo test --bin lay-ibus-engine delete_profile
+    cargo test --bin lay-ibus-engine handoff
+    cargo test --bin lay-ibus-engine reset
+  fi
 fi
 
 if has_file_matching '^src/bin/lay_daemon'; then

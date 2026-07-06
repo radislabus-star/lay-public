@@ -100,6 +100,37 @@ fn committed_tail_full_token_plan_avoids_middle_edit_for_ime_autocorrect() {
 }
 
 #[test]
+fn autocorrect_safety_blocks_middle_suffix_plan_but_allows_full_token_plan() {
+    let original = "следущий ";
+    let replacement = "следующий ";
+    let minimal = plan_committed_tail_replacement(original, replacement).expect("minimal");
+    let full_token =
+        plan_committed_tail_full_token_replacement(original, replacement).expect("full token");
+
+    let minimal_safety = autocorrect_edit_safety(
+        original,
+        replacement,
+        &minimal,
+        Some("L2SurfaceMotifCell32"),
+        Some("typo"),
+    );
+    let full_safety = autocorrect_edit_safety(
+        original,
+        replacement,
+        &full_token,
+        Some("L2SurfaceMotifCell32"),
+        Some("typo"),
+    );
+
+    assert!(!minimal_safety.allow_apply);
+    assert_eq!(
+        minimal_safety.reason,
+        "unsafe_middle_suffix_autocorrect_plan"
+    );
+    assert!(full_safety.allow_apply, "full_safety={full_safety:?}");
+}
+
+#[test]
 fn committed_tail_full_token_plan_can_be_shifted_behind_current_word() {
     let original = "следущий ";
     let replacement = "следующий ";

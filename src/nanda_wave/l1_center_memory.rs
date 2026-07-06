@@ -120,6 +120,16 @@ impl L1CenterMemory {
     }
 
     #[must_use]
+    pub(super) fn center_refs_for_record(&self, word_index: usize) -> &[u32] {
+        let Some(record) = self.word_records.get(word_index) else {
+            return &[];
+        };
+        let start = record.center_ref_start as usize;
+        let end = start.saturating_add(record.center_ref_len as usize);
+        self.sequence_refs.get(start..end).unwrap_or(&[])
+    }
+
+    #[must_use]
     pub(super) fn hot_bytes(&self) -> usize {
         self.centers.len() * L1_CENTER_RECORD_BYTES
             + self.sequence_refs.len() * L1_SEQUENCE_REF_BYTES

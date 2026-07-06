@@ -6,6 +6,17 @@ pub(crate) fn balanced_l2_surface_words<I>(source: I, limit: usize) -> Vec<Strin
 where
     I: IntoIterator<Item = String>,
 {
+    balanced_l2_words_by(source, limit, normalize_l2_surface_word)
+}
+
+fn balanced_l2_words_by<I>(
+    source: I,
+    limit: usize,
+    normalize: fn(&str) -> Option<String>,
+) -> Vec<String>
+where
+    I: IntoIterator<Item = String>,
+{
     if limit == 0 {
         return Vec::new();
     }
@@ -13,7 +24,7 @@ where
     let mut seen = HashSet::new();
     let words = source
         .into_iter()
-        .filter_map(|word| normalize_l2_surface_word(&word))
+        .filter_map(|word| normalize(&word))
         .filter(|word| seen.insert(word.clone()))
         .collect::<Vec<_>>();
     if words.len() <= limit {
@@ -118,6 +129,29 @@ pub(crate) fn normalize_l2_surface_word(word: &str) -> Option<String> {
     Some(normalized)
 }
 
+pub(crate) fn normalize_l2_training_surface_word(word: &str) -> Option<String> {
+    let normalized = word.trim().to_lowercase();
+    let len = normalized.chars().count();
+    if !(1..=24).contains(&len) {
+        return None;
+    }
+    if !normalized.chars().all(is_cyrillic_letter) {
+        return None;
+    }
+    if crate::lexicon::is_ru_live_protected_word(&normalized) {
+        return None;
+    }
+    if len >= 4
+        || crate::lexicon::is_ru_one_letter_function_word(&normalized)
+        || crate::lexicon::is_ru_short_function_word(&normalized)
+        || crate::lexicon::is_common_ru_word(&normalized)
+    {
+        Some(normalized)
+    } else {
+        None
+    }
+}
+
 fn usage_priority(word: &str) -> u16 {
     super::usage_prior::accepted_word_usage_count_cached(word).min(u16::MAX as u32) as u16
 }
@@ -135,5 +169,22 @@ mod tests {
             normalize_l2_surface_word("комитет").as_deref(),
             Some("комитет")
         );
+    }
+
+    #[test]
+    fn l2_training_surface_bank_keeps_known_short_function_words() {
+        assert_eq!(
+            normalize_l2_training_surface_word("и").as_deref(),
+            Some("и")
+        );
+        assert_eq!(
+            normalize_l2_training_surface_word("в").as_deref(),
+            Some("в")
+        );
+        assert_eq!(
+            normalize_l2_training_surface_word("не").as_deref(),
+            Some("не")
+        );
+        assert_eq!(normalize_l2_training_surface_word("гл"), None);
     }
 }

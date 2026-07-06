@@ -4,7 +4,7 @@ import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.2.94';
+const APP_VERSION = '0.2.98';
 const APP_RELEASE_DATE = '2026-07-06';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
@@ -137,7 +137,6 @@ function nandaPassportText(status) {
 
 const OPTIONS = {
     correction_engine: [['replay', 'Обычный'], ['smart', 'Умный']],
-    replace_words: [['1', '1 слово'], ['2', '2 слова'], ['3', '3 слова']],
     correction_safety: [['strict', 'Осторожно'], ['normal', 'Норма'], ['experimental', 'Смелее']],
     trigger: [
         ['double-lshift', 'Двойной Shift'],
@@ -156,7 +155,7 @@ const OPTIONS = {
         ['single-pause', 'Pause'],
         ['caps-lock', 'CapsLock'],
     ],
-    text_backend: [['uinput', 'Быстрый ввод'], ['ime', 'IME, эксперимент'], ['auto', 'Авто']],
+    text_backend: [['uinput', 'Быстрый ввод'], ['ime', 'IME-подсказки'], ['auto', 'Авто']],
     layout_backend: [['auto', 'Авто'], ['gnome', 'GNOME'], ['kde', 'KDE'], ['x11', 'X11'], ['niri', 'Niri']],
 };
 
@@ -318,8 +317,6 @@ class SettingsView {
             this.switchRow('Запоминать правки', 'learning_log', false),
             this.debugLogsRow('Журнал отладки lay'),
             this.switchRow('Автораскладка после пробела', 'auto_switch_layout', false),
-            this.comboRow('Режим', 'correction_engine', OPTIONS.correction_engine, false),
-            this.comboRow('Область', 'replace_words', OPTIONS.replace_words, false),
             this.comboRow('Осторожность', 'correction_safety', OPTIONS.correction_safety, true),
         ]), 0, 0, 1, 1);
         grid.attach(this.section('Управление', [
@@ -335,23 +332,15 @@ class SettingsView {
             this.spinRow('Окно Shift', 'shift_window_ms', 'мс', 150, 600, 25, true),
             this.spinRow('Multi-tap максимум', 'multi_tap_max_taps', '', 2, 4, 1, true),
         ]), 0, 1, 1, 1);
-        grid.attach(this.section('Арбитры и каналы', [
+        grid.attach(this.section('Кандидаты и ввод', [
+            this.comboRow('Режим ввода', 'text_backend', OPTIONS.text_backend, true),
             this.switchRow('Контур LEM', 'lem_enabled', false),
-            this.switchRow('LEM: 2 слова', 'lem_2_words', false),
-            this.switchRow('LEM: 3 слова', 'lem_3_words', false),
             this.weightRow('Вес LEM', 'lem_weight_percent', false),
             this.weightRow('Вес L2 кандидатов', 'nanda_l2_weight_percent', false),
             this.weightRow('Вес L3 фразы', 'nanda_l3_weight_percent', false),
-            this.switchRow('L2 phase shadow', 'nanda_l2_phase_shadow', false),
-            this.switchRow('L2 phase apply', 'nanda_l2_phase_apply', false),
-            this.switchRow('L3 phase shadow', 'nanda_l3_phase_shadow', false),
-            this.switchRow('Подсказки NANDA', 'nanda_precognition', false),
             this.switchRow('Подсказки в [скобках]', 'ime_bracket_candidates', false),
-            this.switchRow('Автокоррекция NANDA', 'nanda_autocorrect', false),
             this.buttonRow('NANDA ячейки', 'Открыть', () => this.showNandaWindow()),
             this.switchRow('Раскладка по окну', 'ptah_alexs_mode', false),
-            this.comboRow('Режим ввода', 'text_backend', OPTIONS.text_backend, true),
-            this.comboRow('Среда раскладки', 'layout_backend', OPTIONS.layout_backend, true),
         ]), 1, 0, 1, 1);
 
         root.append(grid);
@@ -547,8 +536,8 @@ class SettingsView {
         combo.connect('changed', () => {
             const id = combo.get_active_id();
             this.cfg[key] = /^\d+$/.test(id) ? Number(id) : id;
-            if (key === 'text_backend' && id === 'ime')
-                this.cfg.nanda_precognition = true;
+            if (key === 'text_backend')
+                this.cfg.nanda_precognition = id !== 'uinput';
             saveConfig(this.cfg);
             if (key === 'text_backend')
                 applyInputChannel(id);
@@ -650,7 +639,7 @@ class SettingsView {
             css_classes: ['heading'],
         }));
         inner.append(new Gtk.Label({
-            label: 'Включи “Автокоррекция NANDA”, если хочешь тестировать этот слой в живом вводе. “Журнал отладки lay” нужен только для разбора ошибок.',
+            label: 'Для живых подсказок выбери “Режим ввода: IME-подсказки”. “Журнал отладки lay” нужен только для разбора ошибок.',
             xalign: 0,
             wrap: true,
             max_width_chars: 58,

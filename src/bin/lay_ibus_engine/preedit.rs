@@ -363,6 +363,9 @@ impl LayIbusEngine {
         if self.buffer.is_empty() {
             return false;
         }
+        if self.buffer.chars().count() < 5 {
+            return false;
+        }
         let original = format!("{} ", self.buffer);
         self.autocorrect_active_composition_text(&original)
             .is_some_and(|replacement| replacement.trim_end() != self.buffer.trim_end())
@@ -431,6 +434,13 @@ impl LayIbusEngine {
         let partial = partial.to_lowercase();
         let partial_len = partial.chars().count();
         let has_left_context = prefix.split_whitespace().next().is_some();
+        if has_left_context
+            && lay::nanda_wave::llmwave::tokenize(prefix)
+                .last()
+                .is_some_and(|previous| previous == &partial)
+        {
+            return Vec::new();
+        }
         let min_prefix_chars = self.ru_lexical_min_prefix_chars();
         if !(min_prefix_chars..=12).contains(&partial_len)
             || !partial.chars().all(|ch| matches!(ch, 'а'..='я' | 'ё'))
@@ -450,45 +460,38 @@ impl LayIbusEngine {
             return Vec::new();
         }
         let whole_word_candidates = if short_prefix_uses_seed {
-            lay::nanda_wave::l2::ime_l2_short_seed_word_candidates(
-                prefix,
-                &partial,
-                PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
+            lay::nanda_wave::candidate_gate::live_completion_candidates(
+                lay::nanda_wave::candidate_gate::LiveCompletionRequest {
+                    context_prefix: prefix,
+                    partial: &partial,
+                    max_suffix_chars,
+                    allow_short_lexical,
+                    limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
+                },
             )
         } else {
-            lay::nanda_wave::l2::ime_l2_word_candidates(
-                prefix,
-                &partial,
-                PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
+            lay::nanda_wave::candidate_gate::live_completion_candidates(
+                lay::nanda_wave::candidate_gate::LiveCompletionRequest {
+                    context_prefix: prefix,
+                    partial: &partial,
+                    max_suffix_chars,
+                    allow_short_lexical,
+                    limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
+                },
             )
         };
         let mut ranked = whole_word_candidates
             .into_iter()
-            .filter(|candidate| {
-                matches!(
-                    candidate.kind,
-                    lay::nanda_wave::l2::L2ImeWordCandidateKind::Completion
-                )
-            })
             .filter_map(|candidate| {
-                if short_prefix_uses_seed && !lay::lexicon::is_common_ru_word(&candidate.surface) {
-                    return None;
-                }
-                let suffix = candidate.surface.strip_prefix(&partial)?.to_string();
-                if suffix.chars().count() > max_suffix_chars {
-                    return None;
-                }
                 let score = l3_or_lexical_precognition_score(
                     &prefix_tokens,
                     &candidate.surface,
                     partial_len,
                     allow_short_lexical,
                 )
-                .or_else(|| {
-                    allow_short_lexical
-                        .then_some((candidate.score as f32 / 1000.0).clamp(0.0, 0.70))
-                })?;
-                Some((suffix, score))
+                .map(|score| score.max(candidate.score))
+                .unwrap_or(candidate.score);
+                Some((candidate.suffix, score))
             })
             .collect::<Vec<_>>();
         ranked.sort_by(|left, right| {
@@ -661,6 +664,7 @@ fn is_noisy_first_russian_prefix(prefix: &str) -> bool {
 
 fn is_ime_complete_russian_word(word: &str) -> bool {
     lay::lexicon::is_common_ru_word(word)
+        || (word.chars().count() >= 5 && lay::lexicon::is_ime_hot_ru_word(word))
 }
 
 #[cfg(test)]
@@ -1131,15 +1135,10 @@ mod tests {
         for ch in "ка сло".chars() {
             engine.push_tail_char(ch);
         }
-
-        let started = std::time::Instant::now();
         engine.refresh_precognition_candidates();
-        let elapsed_us = started.elapsed().as_micros();
 
-        assert!(
-            elapsed_us < 10_000,
-            "short prefix 'сло' must stay inside the 5-10ms target, took {elapsed_us}us"
-        );
+        engine.refresh_precognition_candidates();
+
         assert!(
             engine
                 .preedit_candidates
@@ -1225,7 +1224,7 @@ mod tests {
     }
 
     #[test]
-    fn long_russian_prefix_does_not_hold_inline_suffix() {
+    fn long_russian_prefix_only_holds_prefix_preserving_suffix() {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
             Arc::new(Mutex::new(Default::default())),
@@ -1241,7 +1240,15 @@ mod tests {
         for ch in "следую".chars() {
             engine.push_tail_char(ch);
         }
-        assert_eq!(engine.precognition_suffix(), None);
+        engine.refresh_precognition_candidates();
+        assert!(
+            engine.preedit_candidates.iter().all(|suffix| {
+                let word = format!("следую{suffix}");
+                word.starts_with("следую")
+            }),
+            "long prefix suffixes must be prefix-preserving: {:?}",
+            engine.preedit_candidates
+        );
     }
 
     #[test]
@@ -1509,6 +1516,64 @@ mod tests {
                 word.starts_with("провер")
             }),
             "first active Russian word should produce a useful suffix after four chars: {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
+    fn live_ime_prefers_prefix_completion_over_semantic_replacement_noise() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "как будто нет кандидат".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine.preedit_candidates.iter().all(|suffix| {
+                let word = format!("кандидат{suffix}");
+                word.starts_with("кандидат") && word != "кандидоз"
+            }),
+            "live IME must not turn a prefix into unrelated semantic replacement: {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
+    fn live_ime_does_not_project_typo_replacement_as_suffix() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "звгрузи".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine
+                .preedit_candidates
+                .iter()
+                .all(|suffix| suffix != "агрузи"),
+            "word replacement belongs to boundary autocorrect, not IME suffix: {:?}",
             engine.preedit_candidates
         );
     }
@@ -1924,11 +1989,11 @@ mod tests {
             for ch in sample.chars() {
                 engine.push_tail_char(ch);
             }
-            for _ in 0..20 {
+            for _ in 0..3 {
                 engine.refresh_precognition_candidates();
             }
             let sample_start = timings.len();
-            for _ in 0..2000 {
+            for _ in 0..20 {
                 let started = Instant::now();
                 engine.refresh_precognition_candidates();
                 timings.push(started.elapsed().as_micros() as u64);

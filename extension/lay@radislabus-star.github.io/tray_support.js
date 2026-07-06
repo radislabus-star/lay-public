@@ -6,7 +6,7 @@ export const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 export const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-export const APP_VERSION = '0.2.94';
+export const APP_VERSION = '0.2.98';
 export const APP_DESCRIPTION = 'Альфа: RU/EN-переключатель по двойному Shift и помощь при наборе';
 export const APP_RELEASE_DATE = '2026-07-06';
 export const APP_LICENSE = 'Non-Commercial';
@@ -295,40 +295,6 @@ export function loadRecentActions(limit = 5) {
         return [];
     }
 }
-export function sameRecentAction(left, right) {
-    return Number(left?.ts ?? 0) === Number(right?.ts ?? 0)
-        && String(left?.kind ?? '') === String(right?.kind ?? '')
-        && String(left?.from ?? '') === String(right?.from ?? '')
-        && String(left?.to ?? '') === String(right?.to ?? '')
-        && Number(left?.elapsed_ms ?? 0) === Number(right?.elapsed_ms ?? 0);
-}
-export function consumeRecentAction(action) {
-    try {
-        const file = Gio.File.new_for_path(RECENT_ACTIONS_PATH);
-        const [, bytes] = file.load_contents(null);
-        const rows = new TextDecoder().decode(bytes)
-            .split('\n')
-            .filter(line => line.trim().length > 0)
-            .map(line => ({line, action: JSON.parse(line)}));
-        for (let idx = rows.length - 1; idx >= 0; idx--) {
-            if (!sameRecentAction(rows[idx].action, action))
-                continue;
-            rows.splice(idx, 1);
-            const text = rows.map(row => row.line).join('\n') + (rows.length > 0 ? '\n' : '');
-            file.replace_contents(
-                new TextEncoder().encode(text),
-                null,
-                false,
-                Gio.FileCreateFlags.REPLACE_DESTINATION,
-                null
-            );
-            return true;
-        }
-    } catch(e) {
-        log(`[lay-extension] consume recent action failed: ${e}`);
-    }
-    return false;
-}
 export function clearRecentActions() {
     try {
         Gio.File.new_for_path(RECENT_ACTIONS_PATH).replace_contents(
@@ -350,20 +316,17 @@ export function summarizeRecentActions(actions) {
         return 'нет действий';
     const counts = {};
     let elapsed = 0;
-    let undo = 0;
     for (const action of actions) {
         const kind = String(action.kind ?? 'action');
         counts[kind] = (counts[kind] ?? 0) + 1;
         elapsed += Number(action.elapsed_ms ?? 0);
-        if (action.undo_available)
-            undo += 1;
     }
     const top = Object.entries(counts)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 3)
         .map(([kind, count]) => `${actionKindLabel(kind)}:${count}`)
         .join(' · ');
-    return `${total} действий · среднее ${Math.round(elapsed / total)}мс · undo ${undo} · ${top}`;
+    return `${total} действий · среднее ${Math.round(elapsed / total)}мс · ${top}`;
 }
 export function actionKindLabel(kind) {
     return {

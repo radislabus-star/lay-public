@@ -52,6 +52,9 @@ import {
     openPreferences,
     openUri,
     optionLabel,
+    applyInputChannel,
+    restartDaemon,
+    saveConfig,
     startDaemon,
     startUpdate,
     stopDaemon,
@@ -126,6 +129,12 @@ class LayIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this._statusItem);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
+        this.menu.addMenuItem(this._inputModeMenu());
+        this.menu.addMenuItem(this._quickSwitchItem('Помощь при наборе', 'typing_assist', true));
+        this.menu.addMenuItem(this._quickSwitchItem('Автоподмена', 'auto_replace', true));
+        this.menu.addMenuItem(this._quickSwitchItem('Автораскладка после пробела', 'auto_switch_layout', false));
+        this.menu.addMenuItem(this._debugLogSwitchItem());
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._preferencesItem());
         this.menu.addMenuItem(this._recentActionsMenu());
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
@@ -181,6 +190,57 @@ class LayIndicator extends PanelMenu.Button {
 
     _recentActionsMenu() {
         return createRecentActionsMenu(this);
+    }
+
+    _inputModeMenu() {
+        const item = new PopupMenu.PopupSubMenuMenuItem(`Режим ввода: ${this._inputModeLabel()}`, false);
+        for (const [id, label] of [
+            ['uinput', 'Быстрый ввод'],
+            ['ime', 'IME-подсказки'],
+            ['auto', 'Авто'],
+        ]) {
+            const active = this._cfg.text_backend === id;
+            const row = new PopupMenu.PopupMenuItem(`${active ? '✓ ' : '  '}${label}`);
+            row.connect('activate', () => this._setInputMode(id));
+            item.menu.addMenuItem(row);
+        }
+        return item;
+    }
+
+    _setInputMode(id) {
+        if (!['uinput', 'ime', 'auto'].includes(id))
+            return;
+        this._cfg.text_backend = id;
+        this._cfg.nanda_precognition = id !== 'uinput';
+        saveConfig(this._cfg);
+        applyInputChannel(id);
+        this._refreshSelections();
+    }
+
+    _quickSwitchItem(label, key, needsRestart) {
+        const item = persistentSwitchItem(label, !!this._cfg[key]);
+        item.connect('toggled', (_item, state) => {
+            this._cfg[key] = state;
+            saveConfig(this._cfg);
+            if (needsRestart)
+                restartDaemon();
+            this._refreshSelections();
+            if (needsRestart)
+                this._scheduleStatusRefreshes();
+        });
+        return item;
+    }
+
+    _debugLogSwitchItem() {
+        const item = persistentSwitchItem('Журнал отладки lay', !!this._cfg.debug_action_log);
+        item.connect('toggled', (_item, state) => {
+            this._cfg.debug_action_log = state;
+            this._cfg.nanda_trace = state;
+            this._cfg.nanda_trace_text = state;
+            saveConfig(this._cfg);
+            this._refreshSelections();
+        });
+        return item;
     }
 
     _populateRecentActionsMenu(item) {
@@ -393,11 +453,11 @@ class LayIndicator extends PanelMenu.Button {
     _aboutConfigText() {
         const autoSwitch = this._cfg.auto_switch_layout ? 'авто-раскладка' : 'раскладка вручную';
         const lem = this._cfg.lem_enabled
-            ? `LEM ${this._cfg.lem_2_words ? '2' : '-'}${this._cfg.lem_3_words ? '/3' : ''}`
+            ? 'LEM вкл'
             : 'LEM выкл';
         const weights = `вес ${this._cfg.lem_weight_percent ?? 80}/${this._cfg.nanda_l2_weight_percent ?? 20}/${this._cfg.nanda_l3_weight_percent ?? 8}`;
         const force = this._cfg.force_layout_hotkeys ? 'RU/EN хоткеи' : 'RU/EN выкл';
-        return `${this._engineLabel()} · ${this._safetyLabel()} · ${this._cfg.replace_words} сл. · ${lem} · ${weights} · ${autoSwitch} · ${force} · ${this._triggerLabel(this._cfg.trigger)}`;
+        return `${this._inputModeLabel()} · ${this._safetyLabel()} · ${lem} · ${weights} · ${autoSwitch} · ${force} · ${this._triggerLabel(this._cfg.trigger)}`;
     }
 
     _aboutStatsText() {
@@ -427,6 +487,14 @@ class LayIndicator extends PanelMenu.Button {
 
     _engineLabel() {
         return this._cfg.correction_engine === 'smart' ? 'Умный' : 'Обычный';
+    }
+
+    _inputModeLabel() {
+        if (this._cfg.text_backend === 'ime')
+            return 'IME-подсказки';
+        if (this._cfg.text_backend === 'auto')
+            return 'Авто-ввод';
+        return 'Быстрый ввод';
     }
 
     _refreshLayout() {

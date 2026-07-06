@@ -310,21 +310,32 @@ impl LayIbusEngine {
 }
 
 fn warm_runtime(config: &LayConfig) {
-    lay::lem::set_runtime_enabled(config.lem_enabled && config.active_lem_weight() > 0.0);
-    if config.active_text_backend().should_try_ime() {
-        lay::lexicon::warm_up_for_ime();
-        if config.active_nanda_precognition() {
-            lay::nanda_wave::warm_up_l2_for_ime();
-        }
-    } else {
-        lay::lexicon::warm_up();
-    }
-    if !config.active_text_backend().should_try_ime()
-        && (config.auto_replace || config.typing_assist || config.auto_switch_layout)
+    #[cfg(test)]
     {
-        lay::typing_assist::warm_up();
-        lay::lem::warm_up();
-        std::thread::spawn(lay::nanda_wave::warm_up);
+        lay::lem::set_runtime_enabled(config.lem_enabled && config.active_lem_weight() > 0.0);
+        return;
+    }
+    #[cfg(not(test))]
+    {
+        lay::lem::set_runtime_enabled(config.lem_enabled && config.active_lem_weight() > 0.0);
+        if config.active_text_backend().should_try_ime() {
+            let warm_nanda = config.active_nanda_precognition();
+            std::thread::spawn(move || {
+                lay::lexicon::warm_up_for_ime();
+                if warm_nanda {
+                    lay::nanda_wave::warm_up_l2_for_ime();
+                }
+            });
+        } else {
+            lay::lexicon::warm_up();
+        }
+        if !config.active_text_backend().should_try_ime()
+            && (config.auto_replace || config.typing_assist || config.auto_switch_layout)
+        {
+            lay::typing_assist::warm_up();
+            lay::lem::warm_up();
+            std::thread::spawn(lay::nanda_wave::warm_up);
+        }
     }
 }
 

@@ -7,7 +7,6 @@ import {
     COMPACT_SUBTITLE_STYLE,
     RECENT_ACTIONS_PATH,
     clearRecentActions,
-    consumeRecentAction,
     loadRecentActions,
     summarizeRecentActions,
 } from './tray_support.js';
@@ -28,11 +27,6 @@ export function populateRecentActionsMenu(indicator, item) {
     }
     item.menu.addMenuItem(indicator._mutedTextRow(summarizeRecentActions(loadRecentActions(20))));
     item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-    const undoable = actions.find(action => action.undo_available);
-    if (undoable) {
-        item.menu.addMenuItem(undoRecentActionItem(indicator, undoable));
-        item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-    }
     item.menu.addMenuItem(clearRecentActionsItem(indicator));
     item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
     for (const action of actions)
@@ -55,7 +49,7 @@ function recentActionRow(indicator, action) {
         style: 'spacing:2px;',
     });
     const title = new St.Label({
-        text: `${indicator._actionKindLabel(action.kind)} · ${Number(action.elapsed_ms ?? 0)}мс${action.undo_available ? ' · undo' : ''}`,
+        text: `${indicator._actionKindLabel(action.kind)} · ${Number(action.elapsed_ms ?? 0)}мс`,
         style: 'font-weight:bold; font-size:86%;',
     });
     const text = new St.Label({
@@ -82,32 +76,4 @@ function clearRecentActionsItem(indicator) {
         }
     });
     return item;
-}
-
-function undoRecentActionItem(indicator, action) {
-    const item = new PopupMenu.PopupMenuItem('Откатить последнее');
-    item.connect('activate', () => undoRecentAction(indicator, action));
-    return item;
-}
-
-function undoRecentAction(indicator, action) {
-    const from = String(action.from ?? '');
-    const to = String(action.to ?? '');
-    if (!from || !to || from === to) {
-        indicator._notify('Откат невозможен', 'В последнем действии нет пары from/to.', true);
-        return;
-    }
-    if (Array.from(to).length > 120 || Array.from(from).length > 120) {
-        indicator._notify('Откат пропущен', 'Слишком длинный фрагмент для безопасного отката из трея.', true);
-        return;
-    }
-    const ok = indicator._service?.ReplaceText?.(0, Array.from(to).length, from, 0, '') ?? false;
-    if (ok) {
-        consumeRecentAction(action);
-        refreshRecentActions(indicator);
-        indicator._refreshStats();
-        indicator._notify('Откат выполнен', `${indicator._shortActionText(to)} → ${indicator._shortActionText(from)}`);
-    } else {
-        indicator._notify('Откат не сработал', 'GNOME DBus ReplaceText вернул ошибку.', true);
-    }
 }

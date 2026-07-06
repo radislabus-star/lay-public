@@ -14,6 +14,7 @@ const L2_TOKEN_REF_BYTES: usize = 4;
 const L2_WORD_RECORD_BYTES: usize = 16;
 const L2_RESIDUAL_REF_BYTES: usize = 4;
 const L2_RESIDUAL_TAG: u32 = 1 << 31;
+const MAX_LENGTH_BUCKET_CANDIDATES: usize = 1536;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) struct L2CenterMemoryConfig {
@@ -123,6 +124,7 @@ impl L2CenterMemory {
         for (word_index, word) in words.iter().enumerate() {
             memory.encode_train_word(word_index, word);
         }
+        memory.sort_runtime_indexes();
 
         memory
     }
@@ -206,7 +208,8 @@ impl L2CenterMemory {
         let input_len = input_len_for_bucket(&input_norm);
         if input_len >= 4 {
             let max_gap = if input_len >= 8 { 3 } else { 2 };
-            for word_id in self.length_bucket_word_ids(input_len, max_gap) {
+            let cap = limit.saturating_mul(128).max(MAX_LENGTH_BUCKET_CANDIDATES);
+            for word_id in self.length_bucket_word_ids(input_len, max_gap, cap) {
                 candidate_ids.insert(word_id);
             }
         }
@@ -225,13 +228,13 @@ impl L2CenterMemory {
                     return None;
                 }
 
-                let word_l1 = self.l1.center_sequence_for_word(&word_norm);
-                let word_l2 = self.token_sequence_for_text(&word_norm);
-                let l1_overlap = overlap_count(&query_l1.center_refs, &word_l1.center_refs);
-                let l2_overlap = overlap_count(&query_l2.tokens, &word_l2.tokens);
+                let word_l1_refs = self.l1.center_refs_for_record(word_id);
+                let word_l2_tokens = self.token_refs_for_record(word_id);
+                let l1_overlap = overlap_count(&query_l1.center_refs, word_l1_refs);
+                let l2_overlap = overlap_count(&query_l2.tokens, word_l2_tokens);
                 let motif_overlap = overlap_count(
                     &motif_tokens(&query_l2.tokens),
-                    &motif_tokens(&word_l2.tokens),
+                    &motif_tokens(word_l2_tokens),
                 );
                 let surface_distance = damerau_levenshtein(&input_norm, &word_norm);
                 let prefix_match =
@@ -301,13 +304,44 @@ impl L2CenterMemory {
         });
     }
 
-    fn length_bucket_word_ids(&self, input_len: usize, max_gap: usize) -> Vec<usize> {
+    fn token_refs_for_record(&self, word_index: usize) -> &[u32] {
+        let Some(record) = self.word_records.get(word_index) else {
+            return &[];
+        };
+        let start = record.token_start as usize;
+        let end = start.saturating_add(record.token_len as usize);
+        self.token_refs.get(start..end).unwrap_or(&[])
+    }
+
+    fn sort_runtime_indexes(&mut self) {
+        let priorities = self
+            .source_words
+            .iter()
+            .map(|word| WordRuntimePriority {
+                usage: super::usage_prior::word_usage_prior_cached(word),
+                common: crate::lexicon::is_common_ru_word(word),
+                len: word.chars().count(),
+            })
+            .collect::<Vec<_>>();
+        for ids in self.token_to_words.values_mut() {
+            sort_word_ids_by_runtime_priority(&self.source_words, &priorities, ids);
+        }
+        for ids in self.length_to_words.values_mut() {
+            sort_word_ids_by_runtime_priority(&self.source_words, &priorities, ids);
+        }
+    }
+
+    fn length_bucket_word_ids(&self, input_len: usize, max_gap: usize, cap: usize) -> Vec<usize> {
         let mut ids = Vec::new();
         let start = input_len.saturating_sub(max_gap);
         let end = input_len + max_gap;
         for len in start..=end {
             if let Some(word_ids) = self.length_to_words.get(&len) {
-                ids.extend(word_ids.iter().copied());
+                let remaining = cap.saturating_sub(ids.len());
+                if remaining == 0 {
+                    break;
+                }
+                ids.extend(word_ids.iter().copied().take(remaining));
             }
         }
         ids
@@ -472,6 +506,48 @@ fn candidate_score(
 fn usage_score_boost(word: &str) -> u32 {
     let prior = super::usage_prior::word_usage_prior_cached(word);
     (prior * 2_000.0).round().clamp(0.0, 220.0) as u32
+}
+
+#[derive(Clone, Copy, Debug)]
+struct WordRuntimePriority {
+    usage: f32,
+    common: bool,
+    len: usize,
+}
+
+fn sort_word_ids_by_runtime_priority(
+    source_words: &[String],
+    priorities: &[WordRuntimePriority],
+    ids: &mut [usize],
+) {
+    ids.sort_by(|left_id, right_id| {
+        let left = source_words
+            .get(*left_id)
+            .map(String::as_str)
+            .unwrap_or_default();
+        let right = source_words
+            .get(*right_id)
+            .map(String::as_str)
+            .unwrap_or_default();
+        let left_priority = priorities.get(*left_id).copied().unwrap_or_default();
+        let right_priority = priorities.get(*right_id).copied().unwrap_or_default();
+        right_priority
+            .usage
+            .total_cmp(&left_priority.usage)
+            .then_with(|| right_priority.common.cmp(&left_priority.common))
+            .then_with(|| left_priority.len.cmp(&right_priority.len))
+            .then_with(|| left.cmp(right))
+    });
+}
+
+impl Default for WordRuntimePriority {
+    fn default() -> Self {
+        Self {
+            usage: 0.0,
+            common: false,
+            len: usize::MAX,
+        }
+    }
 }
 
 fn normalize_surface(text: &str) -> String {
