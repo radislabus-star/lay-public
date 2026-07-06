@@ -22,11 +22,14 @@ books/corpus
 Current invariant:
 
 ```text
-memory present != live authority
+memory present != unsafe text output
 ```
 
-LLMWave can influence live output only after an explicit promotion gate. A loaded
-memory packet is evidence, not permission.
+LLMWave is the default L3 feedback authority. It can boost or suppress existing
+word candidates through the normal candidate path.
+
+It still cannot bypass edit-plan safety. A loaded memory packet is not
+permission to perform arbitrary destructive text edits.
 
 ## SCOREBOARD
 
@@ -63,8 +66,9 @@ WATCH
   The model remains evidence-only. Do not promote to live authority.
 ```
 
-`PASS-shadow` is deliberately not a live-apply verdict. Live authority still
-requires a separate runtime proof because typing output is a destructive action.
+`PASS-shadow` admits the memory to the default L3 feedback path. Destructive text
+output still requires the normal edit-plan safety path because typing output is a
+destructive action.
 
 ## DEBT QUEUE
 
@@ -124,9 +128,9 @@ Lay debug log
   -> debug_action_log + nanda_trace + nanda_trace_text
 ```
 
-`llmwave_shadow` and `llmwave_apply` intentionally stay out of the tray quick
-switches for now. They are config/runtime fields, but live authority must pass
-the promotion/runtime-proof route first.
+`llmwave_shadow` and `llmwave_apply` are enabled by default. They intentionally
+stay out of the tray quick switches for now because they are model-authority
+settings, not casual UI toggles.
 
 P4: Clean candidate arbitration
 

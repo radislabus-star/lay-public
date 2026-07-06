@@ -6,7 +6,7 @@ export const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 export const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-export const APP_VERSION = '0.2.105';
+export const APP_VERSION = '0.2.106';
 export const APP_DESCRIPTION = 'Альфа: RU/EN-переключатель по двойному Shift и помощь при наборе';
 export const APP_RELEASE_DATE = '2026-07-06';
 export const APP_LICENSE = 'Non-Commercial';
@@ -131,9 +131,11 @@ export const DEFAULTS = {
     lem_weight_percent: 80,
     nanda_l2_weight_percent: 20,
     nanda_l3_weight_percent: 8,
+    llmwave_shadow: true,
+    llmwave_apply: true,
     nanda_l2_phase_shadow: true,
     nanda_l2_phase_apply: false,
-    nanda_l3_phase_shadow: false,
+    nanda_l3_phase_shadow: true,
     ptah_alexs_mode: false,
     ptah_alexs_rules: [],
     typing_assist_pipeline: DEFAULT_TYPING_PIPELINE,
@@ -197,9 +199,11 @@ export function normalizeConfig(cfg) {
         layout_backend: normalizeChoice(cfg?.layout_backend, LAYOUT_BACKEND_OPTIONS.map(([id]) => id), DEFAULTS.layout_backend),
         text_backend: textBackend,
         nanda_precognition: !!cfg?.nanda_precognition,
+        llmwave_shadow: cfg?.llmwave_shadow !== false,
+        llmwave_apply: cfg?.llmwave_apply !== false,
         nanda_l2_phase_shadow: cfg?.nanda_l2_phase_shadow !== false,
         nanda_l2_phase_apply: !!cfg?.nanda_l2_phase_apply,
-        nanda_l3_phase_shadow: !!cfg?.nanda_l3_phase_shadow,
+        nanda_l3_phase_shadow: cfg?.nanda_l3_phase_shadow !== false,
         ime_bracket_candidates: !!cfg?.ime_bracket_candidates,
         correction_safety: normalizeChoice(cfg?.correction_safety, SAFETY_OPTIONS.map(([id]) => id), DEFAULTS.correction_safety),
         ptah_alexs_mode: !!cfg?.ptah_alexs_mode,

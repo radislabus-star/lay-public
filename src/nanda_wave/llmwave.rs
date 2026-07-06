@@ -1128,12 +1128,20 @@ fn report_to_feedback(report: &LlmWaveReport) -> L3Feedback {
     if top.score < 0.35 {
         return L3Feedback::default();
     }
+    let support_boost = (top.support as f32 / 8.0).clamp(0.0, 0.08);
+    let width_boost = (top.width as f32 * 0.015).clamp(0.0, 0.045);
+    let energy_delta = (top.score * 0.18 + support_boost + width_boost).clamp(0.06, 0.24);
+    let risk_delta = if top.score >= 0.72 && top.support >= 2 {
+        -0.08
+    } else {
+        -0.04
+    };
     L3Feedback {
         adjustments: vec![FeedbackAdjustment {
             source: top.source,
-            energy_delta: (top.score * 0.08).clamp(0.02, 0.08),
-            risk_delta: -0.02,
-            reason: "llmwave_context_memory",
+            energy_delta,
+            risk_delta,
+            reason: "llmwave_main_context_memory",
         }],
         requests: Vec::new(),
     }
@@ -1400,6 +1408,30 @@ mod tests {
             report.top.as_ref().map(|item| item.text.as_str()),
             Some("на улице опять идёт дождь")
         );
+    }
+
+    #[test]
+    fn llmwave_apply_feedback_is_main_l3_signal() {
+        let memory = LlmWaveMemory::from_text(
+            "на улице опять идёт дождь\nсегодня на улице опять идёт дождь\nвечером на улице опять идёт дождь",
+        );
+        let candidates = vec![WordCandidate {
+            text: "на улице опять идёт дождь".to_string(),
+            source: "PhraseForecastCell32",
+            energy: 0.5,
+            risk: 0.1,
+            support: vec![],
+        }];
+        let report = score_candidates("на улице опять идёт д", &candidates, &memory);
+        let feedback = report_to_feedback(&report);
+
+        let adjustment = feedback
+            .adjustments
+            .first()
+            .expect("expected llmwave feedback");
+        assert_eq!(adjustment.reason, "llmwave_main_context_memory");
+        assert!(adjustment.energy_delta > 0.08);
+        assert!(adjustment.risk_delta <= -0.04);
     }
 
     #[test]

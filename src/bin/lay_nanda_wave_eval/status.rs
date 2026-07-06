@@ -89,6 +89,8 @@ fn refresh_live_status_fields(value: &mut Value) {
 }
 
 fn build_status_json(full: bool) -> io::Result<serde_json::Value> {
+    let cfg = config::LayConfig::load();
+    let llmwave_apply_runtime = cfg.llmwave_shadow && cfg.llmwave_apply;
     let suite = real_suite::load()?;
     let status_cases = if full {
         suite.cases.clone()
@@ -159,12 +161,17 @@ fn build_status_json(full: bool) -> io::Result<serde_json::Value> {
             ]
         },
         "llmwave": {
-            "enabled_by_default": false,
-            "shadow_runtime": false,
-            "apply_runtime": false,
+            "enabled_by_default": true,
+            "shadow_runtime": cfg.llmwave_shadow,
+            "apply_runtime": llmwave_apply_runtime,
             "admission": {
-                "live_authority": false,
-                "reason": "LLMWave is admitted by explicit promotion gate, not by memory presence alone",
+                "live_authority": llmwave_apply_runtime,
+                "authority_scope": "L3 candidate feedback; edit-plan safety remains final authority",
+                "reason": if llmwave_apply_runtime {
+                    "LLMWave is the default L3 feedback authority after promotion gate; output still passes safety"
+                } else {
+                    "LLMWave memory is loaded but apply_runtime is disabled in config"
+                },
                 "gate_command": "lay-nanda-wave-eval --llmwave-promotion-gate --train-corpus corpus/project_gutenberg_ru.txt --include-dirty-train",
                 "thresholds": {
                     "min_prediction_points": super::LLMWAVE_PROMOTION_MIN_POINTS,

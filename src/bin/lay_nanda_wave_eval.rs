@@ -767,8 +767,19 @@ fn print_llmwave_promotion_gate_rows(
     println!("{indent}promotion_gate:");
     println!("{indent}  verdict: {}", gate.verdict.as_str());
     println!("{indent}  reason: {}", gate.reason);
-    println!("{indent}  live_authority: false");
-    println!("{indent}  live_authority_reason: requires explicit apply config and separate runtime proof");
+    let cfg = lay::config::LayConfig::load();
+    let live_authority = gate.verdict == LlmWavePromotionVerdict::PassShadow
+        && cfg.llmwave_shadow
+        && cfg.llmwave_apply;
+    println!("{indent}  live_authority: {live_authority}");
+    println!(
+        "{indent}  live_authority_reason: {}",
+        if live_authority {
+            "promotion gate passed and llmwave apply is enabled; edit-plan safety remains final"
+        } else {
+            "requires PASS-shadow plus llmwave_shadow=true and llmwave_apply=true"
+        }
+    );
     println!("{indent}  thresholds:");
     println!(
         "{indent}    min_prediction_points={} min_records={} min_vocabulary={}",

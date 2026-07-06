@@ -61,11 +61,11 @@ impl Default for LayConfig {
             nanda_trace_text: false,
             nanda_precognition: false,
             ime_bracket_candidates: false,
-            llmwave_shadow: false,
-            llmwave_apply: false,
+            llmwave_shadow: true,
+            llmwave_apply: true,
             nanda_l2_phase_shadow: true,
             nanda_l2_phase_apply: false,
-            nanda_l3_phase_shadow: false,
+            nanda_l3_phase_shadow: true,
         }
     }
 }
