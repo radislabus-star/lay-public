@@ -214,7 +214,7 @@ pub fn ime_l2_short_seed_word_candidates(
     };
     let context_tokens = super::llmwave::tokenize(context_prefix);
     let usage = super::usage_prior::cached_usage_prior_snapshot();
-    let mut words = words.iter().cloned().collect::<Vec<_>>();
+    let mut words = words.to_vec();
     words.sort_by(|left, right| {
         compare_l2_words_by_usage(right, left, &context_tokens, &usage)
             .then_with(|| left.chars().count().cmp(&right.chars().count()))
@@ -262,8 +262,7 @@ pub fn ime_l2_foundation_prefix_candidates(
             32,
             limit
                 .saturating_mul(16)
-                .max(L2_BROAD_PREFIX_SCAN_LIMIT)
-                .min(L2_FOUNDATION_LIVE_SCAN_LIMIT),
+                .clamp(L2_BROAD_PREFIX_SCAN_LIMIT, L2_FOUNDATION_LIVE_SCAN_LIMIT),
         )
         .into_iter()
         .map(str::to_string)
@@ -3121,11 +3120,13 @@ mod tests {
         ] {
             let l1 = run_l1(input);
             let candidates = run_l2(input, &l1);
+            let surface_candidates =
+                surface_motif_memory().surface_candidates_for_text(input.trim(), 24);
             assert!(
                 candidates.iter().any(|candidate| {
                     candidate.source == L2_SURFACE_MOTIF_CELL && candidate.text == expected
                 }),
-                "input={input} expected={expected} candidates={candidates:?}"
+                "input={input} expected={expected} candidates={candidates:?} surface_candidates={surface_candidates:?}"
             );
         }
     }

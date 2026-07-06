@@ -313,7 +313,6 @@ fn warm_runtime(config: &LayConfig) {
     #[cfg(test)]
     {
         lay::lem::set_runtime_enabled(config.lem_enabled && config.active_lem_weight() > 0.0);
-        return;
     }
     #[cfg(not(test))]
     {

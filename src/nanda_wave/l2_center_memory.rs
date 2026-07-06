@@ -352,7 +352,14 @@ impl L2CenterMemory {
         let mut ids = Vec::new();
         let start = input_len.saturating_sub(max_gap);
         let end = input_len + max_gap;
-        for len in start..=end {
+        let mut lengths = (start..=end).collect::<Vec<_>>();
+        lengths.sort_by(|left, right| {
+            input_len
+                .abs_diff(*left)
+                .cmp(&input_len.abs_diff(*right))
+                .then_with(|| left.cmp(right))
+        });
+        for len in lengths {
             if let Some(word_ids) = self.length_to_words.get(&len) {
                 let remaining = cap.saturating_sub(ids.len());
                 if remaining == 0 {

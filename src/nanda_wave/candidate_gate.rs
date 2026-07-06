@@ -8,6 +8,7 @@ use crate::keyboard::is_cyrillic_letter;
 
 use super::l2::{self, L2ImeWordCandidateKind};
 use super::l4_goal_state::{derive_l4_scene_state, L4AllowedAction, L4SceneStateInput};
+use super::l4_signed_outcome::{l4_signed_outcome, L4OutcomePolarity, L4SignedOutcomeInput};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::OnceLock;
 use std::time::Instant;
@@ -40,6 +41,9 @@ struct LiveCandidateGateStats {
     l4_suggest: u64,
     l4_wait: u64,
     l4_block: u64,
+    l4_attract: u64,
+    l4_neutral: u64,
+    l4_repel: u64,
     total_us: u64,
     max_us: u64,
 }
@@ -49,13 +53,13 @@ pub fn live_completion_candidates(
 ) -> Vec<LiveCompletionCandidate> {
     let started = Instant::now();
     if request.limit == 0 || request.max_suffix_chars == 0 {
-        record_live_gate_stats(started, 0, 0, 0, 0, None);
+        record_live_gate_stats(started, 0, 0, 0, 0, None, LiveSignedOutcomeStats::default());
         return Vec::new();
     }
     let partial = request.partial.to_lowercase();
     let partial_len = partial.chars().count();
     if !(2..=18).contains(&partial_len) || !partial.chars().all(is_cyrillic_letter) {
-        record_live_gate_stats(started, 0, 0, 0, 0, None);
+        record_live_gate_stats(started, 0, 0, 0, 0, None, LiveSignedOutcomeStats::default());
         return Vec::new();
     }
 
@@ -101,6 +105,7 @@ pub fn live_completion_candidates(
     let usage_snapshot = super::usage_prior::cached_usage_prior_snapshot();
     let mut usage_supported = 0_u64;
     let mut l3_supported = 0_u64;
+    let mut l4_signed = LiveSignedOutcomeStats::default();
     let mut candidates = raw
         .into_iter()
         .filter(|candidate| candidate.kind == L2ImeWordCandidateKind::Completion)
@@ -129,6 +134,17 @@ pub fn live_completion_candidates(
                 request.allow_short_lexical,
                 &usage_snapshot,
             );
+            let signed = l4_signed_outcome(L4SignedOutcomeInput {
+                scene: &scene_state,
+                candidate: &candidate.surface,
+                suffix: &suffix,
+                partial_len,
+                structural,
+                usage,
+                context_usage,
+                accepted,
+            });
+            l4_signed.record(signed.polarity);
 
             if !live_completion_has_authority(LiveCompletionAuthority {
                 partial_len,
@@ -159,7 +175,8 @@ pub fn live_completion_candidates(
                 + if common { 0.055 } else { 0.0 }
                 + if hot { 0.045 } else { 0.0 }
                 + (partial_len.min(8) as f32 * 0.018)
-                + live_l4_scene_bias(scene_state.allowed_action, scene_state.confidence);
+                + live_l4_scene_bias(scene_state.allowed_action, scene_state.confidence)
+                + live_l4_signed_bias(signed.signed_weight);
             let score = l3_score
                 .map(|score| score.max(base_score))
                 .unwrap_or(base_score)
@@ -206,17 +223,14 @@ pub fn live_completion_candidates(
         usage_supported,
         l3_supported,
         Some(scene_state.allowed_action),
+        l4_signed,
     );
     candidates
 }
 
 pub fn live_candidate_gate_stats_json() -> serde_json::Value {
     let stats = live_candidate_gate_stats();
-    let avg_us = if stats.requests == 0 {
-        0
-    } else {
-        stats.total_us / stats.requests
-    };
+    let avg_us = stats.total_us.checked_div(stats.requests).unwrap_or(0);
     serde_json::json!({
         "requests": stats.requests,
         "raw_candidates": stats.raw_candidates,
@@ -228,6 +242,11 @@ pub fn live_candidate_gate_stats_json() -> serde_json::Value {
             "suggest": stats.l4_suggest,
             "wait": stats.l4_wait,
             "block": stats.l4_block,
+        },
+        "l4_signed_outcome": {
+            "attract": stats.l4_attract,
+            "neutral": stats.l4_neutral,
+            "repel": stats.l4_repel,
         },
         "avg_us": avg_us,
         "max_us": stats.max_us,
@@ -246,6 +265,9 @@ fn live_candidate_gate_stats() -> LiveCandidateGateStats {
         l4_suggest: stats.l4_suggest.load(Ordering::Relaxed),
         l4_wait: stats.l4_wait.load(Ordering::Relaxed),
         l4_block: stats.l4_block.load(Ordering::Relaxed),
+        l4_attract: stats.l4_attract.load(Ordering::Relaxed),
+        l4_neutral: stats.l4_neutral.load(Ordering::Relaxed),
+        l4_repel: stats.l4_repel.load(Ordering::Relaxed),
         total_us: stats.total_us.load(Ordering::Relaxed),
         max_us: stats.max_us.load(Ordering::Relaxed),
     }
@@ -290,6 +312,7 @@ fn record_live_gate_stats(
     usage_supported: u64,
     l3_supported: u64,
     l4_action: Option<L4AllowedAction>,
+    l4_signed: LiveSignedOutcomeStats,
 ) {
     let elapsed_us = started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64;
     let stats = live_stats();
@@ -321,6 +344,13 @@ fn record_live_gate_stats(
         }
         None => {}
     }
+    stats
+        .l4_attract
+        .fetch_add(l4_signed.attract, Ordering::Relaxed);
+    stats
+        .l4_neutral
+        .fetch_add(l4_signed.neutral, Ordering::Relaxed);
+    stats.l4_repel.fetch_add(l4_signed.repel, Ordering::Relaxed);
     stats.total_us.fetch_add(elapsed_us, Ordering::Relaxed);
     update_max_atomic(&stats.max_us, elapsed_us);
 }
@@ -341,8 +371,28 @@ struct LiveCandidateGateAtomicStats {
     l4_suggest: AtomicU64,
     l4_wait: AtomicU64,
     l4_block: AtomicU64,
+    l4_attract: AtomicU64,
+    l4_neutral: AtomicU64,
+    l4_repel: AtomicU64,
     total_us: AtomicU64,
     max_us: AtomicU64,
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+struct LiveSignedOutcomeStats {
+    attract: u64,
+    neutral: u64,
+    repel: u64,
+}
+
+impl LiveSignedOutcomeStats {
+    fn record(&mut self, polarity: L4OutcomePolarity) {
+        match polarity {
+            L4OutcomePolarity::Attract => self.attract = self.attract.saturating_add(1),
+            L4OutcomePolarity::Neutral => self.neutral = self.neutral.saturating_add(1),
+            L4OutcomePolarity::Repel => self.repel = self.repel.saturating_add(1),
+        }
+    }
 }
 
 fn update_max_atomic(target: &AtomicU64, value: u64) {
@@ -419,6 +469,10 @@ fn live_l4_scene_bias(action: L4AllowedAction, confidence: f32) -> f32 {
         L4AllowedAction::Wait => -0.020 * confidence,
         L4AllowedAction::Block => -0.060 * confidence,
     }
+}
+
+fn live_l4_signed_bias(signed_weight: f32) -> f32 {
+    (signed_weight * 0.085).clamp(-0.080, 0.080)
 }
 
 fn structural_support(

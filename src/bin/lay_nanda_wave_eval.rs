@@ -939,6 +939,7 @@ fn prediction_next_token(prediction: &llmwave::LlmWavePhrasePrediction) -> Optio
     prediction.tokens.last().map(String::as_str)
 }
 
+#[allow(clippy::too_many_arguments)]
 fn maybe_push_corpus_example(
     examples: &mut Vec<LlmWaveCorpusExample>,
     limit: usize,

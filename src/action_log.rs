@@ -231,6 +231,7 @@ pub fn record_candidate_edit_action_before_apply(
     );
 }
 
+#[allow(clippy::too_many_arguments)]
 fn record_candidate_before_apply_inner(
     from: &str,
     to: &str,

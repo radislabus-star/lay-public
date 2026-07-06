@@ -2,7 +2,7 @@ use serde_json::{json, Value};
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 const IBUS_DEBUG_PATH: &str = ".local/share/lay/ibus_engine_debug.jsonl";
 const RECENT_LIMIT: usize = 2000;
@@ -58,7 +58,7 @@ struct ImeHitRateReport {
     slow_tokens: BTreeMap<String, usize>,
 }
 
-fn report_from_text(text: &str, limit: usize, path: &PathBuf) -> Value {
+fn report_from_text(text: &str, limit: usize, path: &Path) -> Value {
     let lines = text
         .lines()
         .filter(|line| !line.trim().is_empty())
@@ -193,7 +193,7 @@ fn is_complete_ru_eval_token(token: &str) -> bool {
     lower.chars().count() >= 5 && lay::russian_lexicon::is_known_russian_word_or_form(&lower)
 }
 
-fn percentile_block(values: &mut Vec<u64>) -> Value {
+fn percentile_block(values: &mut [u64]) -> Value {
     values.sort_unstable();
     json!({
         "count": values.len(),

@@ -1,6 +1,7 @@
 use super::{
     candidate_rank_score, CandidateGateAction, CorrectionCandidateScoreTrace, CorrectionDecision,
-    CorrectionResolution, CorrectionScoreboard, TypingErrorEvent, UnifiedCorrectionCandidate,
+    CorrectionDecisionSource, CorrectionResolution, CorrectionScoreboard, TypingErrorEvent,
+    UnifiedCorrectionCandidate,
 };
 
 pub(super) struct L2CandidateLattice {
@@ -18,6 +19,17 @@ impl L2CandidateLattice {
 
     pub(super) fn push_source(&mut self, candidate: Option<UnifiedCorrectionCandidate>) {
         if let Some(candidate) = candidate {
+            if let Some(existing) = self
+                .candidates
+                .iter_mut()
+                .find(|existing| existing.replacement == candidate.replacement)
+            {
+                if source_owner_priority(candidate.source) > source_owner_priority(existing.source)
+                {
+                    *existing = candidate;
+                }
+                return;
+            }
             self.candidates.push(candidate);
         }
     }
@@ -58,5 +70,12 @@ impl L2CandidateLattice {
             scoreboard,
             candidate_scores,
         }
+    }
+}
+
+fn source_owner_priority(source: CorrectionDecisionSource) -> u8 {
+    match source {
+        CorrectionDecisionSource::Deterministic => 2,
+        CorrectionDecisionSource::Nanda => 1,
     }
 }

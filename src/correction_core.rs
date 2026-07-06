@@ -229,11 +229,7 @@ pub fn resolve_text_correction(req: CorrectionRequest<'_>) -> CorrectionResoluti
 
 pub fn correction_gate_stats_json() -> serde_json::Value {
     let stats = correction_gate_runtime_stats();
-    let avg_us = if stats.requests == 0 {
-        0
-    } else {
-        stats.total_us / stats.requests
-    };
+    let avg_us = stats.total_us.checked_div(stats.requests).unwrap_or(0);
     serde_json::json!({
         "requests": stats.requests,
         "total_candidates": stats.total_candidates,
@@ -2585,6 +2581,16 @@ mod tests {
         let mut lattice = L2CandidateLattice::new(TypingErrorEvent::from_text("автозаена "));
         lattice.push_source(Some(UnifiedCorrectionCandidate {
             replacement: "автозамена ".to_string(),
+            source: CorrectionDecisionSource::Nanda,
+            source_id: "L2SurfaceMotifCell32".to_string(),
+            error_class: TypingErrorClass::MissingLetter,
+            gate: CandidateGateDecision {
+                action: CandidateGateAction::Apply,
+                reason: "class_allows_apply",
+            },
+        }));
+        lattice.push_source(Some(UnifiedCorrectionCandidate {
+            replacement: "автозамена ".to_string(),
             source: CorrectionDecisionSource::Deterministic,
             source_id: "missing_letter".to_string(),
             error_class: TypingErrorClass::MissingLetter,
@@ -2607,6 +2613,15 @@ mod tests {
         let resolution = lattice.into_resolution();
 
         assert_eq!(resolution.candidates.len(), 2);
+        assert_eq!(
+            resolution
+                .candidates
+                .iter()
+                .filter(|candidate| candidate.replacement == "автозамена ")
+                .count(),
+            1,
+            "duplicate same-replacement candidates must collapse to the owner"
+        );
         assert_eq!(resolution.scoreboard.total_candidates, 2);
         assert_eq!(resolution.scoreboard.deterministic_candidates, 1);
         assert_eq!(resolution.scoreboard.nanda_candidates, 1);
@@ -2953,16 +2968,20 @@ mod tests {
 
         let selected = resolution.selected.as_ref().expect("selected candidate");
         assert_eq!(selected.replacement, "мы отравим ");
+        assert_eq!(selected.source, CorrectionDecisionSource::Deterministic);
         assert!(
-            resolution.candidates.iter().any(|candidate| {
-                candidate.source == CorrectionDecisionSource::Nanda
-                    && candidate.gate.action == CandidateGateAction::SuggestOnly
-                    && matches!(
-                        candidate.gate.reason,
-                        "same_tail_single_consonant_drift" | "l2_surface_local_typo_proof_low"
-                    )
+            resolution.candidates.iter().all(|candidate| {
+                candidate.source != CorrectionDecisionSource::Nanda
+                    || candidate.replacement != selected.replacement
             }),
-            "semantic drift candidate must be suggest-only: {resolution:?}"
+            "NANDA must not steal deterministic ownership for the same replacement: {resolution:?}"
+        );
+        assert!(
+            resolution.candidates.iter().all(|candidate| {
+                candidate.replacement != "мы отвратим "
+                    || candidate.gate.action != CandidateGateAction::Apply
+            }),
+            "semantic drift candidate must not be apply: {resolution:?}"
         );
     }
 

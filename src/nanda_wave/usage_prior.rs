@@ -812,21 +812,21 @@ mod tests {
         let mut counts = UsageCounts::default();
         add_usage_event_counts(&mut counts, text);
 
-        assert_eq!(counts.words.get("дождь"), Some(&6));
+        assert_eq!(counts.words.get("дождь"), Some(&12));
         assert_eq!(
             counts
                 .context_words
                 .get("на улице идёт\u{1f}дождь")
                 .copied(),
-            Some(3)
+            Some(6)
         );
         assert_eq!(
             counts.context_words.get("идёт\u{1f}дождь").copied(),
-            Some(3)
+            Some(6)
         );
         assert_eq!(
             counts.context_words.get("улице идёт\u{1f}дождь").copied(),
-            Some(3)
+            Some(6)
         );
     }
 

@@ -15,6 +15,7 @@ mod l2_center_memory;
 pub mod l3;
 pub(crate) mod l3_phrase_gate;
 pub mod l4_goal_state;
+pub(crate) mod l4_signed_outcome;
 pub mod learned;
 pub mod lexical_attractor;
 pub mod llmwave;

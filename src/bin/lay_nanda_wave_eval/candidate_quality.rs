@@ -2,7 +2,7 @@ use serde_json::{json, Value};
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 const RECENT_ACTIONS_PATH: &str = ".local/share/lay/recent_actions.jsonl";
 const RECENT_LIMIT: usize = 500;
@@ -103,7 +103,7 @@ impl CandidateQualityReport {
     }
 }
 
-fn report_from_text(text: &str, limit: usize, path: &PathBuf) -> serde_json::Value {
+fn report_from_text(text: &str, limit: usize, path: &Path) -> serde_json::Value {
     let mut report = CandidateQualityReport::default();
     let lines = text
         .lines()
