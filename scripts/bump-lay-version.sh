@@ -37,6 +37,38 @@ version_from_cargo() {
   perl -ne 'print "$1\n" if /^version = "([^"]+)"/' Cargo.toml | head -n1
 }
 
+ensure_ibus_daemon() {
+  if busctl --user list 2>/dev/null | grep -q 'org.freedesktop.IBus'; then
+    return 0
+  fi
+  ibus-daemon -drx >/dev/null 2>&1 &
+  sleep 1
+}
+
+select_lay_ru_input_source() {
+  local sources index
+  sources="$(gsettings get org.gnome.desktop.input-sources sources 2>/dev/null || true)"
+  index="$(
+    python3 - "$sources" <<'PY' 2>/dev/null || true
+import ast
+import sys
+
+try:
+    sources = ast.literal_eval(sys.argv[1])
+except Exception:
+    raise SystemExit(0)
+
+for idx, source in enumerate(sources):
+    if tuple(source) == ("ibus", "lay-ime-ru"):
+        print(idx)
+        break
+PY
+  )"
+  if [[ -n "$index" ]]; then
+    gsettings set org.gnome.desktop.input-sources current "$index" || true
+  fi
+}
+
 if [[ "$SYNC_ONLY" == "0" ]]; then
   scripts/bump-version-from-git.sh
 else
@@ -63,8 +95,12 @@ if [[ "$NO_RELOAD" == "0" ]]; then
   systemctl --user restart lay-daemon.service
   pkill -x lay-ibus-engine 2>/dev/null || true
   ibus restart
+  ensure_ibus_daemon
+  select_lay_ru_input_source
   sleep 1
   ibus engine lay-ime-ru || {
+    ensure_ibus_daemon
+    select_lay_ru_input_source
     sleep 1
     ibus engine lay-ime-ru
   }
