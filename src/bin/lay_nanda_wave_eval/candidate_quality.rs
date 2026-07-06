@@ -199,6 +199,9 @@ fn inspect_edit_plan(report: &mut CandidateQualityReport, value: &Value) {
         if reason == "low_confidence_boundary_edit" {
             report.add_class("low_confidence_boundary_edit");
         }
+        if reason == "low_confidence_wide_edit" {
+            report.add_class("low_confidence_wide_edit");
+        }
     }
     let safety_allow_apply = value
         .get("safety_allow_apply")

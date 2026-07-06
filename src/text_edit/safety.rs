@@ -184,8 +184,14 @@ fn insertion_point_is_inside_word(chars: &[char], idx: usize) -> bool {
 fn changed_non_last_word(original: &str, replacement: &str) -> bool {
     let original_words = original.split_whitespace().collect::<Vec<_>>();
     let replacement_words = replacement.split_whitespace().collect::<Vec<_>>();
-    if original_words.len() < 2 || original_words.len() != replacement_words.len() {
+    if original_words.len() < 2 {
         return false;
+    }
+    if original_words.len() != replacement_words.len() {
+        return original_words
+            .last()
+            .zip(replacement_words.last())
+            .is_some_and(|(left, right)| left == right);
     }
     original_words[..original_words.len() - 1] != replacement_words[..replacement_words.len() - 1]
 }

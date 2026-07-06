@@ -178,8 +178,8 @@ pub fn ime_l2_word_candidates(
         })
         .collect::<Vec<_>>();
     candidates.sort_by(|left, right| {
-        l2_ime_word_candidate_score(right)
-            .cmp(&l2_ime_word_candidate_score(left))
+        l2_ime_word_candidate_score(right, &usage)
+            .cmp(&l2_ime_word_candidate_score(left, &usage))
             .then_with(|| right.motif_overlap.cmp(&left.motif_overlap))
             .then_with(|| right.l2_overlap.cmp(&left.l2_overlap))
             .then_with(|| right.l1_overlap.cmp(&left.l1_overlap))
@@ -214,6 +214,12 @@ pub fn ime_l2_short_seed_word_candidates(
     };
     let context_tokens = super::llmwave::tokenize(context_prefix);
     let usage = super::usage_prior::cached_usage_prior_snapshot();
+    let mut words = words.iter().cloned().collect::<Vec<_>>();
+    words.sort_by(|left, right| {
+        compare_l2_words_by_usage(right, left, &context_tokens, &usage)
+            .then_with(|| left.chars().count().cmp(&right.chars().count()))
+            .then_with(|| left.cmp(right))
+    });
     words
         .iter()
         .take(limit)
@@ -263,14 +269,7 @@ pub fn ime_l2_foundation_prefix_candidates(
         .map(str::to_string)
         .collect::<Vec<_>>();
     words.sort_by(|left, right| {
-        usage
-            .word_prior(right)
-            .total_cmp(&usage.word_prior(left))
-            .then_with(|| {
-                usage
-                    .context_word_prior(&context_tokens, right)
-                    .total_cmp(&usage.context_word_prior(&context_tokens, left))
-            })
+        compare_l2_words_by_usage(right, left, &context_tokens, &usage)
             .then_with(|| {
                 crate::lexicon::is_common_ru_word(right)
                     .cmp(&crate::lexicon::is_common_ru_word(left))
@@ -324,14 +323,7 @@ pub fn ime_l2_generated_form_prefix_candidates(
     let context_tokens = super::llmwave::tokenize(context_prefix);
     let usage = super::usage_prior::cached_usage_prior_snapshot();
     words.sort_by(|left, right| {
-        usage
-            .word_prior(right)
-            .total_cmp(&usage.word_prior(left))
-            .then_with(|| {
-                usage
-                    .context_word_prior(&context_tokens, right)
-                    .total_cmp(&usage.context_word_prior(&context_tokens, left))
-            })
+        compare_l2_words_by_usage(right, left, &context_tokens, &usage)
             .then_with(|| {
                 crate::lexicon::is_common_ru_word(right)
                     .cmp(&crate::lexicon::is_common_ru_word(left))
@@ -392,10 +384,14 @@ fn l2_short_position_seed_index() -> &'static HashMap<String, Vec<String>> {
     })
 }
 
-fn l2_ime_word_candidate_score(candidate: &L2ImeWordCandidate) -> u32 {
-    let prior = ((candidate.usage_prior + candidate.context_prior) * 1000.0)
+fn l2_ime_word_candidate_score(
+    candidate: &L2ImeWordCandidate,
+    usage: &super::usage_prior::UsagePriorSnapshot,
+) -> u32 {
+    let prior = ((candidate.usage_prior * 1600.0 + candidate.context_prior * 2600.0)
         .round()
-        .clamp(0.0, 420.0) as u32;
+        .clamp(0.0, 820.0) as u32)
+        .saturating_add(usage.accepted_word_count(&candidate.surface).min(40) * 18);
     let kind_bonus = match candidate.kind {
         L2ImeWordCandidateKind::Completion => 80,
         L2ImeWordCandidateKind::Replacement => 0,
@@ -404,6 +400,33 @@ fn l2_ime_word_candidate_score(candidate: &L2ImeWordCandidate) -> u32 {
         .score
         .saturating_add(prior)
         .saturating_add(kind_bonus)
+}
+
+fn compare_l2_words_by_usage(
+    left: &str,
+    right: &str,
+    context_tokens: &[String],
+    usage: &super::usage_prior::UsagePriorSnapshot,
+) -> std::cmp::Ordering {
+    l2_word_usage_rank(left, context_tokens, usage).cmp(&l2_word_usage_rank(
+        right,
+        context_tokens,
+        usage,
+    ))
+}
+
+fn l2_word_usage_rank(
+    word: &str,
+    context_tokens: &[String],
+    usage: &super::usage_prior::UsagePriorSnapshot,
+) -> u32 {
+    let usage_prior = usage.word_prior(word);
+    let context_prior = usage.context_word_prior(context_tokens, word);
+    let accepted = usage.accepted_word_count(word).min(40);
+    ((usage_prior * 1600.0 + context_prior * 2600.0)
+        .round()
+        .clamp(0.0, 820.0) as u32)
+        .saturating_add(accepted * 18)
 }
 
 pub fn run_l2_refined_with_feedback(

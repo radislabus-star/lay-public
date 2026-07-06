@@ -135,7 +135,7 @@ pub fn live_completion_candidates(
                 return None;
             }
 
-            if usage >= 0.035 || context_usage >= 0.025 || accepted >= 2 {
+            if usage >= 0.025 || context_usage >= 0.018 || accepted >= 1 {
                 usage_supported = usage_supported.saturating_add(1);
             }
             if l3_score.is_some() {
@@ -144,9 +144,9 @@ pub fn live_completion_candidates(
 
             let base_score = 0.22
                 + structural
-                + usage * 1.65
-                + context_usage * 2.10
-                + (accepted.min(20) as f32 * 0.016)
+                + usage * 2.30
+                + context_usage * 3.20
+                + (accepted.min(20) as f32 * 0.030)
                 + if common { 0.055 } else { 0.0 }
                 + if hot { 0.045 } else { 0.0 }
                 + (partial_len.min(8) as f32 * 0.018);
@@ -154,6 +154,17 @@ pub fn live_completion_candidates(
                 .map(|score| score.max(base_score))
                 .unwrap_or(base_score)
                 .clamp(0.0, 1.0);
+            if !live_suffix_has_display_authority(LiveSuffixAuthority {
+                suffix_len,
+                suffix: &suffix,
+                score,
+                structural,
+                usage,
+                context_usage,
+                accepted,
+            }) {
+                return None;
+            }
 
             Some(LiveCompletionCandidate {
                 surface: candidate.surface,
@@ -323,7 +334,7 @@ struct LiveCompletionAuthority {
 }
 
 fn live_completion_has_authority(input: LiveCompletionAuthority) -> bool {
-    let usage_signal = input.usage >= 0.035 || input.context_usage >= 0.025 || input.accepted >= 2;
+    let usage_signal = input.usage >= 0.025 || input.context_usage >= 0.018 || input.accepted >= 1;
     let lexical_signal = input.common || input.hot;
     let structural_signal = input.structural >= 0.34;
 
@@ -341,6 +352,30 @@ fn live_completion_has_authority(input: LiveCompletionAuthority) -> bool {
         return usage_signal || structural_signal || lexical_signal;
     }
     usage_signal || structural_signal || lexical_signal
+}
+
+#[derive(Debug, Clone, Copy)]
+struct LiveSuffixAuthority<'a> {
+    suffix_len: usize,
+    suffix: &'a str,
+    score: f32,
+    structural: f32,
+    usage: f32,
+    context_usage: f32,
+    accepted: u32,
+}
+
+fn live_suffix_has_display_authority(input: LiveSuffixAuthority<'_>) -> bool {
+    if input.suffix_len != 1 {
+        return true;
+    }
+    if matches!(input.suffix, "и" | "я") {
+        return true;
+    }
+    input.accepted >= 2
+        || input.context_usage >= 0.060
+        || input.usage >= 0.095
+        || (input.score >= 0.90 && input.structural >= 0.46)
 }
 
 fn structural_support(

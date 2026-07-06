@@ -638,7 +638,7 @@ fn is_allowed_visible_completion_suffix(suffix: &str) -> bool {
     if chars.next().is_some() {
         return true;
     }
-    matches!(ch, 'а' | 'в' | 'и' | 'к' | 'о' | 'с' | 'у' | 'I' | 'a')
+    matches!(ch, 'и' | 'я' | 'I' | 'a')
 }
 
 fn is_noisy_first_russian_prefix(prefix: &str) -> bool {
@@ -701,7 +701,11 @@ fn preedit_suffix_bayes_score(
     let Some((context, word)) = preedit_suffix_context_and_word(tail, suffix) else {
         return base;
     };
-    (base + usage.word_prior(&word) + usage.context_word_prior(&context, &word)).clamp(0.0, 1.0)
+    (base
+        + usage.word_prior(&word) * 1.45
+        + usage.context_word_prior(&context, &word) * 1.90
+        + usage.accepted_word_count(&word).min(12) as f32 * 0.018)
+        .clamp(0.0, 1.0)
 }
 
 fn preedit_suffix_context_and_word(tail: &str, suffix: &str) -> Option<(Vec<String>, String)> {
@@ -1043,6 +1047,19 @@ mod tests {
             "bracket mode must not show weak three-letter Russian guesses: {:?}",
             engine.preedit_candidates
         );
+    }
+
+    #[test]
+    fn weak_single_russian_suffixes_are_not_visible_by_default() {
+        for suffix in ["а", "в", "к", "о", "с", "у"] {
+            assert!(
+                !is_allowed_visible_completion_suffix(suffix),
+                "weak single suffix {suffix:?} must need stronger candidate authority"
+            );
+        }
+        assert!(is_allowed_visible_completion_suffix("и"));
+        assert!(is_allowed_visible_completion_suffix("я"));
+        assert!(is_allowed_visible_completion_suffix("ть"));
     }
 
     #[test]

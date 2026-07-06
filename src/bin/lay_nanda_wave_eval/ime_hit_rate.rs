@@ -181,10 +181,16 @@ fn is_eligible_ru_prefix(token: &str) -> bool {
         && token
             .chars()
             .all(|ch| matches!(ch, 'а'..='я' | 'ё' | 'А'..='Я' | 'Ё'))
+        && !is_complete_ru_eval_token(token)
 }
 
 fn is_weak_single_suffix(suffix: &str) -> bool {
     suffix.chars().count() == 1 && !matches!(suffix, "и" | "я")
+}
+
+fn is_complete_ru_eval_token(token: &str) -> bool {
+    let lower = token.to_lowercase();
+    lower.chars().count() >= 5 && lay::russian_lexicon::is_known_russian_word_or_form(&lower)
 }
 
 fn percentile_block(values: &mut Vec<u64>) -> Value {

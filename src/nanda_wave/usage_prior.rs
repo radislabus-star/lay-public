@@ -211,7 +211,7 @@ pub(crate) fn context_word_usage_prior(context: &[String], word: &str) -> f32 {
 }
 
 fn word_prior_from_count(count: u32) -> f32 {
-    ((count as f32 + 1.0).ln() * 0.026).clamp(0.0, 0.14)
+    ((count as f32 + 1.0).ln() * 0.036).clamp(0.0, 0.22)
 }
 
 fn usage_learning_enabled() -> bool {
@@ -349,11 +349,11 @@ fn context_ngram_prior_from_counts(counts: &UsageCounts, context: &[String], wor
                 .map(|count| (count, ngram_len))
         })
         .map(|(count, ngram_len)| {
-            let ngram_weight = 0.014 + ngram_len as f32 * 0.006;
-            ((count as f32 + 1.0).ln() * ngram_weight).min(0.11)
+            let ngram_weight = 0.020 + ngram_len as f32 * 0.010;
+            ((count as f32 + 1.0).ln() * ngram_weight).min(0.18)
         })
         .sum::<f32>()
-        .clamp(0.0, 0.24)
+        .clamp(0.0, 0.34)
 }
 
 fn cached_usage_counts() -> Arc<UsageCounts> {
@@ -456,8 +456,8 @@ fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
     }
     let weight = match event.kind {
         UsageEventKind::Typed => 1,
-        UsageEventKind::AcceptedFix => 3,
-        UsageEventKind::AcceptedIme => 2,
+        UsageEventKind::AcceptedFix => 6,
+        UsageEventKind::AcceptedIme => 5,
     };
     *counts.words.entry(word.clone()).or_default() = counts
         .words
