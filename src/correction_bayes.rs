@@ -1,5 +1,4 @@
 use crate::text_metrics::damerau_levenshtein;
-use crate::typing_rule_graph::ids;
 use crate::word_reader::{is_cyrillic_letters_only, split_edge_whitespace, split_word_punctuation};
 
 #[derive(Debug, Clone, PartialEq)]
@@ -79,7 +78,9 @@ pub(crate) fn bayes_suggest_only_reason(
 }
 
 fn input_likelihood(error_class: &str, source_id: &str, distance: usize, max_len: usize) -> f32 {
-    if source_id.contains("layout") || error_class == "wrong_layout" {
+    if crate::correction_source_contract::is_layout_source(source_id)
+        || error_class == "wrong_layout"
+    {
         return 0.96;
     }
     let edit_likelihood = 1.0 - (distance as f32 / max_len as f32).min(1.0);
@@ -123,7 +124,7 @@ fn candidate_risk(
     if is_known_autocorrect_token(original)
         && is_known_autocorrect_token(replacement)
         && original != replacement
-        && !source_id.contains("layout")
+        && !crate::correction_source_contract::is_layout_source(source_id)
     {
         risk += 0.34;
     }
@@ -153,13 +154,7 @@ fn candidate_risk(
 }
 
 fn trusted_typo_source(source_id: &str) -> bool {
-    matches!(
-        source_id,
-        "composite_ru_typo"
-            | ids::ADJACENT_TRANSPOSITION
-            | ids::MISSING_LETTER
-            | ids::REPEATED_LETTER
-    ) || source_id.starts_with("layout_then_")
+    crate::correction_source_contract::is_deterministic_typo_source(source_id)
 }
 
 fn source_prior(source_id: &str) -> f32 {

@@ -108,6 +108,47 @@ pub fn split_last_alphabetic_token(text: &str) -> Option<(&str, &str)> {
     (!token.is_empty()).then_some((prefix, token))
 }
 
+pub(crate) fn last_text_word(text: &str) -> Option<String> {
+    split_ws_segments(text)
+        .into_iter()
+        .rev()
+        .find_map(|(segment, is_ws)| {
+            if is_ws {
+                return None;
+            }
+            let (_, word, _) = split_word_punctuation(segment);
+            (!word.is_empty()).then(|| word.to_string())
+        })
+}
+
+pub(crate) fn replace_last_text_word(text: &str, replacement_word: &str) -> Option<String> {
+    let (leading_ws, core, trailing_ws) = split_edge_whitespace(text);
+    let segments = split_ws_segments(core);
+    let replace_idx = segments
+        .iter()
+        .enumerate()
+        .rev()
+        .find_map(|(idx, (_, is_ws))| (!*is_ws).then_some(idx))?;
+
+    let mut output = String::with_capacity(text.len() + replacement_word.len());
+    output.push_str(leading_ws);
+    for (idx, (segment, _is_ws)) in segments.iter().enumerate() {
+        if idx == replace_idx {
+            let (token_leading, word, token_trailing) = split_word_punctuation(segment);
+            if word.is_empty() {
+                return None;
+            }
+            output.push_str(token_leading);
+            output.push_str(replacement_word);
+            output.push_str(token_trailing);
+        } else {
+            output.push_str(segment);
+        }
+    }
+    output.push_str(trailing_ws);
+    Some(output)
+}
+
 pub fn is_cyrillic_word(word: &str) -> bool {
     word.chars()
         .all(|ch| matches!(ch, 'А'..='я' | 'ё' | 'Ё' | '-'))

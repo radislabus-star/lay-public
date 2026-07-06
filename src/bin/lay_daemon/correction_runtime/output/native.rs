@@ -194,7 +194,7 @@ fn native_text_edit_action_allowed(
         insert: replace_text.to_string(),
         move_right: 0,
     };
-    let edit_action = lay::text_edit::EditAction::planned_replacement(
+    let edit_action = lay::text_edit::authorize_replacement(
         replace_kind,
         0,
         ctx.mapped_orig,

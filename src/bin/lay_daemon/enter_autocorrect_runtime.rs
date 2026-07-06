@@ -84,7 +84,7 @@ pub(super) fn handle_enter_autocorrect(
         log("⚠ enter-autocorrect skipped before delete: edit plan invariant failed");
         return None;
     };
-    let edit_action = lay::text_edit::EditAction::planned_replacement(
+    let edit_action = lay::text_edit::authorize_replacement(
         "enter-autocorrect",
         0,
         original.as_str(),

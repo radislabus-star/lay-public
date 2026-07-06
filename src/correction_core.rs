@@ -7,6 +7,7 @@ mod l2_lattice;
 
 use crate::candidate_explanation::{explain_candidate, CandidateExplanation};
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
+use crate::correction_source_contract::{self, CorrectionSourceRole};
 use crate::language_action::{operator_for_candidate, proof_for_candidate};
 use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
 use crate::nanda_wave::{run_wave_trace, WaveDecision};
@@ -19,10 +20,14 @@ use crate::typing_assist::{explain_typing_assist_with_pipeline, split_ws_segment
 use crate::typing_context::{syntax_allows_candidate, typing_assist_pipeline_for_context};
 use crate::typing_rule_graph::ids;
 use crate::word_reader::{
-    cyrillic_word_splits, is_cyrillic_letters_only, split_edge_whitespace, split_word_punctuation,
+    cyrillic_word_splits, is_cyrillic_letters_only, last_text_word, replace_last_text_word,
+    split_edge_whitespace, split_word_punctuation,
 };
 use crate::word_recognizer::is_ascii_technical_token;
 use l2_lattice::L2CandidateLattice;
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::OnceLock;
+use std::time::Instant;
 
 const COMPOSITE_TRANSPOSE_MIN_MARGIN: f64 = -8.0;
 
@@ -155,6 +160,21 @@ pub struct CorrectionScoreboard {
     pub selected_bayes_posterior_milli: Option<i16>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+struct CorrectionGateRuntimeStats {
+    requests: u64,
+    total_candidates: u64,
+    apply_candidates: u64,
+    suggest_only_candidates: u64,
+    keep_original_candidates: u64,
+    veto_candidates: u64,
+    deterministic_candidates: u64,
+    nanda_candidates: u64,
+    selected_apply: u64,
+    total_us: u64,
+    max_us: u64,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct CorrectionCandidateScoreTrace {
     pub(crate) replacement: String,
@@ -186,6 +206,7 @@ pub fn decide_text_correction(req: CorrectionRequest<'_>) -> Option<CorrectionDe
 }
 
 pub fn resolve_text_correction(req: CorrectionRequest<'_>) -> CorrectionResolution {
+    let started = Instant::now();
     let mut lattice = L2CandidateLattice::new(TypingErrorEvent::from_text(req.text));
 
     match req.mode {
@@ -201,7 +222,31 @@ pub fn resolve_text_correction(req: CorrectionRequest<'_>) -> CorrectionResoluti
         }
     }
 
-    lattice.into_resolution()
+    let resolution = lattice.into_resolution();
+    record_correction_gate_stats(started, &resolution);
+    resolution
+}
+
+pub fn correction_gate_stats_json() -> serde_json::Value {
+    let stats = correction_gate_runtime_stats();
+    let avg_us = if stats.requests == 0 {
+        0
+    } else {
+        stats.total_us / stats.requests
+    };
+    serde_json::json!({
+        "requests": stats.requests,
+        "total_candidates": stats.total_candidates,
+        "apply_candidates": stats.apply_candidates,
+        "suggest_only_candidates": stats.suggest_only_candidates,
+        "keep_original_candidates": stats.keep_original_candidates,
+        "veto_candidates": stats.veto_candidates,
+        "deterministic_candidates": stats.deterministic_candidates,
+        "nanda_candidates": stats.nanda_candidates,
+        "selected_apply": stats.selected_apply,
+        "avg_us": avg_us,
+        "max_us": stats.max_us,
+    })
 }
 
 impl CorrectionScoreboard {
@@ -237,6 +282,92 @@ impl CorrectionScoreboard {
             (posterior * 1000.0).round() as i16
         });
         scoreboard
+    }
+}
+
+fn record_correction_gate_stats(started: Instant, resolution: &CorrectionResolution) {
+    let elapsed_us = started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64;
+    let stats = correction_gate_stats();
+    stats.requests.fetch_add(1, Ordering::Relaxed);
+    stats.total_candidates.fetch_add(
+        resolution.scoreboard.total_candidates as u64,
+        Ordering::Relaxed,
+    );
+    stats.apply_candidates.fetch_add(
+        resolution.scoreboard.apply_candidates as u64,
+        Ordering::Relaxed,
+    );
+    stats.suggest_only_candidates.fetch_add(
+        resolution.scoreboard.suggest_only_candidates as u64,
+        Ordering::Relaxed,
+    );
+    stats.keep_original_candidates.fetch_add(
+        resolution.scoreboard.keep_original_candidates as u64,
+        Ordering::Relaxed,
+    );
+    stats.veto_candidates.fetch_add(
+        resolution.scoreboard.veto_candidates as u64,
+        Ordering::Relaxed,
+    );
+    stats.deterministic_candidates.fetch_add(
+        resolution.scoreboard.deterministic_candidates as u64,
+        Ordering::Relaxed,
+    );
+    stats.nanda_candidates.fetch_add(
+        resolution.scoreboard.nanda_candidates as u64,
+        Ordering::Relaxed,
+    );
+    if resolution.decision.is_some() {
+        stats.selected_apply.fetch_add(1, Ordering::Relaxed);
+    }
+    stats.total_us.fetch_add(elapsed_us, Ordering::Relaxed);
+    update_max_atomic(&stats.max_us, elapsed_us);
+}
+
+fn correction_gate_runtime_stats() -> CorrectionGateRuntimeStats {
+    let stats = correction_gate_stats();
+    CorrectionGateRuntimeStats {
+        requests: stats.requests.load(Ordering::Relaxed),
+        total_candidates: stats.total_candidates.load(Ordering::Relaxed),
+        apply_candidates: stats.apply_candidates.load(Ordering::Relaxed),
+        suggest_only_candidates: stats.suggest_only_candidates.load(Ordering::Relaxed),
+        keep_original_candidates: stats.keep_original_candidates.load(Ordering::Relaxed),
+        veto_candidates: stats.veto_candidates.load(Ordering::Relaxed),
+        deterministic_candidates: stats.deterministic_candidates.load(Ordering::Relaxed),
+        nanda_candidates: stats.nanda_candidates.load(Ordering::Relaxed),
+        selected_apply: stats.selected_apply.load(Ordering::Relaxed),
+        total_us: stats.total_us.load(Ordering::Relaxed),
+        max_us: stats.max_us.load(Ordering::Relaxed),
+    }
+}
+
+fn correction_gate_stats() -> &'static CorrectionGateAtomicStats {
+    static STATS: OnceLock<CorrectionGateAtomicStats> = OnceLock::new();
+    STATS.get_or_init(CorrectionGateAtomicStats::default)
+}
+
+#[derive(Default)]
+struct CorrectionGateAtomicStats {
+    requests: AtomicU64,
+    total_candidates: AtomicU64,
+    apply_candidates: AtomicU64,
+    suggest_only_candidates: AtomicU64,
+    keep_original_candidates: AtomicU64,
+    veto_candidates: AtomicU64,
+    deterministic_candidates: AtomicU64,
+    nanda_candidates: AtomicU64,
+    selected_apply: AtomicU64,
+    total_us: AtomicU64,
+    max_us: AtomicU64,
+}
+
+fn update_max_atomic(target: &AtomicU64, value: u64) {
+    let mut current = target.load(Ordering::Relaxed);
+    while value > current {
+        match target.compare_exchange_weak(current, value, Ordering::Relaxed, Ordering::Relaxed) {
+            Ok(_) => break,
+            Err(next) => current = next,
+        }
     }
 }
 
@@ -744,19 +875,6 @@ fn nanda_text_correction(req: &CorrectionRequest<'_>) -> Option<UnifiedCorrectio
     }
 }
 
-fn last_text_word(core: &str) -> Option<String> {
-    split_ws_segments(core)
-        .into_iter()
-        .rev()
-        .find_map(|(segment, is_ws)| {
-            if is_ws {
-                return None;
-            }
-            let (_, word, _) = split_word_punctuation(segment);
-            (!word.is_empty()).then(|| word.to_string())
-        })
-}
-
 fn unique_adjacent_transposition_word(word: &str) -> Option<String> {
     if word.chars().count() < 5 || !is_cyrillic_letters_only(word) {
         return None;
@@ -792,34 +910,6 @@ fn unique_adjacent_transposition_word(word: &str) -> Option<String> {
     }
 
     found.map(|candidate| apply_word_case(word, &candidate))
-}
-
-fn replace_last_text_word(text: &str, replacement_word: &str) -> Option<String> {
-    let (leading_ws, core, trailing_ws) = split_edge_whitespace(text);
-    let segments = split_ws_segments(core);
-    let replace_idx = segments
-        .iter()
-        .enumerate()
-        .rev()
-        .find_map(|(idx, (_, is_ws))| (!*is_ws).then_some(idx))?;
-
-    let mut output = String::with_capacity(text.len() + replacement_word.len());
-    output.push_str(leading_ws);
-    for (idx, (segment, _is_ws)) in segments.iter().enumerate() {
-        if idx == replace_idx {
-            let (token_leading, word, token_trailing) = split_word_punctuation(segment);
-            if word.is_empty() {
-                return None;
-            }
-            output.push_str(token_leading);
-            output.push_str(replacement_word);
-            output.push_str(token_trailing);
-        } else {
-            output.push_str(segment);
-        }
-    }
-    output.push_str(trailing_ws);
-    Some(output)
 }
 
 fn replace_last_word_and_split_previous_glued(
@@ -1106,22 +1196,22 @@ fn rule_error_class(rule_id: &str) -> TypingErrorClass {
 }
 
 fn nanda_source_error_class(source: &str) -> TypingErrorClass {
-    match source {
-        "LayoutWordCell32" => TypingErrorClass::WrongLayout,
-        "ShortTokenCell32" => TypingErrorClass::PartialLayout,
-        "TechTokenCell32" | "TechnicalContextCell32" => TypingErrorClass::TechnicalToken,
-        "BoundaryCell32" => TypingErrorClass::GluedWords,
-        "GrammarCell32" => TypingErrorClass::GrammarAgreement,
-        "PhraseForecastCell32" | "L2WordAttractorCell32" | "L2SurfaceCompletionCell32" => {
-            TypingErrorClass::CompletionOnly
+    match correction_source_contract::source_role(source) {
+        CorrectionSourceRole::Layout => TypingErrorClass::WrongLayout,
+        CorrectionSourceRole::Boundary => TypingErrorClass::GluedWords,
+        CorrectionSourceRole::Completion => TypingErrorClass::CompletionOnly,
+        CorrectionSourceRole::L2Surface | CorrectionSourceRole::L3Context => {
+            TypingErrorClass::CompositeTypo
         }
-        "CommonRuFixCell32"
-        | "LearnedMemoryCell32"
-        | "PhraseMemoryCell32"
-        | "PhraseCell32"
-        | "L2SurfaceMotifCell32"
-        | "SemanticWordCell32" => TypingErrorClass::CompositeTypo,
-        _ => TypingErrorClass::Unknown,
+        CorrectionSourceRole::Technical => TypingErrorClass::TechnicalToken,
+        CorrectionSourceRole::DeterministicTypo | CorrectionSourceRole::Unknown => match source {
+            "ShortTokenCell32" => TypingErrorClass::PartialLayout,
+            "GrammarCell32" => TypingErrorClass::GrammarAgreement,
+            "CommonRuFixCell32" | "LearnedMemoryCell32" | "PhraseMemoryCell32" => {
+                TypingErrorClass::CompositeTypo
+            }
+            _ => TypingErrorClass::Unknown,
+        },
     }
 }
 
@@ -1752,15 +1842,14 @@ fn l2_surface_candidate_lacks_local_typo_proof(
     error_class: TypingErrorClass,
     source_id: &str,
 ) -> bool {
-    if !matches!(
-        source_id,
-        "L2SurfaceMotifCell32" | "L2WordAttractorCell32" | "SemanticWordCell32"
-    ) || !matches!(
-        error_class,
-        TypingErrorClass::CompositeTypo
-            | TypingErrorClass::LetterSubstitution
-            | TypingErrorClass::GrammarAgreement
-    ) {
+    if !correction_source_contract::is_surface_or_context_source(source_id)
+        || !matches!(
+            error_class,
+            TypingErrorClass::CompositeTypo
+                | TypingErrorClass::LetterSubstitution
+                | TypingErrorClass::GrammarAgreement
+        )
+    {
         return false;
     }
     let Some(original_word) = last_text_word(original) else {
@@ -2266,10 +2355,7 @@ fn short_nanda_composite_candidate_shrinks_word(
     source_id: &str,
 ) -> bool {
     if !matches!(error_class, TypingErrorClass::CompositeTypo)
-        || !matches!(
-            source_id,
-            "L2SurfaceMotifCell32" | "SemanticWordCell32" | "L2WordAttractorCell32"
-        )
+        || !correction_source_contract::is_surface_or_context_source(source_id)
     {
         return false;
     }
@@ -2294,10 +2380,7 @@ fn nanda_surface_candidate_outputs_unknown_word(
     source_id: &str,
 ) -> bool {
     if !matches!(error_class, TypingErrorClass::CompositeTypo)
-        || !matches!(
-            source_id,
-            "L2SurfaceMotifCell32" | "SemanticWordCell32" | "L2WordAttractorCell32"
-        )
+        || !correction_source_contract::is_surface_or_context_source(source_id)
     {
         return false;
     }
@@ -2323,10 +2406,7 @@ fn short_nanda_candidate_inserts_internal_vowel(
     source_id: &str,
 ) -> bool {
     if !matches!(error_class, TypingErrorClass::CompositeTypo)
-        || !matches!(
-            source_id,
-            "L2SurfaceMotifCell32" | "SemanticWordCell32" | "L2WordAttractorCell32"
-        )
+        || !correction_source_contract::is_surface_or_context_source(source_id)
     {
         return false;
     }

@@ -9,6 +9,7 @@ pub mod core;
 pub mod correction;
 pub(crate) mod correction_bayes;
 pub mod correction_core;
+pub(crate) mod correction_source_contract;
 pub(crate) mod data_lines;
 pub mod debug_log;
 pub mod decoder;

@@ -136,6 +136,7 @@ impl From<&CorrectionCandidateScoreTrace> for InputGateCandidateScoreTrace {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct InputGateScoreboard {
+    pub total_candidates: usize,
     pub apply_candidates: usize,
     pub suggest_only_candidates: usize,
     pub keep_original_candidates: usize,
@@ -148,6 +149,7 @@ pub struct InputGateScoreboard {
 impl From<CorrectionScoreboard> for InputGateScoreboard {
     fn from(scoreboard: CorrectionScoreboard) -> Self {
         Self {
+            total_candidates: scoreboard.total_candidates,
             apply_candidates: scoreboard.apply_candidates,
             suggest_only_candidates: scoreboard.suggest_only_candidates,
             keep_original_candidates: scoreboard.keep_original_candidates,

@@ -198,11 +198,12 @@ fn shortcut_risk_milli(
     ) {
         return 0;
     }
-    let source_penalty = if source_id.contains("L2") || source_id.contains("Semantic") {
-        150
-    } else {
-        0
-    };
+    let source_penalty =
+        if crate::correction_source_contract::is_surface_or_context_source(source_id) {
+            150
+        } else {
+            0
+        };
     (lost_mass_milli as i32 + source_penalty + (500 - operator_fit_milli as i32).max(0) / 2)
         .clamp(0, 1000) as i16
 }

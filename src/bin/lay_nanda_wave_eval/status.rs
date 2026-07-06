@@ -251,6 +251,7 @@ fn preedit_live_json() -> serde_json::Value {
         "abandoned": stats.abandoned,
         "acceptance_percent": stats.acceptance_percent(),
         "candidate_gate": lay::nanda_wave::candidate_gate::live_candidate_gate_stats_json(),
+        "correction_gate": lay::correction_core::correction_gate_stats_json(),
     })
 }
 

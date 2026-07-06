@@ -80,6 +80,7 @@ pub(crate) struct RecentActionCandidateScore {
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct RecentActionGateScoreboard {
+    pub total_candidates: usize,
     pub apply_candidates: usize,
     pub suggest_only_candidates: usize,
     pub keep_original_candidates: usize,
@@ -146,6 +147,7 @@ impl RecentActionGateTrace {
             input_class: trace.input_class.map(|class| class.as_str().to_string()),
             candidate_count: trace.candidate_count,
             scoreboard: Some(RecentActionGateScoreboard {
+                total_candidates: trace.scoreboard.total_candidates,
                 apply_candidates: trace.scoreboard.apply_candidates,
                 suggest_only_candidates: trace.scoreboard.suggest_only_candidates,
                 keep_original_candidates: trace.scoreboard.keep_original_candidates,

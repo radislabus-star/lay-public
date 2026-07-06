@@ -58,7 +58,7 @@ pub(crate) fn apply_minimal_typing_replacement(
         .and_then(|trace| trace.scoreboard.as_ref())
         .and_then(|scoreboard| scoreboard.selected_bayes_posterior_milli)
         .unwrap_or(0);
-    let edit_action = lay::text_edit::EditAction::planned_replacement(
+    let edit_action = lay::text_edit::authorize_replacement(
         "typing-assist",
         confidence_milli,
         original,

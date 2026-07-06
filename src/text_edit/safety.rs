@@ -52,10 +52,10 @@ pub fn autocorrect_edit_safety(
 
     let boundary_proof = boundary_proof_source(selected_source_id, selected_error_class);
     let layout_phrase = selected_error_class == Some("wrong_layout");
-    let semantic_source = matches!(
-        selected_source_id,
-        Some("SemanticWordCell32" | "L2SurfaceMotifCell32")
-    );
+    let semantic_source = selected_source_id.is_some_and(|source| {
+        crate::correction_source_contract::is_l3_context_source(source)
+            || crate::correction_source_contract::is_l2_surface_source(source)
+    });
 
     let strong_boundary_shape =
         !boundary_changed || layout_phrase || strong_boundary_edit_shape(original, replacement);
@@ -90,10 +90,9 @@ pub fn autocorrect_edit_safety(
 }
 
 fn boundary_proof_source(source_id: Option<&str>, error_class: Option<&str>) -> bool {
-    matches!(
-        source_id,
-        Some("BoundaryCell32" | "PhraseCell32" | "layout_phrase" | "experimental_layout_en_to_ru")
-    ) || matches!(error_class, Some("split-word" | "glued-words"))
+    source_id.is_some_and(|source| {
+        crate::correction_source_contract::is_boundary_source(source) || source == "PhraseCell32"
+    }) || matches!(error_class, Some("split-word" | "glued-words"))
 }
 
 fn strong_boundary_edit_shape(original: &str, replacement: &str) -> bool {

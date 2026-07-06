@@ -59,7 +59,7 @@ impl EditAction {
         }
     }
 
-    pub fn planned_replacement(
+    pub(crate) fn planned_replacement(
         source: impl Into<String>,
         confidence_milli: i16,
         from_text: impl Into<String>,

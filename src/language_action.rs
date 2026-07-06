@@ -83,7 +83,7 @@ pub fn operator_for_candidate(
     error_class: TypingErrorClass,
     source_id: &str,
 ) -> LanguageActionOperator {
-    if source_id.starts_with("layout_then_") {
+    if crate::correction_source_contract::is_layout_then_typo_source(source_id) {
         return LanguageActionOperator::FixMixedLayout;
     }
     match error_class {
@@ -111,7 +111,7 @@ pub fn operator_for_candidate(
 }
 
 pub fn proof_for_candidate(error_class: TypingErrorClass, source_id: &str) -> LanguageActionProof {
-    if source_id.starts_with("layout_then_") {
+    if crate::correction_source_contract::is_layout_then_typo_source(source_id) {
         return LanguageActionProof::Layout;
     }
     match error_class {
@@ -148,10 +148,9 @@ fn context_or_typo_operator(source_id: &str) -> LanguageActionOperator {
 }
 
 fn is_context_source(source_id: &str) -> bool {
-    matches!(
-        source_id,
-        "PhraseForecastCell32" | "PhraseMemoryCell32" | "PhraseCell32" | "SemanticWordCell32"
-    )
+    crate::correction_source_contract::is_l3_context_source(source_id)
+        || source_id == "PhraseMemoryCell32"
+        || source_id == "PhraseForecastCell32"
 }
 
 #[cfg(test)]

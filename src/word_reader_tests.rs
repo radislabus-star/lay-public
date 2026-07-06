@@ -8,6 +8,15 @@ fn reads_edge_whitespace_and_token_punctuation() {
 }
 
 #[test]
+fn reads_and_replaces_last_text_word_without_touching_boundaries() {
+    assert_eq!(last_text_word("  ну привет, "), Some("привет".to_string()));
+    assert_eq!(
+        replace_last_text_word("  ну привет, ", "здравствуй").as_deref(),
+        Some("  ну здравствуй, ")
+    );
+}
+
+#[test]
 fn splits_whitespace_segments_without_losing_boundaries() {
     assert_eq!(
         split_ws_segments("как  проверить"),

@@ -30,7 +30,7 @@ pub(crate) fn try_manual_text_replacement(
     }
 
     let plan = manual_text_replacement_plan(ctx, text, kind);
-    let edit_action = lay::text_edit::EditAction::planned_replacement(
+    let edit_action = lay::text_edit::authorize_replacement(
         kind,
         0,
         ctx.mapped_orig,
