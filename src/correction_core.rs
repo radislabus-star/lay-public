@@ -21,7 +21,7 @@ use crate::typing_context::{syntax_allows_candidate, typing_assist_pipeline_for_
 use crate::typing_rule_graph::ids;
 use crate::word_reader::{
     cyrillic_word_splits, is_cyrillic_letters_only, last_text_word, replace_last_text_word,
-    split_edge_whitespace, split_word_punctuation,
+    split_edge_whitespace, split_last_trimmed_ws_token, split_word_punctuation,
 };
 use crate::word_recognizer::is_ascii_technical_token;
 use l2_lattice::L2CandidateLattice;
@@ -1286,6 +1286,17 @@ fn gate_candidate_with_source(
             reason: "weak_boundary_split_tail",
         };
     }
+    if candidate_changes_left_context_without_operator(
+        original,
+        replacement,
+        error_class,
+        source_id,
+    ) {
+        return CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "extra_context_requires_operator_proof",
+        };
+    }
     if let Some(decision) = l3_context_gate(original, replacement, error_class, source_id) {
         return decision;
     }
@@ -1351,6 +1362,151 @@ fn gate_candidate_with_source(
             reason: "class_allows_apply",
         },
     }
+}
+
+fn candidate_changes_left_context_without_operator(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    source_id: &str,
+) -> bool {
+    let Some((original_prefix, _)) = split_last_trimmed_ws_token(original) else {
+        return false;
+    };
+    let Some((replacement_prefix, _)) = split_last_trimmed_ws_token(replacement) else {
+        return false;
+    };
+    if original_prefix == replacement_prefix {
+        return false;
+    }
+
+    match correction_source_contract::source_role(source_id) {
+        CorrectionSourceRole::Layout => {
+            !layout_operator_may_rewrite_whole_tail(original, replacement, error_class)
+        }
+        CorrectionSourceRole::Boundary => {
+            !boundary_operator_may_shift_word_boundary(original, replacement, error_class)
+        }
+        CorrectionSourceRole::L3Context => {
+            !phrase_context_operator_may_rewrite_one_token(original, replacement, source_id)
+        }
+        CorrectionSourceRole::DeterministicTypo => {
+            !deterministic_typo_may_split_previous_glued_word(original, replacement)
+        }
+        CorrectionSourceRole::Completion
+        | CorrectionSourceRole::L2Surface
+        | CorrectionSourceRole::Technical => true,
+        CorrectionSourceRole::Unknown => false,
+    }
+}
+
+fn layout_operator_may_rewrite_whole_tail(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+) -> bool {
+    if !matches!(
+        error_class,
+        TypingErrorClass::WrongLayout
+            | TypingErrorClass::PartialLayout
+            | TypingErrorClass::MixedScript
+    ) {
+        return false;
+    }
+    let (_, original_core, _) = split_edge_whitespace(original);
+    let (_, replacement_core, _) = split_edge_whitespace(replacement);
+    let original_words = original_core.split_whitespace().collect::<Vec<_>>();
+    let replacement_words = replacement_core.split_whitespace().collect::<Vec<_>>();
+    original_words.len() >= 2 && original_words.len() == replacement_words.len()
+}
+
+fn boundary_operator_may_shift_word_boundary(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+) -> bool {
+    if !matches!(
+        error_class,
+        TypingErrorClass::SplitWord | TypingErrorClass::GluedWords
+    ) {
+        return false;
+    }
+    let (_, original_core, _) = split_edge_whitespace(original);
+    let (_, replacement_core, _) = split_edge_whitespace(replacement);
+    let original_words = original_core.split_whitespace().count();
+    let replacement_words = replacement_core.split_whitespace().count();
+    if original_words == 0 || replacement_words == 0 {
+        return false;
+    }
+    original_words.abs_diff(replacement_words) == 1
+        && original_words.max(replacement_words) <= original_words.min(replacement_words) + 1
+}
+
+fn phrase_context_operator_may_rewrite_one_token(
+    original: &str,
+    replacement: &str,
+    source_id: &str,
+) -> bool {
+    if source_id != "PhraseCell32" {
+        return false;
+    }
+    let (_, original_core, _) = split_edge_whitespace(original);
+    let (_, replacement_core, _) = split_edge_whitespace(replacement);
+    let original_words = original_core.split_whitespace().collect::<Vec<_>>();
+    let replacement_words = replacement_core.split_whitespace().collect::<Vec<_>>();
+    if original_words.len() < 2 || original_words.len() != replacement_words.len() {
+        return false;
+    }
+    original_words
+        .iter()
+        .zip(replacement_words.iter())
+        .filter(|(left, right)| left != right)
+        .count()
+        == 1
+}
+
+fn deterministic_typo_may_split_previous_glued_word(original: &str, replacement: &str) -> bool {
+    let (_, original_core, _) = split_edge_whitespace(original);
+    let (_, replacement_core, _) = split_edge_whitespace(replacement);
+    let original_words = original_core.split_whitespace().collect::<Vec<_>>();
+    let replacement_words = replacement_core.split_whitespace().collect::<Vec<_>>();
+    if original_words.is_empty() || replacement_words.len() != original_words.len() + 1 {
+        return false;
+    }
+
+    for split_idx in 0..original_words.len() {
+        let Some(left) = replacement_words.get(split_idx) else {
+            continue;
+        };
+        let Some(right) = replacement_words.get(split_idx + 1) else {
+            continue;
+        };
+        let merged = format!("{left}{right}");
+        if !same_cyrillic_token(original_words[split_idx], &merged) {
+            continue;
+        }
+        if original_words[..split_idx] != replacement_words[..split_idx] {
+            continue;
+        }
+        let original_after = &original_words[split_idx + 1..];
+        let replacement_after = &replacement_words[split_idx + 2..];
+        if original_after.len() != replacement_after.len() {
+            continue;
+        }
+        let changed_after = original_after
+            .iter()
+            .zip(replacement_after.iter())
+            .enumerate()
+            .filter(|(_, (left, right))| left != right)
+            .map(|(idx, _)| idx)
+            .collect::<Vec<_>>();
+        if changed_after.is_empty()
+            || changed_after.as_slice() == [original_after.len().saturating_sub(1)]
+        {
+            return true;
+        }
+    }
+    false
 }
 
 fn bayes_score_for_candidate(
@@ -2774,6 +2930,56 @@ mod tests {
 
         assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
         assert_eq!(gate.reason, "unexplained_signal_loss");
+    }
+
+    #[test]
+    fn surface_candidate_cannot_apply_extra_left_context() {
+        let gate = gate_candidate_with_source(
+            "содержкой ",
+            "что получилось вроде хороший ввод и даже фикс был шикарный но с содержать ",
+            TypingErrorClass::CompositeTypo,
+            "L2SurfaceMotifCell32",
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "extra_context_requires_operator_proof");
+    }
+
+    #[test]
+    fn surface_candidate_may_replace_only_current_word_with_same_prefix() {
+        let gate = gate_candidate_with_source(
+            "что получилось содержкой ",
+            "что получилось содержать ",
+            TypingErrorClass::CompositeTypo,
+            "L2SurfaceMotifCell32",
+        );
+
+        assert_ne!(gate.reason, "extra_context_requires_operator_proof");
+    }
+
+    #[test]
+    fn layout_candidate_cannot_add_context_to_single_word() {
+        let gate = gate_candidate_with_source(
+            "uрафике ",
+            "на графике ",
+            TypingErrorClass::WrongLayout,
+            "LayoutWordCell32",
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "extra_context_requires_operator_proof");
+    }
+
+    #[test]
+    fn layout_candidate_may_rewrite_multiword_layout_tail() {
+        let gate = gate_candidate_with_source(
+            "HF<JNF NTCN CFV ",
+            "РАБОТА ТЕСТ САМ ",
+            TypingErrorClass::WrongLayout,
+            ids::LAYOUT_EN_TO_RU,
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::Apply);
     }
 
     #[test]
