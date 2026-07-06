@@ -106,6 +106,12 @@ struct DirtyTaskRecord<'a> {
 struct CandidateBeforeApplyRecord<'a> {
     ts: u64,
     kind: &'static str,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    action_kind: Option<&'static str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    action_source: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    action_confidence_milli: Option<i16>,
     from: &'a str,
     to: &'a str,
     edit_plan: EditPlanRecord<'a>,
@@ -201,6 +207,38 @@ pub fn record_candidate_before_apply(
     safety: &crate::text_edit::EditPlanSafetyReport,
     input_gate: Option<RecentActionGateTrace>,
 ) {
+    record_candidate_before_apply_inner(from, to, plan, safety, None, None, None, input_gate);
+}
+
+pub fn record_candidate_edit_action_before_apply(
+    action: &crate::text_edit::EditAction,
+    input_gate: Option<RecentActionGateTrace>,
+) {
+    let (Some(plan), Some(safety)) = (action.plan.as_ref(), action.safety.as_ref()) else {
+        return;
+    };
+    record_candidate_before_apply_inner(
+        &action.from_text,
+        &action.to_text,
+        plan,
+        safety,
+        Some(action.kind.as_str()),
+        Some(action.source.as_str()),
+        Some(action.confidence_milli),
+        input_gate,
+    );
+}
+
+fn record_candidate_before_apply_inner(
+    from: &str,
+    to: &str,
+    plan: &crate::text_edit::TextReplacement,
+    safety: &crate::text_edit::EditPlanSafetyReport,
+    action_kind: Option<&'static str>,
+    action_source: Option<&str>,
+    action_confidence_milli: Option<i16>,
+    input_gate: Option<RecentActionGateTrace>,
+) {
     if !crate::config::LayConfig::load().debug_action_log {
         return;
     }
@@ -210,6 +248,9 @@ pub fn record_candidate_before_apply(
     let record = CandidateBeforeApplyRecord {
         ts: unix_timestamp(),
         kind: "candidate_before_apply",
+        action_kind,
+        action_source,
+        action_confidence_milli,
         from,
         to,
         edit_plan: EditPlanRecord {

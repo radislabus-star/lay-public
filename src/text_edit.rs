@@ -3,6 +3,8 @@
 //! The planner decides which already-typed prefix/suffix can stay on screen and
 //! returns the smallest edit needed for replacing the bad middle range.
 
+#[path = "text_edit/action.rs"]
+mod action;
 #[path = "text_edit/committed_tail.rs"]
 mod committed_tail;
 #[path = "text_edit/cursor.rs"]
@@ -14,6 +16,7 @@ mod safety;
 #[path = "text_edit/types.rs"]
 mod types;
 
+pub use action::{EditAction, EditActionKind};
 pub use committed_tail::{
     committed_separator_is_preserved, ensure_committed_tail_spacing,
     plan_committed_tail_full_token_replacement, plan_committed_tail_replacement,
