@@ -13,15 +13,17 @@ const USAGE_COUNTS_PATH: &str = ".local/share/lay/nanda_wave/word_usage_counts.j
 const LEGACY_USAGE_PRIOR_PATH: &str = ".local/share/lay/learning_candidates.json";
 const USAGE_EVENTS_MAX_BYTES: u64 = 500 * 1024;
 const USAGE_EVENTS_FULL_REBUILD_MAX_BYTES: u64 = 8 * 1024 * 1024;
-const USAGE_COUNTS_SCHEMA_VERSION: u32 = 4;
+const USAGE_COUNTS_SCHEMA_VERSION: u32 = 5;
 const USAGE_COUNTS_MAX_WORDS: usize = 10_000;
 const USAGE_COUNTS_MAX_ACCEPTED_WORDS: usize = 5_000;
 const USAGE_COUNTS_MAX_CONTEXT_WORDS: usize = 12_000;
 const USAGE_COUNTS_MAX_REJECTED_WORDS: usize = 5_000;
 const USAGE_COUNTS_MAX_REJECTED_CONTEXT_WORDS: usize = 12_000;
+const USAGE_COUNTS_MAX_TRANSITION_STATES: usize = 24_000;
 const USAGE_REFRESH_INTERVAL: Duration = Duration::from_millis(1000);
 const CONTEXT_WORDS: usize = 5;
 const MIN_CONTEXT_NGRAM: usize = 1;
+const TRANSITION_ANY: &str = "*";
 
 #[derive(Debug, serde::Deserialize)]
 struct LearningCandidate {
@@ -43,6 +45,10 @@ struct UsageEvent {
     from: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     to: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    source: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    operation: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
@@ -64,6 +70,12 @@ struct UsageCounts {
     rejected_words: HashMap<String, u32>,
     #[serde(default)]
     rejected_context_words: HashMap<String, u32>,
+    #[serde(default)]
+    transition_observed: HashMap<String, u32>,
+    #[serde(default)]
+    transition_attract: HashMap<String, u32>,
+    #[serde(default)]
+    transition_repel: HashMap<String, u32>,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -81,6 +93,22 @@ pub(crate) struct UsageStateMapSummary {
     pub(crate) rejected_word_states: usize,
     pub(crate) rejected_context_word_states: usize,
     pub(crate) signed_word_states: usize,
+    pub(crate) transition_states: usize,
+    pub(crate) transition_observed_states: usize,
+    pub(crate) transition_attract_states: usize,
+    pub(crate) transition_repel_states: usize,
+    pub(crate) transition_signed_states: usize,
+    pub(crate) transition_conflict_states: usize,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
+pub(crate) struct UsageTransitionSignal {
+    pub(crate) attraction: f32,
+    pub(crate) repulsion: f32,
+    pub(crate) signed_weight: f32,
+    pub(crate) attract_count: u32,
+    pub(crate) repel_count: u32,
+    pub(crate) reason: &'static str,
 }
 
 impl UsagePriorSnapshot {
@@ -149,6 +177,16 @@ impl UsagePriorSnapshot {
             .copied()
             .unwrap_or_default()
     }
+
+    pub(crate) fn transition_signal(
+        &self,
+        context: &[String],
+        source: &str,
+        operation: &str,
+        word: &str,
+    ) -> UsageTransitionSignal {
+        transition_signal_from_counts(&self.counts, context, source, operation, word)
+    }
 }
 
 #[derive(Debug, Clone, Default, serde::Deserialize, serde::Serialize)]
@@ -179,6 +217,8 @@ pub(crate) fn record_typed_tail_if_enabled(tail: &str) {
         context,
         from: None,
         to: None,
+        source: Some("user".to_string()),
+        operation: Some("typed".to_string()),
     });
 }
 
@@ -208,6 +248,8 @@ pub(crate) fn record_accepted_fix_if_enabled(from: &str, to: &str) {
             context: context.clone(),
             from: Some(from.trim().to_string()),
             to: Some(to.trim().to_string()),
+            source: Some("autocorrect".to_string()),
+            operation: Some("replacement".to_string()),
         });
     }
 }
@@ -236,6 +278,8 @@ pub(crate) fn record_accepted_ime_if_enabled(context_tail: &str, accepted_text: 
             context: context.clone(),
             from: None,
             to: Some(accepted_text.trim().to_string()),
+            source: Some("ime".to_string()),
+            operation: Some("completion".to_string()),
         });
     }
 }
@@ -378,6 +422,27 @@ pub(crate) fn usage_state_map_summary() -> UsageStateMapSummary {
             .chain(counts.rejected_words.keys())
             .collect::<HashSet<_>>()
             .len(),
+        transition_states: counts
+            .transition_observed
+            .keys()
+            .chain(counts.transition_attract.keys())
+            .chain(counts.transition_repel.keys())
+            .collect::<HashSet<_>>()
+            .len(),
+        transition_observed_states: counts.transition_observed.len(),
+        transition_attract_states: counts.transition_attract.len(),
+        transition_repel_states: counts.transition_repel.len(),
+        transition_signed_states: counts
+            .transition_attract
+            .keys()
+            .chain(counts.transition_repel.keys())
+            .collect::<HashSet<_>>()
+            .len(),
+        transition_conflict_states: counts
+            .transition_attract
+            .keys()
+            .filter(|key| counts.transition_repel.contains_key(*key))
+            .count(),
     }
 }
 
@@ -533,6 +598,19 @@ fn merge_usage_counts(target: &mut UsageCounts, source: UsageCounts) {
             .unwrap_or_default()
             .saturating_add(count);
     }
+    merge_count_map(&mut target.transition_observed, source.transition_observed);
+    merge_count_map(&mut target.transition_attract, source.transition_attract);
+    merge_count_map(&mut target.transition_repel, source.transition_repel);
+}
+
+fn merge_count_map(target: &mut HashMap<String, u32>, source: HashMap<String, u32>) {
+    for (key, count) in source {
+        *target.entry(key.clone()).or_default() = target
+            .get(&key)
+            .copied()
+            .unwrap_or_default()
+            .saturating_add(count);
+    }
 }
 
 fn add_legacy_usage_counts(counts: &mut UsageCounts, text: &str) {
@@ -588,9 +666,29 @@ fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
             .unwrap_or_default()
             .saturating_add(weight);
     }
+    let source = event_source(event);
+    let operation = event_operation(event);
+    add_transition_counts(
+        &mut counts.transition_observed,
+        &event.context,
+        source,
+        operation,
+        &word,
+        weight,
+    );
+    if !matches!(event.kind, UsageEventKind::Typed) {
+        add_transition_counts(
+            &mut counts.transition_attract,
+            &event.context,
+            source,
+            operation,
+            &word,
+            weight,
+        );
+    }
 
     if matches!(event.kind, UsageEventKind::AcceptedFix) {
-        add_rejected_fix_sources(counts, event, weight);
+        add_rejected_fix_sources(counts, event, weight, source, operation);
     }
 }
 
@@ -625,7 +723,13 @@ fn legacy_usage_counts_from_json(text: &str) -> HashMap<String, u32> {
     counts
 }
 
-fn add_rejected_fix_sources(counts: &mut UsageCounts, event: &UsageEvent, weight: u32) {
+fn add_rejected_fix_sources(
+    counts: &mut UsageCounts,
+    event: &UsageEvent,
+    weight: u32,
+    source: &str,
+    operation: &str,
+) {
     let Some(from) = event.from.as_deref() else {
         return;
     };
@@ -658,11 +762,77 @@ fn add_rejected_fix_sources(counts: &mut UsageCounts, event: &UsageEvent, weight
                 .unwrap_or_default()
                 .saturating_add(weight);
         }
+        add_transition_counts(
+            &mut counts.transition_repel,
+            &event.context,
+            source,
+            operation,
+            &rejected,
+            weight,
+        );
     }
 }
 
 fn rejected_prior_from_count(count: u32) -> f32 {
     ((count as f32 + 1.0).ln() * 0.040).clamp(0.0, 0.26)
+}
+
+fn transition_signal_from_counts(
+    counts: &UsageCounts,
+    context: &[String],
+    source: &str,
+    operation: &str,
+    word: &str,
+) -> UsageTransitionSignal {
+    let word = normalize_word(word);
+    if word.is_empty() {
+        return UsageTransitionSignal::default();
+    }
+    let keys = transition_lookup_keys(context, source, operation, &word);
+    let attract_count = keys
+        .iter()
+        .filter_map(|key| counts.transition_attract.get(key).copied())
+        .max()
+        .unwrap_or_default();
+    let repel_count = keys
+        .iter()
+        .filter_map(|key| counts.transition_repel.get(key).copied())
+        .max()
+        .unwrap_or_default();
+    let attraction = transition_attraction_from_count(attract_count);
+    let repulsion = transition_repulsion_from_count(repel_count);
+    let signed_weight = (attraction - repulsion).clamp(-1.0, 1.0);
+    let reason = if repel_count > 0 && repulsion > attraction {
+        "transition_repels"
+    } else if attract_count > 0 && attraction > repulsion {
+        "transition_attracts"
+    } else if attract_count > 0 || repel_count > 0 {
+        "transition_conflict"
+    } else {
+        "transition_empty"
+    };
+    UsageTransitionSignal {
+        attraction,
+        repulsion,
+        signed_weight,
+        attract_count,
+        repel_count,
+        reason,
+    }
+}
+
+fn transition_attraction_from_count(count: u32) -> f32 {
+    if count == 0 {
+        return 0.0;
+    }
+    ((count as f32 + 1.0).ln() * 0.050).clamp(0.0, 0.32)
+}
+
+fn transition_repulsion_from_count(count: u32) -> f32 {
+    if count == 0 {
+        return 0.0;
+    }
+    ((count as f32 + 1.0).ln() * 0.060).clamp(0.0, 0.38)
 }
 
 fn append_usage_event(event: UsageEvent) {
@@ -716,6 +886,8 @@ fn usage_event_payload_eq(left: &UsageEvent, right: &UsageEvent) -> bool {
         && left.context == right.context
         && left.from == right.from
         && left.to == right.to
+        && left.source == right.source
+        && left.operation == right.operation
 }
 
 fn compact_usage_events_if_needed(path: &Path) {
@@ -798,6 +970,18 @@ fn compact_usage_counts_for_persist(counts: &UsageCounts) -> UsageCounts {
         rejected_context_words: top_count_entries(
             &counts.rejected_context_words,
             USAGE_COUNTS_MAX_REJECTED_CONTEXT_WORDS,
+        ),
+        transition_observed: top_count_entries(
+            &counts.transition_observed,
+            USAGE_COUNTS_MAX_TRANSITION_STATES,
+        ),
+        transition_attract: top_count_entries(
+            &counts.transition_attract,
+            USAGE_COUNTS_MAX_TRANSITION_STATES,
+        ),
+        transition_repel: top_count_entries(
+            &counts.transition_repel,
+            USAGE_COUNTS_MAX_TRANSITION_STATES,
         ),
     }
 }
@@ -889,6 +1073,96 @@ fn context_ngram_keys(context: &[String]) -> Vec<String> {
 
 fn context_word_key(context: &str, word: &str) -> String {
     format!("{context}\u{1f}{word}")
+}
+
+fn add_transition_counts(
+    target: &mut HashMap<String, u32>,
+    context: &[String],
+    source: &str,
+    operation: &str,
+    word: &str,
+    weight: u32,
+) {
+    for key in transition_record_keys(context, source, operation, word) {
+        *target.entry(key.clone()).or_default() = target
+            .get(&key)
+            .copied()
+            .unwrap_or_default()
+            .saturating_add(weight);
+    }
+}
+
+fn transition_record_keys(
+    context: &[String],
+    source: &str,
+    operation: &str,
+    word: &str,
+) -> Vec<String> {
+    let mut keys = Vec::new();
+    let mut contexts = context_ngram_keys(context);
+    contexts.push(String::new());
+    for context_key in contexts {
+        keys.push(transition_key(&context_key, source, operation, word));
+        keys.push(transition_key(
+            &context_key,
+            TRANSITION_ANY,
+            operation,
+            word,
+        ));
+        keys.push(transition_key(
+            &context_key,
+            TRANSITION_ANY,
+            TRANSITION_ANY,
+            word,
+        ));
+    }
+    keys.sort();
+    keys.dedup();
+    keys
+}
+
+fn transition_lookup_keys(
+    context: &[String],
+    source: &str,
+    operation: &str,
+    word: &str,
+) -> Vec<String> {
+    let mut keys = transition_record_keys(context, source, operation, word);
+    keys.extend(transition_record_keys(
+        context,
+        TRANSITION_ANY,
+        operation,
+        word,
+    ));
+    keys.extend(transition_record_keys(
+        context,
+        TRANSITION_ANY,
+        TRANSITION_ANY,
+        word,
+    ));
+    keys.sort();
+    keys.dedup();
+    keys
+}
+
+fn transition_key(context: &str, source: &str, operation: &str, word: &str) -> String {
+    format!("{context}\u{1e}{source}\u{1e}{operation}\u{1f}{word}")
+}
+
+fn event_source(event: &UsageEvent) -> &str {
+    event.source.as_deref().unwrap_or(match event.kind {
+        UsageEventKind::Typed => "user",
+        UsageEventKind::AcceptedFix => "autocorrect",
+        UsageEventKind::AcceptedIme => "ime",
+    })
+}
+
+fn event_operation(event: &UsageEvent) -> &str {
+    event.operation.as_deref().unwrap_or(match event.kind {
+        UsageEventKind::Typed => "typed",
+        UsageEventKind::AcceptedFix => "replacement",
+        UsageEventKind::AcceptedIme => "completion",
+    })
 }
 
 fn usage_events_path() -> Option<PathBuf> {
@@ -1022,6 +1296,38 @@ mod tests {
         assert_eq!(counts.accepted_words.len(), 2);
         assert_eq!(counts.rejected_words.len(), 1);
         assert_eq!(signed_word_states, 3);
+        assert!(!counts.transition_attract.is_empty());
+        assert!(!counts.transition_repel.is_empty());
+    }
+
+    #[test]
+    fn transition_signal_attracts_accepted_completion() {
+        let usage = snapshot_from_usage_events_for_tests(
+            r#"{"ts":1,"kind":"accepted_ime","word":"дождь","context":["на","улице","идёт"],"to":"дождь","source":"ime","operation":"completion"}
+"#,
+        );
+        let context = ["на", "улице", "идёт"].map(String::from);
+        let signal =
+            usage.transition_signal(&context, "L2LiveCandidateGate32", "completion", "дождь");
+
+        assert!(signal.attraction > signal.repulsion);
+        assert!(signal.signed_weight > 0.0);
+        assert_eq!(signal.reason, "transition_attracts");
+    }
+
+    #[test]
+    fn transition_signal_repels_corrected_away_replacement() {
+        let usage = snapshot_from_usage_events_for_tests(
+            r#"{"ts":1,"kind":"accepted_fix","word":"отравим","context":["мы"],"from":"мы отвравим","to":"мы отравим","source":"autocorrect","operation":"replacement"}
+"#,
+        );
+        let context = ["мы"].map(String::from);
+        let signal =
+            usage.transition_signal(&context, "SemanticWordCell32", "replacement", "отвравим");
+
+        assert!(signal.repulsion > signal.attraction);
+        assert!(signal.signed_weight < 0.0);
+        assert_eq!(signal.reason, "transition_repels");
     }
 
     #[test]
@@ -1099,6 +1405,8 @@ mod tests {
             context: vec!["смотри".to_string()],
             from: None,
             to: None,
+            source: Some("user".to_string()),
+            operation: Some("typed".to_string()),
         };
         let second = UsageEvent {
             ts: 2,

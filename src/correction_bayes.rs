@@ -40,6 +40,8 @@ pub(crate) fn bayes_score_candidate(
     let signed_memory = crate::nanda_wave::l4_signed_memory::l4_signed_memory_signal(
         crate::nanda_wave::l4_signed_memory::L4SignedMemoryInput {
             context: &context,
+            source: source_id,
+            operation: "replacement",
             word: &replacement_lower,
             usage: &usage_snapshot,
         },

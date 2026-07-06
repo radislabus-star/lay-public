@@ -45,6 +45,8 @@ struct LiveCandidateGateStats {
     l4_attract: u64,
     l4_neutral: u64,
     l4_repel: u64,
+    l4_transition_hits: u64,
+    l4_transition_repels: u64,
     total_us: u64,
     max_us: u64,
 }
@@ -137,6 +139,8 @@ pub fn live_completion_candidates(
             );
             let memory_signal = l4_signed_memory_signal(L4SignedMemoryInput {
                 context: &context_tokens,
+                source: "L2LiveCandidateGate32",
+                operation: "completion",
                 word: &candidate.surface,
                 usage: &usage_snapshot,
             });
@@ -153,6 +157,7 @@ pub fn live_completion_candidates(
                 learned_repulsion: memory_signal.repulsion,
             });
             l4_signed.record(signed.polarity);
+            l4_signed.record_transition(&memory_signal);
 
             if !live_completion_has_authority(LiveCompletionAuthority {
                 partial_len,
@@ -255,7 +260,10 @@ pub fn live_candidate_gate_stats_json() -> serde_json::Value {
             "attract": stats.l4_attract,
             "neutral": stats.l4_neutral,
             "repel": stats.l4_repel,
+            "transition_hits": stats.l4_transition_hits,
+            "transition_repels": stats.l4_transition_repels,
         },
+        "authority_contract": "L4 signed state is bias only; live candidate authority and edit-plan safety remain final",
         "avg_us": avg_us,
         "max_us": stats.max_us,
     })
@@ -276,6 +284,8 @@ fn live_candidate_gate_stats() -> LiveCandidateGateStats {
         l4_attract: stats.l4_attract.load(Ordering::Relaxed),
         l4_neutral: stats.l4_neutral.load(Ordering::Relaxed),
         l4_repel: stats.l4_repel.load(Ordering::Relaxed),
+        l4_transition_hits: stats.l4_transition_hits.load(Ordering::Relaxed),
+        l4_transition_repels: stats.l4_transition_repels.load(Ordering::Relaxed),
         total_us: stats.total_us.load(Ordering::Relaxed),
         max_us: stats.max_us.load(Ordering::Relaxed),
     }
@@ -359,6 +369,12 @@ fn record_live_gate_stats(
         .l4_neutral
         .fetch_add(l4_signed.neutral, Ordering::Relaxed);
     stats.l4_repel.fetch_add(l4_signed.repel, Ordering::Relaxed);
+    stats
+        .l4_transition_hits
+        .fetch_add(l4_signed.transition_hits, Ordering::Relaxed);
+    stats
+        .l4_transition_repels
+        .fetch_add(l4_signed.transition_repels, Ordering::Relaxed);
     stats.total_us.fetch_add(elapsed_us, Ordering::Relaxed);
     update_max_atomic(&stats.max_us, elapsed_us);
 }
@@ -382,6 +398,8 @@ struct LiveCandidateGateAtomicStats {
     l4_attract: AtomicU64,
     l4_neutral: AtomicU64,
     l4_repel: AtomicU64,
+    l4_transition_hits: AtomicU64,
+    l4_transition_repels: AtomicU64,
     total_us: AtomicU64,
     max_us: AtomicU64,
 }
@@ -391,6 +409,8 @@ struct LiveSignedOutcomeStats {
     attract: u64,
     neutral: u64,
     repel: u64,
+    transition_hits: u64,
+    transition_repels: u64,
 }
 
 impl LiveSignedOutcomeStats {
@@ -399,6 +419,17 @@ impl LiveSignedOutcomeStats {
             L4OutcomePolarity::Attract => self.attract = self.attract.saturating_add(1),
             L4OutcomePolarity::Neutral => self.neutral = self.neutral.saturating_add(1),
             L4OutcomePolarity::Repel => self.repel = self.repel.saturating_add(1),
+        }
+    }
+
+    fn record_transition(&mut self, signal: &super::l4_signed_memory::L4SignedMemorySignal) {
+        if signal.transition_attract_count > 0 || signal.transition_repel_count > 0 {
+            self.transition_hits = self.transition_hits.saturating_add(1);
+        }
+        if signal.transition_repulsion > signal.transition_attraction
+            && signal.transition_repel_count > 0
+        {
+            self.transition_repels = self.transition_repels.saturating_add(1);
         }
     }
 }
@@ -559,5 +590,27 @@ mod tests {
         assert!(after.raw_candidates >= before.raw_candidates);
         assert!(after.returned_candidates >= before.returned_candidates);
         assert!(after.total_us >= before.total_us);
+    }
+
+    #[test]
+    fn single_letter_suffix_still_needs_display_authority() {
+        assert!(!live_suffix_has_display_authority(LiveSuffixAuthority {
+            suffix_len: 1,
+            suffix: "е",
+            score: 1.0,
+            structural: 0.20,
+            usage: 0.0,
+            context_usage: 0.0,
+            accepted: 0,
+        }));
+        assert!(live_suffix_has_display_authority(LiveSuffixAuthority {
+            suffix_len: 1,
+            suffix: "е",
+            score: 0.70,
+            structural: 0.20,
+            usage: 0.10,
+            context_usage: 0.0,
+            accepted: 2,
+        }));
     }
 }

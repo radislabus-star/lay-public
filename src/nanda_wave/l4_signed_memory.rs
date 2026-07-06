@@ -7,12 +7,18 @@ pub(crate) struct L4SignedMemorySignal {
     pub(crate) signed_weight: f32,
     pub(crate) accepted: u32,
     pub(crate) rejected: u32,
+    pub(crate) transition_attraction: f32,
+    pub(crate) transition_repulsion: f32,
+    pub(crate) transition_attract_count: u32,
+    pub(crate) transition_repel_count: u32,
     pub(crate) reason: &'static str,
 }
 
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct L4SignedMemoryInput<'a> {
     pub(crate) context: &'a [String],
+    pub(crate) source: &'a str,
+    pub(crate) operation: &'a str,
     pub(crate) word: &'a str,
     pub(crate) usage: &'a UsagePriorSnapshot,
 }
@@ -24,16 +30,29 @@ pub(crate) fn l4_signed_memory_signal(input: L4SignedMemoryInput<'_>) -> L4Signe
     let context_rejected = input
         .usage
         .context_rejected_word_prior(input.context, input.word);
+    let transition =
+        input
+            .usage
+            .transition_signal(input.context, input.source, input.operation, input.word);
     let accepted = input.usage.accepted_word_count(input.word);
     let rejected = input.usage.rejected_word_count(input.word);
 
-    let attraction = (word_prior * 0.70 + context_prior * 1.20 + accepted.min(24) as f32 * 0.014)
+    let attraction = (word_prior * 0.70
+        + context_prior * 1.20
+        + transition.attraction * 0.85
+        + accepted.min(24) as f32 * 0.014)
         .clamp(0.0, 0.62);
-    let repulsion =
-        (rejected_prior * 1.25 + context_rejected * 1.65 + rejected.min(24) as f32 * 0.016)
-            .clamp(0.0, 0.72);
+    let repulsion = (rejected_prior * 1.25
+        + context_rejected * 1.65
+        + transition.repulsion * 0.95
+        + rejected.min(24) as f32 * 0.016)
+        .clamp(0.0, 0.72);
     let signed_weight = (attraction - repulsion).clamp(-1.0, 1.0);
-    let reason = if repulsion > attraction && rejected > 0 {
+    let reason = if transition.repulsion > transition.attraction && transition.repel_count > 0 {
+        "learned_transition_repels"
+    } else if transition.attraction > transition.repulsion && transition.attract_count > 0 {
+        "learned_transition_attracts"
+    } else if repulsion > attraction && rejected > 0 {
         "learned_state_repels"
     } else if attraction > repulsion && accepted > 0 {
         "learned_state_attracts"
@@ -49,6 +68,10 @@ pub(crate) fn l4_signed_memory_signal(input: L4SignedMemoryInput<'_>) -> L4Signe
         signed_weight,
         accepted,
         rejected,
+        transition_attraction: transition.attraction,
+        transition_repulsion: transition.repulsion,
+        transition_attract_count: transition.attract_count,
+        transition_repel_count: transition.repel_count,
         reason,
     }
 }
@@ -72,13 +95,15 @@ mod tests {
 
         let signal = l4_signed_memory_signal(L4SignedMemoryInput {
             context: &context,
+            source: "ime",
+            operation: "completion",
             word: "дождь",
             usage: &usage,
         });
 
         assert!(signal.attraction > signal.repulsion);
         assert!(signal.signed_weight > 0.0);
-        assert_eq!(signal.reason, "learned_state_attracts");
+        assert_eq!(signal.reason, "learned_transition_attracts");
     }
 
     #[test]
@@ -91,11 +116,15 @@ mod tests {
 
         let bad = l4_signed_memory_signal(L4SignedMemoryInput {
             context: &context,
+            source: "autocorrect",
+            operation: "replacement",
             word: "отвравим",
             usage: &usage,
         });
         let good = l4_signed_memory_signal(L4SignedMemoryInput {
             context: &context,
+            source: "autocorrect",
+            operation: "replacement",
             word: "отравим",
             usage: &usage,
         });

@@ -83,6 +83,7 @@ fn refresh_live_status_fields(value: &mut Value) {
     value["cell_scoreboard"] = scoreboard_json(&scoreboard);
     value["resonance_memory"] = resonance_memory_json(&resonance_memory);
     value["l4_state_map"] = l4_state_map_json();
+    value["candidate_gate"] = lay::nanda_wave::candidate_gate::live_candidate_gate_stats_json();
     value["preedit_live"] = preedit_live_json();
     value["candidate_quality"] = candidate_quality::report_json();
     value["live_scoreboard_refreshed_at_unix"] = json!(lay::time::unix_timestamp());
@@ -221,6 +222,7 @@ fn build_status_json(full: bool) -> io::Result<serde_json::Value> {
         "cell_scoreboard": scoreboard_json(&scoreboard),
         "resonance_memory": resonance_memory_json(&resonance_memory),
         "l4_state_map": l4_state_map_json(),
+        "candidate_gate": lay::nanda_wave::candidate_gate::live_candidate_gate_stats_json(),
         "preedit_live": preedit_live_json(),
         "candidate_quality": candidate_quality::report_json(),
         "sources": suite.sources.iter().map(|source| {
@@ -620,6 +622,12 @@ struct StatusUsageCounts {
     rejected_words: BTreeMap<String, u32>,
     #[serde(default)]
     rejected_context_words: BTreeMap<String, u32>,
+    #[serde(default)]
+    transition_observed: BTreeMap<String, u32>,
+    #[serde(default)]
+    transition_attract: BTreeMap<String, u32>,
+    #[serde(default)]
+    transition_repel: BTreeMap<String, u32>,
 }
 
 fn l4_state_map_json() -> Value {
@@ -631,10 +639,29 @@ fn l4_state_map_json() -> Value {
         .chain(counts.rejected_words.keys())
         .collect::<BTreeSet<_>>()
         .len();
+    let transition_states = counts
+        .transition_observed
+        .keys()
+        .chain(counts.transition_attract.keys())
+        .chain(counts.transition_repel.keys())
+        .collect::<BTreeSet<_>>()
+        .len();
+    let transition_signed_states = counts
+        .transition_attract
+        .keys()
+        .chain(counts.transition_repel.keys())
+        .collect::<BTreeSet<_>>()
+        .len();
+    let transition_conflict_states = counts
+        .transition_attract
+        .keys()
+        .filter(|key| counts.transition_repel.contains_key(*key))
+        .count();
     let neutral = word_states.saturating_sub(signed_word_states);
+    let transition_neutral = transition_states.saturating_sub(transition_signed_states);
     json!({
         "kind": "l4_signed_state_map",
-        "source": "word_usage_events.jsonl -> usage_counts v4",
+        "source": "word_usage_events.jsonl -> usage_counts v5",
         "source_bytes": source_bytes,
         "parsed_events": parsed_events,
         "word_states": word_states,
@@ -643,10 +670,24 @@ fn l4_state_map_json() -> Value {
         "rejected_word_states": counts.rejected_words.len(),
         "rejected_context_word_states": counts.rejected_context_words.len(),
         "signed_word_states": signed_word_states,
+        "transition_states": transition_states,
+        "transition_observed_states": counts.transition_observed.len(),
+        "transition_attract_states": counts.transition_attract.len(),
+        "transition_repel_states": counts.transition_repel.len(),
+        "transition_signed_states": transition_signed_states,
+        "transition_conflict_states": transition_conflict_states,
         "polarity": {
             "attract": counts.accepted_words.len(),
             "neutral": neutral,
             "repel": counts.rejected_words.len()
+        },
+        "transition_shadow": {
+            "mode": "self_shadow_over_usage_counts",
+            "state_hits": transition_signed_states,
+            "state_repels": counts.transition_repel.len(),
+            "state_false_push": transition_conflict_states,
+            "neutral": transition_neutral,
+            "ready": transition_signed_states > 0
         },
         "contract": {
             "positive_trace": "accepted_ime / accepted_fix target",

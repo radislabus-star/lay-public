@@ -1,3 +1,4 @@
+use super::l4_signed_memory::{l4_signed_memory_signal, L4SignedMemoryInput};
 use super::options::WaveOptions;
 use super::pattern_wave::{evaluate_pattern_wave, PATTERN_WAVE_CELL};
 use super::signal::{LayerTrace, WaveDecision, WordCandidate};
@@ -254,6 +255,7 @@ fn l3_rank_score(
 ) -> f32 {
     let mut value = confidence(candidate);
     value += candidate_usage_context_prior(original, &candidate.text);
+    value += candidate_l4_signed_bias(original, candidate);
     if let Some(report) = phrase_gate_report(original, &candidate.text, phrase_memory) {
         match report.decision {
             l3_phrase_gate::L3PhraseGateDecision::Support => {
@@ -487,7 +489,33 @@ fn adjusted_confidence(
             }
         }
     }
+    value += candidate_l4_signed_bias(original, candidate);
     value.clamp(0.0, 1.0)
+}
+
+fn candidate_l4_signed_bias(original: &str, candidate: &WordCandidate) -> f32 {
+    let Some(word) = last_token(&candidate.text) else {
+        return 0.0;
+    };
+    let context = previous_context_tokens(original);
+    let usage = super::usage_prior::cached_usage_prior_snapshot();
+    let signal = l4_signed_memory_signal(L4SignedMemoryInput {
+        context: &context,
+        source: candidate.source,
+        operation: candidate_operation(candidate.source),
+        word,
+        usage: &usage,
+    });
+    (signal.signed_weight * 0.080).clamp(-0.080, 0.080)
+}
+
+fn candidate_operation(source: &str) -> &'static str {
+    match source {
+        "LayoutWordCell32" => "layout",
+        "BoundaryCell32" => "boundary",
+        source if source == super::l2::L2_SURFACE_COMPLETION_CELL => "completion",
+        _ => "replacement",
+    }
 }
 
 fn mesh_summary(confidence: f32, original: &str, candidate: &str) -> String {
