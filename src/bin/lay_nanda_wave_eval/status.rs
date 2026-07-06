@@ -162,6 +162,27 @@ fn build_status_json(full: bool) -> io::Result<serde_json::Value> {
             "enabled_by_default": false,
             "shadow_runtime": false,
             "apply_runtime": false,
+            "admission": {
+                "live_authority": false,
+                "reason": "LLMWave is admitted by explicit promotion gate, not by memory presence alone",
+                "gate_command": "lay-nanda-wave-eval --llmwave-promotion-gate --train-corpus corpus/project_gutenberg_ru.txt --include-dirty-train",
+                "thresholds": {
+                    "min_prediction_points": super::LLMWAVE_PROMOTION_MIN_POINTS,
+                    "min_records": super::LLMWAVE_PROMOTION_MIN_RECORDS,
+                    "min_vocabulary": super::LLMWAVE_PROMOTION_MIN_VOCABULARY,
+                    "min_ready_percent": super::LLMWAVE_PROMOTION_MIN_READY_PERCENT,
+                    "min_top1_percent": super::LLMWAVE_PROMOTION_MIN_TOP1_PERCENT,
+                    "min_top3_percent": super::LLMWAVE_PROMOTION_MIN_TOP3_PERCENT
+                },
+                "stages": [
+                    "books/corpus",
+                    "compact wave memory",
+                    "dirty eval",
+                    "shadow",
+                    "promotion",
+                    "live"
+                ]
+            },
             "contract": {
                 "model_id": llmwave::contract().model_id,
                 "schema_id": llmwave::contract().schema_id,

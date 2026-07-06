@@ -26,6 +26,13 @@ mod status;
 
 const DEFAULT_LLMWAVE_SEED: &str = "data/nanda_llmwave_seed_phrases.txt";
 const DEFAULT_LLMWAVE_LIVE_MIN_COUNT: usize = 2;
+const DEFAULT_LLMWAVE_PROMOTION_MAX_LINES: usize = 500;
+const LLMWAVE_PROMOTION_MIN_POINTS: usize = 100;
+const LLMWAVE_PROMOTION_MIN_RECORDS: usize = 100;
+const LLMWAVE_PROMOTION_MIN_VOCABULARY: usize = 50;
+const LLMWAVE_PROMOTION_MIN_READY_PERCENT: f32 = 90.0;
+const LLMWAVE_PROMOTION_MIN_TOP1_PERCENT: f32 = 50.0;
+const LLMWAVE_PROMOTION_MIN_TOP3_PERCENT: f32 = 85.0;
 const L2_SURFACE_MOTIF_CELL: &str = "L2SurfaceMotifCell32";
 const L2_SURFACE_COMPLETION_CELL: &str = "L2SurfaceCompletionCell32";
 
@@ -118,6 +125,15 @@ fn main() -> io::Result<()> {
             .and_then(|value| value.parse::<usize>().ok())
             .unwrap_or(20_000);
         print_llmwave_dirty_report(train.as_deref(), include_dirty_train, limit, max_lines)?;
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--llmwave-promotion-gate") {
+        let train = arg_value(&args, "--train-corpus").map(PathBuf::from);
+        let include_dirty_train = args.iter().any(|arg| arg == "--include-dirty-train");
+        let max_lines = arg_value(&args, "--max-lines")
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(DEFAULT_LLMWAVE_PROMOTION_MAX_LINES);
+        print_llmwave_promotion_gate(train.as_deref(), include_dirty_train, max_lines)?;
         return Ok(());
     }
     if args.iter().any(|arg| arg == "--learning-shadow-report") {
@@ -280,7 +296,7 @@ fn main() -> io::Result<()> {
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --l2-phase-coverage-recent [--limit N] [--candidate-limit N] [--max-examples N] | --l2-candidate-phase-shadow-recent [--l2-phase-memory PATH] [--limit N] [--max-examples N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --llmwave-corpus-report PATH [--test-corpus PATH] [--max-lines N] | --llmwave-dirty-report [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --l2-phase-coverage-recent [--limit N] [--candidate-limit N] [--max-examples N] | --l2-candidate-phase-shadow-recent [--l2-phase-memory PATH] [--limit N] [--max-examples N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --llmwave-corpus-report PATH [--test-corpus PATH] [--max-lines N] | --llmwave-dirty-report [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --llmwave-promotion-gate [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
         );
         return Ok(());
     }
@@ -448,6 +464,27 @@ struct LlmWaveCorpusExample {
     top3: Vec<String>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct LlmWavePromotionGate {
+    verdict: LlmWavePromotionVerdict,
+    reason: &'static str,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum LlmWavePromotionVerdict {
+    PassShadow,
+    Watch,
+}
+
+impl LlmWavePromotionVerdict {
+    fn as_str(self) -> &'static str {
+        match self {
+            Self::PassShadow => "PASS-shadow",
+            Self::Watch => "WATCH",
+        }
+    }
+}
+
 fn print_llmwave_corpus_report(
     train_path: &Path,
     test_path: Option<&Path>,
@@ -496,6 +533,35 @@ fn print_llmwave_dirty_report(
         max_lines,
     );
     print_llmwave_corpus_report_rows("llmwave_dirty_report", &report);
+    Ok(())
+}
+
+fn print_llmwave_promotion_gate(
+    train_path: Option<&Path>,
+    include_dirty_train: bool,
+    max_lines: usize,
+) -> io::Result<()> {
+    let dirty = dirty_log_corpus_text(max_lines)?;
+    let (mut train_input, mut train_text) = match train_path {
+        Some(path) => (path.display().to_string(), std::fs::read_to_string(path)?),
+        None => ("dirty_logs".to_string(), dirty.clone()),
+    };
+    if include_dirty_train && train_path.is_some() {
+        train_input = format!("{train_input}+dirty_logs");
+        train_text.push('\n');
+        train_text.push_str(&dirty);
+    }
+    let report = llmwave_corpus_report_from_text(
+        train_input,
+        train_text,
+        "dirty_logs".to_string(),
+        dirty,
+        0,
+        max_lines,
+    );
+    let gate = llmwave_promotion_gate(&report);
+    println!("llmwave_promotion_gate:");
+    print_llmwave_promotion_gate_rows(&report, gate, "  ");
     Ok(())
 }
 
@@ -602,6 +668,7 @@ fn llmwave_corpus_report_from_text(
 }
 
 fn print_llmwave_corpus_report_rows(label: &str, report: &LlmWaveCorpusReport) {
+    let gate = llmwave_promotion_gate(report);
     println!("{label}:");
     println!("  train_input: {}", report.train_input);
     println!("  test_input: {}", report.test_input);
@@ -625,6 +692,7 @@ fn print_llmwave_corpus_report_rows(label: &str, report: &LlmWaveCorpusReport) {
         report.avg_expected_score,
         report.avg_top_score
     );
+    print_llmwave_promotion_gate_rows(report, gate, "  ");
     println!("  misses_examples:");
     if report.examples.is_empty() {
         println!("    none");
@@ -640,6 +708,89 @@ fn print_llmwave_corpus_report_rows(label: &str, report: &LlmWaveCorpusReport) {
             example.top3
         );
     }
+}
+
+fn llmwave_promotion_gate(report: &LlmWaveCorpusReport) -> LlmWavePromotionGate {
+    if report.prediction_points < LLMWAVE_PROMOTION_MIN_POINTS {
+        return LlmWavePromotionGate {
+            verdict: LlmWavePromotionVerdict::Watch,
+            reason: "not_enough_prediction_points",
+        };
+    }
+    if report.records < LLMWAVE_PROMOTION_MIN_RECORDS {
+        return LlmWavePromotionGate {
+            verdict: LlmWavePromotionVerdict::Watch,
+            reason: "not_enough_memory_records",
+        };
+    }
+    if report.vocabulary < LLMWAVE_PROMOTION_MIN_VOCABULARY {
+        return LlmWavePromotionGate {
+            verdict: LlmWavePromotionVerdict::Watch,
+            reason: "not_enough_vocabulary",
+        };
+    }
+    if corpus_percent(report.ready_points, report.prediction_points)
+        < LLMWAVE_PROMOTION_MIN_READY_PERCENT
+    {
+        return LlmWavePromotionGate {
+            verdict: LlmWavePromotionVerdict::Watch,
+            reason: "ready_coverage_too_low",
+        };
+    }
+    if corpus_percent(report.top1_hits, report.prediction_points)
+        < LLMWAVE_PROMOTION_MIN_TOP1_PERCENT
+    {
+        return LlmWavePromotionGate {
+            verdict: LlmWavePromotionVerdict::Watch,
+            reason: "top1_too_low",
+        };
+    }
+    if corpus_percent(report.top3_hits, report.prediction_points)
+        < LLMWAVE_PROMOTION_MIN_TOP3_PERCENT
+    {
+        return LlmWavePromotionGate {
+            verdict: LlmWavePromotionVerdict::Watch,
+            reason: "top3_too_low",
+        };
+    }
+    LlmWavePromotionGate {
+        verdict: LlmWavePromotionVerdict::PassShadow,
+        reason: "dirty_eval_passed_shadow_thresholds",
+    }
+}
+
+fn print_llmwave_promotion_gate_rows(
+    report: &LlmWaveCorpusReport,
+    gate: LlmWavePromotionGate,
+    indent: &str,
+) {
+    println!("{indent}promotion_gate:");
+    println!("{indent}  verdict: {}", gate.verdict.as_str());
+    println!("{indent}  reason: {}", gate.reason);
+    println!("{indent}  live_authority: false");
+    println!("{indent}  live_authority_reason: requires explicit apply config and separate runtime proof");
+    println!("{indent}  thresholds:");
+    println!(
+        "{indent}    min_prediction_points={} min_records={} min_vocabulary={}",
+        LLMWAVE_PROMOTION_MIN_POINTS,
+        LLMWAVE_PROMOTION_MIN_RECORDS,
+        LLMWAVE_PROMOTION_MIN_VOCABULARY
+    );
+    println!(
+        "{indent}    min_ready={:.2}% min_top1={:.2}% min_top3={:.2}%",
+        LLMWAVE_PROMOTION_MIN_READY_PERCENT,
+        LLMWAVE_PROMOTION_MIN_TOP1_PERCENT,
+        LLMWAVE_PROMOTION_MIN_TOP3_PERCENT
+    );
+    println!(
+        "{indent}  actual: prediction_points={} records={} vocabulary={} ready={:.2}% top1={:.2}% top3={:.2}%",
+        report.prediction_points,
+        report.records,
+        report.vocabulary,
+        corpus_percent(report.ready_points, report.prediction_points),
+        corpus_percent(report.top1_hits, report.prediction_points),
+        corpus_percent(report.top3_hits, report.prediction_points)
+    );
 }
 
 fn dirty_log_corpus_text(max_lines: usize) -> io::Result<String> {
@@ -2239,5 +2390,54 @@ mod tests {
         assert_eq!(lines.len(), 2);
         assert!(lines.contains(&"проверить ввод".to_string()));
         assert!(lines.contains(&"на улице дождь".to_string()));
+    }
+
+    #[test]
+    fn llmwave_promotion_gate_blocks_tiny_reports() {
+        let report = LlmWaveCorpusReport {
+            train_input: "train".to_string(),
+            test_input: "test".to_string(),
+            train_lines: 1,
+            test_lines: 1,
+            records: LLMWAVE_PROMOTION_MIN_RECORDS,
+            vocabulary: LLMWAVE_PROMOTION_MIN_VOCABULARY,
+            prediction_points: LLMWAVE_PROMOTION_MIN_POINTS - 1,
+            ready_points: LLMWAVE_PROMOTION_MIN_POINTS - 1,
+            top1_hits: LLMWAVE_PROMOTION_MIN_POINTS - 1,
+            top3_hits: LLMWAVE_PROMOTION_MIN_POINTS - 1,
+            misses: 0,
+            avg_expected_score: 1.0,
+            avg_top_score: 1.0,
+            examples: Vec::new(),
+        };
+
+        let gate = llmwave_promotion_gate(&report);
+        assert_eq!(gate.verdict, LlmWavePromotionVerdict::Watch);
+        assert_eq!(gate.reason, "not_enough_prediction_points");
+    }
+
+    #[test]
+    fn llmwave_promotion_gate_promotes_shadow_only_after_thresholds() {
+        let points = LLMWAVE_PROMOTION_MIN_POINTS;
+        let report = LlmWaveCorpusReport {
+            train_input: "train".to_string(),
+            test_input: "test".to_string(),
+            train_lines: 20,
+            test_lines: 20,
+            records: LLMWAVE_PROMOTION_MIN_RECORDS,
+            vocabulary: LLMWAVE_PROMOTION_MIN_VOCABULARY,
+            prediction_points: points,
+            ready_points: points,
+            top1_hits: points,
+            top3_hits: points,
+            misses: 0,
+            avg_expected_score: 1.0,
+            avg_top_score: 1.0,
+            examples: Vec::new(),
+        };
+
+        let gate = llmwave_promotion_gate(&report);
+        assert_eq!(gate.verdict, LlmWavePromotionVerdict::PassShadow);
+        assert_eq!(gate.reason, "dirty_eval_passed_shadow_thresholds");
     }
 }
