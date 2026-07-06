@@ -8,6 +8,12 @@ use super::trace;
 use lay::correction_core::CorrectionMode;
 use lay::input_gate::{decide_input_gate, InputGateAction, InputGateRequest, InputGateTrigger};
 
+struct ImeAutocorrectDecision {
+    replacement: String,
+    action: lay::text_edit::EditAction,
+    input_gate: Option<lay::action_log::RecentActionGateTrace>,
+}
+
 pub(super) struct ActiveCompositionCommit {
     with_space: bool,
     suffix: String,
@@ -145,12 +151,19 @@ impl LayIbusEngine {
             text.push(' ');
         }
         let decision_started_at = Instant::now();
-        let text = if autocorrect {
-            self.autocorrect_active_composition_text(&text)
-                .unwrap_or(text)
-        } else {
-            text
-        };
+        if autocorrect {
+            if let Some(decision) = self.autocorrect_active_composition_decision(&text) {
+                lay::action_log::record_candidate_edit_action_before_apply(
+                    &decision.action,
+                    decision.input_gate.clone(),
+                );
+                if decision.action.allow_apply() {
+                    text = decision.replacement;
+                } else {
+                    trace::record(r#"{"kind":"ibus_active_composition_autocorrect_blocked"}"#);
+                }
+            }
+        }
         let decision_ms = decision_started_at.elapsed().as_micros() as u64;
         let output_started_at = Instant::now();
         Self::commit_text(emitter, make_ibus_text(text.clone()))
@@ -175,15 +188,19 @@ impl LayIbusEngine {
     }
 
     pub(super) fn autocorrect_active_composition_text(&self, text: &str) -> Option<String> {
-        self.input_gate_active_composition_text(text)
+        self.autocorrect_active_composition_decision(text)
+            .map(|decision| decision.replacement)
     }
 
     #[cfg(test)]
     pub(super) fn autocorrect_committed_tail_text(&self, text: &str) -> Option<String> {
-        self.input_gate_active_composition_text(text)
+        self.autocorrect_active_composition_text(text)
     }
 
-    fn input_gate_active_composition_text(&self, text: &str) -> Option<String> {
+    fn autocorrect_active_composition_decision(
+        &self,
+        text: &str,
+    ) -> Option<ImeAutocorrectDecision> {
         let (gate_text, active_prefix) = self.active_composition_gate_text(text);
         let gate_config = ActiveCompositionGateConfig::from_engine(self);
         let decision = decide_input_gate(InputGateRequest {
@@ -203,12 +220,46 @@ impl LayIbusEngine {
         if replacement == gate_text {
             return None;
         }
-        if active_prefix.is_empty() {
-            return Some(replacement);
-        }
-        replacement
-            .strip_prefix(&active_prefix)
-            .map(|replacement_tail| replacement_tail.to_string())
+        let replacement = if active_prefix.is_empty() {
+            replacement
+        } else {
+            replacement.strip_prefix(&active_prefix)?.to_string()
+        };
+        let plan = lay::text_edit::plan_text_replacement(text, &replacement)?;
+        let input_gate = decision
+            .trace
+            .as_ref()
+            .map(lay::action_log::RecentActionGateTrace::from_input_gate);
+        let source_id = input_gate
+            .as_ref()
+            .and_then(|trace| trace.selected_source_id.as_deref());
+        let error_class = input_gate
+            .as_ref()
+            .and_then(|trace| trace.selected_error_class.as_deref());
+        let confidence_milli = input_gate
+            .as_ref()
+            .and_then(|trace| trace.scoreboard.as_ref())
+            .and_then(|scoreboard| scoreboard.selected_bayes_posterior_milli)
+            .unwrap_or(0);
+        let transition = input_gate
+            .as_ref()
+            .map(lay::action_log::RecentActionGateTrace::selected_transition_audit)
+            .unwrap_or_default();
+        let action = lay::text_edit::authorize_replacement_with_transition(
+            "ibus-active-composition",
+            confidence_milli,
+            text,
+            &replacement,
+            plan,
+            source_id,
+            error_class,
+            transition,
+        );
+        Some(ImeAutocorrectDecision {
+            replacement,
+            action,
+            input_gate,
+        })
     }
 
     fn active_composition_gate_text(&self, text: &str) -> (String, String) {

@@ -190,6 +190,15 @@ assert_text_mutation_call_owners() {
   fi
 }
 
+assert_file_contains() {
+  local file="$1"
+  local pattern="$2"
+  local reason="$3"
+  if ! search_fixed "$pattern" "$file" >/dev/null; then
+    error "$reason"
+  fi
+}
+
 assert_single_owner "fn unix_timestamp(" "src/time.rs"
 assert_single_owner "fn is_cyrillic_letter(" "src/keyboard/text_input/script.rs"
 assert_single_owner "fn mix64(" "src/nanda_wave/mode.rs"
@@ -274,6 +283,22 @@ assert_text_mutation_call_owners \
   "pending committed-tail autocorrect must stay inside approved IME boundary owners" \
   src/bin/lay_ibus_engine/committed_tail.rs \
   src/bin/lay_ibus_engine/ibus_interface.rs
+
+for text_mutation_owner in \
+  src/bin/lay_daemon/typing_assist_runtime/output/minimal.rs \
+  src/bin/lay_daemon/typing_assist_runtime/output/ime.rs \
+  src/bin/lay_daemon/correction_runtime/output/text_replace.rs \
+  src/bin/lay_daemon/correction_runtime/output/native.rs \
+  src/bin/lay_daemon/enter_autocorrect_runtime.rs \
+  src/bin/lay_daemon/auto_undo_runtime.rs \
+  src/bin/lay_ibus_engine/state.rs \
+  src/bin/lay_ibus_engine/composition_commit.rs
+do
+  assert_file_contains \
+    "$text_mutation_owner" \
+    "record_candidate_edit_action_before_apply" \
+    "$text_mutation_owner can mutate visible text and must log an EditAction before apply"
+done
 
 assert_max_lines src/bin/lay_daemon.rs 240
 assert_max_lines src/bin/lay_daemon/action_log_runtime.rs 40

@@ -22,6 +22,8 @@ pub fn authorize_replacement(
     )
 }
 
+// This is the public text-edit gate boundary; keep metadata explicit at call sites.
+#[allow(clippy::too_many_arguments)]
 pub fn authorize_replacement_with_transition(
     source: &str,
     confidence_milli: i16,

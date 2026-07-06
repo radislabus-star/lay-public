@@ -1,5 +1,6 @@
 use lay::config::LayConfig;
 use lay::manual_toggle::VisibleTailSource;
+use lay::text_edit::{tail_chars, TextReplacement};
 use std::time::{Duration, Instant};
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
@@ -212,6 +213,32 @@ impl LayIbusEngine {
         let backspaces = request.backspaces;
         let suppress_next_autocorrect = request.suppress_next_autocorrect;
         let text = request.text;
+        let original_text = tail_chars(&self.tail_buffer, backspaces as usize);
+        let plan = TextReplacement {
+            move_left: 0,
+            backspaces,
+            insert: text.clone(),
+            move_right: 0,
+        };
+        let edit_action = lay::text_edit::authorize_replacement(
+            "ibus-committed-tail",
+            1000,
+            &original_text,
+            &text,
+            plan,
+            Some(committed_tail_source_id(source)),
+            None,
+        );
+        lay::action_log::record_candidate_edit_action_before_apply(&edit_action, None);
+        if !edit_action.allow_apply() {
+            trace::record_committed_tail_replace(
+                source,
+                edit_action.safety_reason(),
+                backspaces,
+                &text,
+            );
+            return Ok(false);
+        }
         let now = Instant::now();
         self.last_commit_at = Some(now);
         self.publish_active_path_preserve_handoff(now + Duration::from_millis(700));
@@ -335,6 +362,14 @@ fn warm_runtime(config: &LayConfig) {
             lay::lem::warm_up();
             std::thread::spawn(lay::nanda_wave::warm_up);
         }
+    }
+}
+
+fn committed_tail_source_id(source: VisibleTailSource) -> &'static str {
+    match source {
+        VisibleTailSource::DaemonWordBuffer => "daemon_word_buffer",
+        VisibleTailSource::ImeActiveComposition => "ime_active_composition",
+        VisibleTailSource::ImeCommittedTail => "ime_committed_tail",
     }
 }
 

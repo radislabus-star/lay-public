@@ -21,6 +21,25 @@ pub(super) fn handle_pending_auto_undo(
         log("⚠ auto-undo skipped before delete: edit plan invariant failed");
         return None;
     }
+    let edit_action = lay::text_edit::authorize_replacement(
+        "auto-undo",
+        1000,
+        &undo.replacement,
+        &undo.original,
+        plan.clone(),
+        Some("auto_undo"),
+        None,
+    );
+    lay::action_log::record_candidate_edit_action_before_apply(&edit_action, None);
+    if !edit_action.allow_apply() {
+        log(&format!(
+            "⚠ auto-undo blocked by EditAction safety: reason={} original={:?} replacement={:?}",
+            edit_action.safety_reason(),
+            undo.replacement,
+            undo.original
+        ));
+        return None;
+    }
 
     if should_try_ime_text_backend()
         && try_ime_replace_tail(&undo.replacement, &undo.original, "auto-undo").unwrap_or(false)
