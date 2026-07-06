@@ -7,6 +7,9 @@
 use crate::keyboard::is_cyrillic_letter;
 
 use super::l2::{self, L2ImeWordCandidateKind};
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::OnceLock;
+use std::time::Instant;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LiveCompletionRequest<'a> {
@@ -25,15 +28,30 @@ pub struct LiveCompletionCandidate {
     pub source: &'static str,
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+struct LiveCandidateGateStats {
+    requests: u64,
+    raw_candidates: u64,
+    returned_candidates: u64,
+    no_candidate: u64,
+    usage_supported: u64,
+    l3_supported: u64,
+    total_us: u64,
+    max_us: u64,
+}
+
 pub fn live_completion_candidates(
     request: LiveCompletionRequest<'_>,
 ) -> Vec<LiveCompletionCandidate> {
+    let started = Instant::now();
     if request.limit == 0 || request.max_suffix_chars == 0 {
+        record_live_gate_stats(started, 0, 0, 0, 0);
         return Vec::new();
     }
     let partial = request.partial.to_lowercase();
     let partial_len = partial.chars().count();
     if !(2..=18).contains(&partial_len) || !partial.chars().all(is_cyrillic_letter) {
+        record_live_gate_stats(started, 0, 0, 0, 0);
         return Vec::new();
     }
 
@@ -70,7 +88,10 @@ pub fn live_completion_candidates(
         request.limit.saturating_mul(4).max(request.limit),
     ));
 
+    let raw_count = raw.len();
     let context_tokens = super::llmwave::tokenize(request.context_prefix);
+    let mut usage_supported = 0_u64;
+    let mut l3_supported = 0_u64;
     let mut candidates = raw
         .into_iter()
         .filter(|candidate| candidate.kind == L2ImeWordCandidateKind::Completion)
@@ -94,6 +115,12 @@ pub fn live_completion_candidates(
                 candidate.l2_overlap,
                 candidate.motif_overlap,
             );
+            let l3_score = live_l3_context_score(
+                &context_tokens,
+                &candidate.surface,
+                partial_len,
+                request.allow_short_lexical,
+            );
 
             if !live_completion_has_authority(LiveCompletionAuthority {
                 partial_len,
@@ -109,14 +136,24 @@ pub fn live_completion_candidates(
                 return None;
             }
 
-            let score = (0.22
+            if usage >= 0.035 || context_usage >= 0.025 || accepted >= 2 {
+                usage_supported = usage_supported.saturating_add(1);
+            }
+            if l3_score.is_some() {
+                l3_supported = l3_supported.saturating_add(1);
+            }
+
+            let base_score = 0.22
                 + structural
-                + usage * 1.40
-                + context_usage * 1.85
-                + (accepted.min(12) as f32 * 0.012)
+                + usage * 1.65
+                + context_usage * 2.10
+                + (accepted.min(20) as f32 * 0.016)
                 + if common { 0.055 } else { 0.0 }
                 + if hot { 0.045 } else { 0.0 }
-                + (partial_len.min(8) as f32 * 0.018))
+                + (partial_len.min(8) as f32 * 0.018);
+            let score = l3_score
+                .map(|score| score.max(base_score))
+                .unwrap_or(base_score)
                 .clamp(0.0, 1.0);
 
             Some(LiveCompletionCandidate {
@@ -142,7 +179,135 @@ pub fn live_completion_candidates(
     });
     candidates.dedup_by(|left, right| left.surface == right.surface || left.suffix == right.suffix);
     candidates.truncate(request.limit);
+    record_live_gate_stats(
+        started,
+        raw_count as u64,
+        candidates.len() as u64,
+        usage_supported,
+        l3_supported,
+    );
     candidates
+}
+
+pub fn live_candidate_gate_stats_json() -> serde_json::Value {
+    let stats = live_candidate_gate_stats();
+    let avg_us = if stats.requests == 0 {
+        0
+    } else {
+        stats.total_us / stats.requests
+    };
+    serde_json::json!({
+        "requests": stats.requests,
+        "raw_candidates": stats.raw_candidates,
+        "returned_candidates": stats.returned_candidates,
+        "no_candidate": stats.no_candidate,
+        "usage_supported": stats.usage_supported,
+        "l3_supported": stats.l3_supported,
+        "avg_us": avg_us,
+        "max_us": stats.max_us,
+    })
+}
+
+fn live_candidate_gate_stats() -> LiveCandidateGateStats {
+    let stats = live_stats();
+    LiveCandidateGateStats {
+        requests: stats.requests.load(Ordering::Relaxed),
+        raw_candidates: stats.raw_candidates.load(Ordering::Relaxed),
+        returned_candidates: stats.returned_candidates.load(Ordering::Relaxed),
+        no_candidate: stats.no_candidate.load(Ordering::Relaxed),
+        usage_supported: stats.usage_supported.load(Ordering::Relaxed),
+        l3_supported: stats.l3_supported.load(Ordering::Relaxed),
+        total_us: stats.total_us.load(Ordering::Relaxed),
+        max_us: stats.max_us.load(Ordering::Relaxed),
+    }
+}
+
+fn live_l3_context_score(
+    prefix_tokens: &[String],
+    word: &str,
+    partial_len: usize,
+    allow_short_lexical: bool,
+) -> Option<f32> {
+    let min_lexical_prefix = if allow_short_lexical { 2 } else { 4 };
+    let word_len = word.chars().count();
+    let lexical_backoff_allowed = partial_len >= min_lexical_prefix
+        && (partial_len >= 4 || word_len.saturating_sub(partial_len) <= 5);
+    let usage_prior = super::usage_prior::word_usage_prior_cached(word);
+    let context_usage_prior =
+        super::usage_prior::context_word_usage_prior_cached(prefix_tokens, word);
+    if super::llmwave::default_memory_is_warm() {
+        return super::llmwave::with_default_memory(|memory| {
+            if let Some(report) = memory.score_next_token_report(prefix_tokens, word) {
+                return (report.score >= 0.18).then_some(
+                    (0.62 + report.score * 0.34 + usage_prior + context_usage_prior)
+                        .clamp(0.0, 1.0),
+                );
+            }
+            lexical_backoff_allowed.then_some(
+                (0.28 + partial_len as f32 * 0.035 + usage_prior + context_usage_prior)
+                    .clamp(0.0, 0.70),
+            )
+        });
+    }
+    lexical_backoff_allowed.then_some(
+        (0.28 + partial_len as f32 * 0.035 + usage_prior + context_usage_prior).clamp(0.0, 0.70),
+    )
+}
+
+fn record_live_gate_stats(
+    started: Instant,
+    raw_candidates: u64,
+    returned_candidates: u64,
+    usage_supported: u64,
+    l3_supported: u64,
+) {
+    let elapsed_us = started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64;
+    let stats = live_stats();
+    stats.requests.fetch_add(1, Ordering::Relaxed);
+    stats
+        .raw_candidates
+        .fetch_add(raw_candidates, Ordering::Relaxed);
+    stats
+        .returned_candidates
+        .fetch_add(returned_candidates, Ordering::Relaxed);
+    if returned_candidates == 0 {
+        stats.no_candidate.fetch_add(1, Ordering::Relaxed);
+    }
+    stats
+        .usage_supported
+        .fetch_add(usage_supported, Ordering::Relaxed);
+    stats
+        .l3_supported
+        .fetch_add(l3_supported, Ordering::Relaxed);
+    stats.total_us.fetch_add(elapsed_us, Ordering::Relaxed);
+    update_max_atomic(&stats.max_us, elapsed_us);
+}
+
+fn live_stats() -> &'static LiveCandidateGateAtomicStats {
+    static STATS: OnceLock<LiveCandidateGateAtomicStats> = OnceLock::new();
+    STATS.get_or_init(LiveCandidateGateAtomicStats::default)
+}
+
+#[derive(Default)]
+struct LiveCandidateGateAtomicStats {
+    requests: AtomicU64,
+    raw_candidates: AtomicU64,
+    returned_candidates: AtomicU64,
+    no_candidate: AtomicU64,
+    usage_supported: AtomicU64,
+    l3_supported: AtomicU64,
+    total_us: AtomicU64,
+    max_us: AtomicU64,
+}
+
+fn update_max_atomic(target: &AtomicU64, value: u64) {
+    let mut current = target.load(Ordering::Relaxed);
+    while value > current {
+        match target.compare_exchange_weak(current, value, Ordering::Relaxed, Ordering::Relaxed) {
+            Ok(_) => break,
+            Err(next) => current = next,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -243,5 +408,17 @@ mod tests {
                 .is_some_and(|candidate| candidate.surface.starts_with("кандидат")),
             "кандидат should get foundation continuations first, got {candidates:?}"
         );
+    }
+
+    #[test]
+    fn live_gate_records_candidate_metrics_without_raw_text() {
+        let before = live_candidate_gate_stats();
+        let _ = live_completion_candidates(request("я хочу ", "пров"));
+        let after = live_candidate_gate_stats();
+
+        assert!(after.requests > before.requests);
+        assert!(after.raw_candidates >= before.raw_candidates);
+        assert!(after.returned_candidates >= before.returned_candidates);
+        assert!(after.total_us >= before.total_us);
     }
 }

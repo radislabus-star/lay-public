@@ -451,7 +451,6 @@ impl LayIbusEngine {
         }
 
         let max_suffix_chars = self.precognition_max_suffix_chars();
-        let prefix_tokens = lay::nanda_wave::llmwave::tokenize(prefix);
         let allow_short_lexical = self.config.active_correction_safety()
             == lay::config::CorrectionSafety::Experimental
             || !has_left_context;
@@ -482,17 +481,7 @@ impl LayIbusEngine {
         };
         let mut ranked = whole_word_candidates
             .into_iter()
-            .filter_map(|candidate| {
-                let score = l3_or_lexical_precognition_score(
-                    &prefix_tokens,
-                    &candidate.surface,
-                    partial_len,
-                    allow_short_lexical,
-                )
-                .map(|score| score.max(candidate.score))
-                .unwrap_or(candidate.score);
-                Some((candidate.suffix, score))
-            })
+            .map(|candidate| (candidate.suffix, candidate.score))
             .collect::<Vec<_>>();
         ranked.sort_by(|left, right| {
             right
@@ -737,37 +726,6 @@ fn preedit_suffix_context_and_word(tail: &str, suffix: &str) -> Option<(Vec<Stri
     );
     let context = lay::nanda_wave::llmwave::tokenize(prefix);
     Some((context, word))
-}
-
-fn l3_or_lexical_precognition_score(
-    prefix_tokens: &[String],
-    word: &str,
-    partial_len: usize,
-    allow_short_lexical: bool,
-) -> Option<f32> {
-    let min_lexical_prefix = if allow_short_lexical { 2 } else { 4 };
-    let word_len = word.chars().count();
-    let lexical_backoff_allowed = partial_len >= min_lexical_prefix
-        && (partial_len >= 4 || word_len.saturating_sub(partial_len) <= 5);
-    let usage_prior = lay::nanda_wave::cached_word_usage_prior(word);
-    let context_usage_prior = lay::nanda_wave::cached_context_word_usage_prior(prefix_tokens, word);
-    if lay::nanda_wave::llmwave::default_memory_is_warm() {
-        return lay::nanda_wave::llmwave::with_default_memory(|memory| {
-            if let Some(report) = memory.score_next_token_report(prefix_tokens, word) {
-                return (report.score >= 0.18).then_some(
-                    (0.62 + report.score * 0.34 + usage_prior + context_usage_prior)
-                        .clamp(0.0, 1.0),
-                );
-            }
-            lexical_backoff_allowed.then_some(
-                (0.28 + partial_len as f32 * 0.035 + usage_prior + context_usage_prior)
-                    .clamp(0.0, 0.70),
-            )
-        });
-    }
-    lexical_backoff_allowed.then_some(
-        (0.28 + partial_len as f32 * 0.035 + usage_prior + context_usage_prior).clamp(0.0, 0.70),
-    )
 }
 
 fn phrase_candidate_suffix(tail: &str, candidate: &str, max_suffix_chars: usize) -> Option<String> {
