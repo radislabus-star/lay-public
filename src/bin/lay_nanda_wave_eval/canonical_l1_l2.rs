@@ -270,7 +270,7 @@ mod tests {
     #[test]
     fn canonical_l1_l2_report_input_keeps_short_service_words() {
         let mut words = BTreeSet::new();
-        collect_words("wave и context в поле не теряются", &mut words);
+        collect_words("проверка и контекст в поле не теряются", &mut words);
         for word in seed_words() {
             words.insert((*word).to_string());
         }
@@ -278,8 +278,8 @@ mod tests {
         assert!(words.contains("и"));
         assert!(words.contains("в"));
         assert!(words.contains("не"));
-        assert!(words.contains("wave"));
-        assert!(words.contains("context"));
+        assert!(words.contains("проверка"));
+        assert!(words.contains("контекст"));
     }
 
     #[test]

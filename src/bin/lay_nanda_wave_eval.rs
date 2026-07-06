@@ -5,10 +5,11 @@ use lay::nanda_wave::{
     WaveOptions,
 };
 use lay::nanda_wave::{journal, llmwave};
+use serde_json::Value;
 use std::collections::BTreeMap;
 use std::env;
 use std::io;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 #[path = "lay_nanda_wave_eval/candidate_quality.rs"]
 mod candidate_quality;
@@ -89,6 +90,34 @@ fn main() -> io::Result<()> {
             .and_then(|value| value.parse::<usize>().ok())
             .unwrap_or(12);
         print_llmwave_learning_report(seed, limit, live_min_count(&args))?;
+        return Ok(());
+    }
+    if let Some(path) = arg_value(&args, "--llmwave-corpus-report") {
+        let test = arg_value(&args, "--test-corpus");
+        let limit = arg_value(&args, "--limit")
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(12);
+        let max_lines = arg_value(&args, "--max-lines")
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(20_000);
+        print_llmwave_corpus_report(
+            &PathBuf::from(path),
+            test.map(PathBuf::from).as_deref(),
+            limit,
+            max_lines,
+        )?;
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--llmwave-dirty-report") {
+        let train = arg_value(&args, "--train-corpus").map(PathBuf::from);
+        let include_dirty_train = args.iter().any(|arg| arg == "--include-dirty-train");
+        let limit = arg_value(&args, "--limit")
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(12);
+        let max_lines = arg_value(&args, "--max-lines")
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(20_000);
+        print_llmwave_dirty_report(train.as_deref(), include_dirty_train, limit, max_lines)?;
         return Ok(());
     }
     if args.iter().any(|arg| arg == "--learning-shadow-report") {
@@ -251,7 +280,7 @@ fn main() -> io::Result<()> {
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --l2-phase-coverage-recent [--limit N] [--candidate-limit N] [--max-examples N] | --l2-candidate-phase-shadow-recent [--l2-phase-memory PATH] [--limit N] [--max-examples N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --l2-phase-coverage-recent [--limit N] [--candidate-limit N] [--max-examples N] | --l2-candidate-phase-shadow-recent [--l2-phase-memory PATH] [--limit N] [--max-examples N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --llmwave-corpus-report PATH [--test-corpus PATH] [--max-lines N] | --llmwave-dirty-report [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
         );
         return Ok(());
     }
@@ -389,6 +418,378 @@ fn print_llmwave_learning_report(seed: &str, limit: usize, min_count: usize) -> 
     print_learning_deltas(&seed_memory, &combined_memory, reinforced.keys(), limit);
     print_prediction_deltas(&seed_memory, &combined_memory, reinforced.keys(), limit);
     Ok(())
+}
+
+#[derive(Debug, Clone, PartialEq)]
+struct LlmWaveCorpusReport {
+    train_input: String,
+    test_input: String,
+    train_lines: usize,
+    test_lines: usize,
+    records: usize,
+    vocabulary: usize,
+    prediction_points: usize,
+    ready_points: usize,
+    top1_hits: usize,
+    top3_hits: usize,
+    misses: usize,
+    avg_expected_score: f32,
+    avg_top_score: f32,
+    examples: Vec<LlmWaveCorpusExample>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+struct LlmWaveCorpusExample {
+    prefix: String,
+    expected: String,
+    top: String,
+    top_score: f32,
+    expected_score: f32,
+    top3: Vec<String>,
+}
+
+fn print_llmwave_corpus_report(
+    train_path: &Path,
+    test_path: Option<&Path>,
+    limit: usize,
+    max_lines: usize,
+) -> io::Result<()> {
+    let train_text = std::fs::read_to_string(train_path)?;
+    let (test_input, test_text) = match test_path {
+        Some(path) => (path.display().to_string(), std::fs::read_to_string(path)?),
+        None => (train_path.display().to_string(), train_text.clone()),
+    };
+    let report = llmwave_corpus_report_from_text(
+        train_path.display().to_string(),
+        train_text,
+        test_input,
+        test_text,
+        limit,
+        max_lines,
+    );
+    print_llmwave_corpus_report_rows("llmwave_corpus_report", &report);
+    Ok(())
+}
+
+fn print_llmwave_dirty_report(
+    train_path: Option<&Path>,
+    include_dirty_train: bool,
+    limit: usize,
+    max_lines: usize,
+) -> io::Result<()> {
+    let dirty = dirty_log_corpus_text(max_lines)?;
+    let (mut train_input, mut train_text) = match train_path {
+        Some(path) => (path.display().to_string(), std::fs::read_to_string(path)?),
+        None => ("dirty_logs".to_string(), dirty.clone()),
+    };
+    if include_dirty_train && train_path.is_some() {
+        train_input = format!("{train_input}+dirty_logs");
+        train_text.push('\n');
+        train_text.push_str(&dirty);
+    }
+    let report = llmwave_corpus_report_from_text(
+        train_input,
+        train_text,
+        "dirty_logs".to_string(),
+        dirty,
+        limit,
+        max_lines,
+    );
+    print_llmwave_corpus_report_rows("llmwave_dirty_report", &report);
+    Ok(())
+}
+
+fn llmwave_corpus_report_from_text(
+    train_input: String,
+    train_text: String,
+    test_input: String,
+    test_text: String,
+    limit: usize,
+    max_lines: usize,
+) -> LlmWaveCorpusReport {
+    let memory = llmwave::LlmWaveMemory::from_text(&train_text);
+    let train_lines = non_empty_line_count(&train_text);
+    let test_lines = non_empty_line_count(&test_text).min(max_lines);
+    let mut prediction_points = 0usize;
+    let mut ready_points = 0usize;
+    let mut top1_hits = 0usize;
+    let mut top3_hits = 0usize;
+    let mut expected_score_sum = 0.0f32;
+    let mut top_score_sum = 0.0f32;
+    let mut examples = Vec::new();
+
+    for line in test_text
+        .lines()
+        .filter(|line| !line.trim().is_empty())
+        .take(max_lines)
+    {
+        let tokens = llmwave::tokenize(line);
+        if tokens.len() < 3 {
+            continue;
+        }
+        for idx in 1..tokens.len() {
+            let prefix_tokens = &tokens[..idx];
+            let expected = &tokens[idx];
+            prediction_points += 1;
+            let prefix = prefix_tokens.join(" ");
+            let predictions = memory.predict_phrase(&prefix, 1, 3);
+            if predictions.is_empty() {
+                maybe_push_corpus_example(
+                    &mut examples,
+                    limit,
+                    prefix,
+                    expected.clone(),
+                    "none".to_string(),
+                    0.0,
+                    0.0,
+                    Vec::new(),
+                );
+                continue;
+            }
+            ready_points += 1;
+            let top_next = prediction_next_token(&predictions[0])
+                .unwrap_or_default()
+                .to_string();
+            let top_score = predictions[0].score;
+            let expected_score = memory
+                .score_next_token_report(prefix_tokens, expected)
+                .map(|score| score.score)
+                .unwrap_or(0.0);
+            let top3 = predictions
+                .iter()
+                .filter_map(prediction_next_token)
+                .map(str::to_string)
+                .collect::<Vec<_>>();
+            let hit1 = top_next == *expected;
+            let hit3 = top3.iter().any(|item| item == expected);
+            top1_hits += usize::from(hit1);
+            top3_hits += usize::from(hit3);
+            expected_score_sum += expected_score;
+            top_score_sum += top_score;
+            if !hit1 {
+                maybe_push_corpus_example(
+                    &mut examples,
+                    limit,
+                    prefix,
+                    expected.clone(),
+                    top_next,
+                    top_score,
+                    expected_score,
+                    top3,
+                );
+            }
+        }
+    }
+
+    let misses = prediction_points.saturating_sub(top1_hits);
+    let denominator = prediction_points.max(1) as f32;
+    LlmWaveCorpusReport {
+        train_input,
+        test_input,
+        train_lines,
+        test_lines,
+        records: memory.len(),
+        vocabulary: memory.vocabulary_len(),
+        prediction_points,
+        ready_points,
+        top1_hits,
+        top3_hits,
+        misses,
+        avg_expected_score: expected_score_sum / denominator,
+        avg_top_score: top_score_sum / denominator,
+        examples,
+    }
+}
+
+fn print_llmwave_corpus_report_rows(label: &str, report: &LlmWaveCorpusReport) {
+    println!("{label}:");
+    println!("  train_input: {}", report.train_input);
+    println!("  test_input: {}", report.test_input);
+    println!(
+        "  train_lines={} test_lines={} records={} vocabulary={}",
+        report.train_lines, report.test_lines, report.records, report.vocabulary
+    );
+    println!(
+        "  prediction_points={} ready_points={} top1_hits={} top3_hits={} misses={}",
+        report.prediction_points,
+        report.ready_points,
+        report.top1_hits,
+        report.top3_hits,
+        report.misses
+    );
+    println!(
+        "  top1={:.2}% top3={:.2}% ready={:.2}% avg_expected_score={:.3} avg_top_score={:.3}",
+        corpus_percent(report.top1_hits, report.prediction_points),
+        corpus_percent(report.top3_hits, report.prediction_points),
+        corpus_percent(report.ready_points, report.prediction_points),
+        report.avg_expected_score,
+        report.avg_top_score
+    );
+    println!("  misses_examples:");
+    if report.examples.is_empty() {
+        println!("    none");
+    }
+    for example in &report.examples {
+        println!(
+            "    prefix={:?} expected={:?} top={:?} top_score={:.3} expected_score={:.3} top3={:?}",
+            example.prefix,
+            example.expected,
+            example.top,
+            example.top_score,
+            example.expected_score,
+            example.top3
+        );
+    }
+}
+
+fn dirty_log_corpus_text(max_lines: usize) -> io::Result<String> {
+    let mut lines = Vec::new();
+    if let Some(path) = default_recent_actions_path() {
+        collect_json_string_fields(
+            &path,
+            &["to", "expected", "text", "replacement", "inserted_text"],
+            &mut lines,
+            max_lines,
+        )?;
+    }
+    if lines.len() < max_lines {
+        if let Some(path) = learning_loop::default_correction_log_path() {
+            collect_json_string_fields(&path, &["to", "lay_to"], &mut lines, max_lines)?;
+        }
+    }
+    if lines.len() < max_lines {
+        if let Some(path) = llmwave::default_phrase_experience_path() {
+            if let Ok(text) = llmwave::load_phrase_experience_text(&path) {
+                for line in text.lines() {
+                    if lines.len() >= max_lines {
+                        break;
+                    }
+                    lines.push(line.to_string());
+                }
+            }
+        }
+    }
+    Ok(lines
+        .into_iter()
+        .filter(|line| llmwave::tokenize(line).len() >= 2)
+        .take(max_lines)
+        .collect::<Vec<_>>()
+        .join("\n"))
+}
+
+fn collect_json_string_fields(
+    path: &Path,
+    fields: &[&str],
+    out: &mut Vec<String>,
+    max_lines: usize,
+) -> io::Result<()> {
+    let Ok(text) = std::fs::read_to_string(path) else {
+        return Ok(());
+    };
+    collect_json_string_fields_from_str(&text, fields, out, max_lines);
+    Ok(())
+}
+
+fn collect_json_string_fields_from_str(
+    text: &str,
+    fields: &[&str],
+    out: &mut Vec<String>,
+    max_lines: usize,
+) {
+    let log_lines = text
+        .lines()
+        .filter(|line| !line.trim().is_empty())
+        .collect::<Vec<_>>();
+    for line in log_lines.into_iter().rev() {
+        if out.len() >= max_lines {
+            break;
+        }
+        let Ok(value) = serde_json::from_str::<Value>(line) else {
+            continue;
+        };
+        collect_json_value_string_fields(&value, fields, out, max_lines);
+    }
+}
+
+fn collect_json_value_string_fields(
+    value: &Value,
+    fields: &[&str],
+    out: &mut Vec<String>,
+    max_lines: usize,
+) {
+    if out.len() >= max_lines {
+        return;
+    }
+    match value {
+        Value::Object(map) => {
+            for (key, item) in map {
+                if out.len() >= max_lines {
+                    return;
+                }
+                if fields.contains(&key.as_str()) {
+                    if let Some(text) = item.as_str() {
+                        if !text.trim().is_empty() {
+                            out.push(text.to_string());
+                        }
+                    }
+                }
+                collect_json_value_string_fields(item, fields, out, max_lines);
+            }
+        }
+        Value::Array(items) => {
+            for item in items {
+                collect_json_value_string_fields(item, fields, out, max_lines);
+                if out.len() >= max_lines {
+                    return;
+                }
+            }
+        }
+        _ => {}
+    }
+}
+
+fn default_recent_actions_path() -> Option<PathBuf> {
+    std::env::var_os("HOME")
+        .map(PathBuf::from)
+        .map(|home| home.join(".local/share/lay/recent_actions.jsonl"))
+}
+
+fn prediction_next_token(prediction: &llmwave::LlmWavePhrasePrediction) -> Option<&str> {
+    prediction.tokens.last().map(String::as_str)
+}
+
+fn maybe_push_corpus_example(
+    examples: &mut Vec<LlmWaveCorpusExample>,
+    limit: usize,
+    prefix: String,
+    expected: String,
+    top: String,
+    top_score: f32,
+    expected_score: f32,
+    top3: Vec<String>,
+) {
+    if examples.len() >= limit {
+        return;
+    }
+    examples.push(LlmWaveCorpusExample {
+        prefix,
+        expected,
+        top,
+        top_score,
+        expected_score,
+        top3,
+    });
+}
+
+fn non_empty_line_count(text: &str) -> usize {
+    text.lines().filter(|line| !line.trim().is_empty()).count()
+}
+
+fn corpus_percent(part: usize, total: usize) -> f32 {
+    if total == 0 {
+        return 0.0;
+    }
+    part as f32 * 100.0 / total as f32
 }
 
 fn live_min_count(args: &[String]) -> usize {
@@ -1798,4 +2199,45 @@ fn arg_values(args: &[String], name: &str) -> Vec<String> {
 
 fn parse_limit(value: &str, fallback: usize) -> usize {
     value.parse::<usize>().unwrap_or(fallback).clamp(1, 50)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn llmwave_corpus_report_measures_next_word_hits() {
+        let report = llmwave_corpus_report_from_text(
+            "train".to_string(),
+            "на улице идет дождь\nя хочу проверить ввод\n".to_string(),
+            "test".to_string(),
+            "на улице идет дождь\nна улице идет снег\n".to_string(),
+            8,
+            100,
+        );
+
+        assert!(report.prediction_points > 0);
+        assert!(report.ready_points > 0);
+        assert!(report.top1_hits > 0);
+        assert!(report.misses > 0);
+        assert!(report
+            .examples
+            .iter()
+            .any(|example| example.expected == "снег"));
+    }
+
+    #[test]
+    fn dirty_log_field_collector_reads_json_strings() {
+        let mut lines = Vec::new();
+        collect_json_string_fields_from_str(
+            r#"{"to":"проверить ввод","expected":"на улице дождь"}"#,
+            &["to", "expected"],
+            &mut lines,
+            10,
+        );
+
+        assert_eq!(lines.len(), 2);
+        assert!(lines.contains(&"проверить ввод".to_string()));
+        assert!(lines.contains(&"на улице дождь".to_string()));
+    }
 }
