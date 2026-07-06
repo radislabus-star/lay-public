@@ -80,6 +80,28 @@ pub(super) fn handle_enter_autocorrect(
         enter_autocorrect_candidate(buf, replace_words, allow_layout_auto, &pipeline)?;
     let original = edit.original.clone();
     let replacement = edit.replacement.clone();
+    let Some(plan) = edit.verified_plan_for_cursor(0) else {
+        log("⚠ enter-autocorrect skipped before delete: edit plan invariant failed");
+        return None;
+    };
+    let edit_action = lay::text_edit::EditAction::planned_replacement(
+        "enter-autocorrect",
+        0,
+        original.as_str(),
+        replacement.as_str(),
+        plan.clone(),
+        None,
+        None,
+    );
+    if !edit_action.allow_apply() {
+        log(&format!(
+            "⚠ enter-autocorrect blocked by EditAction safety: reason={} original={:?} replacement={:?}",
+            edit_action.safety_reason(),
+            original,
+            replacement
+        ));
+        return None;
+    }
 
     if should_try_ime_text_backend() {
         let original_layout = read_current_layout_is_ru().ok();
@@ -132,10 +154,6 @@ pub(super) fn handle_enter_autocorrect(
     }
 
     let original_layout = read_current_layout_is_ru().ok();
-    let Some(plan) = edit.verified_plan_for_cursor(0) else {
-        log("⚠ enter-autocorrect skipped before delete: edit plan invariant failed");
-        return None;
-    };
 
     let insert_outcome = match apply_text_replacement_pipeline(
         kbd,

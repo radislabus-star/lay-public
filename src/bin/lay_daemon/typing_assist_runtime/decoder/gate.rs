@@ -81,24 +81,27 @@ fn build_input_gate_decoded_tail(
     let error_class = input_gate
         .as_ref()
         .and_then(|trace| trace.selected_error_class.as_deref());
-    let safety = lay::text_edit::autocorrect_edit_safety(
+    let confidence_milli = input_gate
+        .as_ref()
+        .and_then(|trace| trace.scoreboard.as_ref())
+        .and_then(|scoreboard| scoreboard.selected_bayes_posterior_milli)
+        .unwrap_or(0);
+    let edit_action = lay::text_edit::EditAction::planned_replacement(
+        "typing-assist",
+        confidence_milli,
         original,
-        &edit.replacement,
-        &edit.plan,
+        edit.replacement.as_str(),
+        edit.plan.clone(),
         source_id,
         error_class,
     );
-    lay::action_log::record_candidate_before_apply(
-        original,
-        &edit.replacement,
-        &edit.plan,
-        &safety,
-        input_gate.clone(),
-    );
-    if !safety.allow_apply {
+    lay::action_log::record_candidate_edit_action_before_apply(&edit_action, input_gate.clone());
+    if !edit_action.allow_apply() {
         crate::log(&format!(
             "· typing-assist blocked by edit-plan safety: reason={} original={:?} replacement={:?}",
-            safety.reason, original, edit.replacement
+            edit_action.safety_reason(),
+            original,
+            edit.replacement
         ));
         return None;
     }

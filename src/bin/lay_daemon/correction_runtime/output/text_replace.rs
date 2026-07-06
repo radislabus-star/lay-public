@@ -30,6 +30,24 @@ pub(crate) fn try_manual_text_replacement(
     }
 
     let plan = manual_text_replacement_plan(ctx, text, kind);
+    let edit_action = lay::text_edit::EditAction::planned_replacement(
+        kind,
+        0,
+        ctx.mapped_orig,
+        text.as_str(),
+        plan.clone(),
+        Some("manual_toggle"),
+        None,
+    );
+    if !edit_action.allow_apply() {
+        log(&format!(
+            "⚠ {kind} blocked by EditAction safety: reason={} original={:?} replacement={:?}; fallback to replay",
+            edit_action.safety_reason(),
+            ctx.mapped_orig,
+            text
+        ));
+        return OutputFlow::ContinueReplay;
+    }
     let insert_outcome = match apply_text_replacement_pipeline(
         kbd,
         &plan,

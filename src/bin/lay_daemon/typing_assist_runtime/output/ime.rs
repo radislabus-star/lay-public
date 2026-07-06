@@ -47,17 +47,26 @@ pub(crate) fn try_apply_ime_replacement(
     let error_class = input_gate
         .as_ref()
         .and_then(|trace| trace.selected_error_class.as_deref());
-    let safety = lay::text_edit::autocorrect_edit_safety(
+    let confidence_milli = input_gate
+        .as_ref()
+        .and_then(|trace| trace.scoreboard.as_ref())
+        .and_then(|scoreboard| scoreboard.selected_bayes_posterior_milli)
+        .unwrap_or(0);
+    let edit_action = lay::text_edit::EditAction::planned_replacement(
+        "typing-assist-ime",
+        confidence_milli,
         original,
         replacement,
-        &plan,
+        plan.clone(),
         source_id,
         error_class,
     );
-    if !safety.allow_apply {
+    if !edit_action.allow_apply() {
         log(&format!(
             "⚠ typing-assist IME blocked by edit-plan safety: reason={} original={:?} replacement={:?}",
-            safety.reason, original, replacement
+            edit_action.safety_reason(),
+            original,
+            replacement
         ));
         return None;
     }

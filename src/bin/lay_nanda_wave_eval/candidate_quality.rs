@@ -59,6 +59,7 @@ struct CandidateQualityReport {
     slow_output: usize,
     source_counts: BTreeMap<String, usize>,
     error_class_counts: BTreeMap<String, usize>,
+    action_kind_counts: BTreeMap<String, usize>,
     class_counts: BTreeMap<&'static str, usize>,
 }
 
@@ -78,6 +79,15 @@ impl CandidateQualityReport {
             *self
                 .error_class_counts
                 .entry(error_class.to_string())
+                .or_default() += 1;
+        }
+    }
+
+    fn add_action_kind(&mut self, action_kind: &str) {
+        if !action_kind.is_empty() {
+            *self
+                .action_kind_counts
+                .entry(action_kind.to_string())
                 .or_default() += 1;
         }
     }
@@ -131,6 +141,7 @@ fn report_from_text(text: &str, limit: usize, path: &PathBuf) -> serde_json::Val
             "nanda_apply": report.nanda_apply,
             "by_source": report.source_counts
         },
+        "edit_actions": report.action_kind_counts,
         "error_classes": report.error_class_counts,
         "class_counts": report.class_counts,
         "read_as": "diagnostic only; this report does not change runtime decisions"
@@ -165,6 +176,13 @@ fn inspect_record(report: &mut CandidateQualityReport, value: &Value) {
 }
 
 fn inspect_edit_plan(report: &mut CandidateQualityReport, value: &Value) {
+    if let Some(action_kind) = value.get("action_kind").and_then(Value::as_str) {
+        report.add_action_kind(action_kind);
+        if action_kind == "block_unsafe" {
+            report.unsafe_edit_plan += 1;
+            report.add_class("unsafe_edit_action");
+        }
+    }
     let safety_allow_apply = value
         .get("safety_allow_apply")
         .and_then(Value::as_bool)
@@ -337,15 +355,17 @@ mod tests {
     #[test]
     fn candidate_quality_report_flags_trace_and_boundary_risks() {
         let text = r#"
-{"kind":"candidate_before_apply","from":"gjhn ","to":"порт ","boundary_changed":false,"changes_non_last_word":false,"word_count_changed":false,"would_touch_words":1,"safety_allow_apply":true,"input_gate":{"selected_source":"deterministic","selected_error_class":"composite-typo","selected_gate_action":"apply","candidate_count":1,"candidate_scores":[{"replacement":"порт port порт ","source":"deterministic","posterior_milli":488,"usage_prior_milli":0,"context_prior_milli":240,"risk_milli":280,"gate_action":"apply","selected":true}]}}
-{"kind":"candidate_before_apply","from":"одно два ","to":"однотри ","boundary_changed":true,"changes_non_last_word":true,"word_count_changed":true,"would_touch_words":2,"safety_allow_apply":false,"input_gate":{"selected_source":"nanda","selected_error_class":"glued-words","selected_gate_action":"apply","candidate_count":2,"candidate_scores":[{"replacement":"однотри ","source":"nanda","posterior_milli":220,"usage_prior_milli":0,"context_prior_milli":0,"risk_milli":310,"gate_action":"apply","selected":true},{"replacement":"одно два ","source":"deterministic","posterior_milli":500,"usage_prior_milli":0,"context_prior_milli":0,"risk_milli":0,"gate_action":"suggest_only","selected":false}]}}
+{"kind":"candidate_before_apply","action_kind":"replace_last_token","from":"gjhn ","to":"порт ","boundary_changed":false,"changes_non_last_word":false,"word_count_changed":false,"would_touch_words":1,"safety_allow_apply":true,"input_gate":{"selected_source":"deterministic","selected_error_class":"composite-typo","selected_gate_action":"apply","candidate_count":1,"candidate_scores":[{"replacement":"порт port порт ","source":"deterministic","posterior_milli":488,"usage_prior_milli":0,"context_prior_milli":240,"risk_milli":280,"gate_action":"apply","selected":true}]}}
+{"kind":"candidate_before_apply","action_kind":"block_unsafe","from":"одно два ","to":"однотри ","boundary_changed":true,"changes_non_last_word":true,"word_count_changed":true,"would_touch_words":2,"safety_allow_apply":false,"input_gate":{"selected_source":"nanda","selected_error_class":"glued-words","selected_gate_action":"apply","candidate_count":2,"candidate_scores":[{"replacement":"однотри ","source":"nanda","posterior_milli":220,"usage_prior_milli":0,"context_prior_milli":0,"risk_milli":310,"gate_action":"apply","selected":true},{"replacement":"одно два ","source":"deterministic","posterior_milli":500,"usage_prior_milli":0,"context_prior_milli":0,"risk_milli":0,"gate_action":"suggest_only","selected":false}]}}
 "#;
 
         let report = report_from_text(text, 20, &PathBuf::from("recent.jsonl"));
 
         assert_eq!(report["classes"]["trace_output_mismatch"], 0);
         assert_eq!(report["classes"]["trace_output_extra_context"], 1);
-        assert_eq!(report["classes"]["unsafe_edit_plan"], 1);
+        assert_eq!(report["classes"]["unsafe_edit_plan"], 2);
+        assert_eq!(report["edit_actions"]["replace_last_token"], 1);
+        assert_eq!(report["edit_actions"]["block_unsafe"], 1);
         assert_eq!(report["classes"]["boundary_changed"], 1);
         assert_eq!(report["classes"]["multiword_touch"], 1);
         assert_eq!(report["classes"]["weak_bayes_apply"], 1);

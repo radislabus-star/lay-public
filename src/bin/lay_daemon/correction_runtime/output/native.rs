@@ -28,6 +28,9 @@ pub(crate) fn try_ime_replace_output(
     }
     let (replace_text, replace_kind, is_replay) = text_for_native_replace(ctx, "ime-replay");
     let replace_target_is_ru = preferred_layout_for_text(&replace_text, ctx.target_is_ru);
+    if !native_text_edit_action_allowed(ctx, &replace_text, replace_kind, is_replay) {
+        return None;
+    }
     if !try_ime_replace_tail(ctx.mapped_orig, &replace_text, replace_kind).unwrap_or(false) {
         return None;
     }
@@ -70,6 +73,9 @@ pub(crate) fn try_gnome_native_replace_output(
     }
     let (replace_text, replace_kind, is_replay) = text_for_native_replace(ctx, "gnome-replace");
     let replace_target_is_ru = preferred_layout_for_text(&replace_text, ctx.target_is_ru);
+    if !native_text_edit_action_allowed(ctx, &replace_text, replace_kind, is_replay) {
+        return None;
+    }
     let (layout_id, _) = target_layout(replace_target_is_ru);
     match call_replace_text(0, ctx.n_backspaces, &replace_text, 0, layout_id) {
         Ok(true) => {
@@ -171,6 +177,42 @@ fn remember_native_replace(
             true,
         );
     }
+}
+
+fn native_text_edit_action_allowed(
+    ctx: &ManualOutputCommon<'_>,
+    replace_text: &str,
+    replace_kind: &'static str,
+    is_replay: bool,
+) -> bool {
+    if is_replay {
+        return true;
+    }
+    let plan = TextReplacement {
+        move_left: 0,
+        backspaces: ctx.mapped_orig.chars().count() as u32,
+        insert: replace_text.to_string(),
+        move_right: 0,
+    };
+    let edit_action = lay::text_edit::EditAction::planned_replacement(
+        replace_kind,
+        0,
+        ctx.mapped_orig,
+        replace_text,
+        plan,
+        Some("manual_native_replace"),
+        None,
+    );
+    if edit_action.allow_apply() {
+        return true;
+    }
+    log(&format!(
+        "⚠ {replace_kind} native replace blocked by EditAction safety: reason={} original={:?} replacement={:?}",
+        edit_action.safety_reason(),
+        ctx.mapped_orig,
+        replace_text
+    ));
+    false
 }
 
 fn trailing_space_count(text: &str) -> usize {
