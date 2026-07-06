@@ -27,6 +27,8 @@ pub(crate) struct L4SignedOutcomeInput<'a> {
     pub(crate) usage: f32,
     pub(crate) context_usage: f32,
     pub(crate) accepted: u32,
+    pub(crate) learned_attraction: f32,
+    pub(crate) learned_repulsion: f32,
 }
 
 pub(crate) fn l4_signed_outcome(input: L4SignedOutcomeInput<'_>) -> L4SignedOutcome {
@@ -53,9 +55,17 @@ pub(crate) fn l4_signed_outcome(input: L4SignedOutcomeInput<'_>) -> L4SignedOutc
     attraction += input.usage * 1.15;
     attraction += input.context_usage * 1.85;
     attraction += input.accepted.min(10) as f32 * 0.035;
+    attraction += input.learned_attraction * 0.72;
+    repulsion += input.learned_repulsion * 0.86;
 
     if input.accepted > 0 || input.context_usage >= 0.030 {
         reason = "usage_context_attracts";
+    }
+    if input.learned_attraction > input.learned_repulsion && input.learned_attraction >= 0.060 {
+        reason = "learned_state_attracts";
+    }
+    if input.learned_repulsion > input.learned_attraction && input.learned_repulsion >= 0.060 {
+        reason = "learned_state_repels";
     }
 
     if input.structural < 0.28 && input.usage < 0.020 && input.context_usage < 0.015 {
@@ -156,6 +166,8 @@ mod tests {
             usage: 0.04,
             context_usage: 0.05,
             accepted: 2,
+            learned_attraction: 0.10,
+            learned_repulsion: 0.0,
         });
 
         assert_eq!(outcome.polarity, L4OutcomePolarity::Attract);
@@ -173,6 +185,8 @@ mod tests {
             usage: 0.0,
             context_usage: 0.0,
             accepted: 0,
+            learned_attraction: 0.0,
+            learned_repulsion: 0.0,
         });
 
         assert_eq!(outcome.polarity, L4OutcomePolarity::Repel);
@@ -190,8 +204,29 @@ mod tests {
             usage: 0.0,
             context_usage: 0.0,
             accepted: 0,
+            learned_attraction: 0.0,
+            learned_repulsion: 0.0,
         });
 
         assert_eq!(outcome.polarity, L4OutcomePolarity::Neutral);
+    }
+
+    #[test]
+    fn learned_repulsion_can_turn_thin_candidate_negative() {
+        let outcome = l4_signed_outcome(L4SignedOutcomeInput {
+            scene: &scene(L4AllowedAction::Suggest),
+            candidate: "отвравим",
+            suffix: "им",
+            partial_len: 5,
+            structural: 0.30,
+            usage: 0.0,
+            context_usage: 0.0,
+            accepted: 0,
+            learned_attraction: 0.0,
+            learned_repulsion: 0.46,
+        });
+
+        assert_eq!(outcome.polarity, L4OutcomePolarity::Repel);
+        assert_eq!(outcome.reason, "learned_state_repels");
     }
 }

@@ -8,6 +8,7 @@ use crate::keyboard::is_cyrillic_letter;
 
 use super::l2::{self, L2ImeWordCandidateKind};
 use super::l4_goal_state::{derive_l4_scene_state, L4AllowedAction, L4SceneStateInput};
+use super::l4_signed_memory::{l4_signed_memory_signal, L4SignedMemoryInput};
 use super::l4_signed_outcome::{l4_signed_outcome, L4OutcomePolarity, L4SignedOutcomeInput};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::OnceLock;
@@ -134,6 +135,11 @@ pub fn live_completion_candidates(
                 request.allow_short_lexical,
                 &usage_snapshot,
             );
+            let memory_signal = l4_signed_memory_signal(L4SignedMemoryInput {
+                context: &context_tokens,
+                word: &candidate.surface,
+                usage: &usage_snapshot,
+            });
             let signed = l4_signed_outcome(L4SignedOutcomeInput {
                 scene: &scene_state,
                 candidate: &candidate.surface,
@@ -143,6 +149,8 @@ pub fn live_completion_candidates(
                 usage,
                 context_usage,
                 accepted,
+                learned_attraction: memory_signal.attraction,
+                learned_repulsion: memory_signal.repulsion,
             });
             l4_signed.record(signed.polarity);
 

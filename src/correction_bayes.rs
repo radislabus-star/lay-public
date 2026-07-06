@@ -32,17 +32,28 @@ pub(crate) fn bayes_score_candidate(
         .max(1);
     let likelihood = input_likelihood(error_class, source_id, distance, max_len);
     let usage_prior = crate::nanda_wave::usage_prior::word_usage_prior(&replacement_lower);
-    let context_prior = (local_context_prior(original, &replacement_lower)
+    let context = context_words_before_last(original);
+    let context_prior = (local_context_prior(&context, &replacement_lower)
         + source_prior(source_id))
     .clamp(0.0, 0.34);
+    let usage_snapshot = crate::nanda_wave::cached_usage_prior_snapshot();
+    let signed_memory = crate::nanda_wave::l4_signed_memory::l4_signed_memory_signal(
+        crate::nanda_wave::l4_signed_memory::L4SignedMemoryInput {
+            context: &context,
+            word: &replacement_lower,
+            usage: &usage_snapshot,
+        },
+    );
     let risk = candidate_risk(
         &original_lower,
         &replacement_lower,
         error_class,
         source_id,
         distance,
-    );
-    let posterior = (likelihood * 0.55 + usage_prior + context_prior - risk).clamp(-1.0, 1.0);
+    ) + signed_memory.repulsion * 0.34;
+    let posterior =
+        (likelihood * 0.55 + usage_prior + context_prior + signed_memory.attraction * 0.10 - risk)
+            .clamp(-1.0, 1.0);
 
     BayesCandidateScore {
         posterior,
@@ -94,16 +105,19 @@ fn input_likelihood(error_class: &str, source_id: &str, distance: usize, max_len
     }
 }
 
-fn local_context_prior(original: &str, replacement_word: &str) -> f32 {
-    let words = text_words(original);
+fn local_context_prior(context: &[String], replacement_word: &str) -> f32 {
     let mut prior: f32 = 0.0;
     if crate::lexicon::is_common_ru_word(replacement_word) {
         prior += 0.08;
     }
-    let mut context = words;
-    context.pop();
-    prior += crate::nanda_wave::context_word_usage_prior(&context, replacement_word);
+    prior += crate::nanda_wave::context_word_usage_prior(context, replacement_word);
     prior.clamp(0.0, 0.26)
+}
+
+fn context_words_before_last(original: &str) -> Vec<String> {
+    let mut context = text_words(original);
+    context.pop();
+    context
 }
 
 fn candidate_risk(

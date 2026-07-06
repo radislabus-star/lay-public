@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, OnceLock};
 use std::time::{Duration, Instant};
@@ -13,10 +13,12 @@ const USAGE_COUNTS_PATH: &str = ".local/share/lay/nanda_wave/word_usage_counts.j
 const LEGACY_USAGE_PRIOR_PATH: &str = ".local/share/lay/learning_candidates.json";
 const USAGE_EVENTS_MAX_BYTES: u64 = 500 * 1024;
 const USAGE_EVENTS_FULL_REBUILD_MAX_BYTES: u64 = 8 * 1024 * 1024;
-const USAGE_COUNTS_SCHEMA_VERSION: u32 = 3;
+const USAGE_COUNTS_SCHEMA_VERSION: u32 = 4;
 const USAGE_COUNTS_MAX_WORDS: usize = 10_000;
 const USAGE_COUNTS_MAX_ACCEPTED_WORDS: usize = 5_000;
 const USAGE_COUNTS_MAX_CONTEXT_WORDS: usize = 12_000;
+const USAGE_COUNTS_MAX_REJECTED_WORDS: usize = 5_000;
+const USAGE_COUNTS_MAX_REJECTED_CONTEXT_WORDS: usize = 12_000;
 const USAGE_REFRESH_INTERVAL: Duration = Duration::from_millis(1000);
 const CONTEXT_WORDS: usize = 5;
 const MIN_CONTEXT_NGRAM: usize = 1;
@@ -58,6 +60,10 @@ struct UsageCounts {
     #[serde(default)]
     accepted_words: HashMap<String, u32>,
     context_words: HashMap<String, u32>,
+    #[serde(default)]
+    rejected_words: HashMap<String, u32>,
+    #[serde(default)]
+    rejected_context_words: HashMap<String, u32>,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -94,6 +100,39 @@ impl UsagePriorSnapshot {
         }
         self.counts
             .accepted_words
+            .get(&lower)
+            .copied()
+            .unwrap_or_default()
+    }
+
+    pub(crate) fn rejected_word_prior(&self, word: &str) -> f32 {
+        let lower = normalize_word(word);
+        if lower.is_empty() {
+            return 0.0;
+        }
+        self.counts
+            .rejected_words
+            .get(&lower)
+            .copied()
+            .map(rejected_prior_from_count)
+            .unwrap_or(0.0)
+    }
+
+    pub(crate) fn context_rejected_word_prior(&self, context: &[String], word: &str) -> f32 {
+        let lower = normalize_word(word);
+        if lower.is_empty() || context.is_empty() {
+            return 0.0;
+        }
+        context_ngram_prior_from_map(&self.counts.rejected_context_words, context, &lower, 0.012)
+    }
+
+    pub(crate) fn rejected_word_count(&self, word: &str) -> u32 {
+        let lower = normalize_word(word);
+        if lower.is_empty() {
+            return 0;
+        }
+        self.counts
+            .rejected_words
             .get(&lower)
             .copied()
             .unwrap_or_default()
@@ -280,6 +319,15 @@ pub(crate) fn cached_usage_prior_snapshot() -> UsagePriorSnapshot {
     }
 }
 
+#[cfg(test)]
+pub(crate) fn snapshot_from_usage_events_for_tests(text: &str) -> UsagePriorSnapshot {
+    let mut counts = UsageCounts::default();
+    add_usage_event_counts(&mut counts, text);
+    UsagePriorSnapshot {
+        counts: Arc::new(counts),
+    }
+}
+
 pub(crate) fn l2_surface_words_by_usage(limit: usize) -> Vec<String> {
     if limit == 0 {
         return Vec::new();
@@ -337,19 +385,24 @@ fn usage_surface_words_from_counts(counts: UsageCounts) -> Vec<String> {
 }
 
 fn context_ngram_prior_from_counts(counts: &UsageCounts, context: &[String], word: &str) -> f32 {
+    context_ngram_prior_from_map(&counts.context_words, context, word, 0.020)
+}
+
+fn context_ngram_prior_from_map(
+    source: &HashMap<String, u32>,
+    context: &[String],
+    word: &str,
+    base_weight: f32,
+) -> f32 {
     context_ngram_keys(context)
         .into_iter()
         .filter_map(|context_key| {
             let ngram_len = context_key.split_whitespace().count();
             let key = context_word_key(&context_key, word);
-            counts
-                .context_words
-                .get(&key)
-                .copied()
-                .map(|count| (count, ngram_len))
+            source.get(&key).copied().map(|count| (count, ngram_len))
         })
         .map(|(count, ngram_len)| {
-            let ngram_weight = 0.020 + ngram_len as f32 * 0.010;
+            let ngram_weight = base_weight + ngram_len as f32 * 0.010;
             ((count as f32 + 1.0).ln() * ngram_weight).min(0.18)
         })
         .sum::<f32>()
@@ -428,6 +481,25 @@ fn merge_usage_counts(target: &mut UsageCounts, source: UsageCounts) {
             .unwrap_or_default()
             .saturating_add(count);
     }
+    for (word, count) in source.rejected_words {
+        *target.rejected_words.entry(word.clone()).or_default() = target
+            .rejected_words
+            .get(&word)
+            .copied()
+            .unwrap_or_default()
+            .saturating_add(count);
+    }
+    for (key, count) in source.rejected_context_words {
+        *target
+            .rejected_context_words
+            .entry(key.clone())
+            .or_default() = target
+            .rejected_context_words
+            .get(&key)
+            .copied()
+            .unwrap_or_default()
+            .saturating_add(count);
+    }
 }
 
 fn add_legacy_usage_counts(counts: &mut UsageCounts, text: &str) {
@@ -483,6 +555,10 @@ fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
             .unwrap_or_default()
             .saturating_add(weight);
     }
+
+    if matches!(event.kind, UsageEventKind::AcceptedFix) {
+        add_rejected_fix_sources(counts, event, weight);
+    }
 }
 
 fn usage_events_from_jsonl(text: &str) -> impl Iterator<Item = UsageEvent> + '_ {
@@ -514,6 +590,46 @@ fn legacy_usage_counts_from_json(text: &str) -> HashMap<String, u32> {
             .saturating_add(weight);
     }
     counts
+}
+
+fn add_rejected_fix_sources(counts: &mut UsageCounts, event: &UsageEvent, weight: u32) {
+    let Some(from) = event.from.as_deref() else {
+        return;
+    };
+    let accepted = event
+        .to
+        .as_deref()
+        .map(normalized_words)
+        .unwrap_or_default()
+        .into_iter()
+        .collect::<HashSet<_>>();
+    for rejected in normalized_words(from)
+        .into_iter()
+        .filter(|word| !accepted.contains(word))
+    {
+        *counts.rejected_words.entry(rejected.clone()).or_default() = counts
+            .rejected_words
+            .get(&rejected)
+            .copied()
+            .unwrap_or_default()
+            .saturating_add(weight);
+        for context_key in context_ngram_keys(&event.context) {
+            let key = context_word_key(&context_key, &rejected);
+            *counts
+                .rejected_context_words
+                .entry(key.clone())
+                .or_default() = counts
+                .rejected_context_words
+                .get(&key)
+                .copied()
+                .unwrap_or_default()
+                .saturating_add(weight);
+        }
+    }
+}
+
+fn rejected_prior_from_count(count: u32) -> f32 {
+    ((count as f32 + 1.0).ln() * 0.040).clamp(0.0, 0.26)
 }
 
 fn append_usage_event(event: UsageEvent) {
@@ -645,6 +761,11 @@ fn compact_usage_counts_for_persist(counts: &UsageCounts) -> UsageCounts {
         words: top_count_entries(&counts.words, USAGE_COUNTS_MAX_WORDS),
         accepted_words: top_count_entries(&counts.accepted_words, USAGE_COUNTS_MAX_ACCEPTED_WORDS),
         context_words: top_count_entries(&counts.context_words, USAGE_COUNTS_MAX_CONTEXT_WORDS),
+        rejected_words: top_count_entries(&counts.rejected_words, USAGE_COUNTS_MAX_REJECTED_WORDS),
+        rejected_context_words: top_count_entries(
+            &counts.rejected_context_words,
+            USAGE_COUNTS_MAX_REJECTED_CONTEXT_WORDS,
+        ),
     }
 }
 
@@ -826,6 +947,26 @@ mod tests {
         );
         assert_eq!(
             counts.context_words.get("улице идёт\u{1f}дождь").copied(),
+            Some(6)
+        );
+        assert_eq!(counts.rejected_words.get("дожть"), Some(&6));
+    }
+
+    #[test]
+    fn accepted_fix_creates_negative_trace_for_corrected_away_word_only() {
+        let text = r#"{"ts":1,"kind":"accepted_fix","word":"отравим","context":["мы"],"from":"мы отвравим","to":"мы отравим"}
+"#;
+        let mut counts = UsageCounts::default();
+        add_usage_event_counts(&mut counts, text);
+
+        assert_eq!(counts.accepted_words.get("отравим"), Some(&6));
+        assert_eq!(counts.rejected_words.get("отвравим"), Some(&6));
+        assert!(!counts.rejected_words.contains_key("мы"));
+        assert_eq!(
+            counts
+                .rejected_context_words
+                .get("мы\u{1f}отвравим")
+                .copied(),
             Some(6)
         );
     }
