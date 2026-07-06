@@ -60,6 +60,46 @@ struct UsageCounts {
     context_words: HashMap<String, u32>,
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct UsagePriorSnapshot {
+    counts: UsageCounts,
+}
+
+impl UsagePriorSnapshot {
+    pub fn word_prior(&self, word: &str) -> f32 {
+        let lower = normalize_word(word);
+        if lower.is_empty() {
+            return 0.0;
+        }
+        self.counts
+            .words
+            .get(&lower)
+            .copied()
+            .map(word_prior_from_count)
+            .unwrap_or(0.0)
+    }
+
+    pub fn context_word_prior(&self, context: &[String], word: &str) -> f32 {
+        let lower = normalize_word(word);
+        if lower.is_empty() || context.is_empty() {
+            return 0.0;
+        }
+        context_ngram_prior_from_counts(&self.counts, context, &lower)
+    }
+
+    pub fn accepted_word_count(&self, word: &str) -> u32 {
+        let lower = normalize_word(word);
+        if lower.is_empty() {
+            return 0;
+        }
+        self.counts
+            .accepted_words
+            .get(&lower)
+            .copied()
+            .unwrap_or_default()
+    }
+}
+
 #[derive(Debug, Clone, Default, serde::Deserialize, serde::Serialize)]
 struct PersistedUsageCounts {
     #[serde(default)]
@@ -234,6 +274,12 @@ pub(crate) fn context_word_usage_prior_cached(context: &[String], word: &str) ->
     context_ngram_prior_from_counts(&counts, context, &lower)
 }
 
+pub(crate) fn cached_usage_prior_snapshot() -> UsagePriorSnapshot {
+    UsagePriorSnapshot {
+        counts: cached_usage_counts(),
+    }
+}
+
 pub(crate) fn l2_surface_words_by_usage(limit: usize) -> Vec<String> {
     if limit == 0 {
         return Vec::new();
@@ -264,13 +310,21 @@ fn refresh_usage_counts_from_disk() -> UsageCounts {
 }
 
 fn usage_surface_words_from_counts(counts: UsageCounts) -> Vec<String> {
+    let word_counts = counts.words;
     let mut words = counts
         .accepted_words
         .into_iter()
         .filter(|(word, count)| {
-            *count >= 2
-                && word.chars().count() >= 2
+            *count >= 1
+                && (2..=32).contains(&word.chars().count())
                 && word.chars().all(|ch| ch.is_alphabetic() || ch == '-')
+        })
+        .map(|(word, accepted_count)| {
+            let typed_count = word_counts.get(&word).copied().unwrap_or_default();
+            let score = accepted_count
+                .saturating_mul(4)
+                .saturating_add(typed_count.min(50));
+            (word, score)
         })
         .collect::<Vec<_>>();
     words.sort_by(|(left_word, left_count), (right_word, right_count)| {
@@ -824,6 +878,20 @@ mod tests {
 
         assert_eq!(words.first().map(String::as_str), Some("комитет"));
         assert!(!words.iter().any(|word| word == "x"));
+    }
+
+    #[test]
+    fn usage_surface_words_promote_accepted_ime_word_into_hot_set() {
+        let mut counts = UsageCounts::default();
+        add_usage_event_counts(
+            &mut counts,
+            r#"{"ts":1,"kind":"accepted_ime","word":"архитектура","context":["новая"],"to":"архитектура"}
+"#,
+        );
+
+        let words = usage_surface_words_from_counts(counts);
+
+        assert_eq!(words.first().map(String::as_str), Some("архитектура"));
     }
 
     #[test]

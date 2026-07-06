@@ -295,13 +295,14 @@ impl LayIbusEngine {
             .map(|(_, token)| token.chars().count())
             .unwrap_or(0);
         let mut candidates = Vec::with_capacity(16);
+        let usage = lay::nanda_wave::cached_usage_prior_snapshot();
 
         let semantic_started = timing_enabled.then(Instant::now);
         for suffix in self.semantic_phrase_suffixes() {
             push_unique_ranked_suffix(
                 &mut candidates,
                 Some(suffix.clone()),
-                preedit_suffix_bayes_score(tail, &suffix, 0.72),
+                preedit_suffix_bayes_score(&usage, tail, &suffix, 0.72),
             );
         }
         let semantic_us = elapsed_us(semantic_started);
@@ -311,7 +312,7 @@ impl LayIbusEngine {
             push_unique_ranked_suffix(
                 &mut candidates,
                 Some(suffix.clone()),
-                preedit_suffix_bayes_score(tail, &suffix, 0.48),
+                preedit_suffix_bayes_score(&usage, tail, &suffix, 0.48),
             );
         }
         let ru_us = elapsed_us(ru_started);
@@ -324,7 +325,7 @@ impl LayIbusEngine {
             push_unique_ranked_suffix(
                 &mut candidates,
                 Some(suffix.clone()),
-                preedit_suffix_bayes_score(tail, &suffix, 0.80),
+                preedit_suffix_bayes_score(&usage, tail, &suffix, 0.80),
             );
         }
         let ascii_us = elapsed_us(ascii_started);
@@ -698,14 +699,16 @@ fn compare_suffix_len_for_prefix(
     left_len.cmp(&right_len)
 }
 
-fn preedit_suffix_bayes_score(tail: &str, suffix: &str, base: f32) -> f32 {
+fn preedit_suffix_bayes_score(
+    usage: &lay::nanda_wave::UsagePriorSnapshot,
+    tail: &str,
+    suffix: &str,
+    base: f32,
+) -> f32 {
     let Some((context, word)) = preedit_suffix_context_and_word(tail, suffix) else {
         return base;
     };
-    (base
-        + lay::nanda_wave::cached_word_usage_prior(&word)
-        + lay::nanda_wave::cached_context_word_usage_prior(&context, &word))
-    .clamp(0.0, 1.0)
+    (base + usage.word_prior(&word) + usage.context_word_prior(&context, &word)).clamp(0.0, 1.0)
 }
 
 fn preedit_suffix_context_and_word(tail: &str, suffix: &str) -> Option<(Vec<String>, String)> {

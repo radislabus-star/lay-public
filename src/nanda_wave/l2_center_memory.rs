@@ -186,6 +186,17 @@ impl L2CenterMemory {
         text: &str,
         limit: usize,
     ) -> Vec<L2SurfaceCandidate> {
+        let usage = super::usage_prior::cached_usage_prior_snapshot();
+        self.surface_candidates_for_text_with_usage(text, limit, &usage)
+    }
+
+    #[must_use]
+    pub(super) fn surface_candidates_for_text_with_usage(
+        &self,
+        text: &str,
+        limit: usize,
+        usage: &super::usage_prior::UsagePriorSnapshot,
+    ) -> Vec<L2SurfaceCandidate> {
         if limit == 0 {
             return Vec::new();
         }
@@ -254,7 +265,7 @@ impl L2CenterMemory {
                     prefix_match,
                 );
                 if score > 0 {
-                    score = score.saturating_add(usage_score_boost(&word_norm));
+                    score = score.saturating_add(usage_score_boost(usage, &word_norm));
                 }
                 (score > 0).then_some(L2SurfaceCandidate {
                     word: word_norm,
@@ -319,11 +330,12 @@ impl L2CenterMemory {
     }
 
     fn sort_runtime_indexes(&mut self) {
+        let usage = super::usage_prior::cached_usage_prior_snapshot();
         let priorities = self
             .source_words
             .iter()
             .map(|word| WordRuntimePriority {
-                usage: super::usage_prior::word_usage_prior_cached(word),
+                usage: usage.word_prior(word),
                 common: crate::lexicon::is_common_ru_word(word),
                 len: word.chars().count(),
             })
@@ -508,8 +520,8 @@ fn candidate_score(
     score.saturating_sub(len_gap * 8 + surface_distance.min(16) as u32 * 12)
 }
 
-fn usage_score_boost(word: &str) -> u32 {
-    let prior = super::usage_prior::word_usage_prior_cached(word);
+fn usage_score_boost(usage: &super::usage_prior::UsagePriorSnapshot, word: &str) -> u32 {
+    let prior = usage.word_prior(word);
     (prior * 2_000.0).round().clamp(0.0, 220.0) as u32
 }
 

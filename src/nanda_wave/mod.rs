@@ -37,6 +37,7 @@ pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
 pub use options::WaveOptions;
 pub use signal::{ActiveMode, LayerTrace, WaveDecision, WavePacket, WaveTrace, WordCandidate};
 pub use trace::{run_wave_trace, run_wave_trace_with_options};
+pub use usage_prior::UsagePriorSnapshot;
 
 pub fn word_usage_prior(word: &str) -> f32 {
     usage_prior::word_usage_prior(word)
@@ -52,6 +53,10 @@ pub fn cached_word_usage_prior(word: &str) -> f32 {
 
 pub fn cached_context_word_usage_prior(context: &[String], word: &str) -> f32 {
     usage_prior::context_word_usage_prior_cached(context, word)
+}
+
+pub fn cached_usage_prior_snapshot() -> UsagePriorSnapshot {
+    usage_prior::cached_usage_prior_snapshot()
 }
 
 pub fn l2_surface_words_by_usage(limit: usize) -> Vec<String> {

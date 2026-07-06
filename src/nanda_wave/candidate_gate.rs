@@ -64,11 +64,13 @@ pub fn live_completion_candidates(
     } else {
         Vec::new()
     };
-    raw.extend(l2::ime_l2_word_candidates(
-        request.context_prefix,
-        &partial,
-        request.limit.saturating_mul(4).max(request.limit),
-    ));
+    if partial_len >= 5 {
+        raw.extend(l2::ime_l2_word_candidates(
+            request.context_prefix,
+            &partial,
+            request.limit.saturating_mul(4).max(request.limit),
+        ));
+    }
     let has_completion = raw
         .iter()
         .any(|candidate| candidate.kind == L2ImeWordCandidateKind::Completion);
@@ -87,6 +89,7 @@ pub fn live_completion_candidates(
 
     let raw_count = raw.len();
     let context_tokens = super::llmwave::tokenize(request.context_prefix);
+    let usage_snapshot = super::usage_prior::cached_usage_prior_snapshot();
     let mut usage_supported = 0_u64;
     let mut l3_supported = 0_u64;
     let mut candidates = raw
@@ -98,12 +101,10 @@ pub fn live_completion_candidates(
             if suffix.is_empty() || suffix_len > request.max_suffix_chars {
                 return None;
             }
-            let usage = super::usage_prior::word_usage_prior_cached(&candidate.surface);
-            let context_usage = super::usage_prior::context_word_usage_prior_cached(
-                &context_tokens,
-                &candidate.surface,
-            );
-            let accepted = super::usage_prior::accepted_word_usage_count_cached(&candidate.surface);
+            let usage = usage_snapshot.word_prior(&candidate.surface);
+            let context_usage =
+                usage_snapshot.context_word_prior(&context_tokens, &candidate.surface);
+            let accepted = usage_snapshot.accepted_word_count(&candidate.surface);
             let common = crate::lexicon::is_common_ru_word(&candidate.surface);
             let hot = crate::lexicon::is_ime_hot_ru_word(&candidate.surface);
             let structural = structural_support(
@@ -117,6 +118,7 @@ pub fn live_completion_candidates(
                 &candidate.surface,
                 partial_len,
                 request.allow_short_lexical,
+                &usage_snapshot,
             );
 
             if !live_completion_has_authority(LiveCompletionAuthority {
@@ -224,14 +226,14 @@ fn live_l3_context_score(
     word: &str,
     partial_len: usize,
     allow_short_lexical: bool,
+    usage: &super::usage_prior::UsagePriorSnapshot,
 ) -> Option<f32> {
     let min_lexical_prefix = if allow_short_lexical { 2 } else { 4 };
     let word_len = word.chars().count();
     let lexical_backoff_allowed = partial_len >= min_lexical_prefix
         && (partial_len >= 4 || word_len.saturating_sub(partial_len) <= 5);
-    let usage_prior = super::usage_prior::word_usage_prior_cached(word);
-    let context_usage_prior =
-        super::usage_prior::context_word_usage_prior_cached(prefix_tokens, word);
+    let usage_prior = usage.word_prior(word);
+    let context_usage_prior = usage.context_word_prior(prefix_tokens, word);
     if super::llmwave::default_memory_is_warm() {
         return super::llmwave::with_default_memory(|memory| {
             if let Some(report) = memory.score_next_token_report(prefix_tokens, word) {

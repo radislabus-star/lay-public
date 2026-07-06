@@ -148,8 +148,13 @@ pub fn ime_l2_word_candidates(
         return Vec::new();
     }
     let context_tokens = super::llmwave::tokenize(context_prefix);
+    let usage = super::usage_prior::cached_usage_prior_snapshot();
     let mut candidates = surface_motif_memory()
-        .surface_candidates_for_text(&normalized, limit.saturating_mul(4).max(limit))
+        .surface_candidates_for_text_with_usage(
+            &normalized,
+            limit.saturating_mul(4).max(limit),
+            &usage,
+        )
         .into_iter()
         .map(|candidate| {
             let candidate_len = candidate.word.chars().count();
@@ -158,11 +163,8 @@ pub fn ime_l2_word_candidates(
             } else {
                 L2ImeWordCandidateKind::Replacement
             };
-            let usage_prior = super::usage_prior::word_usage_prior_cached(&candidate.word);
-            let context_prior = super::usage_prior::context_word_usage_prior_cached(
-                &context_tokens,
-                &candidate.word,
-            );
+            let usage_prior = usage.word_prior(&candidate.word);
+            let context_prior = usage.context_word_prior(&context_tokens, &candidate.word);
             L2ImeWordCandidate {
                 surface: candidate.word,
                 kind,
@@ -211,13 +213,13 @@ pub fn ime_l2_short_seed_word_candidates(
         return Vec::new();
     };
     let context_tokens = super::llmwave::tokenize(context_prefix);
+    let usage = super::usage_prior::cached_usage_prior_snapshot();
     words
         .iter()
         .take(limit)
         .map(|word| {
-            let usage_prior = super::usage_prior::word_usage_prior_cached(&word);
-            let context_prior =
-                super::usage_prior::context_word_usage_prior_cached(&context_tokens, &word);
+            let usage_prior = usage.word_prior(word);
+            let context_prior = usage.context_word_prior(&context_tokens, word);
             L2ImeWordCandidate {
                 surface: word.clone(),
                 kind: L2ImeWordCandidateKind::Completion,
@@ -246,6 +248,7 @@ pub fn ime_l2_foundation_prefix_candidates(
         return Vec::new();
     }
     let context_tokens = super::llmwave::tokenize(context_prefix);
+    let usage = super::usage_prior::cached_usage_prior_snapshot();
     let mut words = broad_prefix_index()
         .prefix_candidates(
             &normalized,
@@ -260,14 +263,13 @@ pub fn ime_l2_foundation_prefix_candidates(
         .map(str::to_string)
         .collect::<Vec<_>>();
     words.sort_by(|left, right| {
-        super::usage_prior::word_usage_prior_cached(right)
-            .total_cmp(&super::usage_prior::word_usage_prior_cached(left))
+        usage
+            .word_prior(right)
+            .total_cmp(&usage.word_prior(left))
             .then_with(|| {
-                super::usage_prior::context_word_usage_prior_cached(&context_tokens, right)
-                    .total_cmp(&super::usage_prior::context_word_usage_prior_cached(
-                        &context_tokens,
-                        left,
-                    ))
+                usage
+                    .context_word_prior(&context_tokens, right)
+                    .total_cmp(&usage.context_word_prior(&context_tokens, left))
             })
             .then_with(|| {
                 crate::lexicon::is_common_ru_word(right)
@@ -280,9 +282,8 @@ pub fn ime_l2_foundation_prefix_candidates(
     words
         .into_iter()
         .map(|word| {
-            let usage_prior = super::usage_prior::word_usage_prior_cached(&word);
-            let context_prior =
-                super::usage_prior::context_word_usage_prior_cached(&context_tokens, &word);
+            let usage_prior = usage.word_prior(&word);
+            let context_prior = usage.context_word_prior(&context_tokens, &word);
             L2ImeWordCandidate {
                 surface: word,
                 kind: L2ImeWordCandidateKind::Completion,
@@ -321,15 +322,15 @@ pub fn ime_l2_generated_form_prefix_candidates(
         limit.saturating_mul(4).max(limit),
     );
     let context_tokens = super::llmwave::tokenize(context_prefix);
+    let usage = super::usage_prior::cached_usage_prior_snapshot();
     words.sort_by(|left, right| {
-        super::usage_prior::word_usage_prior_cached(right)
-            .total_cmp(&super::usage_prior::word_usage_prior_cached(left))
+        usage
+            .word_prior(right)
+            .total_cmp(&usage.word_prior(left))
             .then_with(|| {
-                super::usage_prior::context_word_usage_prior_cached(&context_tokens, right)
-                    .total_cmp(&super::usage_prior::context_word_usage_prior_cached(
-                        &context_tokens,
-                        left,
-                    ))
+                usage
+                    .context_word_prior(&context_tokens, right)
+                    .total_cmp(&usage.context_word_prior(&context_tokens, left))
             })
             .then_with(|| {
                 crate::lexicon::is_common_ru_word(right)
@@ -342,9 +343,8 @@ pub fn ime_l2_generated_form_prefix_candidates(
     words
         .into_iter()
         .map(|word| {
-            let usage_prior = super::usage_prior::word_usage_prior_cached(&word);
-            let context_prior =
-                super::usage_prior::context_word_usage_prior_cached(&context_tokens, &word);
+            let usage_prior = usage.word_prior(&word);
+            let context_prior = usage.context_word_prior(&context_tokens, &word);
             L2ImeWordCandidate {
                 surface: word,
                 kind: L2ImeWordCandidateKind::Completion,
@@ -373,10 +373,12 @@ fn l2_short_position_seed_index() -> &'static HashMap<String, Vec<String>> {
                 index.entry(key).or_default().push(word.clone());
             }
         }
+        let usage = super::usage_prior::cached_usage_prior_snapshot();
         for words in index.values_mut() {
             words.sort_by(|left, right| {
-                super::usage_prior::word_usage_prior_cached(right)
-                    .total_cmp(&super::usage_prior::word_usage_prior_cached(left))
+                usage
+                    .word_prior(right)
+                    .total_cmp(&usage.word_prior(left))
                     .then_with(|| {
                         crate::lexicon::is_common_ru_word(right)
                             .cmp(&crate::lexicon::is_common_ru_word(left))
