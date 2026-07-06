@@ -54,6 +54,15 @@ struct CandidateQualityReport {
     l3_weak_context_apply: usize,
     good_candidate_bad_rank: usize,
     no_candidates: usize,
+    arbitration_records: usize,
+    arbitration_selected: usize,
+    arbitration_no_candidate_scores: usize,
+    arbitration_no_selected: usize,
+    arbitration_selected_not_top: usize,
+    arbitration_selected_low_posterior: usize,
+    arbitration_selected_high_risk: usize,
+    arbitration_selected_unsafe_edit: usize,
+    arbitration_nanda_extra_context: usize,
     nanda_apply: usize,
     deterministic_apply: usize,
     slow_output: usize,
@@ -145,6 +154,18 @@ fn report_from_text(text: &str, limit: usize, path: &Path) -> serde_json::Value 
             "good_candidate_bad_rank": report.good_candidate_bad_rank,
             "no_candidates": report.no_candidates,
             "slow_output": report.slow_output
+        },
+        "candidate_arbitration": {
+            "records": report.arbitration_records,
+            "selected": report.arbitration_selected,
+            "no_candidate_scores": report.arbitration_no_candidate_scores,
+            "no_selected_candidate": report.arbitration_no_selected,
+            "selected_not_top": report.arbitration_selected_not_top,
+            "selected_low_posterior": report.arbitration_selected_low_posterior,
+            "selected_high_risk": report.arbitration_selected_high_risk,
+            "selected_unsafe_edit": report.arbitration_selected_unsafe_edit,
+            "nanda_extra_context": report.arbitration_nanda_extra_context,
+            "read_as": "why the chosen candidate won or should not have won; diagnostic only"
         },
         "source_mix": {
             "deterministic_apply": report.deterministic_apply,
@@ -272,6 +293,7 @@ fn inspect_gate(report: &mut CandidateQualityReport, value: &Value, gate: &Value
         inspect_selected_candidate(report, value, selected_source, selected);
         inspect_rank(report, gate, selected);
     }
+    inspect_arbitration(report, value, gate);
 }
 
 fn selected_candidate_score(gate: &Value) -> Option<&Value> {
@@ -367,6 +389,129 @@ fn inspect_rank(report: &mut CandidateQualityReport, gate: &Value, selected: &Va
     }
 }
 
+fn inspect_arbitration(report: &mut CandidateQualityReport, value: &Value, gate: &Value) {
+    let Some(candidates) = gate.get("candidate_scores").and_then(Value::as_array) else {
+        report.arbitration_no_candidate_scores += 1;
+        report.add_class("arbitration_no_candidate_scores");
+        return;
+    };
+    if candidates.is_empty() {
+        report.arbitration_no_candidate_scores += 1;
+        report.add_class("arbitration_no_candidate_scores");
+        return;
+    }
+    report.arbitration_records += 1;
+
+    let selected_index = candidates.iter().position(is_selected_candidate);
+    let Some(selected_index) = selected_index else {
+        report.arbitration_no_selected += 1;
+        report.add_class("arbitration_no_selected_candidate");
+        return;
+    };
+    report.arbitration_selected += 1;
+
+    let selected = &candidates[selected_index];
+    if let Some(top_index) = top_candidate_index(candidates) {
+        let selected_rank = candidate_rank_tuple(selected);
+        let top_rank = candidate_rank_tuple(&candidates[top_index]);
+        if top_index != selected_index && top_rank.0 >= selected_rank.0 + 80 {
+            report.arbitration_selected_not_top += 1;
+            report.add_class("arbitration_selected_not_top");
+        }
+    }
+
+    let posterior = selected
+        .get("posterior_milli")
+        .and_then(Value::as_i64)
+        .unwrap_or(0);
+    let risk = selected
+        .get("risk_milli")
+        .and_then(Value::as_i64)
+        .unwrap_or(0);
+    if posterior < 350 {
+        report.arbitration_selected_low_posterior += 1;
+        report.add_class("arbitration_selected_low_posterior");
+    }
+    if risk >= 300 {
+        report.arbitration_selected_high_risk += 1;
+        report.add_class("arbitration_selected_high_risk");
+    }
+
+    let safety_allow_apply = value
+        .get("safety_allow_apply")
+        .and_then(Value::as_bool)
+        .unwrap_or(true);
+    let touches_left_context = value
+        .get("changes_non_last_word")
+        .and_then(Value::as_bool)
+        .unwrap_or(false)
+        || value
+            .get("would_touch_words")
+            .and_then(Value::as_u64)
+            .is_some_and(|words| words > 1);
+    if !safety_allow_apply || touches_left_context {
+        report.arbitration_selected_unsafe_edit += 1;
+        report.add_class("arbitration_selected_unsafe_edit");
+    }
+
+    let selected_source = selected
+        .get("source")
+        .and_then(Value::as_str)
+        .or_else(|| gate.get("selected_source").and_then(Value::as_str))
+        .unwrap_or("");
+    let replacement_words = selected
+        .get("replacement")
+        .and_then(Value::as_str)
+        .unwrap_or("")
+        .split_whitespace()
+        .count();
+    let to_words = value
+        .get("to")
+        .and_then(Value::as_str)
+        .unwrap_or("")
+        .split_whitespace()
+        .count();
+    if selected_source == "nanda" && replacement_words > to_words.max(1) {
+        report.arbitration_nanda_extra_context += 1;
+        report.add_class("arbitration_nanda_extra_context");
+    }
+}
+
+fn is_selected_candidate(candidate: &Value) -> bool {
+    candidate
+        .get("selected")
+        .and_then(Value::as_bool)
+        .unwrap_or(false)
+}
+
+fn top_candidate_index(candidates: &[Value]) -> Option<usize> {
+    candidates
+        .iter()
+        .enumerate()
+        .filter(|(_, candidate)| candidate_is_viable(candidate))
+        .max_by_key(|(_, candidate)| candidate_rank_tuple(candidate))
+        .map(|(index, _)| index)
+}
+
+fn candidate_is_viable(candidate: &Value) -> bool {
+    candidate
+        .get("gate_action")
+        .and_then(Value::as_str)
+        .map_or(true, |action| action == "apply" || action == "suggest_only")
+}
+
+fn candidate_rank_tuple(candidate: &Value) -> (i64, i64) {
+    let posterior = candidate
+        .get("posterior_milli")
+        .and_then(Value::as_i64)
+        .unwrap_or(0);
+    let risk = candidate
+        .get("risk_milli")
+        .and_then(Value::as_i64)
+        .unwrap_or(0);
+    (posterior, -risk)
+}
+
 #[cfg(test)]
 mod tests {
     use super::report_from_text;
@@ -392,5 +537,11 @@ mod tests {
         assert_eq!(report["classes"]["bayes_unsupported_apply"], 1);
         assert_eq!(report["classes"]["l3_weak_context_apply"], 1);
         assert_eq!(report["classes"]["good_candidate_bad_rank"], 1);
+        assert_eq!(report["candidate_arbitration"]["records"], 2);
+        assert_eq!(report["candidate_arbitration"]["selected"], 2);
+        assert_eq!(report["candidate_arbitration"]["selected_not_top"], 1);
+        assert_eq!(report["candidate_arbitration"]["selected_low_posterior"], 1);
+        assert_eq!(report["candidate_arbitration"]["selected_high_risk"], 1);
+        assert_eq!(report["candidate_arbitration"]["selected_unsafe_edit"], 1);
     }
 }
