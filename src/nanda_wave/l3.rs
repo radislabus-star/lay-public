@@ -256,6 +256,7 @@ fn l3_rank_score(
     let mut value = confidence(candidate);
     value += candidate_usage_context_prior(original, &candidate.text);
     value += candidate_l4_signed_bias(original, candidate);
+    value += candidate_l4_scene_memory_bias(original, candidate, phrase_memory);
     if let Some(report) = phrase_gate_report(original, &candidate.text, phrase_memory) {
         match report.decision {
             l3_phrase_gate::L3PhraseGateDecision::Support => {
@@ -490,6 +491,7 @@ fn adjusted_confidence(
         }
     }
     value += candidate_l4_signed_bias(original, candidate);
+    value += candidate_l4_scene_memory_bias(original, candidate, None);
     value.clamp(0.0, 1.0)
 }
 
@@ -507,6 +509,31 @@ fn candidate_l4_signed_bias(original: &str, candidate: &WordCandidate) -> f32 {
         usage: &usage,
     });
     (signal.signed_weight * 0.080).clamp(-0.080, 0.080)
+}
+
+fn candidate_l4_scene_memory_bias(
+    original: &str,
+    candidate: &WordCandidate,
+    phrase_memory: Option<&llmwave::LlmWaveMemory>,
+) -> f32 {
+    let Some(word) = last_token(&candidate.text) else {
+        return 0.0;
+    };
+    let context = previous_context_tokens(original);
+    if context.len() < 3 {
+        return 0.0;
+    }
+    let report = match phrase_memory {
+        Some(memory) => memory.score_scene_token_report(&context, word),
+        None if llmwave::default_memory_is_warm() => {
+            llmwave::with_default_memory(|memory| memory.score_scene_token_report(&context, word))
+        }
+        None => None,
+    };
+    report
+        .filter(|report| report.score >= 0.16 && report.support > 0)
+        .map(|report| (report.score * 0.070).clamp(0.0, 0.080))
+        .unwrap_or(0.0)
 }
 
 fn candidate_operation(source: &str) -> &'static str {

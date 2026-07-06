@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
@@ -282,6 +282,71 @@ impl LlmWaveMemory {
             });
         }
         None
+    }
+
+    pub(crate) fn score_scene_token_report(
+        &self,
+        context_tokens: &[String],
+        next_token: &str,
+    ) -> Option<LlmWaveNextTokenScore> {
+        if context_tokens.len() < 2 || self.records.is_empty() {
+            return None;
+        }
+        let next = token_hash(next_token);
+        let prior = self.next_token_prior(next);
+        let start = context_tokens.len().saturating_sub(24);
+        let window = &context_tokens[start..];
+        let window_len = window.len().max(1) as f32;
+        let mut token_weights = BTreeMap::<u32, f32>::new();
+        for (idx, token) in window.iter().enumerate() {
+            let recency = (idx + 1) as f32 / window_len;
+            let weight = 0.35 + recency * 0.65;
+            token_weights
+                .entry(token_hash(token))
+                .and_modify(|current| *current = current.max(weight))
+                .or_insert(weight);
+        }
+        if token_weights.is_empty() {
+            return None;
+        }
+
+        let mut total_energy = 0.0_f32;
+        let mut hit_energy = 0.0_f32;
+        let mut support = 0_usize;
+        let mut phase_sum = 0.0_f32;
+        let mut phase_records = 0_usize;
+        let mut hit_tokens = BTreeSet::<u32>::new();
+        for record in &self.records {
+            let Some(weight) = token_weights.get(&record.token_hash) else {
+                continue;
+            };
+            let energy = record_energy(record) * *weight;
+            total_energy += energy;
+            if record.next_hash == next {
+                hit_energy += energy;
+                support = support.saturating_add(record_support(record));
+                phase_sum += phase_coherence(record.phase);
+                phase_records = phase_records.saturating_add(1);
+                hit_tokens.insert(record.token_hash);
+            }
+        }
+        if support == 0 || total_energy <= f32::EPSILON || phase_records == 0 {
+            return None;
+        }
+        let likelihood = (hit_energy / total_energy).clamp(0.0, 1.0);
+        let phase_coherence = (phase_sum / phase_records as f32).clamp(0.0, 1.0);
+        let coverage =
+            (hit_tokens.len() as f32 / token_weights.len().min(8) as f32).clamp(0.0, 1.0);
+        let score = (likelihood * 0.50 + prior * 0.14 + phase_coherence * 0.12 + coverage * 0.24)
+            .clamp(0.0, 1.0);
+        Some(LlmWaveNextTokenScore {
+            score,
+            support,
+            width: token_weights.len().min(24),
+            likelihood,
+            prior,
+            phase_coherence,
+        })
     }
 
     fn next_token_prior(&self, next: u32) -> f32 {
@@ -1423,6 +1488,26 @@ mod tests {
             rain.score > house.score,
             "longer phrase context must beat short association: rain={rain:?} house={house:?}"
         );
+    }
+
+    #[test]
+    fn scene_token_score_reads_whole_context_field() {
+        let memory = LlmWaveMemory::from_text(
+            "идёт дом\nна улице опять идёт дождь\nсегодня на улице опять идёт дождь",
+        );
+        let context = tokenize("на улице опять идёт");
+        let rain = memory
+            .score_scene_token_report(&context, "дождь")
+            .expect("rain should resonate with the whole scene");
+        let house = memory
+            .score_scene_token_report(&context, "дом")
+            .expect("house has a local one-token trace");
+
+        assert!(
+            rain.score > house.score,
+            "whole-scene field should beat a short local association: rain={rain:?} house={house:?}"
+        );
+        assert!(rain.width >= 4);
     }
 
     #[test]

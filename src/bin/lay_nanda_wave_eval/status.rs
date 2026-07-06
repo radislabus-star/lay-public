@@ -689,6 +689,11 @@ fn l4_state_map_json() -> Value {
             "neutral": transition_neutral,
             "ready": transition_signed_states > 0
         },
+        "scene_memory": {
+            "mode": "whole_context_token_field",
+            "source": "phrase_memory.llmw.bin scene-token readout",
+            "authority": "weak bias only; candidate authority and edit-plan safety remain final"
+        },
         "contract": {
             "positive_trace": "accepted_ime / accepted_fix target",
             "negative_trace": "accepted_fix corrected-away source word",
@@ -740,6 +745,11 @@ mod tests {
         assert_eq!(
             value["contract"]["authority"],
             "bias only; safety/edit gates remain final authority"
+        );
+        assert_eq!(value["scene_memory"]["mode"], "whole_context_token_field");
+        assert_eq!(
+            value["scene_memory"]["authority"],
+            "weak bias only; candidate authority and edit-plan safety remain final"
         );
     }
 }

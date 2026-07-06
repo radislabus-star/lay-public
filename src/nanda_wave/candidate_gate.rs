@@ -47,6 +47,7 @@ struct LiveCandidateGateStats {
     l4_repel: u64,
     l4_transition_hits: u64,
     l4_transition_repels: u64,
+    l4_scene_memory_hits: u64,
     total_us: u64,
     max_us: u64,
 }
@@ -108,6 +109,7 @@ pub fn live_completion_candidates(
     let usage_snapshot = super::usage_prior::cached_usage_prior_snapshot();
     let mut usage_supported = 0_u64;
     let mut l3_supported = 0_u64;
+    let mut l4_scene_memory_supported = 0_u64;
     let mut l4_signed = LiveSignedOutcomeStats::default();
     let mut candidates = raw
         .into_iter()
@@ -137,6 +139,11 @@ pub fn live_completion_candidates(
                 request.allow_short_lexical,
                 &usage_snapshot,
             );
+            let scene_memory_score = if l3_score.is_none() {
+                live_l4_scene_memory_score(&context_tokens, &candidate.surface)
+            } else {
+                None
+            };
             let memory_signal = l4_signed_memory_signal(L4SignedMemoryInput {
                 context: &context_tokens,
                 source: "L2LiveCandidateGate32",
@@ -179,6 +186,9 @@ pub fn live_completion_candidates(
             if l3_score.is_some() {
                 l3_supported = l3_supported.saturating_add(1);
             }
+            if scene_memory_score.is_some() {
+                l4_scene_memory_supported = l4_scene_memory_supported.saturating_add(1);
+            }
 
             let base_score = 0.22
                 + structural
@@ -189,6 +199,7 @@ pub fn live_completion_candidates(
                 + if hot { 0.045 } else { 0.0 }
                 + (partial_len.min(8) as f32 * 0.018)
                 + live_l4_scene_bias(scene_state.allowed_action, scene_state.confidence)
+                + live_l4_scene_memory_bias(scene_memory_score)
                 + live_l4_signed_bias(signed.signed_weight);
             let score = l3_score
                 .map(|score| score.max(base_score))
@@ -229,6 +240,7 @@ pub fn live_completion_candidates(
     });
     candidates.dedup_by(|left, right| left.surface == right.surface || left.suffix == right.suffix);
     candidates.truncate(request.limit);
+    l4_signed.scene_memory_hits = l4_scene_memory_supported;
     record_live_gate_stats(
         started,
         raw_count as u64,
@@ -263,6 +275,10 @@ pub fn live_candidate_gate_stats_json() -> serde_json::Value {
             "transition_hits": stats.l4_transition_hits,
             "transition_repels": stats.l4_transition_repels,
         },
+        "l4_scene_memory": {
+            "hits": stats.l4_scene_memory_hits,
+            "authority": "weak bias only; display authority and edit-plan safety stay final"
+        },
         "authority_contract": "L4 signed state is bias only; live candidate authority and edit-plan safety remain final",
         "avg_us": avg_us,
         "max_us": stats.max_us,
@@ -286,6 +302,7 @@ fn live_candidate_gate_stats() -> LiveCandidateGateStats {
         l4_repel: stats.l4_repel.load(Ordering::Relaxed),
         l4_transition_hits: stats.l4_transition_hits.load(Ordering::Relaxed),
         l4_transition_repels: stats.l4_transition_repels.load(Ordering::Relaxed),
+        l4_scene_memory_hits: stats.l4_scene_memory_hits.load(Ordering::Relaxed),
         total_us: stats.total_us.load(Ordering::Relaxed),
         max_us: stats.max_us.load(Ordering::Relaxed),
     }
@@ -321,6 +338,17 @@ fn live_l3_context_score(
     lexical_backoff_allowed.then_some(
         (0.28 + partial_len as f32 * 0.035 + usage_prior + context_usage_prior).clamp(0.0, 0.70),
     )
+}
+
+fn live_l4_scene_memory_score(prefix_tokens: &[String], word: &str) -> Option<f32> {
+    if prefix_tokens.len() < 3 || !super::llmwave::default_memory_is_warm() {
+        return None;
+    }
+    super::llmwave::with_default_memory(|memory| {
+        memory
+            .score_scene_token_report(prefix_tokens, word)
+            .and_then(|report| (report.score >= 0.16 && report.support > 0).then_some(report.score))
+    })
 }
 
 fn record_live_gate_stats(
@@ -375,6 +403,9 @@ fn record_live_gate_stats(
     stats
         .l4_transition_repels
         .fetch_add(l4_signed.transition_repels, Ordering::Relaxed);
+    stats
+        .l4_scene_memory_hits
+        .fetch_add(l4_signed.scene_memory_hits, Ordering::Relaxed);
     stats.total_us.fetch_add(elapsed_us, Ordering::Relaxed);
     update_max_atomic(&stats.max_us, elapsed_us);
 }
@@ -400,6 +431,7 @@ struct LiveCandidateGateAtomicStats {
     l4_repel: AtomicU64,
     l4_transition_hits: AtomicU64,
     l4_transition_repels: AtomicU64,
+    l4_scene_memory_hits: AtomicU64,
     total_us: AtomicU64,
     max_us: AtomicU64,
 }
@@ -411,6 +443,7 @@ struct LiveSignedOutcomeStats {
     repel: u64,
     transition_hits: u64,
     transition_repels: u64,
+    scene_memory_hits: u64,
 }
 
 impl LiveSignedOutcomeStats {
@@ -508,6 +541,12 @@ fn live_l4_scene_bias(action: L4AllowedAction, confidence: f32) -> f32 {
         L4AllowedAction::Wait => -0.020 * confidence,
         L4AllowedAction::Block => -0.060 * confidence,
     }
+}
+
+fn live_l4_scene_memory_bias(score: Option<f32>) -> f32 {
+    score
+        .map(|score| (score * 0.075).clamp(0.0, 0.090))
+        .unwrap_or(0.0)
 }
 
 fn live_l4_signed_bias(signed_weight: f32) -> f32 {
