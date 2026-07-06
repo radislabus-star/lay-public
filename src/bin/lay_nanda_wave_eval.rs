@@ -17,6 +17,8 @@ mod candidate_quality;
 mod canonical_l1_l2;
 #[path = "lay_nanda_wave_eval/canonical_l2_recent.rs"]
 mod canonical_l2_recent;
+#[path = "lay_nanda_wave_eval/ime_hit_rate.rs"]
+mod ime_hit_rate;
 #[path = "lay_nanda_wave_eval/learning_loop.rs"]
 mod learning_loop;
 #[path = "lay_nanda_wave_eval/real_suite.rs"]
@@ -206,6 +208,10 @@ fn main() -> io::Result<()> {
         candidate_quality::print_json()?;
         return Ok(());
     }
+    if args.iter().any(|arg| arg == "--ime-hit-rate-report") {
+        ime_hit_rate::print_json()?;
+        return Ok(());
+    }
     if let Some(limit) = arg_value(&args, "--recent-traces") {
         print_recent_traces(parse_limit(limit, 10));
         return Ok(());
@@ -296,7 +302,7 @@ fn main() -> io::Result<()> {
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --l2-phase-coverage-recent [--limit N] [--candidate-limit N] [--max-examples N] | --l2-candidate-phase-shadow-recent [--l2-phase-memory PATH] [--limit N] [--max-examples N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --llmwave-corpus-report PATH [--test-corpus PATH] [--max-lines N] | --llmwave-dirty-report [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --llmwave-promotion-gate [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --l2-phase-coverage-recent [--limit N] [--candidate-limit N] [--max-examples N] | --l2-candidate-phase-shadow-recent [--l2-phase-memory PATH] [--limit N] [--max-examples N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --llmwave-corpus-report PATH [--test-corpus PATH] [--max-lines N] | --llmwave-dirty-report [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --llmwave-promotion-gate [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --candidate-quality-report | --ime-hit-rate-report | --cases PATH"
         );
         return Ok(());
     }
@@ -430,9 +436,10 @@ fn print_llmwave_learning_report(seed: &str, limit: usize, min_count: usize) -> 
             }
         }
     }
+    let report_phrases = reinforced_phrase_report_sample(&reinforced, limit);
     print_live_phrase_counts(&reinforced, limit);
-    print_learning_deltas(&seed_memory, &combined_memory, reinforced.keys(), limit);
-    print_prediction_deltas(&seed_memory, &combined_memory, reinforced.keys(), limit);
+    print_learning_deltas(&seed_memory, &combined_memory, report_phrases.iter(), limit);
+    print_prediction_deltas(&seed_memory, &combined_memory, report_phrases.iter(), limit);
     Ok(())
 }
 
@@ -1066,9 +1073,7 @@ fn live_phrase_quality_counts(
             *rejected.entry("invalid_json".to_string()).or_default() += 1;
             continue;
         };
-        if let Some(reason) =
-            llmwave::phrase_experience_rejection_reason(&record.stage, &record.text)
-        {
+        if let Some(reason) = llmwave::stored_phrase_experience_rejection_reason(&record) {
             *rejected.entry(reason.as_str().to_string()).or_default() += 1;
         } else {
             accepted += 1;
@@ -1088,6 +1093,18 @@ fn print_live_phrase_counts(live_counts: &BTreeMap<String, usize>, limit: usize)
     for (phrase, count) in rows.into_iter().take(limit) {
         println!("    count={count} text={phrase:?}");
     }
+}
+
+fn reinforced_phrase_report_sample(
+    live_counts: &BTreeMap<String, usize>,
+    limit: usize,
+) -> Vec<String> {
+    let mut rows = live_counts.iter().collect::<Vec<_>>();
+    rows.sort_by(|left, right| right.1.cmp(left.1).then_with(|| left.0.cmp(right.0)));
+    rows.into_iter()
+        .take(limit.saturating_mul(8).clamp(16, 64))
+        .map(|(phrase, _count)| phrase.clone())
+        .collect()
 }
 
 fn print_learning_deltas<'a>(

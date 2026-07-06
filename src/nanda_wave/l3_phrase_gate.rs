@@ -50,7 +50,7 @@ pub(crate) fn evaluate_candidate_with_memory(
         .next();
 
     if let Some(score) = candidate.as_ref() {
-        if score.score >= 0.42 && score.support > 0 {
+        if score.score >= 0.42 && phrase_support_has_apply_mass(score.support) {
             return Some(L3PhraseGateReport {
                 decision: L3PhraseGateDecision::Support,
                 score: score.score,
@@ -66,7 +66,11 @@ pub(crate) fn evaluate_candidate_with_memory(
         .as_ref()
         .and_then(|item| item.tokens.get(prefix.len()))
         .map(String::as_str);
-    if best_score >= 0.56 && best_token.is_some_and(|token| token != next) {
+    let best_support = best.as_ref().map(|item| item.support).unwrap_or(0);
+    if best_score >= 0.56
+        && phrase_support_has_apply_mass(best_support)
+        && best_token.is_some_and(|token| token != next)
+    {
         return Some(L3PhraseGateReport {
             decision: L3PhraseGateDecision::Suppress,
             score: candidate.map(|score| score.score).unwrap_or(0.0),
@@ -83,6 +87,10 @@ pub(crate) fn evaluate_candidate_with_memory(
         width: 0,
         reason: "l3_phrase_memory_neutral",
     })
+}
+
+fn phrase_support_has_apply_mass(support: usize) -> bool {
+    support >= 2
 }
 
 fn changed_next_token(
@@ -131,6 +139,7 @@ mod tests {
         assert_eq!(report.decision, L3PhraseGateDecision::Support);
         assert_eq!(report.reason, "l3_phrase_memory_support");
         assert!(report.score >= 0.42);
+        assert!(report.support >= 2);
     }
 
     #[test]
@@ -147,6 +156,20 @@ mod tests {
 
         assert_eq!(report.decision, L3PhraseGateDecision::Suppress);
         assert_eq!(report.reason, "l3_phrase_memory_conflict");
+    }
+
+    #[test]
+    fn singleton_phrase_memory_stays_neutral_for_apply_authority() {
+        let memory = LlmWaveMemory::from_text("на улице опять идёт дождь");
+        let report = evaluate_candidate_with_memory(
+            "на улице опять идёт дом ",
+            "на улице опять идёт дождь ",
+            &memory,
+        )
+        .expect("phrase report");
+
+        assert_eq!(report.decision, L3PhraseGateDecision::Neutral);
+        assert_eq!(report.support, 0);
     }
 
     #[test]

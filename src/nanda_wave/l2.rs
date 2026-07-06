@@ -395,7 +395,7 @@ fn l2_short_position_seed_index() -> &'static HashMap<String, Vec<String>> {
 fn l2_ime_word_candidate_score(candidate: &L2ImeWordCandidate) -> u32 {
     let prior = ((candidate.usage_prior + candidate.context_prior) * 1000.0)
         .round()
-        .clamp(0.0, 260.0) as u32;
+        .clamp(0.0, 420.0) as u32;
     let kind_bonus = match candidate.kind {
         L2ImeWordCandidateKind::Completion => 80,
         L2ImeWordCandidateKind::Replacement => 0,

@@ -211,7 +211,7 @@ pub(crate) fn context_word_usage_prior(context: &[String], word: &str) -> f32 {
 }
 
 fn word_prior_from_count(count: u32) -> f32 {
-    ((count as f32 + 1.0).ln() * 0.018).clamp(0.0, 0.09)
+    ((count as f32 + 1.0).ln() * 0.026).clamp(0.0, 0.14)
 }
 
 fn usage_learning_enabled() -> bool {
@@ -349,11 +349,11 @@ fn context_ngram_prior_from_counts(counts: &UsageCounts, context: &[String], wor
                 .map(|count| (count, ngram_len))
         })
         .map(|(count, ngram_len)| {
-            let ngram_weight = 0.010 + ngram_len as f32 * 0.004;
-            ((count as f32 + 1.0).ln() * ngram_weight).min(0.07)
+            let ngram_weight = 0.014 + ngram_len as f32 * 0.006;
+            ((count as f32 + 1.0).ln() * ngram_weight).min(0.11)
         })
         .sum::<f32>()
-        .clamp(0.0, 0.16)
+        .clamp(0.0, 0.24)
 }
 
 fn cached_usage_counts() -> UsageCounts {

@@ -34,7 +34,7 @@ pub(crate) fn bayes_score_candidate(
     let usage_prior = crate::nanda_wave::usage_prior::word_usage_prior(&replacement_lower);
     let context_prior = (local_context_prior(original, &replacement_lower)
         + source_prior(source_id))
-    .clamp(0.0, 0.26);
+    .clamp(0.0, 0.34);
     let risk = candidate_risk(
         &original_lower,
         &replacement_lower,
@@ -96,18 +96,14 @@ fn input_likelihood(error_class: &str, source_id: &str, distance: usize, max_len
 
 fn local_context_prior(original: &str, replacement_word: &str) -> f32 {
     let words = text_words(original);
-    let previous = words.iter().rev().nth(1).map(String::as_str).unwrap_or("");
     let mut prior: f32 = 0.0;
     if crate::lexicon::is_common_ru_word(replacement_word) {
         prior += 0.08;
     }
-    if previous == "теорию" && replacement_word.ends_with('а') {
-        prior += 0.06;
-    }
     let mut context = words;
     context.pop();
     prior += crate::nanda_wave::context_word_usage_prior(&context, replacement_word);
-    prior.clamp(0.0, 0.18)
+    prior.clamp(0.0, 0.26)
 }
 
 fn candidate_risk(

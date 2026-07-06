@@ -257,7 +257,7 @@ impl LlmWaveMemory {
                 total_energy += energy;
                 if record.next_hash == next {
                     hit_energy += energy;
-                    support += 1;
+                    support = support.saturating_add(record_support(record));
                     phase_sum += phase_coherence(record.phase);
                 }
             }
@@ -370,7 +370,7 @@ impl LlmWaveMemory {
                 let score = (f32::from(record.strength.max(0)) / 1024.0).clamp(0.0, 1.0) * trust;
                 let entry = by_hash.entry(record.next_hash).or_default();
                 entry.0 += score;
-                entry.1 += 1;
+                entry.1 = entry.1.saturating_add(record_support(record));
             }
             let predictions = ranked_predictions(&self.vocabulary, by_hash, limit);
             if !predictions.is_empty() {
@@ -454,6 +454,10 @@ fn record_energy(record: &LlmWaveRecord) -> f32 {
     let rejected = f32::from(record.rejected);
     let trust = (accepted + 1.0) / (accepted + rejected + 2.0);
     (f32::from(record.strength.max(0)) / 1024.0).clamp(0.0, 1.0) * trust
+}
+
+fn record_support(record: &LlmWaveRecord) -> usize {
+    usize::from(record.accepted.max(1))
 }
 
 fn phase_coherence(phase: i8) -> f32 {
@@ -591,11 +595,45 @@ pub fn load_phrase_experience(path: &Path) -> io::Result<Vec<LlmWavePhraseExperi
         let Ok(record) = serde_json::from_str::<LlmWavePhraseExperience>(line) else {
             continue;
         };
-        if phrase_experience(&record.stage, &record.text).is_some() {
+        if stored_phrase_experience_rejection_reason(&record).is_none() {
             records.push(record);
         }
     }
     Ok(records)
+}
+
+pub fn stored_phrase_experience_rejection_reason(
+    record: &LlmWavePhraseExperience,
+) -> Option<PhraseExperienceRejectReason> {
+    if record.kind != "llmwave_phrase_experience_v1" {
+        return Some(PhraseExperienceRejectReason::UnsafeText);
+    }
+    if record.stage != "space" && record.stage != "enter" {
+        return Some(PhraseExperienceRejectReason::UnsupportedStage);
+    }
+    let normalized = match normalize_experience_text(&record.text) {
+        Ok(normalized) => normalized,
+        Err(reason) => return Some(reason),
+    };
+    if normalized != record.text {
+        return Some(PhraseExperienceRejectReason::UnsafeText);
+    }
+    let tokens = tokenize(&normalized);
+    if tokens.len() != record.tokens
+        || !(MIN_EXPERIENCE_TOKENS..=MAX_EXPERIENCE_TOKENS).contains(&tokens.len())
+    {
+        return Some(PhraseExperienceRejectReason::TokenCount);
+    }
+    if has_dirty_layout_fragment(&normalized, &tokens) {
+        return Some(PhraseExperienceRejectReason::DirtyLayout);
+    }
+    if is_unstable_or_noisy_phrase(&normalized) {
+        return Some(PhraseExperienceRejectReason::UnstableOrNoisy);
+    }
+    if alpha_quality_is_low(&normalized) || ends_with_unfinished_short_word(&tokens) {
+        return Some(PhraseExperienceRejectReason::LowLanguageQuality);
+    }
+    None
 }
 
 pub fn phrase_experience_rejection_reason(
@@ -662,6 +700,12 @@ fn normalize_experience_text(text: &str) -> Result<String, PhraseExperienceRejec
         return Err(PhraseExperienceRejectReason::LowLanguageQuality);
     }
     Ok(text)
+}
+
+fn alpha_quality_is_low(text: &str) -> bool {
+    let alpha = text.chars().filter(|ch| ch.is_alphabetic()).count();
+    let total = text.chars().filter(|ch| !ch.is_whitespace()).count().max(1);
+    alpha * 2 < total
 }
 
 fn has_dirty_layout_fragment(text: &str, tokens: &[String]) -> bool {
