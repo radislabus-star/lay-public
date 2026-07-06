@@ -7,7 +7,7 @@ use lay::nanda_wave::{
 use lay::nanda_wave::{l2, run_wave_trace_with_options, WaveDecision, WaveOptions};
 use lay::{config, typing_assist, typing_context};
 use serde_json::{json, Value};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::env;
 use std::fs;
 use std::io;
@@ -82,6 +82,7 @@ fn refresh_live_status_fields(value: &mut Value) {
     let resonance_memory = resonance_memory::load_resonance_memory();
     value["cell_scoreboard"] = scoreboard_json(&scoreboard);
     value["resonance_memory"] = resonance_memory_json(&resonance_memory);
+    value["l4_state_map"] = l4_state_map_json();
     value["preedit_live"] = preedit_live_json();
     value["candidate_quality"] = candidate_quality::report_json();
     value["live_scoreboard_refreshed_at_unix"] = json!(lay::time::unix_timestamp());
@@ -219,6 +220,7 @@ fn build_status_json(full: bool) -> io::Result<serde_json::Value> {
         "candidate_stats": candidate_stats,
         "cell_scoreboard": scoreboard_json(&scoreboard),
         "resonance_memory": resonance_memory_json(&resonance_memory),
+        "l4_state_map": l4_state_map_json(),
         "preedit_live": preedit_live_json(),
         "candidate_quality": candidate_quality::report_json(),
         "sources": suite.sources.iter().map(|source| {
@@ -603,9 +605,72 @@ fn status_cache_path() -> PathBuf {
         .join(".cache/lay/nanda_wave_status.json")
 }
 
+#[derive(Debug, Default, serde::Deserialize)]
+struct StatusUsageCountsFile {
+    counts: StatusUsageCounts,
+}
+
+#[derive(Debug, Default, serde::Deserialize)]
+struct StatusUsageCounts {
+    #[serde(default)]
+    accepted_words: BTreeMap<String, u32>,
+    #[serde(default)]
+    context_words: BTreeMap<String, u32>,
+    #[serde(default)]
+    rejected_words: BTreeMap<String, u32>,
+    #[serde(default)]
+    rejected_context_words: BTreeMap<String, u32>,
+}
+
+fn l4_state_map_json() -> Value {
+    let (source_bytes, parsed_events, word_states) = lay::nanda_wave::usage_debug_summary();
+    let counts = status_usage_counts();
+    let signed_word_states = counts
+        .accepted_words
+        .keys()
+        .chain(counts.rejected_words.keys())
+        .collect::<BTreeSet<_>>()
+        .len();
+    let neutral = word_states.saturating_sub(signed_word_states);
+    json!({
+        "kind": "l4_signed_state_map",
+        "source": "word_usage_events.jsonl -> usage_counts v4",
+        "source_bytes": source_bytes,
+        "parsed_events": parsed_events,
+        "word_states": word_states,
+        "accepted_word_states": counts.accepted_words.len(),
+        "context_word_states": counts.context_words.len(),
+        "rejected_word_states": counts.rejected_words.len(),
+        "rejected_context_word_states": counts.rejected_context_words.len(),
+        "signed_word_states": signed_word_states,
+        "polarity": {
+            "attract": counts.accepted_words.len(),
+            "neutral": neutral,
+            "repel": counts.rejected_words.len()
+        },
+        "contract": {
+            "positive_trace": "accepted_ime / accepted_fix target",
+            "negative_trace": "accepted_fix corrected-away source word",
+            "authority": "bias only; safety/edit gates remain final authority"
+        }
+    })
+}
+
+fn status_usage_counts() -> StatusUsageCounts {
+    let path = env::var_os("HOME")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from("."))
+        .join(".local/share/lay/nanda_wave/word_usage_counts.json");
+    fs::read_to_string(path)
+        .ok()
+        .and_then(|text| serde_json::from_str::<StatusUsageCountsFile>(&text).ok())
+        .map(|file| file.counts)
+        .unwrap_or_default()
+}
+
 #[cfg(test)]
 mod tests {
-    use super::preedit_live_stats_from_text;
+    use super::{l4_state_map_json, preedit_live_stats_from_text};
 
     #[test]
     fn preedit_live_stats_count_sessions_not_each_show() {
@@ -624,5 +689,16 @@ mod tests {
         assert_eq!(stats.accepted, 1);
         assert_eq!(stats.abandoned, 1);
         assert_eq!(stats.acceptance_percent(), Some(50.0));
+    }
+
+    #[test]
+    fn l4_state_map_status_has_contract() {
+        let value = l4_state_map_json();
+
+        assert_eq!(value["kind"], "l4_signed_state_map");
+        assert_eq!(
+            value["contract"]["authority"],
+            "bias only; safety/edit gates remain final authority"
+        );
     }
 }

@@ -71,6 +71,18 @@ pub struct UsagePriorSnapshot {
     counts: Arc<UsageCounts>,
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub(crate) struct UsageStateMapSummary {
+    pub(crate) source_bytes: u64,
+    pub(crate) parsed_events: usize,
+    pub(crate) word_states: usize,
+    pub(crate) accepted_word_states: usize,
+    pub(crate) context_word_states: usize,
+    pub(crate) rejected_word_states: usize,
+    pub(crate) rejected_context_word_states: usize,
+    pub(crate) signed_word_states: usize,
+}
+
 impl UsagePriorSnapshot {
     pub fn word_prior(&self, word: &str) -> f32 {
         let lower = normalize_word(word);
@@ -339,13 +351,34 @@ pub(crate) fn l2_surface_words_by_usage(limit: usize) -> Vec<String> {
 }
 
 pub(crate) fn usage_debug_summary() -> (u64, usize, usize) {
+    let summary = usage_state_map_summary();
+    (
+        summary.source_bytes,
+        summary.parsed_events,
+        summary.word_states,
+    )
+}
+
+pub(crate) fn usage_state_map_summary() -> UsageStateMapSummary {
     let text = usage_events_path()
         .and_then(|path| read_usage_events_text(&path))
         .unwrap_or_default();
-    let bytes = text.len() as u64;
-    let parsed = usage_events_from_jsonl(&text).count();
     let counts = load_usage_counts();
-    (bytes, parsed, counts.words.len())
+    UsageStateMapSummary {
+        source_bytes: text.len() as u64,
+        parsed_events: usage_events_from_jsonl(&text).count(),
+        word_states: counts.words.len(),
+        accepted_word_states: counts.accepted_words.len(),
+        context_word_states: counts.context_words.len(),
+        rejected_word_states: counts.rejected_words.len(),
+        rejected_context_word_states: counts.rejected_context_words.len(),
+        signed_word_states: counts
+            .accepted_words
+            .keys()
+            .chain(counts.rejected_words.keys())
+            .collect::<HashSet<_>>()
+            .len(),
+    }
 }
 
 fn refresh_usage_counts_from_disk() -> UsageCounts {
@@ -969,6 +1002,26 @@ mod tests {
                 .copied(),
             Some(6)
         );
+    }
+
+    #[test]
+    fn state_map_summary_counts_signed_word_states() {
+        let text = r#"{"ts":1,"kind":"accepted_fix","word":"отравим","context":["мы"],"from":"мы отвравим","to":"мы отравим"}
+{"ts":2,"kind":"accepted_ime","word":"дождь","context":["идёт"],"to":"дождь"}
+"#;
+        let mut counts = UsageCounts::default();
+        add_usage_event_counts(&mut counts, text);
+
+        let signed_word_states = counts
+            .accepted_words
+            .keys()
+            .chain(counts.rejected_words.keys())
+            .collect::<HashSet<_>>()
+            .len();
+
+        assert_eq!(counts.accepted_words.len(), 2);
+        assert_eq!(counts.rejected_words.len(), 1);
+        assert_eq!(signed_word_states, 3);
     }
 
     #[test]
