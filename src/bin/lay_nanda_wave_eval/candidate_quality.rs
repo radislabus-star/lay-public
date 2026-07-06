@@ -65,6 +65,8 @@ struct CandidateQualityReport {
     arbitration_nanda_extra_context: usize,
     arbitration_left_context_changed: usize,
     arbitration_unverified_transition: usize,
+    edit_action_left_context_changed: usize,
+    edit_action_unverified_transition: usize,
     nanda_apply: usize,
     deterministic_apply: usize,
     slow_output: usize,
@@ -169,6 +171,8 @@ fn report_from_text(text: &str, limit: usize, path: &Path) -> serde_json::Value 
             "nanda_extra_context": report.arbitration_nanda_extra_context,
             "left_context_changed": report.arbitration_left_context_changed,
             "unverified_transition": report.arbitration_unverified_transition,
+            "edit_action_left_context_changed": report.edit_action_left_context_changed,
+            "edit_action_unverified_transition": report.edit_action_unverified_transition,
             "read_as": "why the chosen candidate won or should not have won; diagnostic only"
         },
         "source_mix": {
@@ -259,6 +263,22 @@ fn inspect_edit_plan(report: &mut CandidateQualityReport, value: &Value) {
     if would_touch_words > 1 || changes_non_last_word {
         report.multiword_touch += 1;
         report.add_class("multiword_touch");
+    }
+    let transition_left_context_changed = value
+        .get("transition_left_context_changed")
+        .and_then(Value::as_bool)
+        .unwrap_or(false);
+    let transition_verified = value
+        .get("transition_verified")
+        .and_then(Value::as_bool)
+        .unwrap_or(true);
+    if transition_left_context_changed {
+        report.edit_action_left_context_changed += 1;
+        report.add_class("edit_action_left_context_changed");
+    }
+    if transition_left_context_changed && !transition_verified {
+        report.edit_action_unverified_transition += 1;
+        report.add_class("edit_action_unverified_transition");
     }
 }
 
@@ -542,7 +562,7 @@ mod tests {
     fn candidate_quality_report_flags_trace_and_boundary_risks() {
         let text = r#"
 {"kind":"candidate_before_apply","action_kind":"replace_last_token","from":"gjhn ","to":"порт ","boundary_changed":false,"changes_non_last_word":false,"word_count_changed":false,"would_touch_words":1,"safety_allow_apply":true,"input_gate":{"selected_source":"deterministic","selected_error_class":"composite-typo","selected_gate_action":"apply","candidate_count":1,"candidate_scores":[{"replacement":"порт port порт ","source":"deterministic","posterior_milli":488,"usage_prior_milli":0,"context_prior_milli":240,"risk_milli":280,"gate_action":"apply","selected":true,"edit_transition_left_context_changed":false,"edit_transition_verified":true}]}}
-{"kind":"candidate_before_apply","action_kind":"block_unsafe","from":"одно два ","to":"однотри ","boundary_changed":true,"changes_non_last_word":true,"word_count_changed":true,"would_touch_words":2,"safety_allow_apply":false,"input_gate":{"selected_source":"nanda","selected_error_class":"glued-words","selected_gate_action":"apply","candidate_count":2,"candidate_scores":[{"replacement":"однотри ","source":"nanda","posterior_milli":220,"usage_prior_milli":0,"context_prior_milli":0,"risk_milli":310,"gate_action":"apply","selected":true,"edit_transition_left_context_changed":true,"edit_transition_verified":false},{"replacement":"одно два ","source":"deterministic","posterior_milli":500,"usage_prior_milli":0,"context_prior_milli":0,"risk_milli":0,"gate_action":"suggest_only","selected":false,"edit_transition_left_context_changed":false,"edit_transition_verified":true}]}}
+{"kind":"candidate_before_apply","action_kind":"block_unsafe","transition_left_context_changed":true,"transition_verified":false,"from":"одно два ","to":"однотри ","boundary_changed":true,"changes_non_last_word":true,"word_count_changed":true,"would_touch_words":2,"safety_allow_apply":false,"input_gate":{"selected_source":"nanda","selected_error_class":"glued-words","selected_gate_action":"apply","candidate_count":2,"candidate_scores":[{"replacement":"однотри ","source":"nanda","posterior_milli":220,"usage_prior_milli":0,"context_prior_milli":0,"risk_milli":310,"gate_action":"apply","selected":true,"edit_transition_left_context_changed":true,"edit_transition_verified":false},{"replacement":"одно два ","source":"deterministic","posterior_milli":500,"usage_prior_milli":0,"context_prior_milli":0,"risk_milli":0,"gate_action":"suggest_only","selected":false,"edit_transition_left_context_changed":false,"edit_transition_verified":true}]}}
 "#;
 
         let report = report_from_text(text, 20, &PathBuf::from("recent.jsonl"));
@@ -566,5 +586,13 @@ mod tests {
         assert_eq!(report["candidate_arbitration"]["selected_unsafe_edit"], 1);
         assert_eq!(report["candidate_arbitration"]["left_context_changed"], 1);
         assert_eq!(report["candidate_arbitration"]["unverified_transition"], 1);
+        assert_eq!(
+            report["candidate_arbitration"]["edit_action_left_context_changed"],
+            1
+        );
+        assert_eq!(
+            report["candidate_arbitration"]["edit_action_unverified_transition"],
+            1
+        );
     }
 }

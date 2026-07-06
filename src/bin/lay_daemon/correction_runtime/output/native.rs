@@ -203,6 +203,7 @@ fn native_text_edit_action_allowed(
         Some("manual_native_replace"),
         None,
     );
+    lay::action_log::record_candidate_edit_action_before_apply(&edit_action, None);
     if edit_action.allow_apply() {
         return true;
     }

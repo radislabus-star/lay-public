@@ -13,6 +13,8 @@ mod cursor;
 mod diff_plan;
 #[path = "text_edit/gate.rs"]
 mod gate;
+#[path = "text_edit/mutation.rs"]
+mod mutation;
 #[path = "text_edit/safety.rs"]
 mod safety;
 #[path = "text_edit/types.rs"]
@@ -28,7 +30,8 @@ pub use cursor::offset_replacement_plan_for_cursor;
 pub use diff_plan::{
     apply_replacement_plan_to_text, plan_text_replacement, replacement_plan_matches, tail_chars,
 };
-pub use gate::authorize_replacement;
+pub use gate::{authorize_replacement, authorize_replacement_with_transition};
+pub use mutation::TransitionAudit;
 pub use safety::{autocorrect_edit_safety, EditPlanSafetyReport};
 pub use types::TextReplacement;
 

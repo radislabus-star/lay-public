@@ -86,7 +86,11 @@ fn build_input_gate_decoded_tail(
         .and_then(|trace| trace.scoreboard.as_ref())
         .and_then(|scoreboard| scoreboard.selected_bayes_posterior_milli)
         .unwrap_or(0);
-    let edit_action = lay::text_edit::authorize_replacement(
+    let transition = input_gate
+        .as_ref()
+        .map(lay::action_log::RecentActionGateTrace::selected_transition_audit)
+        .unwrap_or_default();
+    let edit_action = lay::text_edit::authorize_replacement_with_transition(
         "typing-assist",
         confidence_milli,
         original,
@@ -94,8 +98,8 @@ fn build_input_gate_decoded_tail(
         edit.plan.clone(),
         source_id,
         error_class,
+        transition,
     );
-    lay::action_log::record_candidate_edit_action_before_apply(&edit_action, input_gate.clone());
     if !edit_action.allow_apply() {
         crate::log(&format!(
             "· typing-assist blocked by edit-plan safety: reason={} original={:?} replacement={:?}",

@@ -1,3 +1,4 @@
+use super::mutation::TransitionAudit;
 use super::safety::{autocorrect_edit_safety, EditPlanSafetyReport};
 use super::types::TextReplacement;
 
@@ -39,6 +40,7 @@ pub struct EditAction {
     pub to_text: String,
     pub plan: Option<TextReplacement>,
     pub safety: Option<EditPlanSafetyReport>,
+    pub transition: TransitionAudit,
     pub selected_source_id: Option<String>,
     pub selected_error_class: Option<String>,
 }
@@ -54,6 +56,7 @@ impl EditAction {
             to_text: text,
             plan: None,
             safety: None,
+            transition: TransitionAudit::none(),
             selected_source_id: None,
             selected_error_class: None,
         }
@@ -88,6 +91,7 @@ impl EditAction {
             to_text,
             plan: Some(plan),
             safety: Some(safety),
+            transition: TransitionAudit::none(),
             selected_source_id: selected_source_id.map(str::to_string),
             selected_error_class: selected_error_class.map(str::to_string),
         }
@@ -107,9 +111,22 @@ impl EditAction {
             to_text: to_text.into(),
             plan: None,
             safety: None,
+            transition: TransitionAudit::none(),
             selected_source_id: None,
             selected_error_class: None,
         }
+    }
+
+    pub fn with_transition(mut self, transition: TransitionAudit) -> Self {
+        if let Some(reason) = transition.block_reason() {
+            self.kind = EditActionKind::BlockUnsafe;
+            if let Some(safety) = self.safety.as_mut() {
+                safety.allow_apply = false;
+                safety.reason = reason;
+            }
+        }
+        self.transition = transition;
+        self
     }
 
     pub fn allow_apply(&self) -> bool {

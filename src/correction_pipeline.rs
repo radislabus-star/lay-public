@@ -108,13 +108,13 @@ impl GateDecision {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-struct EditPlan {
+struct PipelineEditDecision {
     original: String,
     replacement: String,
     apply_space: bool,
 }
 
-impl EditPlan {
+impl PipelineEditDecision {
     fn from_gate(snapshot: &TailSnapshot, gate: &GateDecision) -> Option<Self> {
         let InputGateAction::ApplyReplacement { replacement, .. } = &gate.action else {
             return None;
@@ -133,7 +133,7 @@ struct ArbitrationReport {
     candidate_set: CandidateSet,
     l3_report: Option<L3ArbitrationReport>,
     gate: GateDecision,
-    edit_plan: Option<EditPlan>,
+    edit_plan: Option<PipelineEditDecision>,
     input_gate: InputGateDecision,
 }
 
@@ -235,7 +235,7 @@ impl CanonicalTextPipeline {
                 candidates: Vec::new(),
             });
         let gate = GateDecision::from_input_gate(&input_gate);
-        let edit_plan = EditPlan::from_gate(&req.snapshot, &gate);
+        let edit_plan = PipelineEditDecision::from_gate(&req.snapshot, &gate);
         let l3_report = req
             .include_l3_report
             .then(|| run_wave_trace(&req.snapshot.text))

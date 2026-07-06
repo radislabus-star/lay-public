@@ -118,6 +118,16 @@ struct CandidateBeforeApplyRecord<'a> {
     action_source: Option<&'a str>,
     #[serde(skip_serializing_if = "Option::is_none")]
     action_confidence_milli: Option<i16>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    transition_operator: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    transition_proof: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    transition_verified: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    transition_left_context_changed: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    transition_changed_tokens: Option<usize>,
     from: &'a str,
     to: &'a str,
     edit_plan: EditPlanRecord<'a>,
@@ -211,6 +221,19 @@ impl RecentActionGateTrace {
             reason: trace.reason.to_string(),
         }
     }
+
+    pub fn selected_transition_audit(&self) -> crate::text_edit::TransitionAudit {
+        let Some(selected) = self.candidate_scores.iter().find(|score| score.selected) else {
+            return crate::text_edit::TransitionAudit::none();
+        };
+        crate::text_edit::TransitionAudit::proven(
+            selected.edit_transition_operator.clone(),
+            selected.edit_transition_proof.clone(),
+            selected.edit_transition_verified,
+            selected.edit_transition_left_context_changed,
+            selected.edit_transition_changed_tokens,
+        )
+    }
 }
 
 pub fn record_candidate_before_apply(
@@ -220,7 +243,7 @@ pub fn record_candidate_before_apply(
     safety: &crate::text_edit::EditPlanSafetyReport,
     input_gate: Option<RecentActionGateTrace>,
 ) {
-    record_candidate_before_apply_inner(from, to, plan, safety, None, None, None, input_gate);
+    record_candidate_before_apply_inner(from, to, plan, safety, None, None, None, None, input_gate);
 }
 
 pub fn record_candidate_edit_action_before_apply(
@@ -238,6 +261,7 @@ pub fn record_candidate_edit_action_before_apply(
         Some(action.kind.as_str()),
         Some(action.source.as_str()),
         Some(action.confidence_milli),
+        Some(&action.transition),
         input_gate,
     );
 }
@@ -251,6 +275,7 @@ fn record_candidate_before_apply_inner(
     action_kind: Option<&'static str>,
     action_source: Option<&str>,
     action_confidence_milli: Option<i16>,
+    transition: Option<&crate::text_edit::TransitionAudit>,
     input_gate: Option<RecentActionGateTrace>,
 ) {
     if !crate::config::LayConfig::load().debug_action_log {
@@ -265,6 +290,11 @@ fn record_candidate_before_apply_inner(
         action_kind,
         action_source,
         action_confidence_milli,
+        transition_operator: transition.and_then(|audit| audit.operator.as_deref()),
+        transition_proof: transition.and_then(|audit| audit.proof.as_deref()),
+        transition_verified: transition.and_then(|audit| audit.verified),
+        transition_left_context_changed: transition.and_then(|audit| audit.left_context_changed),
+        transition_changed_tokens: transition.and_then(|audit| audit.changed_tokens),
         from,
         to,
         edit_plan: EditPlanRecord {

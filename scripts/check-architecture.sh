@@ -200,9 +200,14 @@ assert_single_owner "fn split_last_alphabetic_token(" "src/word_reader.rs"
 assert_single_owner "pub struct CandidateExplanation" "src/candidate_explanation.rs"
 assert_single_owner "pub enum LanguageActionOperator" "src/language_action.rs"
 assert_single_owner "pub fn operator_for_candidate(" "src/language_action.rs"
+assert_single_owner "pub struct TransitionAudit" "src/text_edit/mutation.rs"
 if search_fixed "fn split_last_token(" src >"$HIT_FILE"; then
   cat "$HIT_FILE" >&2
   error "ambiguous split_last_token helper is forbidden; use explicit word_reader split helpers"
+fi
+if search_fixed "struct EditPlan {" src >"$HIT_FILE"; then
+  cat "$HIT_FILE" >&2
+  error "local struct EditPlan is forbidden; use text_edit::TextReplacement or a route-specific name"
 fi
 assert_live_correction_entrypoint_owned_by_input_gate "resolve_text_correction("
 assert_live_correction_entrypoint_owned_by_input_gate "decide_text_correction("

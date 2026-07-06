@@ -39,6 +39,7 @@ pub(crate) fn try_manual_text_replacement(
         Some("manual_toggle"),
         None,
     );
+    lay::action_log::record_candidate_edit_action_before_apply(&edit_action, None);
     if !edit_action.allow_apply() {
         log(&format!(
             "⚠ {kind} blocked by EditAction safety: reason={} original={:?} replacement={:?}; fallback to replay",
