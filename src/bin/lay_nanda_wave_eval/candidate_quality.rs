@@ -67,6 +67,20 @@ struct CandidateQualityReport {
     arbitration_unverified_transition: usize,
     edit_action_left_context_changed: usize,
     edit_action_unverified_transition: usize,
+    candidate_score_rows: usize,
+    selected_score_rows: usize,
+    bayes_posterior_rows: usize,
+    bayes_usage_signal_rows: usize,
+    bayes_context_signal_rows: usize,
+    l3_phrase_signal_rows: usize,
+    l3_phrase_support_rows: usize,
+    l3_phrase_suppress_rows: usize,
+    l4_scene_signal_rows: usize,
+    l4_scene_suggest_rows: usize,
+    l4_scene_wait_or_block_rows: usize,
+    l4_signed_signal_rows: usize,
+    decision_rank_rows: usize,
+    selected_decision_rank_rows: usize,
     nanda_apply: usize,
     deterministic_apply: usize,
     slow_output: usize,
@@ -174,6 +188,23 @@ fn report_from_text(text: &str, limit: usize, path: &Path) -> serde_json::Value 
             "edit_action_left_context_changed": report.edit_action_left_context_changed,
             "edit_action_unverified_transition": report.edit_action_unverified_transition,
             "read_as": "why the chosen candidate won or should not have won; diagnostic only"
+        },
+        "decision_lanes": {
+            "candidate_score_rows": report.candidate_score_rows,
+            "selected_score_rows": report.selected_score_rows,
+            "bayes_posterior_rows": report.bayes_posterior_rows,
+            "bayes_usage_signal_rows": report.bayes_usage_signal_rows,
+            "bayes_context_signal_rows": report.bayes_context_signal_rows,
+            "l3_phrase_signal_rows": report.l3_phrase_signal_rows,
+            "l3_phrase_support_rows": report.l3_phrase_support_rows,
+            "l3_phrase_suppress_rows": report.l3_phrase_suppress_rows,
+            "l4_scene_signal_rows": report.l4_scene_signal_rows,
+            "l4_scene_suggest_rows": report.l4_scene_suggest_rows,
+            "l4_scene_wait_or_block_rows": report.l4_scene_wait_or_block_rows,
+            "l4_signed_signal_rows": report.l4_signed_signal_rows,
+            "decision_rank_rows": report.decision_rank_rows,
+            "selected_decision_rank_rows": report.selected_decision_rank_rows,
+            "read_as": "Bayes/L3/L4/DecisionCore lane coverage from logged candidate_scores; diagnostic only"
         },
         "source_mix": {
             "deterministic_apply": report.deterministic_apply,
@@ -317,6 +348,7 @@ fn inspect_gate(report: &mut CandidateQualityReport, value: &Value, gate: &Value
         inspect_selected_candidate(report, value, selected_source, selected);
         inspect_rank(report, gate, selected);
     }
+    inspect_decision_lanes(report, gate);
     inspect_arbitration(report, value, gate);
 }
 
@@ -410,6 +442,87 @@ fn inspect_rank(report: &mut CandidateQualityReport, gate: &Value, selected: &Va
     if better_exists {
         report.good_candidate_bad_rank += 1;
         report.add_class("good_candidate_bad_rank");
+    }
+}
+
+fn inspect_decision_lanes(report: &mut CandidateQualityReport, gate: &Value) {
+    let Some(candidates) = gate.get("candidate_scores").and_then(Value::as_array) else {
+        return;
+    };
+    for candidate in candidates {
+        report.candidate_score_rows += 1;
+        let selected = is_selected_candidate(candidate);
+        if selected {
+            report.selected_score_rows += 1;
+        }
+        if candidate.get("posterior_milli").is_some() {
+            report.bayes_posterior_rows += 1;
+        }
+        if candidate
+            .get("usage_prior_milli")
+            .and_then(Value::as_i64)
+            .is_some_and(|value| value > 0)
+        {
+            report.bayes_usage_signal_rows += 1;
+        }
+        if candidate
+            .get("context_prior_milli")
+            .and_then(Value::as_i64)
+            .is_some_and(|value| value > 0)
+        {
+            report.bayes_context_signal_rows += 1;
+        }
+
+        let l3_phrase_milli = candidate
+            .get("l3_phrase_milli")
+            .and_then(Value::as_i64)
+            .unwrap_or(0);
+        if l3_phrase_milli != 0 {
+            report.l3_phrase_signal_rows += 1;
+        }
+        match candidate
+            .get("l3_phrase_decision")
+            .and_then(Value::as_str)
+            .unwrap_or("")
+        {
+            "support" => report.l3_phrase_support_rows += 1,
+            "suppress" => report.l3_phrase_suppress_rows += 1,
+            _ => {}
+        }
+
+        let l4_scene_milli = candidate
+            .get("l4_scene_milli")
+            .and_then(Value::as_i64)
+            .unwrap_or(0);
+        if l4_scene_milli != 0 {
+            report.l4_scene_signal_rows += 1;
+        }
+        match candidate
+            .get("l4_scene_action")
+            .and_then(Value::as_str)
+            .unwrap_or("")
+        {
+            "suggest" => report.l4_scene_suggest_rows += 1,
+            "wait" | "block" => report.l4_scene_wait_or_block_rows += 1,
+            _ => {}
+        }
+        if candidate
+            .get("l4_signed_milli")
+            .and_then(Value::as_i64)
+            .is_some_and(|value| value != 0)
+        {
+            report.l4_signed_signal_rows += 1;
+        }
+        if candidate
+            .get("decision_rank_milli")
+            .and_then(Value::as_i64)
+            .is_some_and(|value| value != 0)
+        {
+            report.decision_rank_rows += 1;
+            if selected {
+                report.selected_decision_rank_rows += 1;
+            }
+        }
     }
 }
 
@@ -561,8 +674,8 @@ mod tests {
     #[test]
     fn candidate_quality_report_flags_trace_and_boundary_risks() {
         let text = r#"
-{"kind":"candidate_before_apply","action_kind":"replace_last_token","from":"gjhn ","to":"порт ","boundary_changed":false,"changes_non_last_word":false,"word_count_changed":false,"would_touch_words":1,"safety_allow_apply":true,"input_gate":{"selected_source":"deterministic","selected_error_class":"composite-typo","selected_gate_action":"apply","candidate_count":1,"candidate_scores":[{"replacement":"порт port порт ","source":"deterministic","posterior_milli":488,"usage_prior_milli":0,"context_prior_milli":240,"risk_milli":280,"gate_action":"apply","selected":true,"edit_transition_left_context_changed":false,"edit_transition_verified":true}]}}
-{"kind":"candidate_before_apply","action_kind":"block_unsafe","transition_left_context_changed":true,"transition_verified":false,"from":"одно два ","to":"однотри ","boundary_changed":true,"changes_non_last_word":true,"word_count_changed":true,"would_touch_words":2,"safety_allow_apply":false,"input_gate":{"selected_source":"nanda","selected_error_class":"glued-words","selected_gate_action":"apply","candidate_count":2,"candidate_scores":[{"replacement":"однотри ","source":"nanda","posterior_milli":220,"usage_prior_milli":0,"context_prior_milli":0,"risk_milli":310,"gate_action":"apply","selected":true,"edit_transition_left_context_changed":true,"edit_transition_verified":false},{"replacement":"одно два ","source":"deterministic","posterior_milli":500,"usage_prior_milli":0,"context_prior_milli":0,"risk_milli":0,"gate_action":"suggest_only","selected":false,"edit_transition_left_context_changed":false,"edit_transition_verified":true}]}}
+{"kind":"candidate_before_apply","action_kind":"replace_last_token","from":"gjhn ","to":"порт ","boundary_changed":false,"changes_non_last_word":false,"word_count_changed":false,"would_touch_words":1,"safety_allow_apply":true,"input_gate":{"selected_source":"deterministic","selected_error_class":"composite-typo","selected_gate_action":"apply","candidate_count":1,"candidate_scores":[{"replacement":"порт port порт ","source":"deterministic","posterior_milli":488,"usage_prior_milli":50,"context_prior_milli":240,"risk_milli":280,"gate_action":"apply","selected":true,"l3_phrase_milli":40,"l3_phrase_decision":"support","l4_scene_milli":620,"l4_scene_action":"suggest","l4_signed_milli":0,"decision_rank_milli":800,"edit_transition_left_context_changed":false,"edit_transition_verified":true}]}}
+{"kind":"candidate_before_apply","action_kind":"block_unsafe","transition_left_context_changed":true,"transition_verified":false,"from":"одно два ","to":"однотри ","boundary_changed":true,"changes_non_last_word":true,"word_count_changed":true,"would_touch_words":2,"safety_allow_apply":false,"input_gate":{"selected_source":"nanda","selected_error_class":"glued-words","selected_gate_action":"apply","candidate_count":2,"candidate_scores":[{"replacement":"однотри ","source":"nanda","posterior_milli":220,"usage_prior_milli":0,"context_prior_milli":0,"risk_milli":310,"gate_action":"apply","selected":true,"l3_phrase_milli":-300,"l3_phrase_decision":"suppress","l4_scene_milli":620,"l4_scene_action":"suggest","l4_signed_milli":-100,"decision_rank_milli":100,"edit_transition_left_context_changed":true,"edit_transition_verified":false},{"replacement":"одно два ","source":"deterministic","posterior_milli":500,"usage_prior_milli":0,"context_prior_milli":0,"risk_milli":0,"gate_action":"suggest_only","selected":false,"l3_phrase_milli":0,"l3_phrase_decision":"neutral","l4_scene_milli":-200,"l4_scene_action":"wait","l4_signed_milli":0,"decision_rank_milli":500,"edit_transition_left_context_changed":false,"edit_transition_verified":true}]}}
 "#;
 
         let report = report_from_text(text, 20, &PathBuf::from("recent.jsonl"));
@@ -594,5 +707,19 @@ mod tests {
             report["candidate_arbitration"]["edit_action_unverified_transition"],
             1
         );
+        assert_eq!(report["decision_lanes"]["candidate_score_rows"], 3);
+        assert_eq!(report["decision_lanes"]["selected_score_rows"], 2);
+        assert_eq!(report["decision_lanes"]["bayes_posterior_rows"], 3);
+        assert_eq!(report["decision_lanes"]["bayes_usage_signal_rows"], 1);
+        assert_eq!(report["decision_lanes"]["bayes_context_signal_rows"], 1);
+        assert_eq!(report["decision_lanes"]["l3_phrase_signal_rows"], 2);
+        assert_eq!(report["decision_lanes"]["l3_phrase_support_rows"], 1);
+        assert_eq!(report["decision_lanes"]["l3_phrase_suppress_rows"], 1);
+        assert_eq!(report["decision_lanes"]["l4_scene_signal_rows"], 3);
+        assert_eq!(report["decision_lanes"]["l4_scene_suggest_rows"], 2);
+        assert_eq!(report["decision_lanes"]["l4_scene_wait_or_block_rows"], 1);
+        assert_eq!(report["decision_lanes"]["l4_signed_signal_rows"], 1);
+        assert_eq!(report["decision_lanes"]["decision_rank_rows"], 3);
+        assert_eq!(report["decision_lanes"]["selected_decision_rank_rows"], 2);
     }
 }

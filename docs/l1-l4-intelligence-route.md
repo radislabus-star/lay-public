@@ -477,7 +477,7 @@ boundary or multiword change:
 ## Current Progress Matrix
 
 ```text
-checkpoint: 0.2.159
+checkpoint: 0.2.160
 
 1. mutation route map:
    status: PASS-basic
@@ -520,8 +520,8 @@ checkpoint: 0.2.159
    evidence: correction_core::L2CandidateSource routes deterministic/NANDA proposals by mode
 
 11-13. Bayes/L3/L4:
-   status: PASS-partial
-   evidence: DecisionCore rank now consumes Bayes posterior, L3 phrase pressure, L4 scene state, and L4 signed memory; input_gate/recent_actions candidate score traces expose l3_phrase_milli, l4_scene_milli, l4_signed_milli, and decision_rank_milli without widening the public scoreboard API
+   status: PASS-basic
+   evidence: DecisionCore rank now consumes Bayes posterior, L3 phrase pressure, L4 scene state, and L4 signed memory; input_gate/recent_actions candidate score traces expose l3_phrase_milli, l4_scene_milli, l4_signed_milli, and decision_rank_milli without widening the public scoreboard API; candidate_quality_report exposes decision_lanes coverage for Bayes/L3/L4/DecisionRank
 
 14. DecisionCore final chooser:
    status: PASS-basic
@@ -562,6 +562,7 @@ commit 16: Bayes/L3/L4 first-class DecisionCore lanes
 commit 17: version bump and release sync
 commit 18: IME completion accept through AcceptImeCandidate EditAction
 commit 19: move IME autocorrect proof cases into shared ime_correction
+commit 20: candidate-quality lane scoreboard for Bayes L3 L4
 ```
 
 ## Scoreboard
