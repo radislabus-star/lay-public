@@ -78,14 +78,50 @@ SCOREBOARD
     +-- backend
 ```
 
+Current diagnostic commands:
+
+```text
+lay-debug-actions --unsafe-scoreboard
+lay-debug-actions --unsafe-edits
+lay-nanda-wave-eval --candidate-quality-report
+```
+
+Current checkpoint:
+
+```text
+0.2.143
+|
++-- runtime text edits pass through text_edit transition safety
++-- direct runtime authorize_replacement calls are blocked by a contract test
++-- DoubleShift and TabAccept are visible in InputGate trace
++-- Enter/manual/native before-apply logs now carry gate trace when the route owns one
++-- unsafe edit scoreboard detects:
+    +-- boundary_changed
+    +-- multiword_touch
+    +-- transition_left_context_changed
+    +-- unverified_transition
+    +-- selected candidate transition risk
+    +-- slow_output
+```
+
+Live diagnostic sample after this checkpoint:
+
+```text
+recent_actions window: 294
+unsafe records: 14
+boundary_changed: 0
+multiword_touch: 0
+slow_output: 4
+```
+
 ## Debt Queue
 
 ```text
-P0: carry edit_transition proof to the top-level EditAction log.
-P1: forbid new raw text mutation callers in architecture checks.
-P2: remove duplicate local "EditPlan" names that hide the real text-edit plan.
-P3: make IME a display/commit backend, not an independent correction owner.
-P4: add candidate-quality counters for unsafe top-level transitions.
+P0: keep IME committed-tail transition explicit as a transition route, not fake InputGate.
+P0: decide whether auto-undo needs its own transition scoreboard row.
+P1: remove duplicate local "EditPlan" names that hide the real text-edit plan.
+P2: make IME a display/commit backend, not an independent correction owner.
+P2: keep candidate-quality counters in release checks.
 ```
 
 ## Laws
