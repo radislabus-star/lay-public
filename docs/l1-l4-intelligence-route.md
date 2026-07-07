@@ -477,7 +477,7 @@ boundary or multiword change:
 ## Current Progress Matrix
 
 ```text
-checkpoint: 0.2.146
+checkpoint: 0.2.148
 
 1. mutation route map:
    status: PASS-basic
@@ -504,8 +504,8 @@ checkpoint: 0.2.146
    evidence: ime_active_composition / ime_committed_tail routes are explicit
 
 7. move IME correction logic out:
-   status: WATCH
-   evidence: IME routes are visible, but committed-tail autocorrect still has local route code
+   status: PASS-partial
+   evidence: active-composition correction decision moved to lay::ime_correction; committed-tail route still needs the same treatment
 
 8-15. L1/L2/L3/L4/Bayes/DecisionCore/preedit:
    status: WATCH

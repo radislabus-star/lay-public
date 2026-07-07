@@ -17,6 +17,7 @@ pub mod desktop;
 pub mod dict;
 pub mod engine;
 pub mod eval_cases;
+pub mod ime_correction;
 pub mod input_gate;
 pub mod keyboard;
 pub mod language_action;
