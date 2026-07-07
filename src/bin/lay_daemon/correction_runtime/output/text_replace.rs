@@ -52,7 +52,7 @@ pub(crate) fn try_manual_text_replacement(
     );
     lay::action_log::record_candidate_edit_action_before_apply(
         &edit_action,
-        "manual_text_replace",
+        lay::action_log::MutationLogRoute::MANUAL_TEXT_REPLACE,
         input_gate.clone(),
     );
     if !edit_action.allow_apply() {

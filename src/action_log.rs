@@ -13,6 +13,27 @@ const TIMING_PROFILE_PATH: &str = ".local/share/lay/timing_profile.jsonl";
 const NANDA_DIRTY_TASKS_PATH: &str = ".local/share/lay/nanda_wave/dirty_tasks.jsonl";
 const MAX_LOGGED_CANDIDATE_SCORES: usize = 8;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct MutationLogRoute(&'static str);
+
+impl MutationLogRoute {
+    pub const AUTO_UNDO: Self = Self("auto_undo");
+    pub const ENTER_AUTOCORRECT: Self = Self("enter_autocorrect");
+    pub const IME_ACTIVE_COMPOSITION: Self = Self("ime_active_composition");
+    pub const IME_COMMITTED_TAIL: Self = Self("ime_committed_tail");
+    pub const MANUAL_NATIVE_REPLACE: Self = Self("manual_native_replace");
+    pub const MANUAL_TEXT_REPLACE: Self = Self("manual_text_replace");
+    pub const TYPING_ASSIST_IME: Self = Self("typing_assist_ime");
+    pub const TYPING_ASSIST_MINIMAL: Self = Self("typing_assist_minimal");
+
+    #[cfg(test)]
+    pub const TEST: Self = Self("test_mutation_route");
+
+    pub fn as_str(self) -> &'static str {
+        self.0
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct RecentAction<'a> {
     pub ts: u64,
@@ -238,7 +259,7 @@ impl RecentActionGateTrace {
 }
 
 pub fn record_candidate_before_apply(
-    mutation_route: &'static str,
+    mutation_route: MutationLogRoute,
     from: &str,
     to: &str,
     plan: &crate::text_edit::TextReplacement,
@@ -261,7 +282,7 @@ pub fn record_candidate_before_apply(
 
 pub fn record_candidate_edit_action_before_apply(
     action: &crate::text_edit::EditAction,
-    mutation_route: &'static str,
+    mutation_route: MutationLogRoute,
     input_gate: Option<RecentActionGateTrace>,
 ) {
     let (Some(plan), Some(safety)) = (action.plan.as_ref(), action.safety.as_ref()) else {
@@ -283,7 +304,7 @@ pub fn record_candidate_edit_action_before_apply(
 
 #[allow(clippy::too_many_arguments)]
 fn record_candidate_before_apply_inner(
-    mutation_route: &'static str,
+    mutation_route: MutationLogRoute,
     from: &str,
     to: &str,
     plan: &crate::text_edit::TextReplacement,
@@ -303,7 +324,7 @@ fn record_candidate_before_apply_inner(
     let record = CandidateBeforeApplyRecord {
         ts: unix_timestamp(),
         kind: "candidate_before_apply",
-        mutation_route,
+        mutation_route: mutation_route.as_str(),
         action_kind,
         action_source,
         action_confidence_milli,

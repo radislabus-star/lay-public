@@ -232,7 +232,7 @@ fn native_text_edit_action_allowed(
     );
     lay::action_log::record_candidate_edit_action_before_apply(
         &edit_action,
-        "manual_native_replace",
+        lay::action_log::MutationLogRoute::MANUAL_NATIVE_REPLACE,
         input_gate,
     );
     if edit_action.allow_apply() {

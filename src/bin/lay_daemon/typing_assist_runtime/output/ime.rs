@@ -68,7 +68,7 @@ pub(crate) fn try_apply_ime_replacement(
     );
     lay::action_log::record_candidate_edit_action_before_apply(
         &edit_action,
-        "typing_assist_ime",
+        lay::action_log::MutationLogRoute::TYPING_ASSIST_IME,
         input_gate.clone(),
     );
     if !edit_action.allow_apply() {

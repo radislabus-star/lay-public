@@ -254,7 +254,7 @@ impl LayIbusEngine {
                 if let Some(action) = action.as_ref() {
                     lay::action_log::record_candidate_edit_action_before_apply(
                         action,
-                        "ime_committed_tail",
+                        lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
                         None,
                     );
                     trace::record_committed_tail_replace(
@@ -277,7 +277,7 @@ impl LayIbusEngine {
         };
         lay::action_log::record_candidate_edit_action_before_apply(
             &edit_action,
-            "ime_committed_tail",
+            lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
             None,
         );
         let text = plan.insert.clone();

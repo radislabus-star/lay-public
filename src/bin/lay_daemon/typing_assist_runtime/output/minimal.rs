@@ -74,7 +74,7 @@ pub(crate) fn apply_minimal_typing_replacement(
     );
     lay::action_log::record_candidate_edit_action_before_apply(
         &edit_action,
-        "typing_assist_minimal",
+        lay::action_log::MutationLogRoute::TYPING_ASSIST_MINIMAL,
         input_gate.clone(),
     );
     if !edit_action.allow_apply() {

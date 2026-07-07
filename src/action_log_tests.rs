@@ -273,7 +273,7 @@ fn action_log_writes_candidate_before_apply_mutation_route() {
         ),
     );
 
-    record_candidate_edit_action_before_apply(&action, "test_mutation_route", None);
+    record_candidate_edit_action_before_apply(&action, MutationLogRoute::TEST, None);
 
     let text = std::fs::read_to_string(home.join(ACTIONS_PATH)).unwrap();
     assert!(text.contains("\"kind\":\"candidate_before_apply\""));

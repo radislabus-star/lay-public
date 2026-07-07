@@ -136,7 +136,7 @@ pub(super) fn handle_enter_autocorrect(
     );
     lay::action_log::record_candidate_edit_action_before_apply(
         &edit_action,
-        "enter_autocorrect",
+        lay::action_log::MutationLogRoute::ENTER_AUTOCORRECT,
         input_gate.clone(),
     );
     if !edit_action.allow_apply() {
