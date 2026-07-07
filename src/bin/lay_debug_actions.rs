@@ -2,6 +2,7 @@ use serde_json::Value;
 use std::path::PathBuf;
 
 const RECENT_ACTIONS: &str = ".local/share/lay/recent_actions.jsonl";
+const IBUS_TRACE: &str = ".local/share/lay/ibus_engine_debug.jsonl";
 
 fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
@@ -9,12 +10,19 @@ fn main() {
         print_usage();
         return;
     }
-    if !args.iter().any(|arg| arg == "--unsafe-edits") {
-        print_usage();
-        std::process::exit(2);
+    if args.iter().any(|arg| arg == "--unsafe-edits") {
+        print_matching_jsonl(recent_actions_path(), unsafe_edit);
+        return;
     }
+    if args.iter().any(|arg| arg == "--stale-tail") {
+        print_matching_jsonl(ibus_trace_path(), stale_tail_guard);
+        return;
+    }
+    print_usage();
+    std::process::exit(2);
+}
 
-    let path = recent_actions_path();
+fn print_matching_jsonl(path: PathBuf, predicate: fn(&Value) -> bool) {
     let Ok(text) = std::fs::read_to_string(&path) else {
         eprintln!("cannot read {}", path.display());
         std::process::exit(1);
@@ -24,7 +32,7 @@ fn main() {
         let Ok(value) = serde_json::from_str::<Value>(line) else {
             continue;
         };
-        if !unsafe_edit(&value) {
+        if !predicate(&value) {
             continue;
         }
         println!(
@@ -35,7 +43,7 @@ fn main() {
 }
 
 fn print_usage() {
-    eprintln!("usage: lay-debug-actions --unsafe-edits");
+    eprintln!("usage: lay-debug-actions --unsafe-edits | --stale-tail");
 }
 
 fn recent_actions_path() -> PathBuf {
@@ -43,6 +51,21 @@ fn recent_actions_path() -> PathBuf {
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from("."))
         .join(RECENT_ACTIONS)
+}
+
+fn ibus_trace_path() -> PathBuf {
+    std::env::var_os("HOME")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from("."))
+        .join(IBUS_TRACE)
+}
+
+fn stale_tail_guard(value: &Value) -> bool {
+    value.get("kind").and_then(Value::as_str) == Some("ibus_committed_tail_replace_guard")
+        && value
+            .get("reason")
+            .and_then(Value::as_str)
+            .is_some_and(|reason| reason.contains("stale"))
 }
 
 fn unsafe_edit(value: &Value) -> bool {

@@ -138,6 +138,7 @@ impl LayIbusEngine {
             preedit_dirty: false,
             cursor_cell_width: 0,
             surrounding_text_supported: false,
+            surrounding_text_snapshot: None,
             layout_is_ru,
             shift_active: false,
             shift_used_as_modifier: false,
@@ -183,6 +184,7 @@ impl LayIbusEngine {
             self.preedit_fast.reset();
             self.publish_tail_handoff();
         }
+        self.surrounding_text_snapshot = None;
     }
 
     pub(super) fn should_preserve_focus_handoff(&self) -> bool {
@@ -207,6 +209,7 @@ impl LayIbusEngine {
         self.shift_used_as_modifier = false;
         self.alt_completion_active = false;
         self.alt_used_as_modifier = false;
+        self.surrounding_text_snapshot = None;
         self.rebuild_preedit_fast_from_tail();
         self.publish_tail_handoff();
     }
@@ -241,6 +244,21 @@ impl LayIbusEngine {
                 backspaces,
                 expected,
                 &original_text,
+            );
+            return Ok(false);
+        }
+        if !self.surrounding_text_delete_is_current(&original_text, backspaces) {
+            let actual = self
+                .surrounding_text_snapshot
+                .as_ref()
+                .and_then(|snapshot| snapshot.suffix_before_cursor(backspaces as usize))
+                .unwrap_or_default();
+            trace::record_committed_tail_replace_guard(
+                source,
+                "stale_surrounding_text",
+                backspaces,
+                &original_text,
+                &actual,
             );
             return Ok(false);
         }
@@ -365,6 +383,14 @@ impl LayIbusEngine {
                     && self.tail_buffer.ends_with(text)
             })
     }
+
+    fn surrounding_text_delete_is_current(&self, expected: &str, backspaces: u32) -> bool {
+        self.surrounding_text_snapshot
+            .as_ref()
+            .map_or(true, |snapshot| {
+                snapshot.matches_delete_suffix(expected, backspaces as usize)
+            })
+    }
 }
 
 fn warm_runtime(config: &LayConfig) {
@@ -467,6 +493,26 @@ mod tests {
             ));
 
         assert!(!request.expected_tail_is_current("ghjdt", Some("/test")));
+    }
+
+    #[test]
+    fn surrounding_text_guard_accepts_matching_field_suffix() {
+        let mut engine = engine();
+        engine.surrounding_text_snapshot = Some(
+            super::super::engine::SurroundingTextSnapshot::new("abc ghbdtn".to_string(), 10, 10),
+        );
+
+        assert!(engine.surrounding_text_delete_is_current("bdtn", 4));
+    }
+
+    #[test]
+    fn surrounding_text_guard_rejects_stale_field_suffix() {
+        let mut engine = engine();
+        engine.surrounding_text_snapshot = Some(
+            super::super::engine::SurroundingTextSnapshot::new("abc ghjdt".to_string(), 9, 9),
+        );
+
+        assert!(!engine.surrounding_text_delete_is_current("bdtn", 4));
     }
 
     #[test]

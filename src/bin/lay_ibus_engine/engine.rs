@@ -32,6 +32,49 @@ pub(super) struct PendingSpaceCommittedTailReplace {
     pub(super) started_at: Instant,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct SurroundingTextSnapshot {
+    pub(super) text: String,
+    pub(super) cursor_pos: u32,
+    pub(super) anchor_pos: u32,
+}
+
+impl SurroundingTextSnapshot {
+    pub(super) fn new(text: String, cursor_pos: u32, anchor_pos: u32) -> Self {
+        Self {
+            text,
+            cursor_pos,
+            anchor_pos,
+        }
+    }
+
+    pub(super) fn suffix_before_cursor(&self, chars: usize) -> Option<String> {
+        if chars == 0 {
+            return Some(String::new());
+        }
+        let cursor = self.cursor_pos as usize;
+        if cursor < chars || self.text.chars().count() < cursor {
+            return None;
+        }
+        Some(
+            self.text
+                .chars()
+                .take(cursor)
+                .skip(cursor - chars)
+                .collect(),
+        )
+    }
+
+    pub(super) fn matches_delete_suffix(&self, expected: &str, chars: usize) -> bool {
+        self.cursor_pos == self.anchor_pos
+            && expected.chars().count() == chars
+            && self
+                .suffix_before_cursor(chars)
+                .as_deref()
+                .is_some_and(|actual| actual == expected)
+    }
+}
+
 pub(crate) struct LayIbusEngine {
     pub(super) path: String,
     pub(super) shared: Shared,
@@ -45,6 +88,7 @@ pub(crate) struct LayIbusEngine {
     pub(super) preedit_dirty: bool,
     pub(super) cursor_cell_width: i32,
     pub(super) surrounding_text_supported: bool,
+    pub(super) surrounding_text_snapshot: Option<SurroundingTextSnapshot>,
     pub(super) layout_is_ru: bool,
     pub(super) shift_active: bool,
     pub(super) shift_used_as_modifier: bool,

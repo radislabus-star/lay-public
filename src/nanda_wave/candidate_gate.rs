@@ -501,6 +501,9 @@ fn live_completion_has_authority(input: LiveCompletionAuthority) -> bool {
             && input.suffix_len <= 8;
     }
     if input.partial_len == 3 {
+        if !input.allow_short_lexical {
+            return usage_signal;
+        }
         return usage_signal
             || structural_signal
             || (input.allow_short_lexical && lexical_signal && input.suffix_len <= 7);
@@ -650,6 +653,32 @@ mod tests {
             usage: 0.10,
             context_usage: 0.0,
             accepted: 2,
+        }));
+    }
+
+    #[test]
+    fn short_mid_sentence_completion_needs_usage_authority() {
+        assert!(!live_completion_has_authority(LiveCompletionAuthority {
+            partial_len: 3,
+            suffix_len: 3,
+            allow_short_lexical: false,
+            structural: 0.60,
+            usage: 0.0,
+            context_usage: 0.0,
+            accepted: 0,
+            common: true,
+            hot: true,
+        }));
+        assert!(live_completion_has_authority(LiveCompletionAuthority {
+            partial_len: 3,
+            suffix_len: 3,
+            allow_short_lexical: false,
+            structural: 0.0,
+            usage: 0.0,
+            context_usage: 0.0,
+            accepted: 1,
+            common: false,
+            hot: false,
         }));
     }
 }

@@ -455,28 +455,15 @@ impl LayIbusEngine {
         let allow_short_lexical = self.config.active_correction_safety()
             == lay::config::CorrectionSafety::Experimental
             || !has_left_context;
-        let short_prefix_uses_seed = partial_len <= 4;
-        let whole_word_candidates = if short_prefix_uses_seed {
-            lay::nanda_wave::candidate_gate::live_completion_candidates(
-                lay::nanda_wave::candidate_gate::LiveCompletionRequest {
-                    context_prefix: prefix,
-                    partial: &partial,
-                    max_suffix_chars,
-                    allow_short_lexical: true,
-                    limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
-                },
-            )
-        } else {
-            lay::nanda_wave::candidate_gate::live_completion_candidates(
-                lay::nanda_wave::candidate_gate::LiveCompletionRequest {
-                    context_prefix: prefix,
-                    partial: &partial,
-                    max_suffix_chars,
-                    allow_short_lexical,
-                    limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
-                },
-            )
-        };
+        let whole_word_candidates = lay::nanda_wave::candidate_gate::live_completion_candidates(
+            lay::nanda_wave::candidate_gate::LiveCompletionRequest {
+                context_prefix: prefix,
+                partial: &partial,
+                max_suffix_chars,
+                allow_short_lexical,
+                limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
+            },
+        );
         let mut ranked = whole_word_candidates
             .into_iter()
             .map(|candidate| (candidate.suffix, candidate.score))
@@ -1911,10 +1898,7 @@ mod tests {
         push_unique_suffix(&mut candidates, Some(" в".to_string()));
         push_unique_suffix(&mut candidates, Some("ет".to_string()));
 
-        assert_eq!(
-            candidates,
-            vec!["и".to_string(), " в".to_string(), "ет".to_string()]
-        );
+        assert_eq!(candidates, vec!["и".to_string(), "ет".to_string()]);
     }
 
     #[test]

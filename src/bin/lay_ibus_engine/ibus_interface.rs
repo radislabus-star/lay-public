@@ -3,7 +3,7 @@ use zbus::interface;
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::Value;
 
-use super::engine::LayIbusEngine;
+use super::engine::{LayIbusEngine, SurroundingTextSnapshot};
 use super::protocol::{is_accept_completion_with_space_key, is_key_press, is_shift_key, KEY_SPACE};
 use super::trace;
 
@@ -86,6 +86,7 @@ impl LayIbusEngine {
         trace::record(r#"{"kind":"ibus_focus","stage":"focus_in"}"#);
         self.config = lay::config::LayConfig::load();
         self.surrounding_text_supported = false;
+        self.surrounding_text_snapshot = None;
         self.refresh_empty_tail_from_handoff();
         self.shared
             .lock()
@@ -105,6 +106,7 @@ impl LayIbusEngine {
             self.should_preserve_focus_handoff() || self.shared_active_path_preserved();
         self.reset_for_ibus_focus_change();
         self.surrounding_text_supported = false;
+        self.surrounding_text_snapshot = None;
         if preserve_active_path {
             return;
         }
@@ -182,8 +184,10 @@ impl LayIbusEngine {
     fn cursor_down(&mut self) {}
 
     #[zbus(name = "SetSurroundingText")]
-    fn set_surrounding_text(&mut self, _text: Value<'_>, _cursor_pos: u32, _anchor_pos: u32) {
+    fn set_surrounding_text(&mut self, text: Value<'_>, cursor_pos: u32, anchor_pos: u32) {
         self.surrounding_text_supported = true;
+        self.surrounding_text_snapshot = ibus_text_value_to_string(&text)
+            .map(|text| SurroundingTextSnapshot::new(text, cursor_pos, anchor_pos));
     }
 
     #[zbus(name = "PanelExtensionReceived")]
@@ -244,5 +248,44 @@ impl LayIbusEngine {
     #[zbus(property, name = "ActiveSurroundingText")]
     fn active_surrounding_text(&self) -> bool {
         true
+    }
+}
+
+fn ibus_text_value_to_string(value: &Value<'_>) -> Option<String> {
+    match value {
+        Value::Str(text) => Some(text.as_str().to_string()),
+        Value::Structure(structure) => {
+            let fields = structure.fields();
+            match fields.get(2) {
+                Some(Value::Str(text)) => Some(text.as_str().to_string()),
+                _ => None,
+            }
+        }
+        _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::ibus_text_value_to_string;
+    use crate::text::make_ibus_text;
+    use zbus::zvariant::Value;
+
+    #[test]
+    fn parses_plain_string_surrounding_text() {
+        assert_eq!(
+            ibus_text_value_to_string(&Value::new("привет")),
+            Some("привет".to_string())
+        );
+    }
+
+    #[test]
+    fn parses_ibus_text_surrounding_text() {
+        let value = make_ibus_text("abc ghbdtn".to_string());
+
+        assert_eq!(
+            ibus_text_value_to_string(&value),
+            Some("abc ghbdtn".to_string())
+        );
     }
 }
