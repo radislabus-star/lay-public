@@ -89,7 +89,7 @@ lay-nanda-wave-eval --candidate-quality-report
 Current checkpoint:
 
 ```text
-0.2.152
+0.2.153
 |
 +-- runtime text edits pass through text_edit transition safety
 +-- direct runtime authorize_replacement calls are blocked by a contract test
@@ -99,6 +99,7 @@ Current checkpoint:
 +-- dead pending committed-tail Space autocorrect branch removed
 +-- TypingErrorEvent now enters correction through L1SurfaceSignal instead of local event parsing
 +-- correction_core now routes deterministic/NANDA candidate generation through L2CandidateSource
++-- final apply-candidate selection moved from L2CandidateLattice into CorrectionDecisionCore
 +-- candidate ranking includes verified edit-transition operator weight, so boundary/layout proof can beat L2 surface shortcuts
 +-- every candidate_before_apply record now carries typed mutation_route:
     +-- enter_autocorrect

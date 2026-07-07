@@ -3,6 +3,7 @@
 //! Runtime backends still own output and state. This module only answers one
 //! question: should this completed text be replaced, and by which engine?
 
+mod decision_core;
 mod edit_transition;
 mod l1_surface_signal;
 mod l2_lattice;
@@ -437,42 +438,6 @@ fn explanation_for_candidate(
         candidate.error_class,
         &candidate.source_id,
     )
-}
-
-fn candidate_rank_score(original: &str, candidate: &UnifiedCorrectionCandidate) -> f32 {
-    let bayes = bayes_score_for_candidate(original, candidate).posterior;
-    let explanation = explanation_for_candidate(original, candidate);
-    let transition = edit_transition::prove_edit_transition(
-        original,
-        &candidate.replacement,
-        candidate.error_class,
-        &candidate.source_id,
-    );
-    bayes
-        + ((explanation.explanation_score_milli as f32 - 500.0) / 10_000.0)
-        + transition_rank_bonus(transition, &candidate.source_id)
-}
-
-fn transition_rank_bonus(transition: edit_transition::EditTransitionProof, source_id: &str) -> f32 {
-    if !transition.verified {
-        return -0.20;
-    }
-    match transition.operator {
-        edit_transition::EditTransitionOperator::BoundaryShift
-        | edit_transition::EditTransitionOperator::SplitPreviousGluedAndRepairTail => 0.34,
-        edit_transition::EditTransitionOperator::LayoutProjection => 0.28,
-        edit_transition::EditTransitionOperator::PhraseTokenRepair => 0.16,
-        edit_transition::EditTransitionOperator::ReplaceCurrentWord => {
-            match correction_source_contract::source_role(source_id) {
-                CorrectionSourceRole::DeterministicTypo => 0.08,
-                CorrectionSourceRole::L2Surface => -0.08,
-                _ => 0.0,
-            }
-        }
-        edit_transition::EditTransitionOperator::Completion
-        | edit_transition::EditTransitionOperator::Protected
-        | edit_transition::EditTransitionOperator::Unknown => 0.0,
-    }
 }
 
 impl TypingErrorEvent {

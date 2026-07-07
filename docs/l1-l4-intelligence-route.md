@@ -477,7 +477,7 @@ boundary or multiword change:
 ## Current Progress Matrix
 
 ```text
-checkpoint: 0.2.152
+checkpoint: 0.2.153
 
 1. mutation route map:
    status: PASS-basic
@@ -513,15 +513,23 @@ checkpoint: 0.2.152
 
 9. L2CandidateLattice object:
    status: PASS-basic
-   evidence: correction_core::L2CandidateLattice owns dedup + selected apply candidate
+   evidence: correction_core::L2CandidateLattice owns candidate collection and dedup only
 
 10. CandidateSource adapters:
    status: PASS-basic
    evidence: correction_core::L2CandidateSource routes deterministic/NANDA proposals by mode
 
-11-15. Bayes/L3/L4/DecisionCore/preedit:
+11-13. Bayes/L3/L4:
    status: WATCH
-   evidence: pieces exist, but final single DecisionCore is not yet the only authority
+   evidence: pieces exist, but they are not yet full first-class final scoring inputs
+
+14. DecisionCore final chooser:
+   status: PASS-basic
+   evidence: correction_core::decision_core owns selected apply ranking; L2CandidateLattice only collects/dedups candidates
+
+15. preedit from DecisionCore:
+   status: WATCH
+   evidence: IME display path still needs final audit against common DecisionCore authority
 
 16. delete old direct mutation paths:
    status: WATCH
