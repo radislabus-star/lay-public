@@ -477,7 +477,7 @@ boundary or multiword change:
 ## Current Progress Matrix
 
 ```text
-checkpoint: 0.2.156
+checkpoint: 0.2.157
 
 1. mutation route map:
    status: PASS-basic
@@ -520,8 +520,8 @@ checkpoint: 0.2.156
    evidence: correction_core::L2CandidateSource routes deterministic/NANDA proposals by mode
 
 11-13. Bayes/L3/L4:
-   status: WATCH
-   evidence: pieces exist, but they are not yet full first-class final scoring inputs
+   status: PASS-partial
+   evidence: DecisionCore rank now consumes Bayes posterior, L3 phrase pressure, L4 scene state, and L4 signed memory; input_gate/recent_actions candidate score traces expose l3_phrase_milli, l4_scene_milli, l4_signed_milli, and decision_rank_milli without widening the public scoreboard API
 
 14. DecisionCore final chooser:
    status: PASS-basic
@@ -558,7 +558,8 @@ commit 12: unified DecisionCore
 commit 13: preedit from DecisionCore
 commit 14: remove old direct mutation paths
 commit 15: tray cleanup
-commit 16: version bump and release sync
+commit 16: Bayes/L3/L4 first-class DecisionCore lanes
+commit 17: version bump and release sync
 ```
 
 ## Scoreboard
@@ -576,6 +577,10 @@ boundary_changed
 weak_bayes
 bayes_unsupported
 l3_context_used
+l3_phrase_milli
+l4_scene_milli
+l4_signed_milli
+decision_rank_milli
 auto_apply_rate
 suggest_rate
 accept_rate
@@ -598,8 +603,8 @@ P0: keep IME display-only
 P1: make first-word IME suggestions aggressive
 P1: make Bayes usage prior dominate repeat choices
 P1: make L2 output a real lattice
-P2: add bounded L3 phrase frames
-P2: connect L4 task state
+P2: strengthen bounded L3 phrase frames with broader corpus proof
+P2: tune L4 task-state pressure against dirty-log regressions
 P2: remove old tail hacks
 P3: tray cleanup is contract-guarded; keep future UI changes behind tray_ui_contract
 ```

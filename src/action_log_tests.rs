@@ -203,6 +203,10 @@ fn action_log_writes_candidate_score_trace_from_input_gate() {
     assert!(text.contains("\"candidate_scores\""));
     assert!(text.contains("\"posterior_milli\""));
     assert!(text.contains("\"usage_prior_milli\""));
+    assert!(text.contains("\"l3_phrase_milli\""));
+    assert!(text.contains("\"l4_scene_milli\""));
+    assert!(text.contains("\"l4_signed_milli\""));
+    assert!(text.contains("\"decision_rank_milli\""));
     assert!(text.contains("\"risk_milli\""));
     assert!(text.contains("\"selected\":true"));
     let _ = std::fs::remove_dir_all(tmp);

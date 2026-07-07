@@ -105,8 +105,16 @@ pub(crate) struct InputGateCandidateScoreTrace {
     pub(crate) likelihood_milli: i16,
     pub(crate) usage_prior_milli: i16,
     pub(crate) context_prior_milli: i16,
+    pub(crate) l3_phrase_milli: i16,
+    pub(crate) l3_phrase_decision: &'static str,
+    pub(crate) l4_scene_milli: i16,
+    pub(crate) l4_scene_action: &'static str,
+    pub(crate) l4_scene_reason: &'static str,
+    pub(crate) l4_signed_milli: i16,
+    pub(crate) l4_signed_reason: &'static str,
     pub(crate) risk_milli: i16,
     pub(crate) posterior_milli: i16,
+    pub(crate) decision_rank_milli: i16,
     pub(crate) selected: bool,
 }
 
@@ -137,8 +145,16 @@ impl From<&CorrectionCandidateScoreTrace> for InputGateCandidateScoreTrace {
             likelihood_milli: score.likelihood_milli,
             usage_prior_milli: score.usage_prior_milli,
             context_prior_milli: score.context_prior_milli,
+            l3_phrase_milli: score.l3_phrase_milli,
+            l3_phrase_decision: score.l3_phrase_decision,
+            l4_scene_milli: score.l4_scene_milli,
+            l4_scene_action: score.l4_scene_action,
+            l4_scene_reason: score.l4_scene_reason,
+            l4_signed_milli: score.l4_signed_milli,
+            l4_signed_reason: score.l4_signed_reason,
             risk_milli: score.risk_milli,
             posterior_milli: score.posterior_milli,
+            decision_rank_milli: score.decision_rank_milli,
             selected: score.selected,
         }
     }
@@ -446,6 +462,9 @@ mod tests {
         assert_eq!(score.gate_action, CandidateGateAction::Apply);
         assert!(score.selected);
         assert!(score.posterior_milli > 0);
+        assert!(score.decision_rank_milli > 0);
+        assert_eq!(score.l4_scene_action, "suggest");
+        assert!(score.l4_scene_milli > 0);
         assert_eq!(
             trace.selected_source,
             Some(CorrectionDecisionSource::Deterministic)

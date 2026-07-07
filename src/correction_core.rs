@@ -26,6 +26,7 @@ use crate::word_reader::{
     cyrillic_word_splits, is_cyrillic_letters_only, last_text_word, replace_last_text_word,
     split_edge_whitespace, split_word_punctuation,
 };
+use decision_core::candidate_decision_signals;
 use l1_surface_signal::L1SurfaceSignal;
 use l2_lattice::L2CandidateLattice;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -204,8 +205,16 @@ pub(crate) struct CorrectionCandidateScoreTrace {
     pub(crate) likelihood_milli: i16,
     pub(crate) usage_prior_milli: i16,
     pub(crate) context_prior_milli: i16,
+    pub(crate) l3_phrase_milli: i16,
+    pub(crate) l3_phrase_decision: &'static str,
+    pub(crate) l4_scene_milli: i16,
+    pub(crate) l4_scene_action: &'static str,
+    pub(crate) l4_scene_reason: &'static str,
+    pub(crate) l4_signed_milli: i16,
+    pub(crate) l4_signed_reason: &'static str,
     pub(crate) risk_milli: i16,
     pub(crate) posterior_milli: i16,
+    pub(crate) decision_rank_milli: i16,
     pub(crate) selected: bool,
 }
 
@@ -246,7 +255,7 @@ pub fn correction_gate_stats_json() -> serde_json::Value {
 
 impl CorrectionScoreboard {
     fn from_candidates(
-        original: &str,
+        event: &TypingErrorEvent,
         candidates: &[UnifiedCorrectionCandidate],
         selected: Option<&UnifiedCorrectionCandidate>,
     ) -> Self {
@@ -273,7 +282,7 @@ impl CorrectionScoreboard {
         }
 
         scoreboard.selected_bayes_posterior_milli = selected.map(|candidate| {
-            let posterior = bayes_score_for_candidate(original, candidate).posterior;
+            let posterior = bayes_score_for_candidate(&event.original, candidate).posterior;
             (posterior * 1000.0).round() as i16
         });
         scoreboard
@@ -368,21 +377,23 @@ fn update_max_atomic(target: &AtomicU64, value: u64) {
 
 impl CorrectionCandidateScoreTrace {
     fn from_candidates(
-        original: &str,
+        event: &TypingErrorEvent,
         candidates: &[UnifiedCorrectionCandidate],
         selected: Option<&UnifiedCorrectionCandidate>,
     ) -> Vec<Self> {
         candidates
             .iter()
             .map(|candidate| {
-                let score = bayes_score_for_candidate(original, candidate);
-                let explanation = explanation_for_candidate(original, candidate);
+                let score = bayes_score_for_candidate(&event.original, candidate);
+                let explanation = explanation_for_candidate(&event.original, candidate);
                 let transition = edit_transition::prove_edit_transition(
-                    original,
+                    &event.original,
                     &candidate.replacement,
                     candidate.error_class,
                     &candidate.source_id,
                 );
+                let decision_signals =
+                    candidate_decision_signals(event, candidate, candidates.len());
                 Self {
                     replacement: candidate.replacement.clone(),
                     source: candidate.source,
@@ -413,8 +424,16 @@ impl CorrectionCandidateScoreTrace {
                     likelihood_milli: score_to_milli(score.likelihood),
                     usage_prior_milli: score_to_milli(score.usage_prior),
                     context_prior_milli: score_to_milli(score.context_prior),
+                    l3_phrase_milli: decision_signals.l3_phrase_milli,
+                    l3_phrase_decision: decision_signals.l3_phrase_decision,
+                    l4_scene_milli: decision_signals.l4_scene_milli,
+                    l4_scene_action: decision_signals.l4_scene_action,
+                    l4_scene_reason: decision_signals.l4_scene_reason,
+                    l4_signed_milli: decision_signals.l4_signed_milli,
+                    l4_signed_reason: decision_signals.l4_signed_reason,
                     risk_milli: score_to_milli(score.risk),
                     posterior_milli: score_to_milli(score.posterior),
+                    decision_rank_milli: decision_signals.rank_milli,
                     selected: selected.is_some_and(|selected| selected == candidate),
                 }
             })
@@ -2890,6 +2909,10 @@ mod tests {
         assert!(score.selected);
         assert!(score.likelihood_milli > 0);
         assert!(score.posterior_milli > 0);
+        assert_eq!(score.l4_scene_action, "suggest");
+        assert_eq!(score.l4_scene_reason, "scene_allows_suggestion");
+        assert!(score.l4_scene_milli > 0);
+        assert!(score.decision_rank_milli > 0);
     }
 
     #[test]

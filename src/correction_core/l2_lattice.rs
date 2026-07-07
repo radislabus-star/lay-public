@@ -41,13 +41,10 @@ impl L2CandidateLattice {
             replacement: candidate.replacement.clone(),
             source: candidate.source,
         });
-        let scoreboard = CorrectionScoreboard::from_candidates(
-            &self.event.original,
-            &self.candidates,
-            selected.as_ref(),
-        );
+        let scoreboard =
+            CorrectionScoreboard::from_candidates(&self.event, &self.candidates, selected.as_ref());
         let candidate_scores = CorrectionCandidateScoreTrace::from_candidates(
-            &self.event.original,
+            &self.event,
             &self.candidates,
             selected.as_ref(),
         );
