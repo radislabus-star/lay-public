@@ -133,7 +133,10 @@ impl ActiveCompositionGateConfig {
 
 #[cfg(test)]
 mod tests {
-    use super::{active_composition_gate_text, decide_active_composition_autocorrect};
+    use super::{
+        active_composition_gate_text, decide_active_composition_autocorrect,
+        ActiveCompositionAutocorrectRequest,
+    };
     use crate::config::LayConfig;
 
     fn config() -> LayConfig {
@@ -170,5 +173,72 @@ mod tests {
 
         assert_eq!(decision.replacement, "проходил ");
         assert_eq!(decision.action.from_text, "прохоил ");
+    }
+
+    #[test]
+    fn active_composition_autocorrect_can_use_nanda_fallback() {
+        assert_replacement("тфтвф ", "", "nanda ");
+    }
+
+    #[test]
+    fn active_composition_autocorrect_uses_unified_input_gate() {
+        assert_replacement("прохоил ", "я прохоил", "проходил ");
+    }
+
+    #[test]
+    fn active_composition_context_replacement_keeps_previous_words_out_of_commit() {
+        assert_replacement("ффективная ", "на сколько ффективная", "эффективная ");
+    }
+
+    #[test]
+    fn committed_tail_autocorrect_can_use_tail_context_for_nanda() {
+        assert_replacement("ghjdthrf ", "file ghjdthrf", "проверка ");
+    }
+
+    #[test]
+    fn committed_tail_autocorrect_handles_ascii_tail_after_russian_context() {
+        assert_replacement("ghjdthrf ", "проверка ghjdthrf", "проверка ");
+    }
+
+    #[test]
+    fn committed_tail_autocorrect_handles_autozamena_layout_word() {
+        assert_replacement("fdnjpfvtyf ", "fdnjpfvtyf", "автозамена ");
+    }
+
+    #[test]
+    fn committed_tail_autocorrect_repairs_layout_word_with_missing_initial_letter() {
+        assert_replacement("dnjpfvtyf ", "dnjpfvtyf", "автозамена ");
+    }
+
+    #[test]
+    fn committed_tail_autocorrect_repairs_autozamena_mixed_prefix() {
+        assert_replacement("fвтозамена ", "fвтозамена", "автозамена ");
+    }
+
+    #[test]
+    fn committed_tail_autocorrect_repairs_duplicate_latin_prefix_before_russian_word() {
+        assert_replacement("fавтозамена ", "fавтозамена", "автозамена ");
+    }
+
+    #[test]
+    fn committed_tail_autocorrect_handles_plain_en_to_ru_layout_words() {
+        assert_replacement("ghbdtn ", "ghbdtn", "привет ");
+    }
+
+    #[test]
+    fn committed_tail_autocorrect_keeps_ascii_layout_punctuation_in_token() {
+        assert_replacement("ghj,ktvf ", "ghj,ktvf", "проблема ");
+    }
+
+    fn assert_replacement(text: &str, committed_tail: &str, expected: &str) {
+        let cfg = config();
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text,
+            committed_tail,
+            config: &cfg,
+        })
+        .expect("decision");
+
+        assert_eq!(decision.replacement, expected);
     }
 }

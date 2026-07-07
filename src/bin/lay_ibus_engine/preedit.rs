@@ -368,8 +368,14 @@ impl LayIbusEngine {
             return false;
         }
         let original = format!("{} ", self.buffer);
-        self.autocorrect_active_composition_text(&original)
-            .is_some_and(|replacement| replacement.trim_end() != self.buffer.trim_end())
+        lay::ime_correction::decide_active_composition_autocorrect(
+            lay::ime_correction::ActiveCompositionAutocorrectRequest {
+                text: &original,
+                committed_tail: &self.tail_buffer,
+                config: &self.config,
+            },
+        )
+        .is_some_and(|decision| decision.replacement.trim_end() != self.buffer.trim_end())
     }
 
     fn precognition_max_suffix_chars(&self) -> usize {

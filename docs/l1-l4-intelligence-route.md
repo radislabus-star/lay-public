@@ -477,7 +477,7 @@ boundary or multiword change:
 ## Current Progress Matrix
 
 ```text
-checkpoint: 0.2.158
+checkpoint: 0.2.159
 
 1. mutation route map:
    status: PASS-basic
@@ -504,8 +504,8 @@ checkpoint: 0.2.158
    evidence: ime_active_composition / ime_committed_tail routes are explicit; Tab/IME completion accept now creates EditAction::AcceptImeCandidate with safety/log evidence before CommitText
 
 7. move IME correction logic out:
-   status: PASS-partial
-   evidence: active-composition correction decision moved to lay::ime_correction; dead pending committed-tail Space autocorrect branch removed
+   status: PASS-basic
+   evidence: active-composition correction decision moved to lay::ime_correction; correction regression cases live in the shared ime_correction layer; IBus autocorrect_*_text helpers are deleted and blocked by text_mutation_monopoly_contract; dead pending committed-tail Space autocorrect branch removed
 
 8. L1SurfaceSignal object:
    status: PASS-basic
@@ -561,6 +561,7 @@ commit 15: tray cleanup
 commit 16: Bayes/L3/L4 first-class DecisionCore lanes
 commit 17: version bump and release sync
 commit 18: IME completion accept through AcceptImeCandidate EditAction
+commit 19: move IME autocorrect proof cases into shared ime_correction
 ```
 
 ## Scoreboard

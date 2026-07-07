@@ -72,6 +72,19 @@ fn dead_ime_pending_space_autocorrect_route_stays_deleted() {
 }
 
 #[test]
+fn ime_autocorrect_text_helpers_stay_deleted() {
+    for path in source_files("src/bin/lay_ibus_engine") {
+        let source = std::fs::read_to_string(&path).expect("source file");
+        assert!(
+            !source.contains("autocorrect_active_composition_text(")
+                && !source.contains("autocorrect_committed_tail_text("),
+            "{} must use ime_correction decision objects instead of local autocorrect text helpers",
+            path.display()
+        );
+    }
+}
+
+#[test]
 fn candidate_before_apply_logs_use_typed_mutation_routes() {
     let mut files = source_files("src/bin");
     files.push(Path::new(ROOT).join("src/action_log_tests.rs"));
