@@ -17,6 +17,8 @@ mod gate;
 mod mutation;
 #[path = "text_edit/safety.rs"]
 mod safety;
+#[path = "text_edit/transition.rs"]
+mod transition;
 #[path = "text_edit/types.rs"]
 mod types;
 #[path = "text_edit/visible_tail.rs"]
@@ -35,6 +37,10 @@ pub use diff_plan::{
 pub use gate::{authorize_replacement, authorize_replacement_with_transition};
 pub use mutation::TransitionAudit;
 pub use safety::{autocorrect_edit_safety, EditPlanSafetyReport};
+pub use transition::{
+    decide_text_transition, LatentTextTransitionCandidate, TextTransitionDecision,
+    TextTransitionIntent, TextTransitionRejection, VisibleFieldState,
+};
 pub use types::TextReplacement;
 pub use visible_tail::{VisibleTail, VisibleTailSnapshot, VisibleTailSource};
 

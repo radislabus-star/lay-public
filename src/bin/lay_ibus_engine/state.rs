@@ -1,6 +1,8 @@
 use lay::config::LayConfig;
-use lay::text_edit::{tail_chars, TextReplacement};
-use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
+use lay::text_edit::{
+    decide_text_transition, LatentTextTransitionCandidate, TextTransitionDecision,
+    TextTransitionIntent, VisibleFieldState, VisibleTailSnapshot, VisibleTailSource,
+};
 use std::time::{Duration, Instant};
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
@@ -51,6 +53,7 @@ pub(crate) struct CommittedTailReplaceRequest {
     pub(crate) source: VisibleTailSource,
     pub(crate) backspaces: u32,
     pub(crate) text: String,
+    pub(crate) intent: TextTransitionIntent,
     pub(crate) suppress_next_autocorrect: bool,
     pub(crate) expected_tail: Option<VisibleTailSnapshot>,
 }
@@ -61,6 +64,7 @@ impl CommittedTailReplaceRequest {
             source: VisibleTailSource::ImeCommittedTail,
             backspaces,
             text,
+            intent: TextTransitionIntent::ImeAutocorrect,
             suppress_next_autocorrect: false,
             expected_tail: None,
         }
@@ -75,6 +79,7 @@ impl CommittedTailReplaceRequest {
             source: VisibleTailSource::ImeCommittedTail,
             backspaces,
             text,
+            intent: TextTransitionIntent::ImeManualToggle,
             suppress_next_autocorrect,
             expected_tail: None,
         }
@@ -89,6 +94,7 @@ impl CommittedTailReplaceRequest {
             source: VisibleTailSource::DaemonWordBuffer,
             backspaces,
             text,
+            intent: TextTransitionIntent::DaemonBridge,
             suppress_next_autocorrect,
             expected_tail: None,
         }
@@ -101,13 +107,6 @@ impl CommittedTailReplaceRequest {
 
     fn is_noop(&self) -> bool {
         self.backspaces == 0 && self.text.is_empty()
-    }
-
-    fn expected_tail_is_current(&self, current_tail: &str, focus_id: Option<&str>) -> bool {
-        self.expected_tail.as_ref().map_or(true, |expected| {
-            expected.matches_source_and_focus(self.source, focus_id)
-                && expected.matches_current_suffix(current_tail, self.backspaces as usize)
-        })
     }
 }
 
@@ -231,63 +230,49 @@ impl LayIbusEngine {
         let source = request.source;
         let backspaces = request.backspaces;
         let suppress_next_autocorrect = request.suppress_next_autocorrect;
-        let original_text = tail_chars(&self.tail_buffer, backspaces as usize);
-        if !request.expected_tail_is_current(&self.tail_buffer, Some(&self.path)) {
-            let expected = request
-                .expected_tail
-                .as_ref()
-                .map(|snapshot| snapshot.expected_suffix.as_str())
-                .unwrap_or("");
-            trace::record_committed_tail_replace_guard(
-                source,
-                "stale_visible_tail",
-                backspaces,
-                expected,
-                &original_text,
-            );
-            return Ok(false);
-        }
-        if !self.surrounding_text_delete_is_current(&original_text, backspaces) {
-            let actual = self
-                .surrounding_text_snapshot
-                .as_ref()
-                .and_then(|snapshot| snapshot.suffix_before_cursor(backspaces as usize))
-                .unwrap_or_default();
-            trace::record_committed_tail_replace_guard(
-                source,
-                "stale_surrounding_text",
-                backspaces,
-                &original_text,
-                &actual,
-            );
-            return Ok(false);
-        }
-        let text = request.text;
-        let plan = TextReplacement {
-            move_left: 0,
+        let visible_state =
+            VisibleFieldState::committed_tail(self.tail_buffer.clone(), Some(self.path.clone()))
+                .with_external_tail_before_cursor(
+                    self.surrounding_text_snapshot
+                        .as_ref()
+                        .and_then(|snapshot| snapshot.suffix_before_cursor(backspaces as usize)),
+                    self.surrounding_text_snapshot
+                        .as_ref()
+                        .is_some_and(|snapshot| snapshot.has_selection()),
+                );
+        let transition_candidate = LatentTextTransitionCandidate::new(
+            source,
             backspaces,
-            insert: text.clone(),
-            move_right: 0,
-        };
-        let edit_action = lay::text_edit::authorize_replacement(
-            "ibus-committed-tail",
-            1000,
-            &original_text,
-            &text,
-            plan,
-            Some(source.source_id()),
-            None,
+            request.text,
+            request.intent,
+            request.expected_tail,
         );
+        let (plan, edit_action) = match decide_text_transition(&visible_state, transition_candidate)
+        {
+            TextTransitionDecision::Apply { plan, action } => (plan, action),
+            TextTransitionDecision::Reject { rejection, action } => {
+                if let Some(action) = action.as_ref() {
+                    lay::action_log::record_candidate_edit_action_before_apply(action, None);
+                    trace::record_committed_tail_replace(
+                        source,
+                        action.safety_reason(),
+                        backspaces,
+                        &action.to_text,
+                    );
+                } else if rejection.reason() != "noop_transition" {
+                    trace::record_committed_tail_replace_guard(
+                        source,
+                        rejection.reason(),
+                        backspaces,
+                        rejection.expected(),
+                        rejection.actual(),
+                    );
+                }
+                return Ok(false);
+            }
+        };
         lay::action_log::record_candidate_edit_action_before_apply(&edit_action, None);
-        if !edit_action.allow_apply() {
-            trace::record_committed_tail_replace(
-                source,
-                edit_action.safety_reason(),
-                backspaces,
-                &text,
-            );
-            return Ok(false);
-        }
+        let text = plan.insert.clone();
         let now = Instant::now();
         self.last_commit_at = Some(now);
         self.publish_active_path_preserve_handoff(now + Duration::from_millis(700));
@@ -383,14 +368,6 @@ impl LayIbusEngine {
                     && self.tail_buffer.ends_with(text)
             })
     }
-
-    fn surrounding_text_delete_is_current(&self, expected: &str, backspaces: u32) -> bool {
-        self.surrounding_text_snapshot
-            .as_ref()
-            .map_or(true, |snapshot| {
-                snapshot.matches_delete_suffix(expected, backspaces as usize)
-            })
-    }
 }
 
 fn warm_runtime(config: &LayConfig) {
@@ -434,6 +411,7 @@ mod tests {
     };
     use lay::config::LayConfig;
     use lay::manual_toggle::VisibleTailSource;
+    use lay::text_edit::TextTransitionIntent;
     use std::sync::{Arc, Mutex};
     use std::time::{Duration, Instant};
 
@@ -454,6 +432,7 @@ mod tests {
         assert_eq!(request.source, VisibleTailSource::DaemonWordBuffer);
         assert_eq!(request.backspaces, 6);
         assert_eq!(request.text, "привет");
+        assert_eq!(request.intent, TextTransitionIntent::DaemonBridge);
         assert!(request.suppress_next_autocorrect);
         assert!(request.expected_tail.is_none());
     }
@@ -465,54 +444,9 @@ mod tests {
         assert_eq!(request.source, VisibleTailSource::ImeCommittedTail);
         assert_eq!(request.backspaces, 4);
         assert_eq!(request.text, "djn ");
+        assert_eq!(request.intent, TextTransitionIntent::ImeManualToggle);
         assert!(request.suppress_next_autocorrect);
         assert!(request.expected_tail.is_none());
-    }
-
-    #[test]
-    fn replace_request_accepts_matching_visible_tail_snapshot() {
-        let request = CommittedTailReplaceRequest::daemon_bridge(4, "вет".to_string(), true)
-            .with_expected_tail(lay::text_edit::VisibleTailSnapshot::new(
-                VisibleTailSource::DaemonWordBuffer,
-                "bdtn",
-                Some("/test".to_string()),
-                0,
-            ));
-
-        assert!(request.expected_tail_is_current("ghbdtn", Some("/test")));
-    }
-
-    #[test]
-    fn replace_request_rejects_stale_visible_tail_snapshot() {
-        let request = CommittedTailReplaceRequest::daemon_bridge(4, "вет".to_string(), true)
-            .with_expected_tail(lay::text_edit::VisibleTailSnapshot::new(
-                VisibleTailSource::DaemonWordBuffer,
-                "bdtn",
-                Some("/test".to_string()),
-                0,
-            ));
-
-        assert!(!request.expected_tail_is_current("ghjdt", Some("/test")));
-    }
-
-    #[test]
-    fn surrounding_text_guard_accepts_matching_field_suffix() {
-        let mut engine = engine();
-        engine.surrounding_text_snapshot = Some(
-            super::super::engine::SurroundingTextSnapshot::new("abc ghbdtn".to_string(), 10, 10),
-        );
-
-        assert!(engine.surrounding_text_delete_is_current("bdtn", 4));
-    }
-
-    #[test]
-    fn surrounding_text_guard_rejects_stale_field_suffix() {
-        let mut engine = engine();
-        engine.surrounding_text_snapshot = Some(
-            super::super::engine::SurroundingTextSnapshot::new("abc ghjdt".to_string(), 9, 9),
-        );
-
-        assert!(!engine.surrounding_text_delete_is_current("bdtn", 4));
     }
 
     #[test]

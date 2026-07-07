@@ -65,13 +65,8 @@ impl SurroundingTextSnapshot {
         )
     }
 
-    pub(super) fn matches_delete_suffix(&self, expected: &str, chars: usize) -> bool {
-        self.cursor_pos == self.anchor_pos
-            && expected.chars().count() == chars
-            && self
-                .suffix_before_cursor(chars)
-                .as_deref()
-                .is_some_and(|actual| actual == expected)
+    pub(super) fn has_selection(&self) -> bool {
+        self.cursor_pos != self.anchor_pos
     }
 }
 
