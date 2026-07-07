@@ -1,3 +1,4 @@
+use super::diff_plan::replacement_plan_matches;
 use super::types::TextReplacement;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -23,8 +24,11 @@ pub fn autocorrect_edit_safety(
     selected_error_class: Option<&str>,
 ) -> EditPlanSafetyReport {
     let original_chars = original.chars().collect::<Vec<_>>();
-    let cursor = original_chars.len().saturating_sub(plan.move_left as usize);
-    let delete_start = cursor.saturating_sub(plan.backspaces as usize);
+    let plan_cursor_valid = replacement_plan_has_valid_cursor(original_chars.len(), plan);
+    let plan_matches_replacement =
+        plan_cursor_valid && replacement_plan_matches(original, replacement, plan);
+    let (delete_start, cursor) = checked_delete_range(original_chars.len(), plan)
+        .unwrap_or((original_chars.len(), original_chars.len()));
     let deleted_text = original_chars[delete_start..cursor]
         .iter()
         .collect::<String>();
@@ -60,7 +64,11 @@ pub fn autocorrect_edit_safety(
     let strong_boundary_shape =
         !boundary_changed || layout_phrase || strong_boundary_edit_shape(original, replacement);
 
-    let (allow_apply, reason) = if multiword_original && !boundary_proof {
+    let (allow_apply, reason) = if !plan_cursor_valid {
+        (false, "invalid_edit_plan_cursor_bounds")
+    } else if !plan_matches_replacement {
+        (false, "edit_plan_dry_run_mismatch")
+    } else if multiword_original && !boundary_proof {
         (false, "unsafe_multiword_autocorrect_scope")
     } else if rewrites_inside_committed_tail && !(boundary_proof || layout_phrase) {
         (false, "unsafe_middle_suffix_autocorrect_plan")
@@ -87,6 +95,28 @@ pub fn autocorrect_edit_safety(
         allow_apply,
         reason,
     }
+}
+
+fn checked_delete_range(original_len: usize, plan: &TextReplacement) -> Option<(usize, usize)> {
+    let move_left = plan.move_left as usize;
+    if move_left > original_len {
+        return None;
+    }
+    let cursor = original_len - move_left;
+    let delete_start = cursor.checked_sub(plan.backspaces as usize)?;
+    Some((delete_start, cursor))
+}
+
+fn replacement_plan_has_valid_cursor(original_len: usize, plan: &TextReplacement) -> bool {
+    let Some((delete_start, cursor)) = checked_delete_range(original_len, plan) else {
+        return false;
+    };
+    let insert_len = plan.insert.chars().count();
+    let after_len = original_len - (cursor - delete_start) + insert_len;
+    let after_cursor = delete_start + insert_len;
+    after_cursor
+        .checked_add(plan.move_right as usize)
+        .is_some_and(|final_cursor| final_cursor <= after_len)
 }
 
 fn boundary_proof_source(source_id: Option<&str>, error_class: Option<&str>) -> bool {

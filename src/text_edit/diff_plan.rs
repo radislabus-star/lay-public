@@ -62,15 +62,33 @@ pub(super) fn plan_text_replacement_with_options(
 }
 
 pub fn apply_replacement_plan_to_text(original: &str, plan: &TextReplacement) -> String {
+    let Some(applied) = try_apply_replacement_plan_to_text(original, plan) else {
+        return original.to_string();
+    };
+    applied
+}
+
+fn try_apply_replacement_plan_to_text(original: &str, plan: &TextReplacement) -> Option<String> {
     let mut chars: Vec<char> = original.chars().collect();
-    let cursor = chars.len().saturating_sub(plan.move_left as usize);
-    let delete_start = cursor.saturating_sub(plan.backspaces as usize);
+    let cursor = checked_cursor(chars.len(), plan)?;
+    let delete_start = cursor.checked_sub(plan.backspaces as usize)?;
     chars.splice(delete_start..cursor, plan.insert.chars());
     let cursor = delete_start + plan.insert.chars().count();
-    let _cursor = (cursor + plan.move_right as usize).min(chars.len());
-    chars.into_iter().collect()
+    let final_cursor = cursor.checked_add(plan.move_right as usize)?;
+    if final_cursor > chars.len() {
+        return None;
+    }
+    Some(chars.into_iter().collect())
 }
 
 pub fn replacement_plan_matches(original: &str, replacement: &str, plan: &TextReplacement) -> bool {
-    apply_replacement_plan_to_text(original, plan) == replacement
+    try_apply_replacement_plan_to_text(original, plan).as_deref() == Some(replacement)
+}
+
+fn checked_cursor(original_len: usize, plan: &TextReplacement) -> Option<usize> {
+    let move_left = plan.move_left as usize;
+    if move_left > original_len {
+        return None;
+    }
+    Some(original_len - move_left)
 }

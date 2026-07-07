@@ -131,6 +131,48 @@ fn autocorrect_safety_blocks_middle_suffix_plan_but_allows_full_token_plan() {
 }
 
 #[test]
+fn autocorrect_safety_blocks_cursor_underflow_edit_plan() {
+    let original = "провекрытое ";
+    let replacement = "крытое ";
+    let plan = text_replacement(5, 11, "крытое", 5);
+
+    assert!(!replacement_plan_matches(original, replacement, &plan));
+    assert_eq!(apply_plan(original, &plan), original);
+
+    let safety = autocorrect_edit_safety(
+        original,
+        replacement,
+        &plan,
+        Some("glued_phrase"),
+        Some("glued-words"),
+    );
+
+    assert!(!safety.allow_apply);
+    assert_eq!(safety.reason, "invalid_edit_plan_cursor_bounds");
+}
+
+#[test]
+fn autocorrect_safety_blocks_dry_run_mismatched_edit_plan() {
+    let original = "провекрытое ";
+    let replacement = "крытое ";
+    let plan = text_replacement(5, 7, "крытое", 5);
+
+    assert_eq!(apply_plan(original, &plan), "крытоеытое ");
+    assert!(!replacement_plan_matches(original, replacement, &plan));
+
+    let safety = autocorrect_edit_safety(
+        original,
+        replacement,
+        &plan,
+        Some("glued_phrase"),
+        Some("glued-words"),
+    );
+
+    assert!(!safety.allow_apply);
+    assert_eq!(safety.reason, "edit_plan_dry_run_mismatch");
+}
+
+#[test]
 fn committed_tail_full_token_plan_can_be_shifted_behind_current_word() {
     let original = "следущий ";
     let replacement = "следующий ";

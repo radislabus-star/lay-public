@@ -1312,6 +1312,12 @@ fn gate_candidate_with_source(
             reason,
         };
     }
+    if surface_or_context_candidate_changes_left_context(original, replacement, source_id) {
+        return CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "surface_left_context_apply_blocked",
+        };
+    }
     if let Some(decision) = l3_context_gate(original, replacement, error_class, source_id) {
         return decision;
     }
@@ -1377,6 +1383,40 @@ fn gate_candidate_with_source(
             reason: "class_allows_apply",
         },
     }
+}
+
+fn surface_or_context_candidate_changes_left_context(
+    original: &str,
+    replacement: &str,
+    source_id: &str,
+) -> bool {
+    let source_may_only_fix_current_word = match correction_source_contract::source_role(source_id)
+    {
+        CorrectionSourceRole::L2Surface => true,
+        _ => false,
+    };
+    source_may_only_fix_current_word && candidate_changes_non_last_word(original, replacement)
+}
+
+fn candidate_changes_non_last_word(original: &str, replacement: &str) -> bool {
+    let original_words = normalized_correction_words(original);
+    let replacement_words = normalized_correction_words(replacement);
+    if original_words.len() != replacement_words.len() {
+        return original_words.len() > 1 || replacement_words.len() > 1;
+    }
+    if original_words.len() <= 1 {
+        return false;
+    }
+    original_words[..original_words.len() - 1] != replacement_words[..replacement_words.len() - 1]
+}
+
+fn normalized_correction_words(text: &str) -> Vec<String> {
+    text.split_whitespace()
+        .filter_map(|token| {
+            let (_, word, _) = split_word_punctuation(token);
+            (!word.is_empty()).then(|| word.to_lowercase())
+        })
+        .collect()
 }
 
 fn bayes_score_for_candidate(
@@ -2664,6 +2704,19 @@ mod tests {
                 source: CorrectionDecisionSource::Deterministic,
             })
         );
+    }
+
+    #[test]
+    fn l2_surface_candidate_cannot_apply_left_context_rewrite() {
+        let gate = gate_candidate_with_source(
+            "коретка улитела ",
+            "етка улитка ",
+            TypingErrorClass::CompositeTypo,
+            "L2SurfaceMotifCell32",
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_ne!(gate.reason, "class_allows_apply");
     }
 
     #[test]
