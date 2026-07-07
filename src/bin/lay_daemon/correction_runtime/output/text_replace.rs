@@ -50,7 +50,7 @@ pub(crate) fn try_manual_text_replacement(
             ctx.words_orig.max(1),
         ),
     );
-    lay::action_log::record_candidate_edit_action_before_apply(&edit_action, None);
+    lay::action_log::record_candidate_edit_action_before_apply(&edit_action, input_gate.clone());
     if !edit_action.allow_apply() {
         log(&format!(
             "⚠ {kind} blocked by EditAction safety: reason={} original={:?} replacement={:?}; fallback to replay",

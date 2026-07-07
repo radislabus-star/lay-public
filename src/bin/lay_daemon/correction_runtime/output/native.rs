@@ -30,7 +30,13 @@ pub(crate) fn try_ime_replace_output(
     }
     let (replace_text, replace_kind, is_replay) = text_for_native_replace(ctx, "ime-replay");
     let replace_target_is_ru = preferred_layout_for_text(&replace_text, ctx.target_is_ru);
-    if !native_text_edit_action_allowed(ctx, &replace_text, replace_kind, is_replay) {
+    if !native_text_edit_action_allowed(
+        ctx,
+        &replace_text,
+        replace_kind,
+        is_replay,
+        input_gate.clone(),
+    ) {
         return None;
     }
     if !try_ime_replace_tail(ctx.mapped_orig, &replace_text, replace_kind).unwrap_or(false) {
@@ -77,7 +83,13 @@ pub(crate) fn try_gnome_native_replace_output(
     }
     let (replace_text, replace_kind, is_replay) = text_for_native_replace(ctx, "gnome-replace");
     let replace_target_is_ru = preferred_layout_for_text(&replace_text, ctx.target_is_ru);
-    if !native_text_edit_action_allowed(ctx, &replace_text, replace_kind, is_replay) {
+    if !native_text_edit_action_allowed(
+        ctx,
+        &replace_text,
+        replace_kind,
+        is_replay,
+        input_gate.clone(),
+    ) {
         return None;
     }
     let (layout_id, _) = target_layout(replace_target_is_ru);
@@ -191,6 +203,7 @@ fn native_text_edit_action_allowed(
     replace_text: &str,
     replace_kind: &'static str,
     is_replay: bool,
+    input_gate: Option<RecentActionGateTrace>,
 ) -> bool {
     if is_replay {
         return true;
@@ -217,7 +230,7 @@ fn native_text_edit_action_allowed(
             ctx.words_orig.max(1),
         ),
     );
-    lay::action_log::record_candidate_edit_action_before_apply(&edit_action, None);
+    lay::action_log::record_candidate_edit_action_before_apply(&edit_action, input_gate);
     if edit_action.allow_apply() {
         return true;
     }

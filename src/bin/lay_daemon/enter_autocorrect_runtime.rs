@@ -1,6 +1,9 @@
 use evdev::{uinput::VirtualDevice, KeyCode};
-use lay::config::TypingAssistRuleConfig;
+use lay::action_log::RecentActionGateTrace;
+use lay::config::{CorrectionSafety, TypingAssistRuleConfig};
+use lay::correction_core::CorrectionMode;
 use lay::decoder::{decode_enter_autocorrect_tail, DecoderEditPlan};
+use lay::input_gate::{decide_input_gate, InputGateRequest, InputGateTrigger};
 use lay::keyboard::{map_original_events, KeyEvent};
 use lay::text_edit::TransitionAudit;
 use lay::word_buffer::WordBuffer;
@@ -26,7 +29,11 @@ pub(super) fn enter_autocorrect_candidate(
     replace_words: usize,
     allow_layout_auto: bool,
     pipeline: &[TypingAssistRuleConfig],
-) -> Option<(Vec<KeyEvent>, DecoderEditPlan)> {
+) -> Option<(
+    Vec<KeyEvent>,
+    DecoderEditPlan,
+    Option<RecentActionGateTrace>,
+)> {
     let replace_words = replace_words.min(1);
     let (events, _) = buf.what_to_replay(replace_words)?;
     let original = map_original_events(&events);
@@ -38,13 +45,22 @@ pub(super) fn enter_autocorrect_candidate(
         .chars()
         .next_back()
         .is_some_and(char::is_whitespace);
+    let assist_input = if original_has_trailing_space {
+        original.clone()
+    } else {
+        format!("{original} ")
+    };
     let edit = decode_enter_autocorrect_tail(
         &events,
         original_has_trailing_space,
         allow_layout_auto,
         pipeline,
     )?;
-    Some((events, edit))
+    Some((
+        events,
+        edit,
+        enter_input_gate_trace(&assist_input, pipeline),
+    ))
 }
 
 pub(super) fn handle_enter_autocorrect(
@@ -77,7 +93,7 @@ pub(super) fn handle_enter_autocorrect(
     );
     #[cfg(not(test))]
     let pipeline = active_typing_assist_pipeline_for_auto_replace(&context);
-    let (events, edit) =
+    let (events, edit, input_gate) =
         enter_autocorrect_candidate(buf, replace_words, allow_layout_auto, &pipeline)?;
     let original = edit.original.clone();
     let replacement = edit.replacement.clone();
@@ -85,23 +101,40 @@ pub(super) fn handle_enter_autocorrect(
         log("⚠ enter-autocorrect skipped before delete: edit plan invariant failed");
         return None;
     };
+    let source_id = input_gate
+        .as_ref()
+        .and_then(|trace| trace.selected_source_id.as_deref());
+    let error_class = input_gate
+        .as_ref()
+        .and_then(|trace| trace.selected_error_class.as_deref());
+    let confidence_milli = input_gate
+        .as_ref()
+        .and_then(|trace| trace.scoreboard.as_ref())
+        .and_then(|scoreboard| scoreboard.selected_bayes_posterior_milli)
+        .unwrap_or(0);
+    let transition = input_gate
+        .as_ref()
+        .map(RecentActionGateTrace::selected_transition_audit)
+        .unwrap_or_else(|| {
+            TransitionAudit::proven(
+                "enter_autocorrect",
+                "enter_boundary_plan_verified",
+                true,
+                false,
+                original.split_whitespace().count().max(1),
+            )
+        });
     let edit_action = lay::text_edit::authorize_replacement_with_transition(
         "enter-autocorrect",
-        0,
+        confidence_milli,
         original.as_str(),
         replacement.as_str(),
         plan.clone(),
-        None,
-        None,
-        TransitionAudit::proven(
-            "enter_autocorrect",
-            "enter_boundary_plan_verified",
-            true,
-            false,
-            original.split_whitespace().count().max(1),
-        ),
+        source_id,
+        error_class,
+        transition,
     );
-    lay::action_log::record_candidate_edit_action_before_apply(&edit_action, None);
+    lay::action_log::record_candidate_edit_action_before_apply(&edit_action, input_gate.clone());
     if !edit_action.allow_apply() {
         log(&format!(
             "⚠ enter-autocorrect blocked by EditAction safety: reason={} original={:?} replacement={:?}",
@@ -140,7 +173,7 @@ pub(super) fn handle_enter_autocorrect(
                 replace_words,
                 original.split_whitespace().count(),
                 started_at,
-                None,
+                input_gate.clone(),
                 false,
             );
             log(&format!(
@@ -220,7 +253,7 @@ pub(super) fn handle_enter_autocorrect(
         replace_words,
         original.split_whitespace().count(),
         started_at,
-        None,
+        input_gate,
         true,
     );
     log(&format!(
@@ -230,4 +263,25 @@ pub(super) fn handle_enter_autocorrect(
         started_at.elapsed().as_millis()
     ));
     Some(insert_outcome.layout_is_ru)
+}
+
+fn enter_input_gate_trace(
+    text_tail: &str,
+    pipeline: &[TypingAssistRuleConfig],
+) -> Option<RecentActionGateTrace> {
+    let decision = decide_input_gate(InputGateRequest {
+        trigger: InputGateTrigger::Enter,
+        text_tail,
+        auto_replace: true,
+        typing_assist: true,
+        auto_switch_layout: false,
+        correction_safety: CorrectionSafety::Normal,
+        typing_assist_pipeline: pipeline,
+        nanda_autocorrect: false,
+        correction_mode: CorrectionMode::DeterministicOnly,
+    });
+    decision
+        .trace
+        .as_ref()
+        .map(RecentActionGateTrace::from_input_gate)
 }
