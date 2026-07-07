@@ -15,6 +15,49 @@ fn ime_composition_does_not_own_input_gate_decision() {
 }
 
 #[test]
+fn ime_correction_route_reaches_common_decision_core() {
+    let ime_correction = read("src/ime_correction.rs");
+    let correction_core = read("src/correction_core.rs");
+    let decision_core = read("src/correction_core/decision_core.rs");
+
+    assert!(
+        ime_correction.contains("decide_input_gate(InputGateRequest")
+            || ime_correction.contains("resolve_text_correction(CorrectionRequest"),
+        "ime_correction.rs must enter the shared correction pipeline"
+    );
+    assert!(
+        correction_core.contains("mod decision_core;"),
+        "correction_core must own the DecisionCore module"
+    );
+    assert!(
+        decision_core.contains("struct CorrectionDecisionCore")
+            && decision_core.contains("select_apply_candidate"),
+        "DecisionCore must own final apply-candidate selection"
+    );
+}
+
+#[test]
+fn ime_preedit_display_does_not_own_correction_or_apply() {
+    let source = read("src/bin/lay_ibus_engine/preedit.rs");
+    let forbidden = [
+        "decide_input_gate",
+        "resolve_text_correction",
+        "decide_text_transition",
+        "authorize_replacement",
+        "commit_text(",
+        "replace_committed_tail(",
+        "record_candidate_edit_action_before_apply(",
+    ];
+
+    for needle in forbidden {
+        assert!(
+            !source.contains(needle),
+            "preedit.rs must stay display-only and must not contain {needle}"
+        );
+    }
+}
+
+#[test]
 fn dead_ime_pending_space_autocorrect_route_stays_deleted() {
     for path in source_files("src/bin/lay_ibus_engine") {
         let source = std::fs::read_to_string(&path).expect("source file");

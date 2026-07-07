@@ -477,7 +477,7 @@ boundary or multiword change:
 ## Current Progress Matrix
 
 ```text
-checkpoint: 0.2.153
+checkpoint: 0.2.154
 
 1. mutation route map:
    status: PASS-basic
@@ -528,8 +528,8 @@ checkpoint: 0.2.153
    evidence: correction_core::decision_core owns selected apply ranking; L2CandidateLattice only collects/dedups candidates
 
 15. preedit from DecisionCore:
-   status: WATCH
-   evidence: IME display path still needs final audit against common DecisionCore authority
+   status: PASS-basic
+   evidence: contract test keeps preedit.rs display-only; active composition correction enters shared ime_correction -> input_gate/correction_core -> DecisionCore route
 
 16. delete old direct mutation paths:
    status: WATCH
