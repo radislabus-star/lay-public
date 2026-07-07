@@ -24,6 +24,10 @@ use super::options::WaveOptions;
 use super::pattern_memory::{apply_pattern_memory, PATTERN_MEMORY_CELL};
 use super::signal::{WavePacket, WordCandidate};
 
+static SURFACE_MOTIF_MEMORY: OnceLock<L2CenterMemory> = OnceLock::new();
+static BROAD_PREFIX_INDEX: OnceLock<super::l2_broad_index::L2BroadPrefixIndex> = OnceLock::new();
+static L2_SHORT_POSITION_SEED_INDEX: OnceLock<HashMap<String, Vec<String>>> = OnceLock::new();
+
 const MAX_LAYOUT_SCAN_CANDIDATES: usize = 4;
 const MAX_TAUGHT_CANDIDATES: usize = 6;
 const L2_ACTIVE_SOURCE_TARGET: usize = 1_000_000;
@@ -102,8 +106,9 @@ pub(super) fn warm_up_surface_motif_memory() {
 }
 
 pub(super) fn warm_up_ime_word_candidate_memory() {
-    warm_up_surface_motif_memory();
-    let _ = l2_short_position_seed_index().len();
+    // Live IME must not build broad/full L2 indexes during startup. The hot
+    // path uses a bounded corpus bootstrap and only reads heavy memories after
+    // another route has already warmed them.
 }
 
 pub fn l2_surface_memory_status() -> L2SurfaceMemoryStatus {
@@ -177,6 +182,15 @@ pub fn ime_l2_word_candidates(
         })
         .collect::<Vec<_>>();
     extend_ime_l2_prefix_material(&mut candidates, context_prefix, &normalized, limit);
+    sort_and_truncate_ime_l2_candidates(&mut candidates, &usage, limit);
+    candidates
+}
+
+fn sort_and_truncate_ime_l2_candidates(
+    candidates: &mut Vec<L2ImeWordCandidate>,
+    usage: &super::usage_prior::UsagePriorSnapshot,
+    limit: usize,
+) {
     candidates.sort_by(|left, right| {
         l2_ime_word_candidate_score(right, &usage)
             .cmp(&l2_ime_word_candidate_score(left, &usage))
@@ -193,7 +207,6 @@ pub fn ime_l2_word_candidates(
     });
     candidates.dedup_by(|left, right| left.surface == right.surface);
     candidates.truncate(limit);
-    candidates
 }
 
 fn extend_ime_l2_prefix_material(
@@ -206,8 +219,7 @@ fn extend_ime_l2_prefix_material(
         return;
     }
     let material_limit = limit.saturating_mul(2).max(limit);
-    for candidate in ime_l2_generated_form_prefix_candidates(context_prefix, token, material_limit)
-    {
+    for candidate in ime_l2_generated_form_prefix_candidates(context_prefix, token, material_limit) {
         push_unique_ime_l2_candidate(candidates, candidate);
         if ime_l2_completion_count(candidates) >= limit.saturating_mul(2).max(limit) {
             return;
@@ -298,6 +310,20 @@ pub fn ime_l2_foundation_prefix_candidates(
     token: &str,
     limit: usize,
 ) -> Vec<L2ImeWordCandidate> {
+    ime_l2_foundation_prefix_candidates_from_index(
+        broad_prefix_index(),
+        context_prefix,
+        token,
+        limit,
+    )
+}
+
+fn ime_l2_foundation_prefix_candidates_from_index(
+    index: &super::l2_broad_index::L2BroadPrefixIndex,
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> Vec<L2ImeWordCandidate> {
     if limit == 0 {
         return Vec::new();
     }
@@ -308,7 +334,7 @@ pub fn ime_l2_foundation_prefix_candidates(
     }
     let context_tokens = super::llmwave::tokenize(context_prefix);
     let usage = super::usage_prior::cached_usage_prior_snapshot();
-    let mut words = broad_prefix_index()
+    let mut words = index
         .prefix_candidates(
             &normalized,
             token_len + 1,
@@ -404,8 +430,7 @@ pub fn ime_l2_generated_form_prefix_candidates(
 }
 
 fn l2_short_position_seed_index() -> &'static HashMap<String, Vec<String>> {
-    static INDEX: OnceLock<HashMap<String, Vec<String>>> = OnceLock::new();
-    INDEX.get_or_init(|| {
+    L2_SHORT_POSITION_SEED_INDEX.get_or_init(|| {
         let mut index = HashMap::<String, Vec<String>>::new();
         for word in runtime_l2_surface_words() {
             let len = word.chars().count();
@@ -1653,8 +1678,7 @@ fn surface_motif_typo_risk(context: &TailContext, distance: usize) -> f32 {
 }
 
 fn surface_motif_memory() -> &'static L2CenterMemory {
-    static MEMORY: OnceLock<L2CenterMemory> = OnceLock::new();
-    MEMORY.get_or_init(|| {
+    SURFACE_MOTIF_MEMORY.get_or_init(|| {
         let timing_enabled = std::env::var_os("LAY_NANDA_L2_TIMING").is_some();
         let started = std::time::Instant::now();
         let words = runtime_l2_surface_words();
@@ -1703,8 +1727,7 @@ fn trim_allocator_after_l2_surface_build() {
 fn trim_allocator_after_l2_surface_build() {}
 
 fn broad_prefix_index() -> &'static super::l2_broad_index::L2BroadPrefixIndex {
-    static INDEX: OnceLock<super::l2_broad_index::L2BroadPrefixIndex> = OnceLock::new();
-    INDEX.get_or_init(|| {
+    BROAD_PREFIX_INDEX.get_or_init(|| {
         super::l2_broad_index::L2BroadPrefixIndex::build(&[
             L2_SURFACE_FOUNDATION_RU_DATA,
             L2_SURFACE_HOT_RU_DATA,

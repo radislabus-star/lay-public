@@ -16,6 +16,9 @@ use std::sync::{Mutex, OnceLock};
 use std::time::Instant;
 
 const LIVE_COMPLETION_CACHE_LIMIT: usize = 128;
+const LIVE_BOOTSTRAP_SCAN_LIMIT: usize = 16_384;
+const LIVE_BOOTSTRAP_RU_DATA: &str =
+    include_str!("../../data/lexicon/l2_surface_foundation_ru_100k.txt");
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LiveCompletionRequest<'a> {
@@ -117,7 +120,7 @@ pub fn live_completion_candidates(
         return cached;
     }
 
-    let raw = l2::ime_l2_word_candidates(
+    let raw = live_l2_word_candidates(
         request.context_prefix,
         &partial,
         request.limit.saturating_mul(4).max(request.limit),
@@ -278,6 +281,69 @@ pub fn live_completion_candidates(
             cache_hit: false,
         },
     );
+    candidates
+}
+
+fn live_l2_word_candidates(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> Vec<l2::L2ImeWordCandidate> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let normalized = token.to_lowercase();
+    let token_len = normalized.chars().count();
+    if !(2..=18).contains(&token_len) || !normalized.chars().all(is_cyrillic_letter) {
+        return Vec::new();
+    }
+
+    let context_tokens = super::llmwave::tokenize(context_prefix);
+    let usage = super::usage_prior::cached_usage_prior_snapshot();
+    let mut candidates = LIVE_BOOTSTRAP_RU_DATA
+        .lines()
+        .take(LIVE_BOOTSTRAP_SCAN_LIMIT)
+        .filter_map(|line| {
+            let word = line.trim().to_lowercase();
+            if word.chars().count() <= token_len
+                || !word.starts_with(&normalized)
+                || !word.chars().all(is_cyrillic_letter)
+                || crate::lexicon::is_ru_live_protected_word(&word)
+            {
+                return None;
+            }
+            let usage_prior = usage.word_prior(&word);
+            let context_prior = usage.context_word_prior(&context_tokens, &word);
+            Some(l2::L2ImeWordCandidate {
+                surface: word,
+                kind: L2ImeWordCandidateKind::Completion,
+                score: 640,
+                l1_overlap: token_len,
+                l2_overlap: 0,
+                motif_overlap: 0,
+                usage_prior,
+                context_prior,
+            })
+        })
+        .take(limit.saturating_mul(2).max(limit))
+        .collect::<Vec<_>>();
+
+    for candidate in l2::ime_l2_generated_form_prefix_candidates(
+        context_prefix,
+        &normalized,
+        limit.saturating_mul(2).max(limit),
+    ) {
+        if !candidates
+            .iter()
+            .any(|existing| existing.surface == candidate.surface)
+        {
+            candidates.push(candidate);
+        }
+        if candidates.len() >= limit.saturating_mul(4).max(limit) {
+            break;
+        }
+    }
+
     candidates
 }
 
