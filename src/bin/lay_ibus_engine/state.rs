@@ -59,17 +59,6 @@ pub(crate) struct CommittedTailReplaceRequest {
 }
 
 impl CommittedTailReplaceRequest {
-    pub(crate) fn ime_autocorrect(backspaces: u32, text: String) -> Self {
-        Self {
-            source: VisibleTailSource::ImeCommittedTail,
-            backspaces,
-            text,
-            intent: TextTransitionIntent::ImeAutocorrect,
-            suppress_next_autocorrect: false,
-            expected_tail: None,
-        }
-    }
-
     pub(crate) fn ime_manual_toggle(
         backspaces: u32,
         text: String,
@@ -147,7 +136,6 @@ impl LayIbusEngine {
             last_commit_at: None,
             last_tail_input_at: None,
             recent_committed_tail_replace: None,
-            pending_space_committed_tail_replace: None,
             suppress_next_committed_tail_autocorrect: false,
             word_input_mode: None,
             managed_input,
@@ -166,7 +154,6 @@ impl LayIbusEngine {
         self.preedit_candidates.clear();
         self.preedit_candidate_index = 0;
         self.preedit_dirty = false;
-        self.pending_space_committed_tail_replace = None;
         self.last_shift_release_at = None;
         if !preserve_tail {
             self.last_tail_input_at = None;
@@ -202,7 +189,6 @@ impl LayIbusEngine {
         self.preedit_candidates.clear();
         self.preedit_candidate_index = 0;
         self.preedit_dirty = false;
-        self.pending_space_committed_tail_replace = None;
         self.last_shift_release_at = None;
         self.recent_committed_tail_replace = None;
         self.shift_used_as_modifier = false;
@@ -459,9 +445,11 @@ mod tests {
 
     #[test]
     fn committed_tail_noop_requires_empty_delete_and_empty_insert() {
-        assert!(CommittedTailReplaceRequest::ime_autocorrect(0, String::new()).is_noop());
-        assert!(!CommittedTailReplaceRequest::ime_autocorrect(1, String::new()).is_noop());
-        assert!(!CommittedTailReplaceRequest::ime_autocorrect(0, "x".to_string()).is_noop());
+        assert!(CommittedTailReplaceRequest::ime_manual_toggle(0, String::new(), false).is_noop());
+        assert!(!CommittedTailReplaceRequest::ime_manual_toggle(1, String::new(), false).is_noop());
+        assert!(
+            !CommittedTailReplaceRequest::ime_manual_toggle(0, "x".to_string(), false).is_noop()
+        );
     }
 
     #[test]

@@ -4,7 +4,7 @@ use zbus::object_server::SignalEmitter;
 use zbus::zvariant::Value;
 
 use super::engine::{LayIbusEngine, SurroundingTextSnapshot};
-use super::protocol::{is_accept_completion_with_space_key, is_key_press, is_shift_key, KEY_SPACE};
+use super::protocol::{is_accept_completion_with_space_key, is_key_press, is_shift_key};
 use super::trace;
 
 #[interface(name = "org.freedesktop.IBus.Engine")]
@@ -62,11 +62,6 @@ impl LayIbusEngine {
             self.alt_completion_active = false;
             self.alt_used_as_modifier = false;
             return Ok(false);
-        }
-        if keyval == KEY_SPACE && !is_key_press(state) {
-            return self
-                .apply_pending_committed_tail_space_autocorrect(&emitter)
-                .await;
         }
         if !is_key_press(state) {
             return Ok(false);

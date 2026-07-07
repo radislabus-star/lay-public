@@ -58,7 +58,6 @@ impl LayIbusEngine {
     pub(super) fn close_committed_tail_field(&mut self) {
         self.tail_buffer.clear();
         self.preedit_fast.reset();
-        self.pending_space_committed_tail_replace = None;
         self.suppress_next_committed_tail_autocorrect = false;
         self.word_input_mode = None;
         self.last_tail_input_at = None;
@@ -94,6 +93,7 @@ impl LayIbusEngine {
         state.suppress_next_committed_tail_autocorrect = true;
     }
 
+    #[cfg(test)]
     pub(super) fn take_autocorrect_suppression_handoff(&self) -> bool {
         let Ok(mut state) = self.shared.lock() else {
             return false;

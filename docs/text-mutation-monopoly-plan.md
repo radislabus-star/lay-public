@@ -89,13 +89,14 @@ lay-nanda-wave-eval --candidate-quality-report
 Current checkpoint:
 
 ```text
-0.2.148
+0.2.149
 |
 +-- runtime text edits pass through text_edit transition safety
 +-- direct runtime authorize_replacement calls are blocked by a contract test
 +-- DoubleShift and TabAccept are visible in InputGate trace
 +-- Enter/manual/native before-apply logs now carry gate trace when the route owns one
 +-- active-composition autocorrect decision lives in shared lay::ime_correction
++-- dead pending committed-tail Space autocorrect branch removed
 +-- every candidate_before_apply record now carries typed mutation_route:
     +-- enter_autocorrect
     +-- typing_assist_minimal
@@ -127,9 +128,8 @@ slow_output: 4
 ## Debt Queue
 
 ```text
-P0: keep IME committed-tail transition explicit as a transition route, not fake InputGate.
-P0: move committed-tail autocorrect decision ownership toward shared lay::ime_correction too.
 P0: move stale legacy recent_actions records out of the active scoreboard window after release.
+P1: keep IME committed-tail transition explicit as a transition route, not fake InputGate.
 P1: remove duplicate local "EditPlan" names that hide the real text-edit plan.
 P2: make IME a display/commit backend, not an independent correction owner.
 P2: keep candidate-quality counters in release checks.

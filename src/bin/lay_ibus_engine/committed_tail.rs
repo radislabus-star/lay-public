@@ -76,40 +76,7 @@ impl LayIbusEngine {
         })
     }
 
-    pub(super) async fn apply_pending_committed_tail_space_autocorrect(
-        &mut self,
-        emitter: &SignalEmitter<'_>,
-    ) -> fdo::Result<bool> {
-        if self.take_manual_toggle_autocorrect_suppression() {
-            return Ok(false);
-        }
-        let Some(pending) = self.pending_space_committed_tail_replace.take() else {
-            return Ok(false);
-        };
-        let handled = self
-            .replace_committed_tail(
-                emitter,
-                CommittedTailReplaceRequest::ime_autocorrect(
-                    pending.backspaces,
-                    pending.replacement.clone(),
-                ),
-            )
-            .await?;
-        if handled {
-            self.sync_layout_after_committed_text(&pending.replacement);
-            lay::action_log::record_action(
-                "ime-typing-assist",
-                &format!("{} ", pending.original),
-                &pending.replacement,
-                1,
-                1,
-                pending.started_at.elapsed().as_millis(),
-                true,
-            );
-        }
-        Ok(handled)
-    }
-
+    #[cfg(test)]
     fn take_manual_toggle_autocorrect_suppression(&mut self) -> bool {
         let suppress = self.suppress_next_committed_tail_autocorrect
             || self.take_autocorrect_suppression_handoff();
@@ -154,22 +121,6 @@ mod tests {
 
         assert_eq!(engine.tail_buffer, "проверка ");
         assert_eq!(engine.preedit_fast.token(), "");
-    }
-
-    #[test]
-    fn space_boundary_autocorrect_respects_daemon_bridge_suppression() {
-        let mut engine = engine();
-        engine.suppress_next_committed_tail_autocorrect = true;
-        engine.pending_space_committed_tail_replace =
-            Some(super::super::engine::PendingSpaceCommittedTailReplace {
-                original: "АВТОзамена".to_string(),
-                replacement: "Автозамена ".to_string(),
-                backspaces: 10,
-                started_at: std::time::Instant::now(),
-            });
-
-        assert!(engine.take_manual_toggle_autocorrect_suppression());
-        assert!(!engine.take_manual_toggle_autocorrect_suppression());
     }
 
     #[test]

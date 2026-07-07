@@ -24,14 +24,6 @@ pub(super) struct RecentCommittedTailReplace {
     pub(super) at: Instant,
 }
 
-#[derive(Debug, Clone)]
-pub(super) struct PendingSpaceCommittedTailReplace {
-    pub(super) backspaces: u32,
-    pub(super) replacement: String,
-    pub(super) original: String,
-    pub(super) started_at: Instant,
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct SurroundingTextSnapshot {
     pub(super) text: String,
@@ -93,7 +85,6 @@ pub(crate) struct LayIbusEngine {
     pub(super) last_commit_at: Option<Instant>,
     pub(super) last_tail_input_at: Option<Instant>,
     pub(super) recent_committed_tail_replace: Option<RecentCommittedTailReplace>,
-    pub(super) pending_space_committed_tail_replace: Option<PendingSpaceCommittedTailReplace>,
     pub(super) suppress_next_committed_tail_autocorrect: bool,
     pub(super) word_input_mode: Option<WordInputMode>,
     pub(super) managed_input: bool,
