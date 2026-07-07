@@ -6,7 +6,7 @@ export const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 export const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-export const APP_VERSION = '0.2.155';
+export const APP_VERSION = '0.2.156';
 export const APP_DESCRIPTION = 'Альфа: RU/EN-переключатель по двойному Shift и помощь при наборе';
 export const APP_RELEASE_DATE = '2026-07-07';
 export const APP_LICENSE = 'Non-Commercial';
@@ -28,7 +28,8 @@ export const LEARNING_LOG_TOOLTIP = 'Запоминать правки рабо�
     + '  удалишь ли ты результат и введёшь свой вариант.\n'
     + 'Если удалил и перепечатал — это считается твоей правкой.';
 export const DEBUG_ACTION_LOG_TOOLTIP = 'Единый рубильник диагностических журналов lay:\n'
-    + 'действия, backend IME/uinput, NANDA trace и прекогниция.\n'
+    + 'действия, backend IME/uinput и NANDA trace.\n'
+    + 'Живые подсказки включает только “Режим ввода”.\n'
     + 'В обычном режиме лучше держать выключенным.';
 export const AUTO_REPLACE_TOOLTIP = 'Когда включено: typo-правки после пробела и точные автоподмены.\n'
     + 'Когда выключено: остаётся только безопасный авто-layout EN/RU после пробела.';

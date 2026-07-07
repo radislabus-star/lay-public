@@ -4,7 +4,7 @@ import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.2.155';
+const APP_VERSION = '0.2.156';
 const APP_RELEASE_DATE = '2026-07-07';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
@@ -319,7 +319,7 @@ class SettingsView {
             this.switchRow('Помощь при наборе', 'typing_assist', true),
             this.switchRow('Автоподмена', 'auto_replace', true),
             this.switchRow('Запоминать правки', 'learning_log', false),
-            this.debugLogsRow('Журнал отладки lay'),
+            this.debugLogsRow('Журнал отладки действий'),
             this.switchRow('Автораскладка после пробела', 'auto_switch_layout', false),
             this.comboRow('Осторожность', 'correction_safety', OPTIONS.correction_safety, true),
         ]), 0, 0, 1, 1);
@@ -643,7 +643,7 @@ class SettingsView {
             css_classes: ['heading'],
         }));
         inner.append(new Gtk.Label({
-            label: 'Для живых подсказок выбери “Режим ввода: IME-подсказки”. “Журнал отладки lay” нужен только для разбора ошибок.',
+            label: 'Для живых подсказок выбери “Режим ввода: IME-подсказки”. “Журнал отладки действий” нужен только для разбора ошибок.',
             xalign: 0,
             wrap: true,
             max_width_chars: 58,

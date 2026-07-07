@@ -6,7 +6,7 @@ import Gtk from 'gi://Gtk';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.2.155';
+const APP_VERSION = '0.2.156';
 const APP_RELEASE_DATE = '2026-07-07';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
@@ -317,7 +317,7 @@ class LayPrefsView {
             this._switchRow('Помощь при наборе', 'typing_assist', true),
             this._switchRow('Автоподмена', 'auto_replace', true),
             this._switchRow('Запоминать правки', 'learning_log', false),
-            this._debugLogsRow('Журнал отладки lay'),
+            this._debugLogsRow('Журнал отладки действий'),
             this._switchRow('Автораскладка после пробела', 'auto_switch_layout', false),
             this._comboRow('Осторожность', 'correction_safety', SAFETY_OPTIONS, true),
         ]), 0, 0, 1, 1);
@@ -690,7 +690,7 @@ class LayPrefsView {
         }));
         inner.append(new Gtk.Label({label: 'Как использовать', xalign: 0, css_classes: ['heading']}));
         inner.append(new Gtk.Label({
-            label: 'Для живых подсказок выбери “Режим ввода: IME-подсказки”. “Журнал отладки lay” нужен только для разбора ошибок.',
+            label: 'Для живых подсказок выбери “Режим ввода: IME-подсказки”. “Журнал отладки действий” нужен только для разбора ошибок.',
             xalign: 0,
             wrap: true,
             max_width_chars: 58,

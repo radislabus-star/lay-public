@@ -232,7 +232,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _debugLogSwitchItem() {
-        const item = persistentSwitchItem('Журнал отладки lay', !!this._cfg.debug_action_log);
+        const item = persistentSwitchItem('Журнал отладки действий', !!this._cfg.debug_action_log);
         item.connect('toggled', (_item, state) => {
             this._cfg.debug_action_log = state;
             this._cfg.nanda_trace = state;
@@ -483,10 +483,6 @@ class LayIndicator extends PanelMenu.Button {
         } catch(e) {
             return '';
         }
-    }
-
-    _engineLabel() {
-        return this._cfg.correction_engine === 'smart' ? 'Умный' : 'Обычный';
     }
 
     _inputModeLabel() {
