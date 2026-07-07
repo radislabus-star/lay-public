@@ -25,6 +25,7 @@ use hunspell::{
 pub(crate) use word_set::WordSet;
 
 static RUSSIAN_GENERATED_FORMS: OnceLock<WordSet> = OnceLock::new();
+static EMPTY_GENERATED_FORMS: OnceLock<WordSet> = OnceLock::new();
 
 pub fn warm_up() {
     let _ = russian_dictionary().len();
@@ -95,6 +96,9 @@ pub fn russian_tiny_dictionary() -> &'static WordSet {
 }
 
 pub fn russian_generated_form_dictionary() -> &'static WordSet {
+    if !full_generated_forms_enabled() {
+        return EMPTY_GENERATED_FORMS.get_or_init(|| WordSet::from_words(Default::default()));
+    }
     RUSSIAN_GENERATED_FORMS.get_or_init(|| {
         WordSet::from_words(
             load_hunspell_generated_forms_min_len(RU_HUNSPELL, RU_HUNSPELL_AFF, 4)
@@ -105,6 +109,10 @@ pub fn russian_generated_form_dictionary() -> &'static WordSet {
 
 pub fn russian_generated_form_dictionary_is_warm() -> bool {
     RUSSIAN_GENERATED_FORMS.get().is_some()
+}
+
+fn full_generated_forms_enabled() -> bool {
+    cfg!(test) || std::env::var_os("LAY_ENABLE_FULL_GENERATED_FORMS").is_some()
 }
 
 pub fn is_known_russian_word_or_form(word: &str) -> bool {

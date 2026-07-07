@@ -123,6 +123,13 @@ impl LayIbusEngine {
             || !self.preedit_candidates.is_empty()
             || self.preedit_dirty
     }
+
+    pub(super) fn clear_preedit_completion_state(&mut self) {
+        self.preedit_suffix.clear();
+        self.preedit_candidates.clear();
+        self.preedit_candidate_index = 0;
+        self.preedit_dirty = false;
+    }
 }
 
 #[cfg(test)]

@@ -115,6 +115,10 @@ pub fn record_accepted_ime_usage(context_tail: &str, accepted_text: &str) {
     usage_prior::record_accepted_ime_if_enabled(context_tail, accepted_text);
 }
 
+pub fn record_rejected_ime_usage(context_tail: &str, rejected_text: &str) {
+    usage_prior::record_rejected_ime_if_enabled(context_tail, rejected_text);
+}
+
 pub fn warm_up() {
     context_wave::warm_up();
     l2::warm_up_surface_motif_memory();

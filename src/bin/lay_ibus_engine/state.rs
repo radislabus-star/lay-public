@@ -325,8 +325,7 @@ impl LayIbusEngine {
         self.publish_tail_handoff();
         self.buffer.clear();
         self.composition_cursor = 0;
-        self.preedit_candidates.clear();
-        self.preedit_candidate_index = 0;
+        self.clear_preedit_completion_state();
         self.sync_layout_after_committed_text(&text);
         let state_us = state_started.elapsed().as_micros();
         trace::record_committed_tail_replace_timing(
@@ -527,5 +526,21 @@ mod tests {
         });
 
         assert!(!engine.should_skip_duplicate_committed_tail_replace(6, "ладно ", now));
+    }
+
+    #[test]
+    fn committed_tail_replace_state_sync_clears_stale_preedit_suffix() {
+        let mut engine = engine();
+        engine.preedit_suffix = "а".to_string();
+        engine.preedit_candidates = vec!["а".to_string()];
+        engine.preedit_candidate_index = 0;
+        engine.preedit_dirty = true;
+
+        engine.clear_preedit_completion_state();
+
+        assert!(engine.preedit_suffix.is_empty());
+        assert!(engine.preedit_candidates.is_empty());
+        assert_eq!(engine.preedit_candidate_index, 0);
+        assert!(!engine.preedit_dirty);
     }
 }

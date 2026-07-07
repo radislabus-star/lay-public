@@ -161,10 +161,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn close_precognition_word_boundary(&mut self) {
-        self.preedit_suffix.clear();
-        self.preedit_candidates.clear();
-        self.preedit_candidate_index = 0;
-        self.preedit_dirty = false;
+        self.clear_preedit_completion_state();
         self.preedit_fast.reset();
     }
 
@@ -518,16 +515,36 @@ impl LayIbusEngine {
     }
 
     pub(super) fn push_tail_char(&mut self, ch: char) {
+        let tail_before_boundary = ch.is_whitespace().then(|| self.tail_buffer.clone());
         self.tail_buffer.push(ch);
         self.preedit_fast.push(ch);
         self.last_tail_input_at = Some(Instant::now());
         if ch.is_whitespace() {
+            if let Some(tail_before_boundary) = tail_before_boundary.as_deref() {
+                self.record_ignored_precognition_at_boundary(tail_before_boundary);
+            }
             self.close_precognition_word_boundary();
             self.word_input_mode = None;
             lay::nanda_wave::record_typed_tail_usage(&self.tail_buffer);
         }
         trim_tail_buffer(&mut self.tail_buffer);
         self.publish_tail_handoff();
+    }
+
+    fn record_ignored_precognition_at_boundary(&self, tail_before_boundary: &str) {
+        let suffix = self.selected_visible_completion_suffix();
+        if suffix.is_empty() {
+            return;
+        }
+        let Some((context, rejected_word)) =
+            preedit_suffix_context_and_word(tail_before_boundary, &suffix)
+        else {
+            return;
+        };
+        if rejected_word == self.last_tail_token_text().to_lowercase() {
+            return;
+        }
+        lay::nanda_wave::record_rejected_ime_usage(&context.join(" "), &rejected_word);
     }
 
     #[cfg(test)]
@@ -810,6 +827,53 @@ mod tests {
         assert!(engine.preedit_suffix.is_empty());
         assert!(engine.preedit_candidates.is_empty());
         assert_eq!(engine.preedit_candidate_index, 0);
+    }
+
+    #[test]
+    fn ignored_preedit_candidate_records_negative_usage_without_promoting_it() {
+        let test_id = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("clock")
+            .as_nanos();
+        let events_path = std::env::temp_dir().join(format!(
+            "lay-ime-usage-events-{}-{test_id}.jsonl",
+            std::process::id()
+        ));
+        let counts_path = std::env::temp_dir().join(format!(
+            "lay-ime-usage-counts-{}-{test_id}.json",
+            std::process::id()
+        ));
+        std::env::set_var("LAY_NANDA_WORD_USAGE_EVENTS", &events_path);
+        std::env::set_var("LAY_NANDA_WORD_USAGE_COUNTS", &counts_path);
+
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "ну да".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.preedit_suffix = "ша".to_string();
+        engine.preedit_candidates = vec!["ша".to_string()];
+        engine.push_tail_char(' ');
+
+        let text = std::fs::read_to_string(&events_path).expect("usage events");
+        assert!(text.contains(r#""kind":"rejected_ime""#), "{text}");
+        assert!(text.contains(r#""word":"даша""#), "{text}");
+        assert!(!text.contains(r#""kind":"accepted_ime""#), "{text}");
+
+        std::env::remove_var("LAY_NANDA_WORD_USAGE_EVENTS");
+        std::env::remove_var("LAY_NANDA_WORD_USAGE_COUNTS");
+        let _ = std::fs::remove_file(events_path);
+        let _ = std::fs::remove_file(counts_path);
     }
 
     #[test]

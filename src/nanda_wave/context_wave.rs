@@ -2,12 +2,12 @@ use std::collections::{HashMap, HashSet};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::OnceLock;
 
+use crate::data_lines::data_lines;
 use crate::keyboard::is_cyrillic_letter;
 use crate::lexicon::{is_common_en_technical_word, is_common_ru_word, EN_HUNSPELL, EN_WORDS};
 use crate::phrase_lexicon::is_known_russian_phrase_part;
 use crate::russian_lexicon::{
-    is_known_russian_word_or_form, russian_dictionary, russian_generated_form_dictionary,
-    russian_tiny_dictionary,
+    is_known_russian_word_or_form, russian_dictionary, russian_tiny_dictionary,
 };
 use crate::text_metrics::damerau_levenshtein;
 use crate::word_reader::split_last_ws_token;
@@ -19,6 +19,9 @@ pub const PHRASE_FORECAST_CELL: &str = "PhraseForecastCell32";
 const MAX_SEMANTIC_WORD_CANDIDATES: usize = 8;
 const MAX_WAVE_BUCKET_SCAN: usize = 512;
 const MAX_WAVE_POOL: usize = 4096;
+const L2_SURFACE_FOUNDATION_RU_DATA: &str =
+    include_str!("../../data/lexicon/l2_surface_foundation_ru_100k.txt");
+const L2_SURFACE_HOT_RU_DATA: &str = include_str!("../../data/lexicon/l2_surface_hot_ru.txt");
 static PREFIX_COMPLETION_INDEX_WARM: AtomicBool = AtomicBool::new(false);
 static RU_WORD_WAVE_MEMORY: OnceLock<RuWordWaveMemory> = OnceLock::new();
 static EN_WORD_WAVE_MEMORY: OnceLock<EnWordWaveMemory> = OnceLock::new();
@@ -545,15 +548,7 @@ fn ru_word_wave_memory() -> &'static RuWordWaveMemory {
     RU_WORD_WAVE_MEMORY.get_or_init(|| {
         let mut entries = Vec::new();
         let mut buckets = HashMap::<u16, Vec<usize>>::new();
-        let mut words = russian_dictionary()
-            .iter()
-            .map(|word| normalize_ru(word))
-            .collect::<Vec<_>>();
-        words.extend(
-            russian_generated_form_dictionary()
-                .iter()
-                .map(|word| normalize_ru(word)),
-        );
+        let mut words = ru_wave_source_words();
         words.sort_by(|left, right| {
             is_common_ru_word(right)
                 .cmp(&is_common_ru_word(left))
@@ -576,6 +571,19 @@ fn ru_word_wave_memory() -> &'static RuWordWaveMemory {
         }
         RuWordWaveMemory { entries, buckets }
     })
+}
+
+fn ru_wave_source_words() -> Vec<String> {
+    let mut words = russian_dictionary()
+        .iter()
+        .map(|word| normalize_ru(word))
+        .collect::<Vec<_>>();
+    words.extend(
+        data_lines(L2_SURFACE_FOUNDATION_RU_DATA)
+            .chain(data_lines(L2_SURFACE_HOT_RU_DATA))
+            .filter_map(super::surface_bank::normalize_l2_surface_word),
+    );
+    words
 }
 
 fn en_word_wave_memory() -> &'static EnWordWaveMemory {

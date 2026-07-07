@@ -16,7 +16,15 @@ fn main() {
         return;
     }
     if args.iter().any(|arg| arg == "--unsafe-scoreboard") {
-        print_unsafe_scoreboard(recent_actions_path());
+        print_unsafe_scoreboard(recent_actions_path(), false);
+        return;
+    }
+    if args.iter().any(|arg| arg == "--unsafe-gate") {
+        print_unsafe_scoreboard(recent_actions_path(), true);
+        return;
+    }
+    if args.iter().any(|arg| arg == "--candidate-report") {
+        print_candidate_report(recent_actions_path());
         return;
     }
     if args.iter().any(|arg| arg == "--stale-tail") {
@@ -47,7 +55,7 @@ fn print_matching_jsonl(path: PathBuf, predicate: fn(&Value) -> bool) {
     }
 }
 
-fn print_unsafe_scoreboard(path: PathBuf) {
+fn print_unsafe_scoreboard(path: PathBuf, fail_on_unsafe: bool) {
     let Ok(text) = std::fs::read_to_string(&path) else {
         eprintln!("cannot read {}", path.display());
         std::process::exit(1);
@@ -60,10 +68,30 @@ fn print_unsafe_scoreboard(path: PathBuf) {
         scoreboard.inspect(&value);
     }
     println!("{}", scoreboard.to_json(&path));
+    if fail_on_unsafe && scoreboard.unsafe_records > 0 {
+        std::process::exit(1);
+    }
+}
+
+fn print_candidate_report(path: PathBuf) {
+    let Ok(text) = std::fs::read_to_string(&path) else {
+        eprintln!("cannot read {}", path.display());
+        std::process::exit(1);
+    };
+    let mut report = CandidateReport::default();
+    for line in text.lines() {
+        let Ok(value) = serde_json::from_str::<Value>(line) else {
+            continue;
+        };
+        report.inspect(&value);
+    }
+    println!("{}", report.to_json(&path));
 }
 
 fn print_usage() {
-    eprintln!("usage: lay-debug-actions --unsafe-edits | --unsafe-scoreboard | --stale-tail");
+    eprintln!(
+        "usage: lay-debug-actions --unsafe-edits | --unsafe-scoreboard | --unsafe-gate | --candidate-report | --stale-tail"
+    );
 }
 
 fn recent_actions_path() -> PathBuf {
@@ -240,6 +268,138 @@ struct UnsafeScoreboard {
     mutation_routes: BTreeMap<String, usize>,
 }
 
+#[derive(Default)]
+struct CandidateReport {
+    records: usize,
+    gate_records: usize,
+    total_candidates: u64,
+    selected_sources: BTreeMap<String, usize>,
+    selected_error_classes: BTreeMap<String, usize>,
+    selected_gate_actions: BTreeMap<String, usize>,
+    bayes_selected: usize,
+    deterministic_candidates: u64,
+    nanda_candidates: u64,
+    apply_candidates: u64,
+    suggest_only_candidates: u64,
+    veto_candidates: u64,
+    max_output_ms: u64,
+}
+
+impl CandidateReport {
+    fn inspect(&mut self, value: &Value) {
+        self.records += 1;
+        if let Some(ms) = value.get("output_ms").and_then(Value::as_u64) {
+            self.max_output_ms = self.max_output_ms.max(ms);
+        }
+        let Some(gate) = value.get("input_gate") else {
+            return;
+        };
+        self.gate_records += 1;
+        let scoreboard = gate.get("scoreboard");
+        self.total_candidates = self.total_candidates.saturating_add(
+            scoreboard
+                .and_then(|scoreboard| scoreboard.get("total_candidates"))
+                .and_then(Value::as_u64)
+                .unwrap_or_else(|| {
+                    gate.get("candidate_count")
+                        .and_then(Value::as_u64)
+                        .unwrap_or_default()
+                }),
+        );
+        self.deterministic_candidates = self.deterministic_candidates.saturating_add(
+            scoreboard
+                .and_then(|scoreboard| scoreboard.get("deterministic_candidates"))
+                .and_then(Value::as_u64)
+                .unwrap_or_default(),
+        );
+        self.nanda_candidates = self.nanda_candidates.saturating_add(
+            scoreboard
+                .and_then(|scoreboard| scoreboard.get("nanda_candidates"))
+                .and_then(Value::as_u64)
+                .unwrap_or_default(),
+        );
+        self.apply_candidates = self.apply_candidates.saturating_add(
+            scoreboard
+                .and_then(|scoreboard| scoreboard.get("apply_candidates"))
+                .and_then(Value::as_u64)
+                .unwrap_or_default(),
+        );
+        self.suggest_only_candidates = self.suggest_only_candidates.saturating_add(
+            scoreboard
+                .and_then(|scoreboard| scoreboard.get("suggest_only_candidates"))
+                .and_then(Value::as_u64)
+                .unwrap_or_default(),
+        );
+        self.veto_candidates = self.veto_candidates.saturating_add(
+            scoreboard
+                .and_then(|scoreboard| scoreboard.get("veto_candidates"))
+                .and_then(Value::as_u64)
+                .unwrap_or_default(),
+        );
+        if scoreboard
+            .and_then(|scoreboard| scoreboard.get("selected_bayes_posterior_milli"))
+            .and_then(Value::as_i64)
+            .is_some()
+        {
+            self.bayes_selected += 1;
+        }
+        if let Some(source) = gate.get("selected_source").and_then(Value::as_str) {
+            *self.selected_sources.entry(source.to_string()).or_insert(0) += 1;
+        }
+        if let Some(error_class) = gate.get("selected_error_class").and_then(Value::as_str) {
+            *self
+                .selected_error_classes
+                .entry(error_class.to_string())
+                .or_insert(0) += 1;
+        }
+        if let Some(action) = gate.get("selected_gate_action").and_then(Value::as_str) {
+            *self
+                .selected_gate_actions
+                .entry(action.to_string())
+                .or_insert(0) += 1;
+        }
+    }
+
+    fn to_json(&self, path: &std::path::Path) -> String {
+        let avg_candidates = self
+            .total_candidates
+            .checked_div(self.gate_records as u64)
+            .unwrap_or_default();
+        serde_json::json!({
+            "kind": "candidate_quality_report",
+            "source": path.display().to_string(),
+            "records": {
+                "total": self.records,
+                "with_input_gate": self.gate_records
+            },
+            "candidate_count": {
+                "total": self.total_candidates,
+                "avg_per_gate_record": avg_candidates
+            },
+            "candidate_sources": {
+                "deterministic": self.deterministic_candidates,
+                "nanda": self.nanda_candidates,
+            },
+            "gate_actions": {
+                "apply": self.apply_candidates,
+                "suggest_only": self.suggest_only_candidates,
+                "veto": self.veto_candidates,
+            },
+            "selected": {
+                "sources": self.selected_sources,
+                "error_classes": self.selected_error_classes,
+                "gate_actions": self.selected_gate_actions,
+                "bayes_posterior_records": self.bayes_selected
+            },
+            "latency": {
+                "max_output_ms": self.max_output_ms
+            },
+            "read_as": "recent_actions candidate scoreboard; use with --unsafe-gate for edit safety"
+        })
+        .to_string()
+    }
+}
+
 impl UnsafeScoreboard {
     fn inspect(&mut self, value: &Value) {
         self.records += 1;
@@ -303,7 +463,7 @@ impl UnsafeScoreboard {
 
 #[cfg(test)]
 mod tests {
-    use super::{unsafe_edit, UnsafeScoreboard};
+    use super::{unsafe_edit, CandidateReport, UnsafeScoreboard};
     use serde_json::json;
 
     #[test]
@@ -385,5 +545,36 @@ mod tests {
                 .copied(),
             Some(1)
         );
+    }
+
+    #[test]
+    fn candidate_report_counts_sources_and_bayes_records() {
+        let value = json!({
+            "kind": "typing-assist",
+            "output_ms": 12,
+            "input_gate": {
+                "candidate_count": 4,
+                "selected_source": "nanda",
+                "selected_error_class": "typo",
+                "selected_gate_action": "apply",
+                "scoreboard": {
+                    "total_candidates": 4,
+                    "apply_candidates": 1,
+                    "suggest_only_candidates": 2,
+                    "veto_candidates": 1,
+                    "deterministic_candidates": 1,
+                    "nanda_candidates": 3,
+                    "selected_bayes_posterior_milli": 820
+                }
+            }
+        });
+        let mut report = CandidateReport::default();
+        report.inspect(&value);
+
+        assert_eq!(report.gate_records, 1);
+        assert_eq!(report.total_candidates, 4);
+        assert_eq!(report.nanda_candidates, 3);
+        assert_eq!(report.bayes_selected, 1);
+        assert_eq!(report.selected_sources.get("nanda").copied(), Some(1));
     }
 }

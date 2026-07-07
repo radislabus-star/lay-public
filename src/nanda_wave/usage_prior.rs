@@ -58,6 +58,7 @@ enum UsageEventKind {
     Typed,
     AcceptedFix,
     AcceptedIme,
+    RejectedIme,
 }
 
 #[derive(Debug, Clone, Default, serde::Deserialize, serde::Serialize)]
@@ -278,6 +279,32 @@ pub(crate) fn record_accepted_ime_if_enabled(context_tail: &str, accepted_text: 
             context: context.clone(),
             from: None,
             to: Some(accepted_text.trim().to_string()),
+            source: Some("ime".to_string()),
+            operation: Some("completion".to_string()),
+        });
+    }
+}
+
+pub(crate) fn record_rejected_ime_if_enabled(context_tail: &str, rejected_text: &str) {
+    if !usage_learning_enabled() {
+        return;
+    }
+    let context = normalized_words(context_tail)
+        .into_iter()
+        .rev()
+        .take(CONTEXT_WORDS)
+        .collect::<Vec<_>>()
+        .into_iter()
+        .rev()
+        .collect::<Vec<_>>();
+    for word in normalized_words(rejected_text) {
+        append_usage_event(UsageEvent {
+            ts: unix_timestamp(),
+            kind: UsageEventKind::RejectedIme,
+            word: Some(word),
+            context: context.clone(),
+            from: None,
+            to: Some(rejected_text.trim().to_string()),
             source: Some("ime".to_string()),
             operation: Some("completion".to_string()),
         });
@@ -637,10 +664,22 @@ fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
     if word.is_empty() {
         return;
     }
+    if matches!(event.kind, UsageEventKind::RejectedIme) {
+        add_rejected_word_state(
+            counts,
+            &event.context,
+            event_source(event),
+            event_operation(event),
+            &word,
+            4,
+        );
+        return;
+    }
     let weight = match event.kind {
         UsageEventKind::Typed => 1,
         UsageEventKind::AcceptedFix => 6,
         UsageEventKind::AcceptedIme => 5,
+        UsageEventKind::RejectedIme => unreachable!("handled before positive count"),
     };
     *counts.words.entry(word.clone()).or_default() = counts
         .words
@@ -744,33 +783,47 @@ fn add_rejected_fix_sources(
         .into_iter()
         .filter(|word| !accepted.contains(word))
     {
-        *counts.rejected_words.entry(rejected.clone()).or_default() = counts
-            .rejected_words
-            .get(&rejected)
+        add_rejected_word_state(counts, &event.context, source, operation, &rejected, weight);
+    }
+}
+
+fn add_rejected_word_state(
+    counts: &mut UsageCounts,
+    context: &[String],
+    source: &str,
+    operation: &str,
+    rejected: &str,
+    weight: u32,
+) {
+    *counts
+        .rejected_words
+        .entry(rejected.to_string())
+        .or_default() = counts
+        .rejected_words
+        .get(rejected)
+        .copied()
+        .unwrap_or_default()
+        .saturating_add(weight);
+    for context_key in context_ngram_keys(context) {
+        let key = context_word_key(&context_key, rejected);
+        *counts
+            .rejected_context_words
+            .entry(key.clone())
+            .or_default() = counts
+            .rejected_context_words
+            .get(&key)
             .copied()
             .unwrap_or_default()
             .saturating_add(weight);
-        for context_key in context_ngram_keys(&event.context) {
-            let key = context_word_key(&context_key, &rejected);
-            *counts
-                .rejected_context_words
-                .entry(key.clone())
-                .or_default() = counts
-                .rejected_context_words
-                .get(&key)
-                .copied()
-                .unwrap_or_default()
-                .saturating_add(weight);
-        }
-        add_transition_counts(
-            &mut counts.transition_repel,
-            &event.context,
-            source,
-            operation,
-            &rejected,
-            weight,
-        );
     }
+    add_transition_counts(
+        &mut counts.transition_repel,
+        context,
+        source,
+        operation,
+        rejected,
+        weight,
+    );
 }
 
 fn rejected_prior_from_count(count: u32) -> f32 {
@@ -1153,7 +1206,7 @@ fn event_source(event: &UsageEvent) -> &str {
     event.source.as_deref().unwrap_or(match event.kind {
         UsageEventKind::Typed => "user",
         UsageEventKind::AcceptedFix => "autocorrect",
-        UsageEventKind::AcceptedIme => "ime",
+        UsageEventKind::AcceptedIme | UsageEventKind::RejectedIme => "ime",
     })
 }
 
@@ -1161,7 +1214,7 @@ fn event_operation(event: &UsageEvent) -> &str {
     event.operation.as_deref().unwrap_or(match event.kind {
         UsageEventKind::Typed => "typed",
         UsageEventKind::AcceptedFix => "replacement",
-        UsageEventKind::AcceptedIme => "completion",
+        UsageEventKind::AcceptedIme | UsageEventKind::RejectedIme => "completion",
     })
 }
 
@@ -1394,6 +1447,28 @@ mod tests {
         let words = usage_surface_words_from_counts(counts);
 
         assert_eq!(words.first().map(String::as_str), Some("архитектура"));
+    }
+
+    #[test]
+    fn rejected_ime_creates_negative_trace_without_promoting_word() {
+        let text = r#"{"ts":1,"kind":"rejected_ime","word":"даша","context":["ну"],"to":"даша","source":"ime","operation":"completion"}
+"#;
+        let mut counts = UsageCounts::default();
+        add_usage_event_counts(&mut counts, text);
+
+        assert!(!counts.words.contains_key("даша"));
+        assert!(!counts.accepted_words.contains_key("даша"));
+        assert_eq!(counts.rejected_words.get("даша"), Some(&4));
+        assert_eq!(
+            counts.rejected_context_words.get("ну\u{1f}даша").copied(),
+            Some(4)
+        );
+
+        let usage = snapshot_from_usage_events_for_tests(text);
+        let context = ["ну"].map(String::from);
+        let signal =
+            usage.transition_signal(&context, "L2LiveCandidateGate32", "completion", "даша");
+        assert!(signal.repulsion > signal.attraction);
     }
 
     #[test]

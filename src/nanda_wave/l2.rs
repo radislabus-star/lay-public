@@ -219,7 +219,8 @@ fn extend_ime_l2_prefix_material(
         return;
     }
     let material_limit = limit.saturating_mul(2).max(limit);
-    for candidate in ime_l2_generated_form_prefix_candidates(context_prefix, token, material_limit) {
+    for candidate in ime_l2_generated_form_prefix_candidates(context_prefix, token, material_limit)
+    {
         push_unique_ime_l2_candidate(candidates, candidate);
         if ime_l2_completion_count(candidates) >= limit.saturating_mul(2).max(limit) {
             return;
