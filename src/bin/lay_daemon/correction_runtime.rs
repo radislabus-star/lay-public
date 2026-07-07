@@ -1,5 +1,8 @@
-use lay::config::CorrectionEngine;
+use lay::action_log::RecentActionGateTrace;
+use lay::config::{CorrectionEngine, CorrectionSafety, TypingAssistRuleConfig};
+use lay::correction_core::CorrectionMode;
 use lay::engine::{decide_manual_correction, ManualCorrectionInput, ManualCorrectionPolicy};
+use lay::input_gate::{decide_input_gate, InputGateRequest, InputGateTrigger};
 use lay::keyboard::{
     map_events_to_layout, map_original_events, mark_single_current_word_layout_if_stale,
     replay_layout_decision,
@@ -90,6 +93,7 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
     let mixed_layouts = layout_decision.mixed_layouts;
 
     let mapped_orig = map_original_events(&events);
+    let input_gate = manual_toggle_gate_trace(&mapped_orig, auto_replace);
     let mapped_target = map_events_to_layout(&events, target_is_ru);
     let chars_orig = mapped_orig.chars().count();
     let chars_target = mapped_target.chars().count();
@@ -138,22 +142,44 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
             scoped_options,
         },
     );
-    apply_manual_correction_output(ManualCorrectionOutputContext {
-        buf,
-        events: &events,
-        mapped_orig: &mapped_orig,
-        mapped_target: &effective_mapped_target,
-        target_is_ru,
-        n_backspaces,
-        replace_words,
-        words_orig,
-        force_replay_toggle,
-        started_at,
-        decision: &correction_result,
-        virtual_kbd,
-        physical_grab,
-        input_isolated,
-    })
+    apply_manual_correction_output(
+        ManualCorrectionOutputContext {
+            buf,
+            events: &events,
+            mapped_orig: &mapped_orig,
+            mapped_target: &effective_mapped_target,
+            target_is_ru,
+            n_backspaces,
+            replace_words,
+            words_orig,
+            force_replay_toggle,
+            started_at,
+            decision: &correction_result,
+            virtual_kbd,
+            physical_grab,
+            input_isolated,
+        },
+        input_gate,
+    )
+}
+
+fn manual_toggle_gate_trace(text_tail: &str, auto_replace: bool) -> Option<RecentActionGateTrace> {
+    let empty_pipeline: &[TypingAssistRuleConfig] = &[];
+    let decision = decide_input_gate(InputGateRequest {
+        trigger: InputGateTrigger::DoubleShift,
+        text_tail,
+        auto_replace,
+        typing_assist: false,
+        auto_switch_layout: active_auto_switch_layout(),
+        correction_safety: CorrectionSafety::Normal,
+        typing_assist_pipeline: empty_pipeline,
+        nanda_autocorrect: false,
+        correction_mode: CorrectionMode::DeterministicOnly,
+    });
+    decision
+        .trace
+        .as_ref()
+        .map(RecentActionGateTrace::from_input_gate)
 }
 
 fn recovered_initial_manual_toggle_target(

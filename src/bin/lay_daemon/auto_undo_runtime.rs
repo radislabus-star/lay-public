@@ -125,6 +125,7 @@ fn remember_auto_undo(buf: &mut WordBuffer, undo: &PendingAutoUndo, started_at: 
         undo.replace_words,
         undo.words,
         started_at,
+        None,
         false,
     );
     buf.clear_pending_learning();

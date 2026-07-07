@@ -140,6 +140,7 @@ pub(super) fn handle_enter_autocorrect(
                 replace_words,
                 original.split_whitespace().count(),
                 started_at,
+                None,
                 false,
             );
             log(&format!(
@@ -219,6 +220,7 @@ pub(super) fn handle_enter_autocorrect(
         replace_words,
         original.split_whitespace().count(),
         started_at,
+        None,
         true,
     );
     log(&format!(

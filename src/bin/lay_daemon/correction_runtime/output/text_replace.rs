@@ -1,4 +1,5 @@
 use evdev::uinput::VirtualDevice;
+use lay::action_log::RecentActionGateTrace;
 use lay::decoder::DecoderAction;
 use lay::keyboard::preferred_layout_for_text;
 use lay::text_edit::{
@@ -17,6 +18,7 @@ use super::context::{ManualOutputCommon, OutputFlow};
 pub(crate) fn try_manual_text_replacement(
     ctx: &mut ManualOutputCommon<'_>,
     kbd: &mut VirtualDevice,
+    input_gate: Option<RecentActionGateTrace>,
 ) -> OutputFlow {
     let DecoderAction::ReplaceText {
         replacement: text,
@@ -79,7 +81,7 @@ pub(crate) fn try_manual_text_replacement(
     } else {
         switch_to_target_layout(insert_target_is_ru)
     };
-    remember_text_replacement(ctx, &plan, text, kind, insert_target_is_ru);
+    remember_text_replacement(ctx, &plan, text, kind, insert_target_is_ru, input_gate);
     log(&format!(
         "  1. minimal replace: left={} bs={} insert={:?} right={}",
         plan.move_left, plan.backspaces, plan.insert, plan.move_right
@@ -112,6 +114,7 @@ fn remember_text_replacement(
     text: &str,
     kind: &'static str,
     insert_target_is_ru: bool,
+    input_gate: Option<RecentActionGateTrace>,
 ) {
     remember_manual_text_correction(
         ctx.buf,
@@ -136,6 +139,7 @@ fn remember_text_replacement(
         ctx.replace_words,
         ctx.words_orig,
         ctx.started_at,
+        input_gate,
         true,
     );
 }

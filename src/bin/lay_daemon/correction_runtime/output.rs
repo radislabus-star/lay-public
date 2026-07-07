@@ -9,6 +9,8 @@ mod replay;
 #[path = "output/text_replace.rs"]
 mod text_replace;
 
+use lay::action_log::RecentActionGateTrace;
+
 pub(super) use self::context::ManualCorrectionOutputContext;
 use self::context::{ManualOutputCommon, OutputFlow};
 use self::native_stage::try_native_output_stage;
@@ -20,6 +22,7 @@ use super::super::{log, release_possible_modifiers, settle_after_physical_trigge
 
 pub(super) fn apply_manual_correction_output(
     ctx: ManualCorrectionOutputContext<'_, '_>,
+    input_gate: Option<RecentActionGateTrace>,
 ) -> Option<bool> {
     let ManualCorrectionOutputContext {
         buf,
@@ -55,8 +58,12 @@ pub(super) fn apply_manual_correction_output(
     let mut virtual_kbd = virtual_kbd;
     let mut physical_grab = physical_grab;
 
-    if let Some(result) = try_native_output_stage(&mut common, &mut virtual_kbd, &mut physical_grab)
-    {
+    if let Some(result) = try_native_output_stage(
+        &mut common,
+        &mut virtual_kbd,
+        &mut physical_grab,
+        input_gate.clone(),
+    ) {
         return result;
     }
 
@@ -82,7 +89,7 @@ pub(super) fn apply_manual_correction_output(
         }
     }
 
-    match try_manual_text_replacement(&mut common, kbd) {
+    match try_manual_text_replacement(&mut common, kbd, input_gate.clone()) {
         OutputFlow::Return(result) => result,
         OutputFlow::ContinueReplay => apply_layout_replay(&mut common, kbd),
     }

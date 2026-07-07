@@ -1,3 +1,4 @@
+use lay::action_log::RecentActionGateTrace;
 use lay::decoder::DecoderAction;
 use lay::desktop::LayoutBackend;
 use lay::keyboard::preferred_layout_for_text;
@@ -22,6 +23,7 @@ pub(crate) struct NativeReplaceOutput {
 
 pub(crate) fn try_ime_replace_output(
     ctx: &mut ManualOutputCommon<'_>,
+    input_gate: Option<RecentActionGateTrace>,
 ) -> Option<NativeReplaceOutput> {
     if !should_try_ime_text_backend() {
         return None;
@@ -41,6 +43,7 @@ pub(crate) fn try_ime_replace_output(
         replace_kind,
         replace_target_is_ru,
         is_replay,
+        input_gate,
     );
     let result = match switch_to_target_layout(replace_target_is_ru) {
         Ok(layout_id) => {
@@ -67,6 +70,7 @@ pub(crate) fn try_ime_replace_output(
 
 pub(crate) fn try_gnome_native_replace_output(
     ctx: &mut ManualOutputCommon<'_>,
+    input_gate: Option<RecentActionGateTrace>,
 ) -> Option<NativeReplaceOutput> {
     if !(GNOME_NATIVE_REPLACE_EXPERIMENTAL && active_layout_backend() == LayoutBackend::Gnome) {
         return None;
@@ -85,6 +89,7 @@ pub(crate) fn try_gnome_native_replace_output(
                 replace_kind,
                 replace_target_is_ru,
                 is_replay,
+                input_gate,
             );
             log(&format!(
                 "  1. GNOME ReplaceText: bs={} insert={:?}",
@@ -133,6 +138,7 @@ fn remember_native_replace(
     replace_kind: &'static str,
     replace_target_is_ru: bool,
     is_replay: bool,
+    input_gate: Option<RecentActionGateTrace>,
 ) {
     if is_replay {
         remember_layout_replay_success(
@@ -174,6 +180,7 @@ fn remember_native_replace(
             ctx.replace_words,
             ctx.words_orig,
             ctx.started_at,
+            input_gate,
             true,
         );
     }

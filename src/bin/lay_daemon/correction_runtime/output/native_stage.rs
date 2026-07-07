@@ -1,4 +1,5 @@
 use evdev::uinput::VirtualDevice;
+use lay::action_log::RecentActionGateTrace;
 
 use super::super::super::physical_input_grab::PhysicalInputGrab;
 use super::context::ManualOutputCommon;
@@ -8,8 +9,9 @@ pub(super) fn try_native_output_stage<'a, 'grab>(
     common: &mut ManualOutputCommon<'_>,
     virtual_kbd: &mut Option<&'a mut VirtualDevice>,
     physical_grab: &mut Option<&'a mut PhysicalInputGrab<'grab>>,
+    input_gate: Option<RecentActionGateTrace>,
 ) -> Option<Option<bool>> {
-    if let Some(output) = try_ime_replace_output(common) {
+    if let Some(output) = try_ime_replace_output(common, input_gate.clone()) {
         forward_queued_after_native_output(
             virtual_kbd,
             physical_grab,
@@ -19,7 +21,7 @@ pub(super) fn try_native_output_stage<'a, 'grab>(
         );
         return Some(output.result);
     }
-    if let Some(output) = try_gnome_native_replace_output(common) {
+    if let Some(output) = try_gnome_native_replace_output(common, input_gate) {
         forward_queued_after_native_output(
             virtual_kbd,
             physical_grab,

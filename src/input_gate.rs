@@ -194,7 +194,7 @@ pub fn decide_input_gate(req: InputGateRequest<'_>) -> InputGateDecision {
             correction: None,
             trace: Some(observe_trace(
                 InputGateStage::ManualToggle,
-                "manual_toggle_owned_elsewhere",
+                "manual_toggle_route_observed",
             )),
         },
         InputGateTrigger::TabAccept => InputGateDecision {
@@ -204,7 +204,7 @@ pub fn decide_input_gate(req: InputGateRequest<'_>) -> InputGateDecision {
             correction: None,
             trace: Some(observe_trace(
                 InputGateStage::CompletionAccept,
-                "completion_accept_owned_elsewhere",
+                "completion_accept_route_observed",
             )),
         },
         InputGateTrigger::FocusChanged | InputGateTrigger::LayoutChanged => InputGateDecision {
@@ -382,6 +382,25 @@ mod tests {
             decision.trace.as_ref().map(|trace| trace.reason),
             Some("live_input_observe_only")
         );
+    }
+
+    #[test]
+    fn double_shift_is_visible_as_manual_toggle_operator() {
+        let decision = decide_input_gate(request(InputGateTrigger::DoubleShift, "ghbdtn"));
+        assert_eq!(decision.stage, InputGateStage::ManualToggle);
+        assert_eq!(decision.action, InputGateAction::Observe);
+        assert!(decision.correction.is_none());
+        let trace = decision.trace.as_ref().expect("manual toggle trace");
+        assert_eq!(trace.reason, "manual_toggle_route_observed");
+    }
+
+    #[test]
+    fn tab_accept_is_visible_as_completion_operator() {
+        let decision = decide_input_gate(request(InputGateTrigger::TabAccept, "пров"));
+        assert_eq!(decision.stage, InputGateStage::CompletionAccept);
+        assert_eq!(decision.action, InputGateAction::Observe);
+        let trace = decision.trace.as_ref().expect("completion trace");
+        assert_eq!(trace.reason, "completion_accept_route_observed");
     }
 
     #[test]
