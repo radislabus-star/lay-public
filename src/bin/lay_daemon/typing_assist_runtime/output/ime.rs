@@ -1,5 +1,5 @@
 use super::super::super::{
-    active_auto_switch_layout, layout_switch_policy, log, should_try_ime_text_backend,
+    layout_switch_policy, log, should_try_ime_text_backend,
     switch_or_restore_layout_after_text_edit, try_ime_replace_tail,
 };
 use super::super::TypingAssistOutcome;
@@ -85,13 +85,9 @@ pub(crate) fn try_apply_ime_replacement(
     let layout_started = std::time::Instant::now();
     let force_layout =
         layout_switch_policy::force_target_layout_for_replacement(original, replacement);
-    switch_or_restore_layout_after_text_edit(
-        active_auto_switch_layout() || force_layout,
-        target_layout,
-        None,
-        "typing-assist",
-        false,
-    );
+    if force_layout {
+        switch_or_restore_layout_after_text_edit(true, target_layout, None, "typing-assist", false);
+    }
     let layout_ms = layout_started.elapsed().as_millis();
     let remember_started = std::time::Instant::now();
     remember_ime_typing_correction(

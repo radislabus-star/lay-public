@@ -22,8 +22,12 @@ impl LayIbusEngine {
             return;
         }
         let target_is_ru = preferred_layout_for_text(text, self.layout_is_ru);
-        self.publish_tail_handoff();
         let target_engine = ime_engine_for_layout(target_is_ru);
+        self.publish_tail_handoff();
+        if target_is_ru == self.layout_is_ru {
+            trace::record_layout_sync(target_is_ru, target_engine, true);
+            return;
+        }
         let ok = switch_active_ime_engine(target_engine).is_ok();
         if ok {
             self.layout_is_ru = target_is_ru;

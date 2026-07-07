@@ -45,14 +45,21 @@ impl TextReplacementPipelineError {
 fn prepare_text_insert_for_replacement_plan(
     plan: &TextReplacement,
     fallback_layout_is_ru: bool,
+    known_current_layout_is_ru: Option<bool>,
 ) -> Result<PreparedTextInsert, String> {
     let insert_layout_is_ru = preferred_layout_for_text(&plan.insert, fallback_layout_is_ru);
     let runs = text_to_uinput_runs(&plan.insert, insert_layout_is_ru)
         .ok_or_else(|| "text insert requires unsafe TypeText fallback".to_string())?;
     let mut preflight_final_layout_is_ru = None;
+    let mut current_layout_is_ru = known_current_layout_is_ru;
     for run in &runs {
+        if current_layout_is_ru == Some(run.target_is_ru) {
+            preflight_final_layout_is_ru = current_layout_is_ru;
+            continue;
+        }
         switch_to_target_layout(run.target_is_ru)
             .map_err(|e| format!("layout preflight failed before destructive edit: {e}"))?;
+        current_layout_is_ru = Some(run.target_is_ru);
         preflight_final_layout_is_ru = Some(run.target_is_ru);
     }
     Ok(PreparedTextInsert {
@@ -90,13 +97,18 @@ pub(crate) fn apply_text_replacement_pipeline(
     plan: &TextReplacement,
     replacement: &str,
     fallback_layout_is_ru: bool,
+    known_current_layout_is_ru: Option<bool>,
     label: &str,
     fast_output: bool,
 ) -> Result<TextInsertOutcome, TextReplacementPipelineError> {
     let pipeline_started = Instant::now();
     let prepare_started = Instant::now();
-    let prepared_insert = prepare_text_insert_for_replacement_plan(plan, fallback_layout_is_ru)
-        .map_err(TextReplacementPipelineError::Preflight)?;
+    let prepared_insert = prepare_text_insert_for_replacement_plan(
+        plan,
+        fallback_layout_is_ru,
+        known_current_layout_is_ru,
+    )
+    .map_err(TextReplacementPipelineError::Preflight)?;
     let prepare_ms = prepare_started.elapsed().as_millis();
     let delete_started = Instant::now();
     apply_text_replacement(dev, plan, fast_output).map_err(TextReplacementPipelineError::Delete)?;

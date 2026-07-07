@@ -1318,6 +1318,16 @@ fn gate_candidate_with_source(
             reason: "surface_left_context_apply_blocked",
         };
     }
+    if l2_surface_candidate_truncates_to_stem_without_deletion_proof(
+        original,
+        replacement,
+        source_id,
+    ) {
+        return CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "l2_surface_stem_truncation_low",
+        };
+    }
     if let Some(decision) = l3_context_gate(original, replacement, error_class, source_id) {
         return decision;
     }
@@ -1944,6 +1954,56 @@ fn l2_surface_candidate_lacks_local_typo_proof(
         && prefix + 3 < original_len.max(replacement_len)
     {
         return true;
+    }
+    false
+}
+
+fn l2_surface_candidate_truncates_to_stem_without_deletion_proof(
+    original: &str,
+    replacement: &str,
+    source_id: &str,
+) -> bool {
+    if correction_source_contract::source_role(source_id) != CorrectionSourceRole::L2Surface {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return false;
+    };
+    if !is_cyrillic_letters_only(&original_word) || !is_cyrillic_letters_only(&replacement_word) {
+        return false;
+    }
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    let original_len = original_lower.chars().count();
+    let replacement_len = replacement_lower.chars().count();
+    if replacement_len >= original_len || replacement_len < 4 {
+        return false;
+    }
+    if one_deletion_reduces_to(&original_lower, &replacement_lower) {
+        return false;
+    }
+    let prefix = common_prefix_len(&original_lower, &replacement_lower);
+    prefix + 1 >= replacement_len
+}
+
+fn one_deletion_reduces_to(original: &str, replacement: &str) -> bool {
+    let original_chars = original.chars().collect::<Vec<_>>();
+    let replacement_chars = replacement.chars().collect::<Vec<_>>();
+    if original_chars.len() != replacement_chars.len() + 1 {
+        return false;
+    }
+    for skip in 0..original_chars.len() {
+        if original_chars
+            .iter()
+            .enumerate()
+            .filter_map(|(idx, ch)| (idx != skip).then_some(*ch))
+            .eq(replacement_chars.iter().copied())
+        {
+            return true;
+        }
     }
     false
 }
@@ -2648,7 +2708,7 @@ mod tests {
         lattice.push_source(Some(UnifiedCorrectionCandidate {
             replacement: "автозамена ".to_string(),
             source: CorrectionDecisionSource::Deterministic,
-            source_id: "missing_letter".to_string(),
+            source_id: ids::MISSING_LETTER.to_string(),
             error_class: TypingErrorClass::MissingLetter,
             gate: CandidateGateDecision {
                 action: CandidateGateAction::Apply,
@@ -2949,6 +3009,19 @@ mod tests {
 
         assert_eq!(gate.action, CandidateGateAction::KeepOriginal);
         assert_eq!(gate.reason, "candidate_over_compresses_word");
+    }
+
+    #[test]
+    fn l2_surface_cannot_apply_context_stem_truncation() {
+        let gate = gate_candidate_with_source(
+            "я прохоил ",
+            "я проход ",
+            TypingErrorClass::CompositeTypo,
+            "L2SurfaceMotifCell32",
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "l2_surface_stem_truncation_low");
     }
 
     #[test]

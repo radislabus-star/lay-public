@@ -54,6 +54,7 @@ pub(crate) fn try_manual_text_replacement(
         &plan,
         text,
         ctx.target_is_ru,
+        None,
         kind,
         ctx.input_isolated,
     ) {

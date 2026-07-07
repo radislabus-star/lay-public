@@ -212,7 +212,7 @@ impl LayIbusEngine {
             correction_safety: gate_config.correction_safety,
             typing_assist_pipeline: &self.config.typing_assist_pipeline,
             nanda_autocorrect: gate_config.nanda_autocorrect,
-            correction_mode: CorrectionMode::DeterministicThenNanda,
+            correction_mode: gate_config.correction_mode(),
         });
         let InputGateAction::ApplyReplacement { replacement, .. } = decision.action else {
             return None;
@@ -299,6 +299,14 @@ impl ActiveCompositionGateConfig {
             auto_switch_layout: engine.config.auto_switch_layout,
             nanda_autocorrect: engine.config.nanda_autocorrect,
             correction_safety: engine.config.active_correction_safety(),
+        }
+    }
+
+    fn correction_mode(self) -> CorrectionMode {
+        if self.nanda_autocorrect {
+            CorrectionMode::DeterministicThenNanda
+        } else {
+            CorrectionMode::DeterministicOnly
         }
     }
 }

@@ -27,7 +27,7 @@ use super::signal::{WavePacket, WordCandidate};
 const MAX_LAYOUT_SCAN_CANDIDATES: usize = 4;
 const MAX_TAUGHT_CANDIDATES: usize = 6;
 const L2_ACTIVE_SOURCE_TARGET: usize = 1_000_000;
-const L2_RUNTIME_WORD_LIMIT: usize = 16_384;
+const L2_RUNTIME_WORD_LIMIT: usize = 100_000;
 const L2_FOUNDATION_SOURCE_LIMIT: usize = 100_000;
 const L2_FOUNDATION_LIVE_SCAN_LIMIT: usize = 100_000;
 const L2_USAGE_WORD_LIMIT: usize = 5_000;
@@ -103,7 +103,6 @@ pub(super) fn warm_up_surface_motif_memory() {
 
 pub(super) fn warm_up_ime_word_candidate_memory() {
     warm_up_surface_motif_memory();
-    let _ = broad_prefix_index().stats();
     let _ = l2_short_position_seed_index().len();
 }
 
@@ -1633,9 +1632,21 @@ fn surface_motif_memory() -> &'static L2CenterMemory {
                 words.len()
             );
         }
+        drop(words);
+        trim_allocator_after_l2_surface_build();
         memory
     })
 }
+
+#[cfg(target_os = "linux")]
+fn trim_allocator_after_l2_surface_build() {
+    unsafe {
+        libc::malloc_trim(0);
+    }
+}
+
+#[cfg(not(target_os = "linux"))]
+fn trim_allocator_after_l2_surface_build() {}
 
 fn broad_prefix_index() -> &'static super::l2_broad_index::L2BroadPrefixIndex {
     static INDEX: OnceLock<super::l2_broad_index::L2BroadPrefixIndex> = OnceLock::new();

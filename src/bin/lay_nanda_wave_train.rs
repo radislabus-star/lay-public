@@ -23,6 +23,10 @@ struct Learned {
 
 fn main() -> io::Result<()> {
     let args = env::args().collect::<Vec<_>>();
+    if args.iter().any(|arg| arg == "--l2-surface-status") {
+        print_l2_surface_status();
+        return Ok(());
+    }
     if let Some(corpus) = arg_path(&args, "--llmwave-corpus") {
         let out = arg_path(&args, "--llmwave-out")
             .or_else(|| arg_path(&args, "--out"))
@@ -36,8 +40,10 @@ fn main() -> io::Result<()> {
         arg_path(&args, "--out").unwrap_or_else(lay::nanda_wave::learned::default_memory_path);
     let phase_out = arg_path(&args, "--phase-out")
         .unwrap_or_else(lay::nanda_wave::default_l2_candidate_phase_memory_path);
-    let include_live_actions = args.iter().any(|arg| arg == "--include-live-actions");
-    let include_user_corrections = args.iter().any(|arg| arg == "--include-user-corrections");
+    let pack_live = args.iter().any(|arg| arg == "--pack-live");
+    let include_live_actions = pack_live || args.iter().any(|arg| arg == "--include-live-actions");
+    let include_user_corrections =
+        pack_live || args.iter().any(|arg| arg == "--include-user-corrections");
     let mut learned = learn(&dataset)?;
     let live_report = if include_live_actions || include_user_corrections {
         add_live_learning(&mut learned, include_user_corrections)?
@@ -48,6 +54,33 @@ fn main() -> io::Result<()> {
     write_phase_memory(&phase_out, &learned)?;
     print_summary(&dataset, &out, &phase_out, &learned, &live_report);
     Ok(())
+}
+
+fn print_l2_surface_status() {
+    let status = lay::nanda_wave::l2::l2_surface_memory_status();
+    println!("l2_surface_status:");
+    println!("  active_source_target: {}", status.active_source_target);
+    println!("  hot_center_words: {}", status.hot_center_words);
+    println!("  hot_center_records: {}", status.hot_center_records);
+    println!("  hot_center_motifs: {}", status.hot_center_motifs);
+    println!("  hot_center_token_refs: {}", status.hot_center_token_refs);
+    println!("  hot_center_bytes: {}", status.hot_center_bytes);
+    println!("  broad_source_words: {}", status.broad_source_words);
+    println!("  broad_prefix_keys: {}", status.broad_prefix_keys);
+    println!("  broad_word_refs: {}", status.broad_word_refs);
+    println!(
+        "  foundation_source_limit: {}",
+        status.foundation_source_limit
+    );
+    println!(
+        "  foundation_live_scan_limit: {}",
+        status.foundation_live_scan_limit
+    );
+    println!(
+        "  generated_forms_loaded: {}",
+        status.generated_forms_loaded
+    );
+    println!("  generated_forms_words: {}", status.generated_forms_words);
 }
 
 fn train_llmwave_corpus(corpus: &Path, out: &Path) -> io::Result<()> {

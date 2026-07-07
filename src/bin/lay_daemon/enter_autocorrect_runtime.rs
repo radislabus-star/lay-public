@@ -116,13 +116,15 @@ pub(super) fn handle_enter_autocorrect(
                     log(&format!("⚠ enter-autocorrect Enter send failed: {e}"));
                 }
             }
-            switch_or_restore_layout_after_text_edit(
-                active_auto_switch_layout() || force_target_layout,
-                target_layout,
-                original_layout,
-                "enter-autocorrect",
-                false,
-            );
+            if force_target_layout {
+                switch_or_restore_layout_after_text_edit(
+                    true,
+                    target_layout,
+                    original_layout,
+                    "enter-autocorrect",
+                    false,
+                );
+            }
             record_recent_action(
                 "enter-autocorrect",
                 &original,
@@ -160,7 +162,8 @@ pub(super) fn handle_enter_autocorrect(
         kbd,
         &plan,
         &replacement,
-        true,
+        original_layout.unwrap_or(true),
+        original_layout,
         "enter-autocorrect",
         false,
     ) {
@@ -172,13 +175,15 @@ pub(super) fn handle_enter_autocorrect(
     };
     let force_target_layout =
         layout_switch_policy::force_target_layout_for_replacement(&original, &replacement);
-    switch_or_restore_layout_after_text_edit(
-        active_auto_switch_layout() || force_target_layout,
-        insert_outcome.layout_is_ru,
-        original_layout,
-        "enter-autocorrect",
-        insert_outcome.layout_already_set,
-    );
+    if force_target_layout {
+        switch_or_restore_layout_after_text_edit(
+            true,
+            insert_outcome.layout_is_ru,
+            original_layout,
+            "enter-autocorrect",
+            insert_outcome.layout_already_set,
+        );
+    }
 
     if let Err(e) = emit_key_taps_fast(kbd, KeyCode::KEY_ENTER, 1) {
         log(&format!("⚠ enter-autocorrect Enter send failed: {e}"));

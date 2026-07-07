@@ -67,37 +67,11 @@ pub fn live_completion_candidates(
         return Vec::new();
     }
 
-    let mut raw = if partial_len <= 4 {
-        l2::ime_l2_short_seed_word_candidates(
-            request.context_prefix,
-            &partial,
-            request.limit.saturating_mul(3).max(request.limit),
-        )
-    } else {
-        Vec::new()
-    };
-    if partial_len >= 5 {
-        raw.extend(l2::ime_l2_word_candidates(
-            request.context_prefix,
-            &partial,
-            request.limit.saturating_mul(4).max(request.limit),
-        ));
-    }
-    let has_completion = raw
-        .iter()
-        .any(|candidate| candidate.kind == L2ImeWordCandidateKind::Completion);
-    if !has_completion {
-        raw.extend(l2::ime_l2_foundation_prefix_candidates(
-            request.context_prefix,
-            &partial,
-            request.limit.saturating_mul(4).max(request.limit),
-        ));
-    }
-    raw.extend(l2::ime_l2_generated_form_prefix_candidates(
+    let raw = l2::ime_l2_word_candidates(
         request.context_prefix,
         &partial,
         request.limit.saturating_mul(4).max(request.limit),
-    ));
+    );
 
     let raw_count = raw.len();
     let context_tokens = super::llmwave::tokenize(request.context_prefix);
@@ -497,7 +471,11 @@ fn live_completion_has_authority(input: LiveCompletionAuthority) -> bool {
 
     if input.partial_len <= 2 {
         return input.allow_short_lexical
-            && (usage_signal || input.context_usage >= 0.018 || input.hot || input.common)
+            && (usage_signal
+                || structural_signal
+                || input.context_usage >= 0.018
+                || input.hot
+                || input.common)
             && input.suffix_len <= 8;
     }
     if input.partial_len == 3 {
@@ -601,6 +579,23 @@ mod tests {
     }
 
     #[test]
+    fn live_gate_does_not_fallback_from_ambiguous_short_prefix() {
+        let center_candidates = l2::ime_l2_word_candidates("я хочу ", "пр", 12);
+        assert!(
+            center_candidates
+                .iter()
+                .any(|candidate| candidate.kind == L2ImeWordCandidateKind::Completion),
+            "short prefixes should be visible to L2 center memory, not prefix fallback: {center_candidates:?}"
+        );
+
+        let live_candidates = live_completion_candidates(request("я хочу ", "пр"));
+        assert!(
+            live_candidates.is_empty(),
+            "ambiguous two-letter L2 centers should stay silent instead of falling back to prefix noise: {live_candidates:?}"
+        );
+    }
+
+    #[test]
     fn live_gate_keeps_replacement_out_of_suffix_lane() {
         let candidates = live_completion_candidates(request("", "звгрузи"));
         assert!(
@@ -612,13 +607,13 @@ mod tests {
     }
 
     #[test]
-    fn live_gate_prefers_exact_prefix_continuation_from_foundation() {
+    fn live_gate_prefers_exact_prefix_continuation_from_l2_center() {
         let candidates = live_completion_candidates(request("как будто нет ", "кандидат"));
         assert!(
             candidates
                 .first()
                 .is_some_and(|candidate| candidate.surface.starts_with("кандидат")),
-            "кандидат should get foundation continuations first, got {candidates:?}"
+            "кандидат should get L2 center continuations first, got {candidates:?}"
         );
     }
 

@@ -1,6 +1,8 @@
 use super::*;
 use crate::boundary_runtime::{handle_hard_boundary_if_needed, HardBoundaryContext};
-use crate::pending_typing_assist::PendingTypingAssist;
+use crate::pending_typing_assist::{
+    drop_pending_after_following_word_started, PendingTypingAssist,
+};
 
 fn deferred_case(label: &str) -> Vec<String> {
     fixture_row_by_id("daemon_typing_assist_deferred_cases.tsv", label)
@@ -186,24 +188,21 @@ fn deferred_typing_assist_respects_single_word_scope() {
 }
 
 #[test]
-fn deferred_typing_assist_snapshot_survives_extra_space_and_next_word() {
+fn deferred_typing_assist_drops_snapshot_when_next_word_starts() {
     let row = deferred_case("snapshot_extra_space");
     let mut buffer = typed_buffer_from_semicolon_fixture(&row[1]);
 
-    let pending = find_typing_assist_correction(&buffer, true, row[2].parse().expect("scope"))
+    let correction = find_typing_assist_correction(&buffer, true, row[2].parse().expect("scope"))
         .expect("prepared completed word");
-    assert_eq!(map_original_events(&pending.events), row[3]);
-    assert_eq!(pending.edit.original, row[4]);
-    assert_eq!(pending.edit.replacement, row[5]);
+    assert_eq!(map_original_events(&correction.events), row[3]);
+    assert_eq!(correction.edit.original, row[4]);
+    assert_eq!(correction.edit.replacement, row[5]);
 
+    let mut pending = Some(PendingTypingAssist::new(correction));
     buffer.handle_space();
+    assert!(drop_pending_after_following_word_started(&mut pending));
+    assert!(pending.is_none());
     push_text_as_layout(&mut buffer, "x", false);
-    let shifted = lay::text_edit::offset_replacement_plan_for_cursor(
-        &pending.edit.plan,
-        row[6].parse().expect("cursor_offset"),
-    );
-
-    assert_eq!(shifted, deferred_plan(&row));
 }
 
 #[test]

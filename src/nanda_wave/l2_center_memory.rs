@@ -13,8 +13,11 @@ const L2_CENTER_RECORD_BYTES: usize = 32;
 const L2_TOKEN_REF_BYTES: usize = 4;
 const L2_WORD_RECORD_BYTES: usize = 16;
 const L2_RESIDUAL_REF_BYTES: usize = 4;
+const L2_CENTER_INDEX_BYTES: usize = 16;
 const L2_RESIDUAL_TAG: u32 = 1 << 31;
 const MAX_LENGTH_BUCKET_CANDIDATES: usize = 1536;
+const MAX_TOKEN_WORD_IDS: usize = 512;
+const MAX_LENGTH_WORD_IDS: usize = 4096;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) struct L2CenterMemoryConfig {
@@ -43,6 +46,12 @@ struct L2SequenceCenter {
     l1_center_refs: Vec<u32>,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+struct L2CenterLookupKey {
+    sequence_hash: u64,
+    len: u16,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct L2WordRecord {
     source_hash: u64,
@@ -58,7 +67,7 @@ pub(super) struct L2CenterMemory {
     l1: L1CenterMemory,
     centers: Vec<L2SequenceCenter>,
     max_center_len: usize,
-    center_index: HashMap<Vec<u32>, u32>,
+    center_index: HashMap<L2CenterLookupKey, u32>,
     source_words: Vec<String>,
     word_records: Vec<L2WordRecord>,
     token_refs: Vec<u32>,
@@ -106,7 +115,15 @@ impl L2CenterMemory {
             .unwrap_or(0);
         let center_index = centers
             .iter()
-            .map(|center| (center.l1_center_refs.clone(), center.id))
+            .map(|center| {
+                (
+                    L2CenterLookupKey {
+                        sequence_hash: center.sequence_hash,
+                        len: center.l1_center_refs.len().min(u16::MAX as usize) as u16,
+                    },
+                    center.id,
+                )
+            })
             .collect::<HashMap<_, _>>();
         let mut memory = Self {
             l1,
@@ -175,9 +192,20 @@ impl L2CenterMemory {
                 .iter()
                 .map(|center| center.l1_center_refs.len() * L1_SEQUENCE_REF_BYTES)
                 .sum::<usize>()
+            + self.center_index.len() * L2_CENTER_INDEX_BYTES
             + self.token_refs.len() * L2_TOKEN_REF_BYTES
             + self.word_records.len() * L2_WORD_RECORD_BYTES
             + self.residual_ref_count * L2_RESIDUAL_REF_BYTES
+            + self
+                .token_to_words
+                .values()
+                .map(|ids| ids.len() * std::mem::size_of::<u32>())
+                .sum::<usize>()
+            + self
+                .length_to_words
+                .values()
+                .map(|ids| ids.len() * std::mem::size_of::<u32>())
+                .sum::<usize>()
     }
 
     #[must_use]
@@ -240,7 +268,10 @@ impl L2CenterMemory {
                 }
                 let input_len = input_norm.chars().count();
                 let word_len = word_norm.chars().count();
-                if input_len.abs_diff(word_len) > 4 {
+                let prefix_match =
+                    word_norm.starts_with(&input_norm) || input_norm.starts_with(&word_norm);
+                let len_gap = input_len.abs_diff(word_len);
+                if (!prefix_match && len_gap > 4) || (prefix_match && len_gap > 16) {
                     return None;
                 }
 
@@ -253,8 +284,6 @@ impl L2CenterMemory {
                     &motif_tokens(word_l2_tokens),
                 );
                 let surface_distance = damerau_levenshtein(&input_norm, &word_norm);
-                let prefix_match =
-                    word_norm.starts_with(&input_norm) || input_norm.starts_with(&word_norm);
                 let mut score = candidate_score(
                     input_len,
                     word_len,
@@ -342,9 +371,11 @@ impl L2CenterMemory {
             .collect::<Vec<_>>();
         for ids in self.token_to_words.values_mut() {
             sort_word_ids_by_runtime_priority(&self.source_words, &priorities, ids);
+            ids.truncate(MAX_TOKEN_WORD_IDS);
         }
         for ids in self.length_to_words.values_mut() {
             sort_word_ids_by_runtime_priority(&self.source_words, &priorities, ids);
+            ids.truncate(MAX_LENGTH_WORD_IDS);
         }
     }
 
@@ -384,9 +415,20 @@ impl L2CenterMemory {
                 let max_len = self.max_center_len.min(remaining);
                 let mut matched = None;
                 for len in (1..=max_len).rev() {
-                    if let Some(id) = self.center_index.get(&sequence[index..index + len]) {
-                        matched = Some((*id, len));
-                        break;
+                    let window = &sequence[index..index + len];
+                    let key = L2CenterLookupKey {
+                        sequence_hash: stable_hash_u32s(window),
+                        len: len.min(u16::MAX as usize) as u16,
+                    };
+                    if let Some(id) = self.center_index.get(&key) {
+                        let center_matches = self
+                            .centers
+                            .get(*id as usize)
+                            .is_some_and(|center| center.l1_center_refs.as_slice() == window);
+                        if center_matches {
+                            matched = Some((*id, len));
+                            break;
+                        }
                     }
                 }
                 if let Some((id, len)) = matched {

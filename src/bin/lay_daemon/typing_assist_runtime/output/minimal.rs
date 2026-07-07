@@ -1,5 +1,5 @@
 use super::super::super::{
-    active_auto_switch_layout, apply_text_replacement_pipeline, layout_switch_policy, log,
+    apply_text_replacement_pipeline, layout_switch_policy, log,
     switch_or_restore_layout_after_text_edit, tail_replace_policy,
 };
 use super::super::TypingAssistOutcome;
@@ -91,7 +91,8 @@ pub(crate) fn apply_minimal_typing_replacement(
         kbd,
         &plan,
         replacement,
-        true,
+        original_layout.unwrap_or(true),
+        original_layout,
         "typing-assist",
         fast_output,
     ) {
@@ -114,13 +115,15 @@ pub(crate) fn apply_minimal_typing_replacement(
     });
     let force_target_layout =
         layout_switch_policy::force_target_layout_for_replacement(original, replacement);
-    switch_or_restore_layout_after_text_edit(
-        active_auto_switch_layout() || force_target_layout,
-        insert_outcome.layout_is_ru,
-        original_layout,
-        "typing-assist",
-        insert_outcome.layout_already_set,
-    );
+    if force_target_layout {
+        switch_or_restore_layout_after_text_edit(
+            true,
+            insert_outcome.layout_is_ru,
+            original_layout,
+            "typing-assist",
+            insert_outcome.layout_already_set,
+        );
+    }
     let forwarded = physical_grab.forward_queued_typing(
         kbd,
         buf,

@@ -68,15 +68,21 @@ pub(super) fn handle_pending_auto_undo(
         log(&format!("⚠ auto-undo modifier cleanup failed: {e}"));
     }
 
-    let insert_outcome =
-        match apply_text_replacement_pipeline(kbd, &plan, &undo.original, true, "auto-undo", false)
-        {
-            Ok(outcome) => outcome,
-            Err(e) => {
-                e.log("auto-undo", "delete failed");
-                return None;
-            }
-        };
+    let insert_outcome = match apply_text_replacement_pipeline(
+        kbd,
+        &plan,
+        &undo.original,
+        true,
+        None,
+        "auto-undo",
+        false,
+    ) {
+        Ok(outcome) => outcome,
+        Err(e) => {
+            e.log("auto-undo", "delete failed");
+            return None;
+        }
+    };
     switch_or_restore_layout_after_text_edit(
         true,
         insert_outcome.layout_is_ru,

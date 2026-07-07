@@ -45,10 +45,8 @@ const IME_HOT_MIN_WORD_CHARS: usize = 4;
 
 pub fn warm_up() {
     let _ = common_ru_words().len();
-    let _ = common_ru_prefix_index().len();
     let _ = ru_technical_loanwords().len();
     let _ = ru_live_protected_words().len();
-    let _ = hunspell_ru_words_ordered().len();
     let _ = common_en_technical_words().len();
     let _ = common_en_technical_prefix_index().len();
     let _ = common_en_guard_prefixes().len();

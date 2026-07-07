@@ -20,7 +20,7 @@ fn decode_input_gate_tail(
         correction_safety: gate_config.correction_safety,
         typing_assist_pipeline: pipeline,
         nanda_autocorrect: gate_config.nanda_autocorrect,
-        correction_mode: lay::correction_core::CorrectionMode::DeterministicThenNanda,
+        correction_mode: word_boundary_correction_mode(gate_config.nanda_autocorrect),
     });
     let lay::input_gate::InputGateAction::ApplyReplacement { replacement, .. } = &decision.action
     else {
@@ -55,6 +55,14 @@ fn decode_input_gate_tail(
         (original.as_str(), replacement.as_str())
     };
     build_input_gate_decoded_tail(decision, original_tail, replacement_tail)
+}
+
+fn word_boundary_correction_mode(nanda_autocorrect: bool) -> lay::correction_core::CorrectionMode {
+    if nanda_autocorrect {
+        lay::correction_core::CorrectionMode::DeterministicThenNanda
+    } else {
+        lay::correction_core::CorrectionMode::DeterministicOnly
+    }
 }
 
 fn build_input_gate_decoded_tail(

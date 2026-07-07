@@ -30,7 +30,6 @@ pub fn warm_up() {
     let _ = russian_dictionary().len();
     let _ = russian_short_dictionary().len();
     let _ = russian_tiny_dictionary().len();
-    let _ = russian_generated_form_dictionary().len();
 }
 
 pub fn russian_dictionary() -> &'static WordSet {
