@@ -474,6 +474,51 @@ boundary or multiword change:
 17. Clean tray settings after runtime architecture is stable.
 ```
 
+## Current Progress Matrix
+
+```text
+checkpoint: 0.2.146
+
+1. mutation route map:
+   status: PASS-basic
+   evidence: text-mutation-monopoly-plan + typed mutation_route logs
+
+2. EditAction dry-run/safety:
+   status: PASS-basic
+   evidence: text_edit transition safety + candidate_before_apply deleted/inserted text
+
+3. SafetyGate before apply:
+   status: PASS-basic
+   evidence: runtime text edits call EditAction safety before backend output
+
+4. daemon autocorrect through EditAction:
+   status: PASS-basic
+   evidence: enter_autocorrect / typing_assist routes log typed mutation_route
+
+5. double Shift through EditAction:
+   status: PASS-partial
+   evidence: manual text/native replacement routes are gated; replay-only route still needs final monopoly audit
+
+6. IME accept through EditAction:
+   status: PASS-partial
+   evidence: ime_active_composition / ime_committed_tail routes are explicit
+
+7. move IME correction logic out:
+   status: WATCH
+   evidence: IME routes are visible, but committed-tail autocorrect still has local route code
+
+8-15. L1/L2/L3/L4/Bayes/DecisionCore/preedit:
+   status: WATCH
+   evidence: pieces exist, but final single DecisionCore is not yet the only authority
+
+16. delete old direct mutation paths:
+   status: WATCH
+   evidence: route logging improved; full raw output path audit still open
+
+17. tray cleanup:
+   status: OPEN
+```
+
 ## Commit Route
 
 ```text
