@@ -477,7 +477,7 @@ boundary or multiword change:
 ## Current Progress Matrix
 
 ```text
-checkpoint: 0.2.157
+checkpoint: 0.2.158
 
 1. mutation route map:
    status: PASS-basic
@@ -500,8 +500,8 @@ checkpoint: 0.2.157
    evidence: manual text/native replacement routes and replay/native replay routes pass through EditAction before backend output
 
 6. IME accept through EditAction:
-   status: PASS-partial
-   evidence: ime_active_composition / ime_committed_tail routes are explicit
+   status: PASS-basic
+   evidence: ime_active_composition / ime_committed_tail routes are explicit; Tab/IME completion accept now creates EditAction::AcceptImeCandidate with safety/log evidence before CommitText
 
 7. move IME correction logic out:
    status: PASS-partial
@@ -560,6 +560,7 @@ commit 14: remove old direct mutation paths
 commit 15: tray cleanup
 commit 16: Bayes/L3/L4 first-class DecisionCore lanes
 commit 17: version bump and release sync
+commit 18: IME completion accept through AcceptImeCandidate EditAction
 ```
 
 ## Scoreboard

@@ -76,6 +76,26 @@ impl LayIbusEngine {
         }
 
         let accepted_word = format!("{}{}", self.buffer, suffix);
+        let accepted_text = if with_space {
+            format!("{accepted_word} ")
+        } else {
+            accepted_word.clone()
+        };
+        let action = lay::text_edit::EditAction::ime_accept(
+            "ibus-active-composition-completion",
+            900,
+            self.buffer.clone(),
+            accepted_text,
+        );
+        lay::action_log::record_candidate_edit_action_before_apply(
+            &action,
+            lay::action_log::MutationLogRoute::IME_ACTIVE_COMPOSITION,
+            None,
+        );
+        if !action.allow_apply() {
+            trace::record(r#"{"kind":"ibus_completion_accept_blocked"}"#);
+            return Ok(false);
+        }
         let context_tail = self.tail_buffer.clone();
         trace::record_completion_accept("active_composition", suffix.chars().count(), with_space);
         self.commit_active_composition(
@@ -218,6 +238,15 @@ mod active_composition_route_contract {
         assert!(
             !source.contains(&direct_gate_call) && !source.contains(&direct_gate_request),
             "composition_commit.rs must call lay::ime_correction instead of owning InputGate construction"
+        );
+    }
+
+    #[test]
+    fn completion_accept_uses_edit_action_contract() {
+        let source = include_str!("composition_commit.rs");
+        assert!(
+            source.contains("EditAction::ime_accept("),
+            "Tab/IME completion accept must be represented as EditAction::AcceptImeCandidate"
         );
     }
 }

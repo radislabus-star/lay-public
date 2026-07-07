@@ -103,17 +103,34 @@ impl EditAction {
         from_text: impl Into<String>,
         to_text: impl Into<String>,
     ) -> Self {
+        let from_text = from_text.into();
+        let to_text = to_text.into();
+        let plan = super::diff_plan::plan_text_replacement(&from_text, &to_text);
+        let safety = plan.as_ref().map(|plan| {
+            autocorrect_edit_safety(
+                &from_text,
+                &to_text,
+                plan,
+                Some("ImeCompletionCell32"),
+                Some("ime-completion"),
+            )
+        });
+        let kind = if safety.as_ref().is_some_and(|safety| !safety.allow_apply) {
+            EditActionKind::BlockUnsafe
+        } else {
+            EditActionKind::AcceptImeCandidate
+        };
         Self {
-            kind: EditActionKind::AcceptImeCandidate,
+            kind,
             source: source.into(),
             confidence_milli,
-            from_text: from_text.into(),
-            to_text: to_text.into(),
-            plan: None,
-            safety: None,
+            from_text,
+            to_text,
+            plan,
+            safety,
             transition: TransitionAudit::none(),
-            selected_source_id: None,
-            selected_error_class: None,
+            selected_source_id: Some("ImeCompletionCell32".to_string()),
+            selected_error_class: Some("ime-completion".to_string()),
         }
     }
 
@@ -239,6 +256,25 @@ mod tests {
         assert_eq!(action.kind, EditActionKind::BlockUnsafe);
         assert!(!action.allow_apply());
         assert!(action.boundary_changed());
+    }
+
+    #[test]
+    fn ime_accept_candidate_is_a_planned_edit_action() {
+        let action = EditAction::ime_accept(
+            "ibus-active-composition-completion",
+            900,
+            "пров",
+            "проверка ",
+        );
+
+        assert_eq!(action.kind, EditActionKind::AcceptImeCandidate);
+        assert!(action.allow_apply());
+        assert!(action.plan.is_some());
+        assert!(action.safety.is_some());
+        assert_eq!(
+            action.selected_source_id.as_deref(),
+            Some("ImeCompletionCell32")
+        );
     }
 
     #[test]
