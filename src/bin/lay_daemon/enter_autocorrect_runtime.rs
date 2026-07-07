@@ -2,6 +2,7 @@ use evdev::{uinput::VirtualDevice, KeyCode};
 use lay::config::TypingAssistRuleConfig;
 use lay::decoder::{decode_enter_autocorrect_tail, DecoderEditPlan};
 use lay::keyboard::{map_original_events, KeyEvent};
+use lay::text_edit::TransitionAudit;
 use lay::word_buffer::WordBuffer;
 use std::sync::atomic::Ordering;
 use std::time::Instant;
@@ -84,7 +85,7 @@ pub(super) fn handle_enter_autocorrect(
         log("⚠ enter-autocorrect skipped before delete: edit plan invariant failed");
         return None;
     };
-    let edit_action = lay::text_edit::authorize_replacement(
+    let edit_action = lay::text_edit::authorize_replacement_with_transition(
         "enter-autocorrect",
         0,
         original.as_str(),
@@ -92,6 +93,13 @@ pub(super) fn handle_enter_autocorrect(
         plan.clone(),
         None,
         None,
+        TransitionAudit::proven(
+            "enter_autocorrect",
+            "enter_boundary_plan_verified",
+            true,
+            false,
+            original.split_whitespace().count().max(1),
+        ),
     );
     lay::action_log::record_candidate_edit_action_before_apply(&edit_action, None);
     if !edit_action.allow_apply() {

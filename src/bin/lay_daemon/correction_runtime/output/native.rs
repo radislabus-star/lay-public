@@ -1,7 +1,7 @@
 use lay::decoder::DecoderAction;
 use lay::desktop::LayoutBackend;
 use lay::keyboard::preferred_layout_for_text;
-use lay::text_edit::TextReplacement;
+use lay::text_edit::{TextReplacement, TransitionAudit};
 
 use super::super::super::correction_memory_runtime::{
     remember_manual_text_correction, ManualTextCorrectionMemory,
@@ -194,7 +194,7 @@ fn native_text_edit_action_allowed(
         insert: replace_text.to_string(),
         move_right: 0,
     };
-    let edit_action = lay::text_edit::authorize_replacement(
+    let edit_action = lay::text_edit::authorize_replacement_with_transition(
         replace_kind,
         0,
         ctx.mapped_orig,
@@ -202,6 +202,13 @@ fn native_text_edit_action_allowed(
         plan,
         Some("manual_native_replace"),
         None,
+        TransitionAudit::proven(
+            "manual_native_replace",
+            "manual_native_plan_verified",
+            true,
+            false,
+            ctx.words_orig.max(1),
+        ),
     );
     lay::action_log::record_candidate_edit_action_before_apply(&edit_action, None);
     if edit_action.allow_apply() {

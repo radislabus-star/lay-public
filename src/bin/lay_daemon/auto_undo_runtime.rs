@@ -1,5 +1,5 @@
 use evdev::uinput::VirtualDevice;
-use lay::text_edit::replacement_plan_matches;
+use lay::text_edit::{replacement_plan_matches, TransitionAudit};
 use lay::word_buffer::{PendingAutoUndo, UserLearningCorrection, WordBuffer};
 use std::time::Instant;
 
@@ -21,7 +21,7 @@ pub(super) fn handle_pending_auto_undo(
         log("⚠ auto-undo skipped before delete: edit plan invariant failed");
         return None;
     }
-    let edit_action = lay::text_edit::authorize_replacement(
+    let edit_action = lay::text_edit::authorize_replacement_with_transition(
         "auto-undo",
         1000,
         &undo.replacement,
@@ -29,6 +29,13 @@ pub(super) fn handle_pending_auto_undo(
         plan.clone(),
         Some("auto_undo"),
         None,
+        TransitionAudit::proven(
+            "auto_undo_restore",
+            "pending_auto_undo_recorded",
+            true,
+            false,
+            undo.words.max(1),
+        ),
     );
     lay::action_log::record_candidate_edit_action_before_apply(&edit_action, None);
     if !edit_action.allow_apply() {
