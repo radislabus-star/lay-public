@@ -89,7 +89,7 @@ lay-nanda-wave-eval --candidate-quality-report
 Current checkpoint:
 
 ```text
-0.2.154
+0.2.155
 |
 +-- runtime text edits pass through text_edit transition safety
 +-- direct runtime authorize_replacement calls are blocked by a contract test
@@ -101,6 +101,7 @@ Current checkpoint:
 +-- correction_core now routes deterministic/NANDA candidate generation through L2CandidateSource
 +-- final apply-candidate selection moved from L2CandidateLattice into CorrectionDecisionCore
 +-- preedit display is contract-locked out of correction/apply authority; active composition correction reaches the shared DecisionCore route
++-- manual replay/native replay routes now pass through EditAction, typed manual backend logs, and replay transition proof before any backspace/replay output
 +-- candidate ranking includes verified edit-transition operator weight, so boundary/layout proof can beat L2 surface shortcuts
 +-- every candidate_before_apply record now carries typed mutation_route:
     +-- enter_autocorrect

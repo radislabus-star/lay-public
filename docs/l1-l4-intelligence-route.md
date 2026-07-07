@@ -477,7 +477,7 @@ boundary or multiword change:
 ## Current Progress Matrix
 
 ```text
-checkpoint: 0.2.154
+checkpoint: 0.2.155
 
 1. mutation route map:
    status: PASS-basic
@@ -496,8 +496,8 @@ checkpoint: 0.2.154
    evidence: enter_autocorrect / typing_assist routes log typed mutation_route
 
 5. double Shift through EditAction:
-   status: PASS-partial
-   evidence: manual text/native replacement routes are gated; replay-only route still needs final monopoly audit
+   status: PASS-basic
+   evidence: manual text/native replacement routes and replay/native replay routes pass through EditAction before backend output
 
 6. IME accept through EditAction:
    status: PASS-partial
@@ -532,8 +532,8 @@ checkpoint: 0.2.154
    evidence: contract test keeps preedit.rs display-only; active composition correction enters shared ime_correction -> input_gate/correction_core -> DecisionCore route
 
 16. delete old direct mutation paths:
-   status: WATCH
-   evidence: route logging improved; full raw output path audit still open
+   status: PASS-basic
+   evidence: manual replay and native replay bypasses now pass through EditAction with typed manual backend routes and replay transition proof; contract test blocks direct replay bypass
 
 17. tray cleanup:
    status: OPEN
@@ -591,7 +591,7 @@ lay-nanda-wave-eval --candidate-quality-report
 ## Debt Queue
 
 ```text
-P0: eliminate direct text mutation outside EditAction
+P0: keep direct text mutation outside EditAction blocked by contract tests
 P0: block unsafe multiword autocorrect
 P0: keep IME display-only
 P1: make first-word IME suggestions aggressive

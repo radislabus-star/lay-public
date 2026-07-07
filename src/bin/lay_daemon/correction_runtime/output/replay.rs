@@ -1,4 +1,6 @@
 use evdev::uinput::VirtualDevice;
+use lay::action_log::RecentActionGateTrace;
+use lay::text_edit::{TextReplacement, TransitionAudit};
 use std::time::Instant;
 
 use super::super::super::{
@@ -12,7 +14,11 @@ use super::context::ManualOutputCommon;
 pub(crate) fn apply_layout_replay(
     ctx: &mut ManualOutputCommon<'_>,
     kbd: &mut VirtualDevice,
+    input_gate: Option<RecentActionGateTrace>,
 ) -> Option<bool> {
+    if !manual_replay_action_allowed(ctx, input_gate) {
+        return None;
+    }
     let layout_started = Instant::now();
     let layout_id = match switch_to_target_layout(ctx.target_is_ru) {
         Ok(layout_id) => layout_id,
@@ -81,4 +87,47 @@ pub(crate) fn apply_layout_replay(
         ctx.started_at.elapsed().as_millis()
     ));
     Some(ctx.target_is_ru)
+}
+
+fn manual_replay_action_allowed(
+    ctx: &ManualOutputCommon<'_>,
+    input_gate: Option<RecentActionGateTrace>,
+) -> bool {
+    let plan = TextReplacement {
+        move_left: 0,
+        backspaces: ctx.n_backspaces,
+        insert: ctx.mapped_target.to_string(),
+        move_right: 0,
+    };
+    let edit_action = lay::text_edit::authorize_replacement_with_transition(
+        "manual-replay",
+        1000,
+        ctx.mapped_orig,
+        ctx.mapped_target,
+        plan,
+        Some("manual_replay"),
+        None,
+        TransitionAudit::proven(
+            "manual_replay",
+            "manual_replay_plan_verified",
+            true,
+            false,
+            ctx.words_orig.max(1),
+        ),
+    );
+    lay::action_log::record_candidate_edit_action_before_apply(
+        &edit_action,
+        lay::action_log::MutationLogRoute::MANUAL_TEXT_REPLACE,
+        input_gate,
+    );
+    if edit_action.allow_apply() {
+        return true;
+    }
+    log(&format!(
+        "⚠ manual replay blocked by EditAction safety: reason={} original={:?} replacement={:?}",
+        edit_action.safety_reason(),
+        ctx.mapped_orig,
+        ctx.mapped_target
+    ));
+    false
 }

@@ -121,7 +121,10 @@ fn replacement_plan_has_valid_cursor(original_len: usize, plan: &TextReplacement
 
 fn boundary_proof_source(source_id: Option<&str>, error_class: Option<&str>) -> bool {
     source_id.is_some_and(|source| {
-        crate::correction_source_contract::is_boundary_source(source) || source == "PhraseCell32"
+        crate::correction_source_contract::is_boundary_source(source)
+            || source == "PhraseCell32"
+            || source == "manual_toggle"
+            || source == "manual_replay"
     }) || matches!(error_class, Some("split-word" | "glued-words"))
 }
 

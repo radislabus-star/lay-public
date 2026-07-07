@@ -81,7 +81,7 @@ fn candidate_before_apply_logs_use_typed_mutation_routes() {
             continue;
         }
         for call in source.match_indices("record_candidate_edit_action_before_apply(") {
-            let tail = &source[call.0..source.len().min(call.0 + 240)];
+            let tail: String = source[call.0..].chars().take(240).collect();
             assert!(
                 tail.contains("MutationLogRoute::"),
                 "{} has candidate_before_apply call without typed MutationLogRoute near byte {}",
@@ -90,6 +90,35 @@ fn candidate_before_apply_logs_use_typed_mutation_routes() {
             );
         }
     }
+}
+
+#[test]
+fn manual_replay_paths_are_edit_action_gated() {
+    let replay = read("src/bin/lay_daemon/correction_runtime/output/replay.rs");
+    assert!(
+        replay.contains("authorize_replacement_with_transition(")
+            && replay.contains("MutationLogRoute::MANUAL_TEXT_REPLACE")
+            && replay.contains("edit_action.allow_apply()"),
+        "manual replay output must pass through EditAction before backspace/replay"
+    );
+
+    let native = read("src/bin/lay_daemon/correction_runtime/output/native.rs");
+    assert!(
+        !native.contains("if is_replay {\n        return true;\n    }"),
+        "native replay must not bypass EditAction with a direct true"
+    );
+    assert!(
+        replay.contains("manual_replay_plan_verified")
+            && native.contains("MutationLogRoute::MANUAL_NATIVE_REPLACE")
+            && native.contains("manual_native_replay_plan_verified"),
+        "manual replay output must log through typed manual routes and carry replay transition proof"
+    );
+
+    let output = read("src/bin/lay_daemon/correction_runtime/output.rs");
+    assert!(
+        output.contains("apply_layout_replay(&mut common, kbd, input_gate)"),
+        "manual replay must preserve the input_gate trace into the EditAction log"
+    );
 }
 
 fn read(relative: &str) -> String {

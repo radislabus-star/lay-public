@@ -205,26 +205,38 @@ fn native_text_edit_action_allowed(
     is_replay: bool,
     input_gate: Option<RecentActionGateTrace>,
 ) -> bool {
-    if is_replay {
-        return true;
-    }
     let plan = TextReplacement {
         move_left: 0,
         backspaces: ctx.mapped_orig.chars().count() as u32,
         insert: replace_text.to_string(),
         move_right: 0,
     };
+    let (source_id, transition_operator, transition_proof, confidence_milli) = if is_replay {
+        (
+            "manual_replay",
+            "manual_native_replay",
+            "manual_native_replay_plan_verified",
+            1000,
+        )
+    } else {
+        (
+            "manual_native_replace",
+            "manual_native_replace",
+            "manual_native_plan_verified",
+            0,
+        )
+    };
     let edit_action = lay::text_edit::authorize_replacement_with_transition(
         replace_kind,
-        0,
+        confidence_milli,
         ctx.mapped_orig,
         replace_text,
         plan,
-        Some("manual_native_replace"),
+        Some(source_id),
         None,
         TransitionAudit::proven(
-            "manual_native_replace",
-            "manual_native_plan_verified",
+            transition_operator,
+            transition_proof,
             true,
             false,
             ctx.words_orig.max(1),

@@ -91,6 +91,6 @@ pub(super) fn apply_manual_correction_output(
 
     match try_manual_text_replacement(&mut common, kbd, input_gate.clone()) {
         OutputFlow::Return(result) => result,
-        OutputFlow::ContinueReplay => apply_layout_replay(&mut common, kbd),
+        OutputFlow::ContinueReplay => apply_layout_replay(&mut common, kbd, input_gate),
     }
 }
