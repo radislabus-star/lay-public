@@ -477,7 +477,7 @@ boundary or multiword change:
 ## Current Progress Matrix
 
 ```text
-checkpoint: 0.2.149
+checkpoint: 0.2.151
 
 1. mutation route map:
    status: PASS-basic
@@ -507,7 +507,11 @@ checkpoint: 0.2.149
    status: PASS-partial
    evidence: active-composition correction decision moved to lay::ime_correction; dead pending committed-tail Space autocorrect branch removed
 
-8-15. L1/L2/L3/L4/Bayes/DecisionCore/preedit:
+8. L1SurfaceSignal object:
+   status: PASS-basic
+   evidence: TypingErrorEvent now comes from correction_core::l1_surface_signal
+
+9-15. L2/L3/L4/Bayes/DecisionCore/preedit:
    status: WATCH
    evidence: pieces exist, but final single DecisionCore is not yet the only authority
 

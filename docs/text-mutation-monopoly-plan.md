@@ -89,7 +89,7 @@ lay-nanda-wave-eval --candidate-quality-report
 Current checkpoint:
 
 ```text
-0.2.149
+0.2.151
 |
 +-- runtime text edits pass through text_edit transition safety
 +-- direct runtime authorize_replacement calls are blocked by a contract test
@@ -97,6 +97,7 @@ Current checkpoint:
 +-- Enter/manual/native before-apply logs now carry gate trace when the route owns one
 +-- active-composition autocorrect decision lives in shared lay::ime_correction
 +-- dead pending committed-tail Space autocorrect branch removed
++-- TypingErrorEvent now enters correction through L1SurfaceSignal instead of local event parsing
 +-- every candidate_before_apply record now carries typed mutation_route:
     +-- enter_autocorrect
     +-- typing_assist_minimal

@@ -4,6 +4,7 @@
 //! question: should this completed text be replaced, and by which engine?
 
 mod edit_transition;
+mod l1_surface_signal;
 mod l2_lattice;
 
 use crate::candidate_explanation::{explain_candidate, CandidateExplanation};
@@ -16,7 +17,7 @@ use crate::russian_typo_candidates::{
     inserted_char_position_for_missing_letter, repeated_run_deletion_candidates,
 };
 use crate::text_case::apply_word_case;
-use crate::text_metrics::{damerau_levenshtein, has_cyrillic, has_latin};
+use crate::text_metrics::{damerau_levenshtein, has_cyrillic};
 use crate::typing_assist::{explain_typing_assist_with_pipeline, split_ws_segments};
 use crate::typing_context::{syntax_allows_candidate, typing_assist_pipeline_for_context};
 use crate::typing_rule_graph::ids;
@@ -24,7 +25,7 @@ use crate::word_reader::{
     cyrillic_word_splits, is_cyrillic_letters_only, last_text_word, replace_last_text_word,
     split_edge_whitespace, split_word_punctuation,
 };
-use crate::word_recognizer::is_ascii_technical_token;
+use l1_surface_signal::L1SurfaceSignal;
 use l2_lattice::L2CandidateLattice;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::OnceLock;
@@ -450,21 +451,42 @@ fn explanation_for_candidate(
 fn candidate_rank_score(original: &str, candidate: &UnifiedCorrectionCandidate) -> f32 {
     let bayes = bayes_score_for_candidate(original, candidate).posterior;
     let explanation = explanation_for_candidate(original, candidate);
-    bayes + ((explanation.explanation_score_milli as f32 - 500.0) / 10_000.0)
+    let transition = edit_transition::prove_edit_transition(
+        original,
+        &candidate.replacement,
+        candidate.error_class,
+        &candidate.source_id,
+    );
+    bayes
+        + ((explanation.explanation_score_milli as f32 - 500.0) / 10_000.0)
+        + transition_rank_bonus(transition, &candidate.source_id)
+}
+
+fn transition_rank_bonus(transition: edit_transition::EditTransitionProof, source_id: &str) -> f32 {
+    if !transition.verified {
+        return -0.20;
+    }
+    match transition.operator {
+        edit_transition::EditTransitionOperator::BoundaryShift
+        | edit_transition::EditTransitionOperator::SplitPreviousGluedAndRepairTail => 0.34,
+        edit_transition::EditTransitionOperator::LayoutProjection => 0.28,
+        edit_transition::EditTransitionOperator::PhraseTokenRepair => 0.16,
+        edit_transition::EditTransitionOperator::ReplaceCurrentWord => {
+            match correction_source_contract::source_role(source_id) {
+                CorrectionSourceRole::DeterministicTypo => 0.08,
+                CorrectionSourceRole::L2Surface => -0.08,
+                _ => 0.0,
+            }
+        }
+        edit_transition::EditTransitionOperator::Completion
+        | edit_transition::EditTransitionOperator::Protected
+        | edit_transition::EditTransitionOperator::Unknown => 0.0,
+    }
 }
 
 impl TypingErrorEvent {
     fn from_text(text: &str) -> Self {
-        let (_, core, _) = split_edge_whitespace(text);
-        let current_word = last_text_word(core).unwrap_or_default();
-        let input_class = classify_input_word(&current_word);
-
-        Self {
-            original: text.to_string(),
-            core: core.to_string(),
-            current_word,
-            input_class,
-        }
+        L1SurfaceSignal::from_text(text).into_event()
     }
 }
 
@@ -1155,27 +1177,6 @@ fn loose_shape_char(ch: char) -> char {
         'Щ' => 'Ш',
         other => other,
     }
-}
-
-fn classify_input_word(word: &str) -> TypingErrorClass {
-    if word.is_empty() {
-        return TypingErrorClass::Unknown;
-    }
-    if is_ascii_technical_token(word) {
-        return TypingErrorClass::TechnicalToken;
-    }
-    if has_cyrillic(word) && has_latin(word) {
-        return TypingErrorClass::MixedScript;
-    }
-    if is_cyrillic_letters_only(word)
-        && !crate::russian_lexicon::is_known_russian_word_or_form(word)
-    {
-        return TypingErrorClass::CompositeTypo;
-    }
-    if word.chars().all(|ch| ch.is_ascii_alphabetic()) && word.chars().count() >= 3 {
-        return TypingErrorClass::WrongLayout;
-    }
-    TypingErrorClass::Unknown
 }
 
 fn rule_error_class(rule_id: &str) -> TypingErrorClass {
