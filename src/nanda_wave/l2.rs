@@ -176,6 +176,7 @@ pub fn ime_l2_word_candidates(
             }
         })
         .collect::<Vec<_>>();
+    extend_ime_l2_prefix_material(&mut candidates, context_prefix, &normalized, limit);
     candidates.sort_by(|left, right| {
         l2_ime_word_candidate_score(right, &usage)
             .cmp(&l2_ime_word_candidate_score(left, &usage))
@@ -193,6 +194,59 @@ pub fn ime_l2_word_candidates(
     candidates.dedup_by(|left, right| left.surface == right.surface);
     candidates.truncate(limit);
     candidates
+}
+
+fn extend_ime_l2_prefix_material(
+    candidates: &mut Vec<L2ImeWordCandidate>,
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) {
+    if ime_l2_completion_count(candidates) >= limit {
+        return;
+    }
+    let material_limit = limit.saturating_mul(2).max(limit);
+    for candidate in ime_l2_generated_form_prefix_candidates(context_prefix, token, material_limit)
+    {
+        push_unique_ime_l2_candidate(candidates, candidate);
+        if ime_l2_completion_count(candidates) >= limit.saturating_mul(2).max(limit) {
+            return;
+        }
+    }
+    for candidate in ime_l2_foundation_prefix_candidates(context_prefix, token, material_limit) {
+        push_unique_ime_l2_candidate(candidates, candidate);
+        if ime_l2_completion_count(candidates) >= limit.saturating_mul(2).max(limit) {
+            return;
+        }
+    }
+    if token.chars().count() <= 4 {
+        for candidate in ime_l2_short_seed_word_candidates(context_prefix, token, material_limit) {
+            push_unique_ime_l2_candidate(candidates, candidate);
+            if ime_l2_completion_count(candidates) >= limit.saturating_mul(2).max(limit) {
+                return;
+            }
+        }
+    }
+}
+
+fn ime_l2_completion_count(candidates: &[L2ImeWordCandidate]) -> usize {
+    candidates
+        .iter()
+        .filter(|candidate| candidate.kind == L2ImeWordCandidateKind::Completion)
+        .count()
+}
+
+fn push_unique_ime_l2_candidate(
+    candidates: &mut Vec<L2ImeWordCandidate>,
+    candidate: L2ImeWordCandidate,
+) {
+    if candidates
+        .iter()
+        .any(|existing| existing.surface == candidate.surface)
+    {
+        return;
+    }
+    candidates.push(candidate);
 }
 
 pub fn ime_l2_short_seed_word_candidates(

@@ -453,6 +453,24 @@ fn committed_tail_plans_apply_exactly_to_replacement() {
 }
 
 #[test]
+fn committed_tail_last_token_plan_keeps_left_context_fixed() {
+    let original = "я прохоил ";
+    let replacement = "я проходил ";
+    let plan = plan_committed_tail_last_token_replacement(original, replacement).expect("plan");
+
+    assert_eq!(plan, text_replacement(1, 7, "проходил", 1));
+    assert_eq!(apply_plan(original, &plan), replacement);
+}
+
+#[test]
+fn committed_tail_last_token_plan_rejects_boundary_rewrite() {
+    assert_eq!(
+        plan_committed_tail_last_token_replacement("ябыл ", "я был "),
+        None
+    );
+}
+
+#[test]
 fn tail_chars_returns_unicode_tail() {
     assert_eq!(tail_chars("привет", 3), "вет");
     assert_eq!(tail_chars("hi", 10), "hi");

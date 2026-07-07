@@ -49,6 +49,52 @@ pub fn plan_committed_tail_full_token_replacement(
     })
 }
 
+pub(crate) fn plan_committed_tail_last_token_replacement(
+    original: &str,
+    replacement: &str,
+) -> Option<TextReplacement> {
+    if original == replacement || !committed_separator_is_preserved(original, replacement) {
+        return None;
+    }
+
+    let original_trailing_ws = trailing_whitespace_chars(original);
+    let replacement_trailing_ws = trailing_whitespace_chars(replacement);
+    let original_body_len = original
+        .chars()
+        .count()
+        .saturating_sub(original_trailing_ws);
+    let replacement_body_len = replacement
+        .chars()
+        .count()
+        .saturating_sub(replacement_trailing_ws);
+    if original_body_len == 0 || replacement_body_len == 0 {
+        return None;
+    }
+
+    let original_body = original.chars().take(original_body_len).collect::<String>();
+    let replacement_body = replacement
+        .chars()
+        .take(replacement_body_len)
+        .collect::<String>();
+    let original_start = last_token_start_byte(&original_body)?;
+    let replacement_start = last_token_start_byte(&replacement_body)?;
+    if original_body[..original_start] != replacement_body[..replacement_start] {
+        return None;
+    }
+    let original_token = &original_body[original_start..];
+    let replacement_token = &replacement_body[replacement_start..];
+    if original_token.is_empty() || original_token == replacement_token {
+        return None;
+    }
+
+    Some(TextReplacement {
+        move_left: original_trailing_ws as u32,
+        backspaces: original_token.chars().count() as u32,
+        insert: replacement_token.to_string(),
+        move_right: original_trailing_ws as u32,
+    })
+}
+
 pub fn ensure_committed_tail_spacing(original: &str, mut replacement: String) -> String {
     let Some(original_last) = original.chars().next_back() else {
         return replacement;
@@ -158,4 +204,18 @@ fn trailing_whitespace_chars(text: &str) -> usize {
         .rev()
         .take_while(|ch| ch.is_whitespace())
         .count()
+}
+
+fn last_token_start_byte(text: &str) -> Option<usize> {
+    let trimmed = text.trim_end_matches(char::is_whitespace);
+    if trimmed.is_empty() {
+        return None;
+    }
+    let start = trimmed
+        .char_indices()
+        .rev()
+        .find(|(_, ch)| ch.is_whitespace())
+        .map(|(idx, ch)| idx + ch.len_utf8())
+        .unwrap_or(0);
+    Some(start)
 }

@@ -8,7 +8,10 @@ use crate::action_log::RecentActionGateTrace;
 use crate::config::{CorrectionSafety, LayConfig};
 use crate::correction_core::CorrectionMode;
 use crate::input_gate::{decide_input_gate, InputGateAction, InputGateRequest, InputGateTrigger};
-use crate::text_edit::{authorize_replacement_with_transition, plan_text_replacement, EditAction};
+use crate::text_edit::{
+    authorize_replacement_with_transition, plan_committed_tail_last_token_replacement,
+    plan_text_replacement, EditAction,
+};
 
 pub struct ActiveCompositionAutocorrectRequest<'a> {
     pub text: &'a str,
@@ -50,7 +53,8 @@ pub fn decide_active_composition_autocorrect(
     } else {
         replacement.strip_prefix(&active_prefix)?.to_string()
     };
-    let plan = plan_text_replacement(request.text, &replacement)?;
+    let plan = plan_committed_tail_last_token_replacement(request.text, &replacement)
+        .or_else(|| plan_text_replacement(request.text, &replacement))?;
     let input_gate = decision
         .trace
         .as_ref()

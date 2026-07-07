@@ -1,8 +1,8 @@
 use crate::text_edit::{
     committed_separator_is_preserved, ensure_committed_tail_spacing,
     offset_replacement_plan_for_cursor, plan_committed_tail_full_token_replacement,
-    plan_committed_tail_replacement, plan_text_replacement, replacement_plan_matches,
-    TextReplacement,
+    plan_committed_tail_last_token_replacement, plan_committed_tail_replacement,
+    plan_text_replacement, replacement_plan_matches, TextReplacement,
 };
 
 use super::types::{CorrectionSource, CorrectionTrigger};
@@ -27,7 +27,10 @@ impl DecoderEditPlan {
         let plan = match trigger {
             CorrectionTrigger::AfterSpace
             | CorrectionTrigger::AfterPunctuation
-            | CorrectionTrigger::Enter => plan_committed_tail_replacement(original, &replacement),
+            | CorrectionTrigger::Enter => {
+                plan_committed_tail_last_token_replacement(original, &replacement)
+                    .or_else(|| plan_committed_tail_replacement(original, &replacement))
+            }
             CorrectionTrigger::Manual => plan_text_replacement(original, &replacement),
         }?;
         debug_assert!(

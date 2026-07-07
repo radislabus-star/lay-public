@@ -31,12 +31,14 @@ pub(crate) fn bayes_score_candidate(
         .max(replacement_lower.chars().count())
         .max(1);
     let likelihood = input_likelihood(error_class, source_id, distance, max_len);
-    let usage_prior = crate::nanda_wave::usage_prior::word_usage_prior(&replacement_lower);
+    let usage_snapshot = crate::nanda_wave::cached_usage_prior_snapshot();
+    let usage_prior = (crate::nanda_wave::usage_prior::word_usage_prior(&replacement_lower)
+        + accepted_prior_from_count(usage_snapshot.accepted_word_count(&replacement_lower)))
+    .clamp(0.0, 0.36);
     let context = context_words_before_last(original);
     let context_prior = (local_context_prior(&context, &replacement_lower)
         + source_prior(source_id))
     .clamp(0.0, 0.34);
-    let usage_snapshot = crate::nanda_wave::cached_usage_prior_snapshot();
     let signed_memory = crate::nanda_wave::l4_signed_memory::l4_signed_memory_signal(
         crate::nanda_wave::l4_signed_memory::L4SignedMemoryInput {
             context: &context,
@@ -46,13 +48,16 @@ pub(crate) fn bayes_score_candidate(
             usage: &usage_snapshot,
         },
     );
+    let rejected_prior = usage_snapshot.rejected_word_prior(&replacement_lower)
+        + usage_snapshot.context_rejected_word_prior(&context, &replacement_lower);
     let risk = candidate_risk(
         &original_lower,
         &replacement_lower,
         error_class,
         source_id,
         distance,
-    ) + signed_memory.repulsion * 0.34;
+    ) + signed_memory.repulsion * 0.34
+        + rejected_prior * 0.70;
     let posterior =
         (likelihood * 0.55 + usage_prior + context_prior + signed_memory.attraction * 0.10 - risk)
             .clamp(-1.0, 1.0);
@@ -114,6 +119,13 @@ fn local_context_prior(context: &[String], replacement_word: &str) -> f32 {
     }
     prior += crate::nanda_wave::context_word_usage_prior(context, replacement_word);
     prior.clamp(0.0, 0.26)
+}
+
+fn accepted_prior_from_count(count: u32) -> f32 {
+    if count == 0 {
+        return 0.0;
+    }
+    ((count as f32 + 1.0).ln() * 0.052).clamp(0.0, 0.30)
 }
 
 fn context_words_before_last(original: &str) -> Vec<String> {

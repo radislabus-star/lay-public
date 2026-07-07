@@ -10,9 +10,12 @@ use super::l2::{self, L2ImeWordCandidateKind};
 use super::l4_goal_state::{derive_l4_scene_state, L4AllowedAction, L4SceneStateInput};
 use super::l4_signed_memory::{l4_signed_memory_signal, L4SignedMemoryInput};
 use super::l4_signed_outcome::{l4_signed_outcome, L4OutcomePolarity, L4SignedOutcomeInput};
+use std::collections::VecDeque;
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::OnceLock;
+use std::sync::{Mutex, OnceLock};
 use std::time::Instant;
+
+const LIVE_COMPLETION_CACHE_LIMIT: usize = 128;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LiveCompletionRequest<'a> {
@@ -29,6 +32,21 @@ pub struct LiveCompletionCandidate {
     pub suffix: String,
     pub score: f32,
     pub source: &'static str,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct LiveCompletionCacheKey {
+    context_tail: String,
+    partial: String,
+    max_suffix_chars: usize,
+    allow_short_lexical: bool,
+    limit: usize,
+}
+
+#[derive(Debug, Clone)]
+struct LiveCompletionCacheEntry {
+    key: LiveCompletionCacheKey,
+    candidates: Vec<LiveCompletionCandidate>,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -48,6 +66,8 @@ struct LiveCandidateGateStats {
     l4_transition_hits: u64,
     l4_transition_repels: u64,
     l4_scene_memory_hits: u64,
+    cache_hits: u64,
+    cache_misses: u64,
     total_us: u64,
     max_us: u64,
 }
@@ -57,14 +77,44 @@ pub fn live_completion_candidates(
 ) -> Vec<LiveCompletionCandidate> {
     let started = Instant::now();
     if request.limit == 0 || request.max_suffix_chars == 0 {
-        record_live_gate_stats(started, 0, 0, 0, 0, None, LiveSignedOutcomeStats::default());
+        record_live_gate_stats(
+            started,
+            LiveGateRecord {
+                cache_hit: false,
+                ..LiveGateRecord::default()
+            },
+        );
         return Vec::new();
     }
     let partial = request.partial.to_lowercase();
     let partial_len = partial.chars().count();
     if !(2..=18).contains(&partial_len) || !partial.chars().all(is_cyrillic_letter) {
-        record_live_gate_stats(started, 0, 0, 0, 0, None, LiveSignedOutcomeStats::default());
+        record_live_gate_stats(
+            started,
+            LiveGateRecord {
+                cache_hit: false,
+                ..LiveGateRecord::default()
+            },
+        );
         return Vec::new();
+    }
+    let cache_key = LiveCompletionCacheKey {
+        context_tail: live_completion_context_tail(request.context_prefix),
+        partial: partial.clone(),
+        max_suffix_chars: request.max_suffix_chars,
+        allow_short_lexical: request.allow_short_lexical,
+        limit: request.limit,
+    };
+    if let Some(cached) = cached_live_completion_candidates(&cache_key) {
+        record_live_gate_stats(
+            started,
+            LiveGateRecord {
+                returned_candidates: cached.len() as u64,
+                cache_hit: true,
+                ..LiveGateRecord::default()
+            },
+        );
+        return cached;
     }
 
     let raw = l2::ime_l2_word_candidates(
@@ -214,15 +264,19 @@ pub fn live_completion_candidates(
     });
     candidates.dedup_by(|left, right| left.surface == right.surface || left.suffix == right.suffix);
     candidates.truncate(request.limit);
+    store_live_completion_candidates(cache_key, &candidates);
     l4_signed.scene_memory_hits = l4_scene_memory_supported;
     record_live_gate_stats(
         started,
-        raw_count as u64,
-        candidates.len() as u64,
-        usage_supported,
-        l3_supported,
-        Some(scene_state.allowed_action),
-        l4_signed,
+        LiveGateRecord {
+            raw_candidates: raw_count as u64,
+            returned_candidates: candidates.len() as u64,
+            usage_supported,
+            l3_supported,
+            l4_action: Some(scene_state.allowed_action),
+            l4_signed,
+            cache_hit: false,
+        },
     );
     candidates
 }
@@ -253,6 +307,10 @@ pub fn live_candidate_gate_stats_json() -> serde_json::Value {
             "hits": stats.l4_scene_memory_hits,
             "authority": "weak bias only; display authority and edit-plan safety stay final"
         },
+        "live_completion_cache": {
+            "hits": stats.cache_hits,
+            "misses": stats.cache_misses
+        },
         "authority_contract": "L4 signed state is bias only; live candidate authority and edit-plan safety remain final",
         "avg_us": avg_us,
         "max_us": stats.max_us,
@@ -277,6 +335,8 @@ fn live_candidate_gate_stats() -> LiveCandidateGateStats {
         l4_transition_hits: stats.l4_transition_hits.load(Ordering::Relaxed),
         l4_transition_repels: stats.l4_transition_repels.load(Ordering::Relaxed),
         l4_scene_memory_hits: stats.l4_scene_memory_hits.load(Ordering::Relaxed),
+        cache_hits: stats.cache_hits.load(Ordering::Relaxed),
+        cache_misses: stats.cache_misses.load(Ordering::Relaxed),
         total_us: stats.total_us.load(Ordering::Relaxed),
         max_us: stats.max_us.load(Ordering::Relaxed),
     }
@@ -325,34 +385,26 @@ fn live_l4_scene_memory_score(prefix_tokens: &[String], word: &str) -> Option<f3
     })
 }
 
-fn record_live_gate_stats(
-    started: Instant,
-    raw_candidates: u64,
-    returned_candidates: u64,
-    usage_supported: u64,
-    l3_supported: u64,
-    l4_action: Option<L4AllowedAction>,
-    l4_signed: LiveSignedOutcomeStats,
-) {
+fn record_live_gate_stats(started: Instant, record: LiveGateRecord) {
     let elapsed_us = started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64;
     let stats = live_stats();
     stats.requests.fetch_add(1, Ordering::Relaxed);
     stats
         .raw_candidates
-        .fetch_add(raw_candidates, Ordering::Relaxed);
+        .fetch_add(record.raw_candidates, Ordering::Relaxed);
     stats
         .returned_candidates
-        .fetch_add(returned_candidates, Ordering::Relaxed);
-    if returned_candidates == 0 {
+        .fetch_add(record.returned_candidates, Ordering::Relaxed);
+    if record.returned_candidates == 0 {
         stats.no_candidate.fetch_add(1, Ordering::Relaxed);
     }
     stats
         .usage_supported
-        .fetch_add(usage_supported, Ordering::Relaxed);
+        .fetch_add(record.usage_supported, Ordering::Relaxed);
     stats
         .l3_supported
-        .fetch_add(l3_supported, Ordering::Relaxed);
-    match l4_action {
+        .fetch_add(record.l3_supported, Ordering::Relaxed);
+    match record.l4_action {
         Some(L4AllowedAction::Suggest) => {
             stats.l4_suggest.fetch_add(1, Ordering::Relaxed);
         }
@@ -366,20 +418,27 @@ fn record_live_gate_stats(
     }
     stats
         .l4_attract
-        .fetch_add(l4_signed.attract, Ordering::Relaxed);
+        .fetch_add(record.l4_signed.attract, Ordering::Relaxed);
     stats
         .l4_neutral
-        .fetch_add(l4_signed.neutral, Ordering::Relaxed);
-    stats.l4_repel.fetch_add(l4_signed.repel, Ordering::Relaxed);
+        .fetch_add(record.l4_signed.neutral, Ordering::Relaxed);
+    stats
+        .l4_repel
+        .fetch_add(record.l4_signed.repel, Ordering::Relaxed);
     stats
         .l4_transition_hits
-        .fetch_add(l4_signed.transition_hits, Ordering::Relaxed);
+        .fetch_add(record.l4_signed.transition_hits, Ordering::Relaxed);
     stats
         .l4_transition_repels
-        .fetch_add(l4_signed.transition_repels, Ordering::Relaxed);
+        .fetch_add(record.l4_signed.transition_repels, Ordering::Relaxed);
     stats
         .l4_scene_memory_hits
-        .fetch_add(l4_signed.scene_memory_hits, Ordering::Relaxed);
+        .fetch_add(record.l4_signed.scene_memory_hits, Ordering::Relaxed);
+    if record.cache_hit {
+        stats.cache_hits.fetch_add(1, Ordering::Relaxed);
+    } else {
+        stats.cache_misses.fetch_add(1, Ordering::Relaxed);
+    }
     stats.total_us.fetch_add(elapsed_us, Ordering::Relaxed);
     update_max_atomic(&stats.max_us, elapsed_us);
 }
@@ -406,6 +465,8 @@ struct LiveCandidateGateAtomicStats {
     l4_transition_hits: AtomicU64,
     l4_transition_repels: AtomicU64,
     l4_scene_memory_hits: AtomicU64,
+    cache_hits: AtomicU64,
+    cache_misses: AtomicU64,
     total_us: AtomicU64,
     max_us: AtomicU64,
 }
@@ -439,6 +500,64 @@ impl LiveSignedOutcomeStats {
             self.transition_repels = self.transition_repels.saturating_add(1);
         }
     }
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+struct LiveGateRecord {
+    raw_candidates: u64,
+    returned_candidates: u64,
+    usage_supported: u64,
+    l3_supported: u64,
+    l4_action: Option<L4AllowedAction>,
+    l4_signed: LiveSignedOutcomeStats,
+    cache_hit: bool,
+}
+
+fn live_completion_context_tail(context_prefix: &str) -> String {
+    let mut tokens = context_prefix
+        .split_whitespace()
+        .rev()
+        .take(5)
+        .collect::<Vec<_>>();
+    tokens.reverse();
+    tokens.join(" ")
+}
+
+fn cached_live_completion_candidates(
+    key: &LiveCompletionCacheKey,
+) -> Option<Vec<LiveCompletionCandidate>> {
+    let Ok(mut cache) = live_completion_cache().lock() else {
+        return None;
+    };
+    let index = cache.iter().position(|entry| &entry.key == key)?;
+    let entry = cache.remove(index)?;
+    let candidates = entry.candidates.clone();
+    cache.push_back(entry);
+    Some(candidates)
+}
+
+fn store_live_completion_candidates(
+    key: LiveCompletionCacheKey,
+    candidates: &[LiveCompletionCandidate],
+) {
+    let Ok(mut cache) = live_completion_cache().lock() else {
+        return;
+    };
+    if let Some(index) = cache.iter().position(|entry| entry.key == key) {
+        cache.remove(index);
+    }
+    cache.push_back(LiveCompletionCacheEntry {
+        key,
+        candidates: candidates.to_vec(),
+    });
+    while cache.len() > LIVE_COMPLETION_CACHE_LIMIT {
+        cache.pop_front();
+    }
+}
+
+fn live_completion_cache() -> &'static Mutex<VecDeque<LiveCompletionCacheEntry>> {
+    static CACHE: OnceLock<Mutex<VecDeque<LiveCompletionCacheEntry>>> = OnceLock::new();
+    CACHE.get_or_init(|| Mutex::new(VecDeque::new()))
 }
 
 fn update_max_atomic(target: &AtomicU64, value: u64) {
@@ -579,7 +698,7 @@ mod tests {
     }
 
     #[test]
-    fn live_gate_does_not_fallback_from_ambiguous_short_prefix() {
+    fn live_gate_allows_authorized_short_prefix_candidates() {
         let center_candidates = l2::ime_l2_word_candidates("я хочу ", "пр", 12);
         assert!(
             center_candidates
@@ -590,8 +709,10 @@ mod tests {
 
         let live_candidates = live_completion_candidates(request("я хочу ", "пр"));
         assert!(
-            live_candidates.is_empty(),
-            "ambiguous two-letter L2 centers should stay silent instead of falling back to prefix noise: {live_candidates:?}"
+            live_candidates
+                .iter()
+                .all(|candidate| candidate.surface.starts_with("пр")),
+            "short-prefix candidates must preserve the typed prefix: {live_candidates:?}"
         );
     }
 

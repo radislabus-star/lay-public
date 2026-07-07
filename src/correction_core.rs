@@ -908,8 +908,46 @@ fn nanda_text_correction(req: &CorrectionRequest<'_>) -> Option<UnifiedCorrectio
                 gate,
             })
         }
-        WaveDecision::Apply { .. } | WaveDecision::Keep { .. } | WaveDecision::Veto { .. } => None,
+        WaveDecision::Apply { .. } | WaveDecision::Keep { .. } | WaveDecision::Veto { .. } => {
+            nanda_completion_suggestion(req.text, &trace)
+        }
     }
+}
+
+fn nanda_completion_suggestion(
+    original: &str,
+    trace: &crate::nanda_wave::WaveTrace,
+) -> Option<UnifiedCorrectionCandidate> {
+    let candidate = trace
+        .l2_candidates
+        .iter()
+        .find(|candidate| candidate.source == "L2SurfaceCompletionCell32")?;
+    let replacement = preserve_candidate_trailing_separator(original, &candidate.text);
+    if replacement == original {
+        return None;
+    }
+    let error_class = nanda_source_error_class(candidate.source);
+    let gate = gate_candidate_with_source(original, &replacement, error_class, candidate.source);
+    Some(UnifiedCorrectionCandidate {
+        replacement,
+        source: CorrectionDecisionSource::Nanda,
+        source_id: candidate.source.to_string(),
+        error_class,
+        gate,
+    })
+}
+
+fn preserve_candidate_trailing_separator(original: &str, candidate: &str) -> String {
+    let mut out = candidate.to_string();
+    if original
+        .chars()
+        .next_back()
+        .is_some_and(char::is_whitespace)
+        && !out.chars().next_back().is_some_and(char::is_whitespace)
+    {
+        out.push(' ');
+    }
+    out
 }
 
 fn unique_adjacent_transposition_word(word: &str) -> Option<String> {
@@ -3682,6 +3720,26 @@ mod tests {
         assert_eq!(selected.source_id, "L2SurfaceMotifCell32");
         assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
         assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn nanda_surface_drift_stays_out_of_autocorrect_apply() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, bad_replacement) in
+            [("сысл ", "сыск "), ("дать ", "гать "), ("теком ", "телом ")]
+        {
+            let resolution =
+                resolve_text_correction(request(input, &pipeline, CorrectionMode::NandaOnly));
+            assert!(
+                resolution
+                    .selected
+                    .as_ref()
+                    .map(|candidate| candidate.replacement.as_str() != bad_replacement)
+                    .unwrap_or(true),
+                "{input:?} must not select weak drift {bad_replacement:?}; candidates={:?}",
+                resolution.candidates
+            );
+        }
     }
 
     #[test]

@@ -25,6 +25,7 @@ mod types;
 mod visible_tail;
 
 pub use action::{EditAction, EditActionKind};
+pub(crate) use committed_tail::plan_committed_tail_last_token_replacement;
 pub use committed_tail::{
     committed_separator_is_preserved, ensure_committed_tail_spacing,
     plan_committed_tail_full_token_replacement, plan_committed_tail_replacement,

@@ -295,6 +295,7 @@ impl L2CenterMemory {
                 );
                 if score > 0 {
                     score = score.saturating_add(usage_score_boost(usage, &word_norm));
+                    score = score.saturating_add(surface_frequency_boost(&word_norm));
                 }
                 (score > 0).then_some(L2SurfaceCandidate {
                     word: word_norm,
@@ -390,13 +391,31 @@ impl L2CenterMemory {
                 .cmp(&input_len.abs_diff(*right))
                 .then_with(|| left.cmp(right))
         });
-        for len in lengths {
-            if let Some(word_ids) = self.length_to_words.get(&len) {
-                let remaining = cap.saturating_sub(ids.len());
-                if remaining == 0 {
+        let buckets = lengths
+            .iter()
+            .filter_map(|len| {
+                self.length_to_words
+                    .get(len)
+                    .map(|word_ids| word_ids.as_slice())
+            })
+            .collect::<Vec<_>>();
+        let mut positions = vec![0usize; buckets.len()];
+        while ids.len() < cap {
+            let mut advanced = false;
+            for (bucket_index, bucket) in buckets.iter().enumerate() {
+                if ids.len() >= cap {
                     break;
                 }
-                ids.extend(word_ids.iter().copied().take(remaining));
+                let position = positions[bucket_index];
+                let Some(word_id) = bucket.get(position) else {
+                    continue;
+                };
+                positions[bucket_index] = position + 1;
+                ids.push(*word_id);
+                advanced = true;
+            }
+            if !advanced {
+                break;
             }
         }
         ids
@@ -572,6 +591,16 @@ fn candidate_score(
 fn usage_score_boost(usage: &super::usage_prior::UsagePriorSnapshot, word: &str) -> u32 {
     let prior = usage.word_prior(word);
     (prior * 2_000.0).round().clamp(0.0, 220.0) as u32
+}
+
+fn surface_frequency_boost(word: &str) -> u32 {
+    if crate::lexicon::is_common_ru_word(word) {
+        520
+    } else if crate::russian_lexicon::is_known_russian_word_or_form(word) {
+        80
+    } else {
+        0
+    }
 }
 
 #[derive(Clone, Copy, Debug)]

@@ -6,6 +6,8 @@ use crate::correction_source_contract::{self, CorrectionSourceRole};
 use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
 use crate::nanda_wave::l4_goal_state::{derive_l4_scene_state, L4AllowedAction, L4SceneStateInput};
 use crate::nanda_wave::l4_signed_memory::{l4_signed_memory_signal, L4SignedMemoryInput};
+use crate::text_metrics::damerau_levenshtein;
+use crate::word_reader::split_word_punctuation;
 
 pub(super) struct CorrectionDecisionCore;
 
@@ -17,6 +19,7 @@ impl CorrectionDecisionCore {
         candidates
             .iter()
             .filter(|candidate| candidate.gate.action == CandidateGateAction::Apply)
+            .filter(|candidate| candidate_has_apply_authority(event, candidate, candidates))
             .cloned()
             .max_by(|left, right| {
                 candidate_decision_signals(event, left, candidates.len())
@@ -26,6 +29,154 @@ impl CorrectionDecisionCore {
                     )
             })
     }
+}
+
+fn candidate_has_apply_authority(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+    candidates: &[UnifiedCorrectionCandidate],
+) -> bool {
+    let bayes = bayes_score_for_candidate(&event.original, candidate);
+    let source_role = if matches!(
+        candidate.error_class,
+        super::TypingErrorClass::WrongLayout
+            | super::TypingErrorClass::PartialLayout
+            | super::TypingErrorClass::MixedScript
+    ) {
+        CorrectionSourceRole::Layout
+    } else {
+        correction_source_contract::source_role(&candidate.source_id)
+    };
+    let transition = edit_transition::prove_edit_transition(
+        &event.original,
+        &candidate.replacement,
+        candidate.error_class,
+        &candidate.source_id,
+    );
+    if !transition.verified
+        && !matches!(
+            source_role,
+            CorrectionSourceRole::Layout
+                | CorrectionSourceRole::Boundary
+                | CorrectionSourceRole::DeterministicTypo
+        )
+    {
+        debug_decision_reject(
+            candidate,
+            "unverified_transition",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
+    let signals = candidate_decision_signals(event, candidate, candidates.len());
+    let strong_learned_support = bayes.usage_prior >= 0.080
+        || bayes.context_prior >= 0.080
+        || signals.l3_phrase_milli >= 420
+        || signals.l4_signed_milli >= 120;
+    if bayes.risk >= 0.62
+        && !matches!(
+            source_role,
+            CorrectionSourceRole::Layout
+                | CorrectionSourceRole::Boundary
+                | CorrectionSourceRole::DeterministicTypo
+        )
+    {
+        debug_decision_reject(candidate, "high_risk", bayes.posterior, bayes.risk);
+        return false;
+    }
+    let posterior_floor = match source_role {
+        CorrectionSourceRole::Layout => 0.0,
+        CorrectionSourceRole::Boundary | CorrectionSourceRole::DeterministicTypo => 0.20,
+        CorrectionSourceRole::L3Context => 0.28,
+        CorrectionSourceRole::L2Surface | CorrectionSourceRole::Unknown => 0.34,
+        CorrectionSourceRole::Completion | CorrectionSourceRole::Technical => 0.40,
+    };
+    if bayes.posterior < posterior_floor && !strong_learned_support {
+        debug_decision_reject(candidate, "low_posterior", bayes.posterior, bayes.risk);
+        return false;
+    }
+    if source_role == CorrectionSourceRole::L2Surface
+        && !strong_learned_support
+        && short_same_length_surface_drift(&event.current_word, &candidate.replacement)
+    {
+        debug_decision_reject(
+            candidate,
+            "short_same_length_surface_drift",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
+    let allowed = !matches!(
+        source_role,
+        CorrectionSourceRole::L2Surface
+            | CorrectionSourceRole::L3Context
+            | CorrectionSourceRole::Unknown
+    ) || !better_non_apply_candidate_exists(event, candidate, candidates);
+    if !allowed {
+        debug_decision_reject(candidate, "better_non_apply", bayes.posterior, bayes.risk);
+    }
+    allowed
+}
+
+fn short_same_length_surface_drift(original_word: &str, replacement: &str) -> bool {
+    let Some(replacement_word) = last_replacement_word(replacement) else {
+        return false;
+    };
+    let original = original_word.to_lowercase();
+    let replacement = replacement_word.to_lowercase();
+    let original_len = original.chars().count();
+    original_len <= 6
+        && original_len == replacement.chars().count()
+        && original.chars().all(is_russian_letter)
+        && replacement.chars().all(is_russian_letter)
+        && damerau_levenshtein(&original, &replacement) <= 2
+}
+
+fn last_replacement_word(text: &str) -> Option<String> {
+    text.split_whitespace().rev().find_map(|token| {
+        let (_, word, _) = split_word_punctuation(token);
+        (!word.is_empty()).then(|| word.to_string())
+    })
+}
+
+fn is_russian_letter(ch: char) -> bool {
+    matches!(ch, 'а'..='я' | 'ё')
+}
+
+fn debug_decision_reject(
+    candidate: &UnifiedCorrectionCandidate,
+    reason: &'static str,
+    posterior: f32,
+    risk: f32,
+) {
+    if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
+        eprintln!(
+            "decision-core-reject reason={reason} source_id={} class={} replacement={:?} posterior={:.3} risk={:.3}",
+            candidate.source_id,
+            candidate.error_class.as_str(),
+            candidate.replacement,
+            posterior,
+            risk
+        );
+    }
+}
+
+fn better_non_apply_candidate_exists(
+    event: &TypingErrorEvent,
+    selected: &UnifiedCorrectionCandidate,
+    candidates: &[UnifiedCorrectionCandidate],
+) -> bool {
+    let selected_bayes = bayes_score_for_candidate(&event.original, selected);
+    candidates.iter().any(|candidate| {
+        if candidate == selected || candidate.gate.action == CandidateGateAction::Veto {
+            return false;
+        }
+        let candidate_bayes = bayes_score_for_candidate(&event.original, candidate);
+        candidate_bayes.risk <= selected_bayes.risk
+            && candidate_bayes.posterior >= selected_bayes.posterior + 0.12
+    })
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -100,7 +251,7 @@ struct L4SignedSignal {
 }
 
 fn l3_phrase_signal(event: &TypingErrorEvent, candidate: &UnifiedCorrectionCandidate) -> L3Signal {
-    if !super::l3_phrase_memory_applies_to(candidate.error_class) {
+    if !l3_phrase_signal_observes(candidate.error_class) {
         return L3Signal {
             signal: 0.0,
             rank_bonus: 0.0,
@@ -129,11 +280,21 @@ fn l3_phrase_signal(event: &TypingErrorEvent, candidate: &UnifiedCorrectionCandi
             decision: "suppress",
         },
         L3PhraseGateDecision::Neutral => L3Signal {
-            signal: 0.0,
+            signal: (report.score * 0.20).clamp(0.0, 0.20),
             rank_bonus: 0.0,
             decision: "neutral",
         },
     }
+}
+
+fn l3_phrase_signal_observes(error_class: super::TypingErrorClass) -> bool {
+    !matches!(
+        error_class,
+        super::TypingErrorClass::CompletionOnly
+            | super::TypingErrorClass::TechnicalToken
+            | super::TypingErrorClass::ProtectedToken
+            | super::TypingErrorClass::Unknown
+    )
 }
 
 fn l4_scene_signal(event: &TypingErrorEvent, candidate_count: usize) -> L4SceneSignal {

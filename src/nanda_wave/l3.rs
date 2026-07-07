@@ -230,6 +230,9 @@ fn best_apply_candidate<'a>(
         .iter()
         .filter(|candidate| apply_source_enabled(candidate.source, options))
         .filter(|candidate| !semantic_candidate_lacks_surface_authority(original, candidate))
+        .filter(|candidate| {
+            !surface_motif_candidate_lacks_autocorrect_authority(original, candidate)
+        })
         .filter(|candidate| !completion_candidate_lacks_autocorrect_authority(original, candidate))
         .filter(|candidate| !phrase_gate_suppresses(original, &candidate.text, phrase_memory))
         .fold(None, |best: Option<(&'a WordCandidate, f32)>, candidate| {
@@ -272,10 +275,22 @@ fn l3_rank_score(
 }
 
 fn completion_candidate_lacks_autocorrect_authority(
-    original: &str,
+    _original: &str,
     candidate: &WordCandidate,
 ) -> bool {
     if candidate.source != super::l2::L2_SURFACE_COMPLETION_CELL {
+        return false;
+    }
+    // L2 surface completion is an IME/preedit suggestion source. It can expose
+    // a continuation candidate, but it must not rewrite committed text on Space.
+    true
+}
+
+fn surface_motif_candidate_lacks_autocorrect_authority(
+    original: &str,
+    candidate: &WordCandidate,
+) -> bool {
+    if candidate.source != super::l2::L2_SURFACE_MOTIF_CELL {
         return false;
     }
     let Some(original_word) = last_token(original) else {
@@ -290,25 +305,20 @@ fn completion_candidate_lacks_autocorrect_authority(
 
     let original_lower = original_word.to_lowercase();
     let replacement_lower = replacement_word.to_lowercase();
-    if !replacement_lower.starts_with(&original_lower) {
-        return true;
-    }
-
-    let original_len = original_lower.chars().count();
-    let context = previous_context_tokens(original);
-    let usage = super::usage_prior::word_usage_prior_cached(&replacement_lower);
-    let context_usage =
-        super::usage_prior::context_word_usage_prior_cached(&context, &replacement_lower);
-    let accepted_count = super::usage_prior::accepted_word_usage_count_cached(&replacement_lower);
-
-    if original_len >= 4 {
+    let distance = damerau_levenshtein(&original_lower, &replacement_lower);
+    if distance <= 1 || single_adjacent_transposition(&original_lower, &replacement_lower) {
         return false;
     }
-    if original_len <= 2 {
-        return context_usage < 0.04;
+    let phase_admitted = candidate
+        .support
+        .iter()
+        .any(|item| item.contains("l2-phase:") && item.contains("admitted=true"));
+    if phase_admitted {
+        return false;
     }
-
-    accepted_count < 3 && usage < 0.08 && context_usage < 0.03
+    original_lower.chars().count() < 7
+        || distance > 3
+        || !crate::lexicon::is_common_ru_word(&replacement_lower)
 }
 
 fn candidate_usage_context_prior(original: &str, replacement: &str) -> f32 {
@@ -456,6 +466,22 @@ fn is_cyrillic_char(ch: char) -> bool {
 
 fn is_cyrillic_word(word: &str) -> bool {
     !word.is_empty() && word.chars().all(is_cyrillic_char)
+}
+
+fn single_adjacent_transposition(left: &str, right: &str) -> bool {
+    let mut left_chars = left.chars().collect::<Vec<_>>();
+    let right_chars = right.chars().collect::<Vec<_>>();
+    if left_chars.len() != right_chars.len() || left_chars.len() < 2 || left_chars == right_chars {
+        return false;
+    }
+    for index in 0..left_chars.len() - 1 {
+        left_chars.swap(index, index + 1);
+        if left_chars == right_chars {
+            return true;
+        }
+        left_chars.swap(index, index + 1);
+    }
+    false
 }
 
 fn adjusted_confidence(
@@ -633,7 +659,7 @@ mod tests {
     }
 
     #[test]
-    fn l3_allows_long_completion_autocorrect() {
+    fn l3_keeps_surface_completion_out_of_autocorrect() {
         let candidate = WordCandidate {
             text: "попаданий".to_string(),
             source: super::super::l2::L2_SURFACE_COMPLETION_CELL,
@@ -644,7 +670,7 @@ mod tests {
 
         let (_trace, decision) = run_l3("попадани ", &[candidate]);
 
-        assert_eq!(decision.output(), Some("попаданий "));
+        assert_eq!(decision.output(), None);
     }
 
     #[test]
