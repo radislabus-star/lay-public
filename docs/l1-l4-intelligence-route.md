@@ -477,7 +477,7 @@ boundary or multiword change:
 ## Current Progress Matrix
 
 ```text
-checkpoint: 0.2.151
+checkpoint: 0.2.152
 
 1. mutation route map:
    status: PASS-basic
@@ -511,7 +511,15 @@ checkpoint: 0.2.151
    status: PASS-basic
    evidence: TypingErrorEvent now comes from correction_core::l1_surface_signal
 
-9-15. L2/L3/L4/Bayes/DecisionCore/preedit:
+9. L2CandidateLattice object:
+   status: PASS-basic
+   evidence: correction_core::L2CandidateLattice owns dedup + selected apply candidate
+
+10. CandidateSource adapters:
+   status: PASS-basic
+   evidence: correction_core::L2CandidateSource routes deterministic/NANDA proposals by mode
+
+11-15. Bayes/L3/L4/DecisionCore/preedit:
    status: WATCH
    evidence: pieces exist, but final single DecisionCore is not yet the only authority
 

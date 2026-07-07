@@ -216,17 +216,8 @@ pub fn resolve_text_correction(req: CorrectionRequest<'_>) -> CorrectionResoluti
     let started = Instant::now();
     let mut lattice = L2CandidateLattice::new(TypingErrorEvent::from_text(req.text));
 
-    match req.mode {
-        CorrectionMode::DeterministicOnly => {
-            lattice.push_source(deterministic_text_correction(&req));
-        }
-        CorrectionMode::NandaOnly => {
-            lattice.push_source(nanda_text_correction(&req));
-        }
-        CorrectionMode::DeterministicThenNanda => {
-            lattice.push_source(deterministic_text_correction(&req));
-            lattice.push_source(nanda_text_correction(&req));
-        }
+    for source in L2CandidateSource::for_mode(req.mode) {
+        lattice.push_source(source.propose(&req));
     }
 
     let resolution = lattice.into_resolution();
@@ -487,6 +478,33 @@ fn transition_rank_bonus(transition: edit_transition::EditTransitionProof, sourc
 impl TypingErrorEvent {
     fn from_text(text: &str) -> Self {
         L1SurfaceSignal::from_text(text).into_event()
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum L2CandidateSource {
+    Deterministic,
+    Nanda,
+}
+
+impl L2CandidateSource {
+    const DETERMINISTIC_ONLY: [Self; 1] = [Self::Deterministic];
+    const NANDA_ONLY: [Self; 1] = [Self::Nanda];
+    const DETERMINISTIC_THEN_NANDA: [Self; 2] = [Self::Deterministic, Self::Nanda];
+
+    fn for_mode(mode: CorrectionMode) -> &'static [Self] {
+        match mode {
+            CorrectionMode::DeterministicOnly => &Self::DETERMINISTIC_ONLY,
+            CorrectionMode::NandaOnly => &Self::NANDA_ONLY,
+            CorrectionMode::DeterministicThenNanda => &Self::DETERMINISTIC_THEN_NANDA,
+        }
+    }
+
+    fn propose(self, req: &CorrectionRequest<'_>) -> Option<UnifiedCorrectionCandidate> {
+        match self {
+            Self::Deterministic => deterministic_text_correction(req),
+            Self::Nanda => nanda_text_correction(req),
+        }
     }
 }
 
@@ -2691,6 +2709,22 @@ mod tests {
             nanda_autocorrect: true,
             mode,
         }
+    }
+
+    #[test]
+    fn l2_candidate_sources_follow_correction_mode_order() {
+        assert_eq!(
+            L2CandidateSource::for_mode(CorrectionMode::DeterministicOnly),
+            &[L2CandidateSource::Deterministic]
+        );
+        assert_eq!(
+            L2CandidateSource::for_mode(CorrectionMode::NandaOnly),
+            &[L2CandidateSource::Nanda]
+        );
+        assert_eq!(
+            L2CandidateSource::for_mode(CorrectionMode::DeterministicThenNanda),
+            &[L2CandidateSource::Deterministic, L2CandidateSource::Nanda]
+        );
     }
 
     #[test]
