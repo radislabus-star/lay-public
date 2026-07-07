@@ -1,4 +1,5 @@
 use serde_json::Value;
+use std::collections::BTreeMap;
 use std::path::PathBuf;
 
 const RECENT_ACTIONS: &str = ".local/share/lay/recent_actions.jsonl";
@@ -236,6 +237,7 @@ struct UnsafeScoreboard {
     selected_unverified_transition: usize,
     nanda_multiword: usize,
     slow_output: usize,
+    mutation_routes: BTreeMap<String, usize>,
 }
 
 impl UnsafeScoreboard {
@@ -243,6 +245,11 @@ impl UnsafeScoreboard {
         self.records += 1;
         if value.get("kind").and_then(Value::as_str) == Some("candidate_before_apply") {
             self.candidate_before_apply += 1;
+            let route = value
+                .get("mutation_route")
+                .and_then(Value::as_str)
+                .unwrap_or("legacy_missing_route");
+            *self.mutation_routes.entry(route.to_string()).or_insert(0) += 1;
         } else {
             self.action_records += 1;
         }
@@ -287,6 +294,7 @@ impl UnsafeScoreboard {
                 "nanda_multiword": self.nanda_multiword,
                 "slow_output": self.slow_output
             },
+            "mutation_routes": self.mutation_routes,
             "read_as": "diagnostic gate over recent_actions; runtime decisions are unchanged"
         })
         .to_string()
@@ -352,5 +360,30 @@ mod tests {
         assert_eq!(scoreboard.unsafe_records, 1);
         assert_eq!(scoreboard.selected_left_context_changed, 1);
         assert_eq!(scoreboard.selected_unverified_transition, 1);
+    }
+
+    #[test]
+    fn unsafe_scoreboard_counts_mutation_routes() {
+        let value = json!({
+            "kind": "candidate_before_apply",
+            "mutation_route": "ime_committed_tail",
+            "from": "провека ",
+            "to": "проверка ",
+            "boundary_changed": false,
+            "changes_non_last_word": false,
+            "word_count_changed": false,
+            "would_touch_words": 1,
+            "safety_allow_apply": true
+        });
+        let mut scoreboard = UnsafeScoreboard::default();
+        scoreboard.inspect(&value);
+        assert_eq!(scoreboard.candidate_before_apply, 1);
+        assert_eq!(
+            scoreboard
+                .mutation_routes
+                .get("ime_committed_tail")
+                .copied(),
+            Some(1)
+        );
     }
 }

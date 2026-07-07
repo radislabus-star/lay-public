@@ -112,6 +112,7 @@ struct DirtyTaskRecord<'a> {
 struct CandidateBeforeApplyRecord<'a> {
     ts: u64,
     kind: &'static str,
+    mutation_route: &'static str,
     #[serde(skip_serializing_if = "Option::is_none")]
     action_kind: Option<&'static str>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -237,23 +238,37 @@ impl RecentActionGateTrace {
 }
 
 pub fn record_candidate_before_apply(
+    mutation_route: &'static str,
     from: &str,
     to: &str,
     plan: &crate::text_edit::TextReplacement,
     safety: &crate::text_edit::EditPlanSafetyReport,
     input_gate: Option<RecentActionGateTrace>,
 ) {
-    record_candidate_before_apply_inner(from, to, plan, safety, None, None, None, None, input_gate);
+    record_candidate_before_apply_inner(
+        mutation_route,
+        from,
+        to,
+        plan,
+        safety,
+        None,
+        None,
+        None,
+        None,
+        input_gate,
+    );
 }
 
 pub fn record_candidate_edit_action_before_apply(
     action: &crate::text_edit::EditAction,
+    mutation_route: &'static str,
     input_gate: Option<RecentActionGateTrace>,
 ) {
     let (Some(plan), Some(safety)) = (action.plan.as_ref(), action.safety.as_ref()) else {
         return;
     };
     record_candidate_before_apply_inner(
+        mutation_route,
         &action.from_text,
         &action.to_text,
         plan,
@@ -268,6 +283,7 @@ pub fn record_candidate_edit_action_before_apply(
 
 #[allow(clippy::too_many_arguments)]
 fn record_candidate_before_apply_inner(
+    mutation_route: &'static str,
     from: &str,
     to: &str,
     plan: &crate::text_edit::TextReplacement,
@@ -287,6 +303,7 @@ fn record_candidate_before_apply_inner(
     let record = CandidateBeforeApplyRecord {
         ts: unix_timestamp(),
         kind: "candidate_before_apply",
+        mutation_route,
         action_kind,
         action_source,
         action_confidence_milli,

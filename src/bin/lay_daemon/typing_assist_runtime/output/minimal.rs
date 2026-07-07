@@ -72,7 +72,11 @@ pub(crate) fn apply_minimal_typing_replacement(
         error_class,
         transition,
     );
-    lay::action_log::record_candidate_edit_action_before_apply(&edit_action, input_gate.clone());
+    lay::action_log::record_candidate_edit_action_before_apply(
+        &edit_action,
+        "typing_assist_minimal",
+        input_gate.clone(),
+    );
     if !edit_action.allow_apply() {
         log(&format!(
             "⚠ typing-assist output blocked by edit-plan safety: reason={} original={:?} replacement={:?}",

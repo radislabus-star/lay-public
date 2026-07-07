@@ -134,7 +134,11 @@ pub(super) fn handle_enter_autocorrect(
         error_class,
         transition,
     );
-    lay::action_log::record_candidate_edit_action_before_apply(&edit_action, input_gate.clone());
+    lay::action_log::record_candidate_edit_action_before_apply(
+        &edit_action,
+        "enter_autocorrect",
+        input_gate.clone(),
+    );
     if !edit_action.allow_apply() {
         log(&format!(
             "⚠ enter-autocorrect blocked by EditAction safety: reason={} original={:?} replacement={:?}",

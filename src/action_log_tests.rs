@@ -237,6 +237,53 @@ fn action_log_is_disabled_by_default_and_enabled_by_config() {
 }
 
 #[test]
+fn action_log_writes_candidate_before_apply_mutation_route() {
+    let _lock = ACTION_LOG_ENV_LOCK.lock().unwrap();
+    let tmp = std::env::temp_dir().join(format!(
+        "lay-action-log-mutation-route-test-{}",
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos()
+    ));
+    let home = tmp.join("home");
+    let config_path = tmp.join("config.json");
+    std::fs::create_dir_all(&home).unwrap();
+    std::fs::write(&config_path, r#"{"debug_action_log":true}"#).unwrap();
+    let _home = EnvGuard::set("HOME", &home);
+    let _config = EnvGuard::set(crate::config::CONFIG_PATH_ENV, &config_path);
+
+    let plan =
+        crate::text_edit::plan_committed_tail_full_token_replacement("провека ", "проверка ")
+            .expect("plan");
+    let action = crate::text_edit::authorize_replacement_with_transition(
+        "typing-assist",
+        700,
+        "провека ",
+        "проверка ",
+        plan,
+        Some("test"),
+        Some("missing-letter"),
+        crate::text_edit::TransitionAudit::proven(
+            "test_transition",
+            "test_transition_verified",
+            true,
+            false,
+            1,
+        ),
+    );
+
+    record_candidate_edit_action_before_apply(&action, "test_mutation_route", None);
+
+    let text = std::fs::read_to_string(home.join(ACTIONS_PATH)).unwrap();
+    assert!(text.contains("\"kind\":\"candidate_before_apply\""));
+    assert!(text.contains("\"mutation_route\":\"test_mutation_route\""));
+    assert!(text.contains("\"transition_operator\":\"test_transition\""));
+
+    let _ = std::fs::remove_dir_all(tmp);
+}
+
+#[test]
 fn action_log_writes_dirty_task_for_applied_gate() {
     let _lock = ACTION_LOG_ENV_LOCK.lock().unwrap();
     let tmp = std::env::temp_dir().join(format!(

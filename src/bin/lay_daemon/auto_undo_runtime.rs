@@ -37,7 +37,7 @@ pub(super) fn handle_pending_auto_undo(
             undo.words.max(1),
         ),
     );
-    lay::action_log::record_candidate_edit_action_before_apply(&edit_action, None);
+    lay::action_log::record_candidate_edit_action_before_apply(&edit_action, "auto_undo", None);
     if !edit_action.allow_apply() {
         log(&format!(
             "⚠ auto-undo blocked by EditAction safety: reason={} original={:?} replacement={:?}",

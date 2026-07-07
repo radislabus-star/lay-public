@@ -252,7 +252,11 @@ impl LayIbusEngine {
             TextTransitionDecision::Apply { plan, action } => (plan, action),
             TextTransitionDecision::Reject { rejection, action } => {
                 if let Some(action) = action.as_ref() {
-                    lay::action_log::record_candidate_edit_action_before_apply(action, None);
+                    lay::action_log::record_candidate_edit_action_before_apply(
+                        action,
+                        "ime_committed_tail",
+                        None,
+                    );
                     trace::record_committed_tail_replace(
                         source,
                         action.safety_reason(),
@@ -271,7 +275,11 @@ impl LayIbusEngine {
                 return Ok(false);
             }
         };
-        lay::action_log::record_candidate_edit_action_before_apply(&edit_action, None);
+        lay::action_log::record_candidate_edit_action_before_apply(
+            &edit_action,
+            "ime_committed_tail",
+            None,
+        );
         let text = plan.insert.clone();
         let now = Instant::now();
         self.last_commit_at = Some(now);

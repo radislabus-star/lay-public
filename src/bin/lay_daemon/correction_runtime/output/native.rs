@@ -230,7 +230,11 @@ fn native_text_edit_action_allowed(
             ctx.words_orig.max(1),
         ),
     );
-    lay::action_log::record_candidate_edit_action_before_apply(&edit_action, input_gate);
+    lay::action_log::record_candidate_edit_action_before_apply(
+        &edit_action,
+        "manual_native_replace",
+        input_gate,
+    );
     if edit_action.allow_apply() {
         return true;
     }

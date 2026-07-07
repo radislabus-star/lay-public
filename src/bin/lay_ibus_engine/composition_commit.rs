@@ -155,6 +155,7 @@ impl LayIbusEngine {
             if let Some(decision) = self.autocorrect_active_composition_decision(&text) {
                 lay::action_log::record_candidate_edit_action_before_apply(
                     &decision.action,
+                    "ime_active_composition",
                     decision.input_gate.clone(),
                 );
                 if decision.action.allow_apply() {
