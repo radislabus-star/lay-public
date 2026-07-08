@@ -35,6 +35,7 @@ pub(crate) fn try_ime_replace_output(
         &replace_text,
         replace_kind,
         is_replay,
+        lay::text_edit::TextEditBackend::Ime,
         input_gate.clone(),
     ) {
         return None;
@@ -88,6 +89,7 @@ pub(crate) fn try_gnome_native_replace_output(
         &replace_text,
         replace_kind,
         is_replay,
+        lay::text_edit::TextEditBackend::Daemon,
         input_gate.clone(),
     ) {
         return None;
@@ -203,6 +205,7 @@ fn native_text_edit_action_allowed(
     replace_text: &str,
     replace_kind: &'static str,
     is_replay: bool,
+    backend: lay::text_edit::TextEditBackend,
     input_gate: Option<RecentActionGateTrace>,
 ) -> bool {
     let plan = TextReplacement {
@@ -247,12 +250,14 @@ fn native_text_edit_action_allowed(
         lay::action_log::MutationLogRoute::MANUAL_NATIVE_REPLACE,
         input_gate,
     );
-    if edit_action.allow_apply() {
+    let backend_action = lay::text_edit::authorize_backend_edit(backend, &edit_action);
+    if backend_action.allow_execute {
         return true;
     }
     log(&format!(
-        "⚠ {replace_kind} native replace blocked by EditAction safety: reason={} original={:?} replacement={:?}",
-        edit_action.safety_reason(),
+        "⚠ {replace_kind} native replace blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
+        backend_action.reason,
+        backend_action.backend.as_str(),
         ctx.mapped_orig,
         replace_text
     ));

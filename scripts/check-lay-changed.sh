@@ -8,6 +8,7 @@ changed_files() {
   {
     git diff --name-only --diff-filter=ACMRTUXB --cached
     git diff --name-only --diff-filter=ACMRTUXB
+    git ls-files --others --exclude-standard
   } | sed '/^$/d' | sort -u
 }
 
@@ -143,8 +144,21 @@ if has_file_matching '^src/bin/lay_ibus_engine'; then
 fi
 
 if has_file_matching '^src/bin/lay_daemon'; then
-  echo "== cargo test --bin lay-daemon =="
-  cargo test --bin lay-daemon
+  if [[ "${LAY_CHANGED_FULL_DAEMON:-0}" == "1" ]]; then
+    echo "== cargo test --bin lay-daemon =="
+    cargo test --bin lay-daemon
+  else
+    echo "== cargo test --bin lay-daemon targeted =="
+    cargo test --bin lay-daemon text_output_contract
+    cargo test --bin lay-daemon enter_autocorrect
+    cargo test --bin lay-daemon runtime_state::typing_assist
+    cargo test --bin lay-daemon layout_switch_policy
+  fi
+fi
+
+if has_file_matching '^src/bin/lay_debug_actions\.rs$'; then
+  echo "== cargo test --bin lay-debug-actions =="
+  cargo test --bin lay-debug-actions
 fi
 
 if has_file_matching '^src/correction_core\.rs$'; then
@@ -195,6 +209,17 @@ fi
 
 echo "== cargo check --all-targets =="
 cargo check --all-targets
+
+recent_actions="${XDG_DATA_HOME:-$HOME/.local/share}/lay/recent_actions.jsonl"
+if [[ -s "$recent_actions" ]]; then
+  echo "== transition replay release gate =="
+  cargo run --quiet --bin lay-debug-actions -- --transition-replay
+
+  echo "== unsafe edit release gate =="
+  cargo run --quiet --bin lay-debug-actions -- --unsafe-gate
+else
+  echo "== transition replay release gate skipped: no recent_actions.jsonl =="
+fi
 
 if [[ "${LAY_CHANGED_CLIPPY:-0}" == "1" ]]; then
   echo "== cargo clippy --all-targets -- -D warnings =="

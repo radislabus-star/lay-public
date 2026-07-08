@@ -92,7 +92,9 @@ impl LayIbusEngine {
             lay::action_log::MutationLogRoute::IME_ACTIVE_COMPOSITION,
             None,
         );
-        if !action.allow_apply() {
+        let backend_action =
+            lay::text_edit::authorize_backend_edit(lay::text_edit::TextEditBackend::Ime, &action);
+        if !backend_action.allow_execute {
             trace::record(r#"{"kind":"ibus_completion_accept_blocked"}"#);
             return Ok(false);
         }
@@ -170,7 +172,11 @@ impl LayIbusEngine {
                     lay::action_log::MutationLogRoute::IME_ACTIVE_COMPOSITION,
                     decision.input_gate.clone(),
                 );
-                if decision.action.allow_apply() {
+                let backend_action = lay::text_edit::authorize_backend_edit(
+                    lay::text_edit::TextEditBackend::Ime,
+                    &decision.action,
+                );
+                if backend_action.allow_execute {
                     text = decision.replacement;
                 } else {
                     trace::record(r#"{"kind":"ibus_active_composition_autocorrect_blocked"}"#);

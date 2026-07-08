@@ -120,12 +120,17 @@ fn manual_replay_action_allowed(
         lay::action_log::MutationLogRoute::MANUAL_TEXT_REPLACE,
         input_gate,
     );
-    if edit_action.allow_apply() {
+    let backend_action = lay::text_edit::authorize_backend_edit(
+        lay::text_edit::TextEditBackend::Daemon,
+        &edit_action,
+    );
+    if backend_action.allow_execute {
         return true;
     }
     log(&format!(
-        "⚠ manual replay blocked by EditAction safety: reason={} original={:?} replacement={:?}",
-        edit_action.safety_reason(),
+        "⚠ manual replay blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
+        backend_action.reason,
+        backend_action.backend.as_str(),
         ctx.mapped_orig,
         ctx.mapped_target
     ));

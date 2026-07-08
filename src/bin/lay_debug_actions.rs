@@ -205,7 +205,6 @@ fn unsafe_reasons(value: &Value) -> Vec<&'static str> {
     let from_words = from.split_whitespace().collect::<Vec<_>>();
     let to_words = to.split_whitespace().collect::<Vec<_>>();
     let word_count_changed = from_words.len() != to_words.len();
-    let replacement_shorter = to.chars().count() + 2 <= from.chars().count();
     let left_context_changed = from_words.len() >= 2
         && from_words.len() == to_words.len()
         && from_words[..from_words.len() - 1] != to_words[..to_words.len() - 1];
@@ -221,9 +220,6 @@ fn unsafe_reasons(value: &Value) -> Vec<&'static str> {
 
     if word_count_changed {
         reasons.push("word_count_changed");
-    }
-    if replacement_shorter {
-        reasons.push("replacement_shorter");
     }
     if left_context_changed {
         reasons.push("left_context_changed");

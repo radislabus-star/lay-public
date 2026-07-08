@@ -139,17 +139,23 @@ pub(super) fn handle_enter_autocorrect(
         lay::action_log::MutationLogRoute::ENTER_AUTOCORRECT,
         input_gate.clone(),
     );
-    if !edit_action.allow_apply() {
+    let ime_backend_action =
+        lay::text_edit::authorize_backend_edit(lay::text_edit::TextEditBackend::Ime, &edit_action);
+    let daemon_backend_action = lay::text_edit::authorize_backend_edit(
+        lay::text_edit::TextEditBackend::Daemon,
+        &edit_action,
+    );
+    if !ime_backend_action.allow_execute && !daemon_backend_action.allow_execute {
         log(&format!(
-            "⚠ enter-autocorrect blocked by EditAction safety: reason={} original={:?} replacement={:?}",
-            edit_action.safety_reason(),
+            "⚠ enter-autocorrect blocked by executor contract: reason={} original={:?} replacement={:?}",
+            daemon_backend_action.reason,
             original,
             replacement
         ));
         return None;
     }
 
-    if should_try_ime_text_backend() {
+    if should_try_ime_text_backend() && ime_backend_action.allow_execute {
         let original_layout = read_current_layout_is_ru().ok();
         if try_ime_replace_tail(&original, &replacement, "enter-autocorrect").unwrap_or(false) {
             let target_layout =
@@ -194,6 +200,16 @@ pub(super) fn handle_enter_autocorrect(
         log("⚠ enter-autocorrect: нет uinput device");
         return None;
     };
+    if !daemon_backend_action.allow_execute {
+        log(&format!(
+            "⚠ enter-autocorrect daemon output blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
+            daemon_backend_action.reason,
+            daemon_backend_action.backend.as_str(),
+            original,
+            replacement
+        ));
+        return None;
+    }
 
     *executing = true;
     let _executing_guard = ExecutingGuard(executing);

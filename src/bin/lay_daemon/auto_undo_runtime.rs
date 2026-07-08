@@ -42,17 +42,22 @@ pub(super) fn handle_pending_auto_undo(
         lay::action_log::MutationLogRoute::AUTO_UNDO,
         None,
     );
-    if !edit_action.allow_apply() {
+    let ime_backend_action =
+        lay::text_edit::authorize_backend_edit(lay::text_edit::TextEditBackend::Ime, &edit_action);
+    let daemon_backend_action = lay::text_edit::authorize_backend_edit(
+        lay::text_edit::TextEditBackend::Daemon,
+        &edit_action,
+    );
+    if !ime_backend_action.allow_execute && !daemon_backend_action.allow_execute {
         log(&format!(
-            "⚠ auto-undo blocked by EditAction safety: reason={} original={:?} replacement={:?}",
-            edit_action.safety_reason(),
-            undo.replacement,
-            undo.original
+            "⚠ auto-undo blocked by executor contract: reason={} original={:?} replacement={:?}",
+            daemon_backend_action.reason, undo.replacement, undo.original
         ));
         return None;
     }
 
     if should_try_ime_text_backend()
+        && ime_backend_action.allow_execute
         && try_ime_replace_tail(&undo.replacement, &undo.original, "auto-undo").unwrap_or(false)
     {
         let target_layout = lay::keyboard::preferred_layout_for_text(&undo.original, true);
@@ -71,6 +76,16 @@ pub(super) fn handle_pending_auto_undo(
         log("⚠ auto-undo: нет uinput device");
         return None;
     };
+    if !daemon_backend_action.allow_execute {
+        log(&format!(
+            "⚠ auto-undo daemon output blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
+            daemon_backend_action.reason,
+            daemon_backend_action.backend.as_str(),
+            undo.replacement,
+            undo.original
+        ));
+        return None;
+    }
 
     *executing = true;
     let _executing_guard = ExecutingGuard(executing);

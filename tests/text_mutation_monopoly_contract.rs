@@ -113,8 +113,8 @@ fn manual_replay_paths_are_edit_action_gated() {
     assert!(
         replay.contains("authorize_replacement_with_transition(")
             && replay.contains("MutationLogRoute::MANUAL_TEXT_REPLACE")
-            && replay.contains("edit_action.allow_apply()"),
-        "manual replay output must pass through EditAction before backspace/replay"
+            && replay.contains("authorize_backend_edit("),
+        "manual replay output must pass through EditAction and ExecutorContract before backspace/replay"
     );
 
     let native = read("src/bin/lay_daemon/correction_runtime/output/native.rs");
@@ -133,6 +133,75 @@ fn manual_replay_paths_are_edit_action_gated() {
     assert!(
         output.contains("apply_layout_replay(&mut common, kbd, input_gate)"),
         "manual replay must preserve the input_gate trace into the EditAction log"
+    );
+}
+
+#[test]
+fn live_text_mutation_outputs_use_executor_contract() {
+    let cases = [
+        (
+            "src/bin/lay_daemon/typing_assist_runtime/output/minimal.rs",
+            "TextEditBackend::Daemon",
+        ),
+        (
+            "src/bin/lay_daemon/typing_assist_runtime/output/ime.rs",
+            "TextEditBackend::Ime",
+        ),
+        (
+            "src/bin/lay_daemon/correction_runtime/output/text_replace.rs",
+            "TextEditBackend::Daemon",
+        ),
+        (
+            "src/bin/lay_daemon/correction_runtime/output/replay.rs",
+            "TextEditBackend::Daemon",
+        ),
+        (
+            "src/bin/lay_daemon/correction_runtime/output/native.rs",
+            "TextEditBackend::Ime",
+        ),
+        (
+            "src/bin/lay_daemon/correction_runtime/output/native.rs",
+            "TextEditBackend::Daemon",
+        ),
+        (
+            "src/bin/lay_daemon/auto_undo_runtime.rs",
+            "TextEditBackend::Daemon",
+        ),
+        (
+            "src/bin/lay_daemon/enter_autocorrect_runtime.rs",
+            "TextEditBackend::Daemon",
+        ),
+        (
+            "src/bin/lay_ibus_engine/composition_commit.rs",
+            "TextEditBackend::Ime",
+        ),
+    ];
+
+    for (path, backend) in cases {
+        let source = read(path);
+        assert!(
+            source.contains("authorize_backend_edit(") && source.contains(backend),
+            "{path} must authorize physical mutation through ExecutorContract for {backend}"
+        );
+    }
+
+    let executor_contract = read("src/typing_transition/executor_contract.rs");
+    assert!(
+        !executor_contract.contains("#![allow(dead_code)]"),
+        "ExecutorContract must be live architecture, not an unused declaration"
+    );
+    assert!(
+        read("src/text_edit.rs").contains("authorize_backend_edit"),
+        "bin backends must reach ExecutorContract through the shared text_edit API"
+    );
+}
+
+#[test]
+fn changed_check_runs_shadow_replay_release_gate() {
+    let script = read("scripts/check-lay-changed.sh");
+    assert!(
+        script.contains("--transition-replay") && script.contains("--unsafe-gate"),
+        "changed check must promote shadow replay and unsafe edit scan to release gates"
     );
 }
 

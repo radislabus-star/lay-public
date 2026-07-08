@@ -71,10 +71,13 @@ pub(crate) fn try_apply_ime_replacement(
         lay::action_log::MutationLogRoute::TYPING_ASSIST_IME,
         input_gate.clone(),
     );
-    if !edit_action.allow_apply() {
+    let backend_action =
+        lay::text_edit::authorize_backend_edit(lay::text_edit::TextEditBackend::Ime, &edit_action);
+    if !backend_action.allow_execute {
         log(&format!(
-            "⚠ typing-assist IME blocked by edit-plan safety: reason={} original={:?} replacement={:?}",
-            edit_action.safety_reason(),
+            "⚠ typing-assist IME blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
+            backend_action.reason,
+            backend_action.backend.as_str(),
             original,
             replacement
         ));
