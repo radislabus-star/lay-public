@@ -1,4 +1,7 @@
-use crate::phrase_lexicon::{is_known_russian_phrase_part, is_one_letter_russian_function_word};
+use crate::phrase_lexicon::{
+    is_known_russian_phrase_part, is_one_letter_russian_function_word,
+    looks_like_short_function_chain_glued, looks_like_short_function_word_glued_to_known_word,
+};
 use crate::phrase_score::NGRAM_SPLIT_REJECT_MARGIN;
 use crate::ru_typo::correct_repeated_letter;
 use crate::russian_lexicon::is_known_russian_word_or_form;
@@ -56,6 +59,16 @@ pub fn correct_split_word_pair(text: &str) -> Option<String> {
     (!should_keep_standalone_pair_with_function_left(&left_lower, &right_lower)).then_some(())?;
     if is_known_russian_phrase_part(&left_lower)
         && is_one_letter_russian_function_word(&right_lower)
+    {
+        return None;
+    }
+    if looks_like_short_function_word_glued_to_known_word(&left_lower)
+        && is_known_russian_phrase_part(&right_lower)
+    {
+        return None;
+    }
+    if looks_like_short_function_chain_glued(&left_lower)
+        && is_known_russian_phrase_part(&right_lower)
     {
         return None;
     }

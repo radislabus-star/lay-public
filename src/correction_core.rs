@@ -1554,7 +1554,9 @@ fn l3_context_gate(
             reason: "same_tail_single_consonant_drift",
         });
     }
-    if known_russian_word_rewritten_to_different_known_word(original, replacement, error_class) {
+    if source_id != crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE
+        && known_russian_word_rewritten_to_different_known_word(original, replacement, error_class)
+    {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "known_word_to_different_known_word",

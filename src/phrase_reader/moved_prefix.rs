@@ -23,6 +23,7 @@ pub fn correct_moved_prefix_letter_pair(text: &str) -> Option<String> {
     let right_rest: String = right_chars.collect();
     let left_candidate = format!("{}{}", pair.left, moved);
     let candidate = format!("{left_candidate} {right_rest}");
+    let candidate_lower = candidate.to_lowercase();
 
     if !is_cyrillic_word(&left_candidate) || !is_cyrillic_word(&right_rest) {
         return None;
@@ -49,7 +50,7 @@ pub fn correct_moved_prefix_letter_pair(text: &str) -> Option<String> {
     if left_candidate.chars().count() >= 5
         && short_right_is_safe
         && is_known_russian_word_or_form(&left_candidate_lower)
-        && ngram_allows_ru_candidate(&candidate.to_lowercase(), text, NGRAM_MOVED_PREFIX_MARGIN)
+        && ngram_allows_ru_candidate(&candidate_lower, text, NGRAM_MOVED_PREFIX_MARGIN)
     {
         return Some(format!("{}{}", candidate, pair.right_trailing));
     }
@@ -75,7 +76,12 @@ pub fn correct_moved_prefix_letter_pair(text: &str) -> Option<String> {
         && (russian_tiny_dictionary().contains(&left_candidate_lower)
             || russian_short_dictionary().contains(&left_candidate_lower))
         && right_rest.chars().count() >= 5
-        && is_known_russian_phrase_part(&right_rest_lower)
+        && moved_prefix_right_rest_has_authority(
+            &right_rest_lower,
+            &right_lower,
+            &candidate_lower,
+            text,
+        )
     {
         return Some(format!("{}{}", candidate, pair.right_trailing));
     }
@@ -93,9 +99,26 @@ pub fn correct_moved_prefix_letter_pair(text: &str) -> Option<String> {
     {
         return None;
     }
-    if !ngram_allows_ru_candidate(&candidate.to_lowercase(), text, NGRAM_MOVED_PREFIX_MARGIN) {
+    if !ngram_allows_ru_candidate(&candidate_lower, text, NGRAM_MOVED_PREFIX_MARGIN) {
         return None;
     }
 
     Some(format!("{}{}", candidate, pair.right_trailing))
+}
+
+fn moved_prefix_right_rest_has_authority(
+    right_rest_lower: &str,
+    right_lower: &str,
+    candidate_lower: &str,
+    original_text: &str,
+) -> bool {
+    if is_known_russian_phrase_part(right_rest_lower)
+        || crate::lexicon::is_ime_hot_ru_word(right_rest_lower)
+    {
+        return true;
+    }
+
+    crate::ngram::ru_candidate_margin(right_rest_lower, right_lower)
+        >= NGRAM_MOVED_PREFIX_RIGHT_MARGIN
+        && ngram_allows_ru_candidate(candidate_lower, original_text, NGRAM_MOVED_PREFIX_MARGIN)
 }

@@ -99,7 +99,7 @@ pub(crate) fn is_confident_multiword_glued_phrase(parts: &[&str]) -> bool {
             continue;
         }
 
-        if !is_known_russian_phrase_part(part) {
+        if !is_known_multiword_glue_part(part) {
             return false;
         }
         if is_short_russian_function_word(part)
@@ -119,7 +119,7 @@ pub(crate) fn is_confident_multiword_glued_phrase(parts: &[&str]) -> bool {
 
     let last_is_known_word = parts
         .last()
-        .is_some_and(|part| char_len(part) >= 3 && is_known_russian_phrase_part(part));
+        .is_some_and(|part| char_len(part) >= 3 && is_known_multiword_glue_part(part));
 
     (function_parts >= 2 && (strong_parts >= 1 || last_is_known_word))
         || (parts.len() >= 3 && function_parts >= 1 && strong_parts >= 2)
@@ -173,11 +173,14 @@ pub(crate) fn multiword_glued_phrase_score(parts: &[&str], ngram_margin: f64) ->
 }
 
 pub(crate) fn contains_preferable_merged_russian_part(parts: &[&str]) -> bool {
-    parts.windows(2).any(|window| {
+    parts.windows(2).enumerate().any(|(idx, window)| {
         let left = window[0];
         let right = window[1];
         let left_len = char_len(left);
         let right_len = char_len(right);
+        if long_multiword_tail_supports_split_over_local_merge(parts, idx) {
+            return false;
+        }
         if left_len > MAX_RU_FUNCTION_GLUE_LEFT_LEN || right_len < 4 {
             let merged = format!("{left}{right}");
             if right_len == 1 && is_one_letter_russian_function_word(right) {
@@ -196,13 +199,35 @@ pub(crate) fn contains_preferable_merged_russian_part(parts: &[&str]) -> bool {
     })
 }
 
+fn long_multiword_tail_supports_split_over_local_merge(parts: &[&str], merge_idx: usize) -> bool {
+    if parts.len() < 4 || merge_idx != 0 {
+        return false;
+    }
+    let left = parts[merge_idx];
+    let right = parts[merge_idx + 1];
+    if !is_short_russian_function_word(left) || char_len(right) < 5 {
+        return false;
+    }
+    parts
+        .iter()
+        .skip(merge_idx + 2)
+        .filter(|part| is_strong_phrase_part(part))
+        .count()
+        >= 2
+}
+
 fn looks_like_incomplete_russian_reflexive_part(part: &str) -> bool {
     let len = char_len(part);
     len >= 6 && data_lines(INCOMPLETE_REFLEXIVE_PARTS_DATA).any(|suffix| part.ends_with(suffix))
 }
 
 fn is_strong_phrase_part(part: &str) -> bool {
-    char_len(part) >= 4 && is_known_russian_phrase_part(part)
+    char_len(part) >= 4 && is_known_multiword_glue_part(part)
+}
+
+fn is_known_multiword_glue_part(part: &str) -> bool {
+    is_known_russian_phrase_part(part)
+        || (char_len(part) >= 5 && crate::nanda_wave::l2::l2_surface_foundation_contains(part))
 }
 
 fn char_len(text: &str) -> usize {

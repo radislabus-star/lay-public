@@ -3,7 +3,7 @@ use crate::keyboard::is_cyrillic_letter;
 use crate::phrase_candidates::glued_phrase_part_candidates;
 use crate::phrase_lexicon::{
     is_common_be_verb_form, is_common_short_russian_preposition, is_known_russian_phrase_part,
-    is_short_russian_function_word,
+    is_short_russian_function_word, looks_like_short_function_word_glued_to_known_word,
 };
 use crate::phrase_score::{
     contains_preferable_merged_russian_part, is_confident_multiword_glued_phrase,
@@ -37,7 +37,9 @@ pub fn correct_glued_russian_phrase(word: &str) -> Option<String> {
     }
     if russian_dictionary().contains(&lower)
         || russian_generated_form_dictionary().contains(&lower)
-        || (is_known_russian_word_or_form(&lower) && !looks_like_word_glued_to_trailing_ya(&lower))
+        || (is_known_russian_word_or_form(&lower)
+            && !looks_like_word_glued_to_trailing_ya(&lower)
+            && !looks_like_short_function_word_glued_to_known_word(&lower))
     {
         return None;
     }

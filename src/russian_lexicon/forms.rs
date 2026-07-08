@@ -195,8 +195,15 @@ fn is_known_russian_verb_form(word: &str) -> bool {
         stem.chars().count() >= 3
             && lemmas
                 .into_iter()
-                .any(|lemma_suffix| russian_dictionary().contains(&format!("{stem}{lemma_suffix}")))
+                .any(|lemma_suffix| known_runtime_verb_lemma(&format!("{stem}{lemma_suffix}")))
     })
+}
+
+fn known_runtime_verb_lemma(lemma: &str) -> bool {
+    russian_dictionary().contains(lemma)
+        || russian_short_dictionary().contains(lemma)
+        || crate::nanda_wave::l2::runtime_l2_surface_contains(lemma)
+        || crate::nanda_wave::l2::l2_surface_foundation_contains(lemma)
 }
 
 fn is_known_russian_imperative_i_form(word: &str) -> bool {

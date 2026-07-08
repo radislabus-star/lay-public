@@ -93,6 +93,28 @@ pub(crate) fn looks_like_short_function_word_glued_to_known_word(word: &str) -> 
     false
 }
 
+pub(crate) fn looks_like_short_function_chain_glued(word: &str) -> bool {
+    let char_len = word.chars().count();
+    if char_len < 4 {
+        return false;
+    }
+
+    for split in cyrillic_word_splits(word) {
+        let left = split.left;
+        let right = split.right;
+        if split.left_len > MAX_RU_FUNCTION_GLUE_LEFT_LEN {
+            break;
+        }
+        if split.right_len < 2 {
+            continue;
+        }
+        if is_short_russian_function_word(left) && is_short_russian_function_word(right) {
+            return true;
+        }
+    }
+    false
+}
+
 fn is_common_short_russian_pronoun(word: &str) -> bool {
     is_ru_short_pronoun(word)
 }

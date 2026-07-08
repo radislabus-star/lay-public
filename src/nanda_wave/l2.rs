@@ -27,6 +27,7 @@ use super::signal::{WavePacket, WordCandidate};
 static SURFACE_MOTIF_MEMORY: OnceLock<L2CenterMemory> = OnceLock::new();
 static BROAD_PREFIX_INDEX: OnceLock<super::l2_broad_index::L2BroadPrefixIndex> = OnceLock::new();
 static L2_SHORT_POSITION_SEED_INDEX: OnceLock<HashMap<String, Vec<String>>> = OnceLock::new();
+static L2_SURFACE_FOUNDATION_SET: OnceLock<HashSet<&'static str>> = OnceLock::new();
 
 const MAX_LAYOUT_SCAN_CANDIDATES: usize = 4;
 const MAX_TAUGHT_CANDIDATES: usize = 6;
@@ -1741,6 +1742,16 @@ fn runtime_l2_surface_word_set() -> &'static HashSet<String> {
     WORDS.get_or_init(|| runtime_l2_surface_words().into_iter().collect())
 }
 
+pub(crate) fn runtime_l2_surface_contains(word: &str) -> bool {
+    runtime_l2_surface_word_set().contains(word)
+}
+
+pub(crate) fn l2_surface_foundation_contains(word: &str) -> bool {
+    L2_SURFACE_FOUNDATION_SET
+        .get_or_init(|| data_words_static(L2_SURFACE_FOUNDATION_RU_DATA).collect())
+        .contains(word)
+}
+
 fn runtime_l2_surface_words() -> Vec<String> {
     let mut words = Vec::new();
     let mut seen = HashSet::new();
@@ -1836,6 +1847,12 @@ fn data_words(data: &str) -> impl Iterator<Item = String> + '_ {
         .map(str::trim)
         .filter(|line| !line.is_empty() && !line.starts_with('#'))
         .map(str::to_string)
+}
+
+fn data_words_static(data: &'static str) -> impl Iterator<Item = &'static str> {
+    data.lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty() && !line.starts_with('#'))
 }
 
 fn collect_runtime_l2_case_words(
@@ -2387,7 +2404,27 @@ fn boundary_scan_candidates(
             "{}{}{}",
             segments[window.left_idx].0, segments[window.ws_idx].0, segments[window.right_idx].0
         );
-        let Some(replacement) = crate::phrase_reader::correct_split_word_pair(&pair_text) else {
+        let Some((replacement, repair_kind, energy, risk)) =
+            crate::phrase_reader::correct_moved_prefix_letter_pair(&pair_text)
+                .map(|replacement| {
+                    (
+                        replacement,
+                        "tail-moved-prefix-pair-scan",
+                        l1_energy(l1, "BoundaryCell32").max(0.92),
+                        0.06,
+                    )
+                })
+                .or_else(|| {
+                    crate::phrase_reader::correct_split_word_pair(&pair_text).map(|replacement| {
+                        (
+                            replacement,
+                            "tail-split-pair-scan",
+                            l1_energy(l1, "BoundaryCell32").max(0.80),
+                            0.12,
+                        )
+                    })
+                })
+        else {
             continue;
         };
         if replacement == pair_text {
@@ -2401,11 +2438,11 @@ fn boundary_scan_candidates(
                 &replacement,
             ),
             source: "BoundaryCell32",
-            energy: l1_energy(l1, "BoundaryCell32").max(0.80),
-            risk: 0.12,
+            energy,
+            risk,
             support: {
                 let mut support = candidate_support(l1, context);
-                support.push("tail-split-pair-scan".to_string());
+                support.push(repair_kind.to_string());
                 support.push(format!("pair={pair_text:?} replacement={replacement:?}"));
                 support
             },
@@ -3007,6 +3044,20 @@ mod tests {
             candidates.iter().any(|candidate| {
                 candidate.source == "BoundaryCell32"
                     && candidate.text == "сейчас думаю такой пример работает"
+            }),
+            "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn boundary_cell_scans_moved_prefix_pair_inside_tail() {
+        let original = "сервер работает н апостоянку ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.source == "BoundaryCell32"
+                    && candidate.text == "сервер работает на постоянку"
             }),
             "candidates={candidates:?}"
         );
