@@ -282,6 +282,16 @@ impl LayIbusEngine {
         if self.buffer.is_empty() && self.tail_buffer.ends_with(char::is_whitespace) {
             return Vec::new();
         }
+        if self.buffer.is_empty()
+            && self
+                .tail_buffer
+                .trim_end()
+                .chars()
+                .last()
+                .is_some_and(is_hard_precognition_boundary)
+        {
+            return Vec::new();
+        }
         let timing_enabled = trace::enabled();
         let total_started = timing_enabled.then(Instant::now);
         let tail = self.tail_buffer.as_str();
@@ -515,17 +525,20 @@ impl LayIbusEngine {
     }
 
     pub(super) fn push_tail_char(&mut self, ch: char) {
-        let tail_before_boundary = ch.is_whitespace().then(|| self.tail_buffer.clone());
+        let is_boundary = ch.is_whitespace() || is_hard_precognition_boundary(ch);
+        let tail_before_boundary = is_boundary.then(|| self.tail_buffer.clone());
         self.tail_buffer.push(ch);
         self.preedit_fast.push(ch);
         self.last_tail_input_at = Some(Instant::now());
-        if ch.is_whitespace() {
+        if is_boundary {
             if let Some(tail_before_boundary) = tail_before_boundary.as_deref() {
                 self.record_ignored_precognition_at_boundary(tail_before_boundary);
             }
             self.close_precognition_word_boundary();
-            self.word_input_mode = None;
-            lay::nanda_wave::record_typed_tail_usage(&self.tail_buffer);
+            if ch.is_whitespace() {
+                self.word_input_mode = None;
+                lay::nanda_wave::record_typed_tail_usage(&self.tail_buffer);
+            }
         }
         trim_tail_buffer(&mut self.tail_buffer);
         self.publish_tail_handoff();
@@ -1144,6 +1157,38 @@ mod tests {
             "known word must not be extended by weak suffixes: {:?}",
             engine.preedit_candidates
         );
+    }
+
+    #[test]
+    fn punctuation_closes_inactive_completion_for_previous_word() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                ime_bracket_candidates: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "Читал логи".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.preedit_suffix = "ка".to_string();
+        engine.preedit_candidates = vec!["ка".to_string()];
+        engine.push_tail_char('?');
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine.preedit_candidates.is_empty(),
+            "punctuation must not revive completion for a closed word: {:?}",
+            engine.preedit_candidates
+        );
+        assert_eq!(engine.preedit_fast.token(), "");
+        assert_eq!(engine.preedit_suffix, "");
     }
 
     #[test]
@@ -2124,4 +2169,11 @@ mod tests {
         trim_tail_buffer(&mut text);
         assert_eq!(text.chars().count(), PREEDIT_TAIL_LIMIT);
     }
+}
+
+fn is_hard_precognition_boundary(ch: char) -> bool {
+    matches!(
+        ch,
+        '.' | ',' | '!' | '?' | ':' | ';' | ')' | ']' | '}' | '…'
+    )
 }

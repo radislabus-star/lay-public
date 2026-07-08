@@ -1339,6 +1339,24 @@ fn gate_candidate_with_source(
             reason: "weak_boundary_split_tail",
         };
     }
+    if reflexive_suffix_candidate_requires_grammar_proof(
+        original,
+        replacement,
+        error_class,
+        source_id,
+    ) {
+        return CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "reflexive_suffix_requires_grammar_proof",
+        };
+    }
+    if known_current_word_gets_unproven_surface_drift(original, replacement, error_class, source_id)
+    {
+        return CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "known_current_word_surface_drift",
+        };
+    }
     if let Some(reason) =
         action_operator::verify_action_operator(original, replacement, error_class, source_id)
             .apply_blocker()
@@ -1610,6 +1628,112 @@ fn l3_phrase_memory_applies_to(error_class: TypingErrorClass) -> bool {
             | TypingErrorClass::LetterSubstitution
             | TypingErrorClass::GrammarAgreement
     )
+}
+
+fn reflexive_suffix_candidate_requires_grammar_proof(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    source_id: &str,
+) -> bool {
+    if error_class == TypingErrorClass::GrammarAgreement || source_id == "GrammarCell32" {
+        return false;
+    }
+    if !matches!(
+        error_class,
+        TypingErrorClass::MissingLetter
+            | TypingErrorClass::CompositeTypo
+            | TypingErrorClass::LetterSubstitution
+    ) {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return false;
+    };
+    if !is_cyrillic_letters_only(&original_word) || !is_cyrillic_letters_only(&replacement_word) {
+        return false;
+    }
+
+    toggles_reflexive_soft_sign(
+        &original_word.to_lowercase(),
+        &replacement_word.to_lowercase(),
+    )
+}
+
+fn toggles_reflexive_soft_sign(original: &str, replacement: &str) -> bool {
+    let Some(stem) = original.strip_suffix("тся") else {
+        return replacement
+            .strip_suffix("тся")
+            .is_some_and(|stem| original == format!("{stem}ться"));
+    };
+    replacement == format!("{stem}ться")
+}
+
+fn known_current_word_gets_unproven_surface_drift(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    source_id: &str,
+) -> bool {
+    if source_id == "candidate_gate" {
+        return false;
+    }
+    if matches!(
+        error_class,
+        TypingErrorClass::WrongLayout
+            | TypingErrorClass::PartialLayout
+            | TypingErrorClass::SplitWord
+            | TypingErrorClass::GluedWords
+            | TypingErrorClass::CaseNoise
+            | TypingErrorClass::TechnicalToken
+            | TypingErrorClass::ProtectedToken
+            | TypingErrorClass::CompletionOnly
+            | TypingErrorClass::Unknown
+    ) {
+        return false;
+    }
+    if matches!(
+        correction_source_contract::source_role(source_id),
+        CorrectionSourceRole::Layout
+            | CorrectionSourceRole::Boundary
+            | CorrectionSourceRole::Technical
+    ) {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return false;
+    };
+    if !is_cyrillic_letters_only(&original_word) || !is_cyrillic_letters_only(&replacement_word) {
+        return false;
+    }
+
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    if original_lower == replacement_lower || !protected_current_surface_token(&original_lower) {
+        return false;
+    }
+
+    let original_len = original_lower.chars().count();
+    let replacement_len = replacement_lower.chars().count();
+    if original_len < 4 || replacement_len > original_len + 1 {
+        return false;
+    }
+
+    damerau_levenshtein(&original_lower, &replacement_lower) <= 1
+        || inserted_char_position_for_missing_letter(&original_lower, &replacement_lower).is_some()
+}
+
+fn protected_current_surface_token(lower: &str) -> bool {
+    known_russian_autocorrect_token(lower)
+        || crate::phrase_lexicon::is_known_russian_phrase_part(lower)
+        || crate::russian_lexicon::russian_dictionary().contains(lower)
+        || crate::russian_lexicon::russian_short_dictionary().contains(lower)
 }
 
 fn replacement_glues_separate_words_without_boundary_class(
@@ -3434,6 +3558,65 @@ mod tests {
 
         assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
         assert_eq!(gate.reason, "known_phrase_part_one_letter_growth");
+    }
+
+    #[test]
+    fn reflexive_suffix_needs_grammar_proof_before_apply() {
+        for source_id in ["composite_ru_typo", "L2SurfaceMotifCell32", "PhraseCell32"] {
+            let gate = gate_candidate_with_source(
+                "что нравится? ",
+                "что нравиться? ",
+                TypingErrorClass::MissingLetter,
+                source_id,
+            );
+
+            assert_eq!(
+                gate.action,
+                CandidateGateAction::SuggestOnly,
+                "source_id={source_id}"
+            );
+            assert_eq!(
+                gate.reason, "reflexive_suffix_requires_grammar_proof",
+                "source_id={source_id}"
+            );
+        }
+    }
+
+    #[test]
+    fn grammar_source_may_handle_reflexive_suffix() {
+        let gate = gate_candidate_with_source(
+            "что нравится? ",
+            "что нравиться? ",
+            TypingErrorClass::GrammarAgreement,
+            "GrammarCell32",
+        );
+
+        assert_ne!(gate.reason, "reflexive_suffix_requires_grammar_proof");
+    }
+
+    #[test]
+    fn known_current_word_surface_drift_stays_suggest_only() {
+        for (input, replacement, source_id) in [
+            ("Читал логи ", "Читал логик ", "L2SurfaceMotifCell32"),
+            ("смотри, ", "смотори, ", "composite_ru_typo"),
+        ] {
+            let gate = gate_candidate_with_source(
+                input,
+                replacement,
+                TypingErrorClass::CompositeTypo,
+                source_id,
+            );
+
+            assert_eq!(
+                gate.action,
+                CandidateGateAction::SuggestOnly,
+                "{input:?} -> {replacement:?}"
+            );
+            assert_eq!(
+                gate.reason, "known_current_word_surface_drift",
+                "{input:?} -> {replacement:?}"
+            );
+        }
     }
 
     #[test]
