@@ -1,4 +1,5 @@
 use evdev::uinput::VirtualDevice;
+use lay::decoder::DecoderEditPlan;
 use lay::keyboard::KeyEvent;
 use lay::word_buffer::WordBuffer;
 
@@ -10,6 +11,7 @@ pub(crate) struct ImeTypingReplacementContext<'a, 'kbd, 'grab> {
     pub(crate) virtual_kbd: &'a mut Option<&'kbd mut VirtualDevice>,
     pub(crate) physical_grab: &'a mut PhysicalInputGrab<'grab>,
     pub(crate) events: &'a [KeyEvent],
+    pub(crate) edit: &'a DecoderEditPlan,
     pub(crate) original: &'a str,
     pub(crate) replacement: &'a str,
     pub(crate) rule_id: Option<&'a str>,

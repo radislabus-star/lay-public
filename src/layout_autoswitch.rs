@@ -12,7 +12,7 @@ mod score;
 mod technical;
 
 use crate::keyboard::is_cyrillic_letter;
-use crate::lexicon::is_common_ru_word;
+use crate::lexicon::{is_common_ru_word, is_ime_hot_ru_word};
 use crate::ru_typo::{
     correct_extra_letters, correct_hard_sign_typo, correct_missing_letter, correct_repeated_letter,
 };
@@ -123,7 +123,7 @@ fn correct_layout_missing_initial_letter(word: &str) -> Option<String> {
 }
 
 fn is_strong_layout_polish_word(word: &str) -> bool {
-    is_common_ru_word(word)
+    is_russian_layout_surface_authority_word(word)
         || russian_dictionary().contains(word)
         || russian_short_dictionary().contains(word)
         || russian_tiny_dictionary().contains(word)
@@ -139,8 +139,31 @@ pub(crate) fn is_known_russian_layout_autoswitch_word(word: &str) -> bool {
         return russian_tiny_dictionary().contains(word);
     }
 
-    is_known_russian_word_or_form(word)
-        || is_known_russian_adverb_o_form(word)
-        || is_known_russian_ka_oblique_form(word)
-        || russian_short_dictionary().contains(word)
+    is_russian_layout_surface_authority_word(word)
+}
+
+pub(crate) fn is_russian_layout_surface_authority_word(word: &str) -> bool {
+    if word.is_empty() {
+        return false;
+    }
+    let lower = word.to_lowercase();
+    is_known_russian_word_or_form(&lower)
+        || is_known_russian_adverb_o_form(&lower)
+        || is_known_russian_ka_oblique_form(&lower)
+        || russian_short_dictionary().contains(&lower)
+        || is_common_ru_word(&lower)
+        || is_ime_hot_ru_word(&lower)
+        || crate::nanda_wave::l2::runtime_l2_surface_contains(&lower)
+        || crate::nanda_wave::l2::l2_surface_foundation_contains(&lower)
+        || crate::typing_transition::state::word_has_common_usage_authority(&lower)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::is_russian_layout_surface_authority_word;
+
+    #[test]
+    fn l2_surface_foundation_word_has_layout_authority() {
+        assert!(is_russian_layout_surface_authority_word("допустим"));
+    }
 }

@@ -71,6 +71,7 @@ pub(crate) fn apply_typing_assist_correction(
             virtual_kbd: &mut virtual_kbd,
             physical_grab: &mut physical_grab,
             events: &events,
+            edit: &edit,
             original: &original,
             replacement: &replacement,
             rule_id: rule_id.as_deref(),

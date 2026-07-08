@@ -70,43 +70,27 @@ fn build_input_gate_decoded_tail(
     original: &str,
     replacement_tail: &str,
 ) -> Option<DecodedCompletedTail> {
+    let input_gate = decision
+        .trace
+        .as_ref()
+        .map(lay::action_log::RecentActionGateTrace::from_input_gate);
     let mut edit = DecoderEditPlan::committed_tail(
         lay::decoder::CorrectionTrigger::AfterSpace,
         original,
         replacement_tail,
         CorrectionSource::TypingAssist,
     )?;
+    if let Some(trace) = input_gate.as_ref() {
+        edit = edit.with_input_gate_trace(trace);
+    }
     if let Some(full_token_plan) = edit.verified_full_token_plan_for_cursor(0) {
         edit.plan = full_token_plan;
     }
-    let input_gate = decision
-        .trace
-        .as_ref()
-        .map(lay::action_log::RecentActionGateTrace::from_input_gate);
-    let source_id = input_gate
-        .as_ref()
-        .and_then(|trace| trace.selected_source_id.as_deref());
-    let error_class = input_gate
-        .as_ref()
-        .and_then(|trace| trace.selected_error_class.as_deref());
-    let confidence_milli = input_gate
-        .as_ref()
-        .and_then(|trace| trace.scoreboard.as_ref())
-        .and_then(|scoreboard| scoreboard.selected_bayes_posterior_milli)
-        .unwrap_or(0);
-    let transition = input_gate
-        .as_ref()
-        .map(lay::action_log::RecentActionGateTrace::selected_transition_audit)
-        .unwrap_or_default();
-    let edit_action = lay::text_edit::authorize_replacement_with_transition(
+    let edit_action = edit.authorize_replacement(
         "typing-assist",
-        confidence_milli,
         original,
         edit.replacement.as_str(),
         edit.plan.clone(),
-        source_id,
-        error_class,
-        transition,
     );
     if !edit_action.allow_apply() {
         crate::log(&format!(

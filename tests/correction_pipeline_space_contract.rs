@@ -29,6 +29,7 @@ fn space_autocorrect_keeps_existing_public_gate_contract() {
         ("читай логии ", "читай логи "),
         ("звгрузи ", "загрузи "),
         ("ghbdtn ", "привет "),
+        ("file ljgecnbv ", "file допустим "),
     ];
 
     for (input, expected) in cases {
@@ -39,8 +40,8 @@ fn space_autocorrect_keeps_existing_public_gate_contract() {
         } = decision.action
         else {
             panic!(
-                "expected replacement for {input:?}, got {:?}",
-                decision.action
+                "expected replacement for {input:?}, got {:?}, trace={:?}",
+                decision.action, decision.trace
             );
         };
 
@@ -66,6 +67,7 @@ fn daemon_space_and_enter_decoders_share_input_gate_replacement_contract() {
         ("читай логии ", true, "читай логи "),
         ("звгрузи ", true, "загрузи "),
         ("ghbdtn ", false, "привет "),
+        ("file ljgecnbv ", false, "file допустим "),
     ];
 
     for (input, layout_is_ru, expected) in cases {
@@ -99,4 +101,17 @@ fn daemon_space_and_enter_decoders_share_input_gate_replacement_contract() {
             assert!(enter_plan.preserves_committed_separator(), "{input:?}");
         }
     }
+}
+
+#[test]
+fn weak_known_word_drift_is_suggest_only_without_latent_state_proof() {
+    let decision = decide_space_deterministic("мы можем ");
+
+    assert!(
+        !matches!(decision.action, InputGateAction::ApplyReplacement { .. }),
+        "known-word drift must not auto-apply without latent transition proof: {:?}",
+        decision.action
+    );
+    let trace = decision.trace.as_ref().expect("trace");
+    assert_ne!(trace.reason, "apply_selected_candidate");
 }

@@ -32,6 +32,7 @@ use std::sync::OnceLock;
 use std::time::Instant;
 
 const COMPOSITE_TRANSPOSE_MIN_MARGIN: f64 = -8.0;
+const REPEATED_DELETE_SURFACE_MARGIN: f64 = 0.25;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CorrectionMode {
@@ -589,10 +590,7 @@ fn unique_known_repeated_deletion_word(word: &str) -> Option<String> {
     let lower = word.to_lowercase();
     let mut candidates = repeated_run_deletion_candidates(&lower)
         .into_iter()
-        .filter(|candidate| {
-            crate::russian_lexicon::is_known_russian_word_or_form(candidate)
-                || crate::lexicon::is_common_ru_word(candidate)
-        })
+        .filter(|candidate| repeated_deletion_has_surface_support(&lower, candidate))
         .collect::<Vec<_>>();
     candidates.sort();
     candidates.dedup();
@@ -624,7 +622,7 @@ fn layout_then_typo_candidate(
     let converted_text = replace_last_text_word(req.text, &converted_word)?;
     let explanation = explain_typing_assist_with_pipeline(&converted_text, false, pipeline);
     let final_replacement = explanation.output.unwrap_or_else(|| {
-        if crate::russian_lexicon::is_known_russian_word_or_form(&converted_word) {
+        if crate::layout_autoswitch::is_russian_layout_surface_authority_word(&converted_word) {
             converted_text.clone()
         } else {
             String::new()
@@ -2931,7 +2929,11 @@ fn replacement_last_word_is_unknown_cyrillic(original: &str, replacement: &str) 
     if original_word == replacement_word || !is_cyrillic_letters_only(&replacement_word) {
         return false;
     }
+    let original_lower = original_word.to_lowercase();
     let replacement_lower = replacement_word.to_lowercase();
+    if repeated_deletion_has_surface_support(&original_lower, &replacement_lower) {
+        return false;
+    }
     !crate::russian_lexicon::is_known_russian_word_or_form(&replacement_lower)
         && !crate::lexicon::is_common_ru_word(&replacement_lower)
 }
@@ -2951,13 +2953,59 @@ fn repeated_single_step_has_competing_composite(original: &str, replacement: &st
     {
         return false;
     }
+    if crate::typing_transition::state::word_has_common_usage_authority(&replacement_lower) {
+        return false;
+    }
+    let replacement_len = replacement_lower.chars().count();
     crate::ru_typo::fuzzy_known_word_candidates(&original_lower)
         .into_iter()
         .any(|candidate| {
             candidate != replacement_lower
+                && candidate.chars().count() <= replacement_len
                 && crate::russian_lexicon::is_known_russian_word_or_form(&candidate)
                 && damerau_levenshtein(&replacement_lower, &candidate) <= 1
         })
+}
+
+fn repeated_deletion_has_surface_support(original_lower: &str, replacement_lower: &str) -> bool {
+    if !repeated_run_deletion_candidates(original_lower)
+        .into_iter()
+        .any(|candidate| candidate == replacement_lower)
+    {
+        return false;
+    }
+    crate::russian_lexicon::is_known_russian_word_or_form(replacement_lower)
+        || crate::lexicon::is_common_ru_word(replacement_lower)
+        || short_final_repeated_vowel_delete_has_surface_support(original_lower, replacement_lower)
+}
+
+fn short_final_repeated_vowel_delete_has_surface_support(
+    original_lower: &str,
+    replacement_lower: &str,
+) -> bool {
+    let original_chars = original_lower.chars().collect::<Vec<_>>();
+    let replacement_chars = replacement_lower.chars().collect::<Vec<_>>();
+    if original_chars.len() > 5 || original_chars.len() != replacement_chars.len() + 1 {
+        return false;
+    }
+    let Some(&last) = original_chars.last() else {
+        return false;
+    };
+    if last != 'и'
+        || !crate::russian_chars::is_russian_vowel(last)
+        || original_chars
+            .get(original_chars.len().saturating_sub(2))
+            .copied()
+            != Some(last)
+    {
+        return false;
+    }
+    replacement_chars.as_slice() == &original_chars[..original_chars.len() - 1]
+        && crate::russian_typo_scoring::ngram_allows_ru_candidate(
+            replacement_lower,
+            original_lower,
+            REPEATED_DELETE_SURFACE_MARGIN,
+        )
 }
 
 fn should_prefer_composite_after_repeated_repair(

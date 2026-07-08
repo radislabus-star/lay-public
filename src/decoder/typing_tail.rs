@@ -2,7 +2,9 @@ use super::edit_plan::DecoderEditPlan;
 use super::types::{CorrectionSource, CorrectionTrigger};
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
 use crate::correction_core::CorrectionMode;
-use crate::input_gate::{decide_input_gate, InputGateAction, InputGateRequest, InputGateTrigger};
+use crate::input_gate::{
+    decide_input_gate, InputGateAction, InputGateDecision, InputGateRequest, InputGateTrigger,
+};
 use crate::keyboard::{map_original_events, KeyEvent};
 
 mod punctuation;
@@ -16,11 +18,20 @@ pub fn decode_typing_assist_tail(
     source: CorrectionSource,
 ) -> Option<DecoderEditPlan> {
     let original = map_original_events(events);
-    let replacement = decode_typing_assist_text(&original, allow_layout_auto, pipeline)?;
-    changed_committed_tail_plan(
+    let decision = decode_input_gate_decision(
+        InputGateTrigger::Space,
+        &original,
+        allow_layout_auto,
+        pipeline,
+    );
+    let InputGateAction::ApplyReplacement { replacement, .. } = &decision.action else {
+        return None;
+    };
+    changed_committed_tail_plan_from_gate(
+        &decision,
         CorrectionTrigger::AfterSpace,
         &original,
-        &replacement,
+        replacement,
         source,
     )
 }
@@ -34,12 +45,21 @@ pub fn decode_typing_assist_tail_with_context(
     let original = map_original_events(events);
     if let Some(prefix) = context.strip_suffix(&original) {
         if !prefix.is_empty() {
-            if let Some(replacement_context) =
-                decode_typing_assist_text(context, allow_layout_auto, pipeline)
+            let decision = decode_input_gate_decision(
+                InputGateTrigger::Space,
+                context,
+                allow_layout_auto,
+                pipeline,
+            );
+            if let InputGateAction::ApplyReplacement {
+                replacement: replacement_context,
+                ..
+            } = &decision.action
             {
                 if replacement_context != context && replacement_context.starts_with(prefix) {
                     let replacement = &replacement_context[prefix.len()..];
-                    return changed_committed_tail_plan(
+                    return changed_committed_tail_plan_from_gate(
+                        &decision,
                         CorrectionTrigger::AfterSpace,
                         &original,
                         replacement,
@@ -52,26 +72,13 @@ pub fn decode_typing_assist_tail_with_context(
     decode_typing_assist_tail(events, allow_layout_auto, pipeline, source)
 }
 
-fn decode_typing_assist_text(
-    text_tail: &str,
-    allow_layout_auto: bool,
-    pipeline: &[TypingAssistRuleConfig],
-) -> Option<String> {
-    decode_input_gate_replacement(
-        InputGateTrigger::Space,
-        text_tail,
-        allow_layout_auto,
-        pipeline,
-    )
-}
-
-fn decode_input_gate_replacement(
+pub(super) fn decode_input_gate_decision(
     trigger: InputGateTrigger,
     text_tail: &str,
     allow_layout_auto: bool,
     pipeline: &[TypingAssistRuleConfig],
-) -> Option<String> {
-    let decision = decide_input_gate(InputGateRequest {
+) -> InputGateDecision {
+    decide_input_gate(InputGateRequest {
         trigger,
         text_tail,
         auto_replace: true,
@@ -81,11 +88,7 @@ fn decode_input_gate_replacement(
         typing_assist_pipeline: pipeline,
         nanda_autocorrect: false,
         correction_mode: CorrectionMode::DeterministicOnly,
-    });
-    let InputGateAction::ApplyReplacement { replacement, .. } = decision.action else {
-        return None;
-    };
-    Some(replacement)
+    })
 }
 
 pub(super) fn changed_committed_tail_plan(
@@ -98,4 +101,19 @@ pub(super) fn changed_committed_tail_plan(
         return None;
     }
     DecoderEditPlan::committed_tail(trigger, original, replacement, source)
+}
+
+pub(super) fn changed_committed_tail_plan_from_gate(
+    decision: &InputGateDecision,
+    trigger: CorrectionTrigger,
+    original: &str,
+    replacement: &str,
+    source: CorrectionSource,
+) -> Option<DecoderEditPlan> {
+    let edit = changed_committed_tail_plan(trigger, original, replacement, source)?;
+    let trace = decision
+        .trace
+        .as_ref()
+        .map(crate::action_log::RecentActionGateTrace::from_input_gate)?;
+    Some(edit.with_input_gate_trace(&trace))
 }

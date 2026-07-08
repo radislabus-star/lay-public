@@ -47,31 +47,8 @@ pub(crate) fn apply_minimal_typing_replacement(
         log("⚠ typing-assist skipped before delete: edit plan invariant failed");
         return TypingAssistOutcome::NoCorrection;
     };
-    let source_id = input_gate
-        .as_ref()
-        .and_then(|trace| trace.selected_source_id.as_deref());
-    let error_class = input_gate
-        .as_ref()
-        .and_then(|trace| trace.selected_error_class.as_deref());
-    let confidence_milli = input_gate
-        .as_ref()
-        .and_then(|trace| trace.scoreboard.as_ref())
-        .and_then(|scoreboard| scoreboard.selected_bayes_posterior_milli)
-        .unwrap_or(0);
-    let transition = input_gate
-        .as_ref()
-        .map(lay::action_log::RecentActionGateTrace::selected_transition_audit)
-        .unwrap_or_default();
-    let edit_action = lay::text_edit::authorize_replacement_with_transition(
-        "typing-assist",
-        confidence_milli,
-        original,
-        replacement,
-        plan.clone(),
-        source_id,
-        error_class,
-        transition,
-    );
+    let edit_action =
+        edit.authorize_replacement("typing-assist", original, replacement, plan.clone());
     lay::action_log::record_candidate_edit_action_before_apply(
         &edit_action,
         lay::action_log::MutationLogRoute::TYPING_ASSIST_MINIMAL,

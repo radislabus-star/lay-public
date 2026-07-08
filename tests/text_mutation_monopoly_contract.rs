@@ -39,6 +39,75 @@ fn ime_correction_route_reaches_common_decision_core() {
 }
 
 #[test]
+fn hidden_typing_state_is_apply_admission_authority() {
+    let transition_mod = read("src/typing_transition/mod.rs");
+    let transition_state = read("src/typing_transition/state.rs");
+    let transition_decision = read("src/typing_transition/decision.rs");
+
+    assert!(
+        transition_mod.contains("state::LatentTypingState")
+            && transition_mod.contains("state_before: LatentTypingState")
+            && transition_mod.contains("state_after_predicted: LatentTypingState"),
+        "TypingTransition must carry latent state before/after the candidate action"
+    );
+    assert!(
+        transition_state.contains("struct LatentTypingState")
+            && transition_state.contains("context_words")
+            && transition_state.contains("known_word_drift_to")
+            && transition_state.contains("candidate_imported_left_context"),
+        "LatentTypingState must expose context, drift, and left-context import invariants"
+    );
+    assert!(
+        transition_decision.contains("fn candidate_has_apply_authority")
+            && transition_decision.contains("admit_hidden_transition(")
+            && transition_decision.contains("latent_known_word_drift_needs_state_proof")
+            && transition_decision.contains("latent_context_import"),
+        "TransitionDecisionCore must gate apply through hidden-state admission"
+    );
+}
+
+#[test]
+fn decoder_edit_plan_carries_transition_audit_to_outputs() {
+    let decoder_edit = read("src/decoder/edit_plan.rs");
+    assert!(
+        decoder_edit.contains("transition: TransitionAudit")
+            && !decoder_edit.contains("pub transition: TransitionAudit")
+            && decoder_edit.contains("with_input_gate_trace")
+            && decoder_edit.contains("pub fn authorize_replacement")
+            && decoder_edit.contains("self.transition.blocks_apply()"),
+        "DecoderEditPlan must privately carry transition audit, authorize output edits, and block unverified plans before output"
+    );
+
+    let daemon_gate = read("src/bin/lay_daemon/typing_assist_runtime/decoder/gate.rs");
+    assert!(
+        daemon_gate.contains("edit.with_input_gate_trace")
+            && daemon_gate.contains("edit.authorize_replacement("),
+        "typing-assist decoder must bind input-gate transition audit into DecoderEditPlan"
+    );
+
+    let ime_output = read("src/bin/lay_daemon/typing_assist_runtime/output/ime.rs");
+    let minimal_output = read("src/bin/lay_daemon/typing_assist_runtime/output/minimal.rs");
+    for (path, source) in [
+        (
+            "src/bin/lay_daemon/typing_assist_runtime/output/ime.rs",
+            ime_output,
+        ),
+        (
+            "src/bin/lay_daemon/typing_assist_runtime/output/minimal.rs",
+            minimal_output,
+        ),
+    ] {
+        assert!(
+            source.contains("edit.authorize_replacement(")
+                && !source.contains("edit.transition.clone()")
+                && !source.contains("edit.selected_source_id.as_deref()")
+                && !source.contains("edit.selected_error_class.as_deref()"),
+            "{path} must execute through DecoderEditPlan without reading transition internals"
+        );
+    }
+}
+
+#[test]
 fn ime_preedit_display_does_not_own_correction_or_apply() {
     let source = read("src/bin/lay_ibus_engine/preedit.rs");
     let forbidden = [

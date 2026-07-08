@@ -41,6 +41,36 @@ impl TransitionDecisionCore {
         if provisional.action != CandidateGateAction::Apply {
             return provisional;
         }
+        let source_role = if matches!(
+            error_class,
+            TypingErrorClass::WrongLayout
+                | TypingErrorClass::PartialLayout
+                | TypingErrorClass::MixedScript
+        ) {
+            CorrectionSourceRole::Layout
+        } else {
+            correction_source_contract::source_role(source_id)
+        };
+        let event = TypingErrorEvent {
+            original: original.to_string(),
+            core: original.trim().to_string(),
+            current_word: last_replacement_word(original).unwrap_or_default(),
+            input_class: error_class,
+        };
+        let candidate = UnifiedCorrectionCandidate {
+            replacement: replacement.to_string(),
+            source: crate::correction_core::CorrectionDecisionSource::Deterministic,
+            source_id: source_id.to_string(),
+            error_class,
+            gate: provisional.clone(),
+        };
+        let admission = admit_hidden_transition(&event, &candidate, 1, source_role, false);
+        if !admission.allow_apply {
+            return CandidateGateDecision {
+                action: CandidateGateAction::SuggestOnly,
+                reason: admission.reason,
+            };
+        }
         let transition =
             TypingTransition::from_candidate(original, replacement, error_class, source_id, 1);
         if transition.evidence.left_context_changed && !transition.evidence.verifier_passed {
@@ -59,12 +89,19 @@ impl TransitionDecisionCore {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct TransitionAdmission {
+    pub(crate) allow_apply: bool,
+    pub(crate) reason: &'static str,
+}
+
 fn candidate_has_apply_authority(
     event: &TypingErrorEvent,
     candidate: &UnifiedCorrectionCandidate,
     candidates: &[UnifiedCorrectionCandidate],
 ) -> bool {
     let bayes = bayes_score_for_candidate(&event.original, candidate);
+    let signals = candidate_decision_signals(event, candidate, candidates.len());
     let source_role = if matches!(
         candidate.error_class,
         TypingErrorClass::WrongLayout
@@ -97,11 +134,23 @@ fn candidate_has_apply_authority(
         );
         return false;
     }
-    let signals = candidate_decision_signals(event, candidate, candidates.len());
     let strong_learned_support = bayes.usage_prior >= 0.080
         || bayes.context_prior >= 0.080
         || signals.l3_phrase_milli >= 420
         || signals.l4_signed_milli >= 120;
+    let strong_transition_support =
+        signals.l3_phrase_milli >= 420 || signals.l4_signed_milli >= 120;
+    let admission = admit_hidden_transition(
+        event,
+        candidate,
+        candidates.len(),
+        source_role,
+        strong_transition_support,
+    );
+    if !admission.allow_apply {
+        debug_decision_reject(candidate, admission.reason, bayes.posterior, bayes.risk);
+        return false;
+    }
     if bayes.risk >= 0.62
         && !matches!(
             source_role,
@@ -146,6 +195,84 @@ fn candidate_has_apply_authority(
         debug_decision_reject(candidate, "better_non_apply", bayes.posterior, bayes.risk);
     }
     allowed
+}
+
+pub(crate) fn admit_hidden_transition(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+    candidate_count: usize,
+    source_role: CorrectionSourceRole,
+    strong_transition_support: bool,
+) -> TransitionAdmission {
+    let transition = TypingTransition::from_candidate(
+        &event.original,
+        &candidate.replacement,
+        candidate.error_class,
+        &candidate.source_id,
+        candidate_count,
+    );
+
+    if source_role == CorrectionSourceRole::Layout && transition.evidence.verifier_passed {
+        return TransitionAdmission {
+            allow_apply: true,
+            reason: "latent_layout_projection_admitted",
+        };
+    }
+
+    if transition
+        .state_before
+        .candidate_imported_left_context(&transition.state_after_predicted)
+    {
+        return TransitionAdmission {
+            allow_apply: false,
+            reason: "latent_context_import",
+        };
+    }
+
+    if transition
+        .state_before
+        .context_changed(&transition.state_after_predicted)
+        && !transition.evidence.verifier_passed
+    {
+        return TransitionAdmission {
+            allow_apply: false,
+            reason: "latent_context_unverified",
+        };
+    }
+
+    if transition
+        .state_before
+        .known_word_drift_to(&transition.state_after_predicted)
+        && !known_word_drift_has_authority(source_role, candidate_count, strong_transition_support)
+    {
+        return TransitionAdmission {
+            allow_apply: false,
+            reason: "latent_known_word_drift_needs_state_proof",
+        };
+    }
+
+    if transition.l4_signed_signal.negative {
+        return TransitionAdmission {
+            allow_apply: false,
+            reason: "latent_l4_negative_transition_memory",
+        };
+    }
+
+    TransitionAdmission {
+        allow_apply: true,
+        reason: "latent_transition_admitted",
+    }
+}
+
+fn known_word_drift_has_authority(
+    source_role: CorrectionSourceRole,
+    candidate_count: usize,
+    strong_learned_support: bool,
+) -> bool {
+    matches!(
+        source_role,
+        CorrectionSourceRole::Layout | CorrectionSourceRole::Boundary
+    ) || (candidate_count >= 2 && strong_learned_support)
 }
 
 fn short_same_length_surface_drift(original_word: &str, replacement: &str) -> bool {
@@ -405,8 +532,12 @@ fn score_to_milli(value: f32) -> i16 {
 
 #[cfg(test)]
 mod tests {
-    use super::TransitionDecisionCore;
-    use crate::correction_core::{CandidateGateAction, CandidateGateDecision, TypingErrorClass};
+    use super::{admit_hidden_transition, TransitionDecisionCore};
+    use crate::correction_core::{
+        CandidateGateAction, CandidateGateDecision, CorrectionDecisionSource, TypingErrorClass,
+        TypingErrorEvent, UnifiedCorrectionCandidate,
+    };
+    use crate::correction_source_contract::CorrectionSourceRole;
 
     #[test]
     fn transition_core_blocks_unverified_left_context_apply() {
@@ -439,5 +570,75 @@ mod tests {
         );
 
         assert_eq!(decision.action, CandidateGateAction::Apply);
+    }
+
+    fn event(text: &str) -> TypingErrorEvent {
+        TypingErrorEvent {
+            original: text.to_string(),
+            core: text.trim().to_string(),
+            current_word: text
+                .split_whitespace()
+                .last()
+                .unwrap_or_default()
+                .to_string(),
+            input_class: TypingErrorClass::CompositeTypo,
+        }
+    }
+
+    fn candidate(replacement: &str, source_id: &str) -> UnifiedCorrectionCandidate {
+        UnifiedCorrectionCandidate {
+            replacement: replacement.to_string(),
+            source: CorrectionDecisionSource::Deterministic,
+            source_id: source_id.to_string(),
+            error_class: TypingErrorClass::CompositeTypo,
+            gate: CandidateGateDecision {
+                action: CandidateGateAction::Apply,
+                reason: "class_allows_apply",
+            },
+        }
+    }
+
+    #[test]
+    fn hidden_state_blocks_single_weak_known_word_drift() {
+        let admission = admit_hidden_transition(
+            &event("мы можем "),
+            &candidate("мы модем ", "composite_ru_typo"),
+            1,
+            CorrectionSourceRole::DeterministicTypo,
+            false,
+        );
+
+        assert!(!admission.allow_apply);
+        assert_eq!(
+            admission.reason,
+            "latent_known_word_drift_needs_state_proof"
+        );
+    }
+
+    #[test]
+    fn hidden_state_allows_unknown_to_known_typo_repair() {
+        let admission = admit_hidden_transition(
+            &event("звгрузи "),
+            &candidate("загрузи ", "composite_ru_typo"),
+            1,
+            CorrectionSourceRole::DeterministicTypo,
+            false,
+        );
+
+        assert!(admission.allow_apply, "{admission:?}");
+    }
+
+    #[test]
+    fn hidden_state_blocks_context_imported_candidate_text() {
+        let admission = admit_hidden_transition(
+            &event("можем "),
+            &candidate("мы модем ", "composite_ru_typo"),
+            2,
+            CorrectionSourceRole::DeterministicTypo,
+            true,
+        );
+
+        assert!(!admission.allow_apply);
+        assert_eq!(admission.reason, "latent_context_unverified");
     }
 }

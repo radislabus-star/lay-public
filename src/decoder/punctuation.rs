@@ -1,4 +1,4 @@
-use super::{changed_committed_tail_plan, decode_input_gate_replacement};
+use super::{changed_committed_tail_plan_from_gate, decode_input_gate_decision};
 use crate::config::TypingAssistRuleConfig;
 use crate::decoder::types::{CorrectionSource, CorrectionTrigger};
 use crate::input_gate::InputGateTrigger;
@@ -21,14 +21,19 @@ pub fn decode_typing_assist_current_tail(
         return None;
     }
     let assist_input = format!("{original} ");
-    let replacement = decode_input_gate_replacement(
+    let decision = decode_input_gate_decision(
         InputGateTrigger::Space,
         &assist_input,
         allow_layout_auto,
         pipeline,
-    )?;
+    );
+    let crate::input_gate::InputGateAction::ApplyReplacement { replacement, .. } = &decision.action
+    else {
+        return None;
+    };
     let replacement = replacement.trim_end().to_string();
-    changed_committed_tail_plan(
+    changed_committed_tail_plan_from_gate(
+        &decision,
         CorrectionTrigger::AfterPunctuation,
         &original,
         &replacement,
@@ -51,14 +56,20 @@ pub fn decode_enter_autocorrect_tail(
     } else {
         format!("{original} ")
     };
-    let mut replacement =
-        decode_input_gate_replacement(InputGateTrigger::Enter, &assist_input, false, pipeline)?;
+    let decision =
+        decode_input_gate_decision(InputGateTrigger::Enter, &assist_input, false, pipeline);
+    let crate::input_gate::InputGateAction::ApplyReplacement { replacement, .. } = &decision.action
+    else {
+        return None;
+    };
+    let mut replacement = replacement.clone();
     if original_has_trailing_space {
         replacement = ensure_committed_tail_spacing(&original, replacement);
     } else {
         replacement = replacement.trim_end().to_string();
     }
-    changed_committed_tail_plan(
+    changed_committed_tail_plan_from_gate(
+        &decision,
         CorrectionTrigger::Enter,
         &original,
         &replacement,

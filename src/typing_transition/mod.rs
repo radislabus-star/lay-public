@@ -13,36 +13,19 @@ pub(crate) mod verifier;
 
 use crate::correction_core::TypingErrorClass;
 use crate::language_action::LanguageActionOperator;
+use state::LatentTypingState;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct TypingTransition {
-    pub(crate) state_before: TypingState,
+    pub(crate) state_before: LatentTypingState,
     pub(crate) action_operator: LanguageActionOperator,
     pub(crate) candidate_text: String,
-    pub(crate) state_after_predicted: TypingState,
+    pub(crate) state_after_predicted: LatentTypingState,
     pub(crate) evidence: TransitionEvidence,
     pub(crate) l1_signal: L1TransitionSignal,
     pub(crate) l2_signal: L2TransitionSignal,
     pub(crate) l3_signal: L3TransitionSignal,
     pub(crate) l4_signed_signal: L4SignedTransitionSignal,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct TypingState {
-    pub(crate) text: String,
-    pub(crate) current_word: String,
-    pub(crate) word_count: usize,
-}
-
-impl TypingState {
-    pub(crate) fn from_text(text: &str) -> Self {
-        let current_word = crate::word_reader::last_text_word(text).unwrap_or_default();
-        Self {
-            text: text.to_string(),
-            current_word,
-            word_count: text.split_whitespace().count(),
-        }
-    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -84,8 +67,9 @@ impl TypingTransition {
         candidate_count: usize,
     ) -> Self {
         let action = action::verify_action_operator(original, replacement, error_class, source_id);
-        let state_before = TypingState::from_text(original);
-        let state_after_predicted = TypingState::from_text(replacement);
+        let state_before = LatentTypingState::from_text(original);
+        let state_after_predicted = LatentTypingState::from_text(replacement);
+        let boundary_changed = state_before.word_count_changed(&state_after_predicted);
 
         Self {
             state_before,
@@ -100,10 +84,8 @@ impl TypingTransition {
                 changed_tokens: action.changed_tokens,
             },
             l1_signal: L1TransitionSignal {
-                boundary_changed: original.split_whitespace().count()
-                    != replacement.split_whitespace().count(),
-                word_count_changed: original.split_whitespace().count()
-                    != replacement.split_whitespace().count(),
+                boundary_changed,
+                word_count_changed: boundary_changed,
             },
             l2_signal: L2TransitionSignal { candidate_count },
             l3_signal: L3TransitionSignal {

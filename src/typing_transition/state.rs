@@ -67,6 +67,116 @@ enum L1ScriptProfile {
     Other,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct LatentTypingState {
+    pub(crate) text: String,
+    pub(crate) context_words: Vec<String>,
+    pub(crate) current_word: String,
+    pub(crate) word_count: usize,
+    pub(crate) script: LatentScriptProfile,
+    pub(crate) current_word_known: bool,
+}
+
+impl LatentTypingState {
+    pub(crate) fn from_text(text: &str) -> Self {
+        let words = normalized_words(text);
+        let current_word = words.last().cloned().unwrap_or_default();
+        let context_words = words
+            .get(..words.len().saturating_sub(1))
+            .unwrap_or_default()
+            .to_vec();
+        let script = LatentScriptProfile::from_text(&current_word);
+        let current_word_known = current_word_is_known(&current_word);
+
+        Self {
+            text: text.to_string(),
+            context_words,
+            current_word,
+            word_count: words.len(),
+            script,
+            current_word_known,
+        }
+    }
+
+    pub(crate) fn context_changed(&self, other: &Self) -> bool {
+        self.context_words != other.context_words
+    }
+
+    pub(crate) fn word_count_changed(&self, other: &Self) -> bool {
+        self.word_count != other.word_count
+    }
+
+    pub(crate) fn current_word_changed(&self, other: &Self) -> bool {
+        self.current_word != other.current_word
+    }
+
+    pub(crate) fn known_word_drift_to(&self, other: &Self) -> bool {
+        self.current_word_known
+            && other.current_word_known
+            && self.current_word_changed(other)
+            && self.script == other.script
+            && matches!(
+                self.script,
+                LatentScriptProfile::Cyrillic | LatentScriptProfile::AsciiAlphabetic
+            )
+    }
+
+    pub(crate) fn candidate_imported_left_context(&self, other: &Self) -> bool {
+        self.word_count == other.word_count
+            && self.context_changed(other)
+            && self.current_word_changed(other)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum LatentScriptProfile {
+    Empty,
+    Cyrillic,
+    AsciiAlphabetic,
+    MixedCyrillicLatin,
+    Other,
+}
+
+impl LatentScriptProfile {
+    fn from_text(text: &str) -> Self {
+        match L1ScriptProfile::from_text(text) {
+            L1ScriptProfile::Empty => Self::Empty,
+            L1ScriptProfile::Cyrillic => Self::Cyrillic,
+            L1ScriptProfile::AsciiAlphabetic => Self::AsciiAlphabetic,
+            L1ScriptProfile::MixedCyrillicLatin => Self::MixedCyrillicLatin,
+            L1ScriptProfile::Other => Self::Other,
+        }
+    }
+}
+
+fn normalized_words(text: &str) -> Vec<String> {
+    text.split_whitespace()
+        .filter_map(|token| {
+            let (_, word, _) = crate::word_reader::split_word_punctuation(token);
+            (!word.is_empty()).then(|| word.to_lowercase())
+        })
+        .collect()
+}
+
+fn current_word_is_known(word: &str) -> bool {
+    if word.is_empty() {
+        return false;
+    }
+    let lower = word.to_lowercase();
+    crate::russian_lexicon::is_known_russian_word_or_form(&lower)
+        || word_has_common_usage_authority(&lower)
+        || is_ascii_technical_token(word)
+}
+
+pub(crate) fn word_has_common_usage_authority(word: &str) -> bool {
+    if word.is_empty() {
+        return false;
+    }
+    let lower = word.to_lowercase();
+    crate::lexicon::is_common_ru_word(&lower)
+        || crate::nanda_wave::cached_usage_prior_snapshot().word_prior(&lower) >= 0.020
+}
+
 impl L1ScriptProfile {
     fn from_text(text: &str) -> Self {
         if text.is_empty() {
@@ -105,5 +215,26 @@ mod tests {
 
         assert_eq!(event.current_word, "fавтозамена");
         assert_eq!(event.input_class, TypingErrorClass::MixedScript);
+    }
+
+    #[test]
+    fn latent_state_separates_context_from_current_word() {
+        let before = LatentTypingState::from_text("мы можем ");
+        let after = LatentTypingState::from_text("мы модем ");
+
+        assert_eq!(before.context_words, ["мы"]);
+        assert_eq!(before.current_word, "можем");
+        assert_eq!(after.current_word, "модем");
+        assert!(before.known_word_drift_to(&after));
+        assert!(!before.candidate_imported_left_context(&after));
+    }
+
+    #[test]
+    fn latent_state_detects_context_tainted_candidate() {
+        let before = LatentTypingState::from_text("можем ");
+        let after = LatentTypingState::from_text("мы модем ");
+
+        assert!(before.context_changed(&after));
+        assert!(before.word_count_changed(&after));
     }
 }

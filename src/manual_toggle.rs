@@ -217,8 +217,7 @@ fn known_layout_recovery_replacement(replacement: &str) -> bool {
         && word
             .chars()
             .all(|ch| ('а'..='я').contains(&ch) || ch == 'ё')
-        && (crate::lexicon::is_common_ru_word(&word)
-            || crate::russian_lexicon::is_known_russian_word_or_form(&word))
+        && crate::layout_autoswitch::is_russian_layout_surface_authority_word(&word)
 }
 
 #[cfg(test)]
@@ -314,6 +313,31 @@ mod tests {
         assert_eq!(plan.edit.original_token, "ghbdtn");
         assert_eq!(plan.edit.delete_chars, 6);
         assert_eq!(plan.edit.insert_text, "привет");
+    }
+
+    #[test]
+    fn manual_toggle_keeps_l2_surface_layout_word_bidirectional() {
+        let to_ru = plan_manual_toggle(ManualToggleRequest {
+            visible_tail: VisibleTail::daemon_word_buffer("ljgecnbv"),
+            current_layout_is_ru: false,
+            recover_missing_initial: false,
+            preserve_trailing_whitespace: false,
+        })
+        .expect("toggle to ru");
+
+        assert_eq!(to_ru.edit.insert_text, "допустим");
+        assert!(to_ru.target_layout_is_ru);
+
+        let to_en = plan_manual_toggle(ManualToggleRequest {
+            visible_tail: VisibleTail::daemon_word_buffer("допустим"),
+            current_layout_is_ru: true,
+            recover_missing_initial: false,
+            preserve_trailing_whitespace: false,
+        })
+        .expect("toggle to en");
+
+        assert_eq!(to_en.edit.insert_text, "ljgecnbv");
+        assert!(!to_en.target_layout_is_ru);
     }
 
     #[test]
