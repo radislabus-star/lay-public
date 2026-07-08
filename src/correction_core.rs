@@ -1385,6 +1385,12 @@ fn gate_candidate_with_source(
     if let Some(decision) = l3_context_gate(original, replacement, error_class, source_id) {
         return decision;
     }
+    if unproven_stable_surface_shape_drift(original, replacement, error_class, source_id) {
+        return CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "unproven_stable_surface_shape_drift",
+        };
+    }
     if semantic_wave_candidate_lacks_surface_authority(original, replacement, source_id) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
@@ -1729,6 +1735,161 @@ fn known_current_word_gets_unproven_surface_drift(
 
     damerau_levenshtein(&original_lower, &replacement_lower) <= 1
         || inserted_char_position_for_missing_letter(&original_lower, &replacement_lower).is_some()
+}
+
+fn unproven_stable_surface_shape_drift(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    source_id: &str,
+) -> bool {
+    if matches!(
+        error_class,
+        TypingErrorClass::WrongLayout
+            | TypingErrorClass::PartialLayout
+            | TypingErrorClass::SplitWord
+            | TypingErrorClass::GluedWords
+            | TypingErrorClass::CaseNoise
+            | TypingErrorClass::RepeatedLetter
+            | TypingErrorClass::AdjacentTransposition
+            | TypingErrorClass::TechnicalToken
+            | TypingErrorClass::ProtectedToken
+            | TypingErrorClass::CompletionOnly
+            | TypingErrorClass::Unknown
+    ) {
+        return false;
+    }
+    if matches!(
+        correction_source_contract::source_role(source_id),
+        CorrectionSourceRole::Layout
+            | CorrectionSourceRole::Boundary
+            | CorrectionSourceRole::Technical
+    ) {
+        return false;
+    }
+    if candidate_changes_non_last_word(original, replacement) {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return false;
+    };
+    if !is_cyrillic_letters_only(&original_word) || !is_cyrillic_letters_only(&replacement_word) {
+        return false;
+    }
+
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    if original_lower == replacement_lower {
+        return false;
+    }
+
+    unproven_internal_vowel_insertion(&original_lower, &replacement_lower)
+        || unproven_soft_sign_tail_insertion(&original_lower, &replacement_lower)
+        || unproven_short_vowel_substitution(&original_lower, &replacement_lower)
+        || unproven_tail_vowel_substitution(&original_lower, &replacement_lower)
+        || unproven_inflection_tail_vowel_to_consonant(&original_lower, &replacement_lower)
+}
+
+fn unproven_internal_vowel_insertion(original: &str, replacement: &str) -> bool {
+    let Some((idx, inserted)) = inserted_char_position_for_missing_letter(original, replacement)
+    else {
+        return false;
+    };
+    if idx == 0 || !crate::russian_chars::is_russian_vowel(inserted) {
+        return false;
+    }
+    !inserted_vowel_repairs_consonant_cluster(original, idx)
+}
+
+fn inserted_vowel_repairs_consonant_cluster(original: &str, idx: usize) -> bool {
+    let chars = original.chars().collect::<Vec<_>>();
+    if idx == 0 || idx >= chars.len() {
+        return false;
+    }
+    is_russian_consonant(chars[idx - 1]) && is_russian_consonant(chars[idx])
+}
+
+fn unproven_soft_sign_tail_insertion(original: &str, replacement: &str) -> bool {
+    let Some((idx, inserted)) = inserted_char_position_for_missing_letter(original, replacement)
+    else {
+        return false;
+    };
+    inserted == 'ь' && idx + 2 >= original.chars().count()
+}
+
+fn unproven_short_vowel_substitution(original: &str, replacement: &str) -> bool {
+    let original_chars = original.chars().collect::<Vec<_>>();
+    let replacement_chars = replacement.chars().collect::<Vec<_>>();
+    if original_chars.len() > 6
+        || original_chars.len() != replacement_chars.len()
+        || damerau_levenshtein(original, replacement) != 1
+    {
+        return false;
+    }
+    let diffs = original_chars
+        .iter()
+        .zip(&replacement_chars)
+        .enumerate()
+        .filter(|(_, (left, right))| left != right)
+        .collect::<Vec<_>>();
+    let [(idx, (left, right))] = diffs.as_slice() else {
+        return false;
+    };
+    *idx > 0
+        && crate::russian_chars::is_russian_vowel(**left)
+        && crate::russian_chars::is_russian_vowel(**right)
+}
+
+fn unproven_tail_vowel_substitution(original: &str, replacement: &str) -> bool {
+    let original_chars = original.chars().collect::<Vec<_>>();
+    let replacement_chars = replacement.chars().collect::<Vec<_>>();
+    if original_chars.len() < 7
+        || original_chars.len() != replacement_chars.len()
+        || damerau_levenshtein(original, replacement) != 1
+    {
+        return false;
+    }
+    let diffs = original_chars
+        .iter()
+        .zip(&replacement_chars)
+        .enumerate()
+        .filter(|(_, (left, right))| left != right)
+        .collect::<Vec<_>>();
+    let [(idx, (left, right))] = diffs.as_slice() else {
+        return false;
+    };
+    *idx + 2 >= original_chars.len()
+        && crate::russian_chars::is_russian_vowel(**left)
+        && crate::russian_chars::is_russian_vowel(**right)
+}
+
+fn unproven_inflection_tail_vowel_to_consonant(original: &str, replacement: &str) -> bool {
+    let original_chars = original.chars().collect::<Vec<_>>();
+    let replacement_chars = replacement.chars().collect::<Vec<_>>();
+    if original_chars.len() < 5
+        || original_chars.len() != replacement_chars.len()
+        || damerau_levenshtein(original, replacement) != 1
+    {
+        return false;
+    }
+    let diffs = original_chars
+        .iter()
+        .zip(&replacement_chars)
+        .enumerate()
+        .filter(|(_, (left, right))| left != right)
+        .collect::<Vec<_>>();
+    let [(idx, (left, right))] = diffs.as_slice() else {
+        return false;
+    };
+    *idx + 3 >= original_chars.len()
+        && crate::russian_chars::is_russian_vowel(**left)
+        && is_russian_consonant(**right)
+        && original_chars
+            .last()
+            .is_some_and(|ch| crate::russian_chars::is_russian_vowel(*ch))
 }
 
 fn protected_current_surface_token(lower: &str) -> bool {
@@ -3435,6 +3596,124 @@ mod tests {
                     .map(|decision| &decision.replacement)
                     != Some(&forbidden.to_string()),
                 "forbidden known-word rewrite auto-applied: {resolution:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn weak_shape_drift_from_live_logs_stays_suggest_only() {
+        for (input, replacement, error_class, source_id) in [
+            (
+                "версии ",
+                "версти ",
+                TypingErrorClass::CompositeTypo,
+                "composite_ru_typo",
+            ),
+            (
+                "планы? ",
+                "плауны? ",
+                TypingErrorClass::CompositeTypo,
+                "composite_ru_typo",
+            ),
+            (
+                "нужен ",
+                "ножен ",
+                TypingErrorClass::LetterSubstitution,
+                ids::VOWEL_CONFUSION,
+            ),
+            (
+                "кодировании ",
+                "кодированиеи ",
+                TypingErrorClass::MissingLetter,
+                ids::MISSING_LETTER,
+            ),
+            (
+                "очереди ",
+                "очередьи ",
+                TypingErrorClass::CompositeTypo,
+                "composite_ru_typo",
+            ),
+            (
+                "пользоватся? ",
+                "пользовается ",
+                TypingErrorClass::CompositeTypo,
+                crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+            ),
+        ] {
+            let gate = gate_candidate_with_source(input, replacement, error_class, source_id);
+
+            assert_eq!(
+                gate.action,
+                CandidateGateAction::SuggestOnly,
+                "{input:?} -> {replacement:?}"
+            );
+            assert!(
+                matches!(
+                    gate.reason,
+                    "known_current_word_surface_drift"
+                        | "unproven_stable_surface_shape_drift"
+                        | "known_word_to_different_known_word"
+                ),
+                "{input:?} -> {replacement:?}: {gate:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn weak_shape_drift_from_live_logs_is_not_selected() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, forbidden) in [
+            ("версии ", "версти "),
+            ("планы? ", "плауны? "),
+            ("нужен ", "ножен "),
+            ("кодировании ", "кодирование "),
+            ("кодировании ", "кодированиеи "),
+            ("очереди ", "очередьи "),
+            ("пользоватся? ", "пользовается "),
+        ] {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicThenNanda,
+            ));
+
+            assert!(
+                resolution
+                    .selected
+                    .as_ref()
+                    .map(|candidate| candidate.replacement.as_str() != forbidden)
+                    .unwrap_or(true),
+                "{input:?} must not select {forbidden:?}; candidates={:?}",
+                resolution.candidates
+            );
+        }
+    }
+
+    #[test]
+    fn strong_local_typo_repairs_still_apply_after_shape_guard() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, expected, source_id) in [
+            ("длеай ", "делай ", ids::ADJACENT_TRANSPOSITION),
+            ("тарфик ", "трафик ", ids::ADJACENT_TRANSPOSITION),
+            ("рабоатешь ", "работаешь ", ids::ADJACENT_TRANSPOSITION),
+            ("агресивнее ", "агрессивнее ", "composite_ru_typo"),
+            ("дейстия ", "действия ", "composite_ru_typo"),
+            ("кнал ", "канал ", "composite_ru_typo"),
+            ("сбирать ", "собирать ", ids::MISSING_LETTER),
+        ] {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicOnly,
+            ));
+
+            let selected = resolution.selected.expect("selected candidate");
+            assert_eq!(selected.replacement, expected, "input={input:?}");
+            assert_eq!(selected.source_id, source_id, "input={input:?}");
+            assert_eq!(
+                selected.gate.action,
+                CandidateGateAction::Apply,
+                "input={input:?}"
             );
         }
     }
