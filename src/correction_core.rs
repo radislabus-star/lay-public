@@ -3,6 +3,7 @@
 //! Runtime backends still own output and state. This module only answers one
 //! question: should this completed text be replaced, and by which engine?
 
+mod action_operator;
 mod decision_core;
 mod edit_transition;
 mod l1_surface_signal;
@@ -11,7 +12,6 @@ mod l2_lattice;
 use crate::candidate_explanation::{explain_candidate, CandidateExplanation};
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
 use crate::correction_source_contract::{self, CorrectionSourceRole};
-use crate::language_action::{operator_for_candidate, proof_for_candidate};
 use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
 use crate::nanda_wave::{run_wave_trace, WaveDecision};
 use crate::russian_typo_candidates::{
@@ -386,7 +386,7 @@ impl CorrectionCandidateScoreTrace {
             .map(|candidate| {
                 let score = bayes_score_for_candidate(&event.original, candidate);
                 let explanation = explanation_for_candidate(&event.original, candidate);
-                let transition = edit_transition::prove_edit_transition(
+                let action = action_operator::verify_action_operator(
                     &event.original,
                     &candidate.replacement,
                     candidate.error_class,
@@ -399,18 +399,13 @@ impl CorrectionCandidateScoreTrace {
                     source: candidate.source,
                     source_id: candidate.source_id.clone(),
                     error_class: candidate.error_class,
-                    action_operator: operator_for_candidate(
-                        candidate.error_class,
-                        &candidate.source_id,
-                    )
-                    .as_str(),
-                    action_proof: proof_for_candidate(candidate.error_class, &candidate.source_id)
-                        .as_str(),
-                    edit_transition_operator: transition.operator.as_str(),
-                    edit_transition_proof: transition.language_proof.as_str(),
-                    edit_transition_verified: transition.verified,
-                    edit_transition_left_context_changed: transition.left_context_changed,
-                    edit_transition_changed_tokens: transition.changed_tokens,
+                    action_operator: action.operator.as_str(),
+                    action_proof: action.proof.as_str(),
+                    edit_transition_operator: action.edit_operator.as_str(),
+                    edit_transition_proof: action.edit_proof.as_str(),
+                    edit_transition_verified: action.verifier_passed,
+                    edit_transition_left_context_changed: action.left_context_changed,
+                    edit_transition_changed_tokens: action.changed_tokens,
                     edit_shape: explanation.edit_shape,
                     preservation_milli: explanation.preservation_milli,
                     lost_mass_milli: explanation.lost_mass_milli,
@@ -1345,8 +1340,8 @@ fn gate_candidate_with_source(
         };
     }
     if let Some(reason) =
-        edit_transition::prove_edit_transition(original, replacement, error_class, source_id)
-            .reject_apply_reason()
+        action_operator::verify_action_operator(original, replacement, error_class, source_id)
+            .apply_blocker()
     {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
@@ -1441,11 +1436,10 @@ fn surface_or_context_candidate_changes_left_context(
     replacement: &str,
     source_id: &str,
 ) -> bool {
-    let source_may_only_fix_current_word = match correction_source_contract::source_role(source_id)
-    {
-        CorrectionSourceRole::L2Surface => true,
-        _ => false,
-    };
+    let source_may_only_fix_current_word = matches!(
+        correction_source_contract::source_role(source_id),
+        CorrectionSourceRole::L2Surface
+    );
     source_may_only_fix_current_word && candidate_changes_non_last_word(original, replacement)
 }
 

@@ -1,6 +1,6 @@
 use super::{
-    bayes_score_for_candidate, edit_transition, explanation_for_candidate, CandidateGateAction,
-    TypingErrorEvent, UnifiedCorrectionCandidate,
+    action_operator, bayes_score_for_candidate, edit_transition, explanation_for_candidate,
+    CandidateGateAction, TypingErrorEvent, UnifiedCorrectionCandidate,
 };
 use crate::correction_source_contract::{self, CorrectionSourceRole};
 use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
@@ -47,13 +47,13 @@ fn candidate_has_apply_authority(
     } else {
         correction_source_contract::source_role(&candidate.source_id)
     };
-    let transition = edit_transition::prove_edit_transition(
+    let action = action_operator::verify_action_operator(
         &event.original,
         &candidate.replacement,
         candidate.error_class,
         &candidate.source_id,
     );
-    if !transition.verified
+    if !action.verifier_passed
         && !matches!(
             source_role,
             CorrectionSourceRole::Layout
@@ -199,7 +199,7 @@ pub(super) fn candidate_decision_signals(
 ) -> CandidateDecisionSignals {
     let bayes = bayes_score_for_candidate(&event.original, candidate).posterior;
     let explanation = explanation_for_candidate(&event.original, candidate);
-    let transition = edit_transition::prove_edit_transition(
+    let action = action_operator::verify_action_operator(
         &event.original,
         &candidate.replacement,
         candidate.error_class,
@@ -210,7 +210,7 @@ pub(super) fn candidate_decision_signals(
     let l4_signed = l4_signed_signal(event, candidate);
     let rank_score = bayes
         + ((explanation.explanation_score_milli as f32 - 500.0) / 10_000.0)
-        + transition_rank_bonus(transition, &candidate.source_id)
+        + transition_rank_bonus(&action, &candidate.source_id)
         + l3.rank_bonus
         + l4_scene.rank_bonus
         + l4_signed.rank_bonus;
@@ -347,11 +347,14 @@ fn l4_signed_signal(
     }
 }
 
-fn transition_rank_bonus(transition: edit_transition::EditTransitionProof, source_id: &str) -> f32 {
-    if !transition.verified {
+fn transition_rank_bonus(
+    action: &action_operator::CorrectionActionOperatorReport,
+    source_id: &str,
+) -> f32 {
+    if !action.verifier_passed {
         return -0.20;
     }
-    match transition.operator {
+    match action.edit_operator {
         edit_transition::EditTransitionOperator::BoundaryShift
         | edit_transition::EditTransitionOperator::SplitPreviousGluedAndRepairTail => 0.34,
         edit_transition::EditTransitionOperator::LayoutProjection => 0.28,

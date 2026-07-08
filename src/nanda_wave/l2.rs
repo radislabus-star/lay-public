@@ -192,8 +192,8 @@ fn sort_and_truncate_ime_l2_candidates(
     limit: usize,
 ) {
     candidates.sort_by(|left, right| {
-        l2_ime_word_candidate_score(right, &usage)
-            .cmp(&l2_ime_word_candidate_score(left, &usage))
+        l2_ime_word_candidate_score(right, usage)
+            .cmp(&l2_ime_word_candidate_score(left, usage))
             .then_with(|| right.motif_overlap.cmp(&left.motif_overlap))
             .then_with(|| right.l2_overlap.cmp(&left.l2_overlap))
             .then_with(|| right.l1_overlap.cmp(&left.l1_overlap))
