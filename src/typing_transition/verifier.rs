@@ -1,4 +1,4 @@
-use super::TypingErrorClass;
+use crate::correction_core::TypingErrorClass;
 use crate::language_action::{proof_for_candidate, LanguageActionProof};
 use crate::word_reader::{
     is_cyrillic_letters_only, split_edge_whitespace, split_last_trimmed_ws_token,
@@ -6,7 +6,7 @@ use crate::word_reader::{
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum EditTransitionOperator {
+pub(crate) enum EditTransitionOperator {
     ReplaceCurrentWord,
     LayoutProjection,
     BoundaryShift,
@@ -18,7 +18,7 @@ pub(super) enum EditTransitionOperator {
 }
 
 impl EditTransitionOperator {
-    pub(super) const fn as_str(self) -> &'static str {
+    pub(crate) const fn as_str(self) -> &'static str {
         match self {
             Self::ReplaceCurrentWord => "replace_current_word",
             Self::LayoutProjection => "layout_projection",
@@ -33,18 +33,18 @@ impl EditTransitionOperator {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) struct EditTransitionProof {
-    pub(super) operator: EditTransitionOperator,
-    pub(super) language_proof: LanguageActionProof,
-    pub(super) left_context_changed: bool,
-    pub(super) original_words: usize,
-    pub(super) replacement_words: usize,
-    pub(super) changed_tokens: usize,
-    pub(super) verified: bool,
+pub(crate) struct EditTransitionProof {
+    pub(crate) operator: EditTransitionOperator,
+    pub(crate) language_proof: LanguageActionProof,
+    pub(crate) left_context_changed: bool,
+    pub(crate) original_words: usize,
+    pub(crate) replacement_words: usize,
+    pub(crate) changed_tokens: usize,
+    pub(crate) verified: bool,
 }
 
 impl EditTransitionProof {
-    pub(super) const fn reject_apply_reason(self) -> Option<&'static str> {
+    pub(crate) const fn reject_apply_reason(self) -> Option<&'static str> {
         if self.left_context_changed && !self.verified {
             Some("edit_transition_not_verified")
         } else {
@@ -53,7 +53,7 @@ impl EditTransitionProof {
     }
 }
 
-pub(super) fn prove_edit_transition(
+pub(crate) fn prove_edit_transition(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
@@ -289,7 +289,7 @@ fn core_words(text: &str) -> Vec<String> {
     core.split_whitespace().map(str::to_string).collect()
 }
 
-pub(super) fn same_cyrillic_token(original: &str, candidate: &str) -> bool {
+pub(crate) fn same_cyrillic_token(original: &str, candidate: &str) -> bool {
     let (_, original_word, _) = split_word_punctuation(original);
     let (_, candidate_word, _) = split_word_punctuation(candidate);
     !original_word.is_empty()

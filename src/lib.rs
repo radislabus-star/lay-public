@@ -58,6 +58,7 @@ pub mod typing_context;
 pub(crate) mod typing_pipeline;
 pub mod typing_replacements;
 pub(crate) mod typing_rule_graph;
+pub(crate) mod typing_transition;
 pub mod word_buffer;
 pub mod word_reader;
 pub mod word_recognizer;

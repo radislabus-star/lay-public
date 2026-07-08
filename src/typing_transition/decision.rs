@@ -1,6 +1,7 @@
-use super::{
-    action_operator, bayes_score_for_candidate, edit_transition, explanation_for_candidate,
-    CandidateGateAction, TypingErrorEvent, UnifiedCorrectionCandidate,
+use super::{action, verifier, TypingTransition};
+use crate::correction_core::{
+    bayes_score_for_candidate, explanation_for_candidate, CandidateGateAction,
+    CandidateGateDecision, TypingErrorClass, TypingErrorEvent, UnifiedCorrectionCandidate,
 };
 use crate::correction_source_contract::{self, CorrectionSourceRole};
 use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
@@ -9,10 +10,10 @@ use crate::nanda_wave::l4_signed_memory::{l4_signed_memory_signal, L4SignedMemor
 use crate::text_metrics::damerau_levenshtein;
 use crate::word_reader::split_word_punctuation;
 
-pub(super) struct CorrectionDecisionCore;
+pub(crate) struct TransitionDecisionCore;
 
-impl CorrectionDecisionCore {
-    pub(super) fn select_apply_candidate(
+impl TransitionDecisionCore {
+    pub(crate) fn select_apply_candidate(
         event: &TypingErrorEvent,
         candidates: &[UnifiedCorrectionCandidate],
     ) -> Option<UnifiedCorrectionCandidate> {
@@ -29,6 +30,33 @@ impl CorrectionDecisionCore {
                     )
             })
     }
+
+    pub(crate) fn authorize_gate(
+        original: &str,
+        replacement: &str,
+        error_class: TypingErrorClass,
+        source_id: &str,
+        provisional: CandidateGateDecision,
+    ) -> CandidateGateDecision {
+        if provisional.action != CandidateGateAction::Apply {
+            return provisional;
+        }
+        let transition =
+            TypingTransition::from_candidate(original, replacement, error_class, source_id, 1);
+        if transition.evidence.left_context_changed && !transition.evidence.verifier_passed {
+            return CandidateGateDecision {
+                action: CandidateGateAction::SuggestOnly,
+                reason: "edit_transition_not_verified",
+            };
+        }
+        if transition.l4_signed_signal.negative {
+            return CandidateGateDecision {
+                action: CandidateGateAction::SuggestOnly,
+                reason: "l4_negative_transition_memory",
+            };
+        }
+        provisional
+    }
 }
 
 fn candidate_has_apply_authority(
@@ -39,15 +67,15 @@ fn candidate_has_apply_authority(
     let bayes = bayes_score_for_candidate(&event.original, candidate);
     let source_role = if matches!(
         candidate.error_class,
-        super::TypingErrorClass::WrongLayout
-            | super::TypingErrorClass::PartialLayout
-            | super::TypingErrorClass::MixedScript
+        TypingErrorClass::WrongLayout
+            | TypingErrorClass::PartialLayout
+            | TypingErrorClass::MixedScript
     ) {
         CorrectionSourceRole::Layout
     } else {
         correction_source_contract::source_role(&candidate.source_id)
     };
-    let action = action_operator::verify_action_operator(
+    let action = action::verify_action_operator(
         &event.original,
         &candidate.replacement,
         candidate.error_class,
@@ -180,26 +208,26 @@ fn better_non_apply_candidate_exists(
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub(super) struct CandidateDecisionSignals {
-    pub(super) rank_score: f32,
-    pub(super) rank_milli: i16,
-    pub(super) l3_phrase_milli: i16,
-    pub(super) l3_phrase_decision: &'static str,
-    pub(super) l4_scene_milli: i16,
-    pub(super) l4_scene_action: &'static str,
-    pub(super) l4_scene_reason: &'static str,
-    pub(super) l4_signed_milli: i16,
-    pub(super) l4_signed_reason: &'static str,
+pub(crate) struct CandidateDecisionSignals {
+    pub(crate) rank_score: f32,
+    pub(crate) rank_milli: i16,
+    pub(crate) l3_phrase_milli: i16,
+    pub(crate) l3_phrase_decision: &'static str,
+    pub(crate) l4_scene_milli: i16,
+    pub(crate) l4_scene_action: &'static str,
+    pub(crate) l4_scene_reason: &'static str,
+    pub(crate) l4_signed_milli: i16,
+    pub(crate) l4_signed_reason: &'static str,
 }
 
-pub(super) fn candidate_decision_signals(
+pub(crate) fn candidate_decision_signals(
     event: &TypingErrorEvent,
     candidate: &UnifiedCorrectionCandidate,
     candidate_count: usize,
 ) -> CandidateDecisionSignals {
     let bayes = bayes_score_for_candidate(&event.original, candidate).posterior;
     let explanation = explanation_for_candidate(&event.original, candidate);
-    let action = action_operator::verify_action_operator(
+    let action = action::verify_action_operator(
         &event.original,
         &candidate.replacement,
         candidate.error_class,
@@ -287,13 +315,13 @@ fn l3_phrase_signal(event: &TypingErrorEvent, candidate: &UnifiedCorrectionCandi
     }
 }
 
-fn l3_phrase_signal_observes(error_class: super::TypingErrorClass) -> bool {
+fn l3_phrase_signal_observes(error_class: TypingErrorClass) -> bool {
     !matches!(
         error_class,
-        super::TypingErrorClass::CompletionOnly
-            | super::TypingErrorClass::TechnicalToken
-            | super::TypingErrorClass::ProtectedToken
-            | super::TypingErrorClass::Unknown
+        TypingErrorClass::CompletionOnly
+            | TypingErrorClass::TechnicalToken
+            | TypingErrorClass::ProtectedToken
+            | TypingErrorClass::Unknown
     )
 }
 
@@ -320,9 +348,9 @@ fn l4_signed_signal(
     event: &TypingErrorEvent,
     candidate: &UnifiedCorrectionCandidate,
 ) -> L4SignedSignal {
-    let mut context = super::normalized_correction_words(&event.original);
+    let mut context = crate::correction_core::normalized_correction_words(&event.original);
     context.pop();
-    let word = super::normalized_correction_words(&candidate.replacement)
+    let word = crate::correction_core::normalized_correction_words(&candidate.replacement)
         .pop()
         .unwrap_or_default();
     if word.is_empty() {
@@ -347,28 +375,25 @@ fn l4_signed_signal(
     }
 }
 
-fn transition_rank_bonus(
-    action: &action_operator::CorrectionActionOperatorReport,
-    source_id: &str,
-) -> f32 {
+fn transition_rank_bonus(action: &action::CorrectionActionOperatorReport, source_id: &str) -> f32 {
     if !action.verifier_passed {
         return -0.20;
     }
     match action.edit_operator {
-        edit_transition::EditTransitionOperator::BoundaryShift
-        | edit_transition::EditTransitionOperator::SplitPreviousGluedAndRepairTail => 0.34,
-        edit_transition::EditTransitionOperator::LayoutProjection => 0.28,
-        edit_transition::EditTransitionOperator::PhraseTokenRepair => 0.16,
-        edit_transition::EditTransitionOperator::ReplaceCurrentWord => {
+        verifier::EditTransitionOperator::BoundaryShift
+        | verifier::EditTransitionOperator::SplitPreviousGluedAndRepairTail => 0.34,
+        verifier::EditTransitionOperator::LayoutProjection => 0.28,
+        verifier::EditTransitionOperator::PhraseTokenRepair => 0.16,
+        verifier::EditTransitionOperator::ReplaceCurrentWord => {
             match correction_source_contract::source_role(source_id) {
                 CorrectionSourceRole::DeterministicTypo => 0.08,
                 CorrectionSourceRole::L2Surface => -0.08,
                 _ => 0.0,
             }
         }
-        edit_transition::EditTransitionOperator::Completion
-        | edit_transition::EditTransitionOperator::Protected
-        | edit_transition::EditTransitionOperator::Unknown => 0.0,
+        verifier::EditTransitionOperator::Completion
+        | verifier::EditTransitionOperator::Protected
+        | verifier::EditTransitionOperator::Unknown => 0.0,
     }
 }
 
@@ -376,4 +401,43 @@ fn score_to_milli(value: f32) -> i16 {
     (value * 1000.0)
         .round()
         .clamp(i16::MIN as f32, i16::MAX as f32) as i16
+}
+
+#[cfg(test)]
+mod tests {
+    use super::TransitionDecisionCore;
+    use crate::correction_core::{CandidateGateAction, CandidateGateDecision, TypingErrorClass};
+
+    #[test]
+    fn transition_core_blocks_unverified_left_context_apply() {
+        let decision = TransitionDecisionCore::authorize_gate(
+            "содержкой ",
+            "что получилось вроде хороший ввод и даже фикс был шикарный но с содержать ",
+            TypingErrorClass::CompositeTypo,
+            "L2SurfaceMotifCell32",
+            CandidateGateDecision {
+                action: CandidateGateAction::Apply,
+                reason: "class_allows_apply",
+            },
+        );
+
+        assert_eq!(decision.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(decision.reason, "edit_transition_not_verified");
+    }
+
+    #[test]
+    fn transition_core_allows_verified_current_word_apply() {
+        let decision = TransitionDecisionCore::authorize_gate(
+            "провека ",
+            "проверка ",
+            TypingErrorClass::CompositeTypo,
+            "composite_ru_typo",
+            CandidateGateDecision {
+                action: CandidateGateAction::Apply,
+                reason: "class_allows_apply",
+            },
+        );
+
+        assert_eq!(decision.action, CandidateGateAction::Apply);
+    }
 }

@@ -27,6 +27,10 @@ fn main() {
         print_candidate_report(recent_actions_path());
         return;
     }
+    if args.iter().any(|arg| arg == "--transition-replay") {
+        print_transition_replay(recent_actions_path());
+        return;
+    }
     if args.iter().any(|arg| arg == "--stale-tail") {
         print_matching_jsonl(ibus_trace_path(), stale_tail_guard);
         return;
@@ -88,9 +92,27 @@ fn print_candidate_report(path: PathBuf) {
     println!("{}", report.to_json(&path));
 }
 
+fn print_transition_replay(path: PathBuf) {
+    let Ok(text) = std::fs::read_to_string(&path) else {
+        eprintln!("cannot read {}", path.display());
+        std::process::exit(1);
+    };
+    let mut replay = TransitionReplay::default();
+    for line in text.lines() {
+        let Ok(value) = serde_json::from_str::<Value>(line) else {
+            continue;
+        };
+        replay.inspect(&value);
+    }
+    println!("{}", replay.to_json(&path));
+    if replay.false_apply_candidates > 0 || replay.left_context_mutations > 0 {
+        std::process::exit(1);
+    }
+}
+
 fn print_usage() {
     eprintln!(
-        "usage: lay-debug-actions --unsafe-edits | --unsafe-scoreboard | --unsafe-gate | --candidate-report | --stale-tail"
+        "usage: lay-debug-actions --unsafe-edits | --unsafe-scoreboard | --unsafe-gate | --candidate-report | --transition-replay | --stale-tail"
     );
 }
 
@@ -400,6 +422,129 @@ impl CandidateReport {
     }
 }
 
+#[derive(Default)]
+struct TransitionReplay {
+    records: usize,
+    candidate_before_apply: usize,
+    applied_actions: usize,
+    input_gate_records: usize,
+    selected_apply: usize,
+    false_apply_candidates: usize,
+    missed_good_candidates: usize,
+    left_context_mutations: usize,
+    unverified_transitions: usize,
+    unsafe_multiword: usize,
+}
+
+impl TransitionReplay {
+    fn inspect(&mut self, value: &Value) {
+        self.records += 1;
+        match value.get("kind").and_then(Value::as_str) {
+            Some("candidate_before_apply") => self.candidate_before_apply += 1,
+            Some("typing-assist") => self.applied_actions += 1,
+            _ => {}
+        }
+        if value.get("input_gate").is_some() {
+            self.input_gate_records += 1;
+        }
+        if value
+            .get("transition_left_context_changed")
+            .and_then(Value::as_bool)
+            .unwrap_or(false)
+            || value
+                .get("changes_non_last_word")
+                .and_then(Value::as_bool)
+                .unwrap_or(false)
+        {
+            self.left_context_mutations += 1;
+        }
+        if !value
+            .get("transition_verified")
+            .and_then(Value::as_bool)
+            .unwrap_or(true)
+        {
+            self.unverified_transitions += 1;
+        }
+        if value
+            .get("would_touch_words")
+            .and_then(Value::as_u64)
+            .is_some_and(|words| words > 1)
+        {
+            self.unsafe_multiword += 1;
+        }
+
+        let Some(gate) = value.get("input_gate") else {
+            return;
+        };
+        let Some(candidates) = gate.get("candidate_scores").and_then(Value::as_array) else {
+            return;
+        };
+        for candidate in candidates {
+            self.inspect_candidate(candidate);
+        }
+    }
+
+    fn inspect_candidate(&mut self, candidate: &Value) {
+        let selected = candidate
+            .get("selected")
+            .and_then(Value::as_bool)
+            .unwrap_or(false);
+        if !selected {
+            return;
+        }
+        let apply = candidate.get("gate_action").and_then(Value::as_str) == Some("apply")
+            || candidate
+                .get("selected_gate_action")
+                .and_then(Value::as_str)
+                == Some("apply");
+        let left_context = candidate
+            .get("edit_transition_left_context_changed")
+            .and_then(Value::as_bool)
+            .unwrap_or(false);
+        let verified = candidate
+            .get("edit_transition_verified")
+            .and_then(Value::as_bool)
+            .unwrap_or(true);
+        if apply {
+            self.selected_apply += 1;
+        }
+        if apply && left_context && !verified {
+            self.false_apply_candidates += 1;
+        }
+        if !apply && verified && !left_context {
+            self.missed_good_candidates += 1;
+        }
+    }
+
+    fn to_json(&self, path: &std::path::Path) -> String {
+        serde_json::json!({
+            "kind": "typing_transition_shadow_replay",
+            "source": path.display().to_string(),
+            "records": {
+                "total": self.records,
+                "candidate_before_apply": self.candidate_before_apply,
+                "applied_actions": self.applied_actions,
+                "with_input_gate": self.input_gate_records
+            },
+            "transition": {
+                "selected_apply": self.selected_apply,
+                "false_apply_candidates": self.false_apply_candidates,
+                "missed_good_candidates": self.missed_good_candidates,
+                "left_context_mutations": self.left_context_mutations,
+                "unverified_transitions": self.unverified_transitions,
+                "unsafe_multiword": self.unsafe_multiword
+            },
+            "verdict": if self.false_apply_candidates == 0 && self.left_context_mutations == 0 {
+                "PASS-shadow"
+            } else {
+                "WATCH-shadow"
+            },
+            "read_as": "shadow replay over recent_actions; runtime authority is TransitionDecisionCore"
+        })
+        .to_string()
+    }
+}
+
 impl UnsafeScoreboard {
     fn inspect(&mut self, value: &Value) {
         self.records += 1;
@@ -463,7 +608,7 @@ impl UnsafeScoreboard {
 
 #[cfg(test)]
 mod tests {
-    use super::{unsafe_edit, CandidateReport, UnsafeScoreboard};
+    use super::{unsafe_edit, CandidateReport, TransitionReplay, UnsafeScoreboard};
     use serde_json::json;
 
     #[test]
@@ -576,5 +721,24 @@ mod tests {
         assert_eq!(report.nanda_candidates, 3);
         assert_eq!(report.bayes_selected, 1);
         assert_eq!(report.selected_sources.get("nanda").copied(), Some(1));
+    }
+
+    #[test]
+    fn transition_replay_flags_selected_unverified_apply() {
+        let value = json!({
+            "kind": "typing-assist",
+            "input_gate": {
+                "candidate_scores": [{
+                    "selected": true,
+                    "gate_action": "apply",
+                    "edit_transition_left_context_changed": true,
+                    "edit_transition_verified": false
+                }]
+            }
+        });
+        let mut replay = TransitionReplay::default();
+        replay.inspect(&value);
+        assert_eq!(replay.selected_apply, 1);
+        assert_eq!(replay.false_apply_candidates, 1);
     }
 }

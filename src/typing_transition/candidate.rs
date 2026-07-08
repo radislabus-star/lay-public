@@ -1,23 +1,23 @@
-use super::{
-    decision_core::CorrectionDecisionCore, CorrectionCandidateScoreTrace, CorrectionDecision,
-    CorrectionDecisionSource, CorrectionResolution, CorrectionScoreboard, TypingErrorEvent,
-    UnifiedCorrectionCandidate,
+use super::decision::TransitionDecisionCore;
+use crate::correction_core::{
+    CorrectionCandidateScoreTrace, CorrectionDecision, CorrectionDecisionSource,
+    CorrectionResolution, CorrectionScoreboard, TypingErrorEvent, UnifiedCorrectionCandidate,
 };
 
-pub(super) struct L2CandidateLattice {
+pub(crate) struct L2CandidateLattice {
     event: TypingErrorEvent,
     candidates: Vec<UnifiedCorrectionCandidate>,
 }
 
 impl L2CandidateLattice {
-    pub(super) fn new(event: TypingErrorEvent) -> Self {
+    pub(crate) fn new(event: TypingErrorEvent) -> Self {
         Self {
             event,
             candidates: Vec::new(),
         }
     }
 
-    pub(super) fn push_source(&mut self, candidate: Option<UnifiedCorrectionCandidate>) {
+    pub(crate) fn push_source(&mut self, candidate: Option<UnifiedCorrectionCandidate>) {
         if let Some(candidate) = candidate {
             if let Some(existing) = self
                 .candidates
@@ -34,9 +34,9 @@ impl L2CandidateLattice {
         }
     }
 
-    pub(super) fn into_resolution(self) -> CorrectionResolution {
+    pub(crate) fn into_resolution(self) -> CorrectionResolution {
         let selected =
-            CorrectionDecisionCore::select_apply_candidate(&self.event, &self.candidates);
+            TransitionDecisionCore::select_apply_candidate(&self.event, &self.candidates);
         let decision = selected.as_ref().map(|candidate| CorrectionDecision {
             replacement: candidate.replacement.clone(),
             source: candidate.source,

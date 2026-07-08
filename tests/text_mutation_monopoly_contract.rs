@@ -18,7 +18,7 @@ fn ime_composition_does_not_own_input_gate_decision() {
 fn ime_correction_route_reaches_common_decision_core() {
     let ime_correction = read("src/ime_correction.rs");
     let correction_core = read("src/correction_core.rs");
-    let decision_core = read("src/correction_core/decision_core.rs");
+    let transition_decision = read("src/typing_transition/decision.rs");
 
     assert!(
         ime_correction.contains("decide_input_gate(InputGateRequest")
@@ -26,13 +26,15 @@ fn ime_correction_route_reaches_common_decision_core() {
         "ime_correction.rs must enter the shared correction pipeline"
     );
     assert!(
-        correction_core.contains("mod decision_core;"),
-        "correction_core must own the DecisionCore module"
+        !correction_core.contains("mod decision_core;")
+            && correction_core.contains("TransitionDecisionCore::authorize_gate"),
+        "correction_core must delegate apply authority to typing_transition"
     );
     assert!(
-        decision_core.contains("struct CorrectionDecisionCore")
-            && decision_core.contains("select_apply_candidate"),
-        "DecisionCore must own final apply-candidate selection"
+        transition_decision.contains("struct TransitionDecisionCore")
+            && transition_decision.contains("select_apply_candidate")
+            && transition_decision.contains("authorize_gate"),
+        "TransitionDecisionCore must own final apply-candidate authority"
     );
 }
 

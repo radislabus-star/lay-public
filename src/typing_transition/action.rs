@@ -1,23 +1,24 @@
-use super::{edit_transition, TypingErrorClass};
+use super::verifier;
+use crate::correction_core::TypingErrorClass;
 use crate::language_action::{
     operator_for_candidate, proof_for_candidate, LanguageActionOperator, LanguageActionProof,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) struct CorrectionActionOperatorReport {
-    pub(super) operator: LanguageActionOperator,
-    pub(super) proof: LanguageActionProof,
-    pub(super) edit_operator: edit_transition::EditTransitionOperator,
-    pub(super) edit_proof: LanguageActionProof,
-    pub(super) verifier_required: bool,
-    pub(super) verifier_passed: bool,
-    pub(super) left_context_changed: bool,
-    pub(super) changed_tokens: usize,
+pub(crate) struct CorrectionActionOperatorReport {
+    pub(crate) operator: LanguageActionOperator,
+    pub(crate) proof: LanguageActionProof,
+    pub(crate) edit_operator: verifier::EditTransitionOperator,
+    pub(crate) edit_proof: LanguageActionProof,
+    pub(crate) verifier_required: bool,
+    pub(crate) verifier_passed: bool,
+    pub(crate) left_context_changed: bool,
+    pub(crate) changed_tokens: usize,
     blocker: Option<&'static str>,
 }
 
 impl CorrectionActionOperatorReport {
-    pub(super) const fn apply_blocker(self) -> Option<&'static str> {
+    pub(crate) const fn apply_blocker(self) -> Option<&'static str> {
         if !self.verifier_required {
             return None;
         }
@@ -25,7 +26,7 @@ impl CorrectionActionOperatorReport {
     }
 }
 
-pub(super) fn verify_action_operator(
+pub(crate) fn verify_action_operator(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
@@ -33,8 +34,7 @@ pub(super) fn verify_action_operator(
 ) -> CorrectionActionOperatorReport {
     let operator = operator_for_candidate(error_class, source_id);
     let proof = proof_for_candidate(error_class, source_id);
-    let transition =
-        edit_transition::prove_edit_transition(original, replacement, error_class, source_id);
+    let transition = verifier::prove_edit_transition(original, replacement, error_class, source_id);
 
     CorrectionActionOperatorReport {
         operator,
@@ -65,7 +65,7 @@ mod tests {
         assert_eq!(report.operator, LanguageActionOperator::FlipLayout);
         assert_eq!(
             report.edit_operator,
-            edit_transition::EditTransitionOperator::LayoutProjection
+            verifier::EditTransitionOperator::LayoutProjection
         );
         assert!(report.verifier_required);
         assert!(report.verifier_passed);
@@ -84,7 +84,7 @@ mod tests {
         assert_eq!(report.operator, LanguageActionOperator::FixTypo);
         assert_eq!(
             report.edit_operator,
-            edit_transition::EditTransitionOperator::Unknown
+            verifier::EditTransitionOperator::Unknown
         );
         assert!(report.verifier_required);
         assert!(!report.verifier_passed);

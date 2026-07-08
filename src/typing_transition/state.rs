@@ -1,10 +1,10 @@
-use super::{TypingErrorClass, TypingErrorEvent};
+use crate::correction_core::{TypingErrorClass, TypingErrorEvent};
 use crate::text_metrics::{has_cyrillic, has_latin};
 use crate::word_reader::{is_cyrillic_letters_only, last_text_word, split_edge_whitespace};
 use crate::word_recognizer::is_ascii_technical_token;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(super) struct L1SurfaceSignal {
+pub(crate) struct L1SurfaceSignal {
     original: String,
     core: String,
     current_word: String,
@@ -12,7 +12,7 @@ pub(super) struct L1SurfaceSignal {
 }
 
 impl L1SurfaceSignal {
-    pub(super) fn from_text(text: &str) -> Self {
+    pub(crate) fn from_text(text: &str) -> Self {
         let (_, core, _) = split_edge_whitespace(text);
         let current_word = last_text_word(core).unwrap_or_default();
         let script = L1ScriptProfile::from_text(&current_word);
@@ -25,7 +25,7 @@ impl L1SurfaceSignal {
         }
     }
 
-    pub(super) fn into_event(self) -> TypingErrorEvent {
+    pub(crate) fn into_event(self) -> TypingErrorEvent {
         let input_class = self.classify_current_word();
         TypingErrorEvent {
             original: self.original,

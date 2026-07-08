@@ -3,12 +3,6 @@
 //! Runtime backends still own output and state. This module only answers one
 //! question: should this completed text be replaced, and by which engine?
 
-mod action_operator;
-mod decision_core;
-mod edit_transition;
-mod l1_surface_signal;
-mod l2_lattice;
-
 use crate::candidate_explanation::{explain_candidate, CandidateExplanation};
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
 use crate::correction_source_contract::{self, CorrectionSourceRole};
@@ -22,13 +16,17 @@ use crate::text_metrics::{damerau_levenshtein, has_cyrillic};
 use crate::typing_assist::{explain_typing_assist_with_pipeline, split_ws_segments};
 use crate::typing_context::{syntax_allows_candidate, typing_assist_pipeline_for_context};
 use crate::typing_rule_graph::ids;
+use crate::typing_transition::{
+    action as action_operator,
+    candidate::L2CandidateLattice,
+    decision::{candidate_decision_signals, TransitionDecisionCore},
+    state::L1SurfaceSignal,
+    verifier as edit_transition,
+};
 use crate::word_reader::{
     cyrillic_word_splits, is_cyrillic_letters_only, last_text_word, replace_last_text_word,
     split_edge_whitespace, split_word_punctuation,
 };
-use decision_core::candidate_decision_signals;
-use l1_surface_signal::L1SurfaceSignal;
-use l2_lattice::L2CandidateLattice;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::OnceLock;
 use std::time::Instant;
@@ -254,7 +252,7 @@ pub fn correction_gate_stats_json() -> serde_json::Value {
 }
 
 impl CorrectionScoreboard {
-    fn from_candidates(
+    pub(crate) fn from_candidates(
         event: &TypingErrorEvent,
         candidates: &[UnifiedCorrectionCandidate],
         selected: Option<&UnifiedCorrectionCandidate>,
@@ -376,7 +374,7 @@ fn update_max_atomic(target: &AtomicU64, value: u64) {
 }
 
 impl CorrectionCandidateScoreTrace {
-    fn from_candidates(
+    pub(crate) fn from_candidates(
         event: &TypingErrorEvent,
         candidates: &[UnifiedCorrectionCandidate],
         selected: Option<&UnifiedCorrectionCandidate>,
@@ -442,7 +440,7 @@ fn score_to_milli(value: f32) -> i16 {
         .clamp(i16::MIN as f32, i16::MAX as f32) as i16
 }
 
-fn explanation_for_candidate(
+pub(crate) fn explanation_for_candidate(
     original: &str,
     candidate: &UnifiedCorrectionCandidate,
 ) -> CandidateExplanation {
@@ -1279,6 +1277,23 @@ fn gate_candidate_with_source(
     error_class: TypingErrorClass,
     source_id: &str,
 ) -> CandidateGateDecision {
+    let provisional =
+        legacy_gate_candidate_with_source(original, replacement, error_class, source_id);
+    TransitionDecisionCore::authorize_gate(
+        original,
+        replacement,
+        error_class,
+        source_id,
+        provisional,
+    )
+}
+
+fn legacy_gate_candidate_with_source(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    source_id: &str,
+) -> CandidateGateDecision {
     if original == replacement {
         return CandidateGateDecision {
             action: CandidateGateAction::KeepOriginal,
@@ -1479,7 +1494,7 @@ fn candidate_changes_non_last_word(original: &str, replacement: &str) -> bool {
     original_words[..original_words.len() - 1] != replacement_words[..replacement_words.len() - 1]
 }
 
-fn normalized_correction_words(text: &str) -> Vec<String> {
+pub(crate) fn normalized_correction_words(text: &str) -> Vec<String> {
     text.split_whitespace()
         .filter_map(|token| {
             let (_, word, _) = split_word_punctuation(token);
@@ -1488,7 +1503,7 @@ fn normalized_correction_words(text: &str) -> Vec<String> {
         .collect()
 }
 
-fn bayes_score_for_candidate(
+pub(crate) fn bayes_score_for_candidate(
     original: &str,
     candidate: &UnifiedCorrectionCandidate,
 ) -> crate::correction_bayes::BayesCandidateScore {
