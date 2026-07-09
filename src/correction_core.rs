@@ -7,7 +7,7 @@ use crate::candidate_explanation::{explain_candidate, CandidateExplanation};
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
 use crate::correction_source_contract::{self, CorrectionSourceRole};
 use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
-use crate::nanda_wave::{run_wave_trace, WordCandidate};
+use crate::nanda_wave::{run_wave_trace_with_options, WaveOptions, WordCandidate};
 use crate::russian_typo_candidates::{
     inserted_char_position_for_missing_letter, repeated_run_deletion_candidates,
 };
@@ -142,6 +142,7 @@ pub struct CorrectionRequest<'a> {
     pub correction_safety: CorrectionSafety,
     pub typing_assist_pipeline: &'a [TypingAssistRuleConfig],
     pub nanda_autocorrect: bool,
+    pub nanda_wave_options: WaveOptions,
     pub mode: CorrectionMode,
 }
 
@@ -954,7 +955,7 @@ fn nanda_text_candidates(req: &CorrectionRequest<'_>) -> Vec<UnifiedCorrectionCa
         return Vec::new();
     }
 
-    let trace = run_wave_trace(req.text);
+    let trace = run_wave_trace_with_options(req.text, &req.nanda_wave_options);
     trace
         .l2_candidates
         .iter()
@@ -3114,6 +3115,7 @@ mod tests {
             correction_safety: CorrectionSafety::Experimental,
             typing_assist_pipeline: pipeline,
             nanda_autocorrect: true,
+            nanda_wave_options: WaveOptions::default(),
             mode,
         }
     }
@@ -3222,6 +3224,41 @@ mod tests {
     }
 
     #[test]
+    fn nanda_candidates_respect_request_wave_options() {
+        let pipeline = default_typing_assist_pipeline();
+        let active = resolve_text_correction(CorrectionRequest {
+            text: "звгрузи ",
+            auto_replace: true,
+            typing_assist: true,
+            auto_switch_layout: true,
+            correction_safety: CorrectionSafety::Experimental,
+            typing_assist_pipeline: &pipeline,
+            nanda_autocorrect: true,
+            nanda_wave_options: WaveOptions::default(),
+            mode: CorrectionMode::NandaOnly,
+        });
+        assert!(active.candidates.iter().any(|candidate| {
+            candidate.source_id == "L2SurfaceMotifCell32" && candidate.replacement == "загрузи "
+        }));
+
+        let disabled = resolve_text_correction(CorrectionRequest {
+            text: "звгрузи ",
+            auto_replace: true,
+            typing_assist: true,
+            auto_switch_layout: true,
+            correction_safety: CorrectionSafety::Experimental,
+            typing_assist_pipeline: &pipeline,
+            nanda_autocorrect: true,
+            nanda_wave_options: WaveOptions::with_disabled(&["L2SurfaceMotifCell32".to_string()]),
+            mode: CorrectionMode::NandaOnly,
+        });
+        assert!(!disabled
+            .candidates
+            .iter()
+            .any(|candidate| candidate.source_id == "L2SurfaceMotifCell32"));
+    }
+
+    #[test]
     fn deterministic_mode_corrects_wrong_layout_text() {
         let pipeline = default_typing_assist_pipeline();
         let decision = decide_text_correction(request(
@@ -3276,6 +3313,7 @@ mod tests {
             correction_safety: CorrectionSafety::Normal,
             typing_assist_pipeline: &pipeline,
             nanda_autocorrect: false,
+            nanda_wave_options: WaveOptions::default(),
             mode: CorrectionMode::DeterministicOnly,
         });
 
@@ -4398,6 +4436,7 @@ mod tests {
             correction_safety: CorrectionSafety::Experimental,
             typing_assist_pipeline: &pipeline,
             nanda_autocorrect: false,
+            nanda_wave_options: WaveOptions::default(),
             mode: CorrectionMode::DeterministicThenNanda,
         });
         assert_eq!(decision, None);

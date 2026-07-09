@@ -242,6 +242,7 @@ fn print_nanda_explanation(text: &str, cfg: &config::LayConfig) {
         correction_safety: active_typing_safety(cfg),
         typing_assist_pipeline: &cfg.typing_assist_pipeline,
         nanda_autocorrect: cfg.nanda_autocorrect,
+        nanda_wave_options: cfg.active_nanda_wave_options(),
         mode: correction_core::CorrectionMode::NandaOnly,
     });
     println!(
@@ -272,6 +273,7 @@ fn print_correction_core_explanation(text: &str, cfg: &config::LayConfig) {
         correction_safety: active_typing_safety(cfg),
         typing_assist_pipeline: &cfg.typing_assist_pipeline,
         nanda_autocorrect: cfg.nanda_autocorrect,
+        nanda_wave_options: cfg.active_nanda_wave_options(),
         mode: correction_core::CorrectionMode::DeterministicThenNanda,
     });
 

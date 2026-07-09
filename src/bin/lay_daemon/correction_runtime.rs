@@ -174,6 +174,7 @@ fn manual_toggle_gate_trace(text_tail: &str, auto_replace: bool) -> Option<Recen
         correction_safety: CorrectionSafety::Normal,
         typing_assist_pipeline: empty_pipeline,
         nanda_autocorrect: false,
+        nanda_wave_options: lay::nanda_wave::WaveOptions::default(),
         correction_mode: CorrectionMode::DeterministicOnly,
     });
     decision

@@ -1,10 +1,3 @@
 pub(crate) fn active_nanda_wave_options() -> lay::nanda_wave::WaveOptions {
-    let cfg = super::current_config();
-    lay::nanda_wave::WaveOptions::default()
-        .with_layer_weights(cfg.active_nanda_l2_weight(), cfg.active_nanda_l3_weight())
-        .with_llmwave_shadow(cfg.llmwave_shadow)
-        .with_llmwave_apply(cfg.llmwave_shadow && cfg.llmwave_apply)
-        .with_l2_phase_shadow(cfg.nanda_l2_phase_shadow)
-        .with_l2_phase_apply(cfg.nanda_l2_phase_shadow && cfg.nanda_l2_phase_apply)
-        .with_l3_phase_shadow(cfg.nanda_l3_phase_shadow)
+    super::current_config().active_nanda_wave_options()
 }

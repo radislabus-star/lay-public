@@ -87,6 +87,7 @@ pub(super) fn decode_input_gate_decision(
         correction_safety: CorrectionSafety::Normal,
         typing_assist_pipeline: pipeline,
         nanda_autocorrect: false,
+        nanda_wave_options: crate::nanda_wave::WaveOptions::default(),
         correction_mode: CorrectionMode::DeterministicOnly,
     })
 }

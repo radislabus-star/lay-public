@@ -40,6 +40,7 @@ pub fn decide_active_composition_autocorrect(
         correction_safety: gate_config.correction_safety,
         typing_assist_pipeline: &request.config.typing_assist_pipeline,
         nanda_autocorrect: gate_config.nanda_autocorrect,
+        nanda_wave_options: request.config.active_nanda_wave_options(),
         correction_mode: gate_config.correction_mode(),
     });
     let InputGateAction::ApplyReplacement { replacement, .. } = decision.action else {

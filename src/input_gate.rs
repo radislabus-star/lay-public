@@ -9,6 +9,7 @@ use crate::correction_core::{
     CandidateGateAction, CorrectionCandidateScoreTrace, CorrectionDecisionSource, CorrectionMode,
     CorrectionRequest, CorrectionResolution, CorrectionScoreboard, TypingErrorClass,
 };
+use crate::nanda_wave::WaveOptions;
 
 include!("correction_pipeline.rs");
 
@@ -207,6 +208,7 @@ pub struct InputGateRequest<'a> {
     pub correction_safety: CorrectionSafety,
     pub typing_assist_pipeline: &'a [TypingAssistRuleConfig],
     pub nanda_autocorrect: bool,
+    pub nanda_wave_options: WaveOptions,
     pub correction_mode: CorrectionMode,
 }
 
@@ -383,6 +385,7 @@ mod tests {
             correction_safety: CorrectionSafety::Experimental,
             typing_assist_pipeline: &[],
             nanda_autocorrect: true,
+            nanda_wave_options: WaveOptions::default(),
             correction_mode: CorrectionMode::DeterministicThenNanda,
         }
     }
@@ -441,6 +444,7 @@ mod tests {
             correction_safety: CorrectionSafety::Experimental,
             typing_assist_pipeline: &pipeline,
             nanda_autocorrect: false,
+            nanda_wave_options: WaveOptions::default(),
             correction_mode: CorrectionMode::DeterministicOnly,
         });
         assert_eq!(decision.stage, InputGateStage::WordBoundary);
@@ -516,6 +520,7 @@ mod tests {
             correction_safety: CorrectionSafety::Normal,
             typing_assist_pipeline: &pipeline,
             nanda_autocorrect: false,
+            nanda_wave_options: WaveOptions::default(),
             correction_mode: CorrectionMode::DeterministicThenNanda,
         });
         assert_eq!(decision.action, InputGateAction::KeepOriginal);
