@@ -65,8 +65,6 @@ pub fn warm_up() {
 
 pub fn warm_up_for_ime() {
     let _ = common_ru_words().len();
-    let _ = ime_hot_ru_words().len();
-    let _ = ime_hot_ru_prefix_index().len();
     let _ = common_en_technical_words().len();
     let _ = common_en_technical_prefix_index().len();
     let _ = common_en_guard_prefixes().len();
@@ -86,6 +84,9 @@ pub fn is_common_ru_word(word: &str) -> bool {
 }
 
 pub fn is_ime_hot_ru_word(word: &str) -> bool {
+    if !crate::hot_field::process_allows_full_reference_authority() {
+        return crate::nanda_wave::l2::l2_surface_foundation_contains(word);
+    }
     ime_hot_ru_word_set().contains(word)
 }
 
@@ -170,6 +171,9 @@ pub fn ime_ru_prefix_completion_words(
     if prefix.is_empty() || limit == 0 {
         return Vec::new();
     }
+    if !crate::hot_field::process_allows_full_reference_authority() {
+        return ime_l2_prefix_completion_words(&prefix, max_suffix_chars, limit);
+    }
     let prefix_len = prefix.chars().count();
     ime_hot_ru_prefix_index()
         .get(&prefix)
@@ -179,6 +183,39 @@ pub fn ime_ru_prefix_completion_words(
         .take(limit)
         .cloned()
         .collect()
+}
+
+fn ime_l2_prefix_completion_words(
+    prefix: &str,
+    max_suffix_chars: usize,
+    limit: usize,
+) -> Vec<String> {
+    let mut words = crate::nanda_wave::l2::ime_l2_surface_decoder_candidates("", prefix, limit)
+        .into_iter()
+        .chain(crate::nanda_wave::l2::ime_l2_foundation_prefix_candidates(
+            "",
+            prefix,
+            limit.saturating_mul(2).max(limit),
+        ))
+        .filter_map(|candidate| {
+            let suffix_chars = candidate
+                .surface
+                .chars()
+                .count()
+                .saturating_sub(prefix.chars().count());
+            (candidate.surface.starts_with(prefix) && suffix_chars <= max_suffix_chars)
+                .then_some(candidate.surface)
+        })
+        .collect::<Vec<_>>();
+    words.sort_by(|left, right| {
+        left.chars()
+            .count()
+            .cmp(&right.chars().count())
+            .then_with(|| left.cmp(right))
+    });
+    words.dedup();
+    words.truncate(limit);
+    words
 }
 
 pub fn common_en_technical_prefix_completion(

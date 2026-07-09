@@ -157,7 +157,6 @@ pub(crate) fn is_russian_layout_surface_authority_word(word: &str) -> bool {
         || russian_short_dictionary().contains(&lower)
         || is_common_ru_word(&lower)
         || is_ime_hot_ru_word(&lower)
-        || crate::nanda_wave::l2::runtime_l2_surface_contains(&lower)
         || crate::nanda_wave::l2::l2_surface_foundation_contains(&lower)
         || crate::typing_transition::state::word_has_common_usage_authority(&lower)
 }

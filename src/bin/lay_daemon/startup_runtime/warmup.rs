@@ -9,7 +9,9 @@ fn warm_runtime_if_needed(detect_only: bool, cfg: &LayConfig) {
     if plan.spawn_background {
         std::thread::spawn(move || {
             let started_at = Instant::now();
-            lay::typing_assist::warm_up_hot();
+            if plan.warm_typing_assist {
+                lay::typing_assist::warm_up_hot();
+            }
             TYPING_ASSIST_RUNTIME_READY.store(true, Ordering::Relaxed);
             if plan.warm_smart {
                 match lay::llm::warm_up() {
@@ -30,6 +32,7 @@ fn warm_runtime_if_needed(detect_only: bool, cfg: &LayConfig) {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct RuntimeWarmupPlan {
     spawn_background: bool,
+    warm_typing_assist: bool,
     warm_smart: bool,
     warm_nanda: bool,
 }
@@ -42,10 +45,16 @@ fn runtime_warmup_plan(
     let warm_smart = cfg.active_correction_engine() == CorrectionEngine::Smart;
     let enter_autocorrect_active =
         active_enter_autocorrect_from_env(cfg.enter_autocorrect, enter_autocorrect_env);
-    let warm_typing_assist = cfg.typing_assist || enter_autocorrect_active;
-    let warm_nanda = cfg.nanda_autocorrect || cfg.nanda_precognition || cfg.nanda_trace;
+    let daemon_can_own_full_hot_memory =
+        lay::hot_field::HotFieldPolicy::daemon_for_text_backend(cfg.active_text_backend())
+            .allows_full_reference_authority();
+    let warm_typing_assist =
+        daemon_can_own_full_hot_memory && (cfg.typing_assist || enter_autocorrect_active);
+    let warm_nanda = daemon_can_own_full_hot_memory
+        && (cfg.nanda_autocorrect || cfg.nanda_precognition || cfg.nanda_trace);
     RuntimeWarmupPlan {
         spawn_background: !detect_only && (warm_smart || warm_typing_assist),
+        warm_typing_assist,
         warm_smart,
         warm_nanda,
     }

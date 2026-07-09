@@ -1990,10 +1990,6 @@ fn runtime_l2_surface_word_set() -> &'static HashSet<String> {
     WORDS.get_or_init(|| runtime_l2_surface_words().into_iter().collect())
 }
 
-pub(crate) fn runtime_l2_surface_contains(word: &str) -> bool {
-    runtime_l2_surface_word_set().contains(word)
-}
-
 pub(crate) fn l2_surface_foundation_contains(word: &str) -> bool {
     L2_SURFACE_FOUNDATION_SET
         .get_or_init(|| data_words_static(L2_SURFACE_FOUNDATION_RU_DATA).collect())

@@ -20,18 +20,18 @@
     "semantic_hash": "236e46a80b6d2865de3d1816fb645158"
   },
   "extension/lay@radislabus-star.github.io/lay-impl.js": {
-    "mtime": 1783634803.973679,
+    "mtime": 1783636177.117338,
     "ast_hash": "5b6a06aa6236126c72cb127ef2970fde",
     "semantic_hash": "5b6a06aa6236126c72cb127ef2970fde"
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1783634803.9001434,
-    "ast_hash": "4795c1b01e8d9271b3009b4aff6d73bc",
+    "mtime": 1783636177.0380373,
+    "ast_hash": "dd99899e9516f1fc92868ec0f1391df2",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1783634803.9811406,
-    "ast_hash": "13cb6cd7cf0cafb925441413bb95a383",
+    "mtime": 1783636177.1301615,
+    "ast_hash": "1937e502980814a76647354bac222e7a",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": "40bbf92dafd5dfae313a0760331c3ae3"
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1783634803.981035,
-    "ast_hash": "d94590024d8715490c6a986feed5640b",
+    "mtime": 1783636177.122988,
+    "ast_hash": "82eaa3df4c11a5210fcfd7896cc91a0a",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1783634803.9808757,
-    "ast_hash": "90de049828d810641390d868405c0acc",
+    "mtime": 1783636177.122846,
+    "ast_hash": "d9ca5bdbaa8faefa38f145fab4e560cc",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -475,14 +475,14 @@
     "semantic_hash": "c18b2fe702c19c6729f756cc360083e0"
   },
   "src/bin/lay_daemon/startup_runtime/tests/warmup.rs": {
-    "mtime": 1783090849.3818583,
-    "ast_hash": "6102ba61615d7aeaf073f57fa67d5bae",
-    "semantic_hash": "6102ba61615d7aeaf073f57fa67d5bae"
+    "mtime": 1783636506.2548504,
+    "ast_hash": "254ea93958028f347666afd2e47ef9a0",
+    "semantic_hash": ""
   },
   "src/bin/lay_daemon/startup_runtime/warmup.rs": {
-    "mtime": 1783252490.1206336,
-    "ast_hash": "d26bf4607a04f981340072b67089b2d4",
-    "semantic_hash": "d26bf4607a04f981340072b67089b2d4"
+    "mtime": 1783636477.1313162,
+    "ast_hash": "cdde62602412344eaec3ef0b11585080",
+    "semantic_hash": ""
   },
   "src/bin/lay_daemon/startup_sanitize.rs": {
     "mtime": 1781643242.0280247,
@@ -1005,8 +1005,8 @@
     "semantic_hash": "fa97e94e19d4e1b282a30e1515cd9d4b"
   },
   "src/bin/lay_ibus_engine/state.rs": {
-    "mtime": 1783635371.3443456,
-    "ast_hash": "d97a06456ecdd0429f7366adea02e2b5",
+    "mtime": 1783636139.531219,
+    "ast_hash": "7e118723921b91575959f61a13c16380",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
@@ -1420,9 +1420,9 @@
     "semantic_hash": "4f7356c4ef22115a940675e3e7f23941"
   },
   "src/layout_autoswitch.rs": {
-    "mtime": 1783551216.0802975,
-    "ast_hash": "c2151a6186bf21ef01fde09b86cc2d11",
-    "semantic_hash": "c2151a6186bf21ef01fde09b86cc2d11"
+    "mtime": 1783636062.3979933,
+    "ast_hash": "ff2ee66d980dba41de50ef7721c5f2d4",
+    "semantic_hash": ""
   },
   "src/layout_autoswitch/ascii.rs": {
     "mtime": 1782459896.082025,
@@ -1535,9 +1535,9 @@
     "semantic_hash": "3823a093d394e5c31aaf67e69632c3c7"
   },
   "src/lexicon.rs": {
-    "mtime": 1783415980.3859477,
-    "ast_hash": "339eeb00f910167221abbf6d292b875e",
-    "semantic_hash": "339eeb00f910167221abbf6d292b875e"
+    "mtime": 1783636052.4948332,
+    "ast_hash": "c06acae32c282d1f2aa089b7e7feca94",
+    "semantic_hash": ""
   },
   "src/lexicon_tests.rs": {
     "mtime": 1783210619.5985327,
@@ -1665,8 +1665,8 @@
     "semantic_hash": "ae112b24f1be9ef0a8ccb9ae50d04651"
   },
   "src/nanda_wave/l2.rs": {
-    "mtime": 1783633469.0545287,
-    "ast_hash": "143dc132cc5e6a3291e06be495388c73",
+    "mtime": 1783636090.1534383,
+    "ast_hash": "57eeac4407ba6263aae234c562e842da",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_broad_index.rs": {
@@ -2035,9 +2035,9 @@
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms.rs": {
-    "mtime": 1783598700.0906382,
-    "ast_hash": "d3af661b4cd1c124819707d766422de2",
-    "semantic_hash": "d3af661b4cd1c124819707d766422de2"
+    "mtime": 1783636068.4830914,
+    "ast_hash": "41a9c22679ae5086181e27361799a939",
+    "semantic_hash": ""
   },
   "src/russian_lexicon/forms/data.rs": {
     "mtime": 1783089057.5359719,
@@ -2700,8 +2700,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1783634803.9828644,
-    "ast_hash": "91f268295dfd5ea80876a820df68c9ce",
+    "mtime": 1783636177.1321552,
+    "ast_hash": "56f11079f900d5d2e896468bb4e47460",
     "semantic_hash": ""
   },
   "corpus/README.md": {

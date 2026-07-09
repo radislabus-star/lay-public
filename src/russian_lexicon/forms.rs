@@ -219,7 +219,6 @@ fn is_known_russian_ch_verb_present_form(word: &str) -> bool {
 fn known_runtime_verb_lemma(lemma: &str) -> bool {
     russian_dictionary().contains(lemma)
         || russian_short_dictionary().contains(lemma)
-        || crate::nanda_wave::l2::runtime_l2_surface_contains(lemma)
         || crate::nanda_wave::l2::l2_surface_foundation_contains(lemma)
 }
 
