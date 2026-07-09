@@ -144,12 +144,26 @@ pub(super) fn active_learning_log() -> bool {
 }
 
 pub(super) fn active_nanda_trace() -> bool {
-    current_config().debug_action_log
+    let cfg = current_config();
+    daemon_nanda_trace_active(&cfg)
 }
 
 pub(super) fn active_nanda_precognition() -> bool {
     let cfg = current_config();
-    cfg.debug_action_log && cfg.active_nanda_precognition()
+    daemon_precognition_trace_active(&cfg)
+}
+
+fn daemon_nanda_trace_active(cfg: &LayConfig) -> bool {
+    // Runtime action logs remain under debug_action_log. Full NANDA wave trace
+    // is heavier: in IME mode it belongs to lay-ibus-engine, not the daemon.
+    cfg.debug_action_log && !cfg.active_text_backend().should_try_ime()
+}
+
+fn daemon_precognition_trace_active(cfg: &LayConfig) -> bool {
+    // IME owns live precognition display and timing. The daemon may keep this
+    // trace path only for non-IME experiments, otherwise it loads a second
+    // NANDA wave route on key/space events.
+    cfg.nanda_precognition && daemon_nanda_trace_active(cfg)
 }
 
 #[cfg(not(test))]
@@ -177,4 +191,55 @@ pub(super) fn active_typing_assist_pipeline_for_auto_replace(
         &cfg.typing_assist_pipeline,
         context,
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn ime_backend_does_not_enable_daemon_precognition_trace() {
+        let cfg = LayConfig {
+            text_backend: "ime".to_string(),
+            debug_action_log: true,
+            nanda_precognition: true,
+            ..LayConfig::default()
+        };
+
+        assert!(!daemon_precognition_trace_active(&cfg));
+    }
+
+    #[test]
+    fn ime_backend_does_not_enable_heavy_daemon_wave_trace() {
+        let cfg = LayConfig {
+            text_backend: "ime".to_string(),
+            debug_action_log: true,
+            ..LayConfig::default()
+        };
+
+        assert!(!daemon_nanda_trace_active(&cfg));
+    }
+
+    #[test]
+    fn uinput_backend_can_keep_daemon_precognition_trace_explicitly() {
+        let cfg = LayConfig {
+            text_backend: "uinput".to_string(),
+            debug_action_log: true,
+            nanda_precognition: true,
+            ..LayConfig::default()
+        };
+
+        assert!(daemon_precognition_trace_active(&cfg));
+    }
+
+    #[test]
+    fn uinput_backend_can_keep_heavy_daemon_wave_trace_explicitly() {
+        let cfg = LayConfig {
+            text_backend: "uinput".to_string(),
+            debug_action_log: true,
+            ..LayConfig::default()
+        };
+
+        assert!(daemon_nanda_trace_active(&cfg));
+    }
 }

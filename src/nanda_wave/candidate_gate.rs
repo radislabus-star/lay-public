@@ -322,22 +322,6 @@ fn live_l2_word_candidates(
     let material_limit = live_l2_material_limit(limit);
     let mut candidates = Vec::new();
     for candidate in
-        l2::ime_l2_surface_decoder_candidates(context_prefix, &normalized, material_limit)
-    {
-        push_unique_live_l2_candidate(&mut candidates, candidate);
-        if candidates.len() >= material_limit {
-            return candidates;
-        }
-    }
-    for candidate in
-        l2::ime_l2_generated_form_prefix_candidates(context_prefix, &normalized, material_limit)
-    {
-        push_unique_live_l2_candidate(&mut candidates, candidate);
-        if candidates.len() >= material_limit {
-            return candidates;
-        }
-    }
-    for candidate in
         l2::ime_l2_foundation_prefix_candidates(context_prefix, &normalized, material_limit)
     {
         push_unique_live_l2_candidate(&mut candidates, candidate);
@@ -351,7 +335,27 @@ fn live_l2_word_candidates(
         {
             push_unique_live_l2_candidate(&mut candidates, candidate);
             if candidates.len() >= material_limit {
-                break;
+                return candidates;
+            }
+        }
+    }
+    if token_len >= 4 {
+        for candidate in
+            l2::ime_l2_surface_decoder_candidates(context_prefix, &normalized, material_limit)
+        {
+            push_unique_live_l2_candidate(&mut candidates, candidate);
+            if candidates.len() >= material_limit {
+                return candidates;
+            }
+        }
+    }
+    if token_len >= 4 {
+        for candidate in
+            l2::ime_l2_generated_form_prefix_candidates(context_prefix, &normalized, material_limit)
+        {
+            push_unique_live_l2_candidate(&mut candidates, candidate);
+            if candidates.len() >= material_limit {
+                return candidates;
             }
         }
     }
@@ -864,6 +868,32 @@ mod tests {
             raw_delta <= (LIVE_L2_MATERIAL_CAP as u64) * 4,
             "live short-prefix readout must stay bounded: raw_delta={raw_delta}"
         );
+    }
+
+    #[test]
+    fn live_gate_short_prefixes_stay_under_hot_readout_budget() {
+        super::super::warm_up_l2_for_ime();
+        for partial in ["бу", "де", "дел"] {
+            let started = Instant::now();
+            let candidates = live_completion_candidates(request("", partial));
+            let elapsed_us = started.elapsed().as_micros();
+            let budget_us = if cfg!(debug_assertions) {
+                50_000
+            } else {
+                10_000
+            };
+
+            assert!(
+                elapsed_us <= budget_us,
+                "live short-prefix readout too slow for {partial:?}: {elapsed_us}us; candidates={candidates:?}"
+            );
+            assert!(
+                candidates
+                    .iter()
+                    .all(|candidate| candidate.surface.starts_with(partial)),
+                "short-prefix candidates must preserve prefix for {partial:?}: {candidates:?}"
+            );
+        }
     }
 
     #[test]

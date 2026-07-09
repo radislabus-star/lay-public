@@ -106,8 +106,8 @@ pub(crate) fn score_live_completion_peak(
     let usage = super::cached_usage_prior_snapshot();
     let rejected =
         usage.rejected_word_prior(&surface) + usage.context_rejected_word_prior(&context, &surface);
-    let foundation = foundation_resonance(&surface);
-    let known = known_surface_mass(&surface);
+    let foundation = live_foundation_resonance(&surface);
+    let known = live_known_surface_mass(&surface);
     let prefix_fit = prefix_fit_mass(partial, &surface);
     let accepted = accepted_count.min(20) as f32 * 0.030;
     let positive = structural
@@ -212,6 +212,14 @@ fn foundation_resonance(word: &str) -> f32 {
         .unwrap_or(0.0)
 }
 
+fn live_foundation_resonance(word: &str) -> f32 {
+    if crate::lexicon::is_common_ru_word(word) {
+        0.12
+    } else {
+        0.0
+    }
+}
+
 fn layout_resonance(role: CorrectionSourceRole, original: &str, replacement: &str) -> f32 {
     if role != CorrectionSourceRole::Layout {
         return 0.0;
@@ -247,6 +255,16 @@ fn known_surface_mass(word: &str) -> f32 {
         0.14
     } else if crate::russian_lexicon::is_known_russian_word_or_form(word) {
         0.10
+    } else if crate::typing_transition::state::word_has_common_usage_authority(word) {
+        0.08
+    } else {
+        0.0
+    }
+}
+
+fn live_known_surface_mass(word: &str) -> f32 {
+    if crate::lexicon::is_common_ru_word(word) {
+        0.14
     } else if crate::typing_transition::state::word_has_common_usage_authority(word) {
         0.08
     } else {

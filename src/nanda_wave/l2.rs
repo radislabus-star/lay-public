@@ -116,6 +116,7 @@ pub(super) fn warm_up_ime_word_candidate_memory() {
     // Live IME must not pay cold OnceLock construction during the first word.
     // The decoder is compact state memory; corpus strings are training material,
     // not the hot authority path.
+    crate::lexicon::warm_up_for_ime();
     super::l2_surface_decoder::warm_up();
     let _ = broad_prefix_index().stats();
     let _ = l2_short_position_seed_index().len();
