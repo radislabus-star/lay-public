@@ -121,6 +121,10 @@ pub(super) fn warm_up_ime_word_candidate_memory() {
     let _ = l2_short_position_seed_index().len();
 }
 
+pub fn ime_word_candidate_memory_is_warm() -> bool {
+    super::l2_surface_decoder::is_warm() && BROAD_PREFIX_INDEX.get().is_some()
+}
+
 pub fn l2_surface_memory_status() -> L2SurfaceMemoryStatus {
     let hot = surface_motif_memory();
     let broad = broad_prefix_index().stats();
@@ -335,6 +339,9 @@ pub fn ime_l2_short_seed_word_candidates(
     let normalized = token.to_lowercase();
     let token_len = normalized.chars().count();
     if !(2..=4).contains(&token_len) || !normalized.chars().all(is_cyrillic_letter) {
+        return Vec::new();
+    }
+    if L2_SHORT_POSITION_SEED_INDEX.get().is_none() {
         return Vec::new();
     }
     let Some(words) = l2_short_position_seed_index().get(&normalized) else {

@@ -14,6 +14,7 @@ fn correction_gate_metrics_are_status_only() {
         correction_safety: CorrectionSafety::Normal,
         typing_assist_pipeline: &pipeline,
         nanda_autocorrect: false,
+        nanda_wave_options: lay::nanda_wave::WaveOptions::default(),
         correction_mode: CorrectionMode::DeterministicOnly,
     });
 

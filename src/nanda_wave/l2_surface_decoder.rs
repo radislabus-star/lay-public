@@ -89,6 +89,10 @@ pub(super) fn warm_up() {
     let _ = decoder().stats();
 }
 
+pub(super) fn is_warm() -> bool {
+    DECODER.get().is_some()
+}
+
 pub(super) fn stats() -> L2SurfaceDecoderStats {
     decoder().stats()
 }

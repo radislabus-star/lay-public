@@ -16,6 +16,8 @@ use std::sync::{Mutex, OnceLock};
 use std::time::Instant;
 
 const LIVE_COMPLETION_CACHE_LIMIT: usize = 128;
+const LIVE_L2_MATERIAL_FACTOR: usize = 2;
+const LIVE_L2_MATERIAL_CAP: usize = 64;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LiveCompletionRequest<'a> {
@@ -98,6 +100,17 @@ pub fn live_completion_candidates(
         );
         return Vec::new();
     }
+    if !l2::ime_word_candidate_memory_is_warm() {
+        super::ensure_l2_ime_warmup_started();
+        record_live_gate_stats(
+            started,
+            LiveGateRecord {
+                cache_hit: false,
+                ..LiveGateRecord::default()
+            },
+        );
+        return Vec::new();
+    }
     let cache_key = LiveCompletionCacheKey {
         context_tail: live_completion_context_tail(request.context_prefix),
         partial: partial.clone(),
@@ -117,11 +130,7 @@ pub fn live_completion_candidates(
         return cached;
     }
 
-    let raw = live_l2_word_candidates(
-        request.context_prefix,
-        &partial,
-        request.limit.saturating_mul(4).max(request.limit),
-    );
+    let raw = live_l2_word_candidates(request.context_prefix, &partial, request.limit);
 
     let raw_count = raw.len();
     let context_tokens = super::llmwave::tokenize(request.context_prefix);
@@ -305,7 +314,12 @@ fn live_l2_word_candidates(
         return Vec::new();
     }
 
-    let material_limit = limit.saturating_mul(4).max(limit);
+    if !l2::ime_word_candidate_memory_is_warm() {
+        super::ensure_l2_ime_warmup_started();
+        return Vec::new();
+    }
+
+    let material_limit = live_l2_material_limit(limit);
     let mut candidates = Vec::new();
     for candidate in
         l2::ime_l2_surface_decoder_candidates(context_prefix, &normalized, material_limit)
@@ -342,6 +356,13 @@ fn live_l2_word_candidates(
         }
     }
     candidates
+}
+
+fn live_l2_material_limit(limit: usize) -> usize {
+    limit
+        .saturating_mul(LIVE_L2_MATERIAL_FACTOR)
+        .max(limit)
+        .min(LIVE_L2_MATERIAL_CAP)
 }
 
 fn push_unique_live_l2_candidate(
@@ -758,6 +779,7 @@ mod tests {
 
     #[test]
     fn live_gate_returns_prefix_preserving_candidates() {
+        super::super::warm_up_l2_for_ime();
         let candidates = live_completion_candidates(request("я хочу ", "пров"));
         assert!(
             candidates
@@ -775,6 +797,7 @@ mod tests {
 
     #[test]
     fn live_gate_allows_authorized_short_prefix_candidates() {
+        super::super::warm_up_l2_for_ime();
         let center_candidates = l2::ime_l2_word_candidates("я хочу ", "пр", 12);
         assert!(
             center_candidates
@@ -805,6 +828,7 @@ mod tests {
 
     #[test]
     fn live_gate_prefers_exact_prefix_continuation_from_l2_center() {
+        super::super::warm_up_l2_for_ime();
         let candidates = live_completion_candidates(request("как будто нет ", "кандидат"));
         assert!(
             candidates
@@ -824,6 +848,22 @@ mod tests {
         assert!(after.raw_candidates >= before.raw_candidates);
         assert!(after.returned_candidates >= before.returned_candidates);
         assert!(after.total_us >= before.total_us);
+    }
+
+    #[test]
+    fn live_gate_caps_short_prefix_material_pool() {
+        super::super::warm_up_l2_for_ime();
+        let before = live_candidate_gate_stats();
+        for partial in ["со", "пол", "дал", "чт"] {
+            let _ = live_completion_candidates(request("", partial));
+        }
+        let after = live_candidate_gate_stats();
+        let raw_delta = after.raw_candidates.saturating_sub(before.raw_candidates);
+
+        assert!(
+            raw_delta <= (LIVE_L2_MATERIAL_CAP as u64) * 4,
+            "live short-prefix readout must stay bounded: raw_delta={raw_delta}"
+        );
     }
 
     #[test]

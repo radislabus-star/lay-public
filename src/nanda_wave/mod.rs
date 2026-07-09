@@ -43,6 +43,9 @@ pub use signal::{ActiveMode, LayerTrace, WaveDecision, WavePacket, WaveTrace, Wo
 pub use trace::{run_wave_trace, run_wave_trace_with_options};
 pub use usage_prior::UsagePriorSnapshot;
 
+static L2_IME_WARMUP_STARTED: std::sync::atomic::AtomicBool =
+    std::sync::atomic::AtomicBool::new(false);
+
 pub fn word_usage_prior(word: &str) -> f32 {
     usage_prior::word_usage_prior(word)
 }
@@ -152,5 +155,20 @@ pub fn warm_up_for_ime() {
 }
 
 pub fn warm_up_l2_for_ime() {
+    L2_IME_WARMUP_STARTED.store(true, std::sync::atomic::Ordering::Relaxed);
     l2::warm_up_ime_word_candidate_memory();
+}
+
+pub fn ensure_l2_ime_warmup_started() {
+    if L2_IME_WARMUP_STARTED
+        .compare_exchange(
+            false,
+            true,
+            std::sync::atomic::Ordering::Relaxed,
+            std::sync::atomic::Ordering::Relaxed,
+        )
+        .is_ok()
+    {
+        std::thread::spawn(warm_up_l2_for_ime);
+    }
 }
