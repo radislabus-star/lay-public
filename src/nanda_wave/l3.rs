@@ -213,6 +213,9 @@ fn apply_source_enabled(source: &str, options: &WaveOptions) -> bool {
         source if source == super::l2::L2_SURFACE_COMPLETION_CELL => {
             options.is_enabled(super::l2::L2_SURFACE_COMPLETION_CELL)
         }
+        source if source == super::lexical_attractor::LEXICAL_ATTRACTOR_CELL => {
+            options.is_enabled(super::lexical_attractor::LEXICAL_ATTRACTOR_CELL)
+        }
         source if source == super::context_wave::SEMANTIC_WORD_SOURCE => {
             options.is_enabled(super::context_wave::SEMANTIC_WORD_SOURCE)
         }

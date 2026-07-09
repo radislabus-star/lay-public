@@ -142,9 +142,21 @@ fn unsafe_edit(value: &Value) -> bool {
     !unsafe_reasons(value).is_empty()
 }
 
+fn blocked_unsafe_candidate(value: &Value) -> bool {
+    value.get("kind").and_then(Value::as_str) == Some("candidate_before_apply")
+        && value.get("action_kind").and_then(Value::as_str) == Some("block_unsafe")
+        && !value
+            .get("safety_allow_apply")
+            .and_then(Value::as_bool)
+            .unwrap_or(true)
+}
+
 fn unsafe_reasons(value: &Value) -> Vec<&'static str> {
     let mut reasons = Vec::new();
     if value.get("kind").and_then(Value::as_str) == Some("candidate_before_apply") {
+        if blocked_unsafe_candidate(value) {
+            return reasons;
+        }
         if value
             .get("boundary_changed")
             .and_then(Value::as_bool)
@@ -272,6 +284,7 @@ fn append_selected_candidate_reasons(gate: Option<&Value>, reasons: &mut Vec<&'s
 struct UnsafeScoreboard {
     records: usize,
     unsafe_records: usize,
+    blocked_unsafe: usize,
     candidate_before_apply: usize,
     action_records: usize,
     boundary_changed: usize,
@@ -553,6 +566,9 @@ impl UnsafeScoreboard {
         } else {
             self.action_records += 1;
         }
+        if blocked_unsafe_candidate(value) {
+            self.blocked_unsafe += 1;
+        }
         let reasons = unsafe_reasons(value);
         if !reasons.is_empty() {
             self.unsafe_records += 1;
@@ -583,6 +599,7 @@ impl UnsafeScoreboard {
             "records": {
                 "total": self.records,
                 "unsafe": self.unsafe_records,
+                "blocked_unsafe": self.blocked_unsafe,
                 "candidate_before_apply": self.candidate_before_apply,
                 "actions": self.action_records
             },
@@ -708,6 +725,30 @@ mod tests {
                 .copied(),
             Some(1)
         );
+    }
+
+    #[test]
+    fn unsafe_scoreboard_counts_blocked_unsafe_without_failure() {
+        let value = json!({
+            "kind": "candidate_before_apply",
+            "action_kind": "block_unsafe",
+            "mutation_route": "ime_committed_tail",
+            "from": "а ",
+            "to": " ",
+            "boundary_changed": true,
+            "changes_non_last_word": false,
+            "word_count_changed": true,
+            "would_touch_words": 1,
+            "safety_allow_apply": false,
+            "safety_reason": "unsafe_boundary_edit_without_proof"
+        });
+        let mut scoreboard = UnsafeScoreboard::default();
+        scoreboard.inspect(&value);
+        assert!(!unsafe_edit(&value));
+        assert_eq!(scoreboard.candidate_before_apply, 1);
+        assert_eq!(scoreboard.blocked_unsafe, 1);
+        assert_eq!(scoreboard.unsafe_records, 0);
+        assert_eq!(scoreboard.boundary_changed, 0);
     }
 
     #[test]

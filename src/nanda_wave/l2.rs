@@ -44,6 +44,7 @@ const L2_SURFACE_FOUNDATION_RU_DATA: &str =
 const L2_SURFACE_HOT_RU_DATA: &str = include_str!("../../data/lexicon/l2_surface_hot_ru.txt");
 pub(super) const L2_SURFACE_MOTIF_CELL: &str = "L2SurfaceMotifCell32";
 pub(super) const L2_SURFACE_COMPLETION_CELL: &str = "L2SurfaceCompletionCell32";
+const L2_FORM_ATTRACTOR_LIMIT: usize = 6;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum L2ImeWordCandidateKind {
@@ -575,6 +576,11 @@ pub fn run_l2_refined_with_feedback(
             has_l2_surface_motif_candidate |= candidate.source == L2_SURFACE_MOTIF_CELL;
             push_unique_candidate(&mut candidates, candidate);
         }
+        if options.is_enabled(LEXICAL_ATTRACTOR_CELL) {
+            for candidate in form_attractor_word_candidates(prefix, token, &context, l1) {
+                push_unique_candidate(&mut candidates, candidate);
+            }
+        }
         if options.is_enabled(L2_SURFACE_MOTIF_CELL) {
             for candidate in surface_motif_scan_candidates(tail, l1, &context) {
                 has_l2_surface_motif_candidate |= candidate.source == L2_SURFACE_MOTIF_CELL;
@@ -584,7 +590,7 @@ pub fn run_l2_refined_with_feedback(
     }
     mark_timing!("surface-motif");
     let has_explicit_boundary_split = token.chars().all(is_cyrillic_letter)
-        && light_boundary_replacement(&token.to_lowercase()).is_some();
+        && boundary_replacement_for_word(&token.to_lowercase()).is_some();
     if options.is_enabled("BoundaryCell32") {
         if !has_l2_surface_motif_candidate || has_explicit_boundary_split {
             for candidate in boundary_split_candidates(prefix, token, l1, &context) {
@@ -1206,6 +1212,7 @@ fn surface_motif_word_candidates(
     for candidate in &surface_candidates {
         let candidate_len = candidate.word.chars().count();
         let distance = damerau_levenshtein(&normalized, &candidate.word);
+        let ranked_score = surface_attractor_score(candidate.score, &candidate.word);
         let is_completion = candidate.word.starts_with(&normalized) && candidate_len > len;
 
         if options.is_enabled(L2_SURFACE_MOTIF_CELL)
@@ -1221,13 +1228,7 @@ fn surface_motif_word_candidates(
             )
             && (!fuzzy_surface_candidate_blocked(word, &normalized, &candidate.word)
                 || repeated_all_caps_surface_allowed(word, &normalized, &candidate.word))
-            && surface_motif_typo_allowed(
-                &normalized,
-                &candidate.word,
-                len,
-                distance,
-                candidate.score,
-            )
+            && surface_motif_typo_allowed(&normalized, &candidate.word, len, distance, ranked_score)
         {
             out.push(surface_motif_candidate(SurfaceMotifCandidateInput {
                 prefix,
@@ -1236,13 +1237,13 @@ fn surface_motif_word_candidates(
                 trailing,
                 replacement_lower: &candidate.word,
                 source: L2_SURFACE_MOTIF_CELL,
-                score: candidate.score,
+                score: ranked_score,
                 l1_overlap: candidate.l1_overlap,
                 l2_overlap: candidate.l2_overlap,
                 motif_overlap: candidate.motif_overlap,
                 prefix_match: candidate.prefix_match,
                 distance,
-                risk: surface_motif_typo_risk(context, distance),
+                risk: surface_attractor_risk(context, distance, &candidate.word),
                 l1,
                 context,
             }));
@@ -1265,7 +1266,7 @@ fn surface_motif_word_candidates(
                 trailing,
                 replacement_lower: &candidate.word,
                 source: L2_SURFACE_COMPLETION_CELL,
-                score: candidate.score,
+                score: ranked_score,
                 l1_overlap: candidate.l1_overlap,
                 l2_overlap: candidate.l2_overlap,
                 motif_overlap: candidate.motif_overlap,
@@ -1325,6 +1326,155 @@ fn surface_motif_word_candidates(
         }
     }
     out
+}
+
+fn form_attractor_word_candidates(
+    prefix: &str,
+    token: &str,
+    context: &TailContext,
+    l1: &[WavePacket],
+) -> Vec<WordCandidate> {
+    if context.has_technical_context() {
+        return Vec::new();
+    }
+    let (leading, word, trailing) = split_word_punctuation(token);
+    let normalized = word.to_lowercase();
+    let len = normalized.chars().count();
+    if !(4..=18).contains(&len) || !normalized.chars().all(is_cyrillic_letter) {
+        return Vec::new();
+    }
+    if surface_motif_stable_existing_word(&normalized) {
+        return Vec::new();
+    }
+
+    let context_tokens = super::llmwave::tokenize(prefix);
+    let usage = super::usage_prior::cached_usage_prior_snapshot();
+    let mut out = surface_motif_memory()
+        .surface_candidates_for_text_with_usage(&normalized, 32, &usage)
+        .into_iter()
+        .filter_map(|candidate| {
+            let replacement_lower = candidate.word;
+            if replacement_lower == normalized {
+                return None;
+            }
+            let distance = damerau_levenshtein(&normalized, &replacement_lower);
+            let ranked_score = surface_attractor_score(candidate.score, &replacement_lower);
+            let hot = usage.hot_readout(
+                &context_tokens,
+                LEXICAL_ATTRACTOR_CELL,
+                "replacement",
+                &replacement_lower,
+            );
+            let signed_bonus =
+                ((hot.transition.signed_weight * 180.0).round() as i32).clamp(-180, 180);
+            let usage_bonus = ((hot.word_prior + hot.context_prior) * 1_600.0)
+                .round()
+                .clamp(0.0, 260.0) as u32;
+            let rejected_penalty = ((hot.rejected_prior + hot.context_rejected) * 1_400.0)
+                .round()
+                .clamp(0.0, 220.0) as u32;
+            let signed_score = if signed_bonus.is_negative() {
+                ranked_score.saturating_sub(signed_bonus.unsigned_abs())
+            } else {
+                ranked_score.saturating_add(signed_bonus as u32)
+            }
+            .saturating_add(usage_bonus)
+            .saturating_sub(rejected_penalty);
+
+            if !form_attractor_has_authority(
+                &normalized,
+                &replacement_lower,
+                len,
+                distance,
+                signed_score,
+            ) || fuzzy_surface_candidate_blocked(word, &normalized, &replacement_lower)
+            {
+                return None;
+            }
+
+            let risk = surface_attractor_risk(context, distance, &replacement_lower)
+                + ((hot.rejected_prior + hot.context_rejected) * 0.24).clamp(0.0, 0.16)
+                - (hot.transition.attraction * 0.08).clamp(0.0, 0.06)
+                + (hot.transition.repulsion * 0.12).clamp(0.0, 0.10);
+            Some(surface_motif_candidate(SurfaceMotifCandidateInput {
+                prefix,
+                leading,
+                word,
+                trailing,
+                replacement_lower: &replacement_lower,
+                source: LEXICAL_ATTRACTOR_CELL,
+                score: signed_score,
+                l1_overlap: candidate.l1_overlap,
+                l2_overlap: candidate.l2_overlap,
+                motif_overlap: candidate.motif_overlap,
+                prefix_match: candidate.prefix_match,
+                distance,
+                risk: risk.clamp(0.04, 0.40),
+                l1,
+                context,
+            }))
+        })
+        .collect::<Vec<_>>();
+
+    out.sort_by(|left, right| {
+        (right.energy - right.risk)
+            .total_cmp(&(left.energy - left.risk))
+            .then_with(|| left.text.cmp(&right.text))
+    });
+    out.dedup_by(|left, right| left.text == right.text);
+    out.truncate(L2_FORM_ATTRACTOR_LIMIT);
+    out
+}
+
+fn form_attractor_has_authority(
+    input: &str,
+    candidate: &str,
+    input_len: usize,
+    distance: usize,
+    score: u32,
+) -> bool {
+    if score >= 1_420 && distance <= 3 {
+        return true;
+    }
+    if surface_motif_typo_allowed(input, candidate, input_len, distance, score) {
+        return true;
+    }
+    let corpus_prior = surface_corpus_prior(candidate);
+    input_len >= 6 && distance <= 3 && score >= 1_120 && corpus_prior >= 0.36
+}
+
+fn surface_attractor_score(base: u32, word: &str) -> u32 {
+    base.saturating_add(surface_corpus_score_boost(word))
+}
+
+fn surface_corpus_score_boost(word: &str) -> u32 {
+    let prior = surface_corpus_prior(word);
+    (prior * 520.0).round().clamp(0.0, 520.0) as u32
+}
+
+fn surface_attractor_risk(context: &TailContext, distance: usize, word: &str) -> f32 {
+    let base = surface_motif_typo_risk(context, distance);
+    (base - surface_corpus_prior(word) * 0.10).clamp(0.04, 0.40)
+}
+
+fn surface_corpus_prior(word: &str) -> f32 {
+    if is_common_ru_word(word) {
+        return 1.0;
+    }
+    if let Some(rank) = l2_surface_foundation_rank(word) {
+        return match rank {
+            0..=999 => 0.82,
+            1_000..=4_999 => 0.66,
+            5_000..=19_999 => 0.44,
+            20_000..=59_999 => 0.24,
+            _ => 0.10,
+        };
+    }
+    if crate::russian_lexicon::is_known_russian_word_or_form(word) {
+        0.18
+    } else {
+        0.0
+    }
 }
 
 fn repeated_letter_surface_candidate(
@@ -2236,8 +2386,8 @@ fn boundary_split_candidates(
             return vec![WordCandidate {
                 text: format!("{prefix}{}", apply_word_case(token, &replacement)),
                 source: "BoundaryCell32",
-                energy: l1_energy(l1, "BoundaryCell32").max(0.86),
-                risk: 0.08,
+                energy: l1_energy(l1, "BoundaryCell32").max(0.99),
+                risk: 0.04,
                 support: {
                     let mut support = candidate_support(l1, context);
                     support.push("direct-glued-phrase-boundary".to_string());
@@ -3166,15 +3316,52 @@ mod tests {
     }
 
     #[test]
-    fn l2_surface_motif_cell_recovers_adjacent_transposition() {
+    fn l2_surface_layer_recovers_adjacent_transposition() {
         let original = "пукнт ";
         let l1 = run_l1(original);
         let candidates = run_l2(original, &l1);
         assert!(
             candidates.iter().any(|candidate| {
-                candidate.source == L2_SURFACE_MOTIF_CELL && candidate.text == "пункт"
+                matches!(
+                    candidate.source,
+                    L2_SURFACE_MOTIF_CELL | LEXICAL_ATTRACTOR_CELL
+                ) && candidate.text == "пункт"
             }),
             "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn l2_form_attractor_prefers_clean_corpus_center() {
+        let original = "пукнт ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        let first = candidates
+            .first()
+            .expect("dirty transposition should produce L2 attractor candidates");
+        assert!(matches!(
+            first.source,
+            L2_SURFACE_MOTIF_CELL | LEXICAL_ATTRACTOR_CELL
+        ));
+        assert_eq!(first.text, "пункт");
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.text == "пуант" && candidate.source == LEXICAL_ATTRACTOR_CELL
+            }),
+            "near clean centers should remain visible but lower-ranked: {candidates:?}"
+        );
+    }
+
+    #[test]
+    fn l2_form_attractor_does_not_rewrite_stable_word() {
+        let original = "писать ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        assert!(
+            candidates
+                .iter()
+                .all(|candidate| candidate.source != LEXICAL_ATTRACTOR_CELL),
+            "stable word should not become an attractor rewrite: {candidates:?}"
         );
     }
 

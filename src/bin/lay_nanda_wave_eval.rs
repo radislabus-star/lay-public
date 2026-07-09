@@ -37,6 +37,7 @@ const LLMWAVE_PROMOTION_MIN_TOP1_PERCENT: f32 = 50.0;
 const LLMWAVE_PROMOTION_MIN_TOP3_PERCENT: f32 = 85.0;
 const L2_SURFACE_MOTIF_CELL: &str = "L2SurfaceMotifCell32";
 const L2_SURFACE_COMPLETION_CELL: &str = "L2SurfaceCompletionCell32";
+const L2_WORD_ATTRACTOR_CELL: &str = "L2WordAttractorCell32";
 
 fn main() -> io::Result<()> {
     let args = env::args().collect::<Vec<_>>();
@@ -241,6 +242,13 @@ fn main() -> io::Result<()> {
         candidate_quality::print_json()?;
         return Ok(());
     }
+    if let Some(text) = arg_value(&args, "--l2-form-attractor-candidates") {
+        let limit = arg_value(&args, "--limit")
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(12);
+        print_l2_form_attractor_candidates(text, &options, limit)?;
+        return Ok(());
+    }
     if args.iter().any(|arg| arg == "--ime-hit-rate-report") {
         ime_hit_rate::print_json()?;
         return Ok(());
@@ -347,7 +355,7 @@ fn main() -> io::Result<()> {
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --l2-phase-coverage-recent [--limit N] [--candidate-limit N] [--max-examples N] | --l2-candidate-phase-shadow-recent [--l2-phase-memory PATH] [--limit N] [--max-examples N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --llmwave-ingest-clean-corpus PATH [--max-records N] | --llmwave-ingest-pack-clean-corpus PATH [--out PATH] [--max-records N] | --memory-learned-report | --llmwave-corpus-report PATH [--test-corpus PATH] [--max-lines N] | --llmwave-dirty-report [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --llmwave-promotion-gate [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --candidate-quality-report | --ime-hit-rate-report | --dirty-log-eval | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --l2-form-attractor-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --l2-phase-coverage-recent [--limit N] [--candidate-limit N] [--max-examples N] | --l2-candidate-phase-shadow-recent [--l2-phase-memory PATH] [--limit N] [--max-examples N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --llmwave-ingest-clean-corpus PATH [--max-records N] | --llmwave-ingest-pack-clean-corpus PATH [--out PATH] [--max-records N] | --memory-learned-report | --llmwave-corpus-report PATH [--test-corpus PATH] [--max-lines N] | --llmwave-dirty-report [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --llmwave-promotion-gate [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --candidate-quality-report | --ime-hit-rate-report | --dirty-log-eval | --cases PATH"
         );
         return Ok(());
     }
@@ -1591,17 +1599,16 @@ fn print_surface_l2_ablation(cases: &[EvalCase]) {
         },
         Scenario {
             label: "without_surface_l2",
-            disabled: vec![
-                L2_SURFACE_MOTIF_CELL.to_string(),
-                L2_SURFACE_COMPLETION_CELL.to_string(),
-            ],
+            disabled: surface_l2_cells(),
         },
         Scenario {
             label: "l2_surface_only",
             disabled: wave_cells()
                 .iter()
                 .filter(|cell| {
-                    **cell != L2_SURFACE_MOTIF_CELL && **cell != L2_SURFACE_COMPLETION_CELL
+                    **cell != L2_SURFACE_MOTIF_CELL
+                        && **cell != L2_SURFACE_COMPLETION_CELL
+                        && **cell != L2_WORD_ATTRACTOR_CELL
                 })
                 .map(|cell| (*cell).to_string())
                 .collect(),
@@ -1636,6 +1643,7 @@ fn print_surface_l2_ablation(cases: &[EvalCase]) {
                     .filter(|candidate| {
                         candidate.source == L2_SURFACE_MOTIF_CELL
                             || candidate.source == L2_SURFACE_COMPLETION_CELL
+                            || candidate.source == L2_WORD_ATTRACTOR_CELL
                     })
                     .count()
             })
@@ -1684,6 +1692,40 @@ fn print_ensemble_contribution_report(cases: &[EvalCase], full_cases: usize) {
         let report = contribution_report_for_scenario(cases, &baseline, &scenario);
         print_contribution_report(&report);
     }
+}
+
+fn print_l2_form_attractor_candidates(
+    text: &str,
+    options: &WaveOptions,
+    limit: usize,
+) -> io::Result<()> {
+    let trace = run_wave_trace_with_options(text, options);
+    let candidates = trace
+        .l2_candidates
+        .iter()
+        .filter(|candidate| candidate.source == L2_WORD_ATTRACTOR_CELL)
+        .take(limit)
+        .map(|candidate| {
+            serde_json::json!({
+                "text": candidate.text,
+                "source": candidate.source,
+                "energy": candidate.energy,
+                "risk": candidate.risk,
+                "support": candidate.support,
+            })
+        })
+        .collect::<Vec<_>>();
+    println!(
+        "{}",
+        serde_json::to_string_pretty(&serde_json::json!({
+            "kind": "l2_form_attractor_candidates",
+            "input": text,
+            "source": L2_WORD_ATTRACTOR_CELL,
+            "read_as": "clean corpus word-form attractor; dirty input is only a probe, not training authority",
+            "candidates": candidates,
+        }))?
+    );
+    Ok(())
 }
 
 #[derive(Debug, Clone)]
@@ -1771,10 +1813,14 @@ fn l1_sensor_cells() -> Vec<String> {
 }
 
 fn surface_l2_cells() -> Vec<String> {
-    [L2_SURFACE_MOTIF_CELL, L2_SURFACE_COMPLETION_CELL]
-        .iter()
-        .map(|cell| (*cell).to_string())
-        .collect()
+    [
+        L2_SURFACE_MOTIF_CELL,
+        L2_SURFACE_COMPLETION_CELL,
+        L2_WORD_ATTRACTOR_CELL,
+    ]
+    .iter()
+    .map(|cell| (*cell).to_string())
+    .collect()
 }
 
 fn contribution_report_for_scenario(
@@ -2337,6 +2383,13 @@ fn wave_cell_meta(name: &str) -> WaveCellMeta {
             layer: "L2",
             phase: 2.20,
         },
+        "L2WordAttractorCell32" => WaveCellMeta {
+            label: "L2 аттрактор",
+            role: "полное слово из corpus/L1/L2 центра",
+            zone: "candidates",
+            layer: "L2",
+            phase: 2.24,
+        },
         "TechnicalContextCell32" => WaveCellMeta {
             label: "Защита",
             role: "контекст защиты",
@@ -2442,6 +2495,7 @@ fn wave_cells() -> &'static [&'static str] {
         "SemanticWordCell32",
         "L2SurfaceMotifCell32",
         "L2SurfaceCompletionCell32",
+        "L2WordAttractorCell32",
         "TechnicalContextCell32",
         "PhraseForecastCell32",
         "PatternWaveCell32",

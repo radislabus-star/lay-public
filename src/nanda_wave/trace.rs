@@ -110,6 +110,15 @@ mod tests {
     }
 
     #[test]
+    fn trace_prefers_direct_boundary_phrase_over_word_form_attractor() {
+        let trace = run_wave_trace("тоесть ");
+        assert_eq!(trace.output(), Some("то есть "));
+        assert!(trace.l2_candidates.iter().any(|candidate| {
+            candidate.source == "BoundaryCell32" && candidate.text == "то есть"
+        }));
+    }
+
+    #[test]
     fn trace_keeps_single_all_caps_russian_term() {
         let trace = run_wave_trace("БЕЙСОВКИ ");
         assert_eq!(trace.output(), None);
