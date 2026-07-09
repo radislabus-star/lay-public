@@ -68,6 +68,10 @@ fn print_l2_surface_status() {
     println!("  broad_source_words: {}", status.broad_source_words);
     println!("  broad_prefix_keys: {}", status.broad_prefix_keys);
     println!("  broad_word_refs: {}", status.broad_word_refs);
+    println!("  decoder_source_words: {}", status.decoder_source_words);
+    println!("  decoder_states: {}", status.decoder_states);
+    println!("  decoder_arcs: {}", status.decoder_arcs);
+    println!("  decoder_hot_bytes: {}", status.decoder_hot_bytes);
     println!(
         "  foundation_source_limit: {}",
         status.foundation_source_limit

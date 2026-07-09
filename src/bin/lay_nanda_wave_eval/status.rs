@@ -251,6 +251,13 @@ fn l2_surface_memory_json() -> serde_json::Value {
             "foundation_source_limit": status.foundation_source_limit,
             "foundation_live_scan_limit": status.foundation_live_scan_limit
         },
+        "surface_decoder": {
+            "source_words": status.decoder_source_words,
+            "states": status.decoder_states,
+            "arcs": status.decoder_arcs,
+            "compact_bytes": status.decoder_hot_bytes,
+            "authority": "hot grapheme-state decoder; corpus strings are training material"
+        },
         "generated_forms": {
             "loaded": status.generated_forms_loaded,
             "words": status.generated_forms_words,

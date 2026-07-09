@@ -75,6 +75,10 @@ pub struct L2SurfaceMemoryStatus {
     pub broad_source_words: usize,
     pub broad_prefix_keys: usize,
     pub broad_word_refs: usize,
+    pub decoder_source_words: usize,
+    pub decoder_states: usize,
+    pub decoder_arcs: usize,
+    pub decoder_hot_bytes: usize,
     pub foundation_source_limit: usize,
     pub foundation_live_scan_limit: usize,
     pub generated_forms_loaded: bool,
@@ -109,9 +113,10 @@ pub(super) fn warm_up_surface_motif_memory() {
 }
 
 pub(super) fn warm_up_ime_word_candidate_memory() {
-    // Live IME must not build the full L2 center heap during startup, but it
-    // can warm compact readout indexes so the first visible candidate does not
-    // pay the prefix-index construction cost.
+    // Live IME must not pay cold OnceLock construction during the first word.
+    // The decoder is compact state memory; corpus strings are training material,
+    // not the hot authority path.
+    super::l2_surface_decoder::warm_up();
     let _ = broad_prefix_index().stats();
     let _ = l2_short_position_seed_index().len();
 }
@@ -119,6 +124,7 @@ pub(super) fn warm_up_ime_word_candidate_memory() {
 pub fn l2_surface_memory_status() -> L2SurfaceMemoryStatus {
     let hot = surface_motif_memory();
     let broad = broad_prefix_index().stats();
+    let decoder = super::l2_surface_decoder::stats();
     let generated_forms_loaded =
         crate::russian_lexicon::russian_generated_form_dictionary_is_warm();
     let generated_forms_words = if generated_forms_loaded {
@@ -136,11 +142,56 @@ pub fn l2_surface_memory_status() -> L2SurfaceMemoryStatus {
         broad_source_words: broad.source_words,
         broad_prefix_keys: broad.prefix_keys,
         broad_word_refs: broad.word_refs,
+        decoder_source_words: decoder.source_words,
+        decoder_states: decoder.states,
+        decoder_arcs: decoder.arcs,
+        decoder_hot_bytes: decoder.hot_bytes,
         foundation_source_limit: L2_FOUNDATION_SOURCE_LIMIT,
         foundation_live_scan_limit: L2_FOUNDATION_LIVE_SCAN_LIMIT,
         generated_forms_loaded,
         generated_forms_words,
     }
+}
+
+pub fn ime_l2_surface_decoder_candidates(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> Vec<L2ImeWordCandidate> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let normalized = token.to_lowercase();
+    let token_len = normalized.chars().count();
+    if !(2..=18).contains(&token_len) || !normalized.chars().all(is_cyrillic_letter) {
+        return Vec::new();
+    }
+    let context_tokens = super::llmwave::tokenize(context_prefix);
+    let usage = super::usage_prior::cached_usage_prior_snapshot();
+    super::l2_surface_decoder::completion_candidates(
+        &normalized,
+        limit.saturating_mul(2).max(limit),
+    )
+    .into_iter()
+    .filter(|candidate| {
+        candidate.word.starts_with(&normalized) && candidate.word.chars().count() > token_len
+    })
+    .take(limit)
+    .map(|candidate| {
+        let usage_prior = usage.word_prior(&candidate.word);
+        let context_prior = usage.context_word_prior(&context_tokens, &candidate.word);
+        L2ImeWordCandidate {
+            surface: candidate.word,
+            kind: L2ImeWordCandidateKind::Completion,
+            score: 620u32.saturating_add((candidate.score / 4).min(260)),
+            l1_overlap: token_len,
+            l2_overlap: candidate.support as usize,
+            motif_overlap: candidate.generated_chars,
+            usage_prior,
+            context_prior,
+        }
+    })
+    .collect()
 }
 
 pub fn ime_l2_word_candidates(
@@ -224,6 +275,12 @@ fn extend_ime_l2_prefix_material(
         return;
     }
     let material_limit = limit.saturating_mul(2).max(limit);
+    for candidate in ime_l2_surface_decoder_candidates(context_prefix, token, material_limit) {
+        push_unique_ime_l2_candidate(candidates, candidate);
+        if ime_l2_completion_count(candidates) >= limit.saturating_mul(2).max(limit) {
+            return;
+        }
+    }
     for candidate in ime_l2_generated_form_prefix_candidates(context_prefix, token, material_limit)
     {
         push_unique_ime_l2_candidate(candidates, candidate);
@@ -3493,6 +3550,19 @@ mod tests {
                 .iter()
                 .all(|candidate| !candidate.surface.starts_with("ер")),
             "L2 must not return display suffixes as word candidates: {candidates:?}"
+        );
+    }
+
+    #[test]
+    fn ime_l2_surface_decoder_feeds_ime_completion_candidates() {
+        let candidates = ime_l2_surface_decoder_candidates("я хочу ", "пров", 8);
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.kind == L2ImeWordCandidateKind::Completion
+                    && candidate.surface.starts_with("пров")
+                    && candidate.surface.chars().count() > 4
+            }),
+            "surface decoder must feed complete generated surfaces, got {candidates:?}"
         );
     }
 
