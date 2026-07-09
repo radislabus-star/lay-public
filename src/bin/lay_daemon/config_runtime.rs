@@ -156,7 +156,7 @@ pub(super) fn active_nanda_precognition() -> bool {
 fn daemon_nanda_trace_active(cfg: &LayConfig) -> bool {
     // Runtime action logs remain under debug_action_log. Full NANDA wave trace
     // is heavier: in IME mode it belongs to lay-ibus-engine, not the daemon.
-    cfg.debug_action_log && !cfg.active_text_backend().should_try_ime()
+    cfg.debug_action_log && daemon_hot_field_policy(cfg).allows_full_nanda_authority()
 }
 
 fn daemon_precognition_trace_active(cfg: &LayConfig) -> bool {
@@ -168,7 +168,12 @@ fn daemon_precognition_trace_active(cfg: &LayConfig) -> bool {
 
 #[cfg(not(test))]
 pub(super) fn active_nanda_autocorrect() -> bool {
-    current_config().nanda_autocorrect
+    let cfg = current_config();
+    cfg.nanda_autocorrect && daemon_hot_field_policy(&cfg).allows_full_nanda_authority()
+}
+
+fn daemon_hot_field_policy(cfg: &LayConfig) -> lay::hot_field::HotFieldPolicy {
+    lay::hot_field::HotFieldPolicy::daemon_for_text_backend(cfg.active_text_backend())
 }
 
 pub(super) fn active_lem_enabled_for_scope(word_count: usize) -> bool {
@@ -221,6 +226,28 @@ mod tests {
     }
 
     #[test]
+    fn ime_backend_does_not_enable_full_daemon_nanda_autocorrect() {
+        let cfg = LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_autocorrect: true,
+            ..LayConfig::default()
+        };
+
+        assert!(!daemon_hot_field_policy(&cfg).allows_full_nanda_authority());
+    }
+
+    #[test]
+    fn auto_backend_does_not_enable_full_daemon_nanda_autocorrect() {
+        let cfg = LayConfig {
+            text_backend: "auto".to_string(),
+            nanda_autocorrect: true,
+            ..LayConfig::default()
+        };
+
+        assert!(!daemon_hot_field_policy(&cfg).allows_full_nanda_authority());
+    }
+
+    #[test]
     fn uinput_backend_can_keep_daemon_precognition_trace_explicitly() {
         let cfg = LayConfig {
             text_backend: "uinput".to_string(),
@@ -241,5 +268,16 @@ mod tests {
         };
 
         assert!(daemon_nanda_trace_active(&cfg));
+    }
+
+    #[test]
+    fn uinput_backend_can_keep_full_daemon_nanda_autocorrect_explicitly() {
+        let cfg = LayConfig {
+            text_backend: "uinput".to_string(),
+            nanda_autocorrect: true,
+            ..LayConfig::default()
+        };
+
+        assert!(daemon_hot_field_policy(&cfg).allows_full_nanda_authority());
     }
 }

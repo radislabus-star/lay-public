@@ -4616,11 +4616,19 @@
       "_origin": "ast"
     },
     {
+      "id": "src_bin_lay_daemon_config_runtime_daemon_hot_field_policy",
+      "label": "daemon_hot_field_policy()",
+      "file_type": "code",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L175",
+      "_origin": "ast"
+    },
+    {
       "id": "src_bin_lay_daemon_config_runtime_active_lem_enabled_for_scope",
       "label": "active_lem_enabled_for_scope()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L174",
+      "source_location": "L179",
       "_origin": "ast"
     },
     {
@@ -4628,7 +4636,7 @@
       "label": "active_lem_weight()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L178",
+      "source_location": "L183",
       "_origin": "ast"
     },
     {
@@ -4636,7 +4644,7 @@
       "label": "active_typing_assist_pipeline_for_auto_replace()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L183",
+      "source_location": "L188",
       "_origin": "ast"
     },
     {
@@ -4652,7 +4660,7 @@
       "label": "ime_backend_does_not_enable_daemon_precognition_trace()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L201",
+      "source_location": "L206",
       "_origin": "ast"
     },
     {
@@ -4660,7 +4668,23 @@
       "label": "ime_backend_does_not_enable_heavy_daemon_wave_trace()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L213",
+      "source_location": "L218",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_bin_lay_daemon_config_runtime_ime_backend_does_not_enable_full_daemon_nanda_autocorrect",
+      "label": "ime_backend_does_not_enable_full_daemon_nanda_autocorrect()",
+      "file_type": "code",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L229",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_bin_lay_daemon_config_runtime_auto_backend_does_not_enable_full_daemon_nanda_autocorrect",
+      "label": "auto_backend_does_not_enable_full_daemon_nanda_autocorrect()",
+      "file_type": "code",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L240",
       "_origin": "ast"
     },
     {
@@ -4668,7 +4692,7 @@
       "label": "uinput_backend_can_keep_daemon_precognition_trace_explicitly()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L224",
+      "source_location": "L251",
       "_origin": "ast"
     },
     {
@@ -4676,7 +4700,15 @@
       "label": "uinput_backend_can_keep_heavy_daemon_wave_trace_explicitly()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L236",
+      "source_location": "L263",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_bin_lay_daemon_config_runtime_uinput_backend_can_keep_full_daemon_nanda_autocorrect_explicitly",
+      "label": "uinput_backend_can_keep_full_daemon_nanda_autocorrect_explicitly()",
+      "file_type": "code",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L274",
       "_origin": "ast"
     },
     {
@@ -26192,6 +26224,166 @@
       "_origin": "ast"
     },
     {
+      "id": "src_hot_field",
+      "label": "hot_field.rs",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_hotruntimeroute",
+      "label": "HotRuntimeRoute",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L11",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_hotauthority",
+      "label": "HotAuthority",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L17",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_hotfieldpolicy",
+      "label": "HotFieldPolicy",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L23",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_hotfieldpolicy_daemon_for_text_backend",
+      "label": ".daemon_for_text_backend()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L29",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_rs_self",
+      "label": "Self",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_hotfieldpolicy_ime",
+      "label": ".ime()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L41",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_hotfieldpolicy_route",
+      "label": ".route()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L48",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_hotfieldpolicy_authority",
+      "label": ".authority()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L52",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_hotfieldpolicy_allows_full_reference_authority",
+      "label": ".allows_full_reference_authority()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L56",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_hotfieldpolicy_allows_full_nanda_authority",
+      "label": ".allows_full_nanda_authority()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L60",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_hotwordauthority",
+      "label": "HotWordAuthority",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L66",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_hotwordreadout",
+      "label": "HotWordReadout",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L73",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_hotwordreadout_is_known",
+      "label": ".is_known()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L78",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_hotfieldsnapshot",
+      "label": "HotFieldSnapshot",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L84",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_hotfieldsnapshot_current",
+      "label": ".current()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L87",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_hotfieldsnapshot_word_readout",
+      "label": ".word_readout()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L91",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_daemon_auto_backend_uses_field_snapshot_only",
+      "label": "daemon_auto_backend_uses_field_snapshot_only()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L113",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_daemon_uinput_backend_can_use_full_reference_authority",
+      "label": "daemon_uinput_backend_can_use_full_reference_authority()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L121",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_hot_word_readout_does_not_need_full_dictionary_for_common_words",
+      "label": "hot_word_readout_does_not_need_full_dictionary_for_common_words()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L128",
+      "_origin": "ast"
+    },
+    {
       "id": "src_ime_correction",
       "label": "ime_correction.rs",
       "file_type": "code",
@@ -36204,7 +36396,7 @@
       "label": "prefix_fit_mass()",
       "file_type": "code",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L275",
+      "source_location": "L276",
       "_origin": "ast"
     },
     {
@@ -36212,7 +36404,7 @@
       "label": "live_completion_anti_wave()",
       "file_type": "code",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L286",
+      "source_location": "L287",
       "_origin": "ast"
     },
     {
@@ -36220,7 +36412,7 @@
       "label": "drift_anti_wave()",
       "file_type": "code",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L298",
+      "source_location": "L299",
       "_origin": "ast"
     },
     {
@@ -36228,7 +36420,7 @@
       "label": "unknown_surface_penalty()",
       "file_type": "code",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L322",
+      "source_location": "L323",
       "_origin": "ast"
     },
     {
@@ -36236,7 +36428,7 @@
       "label": "peak_uncertainty()",
       "file_type": "code",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L340",
+      "source_location": "L341",
       "_origin": "ast"
     },
     {
@@ -36244,7 +36436,7 @@
       "label": "peak_reason()",
       "file_type": "code",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L357",
+      "source_location": "L358",
       "_origin": "ast"
     },
     {
@@ -36252,7 +36444,7 @@
       "label": "live_peak_reason()",
       "file_type": "code",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L382",
+      "source_location": "L383",
       "_origin": "ast"
     },
     {
@@ -36260,7 +36452,7 @@
       "label": "score_to_milli()",
       "file_type": "code",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L404",
+      "source_location": "L405",
       "_origin": "ast"
     },
     {
@@ -36268,7 +36460,7 @@
       "label": "layout_projection_forms_strong_wave_peak()",
       "file_type": "code",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L416",
+      "source_location": "L417",
       "_origin": "ast"
     },
     {
@@ -36276,7 +36468,7 @@
       "label": "unknown_surface_without_center_stays_uncertain()",
       "file_type": "code",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L430",
+      "source_location": "L431",
       "_origin": "ast"
     },
     {
@@ -68613,11 +68805,40 @@
     },
     {
       "source": "src_bin_lay_daemon_config_runtime",
+      "target": "src_bin_lay_daemon_config_runtime_daemon_hot_field_policy",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L175",
+      "weight": 1.0
+    },
+    {
+      "source": "src_bin_lay_daemon_config_runtime_daemon_hot_field_policy",
+      "target": "src_bin_lay_daemon_config_runtime_rs_layconfig",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L175",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "src_bin_lay_daemon_config_runtime_daemon_hot_field_policy",
+      "target": "src_hot_field_hotfieldpolicy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L175",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_bin_lay_daemon_config_runtime",
       "target": "src_bin_lay_daemon_config_runtime_active_lem_enabled_for_scope",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L174",
+      "source_location": "L179",
       "weight": 1.0
     },
     {
@@ -68626,7 +68847,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L178",
+      "source_location": "L183",
       "weight": 1.0
     },
     {
@@ -68635,7 +68856,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L183",
+      "source_location": "L188",
       "weight": 1.0
     },
     {
@@ -68644,7 +68865,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L183",
+      "source_location": "L188",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -68654,7 +68875,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L183",
+      "source_location": "L188",
       "weight": 1.0,
       "context": "generic_arg"
     },
@@ -68664,7 +68885,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L201",
+      "source_location": "L206",
       "weight": 1.0
     },
     {
@@ -68673,7 +68894,25 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L213",
+      "source_location": "L218",
+      "weight": 1.0
+    },
+    {
+      "source": "src_bin_lay_daemon_config_runtime",
+      "target": "src_bin_lay_daemon_config_runtime_ime_backend_does_not_enable_full_daemon_nanda_autocorrect",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L229",
+      "weight": 1.0
+    },
+    {
+      "source": "src_bin_lay_daemon_config_runtime",
+      "target": "src_bin_lay_daemon_config_runtime_auto_backend_does_not_enable_full_daemon_nanda_autocorrect",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L240",
       "weight": 1.0
     },
     {
@@ -68682,7 +68921,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L224",
+      "source_location": "L251",
       "weight": 1.0
     },
     {
@@ -68691,7 +68930,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L236",
+      "source_location": "L263",
+      "weight": 1.0
+    },
+    {
+      "source": "src_bin_lay_daemon_config_runtime",
+      "target": "src_bin_lay_daemon_config_runtime_uinput_backend_can_keep_full_daemon_nanda_autocorrect_explicitly",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L274",
       "weight": 1.0
     },
     {
@@ -68886,7 +69134,7 @@
     },
     {
       "source": "src_bin_lay_daemon_config_runtime_daemon_nanda_trace_active",
-      "target": "src_bin_lay_daemon_config_runtime_active_text_backend",
+      "target": "src_bin_lay_daemon_config_runtime_daemon_hot_field_policy",
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -68915,13 +69163,33 @@
       "weight": 1.0
     },
     {
+      "source": "src_bin_lay_daemon_config_runtime_active_nanda_autocorrect",
+      "target": "src_bin_lay_daemon_config_runtime_daemon_hot_field_policy",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L172",
+      "weight": 1.0
+    },
+    {
+      "source": "src_bin_lay_daemon_config_runtime_daemon_hot_field_policy",
+      "target": "src_bin_lay_daemon_config_runtime_active_text_backend",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L176",
+      "weight": 1.0
+    },
+    {
       "source": "src_bin_lay_daemon_config_runtime_active_lem_enabled_for_scope",
       "target": "src_bin_lay_daemon_config_runtime_current_config",
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L175",
+      "source_location": "L180",
       "weight": 1.0
     },
     {
@@ -68931,7 +69199,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L179",
+      "source_location": "L184",
       "weight": 1.0
     },
     {
@@ -68941,7 +69209,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L186",
+      "source_location": "L191",
       "weight": 1.0
     },
     {
@@ -68951,7 +69219,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L187",
+      "source_location": "L192",
       "weight": 1.0
     },
     {
@@ -132644,6 +132912,328 @@
       "weight": 1.0
     },
     {
+      "source": "src_hot_field",
+      "target": "src_text_backend_textbackendpreference",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L8",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_hotruntimeroute",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_hotauthority",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_hotfieldpolicy",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_hotfieldpolicy",
+      "target": "src_hot_field_hotruntimeroute",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L24",
+      "weight": 1.0,
+      "context": "field"
+    },
+    {
+      "source": "src_hot_field_hotfieldpolicy",
+      "target": "src_hot_field_hotauthority",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L25",
+      "weight": 1.0,
+      "context": "field"
+    },
+    {
+      "source": "src_hot_field_hotfieldpolicy",
+      "target": "src_hot_field_hotfieldpolicy_daemon_for_text_backend",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_hotfieldpolicy_daemon_for_text_backend",
+      "target": "src_text_backend_textbackendpreference",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L29",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "src_hot_field_hotfieldpolicy_daemon_for_text_backend",
+      "target": "src_hot_field_rs_self",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L29",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_hot_field_hotfieldpolicy",
+      "target": "src_hot_field_hotfieldpolicy_ime",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_hotfieldpolicy_ime",
+      "target": "src_hot_field_rs_self",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L41",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_hot_field_hotfieldpolicy",
+      "target": "src_hot_field_hotfieldpolicy_route",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_hotfieldpolicy_route",
+      "target": "src_hot_field_hotruntimeroute",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L48",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_hot_field_hotfieldpolicy",
+      "target": "src_hot_field_hotfieldpolicy_authority",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_hotfieldpolicy_authority",
+      "target": "src_hot_field_hotauthority",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L52",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_hot_field_hotfieldpolicy",
+      "target": "src_hot_field_hotfieldpolicy_allows_full_reference_authority",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_hotfieldpolicy",
+      "target": "src_hot_field_hotfieldpolicy_allows_full_nanda_authority",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_hotwordauthority",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L66",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_hotwordreadout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L73",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_hotwordreadout",
+      "target": "src_hot_field_hotwordauthority",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L74",
+      "weight": 1.0,
+      "context": "field"
+    },
+    {
+      "source": "src_hot_field_hotwordreadout",
+      "target": "src_hot_field_hotwordreadout_is_known",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_hotfieldsnapshot",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_hotfieldsnapshot",
+      "target": "src_hot_field_hotfieldsnapshot_current",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_hotfieldsnapshot_current",
+      "target": "src_hot_field_rs_self",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L87",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_hot_field_hotfieldsnapshot",
+      "target": "src_hot_field_hotfieldsnapshot_word_readout",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_hotfieldsnapshot_word_readout",
+      "target": "src_hot_field_hotwordreadout",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L91",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_hot_field",
+      "target": "super",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L110",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_daemon_auto_backend_uses_field_snapshot_only",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_daemon_uinput_backend_can_use_full_reference_authority",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L121",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_hot_word_readout_does_not_need_full_dictionary_for_common_words",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L128",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_hotfieldpolicy_allows_full_nanda_authority",
+      "target": "src_hot_field_hotfieldpolicy_allows_full_reference_authority",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_daemon_auto_backend_uses_field_snapshot_only",
+      "target": "src_hot_field_hotfieldpolicy_daemon_for_text_backend",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L114",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_daemon_uinput_backend_can_use_full_reference_authority",
+      "target": "src_hot_field_hotfieldpolicy_daemon_for_text_backend",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_hot_word_readout_does_not_need_full_dictionary_for_common_words",
+      "target": "src_hot_field_hotfieldsnapshot_current",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L129",
+      "weight": 1.0
+    },
+    {
       "source": "src_ime_correction",
       "target": "src_action_log_recentactiongatetrace",
       "relation": "imports_from",
@@ -163624,7 +164214,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L275",
+      "source_location": "L276",
       "weight": 1.0
     },
     {
@@ -163633,7 +164223,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L286",
+      "source_location": "L287",
       "weight": 1.0
     },
     {
@@ -163642,7 +164232,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L298",
+      "source_location": "L299",
       "weight": 1.0
     },
     {
@@ -163651,7 +164241,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L298",
+      "source_location": "L299",
       "weight": 1.0,
       "context": "parameter_type"
     },
@@ -163661,7 +164251,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L322",
+      "source_location": "L323",
       "weight": 1.0
     },
     {
@@ -163670,7 +164260,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L322",
+      "source_location": "L323",
       "weight": 1.0,
       "context": "parameter_type"
     },
@@ -163680,7 +164270,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L340",
+      "source_location": "L341",
       "weight": 1.0
     },
     {
@@ -163689,7 +164279,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L357",
+      "source_location": "L358",
       "weight": 1.0
     },
     {
@@ -163698,7 +164288,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L382",
+      "source_location": "L383",
       "weight": 1.0
     },
     {
@@ -163707,7 +164297,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L404",
+      "source_location": "L405",
       "weight": 1.0
     },
     {
@@ -163716,7 +164306,7 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L412",
+      "source_location": "L413",
       "weight": 1.0,
       "context": "import"
     },
@@ -163726,7 +164316,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L416",
+      "source_location": "L417",
       "weight": 1.0
     },
     {
@@ -163735,7 +164325,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L430",
+      "source_location": "L431",
       "weight": 1.0
     },
     {
@@ -163945,7 +164535,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L417",
+      "source_location": "L418",
       "weight": 1.0
     },
     {
@@ -163955,7 +164545,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L431",
+      "source_location": "L432",
       "weight": 1.0
     },
     {
@@ -235013,7 +235603,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L290",
+      "source_location": "L291",
       "weight": 1.0
     },
     {
@@ -235024,7 +235614,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/nanda_wave/l2_wave_peak.rs",
-      "source_location": "L315",
+      "source_location": "L316",
       "weight": 1.0
     },
     {

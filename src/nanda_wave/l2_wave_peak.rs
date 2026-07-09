@@ -263,12 +263,13 @@ fn known_surface_mass(word: &str) -> f32 {
 }
 
 fn live_known_surface_mass(word: &str) -> f32 {
-    if crate::lexicon::is_common_ru_word(word) {
-        0.14
-    } else if crate::typing_transition::state::word_has_common_usage_authority(word) {
-        0.08
-    } else {
-        0.0
+    match crate::hot_field::HotFieldSnapshot::current()
+        .word_readout(word)
+        .authority
+    {
+        crate::hot_field::HotWordAuthority::CommonSurface => 0.14,
+        crate::hot_field::HotWordAuthority::UserUsage => 0.08,
+        crate::hot_field::HotWordAuthority::Unknown => 0.0,
     }
 }
 
