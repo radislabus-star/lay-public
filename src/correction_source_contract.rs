@@ -92,6 +92,11 @@ pub(crate) fn is_deterministic_typo_source(source_id: &str) -> bool {
             | ids::ADJACENT_TRANSPOSITION
             | ids::MISSING_LETTER
             | ids::REPEATED_LETTER
+            | ids::EXTRA_LETTERS
+            | ids::SINGLE_LETTER_SUBSTITUTION
+            | ids::VOWEL_CONFUSION
+            | ids::VERB_ENDING
+            | ids::HARD_SIGN
     ) || is_layout_then_typo_source(source_id)
 }
 
@@ -105,6 +110,7 @@ pub(crate) fn is_technical_source(source_id: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::{source_role, CorrectionSourceRole};
+    use crate::typing_rule_graph::ids;
 
     #[test]
     fn classifies_nanda_surface_roles() {
@@ -131,6 +137,10 @@ mod tests {
         assert_eq!(source_role("layout_phrase"), CorrectionSourceRole::Boundary);
         assert_eq!(
             source_role("layout_then_missing-letter"),
+            CorrectionSourceRole::DeterministicTypo
+        );
+        assert_eq!(
+            source_role(ids::EXTRA_LETTERS),
             CorrectionSourceRole::DeterministicTypo
         );
     }

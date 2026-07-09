@@ -1,7 +1,8 @@
 use super::{action, verifier, TypingTransition};
 use crate::correction_core::{
     bayes_score_for_candidate, explanation_for_candidate, CandidateGateAction,
-    CandidateGateDecision, TypingErrorClass, TypingErrorEvent, UnifiedCorrectionCandidate,
+    CandidateGateDecision, CorrectionDecisionSource, TypingErrorClass, TypingErrorEvent,
+    UnifiedCorrectionCandidate,
 };
 use crate::correction_source_contract::{self, CorrectionSourceRole};
 use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
@@ -158,6 +159,16 @@ fn candidate_has_apply_authority(
         debug_decision_reject(candidate, admission.reason, bayes.posterior, bayes.risk);
         return false;
     }
+    if learned_candidate_shadowed_by_deterministic_owner(event, candidate, candidates, source_role)
+    {
+        debug_decision_reject(
+            candidate,
+            "deterministic_owner_gravity",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
     if bayes.risk >= 0.62
         && !matches!(
             source_role,
@@ -199,6 +210,64 @@ fn candidate_has_apply_authority(
         debug_decision_reject(candidate, "better_non_apply", bayes.posterior, bayes.risk);
     }
     allowed
+}
+
+fn learned_candidate_shadowed_by_deterministic_owner(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+    candidates: &[UnifiedCorrectionCandidate],
+    source_role: CorrectionSourceRole,
+) -> bool {
+    if candidate.source != CorrectionDecisionSource::Nanda
+        || !matches!(
+            source_role,
+            CorrectionSourceRole::L2Surface
+                | CorrectionSourceRole::L3Context
+                | CorrectionSourceRole::Unknown
+        )
+    {
+        return false;
+    }
+    let Some(candidate_word) = last_replacement_word(&candidate.replacement) else {
+        return false;
+    };
+    let original_word = event.current_word.to_lowercase();
+    let candidate_distance = damerau_levenshtein(&original_word, &candidate_word.to_lowercase());
+
+    candidates.iter().any(|other| {
+        if other.source != CorrectionDecisionSource::Deterministic
+            || other.gate.action != CandidateGateAction::Apply
+        {
+            return false;
+        }
+        let other_role = correction_source_contract::source_role(&other.source_id);
+        if !matches!(
+            other_role,
+            CorrectionSourceRole::DeterministicTypo
+                | CorrectionSourceRole::Layout
+                | CorrectionSourceRole::Boundary
+        ) {
+            return false;
+        }
+        let transition = TypingTransition::from_candidate(
+            &event.original,
+            &other.replacement,
+            other.error_class,
+            &other.source_id,
+            candidates.len(),
+        );
+        if !transition.evidence.verifier_passed
+            || transition.evidence.left_context_changed
+            || transition.l4_signed_signal.negative
+        {
+            return false;
+        }
+        let Some(other_word) = last_replacement_word(&other.replacement) else {
+            return false;
+        };
+        let other_distance = damerau_levenshtein(&original_word, &other_word.to_lowercase());
+        other_distance <= candidate_distance
+    })
 }
 
 fn strong_l2_wave_peak_support(signals: &CandidateDecisionSignals) -> bool {

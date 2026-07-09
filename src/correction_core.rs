@@ -7,7 +7,7 @@ use crate::candidate_explanation::{explain_candidate, CandidateExplanation};
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
 use crate::correction_source_contract::{self, CorrectionSourceRole};
 use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
-use crate::nanda_wave::{run_wave_trace, WaveDecision};
+use crate::nanda_wave::{run_wave_trace, WordCandidate};
 use crate::russian_typo_candidates::{
     inserted_char_position_for_missing_letter, repeated_run_deletion_candidates,
 };
@@ -231,7 +231,7 @@ pub fn resolve_text_correction(req: CorrectionRequest<'_>) -> CorrectionResoluti
     let mut lattice = L2CandidateLattice::new(TypingErrorEvent::from_text(req.text));
 
     for source in L2CandidateSource::for_mode(req.mode) {
-        lattice.push_source(source.propose(&req));
+        source.push_candidates(&req, &mut lattice);
     }
     if L2CandidateSource::for_mode(req.mode).contains(&L2CandidateSource::Deterministic) {
         lattice.push_source(short_cyrillic_layout_shadow_candidate(&req));
@@ -491,10 +491,14 @@ impl L2CandidateSource {
         }
     }
 
-    fn propose(self, req: &CorrectionRequest<'_>) -> Option<UnifiedCorrectionCandidate> {
+    fn push_candidates(self, req: &CorrectionRequest<'_>, lattice: &mut L2CandidateLattice) {
         match self {
-            Self::Deterministic => deterministic_text_correction(req),
-            Self::Nanda => nanda_text_correction(req),
+            Self::Deterministic => lattice.push_source(deterministic_text_correction(req)),
+            Self::Nanda => {
+                for candidate in nanda_text_candidates(req) {
+                    lattice.push_source(Some(candidate));
+                }
+            }
         }
     }
 }
@@ -945,39 +949,23 @@ fn repeated_prefix_composite_word(lower: &str) -> Option<String> {
     .map(|(candidate, _)| candidate)
 }
 
-fn nanda_text_correction(req: &CorrectionRequest<'_>) -> Option<UnifiedCorrectionCandidate> {
+fn nanda_text_candidates(req: &CorrectionRequest<'_>) -> Vec<UnifiedCorrectionCandidate> {
     if !req.nanda_autocorrect {
-        return None;
+        return Vec::new();
     }
 
     let trace = run_wave_trace(req.text);
-    match &trace.decision {
-        WaveDecision::Apply { text, .. } if text != req.text => {
-            let source_id = accepted_wave_source(&trace, text).unwrap_or("NANDA");
-            let error_class = nanda_source_error_class(source_id);
-            let gate = gate_candidate_with_source(req.text, text, error_class, source_id);
-            Some(UnifiedCorrectionCandidate {
-                replacement: text.clone(),
-                source: CorrectionDecisionSource::Nanda,
-                source_id: source_id.to_string(),
-                error_class,
-                gate,
-            })
-        }
-        WaveDecision::Apply { .. } | WaveDecision::Keep { .. } | WaveDecision::Veto { .. } => {
-            nanda_completion_suggestion(req.text, &trace)
-        }
-    }
-}
-
-fn nanda_completion_suggestion(
-    original: &str,
-    trace: &crate::nanda_wave::WaveTrace,
-) -> Option<UnifiedCorrectionCandidate> {
-    let candidate = trace
+    trace
         .l2_candidates
         .iter()
-        .find(|candidate| candidate.source == "L2SurfaceCompletionCell32")?;
+        .filter_map(|candidate| nanda_word_candidate(req.text, candidate))
+        .collect()
+}
+
+fn nanda_word_candidate(
+    original: &str,
+    candidate: &WordCandidate,
+) -> Option<UnifiedCorrectionCandidate> {
     let replacement = preserve_candidate_trailing_separator(original, &candidate.text);
     if replacement == original {
         return None;
@@ -3108,18 +3096,6 @@ fn should_prefer_composite_after_repeated_repair(
         && crate::russian_lexicon::is_known_russian_word_or_form(&composite_lower)
 }
 
-fn accepted_wave_source<'a>(
-    trace: &'a crate::nanda_wave::WaveTrace,
-    replacement: &str,
-) -> Option<&'a str> {
-    let trimmed = replacement.trim();
-    trace
-        .l2_candidates
-        .iter()
-        .find(|candidate| candidate.text.trim() == trimmed)
-        .map(|candidate| candidate.source)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -3518,8 +3494,11 @@ mod tests {
 
         assert_eq!(resolution.decision, None);
         assert!(
-            resolution.candidates.is_empty(),
-            "short layout candidate must be stopped inside NANDA L3 before correction_core: {resolution:?}"
+            resolution.candidates.iter().all(|candidate| {
+                candidate.gate.action == CandidateGateAction::KeepOriginal
+                    && candidate.gate.reason == "short_layout_without_phrase_context"
+            }),
+            "short layout candidate may be visible, but must stay powerless: {resolution:?}"
         );
     }
 
@@ -3657,7 +3636,7 @@ mod tests {
         ));
 
         let selected = resolution.selected.as_ref().expect("selected candidate");
-        assert_eq!(selected.replacement, "мы отравим ");
+        assert_eq!(selected.replacement, "мы отравим ", "{resolution:?}");
         assert_eq!(selected.source, CorrectionDecisionSource::Deterministic);
         assert!(
             resolution.candidates.iter().all(|candidate| {

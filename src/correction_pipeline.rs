@@ -5,7 +5,6 @@
 // behavior: it only makes Space/Enter flow through the staged pipeline contract.
 
 use crate::correction_core::UnifiedCorrectionCandidate;
-use crate::nanda_wave::{run_wave_trace, WaveDecision, WaveTrace};
 
 /// Canonical after-space autocorrection entrypoint for runtime callers.
 ///
@@ -194,22 +193,36 @@ fn decide_space_autocorrect_gate(req: InputGateRequest<'_>) -> InputGateDecision
 struct L3ArbitrationReport {
     decision: L3DecisionKind,
     output: Option<String>,
-    trace_len: usize,
+    candidate_count: usize,
 }
 
 impl L3ArbitrationReport {
-    fn from_wave_trace(trace: &WaveTrace) -> Self {
-        let (decision, output) = match &trace.decision {
-            WaveDecision::Apply { text, .. } => {
-                (L3DecisionKind::ApplyCandidate, Some(text.clone()))
-            }
-            WaveDecision::Keep { .. } => (L3DecisionKind::Keep, None),
-            WaveDecision::Veto { .. } => (L3DecisionKind::Veto, None),
+    fn from_resolution(resolution: &CorrectionResolution) -> Self {
+        let output = resolution
+            .selected
+            .as_ref()
+            .map(|candidate| candidate.replacement.clone());
+        let decision = if output.is_some() {
+            L3DecisionKind::ApplyCandidate
+        } else if resolution.candidates.iter().any(|candidate| {
+            candidate.gate.action == crate::correction_core::CandidateGateAction::Veto
+        }) {
+            L3DecisionKind::Veto
+        } else {
+            L3DecisionKind::Keep
         };
         Self {
             decision,
             output,
-            trace_len: trace.l3.len(),
+            candidate_count: resolution.candidates.len(),
+        }
+    }
+
+    fn empty() -> Self {
+        Self {
+            decision: L3DecisionKind::Keep,
+            output: None,
+            candidate_count: 0,
         }
     }
 }
@@ -236,10 +249,13 @@ impl CanonicalTextPipeline {
             });
         let gate = GateDecision::from_input_gate(&input_gate);
         let edit_plan = PipelineEditDecision::from_gate(&req.snapshot, &gate);
-        let l3_report = req
-            .include_l3_report
-            .then(|| run_wave_trace(&req.snapshot.text))
-            .map(|trace| L3ArbitrationReport::from_wave_trace(&trace));
+        let l3_report = req.include_l3_report.then(|| {
+            input_gate
+                .correction
+                .as_ref()
+                .map(L3ArbitrationReport::from_resolution)
+                .unwrap_or_else(L3ArbitrationReport::empty)
+        });
 
         ArbitrationReport {
             snapshot: req.snapshot,

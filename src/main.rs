@@ -8,7 +8,7 @@ use clap::Parser;
 use std::io::{self, IsTerminal, Read};
 use std::process;
 
-use lay::{config, correction_core, dict, llm, nanda_wave, typing_assist, typing_context};
+use lay::{config, correction_core, dict, llm, typing_assist, typing_context};
 
 #[derive(Parser, Debug)]
 #[command(
@@ -234,26 +234,32 @@ fn print_nanda_explanation(text: &str, cfg: &config::LayConfig) {
         println!("nanda: disabled");
         return;
     }
-    let options = nanda_wave::WaveOptions::default()
-        .with_llmwave_shadow(cfg.llmwave_shadow)
-        .with_llmwave_apply(cfg.llmwave_shadow && cfg.llmwave_apply)
-        .with_l2_phase_shadow(cfg.nanda_l2_phase_shadow)
-        .with_l2_phase_apply(cfg.nanda_l2_phase_shadow && cfg.nanda_l2_phase_apply)
-        .with_l3_phase_shadow(cfg.nanda_l3_phase_shadow);
-    let trace = nanda_wave::run_wave_trace_with_options(text, &options);
-    match trace.decision {
-        nanda_wave::WaveDecision::Apply {
-            ref text,
-            confidence,
-        } => {
-            println!("nanda: apply {text:?} confidence={confidence:.3}");
-        }
-        nanda_wave::WaveDecision::Keep { ref reason } => {
-            println!("nanda: keep {reason}");
-        }
-        nanda_wave::WaveDecision::Veto { ref reason } => {
-            println!("nanda: veto {reason}");
-        }
+    let resolution = correction_core::resolve_text_correction(correction_core::CorrectionRequest {
+        text,
+        auto_replace: cfg.auto_replace,
+        typing_assist: cfg.typing_assist,
+        auto_switch_layout: cfg.auto_switch_layout,
+        correction_safety: active_typing_safety(cfg),
+        typing_assist_pipeline: &cfg.typing_assist_pipeline,
+        nanda_autocorrect: cfg.nanda_autocorrect,
+        mode: correction_core::CorrectionMode::NandaOnly,
+    });
+    println!(
+        "nanda: candidates={} apply={} suggest={} veto={}",
+        resolution.scoreboard.total_candidates,
+        resolution.scoreboard.apply_candidates,
+        resolution.scoreboard.suggest_only_candidates,
+        resolution.scoreboard.veto_candidates
+    );
+    match &resolution.selected {
+        Some(candidate) => println!(
+            "nanda: transition-apply {:?} source={} gate={:?}/{}",
+            candidate.replacement,
+            candidate.source_id,
+            candidate.gate.action,
+            candidate.gate.reason
+        ),
+        None => println!("nanda: transition-keep"),
     }
 }
 
