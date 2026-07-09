@@ -308,6 +308,14 @@ fn live_l2_word_candidates(
     let material_limit = limit.saturating_mul(4).max(limit);
     let mut candidates = Vec::new();
     for candidate in
+        l2::ime_l2_surface_decoder_candidates(context_prefix, &normalized, material_limit)
+    {
+        push_unique_live_l2_candidate(&mut candidates, candidate);
+        if candidates.len() >= material_limit {
+            return candidates;
+        }
+    }
+    for candidate in
         l2::ime_l2_generated_form_prefix_candidates(context_prefix, &normalized, material_limit)
     {
         push_unique_live_l2_candidate(&mut candidates, candidate);

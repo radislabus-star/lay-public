@@ -99,6 +99,7 @@ fn replace_tail_checked(
     kind: &str,
     expected_tail: &str,
 ) -> Result<bool, String> {
+    let started = std::time::Instant::now();
     let reply = dbus_connection()?
         .call_method(
             Some(IME_DBUS_DEST),
@@ -108,6 +109,12 @@ fn replace_tail_checked(
             &(backspaces, text, kind, expected_tail),
         )
         .map_err(|e| e.to_string())?;
+    let call_ms = started.elapsed().as_millis();
+    lay::action_log::record_timing_profile(
+        "ime-bridge",
+        kind,
+        &[("replace_tail_v3_dbus_call", call_ms)],
+    );
     reply
         .body()
         .deserialize::<bool>()
