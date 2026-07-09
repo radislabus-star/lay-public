@@ -59,6 +59,8 @@ fn correct_wrong_layout_cyrillic_word_with_policy(
     let converted_lower = converted_word.to_ascii_lowercase();
     let original_lower = original_word.to_lowercase();
     let converted_is_technical = is_common_en_technical_word(&converted_lower);
+    let converted_is_known_english_layout =
+        is_known_english_layout_autoswitch_word(&converted_lower);
     let layout_generated_trailing = original_trailing.is_empty() && !converted_trailing.is_empty();
     if short_russian_word_strongly_blocks_technical_layout(&original_lower, original_word) {
         return None;
@@ -71,7 +73,10 @@ fn correct_wrong_layout_cyrillic_word_with_policy(
     if is_known_russian_layout_autoswitch_word(&original_lower) && !converted_is_technical {
         return None;
     }
-    if !converted_is_technical && has_plausible_russian_typo_candidate(&original_lower) {
+    if !converted_is_technical
+        && !converted_is_known_english_layout
+        && has_plausible_russian_typo_candidate(&original_lower)
+    {
         return None;
     }
 
@@ -95,7 +100,6 @@ fn is_known_non_russian_to_english_layout_candidate(original_lower: &str, candid
         && !is_known_russian_word_or_form(original_lower)
         && !is_common_ru_word(original_lower)
         && !is_known_russian_layout_autoswitch_word(original_lower)
-        && !has_plausible_russian_typo_candidate(original_lower)
 }
 
 fn short_russian_word_strongly_blocks_technical_layout(lower: &str, original_word: &str) -> bool {
@@ -192,6 +196,14 @@ mod tests {
         assert_eq!(
             correct_wrong_layout_cyrillic_word("цщкдв"),
             Some("world".to_string())
+        );
+    }
+
+    #[test]
+    fn known_plain_english_layout_target_beats_russian_typo_shadow() {
+        assert_eq!(
+            correct_wrong_layout_cyrillic_word("вудуеу"),
+            Some("delete".to_string())
         );
     }
 

@@ -3724,6 +3724,20 @@ mod tests {
     }
 
     #[test]
+    fn layout_cell_exposes_known_english_target_even_with_russian_typo_shadow() {
+        let original = "вудуеу ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        assert!(
+            candidates
+                .iter()
+                .any(|candidate| candidate.source == "LayoutWordCell32"
+                    && candidate.text == "delete"),
+            "known English layout target must survive Russian typo shadow: {candidates:?}"
+        );
+    }
+
+    #[test]
     fn short_token_cell_exposes_keyboard_and_visual_hypotheses() {
         let original = "пер b ";
         let l1 = run_l1(original);
