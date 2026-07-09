@@ -929,13 +929,14 @@ fn layout_candidate(
     if technical_context_blocks_layout(prefix, token) {
         return None;
     }
-    let converted = convert(token, detect_direction(token));
+    let (converted, strong_autoswitch) = layout_converted_token(token)?;
     if converted == token {
         return None;
     }
     if context.token_count() < 2
         && token.chars().count() > 3
         && !is_common_en_technical_word(&converted.to_ascii_lowercase())
+        && !strong_autoswitch
     {
         return None;
     }
@@ -944,14 +945,18 @@ fn layout_candidate(
     {
         return None;
     }
-    if !layout_candidate_allowed(token, &converted) {
+    if !layout_candidate_allowed(token, &converted, strong_autoswitch) {
         return None;
     }
     if !language_allows_layout(token, &converted) {
         return None;
     }
     let energy = l1_energy(l1, "KeyboardCell32").max(0.35);
-    let risk = layout_risk(token, &converted, context);
+    let risk = if strong_autoswitch {
+        layout_risk(token, &converted, context).min(0.05)
+    } else {
+        layout_risk(token, &converted, context)
+    };
     if energy <= risk {
         return None;
     }
@@ -986,9 +991,11 @@ fn layout_scan_candidates(
         if technical_context_blocks_layout(prefix, token) {
             continue;
         }
-        let converted = convert(token, detect_direction(token));
+        let Some((converted, strong_autoswitch)) = layout_converted_token(token) else {
+            continue;
+        };
         if converted == token
-            || !layout_candidate_allowed(token, &converted)
+            || !layout_candidate_allowed(token, &converted, strong_autoswitch)
             || !language_allows_layout(token, &converted)
         {
             continue;
@@ -1005,7 +1012,12 @@ fn layout_scan_candidates(
         replaced[idx] = converted;
         let text = replaced.join(" ");
         let energy = l1_energy(l1, "KeyboardCell32").max(0.35);
-        let risk = (layout_risk(token, &replaced[idx], context) + 0.08).min(0.90);
+        let base_risk = layout_risk(token, &replaced[idx], context);
+        let risk = if strong_autoswitch {
+            base_risk.min(0.08)
+        } else {
+            (base_risk + 0.08).min(0.90)
+        };
         if energy <= risk {
             continue;
         }
@@ -1021,6 +1033,17 @@ fn layout_scan_candidates(
         }
     }
     candidates
+}
+
+fn layout_converted_token(token: &str) -> Option<(String, bool)> {
+    if token.chars().any(is_cyrillic_letter) {
+        if let Some(converted) = crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(token)
+        {
+            return Some((converted, true));
+        }
+    }
+    let converted = convert(token, detect_direction(token));
+    (converted != token).then_some((converted, false))
 }
 
 fn language_allows_layout(token: &str, converted: &str) -> bool {
@@ -2316,7 +2339,10 @@ fn clean_ru_token(token: &str) -> String {
         .to_lowercase()
 }
 
-fn layout_candidate_allowed(token: &str, converted: &str) -> bool {
+fn layout_candidate_allowed(token: &str, converted: &str, strong_autoswitch: bool) -> bool {
+    if strong_autoswitch {
+        return true;
+    }
     let token_ascii = token.chars().all(|ch| ch.is_ascii_alphabetic());
     let token_cyrillic = token.chars().all(is_cyrillic_letter);
     let converted_ascii = converted.chars().all(|ch| ch.is_ascii_alphabetic());

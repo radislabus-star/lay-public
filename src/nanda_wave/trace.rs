@@ -119,6 +119,23 @@ mod tests {
     }
 
     #[test]
+    fn trace_layout_flip_works_in_both_directions() {
+        let en_to_ru = run_wave_trace("ghbdtn ");
+        assert_eq!(en_to_ru.output(), Some("привет "));
+        assert!(en_to_ru
+            .l2_candidates
+            .iter()
+            .any(|candidate| candidate.source == "LayoutWordCell32"));
+
+        let ru_to_en = run_wave_trace("руддщ ");
+        assert_eq!(ru_to_en.output(), Some("hello "));
+        assert!(ru_to_en
+            .l2_candidates
+            .iter()
+            .any(|candidate| candidate.source == "LayoutWordCell32"));
+    }
+
+    #[test]
     fn trace_keeps_single_all_caps_russian_term() {
         let trace = run_wave_trace("БЕЙСОВКИ ");
         assert_eq!(trace.output(), None);

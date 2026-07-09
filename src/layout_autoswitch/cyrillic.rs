@@ -81,9 +81,21 @@ fn correct_wrong_layout_cyrillic_word_with_policy(
             let candidate_word = apply_word_case(original_word, &candidate_lower);
             let candidate = format!("{converted_leading}{candidate_word}{converted_trailing}");
             (is_common_en_technical_word(&candidate_lower)
+                || is_known_non_russian_to_english_layout_candidate(
+                    &original_lower,
+                    &candidate_lower,
+                )
                 || lem_prefers_layout_candidate(original_word, &candidate_word))
             .then_some(candidate)
         })
+}
+
+fn is_known_non_russian_to_english_layout_candidate(original_lower: &str, candidate: &str) -> bool {
+    is_known_english_layout_autoswitch_word(candidate)
+        && !is_known_russian_word_or_form(original_lower)
+        && !is_common_ru_word(original_lower)
+        && !is_known_russian_layout_autoswitch_word(original_lower)
+        && !has_plausible_russian_typo_candidate(original_lower)
 }
 
 fn short_russian_word_strongly_blocks_technical_layout(lower: &str, original_word: &str) -> bool {
@@ -168,6 +180,18 @@ mod tests {
         assert_eq!(
             correct_wrong_layout_cyrillic_word("дфн"),
             Some("lay".to_string())
+        );
+    }
+
+    #[test]
+    fn known_plain_english_word_autoswitches_without_lem_authority() {
+        assert_eq!(
+            correct_wrong_layout_cyrillic_word("руддщ"),
+            Some("hello".to_string())
+        );
+        assert_eq!(
+            correct_wrong_layout_cyrillic_word("цщкдв"),
+            Some("world".to_string())
         );
     }
 

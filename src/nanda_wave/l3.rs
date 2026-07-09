@@ -1,4 +1,5 @@
 use super::l4_signed_memory::{l4_signed_memory_signal, L4SignedMemoryInput};
+use super::lexical_attractor::LEXICAL_ATTRACTOR_CELL;
 use super::options::WaveOptions;
 use super::pattern_wave::{evaluate_pattern_wave, PATTERN_WAVE_CELL};
 use super::signal::{LayerTrace, WaveDecision, WordCandidate};
@@ -233,9 +234,7 @@ fn best_apply_candidate<'a>(
         .iter()
         .filter(|candidate| apply_source_enabled(candidate.source, options))
         .filter(|candidate| !semantic_candidate_lacks_surface_authority(original, candidate))
-        .filter(|candidate| {
-            !surface_motif_candidate_lacks_autocorrect_authority(original, candidate)
-        })
+        .filter(|candidate| !word_form_candidate_lacks_autocorrect_authority(original, candidate))
         .filter(|candidate| !completion_candidate_lacks_autocorrect_authority(original, candidate))
         .filter(|candidate| !phrase_gate_suppresses(original, &candidate.text, phrase_memory))
         .fold(None, |best: Option<(&'a WordCandidate, f32)>, candidate| {
@@ -289,11 +288,14 @@ fn completion_candidate_lacks_autocorrect_authority(
     true
 }
 
-fn surface_motif_candidate_lacks_autocorrect_authority(
+fn word_form_candidate_lacks_autocorrect_authority(
     original: &str,
     candidate: &WordCandidate,
 ) -> bool {
-    if candidate.source != super::l2::L2_SURFACE_MOTIF_CELL {
+    if !matches!(
+        candidate.source,
+        super::l2::L2_SURFACE_MOTIF_CELL | LEXICAL_ATTRACTOR_CELL
+    ) {
         return false;
     }
     let Some(original_word) = last_token(original) else {
@@ -308,6 +310,14 @@ fn surface_motif_candidate_lacks_autocorrect_authority(
 
     let original_lower = original_word.to_lowercase();
     let replacement_lower = replacement_word.to_lowercase();
+    let original_known = crate::russian_lexicon::is_known_russian_word_or_form(&original_lower)
+        || crate::lexicon::is_common_ru_word(&original_lower);
+    let replacement_known =
+        crate::russian_lexicon::is_known_russian_word_or_form(&replacement_lower)
+            || crate::lexicon::is_common_ru_word(&replacement_lower);
+    if original_known && replacement_known && original_lower != replacement_lower {
+        return true;
+    }
     let distance = damerau_levenshtein(&original_lower, &replacement_lower);
     if distance <= 1 || single_adjacent_transposition(&original_lower, &replacement_lower) {
         return false;

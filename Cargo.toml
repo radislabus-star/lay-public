@@ -1,6 +1,6 @@
 [package]
 name = "lay"
-version = "0.2.177"
+version = "0.2.178"
 edition = "2021"
 description = "Alpha Double Shift RU/EN layout rescue for Linux desktops"
 license-file = "LICENSE"
