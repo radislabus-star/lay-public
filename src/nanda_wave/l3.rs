@@ -5,7 +5,10 @@ use super::pattern_wave::{evaluate_pattern_wave, PATTERN_WAVE_CELL};
 use super::signal::{LayerTrace, WaveDecision, WordCandidate};
 use super::structural_relation::{evaluate_structural_relation, STRUCTURAL_RELATION_CELL};
 use super::{l3_phrase_gate, llmwave};
+use crate::correction_core::{CandidateGateAction, CandidateGateDecision, TypingErrorClass};
+use crate::correction_source_contract::{self, CorrectionSourceRole};
 use crate::text_metrics::damerau_levenshtein;
+use crate::typing_transition::decision::TransitionDecisionCore;
 
 pub fn run_l3(original: &str, candidates: &[WordCandidate]) -> (Vec<LayerTrace>, WaveDecision) {
     run_l3_with_options(original, candidates, &WaveOptions::default())
@@ -256,6 +259,7 @@ fn best_apply_candidate<'a>(
         .filter(|candidate| !semantic_candidate_lacks_surface_authority(original, candidate))
         .filter(|candidate| !word_form_candidate_lacks_autocorrect_authority(original, candidate))
         .filter(|candidate| !completion_candidate_lacks_autocorrect_authority(original, candidate))
+        .filter(|candidate| !candidate_lacks_transition_authority(original, candidate))
         .filter(|candidate| !candidate_l4_signed_memory_vetoes_apply(original, candidate))
         .filter(|candidate| !phrase_gate_suppresses(original, &candidate.text, phrase_memory))
         .fold(None, |best: Option<(&'a WordCandidate, f32)>, candidate| {
@@ -347,12 +351,46 @@ fn word_form_candidate_lacks_autocorrect_authority(
         .support
         .iter()
         .any(|item| item.contains("l2-phase:") && item.contains("admitted=true"));
-    if phase_admitted {
+    let prefix = common_prefix_len(&original_lower, &replacement_lower);
+    if phase_admitted && distance <= 2 && prefix >= 4 {
         return false;
     }
-    original_lower.chars().count() < 7
-        || distance > 3
-        || !crate::lexicon::is_common_ru_word(&replacement_lower)
+    if distance > 2 {
+        return true;
+    }
+    distance == 2
+        && (prefix < 4
+            || original_lower.chars().count() < 7
+            || !crate::lexicon::is_common_ru_word(&replacement_lower))
+}
+
+fn candidate_lacks_transition_authority(original: &str, candidate: &WordCandidate) -> bool {
+    let error_class = nanda_candidate_error_class(candidate.source);
+    let provisional = CandidateGateDecision {
+        action: CandidateGateAction::Apply,
+        reason: "nanda_l3_candidate",
+    };
+    let gate = TransitionDecisionCore::authorize_gate(
+        original,
+        &candidate.text,
+        error_class,
+        candidate.source,
+        provisional,
+    );
+    gate.action != CandidateGateAction::Apply
+}
+
+fn nanda_candidate_error_class(source: &str) -> TypingErrorClass {
+    match correction_source_contract::source_role(source) {
+        CorrectionSourceRole::Layout => TypingErrorClass::WrongLayout,
+        CorrectionSourceRole::Boundary => TypingErrorClass::GluedWords,
+        CorrectionSourceRole::Completion => TypingErrorClass::CompletionOnly,
+        CorrectionSourceRole::L2Surface
+        | CorrectionSourceRole::L3Context
+        | CorrectionSourceRole::DeterministicTypo => TypingErrorClass::CompositeTypo,
+        CorrectionSourceRole::Technical => TypingErrorClass::TechnicalToken,
+        CorrectionSourceRole::Unknown => TypingErrorClass::Unknown,
+    }
 }
 
 fn candidate_usage_context_prior(original: &str, replacement: &str) -> f32 {

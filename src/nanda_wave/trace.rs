@@ -154,6 +154,15 @@ mod tests {
     }
 
     #[test]
+    fn trace_keeps_live_log_l2_boundary_and_attractor_drifts() {
+        for original in ["улетели ", "кодировании ", "тестируй ", "отправляй "]
+        {
+            let trace = run_wave_trace(original);
+            assert_eq!(trace.output(), None, "original={original:?}: {trace:?}");
+        }
+    }
+
+    #[test]
     fn trace_still_repairs_clear_semantic_transposition() {
         let trace = run_wave_trace("делай инстурменты ");
         assert_eq!(trace.output(), Some("делай инструменты "));

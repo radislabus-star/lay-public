@@ -2395,6 +2395,7 @@ fn boundary_split_candidates(
     let normalized = token.to_lowercase();
     if normalized.chars().count() < 6
         || is_common_ru_word(&normalized)
+        || is_known_russian_word_or_form(&normalized)
         || is_ru_live_protected_word(&normalized)
     {
         return Vec::new();
@@ -3175,8 +3176,15 @@ mod tests {
 
     #[test]
     fn boundary_cell_does_not_split_known_russian_word_forms() {
-        for original in ["упоминай ", "поехал ", "поплыл ", "указать ", "сторона "]
-        {
+        for original in [
+            "упоминай ",
+            "поехал ",
+            "поплыл ",
+            "указать ",
+            "сторона ",
+            "улетели ",
+            "кодировании ",
+        ] {
             let l1 = run_l1(original);
             let candidates = run_l2(original, &l1);
             assert!(

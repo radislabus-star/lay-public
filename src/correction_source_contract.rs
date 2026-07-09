@@ -69,7 +69,7 @@ pub(crate) fn is_boundary_source(source_id: &str) -> bool {
 pub(crate) fn is_completion_source(source_id: &str) -> bool {
     matches!(
         source_id,
-        "PhraseForecastCell32" | "L2WordAttractorCell32" | "L2SurfaceCompletionCell32"
+        "PhraseForecastCell32" | "L2SurfaceCompletionCell32"
     )
 }
 
@@ -111,6 +111,14 @@ mod tests {
         assert_eq!(
             source_role("L2SurfaceMotifCell32"),
             CorrectionSourceRole::L2Surface
+        );
+        assert_eq!(
+            source_role("L2WordAttractorCell32"),
+            CorrectionSourceRole::L2Surface
+        );
+        assert_eq!(
+            source_role("L2SurfaceCompletionCell32"),
+            CorrectionSourceRole::Completion
         );
         assert_eq!(
             source_role("SemanticWordCell32"),
