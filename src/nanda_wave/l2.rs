@@ -109,9 +109,11 @@ pub(super) fn warm_up_surface_motif_memory() {
 }
 
 pub(super) fn warm_up_ime_word_candidate_memory() {
-    // Live IME must not build broad/full L2 indexes during startup. The hot
-    // path uses a bounded corpus bootstrap and only reads heavy memories after
-    // another route has already warmed them.
+    // Live IME must not build the full L2 center heap during startup, but it
+    // can warm compact readout indexes so the first visible candidate does not
+    // pay the prefix-index construction cost.
+    let _ = broad_prefix_index().stats();
+    let _ = l2_short_position_seed_index().len();
 }
 
 pub fn l2_surface_memory_status() -> L2SurfaceMemoryStatus {
