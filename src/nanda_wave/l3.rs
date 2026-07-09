@@ -76,6 +76,26 @@ fn run_l3_inner(
         );
     };
 
+    if short_uppercase_layout_candidate_lacks_phrase_context(
+        original,
+        &candidate.text,
+        candidate.source,
+    ) {
+        traces.push(LayerTrace {
+            name: "PhraseCell32",
+            summary: format!(
+                "candidate source={} veto=short_uppercase_layout_without_context",
+                candidate.source
+            ),
+        });
+        return (
+            traces,
+            WaveDecision::Keep {
+                reason: "short_uppercase_layout_without_context",
+            },
+        );
+    }
+
     if short_token_candidate_lacks_phrase_context(original, &candidate.text, candidate.source) {
         traces.push(LayerTrace {
             name: "PhraseCell32",
@@ -236,6 +256,7 @@ fn best_apply_candidate<'a>(
         .filter(|candidate| !semantic_candidate_lacks_surface_authority(original, candidate))
         .filter(|candidate| !word_form_candidate_lacks_autocorrect_authority(original, candidate))
         .filter(|candidate| !completion_candidate_lacks_autocorrect_authority(original, candidate))
+        .filter(|candidate| !candidate_l4_signed_memory_vetoes_apply(original, candidate))
         .filter(|candidate| !phrase_gate_suppresses(original, &candidate.text, phrase_memory))
         .fold(None, |best: Option<(&'a WordCandidate, f32)>, candidate| {
             let score = l3_rank_score(original, candidate, phrase_memory);
@@ -469,6 +490,45 @@ fn short_token_candidate_lacks_phrase_context(
     has_ascii_context && !has_cyrillic_context
 }
 
+fn short_uppercase_layout_candidate_lacks_phrase_context(
+    original: &str,
+    replacement: &str,
+    source: &str,
+) -> bool {
+    if source != "LayoutWordCell32" {
+        return false;
+    }
+    let Some(original_word) = last_token(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_token(replacement) else {
+        return false;
+    };
+    if original_word.chars().count() > 2 || replacement_word.chars().count() > 2 {
+        return false;
+    }
+    if !looks_like_uppercase_word(original_word) || !looks_like_uppercase_word(replacement_word) {
+        return false;
+    }
+    !previous_context_has_cyrillic(original)
+}
+
+fn looks_like_uppercase_word(token: &str) -> bool {
+    let letters = token
+        .chars()
+        .filter(|ch| ch.is_alphabetic())
+        .collect::<Vec<_>>();
+    letters.len() >= 2 && letters.iter().all(|ch| ch.is_uppercase())
+}
+
+fn previous_context_has_cyrillic(text: &str) -> bool {
+    let words = text.split_whitespace().collect::<Vec<_>>();
+    words
+        .iter()
+        .take(words.len().saturating_sub(1))
+        .any(|word| word.chars().any(is_cyrillic_char))
+}
+
 fn last_token(text: &str) -> Option<&str> {
     text.split_whitespace().next_back()
 }
@@ -535,19 +595,38 @@ fn adjusted_confidence(
 }
 
 fn candidate_l4_signed_bias(original: &str, candidate: &WordCandidate) -> f32 {
-    let Some(word) = last_token(&candidate.text) else {
+    let Some(signal) = candidate_l4_signed_signal(original, candidate) else {
         return 0.0;
     };
+    (signal.signed_weight * 0.080).clamp(-0.080, 0.080)
+}
+
+fn candidate_l4_signed_memory_vetoes_apply(original: &str, candidate: &WordCandidate) -> bool {
+    let Some(signal) = candidate_l4_signed_signal(original, candidate) else {
+        return false;
+    };
+    let rejected_more_than_accepted = signal.rejected > signal.accepted;
+    let transition_repel = signal.transition_repel_count > signal.transition_attract_count
+        && signal.transition_repel_count > 0;
+    rejected_more_than_accepted
+        && signal.signed_weight < 0.0
+        && (signal.rejected >= 2 || signal.repulsion >= 0.045 || transition_repel)
+}
+
+fn candidate_l4_signed_signal(
+    original: &str,
+    candidate: &WordCandidate,
+) -> Option<super::l4_signed_memory::L4SignedMemorySignal> {
+    let word = last_token(&candidate.text)?;
     let context = previous_context_tokens(original);
     let usage = super::usage_prior::cached_usage_prior_snapshot();
-    let signal = l4_signed_memory_signal(L4SignedMemoryInput {
+    Some(l4_signed_memory_signal(L4SignedMemoryInput {
         context: &context,
         source: candidate.source,
         operation: candidate_operation(candidate.source),
         word,
         usage: &usage,
-    });
-    (signal.signed_weight * 0.080).clamp(-0.080, 0.080)
+    }))
 }
 
 fn candidate_l4_scene_memory_bias(

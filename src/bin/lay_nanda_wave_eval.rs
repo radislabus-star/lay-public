@@ -271,6 +271,14 @@ fn main() -> io::Result<()> {
         dirty_log_collect::print_json(&args)?;
         return Ok(());
     }
+    if args.iter().any(|arg| arg == "--dirty-log-replay") {
+        dirty_log_collect::print_replay_json(&args, &options)?;
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--dirty-log-pack-usage") {
+        dirty_log_collect::pack_usage_json(&args)?;
+        return Ok(());
+    }
     if let Some(limit) = arg_value(&args, "--recent-traces") {
         print_recent_traces(parse_limit(limit, 10));
         return Ok(());
@@ -361,7 +369,7 @@ fn main() -> io::Result<()> {
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --l2-form-attractor-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --l2-phase-coverage-recent [--limit N] [--candidate-limit N] [--max-examples N] | --l2-candidate-phase-shadow-recent [--l2-phase-memory PATH] [--limit N] [--max-examples N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --llmwave-ingest-clean-corpus PATH [--max-records N] | --llmwave-ingest-pack-clean-corpus PATH [--out PATH] [--max-records N] | --memory-learned-report | --llmwave-corpus-report PATH [--test-corpus PATH] [--max-lines N] | --llmwave-dirty-report [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --llmwave-promotion-gate [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --candidate-quality-report | --ime-hit-rate-report | --dirty-log-eval | --dirty-log-collect [--out PATH] [--limit N] [--recent-actions PATH] [--learning-log PATH] | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --l2-form-attractor-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --l2-phase-coverage-recent [--limit N] [--candidate-limit N] [--max-examples N] | --l2-candidate-phase-shadow-recent [--l2-phase-memory PATH] [--limit N] [--max-examples N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --llmwave-ingest-clean-corpus PATH [--max-records N] | --llmwave-ingest-pack-clean-corpus PATH [--out PATH] [--max-records N] | --memory-learned-report | --llmwave-corpus-report PATH [--test-corpus PATH] [--max-lines N] | --llmwave-dirty-report [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --llmwave-promotion-gate [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --candidate-quality-report | --ime-hit-rate-report | --dirty-log-eval | --dirty-log-collect [--out PATH] [--limit N] [--recent-actions PATH] [--learning-log PATH] | --dirty-log-replay [--input PATH] [--limit N] [--train-role all|positive|negative] [--max-examples N] | --dirty-log-pack-usage --input PATH --out PATH [--limit N] | --cases PATH"
         );
         return Ok(());
     }

@@ -14,7 +14,7 @@ const USAGE_COUNTS_PATH: &str = ".local/share/lay/nanda_wave/word_usage_counts.j
 const LEGACY_USAGE_PRIOR_PATH: &str = ".local/share/lay/learning_candidates.json";
 const USAGE_EVENTS_MAX_BYTES: u64 = 500 * 1024;
 const USAGE_EVENTS_FULL_REBUILD_MAX_BYTES: u64 = 8 * 1024 * 1024;
-const USAGE_COUNTS_SCHEMA_VERSION: u32 = 5;
+const USAGE_COUNTS_SCHEMA_VERSION: u32 = 6;
 const USAGE_COUNTS_MAX_WORDS: usize = 10_000;
 const USAGE_COUNTS_MAX_ACCEPTED_WORDS: usize = 5_000;
 const USAGE_COUNTS_MAX_CONTEXT_WORDS: usize = 12_000;
@@ -755,13 +755,14 @@ fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
         event.kind,
         UsageEventKind::RejectedIme | UsageEventKind::RejectedCandidate
     ) {
+        let weight = rejected_usage_weight(event.kind);
         add_rejected_word_state(
             counts,
             &event.context,
             event_source(event),
             event_operation(event),
             &word,
-            4,
+            weight,
         );
         return;
     }
@@ -820,6 +821,14 @@ fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
 
     if matches!(event.kind, UsageEventKind::AcceptedFix) {
         add_rejected_fix_sources(counts, event, weight, source, operation);
+    }
+}
+
+fn rejected_usage_weight(kind: UsageEventKind) -> u32 {
+    match kind {
+        UsageEventKind::RejectedCandidate => 8,
+        UsageEventKind::RejectedIme => 8,
+        _ => 0,
     }
 }
 
@@ -1570,10 +1579,10 @@ mod tests {
 
         assert!(!counts.words.contains_key("даша"));
         assert!(!counts.accepted_words.contains_key("даша"));
-        assert_eq!(counts.rejected_words.get("даша"), Some(&4));
+        assert_eq!(counts.rejected_words.get("даша"), Some(&8));
         assert_eq!(
             counts.rejected_context_words.get("ну\u{1f}даша").copied(),
-            Some(4)
+            Some(8)
         );
 
         let usage = snapshot_from_usage_events_for_tests(text);
@@ -1612,7 +1621,7 @@ mod tests {
         }
 
         assert!(!counts.words.contains_key("даша"));
-        assert_eq!(counts.rejected_words.get("даша"), Some(&4));
+        assert_eq!(counts.rejected_words.get("даша"), Some(&8));
 
         let usage = UsagePriorSnapshot {
             counts: Arc::new(counts),

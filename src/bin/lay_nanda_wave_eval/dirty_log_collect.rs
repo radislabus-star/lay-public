@@ -1,4 +1,5 @@
-use serde::Serialize;
+use lay::nanda_wave::{run_wave_trace_with_options, WaveDecision, WaveOptions, WordCandidate};
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::collections::BTreeMap;
 use std::fs;
@@ -8,17 +9,18 @@ use std::path::{Path, PathBuf};
 const DEFAULT_RECENT_ACTIONS_PATH: &str = ".local/share/lay/recent_actions.jsonl";
 const DEFAULT_CORRECTIONS_PATH: &str = ".local/share/lay/corrections.jsonl";
 const DEFAULT_LIMIT: usize = 2_000;
+const DEFAULT_REPLAY_LIMIT: usize = 30;
 const MAX_TEXT_CHARS: usize = 180;
 const MAX_WORDS: usize = 12;
 const SAMPLE_LIMIT: usize = 18;
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 struct DirtyLogPair {
-    kind: &'static str,
+    kind: String,
     ts: u64,
-    source_log: &'static str,
-    signal: &'static str,
-    train_role: &'static str,
+    source_log: String,
+    signal: String,
+    train_role: String,
     quarantine_reason: String,
     original: String,
     expected: String,
@@ -93,6 +95,88 @@ pub(crate) fn print_json(args: &[String]) -> io::Result<()> {
     println!(
         "{}",
         serde_json::to_string_pretty(&report_json(&report, recent_path, corrections_path, out))?
+    );
+    Ok(())
+}
+
+pub(crate) fn print_replay_json(args: &[String], options: &WaveOptions) -> io::Result<()> {
+    let limit = arg_value(args, "--limit")
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(DEFAULT_REPLAY_LIMIT);
+    let max_examples = arg_value(args, "--max-examples")
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(SAMPLE_LIMIT);
+    let max_eval = arg_value(args, "--max-eval")
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(limit);
+    let train_role = arg_value(args, "--train-role").unwrap_or_else(|| "all".to_string());
+    let input = arg_value(args, "--input").map(PathBuf::from);
+    let mut pairs = if let Some(path) = input.as_deref() {
+        read_pairs(path, limit)?
+    } else {
+        collect(
+            home_path(DEFAULT_RECENT_ACTIONS_PATH).as_deref(),
+            home_path(DEFAULT_CORRECTIONS_PATH).as_deref(),
+            limit,
+        )?
+        .pairs
+    };
+    if train_role != "all" {
+        pairs.retain(|pair| pair.train_role == train_role);
+    }
+    pairs.truncate(max_eval);
+    let report = replay_pairs(&pairs, options, max_examples);
+    println!(
+        "{}",
+        serde_json::to_string_pretty(&replay_report_json(&report, input, pairs.len()))?
+    );
+    Ok(())
+}
+
+pub(crate) fn pack_usage_json(args: &[String]) -> io::Result<()> {
+    let Some(input) = arg_value(args, "--input").map(PathBuf::from) else {
+        eprintln!("--dirty-log-pack-usage requires --input PATH");
+        return Ok(());
+    };
+    let Some(out) = arg_value(args, "--out").map(PathBuf::from) else {
+        eprintln!("--dirty-log-pack-usage requires --out PATH");
+        return Ok(());
+    };
+    let limit = arg_value(args, "--limit")
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(DEFAULT_LIMIT);
+    let pairs = read_pairs(&input, limit)?;
+    let events = usage_events_from_pairs(&pairs);
+    if let Some(parent) = out.parent() {
+        fs::create_dir_all(parent)?;
+    }
+    let mut text = String::new();
+    for event in &events {
+        text.push_str(&serde_json::to_string(event)?);
+        text.push('\n');
+    }
+    fs::write(&out, text)?;
+    let accepted = events
+        .iter()
+        .filter(|event| event.get("kind").and_then(Value::as_str) == Some("accepted_fix"))
+        .count();
+    let rejected = events
+        .iter()
+        .filter(|event| event.get("kind").and_then(Value::as_str) == Some("rejected_candidate"))
+        .count();
+    println!(
+        "{}",
+        serde_json::to_string_pretty(&json!({
+            "kind": "dirty_log_usage_pack_report",
+            "status": "ok",
+            "input": input.display().to_string(),
+            "out": out.display().to_string(),
+            "pairs": pairs.len(),
+            "events": events.len(),
+            "accepted_fix_events": accepted,
+            "rejected_candidate_events": rejected,
+            "read_as": "shadow usage-event pack from dirty-log pairs; does not mutate live user memory"
+        }))?
     );
     Ok(())
 }
@@ -216,10 +300,10 @@ fn pair_from_recent(value: &Value, signal: &'static str) -> Option<DirtyLogPair>
         &classify_operation(from, to, source_id, error_class),
     );
     Some(DirtyLogPair {
-        kind: "dirty_log_pair_v1",
+        kind: "dirty_log_pair_v1".to_string(),
         ts: value.get("ts").and_then(Value::as_u64).unwrap_or(0),
-        source_log: "recent_actions",
-        signal,
+        source_log: "recent_actions".to_string(),
+        signal: signal.to_string(),
         train_role,
         quarantine_reason,
         original: from.to_string(),
@@ -282,13 +366,14 @@ fn pair_from_layout_replay(value: &Value) -> Option<DirtyLogPair> {
     if !valid_pair(from, to) {
         return None;
     }
+    let (train_role, quarantine_reason) = manual_layout_train_role(from, to);
     Some(DirtyLogPair {
-        kind: "dirty_log_pair_v1",
+        kind: "dirty_log_pair_v1".to_string(),
         ts: value.get("ts").and_then(Value::as_u64).unwrap_or(0),
-        source_log: "recent_actions",
-        signal: "manual_layout_replay",
-        train_role: "positive",
-        quarantine_reason: String::new(),
+        source_log: "recent_actions".to_string(),
+        signal: "manual_layout_replay".to_string(),
+        train_role,
+        quarantine_reason,
         original: from.to_string(),
         expected: to.to_string(),
         operation: "layout".to_string(),
@@ -343,10 +428,10 @@ fn pair_from_correction(
     let (train_role, quarantine_reason) =
         train_role_and_quarantine(signal, lay_kind, from, to, &operation);
     Some(DirtyLogPair {
-        kind: "dirty_log_pair_v1",
+        kind: "dirty_log_pair_v1".to_string(),
         ts: value.get("ts").and_then(Value::as_u64).unwrap_or(0),
-        source_log: "corrections",
-        signal,
+        source_log: "corrections".to_string(),
+        signal: signal.to_string(),
         train_role,
         quarantine_reason,
         original: from.to_string(),
@@ -429,10 +514,10 @@ fn inspect_candidate_before_apply(collector: &mut Collector, value: &Value) {
 
 impl Collector {
     fn add(&mut self, pair: DirtyLogPair) {
-        *self.by_signal.entry(pair.signal.to_string()).or_default() += 1;
+        *self.by_signal.entry(pair.signal.clone()).or_default() += 1;
         *self
             .by_train_role
-            .entry(pair.train_role.to_string())
+            .entry(pair.train_role.clone())
             .or_default() += 1;
         if !pair.quarantine_reason.is_empty() {
             *self
@@ -545,6 +630,372 @@ fn write_pairs(path: &Path, pairs: &[DirtyLogPair]) -> io::Result<()> {
     fs::write(path, text)
 }
 
+fn read_pairs(path: &Path, limit: usize) -> io::Result<Vec<DirtyLogPair>> {
+    let text = fs::read_to_string(path)?;
+    let mut pairs = Vec::new();
+    for line in bounded_tail_lines(&text, limit) {
+        if let Ok(pair) = serde_json::from_str::<DirtyLogPair>(line) {
+            pairs.push(pair);
+        }
+    }
+    Ok(pairs)
+}
+
+#[derive(Debug, Default)]
+struct ReplayReport {
+    positive: ReplayBucket,
+    negative: ReplayBucket,
+    review: usize,
+    by_operation: BTreeMap<String, ReplayBucket>,
+    by_source: BTreeMap<String, ReplayBucket>,
+    examples: ReplayExamples,
+}
+
+#[derive(Debug, Default, Clone, Copy)]
+struct ReplayBucket {
+    cases: usize,
+    with_l2_candidates: usize,
+    no_l2_candidates: usize,
+    expected_present: usize,
+    expected_missing: usize,
+    applied_expected: usize,
+    present_not_applied: usize,
+    applied_other: usize,
+    kept_or_vetoed: usize,
+}
+
+#[derive(Debug, Default)]
+struct ReplayExamples {
+    missing_expected: Vec<Value>,
+    present_not_applied: Vec<Value>,
+    applied_other: Vec<Value>,
+    negative_applied: Vec<Value>,
+}
+
+fn replay_pairs(
+    pairs: &[DirtyLogPair],
+    options: &WaveOptions,
+    max_examples: usize,
+) -> ReplayReport {
+    let mut report = ReplayReport::default();
+    let mut trace_cache = BTreeMap::new();
+    for pair in pairs {
+        if pair.train_role == "review" {
+            report.review += 1;
+            continue;
+        }
+        let trace = trace_cache
+            .entry(pair.original.clone())
+            .or_insert_with(|| run_wave_trace_with_options(&pair.original, options));
+        let outcome = replay_one(pair, &trace);
+        let bucket = if pair.train_role == "negative" {
+            &mut report.negative
+        } else {
+            &mut report.positive
+        };
+        bucket.add(outcome);
+        report
+            .by_operation
+            .entry(pair.operation.clone())
+            .or_default()
+            .add(outcome);
+        report
+            .by_source
+            .entry(pair.source_id.clone())
+            .or_default()
+            .add(outcome);
+        collect_replay_examples(&mut report.examples, pair, &trace, outcome, max_examples);
+    }
+    report
+}
+
+#[derive(Debug, Clone, Copy)]
+struct ReplayOutcome {
+    has_l2: bool,
+    expected_present: bool,
+    applied_expected: bool,
+    applied_other: bool,
+}
+
+impl ReplayBucket {
+    fn add(&mut self, outcome: ReplayOutcome) {
+        self.cases += 1;
+        if outcome.has_l2 {
+            self.with_l2_candidates += 1;
+        } else {
+            self.no_l2_candidates += 1;
+        }
+        if outcome.expected_present {
+            self.expected_present += 1;
+        } else {
+            self.expected_missing += 1;
+        }
+        if outcome.applied_expected {
+            self.applied_expected += 1;
+        } else if outcome.applied_other {
+            self.applied_other += 1;
+        } else {
+            self.kept_or_vetoed += 1;
+        }
+        if outcome.expected_present && !outcome.applied_expected {
+            self.present_not_applied += 1;
+        }
+    }
+}
+
+fn replay_one(pair: &DirtyLogPair, trace: &lay::nanda_wave::WaveTrace) -> ReplayOutcome {
+    let expected_present = trace.l2_candidates.iter().any(|candidate| {
+        candidate_output_for_original(&pair.original, &candidate.text) == pair.expected
+    });
+    let output = trace.output();
+    ReplayOutcome {
+        has_l2: !trace.l2_candidates.is_empty(),
+        expected_present,
+        applied_expected: output == Some(pair.expected.as_str()),
+        applied_other: output.is_some_and(|text| text != pair.expected),
+    }
+}
+
+fn collect_replay_examples(
+    examples: &mut ReplayExamples,
+    pair: &DirtyLogPair,
+    trace: &lay::nanda_wave::WaveTrace,
+    outcome: ReplayOutcome,
+    max_examples: usize,
+) {
+    if !outcome.expected_present {
+        push_example(&mut examples.missing_expected, pair, trace, max_examples);
+    } else if !outcome.applied_expected {
+        push_example(&mut examples.present_not_applied, pair, trace, max_examples);
+    }
+    if outcome.applied_other {
+        push_example(&mut examples.applied_other, pair, trace, max_examples);
+    }
+    if pair.train_role == "negative" && outcome.applied_expected {
+        push_example(&mut examples.negative_applied, pair, trace, max_examples);
+    }
+}
+
+fn push_example(
+    target: &mut Vec<Value>,
+    pair: &DirtyLogPair,
+    trace: &lay::nanda_wave::WaveTrace,
+    max_examples: usize,
+) {
+    if target.len() >= max_examples {
+        return;
+    }
+    target.push(json!({
+        "role": pair.train_role,
+        "signal": pair.signal,
+        "operation": pair.operation,
+        "source_id": pair.source_id,
+        "original": pair.original,
+        "expected": pair.expected,
+        "decision": decision_label(&trace.decision),
+        "output": trace.output().unwrap_or("keep"),
+        "first_candidate": trace.l2_candidates.first().map(candidate_short),
+        "candidate_sources": trace.l2_candidates.iter().take(5).map(|candidate| candidate.source).collect::<Vec<_>>()
+    }));
+}
+
+fn replay_report_json(report: &ReplayReport, input: Option<PathBuf>, pairs: usize) -> Value {
+    json!({
+        "kind": "dirty_log_replay_report",
+        "status": "ok",
+        "input": input.map(|path| path.display().to_string()).unwrap_or_else(|| "live_logs".to_string()),
+        "pairs": pairs,
+        "read_as": "shadow replay over dirty-log corpus; runtime authority is unchanged",
+        "positive": replay_bucket_json(report.positive),
+        "negative": replay_bucket_json(report.negative),
+        "review": {
+            "cases": report.review,
+            "read_as": "quarantined pairs are not scored as positive authority"
+        },
+        "scoreboard": {
+            "positive_top1_percent": percent(report.positive.applied_expected, report.positive.cases),
+            "positive_candidate_coverage_percent": percent(report.positive.expected_present, report.positive.cases),
+            "positive_present_but_not_applied": report.positive.present_not_applied,
+            "negative_false_apply": report.negative.applied_expected,
+            "negative_false_apply_percent": percent(report.negative.applied_expected, report.negative.cases),
+            "missing_candidate": report.positive.expected_missing,
+            "applied_other": report.positive.applied_other,
+            "gate": replay_gate(report)
+        },
+        "by_operation": report.by_operation.iter().map(|(key, bucket)| (key, replay_bucket_json(*bucket))).collect::<BTreeMap<_, _>>(),
+        "by_source": report.by_source.iter().map(|(key, bucket)| (key, replay_bucket_json(*bucket))).collect::<BTreeMap<_, _>>(),
+        "examples": {
+            "missing_expected": report.examples.missing_expected,
+            "present_not_applied": report.examples.present_not_applied,
+            "applied_other": report.examples.applied_other,
+            "negative_applied": report.examples.negative_applied
+        }
+    })
+}
+
+fn usage_events_from_pairs(pairs: &[DirtyLogPair]) -> Vec<Value> {
+    let mut events = Vec::new();
+    for pair in pairs {
+        match pair.train_role.as_str() {
+            "positive" => events.extend(accepted_usage_events(pair)),
+            "negative" => events.extend(rejected_usage_events(pair)),
+            _ => {}
+        }
+    }
+    events
+}
+
+fn accepted_usage_events(pair: &DirtyLogPair) -> Vec<Value> {
+    let expected_words = normalized_words(&pair.expected);
+    if expected_words.is_empty() {
+        return Vec::new();
+    }
+    let original_words = normalized_words(&pair.original);
+    let indexes = changed_word_indexes(&original_words, &expected_words);
+    indexes
+        .into_iter()
+        .filter_map(|index| {
+            let word = expected_words.get(index)?;
+            Some(json!({
+                "ts": pair.ts,
+                "kind": "accepted_fix",
+                "word": word,
+                "context": words_before_index(&expected_words, index),
+                "from": pair.original.trim(),
+                "to": pair.expected.trim(),
+                "source": pair.source_id,
+                "operation": pair.operation
+            }))
+        })
+        .collect()
+}
+
+fn rejected_usage_events(pair: &DirtyLogPair) -> Vec<Value> {
+    let rejected_words = normalized_words(&pair.expected);
+    if rejected_words.is_empty() {
+        return Vec::new();
+    }
+    let context = previous_context_words(&pair.original);
+    rejected_words
+        .into_iter()
+        .map(|word| {
+            json!({
+                "ts": pair.ts,
+                "kind": "rejected_candidate",
+                "word": word,
+                "context": context,
+                "to": pair.expected.trim(),
+                "source": pair.source_id,
+                "operation": pair.operation
+            })
+        })
+        .collect()
+}
+
+fn changed_word_indexes(original_words: &[String], expected_words: &[String]) -> Vec<usize> {
+    let indexes = expected_words
+        .iter()
+        .enumerate()
+        .filter_map(|(index, word)| (original_words.get(index) != Some(word)).then_some(index))
+        .collect::<Vec<_>>();
+    if indexes.is_empty() {
+        expected_words.len().checked_sub(1).into_iter().collect()
+    } else {
+        indexes
+    }
+}
+
+fn words_before_index(words: &[String], index: usize) -> Vec<String> {
+    words[..index]
+        .iter()
+        .rev()
+        .take(5)
+        .cloned()
+        .collect::<Vec<_>>()
+        .into_iter()
+        .rev()
+        .collect()
+}
+
+fn previous_context_words(text: &str) -> Vec<String> {
+    let mut words = normalized_words(text);
+    words.pop();
+    words
+        .into_iter()
+        .rev()
+        .take(5)
+        .collect::<Vec<_>>()
+        .into_iter()
+        .rev()
+        .collect()
+}
+
+fn normalized_words(text: &str) -> Vec<String> {
+    text.split_whitespace().filter_map(normalize_word).collect()
+}
+
+fn normalize_word(token: &str) -> Option<String> {
+    let trimmed = token.trim_matches(|ch: char| !ch.is_alphabetic() && ch != '-');
+    let alpha = trimmed.chars().filter(|ch| ch.is_alphabetic()).count();
+    (alpha >= 2).then(|| trimmed.to_lowercase())
+}
+
+fn replay_bucket_json(bucket: ReplayBucket) -> Value {
+    json!({
+        "cases": bucket.cases,
+        "with_l2_candidates": bucket.with_l2_candidates,
+        "no_l2_candidates": bucket.no_l2_candidates,
+        "expected_present": bucket.expected_present,
+        "expected_missing": bucket.expected_missing,
+        "applied_expected": bucket.applied_expected,
+        "present_not_applied": bucket.present_not_applied,
+        "applied_other": bucket.applied_other,
+        "kept_or_vetoed": bucket.kept_or_vetoed
+    })
+}
+
+fn replay_gate(report: &ReplayReport) -> &'static str {
+    if report.negative.applied_expected > 0 {
+        "WATCH-negative-false-apply"
+    } else if report.positive.expected_present < report.positive.cases / 2 {
+        "WATCH-low-candidate-coverage"
+    } else if report.positive.present_not_applied > report.positive.applied_expected {
+        "WATCH-arbitration"
+    } else {
+        "PASS-shadow"
+    }
+}
+
+fn percent(numerator: usize, denominator: usize) -> f64 {
+    if denominator == 0 {
+        return 0.0;
+    }
+    (numerator as f64 * 100.0 / denominator as f64 * 100.0).round() / 100.0
+}
+
+fn decision_label(decision: &WaveDecision) -> &'static str {
+    match decision {
+        WaveDecision::Apply { .. } => "apply",
+        WaveDecision::Keep { .. } => "keep",
+        WaveDecision::Veto { .. } => "veto",
+    }
+}
+
+fn candidate_short(candidate: &WordCandidate) -> String {
+    format!(
+        "{}:{:?}:e{:.2}:r{:.2}",
+        candidate.source, candidate.text, candidate.energy, candidate.risk
+    )
+}
+
+fn candidate_output_for_original(original: &str, candidate: &str) -> String {
+    if original.ends_with(' ') && !candidate.ends_with(' ') {
+        format!("{candidate} ")
+    } else {
+        candidate.to_string()
+    }
+}
+
 fn selected_candidate_score(gate: &Value) -> Option<&Value> {
     gate.get("candidate_scores")?
         .as_array()?
@@ -605,18 +1056,24 @@ fn train_role_and_quarantine(
     original: &str,
     expected: &str,
     operation: &str,
-) -> (&'static str, String) {
+) -> (String, String) {
     if signal == "user_rejected_lay_output" {
-        return ("negative", String::new());
+        return ("negative".to_string(), String::new());
     }
     if source_id == "smart-text" && signal == "user_accepted_fix" {
-        return ("review", "external_smart_text_source".to_string());
+        return (
+            "review".to_string(),
+            "external_smart_text_source".to_string(),
+        );
     }
     if operation == "boundary" && signal != "manual_layout_replay" {
-        return ("review", "boundary_needs_transition_proof".to_string());
+        return (
+            "review".to_string(),
+            "boundary_needs_transition_proof".to_string(),
+        );
     }
     if operation == "mixed_layout" && signal != "manual_layout_replay" {
-        return ("review", "mixed_layout_dirty_pair".to_string());
+        return ("review".to_string(), "mixed_layout_dirty_pair".to_string());
     }
     if original
         .split_whitespace()
@@ -624,9 +1081,41 @@ fn train_role_and_quarantine(
         .max(expected.split_whitespace().count())
         > 4
     {
-        return ("review", "wide_context_pair".to_string());
+        return ("review".to_string(), "wide_context_pair".to_string());
     }
-    ("positive", String::new())
+    ("positive".to_string(), String::new())
+}
+
+fn manual_layout_train_role(original: &str, expected: &str) -> (String, String) {
+    if manual_layout_pair_is_trainable(original, expected) {
+        ("positive".to_string(), String::new())
+    } else {
+        (
+            "review".to_string(),
+            "manual_layout_short_or_technical".to_string(),
+        )
+    }
+}
+
+fn manual_layout_pair_is_trainable(original: &str, expected: &str) -> bool {
+    let original = original.trim();
+    let expected = expected.trim();
+    original.split_whitespace().count() == 1
+        && expected.split_whitespace().count() == 1
+        && original.chars().all(|ch| ch.is_alphabetic())
+        && expected.chars().all(|ch| ch.is_alphabetic())
+        && original.chars().filter(|ch| ch.is_alphabetic()).count() >= 4
+        && expected.chars().filter(|ch| ch.is_alphabetic()).count() >= 4
+        && !looks_like_uppercase_technical_token(original)
+        && !looks_like_uppercase_technical_token(expected)
+}
+
+fn looks_like_uppercase_technical_token(token: &str) -> bool {
+    let letters = token
+        .chars()
+        .filter(|ch| ch.is_alphabetic())
+        .collect::<Vec<_>>();
+    letters.len() >= 2 && letters.iter().all(|ch| ch.is_uppercase())
 }
 
 fn is_adjacent_transposition(original: &str, expected: &str) -> bool {
@@ -737,7 +1226,26 @@ mod tests {
         collect_recent_text(&mut collector, text, 100);
         assert_eq!(collector.pairs.len(), 1);
         assert_eq!(collector.pairs[0].signal, "manual_layout_replay");
+        assert_eq!(collector.pairs[0].train_role, "positive");
         assert_eq!(collector.pairs[0].operation, "layout");
+    }
+
+    #[test]
+    fn quarantines_short_or_technical_manual_layout_pairs() {
+        let text = r#"{"ts":3,"kind":"layout-replay","from":"Д2","to":"L2","replace_words":1}
+{"ts":4,"kind":"layout-replay","from":"e","to":"у","replace_words":1}
+"#;
+        let mut collector = Collector::default();
+        collect_recent_text(&mut collector, text, 100);
+        assert_eq!(collector.pairs.len(), 2);
+        assert!(collector
+            .pairs
+            .iter()
+            .all(|pair| pair.train_role == "review"));
+        assert!(collector
+            .pairs
+            .iter()
+            .all(|pair| pair.quarantine_reason == "manual_layout_short_or_technical"));
     }
 
     #[test]
