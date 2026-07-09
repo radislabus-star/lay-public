@@ -109,6 +109,24 @@ fn main() -> io::Result<()> {
         println!("{}", serde_json::to_string_pretty(&report)?);
         return Ok(());
     }
+    if let Some(path) = arg_value(&args, "--llmwave-ingest-pack-clean-corpus") {
+        let out = arg_value(&args, "--out")
+            .map(PathBuf::from)
+            .or_else(llmwave::default_memory_path)
+            .expect("default llmwave memory path");
+        let seed = arg_value(&args, "--seed").unwrap_or(DEFAULT_LLMWAVE_SEED);
+        let max_records = arg_value(&args, "--max-records")
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(50_000);
+        ingest_pack_clean_corpus(
+            &PathBuf::from(path),
+            seed,
+            &out,
+            max_records,
+            live_min_count(&args),
+        )?;
+        return Ok(());
+    }
     if args.iter().any(|arg| arg == "--memory-learned-report") {
         println!(
             "{}",
@@ -329,7 +347,7 @@ fn main() -> io::Result<()> {
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --l2-phase-coverage-recent [--limit N] [--candidate-limit N] [--max-examples N] | --l2-candidate-phase-shadow-recent [--l2-phase-memory PATH] [--limit N] [--max-examples N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --llmwave-corpus-report PATH [--test-corpus PATH] [--max-lines N] | --llmwave-dirty-report [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --llmwave-promotion-gate [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --candidate-quality-report | --ime-hit-rate-report | --dirty-log-eval | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --l2-phase-coverage-recent [--limit N] [--candidate-limit N] [--max-examples N] | --l2-candidate-phase-shadow-recent [--l2-phase-memory PATH] [--limit N] [--max-examples N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --llmwave-ingest-clean-corpus PATH [--max-records N] | --llmwave-ingest-pack-clean-corpus PATH [--out PATH] [--max-records N] | --memory-learned-report | --llmwave-corpus-report PATH [--test-corpus PATH] [--max-lines N] | --llmwave-dirty-report [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --llmwave-promotion-gate [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --candidate-quality-report | --ime-hit-rate-report | --dirty-log-eval | --cases PATH"
         );
         return Ok(());
     }
@@ -375,6 +393,57 @@ fn pack_llmwave_text(path: &str, out: &str) -> io::Result<()> {
 }
 
 fn pack_llmwave_live(seed: &str, out: &std::path::Path, min_count: usize) -> io::Result<()> {
+    let (memory, live_path, live_records) = build_live_llmwave_memory(seed, min_count);
+    llmwave::write_memory_packet(out, &memory)?;
+    println!(
+        "llmwave_pack_live: seed={} live={} live_records={} min_count={} output={} records={} vocabulary={} record_bytes={}",
+        seed,
+        live_path,
+        live_records,
+        min_count,
+        out.display(),
+        memory.len(),
+        memory.vocabulary_len(),
+        llmwave::LLMWAVE_RECORD_BYTES
+    );
+    Ok(())
+}
+
+fn ingest_pack_clean_corpus(
+    path: &Path,
+    seed: &str,
+    out: &Path,
+    max_records: usize,
+    min_count: usize,
+) -> io::Result<()> {
+    let ingest = llmwave::ingest_clean_corpus_path(path, max_records)?;
+    let (memory, live_path, live_records) = build_live_llmwave_memory(seed, min_count);
+    llmwave::write_memory_packet(out, &memory)?;
+    println!(
+        "{}",
+        serde_json::to_string_pretty(&serde_json::json!({
+            "kind": "llmwave_clean_corpus_pipeline",
+            "ingest": ingest,
+            "pack": {
+                "seed": seed,
+                "live": live_path,
+                "live_records": live_records,
+                "min_count": min_count,
+                "output": out.display().to_string(),
+                "records": memory.len(),
+                "vocabulary": memory.vocabulary_len(),
+                "record_bytes": llmwave::LLMWAVE_RECORD_BYTES
+            },
+            "authority": "clean corpus ingestion + pack only; runtime apply still gated by config"
+        }))?
+    );
+    Ok(())
+}
+
+fn build_live_llmwave_memory(
+    seed: &str,
+    min_count: usize,
+) -> (llmwave::LlmWaveMemory, String, usize) {
     let mut parts = Vec::new();
     if let Ok(text) = std::fs::read_to_string(seed) {
         parts.push(text);
@@ -390,21 +459,13 @@ fn pack_llmwave_live(seed: &str, out: &std::path::Path, min_count: usize) -> io:
     }
     let text = parts.join("\n");
     let memory = llmwave::LlmWaveMemory::from_text(&text);
-    llmwave::write_memory_packet(out, &memory)?;
-    println!(
-        "llmwave_pack_live: seed={} live={} live_records={} min_count={} output={} records={} vocabulary={} record_bytes={}",
-        seed,
+    (
+        memory,
         live_path
             .map(|path| path.display().to_string())
             .unwrap_or_else(|| "none".to_string()),
         live_records.len(),
-        min_count,
-        out.display(),
-        memory.len(),
-        memory.vocabulary_len(),
-        llmwave::LLMWAVE_RECORD_BYTES
-    );
-    Ok(())
+    )
 }
 
 fn print_llmwave_learning_report(seed: &str, limit: usize, min_count: usize) -> io::Result<()> {

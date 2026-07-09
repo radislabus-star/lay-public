@@ -4,9 +4,10 @@ import GLib from 'gi://GLib';
 export const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 export const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
+export const USAGE_COUNTS_PATH = GLib.get_home_dir() + '/.local/share/lay/nanda_wave/word_usage_counts.json';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 export const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-export const APP_VERSION = '0.2.175';
+export const APP_VERSION = '0.2.176';
 export const APP_DESCRIPTION = 'Альфа: RU/EN-переключатель по двойному Shift и помощь при наборе';
 export const APP_RELEASE_DATE = '2026-07-09';
 export const APP_LICENSE = 'Non-Commercial';
@@ -286,6 +287,30 @@ export function loadStats() {
     } catch(e) {
         return {};
     }
+}
+export function loadTypingMemorySummary() {
+    try {
+        const [, bytes] = Gio.File.new_for_path(USAGE_COUNTS_PATH).load_contents(null);
+        const data = JSON.parse(new TextDecoder().decode(bytes));
+        const counts = data?.counts ?? {};
+        return {
+            accepted: objectSize(counts.accepted_words),
+            rejected: objectSize(counts.rejected_words),
+            context: objectSize(counts.context_words),
+            attract: objectSize(counts.transition_attract),
+            repel: objectSize(counts.transition_repel),
+        };
+    } catch(e) {
+        return null;
+    }
+}
+function objectSize(value) {
+    return value && typeof value === 'object' ? Object.keys(value).length : 0;
+}
+export function summarizeTypingMemory(summary) {
+    if (!summary)
+        return 'память: нет данных';
+    return `память +${summary.accepted}/-${summary.rejected} · ctx ${summary.context} · ↔ ${summary.attract}/${summary.repel}`;
 }
 export function loadRecentActions(limit = 5) {
     try {

@@ -41,6 +41,7 @@ pub(super) fn append_learning_log(
 }
 
 pub(super) fn append_user_correction_learning_log(correction: &UserLearningCorrection) {
+    record_user_correction_memory(correction);
     if !active_learning_log() {
         return;
     }
@@ -65,6 +66,16 @@ pub(super) fn append_user_correction_learning_log(correction: &UserLearningCorre
         }
         LearningPromotion::Skipped => {}
     }
+}
+
+fn record_user_correction_memory(correction: &UserLearningCorrection) {
+    lay::nanda_wave::record_rejected_candidate_usage(
+        &correction.lay_from,
+        &correction.from,
+        "user_correction",
+        &correction.lay_kind,
+    );
+    lay::nanda_wave::record_accepted_fix_usage(&correction.from, &correction.to);
 }
 
 fn runtime_log(message: &str) {

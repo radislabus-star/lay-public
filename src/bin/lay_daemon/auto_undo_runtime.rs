@@ -129,12 +129,6 @@ pub(super) fn handle_pending_auto_undo(
 }
 
 fn remember_auto_undo(buf: &mut WordBuffer, undo: &PendingAutoUndo, started_at: Instant) {
-    lay::nanda_wave::record_rejected_candidate_usage(
-        &undo.original,
-        &undo.replacement,
-        "autocorrect",
-        "auto_undo",
-    );
     append_user_correction_learning_log(&UserLearningCorrection {
         lay_kind: undo.lay_kind.clone(),
         lay_from: undo.original.clone(),

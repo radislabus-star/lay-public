@@ -225,6 +225,7 @@ fn report_from_text(text: &str, limit: usize, path: &Path) -> serde_json::Value 
             "memory_demoted_selected": report.memory_shadow_demoted_selected,
             "positive_signal_rows": report.memory_shadow_positive_signal_rows,
             "negative_signal_rows": report.memory_shadow_negative_signal_rows,
+            "gate": memory_shadow_gate_json(&report),
             "baseline": "decision_rank without usage/context/L3/L4 lanes",
             "memory": "logged decision_rank with memory/context lanes",
             "read_as": "shadow old ranking vs memory ranking on dirty recent_actions; diagnostic only"
@@ -786,6 +787,32 @@ fn memory_lane_delta_milli(candidate: &Value) -> i64 {
     .sum()
 }
 
+fn memory_shadow_gate_json(report: &CandidateQualityReport) -> Value {
+    let (verdict, reason) = if report.memory_shadow_records == 0 {
+        ("WATCH", "no_memory_shadow_signal")
+    } else if report.memory_shadow_demoted_selected > 0 {
+        ("FAIL", "memory_demoted_selected_candidate")
+    } else if report.memory_shadow_negative_signal_rows > report.memory_shadow_positive_signal_rows
+    {
+        ("WATCH", "negative_memory_signal_dominates")
+    } else if report.memory_shadow_promoted_selected > 0 || report.memory_shadow_changed_winner == 0
+    {
+        ("PASS-shadow", "memory_ranking_non_regressive")
+    } else {
+        ("WATCH", "memory_changed_winner_without_selected_promotion")
+    };
+    json!({
+        "verdict": verdict,
+        "reason": reason,
+        "authority": "diagnostic only; not product apply authority",
+        "requires_before_promotion": [
+            "false unsafe multiword apply = 0",
+            "memory_demoted_selected = 0",
+            "manual review for changed winners"
+        ]
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::report_from_text;
@@ -848,5 +875,9 @@ mod tests {
         assert_eq!(report["memory_shadow_eval"]["baseline_winner_selected"], 1);
         assert_eq!(report["memory_shadow_eval"]["positive_signal_rows"], 2);
         assert_eq!(report["memory_shadow_eval"]["negative_signal_rows"], 1);
+        assert_eq!(
+            report["memory_shadow_eval"]["gate"]["verdict"],
+            "PASS-shadow"
+        );
     }
 }

@@ -59,6 +59,8 @@ import {
     startUpdate,
     stopDaemon,
     summarizeRecentActions,
+    loadTypingMemorySummary,
+    summarizeTypingMemory,
 } from './tray_support.js';
 
 function persistentSwitchItem(label, active, params = {}) {
@@ -463,9 +465,11 @@ class LayIndicator extends PanelMenu.Button {
     _aboutStatsText() {
         const stats = loadStats();
         const actions = summarizeRecentActions(loadRecentActions(20));
+        const memory = summarizeTypingMemory(loadTypingMemorySummary());
         return `LLM ${stats.llm_calls ?? 0}${this._lastTime(stats.last_llm_ts)} · `
             + `правки ${stats.learning_log_entries ?? 0}${this._lastTime(stats.last_learning_ts)} · `
             + `правил ${stats.promoted_rules ?? 0}${this._lastTime(stats.last_promotion_ts)} · `
+            + `${memory} · `
             + `действия: ${actions}`;
     }
 

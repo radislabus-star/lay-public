@@ -6,7 +6,7 @@ import Gtk from 'gi://Gtk';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.2.175';
+const APP_VERSION = '0.2.176';
 const APP_RELEASE_DATE = '2026-07-09';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
@@ -82,6 +82,7 @@ function nandaPassportText(status) {
     const cells = Array.isArray(status.cells) ? status.cells : [];
     const ablation = Array.isArray(status.ablation) ? status.ablation : [];
     const candidateStats = Array.isArray(status.candidate_stats) ? status.candidate_stats : [];
+    const memory = status.memory_learned?.summary ?? {};
     const preeditLive = status.preedit_live ?? {};
     const scoreboard = status.cell_scoreboard && Array.isArray(status.cell_scoreboard.cells)
         ? status.cell_scoreboard
@@ -118,6 +119,13 @@ function nandaPassportText(status) {
         lines.push('  данных нет');
     for (const item of candidateStats)
         lines.push(`  ${item.source ?? '?'}: родила ${item.generated ?? 0}, приняла ${item.accepted ?? 0}, veto ${item.vetoed ?? 0}, keep ${item.kept ?? 0}`);
+    lines.push(
+        '',
+        'Память ввода',
+        `  events: ${memory.parsed_events ?? 0}, words: ${memory.word_states ?? 0}`,
+        `  accepted/rejected: ${memory.accepted_word_states ?? 0} / ${memory.rejected_word_states ?? 0}`,
+        `  transitions attract/repel: ${memory.transition_attract_states ?? 0} / ${memory.transition_repel_states ?? 0}`,
+    );
     lines.push(
         '',
         'IME подсказки',
