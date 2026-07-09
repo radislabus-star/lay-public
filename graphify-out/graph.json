@@ -4464,11 +4464,27 @@
       "_origin": "ast"
     },
     {
+      "id": "src_bin_lay_daemon_config_runtime_sync_hot_runtime",
+      "label": "sync_hot_runtime()",
+      "file_type": "code",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L66",
+      "_origin": "ast"
+    },
+    {
       "id": "src_bin_lay_daemon_config_runtime_sync_lem_runtime",
       "label": "sync_lem_runtime()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L66",
+      "source_location": "L71",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_bin_lay_daemon_config_runtime_sync_hot_field_runtime",
+      "label": "sync_hot_field_runtime()",
+      "file_type": "code",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L75",
       "_origin": "ast"
     },
     {
@@ -4476,7 +4492,7 @@
       "label": "config_modified_at()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L71",
+      "source_location": "L80",
       "_origin": "ast"
     },
     {
@@ -4484,7 +4500,7 @@
       "label": "active_replace_words()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L77",
+      "source_location": "L86",
       "_origin": "ast"
     },
     {
@@ -4492,7 +4508,7 @@
       "label": "active_typing_assist_words()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L81",
+      "source_location": "L90",
       "_origin": "ast"
     },
     {
@@ -4500,7 +4516,7 @@
       "label": "active_correction_engine()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L85",
+      "source_location": "L94",
       "_origin": "ast"
     },
     {
@@ -4508,7 +4524,7 @@
       "label": "active_layout_backend()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L89",
+      "source_location": "L98",
       "_origin": "ast"
     },
     {
@@ -4516,7 +4532,7 @@
       "label": "active_text_backend()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L102",
+      "source_location": "L111",
       "_origin": "ast"
     },
     {
@@ -4524,7 +4540,7 @@
       "label": "active_auto_replace()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L106",
+      "source_location": "L115",
       "_origin": "ast"
     },
     {
@@ -4532,7 +4548,7 @@
       "label": "active_typing_assist()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L110",
+      "source_location": "L119",
       "_origin": "ast"
     },
     {
@@ -4540,7 +4556,7 @@
       "label": "active_enter_autocorrect()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L114",
+      "source_location": "L123",
       "_origin": "ast"
     },
     {
@@ -4548,7 +4564,7 @@
       "label": "active_enter_autocorrect_from_env()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L120",
+      "source_location": "L129",
       "_origin": "ast"
     },
     {
@@ -4556,7 +4572,7 @@
       "label": "active_auto_switch_layout()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L133",
+      "source_location": "L142",
       "_origin": "ast"
     },
     {
@@ -4564,7 +4580,7 @@
       "label": "active_correction_safety()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L138",
+      "source_location": "L147",
       "_origin": "ast"
     },
     {
@@ -4572,7 +4588,7 @@
       "label": "active_learning_log()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L142",
+      "source_location": "L151",
       "_origin": "ast"
     },
     {
@@ -4580,7 +4596,7 @@
       "label": "active_nanda_trace()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L146",
+      "source_location": "L155",
       "_origin": "ast"
     },
     {
@@ -4588,7 +4604,7 @@
       "label": "active_nanda_precognition()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L151",
+      "source_location": "L160",
       "_origin": "ast"
     },
     {
@@ -4596,7 +4612,7 @@
       "label": "daemon_nanda_trace_active()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L156",
+      "source_location": "L165",
       "_origin": "ast"
     },
     {
@@ -4604,7 +4620,7 @@
       "label": "daemon_precognition_trace_active()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L162",
+      "source_location": "L171",
       "_origin": "ast"
     },
     {
@@ -4612,7 +4628,7 @@
       "label": "active_nanda_autocorrect()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L170",
+      "source_location": "L179",
       "_origin": "ast"
     },
     {
@@ -4620,7 +4636,7 @@
       "label": "daemon_hot_field_policy()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L175",
+      "source_location": "L184",
       "_origin": "ast"
     },
     {
@@ -4628,7 +4644,7 @@
       "label": "active_lem_enabled_for_scope()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L179",
+      "source_location": "L188",
       "_origin": "ast"
     },
     {
@@ -4636,7 +4652,7 @@
       "label": "active_lem_weight()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L183",
+      "source_location": "L192",
       "_origin": "ast"
     },
     {
@@ -4644,7 +4660,7 @@
       "label": "active_typing_assist_pipeline_for_auto_replace()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L188",
+      "source_location": "L197",
       "_origin": "ast"
     },
     {
@@ -4660,7 +4676,7 @@
       "label": "ime_backend_does_not_enable_daemon_precognition_trace()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L206",
+      "source_location": "L215",
       "_origin": "ast"
     },
     {
@@ -4668,7 +4684,7 @@
       "label": "ime_backend_does_not_enable_heavy_daemon_wave_trace()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L218",
+      "source_location": "L227",
       "_origin": "ast"
     },
     {
@@ -4676,7 +4692,7 @@
       "label": "ime_backend_does_not_enable_full_daemon_nanda_autocorrect()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L229",
+      "source_location": "L238",
       "_origin": "ast"
     },
     {
@@ -4684,7 +4700,7 @@
       "label": "auto_backend_does_not_enable_full_daemon_nanda_autocorrect()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L240",
+      "source_location": "L249",
       "_origin": "ast"
     },
     {
@@ -4692,7 +4708,7 @@
       "label": "uinput_backend_can_keep_daemon_precognition_trace_explicitly()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L251",
+      "source_location": "L260",
       "_origin": "ast"
     },
     {
@@ -4700,7 +4716,7 @@
       "label": "uinput_backend_can_keep_heavy_daemon_wave_trace_explicitly()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L263",
+      "source_location": "L272",
       "_origin": "ast"
     },
     {
@@ -4708,7 +4724,7 @@
       "label": "uinput_backend_can_keep_full_daemon_nanda_autocorrect_explicitly()",
       "file_type": "code",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L274",
+      "source_location": "L283",
       "_origin": "ast"
     },
     {
@@ -16212,7 +16228,7 @@
       "label": "terminal_erase_prefix()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L395",
+      "source_location": "L396",
       "_origin": "ast"
     },
     {
@@ -16220,7 +16236,7 @@
       "label": "engine()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L411",
+      "source_location": "L412",
       "_origin": "ast"
     },
     {
@@ -16228,7 +16244,7 @@
       "label": "daemon_bridge_request_is_not_confused_with_ime_sources()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L422",
+      "source_location": "L423",
       "_origin": "ast"
     },
     {
@@ -16236,7 +16252,7 @@
       "label": "ime_manual_toggle_request_keeps_ime_committed_tail_source()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L434",
+      "source_location": "L435",
       "_origin": "ast"
     },
     {
@@ -16244,7 +16260,7 @@
       "label": "committed_tail_noop_requires_empty_delete_and_empty_insert()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L446",
+      "source_location": "L447",
       "_origin": "ast"
     },
     {
@@ -16252,7 +16268,7 @@
       "label": "terminal_erase_prefix_is_delete_control_run_only()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L455",
+      "source_location": "L456",
       "_origin": "ast"
     },
     {
@@ -16260,7 +16276,7 @@
       "label": "kitty_profile_keeps_existing_terminal_erase_route()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L460",
+      "source_location": "L461",
       "_origin": "ast"
     },
     {
@@ -16268,7 +16284,7 @@
       "label": "wechat_profile_prefers_surrounding_text_over_terminal_erase()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L469",
+      "source_location": "L470",
       "_origin": "ast"
     },
     {
@@ -16276,7 +16292,7 @@
       "label": "plain_commits_do_not_select_delete_profile()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L481",
+      "source_location": "L482",
       "_origin": "ast"
     },
     {
@@ -16284,7 +16300,7 @@
       "label": "duplicate_replace_gate_skips_same_recent_visible_result()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L490",
+      "source_location": "L491",
       "_origin": "ast"
     },
     {
@@ -16292,7 +16308,7 @@
       "label": "duplicate_replace_gate_allows_same_edit_for_new_original_tail()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L504",
+      "source_location": "L505",
       "_origin": "ast"
     },
     {
@@ -16300,7 +16316,7 @@
       "label": "duplicate_replace_gate_expires_quickly()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L518",
+      "source_location": "L519",
       "_origin": "ast"
     },
     {
@@ -16308,7 +16324,7 @@
       "label": "committed_tail_replace_state_sync_clears_stale_preedit_suffix()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L532",
+      "source_location": "L533",
       "_origin": "ast"
     },
     {
@@ -26236,7 +26252,7 @@
       "label": "HotRuntimeRoute",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L11",
+      "source_location": "L20",
       "_origin": "ast"
     },
     {
@@ -26244,7 +26260,7 @@
       "label": "HotAuthority",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L17",
+      "source_location": "L26",
       "_origin": "ast"
     },
     {
@@ -26252,7 +26268,7 @@
       "label": "HotFieldPolicy",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L23",
+      "source_location": "L32",
       "_origin": "ast"
     },
     {
@@ -26260,7 +26276,7 @@
       "label": ".daemon_for_text_backend()",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L29",
+      "source_location": "L38",
       "_origin": "ast"
     },
     {
@@ -26276,7 +26292,7 @@
       "label": ".ime()",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L41",
+      "source_location": "L50",
       "_origin": "ast"
     },
     {
@@ -26284,7 +26300,7 @@
       "label": ".route()",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L48",
+      "source_location": "L57",
       "_origin": "ast"
     },
     {
@@ -26292,7 +26308,7 @@
       "label": ".authority()",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L52",
+      "source_location": "L61",
       "_origin": "ast"
     },
     {
@@ -26300,7 +26316,7 @@
       "label": ".allows_full_reference_authority()",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L56",
+      "source_location": "L65",
       "_origin": "ast"
     },
     {
@@ -26308,7 +26324,63 @@
       "label": ".allows_full_nanda_authority()",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L60",
+      "source_location": "L69",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_set_process_policy",
+      "label": "set_process_policy()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L74",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_process_policy",
+      "label": "process_policy()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L79",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_process_allows_full_reference_authority",
+      "label": "process_allows_full_reference_authority()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L86",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_encode_route",
+      "label": "encode_route()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L90",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_decode_route",
+      "label": "decode_route()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L97",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_encode_authority",
+      "label": "encode_authority()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L104",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_decode_authority",
+      "label": "decode_authority()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L111",
       "_origin": "ast"
     },
     {
@@ -26316,7 +26388,7 @@
       "label": "HotWordAuthority",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L66",
+      "source_location": "L119",
       "_origin": "ast"
     },
     {
@@ -26324,7 +26396,7 @@
       "label": "HotWordReadout",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L73",
+      "source_location": "L126",
       "_origin": "ast"
     },
     {
@@ -26332,7 +26404,7 @@
       "label": ".is_known()",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L78",
+      "source_location": "L131",
       "_origin": "ast"
     },
     {
@@ -26340,7 +26412,7 @@
       "label": "HotFieldSnapshot",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L84",
+      "source_location": "L137",
       "_origin": "ast"
     },
     {
@@ -26348,7 +26420,7 @@
       "label": ".current()",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L87",
+      "source_location": "L140",
       "_origin": "ast"
     },
     {
@@ -26356,7 +26428,7 @@
       "label": ".word_readout()",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L91",
+      "source_location": "L144",
       "_origin": "ast"
     },
     {
@@ -26364,7 +26436,7 @@
       "label": "daemon_auto_backend_uses_field_snapshot_only()",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L113",
+      "source_location": "L166",
       "_origin": "ast"
     },
     {
@@ -26372,7 +26444,15 @@
       "label": "daemon_uinput_backend_can_use_full_reference_authority()",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L121",
+      "source_location": "L174",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_hot_field_process_policy_tracks_hot_authority",
+      "label": "process_policy_tracks_hot_authority()",
+      "file_type": "code",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L181",
       "_origin": "ast"
     },
     {
@@ -26380,7 +26460,7 @@
       "label": "hot_word_readout_does_not_need_full_dictionary_for_common_words()",
       "file_type": "code",
       "source_file": "src/hot_field.rs",
-      "source_location": "L128",
+      "source_location": "L196",
       "_origin": "ast"
     },
     {
@@ -44268,7 +44348,7 @@
       "label": "warm_up()",
       "file_type": "code",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L30",
+      "source_location": "L34",
       "_origin": "ast"
     },
     {
@@ -44276,7 +44356,23 @@
       "label": "russian_dictionary()",
       "file_type": "code",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L36",
+      "source_location": "L40",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_russian_lexicon_russian_dictionary_for_authority",
+      "label": "russian_dictionary_for_authority()",
+      "file_type": "code",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L44",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_russian_lexicon_full_russian_dictionary",
+      "label": "full_russian_dictionary()",
+      "file_type": "code",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L52",
       "_origin": "ast"
     },
     {
@@ -44284,7 +44380,23 @@
       "label": "russian_short_dictionary()",
       "file_type": "code",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L54",
+      "source_location": "L69",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_russian_lexicon_russian_short_dictionary_for_authority",
+      "label": "russian_short_dictionary_for_authority()",
+      "file_type": "code",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L73",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_russian_lexicon_full_russian_short_dictionary",
+      "label": "full_russian_short_dictionary()",
+      "file_type": "code",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L83",
       "_origin": "ast"
     },
     {
@@ -44292,7 +44404,23 @@
       "label": "russian_tiny_dictionary()",
       "file_type": "code",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L76",
+      "source_location": "L104",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_russian_lexicon_russian_tiny_dictionary_for_authority",
+      "label": "russian_tiny_dictionary_for_authority()",
+      "file_type": "code",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L108",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_russian_lexicon_full_russian_tiny_dictionary",
+      "label": "full_russian_tiny_dictionary()",
+      "file_type": "code",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L118",
       "_origin": "ast"
     },
     {
@@ -44300,7 +44428,23 @@
       "label": "russian_generated_form_dictionary()",
       "file_type": "code",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L98",
+      "source_location": "L139",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_russian_lexicon_russian_generated_form_dictionary_for_authority",
+      "label": "russian_generated_form_dictionary_for_authority()",
+      "file_type": "code",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L143",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_russian_lexicon_full_russian_generated_form_dictionary",
+      "label": "full_russian_generated_form_dictionary()",
+      "file_type": "code",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L155",
       "_origin": "ast"
     },
     {
@@ -44308,7 +44452,15 @@
       "label": "russian_generated_form_dictionary_is_warm()",
       "file_type": "code",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L110",
+      "source_location": "L164",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_russian_lexicon_russian_dictionary_is_warm",
+      "label": "russian_dictionary_is_warm()",
+      "file_type": "code",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L168",
       "_origin": "ast"
     },
     {
@@ -44316,7 +44468,7 @@
       "label": "full_generated_forms_enabled()",
       "file_type": "code",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L114",
+      "source_location": "L172",
       "_origin": "ast"
     },
     {
@@ -44324,7 +44476,15 @@
       "label": "is_known_russian_word_or_form()",
       "file_type": "code",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L118",
+      "source_location": "L176",
+      "_origin": "ast"
+    },
+    {
+      "id": "src_russian_lexicon_empty_word_set",
+      "label": "empty_word_set()",
+      "file_type": "code",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L192",
       "_origin": "ast"
     },
     {
@@ -44864,11 +45024,19 @@
       "_origin": "ast"
     },
     {
+      "id": "src_russian_lexicon_tests_field_only_authority_does_not_expose_reference_dictionaries",
+      "label": "field_only_authority_does_not_expose_reference_dictionaries()",
+      "file_type": "code",
+      "source_file": "src/russian_lexicon_tests.rs",
+      "source_location": "L4",
+      "_origin": "ast"
+    },
+    {
       "id": "src_russian_lexicon_tests_recognizes_adjective_plural_from_known_lemma",
       "label": "recognizes_adjective_plural_from_known_lemma()",
       "file_type": "code",
       "source_file": "src/russian_lexicon_tests.rs",
-      "source_location": "L4",
+      "source_location": "L17",
       "_origin": "ast"
     },
     {
@@ -44876,7 +45044,7 @@
       "label": "recognizes_common_noun_forms_for_typo_candidates()",
       "file_type": "code",
       "source_file": "src/russian_lexicon_tests.rs",
-      "source_location": "L9",
+      "source_location": "L22",
       "_origin": "ast"
     },
     {
@@ -44884,7 +45052,7 @@
       "label": "recognizes_russian_technical_loanword_forms()",
       "file_type": "code",
       "source_file": "src/russian_lexicon_tests.rs",
-      "source_location": "L16",
+      "source_location": "L29",
       "_origin": "ast"
     },
     {
@@ -44892,7 +45060,7 @@
       "label": "generates_ka_oblique_forms_for_prefix_candidates()",
       "file_type": "code",
       "source_file": "src/russian_lexicon_tests.rs",
-      "source_location": "L47",
+      "source_location": "L60",
       "_origin": "ast"
     },
     {
@@ -44900,7 +45068,7 @@
       "label": "recognizes_common_live_noun_case_forms()",
       "file_type": "code",
       "source_file": "src/russian_lexicon_tests.rs",
-      "source_location": "L56",
+      "source_location": "L69",
       "_origin": "ast"
     },
     {
@@ -44908,7 +45076,7 @@
       "label": "recognizes_ch_verb_present_forms_from_l2_foundation_lemmas()",
       "file_type": "code",
       "source_file": "src/russian_lexicon_tests.rs",
-      "source_location": "L61",
+      "source_location": "L74",
       "_origin": "ast"
     },
     {
@@ -68534,11 +68702,30 @@
     },
     {
       "source": "src_bin_lay_daemon_config_runtime",
-      "target": "src_bin_lay_daemon_config_runtime_sync_lem_runtime",
+      "target": "src_bin_lay_daemon_config_runtime_sync_hot_runtime",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
       "source_location": "L66",
+      "weight": 1.0
+    },
+    {
+      "source": "src_bin_lay_daemon_config_runtime_sync_hot_runtime",
+      "target": "src_bin_lay_daemon_config_runtime_rs_layconfig",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L66",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "src_bin_lay_daemon_config_runtime",
+      "target": "src_bin_lay_daemon_config_runtime_sync_lem_runtime",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L71",
       "weight": 1.0
     },
     {
@@ -68547,7 +68734,26 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L66",
+      "source_location": "L71",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "src_bin_lay_daemon_config_runtime",
+      "target": "src_bin_lay_daemon_config_runtime_sync_hot_field_runtime",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "src_bin_lay_daemon_config_runtime_sync_hot_field_runtime",
+      "target": "src_bin_lay_daemon_config_runtime_rs_layconfig",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L75",
       "weight": 1.0,
       "context": "parameter_type"
     },
@@ -68557,7 +68763,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L71",
+      "source_location": "L80",
       "weight": 1.0
     },
     {
@@ -68566,7 +68772,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L71",
+      "source_location": "L80",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -68576,7 +68782,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L71",
+      "source_location": "L80",
       "weight": 1.0,
       "context": "generic_arg"
     },
@@ -68586,7 +68792,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L77",
+      "source_location": "L86",
       "weight": 1.0
     },
     {
@@ -68595,7 +68801,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L81",
+      "source_location": "L90",
       "weight": 1.0
     },
     {
@@ -68604,7 +68810,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L85",
+      "source_location": "L94",
       "weight": 1.0
     },
     {
@@ -68613,7 +68819,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L85",
+      "source_location": "L94",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -68623,7 +68829,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L89",
+      "source_location": "L98",
       "weight": 1.0
     },
     {
@@ -68632,7 +68838,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L89",
+      "source_location": "L98",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -68642,7 +68848,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L102",
+      "source_location": "L111",
       "weight": 1.0
     },
     {
@@ -68651,7 +68857,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L102",
+      "source_location": "L111",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -68661,7 +68867,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L106",
+      "source_location": "L115",
       "weight": 1.0
     },
     {
@@ -68670,7 +68876,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L110",
+      "source_location": "L119",
       "weight": 1.0
     },
     {
@@ -68679,7 +68885,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L114",
+      "source_location": "L123",
       "weight": 1.0
     },
     {
@@ -68688,7 +68894,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L120",
+      "source_location": "L129",
       "weight": 1.0
     },
     {
@@ -68697,7 +68903,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L120",
+      "source_location": "L129",
       "weight": 1.0,
       "context": "parameter_type"
     },
@@ -68707,7 +68913,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L133",
+      "source_location": "L142",
       "weight": 1.0
     },
     {
@@ -68716,7 +68922,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L138",
+      "source_location": "L147",
       "weight": 1.0
     },
     {
@@ -68725,7 +68931,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L138",
+      "source_location": "L147",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -68735,7 +68941,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L142",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
@@ -68744,7 +68950,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L146",
+      "source_location": "L155",
       "weight": 1.0
     },
     {
@@ -68753,7 +68959,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L151",
+      "source_location": "L160",
       "weight": 1.0
     },
     {
@@ -68762,7 +68968,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L156",
+      "source_location": "L165",
       "weight": 1.0
     },
     {
@@ -68771,7 +68977,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L156",
+      "source_location": "L165",
       "weight": 1.0,
       "context": "parameter_type"
     },
@@ -68781,7 +68987,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L162",
+      "source_location": "L171",
       "weight": 1.0
     },
     {
@@ -68790,7 +68996,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L162",
+      "source_location": "L171",
       "weight": 1.0,
       "context": "parameter_type"
     },
@@ -68800,7 +69006,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L170",
+      "source_location": "L179",
       "weight": 1.0
     },
     {
@@ -68809,7 +69015,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L175",
+      "source_location": "L184",
       "weight": 1.0
     },
     {
@@ -68818,7 +69024,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L175",
+      "source_location": "L184",
       "weight": 1.0,
       "context": "parameter_type"
     },
@@ -68828,7 +69034,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L175",
+      "source_location": "L184",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -68838,7 +69044,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L179",
+      "source_location": "L188",
       "weight": 1.0
     },
     {
@@ -68847,7 +69053,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L183",
+      "source_location": "L192",
       "weight": 1.0
     },
     {
@@ -68856,7 +69062,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L188",
+      "source_location": "L197",
       "weight": 1.0
     },
     {
@@ -68865,7 +69071,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L188",
+      "source_location": "L197",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -68875,7 +69081,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L188",
+      "source_location": "L197",
       "weight": 1.0,
       "context": "generic_arg"
     },
@@ -68885,7 +69091,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L206",
+      "source_location": "L215",
       "weight": 1.0
     },
     {
@@ -68894,7 +69100,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L218",
+      "source_location": "L227",
       "weight": 1.0
     },
     {
@@ -68903,7 +69109,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L229",
+      "source_location": "L238",
       "weight": 1.0
     },
     {
@@ -68912,7 +69118,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L240",
+      "source_location": "L249",
       "weight": 1.0
     },
     {
@@ -68921,7 +69127,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L251",
+      "source_location": "L260",
       "weight": 1.0
     },
     {
@@ -68930,7 +69136,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L263",
+      "source_location": "L272",
       "weight": 1.0
     },
     {
@@ -68939,12 +69145,12 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L274",
+      "source_location": "L283",
       "weight": 1.0
     },
     {
       "source": "src_bin_lay_daemon_config_runtime_current_config",
-      "target": "src_bin_lay_daemon_config_runtime_sync_lem_runtime",
+      "target": "src_bin_lay_daemon_config_runtime_sync_hot_runtime",
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -68963,13 +69169,43 @@
       "weight": 1.0
     },
     {
+      "source": "src_bin_lay_daemon_config_runtime_sync_hot_runtime",
+      "target": "src_bin_lay_daemon_config_runtime_sync_lem_runtime",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "src_bin_lay_daemon_config_runtime_sync_hot_runtime",
+      "target": "src_bin_lay_daemon_config_runtime_sync_hot_field_runtime",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
       "source": "src_bin_lay_daemon_config_runtime_sync_lem_runtime",
       "target": "src_bin_lay_daemon_config_runtime_active_lem_weight",
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L67",
+      "source_location": "L72",
+      "weight": 1.0
+    },
+    {
+      "source": "src_bin_lay_daemon_config_runtime_sync_hot_field_runtime",
+      "target": "src_bin_lay_daemon_config_runtime_daemon_hot_field_policy",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L76",
       "weight": 1.0
     },
     {
@@ -68979,7 +69215,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L78",
+      "source_location": "L87",
       "weight": 1.0
     },
     {
@@ -68989,7 +69225,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L82",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -68999,7 +69235,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L86",
+      "source_location": "L95",
       "weight": 1.0
     },
     {
@@ -69009,7 +69245,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L90",
+      "source_location": "L99",
       "weight": 1.0
     },
     {
@@ -69019,7 +69255,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L103",
+      "source_location": "L112",
       "weight": 1.0
     },
     {
@@ -69029,7 +69265,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L107",
+      "source_location": "L116",
       "weight": 1.0
     },
     {
@@ -69039,7 +69275,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L111",
+      "source_location": "L120",
       "weight": 1.0
     },
     {
@@ -69049,7 +69285,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L115",
+      "source_location": "L124",
       "weight": 1.0
     },
     {
@@ -69059,7 +69295,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L117",
+      "source_location": "L126",
       "weight": 1.0
     },
     {
@@ -69069,7 +69305,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L134",
+      "source_location": "L143",
       "weight": 1.0
     },
     {
@@ -69079,7 +69315,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L139",
+      "source_location": "L148",
       "weight": 1.0
     },
     {
@@ -69089,7 +69325,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L143",
+      "source_location": "L152",
       "weight": 1.0
     },
     {
@@ -69099,7 +69335,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L147",
+      "source_location": "L156",
       "weight": 1.0
     },
     {
@@ -69109,7 +69345,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L148",
+      "source_location": "L157",
       "weight": 1.0
     },
     {
@@ -69119,7 +69355,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L152",
+      "source_location": "L161",
       "weight": 1.0
     },
     {
@@ -69129,7 +69365,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L153",
+      "source_location": "L162",
       "weight": 1.0
     },
     {
@@ -69139,7 +69375,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L159",
+      "source_location": "L168",
       "weight": 1.0
     },
     {
@@ -69149,41 +69385,11 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L166",
+      "source_location": "L175",
       "weight": 1.0
     },
     {
       "source": "src_bin_lay_daemon_config_runtime_active_nanda_autocorrect",
-      "target": "src_bin_lay_daemon_config_runtime_current_config",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L171",
-      "weight": 1.0
-    },
-    {
-      "source": "src_bin_lay_daemon_config_runtime_active_nanda_autocorrect",
-      "target": "src_bin_lay_daemon_config_runtime_daemon_hot_field_policy",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L172",
-      "weight": 1.0
-    },
-    {
-      "source": "src_bin_lay_daemon_config_runtime_daemon_hot_field_policy",
-      "target": "src_bin_lay_daemon_config_runtime_active_text_backend",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L176",
-      "weight": 1.0
-    },
-    {
-      "source": "src_bin_lay_daemon_config_runtime_active_lem_enabled_for_scope",
       "target": "src_bin_lay_daemon_config_runtime_current_config",
       "relation": "calls",
       "context": "call",
@@ -69193,13 +69399,43 @@
       "weight": 1.0
     },
     {
+      "source": "src_bin_lay_daemon_config_runtime_active_nanda_autocorrect",
+      "target": "src_bin_lay_daemon_config_runtime_daemon_hot_field_policy",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L181",
+      "weight": 1.0
+    },
+    {
+      "source": "src_bin_lay_daemon_config_runtime_daemon_hot_field_policy",
+      "target": "src_bin_lay_daemon_config_runtime_active_text_backend",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L185",
+      "weight": 1.0
+    },
+    {
+      "source": "src_bin_lay_daemon_config_runtime_active_lem_enabled_for_scope",
+      "target": "src_bin_lay_daemon_config_runtime_current_config",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/bin/lay_daemon/config_runtime.rs",
+      "source_location": "L189",
+      "weight": 1.0
+    },
+    {
       "source": "src_bin_lay_daemon_config_runtime_active_lem_weight",
       "target": "src_bin_lay_daemon_config_runtime_current_config",
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L184",
+      "source_location": "L193",
       "weight": 1.0
     },
     {
@@ -69209,7 +69445,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L191",
+      "source_location": "L200",
       "weight": 1.0
     },
     {
@@ -69219,7 +69455,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_daemon/config_runtime.rs",
-      "source_location": "L192",
+      "source_location": "L201",
       "weight": 1.0
     },
     {
@@ -99492,7 +99728,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L395",
+      "source_location": "L396",
       "weight": 1.0
     },
     {
@@ -99501,7 +99737,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L395",
+      "source_location": "L396",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -99511,7 +99747,7 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L401",
+      "source_location": "L402",
       "weight": 1.0,
       "context": "import"
     },
@@ -99521,7 +99757,7 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L406",
+      "source_location": "L407",
       "weight": 1.0,
       "context": "import"
     },
@@ -99531,7 +99767,7 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L407",
+      "source_location": "L408",
       "weight": 1.0,
       "context": "import"
     },
@@ -99541,7 +99777,7 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L408",
+      "source_location": "L409",
       "weight": 1.0,
       "context": "import"
     },
@@ -99551,7 +99787,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L411",
+      "source_location": "L412",
       "weight": 1.0
     },
     {
@@ -99560,7 +99796,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L411",
+      "source_location": "L412",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -99570,7 +99806,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L422",
+      "source_location": "L423",
       "weight": 1.0
     },
     {
@@ -99579,7 +99815,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L434",
+      "source_location": "L435",
       "weight": 1.0
     },
     {
@@ -99588,7 +99824,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L446",
+      "source_location": "L447",
       "weight": 1.0
     },
     {
@@ -99597,7 +99833,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L455",
+      "source_location": "L456",
       "weight": 1.0
     },
     {
@@ -99606,7 +99842,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L460",
+      "source_location": "L461",
       "weight": 1.0
     },
     {
@@ -99615,7 +99851,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L469",
+      "source_location": "L470",
       "weight": 1.0
     },
     {
@@ -99624,7 +99860,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L481",
+      "source_location": "L482",
       "weight": 1.0
     },
     {
@@ -99633,7 +99869,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L490",
+      "source_location": "L491",
       "weight": 1.0
     },
     {
@@ -99642,7 +99878,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L504",
+      "source_location": "L505",
       "weight": 1.0
     },
     {
@@ -99651,7 +99887,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L518",
+      "source_location": "L519",
       "weight": 1.0
     },
     {
@@ -99660,7 +99896,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L532",
+      "source_location": "L533",
       "weight": 1.0
     },
     {
@@ -99760,7 +99996,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L412",
+      "source_location": "L413",
       "weight": 1.0
     },
     {
@@ -99770,7 +100006,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L423",
+      "source_location": "L424",
       "weight": 1.0
     },
     {
@@ -99780,7 +100016,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L435",
+      "source_location": "L436",
       "weight": 1.0
     },
     {
@@ -99790,7 +100026,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L461",
+      "source_location": "L462",
       "weight": 1.0
     },
     {
@@ -99800,7 +100036,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L470",
+      "source_location": "L471",
       "weight": 1.0
     },
     {
@@ -99810,7 +100046,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L482",
+      "source_location": "L483",
       "weight": 1.0
     },
     {
@@ -99820,7 +100056,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L492",
+      "source_location": "L493",
       "weight": 1.0
     },
     {
@@ -99830,7 +100066,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L506",
+      "source_location": "L507",
       "weight": 1.0
     },
     {
@@ -99840,7 +100076,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L520",
+      "source_location": "L521",
       "weight": 1.0
     },
     {
@@ -99850,7 +100086,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/state.rs",
-      "source_location": "L533",
+      "source_location": "L534",
       "weight": 1.0
     },
     {
@@ -132923,11 +133159,21 @@
     },
     {
       "source": "src_hot_field",
+      "target": "atomic",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L9",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "src_hot_field",
       "target": "src_hot_field_hotruntimeroute",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L11",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -132936,7 +133182,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L17",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -132945,7 +133191,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L23",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -132954,7 +133200,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L24",
+      "source_location": "L33",
       "weight": 1.0,
       "context": "field"
     },
@@ -132964,7 +133210,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L25",
+      "source_location": "L34",
       "weight": 1.0,
       "context": "field"
     },
@@ -132974,7 +133220,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L29",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -132983,7 +133229,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L29",
+      "source_location": "L38",
       "weight": 1.0,
       "context": "parameter_type"
     },
@@ -132993,7 +133239,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L29",
+      "source_location": "L38",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -133003,7 +133249,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L41",
+      "source_location": "L50",
       "weight": 1.0
     },
     {
@@ -133012,7 +133258,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L41",
+      "source_location": "L50",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -133022,7 +133268,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L48",
+      "source_location": "L57",
       "weight": 1.0
     },
     {
@@ -133031,7 +133277,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L48",
+      "source_location": "L57",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -133041,7 +133287,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L52",
+      "source_location": "L61",
       "weight": 1.0
     },
     {
@@ -133050,7 +133296,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L52",
+      "source_location": "L61",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -133060,7 +133306,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L56",
+      "source_location": "L65",
       "weight": 1.0
     },
     {
@@ -133069,8 +133315,131 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L60",
+      "source_location": "L69",
       "weight": 1.0
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_set_process_policy",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_set_process_policy",
+      "target": "src_hot_field_hotfieldpolicy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L74",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_process_policy",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_process_policy",
+      "target": "src_hot_field_hotfieldpolicy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L79",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_process_allows_full_reference_authority",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L86",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_encode_route",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_encode_route",
+      "target": "src_hot_field_hotruntimeroute",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L90",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_decode_route",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_decode_route",
+      "target": "src_hot_field_hotruntimeroute",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L97",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_encode_authority",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L104",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_encode_authority",
+      "target": "src_hot_field_hotauthority",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L104",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_decode_authority",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L111",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_decode_authority",
+      "target": "src_hot_field_hotauthority",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L111",
+      "weight": 1.0,
+      "context": "return_type"
     },
     {
       "source": "src_hot_field",
@@ -133078,7 +133447,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L66",
+      "source_location": "L119",
       "weight": 1.0
     },
     {
@@ -133087,7 +133456,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L73",
+      "source_location": "L126",
       "weight": 1.0
     },
     {
@@ -133096,7 +133465,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L74",
+      "source_location": "L127",
       "weight": 1.0,
       "context": "field"
     },
@@ -133106,7 +133475,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L78",
+      "source_location": "L131",
       "weight": 1.0
     },
     {
@@ -133115,7 +133484,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L84",
+      "source_location": "L137",
       "weight": 1.0
     },
     {
@@ -133124,7 +133493,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L87",
+      "source_location": "L140",
       "weight": 1.0
     },
     {
@@ -133133,7 +133502,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L87",
+      "source_location": "L140",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -133143,7 +133512,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L91",
+      "source_location": "L144",
       "weight": 1.0
     },
     {
@@ -133152,7 +133521,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L91",
+      "source_location": "L144",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -133162,7 +133531,7 @@
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L110",
+      "source_location": "L163",
       "weight": 1.0,
       "context": "import"
     },
@@ -133172,7 +133541,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L113",
+      "source_location": "L166",
       "weight": 1.0
     },
     {
@@ -133181,7 +133550,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L121",
+      "source_location": "L174",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field",
+      "target": "src_hot_field_process_policy_tracks_hot_authority",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L181",
       "weight": 1.0
     },
     {
@@ -133190,7 +133568,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L128",
+      "source_location": "L196",
       "weight": 1.0
     },
     {
@@ -133200,7 +133578,67 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L61",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_set_process_policy",
+      "target": "src_hot_field_encode_route",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_set_process_policy",
+      "target": "src_hot_field_encode_authority",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_process_policy",
+      "target": "src_hot_field_decode_route",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L81",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_process_policy",
+      "target": "src_hot_field_decode_authority",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L82",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_process_allows_full_reference_authority",
+      "target": "src_hot_field_hotfieldpolicy_allows_full_reference_authority",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_process_allows_full_reference_authority",
+      "target": "src_hot_field_process_policy",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L87",
       "weight": 1.0
     },
     {
@@ -133210,7 +133648,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L114",
+      "source_location": "L167",
       "weight": 1.0
     },
     {
@@ -133220,7 +133658,37 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L122",
+      "source_location": "L175",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_process_policy_tracks_hot_authority",
+      "target": "src_hot_field_process_policy",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L182",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_process_policy_tracks_hot_authority",
+      "target": "src_hot_field_set_process_policy",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L183",
+      "weight": 1.0
+    },
+    {
+      "source": "src_hot_field_process_policy_tracks_hot_authority",
+      "target": "src_hot_field_hotfieldpolicy_ime",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hot_field.rs",
+      "source_location": "L183",
       "weight": 1.0
     },
     {
@@ -133230,7 +133698,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/hot_field.rs",
-      "source_location": "L129",
+      "source_location": "L197",
       "weight": 1.0
     },
     {
@@ -188118,7 +188586,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L30",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -188127,7 +188595,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L36",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -188136,7 +188604,55 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L36",
+      "source_location": "L40",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_russian_lexicon",
+      "target": "src_russian_lexicon_russian_dictionary_for_authority",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_russian_dictionary_for_authority",
+      "target": "src_hot_field_hotauthority",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L44",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "src_russian_lexicon_russian_dictionary_for_authority",
+      "target": "src_russian_lexicon_word_set_wordset",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L44",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_russian_lexicon",
+      "target": "src_russian_lexicon_full_russian_dictionary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_full_russian_dictionary",
+      "target": "src_russian_lexicon_word_set_wordset",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L52",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -188146,7 +188662,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L54",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -188155,7 +188671,55 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L54",
+      "source_location": "L69",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_russian_lexicon",
+      "target": "src_russian_lexicon_russian_short_dictionary_for_authority",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L73",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_russian_short_dictionary_for_authority",
+      "target": "src_hot_field_hotauthority",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L73",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "src_russian_lexicon_russian_short_dictionary_for_authority",
+      "target": "src_russian_lexicon_word_set_wordset",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L73",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_russian_lexicon",
+      "target": "src_russian_lexicon_full_russian_short_dictionary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L83",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_full_russian_short_dictionary",
+      "target": "src_russian_lexicon_word_set_wordset",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L83",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -188165,7 +188729,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L76",
+      "source_location": "L104",
       "weight": 1.0
     },
     {
@@ -188174,7 +188738,55 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L76",
+      "source_location": "L104",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_russian_lexicon",
+      "target": "src_russian_lexicon_russian_tiny_dictionary_for_authority",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L108",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_russian_tiny_dictionary_for_authority",
+      "target": "src_hot_field_hotauthority",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L108",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "src_russian_lexicon_russian_tiny_dictionary_for_authority",
+      "target": "src_russian_lexicon_word_set_wordset",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L108",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_russian_lexicon",
+      "target": "src_russian_lexicon_full_russian_tiny_dictionary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_full_russian_tiny_dictionary",
+      "target": "src_russian_lexicon_word_set_wordset",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L118",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -188184,7 +188796,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L98",
+      "source_location": "L139",
       "weight": 1.0
     },
     {
@@ -188193,7 +188805,55 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L98",
+      "source_location": "L139",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_russian_lexicon",
+      "target": "src_russian_lexicon_russian_generated_form_dictionary_for_authority",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_russian_generated_form_dictionary_for_authority",
+      "target": "src_hot_field_hotauthority",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L143",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "src_russian_lexicon_russian_generated_form_dictionary_for_authority",
+      "target": "src_russian_lexicon_word_set_wordset",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L143",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "src_russian_lexicon",
+      "target": "src_russian_lexicon_full_russian_generated_form_dictionary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L155",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_full_russian_generated_form_dictionary",
+      "target": "src_russian_lexicon_word_set_wordset",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L155",
       "weight": 1.0,
       "context": "return_type"
     },
@@ -188203,7 +188863,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L110",
+      "source_location": "L164",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon",
+      "target": "src_russian_lexicon_russian_dictionary_is_warm",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L168",
       "weight": 1.0
     },
     {
@@ -188212,7 +188881,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L114",
+      "source_location": "L172",
       "weight": 1.0
     },
     {
@@ -188221,8 +188890,27 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L118",
+      "source_location": "L176",
       "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon",
+      "target": "src_russian_lexicon_empty_word_set",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L192",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_empty_word_set",
+      "target": "src_russian_lexicon_word_set_wordset",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L192",
+      "weight": 1.0,
+      "context": "return_type"
     },
     {
       "source": "src_russian_lexicon_warm_up",
@@ -188231,7 +188919,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L31",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -188241,7 +188929,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L32",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -188251,37 +188939,157 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L33",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_russian_dictionary",
+      "target": "src_russian_lexicon_russian_dictionary_for_authority",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_russian_dictionary_for_authority",
+      "target": "src_russian_lexicon_empty_word_set",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_russian_dictionary_for_authority",
+      "target": "src_russian_lexicon_full_russian_dictionary",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_russian_short_dictionary",
+      "target": "src_russian_lexicon_russian_short_dictionary_for_authority",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_russian_short_dictionary_for_authority",
+      "target": "src_russian_lexicon_empty_word_set",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_russian_short_dictionary_for_authority",
+      "target": "src_russian_lexicon_full_russian_short_dictionary",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_russian_tiny_dictionary",
+      "target": "src_russian_lexicon_russian_tiny_dictionary_for_authority",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_russian_tiny_dictionary_for_authority",
+      "target": "src_russian_lexicon_empty_word_set",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L112",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_russian_tiny_dictionary_for_authority",
+      "target": "src_russian_lexicon_full_russian_tiny_dictionary",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L114",
       "weight": 1.0
     },
     {
       "source": "src_russian_lexicon_russian_generated_form_dictionary",
+      "target": "src_russian_lexicon_russian_generated_form_dictionary_for_authority",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L140",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_russian_generated_form_dictionary_for_authority",
       "target": "src_russian_lexicon_full_generated_forms_enabled",
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L99",
+      "source_location": "L147",
       "weight": 1.0
     },
     {
-      "source": "src_russian_lexicon_is_known_russian_word_or_form",
-      "target": "src_russian_lexicon_russian_dictionary",
+      "source": "src_russian_lexicon_russian_generated_form_dictionary_for_authority",
+      "target": "src_russian_lexicon_full_russian_generated_form_dictionary",
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L119",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
       "source": "src_russian_lexicon_is_known_russian_word_or_form",
-      "target": "src_russian_lexicon_russian_generated_form_dictionary",
+      "target": "src_russian_lexicon_full_russian_dictionary",
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L120",
+      "source_location": "L185",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_is_known_russian_word_or_form",
+      "target": "src_russian_lexicon_full_generated_forms_enabled",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L186",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_is_known_russian_word_or_form",
+      "target": "src_russian_lexicon_full_russian_generated_form_dictionary",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L187",
       "weight": 1.0
     },
     {
@@ -189535,7 +190343,7 @@
     },
     {
       "source": "src_russian_lexicon_tests",
-      "target": "src_russian_lexicon_tests_recognizes_adjective_plural_from_known_lemma",
+      "target": "src_russian_lexicon_tests_field_only_authority_does_not_expose_reference_dictionaries",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon_tests.rs",
@@ -189544,11 +190352,20 @@
     },
     {
       "source": "src_russian_lexicon_tests",
+      "target": "src_russian_lexicon_tests_recognizes_adjective_plural_from_known_lemma",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/russian_lexicon_tests.rs",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_tests",
       "target": "src_russian_lexicon_tests_recognizes_common_noun_forms_for_typo_candidates",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon_tests.rs",
-      "source_location": "L9",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -189557,7 +190374,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon_tests.rs",
-      "source_location": "L16",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -189566,7 +190383,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon_tests.rs",
-      "source_location": "L47",
+      "source_location": "L60",
       "weight": 1.0
     },
     {
@@ -189575,7 +190392,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon_tests.rs",
-      "source_location": "L56",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -189584,7 +190401,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/russian_lexicon_tests.rs",
-      "source_location": "L61",
+      "source_location": "L74",
       "weight": 1.0
     },
     {
@@ -239050,52 +239867,19 @@
       "weight": 1.0
     },
     {
-      "source": "src_russian_lexicon_russian_dictionary",
+      "source": "src_russian_lexicon_full_russian_dictionary",
       "target": "src_russian_lexicon_hunspell_load_hunspell_words_min_len",
       "relation": "calls",
       "context": "call",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L39",
+      "source_location": "L54",
       "weight": 1.0
     },
     {
-      "source": "src_russian_lexicon_russian_dictionary",
+      "source": "src_russian_lexicon_full_russian_dictionary",
       "target": "src_russian_lexicon_hunspell_load_word_list",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "src/russian_lexicon.rs",
-      "source_location": "L42",
-      "weight": 1.0
-    },
-    {
-      "source": "src_russian_lexicon_russian_dictionary",
-      "target": "src_lexicon_extend_common_ru_words",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "src/russian_lexicon.rs",
-      "source_location": "L48",
-      "weight": 1.0
-    },
-    {
-      "source": "src_russian_lexicon_russian_dictionary",
-      "target": "src_lexicon_extend_ru_technical_loanwords",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "src/russian_lexicon.rs",
-      "source_location": "L49",
-      "weight": 1.0
-    },
-    {
-      "source": "src_russian_lexicon_russian_short_dictionary",
-      "target": "src_russian_lexicon_hunspell_load_hunspell_words_min_len",
       "relation": "calls",
       "context": "call",
       "confidence": "INFERRED",
@@ -239105,19 +239889,8 @@
       "weight": 1.0
     },
     {
-      "source": "src_russian_lexicon_russian_short_dictionary",
+      "source": "src_russian_lexicon_full_russian_dictionary",
       "target": "src_lexicon_extend_common_ru_words",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "src/russian_lexicon.rs",
-      "source_location": "L62",
-      "weight": 1.0
-    },
-    {
-      "source": "src_russian_lexicon_russian_short_dictionary",
-      "target": "src_lexicon_extend_ru_technical_loanwords",
       "relation": "calls",
       "context": "call",
       "confidence": "INFERRED",
@@ -239127,30 +239900,19 @@
       "weight": 1.0
     },
     {
-      "source": "src_russian_lexicon_russian_tiny_dictionary",
-      "target": "src_russian_lexicon_hunspell_load_hunspell_words_min_len",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "src/russian_lexicon.rs",
-      "source_location": "L79",
-      "weight": 1.0
-    },
-    {
-      "source": "src_russian_lexicon_russian_tiny_dictionary",
-      "target": "src_lexicon_extend_common_ru_words",
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "src/russian_lexicon.rs",
-      "source_location": "L84",
-      "weight": 1.0
-    },
-    {
-      "source": "src_russian_lexicon_russian_tiny_dictionary",
+      "source": "src_russian_lexicon_full_russian_dictionary",
       "target": "src_lexicon_extend_ru_technical_loanwords",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L64",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_full_russian_short_dictionary",
+      "target": "src_russian_lexicon_hunspell_load_hunspell_words_min_len",
       "relation": "calls",
       "context": "call",
       "confidence": "INFERRED",
@@ -239160,14 +239922,69 @@
       "weight": 1.0
     },
     {
-      "source": "src_russian_lexicon_russian_generated_form_dictionary",
+      "source": "src_russian_lexicon_full_russian_short_dictionary",
+      "target": "src_lexicon_extend_common_ru_words",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_full_russian_short_dictionary",
+      "target": "src_lexicon_extend_ru_technical_loanwords",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_full_russian_tiny_dictionary",
+      "target": "src_russian_lexicon_hunspell_load_hunspell_words_min_len",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L120",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_full_russian_tiny_dictionary",
+      "target": "src_lexicon_extend_common_ru_words",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L125",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_full_russian_tiny_dictionary",
+      "target": "src_lexicon_extend_ru_technical_loanwords",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/russian_lexicon.rs",
+      "source_location": "L126",
+      "weight": 1.0
+    },
+    {
+      "source": "src_russian_lexicon_full_russian_generated_form_dictionary",
       "target": "src_russian_lexicon_hunspell_load_hunspell_generated_forms_min_len",
       "relation": "calls",
       "context": "call",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/russian_lexicon.rs",
-      "source_location": "L104",
+      "source_location": "L158",
       "weight": 1.0
     },
     {
@@ -239607,7 +240424,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/russian_lexicon_tests.rs",
-      "source_location": "L48",
+      "source_location": "L61",
       "weight": 1.0
     },
     {

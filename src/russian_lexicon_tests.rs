@@ -1,6 +1,19 @@
 use super::*;
 
 #[test]
+fn field_only_authority_does_not_expose_reference_dictionaries() {
+    let authority = crate::hot_field::HotAuthority::FieldSnapshotOnly;
+
+    assert_eq!(russian_dictionary_for_authority(authority).len(), 0);
+    assert_eq!(russian_short_dictionary_for_authority(authority).len(), 0);
+    assert_eq!(russian_tiny_dictionary_for_authority(authority).len(), 0);
+    assert_eq!(
+        russian_generated_form_dictionary_for_authority(authority).len(),
+        0
+    );
+}
+
+#[test]
 fn recognizes_adjective_plural_from_known_lemma() {
     assert!(is_known_russian_word_or_form("котовые"));
 }

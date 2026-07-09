@@ -235,8 +235,8 @@
     "semantic_hash": "1470f588bfc938d9547f6f52160e876a"
   },
   "src/bin/lay_daemon/config_runtime.rs": {
-    "mtime": 1783634670.552515,
-    "ast_hash": "bc47d427e7d6e02c3b263e3e77675176",
+    "mtime": 1783635366.092212,
+    "ast_hash": "05438119769d7575cc354f8248f3df16",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/config_runtime/nanda.rs": {
@@ -1005,9 +1005,9 @@
     "semantic_hash": "fa97e94e19d4e1b282a30e1515cd9d4b"
   },
   "src/bin/lay_ibus_engine/state.rs": {
-    "mtime": 1783627781.7814145,
-    "ast_hash": "4c7ad78d492bd53783d8183e667dce50",
-    "semantic_hash": "4c7ad78d492bd53783d8183e667dce50"
+    "mtime": 1783635371.3443456,
+    "ast_hash": "d97a06456ecdd0429f7366adea02e2b5",
+    "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
     "mtime": 1783426372.088731,
@@ -2030,9 +2030,9 @@
     "semantic_hash": "334f4e8a4c5e194816d65b586565cf96"
   },
   "src/russian_lexicon.rs": {
-    "mtime": 1783466959.1957767,
-    "ast_hash": "5e380cb0536988c4483a466578b16bc8",
-    "semantic_hash": "5e380cb0536988c4483a466578b16bc8"
+    "mtime": 1783635547.360478,
+    "ast_hash": "e54dafc94cf7e8e62cfca07bcfcfed4f",
+    "semantic_hash": ""
   },
   "src/russian_lexicon/forms.rs": {
     "mtime": 1783598700.0906382,
@@ -2055,9 +2055,9 @@
     "semantic_hash": "8eb20de5957fccf493e0e3adf7f6dc9f"
   },
   "src/russian_lexicon_tests.rs": {
-    "mtime": 1783598710.23106,
-    "ast_hash": "9c0436f5c2004f8a7638b5859257c18c",
-    "semantic_hash": "9c0436f5c2004f8a7638b5859257c18c"
+    "mtime": 1783635537.9222717,
+    "ast_hash": "5a5152252bec2ebe58adb962fc50156a",
+    "semantic_hash": ""
   },
   "src/russian_prefixes.rs": {
     "mtime": 1780218934.43806,
@@ -3275,8 +3275,8 @@
     "semantic_hash": ""
   },
   "src/hot_field.rs": {
-    "mtime": 1783634641.0286367,
-    "ast_hash": "51aef15e41c27ab61e863f5167cc918f",
+    "mtime": 1783635354.9309254,
+    "ast_hash": "747231dd22de196b6e1775300cbec707",
     "semantic_hash": ""
   }
 }

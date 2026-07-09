@@ -364,6 +364,7 @@ impl LayIbusEngine {
 }
 
 fn warm_runtime(config: &LayConfig) {
+    lay::hot_field::set_process_policy(lay::hot_field::HotFieldPolicy::ime());
     #[cfg(test)]
     {
         lay::lem::set_runtime_enabled(config.lem_enabled && config.active_lem_weight() > 0.0);

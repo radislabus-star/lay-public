@@ -33,7 +33,7 @@ fn current_config() -> LayConfig {
     #[cfg(test)]
     {
         let config = LayConfig::load();
-        sync_lem_runtime(&config);
+        sync_hot_runtime(&config);
         config
     }
     #[cfg(not(test))]
@@ -49,7 +49,7 @@ fn current_config() -> LayConfig {
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner());
         if cache.checked_at.elapsed() < CONFIG_CACHE_CHECK_INTERVAL {
-            sync_lem_runtime(&cache.config);
+            sync_hot_runtime(&cache.config);
             return cache.config.clone();
         }
         cache.checked_at = Instant::now();
@@ -58,13 +58,22 @@ fn current_config() -> LayConfig {
             cache.config = LayConfig::load();
             cache.modified = modified;
         }
-        sync_lem_runtime(&cache.config);
+        sync_hot_runtime(&cache.config);
         cache.config.clone()
     }
 }
 
+fn sync_hot_runtime(config: &LayConfig) {
+    sync_lem_runtime(config);
+    sync_hot_field_runtime(config);
+}
+
 fn sync_lem_runtime(config: &LayConfig) {
     lay::lem::set_runtime_enabled(config.lem_enabled && config.active_lem_weight() > 0.0);
+}
+
+fn sync_hot_field_runtime(config: &LayConfig) {
+    lay::hot_field::set_process_policy(daemon_hot_field_policy(config));
 }
 
 #[cfg(not(test))]

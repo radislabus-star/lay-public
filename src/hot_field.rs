@@ -6,6 +6,15 @@
 //! live daemon's default memory object.
 
 use crate::text_backend::TextBackendPreference;
+use std::sync::atomic::{AtomicU8, Ordering};
+
+const ROUTE_DAEMON: u8 = 0;
+const ROUTE_IME: u8 = 1;
+const AUTHORITY_FIELD_SNAPSHOT_ONLY: u8 = 0;
+const AUTHORITY_FULL_REFERENCE_ALLOWED: u8 = 1;
+
+static PROCESS_ROUTE: AtomicU8 = AtomicU8::new(ROUTE_DAEMON);
+static PROCESS_AUTHORITY: AtomicU8 = AtomicU8::new(AUTHORITY_FULL_REFERENCE_ALLOWED);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum HotRuntimeRoute {
@@ -59,6 +68,50 @@ impl HotFieldPolicy {
 
     pub const fn allows_full_nanda_authority(self) -> bool {
         self.allows_full_reference_authority()
+    }
+}
+
+pub fn set_process_policy(policy: HotFieldPolicy) {
+    PROCESS_ROUTE.store(encode_route(policy.route), Ordering::Relaxed);
+    PROCESS_AUTHORITY.store(encode_authority(policy.authority), Ordering::Relaxed);
+}
+
+pub fn process_policy() -> HotFieldPolicy {
+    HotFieldPolicy {
+        route: decode_route(PROCESS_ROUTE.load(Ordering::Relaxed)),
+        authority: decode_authority(PROCESS_AUTHORITY.load(Ordering::Relaxed)),
+    }
+}
+
+pub fn process_allows_full_reference_authority() -> bool {
+    process_policy().allows_full_reference_authority()
+}
+
+const fn encode_route(route: HotRuntimeRoute) -> u8 {
+    match route {
+        HotRuntimeRoute::Daemon => ROUTE_DAEMON,
+        HotRuntimeRoute::Ime => ROUTE_IME,
+    }
+}
+
+const fn decode_route(value: u8) -> HotRuntimeRoute {
+    match value {
+        ROUTE_IME => HotRuntimeRoute::Ime,
+        _ => HotRuntimeRoute::Daemon,
+    }
+}
+
+const fn encode_authority(authority: HotAuthority) -> u8 {
+    match authority {
+        HotAuthority::FieldSnapshotOnly => AUTHORITY_FIELD_SNAPSHOT_ONLY,
+        HotAuthority::FullReferenceAllowed => AUTHORITY_FULL_REFERENCE_ALLOWED,
+    }
+}
+
+const fn decode_authority(value: u8) -> HotAuthority {
+    match value {
+        AUTHORITY_FULL_REFERENCE_ALLOWED => HotAuthority::FullReferenceAllowed,
+        _ => HotAuthority::FieldSnapshotOnly,
     }
 }
 
@@ -122,6 +175,21 @@ mod tests {
         let policy = HotFieldPolicy::daemon_for_text_backend(TextBackendPreference::Uinput);
         assert_eq!(policy.authority(), HotAuthority::FullReferenceAllowed);
         assert!(policy.allows_full_nanda_authority());
+    }
+
+    #[test]
+    fn process_policy_tracks_hot_authority() {
+        let original = process_policy();
+        set_process_policy(HotFieldPolicy::ime());
+
+        assert_eq!(process_policy().route(), HotRuntimeRoute::Ime);
+        assert_eq!(
+            process_policy().authority(),
+            HotAuthority::FieldSnapshotOnly
+        );
+        assert!(!process_allows_full_reference_authority());
+
+        set_process_policy(original);
     }
 
     #[test]
