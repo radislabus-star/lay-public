@@ -28,6 +28,7 @@ static SURFACE_MOTIF_MEMORY: OnceLock<L2CenterMemory> = OnceLock::new();
 static BROAD_PREFIX_INDEX: OnceLock<super::l2_broad_index::L2BroadPrefixIndex> = OnceLock::new();
 static L2_SHORT_POSITION_SEED_INDEX: OnceLock<HashMap<String, Vec<String>>> = OnceLock::new();
 static L2_SURFACE_FOUNDATION_SET: OnceLock<HashSet<&'static str>> = OnceLock::new();
+static L2_SURFACE_FOUNDATION_RANK: OnceLock<HashMap<&'static str, usize>> = OnceLock::new();
 
 const MAX_LAYOUT_SCAN_CANDIDATES: usize = 4;
 const MAX_TAUGHT_CANDIDATES: usize = 6;
@@ -1750,6 +1751,18 @@ pub(crate) fn l2_surface_foundation_contains(word: &str) -> bool {
     L2_SURFACE_FOUNDATION_SET
         .get_or_init(|| data_words_static(L2_SURFACE_FOUNDATION_RU_DATA).collect())
         .contains(word)
+}
+
+pub(crate) fn l2_surface_foundation_rank(word: &str) -> Option<usize> {
+    L2_SURFACE_FOUNDATION_RANK
+        .get_or_init(|| {
+            data_words_static(L2_SURFACE_FOUNDATION_RU_DATA)
+                .enumerate()
+                .map(|(idx, word)| (word, idx))
+                .collect()
+        })
+        .get(word)
+        .copied()
 }
 
 fn runtime_l2_surface_words() -> Vec<String> {

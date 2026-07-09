@@ -60,6 +60,9 @@ fn correct_wrong_layout_cyrillic_word_with_policy(
     let original_lower = original_word.to_lowercase();
     let converted_is_technical = is_common_en_technical_word(&converted_lower);
     let layout_generated_trailing = original_trailing.is_empty() && !converted_trailing.is_empty();
+    if short_russian_word_strongly_blocks_technical_layout(&original_lower, original_word) {
+        return None;
+    }
     if (is_known_russian_word_or_form(&original_lower) || is_common_ru_word(&original_lower))
         && (!converted_is_technical || layout_generated_trailing)
     {
@@ -81,6 +84,16 @@ fn correct_wrong_layout_cyrillic_word_with_policy(
                 || lem_prefers_layout_candidate(original_word, &candidate_word))
             .then_some(candidate)
         })
+}
+
+fn short_russian_word_strongly_blocks_technical_layout(lower: &str, original_word: &str) -> bool {
+    if original_word.chars().count() > 2 {
+        return false;
+    }
+    is_common_ru_word(lower)
+        || crate::typing_transition::state::word_has_common_usage_authority(lower)
+        || crate::nanda_wave::l2::l2_surface_foundation_rank(lower)
+            .is_some_and(|rank| rank < 10_000)
 }
 
 fn english_layout_autoswitch_candidates(

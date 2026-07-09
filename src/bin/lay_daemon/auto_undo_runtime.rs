@@ -3,6 +3,7 @@ use lay::text_edit::{replacement_plan_matches, TransitionAudit};
 use lay::word_buffer::{PendingAutoUndo, UserLearningCorrection, WordBuffer};
 use std::time::Instant;
 
+use super::action_log_runtime::RecentActionRecord;
 use super::{
     append_user_correction_learning_log, apply_text_replacement_pipeline, log,
     record_recent_action, release_possible_modifiers, should_try_ime_text_backend,
@@ -128,6 +129,12 @@ pub(super) fn handle_pending_auto_undo(
 }
 
 fn remember_auto_undo(buf: &mut WordBuffer, undo: &PendingAutoUndo, started_at: Instant) {
+    lay::nanda_wave::record_rejected_candidate_usage(
+        &undo.original,
+        &undo.replacement,
+        "autocorrect",
+        "auto_undo",
+    );
     append_user_correction_learning_log(&UserLearningCorrection {
         lay_kind: undo.lay_kind.clone(),
         lay_from: undo.original.clone(),
@@ -137,16 +144,16 @@ fn remember_auto_undo(buf: &mut WordBuffer, undo: &PendingAutoUndo, started_at: 
         replace_words: undo.replace_words,
         words: undo.words,
     });
-    record_recent_action(
-        "auto-undo",
-        &undo.replacement,
-        &undo.original,
-        undo.replace_words,
-        undo.words,
+    record_recent_action(RecentActionRecord {
+        kind: "auto-undo",
+        from: &undo.replacement,
+        to: &undo.original,
+        replace_words: undo.replace_words,
+        words: undo.words,
         started_at,
-        None,
-        false,
-    );
+        input_gate: None,
+        undo_available: false,
+    });
     buf.clear_pending_learning();
     if !buf.remember_visible_text_for_correction(&undo.original) {
         buf.reset_all();

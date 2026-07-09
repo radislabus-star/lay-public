@@ -16,6 +16,8 @@ pub struct TypingCandidateScore {
     pub family_weight: f64,
     pub language_delta: f64,
     pub structure_bonus: f64,
+    pub lexical_prior_bonus: f64,
+    pub weak_grammar_penalty: f64,
     pub edit_penalty: f64,
     pub intervention_penalty: f64,
     pub priority_bonus: f64,

@@ -28,6 +28,13 @@ pub fn decide_completed_scope_word(word: &[KeyEvent]) -> String {
     if should_keep_plain_cyrillic_before_ascii_technical(&original, &converted) {
         return original;
     }
+    let (_, converted_word, _) = split_word_punctuation(&converted);
+    if converted != original
+        && !stable_completed_scope_original(&original)
+        && completed_scope_flip_target_is_known(&converted, converted_word)
+    {
+        return converted;
+    }
     let decision = if crate::llm::model_backend_enabled() {
         crate::llm::choose_token_consensus(&original, &converted)
     } else {
@@ -74,7 +81,13 @@ pub(super) fn stable_completed_scope_original(original: &str) -> bool {
 
     let lower = word.to_lowercase();
     if is_cyrillic_word(word) {
-        return is_known_ru_token(&lower) || is_known_russian_layout_autoswitch_word(&lower);
+        if strong_russian_completed_scope_original(&lower) {
+            return true;
+        }
+        if cyrillic_to_known_ascii_layout_target(word) {
+            return false;
+        }
+        return is_known_ru_token(&lower);
     }
 
     if word.is_ascii() {
@@ -86,6 +99,22 @@ pub(super) fn stable_completed_scope_original(original: &str) -> bool {
     }
 
     false
+}
+
+fn strong_russian_completed_scope_original(lower: &str) -> bool {
+    crate::lexicon::is_common_ru_word(lower)
+        || crate::lexicon::is_user_protected_word(lower)
+        || crate::russian_lexicon::russian_tiny_dictionary().contains(lower)
+        || crate::russian_lexicon::russian_short_dictionary().contains(lower)
+}
+
+fn cyrillic_to_known_ascii_layout_target(word: &str) -> bool {
+    let converted = crate::dict::convert(word, crate::dict::Direction::Ru2Us);
+    if converted == word {
+        return false;
+    }
+    let (_, converted_word, _) = split_word_punctuation(&converted);
+    completed_scope_flip_target_is_known(&converted, converted_word)
 }
 
 pub(super) fn is_short_repeated_completed_scope_word(original: &str) -> bool {
@@ -116,6 +145,7 @@ pub(super) fn completed_scope_flip_target_is_known(flipped: &str, flipped_word: 
 
     if flipped_word.is_ascii() {
         return is_known_english_layout_autoswitch_word(&flipped_word.to_ascii_lowercase())
+            || is_known_en_token(&flipped_word.to_ascii_lowercase())
             || is_ascii_technical_token(flipped)
             || is_ascii_technical_or_brand_token(flipped_word)
             || is_ascii_titlecase_token(flipped_word);
@@ -131,4 +161,25 @@ fn is_single_cyrillic_completed_scope_word(word: &str) -> bool {
         (chars.next(), chars.next()),
         (Some(ch), None) if is_cyrillic_letter(ch)
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{decide_completed_scope_word, stable_completed_scope_original};
+    use crate::keyboard::{split_event_words, text_to_key_events};
+
+    #[test]
+    fn completed_scope_recovers_known_ascii_layout_target() {
+        let events = text_to_key_events("цщкв", false).expect("events");
+        let words = split_event_words(&events).expect("words");
+
+        assert_eq!(decide_completed_scope_word(words[0]), "word");
+    }
+
+    #[test]
+    fn layout_garbage_is_not_stable_completed_scope_original() {
+        assert!(!stable_completed_scope_original("цщкв"));
+        assert!(!stable_completed_scope_original("ашду"));
+        assert!(!stable_completed_scope_original("пше"));
+    }
 }

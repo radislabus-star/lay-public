@@ -208,3 +208,52 @@ fn rank_lem_scoped_tail_words(
             });
     crate::lem::rank_candidates_with_language_weight(original, candidates, options.lem_weight)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{rank_lem_scoped_tail_words, scoped_tail_lem_candidates, ScopedTailOptions};
+    use crate::keyboard::{split_event_words, text_to_key_events};
+
+    #[test]
+    fn scoped_tail_candidates_include_known_ascii_layout_targets() {
+        let input = "сегодня цщкв потом ашду дальше еукьштфд здесь ыефегы рядом пше згыр";
+        let expected = "сегодня word потом file дальше terminal здесь status рядом git push";
+        let events = text_to_key_events(input, false).expect("events");
+        let words = split_event_words(&events).expect("words");
+        let candidates = scoped_tail_lem_candidates(&words, true, true);
+
+        assert!(
+            candidates.iter().any(|candidate| candidate == expected),
+            "missing {expected:?}; candidates={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn scoped_tail_rank_prefers_more_known_layout_targets() {
+        let input = "сегодня цщкв потом ашду дальше еукьштфд здесь ыефегы рядом пше згыр";
+        let expected = "сегодня word потом file дальше terminal здесь status рядом git push";
+        let events = text_to_key_events(input, false).expect("events");
+        let words = split_event_words(&events).expect("words");
+        let ranked = rank_lem_scoped_tail_words(
+            &words,
+            input,
+            false,
+            ScopedTailOptions {
+                lem_enabled: true,
+                allow_layout_auto: true,
+                lem_weight: 1.0,
+            },
+        );
+        let top: Vec<_> = ranked
+            .iter()
+            .take(5)
+            .map(|candidate| (candidate.text.as_str(), candidate.total))
+            .collect();
+
+        assert_eq!(
+            ranked.first().map(|candidate| candidate.text.as_str()),
+            Some(expected),
+            "top={top:?}"
+        );
+    }
+}

@@ -92,6 +92,10 @@ pub fn usage_debug_summary() -> (u64, usize, usize) {
     usage_prior::usage_debug_summary()
 }
 
+pub fn usage_memory_learned_report_json() -> serde_json::Value {
+    usage_prior::usage_memory_learned_report_json()
+}
+
 pub fn balanced_l2_surface_words<I>(source: I, limit: usize) -> Vec<String>
 where
     I: IntoIterator<Item = String>,
@@ -117,6 +121,20 @@ pub fn record_accepted_ime_usage(context_tail: &str, accepted_text: &str) {
 
 pub fn record_rejected_ime_usage(context_tail: &str, rejected_text: &str) {
     usage_prior::record_rejected_ime_if_enabled(context_tail, rejected_text);
+}
+
+pub fn record_rejected_candidate_usage(
+    context_tail: &str,
+    rejected_text: &str,
+    source: &str,
+    operation: &str,
+) {
+    usage_prior::record_rejected_candidate_if_enabled(
+        context_tail,
+        rejected_text,
+        source,
+        operation,
+    );
 }
 
 pub fn warm_up() {

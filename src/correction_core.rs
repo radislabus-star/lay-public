@@ -228,6 +228,9 @@ pub fn resolve_text_correction(req: CorrectionRequest<'_>) -> CorrectionResoluti
     for source in L2CandidateSource::for_mode(req.mode) {
         lattice.push_source(source.propose(&req));
     }
+    if L2CandidateSource::for_mode(req.mode).contains(&L2CandidateSource::Deterministic) {
+        lattice.push_source(short_cyrillic_layout_shadow_candidate(&req));
+    }
 
     let resolution = lattice.into_resolution();
     record_correction_gate_stats(started, &resolution);
@@ -553,6 +556,48 @@ fn deterministic_composite_text_correction(
     layout_then_typo_candidate(req, pipeline)
         .or_else(|| repeated_letter_fallback_candidate(req))
         .or_else(|| composite_russian_typo_candidate(req, pipeline))
+}
+
+fn short_cyrillic_layout_shadow_candidate(
+    req: &CorrectionRequest<'_>,
+) -> Option<UnifiedCorrectionCandidate> {
+    if !req.auto_switch_layout {
+        return None;
+    }
+
+    let (_, core, _) = split_edge_whitespace(req.text);
+    let current_word = last_text_word(core)?;
+    if current_word.chars().count() > 2 || !has_cyrillic(&current_word) {
+        return None;
+    }
+
+    let replacement_word = crate::dict::convert(&current_word, crate::dict::Direction::Ru2Us);
+    if replacement_word == current_word
+        || !replacement_word
+            .chars()
+            .all(|ch| ch.is_ascii_alphabetic() || matches!(ch, '`'))
+    {
+        return None;
+    }
+
+    let replacement = replace_last_text_word(req.text, &replacement_word)?;
+    let gate = gate_candidate_with_source(
+        req.text,
+        &replacement,
+        TypingErrorClass::WrongLayout,
+        ids::LAYOUT_RU_TO_EN,
+    );
+    if gate.action != CandidateGateAction::SuggestOnly {
+        return None;
+    }
+
+    Some(UnifiedCorrectionCandidate {
+        replacement,
+        source: CorrectionDecisionSource::Deterministic,
+        source_id: ids::LAYOUT_RU_TO_EN.to_string(),
+        error_class: TypingErrorClass::WrongLayout,
+        gate,
+    })
 }
 
 fn repeated_letter_fallback_candidate(
@@ -3381,7 +3426,10 @@ mod tests {
             CorrectionMode::DeterministicThenNanda,
         ));
 
-        let selected = resolution.selected.expect("selected candidate");
+        let selected = resolution
+            .selected
+            .clone()
+            .unwrap_or_else(|| panic!("selected candidate: {resolution:?}"));
         assert_eq!(selected.replacement, "то есть ");
         assert_eq!(selected.gate.action, CandidateGateAction::Apply);
     }
@@ -3514,7 +3562,10 @@ mod tests {
             CorrectionMode::DeterministicOnly,
         ));
 
-        let selected = resolution.selected.expect("selected candidate");
+        let selected = resolution
+            .selected
+            .clone()
+            .unwrap_or_else(|| panic!("selected candidate: {resolution:?}"));
         assert_eq!(selected.replacement, "работает ");
         assert_eq!(selected.source_id, "layout_then_adjacent_transposition");
         assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
@@ -3549,7 +3600,10 @@ mod tests {
             CorrectionMode::DeterministicOnly,
         ));
 
-        let selected = resolution.selected.expect("selected candidate");
+        let selected = resolution
+            .selected
+            .clone()
+            .unwrap_or_else(|| panic!("selected candidate: {resolution:?}"));
         assert_eq!(selected.replacement, "мы отравим ");
         assert_ne!(selected.replacement, "мы отвратим ");
     }
@@ -4288,7 +4342,10 @@ mod tests {
             CorrectionMode::NandaOnly,
         ));
 
-        let selected = resolution.selected.expect("selected candidate");
+        let selected = resolution
+            .selected
+            .clone()
+            .unwrap_or_else(|| panic!("selected candidate: {resolution:?}"));
         assert_eq!(
             selected.replacement,
             "Поставщик говорит что цена до склада нашего покупателя но таможим мы! "

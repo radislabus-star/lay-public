@@ -6,14 +6,10 @@ use super::extra::extra_letter_candidate_exists;
 use super::guards::{
     looks_like_known_word_plus_one_letter_function_suffix, unknown_cyrillic_lower,
 };
-use super::missing::missing_letter_candidate_exists;
 use super::thresholds::NGRAM_TRANSPOSE_MARGIN;
 
 pub(crate) fn correct_adjacent_transposition(word: &str) -> Option<String> {
     let lower = unknown_cyrillic_lower(word, 5)?;
-    if missing_letter_candidate_exists(word, &lower) {
-        return None;
-    }
     if extra_letter_candidate_exists(&lower) {
         return None;
     }

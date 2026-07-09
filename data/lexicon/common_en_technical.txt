@@ -132,6 +132,7 @@ rmdir
 route
 rsync
 rus
+rust
 rustc
 scp
 sed
@@ -189,6 +190,7 @@ wget
 which
 while
 whoami
+word
 xargs
 yq
 zip

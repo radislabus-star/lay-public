@@ -68,12 +68,18 @@ fn pure_space_repair_scores_above_non_pure_split() {
 fn score_total_is_named_component_sum() {
     let score = score_typing_candidate("словослитно ", "слово слитно ", "glued_phrase", 100);
 
-    let expected =
-        score.family_weight + score.language_delta + score.structure_bonus + score.priority_bonus
-            - score.edit_penalty
-            - score.intervention_penalty;
+    let expected = score.family_weight
+        + score.language_delta
+        + score.structure_bonus
+        + score.lexical_prior_bonus
+        + score.priority_bonus
+        - score.edit_penalty
+        - score.intervention_penalty
+        - score.weak_grammar_penalty;
     assert!((score.total - expected).abs() < f64::EPSILON);
     assert!(score.structure_bonus > 0.0);
+    assert!(score.lexical_prior_bonus >= 0.0);
+    assert!(score.weak_grammar_penalty >= 0.0);
     assert!(score.edit_penalty >= 0.0);
     assert!(score.intervention_penalty >= 0.0);
 }
@@ -106,6 +112,14 @@ fn score_components_are_finite_for_edge_inputs() {
         assert!(
             score.language_delta.is_finite(),
             "language delta must be finite: {score:?}"
+        );
+        assert!(
+            score.lexical_prior_bonus.is_finite(),
+            "lexical prior bonus must be finite: {score:?}"
+        );
+        assert!(
+            score.weak_grammar_penalty.is_finite(),
+            "weak grammar penalty must be finite: {score:?}"
         );
         assert!(
             score.structure_bonus.is_finite(),

@@ -73,3 +73,52 @@ pub fn decide_manual_correction(
 #[cfg(test)]
 #[path = "engine_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+mod alternating_stress_tests {
+    use super::{decide_manual_correction, ManualCorrectionInput, ManualCorrectionPolicy};
+    use crate::config::CorrectionEngine;
+    use crate::decoder::DecoderAction;
+    use crate::keyboard::{
+        map_events_to_layout, map_original_events, replay_layout_decision, text_to_key_events,
+    };
+    use crate::typing_assist::ScopedTailOptions;
+
+    #[test]
+    fn manual_decoder_uses_ranked_known_ascii_layout_targets() {
+        let input = "сегодня цщкв потом ашду дальше еукьштфд здесь ыефегы рядом пше згыр";
+        let expected = "сегодня word потом file дальше terminal здесь status рядом git push";
+        let events = text_to_key_events(input, false).expect("events");
+        let original = map_original_events(&events);
+        let replay = replay_layout_decision(&events);
+        let converted = map_events_to_layout(&events, replay.target_is_ru);
+        let decision = decide_manual_correction(
+            ManualCorrectionInput {
+                events: &events,
+                original: &original,
+                converted: &converted,
+            },
+            ManualCorrectionPolicy {
+                engine: CorrectionEngine::Smart,
+                force_replay: false,
+                auto_replace: true,
+                scoped_options: ScopedTailOptions {
+                    lem_enabled: true,
+                    allow_layout_auto: true,
+                    lem_weight: 1.0,
+                },
+            },
+        );
+        let got = match decision.action {
+            DecoderAction::KeepOriginal => original.clone(),
+            DecoderAction::ReplayAll => converted.clone(),
+            DecoderAction::ReplaceText { replacement, .. } => replacement,
+        };
+
+        assert_eq!(
+            got, expected,
+            "original={original:?} converted={converted:?} ranked={:?}",
+            decision.ranked
+        );
+    }
+}

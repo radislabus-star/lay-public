@@ -4,6 +4,7 @@ use lay::desktop::LayoutBackend;
 use lay::keyboard::preferred_layout_for_text;
 use lay::text_edit::{TextReplacement, TransitionAudit};
 
+use super::super::super::action_log_runtime::RecentActionRecord;
 use super::super::super::correction_memory_runtime::{
     remember_manual_text_correction, ManualTextCorrectionMemory,
 };
@@ -187,16 +188,16 @@ fn remember_native_replace(
                 inserted_layout_is_ru: None,
             },
         );
-        record_recent_action(
-            replace_kind,
-            ctx.mapped_orig,
-            replace_text,
-            ctx.replace_words,
-            ctx.words_orig,
-            ctx.started_at,
+        record_recent_action(RecentActionRecord {
+            kind: replace_kind,
+            from: ctx.mapped_orig,
+            to: replace_text,
+            replace_words: ctx.replace_words,
+            words: ctx.words_orig,
+            started_at: ctx.started_at,
             input_gate,
-            true,
-        );
+            undo_available: true,
+        });
     }
 }
 

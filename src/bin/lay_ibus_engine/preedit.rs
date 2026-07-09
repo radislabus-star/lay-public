@@ -375,6 +375,18 @@ impl LayIbusEngine {
             return false;
         }
         let original = format!("{} ", self.buffer);
+        let direct = lay::typing_assist::explain_typing_assist_with_pipeline(
+            &original,
+            self.config.auto_switch_layout,
+            &self.config.typing_assist_pipeline,
+        );
+        if direct
+            .output
+            .as_deref()
+            .is_some_and(|replacement| replacement.trim_end() != self.buffer.trim_end())
+        {
+            return true;
+        }
         lay::ime_correction::decide_active_composition_autocorrect(
             lay::ime_correction::ActiveCompositionAutocorrectRequest {
                 text: &original,
@@ -460,6 +472,12 @@ impl LayIbusEngine {
             || !partial.chars().all(|ch| matches!(ch, 'а'..='я' | 'ё'))
             || is_noisy_first_russian_prefix(&partial)
             || is_ime_complete_russian_word(&partial)
+        {
+            return Vec::new();
+        }
+        if has_left_context
+            && partial_len <= 3
+            && self.config.active_correction_safety() != lay::config::CorrectionSafety::Experimental
         {
             return Vec::new();
         }
@@ -802,6 +820,13 @@ fn trim_tail_buffer_to(buffer: &mut String, limit: usize) {
         .map(|(idx, _)| idx)
         .unwrap_or(0);
     buffer.drain(..byte_idx);
+}
+
+fn is_hard_precognition_boundary(ch: char) -> bool {
+    matches!(
+        ch,
+        '.' | ',' | '!' | '?' | ':' | ';' | ')' | ']' | '}' | '…'
+    )
 }
 
 #[cfg(test)]
@@ -2169,11 +2194,4 @@ mod tests {
         trim_tail_buffer(&mut text);
         assert_eq!(text.chars().count(), PREEDIT_TAIL_LIMIT);
     }
-}
-
-fn is_hard_precognition_boundary(ch: char) -> bool {
-    matches!(
-        ch,
-        '.' | ',' | '!' | '?' | ':' | ';' | ')' | ']' | '}' | '…'
-    )
 }

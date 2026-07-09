@@ -7,12 +7,16 @@ pub(crate) mod action;
 pub(crate) mod candidate;
 pub(crate) mod decision;
 pub(crate) mod executor_contract;
+pub(crate) mod l4_state_estimator;
 pub(crate) mod memory;
 pub(crate) mod state;
 pub(crate) mod verifier;
 
 use crate::correction_core::TypingErrorClass;
 use crate::language_action::LanguageActionOperator;
+use l4_state_estimator::{
+    L4ObservationKind, L4StateEstimate, L4StateEstimator, L4StateObservation,
+};
 use state::LatentTypingState;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -26,6 +30,7 @@ pub(crate) struct TypingTransition {
     pub(crate) l2_signal: L2TransitionSignal,
     pub(crate) l3_signal: L3TransitionSignal,
     pub(crate) l4_signed_signal: L4SignedTransitionSignal,
+    pub(crate) l4_state_estimate: L4StateEstimate,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -70,6 +75,20 @@ impl TypingTransition {
         let state_before = LatentTypingState::from_text(original);
         let state_after_predicted = LatentTypingState::from_text(replacement);
         let boundary_changed = state_before.word_count_changed(&state_after_predicted);
+        let l4_negative = !memory::TransitionMemory::allows_apply(original, replacement, source_id);
+        let l4_state_estimate = L4StateEstimator::estimate(L4StateObservation {
+            kind: if boundary_changed {
+                L4ObservationKind::SpaceBoundary
+            } else {
+                L4ObservationKind::CandidateApply
+            },
+            has_active_composition: false,
+            boundary_seen: boundary_changed,
+            left_context_changed: action.left_context_changed,
+            word_count_changed: boundary_changed,
+            verifier_passed: action.verifier_passed,
+            l4_negative,
+        });
 
         Self {
             state_before,
@@ -94,8 +113,9 @@ impl TypingTransition {
                 ),
             },
             l4_signed_signal: L4SignedTransitionSignal {
-                negative: !memory::TransitionMemory::allows_apply(original, replacement, source_id),
+                negative: l4_negative,
             },
+            l4_state_estimate,
         }
     }
 }
@@ -118,5 +138,6 @@ mod tests {
         assert_eq!(transition.state_after_predicted.current_word, "проверка");
         assert!(transition.evidence.verifier_passed);
         assert!(!transition.evidence.left_context_changed);
+        assert!(transition.l4_state_estimate.apply_allowed);
     }
 }

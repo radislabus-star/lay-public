@@ -251,6 +251,15 @@ pub(crate) fn admit_hidden_transition(
         };
     }
 
+    if !transition.l4_state_estimate.apply_allowed
+        && transition.l4_state_estimate.desync_risk_milli >= 500
+    {
+        return TransitionAdmission {
+            allow_apply: false,
+            reason: "latent_l4_state_desync_risk",
+        };
+    }
+
     if transition.l4_signed_signal.negative {
         return TransitionAdmission {
             allow_apply: false,
@@ -553,7 +562,7 @@ mod tests {
         );
 
         assert_eq!(decision.action, CandidateGateAction::SuggestOnly);
-        assert_eq!(decision.reason, "edit_transition_not_verified");
+        assert_eq!(decision.reason, "latent_context_unverified");
     }
 
     #[test]

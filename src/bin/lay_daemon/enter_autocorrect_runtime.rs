@@ -10,6 +10,7 @@ use lay::word_buffer::WordBuffer;
 use std::sync::atomic::Ordering;
 use std::time::Instant;
 
+use super::action_log_runtime::RecentActionRecord;
 use super::correction_memory_runtime::{
     remember_assisted_text_correction, AssistedCorrectionMemory,
 };
@@ -176,16 +177,16 @@ pub(super) fn handle_enter_autocorrect(
                     false,
                 );
             }
-            record_recent_action(
-                "enter-autocorrect",
-                &original,
-                &replacement,
+            record_recent_action(RecentActionRecord {
+                kind: "enter-autocorrect",
+                from: &original,
+                to: &replacement,
                 replace_words,
-                original.split_whitespace().count(),
+                words: original.split_whitespace().count(),
                 started_at,
-                input_gate.clone(),
-                false,
-            );
+                input_gate: input_gate.clone(),
+                undo_available: false,
+            });
             log(&format!(
                 "✓ done: Enter autocorrect {:?} → {:?} через IME за {}ms",
                 original,
@@ -266,16 +267,16 @@ pub(super) fn handle_enter_autocorrect(
             cursor_offset: 0,
         },
     );
-    record_recent_action(
-        "enter-autocorrect",
-        &original,
-        &replacement,
+    record_recent_action(RecentActionRecord {
+        kind: "enter-autocorrect",
+        from: &original,
+        to: &replacement,
         replace_words,
-        original.split_whitespace().count(),
+        words: original.split_whitespace().count(),
         started_at,
         input_gate,
-        true,
-    );
+        undo_available: true,
+    });
     log(&format!(
         "✓ done: Enter autocorrect {:?} → {:?} за {}ms",
         original,

@@ -81,6 +81,15 @@ struct CandidateQualityReport {
     l4_signed_signal_rows: usize,
     decision_rank_rows: usize,
     selected_decision_rank_rows: usize,
+    memory_shadow_records: usize,
+    memory_shadow_candidate_rows: usize,
+    memory_shadow_changed_winner: usize,
+    memory_shadow_memory_selected: usize,
+    memory_shadow_baseline_selected: usize,
+    memory_shadow_promoted_selected: usize,
+    memory_shadow_demoted_selected: usize,
+    memory_shadow_positive_signal_rows: usize,
+    memory_shadow_negative_signal_rows: usize,
     nanda_apply: usize,
     deterministic_apply: usize,
     slow_output: usize,
@@ -205,6 +214,20 @@ fn report_from_text(text: &str, limit: usize, path: &Path) -> serde_json::Value 
             "decision_rank_rows": report.decision_rank_rows,
             "selected_decision_rank_rows": report.selected_decision_rank_rows,
             "read_as": "Bayes/L3/L4/DecisionCore lane coverage from logged candidate_scores; diagnostic only"
+        },
+        "memory_shadow_eval": {
+            "records": report.memory_shadow_records,
+            "candidate_rows": report.memory_shadow_candidate_rows,
+            "changed_winner": report.memory_shadow_changed_winner,
+            "memory_winner_selected": report.memory_shadow_memory_selected,
+            "baseline_winner_selected": report.memory_shadow_baseline_selected,
+            "memory_promoted_selected": report.memory_shadow_promoted_selected,
+            "memory_demoted_selected": report.memory_shadow_demoted_selected,
+            "positive_signal_rows": report.memory_shadow_positive_signal_rows,
+            "negative_signal_rows": report.memory_shadow_negative_signal_rows,
+            "baseline": "decision_rank without usage/context/L3/L4 lanes",
+            "memory": "logged decision_rank with memory/context lanes",
+            "read_as": "shadow old ranking vs memory ranking on dirty recent_actions; diagnostic only"
         },
         "source_mix": {
             "deterministic_apply": report.deterministic_apply,
@@ -349,6 +372,7 @@ fn inspect_gate(report: &mut CandidateQualityReport, value: &Value, gate: &Value
         inspect_rank(report, gate, selected);
     }
     inspect_decision_lanes(report, gate);
+    inspect_memory_shadow(report, gate);
     inspect_arbitration(report, value, gate);
 }
 
@@ -666,6 +690,102 @@ fn candidate_rank_tuple(candidate: &Value) -> (i64, i64) {
     (posterior, -risk)
 }
 
+fn inspect_memory_shadow(report: &mut CandidateQualityReport, gate: &Value) {
+    let Some(candidates) = gate.get("candidate_scores").and_then(Value::as_array) else {
+        return;
+    };
+    if candidates.is_empty() {
+        return;
+    }
+    let has_memory_signal = candidates
+        .iter()
+        .any(|candidate| memory_lane_delta_milli(candidate) != 0);
+    if !has_memory_signal {
+        return;
+    }
+
+    report.memory_shadow_records += 1;
+    let selected_index = candidates.iter().position(is_selected_candidate);
+    let memory_top = top_candidate_by(candidates, memory_rank_tuple);
+    let baseline_top = top_candidate_by(candidates, baseline_rank_tuple);
+
+    for candidate in candidates
+        .iter()
+        .filter(|candidate| candidate_is_viable(candidate))
+    {
+        report.memory_shadow_candidate_rows += 1;
+        let delta = memory_lane_delta_milli(candidate);
+        if delta > 0 {
+            report.memory_shadow_positive_signal_rows += 1;
+        } else if delta < 0 {
+            report.memory_shadow_negative_signal_rows += 1;
+        }
+    }
+
+    let (Some(memory_top), Some(baseline_top)) = (memory_top, baseline_top) else {
+        return;
+    };
+    if memory_top != baseline_top {
+        report.memory_shadow_changed_winner += 1;
+    }
+    if selected_index == Some(memory_top) {
+        report.memory_shadow_memory_selected += 1;
+    }
+    if selected_index == Some(baseline_top) {
+        report.memory_shadow_baseline_selected += 1;
+    }
+    if selected_index == Some(memory_top) && selected_index != Some(baseline_top) {
+        report.memory_shadow_promoted_selected += 1;
+    }
+    if selected_index == Some(baseline_top) && selected_index != Some(memory_top) {
+        report.memory_shadow_demoted_selected += 1;
+    }
+}
+
+fn top_candidate_by(candidates: &[Value], rank: impl Fn(&Value) -> (i64, i64)) -> Option<usize> {
+    candidates
+        .iter()
+        .enumerate()
+        .filter(|(_, candidate)| candidate_is_viable(candidate))
+        .max_by_key(|(_, candidate)| rank(candidate))
+        .map(|(index, _)| index)
+}
+
+fn memory_rank_tuple(candidate: &Value) -> (i64, i64) {
+    let rank = candidate
+        .get("decision_rank_milli")
+        .and_then(Value::as_i64)
+        .unwrap_or_else(|| {
+            candidate
+                .get("posterior_milli")
+                .and_then(Value::as_i64)
+                .unwrap_or_default()
+        });
+    let risk = candidate
+        .get("risk_milli")
+        .and_then(Value::as_i64)
+        .unwrap_or_default();
+    (rank, -risk)
+}
+
+fn baseline_rank_tuple(candidate: &Value) -> (i64, i64) {
+    let (rank, risk) = memory_rank_tuple(candidate);
+    (rank - memory_lane_delta_milli(candidate), risk)
+}
+
+fn memory_lane_delta_milli(candidate: &Value) -> i64 {
+    [
+        "usage_prior_milli",
+        "context_prior_milli",
+        "l3_phrase_milli",
+        "l4_scene_milli",
+        "l4_signed_milli",
+    ]
+    .into_iter()
+    .filter_map(|key| candidate.get(key).and_then(Value::as_i64))
+    .sum()
+}
+
 #[cfg(test)]
 mod tests {
     use super::report_from_text;
@@ -721,5 +841,12 @@ mod tests {
         assert_eq!(report["decision_lanes"]["l4_signed_signal_rows"], 1);
         assert_eq!(report["decision_lanes"]["decision_rank_rows"], 3);
         assert_eq!(report["decision_lanes"]["selected_decision_rank_rows"], 2);
+        assert_eq!(report["memory_shadow_eval"]["records"], 2);
+        assert_eq!(report["memory_shadow_eval"]["candidate_rows"], 3);
+        assert_eq!(report["memory_shadow_eval"]["changed_winner"], 0);
+        assert_eq!(report["memory_shadow_eval"]["memory_winner_selected"], 1);
+        assert_eq!(report["memory_shadow_eval"]["baseline_winner_selected"], 1);
+        assert_eq!(report["memory_shadow_eval"]["positive_signal_rows"], 2);
+        assert_eq!(report["memory_shadow_eval"]["negative_signal_rows"], 1);
     }
 }

@@ -213,11 +213,6 @@ fn unsafe_reasons(value: &Value) -> Vec<&'static str> {
         .and_then(Value::as_str)
         == Some("nanda")
         && from_words.len() >= 2;
-    let slow_output = value
-        .get("output_ms")
-        .and_then(Value::as_u64)
-        .is_some_and(|ms| ms >= 250);
-
     if word_count_changed {
         reasons.push("word_count_changed");
     }
@@ -227,11 +222,15 @@ fn unsafe_reasons(value: &Value) -> Vec<&'static str> {
     if nanda_multiword {
         reasons.push("nanda_multiword");
     }
-    if slow_output {
-        reasons.push("slow_output");
-    }
     append_selected_candidate_reasons(value.get("input_gate"), &mut reasons);
     reasons
+}
+
+fn is_slow_output(value: &Value) -> bool {
+    value
+        .get("output_ms")
+        .and_then(Value::as_u64)
+        .is_some_and(|ms| ms >= 250)
 }
 
 fn append_selected_candidate_reasons(gate: Option<&Value>, reasons: &mut Vec<&'static str>) {
@@ -558,6 +557,9 @@ impl UnsafeScoreboard {
         if !reasons.is_empty() {
             self.unsafe_records += 1;
         }
+        if is_slow_output(value) {
+            self.slow_output += 1;
+        }
         for reason in reasons {
             match reason {
                 "boundary_changed" | "word_count_changed" => self.boundary_changed += 1,
@@ -569,7 +571,6 @@ impl UnsafeScoreboard {
                 "selected_left_context_changed" => self.selected_left_context_changed += 1,
                 "selected_unverified_transition" => self.selected_unverified_transition += 1,
                 "nanda_multiword" => self.nanda_multiword += 1,
-                "slow_output" => self.slow_output += 1,
                 _ => {}
             }
         }
@@ -594,6 +595,10 @@ impl UnsafeScoreboard {
                 "selected_unverified_transition": self.selected_unverified_transition,
                 "nanda_multiword": self.nanda_multiword,
                 "slow_output": self.slow_output
+            },
+            "performance": {
+                "slow_output": self.slow_output,
+                "slow_output_is_safety_failure": false
             },
             "mutation_routes": self.mutation_routes,
             "read_as": "diagnostic gate over recent_actions; runtime decisions are unchanged"
@@ -661,6 +666,23 @@ mod tests {
         assert_eq!(scoreboard.unsafe_records, 1);
         assert_eq!(scoreboard.selected_left_context_changed, 1);
         assert_eq!(scoreboard.selected_unverified_transition, 1);
+    }
+
+    #[test]
+    fn unsafe_scoreboard_reports_slow_output_without_safety_failure() {
+        let value = json!({
+            "kind": "typing-assist",
+            "from": "провека",
+            "to": "проверка",
+            "output_ms": 291,
+            "replace_words": 1,
+            "words": 1
+        });
+        let mut scoreboard = UnsafeScoreboard::default();
+        scoreboard.inspect(&value);
+        assert_eq!(scoreboard.records, 1);
+        assert_eq!(scoreboard.unsafe_records, 0);
+        assert_eq!(scoreboard.slow_output, 1);
     }
 
     #[test]

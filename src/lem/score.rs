@@ -105,7 +105,7 @@ fn structure_bonus(typed: &str, candidate: &str) -> f64 {
         .filter(|token| is_known_word(trim_token(token)))
         .count();
     if typed_spaces == candidate_spaces && candidate_known > typed_known {
-        return MORE_KNOWN_TOKENS_BONUS;
+        return MORE_KNOWN_TOKENS_BONUS * (candidate_known - typed_known) as f64;
     }
     0.0
 }

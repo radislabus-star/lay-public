@@ -55,6 +55,7 @@ pub(crate) mod token_language;
 pub mod typing_assist;
 pub mod typing_candidate;
 pub mod typing_context;
+pub(crate) mod typing_memory;
 pub(crate) mod typing_pipeline;
 pub mod typing_replacements;
 pub(crate) mod typing_rule_graph;

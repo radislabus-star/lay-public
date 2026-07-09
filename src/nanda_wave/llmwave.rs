@@ -84,6 +84,18 @@ pub struct LlmWaveLearningDelta {
     pub width: usize,
 }
 
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize)]
+pub struct CleanCorpusIngestReport {
+    pub kind: &'static str,
+    pub stage: String,
+    pub source_fragments: usize,
+    pub accepted: usize,
+    pub rejected: usize,
+    pub max_records: usize,
+    pub output_path: Option<PathBuf>,
+    pub rejection_reasons: BTreeMap<String, usize>,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct LlmWavePhraseExperience {
     pub kind: String,
@@ -643,6 +655,63 @@ pub fn record_phrase_experience(stage: &str, text: &str) {
     if let Ok(line) = serde_json::to_string(&experience) {
         crate::debug_log::append_private_line(path, line);
     }
+}
+
+pub fn ingest_clean_corpus_path(
+    path: &Path,
+    max_records: usize,
+) -> io::Result<CleanCorpusIngestReport> {
+    let text = fs::read_to_string(path)?;
+    ingest_clean_corpus_text("space", &text, max_records)
+}
+
+pub fn ingest_clean_corpus_text(
+    stage: &str,
+    text: &str,
+    max_records: usize,
+) -> io::Result<CleanCorpusIngestReport> {
+    let output_path = default_phrase_experience_path();
+    let mut report = CleanCorpusIngestReport {
+        kind: "llmwave_clean_corpus_ingest",
+        stage: stage.to_string(),
+        max_records,
+        output_path: output_path.clone(),
+        ..CleanCorpusIngestReport::default()
+    };
+    let mut out = String::new();
+    for fragment in text.split(['\n', '.', '!', '?', ';']) {
+        let fragment = fragment.trim();
+        if fragment.is_empty() {
+            continue;
+        }
+        report.source_fragments += 1;
+        if max_records > 0 && report.accepted >= max_records {
+            break;
+        }
+        match build_phrase_experience(stage, fragment) {
+            Ok(record) => {
+                if let Ok(line) = serde_json::to_string(&record) {
+                    out.push_str(&line);
+                    out.push('\n');
+                    report.accepted += 1;
+                }
+            }
+            Err(reason) => {
+                report.rejected += 1;
+                *report
+                    .rejection_reasons
+                    .entry(reason.as_str().to_string())
+                    .or_default() += 1;
+            }
+        }
+    }
+    if !out.is_empty() {
+        let Some(path) = output_path else {
+            return Ok(report);
+        };
+        crate::private_file::append_private_text(&path, &out)?;
+    }
+    Ok(report)
 }
 
 pub fn load_phrase_experience_text(path: &Path) -> io::Result<String> {

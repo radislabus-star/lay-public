@@ -101,6 +101,21 @@ fn main() -> io::Result<()> {
         print_llmwave_learning_report(seed, limit, live_min_count(&args))?;
         return Ok(());
     }
+    if let Some(path) = arg_value(&args, "--llmwave-ingest-clean-corpus") {
+        let max_records = arg_value(&args, "--max-records")
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(50_000);
+        let report = llmwave::ingest_clean_corpus_path(&PathBuf::from(path), max_records)?;
+        println!("{}", serde_json::to_string_pretty(&report)?);
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--memory-learned-report") {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&lay::nanda_wave::usage_memory_learned_report_json())?
+        );
+        return Ok(());
+    }
     if let Some(path) = arg_value(&args, "--llmwave-corpus-report") {
         let test = arg_value(&args, "--test-corpus");
         let limit = arg_value(&args, "--limit")

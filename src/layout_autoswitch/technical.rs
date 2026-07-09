@@ -98,8 +98,13 @@ fn is_ascii_layout_anchor(prefix: &str) -> bool {
 }
 
 pub fn should_keep_plain_cyrillic_before_ascii_technical(original: &str, converted: &str) -> bool {
+    let original_lower = original.to_lowercase();
+    let original_known_ru = crate::token_language::is_known_ru_token(&original_lower)
+        || crate::russian_lexicon::is_known_russian_word_or_form(&original_lower);
+
     original.chars().count() >= 4
         && original.chars().all(is_cyrillic_letter)
+        && original_known_ru
         && converted != original
         && is_ascii_technical_token(converted)
 }

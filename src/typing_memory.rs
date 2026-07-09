@@ -1,0 +1,259 @@
+//! Unified typing memory event contract.
+//!
+//! Runtime code should describe learning as typed memory events. Storage layers
+//! can then route the same event into L1/L2 usage, L3 phrase context, L4 signed
+//! state, and Bayes priors without each caller inventing its own schema.
+
+const CONTEXT_WORDS: usize = 5;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum TypingMemoryEventKind {
+    Typed,
+    AcceptedFix,
+    AcceptedIme,
+    RejectedIme,
+    RejectedCandidate,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum TypingMemoryFeedback {
+    Observed,
+    Accepted,
+    Rejected,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct TypingMemoryEvent {
+    pub(crate) kind: TypingMemoryEventKind,
+    pub(crate) feedback: TypingMemoryFeedback,
+    pub(crate) word: String,
+    pub(crate) context: Vec<String>,
+    pub(crate) from: Option<String>,
+    pub(crate) to: Option<String>,
+    pub(crate) source: String,
+    pub(crate) operation: String,
+}
+
+impl TypingMemoryEvent {
+    pub(crate) fn typed_tail(tail: &str) -> Option<Self> {
+        let (context, word) = context_and_last_word(tail)?;
+        Some(Self {
+            kind: TypingMemoryEventKind::Typed,
+            feedback: TypingMemoryFeedback::Observed,
+            word,
+            context,
+            from: None,
+            to: None,
+            source: "user".to_string(),
+            operation: "typed".to_string(),
+        })
+    }
+
+    pub(crate) fn accepted_fix(from: &str, to: &str) -> Vec<Self> {
+        accepted_events(
+            TypingMemoryEventKind::AcceptedFix,
+            from,
+            to,
+            "autocorrect",
+            "replacement",
+        )
+    }
+
+    pub(crate) fn accepted_ime(context_tail: &str, accepted_text: &str) -> Vec<Self> {
+        ime_events(
+            TypingMemoryEventKind::AcceptedIme,
+            TypingMemoryFeedback::Accepted,
+            context_tail,
+            accepted_text,
+        )
+    }
+
+    pub(crate) fn rejected_ime(context_tail: &str, rejected_text: &str) -> Vec<Self> {
+        ime_events(
+            TypingMemoryEventKind::RejectedIme,
+            TypingMemoryFeedback::Rejected,
+            context_tail,
+            rejected_text,
+        )
+    }
+
+    pub(crate) fn rejected_candidate(
+        context_tail: &str,
+        rejected_text: &str,
+        source: &str,
+        operation: &str,
+    ) -> Vec<Self> {
+        let context = recent_context_words(context_tail);
+        normalized_words(rejected_text)
+            .into_iter()
+            .map(|word| Self {
+                kind: TypingMemoryEventKind::RejectedCandidate,
+                feedback: TypingMemoryFeedback::Rejected,
+                word,
+                context: context.clone(),
+                from: None,
+                to: Some(rejected_text.trim().to_string()),
+                source: source.to_string(),
+                operation: operation.to_string(),
+            })
+            .collect()
+    }
+}
+
+fn accepted_events(
+    kind: TypingMemoryEventKind,
+    from: &str,
+    to: &str,
+    source: &str,
+    operation: &str,
+) -> Vec<TypingMemoryEvent> {
+    let to_words = normalized_words(to);
+    if to_words.is_empty() {
+        return Vec::new();
+    }
+    let from_words = normalized_words(from);
+    let target_indexes = accepted_target_indexes(&from_words, &to_words);
+    target_indexes
+        .into_iter()
+        .map(|index| {
+            let word = to_words[index].clone();
+            let context = words_before_last(&to_words[..index]);
+            TypingMemoryEvent {
+                kind,
+                feedback: TypingMemoryFeedback::Accepted,
+                word,
+                context,
+                from: Some(from.trim().to_string()),
+                to: Some(to.trim().to_string()),
+                source: source.to_string(),
+                operation: operation.to_string(),
+            }
+        })
+        .collect()
+}
+
+fn accepted_target_indexes(from_words: &[String], to_words: &[String]) -> Vec<usize> {
+    let indexes = to_words
+        .iter()
+        .enumerate()
+        .filter_map(|(index, word)| (from_words.get(index) != Some(word)).then_some(index))
+        .collect::<Vec<_>>();
+    if indexes.is_empty() {
+        to_words.len().checked_sub(1).into_iter().collect()
+    } else {
+        indexes
+    }
+}
+
+fn ime_events(
+    kind: TypingMemoryEventKind,
+    feedback: TypingMemoryFeedback,
+    context_tail: &str,
+    text: &str,
+) -> Vec<TypingMemoryEvent> {
+    let context = recent_context_words(context_tail);
+    normalized_words(text)
+        .into_iter()
+        .map(|word| TypingMemoryEvent {
+            kind,
+            feedback,
+            word,
+            context: context.clone(),
+            from: None,
+            to: Some(text.trim().to_string()),
+            source: "ime".to_string(),
+            operation: "completion".to_string(),
+        })
+        .collect()
+}
+
+pub(crate) fn context_and_last_word(text: &str) -> Option<(Vec<String>, String)> {
+    let words = normalized_words(text);
+    let (word, context) = words.split_last()?;
+    Some((words_before_last(context), word.clone()))
+}
+
+pub(crate) fn recent_context_words(text: &str) -> Vec<String> {
+    normalized_words(text)
+        .into_iter()
+        .rev()
+        .take(CONTEXT_WORDS)
+        .collect::<Vec<_>>()
+        .into_iter()
+        .rev()
+        .collect()
+}
+
+pub(crate) fn normalized_words(text: &str) -> Vec<String> {
+    text.split_whitespace()
+        .filter_map(|token| {
+            let word = normalize_word(token);
+            (!word.is_empty()).then_some(word)
+        })
+        .collect()
+}
+
+pub(crate) fn normalize_word(word: &str) -> String {
+    let trimmed = word
+        .trim()
+        .trim_matches(|ch: char| !ch.is_alphabetic() && ch != '-');
+    if trimmed.chars().filter(|ch| ch.is_alphabetic()).count() < 2 {
+        return String::new();
+    }
+    trimmed.to_lowercase()
+}
+
+fn words_before_last(words: &[String]) -> Vec<String> {
+    words
+        .iter()
+        .rev()
+        .take(CONTEXT_WORDS)
+        .cloned()
+        .collect::<Vec<_>>()
+        .into_iter()
+        .rev()
+        .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn typed_tail_event_keeps_recent_context_and_word() {
+        let event = TypingMemoryEvent::typed_tail("на улице опять идёт дождь ").unwrap();
+
+        assert_eq!(event.kind, TypingMemoryEventKind::Typed);
+        assert_eq!(event.feedback, TypingMemoryFeedback::Observed);
+        assert_eq!(event.word, "дождь");
+        assert_eq!(event.context, ["на", "улице", "опять", "идёт"]);
+    }
+
+    #[test]
+    fn accepted_fix_events_mark_positive_result_and_source() {
+        let events = TypingMemoryEvent::accepted_fix("мы отвравим", "мы отравим");
+
+        assert!(events.iter().any(|event| event.word == "отравим"));
+        assert!(events
+            .iter()
+            .all(|event| event.feedback == TypingMemoryFeedback::Accepted));
+        assert!(events.iter().all(|event| event.source == "autocorrect"));
+        assert!(events.iter().all(|event| event.operation == "replacement"));
+    }
+
+    #[test]
+    fn rejected_candidate_events_are_negative_transition_material() {
+        let events = TypingMemoryEvent::rejected_candidate(
+            "ну",
+            "даша",
+            "L2LiveCandidateGate32",
+            "completion",
+        );
+
+        assert_eq!(events.len(), 1);
+        assert_eq!(events[0].kind, TypingMemoryEventKind::RejectedCandidate);
+        assert_eq!(events[0].feedback, TypingMemoryFeedback::Rejected);
+        assert_eq!(events[0].context, ["ну"]);
+        assert_eq!(events[0].word, "даша");
+    }
+}

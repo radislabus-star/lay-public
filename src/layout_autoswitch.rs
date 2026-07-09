@@ -136,7 +136,11 @@ pub(crate) fn is_known_russian_layout_autoswitch_word(word: &str) -> bool {
 
     let len = word.chars().filter(|ch| is_cyrillic_letter(*ch)).count();
     if len <= 3 {
-        return russian_tiny_dictionary().contains(word);
+        return russian_tiny_dictionary().contains(word)
+            || is_common_ru_word(word)
+            || crate::typing_transition::state::word_has_common_usage_authority(word)
+            || crate::nanda_wave::l2::l2_surface_foundation_rank(word)
+                .is_some_and(|rank| rank < 10_000);
     }
 
     is_russian_layout_surface_authority_word(word)

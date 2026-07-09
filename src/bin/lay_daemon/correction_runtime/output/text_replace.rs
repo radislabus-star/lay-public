@@ -6,6 +6,7 @@ use lay::text_edit::{
     plan_committed_tail_replacement, replacement_plan_matches, TextReplacement, TransitionAudit,
 };
 
+use super::super::super::action_log_runtime::RecentActionRecord;
 use super::super::super::correction_memory_runtime::{
     remember_manual_text_correction, ManualTextCorrectionMemory,
 };
@@ -141,16 +142,16 @@ fn remember_text_replacement(
             )),
         },
     );
-    record_recent_action(
+    record_recent_action(RecentActionRecord {
         kind,
-        ctx.mapped_orig,
-        text,
-        ctx.replace_words,
-        ctx.words_orig,
-        ctx.started_at,
+        from: ctx.mapped_orig,
+        to: text,
+        replace_words: ctx.replace_words,
+        words: ctx.words_orig,
+        started_at: ctx.started_at,
         input_gate,
-        true,
-    );
+        undo_available: true,
+    });
 }
 
 fn manual_text_replacement_plan(

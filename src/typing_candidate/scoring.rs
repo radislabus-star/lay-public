@@ -1,4 +1,6 @@
 use crate::text_metrics::{damerau_levenshtein, has_cyrillic, without_whitespace};
+use crate::typing_rule_graph::ids;
+use crate::word_reader::last_text_word;
 
 use super::types::{TypingCandidate, TypingCandidateFamily, TypingCandidateScore};
 
@@ -43,12 +45,16 @@ pub fn score_typing_candidate(
     let family_weight = family_weight(rule_id, family);
     let language_delta = language_delta(&text);
     let structure_bonus = structure_bonus(&text);
+    let lexical_prior_bonus = lexical_prior_bonus(&text);
+    let weak_grammar_penalty = weak_grammar_penalty(rule_id, &text);
     let edit_penalty = edit_penalty(&text);
     let intervention_penalty = intervention_penalty(&text);
     let priority_bonus = priority_bonus(priority);
-    let total = family_weight + language_delta + structure_bonus + priority_bonus
-        - edit_penalty
-        - intervention_penalty;
+    let total =
+        family_weight + language_delta + structure_bonus + lexical_prior_bonus + priority_bonus
+            - edit_penalty
+            - intervention_penalty;
+    let total = total - weak_grammar_penalty;
 
     TypingCandidateScore {
         total,
@@ -56,6 +62,8 @@ pub fn score_typing_candidate(
         family_weight,
         language_delta,
         structure_bonus,
+        lexical_prior_bonus,
+        weak_grammar_penalty,
         edit_penalty,
         intervention_penalty,
         priority_bonus,
@@ -130,6 +138,47 @@ fn structure_bonus(text: &CandidateTextPair<'_>) -> f64 {
         return 0.0;
     }
     0.0
+}
+
+fn lexical_prior_bonus(text: &CandidateTextPair<'_>) -> f64 {
+    let Some(word) = last_text_word(text.replacement) else {
+        return 0.0;
+    };
+    let lower = word.to_lowercase();
+    let mut bonus = 0.0;
+    if crate::lexicon::is_common_ru_word(&lower) {
+        bonus += 8.0;
+    } else if crate::typing_transition::state::word_has_common_usage_authority(&lower) {
+        bonus += 4.0;
+    }
+    if let Some(rank) = crate::nanda_wave::l2::l2_surface_foundation_rank(&lower) {
+        bonus += match rank {
+            0..=999 => 6.0,
+            1000..=9_999 => 3.0,
+            10_000..=49_999 => 1.0,
+            _ => 0.0,
+        };
+    }
+    bonus
+}
+
+fn weak_grammar_penalty(rule_id: &str, text: &CandidateTextPair<'_>) -> f64 {
+    if !matches!(rule_id, ids::VERB_ENDING | ids::VOWEL_CONFUSION) {
+        return 0.0;
+    }
+    let Some(word) = last_text_word(text.replacement) else {
+        return 0.0;
+    };
+    let lower = word.to_lowercase();
+    let has_authority = crate::lexicon::is_common_ru_word(&lower)
+        || crate::typing_transition::state::word_has_common_usage_authority(&lower)
+        || crate::nanda_wave::l2::l2_surface_foundation_rank(&lower)
+            .is_some_and(|rank| rank < 50_000);
+    if has_authority {
+        0.0
+    } else {
+        12.0
+    }
 }
 
 fn edit_penalty(text: &CandidateTextPair<'_>) -> f64 {
