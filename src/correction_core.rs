@@ -676,6 +676,9 @@ fn layout_then_typo_candidate(
 
     let converted_text = replace_last_text_word(req.text, &converted_word)?;
     let explanation = explain_typing_assist_with_pipeline(&converted_text, false, pipeline);
+    if explanation.chosen.is_none() && is_protected_known_english_layout_word(&current_word) {
+        return None;
+    }
     let final_replacement = explanation.output.unwrap_or_else(|| {
         if crate::layout_autoswitch::is_russian_layout_surface_authority_word(&converted_word) {
             converted_text.clone()
@@ -704,6 +707,13 @@ fn layout_then_typo_candidate(
         error_class: TypingErrorClass::CompositeTypo,
         gate,
     })
+}
+
+fn is_protected_known_english_layout_word(word: &str) -> bool {
+    crate::layout_autoswitch::is_protected_ascii_layout_token(word)
+        && crate::layout_autoswitch::is_known_english_layout_autoswitch_word(
+            &word.to_ascii_lowercase(),
+        )
 }
 
 fn composite_russian_typo_candidate(
@@ -3580,6 +3590,25 @@ mod tests {
         assert_eq!(selected.source_id, "layout_then_adjacent_transposition");
         assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
         assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn layout_then_known_word_does_not_flip_known_english_word() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "file ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert_eq!(resolution.decision, None);
+        assert!(
+            resolution.candidates.iter().all(|candidate| {
+                candidate.replacement != "ашду "
+                    || candidate.gate.action != CandidateGateAction::Apply
+            }),
+            "known English word must not use weak layout fallback: {resolution:?}"
+        );
     }
 
     #[test]
