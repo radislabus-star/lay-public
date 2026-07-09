@@ -1646,10 +1646,17 @@ fn surface_motif_stable_existing_word(word: &str) -> bool {
     is_common_ru_word(word)
         || is_user_protected_word(word)
         || is_ru_live_protected_word(word)
+        || surface_motif_runtime_known_surface(word)
         || (surface_motif_strict_known_surface(word)
             && !russian_zero_a_ya_stem_has_known_lemma(word))
         || russian_zero_o_form_has_known_lemma(word)
         || russian_future_ut_form_has_known_infinitive(word)
+}
+
+fn surface_motif_runtime_known_surface(word: &str) -> bool {
+    is_known_russian_word_or_form(word)
+        || crate::russian_lexicon::is_known_russian_adverb_o_form(word)
+        || crate::russian_lexicon::is_known_russian_ka_oblique_form(word)
 }
 
 fn russian_zero_a_ya_stem_has_known_lemma(word: &str) -> bool {
@@ -3391,6 +3398,39 @@ mod tests {
                 .all(|candidate| candidate.source != LEXICAL_ATTRACTOR_CELL),
             "stable word should not become an attractor rewrite: {candidates:?}"
         );
+    }
+
+    #[test]
+    fn l2_form_attractor_does_not_rewrite_known_verb_form() {
+        assert!(surface_motif_stable_existing_word("можем"));
+        assert!(!surface_motif_stable_existing_word("пукнт"));
+        assert!(!surface_motif_stable_existing_word("звгрузи"));
+
+        for original in ["можем ", "проверка можем "] {
+            let l1 = run_l1(original);
+            let candidates = run_l2(original, &l1);
+            assert!(
+                candidates.iter().all(|candidate| {
+                    !matches!(
+                        candidate.source,
+                        L2_SURFACE_MOTIF_CELL | LEXICAL_ATTRACTOR_CELL
+                    ) || candidate.text == original.trim_end()
+                }),
+                "known verb form should not drift to a neighboring word: {candidates:?}"
+            );
+            assert!(
+                candidates
+                    .iter()
+                    .all(|candidate| !matches!(candidate.text.as_str(), "модем" | "может")),
+                "known verb form leaked standalone drift candidates: {candidates:?}"
+            );
+            assert!(
+                candidates.iter().all(|candidate| {
+                    !matches!(candidate.text.as_str(), "проверка модем" | "проверка может")
+                }),
+                "known verb form leaked phrase drift candidates: {candidates:?}"
+            );
+        }
     }
 
     #[test]

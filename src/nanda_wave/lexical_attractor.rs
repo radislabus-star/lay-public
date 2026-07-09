@@ -303,6 +303,7 @@ fn known_surface(surface: &str) -> bool {
         || crate::lexicon::is_common_en_technical_word(&lower)
         || crate::lexicon::is_ru_technical_loanword(&lower)
         || crate::lexicon::is_ru_live_protected_word(&lower)
+        || crate::russian_lexicon::is_known_russian_word_or_form(&lower)
 }
 
 fn grammar_score(surface: &str, context: &TailContext) -> u16 {
@@ -465,6 +466,19 @@ mod tests {
         assert_eq!(trace.produced_surface, "мы привет");
         assert!(trace.gate.accepted);
         assert!(trace.accepted_binding.is_some());
+    }
+
+    #[test]
+    fn typo_route_does_not_rewrite_known_verb_form() {
+        let context = context("проверка можем");
+        let traces = lexical_attractor_traces("проверка можем", &context);
+
+        assert!(
+            traces
+                .iter()
+                .all(|trace| trace.route != SurfaceProductionRoute::GraphemeWave),
+            "known Russian verb form must not become a neighboring attractor: {traces:?}"
+        );
     }
 
     #[test]

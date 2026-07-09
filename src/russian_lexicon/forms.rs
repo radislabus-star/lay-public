@@ -17,6 +17,7 @@ pub(crate) fn is_known_russian_form(word: &str) -> bool {
         || is_known_russian_ka_declension_form(word)
         || is_known_russian_prefixed_form(word)
         || is_known_russian_verb_form(word)
+        || is_known_russian_ch_verb_present_form(word)
         || is_known_russian_imperative_i_form(word)
 }
 
@@ -196,6 +197,22 @@ fn is_known_russian_verb_form(word: &str) -> bool {
             && lemmas
                 .into_iter()
                 .any(|lemma_suffix| known_runtime_verb_lemma(&format!("{stem}{lemma_suffix}")))
+    })
+}
+
+fn is_known_russian_ch_verb_present_form(word: &str) -> bool {
+    const ENDINGS: &[&str] = &["ешь", "ет", "ем", "ете", "ёшь", "ёт", "ём", "ёте"];
+    if word.chars().count() < 5 {
+        return false;
+    }
+    ENDINGS.iter().any(|ending| {
+        let Some(stem) = word.strip_suffix(ending) else {
+            return false;
+        };
+        let Some(base) = stem.strip_suffix('ж') else {
+            return false;
+        };
+        base.chars().count() >= 2 && known_runtime_verb_lemma(&format!("{base}чь"))
     })
 }
 

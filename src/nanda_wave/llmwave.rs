@@ -873,6 +873,12 @@ fn has_low_language_quality(text: &str, tokens: &[String]) -> bool {
     let alpha = text.chars().filter(|ch| ch.is_alphabetic()).count();
     let cyrillic = text.chars().filter(|ch| is_cyrillic_letter(*ch)).count();
     let ascii = text.chars().filter(|ch| ch.is_ascii_alphabetic()).count();
+    let mixed_technical_anchor = tokens.iter().any(|token| {
+        let lower = token.to_ascii_lowercase();
+        token.chars().all(|ch| ch.is_ascii_alphabetic())
+            && (crate::lexicon::is_common_en_technical_word(&lower)
+                || crate::word_recognizer::is_ascii_technical_or_brand_token(&lower))
+    });
     if cyrillic > 0 && ascii > 0 && ascii > cyrillic * 2 {
         return true;
     }
@@ -881,7 +887,7 @@ fn has_low_language_quality(text: &str, tokens: &[String]) -> bool {
         || tokens.iter().any(|token| has_repeated_letter_run(token, 4))
         || tokens
             .iter()
-            .any(|token| looks_like_untrusted_live_learning_token(token))
+            .any(|token| looks_like_untrusted_live_learning_token(token, mixed_technical_anchor))
         || tokens
             .iter()
             .any(|token| looks_like_unstable_unknown_russian_token(token))
@@ -932,7 +938,7 @@ fn has_repeated_letter_run(token: &str, limit: usize) -> bool {
     false
 }
 
-fn looks_like_untrusted_live_learning_token(token: &str) -> bool {
+fn looks_like_untrusted_live_learning_token(token: &str, mixed_technical_anchor: bool) -> bool {
     let lower = token.to_lowercase();
     if lower.chars().all(|ch| ch.is_ascii_digit()) {
         return false;
@@ -945,13 +951,16 @@ fn looks_like_untrusted_live_learning_token(token: &str) -> bool {
         return lower
             .split('-')
             .filter(|part| !part.is_empty())
-            .any(looks_like_untrusted_live_learning_token);
+            .any(|part| looks_like_untrusted_live_learning_token(part, mixed_technical_anchor));
     }
     if !lower.chars().all(is_cyrillic_letter) {
         return true;
     }
     let len = lower.chars().count();
     if is_known_russian_learning_token(&lower) {
+        if mixed_technical_anchor && len <= 6 {
+            return false;
+        }
         if crate::lexicon::is_common_ru_word(&lower)
             || (len <= 3 && crate::phrase_lexicon::is_known_russian_phrase_part(&lower))
             || looks_like_short_russian_imperative(&lower)

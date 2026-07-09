@@ -56,3 +56,13 @@ fn generates_ka_oblique_forms_for_prefix_candidates() {
 fn recognizes_common_live_noun_case_forms() {
     assert!(is_known_russian_word_or_form("авиапорту"));
 }
+
+#[test]
+fn recognizes_ch_verb_present_forms_from_l2_foundation_lemmas() {
+    for word in ["можем", "может", "можешь", "поможем"] {
+        assert!(
+            is_known_russian_word_or_form(word),
+            "missing -чь present form from L2 foundation lemma: {word:?}"
+        );
+    }
+}
