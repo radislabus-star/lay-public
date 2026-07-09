@@ -778,6 +778,7 @@ fn memory_lane_delta_milli(candidate: &Value) -> i64 {
     [
         "usage_prior_milli",
         "context_prior_milli",
+        "l2_wave_peak_milli",
         "l3_phrase_milli",
         "l4_scene_milli",
         "l4_signed_milli",

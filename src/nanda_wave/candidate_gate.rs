@@ -216,9 +216,19 @@ pub fn live_completion_candidates(
             if scene_memory_score.is_some() {
                 l4_scene_memory_supported = l4_scene_memory_supported.saturating_add(1);
             }
+            let wave_peak = super::l2_wave_peak::score_live_completion_peak(
+                request.context_prefix,
+                &partial,
+                &candidate.surface,
+                structural,
+                usage,
+                context_usage,
+                accepted,
+            );
 
             let base_score = 0.22
                 + structural
+                + wave_peak.rank_bonus
                 + usage * 2.30
                 + context_usage * 3.20
                 + (accepted.min(20) as f32 * 0.030)

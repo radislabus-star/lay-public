@@ -12,6 +12,7 @@ pub mod l2;
 mod l2_broad_index;
 mod l2_candidate_phase;
 mod l2_center_memory;
+pub(crate) mod l2_wave_peak;
 pub mod l3;
 pub(crate) mod l3_phrase_gate;
 pub mod l4_goal_state;

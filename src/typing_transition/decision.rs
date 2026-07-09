@@ -134,12 +134,19 @@ fn candidate_has_apply_authority(
         );
         return false;
     }
-    let strong_learned_support = bayes.usage_prior >= 0.080
+    let self_referential_surface_drift = source_role == CorrectionSourceRole::L2Surface
+        && short_same_length_surface_drift(&event.current_word, &candidate.replacement);
+    let external_learned_support = bayes.usage_prior >= 0.080
         || bayes.context_prior >= 0.080
         || signals.l3_phrase_milli >= 420
         || signals.l4_signed_milli >= 120;
-    let strong_transition_support =
-        signals.l3_phrase_milli >= 420 || signals.l4_signed_milli >= 120;
+    let strong_l2_peak_support =
+        strong_l2_wave_peak_support(&signals) && !self_referential_surface_drift;
+    let strong_learned_support = external_learned_support || strong_l2_peak_support;
+    let strong_transition_support = strong_l2_wave_peak_transition_support(&signals)
+        && !self_referential_surface_drift
+        || signals.l3_phrase_milli >= 420
+        || signals.l4_signed_milli >= 120;
     let admission = admit_hidden_transition(
         event,
         candidate,
@@ -173,10 +180,7 @@ fn candidate_has_apply_authority(
         debug_decision_reject(candidate, "low_posterior", bayes.posterior, bayes.risk);
         return false;
     }
-    if source_role == CorrectionSourceRole::L2Surface
-        && !strong_learned_support
-        && short_same_length_surface_drift(&event.current_word, &candidate.replacement)
-    {
+    if self_referential_surface_drift && !external_learned_support {
         debug_decision_reject(
             candidate,
             "short_same_length_surface_drift",
@@ -195,6 +199,14 @@ fn candidate_has_apply_authority(
         debug_decision_reject(candidate, "better_non_apply", bayes.posterior, bayes.risk);
     }
     allowed
+}
+
+fn strong_l2_wave_peak_support(signals: &CandidateDecisionSignals) -> bool {
+    signals.l2_wave_peak_milli >= 650 && signals.l2_wave_peak_uncertainty_milli <= 450
+}
+
+fn strong_l2_wave_peak_transition_support(signals: &CandidateDecisionSignals) -> bool {
+    signals.l2_wave_peak_milli >= 780 && signals.l2_wave_peak_uncertainty_milli <= 300
 }
 
 pub(crate) fn admit_hidden_transition(
@@ -333,13 +345,15 @@ fn better_non_apply_candidate_exists(
     candidates: &[UnifiedCorrectionCandidate],
 ) -> bool {
     let selected_bayes = bayes_score_for_candidate(&event.original, selected);
+    let selected_signals = candidate_decision_signals(event, selected, candidates.len());
     candidates.iter().any(|candidate| {
         if candidate == selected || candidate.gate.action == CandidateGateAction::Veto {
             return false;
         }
         let candidate_bayes = bayes_score_for_candidate(&event.original, candidate);
+        let candidate_signals = candidate_decision_signals(event, candidate, candidates.len());
         candidate_bayes.risk <= selected_bayes.risk
-            && candidate_bayes.posterior >= selected_bayes.posterior + 0.12
+            && candidate_signals.rank_score >= selected_signals.rank_score + 0.10
     })
 }
 
@@ -347,6 +361,11 @@ fn better_non_apply_candidate_exists(
 pub(crate) struct CandidateDecisionSignals {
     pub(crate) rank_score: f32,
     pub(crate) rank_milli: i16,
+    pub(crate) l2_wave_peak_milli: i16,
+    pub(crate) l2_wave_peak_positive_milli: i16,
+    pub(crate) l2_wave_peak_negative_milli: i16,
+    pub(crate) l2_wave_peak_uncertainty_milli: i16,
+    pub(crate) l2_wave_peak_reason: &'static str,
     pub(crate) l3_phrase_milli: i16,
     pub(crate) l3_phrase_decision: &'static str,
     pub(crate) l4_scene_milli: i16,
@@ -372,9 +391,11 @@ pub(crate) fn candidate_decision_signals(
     let l3 = l3_phrase_signal(event, candidate);
     let l4_scene = l4_scene_signal(event, candidate_count);
     let l4_signed = l4_signed_signal(event, candidate);
+    let l2_wave_peak = l2_wave_peak_signal(event, candidate, candidate_count);
     let rank_score = bayes
         + ((explanation.explanation_score_milli as f32 - 500.0) / 10_000.0)
         + transition_rank_bonus(&action, &candidate.source_id)
+        + l2_wave_peak.rank_bonus
         + l3.rank_bonus
         + l4_scene.rank_bonus
         + l4_signed.rank_bonus;
@@ -382,6 +403,11 @@ pub(crate) fn candidate_decision_signals(
     CandidateDecisionSignals {
         rank_score,
         rank_milli: score_to_milli(rank_score),
+        l2_wave_peak_milli: score_to_milli(l2_wave_peak.signal),
+        l2_wave_peak_positive_milli: l2_wave_peak.positive_milli,
+        l2_wave_peak_negative_milli: l2_wave_peak.negative_milli,
+        l2_wave_peak_uncertainty_milli: l2_wave_peak.uncertainty_milli,
+        l2_wave_peak_reason: l2_wave_peak.reason,
         l3_phrase_milli: score_to_milli(l3.signal),
         l3_phrase_decision: l3.decision,
         l4_scene_milli: score_to_milli(l4_scene.signal),
@@ -412,6 +438,38 @@ struct L4SignedSignal {
     signal: f32,
     rank_bonus: f32,
     reason: &'static str,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct L2WavePeakSignal {
+    signal: f32,
+    rank_bonus: f32,
+    positive_milli: i16,
+    negative_milli: i16,
+    uncertainty_milli: i16,
+    reason: &'static str,
+}
+
+fn l2_wave_peak_signal(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+    candidate_count: usize,
+) -> L2WavePeakSignal {
+    let score = crate::nanda_wave::l2_wave_peak::score_correction_peak(
+        &event.original,
+        &candidate.replacement,
+        candidate.error_class,
+        &candidate.source_id,
+        candidate_count,
+    );
+    L2WavePeakSignal {
+        signal: score.signal,
+        rank_bonus: score.rank_bonus,
+        positive_milli: score.positive_milli,
+        negative_milli: score.negative_milli,
+        uncertainty_milli: score.uncertainty_milli,
+        reason: score.reason,
+    }
 }
 
 fn l3_phrase_signal(event: &TypingErrorEvent, candidate: &UnifiedCorrectionCandidate) -> L3Signal {
