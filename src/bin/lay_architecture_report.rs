@@ -1,5 +1,6 @@
 use lay::architecture_contract::{
     all_contract_lines_pass, architecture_lines, architecture_tree, debt_queue,
+    observed_contract_status,
 };
 
 fn main() {
@@ -14,7 +15,7 @@ fn main() {
         println!(
             "- {} [{}] owner={} proof={}",
             line.id,
-            line.status.as_str(),
+            observed_contract_status(line.id).as_str(),
             line.owner,
             line.proof
         );

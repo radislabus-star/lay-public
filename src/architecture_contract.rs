@@ -118,6 +118,100 @@ pub fn architecture_lines() -> &'static [ArchitectureLine] {
     &LINES
 }
 
+/// Cheap route evidence compiled from the physical mutation modules.
+///
+/// This is deliberately not a claim of whole-program proof: graphify carries
+/// that broader graph role. It prevents the status command from reporting a
+/// static PASS after a known execution route stops acquiring AuthorizedEdit.
+pub fn observed_contract_status(id: &str) -> ContractStatus {
+    match id {
+        "decision-authority" => {
+            let facade_uses_lattice = source_contains_all(
+                include_str!("correction_core.rs"),
+                &["L2CandidateLattice::new", "lattice.into_resolution()"],
+            );
+            let lattice_uses_core = source_contains_all(
+                include_str!("typing_transition/candidate.rs"),
+                &["TransitionDecisionCore::select_apply_candidate"],
+            );
+            if matches!(facade_uses_lattice, ContractStatus::Pass)
+                && matches!(lattice_uses_core, ContractStatus::Pass)
+            {
+                ContractStatus::Pass
+            } else {
+                ContractStatus::Watch
+            }
+        }
+        "ime-backend-only" => mutation_routes_hold_authorized_edit(&[
+            include_str!("bin/lay_ibus_engine/composition_commit.rs"),
+            include_str!("bin/lay_daemon/typing_assist_runtime/output/ime.rs"),
+        ]),
+        "edit-plan-verifier" => {
+            let executor_has_capability = source_contains_all(
+                include_str!("text_edit/executor.rs"),
+                &[
+                    "pub struct AuthorizedEdit",
+                    "authorized: Option<AuthorizedEdit",
+                ],
+            );
+            let routes_hold_capability = mutation_routes_hold_authorized_edit(&[
+                include_str!("bin/lay_daemon/typing_assist_runtime/output/minimal.rs"),
+                include_str!("bin/lay_daemon/correction_runtime/output/text_replace.rs"),
+                include_str!("bin/lay_daemon/correction_runtime/output/replay.rs"),
+                include_str!("bin/lay_daemon/correction_runtime/output/native.rs"),
+                include_str!("bin/lay_daemon/auto_undo_runtime.rs"),
+                include_str!("bin/lay_daemon/enter_autocorrect_runtime.rs"),
+            ]);
+            if matches!(executor_has_capability, ContractStatus::Pass)
+                && matches!(routes_hold_capability, ContractStatus::Pass)
+            {
+                ContractStatus::Pass
+            } else {
+                ContractStatus::Watch
+            }
+        }
+        "hot-field-memory" => source_contains_all(
+            include_str!("hot_field.rs"),
+            &["HotFieldSnapshot", "FieldSnapshotOnly"],
+        ),
+        "l2-candidate-field" => source_contains_all(
+            include_str!("typing_transition/candidate.rs"),
+            &[
+                "L2CandidateLattice",
+                "TransitionDecisionCore::select_apply_candidate",
+            ],
+        ),
+        "l3-l4-learning" => source_contains_all(
+            include_str!("typing_transition/mod.rs"),
+            &["L4StateEstimator", "TransitionMemory::allows_apply"],
+        ),
+        "fast-verifiable" => source_contains_all(
+            include_str!("text_edit/executor.rs"),
+            &["ExecutorContract::backend_only", "authorize_edit"],
+        ),
+        _ => ContractStatus::Watch,
+    }
+}
+
+fn source_contains_all(source: &str, needles: &[&str]) -> ContractStatus {
+    if needles.iter().all(|needle| source.contains(needle)) {
+        ContractStatus::Pass
+    } else {
+        ContractStatus::Watch
+    }
+}
+
+fn mutation_routes_hold_authorized_edit(routes: &[&str]) -> ContractStatus {
+    if routes
+        .iter()
+        .all(|route| route.contains("authorize_backend_edit(") && route.contains(".authorized()"))
+    {
+        ContractStatus::Pass
+    } else {
+        ContractStatus::Watch
+    }
+}
+
 pub fn architecture_tree() -> &'static [&'static str] {
     &TREE
 }
@@ -129,12 +223,14 @@ pub fn debt_queue() -> &'static [&'static str] {
 pub fn all_contract_lines_pass() -> bool {
     LINES
         .iter()
-        .all(|line| matches!(line.status, ContractStatus::Pass))
+        .all(|line| matches!(observed_contract_status(line.id), ContractStatus::Pass))
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{all_contract_lines_pass, architecture_lines};
+    use super::{
+        all_contract_lines_pass, architecture_lines, observed_contract_status, ContractStatus,
+    };
 
     #[test]
     fn architecture_contract_has_seven_pass_lines() {
@@ -144,5 +240,9 @@ mod tests {
         assert!(lines.iter().any(|line| line.id == "ime-backend-only"));
         assert!(lines.iter().any(|line| line.id == "edit-plan-verifier"));
         assert!(lines.iter().any(|line| line.id == "l3-l4-learning"));
+        assert_eq!(
+            observed_contract_status("edit-plan-verifier"),
+            ContractStatus::Pass
+        );
     }
 }
