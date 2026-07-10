@@ -295,6 +295,25 @@ fn typing_assist_boundary_event_cannot_schedule_a_second_apply() {
 }
 
 #[test]
+fn typing_assist_ime_fallback_requires_a_typed_receipt() {
+    let ime = read("src/bin/lay_daemon/typing_assist_runtime/output/ime.rs");
+    let output = read("src/bin/lay_daemon/typing_assist_runtime/output.rs");
+    assert!(
+        ime.contains("enum ImeTypingApplyReceipt")
+            && ime.contains("Applied(TypingAssistOutcome)")
+            && ime.contains("Unavailable")
+            && ime.contains("Blocked"),
+        "IME output must report execution state instead of collapsing it into Option"
+    );
+    assert!(
+        output.contains("ImeTypingApplyReceipt::Applied")
+            && output.contains("ImeTypingApplyReceipt::Unavailable")
+            && output.contains("ImeTypingApplyReceipt::Blocked"),
+        "daemon fallback must branch on an explicit IME execution receipt"
+    );
+}
+
+#[test]
 fn changed_check_runs_shadow_replay_release_gate() {
     let script = read("scripts/check-lay-changed.sh");
     assert!(

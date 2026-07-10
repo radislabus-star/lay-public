@@ -13,7 +13,7 @@ mod minimal;
 #[path = "output/nanda_trace.rs"]
 mod nanda_trace;
 use defer::{defer_complex_edit, should_defer_immediate_typing_edit};
-use ime::{try_apply_ime_replacement, ImeTypingReplacementContext};
+use ime::{try_apply_ime_replacement, ImeTypingApplyReceipt, ImeTypingReplacementContext};
 use memory::TypingAssistTiming;
 use minimal::{apply_minimal_typing_replacement, MinimalTypingReplacementContext};
 
@@ -63,7 +63,7 @@ pub(crate) fn apply_typing_assist_correction(
         && should_defer_immediate_typing_edit(&edit);
 
     if cursor_offset == 0 {
-        if let Some(outcome) = try_apply_ime_replacement(ImeTypingReplacementContext {
+        match try_apply_ime_replacement(ImeTypingReplacementContext {
             buf,
             virtual_kbd: &mut virtual_kbd,
             physical_grab: &mut physical_grab,
@@ -75,7 +75,9 @@ pub(crate) fn apply_typing_assist_correction(
             input_gate: input_gate.clone(),
             timing,
         }) {
-            return outcome;
+            ImeTypingApplyReceipt::Applied(outcome) => return outcome,
+            ImeTypingApplyReceipt::Blocked => return TypingAssistOutcome::NoCorrection,
+            ImeTypingApplyReceipt::Unavailable => {}
         }
         if defer_complex_live_edit {
             return defer_complex_edit();

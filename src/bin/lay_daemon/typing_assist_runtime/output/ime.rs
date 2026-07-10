@@ -16,9 +16,19 @@ use forward::{forward_after_ime_replace, trailing_space_count};
 use lay::text_edit::TextReplacement;
 use remember::remember_ime_typing_correction;
 use timing_profile::record_ime_timing;
+
+pub(crate) enum ImeTypingApplyReceipt {
+    Applied(TypingAssistOutcome),
+    /// The IME bridge could not execute this transition. A daemon backend may
+    /// be considered as an explicit fallback.
+    Unavailable,
+    /// Verification rejected the edit. No backend may retry it.
+    Blocked,
+}
+
 pub(crate) fn try_apply_ime_replacement(
     ctx: ImeTypingReplacementContext<'_, '_, '_>,
-) -> Option<TypingAssistOutcome> {
+) -> ImeTypingApplyReceipt {
     let ImeTypingReplacementContext {
         buf,
         virtual_kbd,
@@ -32,7 +42,7 @@ pub(crate) fn try_apply_ime_replacement(
         timing,
     } = ctx;
     if !should_try_ime_text_backend() {
-        return None;
+        return ImeTypingApplyReceipt::Unavailable;
     }
     let plan = TextReplacement {
         move_left: 0,
@@ -61,11 +71,11 @@ pub(crate) fn try_apply_ime_replacement(
             original,
             replacement
         ));
-        return None;
+        return ImeTypingApplyReceipt::Blocked;
     };
     let replace_tail_started = std::time::Instant::now();
     if !try_ime_replace_tail(original, replacement, "typing-assist").unwrap_or(false) {
-        return None;
+        return ImeTypingApplyReceipt::Unavailable;
     }
     let replace_tail_ms = replace_tail_started.elapsed().as_millis();
     let target_layout = layout_switch_policy::target_layout_for_replacement(replacement, true);
@@ -103,7 +113,7 @@ pub(crate) fn try_apply_ime_replacement(
         replacement,
         timing.started_at.elapsed().as_millis()
     ));
-    Some(TypingAssistOutcome::Applied {
+    ImeTypingApplyReceipt::Applied(TypingAssistOutcome::Applied {
         layout_is_ru: target_layout,
     })
 }
