@@ -1,4 +1,5 @@
 use lay::desktop::{is_ru_layout_id, LayoutBackend};
+use lay::text_edit::{AuthorizedEdit, TextEditBackend};
 use std::time::Duration;
 
 use super::{active_layout_backend, active_text_backend, layout_kde, layout_niri, layout_x11, log};
@@ -205,16 +206,30 @@ pub(super) fn settle_after_physical_trigger_release() {
 }
 
 pub(super) fn call_replace_text(
-    move_left: u32,
-    backspaces: u32,
-    text: &str,
-    move_right: u32,
+    authorized: &AuthorizedEdit,
     layout_id: &str,
 ) -> Result<bool, String> {
+    if authorized.backend() != TextEditBackend::Daemon {
+        return Err(format!(
+            "GNOME ReplaceText requires a daemon AuthorizedEdit, got {}",
+            authorized.backend().as_str()
+        ));
+    }
     if active_layout_backend() != LayoutBackend::Gnome {
         return Err("ReplaceText is available only through the GNOME backend".to_string());
     }
-    gnome_dbus::call_replace_text(move_left, backspaces, text, move_right, layout_id)
+    let action = authorized.action();
+    let plan = action
+        .plan
+        .as_ref()
+        .ok_or_else(|| "authorized edit has no replacement plan".to_string())?;
+    gnome_dbus::call_replace_text(
+        plan.move_left,
+        plan.backspaces,
+        &plan.insert,
+        plan.move_right,
+        layout_id,
+    )
 }
 
 pub(super) fn should_try_ime_text_backend() -> bool {
@@ -222,11 +237,17 @@ pub(super) fn should_try_ime_text_backend() -> bool {
 }
 
 pub(super) fn try_ime_replace_tail(
-    original: &str,
-    replacement: &str,
+    authorized: &AuthorizedEdit,
     kind: &str,
 ) -> Result<bool, String> {
-    ime_bridge::try_replace_tail(original, replacement, kind)
+    if authorized.backend() != TextEditBackend::Ime {
+        return Err(format!(
+            "IME bridge requires an IME AuthorizedEdit, got {}",
+            authorized.backend().as_str()
+        ));
+    }
+    let action = authorized.action();
+    ime_bridge::try_replace_tail(&action.from_text, &action.to_text, kind)
 }
 
 pub(super) fn call_ime_ping() -> Result<String, String> {

@@ -158,9 +158,12 @@ pub(super) fn handle_enter_autocorrect(
         return None;
     }
 
-    if should_try_ime_text_backend() && ime_authorized.is_some() {
+    if should_try_ime_text_backend() {
         let original_layout = read_current_layout_is_ru().ok();
-        if try_ime_replace_tail(&original, &replacement, "enter-autocorrect").unwrap_or(false) {
+        if ime_authorized
+            .as_ref()
+            .is_some_and(|authorized| try_ime_replace_tail(authorized, "enter-autocorrect").unwrap_or(false))
+        {
             let target_layout =
                 layout_switch_policy::target_layout_for_replacement(&replacement, true);
             let force_target_layout =
@@ -203,7 +206,7 @@ pub(super) fn handle_enter_autocorrect(
         log("⚠ enter-autocorrect: нет uinput device");
         return None;
     };
-    if daemon_authorized.is_none() {
+    let Some(daemon_authorized) = daemon_authorized else {
         log(&format!(
             "⚠ enter-autocorrect daemon output blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
             daemon_backend_action.reason,
@@ -212,7 +215,7 @@ pub(super) fn handle_enter_autocorrect(
             replacement
         ));
         return None;
-    }
+    };
 
     *executing = true;
     let _executing_guard = ExecutingGuard(executing);
@@ -225,8 +228,7 @@ pub(super) fn handle_enter_autocorrect(
 
     let insert_outcome = match apply_text_replacement_pipeline(
         kbd,
-        &plan,
-        &replacement,
+        &daemon_authorized,
         original_layout.unwrap_or(true),
         original_layout,
         "enter-autocorrect",

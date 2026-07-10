@@ -54,7 +54,7 @@ pub(crate) fn apply_minimal_typing_replacement(
         lay::text_edit::TextEditBackend::Daemon,
         &edit_action,
     );
-    let Some(_authorized_edit) = backend_action.authorized() else {
+    let Some(authorized_edit) = backend_action.authorized() else {
         log(&format!(
             "⚠ typing-assist output blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
             backend_action.reason,
@@ -71,8 +71,7 @@ pub(crate) fn apply_minimal_typing_replacement(
     let fast_output = physical_grab.is_active();
     let insert_outcome = match apply_text_replacement_pipeline(
         kbd,
-        &plan,
-        replacement,
+        &authorized_edit,
         original_layout.unwrap_or(true),
         original_layout,
         "typing-assist",

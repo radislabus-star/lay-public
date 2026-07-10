@@ -1,6 +1,6 @@
 use evdev::{uinput::VirtualDevice, KeyCode};
 use lay::keyboard::{preferred_layout_for_text, text_to_uinput_runs, TextInputRun};
-use lay::text_edit::TextReplacement;
+use lay::text_edit::{AuthorizedEdit, TextEditBackend, TextReplacement};
 use std::time::Instant;
 
 use super::super::{log, switch_to_target_layout};
@@ -94,13 +94,23 @@ fn apply_text_replacement(
 
 pub(crate) fn apply_text_replacement_pipeline(
     dev: &mut VirtualDevice,
-    plan: &TextReplacement,
-    replacement: &str,
+    authorized: &AuthorizedEdit,
     fallback_layout_is_ru: bool,
     known_current_layout_is_ru: Option<bool>,
     label: &str,
     fast_output: bool,
 ) -> Result<TextInsertOutcome, TextReplacementPipelineError> {
+    if authorized.backend() != TextEditBackend::Daemon {
+        return Err(TextReplacementPipelineError::Preflight(format!(
+            "authorized backend mismatch: expected daemon, got {}",
+            authorized.backend().as_str()
+        )));
+    }
+    let action = authorized.action();
+    let plan = action.plan.as_ref().ok_or_else(|| {
+        TextReplacementPipelineError::Preflight("authorized edit has no replacement plan".to_string())
+    })?;
+    let replacement = action.to_text.as_str();
     let pipeline_started = Instant::now();
     let prepare_started = Instant::now();
     let prepared_insert = prepare_text_insert_for_replacement_plan(

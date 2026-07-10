@@ -25,42 +25,42 @@ impl TextEditBackend {
 /// Output adapters may inspect this capability, but cannot manufacture one.
 /// This is intentionally the only value that represents permission to mutate
 /// user-visible text.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct AuthorizedEdit<'a> {
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AuthorizedEdit {
     backend: TextEditBackend,
-    action: &'a EditAction,
+    action: EditAction,
 }
 
-impl<'a> AuthorizedEdit<'a> {
+impl AuthorizedEdit {
     pub const fn backend(&self) -> TextEditBackend {
         self.backend
     }
 
-    pub const fn action(&self) -> &'a EditAction {
-        self.action
+    pub fn action(&self) -> &EditAction {
+        &self.action
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct BackendEditAuthorization<'a> {
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BackendEditAuthorization {
     pub backend: TextEditBackend,
     pub allow_execute: bool,
     pub reason: &'static str,
-    authorized: Option<AuthorizedEdit<'a>>,
+    authorized: Option<AuthorizedEdit>,
 }
 
-impl<'a> BackendEditAuthorization<'a> {
+impl BackendEditAuthorization {
     /// Returns the sealed capability for backends that have migrated to the
     /// typed execution contract.
-    pub const fn authorized(&self) -> Option<AuthorizedEdit<'a>> {
-        self.authorized
+    pub fn authorized(&self) -> Option<AuthorizedEdit> {
+        self.authorized.clone()
     }
 }
 
 pub fn authorize_backend_edit(
     backend: TextEditBackend,
     action: &EditAction,
-) -> BackendEditAuthorization<'_> {
+) -> BackendEditAuthorization {
     let execution_backend: ExecutionBackend = backend.into();
     let auth = ExecutorContract::backend_only(execution_backend).authorize_edit(action);
     debug_assert_eq!(auth.backend, execution_backend);
@@ -69,7 +69,10 @@ pub fn authorize_backend_edit(
             backend,
             allow_execute: true,
             reason: auth.reason,
-            authorized: Some(AuthorizedEdit { backend, action }),
+            authorized: Some(AuthorizedEdit {
+                backend,
+                action: action.clone(),
+            }),
         }
     } else {
         BackendEditAuthorization {

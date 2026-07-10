@@ -59,27 +59,28 @@ pub(super) fn handle_pending_auto_undo(
         return None;
     }
 
-    if should_try_ime_text_backend()
-        && ime_authorized.is_some()
-        && try_ime_replace_tail(&undo.replacement, &undo.original, "auto-undo").unwrap_or(false)
-    {
-        let target_layout = lay::keyboard::preferred_layout_for_text(&undo.original, true);
-        switch_or_restore_layout_after_text_edit(true, target_layout, None, "auto-undo", false);
-        remember_auto_undo(buf, &undo, started_at);
-        log(&format!(
-            "✓ done: auto-undo {:?} → {:?} через IME за {}ms",
-            undo.replacement,
-            undo.original,
-            started_at.elapsed().as_millis()
-        ));
-        return Some(target_layout);
+    if should_try_ime_text_backend() {
+        if let Some(ime_authorized) = ime_authorized.as_ref() {
+            if try_ime_replace_tail(ime_authorized, "auto-undo").unwrap_or(false) {
+                let target_layout = lay::keyboard::preferred_layout_for_text(&undo.original, true);
+                switch_or_restore_layout_after_text_edit(true, target_layout, None, "auto-undo", false);
+                remember_auto_undo(buf, &undo, started_at);
+                log(&format!(
+                    "✓ done: auto-undo {:?} → {:?} через IME за {}ms",
+                    undo.replacement,
+                    undo.original,
+                    started_at.elapsed().as_millis()
+                ));
+                return Some(target_layout);
+            }
+        }
     }
 
     let Some(kbd) = virtual_kbd else {
         log("⚠ auto-undo: нет uinput device");
         return None;
     };
-    if daemon_authorized.is_none() {
+    let Some(daemon_authorized) = daemon_authorized else {
         log(&format!(
             "⚠ auto-undo daemon output blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
             daemon_backend_action.reason,
@@ -88,7 +89,7 @@ pub(super) fn handle_pending_auto_undo(
             undo.original
         ));
         return None;
-    }
+    };
 
     *executing = true;
     let _executing_guard = ExecutingGuard(executing);
@@ -99,8 +100,7 @@ pub(super) fn handle_pending_auto_undo(
 
     let insert_outcome = match apply_text_replacement_pipeline(
         kbd,
-        &plan,
-        &undo.original,
+        &daemon_authorized,
         true,
         None,
         "auto-undo",

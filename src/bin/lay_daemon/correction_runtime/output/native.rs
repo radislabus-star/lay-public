@@ -2,7 +2,7 @@ use lay::action_log::RecentActionGateTrace;
 use lay::decoder::DecoderAction;
 use lay::desktop::LayoutBackend;
 use lay::keyboard::preferred_layout_for_text;
-use lay::text_edit::{TextReplacement, TransitionAudit};
+use lay::text_edit::{AuthorizedEdit, TextReplacement, TransitionAudit};
 
 use super::super::super::action_log_runtime::RecentActionRecord;
 use super::super::super::correction_memory_runtime::{
@@ -31,17 +31,15 @@ pub(crate) fn try_ime_replace_output(
     }
     let (replace_text, replace_kind, is_replay) = text_for_native_replace(ctx, "ime-replay");
     let replace_target_is_ru = preferred_layout_for_text(&replace_text, ctx.target_is_ru);
-    if !native_text_edit_action_allowed(
+    let authorized_edit = authorize_native_text_edit(
         ctx,
         &replace_text,
         replace_kind,
         is_replay,
         lay::text_edit::TextEditBackend::Ime,
         input_gate.clone(),
-    ) {
-        return None;
-    }
-    if !try_ime_replace_tail(ctx.mapped_orig, &replace_text, replace_kind).unwrap_or(false) {
+    )?;
+    if !try_ime_replace_tail(&authorized_edit, replace_kind).unwrap_or(false) {
         return None;
     }
 
@@ -85,18 +83,16 @@ pub(crate) fn try_gnome_native_replace_output(
     }
     let (replace_text, replace_kind, is_replay) = text_for_native_replace(ctx, "gnome-replace");
     let replace_target_is_ru = preferred_layout_for_text(&replace_text, ctx.target_is_ru);
-    if !native_text_edit_action_allowed(
+    let authorized_edit = authorize_native_text_edit(
         ctx,
         &replace_text,
         replace_kind,
         is_replay,
         lay::text_edit::TextEditBackend::Daemon,
         input_gate.clone(),
-    ) {
-        return None;
-    }
+    )?;
     let (layout_id, _) = target_layout(replace_target_is_ru);
-    match call_replace_text(0, ctx.n_backspaces, &replace_text, 0, layout_id) {
+    match call_replace_text(&authorized_edit, layout_id) {
         Ok(true) => {
             remember_native_replace(
                 ctx,
@@ -201,14 +197,14 @@ fn remember_native_replace(
     }
 }
 
-fn native_text_edit_action_allowed(
+fn authorize_native_text_edit(
     ctx: &ManualOutputCommon<'_>,
     replace_text: &str,
     replace_kind: &'static str,
     is_replay: bool,
     backend: lay::text_edit::TextEditBackend,
     input_gate: Option<RecentActionGateTrace>,
-) -> bool {
+) -> Option<AuthorizedEdit> {
     let plan = TextReplacement {
         move_left: 0,
         backspaces: ctx.mapped_orig.chars().count() as u32,
@@ -252,8 +248,8 @@ fn native_text_edit_action_allowed(
         input_gate,
     );
     let backend_action = lay::text_edit::authorize_backend_edit(backend, &edit_action);
-    if backend_action.authorized().is_some() {
-        return true;
+    if let Some(authorized_edit) = backend_action.authorized() {
+        return Some(authorized_edit);
     }
     log(&format!(
         "⚠ {replace_kind} native replace blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
@@ -262,7 +258,7 @@ fn native_text_edit_action_allowed(
         ctx.mapped_orig,
         replace_text
     ));
-    false
+    None
 }
 
 fn trailing_space_count(text: &str) -> usize {

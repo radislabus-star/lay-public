@@ -269,7 +269,20 @@ fn live_text_mutation_outputs_use_executor_contract() {
     assert!(
         executor.contains("pub struct AuthorizedEdit")
             && executor.contains("authorized: Option<AuthorizedEdit"),
-        "executor must issue a sealed AuthorizedEdit capability"
+            "executor must issue a sealed AuthorizedEdit capability"
+    );
+
+    let daemon_pipeline = read("src/bin/lay_daemon/text_output/replacement.rs");
+    assert!(
+        daemon_pipeline.contains("authorized: &AuthorizedEdit")
+            && !daemon_pipeline.contains("plan: &TextReplacement,\n    replacement: &str"),
+        "daemon replacement pipeline must require AuthorizedEdit rather than raw plan/text"
+    );
+    let layout_controller = read("src/bin/lay_daemon/layout_controller.rs");
+    assert!(
+        layout_controller.contains("try_ime_replace_tail(\n    authorized: &AuthorizedEdit")
+            && layout_controller.contains("call_replace_text(\n    authorized: &AuthorizedEdit"),
+        "IME and GNOME bridge mutations must require AuthorizedEdit"
     );
 }
 
