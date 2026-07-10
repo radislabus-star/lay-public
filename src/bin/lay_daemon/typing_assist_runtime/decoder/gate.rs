@@ -87,7 +87,7 @@ fn build_input_gate_decoded_tail(
     if let Some(full_token_plan) = edit.verified_full_token_plan_for_cursor(0) {
         edit.plan = full_token_plan;
     }
-    let edit_action = edit.authorize_replacement(
+    let edit_action = edit.authorize_verified_replacement(
         "typing-assist",
         original,
         edit.replacement.as_str(),

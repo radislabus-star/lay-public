@@ -73,7 +73,7 @@ fn decoder_edit_plan_carries_transition_audit_to_outputs() {
         decoder_edit.contains("transition: TransitionAudit")
             && !decoder_edit.contains("pub transition: TransitionAudit")
             && decoder_edit.contains("with_input_gate_trace")
-            && decoder_edit.contains("pub fn authorize_replacement")
+            && decoder_edit.contains("pub fn authorize_verified_replacement")
             && decoder_edit.contains("self.transition.blocks_apply()"),
         "DecoderEditPlan must privately carry transition audit, authorize output edits, and block unverified plans before output"
     );
@@ -81,7 +81,7 @@ fn decoder_edit_plan_carries_transition_audit_to_outputs() {
     let daemon_gate = read("src/bin/lay_daemon/typing_assist_runtime/decoder/gate.rs");
     assert!(
         daemon_gate.contains("edit.with_input_gate_trace")
-            && daemon_gate.contains("edit.authorize_replacement("),
+            && daemon_gate.contains("edit.authorize_verified_replacement("),
         "typing-assist decoder must bind input-gate transition audit into DecoderEditPlan"
     );
 
@@ -98,7 +98,7 @@ fn decoder_edit_plan_carries_transition_audit_to_outputs() {
         ),
     ] {
         assert!(
-            source.contains("edit.authorize_replacement(")
+            source.contains("edit.authorize_verified_replacement(")
                 && !source.contains("edit.transition.clone()")
                 && !source.contains("edit.selected_source_id.as_deref()")
                 && !source.contains("edit.selected_error_class.as_deref()"),

@@ -99,7 +99,7 @@ impl DecoderEditPlan {
         )
     }
 
-    pub fn authorize_replacement(
+    pub fn authorize_verified_replacement(
         &self,
         source: &str,
         original: &str,

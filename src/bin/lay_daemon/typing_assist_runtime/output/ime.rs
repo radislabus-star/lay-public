@@ -42,8 +42,12 @@ pub(crate) fn try_apply_ime_replacement(
         insert: replacement.to_string(),
         move_right: 0,
     };
-    let edit_action =
-        edit.authorize_replacement("typing-assist-ime", original, replacement, plan.clone());
+    let edit_action = edit.authorize_verified_replacement(
+        "typing-assist-ime",
+        original,
+        replacement,
+        plan.clone(),
+    );
     lay::action_log::record_candidate_edit_action_before_apply(
         &edit_action,
         lay::action_log::MutationLogRoute::TYPING_ASSIST_IME,

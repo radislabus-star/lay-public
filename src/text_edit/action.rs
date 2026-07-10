@@ -132,6 +132,13 @@ impl EditAction {
             selected_source_id: Some("ImeCompletionCell32".to_string()),
             selected_error_class: Some("ime-completion".to_string()),
         }
+        .with_transition(TransitionAudit::proven(
+            "ime_active_composition_completion",
+            "visible_preedit_completion_selected",
+            true,
+            false,
+            1,
+        ))
     }
 
     pub fn with_transition(mut self, transition: TransitionAudit) -> Self {
@@ -272,8 +279,35 @@ mod tests {
         assert!(action.plan.is_some());
         assert!(action.safety.is_some());
         assert_eq!(
+            action.transition.operator.as_deref(),
+            Some("ime_active_composition_completion")
+        );
+        assert_eq!(
+            action.transition.proof.as_deref(),
+            Some("visible_preedit_completion_selected")
+        );
+        assert_eq!(action.transition.verified, Some(true));
+        assert_eq!(
             action.selected_source_id.as_deref(),
             Some("ImeCompletionCell32")
+        );
+    }
+
+    #[test]
+    fn ime_accept_candidate_cannot_rewrite_left_context() {
+        let action = EditAction::ime_accept(
+            "ibus-active-composition-completion",
+            900,
+            "так можно проверить скры",
+            "так можно проверять нкрытое сос",
+        );
+
+        assert_eq!(action.kind, EditActionKind::BlockUnsafe);
+        assert!(!action.allow_apply());
+        assert_eq!(action.safety_reason(), "unsafe_multiword_autocorrect_scope");
+        assert_eq!(
+            action.transition.operator.as_deref(),
+            Some("ime_active_composition_completion")
         );
     }
 

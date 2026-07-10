@@ -687,7 +687,7 @@ fn replay_pairs(
         let trace = trace_cache
             .entry(pair.original.clone())
             .or_insert_with(|| run_wave_trace_with_options(&pair.original, options));
-        let outcome = replay_one(pair, &trace);
+        let outcome = replay_one(pair, trace);
         let bucket = if pair.train_role == "negative" {
             &mut report.negative
         } else {
@@ -704,7 +704,7 @@ fn replay_pairs(
             .entry(pair.source_id.clone())
             .or_default()
             .add(outcome);
-        collect_replay_examples(&mut report.examples, pair, &trace, outcome, max_examples);
+        collect_replay_examples(&mut report.examples, pair, trace, outcome, max_examples);
     }
     report
 }

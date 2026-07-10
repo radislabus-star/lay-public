@@ -362,4 +362,37 @@ mod tests {
             other => panic!("unexpected decision: {other:?}"),
         }
     }
+
+    #[test]
+    fn text_transition_blocks_two_word_cursor_teleport_edit() {
+        let original = "так можно проверить скры";
+        let state = VisibleFieldState::committed_tail(original, Some("/test".to_string()));
+        let request = LatentTextTransitionCandidate::new(
+            VisibleTailSource::ImeCommittedTail,
+            original.chars().count() as u32,
+            "так можно проверять нкрытое сос",
+            TextTransitionIntent::ImeAutocorrect,
+            None,
+        );
+
+        let decision = decide_text_transition(&state, request);
+
+        match decision {
+            TextTransitionDecision::Reject { rejection, action } => {
+                assert_eq!(
+                    rejection,
+                    TextTransitionRejection::UnsafeEdit {
+                        reason: "unsafe_multiword_autocorrect_scope"
+                    }
+                );
+                let action = action.expect("edit action");
+                assert_eq!(action.kind, EditActionKind::BlockUnsafe);
+                assert_eq!(
+                    action.transition.operator.as_deref(),
+                    Some("ime_committed_tail_autocorrect")
+                );
+            }
+            other => panic!("unexpected decision: {other:?}"),
+        }
+    }
 }

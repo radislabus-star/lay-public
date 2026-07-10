@@ -48,7 +48,7 @@ pub(crate) fn apply_minimal_typing_replacement(
         return TypingAssistOutcome::NoCorrection;
     };
     let edit_action =
-        edit.authorize_replacement("typing-assist", original, replacement, plan.clone());
+        edit.authorize_verified_replacement("typing-assist", original, replacement, plan.clone());
     lay::action_log::record_candidate_edit_action_before_apply(
         &edit_action,
         lay::action_log::MutationLogRoute::TYPING_ASSIST_MINIMAL,
