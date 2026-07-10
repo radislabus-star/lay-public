@@ -144,6 +144,7 @@ pub fn observed_contract_status(id: &str) -> ContractStatus {
         }
         "ime-backend-only" => mutation_routes_hold_authorized_edit(&[
             include_str!("bin/lay_ibus_engine/composition_commit.rs"),
+            include_str!("bin/lay_ibus_engine/committed_tail.rs"),
             include_str!("bin/lay_daemon/typing_assist_runtime/output/ime.rs"),
         ]),
         "edit-plan-verifier" => {

@@ -244,6 +244,10 @@ fn live_text_mutation_outputs_use_executor_contract() {
             "src/bin/lay_ibus_engine/composition_commit.rs",
             "TextEditBackend::Ime",
         ),
+        (
+            "src/bin/lay_ibus_engine/committed_tail.rs",
+            "TextEditBackend::Ime",
+        ),
     ];
 
     for (path, backend) in cases {

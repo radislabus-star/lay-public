@@ -27,10 +27,34 @@ impl LayIbusEngine {
         if with_space {
             text.push(' ');
         }
+        let action = lay::text_edit::EditAction::ime_accept(
+            "ibus-committed-tail-completion",
+            900,
+            String::new(),
+            text.clone(),
+        );
+        lay::action_log::record_candidate_edit_action_before_apply(
+            &action,
+            lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
+            None,
+        );
+        let authorization =
+            lay::text_edit::authorize_backend_edit(lay::text_edit::TextEditBackend::Ime, &action);
+        let Some(authorized_edit) = authorization.authorized() else {
+            trace::record(r#"{"kind":"ibus_stuck_completion_blocked"}"#);
+            return Ok(false);
+        };
+        if authorized_edit.action().to_text != text {
+            trace::record(r#"{"kind":"ibus_stuck_completion_authorized_text_mismatch"}"#);
+            return Ok(false);
+        }
         self.clear_preedit(emitter).await?;
-        Self::commit_text(emitter, make_ibus_text(text.clone()))
-            .await
-            .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+        Self::commit_text(
+            emitter,
+            make_ibus_text(authorized_edit.action().to_text.clone()),
+        )
+        .await
+        .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         lay::nanda_wave::record_accepted_ime_usage(&context_tail, &accepted_word);
         self.sync_tail_after_stuck_completion(&text);
         Ok(true)
@@ -121,6 +145,16 @@ mod tests {
 
         assert_eq!(engine.tail_buffer, "проверка ");
         assert_eq!(engine.preedit_fast.token(), "");
+    }
+
+    #[test]
+    fn stuck_completion_is_an_authorized_ime_edit() {
+        let source = include_str!("committed_tail.rs");
+        assert!(
+            source.contains("ibus-committed-tail-completion")
+                && source.contains("authorized_edit.action().to_text"),
+            "stuck completion must keep its AuthorizedEdit through CommitText"
+        );
     }
 
     #[test]
