@@ -339,7 +339,7 @@ fn word_boundary_action(resolution: &CorrectionResolution) -> InputGateAction {
             CandidateGateAction::KeepOriginal => {
                 keep_original = true;
             }
-            CandidateGateAction::SuggestOnly => {
+            CandidateGateAction::Eligible | CandidateGateAction::SuggestOnly => {
                 best_suggestion.get_or_insert_with(|| candidate.replacement.clone());
             }
             CandidateGateAction::Veto => {

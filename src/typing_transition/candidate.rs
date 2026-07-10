@@ -1,7 +1,7 @@
 use super::decision::TransitionDecisionCore;
 use crate::correction_core::{
-    CorrectionCandidateScoreTrace, CorrectionDecision, CorrectionDecisionSource,
-    CorrectionResolution, CorrectionScoreboard, TypingErrorEvent, UnifiedCorrectionCandidate,
+    CorrectionCandidateScoreTrace, CorrectionDecision, CorrectionResolution, CorrectionScoreboard,
+    TypingErrorEvent, UnifiedCorrectionCandidate,
 };
 
 pub(crate) struct L2CandidateLattice {
@@ -24,10 +24,7 @@ impl L2CandidateLattice {
                 .iter_mut()
                 .find(|existing| existing.replacement == candidate.replacement)
             {
-                if source_owner_priority(candidate.source) > source_owner_priority(existing.source)
-                {
-                    *existing = candidate;
-                }
+                existing.merge_evidence(candidate);
                 return;
             }
             self.candidates.push(candidate);
@@ -57,12 +54,5 @@ impl L2CandidateLattice {
             scoreboard,
             candidate_scores,
         }
-    }
-}
-
-fn source_owner_priority(source: CorrectionDecisionSource) -> u8 {
-    match source {
-        CorrectionDecisionSource::Deterministic => 2,
-        CorrectionDecisionSource::Nanda => 1,
     }
 }

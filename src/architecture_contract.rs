@@ -162,8 +162,25 @@ pub fn observed_contract_status(id: &str) -> ContractStatus {
                 include_str!("bin/lay_daemon/auto_undo_runtime.rs"),
                 include_str!("bin/lay_daemon/enter_autocorrect_runtime.rs"),
             ]);
+            let physical_executors_require_capability = matches!(
+                source_contains_all(
+                    include_str!("bin/lay_daemon/text_output/replacement.rs"),
+                    &["authorized: &AuthorizedEdit", "authorized.action()"],
+                ),
+                ContractStatus::Pass
+            ) && matches!(
+                source_contains_all(
+                    include_str!("bin/lay_daemon/layout_controller.rs"),
+                    &[
+                        "try_ime_replace_tail(\n    authorized: &AuthorizedEdit",
+                        "call_replace_text(\n    authorized: &AuthorizedEdit",
+                    ],
+                ),
+                ContractStatus::Pass
+            );
             if matches!(executor_has_capability, ContractStatus::Pass)
                 && matches!(routes_hold_capability, ContractStatus::Pass)
+                && physical_executors_require_capability
             {
                 ContractStatus::Pass
             } else {

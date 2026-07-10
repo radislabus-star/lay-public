@@ -4,9 +4,9 @@ use zbus::object_server::SignalEmitter;
 
 use lay::ime_candidate_readout::{
     compare_suffix_len_for_prefix, is_command_like_long_tail, is_noisy_first_russian_prefix,
-    phrase_candidate_suffix, preedit_suffix_bayes_score, preedit_suffix_context_and_word,
-    push_unique_ascii_known_suffix, push_unique_ranked_suffix, push_unique_suffix,
-    should_query_llmwave_phrase_suffix, RankedImeSuffix,
+    phrase_candidate_suffix, preedit_suffix_context_and_word, push_unique_ascii_known_suffix,
+    push_unique_suffix, rank_ime_candidate_suffixes, should_query_llmwave_phrase_suffix,
+    ImeCandidateReadoutRequest,
 };
 use lay::word_reader::split_last_alphabetic_token;
 
@@ -30,8 +30,6 @@ const PREEDIT_MODE_CLEAR: u32 = 0;
 pub(crate) struct PreeditFastState {
     token: String,
 }
-
-type RankedPreeditSuffix = RankedImeSuffix;
 
 impl PreeditFastState {
     pub(crate) fn reset(&mut self) {
@@ -302,59 +300,27 @@ impl LayIbusEngine {
         if is_command_like_long_tail(tail.trim_end()) {
             return Vec::new();
         }
-        let partial_len = split_last_alphabetic_token(tail.trim_end())
-            .map(|(_, token)| token.chars().count())
-            .unwrap_or(0);
-        let mut candidates = Vec::with_capacity(16);
-        let usage = lay::nanda_wave::cached_usage_prior_snapshot();
-
         let semantic_started = timing_enabled.then(Instant::now);
-        for suffix in self.semantic_phrase_suffixes() {
-            push_unique_ranked_suffix(
-                &mut candidates,
-                Some(suffix.clone()),
-                preedit_suffix_bayes_score(&usage, tail, &suffix, 0.72),
-            );
-        }
+        let semantic_suffixes = self.semantic_phrase_suffixes();
         let semantic_us = elapsed_us(semantic_started);
 
         let ru_started = timing_enabled.then(Instant::now);
-        for suffix in self.ru_l2_word_attractor_suffixes() {
-            push_unique_ranked_suffix(
-                &mut candidates,
-                Some(suffix.clone()),
-                preedit_suffix_bayes_score(&usage, tail, &suffix, 0.48),
-            );
-        }
+        let ru_l2_suffixes = self.ru_l2_word_attractor_suffixes();
         let ru_us = elapsed_us(ru_started);
 
         let ascii_started = timing_enabled.then(Instant::now);
-        for suffix in self.preedit_fast.ascii_suffixes(
+        let ascii_suffixes = self.preedit_fast.ascii_suffixes(
             self.precognition_max_suffix_chars(),
             PREEDIT_ASCII_CANDIDATE_LIMIT,
-        ) {
-            push_unique_ranked_suffix(
-                &mut candidates,
-                Some(suffix.clone()),
-                preedit_suffix_bayes_score(&usage, tail, &suffix, 0.80),
-            );
-        }
+        );
         let ascii_us = elapsed_us(ascii_started);
 
-        candidates.sort_by(|left: &RankedPreeditSuffix, right: &RankedPreeditSuffix| {
-            right
-                .score
-                .total_cmp(&left.score)
-                .then_with(|| left.order.cmp(&right.order))
-                .then_with(|| {
-                    compare_suffix_len_for_prefix(partial_len, &left.suffix, &right.suffix)
-                })
-                .then_with(|| left.suffix.cmp(&right.suffix))
+        let candidates = rank_ime_candidate_suffixes(ImeCandidateReadoutRequest {
+            tail,
+            semantic_suffixes: &semantic_suffixes,
+            ru_l2_suffixes: &ru_l2_suffixes,
+            ascii_suffixes: &ascii_suffixes,
         });
-        let candidates = candidates
-            .into_iter()
-            .map(|candidate| candidate.suffix)
-            .collect::<Vec<_>>();
 
         if let Some(started) = total_started {
             let token = split_last_alphabetic_token(tail.trim_end()).map(|(_, token)| token);
@@ -379,18 +345,6 @@ impl LayIbusEngine {
             return false;
         }
         let original = format!("{} ", self.buffer);
-        let direct = lay::typing_assist::explain_typing_assist_with_pipeline(
-            &original,
-            self.config.auto_switch_layout,
-            &self.config.typing_assist_pipeline,
-        );
-        if direct
-            .output
-            .as_deref()
-            .is_some_and(|replacement| replacement.trim_end() != self.buffer.trim_end())
-        {
-            return true;
-        }
         lay::ime_correction::decide_active_composition_autocorrect(
             lay::ime_correction::ActiveCompositionAutocorrectRequest {
                 text: &original,

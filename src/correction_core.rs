@@ -5,7 +5,7 @@
 
 use crate::candidate_explanation::{explain_candidate, CandidateExplanation};
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
-use crate::correction_source_contract::{self, CorrectionSourceRole};
+use crate::correction_source_contract::{self, CandidateOrigin, CorrectionSourceRole};
 use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
 use crate::nanda_wave::{run_wave_trace_with_options, WaveOptions, WordCandidate};
 use crate::russian_typo_candidates::{
@@ -94,6 +94,9 @@ impl TypingErrorClass {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CandidateGateAction {
+    /// Producer supplied evidence and no local constraint blocked it. Only the
+    /// TransitionDecisionCore may turn this into a physical Apply.
+    Eligible,
     Apply,
     SuggestOnly,
     KeepOriginal,
@@ -118,9 +121,73 @@ pub struct TypingErrorEvent {
 pub struct UnifiedCorrectionCandidate {
     pub replacement: String,
     pub source: CorrectionDecisionSource,
+    pub(crate) origin: CandidateOrigin,
     pub source_id: String,
     pub error_class: TypingErrorClass,
     pub gate: CandidateGateDecision,
+    pub(crate) evidence: Vec<CandidateEvidence>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct CandidateEvidence {
+    pub(crate) source: CorrectionDecisionSource,
+    pub(crate) origin: CandidateOrigin,
+    pub(crate) source_id: String,
+    pub(crate) error_class: TypingErrorClass,
+    pub(crate) gate: CandidateGateDecision,
+}
+
+impl UnifiedCorrectionCandidate {
+    pub fn new(
+        replacement: impl Into<String>,
+        source: CorrectionDecisionSource,
+        source_id: impl Into<String>,
+        error_class: TypingErrorClass,
+        gate: CandidateGateDecision,
+    ) -> Self {
+        let source_id = source_id.into();
+        let origin = correction_source_contract::candidate_origin(&source_id);
+        Self {
+            replacement: replacement.into(),
+            source,
+            origin,
+            source_id: source_id.clone(),
+            error_class,
+            gate: gate.clone(),
+            evidence: vec![CandidateEvidence {
+                source,
+                origin,
+                source_id,
+                error_class,
+                gate,
+            }],
+        }
+    }
+
+    pub(crate) fn merge_evidence(&mut self, candidate: Self) {
+        for evidence in candidate.evidence {
+            let already_present = self.evidence.iter().any(|existing| {
+                existing.source == evidence.source
+                    && existing.origin == evidence.origin
+                    && existing.source_id == evidence.source_id
+                    && existing.error_class == evidence.error_class
+                    && existing.gate == evidence.gate
+            });
+            if !already_present {
+                self.evidence.push(evidence);
+            }
+        }
+    }
+
+    pub(crate) fn has_origin(&self, origin: CandidateOrigin) -> bool {
+        self.evidence
+            .iter()
+            .any(|evidence| evidence.origin == origin)
+    }
+
+    pub(crate) fn evidence_count(&self) -> usize {
+        self.evidence.len()
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -274,17 +341,20 @@ impl CorrectionScoreboard {
 
         for candidate in candidates {
             match candidate.gate.action {
+                CandidateGateAction::Eligible => scoreboard.suggest_only_candidates += 1,
                 CandidateGateAction::Apply => scoreboard.apply_candidates += 1,
                 CandidateGateAction::SuggestOnly => scoreboard.suggest_only_candidates += 1,
                 CandidateGateAction::KeepOriginal => scoreboard.keep_original_candidates += 1,
                 CandidateGateAction::Veto => scoreboard.veto_candidates += 1,
             }
-            match candidate.source {
-                CorrectionDecisionSource::Deterministic => {
-                    scoreboard.deterministic_candidates += 1;
-                }
-                CorrectionDecisionSource::Nanda => {
-                    scoreboard.nanda_candidates += 1;
+            for evidence in &candidate.evidence {
+                match evidence.source {
+                    CorrectionDecisionSource::Deterministic => {
+                        scoreboard.deterministic_candidates += 1;
+                    }
+                    CorrectionDecisionSource::Nanda => {
+                        scoreboard.nanda_candidates += 1;
+                    }
                 }
             }
         }
@@ -398,7 +468,7 @@ impl CorrectionCandidateScoreTrace {
                     &event.original,
                     &candidate.replacement,
                     candidate.error_class,
-                    &candidate.source_id,
+                    candidate.origin,
                 );
                 let decision_signals =
                     candidate_decision_signals(event, candidate, candidates.len());
@@ -545,23 +615,23 @@ fn deterministic_text_correction(
     }
     if gate.action != CandidateGateAction::Apply {
         return deterministic_composite_text_correction(req, &pipeline).or(Some(
-            UnifiedCorrectionCandidate {
+            UnifiedCorrectionCandidate::new(
                 replacement,
-                source: CorrectionDecisionSource::Deterministic,
-                source_id: rule_id.to_string(),
+                CorrectionDecisionSource::Deterministic,
+                rule_id,
                 error_class,
                 gate,
-            },
+            ),
         ));
     }
 
-    Some(UnifiedCorrectionCandidate {
+    Some(UnifiedCorrectionCandidate::new(
         replacement,
-        source: CorrectionDecisionSource::Deterministic,
-        source_id: rule_id.to_string(),
+        CorrectionDecisionSource::Deterministic,
+        rule_id,
         error_class,
         gate,
-    })
+    ))
 }
 
 fn deterministic_composite_text_correction(
@@ -606,13 +676,13 @@ fn short_cyrillic_layout_shadow_candidate(
         return None;
     }
 
-    Some(UnifiedCorrectionCandidate {
+    Some(UnifiedCorrectionCandidate::new(
         replacement,
-        source: CorrectionDecisionSource::Deterministic,
-        source_id: ids::LAYOUT_RU_TO_EN.to_string(),
-        error_class: TypingErrorClass::WrongLayout,
+        CorrectionDecisionSource::Deterministic,
+        ids::LAYOUT_RU_TO_EN,
+        TypingErrorClass::WrongLayout,
         gate,
-    })
+    ))
 }
 
 fn repeated_letter_fallback_candidate(
@@ -637,13 +707,13 @@ fn repeated_letter_fallback_candidate(
         TypingErrorClass::RepeatedLetter,
         source_id,
     );
-    Some(UnifiedCorrectionCandidate {
+    Some(UnifiedCorrectionCandidate::new(
         replacement,
-        source: CorrectionDecisionSource::Deterministic,
-        source_id: source_id.to_string(),
-        error_class: TypingErrorClass::RepeatedLetter,
+        CorrectionDecisionSource::Deterministic,
+        source_id,
+        TypingErrorClass::RepeatedLetter,
         gate,
-    })
+    ))
 }
 
 fn unique_known_repeated_deletion_word(word: &str) -> Option<String> {
@@ -705,13 +775,13 @@ fn layout_then_typo_candidate(
         TypingErrorClass::CompositeTypo,
         &source_id,
     );
-    Some(UnifiedCorrectionCandidate {
-        replacement: final_replacement,
-        source: CorrectionDecisionSource::Deterministic,
+    Some(UnifiedCorrectionCandidate::new(
+        final_replacement,
+        CorrectionDecisionSource::Deterministic,
         source_id,
-        error_class: TypingErrorClass::CompositeTypo,
+        TypingErrorClass::CompositeTypo,
         gate,
-    })
+    ))
 }
 
 fn is_protected_known_english_layout_word(word: &str) -> bool {
@@ -749,13 +819,13 @@ fn composite_russian_typo_candidate(
                 TypingErrorClass::AdjacentTransposition,
                 source_id,
             );
-            return Some(UnifiedCorrectionCandidate {
+            return Some(UnifiedCorrectionCandidate::new(
                 replacement,
-                source: CorrectionDecisionSource::Deterministic,
-                source_id: source_id.to_string(),
-                error_class: TypingErrorClass::AdjacentTransposition,
+                CorrectionDecisionSource::Deterministic,
+                source_id,
+                TypingErrorClass::AdjacentTransposition,
                 gate,
-            });
+            ));
         }
     }
 
@@ -775,13 +845,13 @@ fn composite_russian_typo_candidate(
                 TypingErrorClass::CompositeTypo,
                 source_id,
             );
-            return Some(UnifiedCorrectionCandidate {
+            return Some(UnifiedCorrectionCandidate::new(
                 replacement,
-                source: CorrectionDecisionSource::Deterministic,
-                source_id: source_id.to_string(),
-                error_class: TypingErrorClass::CompositeTypo,
+                CorrectionDecisionSource::Deterministic,
+                source_id,
+                TypingErrorClass::CompositeTypo,
                 gate,
-            });
+            ));
         }
     }
 
@@ -867,13 +937,13 @@ fn composite_russian_typo_candidate(
         TypingErrorClass::CompositeTypo,
         source_id,
     );
-    let composite = UnifiedCorrectionCandidate {
+    let composite = UnifiedCorrectionCandidate::new(
         replacement,
-        source: CorrectionDecisionSource::Deterministic,
-        source_id: source_id.to_string(),
-        error_class: TypingErrorClass::CompositeTypo,
+        CorrectionDecisionSource::Deterministic,
+        source_id,
+        TypingErrorClass::CompositeTypo,
         gate,
-    };
+    );
     if let Some(single_step) = single_step {
         if !should_prefer_composite_after_repeated_repair(
             req.text,
@@ -909,13 +979,13 @@ fn current_word_rule_candidate(
         .unwrap_or("current_word_rule");
     let error_class = rule_error_class(rule_id);
     let gate = gate_candidate_with_source(req.text, &replacement, error_class, rule_id);
-    Some(UnifiedCorrectionCandidate {
+    Some(UnifiedCorrectionCandidate::new(
         replacement,
-        source: CorrectionDecisionSource::Deterministic,
-        source_id: rule_id.to_string(),
+        CorrectionDecisionSource::Deterministic,
+        rule_id,
         error_class,
         gate,
-    })
+    ))
 }
 
 fn repeated_prefix_composite_word(lower: &str) -> Option<String> {
@@ -973,13 +1043,13 @@ fn nanda_word_candidate(
     }
     let error_class = nanda_source_error_class(candidate.source);
     let gate = gate_candidate_with_source(original, &replacement, error_class, candidate.source);
-    Some(UnifiedCorrectionCandidate {
+    Some(UnifiedCorrectionCandidate::new(
         replacement,
-        source: CorrectionDecisionSource::Nanda,
-        source_id: candidate.source.to_string(),
+        CorrectionDecisionSource::Nanda,
+        candidate.source,
         error_class,
         gate,
-    })
+    ))
 }
 
 fn preserve_candidate_trailing_separator(original: &str, candidate: &str) -> String {
@@ -1335,6 +1405,7 @@ fn gate_candidate_with_source(
         original,
         replacement,
         error_class,
+        correction_source_contract::candidate_origin(source_id),
         source_id,
         provisional,
     )
@@ -1424,9 +1495,13 @@ fn legacy_gate_candidate_with_source(
             reason: "known_current_word_surface_drift",
         };
     }
-    if let Some(reason) =
-        action_operator::verify_action_operator(original, replacement, error_class, source_id)
-            .apply_blocker()
+    if let Some(reason) = action_operator::verify_action_operator(
+        original,
+        replacement,
+        error_class,
+        correction_source_contract::candidate_origin(source_id),
+    )
+    .apply_blocker()
     {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
@@ -1480,7 +1555,7 @@ fn legacy_gate_candidate_with_source(
         original,
         replacement,
         error_class.as_str(),
-        source_id,
+        correction_source_contract::candidate_origin(source_id),
     ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
@@ -1516,7 +1591,7 @@ fn legacy_gate_candidate_with_source(
             reason: "unknown_error_class",
         },
         _ => CandidateGateDecision {
-            action: CandidateGateAction::Apply,
+            action: CandidateGateAction::Eligible,
             reason: "class_allows_apply",
         },
     }
@@ -1563,7 +1638,7 @@ pub(crate) fn bayes_score_for_candidate(
         original,
         &candidate.replacement,
         candidate.error_class.as_str(),
-        &candidate.source_id,
+        candidate.origin,
     )
 }
 
@@ -1682,7 +1757,7 @@ fn l3_phrase_memory_gate(
     let report = evaluate_default_candidate(original, replacement)?;
     match report.decision {
         L3PhraseGateDecision::Support => Some(CandidateGateDecision {
-            action: CandidateGateAction::Apply,
+            action: CandidateGateAction::Eligible,
             reason: "l3_phrase_memory_support",
         }),
         L3PhraseGateDecision::Suppress => Some(CandidateGateDecision {
@@ -3139,36 +3214,36 @@ mod tests {
     #[test]
     fn l2_candidate_lattice_keeps_sources_and_selects_only_apply_candidate() {
         let mut lattice = L2CandidateLattice::new(TypingErrorEvent::from_text("автозаена "));
-        lattice.push_source(Some(UnifiedCorrectionCandidate {
-            replacement: "автозамена ".to_string(),
-            source: CorrectionDecisionSource::Nanda,
-            source_id: "L2SurfaceMotifCell32".to_string(),
-            error_class: TypingErrorClass::MissingLetter,
-            gate: CandidateGateDecision {
+        lattice.push_source(Some(UnifiedCorrectionCandidate::new(
+            "автозамена ",
+            CorrectionDecisionSource::Nanda,
+            "L2SurfaceMotifCell32",
+            TypingErrorClass::MissingLetter,
+            CandidateGateDecision {
                 action: CandidateGateAction::Apply,
                 reason: "class_allows_apply",
             },
-        }));
-        lattice.push_source(Some(UnifiedCorrectionCandidate {
-            replacement: "автозамена ".to_string(),
-            source: CorrectionDecisionSource::Deterministic,
-            source_id: ids::MISSING_LETTER.to_string(),
-            error_class: TypingErrorClass::MissingLetter,
-            gate: CandidateGateDecision {
+        )));
+        lattice.push_source(Some(UnifiedCorrectionCandidate::new(
+            "автозамена ",
+            CorrectionDecisionSource::Deterministic,
+            ids::MISSING_LETTER,
+            TypingErrorClass::MissingLetter,
+            CandidateGateDecision {
                 action: CandidateGateAction::Apply,
                 reason: "class_allows_apply",
             },
-        }));
-        lattice.push_source(Some(UnifiedCorrectionCandidate {
-            replacement: "авто замена ".to_string(),
-            source: CorrectionDecisionSource::Nanda,
-            source_id: "BoundaryCell32".to_string(),
-            error_class: TypingErrorClass::GluedWords,
-            gate: CandidateGateDecision {
+        )));
+        lattice.push_source(Some(UnifiedCorrectionCandidate::new(
+            "авто замена ",
+            CorrectionDecisionSource::Nanda,
+            "BoundaryCell32",
+            TypingErrorClass::GluedWords,
+            CandidateGateDecision {
                 action: CandidateGateAction::SuggestOnly,
                 reason: "requires_boundary_proof",
             },
-        }));
+        )));
 
         let resolution = lattice.into_resolution();
 
@@ -3180,32 +3255,24 @@ mod tests {
                 .filter(|candidate| candidate.replacement == "автозамена ")
                 .count(),
             1,
-            "duplicate same-replacement candidates must collapse to the owner"
+            "duplicate same-replacement candidates must collapse into one evidence-backed node"
         );
         assert_eq!(resolution.scoreboard.total_candidates, 2);
         assert_eq!(resolution.scoreboard.deterministic_candidates, 1);
         assert_eq!(resolution.scoreboard.nanda_candidates, 1);
         assert_eq!(resolution.scoreboard.apply_candidates, 1);
         assert_eq!(resolution.scoreboard.suggest_only_candidates, 1);
-        assert_eq!(
-            resolution.selected.as_ref().map(|candidate| {
-                (
-                    candidate.replacement.as_str(),
-                    candidate.source,
-                    candidate.gate.action,
-                )
-            }),
-            Some((
-                "автозамена ",
-                CorrectionDecisionSource::Deterministic,
-                CandidateGateAction::Apply,
-            ))
-        );
+        let selected = resolution.selected.as_ref().expect("selected candidate");
+        assert_eq!(selected.replacement, "автозамена ");
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+        assert_eq!(selected.evidence_count(), 2);
+        assert!(selected.has_origin(CandidateOrigin::L2Surface));
+        assert!(selected.has_origin(CandidateOrigin::DeterministicTypo));
         assert_eq!(
             resolution.decision,
             Some(CorrectionDecision {
                 replacement: "автозамена ".to_string(),
-                source: CorrectionDecisionSource::Deterministic,
+                source: CorrectionDecisionSource::Nanda,
             })
         );
     }

@@ -1,7 +1,8 @@
 use super::verifier;
 use crate::correction_core::TypingErrorClass;
+use crate::correction_source_contract::CandidateOrigin;
 use crate::language_action::{
-    operator_for_candidate, proof_for_candidate, LanguageActionOperator, LanguageActionProof,
+    operator_for_origin, proof_for_origin, LanguageActionOperator, LanguageActionProof,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -30,11 +31,11 @@ pub(crate) fn verify_action_operator(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
-    source_id: &str,
+    origin: CandidateOrigin,
 ) -> CorrectionActionOperatorReport {
-    let operator = operator_for_candidate(error_class, source_id);
-    let proof = proof_for_candidate(error_class, source_id);
-    let transition = verifier::prove_edit_transition(original, replacement, error_class, source_id);
+    let operator = operator_for_origin(error_class, origin);
+    let proof = proof_for_origin(error_class, origin);
+    let transition = verifier::prove_edit_transition(original, replacement, error_class, origin);
 
     CorrectionActionOperatorReport {
         operator,
@@ -59,7 +60,7 @@ mod tests {
             "HF<JNF NTCN CFV ",
             "РАБОТА ТЕСТ САМ ",
             TypingErrorClass::WrongLayout,
-            crate::typing_rule_graph::ids::LAYOUT_EN_TO_RU,
+            crate::correction_source_contract::CandidateOrigin::Layout,
         );
 
         assert_eq!(report.operator, LanguageActionOperator::FlipLayout);
@@ -78,7 +79,7 @@ mod tests {
             "содержкой ",
             "что получилось вроде хороший ввод и даже фикс был шикарный но с содержать ",
             TypingErrorClass::CompositeTypo,
-            "L2SurfaceMotifCell32",
+            crate::correction_source_contract::CandidateOrigin::L2Surface,
         );
 
         assert_eq!(report.operator, LanguageActionOperator::FixTypo);

@@ -1,17 +1,15 @@
 use super::action::EditAction;
-use super::diff_plan::tail_chars;
-use super::gate::authorize_replacement_with_transition;
-use super::mutation::TransitionAudit;
 use super::types::TextReplacement;
 use super::visible_tail::{VisibleTailSnapshot, VisibleTailSource};
+use crate::typing_transition::decision::TransitionDecisionCore;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct VisibleFieldState {
-    visible_tail: String,
-    focus_id: Option<String>,
-    external_state_present: bool,
-    external_tail_before_cursor: Option<String>,
-    external_selection_active: bool,
+    pub(crate) visible_tail: String,
+    pub(crate) focus_id: Option<String>,
+    pub(crate) external_state_present: bool,
+    pub(crate) external_tail_before_cursor: Option<String>,
+    pub(crate) external_selection_active: bool,
 }
 
 impl VisibleFieldState {
@@ -45,7 +43,7 @@ pub enum TextTransitionIntent {
 }
 
 impl TextTransitionIntent {
-    fn operator(self) -> &'static str {
+    pub(crate) fn operator(self) -> &'static str {
         match self {
             Self::ImeAutocorrect => "ime_committed_tail_autocorrect",
             Self::ImeManualToggle => "ime_committed_tail_manual_toggle",
@@ -53,18 +51,18 @@ impl TextTransitionIntent {
         }
     }
 
-    fn proof(self) -> &'static str {
+    pub(crate) fn proof(self) -> &'static str {
         "visible_field_state_and_edit_plan_checked"
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LatentTextTransitionCandidate {
-    source: VisibleTailSource,
-    delete_chars: u32,
-    insert_text: String,
-    intent: TextTransitionIntent,
-    expected_tail: Option<VisibleTailSnapshot>,
+    pub(crate) source: VisibleTailSource,
+    pub(crate) delete_chars: u32,
+    pub(crate) insert_text: String,
+    pub(crate) intent: TextTransitionIntent,
+    pub(crate) expected_tail: Option<VisibleTailSnapshot>,
 }
 
 impl LatentTextTransitionCandidate {
@@ -137,92 +135,7 @@ pub fn decide_text_transition(
     state: &VisibleFieldState,
     candidate: LatentTextTransitionCandidate,
 ) -> TextTransitionDecision {
-    if candidate.delete_chars == 0 && candidate.insert_text.is_empty() {
-        return TextTransitionDecision::Reject {
-            rejection: TextTransitionRejection::Noop,
-            action: None,
-        };
-    }
-
-    let original_text = tail_chars(&state.visible_tail, candidate.delete_chars as usize);
-    if let Some(expected) = candidate.expected_tail.as_ref() {
-        let focus_id = state.focus_id.as_deref();
-        if !expected.matches_source_and_focus(candidate.source, focus_id)
-            || !expected
-                .matches_current_suffix(&state.visible_tail, candidate.delete_chars as usize)
-        {
-            return TextTransitionDecision::Reject {
-                rejection: TextTransitionRejection::StaleVisibleTail {
-                    expected: expected.expected_suffix.clone(),
-                    actual: original_text,
-                },
-                action: None,
-            };
-        }
-    }
-
-    if state.external_selection_active {
-        return TextTransitionDecision::Reject {
-            rejection: TextTransitionRejection::StaleSurroundingText {
-                expected: original_text,
-                actual: state
-                    .external_tail_before_cursor
-                    .clone()
-                    .unwrap_or_default(),
-            },
-            action: None,
-        };
-    }
-
-    if state.external_state_present {
-        let actual = state
-            .external_tail_before_cursor
-            .clone()
-            .unwrap_or_default();
-        if actual != original_text {
-            return TextTransitionDecision::Reject {
-                rejection: TextTransitionRejection::StaleSurroundingText {
-                    expected: original_text,
-                    actual,
-                },
-                action: None,
-            };
-        }
-    }
-
-    let plan = TextReplacement {
-        move_left: 0,
-        backspaces: candidate.delete_chars,
-        insert: candidate.insert_text.clone(),
-        move_right: 0,
-    };
-    let transition = TransitionAudit::proven(
-        candidate.intent.operator(),
-        candidate.intent.proof(),
-        true,
-        false,
-        1,
-    );
-    let action = authorize_replacement_with_transition(
-        "ibus-committed-tail",
-        1000,
-        &original_text,
-        &candidate.insert_text,
-        plan.clone(),
-        Some(candidate.source.source_id()),
-        None,
-        transition,
-    );
-    if !action.allow_apply() {
-        return TextTransitionDecision::Reject {
-            rejection: TextTransitionRejection::UnsafeEdit {
-                reason: action.safety_reason(),
-            },
-            action: Some(action),
-        };
-    }
-
-    TextTransitionDecision::Apply { plan, action }
+    TransitionDecisionCore::decide_visible_text_transition(state, candidate)
 }
 
 #[cfg(test)]

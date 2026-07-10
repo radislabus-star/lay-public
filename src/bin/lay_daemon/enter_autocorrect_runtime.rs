@@ -160,10 +160,9 @@ pub(super) fn handle_enter_autocorrect(
 
     if should_try_ime_text_backend() {
         let original_layout = read_current_layout_is_ru().ok();
-        if ime_authorized
-            .as_ref()
-            .is_some_and(|authorized| try_ime_replace_tail(authorized, "enter-autocorrect").unwrap_or(false))
-        {
+        if ime_authorized.as_ref().is_some_and(|authorized| {
+            try_ime_replace_tail(authorized, "enter-autocorrect").unwrap_or(false)
+        }) {
             let target_layout =
                 layout_switch_policy::target_layout_for_replacement(&replacement, true);
             let force_target_layout =

@@ -5,7 +5,7 @@
 //! core can then rank peaks instead of trusting a rule id as authority.
 
 use crate::correction_core::TypingErrorClass;
-use crate::correction_source_contract::{self, CorrectionSourceRole};
+use crate::correction_source_contract::{CandidateOrigin, CorrectionSourceRole};
 use crate::text_metrics::{damerau_levenshtein, has_cyrillic, has_latin};
 use crate::word_reader::{last_text_word, split_word_punctuation};
 
@@ -25,7 +25,7 @@ pub(crate) fn score_correction_peak(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
-    source_id: &str,
+    origin: CandidateOrigin,
     candidate_count: usize,
 ) -> L2WavePeakScore {
     let original_word = normalized_last_word(original);
@@ -42,7 +42,7 @@ pub(crate) fn score_correction_peak(
     ) {
         CorrectionSourceRole::Layout
     } else {
-        correction_source_contract::source_role(source_id)
+        origin.source_role()
     };
     let usage = super::cached_usage_prior_snapshot();
     let context = context_words_before_last(original);
@@ -412,6 +412,7 @@ fn score_to_milli(value: f32) -> i16 {
 mod tests {
     use super::score_correction_peak;
     use crate::correction_core::TypingErrorClass;
+    use crate::correction_source_contract::CandidateOrigin;
 
     #[test]
     fn layout_projection_forms_strong_wave_peak() {
@@ -419,7 +420,7 @@ mod tests {
             "file ljgecnbv ",
             "file допустим ",
             TypingErrorClass::WrongLayout,
-            "layout_en_to_ru",
+            CandidateOrigin::Layout,
             1,
         );
 
@@ -433,7 +434,7 @@ mod tests {
             "мы можем ",
             "мы модем ",
             TypingErrorClass::CompositeTypo,
-            "L2SurfaceMotifCell32",
+            CandidateOrigin::L2Surface,
             1,
         );
 

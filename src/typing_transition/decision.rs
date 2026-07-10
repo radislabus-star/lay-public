@@ -4,16 +4,113 @@ use crate::correction_core::{
     CandidateGateDecision, CorrectionDecisionSource, TypingErrorClass, TypingErrorEvent,
     UnifiedCorrectionCandidate,
 };
-use crate::correction_source_contract::{self, CorrectionSourceRole};
+use crate::correction_source_contract::CorrectionSourceRole;
 use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
 use crate::nanda_wave::l4_goal_state::{derive_l4_scene_state, L4AllowedAction, L4SceneStateInput};
 use crate::nanda_wave::l4_signed_memory::{l4_signed_memory_signal, L4SignedMemoryInput};
+use crate::text_edit::{
+    authorize_replacement_with_transition, tail_chars, LatentTextTransitionCandidate,
+    TextReplacement, TextTransitionDecision, TextTransitionRejection, TransitionAudit,
+    VisibleFieldState,
+};
 use crate::text_metrics::damerau_levenshtein;
 use crate::word_reader::split_word_punctuation;
 
 pub(crate) struct TransitionDecisionCore;
 
 impl TransitionDecisionCore {
+    pub(crate) fn decide_visible_text_transition(
+        state: &VisibleFieldState,
+        candidate: LatentTextTransitionCandidate,
+    ) -> TextTransitionDecision {
+        if candidate.delete_chars == 0 && candidate.insert_text.is_empty() {
+            return TextTransitionDecision::Reject {
+                rejection: TextTransitionRejection::Noop,
+                action: None,
+            };
+        }
+
+        let original_text = tail_chars(&state.visible_tail, candidate.delete_chars as usize);
+        if let Some(expected) = candidate.expected_tail.as_ref() {
+            let focus_id = state.focus_id.as_deref();
+            if !expected.matches_source_and_focus(candidate.source, focus_id)
+                || !expected
+                    .matches_current_suffix(&state.visible_tail, candidate.delete_chars as usize)
+            {
+                return TextTransitionDecision::Reject {
+                    rejection: TextTransitionRejection::StaleVisibleTail {
+                        expected: expected.expected_suffix.clone(),
+                        actual: original_text,
+                    },
+                    action: None,
+                };
+            }
+        }
+
+        if state.external_selection_active {
+            return TextTransitionDecision::Reject {
+                rejection: TextTransitionRejection::StaleSurroundingText {
+                    expected: original_text,
+                    actual: state
+                        .external_tail_before_cursor
+                        .clone()
+                        .unwrap_or_default(),
+                },
+                action: None,
+            };
+        }
+
+        if state.external_state_present {
+            let actual = state
+                .external_tail_before_cursor
+                .clone()
+                .unwrap_or_default();
+            if actual != original_text {
+                return TextTransitionDecision::Reject {
+                    rejection: TextTransitionRejection::StaleSurroundingText {
+                        expected: original_text,
+                        actual,
+                    },
+                    action: None,
+                };
+            }
+        }
+
+        let plan = TextReplacement {
+            move_left: 0,
+            backspaces: candidate.delete_chars,
+            insert: candidate.insert_text.clone(),
+            move_right: 0,
+        };
+        let transition = TransitionAudit::proven(
+            candidate.intent.operator(),
+            candidate.intent.proof(),
+            true,
+            false,
+            1,
+        );
+        let action = authorize_replacement_with_transition(
+            "ibus-committed-tail",
+            1000,
+            &original_text,
+            &candidate.insert_text,
+            plan.clone(),
+            Some(candidate.source.source_id()),
+            None,
+            transition,
+        );
+        if !action.allow_apply() {
+            return TextTransitionDecision::Reject {
+                rejection: TextTransitionRejection::UnsafeEdit {
+                    reason: action.safety_reason(),
+                },
+                action: Some(action),
+            };
+        }
+
+        TextTransitionDecision::Apply { plan, action }
+    }
+
     pub(crate) fn select_apply_candidate(
         event: &TypingErrorEvent,
         candidates: &[UnifiedCorrectionCandidate],
@@ -36,44 +133,44 @@ impl TransitionDecisionCore {
         original: &str,
         replacement: &str,
         error_class: TypingErrorClass,
+        origin: crate::correction_source_contract::CandidateOrigin,
         source_id: &str,
         provisional: CandidateGateDecision,
     ) -> CandidateGateDecision {
-        if provisional.action != CandidateGateAction::Apply {
+        if !matches!(
+            provisional.action,
+            CandidateGateAction::Eligible | CandidateGateAction::Apply
+        ) {
             return provisional;
         }
-        let source_role = if matches!(
-            error_class,
-            TypingErrorClass::WrongLayout
-                | TypingErrorClass::PartialLayout
-                | TypingErrorClass::MixedScript
-        ) {
-            CorrectionSourceRole::Layout
-        } else {
-            correction_source_contract::source_role(source_id)
-        };
         let event = TypingErrorEvent {
             original: original.to_string(),
             core: original.trim().to_string(),
             current_word: last_replacement_word(original).unwrap_or_default(),
             input_class: error_class,
         };
-        let candidate = UnifiedCorrectionCandidate {
-            replacement: replacement.to_string(),
-            source: crate::correction_core::CorrectionDecisionSource::Deterministic,
-            source_id: source_id.to_string(),
+        let candidate = UnifiedCorrectionCandidate::new(
+            replacement,
+            crate::correction_core::CorrectionDecisionSource::Deterministic,
+            source_id,
             error_class,
-            gate: provisional.clone(),
-        };
-        let admission = admit_hidden_transition(&event, &candidate, 1, source_role, false);
+            provisional.clone(),
+        );
+        let admission = admit_hidden_transition(&event, &candidate, 1, origin.source_role(), false);
         if !admission.allow_apply {
             return CandidateGateDecision {
                 action: CandidateGateAction::SuggestOnly,
                 reason: admission.reason,
             };
         }
-        let transition =
-            TypingTransition::from_candidate(original, replacement, error_class, source_id, 1);
+        let transition = TypingTransition::from_candidate(
+            original,
+            replacement,
+            error_class,
+            origin,
+            source_id,
+            1,
+        );
         if transition.evidence.left_context_changed && !transition.evidence.verifier_passed {
             return CandidateGateDecision {
                 action: CandidateGateAction::SuggestOnly,
@@ -86,7 +183,10 @@ impl TransitionDecisionCore {
                 reason: "l4_negative_transition_memory",
             };
         }
-        provisional
+        CandidateGateDecision {
+            action: CandidateGateAction::Apply,
+            reason: "transition_core_authorized",
+        }
     }
 }
 
@@ -103,21 +203,12 @@ fn candidate_has_apply_authority(
 ) -> bool {
     let bayes = bayes_score_for_candidate(&event.original, candidate);
     let signals = candidate_decision_signals(event, candidate, candidates.len());
-    let source_role = if matches!(
-        candidate.error_class,
-        TypingErrorClass::WrongLayout
-            | TypingErrorClass::PartialLayout
-            | TypingErrorClass::MixedScript
-    ) {
-        CorrectionSourceRole::Layout
-    } else {
-        correction_source_contract::source_role(&candidate.source_id)
-    };
+    let source_role = candidate.origin.source_role();
     let action = action::verify_action_operator(
         &event.original,
         &candidate.replacement,
         candidate.error_class,
-        &candidate.source_id,
+        candidate.origin,
     );
     if !action.verifier_passed
         && !matches!(
@@ -240,7 +331,7 @@ fn learned_candidate_shadowed_by_deterministic_owner(
         {
             return false;
         }
-        let other_role = correction_source_contract::source_role(&other.source_id);
+        let other_role = other.origin.source_role();
         if !matches!(
             other_role,
             CorrectionSourceRole::DeterministicTypo
@@ -253,6 +344,7 @@ fn learned_candidate_shadowed_by_deterministic_owner(
             &event.original,
             &other.replacement,
             other.error_class,
+            other.origin,
             &other.source_id,
             candidates.len(),
         );
@@ -289,6 +381,7 @@ pub(crate) fn admit_hidden_transition(
         &event.original,
         &candidate.replacement,
         candidate.error_class,
+        candidate.origin,
         &candidate.source_id,
         candidate_count,
     );
@@ -455,7 +548,7 @@ pub(crate) fn candidate_decision_signals(
         &event.original,
         &candidate.replacement,
         candidate.error_class,
-        &candidate.source_id,
+        candidate.origin,
     );
     let l3 = l3_phrase_signal(event, candidate);
     let l4_scene = l4_scene_signal(event, candidate_count);
@@ -463,7 +556,8 @@ pub(crate) fn candidate_decision_signals(
     let l2_wave_peak = l2_wave_peak_signal(event, candidate, candidate_count);
     let rank_score = bayes
         + ((explanation.explanation_score_milli as f32 - 500.0) / 10_000.0)
-        + transition_rank_bonus(&action, &candidate.source_id)
+        + transition_rank_bonus(&action, candidate)
+        + ((candidate.evidence_count().saturating_sub(1).min(3) as f32) * 0.025)
         + l2_wave_peak.rank_bonus
         + l3.rank_bonus
         + l4_scene.rank_bonus
@@ -528,7 +622,7 @@ fn l2_wave_peak_signal(
         &event.original,
         &candidate.replacement,
         candidate.error_class,
-        &candidate.source_id,
+        candidate.origin,
         candidate_count,
     );
     L2WavePeakSignal {
@@ -626,7 +720,7 @@ fn l4_signed_signal(
     let usage = crate::nanda_wave::cached_usage_prior_snapshot();
     let signed = l4_signed_memory_signal(L4SignedMemoryInput {
         context: &context,
-        source: &candidate.source_id,
+        source: candidate.origin.memory_key(),
         operation: "replacement",
         word: &word,
         usage: &usage,
@@ -638,7 +732,10 @@ fn l4_signed_signal(
     }
 }
 
-fn transition_rank_bonus(action: &action::CorrectionActionOperatorReport, source_id: &str) -> f32 {
+fn transition_rank_bonus(
+    action: &action::CorrectionActionOperatorReport,
+    candidate: &UnifiedCorrectionCandidate,
+) -> f32 {
     if !action.verifier_passed {
         return -0.20;
     }
@@ -648,10 +745,16 @@ fn transition_rank_bonus(action: &action::CorrectionActionOperatorReport, source
         verifier::EditTransitionOperator::LayoutProjection => 0.28,
         verifier::EditTransitionOperator::PhraseTokenRepair => 0.16,
         verifier::EditTransitionOperator::ReplaceCurrentWord => {
-            match correction_source_contract::source_role(source_id) {
-                CorrectionSourceRole::DeterministicTypo => 0.08,
-                CorrectionSourceRole::L2Surface => -0.08,
-                _ => 0.0,
+            if candidate
+                .has_origin(crate::correction_source_contract::CandidateOrigin::DeterministicTypo)
+            {
+                0.08
+            } else if candidate
+                .has_origin(crate::correction_source_contract::CandidateOrigin::L2Surface)
+            {
+                -0.08
+            } else {
+                0.0
             }
         }
         verifier::EditTransitionOperator::Completion
@@ -673,7 +776,7 @@ mod tests {
         CandidateGateAction, CandidateGateDecision, CorrectionDecisionSource, TypingErrorClass,
         TypingErrorEvent, UnifiedCorrectionCandidate,
     };
-    use crate::correction_source_contract::CorrectionSourceRole;
+    use crate::correction_source_contract::{CandidateOrigin, CorrectionSourceRole};
 
     #[test]
     fn transition_core_blocks_unverified_left_context_apply() {
@@ -681,6 +784,7 @@ mod tests {
             "содержкой ",
             "что получилось вроде хороший ввод и даже фикс был шикарный но с содержать ",
             TypingErrorClass::CompositeTypo,
+            CandidateOrigin::L2Surface,
             "L2SurfaceMotifCell32",
             CandidateGateDecision {
                 action: CandidateGateAction::Apply,
@@ -698,6 +802,7 @@ mod tests {
             "провека ",
             "проверка ",
             TypingErrorClass::CompositeTypo,
+            CandidateOrigin::DeterministicTypo,
             "composite_ru_typo",
             CandidateGateDecision {
                 action: CandidateGateAction::Apply,
@@ -722,16 +827,16 @@ mod tests {
     }
 
     fn candidate(replacement: &str, source_id: &str) -> UnifiedCorrectionCandidate {
-        UnifiedCorrectionCandidate {
-            replacement: replacement.to_string(),
-            source: CorrectionDecisionSource::Deterministic,
-            source_id: source_id.to_string(),
-            error_class: TypingErrorClass::CompositeTypo,
-            gate: CandidateGateDecision {
+        UnifiedCorrectionCandidate::new(
+            replacement,
+            CorrectionDecisionSource::Deterministic,
+            source_id,
+            TypingErrorClass::CompositeTypo,
+            CandidateGateDecision {
                 action: CandidateGateAction::Apply,
                 reason: "class_allows_apply",
             },
-        }
+        )
     }
 
     #[test]

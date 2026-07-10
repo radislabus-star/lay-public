@@ -17,6 +17,68 @@ pub(crate) enum CorrectionSourceRole {
     Unknown,
 }
 
+/// Typed origin carried by a candidate after it leaves its legacy producer.
+/// `source_id` remains useful for logs and local diagnostics, but decision
+/// authority must use this stable semantic category.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum CandidateOrigin {
+    Layout,
+    LayoutThenTypo,
+    Boundary,
+    Completion,
+    L2Surface,
+    L3Context,
+    DeterministicTypo,
+    Technical,
+    Unknown,
+}
+
+impl CandidateOrigin {
+    pub(crate) const fn source_role(self) -> CorrectionSourceRole {
+        match self {
+            Self::Layout | Self::LayoutThenTypo => CorrectionSourceRole::Layout,
+            Self::Boundary => CorrectionSourceRole::Boundary,
+            Self::Completion => CorrectionSourceRole::Completion,
+            Self::L2Surface => CorrectionSourceRole::L2Surface,
+            Self::L3Context => CorrectionSourceRole::L3Context,
+            Self::DeterministicTypo => CorrectionSourceRole::DeterministicTypo,
+            Self::Technical => CorrectionSourceRole::Technical,
+            Self::Unknown => CorrectionSourceRole::Unknown,
+        }
+    }
+
+    pub(crate) const fn memory_key(self) -> &'static str {
+        match self {
+            Self::Layout => "layout",
+            Self::LayoutThenTypo => "layout_then_typo",
+            Self::Boundary => "boundary",
+            Self::Completion => "completion",
+            Self::L2Surface => "l2_surface",
+            Self::L3Context => "l3_context",
+            Self::DeterministicTypo => "deterministic_typo",
+            Self::Technical => "technical",
+            Self::Unknown => "unknown",
+        }
+    }
+}
+
+pub(crate) fn candidate_origin(source_id: &str) -> CandidateOrigin {
+    if is_layout_then_typo_source(source_id) {
+        CandidateOrigin::LayoutThenTypo
+    } else {
+        match source_role(source_id) {
+            CorrectionSourceRole::Layout => CandidateOrigin::Layout,
+            CorrectionSourceRole::Boundary => CandidateOrigin::Boundary,
+            CorrectionSourceRole::Completion => CandidateOrigin::Completion,
+            CorrectionSourceRole::L2Surface => CandidateOrigin::L2Surface,
+            CorrectionSourceRole::L3Context => CandidateOrigin::L3Context,
+            CorrectionSourceRole::DeterministicTypo => CandidateOrigin::DeterministicTypo,
+            CorrectionSourceRole::Technical => CandidateOrigin::Technical,
+            CorrectionSourceRole::Unknown => CandidateOrigin::Unknown,
+        }
+    }
+}
+
 pub(crate) fn source_role(source_id: &str) -> CorrectionSourceRole {
     if is_boundary_source(source_id) {
         CorrectionSourceRole::Boundary
@@ -78,7 +140,10 @@ pub(crate) fn is_l2_surface_source(source_id: &str) -> bool {
 }
 
 pub(crate) fn is_l3_context_source(source_id: &str) -> bool {
-    matches!(source_id, "PhraseCell32" | "SemanticWordCell32")
+    matches!(
+        source_id,
+        "PhraseCell32" | "PhraseMemoryCell32" | "SemanticWordCell32"
+    )
 }
 
 pub(crate) fn is_surface_or_context_source(source_id: &str) -> bool {

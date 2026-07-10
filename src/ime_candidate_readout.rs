@@ -13,6 +13,63 @@ pub struct RankedImeSuffix {
     pub order: usize,
 }
 
+/// Adapter-neutral candidate readout request. The IME supplies raw candidate
+/// signals; this shared owner merges and ranks them using the same usage/Bayes
+/// memory used by the correction path.
+pub struct ImeCandidateReadoutRequest<'a> {
+    pub tail: &'a str,
+    pub semantic_suffixes: &'a [String],
+    pub ru_l2_suffixes: &'a [String],
+    pub ascii_suffixes: &'a [String],
+}
+
+pub fn rank_ime_candidate_suffixes(request: ImeCandidateReadoutRequest<'_>) -> Vec<String> {
+    let partial_len = split_last_alphabetic_token(request.tail.trim_end())
+        .map(|(_, token)| token.chars().count())
+        .unwrap_or(0);
+    let usage = crate::nanda_wave::cached_usage_prior_snapshot();
+    let mut candidates = Vec::with_capacity(
+        request.semantic_suffixes.len()
+            + request.ru_l2_suffixes.len()
+            + request.ascii_suffixes.len(),
+    );
+
+    for suffix in request.semantic_suffixes {
+        push_unique_ranked_suffix(
+            &mut candidates,
+            Some(suffix.clone()),
+            preedit_suffix_bayes_score(&usage, request.tail, suffix, 0.72),
+        );
+    }
+    for suffix in request.ru_l2_suffixes {
+        push_unique_ranked_suffix(
+            &mut candidates,
+            Some(suffix.clone()),
+            preedit_suffix_bayes_score(&usage, request.tail, suffix, 0.48),
+        );
+    }
+    for suffix in request.ascii_suffixes {
+        push_unique_ranked_suffix(
+            &mut candidates,
+            Some(suffix.clone()),
+            preedit_suffix_bayes_score(&usage, request.tail, suffix, 0.80),
+        );
+    }
+
+    candidates.sort_by(|left, right| {
+        right
+            .score
+            .total_cmp(&left.score)
+            .then_with(|| left.order.cmp(&right.order))
+            .then_with(|| compare_suffix_len_for_prefix(partial_len, &left.suffix, &right.suffix))
+            .then_with(|| left.suffix.cmp(&right.suffix))
+    });
+    candidates
+        .into_iter()
+        .map(|candidate| candidate.suffix)
+        .collect()
+}
+
 pub fn push_unique_suffix(candidates: &mut Vec<String>, suffix: Option<String>) {
     let Some(suffix) = suffix else {
         return;
@@ -191,5 +248,32 @@ fn next_word_suffix(suffix: &str) -> Option<String> {
         Some(format!(" {word}"))
     } else {
         Some(word.to_string())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{rank_ime_candidate_suffixes, ImeCandidateReadoutRequest};
+
+    #[test]
+    fn shared_readout_merges_sources_before_ranking() {
+        let semantic = vec!["вет".to_string()];
+        let ru_l2 = vec!["вет".to_string(), "чер".to_string()];
+        let ascii = Vec::new();
+        let ranked = rank_ime_candidate_suffixes(ImeCandidateReadoutRequest {
+            tail: "на улице д",
+            semantic_suffixes: &semantic,
+            ru_l2_suffixes: &ru_l2,
+            ascii_suffixes: &ascii,
+        });
+
+        assert_eq!(
+            ranked
+                .iter()
+                .filter(|suffix| suffix.as_str() == "вет")
+                .count(),
+            1
+        );
+        assert!(ranked.iter().any(|suffix| suffix == "чер"));
     }
 }

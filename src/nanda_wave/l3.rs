@@ -374,6 +374,7 @@ fn candidate_lacks_transition_authority(original: &str, candidate: &WordCandidat
         original,
         &candidate.text,
         error_class,
+        correction_source_contract::candidate_origin(candidate.source),
         candidate.source,
         provisional,
     );

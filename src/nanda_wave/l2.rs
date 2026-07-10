@@ -24,6 +24,16 @@ use super::options::WaveOptions;
 use super::pattern_memory::{apply_pattern_memory, PATTERN_MEMORY_CELL};
 use super::signal::{WavePacket, WordCandidate};
 
+#[path = "l2/hot_memory.rs"]
+mod hot_memory;
+#[path = "l2/phase.rs"]
+mod phase;
+pub use hot_memory::{
+    ime_word_candidate_memory_is_warm, l2_surface_memory_status, L2SurfaceMemoryStatus,
+};
+pub(crate) use hot_memory::{warm_up_ime_word_candidate_memory, warm_up_surface_motif_memory};
+use phase::apply_l2_phase_shadow;
+
 static SURFACE_MOTIF_MEMORY: OnceLock<L2CenterMemory> = OnceLock::new();
 static BROAD_PREFIX_INDEX: OnceLock<super::l2_broad_index::L2BroadPrefixIndex> = OnceLock::new();
 static L2_SHORT_POSITION_SEED_INDEX: OnceLock<HashMap<String, Vec<String>>> = OnceLock::new();
@@ -64,27 +74,6 @@ pub struct L2ImeWordCandidate {
     pub context_prior: f32,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct L2SurfaceMemoryStatus {
-    pub active_source_target: usize,
-    pub hot_center_words: usize,
-    pub hot_center_records: usize,
-    pub hot_center_motifs: usize,
-    pub hot_center_token_refs: usize,
-    pub hot_center_bytes: usize,
-    pub broad_source_words: usize,
-    pub broad_prefix_keys: usize,
-    pub broad_word_refs: usize,
-    pub decoder_source_words: usize,
-    pub decoder_states: usize,
-    pub decoder_arcs: usize,
-    pub decoder_hot_bytes: usize,
-    pub foundation_source_limit: usize,
-    pub foundation_live_scan_limit: usize,
-    pub generated_forms_loaded: bool,
-    pub generated_forms_words: usize,
-}
-
 struct TaughtCandidateInput<'a> {
     original: &'a str,
     context: &'a TailContext,
@@ -106,56 +95,6 @@ pub fn run_l2_with_options(
     options: &WaveOptions,
 ) -> Vec<WordCandidate> {
     run_l2_refined_with_feedback(original, l1, options, &L3Feedback::default())
-}
-
-pub(super) fn warm_up_surface_motif_memory() {
-    let _ = surface_motif_memory().center_count();
-}
-
-pub(super) fn warm_up_ime_word_candidate_memory() {
-    // Live IME must not pay cold OnceLock construction during the first word.
-    // The decoder is compact state memory; corpus strings are training material,
-    // not the hot authority path.
-    crate::lexicon::warm_up_for_ime();
-    super::l2_surface_decoder::warm_up();
-    let _ = broad_prefix_index().stats();
-    let _ = l2_short_position_seed_index().len();
-}
-
-pub fn ime_word_candidate_memory_is_warm() -> bool {
-    super::l2_surface_decoder::is_warm() && BROAD_PREFIX_INDEX.get().is_some()
-}
-
-pub fn l2_surface_memory_status() -> L2SurfaceMemoryStatus {
-    let hot = surface_motif_memory();
-    let broad = broad_prefix_index().stats();
-    let decoder = super::l2_surface_decoder::stats();
-    let generated_forms_loaded =
-        crate::russian_lexicon::russian_generated_form_dictionary_is_warm();
-    let generated_forms_words = if generated_forms_loaded {
-        crate::russian_lexicon::russian_generated_form_dictionary().len()
-    } else {
-        0
-    };
-    L2SurfaceMemoryStatus {
-        active_source_target: L2_ACTIVE_SOURCE_TARGET,
-        hot_center_words: hot.source_word_count(),
-        hot_center_records: hot.word_records().len(),
-        hot_center_motifs: hot.center_count(),
-        hot_center_token_refs: hot.token_refs().len(),
-        hot_center_bytes: hot.hot_bytes(),
-        broad_source_words: broad.source_words,
-        broad_prefix_keys: broad.prefix_keys,
-        broad_word_refs: broad.word_refs,
-        decoder_source_words: decoder.source_words,
-        decoder_states: decoder.states,
-        decoder_arcs: decoder.arcs,
-        decoder_hot_bytes: decoder.hot_bytes,
-        foundation_source_limit: L2_FOUNDATION_SOURCE_LIMIT,
-        foundation_live_scan_limit: L2_FOUNDATION_LIVE_SCAN_LIMIT,
-        generated_forms_loaded,
-        generated_forms_words,
-    }
 }
 
 pub fn ime_l2_surface_decoder_candidates(
@@ -760,65 +699,6 @@ fn apply_l2_weight(candidates: &mut [WordCandidate], options: &WaveOptions) {
             .support
             .push(format!("l2-weight:{:.2}", options.l2_weight()));
     }
-}
-
-fn apply_l2_phase_shadow(
-    original: &str,
-    candidates: &mut Vec<WordCandidate>,
-    options: &WaveOptions,
-) {
-    if !options.l2_phase_shadow() {
-        return;
-    }
-    let mut package_loaded_any = false;
-    for candidate in candidates.iter_mut() {
-        let operation = l2_phase_operation(candidate.source);
-        let (loaded, margin_micro, admitted) =
-            super::l2_candidate_phase_shadow(original, &candidate.text, operation);
-        package_loaded_any |= loaded;
-        candidate.support.push(format!(
-            "l2-phase:loaded={} margin={} admitted={}",
-            loaded, margin_micro, admitted
-        ));
-    }
-    if !options.l2_phase_apply() || !package_loaded_any {
-        return;
-    }
-    for candidate in candidates.iter_mut() {
-        if candidate_has_l2_phase_admission(candidate) {
-            candidate.energy = (candidate.energy + 0.025).min(1.0);
-        }
-    }
-    candidates.retain(|candidate| {
-        candidate_has_l2_phase_admission(candidate) || !l2_phase_apply_source(candidate.source)
-    });
-}
-
-fn candidate_has_l2_phase_admission(candidate: &WordCandidate) -> bool {
-    candidate
-        .support
-        .iter()
-        .any(|item| item.contains("l2-phase:loaded=true") && item.contains("admitted=true"))
-}
-
-fn l2_phase_operation(source: &str) -> &'static str {
-    match source {
-        "LayoutWordCell32" | "LearnedMemoryCell32" => "layout",
-        "BoundaryCell32" | "PhraseMemoryCell32" => "split",
-        L2_SURFACE_COMPLETION_CELL => "completion",
-        _ => "typo",
-    }
-}
-
-fn l2_phase_apply_source(source: &str) -> bool {
-    matches!(
-        source,
-        L2_SURFACE_MOTIF_CELL
-            | L2_SURFACE_COMPLETION_CELL
-            | "CommonRuFixCell32"
-            | "PhraseCell32"
-            | "GrammarCell32"
-    )
 }
 
 #[cfg(not(test))]

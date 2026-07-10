@@ -1,3 +1,4 @@
+use crate::correction_source_contract::CandidateOrigin;
 use crate::text_metrics::damerau_levenshtein;
 use crate::word_reader::{is_cyrillic_letters_only, split_edge_whitespace, split_word_punctuation};
 
@@ -14,7 +15,7 @@ pub(crate) fn bayes_score_candidate(
     original: &str,
     replacement: &str,
     error_class: &str,
-    source_id: &str,
+    origin: CandidateOrigin,
 ) -> BayesCandidateScore {
     let original_word = last_word(original).unwrap_or_default();
     let replacement_word = last_word(replacement).unwrap_or_default();
@@ -30,19 +31,18 @@ pub(crate) fn bayes_score_candidate(
         .count()
         .max(replacement_lower.chars().count())
         .max(1);
-    let likelihood = input_likelihood(error_class, source_id, distance, max_len);
+    let likelihood = input_likelihood(error_class, origin, distance, max_len);
     let usage_snapshot = crate::nanda_wave::cached_usage_prior_snapshot();
     let usage_prior = (crate::nanda_wave::usage_prior::word_usage_prior(&replacement_lower)
         + accepted_prior_from_count(usage_snapshot.accepted_word_count(&replacement_lower)))
     .clamp(0.0, 0.36);
     let context = context_words_before_last(original);
-    let context_prior = (local_context_prior(&context, &replacement_lower)
-        + source_prior(source_id))
-    .clamp(0.0, 0.34);
+    let context_prior =
+        (local_context_prior(&context, &replacement_lower) + source_prior(origin)).clamp(0.0, 0.34);
     let signed_memory = crate::nanda_wave::l4_signed_memory::l4_signed_memory_signal(
         crate::nanda_wave::l4_signed_memory::L4SignedMemoryInput {
             context: &context,
-            source: source_id,
+            source: origin.memory_key(),
             operation: "replacement",
             word: &replacement_lower,
             usage: &usage_snapshot,
@@ -54,7 +54,7 @@ pub(crate) fn bayes_score_candidate(
         &original_lower,
         &replacement_lower,
         error_class,
-        source_id,
+        origin,
         distance,
     ) + signed_memory.repulsion * 0.34
         + rejected_prior * 0.70;
@@ -75,7 +75,7 @@ pub(crate) fn bayes_suggest_only_reason(
     original: &str,
     replacement: &str,
     error_class: &str,
-    source_id: &str,
+    origin: CandidateOrigin,
 ) -> Option<&'static str> {
     if matches!(
         error_class,
@@ -83,7 +83,7 @@ pub(crate) fn bayes_suggest_only_reason(
     ) {
         return None;
     }
-    let score = bayes_score_candidate(original, replacement, error_class, source_id);
+    let score = bayes_score_candidate(original, replacement, error_class, origin);
     if score.risk >= 0.62 {
         return Some("bayes_high_candidate_risk");
     }
@@ -95,9 +95,16 @@ pub(crate) fn bayes_suggest_only_reason(
     (score.posterior < min_posterior).then_some("bayes_low_posterior")
 }
 
-fn input_likelihood(error_class: &str, source_id: &str, distance: usize, max_len: usize) -> f32 {
-    if crate::correction_source_contract::is_layout_source(source_id)
-        || error_class == "wrong_layout"
+fn input_likelihood(
+    error_class: &str,
+    origin: CandidateOrigin,
+    distance: usize,
+    max_len: usize,
+) -> f32 {
+    if matches!(
+        origin,
+        CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo
+    ) || error_class == "wrong_layout"
     {
         return 0.96;
     }
@@ -138,7 +145,7 @@ fn candidate_risk(
     original: &str,
     replacement: &str,
     error_class: &str,
-    source_id: &str,
+    origin: CandidateOrigin,
     distance: usize,
 ) -> f32 {
     let mut risk: f32 = 0.0;
@@ -148,11 +155,14 @@ fn candidate_risk(
     if is_known_autocorrect_token(original)
         && is_known_autocorrect_token(replacement)
         && original != replacement
-        && !crate::correction_source_contract::is_layout_source(source_id)
+        && !matches!(
+            origin,
+            CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo
+        )
     {
         risk += 0.34;
     }
-    if !trusted_typo_source(source_id)
+    if !trusted_typo_origin(origin)
         && !is_known_autocorrect_token(replacement)
         && is_cyrillic_letters_only(replacement)
         && error_class != "wrong_layout"
@@ -177,12 +187,15 @@ fn candidate_risk(
     risk.clamp(0.0, 1.0)
 }
 
-fn trusted_typo_source(source_id: &str) -> bool {
-    crate::correction_source_contract::is_deterministic_typo_source(source_id)
+fn trusted_typo_origin(origin: CandidateOrigin) -> bool {
+    matches!(
+        origin,
+        CandidateOrigin::DeterministicTypo | CandidateOrigin::LayoutThenTypo
+    )
 }
 
-fn source_prior(source_id: &str) -> f32 {
-    if trusted_typo_source(source_id) {
+fn source_prior(origin: CandidateOrigin) -> f32 {
+    if trusted_typo_origin(origin) {
         0.16
     } else {
         0.0
@@ -283,7 +296,7 @@ mod tests {
             "теорию бейса ",
             "теорию бейсяа ",
             "composite-typo",
-            "composite_ru_typo",
+            CandidateOrigin::DeterministicTypo,
         );
         assert_eq!(reason, Some("bayes_high_candidate_risk"));
     }
@@ -294,7 +307,7 @@ mod tests {
             "где эсперемнт ",
             "где эксперимент ",
             "composite-typo",
-            "composite_ru_typo",
+            CandidateOrigin::DeterministicTypo,
         );
         assert_eq!(reason, None);
     }

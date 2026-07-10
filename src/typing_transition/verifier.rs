@@ -1,5 +1,6 @@
 use crate::correction_core::TypingErrorClass;
-use crate::language_action::{proof_for_candidate, LanguageActionProof};
+use crate::correction_source_contract::CandidateOrigin;
+use crate::language_action::{proof_for_origin, LanguageActionProof};
 use crate::word_reader::{
     is_cyrillic_letters_only, split_edge_whitespace, split_last_trimmed_ws_token,
     split_word_punctuation,
@@ -57,9 +58,9 @@ pub(crate) fn prove_edit_transition(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
-    source_id: &str,
+    origin: CandidateOrigin,
 ) -> EditTransitionProof {
-    let language_proof = proof_for_candidate(error_class, source_id);
+    let language_proof = proof_for_origin(error_class, origin);
     let original_words = core_words(original);
     let replacement_words = core_words(replacement);
     let left_context_changed = left_context_changed(original, replacement);
@@ -307,9 +308,9 @@ mod tests {
         original: &str,
         replacement: &str,
         error_class: TypingErrorClass,
-        source_id: &str,
+        origin: CandidateOrigin,
     ) -> EditTransitionProof {
-        prove_edit_transition(original, replacement, error_class, source_id)
+        prove_edit_transition(original, replacement, error_class, origin)
     }
 
     #[test]
@@ -318,7 +319,7 @@ mod tests {
             "что получилось содержкой ",
             "что получилось содержать ",
             TypingErrorClass::CompositeTypo,
-            "L2SurfaceMotifCell32",
+            CandidateOrigin::L2Surface,
         );
 
         assert_eq!(proof.operator, EditTransitionOperator::ReplaceCurrentWord);
@@ -332,7 +333,7 @@ mod tests {
             "содержкой ",
             "что получилось вроде хороший ввод и даже фикс был шикарный но с содержать ",
             TypingErrorClass::CompositeTypo,
-            "L2SurfaceMotifCell32",
+            CandidateOrigin::L2Surface,
         );
 
         assert_eq!(proof.operator, EditTransitionOperator::Unknown);
@@ -348,7 +349,7 @@ mod tests {
             "HF<JNF NTCN CFV ",
             "РАБОТА ТЕСТ САМ ",
             TypingErrorClass::WrongLayout,
-            crate::typing_rule_graph::ids::LAYOUT_EN_TO_RU,
+            CandidateOrigin::Layout,
         );
 
         assert_eq!(proof.operator, EditTransitionOperator::LayoutProjection);
@@ -361,7 +362,7 @@ mod tests {
             "uрафике ",
             "на графике ",
             TypingErrorClass::WrongLayout,
-            "LayoutWordCell32",
+            CandidateOrigin::Layout,
         );
 
         assert_eq!(proof.operator, EditTransitionOperator::Unknown);
@@ -377,7 +378,7 @@ mod tests {
             "Поставщик говорит что цена до склада нашего покупателя но таможен мы! ",
             "Поставщик говорит что цена до склада нашего покупателя но таможим мы! ",
             TypingErrorClass::CompositeTypo,
-            "PhraseCell32",
+            CandidateOrigin::L3Context,
         );
 
         assert_eq!(proof.operator, EditTransitionOperator::PhraseTokenRepair);
@@ -390,7 +391,7 @@ mod tests {
             "ее простозальет свтеом ",
             "ее просто зальет светом ",
             TypingErrorClass::AdjacentTransposition,
-            crate::typing_rule_graph::ids::ADJACENT_TRANSPOSITION,
+            CandidateOrigin::DeterministicTypo,
         );
 
         assert_eq!(
@@ -406,7 +407,7 @@ mod tests {
             "curl file ",
             "curl файл ",
             TypingErrorClass::ProtectedToken,
-            "TechnicalTokenCell32",
+            CandidateOrigin::Technical,
         );
 
         assert_eq!(proof.operator, EditTransitionOperator::Protected);

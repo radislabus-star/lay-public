@@ -13,6 +13,7 @@ pub(crate) mod state;
 pub(crate) mod verifier;
 
 use crate::correction_core::TypingErrorClass;
+use crate::correction_source_contract::CandidateOrigin;
 use crate::language_action::LanguageActionOperator;
 use l4_state_estimator::{
     L4ObservationKind, L4StateEstimate, L4StateEstimator, L4StateObservation,
@@ -35,6 +36,8 @@ pub(crate) struct TypingTransition {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct TransitionEvidence {
+    pub(crate) origin: CandidateOrigin,
+    /// Diagnostic provenance only. Decision and verifier authority use `origin`.
     pub(crate) source_id: String,
     pub(crate) error_class: TypingErrorClass,
     pub(crate) verifier_passed: bool,
@@ -68,14 +71,15 @@ impl TypingTransition {
         original: &str,
         replacement: &str,
         error_class: TypingErrorClass,
+        origin: CandidateOrigin,
         source_id: &str,
         candidate_count: usize,
     ) -> Self {
-        let action = action::verify_action_operator(original, replacement, error_class, source_id);
+        let action = action::verify_action_operator(original, replacement, error_class, origin);
         let state_before = LatentTypingState::from_text(original);
         let state_after_predicted = LatentTypingState::from_text(replacement);
         let boundary_changed = state_before.word_count_changed(&state_after_predicted);
-        let l4_negative = !memory::TransitionMemory::allows_apply(original, replacement, source_id);
+        let l4_negative = !memory::TransitionMemory::allows_apply(original, replacement, origin);
         let l4_state_estimate = L4StateEstimator::estimate(L4StateObservation {
             kind: if boundary_changed {
                 L4ObservationKind::SpaceBoundary
@@ -96,6 +100,7 @@ impl TypingTransition {
             candidate_text: replacement.to_string(),
             state_after_predicted,
             evidence: TransitionEvidence {
+                origin,
                 source_id: source_id.to_string(),
                 error_class,
                 verifier_passed: action.verifier_passed,
@@ -108,9 +113,7 @@ impl TypingTransition {
             },
             l2_signal: L2TransitionSignal { candidate_count },
             l3_signal: L3TransitionSignal {
-                observes_context: crate::correction_source_contract::is_l3_context_source(
-                    source_id,
-                ),
+                observes_context: matches!(origin, CandidateOrigin::L3Context),
             },
             l4_signed_signal: L4SignedTransitionSignal {
                 negative: l4_negative,
@@ -130,6 +133,7 @@ mod tests {
             "провека ",
             "проверка ",
             TypingErrorClass::CompositeTypo,
+            CandidateOrigin::DeterministicTypo,
             "composite_ru_typo",
             1,
         );

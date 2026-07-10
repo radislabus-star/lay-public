@@ -108,7 +108,9 @@ pub(crate) fn apply_text_replacement_pipeline(
     }
     let action = authorized.action();
     let plan = action.plan.as_ref().ok_or_else(|| {
-        TextReplacementPipelineError::Preflight("authorized edit has no replacement plan".to_string())
+        TextReplacementPipelineError::Preflight(
+            "authorized edit has no replacement plan".to_string(),
+        )
     })?;
     let replacement = action.to_text.as_str();
     let pipeline_started = Instant::now();

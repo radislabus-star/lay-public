@@ -63,7 +63,13 @@ pub(super) fn handle_pending_auto_undo(
         if let Some(ime_authorized) = ime_authorized.as_ref() {
             if try_ime_replace_tail(ime_authorized, "auto-undo").unwrap_or(false) {
                 let target_layout = lay::keyboard::preferred_layout_for_text(&undo.original, true);
-                switch_or_restore_layout_after_text_edit(true, target_layout, None, "auto-undo", false);
+                switch_or_restore_layout_after_text_edit(
+                    true,
+                    target_layout,
+                    None,
+                    "auto-undo",
+                    false,
+                );
                 remember_auto_undo(buf, &undo, started_at);
                 log(&format!(
                     "✓ done: auto-undo {:?} → {:?} через IME за {}ms",

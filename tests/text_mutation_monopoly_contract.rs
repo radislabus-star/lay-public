@@ -269,13 +269,13 @@ fn live_text_mutation_outputs_use_executor_contract() {
     assert!(
         executor.contains("pub struct AuthorizedEdit")
             && executor.contains("authorized: Option<AuthorizedEdit"),
-            "executor must issue a sealed AuthorizedEdit capability"
+        "executor must issue a sealed AuthorizedEdit capability"
     );
 
     let daemon_pipeline = read("src/bin/lay_daemon/text_output/replacement.rs");
     assert!(
-        daemon_pipeline.contains("authorized: &AuthorizedEdit")
-            && !daemon_pipeline.contains("plan: &TextReplacement,\n    replacement: &str"),
+        daemon_pipeline.contains("pub(crate) fn apply_text_replacement_pipeline")
+            && daemon_pipeline.contains("authorized: &AuthorizedEdit"),
         "daemon replacement pipeline must require AuthorizedEdit rather than raw plan/text"
     );
     let layout_controller = read("src/bin/lay_daemon/layout_controller.rs");

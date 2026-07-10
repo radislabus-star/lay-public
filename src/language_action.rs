@@ -4,6 +4,7 @@
 //! still own how text is deleted/inserted.
 
 use crate::correction_core::TypingErrorClass;
+use crate::correction_source_contract::{candidate_origin, CandidateOrigin};
 
 pub const LANGUAGE_ACTION_OPERATOR_COUNT: usize = 17;
 
@@ -83,7 +84,14 @@ pub fn operator_for_candidate(
     error_class: TypingErrorClass,
     source_id: &str,
 ) -> LanguageActionOperator {
-    if crate::correction_source_contract::is_layout_then_typo_source(source_id) {
+    operator_for_origin(error_class, candidate_origin(source_id))
+}
+
+pub(crate) fn operator_for_origin(
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+) -> LanguageActionOperator {
+    if origin == CandidateOrigin::LayoutThenTypo {
         return LanguageActionOperator::FixMixedLayout;
     }
     match error_class {
@@ -98,7 +106,7 @@ pub fn operator_for_candidate(
         TypingErrorClass::AdjacentTransposition => LanguageActionOperator::FixTransposition,
         TypingErrorClass::LetterSubstitution => LanguageActionOperator::ReplaceLetter,
         TypingErrorClass::CaseNoise => LanguageActionOperator::NormalizeCase,
-        TypingErrorClass::CompositeTypo => context_or_typo_operator(source_id),
+        TypingErrorClass::CompositeTypo => context_or_typo_operator(origin),
         TypingErrorClass::Unknown => LanguageActionOperator::SuggestOnly,
         TypingErrorClass::SplitWord => LanguageActionOperator::JoinBrokenWord,
         TypingErrorClass::GluedWords => LanguageActionOperator::SplitGluedWords,
@@ -111,7 +119,14 @@ pub fn operator_for_candidate(
 }
 
 pub fn proof_for_candidate(error_class: TypingErrorClass, source_id: &str) -> LanguageActionProof {
-    if crate::correction_source_contract::is_layout_then_typo_source(source_id) {
+    proof_for_origin(error_class, candidate_origin(source_id))
+}
+
+pub(crate) fn proof_for_origin(
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+) -> LanguageActionProof {
+    if origin == CandidateOrigin::LayoutThenTypo {
         return LanguageActionProof::Layout;
     }
     match error_class {
@@ -125,7 +140,7 @@ pub fn proof_for_candidate(error_class: TypingErrorClass, source_id: &str) -> La
         TypingErrorClass::TechnicalToken | TypingErrorClass::ProtectedToken => {
             LanguageActionProof::SafetyVeto
         }
-        TypingErrorClass::CompositeTypo if is_context_source(source_id) => {
+        TypingErrorClass::CompositeTypo if is_context_origin(origin) => {
             LanguageActionProof::Context
         }
         TypingErrorClass::LetterSubstitution
@@ -139,18 +154,19 @@ pub fn proof_for_candidate(error_class: TypingErrorClass, source_id: &str) -> La
     }
 }
 
-fn context_or_typo_operator(source_id: &str) -> LanguageActionOperator {
-    if is_context_source(source_id) {
+fn context_or_typo_operator(origin: CandidateOrigin) -> LanguageActionOperator {
+    if is_context_origin(origin) {
         LanguageActionOperator::ApplyContextChoice
     } else {
         LanguageActionOperator::FixTypo
     }
 }
 
-fn is_context_source(source_id: &str) -> bool {
-    crate::correction_source_contract::is_l3_context_source(source_id)
-        || source_id == "PhraseMemoryCell32"
-        || source_id == "PhraseForecastCell32"
+fn is_context_origin(origin: CandidateOrigin) -> bool {
+    matches!(
+        origin,
+        CandidateOrigin::L3Context | CandidateOrigin::Completion
+    )
 }
 
 #[cfg(test)]

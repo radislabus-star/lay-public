@@ -495,6 +495,7 @@ fn correction_source_name(
 
 fn gate_action_name(action: crate::correction_core::CandidateGateAction) -> &'static str {
     match action {
+        crate::correction_core::CandidateGateAction::Eligible => "eligible",
         crate::correction_core::CandidateGateAction::Apply => "apply",
         crate::correction_core::CandidateGateAction::SuggestOnly => "suggest_only",
         crate::correction_core::CandidateGateAction::KeepOriginal => "keep_original",
