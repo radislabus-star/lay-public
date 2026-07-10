@@ -3,12 +3,8 @@ use super::super::super::{
     switch_or_restore_layout_after_text_edit, tail_replace_policy,
 };
 use super::super::TypingAssistOutcome;
-use super::memory::{
-    remember_typing_assist_correction, TypingAssistMemoryContext, TypingAssistTiming,
-};
-use super::queued::next_correction_after_forwarded_spaces;
+use super::memory::{remember_typing_assist_correction, TypingAssistMemoryContext};
 use lay::decoder::CorrectionTrigger;
-use std::time::Instant;
 
 #[path = "minimal/context.rs"]
 mod context;
@@ -110,7 +106,7 @@ pub(crate) fn apply_minimal_typing_replacement(
             insert_outcome.layout_already_set,
         );
     }
-    let forwarded = physical_grab.forward_queued_typing(
+    let _ = physical_grab.forward_queued_typing(
         kbd,
         buf,
         insert_outcome.layout_is_ru,
@@ -123,28 +119,6 @@ pub(crate) fn apply_minimal_typing_replacement(
         replacement,
         timing.started_at.elapsed().as_millis()
     ));
-    if let Some(next) = next_correction_after_forwarded_spaces(buf, forwarded.spaces) {
-        let (next_original, next_replacement) =
-            (next.edit.original.clone(), next.edit.replacement.clone());
-        return apply_minimal_typing_replacement(MinimalTypingReplacementContext {
-            buf,
-            events: &next.events,
-            edit: &next.edit,
-            original: &next_original,
-            replacement: &next_replacement,
-            rule_id: next.rule_id.as_deref(),
-            input_gate: next.input_gate,
-            cursor_offset: 0,
-            timing: TypingAssistTiming {
-                decision_ms: next.decision_ms,
-                started_at: Instant::now(),
-            },
-            physical_grab,
-            kbd,
-            original_layout,
-            prefer_full_token_plan,
-        });
-    }
     TypingAssistOutcome::Applied {
         layout_is_ru: insert_outcome.layout_is_ru,
     }

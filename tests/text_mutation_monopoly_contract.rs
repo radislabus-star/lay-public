@@ -266,6 +266,27 @@ fn live_text_mutation_outputs_use_executor_contract() {
 }
 
 #[test]
+fn typing_assist_boundary_event_cannot_schedule_a_second_apply() {
+    for path in [
+        "src/bin/lay_daemon/typing_assist_runtime/output/ime.rs",
+        "src/bin/lay_daemon/typing_assist_runtime/output/minimal.rs",
+    ] {
+        let source = read(path);
+        assert!(
+            !source.contains("next_correction_after_forwarded_spaces"),
+            "{path} must finish one verified transition instead of recursively applying a second correction"
+        );
+    }
+
+    assert!(
+        !Path::new(ROOT)
+            .join("src/bin/lay_daemon/typing_assist_runtime/output/queued.rs")
+            .exists(),
+        "forwarded-space correction queue must not be revived without a new typed transition route"
+    );
+}
+
+#[test]
 fn changed_check_runs_shadow_replay_release_gate() {
     let script = read("scripts/check-lay-changed.sh");
     assert!(

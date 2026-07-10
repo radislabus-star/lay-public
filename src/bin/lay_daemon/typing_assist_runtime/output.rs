@@ -12,9 +12,6 @@ mod memory;
 mod minimal;
 #[path = "output/nanda_trace.rs"]
 mod nanda_trace;
-#[path = "output/queued.rs"]
-mod queued;
-
 use defer::{defer_complex_edit, should_defer_immediate_typing_edit};
 use ime::{try_apply_ime_replacement, ImeTypingReplacementContext};
 use memory::TypingAssistTiming;

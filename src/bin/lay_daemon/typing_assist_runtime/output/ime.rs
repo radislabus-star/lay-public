@@ -3,8 +3,6 @@ use super::super::super::{
     switch_or_restore_layout_after_text_edit, try_ime_replace_tail,
 };
 use super::super::TypingAssistOutcome;
-use super::memory::TypingAssistTiming;
-use super::queued::next_correction_after_forwarded_spaces;
 #[path = "ime/context.rs"]
 mod context;
 #[path = "ime/forward.rs"]
@@ -90,7 +88,7 @@ pub(crate) fn try_apply_ime_replacement(
     );
     let remember_ms = remember_started.elapsed().as_millis();
     let forward_started = std::time::Instant::now();
-    let forwarded_spaces = forward_after_ime_replace(
+    let _ = forward_after_ime_replace(
         virtual_kbd,
         physical_grab,
         buf,
@@ -105,23 +103,6 @@ pub(crate) fn try_apply_ime_replacement(
         replacement,
         timing.started_at.elapsed().as_millis()
     ));
-    if let Some(next) = next_correction_after_forwarded_spaces(buf, forwarded_spaces) {
-        return try_apply_ime_replacement(ImeTypingReplacementContext {
-            buf,
-            virtual_kbd,
-            physical_grab,
-            events: &next.events,
-            edit: &next.edit,
-            original: &next.edit.original,
-            replacement: &next.edit.replacement,
-            rule_id: next.rule_id.as_deref(),
-            input_gate: next.input_gate,
-            timing: TypingAssistTiming {
-                decision_ms: next.decision_ms,
-                started_at: std::time::Instant::now(),
-            },
-        });
-    }
     Some(TypingAssistOutcome::Applied {
         layout_is_ru: target_layout,
     })
