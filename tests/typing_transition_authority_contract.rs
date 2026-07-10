@@ -81,11 +81,13 @@ fn ime_preedit_uses_shared_candidate_readout_for_ranking() {
 #[test]
 fn legacy_gate_only_marks_eligibility_and_core_grants_apply() {
     let correction = read("src/correction_core.rs");
+    let gate = read("src/correction_core/gate.rs");
     let decision = read("src/typing_transition/decision.rs");
 
     assert!(
         correction.contains("CandidateGateAction::Eligible")
-            && correction.contains("fn legacy_gate_candidate_with_source"),
+            && correction.contains("mod gate;")
+            && gate.contains("fn legacy_gate_candidate_with_source"),
         "legacy candidate checks must expose eligibility rather than direct execution"
     );
     assert!(

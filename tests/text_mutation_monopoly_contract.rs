@@ -18,6 +18,7 @@ fn ime_composition_does_not_own_input_gate_decision() {
 fn ime_correction_route_reaches_common_decision_core() {
     let ime_correction = read("src/ime_correction.rs");
     let correction_core = read("src/correction_core.rs");
+    let correction_gate = read("src/correction_core/gate.rs");
     let transition_decision = read("src/typing_transition/decision.rs");
 
     assert!(
@@ -27,8 +28,9 @@ fn ime_correction_route_reaches_common_decision_core() {
     );
     assert!(
         !correction_core.contains("mod decision_core;")
-            && correction_core.contains("TransitionDecisionCore::authorize_gate"),
-        "correction_core must delegate apply authority to typing_transition"
+            && correction_core.contains("mod gate;")
+            && correction_gate.contains("TransitionDecisionCore::authorize_gate"),
+        "correction core gate must delegate apply authority to typing_transition"
     );
     assert!(
         transition_decision.contains("struct TransitionDecisionCore")
