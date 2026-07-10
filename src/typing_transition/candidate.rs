@@ -32,27 +32,8 @@ impl L2CandidateLattice {
     }
 
     pub(crate) fn into_resolution(self) -> CorrectionResolution {
-        let selected =
-            TransitionDecisionCore::select_apply_candidate(&self.event, &self.candidates);
-        let decision = selected.as_ref().map(|candidate| CorrectionDecision {
-            replacement: candidate.replacement.clone(),
-            source: candidate.source,
-        });
-        let scoreboard =
-            CorrectionScoreboard::from_candidates(&self.event, &self.candidates, selected.as_ref());
-        let candidate_scores = CorrectionCandidateScoreTrace::from_candidates(
-            &self.event,
-            &self.candidates,
-            selected.as_ref(),
-        );
-
-        CorrectionResolution {
-            event: self.event,
-            candidates: self.candidates,
-            selected,
-            decision,
-            scoreboard,
-            candidate_scores,
-        }
+        resolve_l2_lattice(self)
     }
 }
+
+include!("candidate_resolution.rs");

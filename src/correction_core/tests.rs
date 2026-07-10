@@ -1,0 +1,1337 @@
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::config::default_typing_assist_pipeline;
+
+    fn request<'a>(
+        text: &'a str,
+        pipeline: &'a [TypingAssistRuleConfig],
+        mode: CorrectionMode,
+    ) -> CorrectionRequest<'a> {
+        CorrectionRequest {
+            text,
+            auto_replace: true,
+            typing_assist: true,
+            auto_switch_layout: true,
+            correction_safety: CorrectionSafety::Experimental,
+            typing_assist_pipeline: pipeline,
+            nanda_autocorrect: true,
+            nanda_wave_options: WaveOptions::default(),
+            mode,
+        }
+    }
+
+    #[test]
+    fn l2_candidate_sources_follow_correction_mode_order() {
+        assert_eq!(
+            L2CandidateSource::for_mode(CorrectionMode::DeterministicOnly),
+            &[L2CandidateSource::Deterministic]
+        );
+        assert_eq!(
+            L2CandidateSource::for_mode(CorrectionMode::NandaOnly),
+            &[L2CandidateSource::Nanda]
+        );
+        assert_eq!(
+            L2CandidateSource::for_mode(CorrectionMode::DeterministicThenNanda),
+            &[L2CandidateSource::Deterministic, L2CandidateSource::Nanda]
+        );
+    }
+
+    #[test]
+    fn l2_candidate_lattice_keeps_sources_and_selects_only_apply_candidate() {
+        let mut lattice = L2CandidateLattice::new(TypingErrorEvent::from_text("автозаена "));
+        lattice.push_source(Some(UnifiedCorrectionCandidate::new(
+            "автозамена ",
+            CorrectionDecisionSource::Nanda,
+            "L2SurfaceMotifCell32",
+            TypingErrorClass::MissingLetter,
+            CandidateGateDecision {
+                action: CandidateGateAction::Apply,
+                reason: "class_allows_apply",
+            },
+        )));
+        lattice.push_source(Some(UnifiedCorrectionCandidate::new(
+            "автозамена ",
+            CorrectionDecisionSource::Deterministic,
+            ids::MISSING_LETTER,
+            TypingErrorClass::MissingLetter,
+            CandidateGateDecision {
+                action: CandidateGateAction::Apply,
+                reason: "class_allows_apply",
+            },
+        )));
+        lattice.push_source(Some(UnifiedCorrectionCandidate::new(
+            "авто замена ",
+            CorrectionDecisionSource::Nanda,
+            "BoundaryCell32",
+            TypingErrorClass::GluedWords,
+            CandidateGateDecision {
+                action: CandidateGateAction::SuggestOnly,
+                reason: "requires_boundary_proof",
+            },
+        )));
+
+        let resolution = lattice.into_resolution();
+
+        assert_eq!(resolution.candidates.len(), 2);
+        assert_eq!(
+            resolution
+                .candidates
+                .iter()
+                .filter(|candidate| candidate.replacement == "автозамена ")
+                .count(),
+            1,
+            "duplicate same-replacement candidates must collapse into one evidence-backed node"
+        );
+        assert_eq!(resolution.scoreboard.total_candidates, 2);
+        assert_eq!(resolution.scoreboard.deterministic_candidates, 1);
+        assert_eq!(resolution.scoreboard.nanda_candidates, 1);
+        assert_eq!(resolution.scoreboard.apply_candidates, 1);
+        assert_eq!(resolution.scoreboard.suggest_only_candidates, 1);
+        let selected = resolution.selected.as_ref().expect("selected candidate");
+        assert_eq!(selected.replacement, "автозамена ");
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+        assert_eq!(selected.evidence_count(), 2);
+        assert!(selected.has_origin(CandidateOrigin::L2Surface));
+        assert!(selected.has_origin(CandidateOrigin::DeterministicTypo));
+        assert_eq!(
+            resolution.decision,
+            Some(CorrectionDecision {
+                replacement: "автозамена ".to_string(),
+                source: CorrectionDecisionSource::Nanda,
+            })
+        );
+    }
+
+    #[test]
+    fn l2_surface_candidate_cannot_apply_left_context_rewrite() {
+        let gate = gate_candidate_with_source(
+            "коретка улитела ",
+            "етка улитка ",
+            TypingErrorClass::CompositeTypo,
+            "L2SurfaceMotifCell32",
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_ne!(gate.reason, "class_allows_apply");
+    }
+
+    #[test]
+    fn nanda_candidates_respect_request_wave_options() {
+        let pipeline = default_typing_assist_pipeline();
+        let active = resolve_text_correction(CorrectionRequest {
+            text: "звгрузи ",
+            auto_replace: true,
+            typing_assist: true,
+            auto_switch_layout: true,
+            correction_safety: CorrectionSafety::Experimental,
+            typing_assist_pipeline: &pipeline,
+            nanda_autocorrect: true,
+            nanda_wave_options: WaveOptions::default(),
+            mode: CorrectionMode::NandaOnly,
+        });
+        assert!(active.candidates.iter().any(|candidate| {
+            candidate.source_id == "L2SurfaceMotifCell32" && candidate.replacement == "загрузи "
+        }));
+
+        let disabled = resolve_text_correction(CorrectionRequest {
+            text: "звгрузи ",
+            auto_replace: true,
+            typing_assist: true,
+            auto_switch_layout: true,
+            correction_safety: CorrectionSafety::Experimental,
+            typing_assist_pipeline: &pipeline,
+            nanda_autocorrect: true,
+            nanda_wave_options: WaveOptions::with_disabled(&["L2SurfaceMotifCell32".to_string()]),
+            mode: CorrectionMode::NandaOnly,
+        });
+        assert!(!disabled
+            .candidates
+            .iter()
+            .any(|candidate| candidate.source_id == "L2SurfaceMotifCell32"));
+    }
+
+    #[test]
+    fn deterministic_mode_corrects_wrong_layout_text() {
+        let pipeline = default_typing_assist_pipeline();
+        let decision = decide_text_correction(request(
+            "lfdfq ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ))
+        .unwrap();
+        assert_eq!(decision.replacement, "давай ");
+        assert_eq!(decision.source, CorrectionDecisionSource::Deterministic);
+    }
+
+    #[test]
+    fn deterministic_mode_corrects_multiword_wrong_layout_tail() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "HF<JNF NTCN CFV ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert_eq!(
+            resolution
+                .decision
+                .as_ref()
+                .map(|decision| decision.replacement.as_str()),
+            Some("РАБОТА ТЕСТ САМ ")
+        );
+        assert_eq!(
+            resolution
+                .selected
+                .as_ref()
+                .map(|candidate| candidate.gate.action),
+            Some(CandidateGateAction::Apply)
+        );
+    }
+
+    #[test]
+    fn deterministic_mode_corrects_multiword_wrong_layout_tail_with_context_pipeline() {
+        let default_pipeline = default_typing_assist_pipeline();
+        let pipeline = crate::typing_context::typing_assist_pipeline_for_context(
+            true,
+            CorrectionSafety::Normal,
+            &default_pipeline,
+            "HF<JNF NTCN CFV ",
+        );
+        let resolution = resolve_text_correction(CorrectionRequest {
+            text: "HF<JNF NTCN CFV ",
+            auto_replace: true,
+            typing_assist: true,
+            auto_switch_layout: true,
+            correction_safety: CorrectionSafety::Normal,
+            typing_assist_pipeline: &pipeline,
+            nanda_autocorrect: false,
+            nanda_wave_options: WaveOptions::default(),
+            mode: CorrectionMode::DeterministicOnly,
+        });
+
+        assert_eq!(
+            resolution
+                .decision
+                .as_ref()
+                .map(|decision| decision.replacement.as_str()),
+            Some("РАБОТА ТЕСТ САМ ")
+        );
+        assert_eq!(
+            resolution
+                .selected
+                .as_ref()
+                .map(|candidate| candidate.gate.action),
+            Some(CandidateGateAction::Apply)
+        );
+    }
+
+    #[test]
+    fn resolution_routes_missing_letter_through_unified_gate() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "автозаена ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution
+            .selected
+            .clone()
+            .unwrap_or_else(|| panic!("selected candidate: {resolution:?}"));
+        assert_eq!(selected.replacement, "автозамена ");
+        assert_eq!(selected.error_class, TypingErrorClass::MissingLetter);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+        assert_eq!(resolution.scoreboard.total_candidates, 1);
+        assert_eq!(resolution.scoreboard.apply_candidates, 1);
+        assert_eq!(resolution.scoreboard.deterministic_candidates, 1);
+        assert_eq!(resolution.scoreboard.nanda_candidates, 0);
+        assert!(
+            resolution
+                .scoreboard
+                .selected_bayes_posterior_milli
+                .is_some(),
+            "selected candidate must expose Bayes posterior"
+        );
+        assert_eq!(resolution.candidate_scores.len(), 1);
+        let score = &resolution.candidate_scores[0];
+        assert_eq!(score.replacement, "автозамена ");
+        assert_eq!(score.error_class, TypingErrorClass::MissingLetter);
+        assert_eq!(score.action_operator, "restore_missing_letter");
+        assert_eq!(score.action_proof, "typo");
+        assert_eq!(score.gate_action, CandidateGateAction::Apply);
+        assert!(score.selected);
+        assert!(score.likelihood_milli > 0);
+        assert!(score.posterior_milli > 0);
+        assert_eq!(score.l4_scene_action, "suggest");
+        assert_eq!(score.l4_scene_reason, "scene_allows_suggestion");
+        assert!(score.l4_scene_milli > 0);
+        assert!(score.decision_rank_milli > 0);
+    }
+
+    #[test]
+    fn unexplained_signal_loss_blocks_l2_shortcut_candidate() {
+        let gate = gate_candidate_with_source(
+            "тоесть ",
+            "есть ",
+            TypingErrorClass::CompositeTypo,
+            "L2SurfaceMotifCell32",
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "unexplained_signal_loss");
+    }
+
+    #[test]
+    fn surface_candidate_cannot_apply_extra_left_context() {
+        let gate = gate_candidate_with_source(
+            "содержкой ",
+            "что получилось вроде хороший ввод и даже фикс был шикарный но с содержать ",
+            TypingErrorClass::CompositeTypo,
+            "L2SurfaceMotifCell32",
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "edit_transition_not_verified");
+    }
+
+    #[test]
+    fn surface_candidate_may_replace_only_current_word_with_same_prefix() {
+        let gate = gate_candidate_with_source(
+            "что получилось содержкой ",
+            "что получилось содержать ",
+            TypingErrorClass::CompositeTypo,
+            "L2SurfaceMotifCell32",
+        );
+
+        assert_ne!(gate.reason, "edit_transition_not_verified");
+    }
+
+    #[test]
+    fn layout_candidate_cannot_add_context_to_single_word() {
+        let gate = gate_candidate_with_source(
+            "uрафике ",
+            "на графике ",
+            TypingErrorClass::WrongLayout,
+            "LayoutWordCell32",
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "edit_transition_not_verified");
+    }
+
+    #[test]
+    fn layout_candidate_may_rewrite_multiword_layout_tail() {
+        let gate = gate_candidate_with_source(
+            "HF<JNF NTCN CFV ",
+            "РАБОТА ТЕСТ САМ ",
+            TypingErrorClass::WrongLayout,
+            ids::LAYOUT_EN_TO_RU,
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn boundary_preserving_candidate_survives_explanation_gate() {
+        let gate = gate_candidate_with_source(
+            "тоесть ",
+            "то есть ",
+            TypingErrorClass::CompositeTypo,
+            ids::PERSONAL_PHRASE,
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn split_phrase_candidate_wins_over_l2_shortcut() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "тоесть ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        ));
+
+        let selected = resolution
+            .selected
+            .clone()
+            .unwrap_or_else(|| panic!("selected candidate: {resolution:?}"));
+        assert_eq!(selected.replacement, "то есть ");
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn unknown_russian_shape_is_classified_before_candidate_generation() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "приудишна ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        ));
+
+        assert_eq!(resolution.event.current_word, "приудишна");
+        assert_eq!(
+            resolution.event.input_class,
+            TypingErrorClass::CompositeTypo
+        );
+        assert_eq!(resolution.decision, None);
+    }
+
+    #[test]
+    fn l3_anti_shortcut_blocks_overcompressed_word_candidate() {
+        let gate = gate_candidate_with_source(
+            "патерна ",
+            "пара ",
+            TypingErrorClass::CompositeTypo,
+            crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::KeepOriginal);
+        assert_eq!(gate.reason, "candidate_over_compresses_word");
+    }
+
+    #[test]
+    fn l2_surface_cannot_apply_context_stem_truncation() {
+        let gate = gate_candidate_with_source(
+            "я прохоил ",
+            "я проход ",
+            TypingErrorClass::CompositeTypo,
+            "L2SurfaceMotifCell32",
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "l2_surface_stem_truncation_low");
+    }
+
+    #[test]
+    fn l3_anti_shortcut_blocks_function_prefix_letter_drop_from_logs() {
+        let gate = gate_candidate_with_source(
+            "ответили вчате ",
+            "ответили вате ",
+            TypingErrorClass::CompositeTypo,
+            crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::KeepOriginal);
+        assert_eq!(gate.reason, "function_prefix_letter_drop");
+    }
+
+    #[test]
+    fn l3_anti_shortcut_blocks_short_layout_without_phrase_context() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution =
+            resolve_text_correction(request("wave b ", &pipeline, CorrectionMode::NandaOnly));
+
+        assert_eq!(resolution.decision, None);
+        assert!(
+            resolution.candidates.iter().all(|candidate| {
+                candidate.gate.action == CandidateGateAction::KeepOriginal
+                    && candidate.gate.reason == "short_layout_without_phrase_context"
+            }),
+            "short layout candidate may be visible, but must stay powerless: {resolution:?}"
+        );
+    }
+
+    #[test]
+    fn known_russian_word_with_yo_is_not_layout_switched_to_ascii() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "ещё ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert_eq!(resolution.decision, None);
+        assert!(
+            resolution.candidates.iter().all(|candidate| {
+                candidate.replacement != "to` "
+                    && candidate.gate.action != CandidateGateAction::Apply
+            }),
+            "known Russian word must not autoswitch to ASCII layout: {resolution:?}"
+        );
+    }
+
+    #[test]
+    fn short_russian_word_does_not_autoswitch_to_ascii_from_logs() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution =
+            resolve_text_correction(request("ой ", &pipeline, CorrectionMode::DeterministicOnly));
+
+        assert_eq!(resolution.decision, None);
+        assert!(resolution.candidates.iter().any(|candidate| {
+            candidate.replacement == "jq "
+                && candidate.gate.action == CandidateGateAction::SuggestOnly
+                && candidate.gate.reason == "short_cyrillic_to_ascii_layout"
+        }));
+    }
+
+    #[test]
+    fn russian_phrase_context_still_allows_short_preposition_repair() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "читай cola d wechat ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution
+            .selected
+            .clone()
+            .unwrap_or_else(|| panic!("selected candidate: {resolution:?}"));
+        assert_eq!(selected.replacement, "читай cola в wechat ");
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn layout_then_typo_repairs_dirty_wrong_layout_word() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "hf,jfntn ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution
+            .selected
+            .clone()
+            .unwrap_or_else(|| panic!("selected candidate: {resolution:?}"));
+        assert_eq!(selected.replacement, "работает ");
+        assert_eq!(selected.source_id, "layout_then_adjacent_transposition");
+        assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn layout_then_known_word_does_not_flip_known_english_word() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "file ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert_eq!(resolution.decision, None);
+        assert!(
+            resolution.candidates.iter().all(|candidate| {
+                candidate.replacement != "ашду "
+                    || candidate.gate.action != CandidateGateAction::Apply
+            }),
+            "known English word must not use weak layout fallback: {resolution:?}"
+        );
+    }
+
+    #[test]
+    fn composite_typo_repairs_known_russian_word() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "помшник ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution
+            .selected
+            .clone()
+            .unwrap_or_else(|| panic!("selected candidate: {resolution:?}"));
+        assert_eq!(selected.replacement, "помощник ");
+        assert_eq!(selected.source_id, "composite_ru_typo");
+        assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn composite_typo_does_not_jump_over_known_single_step_repair() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "мы отвравим ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution
+            .selected
+            .clone()
+            .unwrap_or_else(|| panic!("selected candidate: {resolution:?}"));
+        assert_eq!(selected.replacement, "мы отравим ");
+        assert_ne!(selected.replacement, "мы отвратим ");
+    }
+
+    #[test]
+    fn nanda_semantic_drift_does_not_beat_local_single_step_repair() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "мы отвравим ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        ));
+
+        let selected = resolution.selected.as_ref().expect("selected candidate");
+        assert_eq!(selected.replacement, "мы отравим ", "{resolution:?}");
+        assert_eq!(selected.source, CorrectionDecisionSource::Deterministic);
+        assert!(
+            resolution.candidates.iter().all(|candidate| {
+                candidate.source != CorrectionDecisionSource::Nanda
+                    || candidate.replacement != selected.replacement
+            }),
+            "NANDA must not steal deterministic ownership for the same replacement: {resolution:?}"
+        );
+        assert!(
+            resolution.candidates.iter().all(|candidate| {
+                candidate.replacement != "мы отвратим "
+                    || candidate.gate.action != CandidateGateAction::Apply
+            }),
+            "semantic drift candidate must not be apply: {resolution:?}"
+        );
+    }
+
+    #[test]
+    fn composite_gate_blocks_same_tail_consonant_semantic_drift() {
+        let decision = gate_candidate_with_source(
+            "будет примать ",
+            "будет придать ",
+            TypingErrorClass::CompositeTypo,
+            crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+        );
+
+        assert_eq!(decision.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(decision.reason, "same_tail_single_consonant_drift");
+    }
+
+    #[test]
+    fn composite_typo_rejects_short_initial_consonant_growth() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "давай лушее ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution.selected.expect("safe candidate should remain");
+        assert_eq!(selected.replacement, "давай лучшее ");
+        assert!(!resolution
+            .candidates
+            .iter()
+            .any(|candidate| candidate.replacement == "давай глушее "
+                && candidate.gate.action == CandidateGateAction::Apply));
+    }
+
+    #[test]
+    fn composite_typo_rejects_short_initial_vowel_growth_from_logs() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, forbidden) in [("рина ", "арина "), ("решение задачь ", "решение озадачь ")]
+        {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicOnly,
+            ));
+
+            assert!(
+                resolution
+                    .decision
+                    .as_ref()
+                    .map(|decision| &decision.replacement)
+                    != Some(&forbidden.to_string()),
+                "forbidden candidate auto-applied: {resolution:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn known_russian_words_do_not_autorewrite_to_other_known_words() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, forbidden) in [
+            ("искать хрень! ", "искать хрену "),
+            ("будет плох ", "будет плоха "),
+            ("Блин ", "Блина "),
+            ("не мение ", "не мерние "),
+            ("не мение ", "не менте "),
+            ("теорию бейса ", "теорию бейсяа "),
+        ] {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicOnly,
+            ));
+
+            assert!(
+                resolution
+                    .decision
+                    .as_ref()
+                    .map(|decision| &decision.replacement)
+                    != Some(&forbidden.to_string()),
+                "forbidden known-word rewrite auto-applied: {resolution:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn weak_shape_drift_from_live_logs_stays_suggest_only() {
+        for (input, replacement, error_class, source_id) in [
+            (
+                "версии ",
+                "версти ",
+                TypingErrorClass::CompositeTypo,
+                "composite_ru_typo",
+            ),
+            (
+                "планы? ",
+                "плауны? ",
+                TypingErrorClass::CompositeTypo,
+                "composite_ru_typo",
+            ),
+            (
+                "нужен ",
+                "ножен ",
+                TypingErrorClass::LetterSubstitution,
+                ids::VOWEL_CONFUSION,
+            ),
+            (
+                "кодировании ",
+                "кодированиеи ",
+                TypingErrorClass::MissingLetter,
+                ids::MISSING_LETTER,
+            ),
+            (
+                "очереди ",
+                "очередьи ",
+                TypingErrorClass::CompositeTypo,
+                "composite_ru_typo",
+            ),
+            (
+                "пользоватся? ",
+                "пользовается ",
+                TypingErrorClass::CompositeTypo,
+                crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+            ),
+        ] {
+            let gate = gate_candidate_with_source(input, replacement, error_class, source_id);
+
+            assert_eq!(
+                gate.action,
+                CandidateGateAction::SuggestOnly,
+                "{input:?} -> {replacement:?}"
+            );
+            assert!(
+                matches!(
+                    gate.reason,
+                    "known_current_word_surface_drift"
+                        | "unproven_stable_surface_shape_drift"
+                        | "known_word_to_different_known_word"
+                ),
+                "{input:?} -> {replacement:?}: {gate:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn weak_shape_drift_from_live_logs_is_not_selected() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, forbidden) in [
+            ("версии ", "версти "),
+            ("планы? ", "плауны? "),
+            ("нужен ", "ножен "),
+            ("кодировании ", "кодирование "),
+            ("кодировании ", "кодированиеи "),
+            ("очереди ", "очередьи "),
+            ("пользоватся? ", "пользовается "),
+        ] {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicThenNanda,
+            ));
+
+            assert!(
+                resolution
+                    .selected
+                    .as_ref()
+                    .map(|candidate| candidate.replacement.as_str() != forbidden)
+                    .unwrap_or(true),
+                "{input:?} must not select {forbidden:?}; candidates={:?}",
+                resolution.candidates
+            );
+        }
+    }
+
+    #[test]
+    fn strong_local_typo_repairs_still_apply_after_shape_guard() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, expected, source_id) in [
+            ("длеай ", "делай ", ids::ADJACENT_TRANSPOSITION),
+            ("тарфик ", "трафик ", ids::ADJACENT_TRANSPOSITION),
+            ("рабоатешь ", "работаешь ", ids::ADJACENT_TRANSPOSITION),
+            ("агресивнее ", "агрессивнее ", "composite_ru_typo"),
+            ("дейстия ", "действия ", "composite_ru_typo"),
+            ("кнал ", "канал ", "composite_ru_typo"),
+            ("сбирать ", "собирать ", ids::MISSING_LETTER),
+        ] {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicOnly,
+            ));
+
+            let selected = resolution.selected.expect("selected candidate");
+            assert_eq!(selected.replacement, expected, "input={input:?}");
+            assert_eq!(selected.source_id, source_id, "input={input:?}");
+            assert_eq!(
+                selected.gate.action,
+                CandidateGateAction::Apply,
+                "input={input:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn composite_typo_recovers_common_word_with_broken_prefix() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "где эсперемнт ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution.selected.expect("selected candidate");
+        assert_eq!(selected.replacement, "где эксперимент ");
+        assert_eq!(selected.source_id, "composite_ru_typo");
+        assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn composite_typo_prefers_effective_over_affective_for_missing_initial_vowel() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "на сколько ффективная ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution.selected.expect("selected candidate");
+        assert_eq!(selected.replacement, "на сколько эффективная ");
+        assert_eq!(selected.source_id, "composite_ru_typo");
+        assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn boundary_gate_does_not_split_known_single_word() {
+        let gate = gate_candidate("уровне ", "у ровне ", TypingErrorClass::GluedWords);
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "known_single_word_boundary_split");
+    }
+
+    #[test]
+    fn boundary_gate_does_not_split_known_word_inside_phrase() {
+        let gate = gate_candidate("на уровне ", "на у ровне ", TypingErrorClass::GluedWords);
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "known_single_word_boundary_split");
+    }
+
+    #[test]
+    fn boundary_gate_rejects_known_word_split_from_non_boundary_candidate() {
+        let gate = gate_candidate_with_source(
+            "за настройки ",
+            "за нас тройки ",
+            TypingErrorClass::CompositeTypo,
+            crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "known_single_word_boundary_split");
+    }
+
+    #[test]
+    fn boundary_gate_rejects_short_function_split_with_unknown_tail() {
+        let gate = gate_candidate("со скрина ", "со с крина ", TypingErrorClass::GluedWords);
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "weak_boundary_split_tail");
+    }
+
+    #[test]
+    fn composite_typo_repairs_generated_russian_forms() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, expected) in [("руских ", "русских "), ("звгрузи ", "загрузи ")]
+        {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicOnly,
+            ));
+
+            let selected = resolution.selected.expect("selected candidate");
+            assert_eq!(selected.replacement, expected, "input={input:?}");
+            assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
+            assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+        }
+    }
+
+    #[test]
+    fn known_phrase_parts_do_not_autogrow_by_one_letter() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, forbidden) in [
+            ("у меня ", "у меняю "),
+            ("твой ", "тывой "),
+            ("к тебе ", "к требе "),
+            ("Тебе ", "Требе "),
+            ("в план! ", "в плана! "),
+            ("но пока ", "но прока "),
+        ] {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicOnly,
+            ));
+
+            assert_eq!(resolution.decision, None, "input={input:?}");
+            assert!(
+                resolution.candidates.iter().all(|candidate| {
+                    candidate.replacement != forbidden
+                        || candidate.gate.action != CandidateGateAction::Apply
+                }),
+                "forbidden candidate auto-applied: {resolution:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn nanda_candidate_cannot_autogrow_known_phrase_part_either() {
+        let gate = gate_candidate("твой ", "тывой ", TypingErrorClass::CompositeTypo);
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "known_phrase_part_one_letter_growth");
+    }
+
+    #[test]
+    fn reflexive_suffix_needs_grammar_proof_before_apply() {
+        for source_id in ["composite_ru_typo", "L2SurfaceMotifCell32", "PhraseCell32"] {
+            let gate = gate_candidate_with_source(
+                "что нравится? ",
+                "что нравиться? ",
+                TypingErrorClass::MissingLetter,
+                source_id,
+            );
+
+            assert_eq!(
+                gate.action,
+                CandidateGateAction::SuggestOnly,
+                "source_id={source_id}"
+            );
+            assert_eq!(
+                gate.reason, "reflexive_suffix_requires_grammar_proof",
+                "source_id={source_id}"
+            );
+        }
+    }
+
+    #[test]
+    fn grammar_source_may_handle_reflexive_suffix() {
+        let gate = gate_candidate_with_source(
+            "что нравится? ",
+            "что нравиться? ",
+            TypingErrorClass::GrammarAgreement,
+            "GrammarCell32",
+        );
+
+        assert_ne!(gate.reason, "reflexive_suffix_requires_grammar_proof");
+    }
+
+    #[test]
+    fn known_current_word_surface_drift_stays_suggest_only() {
+        for (input, replacement, source_id) in [
+            ("Читал логи ", "Читал логик ", "L2SurfaceMotifCell32"),
+            ("смотри, ", "смотори, ", "composite_ru_typo"),
+        ] {
+            let gate = gate_candidate_with_source(
+                input,
+                replacement,
+                TypingErrorClass::CompositeTypo,
+                source_id,
+            );
+
+            assert_eq!(
+                gate.action,
+                CandidateGateAction::SuggestOnly,
+                "{input:?} -> {replacement:?}"
+            );
+            assert_eq!(
+                gate.reason, "known_current_word_surface_drift",
+                "{input:?} -> {replacement:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn nanda_semantic_candidate_cannot_rewrite_known_word_to_neighbor_word() {
+        let gate = gate_candidate(
+            "искать хрень! ",
+            "искать хрену ",
+            TypingErrorClass::CompositeTypo,
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "soft_sign_vowel_drift");
+    }
+
+    #[test]
+    fn semantic_word_cell_far_surface_jumps_are_suggest_only() {
+        for (input, replacement) in [
+            ("реально помагаешь ", "реально понимаешь "),
+            ("она спраивтя ", "она спрашивая "),
+        ] {
+            assert!(
+                semantic_wave_candidate_lacks_surface_authority(
+                    input,
+                    replacement,
+                    crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+                ),
+                "semantic helper must reject {input:?} -> {replacement:?}"
+            );
+            let gate = gate_candidate_with_source(
+                input,
+                replacement,
+                TypingErrorClass::CompositeTypo,
+                crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+            );
+
+            assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+            assert_eq!(gate.reason, "semantic_wave_surface_authority_low");
+        }
+    }
+
+    #[test]
+    fn nanda_l3_support_cannot_override_live_protected_terms() {
+        let pipeline = default_typing_assist_pipeline();
+        for input in [
+            "это патерн ",
+            "в гугле ",
+            "блять ",
+            "слово грокать ",
+            "тоже грокнулся. ",
+        ] {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicThenNanda,
+            ));
+
+            assert_eq!(resolution.decision, None, "input={input:?}: {resolution:?}");
+            assert!(
+                resolution.candidates.iter().all(|candidate| {
+                    candidate.source != CorrectionDecisionSource::Nanda
+                        || candidate.gate.action != CandidateGateAction::Apply
+                }),
+                "NANDA candidate bypassed hard safety: {resolution:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn nanda_surface_candidates_from_logs_are_suggest_only_when_surface_is_weak() {
+        for (input, replacement, reason) in [
+            ("тели ", "тел ", "short_nanda_word_shrink"),
+            (
+                "нас моного ",
+                "нас мюоного ",
+                "short_nanda_internal_vowel_growth",
+            ),
+        ] {
+            let gate = gate_candidate_with_source(
+                input,
+                replacement,
+                TypingErrorClass::CompositeTypo,
+                "L2SurfaceMotifCell32",
+            );
+
+            assert_eq!(
+                gate.action,
+                CandidateGateAction::SuggestOnly,
+                "input={input:?}"
+            );
+            assert_eq!(gate.reason, reason, "input={input:?}");
+        }
+    }
+
+    #[test]
+    fn composite_typo_splits_previous_glued_word_when_fixing_current_typo() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "ее простозальет свтеом ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution.selected.expect("selected candidate");
+        assert_eq!(selected.replacement, "ее просто зальет светом ");
+        assert_eq!(selected.source_id, ids::ADJACENT_TRANSPOSITION);
+        assert_eq!(
+            selected.error_class,
+            TypingErrorClass::AdjacentTransposition
+        );
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn composite_typo_does_not_glue_two_committed_words() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "реально ое ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert_eq!(resolution.decision, None);
+        assert!(!resolution
+            .candidates
+            .iter()
+            .any(|candidate| candidate.replacement == "реальное "));
+    }
+
+    #[test]
+    fn live_log_multi_word_drifts_do_not_autoreplace_neighbors() {
+        let pipeline = default_typing_assist_pipeline();
+        for input in ["мете ты ", "тут тоже ", "я позвол ", "мы токенов "]
+        {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicThenNanda,
+            ));
+
+            assert_eq!(
+                resolution.decision, None,
+                "multi-word dirty log case must not auto-apply: {input:?}: {resolution:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn single_letter_boundary_beats_wrong_transposition_candidate() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "посмотреть влогах ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        ));
+
+        let selected = resolution.selected.expect("selected boundary candidate");
+        assert_eq!(selected.replacement, "посмотреть в логах ");
+        assert_eq!(selected.source_id, "BoundaryCell32");
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+        assert!(resolution.candidates.iter().all(|candidate| {
+            candidate.replacement != "посмотреть волгах "
+                || candidate.gate.action != CandidateGateAction::Apply
+        }));
+    }
+
+    #[test]
+    fn repeated_letter_repairs_short_all_caps_word() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "ТРУССС ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution
+            .selected
+            .clone()
+            .unwrap_or_else(|| panic!("selected candidate, resolution={resolution:?}"));
+        assert_eq!(selected.replacement, "ТРУС ");
+        assert_eq!(selected.source_id, ids::REPEATED_LETTER);
+        assert_eq!(selected.error_class, TypingErrorClass::RepeatedLetter);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn repeated_prefix_plus_letter_substitution_does_not_apply_intermediate_word() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "ППОНИКАЕШЬ? ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert_eq!(resolution.decision, None);
+        assert!(resolution.candidates.iter().any(|candidate| {
+            candidate.replacement == "ПОНИКАЕШЬ? "
+                && candidate.gate.action == CandidateGateAction::SuggestOnly
+                && candidate.gate.reason == "single_step_typo_has_competing_composite"
+        }));
+    }
+
+    #[test]
+    fn composite_typo_repairs_short_adjacent_transposition_in_phrase() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "имеет смылс ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution.selected.expect("selected candidate");
+        assert_eq!(selected.replacement, "имеет смысл ");
+        assert_eq!(selected.source_id, ids::ADJACENT_TRANSPOSITION);
+        assert_eq!(
+            selected.error_class,
+            TypingErrorClass::AdjacentTransposition
+        );
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn adjacent_transposition_keeps_already_known_word() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "Ладно ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert!(resolution.selected.is_none());
+        assert!(resolution.decision.is_none());
+    }
+
+    #[test]
+    fn future_auxiliary_blocks_non_infinitive_typo_candidate() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "будет несити ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert!(resolution.selected.is_none());
+        assert!(resolution.decision.is_none());
+    }
+
+    #[test]
+    fn nanda_mode_corrects_wave_writer_text() {
+        let pipeline = default_typing_assist_pipeline();
+        let decision =
+            decide_text_correction(request("тфтвф ", &pipeline, CorrectionMode::NandaOnly))
+                .expect("nanda should produce a layout candidate");
+        assert_eq!(decision.replacement, "nanda ");
+        assert_eq!(decision.source, CorrectionDecisionSource::Nanda);
+    }
+
+    #[test]
+    fn nanda_candidate_also_passes_unified_gate() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution =
+            resolve_text_correction(request("тфтвф ", &pipeline, CorrectionMode::NandaOnly));
+
+        let selected = resolution.selected.expect("selected candidate");
+        assert_eq!(selected.replacement, "nanda ");
+        assert_eq!(selected.error_class, TypingErrorClass::WrongLayout);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn nanda_surface_motif_can_apply_known_typo() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution =
+            resolve_text_correction(request("звгрузи ", &pipeline, CorrectionMode::NandaOnly));
+
+        let selected = resolution.selected.expect("selected candidate");
+        assert_eq!(selected.replacement, "загрузи ");
+        assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
+        assert_eq!(selected.source_id, "L2SurfaceMotifCell32");
+        assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn nanda_surface_drift_stays_out_of_autocorrect_apply() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, bad_replacement) in
+            [("сысл ", "сыск "), ("дать ", "гать "), ("теком ", "телом ")]
+        {
+            let resolution =
+                resolve_text_correction(request(input, &pipeline, CorrectionMode::NandaOnly));
+            assert!(
+                resolution
+                    .selected
+                    .as_ref()
+                    .map(|candidate| candidate.replacement.as_str() != bad_replacement)
+                    .unwrap_or(true),
+                "{input:?} must not select weak drift {bad_replacement:?}; candidates={:?}",
+                resolution.candidates
+            );
+        }
+    }
+
+    #[test]
+    fn nanda_surface_completion_is_suggest_only_not_autocorrect() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution =
+            resolve_text_correction(request("делай пров ", &pipeline, CorrectionMode::NandaOnly));
+
+        assert!(resolution.decision.is_none());
+        let completion = resolution
+            .candidates
+            .iter()
+            .find(|candidate| candidate.source_id == "L2SurfaceCompletionCell32")
+            .expect("completion candidate");
+        assert_eq!(completion.error_class, TypingErrorClass::CompletionOnly);
+        assert_eq!(completion.gate.action, CandidateGateAction::SuggestOnly);
+    }
+
+    #[test]
+    fn nanda_corrects_customs_actor_phrase_with_right_anchor() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "Поставщик говорит что цена до склада нашего покупателя но таможен мы! ",
+            &pipeline,
+            CorrectionMode::NandaOnly,
+        ));
+
+        let selected = resolution
+            .selected
+            .clone()
+            .unwrap_or_else(|| panic!("selected candidate: {resolution:?}"));
+        assert_eq!(
+            selected.replacement,
+            "Поставщик говорит что цена до склада нашего покупателя но таможим мы! "
+        );
+        assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
+        assert_eq!(selected.source_id, "PhraseCell32");
+        assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn nanda_does_not_correct_customs_actor_phrase_without_right_anchor() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "Поставщик говорит что цена до склада нашего покупателя но таможен ",
+            &pipeline,
+            CorrectionMode::NandaOnly,
+        ));
+
+        assert!(resolution.selected.is_none());
+        assert!(resolution.decision.is_none());
+    }
+
+    #[test]
+    fn disabled_runtime_flags_keep_original() {
+        let pipeline = default_typing_assist_pipeline();
+        let decision = decide_text_correction(CorrectionRequest {
+            text: "lfdfq ",
+            auto_replace: false,
+            typing_assist: false,
+            auto_switch_layout: false,
+            correction_safety: CorrectionSafety::Experimental,
+            typing_assist_pipeline: &pipeline,
+            nanda_autocorrect: false,
+            nanda_wave_options: WaveOptions::default(),
+            mode: CorrectionMode::DeterministicThenNanda,
+        });
+        assert_eq!(decision, None);
+    }
+}

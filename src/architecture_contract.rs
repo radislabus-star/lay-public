@@ -130,12 +130,12 @@ pub fn observed_contract_status(id: &str) -> ContractStatus {
                 include_str!("correction_core.rs"),
                 &["L2CandidateLattice::new", "lattice.into_resolution()"],
             );
-            let lattice_uses_core = source_contains_all(
-                include_str!("typing_transition/candidate.rs"),
+            let authority_uses_core = source_contains_all(
+                include_str!("typing_transition/candidate_resolution.rs"),
                 &["TransitionDecisionCore::select_apply_candidate"],
             );
             if matches!(facade_uses_lattice, ContractStatus::Pass)
-                && matches!(lattice_uses_core, ContractStatus::Pass)
+                && matches!(authority_uses_core, ContractStatus::Pass)
             {
                 ContractStatus::Pass
             } else {
@@ -193,9 +193,9 @@ pub fn observed_contract_status(id: &str) -> ContractStatus {
             &["HotFieldSnapshot", "FieldSnapshotOnly"],
         ),
         "l2-candidate-field" => source_contains_all(
-            include_str!("typing_transition/candidate.rs"),
+            include_str!("typing_transition/candidate_resolution.rs"),
             &[
-                "L2CandidateLattice",
+                "resolve_l2_lattice",
                 "TransitionDecisionCore::select_apply_candidate",
             ],
         ),
