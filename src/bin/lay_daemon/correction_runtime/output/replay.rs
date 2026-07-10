@@ -1,6 +1,6 @@
 use evdev::uinput::VirtualDevice;
 use lay::action_log::RecentActionGateTrace;
-use lay::text_edit::{TextReplacement, TransitionAudit};
+use lay::text_edit::{AuthorizedEdit, TextReplacement, TransitionAudit};
 use std::time::Instant;
 
 use super::super::super::{
@@ -16,7 +16,14 @@ pub(crate) fn apply_layout_replay(
     kbd: &mut VirtualDevice,
     input_gate: Option<RecentActionGateTrace>,
 ) -> Option<bool> {
-    if !manual_replay_action_allowed(ctx, input_gate) {
+    let authorized_edit = manual_replay_action(ctx, input_gate)?;
+    let action = authorized_edit.action();
+    let Some(plan) = action.plan.as_ref() else {
+        log("⚠ manual replay blocked: AuthorizedEdit has no replacement plan");
+        return None;
+    };
+    if plan.backspaces != ctx.n_backspaces || action.to_text != ctx.mapped_target {
+        log("⚠ manual replay blocked: AuthorizedEdit does not match replay state");
         return None;
     }
     let layout_started = Instant::now();
@@ -89,10 +96,10 @@ pub(crate) fn apply_layout_replay(
     Some(ctx.target_is_ru)
 }
 
-fn manual_replay_action_allowed(
+fn manual_replay_action(
     ctx: &ManualOutputCommon<'_>,
     input_gate: Option<RecentActionGateTrace>,
-) -> bool {
+) -> Option<AuthorizedEdit> {
     let plan = TextReplacement {
         move_left: 0,
         backspaces: ctx.n_backspaces,
@@ -124,8 +131,8 @@ fn manual_replay_action_allowed(
         lay::text_edit::TextEditBackend::Daemon,
         &edit_action,
     );
-    if backend_action.authorized().is_some() {
-        return true;
+    if let Some(authorized_edit) = backend_action.authorized() {
+        return Some(authorized_edit);
     }
     log(&format!(
         "⚠ manual replay blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
@@ -134,5 +141,5 @@ fn manual_replay_action_allowed(
         ctx.mapped_orig,
         ctx.mapped_target
     ));
-    false
+    None
 }
