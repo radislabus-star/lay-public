@@ -16,22 +16,27 @@ impl LayIbusEngine {
         if self.tail_buffer.trim().is_empty() {
             return Ok(false);
         }
-        let mut text = self.selected_visible_completion_suffix();
-        if text.is_empty() {
+        let mut committed_suffix = self.selected_visible_completion_suffix();
+        if committed_suffix.is_empty() {
             return Ok(false);
         }
-        let suffix_chars = text.chars().count();
+        let tail_token = self.last_tail_token_text();
+        if tail_token.is_empty() {
+            return Ok(false);
+        }
+        let suffix_chars = committed_suffix.chars().count();
         trace::record_completion_accept("stuck_tail", suffix_chars, with_space);
-        let accepted_word = format!("{}{}", self.last_tail_token_text(), text.trim());
+        let mut accepted_text = format!("{}{}", tail_token, committed_suffix.trim());
         let context_tail = self.tail_buffer.clone();
         if with_space {
-            text.push(' ');
+            committed_suffix.push(' ');
+            accepted_text.push(' ');
         }
         let action = lay::text_edit::EditAction::ime_accept(
             "ibus-committed-tail-completion",
             900,
-            String::new(),
-            text.clone(),
+            tail_token,
+            accepted_text.clone(),
         );
         lay::action_log::record_candidate_edit_action_before_apply(
             &action,
@@ -44,19 +49,16 @@ impl LayIbusEngine {
             trace::record(r#"{"kind":"ibus_stuck_completion_blocked"}"#);
             return Ok(false);
         };
-        if authorized_edit.action().to_text != text {
+        if authorized_edit.action().to_text != accepted_text {
             trace::record(r#"{"kind":"ibus_stuck_completion_authorized_text_mismatch"}"#);
             return Ok(false);
         }
         self.clear_preedit(emitter).await?;
-        Self::commit_text(
-            emitter,
-            make_ibus_text(authorized_edit.action().to_text.clone()),
-        )
-        .await
-        .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        lay::nanda_wave::record_accepted_ime_usage(&context_tail, &accepted_word);
-        self.sync_tail_after_stuck_completion(&text);
+        Self::commit_text(emitter, make_ibus_text(committed_suffix.clone()))
+            .await
+            .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+        lay::nanda_wave::record_accepted_ime_usage(&context_tail, &accepted_text);
+        self.sync_tail_after_stuck_completion(&committed_suffix);
         Ok(true)
     }
 
@@ -152,8 +154,9 @@ mod tests {
         let source = include_str!("committed_tail.rs");
         assert!(
             source.contains("ibus-committed-tail-completion")
-                && source.contains("authorized_edit.action().to_text"),
-            "stuck completion must keep its AuthorizedEdit through CommitText"
+                && source.contains("accepted_text.clone()")
+                && source.contains("make_ibus_text(committed_suffix.clone())"),
+            "the proof must cover full token completion while CommitText emits only its suffix"
         );
     }
 
