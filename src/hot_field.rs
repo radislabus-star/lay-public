@@ -145,9 +145,7 @@ impl HotFieldSnapshot {
         let lower = word.trim().to_lowercase();
         let authority = if lower.is_empty() {
             HotWordAuthority::Unknown
-        } else if crate::lexicon::is_common_ru_word(&lower)
-            || crate::lexicon::is_ime_hot_ru_word(&lower)
-        {
+        } else if crate::lexicon::is_common_ru_word(&lower) {
             HotWordAuthority::CommonSurface
         } else if crate::nanda_wave::cached_usage_prior_snapshot().word_prior(&lower) >= 0.020 {
             HotWordAuthority::UserUsage
@@ -196,5 +194,13 @@ mod tests {
     fn hot_word_readout_does_not_need_full_dictionary_for_common_words() {
         let snapshot = HotFieldSnapshot::current();
         assert!(snapshot.word_readout("это").is_known());
+    }
+
+    #[test]
+    fn reference_surface_is_not_terminal_known_word() {
+        let snapshot = HotFieldSnapshot::current();
+        let readout = snapshot.word_readout("пров");
+        assert_eq!(readout.authority, HotWordAuthority::Unknown);
+        assert!(!readout.is_known());
     }
 }

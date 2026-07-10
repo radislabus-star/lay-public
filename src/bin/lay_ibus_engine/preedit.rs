@@ -589,6 +589,7 @@ mod tests {
 
     #[test]
     fn russian_fast_lexical_prior_generates_contextual_suffix() {
+        lay::nanda_wave::warm_up_l2_for_ime();
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
             Arc::new(Mutex::new(Default::default())),
@@ -1119,24 +1120,12 @@ mod tests {
     }
 
     #[test]
-    fn mid_sentence_short_prefix_does_not_suggest_greeting() {
-        let mut engine = LayIbusEngine::new(
-            "/test".to_string(),
-            Arc::new(Mutex::new(Default::default())),
-            true,
-            true,
-            LayConfig {
-                text_backend: "ime".to_string(),
-                nanda_precognition: true,
-                correction_safety: "normal".to_string(),
-                ..LayConfig::default()
-            },
+    fn mid_sentence_short_prefix_delegates_to_shared_candidate_gate() {
+        let readout = include_str!("preedit_readout.rs");
+        assert!(
+            !readout.contains("has_left_context\n            && partial_len <= 3"),
+            "IME must not suppress a shared L2/L3/L4 candidate only because it is inside a phrase"
         );
-        for ch in "смотрим что будет происходить когда при".chars()
-        {
-            engine.push_tail_char(ch);
-        }
-        assert_eq!(engine.precognition_suffix().as_deref(), None);
     }
 
     #[test]
@@ -1704,6 +1693,7 @@ mod tests {
 
     #[test]
     fn precognition_candidate_generation_stays_under_budget() {
+        lay::nanda_wave::warm_up_l2_for_ime();
         let samples = [
             "пр",
             "пров",

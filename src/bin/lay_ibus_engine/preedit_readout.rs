@@ -76,23 +76,15 @@ impl LayIbusEngine {
         {
             return Vec::new();
         }
-        if has_left_context
-            && partial_len <= 3
-            && self.config.active_correction_safety() != lay::config::CorrectionSafety::Experimental
-        {
-            return Vec::new();
-        }
-
         let max_suffix_chars = self.precognition_max_suffix_chars();
-        let allow_short_lexical = self.config.active_correction_safety()
-            == lay::config::CorrectionSafety::Experimental
-            || !has_left_context;
         let whole_word_candidates = lay::nanda_wave::candidate_gate::live_completion_candidates(
             lay::nanda_wave::candidate_gate::LiveCompletionRequest {
                 context_prefix: prefix,
                 partial: &partial,
                 max_suffix_chars,
-                allow_short_lexical,
+                // Candidate authority belongs to the shared L2/L3/L4 gate.
+                // IME only renders its approved result, including in a phrase.
+                allow_short_lexical: true,
                 limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
             },
         );

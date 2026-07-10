@@ -263,13 +263,19 @@ fn known_surface_mass(word: &str) -> f32 {
 }
 
 fn live_known_surface_mass(word: &str) -> f32 {
-    match crate::hot_field::HotFieldSnapshot::current()
+    let authority = crate::hot_field::HotFieldSnapshot::current()
         .word_readout(word)
-        .authority
-    {
+        .authority;
+    match authority {
         crate::hot_field::HotWordAuthority::CommonSurface => 0.14,
         crate::hot_field::HotWordAuthority::UserUsage => 0.08,
-        crate::hot_field::HotWordAuthority::Unknown => 0.0,
+        crate::hot_field::HotWordAuthority::Unknown => {
+            if crate::lexicon::is_ime_hot_ru_word(word) {
+                0.10
+            } else {
+                0.0
+            }
+        }
     }
 }
 

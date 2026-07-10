@@ -349,18 +349,15 @@ fn ime_l2_foundation_prefix_candidates_from_index(
     }
     let context_tokens = super::llmwave::tokenize(context_prefix);
     let usage = super::usage_prior::cached_usage_prior_snapshot();
-    let mut words = index
-        .prefix_candidates(
-            &normalized,
-            token_len + 1,
-            32,
-            limit
-                .saturating_mul(16)
-                .clamp(L2_BROAD_PREFIX_SCAN_LIMIT, L2_FOUNDATION_LIVE_SCAN_LIMIT),
-        )
-        .into_iter()
-        .map(str::to_string)
-        .collect::<Vec<_>>();
+    let mut words = index.prefix_candidates(
+        &normalized,
+        token_len + 1,
+        32,
+        limit.saturating_mul(8).clamp(
+            L2_BROAD_PREFIX_SCAN_LIMIT / 6,
+            L2_FOUNDATION_LIVE_SCAN_LIMIT,
+        ),
+    );
     words.sort_by(|left, right| {
         compare_l2_words_by_usage(right, left, &context_tokens, &usage)
             .then_with(|| {
@@ -374,10 +371,10 @@ fn ime_l2_foundation_prefix_candidates_from_index(
     words
         .into_iter()
         .map(|word| {
-            let usage_prior = usage.word_prior(&word);
-            let context_prior = usage.context_word_prior(&context_tokens, &word);
+            let usage_prior = usage.word_prior(word);
+            let context_prior = usage.context_word_prior(&context_tokens, word);
             L2ImeWordCandidate {
-                surface: word,
+                surface: word.to_string(),
                 kind: L2ImeWordCandidateKind::Completion,
                 score: 610,
                 l1_overlap: token_len,
