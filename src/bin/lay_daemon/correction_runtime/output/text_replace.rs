@@ -60,7 +60,7 @@ pub(crate) fn try_manual_text_replacement(
         lay::text_edit::TextEditBackend::Daemon,
         &edit_action,
     );
-    if !backend_action.allow_execute {
+    if backend_action.authorized().is_none() {
         log(&format!(
             "⚠ {kind} blocked by executor contract: reason={} backend={} original={:?} replacement={:?}; fallback to replay",
             backend_action.reason,

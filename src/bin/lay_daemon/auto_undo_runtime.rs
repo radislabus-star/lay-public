@@ -49,7 +49,9 @@ pub(super) fn handle_pending_auto_undo(
         lay::text_edit::TextEditBackend::Daemon,
         &edit_action,
     );
-    if !ime_backend_action.allow_execute && !daemon_backend_action.allow_execute {
+    let ime_authorized = ime_backend_action.authorized();
+    let daemon_authorized = daemon_backend_action.authorized();
+    if ime_authorized.is_none() && daemon_authorized.is_none() {
         log(&format!(
             "⚠ auto-undo blocked by executor contract: reason={} original={:?} replacement={:?}",
             daemon_backend_action.reason, undo.replacement, undo.original
@@ -58,7 +60,7 @@ pub(super) fn handle_pending_auto_undo(
     }
 
     if should_try_ime_text_backend()
-        && ime_backend_action.allow_execute
+        && ime_authorized.is_some()
         && try_ime_replace_tail(&undo.replacement, &undo.original, "auto-undo").unwrap_or(false)
     {
         let target_layout = lay::keyboard::preferred_layout_for_text(&undo.original, true);
@@ -77,7 +79,7 @@ pub(super) fn handle_pending_auto_undo(
         log("⚠ auto-undo: нет uinput device");
         return None;
     };
-    if !daemon_backend_action.allow_execute {
+    if daemon_authorized.is_none() {
         log(&format!(
             "⚠ auto-undo daemon output blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
             daemon_backend_action.reason,

@@ -54,7 +54,7 @@ pub(crate) fn apply_minimal_typing_replacement(
         lay::text_edit::TextEditBackend::Daemon,
         &edit_action,
     );
-    if !backend_action.allow_execute {
+    let Some(_authorized_edit) = backend_action.authorized() else {
         log(&format!(
             "⚠ typing-assist output blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
             backend_action.reason,
@@ -63,7 +63,7 @@ pub(crate) fn apply_minimal_typing_replacement(
             replacement
         ));
         return TypingAssistOutcome::NoCorrection;
-    }
+    };
     log(&format!(
         "  typing-assist plan: left={} bs={} insert={:?} right={}",
         plan.move_left, plan.backspaces, plan.insert, plan.move_right

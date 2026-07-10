@@ -249,8 +249,10 @@ fn live_text_mutation_outputs_use_executor_contract() {
     for (path, backend) in cases {
         let source = read(path);
         assert!(
-            source.contains("authorize_backend_edit(") && source.contains(backend),
-            "{path} must authorize physical mutation through ExecutorContract for {backend}"
+            source.contains("authorize_backend_edit(")
+                && source.contains(backend)
+                && source.contains(".authorized()"),
+            "{path} must hold AuthorizedEdit before physical mutation through ExecutorContract for {backend}"
         );
     }
 
@@ -262,6 +264,12 @@ fn live_text_mutation_outputs_use_executor_contract() {
     assert!(
         read("src/text_edit.rs").contains("authorize_backend_edit"),
         "bin backends must reach ExecutorContract through the shared text_edit API"
+    );
+    let executor = read("src/text_edit/executor.rs");
+    assert!(
+        executor.contains("pub struct AuthorizedEdit")
+            && executor.contains("authorized: Option<AuthorizedEdit"),
+        "executor must issue a sealed AuthorizedEdit capability"
     );
 }
 

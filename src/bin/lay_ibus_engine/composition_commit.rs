@@ -94,7 +94,7 @@ impl LayIbusEngine {
         );
         let backend_action =
             lay::text_edit::authorize_backend_edit(lay::text_edit::TextEditBackend::Ime, &action);
-        if !backend_action.allow_execute {
+        if backend_action.authorized().is_none() {
             trace::record(r#"{"kind":"ibus_completion_accept_blocked"}"#);
             return Ok(false);
         }
@@ -176,7 +176,7 @@ impl LayIbusEngine {
                     lay::text_edit::TextEditBackend::Ime,
                     &decision.action,
                 );
-                if backend_action.allow_execute {
+                if backend_action.authorized().is_some() {
                     text = decision.replacement;
                 } else {
                     trace::record(r#"{"kind":"ibus_active_composition_autocorrect_blocked"}"#);

@@ -146,7 +146,9 @@ pub(super) fn handle_enter_autocorrect(
         lay::text_edit::TextEditBackend::Daemon,
         &edit_action,
     );
-    if !ime_backend_action.allow_execute && !daemon_backend_action.allow_execute {
+    let ime_authorized = ime_backend_action.authorized();
+    let daemon_authorized = daemon_backend_action.authorized();
+    if ime_authorized.is_none() && daemon_authorized.is_none() {
         log(&format!(
             "⚠ enter-autocorrect blocked by executor contract: reason={} original={:?} replacement={:?}",
             daemon_backend_action.reason,
@@ -156,7 +158,7 @@ pub(super) fn handle_enter_autocorrect(
         return None;
     }
 
-    if should_try_ime_text_backend() && ime_backend_action.allow_execute {
+    if should_try_ime_text_backend() && ime_authorized.is_some() {
         let original_layout = read_current_layout_is_ru().ok();
         if try_ime_replace_tail(&original, &replacement, "enter-autocorrect").unwrap_or(false) {
             let target_layout =
@@ -201,7 +203,7 @@ pub(super) fn handle_enter_autocorrect(
         log("⚠ enter-autocorrect: нет uinput device");
         return None;
     };
-    if !daemon_backend_action.allow_execute {
+    if daemon_authorized.is_none() {
         log(&format!(
             "⚠ enter-autocorrect daemon output blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
             daemon_backend_action.reason,

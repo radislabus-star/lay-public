@@ -124,7 +124,7 @@ fn manual_replay_action_allowed(
         lay::text_edit::TextEditBackend::Daemon,
         &edit_action,
     );
-    if backend_action.allow_execute {
+    if backend_action.authorized().is_some() {
         return true;
     }
     log(&format!(

@@ -252,7 +252,7 @@ fn native_text_edit_action_allowed(
         input_gate,
     );
     let backend_action = lay::text_edit::authorize_backend_edit(backend, &edit_action);
-    if backend_action.allow_execute {
+    if backend_action.authorized().is_some() {
         return true;
     }
     log(&format!(

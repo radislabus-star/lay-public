@@ -20,24 +20,64 @@ impl TextEditBackend {
     }
 }
 
+/// Capability issued only after the transition verifier admits the edit.
+///
+/// Output adapters may inspect this capability, but cannot manufacture one.
+/// This is intentionally the only value that represents permission to mutate
+/// user-visible text.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct BackendEditAuthorization {
+pub struct AuthorizedEdit<'a> {
+    backend: TextEditBackend,
+    action: &'a EditAction,
+}
+
+impl<'a> AuthorizedEdit<'a> {
+    pub const fn backend(&self) -> TextEditBackend {
+        self.backend
+    }
+
+    pub const fn action(&self) -> &'a EditAction {
+        self.action
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct BackendEditAuthorization<'a> {
     pub backend: TextEditBackend,
     pub allow_execute: bool,
     pub reason: &'static str,
+    authorized: Option<AuthorizedEdit<'a>>,
+}
+
+impl<'a> BackendEditAuthorization<'a> {
+    /// Returns the sealed capability for backends that have migrated to the
+    /// typed execution contract.
+    pub const fn authorized(&self) -> Option<AuthorizedEdit<'a>> {
+        self.authorized
+    }
 }
 
 pub fn authorize_backend_edit(
     backend: TextEditBackend,
     action: &EditAction,
-) -> BackendEditAuthorization {
+) -> BackendEditAuthorization<'_> {
     let execution_backend: ExecutionBackend = backend.into();
     let auth = ExecutorContract::backend_only(execution_backend).authorize_edit(action);
     debug_assert_eq!(auth.backend, execution_backend);
-    BackendEditAuthorization {
-        backend,
-        allow_execute: auth.allow_execute,
-        reason: auth.reason,
+    if auth.allow_execute {
+        BackendEditAuthorization {
+            backend,
+            allow_execute: true,
+            reason: auth.reason,
+            authorized: Some(AuthorizedEdit { backend, action }),
+        }
+    } else {
+        BackendEditAuthorization {
+            backend,
+            allow_execute: false,
+            reason: auth.reason,
+            authorized: None,
+        }
     }
 }
 
@@ -75,6 +115,7 @@ mod tests {
         );
         let auth = authorize_backend_edit(TextEditBackend::Ime, &action);
         assert!(!auth.allow_execute);
+        assert!(auth.authorized().is_none());
         assert_eq!(auth.backend.as_str(), "ime");
         assert_ne!(auth.reason, "verified_transition_authority");
     }

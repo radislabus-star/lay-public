@@ -37,7 +37,9 @@ pub use cursor::offset_replacement_plan_for_cursor;
 pub use diff_plan::{
     apply_replacement_plan_to_text, plan_text_replacement, replacement_plan_matches, tail_chars,
 };
-pub use executor::{authorize_backend_edit, BackendEditAuthorization, TextEditBackend};
+pub use executor::{
+    authorize_backend_edit, AuthorizedEdit, BackendEditAuthorization, TextEditBackend,
+};
 pub use gate::{authorize_replacement, authorize_replacement_with_transition};
 pub use mutation::TransitionAudit;
 pub use safety::{autocorrect_edit_safety, EditPlanSafetyReport};
