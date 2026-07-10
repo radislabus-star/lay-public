@@ -89,6 +89,23 @@ lay-nanda-wave-eval --candidate-quality-report
 Current checkpoint:
 
 ```text
+0.2.201
+|
++-- all physical daemon, committed-tail IME, active-composition, and completion
+|   text mutations retain AuthorizedEdit through execution
++-- TransitionDecisionCore is the sole candidate promotion owner; legacy gates
+|   only return eligibility or constraints
++-- candidate evidence is typed by CandidateOrigin and merged in L2CandidateLattice
+|   instead of replacing one source with deterministic owner priority
++-- correction_core facade and its legacy constraint gate are separate owners
++-- L2 surface-attractor field is separate from hot-memory and phase modules
++-- IME preedit rendering is separate from the L2/L3 source adapter; candidate
+|   ranking remains in shared ime_candidate_readout
++-- transition shadow replay distinguishes verified boundary transitions from
+|   unverified left-context mutations
++-- changed-route checks run focused contracts by default; broad core/L2 suites
+|   require explicit LAY_CHANGED_FULL_CORE=1 or LAY_CHANGED_FULL_L2=1
+
 0.2.155
 |
 +-- runtime text edits pass through text_edit transition safety
