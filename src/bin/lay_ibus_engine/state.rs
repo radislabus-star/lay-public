@@ -373,10 +373,7 @@ fn warm_runtime(config: &LayConfig) {
     {
         lay::lem::set_runtime_enabled(config.lem_enabled && config.active_lem_weight() > 0.0);
         if config.active_text_backend().should_try_ime() {
-            std::thread::spawn(move || {
-                lay::lexicon::warm_up_for_ime();
-                lay::nanda_wave::warm_up_l2_for_ime();
-            });
+            lay::nanda_wave::ensure_l2_ime_warmup_started();
         } else {
             lay::lexicon::warm_up();
         }
