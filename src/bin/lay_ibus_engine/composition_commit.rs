@@ -5,6 +5,7 @@ use zbus::object_server::SignalEmitter;
 use super::engine::LayIbusEngine;
 use super::text::make_ibus_text;
 use super::trace;
+use lay::text_edit::AuthorizedEdit;
 
 pub(super) struct ActiveCompositionCommit {
     with_space: bool,
@@ -31,15 +32,6 @@ impl ActiveCompositionCommit {
             autocorrect: true,
         }
     }
-
-    pub(super) fn with_completion(suffix: String, with_space: bool) -> Self {
-        Self {
-            with_space,
-            suffix,
-            sync_layout: false,
-            autocorrect: false,
-        }
-    }
 }
 
 impl LayIbusEngine {
@@ -54,6 +46,7 @@ impl LayIbusEngine {
             &request.suffix,
             request.sync_layout,
             request.autocorrect,
+            None,
         )
         .await
     }
@@ -94,15 +87,19 @@ impl LayIbusEngine {
         );
         let backend_action =
             lay::text_edit::authorize_backend_edit(lay::text_edit::TextEditBackend::Ime, &action);
-        if backend_action.authorized().is_none() {
+        let Some(authorized_edit) = backend_action.authorized() else {
             trace::record(r#"{"kind":"ibus_completion_accept_blocked"}"#);
             return Ok(false);
-        }
+        };
         let context_tail = self.tail_buffer.clone();
         trace::record_completion_accept("active_composition", suffix.chars().count(), with_space);
-        self.commit_active_composition(
+        self.commit_active_composition_with_suffix(
             emitter,
-            ActiveCompositionCommit::with_completion(suffix, with_space),
+            with_space,
+            &suffix,
+            false,
+            false,
+            Some(authorized_edit),
         )
         .await?;
         lay::nanda_wave::record_accepted_ime_usage(&context_tail, &accepted_word);
@@ -153,6 +150,7 @@ impl LayIbusEngine {
         suffix: &str,
         sync_layout: bool,
         autocorrect: bool,
+        mut authorized_edit: Option<AuthorizedEdit>,
     ) -> fdo::Result<()> {
         let started_at = Instant::now();
         let clear_started_at = Instant::now();
@@ -163,6 +161,10 @@ impl LayIbusEngine {
         text.push_str(suffix);
         if with_space {
             text.push(' ');
+        }
+        if !authorized_edit_matches_ime_text(authorized_edit.as_ref(), &text) {
+            trace::record(r#"{"kind":"ibus_active_composition_authorized_text_mismatch"}"#);
+            return Ok(());
         }
         let decision_started_at = Instant::now();
         if autocorrect {
@@ -176,14 +178,19 @@ impl LayIbusEngine {
                     lay::text_edit::TextEditBackend::Ime,
                     &decision.action,
                 );
-                if backend_action.authorized().is_some() {
-                    text = decision.replacement;
+                if let Some(edit) = backend_action.authorized() {
+                    text = edit.action().to_text.clone();
+                    authorized_edit = Some(edit);
                 } else {
                     trace::record(r#"{"kind":"ibus_active_composition_autocorrect_blocked"}"#);
                 }
             }
         }
         let decision_ms = decision_started_at.elapsed().as_micros() as u64;
+        if !authorized_edit_matches_ime_text(authorized_edit.as_ref(), &text) {
+            trace::record(r#"{"kind":"ibus_active_composition_authorized_text_mismatch"}"#);
+            return Ok(());
+        }
         let output_started_at = Instant::now();
         Self::commit_text(emitter, make_ibus_text(text.clone()))
             .await
@@ -224,6 +231,15 @@ impl LayIbusEngine {
     }
 }
 
+fn authorized_edit_matches_ime_text(authorized_edit: Option<&AuthorizedEdit>, text: &str) -> bool {
+    match authorized_edit {
+        Some(edit) => {
+            edit.backend() == lay::text_edit::TextEditBackend::Ime && edit.action().to_text == text
+        }
+        None => true,
+    }
+}
+
 #[cfg(test)]
 mod active_composition_route_contract {
     #[test]
@@ -244,6 +260,11 @@ mod active_composition_route_contract {
             source.contains("EditAction::ime_accept("),
             "Tab/IME completion accept must be represented as EditAction::AcceptImeCandidate"
         );
+        assert!(
+            source.contains("Some(authorized_edit)")
+                && source.contains("authorized_edit_matches_ime_text"),
+            "accepted completion must hold AuthorizedEdit until CommitText"
+        );
     }
 }
 
@@ -251,7 +272,12 @@ mod active_composition_route_contract {
 mod tests {
     #[test]
     fn completion_with_space_does_not_trigger_autocorrect() {
-        let completion = super::ActiveCompositionCommit::with_completion("ерка".to_string(), true);
+        let completion = super::ActiveCompositionCommit {
+            with_space: true,
+            suffix: "ерка".to_string(),
+            sync_layout: false,
+            autocorrect: false,
+        };
         assert!(completion.with_space);
         assert_eq!(completion.suffix, "ерка");
         assert!(!completion.autocorrect);

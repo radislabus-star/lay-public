@@ -1,6 +1,6 @@
 use lay::config::LayConfig;
 use lay::text_edit::{
-    decide_text_transition, LatentTextTransitionCandidate, TextTransitionDecision,
+    decide_text_transition, LatentTextTransitionCandidate, TextEditBackend, TextTransitionDecision,
     TextTransitionIntent, VisibleFieldState, VisibleTailSnapshot, VisibleTailSource,
 };
 use std::time::{Duration, Instant};
@@ -266,7 +266,36 @@ impl LayIbusEngine {
             lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
             None,
         );
-        let text = plan.insert.clone();
+        let backend_action =
+            lay::text_edit::authorize_backend_edit(TextEditBackend::Ime, &edit_action);
+        let Some(authorized_edit) = backend_action.authorized() else {
+            trace::record_committed_tail_replace(
+                source,
+                backend_action.reason,
+                backspaces,
+                &edit_action.to_text,
+            );
+            return Ok(false);
+        };
+        let Some(authorized_plan) = authorized_edit.action().plan.as_ref() else {
+            trace::record_committed_tail_replace(
+                source,
+                "authorized_edit_without_plan",
+                backspaces,
+                "",
+            );
+            return Ok(false);
+        };
+        if authorized_plan.backspaces != backspaces || authorized_plan.insert != plan.insert {
+            trace::record_committed_tail_replace(
+                source,
+                "authorized_edit_plan_mismatch",
+                backspaces,
+                "",
+            );
+            return Ok(false);
+        }
+        let text = authorized_plan.insert.clone();
         let now = Instant::now();
         self.last_commit_at = Some(now);
         self.publish_active_path_preserve_handoff(now + Duration::from_millis(700));
