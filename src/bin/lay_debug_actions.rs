@@ -440,6 +440,7 @@ struct TransitionReplay {
     false_apply_candidates: usize,
     missed_good_candidates: usize,
     left_context_mutations: usize,
+    unverified_left_context_mutations: usize,
     unverified_transitions: usize,
     unsafe_multiword: usize,
 }
@@ -455,22 +456,25 @@ impl TransitionReplay {
         if value.get("input_gate").is_some() {
             self.input_gate_records += 1;
         }
-        if value
+        let left_context_changed = value
             .get("transition_left_context_changed")
             .and_then(Value::as_bool)
             .unwrap_or(false)
             || value
                 .get("changes_non_last_word")
                 .and_then(Value::as_bool)
-                .unwrap_or(false)
-        {
-            self.left_context_mutations += 1;
-        }
-        if !value
+                .unwrap_or(false);
+        let transition_verified = value
             .get("transition_verified")
             .and_then(Value::as_bool)
-            .unwrap_or(true)
-        {
+            .unwrap_or(true);
+        if left_context_changed {
+            self.left_context_mutations += 1;
+        }
+        if left_context_changed && !transition_verified {
+            self.unverified_left_context_mutations += 1;
+        }
+        if !transition_verified {
             self.unverified_transitions += 1;
         }
         if value
@@ -538,11 +542,14 @@ impl TransitionReplay {
                 "selected_apply": self.selected_apply,
                 "false_apply_candidates": self.false_apply_candidates,
                 "missed_good_candidates": self.missed_good_candidates,
-                "left_context_mutations": self.left_context_mutations,
+                "left_context_mutations_observed": self.left_context_mutations,
+                "unverified_left_context_mutations": self.unverified_left_context_mutations,
                 "unverified_transitions": self.unverified_transitions,
                 "unsafe_multiword": self.unsafe_multiword
             },
-            "verdict": if self.false_apply_candidates == 0 && self.left_context_mutations == 0 {
+            "verdict": if self.false_apply_candidates == 0
+                && self.unverified_left_context_mutations == 0
+            {
                 "PASS-shadow"
             } else {
                 "WATCH-shadow"
@@ -799,5 +806,19 @@ mod tests {
         replay.inspect(&value);
         assert_eq!(replay.selected_apply, 1);
         assert_eq!(replay.false_apply_candidates, 1);
+    }
+
+    #[test]
+    fn transition_replay_keeps_verified_boundary_transition_out_of_unsafe_count() {
+        let value = json!({
+            "kind": "candidate_before_apply",
+            "transition_left_context_changed": true,
+            "transition_verified": true
+        });
+        let mut replay = TransitionReplay::default();
+        replay.inspect(&value);
+
+        assert_eq!(replay.left_context_mutations, 1);
+        assert_eq!(replay.unverified_left_context_mutations, 0);
     }
 }
