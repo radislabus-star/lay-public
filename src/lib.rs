@@ -19,6 +19,7 @@ pub mod dict;
 pub mod engine;
 pub mod eval_cases;
 pub mod hot_field;
+pub mod ime_candidate_readout;
 pub mod ime_correction;
 pub mod input_gate;
 pub mod keyboard;

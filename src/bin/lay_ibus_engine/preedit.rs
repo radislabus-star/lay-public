@@ -2,7 +2,16 @@ use std::time::Instant;
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
+use lay::ime_candidate_readout::{
+    compare_suffix_len_for_prefix, is_command_like_long_tail, is_noisy_first_russian_prefix,
+    phrase_candidate_suffix, preedit_suffix_bayes_score, preedit_suffix_context_and_word,
+    push_unique_ascii_known_suffix, push_unique_ranked_suffix, push_unique_suffix,
+    should_query_llmwave_phrase_suffix, RankedImeSuffix,
+};
 use lay::word_reader::split_last_alphabetic_token;
+
+#[cfg(test)]
+use lay::ime_candidate_readout::is_allowed_visible_completion_suffix;
 
 use super::engine::LayIbusEngine;
 use super::text::{make_ibus_text, make_preedit_ibus_text};
@@ -22,12 +31,7 @@ pub(crate) struct PreeditFastState {
     token: String,
 }
 
-#[derive(Debug, Clone)]
-struct RankedPreeditSuffix {
-    suffix: String,
-    score: f32,
-    order: usize,
-}
+type RankedPreeditSuffix = RankedImeSuffix;
 
 impl PreeditFastState {
     pub(crate) fn reset(&mut self) {
@@ -590,19 +594,6 @@ fn elapsed_us(started: Option<Instant>) -> u64 {
         .unwrap_or(0)
 }
 
-fn push_unique_suffix(candidates: &mut Vec<String>, suffix: Option<String>) {
-    let Some(suffix) = suffix else {
-        return;
-    };
-    if suffix.is_empty()
-        || !is_allowed_visible_completion_suffix(&suffix)
-        || candidates.iter().any(|candidate| candidate == &suffix)
-    {
-        return;
-    }
-    candidates.push(suffix);
-}
-
 #[cfg(test)]
 fn push_unique_ru_known_suffix(
     candidates: &mut Vec<String>,
@@ -627,65 +618,6 @@ fn push_unique_ru_known_suffix(
     }
 }
 
-fn push_unique_ranked_suffix(
-    candidates: &mut Vec<RankedPreeditSuffix>,
-    suffix: Option<String>,
-    score: f32,
-) {
-    let Some(suffix) = suffix else {
-        return;
-    };
-    if suffix.is_empty() || !is_allowed_visible_completion_suffix(&suffix) {
-        return;
-    }
-    if let Some(existing) = candidates
-        .iter_mut()
-        .find(|candidate| candidate.suffix == suffix)
-    {
-        if score > existing.score {
-            existing.score = score;
-        }
-        return;
-    }
-    let order = candidates.len();
-    candidates.push(RankedPreeditSuffix {
-        suffix,
-        score,
-        order,
-    });
-}
-
-fn push_unique_ascii_known_suffix(candidates: &mut Vec<String>, token: &str, suffix: String) {
-    if suffix.is_empty() || candidates.iter().any(|candidate| candidate == &suffix) {
-        return;
-    }
-    let completed = format!("{token}{suffix}").to_ascii_lowercase();
-    let one_ascii_char =
-        suffix.chars().count() == 1 && suffix.chars().all(|ch| ch.is_ascii_alphabetic());
-    if one_ascii_char && !lay::lexicon::is_common_en_technical_word(&completed) {
-        return;
-    }
-    if one_ascii_char || is_allowed_visible_completion_suffix(&suffix) {
-        candidates.push(suffix);
-    }
-}
-
-fn is_allowed_visible_completion_suffix(suffix: &str) -> bool {
-    let trimmed = suffix.trim();
-    let mut chars = trimmed.chars();
-    let Some(ch) = chars.next() else {
-        return false;
-    };
-    if chars.next().is_some() {
-        return true;
-    }
-    matches!(ch, 'и' | 'я' | 'I' | 'a')
-}
-
-fn is_noisy_first_russian_prefix(prefix: &str) -> bool {
-    matches!(prefix, "нев" | "инт")
-}
-
 fn is_ime_complete_russian_word(word: &str) -> bool {
     lay::lexicon::is_common_ru_word(word)
         || (word.chars().count() >= 5 && lay::lexicon::is_ime_hot_ru_word(word))
@@ -694,114 +626,6 @@ fn is_ime_complete_russian_word(word: &str) -> bool {
 #[cfg(test)]
 fn is_ime_candidate_russian_word(word: &str) -> bool {
     lay::lexicon::is_common_ru_word(word) || lay::lexicon::is_ime_hot_ru_word(word)
-}
-
-fn is_command_like_long_tail(tail: &str) -> bool {
-    let mut word_count = 0usize;
-    let mut uppercase = 0usize;
-    let mut lowercase = 0usize;
-
-    for token in tail.split_whitespace() {
-        let mut has_alpha = false;
-        for ch in token.chars().filter(|ch| ch.is_alphabetic()) {
-            has_alpha = true;
-            if ch.is_uppercase() {
-                uppercase += 1;
-            }
-            if ch.is_lowercase() {
-                lowercase += 1;
-            }
-        }
-        if has_alpha {
-            word_count += 1;
-        }
-    }
-
-    word_count >= 4 && uppercase >= 12 && uppercase >= lowercase.saturating_mul(2).max(1)
-}
-
-fn compare_suffix_len_for_prefix(
-    partial_len: usize,
-    left: &str,
-    right: &str,
-) -> std::cmp::Ordering {
-    let left_len = left.chars().count();
-    let right_len = right.chars().count();
-    if partial_len <= 3 {
-        return right_len.cmp(&left_len);
-    }
-    left_len.cmp(&right_len)
-}
-
-fn preedit_suffix_bayes_score(
-    usage: &lay::nanda_wave::UsagePriorSnapshot,
-    tail: &str,
-    suffix: &str,
-    base: f32,
-) -> f32 {
-    let Some((context, word)) = preedit_suffix_context_and_word(tail, suffix) else {
-        return base;
-    };
-    (base
-        + usage.word_prior(&word) * 1.45
-        + usage.context_word_prior(&context, &word) * 1.90
-        + usage.accepted_word_count(&word).min(12) as f32 * 0.018)
-        .clamp(0.0, 1.0)
-}
-
-fn preedit_suffix_context_and_word(tail: &str, suffix: &str) -> Option<(Vec<String>, String)> {
-    let tail = tail.trim_end();
-    let suffix_starts_new_word = suffix.chars().next().is_some_and(char::is_whitespace);
-    if suffix_starts_new_word || tail.is_empty() {
-        let word = suffix.split_whitespace().next()?.to_lowercase();
-        let context = lay::nanda_wave::llmwave::tokenize(tail);
-        return Some((context, word));
-    }
-
-    let (prefix, partial) = split_last_alphabetic_token(tail)?;
-    let suffix_word_part = suffix.split_whitespace().next().unwrap_or(suffix);
-    let word = format!(
-        "{}{}",
-        partial.to_lowercase(),
-        suffix_word_part.to_lowercase()
-    );
-    let context = lay::nanda_wave::llmwave::tokenize(prefix);
-    Some((context, word))
-}
-
-fn phrase_candidate_suffix(tail: &str, candidate: &str, max_suffix_chars: usize) -> Option<String> {
-    let suffix = candidate.strip_prefix(tail)?;
-    let suffix = if tail.ends_with(char::is_whitespace) {
-        suffix.trim_start_matches(char::is_whitespace)
-    } else {
-        suffix
-    };
-    let suffix = next_word_suffix(suffix)?;
-    (!suffix.is_empty() && suffix.chars().count() <= max_suffix_chars).then_some(suffix)
-}
-
-fn should_query_llmwave_phrase_suffix(tail: &str) -> bool {
-    if tail.ends_with(char::is_whitespace) {
-        return true;
-    }
-    let trimmed = tail.trim_end();
-    let Some((left, token)) = trimmed.rsplit_once(char::is_whitespace) else {
-        return false;
-    };
-    let token_chars = token.chars().count();
-    (1..=6).contains(&token_chars)
-        && left.split_whitespace().count() >= 1
-        && token.chars().all(|ch| ch.is_alphabetic())
-}
-
-fn next_word_suffix(suffix: &str) -> Option<String> {
-    let leading_space = suffix.chars().next().is_some_and(char::is_whitespace);
-    let word = suffix.split_whitespace().next()?;
-    if leading_space {
-        Some(format!(" {word}"))
-    } else {
-        Some(word.to_string())
-    }
 }
 
 fn trim_tail_buffer(buffer: &mut String) {
