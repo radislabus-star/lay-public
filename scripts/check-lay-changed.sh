@@ -161,9 +161,15 @@ if has_file_matching '^src/bin/lay_debug_actions\.rs$'; then
   cargo test --bin lay-debug-actions
 fi
 
-if has_file_matching '^src/correction_core\.rs$'; then
-  echo "== cargo test correction_core:: --lib =="
-  cargo test correction_core:: --lib
+if has_file_matching '^src/correction_core(\.rs|/)'; then
+  if [[ "${LAY_CHANGED_FULL_CORE:-0}" == "1" ]]; then
+    echo "== cargo test correction_core:: --lib =="
+    cargo test correction_core:: --lib
+  else
+    echo "== correction-core route contracts =="
+    cargo test --test typing_transition_authority_contract
+    cargo test --test text_mutation_monopoly_contract
+  fi
 
   echo "== cargo test input_gate:: --lib =="
   cargo test input_gate:: --lib
@@ -189,8 +195,14 @@ if has_file_matching '^src/nanda_wave/(l3|l3_phrase_gate)\.rs$'; then
   echo "== cargo test nanda_wave::l3_phrase_gate --lib =="
   cargo test nanda_wave::l3_phrase_gate --lib
 elif has_file_matching '^src/nanda_wave'; then
-  echo "== cargo test nanda_wave:: --lib =="
-  cargo test nanda_wave:: --lib
+  if [[ "${LAY_CHANGED_FULL_L2:-0}" == "1" ]]; then
+    echo "== cargo test nanda_wave:: --lib =="
+    cargo test nanda_wave:: --lib
+  else
+    echo "== nanda-wave route contracts =="
+    cargo test --test typing_transition_authority_contract
+    cargo test --test text_mutation_monopoly_contract
+  fi
 fi
 
 if has_file_matching '^tests/.*\.rs$'; then
