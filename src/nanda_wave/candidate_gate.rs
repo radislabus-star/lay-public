@@ -160,20 +160,24 @@ pub fn live_completion_candidates(
             let accepted = usage_snapshot.accepted_word_count(&candidate.surface);
             let common = crate::lexicon::is_common_ru_word(&candidate.surface);
             let hot = crate::lexicon::is_ime_hot_ru_word(&candidate.surface);
+            let l2_center_grounded =
+                super::l2_surface_decoder::is_source_surface(&candidate.surface);
             let structural = structural_support(
                 candidate.score,
                 candidate.l1_overlap,
                 candidate.l2_overlap,
                 candidate.motif_overlap,
             );
-            let l3_score = live_l3_context_score(
+            let l3_readout = live_l3_context_score(
                 &context_tokens,
                 &candidate.surface,
                 partial_len,
                 request.allow_short_lexical,
                 &usage_snapshot,
             );
-            let scene_memory_score = if l3_score.is_none() {
+            let l3_score = l3_readout.map(|readout| readout.score);
+            let l3_memory_supported = l3_readout.is_some_and(|readout| readout.memory_supported);
+            let scene_memory_score = if !l3_memory_supported {
                 live_l4_scene_memory_score(&context_tokens, &candidate.surface)
             } else {
                 None
@@ -212,6 +216,8 @@ pub fn live_completion_candidates(
                 accepted,
                 common,
                 hot,
+                l2_center_grounded,
+                l3_memory_supported,
             }) {
                 return None;
             }
@@ -219,7 +225,7 @@ pub fn live_completion_candidates(
             if usage >= 0.025 || context_usage >= 0.018 || accepted >= 1 {
                 usage_supported = usage_supported.saturating_add(1);
             }
-            if l3_score.is_some() {
+            if l3_memory_supported {
                 l3_supported = l3_supported.saturating_add(1);
             }
             if scene_memory_score.is_some() {
@@ -454,13 +460,19 @@ fn live_candidate_gate_stats() -> LiveCandidateGateStats {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
+struct LiveL3ContextReadout {
+    score: f32,
+    memory_supported: bool,
+}
+
 fn live_l3_context_score(
     prefix_tokens: &[String],
     word: &str,
     partial_len: usize,
     allow_short_lexical: bool,
     usage: &super::usage_prior::UsagePriorSnapshot,
-) -> Option<f32> {
+) -> Option<LiveL3ContextReadout> {
     let min_lexical_prefix = if allow_short_lexical { 2 } else { 4 };
     let word_len = word.chars().count();
     let lexical_backoff_allowed = partial_len >= min_lexical_prefix
@@ -470,20 +482,24 @@ fn live_l3_context_score(
     if super::llmwave::default_memory_is_warm() {
         return super::llmwave::with_default_memory(|memory| {
             if let Some(report) = memory.score_next_token_report(prefix_tokens, word) {
-                return (report.score >= 0.18).then_some(
-                    (0.62 + report.score * 0.34 + usage_prior + context_usage_prior)
+                return (report.score >= 0.18).then_some(LiveL3ContextReadout {
+                    score: (0.62 + report.score * 0.34 + usage_prior + context_usage_prior)
                         .clamp(0.0, 1.0),
-                );
+                    memory_supported: true,
+                });
             }
-            lexical_backoff_allowed.then_some(
-                (0.28 + partial_len as f32 * 0.035 + usage_prior + context_usage_prior)
+            lexical_backoff_allowed.then_some(LiveL3ContextReadout {
+                score: (0.28 + partial_len as f32 * 0.035 + usage_prior + context_usage_prior)
                     .clamp(0.0, 0.70),
-            )
+                memory_supported: false,
+            })
         });
     }
-    lexical_backoff_allowed.then_some(
-        (0.28 + partial_len as f32 * 0.035 + usage_prior + context_usage_prior).clamp(0.0, 0.70),
-    )
+    lexical_backoff_allowed.then_some(LiveL3ContextReadout {
+        score: (0.28 + partial_len as f32 * 0.035 + usage_prior + context_usage_prior)
+            .clamp(0.0, 0.70),
+        memory_supported: false,
+    })
 }
 
 fn live_l4_scene_memory_score(prefix_tokens: &[String], word: &str) -> Option<f32> {
@@ -693,11 +709,13 @@ struct LiveCompletionAuthority {
     accepted: u32,
     common: bool,
     hot: bool,
+    l2_center_grounded: bool,
+    l3_memory_supported: bool,
 }
 
 fn live_completion_has_authority(input: LiveCompletionAuthority) -> bool {
     let usage_signal = input.usage >= 0.025 || input.context_usage >= 0.018 || input.accepted >= 1;
-    let lexical_signal = input.common || input.hot;
+    let lexical_signal = input.common || input.hot || input.l2_center_grounded;
     let structural_signal = input.structural >= 0.34;
 
     if input.partial_len <= 2 {
@@ -720,7 +738,7 @@ fn live_completion_has_authority(input: LiveCompletionAuthority) -> bool {
     if input.partial_len == 4 {
         return usage_signal || structural_signal || lexical_signal;
     }
-    usage_signal || structural_signal || lexical_signal
+    usage_signal || lexical_signal || (structural_signal && input.l3_memory_supported)
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -854,6 +872,24 @@ mod tests {
     }
 
     #[test]
+    fn live_gate_rejects_ungrounded_ngram_continuations() {
+        super::super::warm_up_l2_for_ime();
+        let candidates = live_completion_candidates(request("", "провв"));
+        assert!(
+            candidates.iter().all(
+                |candidate| super::super::l2_surface_decoder::is_source_surface(&candidate.surface)
+            ),
+            "all visible continuations must resolve to trained L2 centers: {candidates:?}"
+        );
+        assert!(
+            candidates
+                .iter()
+                .all(|candidate| candidate.suffix != "раться"),
+            "the synthetic проввраться continuation must not become visible: {candidates:?}"
+        );
+    }
+
+    #[test]
     fn live_gate_records_candidate_metrics_without_raw_text() {
         let before = live_candidate_gate_stats();
         let _ = live_completion_candidates(request("я хочу ", "пров"));
@@ -941,6 +977,8 @@ mod tests {
             accepted: 0,
             common: true,
             hot: true,
+            l2_center_grounded: false,
+            l3_memory_supported: false,
         }));
         assert!(live_completion_has_authority(LiveCompletionAuthority {
             partial_len: 3,
@@ -952,6 +990,34 @@ mod tests {
             accepted: 1,
             common: false,
             hot: false,
+            l2_center_grounded: false,
+            l3_memory_supported: false,
+        }));
+    }
+
+    #[test]
+    fn long_surface_completion_needs_grounded_memory() {
+        let ungrounded = LiveCompletionAuthority {
+            partial_len: 5,
+            suffix_len: 6,
+            allow_short_lexical: true,
+            structural: 0.60,
+            usage: 0.0,
+            context_usage: 0.0,
+            accepted: 0,
+            common: false,
+            hot: false,
+            l2_center_grounded: false,
+            l3_memory_supported: false,
+        };
+        assert!(!live_completion_has_authority(ungrounded));
+        assert!(live_completion_has_authority(LiveCompletionAuthority {
+            l2_center_grounded: true,
+            ..ungrounded
+        }));
+        assert!(live_completion_has_authority(LiveCompletionAuthority {
+            l3_memory_supported: true,
+            ..ungrounded
         }));
     }
 }
