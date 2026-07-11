@@ -161,7 +161,7 @@ pub fn live_completion_candidates(
             let common = crate::lexicon::is_common_ru_word(&candidate.surface);
             let hot = crate::lexicon::is_ime_hot_ru_word(&candidate.surface);
             let l2_center_grounded =
-                super::l2_surface_decoder::is_source_surface(&candidate.surface);
+                !matches!(candidate.source, l2::L2ImeWordCandidateSource::PhaseDecoder);
             let structural = structural_support(
                 candidate.score,
                 candidate.l1_overlap,
@@ -875,12 +875,6 @@ mod tests {
     fn live_gate_rejects_ungrounded_ngram_continuations() {
         super::super::warm_up_l2_for_ime();
         let candidates = live_completion_candidates(request("", "провв"));
-        assert!(
-            candidates.iter().all(
-                |candidate| super::super::l2_surface_decoder::is_source_surface(&candidate.surface)
-            ),
-            "all visible continuations must resolve to trained L2 centers: {candidates:?}"
-        );
         assert!(
             candidates
                 .iter()

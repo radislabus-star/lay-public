@@ -67,10 +67,20 @@ pub enum L2ImeWordCandidateKind {
     Replacement,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum L2ImeWordCandidateSource {
+    SurfaceCenter,
+    PhaseDecoder,
+    ShortSeedCenter,
+    FoundationCenter,
+    GeneratedFormCenter,
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct L2ImeWordCandidate {
     pub surface: String,
     pub kind: L2ImeWordCandidateKind,
+    pub source: L2ImeWordCandidateSource,
     pub score: u32,
     pub l1_overlap: usize,
     pub l2_overlap: usize,
@@ -132,6 +142,7 @@ pub fn ime_l2_surface_decoder_candidates(
         L2ImeWordCandidate {
             surface: candidate.word,
             kind: L2ImeWordCandidateKind::Completion,
+            source: L2ImeWordCandidateSource::PhaseDecoder,
             score: 620u32.saturating_add((candidate.score / 4).min(260)),
             l1_overlap: token_len,
             l2_overlap: candidate.support as usize,
@@ -177,6 +188,7 @@ pub fn ime_l2_word_candidates(
             L2ImeWordCandidate {
                 surface: candidate.word,
                 kind,
+                source: L2ImeWordCandidateSource::SurfaceCenter,
                 score: candidate.score,
                 l1_overlap: candidate.l1_overlap,
                 l2_overlap: candidate.l2_overlap,
@@ -309,6 +321,7 @@ pub fn ime_l2_short_seed_word_candidates(
             L2ImeWordCandidate {
                 surface: word.clone(),
                 kind: L2ImeWordCandidateKind::Completion,
+                source: L2ImeWordCandidateSource::ShortSeedCenter,
                 score: 520,
                 l1_overlap: token_len,
                 l2_overlap: 0,
@@ -376,6 +389,7 @@ fn ime_l2_foundation_prefix_candidates_from_index(
             L2ImeWordCandidate {
                 surface: word.to_string(),
                 kind: L2ImeWordCandidateKind::Completion,
+                source: L2ImeWordCandidateSource::FoundationCenter,
                 score: 610,
                 l1_overlap: token_len,
                 l2_overlap: 0,
@@ -430,6 +444,7 @@ pub fn ime_l2_generated_form_prefix_candidates(
             L2ImeWordCandidate {
                 surface: word,
                 kind: L2ImeWordCandidateKind::Completion,
+                source: L2ImeWordCandidateSource::GeneratedFormCenter,
                 score: 650,
                 l1_overlap: token_len,
                 l2_overlap: 0,

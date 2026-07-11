@@ -4,7 +4,7 @@
 //! to compile a hot grapheme-state field; runtime reads transitions and decodes
 //! a surface form from the current prefix state.
 
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::sync::OnceLock;
 
 use crate::keyboard::is_cyrillic_letter;
@@ -72,7 +72,6 @@ struct DecoderNode {
 #[derive(Clone, Debug)]
 struct L2SurfaceDecoder {
     nodes: HashMap<DecoderState, DecoderNode>,
-    source_fingerprints: HashSet<u64>,
     source_words: usize,
     arc_count: usize,
 }
@@ -100,12 +99,6 @@ pub(super) fn stats() -> L2SurfaceDecoderStats {
 
 pub(super) fn completion_candidates(prefix: &str, limit: usize) -> Vec<DecodedSurfaceCandidate> {
     decoder().completion_candidates(prefix, limit)
-}
-
-pub(super) fn is_source_surface(word: &str) -> bool {
-    decoder()
-        .source_fingerprints
-        .contains(&surface_fingerprint(word))
 }
 
 fn decoder() -> &'static L2SurfaceDecoder {
@@ -148,7 +141,6 @@ impl L2SurfaceDecoder {
         I: IntoIterator<Item = &'a str>,
     {
         let mut raw = HashMap::<DecoderState, RawNode>::new();
-        let mut source_fingerprints = HashSet::new();
         let mut source_words = 0usize;
         for word in words {
             let chars = word.chars().collect::<Vec<_>>();
@@ -156,7 +148,6 @@ impl L2SurfaceDecoder {
                 continue;
             }
             source_words += 1;
-            source_fingerprints.insert(surface_fingerprint(word));
             let mut prev2 = 0;
             let mut prev1 = 0;
             for (idx, ch) in chars.iter().copied().enumerate() {
@@ -222,7 +213,6 @@ impl L2SurfaceDecoder {
 
         Self {
             nodes,
-            source_fingerprints,
             source_words,
             arc_count,
         }
@@ -241,7 +231,6 @@ impl L2SurfaceDecoder {
         self.nodes.len()
             * (std::mem::size_of::<DecoderState>() + std::mem::size_of::<DecoderNode>())
             + self.arc_count * std::mem::size_of::<DecoderArc>()
-            + self.source_fingerprints.capacity() * std::mem::size_of::<u64>()
     }
 
     fn completion_candidates(&self, prefix: &str, limit: usize) -> Vec<DecodedSurfaceCandidate> {
@@ -366,14 +355,6 @@ fn terminal_score(path_score: u32, generated_chars: usize, node: &DecoderNode) -
     avg_path
         .saturating_add(node.terminal_weight_milli as u32)
         .saturating_add(node.terminal_support.min(256) as u32)
-}
-
-fn surface_fingerprint(word: &str) -> u64 {
-    word.as_bytes()
-        .iter()
-        .fold(0xcbf2_9ce4_8422_2325, |hash, byte| {
-            super::mode::mix64((hash ^ u64::from(*byte)).wrapping_mul(0x100_0000_01b3))
-        })
 }
 
 #[cfg(test)]
