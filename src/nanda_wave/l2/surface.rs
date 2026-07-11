@@ -47,7 +47,7 @@ pub(super) fn surface_motif_word_candidates(
             && !is_common_ru_word(&normalized)
             && !surface_motif_stable_existing_word(&normalized)
             && surface_motif_typo_has_authority(
-                &normalized,
+                &crate::transition_relation::transition_state_id(prefix),
                 &candidate.word,
                 candidate.score,
                 &surface_candidates,
@@ -190,6 +190,7 @@ pub(super) fn form_attractor_word_candidates(
                 &context_tokens,
                 LEXICAL_ATTRACTOR_CELL,
                 "replacement",
+                &normalized,
                 &replacement_lower,
             );
             let signed_bonus =

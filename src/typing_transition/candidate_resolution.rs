@@ -3,7 +3,11 @@
 // typing-transition API.
 
 fn resolve_l2_lattice(lattice: L2CandidateLattice) -> CorrectionResolution {
-    let selected = TransitionDecisionCore::select_apply_candidate(&lattice.event, &lattice.candidates);
+    let selected = TransitionDecisionCore::select_apply_candidate(
+        &lattice.event,
+        &lattice.candidates,
+        lattice.policy,
+    );
     let decision = selected.as_ref().map(|candidate| CorrectionDecision {
         replacement: candidate.replacement.clone(),
         source: candidate.source,

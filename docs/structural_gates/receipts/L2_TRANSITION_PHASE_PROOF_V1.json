@@ -1,0 +1,957 @@
+{
+  "report_kind": "lay_l2_transition_phase_proof_v1",
+  "verdict": "PROVEN",
+  "verdicts": {
+    "full_execution_pass": true,
+    "phase_causal_pass": true,
+    "relational_atoms_causal_pass": true,
+    "core_causal_pass": true,
+    "anti_center_causal_pass": true
+  },
+  "wrong_accepts": 0,
+  "abstained_queries": 0,
+  "package_failures": 0,
+  "exact_cache_overlap": 0,
+  "structural_exact_parity_failures": 0,
+  "corpus_seeds": 745,
+  "heldout_queries": 242,
+  "correct_cpu_executions": 72,
+  "promoted_operators": [
+    "layout_projection",
+    "adjacent_transposition",
+    "missing_letter_repair",
+    "repeated_letter_repair",
+    "extra_letter_repair",
+    "letter_substitution",
+    "boundary_split",
+    "boundary_merge",
+    "accept_completion",
+    "composite_typo",
+    "context_choice"
+  ],
+  "phase_proof": {
+    "by_operator": {
+      "accept_completion": {
+        "anti_center_false_accept_prevention": 12,
+        "causal_positive_support_drop": 6,
+        "modes": {
+          "full_phase": {
+            "negative_cases": 12,
+            "negative_repel": 12,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 6,
+            "positive_support_percent": 100.0
+          },
+          "magnitude_only": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "no_phase": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "random_center": {
+            "negative_cases": 12,
+            "negative_repel": 12,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 6,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "shuffled_phase": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "without_anti": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 12,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 6,
+            "positive_support_percent": 100.0
+          }
+        },
+        "negative_cases": 12,
+        "negative_repel": 12,
+        "negative_repel_percent": 100.0,
+        "negative_support_false_accepts": 0,
+        "positive_cases": 6,
+        "positive_repel": 0,
+        "positive_support": 6,
+        "positive_support_percent": 100.0,
+        "promotion_verdict": "PROMOTED"
+      },
+      "adjacent_transposition": {
+        "anti_center_false_accept_prevention": 14,
+        "causal_positive_support_drop": 7,
+        "modes": {
+          "full_phase": {
+            "negative_cases": 14,
+            "negative_repel": 14,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 7,
+            "positive_repel": 0,
+            "positive_support": 7,
+            "positive_support_percent": 100.0
+          },
+          "magnitude_only": {
+            "negative_cases": 14,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 7,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "no_phase": {
+            "negative_cases": 14,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 7,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "random_center": {
+            "negative_cases": 14,
+            "negative_repel": 7,
+            "negative_repel_percent": 50.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 7,
+            "positive_repel": 7,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "shuffled_phase": {
+            "negative_cases": 14,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 7,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "without_anti": {
+            "negative_cases": 14,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 14,
+            "positive_cases": 7,
+            "positive_repel": 0,
+            "positive_support": 7,
+            "positive_support_percent": 100.0
+          }
+        },
+        "negative_cases": 14,
+        "negative_repel": 14,
+        "negative_repel_percent": 100.0,
+        "negative_support_false_accepts": 0,
+        "positive_cases": 7,
+        "positive_repel": 0,
+        "positive_support": 7,
+        "positive_support_percent": 100.0,
+        "promotion_verdict": "PROMOTED"
+      },
+      "boundary_merge": {
+        "anti_center_false_accept_prevention": 22,
+        "causal_positive_support_drop": 6,
+        "modes": {
+          "full_phase": {
+            "negative_cases": 22,
+            "negative_repel": 22,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 6,
+            "positive_support_percent": 100.0
+          },
+          "magnitude_only": {
+            "negative_cases": 22,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "no_phase": {
+            "negative_cases": 22,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "random_center": {
+            "negative_cases": 22,
+            "negative_repel": 10,
+            "negative_repel_percent": 45.45,
+            "negative_support_false_accepts": 12,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 6,
+            "positive_support_percent": 100.0
+          },
+          "shuffled_phase": {
+            "negative_cases": 22,
+            "negative_repel": 2,
+            "negative_repel_percent": 9.09,
+            "negative_support_false_accepts": 12,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 6,
+            "positive_support_percent": 100.0
+          },
+          "without_anti": {
+            "negative_cases": 22,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 22,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 6,
+            "positive_support_percent": 100.0
+          }
+        },
+        "negative_cases": 22,
+        "negative_repel": 22,
+        "negative_repel_percent": 100.0,
+        "negative_support_false_accepts": 0,
+        "positive_cases": 6,
+        "positive_repel": 0,
+        "positive_support": 6,
+        "positive_support_percent": 100.0,
+        "promotion_verdict": "PROMOTED"
+      },
+      "boundary_split": {
+        "anti_center_false_accept_prevention": 16,
+        "causal_positive_support_drop": 7,
+        "modes": {
+          "full_phase": {
+            "negative_cases": 16,
+            "negative_repel": 16,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 7,
+            "positive_repel": 0,
+            "positive_support": 7,
+            "positive_support_percent": 100.0
+          },
+          "magnitude_only": {
+            "negative_cases": 16,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 7,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "no_phase": {
+            "negative_cases": 16,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 7,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "random_center": {
+            "negative_cases": 16,
+            "negative_repel": 16,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 7,
+            "positive_repel": 7,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "shuffled_phase": {
+            "negative_cases": 16,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 8,
+            "positive_cases": 7,
+            "positive_repel": 0,
+            "positive_support": 7,
+            "positive_support_percent": 100.0
+          },
+          "without_anti": {
+            "negative_cases": 16,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 16,
+            "positive_cases": 7,
+            "positive_repel": 0,
+            "positive_support": 7,
+            "positive_support_percent": 100.0
+          }
+        },
+        "negative_cases": 16,
+        "negative_repel": 16,
+        "negative_repel_percent": 100.0,
+        "negative_support_false_accepts": 0,
+        "positive_cases": 7,
+        "positive_repel": 0,
+        "positive_support": 7,
+        "positive_support_percent": 100.0,
+        "promotion_verdict": "PROMOTED"
+      },
+      "composite_typo": {
+        "anti_center_false_accept_prevention": 13,
+        "causal_positive_support_drop": 6,
+        "modes": {
+          "full_phase": {
+            "negative_cases": 13,
+            "negative_repel": 13,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 6,
+            "positive_support_percent": 100.0
+          },
+          "magnitude_only": {
+            "negative_cases": 13,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "no_phase": {
+            "negative_cases": 13,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "random_center": {
+            "negative_cases": 13,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 13,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "shuffled_phase": {
+            "negative_cases": 13,
+            "negative_repel": 13,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 6,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "without_anti": {
+            "negative_cases": 13,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 13,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 6,
+            "positive_support_percent": 100.0
+          }
+        },
+        "negative_cases": 13,
+        "negative_repel": 13,
+        "negative_repel_percent": 100.0,
+        "negative_support_false_accepts": 0,
+        "positive_cases": 6,
+        "positive_repel": 0,
+        "positive_support": 6,
+        "positive_support_percent": 100.0,
+        "promotion_verdict": "PROMOTED"
+      },
+      "context_choice": {
+        "anti_center_false_accept_prevention": 12,
+        "causal_positive_support_drop": 5,
+        "modes": {
+          "full_phase": {
+            "negative_cases": 12,
+            "negative_repel": 12,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 5,
+            "positive_repel": 0,
+            "positive_support": 5,
+            "positive_support_percent": 100.0
+          },
+          "magnitude_only": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 5,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "no_phase": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 5,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "random_center": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 6,
+            "positive_cases": 5,
+            "positive_repel": 0,
+            "positive_support": 5,
+            "positive_support_percent": 100.0
+          },
+          "shuffled_phase": {
+            "negative_cases": 12,
+            "negative_repel": 6,
+            "negative_repel_percent": 50.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 5,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "without_anti": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 12,
+            "positive_cases": 5,
+            "positive_repel": 0,
+            "positive_support": 5,
+            "positive_support_percent": 100.0
+          }
+        },
+        "negative_cases": 12,
+        "negative_repel": 12,
+        "negative_repel_percent": 100.0,
+        "negative_support_false_accepts": 0,
+        "positive_cases": 5,
+        "positive_repel": 0,
+        "positive_support": 5,
+        "positive_support_percent": 100.0,
+        "promotion_verdict": "PROMOTED"
+      },
+      "extra_letter_repair": {
+        "anti_center_false_accept_prevention": 12,
+        "causal_positive_support_drop": 4,
+        "modes": {
+          "full_phase": {
+            "negative_cases": 12,
+            "negative_repel": 12,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 4,
+            "positive_repel": 0,
+            "positive_support": 4,
+            "positive_support_percent": 100.0
+          },
+          "magnitude_only": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 4,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "no_phase": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 4,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "random_center": {
+            "negative_cases": 12,
+            "negative_repel": 12,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 4,
+            "positive_repel": 4,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "shuffled_phase": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 6,
+            "positive_cases": 4,
+            "positive_repel": 4,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "without_anti": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 12,
+            "positive_cases": 4,
+            "positive_repel": 0,
+            "positive_support": 4,
+            "positive_support_percent": 100.0
+          }
+        },
+        "negative_cases": 12,
+        "negative_repel": 12,
+        "negative_repel_percent": 100.0,
+        "negative_support_false_accepts": 0,
+        "positive_cases": 4,
+        "positive_repel": 0,
+        "positive_support": 4,
+        "positive_support_percent": 100.0,
+        "promotion_verdict": "PROMOTED"
+      },
+      "layout_projection": {
+        "anti_center_false_accept_prevention": 27,
+        "causal_positive_support_drop": 11,
+        "modes": {
+          "full_phase": {
+            "negative_cases": 27,
+            "negative_repel": 27,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 11,
+            "positive_repel": 0,
+            "positive_support": 11,
+            "positive_support_percent": 100.0
+          },
+          "magnitude_only": {
+            "negative_cases": 27,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 11,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "no_phase": {
+            "negative_cases": 27,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 11,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "random_center": {
+            "negative_cases": 27,
+            "negative_repel": 14,
+            "negative_repel_percent": 51.85,
+            "negative_support_false_accepts": 11,
+            "positive_cases": 11,
+            "positive_repel": 7,
+            "positive_support": 4,
+            "positive_support_percent": 36.36
+          },
+          "shuffled_phase": {
+            "negative_cases": 27,
+            "negative_repel": 10,
+            "negative_repel_percent": 37.04,
+            "negative_support_false_accepts": 17,
+            "positive_cases": 11,
+            "positive_repel": 11,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "without_anti": {
+            "negative_cases": 27,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 27,
+            "positive_cases": 11,
+            "positive_repel": 0,
+            "positive_support": 11,
+            "positive_support_percent": 100.0
+          }
+        },
+        "negative_cases": 27,
+        "negative_repel": 27,
+        "negative_repel_percent": 100.0,
+        "negative_support_false_accepts": 0,
+        "positive_cases": 11,
+        "positive_repel": 0,
+        "positive_support": 11,
+        "positive_support_percent": 100.0,
+        "promotion_verdict": "PROMOTED"
+      },
+      "letter_substitution": {
+        "anti_center_false_accept_prevention": 12,
+        "causal_positive_support_drop": 6,
+        "modes": {
+          "full_phase": {
+            "negative_cases": 12,
+            "negative_repel": 12,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 6,
+            "positive_support_percent": 100.0
+          },
+          "magnitude_only": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "no_phase": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "random_center": {
+            "negative_cases": 12,
+            "negative_repel": 12,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 6,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "shuffled_phase": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 6,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "without_anti": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 12,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 6,
+            "positive_support_percent": 100.0
+          }
+        },
+        "negative_cases": 12,
+        "negative_repel": 12,
+        "negative_repel_percent": 100.0,
+        "negative_support_false_accepts": 0,
+        "positive_cases": 6,
+        "positive_repel": 0,
+        "positive_support": 6,
+        "positive_support_percent": 100.0,
+        "promotion_verdict": "PROMOTED"
+      },
+      "missing_letter_repair": {
+        "anti_center_false_accept_prevention": 18,
+        "causal_positive_support_drop": 8,
+        "modes": {
+          "full_phase": {
+            "negative_cases": 18,
+            "negative_repel": 18,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 8,
+            "positive_repel": 0,
+            "positive_support": 8,
+            "positive_support_percent": 100.0
+          },
+          "magnitude_only": {
+            "negative_cases": 18,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 8,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "no_phase": {
+            "negative_cases": 18,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 8,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "random_center": {
+            "negative_cases": 18,
+            "negative_repel": 18,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 8,
+            "positive_repel": 8,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "shuffled_phase": {
+            "negative_cases": 18,
+            "negative_repel": 9,
+            "negative_repel_percent": 50.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 8,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "without_anti": {
+            "negative_cases": 18,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 18,
+            "positive_cases": 8,
+            "positive_repel": 0,
+            "positive_support": 8,
+            "positive_support_percent": 100.0
+          }
+        },
+        "negative_cases": 18,
+        "negative_repel": 18,
+        "negative_repel_percent": 100.0,
+        "negative_support_false_accepts": 0,
+        "positive_cases": 8,
+        "positive_repel": 0,
+        "positive_support": 8,
+        "positive_support_percent": 100.0,
+        "promotion_verdict": "PROMOTED"
+      },
+      "repeated_letter_repair": {
+        "anti_center_false_accept_prevention": 12,
+        "causal_positive_support_drop": 6,
+        "modes": {
+          "full_phase": {
+            "negative_cases": 12,
+            "negative_repel": 12,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 6,
+            "positive_support_percent": 100.0
+          },
+          "magnitude_only": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "no_phase": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 0,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "random_center": {
+            "negative_cases": 12,
+            "negative_repel": 6,
+            "negative_repel_percent": 50.0,
+            "negative_support_false_accepts": 6,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 6,
+            "positive_support_percent": 100.0
+          },
+          "shuffled_phase": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 6,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
+          },
+          "without_anti": {
+            "negative_cases": 12,
+            "negative_repel": 0,
+            "negative_repel_percent": 0.0,
+            "negative_support_false_accepts": 12,
+            "positive_cases": 6,
+            "positive_repel": 0,
+            "positive_support": 6,
+            "positive_support_percent": 100.0
+          }
+        },
+        "negative_cases": 12,
+        "negative_repel": 12,
+        "negative_repel_percent": 100.0,
+        "negative_support_false_accepts": 0,
+        "positive_cases": 6,
+        "positive_repel": 0,
+        "positive_support": 6,
+        "positive_support_percent": 100.0,
+        "promotion_verdict": "PROMOTED"
+      }
+    },
+    "causal_positive_support_drop": 72,
+    "dataset": "/home/ubu/projects/lay/data/nanda_training/generated_cases.tsv",
+    "exact_memory_rows_after_compile": 0,
+    "false_accept_examples": [],
+    "full_phase_false_accepts": 0,
+    "gate": {
+      "destructive_ablation_drop_required": true,
+      "heldout_negative_false_accepts_required": 0,
+      "heldout_positive_support_min_percent": 80
+    },
+    "heldout_entries": 242,
+    "heldout_surfaces": 242,
+    "kind": "l2_transition_phase_proof",
+    "labeled_rows": 1181,
+    "lexical_negative_rows_deferred_to_l2_word_center": 163,
+    "modes": {
+      "full_phase": {
+        "negative_cases": 170,
+        "negative_repel": 170,
+        "negative_repel_percent": 100.0,
+        "negative_support_false_accepts": 0,
+        "positive_cases": 72,
+        "positive_repel": 0,
+        "positive_support": 72,
+        "positive_support_percent": 100.0
+      },
+      "magnitude_only": {
+        "negative_cases": 170,
+        "negative_repel": 0,
+        "negative_repel_percent": 0.0,
+        "negative_support_false_accepts": 0,
+        "positive_cases": 72,
+        "positive_repel": 0,
+        "positive_support": 0,
+        "positive_support_percent": 0.0
+      },
+      "no_phase": {
+        "negative_cases": 170,
+        "negative_repel": 0,
+        "negative_repel_percent": 0.0,
+        "negative_support_false_accepts": 0,
+        "positive_cases": 72,
+        "positive_repel": 0,
+        "positive_support": 0,
+        "positive_support_percent": 0.0
+      },
+      "random_center": {
+        "negative_cases": 170,
+        "negative_repel": 107,
+        "negative_repel_percent": 62.94,
+        "negative_support_false_accepts": 48,
+        "positive_cases": 72,
+        "positive_repel": 45,
+        "positive_support": 21,
+        "positive_support_percent": 29.17
+      },
+      "shuffled_phase": {
+        "negative_cases": 170,
+        "negative_repel": 40,
+        "negative_repel_percent": 23.53,
+        "negative_support_false_accepts": 55,
+        "positive_cases": 72,
+        "positive_repel": 21,
+        "positive_support": 13,
+        "positive_support_percent": 18.06
+      },
+      "without_anti": {
+        "negative_cases": 170,
+        "negative_repel": 0,
+        "negative_repel_percent": 0.0,
+        "negative_support_false_accepts": 170,
+        "positive_cases": 72,
+        "positive_repel": 0,
+        "positive_support": 72,
+        "positive_support_percent": 100.0
+      }
+    },
+    "positive_miss_examples": [],
+    "promoted_operators": [
+      "layout_projection",
+      "adjacent_transposition",
+      "missing_letter_repair",
+      "repeated_letter_repair",
+      "extra_letter_repair",
+      "letter_substitution",
+      "boundary_split",
+      "boundary_merge",
+      "accept_completion",
+      "composite_typo",
+      "context_choice"
+    ],
+    "raw_words_stored": false,
+    "schema": "lay.l2-transition-phase-proof.v1",
+    "training_entries": 745,
+    "training_surfaces": 745,
+    "verdict": "PASS"
+  }
+}

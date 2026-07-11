@@ -14,7 +14,7 @@ const USAGE_COUNTS_PATH: &str = ".local/share/lay/nanda_wave/word_usage_counts.j
 const LEGACY_USAGE_PRIOR_PATH: &str = ".local/share/lay/learning_candidates.json";
 const USAGE_EVENTS_MAX_BYTES: u64 = 500 * 1024;
 const USAGE_EVENTS_FULL_REBUILD_MAX_BYTES: u64 = 8 * 1024 * 1024;
-const USAGE_COUNTS_SCHEMA_VERSION: u32 = 6;
+const USAGE_COUNTS_SCHEMA_VERSION: u32 = 8;
 const USAGE_COUNTS_MAX_WORDS: usize = 10_000;
 const USAGE_COUNTS_MAX_ACCEPTED_WORDS: usize = 5_000;
 const USAGE_COUNTS_MAX_CONTEXT_WORDS: usize = 12_000;
@@ -50,6 +50,8 @@ struct UsageEvent {
     source: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     operation: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    surface: Option<String>,
 }
 
 impl UsageEvent {
@@ -69,6 +71,7 @@ impl UsageEvent {
             to: event.to.clone(),
             source: Some(event.source.clone()),
             operation: Some(event.operation.clone()),
+            surface: event.surface.clone(),
         }
     }
 }
@@ -100,6 +103,12 @@ struct UsageCounts {
     transition_attract: HashMap<String, u32>,
     #[serde(default)]
     transition_repel: HashMap<String, u32>,
+    #[serde(default)]
+    surface_observed: HashMap<String, u32>,
+    #[serde(default)]
+    surface_attract: HashMap<String, u32>,
+    #[serde(default)]
+    surface_repel: HashMap<String, u32>,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -123,6 +132,11 @@ pub(crate) struct UsageStateMapSummary {
     pub(crate) transition_repel_states: usize,
     pub(crate) transition_signed_states: usize,
     pub(crate) transition_conflict_states: usize,
+    pub(crate) surface_states: usize,
+    pub(crate) surface_observed_states: usize,
+    pub(crate) surface_covered_states: usize,
+    pub(crate) surface_repelled_states: usize,
+    pub(crate) surface_conflict_states: usize,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
@@ -132,7 +146,15 @@ pub(crate) struct UsageTransitionSignal {
     pub(crate) signed_weight: f32,
     pub(crate) attract_count: u32,
     pub(crate) repel_count: u32,
+    pub(crate) state_specific: bool,
     pub(crate) reason: &'static str,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub(crate) struct UsageSurfaceCoverage {
+    pub(crate) observed: u32,
+    pub(crate) accepted: u32,
+    pub(crate) rejected: u32,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
@@ -147,6 +169,28 @@ pub(crate) struct UsageHotReadout {
 }
 
 impl UsagePriorSnapshot {
+    pub(crate) fn surface_coverage(&self, surface: &str) -> UsageSurfaceCoverage {
+        UsageSurfaceCoverage {
+            observed: self
+                .counts
+                .surface_observed
+                .get(surface)
+                .copied()
+                .unwrap_or_default(),
+            accepted: self
+                .counts
+                .surface_attract
+                .get(surface)
+                .copied()
+                .unwrap_or_default(),
+            rejected: self
+                .counts
+                .surface_repel
+                .get(surface)
+                .copied()
+                .unwrap_or_default(),
+        }
+    }
     pub fn word_prior(&self, word: &str) -> f32 {
         let lower = normalize_word(word);
         if lower.is_empty() {
@@ -206,6 +250,7 @@ impl UsagePriorSnapshot {
         context: &[String],
         source: &str,
         operation: &str,
+        state_word: &str,
         word: &str,
     ) -> UsageHotReadout {
         let lower = normalize_word(word);
@@ -257,6 +302,7 @@ impl UsagePriorSnapshot {
                 &context_keys,
                 source,
                 operation,
+                state_word,
                 &lower,
             ),
         }
@@ -503,6 +549,21 @@ pub(crate) fn usage_state_map_summary() -> UsageStateMapSummary {
             .keys()
             .filter(|key| counts.transition_repel.contains_key(*key))
             .count(),
+        surface_states: counts
+            .surface_observed
+            .keys()
+            .chain(counts.surface_attract.keys())
+            .chain(counts.surface_repel.keys())
+            .collect::<HashSet<_>>()
+            .len(),
+        surface_observed_states: counts.surface_observed.len(),
+        surface_covered_states: counts.surface_attract.len(),
+        surface_repelled_states: counts.surface_repel.len(),
+        surface_conflict_states: counts
+            .surface_attract
+            .keys()
+            .filter(|key| counts.surface_repel.contains_key(*key))
+            .count(),
     }
 }
 
@@ -530,19 +591,26 @@ pub fn usage_memory_learned_report_json() -> serde_json::Value {
             "transition_attract_states": summary.transition_attract_states,
             "transition_repel_states": summary.transition_repel_states,
             "transition_signed_states": summary.transition_signed_states,
-            "transition_conflict_states": summary.transition_conflict_states
+            "transition_conflict_states": summary.transition_conflict_states,
+            "surface_states": summary.surface_states,
+            "surface_observed_states": summary.surface_observed_states,
+            "surface_covered_states": summary.surface_covered_states,
+            "surface_repelled_states": summary.surface_repelled_states,
+            "surface_conflict_states": summary.surface_conflict_states
         },
         "learned_top": {
             "accepted_words": top_count_json(&counts.accepted_words, 12),
             "rejected_words": top_count_json(&counts.rejected_words, 12),
             "context_words": top_count_json(&counts.context_words, 12),
             "transition_attract": top_count_json(&counts.transition_attract, 12),
-            "transition_repel": top_count_json(&counts.transition_repel, 12)
+            "transition_repel": top_count_json(&counts.transition_repel, 12),
+            "surface_covered": top_count_json(&counts.surface_attract, 12),
+            "surface_repelled": top_count_json(&counts.surface_repel, 12)
         },
         "hot_readout": {
             "mode": "UsagePriorSnapshot::hot_readout",
             "single_pass": true,
-            "uses": ["word_prior", "context_prior", "rejected_prior", "context_rejected", "accepted_count", "rejected_count", "transition_signal"]
+            "uses": ["word_prior", "context_prior", "rejected_prior", "context_rejected", "accepted_count", "rejected_count", "transition_signal", "surface_frontier"]
         },
         "events_tail_bytes": text.len(),
         "authority": "ranking signal only; edit safety gate remains final"
@@ -751,18 +819,29 @@ fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
     if word.is_empty() {
         return;
     }
+    let state_word = event_state_word(event);
     if matches!(
         event.kind,
         UsageEventKind::RejectedIme | UsageEventKind::RejectedCandidate
     ) {
         let weight = rejected_usage_weight(event.kind);
+        if let Some(surface) = event.surface.as_deref() {
+            *counts
+                .surface_observed
+                .entry(surface.to_string())
+                .or_default() += weight;
+        }
         add_rejected_word_state(
             counts,
-            &event.context,
-            event_source(event),
-            event_operation(event),
-            &word,
-            weight,
+            RejectedStateEvidence {
+                context: &event.context,
+                source: event_source(event),
+                operation: event_operation(event),
+                state_word: &state_word,
+                rejected: &word,
+                weight,
+                record_transition: true,
+            },
         );
         return;
     }
@@ -774,6 +853,21 @@ fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
             unreachable!("handled before positive count")
         }
     };
+    if let Some(surface) = event.surface.as_deref() {
+        *counts
+            .surface_observed
+            .entry(surface.to_string())
+            .or_default() += weight;
+        if matches!(
+            event.kind,
+            UsageEventKind::AcceptedFix | UsageEventKind::AcceptedIme
+        ) {
+            *counts
+                .surface_attract
+                .entry(surface.to_string())
+                .or_default() += weight;
+        }
+    }
     *counts.words.entry(word.clone()).or_default() = counts
         .words
         .get(&word)
@@ -805,6 +899,7 @@ fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
         &event.context,
         source,
         operation,
+        &state_word,
         &word,
         weight,
     );
@@ -814,6 +909,7 @@ fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
             &event.context,
             source,
             operation,
+            &state_word,
             &word,
             weight,
         );
@@ -884,18 +980,41 @@ fn add_rejected_fix_sources(
         .into_iter()
         .filter(|word| !accepted.contains(word))
     {
-        add_rejected_word_state(counts, &event.context, source, operation, &rejected, weight);
+        add_rejected_word_state(
+            counts,
+            RejectedStateEvidence {
+                context: &event.context,
+                source,
+                operation,
+                state_word: &rejected,
+                rejected: &rejected,
+                weight,
+                record_transition: false,
+            },
+        );
     }
 }
 
-fn add_rejected_word_state(
-    counts: &mut UsageCounts,
-    context: &[String],
-    source: &str,
-    operation: &str,
-    rejected: &str,
+struct RejectedStateEvidence<'a> {
+    context: &'a [String],
+    source: &'a str,
+    operation: &'a str,
+    state_word: &'a str,
+    rejected: &'a str,
     weight: u32,
-) {
+    record_transition: bool,
+}
+
+fn add_rejected_word_state(counts: &mut UsageCounts, evidence: RejectedStateEvidence<'_>) {
+    let RejectedStateEvidence {
+        context,
+        source,
+        operation,
+        state_word,
+        rejected,
+        weight,
+        record_transition,
+    } = evidence;
     *counts
         .rejected_words
         .entry(rejected.to_string())
@@ -917,14 +1036,25 @@ fn add_rejected_word_state(
             .unwrap_or_default()
             .saturating_add(weight);
     }
-    add_transition_counts(
-        &mut counts.transition_repel,
-        context,
-        source,
-        operation,
-        rejected,
-        weight,
-    );
+    if record_transition {
+        add_transition_counts(
+            &mut counts.transition_repel,
+            context,
+            source,
+            operation,
+            state_word,
+            rejected,
+            weight,
+        );
+    }
+}
+
+fn event_state_word(event: &UsageEvent) -> String {
+    event
+        .from
+        .as_deref()
+        .map(crate::transition_relation::transition_state_id)
+        .unwrap_or_else(|| TRANSITION_ANY.to_string())
 }
 
 fn rejected_prior_from_count(count: u32) -> f32 {
@@ -936,19 +1066,23 @@ fn transition_signal_from_counts_for_word(
     context_keys: &[String],
     source: &str,
     operation: &str,
+    state_word: &str,
     word: &str,
 ) -> UsageTransitionSignal {
-    let keys = transition_lookup_keys_from_context_keys(context_keys, source, operation, word);
-    let attract_count = keys
-        .iter()
-        .filter_map(|key| counts.transition_attract.get(key).copied())
-        .max()
-        .unwrap_or_default();
-    let repel_count = keys
-        .iter()
-        .filter_map(|key| counts.transition_repel.get(key).copied())
-        .max()
-        .unwrap_or_default();
+    let exact_keys =
+        transition_lookup_keys_from_context_keys(context_keys, source, operation, state_word, word);
+    let (mut attract_count, mut repel_count) = transition_counts_for_keys(counts, &exact_keys);
+    let state_specific = state_word != TRANSITION_ANY && (attract_count > 0 || repel_count > 0);
+    if attract_count == 0 && repel_count == 0 && state_word != TRANSITION_ANY {
+        let fallback_keys = transition_lookup_keys_from_context_keys(
+            context_keys,
+            source,
+            operation,
+            TRANSITION_ANY,
+            word,
+        );
+        (attract_count, repel_count) = transition_counts_for_keys(counts, &fallback_keys);
+    }
     let attraction = transition_attraction_from_count(attract_count);
     let repulsion = transition_repulsion_from_count(repel_count);
     let signed_weight = (attraction - repulsion).clamp(-1.0, 1.0);
@@ -967,8 +1101,23 @@ fn transition_signal_from_counts_for_word(
         signed_weight,
         attract_count,
         repel_count,
+        state_specific,
         reason,
     }
+}
+
+fn transition_counts_for_keys(counts: &UsageCounts, keys: &[String]) -> (u32, u32) {
+    let attract = keys
+        .iter()
+        .filter_map(|key| counts.transition_attract.get(key).copied())
+        .max()
+        .unwrap_or_default();
+    let repel = keys
+        .iter()
+        .filter_map(|key| counts.transition_repel.get(key).copied())
+        .max()
+        .unwrap_or_default();
+    (attract, repel)
 }
 
 fn transition_attraction_from_count(count: u32) -> f32 {
@@ -1133,6 +1282,15 @@ fn compact_usage_counts_for_persist(counts: &UsageCounts) -> UsageCounts {
             &counts.transition_repel,
             USAGE_COUNTS_MAX_TRANSITION_STATES,
         ),
+        surface_observed: top_count_entries(
+            &counts.surface_observed,
+            USAGE_COUNTS_MAX_TRANSITION_STATES,
+        ),
+        surface_attract: top_count_entries(
+            &counts.surface_attract,
+            USAGE_COUNTS_MAX_TRANSITION_STATES,
+        ),
+        surface_repel: top_count_entries(&counts.surface_repel, USAGE_COUNTS_MAX_TRANSITION_STATES),
     }
 }
 
@@ -1204,10 +1362,11 @@ fn add_transition_counts(
     context: &[String],
     source: &str,
     operation: &str,
+    state_word: &str,
     word: &str,
     weight: u32,
 ) {
-    for key in transition_record_keys(context, source, operation, word) {
+    for key in transition_record_keys(context, source, operation, state_word, word) {
         *target.entry(key.clone()).or_default() = target
             .get(&key)
             .copied()
@@ -1220,22 +1379,22 @@ fn transition_record_keys(
     context: &[String],
     source: &str,
     operation: &str,
+    state_word: &str,
     word: &str,
 ) -> Vec<String> {
-    let mut keys = Vec::new();
-    let mut contexts = context_ngram_keys(context);
-    contexts.push(String::new());
-    for context_key in contexts {
-        keys.push(transition_key(&context_key, source, operation, word));
-        keys.push(transition_key(
-            &context_key,
-            TRANSITION_ANY,
+    let context_keys = context_ngram_keys(context);
+    let mut keys = transition_lookup_keys_from_context_keys(
+        &context_keys,
+        source,
+        operation,
+        state_word,
+        word,
+    );
+    if state_word != TRANSITION_ANY {
+        keys.extend(transition_lookup_keys_from_context_keys(
+            &context_keys,
+            source,
             operation,
-            word,
-        ));
-        keys.push(transition_key(
-            &context_key,
-            TRANSITION_ANY,
             TRANSITION_ANY,
             word,
         ));
@@ -1249,47 +1408,32 @@ fn transition_lookup_keys_from_context_keys(
     context_keys: &[String],
     source: &str,
     operation: &str,
-    word: &str,
-) -> Vec<String> {
-    let mut keys = transition_record_keys_from_context_keys(context_keys, source, operation, word);
-    keys.extend(transition_record_keys_from_context_keys(
-        context_keys,
-        TRANSITION_ANY,
-        operation,
-        word,
-    ));
-    keys.extend(transition_record_keys_from_context_keys(
-        context_keys,
-        TRANSITION_ANY,
-        TRANSITION_ANY,
-        word,
-    ));
-    keys.sort();
-    keys.dedup();
-    keys
-}
-
-fn transition_record_keys_from_context_keys(
-    context_keys: &[String],
-    source: &str,
-    operation: &str,
+    state_word: &str,
     word: &str,
 ) -> Vec<String> {
     let mut keys = Vec::new();
     let mut contexts = context_keys.to_vec();
     contexts.push(String::new());
     for context_key in contexts {
-        keys.push(transition_key(&context_key, source, operation, word));
+        keys.push(transition_key(
+            &context_key,
+            source,
+            operation,
+            state_word,
+            word,
+        ));
         keys.push(transition_key(
             &context_key,
             TRANSITION_ANY,
             operation,
+            state_word,
             word,
         ));
         keys.push(transition_key(
             &context_key,
             TRANSITION_ANY,
             TRANSITION_ANY,
+            state_word,
             word,
         ));
     }
@@ -1298,8 +1442,14 @@ fn transition_record_keys_from_context_keys(
     keys
 }
 
-fn transition_key(context: &str, source: &str, operation: &str, word: &str) -> String {
-    format!("{context}\u{1e}{source}\u{1e}{operation}\u{1f}{word}")
+fn transition_key(
+    context: &str,
+    source: &str,
+    operation: &str,
+    state_word: &str,
+    word: &str,
+) -> String {
+    format!("{context}\u{1e}{source}\u{1e}{operation}\u{1f}{state_word}\u{1d}{word}")
 }
 
 fn top_count_json(source: &HashMap<String, u32>, limit: usize) -> Vec<serde_json::Value> {
@@ -1469,7 +1619,7 @@ mod tests {
         assert_eq!(counts.rejected_words.len(), 1);
         assert_eq!(signed_word_states, 3);
         assert!(!counts.transition_attract.is_empty());
-        assert!(!counts.transition_repel.is_empty());
+        assert!(counts.transition_repel.is_empty());
     }
 
     #[test]
@@ -1480,7 +1630,13 @@ mod tests {
         );
         let context = ["на", "улице", "идёт"].map(String::from);
         let signal = usage
-            .hot_readout(&context, "L2LiveCandidateGate32", "completion", "дождь")
+            .hot_readout(
+                &context,
+                "L2LiveCandidateGate32",
+                "completion",
+                "д",
+                "дождь",
+            )
             .transition;
 
         assert!(signal.attraction > signal.repulsion);
@@ -1489,19 +1645,25 @@ mod tests {
     }
 
     #[test]
-    fn transition_signal_repels_corrected_away_replacement() {
+    fn transition_signal_attracts_accepted_state_change() {
         let usage = snapshot_from_usage_events_for_tests(
             r#"{"ts":1,"kind":"accepted_fix","word":"отравим","context":["мы"],"from":"мы отвравим","to":"мы отравим","source":"autocorrect","operation":"replacement"}
 "#,
         );
         let context = ["мы"].map(String::from);
         let signal = usage
-            .hot_readout(&context, "SemanticWordCell32", "replacement", "отвравим")
+            .hot_readout(
+                &context,
+                "SemanticWordCell32",
+                "replacement",
+                "отвравим",
+                "отравим",
+            )
             .transition;
 
-        assert!(signal.repulsion > signal.attraction);
-        assert!(signal.signed_weight < 0.0);
-        assert_eq!(signal.reason, "transition_repels");
+        assert!(signal.attraction > signal.repulsion);
+        assert!(signal.signed_weight > 0.0);
+        assert_eq!(signal.reason, "transition_attracts");
     }
 
     #[test]
@@ -1588,7 +1750,7 @@ mod tests {
         let usage = snapshot_from_usage_events_for_tests(text);
         let context = ["ну"].map(String::from);
         let signal = usage
-            .hot_readout(&context, "L2LiveCandidateGate32", "completion", "даша")
+            .hot_readout(&context, "L2LiveCandidateGate32", "completion", "*", "даша")
             .transition;
         assert!(signal.repulsion > signal.attraction);
     }
@@ -1604,7 +1766,7 @@ mod tests {
         assert_eq!(counts.accepted_words.get("отравим"), Some(&6));
         assert_eq!(counts.rejected_words.get("отвравим"), Some(&6));
         assert!(!counts.transition_attract.is_empty());
-        assert!(!counts.transition_repel.is_empty());
+        assert!(counts.transition_repel.is_empty());
     }
 
     #[test]
@@ -1628,7 +1790,13 @@ mod tests {
         };
         let context = ["ну"].map(String::from);
         let signal = usage
-            .hot_readout(&context, "L2LiveCandidateGate32", "completion", "даша")
+            .hot_readout(
+                &context,
+                "L2LiveCandidateGate32",
+                "completion",
+                "ну",
+                "даша",
+            )
             .transition;
         assert!(signal.repulsion > signal.attraction);
         assert_eq!(signal.reason, "transition_repels");
@@ -1643,13 +1811,39 @@ mod tests {
         );
         let context = ["можно".to_string()];
 
-        let good = usage.hot_readout(&context, "autocorrect", "replacement", "проверить");
-        let bad = usage.hot_readout(&context, "autocorrect", "auto_undo", "проврить");
+        let good = usage.hot_readout(
+            &context,
+            "autocorrect",
+            "replacement",
+            "проврить",
+            "проверить",
+        );
+        let bad = usage.hot_readout(&context, "autocorrect", "auto_undo", "*", "проврить");
 
         assert!(good.accepted_count > 0);
         assert!(good.transition.attraction > good.transition.repulsion);
         assert!(bad.rejected_count > 0);
         assert!(bad.transition.repulsion > bad.transition.attraction);
+    }
+
+    #[test]
+    fn exact_state_transition_overrides_global_target_frequency() {
+        let usage = snapshot_from_usage_events_for_tests(
+            r#"{"ts":1,"kind":"accepted_fix","word":"так","from":"nfr","to":"так","source":"autocorrect","operation":"replacement"}
+{"ts":2,"kind":"accepted_fix","word":"так","from":"другой","to":"так","source":"autocorrect","operation":"replacement"}
+{"ts":3,"kind":"rejected_candidate","word":"так","from":"nfr","to":"так","source":"user_correction","operation":"replacement"}
+"#,
+        );
+
+        let rejected_state = crate::transition_relation::transition_state_id("nfr");
+        let fallback_state = crate::transition_relation::transition_state_id("новый");
+        let rejected = usage.hot_readout(&[], "layout", "replacement", &rejected_state, "так");
+        let fallback = usage.hot_readout(&[], "layout", "replacement", &fallback_state, "так");
+
+        assert!(rejected.transition.repulsion > rejected.transition.attraction);
+        assert!(rejected.transition.state_specific);
+        assert!(fallback.transition.attraction > 0.0);
+        assert!(!fallback.transition.state_specific);
     }
 
     #[test]
@@ -1663,6 +1857,7 @@ mod tests {
             to: None,
             source: Some("user".to_string()),
             operation: Some("typed".to_string()),
+            surface: None,
         };
         let second = UsageEvent {
             ts: 2,

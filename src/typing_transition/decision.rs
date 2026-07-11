@@ -14,9 +14,15 @@ use crate::text_edit::{
     VisibleFieldState,
 };
 use crate::text_metrics::damerau_levenshtein;
+use crate::transition_relation::{TransitionRelationAtoms, TransitionRelationInput};
 use crate::word_reader::split_word_punctuation;
 
 pub(crate) struct TransitionDecisionCore;
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub(crate) struct TransitionDecisionPolicy {
+    pub(crate) l2_phase_apply: bool,
+}
 
 impl TransitionDecisionCore {
     pub(crate) fn decide_visible_text_transition(
@@ -114,11 +120,12 @@ impl TransitionDecisionCore {
     pub(crate) fn select_apply_candidate(
         event: &TypingErrorEvent,
         candidates: &[UnifiedCorrectionCandidate],
+        policy: TransitionDecisionPolicy,
     ) -> Option<UnifiedCorrectionCandidate> {
         candidates
             .iter()
             .filter(|candidate| candidate.gate.action == CandidateGateAction::Apply)
-            .filter(|candidate| candidate_has_apply_authority(event, candidate, candidates))
+            .filter(|candidate| candidate_has_apply_authority(event, candidate, candidates, policy))
             .cloned()
             .max_by(|left, right| {
                 candidate_decision_signals(event, left, candidates.len())
@@ -200,10 +207,22 @@ fn candidate_has_apply_authority(
     event: &TypingErrorEvent,
     candidate: &UnifiedCorrectionCandidate,
     candidates: &[UnifiedCorrectionCandidate],
+    policy: TransitionDecisionPolicy,
 ) -> bool {
     let bayes = bayes_score_for_candidate(&event.original, candidate);
     let signals = candidate_decision_signals(event, candidate, candidates.len());
     let source_role = candidate.origin.source_role();
+    if let Some(reason) = phase_policy_rejection(
+        policy,
+        source_role,
+        signals.l2_transition_phase_package_loaded,
+        signals.l2_transition_phase_operator_present,
+        signals.l2_transition_phase_operator_promoted,
+        signals.l2_transition_phase_verdict,
+    ) {
+        debug_decision_reject(candidate, reason, bayes.posterior, bayes.risk);
+        return false;
+    }
     let action = action::verify_action_operator(
         &event.original,
         &candidate.replacement,
@@ -237,6 +256,10 @@ fn candidate_has_apply_authority(
     let strong_learned_support = external_learned_support || strong_l2_peak_support;
     let strong_transition_support = strong_l2_wave_peak_transition_support(&signals)
         && !self_referential_surface_drift
+        || (policy.l2_phase_apply
+            && signals.l2_transition_phase_operator_promoted
+            && signals.l2_transition_phase_verdict == "support"
+            && signals.l2_transition_phase_milli >= signals.l2_transition_phase_threshold_milli)
         || signals.l3_phrase_milli >= 420
         || signals.l4_signed_milli >= 120;
     let admission = admit_hidden_transition(
@@ -301,6 +324,42 @@ fn candidate_has_apply_authority(
         debug_decision_reject(candidate, "better_non_apply", bayes.posterior, bayes.risk);
     }
     allowed
+}
+
+fn phase_managed_source(source_role: CorrectionSourceRole) -> bool {
+    matches!(
+        source_role,
+        CorrectionSourceRole::L2Surface
+            | CorrectionSourceRole::L3Context
+            | CorrectionSourceRole::Unknown
+    )
+}
+
+fn phase_policy_rejection(
+    policy: TransitionDecisionPolicy,
+    source_role: CorrectionSourceRole,
+    package_loaded: bool,
+    operator_present: bool,
+    operator_promoted: bool,
+    verdict: &str,
+) -> Option<&'static str> {
+    if !policy.l2_phase_apply || !phase_managed_source(source_role) {
+        return None;
+    }
+    if !package_loaded {
+        return Some("l2_transition_phase_package_missing");
+    }
+    if !operator_present {
+        return Some("l2_transition_phase_operator_missing");
+    }
+    if !operator_promoted {
+        return Some("l2_transition_phase_shadow_only");
+    }
+    match verdict {
+        "repel" => Some("l2_transition_phase_repel"),
+        "unknown" => Some("l2_transition_phase_unknown"),
+        _ => None,
+    }
 }
 
 fn learned_candidate_shadowed_by_deterministic_owner(
@@ -386,13 +445,6 @@ pub(crate) fn admit_hidden_transition(
         candidate_count,
     );
 
-    if source_role == CorrectionSourceRole::Layout && transition.evidence.verifier_passed {
-        return TransitionAdmission {
-            allow_apply: true,
-            reason: "latent_layout_projection_admitted",
-        };
-    }
-
     if transition
         .state_before
         .candidate_imported_left_context(&transition.state_after_predicted)
@@ -438,6 +490,13 @@ pub(crate) fn admit_hidden_transition(
         return TransitionAdmission {
             allow_apply: false,
             reason: "latent_l4_negative_transition_memory",
+        };
+    }
+
+    if source_role == CorrectionSourceRole::Layout && transition.evidence.verifier_passed {
+        return TransitionAdmission {
+            allow_apply: true,
+            reason: "latent_layout_projection_admitted",
         };
     }
 
@@ -528,6 +587,15 @@ pub(crate) struct CandidateDecisionSignals {
     pub(crate) l2_wave_peak_negative_milli: i16,
     pub(crate) l2_wave_peak_uncertainty_milli: i16,
     pub(crate) l2_wave_peak_reason: &'static str,
+    pub(crate) l2_transition_phase_milli: i16,
+    pub(crate) l2_transition_phase_threshold_milli: i16,
+    pub(crate) l2_transition_phase_verdict: &'static str,
+    pub(crate) l2_transition_phase_package_loaded: bool,
+    pub(crate) l2_transition_phase_operator_present: bool,
+    pub(crate) l2_transition_phase_operator_promoted: bool,
+    pub(crate) l2_transition_phase_positive_centers: u8,
+    pub(crate) l2_transition_phase_anti_centers: u8,
+    pub(crate) l2_transition_phase_surfaces: u32,
     pub(crate) l3_phrase_milli: i16,
     pub(crate) l3_phrase_decision: &'static str,
     pub(crate) l4_scene_milli: i16,
@@ -535,6 +603,10 @@ pub(crate) struct CandidateDecisionSignals {
     pub(crate) l4_scene_reason: &'static str,
     pub(crate) l4_signed_milli: i16,
     pub(crate) l4_signed_reason: &'static str,
+    pub(crate) l4_surface_status: &'static str,
+    pub(crate) l4_transition_state_specific: bool,
+    pub(crate) l4_transition_attract_count: u32,
+    pub(crate) l4_transition_repel_count: u32,
 }
 
 pub(crate) fn candidate_decision_signals(
@@ -552,8 +624,22 @@ pub(crate) fn candidate_decision_signals(
     );
     let l3 = l3_phrase_signal(event, candidate);
     let l4_scene = l4_scene_signal(event, candidate_count);
-    let l4_signed = l4_signed_signal(event, candidate);
-    let l2_wave_peak = l2_wave_peak_signal(event, candidate, candidate_count);
+    let relation = TransitionRelationAtoms::encode(
+        &event.original,
+        &candidate.replacement,
+        TransitionRelationInput {
+            action_operator: action.operator.as_str(),
+            edit_operator: action.edit_operator.as_str(),
+            proof: action.edit_proof.as_str(),
+            verifier_passed: action.verifier_passed,
+            left_context_changed: action.left_context_changed,
+            changed_tokens: action.changed_tokens,
+        },
+    );
+    let phase =
+        crate::nanda_wave::l2_transition_phase_readout(action.operator.as_str(), relation.atoms());
+    let l4_signed = l4_signed_signal(event, candidate, relation.surface_key());
+    let l2_wave_peak = l2_wave_peak_signal(event, candidate, candidate_count, phase);
     let rank_score = bayes
         + ((explanation.explanation_score_milli as f32 - 500.0) / 10_000.0)
         + transition_rank_bonus(&action, candidate)
@@ -571,6 +657,15 @@ pub(crate) fn candidate_decision_signals(
         l2_wave_peak_negative_milli: l2_wave_peak.negative_milli,
         l2_wave_peak_uncertainty_milli: l2_wave_peak.uncertainty_milli,
         l2_wave_peak_reason: l2_wave_peak.reason,
+        l2_transition_phase_milli: l2_wave_peak.transition_phase_milli,
+        l2_transition_phase_threshold_milli: l2_wave_peak.transition_phase_threshold_milli,
+        l2_transition_phase_verdict: l2_wave_peak.transition_phase_verdict,
+        l2_transition_phase_package_loaded: l2_wave_peak.transition_phase_package_loaded,
+        l2_transition_phase_operator_present: l2_wave_peak.transition_phase_operator_present,
+        l2_transition_phase_operator_promoted: l2_wave_peak.transition_phase_operator_promoted,
+        l2_transition_phase_positive_centers: l2_wave_peak.transition_phase_positive_centers,
+        l2_transition_phase_anti_centers: l2_wave_peak.transition_phase_anti_centers,
+        l2_transition_phase_surfaces: l2_wave_peak.transition_phase_surfaces,
         l3_phrase_milli: score_to_milli(l3.signal),
         l3_phrase_decision: l3.decision,
         l4_scene_milli: score_to_milli(l4_scene.signal),
@@ -578,6 +673,10 @@ pub(crate) fn candidate_decision_signals(
         l4_scene_reason: l4_scene.reason,
         l4_signed_milli: score_to_milli(l4_signed.signal),
         l4_signed_reason: l4_signed.reason,
+        l4_surface_status: l4_signed.surface_status,
+        l4_transition_state_specific: l4_signed.transition_state_specific,
+        l4_transition_attract_count: l4_signed.transition_attract_count,
+        l4_transition_repel_count: l4_signed.transition_repel_count,
     }
 }
 
@@ -585,7 +684,10 @@ include!("decision_signals.rs");
 
 #[cfg(test)]
 mod tests {
-    use super::{admit_hidden_transition, TransitionDecisionCore};
+    use super::{
+        admit_hidden_transition, phase_policy_rejection, TransitionDecisionCore,
+        TransitionDecisionPolicy,
+    };
     use crate::correction_core::{
         CandidateGateAction, CandidateGateDecision, CorrectionDecisionSource, TypingErrorClass,
         TypingErrorEvent, UnifiedCorrectionCandidate,
@@ -625,6 +727,83 @@ mod tests {
         );
 
         assert_eq!(decision.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
+    fn phase_cutover_only_blocks_managed_sources_when_enabled() {
+        let disabled = TransitionDecisionPolicy {
+            l2_phase_apply: false,
+        };
+        let enabled = TransitionDecisionPolicy {
+            l2_phase_apply: true,
+        };
+
+        assert_eq!(
+            phase_policy_rejection(
+                disabled,
+                CorrectionSourceRole::L2Surface,
+                true,
+                true,
+                true,
+                "repel",
+            ),
+            None
+        );
+        assert_eq!(
+            phase_policy_rejection(
+                enabled,
+                CorrectionSourceRole::L2Surface,
+                true,
+                true,
+                true,
+                "repel",
+            ),
+            Some("l2_transition_phase_repel")
+        );
+        assert_eq!(
+            phase_policy_rejection(
+                enabled,
+                CorrectionSourceRole::L2Surface,
+                true,
+                true,
+                true,
+                "unknown",
+            ),
+            Some("l2_transition_phase_unknown")
+        );
+        assert_eq!(
+            phase_policy_rejection(
+                enabled,
+                CorrectionSourceRole::DeterministicTypo,
+                true,
+                true,
+                true,
+                "repel"
+            ),
+            None
+        );
+        assert_eq!(
+            phase_policy_rejection(
+                enabled,
+                CorrectionSourceRole::L2Surface,
+                false,
+                false,
+                false,
+                "unknown",
+            ),
+            Some("l2_transition_phase_package_missing")
+        );
+        assert_eq!(
+            phase_policy_rejection(
+                enabled,
+                CorrectionSourceRole::L2Surface,
+                true,
+                true,
+                false,
+                "support",
+            ),
+            Some("l2_transition_phase_shadow_only")
+        );
     }
 
     fn event(text: &str) -> TypingErrorEvent {

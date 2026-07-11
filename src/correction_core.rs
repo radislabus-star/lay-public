@@ -289,6 +289,15 @@ pub(crate) struct CorrectionCandidateScoreTrace {
     pub(crate) l2_wave_peak_negative_milli: i16,
     pub(crate) l2_wave_peak_uncertainty_milli: i16,
     pub(crate) l2_wave_peak_reason: &'static str,
+    pub(crate) l2_transition_phase_milli: i16,
+    pub(crate) l2_transition_phase_threshold_milli: i16,
+    pub(crate) l2_transition_phase_verdict: &'static str,
+    pub(crate) l2_transition_phase_package_loaded: bool,
+    pub(crate) l2_transition_phase_operator_present: bool,
+    pub(crate) l2_transition_phase_operator_promoted: bool,
+    pub(crate) l2_transition_phase_positive_centers: u8,
+    pub(crate) l2_transition_phase_anti_centers: u8,
+    pub(crate) l2_transition_phase_surfaces: u32,
     pub(crate) l3_phrase_milli: i16,
     pub(crate) l3_phrase_decision: &'static str,
     pub(crate) l4_scene_milli: i16,
@@ -296,6 +305,10 @@ pub(crate) struct CorrectionCandidateScoreTrace {
     pub(crate) l4_scene_reason: &'static str,
     pub(crate) l4_signed_milli: i16,
     pub(crate) l4_signed_reason: &'static str,
+    pub(crate) l4_surface_status: &'static str,
+    pub(crate) l4_transition_state_specific: bool,
+    pub(crate) l4_transition_attract_count: u32,
+    pub(crate) l4_transition_repel_count: u32,
     pub(crate) risk_milli: i16,
     pub(crate) posterior_milli: i16,
     pub(crate) decision_rank_milli: i16,
@@ -308,7 +321,10 @@ pub fn decide_text_correction(req: CorrectionRequest<'_>) -> Option<CorrectionDe
 
 pub fn resolve_text_correction(req: CorrectionRequest<'_>) -> CorrectionResolution {
     let started = Instant::now();
-    let mut lattice = L2CandidateLattice::new(TypingErrorEvent::from_text(req.text));
+    let mut lattice = L2CandidateLattice::with_options(
+        TypingErrorEvent::from_text(req.text),
+        &req.nanda_wave_options,
+    );
 
     for source in L2CandidateSource::for_mode(req.mode) {
         source.push_candidates(&req, &mut lattice);
@@ -514,6 +530,21 @@ impl CorrectionCandidateScoreTrace {
                     l2_wave_peak_negative_milli: decision_signals.l2_wave_peak_negative_milli,
                     l2_wave_peak_uncertainty_milli: decision_signals.l2_wave_peak_uncertainty_milli,
                     l2_wave_peak_reason: decision_signals.l2_wave_peak_reason,
+                    l2_transition_phase_milli: decision_signals.l2_transition_phase_milli,
+                    l2_transition_phase_threshold_milli: decision_signals
+                        .l2_transition_phase_threshold_milli,
+                    l2_transition_phase_verdict: decision_signals.l2_transition_phase_verdict,
+                    l2_transition_phase_package_loaded: decision_signals
+                        .l2_transition_phase_package_loaded,
+                    l2_transition_phase_operator_present: decision_signals
+                        .l2_transition_phase_operator_present,
+                    l2_transition_phase_operator_promoted: decision_signals
+                        .l2_transition_phase_operator_promoted,
+                    l2_transition_phase_positive_centers: decision_signals
+                        .l2_transition_phase_positive_centers,
+                    l2_transition_phase_anti_centers: decision_signals
+                        .l2_transition_phase_anti_centers,
+                    l2_transition_phase_surfaces: decision_signals.l2_transition_phase_surfaces,
                     l3_phrase_milli: decision_signals.l3_phrase_milli,
                     l3_phrase_decision: decision_signals.l3_phrase_decision,
                     l4_scene_milli: decision_signals.l4_scene_milli,
@@ -521,6 +552,10 @@ impl CorrectionCandidateScoreTrace {
                     l4_scene_reason: decision_signals.l4_scene_reason,
                     l4_signed_milli: decision_signals.l4_signed_milli,
                     l4_signed_reason: decision_signals.l4_signed_reason,
+                    l4_surface_status: decision_signals.l4_surface_status,
+                    l4_transition_state_specific: decision_signals.l4_transition_state_specific,
+                    l4_transition_attract_count: decision_signals.l4_transition_attract_count,
+                    l4_transition_repel_count: decision_signals.l4_transition_repel_count,
                     risk_milli: score_to_milli(score.risk),
                     posterior_milli: score_to_milli(score.posterior),
                     decision_rank_milli: decision_signals.rank_milli,

@@ -18,6 +18,10 @@ struct L4SignedSignal {
     signal: f32,
     rank_bonus: f32,
     reason: &'static str,
+    surface_status: &'static str,
+    transition_state_specific: bool,
+    transition_attract_count: u32,
+    transition_repel_count: u32,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -28,12 +32,22 @@ struct L2WavePeakSignal {
     negative_milli: i16,
     uncertainty_milli: i16,
     reason: &'static str,
+    transition_phase_milli: i16,
+    transition_phase_threshold_milli: i16,
+    transition_phase_verdict: &'static str,
+    transition_phase_package_loaded: bool,
+    transition_phase_operator_present: bool,
+    transition_phase_operator_promoted: bool,
+    transition_phase_positive_centers: u8,
+    transition_phase_anti_centers: u8,
+    transition_phase_surfaces: u32,
 }
 
 fn l2_wave_peak_signal(
     event: &TypingErrorEvent,
     candidate: &UnifiedCorrectionCandidate,
     candidate_count: usize,
+    phase: crate::nanda_wave::PhaseReadout,
 ) -> L2WavePeakSignal {
     let score = crate::nanda_wave::l2_wave_peak::score_correction_peak(
         &event.original,
@@ -49,6 +63,15 @@ fn l2_wave_peak_signal(
         negative_milli: score.negative_milli,
         uncertainty_milli: score.uncertainty_milli,
         reason: score.reason,
+        transition_phase_milli: micro_to_milli(phase.margin_micro),
+        transition_phase_threshold_milli: micro_to_milli(phase.threshold_micro),
+        transition_phase_verdict: phase.verdict.as_str(),
+        transition_phase_package_loaded: phase.package_loaded,
+        transition_phase_operator_present: phase.operator_present,
+        transition_phase_operator_promoted: phase.operator_promoted,
+        transition_phase_positive_centers: phase.positive_centers,
+        transition_phase_anti_centers: phase.anti_centers,
+        transition_phase_surfaces: phase.covered_surfaces,
     }
 }
 
@@ -121,6 +144,7 @@ fn l4_scene_signal(event: &TypingErrorEvent, candidate_count: usize) -> L4SceneS
 fn l4_signed_signal(
     event: &TypingErrorEvent,
     candidate: &UnifiedCorrectionCandidate,
+    surface: &str,
 ) -> L4SignedSignal {
     let mut context = crate::correction_core::normalized_correction_words(&event.original);
     context.pop();
@@ -132,20 +156,31 @@ fn l4_signed_signal(
             signal: 0.0,
             rank_bonus: 0.0,
             reason: "learned_state_empty",
+            surface_status: "unknown",
+            transition_state_specific: false,
+            transition_attract_count: 0,
+            transition_repel_count: 0,
         };
     }
     let usage = crate::nanda_wave::cached_usage_prior_snapshot();
+    let state_id = crate::transition_relation::transition_state_id(&event.original);
     let signed = l4_signed_memory_signal(L4SignedMemoryInput {
         context: &context,
         source: candidate.origin.memory_key(),
         operation: "replacement",
+        state_word: &state_id,
         word: &word,
         usage: &usage,
+        surface: Some(surface),
     });
     L4SignedSignal {
         signal: signed.signed_weight,
         rank_bonus: signed.signed_weight * 0.12,
         reason: signed.reason,
+        surface_status: signed.surface_status,
+        transition_state_specific: signed.transition_state_specific,
+        transition_attract_count: signed.transition_attract_count,
+        transition_repel_count: signed.transition_repel_count,
     }
 }
 
@@ -184,4 +219,8 @@ fn score_to_milli(value: f32) -> i16 {
     (value * 1000.0)
         .round()
         .clamp(i16::MIN as f32, i16::MAX as f32) as i16
+}
+
+fn micro_to_milli(value: i64) -> i16 {
+    (value / 1000).clamp(i16::MIN as i64, i16::MAX as i64) as i16
 }

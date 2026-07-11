@@ -140,6 +140,7 @@ pub fn live_completion_candidates(
         candidate_count: raw_count,
     });
     let usage_snapshot = super::usage_prior::cached_usage_prior_snapshot();
+    let state_id = crate::transition_relation::transition_state_id(&partial);
     let mut usage_supported = 0_u64;
     let mut l3_supported = 0_u64;
     let mut l4_scene_memory_supported = 0_u64;
@@ -181,8 +182,10 @@ pub fn live_completion_candidates(
                 context: &context_tokens,
                 source: "L2LiveCandidateGate32",
                 operation: "completion",
+                state_word: &state_id,
                 word: &candidate.surface,
                 usage: &usage_snapshot,
+                surface: None,
             });
             let signed = l4_signed_outcome(L4SignedOutcomeInput {
                 scene: &scene_state,

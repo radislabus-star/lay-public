@@ -659,12 +659,15 @@ fn candidate_l4_signed_signal(
     let word = last_token(&candidate.text)?;
     let context = previous_context_tokens(original);
     let usage = super::usage_prior::cached_usage_prior_snapshot();
+    let state_id = crate::transition_relation::transition_state_id(original);
     Some(l4_signed_memory_signal(L4SignedMemoryInput {
         context: &context,
         source: candidate.source,
         operation: candidate_operation(candidate.source),
+        state_word: &state_id,
         word,
         usage: &usage,
+        surface: None,
     }))
 }
 

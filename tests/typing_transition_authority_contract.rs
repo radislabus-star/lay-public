@@ -44,6 +44,7 @@ fn candidate_lattice_merges_typed_evidence_without_owner_priority() {
 fn transition_core_uses_typed_origin_for_verifier_and_memory() {
     let transition = read("src/typing_transition/mod.rs");
     let decision = read("src/typing_transition/decision.rs");
+    let decision_signals = read("src/typing_transition/decision_signals.rs");
 
     assert!(
         transition.contains("origin: CandidateOrigin")
@@ -51,7 +52,8 @@ fn transition_core_uses_typed_origin_for_verifier_and_memory() {
         "source_id must be diagnostic provenance, while typed origin carries authority"
     );
     assert!(
-        decision.contains("candidate.origin") && decision.contains("candidate.origin.memory_key()"),
+        decision.contains("candidate.origin")
+            && decision_signals.contains("candidate.origin.memory_key()"),
         "decision and signed memory must read typed origin rather than source-id strings"
     );
     let bayes = read("src/correction_bayes.rs");

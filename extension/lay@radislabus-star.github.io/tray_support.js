@@ -7,9 +7,9 @@ export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/rece
 export const USAGE_COUNTS_PATH = GLib.get_home_dir() + '/.local/share/lay/nanda_wave/word_usage_counts.json';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 export const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-export const APP_VERSION = '0.2.206';
+export const APP_VERSION = '0.2.207';
 export const APP_DESCRIPTION = 'Альфа: RU/EN-переключатель по двойному Shift и помощь при наборе';
-export const APP_RELEASE_DATE = '2026-07-10';
+export const APP_RELEASE_DATE = '2026-07-11';
 export const APP_LICENSE = 'Non-Commercial';
 export const APP_URL = 'https://github.com/radislabus-star/lay-public';
 export const APP_PLATFORM = 'Linux: GNOME, KDE, Niri, Wayland, X11';
@@ -136,7 +136,7 @@ export const DEFAULTS = {
     llmwave_shadow: true,
     llmwave_apply: true,
     nanda_l2_phase_shadow: true,
-    nanda_l2_phase_apply: false,
+    nanda_l2_phase_apply: true,
     nanda_l3_phase_shadow: true,
     ptah_alexs_mode: false,
     ptah_alexs_rules: [],

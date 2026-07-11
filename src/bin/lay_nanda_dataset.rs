@@ -6,6 +6,8 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 const DEFAULT_OUT: &str = "data/nanda_training/generated_cases.tsv";
+const PHASE_REFERENCE_WORDS: &str = "data/lexicon/l2_surface_hot_ru.txt";
+const PHASE_SURFACES_PER_OPERATOR: usize = 24;
 
 #[derive(Debug, Clone)]
 struct Case {
@@ -47,6 +49,7 @@ fn output_path() -> PathBuf {
 fn build_cases() -> io::Result<Vec<Case>> {
     let mut cases = Vec::new();
     add_nanda_seed_cases(&mut cases)?;
+    add_phase_transition_surfaces(&mut cases)?;
     add_short_alternating_cases(&mut cases)?;
     add_technical_layout_cases(&mut cases)?;
     add_keep_lines(
@@ -60,6 +63,154 @@ fn build_cases() -> io::Result<Vec<Case>> {
         "shell_keep",
     )?;
     dedupe_cases(cases)
+}
+
+fn add_phase_transition_surfaces(cases: &mut Vec<Case>) -> io::Result<()> {
+    let words = read_data_lines(PHASE_REFERENCE_WORDS)?
+        .into_iter()
+        .filter(|word| {
+            let len = word.chars().count();
+            (6..=16).contains(&len) && word.chars().all(char::is_alphabetic)
+        })
+        .take(PHASE_SURFACES_PER_OPERATOR * 3)
+        .collect::<Vec<_>>();
+    if words.len() < PHASE_SURFACES_PER_OPERATOR + 1 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "not enough clean L2 reference words for transition surfaces",
+        ));
+    }
+
+    type SurfaceCorruptor = fn(&str, usize) -> Option<String>;
+    let operators: [(&str, SurfaceCorruptor); 8] = [
+        ("adjacent_transposition", corrupt_transposition),
+        ("missing_letter_repair", corrupt_missing_letter),
+        ("repeated_letter_repair", corrupt_repeated_letter),
+        ("extra_letter_repair", corrupt_extra_letter),
+        ("letter_substitution", corrupt_substitution),
+        ("accept_completion", corrupt_completion),
+        ("composite_typo", corrupt_composite),
+        ("layout_projection", corrupt_layout),
+    ];
+    for (operation, corrupt) in operators {
+        for (index, word) in words.iter().take(PHASE_SURFACES_PER_OPERATOR).enumerate() {
+            let Some(original) = corrupt(word, index) else {
+                continue;
+            };
+            push_phase_surface_case(cases, original, word.clone(), operation, index);
+        }
+    }
+
+    for index in 0..PHASE_SURFACES_PER_OPERATOR {
+        let left = &words[index];
+        let right = &words[index + 1];
+        push_phase_surface_case(
+            cases,
+            format!("{left}{right}"),
+            format!("{left} {right}"),
+            "boundary_split",
+            index,
+        );
+
+        let word = &words[index];
+        let chars = word.chars().collect::<Vec<_>>();
+        let split = chars.len() / 2;
+        push_phase_surface_case(
+            cases,
+            format!(
+                "{} {}",
+                chars[..split].iter().collect::<String>(),
+                chars[split..].iter().collect::<String>()
+            ),
+            word.clone(),
+            "boundary_merge",
+            index,
+        );
+
+        let corrupted = corrupt_composite(word, index).expect("eligible reference word");
+        push_phase_surface_case(
+            cases,
+            format!("{} {corrupted}", words[index + 1]),
+            format!("{} {word}", words[index + 1]),
+            "context_choice",
+            index,
+        );
+    }
+    Ok(())
+}
+
+fn push_phase_surface_case(
+    cases: &mut Vec<Case>,
+    original: String,
+    expected: String,
+    operation: &str,
+    index: usize,
+) {
+    if original == expected {
+        return;
+    }
+    cases.push(Case {
+        original: format!("{original} "),
+        expected: format!("{expected} "),
+        operation: operation.to_string(),
+        source: PHASE_REFERENCE_WORDS.to_string(),
+        reason: format!("phase_surface_{operation}_{index:02}"),
+    });
+}
+
+fn corrupt_transposition(word: &str, seed: usize) -> Option<String> {
+    let mut chars = word.chars().collect::<Vec<_>>();
+    let index = 1 + seed % chars.len().saturating_sub(2);
+    chars.swap(index, index + 1);
+    Some(chars.into_iter().collect())
+}
+
+fn corrupt_missing_letter(word: &str, seed: usize) -> Option<String> {
+    let mut chars = word.chars().collect::<Vec<_>>();
+    let index = 1 + seed % chars.len().saturating_sub(2);
+    chars.remove(index);
+    Some(chars.into_iter().collect())
+}
+
+fn corrupt_repeated_letter(word: &str, seed: usize) -> Option<String> {
+    let mut chars = word.chars().collect::<Vec<_>>();
+    let index = 1 + seed % chars.len().saturating_sub(2);
+    chars.insert(index, chars[index]);
+    Some(chars.into_iter().collect())
+}
+
+fn corrupt_extra_letter(word: &str, seed: usize) -> Option<String> {
+    let mut chars = word.chars().collect::<Vec<_>>();
+    let index = 1 + seed % chars.len().saturating_sub(2);
+    let extra = if chars[index] == 'а' { 'о' } else { 'а' };
+    chars.insert(index, extra);
+    Some(chars.into_iter().collect())
+}
+
+fn corrupt_substitution(word: &str, seed: usize) -> Option<String> {
+    let mut chars = word.chars().collect::<Vec<_>>();
+    let index = 1 + seed % chars.len().saturating_sub(2);
+    chars[index] = if chars[index] == 'а' { 'о' } else { 'а' };
+    Some(chars.into_iter().collect())
+}
+
+fn corrupt_completion(word: &str, seed: usize) -> Option<String> {
+    let chars = word.chars().collect::<Vec<_>>();
+    let remove = 2 + seed % 2;
+    Some(chars[..chars.len() - remove].iter().collect())
+}
+
+fn corrupt_composite(word: &str, seed: usize) -> Option<String> {
+    let mut chars = word.chars().collect::<Vec<_>>();
+    let first = 1 + seed % chars.len().saturating_sub(3);
+    chars.swap(first, first + 1);
+    let second = (first + 2).min(chars.len() - 2);
+    chars[second] = if chars[second] == 'е' { 'и' } else { 'е' };
+    Some(chars.into_iter().collect())
+}
+
+fn corrupt_layout(word: &str, _seed: usize) -> Option<String> {
+    Some(convert(word, Direction::Ru2Us))
 }
 
 fn add_nanda_seed_cases(cases: &mut Vec<Case>) -> io::Result<()> {

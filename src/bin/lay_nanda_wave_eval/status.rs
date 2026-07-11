@@ -84,6 +84,7 @@ fn refresh_live_status_fields(value: &mut Value) {
     value["resonance_memory"] = resonance_memory_json(&resonance_memory);
     value["l4_state_map"] = l4_state_map_json();
     value["memory_learned"] = lay::nanda_wave::usage_memory_learned_report_json();
+    value["l2_transition_phase"] = lay::nanda_wave::l2_transition_phase_report_json(None);
     value["candidate_gate"] = lay::nanda_wave::candidate_gate::live_candidate_gate_stats_json();
     value["preedit_live"] = preedit_live_json();
     value["candidate_quality"] = candidate_quality::report_json();
@@ -224,6 +225,7 @@ fn build_status_json(full: bool) -> io::Result<serde_json::Value> {
         "resonance_memory": resonance_memory_json(&resonance_memory),
         "l4_state_map": l4_state_map_json(),
         "memory_learned": lay::nanda_wave::usage_memory_learned_report_json(),
+        "l2_transition_phase": lay::nanda_wave::l2_transition_phase_report_json(None),
         "candidate_gate": lay::nanda_wave::candidate_gate::live_candidate_gate_stats_json(),
         "preedit_live": preedit_live_json(),
         "candidate_quality": candidate_quality::report_json(),

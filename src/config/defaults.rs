@@ -64,7 +64,7 @@ impl Default for LayConfig {
             llmwave_shadow: true,
             llmwave_apply: true,
             nanda_l2_phase_shadow: true,
-            nanda_l2_phase_apply: false,
+            nanda_l2_phase_apply: true,
             nanda_l3_phase_shadow: true,
         }
     }

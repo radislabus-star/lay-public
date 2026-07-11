@@ -104,6 +104,24 @@ pub(crate) struct RecentActionCandidateScore {
     pub(crate) l2_wave_peak_negative_milli: i16,
     pub(crate) l2_wave_peak_uncertainty_milli: i16,
     pub(crate) l2_wave_peak_reason: String,
+    #[serde(default)]
+    pub(crate) l2_transition_phase_milli: i16,
+    #[serde(default)]
+    pub(crate) l2_transition_phase_threshold_milli: i16,
+    #[serde(default)]
+    pub(crate) l2_transition_phase_verdict: String,
+    #[serde(default)]
+    pub(crate) l2_transition_phase_package_loaded: bool,
+    #[serde(default)]
+    pub(crate) l2_transition_phase_operator_present: bool,
+    #[serde(default)]
+    pub(crate) l2_transition_phase_operator_promoted: bool,
+    #[serde(default)]
+    pub(crate) l2_transition_phase_positive_centers: u8,
+    #[serde(default)]
+    pub(crate) l2_transition_phase_anti_centers: u8,
+    #[serde(default)]
+    pub(crate) l2_transition_phase_surfaces: u32,
     pub(crate) l3_phrase_milli: i16,
     pub(crate) l3_phrase_decision: String,
     pub(crate) l4_scene_milli: i16,
@@ -111,6 +129,14 @@ pub(crate) struct RecentActionCandidateScore {
     pub(crate) l4_scene_reason: String,
     pub(crate) l4_signed_milli: i16,
     pub(crate) l4_signed_reason: String,
+    #[serde(default)]
+    pub(crate) l4_surface_status: String,
+    #[serde(default)]
+    pub(crate) l4_transition_state_specific: bool,
+    #[serde(default)]
+    pub(crate) l4_transition_attract_count: u32,
+    #[serde(default)]
+    pub(crate) l4_transition_repel_count: u32,
     pub(crate) risk_milli: i16,
     pub(crate) posterior_milli: i16,
     pub(crate) decision_rank_milli: i16,
@@ -241,6 +267,18 @@ impl RecentActionGateTrace {
                     l2_wave_peak_negative_milli: score.l2_wave_peak_negative_milli,
                     l2_wave_peak_uncertainty_milli: score.l2_wave_peak_uncertainty_milli,
                     l2_wave_peak_reason: score.l2_wave_peak_reason.to_string(),
+                    l2_transition_phase_milli: score.l2_transition_phase_milli,
+                    l2_transition_phase_threshold_milli: score.l2_transition_phase_threshold_milli,
+                    l2_transition_phase_verdict: score.l2_transition_phase_verdict.to_string(),
+                    l2_transition_phase_package_loaded: score.l2_transition_phase_package_loaded,
+                    l2_transition_phase_operator_present: score
+                        .l2_transition_phase_operator_present,
+                    l2_transition_phase_operator_promoted: score
+                        .l2_transition_phase_operator_promoted,
+                    l2_transition_phase_positive_centers: score
+                        .l2_transition_phase_positive_centers,
+                    l2_transition_phase_anti_centers: score.l2_transition_phase_anti_centers,
+                    l2_transition_phase_surfaces: score.l2_transition_phase_surfaces,
                     l3_phrase_milli: score.l3_phrase_milli,
                     l3_phrase_decision: score.l3_phrase_decision.to_string(),
                     l4_scene_milli: score.l4_scene_milli,
@@ -248,6 +286,10 @@ impl RecentActionGateTrace {
                     l4_scene_reason: score.l4_scene_reason.to_string(),
                     l4_signed_milli: score.l4_signed_milli,
                     l4_signed_reason: score.l4_signed_reason.to_string(),
+                    l4_surface_status: score.l4_surface_status.to_string(),
+                    l4_transition_state_specific: score.l4_transition_state_specific,
+                    l4_transition_attract_count: score.l4_transition_attract_count,
+                    l4_transition_repel_count: score.l4_transition_repel_count,
                     risk_milli: score.risk_milli,
                     posterior_milli: score.posterior_milli,
                     decision_rank_milli: score.decision_rank_milli,

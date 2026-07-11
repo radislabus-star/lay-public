@@ -44,8 +44,10 @@ pub(crate) fn bayes_score_candidate(
             context: &context,
             source: origin.memory_key(),
             operation: "replacement",
+            state_word: &crate::transition_relation::transition_state_id(original),
             word: &replacement_lower,
             usage: &usage_snapshot,
+            surface: None,
         },
     );
     let rejected_prior = usage_snapshot.rejected_word_prior(&replacement_lower)

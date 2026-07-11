@@ -55,6 +55,7 @@ pub mod text_metrics;
 #[doc(hidden)]
 pub mod time;
 pub(crate) mod token_language;
+pub(crate) mod transition_relation;
 pub mod typing_assist;
 pub mod typing_candidate;
 pub mod typing_context;

@@ -15,6 +15,7 @@ pub(crate) mod verifier;
 use crate::correction_core::TypingErrorClass;
 use crate::correction_source_contract::CandidateOrigin;
 use crate::language_action::LanguageActionOperator;
+use crate::transition_relation::{TransitionRelationAtoms, TransitionRelationInput};
 use l4_state_estimator::{
     L4ObservationKind, L4StateEstimate, L4StateEstimator, L4StateObservation,
 };
@@ -32,6 +33,7 @@ pub(crate) struct TypingTransition {
     pub(crate) l3_signal: L3TransitionSignal,
     pub(crate) l4_signed_signal: L4SignedTransitionSignal,
     pub(crate) l4_state_estimate: L4StateEstimate,
+    relation_atoms: TransitionRelationAtoms,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -93,6 +95,18 @@ impl TypingTransition {
             verifier_passed: action.verifier_passed,
             l4_negative,
         });
+        let relation_atoms = TransitionRelationAtoms::encode(
+            original,
+            replacement,
+            TransitionRelationInput {
+                action_operator: action.operator.as_str(),
+                edit_operator: action.edit_operator.as_str(),
+                proof: action.edit_proof.as_str(),
+                verifier_passed: action.verifier_passed,
+                left_context_changed: action.left_context_changed,
+                changed_tokens: action.changed_tokens,
+            },
+        );
 
         Self {
             state_before,
@@ -119,6 +133,7 @@ impl TypingTransition {
                 negative: l4_negative,
             },
             l4_state_estimate,
+            relation_atoms,
         }
     }
 }

@@ -16,6 +16,7 @@ impl TransitionMemory {
         let word = crate::correction_core::normalized_correction_words(replacement)
             .pop()
             .unwrap_or_default();
+        let state_word = crate::transition_relation::transition_state_id(original);
         if word.is_empty() {
             return true;
         }
@@ -25,11 +26,15 @@ impl TransitionMemory {
                 context: &context,
                 source: origin.memory_key(),
                 operation: "replacement",
+                state_word: &state_word,
                 word: &word,
                 usage: &usage,
+                surface: None,
             },
         );
-        signed.signed_weight > -0.45
+        let exact_transition_rejected = signed.transition_state_specific
+            && signed.transition_repel_count > signed.transition_attract_count;
+        !exact_transition_rejected && signed.signed_weight > -0.45
     }
 }
 

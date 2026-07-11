@@ -11,7 +11,9 @@ pub(crate) struct L4SignedMemorySignal {
     pub(crate) transition_repulsion: f32,
     pub(crate) transition_attract_count: u32,
     pub(crate) transition_repel_count: u32,
+    pub(crate) transition_state_specific: bool,
     pub(crate) reason: &'static str,
+    pub(crate) surface_status: &'static str,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -19,14 +21,33 @@ pub(crate) struct L4SignedMemoryInput<'a> {
     pub(crate) context: &'a [String],
     pub(crate) source: &'a str,
     pub(crate) operation: &'a str,
+    pub(crate) state_word: &'a str,
     pub(crate) word: &'a str,
     pub(crate) usage: &'a UsagePriorSnapshot,
+    pub(crate) surface: Option<&'a str>,
 }
 
 pub(crate) fn l4_signed_memory_signal(input: L4SignedMemoryInput<'_>) -> L4SignedMemorySignal {
-    let readout = input
-        .usage
-        .hot_readout(input.context, input.source, input.operation, input.word);
+    let readout = input.usage.hot_readout(
+        input.context,
+        input.source,
+        input.operation,
+        input.state_word,
+        input.word,
+    );
+    let coverage = input
+        .surface
+        .map(|surface| input.usage.surface_coverage(surface))
+        .unwrap_or_default();
+    let surface_status = if coverage.rejected > coverage.accepted {
+        "repelled"
+    } else if coverage.accepted > 0 {
+        "covered"
+    } else if coverage.observed > 0 {
+        "observed"
+    } else {
+        "unknown"
+    };
 
     let attraction = (readout.word_prior * 0.70
         + readout.context_prior * 1.20
@@ -67,7 +88,9 @@ pub(crate) fn l4_signed_memory_signal(input: L4SignedMemoryInput<'_>) -> L4Signe
         transition_repulsion: readout.transition.repulsion,
         transition_attract_count: readout.transition.attract_count,
         transition_repel_count: readout.transition.repel_count,
+        transition_state_specific: readout.transition.state_specific,
         reason,
+        surface_status,
     }
 }
 
@@ -92,8 +115,10 @@ mod tests {
             context: &context,
             source: "ime",
             operation: "completion",
+            state_word: "д",
             word: "дождь",
             usage: &usage,
+            surface: None,
         });
 
         assert!(signal.attraction > signal.repulsion);
@@ -113,19 +138,57 @@ mod tests {
             context: &context,
             source: "autocorrect",
             operation: "replacement",
+            state_word: "отвравим",
             word: "отвравим",
             usage: &usage,
+            surface: None,
         });
         let good = l4_signed_memory_signal(L4SignedMemoryInput {
             context: &context,
             source: "autocorrect",
             operation: "replacement",
+            state_word: "отвравим",
             word: "отравим",
             usage: &usage,
+            surface: None,
         });
 
         assert!(bad.repulsion > bad.attraction);
         assert!(bad.signed_weight < 0.0);
         assert!(good.attraction > good.repulsion);
+    }
+
+    #[test]
+    fn signed_memory_keeps_context_rejection_out_of_structural_surface_repel() {
+        let surface = "op=replacement|source=autocorrect|words=2->2|delta=0|prefix=3-4|edit=1";
+        let covered_usage = usage_from_events(&format!(
+            "{{\"ts\":1,\"kind\":\"accepted_fix\",\"word\":\"проверить\",\"context\":[\"можно\"],\"from\":\"можно проврить\",\"to\":\"можно проверить\",\"source\":\"autocorrect\",\"operation\":\"replacement\",\"surface\":\"{surface}\"}}\n"
+        ));
+        let repelled_usage = usage_from_events(&format!(
+            "{{\"ts\":1,\"kind\":\"rejected_candidate\",\"word\":\"проврить\",\"context\":[\"можно\"],\"from\":\"можно проверить\",\"to\":\"можно проврить\",\"source\":\"autocorrect\",\"operation\":\"replacement\",\"surface\":\"{surface}\"}}\n"
+        ));
+        let context = ["можно".to_string()];
+
+        let covered = l4_signed_memory_signal(L4SignedMemoryInput {
+            context: &context,
+            source: "autocorrect",
+            operation: "replacement",
+            state_word: "проврить",
+            word: "проверить",
+            usage: &covered_usage,
+            surface: Some(surface),
+        });
+        let repelled = l4_signed_memory_signal(L4SignedMemoryInput {
+            context: &context,
+            source: "autocorrect",
+            operation: "replacement",
+            state_word: "проверить",
+            word: "проврить",
+            usage: &repelled_usage,
+            surface: Some(surface),
+        });
+
+        assert_eq!(covered.surface_status, "covered");
+        assert_eq!(repelled.surface_status, "observed");
     }
 }

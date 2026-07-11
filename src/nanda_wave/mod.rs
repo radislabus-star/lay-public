@@ -37,6 +37,8 @@ pub mod trace;
 pub(crate) mod usage_prior;
 
 pub use eval::{evaluate_wave, evaluate_wave_with_options, WaveEvalResult, WaveEvalStats};
+pub use l2_candidate_phase::L2PhaseTrainingEntry;
+pub(crate) use l2_candidate_phase::PhaseReadout;
 pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
 pub use options::WaveOptions;
 pub use signal::{ActiveMode, LayerTrace, WaveDecision, WavePacket, WaveTrace, WordCandidate};
@@ -84,13 +86,135 @@ where
     l2_candidate_phase::write_phase_memory_from_entries(path, entries)
 }
 
+pub fn write_l2_candidate_phase_memory_labeled<I>(
+    path: &std::path::Path,
+    entries: I,
+) -> std::io::Result<usize>
+where
+    I: IntoIterator<Item = L2PhaseTrainingEntry>,
+{
+    l2_candidate_phase::write_phase_memory_from_labeled_entries(path, entries)
+}
+
+pub fn infer_l2_transition_operator(
+    original: &str,
+    candidate: &str,
+    operation: &str,
+) -> &'static str {
+    crate::transition_relation::TransitionOperatorKind::infer(original, candidate, operation)
+        .as_str()
+}
+
+#[derive(Clone, Debug, serde::Serialize)]
+pub struct L2TransitionPhaseShadowReadout {
+    pub package_loaded: bool,
+    pub operator_present: bool,
+    pub operator_promoted: bool,
+    pub verdict: &'static str,
+    pub positive_micro: i64,
+    pub anti_micro: i64,
+    pub margin_micro: i64,
+    pub threshold_micro: i64,
+    pub positive_examples: u32,
+    pub negative_examples: u32,
+    pub positive_centers: u8,
+    pub anti_centers: u8,
+    pub covered_surfaces: u32,
+    pub rejected_surfaces: u32,
+}
+
+#[derive(Clone, Debug)]
+pub struct L2TransitionPhaseShadowEvaluator {
+    inner: l2_candidate_phase::PhaseEvaluator,
+}
+
+impl L2TransitionPhaseShadowEvaluator {
+    pub fn load(path: Option<&std::path::Path>) -> Self {
+        Self {
+            inner: l2_candidate_phase::PhaseEvaluator::load(path),
+        }
+    }
+
+    pub fn readout(
+        &self,
+        original: &str,
+        candidate: &str,
+        operation: &str,
+    ) -> L2TransitionPhaseShadowReadout {
+        phase_shadow_readout(self.inner.readout(original, candidate, operation))
+    }
+}
+
+pub fn l2_transition_phase_shadow_readout(
+    original: &str,
+    candidate: &str,
+    operation: &str,
+    path: Option<&std::path::Path>,
+) -> L2TransitionPhaseShadowReadout {
+    let readout = match path {
+        Some(path) => {
+            l2_candidate_phase::shadow_readout_from_path(original, candidate, operation, path)
+        }
+        None => l2_candidate_phase::shadow_readout(original, candidate, operation),
+    };
+    phase_shadow_readout(readout)
+}
+
+fn phase_shadow_readout(
+    readout: l2_candidate_phase::PhaseReadout,
+) -> L2TransitionPhaseShadowReadout {
+    L2TransitionPhaseShadowReadout {
+        package_loaded: readout.package_loaded,
+        operator_present: readout.operator_present,
+        operator_promoted: readout.operator_promoted,
+        verdict: readout.verdict.as_str(),
+        positive_micro: readout.positive_micro,
+        anti_micro: readout.anti_micro,
+        margin_micro: readout.margin_micro,
+        threshold_micro: readout.threshold_micro,
+        positive_examples: readout.positive_examples,
+        negative_examples: readout.negative_examples,
+        positive_centers: readout.positive_centers,
+        anti_centers: readout.anti_centers,
+        covered_surfaces: readout.covered_surfaces,
+        rejected_surfaces: readout.rejected_surfaces,
+    }
+}
+
 pub fn l2_candidate_phase_shadow(
     original: &str,
     candidate: &str,
     operation: &str,
 ) -> (bool, i64, bool) {
-    let shadow = l2_candidate_phase::shadow_admission(original, candidate, operation);
-    (shadow.package_loaded, shadow.margin_micro, shadow.admitted)
+    let shadow = l2_transition_phase_shadow_readout(original, candidate, operation, None);
+    (
+        shadow.package_loaded,
+        shadow.margin_micro,
+        shadow.verdict == "support",
+    )
+}
+
+pub fn l2_transition_phase_report_json(path: Option<&std::path::Path>) -> serde_json::Value {
+    let owned;
+    let path = match path {
+        Some(path) => path,
+        None => {
+            owned = l2_candidate_phase::default_phase_memory_path();
+            &owned
+        }
+    };
+    l2_candidate_phase::phase_memory_report_json(path)
+}
+
+pub fn l2_transition_phase_proof_json(entries: &[L2PhaseTrainingEntry]) -> serde_json::Value {
+    l2_candidate_phase::phase_proof_json(entries)
+}
+
+pub(crate) fn l2_transition_phase_readout(
+    action_operator: &str,
+    atoms: &[String],
+) -> l2_candidate_phase::PhaseReadout {
+    l2_candidate_phase::relation_readout(action_operator, atoms)
 }
 
 pub fn usage_debug_summary() -> (u64, usize, usize) {

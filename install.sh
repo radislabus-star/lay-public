@@ -229,6 +229,10 @@ echo "✓ lay:        $(ls -lh target/release/lay | awk '{print $5}')"
 echo "✓ lay-daemon: $(ls -lh target/release/lay-daemon | awk '{print $5}')"
 
 echo ""
+echo "=== L2 transition phase package ==="
+scripts/install-l2-transition-phase.sh
+
+echo ""
 echo "=== n-gram cache ==="
 LAY_STATE_DIR="$HOME/.local/state/lay"
 mkdir -p "$LAY_STATE_DIR"

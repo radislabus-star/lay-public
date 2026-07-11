@@ -6,11 +6,13 @@ use std::path::{Path, PathBuf};
 
 use lay::nanda_wave::llmwave;
 use lay::nanda_wave::packet::{write_learned_packet, LearnedPacketEntry};
+use lay::nanda_wave::L2PhaseTrainingEntry;
 use serde::Deserialize;
 
 const DEFAULT_DATASET: &str = "data/nanda_training/generated_cases.tsv";
 const RECENT_ACTIONS: &str = ".local/share/lay/recent_actions.jsonl";
 const CORRECTIONS_LOG: &str = ".local/share/lay/corrections.jsonl";
+const USAGE_EVENTS: &str = ".local/share/lay/nanda_wave/word_usage_events.jsonl";
 
 #[derive(Debug, Clone)]
 struct Learned {
@@ -44,14 +46,24 @@ fn main() -> io::Result<()> {
     let include_live_actions = pack_live || args.iter().any(|arg| arg == "--include-live-actions");
     let include_user_corrections =
         pack_live || args.iter().any(|arg| arg == "--include-user-corrections");
+    let phase_only = args.iter().any(|arg| arg == "--phase-only");
+    if phase_only {
+        let phase_entries =
+            phase_training_entries(&dataset, include_live_actions, include_user_corrections)?;
+        write_phase_memory(&phase_out, phase_entries)?;
+        println!("phase_out: {}", phase_out.display());
+        return Ok(());
+    }
     let mut learned = learn(&dataset)?;
     let live_report = if include_live_actions || include_user_corrections {
         add_live_learning(&mut learned, include_user_corrections)?
     } else {
         LiveLearningReport::default()
     };
+    let phase_entries =
+        phase_training_entries(&dataset, include_live_actions, include_user_corrections)?;
     write_memory(&out, &learned)?;
-    write_phase_memory(&phase_out, &learned)?;
+    write_phase_memory(&phase_out, phase_entries)?;
     print_summary(&dataset, &out, &phase_out, &learned, &live_report);
     Ok(())
 }
@@ -85,6 +97,13 @@ fn print_l2_surface_status() {
         status.generated_forms_loaded
     );
     println!("  generated_forms_words: {}", status.generated_forms_words);
+    let phase = lay::nanda_wave::l2_transition_phase_report_json(None);
+    println!(
+        "l2_transition_phase: loaded={} profiles={} hot_bytes={}",
+        phase["loaded"].as_bool().unwrap_or(false),
+        phase["profile_count"].as_u64().unwrap_or(0),
+        phase["hot_bytes"].as_u64().unwrap_or(0)
+    );
 }
 
 fn train_llmwave_corpus(corpus: &Path, out: &Path) -> io::Result<()> {
@@ -153,6 +172,8 @@ struct LiveAction {
     from_text: String,
     #[serde(default, rename = "to")]
     to_text: String,
+    #[serde(default)]
+    safety_allow_apply: Option<bool>,
 }
 
 fn add_live_learning(
@@ -265,7 +286,11 @@ fn live_paths() -> Vec<PathBuf> {
     let Some(home) = env::var_os("HOME").map(PathBuf::from) else {
         return Vec::new();
     };
-    vec![home.join(RECENT_ACTIONS), home.join(CORRECTIONS_LOG)]
+    vec![
+        home.join(RECENT_ACTIONS),
+        home.join(CORRECTIONS_LOG),
+        home.join(USAGE_EVENTS),
+    ]
 }
 
 fn write_memory(path: &Path, learned: &BTreeMap<String, Learned>) -> io::Result<()> {
@@ -288,21 +313,154 @@ fn write_memory(path: &Path, learned: &BTreeMap<String, Learned>) -> io::Result<
     Ok(())
 }
 
-fn write_phase_memory(path: &Path, learned: &BTreeMap<String, Learned>) -> io::Result<()> {
-    let examples = learned
-        .iter()
-        .map(|(original, item)| {
-            (
-                original.clone(),
-                item.expected.clone(),
-                item.operation.clone(),
-                item.count,
-            )
+fn write_phase_memory(path: &Path, entries: Vec<L2PhaseTrainingEntry>) -> io::Result<()> {
+    let bytes = lay::nanda_wave::write_l2_candidate_phase_memory_labeled(path, entries)?;
+    println!("l2_candidate_phase_packet: bytes={bytes}");
+    let report = lay::nanda_wave::l2_transition_phase_report_json(Some(path));
+    println!(
+        "l2_transition_phase_profiles: profiles={} raw_words_stored={}",
+        report["profile_count"].as_u64().unwrap_or(0),
+        report["raw_words_stored"].as_bool().unwrap_or(true)
+    );
+    Ok(())
+}
+
+fn phase_training_entries(
+    dataset: &Path,
+    include_live_actions: bool,
+    include_user_corrections: bool,
+) -> io::Result<Vec<L2PhaseTrainingEntry>> {
+    let text = fs::read_to_string(dataset)?;
+    let rows = text
+        .lines()
+        .skip(1)
+        .filter_map(|line| {
+            let cols = line.split('\t').collect::<Vec<_>>();
+            (cols.len() >= 8 && cols[2] != cols[3]).then(|| {
+                (
+                    cols[0].to_string(),
+                    cols[2].trim_end().to_string(),
+                    cols[3].trim_end().to_string(),
+                    cols[4].to_string(),
+                    cols[5] == "1",
+                )
+            })
         })
         .collect::<Vec<_>>();
-    let bytes = lay::nanda_wave::write_l2_candidate_phase_memory(path, examples)?;
-    println!("l2_candidate_phase_packet: bytes={bytes}");
+    let group_operators = rows
+        .iter()
+        .filter(|row| row.4)
+        .map(|row| {
+            (
+                row.0.clone(),
+                lay::nanda_wave::infer_l2_transition_operator(&row.1, &row.2, &row.3).to_string(),
+            )
+        })
+        .collect::<BTreeMap<_, _>>();
+    let mut entries = rows
+        .into_iter()
+        .filter_map(|(group, original, candidate, operation, accepted)| {
+            let operation = group_operators.get(&group).cloned().unwrap_or(operation);
+            (!original.is_empty() && !candidate.is_empty()).then_some(L2PhaseTrainingEntry {
+                original,
+                candidate,
+                operation,
+                accepted,
+                count: 1,
+            })
+        })
+        .collect::<Vec<_>>();
+
+    if include_live_actions || include_user_corrections {
+        for path in live_paths() {
+            append_live_phase_entries(&mut entries, &path, include_user_corrections)?;
+        }
+    }
+    Ok(entries)
+}
+
+fn append_live_phase_entries(
+    entries: &mut Vec<L2PhaseTrainingEntry>,
+    path: &Path,
+    include_user_corrections: bool,
+) -> io::Result<()> {
+    let Ok(text) = fs::read_to_string(path) else {
+        return Ok(());
+    };
+    for line in text.lines().filter(|line| !line.trim().is_empty()) {
+        let Ok(action) = serde_json::from_str::<LiveAction>(line) else {
+            continue;
+        };
+        if action.kind == "layout-replay" {
+            push_phase_entry(
+                entries,
+                &action.from_text,
+                &action.to_text,
+                &action.kind,
+                true,
+            );
+        } else if action.kind == "candidate_before_apply"
+            && action.safety_allow_apply == Some(false)
+        {
+            push_phase_entry(
+                entries,
+                &action.from_text,
+                &action.to_text,
+                &action.kind,
+                false,
+            );
+        } else if include_user_corrections && action.kind == "user-correction" {
+            push_proven_user_phase_entry(entries, &action.from_text, &action.to_text);
+        }
+    }
     Ok(())
+}
+
+fn push_proven_user_phase_entry(entries: &mut Vec<L2PhaseTrainingEntry>, from: &str, to: &str) {
+    let Some((original, candidate)) = normalized_live_pair(from, to) else {
+        return;
+    };
+    if original.split_whitespace().count() != 1 || candidate.split_whitespace().count() != 1 {
+        return;
+    }
+    let operator =
+        lay::nanda_wave::infer_l2_transition_operator(&original, &candidate, "user-correction");
+    if !matches!(
+        operator,
+        "adjacent_transposition"
+            | "missing_letter_repair"
+            | "repeated_letter_repair"
+            | "extra_letter_repair"
+            | "letter_substitution"
+    ) {
+        return;
+    }
+    entries.push(L2PhaseTrainingEntry {
+        original,
+        candidate,
+        operation: operator.to_string(),
+        accepted: true,
+        count: 1,
+    });
+}
+
+fn push_phase_entry(
+    entries: &mut Vec<L2PhaseTrainingEntry>,
+    from: &str,
+    to: &str,
+    kind: &str,
+    accepted: bool,
+) {
+    let Some((original, candidate)) = normalized_live_pair(from, to) else {
+        return;
+    };
+    entries.push(L2PhaseTrainingEntry {
+        operation: operation_from_live_kind(kind, &original, &candidate).to_string(),
+        original,
+        candidate,
+        accepted,
+        count: 1,
+    });
 }
 
 fn print_summary(

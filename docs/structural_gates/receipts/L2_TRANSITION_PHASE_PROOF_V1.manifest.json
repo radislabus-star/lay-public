@@ -1,0 +1,29 @@
+{
+  "schema": "nando.wave-causal-proof-manifest.v1",
+  "artifact": {
+    "path": "docs/structural_gates/receipts/L2_TRANSITION_PHASE_PROOF_V1.json",
+    "sha256": "5f8ee0f9351835b60ee649a94c8b9e7db1e5c595ee5928b138f32108088cd7c7"
+  },
+  "sources": [
+    {
+      "path": "src/transition_relation.rs",
+      "sha256": "90d17d089fcfd75e05098050bc877a047c66cd0226aefea1c9421d93c6bd5e9a"
+    },
+    {
+      "path": "src/nanda_wave/l2_candidate_phase.rs",
+      "sha256": "c56484608ca57dbc65c432802532857c4fd28344f35e46e5555cf4aba2b60447"
+    },
+    {
+      "path": "src/typing_transition/decision.rs",
+      "sha256": "6b725019dabc808249682d59ec567f3766ce66bf2db0e8efba9f31cf32d2717f"
+    },
+    {
+      "path": "src/bin/lay_nanda_dataset.rs",
+      "sha256": "54621557ab3243e6b0f9f2dec85075683a33c3754fc05c3cdfe66696689d6921"
+    },
+    {
+      "path": "data/nanda_training/generated_cases.tsv",
+      "sha256": "558afae983240e141e8eda5e39537e24c83d1e8f1dae9d9da90ac4ed73a4ebdb"
+    }
+  ]
+}

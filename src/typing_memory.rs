@@ -32,6 +32,8 @@ pub(crate) struct TypingMemoryEvent {
     pub(crate) to: Option<String>,
     pub(crate) source: String,
     pub(crate) operation: String,
+    /// Stable relation shape, intentionally independent from concrete words.
+    pub(crate) surface: Option<String>,
 }
 
 impl TypingMemoryEvent {
@@ -46,6 +48,7 @@ impl TypingMemoryEvent {
             to: None,
             source: "user".to_string(),
             operation: "typed".to_string(),
+            surface: None,
         })
     }
 
@@ -91,10 +94,16 @@ impl TypingMemoryEvent {
                 feedback: TypingMemoryFeedback::Rejected,
                 word,
                 context: context.clone(),
-                from: None,
+                from: Some(context_tail.trim().to_string()),
                 to: Some(rejected_text.trim().to_string()),
                 source: source.to_string(),
                 operation: operation.to_string(),
+                surface: Some(transition_surface_key(
+                    context_tail,
+                    rejected_text,
+                    source,
+                    operation,
+                )),
             })
             .collect()
     }
@@ -127,6 +136,7 @@ fn accepted_events(
                 to: Some(to.trim().to_string()),
                 source: source.to_string(),
                 operation: operation.to_string(),
+                surface: Some(transition_surface_key(from, to, source, operation)),
             }
         })
         .collect()
@@ -163,8 +173,20 @@ fn ime_events(
             to: Some(text.trim().to_string()),
             source: "ime".to_string(),
             operation: "completion".to_string(),
+            surface: None,
         })
         .collect()
+}
+
+pub(crate) fn transition_surface_key(
+    from: &str,
+    to: &str,
+    _source: &str,
+    operation: &str,
+) -> String {
+    let (_, relation) =
+        crate::transition_relation::TransitionRelationAtoms::inferred(from, to, operation);
+    relation.surface_key().to_string()
 }
 
 pub(crate) fn context_and_last_word(text: &str) -> Option<(Vec<String>, String)> {
@@ -197,7 +219,7 @@ pub(crate) fn normalize_word(word: &str) -> String {
     let trimmed = word
         .trim()
         .trim_matches(|ch: char| !ch.is_alphabetic() && ch != '-');
-    if trimmed.chars().filter(|ch| ch.is_alphabetic()).count() < 2 {
+    if !trimmed.chars().any(|ch| ch.is_alphabetic()) {
         return String::new();
     }
     trimmed.to_lowercase()
@@ -239,6 +261,7 @@ mod tests {
             .all(|event| event.feedback == TypingMemoryFeedback::Accepted));
         assert!(events.iter().all(|event| event.source == "autocorrect"));
         assert!(events.iter().all(|event| event.operation == "replacement"));
+        assert!(events.iter().all(|event| event.surface.is_some()));
     }
 
     #[test]
@@ -255,5 +278,14 @@ mod tests {
         assert_eq!(events[0].feedback, TypingMemoryFeedback::Rejected);
         assert_eq!(events[0].context, ["ну"]);
         assert_eq!(events[0].word, "даша");
+        assert!(events[0].surface.is_some());
+    }
+
+    #[test]
+    fn transition_surface_key_generalizes_across_concrete_words() {
+        let first = transition_surface_key("мы cat", "мы car", "autocorrect", "replacement");
+        let second = transition_surface_key("они dog", "они dot", "autocorrect", "replacement");
+
+        assert_eq!(first, second);
     }
 }

@@ -89,6 +89,7 @@ fi
 
 if [[ "$NO_BUILD" == "0" ]]; then
   cargo build --release --bins
+  scripts/install-l2-transition-phase.sh
 fi
 
 if [[ "$NO_RELOAD" == "0" ]]; then

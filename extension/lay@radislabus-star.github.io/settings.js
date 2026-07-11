@@ -4,8 +4,8 @@ import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.2.206';
-const APP_RELEASE_DATE = '2026-07-10';
+const APP_VERSION = '0.2.207';
+const APP_RELEASE_DATE = '2026-07-11';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
 const HEADER_ICON_SIZE = 16;
@@ -81,6 +81,11 @@ function nandaPassportText(status) {
     const ablation = Array.isArray(status.ablation) ? status.ablation : [];
     const candidateStats = Array.isArray(status.candidate_stats) ? status.candidate_stats : [];
     const memory = status.memory_learned?.summary ?? {};
+    const phase = status.l2_transition_phase ?? {};
+    const quality = status.candidate_quality ?? {};
+    const lanes = quality.decision_lanes ?? {};
+    const outcomes = quality.decision_outcomes ?? {};
+    const latency = quality.latency_ms ?? {};
     const preeditLive = status.preedit_live ?? {};
     const scoreboard = status.cell_scoreboard && Array.isArray(status.cell_scoreboard.cells)
         ? status.cell_scoreboard
@@ -123,6 +128,20 @@ function nandaPassportText(status) {
         `  events: ${memory.parsed_events ?? 0}, words: ${memory.word_states ?? 0}`,
         `  accepted/rejected: ${memory.accepted_word_states ?? 0} / ${memory.rejected_word_states ?? 0}`,
         `  transitions attract/repel: ${memory.transition_attract_states ?? 0} / ${memory.transition_repel_states ?? 0}`,
+        `  exact-state transitions: ${lanes.l4_exact_transition_rows ?? 0} · repel ${lanes.l4_exact_transition_repel_rows ?? 0}`,
+        `  surface covered/repelled: ${memory.surface_covered_states ?? 0} / ${memory.surface_repelled_states ?? 0}`,
+        '',
+        'L2 фазовая память переходов',
+        `  loaded: ${phase.loaded ? 'да' : 'нет'} · hot ${phase.hot_bytes ?? 0} Б`,
+        `  operators: ${phase.profile_count ?? 0} / ${phase.operator_family_target ?? 11} · promoted ${phase.promoted_profiles ?? 0}`,
+        `  centers +/anti: ${phase.positive_centers ?? 0} / ${phase.anti_centers ?? 0}`,
+        `  surfaces +/anti: ${phase.covered_surfaces ?? 0} / ${phase.rejected_surfaces ?? 0}`,
+        `  hot exact traces: ${phase.exact_traces_in_hot_package ?? 0}`,
+        '',
+        'Transition Decision Core',
+        `  phase support/repel/unknown: ${lanes.l2_transition_phase_support_rows ?? 0} / ${lanes.l2_transition_phase_repel_rows ?? 0} / ${lanes.l2_transition_phase_unknown_rows ?? 0}`,
+        `  apply/non-apply: ${outcomes.apply ?? 0} / ${outcomes.non_apply ?? 0}`,
+        `  latency p50/p99/max: ${latency.total?.p50 ?? '?'} / ${latency.total?.p99 ?? '?'} / ${latency.total?.max ?? '?'} мс`,
     );
     lines.push(
         '',
@@ -196,7 +215,7 @@ const DEFAULTS = {
     llmwave_shadow: true,
     llmwave_apply: true,
     nanda_l2_phase_shadow: true,
-    nanda_l2_phase_apply: false,
+    nanda_l2_phase_apply: true,
     nanda_l3_phase_shadow: true,
     ptah_alexs_mode: false,
     ptah_alexs_rules: [],

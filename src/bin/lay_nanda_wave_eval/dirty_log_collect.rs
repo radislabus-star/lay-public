@@ -39,10 +39,18 @@ struct DirtyLogPair {
     context_prior_milli: Option<i64>,
     l2_wave_peak_milli: Option<i64>,
     l2_wave_peak_reason: String,
+    #[serde(default)]
+    l2_transition_phase_milli: Option<i64>,
+    #[serde(default)]
+    l2_transition_phase_verdict: String,
+    #[serde(default)]
+    l2_transition_phase_surfaces: Option<u64>,
     l3_phrase_milli: Option<i64>,
     l3_phrase_decision: String,
     l4_signed_milli: Option<i64>,
     l4_signed_reason: String,
+    #[serde(default)]
+    l4_surface_status: String,
     transition_verified: Option<bool>,
     left_context_changed: bool,
     boundary_changed: bool,
@@ -111,6 +119,7 @@ pub(crate) fn print_replay_json(args: &[String], options: &WaveOptions) -> io::R
         .unwrap_or(limit);
     let train_role = arg_value(args, "--train-role").unwrap_or_else(|| "all".to_string());
     let input = arg_value(args, "--input").map(PathBuf::from);
+    let phase_memory = arg_value(args, "--l2-phase-memory").map(PathBuf::from);
     let mut pairs = if let Some(path) = input.as_deref() {
         read_pairs(path, limit)?
     } else {
@@ -121,16 +130,72 @@ pub(crate) fn print_replay_json(args: &[String], options: &WaveOptions) -> io::R
         )?
         .pairs
     };
+    let latest_state_only = args.iter().any(|arg| arg == "--latest-state-only");
+    if latest_state_only {
+        pairs = latest_transition_states(pairs);
+    }
     if train_role != "all" {
         pairs.retain(|pair| pair.train_role == train_role);
     }
     pairs.truncate(max_eval);
-    let report = replay_pairs(&pairs, options, max_examples);
+    let phase_evaluator =
+        lay::nanda_wave::L2TransitionPhaseShadowEvaluator::load(phase_memory.as_deref());
+    if args.iter().any(|arg| arg == "--phase-only") {
+        let phase_report = replay_phase_pairs(&pairs, &phase_evaluator, max_examples);
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&json!({
+                "kind": "dirty_log_transition_phase_replay",
+                "status": "ok",
+                "input": input.map(|path| path.display().to_string()).unwrap_or_else(|| "live_logs".to_string()),
+                "pairs": pairs.len(),
+                "latest_state_only": latest_state_only,
+                "read_as": "fast phase-only replay; full L2/L3 candidate generation is intentionally skipped",
+                "transition_phase_shadow": phase_replay_report_json(&phase_report, phase_memory),
+            }))?
+        );
+        return Ok(());
+    }
+    let report = replay_pairs(&pairs, options, max_examples, &phase_evaluator);
     println!(
         "{}",
-        serde_json::to_string_pretty(&replay_report_json(&report, input, pairs.len()))?
+        serde_json::to_string_pretty(&replay_report_json(
+            &report,
+            input,
+            phase_memory,
+            pairs.len(),
+            latest_state_only,
+        ))?
     );
     Ok(())
+}
+
+fn latest_transition_states(pairs: Vec<DirtyLogPair>) -> Vec<DirtyLogPair> {
+    let mut latest = BTreeMap::<String, DirtyLogPair>::new();
+    for pair in pairs {
+        let key = transition_state_replay_key(&pair);
+        match latest.get(&key) {
+            Some(existing) if existing.ts > pair.ts => {}
+            _ => {
+                latest.insert(key, pair);
+            }
+        }
+    }
+    latest.into_values().collect()
+}
+
+fn transition_state_replay_key(pair: &DirtyLogPair) -> String {
+    let operation = if pair.action_operator.trim().is_empty() {
+        pair.operation.as_str()
+    } else {
+        pair.action_operator.as_str()
+    };
+    format!(
+        "{}\u{1e}{}\u{1e}{}",
+        pair.original.trim().to_lowercase(),
+        pair.expected.trim().to_lowercase(),
+        lay::nanda_wave::infer_l2_transition_operator(&pair.original, &pair.expected, operation,)
+    )
 }
 
 pub(crate) fn pack_usage_json(args: &[String]) -> io::Result<()> {
@@ -145,7 +210,11 @@ pub(crate) fn pack_usage_json(args: &[String]) -> io::Result<()> {
     let limit = arg_value(args, "--limit")
         .and_then(|value| value.parse::<usize>().ok())
         .unwrap_or(DEFAULT_LIMIT);
-    let pairs = read_pairs(&input, limit)?;
+    let mut pairs = read_pairs(&input, limit)?;
+    let latest_state_only = args.iter().any(|arg| arg == "--latest-state-only");
+    if latest_state_only {
+        pairs = latest_transition_states(pairs);
+    }
     let events = usage_events_from_pairs(&pairs);
     if let Some(parent) = out.parent() {
         fs::create_dir_all(parent)?;
@@ -168,6 +237,7 @@ pub(crate) fn pack_usage_json(args: &[String]) -> io::Result<()> {
         "{}",
         serde_json::to_string_pretty(&json!({
             "kind": "dirty_log_usage_pack_report",
+            "latest_state_only": latest_state_only,
             "status": "ok",
             "input": input.display().to_string(),
             "out": out.display().to_string(),
@@ -342,10 +412,16 @@ fn pair_from_recent(value: &Value, signal: &'static str) -> Option<DirtyLogPair>
         context_prior_milli: selected_i64(selected, "context_prior_milli"),
         l2_wave_peak_milli: selected_i64(selected, "l2_wave_peak_milli"),
         l2_wave_peak_reason: selected_string(selected, "l2_wave_peak_reason"),
+        l2_transition_phase_milli: selected_i64(selected, "l2_transition_phase_milli"),
+        l2_transition_phase_verdict: selected_string(selected, "l2_transition_phase_verdict"),
+        l2_transition_phase_surfaces: selected
+            .and_then(|item| item.get("l2_transition_phase_surfaces"))
+            .and_then(Value::as_u64),
         l3_phrase_milli: selected_i64(selected, "l3_phrase_milli"),
         l3_phrase_decision: selected_string(selected, "l3_phrase_decision"),
         l4_signed_milli: selected_i64(selected, "l4_signed_milli"),
         l4_signed_reason: selected_string(selected, "l4_signed_reason"),
+        l4_surface_status: selected_string(selected, "l4_surface_status"),
         transition_verified: selected
             .and_then(|item| item.get("edit_transition_verified"))
             .and_then(Value::as_bool),
@@ -396,10 +472,14 @@ fn pair_from_layout_replay(value: &Value) -> Option<DirtyLogPair> {
         context_prior_milli: None,
         l2_wave_peak_milli: None,
         l2_wave_peak_reason: String::new(),
+        l2_transition_phase_milli: None,
+        l2_transition_phase_verdict: String::new(),
+        l2_transition_phase_surfaces: None,
         l3_phrase_milli: None,
         l3_phrase_decision: String::new(),
         l4_signed_milli: None,
         l4_signed_reason: String::new(),
+        l4_surface_status: String::new(),
         transition_verified: None,
         left_context_changed: false,
         boundary_changed: word_count_changed(from, to),
@@ -461,10 +541,14 @@ fn pair_from_correction(
         context_prior_milli: None,
         l2_wave_peak_milli: None,
         l2_wave_peak_reason: String::new(),
+        l2_transition_phase_milli: None,
+        l2_transition_phase_verdict: String::new(),
+        l2_transition_phase_surfaces: None,
         l3_phrase_milli: None,
         l3_phrase_decision: String::new(),
         l4_signed_milli: None,
         l4_signed_reason: String::new(),
+        l4_surface_status: String::new(),
         transition_verified: None,
         left_context_changed: false,
         boundary_changed: word_count_changed(from, to),
@@ -572,8 +656,12 @@ fn report_json(
                 "expected": pair.expected,
                 "posterior_milli": pair.posterior_milli,
                 "l2_wave_peak_reason": pair.l2_wave_peak_reason,
+                "l2_transition_phase_milli": pair.l2_transition_phase_milli,
+                "l2_transition_phase_verdict": pair.l2_transition_phase_verdict,
+                "l2_transition_phase_surfaces": pair.l2_transition_phase_surfaces,
                 "l3_phrase_decision": pair.l3_phrase_decision,
-                "l4_signed_reason": pair.l4_signed_reason
+                "l4_signed_reason": pair.l4_signed_reason,
+                "l4_surface_status": pair.l4_surface_status
             })
         })
         .collect::<Vec<_>>();
@@ -649,6 +737,8 @@ struct ReplayReport {
     by_operation: BTreeMap<String, ReplayBucket>,
     by_source: BTreeMap<String, ReplayBucket>,
     examples: ReplayExamples,
+    transition_phase: PhaseReplayReport,
+    phase_apply_policy: bool,
 }
 
 #[derive(Debug, Default, Clone, Copy)]
@@ -672,12 +762,45 @@ struct ReplayExamples {
     negative_applied: Vec<Value>,
 }
 
+#[derive(Debug, Default)]
+struct PhaseReplayReport {
+    positive: PhaseReplayBucket,
+    negative: PhaseReplayBucket,
+    structural_positive: PhaseReplayBucket,
+    structural_negative: PhaseReplayBucket,
+    context_positive: PhaseReplayBucket,
+    context_negative: PhaseReplayBucket,
+    by_operation: BTreeMap<String, PhaseReplayBucket>,
+    examples: PhaseReplayExamples,
+}
+
+#[derive(Debug, Default, Clone, Copy)]
+struct PhaseReplayBucket {
+    cases: usize,
+    support: usize,
+    repel: usize,
+    unknown: usize,
+    package_missing: usize,
+    operator_missing: usize,
+}
+
+#[derive(Debug, Default)]
+struct PhaseReplayExamples {
+    positive_unknown: Vec<Value>,
+    positive_repelled: Vec<Value>,
+    negative_supported: Vec<Value>,
+}
+
 fn replay_pairs(
     pairs: &[DirtyLogPair],
     options: &WaveOptions,
     max_examples: usize,
+    phase_evaluator: &lay::nanda_wave::L2TransitionPhaseShadowEvaluator,
 ) -> ReplayReport {
-    let mut report = ReplayReport::default();
+    let mut report = ReplayReport {
+        phase_apply_policy: options.l2_phase_apply(),
+        ..ReplayReport::default()
+    };
     let mut trace_cache = BTreeMap::new();
     for pair in pairs {
         if pair.train_role == "review" {
@@ -705,8 +828,178 @@ fn replay_pairs(
             .or_default()
             .add(outcome);
         collect_replay_examples(&mut report.examples, pair, trace, outcome, max_examples);
+        add_phase_replay(
+            &mut report.transition_phase,
+            pair,
+            phase_evaluator,
+            max_examples,
+        );
     }
     report
+}
+
+fn replay_phase_pairs(
+    pairs: &[DirtyLogPair],
+    phase_evaluator: &lay::nanda_wave::L2TransitionPhaseShadowEvaluator,
+    max_examples: usize,
+) -> PhaseReplayReport {
+    let mut report = PhaseReplayReport::default();
+    for pair in pairs {
+        if pair.train_role != "review" {
+            add_phase_replay(&mut report, pair, phase_evaluator, max_examples);
+        }
+    }
+    report
+}
+
+fn add_phase_replay(
+    report: &mut PhaseReplayReport,
+    pair: &DirtyLogPair,
+    phase_evaluator: &lay::nanda_wave::L2TransitionPhaseShadowEvaluator,
+    max_examples: usize,
+) {
+    let outcome = replay_phase_one(pair, phase_evaluator);
+    let bucket = if pair.train_role == "negative" {
+        &mut report.negative
+    } else {
+        &mut report.positive
+    };
+    bucket.add(&outcome);
+    match phase_evidence_role(pair) {
+        PhaseEvidenceRole::StructuralPositive => report.structural_positive.add(&outcome),
+        PhaseEvidenceRole::StructuralNegative => report.structural_negative.add(&outcome),
+        PhaseEvidenceRole::ContextPositive => report.context_positive.add(&outcome),
+        PhaseEvidenceRole::ContextNegative => report.context_negative.add(&outcome),
+        PhaseEvidenceRole::Review => {}
+    }
+    report
+        .by_operation
+        .entry(outcome.operator.clone())
+        .or_default()
+        .add(&outcome);
+    collect_phase_examples(&mut report.examples, pair, &outcome, max_examples);
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum PhaseEvidenceRole {
+    StructuralPositive,
+    StructuralNegative,
+    ContextPositive,
+    ContextNegative,
+    Review,
+}
+
+fn phase_evidence_role(pair: &DirtyLogPair) -> PhaseEvidenceRole {
+    if pair.train_role == "review" {
+        return PhaseEvidenceRole::Review;
+    }
+    if pair.safety_allow_apply == Some(false) || pair.transition_verified == Some(false) {
+        return PhaseEvidenceRole::StructuralNegative;
+    }
+    if pair.signal == "manual_layout_replay" || pair.transition_verified == Some(true) {
+        return PhaseEvidenceRole::StructuralPositive;
+    }
+    if pair.train_role == "negative" {
+        PhaseEvidenceRole::ContextNegative
+    } else {
+        PhaseEvidenceRole::ContextPositive
+    }
+}
+
+#[derive(Debug)]
+struct PhaseReplayOutcome {
+    operator: String,
+    verdict: &'static str,
+    package_loaded: bool,
+    operator_present: bool,
+    margin_micro: i64,
+    threshold_micro: i64,
+    positive_centers: u8,
+    anti_centers: u8,
+    covered_surfaces: u32,
+    rejected_surfaces: u32,
+}
+
+impl PhaseReplayBucket {
+    fn add(&mut self, outcome: &PhaseReplayOutcome) {
+        self.cases += 1;
+        match outcome.verdict {
+            "support" => self.support += 1,
+            "repel" => self.repel += 1,
+            _ => self.unknown += 1,
+        }
+        if !outcome.package_loaded {
+            self.package_missing += 1;
+        } else if !outcome.operator_present {
+            self.operator_missing += 1;
+        }
+    }
+}
+
+fn replay_phase_one(
+    pair: &DirtyLogPair,
+    phase_evaluator: &lay::nanda_wave::L2TransitionPhaseShadowEvaluator,
+) -> PhaseReplayOutcome {
+    let operation = if pair.action_operator.trim().is_empty()
+        || pair.action_operator == "other"
+        || pair.action_operator == "keep"
+    {
+        pair.operation.as_str()
+    } else {
+        pair.action_operator.as_str()
+    };
+    let readout = phase_evaluator.readout(&pair.original, &pair.expected, operation);
+    PhaseReplayOutcome {
+        operator: lay::nanda_wave::infer_l2_transition_operator(
+            &pair.original,
+            &pair.expected,
+            operation,
+        )
+        .to_string(),
+        verdict: readout.verdict,
+        package_loaded: readout.package_loaded,
+        operator_present: readout.operator_present,
+        margin_micro: readout.margin_micro,
+        threshold_micro: readout.threshold_micro,
+        positive_centers: readout.positive_centers,
+        anti_centers: readout.anti_centers,
+        covered_surfaces: readout.covered_surfaces,
+        rejected_surfaces: readout.rejected_surfaces,
+    }
+}
+
+fn collect_phase_examples(
+    examples: &mut PhaseReplayExamples,
+    pair: &DirtyLogPair,
+    outcome: &PhaseReplayOutcome,
+    max_examples: usize,
+) {
+    let target = match (pair.train_role.as_str(), outcome.verdict) {
+        ("positive", "unknown") => Some(&mut examples.positive_unknown),
+        ("positive", "repel") => Some(&mut examples.positive_repelled),
+        ("negative", "support") => Some(&mut examples.negative_supported),
+        _ => None,
+    };
+    let Some(target) = target else {
+        return;
+    };
+    if target.len() >= max_examples {
+        return;
+    }
+    target.push(json!({
+        "role": pair.train_role,
+        "signal": pair.signal,
+        "operator": outcome.operator,
+        "original": pair.original,
+        "expected": pair.expected,
+        "verdict": outcome.verdict,
+        "margin_micro": outcome.margin_micro,
+        "threshold_micro": outcome.threshold_micro,
+        "positive_centers": outcome.positive_centers,
+        "anti_centers": outcome.anti_centers,
+        "covered_surfaces": outcome.covered_surfaces,
+        "rejected_surfaces": outcome.rejected_surfaces,
+    }));
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -799,12 +1092,20 @@ fn push_example(
     }));
 }
 
-fn replay_report_json(report: &ReplayReport, input: Option<PathBuf>, pairs: usize) -> Value {
+fn replay_report_json(
+    report: &ReplayReport,
+    input: Option<PathBuf>,
+    phase_memory: Option<PathBuf>,
+    pairs: usize,
+    latest_state_only: bool,
+) -> Value {
     json!({
         "kind": "dirty_log_replay_report",
         "status": "ok",
         "input": input.map(|path| path.display().to_string()).unwrap_or_else(|| "live_logs".to_string()),
         "pairs": pairs,
+        "latest_state_only": latest_state_only,
+        "l2_phase_apply_policy": report.phase_apply_policy,
         "read_as": "shadow replay over dirty-log corpus; runtime authority is unchanged",
         "positive": replay_bucket_json(report.positive),
         "negative": replay_bucket_json(report.negative),
@@ -822,6 +1123,10 @@ fn replay_report_json(report: &ReplayReport, input: Option<PathBuf>, pairs: usiz
             "applied_other": report.positive.applied_other,
             "gate": replay_gate(report)
         },
+        "transition_phase_shadow": phase_replay_report_json(
+            &report.transition_phase,
+            phase_memory,
+        ),
         "by_operation": report.by_operation.iter().map(|(key, bucket)| (key, replay_bucket_json(*bucket))).collect::<BTreeMap<_, _>>(),
         "by_source": report.by_source.iter().map(|(key, bucket)| (key, replay_bucket_json(*bucket))).collect::<BTreeMap<_, _>>(),
         "examples": {
@@ -831,6 +1136,65 @@ fn replay_report_json(report: &ReplayReport, input: Option<PathBuf>, pairs: usiz
             "negative_applied": report.examples.negative_applied
         }
     })
+}
+
+fn phase_replay_report_json(report: &PhaseReplayReport, path: Option<PathBuf>) -> Value {
+    json!({
+        "schema": "lay.l2-transition-phase-shadow.v1",
+        "memory": path.map(|path| path.display().to_string()).unwrap_or_else(|| "live_default".to_string()),
+        "apply_authority": false,
+        "positive": phase_replay_bucket_json(report.positive),
+        "negative": phase_replay_bucket_json(report.negative),
+        "evidence_ownership": {
+            "structural_positive": phase_replay_bucket_json(report.structural_positive),
+            "structural_negative": phase_replay_bucket_json(report.structural_negative),
+            "context_positive": phase_replay_bucket_json(report.context_positive),
+            "context_negative": phase_replay_bucket_json(report.context_negative),
+            "read_as": "L2 owns structural transition evidence; contextual accept/reject belongs to L3/L4 and cannot train L2 anti-centers",
+        },
+        "scoreboard": {
+            "positive_support_percent": percent(report.positive.support, report.positive.cases),
+            "positive_repel_percent": percent(report.positive.repel, report.positive.cases),
+            "structural_negative_support": report.structural_negative.support,
+            "structural_negative_support_percent": percent(report.structural_negative.support, report.structural_negative.cases),
+            "context_negative_support_needs_l3_l4": report.context_negative.support,
+            "negative_repel_percent": percent(report.negative.repel, report.negative.cases),
+            "gate": phase_replay_gate(report),
+        },
+        "by_operation": report.by_operation.iter().map(|(key, bucket)| (key, phase_replay_bucket_json(*bucket))).collect::<BTreeMap<_, _>>(),
+        "examples": {
+            "positive_unknown": report.examples.positive_unknown,
+            "positive_repelled": report.examples.positive_repelled,
+            "negative_supported": report.examples.negative_supported,
+        }
+    })
+}
+
+fn phase_replay_bucket_json(bucket: PhaseReplayBucket) -> Value {
+    json!({
+        "cases": bucket.cases,
+        "support": bucket.support,
+        "repel": bucket.repel,
+        "unknown": bucket.unknown,
+        "package_missing": bucket.package_missing,
+        "operator_missing": bucket.operator_missing,
+    })
+}
+
+fn phase_replay_gate(report: &PhaseReplayReport) -> &'static str {
+    if report.positive.package_missing > 0 || report.negative.package_missing > 0 {
+        "WATCH-phase-package-missing"
+    } else if report.structural_negative.support > 0 {
+        "VETO-structural-negative-phase-support"
+    } else if report.structural_positive.repel > 0 {
+        "WATCH-structural-positive-phase-repel"
+    } else if report.structural_positive.cases == 0 {
+        "WATCH-no-live-structural-proof"
+    } else if report.structural_positive.support * 2 < report.structural_positive.cases {
+        "WATCH-low-structural-phase-coverage"
+    } else {
+        "PASS-shadow"
+    }
 }
 
 fn usage_events_from_pairs(pairs: &[DirtyLogPair]) -> Vec<Value> {
@@ -884,6 +1248,7 @@ fn rejected_usage_events(pair: &DirtyLogPair) -> Vec<Value> {
                 "kind": "rejected_candidate",
                 "word": word,
                 "context": context,
+                "from": pair.original.trim(),
                 "to": pair.expected.trim(),
                 "source": pair.source_id,
                 "operation": pair.operation
@@ -937,7 +1302,7 @@ fn normalized_words(text: &str) -> Vec<String> {
 fn normalize_word(token: &str) -> Option<String> {
     let trimmed = token.trim_matches(|ch: char| !ch.is_alphabetic() && ch != '-');
     let alpha = trimmed.chars().filter(|ch| ch.is_alphabetic()).count();
-    (alpha >= 2).then(|| trimmed.to_lowercase())
+    (alpha >= 1).then(|| trimmed.to_lowercase())
 }
 
 fn replay_bucket_json(bucket: ReplayBucket) -> Value {
@@ -1258,5 +1623,30 @@ mod tests {
         assert_eq!(collector.boundary_changed, 1);
         assert_eq!(collector.left_context_changed, 1);
         assert_eq!(collector.by_safety_reason["low_confidence_wide_edit"], 1);
+    }
+
+    #[test]
+    fn latest_state_replay_uses_newest_feedback_for_same_transition() {
+        let older = serde_json::json!({
+            "ts": 1,
+            "lay_kind": "typing-assist",
+            "lay_from": "xnj ",
+            "lay_to": "что "
+        });
+        let newer = serde_json::json!({
+            "ts": 2,
+            "lay_kind": "typing-assist",
+            "from": "xnj ",
+            "to": "что "
+        });
+        let rejected =
+            pair_from_correction(&older, "user_rejected_lay_output", "lay_from", "lay_to").unwrap();
+        let accepted = pair_from_correction(&newer, "user_accepted_fix", "from", "to").unwrap();
+
+        let latest = latest_transition_states(vec![rejected, accepted]);
+
+        assert_eq!(latest.len(), 1);
+        assert_eq!(latest[0].train_role, "positive");
+        assert_eq!(latest[0].ts, 2);
     }
 }

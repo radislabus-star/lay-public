@@ -79,6 +79,17 @@ struct CandidateQualityReport {
     l4_scene_suggest_rows: usize,
     l4_scene_wait_or_block_rows: usize,
     l4_signed_signal_rows: usize,
+    l4_exact_transition_rows: usize,
+    l4_exact_transition_repel_rows: usize,
+    l2_transition_phase_rows: usize,
+    l2_transition_phase_support_rows: usize,
+    l2_transition_phase_repel_rows: usize,
+    l2_transition_phase_unknown_rows: usize,
+    l2_transition_phase_package_loaded_rows: usize,
+    l2_transition_phase_operator_present_rows: usize,
+    l2_transition_phase_operator_promoted_rows: usize,
+    l4_surface_covered_rows: usize,
+    l4_surface_repelled_rows: usize,
     decision_rank_rows: usize,
     selected_decision_rank_rows: usize,
     memory_shadow_records: usize,
@@ -93,6 +104,10 @@ struct CandidateQualityReport {
     nanda_apply: usize,
     deterministic_apply: usize,
     slow_output: usize,
+    decision_counts: BTreeMap<String, usize>,
+    elapsed_ms: Vec<u64>,
+    decision_ms: Vec<u64>,
+    output_ms: Vec<u64>,
     source_counts: BTreeMap<String, usize>,
     error_class_counts: BTreeMap<String, usize>,
     action_kind_counts: BTreeMap<String, usize>,
@@ -211,9 +226,26 @@ fn report_from_text(text: &str, limit: usize, path: &Path) -> serde_json::Value 
             "l4_scene_suggest_rows": report.l4_scene_suggest_rows,
             "l4_scene_wait_or_block_rows": report.l4_scene_wait_or_block_rows,
             "l4_signed_signal_rows": report.l4_signed_signal_rows,
+            "l4_exact_transition_rows": report.l4_exact_transition_rows,
+            "l4_exact_transition_repel_rows": report.l4_exact_transition_repel_rows,
+            "l2_transition_phase_rows": report.l2_transition_phase_rows,
+            "l2_transition_phase_support_rows": report.l2_transition_phase_support_rows,
+            "l2_transition_phase_repel_rows": report.l2_transition_phase_repel_rows,
+            "l2_transition_phase_unknown_rows": report.l2_transition_phase_unknown_rows,
+            "l2_transition_phase_package_loaded_rows": report.l2_transition_phase_package_loaded_rows,
+            "l2_transition_phase_operator_present_rows": report.l2_transition_phase_operator_present_rows,
+            "l2_transition_phase_operator_promoted_rows": report.l2_transition_phase_operator_promoted_rows,
+            "l4_surface_covered_rows": report.l4_surface_covered_rows,
+            "l4_surface_repelled_rows": report.l4_surface_repelled_rows,
             "decision_rank_rows": report.decision_rank_rows,
             "selected_decision_rank_rows": report.selected_decision_rank_rows,
             "read_as": "Bayes/L3/L4/DecisionCore lane coverage from logged candidate_scores; diagnostic only"
+        },
+        "decision_outcomes": decision_outcomes_json(&report),
+        "latency_ms": {
+            "total": latency_summary_json(&report.elapsed_ms),
+            "decision": latency_summary_json(&report.decision_ms),
+            "output": latency_summary_json(&report.output_ms)
         },
         "memory_shadow_eval": {
             "records": report.memory_shadow_records,
@@ -250,6 +282,15 @@ fn inspect_record(report: &mut CandidateQualityReport, value: &Value) {
         inspect_edit_plan(report, value);
     } else {
         report.action_records += 1;
+    }
+    if let Some(ms) = value.get("elapsed_ms").and_then(Value::as_u64) {
+        report.elapsed_ms.push(ms);
+    }
+    if let Some(ms) = value.get("decision_ms").and_then(Value::as_u64) {
+        report.decision_ms.push(ms);
+    }
+    if let Some(ms) = value.get("output_ms").and_then(Value::as_u64) {
+        report.output_ms.push(ms);
     }
     if value
         .get("output_ms")
@@ -350,6 +391,17 @@ fn inspect_gate(report: &mut CandidateQualityReport, value: &Value, gate: &Value
         .get("selected_gate_action")
         .and_then(Value::as_str)
         .unwrap_or("");
+    if selected_action.is_empty() {
+        *report
+            .decision_counts
+            .entry("abstain_or_unselected".to_string())
+            .or_default() += 1;
+    } else {
+        *report
+            .decision_counts
+            .entry(selected_action.to_string())
+            .or_default() += 1;
+    }
     if selected_action == "apply" {
         report.selected_apply_records += 1;
     }
@@ -537,6 +589,73 @@ fn inspect_decision_lanes(report: &mut CandidateQualityReport, gate: &Value) {
             .is_some_and(|value| value != 0)
         {
             report.l4_signed_signal_rows += 1;
+        }
+        if candidate
+            .get("l4_transition_state_specific")
+            .and_then(Value::as_bool)
+            .unwrap_or(false)
+        {
+            report.l4_exact_transition_rows += 1;
+            let attract = candidate
+                .get("l4_transition_attract_count")
+                .and_then(Value::as_u64)
+                .unwrap_or_default();
+            let repel = candidate
+                .get("l4_transition_repel_count")
+                .and_then(Value::as_u64)
+                .unwrap_or_default();
+            if repel > attract {
+                report.l4_exact_transition_repel_rows += 1;
+            }
+        }
+        if candidate
+            .get("l2_transition_phase_package_loaded")
+            .and_then(Value::as_bool)
+            .unwrap_or(false)
+        {
+            report.l2_transition_phase_package_loaded_rows += 1;
+        }
+        if candidate
+            .get("l2_transition_phase_operator_present")
+            .and_then(Value::as_bool)
+            .unwrap_or(false)
+        {
+            report.l2_transition_phase_operator_present_rows += 1;
+        }
+        if candidate
+            .get("l2_transition_phase_operator_promoted")
+            .and_then(Value::as_bool)
+            .unwrap_or(false)
+        {
+            report.l2_transition_phase_operator_promoted_rows += 1;
+        }
+        match candidate
+            .get("l2_transition_phase_verdict")
+            .and_then(Value::as_str)
+            .unwrap_or("")
+        {
+            "support" => {
+                report.l2_transition_phase_rows += 1;
+                report.l2_transition_phase_support_rows += 1;
+            }
+            "repel" => {
+                report.l2_transition_phase_rows += 1;
+                report.l2_transition_phase_repel_rows += 1;
+            }
+            "unknown" => {
+                report.l2_transition_phase_rows += 1;
+                report.l2_transition_phase_unknown_rows += 1;
+            }
+            _ => {}
+        }
+        match candidate
+            .get("l4_surface_status")
+            .and_then(Value::as_str)
+            .unwrap_or("")
+        {
+            "covered" => report.l4_surface_covered_rows += 1,
+            "repelled" => report.l4_surface_repelled_rows += 1,
+            _ => {}
         }
         if candidate
             .get("decision_rank_milli")
@@ -812,6 +931,51 @@ fn memory_shadow_gate_json(report: &CandidateQualityReport) -> Value {
             "manual review for changed winners"
         ]
     })
+}
+
+fn decision_outcomes_json(report: &CandidateQualityReport) -> Value {
+    let apply = report
+        .decision_counts
+        .get("apply")
+        .copied()
+        .unwrap_or_default();
+    let non_apply = report.gate_records.saturating_sub(apply);
+    json!({
+        "observed_gate_records": report.gate_records,
+        "apply": apply,
+        "non_apply": non_apply,
+        "non_apply_percent": percent(non_apply, report.gate_records),
+        "by_action": report.decision_counts,
+        "read_as": "observed DecisionCore outcomes; non_apply includes SuggestOnly, Keep, Veto and unselected/ABSTAIN"
+    })
+}
+
+fn latency_summary_json(samples: &[u64]) -> Value {
+    if samples.is_empty() {
+        return json!({"samples": 0});
+    }
+    let mut sorted = samples.to_vec();
+    sorted.sort_unstable();
+    json!({
+        "samples": sorted.len(),
+        "p50": percentile(&sorted, 50),
+        "p90": percentile(&sorted, 90),
+        "p99": percentile(&sorted, 99),
+        "max": sorted.last().copied().unwrap_or_default()
+    })
+}
+
+fn percentile(sorted: &[u64], percent: usize) -> u64 {
+    let index = sorted
+        .len()
+        .saturating_sub(1)
+        .saturating_mul(percent)
+        .div_ceil(100);
+    sorted[index.min(sorted.len().saturating_sub(1))]
+}
+
+fn percent(value: usize, total: usize) -> Option<f64> {
+    (total > 0).then(|| value as f64 / total as f64 * 100.0)
 }
 
 #[cfg(test)]

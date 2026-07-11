@@ -57,26 +57,26 @@ const LINES: [ArchitectureLine; 7] = [
     ArchitectureLine {
         id: "hot-field-memory",
         layer: "Hot Runtime Memory",
-        owner: "hot_field + nanda_wave center memories",
+        owner: "hot_field + l2_candidate_phase + usage_prior",
         status: ContractStatus::Pass,
-        proof: "hot processes use compact field/center readout as authority",
-        debt: "dictionary strings remain training/fallback material, not hot authority",
+        proof: "LAYPC004 stores quantized centers, anti-centers and promotion bits without words",
+        debt: "keep exact text in cold training/debug evidence only",
     },
     ArchitectureLine {
         id: "l2-candidate-field",
         layer: "L2",
-        owner: "nanda_wave::l2 + surface_motif_memory + center memories",
+        owner: "nanda_wave::l2 + l2_candidate_phase",
         status: ContractStatus::Pass,
-        proof: "L2 emits word candidates from layout, typo, motif, center, and usage signals",
-        debt: "raise coverage without restoring direct dictionary authority",
+        proof: "L2 proposes candidates and emits support/repel/unknown; it cannot execute",
+        debt: "raise candidate coverage without bypassing per-operator promotion",
     },
     ArchitectureLine {
         id: "l3-l4-learning",
         layer: "L3/L4",
         owner: "usage_prior + l4_signed_memory + typing_memory",
         status: ContractStatus::Pass,
-        proof: "accepted/rejected usage provides signed context and transition memory",
-        debt: "expand clean corpus and user-local feedback while keeping rejected memory active",
+        proof: "state-specific accepted/rejected usage overrides broad popularity and preserves anti-wave",
+        debt: "expand organic surface coverage while latest-state feedback remains authoritative",
     },
     ArchitectureLine {
         id: "fast-verifiable",
@@ -88,15 +88,18 @@ const LINES: [ArchitectureLine; 7] = [
     },
 ];
 
-const TREE: [&str; 13] = [
-    "LAY TYPING CPU",
+const TREE: [&str; 16] = [
+    "LAY TYPING TRANSITION CPU",
     "|",
-    "+-- L1 Surface Encoder: chars, layout, boundaries, speed, route",
-    "+-- L2 Candidate Action Factory: layout, typo, transposition, boundary, completion",
-    "+-- L3 Context State Encoder: phrase scene and word admissibility",
-    "+-- L4 Transition Memory: accepted/rejected signed experience",
-    "+-- Transition Decision Core: Apply / SuggestOnly / Keep / Veto",
-    "+-- Text Edit Gate: verified edit plan, no unsafe multiword drift",
+    "+-- Input snapshots: daemon/IME state, focus, revision, caret, layout",
+    "+-- L1 Relation Encoder: surface delta, changed region, proof and verifier atoms",
+    "+-- L2 Candidate Lattice: candidate producers without apply authority",
+    "+-- L2 Phase Memory: promoted centers / anti-centers / learned margin",
+    "+-- L3 Context Constraint: phrase admissibility, never text mutation",
+    "+-- L4 Surface Frontier: exact-state signed accepted/rejected experience",
+    "+-- Transition Decision Core: Apply / SuggestOnly / Keep / ABSTAIN / Veto",
+    "+-- Transition Verifier: revision, boundary, left context and backend postconditions",
+    "+-- AuthorizedEdit: sealed sole mutation capability",
     "+-- Executor Backends",
     "    |",
     "    +-- daemon: execute verified edits",
@@ -105,13 +108,13 @@ const TREE: [&str; 13] = [
 ];
 
 const DEBT: [&str; 7] = [
-    "P0: keep every text mutation behind EditAction and TransitionAudit",
-    "P1: remove any remaining direct apply authority from legacy correction producers",
-    "P2: raise L2 field coverage without hot dictionary authority",
-    "P3: make L3/L4 signed memory explain learned boosts and vetoes",
-    "P4: keep IME display aggressive but backend-only",
-    "P5: shadow-eval old vs transition-core ranking on dirty logs",
-    "P6: keep p99 candidate readout in microseconds and investigate max spikes",
+    "P0: raise L2 candidate coverage; phase admission cannot recover a candidate that was never born",
+    "P1: accumulate organic L4 surface evidence without mixing stale accept/reject states",
+    "P2: keep CompositeTypo split into typed subforms when new evidence reveals distinct circuits",
+    "P3: keep IME display aggressive, first-word capable and backend-only",
+    "P4: investigate end-to-end output latency separately from microsecond phase readout",
+    "P5: preserve zero unsafe multiword and unverified left-context applies in live logs",
+    "P6: retrain and re-gate every package after relation encoder or proof source changes",
 ];
 
 pub fn architecture_lines() -> &'static [ArchitectureLine] {
@@ -128,7 +131,10 @@ pub fn observed_contract_status(id: &str) -> ContractStatus {
         "decision-authority" => {
             let facade_uses_lattice = source_contains_all(
                 include_str!("correction_core.rs"),
-                &["L2CandidateLattice::new", "lattice.into_resolution()"],
+                &[
+                    "L2CandidateLattice::with_options",
+                    "lattice.into_resolution()",
+                ],
             );
             let authority_uses_core = source_contains_all(
                 include_str!("typing_transition/candidate_resolution.rs"),
@@ -189,19 +195,41 @@ pub fn observed_contract_status(id: &str) -> ContractStatus {
             }
         }
         "hot-field-memory" => source_contains_all(
-            include_str!("hot_field.rs"),
-            &["HotFieldSnapshot", "FieldSnapshotOnly"],
-        ),
-        "l2-candidate-field" => source_contains_all(
-            include_str!("typing_transition/candidate_resolution.rs"),
+            include_str!("nanda_wave/l2_candidate_phase.rs"),
             &[
-                "resolve_l2_lattice",
-                "TransitionDecisionCore::select_apply_candidate",
+                "LAYPC004",
+                "operator_promoted",
+                "raw_words_stored",
+                "proven_phase_operators",
             ],
         ),
+        "l2-candidate-field" => {
+            let lattice = source_contains_all(
+                include_str!("typing_transition/candidate_resolution.rs"),
+                &[
+                    "resolve_l2_lattice",
+                    "TransitionDecisionCore::select_apply_candidate",
+                ],
+            );
+            let phase_authority = source_contains_all(
+                include_str!("typing_transition/decision.rs"),
+                &["l2_transition_phase_readout", "phase_policy_rejection"],
+            );
+            if matches!(lattice, ContractStatus::Pass)
+                && matches!(phase_authority, ContractStatus::Pass)
+            {
+                ContractStatus::Pass
+            } else {
+                ContractStatus::Watch
+            }
+        }
         "l3-l4-learning" => source_contains_all(
-            include_str!("typing_transition/mod.rs"),
-            &["L4StateEstimator", "TransitionMemory::allows_apply"],
+            include_str!("typing_transition/decision_signals.rs"),
+            &[
+                "transition_state_id",
+                "l4_signed_memory_signal",
+                "transition_state_specific",
+            ],
         ),
         "fast-verifiable" => source_contains_all(
             include_str!("text_edit/executor.rs"),

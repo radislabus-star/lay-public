@@ -1,0 +1,35 @@
+{
+  "schema": "nando.live-transition-gate-profile.v1",
+  "project_id": "lay-typing-transition-cpu",
+  "required_checks": [
+    "structural",
+    "wave_causal"
+  ],
+  "structural_routes": [
+    "l2_transition_phase"
+  ],
+  "wave_causal": {
+    "receipt": "docs/structural_gates/receipts/L2_TRANSITION_PHASE_PROOF_V1.json",
+    "manifest": "docs/structural_gates/receipts/L2_TRANSITION_PHASE_PROOF_V1.manifest.json",
+    "minimum_corpus_seeds": 100,
+    "minimum_heldout_queries": 200,
+    "accepted_report_kinds": [
+      "lay_l2_transition_phase_proof_v1"
+    ],
+    "require_core_causal_pass": true,
+    "require_strict_anti_center_pass": true
+  },
+  "runtime": {
+    "registry": "not-required",
+    "inspector": "not-required"
+  },
+  "deployment": {
+    "health_url": "not-required",
+    "services": []
+  },
+  "policy": {
+    "fail_closed_for_local_accept": true,
+    "preserve_provider_fallback": true,
+    "manual_per_profile_controls_allowed": false
+  }
+}
