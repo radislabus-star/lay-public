@@ -30,18 +30,6 @@ pub(super) static RULES: &[TypingRuleDefinition] = &[
         TypingCandidateFamily::Visual,
         rules::apply_visual_b,
     ),
-    rule(
-        ids::PERSONAL_PHRASE,
-        priorities::PERSONAL_PHRASE,
-        TypingCandidateFamily::Exact,
-        rules::apply_personal_phrase,
-    ),
-    rule(
-        ids::PERSONAL_TOKEN,
-        priorities::PERSONAL_TOKEN,
-        TypingCandidateFamily::Exact,
-        rules::apply_personal_token,
-    ),
     layout_only_rule(
         ids::DUPLICATE_LAYOUT_PREFIX,
         priorities::DUPLICATE_LAYOUT_PREFIX,

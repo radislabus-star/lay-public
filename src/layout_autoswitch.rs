@@ -136,11 +136,10 @@ pub(crate) fn is_known_russian_layout_autoswitch_word(word: &str) -> bool {
 
     let len = word.chars().filter(|ch| is_cyrillic_letter(*ch)).count();
     if len <= 3 {
-        return russian_tiny_dictionary().contains(word)
+        return crate::nanda_wave::l2::l2_center_contains_surface(word)
+            || russian_tiny_dictionary().contains(word)
             || is_common_ru_word(word)
-            || crate::typing_transition::state::word_has_common_usage_authority(word)
-            || crate::nanda_wave::l2::l2_surface_foundation_rank(word)
-                .is_some_and(|rank| rank < 10_000);
+            || crate::typing_transition::state::word_has_common_usage_authority(word);
     }
 
     is_russian_layout_surface_authority_word(word)
@@ -151,13 +150,13 @@ pub(crate) fn is_russian_layout_surface_authority_word(word: &str) -> bool {
         return false;
     }
     let lower = word.to_lowercase();
-    is_known_russian_word_or_form(&lower)
+    crate::nanda_wave::l2::l2_center_contains_surface(&lower)
+        || is_known_russian_word_or_form(&lower)
         || is_known_russian_adverb_o_form(&lower)
         || is_known_russian_ka_oblique_form(&lower)
         || russian_short_dictionary().contains(&lower)
         || is_common_ru_word(&lower)
         || is_ime_hot_ru_word(&lower)
-        || crate::nanda_wave::l2::l2_surface_foundation_contains(&lower)
         || crate::typing_transition::state::word_has_common_usage_authority(&lower)
 }
 

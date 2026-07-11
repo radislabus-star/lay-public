@@ -13,7 +13,7 @@ use crate::typing_candidate::TypingCandidateFamily;
 use crate::typing_context;
 use crate::typing_pipeline::explain_typing_assist_with_pipeline;
 use crate::word_reader::{split_last_ws_token, split_word_punctuation, split_ws_segments};
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::sync::OnceLock;
 
 use super::context::{TailContext, TokenKind};
@@ -21,7 +21,6 @@ use super::feedback::{apply_l3_feedback, L3Feedback};
 use super::l2_center_memory::{L2CenterMemory, L2CenterMemoryConfig};
 use super::lexical_attractor::{lexical_attractor_candidates, LEXICAL_ATTRACTOR_CELL};
 use super::options::WaveOptions;
-use super::pattern_memory::{apply_pattern_memory, PATTERN_MEMORY_CELL};
 use super::signal::{WavePacket, WordCandidate};
 
 #[path = "l2/hot_memory.rs"]
@@ -37,23 +36,20 @@ use phase::apply_l2_phase_shadow;
 #[path = "l2/surface.rs"]
 mod surface;
 use surface::*;
-pub(crate) use surface::{l2_surface_foundation_contains, l2_surface_foundation_rank};
+pub(crate) use surface::{
+    l2_surface_foundation_contains, l2_surface_foundation_has_authority, l2_surface_foundation_rank,
+};
 
 static SURFACE_MOTIF_MEMORY: OnceLock<L2CenterMemory> = OnceLock::new();
-static BROAD_PREFIX_INDEX: OnceLock<super::l2_broad_index::L2BroadPrefixIndex> = OnceLock::new();
-static L2_SHORT_POSITION_SEED_INDEX: OnceLock<HashMap<String, Vec<String>>> = OnceLock::new();
-static L2_SURFACE_FOUNDATION_SET: OnceLock<HashSet<&'static str>> = OnceLock::new();
-static L2_SURFACE_FOUNDATION_RANK: OnceLock<HashMap<&'static str, usize>> = OnceLock::new();
+static L2_SURFACE_FOUNDATION_HASH_RANK: OnceLock<Vec<(u64, usize)>> = OnceLock::new();
 
 const MAX_LAYOUT_SCAN_CANDIDATES: usize = 4;
 const MAX_TAUGHT_CANDIDATES: usize = 6;
 const L2_ACTIVE_SOURCE_TARGET: usize = 1_000_000;
 const L2_RUNTIME_WORD_LIMIT: usize = 100_000;
 const L2_FOUNDATION_SOURCE_LIMIT: usize = 100_000;
-const L2_FOUNDATION_LIVE_SCAN_LIMIT: usize = 100_000;
 const L2_USAGE_WORD_LIMIT: usize = 5_000;
 const L2_CASE_WORD_LIMIT: usize = 200;
-const L2_BROAD_PREFIX_SCAN_LIMIT: usize = 384;
 const L2_SURFACE_FOUNDATION_RU_DATA: &str =
     include_str!("../../data/lexicon/l2_surface_foundation_ru_100k.txt");
 const L2_SURFACE_HOT_RU_DATA: &str = include_str!("../../data/lexicon/l2_surface_hot_ru.txt");
@@ -71,9 +67,6 @@ pub enum L2ImeWordCandidateKind {
 pub enum L2ImeWordCandidateSource {
     SurfaceCenter,
     PhaseDecoder,
-    ShortSeedCenter,
-    FoundationCenter,
-    GeneratedFormCenter,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -198,9 +191,42 @@ pub fn ime_l2_word_candidates(
             }
         })
         .collect::<Vec<_>>();
-    extend_ime_l2_prefix_material(&mut candidates, context_prefix, &normalized, limit);
     sort_and_truncate_ime_l2_candidates(&mut candidates, &usage, limit);
     candidates
+}
+
+pub(crate) fn l2_center_near_surfaces(text: &str, limit: usize) -> Vec<String> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let normalized = text.to_lowercase();
+    let len = normalized.chars().count();
+    if !(3..=18).contains(&len) || !normalized.chars().all(is_cyrillic_letter) {
+        return Vec::new();
+    }
+    let usage = super::usage_prior::cached_usage_prior_snapshot();
+    surface_motif_memory()
+        .surface_candidates_for_text_with_usage(&normalized, limit.saturating_mul(8), &usage)
+        .into_iter()
+        .filter(|candidate| {
+            let distance = damerau_levenshtein(&normalized, &candidate.word);
+            (1..=3).contains(&distance)
+                && len.abs_diff(candidate.word.chars().count()) <= 3
+                && form_attractor_has_authority(
+                    &normalized,
+                    &candidate.word,
+                    len,
+                    distance,
+                    candidate.score,
+                )
+        })
+        .take(limit)
+        .map(|candidate| candidate.word)
+        .collect()
+}
+
+pub(crate) fn l2_center_contains_surface(word: &str) -> bool {
+    surface_motif_memory().contains_surface(word)
 }
 
 fn sort_and_truncate_ime_l2_candidates(
@@ -226,268 +252,6 @@ fn sort_and_truncate_ime_l2_candidates(
     candidates.truncate(limit);
 }
 
-fn extend_ime_l2_prefix_material(
-    candidates: &mut Vec<L2ImeWordCandidate>,
-    context_prefix: &str,
-    token: &str,
-    limit: usize,
-) {
-    if ime_l2_completion_count(candidates) >= limit {
-        return;
-    }
-    let material_limit = limit.saturating_mul(2).max(limit);
-    for candidate in ime_l2_surface_decoder_candidates(context_prefix, token, material_limit) {
-        push_unique_ime_l2_candidate(candidates, candidate);
-        if ime_l2_completion_count(candidates) >= limit.saturating_mul(2).max(limit) {
-            return;
-        }
-    }
-    for candidate in ime_l2_generated_form_prefix_candidates(context_prefix, token, material_limit)
-    {
-        push_unique_ime_l2_candidate(candidates, candidate);
-        if ime_l2_completion_count(candidates) >= limit.saturating_mul(2).max(limit) {
-            return;
-        }
-    }
-    for candidate in ime_l2_foundation_prefix_candidates(context_prefix, token, material_limit) {
-        push_unique_ime_l2_candidate(candidates, candidate);
-        if ime_l2_completion_count(candidates) >= limit.saturating_mul(2).max(limit) {
-            return;
-        }
-    }
-    if token.chars().count() <= 4 {
-        for candidate in ime_l2_short_seed_word_candidates(context_prefix, token, material_limit) {
-            push_unique_ime_l2_candidate(candidates, candidate);
-            if ime_l2_completion_count(candidates) >= limit.saturating_mul(2).max(limit) {
-                return;
-            }
-        }
-    }
-}
-
-fn ime_l2_completion_count(candidates: &[L2ImeWordCandidate]) -> usize {
-    candidates
-        .iter()
-        .filter(|candidate| candidate.kind == L2ImeWordCandidateKind::Completion)
-        .count()
-}
-
-fn push_unique_ime_l2_candidate(
-    candidates: &mut Vec<L2ImeWordCandidate>,
-    candidate: L2ImeWordCandidate,
-) {
-    if candidates
-        .iter()
-        .any(|existing| existing.surface == candidate.surface)
-    {
-        return;
-    }
-    candidates.push(candidate);
-}
-
-pub fn ime_l2_short_seed_word_candidates(
-    context_prefix: &str,
-    token: &str,
-    limit: usize,
-) -> Vec<L2ImeWordCandidate> {
-    if limit == 0 {
-        return Vec::new();
-    }
-    let normalized = token.to_lowercase();
-    let token_len = normalized.chars().count();
-    if !(2..=4).contains(&token_len) || !normalized.chars().all(is_cyrillic_letter) {
-        return Vec::new();
-    }
-    if L2_SHORT_POSITION_SEED_INDEX.get().is_none() {
-        return Vec::new();
-    }
-    let Some(words) = l2_short_position_seed_index().get(&normalized) else {
-        return Vec::new();
-    };
-    let context_tokens = super::llmwave::tokenize(context_prefix);
-    let usage = super::usage_prior::cached_usage_prior_snapshot();
-    let mut words = words.to_vec();
-    words.sort_by(|left, right| {
-        compare_l2_words_by_usage(right, left, &context_tokens, &usage)
-            .then_with(|| left.chars().count().cmp(&right.chars().count()))
-            .then_with(|| left.cmp(right))
-    });
-    words
-        .iter()
-        .take(limit)
-        .map(|word| {
-            let usage_prior = usage.word_prior(word);
-            let context_prior = usage.context_word_prior(&context_tokens, word);
-            L2ImeWordCandidate {
-                surface: word.clone(),
-                kind: L2ImeWordCandidateKind::Completion,
-                source: L2ImeWordCandidateSource::ShortSeedCenter,
-                score: 520,
-                l1_overlap: token_len,
-                l2_overlap: 0,
-                motif_overlap: 0,
-                usage_prior,
-                context_prior,
-            }
-        })
-        .collect()
-}
-
-pub fn ime_l2_foundation_prefix_candidates(
-    context_prefix: &str,
-    token: &str,
-    limit: usize,
-) -> Vec<L2ImeWordCandidate> {
-    ime_l2_foundation_prefix_candidates_from_index(
-        broad_prefix_index(),
-        context_prefix,
-        token,
-        limit,
-    )
-}
-
-fn ime_l2_foundation_prefix_candidates_from_index(
-    index: &super::l2_broad_index::L2BroadPrefixIndex,
-    context_prefix: &str,
-    token: &str,
-    limit: usize,
-) -> Vec<L2ImeWordCandidate> {
-    if limit == 0 {
-        return Vec::new();
-    }
-    let normalized = token.to_lowercase();
-    let token_len = normalized.chars().count();
-    if !(2..=18).contains(&token_len) || !normalized.chars().all(is_cyrillic_letter) {
-        return Vec::new();
-    }
-    let context_tokens = super::llmwave::tokenize(context_prefix);
-    let usage = super::usage_prior::cached_usage_prior_snapshot();
-    let mut words = index.prefix_candidates(
-        &normalized,
-        token_len + 1,
-        32,
-        limit.saturating_mul(8).clamp(
-            L2_BROAD_PREFIX_SCAN_LIMIT / 6,
-            L2_FOUNDATION_LIVE_SCAN_LIMIT,
-        ),
-    );
-    words.sort_by(|left, right| {
-        compare_l2_words_by_usage(right, left, &context_tokens, &usage)
-            .then_with(|| {
-                crate::lexicon::is_common_ru_word(right)
-                    .cmp(&crate::lexicon::is_common_ru_word(left))
-            })
-            .then_with(|| left.chars().count().cmp(&right.chars().count()))
-            .then_with(|| left.cmp(right))
-    });
-    words.truncate(limit);
-    words
-        .into_iter()
-        .map(|word| {
-            let usage_prior = usage.word_prior(word);
-            let context_prior = usage.context_word_prior(&context_tokens, word);
-            L2ImeWordCandidate {
-                surface: word.to_string(),
-                kind: L2ImeWordCandidateKind::Completion,
-                source: L2ImeWordCandidateSource::FoundationCenter,
-                score: 610,
-                l1_overlap: token_len,
-                l2_overlap: 0,
-                motif_overlap: 0,
-                usage_prior,
-                context_prior,
-            }
-        })
-        .collect()
-}
-
-pub fn ime_l2_generated_form_prefix_candidates(
-    context_prefix: &str,
-    token: &str,
-    limit: usize,
-) -> Vec<L2ImeWordCandidate> {
-    if limit == 0 {
-        return Vec::new();
-    }
-    let normalized = token.to_lowercase();
-    let token_len = normalized.chars().count();
-    if !(3..=18).contains(&token_len) || !normalized.chars().all(is_cyrillic_letter) {
-        return Vec::new();
-    }
-    if !crate::russian_lexicon::russian_generated_form_dictionary_is_warm() {
-        return Vec::new();
-    }
-    let max_len = (token_len + 12).min(32);
-    let mut words = crate::russian_lexicon::russian_generated_form_dictionary().prefix_words(
-        &normalized,
-        token_len + 1,
-        max_len,
-        limit.saturating_mul(4).max(limit),
-    );
-    let context_tokens = super::llmwave::tokenize(context_prefix);
-    let usage = super::usage_prior::cached_usage_prior_snapshot();
-    words.sort_by(|left, right| {
-        compare_l2_words_by_usage(right, left, &context_tokens, &usage)
-            .then_with(|| {
-                crate::lexicon::is_common_ru_word(right)
-                    .cmp(&crate::lexicon::is_common_ru_word(left))
-            })
-            .then_with(|| left.chars().count().cmp(&right.chars().count()))
-            .then_with(|| left.cmp(right))
-    });
-    words.truncate(limit);
-    words
-        .into_iter()
-        .map(|word| {
-            let usage_prior = usage.word_prior(&word);
-            let context_prior = usage.context_word_prior(&context_tokens, &word);
-            L2ImeWordCandidate {
-                surface: word,
-                kind: L2ImeWordCandidateKind::Completion,
-                source: L2ImeWordCandidateSource::GeneratedFormCenter,
-                score: 650,
-                l1_overlap: token_len,
-                l2_overlap: 0,
-                motif_overlap: 0,
-                usage_prior,
-                context_prior,
-            }
-        })
-        .collect()
-}
-
-fn l2_short_position_seed_index() -> &'static HashMap<String, Vec<String>> {
-    L2_SHORT_POSITION_SEED_INDEX.get_or_init(|| {
-        let mut index = HashMap::<String, Vec<String>>::new();
-        for word in runtime_l2_surface_words() {
-            let len = word.chars().count();
-            if !(3..=18).contains(&len) || !word.chars().all(is_cyrillic_letter) {
-                continue;
-            }
-            for prefix_len in 2..=4.min(len.saturating_sub(1)) {
-                let key = word.chars().take(prefix_len).collect::<String>();
-                index.entry(key).or_default().push(word.clone());
-            }
-        }
-        let usage = super::usage_prior::cached_usage_prior_snapshot();
-        for words in index.values_mut() {
-            words.sort_by(|left, right| {
-                usage
-                    .word_prior(right)
-                    .total_cmp(&usage.word_prior(left))
-                    .then_with(|| {
-                        crate::lexicon::is_common_ru_word(right)
-                            .cmp(&crate::lexicon::is_common_ru_word(left))
-                    })
-                    .then_with(|| left.chars().count().cmp(&right.chars().count()))
-                    .then_with(|| left.cmp(right))
-            });
-            words.truncate(16);
-        }
-        index
-    })
-}
-
 fn l2_ime_word_candidate_score(
     candidate: &L2ImeWordCandidate,
     usage: &super::usage_prior::UsagePriorSnapshot,
@@ -504,33 +268,6 @@ fn l2_ime_word_candidate_score(
         .score
         .saturating_add(prior)
         .saturating_add(kind_bonus)
-}
-
-fn compare_l2_words_by_usage(
-    left: &str,
-    right: &str,
-    context_tokens: &[String],
-    usage: &super::usage_prior::UsagePriorSnapshot,
-) -> std::cmp::Ordering {
-    l2_word_usage_rank(left, context_tokens, usage).cmp(&l2_word_usage_rank(
-        right,
-        context_tokens,
-        usage,
-    ))
-}
-
-fn l2_word_usage_rank(
-    word: &str,
-    context_tokens: &[String],
-    usage: &super::usage_prior::UsagePriorSnapshot,
-) -> u32 {
-    let usage_prior = usage.word_prior(word);
-    let context_prior = usage.context_word_prior(context_tokens, word);
-    let accepted = usage.accepted_word_count(word).min(40);
-    ((usage_prior * 1600.0 + context_prior * 2600.0)
-        .round()
-        .clamp(0.0, 820.0) as u32)
-        .saturating_add(accepted * 18)
 }
 
 pub fn run_l2_refined_with_feedback(
@@ -631,15 +368,6 @@ pub fn run_l2_refined_with_feedback(
         }
     }
     mark_timing!("lexical-attractor");
-    if memory_cells_enabled(options) {
-        for candidate in super::learned::learned_candidates(tail)
-            .into_iter()
-            .filter(|candidate| input_source_enabled(candidate.source, options))
-        {
-            push_unique_candidate(&mut candidates, candidate);
-        }
-    }
-    mark_timing!("learned-memory");
     if options.is_enabled(super::context_wave::SEMANTIC_WORD_SOURCE) {
         for candidate in super::context_wave::semantic_word_candidates(tail) {
             push_unique_candidate(&mut candidates, candidate);
@@ -671,18 +399,6 @@ pub fn run_l2_refined_with_feedback(
         }
     }
     mark_timing!("taught");
-    if options.is_enabled(PATTERN_MEMORY_CELL) {
-        let report = apply_pattern_memory(tail, &mut candidates);
-        if report.applied > 0 {
-            candidates.iter_mut().for_each(|candidate| {
-                candidate.support.push(format!(
-                    "pattern-memory-report:records={} applied={}",
-                    report.records, report.applied
-                ));
-            });
-        }
-    }
-    mark_timing!("pattern-memory");
     apply_l2_phase_shadow(tail, &mut candidates, options);
     mark_timing!("l2-phase-shadow");
     apply_l2_weight(&mut candidates, options);
@@ -794,26 +510,6 @@ fn taught_candidates(
         }
     }
     candidates
-}
-
-fn memory_cells_enabled(options: &WaveOptions) -> bool {
-    options.is_enabled("LearnedMemoryCell32")
-        || options.is_enabled("CommonRuFixCell32")
-        || options.is_enabled("PhraseMemoryCell32")
-        || options.is_enabled("UserMemoryCell32")
-}
-
-fn input_source_enabled(source: &str, options: &WaveOptions) -> bool {
-    match source {
-        "LearnedMemoryCell32" => options.is_enabled("LearnedMemoryCell32"),
-        "CommonRuFixCell32" => options.is_enabled("CommonRuFixCell32"),
-        "PhraseMemoryCell32" => options.is_enabled("PhraseMemoryCell32"),
-        "UserMemoryCell32" => options.is_enabled("UserMemoryCell32"),
-        L2_SURFACE_MOTIF_CELL => options.is_enabled(L2_SURFACE_MOTIF_CELL),
-        L2_SURFACE_COMPLETION_CELL => options.is_enabled(L2_SURFACE_COMPLETION_CELL),
-        source if source == PATTERN_MEMORY_CELL => false,
-        _ => true,
-    }
 }
 
 fn should_run_taught_candidates(token: &str, options: &WaveOptions) -> bool {

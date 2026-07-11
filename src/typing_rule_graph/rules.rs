@@ -7,7 +7,7 @@ use crate::layout_autoswitch::{
     correct_wrong_layout_cyrillic_word_experimental,
 };
 use crate::phrase_reader::{correct_moved_prefix_letter_pair, correct_split_word_pair};
-use crate::typing_replacements::{replace_visual_b_words, replacement_for_token};
+use crate::typing_replacements::replace_visual_b_words;
 
 use super::types::TypingRuleContext;
 
@@ -15,9 +15,8 @@ use super::types::TypingRuleContext;
 mod helpers;
 use helpers::TextRule;
 use helpers::{
-    apply_any_word_rule, apply_core_then_word_rule, apply_short_left_word_rule,
-    apply_token_word_rule, apply_trailing_word_rule, cleanup_extra_letters_after_ru_layout,
-    layout_auto_allowed,
+    apply_core_then_word_rule, apply_short_left_word_rule, apply_token_word_rule,
+    cleanup_extra_letters_after_ru_layout, layout_auto_allowed,
 };
 
 pub(super) fn apply_moved_prefix_pair(ctx: &TypingRuleContext<'_>) -> Option<String> {
@@ -33,16 +32,6 @@ pub(super) fn apply_visual_b(ctx: &TypingRuleContext<'_>) -> Option<String> {
         return None;
     }
     replace_visual_b_words(ctx.core, ctx.core)
-}
-
-pub(super) fn apply_personal_phrase(ctx: &TypingRuleContext<'_>) -> Option<String> {
-    replacement_for_token(ctx.core)
-}
-
-pub(super) fn apply_personal_token(ctx: &TypingRuleContext<'_>) -> Option<String> {
-    apply_word_rule(ctx, replacement_for_token)
-        .or_else(|| apply_trailing_word_rule(ctx, replacement_for_token))
-        .or_else(|| apply_any_word_rule(ctx, replacement_for_token))
 }
 
 pub(super) fn apply_duplicate_layout_prefix(ctx: &TypingRuleContext<'_>) -> Option<String> {

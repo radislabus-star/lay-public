@@ -159,9 +159,9 @@ pub fn live_completion_candidates(
                 usage_snapshot.context_word_prior(&context_tokens, &candidate.surface);
             let accepted = usage_snapshot.accepted_word_count(&candidate.surface);
             let common = crate::lexicon::is_common_ru_word(&candidate.surface);
-            let hot = crate::lexicon::is_ime_hot_ru_word(&candidate.surface);
             let l2_center_grounded =
                 !matches!(candidate.source, l2::L2ImeWordCandidateSource::PhaseDecoder);
+            let hot = l2_center_grounded;
             let structural = structural_support(
                 candidate.score,
                 candidate.l1_overlap,
@@ -329,51 +329,13 @@ fn live_l2_word_candidates(
     }
 
     let material_limit = live_l2_material_limit(limit);
-    let active_sources = 1 + usize::from(token_len <= 4) + if token_len >= 4 { 2 } else { 0 };
-    let source_limit = material_limit
-        .saturating_add(active_sources.saturating_sub(1))
-        .checked_div(active_sources)
-        .unwrap_or(material_limit)
-        .max(4);
-    let mut candidates = Vec::new();
+    let mut candidates = l2::ime_l2_word_candidates(context_prefix, &normalized, material_limit);
     for candidate in
-        l2::ime_l2_foundation_prefix_candidates(context_prefix, &normalized, source_limit)
+        l2::ime_l2_surface_decoder_candidates(context_prefix, &normalized, material_limit)
     {
         push_unique_live_l2_candidate(&mut candidates, candidate);
-    }
-    if token_len <= 4 {
-        for candidate in
-            l2::ime_l2_short_seed_word_candidates(context_prefix, &normalized, source_limit)
-        {
-            push_unique_live_l2_candidate(&mut candidates, candidate);
-        }
-    }
-    if token_len >= 4 {
-        for candidate in
-            l2::ime_l2_surface_decoder_candidates(context_prefix, &normalized, source_limit)
-        {
-            push_unique_live_l2_candidate(&mut candidates, candidate);
-        }
-        for candidate in
-            l2::ime_l2_generated_form_prefix_candidates(context_prefix, &normalized, source_limit)
-        {
-            push_unique_live_l2_candidate(&mut candidates, candidate);
-        }
-    }
-
-    // Every L2 producer gets a route into the lattice before the static
-    // foundation is allowed to top it up. This keeps the broad reference bank
-    // useful without making it the sole source of live candidates.
-    if candidates.len() < material_limit {
-        for candidate in l2::ime_l2_foundation_prefix_candidates(
-            context_prefix,
-            &normalized,
-            material_limit.saturating_sub(candidates.len()),
-        ) {
-            push_unique_live_l2_candidate(&mut candidates, candidate);
-            if candidates.len() >= material_limit {
-                break;
-            }
+        if candidates.len() >= material_limit {
+            break;
         }
     }
     candidates

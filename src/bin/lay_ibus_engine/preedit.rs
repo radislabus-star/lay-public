@@ -4,10 +4,12 @@ use zbus::object_server::SignalEmitter;
 
 use lay::ime_candidate_readout::{
     is_command_like_long_tail, preedit_suffix_context_and_word, push_unique_ascii_known_suffix,
-    push_unique_suffix, rank_ime_candidate_suffixes, ImeCandidateReadoutRequest,
+    rank_ime_candidate_suffixes, ImeCandidateReadoutRequest,
 };
 use lay::word_reader::split_last_alphabetic_token;
 
+#[cfg(test)]
+use lay::ime_candidate_readout::push_unique_suffix;
 #[cfg(test)]
 use lay::ime_candidate_readout::{is_allowed_visible_completion_suffix, phrase_candidate_suffix};
 
@@ -60,23 +62,13 @@ impl PreeditFastState {
         }
         if self.token.chars().all(|ch| ch.is_ascii_alphabetic()) {
             let mut suffixes = Vec::new();
-            for suffix in lay::lexicon::common_en_technical_prefix_completions(
-                &self.token,
-                max_suffix_chars,
-                limit,
-            ) {
-                push_unique_ascii_known_suffix(&mut suffixes, &self.token, suffix);
-                if suffixes.len() >= limit {
-                    break;
-                }
-            }
             if lay::nanda_wave::context_wave::prefix_wave_memory_is_warm() {
                 for suffix in lay::nanda_wave::context_wave::en_word_prefix_completion_suffixes(
                     &self.token,
                     max_suffix_chars,
                     limit,
                 ) {
-                    push_unique_suffix(&mut suffixes, Some(suffix));
+                    push_unique_ascii_known_suffix(&mut suffixes, &self.token, suffix);
                     if suffixes.len() >= limit {
                         break;
                     }

@@ -115,4 +115,12 @@ mod tests {
     fn known_english_context_word_blocks_whole_phrase_layout_flip() {
         assert_eq!(correct_wrong_layout_ascii_phrase("file ljgecnbv"), None);
     }
+
+    #[test]
+    fn shifted_layout_symbol_stays_inside_physical_word() {
+        assert_eq!(
+            correct_wrong_layout_ascii_phrase("HF<JNF NTCN CFV"),
+            Some("РАБОТА ТЕСТ САМ".to_string())
+        );
+    }
 }

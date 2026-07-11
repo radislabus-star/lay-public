@@ -14,11 +14,13 @@ use super::guards::{
 use super::thresholds::NGRAM_DICT_MISSING_LETTER_MARGIN;
 
 pub fn correct_missing_letter(word: &str) -> Option<String> {
-    if word.chars().count() < 6 || !crate::word_reader::is_cyrillic_word(word) {
+    if word.chars().count() < 4 || !crate::word_reader::is_cyrillic_word(word) {
         return None;
     }
     let lower = word.to_lowercase();
-    if is_known_russian_word_or_form(&lower) && !has_common_missing_letter_candidate(&lower) {
+    let field_knows_original = crate::nanda_wave::l2::l2_surface_foundation_has_authority(&lower)
+        || crate::russian_lexicon::is_center_backed_russian_form(&lower);
+    if field_knows_original && !has_common_missing_letter_candidate(&lower) {
         return None;
     }
     if looks_like_plausible_russian_past_tense(&lower)

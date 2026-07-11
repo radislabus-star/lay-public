@@ -1,8 +1,6 @@
 pub(super) const MOVED_PREFIX_PAIR: i32 = 10;
 pub(super) const SPLIT_WORD_PAIR: i32 = 20;
 pub(super) const VISUAL_B: i32 = 30;
-pub(super) const PERSONAL_PHRASE: i32 = 40;
-pub(super) const PERSONAL_TOKEN: i32 = 50;
 pub(super) const DUPLICATE_LAYOUT_PREFIX: i32 = 60;
 pub(super) const MIXED_SCRIPT_LAYOUT: i32 = 70;
 pub(super) const LAYOUT_TECHNICAL: i32 = 80;

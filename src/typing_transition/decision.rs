@@ -449,6 +449,7 @@ pub(crate) fn admit_hidden_transition(
     if transition
         .state_before
         .candidate_imported_left_context(&transition.state_after_predicted)
+        && !transition.evidence.verifier_passed
     {
         return TransitionAdmission {
             allow_apply: false,

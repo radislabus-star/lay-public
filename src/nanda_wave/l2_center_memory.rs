@@ -68,6 +68,7 @@ pub(super) struct L2CenterMemory {
     centers: Vec<L2SequenceCenter>,
     max_center_len: usize,
     center_index: HashMap<L2CenterLookupKey, u32>,
+    surface_hashes: Vec<u64>,
     source_words: Vec<String>,
     word_records: Vec<L2WordRecord>,
     token_refs: Vec<u32>,
@@ -125,11 +126,18 @@ impl L2CenterMemory {
                 )
             })
             .collect::<HashMap<_, _>>();
+        let mut surface_hashes = words
+            .iter()
+            .map(|word| stable_hash_bytes(word.as_bytes()))
+            .collect::<Vec<_>>();
+        surface_hashes.sort_unstable();
+        surface_hashes.dedup();
         let mut memory = Self {
             l1,
             centers,
             max_center_len,
             center_index,
+            surface_hashes,
             source_words: words.clone(),
             word_records: Vec::with_capacity(words.len()),
             token_refs: Vec::new(),
@@ -159,6 +167,16 @@ impl L2CenterMemory {
     #[must_use]
     pub(super) fn source_word_count(&self) -> usize {
         self.source_words.len()
+    }
+
+    #[must_use]
+    pub(super) fn contains_surface(&self, word: &str) -> bool {
+        let normalized = normalize_surface(word);
+        !normalized.is_empty()
+            && self
+                .surface_hashes
+                .binary_search(&stable_hash_bytes(normalized.as_bytes()))
+                .is_ok()
     }
 
     #[must_use]
@@ -193,6 +211,7 @@ impl L2CenterMemory {
                 .map(|center| center.l1_center_refs.len() * L1_SEQUENCE_REF_BYTES)
                 .sum::<usize>()
             + self.center_index.len() * L2_CENTER_INDEX_BYTES
+            + self.surface_hashes.len() * std::mem::size_of::<u64>()
             + self.token_refs.len() * L2_TOKEN_REF_BYTES
             + self.word_records.len() * L2_WORD_RECORD_BYTES
             + self.residual_ref_count * L2_RESIDUAL_REF_BYTES
@@ -596,8 +615,6 @@ fn usage_score_boost(usage: &super::usage_prior::UsagePriorSnapshot, word: &str)
 fn surface_frequency_boost(word: &str) -> u32 {
     if crate::lexicon::is_common_ru_word(word) {
         520
-    } else if crate::russian_lexicon::is_known_russian_word_or_form(word) {
-        80
     } else {
         0
     }
@@ -668,6 +685,10 @@ fn stable_hash_bytes(bytes: &[u8]) -> u64 {
         state = mix64_golden(state);
     }
     mix64_golden(state ^ bytes.len() as u64)
+}
+
+pub(super) fn surface_hash64(surface: &str) -> u64 {
+    stable_hash_bytes(normalize_surface(surface).as_bytes())
 }
 
 #[cfg(test)]

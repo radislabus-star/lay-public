@@ -35,6 +35,9 @@ fn deterministic_text_correction(
     if !(req.auto_replace || req.typing_assist || req.auto_switch_layout) {
         return None;
     }
+    if let Some(candidate) = multiword_layout_projection_candidate(req) {
+        return Some(candidate);
+    }
 
     let pipeline = typing_assist_pipeline_for_context(
         req.auto_replace,
@@ -85,6 +88,30 @@ fn deterministic_text_correction(
         CorrectionDecisionSource::Deterministic,
         rule_id,
         error_class,
+        gate,
+    ))
+}
+
+fn multiword_layout_projection_candidate(
+    req: &CorrectionRequest<'_>,
+) -> Option<UnifiedCorrectionCandidate> {
+    if !req.auto_switch_layout || req.text.split_whitespace().count() < 2 {
+        return None;
+    }
+    let (leading, core, trailing) = split_edge_whitespace(req.text);
+    let converted = crate::layout_autoswitch::correct_wrong_layout_ascii_phrase(core)?;
+    let replacement = format!("{leading}{converted}{trailing}");
+    let gate = gate_candidate_with_source(
+        req.text,
+        &replacement,
+        TypingErrorClass::WrongLayout,
+        ids::LAYOUT_EN_TO_RU,
+    );
+    Some(UnifiedCorrectionCandidate::new(
+        replacement,
+        CorrectionDecisionSource::Deterministic,
+        ids::LAYOUT_EN_TO_RU,
+        TypingErrorClass::WrongLayout,
         gate,
     ))
 }
@@ -257,9 +284,10 @@ fn composite_russian_typo_candidate(
     let (_, core, _) = split_edge_whitespace(req.text);
     let current_word = last_text_word(core)?;
     let lower = current_word.to_lowercase();
-    if !is_cyrillic_letters_only(&current_word)
-        || crate::russian_lexicon::is_known_russian_word_or_form(&lower)
-    {
+    let field_knows_original =
+        crate::nanda_wave::l2::l2_surface_foundation_has_authority(&lower)
+        || crate::russian_lexicon::is_center_backed_russian_form(&lower);
+    if !is_cyrillic_letters_only(&current_word) || field_knows_original {
         return None;
     }
 
@@ -349,6 +377,16 @@ fn composite_russian_typo_candidate(
                 return None;
             }
             let shape_bonus = inserted as f64 * 8.0;
+            let typed_operator_bonus = if inserted_char_position_for_missing_letter(
+                &lower,
+                candidate,
+            )
+            .is_some()
+            {
+                10.0
+            } else {
+                0.0
+            };
             let close_insert_bonus = if distance == 1 && inserted == 1 {
                 12.0
             } else {
@@ -365,6 +403,7 @@ fn composite_russian_typo_candidate(
                 missing_initial_vowel_before_double_consonant_bonus(&lower, candidate);
             let score = margin
                 + shape_bonus
+                + typed_operator_bonus
                 + close_insert_bonus
                 + common_word_bonus
                 + repeated_repair_bonus

@@ -1,13 +1,8 @@
 use crate::russian_lexicon::is_known_russian_word_or_form;
 use crate::text_case::apply_word_case;
 use crate::word_reader::is_cyrillic_word;
-use std::collections::HashMap;
-use std::sync::OnceLock;
 
 use super::keyboard::are_ru_keyboard_neighbors;
-
-const SAFE_NEIGHBOR_SUBSTITUTION_FIXES: &str =
-    include_str!("../../data/lexicon/russian_neighbor_substitution_fixes.tsv");
 
 pub(crate) fn correct_single_letter_substitution(word: &str) -> Option<String> {
     if word.chars().count() < 5 || !is_cyrillic_word(word) {
@@ -19,9 +14,20 @@ pub(crate) fn correct_single_letter_substitution(word: &str) -> Option<String> {
         return None;
     }
 
-    let candidate = safe_neighbor_substitution_fixes().get(lower.as_str())?;
-    safe_neighbor_substitution_candidate(&lower, candidate)
-        .then(|| apply_word_case(word, candidate))
+    let (candidate, _) = crate::candidate_ranker::choose_best_with_gap(
+        crate::nanda_wave::l2::l2_center_near_surfaces(&lower, 64),
+        0.40,
+        |candidate| {
+            if !safe_neighbor_substitution_candidate(&lower, candidate) {
+                return None;
+            }
+            let center_prior = crate::nanda_wave::l2::l2_surface_foundation_rank(candidate)
+                .map(|rank| 12.0 / (1.0 + rank as f64 / 2_000.0))
+                .unwrap_or(0.0);
+            Some(crate::ngram::ru_candidate_margin(candidate, &lower) + center_prior)
+        },
+    )?;
+    Some(apply_word_case(word, &candidate))
 }
 
 fn safe_neighbor_substitution_candidate(original: &str, candidate: &str) -> bool {
@@ -39,19 +45,4 @@ fn safe_neighbor_substitution_candidate(original: &str, candidate: &str) -> bool
         .filter(|(left, right)| left != right)
         .collect();
     matches!(diffs.as_slice(), [(left, right)] if are_ru_keyboard_neighbors(*left, *right))
-}
-
-fn safe_neighbor_substitution_fixes() -> &'static HashMap<String, String> {
-    static FIXES: OnceLock<HashMap<String, String>> = OnceLock::new();
-    FIXES.get_or_init(|| {
-        SAFE_NEIGHBOR_SUBSTITUTION_FIXES
-            .lines()
-            .map(str::trim)
-            .filter(|line| !line.is_empty() && !line.starts_with('#'))
-            .filter_map(|line| {
-                let (wrong, correct) = line.split_once('\t')?;
-                Some((wrong.to_string(), correct.to_string()))
-            })
-            .collect()
-    })
 }

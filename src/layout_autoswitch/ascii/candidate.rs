@@ -23,7 +23,17 @@ pub(super) fn ascii_to_russian_layout_candidate(
         return None;
     }
 
-    let (_, original_word, _) = split_word_punctuation(token);
+    let shift_letter_signal = has_ascii_shift_letter_signal(token);
+    let shifted_layout_word = shift_letter_signal
+        && token
+            .chars()
+            .all(|ch| ch.is_ascii_alphabetic() || matches!(ch, '<' | '>' | '{' | '}' | ':' | '"'));
+    let (_, split_word, _) = split_word_punctuation(token);
+    let original_word = if shifted_layout_word {
+        token
+    } else {
+        split_word
+    };
     if original_word.is_empty() {
         return None;
     }
@@ -40,7 +50,6 @@ pub(super) fn ascii_to_russian_layout_candidate(
 
     let converted_lower = converted_word.to_lowercase();
     let known = is_known_russian_layout_autoswitch_word(&converted_lower);
-    let shift_letter_signal = has_ascii_shift_letter_signal(token);
     if !(known || allow_shift_fallback && shift_letter_signal) {
         if let Some(replacement) = polish_converted_russian_layout_token(&converted) {
             let (_, replacement_word, _) = split_word_punctuation(&replacement);

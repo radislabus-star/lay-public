@@ -64,6 +64,17 @@ fn legacy_gate_candidate_with_source(
             reason: "moved_prefix_eats_known_current_word",
         };
     }
+    if boundary_operator_changes_non_whitespace_surface(
+        original,
+        replacement,
+        error_class,
+        source_id,
+    ) {
+        return CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "boundary_operator_changes_surface",
+        };
+    }
     if multi_word_candidate_only_completes_last_vowel(original, replacement, error_class) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
@@ -653,8 +664,31 @@ fn unproven_inflection_tail_vowel_to_consonant(original: &str, replacement: &str
 fn protected_current_surface_token(lower: &str) -> bool {
     known_russian_autocorrect_token(lower)
         || crate::phrase_lexicon::is_known_russian_phrase_part(lower)
+        || crate::nanda_wave::l2::l2_surface_foundation_has_authority(lower)
+        || crate::russian_lexicon::is_center_backed_russian_form(lower)
         || crate::russian_lexicon::russian_dictionary().contains(lower)
         || crate::russian_lexicon::russian_short_dictionary().contains(lower)
+}
+
+fn boundary_operator_changes_non_whitespace_surface(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    source_id: &str,
+) -> bool {
+    if !matches!(
+        error_class,
+        TypingErrorClass::SplitWord | TypingErrorClass::GluedWords
+    ) && !matches!(
+        correction_source_contract::source_role(source_id),
+        CorrectionSourceRole::Boundary
+    ) {
+        return false;
+    }
+    original
+        .chars()
+        .filter(|ch| !ch.is_whitespace())
+        .ne(replacement.chars().filter(|ch| !ch.is_whitespace()))
 }
 
 fn replacement_glues_separate_words_without_boundary_class(
@@ -1648,7 +1682,10 @@ fn same_known_russian_token(original: &str, candidate: &str) -> bool {
     }
     let original_lower = original_word.to_lowercase();
     original_lower == candidate_word.to_lowercase()
-        && crate::russian_lexicon::is_known_russian_word_or_form(&original_lower)
+        && (crate::nanda_wave::l2::l2_surface_foundation_contains(&original_lower)
+            || crate::russian_lexicon::is_reference_backed_russian_form(&original_lower)
+            || crate::lexicon::is_common_ru_word(&original_lower)
+            || crate::lexicon::is_ru_technical_loanword(&original_lower))
 }
 
 fn strong_standalone_split_tail(lower: &str) -> bool {

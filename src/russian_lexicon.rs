@@ -15,8 +15,8 @@ mod hunspell;
 mod word_set;
 
 pub(crate) use forms::{
-    is_known_cyrillic_hyphen_part, is_known_russian_adverb_o_form,
-    is_known_russian_ka_oblique_form, ka_oblique_forms_for_prefix,
+    is_center_backed_russian_form, is_known_cyrillic_hyphen_part, is_known_russian_adverb_o_form,
+    is_known_russian_ka_oblique_form, is_reference_backed_russian_form,
     looks_like_russian_adjective_lemma,
 };
 use hunspell::{

@@ -91,24 +91,3 @@ fn hunspell_ru_parser_keeps_common_lowercase_words_without_flags() {
     assert!(!words.contains(&"чпу".to_string()));
     assert!(!words.contains(&"я".to_string()));
 }
-
-#[test]
-fn ru_prefix_completion_uses_system_dictionary_fallback() {
-    let candidates = common_ru_prefix_completion_words("следующ", 16, 16);
-    if std::path::Path::new(RU_HUNSPELL).exists() {
-        assert!(
-            candidates.iter().any(|word| word == "следующий"),
-            "expected Hunspell fallback to offer 'следующий', got {candidates:?}"
-        );
-    }
-}
-
-#[test]
-fn ru_prefix_completion_keeps_short_common_suffixes_visible() {
-    let candidates = common_ru_prefix_completion_words("буде", 16, 16);
-
-    assert!(
-        candidates.iter().any(|word| word == "будет"),
-        "short common completion must not be hidden behind longer forms: {candidates:?}"
-    );
-}

@@ -1,7 +1,5 @@
 use super::*;
-use crate::nanda_wave::{
-    l1_center_memory, l2_broad_index, l2_center_memory, llmwave, surface_bank, usage_prior,
-};
+use crate::nanda_wave::{l1_center_memory, l2_center_memory, llmwave, surface_bank, usage_prior};
 
 pub(super) fn surface_motif_word_candidates(
     prefix: &str,
@@ -718,36 +716,47 @@ pub(super) fn trim_allocator_after_l2_surface_build() {
 #[cfg(not(target_os = "linux"))]
 pub(super) fn trim_allocator_after_l2_surface_build() {}
 
-pub(super) fn broad_prefix_index() -> &'static l2_broad_index::L2BroadPrefixIndex {
-    BROAD_PREFIX_INDEX.get_or_init(|| {
-        l2_broad_index::L2BroadPrefixIndex::build(&[
-            L2_SURFACE_FOUNDATION_RU_DATA,
-            L2_SURFACE_HOT_RU_DATA,
-        ])
-    })
-}
-
 pub(super) fn runtime_l2_surface_word_set() -> &'static HashSet<String> {
     static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
     WORDS.get_or_init(|| runtime_l2_surface_words().into_iter().collect())
 }
 
 pub(crate) fn l2_surface_foundation_contains(word: &str) -> bool {
-    L2_SURFACE_FOUNDATION_SET
-        .get_or_init(|| data_words_static(L2_SURFACE_FOUNDATION_RU_DATA).collect())
-        .contains(word)
+    foundation_hash_rank()
+        .binary_search_by_key(
+            &crate::nanda_wave::l2_center_memory::surface_hash64(word),
+            |(hash, _)| *hash,
+        )
+        .is_ok()
 }
 
 pub(crate) fn l2_surface_foundation_rank(word: &str) -> Option<usize> {
-    L2_SURFACE_FOUNDATION_RANK
-        .get_or_init(|| {
-            data_words_static(L2_SURFACE_FOUNDATION_RU_DATA)
-                .enumerate()
-                .map(|(idx, word)| (word, idx))
-                .collect()
-        })
-        .get(word)
-        .copied()
+    let hash = crate::nanda_wave::l2_center_memory::surface_hash64(word);
+    foundation_hash_rank()
+        .binary_search_by_key(&hash, |(candidate, _)| *candidate)
+        .ok()
+        .map(|idx| foundation_hash_rank()[idx].1)
+}
+
+pub(crate) fn l2_surface_foundation_has_authority(word: &str) -> bool {
+    l2_surface_foundation_rank(word).is_some_and(|rank| rank < 20_000)
+}
+
+fn foundation_hash_rank() -> &'static [(u64, usize)] {
+    L2_SURFACE_FOUNDATION_HASH_RANK.get_or_init(|| {
+        let mut entries = data_words_static(L2_SURFACE_FOUNDATION_RU_DATA)
+            .enumerate()
+            .map(|(rank, word)| {
+                (
+                    crate::nanda_wave::l2_center_memory::surface_hash64(word),
+                    rank,
+                )
+            })
+            .collect::<Vec<_>>();
+        entries.sort_unstable_by_key(|(hash, _)| *hash);
+        entries.dedup_by_key(|(hash, _)| *hash);
+        entries
+    })
 }
 
 pub(super) fn runtime_l2_surface_words() -> Vec<String> {

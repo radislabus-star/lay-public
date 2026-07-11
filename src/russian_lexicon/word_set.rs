@@ -27,31 +27,4 @@ impl WordSet {
     pub fn iter(&self) -> impl Iterator<Item = &String> {
         self.words.iter()
     }
-
-    pub(crate) fn prefix_words(
-        &self,
-        prefix: &str,
-        min_chars: usize,
-        max_chars: usize,
-        limit: usize,
-    ) -> Vec<String> {
-        if prefix.is_empty() || limit == 0 {
-            return Vec::new();
-        }
-        let start = self.words.partition_point(|word| word.as_str() < prefix);
-        let mut out = Vec::with_capacity(limit.min(32));
-        for word in self.words.iter().skip(start) {
-            if !word.starts_with(prefix) {
-                break;
-            }
-            let len = word.chars().count();
-            if (min_chars..=max_chars).contains(&len) {
-                out.push(word.clone());
-                if out.len() >= limit {
-                    break;
-                }
-            }
-        }
-        out
-    }
 }

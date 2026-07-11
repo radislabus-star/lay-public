@@ -1,5 +1,4 @@
 use std::collections::{HashMap, HashSet};
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::OnceLock;
 
 use crate::data_lines::data_lines;
@@ -22,11 +21,8 @@ const MAX_WAVE_POOL: usize = 4096;
 const L2_SURFACE_FOUNDATION_RU_DATA: &str =
     include_str!("../../data/lexicon/l2_surface_foundation_ru_100k.txt");
 const L2_SURFACE_HOT_RU_DATA: &str = include_str!("../../data/lexicon/l2_surface_hot_ru.txt");
-static PREFIX_COMPLETION_INDEX_WARM: AtomicBool = AtomicBool::new(false);
 static RU_WORD_WAVE_MEMORY: OnceLock<RuWordWaveMemory> = OnceLock::new();
 static EN_WORD_WAVE_MEMORY: OnceLock<EnWordWaveMemory> = OnceLock::new();
-static RU_WORD_PREFIX_INDEX: OnceLock<HashMap<String, Vec<String>>> = OnceLock::new();
-static EN_WORD_PREFIX_INDEX: OnceLock<HashMap<String, Vec<String>>> = OnceLock::new();
 
 pub fn warm_up() {
     let _ = ru_word_wave_memory().entries.len();
@@ -35,13 +31,10 @@ pub fn warm_up() {
 
 pub fn warm_up_prefix_completion_indexes() {
     warm_up();
-    let _ = ru_word_prefix_index().len();
-    let _ = en_word_prefix_index().len();
-    PREFIX_COMPLETION_INDEX_WARM.store(true, Ordering::Release);
 }
 
 pub fn prefix_wave_memory_is_warm() -> bool {
-    PREFIX_COMPLETION_INDEX_WARM.load(Ordering::Acquire)
+    RU_WORD_WAVE_MEMORY.get().is_some() && EN_WORD_WAVE_MEMORY.get().is_some()
 }
 
 pub fn ru_word_prefix_completion_suffixes(
@@ -49,12 +42,13 @@ pub fn ru_word_prefix_completion_suffixes(
     max_suffix_chars: usize,
     limit: usize,
 ) -> Vec<String> {
-    word_prefix_completion_suffixes(
+    word_wave_completion_suffixes(
         prefix,
         max_suffix_chars,
         limit,
         None,
-        ru_word_prefix_index(),
+        &ru_word_wave_memory().entries,
+        &ru_word_wave_memory().buckets,
     )
 }
 
@@ -64,12 +58,13 @@ pub fn ru_word_prefix_completion_suffixes_if_bucket_at_most(
     limit: usize,
     max_bucket_entries: usize,
 ) -> Vec<String> {
-    word_prefix_completion_suffixes(
+    word_wave_completion_suffixes(
         prefix,
         max_suffix_chars,
         limit,
         Some(max_bucket_entries),
-        ru_word_prefix_index(),
+        &ru_word_wave_memory().entries,
+        &ru_word_wave_memory().buckets,
     )
 }
 
@@ -78,12 +73,13 @@ pub fn en_word_prefix_completion_suffixes(
     max_suffix_chars: usize,
     limit: usize,
 ) -> Vec<String> {
-    word_prefix_completion_suffixes(
+    word_wave_completion_suffixes(
         &prefix.to_ascii_lowercase(),
         max_suffix_chars,
         limit,
         None,
-        en_word_prefix_index(),
+        &en_word_wave_memory().entries,
+        &en_word_wave_memory().buckets,
     )
 }
 
@@ -452,6 +448,7 @@ fn looks_like_known_form_to_other_known_word_drift(
 
 fn known_ru_token(word: &str) -> bool {
     is_common_ru_word(word)
+        || super::l2::l2_center_contains_surface(word)
         || is_known_russian_phrase_part(word)
         || is_known_russian_word_or_form(word)
         || russian_tiny_dictionary().contains(word)
@@ -620,41 +617,13 @@ fn en_word_wave_memory() -> &'static EnWordWaveMemory {
     })
 }
 
-fn ru_word_prefix_index() -> &'static HashMap<String, Vec<String>> {
-    RU_WORD_PREFIX_INDEX.get_or_init(|| build_prefix_index(&ru_word_wave_memory().entries))
-}
-
-fn en_word_prefix_index() -> &'static HashMap<String, Vec<String>> {
-    EN_WORD_PREFIX_INDEX.get_or_init(|| build_prefix_index(&en_word_wave_memory().entries))
-}
-
-fn build_prefix_index(entries: &[RuWordWaveEntry]) -> HashMap<String, Vec<String>> {
-    let mut index = HashMap::<String, Vec<String>>::new();
-    for entry in entries {
-        for prefix_len in 2..entry.len {
-            let prefix = entry.word.chars().take(prefix_len).collect::<String>();
-            let byte_idx = entry
-                .word
-                .char_indices()
-                .nth(prefix_len)
-                .map(|(idx, _)| idx)
-                .unwrap_or(entry.word.len());
-            let suffix = entry.word[byte_idx..].to_string();
-            if suffix.is_empty() {
-                continue;
-            }
-            index.entry(prefix).or_default().push(suffix);
-        }
-    }
-    index
-}
-
-fn word_prefix_completion_suffixes(
+fn word_wave_completion_suffixes(
     prefix: &str,
     max_suffix_chars: usize,
     limit: usize,
     max_bucket_entries: Option<usize>,
-    prefix_index: &HashMap<String, Vec<String>>,
+    entries: &[RuWordWaveEntry],
+    buckets: &HashMap<u16, Vec<usize>>,
 ) -> Vec<String> {
     if limit == 0 {
         return Vec::new();
@@ -664,17 +633,34 @@ fn word_prefix_completion_suffixes(
     if prefix_len < 2 {
         return Vec::new();
     }
-    let Some(suffixes) = prefix_index.get(&prefix) else {
-        return Vec::new();
-    };
-    if max_bucket_entries.is_some_and(|max| suffixes.len() > max) {
+    let query_modes = word_wave_modes(&prefix);
+    let mut seen = HashSet::new();
+    let mut pool = Vec::new();
+    for mode in query_modes {
+        let Some(bucket) = buckets.get(&mode) else {
+            continue;
+        };
+        for idx in bucket.iter().take(MAX_WAVE_BUCKET_SCAN) {
+            if seen.insert(*idx) {
+                pool.push(*idx);
+            }
+            if pool.len() >= MAX_WAVE_POOL {
+                break;
+            }
+        }
+    }
+    if max_bucket_entries.is_some_and(|max| pool.len() > max) {
         return Vec::new();
     }
-    suffixes
-        .iter()
-        .filter(|suffix| suffix.chars().count() <= max_suffix_chars)
+    pool.into_iter()
+        .filter_map(|idx| entries.get(idx))
+        .filter(|entry| entry.word.starts_with(&prefix) && entry.len > prefix_len)
+        .filter_map(|entry| {
+            let byte_idx = entry.word.char_indices().nth(prefix_len)?.0;
+            let suffix = &entry.word[byte_idx..];
+            (suffix.chars().count() <= max_suffix_chars).then(|| suffix.to_string())
+        })
         .take(limit)
-        .cloned()
         .collect()
 }
 
@@ -1145,16 +1131,11 @@ mod tests {
     }
 
     #[test]
-    fn warm_up_does_not_build_prefix_completion_indexes() {
-        if RU_WORD_PREFIX_INDEX.get().is_some() || EN_WORD_PREFIX_INDEX.get().is_some() {
-            return;
-        }
+    fn warm_up_prepares_wave_memory_without_prefix_indexes() {
         warm_up();
         assert!(RU_WORD_WAVE_MEMORY.get().is_some());
         assert!(EN_WORD_WAVE_MEMORY.get().is_some());
-        assert!(RU_WORD_PREFIX_INDEX.get().is_none());
-        assert!(EN_WORD_PREFIX_INDEX.get().is_none());
-        assert!(!prefix_wave_memory_is_warm());
+        assert!(prefix_wave_memory_is_warm());
     }
 
     #[test]

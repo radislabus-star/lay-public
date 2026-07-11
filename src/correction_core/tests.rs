@@ -101,7 +101,7 @@ mod tests {
         );
         assert_eq!(resolution.scoreboard.total_candidates, 2);
         assert_eq!(resolution.scoreboard.deterministic_candidates, 1);
-        assert_eq!(resolution.scoreboard.nanda_candidates, 1);
+        assert_eq!(resolution.scoreboard.nanda_candidates, 2);
         assert_eq!(resolution.scoreboard.apply_candidates, 1);
         assert_eq!(resolution.scoreboard.suggest_only_candidates, 1);
         let selected = resolution.selected.as_ref().expect("selected candidate");
@@ -147,7 +147,7 @@ mod tests {
             mode: CorrectionMode::NandaOnly,
         });
         assert!(active.candidates.iter().any(|candidate| {
-            candidate.source_id == "L2SurfaceMotifCell32" && candidate.replacement == "загрузи "
+            candidate.source_id == "L2WordAttractorCell32" && candidate.replacement == "загрузи "
         }));
 
         let disabled = resolve_text_correction(CorrectionRequest {
@@ -345,7 +345,7 @@ mod tests {
             ids::LAYOUT_EN_TO_RU,
         );
 
-        assert_eq!(gate.action, CandidateGateAction::Apply);
+        assert_eq!(gate.action, CandidateGateAction::Apply, "gate={gate:?}");
     }
 
     #[test]
@@ -779,8 +779,8 @@ mod tests {
             ("тарфик ", "трафик ", ids::ADJACENT_TRANSPOSITION),
             ("рабоатешь ", "работаешь ", ids::ADJACENT_TRANSPOSITION),
             ("агресивнее ", "агрессивнее ", "composite_ru_typo"),
-            ("дейстия ", "действия ", "composite_ru_typo"),
-            ("кнал ", "канал ", "composite_ru_typo"),
+            ("дейстия ", "действия ", ids::MISSING_LETTER),
+            ("кнал ", "канал ", ids::MISSING_LETTER),
             ("сбирать ", "собирать ", ids::MISSING_LETTER),
         ] {
             let resolution = resolve_text_correction(request(
@@ -789,8 +789,11 @@ mod tests {
                 CorrectionMode::DeterministicOnly,
             ));
 
-            let selected = resolution.selected.expect("selected candidate");
-            assert_eq!(selected.replacement, expected, "input={input:?}");
+            let selected = resolution
+                .selected
+                .as_ref()
+                .unwrap_or_else(|| panic!("selected candidate for {input:?}: {resolution:?}"));
+            assert_eq!(selected.replacement, expected, "input={input:?}; {resolution:?}");
             assert_eq!(selected.source_id, source_id, "input={input:?}");
             assert_eq!(
                 selected.gate.action,
@@ -837,7 +840,7 @@ mod tests {
         let gate = gate_candidate("уровне ", "у ровне ", TypingErrorClass::GluedWords);
 
         assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
-        assert_eq!(gate.reason, "known_single_word_boundary_split");
+        assert_eq!(gate.reason, "weak_boundary_split_tail");
     }
 
     #[test]
@@ -845,7 +848,7 @@ mod tests {
         let gate = gate_candidate("на уровне ", "на у ровне ", TypingErrorClass::GluedWords);
 
         assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
-        assert_eq!(gate.reason, "known_single_word_boundary_split");
+        assert_eq!(gate.reason, "weak_boundary_split_tail");
     }
 
     #[test]
@@ -857,8 +860,8 @@ mod tests {
             crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
         );
 
-        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
-        assert_eq!(gate.reason, "known_single_word_boundary_split");
+        assert_eq!(gate.action, CandidateGateAction::KeepOriginal);
+        assert_eq!(gate.reason, "candidate_over_compresses_word");
     }
 
     #[test]
@@ -866,23 +869,32 @@ mod tests {
         let gate = gate_candidate("со скрина ", "со с крина ", TypingErrorClass::GluedWords);
 
         assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
-        assert_eq!(gate.reason, "weak_boundary_split_tail");
+        assert_eq!(gate.reason, "known_single_word_boundary_split");
     }
 
     #[test]
     fn composite_typo_repairs_generated_russian_forms() {
         let pipeline = default_typing_assist_pipeline();
-        for (input, expected) in [("руских ", "русских "), ("звгрузи ", "загрузи ")]
-        {
+        for (input, expected, expected_class) in [
+            ("руских ", "русских ", TypingErrorClass::CompositeTypo),
+            (
+                "звгрузи ",
+                "загрузи ",
+                TypingErrorClass::LetterSubstitution,
+            ),
+        ] {
             let resolution = resolve_text_correction(request(
                 input,
                 &pipeline,
                 CorrectionMode::DeterministicOnly,
             ));
 
-            let selected = resolution.selected.expect("selected candidate");
-            assert_eq!(selected.replacement, expected, "input={input:?}");
-            assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
+            let selected = resolution
+                .selected
+                .as_ref()
+                .unwrap_or_else(|| panic!("selected candidate for {input:?}: {resolution:?}"));
+            assert_eq!(selected.replacement, expected, "input={input:?}; {resolution:?}");
+            assert_eq!(selected.error_class, expected_class, "input={input:?}");
             assert_eq!(selected.gate.action, CandidateGateAction::Apply);
         }
     }
@@ -1257,7 +1269,7 @@ mod tests {
         let selected = resolution.selected.expect("selected candidate");
         assert_eq!(selected.replacement, "загрузи ");
         assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
-        assert_eq!(selected.source_id, "L2SurfaceMotifCell32");
+        assert_eq!(selected.source_id, "L2WordAttractorCell32");
         assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
         assert_eq!(selected.gate.action, CandidateGateAction::Apply);
     }

@@ -85,15 +85,23 @@ pub(crate) fn missing_letter_candidate_bonus(lower: &str, candidate: &str) -> f6
     let Some((_, inserted)) = inserted_char_position_for_missing_letter(lower, candidate) else {
         return 0.0;
     };
-    if is_russian_vowel(inserted) {
-        4.0
-    } else if inserted == 'й' && looks_like_known_y_noun_form(candidate) {
+    let center_support = if crate::nanda_wave::l2::l2_surface_foundation_has_authority(candidate)
+        || crate::russian_lexicon::is_center_backed_russian_form(candidate)
+    {
         12.0
-    } else if inserted == 'й' {
-        2.0
     } else {
         0.0
-    }
+    };
+    center_support
+        + if is_russian_vowel(inserted) {
+            4.0
+        } else if inserted == 'й' && looks_like_known_y_noun_form(candidate) {
+            12.0
+        } else if inserted == 'й' {
+            2.0
+        } else {
+            0.0
+        }
 }
 
 fn looks_like_known_y_noun_form(candidate: &str) -> bool {

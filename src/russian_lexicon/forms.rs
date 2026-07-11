@@ -15,10 +15,47 @@ pub(crate) fn is_known_russian_form(word: &str) -> bool {
         || is_known_russian_short_accusative_a_form(word)
         || is_known_russian_zero_ending_noun_form(word)
         || is_known_russian_ka_declension_form(word)
+        || is_known_russian_ka_oblique_form(word)
         || is_known_russian_prefixed_form(word)
         || is_known_russian_verb_form(word)
         || is_known_russian_ch_verb_present_form(word)
         || is_known_russian_imperative_i_form(word)
+}
+
+pub(crate) fn is_center_backed_russian_form(word: &str) -> bool {
+    is_backed_russian_form(word, center_contains)
+}
+
+pub(crate) fn is_reference_backed_russian_form(word: &str) -> bool {
+    is_backed_russian_form(word, |surface| {
+        crate::nanda_wave::l2::l2_surface_foundation_contains(surface)
+    })
+}
+
+fn is_backed_russian_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
+    if word.chars().count() < 5 {
+        return false;
+    }
+    if let Some(stem) = word.strip_suffix("кой") {
+        if stem.chars().count() >= 3 && contains(&format!("{stem}ка")) {
+            return true;
+        }
+    }
+    suffix_forms().any(|suffix| {
+        let Some(stem) = word.strip_suffix(suffix) else {
+            return false;
+        };
+        if stem.chars().count() < 3 {
+            return false;
+        }
+        let adjective_suffix = adjective_form_suffixes().any(|candidate| candidate == suffix);
+        (!adjective_suffix && contains(stem))
+            || (matches!(suffix, "я" | "ю" | "ем" | "ями" | "ях")
+                && stem.ends_with('и')
+                && contains(&format!("{stem}е")))
+            || (adjective_suffix
+                && adjective_lemma_endings().any(|ending| contains(&format!("{stem}{ending}"))))
+    })
 }
 
 pub(crate) fn is_known_russian_adverb_o_form(word: &str) -> bool {
@@ -42,43 +79,10 @@ pub(crate) fn is_known_russian_ka_oblique_form(word: &str) -> bool {
     }
     for suffix in ka_oblique_suffixes() {
         if let Some(stem) = word.strip_suffix(suffix) {
-            return stem.chars().count() >= 3
-                && russian_dictionary().contains(&format!("{stem}ка"));
+            return stem.chars().count() >= 3 && known_runtime_lemma(&format!("{stem}ка"));
         }
     }
     false
-}
-
-pub(crate) fn ka_oblique_forms_for_prefix(
-    prefix: &str,
-    min_chars: usize,
-    max_chars: usize,
-    limit: usize,
-) -> Vec<String> {
-    if limit == 0 {
-        return Vec::new();
-    }
-    let mut out = Vec::with_capacity(limit.min(32));
-    let lemma_min_chars = min_chars.saturating_sub(2).max(3);
-    for lemma in russian_dictionary().prefix_words(prefix, lemma_min_chars, max_chars, limit) {
-        let Some(stem) = lemma.strip_suffix("ка") else {
-            continue;
-        };
-        if stem.chars().count() < 3 {
-            continue;
-        }
-        for suffix in ka_oblique_suffixes() {
-            let candidate = format!("{stem}{suffix}");
-            let len = candidate.chars().count();
-            if (min_chars..=max_chars).contains(&len) {
-                out.push(candidate);
-                if out.len() >= limit {
-                    return out;
-                }
-            }
-        }
-    }
-    out
 }
 
 pub(crate) fn is_known_cyrillic_hyphen_part(part: &str, dict: &WordSet) -> bool {
@@ -110,12 +114,18 @@ fn is_known_russian_suffix_form(word: &str) -> bool {
         if is_known_russian_adjective_form(stem, suffix) {
             return true;
         }
-        if russian_dictionary().contains(stem) {
+        if known_runtime_lemma(stem) {
+            return true;
+        }
+        if matches!(suffix, "я" | "ю" | "ем" | "ями" | "ях")
+            && stem.ends_with('и')
+            && known_runtime_lemma(&format!("{stem}е"))
+        {
             return true;
         }
         matches!(suffix, "ами" | "ями")
             && (russian_short_dictionary().contains(stem)
-                || russian_dictionary().contains(&format!("{stem}о")))
+                || known_runtime_lemma(&format!("{stem}о")))
     })
 }
 
@@ -126,8 +136,7 @@ fn is_known_russian_adjective_form(stem: &str, suffix: &str) -> bool {
     if !adjective_form_suffixes().any(|candidate| candidate == suffix) {
         return false;
     }
-    adjective_lemma_endings()
-        .any(|ending| russian_dictionary().contains(&format!("{stem}{ending}")))
+    adjective_lemma_endings().any(|ending| known_runtime_lemma(&format!("{stem}{ending}")))
         || possessive_suffixes().any(|suffix| {
             let Some(noun_stem) = stem.strip_suffix(suffix) else {
                 return false;
@@ -149,7 +158,7 @@ fn is_known_russian_zero_ending_noun_form(word: &str) -> bool {
             return false;
         }
         let lemma = format!("{word}{suffix}");
-        russian_dictionary().contains(&lemma) || russian_short_dictionary().contains(&lemma)
+        known_runtime_lemma(&lemma)
     })
 }
 
@@ -161,7 +170,7 @@ fn is_known_russian_short_accusative_a_form(word: &str) -> bool {
         return false;
     }
     let lemma = format!("{stem}а");
-    russian_dictionary().contains(&lemma) || russian_short_dictionary().contains(&lemma)
+    known_runtime_lemma(&lemma)
 }
 
 fn is_known_russian_ka_declension_form(word: &str) -> bool {
@@ -171,7 +180,7 @@ fn is_known_russian_ka_declension_form(word: &str) -> bool {
     let Some(stem) = word.strip_suffix("ок") else {
         return false;
     };
-    stem.chars().count() >= 3 && russian_dictionary().contains(&format!("{stem}ка"))
+    stem.chars().count() >= 3 && known_runtime_lemma(&format!("{stem}ка"))
 }
 
 fn is_known_russian_prefixed_form(word: &str) -> bool {
@@ -217,9 +226,17 @@ fn is_known_russian_ch_verb_present_form(word: &str) -> bool {
 }
 
 fn known_runtime_verb_lemma(lemma: &str) -> bool {
-    russian_dictionary().contains(lemma)
+    known_runtime_lemma(lemma)
+}
+
+fn known_runtime_lemma(lemma: &str) -> bool {
+    center_contains(lemma)
+        || russian_dictionary().contains(lemma)
         || russian_short_dictionary().contains(lemma)
-        || crate::nanda_wave::l2::l2_surface_foundation_contains(lemma)
+}
+
+fn center_contains(surface: &str) -> bool {
+    crate::nanda_wave::l2::l2_surface_foundation_has_authority(surface)
 }
 
 fn is_known_russian_imperative_i_form(word: &str) -> bool {
@@ -242,4 +259,19 @@ fn is_known_short_accusative_a_form(word: &str, dict: &WordSet) -> bool {
 
 fn is_russian_consonant(ch: char) -> bool {
     is_cyrillic_letter(ch) && !is_russian_vowel(ch) && !matches!(ch, 'ь' | 'Ь' | 'ъ' | 'Ъ')
+}
+
+#[cfg(test)]
+mod tests {
+    use super::is_known_russian_form;
+
+    #[test]
+    fn center_lemmas_produce_regular_noun_and_adjective_forms() {
+        for word in ["действия", "доставкой", "лучшее"] {
+            assert!(
+                is_known_russian_form(word),
+                "missing center-backed form: {word}"
+            );
+        }
+    }
 }
