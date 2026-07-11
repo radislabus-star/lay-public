@@ -329,7 +329,8 @@ fn candidate_has_apply_authority(
 fn phase_managed_source(source_role: CorrectionSourceRole) -> bool {
     matches!(
         source_role,
-        CorrectionSourceRole::L2Surface
+        CorrectionSourceRole::DeterministicTypo
+            | CorrectionSourceRole::L2Surface
             | CorrectionSourceRole::L3Context
             | CorrectionSourceRole::Unknown
     )
@@ -730,7 +731,7 @@ mod tests {
     }
 
     #[test]
-    fn phase_cutover_only_blocks_managed_sources_when_enabled() {
+    fn phase_cutover_blocks_learned_and_deterministic_typo_sources() {
         let disabled = TransitionDecisionPolicy {
             l2_phase_apply: false,
         };
@@ -775,6 +776,39 @@ mod tests {
             phase_policy_rejection(
                 enabled,
                 CorrectionSourceRole::DeterministicTypo,
+                true,
+                true,
+                true,
+                "repel"
+            ),
+            Some("l2_transition_phase_repel")
+        );
+        assert_eq!(
+            phase_policy_rejection(
+                enabled,
+                CorrectionSourceRole::DeterministicTypo,
+                true,
+                true,
+                true,
+                "unknown"
+            ),
+            Some("l2_transition_phase_unknown")
+        );
+        assert_eq!(
+            phase_policy_rejection(
+                enabled,
+                CorrectionSourceRole::DeterministicTypo,
+                true,
+                true,
+                true,
+                "support"
+            ),
+            None
+        );
+        assert_eq!(
+            phase_policy_rejection(
+                enabled,
+                CorrectionSourceRole::Layout,
                 true,
                 true,
                 true,

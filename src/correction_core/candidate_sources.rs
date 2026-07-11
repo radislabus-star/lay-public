@@ -481,11 +481,109 @@ fn nanda_text_candidates(req: &CorrectionRequest<'_>) -> Vec<UnifiedCorrectionCa
     }
 
     let trace = run_wave_trace_with_options(req.text, &req.nanda_wave_options);
-    trace
+    let mut candidates = trace
         .l2_candidates
         .iter()
         .filter_map(|candidate| nanda_word_candidate(req.text, candidate))
+        .collect::<Vec<_>>();
+    candidates.extend(delayed_context_candidates(req.text));
+    candidates
+}
+
+fn delayed_context_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
+    if !original.ends_with(char::is_whitespace)
+        || !crate::nanda_wave::llmwave::default_memory_is_warm()
+    {
+        return Vec::new();
+    }
+    crate::nanda_wave::llmwave::with_default_memory(|memory| {
+        delayed_context_candidates_with_memory(original, memory)
+    })
+}
+
+fn delayed_context_candidates_with_memory(
+    original: &str,
+    memory: &crate::nanda_wave::llmwave::LlmWaveMemory,
+) -> Vec<UnifiedCorrectionCandidate> {
+    let words = normalized_correction_words(original);
+    if words.len() < 2 {
+        return Vec::new();
+    }
+    let previous_index = words.len() - 2;
+    let observed_previous = &words[previous_index];
+    let next_token = &words[previous_index + 1];
+    memory
+        .previous_token_candidates(
+            &words[..previous_index],
+            observed_previous,
+            next_token,
+            4,
+        )
+        .into_iter()
+        .filter(|candidate| candidate.support >= 2)
+        .filter_map(|candidate| {
+            let replacement = replace_penultimate_text_word(original, &candidate.token)?;
+            let mut gate = gate_candidate_with_source(
+                original,
+                &replacement,
+                TypingErrorClass::CompositeTypo,
+                "PhraseMemoryCell32",
+            );
+            if matches!(
+                gate.action,
+                CandidateGateAction::Eligible | CandidateGateAction::Apply
+            ) {
+                gate = CandidateGateDecision {
+                    action: CandidateGateAction::SuggestOnly,
+                    reason: "delayed_context_requires_promotion",
+                };
+            }
+            Some(UnifiedCorrectionCandidate::new(
+                replacement,
+                CorrectionDecisionSource::Nanda,
+                "PhraseMemoryCell32",
+                TypingErrorClass::CompositeTypo,
+                gate,
+            ))
+        })
         .collect()
+}
+
+fn replace_penultimate_text_word(text: &str, replacement_word: &str) -> Option<String> {
+    let (leading_ws, core, trailing_ws) = split_edge_whitespace(text);
+    let segments = split_ws_segments(core);
+    let word_indices = segments
+        .iter()
+        .enumerate()
+        .filter_map(|(index, (segment, is_ws))| {
+            if *is_ws {
+                return None;
+            }
+            let (_, word, _) = split_word_punctuation(segment);
+            (!word.is_empty()).then_some(index)
+        })
+        .collect::<Vec<_>>();
+    let [.., previous_index, _current_index] = word_indices.as_slice() else {
+        return None;
+    };
+    let (prefix, previous_word, suffix) = split_word_punctuation(segments[*previous_index].0);
+    if previous_word.is_empty() {
+        return None;
+    }
+    let replacement_word = apply_word_case(previous_word, replacement_word);
+    let mut output = String::with_capacity(text.len() + replacement_word.len());
+    output.push_str(leading_ws);
+    for (index, (segment, _)) in segments.iter().enumerate() {
+        if index == *previous_index {
+            output.push_str(prefix);
+            output.push_str(&replacement_word);
+            output.push_str(suffix);
+        } else {
+            output.push_str(segment);
+        }
+    }
+    output.push_str(trailing_ws);
+    (output != text).then_some(output)
 }
 
 fn nanda_word_candidate(

@@ -12,6 +12,9 @@ fn warm_runtime_if_needed(detect_only: bool, cfg: &LayConfig) {
             if plan.warm_typing_assist {
                 lay::typing_assist::warm_up_hot();
             }
+            if plan.warm_l3_phrase {
+                lay::nanda_wave::warm_up_l3_phrase_memory();
+            }
             TYPING_ASSIST_RUNTIME_READY.store(true, Ordering::Relaxed);
             if plan.warm_smart {
                 match lay::llm::warm_up() {
@@ -20,7 +23,7 @@ fn warm_runtime_if_needed(detect_only: bool, cfg: &LayConfig) {
                 }
             }
             log(&format!(
-                "► hot typing runtime warmed in {}ms; cold lexicon/NANDA memory stays lazy",
+                "► hot typing runtime warmed in {}ms; full lexicon/NANDA memory stays lazy",
                 started_at.elapsed().as_millis()
             ));
         });
@@ -34,7 +37,7 @@ struct RuntimeWarmupPlan {
     spawn_background: bool,
     warm_typing_assist: bool,
     warm_smart: bool,
-    warm_nanda: bool,
+    warm_l3_phrase: bool,
 }
 
 fn runtime_warmup_plan(
@@ -50,12 +53,11 @@ fn runtime_warmup_plan(
             .allows_full_reference_authority();
     let warm_typing_assist =
         daemon_can_own_full_hot_memory && (cfg.typing_assist || enter_autocorrect_active);
-    let warm_nanda = daemon_can_own_full_hot_memory
-        && (cfg.nanda_autocorrect || cfg.nanda_precognition || cfg.nanda_trace);
+    let warm_l3_phrase = cfg.nanda_autocorrect || cfg.nanda_trace;
     RuntimeWarmupPlan {
-        spawn_background: !detect_only && (warm_smart || warm_typing_assist),
+        spawn_background: !detect_only && (warm_smart || warm_typing_assist || warm_l3_phrase),
         warm_typing_assist,
         warm_smart,
-        warm_nanda,
+        warm_l3_phrase,
     }
 }

@@ -174,7 +174,18 @@ pub(crate) fn word_has_common_usage_authority(word: &str) -> bool {
     }
     let lower = word.to_lowercase();
     crate::lexicon::is_common_ru_word(&lower)
-        || crate::nanda_wave::cached_usage_prior_snapshot().word_prior(&lower) >= 0.020
+        || usage_snapshot_has_word_authority(
+            &crate::nanda_wave::cached_usage_prior_snapshot(),
+            &lower,
+        )
+}
+
+fn usage_snapshot_has_word_authority(
+    usage: &crate::nanda_wave::UsagePriorSnapshot,
+    word: &str,
+) -> bool {
+    let readout = usage.hot_readout(&[], "*", "*", "*", word);
+    readout.accepted_count >= 2 && readout.accepted_count > readout.rejected_count
 }
 
 impl L1ScriptProfile {
@@ -236,5 +247,28 @@ mod tests {
 
         assert!(before.context_changed(&after));
         assert!(before.word_count_changed(&after));
+    }
+
+    #[test]
+    fn raw_repeated_typo_does_not_become_known_word_authority() {
+        let usage = crate::nanda_wave::usage_prior::snapshot_from_usage_events_for_tests(
+            r#"{"ts":1,"kind":"typed","word":"деллай","context":[]}
+{"ts":2,"kind":"typed","word":"деллай","context":[]}
+{"ts":3,"kind":"typed","word":"деллай","context":[]}
+"#,
+        );
+
+        assert!(!usage_snapshot_has_word_authority(&usage, "деллай"));
+    }
+
+    #[test]
+    fn repeated_accepted_use_can_become_known_word_authority() {
+        let usage = crate::nanda_wave::usage_prior::snapshot_from_usage_events_for_tests(
+            r#"{"ts":1,"kind":"accepted_ime","word":"кастомтерм","context":[]}
+{"ts":2,"kind":"accepted_ime","word":"кастомтерм","context":[]}
+"#,
+        );
+
+        assert!(usage_snapshot_has_word_authority(&usage, "кастомтерм"));
     }
 }

@@ -38,6 +38,22 @@ mod tests {
     }
 
     #[test]
+    fn delayed_context_births_previous_token_candidate_without_apply_authority() {
+        let memory = crate::nanda_wave::llmwave::LlmWaveMemory::from_text(
+            "всё ты сделал\nвсё ты понял\nвсё ты проверил\nвес ты измерил",
+        );
+
+        let candidates = delayed_context_candidates_with_memory("вес ты ", &memory);
+
+        let candidate = candidates
+            .iter()
+            .find(|candidate| candidate.replacement == "всё ты ")
+            .expect("reverse phrase candidate");
+        assert_eq!(candidate.origin, CandidateOrigin::L3Context);
+        assert_eq!(candidate.gate.action, CandidateGateAction::SuggestOnly);
+    }
+
+    #[test]
     fn l2_candidate_lattice_keeps_sources_and_selects_only_apply_candidate() {
         let mut lattice = L2CandidateLattice::new(TypingErrorEvent::from_text("автозаена "));
         lattice.push_source(Some(UnifiedCorrectionCandidate::new(

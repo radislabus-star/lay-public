@@ -283,6 +283,10 @@ pub fn warm_up_l2_for_ime() {
     l2::warm_up_ime_word_candidate_memory();
 }
 
+pub fn warm_up_l3_phrase_memory() {
+    let _ = llmwave::load_default_memory();
+}
+
 pub fn ensure_l2_ime_warmup_started() {
     if L2_IME_WARMUP_STARTED
         .compare_exchange(

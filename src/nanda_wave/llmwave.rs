@@ -148,6 +148,14 @@ pub struct LlmWaveMemory {
     vocabulary: BTreeMap<u32, String>,
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub(crate) struct LlmWavePreviousTokenCandidate {
+    pub(crate) token: String,
+    pub(crate) support: usize,
+    pub(crate) width: usize,
+    pub(crate) energy: f32,
+}
+
 impl LlmWaveMemory {
     pub fn empty() -> Self {
         Self {
@@ -234,6 +242,71 @@ impl LlmWaveMemory {
 
     pub fn vocabulary_len(&self) -> usize {
         self.vocabulary.len()
+    }
+
+    pub(crate) fn previous_token_candidates(
+        &self,
+        context_before: &[String],
+        observed_previous: &str,
+        next_token: &str,
+        limit: usize,
+    ) -> Vec<LlmWavePreviousTokenCandidate> {
+        if limit == 0 || observed_previous.is_empty() || next_token.is_empty() {
+            return Vec::new();
+        }
+        let next_hash = token_hash(next_token);
+        let observed_hash = token_hash(observed_previous);
+        let mut candidates = BTreeMap::<u32, (f32, usize, usize)>::new();
+        for record in self
+            .records
+            .iter()
+            .filter(|record| record.next_hash == next_hash && record.token_hash != observed_hash)
+        {
+            let Some(token) = self.vocabulary.get(&record.token_hash) else {
+                continue;
+            };
+            if !near_previous_token_surface(observed_previous, token) {
+                continue;
+            }
+            let width = usize::from(record.lens).max(1);
+            let context_width = width.saturating_sub(1);
+            if context_before.len() < context_width {
+                continue;
+            }
+            let mut prefix = context_before[context_before.len() - context_width..].to_vec();
+            prefix.push(token.clone());
+            if prefix_hash(&prefix) != record.prefix_hash {
+                continue;
+            }
+            let entry = candidates.entry(record.token_hash).or_default();
+            entry.0 += record_energy(record);
+            entry.1 = entry.1.saturating_add(record_support(record));
+            entry.2 = entry.2.max(width);
+        }
+        let mut candidates = candidates
+            .into_iter()
+            .filter_map(|(hash, (energy, support, width))| {
+                self.vocabulary
+                    .get(&hash)
+                    .cloned()
+                    .map(|token| LlmWavePreviousTokenCandidate {
+                        token,
+                        support,
+                        width,
+                        energy,
+                    })
+            })
+            .collect::<Vec<_>>();
+        candidates.sort_by(|left, right| {
+            right
+                .support
+                .cmp(&left.support)
+                .then_with(|| right.width.cmp(&left.width))
+                .then_with(|| right.energy.total_cmp(&left.energy))
+                .then_with(|| left.token.cmp(&right.token))
+        });
+        candidates.truncate(limit);
+        candidates
     }
 
     pub fn score_next_token(&self, prefix_tokens: &[String], next_token: &str) -> (f32, usize) {
@@ -1470,6 +1543,24 @@ fn prefix_hash(tokens: &[String]) -> u32 {
     hash32(&tokens[start..].join("\u{1f}"))
 }
 
+fn near_previous_token_surface(observed: &str, candidate: &str) -> bool {
+    if observed == candidate
+        || !observed.chars().all(char::is_alphabetic)
+        || !candidate.chars().all(char::is_alphabetic)
+    {
+        return false;
+    }
+    let observed_cyrillic = observed.chars().any(|ch| matches!(ch, 'а'..='я' | 'ё'));
+    let candidate_cyrillic = candidate.chars().any(|ch| matches!(ch, 'а'..='я' | 'ё'));
+    if observed_cyrillic != candidate_cyrillic {
+        return false;
+    }
+    let observed_len = observed.chars().count();
+    let candidate_len = candidate.chars().count();
+    observed_len.abs_diff(candidate_len) <= 2
+        && crate::text_metrics::damerau_levenshtein(observed, candidate) <= 2
+}
+
 fn token_hash(token: &str) -> u32 {
     hash32(token)
 }
@@ -1492,6 +1583,21 @@ fn hash32(text: &str) -> u32 {
 mod tests {
     use super::super::signal::WordCandidate;
     use super::*;
+
+    #[test]
+    fn reverse_phrase_readout_births_previous_token_candidate() {
+        let memory = LlmWaveMemory::from_text(
+            "всё ты сделал\nвсё ты понял\nвсё ты проверил\nвес ты измерил",
+        );
+
+        let candidates = memory.previous_token_candidates(&[], "вес", "ты", 4);
+
+        assert_eq!(
+            candidates.first().map(|item| item.token.as_str()),
+            Some("всё")
+        );
+        assert!(candidates[0].support >= 3);
+    }
 
     #[test]
     fn memory_packet_roundtrip_uses_32_byte_records() {
