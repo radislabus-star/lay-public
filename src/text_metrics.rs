@@ -42,7 +42,7 @@ pub(crate) fn common_replacement_span(left: &str, right: &str) -> usize {
     left_chars.len().saturating_sub(prefix + suffix)
 }
 
-pub(crate) fn damerau_levenshtein(left: &str, right: &str) -> usize {
+pub fn damerau_levenshtein(left: &str, right: &str) -> usize {
     let a: Vec<char> = left.chars().collect();
     let b: Vec<char> = right.chars().collect();
     let mut dp = vec![vec![0usize; b.len() + 1]; a.len() + 1];

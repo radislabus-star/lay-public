@@ -312,10 +312,13 @@ fn collect_corrections_text(collector: &mut Collector, text: &str, limit: usize)
         };
         let kind = value.get("kind").and_then(Value::as_str).unwrap_or("");
         if kind == "user-correction" {
-            if let Some(pair) = pair_from_correction(&value, "user_accepted_fix", "from", "to") {
-                collector.add(pair);
-            } else {
-                collector.corrections.skipped_pairs += 1;
+            if !is_exact_lay_undo(&value) {
+                if let Some(pair) = pair_from_correction(&value, "user_accepted_fix", "from", "to")
+                {
+                    collector.add(pair);
+                } else {
+                    collector.corrections.skipped_pairs += 1;
+                }
             }
             if value.get("lay_from").is_some() && value.get("lay_to").is_some() {
                 if let Some(pair) =
@@ -334,6 +337,27 @@ fn collect_corrections_text(collector: &mut Collector, text: &str, limit: usize)
             }
         }
     }
+}
+
+fn is_exact_lay_undo(value: &Value) -> bool {
+    let Some(from) = value.get("from").and_then(Value::as_str) else {
+        return false;
+    };
+    let Some(to) = value.get("to").and_then(Value::as_str) else {
+        return false;
+    };
+    let Some(lay_from) = value.get("lay_from").and_then(Value::as_str) else {
+        return false;
+    };
+    let Some(lay_to) = value.get("lay_to").and_then(Value::as_str) else {
+        return false;
+    };
+    normalized_transition_side(from) == normalized_transition_side(lay_to)
+        && normalized_transition_side(to) == normalized_transition_side(lay_from)
+}
+
+fn normalized_transition_side(text: &str) -> String {
+    text.split_whitespace().collect::<Vec<_>>().join(" ")
 }
 
 fn pair_from_recent(value: &Value, signal: &'static str) -> Option<DirtyLogPair> {
@@ -1379,7 +1403,10 @@ fn classify_operation(
     source_id: &str,
     error_class: &str,
 ) -> String {
-    if source_id.contains("layout") || error_class == "layout" {
+    if source_id.contains("layout")
+        || error_class == "layout"
+        || is_exact_layout_projection(original, expected)
+    {
         return "layout".to_string();
     }
     if word_count_changed(original, expected) {
@@ -1436,7 +1463,69 @@ fn train_role_and_quarantine(
     {
         return ("review".to_string(), "wide_context_pair".to_string());
     }
+    if signal != "manual_layout_replay" && !positive_pair_is_trainable(original, expected) {
+        return (
+            "review".to_string(),
+            "nonlocal_user_edit_not_candidate_evidence".to_string(),
+        );
+    }
     ("positive".to_string(), String::new())
+}
+
+fn positive_pair_is_trainable(original: &str, expected: &str) -> bool {
+    let original_words = normalized_words(original);
+    let expected_words = normalized_words(expected);
+    if original_words.is_empty() || original_words.len() != expected_words.len() {
+        return false;
+    }
+    let changed = original_words
+        .iter()
+        .zip(&expected_words)
+        .filter(|(left, right)| left != right)
+        .collect::<Vec<_>>();
+    let [(original_word, expected_word)] = changed.as_slice() else {
+        return false;
+    };
+    let min_len = original_word
+        .chars()
+        .count()
+        .min(expected_word.chars().count());
+    if min_len < 3 {
+        return false;
+    }
+    if is_exact_layout_projection(original_word, expected_word) {
+        return true;
+    }
+    if has_mixed_layout(original_word) || has_mixed_layout(expected_word) {
+        return false;
+    }
+    let distance = lay::text_metrics::damerau_levenshtein(original_word, expected_word);
+    let max_distance = if min_len >= 7 { 3 } else { 2 };
+    !known_training_surface(original_word)
+        && known_training_surface(expected_word)
+        && distance <= max_distance
+        && original_word
+            .chars()
+            .count()
+            .abs_diff(expected_word.chars().count())
+            <= 2
+}
+
+fn is_exact_layout_projection(original: &str, expected: &str) -> bool {
+    let original = original.trim();
+    let expected = expected.trim();
+    !original.is_empty()
+        && !expected.is_empty()
+        && lay::dict::convert(original, lay::dict::detect_direction(original))
+            .eq_ignore_ascii_case(expected)
+}
+
+fn known_training_surface(word: &str) -> bool {
+    let lower = word.to_lowercase();
+    lay::russian_lexicon::is_known_russian_word_or_form(&lower)
+        || lay::lexicon::is_common_ru_word(&lower)
+        || lay::lexicon::is_common_en_technical_word(&lower)
+        || lay::lexicon::is_ru_technical_loanword(&lower)
 }
 
 fn manual_layout_train_role(original: &str, expected: &str) -> (String, String) {
@@ -1566,6 +1655,16 @@ mod tests {
         let text = r#"{"ts":2,"kind":"user-correction","from":"рвено ","to":"верно ","replace_words":1,"lay_kind":"typing-assist","lay_from":"верно ","lay_to":"рвено "}"#;
         let mut collector = Collector::default();
         collect_corrections_text(&mut collector, text, 100);
+        assert_eq!(collector.pairs.len(), 1);
+        assert_eq!(collector.by_signal.get("user_accepted_fix"), None);
+        assert_eq!(collector.by_signal["user_rejected_lay_output"], 1);
+    }
+
+    #[test]
+    fn non_inverse_user_correction_keeps_positive_feedback() {
+        let text = r#"{"ts":2,"kind":"user-correction","from":"рвено ","to":"верно ","replace_words":1,"lay_kind":"typing-assist","lay_from":"ревно ","lay_to":"рвено "}"#;
+        let mut collector = Collector::default();
+        collect_corrections_text(&mut collector, text, 100);
         assert_eq!(collector.pairs.len(), 2);
         assert_eq!(collector.by_signal["user_accepted_fix"], 1);
         assert_eq!(collector.by_signal["user_rejected_lay_output"], 1);
@@ -1654,5 +1753,33 @@ mod tests {
         assert_eq!(events.len(), 1);
         assert_eq!(events[0]["word"], "опусы");
         assert_eq!(events[0]["context"], serde_json::json!(["как"]));
+    }
+
+    #[test]
+    fn broad_user_rewrite_is_review_not_positive_training() {
+        for (original, expected) in [("воздействиям ", "Все "), ("вот ", "что ")]
+        {
+            let (role, reason) = train_role_and_quarantine(
+                "user_accepted_fix",
+                "typing-assist",
+                original,
+                expected,
+                "surface_typo",
+            );
+
+            assert_eq!(role, "review", "{original:?} -> {expected:?}");
+            assert_eq!(
+                reason, "nonlocal_user_edit_not_candidate_evidence",
+                "{original:?} -> {expected:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn local_typo_and_layout_remain_positive_training() {
+        for (original, expected) in [("звгрузи ", "загрузи "), ("ghbdtn ", "привет ")]
+        {
+            assert!(positive_pair_is_trainable(original, expected));
+        }
     }
 }
