@@ -36,6 +36,7 @@ pub(crate) fn warm_up_surface_motif_memory() {
 pub(crate) fn warm_up_ime_word_candidate_memory() {
     // Live IME must not pay cold OnceLock construction during the first word.
     warm_up_surface_motif_memory();
+    let _ = super::l2_surface_foundation_contains("и");
     super::super::l2_surface_decoder::warm_up();
 }
 

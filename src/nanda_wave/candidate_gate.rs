@@ -265,6 +265,7 @@ pub fn live_completion_candidates(
                 usage,
                 context_usage,
                 accepted,
+                completed_state_known: l2::l2_surface_foundation_contains(&candidate.surface),
             }) {
                 return None;
             }
@@ -712,6 +713,7 @@ struct LiveSuffixAuthority<'a> {
     usage: f32,
     context_usage: f32,
     accepted: u32,
+    completed_state_known: bool,
 }
 
 fn live_suffix_has_display_authority(input: LiveSuffixAuthority<'_>) -> bool {
@@ -721,7 +723,8 @@ fn live_suffix_has_display_authority(input: LiveSuffixAuthority<'_>) -> bool {
     if matches!(input.suffix, "и" | "я") {
         return true;
     }
-    input.accepted >= 2
+    input.completed_state_known
+        || input.accepted >= 2
         || input.context_usage >= 0.060
         || input.usage >= 0.095
         || (input.score >= 0.90 && input.structural >= 0.46)
@@ -909,6 +912,7 @@ mod tests {
             usage: 0.0,
             context_usage: 0.0,
             accepted: 0,
+            completed_state_known: false,
         }));
         assert!(live_suffix_has_display_authority(LiveSuffixAuthority {
             suffix_len: 1,
@@ -918,7 +922,29 @@ mod tests {
             usage: 0.10,
             context_usage: 0.0,
             accepted: 2,
+            completed_state_known: false,
         }));
+        assert!(live_suffix_has_display_authority(LiveSuffixAuthority {
+            suffix_len: 1,
+            suffix: "й",
+            score: 0.55,
+            structural: 0.30,
+            usage: 0.0,
+            context_usage: 0.0,
+            accepted: 0,
+            completed_state_known: true,
+        }));
+    }
+
+    #[test]
+    fn l2_known_state_completion_outranks_longer_prefix_branch() {
+        super::super::warm_up_l2_for_ime();
+        let candidates = live_completion_candidates(request("Мы с ", "тобо"));
+
+        assert_eq!(
+            candidates.first().map(|item| item.surface.as_str()),
+            Some("тобой")
+        );
     }
 
     #[test]

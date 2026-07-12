@@ -133,8 +133,10 @@ impl LayIbusEngine {
 }
 
 fn is_complete_russian_word(word: &str) -> bool {
-    lay::russian_lexicon::is_known_russian_word_or_form(word)
-        || lay::lexicon::is_common_ru_word(word)
+    lay::lexicon::is_common_ru_word(word)
+        || (word.chars().count() >= 5
+            && (lay::russian_lexicon::is_known_russian_word_or_form(word)
+                || lay::lexicon::is_ime_hot_ru_word(word)))
 }
 
 #[cfg(test)]
