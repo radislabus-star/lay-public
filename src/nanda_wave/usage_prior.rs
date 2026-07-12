@@ -1412,8 +1412,11 @@ fn transition_lookup_keys_from_context_keys(
     word: &str,
 ) -> Vec<String> {
     let mut keys = Vec::new();
-    let mut contexts = context_keys.to_vec();
-    contexts.push(String::new());
+    let contexts = if context_keys.is_empty() {
+        vec![String::new()]
+    } else {
+        context_keys.to_vec()
+    };
     for context_key in contexts {
         keys.push(transition_key(
             &context_key,
@@ -1844,6 +1847,28 @@ mod tests {
         assert!(rejected.transition.state_specific);
         assert!(fallback.transition.attraction > 0.0);
         assert!(!fallback.transition.state_specific);
+    }
+
+    #[test]
+    fn context_rejection_does_not_leak_into_empty_context_transition() {
+        let usage = snapshot_from_usage_events_for_tests(
+            r#"{"ts":1,"kind":"accepted_fix","word":"проверь","from":"ghjdthm","to":"проверь","source":"manual_layout_replay","operation":"layout"}
+{"ts":2,"kind":"rejected_candidate","word":"проверь","context":["gfzvnm"],"from":"gfzvnm ghjdthm","to":"gfzvnm проверь","source":"typing-assist","operation":"mixed_layout"}
+"#,
+        );
+        let state = crate::transition_relation::transition_state_id("ghjdthm");
+
+        let empty = usage.hot_readout(&[], "layout", "layout", &state, "проверь");
+        let contextual = usage.hot_readout(
+            &["gfzvnm".to_string()],
+            "layout",
+            "mixed_layout",
+            &state,
+            "проверь",
+        );
+
+        assert!(empty.transition.attraction > empty.transition.repulsion);
+        assert!(contextual.transition.repulsion > contextual.transition.attraction);
     }
 
     #[test]

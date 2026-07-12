@@ -71,6 +71,17 @@ fn run_l3_inner(
     }
 
     let Some(candidate) = best_apply else {
+        traces.extend(candidates.iter().take(8).filter_map(|candidate| {
+            apply_candidate_blocker(original, candidate, options, phrase_memory).map(|blocker| {
+                LayerTrace {
+                    name: "L3AdmissionCell32",
+                    summary: format!(
+                        "candidate source={} text={:?} blocker={blocker}",
+                        candidate.source, candidate.text
+                    ),
+                }
+            })
+        }));
         return (
             traces,
             WaveDecision::Keep {
@@ -255,13 +266,9 @@ fn best_apply_candidate<'a>(
 ) -> Option<&'a WordCandidate> {
     candidates
         .iter()
-        .filter(|candidate| apply_source_enabled(candidate.source, options))
-        .filter(|candidate| !semantic_candidate_lacks_surface_authority(original, candidate))
-        .filter(|candidate| !word_form_candidate_lacks_autocorrect_authority(original, candidate))
-        .filter(|candidate| !completion_candidate_lacks_autocorrect_authority(original, candidate))
-        .filter(|candidate| !candidate_lacks_transition_authority(original, candidate))
-        .filter(|candidate| !candidate_l4_signed_memory_vetoes_apply(original, candidate))
-        .filter(|candidate| !phrase_gate_suppresses(original, &candidate.text, phrase_memory))
+        .filter(|candidate| {
+            apply_candidate_blocker(original, candidate, options, phrase_memory).is_none()
+        })
         .fold(None, |best: Option<(&'a WordCandidate, f32)>, candidate| {
             let score = l3_rank_score(original, candidate, phrase_memory);
             match best {
@@ -272,6 +279,36 @@ fn best_apply_candidate<'a>(
             }
         })
         .map(|(candidate, _score)| candidate)
+}
+
+fn apply_candidate_blocker(
+    original: &str,
+    candidate: &WordCandidate,
+    options: &WaveOptions,
+    phrase_memory: Option<&llmwave::LlmWaveMemory>,
+) -> Option<&'static str> {
+    if !apply_source_enabled(candidate.source, options) {
+        return Some("source_disabled");
+    }
+    if semantic_candidate_lacks_surface_authority(original, candidate) {
+        return Some("semantic_surface_authority");
+    }
+    if word_form_candidate_lacks_autocorrect_authority(original, candidate) {
+        return Some("word_form_authority");
+    }
+    if completion_candidate_lacks_autocorrect_authority(original, candidate) {
+        return Some("completion_suggest_only");
+    }
+    if let Some(reason) = candidate_transition_authority_blocker(original, candidate) {
+        return Some(reason);
+    }
+    if candidate_l4_signed_memory_vetoes_apply(original, candidate) {
+        return Some("l4_signed_memory");
+    }
+    if phrase_gate_suppresses(original, &candidate.text, phrase_memory) {
+        return Some("phrase_gate");
+    }
+    None
 }
 
 fn confidence(candidate: &WordCandidate) -> f32 {
@@ -370,7 +407,10 @@ fn word_form_candidate_lacks_autocorrect_authority(
             || !crate::lexicon::is_common_ru_word(&replacement_lower))
 }
 
-fn candidate_lacks_transition_authority(original: &str, candidate: &WordCandidate) -> bool {
+fn candidate_transition_authority_blocker(
+    original: &str,
+    candidate: &WordCandidate,
+) -> Option<&'static str> {
     let error_class = nanda_candidate_error_class(candidate.source);
     let provisional = CandidateGateDecision {
         action: CandidateGateAction::Apply,
@@ -384,7 +424,7 @@ fn candidate_lacks_transition_authority(original: &str, candidate: &WordCandidat
         candidate.source,
         provisional,
     );
-    gate.action != CandidateGateAction::Apply
+    (gate.action != CandidateGateAction::Apply).then_some(gate.reason)
 }
 
 fn nanda_candidate_error_class(source: &str) -> TypingErrorClass {
@@ -800,6 +840,21 @@ mod tests {
         };
         let (_trace, decision) = run_l3("html djn ", &[candidate]);
         assert_eq!(decision.output(), Some("html вот "));
+    }
+
+    #[test]
+    fn applies_verified_single_word_layout_candidate() {
+        let candidate = WordCandidate {
+            text: "проверь".to_string(),
+            source: "LayoutWordCell32",
+            energy: 1.0,
+            risk: 0.05,
+            support: vec![],
+        };
+
+        let (_trace, decision) = run_l3("ghjdthm", &[candidate]);
+
+        assert_eq!(decision.output(), Some("проверь"));
     }
 
     #[test]
