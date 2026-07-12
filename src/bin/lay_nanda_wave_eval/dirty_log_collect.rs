@@ -1239,20 +1239,21 @@ fn rejected_usage_events(pair: &DirtyLogPair) -> Vec<Value> {
     if rejected_words.is_empty() {
         return Vec::new();
     }
-    let context = previous_context_words(&pair.original);
-    rejected_words
+    let original_words = normalized_words(&pair.original);
+    changed_word_indexes(&original_words, &rejected_words)
         .into_iter()
-        .map(|word| {
-            json!({
+        .filter_map(|index| {
+            let word = rejected_words.get(index)?;
+            Some(json!({
                 "ts": pair.ts,
                 "kind": "rejected_candidate",
                 "word": word,
-                "context": context,
+                "context": words_before_index(&original_words, index.min(original_words.len())),
                 "from": pair.original.trim(),
                 "to": pair.expected.trim(),
                 "source": pair.source_id,
                 "operation": pair.operation
-            })
+            }))
         })
         .collect()
 }
@@ -1276,19 +1277,6 @@ fn words_before_index(words: &[String], index: usize) -> Vec<String> {
         .rev()
         .take(5)
         .cloned()
-        .collect::<Vec<_>>()
-        .into_iter()
-        .rev()
-        .collect()
-}
-
-fn previous_context_words(text: &str) -> Vec<String> {
-    let mut words = normalized_words(text);
-    words.pop();
-    words
-        .into_iter()
-        .rev()
-        .take(5)
         .collect::<Vec<_>>()
         .into_iter()
         .rev()
@@ -1648,5 +1636,23 @@ mod tests {
         assert_eq!(latest.len(), 1);
         assert_eq!(latest[0].train_role, "positive");
         assert_eq!(latest[0].ts, 2);
+    }
+
+    #[test]
+    fn rejected_usage_records_only_the_changed_candidate_word() {
+        let value = serde_json::json!({
+            "ts": 3,
+            "lay_kind": "typing-assist",
+            "lay_from": "как попусы ",
+            "lay_to": "как опусы "
+        });
+        let pair = pair_from_correction(&value, "user_rejected_lay_output", "lay_from", "lay_to")
+            .expect("negative pair");
+
+        let events = rejected_usage_events(&pair);
+
+        assert_eq!(events.len(), 1);
+        assert_eq!(events[0]["word"], "опусы");
+        assert_eq!(events[0]["context"], serde_json::json!(["как"]));
     }
 }
