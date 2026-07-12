@@ -9,6 +9,7 @@ use crate::correction_core::{CandidateGateAction, CandidateGateDecision, TypingE
 use crate::correction_source_contract::{self, CorrectionSourceRole};
 use crate::text_metrics::damerau_levenshtein;
 use crate::typing_transition::decision::TransitionDecisionCore;
+use crate::word_reader::last_text_word_slice;
 
 pub fn run_l3(original: &str, candidates: &[WordCandidate]) -> (Vec<LayerTrace>, WaveDecision) {
     run_l3_with_options(original, candidates, &WaveOptions::default())
@@ -615,7 +616,7 @@ fn previous_context_has_cyrillic(text: &str) -> bool {
 }
 
 fn last_token(text: &str) -> Option<&str> {
-    text.split_whitespace().next_back()
+    last_text_word_slice(text)
 }
 
 fn is_cyrillic_char(ch: char) -> bool {
@@ -827,6 +828,22 @@ mod tests {
 
         assert!(l4_signed_signal_vetoes(&signal));
         assert!(l4_signed_bias(&signal) < 0.0);
+    }
+
+    #[test]
+    fn punctuation_does_not_hide_word_form_authority() {
+        let candidate = WordCandidate {
+            text: " отстранилась!".to_string(),
+            source: LEXICAL_ATTRACTOR_CELL,
+            energy: 0.95,
+            risk: 0.10,
+            support: vec![],
+        };
+
+        assert!(!word_form_candidate_lacks_autocorrect_authority(
+            " отсранилась! ",
+            &candidate,
+        ));
     }
 
     #[test]

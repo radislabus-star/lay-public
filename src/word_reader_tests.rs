@@ -10,6 +10,7 @@ fn reads_edge_whitespace_and_token_punctuation() {
 #[test]
 fn reads_and_replaces_last_text_word_without_touching_boundaries() {
     assert_eq!(last_text_word("  ну привет, "), Some("привет".to_string()));
+    assert_eq!(last_text_word_slice("  ну привет! "), Some("привет"));
     assert_eq!(
         replace_last_text_word("  ну привет, ", "здравствуй").as_deref(),
         Some("  ну здравствуй, ")

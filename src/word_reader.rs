@@ -108,7 +108,7 @@ pub fn split_last_alphabetic_token(text: &str) -> Option<(&str, &str)> {
     (!token.is_empty()).then_some((prefix, token))
 }
 
-pub(crate) fn last_text_word(text: &str) -> Option<String> {
+pub(crate) fn last_text_word_slice(text: &str) -> Option<&str> {
     split_ws_segments(text)
         .into_iter()
         .rev()
@@ -117,8 +117,12 @@ pub(crate) fn last_text_word(text: &str) -> Option<String> {
                 return None;
             }
             let (_, word, _) = split_word_punctuation(segment);
-            (!word.is_empty()).then(|| word.to_string())
+            (!word.is_empty()).then_some(word)
         })
+}
+
+pub(crate) fn last_text_word(text: &str) -> Option<String> {
+    last_text_word_slice(text).map(str::to_string)
 }
 
 pub(crate) fn replace_last_text_word(text: &str, replacement_word: &str) -> Option<String> {
