@@ -1226,6 +1226,24 @@ mod tests {
     }
 
     #[test]
+    fn adjacent_transposition_cannot_rewrite_l2_known_word_without_state_proof() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "Мы с тобой ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert!(resolution.selected.is_none());
+        assert!(resolution.decision.is_none());
+        assert!(!resolution.candidates.is_empty());
+        assert!(resolution.candidates.iter().all(|candidate| {
+            candidate.gate.action != CandidateGateAction::Apply
+                && candidate.gate.reason == "known_current_word_surface_drift"
+        }));
+    }
+
+    #[test]
     fn future_auxiliary_blocks_non_infinitive_typo_candidate() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(

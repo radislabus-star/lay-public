@@ -164,6 +164,7 @@ fn current_word_is_known(word: &str) -> bool {
     }
     let lower = word.to_lowercase();
     crate::russian_lexicon::is_known_russian_word_or_form(&lower)
+        || crate::nanda_wave::l2::l2_surface_foundation_contains(&lower)
         || word_has_common_usage_authority(&lower)
         || is_ascii_technical_token(word)
 }
