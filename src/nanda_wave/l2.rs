@@ -20,6 +20,7 @@ use super::context::{TailContext, TokenKind};
 use super::feedback::{apply_l3_feedback, L3Feedback};
 use super::l2_center_memory::{L2CenterMemory, L2CenterMemoryConfig};
 use super::lexical_attractor::{lexical_attractor_candidates, LEXICAL_ATTRACTOR_CELL};
+use super::llmwave;
 use super::options::WaveOptions;
 use super::signal::{WavePacket, WordCandidate};
 
@@ -593,10 +594,12 @@ fn layout_candidate(
     if converted == token {
         return None;
     }
+    let learned_transition = learned_layout_transition_accepts(prefix, token, &converted);
     if context.token_count() < 2
         && token.chars().count() > 3
         && !is_common_en_technical_word(&converted.to_ascii_lowercase())
         && !strong_autoswitch
+        && !learned_transition
     {
         return None;
     }
@@ -605,10 +608,10 @@ fn layout_candidate(
     {
         return None;
     }
-    if !layout_candidate_allowed(token, &converted, strong_autoswitch) {
+    if !layout_candidate_allowed(token, &converted, strong_autoswitch, learned_transition) {
         return None;
     }
-    if !language_allows_layout(token, &converted) {
+    if !language_allows_layout(token, &converted, learned_transition) {
         return None;
     }
     let energy = l1_energy(l1, "KeyboardCell32").max(0.35);
@@ -654,9 +657,10 @@ fn layout_scan_candidates(
         let Some((converted, strong_autoswitch)) = layout_converted_token(token) else {
             continue;
         };
+        let learned_transition = learned_layout_transition_accepts(prefix, token, &converted);
         if converted == token
-            || !layout_candidate_allowed(token, &converted, strong_autoswitch)
-            || !language_allows_layout(token, &converted)
+            || !layout_candidate_allowed(token, &converted, strong_autoswitch, learned_transition)
+            || !language_allows_layout(token, &converted, learned_transition)
         {
             continue;
         }
@@ -706,7 +710,10 @@ fn layout_converted_token(token: &str) -> Option<(String, bool)> {
     (converted != token).then_some((converted, false))
 }
 
-fn language_allows_layout(token: &str, converted: &str) -> bool {
+fn language_allows_layout(token: &str, converted: &str, learned_transition: bool) -> bool {
+    if learned_transition {
+        return true;
+    }
     let token_ascii = token.chars().all(|ch| ch.is_ascii_alphabetic());
     let converted_cyrillic = converted.chars().all(is_cyrillic_letter);
     if token_ascii && converted_cyrillic {
@@ -1099,8 +1106,13 @@ fn clean_ru_token(token: &str) -> String {
         .to_lowercase()
 }
 
-fn layout_candidate_allowed(token: &str, converted: &str, strong_autoswitch: bool) -> bool {
-    if strong_autoswitch {
+fn layout_candidate_allowed(
+    token: &str,
+    converted: &str,
+    strong_autoswitch: bool,
+    learned_transition: bool,
+) -> bool {
+    if strong_autoswitch || learned_transition {
         return true;
     }
     let token_ascii = token.chars().all(|ch| ch.is_ascii_alphabetic());
@@ -1119,6 +1131,16 @@ fn layout_candidate_allowed(token: &str, converted: &str, strong_autoswitch: boo
         return is_common_en_technical_word(&converted.to_ascii_lowercase());
     }
     false
+}
+
+fn learned_layout_transition_accepts(prefix: &str, token: &str, converted: &str) -> bool {
+    let context = llmwave::tokenize(prefix);
+    let state = crate::transition_relation::transition_state_id(&format!("{prefix}{token}"));
+    let usage = super::usage_prior::cached_usage_prior_snapshot();
+    let transition = usage
+        .hot_readout(&context, "LayoutWordCell32", "layout", &state, converted)
+        .transition;
+    transition.state_specific && transition.attract_count > transition.repel_count
 }
 
 fn technical_keep_candidate(token: &str, l1: &[WavePacket]) -> Option<WordCandidate> {
@@ -1775,6 +1797,12 @@ fn candidate_support(l1: &[WavePacket], context: &TailContext) -> Vec<String> {
 mod tests {
     use super::*;
     use crate::nanda_wave::l1::run_l1;
+
+    #[test]
+    fn accepted_transition_can_admit_unknown_layout_surface() {
+        assert!(!layout_candidate_allowed("полняй", "gjkyzq", false, false));
+        assert!(layout_candidate_allowed("полняй", "gjkyzq", false, true));
+    }
 
     #[test]
     fn layout_candidate_for_last_token() {

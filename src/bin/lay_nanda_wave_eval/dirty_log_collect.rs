@@ -320,7 +320,10 @@ fn collect_corrections_text(collector: &mut Collector, text: &str, limit: usize)
                     collector.corrections.skipped_pairs += 1;
                 }
             }
-            if value.get("lay_from").is_some() && value.get("lay_to").is_some() {
+            if value.get("lay_from").is_some()
+                && value.get("lay_to").is_some()
+                && !lay_output_matches_user_target(&value)
+            {
                 if let Some(pair) =
                     pair_from_correction(&value, "user_rejected_lay_output", "lay_from", "lay_to")
                 {
@@ -354,6 +357,16 @@ fn is_exact_lay_undo(value: &Value) -> bool {
     };
     normalized_transition_side(from) == normalized_transition_side(lay_to)
         && normalized_transition_side(to) == normalized_transition_side(lay_from)
+}
+
+fn lay_output_matches_user_target(value: &Value) -> bool {
+    let Some(to) = value.get("to").and_then(Value::as_str) else {
+        return false;
+    };
+    let Some(lay_to) = value.get("lay_to").and_then(Value::as_str) else {
+        return false;
+    };
+    normalized_transition_side(to) == normalized_transition_side(lay_to)
 }
 
 fn normalized_transition_side(text: &str) -> String {
@@ -772,6 +785,7 @@ struct ReplayBucket {
     no_l2_candidates: usize,
     expected_present: usize,
     expected_missing: usize,
+    expected_top1: usize,
     applied_expected: usize,
     present_not_applied: usize,
     applied_other: usize,
@@ -1030,6 +1044,7 @@ fn collect_phase_examples(
 struct ReplayOutcome {
     has_l2: bool,
     expected_present: bool,
+    expected_top1: bool,
     applied_expected: bool,
     applied_other: bool,
 }
@@ -1046,6 +1061,9 @@ impl ReplayBucket {
             self.expected_present += 1;
         } else {
             self.expected_missing += 1;
+        }
+        if outcome.expected_top1 {
+            self.expected_top1 += 1;
         }
         if outcome.applied_expected {
             self.applied_expected += 1;
@@ -1064,10 +1082,14 @@ fn replay_one(pair: &DirtyLogPair, trace: &lay::nanda_wave::WaveTrace) -> Replay
     let expected_present = trace.l2_candidates.iter().any(|candidate| {
         candidate_output_for_original(&pair.original, &candidate.text) == pair.expected
     });
+    let expected_top1 = trace.l2_candidates.first().is_some_and(|candidate| {
+        candidate_output_for_original(&pair.original, &candidate.text) == pair.expected
+    });
     let output = trace.output();
     ReplayOutcome {
         has_l2: !trace.l2_candidates.is_empty(),
         expected_present,
+        expected_top1,
         applied_expected: output == Some(pair.expected.as_str()),
         applied_other: output.is_some_and(|text| text != pair.expected),
     }
@@ -1112,7 +1134,13 @@ fn push_example(
         "decision": decision_label(&trace.decision),
         "output": trace.output().unwrap_or("keep"),
         "first_candidate": trace.l2_candidates.first().map(candidate_short),
-        "candidate_sources": trace.l2_candidates.iter().take(5).map(|candidate| candidate.source).collect::<Vec<_>>()
+        "candidate_sources": trace.l2_candidates.iter().take(8).map(|candidate| candidate.source).collect::<Vec<_>>(),
+        "candidate_ladder": trace.l2_candidates.iter().take(8).map(|candidate| json!({
+            "output": candidate_output_for_original(&pair.original, &candidate.text),
+            "source": candidate.source,
+            "energy": candidate.energy,
+            "risk": candidate.risk,
+        })).collect::<Vec<_>>()
     }));
 }
 
@@ -1138,7 +1166,8 @@ fn replay_report_json(
             "read_as": "quarantined pairs are not scored as positive authority"
         },
         "scoreboard": {
-            "positive_top1_percent": percent(report.positive.applied_expected, report.positive.cases),
+            "positive_top1_percent": percent(report.positive.expected_top1, report.positive.cases),
+            "positive_apply_accuracy_percent": percent(report.positive.applied_expected, report.positive.cases),
             "positive_candidate_coverage_percent": percent(report.positive.expected_present, report.positive.cases),
             "positive_present_but_not_applied": report.positive.present_not_applied,
             "negative_false_apply": report.negative.applied_expected,
@@ -1324,6 +1353,7 @@ fn replay_bucket_json(bucket: ReplayBucket) -> Value {
         "no_l2_candidates": bucket.no_l2_candidates,
         "expected_present": bucket.expected_present,
         "expected_missing": bucket.expected_missing,
+        "expected_top1": bucket.expected_top1,
         "applied_expected": bucket.applied_expected,
         "present_not_applied": bucket.present_not_applied,
         "applied_other": bucket.applied_other,
@@ -1668,6 +1698,18 @@ mod tests {
         assert_eq!(collector.pairs.len(), 2);
         assert_eq!(collector.by_signal["user_accepted_fix"], 1);
         assert_eq!(collector.by_signal["user_rejected_lay_output"], 1);
+    }
+
+    #[test]
+    fn matching_final_target_confirms_lay_output_instead_of_rejecting_it() {
+        let text = r#"{"ts":3,"kind":"user-correction","from":"гналом ","to":"сигналом ","replace_words":1,"lay_kind":"typing-assist","lay_from":"сиганлом ","lay_to":"сигналом "}"#;
+        let mut collector = Collector::default();
+        collect_corrections_text(&mut collector, text, 100);
+
+        assert_eq!(collector.pairs.len(), 1);
+        assert_eq!(collector.pairs[0].signal, "user_accepted_fix");
+        assert_eq!(collector.pairs[0].train_role, "positive");
+        assert_eq!(collector.by_signal.get("user_rejected_lay_output"), None);
     }
 
     #[test]

@@ -335,6 +335,12 @@ fn word_form_candidate_lacks_autocorrect_authority(
 
     let original_lower = original_word.to_lowercase();
     let replacement_lower = replacement_word.to_lowercase();
+    if candidate_l4_signed_signal(original, candidate).is_some_and(|signal| {
+        signal.transition_state_specific
+            && signal.transition_attract_count > signal.transition_repel_count
+    }) {
+        return false;
+    }
     let original_known = crate::russian_lexicon::is_known_russian_word_or_form(&original_lower)
         || crate::lexicon::is_common_ru_word(&original_lower);
     let replacement_known =
@@ -637,13 +643,32 @@ fn candidate_l4_signed_bias(original: &str, candidate: &WordCandidate) -> f32 {
     let Some(signal) = candidate_l4_signed_signal(original, candidate) else {
         return 0.0;
     };
-    (signal.signed_weight * 0.080).clamp(-0.080, 0.080)
+    l4_signed_bias(&signal)
 }
 
 fn candidate_l4_signed_memory_vetoes_apply(original: &str, candidate: &WordCandidate) -> bool {
     let Some(signal) = candidate_l4_signed_signal(original, candidate) else {
         return false;
     };
+    l4_signed_signal_vetoes(&signal)
+}
+
+fn l4_signed_bias(signal: &super::l4_signed_memory::L4SignedMemorySignal) -> f32 {
+    let global = signal.signed_weight * 0.060;
+    let transition = if signal.transition_state_specific {
+        (signal.transition_attraction - signal.transition_repulsion) * 0.90
+    } else {
+        0.0
+    };
+    (global + transition).clamp(-0.20, 0.20)
+}
+
+fn l4_signed_signal_vetoes(signal: &super::l4_signed_memory::L4SignedMemorySignal) -> bool {
+    if signal.transition_state_specific
+        && signal.transition_attract_count > signal.transition_repel_count
+    {
+        return false;
+    }
     let rejected_more_than_accepted = signal.rejected > signal.accepted;
     let transition_repel = signal.transition_repel_count > signal.transition_attract_count
         && signal.transition_repel_count > 0;
@@ -725,6 +750,44 @@ fn preserve_trailing_separator(original: &str, candidate: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn l4_signal() -> super::super::l4_signed_memory::L4SignedMemorySignal {
+        super::super::l4_signed_memory::L4SignedMemorySignal {
+            attraction: 0.10,
+            repulsion: 0.18,
+            signed_weight: -0.08,
+            accepted: 6,
+            rejected: 8,
+            transition_attraction: 0.10,
+            transition_repulsion: 0.0,
+            transition_attract_count: 6,
+            transition_repel_count: 0,
+            transition_state_specific: true,
+            reason: "learned_transition_attracts",
+            surface_status: "covered",
+        }
+    }
+
+    #[test]
+    fn exact_transition_acceptance_overrides_global_word_rejection() {
+        let signal = l4_signal();
+
+        assert!(!l4_signed_signal_vetoes(&signal));
+        assert!(l4_signed_bias(&signal) > 0.0);
+    }
+
+    #[test]
+    fn exact_transition_rejection_still_vetoes() {
+        let mut signal = l4_signal();
+        signal.transition_attraction = 0.0;
+        signal.transition_repulsion = 0.12;
+        signal.transition_attract_count = 0;
+        signal.transition_repel_count = 8;
+        signal.signed_weight = -0.20;
+
+        assert!(l4_signed_signal_vetoes(&signal));
+        assert!(l4_signed_bias(&signal) < 0.0);
+    }
 
     #[test]
     fn applies_confident_layout_candidate() {

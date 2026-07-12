@@ -174,6 +174,8 @@ pub(super) fn form_attractor_word_candidates(
 
     let context_tokens = llmwave::tokenize(prefix);
     let usage = usage_prior::cached_usage_prior_snapshot();
+    let transition_state =
+        crate::transition_relation::transition_state_id(&format!("{prefix}{token}"));
     let mut out = surface_motif_memory()
         .surface_candidates_for_text_with_usage(&normalized, 32, &usage)
         .into_iter()
@@ -188,7 +190,7 @@ pub(super) fn form_attractor_word_candidates(
                 &context_tokens,
                 LEXICAL_ATTRACTOR_CELL,
                 "replacement",
-                &normalized,
+                &transition_state,
                 &replacement_lower,
             );
             let signed_bonus =
@@ -222,7 +224,7 @@ pub(super) fn form_attractor_word_candidates(
                 + ((hot.rejected_prior + hot.context_rejected) * 0.24).clamp(0.0, 0.16)
                 - (hot.transition.attraction * 0.08).clamp(0.0, 0.06)
                 + (hot.transition.repulsion * 0.12).clamp(0.0, 0.10);
-            Some(surface_motif_candidate(SurfaceMotifCandidateInput {
+            let mut candidate = surface_motif_candidate(SurfaceMotifCandidateInput {
                 prefix,
                 leading,
                 word,
@@ -238,7 +240,9 @@ pub(super) fn form_attractor_word_candidates(
                 risk: risk.clamp(0.04, 0.40),
                 l1,
                 context,
-            }))
+            });
+            apply_learned_transition_pressure(&mut candidate, &hot.transition);
+            Some(candidate)
         })
         .collect::<Vec<_>>();
 
@@ -250,6 +254,22 @@ pub(super) fn form_attractor_word_candidates(
     out.dedup_by(|left, right| left.text == right.text);
     out.truncate(L2_FORM_ATTRACTOR_LIMIT);
     out
+}
+
+fn apply_learned_transition_pressure(
+    candidate: &mut WordCandidate,
+    transition: &usage_prior::UsageTransitionSignal,
+) {
+    let pressure = (transition.attraction - transition.repulsion).clamp(-0.32, 0.32);
+    if pressure == 0.0 {
+        return;
+    }
+    candidate.energy = (candidate.energy + pressure * 0.85).clamp(0.0, 1.0);
+    candidate.risk = (candidate.risk - pressure * 0.85).clamp(0.02, 0.48);
+    candidate.support.push(format!(
+        "l4-transition:pressure={pressure:.4} attract={} repel={} state_specific={}",
+        transition.attract_count, transition.repel_count, transition.state_specific
+    ));
 }
 
 pub(super) fn form_attractor_has_authority(
@@ -924,4 +944,49 @@ pub(super) fn collect_runtime_l2_text_words(
 
 pub(super) fn decode_fixture_spaces(text: &str) -> String {
     text.replace("\\s", " ")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn candidate() -> WordCandidate {
+        WordCandidate {
+            text: "исправление".to_string(),
+            source: LEXICAL_ATTRACTOR_CELL,
+            energy: 0.80,
+            risk: 0.20,
+            support: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn learned_transition_pressure_is_signed_and_symmetric() {
+        let mut attracted = candidate();
+        apply_learned_transition_pressure(
+            &mut attracted,
+            &usage_prior::UsageTransitionSignal {
+                attraction: 0.10,
+                attract_count: 6,
+                state_specific: true,
+                ..Default::default()
+            },
+        );
+
+        let mut repelled = candidate();
+        apply_learned_transition_pressure(
+            &mut repelled,
+            &usage_prior::UsageTransitionSignal {
+                repulsion: 0.10,
+                repel_count: 8,
+                state_specific: true,
+                ..Default::default()
+            },
+        );
+
+        assert!(attracted.energy > 0.80);
+        assert!(attracted.risk < 0.20);
+        assert!(repelled.energy < 0.80);
+        assert!(repelled.risk > 0.20);
+    }
 }
