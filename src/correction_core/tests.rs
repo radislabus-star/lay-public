@@ -1244,6 +1244,22 @@ mod tests {
     }
 
     #[test]
+    fn extra_letter_operator_cannot_damage_l2_backed_inflection() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "тысяч рублей ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert!(resolution.selected.is_none());
+        assert!(resolution.decision.is_none());
+        assert!(resolution.candidates.iter().all(|candidate| {
+            candidate.gate.action != CandidateGateAction::Apply
+        }));
+    }
+
+    #[test]
     fn future_auxiliary_blocks_non_infinitive_typo_candidate() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(

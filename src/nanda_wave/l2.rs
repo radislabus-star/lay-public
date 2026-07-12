@@ -164,11 +164,7 @@ pub fn ime_l2_word_candidates(
     let context_tokens = super::llmwave::tokenize(context_prefix);
     let usage = super::usage_prior::cached_usage_prior_snapshot();
     let mut candidates = surface_motif_memory()
-        .surface_candidates_for_text_with_usage(
-            &normalized,
-            limit.saturating_mul(4).max(limit),
-            &usage,
-        )
+        .completion_candidates_for_prefix_with_usage(&normalized, limit, &usage)
         .into_iter()
         .map(|candidate| {
             let candidate_len = candidate.word.chars().count();

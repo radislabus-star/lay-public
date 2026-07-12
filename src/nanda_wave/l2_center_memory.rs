@@ -102,7 +102,13 @@ impl L2CenterMemory {
     where
         I: IntoIterator<Item = &'a str>,
     {
-        let words = words.into_iter().map(str::to_string).collect::<Vec<_>>();
+        let mut words = words
+            .into_iter()
+            .map(normalize_surface)
+            .filter(|word| !word.is_empty())
+            .collect::<Vec<_>>();
+        words.sort_unstable();
+        words.dedup();
         let l1 = L1CenterMemory::build(words.iter().map(String::as_str), config.l1_config);
         let train_sequences = words
             .iter()
@@ -254,6 +260,7 @@ impl L2CenterMemory {
 
         let query_l1 = self.l1.center_sequence_for_word(&input_norm);
         let query_l2 = self.token_sequence_for_text(&input_norm);
+        let query_motifs = motif_tokens(&query_l2.tokens);
         if query_l1.center_refs.is_empty() && query_l2.tokens.is_empty() {
             return Vec::new();
         }
@@ -281,14 +288,12 @@ impl L2CenterMemory {
             .into_iter()
             .filter_map(|word_id| {
                 let word = self.source_words.get(word_id)?;
-                let word_norm = normalize_surface(word);
-                if word_norm.is_empty() || word_norm == input_norm {
+                if word == &input_norm {
                     return None;
                 }
                 let input_len = input_norm.chars().count();
-                let word_len = word_norm.chars().count();
-                let prefix_match =
-                    word_norm.starts_with(&input_norm) || input_norm.starts_with(&word_norm);
+                let word_len = word.chars().count();
+                let prefix_match = word.starts_with(&input_norm) || input_norm.starts_with(word);
                 let len_gap = input_len.abs_diff(word_len);
                 if (!prefix_match && len_gap > 4) || (prefix_match && len_gap > 16) {
                     return None;
@@ -298,11 +303,8 @@ impl L2CenterMemory {
                 let word_l2_tokens = self.token_refs_for_record(word_id);
                 let l1_overlap = overlap_count(&query_l1.center_refs, word_l1_refs);
                 let l2_overlap = overlap_count(&query_l2.tokens, word_l2_tokens);
-                let motif_overlap = overlap_count(
-                    &motif_tokens(&query_l2.tokens),
-                    &motif_tokens(word_l2_tokens),
-                );
-                let surface_distance = damerau_levenshtein(&input_norm, &word_norm);
+                let motif_overlap = overlap_count(&query_motifs, &motif_tokens(word_l2_tokens));
+                let surface_distance = damerau_levenshtein(&input_norm, word);
                 let mut score = candidate_score(
                     input_len,
                     word_len,
@@ -313,11 +315,11 @@ impl L2CenterMemory {
                     prefix_match,
                 );
                 if score > 0 {
-                    score = score.saturating_add(usage_score_boost(usage, &word_norm));
-                    score = score.saturating_add(surface_frequency_boost(&word_norm));
+                    score = score.saturating_add(usage_score_boost(usage, word));
+                    score = score.saturating_add(surface_frequency_boost(word));
                 }
                 (score > 0).then_some(L2SurfaceCandidate {
-                    word: word_norm,
+                    word: word.clone(),
                     score,
                     l1_overlap,
                     l2_overlap,
@@ -335,6 +337,83 @@ impl L2CenterMemory {
                 .then_with(|| right.l2_overlap.cmp(&left.l2_overlap))
                 .then_with(|| right.l1_overlap.cmp(&left.l1_overlap))
                 .then_with(|| left.word.len().cmp(&right.word.len()))
+                .then_with(|| left.word.cmp(&right.word))
+        });
+        candidates.dedup_by(|left, right| left.word == right.word);
+        candidates.truncate(limit);
+        candidates
+    }
+
+    #[must_use]
+    pub(super) fn completion_candidates_for_prefix_with_usage(
+        &self,
+        prefix: &str,
+        limit: usize,
+        usage: &super::usage_prior::UsagePriorSnapshot,
+    ) -> Vec<L2SurfaceCandidate> {
+        if limit == 0 {
+            return Vec::new();
+        }
+        let input_norm = normalize_surface(prefix);
+        if input_norm.is_empty() {
+            return Vec::new();
+        }
+        let query_l1 = self.l1.center_sequence_for_word(&input_norm);
+        let query_l2 = self.token_sequence_for_text(&input_norm);
+        let query_motifs = motif_tokens(&query_l2.tokens);
+        let mut candidate_ids = HashSet::new();
+        for token in unique_tokens(&query_l2.tokens) {
+            let Some(word_ids) = self.token_to_words.get(&token) else {
+                continue;
+            };
+            candidate_ids.extend(word_ids.iter().copied());
+        }
+
+        let input_len = input_norm.chars().count();
+        let mut candidates = candidate_ids
+            .into_iter()
+            .filter_map(|word_id| {
+                let word = self.source_words.get(word_id)?;
+                if !word.starts_with(&input_norm) || word == &input_norm {
+                    return None;
+                }
+                let word_len = word.chars().count();
+                let word_l1_refs = self.l1.center_refs_for_record(word_id);
+                let word_l2_tokens = self.token_refs_for_record(word_id);
+                let l1_overlap = overlap_count(&query_l1.center_refs, word_l1_refs);
+                let l2_overlap = overlap_count(&query_l2.tokens, word_l2_tokens);
+                let motif_overlap = overlap_count(&query_motifs, &motif_tokens(word_l2_tokens));
+                let mut score = candidate_score(
+                    input_len,
+                    word_len,
+                    word_len.saturating_sub(input_len),
+                    l1_overlap,
+                    l2_overlap,
+                    motif_overlap,
+                    true,
+                );
+                if score > 0 {
+                    score = score.saturating_add(usage_score_boost(usage, word));
+                    score = score.saturating_add(surface_frequency_boost(word));
+                }
+                (score > 0).then_some(L2SurfaceCandidate {
+                    word: word.clone(),
+                    score,
+                    l1_overlap,
+                    l2_overlap,
+                    motif_overlap,
+                    prefix_match: true,
+                })
+            })
+            .collect::<Vec<_>>();
+        candidates.sort_by(|left, right| {
+            right
+                .score
+                .cmp(&left.score)
+                .then_with(|| right.motif_overlap.cmp(&left.motif_overlap))
+                .then_with(|| right.l2_overlap.cmp(&left.l2_overlap))
+                .then_with(|| right.l1_overlap.cmp(&left.l1_overlap))
+                .then_with(|| left.word.chars().count().cmp(&right.word.chars().count()))
                 .then_with(|| left.word.cmp(&right.word))
         });
         candidates.dedup_by(|left, right| left.word == right.word);

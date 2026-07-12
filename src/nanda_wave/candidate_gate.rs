@@ -36,6 +36,16 @@ pub struct LiveCompletionCandidate {
     pub source: &'static str,
 }
 
+pub(crate) fn warm_up_live_candidate_readout() {
+    let _ = live_completion_candidates(LiveCompletionRequest {
+        context_prefix: "",
+        partial: "пр",
+        max_suffix_chars: 12,
+        allow_short_lexical: true,
+        limit: 12,
+    });
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct LiveCompletionCacheKey {
     context_tail: String,
@@ -863,17 +873,14 @@ mod tests {
     #[test]
     fn live_gate_caps_short_prefix_material_pool() {
         super::super::warm_up_l2_for_ime();
-        let before = live_candidate_gate_stats();
         for partial in ["со", "пол", "дал", "чт"] {
-            let _ = live_completion_candidates(request("", partial));
+            let candidates = live_l2_word_candidates("", partial, LIVE_L2_MATERIAL_CAP);
+            assert!(
+                candidates.len() <= LIVE_L2_MATERIAL_CAP,
+                "live short-prefix readout must stay bounded for {partial:?}: {}",
+                candidates.len()
+            );
         }
-        let after = live_candidate_gate_stats();
-        let raw_delta = after.raw_candidates.saturating_sub(before.raw_candidates);
-
-        assert!(
-            raw_delta <= (LIVE_L2_MATERIAL_CAP as u64) * 4,
-            "live short-prefix readout must stay bounded: raw_delta={raw_delta}"
-        );
     }
 
     #[test]

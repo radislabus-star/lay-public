@@ -279,6 +279,7 @@ pub fn warm_up_for_ime() {
 pub fn warm_up_l2_for_ime() {
     L2_IME_WARMUP_STARTED.store(true, std::sync::atomic::Ordering::Relaxed);
     l2::warm_up_ime_word_candidate_memory();
+    candidate_gate::warm_up_live_candidate_readout();
 }
 
 pub fn warm_up_l3_phrase_memory() {

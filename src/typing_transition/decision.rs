@@ -446,6 +446,11 @@ pub(crate) fn admit_hidden_transition(
         candidate_count,
     );
 
+    let exact_state_support = super::memory::TransitionMemory::has_exact_positive(
+        &event.original,
+        &candidate.replacement,
+        candidate.origin,
+    );
     if transition
         .state_before
         .candidate_imported_left_context(&transition.state_after_predicted)
@@ -471,7 +476,12 @@ pub(crate) fn admit_hidden_transition(
     if transition
         .state_before
         .known_word_drift_to(&transition.state_after_predicted)
-        && !known_word_drift_has_authority(source_role, candidate_count, strong_transition_support)
+        && !known_word_drift_has_authority(
+            source_role,
+            candidate_count,
+            strong_transition_support,
+            exact_state_support,
+        )
     {
         return TransitionAdmission {
             allow_apply: false,
@@ -512,11 +522,14 @@ fn known_word_drift_has_authority(
     source_role: CorrectionSourceRole,
     candidate_count: usize,
     strong_learned_support: bool,
+    exact_state_support: bool,
 ) -> bool {
-    matches!(
-        source_role,
-        CorrectionSourceRole::Layout | CorrectionSourceRole::Boundary
-    ) || (candidate_count >= 2 && strong_learned_support)
+    exact_state_support
+        || matches!(
+            source_role,
+            CorrectionSourceRole::Layout | CorrectionSourceRole::Boundary
+        )
+        || (candidate_count >= 2 && strong_learned_support)
 }
 
 fn short_same_length_surface_drift(original_word: &str, replacement: &str) -> bool {
@@ -895,6 +908,16 @@ mod tests {
         );
 
         assert!(admission.allow_apply, "{admission:?}");
+    }
+
+    #[test]
+    fn exact_state_proof_allows_single_learned_drift() {
+        assert!(super::known_word_drift_has_authority(
+            CorrectionSourceRole::DeterministicTypo,
+            1,
+            false,
+            true,
+        ));
     }
 
     #[test]

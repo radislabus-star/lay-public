@@ -11,6 +11,27 @@ impl TransitionMemory {
         replacement: &str,
         origin: crate::correction_source_contract::CandidateOrigin,
     ) -> bool {
+        Self::readout(original, replacement, origin)
+            .as_ref()
+            .is_none_or(signed_signal_allows_apply)
+    }
+
+    pub(crate) fn has_exact_positive(
+        original: &str,
+        replacement: &str,
+        origin: crate::correction_source_contract::CandidateOrigin,
+    ) -> bool {
+        Self::readout(original, replacement, origin).is_some_and(|signed| {
+            signed.transition_state_specific
+                && signed.transition_attract_count > signed.transition_repel_count
+        })
+    }
+
+    fn readout(
+        original: &str,
+        replacement: &str,
+        origin: crate::correction_source_contract::CandidateOrigin,
+    ) -> Option<crate::nanda_wave::l4_signed_memory::L4SignedMemorySignal> {
         let mut context = crate::correction_core::normalized_correction_words(original);
         context.pop();
         let word = crate::correction_core::normalized_correction_words(replacement)
@@ -18,7 +39,7 @@ impl TransitionMemory {
             .unwrap_or_default();
         let state_word = crate::transition_relation::transition_state_id(original);
         if word.is_empty() {
-            return true;
+            return None;
         }
         let usage = crate::nanda_wave::cached_usage_prior_snapshot();
         let signed = crate::nanda_wave::l4_signed_memory::l4_signed_memory_signal(
@@ -44,7 +65,7 @@ impl TransitionMemory {
                 signed.signed_weight
             );
         }
-        signed_signal_allows_apply(&signed)
+        Some(signed)
     }
 }
 

@@ -112,7 +112,6 @@ impl LatentTypingState {
 
     pub(crate) fn known_word_drift_to(&self, other: &Self) -> bool {
         self.current_word_known
-            && other.current_word_known
             && self.current_word_changed(other)
             && self.script == other.script
             && matches!(
@@ -165,6 +164,7 @@ fn current_word_is_known(word: &str) -> bool {
     let lower = word.to_lowercase();
     crate::russian_lexicon::is_known_russian_word_or_form(&lower)
         || crate::nanda_wave::l2::l2_surface_foundation_contains(&lower)
+        || crate::russian_lexicon::is_reference_backed_russian_form(&lower)
         || word_has_common_usage_authority(&lower)
         || is_ascii_technical_token(word)
 }
@@ -248,6 +248,15 @@ mod tests {
 
         assert!(before.context_changed(&after));
         assert!(before.word_count_changed(&after));
+    }
+
+    #[test]
+    fn l2_backed_inflection_cannot_drift_to_unknown_surface() {
+        let before = LatentTypingState::from_text("тысяч рублей ");
+        let after = LatentTypingState::from_text("тысяч рубей ");
+
+        assert!(before.current_word_known);
+        assert!(before.known_word_drift_to(&after));
     }
 
     #[test]
