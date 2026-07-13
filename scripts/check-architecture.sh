@@ -136,10 +136,9 @@ assert_live_correction_entrypoint_owned_by_input_gate() {
         --glob '!src/correction_pipeline.rs' \
         --glob '!src/input_gate.rs' \
         --glob '!src/main.rs' \
-        --glob '!src/**/tests.rs' \
-        --glob '!src/**/*tests.rs' \
-        --glob '!src/**/tests/**' \
-        --glob '!src/*_tests.rs' || true)"
+        || true)"
+    hits="$(printf '%s\n' "$hits" \
+      | grep -Ev '(_tests\.rs:|^src/.*/tests(\.rs:|/))' || true)"
   else
     hits="$(grep -RInF -- "$pattern" src || true)"
     hits="$(printf '%s\n' "$hits" \
@@ -159,15 +158,13 @@ assert_text_mutation_call_owners() {
   local hits
   if command -v rg >/dev/null 2>&1; then
     hits="$(rg -n --fixed-strings "$pattern" src \
-        --glob '!src/architecture_contract.rs' \
-        --glob '!src/**/tests.rs' \
-        --glob '!src/**/*tests.rs' \
-        --glob '!src/**/tests/**' \
-        --glob '!src/*_tests.rs' || true)"
+        || true)"
+    hits="$(printf '%s\n' "$hits" \
+      | grep -Ev '(^src/architecture_contract\.rs:|_tests\.rs:|^src/.*/tests(\.rs:|/))' || true)"
   else
     hits="$(grep -RInF -- "$pattern" src || true)"
     hits="$(printf '%s\n' "$hits" \
-      | grep -Ev '(_tests\.rs:|^src/.*/tests/)' || true)"
+      | grep -Ev '(^src/architecture_contract\.rs:|_tests\.rs:|^src/.*/tests(\.rs:|/))' || true)"
   fi
 
   local filtered=""
