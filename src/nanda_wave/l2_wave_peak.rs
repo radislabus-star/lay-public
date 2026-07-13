@@ -93,22 +93,17 @@ pub(crate) fn score_correction_peak(
 }
 
 pub(crate) fn score_live_completion_peak(
-    context_prefix: &str,
     partial: &str,
     surface: &str,
     structural: f32,
     usage_prior: f32,
     context_prior: f32,
     accepted_count: u32,
+    rejected: f32,
 ) -> L2WavePeakScore {
-    let surface = surface.to_lowercase();
-    let context = super::llmwave::tokenize(context_prefix);
-    let usage = super::cached_usage_prior_snapshot();
-    let rejected =
-        usage.rejected_word_prior(&surface) + usage.context_rejected_word_prior(&context, &surface);
-    let foundation = live_foundation_resonance(&surface);
-    let known = live_known_surface_mass(&surface);
-    let prefix_fit = prefix_fit_mass(partial, &surface);
+    let foundation = live_foundation_resonance(surface);
+    let known = live_known_surface_mass(surface);
+    let prefix_fit = prefix_fit_mass(partial, surface);
     let accepted = accepted_count.min(20) as f32 * 0.030;
     let positive = structural
         + prefix_fit
@@ -118,7 +113,7 @@ pub(crate) fn score_live_completion_peak(
         + usage_prior * 1.25
         + context_prior * 1.85;
     let negative = (rejected * 0.90).clamp(0.0, 0.45)
-        + live_completion_anti_wave(partial, &surface, prefix_fit);
+        + live_completion_anti_wave(partial, surface, prefix_fit);
     let uncertainty = peak_uncertainty(
         positive,
         negative,

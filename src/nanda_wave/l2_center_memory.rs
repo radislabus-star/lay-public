@@ -361,22 +361,49 @@ impl L2CenterMemory {
         let query_l1 = self.l1.center_sequence_for_word(&input_norm);
         let query_l2 = self.token_sequence_for_text(&input_norm);
         let query_motifs = motif_tokens(&query_l2.tokens);
-        let mut candidate_ids = HashSet::new();
+        let mut candidate_votes = HashMap::<usize, u16>::new();
         for token in unique_tokens(&query_l2.tokens) {
             let Some(word_ids) = self.token_to_words.get(&token) else {
                 continue;
             };
-            candidate_ids.extend(word_ids.iter().copied());
+            for word_id in word_ids.iter().copied() {
+                *candidate_votes.entry(word_id).or_default() += 1;
+            }
         }
-
+        let mut candidate_ids = candidate_votes
+            .into_iter()
+            .filter_map(|(word_id, votes)| {
+                let word = self.source_words.get(word_id)?;
+                (word.starts_with(&input_norm) && word != &input_norm).then(|| {
+                    (
+                        word_id,
+                        votes,
+                        crate::lexicon::is_common_ru_word(word),
+                        usage.word_prior(word),
+                        word.chars().count(),
+                    )
+                })
+            })
+            .collect::<Vec<_>>();
+        candidate_ids.sort_by(
+            |(left_id, left_votes, left_common, left_usage, left_len),
+             (right_id, right_votes, right_common, right_usage, right_len)| {
+                let left = self.source_words.get(*left_id).map_or("", String::as_str);
+                let right = self.source_words.get(*right_id).map_or("", String::as_str);
+                right_votes
+                    .cmp(left_votes)
+                    .then_with(|| right_common.cmp(left_common))
+                    .then_with(|| right_usage.total_cmp(left_usage))
+                    .then_with(|| left_len.cmp(right_len))
+                    .then_with(|| left.cmp(right))
+            },
+        );
+        candidate_ids.truncate(limit.saturating_mul(4).max(48));
         let input_len = input_norm.chars().count();
         let mut candidates = candidate_ids
             .into_iter()
-            .filter_map(|word_id| {
+            .filter_map(|(word_id, _votes, _common, _usage, _len)| {
                 let word = self.source_words.get(word_id)?;
-                if !word.starts_with(&input_norm) || word == &input_norm {
-                    return None;
-                }
                 let word_len = word.chars().count();
                 let word_l1_refs = self.l1.center_refs_for_record(word_id);
                 let word_l2_tokens = self.token_refs_for_record(word_id);

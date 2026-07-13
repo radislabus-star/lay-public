@@ -8,7 +8,7 @@ use crate::keyboard::is_cyrillic_letter;
 
 use super::l2::{self, L2ImeWordCandidateKind};
 use super::l4_goal_state::{derive_l4_scene_state, L4AllowedAction, L4SceneStateInput};
-use super::l4_signed_memory::{l4_signed_memory_signal, L4SignedMemoryInput};
+use super::l4_signed_memory::l4_signed_memory_signal_from_readout;
 use super::l4_signed_outcome::{l4_signed_outcome, L4OutcomePolarity, L4SignedOutcomeInput};
 use std::collections::VecDeque;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -151,6 +151,7 @@ pub fn live_completion_candidates(
         candidate_count: raw_count,
     });
     let usage_snapshot = super::usage_prior::cached_usage_prior_snapshot();
+    let usage_context = usage_snapshot.prepare_hot_context(&context_tokens);
     let state_id = crate::transition_relation::transition_state_id(&partial);
     let mut usage_supported = 0_u64;
     let mut l3_supported = 0_u64;
@@ -165,10 +166,16 @@ pub fn live_completion_candidates(
             if suffix.is_empty() || suffix_len > request.max_suffix_chars {
                 return None;
             }
-            let usage = usage_snapshot.word_prior(&candidate.surface);
-            let context_usage =
-                usage_snapshot.context_word_prior(&context_tokens, &candidate.surface);
-            let accepted = usage_snapshot.accepted_word_count(&candidate.surface);
+            let memory_readout = usage_snapshot.hot_readout_prepared(
+                &usage_context,
+                "L2LiveCandidateGate32",
+                "completion",
+                &state_id,
+                &candidate.surface,
+            );
+            let usage = memory_readout.word_prior;
+            let context_usage = memory_readout.context_prior;
+            let accepted = memory_readout.accepted_count;
             let common = crate::lexicon::is_common_ru_word(&candidate.surface);
             let l2_center_grounded =
                 !matches!(candidate.source, l2::L2ImeWordCandidateSource::PhaseDecoder);
@@ -193,15 +200,11 @@ pub fn live_completion_candidates(
             } else {
                 None
             };
-            let memory_signal = l4_signed_memory_signal(L4SignedMemoryInput {
-                context: &context_tokens,
-                source: "L2LiveCandidateGate32",
-                operation: "completion",
-                state_word: &state_id,
-                word: &candidate.surface,
-                usage: &usage_snapshot,
-                surface: None,
-            });
+            let rejected = memory_readout.rejected_prior + memory_readout.context_rejected;
+            let memory_signal = l4_signed_memory_signal_from_readout(
+                memory_readout,
+                super::usage_prior::UsageSurfaceCoverage::default(),
+            );
             let signed = l4_signed_outcome(L4SignedOutcomeInput {
                 scene: &scene_state,
                 candidate: &candidate.surface,
@@ -243,13 +246,13 @@ pub fn live_completion_candidates(
                 l4_scene_memory_supported = l4_scene_memory_supported.saturating_add(1);
             }
             let wave_peak = super::l2_wave_peak::score_live_completion_peak(
-                request.context_prefix,
                 &partial,
                 &candidate.surface,
                 structural,
                 usage,
                 context_usage,
                 accepted,
+                rejected,
             );
 
             let base_score = 0.22
@@ -909,6 +912,33 @@ mod tests {
                 "short-prefix candidates must preserve prefix for {partial:?}: {candidates:?}"
             );
         }
+    }
+
+    #[test]
+    fn unique_prefix_cache_misses_stay_under_hot_readout_budget() {
+        super::super::warm_up_l2_for_ime();
+        let mut timings = Vec::new();
+        for partial in ["пол", "цел", "рас", "оста", "дост", "остан"] {
+            let started = Instant::now();
+            let candidates = live_completion_candidates(request("проверяем скорость ", partial));
+            timings.push((partial, started.elapsed().as_micros(), candidates.len()));
+        }
+        let max_us = timings
+            .iter()
+            .map(|(_, elapsed_us, _)| *elapsed_us)
+            .max()
+            .unwrap_or_default();
+        let budget_us = if cfg!(debug_assertions) {
+            20_000
+        } else {
+            1_500
+        };
+        eprintln!("unique live prefix timings: {timings:?}; max={max_us}us");
+
+        assert!(
+            max_us <= budget_us,
+            "unique live prefix readout exceeded {budget_us}us: {timings:?}"
+        );
     }
 
     #[test]

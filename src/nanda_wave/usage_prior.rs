@@ -168,6 +168,11 @@ pub(crate) struct UsageHotReadout {
     pub(crate) transition: UsageTransitionSignal,
 }
 
+#[derive(Debug, Clone, Default)]
+pub(crate) struct UsageHotContext {
+    context_keys: Vec<String>,
+}
+
 impl UsagePriorSnapshot {
     pub(crate) fn surface_coverage(&self, surface: &str) -> UsageSurfaceCoverage {
         UsageSurfaceCoverage {
@@ -253,11 +258,29 @@ impl UsagePriorSnapshot {
         state_word: &str,
         word: &str,
     ) -> UsageHotReadout {
+        let prepared = self.prepare_hot_context(context);
+        self.hot_readout_prepared(&prepared, source, operation, state_word, word)
+    }
+
+    pub(crate) fn prepare_hot_context(&self, context: &[String]) -> UsageHotContext {
+        UsageHotContext {
+            context_keys: context_ngram_keys(context),
+        }
+    }
+
+    pub(crate) fn hot_readout_prepared(
+        &self,
+        context: &UsageHotContext,
+        source: &str,
+        operation: &str,
+        state_word: &str,
+        word: &str,
+    ) -> UsageHotReadout {
         let lower = normalize_word(word);
         if lower.is_empty() {
             return UsageHotReadout::default();
         }
-        let context_keys = context_ngram_keys(context);
+        let context_keys = &context.context_keys;
         UsageHotReadout {
             word_prior: self
                 .counts
@@ -268,7 +291,7 @@ impl UsagePriorSnapshot {
                 .unwrap_or_default(),
             context_prior: context_ngram_prior_from_keys(
                 &self.counts.context_words,
-                &context_keys,
+                context_keys,
                 &lower,
                 0.020,
             ),
@@ -281,7 +304,7 @@ impl UsagePriorSnapshot {
                 .unwrap_or_default(),
             context_rejected: context_ngram_prior_from_keys(
                 &self.counts.rejected_context_words,
-                &context_keys,
+                context_keys,
                 &lower,
                 0.012,
             ),
@@ -299,7 +322,7 @@ impl UsagePriorSnapshot {
                 .unwrap_or_default(),
             transition: transition_signal_from_counts_for_word(
                 &self.counts,
-                &context_keys,
+                context_keys,
                 source,
                 operation,
                 state_word,
@@ -1821,8 +1844,17 @@ mod tests {
             "проврить",
             "проверить",
         );
+        let prepared = usage.prepare_hot_context(&context);
+        let prepared_good = usage.hot_readout_prepared(
+            &prepared,
+            "autocorrect",
+            "replacement",
+            "проврить",
+            "проверить",
+        );
         let bad = usage.hot_readout(&context, "autocorrect", "auto_undo", "*", "проврить");
 
+        assert_eq!(prepared_good, good);
         assert!(good.accepted_count > 0);
         assert!(good.transition.attraction > good.transition.repulsion);
         assert!(bad.rejected_count > 0);

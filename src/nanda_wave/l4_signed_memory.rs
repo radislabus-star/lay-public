@@ -1,4 +1,4 @@
-use super::usage_prior::UsagePriorSnapshot;
+use super::usage_prior::{UsageHotReadout, UsagePriorSnapshot, UsageSurfaceCoverage};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub(crate) struct L4SignedMemorySignal {
@@ -39,6 +39,13 @@ pub(crate) fn l4_signed_memory_signal(input: L4SignedMemoryInput<'_>) -> L4Signe
         .surface
         .map(|surface| input.usage.surface_coverage(surface))
         .unwrap_or_default();
+    l4_signed_memory_signal_from_readout(readout, coverage)
+}
+
+pub(crate) fn l4_signed_memory_signal_from_readout(
+    readout: UsageHotReadout,
+    coverage: UsageSurfaceCoverage,
+) -> L4SignedMemorySignal {
     let surface_status = if coverage.rejected > coverage.accepted {
         "repelled"
     } else if coverage.accepted > 0 {
