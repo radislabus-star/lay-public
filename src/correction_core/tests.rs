@@ -1309,6 +1309,23 @@ mod tests {
     }
 
     #[test]
+    fn nanda_word_form_center_can_apply_nonlocal_composite_typo() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "Азейбарджан ",
+            &pipeline,
+            CorrectionMode::NandaOnly,
+        ));
+
+        let selected = resolution.selected.expect("selected L2 word-form center");
+        assert_eq!(selected.replacement, "Азербайджан ");
+        assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
+        assert_eq!(selected.source_id, "L2WordAttractorCell32");
+        assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
+        assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+    }
+
+    #[test]
     fn nanda_surface_drift_stays_out_of_autocorrect_apply() {
         let pipeline = default_typing_assist_pipeline();
         for (input, bad_replacement) in

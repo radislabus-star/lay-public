@@ -166,12 +166,6 @@ fn legacy_gate_candidate_with_source(
             reason: "semantic_wave_surface_authority_low",
         };
     }
-    if l2_surface_candidate_lacks_local_typo_proof(original, replacement, error_class, source_id) {
-        return CandidateGateDecision {
-            action: CandidateGateAction::SuggestOnly,
-            reason: "l2_surface_local_typo_proof_low",
-        };
-    }
     if error_class == TypingErrorClass::CompletionOnly {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
@@ -367,7 +361,7 @@ fn l3_context_gate(
             reason: "nanda_surface_unknown_word",
         });
     }
-    if let Some(decision) = l3_phrase_memory_gate(original, replacement, error_class) {
+    if let Some(decision) = l3_phrase_memory_gate(original, replacement, error_class, source_id) {
         return Some(decision);
     }
     None
@@ -377,6 +371,7 @@ fn l3_phrase_memory_gate(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
+    source_id: &str,
 ) -> Option<CandidateGateDecision> {
     if !l3_phrase_memory_applies_to(error_class) {
         return None;
@@ -387,10 +382,19 @@ fn l3_phrase_memory_gate(
             action: CandidateGateAction::Eligible,
             reason: "l3_phrase_memory_support",
         }),
-        L3PhraseGateDecision::Suppress => Some(CandidateGateDecision {
-            action: CandidateGateAction::KeepOriginal,
-            reason: "l3_phrase_memory_conflict",
-        }),
+        // Phrase memory contributes negative pressure in DecisionCore. It may
+        // veto its own context-generated proposal, but it must not erase an
+        // independently verified current-word transition from L2.
+        L3PhraseGateDecision::Suppress
+            if correction_source_contract::source_role(source_id)
+                == CorrectionSourceRole::L3Context =>
+        {
+            Some(CandidateGateDecision {
+                action: CandidateGateAction::KeepOriginal,
+                reason: "l3_phrase_memory_conflict",
+            })
+        }
+        L3PhraseGateDecision::Suppress => None,
         L3PhraseGateDecision::Neutral => None,
     }
 }
@@ -1020,56 +1024,6 @@ pub(super) fn semantic_wave_candidate_lacks_surface_authority(
         return false;
     }
     true
-}
-
-fn l2_surface_candidate_lacks_local_typo_proof(
-    original: &str,
-    replacement: &str,
-    error_class: TypingErrorClass,
-    source_id: &str,
-) -> bool {
-    if !correction_source_contract::is_surface_or_context_source(source_id)
-        || !matches!(
-            error_class,
-            TypingErrorClass::CompositeTypo
-                | TypingErrorClass::LetterSubstitution
-                | TypingErrorClass::GrammarAgreement
-        )
-    {
-        return false;
-    }
-    let Some(original_word) = last_text_word(original) else {
-        return true;
-    };
-    let Some(replacement_word) = last_text_word(replacement) else {
-        return true;
-    };
-    if !is_cyrillic_letters_only(&original_word) || !is_cyrillic_letters_only(&replacement_word) {
-        return false;
-    }
-
-    let original_lower = original_word.to_lowercase();
-    let replacement_lower = replacement_word.to_lowercase();
-    if original_lower == replacement_lower {
-        return false;
-    }
-    let distance = damerau_levenshtein(&original_lower, &replacement_lower);
-    if distance <= 1 {
-        return false;
-    }
-
-    let original_len = original_lower.chars().count();
-    let replacement_len = replacement_lower.chars().count();
-    let prefix = common_prefix_len(&original_lower, &replacement_lower);
-    if original_len >= 6
-        && replacement_len >= original_len
-        && distance >= 2
-        && prefix >= 2
-        && prefix + 3 < original_len.max(replacement_len)
-    {
-        return true;
-    }
-    false
 }
 
 fn l2_surface_candidate_truncates_to_stem_without_deletion_proof(
