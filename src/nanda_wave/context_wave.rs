@@ -150,9 +150,6 @@ fn nearest_ru_word_candidates(tail: &str) -> Vec<WordCandidate> {
     let Some((prefix, token)) = split_last_ws_token(trimmed) else {
         return Vec::new();
     };
-    if prefix.split_whitespace().next().is_none() {
-        return Vec::new();
-    }
     let normalized = normalize_ru(token);
     let len = normalized.chars().count();
     if !(4..=18).contains(&len) || known_ru_token_blocks_semantic_rewrite(&normalized) {
@@ -160,6 +157,9 @@ fn nearest_ru_word_candidates(tail: &str) -> Vec<WordCandidate> {
     }
     if normalized.chars().all(|ch| ch.is_ascii_alphabetic()) {
         return nearest_en_word_candidates(prefix, token, &normalized);
+    }
+    if prefix.split_whitespace().next().is_none() {
+        return Vec::new();
     }
     if !normalized.chars().all(is_cyrillic_letter) {
         return Vec::new();
@@ -801,7 +801,7 @@ fn en_word_to_candidate(
     let closeness = 1.0 - (distance as f32 / len as f32);
     WordCandidate {
         text: format!("{prefix}{word}"),
-        source: SEMANTIC_WORD_SOURCE,
+        source: super::lexical_attractor::LEXICAL_ATTRACTOR_CELL,
         energy: (0.44 + closeness * 0.20 + resonance * 0.14).clamp(0.0, 0.82),
         risk: (0.36 - closeness * 0.08 - resonance * 0.04).clamp(0.18, 0.40),
         support: vec![
@@ -1146,6 +1146,17 @@ mod tests {
                 .iter()
                 .any(|candidate| candidate.text == "this example"),
             "expected English wave memory candidate, got {candidates:?}"
+        );
+    }
+
+    #[test]
+    fn english_wave_candidate_does_not_require_left_context() {
+        let candidates = semantic_word_candidates("dowenload ");
+        assert!(
+            candidates
+                .iter()
+                .any(|candidate| candidate.text == "download"),
+            "single-token English typo must reach its same-script wave center: {candidates:?}"
         );
     }
 

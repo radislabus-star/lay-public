@@ -538,6 +538,28 @@ mod tests {
     }
 
     #[test]
+    fn english_word_centers_beat_more_expensive_cross_script_projections() {
+        let pipeline = default_typing_assist_pipeline();
+        for (original, expected) in [
+            ("dowenload ", "download "),
+            ("adress ", "address "),
+        ] {
+            let mut req = request(
+                original,
+                &pipeline,
+                CorrectionMode::DeterministicThenNanda,
+            );
+            req.nanda_wave_options = req.nanda_wave_options.with_l2_phase_apply(true);
+            let resolution = resolve_text_correction(req);
+            let decision = resolution
+                .decision
+                .unwrap_or_else(|| panic!("same-script candidate for {original:?}"));
+            assert_eq!(decision.replacement, expected, "input={original:?}");
+            assert_eq!(decision.source, CorrectionDecisionSource::Nanda);
+        }
+    }
+
+    #[test]
     fn composite_typo_repairs_known_russian_word() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
