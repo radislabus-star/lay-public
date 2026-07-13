@@ -13,7 +13,7 @@ impl TransitionMemory {
     ) -> bool {
         Self::readout(original, replacement, origin)
             .as_ref()
-            .is_none_or(signed_signal_allows_apply)
+            .map_or(true, signed_signal_allows_apply)
     }
 
     pub(crate) fn has_exact_positive(

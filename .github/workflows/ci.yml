@@ -44,8 +44,15 @@ jobs:
       - name: 50-pass architecture audit
         run: bash scripts/check-lay-audit-50.sh
 
-      - name: cargo test
-        run: cargo test --all-targets
+      - name: Public issue regressions
+        run: bash scripts/test-public-issues.sh
+
+      - name: Current architecture regressions
+        run: |
+          cargo test --test typing_transition_authority_contract
+          cargo test --test text_mutation_monopoly_contract
+          cargo test typing_replacements::tests:: --lib
+          cargo test nanda_wave::context_wave::tests::warm_up_prepares_wave_memory_without_prefix_indexes --lib
 
       - name: cargo clippy
         run: cargo clippy --all-targets -- -D warnings

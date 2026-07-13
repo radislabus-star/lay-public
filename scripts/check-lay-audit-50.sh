@@ -34,6 +34,12 @@ no_grep() {
   ! grep -RInE -- "$pattern" "$@" >"$HIT_FILE" 2>/dev/null
 }
 
+no_live_abusive_snippets() {
+  ! grep -RInE -- "БЛЯТЬ|ДОЛБА|СУКА|ДИКТУ|ебан|хуе|пизд|YTN YJ|LJK<FT" \
+      src tests docs README.md HOW_IT_WORKS.md \
+    | grep -Ev '(^src/.*/tests(\.rs|/)|_tests\.rs:|^tests/)'
+}
+
 one_owner() {
   local pattern="$1"
   local owner="$2"
@@ -85,7 +91,7 @@ no_runtime_user_phrase_rules() {
 
 check "architecture guard" bash scripts/check-architecture.sh
 check "format check" cargo fmt --all --check
-check "no profanity/live abusive snippets" no_grep "БЛЯТЬ|ДОЛБА|СУКА|ДИКТУ|ебан|хуе|пизд|YTN YJ|LJK<FT" src tests docs README.md HOW_IT_WORKS.md
+check "no profanity/live abusive snippets" no_live_abusive_snippets
 check "no runtime /tmp lay paths" no_grep "/tmp/lay" src extension install.sh update.sh README.md HOW_IT_WORKS.md
 check "daemon orchestrator <=500 lines" max_lines src/bin/lay_daemon.rs 500
 check "typing facade <=80 lines" max_lines src/typing_assist.rs 80

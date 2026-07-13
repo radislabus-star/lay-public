@@ -467,9 +467,7 @@ fn candidate_index_for_target(
     partial: &str,
     candidates: &[String],
 ) -> Option<usize> {
-    let Some(expected_suffix) = previous_target.strip_prefix(partial) else {
-        return None;
-    };
+    let expected_suffix = previous_target.strip_prefix(partial)?;
     candidates
         .iter()
         .position(|candidate| candidate == expected_suffix)
