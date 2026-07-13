@@ -34,6 +34,7 @@ pub struct LiveCompletionCandidate {
     pub suffix: String,
     pub score: f32,
     pub source: &'static str,
+    rank_score: f32,
 }
 
 pub(crate) fn warm_up_live_candidate_readout() {
@@ -263,10 +264,10 @@ pub fn live_completion_candidates(
                 + live_l4_scene_bias(scene_state.allowed_action, scene_state.confidence)
                 + live_l4_scene_memory_bias(scene_memory_score)
                 + live_l4_signed_bias(signed.signed_weight);
-            let score = l3_score
+            let rank_score = l3_score
                 .map(|score| score.max(base_score))
-                .unwrap_or(base_score)
-                .clamp(0.0, 1.0);
+                .unwrap_or(base_score);
+            let score = rank_score.clamp(0.0, 1.0);
             if !live_suffix_has_display_authority(LiveSuffixAuthority {
                 suffix_len,
                 suffix: &suffix,
@@ -285,14 +286,15 @@ pub fn live_completion_candidates(
                 suffix,
                 score,
                 source: "L2LiveCandidateGate32",
+                rank_score,
             })
         })
         .collect::<Vec<_>>();
 
     candidates.sort_by(|left, right| {
         right
-            .score
-            .total_cmp(&left.score)
+            .rank_score
+            .total_cmp(&left.rank_score)
             .then_with(|| {
                 left.suffix
                     .chars()
@@ -907,6 +909,20 @@ mod tests {
                 "short-prefix candidates must preserve prefix for {partial:?}: {candidates:?}"
             );
         }
+    }
+
+    #[test]
+    fn common_completion_outranks_rare_long_surface() {
+        super::super::warm_up_l2_for_ime();
+        let candidates = live_completion_candidates(request("подсказка не ", "оче"));
+
+        assert_eq!(
+            candidates
+                .first()
+                .map(|candidate| candidate.surface.as_str()),
+            Some("очень"),
+            "a stable common completion must outrank a rare long surface: {candidates:?}"
+        );
     }
 
     #[test]
