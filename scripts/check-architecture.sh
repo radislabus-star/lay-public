@@ -136,6 +136,9 @@ assert_live_correction_entrypoint_owned_by_input_gate() {
         --glob '!src/correction_pipeline.rs' \
         --glob '!src/input_gate.rs' \
         --glob '!src/main.rs' \
+        --glob '!**/tests.rs' \
+        --glob '!**/*_tests.rs' \
+        --glob '!**/tests/**' \
         || true)"
     hits="$(printf '%s\n' "$hits" \
       | grep -Ev '(_tests\.rs:|^src/.*/tests(\.rs:|/))' || true)"
@@ -158,6 +161,10 @@ assert_text_mutation_call_owners() {
   local hits
   if command -v rg >/dev/null 2>&1; then
     hits="$(rg -n --fixed-strings "$pattern" src \
+        --glob '!**/architecture_contract.rs' \
+        --glob '!**/tests.rs' \
+        --glob '!**/*_tests.rs' \
+        --glob '!**/tests/**' \
         || true)"
     hits="$(printf '%s\n' "$hits" \
       | grep -Ev '(^src/architecture_contract\.rs:|_tests\.rs:|^src/.*/tests(\.rs:|/))' || true)"
