@@ -1387,6 +1387,61 @@ mod tests {
     }
 
     #[test]
+    fn ime_preserves_shared_gate_rank_after_admission_score_saturates() {
+        lay::nanda_wave::warm_up_l2_for_ime();
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "подсказка не оче".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert_eq!(
+            engine.preedit_candidates.first().map(String::as_str),
+            Some("нь"),
+            "IBus must render the common completion selected by the shared gate: {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
+    fn ime_does_not_render_unbound_generated_word_forms() {
+        lay::nanda_wave::warm_up_l2_for_ime();
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "в телеграме жуть".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+
+        assert!(
+            engine.preedit_candidates.is_empty(),
+            "an unbound generated surface must not become visible IME text: {:?}",
+            engine.preedit_candidates
+        );
+    }
+
+    #[test]
     fn strict_precognition_keeps_short_suffix_limit() {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),

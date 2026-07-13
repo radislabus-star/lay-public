@@ -177,9 +177,9 @@ pub fn live_completion_candidates(
             let context_usage = memory_readout.context_prior;
             let accepted = memory_readout.accepted_count;
             let common = crate::lexicon::is_common_ru_word(&candidate.surface);
-            let l2_center_grounded =
-                !matches!(candidate.source, l2::L2ImeWordCandidateSource::PhaseDecoder);
-            let hot = l2_center_grounded;
+            let foundation_rank = l2::l2_surface_foundation_rank(&candidate.surface);
+            let l2_center_grounded = foundation_rank.is_some();
+            let hot = foundation_rank.is_some_and(|rank| rank < 20_000);
             let structural = structural_support(
                 candidate.score,
                 candidate.l1_overlap,
@@ -695,11 +695,12 @@ fn live_completion_has_authority(input: LiveCompletionAuthority) -> bool {
     let usage_signal = input.usage >= 0.025 || input.context_usage >= 0.018 || input.accepted >= 1;
     let lexical_signal = input.common || input.hot || input.l2_center_grounded;
     let structural_signal = input.structural >= 0.34;
+    let bound_structural_signal = input.l2_center_grounded && structural_signal;
 
     if input.partial_len <= 2 {
         return input.allow_short_lexical
             && (usage_signal
-                || structural_signal
+                || bound_structural_signal
                 || input.context_usage >= 0.018
                 || input.hot
                 || input.common)
@@ -710,11 +711,11 @@ fn live_completion_has_authority(input: LiveCompletionAuthority) -> bool {
             return usage_signal;
         }
         return usage_signal
-            || structural_signal
+            || bound_structural_signal
             || (input.allow_short_lexical && lexical_signal && input.suffix_len <= 7);
     }
     if input.partial_len == 4 {
-        return usage_signal || structural_signal || lexical_signal;
+        return usage_signal || bound_structural_signal || lexical_signal;
     }
     usage_signal || lexical_signal || (structural_signal && input.l3_memory_supported)
 }
@@ -953,6 +954,23 @@ mod tests {
             Some("очень"),
             "a stable common completion must outrank a rare long surface: {candidates:?}"
         );
+    }
+
+    #[test]
+    fn generated_surface_without_lexical_binding_has_no_display_authority() {
+        assert!(!live_completion_has_authority(LiveCompletionAuthority {
+            partial_len: 4,
+            suffix_len: 5,
+            allow_short_lexical: true,
+            structural: 0.72,
+            usage: 0.0,
+            context_usage: 0.0,
+            accepted: 0,
+            common: false,
+            hot: false,
+            l2_center_grounded: false,
+            l3_memory_supported: false,
+        }));
     }
 
     #[test]

@@ -2,7 +2,7 @@
 // L2/L3 memory, but does not rank candidates, mutate text, or emit IBus signals.
 
 use lay::ime_candidate_readout::{
-    compare_suffix_len_for_prefix, is_noisy_first_russian_prefix, should_query_llmwave_phrase_suffix,
+    is_noisy_first_russian_prefix, should_query_llmwave_phrase_suffix,
 };
 
 impl LayIbusEngine {
@@ -88,21 +88,12 @@ impl LayIbusEngine {
                 limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
             },
         );
-        let mut ranked = whole_word_candidates
+        // The shared candidate gate owns ranking. IBus only projects its
+        // ordered whole-word readout into visible suffixes.
+        whole_word_candidates
             .into_iter()
-            .map(|candidate| (candidate.suffix, candidate.score))
-            .collect::<Vec<_>>();
-        ranked.sort_by(|left, right| {
-            right
-                .1
-                .total_cmp(&left.1)
-                .then_with(|| compare_suffix_len_for_prefix(partial_len, &left.0, &right.0))
-                .then_with(|| left.0.cmp(&right.0))
-        });
-        ranked
-            .into_iter()
+            .map(|candidate| candidate.suffix)
             .take(PREEDIT_RU_WAVE_CANDIDATE_LIMIT)
-            .map(|(suffix, _score)| suffix)
             .collect()
     }
 
