@@ -36,6 +36,11 @@ impl TransitionDecisionCore {
             };
         }
 
+        if !candidate.insert_text.is_empty() && state.visible_tail.ends_with(&candidate.insert_text)
+        {
+            return TextTransitionDecision::AlreadyApplied;
+        }
+
         let original_text = tail_chars(&state.visible_tail, candidate.delete_chars as usize);
         if let Some(expected) = candidate.expected_tail.as_ref() {
             let focus_id = state.focus_id.as_deref();

@@ -71,7 +71,6 @@ pub(crate) struct LayIbusEngine {
     pub(super) preedit_suffix: String,
     pub(super) preedit_candidates: Vec<String>,
     pub(super) preedit_candidate_index: usize,
-    pub(super) preedit_target_surface: Option<String>,
     pub(super) preedit_fast: PreeditFastState,
     pub(super) preedit_dirty: bool,
     pub(super) cursor_cell_width: i32,
@@ -129,7 +128,7 @@ impl LayIbusEngine {
         self.preedit_suffix.clear();
         self.preedit_candidates.clear();
         self.preedit_candidate_index = 0;
-        self.preedit_target_surface = None;
+        self.preedit_fast.clear_candidate_tracking();
         self.preedit_dirty = false;
     }
 }

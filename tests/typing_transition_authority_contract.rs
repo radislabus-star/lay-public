@@ -23,6 +23,26 @@ fn visible_tail_decision_delegates_to_transition_core() {
 }
 
 #[test]
+fn ime_target_continuity_and_bridge_replay_share_state_transition_contracts() {
+    let preedit = read("src/bin/lay_ibus_engine/preedit.rs");
+    let engine = read("src/bin/lay_ibus_engine/engine.rs");
+    let decision = read("src/typing_transition/decision.rs");
+    let state = read("src/bin/lay_ibus_engine/state.rs");
+
+    assert!(
+        preedit.contains("retarget_blocked_partial")
+            && preedit.contains("block_retarget_for")
+            && !engine.contains("preedit_target_surface"),
+        "temporal candidate continuity must be private fast-state, not parallel engine policy"
+    );
+    assert!(
+        decision.contains("TextTransitionDecision::AlreadyApplied")
+            && state.contains("target_state_already_observed"),
+        "a bridge replay of an already visible target must converge without backend output"
+    );
+}
+
+#[test]
 fn candidate_lattice_merges_typed_evidence_without_owner_priority() {
     let lattice = read("src/typing_transition/candidate.rs");
     let candidate = read("src/correction_core.rs");

@@ -85,6 +85,7 @@ impl LatentTextTransitionCandidate {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TextTransitionDecision {
+    AlreadyApplied,
     Apply {
         plan: TextReplacement,
         action: EditAction,
@@ -199,6 +200,24 @@ mod tests {
             }
             other => panic!("unexpected decision: {other:?}"),
         }
+    }
+
+    #[test]
+    fn text_transition_is_idempotent_when_target_state_is_already_visible() {
+        let state = VisibleFieldState::committed_tail("abc Ты ", Some("/test".to_string()));
+        let mut request = candidate(3, "Ты ");
+        request.expected_tail = Some(VisibleTailSnapshot::new(
+            VisibleTailSource::DaemonWordBuffer,
+            "Ns ",
+            Some("/test".to_string()),
+            0,
+        ));
+        request.source = VisibleTailSource::DaemonWordBuffer;
+
+        assert_eq!(
+            decide_text_transition(&state, request),
+            TextTransitionDecision::AlreadyApplied
+        );
     }
 
     #[test]

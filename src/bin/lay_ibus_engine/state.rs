@@ -122,7 +122,6 @@ impl LayIbusEngine {
             preedit_suffix: String::new(),
             preedit_candidates: Vec::new(),
             preedit_candidate_index: 0,
-            preedit_target_surface: None,
             preedit_fast: Default::default(),
             preedit_dirty: false,
             cursor_cell_width: 0,
@@ -154,7 +153,7 @@ impl LayIbusEngine {
         self.preedit_suffix.clear();
         self.preedit_candidates.clear();
         self.preedit_candidate_index = 0;
-        self.preedit_target_surface = None;
+        self.preedit_fast.clear_candidate_tracking();
         self.preedit_dirty = false;
         self.last_shift_release_at = None;
         if !preserve_tail {
@@ -190,7 +189,7 @@ impl LayIbusEngine {
         self.preedit_suffix.clear();
         self.preedit_candidates.clear();
         self.preedit_candidate_index = 0;
-        self.preedit_target_surface = None;
+        self.preedit_fast.reset();
         self.preedit_dirty = false;
         self.last_shift_release_at = None;
         self.recent_committed_tail_replace = None;
@@ -238,6 +237,15 @@ impl LayIbusEngine {
         );
         let (plan, edit_action) = match decide_text_transition(&visible_state, transition_candidate)
         {
+            TextTransitionDecision::AlreadyApplied => {
+                trace::record_committed_tail_replace(
+                    source,
+                    "target_state_already_observed",
+                    backspaces,
+                    "",
+                );
+                return Ok(true);
+            }
             TextTransitionDecision::Apply { plan, action } => (plan, action),
             TextTransitionDecision::Reject { rejection, action } => {
                 if let Some(action) = action.as_ref() {

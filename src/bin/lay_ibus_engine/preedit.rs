@@ -31,11 +31,15 @@ include!("preedit_readout.rs");
 #[derive(Debug, Default)]
 pub(crate) struct PreeditFastState {
     token: String,
+    target_surface: Option<String>,
+    retarget_blocked_partial: Option<String>,
 }
 
 impl PreeditFastState {
     pub(crate) fn reset(&mut self) {
         self.token.clear();
+        self.target_surface = None;
+        self.retarget_blocked_partial = None;
     }
 
     pub(crate) fn push(&mut self, ch: char) {
@@ -43,12 +47,40 @@ impl PreeditFastState {
             self.reset();
             return;
         }
+        self.retarget_blocked_partial = None;
         self.token.push(ch);
         trim_tail_buffer_to(&mut self.token, PREEDIT_TOKEN_LIMIT);
     }
 
     pub(crate) fn backspace(&mut self) {
+        self.retarget_blocked_partial = None;
         self.token.pop();
+    }
+
+    fn target_surface(&self) -> Option<&str> {
+        self.target_surface.as_deref()
+    }
+
+    fn remember_target(&mut self, target: Option<String>) {
+        self.target_surface = target;
+    }
+
+    fn clear_target(&mut self) {
+        self.target_surface = None;
+    }
+
+    pub(crate) fn clear_candidate_tracking(&mut self) {
+        self.target_surface = None;
+        self.retarget_blocked_partial = None;
+    }
+
+    fn block_retarget_for(&mut self, partial: &str) {
+        self.target_surface = None;
+        self.retarget_blocked_partial = Some(partial.to_string());
+    }
+
+    fn retarget_is_blocked_for(&self, partial: &str) -> bool {
+        self.retarget_blocked_partial.as_deref() == Some(partial)
     }
 
     #[cfg(test)]
@@ -139,7 +171,7 @@ impl LayIbusEngine {
         self.preedit_suffix.clear();
         self.preedit_candidates.clear();
         self.preedit_candidate_index = 0;
-        self.preedit_target_surface = None;
+        self.preedit_fast.clear_target();
         Self::update_preedit_text(
             emitter,
             make_ibus_text(String::new()),
@@ -244,11 +276,23 @@ impl LayIbusEngine {
             .map(|(_, token)| token.to_lowercase())
             .unwrap_or_default();
         self.preedit_candidates = self.precognition_suffix_candidates();
-        self.preedit_candidate_index = candidate_index_for_target(
-            self.preedit_target_surface.as_deref(),
-            &partial,
-            &self.preedit_candidates,
-        );
+        if self.preedit_fast.retarget_is_blocked_for(&partial) {
+            self.clear_visible_candidate_state();
+            return;
+        }
+        if let Some(previous_target) = self.preedit_fast.target_surface() {
+            let Some(index) =
+                candidate_index_for_target(previous_target, &partial, &self.preedit_candidates)
+            else {
+                self.preedit_candidates.clear();
+                self.preedit_candidate_index = 0;
+                self.preedit_fast.block_retarget_for(&partial);
+                return;
+            };
+            self.preedit_candidate_index = index;
+        } else {
+            self.preedit_candidate_index = 0;
+        }
         self.remember_selected_target(&partial);
     }
 
@@ -269,10 +313,18 @@ impl LayIbusEngine {
     }
 
     fn remember_selected_target(&mut self, partial: &str) {
-        self.preedit_target_surface = self
+        let target = self
             .preedit_candidates
             .get(self.preedit_candidate_index)
             .map(|suffix| format!("{partial}{suffix}"));
+        self.preedit_fast.remember_target(target);
+    }
+
+    fn clear_visible_candidate_state(&mut self) {
+        self.preedit_suffix.clear();
+        self.preedit_candidates.clear();
+        self.preedit_candidate_index = 0;
+        self.preedit_fast.clear_target();
     }
 
     fn precognition_suffix_candidates(&self) -> Vec<String> {
@@ -411,20 +463,16 @@ impl LayIbusEngine {
 }
 
 fn candidate_index_for_target(
-    previous_target: Option<&str>,
+    previous_target: &str,
     partial: &str,
     candidates: &[String],
-) -> usize {
-    let Some(previous_target) = previous_target else {
-        return 0;
-    };
+) -> Option<usize> {
     let Some(expected_suffix) = previous_target.strip_prefix(partial) else {
-        return 0;
+        return None;
     };
     candidates
         .iter()
         .position(|candidate| candidate == expected_suffix)
-        .unwrap_or(0)
 }
 
 fn elapsed_us(started: Option<Instant>) -> u64 {
@@ -504,28 +552,20 @@ mod tests {
         let candidates = vec!["ст".to_string(), "рошо".to_string()];
 
         assert_eq!(
-            candidate_index_for_target(Some("хвост"), "хво", &candidates),
-            0
+            candidate_index_for_target("хвост", "хво", &candidates),
+            Some(0)
         );
         assert_eq!(
-            candidate_index_for_target(
-                Some("хорошо"),
-                "хор",
-                &["ошо".to_string(), "ма".to_string()]
-            ),
-            0
+            candidate_index_for_target("хорошо", "хор", &["ошо".to_string(), "ма".to_string()]),
+            Some(0)
         );
     }
 
     #[test]
     fn candidate_target_is_released_when_new_input_invalidates_it() {
         assert_eq!(
-            candidate_index_for_target(
-                Some("хвалить"),
-                "хво",
-                &["ст".to_string(), "ровать".to_string()]
-            ),
-            0
+            candidate_index_for_target("хвалить", "хво", &["ст".to_string(), "ровать".to_string()]),
+            None
         );
     }
 
@@ -533,12 +573,25 @@ mod tests {
     fn candidate_target_preserves_nonzero_selection_by_surface() {
         assert_eq!(
             candidate_index_for_target(
-                Some("проверка"),
+                "проверка",
                 "прове",
                 &["рить".to_string(), "рка".to_string(), "дение".to_string()]
             ),
-            1
+            Some(1)
         );
+    }
+
+    #[test]
+    fn retarget_block_lasts_for_same_partial_and_clears_on_input() {
+        let mut state = PreeditFastState::default();
+        for ch in "вывед".chars() {
+            state.push(ch);
+        }
+        state.block_retarget_for("вывед");
+
+        assert!(state.retarget_is_blocked_for("вывед"));
+        state.push('и');
+        assert!(!state.retarget_is_blocked_for("выведи"));
     }
 
     #[test]
