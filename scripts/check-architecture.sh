@@ -145,7 +145,7 @@ assert_live_correction_entrypoint_owned_by_input_gate() {
   else
     hits="$(grep -RInF -- "$pattern" src || true)"
     hits="$(printf '%s\n' "$hits" \
-      | grep -Ev '(^src/correction_core\.rs:|^src/correction_pipeline\.rs:|^src/input_gate\.rs:|^src/main\.rs:|_tests\.rs:|^src/.*/tests/)' || true)"
+      | grep -Ev '(^src/correction_core\.rs:|^src/correction_pipeline\.rs:|^src/input_gate\.rs:|^src/main\.rs:|_tests\.rs:|^src/.*/tests(\.rs:|/))' || true)"
   fi
   if [[ -n "$hits" ]]; then
     printf '%s\n' "$hits" >&2
