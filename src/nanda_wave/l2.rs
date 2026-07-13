@@ -45,6 +45,7 @@ static SURFACE_MOTIF_MEMORY: OnceLock<L2CenterMemory> = OnceLock::new();
 static L2_SURFACE_FOUNDATION_HASH_RANK: OnceLock<Vec<(u64, usize)>> = OnceLock::new();
 
 const MAX_LAYOUT_SCAN_CANDIDATES: usize = 4;
+const LAYOUT_THEN_L2_WORD_CENTER: &str = "layout_then_l2_word_center";
 const MAX_TAUGHT_CANDIDATES: usize = 6;
 const L2_ACTIVE_SOURCE_TARGET: usize = 1_000_000;
 const L2_RUNTIME_WORD_LIMIT: usize = 100_000;
@@ -586,7 +587,7 @@ fn layout_candidate(
     if technical_context_blocks_layout(prefix, token) {
         return None;
     }
-    let (converted, strong_autoswitch) = layout_converted_token(token)?;
+    let (converted, strong_autoswitch, word_center_settled) = layout_converted_token(token)?;
     if converted == token {
         return None;
     }
@@ -596,6 +597,7 @@ fn layout_candidate(
         && !is_common_en_technical_word(&converted.to_ascii_lowercase())
         && !strong_autoswitch
         && !learned_transition
+        && !word_center_settled
     {
         return None;
     }
@@ -604,15 +606,22 @@ fn layout_candidate(
     {
         return None;
     }
-    if !layout_candidate_allowed(token, &converted, strong_autoswitch, learned_transition) {
+    if !layout_candidate_allowed(
+        token,
+        &converted,
+        strong_autoswitch,
+        learned_transition || word_center_settled,
+    ) {
         return None;
     }
-    if !language_allows_layout(token, &converted, learned_transition) {
+    if !language_allows_layout(token, &converted, learned_transition || word_center_settled) {
         return None;
     }
     let energy = l1_energy(l1, "KeyboardCell32").max(0.35);
     let risk = if strong_autoswitch {
         layout_risk(token, &converted, context).min(0.05)
+    } else if word_center_settled {
+        (layout_risk(token, &converted, context) + 0.06).min(0.24)
     } else {
         layout_risk(token, &converted, context)
     };
@@ -621,7 +630,11 @@ fn layout_candidate(
     }
     Some(WordCandidate {
         text: format!("{prefix}{converted}"),
-        source: "LayoutWordCell32",
+        source: if word_center_settled {
+            LAYOUT_THEN_L2_WORD_CENTER
+        } else {
+            "LayoutWordCell32"
+        },
         energy,
         risk,
         support: candidate_support(l1, context),
@@ -650,13 +663,20 @@ fn layout_scan_candidates(
         if technical_context_blocks_layout(prefix, token) {
             continue;
         }
-        let Some((converted, strong_autoswitch)) = layout_converted_token(token) else {
+        let Some((converted, strong_autoswitch, word_center_settled)) =
+            layout_converted_token(token)
+        else {
             continue;
         };
         let learned_transition = learned_layout_transition_accepts(prefix, token, &converted);
         if converted == token
-            || !layout_candidate_allowed(token, &converted, strong_autoswitch, learned_transition)
-            || !language_allows_layout(token, &converted, learned_transition)
+            || !layout_candidate_allowed(
+                token,
+                &converted,
+                strong_autoswitch,
+                learned_transition || word_center_settled,
+            )
+            || !language_allows_layout(token, &converted, learned_transition || word_center_settled)
         {
             continue;
         }
@@ -675,6 +695,8 @@ fn layout_scan_candidates(
         let base_risk = layout_risk(token, &replaced[idx], context);
         let risk = if strong_autoswitch {
             base_risk.min(0.08)
+        } else if word_center_settled {
+            (base_risk + 0.08).min(0.28)
         } else {
             (base_risk + 0.08).min(0.90)
         };
@@ -683,7 +705,11 @@ fn layout_scan_candidates(
         }
         candidates.push(WordCandidate {
             text,
-            source: "LayoutWordCell32",
+            source: if word_center_settled {
+                LAYOUT_THEN_L2_WORD_CENTER
+            } else {
+                "LayoutWordCell32"
+            },
             energy,
             risk,
             support: candidate_support(l1, context),
@@ -695,15 +721,66 @@ fn layout_scan_candidates(
     candidates
 }
 
-fn layout_converted_token(token: &str) -> Option<(String, bool)> {
+fn layout_converted_token(token: &str) -> Option<(String, bool, bool)> {
     if token.chars().any(is_cyrillic_letter) {
+        let raw_converted = convert(token, detect_direction(token));
+        if token.chars().all(is_cyrillic_letter)
+            && !cyrillic_layout_word_center_blocked(token)
+            && raw_converted != token
+        {
+            let (leading, word, trailing) = split_word_punctuation(&raw_converted);
+            if leading.is_empty() && !word.is_empty() {
+                if let Some(center) = settle_english_word_center(word) {
+                    let center = apply_word_case(token, &center);
+                    return Some((format!("{center}{trailing}"), false, true));
+                }
+            }
+        }
         if let Some(converted) = crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(token)
         {
-            return Some((converted, true));
+            return Some((converted, true, false));
         }
     }
     let converted = convert(token, detect_direction(token));
-    (converted != token).then_some((converted, false))
+    if converted == token {
+        return None;
+    }
+    Some((converted, false, false))
+}
+
+fn settle_english_word_center(token: &str) -> Option<String> {
+    let normalized = token.to_ascii_lowercase();
+    if !(4..=18).contains(&normalized.chars().count())
+        || !normalized.chars().all(|ch| ch.is_ascii_alphabetic())
+    {
+        return None;
+    }
+    let candidates = super::context_wave::semantic_word_candidates(token)
+        .into_iter()
+        .filter(|candidate| {
+            candidate.source == LEXICAL_ATTRACTOR_CELL
+                && candidate.text.chars().all(|ch| ch.is_ascii_alphabetic())
+        })
+        .collect::<Vec<_>>();
+    let best = candidates.first()?;
+    let best_distance = damerau_levenshtein(&normalized, &best.text);
+    if let Some(second) = candidates.get(1) {
+        let second_distance = damerau_levenshtein(&normalized, &second.text);
+        let best_net = best.energy - best.risk;
+        let second_net = second.energy - second.risk;
+        if second_distance == best_distance && best_net < second_net + 0.02 {
+            return None;
+        }
+    }
+    Some(best.text.clone())
+}
+
+fn cyrillic_layout_word_center_blocked(token: &str) -> bool {
+    let lower = token.to_lowercase();
+    is_user_protected_word(&lower)
+        || is_common_ru_word(&lower)
+        || is_known_russian_word_or_form(&lower)
+        || surface_motif_strict_known_surface(&lower)
 }
 
 fn language_allows_layout(token: &str, converted: &str, learned_transition: bool) -> bool {

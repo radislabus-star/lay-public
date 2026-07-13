@@ -957,6 +957,9 @@ fn rule_error_class(rule_id: &str) -> TypingErrorClass {
 }
 
 fn nanda_source_error_class(source: &str) -> TypingErrorClass {
+    if correction_source_contract::candidate_origin(source) == CandidateOrigin::LayoutThenTypo {
+        return TypingErrorClass::CompositeTypo;
+    }
     match correction_source_contract::source_role(source) {
         CorrectionSourceRole::Layout => TypingErrorClass::WrongLayout,
         CorrectionSourceRole::Boundary => TypingErrorClass::GluedWords,

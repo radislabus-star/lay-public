@@ -560,6 +560,51 @@ mod tests {
     }
 
     #[test]
+    fn cyrillic_projection_can_settle_through_english_l2_word_center() {
+        let pipeline = default_typing_assist_pipeline();
+        for (original, expected) in [
+            ("вщцутдщфв ", "download "),
+            ("учьфзду ", "example "),
+            ("фвкуыы ", "address "),
+        ] {
+            let mut req = request(
+                original,
+                &pipeline,
+                CorrectionMode::DeterministicThenNanda,
+            );
+            req.nanda_wave_options = req.nanda_wave_options.with_l2_phase_apply(true);
+            let resolution = resolve_text_correction(req);
+            let selected = resolution
+                .selected
+                .as_ref()
+                .unwrap_or_else(|| panic!("layout+L2 candidate: {resolution:?}"));
+            assert_eq!(selected.replacement, expected, "input={original:?}");
+            assert_eq!(selected.origin, CandidateOrigin::LayoutThenTypo);
+            assert_eq!(selected.gate.action, CandidateGateAction::Apply);
+        }
+    }
+
+    #[test]
+    fn known_russian_centers_block_composite_layout_settling() {
+        let pipeline = default_typing_assist_pipeline();
+        for original in ["привет ", "проверка ", "работает ", "скачать "] {
+            let mut req = request(
+                original,
+                &pipeline,
+                CorrectionMode::DeterministicThenNanda,
+            );
+            req.nanda_wave_options = req.nanda_wave_options.with_l2_phase_apply(true);
+            let resolution = resolve_text_correction(req);
+            assert!(
+                resolution.selected.as_ref().map_or(true, |candidate| {
+                    is_cyrillic_letters_only(candidate.replacement.trim())
+                }),
+                "known Russian center must retain script: {resolution:?}"
+            );
+        }
+    }
+
+    #[test]
     fn composite_typo_repairs_known_russian_word() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
