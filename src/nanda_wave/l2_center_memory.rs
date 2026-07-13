@@ -18,6 +18,7 @@ const L2_RESIDUAL_TAG: u32 = 1 << 31;
 const MAX_LENGTH_BUCKET_CANDIDATES: usize = 1536;
 const MAX_TOKEN_WORD_IDS: usize = 512;
 const MAX_LENGTH_WORD_IDS: usize = 4096;
+const MAX_COMPLETION_PHASE_FRONTIER: usize = 768;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) struct L2CenterMemoryConfig {
@@ -361,15 +362,7 @@ impl L2CenterMemory {
         let query_l1 = self.l1.center_sequence_for_word(&input_norm);
         let query_l2 = self.token_sequence_for_text(&input_norm);
         let query_motifs = motif_tokens(&query_l2.tokens);
-        let mut candidate_votes = HashMap::<usize, u16>::new();
-        for token in unique_tokens(&query_l2.tokens) {
-            let Some(word_ids) = self.token_to_words.get(&token) else {
-                continue;
-            };
-            for word_id in word_ids.iter().copied() {
-                *candidate_votes.entry(word_id).or_default() += 1;
-            }
-        }
+        let candidate_votes = self.completion_phase_frontier(&query_l2.tokens);
         let mut candidate_ids = candidate_votes
             .into_iter()
             .filter_map(|(word_id, votes)| {
@@ -446,6 +439,26 @@ impl L2CenterMemory {
         candidates.dedup_by(|left, right| left.word == right.word);
         candidates.truncate(limit);
         candidates
+    }
+
+    fn completion_phase_frontier(&self, query_tokens: &[u32]) -> HashMap<usize, u16> {
+        let mut postings = unique_tokens(query_tokens)
+            .into_iter()
+            .filter_map(|token| self.token_to_words.get(&token))
+            .collect::<Vec<_>>();
+        postings.sort_by_key(|word_ids| word_ids.len());
+
+        let mut votes = HashMap::<usize, u16>::new();
+        for word_ids in postings {
+            for word_id in word_ids.iter().copied() {
+                if let Some(vote) = votes.get_mut(&word_id) {
+                    *vote = vote.saturating_add(1);
+                } else if votes.len() < MAX_COMPLETION_PHASE_FRONTIER {
+                    votes.insert(word_id, 1);
+                }
+            }
+        }
+        votes
     }
 
     fn encode_train_word(&mut self, word_index: usize, word: &str) {

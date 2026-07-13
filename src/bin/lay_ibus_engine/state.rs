@@ -7,7 +7,7 @@ use std::time::{Duration, Instant};
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
-use super::engine::{LayIbusEngine, RecentCommittedTailReplace};
+use super::engine::{LayIbusEngine, RecentCommittedTailReplace, SurroundingTextSnapshot};
 use super::protocol::Shared;
 use super::text::make_ibus_text;
 use super::trace;
@@ -122,6 +122,7 @@ impl LayIbusEngine {
             preedit_suffix: String::new(),
             preedit_candidates: Vec::new(),
             preedit_candidate_index: 0,
+            preedit_target_surface: None,
             preedit_fast: Default::default(),
             preedit_dirty: false,
             cursor_cell_width: 0,
@@ -153,6 +154,7 @@ impl LayIbusEngine {
         self.preedit_suffix.clear();
         self.preedit_candidates.clear();
         self.preedit_candidate_index = 0;
+        self.preedit_target_surface = None;
         self.preedit_dirty = false;
         self.last_shift_release_at = None;
         if !preserve_tail {
@@ -188,6 +190,7 @@ impl LayIbusEngine {
         self.preedit_suffix.clear();
         self.preedit_candidates.clear();
         self.preedit_candidate_index = 0;
+        self.preedit_target_surface = None;
         self.preedit_dirty = false;
         self.last_shift_release_at = None;
         self.recent_committed_tail_replace = None;
@@ -216,16 +219,16 @@ impl LayIbusEngine {
         let source = request.source;
         let backspaces = request.backspaces;
         let suppress_next_autocorrect = request.suppress_next_autocorrect;
-        let visible_state =
-            VisibleFieldState::committed_tail(self.tail_buffer.clone(), Some(self.path.clone()))
-                .with_external_tail_before_cursor(
-                    self.surrounding_text_snapshot
-                        .as_ref()
-                        .and_then(|snapshot| snapshot.suffix_before_cursor(backspaces as usize)),
-                    self.surrounding_text_snapshot
-                        .as_ref()
-                        .is_some_and(|snapshot| snapshot.has_selection()),
-                );
+        let mut visible_state =
+            VisibleFieldState::committed_tail(self.tail_buffer.clone(), Some(self.path.clone()));
+        if let Some((external_tail, has_selection)) = committed_tail_external_observation(
+            source,
+            self.surrounding_text_snapshot.as_ref(),
+            backspaces as usize,
+        ) {
+            visible_state =
+                visible_state.with_external_tail_before_cursor(external_tail, has_selection);
+        }
         let transition_candidate = LatentTextTransitionCandidate::new(
             source,
             backspaces,
@@ -392,6 +395,24 @@ impl LayIbusEngine {
     }
 }
 
+fn committed_tail_external_observation(
+    source: VisibleTailSource,
+    snapshot: Option<&SurroundingTextSnapshot>,
+    backspaces: usize,
+) -> Option<(Option<String>, bool)> {
+    let snapshot = snapshot?;
+    if source == VisibleTailSource::ImeCommittedTail
+        && snapshot.text.is_empty()
+        && !snapshot.has_selection()
+    {
+        return None;
+    }
+    Some((
+        snapshot.suffix_before_cursor(backspaces),
+        snapshot.has_selection(),
+    ))
+}
+
 fn warm_runtime(config: &LayConfig) {
     lay::hot_field::set_process_policy(lay::hot_field::HotFieldPolicy::ime());
     #[cfg(test)]
@@ -423,8 +444,9 @@ fn terminal_erase_prefix(count: u32) -> String {
 #[cfg(test)]
 mod tests {
     use super::{
-        CommittedTailOutputProfile, CommittedTailReplaceRequest, LayIbusEngine,
-        RecentCommittedTailReplace,
+        committed_tail_external_observation, CommittedTailOutputProfile,
+        CommittedTailReplaceRequest, LayIbusEngine, RecentCommittedTailReplace,
+        SurroundingTextSnapshot,
     };
     use lay::config::LayConfig;
     use lay::manual_toggle::VisibleTailSource;
@@ -464,6 +486,34 @@ mod tests {
         assert_eq!(request.intent, TextTransitionIntent::ImeManualToggle);
         assert!(request.suppress_next_autocorrect);
         assert!(request.expected_tail.is_none());
+    }
+
+    #[test]
+    fn empty_surrounding_text_is_optional_for_ime_owned_manual_toggle() {
+        let snapshot = SurroundingTextSnapshot::new(String::new(), 0, 0);
+
+        assert_eq!(
+            committed_tail_external_observation(
+                VisibleTailSource::ImeCommittedTail,
+                Some(&snapshot),
+                3,
+            ),
+            None
+        );
+    }
+
+    #[test]
+    fn empty_surrounding_text_still_guards_daemon_bridge_edits() {
+        let snapshot = SurroundingTextSnapshot::new(String::new(), 0, 0);
+
+        assert_eq!(
+            committed_tail_external_observation(
+                VisibleTailSource::DaemonWordBuffer,
+                Some(&snapshot),
+                3,
+            ),
+            Some((None, false))
+        );
     }
 
     #[test]

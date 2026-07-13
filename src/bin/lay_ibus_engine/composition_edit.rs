@@ -15,6 +15,7 @@ impl LayIbusEngine {
                 self.preedit_suffix.clear();
                 self.preedit_candidates.clear();
                 self.preedit_candidate_index = 0;
+                self.preedit_target_surface = None;
                 return Ok(false);
             }
             let byte_idx = char_to_byte_idx(&self.buffer, self.composition_cursor - 1);

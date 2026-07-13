@@ -60,21 +60,12 @@ pub(super) fn input_state() -> Result<String, String> {
     call_ime_noarg("InputState")
 }
 
-pub(super) fn visible_tail() -> Result<(String, String, bool), String> {
-    call_ime_noarg("VisibleTailV1")
+pub(super) fn manual_toggle() -> Result<(bool, bool), String> {
+    call_ime_noarg("ManualToggleV2")
 }
 
 pub(super) fn suppress_next_autocorrect() -> Result<bool, String> {
     call_ime_noarg("SuppressNextAutocorrect")
-}
-
-pub(super) fn replace_tail_plan(
-    backspaces: u32,
-    text: &str,
-    kind: &str,
-    expected_tail: &str,
-) -> Result<bool, String> {
-    replace_tail_checked(backspaces, text, kind, expected_tail)
 }
 
 fn call_ime_noarg<T>(method: &str) -> Result<T, String>

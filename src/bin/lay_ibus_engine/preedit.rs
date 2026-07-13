@@ -139,6 +139,7 @@ impl LayIbusEngine {
         self.preedit_suffix.clear();
         self.preedit_candidates.clear();
         self.preedit_candidate_index = 0;
+        self.preedit_target_surface = None;
         Self::update_preedit_text(
             emitter,
             make_ibus_text(String::new()),
@@ -239,19 +240,16 @@ impl LayIbusEngine {
     }
 
     pub(super) fn refresh_precognition_candidates(&mut self) {
-        let previous = self
-            .preedit_candidates
-            .get(self.preedit_candidate_index)
-            .cloned();
+        let partial = split_last_alphabetic_token(self.tail_buffer.trim_end())
+            .map(|(_, token)| token.to_lowercase())
+            .unwrap_or_default();
         self.preedit_candidates = self.precognition_suffix_candidates();
-        self.preedit_candidate_index = previous
-            .as_ref()
-            .and_then(|suffix| {
-                self.preedit_candidates
-                    .iter()
-                    .position(|candidate| candidate == suffix)
-            })
-            .unwrap_or(0);
+        self.preedit_candidate_index = candidate_index_for_target(
+            self.preedit_target_surface.as_deref(),
+            &partial,
+            &self.preedit_candidates,
+        );
+        self.remember_selected_target(&partial);
     }
 
     pub(super) fn cycle_precognition_candidate(&mut self, step: isize) -> bool {
@@ -263,7 +261,18 @@ impl LayIbusEngine {
         let len = len as isize;
         self.preedit_candidate_index =
             (self.preedit_candidate_index as isize + step).rem_euclid(len) as usize;
+        let partial = split_last_alphabetic_token(self.tail_buffer.trim_end())
+            .map(|(_, token)| token.to_lowercase())
+            .unwrap_or_default();
+        self.remember_selected_target(&partial);
         true
+    }
+
+    fn remember_selected_target(&mut self, partial: &str) {
+        self.preedit_target_surface = self
+            .preedit_candidates
+            .get(self.preedit_candidate_index)
+            .map(|suffix| format!("{partial}{suffix}"));
     }
 
     fn precognition_suffix_candidates(&self) -> Vec<String> {
@@ -401,6 +410,23 @@ impl LayIbusEngine {
     }
 }
 
+fn candidate_index_for_target(
+    previous_target: Option<&str>,
+    partial: &str,
+    candidates: &[String],
+) -> usize {
+    let Some(previous_target) = previous_target else {
+        return 0;
+    };
+    let Some(expected_suffix) = previous_target.strip_prefix(partial) else {
+        return 0;
+    };
+    candidates
+        .iter()
+        .position(|candidate| candidate == expected_suffix)
+        .unwrap_or(0)
+}
+
 fn elapsed_us(started: Option<Instant>) -> u64 {
     started
         .map(|started| started.elapsed().as_micros() as u64)
@@ -472,6 +498,48 @@ mod tests {
     use super::*;
     use lay::config::LayConfig;
     use std::sync::{Arc, Mutex};
+
+    #[test]
+    fn candidate_target_survives_suffix_shrink_while_typing() {
+        let candidates = vec!["ст".to_string(), "рошо".to_string()];
+
+        assert_eq!(
+            candidate_index_for_target(Some("хвост"), "хво", &candidates),
+            0
+        );
+        assert_eq!(
+            candidate_index_for_target(
+                Some("хорошо"),
+                "хор",
+                &["ошо".to_string(), "ма".to_string()]
+            ),
+            0
+        );
+    }
+
+    #[test]
+    fn candidate_target_is_released_when_new_input_invalidates_it() {
+        assert_eq!(
+            candidate_index_for_target(
+                Some("хвалить"),
+                "хво",
+                &["ст".to_string(), "ровать".to_string()]
+            ),
+            0
+        );
+    }
+
+    #[test]
+    fn candidate_target_preserves_nonzero_selection_by_surface() {
+        assert_eq!(
+            candidate_index_for_target(
+                Some("проверка"),
+                "прове",
+                &["рить".to_string(), "рка".to_string(), "дение".to_string()]
+            ),
+            1
+        );
+    }
 
     #[test]
     fn whitespace_cancels_pending_inactive_preedit_flush() {
