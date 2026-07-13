@@ -5,6 +5,16 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
+search_quiet() {
+    local pattern="$1"
+    local file="$2"
+    if command -v rg >/dev/null 2>&1; then
+        rg -q "$pattern" "$file"
+    else
+        grep -Eq "$pattern" "$file"
+    fi
+}
+
 echo "== Bazzite/rpm-ostree platform route =="
 platform="$(LAY_PACKAGE_MANAGER_OVERRIDE=rpm-ostree bash "$ROOT/install.sh" --check-platform)"
 grep -q '^package_manager=rpm-ostree$' <<<"$platform"
@@ -66,8 +76,8 @@ test ! -e "$SYSTEM_ROOT/usr/share/ibus/component/lay-ime.xml"
 test ! -e "$SYSTEM_ROOT/etc/udev/rules.d/99-lay-uinput.rules"
 
 echo "== compact wave memory contract =="
-! rg -q 'prefix_index\s*:' "$ROOT/src/nanda_wave/context_wave.rs"
-rg -q 'warm_up_prepares_wave_memory_without_prefix_indexes' \
+! search_quiet 'prefix_index[[:space:]]*:' "$ROOT/src/nanda_wave/context_wave.rs"
+search_quiet 'warm_up_prepares_wave_memory_without_prefix_indexes' \
     "$ROOT/src/nanda_wave/context_wave.rs"
 
 echo "public issue regressions: PASS"
