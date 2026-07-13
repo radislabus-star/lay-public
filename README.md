@@ -280,7 +280,31 @@ curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scr
 cd ~/projects/lay && bash update.sh
 ```
 
+Если старая установка оставила локальные изменения в git-копии, updater сам
+сохранит их в именованный `git stash`, обновит исходники и напечатает команду
+`git stash pop` для восстановления. Пользовательские настройки лежат вне git в
+`~/.config/lay` и при обновлении не удаляются.
+
 В GNOME и KDE обновление также доступно из меню трея: `Проверить обновления`.
+
+Полное удаление runtime, настроек, памяти, логов и чистой установочной git-копии:
+
+```bash
+cd ~/projects/lay && bash uninstall.sh --purge
+```
+
+Без `--purge` скрипт удаляет только runtime и desktop-интеграцию, сохраняя
+настройки и память. Локально изменённую git-копию uninstall не удаляет.
+
+### Bazzite / Fedora Atomic
+
+Installer распознаёт `rpm-ostree` раньше `dnf`. Если зависимостей не хватает,
+он добавит их в следующий deployment и попросит перезагрузиться; после reboot
+нужно повторить ту же команду установки. Проверить маршрут без изменений:
+
+```bash
+bash install.sh --check-platform
+```
 
 ## Возможности
 

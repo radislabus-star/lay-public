@@ -2,6 +2,14 @@
 # update.sh — проверить обновления lay, скачать их и переустановить при необходимости.
 set -euo pipefail
 
+SOURCE_ONLY=0
+if [ "${1:-}" = "--source-only" ]; then
+    SOURCE_ONLY=1
+elif [ "$#" -gt 0 ]; then
+    echo "Использование: bash update.sh [--source-only]" >&2
+    exit 2
+fi
+
 DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$DIR"
 
@@ -10,11 +18,16 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     exit 1
 fi
 
-if ! git diff --quiet || ! git diff --cached --quiet; then
-    echo "В рабочей копии есть локальные изменения." >&2
-    echo "Сохрани их или откати перед обновлением, чтобы git pull ничего не затёр." >&2
-    exit 1
-fi
+preserve_local_changes() {
+    if [ -z "$(git status --porcelain --untracked-files=normal)" ]; then
+        return
+    fi
+    backup_name="lay-auto-update-$(date +%Y%m%d-%H%M%S)"
+    echo "Локальные изменения найдены; сохраняю их в git stash: $backup_name"
+    git stash push --include-untracked -m "$backup_name" >/dev/null
+    echo "✓ локальные изменения сохранены: $(git stash list -1 --format='%gd %s')"
+    echo "  вернуть позже: git stash pop"
+}
 
 current_version() {
     if command -v "$HOME/.local/bin/lay" >/dev/null 2>&1; then
@@ -122,8 +135,14 @@ if [ "$behind" = "0" ]; then
 fi
 
 echo ""
+preserve_local_changes
 echo "=== git pull ==="
 git pull --ff-only
+
+if [ "$SOURCE_ONLY" = "1" ]; then
+    echo "✓ исходники обновлены; установка пропущена (--source-only)"
+    exit 0
+fi
 
 echo ""
 echo "=== install ==="

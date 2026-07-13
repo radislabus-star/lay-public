@@ -13,7 +13,7 @@ use crate::layout_autoswitch::is_known_english_layout_autoswitch_word;
 use crate::lexicon::{
     is_common_en_technical_word, visual_b_after_ascii_replacement, visual_b_default_replacement,
 };
-use crate::russian_lexicon::is_known_russian_word_or_form;
+use crate::russian_lexicon::{is_known_russian_word_or_form, russian_tiny_dictionary};
 use crate::text_case::apply_phrase_case;
 use crate::word_reader::{split_edge_whitespace, split_word_punctuation, split_ws_segments};
 
@@ -122,7 +122,7 @@ pub fn sanitize_replacement_rules_path(path: &Path) -> std::io::Result<usize> {
     let original_len = rules.len();
     let safe = rules
         .into_iter()
-        .filter(|(from, to)| safe_promoted_replacement(from, to))
+        .filter(|(from, to)| safe_user_replacement(from, to))
         .collect::<BTreeMap<_, _>>();
     let removed = original_len.saturating_sub(safe.len());
     if removed == 0 {
@@ -288,7 +288,7 @@ fn replacement_rules() -> &'static HashMap<String, String> {
                     rules.extend(
                         custom
                             .into_iter()
-                            .filter(|(from, to)| safe_promoted_replacement(from, to)),
+                            .filter(|(from, to)| safe_user_replacement(from, to)),
                     );
                 }
             }
@@ -333,10 +333,25 @@ pub fn safe_promoted_replacement(from: &str, to: &str) -> bool {
     true
 }
 
+fn safe_user_replacement(from: &str, to: &str) -> bool {
+    let from = from.trim();
+    let to = to.trim();
+    !from.is_empty()
+        && !to.is_empty()
+        && from != to
+        && from.chars().count() <= 64
+        && to.chars().count() <= 128
+        && to.split_whitespace().count() <= 3
+        && !from.chars().any(char::is_control)
+        && !to.chars().any(char::is_control)
+}
+
 fn target_words_are_known(text: &str) -> bool {
     text.split_whitespace().all(|word| {
         let (_, core, _) = split_word_punctuation(word);
-        !core.is_empty() && is_known_russian_word_or_form(&core.to_lowercase())
+        let lower = core.to_lowercase();
+        !core.is_empty()
+            && (is_known_russian_word_or_form(&lower) || russian_tiny_dictionary().contains(&lower))
     })
 }
 
@@ -353,10 +368,11 @@ mod tests {
     fn promoted_replacement_allows_normal_typo_and_phrase_split() {
         assert!(safe_promoted_replacement("можн", "можно"));
         assert!(safe_promoted_replacement("нуда", "ну да"));
+        assert!(safe_promoted_replacement("нее", "неё"));
     }
 
     #[test]
-    fn sanitize_replacement_rules_removes_unsafe_promotions() {
+    fn sanitize_replacement_rules_preserves_explicit_short_user_words() {
         let tmp = std::env::temp_dir().join(format!(
             "lay-replacements-sanitize-{}",
             std::time::SystemTime::now()
@@ -370,19 +386,25 @@ mod tests {
             &path,
             r#"{
   "коти": "тки",
+  "нее": "неё",
   "можн": "можно",
-  "нуда": "ну да"
+  "нуда": "ну да",
+  "same": "same",
+  "empty": ""
 }
 "#,
         )
         .unwrap();
 
-        assert_eq!(sanitize_replacement_rules_path(&path).unwrap(), 1);
+        assert_eq!(sanitize_replacement_rules_path(&path).unwrap(), 2);
         let rules: BTreeMap<String, String> =
             serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
-        assert!(!rules.contains_key("коти"));
+        assert_eq!(rules.get("коти"), Some(&"тки".to_string()));
+        assert_eq!(rules.get("нее"), Some(&"неё".to_string()));
         assert_eq!(rules.get("можн"), Some(&"можно".to_string()));
         assert_eq!(rules.get("нуда"), Some(&"ну да".to_string()));
+        assert!(!rules.contains_key("same"));
+        assert!(!rules.contains_key("empty"));
 
         let _ = std::fs::remove_dir_all(tmp);
     }

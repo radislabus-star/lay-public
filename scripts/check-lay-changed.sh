@@ -61,6 +61,11 @@ if has_file_matching '^extension/.*\.json$'; then
   python3 -m json.tool extension/lay@radislabus-star.github.io/metadata.json >/dev/null
 fi
 
+if has_file_matching '(^install\.sh$|^update\.sh$|^uninstall\.sh$|^scripts/install-remote\.sh$|^scripts/test-public-issues\.sh$)'; then
+  echo "== public install/update/uninstall issue regressions =="
+  scripts/test-public-issues.sh
+fi
+
 if has_file_matching '^extension/.*\.js$'; then
   echo "== node --check changed GNOME JS =="
   mapfile -t js_files < <(changed_list_for_ext ".js")

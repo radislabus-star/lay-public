@@ -6,7 +6,9 @@ REPO_URL="${LAY_REPO_URL:-https://github.com/radislabus-star/lay-public.git}"
 INSTALL_DIR="${LAY_INSTALL_DIR:-$HOME/projects/lay}"
 
 detect_package_manager() {
-    if command -v rpm-ostree >/dev/null 2>&1 && [ -d /run/ostree-booted ]; then
+    if [ -n "${LAY_PACKAGE_MANAGER_OVERRIDE:-}" ]; then
+        echo "$LAY_PACKAGE_MANAGER_OVERRIDE"
+    elif command -v rpm-ostree >/dev/null 2>&1 && [ -d "${LAY_OSTREE_BOOTED_DIR:-/run/ostree-booted}" ]; then
         echo rpm-ostree
     elif command -v apt-get >/dev/null 2>&1; then
         echo apt
@@ -46,7 +48,9 @@ rpm_ostree_dependencies_available() {
         && command -v make >/dev/null 2>&1 \
         && { command -v pkg-config >/dev/null 2>&1 || command -v pkgconf >/dev/null 2>&1; } \
         && command -v wl-copy >/dev/null 2>&1 \
-        && command -v xclip >/dev/null 2>&1
+        && command -v xclip >/dev/null 2>&1 \
+        && command -v ibus >/dev/null 2>&1 \
+        && python3 -c 'import gi' >/dev/null 2>&1
 }
 
 install_system_packages() {
@@ -72,7 +76,7 @@ install_system_packages() {
             fi
             ;;
         rpm-ostree)
-            packages=(git curl gcc gcc-c++ make pkgconf-pkg-config libxcb wl-clipboard xclip)
+            packages=(git curl gcc gcc-c++ make pkgconf-pkg-config libxcb wl-clipboard xclip ibus python3-gobject)
             if kde_available; then
                 packages+=(qt6-qttools python3-qt6 xcb-util-cursor)
             fi
@@ -131,6 +135,12 @@ install_rust() {
 checkout_repo() {
     echo "=== lay source ==="
     if [ -d "$INSTALL_DIR/.git" ]; then
+        if [ -n "$(git -C "$INSTALL_DIR" status --porcelain --untracked-files=normal)" ]; then
+            backup_name="lay-auto-update-$(date +%Y%m%d-%H%M%S)"
+            echo "Local changes found; preserving them in git stash: $backup_name"
+            git -C "$INSTALL_DIR" stash push --include-untracked -m "$backup_name" >/dev/null
+            echo "✓ preserved: $(git -C "$INSTALL_DIR" stash list -1 --format='%gd %s')"
+        fi
         git -C "$INSTALL_DIR" pull --ff-only
         return
     fi
@@ -146,6 +156,13 @@ checkout_repo() {
 }
 
 main() {
+    if [ "${1:-}" = "--check-platform" ]; then
+        echo "package_manager=$(detect_package_manager)"
+        exit 0
+    elif [ "$#" -gt 0 ]; then
+        echo "Usage: install-remote.sh [--check-platform]" >&2
+        exit 2
+    fi
     install_system_packages
     install_rust
     checkout_repo
@@ -158,6 +175,8 @@ main() {
     echo "=== update command ==="
     echo "To update later:"
     echo "  cd \"$INSTALL_DIR\" && bash update.sh"
+    echo "To uninstall completely:"
+    echo "  cd \"$INSTALL_DIR\" && bash uninstall.sh --purge"
 }
 
 main "$@"

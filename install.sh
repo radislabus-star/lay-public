@@ -31,7 +31,11 @@ EOF
 }
 
 detect_package_manager() {
-    if command -v apt-get >/dev/null 2>&1; then
+    if [ -n "${LAY_PACKAGE_MANAGER_OVERRIDE:-}" ]; then
+        echo "$LAY_PACKAGE_MANAGER_OVERRIDE"
+    elif command -v rpm-ostree >/dev/null 2>&1 && [ -d "${LAY_OSTREE_BOOTED_DIR:-/run/ostree-booted}" ]; then
+        echo rpm-ostree
+    elif command -v apt-get >/dev/null 2>&1; then
         echo apt
     elif command -v pacman >/dev/null 2>&1; then
         echo pacman
@@ -50,7 +54,7 @@ package_installed() {
     case "$pm" in
         apt) dpkg -l "$pkg" 2>/dev/null | grep -q '^ii' ;;
         pacman) pacman -Qi "$pkg" >/dev/null 2>&1 ;;
-        dnf|yum) rpm -q "$pkg" >/dev/null 2>&1 ;;
+        rpm-ostree|dnf|yum) rpm -q "$pkg" >/dev/null 2>&1 ;;
         *) return 1 ;;
     esac
 }
@@ -66,11 +70,15 @@ install_packages() {
         pacman)
             sudo pacman -Sy --needed --noconfirm "$@"
             ;;
+        rpm-ostree)
+            sudo rpm-ostree install --idempotent -y "$@"
+            LAY_REBOOT_REQUIRED=1
+            ;;
         dnf|yum)
             sudo "$pm" install -y "$@"
             ;;
         *)
-            echo "Не найден поддерживаемый менеджер пакетов: apt, pacman, dnf или yum" >&2
+            echo "Не найден поддерживаемый менеджер пакетов: apt, pacman, rpm-ostree, dnf или yum" >&2
             return 1
             ;;
     esac
@@ -120,7 +128,7 @@ base_packages_for_pm() {
     case "$pm" in
         apt) echo "libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip ibus gir1.2-ibus-1.0 python3-gi" ;;
         pacman) echo "libxcb wl-clipboard xclip ibus python-gobject" ;;
-        dnf|yum) echo "libxcb wl-clipboard xclip ibus python3-gobject" ;;
+        rpm-ostree|dnf|yum) echo "libxcb wl-clipboard xclip ibus python3-gobject" ;;
         *) echo "" ;;
     esac
 }
@@ -138,10 +146,21 @@ kde_packages_for_pm() {
             fi
             ;;
         pacman) echo "qt6-tools python-pyqt6 xcb-util-cursor" ;;
-        dnf|yum) echo "qt6-qttools python3-qt6 xcb-util-cursor" ;;
+        rpm-ostree|dnf|yum) echo "qt6-qttools python3-qt6 xcb-util-cursor" ;;
         *) echo "" ;;
     esac
 }
+
+if [ "${1:-}" = "--check-platform" ]; then
+    pm="$(detect_package_manager)"
+    echo "package_manager=$pm"
+    echo "base_packages=$(base_packages_for_pm "$pm")"
+    echo "kde_packages=$(kde_packages_for_pm "$pm")"
+    exit 0
+elif [ "$#" -gt 0 ]; then
+    echo "Использование: bash install.sh [--check-platform]" >&2
+    exit 2
+fi
 
 echo "=== проверка cargo ==="
 if ! command -v cargo >/dev/null; then
@@ -198,7 +217,7 @@ echo "=== системные зависимости ==="
 pm="$(detect_package_manager)"
 if [ "$pm" = none ]; then
     echo "⚠ менеджер пакетов не найден; пропускаю автоустановку зависимостей"
-    echo "  поддерживаются apt, pacman, dnf и yum"
+    echo "  поддерживаются apt, pacman, rpm-ostree, dnf и yum"
 else
     echo "✓ package manager: $pm"
 fi
@@ -217,7 +236,14 @@ if is_kde_available; then
 fi
 if [ ${#need_install[@]} -gt 0 ]; then
     echo "ставим: ${need_install[*]}"
+    LAY_REBOOT_REQUIRED=0
     install_packages "$pm" "${need_install[@]}"
+    if [ "$LAY_REBOOT_REQUIRED" = "1" ]; then
+        echo ""
+        echo "✓ rpm-ostree зависимости добавлены в следующий deployment."
+        echo "Перезагрузите Bazzite/Fedora Atomic и повторите установку lay."
+        exit 0
+    fi
 else
     echo "✓ все пакеты уже стоят"
 fi
@@ -363,4 +389,5 @@ echo "║  Двойной Shift = конвертировать слово    ║
 echo "║                                          ║"
 echo "║  Обновление:                             ║"
 echo "║  cd ~/projects/lay && bash update.sh     ║"
+echo "║  Удаление: bash uninstall.sh --purge     ║"
 echo "╚══════════════════════════════════════════╝"
