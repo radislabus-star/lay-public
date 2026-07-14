@@ -145,6 +145,9 @@ mod daemon_state;
 #[path = "lay_daemon/pending_typing_assist.rs"]
 mod pending_typing_assist;
 
+#[path = "lay_daemon/typing_assist_worker.rs"]
+mod typing_assist_worker;
+
 #[path = "lay_daemon/startup_runtime.rs"]
 mod startup_runtime;
 use startup_runtime::*;

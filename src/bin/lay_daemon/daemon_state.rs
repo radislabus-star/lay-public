@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
 use super::pending_typing_assist::PendingTypingAssist;
+use super::typing_assist_worker::TypingAssistWorker;
 use super::{
     read_current_layout_is_ru, DShiftState, ForceLayoutHotkeys, MultiTapPending, ShiftState,
     FOCUS_IGNORE_POLL_INTERVAL_MS,
@@ -31,6 +32,7 @@ pub(super) struct DaemonLoopState {
     pub(super) suppress_next_typing_assist_after_manual_replay: bool,
     pub(super) events_since_word_start: u32,
     pub(super) pending_typing_assist_after_space: Option<PendingTypingAssist>,
+    pub(super) typing_assist_worker: TypingAssistWorker,
     pub(super) focus_ignored: bool,
     pub(super) focused_window_identity: Option<String>,
     pub(super) field_context_epoch: u64,
@@ -100,6 +102,7 @@ impl DaemonLoopState {
             suppress_next_typing_assist_after_manual_replay: false,
             events_since_word_start: 0,
             pending_typing_assist_after_space: None,
+            typing_assist_worker: TypingAssistWorker::new(),
             focus_ignored: false,
             focused_window_identity: None,
             field_context_epoch: 0,

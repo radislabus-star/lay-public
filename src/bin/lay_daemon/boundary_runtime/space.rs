@@ -4,8 +4,8 @@ use lay::word_buffer::WordBuffer;
 use super::super::pending_typing_assist::PendingTypingAssist;
 use super::super::{
     active_typing_assist, append_user_correction_learning_log, has_later_typing_press, log,
-    prepare_typing_assist_after_space, record_precognition_tick_if_enabled,
-    should_run_typing_assist_on_space_release, should_schedule_typing_assist_after_space,
+    record_precognition_tick_if_enabled, should_run_typing_assist_on_space_release,
+    should_schedule_typing_assist_after_space, typing_assist_worker::TypingAssistWorker,
     ShiftState,
 };
 
@@ -55,6 +55,7 @@ pub(crate) fn try_handle_space_release(
 pub(crate) struct SpacePressContext<'a> {
     pub(crate) buffer: &'a mut WordBuffer,
     pub(crate) pending_typing_assist_after_space: &'a mut Option<PendingTypingAssist>,
+    pub(crate) typing_assist_worker: &'a mut TypingAssistWorker,
     pub(crate) events_since_word_start: &'a mut u32,
     pub(crate) suppress_next_typing_assist_after_manual_replay: &'a mut bool,
     pub(crate) verbose: bool,
@@ -80,8 +81,10 @@ pub(crate) fn handle_space_press(ctx: SpacePressContext<'_>) {
             ctx.suppress_next_typing_assist_after_manual_replay,
         )
     {
-        *ctx.pending_typing_assist_after_space =
-            prepare_typing_assist_after_space(ctx.buffer).map(PendingTypingAssist::new);
+        *ctx.pending_typing_assist_after_space = ctx
+            .typing_assist_worker
+            .submit(ctx.buffer)
+            .map(PendingTypingAssist::waiting);
         if ctx.verbose {
             if ctx.pending_typing_assist_after_space.is_some() {
                 log("· typing-assist scheduled after space");
@@ -108,7 +111,7 @@ mod route_contract {
         let source = include_str!("space.rs");
         let forbidden_ime_owner = ["focused_ime_engine", "_handles_typing"].concat();
 
-        assert!(source.contains("prepare_typing_assist_after_space"));
+        assert!(source.contains("typing_assist_worker.submit"));
         assert!(!source.contains(&forbidden_ime_owner));
     }
 }

@@ -162,18 +162,18 @@ pub fn observed_contract_status(id: &str) -> ContractStatus {
                 !source.contains("decide_active_composition_autocorrect(")
                     && !source.contains("decide_input_gate(")
             });
+            let daemon_space_uses_worker = source_contains_all(
+                include_str!("bin/lay_daemon/boundary_runtime/space.rs"),
+                &["typing_assist_worker", "PendingTypingAssist::waiting"],
+            );
+            let worker_owns_boundary_decision =
+                include_str!("bin/lay_daemon/typing_assist_worker.rs")
+                    .contains("prepare_typing_assist_after_space");
             let daemon_owns_boundary_decision =
-                matches!(
-                    source_contains_all(
-                        include_str!("bin/lay_daemon/boundary_runtime/space.rs"),
-                        &[
-                            "prepare_typing_assist_after_space",
-                            "PendingTypingAssist::new"
-                        ],
-                    ),
-                    ContractStatus::Pass
-                ) && include_str!("bin/lay_daemon/boundary_runtime/deferred.rs")
-                    .contains("apply_prepared_typing_assist_after_space(");
+                matches!(daemon_space_uses_worker, ContractStatus::Pass)
+                    && worker_owns_boundary_decision
+                    && include_str!("bin/lay_daemon/boundary_runtime/deferred.rs")
+                        .contains("apply_prepared_typing_assist_after_space(");
             if matches!(routes_hold_capability, ContractStatus::Pass)
                 && ime_event_loop_has_no_boundary_decision
                 && daemon_owns_boundary_decision

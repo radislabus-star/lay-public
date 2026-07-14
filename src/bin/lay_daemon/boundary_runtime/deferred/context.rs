@@ -3,7 +3,10 @@ use lay::word_buffer::WordBuffer;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
-use super::super::super::{pending_typing_assist::PendingTypingAssist, ShiftState};
+use super::super::super::{
+    pending_typing_assist::PendingTypingAssist, typing_assist_worker::TypingAssistWorker,
+    ShiftState,
+};
 
 pub(crate) struct DeferredTypingAssistContext<'a> {
     pub(crate) buffer: &'a mut WordBuffer,
@@ -13,5 +16,6 @@ pub(crate) struct DeferredTypingAssistContext<'a> {
     pub(crate) current_layout_is_ru: &'a mut bool,
     pub(crate) last_layout_poll: &'a mut Instant,
     pub(crate) pending_typing_assist_after_space: &'a mut Option<PendingTypingAssist>,
+    pub(crate) typing_assist_worker: &'a TypingAssistWorker,
     pub(crate) shift_state: &'a ShiftState,
 }

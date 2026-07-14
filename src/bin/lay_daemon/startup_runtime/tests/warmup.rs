@@ -1,7 +1,7 @@
 use super::*;
 
 #[test]
-fn warmup_plan_does_not_warm_typing_heap_for_auto_ime_daemon() {
+fn warmup_plan_prepares_boundary_memory_for_auto_ime_daemon() {
     let cfg = LayConfig {
         typing_assist: true,
         nanda_autocorrect: true,
@@ -12,7 +12,7 @@ fn warmup_plan_does_not_warm_typing_heap_for_auto_ime_daemon() {
     let plan = runtime_warmup_plan(false, &cfg, None);
 
     assert!(plan.spawn_background);
-    assert!(!plan.warm_typing_assist);
+    assert!(plan.warm_typing_assist);
     assert!(plan.warm_l3_phrase);
 }
 

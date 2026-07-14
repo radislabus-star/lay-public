@@ -18,7 +18,7 @@ pub const MAX_REPLACE_WORDS: usize = 8;
 pub const MAX_HISTORY_WORDS: usize = 32;
 const LEARNING_FEEDBACK_MAX_AGE_SECS: u64 = 30;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct WordBuffer {
     current: Vec<KeyEvent>,
     prev_words: Vec<Vec<KeyEvent>>,

@@ -286,6 +286,26 @@ pub fn decide_input_gate(req: InputGateRequest<'_>) -> InputGateDecision {
     }
 }
 
+/// Builds lazy candidate state through the same boundary route used at runtime.
+/// The results are discarded; this grants no candidate apply authority.
+pub(crate) fn warm_up_word_boundary() {
+    let pipeline = crate::config::default_typing_assist_pipeline();
+    for text_tail in ["руддщ ", "проврека "] {
+        let _ = decide_input_gate(InputGateRequest {
+            trigger: InputGateTrigger::Space,
+            text_tail,
+            auto_replace: true,
+            typing_assist: true,
+            auto_switch_layout: true,
+            correction_safety: CorrectionSafety::Experimental,
+            typing_assist_pipeline: &pipeline,
+            nanda_autocorrect: false,
+            nanda_wave_options: WaveOptions::default(),
+            correction_mode: CorrectionMode::DeterministicOnly,
+        });
+    }
+}
+
 fn observe_trace(stage: InputGateStage, reason: &'static str) -> InputGateDecisionTrace {
     InputGateDecisionTrace {
         stage,

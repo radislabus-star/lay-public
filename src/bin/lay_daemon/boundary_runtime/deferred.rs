@@ -3,7 +3,7 @@ use std::time::Instant;
 use super::super::{
     active_typing_assist, apply_prepared_typing_assist_after_space, lock_virtual_keyboard, log,
     pending_typing_assist::PendingTypingAssist, should_run_deferred_typing_assist_after_space,
-    TypingAssistOutcome,
+    typing_assist_worker::WorkerPoll, TypingAssistOutcome,
 };
 
 #[path = "deferred/context.rs"]
@@ -19,16 +19,28 @@ pub(crate) fn try_handle_deferred_typing_assist(ctx: DeferredTypingAssistContext
         return false;
     }
 
-    let Some(pending) = ctx.pending_typing_assist_after_space.as_ref() else {
+    let Some(pending) = ctx.pending_typing_assist_after_space.as_mut() else {
         return false;
     };
+    if let Some(request_id) = pending.request_id() {
+        match ctx.typing_assist_worker.poll(request_id) {
+            WorkerPoll::Pending => return false,
+            WorkerPoll::Completed(Some(correction)) => pending.resolve(*correction),
+            WorkerPoll::Completed(None) => {
+                ctx.pending_typing_assist_after_space.take();
+                return false;
+            }
+        }
+    }
     if !pending.ready_to_apply() {
         return false;
     }
     let Some(pending) = ctx.pending_typing_assist_after_space.take() else {
         return false;
     };
-    let (correction, cursor_offset) = pending.into_parts();
+    let Some((correction, cursor_offset)) = pending.into_parts() else {
+        return false;
+    };
     let retry_correction = correction.clone();
     let mut g = lock_virtual_keyboard(ctx.virtual_kbd);
     let outcome = apply_prepared_typing_assist_after_space(

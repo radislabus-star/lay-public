@@ -106,6 +106,7 @@ pub(super) fn listen_keyboard(
                     virtual_kbd: &virtual_kbd,
                     executing: &mut state.executing,
                     pending_typing_assist_after_space: &mut state.pending_typing_assist_after_space,
+                    typing_assist_worker: &state.typing_assist_worker,
                     current_layout_is_ru: &mut state.current_layout_is_ru,
                     last_layout_poll: &mut state.last_layout_poll,
                     shift_state: &state.shift_state,
@@ -143,6 +144,13 @@ pub(super) fn listen_keyboard(
                         state.pending_multi_tap.as_ref(),
                         state.last_focus_ignore_poll,
                         state.shift_window,
+                    )
+                    .min(
+                        if state.pending_typing_assist_after_space.is_some() {
+                            std::time::Duration::from_millis(2)
+                        } else {
+                            std::time::Duration::MAX
+                        },
                     ),
                 )?;
                 continue;
@@ -286,6 +294,7 @@ pub(super) fn listen_keyboard(
                         buffer: &mut state.buffer,
                         pending_typing_assist_after_space: &mut state
                             .pending_typing_assist_after_space,
+                        typing_assist_worker: &mut state.typing_assist_worker,
                         events_since_word_start: &mut state.events_since_word_start,
                         suppress_next_typing_assist_after_manual_replay: &mut state
                             .suppress_next_typing_assist_after_manual_replay,

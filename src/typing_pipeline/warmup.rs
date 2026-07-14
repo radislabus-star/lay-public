@@ -2,6 +2,7 @@ pub fn warm_up() {
     warm_up_hot();
     crate::layout_autoswitch::warm_up();
     crate::russian_lexicon::warm_up();
+    crate::input_gate::warm_up_word_boundary();
 }
 
 pub fn warm_up_hot() {
