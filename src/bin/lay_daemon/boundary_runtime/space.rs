@@ -3,10 +3,10 @@ use lay::word_buffer::WordBuffer;
 
 use super::super::pending_typing_assist::PendingTypingAssist;
 use super::super::{
-    active_typing_assist, append_user_correction_learning_log, focused_ime_engine_handles_typing,
-    has_later_typing_press, log, prepare_typing_assist_after_space,
-    record_precognition_tick_if_enabled, should_run_typing_assist_on_space_release,
-    should_schedule_typing_assist_after_space, ShiftState,
+    active_typing_assist, append_user_correction_learning_log, has_later_typing_press, log,
+    prepare_typing_assist_after_space, record_precognition_tick_if_enabled,
+    should_run_typing_assist_on_space_release, should_schedule_typing_assist_after_space,
+    ShiftState,
 };
 
 pub(crate) struct SpaceReleaseContext<'a> {
@@ -23,13 +23,6 @@ pub(crate) fn try_handle_space_release(
     value: i32,
     ctx: SpaceReleaseContext<'_>,
 ) -> bool {
-    if ctx.pending_typing_assist_after_space.is_some() && focused_ime_engine_handles_typing() {
-        ctx.pending_typing_assist_after_space.take();
-        if ctx.verbose {
-            log("· typing-assist skipped: focused IME engine owns boundary text");
-        }
-        return false;
-    }
     if key != KeyCode::KEY_SPACE
         || value != 0
         || !should_run_typing_assist_on_space_release(
@@ -81,13 +74,6 @@ pub(crate) fn handle_space_press(ctx: SpacePressContext<'_>) {
         pending.note_visible_char();
     }
     *ctx.events_since_word_start = 0;
-    if focused_ime_engine_handles_typing() {
-        ctx.pending_typing_assist_after_space.take();
-        if ctx.verbose {
-            log("· typing-assist not scheduled: focused IME engine owns boundary text");
-        }
-        return;
-    }
     if !already_pending
         && should_schedule_typing_assist_after_space(
             active_typing_assist(),
@@ -112,5 +98,17 @@ pub(crate) fn handle_space_press(ctx: SpacePressContext<'_>) {
             ctx.buffer.prev_words_len(),
             ctx.buffer.current_len()
         ));
+    }
+}
+
+#[cfg(test)]
+mod route_contract {
+    #[test]
+    fn focused_ime_does_not_disable_daemon_boundary_worker() {
+        let source = include_str!("space.rs");
+        let forbidden_ime_owner = ["focused_ime_engine", "_handles_typing"].concat();
+
+        assert!(source.contains("prepare_typing_assist_after_space"));
+        assert!(!source.contains(&forbidden_ime_owner));
     }
 }

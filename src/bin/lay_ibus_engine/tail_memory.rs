@@ -93,6 +93,7 @@ impl LayIbusEngine {
         state.suppress_next_committed_tail_autocorrect = true;
     }
 
+    #[cfg(test)]
     pub(super) fn take_autocorrect_suppression_handoff(&self) -> bool {
         let Ok(mut state) = self.shared.lock() else {
             return false;

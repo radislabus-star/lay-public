@@ -8,42 +8,6 @@ use super::trace;
 use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
 
 impl LayIbusEngine {
-    pub(super) async fn autocorrect_committed_tail_on_space(
-        &mut self,
-        emitter: &SignalEmitter<'_>,
-    ) -> fdo::Result<bool> {
-        if self.take_manual_toggle_autocorrect_suppression() {
-            return Ok(false);
-        }
-        let committed_token = self.last_tail_token_text();
-        if committed_token.is_empty() {
-            return Ok(false);
-        }
-        let boundary_text = format!("{committed_token} ");
-        let Some(decision) = lay::ime_correction::decide_active_composition_autocorrect(
-            lay::ime_correction::ActiveCompositionAutocorrectRequest {
-                text: &boundary_text,
-                committed_tail: &self.tail_buffer,
-                config: &self.config,
-            },
-        ) else {
-            return Ok(false);
-        };
-        lay::action_log::record_candidate_edit_action_before_apply(
-            &decision.action,
-            lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
-            decision.input_gate,
-        );
-        self.replace_committed_tail(
-            emitter,
-            CommittedTailReplaceRequest::ime_autocorrect(
-                committed_token.chars().count() as u32,
-                decision.replacement,
-            ),
-        )
-        .await
-    }
-
     pub(super) async fn accept_stuck_tail(
         &mut self,
         emitter: &SignalEmitter<'_>,
@@ -138,6 +102,7 @@ impl LayIbusEngine {
         })
     }
 
+    #[cfg(test)]
     fn take_manual_toggle_autocorrect_suppression(&mut self) -> bool {
         let shared_suppression = self.take_autocorrect_suppression_handoff();
         let suppress = self.suppress_next_committed_tail_autocorrect || shared_suppression;
@@ -247,15 +212,14 @@ mod tests {
     }
 
     #[test]
-    fn committed_tail_space_route_uses_shared_correction_authority() {
+    fn committed_tail_backend_does_not_own_boundary_correction() {
         let source = include_str!("committed_tail.rs");
         let direct_gate_call = ["decide", "_input_gate("].concat();
+        let direct_decision = ["decide_active_composition", "_autocorrect("].concat();
 
         assert!(
-            source.contains("decide_active_composition_autocorrect(")
-                && source.contains("CommittedTailReplaceRequest::ime_autocorrect(")
-                && !source.contains(&direct_gate_call),
-            "IBus committed-tail Space must delegate truth to shared ime_correction"
+            !source.contains(&direct_decision) && !source.contains(&direct_gate_call),
+            "IBus committed-tail code must remain an execution backend"
         );
     }
 }

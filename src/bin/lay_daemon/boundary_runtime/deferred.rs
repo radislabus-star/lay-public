@@ -1,8 +1,7 @@
 use std::time::Instant;
 
 use super::super::{
-    active_typing_assist, apply_prepared_typing_assist_after_space,
-    focused_ime_engine_handles_typing, lock_virtual_keyboard, log,
+    active_typing_assist, apply_prepared_typing_assist_after_space, lock_virtual_keyboard, log,
     pending_typing_assist::PendingTypingAssist, should_run_deferred_typing_assist_after_space,
     TypingAssistOutcome,
 };
@@ -12,11 +11,6 @@ mod context;
 pub(crate) use context::DeferredTypingAssistContext;
 
 pub(crate) fn try_handle_deferred_typing_assist(ctx: DeferredTypingAssistContext<'_>) -> bool {
-    if ctx.pending_typing_assist_after_space.is_some() && focused_ime_engine_handles_typing() {
-        ctx.pending_typing_assist_after_space.take();
-        log("· typing-assist deferred dropped: focused IME engine owns boundary text");
-        return false;
-    }
     if !should_run_deferred_typing_assist_after_space(
         ctx.pending_typing_assist_after_space.is_some(),
         active_typing_assist(),
@@ -60,4 +54,16 @@ pub(crate) fn try_handle_deferred_typing_assist(ctx: DeferredTypingAssistContext
         TypingAssistOutcome::NoCorrection => {}
     }
     true
+}
+
+#[cfg(test)]
+mod route_contract {
+    #[test]
+    fn focused_ime_does_not_drop_verified_deferred_boundary_edit() {
+        let source = include_str!("deferred.rs");
+        let forbidden_ime_owner = ["focused_ime_engine", "_handles_typing"].concat();
+
+        assert!(source.contains("apply_prepared_typing_assist_after_space("));
+        assert!(!source.contains(&forbidden_ime_owner));
+    }
 }

@@ -59,17 +59,6 @@ pub(crate) struct CommittedTailReplaceRequest {
 }
 
 impl CommittedTailReplaceRequest {
-    pub(crate) fn ime_autocorrect(backspaces: u32, text: String) -> Self {
-        Self {
-            source: VisibleTailSource::ImeCommittedTail,
-            backspaces,
-            text,
-            intent: TextTransitionIntent::ImeAutocorrect,
-            suppress_next_autocorrect: false,
-            expected_tail: None,
-        }
-    }
-
     pub(crate) fn ime_manual_toggle(
         backspaces: u32,
         text: String,
@@ -504,18 +493,6 @@ mod tests {
         assert_eq!(request.text, "djn ");
         assert_eq!(request.intent, TextTransitionIntent::ImeManualToggle);
         assert!(request.suppress_next_autocorrect);
-        assert!(request.expected_tail.is_none());
-    }
-
-    #[test]
-    fn ime_autocorrect_request_keeps_typed_boundary_intent() {
-        let request = CommittedTailReplaceRequest::ime_autocorrect(6, "wechat ".to_string());
-
-        assert_eq!(request.source, VisibleTailSource::ImeCommittedTail);
-        assert_eq!(request.backspaces, 6);
-        assert_eq!(request.text, "wechat ");
-        assert_eq!(request.intent, TextTransitionIntent::ImeAutocorrect);
-        assert!(!request.suppress_next_autocorrect);
         assert!(request.expected_tail.is_none());
     }
 

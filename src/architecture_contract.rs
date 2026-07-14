@@ -44,7 +44,7 @@ const LINES: [ArchitectureLine; 7] = [
         owner: "text_edit::executor::TextEditBackend::Ime",
         status: ContractStatus::Pass,
         proof: "IME may execute verified actions but cannot decide apply truth",
-        debt: "all IME word boundaries must delegate correction truth to ime_correction",
+        debt: "daemon boundary worker owns correction truth; IME only executes authorized edits",
     },
     ArchitectureLine {
         id: "edit-plan-verifier",
@@ -154,15 +154,29 @@ pub fn observed_contract_status(id: &str) -> ContractStatus {
                 include_str!("bin/lay_ibus_engine/committed_tail.rs"),
                 include_str!("bin/lay_daemon/typing_assist_runtime/output/ime.rs"),
             ]);
-            let committed_boundary_delegates_truth = source_contains_all(
+            let ime_sources = [
+                include_str!("bin/lay_ibus_engine/managed.rs"),
                 include_str!("bin/lay_ibus_engine/committed_tail.rs"),
-                &[
-                    "decide_active_composition_autocorrect(",
-                    "CommittedTailReplaceRequest::ime_autocorrect(",
-                ],
-            );
+            ];
+            let ime_event_loop_has_no_boundary_decision = ime_sources.iter().all(|source| {
+                !source.contains("decide_active_composition_autocorrect(")
+                    && !source.contains("decide_input_gate(")
+            });
+            let daemon_owns_boundary_decision =
+                matches!(
+                    source_contains_all(
+                        include_str!("bin/lay_daemon/boundary_runtime/space.rs"),
+                        &[
+                            "prepare_typing_assist_after_space",
+                            "PendingTypingAssist::new"
+                        ],
+                    ),
+                    ContractStatus::Pass
+                ) && include_str!("bin/lay_daemon/boundary_runtime/deferred.rs")
+                    .contains("apply_prepared_typing_assist_after_space(");
             if matches!(routes_hold_capability, ContractStatus::Pass)
-                && matches!(committed_boundary_delegates_truth, ContractStatus::Pass)
+                && ime_event_loop_has_no_boundary_decision
+                && daemon_owns_boundary_decision
             {
                 ContractStatus::Pass
             } else {

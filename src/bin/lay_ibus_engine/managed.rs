@@ -54,16 +54,6 @@ impl LayIbusEngine {
         }
         if keyval == KEY_SPACE {
             if self.buffer.is_empty() {
-                if self.autocorrect_committed_tail_on_space(emitter).await? {
-                    self.trace_key(
-                        "space_committed_tail_autocorrect",
-                        keyval,
-                        keycode,
-                        true,
-                        Some(' '),
-                    );
-                    return Ok(true);
-                }
                 self.clear_preedit(emitter).await?;
                 self.push_tail_char(' ');
                 self.trace_key("space_passthrough", keyval, keycode, false, Some(' '));
@@ -128,13 +118,16 @@ impl LayIbusEngine {
 #[cfg(test)]
 mod word_boundary_route_contract {
     #[test]
-    fn managed_space_cannot_bypass_committed_tail_decision() {
+    fn managed_space_never_runs_correction_on_the_ibus_event_loop() {
         let source = include_str!("managed.rs");
+        let direct_decision = ["decide_active_composition", "_autocorrect("].concat();
+        let blocking_route = ["autocorrect_committed_tail", "_on_space("].concat();
 
         assert!(
-            source.contains("autocorrect_committed_tail_on_space(emitter).await?")
-                && source.contains("space_committed_tail_autocorrect"),
-            "managed committed-tail Space must ask shared correction before passthrough"
+            source.contains("space_passthrough")
+                && !source.contains(&direct_decision)
+                && !source.contains(&blocking_route),
+            "managed Space must stay a non-blocking backend event"
         );
     }
 }
