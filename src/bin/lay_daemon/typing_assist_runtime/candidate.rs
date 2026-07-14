@@ -26,6 +26,9 @@ pub(crate) fn find_typing_assist_correction(
             let started = Instant::now();
             let events = buf.last_completed_words_events(word_count)?;
             let decoded = decode_completed_tail(buf, word_count, &events, allow_layout_auto)?;
+            if word_count > 1 && !decoded.edit.matches_text_edit_contract_boundary_shift() {
+                return None;
+            }
             let decision_ms = started.elapsed().as_millis();
             super::super::log(&format!(
                 "  typing-assist decision: scope={} elapsed={}ms",
@@ -49,19 +52,9 @@ fn completed_tail_scopes_from_len(prev_words_len: usize, max_words: usize) -> Ve
     let max_scope = prev_words_len.min(max_words.max(1)).min(MAX_REPLACE_WORDS);
     if max_scope == 0 {
         Vec::new()
+    } else if max_scope >= 2 {
+        vec![2, 1]
     } else {
         vec![1]
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn typing_assist_autocorrect_uses_only_last_completed_word() {
-        assert_eq!(completed_tail_scopes_from_len(0, 3), Vec::<usize>::new());
-        assert_eq!(completed_tail_scopes_from_len(1, 3), vec![1]);
-        assert_eq!(completed_tail_scopes_from_len(3, 3), vec![1]);
     }
 }

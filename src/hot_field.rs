@@ -119,6 +119,8 @@ const fn decode_authority(value: u8) -> HotAuthority {
 pub enum HotWordAuthority {
     Unknown,
     CommonSurface,
+    L2SurfaceCenter,
+    L2FormCenter,
     UserUsage,
 }
 
@@ -130,6 +132,81 @@ pub struct HotWordReadout {
 impl HotWordReadout {
     pub const fn is_known(self) -> bool {
         !matches!(self.authority, HotWordAuthority::Unknown)
+    }
+
+    pub(crate) const fn has_structural_center(self) -> bool {
+        matches!(
+            self.authority,
+            HotWordAuthority::CommonSurface
+                | HotWordAuthority::L2SurfaceCenter
+                | HotWordAuthority::L2FormCenter
+        )
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct HotSurfacePhaseReadout {
+    pub(crate) exact_center: bool,
+    pub(crate) l1_refs: usize,
+    pub(crate) motif_refs: usize,
+    pub(crate) covered_l1_refs: usize,
+    pub(crate) residual_l1_refs: usize,
+    pub(crate) coherence_milli: u32,
+}
+
+impl HotSurfacePhaseReadout {
+    const MIN_FORM_L1_REFS: usize = 8;
+    const MIN_FORM_MOTIFS: usize = 2;
+    const MIN_FORM_COHERENCE_MILLI: u32 = 620;
+
+    pub(crate) const fn settles_as_form(self) -> bool {
+        self.exact_center
+            || (self.l1_refs >= Self::MIN_FORM_L1_REFS
+                && self.motif_refs >= Self::MIN_FORM_MOTIFS
+                && self.coherence_milli >= Self::MIN_FORM_COHERENCE_MILLI)
+    }
+
+    pub(crate) const fn transition_mass(self) -> u32 {
+        self.coherence_milli
+            .saturating_add((self.motif_refs as u32).saturating_mul(40))
+            .saturating_add(if self.exact_center { 240 } else { 0 })
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct HotBoundaryShiftReadout {
+    pub(crate) original_left: HotSurfacePhaseReadout,
+    pub(crate) original_right: HotSurfacePhaseReadout,
+    pub(crate) candidate_left: HotSurfacePhaseReadout,
+    pub(crate) candidate_right: HotSurfacePhaseReadout,
+    pub(crate) candidate_left_form: HotWordReadout,
+    pub(crate) candidate_right_form: HotWordReadout,
+}
+
+impl HotBoundaryShiftReadout {
+    const MIN_DIRECT_MASS_GAIN: u32 = 150;
+
+    pub(crate) const fn candidate_settles(self) -> bool {
+        (self.candidate_left_form.has_structural_center() || self.candidate_left.settles_as_form())
+            && (self.candidate_right_form.has_structural_center()
+                || self.candidate_right.settles_as_form())
+    }
+
+    pub(crate) const fn mass_gain(self) -> u32 {
+        self.candidate_left
+            .transition_mass()
+            .saturating_add(self.candidate_right.transition_mass())
+            .saturating_sub(
+                self.original_left
+                    .transition_mass()
+                    .saturating_add(self.original_right.transition_mass()),
+            )
+    }
+
+    pub(crate) const fn has_direct_apply_mass(self) -> bool {
+        self.candidate_settles()
+            && !self.original_right.exact_center
+            && self.mass_gain() >= Self::MIN_DIRECT_MASS_GAIN
     }
 }
 
@@ -147,12 +224,61 @@ impl HotFieldSnapshot {
             HotWordAuthority::Unknown
         } else if crate::lexicon::is_common_ru_word(&lower) {
             HotWordAuthority::CommonSurface
+        } else if crate::nanda_wave::l2::l2_surface_foundation_has_authority(&lower) {
+            HotWordAuthority::L2SurfaceCenter
         } else if crate::nanda_wave::cached_usage_prior_snapshot().word_prior(&lower) >= 0.020 {
             HotWordAuthority::UserUsage
         } else {
             HotWordAuthority::Unknown
         };
         HotWordReadout { authority }
+    }
+
+    /// Reads a surface that may be reconstructed from a compact morphology
+    /// center even when that exact inflected form is not a stored hot surface.
+    pub(crate) fn form_readout(&self, word: &str) -> HotWordReadout {
+        let surface = self.word_readout(word);
+        if surface.has_structural_center() {
+            return surface;
+        }
+        let phase = self.surface_phase_readout(word);
+        let authority = if phase.exact_center {
+            HotWordAuthority::L2SurfaceCenter
+        } else if phase.settles_as_form() {
+            HotWordAuthority::L2FormCenter
+        } else {
+            surface.authority
+        };
+        HotWordReadout { authority }
+    }
+
+    pub(crate) fn surface_phase_readout(&self, word: &str) -> HotSurfacePhaseReadout {
+        let readout = crate::nanda_wave::l2::l2_surface_phase_readout(word);
+        HotSurfacePhaseReadout {
+            exact_center: readout.exact_center,
+            l1_refs: readout.l1_refs,
+            motif_refs: readout.motif_refs,
+            covered_l1_refs: readout.covered_l1_refs,
+            residual_l1_refs: readout.residual_l1_refs,
+            coherence_milli: readout.coherence_milli(),
+        }
+    }
+
+    pub(crate) fn boundary_shift_readout(
+        &self,
+        original_left: &str,
+        original_right: &str,
+        candidate_left: &str,
+        candidate_right: &str,
+    ) -> HotBoundaryShiftReadout {
+        HotBoundaryShiftReadout {
+            original_left: self.surface_phase_readout(original_left),
+            original_right: self.surface_phase_readout(original_right),
+            candidate_left: self.surface_phase_readout(candidate_left),
+            candidate_right: self.surface_phase_readout(candidate_right),
+            candidate_left_form: self.form_readout(candidate_left),
+            candidate_right_form: self.form_readout(candidate_right),
+        }
     }
 }
 
@@ -202,5 +328,23 @@ mod tests {
         let readout = snapshot.word_readout("пров");
         assert_eq!(readout.authority, HotWordAuthority::Unknown);
         assert!(!readout.is_known());
+    }
+
+    #[test]
+    fn exact_surface_and_reconstructed_form_are_distinct_readouts() {
+        let snapshot = HotFieldSnapshot::current();
+        assert_eq!(
+            snapshot.word_readout("набирать").authority,
+            HotWordAuthority::L2SurfaceCenter
+        );
+        assert_eq!(
+            snapshot.form_readout("допустим").authority,
+            HotWordAuthority::L2SurfaceCenter
+        );
+        assert_eq!(
+            snapshot.form_readout("набираю").authority,
+            HotWordAuthority::L2FormCenter
+        );
+        assert!(!snapshot.word_readout("мнабираю").is_known());
     }
 }

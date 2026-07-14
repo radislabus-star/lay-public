@@ -125,10 +125,16 @@ fn boundary_proof_source(source_id: Option<&str>, error_class: Option<&str>) -> 
             || source == "PhraseCell32"
             || source == "manual_toggle"
             || source == "manual_replay"
-    }) || matches!(error_class, Some("split-word" | "glued-words"))
+    }) || matches!(
+        error_class,
+        Some("boundary-shift" | "split-word" | "glued-words")
+    )
 }
 
 fn strong_boundary_edit_shape(original: &str, replacement: &str) -> bool {
+    if surface_preserving_right_to_left_boundary_shift(original, replacement) {
+        return true;
+    }
     let original_words = normalized_words(original);
     let replacement_words = normalized_words(replacement);
     if replacement_words.len() != original_words.len().saturating_add(1) {
@@ -150,6 +156,70 @@ fn strong_boundary_edit_shape(original: &str, replacement: &str) -> bool {
         }
     }
     false
+}
+
+pub(crate) fn surface_preserving_right_to_left_boundary_shift(
+    original: &str,
+    replacement: &str,
+) -> bool {
+    if !same_non_whitespace_surface(original, replacement)
+        || !same_whitespace_signal(original, replacement)
+    {
+        return false;
+    }
+    let original_words = normalized_words(original);
+    let replacement_words = normalized_words(replacement);
+    if original_words.len() < 2 || original_words.len() != replacement_words.len() {
+        return false;
+    }
+
+    for boundary in 0..original_words.len().saturating_sub(1) {
+        if original_words[..boundary] != replacement_words[..boundary]
+            || original_words[boundary + 2..] != replacement_words[boundary + 2..]
+        {
+            continue;
+        }
+        let original_left = &original_words[boundary];
+        let original_right = &original_words[boundary + 1];
+        let replacement_left = &replacement_words[boundary];
+        let replacement_right = &replacement_words[boundary + 1];
+        if ![
+            original_left,
+            original_right,
+            replacement_left,
+            replacement_right,
+        ]
+        .into_iter()
+        .all(|word| crate::word_reader::is_cyrillic_letters_only(word))
+        {
+            continue;
+        }
+        if replacement_left.chars().count() != original_left.chars().count() + 1
+            || replacement_right.chars().count() + 1 != original_right.chars().count()
+        {
+            continue;
+        }
+        if format!("{original_left}{original_right}")
+            == format!("{replacement_left}{replacement_right}")
+        {
+            return true;
+        }
+    }
+    false
+}
+
+fn same_non_whitespace_surface(original: &str, replacement: &str) -> bool {
+    original
+        .chars()
+        .filter(|ch| !ch.is_whitespace())
+        .eq(replacement.chars().filter(|ch| !ch.is_whitespace()))
+}
+
+fn same_whitespace_signal(original: &str, replacement: &str) -> bool {
+    original
+        .chars()
+        .filter(|ch| ch.is_whitespace())
+        .eq(replacement.chars().filter(|ch| ch.is_whitespace()))
 }
 
 fn normalized_words(text: &str) -> Vec<String> {

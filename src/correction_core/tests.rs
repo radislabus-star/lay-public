@@ -423,6 +423,52 @@ mod tests {
     }
 
     #[test]
+    fn boundary_shift_is_selected_by_the_unified_correction_core() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "я думаю допусти мнабираю ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        let selected = resolution
+            .selected
+            .as_ref()
+            .unwrap_or_else(|| panic!("resolution={resolution:#?}"));
+        assert_eq!(selected.replacement, "я думаю допустим набираю ");
+        assert_eq!(selected.error_class, TypingErrorClass::BoundaryShift);
+        assert_eq!(selected.origin, CandidateOrigin::Boundary);
+    }
+
+    #[test]
+    fn clean_phrase_boundary_cannot_apply_a_shifted_alternative() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "я вижу видит фразу ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert!(resolution.selected.is_none(), "resolution={resolution:#?}");
+    }
+
+    #[test]
+    fn ambiguous_short_boundary_shift_is_suggestion_only() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "во тты ",
+            &pipeline,
+            CorrectionMode::DeterministicOnly,
+        ));
+
+        assert!(resolution.selected.is_none(), "resolution={resolution:#?}");
+        assert!(resolution.candidates.iter().any(|candidate| {
+            candidate.replacement == "вот ты "
+                && candidate.error_class == TypingErrorClass::BoundaryShift
+        }));
+    }
+
+    #[test]
     fn split_phrase_candidate_wins_over_l2_shortcut() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(

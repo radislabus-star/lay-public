@@ -188,6 +188,19 @@ fn deferred_typing_assist_respects_single_word_scope() {
 }
 
 #[test]
+fn deferred_typing_assist_authorizes_exact_two_word_boundary_shift() {
+    let buffer = typed_buffer(&[("я думаю допусти мнабираю ", true)]);
+    let correction =
+        find_typing_assist_correction(&buffer, false, 2).expect("verified two-word boundary shift");
+
+    assert_eq!(map_original_events(&correction.events), "допусти мнабираю ");
+    assert_eq!(correction.edit.original, "допусти мнабираю ");
+    assert_eq!(correction.edit.replacement, "допустим набираю ");
+    assert!(correction.edit.matches_text_edit_contract_boundary_shift());
+    assert!(correction.edit.plan_matches_replacement());
+}
+
+#[test]
 fn deferred_typing_assist_drops_snapshot_when_next_word_starts() {
     let row = deferred_case("snapshot_extra_space");
     let mut buffer = typed_buffer_from_semicolon_fixture(&row[1]);

@@ -403,6 +403,7 @@ fn l3_phrase_memory_applies_to(error_class: TypingErrorClass) -> bool {
     matches!(
         error_class,
         TypingErrorClass::CompositeTypo
+            | TypingErrorClass::BoundaryShift
             | TypingErrorClass::MissingLetter
             | TypingErrorClass::ExtraLetter
             | TypingErrorClass::AdjacentTransposition
@@ -682,7 +683,9 @@ fn boundary_operator_changes_non_whitespace_surface(
 ) -> bool {
     if !matches!(
         error_class,
-        TypingErrorClass::SplitWord | TypingErrorClass::GluedWords
+        TypingErrorClass::BoundaryShift
+            | TypingErrorClass::SplitWord
+            | TypingErrorClass::GluedWords
     ) && !matches!(
         correction_source_contract::source_role(source_id),
         CorrectionSourceRole::Boundary
@@ -702,7 +705,9 @@ fn replacement_glues_separate_words_without_boundary_class(
 ) -> bool {
     if matches!(
         error_class,
-        TypingErrorClass::SplitWord | TypingErrorClass::GluedWords
+        TypingErrorClass::BoundaryShift
+            | TypingErrorClass::SplitWord
+            | TypingErrorClass::GluedWords
     ) {
         return false;
     }
@@ -718,7 +723,9 @@ fn boundary_candidate_glues_short_function_tail(
 ) -> bool {
     if !matches!(
         error_class,
-        TypingErrorClass::SplitWord | TypingErrorClass::GluedWords
+        TypingErrorClass::BoundaryShift
+            | TypingErrorClass::SplitWord
+            | TypingErrorClass::GluedWords
     ) {
         return false;
     }
@@ -1174,6 +1181,7 @@ fn known_russian_word_rewritten_to_different_known_word(
     if !matches!(
         error_class,
         TypingErrorClass::CompositeTypo
+            | TypingErrorClass::BoundaryShift
             | TypingErrorClass::MissingLetter
             | TypingErrorClass::LetterSubstitution
             | TypingErrorClass::GrammarAgreement

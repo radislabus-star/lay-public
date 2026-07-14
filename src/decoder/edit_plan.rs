@@ -15,7 +15,7 @@ pub struct DecoderEditPlan {
     pub replacement: String,
     pub plan: TextReplacement,
     pub source: CorrectionSource,
-    transition: TransitionAudit,
+    pub(super) transition: TransitionAudit,
     confidence_milli: i16,
     selected_source_id: Option<String>,
     selected_error_class: Option<String>,

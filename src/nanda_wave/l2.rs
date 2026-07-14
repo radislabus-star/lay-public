@@ -55,6 +55,8 @@ const L2_CASE_WORD_LIMIT: usize = 200;
 const L2_SURFACE_FOUNDATION_RU_DATA: &str =
     include_str!("../../data/lexicon/l2_surface_foundation_ru_100k.txt");
 const L2_SURFACE_HOT_RU_DATA: &str = include_str!("../../data/lexicon/l2_surface_hot_ru.txt");
+const L2_CLEAN_PHRASE_TRAINING_DATA: &str =
+    include_str!("../../data/nanda_llmwave_seed_phrases.txt");
 pub(super) const L2_SURFACE_MOTIF_CELL: &str = "L2SurfaceMotifCell32";
 pub(super) const L2_SURFACE_COMPLETION_CELL: &str = "L2SurfaceCompletionCell32";
 const L2_FORM_ATTRACTOR_LIMIT: usize = 6;
@@ -225,6 +227,36 @@ pub(crate) fn l2_center_near_surfaces(text: &str, limit: usize) -> Vec<String> {
 
 pub(crate) fn l2_center_contains_surface(word: &str) -> bool {
     surface_motif_memory().contains_surface(word)
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct L2SurfacePhaseReadout {
+    pub(crate) exact_center: bool,
+    pub(crate) l1_refs: usize,
+    pub(crate) motif_refs: usize,
+    pub(crate) covered_l1_refs: usize,
+    pub(crate) residual_l1_refs: usize,
+}
+
+impl L2SurfacePhaseReadout {
+    pub(crate) fn coherence_milli(self) -> u32 {
+        if self.l1_refs == 0 {
+            return 0;
+        }
+        ((self.covered_l1_refs.saturating_mul(1_000)) / self.l1_refs).min(u32::MAX as usize) as u32
+    }
+}
+
+pub(crate) fn l2_surface_phase_readout(word: &str) -> L2SurfacePhaseReadout {
+    let memory = surface_motif_memory();
+    let sequence = memory.token_sequence_for_text(word);
+    L2SurfacePhaseReadout {
+        exact_center: memory.contains_surface(word),
+        l1_refs: sequence.l1_ref_count,
+        motif_refs: sequence.motif_refs,
+        covered_l1_refs: sequence.covered_l1_refs,
+        residual_l1_refs: sequence.residual_l1_refs,
+    }
 }
 
 fn sort_and_truncate_ime_l2_candidates(
@@ -1450,12 +1482,12 @@ fn boundary_scan_candidates(
             segments[window.left_idx].0, segments[window.ws_idx].0, segments[window.right_idx].0
         );
         let Some((replacement, repair_kind, energy, risk)) =
-            crate::phrase_reader::correct_moved_prefix_letter_pair(&pair_text)
+            crate::phrase_reader::propose_moved_prefix_letter_pair(&pair_text)
                 .map(|replacement| {
                     (
                         replacement,
                         "tail-moved-prefix-pair-scan",
-                        l1_energy(l1, "BoundaryCell32").max(0.92),
+                        l1_energy(l1, "BoundaryShiftCell32").max(0.92),
                         0.06,
                     )
                 })
@@ -1482,7 +1514,11 @@ fn boundary_scan_candidates(
                 window.right_idx,
                 &replacement,
             ),
-            source: "BoundaryCell32",
+            source: if repair_kind == "tail-moved-prefix-pair-scan" {
+                "BoundaryShiftCell32"
+            } else {
+                "BoundaryCell32"
+            },
             energy,
             risk,
             support: {
@@ -2114,7 +2150,7 @@ mod tests {
         let candidates = run_l2(original, &l1);
         assert!(
             candidates.iter().any(|candidate| {
-                candidate.source == "BoundaryCell32"
+                candidate.source == "BoundaryShiftCell32"
                     && candidate.text == "сервер работает на постоянку"
             }),
             "candidates={candidates:?}"

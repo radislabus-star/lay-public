@@ -81,7 +81,7 @@ impl EditAction {
             selected_error_class,
         );
         downgrade_low_confidence_boundary_edit(&mut safety, confidence_milli);
-        downgrade_low_confidence_wide_edit(&mut safety, confidence_milli);
+        downgrade_low_confidence_wide_edit(&mut safety, confidence_milli, selected_error_class);
         let kind = classify_planned_replacement(&safety);
         Self {
             kind,
@@ -196,11 +196,15 @@ fn downgrade_low_confidence_boundary_edit(
     safety.reason = "low_confidence_boundary_edit";
 }
 
-fn downgrade_low_confidence_wide_edit(safety: &mut EditPlanSafetyReport, confidence_milli: i16) {
+fn downgrade_low_confidence_wide_edit(
+    safety: &mut EditPlanSafetyReport,
+    confidence_milli: i16,
+    selected_error_class: Option<&str>,
+) {
     if !safety.allow_apply || !(safety.changes_non_last_word || safety.would_touch_words > 1) {
         return;
     }
-    if confidence_milli >= 750 {
+    if selected_error_class == Some("boundary-shift") || confidence_milli >= 750 {
         return;
     }
     safety.allow_apply = false;

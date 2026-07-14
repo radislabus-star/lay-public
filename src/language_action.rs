@@ -6,7 +6,8 @@
 use crate::correction_core::TypingErrorClass;
 use crate::correction_source_contract::{candidate_origin, CandidateOrigin};
 
-pub const LANGUAGE_ACTION_OPERATOR_COUNT: usize = 17;
+#[cfg(test)]
+const LANGUAGE_ACTION_OPERATOR_COUNT: usize = 18;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LanguageActionOperator {
@@ -22,6 +23,7 @@ pub enum LanguageActionOperator {
     FlipLayout,
     FixMixedLayout,
     CompleteWord,
+    ShiftWordBoundary,
     SplitGluedWords,
     JoinBrokenWord,
     ApplyContextChoice,
@@ -44,6 +46,7 @@ impl LanguageActionOperator {
             Self::FlipLayout => "flip_layout",
             Self::FixMixedLayout => "fix_mixed_layout",
             Self::CompleteWord => "complete_word",
+            Self::ShiftWordBoundary => "shift_word_boundary",
             Self::SplitGluedWords => "split_glued_words",
             Self::JoinBrokenWord => "join_broken_word",
             Self::ApplyContextChoice => "apply_context_choice",
@@ -107,6 +110,7 @@ pub(crate) fn operator_for_origin(
         TypingErrorClass::LetterSubstitution => LanguageActionOperator::ReplaceLetter,
         TypingErrorClass::CaseNoise => LanguageActionOperator::NormalizeCase,
         TypingErrorClass::CompositeTypo => context_or_typo_operator(origin),
+        TypingErrorClass::BoundaryShift => LanguageActionOperator::ShiftWordBoundary,
         TypingErrorClass::Unknown => LanguageActionOperator::SuggestOnly,
         TypingErrorClass::SplitWord => LanguageActionOperator::JoinBrokenWord,
         TypingErrorClass::GluedWords => LanguageActionOperator::SplitGluedWords,
@@ -134,7 +138,9 @@ pub(crate) fn proof_for_origin(
             LanguageActionProof::Layout
         }
         TypingErrorClass::MixedScript => LanguageActionProof::Layout,
-        TypingErrorClass::SplitWord | TypingErrorClass::GluedWords => LanguageActionProof::Boundary,
+        TypingErrorClass::BoundaryShift
+        | TypingErrorClass::SplitWord
+        | TypingErrorClass::GluedWords => LanguageActionProof::Boundary,
         TypingErrorClass::GrammarAgreement => LanguageActionProof::Grammar,
         TypingErrorClass::CompletionOnly => LanguageActionProof::Completion,
         TypingErrorClass::TechnicalToken | TypingErrorClass::ProtectedToken => {
@@ -188,6 +194,7 @@ mod tests {
             LanguageActionOperator::FlipLayout,
             LanguageActionOperator::FixMixedLayout,
             LanguageActionOperator::CompleteWord,
+            LanguageActionOperator::ShiftWordBoundary,
             LanguageActionOperator::SplitGluedWords,
             LanguageActionOperator::JoinBrokenWord,
             LanguageActionOperator::ApplyContextChoice,

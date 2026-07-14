@@ -81,7 +81,12 @@ pub(crate) fn bayes_suggest_only_reason(
 ) -> Option<&'static str> {
     if matches!(
         error_class,
-        "wrong_layout" | "partial-layout" | "mixed-script" | "split-word" | "glued-words"
+        "wrong_layout"
+            | "partial-layout"
+            | "mixed-script"
+            | "boundary-shift"
+            | "split-word"
+            | "glued-words"
     ) {
         return None;
     }

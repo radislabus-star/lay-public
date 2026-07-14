@@ -860,6 +860,9 @@ pub(super) fn runtime_l2_surface_words() -> Vec<String> {
         &mut words,
         &mut seen,
     );
+    for phrase in L2_CLEAN_PHRASE_TRAINING_DATA.lines() {
+        collect_runtime_l2_training_text_words(phrase, &mut words, &mut seen);
+    }
     collect_runtime_l2_training_words(
         crate::lexicon::common_ru_words_iter().map(str::to_string),
         &mut words,
@@ -1000,6 +1003,25 @@ pub(super) fn collect_runtime_l2_text_words(
         words,
         seen,
     );
+}
+
+pub(super) fn collect_runtime_l2_training_text_words(
+    text: &str,
+    words: &mut Vec<String>,
+    seen: &mut HashSet<String>,
+) {
+    for token in text.split_whitespace() {
+        let surface = token
+            .chars()
+            .filter(|ch| ch.is_alphabetic() || *ch == '-')
+            .flat_map(char::to_lowercase)
+            .collect::<String>();
+        if let Some(normalized) = surface_bank::normalize_l2_clean_phrase_word(&surface) {
+            if seen.insert(normalized.clone()) {
+                words.push(normalized);
+            }
+        }
+    }
 }
 
 pub(super) fn decode_fixture_spaces(text: &str) -> String {

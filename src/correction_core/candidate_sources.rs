@@ -20,7 +20,11 @@ impl L2CandidateSource {
 
     fn push_candidates(self, req: &CorrectionRequest<'_>, lattice: &mut L2CandidateLattice) {
         match self {
-            Self::Deterministic => lattice.push_source(deterministic_text_correction(req)),
+            Self::Deterministic => {
+                for candidate in deterministic_text_candidates(req) {
+                    lattice.push_source(Some(candidate));
+                }
+            }
             Self::Nanda => {
                 for candidate in nanda_text_candidates(req) {
                     lattice.push_source(Some(candidate));
@@ -29,6 +33,20 @@ impl L2CandidateSource {
         }
     }
 }
+
+fn deterministic_text_candidates(
+    req: &CorrectionRequest<'_>,
+) -> Vec<UnifiedCorrectionCandidate> {
+    let mut candidates = Vec::with_capacity(2);
+    if let Some(candidate) = boundary_shift_transition_candidate(req) {
+        candidates.push(candidate);
+    }
+    if let Some(candidate) = deterministic_text_correction(req) {
+        candidates.push(candidate);
+    }
+    candidates
+}
+
 fn deterministic_text_correction(
     req: &CorrectionRequest<'_>,
 ) -> Option<UnifiedCorrectionCandidate> {
@@ -88,6 +106,61 @@ fn deterministic_text_correction(
         CorrectionDecisionSource::Deterministic,
         rule_id,
         error_class,
+        gate,
+    ))
+}
+
+fn boundary_shift_transition_candidate(
+    req: &CorrectionRequest<'_>,
+) -> Option<UnifiedCorrectionCandidate> {
+    if !req.auto_replace && !req.typing_assist {
+        return None;
+    }
+    let (leading, core, trailing) = split_edge_whitespace(req.text);
+    let segments = split_ws_segments(core);
+    let word_indices = segments
+        .iter()
+        .enumerate()
+        .filter_map(|(idx, (_, is_ws))| (!*is_ws).then_some(idx))
+        .collect::<Vec<_>>();
+    let [.., left_idx, right_idx] = word_indices.as_slice() else {
+        return None;
+    };
+    if *right_idx != *left_idx + 2 || !segments[*left_idx + 1].1 {
+        return None;
+    }
+
+    let pair = format!(
+        "{}{}{}",
+        segments[*left_idx].0,
+        segments[*left_idx + 1].0,
+        segments[*right_idx].0
+    );
+    let pair_replacement = crate::phrase_reader::propose_moved_prefix_letter_pair(&pair)?;
+    let mut replacement = String::with_capacity(req.text.len());
+    replacement.push_str(leading);
+    for (idx, (segment, _)) in segments.iter().enumerate() {
+        if idx == *left_idx {
+            replacement.push_str(&pair_replacement);
+        } else if idx <= *right_idx && idx > *left_idx {
+            continue;
+        } else {
+            replacement.push_str(segment);
+        }
+    }
+    replacement.push_str(trailing);
+
+    let gate = gate_candidate_with_source(
+        req.text,
+        &replacement,
+        TypingErrorClass::BoundaryShift,
+        ids::MOVED_PREFIX_PAIR,
+    );
+    Some(UnifiedCorrectionCandidate::new(
+        replacement,
+        CorrectionDecisionSource::Deterministic,
+        ids::MOVED_PREFIX_PAIR,
+        TypingErrorClass::BoundaryShift,
         gate,
     ))
 }
@@ -939,7 +1012,7 @@ fn rule_error_class(rule_id: &str) -> TypingErrorClass {
         | ids::EXPERIMENTAL_LAYOUT_EN_TO_RU
         | ids::EXPERIMENTAL_LAYOUT_RU_TO_EN
         | ids::VISUAL_B => TypingErrorClass::WrongLayout,
-        ids::MOVED_PREFIX_PAIR => TypingErrorClass::PartialLayout,
+        ids::MOVED_PREFIX_PAIR => TypingErrorClass::BoundaryShift,
         ids::SPLIT_WORD_PAIR => TypingErrorClass::SplitWord,
         ids::CYRILLIC_CASE => TypingErrorClass::CaseNoise,
         ids::HARD_SIGN | ids::SINGLE_LETTER_SUBSTITUTION | ids::VOWEL_CONFUSION => {
@@ -957,6 +1030,9 @@ fn rule_error_class(rule_id: &str) -> TypingErrorClass {
 }
 
 fn nanda_source_error_class(source: &str) -> TypingErrorClass {
+    if source == "BoundaryShiftCell32" {
+        return TypingErrorClass::BoundaryShift;
+    }
     if correction_source_contract::candidate_origin(source) == CandidateOrigin::LayoutThenTypo {
         return TypingErrorClass::CompositeTypo;
     }

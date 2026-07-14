@@ -193,6 +193,7 @@ fn transition_rank_bonus(
     }
     match action.edit_operator {
         verifier::EditTransitionOperator::BoundaryShift
+        | verifier::EditTransitionOperator::BoundaryMergeSplit
         | verifier::EditTransitionOperator::SplitPreviousGluedAndRepairTail => 0.34,
         verifier::EditTransitionOperator::LayoutProjection => 0.28,
         verifier::EditTransitionOperator::PhraseTokenRepair => 0.16,

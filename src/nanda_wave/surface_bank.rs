@@ -152,6 +152,25 @@ pub(crate) fn normalize_l2_training_surface_word(word: &str) -> Option<String> {
     }
 }
 
+/// Normalizes tokens from a reviewed phrase corpus. Unlike live text, this
+/// source already supplies word boundaries, so short Cyrillic forms are not
+/// treated as arbitrary fragments.
+pub(crate) fn normalize_l2_clean_phrase_word(word: &str) -> Option<String> {
+    let normalized = word.trim().to_lowercase();
+    let len = normalized.chars().count();
+    if !(1..=24).contains(&len)
+        || !normalized.chars().all(is_cyrillic_letter)
+        || crate::lexicon::is_ru_live_protected_word(&normalized)
+    {
+        return None;
+    }
+    if len > 1 || crate::lexicon::is_ru_one_letter_function_word(&normalized) {
+        Some(normalized)
+    } else {
+        None
+    }
+}
+
 fn usage_priority(word: &str) -> u16 {
     super::usage_prior::accepted_word_usage_count_cached(word).min(u16::MAX as u32) as u16
 }
@@ -186,5 +205,14 @@ mod tests {
             Some("не")
         );
         assert_eq!(normalize_l2_training_surface_word("гл"), None);
+    }
+
+    #[test]
+    fn clean_phrase_training_uses_reviewed_boundaries_for_short_forms() {
+        assert_eq!(
+            normalize_l2_clean_phrase_word("мне").as_deref(),
+            Some("мне")
+        );
+        assert_eq!(normalize_l2_clean_phrase_word("x"), None);
     }
 }

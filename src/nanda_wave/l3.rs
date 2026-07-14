@@ -451,6 +451,9 @@ fn candidate_transition_authority_blocker(
 }
 
 fn nanda_candidate_error_class(source: &str) -> TypingErrorClass {
+    if source == "BoundaryShiftCell32" {
+        return TypingErrorClass::BoundaryShift;
+    }
     match correction_source_contract::source_role(source) {
         CorrectionSourceRole::Layout => TypingErrorClass::WrongLayout,
         CorrectionSourceRole::Boundary => TypingErrorClass::GluedWords,

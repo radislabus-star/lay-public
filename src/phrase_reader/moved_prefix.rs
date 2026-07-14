@@ -1,124 +1,112 @@
-use crate::phrase_lexicon::is_known_russian_phrase_part;
-use crate::phrase_score::{NGRAM_MOVED_PREFIX_MARGIN, NGRAM_MOVED_PREFIX_RIGHT_MARGIN};
-use crate::russian_chars::same_letter_ignore_case;
-use crate::russian_lexicon::{
-    is_known_russian_word_or_form, russian_short_dictionary, russian_tiny_dictionary,
-};
-use crate::russian_typo_scoring::ngram_allows_ru_candidate;
 use crate::word_reader::is_cyrillic_word;
 
-use super::guards::{is_safe_short_moved_prefix_right, read_plain_phrase_pair};
+use super::guards::read_plain_phrase_pair;
 
+struct BoundaryShiftProposal {
+    replacement: String,
+    direct_apply_mass: bool,
+}
+
+/// Generates a surface-preserving boundary transition for the decision core.
+/// It does not grant apply authority.
+pub(crate) fn propose_moved_prefix_letter_pair(text: &str) -> Option<String> {
+    boundary_shift_proposal(text).map(|proposal| proposal.replacement)
+}
+
+/// Compatibility path for callers that do not pass through the decision core.
+/// Ambiguous proposals remain visible only to the typed transition route.
 pub fn correct_moved_prefix_letter_pair(text: &str) -> Option<String> {
-    let pair = read_plain_phrase_pair(text)?;
-    if pair.right.chars().count() < 2 {
-        return None;
-    }
+    let proposal = boundary_shift_proposal(text)?;
+    proposal.direct_apply_mass.then_some(proposal.replacement)
+}
 
+fn boundary_shift_proposal(text: &str) -> Option<BoundaryShiftProposal> {
+    let pair = read_plain_phrase_pair(text)?;
     let mut right_chars = pair.right.chars();
     let moved = right_chars.next()?;
-    if is_known_russian_word_or_form(&pair.right.to_lowercase()) {
+    let right_rest = right_chars.collect::<String>();
+    if right_rest.is_empty() {
         return None;
     }
-    let right_rest: String = right_chars.collect();
-    let left_candidate = format!("{}{}", pair.left, moved);
-    let candidate = format!("{left_candidate} {right_rest}");
-    let candidate_lower = candidate.to_lowercase();
 
+    let left_candidate = format!("{}{}", pair.left, moved);
     if !is_cyrillic_word(&left_candidate) || !is_cyrillic_word(&right_rest) {
         return None;
     }
 
+    let original_right = pair.right.to_lowercase();
+    let original_left = pair.left.to_lowercase();
     let left_candidate_lower = left_candidate.to_lowercase();
-    let right_rest_lower = right_rest.to_lowercase();
-    let right_lower = pair.right.to_lowercase();
-    let short_right_is_safe = is_safe_short_moved_prefix_right(&right_rest_lower)
-        && !is_known_russian_word_or_form(&right_lower);
-    let left_original_lower = pair.left.to_lowercase();
-
-    if same_letter_ignore_case(moved, 'й')
-        && left_candidate.chars().count() >= 5
-        && right_rest.chars().count() >= 5
-        && !is_known_russian_word_or_form(&left_original_lower)
-        && !is_known_russian_word_or_form(&right_lower)
-        && is_known_russian_word_or_form(&left_candidate_lower)
-        && is_known_russian_phrase_part(&right_rest_lower)
-    {
-        return Some(format!("{}{}", candidate, pair.right_trailing));
+    let right_candidate_lower = right_rest.to_lowercase();
+    let field = crate::hot_field::HotFieldSnapshot::current();
+    let readout = field.boundary_shift_readout(
+        &original_left,
+        &original_right,
+        &left_candidate_lower,
+        &right_candidate_lower,
+    );
+    if !readout.candidate_settles() {
+        return None;
     }
+    let candidate = format!("{left_candidate}{}{right_rest}", pair.separator);
+    Some(BoundaryShiftProposal {
+        replacement: format!("{}{}", candidate, pair.right_trailing),
+        direct_apply_mass: readout.has_direct_apply_mass(),
+    })
+}
 
-    if left_candidate.chars().count() >= 5
-        && short_right_is_safe
-        && is_known_russian_word_or_form(&left_candidate_lower)
-        && ngram_allows_ru_candidate(&candidate_lower, text, NGRAM_MOVED_PREFIX_MARGIN)
-    {
-        return Some(format!("{}{}", candidate, pair.right_trailing));
-    }
+#[cfg(test)]
+fn has_form_center(word: &str) -> bool {
+    crate::hot_field::HotFieldSnapshot::current()
+        .form_readout(word)
+        .has_structural_center()
+}
 
-    if let Some(left_last) = pair.left.chars().last() {
-        if short_right_is_safe
-            && same_letter_ignore_case(left_last, moved)
-            && pair.left.chars().count() > 1
-            && is_known_russian_word_or_form(&left_original_lower)
-            && crate::ngram::ru_candidate_margin(&right_rest_lower, &right_lower)
-                >= NGRAM_MOVED_PREFIX_RIGHT_MARGIN
-        {
-            let candidate = format!("{} {}", pair.left, right_rest);
-            if ngram_allows_ru_candidate(&candidate.to_lowercase(), text, NGRAM_MOVED_PREFIX_MARGIN)
-            {
-                return Some(format!("{}{}", candidate, pair.right_trailing));
-            }
+#[cfg(test)]
+fn has_exact_surface_center(word: &str) -> bool {
+    crate::hot_field::HotFieldSnapshot::current()
+        .surface_phase_readout(word)
+        .exact_center
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{
+        correct_moved_prefix_letter_pair, has_exact_surface_center, has_form_center,
+        propose_moved_prefix_letter_pair,
+    };
+
+    #[test]
+    fn boundary_shift_lexical_centers_cover_inflected_words_not_corrupt_surfaces() {
+        for word in ["на", "допустим", "вот", "ты"] {
+            assert!(has_form_center(word), "missing lexical center: {word}");
+        }
+        for candidate in ["постоянку", "набираю"] {
+            assert!(
+                has_form_center(candidate),
+                "missing form center: {candidate}"
+            );
+        }
+        for word in ["апостоянку", "мнабираю", "тты"] {
+            assert!(
+                !has_exact_surface_center(word),
+                "corrupt surface center is known: {word}"
+            );
         }
     }
 
-    if left_candidate.chars().count() <= 3
-        && !is_known_russian_word_or_form(&left_original_lower)
-        && (russian_tiny_dictionary().contains(&left_candidate_lower)
-            || russian_short_dictionary().contains(&left_candidate_lower))
-        && right_rest.chars().count() >= 5
-        && moved_prefix_right_rest_has_authority(
-            &right_rest_lower,
-            &right_lower,
-            &candidate_lower,
-            text,
-        )
-    {
-        return Some(format!("{}{}", candidate, pair.right_trailing));
+    #[test]
+    fn boundary_shift_uses_hot_field_snapshot_without_cold_dictionary_authority() {
+        assert!(!has_exact_surface_center("мнабираю"));
+        assert!(has_form_center("допустим"));
+        assert!(has_form_center("набираю"));
+        assert_eq!(
+            correct_moved_prefix_letter_pair("допусти мнабираю"),
+            Some("допустим набираю".to_string())
+        );
+        assert_eq!(
+            propose_moved_prefix_letter_pair("сейча сна"),
+            Some("сейчас на".to_string())
+        );
     }
-
-    if left_candidate.chars().count() < 5 || right_rest.chars().count() < 5 {
-        return None;
-    }
-    if !is_known_russian_word_or_form(&left_candidate_lower)
-        || !is_known_russian_word_or_form(&right_rest_lower)
-    {
-        return None;
-    }
-    if crate::ngram::ru_candidate_margin(&right_rest_lower, &right_lower)
-        < NGRAM_MOVED_PREFIX_RIGHT_MARGIN
-    {
-        return None;
-    }
-    if !ngram_allows_ru_candidate(&candidate_lower, text, NGRAM_MOVED_PREFIX_MARGIN) {
-        return None;
-    }
-
-    Some(format!("{}{}", candidate, pair.right_trailing))
-}
-
-fn moved_prefix_right_rest_has_authority(
-    right_rest_lower: &str,
-    right_lower: &str,
-    candidate_lower: &str,
-    original_text: &str,
-) -> bool {
-    if is_known_russian_phrase_part(right_rest_lower)
-        || crate::lexicon::is_ime_hot_ru_word(right_rest_lower)
-    {
-        return true;
-    }
-
-    crate::ngram::ru_candidate_margin(right_rest_lower, right_lower)
-        >= NGRAM_MOVED_PREFIX_RIGHT_MARGIN
-        && ngram_allows_ru_candidate(candidate_lower, original_text, NGRAM_MOVED_PREFIX_MARGIN)
 }

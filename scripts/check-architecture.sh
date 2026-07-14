@@ -335,6 +335,7 @@ assert_max_lines src/layout_autoswitch/ascii/phrase.rs 140
 assert_max_lines src/layout_autoswitch/ascii/symbols.rs 70
 assert_max_lines src/layout_autoswitch/ascii/word.rs 180
 assert_max_lines src/decoder.rs 60
+assert_max_lines src/decoder/edit_contract.rs 30
 assert_max_lines src/decoder/edit_plan.rs 161
 assert_max_lines src/decoder/manual.rs 160
 assert_max_lines src/decoder/ranked.rs 120

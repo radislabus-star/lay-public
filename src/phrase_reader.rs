@@ -28,6 +28,7 @@ pub use contextual_tail::correct_contextual_glued_tail;
 pub use glued_phrase::correct_glued_russian_phrase;
 pub(crate) use known_word_missing::correct_contextual_known_word_missing_letter;
 pub use moved_prefix::correct_moved_prefix_letter_pair;
+pub(crate) use moved_prefix::propose_moved_prefix_letter_pair;
 pub use split_pair::correct_split_word_pair;
 
 #[cfg(test)]

@@ -234,6 +234,32 @@ fn candidate_has_apply_authority(
         candidate.error_class,
         candidate.origin,
     );
+    let boundary_field = (action.edit_operator == verifier::EditTransitionOperator::BoundaryShift)
+        .then(|| boundary_shift_field_readout(&event.original, &candidate.replacement))
+        .flatten();
+    let high_precision_boundary_shift = action.verifier_passed
+        && action.edit_operator == verifier::EditTransitionOperator::BoundaryShift
+        && boundary_shift_has_stable_token_mass(&candidate.replacement)
+        && boundary_field.is_some_and(|readout| readout.has_direct_apply_mass());
+    let learned_short_boundary_authority = signals.l3_phrase_milli >= 420
+        || signals.l4_signed_milli >= 120
+        || super::memory::TransitionMemory::has_exact_positive(
+            &event.original,
+            &candidate.replacement,
+            candidate.origin,
+        );
+    if action.edit_operator == verifier::EditTransitionOperator::BoundaryShift
+        && !high_precision_boundary_shift
+        && !learned_short_boundary_authority
+    {
+        debug_decision_reject(
+            candidate,
+            "ambiguous_short_boundary_shift",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
     if !action.verifier_passed
         && !matches!(
             source_role,
@@ -258,7 +284,8 @@ fn candidate_has_apply_authority(
         || signals.l4_signed_milli >= 120;
     let strong_l2_peak_support =
         strong_l2_wave_peak_support(&signals) && !self_referential_surface_drift;
-    let strong_learned_support = external_learned_support || strong_l2_peak_support;
+    let strong_learned_support =
+        external_learned_support || strong_l2_peak_support || high_precision_boundary_shift;
     let strong_transition_support = strong_l2_wave_peak_transition_support(&signals)
         && !self_referential_surface_drift
         || (policy.l2_phase_apply
@@ -329,6 +356,35 @@ fn candidate_has_apply_authority(
         debug_decision_reject(candidate, "better_non_apply", bayes.posterior, bayes.risk);
     }
     allowed
+}
+
+fn boundary_shift_has_stable_token_mass(replacement: &str) -> bool {
+    let words = crate::correction_core::normalized_correction_words(replacement);
+    let Some(pair) = words.get(words.len().saturating_sub(2)..) else {
+        return false;
+    };
+    pair.len() == 2 && pair.iter().all(|word| word.chars().count() >= 4)
+}
+
+fn boundary_shift_field_readout(
+    original: &str,
+    replacement: &str,
+) -> Option<crate::hot_field::HotBoundaryShiftReadout> {
+    let original_words = crate::correction_core::normalized_correction_words(original);
+    let replacement_words = crate::correction_core::normalized_correction_words(replacement);
+    if original_words.len() != replacement_words.len() || original_words.len() < 2 {
+        return None;
+    }
+    let original_pair = &original_words[original_words.len() - 2..];
+    let replacement_pair = &replacement_words[replacement_words.len() - 2..];
+    Some(
+        crate::hot_field::HotFieldSnapshot::current().boundary_shift_readout(
+            &original_pair[0],
+            &original_pair[1],
+            &replacement_pair[0],
+            &replacement_pair[1],
+        ),
+    )
 }
 
 fn phase_managed_source(source_role: CorrectionSourceRole) -> bool {

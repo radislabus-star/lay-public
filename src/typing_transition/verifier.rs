@@ -11,6 +11,7 @@ pub(crate) enum EditTransitionOperator {
     ReplaceCurrentWord,
     LayoutProjection,
     BoundaryShift,
+    BoundaryMergeSplit,
     PhraseTokenRepair,
     SplitPreviousGluedAndRepairTail,
     Completion,
@@ -24,6 +25,7 @@ impl EditTransitionOperator {
             Self::ReplaceCurrentWord => "replace_current_word",
             Self::LayoutProjection => "layout_projection",
             Self::BoundaryShift => "boundary_shift",
+            Self::BoundaryMergeSplit => "boundary_merge_split",
             Self::PhraseTokenRepair => "phrase_token_repair",
             Self::SplitPreviousGluedAndRepairTail => "split_previous_glued_and_repair_tail",
             Self::Completion => "completion",
@@ -119,12 +121,23 @@ fn infer_operator(input: &EditTransitionInput<'_>) -> EditTransitionOperator {
         return EditTransitionOperator::LayoutProjection;
     }
     if boundary_shift_is_verified(
+        input.original,
+        input.replacement,
+        input.proof,
+        input.error_class,
+        input.original_words,
+        input.replacement_words,
+        input.changed_tokens,
+    ) {
+        return EditTransitionOperator::BoundaryShift;
+    }
+    if boundary_merge_split_is_verified(
         input.proof,
         input.error_class,
         input.original_words,
         input.replacement_words,
     ) {
-        return EditTransitionOperator::BoundaryShift;
+        return EditTransitionOperator::BoundaryMergeSplit;
     }
     if phrase_token_repair_is_verified(
         input.proof,
@@ -175,6 +188,26 @@ fn layout_projection_is_verified(
 }
 
 fn boundary_shift_is_verified(
+    original: &str,
+    replacement: &str,
+    proof: LanguageActionProof,
+    error_class: TypingErrorClass,
+    original_words: &[String],
+    replacement_words: &[String],
+    changed_tokens: usize,
+) -> bool {
+    matches!(proof, LanguageActionProof::Boundary)
+        && error_class == TypingErrorClass::BoundaryShift
+        && original_words.len() >= 2
+        && original_words.len() == replacement_words.len()
+        && changed_tokens == 2
+        && crate::text_edit::safety::surface_preserving_right_to_left_boundary_shift(
+            original,
+            replacement,
+        )
+}
+
+fn boundary_merge_split_is_verified(
     proof: LanguageActionProof,
     error_class: TypingErrorClass,
     original_words: &[String],
@@ -383,6 +416,53 @@ mod tests {
 
         assert_eq!(proof.operator, EditTransitionOperator::PhraseTokenRepair);
         assert!(proof.verified);
+    }
+
+    #[test]
+    fn proves_surface_preserving_boundary_shift() {
+        for (original, replacement) in [
+            ("допусти мнабираю ", "допустим набираю "),
+            ("во тты смотри ", "вот ты смотри "),
+        ] {
+            let proof = proof(
+                original,
+                replacement,
+                TypingErrorClass::BoundaryShift,
+                CandidateOrigin::Boundary,
+            );
+
+            assert_eq!(proof.operator, EditTransitionOperator::BoundaryShift);
+            assert!(proof.verified);
+            assert!(proof.left_context_changed);
+            assert_eq!(proof.changed_tokens, 2);
+        }
+    }
+
+    #[test]
+    fn boundary_shift_cannot_change_letters_or_import_context() {
+        for replacement in [
+            "допустим выбираю ",
+            "мы допустим набираю ",
+            "допустим, набираю ",
+            "Допустим набираю ",
+            "допустим  набираю ",
+        ] {
+            let proof = proof(
+                "допусти мнабираю ",
+                replacement,
+                TypingErrorClass::BoundaryShift,
+                CandidateOrigin::Boundary,
+            );
+            assert_ne!(
+                proof.operator,
+                EditTransitionOperator::BoundaryShift,
+                "replacement={replacement:?} proof={proof:?}"
+            );
+            assert!(
+                !proof.verified,
+                "replacement={replacement:?} proof={proof:?}"
+            );
+        }
     }
 
     #[test]

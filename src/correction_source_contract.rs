@@ -113,7 +113,6 @@ pub(crate) fn is_layout_source(source_id: &str) -> bool {
                 | ids::VISUAL_B
                 | ids::MIXED_SCRIPT_LAYOUT
                 | ids::DUPLICATE_LAYOUT_PREFIX
-                | ids::MOVED_PREFIX_PAIR
         )
 }
 
@@ -124,7 +123,12 @@ pub(crate) fn is_layout_then_typo_source(source_id: &str) -> bool {
 pub(crate) fn is_boundary_source(source_id: &str) -> bool {
     matches!(
         source_id,
-        "BoundaryCell32" | "layout_phrase" | ids::SPLIT_WORD_PAIR | ids::GLUED_PHRASE
+        "BoundaryCell32"
+            | "BoundaryShiftCell32"
+            | "layout_phrase"
+            | ids::MOVED_PREFIX_PAIR
+            | ids::SPLIT_WORD_PAIR
+            | ids::GLUED_PHRASE
     )
 }
 

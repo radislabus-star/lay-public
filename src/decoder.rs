@@ -5,6 +5,7 @@
 //! uinput replay, text insert, an IME bridge, or a future compositor-native
 //! replace operation.
 
+mod edit_contract;
 #[path = "decoder/edit_plan.rs"]
 mod edit_plan;
 #[path = "decoder/manual.rs"]

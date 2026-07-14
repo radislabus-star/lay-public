@@ -10,8 +10,6 @@ use crate::word_reader::MAX_RU_FUNCTION_GLUE_LEFT_LEN;
 
 pub(crate) const NGRAM_SPLIT_REJECT_MARGIN: f64 = 0.25;
 pub(crate) const NGRAM_NODICT_SPLIT_REJECT_MARGIN: f64 = 1.0;
-pub(crate) const NGRAM_MOVED_PREFIX_MARGIN: f64 = 0.5;
-pub(crate) const NGRAM_MOVED_PREFIX_RIGHT_MARGIN: f64 = 5.0;
 pub(crate) const NGRAM_GLUED_SPLIT_MARGIN: f64 = -0.25;
 pub(crate) const MAX_RU_GLUED_PHRASE_PARTS: usize = 7;
 

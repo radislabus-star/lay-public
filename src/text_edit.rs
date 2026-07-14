@@ -18,7 +18,7 @@ mod gate;
 #[path = "text_edit/mutation.rs"]
 mod mutation;
 #[path = "text_edit/safety.rs"]
-mod safety;
+pub(crate) mod safety;
 #[path = "text_edit/transition.rs"]
 mod transition;
 #[path = "text_edit/types.rs"]

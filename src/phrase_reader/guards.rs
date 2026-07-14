@@ -161,10 +161,6 @@ pub(super) fn can_merge_split_without_dictionary(
         && crate::ngram::ru_candidate_margin(glued_lower, text) >= NGRAM_NODICT_SPLIT_REJECT_MARGIN
 }
 
-pub(super) fn is_safe_short_moved_prefix_right(word: &str) -> bool {
-    (3..=4).contains(&char_len(word)) && russian_short_dictionary().contains(word)
-}
-
 fn is_short_non_preposition_function_word(word: &str) -> bool {
     is_short_russian_function_word(word) && !is_common_short_russian_preposition(word)
 }
