@@ -54,6 +54,16 @@ impl LayIbusEngine {
         }
         if keyval == KEY_SPACE {
             if self.buffer.is_empty() {
+                if self.autocorrect_committed_tail_on_space(emitter).await? {
+                    self.trace_key(
+                        "space_committed_tail_autocorrect",
+                        keyval,
+                        keycode,
+                        true,
+                        Some(' '),
+                    );
+                    return Ok(true);
+                }
                 self.clear_preedit(emitter).await?;
                 self.push_tail_char(' ');
                 self.trace_key("space_passthrough", keyval, keycode, false, Some(' '));
@@ -112,5 +122,19 @@ impl LayIbusEngine {
         self.commit_active_composition(emitter, ActiveCompositionCommit::with_space())
             .await?;
         Ok(true)
+    }
+}
+
+#[cfg(test)]
+mod word_boundary_route_contract {
+    #[test]
+    fn managed_space_cannot_bypass_committed_tail_decision() {
+        let source = include_str!("managed.rs");
+
+        assert!(
+            source.contains("autocorrect_committed_tail_on_space(emitter).await?")
+                && source.contains("space_committed_tail_autocorrect"),
+            "managed committed-tail Space must ask shared correction before passthrough"
+        );
     }
 }

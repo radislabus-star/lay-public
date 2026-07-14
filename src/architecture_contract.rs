@@ -44,7 +44,7 @@ const LINES: [ArchitectureLine; 7] = [
         owner: "text_edit::executor::TextEditBackend::Ime",
         status: ContractStatus::Pass,
         proof: "IME may execute verified actions but cannot decide apply truth",
-        debt: "do not add correction scoring inside lay_ibus_engine",
+        debt: "all IME word boundaries must delegate correction truth to ime_correction",
     },
     ArchitectureLine {
         id: "edit-plan-verifier",
@@ -148,11 +148,27 @@ pub fn observed_contract_status(id: &str) -> ContractStatus {
                 ContractStatus::Watch
             }
         }
-        "ime-backend-only" => mutation_routes_hold_authorized_edit(&[
-            include_str!("bin/lay_ibus_engine/composition_commit.rs"),
-            include_str!("bin/lay_ibus_engine/committed_tail.rs"),
-            include_str!("bin/lay_daemon/typing_assist_runtime/output/ime.rs"),
-        ]),
+        "ime-backend-only" => {
+            let routes_hold_capability = mutation_routes_hold_authorized_edit(&[
+                include_str!("bin/lay_ibus_engine/composition_commit.rs"),
+                include_str!("bin/lay_ibus_engine/committed_tail.rs"),
+                include_str!("bin/lay_daemon/typing_assist_runtime/output/ime.rs"),
+            ]);
+            let committed_boundary_delegates_truth = source_contains_all(
+                include_str!("bin/lay_ibus_engine/committed_tail.rs"),
+                &[
+                    "decide_active_composition_autocorrect(",
+                    "CommittedTailReplaceRequest::ime_autocorrect(",
+                ],
+            );
+            if matches!(routes_hold_capability, ContractStatus::Pass)
+                && matches!(committed_boundary_delegates_truth, ContractStatus::Pass)
+            {
+                ContractStatus::Pass
+            } else {
+                ContractStatus::Watch
+            }
+        }
         "edit-plan-verifier" => {
             let executor_has_capability = source_contains_all(
                 include_str!("text_edit/executor.rs"),

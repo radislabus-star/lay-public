@@ -177,6 +177,19 @@ impl UnifiedCorrectionCandidate {
     }
 
     pub(crate) fn merge_evidence(&mut self, candidate: Self) {
+        let promote_verified_apply = candidate.origin.source_role() == CorrectionSourceRole::Layout
+            && candidate.gate.action == CandidateGateAction::Apply
+            && matches!(
+                self.gate.action,
+                CandidateGateAction::Eligible | CandidateGateAction::SuggestOnly
+            );
+        if promote_verified_apply {
+            self.source = candidate.source;
+            self.origin = candidate.origin;
+            self.source_id.clone_from(&candidate.source_id);
+            self.error_class = candidate.error_class;
+            self.gate = candidate.gate.clone();
+        }
         for evidence in candidate.evidence {
             let already_present = self.evidence.iter().any(|existing| {
                 existing.source == evidence.source

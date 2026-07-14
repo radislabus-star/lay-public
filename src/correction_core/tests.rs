@@ -120,6 +120,68 @@ mod tests {
     }
 
     #[test]
+    fn verified_duplicate_evidence_is_not_lost_to_source_order() {
+        let mut lattice = L2CandidateLattice::new(TypingErrorEvent::from_text("цусрфе "));
+        lattice.push_source(Some(UnifiedCorrectionCandidate::new(
+            "wechat ",
+            CorrectionDecisionSource::Nanda,
+            "L2WordAttractorCell32",
+            TypingErrorClass::CompositeTypo,
+            CandidateGateDecision {
+                action: CandidateGateAction::SuggestOnly,
+                reason: "unexplained_signal_loss",
+            },
+        )));
+        lattice.push_source(Some(UnifiedCorrectionCandidate::new(
+            "wechat ",
+            CorrectionDecisionSource::Nanda,
+            "LayoutWordCell32",
+            TypingErrorClass::WrongLayout,
+            CandidateGateDecision {
+                action: CandidateGateAction::Apply,
+                reason: "transition_core_authorized",
+            },
+        )));
+
+        let resolution = lattice.into_resolution();
+        let candidate = resolution.candidates.first().expect("merged candidate");
+        assert_eq!(candidate.source_id, "LayoutWordCell32");
+        assert_eq!(candidate.error_class, TypingErrorClass::WrongLayout);
+        assert_eq!(candidate.gate.action, CandidateGateAction::Apply);
+        assert_eq!(candidate.evidence_count(), 2);
+        assert!(resolution.selected.is_some());
+    }
+
+    #[test]
+    fn verified_duplicate_evidence_cannot_override_keep_or_veto() {
+        for protected_action in [CandidateGateAction::KeepOriginal, CandidateGateAction::Veto] {
+            let mut protected = UnifiedCorrectionCandidate::new(
+                "wechat ",
+                CorrectionDecisionSource::Nanda,
+                "ProtectedSurfaceCell32",
+                TypingErrorClass::ProtectedToken,
+                CandidateGateDecision {
+                    action: protected_action,
+                    reason: "protected",
+                },
+            );
+            protected.merge_evidence(UnifiedCorrectionCandidate::new(
+                "wechat ",
+                CorrectionDecisionSource::Nanda,
+                "LayoutWordCell32",
+                TypingErrorClass::WrongLayout,
+                CandidateGateDecision {
+                    action: CandidateGateAction::Apply,
+                    reason: "transition_core_authorized",
+                },
+            ));
+
+            assert_eq!(protected.gate.action, protected_action);
+            assert_eq!(protected.source_id, "ProtectedSurfaceCell32");
+        }
+    }
+
+    #[test]
     fn l2_surface_candidate_cannot_apply_left_context_rewrite() {
         let gate = gate_candidate_with_source(
             "коретка улитела ",

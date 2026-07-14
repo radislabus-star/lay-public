@@ -231,6 +231,39 @@ mod tests {
     }
 
     #[test]
+    fn committed_tail_boundary_uses_same_dual_layout_decision_as_cli() {
+        let cfg = config();
+        for (tail, token, expected) in [
+            ("смотрим цусрфе", "цусрфе", "wechat "),
+            ("проверяем вщцутдщфв", "вщцутдщфв", "download "),
+            ("check ghbdtn", "ghbdtn", "привет "),
+        ] {
+            let text = format!("{token} ");
+            let decision =
+                decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+                    text: &text,
+                    committed_tail: tail,
+                    config: &cfg,
+                })
+                .unwrap_or_else(|| panic!("dual-layout decision for tail={tail:?}"));
+
+            assert_eq!(decision.replacement, expected, "tail={tail:?}");
+        }
+    }
+
+    #[test]
+    fn committed_tail_boundary_keeps_valid_current_layout_word() {
+        let cfg = config();
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "привет ",
+            committed_tail: "смотрим привет",
+            config: &cfg,
+        });
+
+        assert!(decision.is_none());
+    }
+
+    #[test]
     fn committed_tail_autocorrect_keeps_ascii_layout_punctuation_in_token() {
         assert_replacement("ghj,ktvf ", "ghj,ktvf", "проблема ");
     }
