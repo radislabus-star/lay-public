@@ -70,6 +70,8 @@ struct LiveCandidateGateStats {
     no_candidate: u64,
     usage_supported: u64,
     l3_supported: u64,
+    l3_evaluated: u64,
+    l3_suppressed: u64,
     l4_suggest: u64,
     l4_wait: u64,
     l4_block: u64,
@@ -155,6 +157,8 @@ pub fn live_completion_candidates(
     let state_id = crate::transition_relation::transition_state_id(&partial);
     let mut usage_supported = 0_u64;
     let mut l3_supported = 0_u64;
+    let mut l3_evaluated = 0_u64;
+    let mut l3_suppressed = 0_u64;
     let mut l4_scene_memory_supported = 0_u64;
     let mut l4_signed = LiveSignedOutcomeStats::default();
     let mut candidates = raw
@@ -193,8 +197,13 @@ pub fn live_completion_candidates(
                 request.allow_short_lexical,
                 &usage_snapshot,
             );
-            let l3_score = l3_readout.map(|readout| readout.score);
             let l3_memory_supported = l3_readout.is_some_and(|readout| readout.memory_supported);
+            if let Some(readout) = l3_readout {
+                l3_evaluated = l3_evaluated.saturating_add(1);
+                if readout.rank_delta < 0.0 {
+                    l3_suppressed = l3_suppressed.saturating_add(1);
+                }
+            }
             let scene_memory_score = if !l3_memory_supported {
                 live_l4_scene_memory_score(&context_tokens, &candidate.surface)
             } else {
@@ -267,8 +276,8 @@ pub fn live_completion_candidates(
                 + live_l4_scene_bias(scene_state.allowed_action, scene_state.confidence)
                 + live_l4_scene_memory_bias(scene_memory_score)
                 + live_l4_signed_bias(signed.signed_weight);
-            let rank_score = l3_score
-                .map(|score| score.max(base_score))
+            let rank_score = l3_readout
+                .map(|readout| base_score + readout.rank_delta)
                 .unwrap_or(base_score);
             let score = rank_score.clamp(0.0, 1.0);
             if !live_suffix_has_display_authority(LiveSuffixAuthority {
@@ -317,6 +326,8 @@ pub fn live_completion_candidates(
             returned_candidates: candidates.len() as u64,
             usage_supported,
             l3_supported,
+            l3_evaluated,
+            l3_suppressed,
             l4_action: Some(scene_state.allowed_action),
             l4_signed,
             cache_hit: false,
@@ -387,6 +398,8 @@ pub fn live_candidate_gate_stats_json() -> serde_json::Value {
         "no_candidate": stats.no_candidate,
         "usage_supported": stats.usage_supported,
         "l3_supported": stats.l3_supported,
+        "l3_evaluated": stats.l3_evaluated,
+        "l3_suppressed": stats.l3_suppressed,
         "l4_scene": {
             "suggest": stats.l4_suggest,
             "wait": stats.l4_wait,
@@ -422,6 +435,8 @@ fn live_candidate_gate_stats() -> LiveCandidateGateStats {
         no_candidate: stats.no_candidate.load(Ordering::Relaxed),
         usage_supported: stats.usage_supported.load(Ordering::Relaxed),
         l3_supported: stats.l3_supported.load(Ordering::Relaxed),
+        l3_evaluated: stats.l3_evaluated.load(Ordering::Relaxed),
+        l3_suppressed: stats.l3_suppressed.load(Ordering::Relaxed),
         l4_suggest: stats.l4_suggest.load(Ordering::Relaxed),
         l4_wait: stats.l4_wait.load(Ordering::Relaxed),
         l4_block: stats.l4_block.load(Ordering::Relaxed),
@@ -440,7 +455,7 @@ fn live_candidate_gate_stats() -> LiveCandidateGateStats {
 
 #[derive(Debug, Clone, Copy)]
 struct LiveL3ContextReadout {
-    score: f32,
+    rank_delta: f32,
     memory_supported: bool,
 }
 
@@ -460,22 +475,31 @@ fn live_l3_context_score(
     if super::llmwave::default_memory_is_warm() {
         return super::llmwave::with_default_memory(|memory| {
             if let Some(report) = memory.score_next_token_report(prefix_tokens, word) {
-                return (report.score >= 0.18).then_some(LiveL3ContextReadout {
-                    score: (0.62 + report.score * 0.34 + usage_prior + context_usage_prior)
-                        .clamp(0.0, 1.0),
-                    memory_supported: true,
+                let score = report.score.clamp(0.0, 1.0);
+                let rank_delta = if score >= 0.42 && report.support >= 2 {
+                    0.10 + score * 0.18
+                } else if score >= 0.18 {
+                    0.02 + score * 0.08
+                } else {
+                    -0.08
+                };
+                return Some(LiveL3ContextReadout {
+                    rank_delta: rank_delta + usage_prior + context_usage_prior,
+                    memory_supported: score >= 0.18,
                 });
             }
-            lexical_backoff_allowed.then_some(LiveL3ContextReadout {
-                score: (0.28 + partial_len as f32 * 0.035 + usage_prior + context_usage_prior)
-                    .clamp(0.0, 0.70),
+            Some(LiveL3ContextReadout {
+                rank_delta: if lexical_backoff_allowed {
+                    usage_prior + context_usage_prior
+                } else {
+                    -0.06
+                },
                 memory_supported: false,
             })
         });
     }
     lexical_backoff_allowed.then_some(LiveL3ContextReadout {
-        score: (0.28 + partial_len as f32 * 0.035 + usage_prior + context_usage_prior)
-            .clamp(0.0, 0.70),
+        rank_delta: usage_prior + context_usage_prior,
         memory_supported: false,
     })
 }
@@ -510,6 +534,12 @@ fn record_live_gate_stats(started: Instant, record: LiveGateRecord) {
     stats
         .l3_supported
         .fetch_add(record.l3_supported, Ordering::Relaxed);
+    stats
+        .l3_evaluated
+        .fetch_add(record.l3_evaluated, Ordering::Relaxed);
+    stats
+        .l3_suppressed
+        .fetch_add(record.l3_suppressed, Ordering::Relaxed);
     match record.l4_action {
         Some(L4AllowedAction::Suggest) => {
             stats.l4_suggest.fetch_add(1, Ordering::Relaxed);
@@ -562,6 +592,8 @@ struct LiveCandidateGateAtomicStats {
     no_candidate: AtomicU64,
     usage_supported: AtomicU64,
     l3_supported: AtomicU64,
+    l3_evaluated: AtomicU64,
+    l3_suppressed: AtomicU64,
     l4_suggest: AtomicU64,
     l4_wait: AtomicU64,
     l4_block: AtomicU64,
@@ -614,6 +646,8 @@ struct LiveGateRecord {
     returned_candidates: u64,
     usage_supported: u64,
     l3_supported: u64,
+    l3_evaluated: u64,
+    l3_suppressed: u64,
     l4_action: Option<L4AllowedAction>,
     l4_signed: LiveSignedOutcomeStats,
     cache_hit: bool,

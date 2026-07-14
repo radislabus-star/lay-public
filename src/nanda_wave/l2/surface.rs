@@ -168,7 +168,9 @@ pub(super) fn form_attractor_word_candidates(
     if !(4..=18).contains(&len) || !normalized.chars().all(is_cyrillic_letter) {
         return Vec::new();
     }
-    if surface_motif_stable_existing_word(&normalized) {
+    let stable_input = surface_motif_stable_existing_word(&normalized);
+    let extra_letter_frontier = leading_extra_letter_center_frontier(&normalized);
+    if stable_input && (context.token_count() < 2 || extra_letter_frontier.is_empty()) {
         return Vec::new();
     }
 
@@ -182,6 +184,9 @@ pub(super) fn form_attractor_word_candidates(
         .filter_map(|candidate| {
             let replacement_lower = candidate.word;
             if replacement_lower == normalized {
+                return None;
+            }
+            if stable_input && !extra_letter_frontier.contains(&replacement_lower) {
                 return None;
             }
             let distance = damerau_levenshtein(&normalized, &replacement_lower);
@@ -241,10 +246,53 @@ pub(super) fn form_attractor_word_candidates(
                 l1,
                 context,
             });
+            if stable_input {
+                candidate
+                    .support
+                    .push("stable-input-requires-context-proof".to_string());
+            }
             apply_learned_transition_pressure(&mut candidate, &hot.transition);
             Some(candidate)
         })
         .collect::<Vec<_>>();
+
+    for replacement_lower in extra_letter_frontier {
+        if out.iter().any(|candidate| {
+            candidate
+                .text
+                .split_whitespace()
+                .last()
+                .is_some_and(|word| word.eq_ignore_ascii_case(&replacement_lower))
+        }) {
+            continue;
+        }
+        let mut candidate = surface_motif_candidate(SurfaceMotifCandidateInput {
+            prefix,
+            leading,
+            word,
+            trailing,
+            replacement_lower: &replacement_lower,
+            source: LEXICAL_ATTRACTOR_CELL,
+            score: 1_440,
+            l1_overlap: len.saturating_sub(1),
+            l2_overlap: len.saturating_sub(2),
+            motif_overlap: len.saturating_sub(3),
+            prefix_match: false,
+            distance: 1,
+            risk: surface_attractor_risk(context, 1, &replacement_lower),
+            l1,
+            context,
+        });
+        candidate
+            .support
+            .push("l2-minimal-transition:extra-letter".to_string());
+        if stable_input {
+            candidate
+                .support
+                .push("stable-input-requires-context-proof".to_string());
+        }
+        out.push(candidate);
+    }
 
     out.sort_by(|left, right| {
         (right.energy - right.risk)
@@ -254,6 +302,18 @@ pub(super) fn form_attractor_word_candidates(
     out.dedup_by(|left, right| left.text == right.text);
     out.truncate(L2_FORM_ATTRACTOR_LIMIT);
     out
+}
+
+fn leading_extra_letter_center_frontier(input: &str) -> Vec<String> {
+    let chars = input.chars().collect::<Vec<_>>();
+    if chars.len() < 4 {
+        return Vec::new();
+    }
+    let candidate = chars.into_iter().skip(1).collect::<String>();
+    l2_center_contains_surface(&candidate)
+        .then_some(candidate)
+        .into_iter()
+        .collect()
 }
 
 fn apply_learned_transition_pressure(
@@ -988,5 +1048,13 @@ mod tests {
         assert!(attracted.risk < 0.20);
         assert!(repelled.energy < 0.80);
         assert!(repelled.risk > 0.20);
+    }
+
+    #[test]
+    fn leading_extra_letter_frontier_resolves_through_l2_centers() {
+        let frontier = leading_extra_letter_center_frontier("атак");
+
+        assert_eq!(frontier, vec!["так"]);
+        assert!(leading_extra_letter_center_frontier("можем").is_empty());
     }
 }

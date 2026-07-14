@@ -217,17 +217,6 @@ fn candidate_has_apply_authority(
     let bayes = bayes_score_for_candidate(&event.original, candidate);
     let signals = candidate_decision_signals(event, candidate, candidates.len());
     let source_role = candidate.origin.source_role();
-    if source_role == CorrectionSourceRole::Layout
-        && lower_energy_same_script_transition_exists(event, candidate, candidates)
-    {
-        debug_decision_reject(
-            candidate,
-            "same_script_transition_has_lower_energy",
-            bayes.posterior,
-            bayes.risk,
-        );
-        return false;
-    }
     if let Some(reason) = phase_policy_rejection(
         policy,
         source_role,
@@ -340,60 +329,6 @@ fn candidate_has_apply_authority(
         debug_decision_reject(candidate, "better_non_apply", bayes.posterior, bayes.risk);
     }
     allowed
-}
-
-fn lower_energy_same_script_transition_exists(
-    event: &TypingErrorEvent,
-    layout_candidate: &UnifiedCorrectionCandidate,
-    candidates: &[UnifiedCorrectionCandidate],
-) -> bool {
-    let original = event.current_word.to_lowercase();
-    let Some(layout_word) = last_replacement_word(&layout_candidate.replacement) else {
-        return false;
-    };
-    let layout_word = layout_word.to_lowercase();
-    if words_share_script(&original, &layout_word) {
-        return false;
-    }
-    let layout_distance = damerau_levenshtein(&original, &layout_word);
-
-    candidates.iter().any(|candidate| {
-        if candidate == layout_candidate
-            || candidate.gate.action != CandidateGateAction::Apply
-            || candidate.origin.source_role() == CorrectionSourceRole::Layout
-        {
-            return false;
-        }
-        let Some(candidate_word) = last_replacement_word(&candidate.replacement) else {
-            return false;
-        };
-        let candidate_word = candidate_word.to_lowercase();
-        if !words_share_script(&original, &candidate_word) {
-            return false;
-        }
-        let distance = damerau_levenshtein(&original, &candidate_word);
-        if distance == 0 || distance > 2 || distance >= layout_distance {
-            return false;
-        }
-        let role = candidate.origin.source_role();
-        let action = action::verify_action_operator(
-            &event.original,
-            &candidate.replacement,
-            candidate.error_class,
-            candidate.origin,
-        );
-        matches!(
-            role,
-            CorrectionSourceRole::L2Surface | CorrectionSourceRole::DeterministicTypo
-        ) && action.verifier_passed
-            && !action.left_context_changed
-    })
-}
-
-fn words_share_script(left: &str, right: &str) -> bool {
-    (left.chars().all(|ch| ch.is_ascii_alphabetic())
-        && right.chars().all(|ch| ch.is_ascii_alphabetic()))
-        || (left.chars().all(is_russian_letter) && right.chars().all(is_russian_letter))
 }
 
 fn phase_managed_source(source_role: CorrectionSourceRole) -> bool {
@@ -656,43 +591,11 @@ fn better_non_apply_candidate_exists(
         if candidate == selected || candidate.gate.action == CandidateGateAction::Veto {
             return false;
         }
-        if candidate.origin.source_role() == CorrectionSourceRole::Layout
-            && same_script_candidate_is_lower_energy(event, selected, candidate)
-        {
-            return false;
-        }
         let candidate_bayes = bayes_score_for_candidate(&event.original, candidate);
         let candidate_signals = candidate_decision_signals(event, candidate, candidates.len());
         candidate_bayes.risk <= selected_bayes.risk
             && candidate_signals.rank_score >= selected_signals.rank_score + 0.10
     })
-}
-
-fn same_script_candidate_is_lower_energy(
-    event: &TypingErrorEvent,
-    same_script_candidate: &UnifiedCorrectionCandidate,
-    layout_candidate: &UnifiedCorrectionCandidate,
-) -> bool {
-    if !matches!(
-        same_script_candidate.origin.source_role(),
-        CorrectionSourceRole::L2Surface | CorrectionSourceRole::DeterministicTypo
-    ) {
-        return false;
-    }
-    let original = event.current_word.to_lowercase();
-    let Some(same_script_word) = last_replacement_word(&same_script_candidate.replacement) else {
-        return false;
-    };
-    let Some(layout_word) = last_replacement_word(&layout_candidate.replacement) else {
-        return false;
-    };
-    let same_script_word = same_script_word.to_lowercase();
-    let layout_word = layout_word.to_lowercase();
-    let same_script_distance = damerau_levenshtein(&original, &same_script_word);
-    words_share_script(&original, &same_script_word)
-        && !words_share_script(&original, &layout_word)
-        && (1..=2).contains(&same_script_distance)
-        && same_script_distance < damerau_levenshtein(&original, &layout_word)
 }
 
 #[derive(Debug, Clone, PartialEq)]

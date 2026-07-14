@@ -234,7 +234,11 @@ fn run_l3_inner(
 
 fn apply_source_enabled(source: &str, options: &WaveOptions) -> bool {
     match source {
-        "LayoutWordCell32" => options.is_enabled("LayoutWordCell32"),
+        source
+            if correction_source_contract::source_role(source) == CorrectionSourceRole::Layout =>
+        {
+            options.is_enabled("LayoutWordCell32")
+        }
         "ShortTokenCell32" => options.is_enabled("ShortTokenCell32"),
         "BoundaryCell32" => options.is_enabled("BoundaryCell32"),
         "GrammarCell32" => options.is_enabled("GrammarCell32"),
@@ -322,6 +326,7 @@ fn l3_rank_score(
     phrase_memory: Option<&llmwave::LlmWaveMemory>,
 ) -> f32 {
     let mut value = confidence(candidate);
+    value += verified_operator_coherence(original, candidate);
     value += candidate_usage_context_prior(original, &candidate.text);
     value += candidate_l4_signed_bias(original, candidate);
     value += candidate_l4_scene_memory_bias(original, candidate, phrase_memory);
@@ -337,6 +342,23 @@ fn l3_rank_score(
         }
     }
     value.clamp(-1.0, 1.0)
+}
+
+fn verified_operator_coherence(original: &str, candidate: &WordCandidate) -> f32 {
+    let origin = correction_source_contract::candidate_origin(candidate.source);
+    if origin.source_role() != CorrectionSourceRole::Layout {
+        return 0.0;
+    }
+    let atoms = crate::transition_relation::TransitionRelationAtoms::for_operator(
+        original,
+        &candidate.text,
+        crate::transition_relation::TransitionOperatorKind::LayoutProjection,
+    );
+    if atoms.verifier_passed() {
+        0.30
+    } else {
+        -0.60
+    }
 }
 
 fn completion_candidate_lacks_autocorrect_authority(

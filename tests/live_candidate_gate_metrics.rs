@@ -18,6 +18,8 @@ fn live_candidate_gate_metrics_are_status_only() {
     assert!(stats["returned_candidates"].is_u64());
     assert!(stats["avg_us"].is_u64());
     assert!(stats["max_us"].is_u64());
+    assert!(stats["l3_evaluated"].is_u64());
+    assert!(stats["l3_suppressed"].is_u64());
     assert!(stats["l4_signed_outcome"]["attract"].is_u64());
     assert!(stats["l4_signed_outcome"]["neutral"].is_u64());
     assert!(stats["l4_signed_outcome"]["repel"].is_u64());
