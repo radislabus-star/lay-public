@@ -18,7 +18,30 @@ pub(super) fn surface_motif_word_candidates(
         return Vec::new();
     }
 
-    let surface_candidates = surface_motif_memory().surface_candidates(&normalized, 24);
+    let mut surface_candidates = surface_motif_memory().surface_candidates(&normalized, 24);
+    if options.is_enabled(L2_SURFACE_COMPLETION_CELL) {
+        surface_candidates.extend(surface_motif_memory().completion_candidates(&normalized, 24));
+        surface_candidates.sort_by(|left, right| {
+            right
+                .score
+                .cmp(&left.score)
+                .then_with(|| left.rank.cmp(&right.rank))
+                .then_with(|| left.word.cmp(&right.word))
+        });
+        surface_candidates.dedup_by(|left, right| left.word == right.word);
+        surface_candidates.truncate(32);
+    }
+    if std::env::var_os("LAY_NANDA_L2_TIMING").is_some() {
+        eprintln!(
+            "lay_nanda_l2_surface input={normalized:?} stable={} candidates={:?}",
+            surface_motif_stable_existing_word(&normalized),
+            surface_candidates
+                .iter()
+                .take(12)
+                .map(|candidate| (&candidate.word, candidate.score, candidate.prefix_match))
+                .collect::<Vec<_>>()
+        );
+    }
     let mut out = Vec::new();
     if options.is_enabled(L2_SURFACE_MOTIF_CELL) && surface_candidates.is_empty() {
         if let Some(candidate) = repeated_letter_surface_candidate(
@@ -81,7 +104,6 @@ pub(super) fn surface_motif_word_candidates(
         if is_completion
             && options.is_enabled(L2_SURFACE_COMPLETION_CELL)
             && len >= 2
-            && !surface_motif_stable_existing_word(&normalized)
             && candidate_len.saturating_sub(len) <= 10
         {
             out.push(surface_motif_candidate(SurfaceMotifCandidateInput {
@@ -535,9 +557,9 @@ pub(super) fn surface_motif_stable_existing_word(word: &str) -> bool {
 }
 
 pub(super) fn surface_motif_runtime_known_surface(word: &str) -> bool {
-    is_known_russian_word_or_form(word)
-        || crate::russian_lexicon::is_known_russian_adverb_o_form(word)
-        || crate::russian_lexicon::is_known_russian_ka_oblique_form(word)
+    crate::hot_field::HotFieldSnapshot::current()
+        .word_readout(word)
+        .is_known()
 }
 
 pub(super) fn russian_zero_a_ya_stem_has_known_lemma(word: &str) -> bool {

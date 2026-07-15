@@ -1438,8 +1438,8 @@ fn print_trace(text: &str, options: &WaveOptions, record_trace: bool) {
         }
     }
     match trace.decision {
-        WaveDecision::Apply { text, confidence } => {
-            println!("decision: apply {:?} confidence={confidence:.3}", text);
+        WaveDecision::Suggest { text, confidence } => {
+            println!("decision: suggest {:?} confidence={confidence:.3}", text);
         }
         WaveDecision::Keep { reason } => println!("decision: keep {reason}"),
         WaveDecision::Veto { reason } => println!("decision: veto {reason}"),
@@ -1904,7 +1904,7 @@ fn applied_source_for_trace<'a>(
     trace: &'a lay::nanda_wave::WaveTrace,
     output: &str,
 ) -> Option<&'a str> {
-    if !matches!(trace.decision, WaveDecision::Apply { .. }) {
+    if !matches!(trace.decision, WaveDecision::Suggest { .. }) {
         return None;
     }
     let output = output.trim_end();
@@ -2015,7 +2015,7 @@ fn print_l2_candidate_flow_report(
         }
 
         match trace.decision {
-            WaveDecision::Apply { ref text, .. } => {
+            WaveDecision::Suggest { ref text, .. } => {
                 let applied_source = applied_source_for_trace(&trace, text);
                 if let Some(source) = applied_source {
                     stats.entry(source.to_string()).or_default().accepted += 1;
@@ -2192,7 +2192,7 @@ fn print_flow_examples(label: &str, examples: &[L2CandidateFlowExample]) {
 
 fn decision_label(decision: &WaveDecision) -> &'static str {
     match decision {
-        WaveDecision::Apply { .. } => "apply",
+        WaveDecision::Suggest { .. } => "suggest",
         WaveDecision::Keep { .. } => "keep",
         WaveDecision::Veto { .. } => "veto",
     }

@@ -1,4 +1,3 @@
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum L2CandidateSource {
     Deterministic,
@@ -26,7 +25,18 @@ impl L2CandidateSource {
                 }
             }
             Self::Nanda => {
-                for candidate in nanda_text_candidates(req) {
+                let candidates = nanda_text_candidates(req);
+                if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
+                    eprintln!(
+                        "candidate-lattice source=nanda count={} replacements={:?}",
+                        candidates.len(),
+                        candidates
+                            .iter()
+                            .map(|candidate| candidate.replacement.as_str())
+                            .collect::<Vec<_>>()
+                    );
+                }
+                for candidate in candidates {
                     lattice.push_source(Some(candidate));
                 }
             }
@@ -34,27 +44,16 @@ impl L2CandidateSource {
     }
 }
 
-fn deterministic_text_candidates(
-    req: &CorrectionRequest<'_>,
-) -> Vec<UnifiedCorrectionCandidate> {
-    let mut candidates = Vec::with_capacity(2);
+fn deterministic_text_candidates(req: &CorrectionRequest<'_>) -> Vec<UnifiedCorrectionCandidate> {
+    let mut candidates = Vec::with_capacity(8);
     if let Some(candidate) = boundary_shift_transition_candidate(req) {
         candidates.push(candidate);
     }
-    if let Some(candidate) = deterministic_text_correction(req) {
-        candidates.push(candidate);
-    }
-    candidates
-}
-
-fn deterministic_text_correction(
-    req: &CorrectionRequest<'_>,
-) -> Option<UnifiedCorrectionCandidate> {
     if !(req.auto_replace || req.typing_assist || req.auto_switch_layout) {
-        return None;
+        return candidates;
     }
     if let Some(candidate) = multiword_layout_projection_candidate(req) {
-        return Some(candidate);
+        candidates.push(candidate);
     }
 
     let pipeline = typing_assist_pipeline_for_context(
@@ -63,51 +62,30 @@ fn deterministic_text_correction(
         req.typing_assist_pipeline,
         req.text,
     );
-    let explanation =
-        explain_typing_assist_with_pipeline(req.text, req.auto_switch_layout, &pipeline);
-    let Some(replacement) = explanation.output else {
-        return deterministic_composite_text_correction(req, &pipeline);
-    };
-    let rule_id = explanation
-        .chosen
-        .as_ref()
-        .map(|candidate| candidate.rule_id.as_str())
-        .unwrap_or("deterministic");
-    let error_class = rule_error_class(rule_id);
-    let gate = gate_candidate_with_source(req.text, &replacement, error_class, rule_id);
-    if matches!(
-        error_class,
-        TypingErrorClass::RepeatedLetter | TypingErrorClass::ExtraLetter
-    ) {
-        if let Some(composite) = deterministic_composite_text_correction(req, &pipeline) {
-            if should_prefer_composite_after_repeated_repair(
-                req.text,
-                &replacement,
-                &composite.replacement,
-            ) {
-                return Some(composite);
-            }
-        }
-    }
-    if gate.action != CandidateGateAction::Apply {
-        return deterministic_composite_text_correction(req, &pipeline).or(Some(
-            UnifiedCorrectionCandidate::new(
-                replacement,
-                CorrectionDecisionSource::Deterministic,
-                rule_id,
-                error_class,
-                gate,
-            ),
+    for (candidate, replacement) in
+        collect_typing_assist_candidates_with_pipeline(req.text, req.auto_switch_layout, &pipeline)
+    {
+        let origin = correction_source_contract::candidate_origin(&candidate.rule_id);
+        let error_class = action_operator::classify_token_transition(
+            req.text,
+            &replacement,
+            origin,
+            rule_error_class(&candidate.rule_id),
+        );
+        let gate =
+            gate_candidate_with_source(req.text, &replacement, error_class, &candidate.rule_id);
+        candidates.push(UnifiedCorrectionCandidate::new(
+            replacement,
+            CorrectionDecisionSource::Deterministic,
+            candidate.rule_id,
+            error_class,
+            gate,
         ));
     }
-
-    Some(UnifiedCorrectionCandidate::new(
-        replacement,
-        CorrectionDecisionSource::Deterministic,
-        rule_id,
-        error_class,
-        gate,
-    ))
+    if let Some(candidate) = deterministic_composite_text_correction(req, &pipeline) {
+        candidates.push(candidate);
+    }
+    candidates
 }
 
 fn boundary_shift_transition_candidate(
@@ -357,8 +335,7 @@ fn composite_russian_typo_candidate(
     let (_, core, _) = split_edge_whitespace(req.text);
     let current_word = last_text_word(core)?;
     let lower = current_word.to_lowercase();
-    let field_knows_original =
-        crate::nanda_wave::l2::l2_surface_foundation_has_authority(&lower)
+    let field_knows_original = crate::nanda_wave::l2::l2_surface_foundation_has_authority(&lower)
         || crate::russian_lexicon::is_center_backed_russian_form(&lower);
     if !is_cyrillic_letters_only(&current_word) || field_knows_original {
         return None;
@@ -450,16 +427,12 @@ fn composite_russian_typo_candidate(
                 return None;
             }
             let shape_bonus = inserted as f64 * 8.0;
-            let typed_operator_bonus = if inserted_char_position_for_missing_letter(
-                &lower,
-                candidate,
-            )
-            .is_some()
-            {
-                10.0
-            } else {
-                0.0
-            };
+            let typed_operator_bonus =
+                if inserted_char_position_for_missing_letter(&lower, candidate).is_some() {
+                    10.0
+                } else {
+                    0.0
+                };
             let close_insert_bonus = if distance == 1 && inserted == 1 {
                 12.0
             } else {
@@ -625,12 +598,7 @@ fn delayed_context_candidates_with_memory(
     let observed_previous = &words[previous_index];
     let next_token = &words[previous_index + 1];
     memory
-        .previous_token_candidates(
-            &words[..previous_index],
-            observed_previous,
-            next_token,
-            4,
-        )
+        .previous_token_candidates(&words[..previous_index], observed_previous, next_token, 4)
         .into_iter()
         .filter(|candidate| candidate.support >= 2)
         .filter_map(|candidate| {
@@ -641,10 +609,7 @@ fn delayed_context_candidates_with_memory(
                 TypingErrorClass::CompositeTypo,
                 "PhraseMemoryCell32",
             );
-            if matches!(
-                gate.action,
-                CandidateGateAction::Eligible | CandidateGateAction::Apply
-            ) {
+            if gate.action == CandidateGateAction::Eligible {
                 gate = CandidateGateDecision {
                     action: CandidateGateAction::SuggestOnly,
                     reason: "delayed_context_requires_promotion",
@@ -706,7 +671,13 @@ fn nanda_word_candidate(
     if replacement == original {
         return None;
     }
-    let error_class = nanda_source_error_class(candidate.source);
+    let origin = correction_source_contract::candidate_origin(candidate.source);
+    let error_class = action_operator::classify_token_transition(
+        original,
+        &replacement,
+        origin,
+        nanda_source_error_class(candidate.source),
+    );
     let gate = gate_candidate_with_source(original, &replacement, error_class, candidate.source);
     Some(UnifiedCorrectionCandidate::new(
         replacement,

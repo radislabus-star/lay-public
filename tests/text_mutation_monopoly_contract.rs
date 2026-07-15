@@ -29,13 +29,15 @@ fn ime_correction_route_reaches_common_decision_core() {
     assert!(
         !correction_core.contains("mod decision_core;")
             && correction_core.contains("mod gate;")
-            && correction_gate.contains("TransitionDecisionCore::authorize_gate"),
-        "correction core gate must delegate apply authority to typing_transition"
+            && correction_gate.contains("candidate_admission_with_source")
+            && !correction_gate.contains("TransitionDecisionCore"),
+        "candidate admission must not own final transition authority"
     );
     assert!(
         transition_decision.contains("struct TransitionDecisionCore")
             && transition_decision.contains("select_apply_candidate")
-            && transition_decision.contains("authorize_gate"),
+            && transition_decision.contains("candidate_has_apply_authority")
+            && !transition_decision.contains("authorize_gate"),
         "TransitionDecisionCore must own final apply-candidate authority"
     );
 }

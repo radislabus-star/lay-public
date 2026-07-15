@@ -162,9 +162,9 @@ fn current_word_is_known(word: &str) -> bool {
         return false;
     }
     let lower = word.to_lowercase();
-    crate::russian_lexicon::is_known_russian_word_or_form(&lower)
-        || crate::nanda_wave::l2::l2_surface_foundation_contains(&lower)
-        || crate::russian_lexicon::is_reference_backed_russian_form(&lower)
+    crate::hot_field::HotFieldSnapshot::current()
+        .word_readout(&lower)
+        .is_known()
         || word_has_common_usage_authority(&lower)
         || is_ascii_technical_token(word)
 }

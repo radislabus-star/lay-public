@@ -309,10 +309,7 @@ pub fn run_l2_refined_with_feedback(
         Vec::new()
     };
     let mut has_l2_surface_motif_candidate = false;
-    if boundary_scan.is_empty()
-        && (options.is_enabled(L2_SURFACE_MOTIF_CELL)
-            || options.is_enabled(L2_SURFACE_COMPLETION_CELL))
-    {
+    if options.is_enabled(L2_SURFACE_MOTIF_CELL) || options.is_enabled(L2_SURFACE_COMPLETION_CELL) {
         for candidate in surface_motif_word_candidates(prefix, token, &context, l1, options) {
             has_l2_surface_motif_candidate |= candidate.source == L2_SURFACE_MOTIF_CELL;
             push_unique_candidate(&mut candidates, candidate);
@@ -355,11 +352,6 @@ pub fn run_l2_refined_with_feedback(
         }
     }
     mark_timing!("semantic-word");
-    if options.is_enabled("PhraseCell32") {
-        for candidate in customs_actor_phrase_candidates(tail, &context, l1) {
-            push_unique_candidate(&mut candidates, candidate);
-        }
-    }
     mark_timing!("phrase");
     if options.is_enabled(super::context_wave::PHRASE_FORECAST_CELL) && options.llmwave_shadow() {
         let memory = phrase_forecast_memory();
@@ -710,13 +702,11 @@ fn layout_converted_token(token: &str) -> Option<(String, bool, bool)> {
         if token.chars().all(is_cyrillic_letter)
             && !cyrillic_layout_word_center_blocked(token)
             && raw_converted != token
+            && raw_converted.chars().all(|ch| ch.is_ascii_alphabetic())
         {
-            let (leading, word, trailing) = split_word_punctuation(&raw_converted);
-            if leading.is_empty() && !word.is_empty() {
-                if let Some(center) = settle_english_word_center(word) {
-                    let center = apply_word_case(token, &center);
-                    return Some((format!("{center}{trailing}"), false, true));
-                }
+            if let Some(center) = settle_english_word_center(&raw_converted) {
+                let center = apply_word_case(token, &center);
+                return Some((center, false, true));
             }
         }
         if let Some(converted) = crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(token)
@@ -920,103 +910,6 @@ fn short_cyrillic_layout_technical_allowed(converted: &str) -> bool {
         converted.to_ascii_lowercase().as_str(),
         "api" | "css" | "eng" | "git" | "go" | "lay" | "log" | "md" | "ms" | "rus" | "ssh" | "vpn"
     )
-}
-
-fn customs_actor_phrase_candidates(
-    tail: &str,
-    context: &TailContext,
-    l1: &[WavePacket],
-) -> Vec<WordCandidate> {
-    if context.has_technical_context() || context.tokens.len() < 4 {
-        return Vec::new();
-    }
-    let Some(previous) = context.previous() else {
-        return Vec::new();
-    };
-    let Some(last) = context.last() else {
-        return Vec::new();
-    };
-    if clean_ru_token(&previous.text) != "таможен" || clean_ru_token(&last.text) != "мы" {
-        return Vec::new();
-    }
-    if !has_customs_actor_context(context) {
-        return Vec::new();
-    }
-    let mut tokens = tail
-        .split_whitespace()
-        .map(str::to_string)
-        .collect::<Vec<_>>();
-    if tokens.len() < 2 {
-        return Vec::new();
-    }
-    let previous_idx = tokens.len() - 2;
-    let Some(replacement) = replace_cyrillic_core(&tokens[previous_idx], "таможим") else {
-        return Vec::new();
-    };
-    tokens[previous_idx] = replacement;
-    vec![WordCandidate {
-        text: tokens.join(" "),
-        source: "PhraseCell32",
-        energy: l1_energy(l1, "ScriptCell32")
-            .max(l1_energy(l1, "BoundaryCell32"))
-            .max(0.88),
-        risk: 0.13,
-        support: {
-            let mut support = candidate_support(l1, context);
-            support.push("customs-actor-phrase".to_string());
-            support.push("previous=таможен last=мы replacement=таможим".to_string());
-            support
-        },
-    }]
-}
-
-fn has_customs_actor_context(context: &TailContext) -> bool {
-    context.tokens.iter().any(|token| {
-        let token = clean_ru_token(&token.text);
-        token.contains("поставщик")
-            || token.contains("цен")
-            || token.contains("склад")
-            || token.contains("покупател")
-            || token.contains("накладн")
-            || token.contains("меркур")
-            || token.contains("логист")
-            || token.contains("достав")
-    })
-}
-
-fn replace_cyrillic_core(token: &str, replacement: &str) -> Option<String> {
-    let start = token.find(is_cyrillic_letter)?;
-    let end = token
-        .char_indices()
-        .rev()
-        .find(|(_idx, ch)| is_cyrillic_letter(*ch))
-        .map(|(idx, ch)| idx + ch.len_utf8())?;
-    if start >= end {
-        return None;
-    }
-    let replacement = if token[start..end]
-        .chars()
-        .next()
-        .is_some_and(char::is_uppercase)
-    {
-        capitalize_first(replacement)
-    } else {
-        replacement.to_string()
-    };
-    Some(format!(
-        "{}{}{}",
-        &token[..start],
-        replacement,
-        &token[end..]
-    ))
-}
-
-fn capitalize_first(word: &str) -> String {
-    let mut chars = word.chars();
-    let Some(first) = chars.next() else {
-        return String::new();
-    };
-    first.to_uppercase().chain(chars).collect()
 }
 
 fn grammar_agreement_candidates(

@@ -5,10 +5,9 @@ use super::pattern_wave::{evaluate_pattern_wave, PATTERN_WAVE_CELL};
 use super::signal::{LayerTrace, WaveDecision, WordCandidate};
 use super::structural_relation::{evaluate_structural_relation, STRUCTURAL_RELATION_CELL};
 use super::{l3_phrase_gate, llmwave};
-use crate::correction_core::{CandidateGateAction, CandidateGateDecision, TypingErrorClass};
+use crate::correction_core::TypingErrorClass;
 use crate::correction_source_contract::{self, CorrectionSourceRole};
 use crate::text_metrics::damerau_levenshtein;
-use crate::typing_transition::decision::TransitionDecisionCore;
 use crate::word_reader::last_text_word_slice;
 
 pub fn run_l3(original: &str, candidates: &[WordCandidate]) -> (Vec<LayerTrace>, WaveDecision) {
@@ -217,7 +216,7 @@ fn run_l3_inner(
     if confidence >= 0.25 && candidate.text != original.trim_end() {
         (
             traces,
-            WaveDecision::Apply {
+            WaveDecision::Suggest {
                 text: preserve_trailing_separator(original, &candidate.text),
                 confidence,
             },
@@ -435,19 +434,13 @@ fn candidate_transition_authority_blocker(
     candidate: &WordCandidate,
 ) -> Option<&'static str> {
     let error_class = nanda_candidate_error_class(candidate.source);
-    let provisional = CandidateGateDecision {
-        action: CandidateGateAction::Apply,
-        reason: "nanda_l3_candidate",
-    };
-    let gate = TransitionDecisionCore::authorize_gate(
+    crate::typing_transition::action::verify_action_operator(
         original,
         &candidate.text,
         error_class,
         correction_source_contract::candidate_origin(candidate.source),
-        candidate.source,
-        provisional,
-    );
-    (gate.action != CandidateGateAction::Apply).then_some(gate.reason)
+    )
+    .apply_blocker()
 }
 
 fn nanda_candidate_error_class(source: &str) -> TypingErrorClass {
@@ -1203,7 +1196,7 @@ mod tests {
     impl DecisionOutput for WaveDecision {
         fn output(&self) -> Option<&str> {
             match self {
-                WaveDecision::Apply { text, .. } => Some(text),
+                WaveDecision::Suggest { text, .. } => Some(text),
                 WaveDecision::Keep { .. } | WaveDecision::Veto { .. } => None,
             }
         }

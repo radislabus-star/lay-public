@@ -1382,7 +1382,7 @@ fn percent(numerator: usize, denominator: usize) -> f64 {
 
 fn decision_label(decision: &WaveDecision) -> &'static str {
     match decision {
-        WaveDecision::Apply { .. } => "apply",
+        WaveDecision::Suggest { .. } => "suggest",
         WaveDecision::Keep { .. } => "keep",
         WaveDecision::Veto { .. } => "veto",
     }

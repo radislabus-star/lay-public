@@ -1,8 +1,7 @@
 use super::{action, verifier, TypingTransition};
 use crate::correction_core::{
     bayes_score_for_candidate, explanation_for_candidate, CandidateGateAction,
-    CandidateGateDecision, CorrectionDecisionSource, TypingErrorClass, TypingErrorEvent,
-    UnifiedCorrectionCandidate,
+    CorrectionDecisionSource, TypingErrorClass, TypingErrorEvent, UnifiedCorrectionCandidate,
 };
 use crate::correction_source_contract::CorrectionSourceRole;
 use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
@@ -129,7 +128,7 @@ impl TransitionDecisionCore {
     ) -> Option<UnifiedCorrectionCandidate> {
         candidates
             .iter()
-            .filter(|candidate| candidate.gate.action == CandidateGateAction::Apply)
+            .filter(|candidate| candidate.gate.action == CandidateGateAction::Eligible)
             .filter(|candidate| candidate_has_apply_authority(event, candidate, candidates, policy))
             .cloned()
             .max_by(|left, right| {
@@ -139,66 +138,6 @@ impl TransitionDecisionCore {
                         &candidate_decision_signals(event, right, candidates.len()).rank_score,
                     )
             })
-    }
-
-    pub(crate) fn authorize_gate(
-        original: &str,
-        replacement: &str,
-        error_class: TypingErrorClass,
-        origin: crate::correction_source_contract::CandidateOrigin,
-        source_id: &str,
-        provisional: CandidateGateDecision,
-    ) -> CandidateGateDecision {
-        if !matches!(
-            provisional.action,
-            CandidateGateAction::Eligible | CandidateGateAction::Apply
-        ) {
-            return provisional;
-        }
-        let event = TypingErrorEvent {
-            original: original.to_string(),
-            core: original.trim().to_string(),
-            current_word: last_replacement_word(original).unwrap_or_default(),
-            input_class: error_class,
-        };
-        let candidate = UnifiedCorrectionCandidate::new(
-            replacement,
-            crate::correction_core::CorrectionDecisionSource::Deterministic,
-            source_id,
-            error_class,
-            provisional.clone(),
-        );
-        let admission = admit_hidden_transition(&event, &candidate, 1, origin.source_role(), false);
-        if !admission.allow_apply {
-            return CandidateGateDecision {
-                action: CandidateGateAction::SuggestOnly,
-                reason: admission.reason,
-            };
-        }
-        let transition = TypingTransition::from_candidate(
-            original,
-            replacement,
-            error_class,
-            origin,
-            source_id,
-            1,
-        );
-        if transition.evidence.left_context_changed && !transition.evidence.verifier_passed {
-            return CandidateGateDecision {
-                action: CandidateGateAction::SuggestOnly,
-                reason: "edit_transition_not_verified",
-            };
-        }
-        if transition.l4_signed_signal.negative {
-            return CandidateGateDecision {
-                action: CandidateGateAction::SuggestOnly,
-                reason: "l4_negative_transition_memory",
-            };
-        }
-        CandidateGateDecision {
-            action: CandidateGateAction::Apply,
-            reason: "transition_core_authorized",
-        }
     }
 }
 
@@ -217,6 +156,24 @@ fn candidate_has_apply_authority(
     let bayes = bayes_score_for_candidate(&event.original, candidate);
     let signals = candidate_decision_signals(event, candidate, candidates.len());
     let source_role = candidate.origin.source_role();
+    let exact_positive_transition = super::memory::TransitionMemory::has_exact_positive(
+        &event.original,
+        &candidate.replacement,
+        candidate.origin,
+    );
+    if source_role == CorrectionSourceRole::L3Context
+        && signals.l3_phrase_milli < 420
+        && signals.l4_signed_milli < 120
+        && !exact_positive_transition
+    {
+        debug_decision_reject(
+            candidate,
+            "l3_context_evidence_absent",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
     if let Some(reason) = phase_policy_rejection(
         policy,
         source_role,
@@ -243,11 +200,7 @@ fn candidate_has_apply_authority(
         && boundary_field.is_some_and(|readout| readout.has_direct_apply_mass());
     let learned_short_boundary_authority = signals.l3_phrase_milli >= 420
         || signals.l4_signed_milli >= 120
-        || super::memory::TransitionMemory::has_exact_positive(
-            &event.original,
-            &candidate.replacement,
-            candidate.origin,
-        );
+        || exact_positive_transition;
     if action.edit_operator == verifier::EditTransitionOperator::BoundaryShift
         && !high_precision_boundary_shift
         && !learned_short_boundary_authority
@@ -286,14 +239,13 @@ fn candidate_has_apply_authority(
         strong_l2_wave_peak_support(&signals) && !self_referential_surface_drift;
     let strong_learned_support =
         external_learned_support || strong_l2_peak_support || high_precision_boundary_shift;
-    let strong_transition_support = strong_l2_wave_peak_transition_support(&signals)
-        && !self_referential_surface_drift
+    let strong_transition_support = signals.l3_phrase_milli >= 420
+        || signals.l4_signed_milli >= 120
         || (policy.l2_phase_apply
             && signals.l2_transition_phase_operator_promoted
             && signals.l2_transition_phase_verdict == "support"
-            && signals.l2_transition_phase_milli >= signals.l2_transition_phase_threshold_milli)
-        || signals.l3_phrase_milli >= 420
-        || signals.l4_signed_milli >= 120;
+            && signals.l2_transition_phase_milli >= signals.l2_transition_phase_threshold_milli
+            && signals.l2_transition_phase_surfaces >= 3);
     let admission = admit_hidden_transition(
         event,
         candidate,
@@ -346,14 +298,30 @@ fn candidate_has_apply_authority(
         );
         return false;
     }
-    let allowed = !matches!(
-        source_role,
-        CorrectionSourceRole::L2Surface
-            | CorrectionSourceRole::L3Context
-            | CorrectionSourceRole::Unknown
-    ) || !better_non_apply_candidate_exists(event, candidate, candidates);
+    if source_role == CorrectionSourceRole::L2Surface
+        && candidate.error_class == TypingErrorClass::CompositeTypo
+        && !external_learned_support
+        && !exact_positive_transition
+        && lexical_transition_distance(event, candidate) >= 2
+        && !phase_center_separates_candidate(event, candidate, candidates)
+        && competing_lexical_margin(event, candidate, candidates) < 0.08
+    {
+        debug_decision_reject(
+            candidate,
+            "l2_composite_margin_low",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
+    let allowed = !stronger_unresolved_candidate_exists(event, candidate, candidates);
     if !allowed {
-        debug_decision_reject(candidate, "better_non_apply", bayes.posterior, bayes.risk);
+        debug_decision_reject(
+            candidate,
+            "stronger_unresolved_transition",
+            bayes.posterior,
+            bayes.risk,
+        );
     }
     allowed
 }
@@ -448,7 +416,7 @@ fn learned_candidate_shadowed_by_deterministic_owner(
 
     candidates.iter().any(|other| {
         if other.source != CorrectionDecisionSource::Deterministic
-            || other.gate.action != CandidateGateAction::Apply
+            || other.gate.action != CandidateGateAction::Eligible
         {
             return false;
         }
@@ -485,10 +453,6 @@ fn learned_candidate_shadowed_by_deterministic_owner(
 
 fn strong_l2_wave_peak_support(signals: &CandidateDecisionSignals) -> bool {
     signals.l2_wave_peak_milli >= 650 && signals.l2_wave_peak_uncertainty_milli <= 450
-}
-
-fn strong_l2_wave_peak_transition_support(signals: &CandidateDecisionSignals) -> bool {
-    signals.l2_wave_peak_milli >= 780 && signals.l2_wave_peak_uncertainty_milli <= 300
 }
 
 pub(crate) fn admit_hidden_transition(
@@ -581,8 +545,8 @@ pub(crate) fn admit_hidden_transition(
 
 fn known_word_drift_has_authority(
     source_role: CorrectionSourceRole,
-    candidate_count: usize,
-    strong_learned_support: bool,
+    _candidate_count: usize,
+    strong_state_support: bool,
     exact_state_support: bool,
 ) -> bool {
     exact_state_support
@@ -590,7 +554,7 @@ fn known_word_drift_has_authority(
             source_role,
             CorrectionSourceRole::Layout | CorrectionSourceRole::Boundary
         )
-        || (candidate_count >= 2 && strong_learned_support)
+        || strong_state_support
 }
 
 fn short_same_length_surface_drift(original_word: &str, replacement: &str) -> bool {
@@ -636,21 +600,164 @@ fn debug_decision_reject(
     }
 }
 
-fn better_non_apply_candidate_exists(
+fn stronger_unresolved_candidate_exists(
     event: &TypingErrorEvent,
     selected: &UnifiedCorrectionCandidate,
     candidates: &[UnifiedCorrectionCandidate],
 ) -> bool {
+    let selected_action = action::verify_action_operator(
+        &event.original,
+        &selected.replacement,
+        selected.error_class,
+        selected.origin,
+    );
+    let selected_is_proven_reversible = selected_action.verifier_passed
+        && matches!(
+            selected_action.edit_operator,
+            verifier::EditTransitionOperator::LayoutProjection
+                | verifier::EditTransitionOperator::BoundaryShift
+                | verifier::EditTransitionOperator::BoundaryMergeSplit
+        );
+    if selected_is_proven_reversible {
+        return false;
+    }
     let selected_bayes = bayes_score_for_candidate(&event.original, selected);
     let selected_signals = candidate_decision_signals(event, selected, candidates.len());
+    let selected_explanation = explanation_for_candidate(&event.original, selected);
+    let selected_span = changed_token_span(&event.original, &selected.replacement);
     candidates.iter().any(|candidate| {
         if candidate == selected || candidate.gate.action == CandidateGateAction::Veto {
             return false;
         }
+        if !changed_spans_overlap(
+            selected_span,
+            changed_token_span(&event.original, &candidate.replacement),
+        ) {
+            return false;
+        }
         let candidate_bayes = bayes_score_for_candidate(&event.original, candidate);
         let candidate_signals = candidate_decision_signals(event, candidate, candidates.len());
+        let candidate_explanation = explanation_for_candidate(&event.original, candidate);
+        let preservation_gain = candidate_explanation
+            .preservation_milli
+            .saturating_sub(selected_explanation.preservation_milli);
+        let loss_reduction = selected_explanation
+            .lost_mass_milli
+            .saturating_sub(candidate_explanation.lost_mass_milli);
+        let structurally_dominates = preservation_gain >= 120
+            && loss_reduction >= 120
+            && candidate_explanation.operator_fit_milli >= selected_explanation.operator_fit_milli;
         candidate_bayes.risk <= selected_bayes.risk
-            && candidate_signals.rank_score >= selected_signals.rank_score + 0.10
+            && (candidate_signals.rank_score > selected_signals.rank_score
+                || (structurally_dominates
+                    && candidate_signals.rank_score + 0.08 >= selected_signals.rank_score))
+    })
+}
+
+fn changed_token_span(original: &str, replacement: &str) -> Option<(usize, usize)> {
+    let original_words = crate::correction_core::normalized_correction_words(original);
+    let replacement_words = crate::correction_core::normalized_correction_words(replacement);
+    let width = original_words.len().max(replacement_words.len());
+    let mut first = None;
+    let mut last = 0usize;
+    for index in 0..width {
+        if original_words.get(index) != replacement_words.get(index) {
+            first.get_or_insert(index);
+            last = index;
+        }
+    }
+    first.map(|first| (first, last))
+}
+
+fn changed_spans_overlap(left: Option<(usize, usize)>, right: Option<(usize, usize)>) -> bool {
+    match (left, right) {
+        (Some((left_start, left_end)), Some((right_start, right_end))) => {
+            left_start <= right_end && right_start <= left_end
+        }
+        _ => false,
+    }
+}
+
+fn lexical_transition_distance(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+) -> usize {
+    let original = last_replacement_word(&event.original).unwrap_or_default();
+    let replacement = last_replacement_word(&candidate.replacement).unwrap_or_default();
+    crate::text_metrics::damerau_levenshtein(&original, &replacement)
+}
+
+fn competing_lexical_margin(
+    event: &TypingErrorEvent,
+    selected: &UnifiedCorrectionCandidate,
+    candidates: &[UnifiedCorrectionCandidate],
+) -> f32 {
+    let selected_span = changed_token_span(&event.original, &selected.replacement);
+    let selected_score = candidate_decision_signals(event, selected, candidates.len()).rank_score;
+    let runner_up = candidates
+        .iter()
+        .filter(|candidate| *candidate != selected)
+        .filter(|candidate| candidate.gate.action != CandidateGateAction::Veto)
+        .filter(|candidate| {
+            matches!(
+                candidate.origin.source_role(),
+                CorrectionSourceRole::DeterministicTypo
+                    | CorrectionSourceRole::L2Surface
+                    | CorrectionSourceRole::L3Context
+            )
+        })
+        .filter(|candidate| {
+            changed_spans_overlap(
+                selected_span,
+                changed_token_span(&event.original, &candidate.replacement),
+            )
+        })
+        .map(|candidate| candidate_decision_signals(event, candidate, candidates.len()).rank_score)
+        .max_by(f32::total_cmp);
+    runner_up.map_or(f32::INFINITY, |score| selected_score - score)
+}
+
+fn phase_center_separates_candidate(
+    event: &TypingErrorEvent,
+    selected: &UnifiedCorrectionCandidate,
+    candidates: &[UnifiedCorrectionCandidate],
+) -> bool {
+    let selected_span = changed_token_span(&event.original, &selected.replacement);
+    let selected_signal = candidate_decision_signals(event, selected, candidates.len());
+    if !selected_signal.l2_transition_phase_operator_promoted
+        || selected_signal.l2_transition_phase_verdict != "support"
+        || selected_signal.l2_transition_phase_milli
+            < selected_signal.l2_transition_phase_threshold_milli
+    {
+        return false;
+    }
+    let strongest_competitor = candidates
+        .iter()
+        .filter(|candidate| *candidate != selected)
+        .filter(|candidate| candidate.gate.action != CandidateGateAction::Veto)
+        .filter(|candidate| {
+            matches!(
+                candidate.origin.source_role(),
+                CorrectionSourceRole::DeterministicTypo
+                    | CorrectionSourceRole::L2Surface
+                    | CorrectionSourceRole::L3Context
+            )
+        })
+        .filter(|candidate| {
+            changed_spans_overlap(
+                selected_span,
+                changed_token_span(&event.original, &candidate.replacement),
+            )
+        })
+        .map(|candidate| {
+            candidate_decision_signals(event, candidate, candidates.len()).l2_transition_phase_milli
+        })
+        .max();
+    strongest_competitor.map_or(true, |competitor| {
+        selected_signal
+            .l2_transition_phase_milli
+            .saturating_sub(competitor)
+            >= 10
     })
 }
 
@@ -717,7 +824,7 @@ pub(crate) fn candidate_decision_signals(
     let l4_signed = l4_signed_signal(event, candidate, relation.surface_key());
     let l2_wave_peak = l2_wave_peak_signal(event, candidate, candidate_count, phase);
     let rank_score = bayes
-        + ((explanation.explanation_score_milli as f32 - 500.0) / 10_000.0)
+        + ((explanation.explanation_score_milli as f32 - 500.0) / 2_000.0)
         + transition_rank_bonus(&action, candidate)
         + ((candidate.evidence_count().saturating_sub(1).min(3) as f32) * 0.025)
         + l2_wave_peak.rank_bonus
@@ -760,49 +867,51 @@ include!("decision_signals.rs");
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        admit_hidden_transition, phase_policy_rejection, TransitionDecisionCore,
-        TransitionDecisionPolicy,
-    };
+    use super::{admit_hidden_transition, phase_policy_rejection, TransitionDecisionPolicy};
     use crate::correction_core::{
         CandidateGateAction, CandidateGateDecision, CorrectionDecisionSource, TypingErrorClass,
         TypingErrorEvent, UnifiedCorrectionCandidate,
     };
-    use crate::correction_source_contract::{CandidateOrigin, CorrectionSourceRole};
+    use crate::correction_source_contract::CorrectionSourceRole;
 
     #[test]
-    fn transition_core_blocks_unverified_left_context_apply() {
-        let decision = TransitionDecisionCore::authorize_gate(
-            "содержкой ",
+    fn transition_admission_blocks_unverified_left_context() {
+        let event = event("содержкой ");
+        let candidate = UnifiedCorrectionCandidate::new(
             "что получилось вроде хороший ввод и даже фикс был шикарный но с содержать ",
-            TypingErrorClass::CompositeTypo,
-            CandidateOrigin::L2Surface,
+            CorrectionDecisionSource::Nanda,
             "L2SurfaceMotifCell32",
+            TypingErrorClass::CompositeTypo,
             CandidateGateDecision {
-                action: CandidateGateAction::Apply,
-                reason: "class_allows_apply",
+                action: CandidateGateAction::Eligible,
+                reason: "surface_candidate",
             },
         );
+        let admission = admit_hidden_transition(
+            &event,
+            &candidate,
+            1,
+            CorrectionSourceRole::L2Surface,
+            false,
+        );
 
-        assert_eq!(decision.action, CandidateGateAction::SuggestOnly);
-        assert_eq!(decision.reason, "latent_context_unverified");
+        assert!(!admission.allow_apply);
+        assert_eq!(admission.reason, "latent_context_unverified");
     }
 
     #[test]
-    fn transition_core_allows_verified_current_word_apply() {
-        let decision = TransitionDecisionCore::authorize_gate(
-            "провека ",
-            "проверка ",
-            TypingErrorClass::CompositeTypo,
-            CandidateOrigin::DeterministicTypo,
-            "composite_ru_typo",
-            CandidateGateDecision {
-                action: CandidateGateAction::Apply,
-                reason: "class_allows_apply",
-            },
+    fn transition_admission_allows_verified_current_word() {
+        let event = event("провека ");
+        let candidate = candidate("проверка ", "composite_ru_typo");
+        let admission = admit_hidden_transition(
+            &event,
+            &candidate,
+            1,
+            CorrectionSourceRole::DeterministicTypo,
+            true,
         );
 
-        assert_eq!(decision.action, CandidateGateAction::Apply);
+        assert!(admission.allow_apply, "reason={}", admission.reason);
     }
 
     #[test]
@@ -935,7 +1044,7 @@ mod tests {
             source_id,
             TypingErrorClass::CompositeTypo,
             CandidateGateDecision {
-                action: CandidateGateAction::Apply,
+                action: CandidateGateAction::Eligible,
                 reason: "class_allows_apply",
             },
         )

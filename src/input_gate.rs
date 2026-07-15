@@ -391,7 +391,6 @@ fn word_boundary_action(resolution: &CorrectionResolution) -> InputGateAction {
             CandidateGateAction::Veto => {
                 veto_reason.get_or_insert(candidate.gate.reason);
             }
-            CandidateGateAction::Apply => {}
         }
     }
 
@@ -519,7 +518,7 @@ mod tests {
         assert_eq!(score.replacement, "давай ");
         assert_eq!(score.source, CorrectionDecisionSource::Deterministic);
         assert_eq!(score.error_class, TypingErrorClass::WrongLayout);
-        assert_eq!(score.gate_action, CandidateGateAction::Apply);
+        assert_eq!(score.gate_action, CandidateGateAction::Eligible);
         assert!(score.selected);
         assert!(score.posterior_milli > 0);
         assert!(score.decision_rank_milli > 0);
@@ -533,7 +532,10 @@ mod tests {
             trace.selected_error_class,
             Some(TypingErrorClass::WrongLayout)
         );
-        assert_eq!(trace.selected_gate_action, Some(CandidateGateAction::Apply));
+        assert_eq!(
+            trace.selected_gate_action,
+            Some(CandidateGateAction::Eligible)
+        );
         assert_eq!(trace.reason, "apply_selected_candidate");
     }
 

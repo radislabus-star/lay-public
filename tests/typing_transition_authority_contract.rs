@@ -101,7 +101,7 @@ fn ime_preedit_uses_shared_candidate_readout_for_ranking() {
 }
 
 #[test]
-fn legacy_gate_only_marks_eligibility_and_core_grants_apply() {
+fn candidate_admission_only_marks_eligibility_and_core_selects_transition() {
     let correction = read("src/correction_core.rs");
     let gate = read("src/correction_core/gate.rs");
     let decision = read("src/typing_transition/decision.rs");
@@ -109,12 +109,19 @@ fn legacy_gate_only_marks_eligibility_and_core_grants_apply() {
     assert!(
         correction.contains("CandidateGateAction::Eligible")
             && correction.contains("mod gate;")
-            && gate.contains("fn legacy_gate_candidate_with_source"),
-        "legacy candidate checks must expose eligibility rather than direct execution"
+            && gate.contains("fn candidate_admission_with_source")
+            && !gate.contains("TransitionDecisionCore"),
+        "candidate checks must expose eligibility without choosing the transition"
     );
     assert!(
-        decision.contains("CandidateGateAction::Eligible | CandidateGateAction::Apply")
-            && decision.contains("reason: \"transition_core_authorized\""),
-        "only TransitionDecisionCore may promote an eligible candidate to Apply"
+        decision.contains("candidate.gate.action == CandidateGateAction::Eligible")
+            && decision.contains("candidate_has_apply_authority")
+            && !decision.contains("fn authorize_gate"),
+        "only TransitionDecisionCore may choose an eligible candidate"
+    );
+    assert!(
+        !correction.contains("CandidateGateAction::Apply")
+            && !gate.contains("CandidateGateAction::Apply"),
+        "candidate producer types must not expose an Apply state"
     );
 }

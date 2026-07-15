@@ -6,6 +6,35 @@ use crate::word_reader::{split_edge_whitespace, split_ws_segments};
 use super::candidates::evaluate_rule_candidates;
 use super::types::TypingAssistExplanation;
 
+pub(crate) fn collect_typing_assist_candidates_with_pipeline(
+    text: &str,
+    allow_layout_auto: bool,
+    pipeline: &[TypingAssistRuleConfig],
+) -> Vec<(crate::typing_candidate::TypingCandidate, String)> {
+    let (leading, core, trailing) = split_edge_whitespace(text);
+    if core.is_empty() {
+        return Vec::new();
+    }
+    evaluate_rule_candidates(
+        TypingAssistExplanation::new(text, core, allow_layout_auto),
+        core,
+        allow_layout_auto,
+        pipeline,
+        true,
+    )
+    .candidates
+    .into_iter()
+    .filter(|candidate| !unsafe_word_count_shrink(core, &candidate.replacement, &candidate.rule_id))
+    .filter_map(|candidate| {
+        let mut output = String::with_capacity(text.len().max(candidate.replacement.len()));
+        output.push_str(leading);
+        output.push_str(&candidate.replacement);
+        output.push_str(trailing);
+        (output != text).then_some((candidate, output))
+    })
+    .collect()
+}
+
 pub fn apply_typing_assist_exact(text: &str) -> Option<String> {
     apply_typing_assist_with_pipeline(text, false, &default_typing_assist_pipeline())
 }

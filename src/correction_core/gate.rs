@@ -15,19 +15,10 @@ pub(super) fn gate_candidate_with_source(
     error_class: TypingErrorClass,
     source_id: &str,
 ) -> CandidateGateDecision {
-    let provisional =
-        legacy_gate_candidate_with_source(original, replacement, error_class, source_id);
-    TransitionDecisionCore::authorize_gate(
-        original,
-        replacement,
-        error_class,
-        correction_source_contract::candidate_origin(source_id),
-        source_id,
-        provisional,
-    )
+    candidate_admission_with_source(original, replacement, error_class, source_id)
 }
 
-fn legacy_gate_candidate_with_source(
+fn candidate_admission_with_source(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
@@ -999,38 +990,9 @@ pub(super) fn semantic_wave_candidate_lacks_surface_authority(
     if distance <= 1 {
         return false;
     }
-
-    let max_len = original_lower
-        .chars()
-        .count()
-        .max(replacement_lower.chars().count());
-    let original_len = original_lower.chars().count();
-    let replacement_len = replacement_lower.chars().count();
-    if distance >= 2 && original_len == replacement_len {
-        return true;
-    }
-    let prefix = common_prefix_len(&original_lower, &replacement_lower);
-    let known_replacement =
-        crate::russian_lexicon::is_known_russian_word_or_form(&replacement_lower)
-            || crate::lexicon::is_common_ru_word(&replacement_lower);
-    let known_original = crate::russian_lexicon::is_known_russian_word_or_form(&original_lower);
-
-    if distance == 2 && original_len <= 8 && prefix >= 4 && replacement_len <= original_len + 1 {
-        return true;
-    }
-    if distance == 2 && max_len >= 7 && prefix >= 2 && known_replacement {
-        return false;
-    }
-    if distance == 3
-        && original_len >= 9
-        && max_len >= 10
-        && prefix >= 3
-        && known_replacement
-        && !known_original
-    {
-        return false;
-    }
-    true
+    !crate::nanda_wave::l2::l2_center_near_surfaces(&original_lower, 24)
+        .iter()
+        .any(|candidate| candidate == &replacement_lower)
 }
 
 fn l2_surface_candidate_truncates_to_stem_without_deletion_proof(

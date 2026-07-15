@@ -52,7 +52,7 @@ mod resolution_tests {
             "L2SurfaceMotifCell32",
             TypingErrorClass::MissingLetter,
             CandidateGateDecision {
-                action: CandidateGateAction::Apply,
+                action: CandidateGateAction::Eligible,
                 reason: "test",
             },
         )));

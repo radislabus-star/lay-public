@@ -13,15 +13,15 @@ use crate::russian_typo_candidates::{
 };
 use crate::text_case::apply_word_case;
 use crate::text_metrics::{damerau_levenshtein, has_cyrillic};
-use crate::typing_assist::{explain_typing_assist_with_pipeline, split_ws_segments};
+use crate::typing_assist::split_ws_segments;
 use crate::typing_context::{syntax_allows_candidate, typing_assist_pipeline_for_context};
+use crate::typing_pipeline::{
+    collect_typing_assist_candidates_with_pipeline, explain_typing_assist_with_pipeline,
+};
 use crate::typing_rule_graph::ids;
 use crate::typing_transition::{
-    action as action_operator,
-    candidate::L2CandidateLattice,
-    decision::{candidate_decision_signals, TransitionDecisionCore},
-    state::L1SurfaceSignal,
-    verifier as edit_transition,
+    action as action_operator, candidate::L2CandidateLattice, decision::candidate_decision_signals,
+    state::L1SurfaceSignal, verifier as edit_transition,
 };
 use crate::word_reader::{
     cyrillic_word_splits, is_cyrillic_letters_only, last_text_word, replace_last_text_word,
@@ -38,8 +38,6 @@ const REPEATED_DELETE_SURFACE_MARGIN: f64 = 0.25;
 mod gate;
 #[cfg(test)]
 use gate::gate_candidate;
-#[cfg(test)]
-use gate::semantic_wave_candidate_lacks_surface_authority;
 pub(crate) use gate::{bayes_score_for_candidate, normalized_correction_words};
 use gate::{
     gate_candidate_with_source, repeated_deletion_has_surface_support,
@@ -111,7 +109,6 @@ pub enum CandidateGateAction {
     /// Producer supplied evidence and no local constraint blocked it. Only the
     /// TransitionDecisionCore may turn this into a physical Apply.
     Eligible,
-    Apply,
     SuggestOnly,
     KeepOriginal,
     Veto,
@@ -179,13 +176,10 @@ impl UnifiedCorrectionCandidate {
     }
 
     pub(crate) fn merge_evidence(&mut self, candidate: Self) {
-        let promote_verified_apply = candidate.origin.source_role() == CorrectionSourceRole::Layout
-            && candidate.gate.action == CandidateGateAction::Apply
-            && matches!(
-                self.gate.action,
-                CandidateGateAction::Eligible | CandidateGateAction::SuggestOnly
-            );
-        if promote_verified_apply {
+        let promote_eligible = candidate.origin.source_role() == CorrectionSourceRole::Layout
+            && candidate.gate.action == CandidateGateAction::Eligible
+            && self.gate.action == CandidateGateAction::SuggestOnly;
+        if promote_eligible {
             self.source = candidate.source;
             self.origin = candidate.origin;
             self.source_id.clone_from(&candidate.source_id);
@@ -384,8 +378,10 @@ impl CorrectionScoreboard {
 
         for candidate in candidates {
             match candidate.gate.action {
+                CandidateGateAction::Eligible if selected == Some(candidate) => {
+                    scoreboard.apply_candidates += 1;
+                }
                 CandidateGateAction::Eligible => scoreboard.suggest_only_candidates += 1,
-                CandidateGateAction::Apply => scoreboard.apply_candidates += 1,
                 CandidateGateAction::SuggestOnly => scoreboard.suggest_only_candidates += 1,
                 CandidateGateAction::KeepOriginal => scoreboard.keep_original_candidates += 1,
                 CandidateGateAction::Veto => scoreboard.veto_candidates += 1,

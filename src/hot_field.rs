@@ -226,7 +226,7 @@ impl HotFieldSnapshot {
             HotWordAuthority::CommonSurface
         } else if crate::nanda_wave::l2::l2_surface_foundation_has_authority(&lower) {
             HotWordAuthority::L2SurfaceCenter
-        } else if crate::nanda_wave::cached_usage_prior_snapshot().word_prior(&lower) >= 0.020 {
+        } else if accepted_usage_has_authority(&lower) {
             HotWordAuthority::UserUsage
         } else {
             HotWordAuthority::Unknown
@@ -280,6 +280,12 @@ impl HotFieldSnapshot {
             candidate_right_form: self.form_readout(candidate_right),
         }
     }
+}
+
+fn accepted_usage_has_authority(word: &str) -> bool {
+    let usage = crate::nanda_wave::cached_usage_prior_snapshot();
+    let readout = usage.hot_readout(&[], "*", "*", "*", word);
+    readout.accepted_count >= 2 && readout.accepted_count > readout.rejected_count
 }
 
 #[cfg(test)]

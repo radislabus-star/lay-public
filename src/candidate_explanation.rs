@@ -35,12 +35,22 @@ pub fn explain_candidate(
     let common = lcs_len(&original_surface, &replacement_surface);
     let original_len = original_surface.len();
     let replacement_len = replacement_surface.len();
-    let preservation_milli = ratio_milli(common, original_len);
-    let lost_mass_milli = ratio_milli(original_len.saturating_sub(common), original_len);
-    let added_mass_milli = ratio_milli(
-        replacement_len.saturating_sub(common),
-        replacement_len.max(original_len),
-    );
+    let proof = proof_for_candidate(error_class, source_id);
+    let layout_projection_preserves_key_mass =
+        proof == LanguageActionProof::Layout && original_len > 0 && original_len == replacement_len;
+    let (preservation_milli, lost_mass_milli, added_mass_milli) =
+        if layout_projection_preserves_key_mass {
+            (1000, 0, 0)
+        } else {
+            (
+                ratio_milli(common, original_len),
+                ratio_milli(original_len.saturating_sub(common), original_len),
+                ratio_milli(
+                    replacement_len.saturating_sub(common),
+                    replacement_len.max(original_len),
+                ),
+            )
+        };
     let boundary_delta = boundary_signature(original) != boundary_signature(replacement);
     let edit_shape = edit_shape(
         &original_surface,
@@ -49,7 +59,6 @@ pub fn explain_candidate(
         boundary_delta,
         error_class,
     );
-    let proof = proof_for_candidate(error_class, source_id);
     let operator_fit_milli = operator_fit_milli(
         proof,
         error_class,
@@ -62,9 +71,14 @@ pub fn explain_candidate(
         shortcut_risk_milli(source_id, proof, lost_mass_milli, operator_fit_milli);
     let anti_wave_milli = ((shortcut_risk_milli as i32 * (1000 - operator_fit_milli as i32)) / 1000)
         .clamp(0, 1000) as i16;
-    let explanation_score_milli = (preservation_milli as i32 + operator_fit_milli as i32
-        - anti_wave_milli as i32)
-        .clamp(0, 1000) as i16;
+    // Preserve the full geometry instead of saturating every plausible edit at
+    // 1000. The decision core needs to distinguish a mass-preserving operator
+    // from a shortcut that happens to end at a frequent word.
+    let explanation_score_milli =
+        (200 + preservation_milli as i32 * 45 / 100 + operator_fit_milli as i32 * 35 / 100
+            - lost_mass_milli as i32 * 30 / 100
+            - anti_wave_milli as i32 * 25 / 100)
+            .clamp(0, 1000) as i16;
 
     CandidateExplanation {
         edit_shape,

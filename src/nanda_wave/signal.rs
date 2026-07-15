@@ -49,9 +49,17 @@ pub struct WordCandidate {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum WaveDecision {
-    Apply { text: String, confidence: f32 },
-    Keep { reason: &'static str },
-    Veto { reason: &'static str },
+    /// Ranked readout for IME/shadow consumers. It has no text mutation authority.
+    Suggest {
+        text: String,
+        confidence: f32,
+    },
+    Keep {
+        reason: &'static str,
+    },
+    Veto {
+        reason: &'static str,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -72,7 +80,7 @@ pub struct WaveTrace {
 impl WaveTrace {
     pub fn output(&self) -> Option<&str> {
         match &self.decision {
-            WaveDecision::Apply { text, .. } => Some(text.as_str()),
+            WaveDecision::Suggest { text, .. } => Some(text.as_str()),
             WaveDecision::Keep { .. } | WaveDecision::Veto { .. } => None,
         }
     }

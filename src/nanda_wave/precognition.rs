@@ -88,7 +88,7 @@ fn build_record<'a>(
 
 fn decision_kind(decision: &WaveDecision) -> &'static str {
     match decision {
-        WaveDecision::Apply { .. } => "apply",
+        WaveDecision::Suggest { .. } => "suggest",
         WaveDecision::Keep { .. } => "keep",
         WaveDecision::Veto { .. } => "veto",
     }

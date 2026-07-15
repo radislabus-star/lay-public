@@ -487,7 +487,7 @@ fn candidate_stats_json(cases: &[EvalCase], options: &WaveOptions) -> Vec<serde_
                 .generated += 1;
         }
         match trace.decision {
-            WaveDecision::Apply { ref text, .. } => {
+            WaveDecision::Suggest { ref text, .. } => {
                 if let Some(source) = trace
                     .l2_candidates
                     .iter()

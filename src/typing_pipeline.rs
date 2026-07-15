@@ -10,6 +10,7 @@ mod rule_order;
 mod types;
 mod warmup;
 
+pub(crate) use engine::collect_typing_assist_candidates_with_pipeline;
 pub use engine::{
     apply_typing_assist, apply_typing_assist_exact, apply_typing_assist_with_pipeline,
     explain_typing_assist_with_pipeline,

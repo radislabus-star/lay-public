@@ -83,7 +83,7 @@ pub fn build_trace_record(
         expected: (include_text && expected.is_some())
             .then(|| expected.unwrap_or_default().to_string()),
         output_matches_expected: ok,
-        chosen: accepted_source(trace).map(ToOwned::to_owned),
+        chosen: suggested_source(trace).map(ToOwned::to_owned),
         candidates: trace_candidates(trace, include_text),
         patterns: trace_patterns(trace),
         cells: trace_cells(trace),
@@ -108,17 +108,10 @@ fn trace_cells(trace: &WaveTrace) -> Vec<CellTraceCell> {
         entry.top_energy = entry.top_energy.max(candidate.energy);
     }
     match &trace.decision {
-        WaveDecision::Apply { .. } => {
-            if let Some(source) = accepted_source(trace) {
-                cells
-                    .entry(source.to_string())
-                    .or_insert_with(|| CellTraceCell::new(source, "candidate"))
-                    .accepted += 1;
-            }
-            cells
-                .entry("MeshConsensusCell32".to_string())
-                .or_insert_with(|| CellTraceCell::new("MeshConsensusCell32", "consensus"))
-                .accepted += 1;
+        WaveDecision::Suggest { .. } => {
+            // A model readout is not user acceptance. The selected source is
+            // recorded in `chosen`; signed memory changes only from observed
+            // accept/reject/revert events.
         }
         WaveDecision::Veto { .. } => {
             cells
@@ -178,10 +171,6 @@ fn l3_role(name: &str) -> &str {
 }
 
 fn trace_candidates(trace: &WaveTrace, include_text: bool) -> Vec<CellTraceCandidate> {
-    let accepted = match &trace.decision {
-        WaveDecision::Apply { text, .. } => Some(text.as_str()),
-        WaveDecision::Keep { .. } | WaveDecision::Veto { .. } => None,
-    };
     trace
         .l2_candidates
         .iter()
@@ -192,14 +181,14 @@ fn trace_candidates(trace: &WaveTrace, include_text: bool) -> Vec<CellTraceCandi
                 text: include_text.then_some(candidate_text.clone()),
                 energy: candidate.energy,
                 risk: candidate.risk,
-                accepted: accepted == Some(candidate_text.as_str()),
+                accepted: false,
             }
         })
         .collect()
 }
 
-fn accepted_source(trace: &WaveTrace) -> Option<&'static str> {
-    let WaveDecision::Apply { text, .. } = &trace.decision else {
+fn suggested_source(trace: &WaveTrace) -> Option<&'static str> {
+    let WaveDecision::Suggest { text, .. } = &trace.decision else {
         return None;
     };
     trace
@@ -268,7 +257,7 @@ impl CellTraceCell {
 
 fn decision_kind(decision: &WaveDecision) -> &'static str {
     match decision {
-        WaveDecision::Apply { .. } => "apply",
+        WaveDecision::Suggest { .. } => "suggest",
         WaveDecision::Keep { .. } => "keep",
         WaveDecision::Veto { .. } => "veto",
     }
