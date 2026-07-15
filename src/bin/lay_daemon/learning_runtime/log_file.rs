@@ -17,6 +17,8 @@ struct LearningEntry<'a> {
     lay_from: Option<&'a str>,
     #[serde(skip_serializing_if = "Option::is_none")]
     lay_to: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    user_target: Option<&'a str>,
 }
 
 pub(crate) fn append_learning_log_to_path(
@@ -40,6 +42,7 @@ pub(crate) fn append_learning_log_to_path(
         lay_kind: None,
         lay_from: None,
         lay_to: None,
+        user_target: None,
     };
     append_learning_entry_to_path(path, &entry);
 }
@@ -48,6 +51,7 @@ pub(crate) fn append_user_correction_learning_log_to_path(
     path: &std::path::Path,
     correction: &UserLearningCorrection,
 ) {
+    let user_target = correction.user_target();
     let entry = LearningEntry {
         ts: SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -61,6 +65,7 @@ pub(crate) fn append_user_correction_learning_log_to_path(
         lay_kind: Some(&correction.lay_kind),
         lay_from: Some(&correction.lay_from),
         lay_to: Some(&correction.lay_to),
+        user_target: user_target.as_deref(),
     };
     append_learning_entry_to_path(path, &entry);
 }

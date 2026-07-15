@@ -64,7 +64,7 @@ pub(crate) struct L4SignedMemoryInput<'a> {
     pub(crate) source: &'a str,
     pub(crate) operation: &'a str,
     pub(crate) state_word: &'a str,
-    pub(crate) word: &'a str,
+    pub(crate) candidate_text: &'a str,
     pub(crate) usage: &'a UsagePriorSnapshot,
     pub(crate) surface: Option<&'a str>,
 }
@@ -75,7 +75,7 @@ pub(crate) fn l4_signed_memory_signal(input: L4SignedMemoryInput<'_>) -> L4Signe
         input.source,
         input.operation,
         input.state_word,
-        input.word,
+        input.candidate_text,
     );
     let coverage = input
         .surface
@@ -165,7 +165,7 @@ mod tests {
             source: "ime",
             operation: "completion",
             state_word: "д",
-            word: "дождь",
+            candidate_text: "дождь",
             usage: &usage,
             surface: None,
         });
@@ -188,7 +188,7 @@ mod tests {
             source: "autocorrect",
             operation: "replacement",
             state_word: "отвравим",
-            word: "отвравим",
+            candidate_text: "отвравим",
             usage: &usage,
             surface: None,
         });
@@ -197,7 +197,7 @@ mod tests {
             source: "autocorrect",
             operation: "replacement",
             state_word: "отвравим",
-            word: "отравим",
+            candidate_text: "отравим",
             usage: &usage,
             surface: None,
         });
@@ -223,7 +223,7 @@ mod tests {
             source: "autocorrect",
             operation: "replacement",
             state_word: "проврить",
-            word: "проверить",
+            candidate_text: "проверить",
             usage: &covered_usage,
             surface: Some(surface),
         });
@@ -232,12 +232,45 @@ mod tests {
             source: "autocorrect",
             operation: "replacement",
             state_word: "проверить",
-            word: "проврить",
+            candidate_text: "проврить",
             usage: &repelled_usage,
             surface: Some(surface),
         });
 
         assert_eq!(covered.surface_status, L4SurfaceStatus::Covered);
         assert_eq!(repelled.surface_status, L4SurfaceStatus::Observed);
+    }
+
+    #[test]
+    fn signed_memory_addresses_complete_multiword_transition() {
+        let usage = usage_from_events(
+            r#"{"ts":1,"kind":"rejected_candidate","word":"слов","from":"мыслов","to":"мы слов","source":"typing-assist","operation":"boundary"}
+"#,
+        );
+        let state = crate::transition_relation::transition_state_id("мыслов");
+
+        let split = l4_signed_memory_signal(L4SignedMemoryInput {
+            context: &[],
+            source: "boundary",
+            operation: "replacement",
+            state_word: &state,
+            candidate_text: "мы слов",
+            usage: &usage,
+            surface: None,
+        });
+        let unrelated_tail = l4_signed_memory_signal(L4SignedMemoryInput {
+            context: &[],
+            source: "boundary",
+            operation: "replacement",
+            state_word: &state,
+            candidate_text: "слов",
+            usage: &usage,
+            surface: None,
+        });
+
+        assert!(split.transition_state_specific);
+        assert!(split.transition_repulsion > split.transition_attraction);
+        assert_eq!(split.reason, L4SignedMemoryReason::TransitionRepels);
+        assert_eq!(unrelated_tail.transition_repel_count, 0);
     }
 }

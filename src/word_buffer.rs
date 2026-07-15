@@ -72,6 +72,28 @@ pub struct UserLearningCorrection {
     pub words: usize,
 }
 
+impl UserLearningCorrection {
+    /// Reconstructs the complete text the user left after editing Lay's
+    /// candidate. `from`/`to` are only the changed suffix; memory authority
+    /// must learn the full transition instead of that fragment.
+    pub fn user_target(&self) -> Option<String> {
+        reconstruct_user_correction_target(&self.lay_to, &self.from, &self.to)
+    }
+}
+
+#[doc(hidden)]
+pub fn reconstruct_user_correction_target(
+    lay_candidate: &str,
+    deleted_suffix: &str,
+    typed_suffix: &str,
+) -> Option<String> {
+    let preserved = lay_candidate.strip_suffix(deleted_suffix)?;
+    let mut target = String::with_capacity(preserved.len() + typed_suffix.len());
+    target.push_str(preserved);
+    target.push_str(typed_suffix);
+    Some(target)
+}
+
 impl WordBuffer {
     #[inline]
     pub fn new() -> Self {

@@ -90,6 +90,22 @@ fn learning_feedback_does_not_attach_space_to_non_space_correction() {
 
     assert_eq!(correction.from, "d");
     assert_eq!(correction.to, "c");
+    assert_eq!(correction.user_target().as_deref(), Some("abc"));
+}
+
+#[test]
+fn learning_feedback_reconstructs_the_full_user_target_from_a_suffix_edit() {
+    let correction = UserLearningCorrection {
+        lay_kind: "typing-assist".to_string(),
+        lay_from: "Праивльно? ".to_string(),
+        lay_to: "Правило? ".to_string(),
+        from: "ло? ".to_string(),
+        to: "льно? ".to_string(),
+        replace_words: 1,
+        words: 1,
+    };
+
+    assert_eq!(correction.user_target().as_deref(), Some("Правильно? "));
 }
 
 #[test]
@@ -125,6 +141,7 @@ fn writes_user_correction_learning_log_with_lay_context() {
     assert_eq!(value["lay_kind"], "typing-assist");
     assert_eq!(value["lay_from"], "смотри ");
     assert_eq!(value["lay_to"], "смотрин ");
+    assert_eq!(value["user_target"], "смотри ");
 
     let _ = std::fs::remove_dir_all(tmp);
 }

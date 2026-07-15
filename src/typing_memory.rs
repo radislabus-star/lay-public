@@ -86,24 +86,29 @@ impl TypingMemoryEvent {
         source: &str,
         operation: &str,
     ) -> Vec<Self> {
-        let context = recent_context_words(context_tail);
-        normalized_words(rejected_text)
+        let from_words = normalized_words(context_tail);
+        let rejected_words = normalized_words(rejected_text);
+        changed_target_indexes(&from_words, &rejected_words)
             .into_iter()
-            .map(|word| Self {
-                kind: TypingMemoryEventKind::RejectedCandidate,
-                feedback: TypingMemoryFeedback::Rejected,
-                word,
-                context: context.clone(),
-                from: Some(context_tail.trim().to_string()),
-                to: Some(rejected_text.trim().to_string()),
-                source: source.to_string(),
-                operation: operation.to_string(),
-                surface: Some(transition_surface_key(
-                    context_tail,
-                    rejected_text,
-                    source,
-                    operation,
-                )),
+            .filter_map(|index| {
+                let word = rejected_words.get(index)?.clone();
+                let context = words_before_last(&rejected_words[..index]);
+                Some(Self {
+                    kind: TypingMemoryEventKind::RejectedCandidate,
+                    feedback: TypingMemoryFeedback::Rejected,
+                    word,
+                    context,
+                    from: Some(context_tail.trim().to_string()),
+                    to: Some(rejected_text.trim().to_string()),
+                    source: source.to_string(),
+                    operation: operation.to_string(),
+                    surface: Some(transition_surface_key(
+                        context_tail,
+                        rejected_text,
+                        source,
+                        operation,
+                    )),
+                })
             })
             .collect()
     }
@@ -121,7 +126,7 @@ fn accepted_events(
         return Vec::new();
     }
     let from_words = normalized_words(from);
-    let target_indexes = accepted_target_indexes(&from_words, &to_words);
+    let target_indexes = changed_target_indexes(&from_words, &to_words);
     target_indexes
         .into_iter()
         .map(|index| {
@@ -142,7 +147,7 @@ fn accepted_events(
         .collect()
 }
 
-fn accepted_target_indexes(from_words: &[String], to_words: &[String]) -> Vec<usize> {
+pub(crate) fn changed_target_indexes(from_words: &[String], to_words: &[String]) -> Vec<usize> {
     let indexes = to_words
         .iter()
         .enumerate()
@@ -153,6 +158,31 @@ fn accepted_target_indexes(from_words: &[String], to_words: &[String]) -> Vec<us
     } else {
         indexes
     }
+}
+
+/// Normalized target region beginning at the first changed token.
+///
+/// The unchanged phrase prefix belongs to L3 context, not to the L4 operator
+/// identity. Boundary transitions keep every changed target token, so a split
+/// cannot collapse back to a last-word lookup.
+pub(crate) fn transition_target_text(from: &str, to: &str) -> String {
+    let from_words = normalized_words(from);
+    let to_words = normalized_words(to);
+    let start = changed_target_indexes(&from_words, &to_words)
+        .into_iter()
+        .next()
+        .unwrap_or_else(|| to_words.len().saturating_sub(1));
+    to_words.get(start..).unwrap_or_default().join(" ")
+}
+
+pub(crate) fn transition_context_words(from: &str, to: &str) -> Vec<String> {
+    let from_words = normalized_words(from);
+    let to_words = normalized_words(to);
+    let start = changed_target_indexes(&from_words, &to_words)
+        .into_iter()
+        .next()
+        .unwrap_or_else(|| from_words.len().saturating_sub(1));
+    words_before_last(&from_words[..start.min(from_words.len())])
 }
 
 fn ime_events(
@@ -267,8 +297,8 @@ mod tests {
     #[test]
     fn rejected_candidate_events_are_negative_transition_material() {
         let events = TypingMemoryEvent::rejected_candidate(
-            "ну",
-            "даша",
+            "ну исходник",
+            "ну даша",
             "L2LiveCandidateGate32",
             "completion",
         );
@@ -279,6 +309,35 @@ mod tests {
         assert_eq!(events[0].context, ["ну"]);
         assert_eq!(events[0].word, "даша");
         assert!(events[0].surface.is_some());
+    }
+
+    #[test]
+    fn rejected_candidate_excludes_unchanged_left_context() {
+        let events = TypingMemoryEvent::rejected_candidate(
+            "как попусы",
+            "как опусы",
+            "typing-assist",
+            "replacement",
+        );
+
+        assert_eq!(events.len(), 1);
+        assert_eq!(events[0].word, "опусы");
+        assert_eq!(events[0].context, ["как"]);
+        assert_eq!(events[0].from.as_deref(), Some("как попусы"));
+        assert_eq!(events[0].to.as_deref(), Some("как опусы"));
+    }
+
+    #[test]
+    fn transition_target_keeps_all_changed_boundary_tokens() {
+        assert_eq!(transition_target_text("мыслов", "мы слов"), "мы слов");
+        assert_eq!(
+            transition_target_text("мы отвравим", "мы отравим"),
+            "отравим"
+        );
+        assert_eq!(
+            transition_context_words("мы отвравим", "мы отравим"),
+            ["мы"]
+        );
     }
 
     #[test]

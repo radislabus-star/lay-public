@@ -19,15 +19,15 @@ pub(crate) fn bayes_score_candidate(
     origin: CandidateOrigin,
 ) -> BayesCandidateScore {
     let usage = crate::nanda_wave::cached_usage_prior_snapshot();
-    let context = context_words_before_last(original);
-    let replacement_word = last_word(replacement).unwrap_or_default().to_lowercase();
+    let context = crate::typing_memory::transition_context_words(original, replacement);
+    let transition_target = crate::typing_memory::transition_target_text(original, replacement);
     let signed_memory = crate::nanda_wave::l4_signed_memory::l4_signed_memory_signal(
         crate::nanda_wave::l4_signed_memory::L4SignedMemoryInput {
             context: &context,
             source: origin.memory_key(),
             operation: "replacement",
             state_word: &crate::transition_relation::transition_state_id(original),
-            word: &replacement_word,
+            candidate_text: &transition_target,
             usage: &usage,
             surface: None,
         },

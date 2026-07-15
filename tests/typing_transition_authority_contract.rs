@@ -177,3 +177,28 @@ fn candidate_admission_only_marks_eligibility_and_core_selects_transition() {
         "candidate producer types must not expose an Apply state"
     );
 }
+
+#[test]
+fn l4_memory_owns_complete_transition_targets_and_cold_initialization() {
+    let memory = read("src/typing_memory.rs");
+    let relation = read("src/transition_relation.rs");
+    let usage = read("src/nanda_wave/usage_prior.rs");
+    let decision_signals = read("src/typing_transition/decision_signals.rs");
+
+    assert!(
+        memory.contains("pub(crate) fn transition_target_text")
+            && memory.contains("pub(crate) fn transition_context_words")
+            && relation.contains("pub(crate) fn transition_target_id"),
+        "L4 transition identity must cover the complete changed target, not only its last token"
+    );
+    assert!(
+        decision_signals.contains("transition_target_text(&event.original")
+            && decision_signals.contains("candidate_text: &transition_target"),
+        "TransitionDecisionCore must address signed memory with the typed target region"
+    );
+    assert!(
+        usage.contains("ensure_usage_cache_initialized(&mut cache, load_usage_counts)")
+            && usage.contains("first_hot_readout_initializes_persisted_usage_memory_once"),
+        "the first hot readout must load persisted memory without a foreign warmup route"
+    );
+}

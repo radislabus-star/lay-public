@@ -69,13 +69,18 @@ pub(super) fn append_user_correction_learning_log(correction: &UserLearningCorre
 }
 
 fn record_user_correction_memory(correction: &UserLearningCorrection) {
-    lay::nanda_wave::record_rejected_candidate_usage(
-        &correction.lay_from,
-        &correction.from,
-        "user_correction",
-        &correction.lay_kind,
-    );
-    lay::nanda_wave::record_accepted_fix_usage(&correction.from, &correction.to);
+    let Some(user_target) = correction.user_target() else {
+        return;
+    };
+    if user_target != correction.lay_to {
+        lay::nanda_wave::record_rejected_candidate_usage(
+            &correction.lay_from,
+            &correction.lay_to,
+            "user_correction",
+            &correction.lay_kind,
+        );
+    }
+    lay::nanda_wave::record_accepted_fix_usage(&correction.lay_from, &user_target);
 }
 
 fn runtime_log(message: &str) {

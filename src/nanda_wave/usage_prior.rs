@@ -7,7 +7,8 @@ use crate::time::unix_timestamp;
 #[cfg(test)]
 use crate::typing_memory;
 use crate::typing_memory::{
-    normalize_memory_word, normalized_words, TypingMemoryEvent, TypingMemoryEventKind,
+    changed_target_indexes, normalize_memory_word, normalized_words, TypingMemoryEvent,
+    TypingMemoryEventKind,
 };
 
 #[cfg(not(test))]
@@ -18,7 +19,7 @@ const USAGE_COUNTS_PATH: &str = ".local/share/lay/nanda_wave/word_usage_counts.j
 const LEGACY_USAGE_PRIOR_PATH: &str = ".local/share/lay/learning_candidates.json";
 const USAGE_EVENTS_MAX_BYTES: u64 = 500 * 1024;
 const USAGE_EVENTS_FULL_REBUILD_MAX_BYTES: u64 = 8 * 1024 * 1024;
-const USAGE_COUNTS_SCHEMA_VERSION: u32 = 8;
+const USAGE_COUNTS_SCHEMA_VERSION: u32 = 9;
 const USAGE_COUNTS_MAX_WORDS: usize = 10_000;
 const USAGE_COUNTS_MAX_ACCEPTED_WORDS: usize = 5_000;
 const USAGE_COUNTS_MAX_CONTEXT_WORDS: usize = 12_000;
@@ -267,10 +268,10 @@ impl UsagePriorSnapshot {
         source: &str,
         operation: &str,
         state_word: &str,
-        word: &str,
+        candidate_text: &str,
     ) -> UsageHotReadout {
         let prepared = self.prepare_hot_context(context);
-        self.hot_readout_prepared(&prepared, source, operation, state_word, word)
+        self.hot_readout_prepared(&prepared, source, operation, state_word, candidate_text)
     }
 
     pub(crate) fn prepare_hot_context(&self, context: &[String]) -> UsageHotContext {
@@ -316,12 +317,16 @@ impl UsagePriorSnapshot {
         source: &str,
         operation: &str,
         state_word: &str,
-        word: &str,
+        candidate_text: &str,
     ) -> UsageHotReadout {
-        let lower = normalize_memory_word(word);
+        let lower = normalized_words(candidate_text)
+            .into_iter()
+            .next_back()
+            .unwrap_or_default();
         if lower.is_empty() {
             return UsageHotReadout::default();
         }
+        let transition_target = crate::transition_relation::transition_target_id(candidate_text);
         let context_keys = &context.context_keys;
         UsageHotReadout {
             word_prior: self
@@ -368,7 +373,7 @@ impl UsagePriorSnapshot {
                 source,
                 operation,
                 state_word,
-                &lower,
+                &transition_target,
             ),
         }
     }
@@ -755,10 +760,23 @@ fn context_ngram_prior_from_keys(
 }
 
 fn cached_usage_counts() -> Arc<UsageCounts> {
-    let Ok(cache) = usage_cache().lock() else {
+    let Ok(mut cache) = usage_cache().lock() else {
         return Arc::new(UsageCounts::default());
     };
+    // The hot readout is allowed to be the first usage-memory consumer.
+    // Returning the default Arc here made L4 depend on an unrelated warmup
+    // route and left first-word decisions blind until another action loaded
+    // the persisted state.
+    ensure_usage_cache_initialized(&mut cache, load_usage_counts);
     cache.counts.clone()
+}
+
+fn ensure_usage_cache_initialized(cache: &mut UsageCache, load: impl FnOnce() -> UsageCounts) {
+    if cache.loaded_at.is_some() {
+        return;
+    }
+    cache.counts = Arc::new(load());
+    cache.loaded_at = Some(Instant::now());
 }
 
 fn usage_cache() -> &'static Mutex<UsageCache> {
@@ -884,7 +902,14 @@ fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
     if word.is_empty() {
         return;
     }
+    if matches!(event.kind, UsageEventKind::RejectedCandidate)
+        && !event_word_is_changed_target(event, &word)
+    {
+        return;
+    }
     let state_word = event_state_word(event);
+    let transition_target = event_transition_target(event, &word);
+    let transition_context = event_transition_context(event);
     if matches!(
         event.kind,
         UsageEventKind::RejectedIme | UsageEventKind::RejectedCandidate
@@ -904,7 +929,10 @@ fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
                 operation: event_operation(event),
                 state_word: &state_word,
                 rejected: &word,
+                transition_context: &transition_context,
+                transition_target: &transition_target,
                 weight,
+                transition_weight: event_transition_weight(event, weight),
                 record_transition: true,
             },
         );
@@ -961,22 +989,22 @@ fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
     let operation = event_operation(event);
     add_transition_counts(
         &mut counts.transition_observed,
-        &event.context,
+        &transition_context,
         source,
         operation,
         &state_word,
-        &word,
-        weight,
+        &transition_target,
+        event_transition_weight(event, weight),
     );
     if !matches!(event.kind, UsageEventKind::Typed) {
         add_transition_counts(
             &mut counts.transition_attract,
-            &event.context,
+            &transition_context,
             source,
             operation,
             &state_word,
-            &word,
-            weight,
+            &transition_target,
+            event_transition_weight(event, weight),
         );
     }
 
@@ -1053,7 +1081,10 @@ fn add_rejected_fix_sources(
                 operation,
                 state_word: &rejected,
                 rejected: &rejected,
+                transition_context: &event.context,
+                transition_target: &rejected,
                 weight,
+                transition_weight: weight,
                 record_transition: false,
             },
         );
@@ -1066,7 +1097,10 @@ struct RejectedStateEvidence<'a> {
     operation: &'a str,
     state_word: &'a str,
     rejected: &'a str,
+    transition_context: &'a [String],
+    transition_target: &'a str,
     weight: u32,
+    transition_weight: u32,
     record_transition: bool,
 }
 
@@ -1077,7 +1111,10 @@ fn add_rejected_word_state(counts: &mut UsageCounts, evidence: RejectedStateEvid
         operation,
         state_word,
         rejected,
+        transition_context,
+        transition_target,
         weight,
+        transition_weight,
         record_transition,
     } = evidence;
     *counts
@@ -1104,14 +1141,55 @@ fn add_rejected_word_state(counts: &mut UsageCounts, evidence: RejectedStateEvid
     if record_transition {
         add_transition_counts(
             &mut counts.transition_repel,
-            context,
+            transition_context,
             source,
             operation,
             state_word,
-            rejected,
-            weight,
+            transition_target,
+            transition_weight,
         );
     }
+}
+
+fn event_word_is_changed_target(event: &UsageEvent, word: &str) -> bool {
+    let (Some(from), Some(to)) = (event.from.as_deref(), event.to.as_deref()) else {
+        return true;
+    };
+    let from_words = normalized_words(from);
+    let to_words = normalized_words(to);
+    changed_target_indexes(&from_words, &to_words)
+        .into_iter()
+        .any(|index| to_words.get(index).is_some_and(|target| target == word))
+}
+
+fn event_transition_target(event: &UsageEvent, fallback_word: &str) -> String {
+    let target = match (event.from.as_deref(), event.to.as_deref()) {
+        (Some(from), Some(to)) => crate::typing_memory::transition_target_text(from, to),
+        (_, Some(to)) => to.to_string(),
+        _ => fallback_word.to_string(),
+    };
+    crate::transition_relation::transition_target_id(&target)
+}
+
+fn event_transition_context(event: &UsageEvent) -> Vec<String> {
+    match (event.from.as_deref(), event.to.as_deref()) {
+        (Some(from), Some(to)) => crate::typing_memory::transition_context_words(from, to),
+        _ => event.context.clone(),
+    }
+}
+
+fn event_transition_weight(event: &UsageEvent, weight: u32) -> u32 {
+    let event_count = match (event.from.as_deref(), event.to.as_deref()) {
+        (Some(from), Some(to)) => {
+            let from_words = normalized_words(from);
+            let to_words = normalized_words(to);
+            changed_target_indexes(&from_words, &to_words).len()
+        }
+        (_, Some(to)) => normalized_words(to).len(),
+        _ => 1,
+    }
+    .max(1) as u32;
+    weight.saturating_add(event_count - 1) / event_count
 }
 
 fn event_state_word(event: &UsageEvent) -> String {
@@ -1600,6 +1678,25 @@ mod tests {
     use super::*;
 
     #[test]
+    fn first_hot_readout_initializes_persisted_usage_memory_once() {
+        let mut cache = UsageCache::default();
+        let mut loads = 0;
+        ensure_usage_cache_initialized(&mut cache, || {
+            loads += 1;
+            let mut counts = UsageCounts::default();
+            counts.rejected_words.insert("ошибка".to_string(), 8);
+            counts
+        });
+        ensure_usage_cache_initialized(&mut cache, || {
+            panic!("an initialized hot cache must not reload on every readout")
+        });
+
+        assert_eq!(loads, 1);
+        assert_eq!(cache.counts.rejected_words.get("ошибка"), Some(&8));
+        assert!(cache.loaded_at.is_some());
+    }
+
+    #[test]
     fn legacy_usage_prior_counts_target_words() {
         let counts = legacy_usage_counts_from_json(
             r#"{
@@ -1832,8 +1929,8 @@ mod tests {
     #[test]
     fn typing_memory_event_routes_rejected_candidate_into_l4_repulsion() {
         let events = TypingMemoryEvent::rejected_candidate(
-            "ну",
-            "даша",
+            "ну исходник",
+            "ну даша",
             "L2LiveCandidateGate32",
             "completion",
         );
@@ -1854,7 +1951,7 @@ mod tests {
                 &context,
                 "L2LiveCandidateGate32",
                 "completion",
-                "ну",
+                &crate::transition_relation::transition_state_id("ну исходник"),
                 "даша",
             )
             .transition;

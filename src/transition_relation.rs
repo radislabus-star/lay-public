@@ -26,10 +26,32 @@ pub(crate) fn transition_state_id(text: &str) -> String {
         }
     }
     bytes.extend(last.to_lowercase().as_bytes());
-    let hash = bytes.iter().fold(0xcbf2_9ce4_8422_2325_u64, |hash, byte| {
+    format!("{:016x}", transition_hash(&bytes))
+}
+
+/// Compact identity of the complete proposed text state.
+///
+/// Unlike `transition_state_id`, this intentionally keeps every normalized
+/// token. L4 uses it to distinguish whole boundary transitions such as
+/// `мыслов -> мы слов` from candidates that merely share the last word.
+pub(crate) fn transition_target_id(text: &str) -> String {
+    let mut bytes = Vec::new();
+    for token in text.split_whitespace() {
+        if !bytes.is_empty() {
+            bytes.push(0x1f);
+        }
+        bytes.extend(token.to_lowercase().as_bytes());
+    }
+    if bytes.is_empty() {
+        return "target-empty".to_string();
+    }
+    format!("target-{:016x}", transition_hash(&bytes))
+}
+
+fn transition_hash(bytes: &[u8]) -> u64 {
+    bytes.iter().fold(0xcbf2_9ce4_8422_2325_u64, |hash, byte| {
         (hash ^ u64::from(*byte)).wrapping_mul(0x0000_0100_0000_01b3)
-    });
-    format!("{hash:016x}")
+    })
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -678,6 +700,19 @@ mod tests {
         assert_eq!(question, same_question);
         assert!(!question.contains("xnj"));
         assert_eq!(question.len(), 16);
+    }
+
+    #[test]
+    fn target_id_covers_the_complete_normalized_transition_state() {
+        let split = transition_target_id("мы слов ");
+        let same_split = transition_target_id("  МЫ   СЛОВ  ");
+        let tail_only = transition_target_id("слов");
+
+        assert_eq!(split, same_split);
+        assert_ne!(split, tail_only);
+        assert!(split.starts_with("target-"));
+        assert!(!split.contains("мы"));
+        assert!(!split.contains("слов"));
     }
 
     #[test]

@@ -673,8 +673,9 @@ fn candidate_l4_signed_signal(
     original: &str,
     candidate: &WordCandidate,
 ) -> Option<super::l4_signed_memory::L4SignedMemorySignal> {
-    let word = last_token(&candidate.text)?;
-    let context = previous_context_tokens(original);
+    last_token(&candidate.text)?;
+    let context = crate::typing_memory::transition_context_words(original, &candidate.text);
+    let transition_target = crate::typing_memory::transition_target_text(original, &candidate.text);
     let usage = super::usage_prior::cached_usage_prior_snapshot();
     let state_id = crate::transition_relation::transition_state_id(original);
     Some(l4_signed_memory_signal(L4SignedMemoryInput {
@@ -682,7 +683,7 @@ fn candidate_l4_signed_signal(
         source: candidate.origin.memory_key(),
         operation: candidate_operation(candidate.origin),
         state_word: &state_id,
-        word,
+        candidate_text: &transition_target,
         usage: &usage,
         surface: None,
     }))

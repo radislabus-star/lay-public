@@ -1,4 +1,9 @@
-use lay::nanda_wave::{run_wave_trace_with_options, WaveDecision, WaveOptions, WordCandidate};
+use lay::config::{default_typing_assist_pipeline, CorrectionSafety, TypingAssistRuleConfig};
+use lay::correction_core::{
+    resolve_text_correction, CandidateGateAction, CorrectionDecisionSource, CorrectionMode,
+    CorrectionRequest, CorrectionResolution, UnifiedCorrectionCandidate,
+};
+use lay::nanda_wave::WaveOptions;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::collections::BTreeMap;
@@ -313,8 +318,13 @@ fn collect_corrections_text(collector: &mut Collector, text: &str, limit: usize)
         let kind = value.get("kind").and_then(Value::as_str).unwrap_or("");
         if kind == "user-correction" {
             if !is_exact_lay_undo(&value) {
-                if let Some(pair) = pair_from_correction(&value, "user_accepted_fix", "from", "to")
-                {
+                let pair = full_user_target(&value)
+                    .and_then(|target| {
+                        let lay_from = value.get("lay_from")?.as_str()?;
+                        pair_from_correction_text(&value, "user_accepted_fix", lay_from, &target)
+                    })
+                    .or_else(|| pair_from_correction(&value, "user_accepted_fix", "from", "to"));
+                if let Some(pair) = pair {
                     collector.add(pair);
                 } else {
                     collector.corrections.skipped_pairs += 1;
@@ -343,30 +353,32 @@ fn collect_corrections_text(collector: &mut Collector, text: &str, limit: usize)
 }
 
 fn is_exact_lay_undo(value: &Value) -> bool {
-    let Some(from) = value.get("from").and_then(Value::as_str) else {
-        return false;
-    };
-    let Some(to) = value.get("to").and_then(Value::as_str) else {
-        return false;
-    };
     let Some(lay_from) = value.get("lay_from").and_then(Value::as_str) else {
         return false;
     };
-    let Some(lay_to) = value.get("lay_to").and_then(Value::as_str) else {
-        return false;
-    };
-    normalized_transition_side(from) == normalized_transition_side(lay_to)
-        && normalized_transition_side(to) == normalized_transition_side(lay_from)
+    full_user_target(value).is_some_and(|target| {
+        normalized_transition_side(&target) == normalized_transition_side(lay_from)
+    })
 }
 
 fn lay_output_matches_user_target(value: &Value) -> bool {
-    let Some(to) = value.get("to").and_then(Value::as_str) else {
-        return false;
-    };
     let Some(lay_to) = value.get("lay_to").and_then(Value::as_str) else {
         return false;
     };
-    normalized_transition_side(to) == normalized_transition_side(lay_to)
+    full_user_target(value).is_some_and(|target| {
+        normalized_transition_side(&target) == normalized_transition_side(lay_to)
+    })
+}
+
+fn full_user_target(value: &Value) -> Option<String> {
+    if let Some(target) = value.get("user_target").and_then(Value::as_str) {
+        return Some(target.to_string());
+    }
+    lay::word_buffer::reconstruct_user_correction_target(
+        value.get("lay_to")?.as_str()?,
+        value.get("from")?.as_str()?,
+        value.get("to")?.as_str()?,
+    )
 }
 
 fn normalized_transition_side(text: &str) -> String {
@@ -534,6 +546,15 @@ fn pair_from_correction(
 ) -> Option<DirtyLogPair> {
     let from = value.get(from_key).and_then(Value::as_str)?;
     let to = value.get(to_key).and_then(Value::as_str)?;
+    pair_from_correction_text(value, signal, from, to)
+}
+
+fn pair_from_correction_text(
+    value: &Value,
+    signal: &'static str,
+    from: &str,
+    to: &str,
+) -> Option<DirtyLogPair> {
     if !valid_pair(from, to) {
         return None;
     }
@@ -839,16 +860,17 @@ fn replay_pairs(
         phase_apply_policy: options.l2_phase_apply(),
         ..ReplayReport::default()
     };
-    let mut trace_cache = BTreeMap::new();
+    let pipeline = default_typing_assist_pipeline();
+    let mut resolution_cache = BTreeMap::new();
     for pair in pairs {
         if pair.train_role == "review" {
             report.review += 1;
             continue;
         }
-        let trace = trace_cache
+        let resolution = resolution_cache
             .entry(pair.original.clone())
-            .or_insert_with(|| run_wave_trace_with_options(&pair.original, options));
-        let outcome = replay_one(pair, trace);
+            .or_insert_with(|| canonical_replay_resolution(&pair.original, options, &pipeline));
+        let outcome = replay_one(pair, resolution);
         let bucket = if pair.train_role == "negative" {
             &mut report.negative
         } else {
@@ -865,7 +887,13 @@ fn replay_pairs(
             .entry(pair.source_id.clone())
             .or_default()
             .add(outcome);
-        collect_replay_examples(&mut report.examples, pair, trace, outcome, max_examples);
+        collect_replay_examples(
+            &mut report.examples,
+            pair,
+            resolution,
+            outcome,
+            max_examples,
+        );
         add_phase_replay(
             &mut report.transition_phase,
             pair,
@@ -874,6 +902,24 @@ fn replay_pairs(
         );
     }
     report
+}
+
+fn canonical_replay_resolution(
+    original: &str,
+    options: &WaveOptions,
+    pipeline: &[TypingAssistRuleConfig],
+) -> CorrectionResolution {
+    resolve_text_correction(CorrectionRequest {
+        text: original,
+        auto_replace: true,
+        typing_assist: true,
+        auto_switch_layout: true,
+        correction_safety: CorrectionSafety::Normal,
+        typing_assist_pipeline: pipeline,
+        nanda_autocorrect: true,
+        nanda_wave_options: options.clone(),
+        mode: CorrectionMode::DeterministicThenNanda,
+    })
 }
 
 fn replay_phase_pairs(
@@ -1078,16 +1124,18 @@ impl ReplayBucket {
     }
 }
 
-fn replay_one(pair: &DirtyLogPair, trace: &lay::nanda_wave::WaveTrace) -> ReplayOutcome {
-    let expected_present = trace.l2_candidates.iter().any(|candidate| {
-        candidate_output_for_original(&pair.original, &candidate.text) == pair.expected
-    });
-    let expected_top1 = trace.l2_candidates.first().is_some_and(|candidate| {
-        candidate_output_for_original(&pair.original, &candidate.text) == pair.expected
-    });
-    let output = trace.output();
+fn replay_one(pair: &DirtyLogPair, resolution: &CorrectionResolution) -> ReplayOutcome {
+    let expected_present = resolution
+        .candidates
+        .iter()
+        .any(|candidate| candidate.replacement == pair.expected);
+    let output = resolution
+        .decision
+        .as_ref()
+        .map(|decision| decision.replacement.as_str());
+    let expected_top1 = output == Some(pair.expected.as_str());
     ReplayOutcome {
-        has_l2: !trace.l2_candidates.is_empty(),
+        has_l2: !resolution.candidates.is_empty(),
         expected_present,
         expected_top1,
         applied_expected: output == Some(pair.expected.as_str()),
@@ -1098,27 +1146,42 @@ fn replay_one(pair: &DirtyLogPair, trace: &lay::nanda_wave::WaveTrace) -> Replay
 fn collect_replay_examples(
     examples: &mut ReplayExamples,
     pair: &DirtyLogPair,
-    trace: &lay::nanda_wave::WaveTrace,
+    resolution: &CorrectionResolution,
     outcome: ReplayOutcome,
     max_examples: usize,
 ) {
     if !outcome.expected_present {
-        push_example(&mut examples.missing_expected, pair, trace, max_examples);
+        push_example(
+            &mut examples.missing_expected,
+            pair,
+            resolution,
+            max_examples,
+        );
     } else if !outcome.applied_expected {
-        push_example(&mut examples.present_not_applied, pair, trace, max_examples);
+        push_example(
+            &mut examples.present_not_applied,
+            pair,
+            resolution,
+            max_examples,
+        );
     }
     if outcome.applied_other {
-        push_example(&mut examples.applied_other, pair, trace, max_examples);
+        push_example(&mut examples.applied_other, pair, resolution, max_examples);
     }
     if pair.train_role == "negative" && outcome.applied_expected {
-        push_example(&mut examples.negative_applied, pair, trace, max_examples);
+        push_example(
+            &mut examples.negative_applied,
+            pair,
+            resolution,
+            max_examples,
+        );
     }
 }
 
 fn push_example(
     target: &mut Vec<Value>,
     pair: &DirtyLogPair,
-    trace: &lay::nanda_wave::WaveTrace,
+    resolution: &CorrectionResolution,
     max_examples: usize,
 ) {
     if target.len() >= max_examples {
@@ -1131,15 +1194,17 @@ fn push_example(
         "source_id": pair.source_id,
         "original": pair.original,
         "expected": pair.expected,
-        "decision": decision_label(&trace.decision),
-        "output": trace.output().unwrap_or("keep"),
-        "first_candidate": trace.l2_candidates.first().map(candidate_short),
-        "candidate_sources": trace.l2_candidates.iter().take(8).map(|candidate| candidate.source).collect::<Vec<_>>(),
-        "candidate_ladder": trace.l2_candidates.iter().take(8).map(|candidate| json!({
-            "output": candidate_output_for_original(&pair.original, &candidate.text),
-            "source": candidate.source,
-            "energy": candidate.energy,
-            "risk": candidate.risk,
+        "decision": decision_label(resolution),
+        "output": resolution.decision.as_ref().map(|decision| decision.replacement.as_str()).unwrap_or("keep"),
+        "selected_candidate": resolution.selected.as_ref().map(candidate_short),
+        "candidate_sources": resolution.candidates.iter().take(8).map(|candidate| candidate.source_id.as_str()).collect::<Vec<_>>(),
+        "candidate_ladder": resolution.candidates.iter().take(8).map(|candidate| json!({
+            "output": candidate.replacement,
+            "source": candidate_source_label(candidate.source),
+            "source_id": candidate.source_id,
+            "error_class": candidate.error_class.as_str(),
+            "gate": gate_action_label(candidate.gate.action),
+            "gate_reason": candidate.gate.reason,
         })).collect::<Vec<_>>()
     }));
 }
@@ -1158,7 +1223,13 @@ fn replay_report_json(
         "pairs": pairs,
         "latest_state_only": latest_state_only,
         "l2_phase_apply_policy": report.phase_apply_policy,
-        "read_as": "shadow replay over dirty-log corpus; runtime authority is unchanged",
+        "read_as": "canonical runtime shadow: the live L2 candidate lattice and TransitionDecisionCore are evaluated without physical text output",
+        "runtime_path": {
+            "candidate_factory": "correction_core::resolve_text_correction/L2CandidateLattice",
+            "decision_authority": "typing_transition::TransitionDecisionCore",
+            "usage_memory": "configured hot UsagePriorSnapshot; environment path overrides are honored",
+            "physical_output": false
+        },
         "positive": replay_bucket_json(report.positive),
         "negative": replay_bucket_json(report.negative),
         "review": {
@@ -1380,26 +1451,49 @@ fn percent(numerator: usize, denominator: usize) -> f64 {
     (numerator as f64 * 100.0 / denominator as f64 * 100.0).round() / 100.0
 }
 
-fn decision_label(decision: &WaveDecision) -> &'static str {
-    match decision {
-        WaveDecision::Suggest { .. } => "suggest",
-        WaveDecision::Keep { .. } => "keep",
-        WaveDecision::Veto { .. } => "veto",
+fn decision_label(resolution: &CorrectionResolution) -> &'static str {
+    if resolution.decision.is_some() {
+        "apply"
+    } else if resolution
+        .candidates
+        .iter()
+        .any(|candidate| candidate.gate.action == CandidateGateAction::Veto)
+    {
+        "veto"
+    } else if resolution
+        .candidates
+        .iter()
+        .any(|candidate| candidate.gate.action == CandidateGateAction::SuggestOnly)
+    {
+        "suggest"
+    } else {
+        "keep"
     }
 }
 
-fn candidate_short(candidate: &WordCandidate) -> String {
+fn candidate_short(candidate: &UnifiedCorrectionCandidate) -> String {
     format!(
-        "{}:{:?}:e{:.2}:r{:.2}",
-        candidate.source, candidate.text, candidate.energy, candidate.risk
+        "{}:{:?}:{}:{}",
+        candidate.source_id,
+        candidate.replacement,
+        candidate.error_class.as_str(),
+        gate_action_label(candidate.gate.action),
     )
 }
 
-fn candidate_output_for_original(original: &str, candidate: &str) -> String {
-    if original.ends_with(' ') && !candidate.ends_with(' ') {
-        format!("{candidate} ")
-    } else {
-        candidate.to_string()
+fn candidate_source_label(source: CorrectionDecisionSource) -> &'static str {
+    match source {
+        CorrectionDecisionSource::Deterministic => "deterministic",
+        CorrectionDecisionSource::Nanda => "nanda",
+    }
+}
+
+fn gate_action_label(action: CandidateGateAction) -> &'static str {
+    match action {
+        CandidateGateAction::Eligible => "eligible",
+        CandidateGateAction::SuggestOnly => "suggest_only",
+        CandidateGateAction::KeepOriginal => "keep_original",
+        CandidateGateAction::Veto => "veto",
     }
 }
 
@@ -1683,8 +1777,30 @@ mod tests {
     }
 
     #[test]
+    fn suffix_feedback_emits_full_positive_and_negative_transitions() {
+        let text = r#"{"ts":2,"kind":"user-correction","from":"ло? ","to":"льно? ","replace_words":1,"lay_kind":"typing-assist","lay_from":"Праивльно? ","lay_to":"Правило? "}"#;
+        let mut collector = Collector::default();
+        collect_corrections_text(&mut collector, text, 100);
+
+        assert!(collector.pairs.iter().any(|pair| {
+            pair.train_role == "positive"
+                && pair.original == "Праивльно? "
+                && pair.expected == "Правильно? "
+        }));
+        assert!(collector.pairs.iter().any(|pair| {
+            pair.train_role == "negative"
+                && pair.original == "Праивльно? "
+                && pair.expected == "Правило? "
+        }));
+        assert!(collector
+            .pairs
+            .iter()
+            .all(|pair| pair.original != "ло? " && pair.expected != "льно? "));
+    }
+
+    #[test]
     fn matching_final_target_confirms_lay_output_instead_of_rejecting_it() {
-        let text = r#"{"ts":3,"kind":"user-correction","from":"гналом ","to":"сигналом ","replace_words":1,"lay_kind":"typing-assist","lay_from":"сиганлом ","lay_to":"сигналом "}"#;
+        let text = r#"{"ts":3,"kind":"user-correction","from":"гналом ","to":"сигналом ","replace_words":1,"lay_kind":"typing-assist","lay_from":"сиганлом ","lay_to":"сигналом ","user_target":"сигналом "}"#;
         let mut collector = Collector::default();
         collect_corrections_text(&mut collector, text, 100);
 

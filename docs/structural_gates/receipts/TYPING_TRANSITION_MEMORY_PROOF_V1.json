@@ -1,0 +1,58 @@
+{
+  "schema": "lay.typing-transition-memory-proof.v1",
+  "date": "2026-07-15",
+  "claim": "L4 signed transition memory can close previously observed bad text transitions without disabling the L2/L3 candidate field.",
+  "scope": {
+    "mode": "release shadow replay",
+    "pairs": 1363,
+    "positive": 140,
+    "negative": 732,
+    "review_quarantine": 491,
+    "latest_state_only": true,
+    "physical_output": false,
+    "generalization_claim": false,
+    "read_as": "feedback-closure proof over historical transitions; not a heldout language-quality claim"
+  },
+  "with_transition_memory": {
+    "verdict": "PASS-shadow",
+    "negative_false_apply": 0,
+    "negative_false_apply_percent": 0.0,
+    "positive_apply": 76,
+    "positive_apply_percent": 54.29,
+    "positive_candidate_coverage": 106,
+    "positive_candidate_coverage_percent": 75.71
+  },
+  "without_transition_memory_ablation": {
+    "verdict": "WATCH-negative-false-apply",
+    "negative_false_apply": 228,
+    "negative_false_apply_percent": 31.15,
+    "positive_apply": 49,
+    "positive_apply_percent": 35.0,
+    "positive_candidate_coverage": 97,
+    "positive_candidate_coverage_percent": 69.29
+  },
+  "causal_delta": {
+    "negative_false_apply": -228,
+    "positive_apply": 27,
+    "positive_candidate_coverage": 9
+  },
+  "hot_ime_latency_us": {
+    "samples": 120,
+    "p50": 121,
+    "p90": 176,
+    "p99": 237,
+    "max": 280
+  },
+  "architectural_fixes": [
+    "first hot readout initializes persisted UsagePriorSnapshot",
+    "feedback reconstructs the complete user target after suffix edits",
+    "unchanged left-context words are excluded from rejected lexical events",
+    "L4 addresses a compact hash of the complete changed transition target",
+    "multiword boundary transitions no longer collapse to last-token identity"
+  ],
+  "commands": [
+    "target/release/lay-nanda-wave-eval --dirty-log-replay --input <corpus> --limit 100000 --latest-state-only",
+    "LAY_NANDA_WORD_USAGE_EVENTS=/dev/null target/release/lay-nanda-wave-eval --dirty-log-replay --input <corpus> --limit 100000 --latest-state-only",
+    "LAY_ENFORCE_IME_LATENCY_BUDGET=1 cargo test --bin lay-ibus-engine precognition_candidate_generation_stays_under_budget -- --nocapture --test-threads=1"
+  ]
+}

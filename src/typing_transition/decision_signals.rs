@@ -170,12 +170,13 @@ fn l4_signed_memory_readout(
     surface: &str,
     usage: &crate::nanda_wave::UsagePriorSnapshot,
 ) -> crate::nanda_wave::l4_signed_memory::L4SignedMemorySignal {
-    let mut context = crate::correction_core::normalized_correction_words(&event.original);
-    context.pop();
-    let word = crate::correction_core::normalized_correction_words(&candidate.replacement)
-        .pop()
-        .unwrap_or_default();
-    if word.is_empty() {
+    let context = crate::typing_memory::transition_context_words(
+        &event.original,
+        &candidate.replacement,
+    );
+    let transition_target =
+        crate::typing_memory::transition_target_text(&event.original, &candidate.replacement);
+    if transition_target.is_empty() {
         return crate::nanda_wave::l4_signed_memory::l4_signed_memory_signal_from_readout(
             crate::nanda_wave::usage_prior::UsageHotReadout::default(),
             crate::nanda_wave::usage_prior::UsageSurfaceCoverage::default(),
@@ -187,7 +188,7 @@ fn l4_signed_memory_readout(
         source: candidate.origin.memory_key(),
         operation: "replacement",
         state_word: &state_id,
-        word: &word,
+        candidate_text: &transition_target,
         usage,
         surface: Some(surface),
     })
