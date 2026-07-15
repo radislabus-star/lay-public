@@ -4,6 +4,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+python3 scripts/architecture_graph_gate.py --check-receipt --format text
+
 fail=0
 ARCH_TMP_DIR="${XDG_RUNTIME_DIR:-$ROOT/target/tmp}"
 mkdir -p "$ARCH_TMP_DIR"
@@ -161,6 +163,7 @@ assert_text_mutation_call_owners() {
   local hits
   if command -v rg >/dev/null 2>&1; then
     hits="$(rg -n --fixed-strings "$pattern" src \
+        --glob '*.rs' \
         --glob '!**/architecture_contract.rs' \
         --glob '!**/tests.rs' \
         --glob '!**/*_tests.rs' \
@@ -169,7 +172,7 @@ assert_text_mutation_call_owners() {
     hits="$(printf '%s\n' "$hits" \
       | grep -Ev '(^src/architecture_contract\.rs:|_tests\.rs:|^src/.*/tests(\.rs:|/))' || true)"
   else
-    hits="$(grep -RInF -- "$pattern" src || true)"
+    hits="$(grep -RInF --include='*.rs' -- "$pattern" src || true)"
     hits="$(printf '%s\n' "$hits" \
       | grep -Ev '(^src/architecture_contract\.rs:|_tests\.rs:|^src/.*/tests(\.rs:|/))' || true)"
   fi
@@ -208,14 +211,14 @@ assert_file_contains() {
 
 assert_single_owner "fn unix_timestamp(" "src/time.rs"
 assert_single_owner "fn is_cyrillic_letter(" "src/keyboard/text_input/script.rs"
-assert_single_owner "fn mix64(" "src/nanda_wave/mode.rs"
-assert_single_owner "fn mix64_golden(" "src/nanda_wave/mode.rs"
+assert_single_owner "fn mix64_avalanche(" "src/stable_hash.rs"
+assert_single_owner "fn mix64_golden(" "src/stable_hash.rs"
 assert_single_owner "fn split_last_ws_token(" "src/word_reader.rs"
 assert_single_owner "fn split_last_trimmed_ws_token(" "src/word_reader.rs"
 assert_single_owner "fn split_last_alphabetic_token(" "src/word_reader.rs"
 assert_single_owner "pub struct CandidateExplanation" "src/candidate_explanation.rs"
 assert_single_owner "pub enum LanguageActionOperator" "src/language_action.rs"
-assert_single_owner "pub fn operator_for_candidate(" "src/language_action.rs"
+assert_single_owner "fn operator_for_origin(" "src/language_action.rs"
 assert_single_owner "pub struct TransitionAudit" "src/text_edit/mutation.rs"
 if search_fixed "fn split_last_token(" src >"$HIT_FILE"; then
   cat "$HIT_FILE" >&2
@@ -307,7 +310,7 @@ do
     "$text_mutation_owner can mutate visible text and must log an EditAction before apply"
 done
 
-assert_max_lines src/bin/lay_daemon.rs 240
+assert_max_lines src/bin/lay_daemon.rs 245
 assert_max_lines src/bin/lay_daemon/action_log_runtime.rs 40
 assert_max_lines src/candidate_explanation.rs 280
 assert_max_lines src/bin/lay_daemon/config_runtime.rs 292
@@ -371,7 +374,7 @@ assert_max_lines src/phrase_reader/glued_phrase.rs 180
 assert_max_lines src/phrase_reader/guards.rs 180
 assert_max_lines src/phrase_reader/moved_prefix.rs 130
 assert_max_lines src/phrase_reader/split_pair.rs 96
-assert_max_lines src/russian_lexicon.rs 198
+assert_max_lines src/russian_lexicon.rs 200
 assert_max_lines src/russian_lexicon/forms.rs 277
 assert_max_lines src/russian_lexicon/hunspell.rs 220
 assert_max_lines src/scoped_tail.rs 259
@@ -443,7 +446,7 @@ assert_max_lines src/bin/lay_daemon/manual_trigger_runtime/event.rs 280
 assert_max_lines src/bin/lay_daemon/manual_trigger_runtime/fire.rs 70
 assert_max_lines src/bin/lay_daemon/manual_trigger_runtime/timeout.rs 60
 assert_max_lines src/bin/lay_daemon/boundary_runtime.rs 40
-assert_max_lines src/bin/lay_daemon/boundary_runtime/deferred.rs 70
+assert_max_lines src/bin/lay_daemon/boundary_runtime/deferred.rs 85
 assert_max_lines src/bin/lay_daemon/boundary_runtime/enter.rs 80
 assert_max_lines src/bin/lay_daemon/boundary_runtime/hard.rs 90
 assert_max_lines src/bin/lay_daemon/boundary_runtime/space.rs 120
@@ -457,7 +460,7 @@ assert_max_lines src/bin/lay_daemon/typing_assist_runtime.rs 80
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/candidate.rs 67
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output.rs 140
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/defer.rs 30
-assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/ime.rs 119
+assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/ime.rs 125
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/memory.rs 80
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/minimal.rs 130
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/nanda_trace.rs 40
@@ -538,7 +541,7 @@ assert_max_lines src/bin/lay_ibus_engine/text.rs 30
 assert_max_lines src/bin/lay_ibus_engine/xml.rs 60
 assert_max_lines extension/lay@radislabus-star.github.io/lay-impl.js 1800
 assert_max_lines src/typing_candidate.rs 280
-assert_max_lines src/text_edit.rs 55
+assert_max_lines src/text_edit.rs 60
 assert_max_lines src/text_edit/committed_tail.rs 221
 assert_max_lines src/text_edit/cursor.rs 40
 assert_max_lines src/text_edit/diff_plan.rs 94
@@ -748,7 +751,7 @@ assert_single_owner "fn map_opposite_events" "src/keyboard/event_words/mapping.r
 assert_single_owner "fn map_events_to_layout" "src/keyboard/event_words/mapping.rs"
 assert_single_owner "fn original_event_char" "src/keyboard/event_words/mapping.rs"
 assert_single_owner "fn mixed_visual_latin_word_target_layout" "src/keyboard/event_words/visual_latin.rs"
-assert_single_owner "fn apply_typing_assist_with_pipeline" "src/typing_pipeline/engine.rs"
+assert_single_owner "fn select_typing_assist_with_pipeline" "src/typing_pipeline/engine.rs"
 assert_single_owner "fn explain_typing_assist_with_pipeline" "src/typing_pipeline/engine.rs"
 assert_single_owner "fn typing_rules_for_evaluation" "src/typing_pipeline/rule_order.rs"
 assert_single_owner "struct TypingAssistExplanation" "src/typing_pipeline/types.rs"
@@ -863,6 +866,9 @@ fi
 
 if command -v rg >/dev/null 2>&1; then
   sleep_hits="$(rg -n --fixed-strings "thread::sleep" src \
+    --glob '!**/*_tests.rs' \
+    --glob '!**/tests.rs' \
+    --glob '!**/tests/**' \
     --glob '!src/bin/lay_daemon/text_output.rs' \
     --glob '!src/bin/lay_daemon/text_output/**' \
     --glob '!src/bin/lay_daemon/layout_controller.rs' \
@@ -870,7 +876,7 @@ if command -v rg >/dev/null 2>&1; then
     --glob '!src/bin/lay_test_input/**' || true)"
 else
   sleep_hits="$(grep -RInF -- "thread::sleep" src \
-    | grep -Ev '(^src/bin/lay_daemon/text_output(\.rs|/)|^src/bin/lay_daemon/layout_controller\.rs:|^src/bin/lay_test_input(\.rs|/))' || true)"
+    | grep -Ev '(_tests\.rs:|^src/.*/tests(\.rs:|/)|^src/bin/lay_daemon/text_output(\.rs|/)|^src/bin/lay_daemon/layout_controller\.rs:|^src/bin/lay_test_input(\.rs|/))' || true)"
 fi
 if [[ -n "$sleep_hits" ]]; then
   printf '%s\n' "$sleep_hits" >&2

@@ -1,0 +1,115 @@
+{
+  "checks": [
+    {
+      "evidence": [
+        "src/typing_transition/candidate.rs:L9:L2CandidateLattice",
+        "src/typing_transition/decision.rs:L123:.select_apply_candidate()",
+        "src/typing_transition/decision.rs:L18:TransitionDecisionCore",
+        "src/typing_transition/decision.rs:L26:.decide_visible_text_transition()"
+      ],
+      "id": "decision-authority",
+      "status": "PASS",
+      "violations": []
+    },
+    {
+      "evidence": [
+        "src/bin/lay_ibus_engine/composition_commit.rs -> src/ime_correction.rs",
+        "src/bin/lay_ibus_engine/preedit.rs -> src/ime_candidate_readout.rs"
+      ],
+      "id": "ime-backend-only",
+      "status": "PASS",
+      "violations": []
+    },
+    {
+      "evidence": [
+        "src/bin/lay_daemon/layout_controller.rs:L208:call_replace_text()",
+        "src/bin/lay_daemon/layout_controller.rs:L238:try_ime_replace_tail()",
+        "src/bin/lay_daemon/text_output/replacement.rs:L95:apply_text_replacement_pipeline()",
+        "src/text_edit/executor.rs:L29:AuthorizedEdit",
+        "src/text_edit/executor.rs:L60:authorize_backend_edit()"
+      ],
+      "id": "edit-plan-verifier",
+      "status": "PASS",
+      "violations": []
+    },
+    {
+      "evidence": [
+        "src/text_edit/executor.rs:L72"
+      ],
+      "id": "typed-transition-capability",
+      "status": "PASS",
+      "violations": []
+    },
+    {
+      "evidence": [
+        "src/nanda_wave/lexical_phase/runtime.rs:L52:LexicalPhaseMemory",
+        "src/typing_transition/candidate.rs:L9:L2CandidateLattice"
+      ],
+      "id": "hot-field-memory",
+      "status": "PASS",
+      "violations": []
+    },
+    {
+      "evidence": [
+        "src/nanda_wave/l2.rs",
+        "src/typing_transition/candidate.rs"
+      ],
+      "id": "l2-candidate-field",
+      "status": "PASS",
+      "violations": []
+    },
+    {
+      "evidence": [
+        "src/nanda_wave/l4_signed_memory.rs:L4:L4SignedMemorySignal",
+        "src/typing_transition/l4_state_estimator.rs:L47:L4StateEstimator"
+      ],
+      "id": "l3-l4-learning",
+      "status": "PASS",
+      "violations": []
+    },
+    {
+      "evidence": [
+        "graph_built_at_commit:af9fc1bba0f3de5fc4e8e62e51ee905f0bb00117",
+        "graph_links:18860",
+        "graph_nodes:7633"
+      ],
+      "id": "fast-verifiable",
+      "status": "PASS",
+      "violations": []
+    }
+  ],
+  "duplicate_symbols": {
+    "is_cyrillic()": [
+      "src/dict.rs:L119:is_cyrillic()",
+      "src/nanda_wave/pattern_wave.rs:L254:is_cyrillic()",
+      "src/nanda_wave/structural_relation.rs:L272:is_cyrillic()"
+    ],
+    "is_cyrillic_char()": [
+      "src/nanda_wave/l3.rs:L585:is_cyrillic_char()",
+      "src/text_metrics.rs:L11:is_cyrillic_char()"
+    ],
+    "is_cyrillic_word()": [
+      "src/nanda_wave/l3.rs:L589:is_cyrillic_word()",
+      "src/word_reader.rs:L172:is_cyrillic_word()"
+    ],
+    "normalize_l2_surface_word()": [
+      "src/nanda_wave/mod.rs:L233:normalize_l2_surface_word()",
+      "src/nanda_wave/surface_bank.rs:L117:normalize_l2_surface_word()"
+    ],
+    "normalize_word()": [
+      "src/ngram/tokenize.rs:L18:normalize_word()",
+      "src/typing_memory.rs:L218:normalize_word()"
+    ],
+    "phase_coherence()": [
+      "src/nanda_wave/l2_candidate_phase.rs:L1167:phase_coherence()",
+      "src/nanda_wave/llmwave.rs:L727:phase_coherence()"
+    ]
+  },
+  "git_head": "af9fc1bba0f3de5fc4e8e62e51ee905f0bb00117",
+  "graph_built_at_commit": "af9fc1bba0f3de5fc4e8e62e51ee905f0bb00117",
+  "graph_links": 18860,
+  "graph_nodes": 7633,
+  "schema": "lay.architecture-graph-receipt.v1",
+  "source_fingerprint": "3ab5e60a4c42ab159503ec7ca8f24376f6ab2d61e33d0124da5e54a6e4fd92b3",
+  "verdict": "PASS"
+}
