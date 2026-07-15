@@ -1,5 +1,9 @@
 # NANDA Wave Architecture
 
+> Execution authority: `docs/phase-word-recovery-canonical-cutover.md`.
+> This early experimental note is historical context and cannot authorize a
+> production route that conflicts with the canonical cutover.
+
 NANDA Wave is an experimental trace/eval architecture for lay. It is not the
 current production hot path and must not type into the system directly.
 

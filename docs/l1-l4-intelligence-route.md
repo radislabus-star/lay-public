@@ -1,5 +1,9 @@
 # L1-L4 Intelligence Route
 
+> Execution authority: `docs/phase-word-recovery-canonical-cutover.md`.
+> This document remains a product-intelligence reference. It does not define a
+> second runtime pipeline or an alternative L1-L4 ownership model.
+
 Status: implementation route. This is the target path for replacing scattered
 autocorrect rules with one correction and suggestion pipeline.
 

@@ -1,5 +1,9 @@
 # Text Correction Gate Architecture
 
+> Execution authority: `docs/phase-word-recovery-canonical-cutover.md`.
+> The mutation boundary below remains valid, but implementation order and
+> L1-L4 ownership come from the canonical cutover.
+
 This note is the working architecture contract for text mutation paths.
 
 ## Pipeline Tree

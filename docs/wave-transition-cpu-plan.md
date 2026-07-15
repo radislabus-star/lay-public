@@ -1,5 +1,9 @@
 # Wave Transition CPU Plan
 
+> Execution authority: `docs/phase-word-recovery-canonical-cutover.md`.
+> This document is retained as supporting transition-memory design history.
+> Where wording or implementation order differs, the canonical cutover wins.
+
 ## Goal
 
 Replace remaining "candidate got a score and applied" behavior with portable

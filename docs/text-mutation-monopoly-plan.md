@@ -1,5 +1,9 @@
 # Text Mutation Monopoly Plan
 
+> Execution authority: `docs/phase-word-recovery-canonical-cutover.md`.
+> This document remains the supporting physical-mutation contract. It does not
+> define candidate or model authority independently of the canonical cutover.
+
 Goal: every operation that can change visible text must pass through one
 auditable mutation contract before any output backend presses keys, commits IME
 text, or replaces a tail.
