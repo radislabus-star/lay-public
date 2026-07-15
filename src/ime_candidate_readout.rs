@@ -217,7 +217,7 @@ pub fn phrase_candidate_suffix(
     candidate: &str,
     max_suffix_chars: usize,
 ) -> Option<String> {
-    let suffix = candidate.strip_prefix(tail)?;
+    let suffix = strip_prefix_case_insensitive(candidate, tail)?;
     let suffix = if tail.ends_with(char::is_whitespace) {
         suffix.trim_start_matches(char::is_whitespace)
     } else {
@@ -225,6 +225,21 @@ pub fn phrase_candidate_suffix(
     };
     let suffix = next_word_suffix(suffix)?;
     (!suffix.is_empty() && suffix.chars().count() <= max_suffix_chars).then_some(suffix)
+}
+
+fn strip_prefix_case_insensitive<'a>(text: &'a str, prefix: &str) -> Option<&'a str> {
+    let mut text_chars = text.char_indices();
+    for prefix_ch in prefix.chars() {
+        let (_, text_ch) = text_chars.next()?;
+        if !text_ch.to_lowercase().eq(prefix_ch.to_lowercase()) {
+            return None;
+        }
+    }
+    let suffix_start = text_chars
+        .next()
+        .map(|(index, _)| index)
+        .unwrap_or(text.len());
+    Some(&text[suffix_start..])
 }
 
 pub fn should_query_llmwave_phrase_suffix(tail: &str) -> bool {
@@ -253,7 +268,7 @@ fn next_word_suffix(suffix: &str) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
-    use super::{rank_ime_candidate_suffixes, ImeCandidateReadoutRequest};
+    use super::{phrase_candidate_suffix, rank_ime_candidate_suffixes, ImeCandidateReadoutRequest};
 
     #[test]
     fn shared_readout_merges_sources_before_ranking() {
@@ -275,5 +290,14 @@ mod tests {
             1
         );
         assert!(ranked.iter().any(|suffix| suffix == "чер"));
+    }
+
+    #[test]
+    fn phrase_suffix_matches_normalized_memory_after_sentence_capitalization() {
+        assert_eq!(
+            phrase_candidate_suffix("На улице опять идёт д", "на улице опять идёт дождь", 16,)
+                .as_deref(),
+            Some("ождь")
+        );
     }
 }

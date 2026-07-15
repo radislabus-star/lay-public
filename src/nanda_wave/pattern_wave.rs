@@ -277,7 +277,7 @@ mod tests {
     fn candidate(text: &str, source: &'static str) -> WordCandidate {
         WordCandidate {
             text: text.to_string(),
-            origin: if source == super::super::context_wave::SEMANTIC_WORD_SOURCE {
+            origin: if source == super::super::SEMANTIC_WORD_SOURCE {
                 crate::candidate_contract::CandidateOrigin::L3Context
             } else {
                 crate::candidate_contract::CandidateOrigin::Layout
@@ -304,10 +304,7 @@ mod tests {
     fn pattern_wave_boosts_semantic_typo_shape() {
         let report = evaluate_pattern_wave(
             "это невидные ",
-            &candidate(
-                "это невалидные",
-                super::super::context_wave::SEMANTIC_WORD_SOURCE,
-            ),
+            &candidate("это невалидные", super::super::SEMANTIC_WORD_SOURCE),
         );
         assert_eq!(report.class, "semantic_typo_shape");
         assert_eq!(report.verdict, PatternWaveVerdict::Boost);

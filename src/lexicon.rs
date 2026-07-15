@@ -39,8 +39,6 @@ const RU_HYPHEN_PARTICLE_DATA: &str = include_str!("../data/lexicon/ru_hyphen_pa
 const RU_GREETING_WORDS_DATA: &str = include_str!("../data/lexicon/ru_greeting_words.txt");
 const VISUAL_B_DEFAULT_DATA: &str = include_str!("../data/lexicon/visual_b_default.txt");
 const VISUAL_B_AFTER_ASCII_DATA: &str = include_str!("../data/lexicon/visual_b_after_ascii.txt");
-const IME_HOT_RU_DATA: &str = include_str!("../data/lexicon/l2_surface_hot_ru.txt");
-const IME_HOT_MIN_WORD_CHARS: usize = 4;
 
 pub fn warm_up() {
     let _ = common_ru_words().len();
@@ -78,13 +76,6 @@ pub fn warm_up_for_ime() {
 
 pub fn is_common_ru_word(word: &str) -> bool {
     common_ru_words().contains(word)
-}
-
-pub fn is_ime_hot_ru_word(word: &str) -> bool {
-    if !crate::hot_field::process_allows_full_reference_authority() {
-        return crate::nanda_wave::l2::l2_surface_foundation_contains(word);
-    }
-    ime_hot_ru_word_set().contains(word)
 }
 
 pub fn is_ru_technical_loanword(word: &str) -> bool {
@@ -230,26 +221,6 @@ fn ru_live_protected_words() -> &'static HashSet<String> {
 fn common_ru_words_ordered() -> &'static Vec<String> {
     static WORDS: OnceLock<Vec<String>> = OnceLock::new();
     WORDS.get_or_init(|| data_lines(COMMON_RU_DATA).map(str::to_lowercase).collect())
-}
-
-fn ime_hot_ru_words() -> &'static Vec<String> {
-    static WORDS: OnceLock<Vec<String>> = OnceLock::new();
-    WORDS.get_or_init(|| {
-        let mut words = common_ru_words_ordered().clone();
-        words.extend(
-            data_lines(IME_HOT_RU_DATA)
-                .map(str::to_lowercase)
-                .filter(|word| word.chars().count() >= IME_HOT_MIN_WORD_CHARS),
-        );
-        words.sort();
-        words.dedup();
-        words
-    })
-}
-
-fn ime_hot_ru_word_set() -> &'static HashSet<String> {
-    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
-    WORDS.get_or_init(|| ime_hot_ru_words().iter().cloned().collect())
 }
 
 fn common_en_technical_words() -> &'static HashSet<String> {

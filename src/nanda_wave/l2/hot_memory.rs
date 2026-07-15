@@ -5,6 +5,13 @@
 //! is never consulted here as runtime authority.
 
 use super::{surface_motif_memory, L2_ACTIVE_SOURCE_TARGET};
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    OnceLock,
+};
+
+static IME_WORD_CANDIDATE_MEMORY_READY: AtomicBool = AtomicBool::new(false);
+static IME_WORD_CANDIDATE_MEMORY_WARMUP: OnceLock<()> = OnceLock::new();
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize)]
 pub struct L2SurfaceMemoryStatus {
@@ -30,13 +37,16 @@ pub(crate) fn warm_up_surface_motif_memory() {
 }
 
 pub(crate) fn warm_up_ime_word_candidate_memory() {
-    // Live IME must not pay cold OnceLock construction during the first word.
-    warm_up_surface_motif_memory();
-    let _ = super::l2_surface_foundation_contains("и");
+    IME_WORD_CANDIDATE_MEMORY_WARMUP.get_or_init(|| {
+        let memory = surface_motif_memory();
+        let _ = memory.completion_candidates("пр", 16, 96);
+        let _ = memory.completion_candidates("ex", 16, 96);
+        IME_WORD_CANDIDATE_MEMORY_READY.store(true, Ordering::Release);
+    });
 }
 
 pub fn ime_word_candidate_memory_is_warm() -> bool {
-    super::super::lexical_phase::default_memory().is_some()
+    IME_WORD_CANDIDATE_MEMORY_READY.load(Ordering::Acquire)
 }
 
 pub fn l2_surface_memory_status() -> L2SurfaceMemoryStatus {

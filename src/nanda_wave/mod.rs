@@ -1,7 +1,6 @@
 pub mod candidate_gate;
 pub mod cell32;
 pub mod context;
-pub mod context_wave;
 pub mod eval;
 pub mod feedback;
 pub mod journal;
@@ -43,6 +42,9 @@ pub use usage_prior::UsagePriorSnapshot;
 
 static L2_IME_WARMUP_STARTED: std::sync::atomic::AtomicBool =
     std::sync::atomic::AtomicBool::new(false);
+#[cfg(test)]
+const SEMANTIC_WORD_SOURCE: &str = "SemanticWordCell32";
+const PHRASE_FORECAST_CELL: &str = "PhraseForecastCell32";
 
 pub fn word_usage_prior(word: &str) -> f32 {
     usage_prior::word_usage_prior(word)
@@ -263,13 +265,11 @@ pub fn record_rejected_candidate_usage(
 }
 
 pub fn warm_up() {
-    context_wave::warm_up();
     l2::warm_up_surface_motif_memory();
     let _ = llmwave::load_default_memory();
 }
 
 pub fn warm_up_for_ime() {
-    context_wave::warm_up_prefix_completion_indexes();
     l2::warm_up_surface_motif_memory();
     let _ = llmwave::load_default_memory();
 }

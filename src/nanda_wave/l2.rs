@@ -5,6 +5,7 @@ use super::lexical_phase::{default_memory, LexicalPhaseCandidate, LexicalPhaseMe
 use super::llmwave;
 use super::options::WaveOptions;
 use super::signal::{WavePacket, WordCandidate};
+use super::PHRASE_FORECAST_CELL;
 use crate::candidate_contract::CandidateOrigin;
 use crate::config::CorrectionSafety;
 use crate::dict::{convert, detect_direction};
@@ -105,7 +106,7 @@ pub fn ime_l2_word_candidates(
     }
     let normalized = token.to_lowercase();
     let token_len = normalized.chars().count();
-    if !(2..=18).contains(&token_len) || !normalized.chars().all(is_cyrillic_letter) {
+    if !(2..=18).contains(&token_len) || !is_supported_lexical_surface(&normalized) {
         return Vec::new();
     }
     let context_tokens = super::llmwave::tokenize(context_prefix);
@@ -113,7 +114,11 @@ pub fn ime_l2_word_candidates(
     let usage_context = usage.prepare_hot_context(&context_tokens);
     let memory = surface_motif_memory();
     let material_limit = limit.saturating_mul(8).max(limit);
-    let mut lexical = memory.surface_candidates(&normalized, material_limit);
+    let mut lexical = memory
+        .surface_candidates(&normalized, material_limit)
+        .into_iter()
+        .filter(|candidate| same_lexical_script(&normalized, &candidate.word))
+        .collect::<Vec<_>>();
     lexical.extend(memory.completion_candidates(
         &normalized,
         material_limit,
@@ -155,6 +160,18 @@ pub fn ime_l2_word_candidates(
     candidates
 }
 
+fn is_supported_lexical_surface(surface: &str) -> bool {
+    !surface.is_empty()
+        && (surface.chars().all(is_cyrillic_letter)
+            || surface.chars().all(|ch| ch.is_ascii_alphabetic()))
+}
+
+fn same_lexical_script(left: &str, right: &str) -> bool {
+    (left.chars().all(is_cyrillic_letter) && right.chars().all(is_cyrillic_letter))
+        || (left.chars().all(|ch| ch.is_ascii_alphabetic())
+            && right.chars().all(|ch| ch.is_ascii_alphabetic()))
+}
+
 pub(crate) fn ime_l2_completion_candidates(
     context_prefix: &str,
     token: &str,
@@ -165,7 +182,7 @@ pub(crate) fn ime_l2_completion_candidates(
     }
     let normalized = token.to_lowercase();
     let token_len = normalized.chars().count();
-    if !(2..=18).contains(&token_len) || !normalized.chars().all(is_cyrillic_letter) {
+    if !(2..=18).contains(&token_len) || !is_supported_lexical_surface(&normalized) {
         return Vec::new();
     }
 
@@ -173,8 +190,10 @@ pub(crate) fn ime_l2_completion_candidates(
     let usage = super::usage_prior::cached_usage_prior_snapshot();
     let usage_context = usage.prepare_hot_context(&context_tokens);
     let material_limit = limit.saturating_mul(8).max(limit);
-    let lexical =
-        surface_motif_memory().completion_candidates(&normalized, material_limit, material_limit);
+    let lexical = surface_motif_memory()
+        .completion_candidates(&normalized, material_limit, material_limit)
+        .into_iter()
+        .filter(|candidate| same_lexical_script(&normalized, &candidate.word));
     let mut candidates = lexical
         .into_iter()
         .map(|candidate| L2ImeWordCandidate {
@@ -388,14 +407,8 @@ pub fn run_l2_refined_with_feedback(
         }
     }
     mark_timing!("lexical-attractor");
-    if options.is_enabled(super::context_wave::SEMANTIC_WORD_SOURCE) {
-        for candidate in super::context_wave::semantic_word_candidates(tail) {
-            push_unique_candidate(&mut candidates, candidate);
-        }
-    }
-    mark_timing!("semantic-word");
     mark_timing!("phrase");
-    if options.is_enabled(super::context_wave::PHRASE_FORECAST_CELL) && options.llmwave_shadow() {
+    if options.is_enabled(PHRASE_FORECAST_CELL) && options.llmwave_shadow() {
         let memory = phrase_forecast_memory();
         for candidate in super::llmwave::phrase_forecast_candidates(tail, &memory) {
             push_unique_candidate(&mut candidates, candidate);
@@ -783,24 +796,20 @@ fn settle_english_word_center(token: &str) -> Option<String> {
     {
         return None;
     }
-    let candidates = super::context_wave::semantic_word_candidates(token)
+    let candidates = surface_motif_memory()
+        .surface_candidates(&normalized, 8)
         .into_iter()
-        .filter(|candidate| {
-            candidate.origin == CandidateOrigin::L2Surface
-                && candidate.text.chars().all(|ch| ch.is_ascii_alphabetic())
-        })
+        .filter(|candidate| candidate.word.chars().all(|ch| ch.is_ascii_alphabetic()))
         .collect::<Vec<_>>();
     let best = candidates.first()?;
-    let best_distance = damerau_levenshtein(&normalized, &best.text);
+    let best_distance = damerau_levenshtein(&normalized, &best.word);
     if let Some(second) = candidates.get(1) {
-        let second_distance = damerau_levenshtein(&normalized, &second.text);
-        let best_net = best.energy - best.risk;
-        let second_net = second.energy - second.risk;
-        if second_distance == best_distance && best_net < second_net + 0.02 {
+        let second_distance = damerau_levenshtein(&normalized, &second.word);
+        if second_distance == best_distance && best.score < second.score.saturating_add(120) {
             return None;
         }
     }
-    Some(best.text.clone())
+    Some(best.word.clone())
 }
 
 fn cyrillic_layout_word_center_blocked(token: &str) -> bool {
@@ -2338,6 +2347,62 @@ mod tests {
     }
 
     #[test]
+    fn lexical_phase_field_recovers_english_typo_without_context_wave() {
+        let original = "dowenload ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.source == L2_SURFACE_MOTIF_CELL && candidate.text == "download"
+            }),
+            "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn lexical_phase_field_completes_english_prefix() {
+        let candidates = ime_l2_word_candidates("please ", "down", 12);
+
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.kind == L2ImeWordCandidateKind::Completion
+                    && candidate.surface == "download"
+            }),
+            "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn common_english_center_leads_short_prefix_frontier() {
+        let candidates = ime_l2_word_candidates("", "exi", 32);
+
+        assert_eq!(
+            candidates
+                .first()
+                .map(|candidate| candidate.surface.as_str()),
+            Some("exit"),
+            "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn layout_projection_settles_in_english_phase_center() {
+        let original = "вщцутдщфв ";
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.origin == CandidateOrigin::LayoutThenTypo
+                    && candidate.source == LAYOUT_THEN_L2_WORD_CENTER
+                    && candidate.text == "download"
+            }),
+            "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
     fn ime_l2_word_candidates_keep_replacements_distinct_from_completions() {
         let candidates = ime_l2_word_candidates("", "звгрузи", 8);
         assert!(
@@ -2504,7 +2569,7 @@ mod tests {
         let _ = std::fs::remove_file(path);
 
         assert!(candidates.iter().any(|candidate| {
-            candidate.source == crate::nanda_wave::context_wave::PHRASE_FORECAST_CELL
+            candidate.source == crate::nanda_wave::PHRASE_FORECAST_CELL
                 && candidate.text == "на улице опять идёт дождь"
         }));
     }
@@ -2568,7 +2633,15 @@ mod tests {
         let original = "ola ";
         let l1 = run_l1(original);
         let candidates = run_l2(original, &l1);
-        assert!(candidates.is_empty());
+        assert!(candidates.iter().all(|candidate| {
+            !matches!(
+                candidate.origin,
+                CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo
+            ) && !matches!(
+                candidate.source,
+                "LayoutWordCell32" | LAYOUT_THEN_L2_WORD_CENTER
+            )
+        }));
     }
 
     #[test]

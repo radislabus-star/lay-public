@@ -1480,7 +1480,7 @@ fn phrase_prediction_to_candidate(
     Some(WordCandidate {
         text,
         origin: CandidateOrigin::Completion,
-        source: super::context_wave::PHRASE_FORECAST_CELL,
+        source: super::PHRASE_FORECAST_CELL,
         energy: (0.52 + prediction.score * 0.34).clamp(0.0, 0.88),
         risk: (0.28 - prediction.score * 0.08).clamp(0.16, 0.28),
         support: vec![
@@ -1517,7 +1517,6 @@ fn report_to_feedback(report: &LlmWaveReport) -> L3Feedback {
             risk_delta,
             reason: "llmwave_main_context_memory",
         }],
-        requests: Vec::new(),
     }
 }
 
@@ -1928,7 +1927,7 @@ mod tests {
         );
         let candidates = phrase_forecast_candidates("на улице опять идёт д", &memory);
         assert!(candidates.iter().any(|candidate| {
-            candidate.source == super::super::context_wave::PHRASE_FORECAST_CELL
+            candidate.source == super::super::PHRASE_FORECAST_CELL
                 && candidate.text == "на улице опять идёт дождь"
         }));
         assert!(!candidates

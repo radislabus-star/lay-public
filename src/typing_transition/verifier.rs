@@ -163,10 +163,7 @@ fn contextual_layout_repair_is_verified(
         .enumerate()
         .find(|(_, (original, replacement))| original != replacement)
         .is_some_and(|(index, (original, replacement))| {
-            index + 1 < original_words.len()
-                && original.chars().count() <= 2
-                && replacement.chars().count() <= 2
-                && exact_layout_projection(original, replacement)
+            index + 1 < original_words.len() && exact_layout_projection(original, replacement)
         })
 }
 

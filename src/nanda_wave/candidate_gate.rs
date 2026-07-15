@@ -4,12 +4,11 @@
 //! them is allowed to become a live IME completion. It does not output text and
 //! does not apply edits.
 
-use crate::keyboard::is_cyrillic_letter;
-
 use super::l2::{self, L2ImeWordCandidateKind};
 use super::l4_goal_state::{derive_l4_scene_state, L4AllowedAction, L4SceneStateInput};
 use super::l4_signed_memory::l4_signed_memory_signal_from_readout;
 use super::l4_signed_outcome::{l4_signed_outcome, L4OutcomePolarity, L4SignedOutcomeInput};
+use crate::keyboard::is_cyrillic_letter;
 use std::collections::VecDeque;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Mutex, OnceLock};
@@ -18,6 +17,12 @@ use std::time::Instant;
 const LIVE_COMPLETION_CACHE_LIMIT: usize = 128;
 const LIVE_L2_MATERIAL_FACTOR: usize = 2;
 const LIVE_L2_MATERIAL_CAP: usize = 64;
+
+fn is_live_lexical_surface(surface: &str) -> bool {
+    !surface.is_empty()
+        && (surface.chars().all(is_cyrillic_letter)
+            || surface.chars().all(|ch| ch.is_ascii_alphabetic()))
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LiveCompletionRequest<'a> {
@@ -103,7 +108,7 @@ pub fn live_completion_candidates(
     }
     let partial = request.partial.to_lowercase();
     let partial_len = partial.chars().count();
-    if !(2..=18).contains(&partial_len) || !partial.chars().all(is_cyrillic_letter) {
+    if !(2..=18).contains(&partial_len) || !is_live_lexical_surface(&partial) {
         record_live_gate_stats(
             started,
             LiveGateRecord {
@@ -184,7 +189,8 @@ pub fn live_completion_candidates(
             let usage = memory_readout.word_prior;
             let context_usage = memory_readout.context_prior;
             let accepted = memory_readout.accepted_count;
-            let common = crate::lexicon::is_common_ru_word(&candidate.surface);
+            let common = crate::lexicon::is_common_ru_word(&candidate.surface)
+                || crate::lexicon::is_common_en_technical_word(&candidate.surface);
             let foundation_rank = l2::l2_surface_foundation_rank(&candidate.surface);
             let l2_center_grounded = foundation_rank.is_some();
             let hot = foundation_rank.is_some_and(|rank| rank < 20_000);
@@ -352,7 +358,7 @@ fn live_l2_word_candidates(
     }
     let normalized = token.to_lowercase();
     let token_len = normalized.chars().count();
-    if !(2..=18).contains(&token_len) || !normalized.chars().all(is_cyrillic_letter) {
+    if !(2..=18).contains(&token_len) || !is_live_lexical_surface(&normalized) {
         return Vec::new();
     }
 
@@ -827,6 +833,22 @@ mod tests {
             allow_short_lexical: true,
             limit: 12,
         }
+    }
+
+    #[test]
+    fn common_english_completion_survives_shared_gate() {
+        super::super::warm_up_l2_for_ime();
+        let mut input = request("", "exi");
+        input.limit = 8;
+        let candidates = live_completion_candidates(input);
+
+        assert_eq!(
+            candidates
+                .first()
+                .map(|candidate| candidate.surface.as_str()),
+            Some("exit"),
+            "candidates={candidates:?}"
+        );
     }
 
     #[test]

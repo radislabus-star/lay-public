@@ -76,8 +76,10 @@ test ! -e "$SYSTEM_ROOT/usr/share/ibus/component/lay-ime.xml"
 test ! -e "$SYSTEM_ROOT/etc/udev/rules.d/99-lay-uinput.rules"
 
 echo "== compact wave memory contract =="
-! search_quiet 'prefix_index[[:space:]]*:' "$ROOT/src/nanda_wave/context_wave.rs"
-search_quiet 'warm_up_prepares_wave_memory_without_prefix_indexes' \
-    "$ROOT/src/nanda_wave/context_wave.rs"
+test ! -e "$ROOT/src/nanda_wave/context_wave.rs"
+search_quiet '"raw_word_table": false' \
+    "$ROOT/data/lexicon/l2_lexical_phase_v2.manifest.json"
+search_quiet 'include_english' \
+    "$ROOT/data/lexicon/l2_lexical_phase_v2.manifest.json"
 
 echo "public issue regressions: PASS"

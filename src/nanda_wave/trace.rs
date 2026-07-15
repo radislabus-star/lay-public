@@ -48,7 +48,6 @@ fn merge_feedback(
     mut right: super::feedback::L3Feedback,
 ) -> super::feedback::L3Feedback {
     left.adjustments.append(&mut right.adjustments);
-    left.requests.append(&mut right.requests);
     left
 }
 

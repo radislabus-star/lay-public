@@ -3,6 +3,8 @@ mod tests {
     use super::*;
     use crate::config::default_typing_assist_pipeline;
 
+    const SEMANTIC_WORD_FIXTURE_SOURCE: &str = "SemanticWordCell32";
+
     fn request<'a>(
         text: &'a str,
         pipeline: &'a [TypingAssistRuleConfig],
@@ -524,7 +526,7 @@ mod tests {
             "патерна ",
             "пара ",
             TypingErrorClass::CompositeTypo,
-            crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+            SEMANTIC_WORD_FIXTURE_SOURCE,
         );
 
         assert_eq!(gate.action, CandidateGateAction::KeepOriginal);
@@ -550,7 +552,7 @@ mod tests {
             "ответили вчате ",
             "ответили вате ",
             TypingErrorClass::CompositeTypo,
-            crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+            SEMANTIC_WORD_FIXTURE_SOURCE,
         );
 
         assert_eq!(gate.action, CandidateGateAction::KeepOriginal);
@@ -777,7 +779,7 @@ mod tests {
             "будет примать ",
             "будет придать ",
             TypingErrorClass::CompositeTypo,
-            crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+            SEMANTIC_WORD_FIXTURE_SOURCE,
         );
 
         assert_eq!(decision.action, CandidateGateAction::SuggestOnly);
@@ -889,7 +891,7 @@ mod tests {
                 "пользоватся? ",
                 "пользовается ",
                 TypingErrorClass::CompositeTypo,
-                crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+                SEMANTIC_WORD_FIXTURE_SOURCE,
             ),
         ] {
             let gate = gate_candidate_with_source(input, replacement, error_class, source_id);
@@ -1027,7 +1029,7 @@ mod tests {
             "за настройки ",
             "за нас тройки ",
             TypingErrorClass::CompositeTypo,
-            crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE,
+            SEMANTIC_WORD_FIXTURE_SOURCE,
         );
 
         assert_eq!(gate.action, CandidateGateAction::KeepOriginal);

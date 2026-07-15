@@ -2,8 +2,35 @@
 // L2/L3 memory, but does not rank candidates, mutate text, or emit IBus signals.
 
 use lay::ime_candidate_readout::{
-    is_noisy_first_russian_prefix, should_query_llmwave_phrase_suffix,
+    is_noisy_first_russian_prefix, push_unique_ascii_known_suffix,
+    should_query_llmwave_phrase_suffix,
 };
+
+impl PreeditFastState {
+    fn ascii_suffixes(&self, max_suffix_chars: usize, limit: usize) -> Vec<String> {
+        if self.token.chars().count() < 2
+            || !self.token.chars().all(|ch| ch.is_ascii_alphabetic())
+        {
+            return Vec::new();
+        }
+        let mut suffixes = Vec::new();
+        for candidate in lay::nanda_wave::candidate_gate::live_completion_candidates(
+            lay::nanda_wave::candidate_gate::LiveCompletionRequest {
+                context_prefix: "",
+                partial: &self.token,
+                max_suffix_chars,
+                allow_short_lexical: true,
+                limit,
+            },
+        ) {
+            push_unique_ascii_known_suffix(&mut suffixes, &self.token, candidate.suffix);
+            if suffixes.len() >= limit {
+                break;
+            }
+        }
+        suffixes
+    }
+}
 
 impl LayIbusEngine {
     fn semantic_phrase_suffixes(&self) -> Vec<String> {
@@ -20,28 +47,6 @@ impl LayIbusEngine {
         // belongs to Space autocorrect; running it here burns latency and cannot
         // produce a right-side suffix for the current token.
         let mut suffixes = Vec::new();
-        let context_wave_allowed = split_last_alphabetic_token(tail)
-            .map(|(prefix, token)| {
-                token.chars().count() >= 3 || prefix.split_whitespace().count() >= 3
-            })
-            .unwrap_or_else(|| tail.ends_with(char::is_whitespace));
-        if context_wave_allowed {
-            if let Some(wave) = lay::nanda_wave::context_wave::context_wave_for_tail(tail) {
-                suffixes.extend(
-                    lay::nanda_wave::context_wave::candidate_interferences(&wave)
-                        .into_iter()
-                        .take(5)
-                        .filter(|candidate| candidate.projection >= 0.22)
-                        .filter_map(|candidate| {
-                            let text = format!("{}{}", wave.prefix, candidate.candidate);
-                            let suffix = text.strip_prefix(tail)?;
-                            (!suffix.is_empty()
-                                && suffix.chars().count() <= self.precognition_max_suffix_chars())
-                            .then(|| suffix.to_string())
-                        }),
-                );
-            }
-        }
         if should_query_llmwave_phrase_suffix(raw_tail)
             && lay::nanda_wave::llmwave::default_memory_is_warm()
         {
@@ -55,6 +60,10 @@ impl LayIbusEngine {
             return Vec::new();
         }
         let tail = self.tail_buffer.as_str().trim_end();
+        if !lay::nanda_wave::l2::ime_word_candidate_memory_is_warm() {
+            lay::nanda_wave::ensure_l2_ime_warmup_started();
+            return Vec::new();
+        }
         let Some((prefix, partial)) = split_last_alphabetic_token(tail) else {
             return Vec::new();
         };
@@ -126,8 +135,7 @@ impl LayIbusEngine {
 fn is_complete_russian_word(word: &str) -> bool {
     lay::lexicon::is_common_ru_word(word)
         || (word.chars().count() >= 5
-            && (lay::russian_lexicon::is_known_russian_word_or_form(word)
-                || lay::lexicon::is_ime_hot_ru_word(word)))
+            && lay::russian_lexicon::is_known_russian_word_or_form(word))
 }
 
 #[cfg(test)]
@@ -138,10 +146,9 @@ mod preedit_readout_contract {
         let readout = include_str!("preedit_readout.rs");
 
         assert!(
-            !render.contains("context_wave_for_tail(")
-                && !render.contains("live_completion_candidates(")
-                && readout.contains("context_wave_for_tail(")
-                && readout.contains("live_completion_candidates("),
+            !render.contains("live_completion_candidates(")
+                && readout.contains("live_completion_candidates(")
+                && readout.contains("llmwave_phrase_suffixes("),
             "preedit rendering must not own L2/L3 material acquisition"
         );
     }

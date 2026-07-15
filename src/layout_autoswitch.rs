@@ -12,7 +12,7 @@ mod score;
 mod technical;
 
 use crate::keyboard::is_cyrillic_letter;
-use crate::lexicon::{is_common_ru_word, is_ime_hot_ru_word};
+use crate::lexicon::is_common_ru_word;
 use crate::ru_typo::{
     correct_extra_letters, correct_hard_sign_typo, correct_missing_letter, correct_repeated_letter,
 };
@@ -156,7 +156,6 @@ pub(crate) fn is_russian_layout_surface_authority_word(word: &str) -> bool {
         || is_known_russian_ka_oblique_form(&lower)
         || russian_short_dictionary().contains(&lower)
         || is_common_ru_word(&lower)
-        || is_ime_hot_ru_word(&lower)
         || crate::typing_transition::state::word_has_common_usage_authority(&lower)
 }
 

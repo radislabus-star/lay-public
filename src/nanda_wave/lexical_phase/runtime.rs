@@ -68,18 +68,37 @@ impl std::fmt::Debug for LexicalPhaseMemory {
 pub(crate) fn default_memory() -> Option<&'static LexicalPhaseMemory> {
     DEFAULT_MEMORY
         .get_or_init(|| {
-            let path = default_artifact_path();
-            LexicalPhaseMemory::load(&path)
-                .or_else(|_| LexicalPhaseMemory::load(&repository_artifact_path()))
-                .map_err(|error| {
-                    if std::env::var_os("LAY_NANDA_L2_TIMING").is_some() {
-                        eprintln!("lay_lexical_phase load_failed={error}");
+            let mut last_error = None;
+            for path in default_artifact_candidates() {
+                match LexicalPhaseMemory::load(&path) {
+                    Ok(memory) => {
+                        memory.bytes.prefetch_all();
+                        return Some(memory);
                     }
-                    error
-                })
-                .ok()
+                    Err(error) => last_error = Some((path, error)),
+                }
+            }
+            if std::env::var_os("LAY_NANDA_L2_TIMING").is_some() {
+                if let Some((path, error)) = last_error {
+                    eprintln!(
+                        "lay_lexical_phase load_failed path={} error={error}",
+                        path.display()
+                    );
+                }
+            }
+            None
         })
         .as_ref()
+}
+
+#[cfg(test)]
+fn default_artifact_candidates() -> [PathBuf; 2] {
+    [repository_artifact_path(), default_artifact_path()]
+}
+
+#[cfg(not(test))]
+fn default_artifact_candidates() -> [PathBuf; 2] {
+    [default_artifact_path(), repository_artifact_path()]
 }
 
 pub(crate) fn default_artifact_path() -> PathBuf {
@@ -841,6 +860,26 @@ impl ArtifactBytes {
             false
         }
     }
+
+    fn prefetch_all(&self) {
+        match self {
+            #[cfg(target_os = "linux")]
+            Self::Mapped(mapped) => mapped.prefetch_all(),
+            Self::Owned(bytes) => touch_pages(bytes),
+        }
+    }
+}
+
+fn touch_pages(bytes: &[u8]) {
+    const PAGE_BYTES: usize = 4096;
+    let mut checksum = 0_u8;
+    for offset in (0..bytes.len()).step_by(PAGE_BYTES) {
+        checksum ^= unsafe { std::ptr::read_volatile(bytes.as_ptr().add(offset)) };
+    }
+    if let Some(last) = bytes.last() {
+        checksum ^= *last;
+    }
+    std::hint::black_box(checksum);
 }
 
 #[cfg(target_os = "linux")]
@@ -884,6 +923,13 @@ impl MappedFile {
 
     fn as_slice(&self) -> &[u8] {
         unsafe { std::slice::from_raw_parts(self.ptr.cast::<u8>(), self.len) }
+    }
+
+    fn prefetch_all(&self) {
+        unsafe {
+            libc::madvise(self.ptr, self.len, libc::MADV_WILLNEED);
+        }
+        touch_pages(self.as_slice());
     }
 }
 

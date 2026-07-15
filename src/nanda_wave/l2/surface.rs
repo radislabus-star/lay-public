@@ -15,7 +15,22 @@ pub(super) fn surface_motif_word_candidates(
     let (leading, word, trailing) = split_word_punctuation(token);
     let normalized = word.to_lowercase();
     let len = normalized.chars().count();
-    if !(2..=18).contains(&len) || !normalized.chars().all(is_cyrillic_letter) {
+    if !(2..=18).contains(&len) {
+        return Vec::new();
+    }
+    if normalized.chars().all(|ch| ch.is_ascii_alphabetic()) {
+        return latin_surface_word_candidates(
+            prefix,
+            leading,
+            word,
+            trailing,
+            &normalized,
+            l1,
+            context,
+            options,
+        );
+    }
+    if !normalized.chars().all(is_cyrillic_letter) {
         return Vec::new();
     }
 
@@ -183,6 +198,98 @@ pub(super) fn surface_motif_word_candidates(
                 }));
                 break;
             }
+        }
+    }
+    out
+}
+
+#[allow(clippy::too_many_arguments)]
+fn latin_surface_word_candidates(
+    prefix: &str,
+    leading: &str,
+    word: &str,
+    trailing: &str,
+    normalized: &str,
+    l1: &[WavePacket],
+    context: &TailContext,
+    options: &WaveOptions,
+) -> Vec<WordCandidate> {
+    let len = normalized.chars().count();
+    let memory = surface_motif_memory();
+    let stable_input = memory.contains_decoded_surface(normalized);
+    let mut surface_candidates = memory.surface_candidates(normalized, 24);
+    if options.is_enabled(L2_SURFACE_COMPLETION_CELL) {
+        surface_candidates.extend(memory.completion_candidates(normalized, 24, 144));
+    }
+    surface_candidates
+        .retain(|candidate| candidate.word.chars().all(|ch| ch.is_ascii_alphabetic()));
+    surface_candidates.sort_by(|left, right| {
+        right
+            .score
+            .cmp(&left.score)
+            .then_with(|| left.rank.cmp(&right.rank))
+            .then_with(|| left.word.cmp(&right.word))
+    });
+    surface_candidates.dedup_by(|left, right| left.word == right.word);
+
+    let mut out = Vec::new();
+    for candidate in surface_candidates {
+        let candidate_len = candidate.word.chars().count();
+        let distance = damerau_levenshtein(normalized, &candidate.word);
+        let is_completion = candidate.word.starts_with(normalized) && candidate_len > len;
+        if !stable_input
+            && options.is_enabled(L2_SURFACE_MOTIF_CELL)
+            && len >= 4
+            && !is_completion
+            && surface_motif_typo_allowed(
+                normalized,
+                &candidate.word,
+                len,
+                distance,
+                candidate.score,
+            )
+        {
+            out.push(surface_motif_candidate(SurfaceMotifCandidateInput {
+                prefix,
+                leading,
+                word,
+                trailing,
+                replacement_lower: &candidate.word,
+                source: L2_SURFACE_MOTIF_CELL,
+                score: candidate.score,
+                l1_overlap: candidate.l1_overlap,
+                l2_overlap: candidate.l2_overlap,
+                motif_overlap: candidate.motif_overlap,
+                prefix_match: candidate.prefix_match,
+                distance,
+                risk: surface_motif_typo_risk(context, distance),
+                l1,
+                context,
+            }));
+        } else if is_completion
+            && options.is_enabled(L2_SURFACE_COMPLETION_CELL)
+            && candidate_len.saturating_sub(len) <= 10
+        {
+            out.push(surface_motif_candidate(SurfaceMotifCandidateInput {
+                prefix,
+                leading,
+                word,
+                trailing,
+                replacement_lower: &candidate.word,
+                source: L2_SURFACE_COMPLETION_CELL,
+                score: candidate.score,
+                l1_overlap: candidate.l1_overlap,
+                l2_overlap: candidate.l2_overlap,
+                motif_overlap: candidate.motif_overlap,
+                prefix_match: candidate.prefix_match,
+                distance,
+                risk: 0.06,
+                l1,
+                context,
+            }));
+        }
+        if out.len() >= 8 {
+            break;
         }
     }
     out

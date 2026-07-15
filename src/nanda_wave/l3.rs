@@ -5,6 +5,9 @@ use super::options::WaveOptions;
 use super::pattern_wave::{evaluate_pattern_wave, PATTERN_WAVE_CELL};
 use super::signal::{LayerTrace, WaveDecision, WordCandidate};
 use super::structural_relation::{evaluate_structural_relation, STRUCTURAL_RELATION_CELL};
+use super::PHRASE_FORECAST_CELL;
+#[cfg(test)]
+use super::SEMANTIC_WORD_SOURCE;
 use super::{l3_phrase_gate, llmwave};
 use crate::candidate_contract::CandidateOrigin;
 use crate::correction_core::TypingErrorClass;
@@ -45,7 +48,7 @@ fn run_l3_inner(
     let technical_keep = candidates
         .iter()
         .find(|candidate| candidate.origin == CandidateOrigin::Technical);
-    let best_apply = best_apply_candidate(original, candidates, phrase_memory);
+    let best_readout = best_context_candidate(original, candidates, phrase_memory);
 
     if options.is_enabled("TechnicalContextCell32") {
         if let Some(technical) = technical_keep {
@@ -58,8 +61,8 @@ fn run_l3_inner(
             });
             let protects_whole_tail = technical.text == original.trim_end();
             if protects_whole_tail
-                && (best_apply.is_none()
-                    || technical.energy >= best_apply.map(|item| item.energy).unwrap_or(0.0))
+                && (best_readout.is_none()
+                    || technical.energy >= best_readout.map(|item| item.energy).unwrap_or(0.0))
             {
                 return (
                     traces,
@@ -71,14 +74,16 @@ fn run_l3_inner(
         }
     }
 
-    let Some(candidate) = best_apply else {
+    let Some(candidate) = best_readout else {
         traces.extend(candidates.iter().take(8).filter_map(|candidate| {
-            apply_candidate_blocker(original, candidate, phrase_memory).map(|blocker| LayerTrace {
-                name: "L3AdmissionCell32",
-                summary: format!(
-                    "candidate source={} text={:?} blocker={blocker}",
-                    candidate.source, candidate.text
-                ),
+            context_candidate_blocker(original, candidate, phrase_memory).map(|blocker| {
+                LayerTrace {
+                    name: "L3ReadoutAdmissionCell32",
+                    summary: format!(
+                        "candidate source={} text={:?} blocker={blocker}",
+                        candidate.source, candidate.text
+                    ),
+                }
             })
         }));
         return (
@@ -188,13 +193,15 @@ fn run_l3_inner(
             ),
         });
     }
-    if options.is_enabled(super::context_wave::PHRASE_FORECAST_CELL) {
-        if let Some(summary) = super::context_wave::phrase_forecast_summary(original, candidate) {
-            traces.push(LayerTrace {
-                name: super::context_wave::PHRASE_FORECAST_CELL,
-                summary,
-            });
-        }
+    if options.is_enabled(PHRASE_FORECAST_CELL) && candidate.source == PHRASE_FORECAST_CELL {
+        traces.push(LayerTrace {
+            name: PHRASE_FORECAST_CELL,
+            summary: format!(
+                "forecast={:?} support={}",
+                candidate.text,
+                candidate.support.join(";")
+            ),
+        });
     }
     if options.is_enabled("MeshConsensusCell32") {
         traces.push(LayerTrace {
@@ -230,14 +237,14 @@ fn run_l3_inner(
     }
 }
 
-fn best_apply_candidate<'a>(
+fn best_context_candidate<'a>(
     original: &str,
     candidates: &'a [WordCandidate],
     phrase_memory: Option<&llmwave::LlmWaveMemory>,
 ) -> Option<&'a WordCandidate> {
     candidates
         .iter()
-        .filter(|candidate| apply_candidate_blocker(original, candidate, phrase_memory).is_none())
+        .filter(|candidate| context_candidate_blocker(original, candidate, phrase_memory).is_none())
         .fold(None, |best: Option<(&'a WordCandidate, f32)>, candidate| {
             let score = l3_rank_score(original, candidate, phrase_memory);
             match best {
@@ -250,22 +257,26 @@ fn best_apply_candidate<'a>(
         .map(|(candidate, _score)| candidate)
 }
 
-fn apply_candidate_blocker(
+fn context_candidate_blocker(
     original: &str,
     candidate: &WordCandidate,
     phrase_memory: Option<&llmwave::LlmWaveMemory>,
 ) -> Option<&'static str> {
-    if semantic_candidate_lacks_surface_authority(original, candidate) {
+    let error_class = nanda_candidate_error_class(original, candidate);
+    let action = crate::typing_transition::action::verify_action_operator(
+        original,
+        &candidate.text,
+        error_class,
+        candidate.origin,
+    );
+    if let Some(reason) = action.apply_blocker() {
+        return Some(reason);
+    }
+    if semantic_candidate_lacks_surface_support(original, candidate, action.edit_operator) {
         return Some("semantic_surface_authority");
     }
-    if word_form_candidate_lacks_autocorrect_authority(original, candidate) {
+    if word_form_candidate_lacks_surface_support(original, candidate) {
         return Some("word_form_authority");
-    }
-    if completion_candidate_lacks_autocorrect_authority(original, candidate) {
-        return Some("completion_suggest_only");
-    }
-    if let Some(reason) = candidate_transition_authority_blocker(original, candidate) {
-        return Some(reason);
     }
     if candidate_l4_signed_memory_vetoes_apply(original, candidate) {
         return Some("l4_signed_memory");
@@ -323,22 +334,7 @@ fn verified_operator_coherence(original: &str, candidate: &WordCandidate) -> f32
     }
 }
 
-fn completion_candidate_lacks_autocorrect_authority(
-    _original: &str,
-    candidate: &WordCandidate,
-) -> bool {
-    if candidate.origin != CandidateOrigin::Completion {
-        return false;
-    }
-    // L2 surface completion is an IME/preedit suggestion source. It can expose
-    // a continuation candidate, but it must not rewrite committed text on Space.
-    true
-}
-
-fn word_form_candidate_lacks_autocorrect_authority(
-    original: &str,
-    candidate: &WordCandidate,
-) -> bool {
+fn word_form_candidate_lacks_surface_support(original: &str, candidate: &WordCandidate) -> bool {
     if candidate.origin != CandidateOrigin::L2Surface {
         return false;
     }
@@ -389,20 +385,6 @@ fn word_form_candidate_lacks_autocorrect_authority(
             || !crate::lexicon::is_common_ru_word(&replacement_lower))
 }
 
-fn candidate_transition_authority_blocker(
-    original: &str,
-    candidate: &WordCandidate,
-) -> Option<&'static str> {
-    let error_class = nanda_candidate_error_class(original, candidate);
-    crate::typing_transition::action::verify_action_operator(
-        original,
-        &candidate.text,
-        error_class,
-        candidate.origin,
-    )
-    .apply_blocker()
-}
-
 fn nanda_candidate_error_class(original: &str, candidate: &WordCandidate) -> TypingErrorClass {
     crate::typing_transition::action::classify_token_transition(
         original,
@@ -432,8 +414,19 @@ fn previous_context_tokens(text: &str) -> Vec<String> {
     words
 }
 
-fn semantic_candidate_lacks_surface_authority(original: &str, candidate: &WordCandidate) -> bool {
+fn semantic_candidate_lacks_surface_support(
+    original: &str,
+    candidate: &WordCandidate,
+    operator: crate::text_edit::TransitionOperator,
+) -> bool {
     if candidate.origin != CandidateOrigin::L3Context {
+        return false;
+    }
+    if !matches!(
+        operator,
+        crate::text_edit::TransitionOperator::ReplaceCurrentWord
+            | crate::text_edit::TransitionOperator::PhraseTokenRepair
+    ) {
         return false;
     }
     let Some(original_word) = last_token(original) else {
@@ -622,10 +615,7 @@ fn adjusted_confidence(
     phrase_report: Option<&l3_phrase_gate::L3PhraseGateReport>,
 ) -> f32 {
     let mut value = confidence(candidate);
-    if options.is_enabled(super::context_wave::PHRASE_FORECAST_CELL)
-        && candidate.origin == CandidateOrigin::L3Context
-        && super::context_wave::phrase_forecast_summary(original, candidate).is_some()
-    {
+    if options.is_enabled(PHRASE_FORECAST_CELL) && candidate.source == PHRASE_FORECAST_CELL {
         value += options.scale_l3_delta(0.08);
     }
     if let Some(report) = pattern_report {
@@ -814,7 +804,7 @@ mod tests {
             support: vec![],
         };
 
-        assert!(!word_form_candidate_lacks_autocorrect_authority(
+        assert!(!word_form_candidate_lacks_surface_support(
             " отсранилась! ",
             &candidate,
         ));
@@ -851,7 +841,7 @@ mod tests {
     }
 
     #[test]
-    fn l3_does_not_autocomplete_short_prefix_without_memory_authority() {
+    fn l3_ranks_short_prefix_completion_without_granting_apply_authority() {
         let candidates = [
             WordCandidate {
                 text: "Ну давай".to_string(),
@@ -873,12 +863,7 @@ mod tests {
 
         let (_trace, decision) = run_l3("Ну да ", &candidates);
 
-        assert_eq!(
-            decision,
-            WaveDecision::Keep {
-                reason: "no_layout_candidate"
-            }
-        );
+        assert_eq!(decision.output(), Some("Ну давай "));
     }
 
     #[test]
@@ -887,7 +872,7 @@ mod tests {
             WordCandidate {
                 text: "попаданий".to_string(),
                 origin: CandidateOrigin::L3Context,
-                source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
+                source: SEMANTIC_WORD_SOURCE,
                 energy: 0.80,
                 risk: 0.10,
                 support: vec![],
@@ -895,7 +880,7 @@ mod tests {
             WordCandidate {
                 text: "попадали".to_string(),
                 origin: CandidateOrigin::L3Context,
-                source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
+                source: SEMANTIC_WORD_SOURCE,
                 energy: 0.80,
                 risk: 0.10,
                 support: vec![],
@@ -908,7 +893,7 @@ mod tests {
     }
 
     #[test]
-    fn l3_keeps_surface_completion_out_of_autocorrect() {
+    fn l3_exposes_surface_completion_as_non_mutating_readout() {
         let candidate = WordCandidate {
             text: "попаданий".to_string(),
             origin: CandidateOrigin::Completion,
@@ -920,7 +905,7 @@ mod tests {
 
         let (_trace, decision) = run_l3("попадани ", &[candidate]);
 
-        assert_eq!(decision.output(), None);
+        assert_eq!(decision.output(), Some("попаданий "));
     }
 
     #[test]
@@ -1027,7 +1012,7 @@ mod tests {
     fn applies_split_memory_candidate() {
         let candidate = WordCandidate {
             text: "она есть".to_string(),
-            origin: CandidateOrigin::L3Context,
+            origin: CandidateOrigin::Boundary,
             source: "PhraseMemoryCell32",
             energy: 0.82,
             risk: 0.11,
@@ -1041,8 +1026,8 @@ mod tests {
     fn phrase_forecast_boosts_semantic_candidate() {
         let candidate = WordCandidate {
             text: "На улице опять идёт дождь".to_string(),
-            origin: CandidateOrigin::L3Context,
-            source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
+            origin: CandidateOrigin::Completion,
+            source: PHRASE_FORECAST_CELL,
             energy: 0.30,
             risk: 0.10,
             support: vec![],
@@ -1056,7 +1041,7 @@ mod tests {
         let candidate = WordCandidate {
             text: "она спрашивая".to_string(),
             origin: CandidateOrigin::L3Context,
-            source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
+            source: SEMANTIC_WORD_SOURCE,
             energy: 0.90,
             risk: 0.10,
             support: vec![],
@@ -1071,7 +1056,7 @@ mod tests {
         let candidate = WordCandidate {
             text: "на улице опять идёт дождь".to_string(),
             origin: CandidateOrigin::L3Context,
-            source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
+            source: SEMANTIC_WORD_SOURCE,
             energy: 0.50,
             risk: 0.10,
             support: vec![],
@@ -1090,7 +1075,7 @@ mod tests {
             WordCandidate {
                 text: "на улице опять идёт дом".to_string(),
                 origin: CandidateOrigin::L3Context,
-                source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
+                source: SEMANTIC_WORD_SOURCE,
                 energy: 0.86,
                 risk: 0.06,
                 support: vec![],
@@ -1098,7 +1083,7 @@ mod tests {
             WordCandidate {
                 text: "на улице опять идёт дождь".to_string(),
                 origin: CandidateOrigin::L3Context,
-                source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
+                source: SEMANTIC_WORD_SOURCE,
                 energy: 0.42,
                 risk: 0.08,
                 support: vec![],

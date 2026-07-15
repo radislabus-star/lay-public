@@ -16,12 +16,11 @@ pub struct FeedbackAdjustment {
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct L3Feedback {
     pub adjustments: Vec<FeedbackAdjustment>,
-    pub requests: Vec<&'static str>,
 }
 
 impl L3Feedback {
     pub fn is_empty(&self) -> bool {
-        self.adjustments.is_empty() && self.requests.is_empty()
+        self.adjustments.is_empty()
     }
 }
 
@@ -50,12 +49,6 @@ pub fn derive_l3_feedback(
             reason: "layout_mode_supported_by_phrase",
         });
     }
-    if candidates.is_empty() && looks_like_weather_prefix(original) {
-        feedback
-            .requests
-            .push(super::context_wave::SEMANTIC_WORD_SOURCE);
-    }
-
     let trace = (!feedback.is_empty()).then(|| LayerTrace {
         name: L3_FEEDBACK_CELL,
         summary: feedback_summary(&feedback),
@@ -90,8 +83,7 @@ fn feedback_summary(feedback: &L3Feedback) -> String {
             )
         })
         .collect::<Vec<_>>();
-    let requests = feedback.requests.join(",");
-    format!("adjust=[{}] request=[{}]", adjustments.join("; "), requests)
+    format!("adjust=[{}]", adjustments.join("; "))
 }
 
 fn looks_like_technical_tail(text: &str) -> bool {
@@ -100,9 +92,4 @@ fn looks_like_technical_tail(text: &str) -> bool {
         || text
             .split_whitespace()
             .any(|token| token.starts_with('-') && token != "-" && token.chars().count() > 1)
-}
-
-fn looks_like_weather_prefix(text: &str) -> bool {
-    let lower = text.to_lowercase();
-    lower.contains("улиц") && lower.contains("ид")
 }

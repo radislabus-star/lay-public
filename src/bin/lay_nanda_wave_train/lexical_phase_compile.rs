@@ -23,6 +23,7 @@ struct LexicalPhaseManifest {
     artifact_format: u32,
     compiler_version: &'static str,
     include_hunspell: bool,
+    include_english: bool,
     source_files: Vec<LexicalPhaseSourceDigest>,
     corpus_hash: String,
     artifact_checksum: String,
@@ -43,6 +44,7 @@ fn compile_lexical_phase_artifact(
     inputs: &[PathBuf],
     output: &Path,
     include_hunspell: bool,
+    include_english: bool,
 ) -> io::Result<LexicalPhaseCompileReport> {
     let mut source = Vec::new();
     let mut source_files = Vec::new();
@@ -50,6 +52,28 @@ fn compile_lexical_phase_artifact(
         let text = std::fs::read_to_string(input)?;
         source_files.push(source_digest(input, text.as_bytes()));
         source.extend(text.lines().map(str::to_string));
+    }
+    if include_english {
+        let mut english_sources = 0usize;
+        for (path, hunspell) in [
+            (lexicon::EN_HUNSPELL, true),
+            (lexicon::EN_WORDS, false),
+        ] {
+            let path = Path::new(path);
+            let Ok(bytes) = std::fs::read(path) else {
+                continue;
+            };
+            let text = String::from_utf8_lossy(&bytes);
+            source_files.push(source_digest(path, &bytes));
+            source.extend(english_lexical_surfaces(&text, hunspell));
+            english_sources = english_sources.saturating_add(1);
+        }
+        if english_sources == 0 {
+            return Err(io::Error::new(
+                io::ErrorKind::NotFound,
+                "--include-english requested but no English word source is installed",
+            ));
+        }
     }
     let mut training = source.clone();
     if include_hunspell {
@@ -100,6 +124,7 @@ fn compile_lexical_phase_artifact(
         artifact_format: format::VERSION,
         compiler_version: env!("CARGO_PKG_VERSION"),
         include_hunspell,
+        include_english,
         source_files,
         corpus_hash: report.corpus_hash.clone(),
         artifact_checksum: report.artifact_checksum.clone(),
@@ -117,6 +142,7 @@ fn compile_lexical_phase_artifact(
 
 fn run_lexical_phase_compile(args: &[String]) -> io::Result<()> {
     let include_hunspell = args.iter().any(|arg| arg == "--include-hunspell");
+    let include_english = args.iter().any(|arg| arg == "--include-english");
     let output_index = args.iter().position(|arg| arg == "--out").ok_or_else(|| {
         io::Error::new(
             io::ErrorKind::InvalidInput,
@@ -136,6 +162,7 @@ fn run_lexical_phase_compile(args: &[String]) -> io::Result<()> {
                 && *index != output_index + 1
                 && value.as_str() != "--compile-lexical-phase"
                 && value.as_str() != "--include-hunspell"
+                && value.as_str() != "--include-english"
         })
         .map(|(_, value)| PathBuf::from(value))
         .collect::<Vec<_>>();
@@ -145,12 +172,29 @@ fn run_lexical_phase_compile(args: &[String]) -> io::Result<()> {
             "at least one corpus path is required",
         ));
     }
-    let report = compile_lexical_phase_artifact(&inputs, &output, include_hunspell)?;
+    let report =
+        compile_lexical_phase_artifact(&inputs, &output, include_hunspell, include_english)?;
     println!(
         "{}",
         serde_json::to_string_pretty(&report).map_err(io::Error::other)?
     );
     Ok(())
+}
+
+fn english_lexical_surfaces(text: &str, hunspell: bool) -> impl Iterator<Item = String> + '_ {
+    text.lines().skip(usize::from(hunspell)).filter_map(move |line| {
+        let raw = if hunspell {
+            line.trim().split_once('/').map_or(line.trim(), |(word, _)| word)
+        } else {
+            line.trim()
+        };
+        let word = raw.to_ascii_lowercase();
+        ((2..=format::MAX_WORD_CHARS).contains(&word.chars().count())
+            && word
+                .chars()
+                .all(|ch| ch.is_ascii_alphabetic() || ch == '-' || ch == '\''))
+        .then_some(word)
+    })
 }
 
 fn source_digest(path: &Path, bytes: &[u8]) -> LexicalPhaseSourceDigest {
