@@ -1,4 +1,4 @@
-use crate::lexical_surface_atoms::{surface_atom_projection, surface_atoms};
+use crate::lexical_surface_atoms::{surface_atom_projection, EncodedSurfaceField};
 use crate::stable_hash::mix64_golden;
 
 pub(super) const MAGIC: &[u8; 8] = b"LAYLPH02";
@@ -117,9 +117,9 @@ pub(super) fn normalize_surface(text: &str) -> Option<String> {
     Some(normalized)
 }
 
-pub(super) fn atom_center_keys(text: &str) -> Vec<u64> {
+pub(super) fn atom_center_keys(field: &EncodedSurfaceField) -> Vec<u64> {
     let mut keys = Vec::new();
-    for atom in surface_atoms(text) {
+    for atom in field.atoms() {
         keys.push(atom_key(0x4c31_504f_5349_5449, atom.position, &atom.bytes));
         keys.push(atom_key(0x4c31_5245_4c41_5845, 0, &atom.bytes));
     }
@@ -128,10 +128,9 @@ pub(super) fn atom_center_keys(text: &str) -> Vec<u64> {
     keys
 }
 
-pub(super) fn surface_phase(text: &str) -> ([i8; PHASE_CELLS], u16) {
-    let atoms = surface_atoms(text);
+pub(super) fn surface_phase(field: &EncodedSurfaceField) -> ([i8; PHASE_CELLS], u16) {
     let mut sums = [0i16; PHASE_CELLS];
-    for atom in &atoms {
+    for atom in field.atoms() {
         for trit in surface_atom_projection(atom.position, &atom.bytes) {
             let cell = usize::from(trit.lane) % PHASE_CELLS;
             sums[cell] = sums[cell].saturating_add(i16::from(trit.value));
@@ -141,7 +140,7 @@ pub(super) fn surface_phase(text: &str) -> ([i8; PHASE_CELLS], u16) {
     for (target, value) in phase.iter_mut().zip(sums) {
         *target = value.clamp(i8::MIN as i16, i8::MAX as i16) as i8;
     }
-    (phase, atoms.len().min(u16::MAX as usize) as u16)
+    (phase, field.atoms().len().min(u16::MAX as usize) as u16)
 }
 
 pub(super) fn phase_coherence_milli(left: &[i8; PHASE_CELLS], right: &[i8; PHASE_CELLS]) -> u16 {

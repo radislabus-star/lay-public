@@ -34,13 +34,11 @@ pub(super) fn surface_motif_word_candidates(
         return Vec::new();
     }
 
-    let mut surface_candidates = surface_motif_memory().surface_candidates(&normalized, 24);
-    if options.is_enabled(L2_SURFACE_COMPLETION_CELL) {
-        surface_candidates.extend(surface_motif_memory().completion_candidates(
-            &normalized,
-            24,
-            144,
-        ));
+    let memory = surface_motif_memory();
+    let stable_input = surface_motif_stable_existing_word(&normalized);
+    let mut surface_candidates = memory.surface_candidates(&normalized, 24);
+    if options.is_enabled(L2_SURFACE_COMPLETION_CELL) && !stable_input {
+        surface_candidates.extend(memory.completion_candidates(&normalized, 24, 144));
         surface_candidates.sort_by(|left, right| {
             right
                 .score
@@ -54,7 +52,7 @@ pub(super) fn surface_motif_word_candidates(
     if std::env::var_os("LAY_NANDA_L2_TIMING").is_some() {
         eprintln!(
             "lay_nanda_l2_surface input={normalized:?} stable={} candidates={:?}",
-            surface_motif_stable_existing_word(&normalized),
+            stable_input,
             surface_candidates
                 .iter()
                 .take(12)
@@ -129,7 +127,8 @@ pub(super) fn surface_motif_word_candidates(
             continue;
         }
 
-        if is_completion
+        if !stable_input
+            && is_completion
             && options.is_enabled(L2_SURFACE_COMPLETION_CELL)
             && len >= 2
             && candidate_len.saturating_sub(len) <= 10
@@ -218,7 +217,7 @@ fn latin_surface_word_candidates(
     let memory = surface_motif_memory();
     let stable_input = memory.contains_decoded_surface(normalized);
     let mut surface_candidates = memory.surface_candidates(normalized, 24);
-    if options.is_enabled(L2_SURFACE_COMPLETION_CELL) {
+    if options.is_enabled(L2_SURFACE_COMPLETION_CELL) && !stable_input {
         surface_candidates.extend(memory.completion_candidates(normalized, 24, 144));
     }
     surface_candidates
@@ -266,7 +265,8 @@ fn latin_surface_word_candidates(
                 l1,
                 context,
             }));
-        } else if is_completion
+        } else if !stable_input
+            && is_completion
             && options.is_enabled(L2_SURFACE_COMPLETION_CELL)
             && candidate_len.saturating_sub(len) <= 10
         {
@@ -670,6 +670,7 @@ pub(super) fn surface_motif_stable_existing_word(word: &str) -> bool {
         || is_user_protected_word(word)
         || is_ru_live_protected_word(word)
         || surface_motif_runtime_known_surface(word)
+        || crate::russian_lexicon::is_reference_backed_russian_form(word)
         || (surface_motif_strict_known_surface(word)
             && !russian_zero_a_ya_stem_has_known_lemma(word))
         || russian_zero_o_form_has_known_lemma(word)

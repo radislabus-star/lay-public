@@ -11,17 +11,42 @@ pub(crate) struct SurfaceAtom {
     pub(crate) bytes: Vec<u8>,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct EncodedSurfaceField {
+    symbols: Vec<char>,
+    atoms: Vec<SurfaceAtom>,
+}
+
+impl EncodedSurfaceField {
+    #[must_use]
+    #[allow(dead_code)] // The standalone compiler includes this module without the runtime sensor head.
+    pub(crate) fn symbols(&self) -> &[char] {
+        &self.symbols
+    }
+
+    #[must_use]
+    pub(crate) fn atoms(&self) -> &[SurfaceAtom] {
+        &self.atoms
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default)]
+pub(crate) struct SurfaceFieldEncoder;
+
+impl SurfaceFieldEncoder {
+    #[must_use]
+    pub(crate) fn encode(text: &str) -> EncodedSurfaceField {
+        let symbols = text.chars().collect::<Vec<_>>();
+        let mut atoms = raw_byte_atoms(text.as_bytes());
+        append_boundary_atoms(text, &mut atoms);
+        EncodedSurfaceField { symbols, atoms }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) struct SurfaceWaveTrit {
     pub(crate) lane: u16,
     pub(crate) value: i8,
-}
-
-#[must_use]
-pub(crate) fn surface_atoms(text: &str) -> Vec<SurfaceAtom> {
-    let mut atoms = raw_byte_atoms(text.as_bytes());
-    append_boundary_atoms(text, &mut atoms);
-    atoms
 }
 
 fn raw_byte_atoms(bytes: &[u8]) -> Vec<SurfaceAtom> {
@@ -172,9 +197,19 @@ mod tests {
     #[test]
     fn four_gram_atoms_cover_long_and_short_words() {
         assert_eq!(SURFACE_WAVE_NGRAM, 4);
-        assert!(surface_atoms("проверка").len() >= 4);
+        assert!(SurfaceFieldEncoder::encode("проверка").atoms().len() >= 4);
         for word in ["и", "в", "не", "a", "to", "сыч"] {
-            assert!(!surface_atoms(word).is_empty(), "word={word}");
+            assert!(
+                !SurfaceFieldEncoder::encode(word).atoms().is_empty(),
+                "word={word}"
+            );
         }
+    }
+
+    #[test]
+    fn encoder_owns_symbols_and_atoms_together() {
+        let field = SurfaceFieldEncoder::encode("Тест");
+        assert_eq!(field.symbols(), &['Т', 'е', 'с', 'т']);
+        assert!(!field.atoms().is_empty());
     }
 }

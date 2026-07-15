@@ -245,11 +245,11 @@ impl HotFieldSnapshot {
         let phase = self.surface_phase_readout(word);
         let authority = if phase.exact_center {
             HotWordAuthority::L2SurfaceCenter
-        } else if crate::nanda_wave::l2::l2_decoder_contains_surface(&lower) {
-            HotWordAuthority::L2FormCenter
-        } else if crate::russian_lexicon::is_center_backed_russian_form(&lower) {
-            HotWordAuthority::L2FormCenter
-        } else if phase.settles_as_form() {
+        } else if crate::nanda_wave::l2::l2_decoder_contains_surface(&lower)
+            || crate::russian_lexicon::is_center_backed_russian_form(&lower)
+            || crate::russian_lexicon::is_reference_backed_russian_form(&lower)
+            || phase.settles_as_form()
+        {
             HotWordAuthority::L2FormCenter
         } else {
             surface.authority
@@ -267,8 +267,12 @@ impl HotFieldSnapshot {
             return surface;
         }
         let lower = word.trim().to_lowercase();
-        let authority = if crate::nanda_wave::l2::l2_decoder_contains_surface(&lower)
+        let phase = self.surface_phase_readout(word);
+        let authority = if phase.exact_center {
+            HotWordAuthority::L2SurfaceCenter
+        } else if crate::nanda_wave::l2::l2_decoder_contains_surface(&lower)
             || crate::russian_lexicon::is_center_backed_russian_form(&lower)
+            || crate::russian_lexicon::is_reference_backed_russian_form(&lower)
         {
             HotWordAuthority::L2FormCenter
         } else {

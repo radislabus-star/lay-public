@@ -398,7 +398,7 @@ impl LlmWaveMemory {
                     let hit = hits.entry(record.next_hash).or_default();
                     hit.energy += energy;
                     hit.support = hit.support.saturating_add(record_support(record));
-                    hit.phase_sum += phase_coherence(record.phase);
+                    hit.phase_sum += signed_phase_coherence(record.phase);
                 }
             }
             if total_energy <= f32::EPSILON {
@@ -493,7 +493,7 @@ impl LlmWaveMemory {
                     let hit = hits.entry(record.next_hash).or_default();
                     hit.energy += energy;
                     hit.support = hit.support.saturating_add(record_support(record));
-                    hit.phase_sum += phase_coherence(record.phase);
+                    hit.phase_sum += signed_phase_coherence(record.phase);
                     hit.phase_records = hit.phase_records.saturating_add(1);
                     hit.tokens.insert(record.token_hash);
                 }
@@ -724,7 +724,7 @@ fn prior_from_energy(total: f32, next: Option<f32>) -> f32 {
     }
 }
 
-fn phase_coherence(phase: i8) -> f32 {
+fn signed_phase_coherence(phase: i8) -> f32 {
     1.0 - (phase.unsigned_abs() as f32 / 128.0).clamp(0.0, 1.0)
 }
 

@@ -7,7 +7,7 @@ use crate::time::unix_timestamp;
 #[cfg(test)]
 use crate::typing_memory;
 use crate::typing_memory::{
-    normalize_word, normalized_words, TypingMemoryEvent, TypingMemoryEventKind,
+    normalize_memory_word, normalized_words, TypingMemoryEvent, TypingMemoryEventKind,
 };
 
 #[cfg(not(test))]
@@ -208,7 +208,7 @@ impl UsagePriorSnapshot {
         }
     }
     pub fn word_prior(&self, word: &str) -> f32 {
-        let lower = normalize_word(word);
+        let lower = normalize_memory_word(word);
         if lower.is_empty() {
             return 0.0;
         }
@@ -221,7 +221,7 @@ impl UsagePriorSnapshot {
     }
 
     pub fn context_word_prior(&self, context: &[String], word: &str) -> f32 {
-        let lower = normalize_word(word);
+        let lower = normalize_memory_word(word);
         if lower.is_empty() || context.is_empty() {
             return 0.0;
         }
@@ -229,7 +229,7 @@ impl UsagePriorSnapshot {
     }
 
     pub fn accepted_word_count(&self, word: &str) -> u32 {
-        let lower = normalize_word(word);
+        let lower = normalize_memory_word(word);
         if lower.is_empty() {
             return 0;
         }
@@ -241,7 +241,7 @@ impl UsagePriorSnapshot {
     }
 
     pub(crate) fn rejected_word_prior(&self, word: &str) -> f32 {
-        let lower = normalize_word(word);
+        let lower = normalize_memory_word(word);
         if lower.is_empty() {
             return 0.0;
         }
@@ -254,7 +254,7 @@ impl UsagePriorSnapshot {
     }
 
     pub(crate) fn context_rejected_word_prior(&self, context: &[String], word: &str) -> f32 {
-        let lower = normalize_word(word);
+        let lower = normalize_memory_word(word);
         if lower.is_empty() || context.is_empty() {
             return 0.0;
         }
@@ -318,7 +318,7 @@ impl UsagePriorSnapshot {
         state_word: &str,
         word: &str,
     ) -> UsageHotReadout {
-        let lower = normalize_word(word);
+        let lower = normalize_memory_word(word);
         if lower.is_empty() {
             return UsageHotReadout::default();
         }
@@ -456,7 +456,7 @@ pub(crate) fn record_typing_memory_event_if_enabled(event: &TypingMemoryEvent) {
 }
 
 pub(crate) fn word_usage_prior(word: &str) -> f32 {
-    let lower = normalize_word(word);
+    let lower = normalize_memory_word(word);
     if lower.is_empty() {
         return 0.0;
     }
@@ -468,7 +468,7 @@ pub(crate) fn word_usage_prior(word: &str) -> f32 {
 }
 
 pub(crate) fn context_word_usage_prior(context: &[String], word: &str) -> f32 {
-    let lower = normalize_word(word);
+    let lower = normalize_memory_word(word);
     if lower.is_empty() || context.is_empty() {
         return 0.0;
     }
@@ -502,7 +502,7 @@ fn usage_counts() -> UsageCounts {
 }
 
 pub(crate) fn word_usage_prior_cached(word: &str) -> f32 {
-    let lower = normalize_word(word);
+    let lower = normalize_memory_word(word);
     if lower.is_empty() {
         return 0.0;
     }
@@ -516,7 +516,7 @@ pub(crate) fn word_usage_prior_cached(word: &str) -> f32 {
 }
 
 pub(crate) fn accepted_word_usage_count_cached(word: &str) -> u32 {
-    let lower = normalize_word(word);
+    let lower = normalize_memory_word(word);
     if lower.is_empty() {
         return 0;
     }
@@ -532,7 +532,7 @@ pub(crate) fn accepted_word_usage_count_cached(word: &str) -> u32 {
 }
 
 pub(crate) fn context_word_usage_prior_cached(context: &[String], word: &str) -> f32 {
-    let lower = normalize_word(word);
+    let lower = normalize_memory_word(word);
     if lower.is_empty() || context.is_empty() {
         return 0.0;
     }
@@ -878,7 +878,7 @@ fn add_usage_event_counts(counts: &mut UsageCounts, text: &str) {
 }
 
 fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
-    let Some(word) = event.word.as_deref().map(normalize_word) else {
+    let Some(word) = event.word.as_deref().map(normalize_memory_word) else {
         return;
     };
     if word.is_empty() {
@@ -1396,7 +1396,7 @@ fn context_ngram_keys(context: &[String]) -> Vec<String> {
     let normalized = context
         .iter()
         .filter_map(|word| {
-            let word = normalize_word(word);
+            let word = normalize_memory_word(word);
             (!word.is_empty()).then_some(word)
         })
         .collect::<Vec<_>>();

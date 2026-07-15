@@ -656,8 +656,14 @@ fn proof_percent(numerator: usize, denominator: usize) -> f64 {
     }
 }
 
+#[cfg(not(test))]
 fn load_default_runtime() -> Option<PhaseRuntime> {
     PhaseRuntime::from_bytes(&fs::read(default_phase_memory_path()).ok()?).ok()
+}
+
+#[cfg(test)]
+fn load_default_runtime() -> Option<PhaseRuntime> {
+    None
 }
 
 fn train_phase_runtime<I>(entries: I) -> io::Result<PhaseRuntime>
@@ -1049,7 +1055,7 @@ fn add_cluster(centers: &mut Vec<PhaseCenter>, vector: &[PhaseCell], max_centers
     let best = centers
         .iter()
         .enumerate()
-        .map(|(index, center)| (index, phase_coherence(vector, &center.center)))
+        .map(|(index, center)| (index, vector_phase_coherence(vector, &center.center)))
         .max_by(|left, right| left.1.total_cmp(&right.1));
     if let Some((index, coherence)) = best {
         if coherence >= CENTER_SPLIT_COHERENCE || centers.len() >= max_centers {
@@ -1164,7 +1170,7 @@ fn phase_unit(value: PhaseCell) -> PhaseCell {
     }
 }
 
-fn phase_coherence(vector: &[PhaseCell], center: &[PhaseCell]) -> f32 {
+fn vector_phase_coherence(vector: &[PhaseCell], center: &[PhaseCell]) -> f32 {
     let mut score = 0.0;
     let mut active = 0usize;
     for (left, right) in vector.iter().zip(center) {
@@ -1183,7 +1189,7 @@ fn phase_coherence(vector: &[PhaseCell], center: &[PhaseCell]) -> f32 {
 fn max_coherence(vector: &[PhaseCell], centers: &[PhaseCenter]) -> Option<f32> {
     centers
         .iter()
-        .map(|center| phase_coherence(vector, &center.center))
+        .map(|center| vector_phase_coherence(vector, &center.center))
         .max_by(f32::total_cmp)
 }
 
@@ -1236,7 +1242,7 @@ fn max_random_center_coherence(
                 &mut randomized,
                 seed ^ (index as u64).wrapping_mul(0x9e37_79b9_7f4a_7c15),
             );
-            phase_coherence(vector, &randomized)
+            vector_phase_coherence(vector, &randomized)
         })
         .max_by(f32::total_cmp)
 }

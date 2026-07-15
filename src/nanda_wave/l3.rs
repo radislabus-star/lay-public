@@ -11,8 +11,9 @@ use super::SEMANTIC_WORD_SOURCE;
 use super::{l3_phrase_gate, llmwave};
 use crate::candidate_contract::CandidateOrigin;
 use crate::correction_core::TypingErrorClass;
+use crate::keyboard::is_cyrillic_letter;
 use crate::text_metrics::damerau_levenshtein;
-use crate::word_reader::last_text_word_slice;
+use crate::word_reader::{is_cyrillic_letters_only, last_text_word_slice};
 
 pub fn run_l3(original: &str, candidates: &[WordCandidate]) -> (Vec<LayerTrace>, WaveDecision) {
     run_l3_with_options(original, candidates, &WaveOptions::default())
@@ -344,7 +345,7 @@ fn word_form_candidate_lacks_surface_support(original: &str, candidate: &WordCan
     let Some(replacement_word) = last_token(&candidate.text) else {
         return true;
     };
-    if !is_cyrillic_word(original_word) || !is_cyrillic_word(replacement_word) {
+    if !is_cyrillic_letters_only(original_word) || !is_cyrillic_letters_only(replacement_word) {
         return true;
     }
 
@@ -356,11 +357,9 @@ fn word_form_candidate_lacks_surface_support(original: &str, candidate: &WordCan
     }) {
         return false;
     }
-    let original_known = crate::russian_lexicon::is_known_russian_word_or_form(&original_lower)
-        || crate::lexicon::is_common_ru_word(&original_lower);
-    let replacement_known =
-        crate::russian_lexicon::is_known_russian_word_or_form(&replacement_lower)
-            || crate::lexicon::is_common_ru_word(&replacement_lower);
+    let field = crate::hot_field::HotFieldSnapshot::current();
+    let original_known = field.stable_form_readout(&original_lower).is_known();
+    let replacement_known = field.stable_form_readout(&replacement_lower).is_known();
     if original_known && replacement_known && original_lower != replacement_lower {
         return true;
     }
@@ -435,7 +434,7 @@ fn semantic_candidate_lacks_surface_support(
     let Some(replacement_word) = last_token(&candidate.text) else {
         return true;
     };
-    if !is_cyrillic_word(original_word) || !is_cyrillic_word(replacement_word) {
+    if !is_cyrillic_letters_only(original_word) || !is_cyrillic_letters_only(replacement_word) {
         return false;
     }
 
@@ -529,7 +528,7 @@ fn short_token_candidate_lacks_phrase_context(
         .collect::<Vec<_>>();
     let has_cyrillic_context = previous_words
         .iter()
-        .any(|word| word.chars().any(is_cyrillic_char));
+        .any(|word| word.chars().any(is_cyrillic_letter));
     let has_ascii_context = previous_words
         .iter()
         .any(|word| word.chars().any(|ch| ch.is_ascii_alphabetic()));
@@ -575,19 +574,11 @@ fn previous_context_has_cyrillic(text: &str) -> bool {
     words
         .iter()
         .take(words.len().saturating_sub(1))
-        .any(|word| word.chars().any(is_cyrillic_char))
+        .any(|word| word.chars().any(is_cyrillic_letter))
 }
 
 fn last_token(text: &str) -> Option<&str> {
     last_text_word_slice(text)
-}
-
-fn is_cyrillic_char(ch: char) -> bool {
-    matches!(ch, 'А'..='я' | 'ё' | 'Ё')
-}
-
-fn is_cyrillic_word(word: &str) -> bool {
-    !word.is_empty() && word.chars().all(is_cyrillic_char)
 }
 
 fn single_adjacent_transposition(left: &str, right: &str) -> bool {

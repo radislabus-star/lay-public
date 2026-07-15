@@ -1,15 +1,13 @@
 //! Shared text metrics for scorers and candidate arbitration.
 
+use crate::keyboard::is_cyrillic_letter;
+
 pub(crate) fn has_cyrillic(text: &str) -> bool {
-    text.chars().any(is_cyrillic_char)
+    text.chars().any(is_cyrillic_letter)
 }
 
 pub(crate) fn has_latin(text: &str) -> bool {
     text.chars().any(|ch| ch.is_ascii_alphabetic())
-}
-
-pub(crate) fn is_cyrillic_char(ch: char) -> bool {
-    matches!(ch, 'А'..='я' | 'ё' | 'Ё')
 }
 
 pub fn without_whitespace(text: &str) -> String {

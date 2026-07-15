@@ -10,6 +10,10 @@ use super::{
 
 include!("forms/data.rs");
 
+#[path = "forms/backed.rs"]
+mod backed;
+pub(crate) use backed::{is_center_backed_russian_form, is_reference_backed_russian_form};
+
 pub(crate) fn is_known_russian_form(word: &str) -> bool {
     is_known_russian_suffix_form(word)
         || is_known_russian_short_accusative_a_form(word)
@@ -20,42 +24,6 @@ pub(crate) fn is_known_russian_form(word: &str) -> bool {
         || is_known_russian_verb_form(word)
         || is_known_russian_ch_verb_present_form(word)
         || is_known_russian_imperative_i_form(word)
-}
-
-pub(crate) fn is_center_backed_russian_form(word: &str) -> bool {
-    is_backed_russian_form(word, center_contains)
-}
-
-pub(crate) fn is_reference_backed_russian_form(word: &str) -> bool {
-    is_backed_russian_form(word, |surface| {
-        crate::nanda_wave::l2::l2_surface_foundation_contains(surface)
-    })
-}
-
-fn is_backed_russian_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
-    if word.chars().count() < 5 {
-        return false;
-    }
-    if let Some(stem) = word.strip_suffix("кой") {
-        if stem.chars().count() >= 3 && contains(&format!("{stem}ка")) {
-            return true;
-        }
-    }
-    suffix_forms().any(|suffix| {
-        let Some(stem) = word.strip_suffix(suffix) else {
-            return false;
-        };
-        if stem.chars().count() < 3 {
-            return false;
-        }
-        let adjective_suffix = adjective_form_suffixes().any(|candidate| candidate == suffix);
-        (!adjective_suffix && contains(stem))
-            || (matches!(suffix, "я" | "ю" | "ем" | "ями" | "ях")
-                && stem.ends_with('и')
-                && contains(&format!("{stem}е")))
-            || (adjective_suffix
-                && adjective_lemma_endings().any(|ending| contains(&format!("{stem}{ending}"))))
-    })
 }
 
 pub(crate) fn is_known_russian_adverb_o_form(word: &str) -> bool {
@@ -194,39 +162,11 @@ fn is_known_russian_prefixed_form(word: &str) -> bool {
 }
 
 fn is_known_russian_verb_form(word: &str) -> bool {
-    if word.chars().count() < 5 {
-        return false;
-    }
-
-    verb_form_endings().any(|(ending, lemmas)| {
-        let Some(stem) = word.strip_suffix(ending) else {
-            return false;
-        };
-        stem.chars().count() >= 3
-            && lemmas
-                .into_iter()
-                .any(|lemma_suffix| known_runtime_verb_lemma(&format!("{stem}{lemma_suffix}")))
-    })
+    backed::is_backed_russian_verb_form(word, known_runtime_lemma)
 }
 
 fn is_known_russian_ch_verb_present_form(word: &str) -> bool {
-    const ENDINGS: &[&str] = &["ешь", "ет", "ем", "ете", "ёшь", "ёт", "ём", "ёте"];
-    if word.chars().count() < 5 {
-        return false;
-    }
-    ENDINGS.iter().any(|ending| {
-        let Some(stem) = word.strip_suffix(ending) else {
-            return false;
-        };
-        let Some(base) = stem.strip_suffix('ж') else {
-            return false;
-        };
-        base.chars().count() >= 2 && known_runtime_verb_lemma(&format!("{base}чь"))
-    })
-}
-
-fn known_runtime_verb_lemma(lemma: &str) -> bool {
-    known_runtime_lemma(lemma)
+    backed::is_backed_russian_ch_verb_present_form(word, known_runtime_lemma)
 }
 
 fn known_runtime_lemma(lemma: &str) -> bool {
@@ -240,10 +180,7 @@ fn center_contains(surface: &str) -> bool {
 }
 
 fn is_known_russian_imperative_i_form(word: &str) -> bool {
-    let Some(stem) = word.strip_suffix('и') else {
-        return false;
-    };
-    stem.chars().count() >= 4 && russian_dictionary().contains(&format!("{stem}ить"))
+    backed::is_backed_russian_imperative_i_form(word, known_runtime_lemma)
 }
 
 fn is_known_short_accusative_a_form(word: &str, dict: &WordSet) -> bool {

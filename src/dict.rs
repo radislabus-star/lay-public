@@ -4,6 +4,8 @@
 use std::collections::HashMap;
 use std::sync::OnceLock;
 
+use crate::keyboard::is_cyrillic_letter;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Direction {
     Us2Ru,
@@ -116,16 +118,12 @@ fn ru_to_us() -> &'static HashMap<char, char> {
     T.get_or_init(build_ru_to_us)
 }
 
-fn is_cyrillic(c: char) -> bool {
-    matches!(c, 'А'..='я' | 'ё' | 'Ё')
-}
-
 fn is_latin(c: char) -> bool {
     c.is_ascii_alphabetic()
 }
 
 pub fn detect_direction(text: &str) -> Direction {
-    let cyr = text.chars().filter(|&c| is_cyrillic(c)).count();
+    let cyr = text.chars().filter(|&c| is_cyrillic_letter(c)).count();
     let lat = text.chars().filter(|&c| is_latin(c)).count();
     if cyr > lat {
         Direction::Ru2Us

@@ -231,7 +231,7 @@ where
 }
 
 pub fn normalize_l2_surface_word(word: &str) -> Option<String> {
-    surface_bank::normalize_l2_surface_word(word)
+    surface_bank::normalize_surface_bank_word(word)
 }
 
 pub fn record_typed_tail_usage(tail: &str) {

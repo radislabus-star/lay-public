@@ -209,13 +209,13 @@ pub(crate) fn recent_context_words(text: &str) -> Vec<String> {
 pub(crate) fn normalized_words(text: &str) -> Vec<String> {
     text.split_whitespace()
         .filter_map(|token| {
-            let word = normalize_word(token);
+            let word = normalize_memory_word(token);
             (!word.is_empty()).then_some(word)
         })
         .collect()
 }
 
-pub(crate) fn normalize_word(word: &str) -> String {
+pub(crate) fn normalize_memory_word(word: &str) -> String {
     let trimmed = word
         .trim()
         .trim_matches(|ch: char| !ch.is_alphabetic() && ch != '-');

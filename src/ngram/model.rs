@@ -1,4 +1,4 @@
-use super::tokenize::{normalize_text, normalize_word};
+use super::tokenize::{normalize_ngram_word, normalize_text};
 use std::collections::HashMap;
 
 const N: usize = 3;
@@ -27,7 +27,7 @@ impl CharNgramModel {
         let mut total = 0;
 
         for word in words {
-            let Some(word) = normalize_word(word.as_ref(), lang) else {
+            let Some(word) = normalize_ngram_word(word.as_ref(), lang) else {
                 continue;
             };
             for gram in char_ngrams(&word) {

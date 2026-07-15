@@ -1,5 +1,6 @@
 use super::signal::WordCandidate;
 use crate::candidate_contract::CandidateOrigin;
+use crate::keyboard::is_cyrillic_letter;
 
 pub const STRUCTURAL_RELATION_CELL: &str = "StructuralRelationCell32";
 
@@ -160,9 +161,9 @@ fn relation_for(candidate: &WordCandidate, roles: &RelationRoles) -> &'static st
         }
         CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo => "layout_binding",
         CandidateOrigin::Boundary => "space_boundary",
+        _ if roles.original != roles.candidate => "role_change",
         CandidateOrigin::L3Context => "semantic_repair",
         CandidateOrigin::Technical => "technical_keep",
-        _ if roles.original != roles.candidate => "role_change",
         _ => "identity",
     }
 }
@@ -242,7 +243,7 @@ fn token_role(token: &str) -> TokenRole {
     if clean.is_empty() {
         return TokenRole::Boundary;
     }
-    let has_ru = clean.chars().any(is_cyrillic);
+    let has_ru = clean.chars().any(is_cyrillic_letter);
     let has_en = clean.chars().any(|ch| ch.is_ascii_alphabetic());
     if has_ru && has_en {
         return TokenRole::Mixed;
@@ -267,10 +268,6 @@ fn is_guard_prefix(token: &str) -> bool {
             .trim_matches(|ch: char| ch.is_ascii_punctuation())
             .to_ascii_lowercase(),
     )
-}
-
-fn is_cyrillic(ch: char) -> bool {
-    ('а'..='я').contains(&ch) || ('А'..='Я').contains(&ch) || ch == 'ё' || ch == 'Ё'
 }
 
 #[cfg(test)]

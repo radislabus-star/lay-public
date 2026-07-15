@@ -1,5 +1,6 @@
 use super::signal::WordCandidate;
 use crate::candidate_contract::CandidateOrigin;
+use crate::keyboard::is_cyrillic_letter;
 
 pub const PATTERN_WAVE_CELL: &str = "PatternWaveCell32";
 const SLOT_COUNT: u16 = 4096;
@@ -220,7 +221,7 @@ fn token_kind(token: &str) -> TokenKind {
     if clean.is_empty() {
         return TokenKind::Other;
     }
-    let has_ru = clean.chars().any(is_cyrillic);
+    let has_ru = clean.chars().any(is_cyrillic_letter);
     let has_en = clean.chars().any(|ch| ch.is_ascii_alphabetic());
     if has_ru && has_en {
         return TokenKind::Mixed;
@@ -249,10 +250,6 @@ fn has_guarded_layout_shape(blocks: &PatternBlocks<'_>) -> bool {
         || blocks.focus_original.contains('/')
         || blocks.focus_original.contains('=')
         || blocks.focus_original.contains("://")
-}
-
-fn is_cyrillic(ch: char) -> bool {
-    ('а'..='я').contains(&ch) || ('А'..='Я').contains(&ch) || ch == 'ё' || ch == 'Ё'
 }
 
 fn wave_slot(block: &str, value: &str, class: &str) -> u16 {

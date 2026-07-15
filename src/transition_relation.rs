@@ -428,12 +428,22 @@ fn operator_shape_verified(
             original_words.len() == replacement_words.len()
                 && script_class(original_last) == script_class(replacement_last)
                 && distance >= 2
+                && distance <= typo_edit_budget(original_len.max(replacement_len))
+                && original_len.abs_diff(replacement_len) <= 2
         }
         TransitionOperatorKind::ContextChoice => {
             original_words.len() == replacement_words.len()
                 && changed_token_count(original, replacement) == 1
         }
         TransitionOperatorKind::Other => false,
+    }
+}
+
+const fn typo_edit_budget(surface_len: usize) -> usize {
+    match surface_len {
+        0..=4 => 1,
+        5..=8 => 2,
+        _ => 3,
     }
 }
 
@@ -562,7 +572,7 @@ fn common_suffix_chars(left: &str, right: &str) -> usize {
 }
 
 fn script_class(text: &str) -> &'static str {
-    let has_cyrillic = text.chars().any(|ch| matches!(ch, 'А'..='я' | 'Ё' | 'ё'));
+    let has_cyrillic = text.chars().any(crate::keyboard::is_cyrillic_letter);
     let has_ascii = text.chars().any(|ch| ch.is_ascii_alphabetic());
     match (has_cyrillic, has_ascii) {
         (true, true) => "mixed",
@@ -668,5 +678,13 @@ mod tests {
         assert_eq!(question, same_question);
         assert!(!question.contains("xnj"));
         assert_eq!(question.len(), 16);
+    }
+
+    #[test]
+    fn composite_typo_verifier_rejects_distant_prefix_collapse() {
+        let (operator, transition) = TransitionRelationAtoms::inferred("njtcnm", "nj", "");
+
+        assert_eq!(operator, TransitionOperatorKind::CompositeTypo);
+        assert!(!transition.verifier_passed());
     }
 }

@@ -3,9 +3,9 @@
     {
       "evidence": [
         "src/typing_transition/candidate.rs:L9:L2CandidateLattice",
-        "src/typing_transition/decision.rs:L123:.select_apply_candidate()",
-        "src/typing_transition/decision.rs:L18:TransitionDecisionCore",
-        "src/typing_transition/decision.rs:L26:.decide_visible_text_transition()"
+        "src/typing_transition/decision.rs:L124:.select_apply_candidate()",
+        "src/typing_transition/decision.rs:L19:TransitionDecisionCore",
+        "src/typing_transition/decision.rs:L27:.decide_visible_text_transition()"
       ],
       "id": "decision-authority",
       "status": "PASS",
@@ -42,10 +42,20 @@
     },
     {
       "evidence": [
-        "src/nanda_wave/lexical_phase/runtime.rs:L52:LexicalPhaseMemory",
+        "src/nanda_wave/lexical_phase/runtime.rs:L53:LexicalPhaseMemory",
         "src/typing_transition/candidate.rs:L9:L2CandidateLattice"
       ],
       "id": "hot-field-memory",
+      "status": "PASS",
+      "violations": []
+    },
+    {
+      "evidence": [
+        "src/keyboard/text_input/script.rs:L1:is_cyrillic_letter()",
+        "src/lexical_surface_atoms.rs:L163:surface_atom_projection()",
+        "src/lexical_surface_atoms.rs:L34:SurfaceFieldEncoder"
+      ],
+      "id": "l1-surface-field",
       "status": "PASS",
       "violations": []
     },
@@ -69,47 +79,21 @@
     },
     {
       "evidence": [
-        "graph_built_at_commit:af9fc1bba0f3de5fc4e8e62e51ee905f0bb00117",
-        "graph_links:18860",
-        "graph_nodes:7633"
+        "graph_built_at_commit:c75f46ff975a16b3308acbf4ca6271043500c9c8",
+        "graph_links:18924",
+        "graph_nodes:7639"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
       "violations": []
     }
   ],
-  "duplicate_symbols": {
-    "is_cyrillic()": [
-      "src/dict.rs:L119:is_cyrillic()",
-      "src/nanda_wave/pattern_wave.rs:L254:is_cyrillic()",
-      "src/nanda_wave/structural_relation.rs:L272:is_cyrillic()"
-    ],
-    "is_cyrillic_char()": [
-      "src/nanda_wave/l3.rs:L585:is_cyrillic_char()",
-      "src/text_metrics.rs:L11:is_cyrillic_char()"
-    ],
-    "is_cyrillic_word()": [
-      "src/nanda_wave/l3.rs:L589:is_cyrillic_word()",
-      "src/word_reader.rs:L172:is_cyrillic_word()"
-    ],
-    "normalize_l2_surface_word()": [
-      "src/nanda_wave/mod.rs:L233:normalize_l2_surface_word()",
-      "src/nanda_wave/surface_bank.rs:L117:normalize_l2_surface_word()"
-    ],
-    "normalize_word()": [
-      "src/ngram/tokenize.rs:L18:normalize_word()",
-      "src/typing_memory.rs:L218:normalize_word()"
-    ],
-    "phase_coherence()": [
-      "src/nanda_wave/l2_candidate_phase.rs:L1167:phase_coherence()",
-      "src/nanda_wave/llmwave.rs:L727:phase_coherence()"
-    ]
-  },
-  "git_head": "af9fc1bba0f3de5fc4e8e62e51ee905f0bb00117",
-  "graph_built_at_commit": "af9fc1bba0f3de5fc4e8e62e51ee905f0bb00117",
-  "graph_links": 18860,
-  "graph_nodes": 7633,
+  "duplicate_symbols": {},
+  "git_head": "c75f46ff975a16b3308acbf4ca6271043500c9c8",
+  "graph_built_at_commit": "c75f46ff975a16b3308acbf4ca6271043500c9c8",
+  "graph_links": 18924,
+  "graph_nodes": 7639,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "3ab5e60a4c42ab159503ec7ca8f24376f6ab2d61e33d0124da5e54a6e4fd92b3",
+  "source_fingerprint": "f7779b88139fd681d7b1e40fc3f5ddfca3cebfa6c2a065fa91ce2421716c38a3",
   "verdict": "PASS"
 }

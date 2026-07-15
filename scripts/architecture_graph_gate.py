@@ -29,6 +29,8 @@ RECEIPT_INPUTS = (
 )
 
 PROTECTED_SINGLE_OWNER_SYMBOLS = {
+    "SurfaceFieldEncoder": "src/lexical_surface_atoms.rs",
+    "is_cyrillic_letter()": "src/keyboard/text_input/script.rs",
     "mix64_avalanche()": "src/stable_hash.rs",
     "mix64_golden()": "src/stable_hash.rs",
     "phase_center_from_sum()": "src/nanda_wave/l2_candidate_phase.rs",
@@ -36,6 +38,7 @@ PROTECTED_SINGLE_OWNER_SYMBOLS = {
     "split_last_alphabetic_token()": "src/word_reader.rs",
     "split_last_trimmed_ws_token()": "src/word_reader.rs",
     "split_last_ws_token()": "src/word_reader.rs",
+    "surface_atom_projection()": "src/lexical_surface_atoms.rs",
 }
 
 REPORT_DUPLICATE_SYMBOLS = {
@@ -304,6 +307,18 @@ def build_receipt() -> dict[str, Any]:
                 hot_violations.append(f"hot_full_word_authority:{relative}:{forbidden}")
     checks.append(check("hot-field-memory", hot_evidence, hot_violations))
 
+    l1_evidence: list[str] = []
+    l1_violations: list[str] = []
+    for label, owner in (
+        ("SurfaceFieldEncoder", "src/lexical_surface_atoms.rs"),
+        ("surface_atom_projection()", "src/lexical_surface_atoms.rs"),
+        ("is_cyrillic_letter()", "src/keyboard/text_input/script.rs"),
+    ):
+        item_evidence, item_violations = graph.node(label, owner)
+        l1_evidence.extend(item_evidence)
+        l1_violations.extend(item_violations)
+    checks.append(check("l1-surface-field", l1_evidence, l1_violations))
+
     l2_violations = graph.source_imports(
         "src/nanda_wave", ("typing_transition_decision", "src_text_edit_executor")
     )
@@ -332,6 +347,10 @@ def build_receipt() -> dict[str, Any]:
         if len(refs) > 1:
             duplicate_symbols[label] = refs
     graph_violations = graph_freshness_violations(manifest)
+    graph_violations.extend(
+        f"duplicate_symbol:{label}:{len(refs)}"
+        for label, refs in duplicate_symbols.items()
+    )
     for label, owner in PROTECTED_SINGLE_OWNER_SYMBOLS.items():
         nodes = graph.production_nodes(label)
         if len(nodes) != 1 or nodes[0].get("source_file") != owner:

@@ -6,7 +6,9 @@
 
 #[cfg(test)]
 use crate::lexical_surface_atoms::SURFACE_WAVE_NGRAM;
-use crate::lexical_surface_atoms::{surface_atom_projection, surface_atoms, SURFACE_WAVE_DIM};
+use crate::lexical_surface_atoms::{
+    surface_atom_projection, SurfaceFieldEncoder, SURFACE_WAVE_DIM,
+};
 
 pub(super) const SURFACE_WAVE_BYTES: usize =
     SURFACE_WAVE_DIM * std::mem::size_of::<SurfaceWaveLane>();
@@ -29,7 +31,8 @@ impl SurfaceWave4096 {
     #[must_use]
     pub(super) fn compile(text: &str) -> Self {
         let mut wave = Self::zero();
-        for atom in surface_atoms(text) {
+        let field = SurfaceFieldEncoder::encode(text);
+        for atom in field.atoms() {
             wave.add_atom(atom.position, &atom.bytes);
         }
         wave
@@ -64,21 +67,24 @@ mod tests {
     #[test]
     fn surface_wave_uses_four_byte_grams() {
         assert_eq!(SURFACE_WAVE_NGRAM, 4);
-        assert!(surface_atoms("проверка").len() >= 4);
+        assert!(SurfaceFieldEncoder::encode("проверка").atoms().len() >= 4);
         assert!(SurfaceWave4096::compile("проверка").active_lanes() > 0);
     }
 
     #[test]
     fn short_service_words_still_emit_atoms() {
         for word in ["и", "в", "не", "a", "to"] {
-            assert!(!surface_atoms(word).is_empty(), "word={word}");
+            assert!(
+                !SurfaceFieldEncoder::encode(word).atoms().is_empty(),
+                "word={word}"
+            );
         }
     }
 
     #[test]
     fn short_non_service_words_emit_identity_atoms() {
-        let atoms = surface_atoms("сыч");
-        assert!(!atoms.is_empty(), "atoms={atoms:?}");
+        let field = SurfaceFieldEncoder::encode("сыч");
+        assert!(!field.atoms().is_empty(), "atoms={:?}", field.atoms());
         assert!(SurfaceWave4096::compile("сыч").active_lanes() > 0);
     }
 }

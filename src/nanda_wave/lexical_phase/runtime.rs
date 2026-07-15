@@ -4,6 +4,7 @@ use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
 
+use crate::lexical_surface_atoms::SurfaceFieldEncoder;
 use crate::text_metrics::damerau_levenshtein;
 
 use super::format::{
@@ -183,13 +184,14 @@ impl LexicalPhaseMemory {
         let Some(surface) = normalize_surface(surface) else {
             return LexicalPhaseReadout::default();
         };
-        let keys = atom_center_keys(&surface);
+        let field = SurfaceFieldEncoder::encode(&surface);
+        let keys = atom_center_keys(&field);
         let center_hits = keys
             .iter()
             .filter(|key| self.center_by_key(**key).is_some())
             .count();
         let exact_terminal = self.terminal_for_normalized_surface(&surface);
-        let (query_phase, atom_count) = surface_phase(&surface);
+        let (query_phase, atom_count) = surface_phase(&field);
         let phase_coherence_milli = exact_terminal
             .and_then(|terminal| read_terminal(self.bytes(), self.header, terminal))
             .map(|terminal| phase_coherence_milli(&query_phase, &terminal.phase))
@@ -217,8 +219,9 @@ impl LexicalPhaseMemory {
             return Vec::new();
         }
         let input_len = surface.chars().count();
-        let keys = atom_center_keys(&surface);
-        let (query_phase, _) = surface_phase(&surface);
+        let field = SurfaceFieldEncoder::encode(&surface);
+        let keys = atom_center_keys(&field);
+        let (query_phase, _) = surface_phase(&field);
         let mut votes = HashMap::<u32, u16>::new();
         for key in keys {
             let Some(center) = self.center_by_key(key) else {
@@ -316,7 +319,8 @@ impl LexicalPhaseMemory {
             return Vec::new();
         };
         let prefix_len = prefix.chars().count();
-        let (query_phase, _) = surface_phase(&prefix);
+        let field = SurfaceFieldEncoder::encode(&prefix);
+        let (query_phase, _) = surface_phase(&field);
         let mut heap = BinaryHeap::new();
         self.push_frontier(&mut heap, prefix_node);
         let mut visited = 0usize;
@@ -450,8 +454,9 @@ impl LexicalPhaseMemory {
             }
         }
 
-        let (query_phase, _) = surface_phase(surface);
-        let query_keys = atom_center_keys(surface);
+        let query_field = SurfaceFieldEncoder::encode(surface);
+        let (query_phase, _) = surface_phase(&query_field);
+        let query_keys = atom_center_keys(&query_field);
         let mut candidates = completed
             .into_iter()
             .filter_map(|(word, distance)| {
@@ -462,9 +467,10 @@ impl LexicalPhaseMemory {
                     .terminal_for_normalized_surface(&word)
                     .and_then(|terminal| read_terminal(self.bytes(), self.header, terminal))
                     .map_or(u32::MAX, |terminal| terminal.rank);
-                let (candidate_phase, atom_count) = surface_phase(&word);
+                let candidate_field = SurfaceFieldEncoder::encode(&word);
+                let (candidate_phase, atom_count) = surface_phase(&candidate_field);
                 let coherence = phase_coherence_milli(&query_phase, &candidate_phase);
-                let candidate_keys = atom_center_keys(&word);
+                let candidate_keys = atom_center_keys(&candidate_field);
                 let overlap = sorted_overlap(&query_keys, &candidate_keys);
                 let prefix_match = word.starts_with(surface) || surface.starts_with(&word);
                 let rank_boost = if rank == u32::MAX {

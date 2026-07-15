@@ -1,5 +1,7 @@
 use std::collections::{BTreeMap, HashMap};
 
+use crate::lexical_surface_atoms::SurfaceFieldEncoder;
+
 use super::format::{
     atom_center_keys, checksum, normalize_surface, put_u16, put_u32, put_u64, surface_phase,
     ArcRecord, CenterRecord, DecoderArcRecord, DecoderStateRecord, NodeRecord, TerminalRecord,
@@ -58,7 +60,8 @@ where
             ));
         }
         nodes[node as usize].terminal = terminal_id;
-        let (phase, atom_count) = surface_phase(&source.word);
+        let field = SurfaceFieldEncoder::encode(&source.word);
+        let (phase, atom_count) = surface_phase(&field);
         terminals.push(TerminalRecord {
             node,
             rank: rank.min(u32::MAX as usize) as u32,
@@ -356,7 +359,8 @@ fn flatten_nodes(nodes: &[TempNode]) -> Result<(Vec<NodeRecord>, Vec<ArcRecord>)
 fn compile_centers(words: &[SourceWord]) -> (Vec<CenterRecord>, Vec<u32>) {
     let mut center_postings = BTreeMap::<u64, Vec<u32>>::new();
     for (terminal, source) in words.iter().enumerate() {
-        for key in atom_center_keys(&source.word) {
+        let field = SurfaceFieldEncoder::encode(&source.word);
+        for key in atom_center_keys(&field) {
             center_postings
                 .entry(key)
                 .or_default()

@@ -170,8 +170,7 @@ pub(crate) fn replace_last_text_word(text: &str, replacement_word: &str) -> Opti
 }
 
 pub fn is_cyrillic_word(word: &str) -> bool {
-    word.chars()
-        .all(|ch| matches!(ch, 'А'..='я' | 'ё' | 'Ё' | '-'))
+    !word.is_empty() && word.chars().all(|ch| is_cyrillic_letter(ch) || ch == '-')
 }
 
 pub fn is_cyrillic_letters_only(word: &str) -> bool {

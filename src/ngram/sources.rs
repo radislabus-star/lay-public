@@ -1,4 +1,4 @@
-use super::tokenize::normalize_word;
+use super::tokenize::normalize_ngram_word;
 use super::{CharNgramModel, Lang};
 use crate::data_lines::data_lines;
 
@@ -31,7 +31,7 @@ fn load_hunspell_words(path: &str, lang: Lang) -> Vec<String> {
     };
     text.lines()
         .skip(1)
-        .filter_map(|line| normalize_word(line.split('/').next().unwrap_or(""), lang))
+        .filter_map(|line| normalize_ngram_word(line.split('/').next().unwrap_or(""), lang))
         .collect()
 }
 
@@ -40,6 +40,6 @@ fn load_plain_words(path: &std::path::Path, lang: Lang) -> Vec<String> {
         return Vec::new();
     };
     data_lines(&text)
-        .filter_map(|line| normalize_word(line, lang))
+        .filter_map(|line| normalize_ngram_word(line, lang))
         .collect()
 }

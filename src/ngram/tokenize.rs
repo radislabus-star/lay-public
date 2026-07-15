@@ -2,7 +2,7 @@ use super::Lang;
 
 pub fn tokenize_text(text: &str, lang: Lang) -> Vec<String> {
     text.split(|ch: char| !ch.is_alphabetic() && ch != '-')
-        .filter_map(|word| normalize_word(word, lang))
+        .filter_map(|word| normalize_ngram_word(word, lang))
         .collect()
 }
 
@@ -15,7 +15,7 @@ pub(super) fn normalize_text(text: &str, lang: Lang) -> Option<String> {
     }
 }
 
-pub(super) fn normalize_word(word: &str, lang: Lang) -> Option<String> {
+pub(super) fn normalize_ngram_word(word: &str, lang: Lang) -> Option<String> {
     let word = word.trim().to_lowercase();
     if word.is_empty() {
         return None;

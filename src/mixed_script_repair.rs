@@ -4,8 +4,9 @@
 //! for example a Latin tail accidentally typed inside a Russian word or a
 //! Cyrillic lookalike prefix glued to an ASCII technical token.
 
+use crate::keyboard::is_cyrillic_letter;
 use crate::russian_chars::is_russian_vowel;
-use crate::text_metrics::{has_cyrillic, has_latin, is_cyrillic_char};
+use crate::text_metrics::{has_cyrillic, has_latin};
 use crate::token_language::is_known_ru_token;
 use crate::word_recognizer::{is_protected_ascii_token, is_upper_ascii_acronym};
 
@@ -84,7 +85,7 @@ fn repair_mixed_ascii_token(token: &str) -> Option<String> {
     let candidate: String = token
         .chars()
         .map(|ch| {
-            if is_cyrillic_char(ch) {
+            if is_cyrillic_letter(ch) {
                 crate::dict::convert(&ch.to_string(), crate::dict::Direction::Ru2Us)
             } else {
                 ch.to_string()
@@ -131,7 +132,7 @@ fn repair_duplicate_latin_layout_prefix(token: &str) -> Option<String> {
     for ch in token.chars() {
         if !seen_cyrillic && ch.is_ascii_alphabetic() {
             latin_prefix.push(ch);
-        } else if is_cyrillic_char(ch) {
+        } else if is_cyrillic_letter(ch) {
             seen_cyrillic = true;
             cyrillic_tail.push(ch);
         } else {
@@ -166,7 +167,7 @@ fn should_repair_trailing_latin_as_ru(token: &str, candidate: &str) -> bool {
         if ch.is_ascii_alphabetic() {
             seen_latin = true;
             latin_tail.push(ch);
-        } else if is_cyrillic_char(ch) {
+        } else if is_cyrillic_letter(ch) {
             if seen_latin {
                 return false;
             }

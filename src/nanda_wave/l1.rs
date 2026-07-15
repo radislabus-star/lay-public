@@ -2,6 +2,7 @@ use super::cell32::{NandaCell32, SymbolStimulus, DEFAULT_TOP_K};
 use super::mode::ModeRole;
 use super::options::WaveOptions;
 use super::signal::WavePacket;
+use crate::lexical_surface_atoms::SurfaceFieldEncoder;
 
 const UTF8: NandaCell32 = NandaCell32::new("Utf8Cell32", ModeRole::Utf8, 0x01);
 const SCRIPT: NandaCell32 = NandaCell32::new("ScriptCell32", ModeRole::Script, 0x02);
@@ -13,13 +14,14 @@ pub fn run_l1(text: &str) -> Vec<WavePacket> {
 }
 
 pub fn run_l1_with_options(text: &str, options: &WaveOptions) -> Vec<WavePacket> {
-    let chars = text.chars().collect::<Vec<_>>();
+    let field = SurfaceFieldEncoder::encode(text);
+    let chars = field.symbols();
     let mut packets = Vec::new();
     for (idx, ch) in chars.iter().copied().enumerate() {
         let stimulus = SymbolStimulus {
             ch,
             prev: idx.checked_sub(1).and_then(|prev| chars.get(prev)).copied(),
-            index_in_token: index_in_token(&chars, idx),
+            index_in_token: index_in_token(chars, idx),
         };
         if options.is_enabled(UTF8.id) {
             packets.push(UTF8.observe_symbol(stimulus, DEFAULT_TOP_K));

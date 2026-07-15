@@ -1,5 +1,6 @@
+use crate::keyboard::is_cyrillic_letter;
 use crate::llm_backend::Choice;
-use crate::text_metrics::{has_cyrillic, has_latin, is_cyrillic_char};
+use crate::text_metrics::{has_cyrillic, has_latin};
 use crate::token_language::{is_known_en_token, is_known_ru_token};
 
 pub(super) fn obvious_token_choice(original: &str, converted: &str) -> Option<Choice> {
@@ -87,5 +88,5 @@ fn is_single_ascii_letter(token: &str) -> bool {
 
 fn is_single_cyrillic_letter(token: &str) -> bool {
     let mut chars = token.chars();
-    matches!((chars.next(), chars.next()), (Some(ch), None) if is_cyrillic_char(ch))
+    matches!((chars.next(), chars.next()), (Some(ch), None) if is_cyrillic_letter(ch))
 }

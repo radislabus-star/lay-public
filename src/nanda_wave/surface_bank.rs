@@ -6,7 +6,7 @@ pub(crate) fn balanced_l2_surface_words<I>(source: I, limit: usize) -> Vec<Strin
 where
     I: IntoIterator<Item = String>,
 {
-    balanced_l2_words_by(source, limit, normalize_l2_surface_word)
+    balanced_l2_words_by(source, limit, normalize_surface_bank_word)
 }
 
 fn balanced_l2_words_by<I>(
@@ -114,7 +114,7 @@ struct RankedSurfaceWord {
     len: usize,
 }
 
-pub(crate) fn normalize_l2_surface_word(word: &str) -> Option<String> {
+pub(crate) fn normalize_surface_bank_word(word: &str) -> Option<String> {
     let normalized = word.trim().to_lowercase();
     let len = normalized.chars().count();
     if !(4..=24).contains(&len) {
@@ -139,11 +139,11 @@ mod tests {
 
     #[test]
     fn l2_surface_bank_rejects_fragments() {
-        assert_eq!(normalize_l2_surface_word("ко"), None);
-        assert_eq!(normalize_l2_surface_word("ка"), None);
-        assert_eq!(normalize_l2_surface_word("гл"), None);
+        assert_eq!(normalize_surface_bank_word("ко"), None);
+        assert_eq!(normalize_surface_bank_word("ка"), None);
+        assert_eq!(normalize_surface_bank_word("гл"), None);
         assert_eq!(
-            normalize_l2_surface_word("комитет").as_deref(),
+            normalize_surface_bank_word("комитет").as_deref(),
             Some("комитет")
         );
     }

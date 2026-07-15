@@ -803,6 +803,11 @@ fn settle_english_word_center(token: &str) -> Option<String> {
         .collect::<Vec<_>>();
     let best = candidates.first()?;
     let best_distance = damerau_levenshtein(&normalized, &best.word);
+    let (_, transition) =
+        crate::transition_relation::TransitionRelationAtoms::inferred(&normalized, &best.word, "");
+    if !transition.verifier_passed() {
+        return None;
+    }
     if let Some(second) = candidates.get(1) {
         let second_distance = damerau_levenshtein(&normalized, &second.word);
         if second_distance == best_distance && best.score < second.score.saturating_add(120) {
@@ -2479,15 +2484,39 @@ mod tests {
     }
 
     #[test]
-    fn l2_surface_completion_cell_is_separate_from_typo_candidate() {
+    fn live_ime_completion_is_separate_from_post_space_autocorrect() {
         let original = "делай пров ";
         let l1 = run_l1(original);
+        let autocorrect_candidates = run_l2(original, &l1);
+        assert!(
+            autocorrect_candidates
+                .iter()
+                .all(|candidate| candidate.source != L2_SURFACE_COMPLETION_CELL),
+            "post-space correction must not complete an exact form: {autocorrect_candidates:?}"
+        );
+
+        let ime_candidates = ime_l2_word_candidates("делай ", "пров", 8);
+        assert!(
+            ime_candidates
+                .iter()
+                .any(|candidate| candidate.kind == L2ImeWordCandidateKind::Completion),
+            "live IME must retain completion authority: {ime_candidates:?}"
+        );
+    }
+
+    #[test]
+    fn autocorrect_completion_does_not_extend_a_complete_inflected_form() {
+        let original = "модель генерит ";
+        assert!(surface_motif_stable_existing_word("генерит"));
+
+        let l1 = run_l1(original);
         let candidates = run_l2(original, &l1);
+
         assert!(
             candidates
                 .iter()
-                .any(|candidate| candidate.source == L2_SURFACE_COMPLETION_CELL),
-            "candidates={candidates:?}"
+                .all(|candidate| candidate.source != L2_SURFACE_COMPLETION_CELL),
+            "a completed form must not enter the post-space completion route: {candidates:?}"
         );
     }
 
