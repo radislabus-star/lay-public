@@ -178,7 +178,14 @@ fn daemon_precognition_trace_active(cfg: &LayConfig) -> bool {
 #[cfg(not(test))]
 pub(super) fn active_nanda_autocorrect() -> bool {
     let cfg = current_config();
-    cfg.nanda_autocorrect && daemon_hot_field_policy(&cfg).allows_full_nanda_authority()
+    daemon_nanda_autocorrect_active(&cfg)
+}
+
+fn daemon_nanda_autocorrect_active(cfg: &LayConfig) -> bool {
+    // The correction core selects compact lexical-phase material when the
+    // process policy is FieldSnapshotOnly. Enabling autocorrect here no longer
+    // grants the daemon access to full reference dictionaries or wave traces.
+    cfg.nanda_autocorrect
 }
 
 fn daemon_hot_field_policy(cfg: &LayConfig) -> lay::hot_field::HotFieldPolicy {
@@ -235,24 +242,26 @@ mod tests {
     }
 
     #[test]
-    fn ime_backend_does_not_enable_full_daemon_nanda_autocorrect() {
+    fn ime_backend_uses_compact_nanda_without_full_reference_authority() {
         let cfg = LayConfig {
             text_backend: "ime".to_string(),
             nanda_autocorrect: true,
             ..LayConfig::default()
         };
 
+        assert!(daemon_nanda_autocorrect_active(&cfg));
         assert!(!daemon_hot_field_policy(&cfg).allows_full_nanda_authority());
     }
 
     #[test]
-    fn auto_backend_does_not_enable_full_daemon_nanda_autocorrect() {
+    fn auto_backend_uses_compact_nanda_without_full_reference_authority() {
         let cfg = LayConfig {
             text_backend: "auto".to_string(),
             nanda_autocorrect: true,
             ..LayConfig::default()
         };
 
+        assert!(daemon_nanda_autocorrect_active(&cfg));
         assert!(!daemon_hot_field_policy(&cfg).allows_full_nanda_authority());
     }
 

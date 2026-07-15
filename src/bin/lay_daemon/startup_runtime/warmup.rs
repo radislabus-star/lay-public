@@ -12,6 +12,9 @@ fn warm_runtime_if_needed(detect_only: bool, cfg: &LayConfig) {
             if plan.warm_typing_assist {
                 lay::typing_assist::warm_up();
             }
+            if plan.warm_l2_candidates {
+                lay::nanda_wave::warm_up_l2_for_ime();
+            }
             if plan.warm_l3_phrase {
                 lay::nanda_wave::warm_up_l3_phrase_memory();
             }
@@ -36,6 +39,7 @@ fn warm_runtime_if_needed(detect_only: bool, cfg: &LayConfig) {
 struct RuntimeWarmupPlan {
     spawn_background: bool,
     warm_typing_assist: bool,
+    warm_l2_candidates: bool,
     warm_smart: bool,
     warm_l3_phrase: bool,
 }
@@ -51,10 +55,13 @@ fn runtime_warmup_plan(
     // The daemon owns the after-Space boundary decision even when IME owns
     // rendering. Its compact lookup state must be ready before the first word.
     let warm_typing_assist = cfg.typing_assist || enter_autocorrect_active;
+    let warm_l2_candidates = cfg.nanda_autocorrect;
     let warm_l3_phrase = cfg.nanda_autocorrect || cfg.nanda_trace;
     RuntimeWarmupPlan {
-        spawn_background: !detect_only && (warm_smart || warm_typing_assist || warm_l3_phrase),
+        spawn_background: !detect_only
+            && (warm_smart || warm_typing_assist || warm_l2_candidates || warm_l3_phrase),
         warm_typing_assist,
+        warm_l2_candidates,
         warm_smart,
         warm_l3_phrase,
     }

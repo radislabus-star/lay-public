@@ -3,6 +3,7 @@
 //! Runtime backends still own output and state. This module only answers one
 //! question: should this completed text be replaced, and by which engine?
 
+pub use crate::candidate_contract::CandidateReadoutRoute;
 use crate::candidate_contract::{CandidateOrigin, CorrectionSourceRole};
 use crate::candidate_explanation::{explain_candidate, CandidateExplanation};
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
@@ -25,7 +26,7 @@ use crate::typing_transition::{
 };
 use crate::word_reader::{
     cyrillic_word_splits, is_cyrillic_letters_only, last_text_word, replace_last_text_word,
-    split_edge_whitespace, split_word_punctuation,
+    split_edge_whitespace, split_last_alphabetic_token, split_word_punctuation,
 };
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::OnceLock;
@@ -241,6 +242,7 @@ pub struct CorrectionRequest<'a> {
     pub correction_safety: CorrectionSafety,
     pub typing_assist_pipeline: &'a [TypingAssistRuleConfig],
     pub nanda_autocorrect: bool,
+    pub nanda_candidate_route: CandidateReadoutRoute,
     pub nanda_wave_options: WaveOptions,
     pub mode: CorrectionMode,
 }
@@ -343,19 +345,28 @@ pub fn decide_text_correction(req: CorrectionRequest<'_>) -> Option<CorrectionDe
 
 pub fn resolve_text_correction(req: CorrectionRequest<'_>) -> CorrectionResolution {
     let started = Instant::now();
+    let compact_l2_active = req.nanda_autocorrect
+        && req.nanda_candidate_route == CandidateReadoutRoute::CompactL2
+        && L2CandidateSource::for_mode(req.mode).contains(&L2CandidateSource::Nanda);
+    let mut l2_peak_context = compact_l2_active
+        .then(|| crate::nanda_wave::l2_wave_peak::prepare_correction_peak_context(req.text));
     let mut lattice = L2CandidateLattice::with_options(
         TypingErrorEvent::from_text(req.text),
         &req.nanda_wave_options,
     );
 
     for source in L2CandidateSource::for_mode(req.mode) {
-        source.push_candidates(&req, &mut lattice);
+        source.push_candidates(&req, &mut lattice, l2_peak_context.as_ref());
     }
     if L2CandidateSource::for_mode(req.mode).contains(&L2CandidateSource::Deterministic) {
         lattice.push_source(short_cyrillic_layout_shadow_candidate(&req));
     }
 
-    let resolution = lattice.into_resolution();
+    if !lattice.is_empty() && l2_peak_context.is_none() {
+        l2_peak_context =
+            Some(crate::nanda_wave::l2_wave_peak::prepare_correction_peak_context(req.text));
+    }
+    let resolution = lattice.into_resolution_with_peak_context(l2_peak_context.as_ref());
     record_correction_gate_stats(started, &resolution);
     resolution
 }

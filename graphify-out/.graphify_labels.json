@@ -380,15 +380,7 @@
   "378": "correct_wrong_layout_ascii_phrase",
   "379": "correct_wrong_layout_ascii_technical_token",
   "380": "calibration.rs",
-  "381": "DecisionTransitionReceipt",
-  "382": "run_l3_inner",
   "383": "word_recognizer_tests.rs",
   "384": "TerminalRecord",
-  "385": "measured_precognition_stages",
-  "386": "glued_phrase_part_candidates",
-  "387": "ngram_tests.rs",
-  "388": "managed_ime_session",
-  "389": "gate_candidate",
-  "390": "correction_pipeline_space_contract.rs",
-  "391": "mix64_golden"
+  "388": "managed_ime_session"
 }

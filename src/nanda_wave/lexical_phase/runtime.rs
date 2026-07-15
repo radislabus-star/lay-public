@@ -385,74 +385,27 @@ impl LexicalPhaseMemory {
         } else {
             2
         };
-        let start_row = (0..=input.len()).map(|index| index as u8).collect();
-        let mut stack = vec![DafsaTraversal {
-            state: 0,
-            output: Vec::new(),
-            row: start_row,
-            previous_row: None,
-            previous_char: None,
-        }];
+        let max_depth = input.len().saturating_add(max_edits as usize);
+        let row_width = input.len() + 1;
+        let mut rows = vec![u8::MAX; (max_depth + 1).saturating_mul(row_width)];
+        for (column, value) in rows[..row_width].iter_mut().enumerate() {
+            *value = column as u8;
+        }
+        let mut output = Vec::with_capacity(max_depth);
         let mut visited = 0usize;
         let mut completed = Vec::<(String, usize)>::new();
-        while let Some(frame) = stack.pop() {
-            if visited >= MAX_DAFSA_VISITS {
-                break;
-            }
-            visited += 1;
-            let Some(state) = read_decoder_state(self.bytes(), self.header, frame.state) else {
-                continue;
-            };
-            let distance = usize::from(*frame.row.last().unwrap_or(&u8::MAX));
-            if state.is_final() && distance <= max_edits as usize && !frame.output.is_empty() {
-                completed.push((frame.output.iter().collect(), distance));
-            }
-            if frame.output.len() >= input.len().saturating_add(max_edits as usize)
-                || frame
-                    .row
-                    .iter()
-                    .copied()
-                    .min()
-                    .map_or(true, |minimum| minimum > max_edits)
-            {
-                continue;
-            }
-            for offset in (0..state.arc_len).rev() {
-                let Some(arc) = read_decoder_arc(
-                    self.bytes(),
-                    self.header,
-                    state.first_arc.saturating_add(u32::from(offset)),
-                ) else {
-                    continue;
-                };
-                let Some(ch) = char::from_u32(arc.ch) else {
-                    continue;
-                };
-                let row = next_damerau_row(
-                    &input,
-                    ch,
-                    &frame.row,
-                    frame.previous_row.as_deref(),
-                    frame.previous_char,
-                );
-                if row
-                    .iter()
-                    .copied()
-                    .min()
-                    .is_some_and(|minimum| minimum <= max_edits)
-                {
-                    let mut output = frame.output.clone();
-                    output.push(ch);
-                    stack.push(DafsaTraversal {
-                        state: arc.child,
-                        output,
-                        row,
-                        previous_row: Some(frame.row.clone()),
-                        previous_char: Some(ch),
-                    });
-                }
-            }
-        }
+        self.collect_reconstructed_matches(
+            0,
+            &input,
+            max_edits,
+            max_depth,
+            row_width,
+            0,
+            &mut rows,
+            &mut output,
+            &mut visited,
+            &mut completed,
+        );
 
         let query_field = SurfaceFieldEncoder::encode(surface);
         let (query_phase, _) = surface_phase(&query_field);
@@ -504,6 +457,100 @@ impl LexicalPhaseMemory {
         sort_candidates(&mut candidates);
         candidates.truncate(limit);
         candidates
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn collect_reconstructed_matches(
+        &self,
+        state_id: u32,
+        input: &[char],
+        max_edits: u8,
+        max_depth: usize,
+        row_width: usize,
+        depth: usize,
+        rows: &mut [u8],
+        output: &mut Vec<char>,
+        visited: &mut usize,
+        completed: &mut Vec<(String, usize)>,
+    ) {
+        if *visited >= MAX_DAFSA_VISITS {
+            return;
+        }
+        *visited += 1;
+        let Some(state) = read_decoder_state(self.bytes(), self.header, state_id) else {
+            return;
+        };
+        let row_start = depth * row_width;
+        let row = &rows[row_start..row_start + row_width];
+        let distance = usize::from(row[row_width - 1]);
+        if state.is_final() && distance <= max_edits as usize && !output.is_empty() {
+            completed.push((output.iter().collect(), distance));
+        }
+        if depth >= max_depth
+            || row
+                .iter()
+                .copied()
+                .min()
+                .map_or(true, |minimum| minimum > max_edits)
+        {
+            return;
+        }
+
+        for offset in 0..state.arc_len {
+            if *visited >= MAX_DAFSA_VISITS {
+                return;
+            }
+            let Some(arc) = read_decoder_arc(
+                self.bytes(),
+                self.header,
+                state.first_arc.saturating_add(u32::from(offset)),
+            ) else {
+                continue;
+            };
+            let Some(ch) = char::from_u32(arc.ch) else {
+                continue;
+            };
+            let target_start = (depth + 1) * row_width;
+            let row_is_live = {
+                let (prior_rows, target_rows) = rows.split_at_mut(target_start);
+                let target = &mut target_rows[..row_width];
+                let previous = &prior_rows[row_start..row_start + row_width];
+                let previous_previous = (depth > 0).then(|| {
+                    let start = (depth - 1) * row_width;
+                    &prior_rows[start..start + row_width]
+                });
+                next_damerau_row_into(
+                    input,
+                    ch,
+                    previous,
+                    previous_previous,
+                    output.last().copied(),
+                    target,
+                );
+                target
+                    .iter()
+                    .copied()
+                    .min()
+                    .is_some_and(|minimum| minimum <= max_edits)
+            };
+            if !row_is_live {
+                continue;
+            }
+            output.push(ch);
+            self.collect_reconstructed_matches(
+                arc.child,
+                input,
+                max_edits,
+                max_depth,
+                row_width,
+                depth + 1,
+                rows,
+                output,
+                visited,
+                completed,
+            );
+            output.pop();
+        }
     }
 
     fn decoder_contains_surface(&self, surface: &str) -> bool {
@@ -700,24 +747,15 @@ pub(crate) struct LexicalPhaseReadout {
     pub(crate) phase_coherence_milli: u16,
 }
 
-#[derive(Clone, Debug)]
-struct DafsaTraversal {
-    state: u32,
-    output: Vec<char>,
-    row: Vec<u8>,
-    previous_row: Option<Vec<u8>>,
-    previous_char: Option<char>,
-}
-
-fn next_damerau_row(
+fn next_damerau_row_into(
     input: &[char],
     ch: char,
     previous: &[u8],
     previous_previous: Option<&[u8]>,
     previous_char: Option<char>,
-) -> Vec<u8> {
-    let mut row = Vec::with_capacity(input.len() + 1);
-    row.push(previous[0].saturating_add(1));
+    row: &mut [u8],
+) {
+    row[0] = previous[0].saturating_add(1);
     for column in 1..=input.len() {
         let insertion = row[column - 1].saturating_add(1);
         let deletion = previous[column].saturating_add(1);
@@ -728,9 +766,8 @@ fn next_damerau_row(
                 value = value.min(previous_previous[column - 2].saturating_add(1));
             }
         }
-        row.push(value);
+        row[column] = value;
     }
-    row
 }
 
 fn sorted_overlap(left: &[u64], right: &[u64]) -> usize {

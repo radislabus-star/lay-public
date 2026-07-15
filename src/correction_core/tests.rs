@@ -18,6 +18,7 @@ mod tests {
             correction_safety: CorrectionSafety::Experimental,
             typing_assist_pipeline: pipeline,
             nanda_autocorrect: true,
+            nanda_candidate_route: CandidateReadoutRoute::FullWave,
             nanda_wave_options: WaveOptions::default(),
             mode,
         }
@@ -214,6 +215,7 @@ mod tests {
             correction_safety: CorrectionSafety::Experimental,
             typing_assist_pipeline: &pipeline,
             nanda_autocorrect: true,
+            nanda_candidate_route: CandidateReadoutRoute::FullWave,
             nanda_wave_options: WaveOptions::default(),
             mode: CorrectionMode::NandaOnly,
         });
@@ -230,6 +232,7 @@ mod tests {
             correction_safety: CorrectionSafety::Experimental,
             typing_assist_pipeline: &pipeline,
             nanda_autocorrect: true,
+            nanda_candidate_route: CandidateReadoutRoute::FullWave,
             nanda_wave_options: WaveOptions::with_disabled(&["L2SurfaceMotifCell32".to_string()]),
             mode: CorrectionMode::NandaOnly,
         });
@@ -237,6 +240,73 @@ mod tests {
             .candidates
             .iter()
             .any(|candidate| candidate.source_id == "L2SurfaceMotifCell32"));
+    }
+
+    #[test]
+    fn compact_l2_route_births_nanda_candidates_without_full_wave_authority() {
+        use std::time::Instant;
+
+        let pipeline = default_typing_assist_pipeline();
+        let mut req = request("звгрузи ", &pipeline, CorrectionMode::NandaOnly);
+        req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+
+        let resolution = resolve_text_correction(req);
+        let candidates = &resolution.candidates;
+
+        assert!(!candidates.is_empty());
+        assert!(candidates.iter().all(|candidate| {
+            candidate.source == CorrectionDecisionSource::Nanda
+                && candidate.source_id == "L2LexicalPhaseCell32"
+                && candidate.origin == CandidateOrigin::L2Surface
+        }));
+        assert!(candidates
+            .iter()
+            .any(|candidate| candidate.replacement == "загрузи "));
+        assert_eq!(
+            resolution
+                .selected
+                .as_ref()
+                .map(|candidate| candidate.replacement.as_str()),
+            Some("загрузи ")
+        );
+
+        let sample_count = std::env::var("LAY_COMPACT_L2_SAMPLES")
+            .ok()
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(120)
+            .max(1);
+        let mut timings = Vec::with_capacity(sample_count);
+        for _ in 0..sample_count {
+            let mut req = request("звгрузи ", &pipeline, CorrectionMode::NandaOnly);
+            req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+            let started = Instant::now();
+            let resolution = resolve_text_correction(req);
+            timings.push(started.elapsed().as_micros() as u64);
+            assert_eq!(
+                resolution
+                    .selected
+                    .as_ref()
+                    .map(|candidate| candidate.replacement.as_str()),
+                Some("загрузи ")
+            );
+        }
+        timings.sort_unstable();
+        let p50 = timings[timings.len() / 2];
+        let p90 = timings[timings.len() * 90 / 100];
+        let p99 = timings[timings.len() * 99 / 100];
+        let max = *timings.last().expect("latency samples");
+        eprintln!(
+            "compact L2 correction route: n={} p50={}us p90={}us p99={}us max={}us",
+            timings.len(),
+            p50,
+            p90,
+            p99,
+            max
+        );
+        if std::env::var_os("LAY_ENFORCE_COMPACT_L2_LATENCY_BUDGET").is_some() {
+            assert!(p99 <= 5_000, "compact L2 p99 exceeded budget: {p99}us");
+            assert!(max <= 10_000, "compact L2 max exceeded budget: {max}us");
+        }
     }
 
     #[test]
@@ -295,6 +365,7 @@ mod tests {
             correction_safety: CorrectionSafety::Normal,
             typing_assist_pipeline: &pipeline,
             nanda_autocorrect: false,
+            nanda_candidate_route: CandidateReadoutRoute::FullWave,
             nanda_wave_options: WaveOptions::default(),
             mode: CorrectionMode::DeterministicOnly,
         });
@@ -1592,6 +1663,7 @@ mod tests {
             correction_safety: CorrectionSafety::Experimental,
             typing_assist_pipeline: &pipeline,
             nanda_autocorrect: false,
+            nanda_candidate_route: CandidateReadoutRoute::FullWave,
             nanda_wave_options: WaveOptions::default(),
             mode: CorrectionMode::DeterministicThenNanda,
         });

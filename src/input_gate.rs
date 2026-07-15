@@ -6,8 +6,9 @@
 
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
 use crate::correction_core::{
-    CandidateGateAction, CorrectionCandidateScoreTrace, CorrectionDecisionSource, CorrectionMode,
-    CorrectionRequest, CorrectionResolution, CorrectionScoreboard, TypingErrorClass,
+    CandidateGateAction, CandidateReadoutRoute, CorrectionCandidateScoreTrace,
+    CorrectionDecisionSource, CorrectionMode, CorrectionRequest, CorrectionResolution,
+    CorrectionScoreboard, TypingErrorClass,
 };
 use crate::nanda_wave::WaveOptions;
 
@@ -238,6 +239,7 @@ pub struct InputGateRequest<'a> {
     pub correction_safety: CorrectionSafety,
     pub typing_assist_pipeline: &'a [TypingAssistRuleConfig],
     pub nanda_autocorrect: bool,
+    pub nanda_candidate_route: CandidateReadoutRoute,
     pub nanda_wave_options: WaveOptions,
     pub correction_mode: CorrectionMode,
 }
@@ -304,6 +306,7 @@ pub(crate) fn warm_up_word_boundary() {
             correction_safety: CorrectionSafety::Experimental,
             typing_assist_pipeline: &pipeline,
             nanda_autocorrect: false,
+            nanda_candidate_route: CandidateReadoutRoute::CompactL2,
             nanda_wave_options: WaveOptions::default(),
             correction_mode: CorrectionMode::DeterministicOnly,
         });
@@ -434,6 +437,7 @@ mod tests {
             correction_safety: CorrectionSafety::Experimental,
             typing_assist_pipeline: &[],
             nanda_autocorrect: true,
+            nanda_candidate_route: CandidateReadoutRoute::FullWave,
             nanda_wave_options: WaveOptions::default(),
             correction_mode: CorrectionMode::DeterministicThenNanda,
         }
@@ -493,6 +497,7 @@ mod tests {
             correction_safety: CorrectionSafety::Experimental,
             typing_assist_pipeline: &pipeline,
             nanda_autocorrect: false,
+            nanda_candidate_route: CandidateReadoutRoute::FullWave,
             nanda_wave_options: WaveOptions::default(),
             correction_mode: CorrectionMode::DeterministicOnly,
         });
@@ -576,6 +581,7 @@ mod tests {
             correction_safety: CorrectionSafety::Normal,
             typing_assist_pipeline: &pipeline,
             nanda_autocorrect: false,
+            nanda_candidate_route: CandidateReadoutRoute::FullWave,
             nanda_wave_options: WaveOptions::default(),
             correction_mode: CorrectionMode::DeterministicThenNanda,
         });

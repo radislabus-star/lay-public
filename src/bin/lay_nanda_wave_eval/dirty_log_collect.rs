@@ -917,6 +917,7 @@ fn canonical_replay_resolution(
         correction_safety: CorrectionSafety::Normal,
         typing_assist_pipeline: pipeline,
         nanda_autocorrect: true,
+        nanda_candidate_route: lay::correction_core::CandidateReadoutRoute::FullWave,
         nanda_wave_options: options.clone(),
         mode: CorrectionMode::DeterministicThenNanda,
     })

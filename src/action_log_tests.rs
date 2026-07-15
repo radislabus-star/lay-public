@@ -178,6 +178,7 @@ fn action_log_writes_candidate_score_trace_from_input_gate() {
         correction_safety: CorrectionSafety::Experimental,
         typing_assist_pipeline: &pipeline,
         nanda_autocorrect: false,
+        nanda_candidate_route: crate::correction_core::CandidateReadoutRoute::FullWave,
         nanda_wave_options: crate::nanda_wave::WaveOptions::default(),
         correction_mode: CorrectionMode::DeterministicOnly,
     });

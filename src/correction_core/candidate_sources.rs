@@ -17,13 +17,18 @@ impl L2CandidateSource {
         }
     }
 
-    fn push_candidates(self, req: &CorrectionRequest<'_>, lattice: &mut L2CandidateLattice) {
+    fn push_candidates(
+        self,
+        req: &CorrectionRequest<'_>,
+        lattice: &mut L2CandidateLattice,
+        l2_peak_context: Option<&crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext>,
+    ) {
         match self {
             Self::Deterministic => {
                 lattice.extend_source(deterministic_text_candidates(req));
             }
             Self::Nanda => {
-                let candidates = nanda_text_candidates(req);
+                let candidates = nanda_text_candidates(req, l2_peak_context);
                 if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
                     eprintln!(
                         "candidate-lattice source=nanda count={} replacements={:?}",
@@ -580,9 +585,27 @@ fn repeated_prefix_composite_word(lower: &str) -> Option<String> {
     .map(|(candidate, _)| candidate)
 }
 
-fn nanda_text_candidates(req: &CorrectionRequest<'_>) -> Vec<UnifiedCorrectionCandidate> {
+fn nanda_text_candidates(
+    req: &CorrectionRequest<'_>,
+    l2_peak_context: Option<&crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext>,
+) -> Vec<UnifiedCorrectionCandidate> {
     if !req.nanda_autocorrect {
         return Vec::new();
+    }
+
+    nanda_text_candidates_for_route(req, req.nanda_candidate_route, l2_peak_context)
+}
+
+fn nanda_text_candidates_for_route(
+    req: &CorrectionRequest<'_>,
+    route: CandidateReadoutRoute,
+    l2_peak_context: Option<&crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext>,
+) -> Vec<UnifiedCorrectionCandidate> {
+    if route == CandidateReadoutRoute::CompactL2 {
+        let Some(l2_peak_context) = l2_peak_context else {
+            return Vec::new();
+        };
+        return hot_l2_text_candidates(req.text, l2_peak_context);
     }
 
     let trace = run_wave_trace_with_options(req.text, &req.nanda_wave_options);
@@ -593,6 +616,46 @@ fn nanda_text_candidates(req: &CorrectionRequest<'_>) -> Vec<UnifiedCorrectionCa
         .collect::<Vec<_>>();
     candidates.extend(delayed_context_candidates(req.text));
     candidates
+}
+
+fn hot_l2_text_candidates(
+    original: &str,
+    l2_peak_context: &crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext,
+) -> Vec<UnifiedCorrectionCandidate> {
+    const HOT_L2_CANDIDATE_LIMIT: usize = 8;
+    const HOT_L2_SOURCE_ID: &str = "L2LexicalPhaseCell32";
+
+    let Some((_context_prefix, token)) = split_last_alphabetic_token(original) else {
+        return Vec::new();
+    };
+    let normalized_token = token.to_lowercase();
+    l2_peak_context
+        .center_candidates()
+        .iter()
+        .take(HOT_L2_CANDIDATE_LIMIT)
+        .filter(|candidate| candidate.surface.to_lowercase() != normalized_token)
+        .cloned()
+        .filter_map(|candidate| {
+            let candidate_word = apply_word_case(token, &candidate.surface);
+            let replacement = replace_last_text_word(original, &candidate_word)?;
+            let origin = CandidateOrigin::L2Surface;
+            let error_class = action_operator::classify_token_transition(
+                original,
+                &replacement,
+                origin,
+                TypingErrorClass::Unknown,
+            );
+            let gate = gate_candidate_with_origin(original, &replacement, error_class, origin);
+            Some(UnifiedCorrectionCandidate::new(
+                replacement,
+                CorrectionDecisionSource::Nanda,
+                origin,
+                HOT_L2_SOURCE_ID,
+                error_class,
+                gate,
+            ))
+        })
+        .collect()
 }
 
 fn delayed_context_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {

@@ -19,6 +19,7 @@ fn decide_space_deterministic(text_tail: &str) -> lay::input_gate::InputGateDeci
         correction_safety: CorrectionSafety::Normal,
         typing_assist_pipeline: &pipeline,
         nanda_autocorrect: false,
+        nanda_candidate_route: lay::correction_core::CandidateReadoutRoute::FullWave,
         nanda_wave_options: lay::nanda_wave::WaveOptions::default(),
         correction_mode: CorrectionMode::DeterministicOnly,
     })

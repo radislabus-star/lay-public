@@ -21,6 +21,42 @@ pub(crate) struct L2WavePeakScore {
     pub(crate) reason: &'static str,
 }
 
+pub(crate) struct L2CorrectionPeakContext {
+    context: Vec<String>,
+    original_word: String,
+    center_candidates: Vec<l2::L2ImeWordCandidate>,
+}
+
+impl L2CorrectionPeakContext {
+    pub(crate) fn center_candidates(&self) -> &[l2::L2ImeWordCandidate] {
+        &self.center_candidates
+    }
+}
+
+pub(crate) fn prepare_correction_peak_context(original: &str) -> L2CorrectionPeakContext {
+    let original_word = normalized_last_word(original);
+    let context = context_words_before_last(original);
+    let center_candidates = if original_word.chars().count() >= 2
+        && original_word
+            .chars()
+            .all(crate::keyboard::is_cyrillic_letter)
+    {
+        let context_prefix = if context.is_empty() {
+            String::new()
+        } else {
+            format!("{} ", context.join(" "))
+        };
+        l2::ime_l2_word_candidates(&context_prefix, &original_word, 16)
+    } else {
+        Vec::new()
+    };
+    L2CorrectionPeakContext {
+        context,
+        original_word,
+        center_candidates,
+    }
+}
+
 #[cfg(test)]
 pub(crate) fn score_correction_peak(
     original: &str,
@@ -40,6 +76,7 @@ pub(crate) fn score_correction_peak(
     )
 }
 
+#[cfg(test)]
 pub(crate) fn score_correction_peak_with_usage(
     original: &str,
     replacement: &str,
@@ -48,7 +85,25 @@ pub(crate) fn score_correction_peak_with_usage(
     candidate_count: usize,
     usage: &super::UsagePriorSnapshot,
 ) -> L2WavePeakScore {
-    let original_word = normalized_last_word(original);
+    let prepared = prepare_correction_peak_context(original);
+    score_correction_peak_with_prepared_usage(
+        replacement,
+        error_class,
+        origin,
+        candidate_count,
+        usage,
+        &prepared,
+    )
+}
+
+pub(crate) fn score_correction_peak_with_prepared_usage(
+    replacement: &str,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+    candidate_count: usize,
+    usage: &super::UsagePriorSnapshot,
+    prepared: &L2CorrectionPeakContext,
+) -> L2WavePeakScore {
     let replacement_word = normalized_last_word(replacement);
     if replacement_word.is_empty() {
         return L2WavePeakScore::neutral("empty_replacement_peak");
@@ -64,14 +119,13 @@ pub(crate) fn score_correction_peak_with_usage(
     } else {
         origin.source_role()
     };
-    let context = context_words_before_last(original);
     let usage_prior = usage.word_prior(&replacement_word);
-    let context_prior = usage.context_word_prior(&context, &replacement_word);
+    let context_prior = usage.context_word_prior(&prepared.context, &replacement_word);
     let rejected = usage.rejected_word_prior(&replacement_word)
-        + usage.context_rejected_word_prior(&context, &replacement_word);
-    let center = center_resonance(&context, &original_word, &replacement_word);
+        + usage.context_rejected_word_prior(&prepared.context, &replacement_word);
+    let center = center_resonance(prepared, &replacement_word);
     let foundation = foundation_resonance(&replacement_word);
-    let layout = layout_resonance(role, &original_word, &replacement_word);
+    let layout = layout_resonance(role, &prepared.original_word, &replacement_word);
     let operator = operator_resonance(error_class, role);
     let known = known_surface_mass(&replacement_word);
 
@@ -81,7 +135,7 @@ pub(crate) fn score_correction_peak_with_usage(
         positive += 0.035;
     }
 
-    let drift_negative = drift_anti_wave(role, &original_word, &replacement_word);
+    let drift_negative = drift_anti_wave(role, &prepared.original_word, &replacement_word);
     let mut negative = (rejected * 0.90).clamp(0.0, 0.40);
     negative += drift_negative;
     negative += unknown_surface_penalty(role, &replacement_word);
@@ -188,17 +242,10 @@ fn context_words_before_last(text: &str) -> Vec<String> {
     words
 }
 
-fn center_resonance(context: &[String], original: &str, replacement: &str) -> f32 {
-    if original.chars().count() < 2 || !original.chars().all(crate::keyboard::is_cyrillic_letter) {
-        return 0.0;
-    }
-    let context_prefix = if context.is_empty() {
-        String::new()
-    } else {
-        format!("{} ", context.join(" "))
-    };
-    l2::ime_l2_word_candidates(&context_prefix, original, 16)
-        .into_iter()
+fn center_resonance(prepared: &L2CorrectionPeakContext, replacement: &str) -> f32 {
+    prepared
+        .center_candidates
+        .iter()
         .find(|candidate| candidate.surface == replacement)
         .map(|candidate| {
             let structural = (candidate.score as f32 / 1800.0).clamp(0.0, 0.58);

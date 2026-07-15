@@ -15,6 +15,12 @@ pub(crate) enum CandidateOrigin {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CandidateReadoutRoute {
+    CompactL2,
+    FullWave,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum CorrectionSourceRole {
     Layout,
     Boundary,

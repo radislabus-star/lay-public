@@ -2,11 +2,15 @@
 // included by `candidate.rs`, so it can use lattice state without widening the
 // typing-transition API.
 
-fn resolve_l2_lattice(lattice: L2CandidateLattice) -> CorrectionResolution {
+fn resolve_l2_lattice(
+    lattice: L2CandidateLattice,
+    peak_context: Option<&crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext>,
+) -> CorrectionResolution {
     let decision_batch = TransitionDecisionCore::evaluate_candidates(
         &lattice.event,
         &lattice.candidates,
         lattice.policy,
+        peak_context,
     );
     let selected = decision_batch
         .selected_index
@@ -61,7 +65,7 @@ mod resolution_tests {
             },
         )));
 
-        let resolution = resolve_l2_lattice(lattice);
+        let resolution = lattice.into_resolution();
         assert!(resolution.selected.is_some());
     }
 }

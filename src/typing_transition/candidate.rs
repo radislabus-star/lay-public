@@ -59,8 +59,20 @@ impl L2CandidateLattice {
         self.candidates.push(candidate);
     }
 
+    #[cfg(test)]
     pub(crate) fn into_resolution(self) -> CorrectionResolution {
-        resolve_l2_lattice(self)
+        resolve_l2_lattice(self, None)
+    }
+
+    pub(crate) fn into_resolution_with_peak_context(
+        self,
+        peak_context: Option<&crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext>,
+    ) -> CorrectionResolution {
+        resolve_l2_lattice(self, peak_context)
+    }
+
+    pub(crate) fn is_empty(&self) -> bool {
+        self.candidates.is_empty()
     }
 }
 

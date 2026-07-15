@@ -65,19 +65,19 @@ struct L2WavePeakSignal {
 }
 
 fn l2_wave_peak_signal(
-    event: &TypingErrorEvent,
     candidate: &UnifiedCorrectionCandidate,
     candidate_count: usize,
     phase: crate::nanda_wave::PhaseReadout,
     usage: &crate::nanda_wave::UsagePriorSnapshot,
+    peak_context: &crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext,
 ) -> L2WavePeakSignal {
-    let score = crate::nanda_wave::l2_wave_peak::score_correction_peak_with_usage(
-        &event.original,
+    let score = crate::nanda_wave::l2_wave_peak::score_correction_peak_with_prepared_usage(
         &candidate.replacement,
         candidate.error_class,
         candidate.origin,
         candidate_count,
         usage,
+        peak_context,
     );
     L2WavePeakSignal {
         signal: score.signal,

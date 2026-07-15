@@ -20,6 +20,7 @@ fn decide_space_autocorrect(req: InputGateRequest<'_>) -> InputGateDecision {
         correction_safety: req.correction_safety,
         typing_assist_pipeline: req.typing_assist_pipeline,
         nanda_autocorrect: req.nanda_autocorrect,
+        nanda_candidate_route: req.nanda_candidate_route,
         nanda_wave_options: req.nanda_wave_options,
         correction_mode: req.correction_mode,
         include_l3_report: false,
@@ -146,6 +147,7 @@ struct PipelineRequest<'a> {
     correction_safety: CorrectionSafety,
     typing_assist_pipeline: &'a [TypingAssistRuleConfig],
     nanda_autocorrect: bool,
+    nanda_candidate_route: CandidateReadoutRoute,
     nanda_wave_options: crate::nanda_wave::WaveOptions,
     correction_mode: CorrectionMode,
     include_l3_report: bool,
@@ -164,6 +166,7 @@ impl ErrorGate {
             correction_safety: req.correction_safety,
             typing_assist_pipeline: req.typing_assist_pipeline,
             nanda_autocorrect: req.nanda_autocorrect,
+            nanda_candidate_route: req.nanda_candidate_route,
             nanda_wave_options: req.nanda_wave_options.clone(),
             correction_mode: req.correction_mode,
         })
@@ -179,6 +182,7 @@ fn decide_space_autocorrect_gate(req: InputGateRequest<'_>) -> InputGateDecision
         correction_safety: req.correction_safety,
         typing_assist_pipeline: req.typing_assist_pipeline,
         nanda_autocorrect: req.nanda_autocorrect,
+        nanda_candidate_route: req.nanda_candidate_route,
         nanda_wave_options: req.nanda_wave_options,
         mode: req.correction_mode,
     });
@@ -288,6 +292,7 @@ mod correction_pipeline_tests {
             correction_safety: CorrectionSafety::Normal,
             typing_assist_pipeline: pipeline,
             nanda_autocorrect: false,
+            nanda_candidate_route: CandidateReadoutRoute::FullWave,
             nanda_wave_options: crate::nanda_wave::WaveOptions::default(),
             correction_mode: CorrectionMode::DeterministicOnly,
             include_l3_report: false,
@@ -307,6 +312,7 @@ mod correction_pipeline_tests {
             correction_safety: CorrectionSafety::Normal,
             typing_assist_pipeline: pipeline,
             nanda_autocorrect: false,
+            nanda_candidate_route: CandidateReadoutRoute::FullWave,
             nanda_wave_options: crate::nanda_wave::WaveOptions::default(),
             correction_mode: CorrectionMode::DeterministicOnly,
         })
@@ -325,6 +331,7 @@ mod correction_pipeline_tests {
             correction_safety: CorrectionSafety::Normal,
             typing_assist_pipeline: pipeline,
             nanda_autocorrect: false,
+            nanda_candidate_route: CandidateReadoutRoute::FullWave,
             nanda_wave_options: crate::nanda_wave::WaveOptions::default(),
             correction_mode: CorrectionMode::DeterministicOnly,
         })

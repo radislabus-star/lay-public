@@ -153,14 +153,31 @@ impl TransitionDecisionCore {
         event: &TypingErrorEvent,
         candidates: &[UnifiedCorrectionCandidate],
         policy: TransitionDecisionPolicy,
+        prepared_l2_peak_context: Option<&crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext>,
     ) -> CandidateDecisionBatch {
+        if candidates.is_empty() {
+            return CandidateDecisionBatch {
+                evaluations: Vec::new(),
+                selected_index: None,
+                selected_transition: None,
+            };
+        }
         let usage = crate::nanda_wave::cached_usage_prior_snapshot();
         let l4_scene = l4_scene_signal(event, candidates.len());
+        let owned_l2_peak_context;
+        let l2_peak_context = if let Some(context) = prepared_l2_peak_context {
+            context
+        } else {
+            owned_l2_peak_context =
+                crate::nanda_wave::l2_wave_peak::prepare_correction_peak_context(&event.original);
+            &owned_l2_peak_context
+        };
         let context = CandidateDecisionContext {
             event,
             candidate_count: candidates.len(),
             usage: &usage,
             l4_scene,
+            l2_peak_context,
         };
         let evaluations = candidates
             .iter()
@@ -262,6 +279,7 @@ struct CandidateDecisionContext<'a> {
     candidate_count: usize,
     usage: &'a crate::nanda_wave::UsagePriorSnapshot,
     l4_scene: L4SceneSignal,
+    l2_peak_context: &'a crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext,
 }
 
 struct CandidateSignalReadouts<'a> {
@@ -419,11 +437,11 @@ fn candidate_decision_signals_from_readouts(
         crate::nanda_wave::l2_transition_phase_readout(action.operator.as_str(), relation.atoms());
     let l4_signed = l4_signed_signal_from_memory(l4_memory);
     let l2_wave_peak = l2_wave_peak_signal(
-        event,
         candidate,
         context.candidate_count,
         phase,
         context.usage,
+        context.l2_peak_context,
     );
     let rank_score = bayes.posterior
         + ((explanation.explanation_score_milli as f32 - 500.0) / 2_000.0)

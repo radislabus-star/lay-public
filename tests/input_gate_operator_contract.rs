@@ -14,6 +14,7 @@ fn request<'a>(trigger: InputGateTrigger, text_tail: &'a str) -> InputGateReques
         correction_safety: CorrectionSafety::Normal,
         typing_assist_pipeline: empty_pipeline,
         nanda_autocorrect: false,
+        nanda_candidate_route: lay::correction_core::CandidateReadoutRoute::FullWave,
         nanda_wave_options: lay::nanda_wave::WaveOptions::default(),
         correction_mode: CorrectionMode::DeterministicOnly,
     }
