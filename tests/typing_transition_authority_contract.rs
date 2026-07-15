@@ -118,6 +118,40 @@ fn ime_preedit_uses_shared_candidate_readout_for_ranking() {
 }
 
 #[test]
+fn l2_and_ime_hot_paths_keep_runtime_owners_separate_from_proof_code() {
+    let l2 = read("src/nanda_wave/l2.rs");
+    let ime_readout = read("src/nanda_wave/l2/ime_readout.rs");
+    let layout = read("src/nanda_wave/l2/layout_adapter.rs");
+    let tail_scan = read("src/nanda_wave/l2/tail_scan_adapter.rs");
+    let preedit = read("src/bin/lay_ibus_engine/preedit.rs");
+
+    assert!(
+        l2.contains("mod ime_readout;")
+            && l2.contains("mod layout_adapter;")
+            && l2.contains("mod tail_scan_adapter;")
+            && l2.contains("mod taught_adapter;")
+            && l2.contains("pub struct L2ImeWordCandidate")
+            && l2.contains("pub fn ime_l2_word_candidates(")
+            && ime_readout.contains("pub(super) fn ime_l2_word_candidates_impl(")
+            && l2.contains("mod tests;"),
+        "L2 must keep its stable facade while runtime producers and proof code have private owners"
+    );
+    assert!(
+        !layout.contains("TransitionDecisionCore")
+            && !tail_scan.contains("TransitionDecisionCore")
+            && layout.contains("pub(super) fn layout_candidate")
+            && tail_scan.contains("pub(super) fn boundary_scan_candidates"),
+        "L2 adapters may produce candidates but must not own final transition authority"
+    );
+    assert!(
+        preedit.contains("#[path = \"preedit/tests.rs\"]")
+            && preedit.contains("mod tests;")
+            && !preedit.contains("mod tests {"),
+        "IME proof fixtures must not remain embedded in the hot preedit module"
+    );
+}
+
+#[test]
 fn candidate_admission_only_marks_eligibility_and_core_selects_transition() {
     let correction = read("src/correction_core.rs");
     let gate = read("src/correction_core/gate.rs");

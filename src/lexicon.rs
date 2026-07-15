@@ -282,15 +282,10 @@ fn parse_hunspell_ru_words(data: &str) -> Vec<String> {
             let len = word.chars().count();
             (3..=24).contains(&len)
                 && word.chars().next().is_some_and(char::is_lowercase)
-                && word.chars().all(is_russian_letter)
+                && word.chars().all(crate::keyboard::is_cyrillic_letter)
         })
         .map(str::to_lowercase)
         .collect()
-}
-
-#[cfg(test)]
-fn is_russian_letter(ch: char) -> bool {
-    matches!(ch, 'а'..='я' | 'ё' | 'А'..='Я' | 'Ё')
 }
 
 #[cfg(test)]

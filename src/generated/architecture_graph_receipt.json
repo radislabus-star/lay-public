@@ -3,9 +3,9 @@
     {
       "evidence": [
         "src/typing_transition/candidate.rs:L9:L2CandidateLattice",
-        "src/typing_transition/decision.rs:L133:.evaluate_candidates()",
-        "src/typing_transition/decision.rs:L21:TransitionDecisionCore",
-        "src/typing_transition/decision.rs:L29:.decide_visible_text_transition()",
+        "src/typing_transition/decision.rs:L134:.evaluate_candidates()",
+        "src/typing_transition/decision.rs:L22:TransitionDecisionCore",
+        "src/typing_transition/decision.rs:L30:.decide_visible_text_transition()",
         "src/typing_transition/live_candidate.rs:L39:TransitionDecisionCore",
         "src/typing_transition/live_candidate.rs:L40:.select_live_completions()",
         "src/typing_transition/live_candidate.rs:L72:.select_ime_readout()"
@@ -40,7 +40,7 @@
         "src/text_edit/executor.rs:L72",
         "src/text_edit/gate.rs:L222",
         "src/text_edit/gate.rs:L223",
-        "src/typing_transition/decision.rs:L104"
+        "src/typing_transition/decision.rs:L105"
       ],
       "id": "typed-transition-capability",
       "status": "PASS",
@@ -85,9 +85,9 @@
     },
     {
       "evidence": [
-        "graph_built_at_commit:0503d0fa1591bf936c192e9c93c53e1538835f78",
-        "graph_links:19055",
-        "graph_nodes:7684"
+        "graph_built_at_commit:6c073bd74e46adce113fc332549f3d1dd69fb12e",
+        "graph_links:18991",
+        "graph_nodes:7714"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -95,11 +95,11 @@
     }
   ],
   "duplicate_symbols": {},
-  "git_head": "0503d0fa1591bf936c192e9c93c53e1538835f78",
-  "graph_built_at_commit": "0503d0fa1591bf936c192e9c93c53e1538835f78",
-  "graph_links": 19055,
-  "graph_nodes": 7684,
+  "git_head": "6c073bd74e46adce113fc332549f3d1dd69fb12e",
+  "graph_built_at_commit": "6c073bd74e46adce113fc332549f3d1dd69fb12e",
+  "graph_links": 18991,
+  "graph_nodes": 7714,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "a6eeb415abb7ae06797f73b55dcce48c658cf856bc108d059f0c329266089c1f",
+  "source_fingerprint": "d0dd1dcd63dc028687eda4a92da1752c85f6c38cf4c247f0fb3de5207c58af56",
   "verdict": "PASS"
 }

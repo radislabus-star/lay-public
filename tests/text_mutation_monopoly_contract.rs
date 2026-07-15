@@ -48,6 +48,7 @@ fn hidden_typing_state_is_apply_admission_authority() {
     let transition_mod = read("src/typing_transition/mod.rs");
     let transition_state = read("src/typing_transition/state.rs");
     let transition_decision = read("src/typing_transition/decision.rs");
+    let transition_admission = read("src/typing_transition/decision/admission.rs");
 
     assert!(
         transition_mod.contains("state::LatentTypingState")
@@ -63,10 +64,12 @@ fn hidden_typing_state_is_apply_admission_authority() {
         "LatentTypingState must expose context, drift, and left-context import invariants"
     );
     assert!(
-        transition_decision.contains("fn candidate_has_apply_authority")
-            && transition_decision.contains("admit_evaluated_hidden_transition(")
-            && transition_decision.contains("latent_known_word_drift_needs_state_proof")
-            && transition_decision.contains("latent_context_import"),
+        transition_decision.contains("mod admission;")
+            && transition_decision.contains("use admission::candidate_has_apply_authority;")
+            && transition_admission.contains("fn candidate_has_apply_authority")
+            && transition_admission.contains("admit_evaluated_hidden_transition(")
+            && transition_admission.contains("latent_known_word_drift_needs_state_proof")
+            && transition_admission.contains("latent_context_import"),
         "TransitionDecisionCore must gate apply through hidden-state admission"
     );
 }
