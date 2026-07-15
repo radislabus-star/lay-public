@@ -146,6 +146,13 @@ if has_file_matching '^src/bin/lay_ibus_engine'; then
     cargo test --bin lay-ibus-engine handoff
     cargo test --bin lay-ibus-engine reset
   fi
+  echo "== isolated IME latency budget =="
+  LAY_ENFORCE_IME_LATENCY_BUDGET=1 \
+    cargo test --bin lay-ibus-engine cold_english_wave_memory_does_not_block_precognition \
+      -- --nocapture --test-threads=1
+  LAY_ENFORCE_IME_LATENCY_BUDGET=1 \
+    cargo test --bin lay-ibus-engine precognition_candidate_generation_stays_under_budget \
+      -- --nocapture --test-threads=1
 fi
 
 if has_file_matching '^src/bin/lay_daemon'; then
