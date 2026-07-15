@@ -261,7 +261,7 @@ fn action_log_writes_candidate_before_apply_mutation_route() {
     let plan =
         crate::text_edit::plan_committed_tail_full_token_replacement("провека ", "проверка ")
             .expect("plan");
-    let action = crate::text_edit::authorize_replacement_with_transition(
+    let action = crate::text_edit::plan_verified_transition_edit(
         "typing-assist",
         700,
         "провека ",
@@ -270,8 +270,8 @@ fn action_log_writes_candidate_before_apply_mutation_route() {
         Some("test"),
         Some("missing-letter"),
         crate::text_edit::TransitionAudit::proven(
-            "test_transition",
-            "test_transition_verified",
+            crate::text_edit::TransitionOperator::ReplaceCurrentWord,
+            crate::text_edit::TransitionProof::Invariant,
             true,
             false,
             1,

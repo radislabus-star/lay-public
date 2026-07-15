@@ -29,7 +29,8 @@ fn ime_correction_route_reaches_common_decision_core() {
     assert!(
         !correction_core.contains("mod decision_core;")
             && correction_core.contains("mod gate;")
-            && correction_gate.contains("candidate_admission_with_source")
+            && correction_gate.contains("candidate_admission(")
+            && correction_gate.contains("gate_candidate_with_origin(")
             && !correction_gate.contains("TransitionDecisionCore"),
         "candidate admission must not own final transition authority"
     );
@@ -184,7 +185,7 @@ fn candidate_before_apply_logs_use_typed_mutation_routes() {
 fn manual_replay_paths_are_edit_action_gated() {
     let replay = read("src/bin/lay_daemon/correction_runtime/output/replay.rs");
     assert!(
-        replay.contains("authorize_replacement_with_transition(")
+        replay.contains("plan_manual_edit(")
             && replay.contains("MutationLogRoute::MANUAL_TEXT_REPLACE")
             && replay.contains("authorize_backend_edit("),
         "manual replay output must pass through EditAction and ExecutorContract before backspace/replay"
@@ -196,9 +197,9 @@ fn manual_replay_paths_are_edit_action_gated() {
         "native replay must not bypass EditAction with a direct true"
     );
     assert!(
-        replay.contains("manual_replay_plan_verified")
+        replay.contains("plan_manual_edit(")
             && native.contains("MutationLogRoute::MANUAL_NATIVE_REPLACE")
-            && native.contains("manual_native_replay_plan_verified"),
+            && native.contains("plan_native_edit("),
         "manual replay output must log through typed manual routes and carry replay transition proof"
     );
 

@@ -4,7 +4,11 @@ use std::sync::{Arc, Mutex, OnceLock};
 use std::time::{Duration, Instant};
 
 use crate::time::unix_timestamp;
-use crate::typing_memory::{self, TypingMemoryEvent, TypingMemoryEventKind};
+#[cfg(test)]
+use crate::typing_memory;
+use crate::typing_memory::{
+    normalize_word, normalized_words, TypingMemoryEvent, TypingMemoryEventKind,
+};
 
 #[cfg(not(test))]
 const USAGE_EVENTS_PATH: &str = ".local/share/lay/nanda_wave/word_usage_events.jsonl";
@@ -1348,14 +1352,6 @@ fn keep_jsonl_tail_bytes(content: &str, max_bytes: usize) -> String {
         .map(|idx| idx + 1)
         .unwrap_or(start);
     content[start..].to_string()
-}
-
-fn normalized_words(text: &str) -> Vec<String> {
-    typing_memory::normalized_words(text)
-}
-
-fn normalize_word(word: &str) -> String {
-    typing_memory::normalize_word(word)
 }
 
 fn context_ngram_keys(context: &[String]) -> Vec<String> {

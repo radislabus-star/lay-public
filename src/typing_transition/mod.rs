@@ -12,8 +12,8 @@ pub(crate) mod memory;
 pub(crate) mod state;
 pub(crate) mod verifier;
 
+use crate::candidate_contract::CandidateOrigin;
 use crate::correction_core::TypingErrorClass;
-use crate::correction_source_contract::CandidateOrigin;
 use crate::language_action::LanguageActionOperator;
 use crate::transition_relation::{TransitionRelationAtoms, TransitionRelationInput};
 use l4_state_estimator::{

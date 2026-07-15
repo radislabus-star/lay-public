@@ -83,7 +83,7 @@ pub fn plan_manual_toggle(request: ManualToggleRequest<'_>) -> Option<ManualTogg
     let tail = request.visible_tail.text;
     let token = last_tail_token(tail)?;
     let trailing_ws = if request.preserve_trailing_whitespace {
-        trailing_whitespace_chars(tail)
+        crate::word_reader::trailing_whitespace_char_count(tail)
     } else {
         0
     };
@@ -145,13 +145,6 @@ fn last_tail_token(tail: &str) -> Option<&str> {
         .find_map(|(idx, ch)| ch.is_whitespace().then_some(idx + ch.len_utf8()))
         .unwrap_or(0);
     Some(&tail[start..end])
-}
-
-fn trailing_whitespace_chars(text: &str) -> usize {
-    text.chars()
-        .rev()
-        .take_while(|ch| ch.is_whitespace())
-        .count()
 }
 
 fn recover_missing_initial_layout_toggle(token: &str) -> Option<(u32, String)> {

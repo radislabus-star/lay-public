@@ -1,6 +1,6 @@
 use super::verifier;
+use crate::candidate_contract::{CandidateOrigin, CorrectionSourceRole};
 use crate::correction_core::TypingErrorClass;
-use crate::correction_source_contract::CandidateOrigin;
 use crate::language_action::{
     operator_for_origin, proof_for_origin, LanguageActionOperator, LanguageActionProof,
 };
@@ -9,7 +9,7 @@ use crate::language_action::{
 pub(crate) struct CorrectionActionOperatorReport {
     pub(crate) operator: LanguageActionOperator,
     pub(crate) proof: LanguageActionProof,
-    pub(crate) edit_operator: verifier::EditTransitionOperator,
+    pub(crate) edit_operator: crate::text_edit::TransitionOperator,
     pub(crate) edit_proof: LanguageActionProof,
     pub(crate) verifier_required: bool,
     pub(crate) verifier_passed: bool,
@@ -56,10 +56,31 @@ pub(crate) fn classify_token_transition(
     origin: CandidateOrigin,
     declared: TypingErrorClass,
 ) -> TypingErrorClass {
+    match origin {
+        CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo => {
+            return if declared == TypingErrorClass::Unknown {
+                TypingErrorClass::WrongLayout
+            } else {
+                declared
+            };
+        }
+        CandidateOrigin::Boundary => {
+            return classify_boundary_transition(original, replacement);
+        }
+        CandidateOrigin::Completion => return TypingErrorClass::CompletionOnly,
+        CandidateOrigin::Technical => return TypingErrorClass::TechnicalToken,
+        CandidateOrigin::L3Context => {
+            return if declared == TypingErrorClass::Unknown {
+                TypingErrorClass::CompositeTypo
+            } else {
+                declared
+            };
+        }
+        CandidateOrigin::L2Surface | CandidateOrigin::DeterministicTypo => {}
+    }
     if !matches!(
         origin.source_role(),
-        crate::correction_source_contract::CorrectionSourceRole::L2Surface
-            | crate::correction_source_contract::CorrectionSourceRole::DeterministicTypo
+        CorrectionSourceRole::L2Surface | CorrectionSourceRole::DeterministicTypo
     ) {
         return declared;
     }
@@ -74,7 +95,7 @@ pub(crate) fn classify_token_transition(
     }
     let original_chars = original_word.chars().collect::<Vec<_>>();
     let replacement_chars = replacement_word.chars().collect::<Vec<_>>();
-    if is_adjacent_transposition(&original_chars, &replacement_chars) {
+    if crate::text_metrics::is_adjacent_transposition_chars(&original_chars, &replacement_chars) {
         return TypingErrorClass::AdjacentTransposition;
     }
     if collapses_repeated_runs_to(&original_chars, &replacement_chars) {
@@ -104,8 +125,26 @@ pub(crate) fn classify_token_transition(
             | TypingErrorClass::LetterSubstitution
     ) {
         TypingErrorClass::CompositeTypo
+    } else if declared == TypingErrorClass::Unknown {
+        TypingErrorClass::CompositeTypo
     } else {
         declared
+    }
+}
+
+fn classify_boundary_transition(original: &str, replacement: &str) -> TypingErrorClass {
+    if crate::text_edit::safety::surface_preserving_right_to_left_boundary_shift(
+        original,
+        replacement,
+    ) {
+        return TypingErrorClass::BoundaryShift;
+    }
+    let original_words = original.split_whitespace().count();
+    let replacement_words = replacement.split_whitespace().count();
+    match replacement_words.cmp(&original_words) {
+        std::cmp::Ordering::Greater => TypingErrorClass::GluedWords,
+        std::cmp::Ordering::Less => TypingErrorClass::SplitWord,
+        std::cmp::Ordering::Equal => TypingErrorClass::BoundaryShift,
     }
 }
 
@@ -174,22 +213,6 @@ fn run_lengths(chars: &[char]) -> Vec<(char, usize)> {
     runs
 }
 
-fn is_adjacent_transposition(left: &[char], right: &[char]) -> bool {
-    if left.len() != right.len() || left.len() < 2 {
-        return false;
-    }
-    let differences = left
-        .iter()
-        .zip(right)
-        .enumerate()
-        .filter_map(|(index, (left, right))| (left != right).then_some(index))
-        .collect::<Vec<_>>();
-    matches!(differences.as_slice(), [first, second]
-        if *second == *first + 1
-            && left[*first] == right[*second]
-            && left[*second] == right[*first])
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -200,13 +223,13 @@ mod tests {
             "HF<JNF NTCN CFV ",
             "РАБОТА ТЕСТ САМ ",
             TypingErrorClass::WrongLayout,
-            crate::correction_source_contract::CandidateOrigin::Layout,
+            CandidateOrigin::Layout,
         );
 
         assert_eq!(report.operator, LanguageActionOperator::FlipLayout);
         assert_eq!(
             report.edit_operator,
-            verifier::EditTransitionOperator::LayoutProjection
+            crate::text_edit::TransitionOperator::LayoutProjection
         );
         assert!(report.verifier_required);
         assert!(report.verifier_passed);
@@ -219,13 +242,13 @@ mod tests {
             "содержкой ",
             "что получилось вроде хороший ввод и даже фикс был шикарный но с содержать ",
             TypingErrorClass::CompositeTypo,
-            crate::correction_source_contract::CandidateOrigin::L2Surface,
+            CandidateOrigin::L2Surface,
         );
 
         assert_eq!(report.operator, LanguageActionOperator::FixTypo);
         assert_eq!(
             report.edit_operator,
-            verifier::EditTransitionOperator::Unknown
+            crate::text_edit::TransitionOperator::Unknown
         );
         assert!(report.verifier_required);
         assert!(!report.verifier_passed);

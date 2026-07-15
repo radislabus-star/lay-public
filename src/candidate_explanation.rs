@@ -3,8 +3,9 @@
 //! This module scores whether a correction candidate explains the observed
 //! noisy input. Frequency alone is not enough authority to apply a correction.
 
+use crate::candidate_contract::CandidateOrigin;
 use crate::correction_core::TypingErrorClass;
-use crate::language_action::{proof_for_candidate, LanguageActionProof};
+use crate::language_action::{proof_for_origin, LanguageActionProof};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct CandidateExplanation {
@@ -24,18 +25,18 @@ impl CandidateExplanation {
     }
 }
 
-pub fn explain_candidate(
+pub(crate) fn explain_candidate(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
-    source_id: &str,
+    origin: CandidateOrigin,
 ) -> CandidateExplanation {
     let original_surface = surface_mass(original);
     let replacement_surface = surface_mass(replacement);
     let common = lcs_len(&original_surface, &replacement_surface);
     let original_len = original_surface.len();
     let replacement_len = replacement_surface.len();
-    let proof = proof_for_candidate(error_class, source_id);
+    let proof = proof_for_origin(error_class, origin);
     let layout_projection_preserves_key_mass =
         proof == LanguageActionProof::Layout && original_len > 0 && original_len == replacement_len;
     let (preservation_milli, lost_mass_milli, added_mass_milli) =
@@ -68,7 +69,7 @@ pub fn explain_candidate(
         boundary_delta,
     );
     let shortcut_risk_milli =
-        shortcut_risk_milli(source_id, proof, lost_mass_milli, operator_fit_milli);
+        shortcut_risk_milli(origin, proof, lost_mass_milli, operator_fit_milli);
     let anti_wave_milli = ((shortcut_risk_milli as i32 * (1000 - operator_fit_milli as i32)) / 1000)
         .clamp(0, 1000) as i16;
     // Preserve the full geometry instead of saturating every plausible edit at
@@ -128,7 +129,7 @@ fn edit_shape(
     if boundary_delta && original == replacement {
         return "boundary_only";
     }
-    if is_adjacent_transposition(original, replacement) {
+    if crate::text_metrics::is_adjacent_transposition_chars(original, replacement) {
         return "transpose_adjacent";
     }
     match replacement.len() as isize - original.len() as isize {
@@ -201,7 +202,7 @@ fn typo_operator_fit(edit_shape: &str, error_class: TypingErrorClass, lost_mass_
 }
 
 fn shortcut_risk_milli(
-    source_id: &str,
+    origin: CandidateOrigin,
     proof: LanguageActionProof,
     lost_mass_milli: i16,
     operator_fit_milli: i16,
@@ -212,12 +213,11 @@ fn shortcut_risk_milli(
     ) {
         return 0;
     }
-    let source_penalty =
-        if crate::correction_source_contract::is_surface_or_context_source(source_id) {
-            150
-        } else {
-            0
-        };
+    let source_penalty = if origin.is_surface_or_context() {
+        150
+    } else {
+        0
+    };
     (lost_mass_milli as i32 + source_penalty + (500 - operator_fit_milli as i32).max(0) / 2)
         .clamp(0, 1000) as i16
 }
@@ -249,22 +249,10 @@ fn lcs_len(left: &[char], right: &[char]) -> usize {
     prev[right.len()]
 }
 
-fn is_adjacent_transposition(left: &[char], right: &[char]) -> bool {
-    if left.len() != right.len() || left.len() < 2 {
-        return false;
-    }
-    let diffs: Vec<usize> = left
-        .iter()
-        .zip(right.iter())
-        .enumerate()
-        .filter_map(|(idx, (a, b))| (a != b).then_some(idx))
-        .collect();
-    matches!(diffs.as_slice(), [a, b] if *b == *a + 1 && left[*a] == right[*b] && left[*b] == right[*a])
-}
-
 #[cfg(test)]
 mod tests {
     use super::explain_candidate;
+    use crate::candidate_contract::CandidateOrigin;
     use crate::correction_core::TypingErrorClass;
 
     #[test]
@@ -273,13 +261,13 @@ mod tests {
             "тоесть ",
             "то есть ",
             TypingErrorClass::GluedWords,
-            "BoundaryCell32",
+            CandidateOrigin::Boundary,
         );
         let shortcut = explain_candidate(
             "тоесть ",
             "есть ",
             TypingErrorClass::CompositeTypo,
-            "L2SurfaceMotifCell32",
+            CandidateOrigin::L2Surface,
         );
 
         assert_eq!(split.preservation_milli, 1000);

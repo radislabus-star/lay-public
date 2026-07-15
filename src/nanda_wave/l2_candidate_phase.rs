@@ -14,7 +14,7 @@ use std::sync::OnceLock;
 
 use crate::transition_relation::{TransitionOperatorKind, TransitionRelationAtoms};
 
-use super::mode::mix64_golden;
+use crate::stable_hash::mix64_golden;
 
 const MAGIC: &[u8; 8] = b"LAYPC004";
 const CELLS: usize = 128;

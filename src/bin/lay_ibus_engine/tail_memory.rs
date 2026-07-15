@@ -11,7 +11,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn sync_tail_after_composition_commit(&mut self, text: &str) {
-        let trailing_ws = trailing_whitespace_chars(text);
+        let trailing_ws = lay::word_reader::trailing_whitespace_char_count(text);
         let committed = text.trim_end_matches(char::is_whitespace);
         if !committed.is_empty() {
             self.replace_last_tail_token_text(committed, self.buffer.chars().count());
@@ -155,13 +155,6 @@ fn last_tail_token_range(tail: &str) -> Option<(usize, usize)> {
     Some((start, end))
 }
 
-fn trailing_whitespace_chars(text: &str) -> usize {
-    text.chars()
-        .rev()
-        .take_while(|ch| ch.is_whitespace())
-        .count()
-}
-
 fn trim_committed_tail_buffer(buffer: &mut String) {
     const LIMIT: usize = 160;
     let chars = buffer.chars().count();
@@ -176,7 +169,7 @@ fn trim_committed_tail_buffer(buffer: &mut String) {
 
 #[cfg(test)]
 mod tests {
-    use super::{last_tail_token_range, trailing_whitespace_chars, LayIbusEngine};
+    use super::{last_tail_token_range, LayIbusEngine};
     use crate::engine::WordInputMode;
     use lay::config::LayConfig;
     use std::sync::{Arc, Mutex};
@@ -187,7 +180,7 @@ mod tests {
         let tail = "file проверка ";
         let (start, end) = last_tail_token_range(tail).expect("last token");
         assert_eq!(&tail[start..end], "проверка");
-        assert_eq!(trailing_whitespace_chars(tail), 1);
+        assert_eq!(lay::word_reader::trailing_whitespace_char_count(tail), 1);
     }
 
     #[test]

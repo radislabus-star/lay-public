@@ -83,6 +83,10 @@ pub(crate) struct RecentActionCandidateScore {
     pub(crate) action_proof: String,
     pub(crate) edit_transition_operator: String,
     pub(crate) edit_transition_proof: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) edit_transition_operator_kind: Option<crate::text_edit::TransitionOperator>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) edit_transition_proof_kind: Option<crate::text_edit::TransitionProof>,
     pub(crate) edit_transition_verified: bool,
     pub(crate) edit_transition_left_context_changed: bool,
     pub(crate) edit_transition_changed_tokens: usize,
@@ -245,6 +249,8 @@ impl RecentActionGateTrace {
                     action_proof: score.action_proof.to_string(),
                     edit_transition_operator: score.edit_transition_operator.to_string(),
                     edit_transition_proof: score.edit_transition_proof.to_string(),
+                    edit_transition_operator_kind: Some(score.edit_transition_operator_kind),
+                    edit_transition_proof_kind: Some(score.edit_transition_proof_kind),
                     edit_transition_verified: score.edit_transition_verified,
                     edit_transition_left_context_changed: score
                         .edit_transition_left_context_changed,
@@ -316,9 +322,15 @@ impl RecentActionGateTrace {
         let Some(selected) = self.candidate_scores.iter().find(|score| score.selected) else {
             return crate::text_edit::TransitionAudit::none();
         };
+        let (Some(operator), Some(proof)) = (
+            selected.edit_transition_operator_kind,
+            selected.edit_transition_proof_kind,
+        ) else {
+            return crate::text_edit::TransitionAudit::none();
+        };
         crate::text_edit::TransitionAudit::proven(
-            selected.edit_transition_operator.clone(),
-            selected.edit_transition_proof.clone(),
+            operator,
+            proof,
             selected.edit_transition_verified,
             selected.edit_transition_left_context_changed,
             selected.edit_transition_changed_tokens,
@@ -396,8 +408,9 @@ fn record_candidate_before_apply_inner(
         action_kind,
         action_source,
         action_confidence_milli,
-        transition_operator: transition.and_then(|audit| audit.operator.as_deref()),
-        transition_proof: transition.and_then(|audit| audit.proof.as_deref()),
+        transition_operator: transition
+            .and_then(|audit| audit.operator.map(|value| value.as_str())),
+        transition_proof: transition.and_then(|audit| audit.proof.map(|value| value.as_str())),
         transition_verified: transition.and_then(|audit| audit.verified),
         transition_left_context_changed: transition.and_then(|audit| audit.left_context_changed),
         transition_changed_tokens: transition.and_then(|audit| audit.changed_tokens),

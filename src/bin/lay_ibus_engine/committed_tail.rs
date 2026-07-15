@@ -32,7 +32,7 @@ impl LayIbusEngine {
             committed_suffix.push(' ');
             accepted_text.push(' ');
         }
-        let action = lay::text_edit::EditAction::ime_accept(
+        let action = lay::text_edit::plan_ime_completion_edit(
             "ibus-committed-tail-completion",
             900,
             tail_token,
@@ -49,7 +49,7 @@ impl LayIbusEngine {
             trace::record(r#"{"kind":"ibus_stuck_completion_blocked"}"#);
             return Ok(false);
         };
-        if authorized_edit.action().to_text != accepted_text {
+        if authorized_edit.action().to_text() != accepted_text {
             trace::record(r#"{"kind":"ibus_stuck_completion_authorized_text_mismatch"}"#);
             return Ok(false);
         }

@@ -4,19 +4,19 @@ use super::*;
 fn typing_assist_pipeline_can_disable_rules() {
     let no_en_to_ru = typing_pipeline_with_disabled(&["layout_en_to_ru"]);
     assert_eq!(
-        apply_typing_assist_with_pipeline("njkmrj ", true, &no_en_to_ru),
+        select_typing_assist_with_pipeline("njkmrj ", true, &no_en_to_ru),
         None
     );
 
     let no_ru_to_en = typing_pipeline_with_disabled(&["layout_ru_to_en"]);
     assert_eq!(
-        apply_typing_assist_with_pipeline("ашдуы ", true, &no_ru_to_en),
+        select_typing_assist_with_pipeline("ашдуы ", true, &no_ru_to_en),
         None
     );
 
     let no_hard_sign = typing_pipeline_with_disabled(&["hard_sign"]);
     assert_eq!(
-        apply_typing_assist_with_pipeline("Обьясни ", false, &no_hard_sign),
+        select_typing_assist_with_pipeline("Обьясни ", false, &no_hard_sign),
         None
     );
 }
@@ -74,7 +74,7 @@ fn typing_assist_each_default_rule_has_isolated_positive_case() {
     for case in cases {
         let pipeline = typing_pipeline_with_only(&case.id);
         assert_eq!(
-            apply_typing_assist_with_pipeline(&case.input, case.allow_layout_auto, &pipeline),
+            select_typing_assist_with_pipeline(&case.input, case.allow_layout_auto, &pipeline),
             case.expected,
             "rule={} input={:?}",
             case.id,

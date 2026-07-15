@@ -13,14 +13,13 @@ use lay::keyboard::{
 };
 use lay::text_edit::{plan_committed_tail_replacement, plan_text_replacement, TextReplacement};
 use lay::typing_assist::{
-    apply_typing_assist_with_pipeline, are_ru_keyboard_neighbors, correct_extra_letters,
-    correct_missing_letter, correct_wrong_layout_ascii_technical_token,
-    decide_completed_scope_word, decide_correction, decide_scoped_tail_correction,
-    decide_scoped_tail_correction_with_lem, effective_replace_words, is_ascii_technical_token,
-    is_known_russian_word_or_form, promoted_replacement_for_token,
+    are_ru_keyboard_neighbors, correct_extra_letters, correct_missing_letter,
+    correct_wrong_layout_ascii_technical_token, decide_completed_scope_word, decide_correction,
+    decide_scoped_tail_correction, decide_scoped_tail_correction_with_lem, effective_replace_words,
+    is_ascii_technical_token, is_known_russian_word_or_form, promoted_replacement_for_token,
     russian_generated_form_dictionary, scoped_tail_lem_candidates,
-    should_force_replay_for_short_fragment, should_keep_plain_cyrillic_before_ascii_technical,
-    ScopedTailOptions,
+    select_typing_assist_with_pipeline, should_force_replay_for_short_fragment,
+    should_keep_plain_cyrillic_before_ascii_technical, ScopedTailOptions,
 };
 use lay::word_buffer::{UserLearningCorrection, WordBuffer};
 use std::collections::{BTreeMap, HashSet};

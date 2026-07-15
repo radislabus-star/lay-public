@@ -9,8 +9,8 @@ use crate::config::{CorrectionSafety, LayConfig};
 use crate::correction_core::CorrectionMode;
 use crate::input_gate::{decide_input_gate, InputGateAction, InputGateRequest, InputGateTrigger};
 use crate::text_edit::{
-    authorize_replacement_with_transition, plan_committed_tail_last_token_replacement,
-    plan_text_replacement, EditAction,
+    plan_committed_tail_last_token_replacement, plan_input_gate_edit, plan_text_replacement,
+    EditAction,
 };
 
 pub struct ActiveCompositionAutocorrectRequest<'a> {
@@ -59,36 +59,18 @@ pub fn decide_active_composition_autocorrect(
     let input_gate = decision
         .trace
         .as_ref()
-        .map(RecentActionGateTrace::from_input_gate);
-    let source_id = input_gate
-        .as_ref()
-        .and_then(|trace| trace.selected_source_id.as_deref());
-    let error_class = input_gate
-        .as_ref()
-        .and_then(|trace| trace.selected_error_class.as_deref());
-    let confidence_milli = input_gate
-        .as_ref()
-        .and_then(|trace| trace.scoreboard.as_ref())
-        .and_then(|scoreboard| scoreboard.selected_bayes_posterior_milli)
-        .unwrap_or(0);
-    let transition = input_gate
-        .as_ref()
-        .map(RecentActionGateTrace::selected_transition_audit)
-        .unwrap_or_default();
-    let action = authorize_replacement_with_transition(
+        .map(RecentActionGateTrace::from_input_gate)?;
+    let action = plan_input_gate_edit(
         "ibus-active-composition",
-        confidence_milli,
         request.text,
         &replacement,
         plan,
-        source_id,
-        error_class,
-        transition,
+        &input_gate,
     );
     Some(ActiveCompositionAutocorrectDecision {
         replacement,
         action,
-        input_gate,
+        input_gate: Some(input_gate),
     })
 }
 

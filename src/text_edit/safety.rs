@@ -1,4 +1,5 @@
 use super::diff_plan::replacement_plan_matches;
+use super::mutation::{TransitionAudit, TransitionProof};
 use super::types::TextReplacement;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -20,8 +21,7 @@ pub fn autocorrect_edit_safety(
     original: &str,
     replacement: &str,
     plan: &TextReplacement,
-    selected_source_id: Option<&str>,
-    selected_error_class: Option<&str>,
+    transition: &TransitionAudit,
 ) -> EditPlanSafetyReport {
     let original_chars = original.chars().collect::<Vec<_>>();
     let plan_cursor_valid = replacement_plan_has_valid_cursor(original_chars.len(), plan);
@@ -50,21 +50,23 @@ pub fn autocorrect_edit_safety(
         || insertion_splits_word;
     let changes_non_last_word = changed_non_last_word(original, replacement);
     let would_touch_words = touched_word_count(&original_chars, delete_start, cursor);
-    let trailing_ws = trailing_whitespace_chars(original);
+    let trailing_ws = crate::word_reader::trailing_whitespace_char_count(original);
     let rewrites_inside_committed_tail =
         (plan.backspaces > 0 || !plan.insert.is_empty()) && plan.move_left as usize > trailing_ws;
 
-    let boundary_proof = boundary_proof_source(selected_source_id, selected_error_class);
-    let layout_phrase = selected_error_class == Some("wrong_layout");
-    let semantic_source = selected_source_id.is_some_and(|source| {
-        crate::correction_source_contract::is_l3_context_source(source)
-            || crate::correction_source_contract::is_l2_surface_source(source)
-    });
+    let boundary_proof = matches!(
+        transition.proof,
+        Some(TransitionProof::Boundary | TransitionProof::ManualIntent)
+    );
+    let layout_phrase = transition.proof == Some(TransitionProof::Layout);
+    let semantic_source = transition.proof == Some(TransitionProof::Context);
 
     let strong_boundary_shape =
         !boundary_changed || layout_phrase || strong_boundary_edit_shape(original, replacement);
 
-    let (allow_apply, reason) = if !plan_cursor_valid {
+    let (allow_apply, reason) = if let Some(reason) = transition.block_reason() {
+        (false, reason)
+    } else if !plan_cursor_valid {
         (false, "invalid_edit_plan_cursor_bounds")
     } else if !plan_matches_replacement {
         (false, "edit_plan_dry_run_mismatch")
@@ -119,24 +121,12 @@ fn replacement_plan_has_valid_cursor(original_len: usize, plan: &TextReplacement
         .is_some_and(|final_cursor| final_cursor <= after_len)
 }
 
-fn boundary_proof_source(source_id: Option<&str>, error_class: Option<&str>) -> bool {
-    source_id.is_some_and(|source| {
-        crate::correction_source_contract::is_boundary_source(source)
-            || source == "PhraseCell32"
-            || source == "manual_toggle"
-            || source == "manual_replay"
-    }) || matches!(
-        error_class,
-        Some("boundary-shift" | "split-word" | "glued-words")
-    )
-}
-
 fn strong_boundary_edit_shape(original: &str, replacement: &str) -> bool {
     if surface_preserving_right_to_left_boundary_shift(original, replacement) {
         return true;
     }
-    let original_words = normalized_words(original);
-    let replacement_words = normalized_words(replacement);
+    let original_words = crate::word_reader::normalized_text_words(original);
+    let replacement_words = crate::word_reader::normalized_text_words(replacement);
     if replacement_words.len() != original_words.len().saturating_add(1) {
         return false;
     }
@@ -167,8 +157,8 @@ pub(crate) fn surface_preserving_right_to_left_boundary_shift(
     {
         return false;
     }
-    let original_words = normalized_words(original);
-    let replacement_words = normalized_words(replacement);
+    let original_words = crate::word_reader::normalized_text_words(original);
+    let replacement_words = crate::word_reader::normalized_text_words(replacement);
     if original_words.len() < 2 || original_words.len() != replacement_words.len() {
         return false;
     }
@@ -220,15 +210,6 @@ fn same_whitespace_signal(original: &str, replacement: &str) -> bool {
         .chars()
         .filter(|ch| ch.is_whitespace())
         .eq(replacement.chars().filter(|ch| ch.is_whitespace()))
-}
-
-fn normalized_words(text: &str) -> Vec<String> {
-    text.split_whitespace()
-        .filter_map(|token| {
-            let (_, word, _) = crate::word_reader::split_word_punctuation(token);
-            (!word.is_empty()).then(|| word.to_lowercase())
-        })
-        .collect()
 }
 
 fn confident_split_pair(
@@ -314,13 +295,6 @@ fn touched_word_count(chars: &[char], start: usize, end: usize) -> usize {
         }
     }
     count
-}
-
-fn trailing_whitespace_chars(text: &str) -> usize {
-    text.chars()
-        .rev()
-        .take_while(|ch| ch.is_whitespace())
-        .count()
 }
 
 fn core_contains_space(text: &str) -> bool {

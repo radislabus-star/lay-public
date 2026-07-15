@@ -65,18 +65,19 @@ fn deterministic_text_candidates(req: &CorrectionRequest<'_>) -> Vec<UnifiedCorr
     for (candidate, replacement) in
         collect_typing_assist_candidates_with_pipeline(req.text, req.auto_switch_layout, &pipeline)
     {
-        let origin = correction_source_contract::candidate_origin(&candidate.rule_id);
+        let declared_error_class = rule_error_class(&candidate.rule_id);
+        let origin = typing_rule_origin(candidate.score.family, declared_error_class);
         let error_class = action_operator::classify_token_transition(
             req.text,
             &replacement,
             origin,
-            rule_error_class(&candidate.rule_id),
+            declared_error_class,
         );
-        let gate =
-            gate_candidate_with_source(req.text, &replacement, error_class, &candidate.rule_id);
+        let gate = gate_candidate_with_origin(req.text, &replacement, error_class, origin);
         candidates.push(UnifiedCorrectionCandidate::new(
             replacement,
             CorrectionDecisionSource::Deterministic,
+            origin,
             candidate.rule_id,
             error_class,
             gate,
@@ -128,15 +129,17 @@ fn boundary_shift_transition_candidate(
     }
     replacement.push_str(trailing);
 
-    let gate = gate_candidate_with_source(
+    let origin = CandidateOrigin::Boundary;
+    let gate = gate_candidate_with_origin(
         req.text,
         &replacement,
         TypingErrorClass::BoundaryShift,
-        ids::MOVED_PREFIX_PAIR,
+        origin,
     );
     Some(UnifiedCorrectionCandidate::new(
         replacement,
         CorrectionDecisionSource::Deterministic,
+        origin,
         ids::MOVED_PREFIX_PAIR,
         TypingErrorClass::BoundaryShift,
         gate,
@@ -152,15 +155,17 @@ fn multiword_layout_projection_candidate(
     let (leading, core, trailing) = split_edge_whitespace(req.text);
     let converted = crate::layout_autoswitch::correct_wrong_layout_ascii_phrase(core)?;
     let replacement = format!("{leading}{converted}{trailing}");
-    let gate = gate_candidate_with_source(
+    let origin = CandidateOrigin::Layout;
+    let gate = gate_candidate_with_origin(
         req.text,
         &replacement,
         TypingErrorClass::WrongLayout,
-        ids::LAYOUT_EN_TO_RU,
+        origin,
     );
     Some(UnifiedCorrectionCandidate::new(
         replacement,
         CorrectionDecisionSource::Deterministic,
+        origin,
         ids::LAYOUT_EN_TO_RU,
         TypingErrorClass::WrongLayout,
         gate,
@@ -199,11 +204,12 @@ fn short_cyrillic_layout_shadow_candidate(
     }
 
     let replacement = replace_last_text_word(req.text, &replacement_word)?;
-    let gate = gate_candidate_with_source(
+    let origin = CandidateOrigin::Layout;
+    let gate = gate_candidate_with_origin(
         req.text,
         &replacement,
         TypingErrorClass::WrongLayout,
-        ids::LAYOUT_RU_TO_EN,
+        origin,
     );
     if gate.action != CandidateGateAction::SuggestOnly {
         return None;
@@ -212,6 +218,7 @@ fn short_cyrillic_layout_shadow_candidate(
     Some(UnifiedCorrectionCandidate::new(
         replacement,
         CorrectionDecisionSource::Deterministic,
+        origin,
         ids::LAYOUT_RU_TO_EN,
         TypingErrorClass::WrongLayout,
         gate,
@@ -234,15 +241,17 @@ fn repeated_letter_fallback_candidate(
     }
 
     let source_id = ids::REPEATED_LETTER;
-    let gate = gate_candidate_with_source(
+    let origin = CandidateOrigin::DeterministicTypo;
+    let gate = gate_candidate_with_origin(
         req.text,
         &replacement,
         TypingErrorClass::RepeatedLetter,
-        source_id,
+        origin,
     );
     Some(UnifiedCorrectionCandidate::new(
         replacement,
         CorrectionDecisionSource::Deterministic,
+        origin,
         source_id,
         TypingErrorClass::RepeatedLetter,
         gate,
@@ -302,15 +311,17 @@ fn layout_then_typo_candidate(
         .as_ref()
         .map(|candidate| format!("layout_then_{}", candidate.rule_id))
         .unwrap_or_else(|| "layout_then_known_word".to_string());
-    let gate = gate_candidate_with_source(
+    let origin = CandidateOrigin::LayoutThenTypo;
+    let gate = gate_candidate_with_origin(
         req.text,
         &final_replacement,
         TypingErrorClass::CompositeTypo,
-        &source_id,
+        origin,
     );
     Some(UnifiedCorrectionCandidate::new(
         final_replacement,
         CorrectionDecisionSource::Deterministic,
+        origin,
         source_id,
         TypingErrorClass::CompositeTypo,
         gate,
@@ -346,15 +357,17 @@ fn composite_russian_typo_candidate(
             .or_else(|| replace_last_text_word(req.text, &replacement_word))?;
         if replacement != req.text && syntax_allows_candidate(req.text, &replacement) {
             let source_id = ids::ADJACENT_TRANSPOSITION;
-            let gate = gate_candidate_with_source(
+            let origin = CandidateOrigin::DeterministicTypo;
+            let gate = gate_candidate_with_origin(
                 req.text,
                 &replacement,
                 TypingErrorClass::AdjacentTransposition,
-                source_id,
+                origin,
             );
             return Some(UnifiedCorrectionCandidate::new(
                 replacement,
                 CorrectionDecisionSource::Deterministic,
+                origin,
                 source_id,
                 TypingErrorClass::AdjacentTransposition,
                 gate,
@@ -372,15 +385,17 @@ fn composite_russian_typo_candidate(
             .or_else(|| replace_last_text_word(req.text, &replacement_word))?;
         if replacement != req.text && syntax_allows_candidate(req.text, &replacement) {
             let source_id = "composite_ru_typo";
-            let gate = gate_candidate_with_source(
+            let origin = CandidateOrigin::DeterministicTypo;
+            let gate = gate_candidate_with_origin(
                 req.text,
                 &replacement,
                 TypingErrorClass::CompositeTypo,
-                source_id,
+                origin,
             );
             return Some(UnifiedCorrectionCandidate::new(
                 replacement,
                 CorrectionDecisionSource::Deterministic,
+                origin,
                 source_id,
                 TypingErrorClass::CompositeTypo,
                 gate,
@@ -471,15 +486,17 @@ fn composite_russian_typo_candidate(
     }
 
     let source_id = "composite_ru_typo";
-    let gate = gate_candidate_with_source(
+    let origin = CandidateOrigin::DeterministicTypo;
+    let gate = gate_candidate_with_origin(
         req.text,
         &replacement,
         TypingErrorClass::CompositeTypo,
-        source_id,
+        origin,
     );
     let composite = UnifiedCorrectionCandidate::new(
         replacement,
         CorrectionDecisionSource::Deterministic,
+        origin,
         source_id,
         TypingErrorClass::CompositeTypo,
         gate,
@@ -512,16 +529,18 @@ fn current_word_rule_candidate(
     if replacement == req.text || !syntax_allows_candidate(req.text, &replacement) {
         return None;
     }
-    let rule_id = explanation
+    let (rule_id, family) = explanation
         .chosen
         .as_ref()
-        .map(|candidate| candidate.rule_id.as_str())
-        .unwrap_or("current_word_rule");
+        .map(|candidate| (candidate.rule_id.as_str(), candidate.score.family))
+        .unwrap_or(("current_word_rule", TypingCandidateFamily::Unknown));
     let error_class = rule_error_class(rule_id);
-    let gate = gate_candidate_with_source(req.text, &replacement, error_class, rule_id);
+    let origin = typing_rule_origin(family, error_class);
+    let gate = gate_candidate_with_origin(req.text, &replacement, error_class, origin);
     Some(UnifiedCorrectionCandidate::new(
         replacement,
         CorrectionDecisionSource::Deterministic,
+        origin,
         rule_id,
         error_class,
         gate,
@@ -603,11 +622,12 @@ fn delayed_context_candidates_with_memory(
         .filter(|candidate| candidate.support >= 2)
         .filter_map(|candidate| {
             let replacement = replace_penultimate_text_word(original, &candidate.token)?;
-            let mut gate = gate_candidate_with_source(
+            let origin = CandidateOrigin::L3Context;
+            let mut gate = gate_candidate_with_origin(
                 original,
                 &replacement,
                 TypingErrorClass::CompositeTypo,
-                "PhraseMemoryCell32",
+                origin,
             );
             if gate.action == CandidateGateAction::Eligible {
                 gate = CandidateGateDecision {
@@ -618,6 +638,7 @@ fn delayed_context_candidates_with_memory(
             Some(UnifiedCorrectionCandidate::new(
                 replacement,
                 CorrectionDecisionSource::Nanda,
+                origin,
                 "PhraseMemoryCell32",
                 TypingErrorClass::CompositeTypo,
                 gate,
@@ -671,17 +692,18 @@ fn nanda_word_candidate(
     if replacement == original {
         return None;
     }
-    let origin = correction_source_contract::candidate_origin(candidate.source);
+    let origin = candidate.origin;
     let error_class = action_operator::classify_token_transition(
         original,
         &replacement,
         origin,
-        nanda_source_error_class(candidate.source),
+        TypingErrorClass::Unknown,
     );
-    let gate = gate_candidate_with_source(original, &replacement, error_class, candidate.source);
+    let gate = gate_candidate_with_origin(original, &replacement, error_class, origin);
     Some(UnifiedCorrectionCandidate::new(
         replacement,
         CorrectionDecisionSource::Nanda,
+        origin,
         candidate.source,
         error_class,
         gate,
@@ -1000,28 +1022,28 @@ fn rule_error_class(rule_id: &str) -> TypingErrorClass {
     }
 }
 
-fn nanda_source_error_class(source: &str) -> TypingErrorClass {
-    if source == "BoundaryShiftCell32" {
-        return TypingErrorClass::BoundaryShift;
-    }
-    if correction_source_contract::candidate_origin(source) == CandidateOrigin::LayoutThenTypo {
-        return TypingErrorClass::CompositeTypo;
-    }
-    match correction_source_contract::source_role(source) {
-        CorrectionSourceRole::Layout => TypingErrorClass::WrongLayout,
-        CorrectionSourceRole::Boundary => TypingErrorClass::GluedWords,
-        CorrectionSourceRole::Completion => TypingErrorClass::CompletionOnly,
-        CorrectionSourceRole::L2Surface | CorrectionSourceRole::L3Context => {
-            TypingErrorClass::CompositeTypo
+fn typing_rule_origin(
+    family: TypingCandidateFamily,
+    error_class: TypingErrorClass,
+) -> CandidateOrigin {
+    match error_class {
+        TypingErrorClass::WrongLayout
+        | TypingErrorClass::PartialLayout
+        | TypingErrorClass::MixedScript => CandidateOrigin::Layout,
+        TypingErrorClass::BoundaryShift
+        | TypingErrorClass::SplitWord
+        | TypingErrorClass::GluedWords => CandidateOrigin::Boundary,
+        TypingErrorClass::TechnicalToken | TypingErrorClass::ProtectedToken => {
+            CandidateOrigin::Technical
         }
-        CorrectionSourceRole::Technical => TypingErrorClass::TechnicalToken,
-        CorrectionSourceRole::DeterministicTypo | CorrectionSourceRole::Unknown => match source {
-            "ShortTokenCell32" => TypingErrorClass::PartialLayout,
-            "GrammarCell32" => TypingErrorClass::GrammarAgreement,
-            "CommonRuFixCell32" | "LearnedMemoryCell32" | "PhraseMemoryCell32" => {
-                TypingErrorClass::CompositeTypo
-            }
-            _ => TypingErrorClass::Unknown,
+        _ => match family {
+            TypingCandidateFamily::Layout => CandidateOrigin::Layout,
+            TypingCandidateFamily::Structural => CandidateOrigin::Boundary,
+            TypingCandidateFamily::Exact
+            | TypingCandidateFamily::Visual
+            | TypingCandidateFamily::Typo
+            | TypingCandidateFamily::Cleanup
+            | TypingCandidateFamily::Unknown => CandidateOrigin::DeterministicTypo,
         },
     }
 }

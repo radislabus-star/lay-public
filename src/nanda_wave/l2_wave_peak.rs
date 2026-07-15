@@ -4,8 +4,8 @@
 //! converts every proposed replacement into a word-center peak. The decision
 //! core can then rank peaks instead of trusting a rule id as authority.
 
+use crate::candidate_contract::{CandidateOrigin, CorrectionSourceRole};
 use crate::correction_core::TypingErrorClass;
-use crate::correction_source_contract::{CandidateOrigin, CorrectionSourceRole};
 use crate::text_metrics::{damerau_levenshtein, has_cyrillic, has_latin};
 use crate::word_reader::{last_text_word, split_word_punctuation};
 
@@ -78,9 +78,9 @@ pub(crate) fn score_correction_peak(
     L2WavePeakScore {
         signal,
         rank_bonus,
-        positive_milli: score_to_milli(positive),
-        negative_milli: score_to_milli(negative),
-        uncertainty_milli: score_to_milli(uncertainty),
+        positive_milli: crate::text_metrics::score_to_milli(positive),
+        negative_milli: crate::text_metrics::score_to_milli(negative),
+        uncertainty_milli: crate::text_metrics::score_to_milli(uncertainty),
         reason: peak_reason(
             center,
             layout,
@@ -128,9 +128,9 @@ pub(crate) fn score_live_completion_peak(
     L2WavePeakScore {
         signal,
         rank_bonus,
-        positive_milli: score_to_milli(positive),
-        negative_milli: score_to_milli(negative),
-        uncertainty_milli: score_to_milli(uncertainty),
+        positive_milli: crate::text_metrics::score_to_milli(positive),
+        negative_milli: crate::text_metrics::score_to_milli(negative),
+        uncertainty_milli: crate::text_metrics::score_to_milli(uncertainty),
         reason: live_peak_reason(structural, foundation, usage_prior, context_prior, rejected),
     }
 }
@@ -238,7 +238,7 @@ fn operator_resonance(error_class: TypingErrorClass, role: CorrectionSourceRole)
         CorrectionSourceRole::L2Surface => 0.10,
         CorrectionSourceRole::L3Context => 0.08,
         CorrectionSourceRole::Completion => 0.06,
-        CorrectionSourceRole::Technical | CorrectionSourceRole::Unknown => match error_class {
+        CorrectionSourceRole::Technical => match error_class {
             TypingErrorClass::WrongLayout | TypingErrorClass::MixedScript => 0.10,
             _ => 0.0,
         },
@@ -405,17 +405,11 @@ fn live_peak_reason(
     }
 }
 
-fn score_to_milli(value: f32) -> i16 {
-    (value * 1000.0)
-        .round()
-        .clamp(i16::MIN as f32, i16::MAX as f32) as i16
-}
-
 #[cfg(test)]
 mod tests {
     use super::score_correction_peak;
+    use crate::candidate_contract::CandidateOrigin;
     use crate::correction_core::TypingErrorClass;
-    use crate::correction_source_contract::CandidateOrigin;
 
     #[test]
     fn layout_projection_forms_strong_wave_peak() {

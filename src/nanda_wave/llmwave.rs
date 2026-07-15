@@ -9,6 +9,7 @@ use std::sync::OnceLock;
 use super::feedback::{FeedbackAdjustment, L3Feedback};
 use super::options::WaveOptions;
 use super::signal::{LayerTrace, WordCandidate};
+use crate::candidate_contract::CandidateOrigin;
 use crate::keyboard::is_cyrillic_letter;
 use crate::russian_chars::is_russian_vowel;
 use crate::time::unix_timestamp;
@@ -46,6 +47,7 @@ pub struct LlmWaveReport {
 #[derive(Debug, Clone, PartialEq)]
 pub struct LlmWaveCandidateScore {
     pub source: &'static str,
+    pub(crate) origin: crate::candidate_contract::CandidateOrigin,
     pub text: String,
     pub score: f32,
     pub support: usize,
@@ -1247,6 +1249,7 @@ pub fn score_candidates(
             let report = memory.score_next_token_report(&prefix, &next)?;
             (report.score > 0.0).then(|| LlmWaveCandidateScore {
                 source: candidate.source,
+                origin: candidate.origin,
                 text: candidate.text.clone(),
                 score: report.score,
                 support: report.support,
@@ -1367,6 +1370,7 @@ fn phrase_prediction_to_candidate(
     };
     Some(WordCandidate {
         text,
+        origin: CandidateOrigin::Completion,
         source: super::context_wave::PHRASE_FORECAST_CELL,
         energy: (0.52 + prediction.score * 0.34).clamp(0.0, 0.88),
         risk: (0.28 - prediction.score * 0.08).clamp(0.16, 0.28),
@@ -1399,6 +1403,7 @@ fn report_to_feedback(report: &LlmWaveReport) -> L3Feedback {
     L3Feedback {
         adjustments: vec![FeedbackAdjustment {
             source: top.source,
+            origin: top.origin,
             energy_delta,
             risk_delta,
             reason: "llmwave_main_context_memory",
@@ -1623,6 +1628,7 @@ mod tests {
         let memory = LlmWaveMemory::from_text("html вот api");
         let candidates = vec![WordCandidate {
             text: "html вот api".to_string(),
+            origin: CandidateOrigin::Layout,
             source: "LayoutWordCell32",
             energy: 0.7,
             risk: 0.1,
@@ -1702,6 +1708,7 @@ mod tests {
         let candidates = vec![
             WordCandidate {
                 text: "на улице опять идёт дом".to_string(),
+                origin: CandidateOrigin::Completion,
                 source: "PhraseForecastCell32",
                 energy: 0.7,
                 risk: 0.1,
@@ -1709,6 +1716,7 @@ mod tests {
             },
             WordCandidate {
                 text: "на улице опять идёт дождь".to_string(),
+                origin: CandidateOrigin::Completion,
                 source: "PhraseForecastCell32",
                 energy: 0.7,
                 risk: 0.1,
@@ -1730,6 +1738,7 @@ mod tests {
         );
         let candidates = vec![WordCandidate {
             text: "на улице опять идёт дождь".to_string(),
+            origin: CandidateOrigin::Completion,
             source: "PhraseForecastCell32",
             energy: 0.5,
             risk: 0.1,

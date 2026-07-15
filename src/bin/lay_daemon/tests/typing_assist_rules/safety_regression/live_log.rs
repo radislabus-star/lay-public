@@ -56,7 +56,7 @@ fn typing_assist_keeps_live_log_false_positive_words() {
         "реальном продакшене ",
         "авиапорту ",
     ] {
-        assert_eq!(apply_typing_assist_exact(input), None, "input={input:?}");
+        assert_eq!(select_typing_assist_exact(input), None, "input={input:?}");
     }
 
     let input = "Проверь Сделай ";
@@ -105,7 +105,7 @@ fn typing_assist_keeps_live_log_good_repairs() {
         ("разбор арххитекры ", "разбор архитектуры "),
     ] {
         assert_eq!(
-            apply_typing_assist_exact(input),
+            select_typing_assist_exact(input),
             Some(expected.to_string()),
             "input={input:?}"
         );

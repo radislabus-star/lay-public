@@ -1,43 +1,16 @@
+use crate::candidate_contract::CandidateOrigin;
 use crate::correction_core::TypingErrorClass;
-use crate::correction_source_contract::CandidateOrigin;
 use crate::language_action::{proof_for_origin, LanguageActionProof};
+pub(crate) use crate::text_edit::TransitionOperator as EditTransitionOperator;
+use crate::text_edit::TransitionOperator;
 use crate::word_reader::{
     is_cyrillic_letters_only, split_edge_whitespace, split_last_trimmed_ws_token,
     split_word_punctuation,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum EditTransitionOperator {
-    ReplaceCurrentWord,
-    LayoutProjection,
-    BoundaryShift,
-    BoundaryMergeSplit,
-    PhraseTokenRepair,
-    SplitPreviousGluedAndRepairTail,
-    Completion,
-    Protected,
-    Unknown,
-}
-
-impl EditTransitionOperator {
-    pub(crate) const fn as_str(self) -> &'static str {
-        match self {
-            Self::ReplaceCurrentWord => "replace_current_word",
-            Self::LayoutProjection => "layout_projection",
-            Self::BoundaryShift => "boundary_shift",
-            Self::BoundaryMergeSplit => "boundary_merge_split",
-            Self::PhraseTokenRepair => "phrase_token_repair",
-            Self::SplitPreviousGluedAndRepairTail => "split_previous_glued_and_repair_tail",
-            Self::Completion => "completion",
-            Self::Protected => "protected",
-            Self::Unknown => "unknown",
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct EditTransitionProof {
-    pub(crate) operator: EditTransitionOperator,
+    pub(crate) operator: TransitionOperator,
     pub(crate) language_proof: LanguageActionProof,
     pub(crate) left_context_changed: bool,
     pub(crate) original_words: usize,
@@ -102,23 +75,33 @@ struct EditTransitionInput<'a> {
     changed_tokens: usize,
 }
 
-fn infer_operator(input: &EditTransitionInput<'_>) -> EditTransitionOperator {
+fn infer_operator(input: &EditTransitionInput<'_>) -> TransitionOperator {
     if matches!(input.proof, LanguageActionProof::SafetyVeto) {
-        return EditTransitionOperator::Protected;
+        return TransitionOperator::Protected;
     }
     if matches!(input.proof, LanguageActionProof::Completion) {
-        return EditTransitionOperator::Completion;
+        return TransitionOperator::Completion;
     }
     if !input.left_context_changed {
-        return EditTransitionOperator::ReplaceCurrentWord;
+        return TransitionOperator::ReplaceCurrentWord;
+    }
+    if contextual_layout_repair_is_verified(
+        input.proof,
+        input.error_class,
+        input.original_words,
+        input.replacement_words,
+        input.changed_tokens,
+    ) {
+        return TransitionOperator::PhraseTokenRepair;
     }
     if layout_projection_is_verified(
         input.proof,
         input.error_class,
         input.original_words,
         input.replacement_words,
+        input.changed_tokens,
     ) {
-        return EditTransitionOperator::LayoutProjection;
+        return TransitionOperator::LayoutProjection;
     }
     if boundary_shift_is_verified(
         input.original,
@@ -129,7 +112,7 @@ fn infer_operator(input: &EditTransitionInput<'_>) -> EditTransitionOperator {
         input.replacement_words,
         input.changed_tokens,
     ) {
-        return EditTransitionOperator::BoundaryShift;
+        return TransitionOperator::BoundaryShift;
     }
     if boundary_merge_split_is_verified(
         input.proof,
@@ -137,7 +120,7 @@ fn infer_operator(input: &EditTransitionInput<'_>) -> EditTransitionOperator {
         input.original_words,
         input.replacement_words,
     ) {
-        return EditTransitionOperator::BoundaryMergeSplit;
+        return TransitionOperator::BoundaryMergeSplit;
     }
     if phrase_token_repair_is_verified(
         input.proof,
@@ -145,18 +128,61 @@ fn infer_operator(input: &EditTransitionInput<'_>) -> EditTransitionOperator {
         input.replacement_words,
         input.changed_tokens,
     ) {
-        return EditTransitionOperator::PhraseTokenRepair;
+        return TransitionOperator::PhraseTokenRepair;
     }
     if split_previous_glued_and_repair_tail_is_verified(input.original, input.replacement) {
-        return EditTransitionOperator::SplitPreviousGluedAndRepairTail;
+        return TransitionOperator::SplitPreviousGluedAndRepairTail;
     }
-    EditTransitionOperator::Unknown
+    TransitionOperator::Unknown
 }
 
-fn operator_is_verified(operator: EditTransitionOperator) -> bool {
+fn contextual_layout_repair_is_verified(
+    proof: LanguageActionProof,
+    error_class: TypingErrorClass,
+    original_words: &[String],
+    replacement_words: &[String],
+    changed_tokens: usize,
+) -> bool {
+    if !matches!(proof, LanguageActionProof::Layout)
+        || !matches!(
+            error_class,
+            TypingErrorClass::WrongLayout
+                | TypingErrorClass::PartialLayout
+                | TypingErrorClass::MixedScript
+        )
+        || original_words.len() < 2
+        || original_words.len() != replacement_words.len()
+        || changed_tokens != 1
+    {
+        return false;
+    }
+
+    original_words
+        .iter()
+        .zip(replacement_words)
+        .enumerate()
+        .find(|(_, (original, replacement))| original != replacement)
+        .is_some_and(|(index, (original, replacement))| {
+            index + 1 < original_words.len()
+                && original.chars().count() <= 2
+                && replacement.chars().count() <= 2
+                && exact_layout_projection(original, replacement)
+        })
+}
+
+fn exact_layout_projection(original: &str, replacement: &str) -> bool {
+    let direction = if original.chars().any(|ch| ch.is_ascii_alphabetic()) {
+        crate::dict::Direction::Us2Ru
+    } else {
+        crate::dict::Direction::Ru2Us
+    };
+    crate::dict::convert(original, direction) == replacement
+}
+
+fn operator_is_verified(operator: TransitionOperator) -> bool {
     !matches!(
         operator,
-        EditTransitionOperator::Unknown | EditTransitionOperator::Protected
+        TransitionOperator::Unknown | TransitionOperator::Protected
     )
 }
 
@@ -175,6 +201,7 @@ fn layout_projection_is_verified(
     error_class: TypingErrorClass,
     original_words: &[String],
     replacement_words: &[String],
+    changed_tokens: usize,
 ) -> bool {
     matches!(proof, LanguageActionProof::Layout)
         && matches!(
@@ -185,6 +212,7 @@ fn layout_projection_is_verified(
         )
         && original_words.len() >= 2
         && original_words.len() == replacement_words.len()
+        && changed_tokens == original_words.len()
 }
 
 fn boundary_shift_is_verified(
@@ -205,6 +233,23 @@ fn boundary_shift_is_verified(
             original,
             replacement,
         )
+        && changed_replacement_tokens_have_lexical_mass(original_words, replacement_words)
+}
+
+fn changed_replacement_tokens_have_lexical_mass(
+    original_words: &[String],
+    replacement_words: &[String],
+) -> bool {
+    original_words
+        .iter()
+        .zip(replacement_words)
+        .filter(|(original, replacement)| original != replacement)
+        .all(|(_, replacement)| {
+            let (_, word, _) = split_word_punctuation(replacement);
+            !word.is_empty()
+                && (!is_cyrillic_letters_only(word)
+                    || crate::phrase_lexicon::is_known_russian_phrase_part(&word.to_lowercase()))
+        })
 }
 
 fn boundary_merge_split_is_verified(
@@ -355,7 +400,7 @@ mod tests {
             CandidateOrigin::L2Surface,
         );
 
-        assert_eq!(proof.operator, EditTransitionOperator::ReplaceCurrentWord);
+        assert_eq!(proof.operator, TransitionOperator::ReplaceCurrentWord);
         assert!(proof.verified);
         assert_eq!(proof.reject_apply_reason(), None);
     }
@@ -369,7 +414,7 @@ mod tests {
             CandidateOrigin::L2Surface,
         );
 
-        assert_eq!(proof.operator, EditTransitionOperator::Unknown);
+        assert_eq!(proof.operator, TransitionOperator::Unknown);
         assert_eq!(
             proof.reject_apply_reason(),
             Some("edit_transition_not_verified")
@@ -385,7 +430,7 @@ mod tests {
             CandidateOrigin::Layout,
         );
 
-        assert_eq!(proof.operator, EditTransitionOperator::LayoutProjection);
+        assert_eq!(proof.operator, TransitionOperator::LayoutProjection);
         assert!(proof.verified);
     }
 
@@ -398,7 +443,7 @@ mod tests {
             CandidateOrigin::Layout,
         );
 
-        assert_eq!(proof.operator, EditTransitionOperator::Unknown);
+        assert_eq!(proof.operator, TransitionOperator::Unknown);
         assert_eq!(
             proof.reject_apply_reason(),
             Some("edit_transition_not_verified")
@@ -414,7 +459,7 @@ mod tests {
             CandidateOrigin::L3Context,
         );
 
-        assert_eq!(proof.operator, EditTransitionOperator::PhraseTokenRepair);
+        assert_eq!(proof.operator, TransitionOperator::PhraseTokenRepair);
         assert!(proof.verified);
     }
 
@@ -431,7 +476,7 @@ mod tests {
                 CandidateOrigin::Boundary,
             );
 
-            assert_eq!(proof.operator, EditTransitionOperator::BoundaryShift);
+            assert_eq!(proof.operator, TransitionOperator::BoundaryShift);
             assert!(proof.verified);
             assert!(proof.left_context_changed);
             assert_eq!(proof.changed_tokens, 2);
@@ -455,7 +500,7 @@ mod tests {
             );
             assert_ne!(
                 proof.operator,
-                EditTransitionOperator::BoundaryShift,
+                TransitionOperator::BoundaryShift,
                 "replacement={replacement:?} proof={proof:?}"
             );
             assert!(
@@ -476,7 +521,7 @@ mod tests {
 
         assert_eq!(
             proof.operator,
-            EditTransitionOperator::SplitPreviousGluedAndRepairTail
+            TransitionOperator::SplitPreviousGluedAndRepairTail
         );
         assert!(proof.verified);
     }
@@ -490,7 +535,7 @@ mod tests {
             CandidateOrigin::Technical,
         );
 
-        assert_eq!(proof.operator, EditTransitionOperator::Protected);
+        assert_eq!(proof.operator, TransitionOperator::Protected);
         assert!(!proof.verified);
     }
 }

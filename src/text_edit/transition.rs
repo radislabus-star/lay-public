@@ -1,4 +1,5 @@
 use super::action::EditAction;
+use super::mutation::{TransitionOperator, TransitionProof};
 use super::types::TextReplacement;
 use super::visible_tail::{VisibleTailSnapshot, VisibleTailSource};
 use crate::typing_transition::decision::TransitionDecisionCore;
@@ -43,16 +44,12 @@ pub enum TextTransitionIntent {
 }
 
 impl TextTransitionIntent {
-    pub(crate) fn operator(self) -> &'static str {
-        match self {
-            Self::ImeAutocorrect => "ime_committed_tail_autocorrect",
-            Self::ImeManualToggle => "ime_committed_tail_manual_toggle",
-            Self::DaemonBridge => "daemon_visible_tail_bridge",
-        }
+    pub(crate) const fn operator(self) -> TransitionOperator {
+        TransitionOperator::VisibleTail
     }
 
-    pub(crate) fn proof(self) -> &'static str {
-        "visible_field_state_and_edit_plan_checked"
+    pub(crate) const fn proof(self) -> TransitionProof {
+        TransitionProof::VisibleState
     }
 }
 
@@ -145,7 +142,9 @@ mod tests {
         decide_text_transition, LatentTextTransitionCandidate, TextTransitionDecision,
         TextTransitionIntent, TextTransitionRejection, VisibleFieldState,
     };
-    use crate::text_edit::{EditActionKind, VisibleTailSnapshot, VisibleTailSource};
+    use crate::text_edit::{
+        EditActionKind, TransitionOperator, VisibleTailSnapshot, VisibleTailSource,
+    };
 
     fn candidate(delete_chars: u32, insert_text: &str) -> LatentTextTransitionCandidate {
         LatentTextTransitionCandidate::new(
@@ -170,8 +169,8 @@ mod tests {
                 assert_eq!(plan.insert, "вет");
                 assert_eq!(action.kind, EditActionKind::ReplaceLastToken);
                 assert_eq!(
-                    action.transition.operator.as_deref(),
-                    Some("ime_committed_tail_autocorrect")
+                    action.transition.operator,
+                    Some(TransitionOperator::VisibleTail)
                 );
             }
             other => panic!("unexpected decision: {other:?}"),
@@ -320,8 +319,8 @@ mod tests {
                 let action = action.expect("edit action");
                 assert_eq!(action.kind, EditActionKind::BlockUnsafe);
                 assert_eq!(
-                    action.transition.operator.as_deref(),
-                    Some("ime_committed_tail_autocorrect")
+                    action.transition.operator,
+                    Some(TransitionOperator::VisibleTail)
                 );
             }
             other => panic!("unexpected decision: {other:?}"),

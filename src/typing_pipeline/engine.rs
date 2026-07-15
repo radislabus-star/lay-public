@@ -35,16 +35,16 @@ pub(crate) fn collect_typing_assist_candidates_with_pipeline(
     .collect()
 }
 
-pub fn apply_typing_assist_exact(text: &str) -> Option<String> {
-    apply_typing_assist_with_pipeline(text, false, &default_typing_assist_pipeline())
+pub fn select_typing_assist_exact(text: &str) -> Option<String> {
+    select_typing_assist_with_pipeline(text, false, &default_typing_assist_pipeline())
 }
 
-pub fn apply_typing_assist(text: &str, allow_layout_auto: bool) -> Option<String> {
+pub fn select_typing_assist(text: &str, allow_layout_auto: bool) -> Option<String> {
     let pipeline = default_typing_assist_pipeline();
-    apply_typing_assist_with_pipeline(text, allow_layout_auto, &pipeline)
+    select_typing_assist_with_pipeline(text, allow_layout_auto, &pipeline)
 }
 
-pub fn apply_typing_assist_with_pipeline(
+pub fn select_typing_assist_with_pipeline(
     text: &str,
     allow_layout_auto: bool,
     pipeline: &[TypingAssistRuleConfig],

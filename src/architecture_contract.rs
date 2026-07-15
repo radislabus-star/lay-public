@@ -29,7 +29,7 @@ pub struct ArchitectureLine {
     pub debt: &'static str,
 }
 
-const LINES: [ArchitectureLine; 7] = [
+const LINES: [ArchitectureLine; 8] = [
     ArchitectureLine {
         id: "decision-authority",
         layer: "Transition Decision Core",
@@ -53,6 +53,14 @@ const LINES: [ArchitectureLine; 7] = [
         status: ContractStatus::Pass,
         proof: "multiword, boundary, middle-tail, and stale-tail edits require proof",
         debt: "all future text mutation paths must carry an EditAction",
+    },
+    ArchitectureLine {
+        id: "typed-transition-capability",
+        layer: "Transition Proof Capability",
+        owner: "text_edit::mutation + text_edit::gate",
+        status: ContractStatus::Pass,
+        proof: "generic proof construction is crate-private; adapters receive narrow typed edit plans",
+        debt: "new output routes must not construct TransitionAudit or generic transition plans",
     },
     ArchitectureLine {
         id: "hot-field-memory",
@@ -224,6 +232,35 @@ pub fn observed_contract_status(id: &str) -> ContractStatus {
                 ContractStatus::Watch
             }
         }
+        "typed-transition-capability" => {
+            let mutation = include_str!("text_edit/mutation.rs");
+            let gate = include_str!("text_edit/gate.rs");
+            let facade = include_str!("text_edit.rs");
+            let adapter_routes = [
+                include_str!("bin/lay_daemon/auto_undo_runtime.rs"),
+                include_str!("bin/lay_daemon/enter_autocorrect_runtime.rs"),
+                include_str!("bin/lay_daemon/correction_runtime/output/text_replace.rs"),
+                include_str!("bin/lay_daemon/correction_runtime/output/replay.rs"),
+                include_str!("bin/lay_daemon/correction_runtime/output/native.rs"),
+                include_str!("bin/lay_ibus_engine/composition_commit.rs"),
+                include_str!("bin/lay_ibus_engine/committed_tail.rs"),
+            ];
+            let proof_is_sealed = mutation.contains("pub(crate) fn proven(")
+                && mutation.contains("pub(crate) operator: Option<TransitionOperator>")
+                && mutation.contains("!matches!(proof, TransitionProof::Invariant)");
+            let generic_plan_is_sealed = gate
+                .contains("pub(crate) fn plan_verified_transition_edit(")
+                && !facade.contains("pub use gate::plan_verified_transition_edit");
+            let adapters_use_only_narrow_plans = adapter_routes.iter().all(|source| {
+                !source.contains("TransitionAudit::proven(")
+                    && !source.contains("plan_verified_transition_edit(")
+            });
+            if proof_is_sealed && generic_plan_is_sealed && adapters_use_only_narrow_plans {
+                ContractStatus::Pass
+            } else {
+                ContractStatus::Watch
+            }
+        }
         "hot-field-memory" => source_contains_all(
             include_str!("nanda_wave/l2_candidate_phase.rs"),
             &[
@@ -308,12 +345,15 @@ mod tests {
     };
 
     #[test]
-    fn architecture_contract_has_seven_pass_lines() {
+    fn architecture_contract_has_eight_pass_lines() {
         let lines = architecture_lines();
-        assert_eq!(lines.len(), 7);
+        assert_eq!(lines.len(), 8);
         assert!(all_contract_lines_pass());
         assert!(lines.iter().any(|line| line.id == "ime-backend-only"));
         assert!(lines.iter().any(|line| line.id == "edit-plan-verifier"));
+        assert!(lines
+            .iter()
+            .any(|line| line.id == "typed-transition-capability"));
         assert!(lines.iter().any(|line| line.id == "l3-l4-learning"));
         assert_eq!(
             observed_contract_status("edit-plan-verifier"),

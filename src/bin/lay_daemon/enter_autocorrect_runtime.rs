@@ -5,7 +5,6 @@ use lay::correction_core::CorrectionMode;
 use lay::decoder::{decode_enter_autocorrect_tail, DecoderEditPlan};
 use lay::input_gate::{decide_input_gate, InputGateRequest, InputGateTrigger};
 use lay::keyboard::{map_original_events, KeyEvent};
-use lay::text_edit::TransitionAudit;
 use lay::word_buffer::WordBuffer;
 use std::sync::atomic::Ordering;
 use std::time::Instant;
@@ -102,38 +101,16 @@ pub(super) fn handle_enter_autocorrect(
         log("⚠ enter-autocorrect skipped before delete: edit plan invariant failed");
         return None;
     };
-    let source_id = input_gate
-        .as_ref()
-        .and_then(|trace| trace.selected_source_id.as_deref());
-    let error_class = input_gate
-        .as_ref()
-        .and_then(|trace| trace.selected_error_class.as_deref());
-    let confidence_milli = input_gate
-        .as_ref()
-        .and_then(|trace| trace.scoreboard.as_ref())
-        .and_then(|scoreboard| scoreboard.selected_bayes_posterior_milli)
-        .unwrap_or(0);
-    let transition = input_gate
-        .as_ref()
-        .map(RecentActionGateTrace::selected_transition_audit)
-        .unwrap_or_else(|| {
-            TransitionAudit::proven(
-                "enter_autocorrect",
-                "enter_boundary_plan_verified",
-                true,
-                false,
-                original.split_whitespace().count().max(1),
-            )
-        });
-    let edit_action = lay::text_edit::authorize_replacement_with_transition(
+    let Some(input_gate_trace) = input_gate.as_ref() else {
+        log("· enter-autocorrect skipped: transition trace missing");
+        return None;
+    };
+    let edit_action = lay::text_edit::plan_input_gate_edit(
         "enter-autocorrect",
-        confidence_milli,
         original.as_str(),
         replacement.as_str(),
         plan.clone(),
-        source_id,
-        error_class,
-        transition,
+        input_gate_trace,
     );
     lay::action_log::record_candidate_edit_action_before_apply(
         &edit_action,

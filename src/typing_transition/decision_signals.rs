@@ -199,11 +199,11 @@ fn transition_rank_bonus(
         verifier::EditTransitionOperator::PhraseTokenRepair => 0.16,
         verifier::EditTransitionOperator::ReplaceCurrentWord => {
             if candidate
-                .has_origin(crate::correction_source_contract::CandidateOrigin::DeterministicTypo)
+                .has_origin(crate::candidate_contract::CandidateOrigin::DeterministicTypo)
             {
                 0.08
             } else if candidate
-                .has_origin(crate::correction_source_contract::CandidateOrigin::L2Surface)
+                .has_origin(crate::candidate_contract::CandidateOrigin::L2Surface)
             {
                 -0.08
             } else {
@@ -212,14 +212,14 @@ fn transition_rank_bonus(
         }
         verifier::EditTransitionOperator::Completion
         | verifier::EditTransitionOperator::Protected
-        | verifier::EditTransitionOperator::Unknown => 0.0,
+        | verifier::EditTransitionOperator::Unknown
+        | verifier::EditTransitionOperator::VisibleTail
+        | verifier::EditTransitionOperator::DecoderTail
+        | verifier::EditTransitionOperator::ManualReplace
+        | verifier::EditTransitionOperator::Undo
+        | verifier::EditTransitionOperator::EnterAutocorrect
+        | verifier::EditTransitionOperator::NativeReplace => 0.0,
     }
-}
-
-fn score_to_milli(value: f32) -> i16 {
-    (value * 1000.0)
-        .round()
-        .clamp(i16::MIN as f32, i16::MAX as f32) as i16
 }
 
 fn micro_to_milli(value: i64) -> i16 {

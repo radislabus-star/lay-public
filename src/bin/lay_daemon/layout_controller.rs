@@ -220,8 +220,7 @@ pub(super) fn call_replace_text(
     }
     let action = authorized.action();
     let plan = action
-        .plan
-        .as_ref()
+        .plan()
         .ok_or_else(|| "authorized edit has no replacement plan".to_string())?;
     gnome_dbus::call_replace_text(
         plan.move_left,
@@ -244,7 +243,7 @@ pub(super) fn try_ime_replace_tail(authorized: AuthorizedEdit, kind: &str) -> Re
         ));
     }
     let action = authorized.action();
-    ime_bridge::try_replace_tail(&action.from_text, &action.to_text, kind)
+    ime_bridge::try_replace_tail(action.from_text(), action.to_text(), kind)
 }
 
 pub(super) fn call_ime_ping() -> Result<String, String> {

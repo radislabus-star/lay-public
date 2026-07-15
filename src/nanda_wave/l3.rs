@@ -1,12 +1,13 @@
 use super::l4_signed_memory::{l4_signed_memory_signal, L4SignedMemoryInput};
+#[cfg(test)]
 use super::lexical_attractor::LEXICAL_ATTRACTOR_CELL;
 use super::options::WaveOptions;
 use super::pattern_wave::{evaluate_pattern_wave, PATTERN_WAVE_CELL};
 use super::signal::{LayerTrace, WaveDecision, WordCandidate};
 use super::structural_relation::{evaluate_structural_relation, STRUCTURAL_RELATION_CELL};
 use super::{l3_phrase_gate, llmwave};
+use crate::candidate_contract::CandidateOrigin;
 use crate::correction_core::TypingErrorClass;
-use crate::correction_source_contract::{self, CorrectionSourceRole};
 use crate::text_metrics::damerau_levenshtein;
 use crate::word_reader::last_text_word_slice;
 
@@ -43,8 +44,8 @@ fn run_l3_inner(
     let mut traces = Vec::new();
     let technical_keep = candidates
         .iter()
-        .find(|candidate| candidate.source == "TechTokenCell32");
-    let best_apply = best_apply_candidate(original, candidates, options, phrase_memory);
+        .find(|candidate| candidate.origin == CandidateOrigin::Technical);
+    let best_apply = best_apply_candidate(original, candidates, phrase_memory);
 
     if options.is_enabled("TechnicalContextCell32") {
         if let Some(technical) = technical_keep {
@@ -72,14 +73,12 @@ fn run_l3_inner(
 
     let Some(candidate) = best_apply else {
         traces.extend(candidates.iter().take(8).filter_map(|candidate| {
-            apply_candidate_blocker(original, candidate, options, phrase_memory).map(|blocker| {
-                LayerTrace {
-                    name: "L3AdmissionCell32",
-                    summary: format!(
-                        "candidate source={} text={:?} blocker={blocker}",
-                        candidate.source, candidate.text
-                    ),
-                }
+            apply_candidate_blocker(original, candidate, phrase_memory).map(|blocker| LayerTrace {
+                name: "L3AdmissionCell32",
+                summary: format!(
+                    "candidate source={} text={:?} blocker={blocker}",
+                    candidate.source, candidate.text
+                ),
             })
         }));
         return (
@@ -93,7 +92,7 @@ fn run_l3_inner(
     if short_uppercase_layout_candidate_lacks_phrase_context(
         original,
         &candidate.text,
-        candidate.source,
+        candidate.origin,
     ) {
         traces.push(LayerTrace {
             name: "PhraseCell32",
@@ -110,7 +109,7 @@ fn run_l3_inner(
         );
     }
 
-    if short_token_candidate_lacks_phrase_context(original, &candidate.text, candidate.source) {
+    if short_token_candidate_lacks_phrase_context(original, &candidate.text, candidate.origin) {
         traces.push(LayerTrace {
             name: "PhraseCell32",
             summary: format!(
@@ -231,48 +230,14 @@ fn run_l3_inner(
     }
 }
 
-fn apply_source_enabled(source: &str, options: &WaveOptions) -> bool {
-    match source {
-        source
-            if correction_source_contract::source_role(source) == CorrectionSourceRole::Layout =>
-        {
-            options.is_enabled("LayoutWordCell32")
-        }
-        "ShortTokenCell32" => options.is_enabled("ShortTokenCell32"),
-        "BoundaryCell32" => options.is_enabled("BoundaryCell32"),
-        "GrammarCell32" => options.is_enabled("GrammarCell32"),
-        "PhraseCell32" => options.is_enabled("PhraseCell32"),
-        "LearnedMemoryCell32" => options.is_enabled("LearnedMemoryCell32"),
-        "CommonRuFixCell32" => options.is_enabled("CommonRuFixCell32"),
-        "PhraseMemoryCell32" => options.is_enabled("PhraseMemoryCell32"),
-        "UserMemoryCell32" => options.is_enabled("UserMemoryCell32"),
-        source if source == super::l2::L2_SURFACE_MOTIF_CELL => {
-            options.is_enabled(super::l2::L2_SURFACE_MOTIF_CELL)
-        }
-        source if source == super::l2::L2_SURFACE_COMPLETION_CELL => {
-            options.is_enabled(super::l2::L2_SURFACE_COMPLETION_CELL)
-        }
-        source if source == super::lexical_attractor::LEXICAL_ATTRACTOR_CELL => {
-            options.is_enabled(super::lexical_attractor::LEXICAL_ATTRACTOR_CELL)
-        }
-        source if source == super::context_wave::SEMANTIC_WORD_SOURCE => {
-            options.is_enabled(super::context_wave::SEMANTIC_WORD_SOURCE)
-        }
-        _ => false,
-    }
-}
-
 fn best_apply_candidate<'a>(
     original: &str,
     candidates: &'a [WordCandidate],
-    options: &WaveOptions,
     phrase_memory: Option<&llmwave::LlmWaveMemory>,
 ) -> Option<&'a WordCandidate> {
     candidates
         .iter()
-        .filter(|candidate| {
-            apply_candidate_blocker(original, candidate, options, phrase_memory).is_none()
-        })
+        .filter(|candidate| apply_candidate_blocker(original, candidate, phrase_memory).is_none())
         .fold(None, |best: Option<(&'a WordCandidate, f32)>, candidate| {
             let score = l3_rank_score(original, candidate, phrase_memory);
             match best {
@@ -288,12 +253,8 @@ fn best_apply_candidate<'a>(
 fn apply_candidate_blocker(
     original: &str,
     candidate: &WordCandidate,
-    options: &WaveOptions,
     phrase_memory: Option<&llmwave::LlmWaveMemory>,
 ) -> Option<&'static str> {
-    if !apply_source_enabled(candidate.source, options) {
-        return Some("source_disabled");
-    }
     if semantic_candidate_lacks_surface_authority(original, candidate) {
         return Some("semantic_surface_authority");
     }
@@ -344,8 +305,10 @@ fn l3_rank_score(
 }
 
 fn verified_operator_coherence(original: &str, candidate: &WordCandidate) -> f32 {
-    let origin = correction_source_contract::candidate_origin(candidate.source);
-    if origin.source_role() != CorrectionSourceRole::Layout {
+    if !matches!(
+        candidate.origin,
+        CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo
+    ) {
         return 0.0;
     }
     let atoms = crate::transition_relation::TransitionRelationAtoms::for_operator(
@@ -364,7 +327,7 @@ fn completion_candidate_lacks_autocorrect_authority(
     _original: &str,
     candidate: &WordCandidate,
 ) -> bool {
-    if candidate.source != super::l2::L2_SURFACE_COMPLETION_CELL {
+    if candidate.origin != CandidateOrigin::Completion {
         return false;
     }
     // L2 surface completion is an IME/preedit suggestion source. It can expose
@@ -376,10 +339,7 @@ fn word_form_candidate_lacks_autocorrect_authority(
     original: &str,
     candidate: &WordCandidate,
 ) -> bool {
-    if !matches!(
-        candidate.source,
-        super::l2::L2_SURFACE_MOTIF_CELL | LEXICAL_ATTRACTOR_CELL
-    ) {
+    if candidate.origin != CandidateOrigin::L2Surface {
         return false;
     }
     let Some(original_word) = last_token(original) else {
@@ -416,7 +376,7 @@ fn word_form_candidate_lacks_autocorrect_authority(
         .support
         .iter()
         .any(|item| item.contains("l2-phase:") && item.contains("admitted=true"));
-    let prefix = common_prefix_len(&original_lower, &replacement_lower);
+    let prefix = crate::text_metrics::common_prefix_char_len(&original_lower, &replacement_lower);
     if phase_admitted && distance <= 2 && prefix >= 4 {
         return false;
     }
@@ -433,30 +393,23 @@ fn candidate_transition_authority_blocker(
     original: &str,
     candidate: &WordCandidate,
 ) -> Option<&'static str> {
-    let error_class = nanda_candidate_error_class(candidate.source);
+    let error_class = nanda_candidate_error_class(original, candidate);
     crate::typing_transition::action::verify_action_operator(
         original,
         &candidate.text,
         error_class,
-        correction_source_contract::candidate_origin(candidate.source),
+        candidate.origin,
     )
     .apply_blocker()
 }
 
-fn nanda_candidate_error_class(source: &str) -> TypingErrorClass {
-    if source == "BoundaryShiftCell32" {
-        return TypingErrorClass::BoundaryShift;
-    }
-    match correction_source_contract::source_role(source) {
-        CorrectionSourceRole::Layout => TypingErrorClass::WrongLayout,
-        CorrectionSourceRole::Boundary => TypingErrorClass::GluedWords,
-        CorrectionSourceRole::Completion => TypingErrorClass::CompletionOnly,
-        CorrectionSourceRole::L2Surface
-        | CorrectionSourceRole::L3Context
-        | CorrectionSourceRole::DeterministicTypo => TypingErrorClass::CompositeTypo,
-        CorrectionSourceRole::Technical => TypingErrorClass::TechnicalToken,
-        CorrectionSourceRole::Unknown => TypingErrorClass::Unknown,
-    }
+fn nanda_candidate_error_class(original: &str, candidate: &WordCandidate) -> TypingErrorClass {
+    crate::typing_transition::action::classify_token_transition(
+        original,
+        &candidate.text,
+        candidate.origin,
+        TypingErrorClass::Unknown,
+    )
 }
 
 fn candidate_usage_context_prior(original: &str, replacement: &str) -> f32 {
@@ -480,7 +433,7 @@ fn previous_context_tokens(text: &str) -> Vec<String> {
 }
 
 fn semantic_candidate_lacks_surface_authority(original: &str, candidate: &WordCandidate) -> bool {
-    if candidate.source != super::context_wave::SEMANTIC_WORD_SOURCE {
+    if candidate.origin != CandidateOrigin::L3Context {
         return false;
     }
     let Some(original_word) = last_token(original) else {
@@ -508,7 +461,7 @@ fn semantic_candidate_lacks_surface_authority(original: &str, candidate: &WordCa
     }
 
     let max_len = original_len.max(replacement_len);
-    let prefix = common_prefix_len(&original_lower, &replacement_lower);
+    let prefix = crate::text_metrics::common_prefix_char_len(&original_lower, &replacement_lower);
     let known_replacement =
         crate::russian_lexicon::is_known_russian_word_or_form(&replacement_lower)
             || crate::lexicon::is_common_ru_word(&replacement_lower);
@@ -533,13 +486,6 @@ fn semantic_candidate_lacks_surface_authority(original: &str, candidate: &WordCa
         return false;
     }
     true
-}
-
-fn common_prefix_len(left: &str, right: &str) -> usize {
-    left.chars()
-        .zip(right.chars())
-        .take_while(|(left, right)| left == right)
-        .count()
 }
 
 fn phrase_gate_suppresses(
@@ -567,9 +513,12 @@ fn phrase_gate_report(
 fn short_token_candidate_lacks_phrase_context(
     original: &str,
     replacement: &str,
-    source: &str,
+    origin: CandidateOrigin,
 ) -> bool {
-    if source != "ShortTokenCell32" {
+    if !matches!(
+        origin,
+        CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo
+    ) {
         return false;
     }
     let Some(original_word) = last_token(original) else {
@@ -597,9 +546,12 @@ fn short_token_candidate_lacks_phrase_context(
 fn short_uppercase_layout_candidate_lacks_phrase_context(
     original: &str,
     replacement: &str,
-    source: &str,
+    origin: CandidateOrigin,
 ) -> bool {
-    if source != "LayoutWordCell32" {
+    if !matches!(
+        origin,
+        CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo
+    ) {
         return false;
     }
     let Some(original_word) = last_token(original) else {
@@ -671,7 +623,7 @@ fn adjusted_confidence(
 ) -> f32 {
     let mut value = confidence(candidate);
     if options.is_enabled(super::context_wave::PHRASE_FORECAST_CELL)
-        && candidate.source == super::context_wave::SEMANTIC_WORD_SOURCE
+        && candidate.origin == CandidateOrigin::L3Context
         && super::context_wave::phrase_forecast_summary(original, candidate).is_some()
     {
         value += options.scale_l3_delta(0.08);
@@ -746,8 +698,8 @@ fn candidate_l4_signed_signal(
     let state_id = crate::transition_relation::transition_state_id(original);
     Some(l4_signed_memory_signal(L4SignedMemoryInput {
         context: &context,
-        source: candidate.source,
-        operation: candidate_operation(candidate.source),
+        source: candidate.origin.memory_key(),
+        operation: candidate_operation(candidate.origin),
         state_word: &state_id,
         word,
         usage: &usage,
@@ -780,12 +732,15 @@ fn candidate_l4_scene_memory_bias(
         .unwrap_or(0.0)
 }
 
-fn candidate_operation(source: &str) -> &'static str {
-    match source {
-        "LayoutWordCell32" => "layout",
-        "BoundaryCell32" => "boundary",
-        source if source == super::l2::L2_SURFACE_COMPLETION_CELL => "completion",
-        _ => "replacement",
+fn candidate_operation(origin: CandidateOrigin) -> &'static str {
+    match origin {
+        CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo => "layout",
+        CandidateOrigin::Boundary => "boundary",
+        CandidateOrigin::Completion => "completion",
+        CandidateOrigin::L2Surface
+        | CandidateOrigin::L3Context
+        | CandidateOrigin::DeterministicTypo
+        | CandidateOrigin::Technical => "replacement",
     }
 }
 
@@ -852,6 +807,7 @@ mod tests {
     fn punctuation_does_not_hide_word_form_authority() {
         let candidate = WordCandidate {
             text: " отстранилась!".to_string(),
+            origin: CandidateOrigin::L2Surface,
             source: LEXICAL_ATTRACTOR_CELL,
             energy: 0.95,
             risk: 0.10,
@@ -868,6 +824,7 @@ mod tests {
     fn applies_confident_layout_candidate() {
         let candidate = WordCandidate {
             text: "html вот".to_string(),
+            origin: CandidateOrigin::Layout,
             source: "LayoutWordCell32",
             energy: 0.8,
             risk: 0.1,
@@ -881,6 +838,7 @@ mod tests {
     fn applies_verified_single_word_layout_candidate() {
         let candidate = WordCandidate {
             text: "проверь".to_string(),
+            origin: CandidateOrigin::Layout,
             source: "LayoutWordCell32",
             energy: 1.0,
             risk: 0.05,
@@ -897,6 +855,7 @@ mod tests {
         let candidates = [
             WordCandidate {
                 text: "Ну давай".to_string(),
+                origin: CandidateOrigin::Completion,
                 source: super::super::l2::L2_SURFACE_COMPLETION_CELL,
                 energy: 0.856,
                 risk: 0.060,
@@ -904,6 +863,7 @@ mod tests {
             },
             WordCandidate {
                 text: "Ну даша".to_string(),
+                origin: CandidateOrigin::Completion,
                 source: super::super::l2::L2_SURFACE_COMPLETION_CELL,
                 energy: 0.856,
                 risk: 0.060,
@@ -926,6 +886,7 @@ mod tests {
         let candidates = [
             WordCandidate {
                 text: "попаданий".to_string(),
+                origin: CandidateOrigin::L3Context,
                 source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
                 energy: 0.80,
                 risk: 0.10,
@@ -933,6 +894,7 @@ mod tests {
             },
             WordCandidate {
                 text: "попадали".to_string(),
+                origin: CandidateOrigin::L3Context,
                 source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
                 energy: 0.80,
                 risk: 0.10,
@@ -949,6 +911,7 @@ mod tests {
     fn l3_keeps_surface_completion_out_of_autocorrect() {
         let candidate = WordCandidate {
             text: "попаданий".to_string(),
+            origin: CandidateOrigin::Completion,
             source: super::super::l2::L2_SURFACE_COMPLETION_CELL,
             energy: 0.856,
             risk: 0.060,
@@ -964,6 +927,7 @@ mod tests {
     fn keeps_short_layout_candidate_without_russian_phrase_context() {
         let candidate = WordCandidate {
             text: "wave и".to_string(),
+            origin: CandidateOrigin::Layout,
             source: "ShortTokenCell32",
             energy: 0.9,
             risk: 0.46,
@@ -984,6 +948,7 @@ mod tests {
     fn l3_weight_scales_structural_boosts() {
         let candidate = WordCandidate {
             text: "html вот".to_string(),
+            origin: CandidateOrigin::Layout,
             source: "LayoutWordCell32",
             energy: 0.32,
             risk: 0.10,
@@ -1004,6 +969,7 @@ mod tests {
     fn applies_boundary_candidate() {
         let candidate = WordCandidate {
             text: "у нас есть".to_string(),
+            origin: CandidateOrigin::Boundary,
             source: "BoundaryCell32",
             energy: 0.8,
             risk: 0.1,
@@ -1017,6 +983,7 @@ mod tests {
     fn technical_candidate_vetoes_layout_candidate() {
         let technical = WordCandidate {
             text: "git checkout -b new".to_string(),
+            origin: CandidateOrigin::Technical,
             source: "TechTokenCell32",
             energy: 0.95,
             risk: 0.02,
@@ -1024,6 +991,7 @@ mod tests {
         };
         let layout = WordCandidate {
             text: "git checkout -b туц".to_string(),
+            origin: CandidateOrigin::Layout,
             source: "LayoutWordCell32",
             energy: 0.8,
             risk: 0.1,
@@ -1037,6 +1005,7 @@ mod tests {
     fn technical_tail_does_not_veto_phrase_layout_candidate() {
         let technical = WordCandidate {
             text: "api".to_string(),
+            origin: CandidateOrigin::Technical,
             source: "TechTokenCell32",
             energy: 0.95,
             risk: 0.02,
@@ -1044,6 +1013,7 @@ mod tests {
         };
         let layout = WordCandidate {
             text: "html вот api".to_string(),
+            origin: CandidateOrigin::Layout,
             source: "LayoutWordCell32",
             energy: 0.8,
             risk: 0.1,
@@ -1057,6 +1027,7 @@ mod tests {
     fn applies_split_memory_candidate() {
         let candidate = WordCandidate {
             text: "она есть".to_string(),
+            origin: CandidateOrigin::L3Context,
             source: "PhraseMemoryCell32",
             energy: 0.82,
             risk: 0.11,
@@ -1070,6 +1041,7 @@ mod tests {
     fn phrase_forecast_boosts_semantic_candidate() {
         let candidate = WordCandidate {
             text: "На улице опять идёт дождь".to_string(),
+            origin: CandidateOrigin::L3Context,
             source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
             energy: 0.30,
             risk: 0.10,
@@ -1083,6 +1055,7 @@ mod tests {
     fn semantic_word_candidate_needs_surface_authority() {
         let candidate = WordCandidate {
             text: "она спрашивая".to_string(),
+            origin: CandidateOrigin::L3Context,
             source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
             energy: 0.90,
             risk: 0.10,
@@ -1097,6 +1070,7 @@ mod tests {
     fn semantic_word_completion_keeps_l3_authority() {
         let candidate = WordCandidate {
             text: "на улице опять идёт дождь".to_string(),
+            origin: CandidateOrigin::L3Context,
             source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
             energy: 0.50,
             risk: 0.10,
@@ -1115,6 +1089,7 @@ mod tests {
         let candidates = vec![
             WordCandidate {
                 text: "на улице опять идёт дом".to_string(),
+                origin: CandidateOrigin::L3Context,
                 source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
                 energy: 0.86,
                 risk: 0.06,
@@ -1122,6 +1097,7 @@ mod tests {
             },
             WordCandidate {
                 text: "на улице опять идёт дождь".to_string(),
+                origin: CandidateOrigin::L3Context,
                 source: super::super::context_wave::SEMANTIC_WORD_SOURCE,
                 energy: 0.42,
                 risk: 0.08,
@@ -1145,6 +1121,7 @@ mod tests {
     fn pattern_wave_is_visible_in_l3_trace() {
         let candidate = WordCandidate {
             text: "html вот api".to_string(),
+            origin: CandidateOrigin::Layout,
             source: "LayoutWordCell32",
             energy: 0.55,
             risk: 0.25,
@@ -1162,6 +1139,7 @@ mod tests {
     fn pattern_wave_can_veto_layout_candidate_in_technical_shape() {
         let candidate = WordCandidate {
             text: "git вот".to_string(),
+            origin: CandidateOrigin::Layout,
             source: "LayoutWordCell32",
             energy: 0.95,
             risk: 0.05,
@@ -1176,6 +1154,7 @@ mod tests {
     fn structural_relation_is_visible_in_l3_trace() {
         let candidate = WordCandidate {
             text: "пишу вот дальше".to_string(),
+            origin: CandidateOrigin::Layout,
             source: "LayoutWordCell32",
             energy: 0.50,
             risk: 0.27,

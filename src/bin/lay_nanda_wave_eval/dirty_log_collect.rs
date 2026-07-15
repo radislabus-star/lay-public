@@ -1442,7 +1442,7 @@ fn classify_operation(
     if word_count_changed(original, expected) {
         return "boundary".to_string();
     }
-    if is_adjacent_transposition(original, expected) {
+    if lay::text_metrics::is_adjacent_transposition(original.trim(), expected.trim()) {
         return "transposition".to_string();
     }
     if original
@@ -1588,24 +1588,6 @@ fn looks_like_uppercase_technical_token(token: &str) -> bool {
         .filter(|ch| ch.is_alphabetic())
         .collect::<Vec<_>>();
     letters.len() >= 2 && letters.iter().all(|ch| ch.is_uppercase())
-}
-
-fn is_adjacent_transposition(original: &str, expected: &str) -> bool {
-    let original = original.trim().chars().collect::<Vec<_>>();
-    let expected = expected.trim().chars().collect::<Vec<_>>();
-    if original.len() != expected.len() || original.len() < 2 {
-        return false;
-    }
-    let diffs = original
-        .iter()
-        .zip(expected.iter())
-        .enumerate()
-        .filter_map(|(index, (left, right))| (left != right).then_some(index))
-        .collect::<Vec<_>>();
-    diffs.len() == 2
-        && diffs[1] == diffs[0] + 1
-        && original[diffs[0]] == expected[diffs[1]]
-        && original[diffs[1]] == expected[diffs[0]]
 }
 
 fn has_mixed_layout(text: &str) -> bool {

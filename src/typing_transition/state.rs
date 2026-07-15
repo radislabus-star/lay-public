@@ -79,7 +79,7 @@ pub(crate) struct LatentTypingState {
 
 impl LatentTypingState {
     pub(crate) fn from_text(text: &str) -> Self {
-        let words = normalized_words(text);
+        let words = crate::word_reader::normalized_text_words(text);
         let current_word = words.last().cloned().unwrap_or_default();
         let context_words = words
             .get(..words.len().saturating_sub(1))
@@ -146,15 +146,6 @@ impl LatentScriptProfile {
             L1ScriptProfile::Other => Self::Other,
         }
     }
-}
-
-fn normalized_words(text: &str) -> Vec<String> {
-    text.split_whitespace()
-        .filter_map(|token| {
-            let (_, word, _) = crate::word_reader::split_word_punctuation(token);
-            (!word.is_empty()).then(|| word.to_lowercase())
-        })
-        .collect()
 }
 
 fn current_word_is_known(word: &str) -> bool {

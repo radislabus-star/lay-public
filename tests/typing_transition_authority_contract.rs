@@ -109,7 +109,8 @@ fn candidate_admission_only_marks_eligibility_and_core_selects_transition() {
     assert!(
         correction.contains("CandidateGateAction::Eligible")
             && correction.contains("mod gate;")
-            && gate.contains("fn candidate_admission_with_source")
+            && gate.contains("fn candidate_admission(")
+            && gate.contains("gate_candidate_with_origin(")
             && !gate.contains("TransitionDecisionCore"),
         "candidate checks must expose eligibility without choosing the transition"
     );

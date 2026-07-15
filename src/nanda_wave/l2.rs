@@ -5,6 +5,7 @@ use super::lexical_phase::{default_memory, LexicalPhaseCandidate, LexicalPhaseMe
 use super::llmwave;
 use super::options::WaveOptions;
 use super::signal::{WavePacket, WordCandidate};
+use crate::candidate_contract::CandidateOrigin;
 use crate::config::CorrectionSafety;
 use crate::dict::{convert, detect_direction};
 use crate::keyboard::is_cyrillic_letter;
@@ -308,10 +309,8 @@ pub fn run_l2_refined_with_feedback(
     } else {
         Vec::new()
     };
-    let mut has_l2_surface_motif_candidate = false;
     if options.is_enabled(L2_SURFACE_MOTIF_CELL) || options.is_enabled(L2_SURFACE_COMPLETION_CELL) {
         for candidate in surface_motif_word_candidates(prefix, token, &context, l1, options) {
-            has_l2_surface_motif_candidate |= candidate.source == L2_SURFACE_MOTIF_CELL;
             push_unique_candidate(&mut candidates, candidate);
         }
         if options.is_enabled(LEXICAL_ATTRACTOR_CELL) {
@@ -321,19 +320,14 @@ pub fn run_l2_refined_with_feedback(
         }
         if options.is_enabled(L2_SURFACE_MOTIF_CELL) {
             for candidate in surface_motif_scan_candidates(tail, l1, &context) {
-                has_l2_surface_motif_candidate |= candidate.source == L2_SURFACE_MOTIF_CELL;
                 push_unique_candidate(&mut candidates, candidate);
             }
         }
     }
     mark_timing!("surface-motif");
-    let has_explicit_boundary_split = token.chars().all(is_cyrillic_letter)
-        && boundary_replacement_for_word(&token.to_lowercase()).is_some();
     if options.is_enabled("BoundaryCell32") {
-        if !has_l2_surface_motif_candidate || has_explicit_boundary_split {
-            for candidate in boundary_split_candidates(prefix, token, l1, &context) {
-                push_unique_candidate(&mut candidates, candidate);
-            }
+        for candidate in boundary_split_candidates(prefix, token, l1, &context) {
+            push_unique_candidate(&mut candidates, candidate);
         }
         for candidate in boundary_scan {
             push_unique_candidate(&mut candidates, candidate);
@@ -506,18 +500,18 @@ fn taught_word_candidate(input: TaughtCandidateInput<'_>) -> Option<WordCandidat
     {
         return None;
     }
-    let source = match input.family {
+    let (source, origin) = match input.family {
         TypingCandidateFamily::Layout if input.options.is_enabled("LayoutWordCell32") => {
-            "LayoutWordCell32"
+            ("LayoutWordCell32", CandidateOrigin::Layout)
         }
         TypingCandidateFamily::Structural if input.options.is_enabled("BoundaryCell32") => {
-            "BoundaryCell32"
+            ("BoundaryCell32", CandidateOrigin::Boundary)
         }
         TypingCandidateFamily::Typo | TypingCandidateFamily::Exact
             if is_phrase_grammar_candidate(input.context, input.original, replacement)
                 && input.options.is_enabled("GrammarCell32") =>
         {
-            "GrammarCell32"
+            ("GrammarCell32", CandidateOrigin::L3Context)
         }
         TypingCandidateFamily::Typo
         | TypingCandidateFamily::Visual
@@ -525,20 +519,23 @@ fn taught_word_candidate(input: TaughtCandidateInput<'_>) -> Option<WordCandidat
         | TypingCandidateFamily::Cleanup
             if input.options.is_enabled("PhraseCell32") =>
         {
-            "PhraseCell32"
+            ("PhraseCell32", CandidateOrigin::L3Context)
         }
         _ => return None,
     };
-    if source == "PhraseCell32" && unsafe_single_token_phrase_typo(input.original, replacement) {
+    if origin == CandidateOrigin::L3Context
+        && unsafe_single_token_phrase_typo(input.original, replacement)
+    {
         return None;
     }
     Some(WordCandidate {
         text: replacement.to_string(),
+        origin,
         source,
-        energy: taught_energy(input.score, source, input.l1, input.chosen),
+        energy: taught_energy(input.score, origin, input.l1, input.chosen),
         risk: taught_risk(
             input.family,
-            source,
+            origin,
             input.original,
             replacement,
             input.chosen,
@@ -605,6 +602,11 @@ fn layout_candidate(
     }
     Some(WordCandidate {
         text: format!("{prefix}{converted}"),
+        origin: if word_center_settled {
+            CandidateOrigin::LayoutThenTypo
+        } else {
+            CandidateOrigin::Layout
+        },
         source: if word_center_settled {
             LAYOUT_THEN_L2_WORD_CENTER
         } else {
@@ -680,6 +682,11 @@ fn layout_scan_candidates(
         }
         candidates.push(WordCandidate {
             text,
+            origin: if word_center_settled {
+                CandidateOrigin::LayoutThenTypo
+            } else {
+                CandidateOrigin::Layout
+            },
             source: if word_center_settled {
                 LAYOUT_THEN_L2_WORD_CENTER
             } else {
@@ -731,7 +738,7 @@ fn settle_english_word_center(token: &str) -> Option<String> {
     let candidates = super::context_wave::semantic_word_candidates(token)
         .into_iter()
         .filter(|candidate| {
-            candidate.source == LEXICAL_ATTRACTOR_CELL
+            candidate.origin == CandidateOrigin::L2Surface
                 && candidate.text.chars().all(|ch| ch.is_ascii_alphabetic())
         })
         .collect::<Vec<_>>();
@@ -849,6 +856,7 @@ fn short_token_candidate(input: ShortTokenCandidateInput<'_>) -> WordCandidate {
     };
     WordCandidate {
         text: format!("{}{}", input.prefix, replacement),
+        origin: CandidateOrigin::Layout,
         source: "ShortTokenCell32",
         energy: l1_energy(input.l1, "KeyboardCell32").max(input.energy_floor),
         risk: input.risk,
@@ -944,6 +952,7 @@ fn grammar_agreement_candidates(
     };
     vec![WordCandidate {
         text: format!("{prefix}{replacement}"),
+        origin: CandidateOrigin::L3Context,
         source: "GrammarCell32",
         energy: l1_energy(l1, "ScriptCell32")
             .max(l1_energy(l1, "BoundaryCell32"))
@@ -1098,6 +1107,7 @@ fn technical_keep_candidate(token: &str, l1: &[WavePacket]) -> Option<WordCandid
     }
     Some(WordCandidate {
         text: token.to_string(),
+        origin: CandidateOrigin::Technical,
         source: "TechTokenCell32",
         energy: l1_energy(l1, "ScriptCell32").max(0.8),
         risk: 0.05,
@@ -1128,6 +1138,7 @@ fn boundary_split_candidates(
     if let Some(replacement) = light_boundary_replacement(&normalized) {
         return vec![WordCandidate {
             text: format!("{prefix}{}", apply_word_case(token, &replacement)),
+            origin: CandidateOrigin::Boundary,
             source: "BoundaryCell32",
             energy: l1_energy(l1, "BoundaryCell32").max(0.99),
             risk: 0.04,
@@ -1143,6 +1154,7 @@ fn boundary_split_candidates(
         if replacement != normalized {
             return vec![WordCandidate {
                 text: format!("{prefix}{}", apply_word_case(token, &replacement)),
+                origin: CandidateOrigin::Boundary,
                 source: "BoundaryCell32",
                 energy: l1_energy(l1, "BoundaryCell32").max(0.99),
                 risk: 0.04,
@@ -1201,6 +1213,7 @@ fn boundary_split_candidates(
         };
         candidates.push(WordCandidate {
             text: format!("{prefix}{left} {right}"),
+            origin: CandidateOrigin::Boundary,
             source: "BoundaryCell32",
             energy,
             risk,
@@ -1305,6 +1318,7 @@ fn boundary_scan_candidates(
         let text = replace_segment_word(&segments, idx, leading, &replacement, trailing);
         candidates.push(WordCandidate {
             text,
+            origin: CandidateOrigin::Boundary,
             source: "BoundaryCell32",
             energy: l1_energy(l1, "BoundaryCell32").max(0.82),
             risk: 0.10,
@@ -1358,6 +1372,7 @@ fn boundary_scan_candidates(
                 window.right_idx,
                 &replacement,
             ),
+            origin: CandidateOrigin::Boundary,
             source: if repair_kind == "tail-moved-prefix-pair-scan" {
                 "BoundaryShiftCell32"
             } else {
@@ -1466,6 +1481,7 @@ fn surface_motif_scan_candidates(
         }
         candidates.push(WordCandidate {
             text: replace_segment_word(&segments, idx, leading, &replacement, trailing),
+            origin: CandidateOrigin::L2Surface,
             source: L2_SURFACE_MOTIF_CELL,
             energy: l1_energy(l1, "ScriptCell32").max(0.78),
             risk: surface_motif_typo_risk(context, distance),
@@ -1582,6 +1598,7 @@ fn technical_context_keep_candidate(text: &str, l1: &[WavePacket]) -> Option<Wor
     }
     Some(WordCandidate {
         text: text.to_string(),
+        origin: CandidateOrigin::Technical,
         source: "TechTokenCell32",
         energy: l1_energy(l1, "ScriptCell32").max(0.92),
         risk: 0.02,
@@ -1626,13 +1643,19 @@ fn layout_risk(token: &str, converted: &str, context: &TailContext) -> f32 {
     (short + technical - context_bonus).clamp(0.0, 0.85)
 }
 
-fn taught_energy(score: f64, source: &str, l1: &[WavePacket], chosen: bool) -> f32 {
-    let base = match source {
-        "LayoutWordCell32" => l1_energy(l1, "KeyboardCell32"),
-        "BoundaryCell32" => l1_energy(l1, "BoundaryCell32"),
-        "GrammarCell32" => l1_energy(l1, "ScriptCell32").max(l1_energy(l1, "BoundaryCell32")),
-        "PhraseCell32" => l1_energy(l1, "ScriptCell32"),
-        _ => 0.5,
+fn taught_energy(score: f64, origin: CandidateOrigin, l1: &[WavePacket], chosen: bool) -> f32 {
+    let base = match origin {
+        CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo => {
+            l1_energy(l1, "KeyboardCell32")
+        }
+        CandidateOrigin::Boundary => l1_energy(l1, "BoundaryCell32"),
+        CandidateOrigin::L3Context => {
+            l1_energy(l1, "ScriptCell32").max(l1_energy(l1, "BoundaryCell32") * 0.85)
+        }
+        CandidateOrigin::Completion
+        | CandidateOrigin::L2Surface
+        | CandidateOrigin::DeterministicTypo
+        | CandidateOrigin::Technical => 0.5,
     };
     let score = (score / 14.0).clamp(0.25, 0.95) as f32;
     let chosen_bonus = if chosen { 0.04 } else { 0.0 };
@@ -1641,7 +1664,7 @@ fn taught_energy(score: f64, source: &str, l1: &[WavePacket], chosen: bool) -> f
 
 fn taught_risk(
     family: TypingCandidateFamily,
-    source: &str,
+    origin: CandidateOrigin,
     original: &str,
     replacement: &str,
     chosen: bool,
@@ -1654,12 +1677,13 @@ fn taught_risk(
         TypingCandidateFamily::Visual | TypingCandidateFamily::Exact => 0.10,
         TypingCandidateFamily::Cleanup | TypingCandidateFamily::Unknown => 0.22,
     };
-    let bad_split =
-        if source == "BoundaryCell32" && compact_text(original) != compact_text(replacement) {
-            0.50
-        } else {
-            0.0
-        };
+    let bad_split = if origin == CandidateOrigin::Boundary
+        && compact_text(original) != compact_text(replacement)
+    {
+        0.50
+    } else {
+        0.0
+    };
     let chosen_bonus = if chosen { -0.03 } else { 0.0 };
     (base + edit_ratio * 0.20 + bad_split + chosen_bonus).clamp(0.02, 0.85)
 }

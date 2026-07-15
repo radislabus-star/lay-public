@@ -42,6 +42,41 @@ pub(crate) fn common_replacement_span(left: &str, right: &str) -> usize {
     left_chars.len().saturating_sub(prefix + suffix)
 }
 
+pub fn common_prefix_char_len(left: &str, right: &str) -> usize {
+    left.chars()
+        .zip(right.chars())
+        .take_while(|(left, right)| left == right)
+        .count()
+}
+
+pub(crate) fn is_adjacent_transposition_chars(left: &[char], right: &[char]) -> bool {
+    if left.len() != right.len() || left.len() < 2 {
+        return false;
+    }
+    let differences = left
+        .iter()
+        .zip(right)
+        .enumerate()
+        .filter_map(|(index, (left, right))| (left != right).then_some(index))
+        .collect::<Vec<_>>();
+    matches!(differences.as_slice(), [first, second]
+        if *second == *first + 1
+            && left[*first] == right[*second]
+            && left[*second] == right[*first])
+}
+
+pub fn is_adjacent_transposition(left: &str, right: &str) -> bool {
+    let left = left.chars().collect::<Vec<_>>();
+    let right = right.chars().collect::<Vec<_>>();
+    is_adjacent_transposition_chars(&left, &right)
+}
+
+pub(crate) fn score_to_milli(value: f32) -> i16 {
+    (value * 1000.0)
+        .round()
+        .clamp(i16::MIN as f32, i16::MAX as f32) as i16
+}
+
 pub fn damerau_levenshtein(left: &str, right: &str) -> usize {
     let a: Vec<char> = left.chars().collect();
     let b: Vec<char> = right.chars().collect();

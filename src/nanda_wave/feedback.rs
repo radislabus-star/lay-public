@@ -1,11 +1,13 @@
 use super::options::WaveOptions;
 use super::signal::{LayerTrace, WordCandidate};
+use crate::candidate_contract::CandidateOrigin;
 
 pub const L3_FEEDBACK_CELL: &str = "L3FeedbackCell32";
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct FeedbackAdjustment {
     pub source: &'static str,
+    pub(crate) origin: CandidateOrigin,
     pub energy_delta: f32,
     pub risk_delta: f32,
     pub reason: &'static str,
@@ -33,13 +35,16 @@ pub fn derive_l3_feedback(
     }
 
     let mut feedback = L3Feedback::default();
-    if candidates
-        .iter()
-        .any(|candidate| candidate.source == "LayoutWordCell32")
-        && !looks_like_technical_tail(original)
+    if candidates.iter().any(|candidate| {
+        matches!(
+            candidate.origin,
+            CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo
+        )
+    }) && !looks_like_technical_tail(original)
     {
         feedback.adjustments.push(FeedbackAdjustment {
             source: "LayoutWordCell32",
+            origin: CandidateOrigin::Layout,
             energy_delta: options.scale_l3_delta(0.04),
             risk_delta: options.scale_l3_delta(-0.02),
             reason: "layout_mode_supported_by_phrase",
@@ -63,7 +68,7 @@ pub fn apply_l3_feedback(candidates: &mut [WordCandidate], feedback: &L3Feedback
         for adjustment in feedback
             .adjustments
             .iter()
-            .filter(|adjustment| adjustment.source == candidate.source)
+            .filter(|adjustment| adjustment.origin == candidate.origin)
         {
             candidate.energy = (candidate.energy + adjustment.energy_delta).clamp(0.0, 1.0);
             candidate.risk = (candidate.risk + adjustment.risk_delta).clamp(0.0, 1.0);

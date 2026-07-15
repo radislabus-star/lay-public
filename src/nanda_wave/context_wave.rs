@@ -1,6 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use std::sync::OnceLock;
 
+use crate::candidate_contract::CandidateOrigin;
 use crate::data_lines::data_lines;
 use crate::keyboard::is_cyrillic_letter;
 use crate::lexicon::{is_common_en_technical_word, is_common_ru_word, EN_HUNSPELL, EN_WORDS};
@@ -768,6 +769,7 @@ fn ru_word_to_candidate(
     let usage_boost = usage_prior(word);
     WordCandidate {
         text: format!("{prefix}{word}"),
+        origin: CandidateOrigin::L3Context,
         source: SEMANTIC_WORD_SOURCE,
         energy: (0.50 + closeness * 0.24 + resonance * 0.18 + common_boost + usage_boost)
             .clamp(0.0, 0.95),
@@ -801,6 +803,7 @@ fn en_word_to_candidate(
     let closeness = 1.0 - (distance as f32 / len as f32);
     WordCandidate {
         text: format!("{prefix}{word}"),
+        origin: CandidateOrigin::L2Surface,
         source: super::lexical_attractor::LEXICAL_ATTRACTOR_CELL,
         energy: (0.44 + closeness * 0.20 + resonance * 0.14).clamp(0.0, 0.82),
         risk: (0.36 - closeness * 0.08 - resonance * 0.04).clamp(0.18, 0.40),
@@ -814,7 +817,7 @@ fn en_word_to_candidate(
 }
 
 pub fn phrase_forecast_summary(original: &str, chosen: &WordCandidate) -> Option<String> {
-    if chosen.source != SEMANTIC_WORD_SOURCE {
+    if chosen.origin != CandidateOrigin::L3Context {
         return None;
     }
     let wave = context_wave_for_tail(original)?;
@@ -929,6 +932,7 @@ fn interference_to_candidate(wave: &ContextWave, item: CandidateInterference) ->
     let risk = (0.18 - item.projection * 0.08).clamp(0.06, 0.18);
     WordCandidate {
         text,
+        origin: CandidateOrigin::L3Context,
         source: SEMANTIC_WORD_SOURCE,
         energy,
         risk,

@@ -131,8 +131,8 @@ impl TransitionOperatorKind {
             _ => {}
         }
 
-        let original_words = normalized_words(original);
-        let replacement_words = normalized_words(replacement);
+        let original_words = lowercase_whitespace_tokens(original);
+        let replacement_words = lowercase_whitespace_tokens(replacement);
         if replacement_words.len() == original_words.len() + 1 {
             return Self::BoundarySplit;
         }
@@ -155,7 +155,7 @@ impl TransitionOperatorKind {
         {
             return Self::LayoutProjection;
         }
-        if adjacent_transposition(original, replacement) {
+        if crate::text_metrics::is_adjacent_transposition(original, replacement) {
             return Self::AdjacentTransposition;
         }
         let original_len = original.chars().count();
@@ -287,7 +287,7 @@ impl TransitionRelationAtoms {
         let replacement_last = last_word(replacement);
         let original_len = original_last.chars().count();
         let replacement_len = replacement_last.chars().count();
-        let prefix = common_prefix_chars(original_last, replacement_last);
+        let prefix = crate::text_metrics::common_prefix_char_len(original_last, replacement_last);
         let suffix = common_suffix_chars(original_last, replacement_last);
         let distance = crate::text_metrics::damerau_levenshtein(original_last, replacement_last);
         let observed_edit =
@@ -378,8 +378,8 @@ fn operator_shape_verified(
     replacement: &str,
     operator: TransitionOperatorKind,
 ) -> bool {
-    let original_words = normalized_words(original);
-    let replacement_words = normalized_words(replacement);
+    let original_words = lowercase_whitespace_tokens(original);
+    let replacement_words = lowercase_whitespace_tokens(replacement);
     let original_last = original_words
         .last()
         .map(String::as_str)
@@ -403,7 +403,7 @@ fn operator_shape_verified(
             aligned_changed_tokens_are_layout_projections(&original_words, &replacement_words)
         }
         TransitionOperatorKind::AdjacentTransposition => {
-            adjacent_transposition(original_last, replacement_last)
+            crate::text_metrics::is_adjacent_transposition(original_last, replacement_last)
         }
         TransitionOperatorKind::MissingLetterRepair => replacement_len == original_len + 1,
         TransitionOperatorKind::RepeatedLetterRepair => {
@@ -459,8 +459,8 @@ fn aligned_changed_tokens_are_layout_projections(
 }
 
 fn changed_region(original: &str, replacement: &str) -> &'static str {
-    let original = normalized_words(original);
-    let replacement = normalized_words(replacement);
+    let original = lowercase_whitespace_tokens(original);
+    let replacement = lowercase_whitespace_tokens(replacement);
     if original.len() != replacement.len() {
         return "boundary";
     }
@@ -492,7 +492,7 @@ fn observed_edit_shape(
     if word_count(original) != word_count(replacement) {
         return "boundary-change";
     }
-    if adjacent_transposition(original_last, replacement_last) {
+    if crate::text_metrics::is_adjacent_transposition(original_last, replacement_last) {
         return "adjacent-transposition";
     }
     let original_len = original_last.chars().count();
@@ -514,38 +514,21 @@ fn observed_edit_shape(
     }
 }
 
-fn adjacent_transposition(original: &str, replacement: &str) -> bool {
-    let original = original.chars().collect::<Vec<_>>();
-    let replacement = replacement.chars().collect::<Vec<_>>();
-    if original.len() != replacement.len() {
-        return false;
-    }
-    let differences = original
-        .iter()
-        .zip(&replacement)
-        .enumerate()
-        .filter_map(|(index, (left, right))| (left != right).then_some(index))
-        .collect::<Vec<_>>();
-    matches!(differences.as_slice(), [left, right] if *right == *left + 1
-        && original[*left] == replacement[*right]
-        && original[*right] == replacement[*left])
-}
-
-fn normalized_words(text: &str) -> Vec<String> {
+fn lowercase_whitespace_tokens(text: &str) -> Vec<String> {
     text.split_whitespace()
         .map(|word| word.to_lowercase())
         .collect()
 }
 
 fn left_context(text: &str) -> Vec<String> {
-    let mut words = normalized_words(text);
+    let mut words = lowercase_whitespace_tokens(text);
     words.pop();
     words
 }
 
 fn changed_token_count(original: &str, replacement: &str) -> usize {
-    let original = normalized_words(original);
-    let replacement = normalized_words(replacement);
+    let original = lowercase_whitespace_tokens(original);
+    let replacement = lowercase_whitespace_tokens(replacement);
     if original.len() != replacement.len() {
         return original.len().max(replacement.len());
     }
@@ -568,13 +551,6 @@ fn last_word(text: &str) -> &str {
 
 fn word_count(text: &str) -> usize {
     text.split_whitespace().count()
-}
-
-fn common_prefix_chars(left: &str, right: &str) -> usize {
-    left.chars()
-        .zip(right.chars())
-        .take_while(|(left, right)| left == right)
-        .count()
 }
 
 fn common_suffix_chars(left: &str, right: &str) -> usize {
@@ -622,8 +598,8 @@ fn signed_bucket(value: isize) -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::candidate_contract::CandidateOrigin;
     use crate::correction_core::TypingErrorClass;
-    use crate::correction_source_contract::CandidateOrigin;
     use crate::typing_transition::action::verify_action_operator;
 
     fn encode(

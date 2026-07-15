@@ -2,9 +2,7 @@ use evdev::uinput::VirtualDevice;
 use lay::action_log::RecentActionGateTrace;
 use lay::decoder::DecoderAction;
 use lay::keyboard::preferred_layout_for_text;
-use lay::text_edit::{
-    plan_committed_tail_replacement, replacement_plan_matches, TextReplacement, TransitionAudit,
-};
+use lay::text_edit::{plan_committed_tail_replacement, replacement_plan_matches, TextReplacement};
 
 use super::super::super::action_log_runtime::RecentActionRecord;
 use super::super::super::correction_memory_runtime::{
@@ -35,21 +33,13 @@ pub(crate) fn try_manual_text_replacement(
     }
 
     let plan = manual_text_replacement_plan(ctx, text, kind);
-    let edit_action = lay::text_edit::authorize_replacement_with_transition(
+    let edit_action = lay::text_edit::plan_manual_edit(
         kind,
         0,
         ctx.mapped_orig,
         text.as_str(),
         plan.clone(),
-        Some("manual_toggle"),
-        None,
-        TransitionAudit::proven(
-            "manual_text_replace",
-            "manual_decision_plan_verified",
-            true,
-            false,
-            ctx.words_orig.max(1),
-        ),
+        ctx.words_orig,
     );
     lay::action_log::record_candidate_edit_action_before_apply(
         &edit_action,

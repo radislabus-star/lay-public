@@ -1,4 +1,5 @@
 use super::signal::WordCandidate;
+use crate::candidate_contract::CandidateOrigin;
 
 pub const STRUCTURAL_RELATION_CELL: &str = "StructuralRelationCell32";
 
@@ -151,13 +152,16 @@ fn route_for(roles: &RelationRoles) -> &'static str {
 }
 
 fn relation_for(candidate: &WordCandidate, roles: &RelationRoles) -> &'static str {
-    match candidate.source {
-        "LayoutWordCell32" => "layout_binding",
-        "ShortTokenCell32" => "short_token_choice",
-        "BoundaryCell32" | "PhraseMemoryCell32" => "space_boundary",
-        "GrammarCell32" => "grammar_agreement",
-        source if source == super::context_wave::SEMANTIC_WORD_SOURCE => "semantic_repair",
-        "TechTokenCell32" => "technical_keep",
+    match candidate.origin {
+        CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo
+            if roles.original_token.chars().count() <= 1 =>
+        {
+            "short_token_choice"
+        }
+        CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo => "layout_binding",
+        CandidateOrigin::Boundary => "space_boundary",
+        CandidateOrigin::L3Context => "semantic_repair",
+        CandidateOrigin::Technical => "technical_keep",
         _ if roles.original != roles.candidate => "role_change",
         _ => "identity",
     }
@@ -276,6 +280,11 @@ mod tests {
     fn candidate(text: &str, source: &'static str) -> WordCandidate {
         WordCandidate {
             text: text.to_string(),
+            origin: if source == "PhraseCell32" {
+                crate::candidate_contract::CandidateOrigin::L3Context
+            } else {
+                crate::candidate_contract::CandidateOrigin::Layout
+            },
             source,
             energy: 0.78,
             risk: 0.18,

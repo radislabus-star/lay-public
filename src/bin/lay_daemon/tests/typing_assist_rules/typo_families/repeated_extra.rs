@@ -4,10 +4,10 @@ use super::*;
 fn typing_assist_fixes_extra_repeated_letter() {
     for row in fixture_rows("daemon_typing_assist_repeated_letter.tsv") {
         assert_eq!(row.len(), 2, "repeated-letter fixture must be TSV");
-        assert_eq!(apply_typing_assist_exact(&row[0]), Some(row[1].clone()));
+        assert_eq!(select_typing_assist_exact(&row[0]), Some(row[1].clone()));
     }
     for input in fixture_lines("daemon_typing_assist_repeated_letter_keep.txt") {
-        assert_eq!(apply_typing_assist_exact(&input), None, "input={input:?}");
+        assert_eq!(select_typing_assist_exact(&input), None, "input={input:?}");
     }
 }
 
@@ -49,7 +49,7 @@ fn extra_letter_rule_defers_to_missing_letter_candidates() {
 #[test]
 fn typing_assist_does_not_shorten_tail_into_other_known_word() {
     for input in ["пукнут ", "кормус "] {
-        assert_eq!(apply_typing_assist_exact(input), None, "input={input:?}");
+        assert_eq!(select_typing_assist_exact(input), None, "input={input:?}");
     }
 }
 
@@ -57,7 +57,7 @@ fn typing_assist_does_not_shorten_tail_into_other_known_word() {
 fn extra_letter_rule_does_not_eat_glued_function_phrase() {
     assert_eq!(correct_extra_letters("тоесть"), None);
     assert_eq!(
-        apply_typing_assist_exact("тоесть "),
+        select_typing_assist_exact("тоесть "),
         Some("то есть ".to_string())
     );
 }

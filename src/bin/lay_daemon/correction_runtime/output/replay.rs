@@ -1,6 +1,6 @@
 use evdev::uinput::VirtualDevice;
 use lay::action_log::RecentActionGateTrace;
-use lay::text_edit::{AuthorizedEdit, TextReplacement, TransitionAudit};
+use lay::text_edit::{AuthorizedEdit, TextReplacement};
 use std::time::Instant;
 
 use super::super::super::{
@@ -18,11 +18,11 @@ pub(crate) fn apply_layout_replay(
 ) -> Option<bool> {
     let authorized_edit = manual_replay_action(ctx, input_gate)?;
     let action = authorized_edit.action();
-    let Some(plan) = action.plan.as_ref() else {
+    let Some(plan) = action.plan() else {
         log("⚠ manual replay blocked: AuthorizedEdit has no replacement plan");
         return None;
     };
-    if plan.backspaces != ctx.n_backspaces || action.to_text != ctx.mapped_target {
+    if plan.backspaces != ctx.n_backspaces || action.to_text() != ctx.mapped_target {
         log("⚠ manual replay blocked: AuthorizedEdit does not match replay state");
         return None;
     }
@@ -106,21 +106,13 @@ fn manual_replay_action(
         insert: ctx.mapped_target.to_string(),
         move_right: 0,
     };
-    let edit_action = lay::text_edit::authorize_replacement_with_transition(
+    let edit_action = lay::text_edit::plan_manual_edit(
         "manual-replay",
         1000,
         ctx.mapped_orig,
         ctx.mapped_target,
         plan,
-        Some("manual_replay"),
-        None,
-        TransitionAudit::proven(
-            "manual_replay",
-            "manual_replay_plan_verified",
-            true,
-            false,
-            ctx.words_orig.max(1),
-        ),
+        ctx.words_orig,
     );
     lay::action_log::record_candidate_edit_action_before_apply(
         &edit_action,

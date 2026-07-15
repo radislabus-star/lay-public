@@ -1,3 +1,4 @@
+use crate::candidate_contract::CandidateOrigin;
 use crate::dict::{convert, detect_direction};
 use crate::keyboard::is_cyrillic_letter;
 use crate::text_metrics::damerau_levenshtein;
@@ -131,6 +132,7 @@ pub fn lexical_attractor_traces(tail: &str, context: &TailContext) -> Vec<L2Word
 fn trace_to_candidate(trace: L2WordAttractorTrace) -> WordCandidate {
     WordCandidate {
         text: trace.produced_surface,
+        origin: CandidateOrigin::L2Surface,
         source: LEXICAL_ATTRACTOR_CELL,
         energy: lexical_energy(&trace.gate),
         risk: lexical_risk(&trace.gate),
@@ -440,6 +442,7 @@ mod tests {
     fn l3_does_not_apply_attractor_candidate_as_standalone_source() {
         let candidate = WordCandidate {
             text: "мы вот".to_string(),
+            origin: CandidateOrigin::L2Surface,
             source: LEXICAL_ATTRACTOR_CELL,
             energy: 0.96,
             risk: 0.04,

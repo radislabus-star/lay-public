@@ -1,56 +1,37 @@
 use lay::text_edit::{
-    authorize_replacement, authorize_replacement_with_transition,
-    plan_committed_tail_full_token_replacement, plan_text_replacement, EditActionKind,
-    TransitionAudit,
+    authorize_backend_edit, plan_committed_tail_full_token_replacement, plan_manual_edit,
+    EditActionKind, TextEditBackend,
 };
 use std::fs;
 use std::path::{Path, PathBuf};
 
 #[test]
-fn public_text_edit_gate_keeps_destructive_replacement_behind_safety() {
+fn public_text_edit_gate_keeps_manual_replacement_behind_backend_capability() {
     let plan = plan_committed_tail_full_token_replacement("ошипка ", "ошибка ").expect("plan");
-    let action = authorize_replacement(
-        "contract-test",
-        720,
-        "ошипка ",
-        "ошибка ",
-        plan,
-        Some("missing-letter"),
-        Some("missing-letter"),
-    );
+    let action = plan_manual_edit("contract-test", 1000, "ошипка ", "ошибка ", plan, 1);
 
-    assert_eq!(action.kind, EditActionKind::ReplaceLastToken);
+    assert_eq!(action.kind(), EditActionKind::ReplaceLastToken);
     assert!(action.allow_apply());
+    let authorization = authorize_backend_edit(TextEditBackend::Daemon, action);
+    assert!(authorization.allow_execute);
+    assert!(authorization.into_authorized().is_some());
 }
 
 #[test]
-fn public_text_mutation_gate_blocks_unverified_left_context_transition() {
-    let plan = plan_text_replacement("одно два ", "однотри ").expect("plan");
-    let action = authorize_replacement_with_transition(
-        "contract-test",
-        720,
-        "одно два ",
-        "однотри ",
-        plan,
-        Some("nanda"),
-        Some("glued-words"),
-        TransitionAudit::proven(
-            "boundary_transition",
-            "left_context_changed_without_boundary_proof",
-            false,
-            true,
-            2,
-        ),
-    );
+fn transition_proof_constructor_and_fields_are_not_public_capabilities() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let mutation = fs::read_to_string(root.join("src/text_edit/mutation.rs")).expect("mutation");
+    let gate = fs::read_to_string(root.join("src/text_edit/gate.rs")).expect("gate");
+    let facade = fs::read_to_string(root.join("src/text_edit.rs")).expect("facade");
 
-    assert_eq!(action.kind, EditActionKind::BlockUnsafe);
-    assert!(!action.allow_apply());
-    assert_eq!(action.safety_reason(), "edit_transition_not_verified");
-    assert_eq!(action.transition.changed_tokens, Some(2));
+    assert!(mutation.contains("pub(crate) fn proven("));
+    assert!(mutation.contains("pub(crate) operator: Option<TransitionOperator>"));
+    assert!(gate.contains("pub(crate) fn plan_verified_transition_edit("));
+    assert!(!facade.contains("pub use gate::{authorize_replacement"));
 }
 
 #[test]
-fn runtime_text_edits_use_transition_gate_not_plain_authorize_replacement() {
+fn runtime_text_edits_use_narrow_typed_plans_not_generic_proof_construction() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
     let mut files = Vec::new();
     collect_rust_files(&root.join("src"), &mut files);
@@ -62,12 +43,14 @@ fn runtime_text_edits_use_transition_gate_not_plain_authorize_replacement() {
             .unwrap_or(path.as_path())
             .to_string_lossy()
             .replace('\\', "/");
-        if rel == "src/text_edit/gate.rs" {
+        if !rel.starts_with("src/bin/") {
             continue;
         }
         let text = fs::read_to_string(&path).expect("read rust source");
         for (line_idx, line) in text.lines().enumerate() {
-            if line.contains("authorize_replacement(") {
+            if line.contains("plan_verified_transition_edit(")
+                || line.contains("TransitionAudit::proven(")
+            {
                 violations.push(format!("{}:{}: {}", rel, line_idx + 1, line.trim()));
             }
         }
@@ -75,7 +58,7 @@ fn runtime_text_edits_use_transition_gate_not_plain_authorize_replacement() {
 
     assert!(
         violations.is_empty(),
-        "runtime text mutation must use authorize_replacement_with_transition:\n{}",
+        "runtime adapters must use narrow typed plan APIs:\n{}",
         violations.join("\n")
     );
 }

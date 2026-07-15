@@ -6,7 +6,7 @@ use crate::typing_candidate::TypingDecisionConfidence;
 use crate::typing_pipeline::TypingRuleEvaluation;
 use std::collections::HashSet;
 
-use super::{apply_typing_assist_with_pipeline, explain_typing_assist_with_pipeline};
+use super::{explain_typing_assist_with_pipeline, select_typing_assist_with_pipeline};
 
 #[test]
 fn rule_graph_defines_every_default_rule() {
@@ -28,7 +28,7 @@ fn experimental_pipeline_uses_layout_candidates_for_autocorrect() {
     );
 
     assert_eq!(
-        apply_typing_assist_with_pipeline("djn ", true, &pipeline),
+        select_typing_assist_with_pipeline("djn ", true, &pipeline),
         Some("вот ".to_string())
     );
 }
@@ -43,7 +43,7 @@ fn experimental_pipeline_keeps_normal_word_boundary_pairs() {
     );
 
     assert_eq!(
-        apply_typing_assist_with_pipeline("слов и ", true, &pipeline),
+        select_typing_assist_with_pipeline("слов и ", true, &pipeline),
         None
     );
 }
@@ -206,7 +206,7 @@ fn apply_typing_assist_uses_explain_path() {
         let explanation =
             explain_typing_assist_with_pipeline(&row[0], allow_layout_auto, &pipeline);
         assert_eq!(
-            apply_typing_assist_with_pipeline(&row[0], allow_layout_auto, &pipeline),
+            select_typing_assist_with_pipeline(&row[0], allow_layout_auto, &pipeline),
             explanation.output
         );
     }

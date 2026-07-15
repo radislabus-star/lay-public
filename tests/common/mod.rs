@@ -3,7 +3,7 @@
 use lay::config::{default_typing_assist_pipeline, CorrectionSafety, TypingAssistRuleConfig};
 use lay::text_edit::TextReplacement;
 use lay::typing_assist::{
-    apply_typing_assist_with_pipeline, split_edge_whitespace, split_ws_segments,
+    select_typing_assist_with_pipeline, split_edge_whitespace, split_ws_segments,
 };
 use lay::typing_context::typing_assist_pipeline_for_context;
 
@@ -111,7 +111,7 @@ pub fn apply_typing_assist_to_tail(
 ) -> Option<String> {
     let context_pipeline =
         typing_assist_pipeline_for_context(true, CorrectionSafety::Normal, pipeline, text);
-    apply_typing_assist_with_pipeline(text, allow_layout_auto, &context_pipeline).or_else(|| {
+    select_typing_assist_with_pipeline(text, allow_layout_auto, &context_pipeline).or_else(|| {
         let (leading, core, trailing) = split_edge_whitespace(text);
         let segments = split_ws_segments(core);
         if segments.len() < 3 {
@@ -136,7 +136,7 @@ pub fn apply_typing_assist_to_tail(
 
             let suffix = &core[suffix_start..];
             if let Some(replacement) =
-                apply_typing_assist_with_pipeline(suffix, allow_layout_auto, &context_pipeline)
+                select_typing_assist_with_pipeline(suffix, allow_layout_auto, &context_pipeline)
             {
                 let mut out = String::with_capacity(text.len().max(replacement.len()));
                 out.push_str(leading);

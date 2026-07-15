@@ -6,20 +6,20 @@ mod live_log;
 #[test]
 fn typing_assist_keeps_valid_russian_words() {
     for input in fixture_lines("daemon_typing_assist_valid_word_keep.txt") {
-        assert_eq!(apply_typing_assist_exact(&input), None, "input={input:?}");
+        assert_eq!(select_typing_assist_exact(&input), None, "input={input:?}");
     }
     for input in fixture_lines("daemon_typing_assist_valid_phrase_keep.txt") {
-        assert_eq!(apply_typing_assist_exact(&input), None, "input={input:?}");
+        assert_eq!(select_typing_assist_exact(&input), None, "input={input:?}");
     }
 }
 
 #[test]
 fn typing_assist_ignores_words_with_digits() {
     for input in fixture_lines("daemon_typing_assist_digit_word_keep.txt") {
-        assert_eq!(apply_typing_assist_exact(&input), None, "input={input:?}");
+        assert_eq!(select_typing_assist_exact(&input), None, "input={input:?}");
     }
     for input in fixture_lines("daemon_typing_assist_digit_phrase_keep.txt") {
-        assert_eq!(apply_typing_assist_exact(&input), None, "input={input:?}");
+        assert_eq!(select_typing_assist_exact(&input), None, "input={input:?}");
     }
 }
 
@@ -80,5 +80,5 @@ fn replaces_visual_b_inside_russian_context() {
             row[1]
         );
     }
-    assert_eq!(apply_typing_assist_exact("b "), None);
+    assert_eq!(select_typing_assist_exact("b "), None);
 }

@@ -23,8 +23,8 @@ pub use crate::scoped_tail::{
     should_force_replay_for_short_fragment, ScopedTailOptions,
 };
 pub use crate::typing_pipeline::{
-    apply_typing_assist, apply_typing_assist_exact, apply_typing_assist_with_pipeline,
-    explain_typing_assist_with_pipeline, warm_up, warm_up_hot, TypingAssistExplanation,
+    explain_typing_assist_with_pipeline, select_typing_assist, select_typing_assist_exact,
+    select_typing_assist_with_pipeline, warm_up, warm_up_hot, TypingAssistExplanation,
     TypingRuleEvaluation,
 };
 pub use crate::typing_replacements::{

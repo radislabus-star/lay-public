@@ -24,8 +24,8 @@ pub fn plan_committed_tail_full_token_replacement(
 
     let original_chars: Vec<char> = original.chars().collect();
     let replacement_chars: Vec<char> = replacement.chars().collect();
-    let original_trailing_ws = trailing_whitespace_chars(original);
-    let replacement_trailing_ws = trailing_whitespace_chars(replacement);
+    let original_trailing_ws = crate::word_reader::trailing_whitespace_char_count(original);
+    let replacement_trailing_ws = crate::word_reader::trailing_whitespace_char_count(replacement);
 
     let original_body_len = original_chars.len().saturating_sub(original_trailing_ws);
     let replacement_body_len = replacement_chars
@@ -57,8 +57,8 @@ pub(crate) fn plan_committed_tail_last_token_replacement(
         return None;
     }
 
-    let original_trailing_ws = trailing_whitespace_chars(original);
-    let replacement_trailing_ws = trailing_whitespace_chars(replacement);
+    let original_trailing_ws = crate::word_reader::trailing_whitespace_char_count(original);
+    let replacement_trailing_ws = crate::word_reader::trailing_whitespace_char_count(replacement);
     let original_body_len = original
         .chars()
         .count()
@@ -125,8 +125,8 @@ pub fn plan_committed_whitespace_insertions(
     replacement: &str,
     cursor_offset: u32,
 ) -> Option<Vec<TextReplacement>> {
-    let original_trailing_ws = trailing_whitespace_chars(original);
-    let replacement_trailing_ws = trailing_whitespace_chars(replacement);
+    let original_trailing_ws = crate::word_reader::trailing_whitespace_char_count(original);
+    let replacement_trailing_ws = crate::word_reader::trailing_whitespace_char_count(replacement);
 
     if original_trailing_ws == 0 || replacement_trailing_ws == 0 {
         return None;
@@ -197,13 +197,6 @@ pub fn plan_committed_whitespace_insertions(
         inserted_to_right = inserted_to_right.saturating_add(1);
     }
     Some(plans)
-}
-
-fn trailing_whitespace_chars(text: &str) -> usize {
-    text.chars()
-        .rev()
-        .take_while(|ch| ch.is_whitespace())
-        .count()
 }
 
 fn last_token_start_byte(text: &str) -> Option<usize> {

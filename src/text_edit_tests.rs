@@ -44,6 +44,33 @@ fn autocorrect_safety_fixture(case_name: &str) -> Vec<String> {
     row
 }
 
+fn safety_audit(source: &str) -> TransitionAudit {
+    match source {
+        "BoundaryCell32" | "glued_phrase" => TransitionAudit::proven(
+            TransitionOperator::BoundaryMergeSplit,
+            TransitionProof::Boundary,
+            true,
+            true,
+            2,
+        ),
+        "SemanticWordCell32" => TransitionAudit::proven(
+            TransitionOperator::PhraseTokenRepair,
+            TransitionProof::Context,
+            true,
+            true,
+            2,
+        ),
+        "L2SurfaceMotifCell32" => TransitionAudit::proven(
+            TransitionOperator::ReplaceCurrentWord,
+            TransitionProof::Typo,
+            true,
+            false,
+            1,
+        ),
+        _ => TransitionAudit::none(),
+    }
+}
+
 #[test]
 fn plans_minimal_two_word_prefix_and_suffix_edits() {
     for row in fixture_rows("text_edit_minimal_plan.tsv") {
@@ -111,15 +138,13 @@ fn autocorrect_safety_blocks_middle_suffix_plan_but_allows_full_token_plan() {
         original,
         replacement,
         &minimal,
-        Some("L2SurfaceMotifCell32"),
-        Some("typo"),
+        &safety_audit("L2SurfaceMotifCell32"),
     );
     let full_safety = autocorrect_edit_safety(
         original,
         replacement,
         &full_token,
-        Some("L2SurfaceMotifCell32"),
-        Some("typo"),
+        &safety_audit("L2SurfaceMotifCell32"),
     );
 
     assert!(!minimal_safety.allow_apply);
@@ -139,13 +164,8 @@ fn autocorrect_safety_blocks_cursor_underflow_edit_plan() {
     assert!(!replacement_plan_matches(original, replacement, &plan));
     assert_eq!(apply_plan(original, &plan), original);
 
-    let safety = autocorrect_edit_safety(
-        original,
-        replacement,
-        &plan,
-        Some("glued_phrase"),
-        Some("glued-words"),
-    );
+    let safety =
+        autocorrect_edit_safety(original, replacement, &plan, &safety_audit("glued_phrase"));
 
     assert!(!safety.allow_apply);
     assert_eq!(safety.reason, "invalid_edit_plan_cursor_bounds");
@@ -160,13 +180,8 @@ fn autocorrect_safety_blocks_dry_run_mismatched_edit_plan() {
     assert_eq!(apply_plan(original, &plan), "крытоеытое ");
     assert!(!replacement_plan_matches(original, replacement, &plan));
 
-    let safety = autocorrect_edit_safety(
-        original,
-        replacement,
-        &plan,
-        Some("glued_phrase"),
-        Some("glued-words"),
-    );
+    let safety =
+        autocorrect_edit_safety(original, replacement, &plan, &safety_audit("glued_phrase"));
 
     assert!(!safety.allow_apply);
     assert_eq!(safety.reason, "edit_plan_dry_run_mismatch");
@@ -307,8 +322,7 @@ fn autocorrect_safety_blocks_plain_previous_word_fix_without_boundary_proof() {
     let original = &row[1];
     let replacement = &row[2];
     let plan = plan_committed_tail_replacement(original, replacement).expect("plan");
-    let safety =
-        autocorrect_edit_safety(original, replacement, &plan, Some(&row[3]), Some(&row[4]));
+    let safety = autocorrect_edit_safety(original, replacement, &plan, &safety_audit(&row[3]));
 
     assert!(!safety.allow_apply);
     assert!(original.split_whitespace().count() > 1);
@@ -323,8 +337,7 @@ fn autocorrect_safety_blocks_unproven_word_boundary_split() {
     let original = &row[1];
     let replacement = &row[2];
     let plan = plan_committed_tail_replacement(original, replacement).expect("plan");
-    let safety =
-        autocorrect_edit_safety(original, replacement, &plan, Some(&row[3]), Some(&row[4]));
+    let safety = autocorrect_edit_safety(original, replacement, &plan, &safety_audit(&row[3]));
 
     assert!(!safety.allow_apply);
     assert!(original.split_whitespace().count() > 1);
@@ -338,8 +351,7 @@ fn autocorrect_safety_allows_proven_boundary_split() {
     let original = &row[1];
     let replacement = &row[2];
     let plan = plan_committed_tail_replacement(original, replacement).expect("plan");
-    let safety =
-        autocorrect_edit_safety(original, replacement, &plan, Some(&row[3]), Some(&row[4]));
+    let safety = autocorrect_edit_safety(original, replacement, &plan, &safety_audit(&row[3]));
 
     assert!(safety.allow_apply);
     assert!(safety.boundary_changed);
@@ -358,8 +370,7 @@ fn autocorrect_safety_requires_strong_boundary_shape() {
         let original = &row[1];
         let replacement = &row[2];
         let plan = plan_committed_tail_replacement(original, replacement).expect("plan");
-        let safety =
-            autocorrect_edit_safety(original, replacement, &plan, Some(&row[3]), Some(&row[4]));
+        let safety = autocorrect_edit_safety(original, replacement, &plan, &safety_audit(&row[3]));
 
         assert_eq!(
             safety.allow_apply,
@@ -382,8 +393,7 @@ fn autocorrect_safety_blocks_semantic_left_context_rewrite() {
     let original = &row[1];
     let replacement = &row[2];
     let plan = plan_committed_tail_replacement(original, replacement).expect("plan");
-    let safety =
-        autocorrect_edit_safety(original, replacement, &plan, Some(&row[3]), Some(&row[4]));
+    let safety = autocorrect_edit_safety(original, replacement, &plan, &safety_audit(&row[3]));
 
     assert!(!safety.allow_apply);
     assert!(original.split_whitespace().count() > 1);

@@ -143,7 +143,7 @@ fn uppercase_shift_layout_word_gets_contextual_candidate() {
     );
 
     assert_eq!(
-        apply_typing_assist_with_pipeline(input, true, &pipeline),
+        select_typing_assist_with_pipeline(input, true, &pipeline),
         Some(row[5].clone())
     );
 
@@ -156,7 +156,7 @@ fn uppercase_shift_layout_word_gets_contextual_candidate() {
         leading_shift_input,
     );
     assert_eq!(
-        apply_typing_assist_with_pipeline(leading_shift_input, true, &leading_shift_pipeline),
+        select_typing_assist_with_pipeline(leading_shift_input, true, &leading_shift_pipeline),
         Some(leading_shift_row[5].clone())
     );
 }

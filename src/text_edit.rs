@@ -40,8 +40,12 @@ pub use diff_plan::{
 pub use executor::{
     authorize_backend_edit, AuthorizedEdit, BackendEditAuthorization, TextEditBackend,
 };
-pub use gate::{authorize_replacement, authorize_replacement_with_transition};
-pub use mutation::TransitionAudit;
+pub(crate) use gate::plan_verified_transition_edit;
+pub use gate::{
+    plan_ime_completion_edit, plan_input_gate_edit, plan_manual_edit, plan_native_edit,
+    plan_recorded_undo_edit,
+};
+pub use mutation::{TransitionAudit, TransitionOperator, TransitionProof};
 pub use safety::{autocorrect_edit_safety, EditPlanSafetyReport};
 pub use transition::{
     decide_text_transition, LatentTextTransitionCandidate, TextTransitionDecision,

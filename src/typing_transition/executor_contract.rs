@@ -62,7 +62,9 @@ impl ExecutorAuthorization {
 #[cfg(test)]
 mod tests {
     use super::{ExecutionBackend, ExecutorContract};
-    use crate::text_edit::{EditAction, TextReplacement};
+    use crate::text_edit::{
+        EditAction, TextReplacement, TransitionAudit, TransitionOperator, TransitionProof,
+    };
 
     #[test]
     fn ime_is_backend_not_authority() {
@@ -85,6 +87,13 @@ mod tests {
             },
             Some("layout"),
             Some("layout-flip"),
+            TransitionAudit::proven(
+                TransitionOperator::LayoutProjection,
+                TransitionProof::Layout,
+                true,
+                false,
+                1,
+            ),
         );
         let auth = ExecutorContract::backend_only(ExecutionBackend::Daemon).authorize_edit(&action);
         assert!(auth.allow_execute);
@@ -107,6 +116,7 @@ mod tests {
             },
             Some("test"),
             Some("boundary-unsafe"),
+            TransitionAudit::none(),
         );
         let auth = ExecutorContract::backend_only(ExecutionBackend::Ime).authorize_edit(&action);
         assert!(!auth.allow_execute);

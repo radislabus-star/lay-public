@@ -3,9 +3,9 @@
 //! Runtime backends still own output and state. This module only answers one
 //! question: should this completed text be replaced, and by which engine?
 
+use crate::candidate_contract::{CandidateOrigin, CorrectionSourceRole};
 use crate::candidate_explanation::{explain_candidate, CandidateExplanation};
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
-use crate::correction_source_contract::{self, CandidateOrigin, CorrectionSourceRole};
 use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
 use crate::nanda_wave::{run_wave_trace_with_options, WaveOptions, WordCandidate};
 use crate::russian_typo_candidates::{
@@ -14,6 +14,7 @@ use crate::russian_typo_candidates::{
 use crate::text_case::apply_word_case;
 use crate::text_metrics::{damerau_levenshtein, has_cyrillic};
 use crate::typing_assist::split_ws_segments;
+use crate::typing_candidate::TypingCandidateFamily;
 use crate::typing_context::{syntax_allows_candidate, typing_assist_pipeline_for_context};
 use crate::typing_pipeline::{
     collect_typing_assist_candidates_with_pipeline, explain_typing_assist_with_pipeline,
@@ -38,9 +39,11 @@ const REPEATED_DELETE_SURFACE_MARGIN: f64 = 0.25;
 mod gate;
 #[cfg(test)]
 use gate::gate_candidate;
+#[cfg(test)]
+use gate::gate_candidate_with_source;
 pub(crate) use gate::{bayes_score_for_candidate, normalized_correction_words};
 use gate::{
-    gate_candidate_with_source, repeated_deletion_has_surface_support,
+    gate_candidate_with_origin, repeated_deletion_has_surface_support,
     should_prefer_composite_after_repeated_repair,
 };
 
@@ -149,15 +152,15 @@ pub(crate) struct CandidateEvidence {
 }
 
 impl UnifiedCorrectionCandidate {
-    pub fn new(
+    pub(crate) fn new(
         replacement: impl Into<String>,
         source: CorrectionDecisionSource,
+        origin: CandidateOrigin,
         source_id: impl Into<String>,
         error_class: TypingErrorClass,
         gate: CandidateGateDecision,
     ) -> Self {
         let source_id = source_id.into();
-        let origin = correction_source_contract::candidate_origin(&source_id);
         Self {
             replacement: replacement.into(),
             source,
@@ -277,6 +280,8 @@ pub(crate) struct CorrectionCandidateScoreTrace {
     pub(crate) action_proof: &'static str,
     pub(crate) edit_transition_operator: &'static str,
     pub(crate) edit_transition_proof: &'static str,
+    pub(crate) edit_transition_operator_kind: crate::text_edit::TransitionOperator,
+    pub(crate) edit_transition_proof_kind: crate::text_edit::TransitionProof,
     pub(crate) edit_transition_verified: bool,
     pub(crate) edit_transition_left_context_changed: bool,
     pub(crate) edit_transition_changed_tokens: usize,
@@ -520,6 +525,8 @@ impl CorrectionCandidateScoreTrace {
                     action_proof: action.proof.as_str(),
                     edit_transition_operator: action.edit_operator.as_str(),
                     edit_transition_proof: action.edit_proof.as_str(),
+                    edit_transition_operator_kind: action.edit_operator,
+                    edit_transition_proof_kind: action.edit_proof.into(),
                     edit_transition_verified: action.verifier_passed,
                     edit_transition_left_context_changed: action.left_context_changed,
                     edit_transition_changed_tokens: action.changed_tokens,
@@ -533,9 +540,9 @@ impl CorrectionCandidateScoreTrace {
                     explanation_score_milli: explanation.explanation_score_milli,
                     gate_action: candidate.gate.action,
                     gate_reason: candidate.gate.reason,
-                    likelihood_milli: score_to_milli(score.likelihood),
-                    usage_prior_milli: score_to_milli(score.usage_prior),
-                    context_prior_milli: score_to_milli(score.context_prior),
+                    likelihood_milli: crate::text_metrics::score_to_milli(score.likelihood),
+                    usage_prior_milli: crate::text_metrics::score_to_milli(score.usage_prior),
+                    context_prior_milli: crate::text_metrics::score_to_milli(score.context_prior),
                     l2_wave_peak_milli: decision_signals.l2_wave_peak_milli,
                     l2_wave_peak_positive_milli: decision_signals.l2_wave_peak_positive_milli,
                     l2_wave_peak_negative_milli: decision_signals.l2_wave_peak_negative_milli,
@@ -567,20 +574,14 @@ impl CorrectionCandidateScoreTrace {
                     l4_transition_state_specific: decision_signals.l4_transition_state_specific,
                     l4_transition_attract_count: decision_signals.l4_transition_attract_count,
                     l4_transition_repel_count: decision_signals.l4_transition_repel_count,
-                    risk_milli: score_to_milli(score.risk),
-                    posterior_milli: score_to_milli(score.posterior),
+                    risk_milli: crate::text_metrics::score_to_milli(score.risk),
+                    posterior_milli: crate::text_metrics::score_to_milli(score.posterior),
                     decision_rank_milli: decision_signals.rank_milli,
                     selected: selected.is_some_and(|selected| selected == candidate),
                 }
             })
             .collect()
     }
-}
-
-fn score_to_milli(value: f32) -> i16 {
-    (value * 1000.0)
-        .round()
-        .clamp(i16::MIN as f32, i16::MAX as f32) as i16
 }
 
 pub(crate) fn explanation_for_candidate(
@@ -591,7 +592,7 @@ pub(crate) fn explanation_for_candidate(
         original,
         &candidate.replacement,
         candidate.error_class,
-        &candidate.source_id,
+        candidate.origin,
     )
 }
 

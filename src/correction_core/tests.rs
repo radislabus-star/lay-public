@@ -59,6 +59,7 @@ mod tests {
         lattice.push_source(Some(UnifiedCorrectionCandidate::new(
             "автозамена ",
             CorrectionDecisionSource::Nanda,
+            CandidateOrigin::L2Surface,
             "L2SurfaceMotifCell32",
             TypingErrorClass::MissingLetter,
             CandidateGateDecision {
@@ -69,6 +70,7 @@ mod tests {
         lattice.push_source(Some(UnifiedCorrectionCandidate::new(
             "автозамена ",
             CorrectionDecisionSource::Deterministic,
+            CandidateOrigin::DeterministicTypo,
             ids::MISSING_LETTER,
             TypingErrorClass::MissingLetter,
             CandidateGateDecision {
@@ -79,6 +81,7 @@ mod tests {
         lattice.push_source(Some(UnifiedCorrectionCandidate::new(
             "авто замена ",
             CorrectionDecisionSource::Nanda,
+            CandidateOrigin::Boundary,
             "BoundaryCell32",
             TypingErrorClass::GluedWords,
             CandidateGateDecision {
@@ -125,6 +128,7 @@ mod tests {
         lattice.push_source(Some(UnifiedCorrectionCandidate::new(
             "wechat ",
             CorrectionDecisionSource::Nanda,
+            CandidateOrigin::L2Surface,
             "L2WordAttractorCell32",
             TypingErrorClass::CompositeTypo,
             CandidateGateDecision {
@@ -135,6 +139,7 @@ mod tests {
         lattice.push_source(Some(UnifiedCorrectionCandidate::new(
             "wechat ",
             CorrectionDecisionSource::Nanda,
+            CandidateOrigin::Layout,
             "LayoutWordCell32",
             TypingErrorClass::WrongLayout,
             CandidateGateDecision {
@@ -158,6 +163,7 @@ mod tests {
             let mut protected = UnifiedCorrectionCandidate::new(
                 "wechat ",
                 CorrectionDecisionSource::Nanda,
+                CandidateOrigin::Technical,
                 "ProtectedSurfaceCell32",
                 TypingErrorClass::ProtectedToken,
                 CandidateGateDecision {
@@ -168,6 +174,7 @@ mod tests {
             protected.merge_evidence(UnifiedCorrectionCandidate::new(
                 "wechat ",
                 CorrectionDecisionSource::Nanda,
+                CandidateOrigin::Layout,
                 "LayoutWordCell32",
                 TypingErrorClass::WrongLayout,
                 CandidateGateDecision {
@@ -183,11 +190,11 @@ mod tests {
 
     #[test]
     fn l2_surface_candidate_cannot_apply_left_context_rewrite() {
-        let gate = gate_candidate_with_source(
+        let gate = gate_candidate_with_origin(
             "коретка улитела ",
             "етка улитка ",
             TypingErrorClass::CompositeTypo,
-            "L2SurfaceMotifCell32",
+            CandidateOrigin::L2Surface,
         );
 
         assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
@@ -1094,7 +1101,7 @@ mod tests {
         let gate = gate_candidate("твой ", "тывой ", TypingErrorClass::CompositeTypo);
 
         assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
-        assert_eq!(gate.reason, "known_phrase_part_one_letter_growth");
+        assert_eq!(gate.reason, "known_current_word_surface_drift");
     }
 
     #[test]

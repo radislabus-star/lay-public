@@ -31,6 +31,13 @@ pub fn split_edge_whitespace(text: &str) -> (&str, &str, &str) {
     (&text[..start], &text[start..end], &text[end..])
 }
 
+pub fn trailing_whitespace_char_count(text: &str) -> usize {
+    text.chars()
+        .rev()
+        .take_while(|ch| ch.is_whitespace())
+        .count()
+}
+
 pub fn split_word_punctuation(token: &str) -> (&str, &str, &str) {
     let start = token
         .char_indices()
@@ -123,6 +130,15 @@ pub(crate) fn last_text_word_slice(text: &str) -> Option<&str> {
 
 pub(crate) fn last_text_word(text: &str) -> Option<String> {
     last_text_word_slice(text).map(str::to_string)
+}
+
+pub(crate) fn normalized_text_words(text: &str) -> Vec<String> {
+    text.split_whitespace()
+        .filter_map(|token| {
+            let (_, word, _) = split_word_punctuation(token);
+            (!word.is_empty()).then(|| word.to_lowercase())
+        })
+        .collect()
 }
 
 pub(crate) fn replace_last_text_word(text: &str, replacement_word: &str) -> Option<String> {

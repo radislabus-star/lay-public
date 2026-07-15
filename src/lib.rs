@@ -3,6 +3,7 @@
 
 pub mod action_log;
 pub mod architecture_contract;
+pub(crate) mod candidate_contract;
 pub mod candidate_explanation;
 pub(crate) mod candidate_ranker;
 pub mod config;
@@ -10,7 +11,6 @@ pub mod core;
 pub mod correction;
 pub(crate) mod correction_bayes;
 pub mod correction_core;
-pub(crate) mod correction_source_contract;
 pub(crate) mod data_lines;
 pub mod debug_log;
 pub mod decoder;

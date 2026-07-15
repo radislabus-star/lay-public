@@ -1,18 +1,17 @@
 use super::{action, verifier, TypingTransition};
+use crate::candidate_contract::CorrectionSourceRole;
 use crate::correction_core::{
     bayes_score_for_candidate, explanation_for_candidate, CandidateGateAction,
     CorrectionDecisionSource, TypingErrorClass, TypingErrorEvent, UnifiedCorrectionCandidate,
 };
-use crate::correction_source_contract::CorrectionSourceRole;
 use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
 use crate::nanda_wave::l4_goal_state::{derive_l4_scene_state, L4AllowedAction, L4SceneStateInput};
 use crate::nanda_wave::l4_signed_memory::{l4_signed_memory_signal, L4SignedMemoryInput};
 use crate::text_edit::{
-    authorize_replacement_with_transition, tail_chars, LatentTextTransitionCandidate,
-    TextReplacement, TextTransitionDecision, TextTransitionRejection, TransitionAudit,
-    VisibleFieldState,
+    plan_verified_transition_edit, tail_chars, LatentTextTransitionCandidate, TextReplacement,
+    TextTransitionDecision, TextTransitionRejection, TransitionAudit, VisibleFieldState,
 };
-use crate::text_metrics::damerau_levenshtein;
+use crate::text_metrics::{damerau_levenshtein, score_to_milli};
 use crate::transition_relation::{TransitionRelationAtoms, TransitionRelationInput};
 use crate::word_reader::split_word_punctuation;
 
@@ -99,7 +98,7 @@ impl TransitionDecisionCore {
             false,
             1,
         );
-        let action = authorize_replacement_with_transition(
+        let action = plan_verified_transition_edit(
             "ibus-committed-tail",
             1000,
             &original_text,
@@ -282,7 +281,7 @@ fn candidate_has_apply_authority(
         CorrectionSourceRole::Layout => 0.0,
         CorrectionSourceRole::Boundary | CorrectionSourceRole::DeterministicTypo => 0.20,
         CorrectionSourceRole::L3Context => 0.28,
-        CorrectionSourceRole::L2Surface | CorrectionSourceRole::Unknown => 0.34,
+        CorrectionSourceRole::L2Surface => 0.34,
         CorrectionSourceRole::Completion | CorrectionSourceRole::Technical => 0.40,
     };
     if bayes.posterior < posterior_floor && !strong_learned_support {
@@ -361,7 +360,6 @@ fn phase_managed_source(source_role: CorrectionSourceRole) -> bool {
         CorrectionSourceRole::DeterministicTypo
             | CorrectionSourceRole::L2Surface
             | CorrectionSourceRole::L3Context
-            | CorrectionSourceRole::Unknown
     )
 }
 
@@ -401,9 +399,7 @@ fn learned_candidate_shadowed_by_deterministic_owner(
     if candidate.source != CorrectionDecisionSource::Nanda
         || !matches!(
             source_role,
-            CorrectionSourceRole::L2Surface
-                | CorrectionSourceRole::L3Context
-                | CorrectionSourceRole::Unknown
+            CorrectionSourceRole::L2Surface | CorrectionSourceRole::L3Context
         )
     {
         return false;
@@ -869,11 +865,11 @@ include!("decision_signals.rs");
 #[cfg(test)]
 mod tests {
     use super::{admit_hidden_transition, phase_policy_rejection, TransitionDecisionPolicy};
+    use crate::candidate_contract::{CandidateOrigin, CorrectionSourceRole};
     use crate::correction_core::{
         CandidateGateAction, CandidateGateDecision, CorrectionDecisionSource, TypingErrorClass,
         TypingErrorEvent, UnifiedCorrectionCandidate,
     };
-    use crate::correction_source_contract::CorrectionSourceRole;
 
     #[test]
     fn transition_admission_blocks_unverified_left_context() {
@@ -881,6 +877,7 @@ mod tests {
         let candidate = UnifiedCorrectionCandidate::new(
             "что получилось вроде хороший ввод и даже фикс был шикарный но с содержать ",
             CorrectionDecisionSource::Nanda,
+            CandidateOrigin::L2Surface,
             "L2SurfaceMotifCell32",
             TypingErrorClass::CompositeTypo,
             CandidateGateDecision {
@@ -1042,6 +1039,7 @@ mod tests {
         UnifiedCorrectionCandidate::new(
             replacement,
             CorrectionDecisionSource::Deterministic,
+            CandidateOrigin::DeterministicTypo,
             source_id,
             TypingErrorClass::CompositeTypo,
             CandidateGateDecision {

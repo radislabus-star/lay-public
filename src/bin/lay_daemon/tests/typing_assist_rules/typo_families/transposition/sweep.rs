@@ -23,7 +23,7 @@ fn typing_assist_transposition_sweep_over_generated_forms() {
         checked += 1;
         let input = format!("{typo} ");
         let expected = format!("{word} ");
-        if apply_typing_assist_exact(&input) == Some(expected) {
+        if select_typing_assist_exact(&input) == Some(expected) {
             repaired += 1;
         } else if misses.len() < 12 {
             misses.push((typo, word.clone()));

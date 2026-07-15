@@ -5,7 +5,7 @@ use lay::decoder::{
 };
 use lay::dict::{convert, Direction};
 use lay::keyboard::{map_original_events, replay_layout_decision, text_to_key_events, KeyEvent};
-use lay::typing_assist::{apply_typing_assist_exact, ScopedTailOptions};
+use lay::typing_assist::{select_typing_assist_exact, ScopedTailOptions};
 
 #[path = "common/mod.rs"]
 mod common;
@@ -165,13 +165,13 @@ fn typing_assist_decoder_preserves_space_and_avoids_known_false_splits() {
     for input in common::fixture_lines(include_str!(
         "fixtures/decoder_transition_typing_assist_keep.txt"
     )) {
-        assert_eq!(apply_typing_assist_exact(&input), None, "input={input:?}");
+        assert_eq!(select_typing_assist_exact(&input), None, "input={input:?}");
     }
     for (input, expected) in common::fixture_cases(include_str!(
         "fixtures/decoder_transition_typing_assist_fix.tsv"
     )) {
         assert_eq!(
-            apply_typing_assist_exact(&input),
+            select_typing_assist_exact(&input),
             Some(expected),
             "input={input:?}"
         );

@@ -9,7 +9,7 @@ impl TransitionMemory {
     pub(crate) fn allows_apply(
         original: &str,
         replacement: &str,
-        origin: crate::correction_source_contract::CandidateOrigin,
+        origin: crate::candidate_contract::CandidateOrigin,
     ) -> bool {
         Self::readout(original, replacement, origin)
             .as_ref()
@@ -19,7 +19,7 @@ impl TransitionMemory {
     pub(crate) fn has_exact_positive(
         original: &str,
         replacement: &str,
-        origin: crate::correction_source_contract::CandidateOrigin,
+        origin: crate::candidate_contract::CandidateOrigin,
     ) -> bool {
         Self::readout(original, replacement, origin).is_some_and(|signed| {
             signed.transition_state_specific
@@ -30,7 +30,7 @@ impl TransitionMemory {
     fn readout(
         original: &str,
         replacement: &str,
-        origin: crate::correction_source_contract::CandidateOrigin,
+        origin: crate::candidate_contract::CandidateOrigin,
     ) -> Option<crate::nanda_wave::l4_signed_memory::L4SignedMemorySignal> {
         let mut context = crate::correction_core::normalized_correction_words(original);
         context.pop();
@@ -124,7 +124,7 @@ mod tests {
         assert!(TransitionMemory::allows_apply(
             "тест ",
             " ",
-            crate::correction_source_contract::CandidateOrigin::DeterministicTypo,
+            crate::candidate_contract::CandidateOrigin::DeterministicTypo,
         ));
     }
 }

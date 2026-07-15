@@ -2,7 +2,7 @@ use lay::action_log::RecentActionGateTrace;
 use lay::decoder::DecoderAction;
 use lay::desktop::LayoutBackend;
 use lay::keyboard::preferred_layout_for_text;
-use lay::text_edit::{AuthorizedEdit, TextReplacement, TransitionAudit};
+use lay::text_edit::{AuthorizedEdit, TextReplacement};
 
 use super::super::super::action_log_runtime::RecentActionRecord;
 use super::super::super::correction_memory_runtime::{
@@ -211,36 +211,14 @@ fn authorize_native_text_edit(
         insert: replace_text.to_string(),
         move_right: 0,
     };
-    let (source_id, transition_operator, transition_proof, confidence_milli) = if is_replay {
-        (
-            "manual_replay",
-            "manual_native_replay",
-            "manual_native_replay_plan_verified",
-            1000,
-        )
-    } else {
-        (
-            "manual_native_replace",
-            "manual_native_replace",
-            "manual_native_plan_verified",
-            0,
-        )
-    };
-    let edit_action = lay::text_edit::authorize_replacement_with_transition(
+    let confidence_milli = if is_replay { 1000 } else { 0 };
+    let edit_action = lay::text_edit::plan_native_edit(
         replace_kind,
         confidence_milli,
         ctx.mapped_orig,
         replace_text,
         plan,
-        Some(source_id),
-        None,
-        TransitionAudit::proven(
-            transition_operator,
-            transition_proof,
-            true,
-            false,
-            ctx.words_orig.max(1),
-        ),
+        ctx.words_orig,
     );
     lay::action_log::record_candidate_edit_action_before_apply(
         &edit_action,

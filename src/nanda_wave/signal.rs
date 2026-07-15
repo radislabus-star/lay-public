@@ -1,4 +1,5 @@
 use super::mode::ModeRole;
+use crate::candidate_contract::CandidateOrigin;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ActiveMode {
@@ -41,6 +42,7 @@ impl WavePacket {
 #[derive(Debug, Clone, PartialEq)]
 pub struct WordCandidate {
     pub text: String,
+    pub(crate) origin: CandidateOrigin,
     pub source: &'static str,
     pub energy: f32,
     pub risk: f32,

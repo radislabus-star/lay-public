@@ -74,7 +74,7 @@ impl LayIbusEngine {
         } else {
             accepted_word.clone()
         };
-        let action = lay::text_edit::EditAction::ime_accept(
+        let action = lay::text_edit::plan_ime_completion_edit(
             "ibus-active-composition-completion",
             900,
             self.buffer.clone(),
@@ -179,7 +179,7 @@ impl LayIbusEngine {
                     decision.action,
                 );
                 if let Some(edit) = backend_action.into_authorized() {
-                    text = edit.action().to_text.clone();
+                    text = edit.action().to_text().to_string();
                     authorized_edit = Some(edit);
                 } else {
                     trace::record(r#"{"kind":"ibus_active_composition_autocorrect_blocked"}"#);
@@ -234,7 +234,8 @@ impl LayIbusEngine {
 fn authorized_edit_matches_ime_text(authorized_edit: Option<&AuthorizedEdit>, text: &str) -> bool {
     match authorized_edit {
         Some(edit) => {
-            edit.backend() == lay::text_edit::TextEditBackend::Ime && edit.action().to_text == text
+            edit.backend() == lay::text_edit::TextEditBackend::Ime
+                && edit.action().to_text() == text
         }
         None => true,
     }
@@ -257,8 +258,8 @@ mod active_composition_route_contract {
     fn completion_accept_uses_edit_action_contract() {
         let source = include_str!("composition_commit.rs");
         assert!(
-            source.contains("EditAction::ime_accept("),
-            "Tab/IME completion accept must be represented as EditAction::AcceptImeCandidate"
+            source.contains("plan_ime_completion_edit("),
+            "Tab/IME completion accept must enter the typed IME completion plan"
         );
         assert!(
             source.contains("Some(authorized_edit)")

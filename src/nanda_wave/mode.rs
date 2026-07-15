@@ -57,7 +57,7 @@ pub struct Mode8 {
 
 impl Mode8 {
     pub fn seeded(seed: u64, idx: usize, role: ModeRole) -> Self {
-        let mixed = mix64(seed ^ idx as u64);
+        let mixed = crate::stable_hash::mix64_avalanche(seed ^ idx as u64);
         Self {
             frequency_id: mixed as u16,
             sin_weight: byte_to_i8(mixed >> 8),
@@ -79,19 +79,6 @@ impl Mode8 {
         let transition = transition as f32 / 127.0;
         (0.55 * amp + 0.35 * wave.abs() + 0.10 * transition.max(0.0)).clamp(0.0, 1.0)
     }
-}
-
-pub fn mix64(mut value: u64) -> u64 {
-    value ^= value >> 30;
-    value = value.wrapping_mul(0xbf58_476d_1ce4_e5b9);
-    value ^= value >> 27;
-    value = value.wrapping_mul(0x94d0_49bb_1331_11eb);
-    value ^ (value >> 31)
-}
-
-pub fn mix64_golden(mut value: u64) -> u64 {
-    value = crate::stable_hash::mix64_golden(value);
-    value
 }
 
 fn byte_to_i8(value: u64) -> i8 {

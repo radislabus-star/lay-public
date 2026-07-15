@@ -1,9 +1,9 @@
 use crate::text_edit::{
-    authorize_replacement_with_transition, committed_separator_is_preserved,
-    ensure_committed_tail_spacing, offset_replacement_plan_for_cursor,
-    plan_committed_tail_full_token_replacement, plan_committed_tail_last_token_replacement,
-    plan_committed_tail_replacement, plan_text_replacement, replacement_plan_matches, EditAction,
-    TextReplacement, TransitionAudit,
+    committed_separator_is_preserved, ensure_committed_tail_spacing,
+    offset_replacement_plan_for_cursor, plan_committed_tail_full_token_replacement,
+    plan_committed_tail_last_token_replacement, plan_committed_tail_replacement,
+    plan_text_replacement, plan_verified_transition_edit, replacement_plan_matches, EditAction,
+    TextReplacement, TransitionAudit, TransitionOperator, TransitionProof,
 };
 
 use super::types::{CorrectionSource, CorrectionTrigger};
@@ -59,8 +59,8 @@ impl DecoderEditPlan {
             plan,
             source,
             transition: TransitionAudit::proven(
-                "decoder_committed_tail",
-                "decoder_tail_plan_verified",
+                TransitionOperator::DecoderTail,
+                TransitionProof::DecoderPlan,
                 true,
                 false,
                 original.split_whitespace().count().max(1),
@@ -106,7 +106,7 @@ impl DecoderEditPlan {
         replacement: &str,
         plan: TextReplacement,
     ) -> EditAction {
-        authorize_replacement_with_transition(
+        plan_verified_transition_edit(
             source,
             self.confidence_milli,
             original,

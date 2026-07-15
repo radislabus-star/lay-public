@@ -1,4 +1,5 @@
 use super::*;
+use crate::candidate_contract::CandidateOrigin;
 use crate::nanda_wave::{llmwave, usage_prior};
 
 pub(super) fn surface_motif_word_candidates(
@@ -712,6 +713,11 @@ pub(super) fn surface_motif_candidate(input: SurfaceMotifCandidateInput<'_>) -> 
             "{}{}{}{}",
             input.prefix, input.leading, replacement_word, input.trailing
         ),
+        origin: if input.source == L2_SURFACE_COMPLETION_CELL {
+            CandidateOrigin::Completion
+        } else {
+            CandidateOrigin::L2Surface
+        },
         source: input.source,
         energy,
         risk: input.risk,
@@ -793,6 +799,7 @@ mod tests {
     fn candidate() -> WordCandidate {
         WordCandidate {
             text: "исправление".to_string(),
+            origin: CandidateOrigin::L2Surface,
             source: LEXICAL_ATTRACTOR_CELL,
             energy: 0.80,
             risk: 0.20,

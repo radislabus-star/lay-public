@@ -1,5 +1,5 @@
 use crate::keyboard::{map_original_events, KeyEvent};
-use crate::typing_pipeline::apply_typing_assist;
+use crate::typing_pipeline::select_typing_assist;
 use crate::word_reader::split_word_punctuation;
 
 use super::completed_word::{
@@ -57,7 +57,7 @@ fn scoped_word_lem_options(
         return out;
     }
     push_unique_string(&mut out, decide_completed_scope_word(word));
-    if let Some(repaired) = apply_typing_assist(&format!("{original} "), allow_layout_auto) {
+    if let Some(repaired) = select_typing_assist(&format!("{original} "), allow_layout_auto) {
         push_unique_string(&mut out, repaired.trim().to_string());
     }
     let flipped = flip_word_events(word);

@@ -6,23 +6,77 @@ pub(super) fn gate_candidate(
     replacement: &str,
     error_class: TypingErrorClass,
 ) -> CandidateGateDecision {
-    gate_candidate_with_source(original, replacement, error_class, "candidate_gate")
+    gate_candidate_with_origin(
+        original,
+        replacement,
+        error_class,
+        CandidateOrigin::DeterministicTypo,
+    )
 }
 
+/// Compatibility adapter for legacy fixtures. Runtime producers must supply a
+/// typed origin and cannot route authority through a diagnostic source name.
+#[cfg(test)]
 pub(super) fn gate_candidate_with_source(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
     source_id: &str,
 ) -> CandidateGateDecision {
-    candidate_admission_with_source(original, replacement, error_class, source_id)
+    gate_candidate_with_origin(
+        original,
+        replacement,
+        error_class,
+        fixture_origin(source_id),
+    )
 }
 
-fn candidate_admission_with_source(
+#[cfg(test)]
+fn fixture_origin(source_id: &str) -> CandidateOrigin {
+    if source_id.starts_with("layout_then_") {
+        CandidateOrigin::LayoutThenTypo
+    } else if source_id.contains("layout")
+        || matches!(source_id, "LayoutWordCell32" | "ShortTokenCell32")
+    {
+        CandidateOrigin::Layout
+    } else if matches!(
+        source_id,
+        "BoundaryCell32" | "BoundaryShiftCell32" | "layout_phrase"
+    ) {
+        CandidateOrigin::Boundary
+    } else if matches!(
+        source_id,
+        "PhraseForecastCell32" | "L2SurfaceCompletionCell32"
+    ) {
+        CandidateOrigin::Completion
+    } else if matches!(source_id, "L2SurfaceMotifCell32" | "L2WordAttractorCell32") {
+        CandidateOrigin::L2Surface
+    } else if matches!(
+        source_id,
+        "PhraseCell32" | "PhraseMemoryCell32" | "SemanticWordCell32"
+    ) {
+        CandidateOrigin::L3Context
+    } else if source_id == "TechTokenCell32" {
+        CandidateOrigin::Technical
+    } else {
+        CandidateOrigin::DeterministicTypo
+    }
+}
+
+pub(super) fn gate_candidate_with_origin(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
-    source_id: &str,
+    origin: CandidateOrigin,
+) -> CandidateGateDecision {
+    candidate_admission(original, replacement, error_class, origin)
+}
+
+fn candidate_admission(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
 ) -> CandidateGateDecision {
     if original == replacement {
         return CandidateGateDecision {
@@ -30,7 +84,7 @@ fn candidate_admission_with_source(
             reason: "unchanged",
         };
     }
-    let explanation = explain_candidate(original, replacement, error_class, source_id);
+    let explanation = explain_candidate(original, replacement, error_class, origin);
     if explanation.blocks_apply() {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
@@ -49,18 +103,14 @@ fn candidate_admission_with_source(
             reason: "unsafe_boundary_glue_short_function_tail",
         };
     }
-    if moved_prefix_candidate_eats_known_current_word(original, replacement, source_id) {
+    if boundary_candidate_eats_known_current_word(original, replacement, error_class, origin) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "moved_prefix_eats_known_current_word",
         };
     }
-    if boundary_operator_changes_non_whitespace_surface(
-        original,
-        replacement,
-        error_class,
-        source_id,
-    ) {
+    if boundary_operator_changes_non_whitespace_surface(original, replacement, error_class, origin)
+    {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "boundary_operator_changes_surface",
@@ -95,63 +145,50 @@ fn candidate_admission_with_source(
             reason: "weak_boundary_split_tail",
         };
     }
-    if reflexive_suffix_candidate_requires_grammar_proof(
-        original,
-        replacement,
-        error_class,
-        source_id,
-    ) {
+    if reflexive_suffix_candidate_requires_grammar_proof(original, replacement, error_class) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "reflexive_suffix_requires_grammar_proof",
         };
     }
-    if known_current_word_gets_unproven_surface_drift(original, replacement, error_class, source_id)
-    {
+    if known_current_word_gets_unproven_surface_drift(original, replacement, error_class, origin) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "known_current_word_surface_drift",
         };
     }
-    if let Some(reason) = action_operator::verify_action_operator(
-        original,
-        replacement,
-        error_class,
-        correction_source_contract::candidate_origin(source_id),
-    )
-    .apply_blocker()
+    if let Some(reason) =
+        action_operator::verify_action_operator(original, replacement, error_class, origin)
+            .apply_blocker()
     {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason,
         };
     }
-    if surface_or_context_candidate_changes_left_context(original, replacement, source_id) {
+    if surface_candidate_changes_left_context(original, replacement, origin) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "surface_left_context_apply_blocked",
         };
     }
-    if l2_surface_candidate_truncates_to_stem_without_deletion_proof(
-        original,
-        replacement,
-        source_id,
-    ) {
+    if l2_surface_candidate_truncates_to_stem_without_deletion_proof(original, replacement, origin)
+    {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "l2_surface_stem_truncation_low",
         };
     }
-    if let Some(decision) = l3_context_gate(original, replacement, error_class, source_id) {
+    if let Some(decision) = l3_context_gate(original, replacement, error_class, origin) {
         return decision;
     }
-    if unproven_stable_surface_shape_drift(original, replacement, error_class, source_id) {
+    if unproven_stable_surface_shape_drift(original, replacement, error_class, origin) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "unproven_stable_surface_shape_drift",
         };
     }
-    if semantic_wave_candidate_lacks_surface_authority(original, replacement, source_id) {
+    if semantic_candidate_lacks_surface_authority(original, replacement, origin) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "semantic_wave_surface_authority_low",
@@ -167,7 +204,7 @@ fn candidate_admission_with_source(
         original,
         replacement,
         error_class.as_str(),
-        correction_source_contract::candidate_origin(source_id),
+        origin,
     ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
@@ -209,15 +246,12 @@ fn candidate_admission_with_source(
     }
 }
 
-fn surface_or_context_candidate_changes_left_context(
+fn surface_candidate_changes_left_context(
     original: &str,
     replacement: &str,
-    source_id: &str,
+    origin: CandidateOrigin,
 ) -> bool {
-    let source_may_only_fix_current_word = matches!(
-        correction_source_contract::source_role(source_id),
-        CorrectionSourceRole::L2Surface
-    );
+    let source_may_only_fix_current_word = origin == CandidateOrigin::L2Surface;
     source_may_only_fix_current_word && candidate_changes_non_last_word(original, replacement)
 }
 
@@ -234,12 +268,7 @@ fn candidate_changes_non_last_word(original: &str, replacement: &str) -> bool {
 }
 
 pub(crate) fn normalized_correction_words(text: &str) -> Vec<String> {
-    text.split_whitespace()
-        .filter_map(|token| {
-            let (_, word, _) = split_word_punctuation(token);
-            (!word.is_empty()).then(|| word.to_lowercase())
-        })
-        .collect()
+    crate::word_reader::normalized_text_words(text)
 }
 
 pub(crate) fn bayes_score_for_candidate(
@@ -258,7 +287,7 @@ fn l3_context_gate(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
-    source_id: &str,
+    origin: CandidateOrigin,
 ) -> Option<CandidateGateDecision> {
     if candidate_over_compresses_word(original, replacement, error_class) {
         return Some(CandidateGateDecision {
@@ -314,7 +343,7 @@ fn l3_context_gate(
             reason: "same_tail_single_consonant_drift",
         });
     }
-    if source_id != crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE
+    if origin != CandidateOrigin::L3Context
         && known_russian_word_rewritten_to_different_known_word(original, replacement, error_class)
     {
         return Some(CandidateGateDecision {
@@ -322,7 +351,7 @@ fn l3_context_gate(
             reason: "known_word_to_different_known_word",
         });
     }
-    if short_layout_candidate_lacks_phrase_context(original, replacement, error_class) {
+    if short_layout_candidate_lacks_phrase_context(original, replacement, error_class, origin) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::KeepOriginal,
             reason: "short_layout_without_phrase_context",
@@ -334,25 +363,25 @@ fn l3_context_gate(
             reason: "short_cyrillic_to_ascii_layout",
         });
     }
-    if short_nanda_composite_candidate_shrinks_word(original, replacement, error_class, source_id) {
+    if short_nanda_composite_candidate_shrinks_word(original, replacement, error_class, origin) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "short_nanda_word_shrink",
         });
     }
-    if short_nanda_candidate_inserts_internal_vowel(original, replacement, error_class, source_id) {
+    if short_nanda_candidate_inserts_internal_vowel(original, replacement, error_class, origin) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "short_nanda_internal_vowel_growth",
         });
     }
-    if nanda_surface_candidate_outputs_unknown_word(original, replacement, error_class, source_id) {
+    if nanda_surface_candidate_outputs_unknown_word(original, replacement, error_class, origin) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "nanda_surface_unknown_word",
         });
     }
-    if let Some(decision) = l3_phrase_memory_gate(original, replacement, error_class, source_id) {
+    if let Some(decision) = l3_phrase_memory_gate(original, replacement, error_class, origin) {
         return Some(decision);
     }
     None
@@ -362,7 +391,7 @@ fn l3_phrase_memory_gate(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
-    source_id: &str,
+    origin: CandidateOrigin,
 ) -> Option<CandidateGateDecision> {
     if !l3_phrase_memory_applies_to(error_class) {
         return None;
@@ -376,10 +405,7 @@ fn l3_phrase_memory_gate(
         // Phrase memory contributes negative pressure in DecisionCore. It may
         // veto its own context-generated proposal, but it must not erase an
         // independently verified current-word transition from L2.
-        L3PhraseGateDecision::Suppress
-            if correction_source_contract::source_role(source_id)
-                == CorrectionSourceRole::L3Context =>
-        {
+        L3PhraseGateDecision::Suppress if origin == CandidateOrigin::L3Context => {
             Some(CandidateGateDecision {
                 action: CandidateGateAction::KeepOriginal,
                 reason: "l3_phrase_memory_conflict",
@@ -407,9 +433,8 @@ fn reflexive_suffix_candidate_requires_grammar_proof(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
-    source_id: &str,
 ) -> bool {
-    if error_class == TypingErrorClass::GrammarAgreement || source_id == "GrammarCell32" {
+    if error_class == TypingErrorClass::GrammarAgreement {
         return false;
     }
     if !matches!(
@@ -449,11 +474,8 @@ fn known_current_word_gets_unproven_surface_drift(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
-    source_id: &str,
+    origin: CandidateOrigin,
 ) -> bool {
-    if source_id == "candidate_gate" {
-        return false;
-    }
     if matches!(
         error_class,
         TypingErrorClass::WrongLayout
@@ -469,7 +491,7 @@ fn known_current_word_gets_unproven_surface_drift(
         return false;
     }
     if matches!(
-        correction_source_contract::source_role(source_id),
+        origin.source_role(),
         CorrectionSourceRole::Layout
             | CorrectionSourceRole::Boundary
             | CorrectionSourceRole::Technical
@@ -506,7 +528,7 @@ fn unproven_stable_surface_shape_drift(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
-    source_id: &str,
+    origin: CandidateOrigin,
 ) -> bool {
     if matches!(
         error_class,
@@ -525,7 +547,7 @@ fn unproven_stable_surface_shape_drift(
         return false;
     }
     if matches!(
-        correction_source_contract::source_role(source_id),
+        origin.source_role(),
         CorrectionSourceRole::Layout
             | CorrectionSourceRole::Boundary
             | CorrectionSourceRole::Technical
@@ -670,17 +692,15 @@ fn boundary_operator_changes_non_whitespace_surface(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
-    source_id: &str,
+    origin: CandidateOrigin,
 ) -> bool {
     if !matches!(
         error_class,
         TypingErrorClass::BoundaryShift
             | TypingErrorClass::SplitWord
             | TypingErrorClass::GluedWords
-    ) && !matches!(
-        correction_source_contract::source_role(source_id),
-        CorrectionSourceRole::Boundary
-    ) {
+    ) && origin != CandidateOrigin::Boundary
+    {
         return false;
     }
     original
@@ -744,12 +764,13 @@ fn boundary_candidate_glues_short_function_tail(
             || crate::lexicon::is_common_ru_word(&right_lower))
 }
 
-fn moved_prefix_candidate_eats_known_current_word(
+fn boundary_candidate_eats_known_current_word(
     original: &str,
     replacement: &str,
-    source_id: &str,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
 ) -> bool {
-    if source_id != ids::MOVED_PREFIX_PAIR {
+    if error_class != TypingErrorClass::BoundaryShift || origin != CandidateOrigin::Boundary {
         return false;
     }
     let (_, original_core, _) = split_edge_whitespace(original);
@@ -966,12 +987,12 @@ fn boundary_candidate_splits_to_short_function_and_weak_tail(
     false
 }
 
-pub(super) fn semantic_wave_candidate_lacks_surface_authority(
+pub(super) fn semantic_candidate_lacks_surface_authority(
     original: &str,
     replacement: &str,
-    source_id: &str,
+    origin: CandidateOrigin,
 ) -> bool {
-    if source_id != crate::nanda_wave::context_wave::SEMANTIC_WORD_SOURCE {
+    if origin != CandidateOrigin::L3Context {
         return false;
     }
     let Some(original_word) = last_text_word(original) else {
@@ -998,9 +1019,9 @@ pub(super) fn semantic_wave_candidate_lacks_surface_authority(
 fn l2_surface_candidate_truncates_to_stem_without_deletion_proof(
     original: &str,
     replacement: &str,
-    source_id: &str,
+    origin: CandidateOrigin,
 ) -> bool {
-    if correction_source_contract::source_role(source_id) != CorrectionSourceRole::L2Surface {
+    if origin != CandidateOrigin::L2Surface {
         return false;
     }
     let Some(original_word) = last_text_word(original) else {
@@ -1022,7 +1043,7 @@ fn l2_surface_candidate_truncates_to_stem_without_deletion_proof(
     if one_deletion_reduces_to(&original_lower, &replacement_lower) {
         return false;
     }
-    let prefix = common_prefix_len(&original_lower, &replacement_lower);
+    let prefix = crate::text_metrics::common_prefix_char_len(&original_lower, &replacement_lower);
     prefix + 1 >= replacement_len
 }
 
@@ -1043,13 +1064,6 @@ fn one_deletion_reduces_to(original: &str, replacement: &str) -> bool {
         }
     }
     false
-}
-
-fn common_prefix_len(left: &str, right: &str) -> usize {
-    left.chars()
-        .zip(right.chars())
-        .take_while(|(left, right)| left == right)
-        .count()
 }
 
 fn candidate_over_compresses_word(
@@ -1459,8 +1473,17 @@ fn short_layout_candidate_lacks_phrase_context(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
+    origin: CandidateOrigin,
 ) -> bool {
-    if !matches!(error_class, TypingErrorClass::PartialLayout) {
+    if !matches!(
+        origin,
+        CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo
+    ) || !matches!(
+        error_class,
+        TypingErrorClass::WrongLayout
+            | TypingErrorClass::PartialLayout
+            | TypingErrorClass::MixedScript
+    ) {
         return false;
     }
     let Some(original_word) = last_text_word(original) else {
@@ -1512,11 +1535,9 @@ fn short_nanda_composite_candidate_shrinks_word(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
-    source_id: &str,
+    origin: CandidateOrigin,
 ) -> bool {
-    if !matches!(error_class, TypingErrorClass::CompositeTypo)
-        || !correction_source_contract::is_surface_or_context_source(source_id)
-    {
+    if !matches!(error_class, TypingErrorClass::CompositeTypo) || !origin.is_surface_or_context() {
         return false;
     }
     let Some(original_word) = last_text_word(original) else {
@@ -1537,11 +1558,9 @@ fn nanda_surface_candidate_outputs_unknown_word(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
-    source_id: &str,
+    origin: CandidateOrigin,
 ) -> bool {
-    if !matches!(error_class, TypingErrorClass::CompositeTypo)
-        || !correction_source_contract::is_surface_or_context_source(source_id)
-    {
+    if !matches!(error_class, TypingErrorClass::CompositeTypo) || !origin.is_surface_or_context() {
         return false;
     }
     let Some(original_word) = last_text_word(original) else {
@@ -1563,11 +1582,9 @@ fn short_nanda_candidate_inserts_internal_vowel(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
-    source_id: &str,
+    origin: CandidateOrigin,
 ) -> bool {
-    if !matches!(error_class, TypingErrorClass::CompositeTypo)
-        || !correction_source_contract::is_surface_or_context_source(source_id)
-    {
+    if !matches!(error_class, TypingErrorClass::CompositeTypo) || !origin.is_surface_or_context() {
         return false;
     }
     let Some(original_word) = last_text_word(original) else {

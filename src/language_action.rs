@@ -3,8 +3,8 @@
 //! This layer names what the correction pipeline wants to do. Output backends
 //! still own how text is deleted/inserted.
 
+use crate::candidate_contract::CandidateOrigin;
 use crate::correction_core::TypingErrorClass;
-use crate::correction_source_contract::{candidate_origin, CandidateOrigin};
 
 #[cfg(test)]
 const LANGUAGE_ACTION_OPERATOR_COUNT: usize = 18;
@@ -83,13 +83,6 @@ impl LanguageActionProof {
     }
 }
 
-pub fn operator_for_candidate(
-    error_class: TypingErrorClass,
-    source_id: &str,
-) -> LanguageActionOperator {
-    operator_for_origin(error_class, candidate_origin(source_id))
-}
-
 pub(crate) fn operator_for_origin(
     error_class: TypingErrorClass,
     origin: CandidateOrigin,
@@ -120,10 +113,6 @@ pub(crate) fn operator_for_origin(
             LanguageActionOperator::KeepOriginal
         }
     }
-}
-
-pub fn proof_for_candidate(error_class: TypingErrorClass, source_id: &str) -> LanguageActionProof {
-    proof_for_origin(error_class, candidate_origin(source_id))
 }
 
 pub(crate) fn proof_for_origin(

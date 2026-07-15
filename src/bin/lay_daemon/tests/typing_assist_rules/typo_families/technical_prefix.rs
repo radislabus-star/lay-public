@@ -31,15 +31,15 @@ fn typing_assist_removes_duplicate_layout_prefix_from_ascii_technical_token() {
     );
 
     assert_eq!(
-        apply_typing_assist_exact(&format!("{prefix_lower}{technical_lower} ")),
+        select_typing_assist_exact(&format!("{prefix_lower}{technical_lower} ")),
         Some(format!("{technical_lower} "))
     );
     assert_eq!(
-        apply_typing_assist_exact(&format!("{prefix_upper}{technical_upper}, ")),
+        select_typing_assist_exact(&format!("{prefix_upper}{technical_upper}, ")),
         Some(format!("{technical_upper}, "))
     );
     assert_eq!(
-        apply_typing_assist_exact(&format!("{prefix_lower}{no_separator} ")),
+        select_typing_assist_exact(&format!("{prefix_lower}{no_separator} ")),
         None
     );
 }
@@ -47,6 +47,6 @@ fn typing_assist_removes_duplicate_layout_prefix_from_ascii_technical_token() {
 #[test]
 fn typing_assist_does_not_move_normal_word_prefixes() {
     for input in fixture_lines("daemon_typing_assist_prefix_keep.txt") {
-        assert_eq!(apply_typing_assist_exact(&input), None, "input={input:?}");
+        assert_eq!(select_typing_assist_exact(&input), None, "input={input:?}");
     }
 }

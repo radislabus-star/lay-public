@@ -1085,10 +1085,10 @@ fn morphology_candidate(
             .as_deref()
             .map(|canonical| edit_distance(canonical, &word))
             .unwrap_or(input_distance);
-        let input_prefix = common_prefix_len(&input, &word);
+        let input_prefix = lay::text_metrics::common_prefix_char_len(&input, &word);
         let canonical_prefix = canonical_top
             .as_deref()
-            .map(|canonical| common_prefix_len(canonical, &word))
+            .map(|canonical| lay::text_metrics::common_prefix_char_len(canonical, &word))
             .unwrap_or(0);
         if input_prefix < 2 && canonical_prefix < 2 {
             continue;
@@ -1140,13 +1140,6 @@ fn simulate_replace_last_word(text: &str, replacement: Option<&str>) -> String {
 
 fn char_len(text: &str) -> usize {
     text.chars().count()
-}
-
-fn common_prefix_len(left: &str, right: &str) -> usize {
-    left.chars()
-        .zip(right.chars())
-        .take_while(|(left, right)| left == right)
-        .count()
 }
 
 fn common_suffix_len(left: &str, right: &str) -> usize {

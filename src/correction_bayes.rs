@@ -1,4 +1,4 @@
-use crate::correction_source_contract::CandidateOrigin;
+use crate::candidate_contract::CandidateOrigin;
 use crate::text_metrics::damerau_levenshtein;
 use crate::word_reader::{is_cyrillic_letters_only, split_edge_whitespace, split_word_punctuation};
 

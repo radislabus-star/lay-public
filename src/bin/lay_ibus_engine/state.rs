@@ -258,7 +258,7 @@ impl LayIbusEngine {
                         source,
                         action.safety_reason(),
                         backspaces,
-                        &action.to_text,
+                        action.to_text(),
                     );
                 } else if rejection.reason() != "noop_transition" {
                     trace::record_committed_tail_replace_guard(
@@ -285,11 +285,11 @@ impl LayIbusEngine {
                 source,
                 backend_reason,
                 backspaces,
-                &edit_action.to_text,
+                edit_action.to_text(),
             );
             return Ok(false);
         };
-        let Some(authorized_plan) = authorized_edit.action().plan.as_ref() else {
+        let Some(authorized_plan) = authorized_edit.action().plan() else {
             trace::record_committed_tail_replace(
                 source,
                 "authorized_edit_without_plan",

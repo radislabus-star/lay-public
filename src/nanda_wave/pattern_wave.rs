@@ -1,4 +1,5 @@
 use super::signal::WordCandidate;
+use crate::candidate_contract::CandidateOrigin;
 
 pub const PATTERN_WAVE_CELL: &str = "PatternWaveCell32";
 const SLOT_COUNT: u16 = 4096;
@@ -118,22 +119,27 @@ fn pattern_blocks<'a>(original: &'a str, candidate: &'a str) -> PatternBlocks<'a
 }
 
 fn pattern_class(candidate: &WordCandidate, blocks: &PatternBlocks<'_>) -> &'static str {
-    if candidate.source == "TechTokenCell32"
-        || candidate.source == "LayoutWordCell32" && has_guarded_layout_shape(blocks)
+    if candidate.origin == CandidateOrigin::Technical
+        || matches!(
+            candidate.origin,
+            CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo
+        ) && has_guarded_layout_shape(blocks)
     {
         return "technical_shape";
     }
-    if candidate.source == "LayoutWordCell32" {
+    if matches!(
+        candidate.origin,
+        CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo
+    ) {
         return "safe_layout_shape";
     }
-    if candidate.source == "BoundaryCell32" || candidate.source == "PhraseMemoryCell32" {
+    if candidate.origin == CandidateOrigin::Boundary {
         return "space_glue_shape";
     }
-    if candidate.source == super::context_wave::SEMANTIC_WORD_SOURCE
-        || candidate.source == "CommonRuFixCell32"
-        || candidate.source == "PhraseCell32"
-        || candidate.source == "GrammarCell32"
-    {
+    if matches!(
+        candidate.origin,
+        CandidateOrigin::L2Surface | CandidateOrigin::L3Context
+    ) {
         return if token_kind(blocks.focus_original) == TokenKind::Ru {
             "semantic_typo_shape"
         } else {
@@ -159,7 +165,12 @@ fn pattern_verdict(
     class: &'static str,
     resonance: f32,
 ) -> PatternWaveVerdict {
-    if class == "technical_shape" && candidate.source == "LayoutWordCell32" {
+    if class == "technical_shape"
+        && matches!(
+            candidate.origin,
+            CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo
+        )
+    {
         return PatternWaveVerdict::Veto;
     }
     if matches!(
@@ -266,6 +277,11 @@ mod tests {
     fn candidate(text: &str, source: &'static str) -> WordCandidate {
         WordCandidate {
             text: text.to_string(),
+            origin: if source == super::super::context_wave::SEMANTIC_WORD_SOURCE {
+                crate::candidate_contract::CandidateOrigin::L3Context
+            } else {
+                crate::candidate_contract::CandidateOrigin::Layout
+            },
             source,
             energy: 0.82,
             risk: 0.12,

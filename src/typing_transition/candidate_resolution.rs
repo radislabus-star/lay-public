@@ -37,6 +37,7 @@ mod resolution_tests {
         CandidateGateAction, CandidateGateDecision, CorrectionDecisionSource, TypingErrorClass,
         TypingErrorEvent, UnifiedCorrectionCandidate,
     };
+    use crate::candidate_contract::CandidateOrigin;
 
     #[test]
     fn private_authority_is_the_only_lattice_to_resolution_path() {
@@ -49,6 +50,7 @@ mod resolution_tests {
         lattice.push_source(Some(UnifiedCorrectionCandidate::new(
             "проверка ",
             CorrectionDecisionSource::Nanda,
+            CandidateOrigin::L2Surface,
             "L2SurfaceMotifCell32",
             TypingErrorClass::MissingLetter,
             CandidateGateDecision {

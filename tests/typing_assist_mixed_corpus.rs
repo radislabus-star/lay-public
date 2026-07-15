@@ -4,7 +4,7 @@ use lay::config::{
     default_typing_assist_pipeline, typing_assist_pipeline_for_policy, CorrectionSafety,
 };
 use lay::dict::{convert, Direction};
-use lay::typing_assist::{apply_typing_assist_with_pipeline, explain_typing_assist_with_pipeline};
+use lay::typing_assist::{explain_typing_assist_with_pipeline, select_typing_assist_with_pipeline};
 use lay::typing_context::{should_enable_ascii_to_ru_layout, typing_assist_pipeline_for_context};
 
 use common::{
@@ -53,7 +53,7 @@ fn assert_policy_case(
     expected: ExpectedAssist<'_>,
     message: &str,
 ) {
-    let got = apply_typing_assist_with_pipeline(input, allow_layout_auto, pipeline);
+    let got = select_typing_assist_with_pipeline(input, allow_layout_auto, pipeline);
     match expected {
         ExpectedAssist::Some(expected) => {
             assert_eq!(got, Some(expected.to_string()), "{message}");
@@ -103,7 +103,7 @@ fn dynamic_context_allows_ascii_to_ru_in_russian_sentence() {
         .find(|rule| rule.id == "contextual_layout_en_to_ru")
         .is_some_and(|rule| rule.enabled));
     assert_eq!(
-        apply_typing_assist_with_pipeline("Lfdfq", true, &context_pipeline),
+        select_typing_assist_with_pipeline("Lfdfq", true, &context_pipeline),
         Some("Давай".to_string())
     );
     for (input, expected) in fixture_cases(DYNAMIC_TAIL_CASES) {
@@ -130,15 +130,15 @@ fn experimental_context_accepts_plain_ascii_to_ru_layout_words() {
         .find(|rule| rule.id == "experimental_layout_en_to_ru")
         .is_some_and(|rule| rule.enabled));
     assert_eq!(
-        apply_typing_assist_with_pipeline("djn ", true, &pipeline),
+        select_typing_assist_with_pipeline("djn ", true, &pipeline),
         Some("вот ".to_string())
     );
     assert_eq!(
-        apply_typing_assist_with_pipeline("z ", true, &pipeline),
+        select_typing_assist_with_pipeline("z ", true, &pipeline),
         None
     );
     assert_eq!(
-        apply_typing_assist_with_pipeline("b ", true, &pipeline),
+        select_typing_assist_with_pipeline("b ", true, &pipeline),
         None
     );
 
@@ -149,11 +149,11 @@ fn experimental_context_accepts_plain_ascii_to_ru_layout_words() {
         "",
     );
     assert_eq!(
-        apply_typing_assist_with_pipeline("z ", true, &normal_pipeline),
+        select_typing_assist_with_pipeline("z ", true, &normal_pipeline),
         None
     );
     assert_eq!(
-        apply_typing_assist_with_pipeline("b ", true, &normal_pipeline),
+        select_typing_assist_with_pipeline("b ", true, &normal_pipeline),
         None
     );
 }
@@ -290,11 +290,11 @@ fn experimental_context_accepts_plain_cyrillic_to_ascii_layout_words() {
         .find(|rule| rule.id == "experimental_layout_ru_to_en")
         .is_some_and(|rule| rule.enabled));
     assert_eq!(
-        apply_typing_assist_with_pipeline("щт ", true, &pipeline),
+        select_typing_assist_with_pipeline("щт ", true, &pipeline),
         Some("on ".to_string())
     );
     assert_eq!(
-        apply_typing_assist_with_pipeline("щаа ", true, &pipeline),
+        select_typing_assist_with_pipeline("щаа ", true, &pipeline),
         Some("off ".to_string())
     );
 }
@@ -414,7 +414,7 @@ fn normal_autocorrect_keeps_safe_rules_and_rejects_aggressive_guesses() {
 
     for (input, expected) in fixture_cases(NORMAL_SAFE_CASES) {
         assert_eq!(
-            apply_typing_assist_with_pipeline(&input, false, &normal_auto_pipeline),
+            select_typing_assist_with_pipeline(&input, false, &normal_auto_pipeline),
             Some(expected),
             "safe normal autocorrect case failed: {input:?}"
         );
@@ -422,7 +422,7 @@ fn normal_autocorrect_keeps_safe_rules_and_rejects_aggressive_guesses() {
 
     for input in fixture_lines(NORMAL_REJECT_CASES) {
         assert_eq!(
-            apply_typing_assist_with_pipeline(&input, true, &normal_auto_pipeline),
+            select_typing_assist_with_pipeline(&input, true, &normal_auto_pipeline),
             None,
             "normal autocorrect was too aggressive for {input:?}"
         );

@@ -1,4 +1,4 @@
-use super::mode::{mix64, Mode8, ModeRole, MODES_PER_CELL32};
+use super::mode::{Mode8, ModeRole, MODES_PER_CELL32};
 use super::signal::{ActiveMode, WavePacket};
 
 pub const DEFAULT_TOP_K: usize = 8;
@@ -62,7 +62,7 @@ impl NandaCell32 {
             value ^= (prev as u32 as u64) << 16;
         }
         value ^= class_bits(stimulus.ch);
-        mix64(value)
+        crate::stable_hash::mix64_avalanche(value)
     }
 
     fn transition(&self, prev: Option<char>, ch: char) -> i8 {
@@ -81,7 +81,8 @@ impl NandaCell32 {
 }
 
 fn sparse_mode_index(stimulus_hash: u64, probe: usize) -> usize {
-    (super::mode::mix64(stimulus_hash ^ ((probe as u64) << 32)) as usize) % MODES_PER_CELL32
+    (crate::stable_hash::mix64_avalanche(stimulus_hash ^ ((probe as u64) << 32)) as usize)
+        % MODES_PER_CELL32
 }
 
 fn class_bits(ch: char) -> u64 {

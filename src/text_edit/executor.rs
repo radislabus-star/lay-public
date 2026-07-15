@@ -97,6 +97,7 @@ mod tests {
     use super::{authorize_backend_edit, TextEditBackend};
     use crate::text_edit::{
         plan_committed_tail_full_token_replacement, EditAction, TextReplacement, TransitionAudit,
+        TransitionOperator, TransitionProof,
     };
 
     #[test]
@@ -114,6 +115,7 @@ mod tests {
             },
             Some("test"),
             Some("boundary-unsafe"),
+            TransitionAudit::none(),
         );
         let auth = authorize_backend_edit(TextEditBackend::Ime, action);
         assert!(!auth.allow_execute);
@@ -130,6 +132,7 @@ mod tests {
             plan_committed_tail_full_token_replacement("провека ", "проверка ").expect("plan"),
             Some("test"),
             Some("missing-letter"),
+            TransitionAudit::none(),
         );
         assert!(action.allow_apply());
 
@@ -150,14 +153,14 @@ mod tests {
             plan_committed_tail_full_token_replacement("провека ", "проверка ").expect("plan"),
             Some("test"),
             Some("missing-letter"),
-        )
-        .with_transition(TransitionAudit::proven(
-            "replace_current_word",
-            "candidate_and_plan_verified",
-            true,
-            false,
-            1,
-        ));
+            TransitionAudit::proven(
+                TransitionOperator::ReplaceCurrentWord,
+                TransitionProof::Typo,
+                true,
+                false,
+                1,
+            ),
+        );
 
         let auth = authorize_backend_edit(TextEditBackend::Daemon, action);
 
