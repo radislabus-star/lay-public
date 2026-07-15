@@ -170,7 +170,9 @@ pub fn russian_dictionary_is_warm() -> bool {
 }
 
 fn full_generated_forms_enabled() -> bool {
-    cfg!(test) || std::env::var_os("LAY_ENABLE_FULL_GENERATED_FORMS").is_some()
+    cfg!(test)
+        || cfg!(feature = "lexical-compiler")
+        || std::env::var_os("LAY_ENABLE_FULL_GENERATED_FORMS").is_some()
 }
 
 pub fn is_known_russian_word_or_form(word: &str) -> bool {
