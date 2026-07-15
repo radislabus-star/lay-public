@@ -154,12 +154,10 @@ fn print_json(processes: &[ProcessMemory]) {
     println!("  ],");
     println!("  \"startup_policy\": {{");
     println!(
-        "    \"daemon_hot_startup\": [\"lexicon_guards\", \"typing_replacements\", \"ngram\"],"
+        "    \"daemon_hot_startup\": [\"lexical_phase_mmap\", \"lexicon_guards\", \"typing_replacements\", \"ngram\"],"
     );
-    println!(
-        "    \"daemon_lazy_cold\": [\"russian_generated_forms\", \"nanda_context_wave\", \"llmwave\", \"lem_full\"],"
-    );
-    println!("    \"ime_hot_startup\": [\"bounded_ru_completion\", \"bounded_en_completion\"]");
+    println!("    \"daemon_lazy_cold\": [\"llmwave\", \"lem_full\"],");
+    println!("    \"ime_hot_startup\": [\"lexical_phase_mmap\", \"shared_candidate_gate\"]");
     println!("  }},");
     println!("  \"budgets_kb\": {{");
     println!("    \"daemon_cold_start_rss\": 81920,");
