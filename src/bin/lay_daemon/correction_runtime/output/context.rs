@@ -5,6 +5,7 @@ use lay::word_buffer::WordBuffer;
 use std::time::Instant;
 
 use super::super::super::physical_input_grab::PhysicalInputGrab;
+use super::super::super::DaemonTextObservation;
 
 pub(crate) struct ManualCorrectionOutputContext<'a, 'grab> {
     pub(crate) buf: &'a mut WordBuffer,
@@ -21,6 +22,7 @@ pub(crate) struct ManualCorrectionOutputContext<'a, 'grab> {
     pub(crate) virtual_kbd: Option<&'a mut VirtualDevice>,
     pub(crate) physical_grab: Option<&'a mut PhysicalInputGrab<'grab>>,
     pub(crate) input_isolated: bool,
+    pub(crate) text_observation: DaemonTextObservation<'a>,
 }
 
 pub(crate) struct ManualOutputCommon<'a> {
@@ -36,6 +38,7 @@ pub(crate) struct ManualOutputCommon<'a> {
     pub(crate) started_at: Instant,
     pub(crate) decision: &'a ManualCorrectionDecision,
     pub(crate) input_isolated: bool,
+    pub(crate) text_observation: DaemonTextObservation<'a>,
 }
 
 pub(crate) enum OutputFlow {

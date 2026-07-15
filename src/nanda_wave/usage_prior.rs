@@ -1,4 +1,6 @@
 use std::collections::{HashMap, HashSet};
+#[cfg(test)]
+use std::mem;
 use std::path::{Path, PathBuf};
 #[cfg(not(test))]
 use std::sync::mpsc::{self, RecvTimeoutError, SyncSender, TrySendError};
@@ -9,9 +11,18 @@ use crate::time::unix_timestamp;
 #[cfg(test)]
 use crate::typing_memory;
 use crate::typing_memory::{
-    changed_target_indexes, normalize_memory_word, normalized_words, TypingMemoryEvent,
-    TypingMemoryEventKind,
+    normalize_memory_word, normalized_words, TypingMemoryEvent, TypingMemoryEventKind,
 };
+
+mod hot;
+mod projection;
+
+pub(crate) use hot::{
+    UsageCandidatePrior, UsageHotContext, UsageHotReadout, UsageSurfaceCoverage,
+    UsageTransitionSignal,
+};
+use hot::{UsageHotState, CONTEXT_WORDS, MIN_CONTEXT_NGRAM};
+use projection::{UsageEventProjection, TRANSITION_ANY};
 
 #[cfg(not(test))]
 const USAGE_EVENTS_PATH: &str = ".local/share/lay/nanda_wave/word_usage_events.jsonl";
@@ -35,9 +46,6 @@ const USAGE_PERSIST_INTERVAL: Duration = Duration::from_millis(1000);
 const USAGE_PERSIST_CHANNEL_CAPACITY: usize = 8192;
 #[cfg(not(test))]
 const USAGE_PERSIST_PENDING_MAX_BYTES: usize = 64 * 1024;
-const CONTEXT_WORDS: usize = 5;
-const MIN_CONTEXT_NGRAM: usize = 1;
-const TRANSITION_ANY: &str = "*";
 
 #[derive(Debug, serde::Deserialize)]
 struct LearningCandidate {
@@ -126,13 +134,15 @@ struct UsageCounts {
 
 #[derive(Debug, Clone, Default)]
 pub struct UsagePriorSnapshot {
-    counts: Arc<UsageCounts>,
+    hot: Arc<UsageHotState>,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub(crate) struct UsageStateMapSummary {
     pub(crate) source_bytes: u64,
     pub(crate) parsed_events: usize,
+    pub(crate) hot_logical_payload_bytes: usize,
+    pub(crate) cold_dictionary_logical_bytes: usize,
     pub(crate) word_states: usize,
     pub(crate) accepted_word_states: usize,
     pub(crate) context_word_states: usize,
@@ -152,122 +162,34 @@ pub(crate) struct UsageStateMapSummary {
     pub(crate) surface_conflict_states: usize,
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq)]
-pub(crate) struct UsageTransitionSignal {
-    pub(crate) attraction: f32,
-    pub(crate) repulsion: f32,
-    pub(crate) signed_weight: f32,
-    pub(crate) attract_count: u32,
-    pub(crate) repel_count: u32,
-    pub(crate) state_specific: bool,
-    pub(crate) reason: &'static str,
-}
-
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
-pub(crate) struct UsageSurfaceCoverage {
-    pub(crate) observed: u32,
-    pub(crate) accepted: u32,
-    pub(crate) rejected: u32,
-}
-
-#[derive(Debug, Clone, Copy, Default, PartialEq)]
-pub(crate) struct UsageHotReadout {
-    pub(crate) word_prior: f32,
-    pub(crate) context_prior: f32,
-    pub(crate) rejected_prior: f32,
-    pub(crate) context_rejected: f32,
-    pub(crate) accepted_count: u32,
-    pub(crate) rejected_count: u32,
-    pub(crate) transition: UsageTransitionSignal,
-}
-
-#[derive(Debug, Clone, Default)]
-pub(crate) struct UsageHotContext {
-    context_keys: Vec<String>,
-}
-
-#[derive(Debug, Clone, Copy, Default, PartialEq)]
-pub(crate) struct UsageCandidatePrior {
-    pub(crate) word_prior: f32,
-    pub(crate) context_prior: f32,
-    pub(crate) accepted_count: u32,
-}
-
 impl UsagePriorSnapshot {
     pub(crate) fn surface_coverage(&self, surface: &str) -> UsageSurfaceCoverage {
-        UsageSurfaceCoverage {
-            observed: self
-                .counts
-                .surface_observed
-                .get(surface)
-                .copied()
-                .unwrap_or_default(),
-            accepted: self
-                .counts
-                .surface_attract
-                .get(surface)
-                .copied()
-                .unwrap_or_default(),
-            rejected: self
-                .counts
-                .surface_repel
-                .get(surface)
-                .copied()
-                .unwrap_or_default(),
-        }
+        self.hot.surface_coverage(surface)
     }
+
+    #[cfg(test)]
+    pub(crate) fn hot_logical_payload_bytes(&self) -> usize {
+        self.hot.logical_payload_bytes()
+    }
+
     pub fn word_prior(&self, word: &str) -> f32 {
-        let lower = normalize_memory_word(word);
-        if lower.is_empty() {
-            return 0.0;
-        }
-        self.counts
-            .words
-            .get(&lower)
-            .copied()
-            .map(word_prior_from_count)
-            .unwrap_or(0.0)
+        self.hot.word_prior(word)
     }
 
     pub fn context_word_prior(&self, context: &[String], word: &str) -> f32 {
-        let lower = normalize_memory_word(word);
-        if lower.is_empty() || context.is_empty() {
-            return 0.0;
-        }
-        context_ngram_prior_from_counts(&self.counts, context, &lower)
+        self.hot.context_word_prior(context, word)
     }
 
     pub fn accepted_word_count(&self, word: &str) -> u32 {
-        let lower = normalize_memory_word(word);
-        if lower.is_empty() {
-            return 0;
-        }
-        self.counts
-            .accepted_words
-            .get(&lower)
-            .copied()
-            .unwrap_or_default()
+        self.hot.accepted_word_count(word)
     }
 
     pub(crate) fn rejected_word_prior(&self, word: &str) -> f32 {
-        let lower = normalize_memory_word(word);
-        if lower.is_empty() {
-            return 0.0;
-        }
-        self.counts
-            .rejected_words
-            .get(&lower)
-            .copied()
-            .map(rejected_prior_from_count)
-            .unwrap_or(0.0)
+        self.hot.rejected_word_prior(word)
     }
 
     pub(crate) fn context_rejected_word_prior(&self, context: &[String], word: &str) -> f32 {
-        let lower = normalize_memory_word(word);
-        if lower.is_empty() || context.is_empty() {
-            return 0.0;
-        }
-        context_ngram_prior_from_map(&self.counts.rejected_context_words, context, &lower, 0.012)
+        self.hot.context_rejected_word_prior(context, word)
     }
 
     pub(crate) fn hot_readout(
@@ -283,9 +205,7 @@ impl UsagePriorSnapshot {
     }
 
     pub(crate) fn prepare_hot_context(&self, context: &[String]) -> UsageHotContext {
-        UsageHotContext {
-            context_keys: context_ngram_keys(context),
-        }
+        UsageHotContext::from_words(context)
     }
 
     pub(crate) fn candidate_prior_prepared(
@@ -296,27 +216,7 @@ impl UsagePriorSnapshot {
         if normalized_word.is_empty() {
             return UsageCandidatePrior::default();
         }
-        UsageCandidatePrior {
-            word_prior: self
-                .counts
-                .words
-                .get(normalized_word)
-                .copied()
-                .map(word_prior_from_count)
-                .unwrap_or_default(),
-            context_prior: context_ngram_prior_from_keys(
-                &self.counts.context_words,
-                &context.context_keys,
-                normalized_word,
-                0.020,
-            ),
-            accepted_count: self
-                .counts
-                .accepted_words
-                .get(normalized_word)
-                .copied()
-                .unwrap_or_default(),
-        }
+        self.hot.candidate_prior_prepared(context, normalized_word)
     }
 
     pub(crate) fn hot_readout_prepared(
@@ -327,63 +227,8 @@ impl UsagePriorSnapshot {
         state_word: &str,
         candidate_text: &str,
     ) -> UsageHotReadout {
-        let lower = normalized_words(candidate_text)
-            .into_iter()
-            .next_back()
-            .unwrap_or_default();
-        if lower.is_empty() {
-            return UsageHotReadout::default();
-        }
-        let transition_target = crate::transition_relation::transition_target_id(candidate_text);
-        let context_keys = &context.context_keys;
-        UsageHotReadout {
-            word_prior: self
-                .counts
-                .words
-                .get(&lower)
-                .copied()
-                .map(word_prior_from_count)
-                .unwrap_or_default(),
-            context_prior: context_ngram_prior_from_keys(
-                &self.counts.context_words,
-                context_keys,
-                &lower,
-                0.020,
-            ),
-            rejected_prior: self
-                .counts
-                .rejected_words
-                .get(&lower)
-                .copied()
-                .map(rejected_prior_from_count)
-                .unwrap_or_default(),
-            context_rejected: context_ngram_prior_from_keys(
-                &self.counts.rejected_context_words,
-                context_keys,
-                &lower,
-                0.012,
-            ),
-            accepted_count: self
-                .counts
-                .accepted_words
-                .get(&lower)
-                .copied()
-                .unwrap_or_default(),
-            rejected_count: self
-                .counts
-                .rejected_words
-                .get(&lower)
-                .copied()
-                .unwrap_or_default(),
-            transition: transition_signal_from_counts_for_word(
-                &self.counts,
-                context_keys,
-                source,
-                operation,
-                state_word,
-                &transition_target,
-            ),
-        }
+        self.hot
+            .hot_readout_prepared(context, source, operation, state_word, candidate_text)
     }
 }
 
@@ -398,7 +243,7 @@ struct PersistedUsageCounts {
 #[derive(Debug, Default)]
 struct UsageCache {
     loaded_at: Option<Instant>,
-    counts: Arc<UsageCounts>,
+    hot: Arc<UsageHotState>,
 }
 
 #[cfg(not(test))]
@@ -479,92 +324,47 @@ pub(crate) fn record_typing_memory_event_if_enabled(event: &TypingMemoryEvent) {
 }
 
 pub(crate) fn word_usage_prior(word: &str) -> f32 {
-    let lower = normalize_memory_word(word);
-    if lower.is_empty() {
-        return 0.0;
-    }
-    let counts = usage_counts();
-    let Some(count) = counts.words.get(&lower).copied() else {
-        return 0.0;
-    };
-    word_prior_from_count(count)
+    ingest_usage_hot_state_if_stale().word_prior(word)
 }
 
 pub(crate) fn context_word_usage_prior(context: &[String], word: &str) -> f32 {
-    let lower = normalize_memory_word(word);
-    if lower.is_empty() || context.is_empty() {
-        return 0.0;
-    }
-    let counts = usage_counts();
-    context_ngram_prior_from_counts(&counts, context, &lower)
-}
-
-fn word_prior_from_count(count: u32) -> f32 {
-    ((count as f32 + 1.0).ln() * 0.036).clamp(0.0, 0.22)
+    ingest_usage_hot_state_if_stale().context_word_prior(context, word)
 }
 
 fn usage_learning_enabled() -> bool {
     crate::config::runtime_usage_learning_enabled()
 }
 
-fn usage_counts() -> Arc<UsageCounts> {
-    let cache = usage_cache();
-    let Ok(mut cache) = cache.lock() else {
-        return Arc::new(UsageCounts::default());
+fn ingest_usage_hot_state_if_stale() -> Arc<UsageHotState> {
+    let Ok(mut cache) = usage_cache().lock() else {
+        return Arc::new(UsageHotState::default());
     };
     if cache
         .loaded_at
         .is_some_and(|loaded_at| loaded_at.elapsed() < USAGE_REFRESH_INTERVAL)
     {
-        return Arc::clone(&cache.counts);
+        return Arc::clone(&cache.hot);
     }
-    cache.counts = Arc::new(load_usage_counts());
+    set_usage_cache_hot_from_counts(&mut cache, load_usage_counts());
     cache.loaded_at = Some(Instant::now());
-    Arc::clone(&cache.counts)
+    Arc::clone(&cache.hot)
 }
 
 pub(crate) fn word_usage_prior_cached(word: &str) -> f32 {
-    let lower = normalize_memory_word(word);
-    if lower.is_empty() {
-        return 0.0;
-    }
-    let counts = cached_usage_counts();
-    counts
-        .words
-        .get(&lower)
-        .copied()
-        .map(word_prior_from_count)
-        .unwrap_or(0.0)
+    cached_usage_hot_state().word_prior(word)
 }
 
 pub(crate) fn accepted_word_usage_count_cached(word: &str) -> u32 {
-    let lower = normalize_memory_word(word);
-    if lower.is_empty() {
-        return 0;
-    }
-    let Ok(cache) = usage_cache().lock() else {
-        return 0;
-    };
-    cache
-        .counts
-        .accepted_words
-        .get(&lower)
-        .copied()
-        .unwrap_or(0)
+    cached_usage_hot_state().accepted_word_count(word)
 }
 
 pub(crate) fn context_word_usage_prior_cached(context: &[String], word: &str) -> f32 {
-    let lower = normalize_memory_word(word);
-    if lower.is_empty() || context.is_empty() {
-        return 0.0;
-    }
-    let counts = cached_usage_counts();
-    context_ngram_prior_from_counts(&counts, context, &lower)
+    cached_usage_hot_state().context_word_prior(context, word)
 }
 
 pub(crate) fn cached_usage_prior_snapshot() -> UsagePriorSnapshot {
     UsagePriorSnapshot {
-        counts: cached_usage_counts(),
+        hot: cached_usage_hot_state(),
     }
 }
 
@@ -572,9 +372,7 @@ pub(crate) fn cached_usage_prior_snapshot() -> UsagePriorSnapshot {
 pub(crate) fn snapshot_from_usage_events_for_tests(text: &str) -> UsagePriorSnapshot {
     let mut counts = UsageCounts::default();
     add_usage_event_counts(&mut counts, text);
-    UsagePriorSnapshot {
-        counts: Arc::new(counts),
-    }
+    usage_snapshot_from_counts(counts)
 }
 
 pub(crate) fn l2_surface_words_by_usage(limit: usize) -> Vec<String> {
@@ -601,9 +399,12 @@ pub(crate) fn usage_state_map_summary() -> UsageStateMapSummary {
         .and_then(|path| read_usage_events_text(&path))
         .unwrap_or_default();
     let counts = load_usage_counts();
+    let hot = UsageHotState::from_counts(&counts);
     UsageStateMapSummary {
         source_bytes: text.len() as u64,
         parsed_events: usage_events_from_jsonl(&text).count(),
+        hot_logical_payload_bytes: hot.logical_payload_bytes(),
+        cold_dictionary_logical_bytes: usage_counts_cold_dictionary_logical_bytes(&counts),
         word_states: counts.words.len(),
         accepted_word_states: counts.accepted_words.len(),
         context_word_states: counts.context_words.len(),
@@ -667,6 +468,8 @@ pub fn usage_memory_learned_report_json() -> serde_json::Value {
         "summary": {
             "source_bytes": summary.source_bytes,
             "parsed_events": summary.parsed_events,
+            "hot_logical_payload_bytes": summary.hot_logical_payload_bytes,
+            "cold_dictionary_logical_bytes": summary.cold_dictionary_logical_bytes,
             "word_states": summary.word_states,
             "accepted_word_states": summary.accepted_word_states,
             "context_word_states": summary.context_word_states,
@@ -707,7 +510,7 @@ pub fn usage_memory_learned_report_json() -> serde_json::Value {
 fn refresh_usage_counts_from_disk() -> UsageCounts {
     let counts = load_usage_counts();
     if let Ok(mut cache) = usage_cache().lock() {
-        cache.counts = Arc::new(counts.clone());
+        cache.hot = Arc::new(UsageHotState::from_counts(&counts));
         cache.loaded_at = Some(Instant::now());
     }
     counts
@@ -740,21 +543,13 @@ fn usage_surface_words_from_counts(counts: UsageCounts) -> Vec<String> {
     words.into_iter().map(|(word, _)| word).collect()
 }
 
+#[cfg(test)]
 fn context_ngram_prior_from_counts(counts: &UsageCounts, context: &[String], word: &str) -> f32 {
     let context_keys = context_ngram_keys(context);
     context_ngram_prior_from_keys(&counts.context_words, &context_keys, word, 0.020)
 }
 
-fn context_ngram_prior_from_map(
-    source: &HashMap<String, u32>,
-    context: &[String],
-    word: &str,
-    base_weight: f32,
-) -> f32 {
-    let context_keys = context_ngram_keys(context);
-    context_ngram_prior_from_keys(source, &context_keys, word, base_weight)
-}
-
+#[cfg(test)]
 fn context_ngram_prior_from_keys(
     source: &HashMap<String, u32>,
     context_keys: &[String],
@@ -776,24 +571,35 @@ fn context_ngram_prior_from_keys(
         .clamp(0.0, 0.34)
 }
 
-fn cached_usage_counts() -> Arc<UsageCounts> {
+fn cached_usage_hot_state() -> Arc<UsageHotState> {
     let Ok(mut cache) = usage_cache().lock() else {
-        return Arc::new(UsageCounts::default());
+        return Arc::new(UsageHotState::default());
     };
     // The hot readout is allowed to be the first usage-memory consumer.
     // Returning the default Arc here made L4 depend on an unrelated warmup
     // route and left first-word decisions blind until another action loaded
     // the persisted state.
     ensure_usage_cache_initialized(&mut cache, load_usage_counts);
-    cache.counts.clone()
+    Arc::clone(&cache.hot)
 }
 
 fn ensure_usage_cache_initialized(cache: &mut UsageCache, load: impl FnOnce() -> UsageCounts) {
     if cache.loaded_at.is_some() {
         return;
     }
-    cache.counts = Arc::new(load());
+    set_usage_cache_hot_from_counts(cache, load());
     cache.loaded_at = Some(Instant::now());
+}
+
+fn set_usage_cache_hot_from_counts(cache: &mut UsageCache, counts: UsageCounts) {
+    cache.hot = Arc::new(UsageHotState::from_counts(&counts));
+}
+
+#[cfg(test)]
+fn usage_snapshot_from_counts(counts: UsageCounts) -> UsagePriorSnapshot {
+    UsagePriorSnapshot {
+        hot: Arc::new(UsageHotState::from_counts(&counts)),
+    }
 }
 
 fn usage_cache() -> &'static Mutex<UsageCache> {
@@ -913,128 +719,101 @@ fn add_usage_event_counts(counts: &mut UsageCounts, text: &str) {
 }
 
 fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
-    let Some(word) = event.word.as_deref().map(normalize_memory_word) else {
+    let Some(projected) = UsageEventProjection::from_event(event) else {
         return;
     };
-    if word.is_empty() {
-        return;
-    }
-    if matches!(event.kind, UsageEventKind::RejectedCandidate)
-        && !event_word_is_changed_target(event, &word)
-    {
-        return;
-    }
-    let state_word = event_state_word(event);
-    let transition_target = event_transition_target(event, &word);
-    let transition_context = event_transition_context(event);
-    if matches!(
-        event.kind,
-        UsageEventKind::RejectedIme | UsageEventKind::RejectedCandidate
-    ) {
-        let weight = rejected_usage_weight(event.kind);
-        if let Some(surface) = event.surface.as_deref() {
+    if projected.is_rejected() {
+        if let Some(surface) = projected.surface {
             *counts
                 .surface_observed
                 .entry(surface.to_string())
-                .or_default() += weight;
+                .or_default() += projected.weight;
         }
         add_rejected_word_state(
             counts,
             RejectedStateEvidence {
-                context: &event.context,
-                source: event_source(event),
-                operation: event_operation(event),
-                state_word: &state_word,
-                rejected: &word,
-                transition_context: &transition_context,
-                transition_target: &transition_target,
-                weight,
-                transition_weight: event_transition_weight(event, weight),
+                context: projected.context,
+                source: projected.source,
+                operation: projected.operation,
+                state_word: &projected.state_word,
+                rejected: &projected.word,
+                transition_context: &projected.transition_context,
+                transition_target: &projected.transition_target,
+                weight: projected.weight,
+                transition_weight: projected.transition_weight,
                 record_transition: true,
             },
         );
         return;
     }
-    let weight = match event.kind {
-        UsageEventKind::Typed => 1,
-        UsageEventKind::AcceptedFix => 6,
-        UsageEventKind::AcceptedIme => 5,
-        UsageEventKind::RejectedIme | UsageEventKind::RejectedCandidate => {
-            unreachable!("handled before positive count")
-        }
-    };
-    if let Some(surface) = event.surface.as_deref() {
+    if let Some(surface) = projected.surface {
         *counts
             .surface_observed
             .entry(surface.to_string())
-            .or_default() += weight;
-        if matches!(
-            event.kind,
-            UsageEventKind::AcceptedFix | UsageEventKind::AcceptedIme
-        ) {
+            .or_default() += projected.weight;
+        if projected.is_accepted() {
             *counts
                 .surface_attract
                 .entry(surface.to_string())
-                .or_default() += weight;
+                .or_default() += projected.weight;
         }
     }
-    *counts.words.entry(word.clone()).or_default() = counts
+    *counts.words.entry(projected.word.clone()).or_default() = counts
         .words
-        .get(&word)
+        .get(&projected.word)
         .copied()
         .unwrap_or_default()
-        .saturating_add(weight);
-    if !matches!(event.kind, UsageEventKind::Typed) {
-        *counts.accepted_words.entry(word.clone()).or_default() = counts
+        .saturating_add(projected.weight);
+    if projected.is_accepted() {
+        *counts
             .accepted_words
-            .get(&word)
+            .entry(projected.word.clone())
+            .or_default() = counts
+            .accepted_words
+            .get(&projected.word)
             .copied()
             .unwrap_or_default()
-            .saturating_add(weight);
+            .saturating_add(projected.weight);
     }
 
-    for context_key in context_ngram_keys(&event.context) {
-        let key = context_word_key(&context_key, &word);
+    for context_key in context_ngram_keys(projected.context) {
+        let key = context_word_key(&context_key, &projected.word);
         *counts.context_words.entry(key.clone()).or_default() = counts
             .context_words
             .get(&key)
             .copied()
             .unwrap_or_default()
-            .saturating_add(weight);
+            .saturating_add(projected.weight);
     }
-    let source = event_source(event);
-    let operation = event_operation(event);
     add_transition_counts(
         &mut counts.transition_observed,
-        &transition_context,
-        source,
-        operation,
-        &state_word,
-        &transition_target,
-        event_transition_weight(event, weight),
+        &projected.transition_context,
+        projected.source,
+        projected.operation,
+        &projected.state_word,
+        &projected.transition_target,
+        projected.transition_weight,
     );
-    if !matches!(event.kind, UsageEventKind::Typed) {
+    if projected.is_accepted() {
         add_transition_counts(
             &mut counts.transition_attract,
-            &transition_context,
-            source,
-            operation,
-            &state_word,
-            &transition_target,
-            event_transition_weight(event, weight),
+            &projected.transition_context,
+            projected.source,
+            projected.operation,
+            &projected.state_word,
+            &projected.transition_target,
+            projected.transition_weight,
         );
     }
 
-    if matches!(event.kind, UsageEventKind::AcceptedFix) {
-        add_rejected_fix_sources(counts, event, weight, source, operation);
-    }
-}
-
-fn rejected_usage_weight(kind: UsageEventKind) -> u32 {
-    match kind {
-        UsageEventKind::RejectedCandidate => 8,
-        UsageEventKind::RejectedIme => 8,
-        _ => 0,
+    if projected.records_rejected_fix_sources() {
+        add_rejected_fix_sources(
+            counts,
+            event,
+            projected.weight,
+            projected.source,
+            projected.operation,
+        );
     }
 }
 
@@ -1168,137 +947,11 @@ fn add_rejected_word_state(counts: &mut UsageCounts, evidence: RejectedStateEvid
     }
 }
 
-fn event_word_is_changed_target(event: &UsageEvent, word: &str) -> bool {
-    let (Some(from), Some(to)) = (event.from.as_deref(), event.to.as_deref()) else {
-        return true;
-    };
-    let from_words = normalized_words(from);
-    let to_words = normalized_words(to);
-    changed_target_indexes(&from_words, &to_words)
-        .into_iter()
-        .any(|index| to_words.get(index).is_some_and(|target| target == word))
-}
-
-fn event_transition_target(event: &UsageEvent, fallback_word: &str) -> String {
-    let target = match (event.from.as_deref(), event.to.as_deref()) {
-        (Some(from), Some(to)) => crate::typing_memory::transition_target_text(from, to),
-        (_, Some(to)) => to.to_string(),
-        _ => fallback_word.to_string(),
-    };
-    crate::transition_relation::transition_target_id(&target)
-}
-
-fn event_transition_context(event: &UsageEvent) -> Vec<String> {
-    match (event.from.as_deref(), event.to.as_deref()) {
-        (Some(from), Some(to)) => crate::typing_memory::transition_context_words(from, to),
-        _ => event.context.clone(),
-    }
-}
-
-fn event_transition_weight(event: &UsageEvent, weight: u32) -> u32 {
-    let event_count = match (event.from.as_deref(), event.to.as_deref()) {
-        (Some(from), Some(to)) => {
-            let from_words = normalized_words(from);
-            let to_words = normalized_words(to);
-            changed_target_indexes(&from_words, &to_words).len()
-        }
-        (_, Some(to)) => normalized_words(to).len(),
-        _ => 1,
-    }
-    .max(1) as u32;
-    weight.saturating_add(event_count - 1) / event_count
-}
-
-fn event_state_word(event: &UsageEvent) -> String {
-    event
-        .from
-        .as_deref()
-        .map(crate::transition_relation::transition_state_id)
-        .unwrap_or_else(|| TRANSITION_ANY.to_string())
-}
-
-fn rejected_prior_from_count(count: u32) -> f32 {
-    ((count as f32 + 1.0).ln() * 0.040).clamp(0.0, 0.26)
-}
-
-fn transition_signal_from_counts_for_word(
-    counts: &UsageCounts,
-    context_keys: &[String],
-    source: &str,
-    operation: &str,
-    state_word: &str,
-    word: &str,
-) -> UsageTransitionSignal {
-    let exact_keys =
-        transition_lookup_keys_from_context_keys(context_keys, source, operation, state_word, word);
-    let (mut attract_count, mut repel_count) = transition_counts_for_keys(counts, &exact_keys);
-    let state_specific = state_word != TRANSITION_ANY && (attract_count > 0 || repel_count > 0);
-    if attract_count == 0 && repel_count == 0 && state_word != TRANSITION_ANY {
-        let fallback_keys = transition_lookup_keys_from_context_keys(
-            context_keys,
-            source,
-            operation,
-            TRANSITION_ANY,
-            word,
-        );
-        (attract_count, repel_count) = transition_counts_for_keys(counts, &fallback_keys);
-    }
-    let attraction = transition_attraction_from_count(attract_count);
-    let repulsion = transition_repulsion_from_count(repel_count);
-    let signed_weight = (attraction - repulsion).clamp(-1.0, 1.0);
-    let reason = if repel_count > 0 && repulsion > attraction {
-        "transition_repels"
-    } else if attract_count > 0 && attraction > repulsion {
-        "transition_attracts"
-    } else if attract_count > 0 || repel_count > 0 {
-        "transition_conflict"
-    } else {
-        "transition_empty"
-    };
-    UsageTransitionSignal {
-        attraction,
-        repulsion,
-        signed_weight,
-        attract_count,
-        repel_count,
-        state_specific,
-        reason,
-    }
-}
-
-fn transition_counts_for_keys(counts: &UsageCounts, keys: &[String]) -> (u32, u32) {
-    let attract = keys
-        .iter()
-        .filter_map(|key| counts.transition_attract.get(key).copied())
-        .max()
-        .unwrap_or_default();
-    let repel = keys
-        .iter()
-        .filter_map(|key| counts.transition_repel.get(key).copied())
-        .max()
-        .unwrap_or_default();
-    (attract, repel)
-}
-
-fn transition_attraction_from_count(count: u32) -> f32 {
-    if count == 0 {
-        return 0.0;
-    }
-    ((count as f32 + 1.0).ln() * 0.050).clamp(0.0, 0.32)
-}
-
-fn transition_repulsion_from_count(count: u32) -> f32 {
-    if count == 0 {
-        return 0.0;
-    }
-    ((count as f32 + 1.0).ln() * 0.060).clamp(0.0, 0.38)
-}
-
 fn append_usage_event(event: UsageEvent) {
     let Some(path) = usage_events_path() else {
         return;
     };
-    let _ = usage_counts();
+    let _ = cached_usage_hot_state();
     if adjacent_usage_event_is_duplicate(&path, &event) {
         return;
     }
@@ -1314,10 +967,16 @@ fn refresh_usage_cache_after_write(event: &UsageEvent) {
     let Ok(mut cache) = usage_cache().lock() else {
         return;
     };
-    if cache.loaded_at.is_none() {
-        cache.counts = Arc::new(UsageCounts::default());
-    }
-    add_usage_event_count(Arc::make_mut(&mut cache.counts), event);
+    apply_usage_event_to_cache(&mut cache, event, load_usage_counts);
+}
+
+fn apply_usage_event_to_cache(
+    cache: &mut UsageCache,
+    event: &UsageEvent,
+    load: impl FnOnce() -> UsageCounts,
+) {
+    ensure_usage_cache_initialized(cache, load);
+    Arc::make_mut(&mut cache.hot).apply_event(event);
     cache.loaded_at = Some(Instant::now());
 }
 
@@ -1513,6 +1172,25 @@ fn compact_usage_counts_for_persist(counts: &UsageCounts) -> UsageCounts {
     }
 }
 
+fn usage_counts_cold_dictionary_logical_bytes(counts: &UsageCounts) -> usize {
+    [
+        &counts.words,
+        &counts.accepted_words,
+        &counts.context_words,
+        &counts.rejected_words,
+        &counts.rejected_context_words,
+        &counts.transition_observed,
+        &counts.transition_attract,
+        &counts.transition_repel,
+        &counts.surface_observed,
+        &counts.surface_attract,
+        &counts.surface_repel,
+    ]
+    .into_iter()
+    .map(|map| map.keys().map(String::len).sum::<usize>())
+    .sum()
+}
+
 fn top_count_entries(source: &HashMap<String, u32>, limit: usize) -> HashMap<String, u32> {
     if source.len() <= limit {
         return source.clone();
@@ -1683,24 +1361,6 @@ fn top_count_json(source: &HashMap<String, u32>, limit: usize) -> Vec<serde_json
         .collect()
 }
 
-fn event_source(event: &UsageEvent) -> &str {
-    event.source.as_deref().unwrap_or(match event.kind {
-        UsageEventKind::Typed => "user",
-        UsageEventKind::AcceptedFix => "autocorrect",
-        UsageEventKind::AcceptedIme | UsageEventKind::RejectedIme => "ime",
-        UsageEventKind::RejectedCandidate => "candidate",
-    })
-}
-
-fn event_operation(event: &UsageEvent) -> &str {
-    event.operation.as_deref().unwrap_or(match event.kind {
-        UsageEventKind::Typed => "typed",
-        UsageEventKind::AcceptedFix => "replacement",
-        UsageEventKind::AcceptedIme | UsageEventKind::RejectedIme => "completion",
-        UsageEventKind::RejectedCandidate => "candidate",
-    })
-}
-
 fn usage_events_path() -> Option<PathBuf> {
     if let Some(path) = std::env::var_os("LAY_NANDA_WORD_USAGE_EVENTS").map(PathBuf::from) {
         return Some(path);
@@ -1768,8 +1428,26 @@ mod tests {
         });
 
         assert_eq!(loads, 1);
-        assert_eq!(cache.counts.rejected_words.get("ошибка"), Some(&8));
+        assert_eq!(cache.hot.rejected_word_count_for_tests("ошибка"), 8);
         assert!(cache.loaded_at.is_some());
+    }
+
+    #[test]
+    fn live_cache_owns_only_numeric_hot_state() {
+        let source = include_str!("usage_prior.rs");
+        let cache_body = source
+            .split_once("struct UsageCache {")
+            .and_then(|(_, tail)| tail.split_once('}'))
+            .map(|(body, _)| body)
+            .expect("UsageCache definition");
+        let cold_type = ["Usage", "Counts"].concat();
+
+        assert!(!cache_body.contains(&cold_type));
+        assert!(!cache_body.contains("String"));
+        assert_eq!(
+            mem::size_of::<UsageCache>(),
+            mem::size_of::<Option<Instant>>() + mem::size_of::<Arc<UsageHotState>>()
+        );
     }
 
     #[test]
@@ -1812,6 +1490,102 @@ mod tests {
             Some(6)
         );
         assert_eq!(counts.rejected_words.get("дожть"), Some(&6));
+    }
+
+    #[test]
+    fn hot_usage_prior_compiles_string_counts_into_packed_payload() {
+        let text = r#"{"ts":1,"kind":"accepted_ime","word":"сверхдлиннаялокальнаякоманда","context":["предыдущийсверхдлинныйтокен","операторскийконтекст","детальныймаршрут"],"to":"сверхдлиннаялокальнаякоманда","source":"L2LiveCandidateGate32","operation":"completion","surface":"сверхдлиннаяповерхностькандидата"}
+{"ts":2,"kind":"rejected_candidate","word":"сверхдлиннаяошибкакандидата","context":["предыдущийсверхдлинныйтокен","операторскийконтекст","детальныймаршрут"],"to":"сверхдлиннаяошибкакандидата","source":"L2LiveCandidateGate32","operation":"completion","surface":"сверхдлиннаяповерхностькандидата"}
+"#;
+        let mut counts = UsageCounts::default();
+        add_usage_event_counts(&mut counts, text);
+        let cold_dictionary_logical_bytes = usage_counts_cold_dictionary_logical_bytes(&counts);
+        let usage = usage_snapshot_from_counts(counts);
+
+        assert!(usage.hot_logical_payload_bytes() > 0);
+        assert!(
+            usage.hot_logical_payload_bytes() < cold_dictionary_logical_bytes,
+            "hot logical payload must stay smaller than reversible cold strings: hot={} cold={}",
+            usage.hot_logical_payload_bytes(),
+            cold_dictionary_logical_bytes
+        );
+        assert!(usage.word_prior("сверхдлиннаялокальнаякоманда") > 0.0);
+        assert_eq!(usage.accepted_word_count("сверхдлиннаялокальнаякоманда"), 5);
+        assert!(
+            usage
+                .hot_readout(
+                    &[
+                        "предыдущийсверхдлинныйтокен".to_string(),
+                        "операторскийконтекст".to_string(),
+                        "детальныймаршрут".to_string()
+                    ],
+                    "L2LiveCandidateGate32",
+                    "completion",
+                    "*",
+                    "сверхдлиннаялокальнаякоманда",
+                )
+                .transition
+                .attraction
+                > 0.0
+        );
+    }
+
+    #[test]
+    fn live_cache_applies_typed_events_incrementally_with_cold_parity() {
+        let text = r#"{"ts":1,"kind":"typed","word":"дождь","context":["на","улице"]}
+{"ts":2,"kind":"accepted_fix","word":"дождь","context":["на","улице"],"from":"на улисе дожть","to":"на улице дождь","source":"autocorrect","operation":"replacement","surface":"дождь"}
+{"ts":3,"kind":"accepted_ime","word":"комитет","context":["новый"],"to":"комитет","source":"ime","operation":"completion","surface":"комитет"}
+{"ts":4,"kind":"rejected_ime","word":"камитет","context":["новый"],"to":"камитет","source":"ime","operation":"completion","surface":"камитет"}
+{"ts":5,"kind":"rejected_candidate","word":"даша","context":["ну"],"from":"ну исходник","to":"ну даша","source":"L2LiveCandidateGate32","operation":"completion","surface":"даша"}
+"#;
+        let events = usage_events_from_jsonl(text).collect::<Vec<_>>();
+        let mut cold = UsageCounts::default();
+        let mut cache = UsageCache::default();
+        ensure_usage_cache_initialized(&mut cache, UsageCounts::default);
+        let hot_owner = Arc::as_ptr(&cache.hot);
+
+        for event in &events {
+            add_usage_event_count(&mut cold, event);
+            apply_usage_event_to_cache(&mut cache, event, || {
+                panic!("initialized live cache must not reload cold counts")
+            });
+            assert_eq!(Arc::as_ptr(&cache.hot), hot_owner);
+        }
+
+        assert_eq!(*cache.hot, UsageHotState::from_counts(&cold));
+        assert!(cache.hot.logical_payload_bytes() > 0);
+    }
+
+    #[test]
+    fn live_cache_make_mut_clones_when_snapshot_holds_hot_state() {
+        let mut cache = UsageCache::default();
+        ensure_usage_cache_initialized(&mut cache, UsageCounts::default);
+        let snapshot = UsagePriorSnapshot {
+            hot: Arc::clone(&cache.hot),
+        };
+        let snapshot_owner = Arc::as_ptr(&snapshot.hot);
+        let cache_owner = Arc::as_ptr(&cache.hot);
+
+        apply_usage_event_to_cache(
+            &mut cache,
+            &UsageEvent {
+                ts: 1,
+                kind: UsageEventKind::Typed,
+                word: Some("дождь".to_string()),
+                context: Vec::new(),
+                from: None,
+                to: None,
+                source: None,
+                operation: None,
+                surface: None,
+            },
+            || panic!("initialized live cache must not reload cold counts"),
+        );
+
+        assert_eq!(Arc::as_ptr(&snapshot.hot), snapshot_owner);
+        assert_ne!(Arc::as_ptr(&cache.hot), cache_owner);
+        assert_eq!(snapshot.word_prior("дождь"), 0.0);
+        assert!(cache.hot.word_prior("дождь") > 0.0);
     }
 
     #[test]
@@ -1911,6 +1685,13 @@ mod tests {
                 "улице опять идёт",
                 "на улице опять идёт"
             ]
+        );
+        assert_eq!(
+            hot::context_ngram_ids(&context).as_slice(),
+            context_ngram_keys(&context)
+                .iter()
+                .map(|key| hot::usage_text_id(key))
+                .collect::<Vec<_>>()
         );
     }
 
@@ -2018,9 +1799,7 @@ mod tests {
         assert!(!counts.words.contains_key("даша"));
         assert_eq!(counts.rejected_words.get("даша"), Some(&8));
 
-        let usage = UsagePriorSnapshot {
-            counts: Arc::new(counts),
-        };
+        let usage = usage_snapshot_from_counts(counts);
         let context = ["ну"].map(String::from);
         let signal = usage
             .hot_readout(

@@ -24,7 +24,8 @@ use super::typing_key_runtime::{handle_typing_key_press, TypingKeyContext};
 use super::{
     active_enter_autocorrect_from_env, active_layout_backend, idle_wait_timeout, log,
     should_skip_buffer_input, switch_to_target_layout, wait_for_keyboard_event_or_timeout,
-    DShiftState, ForceLayoutHotkeyContext, ShiftState, ENTER_AUTOCORRECT_EXPERIMENT_ENV,
+    DShiftState, DaemonTextContextObserver, DaemonTextObservation, ForceLayoutHotkeyContext,
+    ShiftState, ENTER_AUTOCORRECT_EXPERIMENT_ENV,
 };
 
 #[path = "daemon_runtime/focus.rs"]
@@ -88,7 +89,7 @@ pub(super) fn listen_keyboard(
         let events: Vec<InputEvent> = match fetched_events {
             Ok(events) => events,
             Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
-                update_focus_state(&mut state);
+                update_focus_state(&mut state, field_context_epoch.as_ref());
                 if state.focus_ignored {
                     wait_for_keyboard_event_or_timeout(
                         device_fd,
@@ -100,6 +101,10 @@ pub(super) fn listen_keyboard(
                     )?;
                     continue;
                 }
+                let text_observer = DaemonTextContextObserver::new(
+                    state.focused_window_identity.as_deref(),
+                    field_context_epoch.as_ref(),
+                );
                 if try_handle_deferred_typing_assist(DeferredTypingAssistContext {
                     buffer: &mut state.buffer,
                     device: &mut device,
@@ -110,6 +115,7 @@ pub(super) fn listen_keyboard(
                     current_layout_is_ru: &mut state.current_layout_is_ru,
                     last_layout_poll: &mut state.last_layout_poll,
                     shift_state: &state.shift_state,
+                    text_observer,
                 }) {
                     continue;
                 }
@@ -118,6 +124,11 @@ pub(super) fn listen_keyboard(
                         .pending_multi_tap
                         .is_some_and(|pending| pending.last_release.elapsed() >= state.shift_window)
                 {
+                    let text_context = state.daemon_text_context();
+                    let text_observer = DaemonTextContextObserver::new(
+                        state.focused_window_identity.as_deref(),
+                        field_context_epoch.as_ref(),
+                    );
                     fire_expired_pending_multi_tap(PendingMultiTapTimeoutContext {
                         buffer: &mut state.buffer,
                         device: &mut device,
@@ -136,6 +147,7 @@ pub(super) fn listen_keyboard(
                         clear_on_next_typing: &mut state.clear_on_next_typing,
                         shift_window: state.shift_window,
                         events_since_word_start: state.events_since_word_start,
+                        text_observation: DaemonTextObservation::new(text_context, text_observer),
                     });
                 }
                 wait_for_keyboard_event_or_timeout(
@@ -158,7 +170,7 @@ pub(super) fn listen_keyboard(
             Err(e) => return Err(e),
         };
 
-        update_focus_state_for_key_batch(&events, &mut state);
+        update_focus_state_for_key_batch(&events, &mut state, field_context_epoch.as_ref());
         sync_field_context_epoch(&field_context_epoch, &mut state);
         if state.focus_ignored {
             state.shift_state = ShiftState::default();
@@ -193,7 +205,7 @@ pub(super) fn listen_keyboard(
                 continue;
             }
             if should_advance_text_context(key, value, &state.shift_state) {
-                let epoch = field_context_epoch.fetch_add(1, Ordering::Relaxed) + 1;
+                let epoch = field_context_epoch.fetch_add(1, Ordering::AcqRel) + 1;
                 if state.switch_field_context_epoch(epoch) && verbose {
                     log("► text context changed: switched field buffer");
                 }
@@ -220,6 +232,11 @@ pub(super) fn listen_keyboard(
                 continue;
             }
 
+            let text_context = state.daemon_text_context();
+            let text_observer = DaemonTextContextObserver::new(
+                state.focused_window_identity.as_deref(),
+                field_context_epoch.as_ref(),
+            );
             if handle_manual_trigger_event(ManualTriggerEventContext {
                 key,
                 code,
@@ -250,6 +267,7 @@ pub(super) fn listen_keyboard(
                 clear_on_next_typing: &mut state.clear_on_next_typing,
                 single_pressed_at: &mut state.single_pressed_at,
                 single_other_key: &mut state.single_other_key,
+                text_observation: DaemonTextObservation::new(text_context, text_observer),
             }) {
                 continue;
             }
@@ -290,6 +308,7 @@ pub(super) fn listen_keyboard(
             // ─── пробел: переносим current → prev (только на press) ──
             if key == KeyCode::KEY_SPACE {
                 if value == 1 {
+                    let text_context = state.daemon_text_context();
                     handle_space_press(SpacePressContext {
                         buffer: &mut state.buffer,
                         pending_typing_assist_after_space: &mut state
@@ -299,6 +318,7 @@ pub(super) fn listen_keyboard(
                         suppress_next_typing_assist_after_manual_replay: &mut state
                             .suppress_next_typing_assist_after_manual_replay,
                         verbose,
+                        text_context,
                     });
                 }
                 continue;
@@ -306,6 +326,11 @@ pub(super) fn listen_keyboard(
 
             // ─── граница (Enter/Tab/Esc/стрелки/BS/Del) — сброс на press ──
             note_learning_backspace_if_needed(key, value, &mut state.buffer);
+            let text_context = state.daemon_text_context();
+            let text_observer = DaemonTextContextObserver::new(
+                state.focused_window_identity.as_deref(),
+                field_context_epoch.as_ref(),
+            );
             if try_handle_enter_autocorrect(
                 key,
                 value,
@@ -320,6 +345,7 @@ pub(super) fn listen_keyboard(
                     ignore_current_token_until_space: &mut state.ignore_current_token_until_space,
                     events_since_word_start: &mut state.events_since_word_start,
                     clear_on_next_typing: &mut state.clear_on_next_typing,
+                    text_observation: DaemonTextObservation::new(text_context, text_observer),
                 },
             ) {
                 continue;

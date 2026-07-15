@@ -12,7 +12,8 @@ pub(crate) use candidate::{find_typing_assist_correction, TypingAssistCorrection
 use output::{apply_typing_assist_correction, TypingAssistApplyContext};
 
 use super::{
-    active_auto_switch_layout, active_typing_assist_words, log, TYPING_ASSIST_RUNTIME_READY,
+    active_auto_switch_layout, active_typing_assist_words, log, DaemonTextObservation,
+    TYPING_ASSIST_RUNTIME_READY,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -44,6 +45,7 @@ pub(super) fn apply_prepared_typing_assist_after_space(
     executing: &mut bool,
     cursor_offset: u32,
     correction: TypingAssistCorrection,
+    text_observation: DaemonTextObservation<'_>,
 ) -> TypingAssistOutcome {
     apply_typing_assist_correction(TypingAssistApplyContext {
         buf,
@@ -53,5 +55,6 @@ pub(super) fn apply_prepared_typing_assist_after_space(
         cursor_offset,
         started_at: Instant::now(),
         correction,
+        text_observation,
     })
 }

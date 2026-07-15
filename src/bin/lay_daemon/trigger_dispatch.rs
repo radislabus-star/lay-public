@@ -11,7 +11,7 @@ use super::{
     lock_virtual_keyboard, run_manual_correction_with_scope, ManualCorrectionRequest,
     ScopedManualCorrectionRequest,
 };
-use super::{DShiftState, MultiTapPending, ShiftState};
+use super::{DShiftState, DaemonTextObservation, MultiTapPending, ShiftState};
 
 pub(super) fn trigger_key_from_config(trigger: &str) -> KeyCode {
     match trigger {
@@ -35,6 +35,7 @@ pub(super) fn run_configured_manual_correction(
     device: &mut Device,
     virtual_kbd: &Arc<Mutex<Option<VirtualDevice>>>,
     executing: &mut bool,
+    text_observation: DaemonTextObservation<'_>,
 ) -> Option<bool> {
     let mut physical_grab = PhysicalInputGrab::new(Some(device));
     let input_isolated = physical_grab.is_active();
@@ -47,36 +48,43 @@ pub(super) fn run_configured_manual_correction(
         virtual_kbd: g.as_mut(),
         executing,
         input_isolated,
+        text_observation,
         physical_grab: Some(&mut physical_grab),
     })
 }
 
 pub(super) fn run_scoped_manual_correction(
-    buffer: &mut WordBuffer,
+    ctx: ScopedManualCorrectionContext<'_>,
     replace_words: usize,
-    device: &mut Device,
-    virtual_kbd: &Arc<Mutex<Option<VirtualDevice>>>,
-    executing: &mut bool,
     events_since_word_start: u32,
     reason: &str,
 ) -> Option<bool> {
-    let mut physical_grab = PhysicalInputGrab::new(Some(device));
+    let mut physical_grab = PhysicalInputGrab::new(Some(ctx.device));
     let input_isolated = physical_grab.is_active();
-    let mut g = lock_virtual_keyboard(virtual_kbd);
+    let mut g = lock_virtual_keyboard(ctx.virtual_kbd);
     run_manual_correction_with_scope(ScopedManualCorrectionRequest {
         manual: ManualCorrectionRequest {
-            buf: buffer,
+            buf: ctx.buffer,
             replace_words,
             engine: active_correction_engine(),
             auto_replace: active_auto_replace(),
             virtual_kbd: g.as_mut(),
-            executing,
+            executing: ctx.executing,
             input_isolated,
+            text_observation: ctx.text_observation,
             physical_grab: Some(&mut physical_grab),
         },
         events_since_word_start,
         label: reason,
     })
+}
+
+pub(super) struct ScopedManualCorrectionContext<'a> {
+    pub(super) buffer: &'a mut WordBuffer,
+    pub(super) device: &'a mut Device,
+    pub(super) virtual_kbd: &'a Arc<Mutex<Option<VirtualDevice>>>,
+    pub(super) executing: &'a mut bool,
+    pub(super) text_observation: DaemonTextObservation<'a>,
 }
 
 pub(super) fn apply_manual_correction_result(

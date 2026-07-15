@@ -150,8 +150,9 @@ pub fn architecture_lines() -> &'static [ArchitectureLine] {
 
 /// Route evidence compiled from Graphify AST nodes and dependency edges.
 ///
-/// The generated receipt replaces the former source-substring checks and is
-/// rejected by the architecture gate whenever the source graph is stale.
+/// The generated receipt replaces the former source-substring checks. The
+/// release architecture gate verifies source/graph freshness before this
+/// embedded report is accepted.
 pub fn observed_contract_status(id: &str) -> ContractStatus {
     receipt()
         .checks

@@ -22,6 +22,8 @@ fn transition_proof_constructor_and_fields_are_not_public_capabilities() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
     let mutation = fs::read_to_string(root.join("src/text_edit/mutation.rs")).expect("mutation");
     let gate = fs::read_to_string(root.join("src/text_edit/gate.rs")).expect("gate");
+    let transition =
+        fs::read_to_string(root.join("src/text_edit/transition.rs")).expect("transition");
     let facade = fs::read_to_string(root.join("src/text_edit.rs")).expect("facade");
 
     let action = fs::read_to_string(root.join("src/text_edit/action.rs")).expect("action");
@@ -29,7 +31,21 @@ fn transition_proof_constructor_and_fields_are_not_public_capabilities() {
     assert!(mutation.contains("operator: Option<TransitionOperator>"));
     assert!(!mutation.contains("pub(crate) operator: Option<TransitionOperator>"));
     assert!(gate.contains("struct VerifiedTransitionReceipt"));
-    assert!(gate.contains("fn issue(action: &EditAction)"));
+    assert!(gate.contains("fn issue(authority: &TransitionAuthority, action: &EditAction)"));
+    assert!(!gate.contains("fn issue(action: &EditAction)"));
+    assert!(transition.contains("pub(super) enum TransitionAuthorityKind"));
+    for variant in [
+        "AutomaticDecision",
+        "ExplicitUserIntent",
+        "RecordedUndo",
+        "CompletionAcceptance",
+        "NativeIntent",
+    ] {
+        assert!(
+            transition.contains(variant),
+            "TransitionAuthorityKind must include {variant}"
+        );
+    }
     assert!(gate.contains("pub(crate) fn plan_decision_transition_edit("));
     assert!(action.contains("verification: Option<VerifiedTransitionReceipt>"));
     assert!(action.contains("verified_transition_receipt_missing"));
@@ -68,6 +84,18 @@ fn runtime_text_edits_use_narrow_typed_plans_not_generic_proof_construction() {
         "runtime adapters must use narrow typed plan APIs:\n{}",
         violations.join("\n")
     );
+}
+
+#[test]
+fn arbitrary_edit_action_cannot_self_seal_a_verified_receipt() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let gate = fs::read_to_string(root.join("src/text_edit/gate.rs")).expect("gate");
+
+    assert!(!gate.contains("fn seal_verified_action("));
+    assert!(!gate.contains("VerifiedTransitionReceipt::issue(&action)"));
+    assert!(gate.contains("seal_authorized_action("));
+    assert!(gate.contains("VerifiedTransitionReceipt::issue(authority, &action)"));
+    assert!(gate.contains("arbitrary_verified_audit_cannot_self_seal_without_authority"));
 }
 
 #[test]

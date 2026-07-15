@@ -7,7 +7,6 @@ pub(crate) mod action;
 pub(crate) mod candidate;
 pub(crate) mod decision;
 pub(crate) mod executor_contract;
-pub(crate) mod l4_state_estimator;
 pub(crate) mod live_candidate;
 pub(crate) mod state;
 pub(crate) mod verifier;
@@ -16,9 +15,6 @@ use crate::candidate_contract::CandidateOrigin;
 use crate::correction_core::TypingErrorClass;
 use crate::language_action::LanguageActionOperator;
 use crate::transition_relation::{TransitionRelationAtoms, TransitionRelationInput};
-use l4_state_estimator::{
-    L4ObservationKind, L4StateEstimate, L4StateEstimator, L4StateObservation,
-};
 use state::LatentTypingState;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -32,7 +28,6 @@ pub(crate) struct TypingTransition {
     pub(crate) l2_signal: L2TransitionSignal,
     pub(crate) l3_signal: L3TransitionSignal,
     pub(crate) l4_signed_signal: L4SignedTransitionSignal,
-    pub(crate) l4_state_estimate: L4StateEstimate,
     relation_atoms: TransitionRelationAtoms,
 }
 
@@ -103,19 +98,6 @@ impl TypingTransition {
         let state_before = LatentTypingState::from_text(original);
         let state_after_predicted = LatentTypingState::from_text(replacement);
         let boundary_changed = state_before.word_count_changed(&state_after_predicted);
-        let l4_state_estimate = L4StateEstimator::estimate(L4StateObservation {
-            kind: if boundary_changed {
-                L4ObservationKind::SpaceBoundary
-            } else {
-                L4ObservationKind::CandidateApply
-            },
-            has_active_composition: false,
-            boundary_seen: boundary_changed,
-            left_context_changed: action.left_context_changed,
-            word_count_changed: boundary_changed,
-            verifier_passed: action.verifier_passed,
-            l4_negative: l4_signed_signal.negative,
-        });
         let relation_atoms = TransitionRelationAtoms::encode(
             original,
             replacement,
@@ -151,7 +133,6 @@ impl TypingTransition {
                 observes_context: matches!(origin, CandidateOrigin::L3Context),
             },
             l4_signed_signal,
-            l4_state_estimate,
             relation_atoms,
         }
     }
@@ -189,6 +170,6 @@ mod tests {
         assert_eq!(transition.state_after_predicted.current_word, "проверка");
         assert!(transition.evidence.verifier_passed);
         assert!(!transition.evidence.left_context_changed);
-        assert!(transition.l4_state_estimate.apply_allowed);
+        assert!(!transition.l4_signed_signal.negative);
     }
 }

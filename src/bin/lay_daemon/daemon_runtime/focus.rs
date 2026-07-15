@@ -55,7 +55,7 @@ pub(in super::super) fn listen_pointer(
                     | KeyCode::BTN_BACK
                     | KeyCode::BTN_TASK
             ) {
-                let epoch = field_context_epoch.fetch_add(1, Ordering::Relaxed) + 1;
+                let epoch = field_context_epoch.fetch_add(1, Ordering::AcqRel) + 1;
                 if verbose {
                     log(&format!("► pointer context changed: field epoch {epoch}"));
                 }
@@ -64,12 +64,16 @@ pub(in super::super) fn listen_pointer(
     }
 }
 
-pub(super) fn update_focus_state(state: &mut DaemonLoopState) {
+pub(super) fn update_focus_state(state: &mut DaemonLoopState, field_context_epoch: &AtomicU64) {
     let focus = poll_focused_window_state(&mut state.last_focus_ignore_poll);
-    apply_focus_state(state, focus);
+    apply_focus_state(state, focus, field_context_epoch);
 }
 
-pub(super) fn update_focus_state_for_key_batch(events: &[InputEvent], state: &mut DaemonLoopState) {
+pub(super) fn update_focus_state_for_key_batch(
+    events: &[InputEvent],
+    state: &mut DaemonLoopState,
+    field_context_epoch: &AtomicU64,
+) {
     let has_key_event = events
         .iter()
         .any(|event| event.event_type() == EventType::KEY);
@@ -78,14 +82,14 @@ pub(super) fn update_focus_state_for_key_batch(events: &[InputEvent], state: &mu
     } else {
         poll_focused_window_state(&mut state.last_focus_ignore_poll)
     };
-    apply_focus_state(state, focus);
+    apply_focus_state(state, focus, field_context_epoch);
 }
 
 pub(super) fn sync_field_context_epoch(
     field_context_epoch: &AtomicU64,
     state: &mut DaemonLoopState,
 ) {
-    let epoch = field_context_epoch.load(Ordering::Relaxed);
+    let epoch = field_context_epoch.load(Ordering::Acquire);
     if state.switch_field_context_epoch(epoch) {
         log("► text context changed: switched field buffer");
         state.dshift_state = DShiftState::Idle;
@@ -93,10 +97,17 @@ pub(super) fn sync_field_context_epoch(
     }
 }
 
-fn apply_focus_state(state: &mut DaemonLoopState, focus: Option<super::super::FocusedWindowState>) {
+fn apply_focus_state(
+    state: &mut DaemonLoopState,
+    focus: Option<super::super::FocusedWindowState>,
+    field_context_epoch: &AtomicU64,
+) {
     let Some(focus) = focus else {
         return;
     };
+    if focus.identity != state.focused_window_identity {
+        state.field_context_epoch = field_context_epoch.fetch_add(1, Ordering::AcqRel) + 1;
+    }
     let identity_changed = state.switch_window_input_state(focus.identity);
     if identity_changed {
         log("► focused window changed: switched text tail buffer");

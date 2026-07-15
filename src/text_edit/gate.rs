@@ -1,7 +1,7 @@
 use super::action::{DecisionTransitionEditInput, EditAction, PlannedReplacementInput};
 use super::mutation::{TransitionAudit, TransitionOperator, TransitionProof};
+use super::transition::TransitionAuthority;
 use super::types::TextReplacement;
-use crate::text_metrics::{transition_changed_token_count, transition_left_context_changed};
 use crate::typing_transition::decision::DecisionTransitionReceipt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -14,14 +14,14 @@ pub(super) struct VerifiedTransitionReceipt {
 }
 
 impl VerifiedTransitionReceipt {
-    fn issue(action: &EditAction) -> Option<Self> {
+    fn issue(authority: &TransitionAuthority, action: &EditAction) -> Option<Self> {
         let plan = action.plan()?.clone();
+        if !authority.matches_transition(action.transition()) {
+            return None;
+        }
         let transition = action.transition();
         let operator = transition.operator()?;
         let proof = transition.proof()?;
-        if !transition.is_verified() || !operator_proof_pair_is_valid(operator, proof) {
-            return None;
-        }
         Some(Self {
             from_text: action.from_text().to_string(),
             to_text: action.to_text().to_string(),
@@ -54,19 +54,24 @@ pub(crate) fn plan_decision_transition_edit(
         selected_source_id,
         selected_error_class,
     } = input;
-    let transition = receipt
-        .projected_transition(from_text, to_text)
+    let authority = TransitionAuthority::automatic_decision(receipt, from_text, to_text);
+    let transition = authority
+        .as_ref()
+        .map(|authority| authority.transition().clone())
         .unwrap_or_default();
-    seal_verified_action(PlannedReplacementInput {
-        source,
-        confidence_milli,
-        from_text,
-        to_text,
-        plan,
-        selected_source_id,
-        selected_error_class,
-        transition,
-    })
+    seal_authorized_action(
+        PlannedReplacementInput {
+            source,
+            confidence_milli,
+            from_text,
+            to_text,
+            plan,
+            selected_source_id,
+            selected_error_class,
+            transition,
+        },
+        authority.as_ref(),
+    )
 }
 
 pub fn plan_input_gate_edit(
@@ -111,22 +116,21 @@ pub fn plan_manual_edit(
     plan: TextReplacement,
     _changed_tokens: usize,
 ) -> EditAction {
-    seal_verified_action(PlannedReplacementInput {
-        source,
-        confidence_milli,
-        from_text,
-        to_text,
-        plan,
-        selected_source_id: Some("manual_toggle"),
-        selected_error_class: None,
-        transition: TransitionAudit::proven(
-            TransitionOperator::ManualReplace,
-            TransitionProof::ManualIntent,
-            true,
-            transition_left_context_changed(from_text, to_text),
-            transition_changed_token_count(from_text, to_text),
-        ),
-    })
+    let authority = TransitionAuthority::explicit_user_intent(from_text, to_text);
+    let transition = authority.transition().clone();
+    seal_authorized_action(
+        PlannedReplacementInput {
+            source,
+            confidence_milli,
+            from_text,
+            to_text,
+            plan,
+            selected_source_id: Some("manual_toggle"),
+            selected_error_class: None,
+            transition,
+        },
+        Some(&authority),
+    )
 }
 
 pub fn plan_native_edit(
@@ -137,22 +141,21 @@ pub fn plan_native_edit(
     plan: TextReplacement,
     _changed_tokens: usize,
 ) -> EditAction {
-    seal_verified_action(PlannedReplacementInput {
-        source,
-        confidence_milli,
-        from_text,
-        to_text,
-        plan,
-        selected_source_id: Some("manual_native_replace"),
-        selected_error_class: None,
-        transition: TransitionAudit::proven(
-            TransitionOperator::NativeReplace,
-            TransitionProof::NativeIntent,
-            true,
-            transition_left_context_changed(from_text, to_text),
-            transition_changed_token_count(from_text, to_text),
-        ),
-    })
+    let authority = TransitionAuthority::native_intent(from_text, to_text);
+    let transition = authority.transition().clone();
+    seal_authorized_action(
+        PlannedReplacementInput {
+            source,
+            confidence_milli,
+            from_text,
+            to_text,
+            plan,
+            selected_source_id: Some("manual_native_replace"),
+            selected_error_class: None,
+            transition,
+        },
+        Some(&authority),
+    )
 }
 
 pub fn plan_recorded_undo_edit(
@@ -161,22 +164,21 @@ pub fn plan_recorded_undo_edit(
     plan: TextReplacement,
     _changed_tokens: usize,
 ) -> EditAction {
-    seal_verified_action(PlannedReplacementInput {
-        source: "auto-undo",
-        confidence_milli: 1000,
-        from_text,
-        to_text,
-        plan,
-        selected_source_id: Some("auto_undo"),
-        selected_error_class: None,
-        transition: TransitionAudit::proven(
-            TransitionOperator::Undo,
-            TransitionProof::UndoRecord,
-            true,
-            transition_left_context_changed(from_text, to_text),
-            transition_changed_token_count(from_text, to_text),
-        ),
-    })
+    let authority = TransitionAuthority::recorded_undo(from_text, to_text);
+    let transition = authority.transition().clone();
+    seal_authorized_action(
+        PlannedReplacementInput {
+            source: "auto-undo",
+            confidence_milli: 1000,
+            from_text,
+            to_text,
+            plan,
+            selected_source_id: Some("auto_undo"),
+            selected_error_class: None,
+            transition,
+        },
+        Some(&authority),
+    )
 }
 
 pub fn plan_ime_completion_edit(
@@ -190,97 +192,48 @@ pub fn plan_ime_completion_edit(
     let Some(plan) = super::diff_plan::plan_text_replacement(&from_text, &to_text) else {
         return EditAction::keep(source, from_text);
     };
-    let transition = if completion_projection_is_valid(&from_text, &to_text) {
-        TransitionAudit::proven(
-            TransitionOperator::Completion,
-            TransitionProof::Completion,
-            true,
-            false,
-            1,
-        )
-    } else {
-        TransitionAudit::none()
-    };
-    let mut action = seal_verified_action(PlannedReplacementInput {
-        source,
-        confidence_milli,
-        from_text: &from_text,
-        to_text: &to_text,
-        plan,
-        selected_source_id: Some("ImeCompletionCell32"),
-        selected_error_class: Some("ime-completion"),
-        transition,
-    });
+    let authority = TransitionAuthority::completion_acceptance(&from_text, &to_text);
+    let transition = authority
+        .as_ref()
+        .map(|authority| authority.transition().clone())
+        .unwrap_or_else(TransitionAudit::none);
+    let mut action = seal_authorized_action(
+        PlannedReplacementInput {
+            source,
+            confidence_milli,
+            from_text: &from_text,
+            to_text: &to_text,
+            plan,
+            selected_source_id: Some("ImeCompletionCell32"),
+            selected_error_class: Some("ime-completion"),
+            transition,
+        },
+        authority.as_ref(),
+    );
     if action.allow_apply() {
         action.mark_ime_accept();
     }
     action
 }
 
-fn seal_verified_action(input: PlannedReplacementInput<'_>) -> EditAction {
+fn seal_authorized_action(
+    input: PlannedReplacementInput<'_>,
+    authority: Option<&TransitionAuthority>,
+) -> EditAction {
     let mut action = EditAction::planned_replacement(input);
     if action.safety().is_some_and(|safety| safety.allow_apply) {
-        if let Some(receipt) = VerifiedTransitionReceipt::issue(&action) {
+        if let Some(receipt) =
+            authority.and_then(|authority| VerifiedTransitionReceipt::issue(authority, &action))
+        {
             action.attach_verification(receipt);
         }
     }
     action
 }
 
-fn operator_proof_pair_is_valid(operator: TransitionOperator, proof: TransitionProof) -> bool {
-    matches!(
-        (operator, proof),
-        (
-            TransitionOperator::ReplaceCurrentWord,
-            TransitionProof::Typo
-                | TransitionProof::Layout
-                | TransitionProof::Context
-                | TransitionProof::Grammar
-        ) | (
-            TransitionOperator::LayoutProjection,
-            TransitionProof::Layout
-        ) | (
-            TransitionOperator::BoundaryShift
-                | TransitionOperator::BoundaryMergeSplit
-                | TransitionOperator::SplitPreviousGluedAndRepairTail,
-            TransitionProof::Boundary
-        ) | (
-            TransitionOperator::PhraseTokenRepair,
-            TransitionProof::Context
-        ) | (TransitionOperator::Completion, TransitionProof::Completion)
-            | (
-                TransitionOperator::VisibleTail,
-                TransitionProof::VisibleState
-            )
-            | (
-                TransitionOperator::DecoderTail,
-                TransitionProof::DecoderPlan
-            )
-            | (
-                TransitionOperator::ManualReplace,
-                TransitionProof::ManualIntent
-            )
-            | (TransitionOperator::Undo, TransitionProof::UndoRecord)
-            | (
-                TransitionOperator::EnterAutocorrect,
-                TransitionProof::Context | TransitionProof::Typo | TransitionProof::Layout
-            )
-            | (
-                TransitionOperator::NativeReplace,
-                TransitionProof::NativeIntent
-            )
-    )
-}
-
-fn completion_projection_is_valid(from_text: &str, to_text: &str) -> bool {
-    let from = from_text.trim_end_matches(char::is_whitespace);
-    let to = to_text.trim_end_matches(char::is_whitespace);
-    !from.is_empty() && to.len() > from.len() && to.starts_with(from)
-}
-
 #[cfg(test)]
 mod tests {
-    use super::{plan_manual_edit, seal_verified_action, PlannedReplacementInput};
+    use super::{plan_manual_edit, seal_authorized_action, PlannedReplacementInput};
     use crate::text_edit::{
         plan_committed_tail_full_token_replacement, plan_text_replacement, EditActionKind,
         TransitionAudit, TransitionOperator, TransitionProof,
@@ -300,25 +253,57 @@ mod tests {
     #[test]
     fn gate_blocks_unverified_left_context_transition() {
         let plan = plan_text_replacement("одно два ", "однотри ").expect("plan");
-        let action = seal_verified_action(PlannedReplacementInput {
-            source: "typing-assist",
-            confidence_milli: 700,
-            from_text: "одно два ",
-            to_text: "однотри ",
-            plan,
-            selected_source_id: Some("nanda"),
-            selected_error_class: Some("glued-words"),
-            transition: TransitionAudit::proven(
-                TransitionOperator::BoundaryMergeSplit,
-                TransitionProof::Boundary,
-                false,
-                true,
-                2,
-            ),
-        });
+        let action = seal_authorized_action(
+            PlannedReplacementInput {
+                source: "typing-assist",
+                confidence_milli: 700,
+                from_text: "одно два ",
+                to_text: "однотри ",
+                plan,
+                selected_source_id: Some("nanda"),
+                selected_error_class: Some("glued-words"),
+                transition: TransitionAudit::proven(
+                    TransitionOperator::BoundaryMergeSplit,
+                    TransitionProof::Boundary,
+                    false,
+                    true,
+                    2,
+                ),
+            },
+            None,
+        );
 
         assert_eq!(action.kind(), EditActionKind::BlockUnsafe);
         assert!(!action.allow_apply());
         assert_eq!(action.safety_reason(), "edit_transition_not_verified");
+    }
+
+    #[test]
+    fn arbitrary_verified_audit_cannot_self_seal_without_authority() {
+        let plan =
+            plan_committed_tail_full_token_replacement("провека ", "проверка ").expect("plan");
+        let action = seal_authorized_action(
+            PlannedReplacementInput {
+                source: "typing-assist",
+                confidence_milli: 1000,
+                from_text: "провека ",
+                to_text: "проверка ",
+                plan,
+                selected_source_id: Some("L2SurfaceMotifCell32"),
+                selected_error_class: Some("missing-letter"),
+                transition: TransitionAudit::proven(
+                    TransitionOperator::ReplaceCurrentWord,
+                    TransitionProof::Typo,
+                    true,
+                    false,
+                    1,
+                ),
+            },
+            None,
+        );
+
+        assert_eq!(action.kind(), EditActionKind::ReplaceLastToken);
+        assert!(!action.allow_apply());
+        assert!(!action.has_verifier_receipt());
     }
 }

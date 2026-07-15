@@ -7,7 +7,6 @@ import argparse
 import hashlib
 import json
 import re
-import subprocess
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -24,9 +23,36 @@ SCHEMA = "lay.architecture-graph-receipt.v1"
 
 RECEIPT_INPUTS = (
     ROOT / "Cargo.toml",
+    ROOT / ".github" / "workflows" / "ci.yml",
     ROOT / "docs" / "phase-word-recovery-canonical-cutover.md",
+    ROOT / "scripts" / "check-architecture.sh",
     Path(__file__).resolve(),
+    ROOT / "src" / "action_log.rs",
+    ROOT / "src" / "architecture_contract.rs",
+    ROOT / "src" / "keyboard" / "text_input" / "script.rs",
+    ROOT / "src" / "lexical_surface_atoms.rs",
+    ROOT / "src" / "nanda_wave" / "l2.rs",
+    ROOT / "src" / "nanda_wave" / "l2" / "hot_memory.rs",
+    ROOT / "src" / "nanda_wave" / "l2_candidate_phase.rs",
+    ROOT / "src" / "nanda_wave" / "l4_signed_memory.rs",
+    ROOT / "src" / "nanda_wave" / "lexical_phase" / "runtime.rs",
+    ROOT / "src" / "stable_hash.rs",
+    ROOT / "src" / "text_edit" / "action.rs",
+    ROOT / "src" / "text_edit" / "executor.rs",
+    ROOT / "src" / "text_edit" / "gate.rs",
+    ROOT / "src" / "text_edit" / "transition.rs",
+    ROOT / "src" / "typing_transition" / "candidate.rs",
+    ROOT / "src" / "typing_transition" / "decision.rs",
+    ROOT / "src" / "typing_transition" / "live_candidate.rs",
+    ROOT / "src" / "word_reader.rs",
+    ROOT / "src" / "bin" / "lay_daemon" / "layout_controller.rs",
+    ROOT / "src" / "bin" / "lay_daemon" / "text_output" / "replacement.rs",
 )
+
+FRESHNESS_IGNORED_RECEIPT_FIELDS = {
+    "git_head",
+    "graph_built_at_commit",
+}
 
 PROTECTED_SINGLE_OWNER_SYMBOLS = {
     "SurfaceFieldEncoder": "src/lexical_surface_atoms.rs",
@@ -54,7 +80,7 @@ REPORT_DUPLICATE_SYMBOLS = {
 
 
 def relevant_files() -> list[Path]:
-    files = list(RECEIPT_INPUTS)
+    files = [path for path in RECEIPT_INPUTS if path.is_file()]
     for directory in (ROOT / "src", ROOT / "tests"):
         files.extend(path for path in directory.rglob("*.rs") if path.is_file())
     return sorted(set(files), key=lambda path: path.relative_to(ROOT).as_posix())
@@ -78,10 +104,10 @@ def load_json(path: Path) -> Any:
         raise RuntimeError(f"cannot read {path.relative_to(ROOT)}: {error}") from error
 
 
-def git_head() -> str:
-    return subprocess.check_output(
-        ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
-    ).strip()
+def file_fingerprint(path: Path) -> str:
+    digest = hashlib.sha256()
+    digest.update(path.read_bytes())
+    return digest.hexdigest()
 
 
 def graph_freshness_violations(manifest: dict[str, Any]) -> list[str]:
@@ -415,7 +441,8 @@ def build_receipt() -> dict[str, Any]:
     learning_evidence: list[str] = []
     learning_violations: list[str] = []
     for label, owner in (
-        ("L4StateEstimator", "src/typing_transition/l4_state_estimator.rs"),
+        ("UsagePriorSnapshot", "src/nanda_wave/usage_prior.rs"),
+        ("TypingMemoryEvent", "src/typing_memory.rs"),
         ("L4SignedMemorySignal", "src/nanda_wave/l4_signed_memory.rs"),
     ):
         item_evidence, item_violations = graph.node(label, owner)
@@ -443,7 +470,6 @@ def build_receipt() -> dict[str, Any]:
             [
                 f"graph_nodes:{len(graph.nodes)}",
                 f"graph_links:{len(graph.links)}",
-                f"graph_built_at_commit:{graph_payload.get('built_at_commit', '')}",
             ],
             graph_violations,
         )
@@ -454,8 +480,7 @@ def build_receipt() -> dict[str, Any]:
         "schema": SCHEMA,
         "verdict": verdict,
         "source_fingerprint": source_fingerprint(),
-        "git_head": git_head(),
-        "graph_built_at_commit": graph_payload.get("built_at_commit", ""),
+        "graph_fingerprint": file_fingerprint(GRAPH_PATH),
         "graph_nodes": len(graph.nodes),
         "graph_links": len(graph.links),
         "checks": checks,
@@ -467,12 +492,42 @@ def canonical_json(payload: dict[str, Any]) -> str:
     return json.dumps(payload, ensure_ascii=True, indent=2, sort_keys=True) + "\n"
 
 
+def freshness_comparable_receipt(payload: dict[str, Any]) -> dict[str, Any]:
+    return {
+        key: value
+        for key, value in payload.items()
+        if key not in FRESHNESS_IGNORED_RECEIPT_FIELDS
+    }
+
+
+def receipt_staleness_violations(
+    existing: dict[str, Any], expected: dict[str, Any]
+) -> list[str]:
+    violations: list[str] = []
+    if existing.get("source_fingerprint") != expected.get("source_fingerprint"):
+        violations.append(
+            "source_fingerprint:"
+            f"{existing.get('source_fingerprint', '<missing>')}!="
+            f"{expected.get('source_fingerprint', '<missing>')}"
+        )
+    if canonical_json(freshness_comparable_receipt(existing)) != canonical_json(
+        freshness_comparable_receipt(expected)
+    ):
+        violations.append("receipt_payload_mismatch")
+    return violations
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--write-receipt", action="store_true")
     parser.add_argument("--check-receipt", action="store_true")
+    parser.add_argument("--source-fingerprint", action="store_true")
     parser.add_argument("--format", choices=("text", "json"), default="text")
     args = parser.parse_args()
+
+    if args.source_fingerprint:
+        print(source_fingerprint())
+        return 0
 
     try:
         receipt = build_receipt()
@@ -487,16 +542,20 @@ def main() -> int:
 
     if args.check_receipt:
         try:
-            existing = RECEIPT_PATH.read_text(encoding="utf-8")
-        except OSError as error:
+            existing = load_json(RECEIPT_PATH)
+        except (OSError, RuntimeError) as error:
             print(f"architecture receipt missing: {error}", file=sys.stderr)
             return 2
-        if existing != rendered:
+        stale_violations = receipt_staleness_violations(existing, receipt)
+        if stale_violations:
             print(
-                "architecture receipt is stale; run graphify update . and "
+                "architecture receipt is stale; refresh the graph when graph "
+                "proof inputs changed, then run "
                 "scripts/architecture_graph_gate.py --write-receipt",
                 file=sys.stderr,
             )
+            for violation in stale_violations:
+                print(f"  {violation}", file=sys.stderr)
             return 1
 
     if args.format == "json":

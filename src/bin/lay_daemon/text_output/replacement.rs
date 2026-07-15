@@ -9,6 +9,8 @@ use super::key_emit::{
     emit_key_taps_fast, replay_text_insert_keycodes,
     replay_text_insert_keycodes_fast_after_modifier_cleanup,
 };
+use super::layout_preflight::LayoutCapabilityPreflight;
+use super::observable_state::DaemonMutationPreflight;
 
 #[path = "replacement/error.rs"]
 mod error;
@@ -20,7 +22,6 @@ const TEXT_REPLACE_KEY_PACE_MS: u64 = 1;
 struct PreparedTextInsert {
     runs: Vec<TextInputRun>,
     insert_layout_is_ru: bool,
-    preflight_final_layout_is_ru: Option<bool>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -32,27 +33,18 @@ pub(crate) struct TextInsertOutcome {
 fn prepare_text_insert_for_replacement_plan(
     plan: &TextReplacement,
     fallback_layout_is_ru: bool,
-    known_current_layout_is_ru: Option<bool>,
 ) -> Result<PreparedTextInsert, String> {
     let insert_layout_is_ru = preferred_layout_for_text(&plan.insert, fallback_layout_is_ru);
     let runs = text_to_uinput_runs(&plan.insert, insert_layout_is_ru)
         .ok_or_else(|| "text insert requires unsafe TypeText fallback".to_string())?;
-    let mut preflight_final_layout_is_ru = None;
-    let mut current_layout_is_ru = known_current_layout_is_ru;
     for run in &runs {
-        if current_layout_is_ru == Some(run.target_is_ru) {
-            preflight_final_layout_is_ru = current_layout_is_ru;
-            continue;
+        if run.events.is_empty() {
+            return Err("text insert run has no events".to_string());
         }
-        switch_to_target_layout(run.target_is_ru)
-            .map_err(|e| format!("layout preflight failed before destructive edit: {e}"))?;
-        current_layout_is_ru = Some(run.target_is_ru);
-        preflight_final_layout_is_ru = Some(run.target_is_ru);
     }
     Ok(PreparedTextInsert {
         runs,
         insert_layout_is_ru,
-        preflight_final_layout_is_ru,
     })
 }
 
@@ -60,7 +52,7 @@ fn apply_text_replacement(
     dev: &mut VirtualDevice,
     plan: &TextReplacement,
     fast_output: bool,
-) -> std::io::Result<()> {
+) -> Result<(), TextReplacementPipelineError> {
     emit_key_taps(
         dev,
         KeyCode::KEY_LEFT,
@@ -70,11 +62,14 @@ fn apply_text_replacement(
         } else {
             TEXT_REPLACE_KEY_PACE_MS
         },
-    )?;
+    )
+    .map_err(TextReplacementPipelineError::Delete)?;
     if fast_output {
-        emit_backspaces_for_text_replace_fast(dev, plan.backspaces)?;
+        emit_backspaces_for_text_replace_fast(dev, plan.backspaces)
+            .map_err(TextReplacementPipelineError::Delete)?;
     } else {
-        emit_backspaces_for_text_replace(dev, plan.backspaces)?;
+        emit_backspaces_for_text_replace(dev, plan.backspaces)
+            .map_err(TextReplacementPipelineError::Delete)?;
     }
     Ok(())
 }
@@ -86,6 +81,7 @@ pub(crate) fn apply_text_replacement_pipeline(
     known_current_layout_is_ru: Option<bool>,
     label: &str,
     fast_output: bool,
+    mut mutation_preflight: DaemonMutationPreflight<'_, '_>,
 ) -> Result<TextInsertOutcome, TextReplacementPipelineError> {
     if authorized.backend() != TextEditBackend::Daemon {
         return Err(TextReplacementPipelineError::Preflight(format!(
@@ -102,15 +98,24 @@ pub(crate) fn apply_text_replacement_pipeline(
     let replacement = action.to_text();
     let pipeline_started = Instant::now();
     let prepare_started = Instant::now();
-    let prepared_insert = prepare_text_insert_for_replacement_plan(
-        plan,
-        fallback_layout_is_ru,
+    let prepared_insert = prepare_text_insert_for_replacement_plan(plan, fallback_layout_is_ru)
+        .map_err(TextReplacementPipelineError::Preflight)?;
+    let prepare_ms = prepare_started.elapsed().as_millis();
+    mutation_preflight
+        .validate_current()
+        .map_err(TextReplacementPipelineError::Preflight)?;
+    let layout_preflight = LayoutCapabilityPreflight::run(
         known_current_layout_is_ru,
+        prepared_insert.runs.iter().map(|run| run.target_is_ru),
+        label,
     )
     .map_err(TextReplacementPipelineError::Preflight)?;
-    let prepare_ms = prepare_started.elapsed().as_millis();
+    if let Err(error) = mutation_preflight.consume() {
+        layout_preflight.restore_initial_best_effort(label);
+        return Err(TextReplacementPipelineError::Preflight(error));
+    }
     let delete_started = Instant::now();
-    apply_text_replacement(dev, plan, fast_output).map_err(TextReplacementPipelineError::Delete)?;
+    apply_text_replacement(dev, plan, fast_output)?;
     let delete_ms = delete_started.elapsed().as_millis();
     let insert_started = Instant::now();
     let outcome = insert_prepared_text_for_replacement_plan(
@@ -118,6 +123,7 @@ pub(crate) fn apply_text_replacement_pipeline(
         plan,
         replacement,
         &prepared_insert,
+        layout_preflight.current_layout_is_ru(),
         label,
         fast_output,
     )
@@ -150,10 +156,10 @@ fn insert_prepared_text_for_replacement_plan(
     plan: &TextReplacement,
     replacement: &str,
     prepared: &PreparedTextInsert,
+    mut current_layout: Option<bool>,
     label: &str,
     fast_output: bool,
 ) -> Result<TextInsertOutcome, String> {
-    let mut current_layout = prepared.preflight_final_layout_is_ru;
     for run in &prepared.runs {
         if current_layout != Some(run.target_is_ru) {
             switch_to_target_layout(run.target_is_ru)?;

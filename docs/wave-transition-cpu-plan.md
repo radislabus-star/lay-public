@@ -334,7 +334,7 @@ Release checkpoint: `0.2.207`.
 | 9. Cutover | PASS | all 11 proven operator profiles are enabled through fail-closed phase admission |
 | 10. IME/daemon | PASS | both consume shared decisions; IME remains display/execution backend only |
 | 11. Proof suite | PASS | full phase 72/72, near-negative repel 170/170, false accepts 0; no-phase and magnitude-only support 0 |
-| 12. Metrics | PASS | phase package, promotion, L4 state, decisions and latency are exposed in CLI/tray diagnostics |
+| 12. Metrics | PASS | phase package, promotion, L4 signed transition state, decisions and latency are exposed in CLI/tray diagnostics |
 
 ### Causal Proof
 

@@ -62,6 +62,11 @@ pub(crate) fn try_manual_text_replacement(
         ));
         return OutputFlow::ContinueReplay;
     };
+    let preflight = ctx.text_observation.explicit_manual_preflight(
+        ctx.buf,
+        ctx.mapped_orig.to_string(),
+        ctx.input_isolated,
+    );
     let insert_outcome = match apply_text_replacement_pipeline(
         kbd,
         authorized_edit,
@@ -69,6 +74,7 @@ pub(crate) fn try_manual_text_replacement(
         None,
         kind,
         ctx.input_isolated,
+        preflight,
     ) {
         Ok(outcome) => outcome,
         Err(e) => {

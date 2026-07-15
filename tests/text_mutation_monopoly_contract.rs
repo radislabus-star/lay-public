@@ -53,7 +53,9 @@ fn hidden_typing_state_is_apply_admission_authority() {
     assert!(
         transition_mod.contains("state::LatentTypingState")
             && transition_mod.contains("state_before: LatentTypingState")
-            && transition_mod.contains("state_after_predicted: LatentTypingState"),
+            && transition_mod.contains("state_after_predicted: LatentTypingState")
+            && transition_mod.contains("l4_signed_signal: L4SignedTransitionSignal")
+            && !transition_mod.contains("l4_state_estimate"),
         "TypingTransition must carry latent state before/after the candidate action"
     );
     assert!(
@@ -69,8 +71,10 @@ fn hidden_typing_state_is_apply_admission_authority() {
             && transition_admission.contains("fn candidate_has_apply_authority")
             && transition_admission.contains("admit_evaluated_hidden_transition(")
             && transition_admission.contains("latent_known_word_drift_needs_state_proof")
-            && transition_admission.contains("latent_context_import"),
-        "TransitionDecisionCore must gate apply through hidden-state admission"
+            && transition_admission.contains("latent_context_import")
+            && transition_admission.contains("latent_l4_negative_transition_memory")
+            && !transition_admission.contains("latent_l4_state_desync_risk"),
+        "TransitionDecisionCore must gate apply through latent invariants and signed L4 memory"
     );
 }
 
@@ -188,11 +192,23 @@ fn candidate_before_apply_logs_use_typed_mutation_routes() {
 #[test]
 fn manual_replay_paths_are_edit_action_gated() {
     let replay = read("src/bin/lay_daemon/correction_runtime/output/replay.rs");
+    let replay_action = read("src/bin/lay_daemon/correction_runtime/output/replay/action.rs");
     assert!(
-        replay.contains("plan_manual_edit(")
-            && replay.contains("MutationLogRoute::MANUAL_TEXT_REPLACE")
-            && replay.contains("authorize_backend_edit("),
+        replay_action.contains("plan_manual_edit(")
+            && replay_action.contains("MutationLogRoute::MANUAL_TEXT_REPLACE")
+            && replay_action.contains("authorize_backend_edit(")
+            && replay_action.contains("Option<AuthorizedEdit>"),
         "manual replay output must pass through EditAction and ExecutorContract before backspace/replay"
+    );
+    let authorization = replay
+        .find("manual_replay_action(ctx, input_gate)?")
+        .expect("manual replay must obtain AuthorizedEdit");
+    let first_backspace = replay
+        .find("let backspace_result =")
+        .expect("manual replay must emit backspaces");
+    assert!(
+        authorization < first_backspace,
+        "manual replay must obtain AuthorizedEdit before its first physical mutation"
     );
 
     let native = read("src/bin/lay_daemon/correction_runtime/output/native.rs");
@@ -201,7 +217,7 @@ fn manual_replay_paths_are_edit_action_gated() {
         "native replay must not bypass EditAction with a direct true"
     );
     assert!(
-        replay.contains("plan_manual_edit(")
+        replay_action.contains("plan_manual_edit(")
             && native.contains("MutationLogRoute::MANUAL_NATIVE_REPLACE")
             && native.contains("plan_native_edit("),
         "manual replay output must log through typed manual routes and carry replay transition proof"
@@ -230,7 +246,7 @@ fn live_text_mutation_outputs_use_executor_contract() {
             "TextEditBackend::Daemon",
         ),
         (
-            "src/bin/lay_daemon/correction_runtime/output/replay.rs",
+            "src/bin/lay_daemon/correction_runtime/output/replay/action.rs",
             "TextEditBackend::Daemon",
         ),
         (
@@ -304,6 +320,82 @@ fn live_text_mutation_outputs_use_executor_contract() {
         !executor.contains("#[derive(Debug, Clone, PartialEq, Eq)]\npub struct AuthorizedEdit")
             && executor.contains("pub fn into_authorized(self)"),
         "AuthorizedEdit must be a move-only one-shot mutation capability"
+    );
+
+    let replay = read("src/bin/lay_daemon/correction_runtime/output/replay.rs");
+    let replay_preflight = read("src/bin/lay_daemon/correction_runtime/output/replay/preflight.rs");
+    let layout_preflight = read("src/bin/lay_daemon/text_output/layout_preflight.rs");
+    assert!(
+        daemon_pipeline.contains("prepared_insert.runs.iter().map(|run| run.target_is_ru)")
+            && layout_preflight.contains("for target_is_ru in target_layouts")
+            && layout_preflight.contains("switch_to_target_layout(target_is_ru)"),
+        "daemon replacement must capability-preflight every required insert layout run"
+    );
+    assert_before(
+        &replay_preflight,
+        ".validate_current()",
+        "LayoutCapabilityPreflight::run(",
+        "manual replay must validate current state before layout capability preflight",
+    );
+    assert_before(
+        &replay_preflight,
+        "LayoutCapabilityPreflight::run(",
+        "mutation_preflight.consume()",
+        "manual replay must consume and revalidate after layout capability preflight",
+    );
+    assert_before(
+        &replay,
+        "preflight_manual_replay(ctx)",
+        "let backspace_started",
+        "manual replay must finish layout and mutation preflight before Backspace",
+    );
+    assert_before(
+        &daemon_pipeline,
+        ".validate_current()",
+        "LayoutCapabilityPreflight::run(",
+        "daemon replacement must validate current state before layout capability preflight",
+    );
+    assert_before(
+        &daemon_pipeline,
+        "LayoutCapabilityPreflight::run(",
+        "mutation_preflight.consume()",
+        "daemon replacement must consume and revalidate after layout capability preflight",
+    );
+    assert_before(
+        &daemon_pipeline,
+        "mutation_preflight.consume()",
+        "apply_text_replacement(dev, plan, fast_output)",
+        "daemon replacement must consume the observed lease before cursor/delete side effects",
+    );
+    assert_eq!(
+        daemon_pipeline
+            .matches("mutation_preflight.consume()")
+            .count(),
+        1,
+        "daemon replacement must consume its mutation lease exactly once"
+    );
+    assert_eq!(
+        replay_preflight
+            .matches("mutation_preflight.consume()")
+            .count(),
+        1,
+        "manual replay must consume its mutation lease exactly once"
+    );
+    assert!(
+        daemon_pipeline.contains("layout_preflight.restore_initial_best_effort(label)")
+            && replay_preflight
+                .contains("layout_preflight.restore_initial_best_effort(\"manual replay\")"),
+        "failed final validation must restore the known initial layout before returning"
+    );
+    let prepare_start = daemon_pipeline
+        .find("fn prepare_text_insert_for_replacement_plan")
+        .expect("replacement prepare function exists");
+    let delete_start = daemon_pipeline
+        .find("fn apply_text_replacement")
+        .expect("replacement apply function exists");
+    assert!(
+        !daemon_pipeline[prepare_start..delete_start].contains("switch_to_target_layout("),
+        "replacement prepare phase must be side-effect free before lease consume"
     );
 
     let composition = read("src/bin/lay_ibus_engine/composition_commit.rs");
@@ -403,6 +495,51 @@ fn dispatched_text_edit_cannot_fall_through_to_a_second_backend() {
 }
 
 #[test]
+fn typed_authority_mints_have_only_named_runtime_callers() {
+    let allowed = [
+        (
+            "plan_manual_edit(",
+            &[
+                "src/bin/lay_daemon/correction_runtime/output/replay/action.rs",
+                "src/bin/lay_daemon/correction_runtime/output/text_replace.rs",
+            ][..],
+        ),
+        (
+            "plan_native_edit(",
+            &["src/bin/lay_daemon/correction_runtime/output/native.rs"][..],
+        ),
+        (
+            "plan_recorded_undo_edit(",
+            &["src/bin/lay_daemon/auto_undo_runtime.rs"][..],
+        ),
+        (
+            "plan_ime_completion_edit(",
+            &[
+                "src/bin/lay_ibus_engine/committed_tail.rs",
+                "src/bin/lay_ibus_engine/composition_commit.rs",
+            ][..],
+        ),
+    ];
+
+    for path in source_files("src/bin") {
+        let relative = path
+            .strip_prefix(ROOT)
+            .expect("runtime source is under repository root")
+            .to_string_lossy()
+            .replace('\\', "/");
+        let source = std::fs::read_to_string(&path).expect("runtime source");
+        for (mint, allowed_paths) in allowed {
+            if source.contains(mint) {
+                assert!(
+                    allowed_paths.contains(&relative.as_str()),
+                    "{relative} must not mint transition authority through {mint}"
+                );
+            }
+        }
+    }
+}
+
+#[test]
 fn changed_check_runs_shadow_replay_release_gate() {
     let script = read("scripts/check-lay-changed.sh");
     assert!(
@@ -413,6 +550,12 @@ fn changed_check_runs_shadow_replay_release_gate() {
 
 fn read(relative: &str) -> String {
     std::fs::read_to_string(Path::new(ROOT).join(relative)).expect("source file")
+}
+
+fn assert_before(source: &str, earlier: &str, later: &str, message: &str) {
+    let earlier_idx = source.find(earlier).expect("earlier source marker exists");
+    let later_idx = source.find(later).expect("later source marker exists");
+    assert!(earlier_idx < later_idx, "{message}");
 }
 
 fn without_whitespace(source: &str) -> String {

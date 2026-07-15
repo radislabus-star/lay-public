@@ -7,7 +7,8 @@ use super::action_log_runtime::RecentActionRecord;
 use super::{
     append_user_correction_learning_log, apply_text_replacement_pipeline, log,
     record_recent_action, release_possible_modifiers, should_try_ime_text_backend,
-    switch_or_restore_layout_after_text_edit, try_ime_replace_tail, ExecutingGuard,
+    switch_or_restore_layout_after_text_edit, try_ime_replace_tail, DaemonTextObservation,
+    ExecutingGuard,
 };
 
 pub(super) fn handle_pending_auto_undo(
@@ -16,6 +17,8 @@ pub(super) fn handle_pending_auto_undo(
     virtual_kbd: Option<&mut VirtualDevice>,
     executing: &mut bool,
     started_at: Instant,
+    input_isolated: bool,
+    text_observation: DaemonTextObservation<'_>,
 ) -> Option<bool> {
     let plan = undo.replacement_plan();
     if !replacement_plan_matches(&undo.replacement, &undo.original, &plan) {
@@ -95,6 +98,8 @@ pub(super) fn handle_pending_auto_undo(
         log(&format!("⚠ auto-undo modifier cleanup failed: {e}"));
     }
 
+    let preflight =
+        text_observation.explicit_manual_preflight(buf, undo.replacement.clone(), input_isolated);
     let insert_outcome = match apply_text_replacement_pipeline(
         kbd,
         daemon_authorized,
@@ -102,6 +107,7 @@ pub(super) fn handle_pending_auto_undo(
         None,
         "auto-undo",
         false,
+        preflight,
     ) {
         Ok(outcome) => outcome,
         Err(e) => {

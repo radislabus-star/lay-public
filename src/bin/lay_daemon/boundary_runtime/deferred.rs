@@ -3,7 +3,7 @@ use std::time::Instant;
 use super::super::{
     active_typing_assist, apply_prepared_typing_assist_after_space, lock_virtual_keyboard, log,
     pending_typing_assist::PendingTypingAssist, should_run_deferred_typing_assist_after_space,
-    typing_assist_worker::WorkerPoll, TypingAssistOutcome,
+    typing_assist_worker::WorkerPoll, DaemonTextObservation, TypingAssistOutcome,
 };
 
 #[path = "deferred/context.rs"]
@@ -38,10 +38,11 @@ pub(crate) fn try_handle_deferred_typing_assist(ctx: DeferredTypingAssistContext
     let Some(pending) = ctx.pending_typing_assist_after_space.take() else {
         return false;
     };
-    let Some((correction, cursor_offset)) = pending.into_parts() else {
+    let Some((correction, cursor_offset, expected_text_context)) = pending.into_parts() else {
         return false;
     };
     let retry_correction = correction.clone();
+    let retry_text_context = expected_text_context.clone();
     let mut g = lock_virtual_keyboard(ctx.virtual_kbd);
     let outcome = apply_prepared_typing_assist_after_space(
         ctx.buffer,
@@ -50,6 +51,7 @@ pub(crate) fn try_handle_deferred_typing_assist(ctx: DeferredTypingAssistContext
         ctx.executing,
         cursor_offset,
         correction,
+        DaemonTextObservation::new(expected_text_context, ctx.text_observer),
     );
     match outcome {
         TypingAssistOutcome::Applied { layout_is_ru } => {
@@ -60,6 +62,7 @@ pub(crate) fn try_handle_deferred_typing_assist(ctx: DeferredTypingAssistContext
             *ctx.pending_typing_assist_after_space = Some(PendingTypingAssist::with_cursor_offset(
                 retry_correction,
                 cursor_offset,
+                retry_text_context,
             ));
             log("· typing-assist deferred again: prepared edit still complex");
         }

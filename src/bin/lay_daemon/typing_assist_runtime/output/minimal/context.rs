@@ -4,6 +4,7 @@ use lay::keyboard::KeyEvent;
 use lay::word_buffer::WordBuffer;
 
 use super::super::super::super::physical_input_grab::PhysicalInputGrab;
+use super::super::super::super::DaemonTextObservation;
 use super::super::memory::TypingAssistTiming;
 
 pub(crate) struct MinimalTypingReplacementContext<'a, 'grab> {
@@ -20,4 +21,5 @@ pub(crate) struct MinimalTypingReplacementContext<'a, 'grab> {
     pub(crate) kbd: &'a mut VirtualDevice,
     pub(crate) original_layout: Option<bool>,
     pub(crate) prefer_full_token_plan: bool,
+    pub(crate) text_observation: DaemonTextObservation<'a>,
 }

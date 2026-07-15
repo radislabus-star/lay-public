@@ -5,7 +5,7 @@ use std::time::Instant;
 
 use super::super::super::{
     pending_typing_assist::PendingTypingAssist, typing_assist_worker::TypingAssistWorker,
-    ShiftState,
+    DaemonTextContextObserver, ShiftState,
 };
 
 pub(crate) struct DeferredTypingAssistContext<'a> {
@@ -18,4 +18,5 @@ pub(crate) struct DeferredTypingAssistContext<'a> {
     pub(crate) pending_typing_assist_after_space: &'a mut Option<PendingTypingAssist>,
     pub(crate) typing_assist_worker: &'a TypingAssistWorker,
     pub(crate) shift_state: &'a ShiftState,
+    pub(crate) text_observer: DaemonTextContextObserver<'a>,
 }

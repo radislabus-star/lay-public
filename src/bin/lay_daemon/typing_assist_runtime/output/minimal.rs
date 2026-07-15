@@ -26,6 +26,7 @@ pub(crate) fn apply_minimal_typing_replacement(
         kbd,
         original_layout,
         prefer_full_token_plan,
+        text_observation,
     } = ctx;
     let plan = if tail_replace_policy::full_tail_replace_required(original) {
         Some(lay::text_edit::TextReplacement {
@@ -71,6 +72,8 @@ pub(crate) fn apply_minimal_typing_replacement(
         plan.move_left, plan.backspaces, plan.insert, plan.move_right
     ));
     let fast_output = physical_grab.is_active();
+    let preflight =
+        text_observation.automatic_destructive_preflight(buf, original.to_string(), fast_output);
     let insert_outcome = match apply_text_replacement_pipeline(
         kbd,
         authorized_edit,
@@ -78,6 +81,7 @@ pub(crate) fn apply_minimal_typing_replacement(
         original_layout,
         "typing-assist",
         fast_output,
+        preflight,
     ) {
         Ok(outcome) => outcome,
         Err(e) => {

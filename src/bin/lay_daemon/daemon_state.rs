@@ -6,8 +6,8 @@ use std::time::{Duration, Instant};
 use super::pending_typing_assist::PendingTypingAssist;
 use super::typing_assist_worker::TypingAssistWorker;
 use super::{
-    read_current_layout_is_ru, DShiftState, ForceLayoutHotkeys, MultiTapPending, ShiftState,
-    FOCUS_IGNORE_POLL_INTERVAL_MS,
+    read_current_layout_is_ru, DShiftState, DaemonTextContext, ForceLayoutHotkeys, MultiTapPending,
+    ShiftState, FOCUS_IGNORE_POLL_INTERVAL_MS,
 };
 
 pub(super) struct DaemonLoopState {
@@ -160,6 +160,13 @@ impl DaemonLoopState {
             Some(window) => format!("{window}:field:{}", self.field_context_epoch),
             None => format!("field:{}", self.field_context_epoch),
         })
+    }
+
+    pub(super) fn daemon_text_context(&self) -> DaemonTextContext {
+        DaemonTextContext::new(
+            self.focused_window_identity.clone(),
+            self.field_context_epoch,
+        )
     }
 
     fn should_save_current_text_context(&self) -> bool {

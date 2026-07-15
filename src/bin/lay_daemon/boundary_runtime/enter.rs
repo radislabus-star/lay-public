@@ -6,7 +6,7 @@ use std::time::Instant;
 use super::super::pending_typing_assist::PendingTypingAssist;
 use super::super::{
     active_enter_autocorrect, grab_physical_device_for_correction, handle_enter_autocorrect,
-    lock_virtual_keyboard, log,
+    lock_virtual_keyboard, log, DaemonTextObservation,
 };
 
 const ENTER_AUTOCORRECT_WORDS: usize = 1;
@@ -22,6 +22,7 @@ pub(crate) struct EnterAutocorrectContext<'a> {
     pub(crate) ignore_current_token_until_space: &'a mut bool,
     pub(crate) events_since_word_start: &'a mut u32,
     pub(crate) clear_on_next_typing: &'a mut bool,
+    pub(crate) text_observation: DaemonTextObservation<'a>,
 }
 
 pub(crate) fn try_handle_enter_autocorrect(
@@ -37,13 +38,16 @@ pub(crate) fn try_handle_enter_autocorrect(
         return false;
     }
 
-    let _physical_grab = grab_physical_device_for_correction(ctx.device);
+    let physical_grab = grab_physical_device_for_correction(ctx.device);
+    let input_isolated = physical_grab.active;
     let mut g = lock_virtual_keyboard(ctx.virtual_kbd);
     let correction_result = handle_enter_autocorrect(
         ctx.buffer,
         ENTER_AUTOCORRECT_WORDS,
         g.as_mut(),
         ctx.executing,
+        ctx.text_observation,
+        input_isolated,
     );
     if let Some(is_ru) = correction_result {
         *ctx.current_layout_is_ru = is_ru;

@@ -1,15 +1,20 @@
 use evdev::uinput::VirtualDevice;
 use lay::action_log::RecentActionGateTrace;
-use lay::text_edit::{AuthorizedEdit, TextReplacement};
 use std::time::Instant;
+
+#[path = "replay/action.rs"]
+mod action;
+#[path = "replay/preflight.rs"]
+mod preflight;
 
 use super::super::super::{
     emit_backspaces, emit_backspaces_fast, log, replay_keycodes,
-    replay_keycodes_fast_after_modifier_cleanup, suppress_next_ime_autocorrect,
-    switch_to_target_layout, target_layout,
+    replay_keycodes_fast_after_modifier_cleanup, suppress_next_ime_autocorrect, target_layout,
 };
 use super::super::memory::{remember_layout_replay_success, LayoutReplayMemory};
 use super::context::ManualOutputCommon;
+use action::manual_replay_action;
+use preflight::preflight_manual_replay;
 
 pub(crate) fn apply_layout_replay(
     ctx: &mut ManualOutputCommon<'_>,
@@ -27,17 +32,15 @@ pub(crate) fn apply_layout_replay(
         return None;
     }
     let layout_started = Instant::now();
-    let layout_id = match switch_to_target_layout(ctx.target_is_ru) {
-        Ok(layout_id) => layout_id,
-        Err(e) => {
-            log(&format!(
-                "⚠ Этап 1 layout switch failed before destructive replay: {e}"
-            ));
-            log("  replay aborted: исходное слово оставлено на месте");
-            return None;
-        }
-    };
+    if let Err(error) = preflight_manual_replay(ctx) {
+        log(&format!(
+            "⚠ manual replay blocked before Backspace: {error}"
+        ));
+        log("  replay aborted: исходное слово оставлено на месте");
+        return None;
+    }
     let layout_ms = layout_started.elapsed().as_millis();
+    let (layout_id, ibus_engine) = target_layout(ctx.target_is_ru);
 
     let backspace_started = Instant::now();
     let backspace_result = if ctx.input_isolated {
@@ -52,8 +55,6 @@ pub(crate) fn apply_layout_replay(
     let backspace_ms = backspace_started.elapsed().as_millis();
     log(&format!("  1. layout → {layout_id}"));
     log(&format!("  2. uinput Backspace × {}", ctx.n_backspaces));
-    let (_, ibus_engine) = target_layout(ctx.target_is_ru);
-
     let replay_started = Instant::now();
     let replay_result = if ctx.input_isolated {
         replay_keycodes_fast_after_modifier_cleanup(kbd, ctx.events)
@@ -94,46 +95,4 @@ pub(crate) fn apply_layout_replay(
         ctx.started_at.elapsed().as_millis()
     ));
     Some(ctx.target_is_ru)
-}
-
-fn manual_replay_action(
-    ctx: &ManualOutputCommon<'_>,
-    input_gate: Option<RecentActionGateTrace>,
-) -> Option<AuthorizedEdit> {
-    let plan = TextReplacement {
-        move_left: 0,
-        backspaces: ctx.n_backspaces,
-        insert: ctx.mapped_target.to_string(),
-        move_right: 0,
-    };
-    let edit_action = lay::text_edit::plan_manual_edit(
-        "manual-replay",
-        1000,
-        ctx.mapped_orig,
-        ctx.mapped_target,
-        plan,
-        ctx.words_orig,
-    );
-    lay::action_log::record_candidate_edit_action_before_apply(
-        &edit_action,
-        lay::action_log::MutationLogRoute::MANUAL_TEXT_REPLACE,
-        input_gate,
-    );
-    let backend_action = lay::text_edit::authorize_backend_edit(
-        lay::text_edit::TextEditBackend::Daemon,
-        edit_action,
-    );
-    let backend = backend_action.backend;
-    let reason = backend_action.reason;
-    if let Some(authorized_edit) = backend_action.into_authorized() {
-        return Some(authorized_edit);
-    }
-    log(&format!(
-        "⚠ manual replay blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
-        reason,
-        backend.as_str(),
-        ctx.mapped_orig,
-        ctx.mapped_target
-    ));
-    None
 }

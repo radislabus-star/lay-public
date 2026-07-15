@@ -1,8 +1,197 @@
 use super::action::EditAction;
-use super::mutation::{TransitionOperator, TransitionProof};
+use super::mutation::{TransitionAudit, TransitionOperator, TransitionProof};
 use super::types::TextReplacement;
 use super::visible_tail::{VisibleTailSnapshot, VisibleTailSource};
-use crate::typing_transition::decision::TransitionDecisionCore;
+use crate::text_metrics::{transition_changed_token_count, transition_left_context_changed};
+use crate::typing_transition::decision::{DecisionTransitionReceipt, TransitionDecisionCore};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum TransitionAuthorityKind {
+    AutomaticDecision,
+    ExplicitUserIntent,
+    RecordedUndo,
+    CompletionAcceptance,
+    NativeIntent,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) struct TransitionAuthority {
+    kind: TransitionAuthorityKind,
+    transition: TransitionAudit,
+}
+
+impl TransitionAuthority {
+    pub(super) fn automatic_decision(
+        receipt: &DecisionTransitionReceipt,
+        from_text: &str,
+        to_text: &str,
+    ) -> Option<Self> {
+        let transition = receipt.projected_transition(from_text, to_text)?;
+        Self::from_verified_transition(TransitionAuthorityKind::AutomaticDecision, transition)
+    }
+
+    pub(super) fn explicit_user_intent(from_text: &str, to_text: &str) -> Self {
+        Self::verified(
+            TransitionAuthorityKind::ExplicitUserIntent,
+            TransitionOperator::ManualReplace,
+            TransitionProof::ManualIntent,
+            from_text,
+            to_text,
+        )
+    }
+
+    pub(super) fn recorded_undo(from_text: &str, to_text: &str) -> Self {
+        Self::verified(
+            TransitionAuthorityKind::RecordedUndo,
+            TransitionOperator::Undo,
+            TransitionProof::UndoRecord,
+            from_text,
+            to_text,
+        )
+    }
+
+    pub(super) fn completion_acceptance(from_text: &str, to_text: &str) -> Option<Self> {
+        if !completion_projection_is_valid(from_text, to_text) {
+            return None;
+        }
+        Some(Self::from_transition(
+            TransitionAuthorityKind::CompletionAcceptance,
+            TransitionAudit::proven(
+                TransitionOperator::Completion,
+                TransitionProof::Completion,
+                true,
+                false,
+                1,
+            ),
+        ))
+    }
+
+    pub(super) fn native_intent(from_text: &str, to_text: &str) -> Self {
+        Self::verified(
+            TransitionAuthorityKind::NativeIntent,
+            TransitionOperator::NativeReplace,
+            TransitionProof::NativeIntent,
+            from_text,
+            to_text,
+        )
+    }
+
+    pub(super) const fn transition(&self) -> &TransitionAudit {
+        &self.transition
+    }
+
+    pub(super) fn matches_transition(&self, transition: &TransitionAudit) -> bool {
+        if &self.transition != transition {
+            return false;
+        }
+        let Some(operator) = transition.operator() else {
+            return false;
+        };
+        let Some(proof) = transition.proof() else {
+            return false;
+        };
+        transition.is_verified() && self.kind.accepts(operator, proof)
+    }
+
+    fn verified(
+        kind: TransitionAuthorityKind,
+        operator: TransitionOperator,
+        proof: TransitionProof,
+        from_text: &str,
+        to_text: &str,
+    ) -> Self {
+        Self::from_transition(
+            kind,
+            TransitionAudit::proven(
+                operator,
+                proof,
+                true,
+                transition_left_context_changed(from_text, to_text),
+                transition_changed_token_count(from_text, to_text),
+            ),
+        )
+    }
+
+    fn from_verified_transition(
+        kind: TransitionAuthorityKind,
+        transition: TransitionAudit,
+    ) -> Option<Self> {
+        let operator = transition.operator()?;
+        let proof = transition.proof()?;
+        if !transition.is_verified() || !kind.accepts(operator, proof) {
+            return None;
+        }
+        Some(Self::from_transition(kind, transition))
+    }
+
+    fn from_transition(kind: TransitionAuthorityKind, transition: TransitionAudit) -> Self {
+        Self { kind, transition }
+    }
+}
+
+impl TransitionAuthorityKind {
+    fn accepts(self, operator: TransitionOperator, proof: TransitionProof) -> bool {
+        match self {
+            Self::AutomaticDecision => automatic_decision_pair_is_valid(operator, proof),
+            Self::ExplicitUserIntent => {
+                operator == TransitionOperator::ManualReplace
+                    && proof == TransitionProof::ManualIntent
+            }
+            Self::RecordedUndo => {
+                operator == TransitionOperator::Undo && proof == TransitionProof::UndoRecord
+            }
+            Self::CompletionAcceptance => {
+                operator == TransitionOperator::Completion && proof == TransitionProof::Completion
+            }
+            Self::NativeIntent => {
+                operator == TransitionOperator::NativeReplace
+                    && proof == TransitionProof::NativeIntent
+            }
+        }
+    }
+}
+
+fn automatic_decision_pair_is_valid(operator: TransitionOperator, proof: TransitionProof) -> bool {
+    matches!(
+        (operator, proof),
+        (
+            TransitionOperator::ReplaceCurrentWord,
+            TransitionProof::Typo
+                | TransitionProof::Layout
+                | TransitionProof::Context
+                | TransitionProof::Grammar
+        ) | (
+            TransitionOperator::LayoutProjection,
+            TransitionProof::Layout
+        ) | (
+            TransitionOperator::BoundaryShift
+                | TransitionOperator::BoundaryMergeSplit
+                | TransitionOperator::SplitPreviousGluedAndRepairTail,
+            TransitionProof::Boundary
+        ) | (
+            TransitionOperator::PhraseTokenRepair,
+            TransitionProof::Context
+        ) | (TransitionOperator::Completion, TransitionProof::Completion)
+            | (
+                TransitionOperator::VisibleTail,
+                TransitionProof::VisibleState
+            )
+            | (
+                TransitionOperator::DecoderTail,
+                TransitionProof::DecoderPlan
+            )
+            | (
+                TransitionOperator::EnterAutocorrect,
+                TransitionProof::Context | TransitionProof::Typo | TransitionProof::Layout
+            )
+    )
+}
+
+fn completion_projection_is_valid(from_text: &str, to_text: &str) -> bool {
+    let from = from_text.trim_end_matches(char::is_whitespace);
+    let to = to_text.trim_end_matches(char::is_whitespace);
+    !from.is_empty() && to.len() > from.len() && to.starts_with(from)
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct VisibleFieldState {

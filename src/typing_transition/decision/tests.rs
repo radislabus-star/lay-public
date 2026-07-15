@@ -190,6 +190,29 @@ fn admit(
     source_role: CorrectionSourceRole,
     strong_transition_support: bool,
 ) -> super::TransitionAdmission {
+    admit_with_l4_signal(
+        event,
+        candidate,
+        candidate_count,
+        source_role,
+        strong_transition_support,
+        crate::typing_transition::L4SignedTransitionSignal {
+            negative: false,
+            state_specific: false,
+            attract_count: 0,
+            repel_count: 0,
+        },
+    )
+}
+
+fn admit_with_l4_signal(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+    candidate_count: usize,
+    source_role: CorrectionSourceRole,
+    strong_transition_support: bool,
+    l4_signed_signal: crate::typing_transition::L4SignedTransitionSignal,
+) -> super::TransitionAdmission {
     let action = crate::typing_transition::action::verify_action_operator(
         &event.original,
         &candidate.replacement,
@@ -205,12 +228,7 @@ fn admit(
             source_id: &candidate.source_id,
             candidate_count,
             action,
-            l4_signed_signal: crate::typing_transition::L4SignedTransitionSignal {
-                negative: false,
-                state_specific: false,
-                attract_count: 0,
-                repel_count: 0,
-            },
+            l4_signed_signal,
         },
     );
     admit_evaluated_hidden_transition(
@@ -273,4 +291,95 @@ fn hidden_state_blocks_context_imported_candidate_text() {
 
     assert!(!admission.allow_apply);
     assert_eq!(admission.reason, "latent_context_unverified");
+}
+
+#[test]
+fn admission_truth_table_uses_verifier_latent_invariants_and_signed_l4_memory() {
+    struct Case {
+        name: &'static str,
+        event: TypingErrorEvent,
+        candidate: UnifiedCorrectionCandidate,
+        source_role: CorrectionSourceRole,
+        strong_transition_support: bool,
+        l4_signed_signal: crate::typing_transition::L4SignedTransitionSignal,
+        expected_reason: Option<&'static str>,
+    }
+
+    let neutral_l4 = crate::typing_transition::L4SignedTransitionSignal {
+        negative: false,
+        state_specific: false,
+        attract_count: 0,
+        repel_count: 0,
+    };
+    let negative_l4 = crate::typing_transition::L4SignedTransitionSignal {
+        negative: true,
+        state_specific: true,
+        attract_count: 0,
+        repel_count: 1,
+    };
+    let cases = [
+        Case {
+            name: "verified_current_word",
+            event: event("провека "),
+            candidate: candidate("проверка ", "composite_ru_typo"),
+            source_role: CorrectionSourceRole::DeterministicTypo,
+            strong_transition_support: true,
+            l4_signed_signal: neutral_l4,
+            expected_reason: None,
+        },
+        Case {
+            name: "unverified_context_change",
+            event: event("можем "),
+            candidate: candidate("мы модем ", "composite_ru_typo"),
+            source_role: CorrectionSourceRole::DeterministicTypo,
+            strong_transition_support: true,
+            l4_signed_signal: neutral_l4,
+            expected_reason: Some("latent_context_unverified"),
+        },
+        Case {
+            name: "known_word_drift_without_state_proof",
+            event: event("мы можем "),
+            candidate: candidate("мы модем ", "composite_ru_typo"),
+            source_role: CorrectionSourceRole::DeterministicTypo,
+            strong_transition_support: false,
+            l4_signed_signal: neutral_l4,
+            expected_reason: Some("latent_known_word_drift_needs_state_proof"),
+        },
+        Case {
+            name: "learned_l4_signed_negative",
+            event: event("провека "),
+            candidate: candidate("проверка ", "composite_ru_typo"),
+            source_role: CorrectionSourceRole::DeterministicTypo,
+            strong_transition_support: true,
+            l4_signed_signal: negative_l4,
+            expected_reason: Some("latent_l4_negative_transition_memory"),
+        },
+    ];
+
+    for case in cases {
+        let admission = admit_with_l4_signal(
+            &case.event,
+            &case.candidate,
+            1,
+            case.source_role,
+            case.strong_transition_support,
+            case.l4_signed_signal,
+        );
+
+        match case.expected_reason {
+            Some(reason) => {
+                assert!(
+                    !admission.allow_apply,
+                    "{} unexpectedly admitted: {admission:?}",
+                    case.name
+                );
+                assert_eq!(admission.reason, reason, "{}", case.name);
+            }
+            None => assert!(
+                admission.allow_apply,
+                "{} unexpectedly rejected: {admission:?}",
+                case.name
+            ),
+        }
+    }
 }

@@ -8,6 +8,8 @@ mod native_stage;
 mod replay;
 #[path = "output/text_replace.rs"]
 mod text_replace;
+#[path = "output/uinput_prepare.rs"]
+mod uinput_prepare;
 
 use lay::action_log::RecentActionGateTrace;
 
@@ -16,9 +18,9 @@ use self::context::{ManualOutputCommon, OutputFlow};
 use self::native_stage::try_native_output_stage;
 use self::replay::apply_layout_replay;
 use self::text_replace::try_manual_text_replacement;
+use self::uinput_prepare::prepare_uinput_output;
 
-use super::super::suppress_next_ime_autocorrect;
-use super::super::{log, release_possible_modifiers, settle_after_physical_trigger_release};
+use super::super::{log, suppress_next_ime_autocorrect};
 
 pub(super) fn apply_manual_correction_output(
     ctx: ManualCorrectionOutputContext<'_, '_>,
@@ -39,6 +41,7 @@ pub(super) fn apply_manual_correction_output(
         virtual_kbd,
         physical_grab,
         input_isolated,
+        text_observation,
     } = ctx;
     let mut common = ManualOutputCommon {
         buf,
@@ -53,6 +56,7 @@ pub(super) fn apply_manual_correction_output(
         started_at,
         decision,
         input_isolated,
+        text_observation,
     };
 
     let mut virtual_kbd = virtual_kbd;
@@ -75,20 +79,7 @@ pub(super) fn apply_manual_correction_output(
         }
     };
     suppress_next_ime_autocorrect();
-    if common.input_isolated {
-        log("  input isolated: skip trigger settle");
-        if let Err(e) = super::super::release_possible_modifiers_fast(kbd) {
-            log(&format!(
-                "⚠ fast modifier cleanup before backspace failed: {e}"
-            ));
-        }
-    } else {
-        settle_after_physical_trigger_release();
-        if let Err(e) = release_possible_modifiers(kbd) {
-            log(&format!("⚠ modifier cleanup before backspace failed: {e}"));
-        }
-    }
-
+    prepare_uinput_output(kbd, common.input_isolated);
     match try_manual_text_replacement(&mut common, kbd, input_gate.clone()) {
         OutputFlow::Return(result) => result,
         OutputFlow::ContinueReplay => apply_layout_replay(&mut common, kbd, input_gate),

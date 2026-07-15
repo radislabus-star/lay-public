@@ -429,15 +429,6 @@ pub(super) fn admit_evaluated_hidden_transition(
         };
     }
 
-    if !transition.l4_state_estimate.apply_allowed
-        && transition.l4_state_estimate.desync_risk_milli >= CURRENT.latent_desync_risk_milli
-    {
-        return TransitionAdmission {
-            allow_apply: false,
-            reason: "latent_l4_state_desync_risk",
-        };
-    }
-
     if transition.l4_signed_signal.negative {
         return TransitionAdmission {
             allow_apply: false,

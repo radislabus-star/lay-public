@@ -263,6 +263,26 @@ fn usage_learning_keeps_disk_io_out_of_the_hot_path() {
 }
 
 #[test]
+fn usage_event_semantics_are_shared_without_cold_to_hot_dependency() {
+    let usage = read("src/nanda_wave/usage_prior.rs");
+    let hot = read("src/nanda_wave/usage_prior/hot.rs");
+    let projection = read("src/nanda_wave/usage_prior/projection.rs");
+
+    assert!(
+        usage.contains("mod hot;")
+            && usage.contains("mod projection;")
+            && usage.contains("use projection::{UsageEventProjection, TRANSITION_ANY};"),
+        "cold persistence and hot runtime must share a neutral event projection owner"
+    );
+    assert!(
+        hot.contains("use super::projection::{UsageEventProjection, TRANSITION_ANY};")
+            && !projection.contains("super::hot")
+            && !projection.contains("UsageHotState"),
+        "event semantics must not depend on the numeric hot representation"
+    );
+}
+
+#[test]
 fn logs_and_usage_share_hot_runtime_flags_and_bounded_periodic_writers() {
     let flags = read("src/config/runtime_flags.rs");
     let config = read("src/config.rs");

@@ -18,8 +18,8 @@ use super::{
     active_auto_switch_layout, apply_text_replacement_pipeline, emit_key_taps_fast,
     focused_ime_engine_handles_typing, layout_switch_policy, log, read_current_layout_is_ru,
     record_recent_action, release_possible_modifiers, should_try_ime_text_backend,
-    switch_or_restore_layout_after_text_edit, try_ime_replace_tail, ExecutingGuard,
-    TYPING_ASSIST_RUNTIME_READY,
+    switch_or_restore_layout_after_text_edit, try_ime_replace_tail, DaemonTextObservation,
+    ExecutingGuard, TYPING_ASSIST_RUNTIME_READY,
 };
 
 pub(super) fn enter_autocorrect_candidate(
@@ -58,6 +58,8 @@ pub(super) fn handle_enter_autocorrect(
     replace_words: usize,
     virtual_kbd: Option<&mut VirtualDevice>,
     executing: &mut bool,
+    text_observation: DaemonTextObservation<'_>,
+    input_isolated: bool,
 ) -> Option<bool> {
     if !TYPING_ASSIST_RUNTIME_READY.load(Ordering::Relaxed) {
         log("· enter-autocorrect skipped: warmup pending");
@@ -196,6 +198,9 @@ pub(super) fn handle_enter_autocorrect(
 
     let original_layout = read_current_layout_is_ru().ok();
 
+    let preflight =
+        text_observation.automatic_destructive_preflight(buf, original.clone(), input_isolated);
+
     let insert_outcome = match apply_text_replacement_pipeline(
         kbd,
         daemon_authorized,
@@ -203,6 +208,7 @@ pub(super) fn handle_enter_autocorrect(
         original_layout,
         "enter-autocorrect",
         false,
+        preflight,
     ) {
         Ok(outcome) => outcome,
         Err(e) => {

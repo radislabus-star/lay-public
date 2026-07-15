@@ -1,3 +1,4 @@
+use super::DaemonTextContext;
 use super::TypingAssistCorrection;
 
 pub(super) struct PendingTypingAssist {
@@ -5,37 +6,42 @@ pub(super) struct PendingTypingAssist {
     correction: Option<TypingAssistCorrection>,
     cursor_offset: u32,
     separator_released: bool,
+    text_context: DaemonTextContext,
 }
 
 impl PendingTypingAssist {
     #[cfg(test)]
-    pub(super) fn new(correction: TypingAssistCorrection) -> Self {
+    pub(super) fn new(correction: TypingAssistCorrection, text_context: DaemonTextContext) -> Self {
         Self {
             request_id: None,
             correction: Some(correction),
             cursor_offset: 0,
             separator_released: false,
+            text_context,
         }
     }
 
     pub(super) fn with_cursor_offset(
         correction: TypingAssistCorrection,
         cursor_offset: u32,
+        text_context: DaemonTextContext,
     ) -> Self {
         Self {
             request_id: None,
             correction: Some(correction),
             cursor_offset,
             separator_released: true,
+            text_context,
         }
     }
 
-    pub(super) fn waiting(request_id: u64) -> Self {
+    pub(super) fn waiting(request_id: u64, text_context: DaemonTextContext) -> Self {
         Self {
             request_id: Some(request_id),
             correction: None,
             cursor_offset: 0,
             separator_released: false,
+            text_context,
         }
     }
 
@@ -60,8 +66,8 @@ impl PendingTypingAssist {
         self.separator_released && self.correction.is_some()
     }
 
-    pub(super) fn into_parts(self) -> Option<(TypingAssistCorrection, u32)> {
-        Some((self.correction?, self.cursor_offset))
+    pub(super) fn into_parts(self) -> Option<(TypingAssistCorrection, u32, DaemonTextContext)> {
+        Some((self.correction?, self.cursor_offset, self.text_context))
     }
 }
 

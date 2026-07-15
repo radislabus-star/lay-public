@@ -135,6 +135,16 @@ L4 is not a workflow rule table. It is a state estimator and transferable
 memory of transition outcomes. Bayes usage priors are an input to L4/readout,
 not a second winner selector.
 
+Current runtime boundary: the transferable signed transition memory is live,
+including exact-state positive and negative evidence. A real
+temporal estimator over focus, revision, composition, and successive
+observations is not live yet. The former per-candidate weighted
+`L4StateEstimator` was removed because an exhaustive live-input truth table
+showed that it produced no unique admission decision beyond verifier, latent
+invariants, and signed memory. Until the temporal inputs exist, the project
+must report this part as `WATCH`, not recreate a stateless scorer under an L4
+name.
+
 ## 4. Canonical Runtime Tree
 
 ```text
@@ -502,6 +512,9 @@ Exit: context ablation measurably harms ambiguous heldout cases while clean
 technical tokens and protected text remain stable.
 
 ### Stage 9: Consolidate L4, Bayes, and state estimation
+
+Status: `WATCH`. Signed accepted/rejected transition memory is implemented;
+streaming temporal state estimation remains open.
 
 - Move accepted, rejected, undone, and manually selected outcomes into one
   signed state memory.

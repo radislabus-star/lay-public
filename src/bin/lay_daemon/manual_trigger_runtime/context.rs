@@ -5,7 +5,7 @@ use std::time::{Duration, Instant};
 
 use crate::pending_typing_assist::PendingTypingAssist;
 
-use super::super::{DShiftState, MultiTapPending, ShiftState};
+use super::super::{DShiftState, DaemonTextObservation, MultiTapPending, ShiftState};
 
 pub(crate) struct PendingMultiTapTimeoutContext<'a> {
     pub(crate) buffer: &'a mut WordBuffer,
@@ -23,6 +23,7 @@ pub(crate) struct PendingMultiTapTimeoutContext<'a> {
     pub(crate) clear_on_next_typing: &'a mut bool,
     pub(crate) shift_window: Duration,
     pub(crate) events_since_word_start: u32,
+    pub(crate) text_observation: DaemonTextObservation<'a>,
 }
 
 pub(crate) struct ManualTriggerEventContext<'a> {
@@ -54,6 +55,7 @@ pub(crate) struct ManualTriggerEventContext<'a> {
     pub(crate) clear_on_next_typing: &'a mut bool,
     pub(crate) single_pressed_at: &'a mut Option<Instant>,
     pub(crate) single_other_key: &'a mut bool,
+    pub(crate) text_observation: DaemonTextObservation<'a>,
 }
 
 pub(crate) struct ManualTriggerFireContext<'a> {
@@ -70,6 +72,7 @@ pub(crate) struct ManualTriggerFireContext<'a> {
     pub(crate) pending_multi_tap: &'a mut Option<MultiTapPending>,
     pub(crate) last_double_at: &'a mut Option<Instant>,
     pub(crate) clear_on_next_typing: &'a mut bool,
+    pub(crate) text_observation: DaemonTextObservation<'a>,
 }
 
 impl<'a> ManualTriggerEventContext<'a> {
@@ -89,6 +92,7 @@ impl<'a> ManualTriggerEventContext<'a> {
             pending_multi_tap: self.pending_multi_tap,
             last_double_at: self.last_double_at,
             clear_on_next_typing: self.clear_on_next_typing,
+            text_observation: self.text_observation.clone(),
         }
     }
 }

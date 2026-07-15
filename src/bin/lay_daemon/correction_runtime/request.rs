@@ -3,6 +3,7 @@ use lay::config::CorrectionEngine;
 use lay::word_buffer::WordBuffer;
 
 use super::super::physical_input_grab::PhysicalInputGrab;
+use super::super::DaemonTextObservation;
 
 pub(crate) struct ManualCorrectionRequest<'a, 'grab> {
     pub(crate) buf: &'a mut WordBuffer,
@@ -12,6 +13,7 @@ pub(crate) struct ManualCorrectionRequest<'a, 'grab> {
     pub(crate) virtual_kbd: Option<&'a mut VirtualDevice>,
     pub(crate) executing: &'a mut bool,
     pub(crate) input_isolated: bool,
+    pub(crate) text_observation: DaemonTextObservation<'a>,
     pub(crate) physical_grab: Option<&'a mut PhysicalInputGrab<'grab>>,
 }
 

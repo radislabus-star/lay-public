@@ -3,6 +3,10 @@ use crate::boundary_runtime::{handle_hard_boundary_if_needed, HardBoundaryContex
 use crate::pending_typing_assist::PendingTypingAssist;
 use crate::trigger_dispatch::apply_manual_correction_result;
 
+fn test_text_context() -> DaemonTextContext {
+    DaemonTextContext::new(Some("test-field".to_string()), 0)
+}
+
 #[test]
 fn idle_wait_uses_long_sleep_when_no_internal_deadlines() {
     let now = Instant::now();
@@ -111,7 +115,7 @@ fn successful_manual_replay_clears_already_pending_typing_assist() {
     let buffer = typed_buffer_from_semicolon_fixture("djn @us");
     let correction =
         find_typing_assist_correction(&buffer, true, 1).expect("pending correction exists");
-    let mut pending = Some(PendingTypingAssist::new(correction));
+    let mut pending = Some(PendingTypingAssist::new(correction, test_text_context()));
     let mut current_layout_is_ru = true;
     let mut last_layout_poll = Instant::now() - Duration::from_secs(10);
     let mut suppress_once = false;
@@ -134,7 +138,7 @@ fn failed_manual_replay_keeps_already_pending_typing_assist() {
     let buffer = typed_buffer_from_semicolon_fixture("djn @us");
     let correction =
         find_typing_assist_correction(&buffer, true, 1).expect("pending correction exists");
-    let mut pending = Some(PendingTypingAssist::new(correction));
+    let mut pending = Some(PendingTypingAssist::new(correction, test_text_context()));
     let mut current_layout_is_ru = true;
     let mut last_layout_poll = Instant::now() - Duration::from_secs(10);
     let mut suppress_once = false;

@@ -6,7 +6,7 @@ use super::super::{
     active_typing_assist, append_user_correction_learning_log, has_later_typing_press, log,
     record_precognition_tick_if_enabled, should_run_typing_assist_on_space_release,
     should_schedule_typing_assist_after_space, typing_assist_worker::TypingAssistWorker,
-    ShiftState,
+    DaemonTextContext, ShiftState,
 };
 
 pub(crate) struct SpaceReleaseContext<'a> {
@@ -59,6 +59,7 @@ pub(crate) struct SpacePressContext<'a> {
     pub(crate) events_since_word_start: &'a mut u32,
     pub(crate) suppress_next_typing_assist_after_manual_replay: &'a mut bool,
     pub(crate) verbose: bool,
+    pub(crate) text_context: DaemonTextContext,
 }
 
 pub(crate) fn handle_space_press(ctx: SpacePressContext<'_>) {
@@ -84,7 +85,7 @@ pub(crate) fn handle_space_press(ctx: SpacePressContext<'_>) {
         *ctx.pending_typing_assist_after_space = ctx
             .typing_assist_worker
             .submit(ctx.buffer)
-            .map(PendingTypingAssist::waiting);
+            .map(|request_id| PendingTypingAssist::waiting(request_id, ctx.text_context.clone()));
         if ctx.verbose {
             if ctx.pending_typing_assist_after_space.is_some() {
                 log("· typing-assist scheduled after space");

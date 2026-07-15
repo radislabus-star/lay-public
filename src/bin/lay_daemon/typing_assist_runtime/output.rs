@@ -19,7 +19,8 @@ use minimal::{apply_minimal_typing_replacement, MinimalTypingReplacementContext}
 
 use super::super::physical_input_grab::PhysicalInputGrab;
 use super::super::{
-    log, read_current_layout_is_ru, release_possible_modifiers_fast, ExecutingGuard,
+    log, read_current_layout_is_ru, release_possible_modifiers_fast, DaemonTextObservation,
+    ExecutingGuard,
 };
 use super::candidate::TypingAssistCorrection;
 use super::TypingAssistOutcome;
@@ -32,6 +33,7 @@ pub(crate) struct TypingAssistApplyContext<'a> {
     pub(crate) cursor_offset: u32,
     pub(crate) started_at: Instant,
     pub(crate) correction: TypingAssistCorrection,
+    pub(crate) text_observation: DaemonTextObservation<'a>,
 }
 
 pub(crate) fn apply_typing_assist_correction(
@@ -45,6 +47,7 @@ pub(crate) fn apply_typing_assist_correction(
         cursor_offset,
         started_at,
         correction,
+        text_observation,
     } = ctx;
     let mut physical_grab = PhysicalInputGrab::new(physical_device);
     let events = correction.events;
@@ -115,5 +118,6 @@ pub(crate) fn apply_typing_assist_correction(
         kbd,
         original_layout,
         prefer_full_token_plan,
+        text_observation,
     })
 }

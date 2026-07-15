@@ -16,6 +16,10 @@ fn typing_assist_cursor_offset_after_space(current_len: usize) -> u32 {
     current_len.min(u32::MAX as usize) as u32
 }
 
+fn test_text_context() -> DaemonTextContext {
+    DaemonTextContext::new(Some("test-field".to_string()), 0)
+}
+
 fn deferred_plan(row: &[String]) -> TextReplacement {
     text_replacement_from_fixture(row, 7, 8, 9, 10)
 }
@@ -49,7 +53,7 @@ fn pending_typing_assist_waits_for_space_release_before_output() {
 
     let correction =
         find_typing_assist_correction(&buffer, true, 1).expect("prepared completed word");
-    let mut pending = PendingTypingAssist::new(correction);
+    let mut pending = PendingTypingAssist::new(correction, test_text_context());
 
     assert!(!pending.ready_to_apply());
     pending.note_visible_char();
@@ -64,7 +68,7 @@ fn hard_boundary_drops_pending_typing_assist_without_unsafe_output() {
     let mut buffer = typed_buffer_from_semicolon_fixture(&row[1]);
     let correction =
         find_typing_assist_correction(&buffer, true, 1).expect("prepared completed word");
-    let mut pending = Some(PendingTypingAssist::new(correction));
+    let mut pending = Some(PendingTypingAssist::new(correction, test_text_context()));
     let mut ignore_current_token_until_space = false;
     let mut events_since_word_start = 3;
 
@@ -211,7 +215,7 @@ fn deferred_typing_assist_drops_snapshot_when_next_word_starts() {
     assert_eq!(correction.edit.original, row[4]);
     assert_eq!(correction.edit.replacement, row[5]);
 
-    let mut pending = Some(PendingTypingAssist::new(correction));
+    let mut pending = Some(PendingTypingAssist::new(correction, test_text_context()));
     buffer.handle_space();
     assert!(drop_pending_after_following_word_started(&mut pending));
     assert!(pending.is_none());

@@ -1,6 +1,6 @@
 use super::super::trigger_dispatch::{
     complete_manual_trigger, run_configured_manual_correction, run_scoped_manual_correction,
-    ManualTriggerCompletion,
+    ManualTriggerCompletion, ScopedManualCorrectionContext,
 };
 use super::context::ManualTriggerFireContext;
 use super::ime::run_ime_manual_toggle;
@@ -10,8 +10,13 @@ pub(crate) fn fire_configured_manual_trigger(ctx: ManualTriggerFireContext<'_>) 
         complete_manual_trigger_with_result(Some(result), ctx);
         return;
     }
-    let correction_result =
-        run_configured_manual_correction(ctx.buffer, ctx.device, ctx.virtual_kbd, ctx.executing);
+    let correction_result = run_configured_manual_correction(
+        ctx.buffer,
+        ctx.device,
+        ctx.virtual_kbd,
+        ctx.executing,
+        ctx.text_observation.clone(),
+    );
     complete_manual_trigger_with_result(correction_result, ctx);
 }
 
@@ -26,11 +31,14 @@ pub(crate) fn fire_scoped_manual_trigger(
         return;
     }
     let correction_result = run_scoped_manual_correction(
-        ctx.buffer,
+        ScopedManualCorrectionContext {
+            buffer: ctx.buffer,
+            device: ctx.device,
+            virtual_kbd: ctx.virtual_kbd,
+            executing: ctx.executing,
+            text_observation: ctx.text_observation.clone(),
+        },
         replace_words,
-        ctx.device,
-        ctx.virtual_kbd,
-        ctx.executing,
         events_since_word_start,
         reason,
     );

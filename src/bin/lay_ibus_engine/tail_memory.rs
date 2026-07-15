@@ -33,6 +33,7 @@ impl LayIbusEngine {
         let status = if observed.as_deref() == Some(pending.expected_suffix.as_str()) {
             "observed"
         } else {
+            self.quarantine_visible_postcondition_mismatch();
             "mismatch"
         };
         super::trace::record(format!(
@@ -113,6 +114,26 @@ impl LayIbusEngine {
         state.handoff_tail_epoch = self.tail_epoch;
         state.suppress_next_committed_tail_autocorrect = false;
         state.preserve_active_path_until = None;
+    }
+
+    fn quarantine_visible_postcondition_mismatch(&mut self) {
+        let shared = self.shared.clone();
+        self.buffer.clear();
+        self.composition_cursor = 0;
+        self.tail_buffer.clear();
+        self.preedit_fast.reset();
+        self.clear_preedit_completion_state();
+        self.word_input_mode = None;
+        self.last_tail_input_at = None;
+        self.recent_committed_tail_replace = None;
+        self.suppress_next_committed_tail_autocorrect = false;
+        self.tail_epoch = self.tail_epoch.wrapping_add(1);
+        if let Ok(mut state) = shared.lock() {
+            state.handoff_tail_buffer.clear();
+            state.handoff_tail_epoch = self.tail_epoch;
+            state.suppress_next_committed_tail_autocorrect = false;
+            state.preserve_active_path_until = None;
+        };
     }
 
     pub(super) fn refresh_empty_tail_from_handoff(&mut self) {
@@ -215,8 +236,13 @@ fn trim_committed_tail_buffer(buffer: &mut String) {
 #[cfg(test)]
 mod tests {
     use super::{last_tail_token_range, LayIbusEngine};
-    use crate::engine::WordInputMode;
+    use crate::engine::{ManualToggleAuthority, WordInputMode};
     use lay::config::LayConfig;
+    use lay::text_edit::{
+        decide_text_transition, LatentTextTransitionCandidate, TextTransitionDecision,
+        TextTransitionIntent, TextTransitionRejection, VisibleFieldState, VisibleTailSnapshot,
+        VisibleTailSource,
+    };
     use std::sync::{Arc, Mutex};
     use std::time::{Duration, Instant};
 
@@ -230,9 +256,10 @@ mod tests {
 
     #[test]
     fn visible_postcondition_is_consumed_only_for_same_epoch() {
+        let shared = Arc::new(Mutex::new(Default::default()));
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
-            Arc::new(Mutex::new(Default::default())),
+            shared.clone(),
             true,
             true,
             LayConfig::default(),
@@ -240,6 +267,7 @@ mod tests {
         engine.surrounding_text_supported = true;
         engine.tail_buffer = "проверка ".to_string();
         engine.publish_tail_handoff();
+        let epoch = engine.tail_epoch;
         engine.arm_visible_postcondition(Instant::now());
         engine.surrounding_text_snapshot = Some(
             super::super::engine::SurroundingTextSnapshot::new("проверка ".to_string(), 9, 9),
@@ -248,6 +276,102 @@ mod tests {
         engine.observe_visible_postcondition();
 
         assert!(engine.pending_visible_postcondition.is_none());
+        assert_eq!(engine.tail_buffer, "проверка ");
+        assert_eq!(engine.tail_epoch, epoch);
+        let state = shared.lock().expect("lay ime state poisoned");
+        assert_eq!(state.handoff_tail_buffer, "проверка ");
+        assert_eq!(state.handoff_tail_epoch, epoch);
+    }
+
+    #[test]
+    fn visible_postcondition_mismatch_quarantines_tail_and_composition_authority() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            shared.clone(),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.surrounding_text_supported = true;
+        engine.buffer = "stale".to_string();
+        engine.composition_cursor = 5;
+        engine.tail_buffer = "ghbdtn ".to_string();
+        engine.rebuild_preedit_fast_from_tail();
+        engine.word_input_mode = Some(WordInputMode::ManagedCommit);
+        engine.suppress_next_committed_tail_autocorrect = true;
+        engine.publish_tail_handoff();
+        let epoch = engine.tail_epoch;
+        engine.arm_visible_postcondition(Instant::now());
+        engine.surrounding_text_snapshot = Some(
+            super::super::engine::SurroundingTextSnapshot::new("ghjdt! ".to_string(), 7, 7),
+        );
+
+        engine.observe_visible_postcondition();
+
+        assert!(engine.pending_visible_postcondition.is_none());
+        assert!(engine.buffer.is_empty());
+        assert_eq!(engine.composition_cursor, 0);
+        assert!(engine.tail_buffer.is_empty());
+        assert_eq!(engine.preedit_fast.token(), "");
+        assert_eq!(engine.word_input_mode, None);
+        assert!(!engine.suppress_next_committed_tail_autocorrect);
+        assert_eq!(
+            engine.manual_toggle_authority(),
+            ManualToggleAuthority::DaemonWordBuffer
+        );
+        assert_eq!(engine.tail_epoch, epoch.wrapping_add(1));
+        let state = shared.lock().expect("lay ime state poisoned");
+        assert!(state.handoff_tail_buffer.is_empty());
+        assert_eq!(state.handoff_tail_epoch, engine.tail_epoch);
+        assert!(!state.suppress_next_committed_tail_autocorrect);
+    }
+
+    #[test]
+    fn visible_postcondition_mismatch_blocks_repeated_stale_receipt() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.surrounding_text_supported = true;
+        engine.tail_buffer = "ghbdtn ".to_string();
+        engine.publish_tail_handoff();
+        let stale_epoch = engine.tail_epoch;
+        engine.arm_visible_postcondition(Instant::now());
+        engine.surrounding_text_snapshot = Some(
+            super::super::engine::SurroundingTextSnapshot::new("ghjdt! ".to_string(), 7, 7),
+        );
+
+        engine.observe_visible_postcondition();
+
+        let state = VisibleFieldState::committed_tail(
+            engine.tail_buffer.clone(),
+            Some(engine.path.clone()),
+        )
+        .with_epoch(engine.tail_epoch);
+        let stale_request = LatentTextTransitionCandidate::new(
+            VisibleTailSource::ImeCommittedTail,
+            7,
+            "привет ",
+            TextTransitionIntent::ImeManualToggle,
+            Some(VisibleTailSnapshot::new(
+                VisibleTailSource::ImeCommittedTail,
+                "ghbdtn ",
+                Some(engine.path.clone()),
+                stale_epoch,
+            )),
+        );
+
+        assert!(matches!(
+            decide_text_transition(&state, stale_request),
+            TextTransitionDecision::Reject {
+                rejection: TextTransitionRejection::StaleVisibleRevision { expected, actual },
+                action: None
+            } if expected == stale_epoch && actual == engine.tail_epoch
+        ));
     }
 
     #[test]
