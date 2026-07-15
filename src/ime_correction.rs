@@ -43,30 +43,33 @@ pub fn decide_active_composition_autocorrect(
         nanda_wave_options: request.config.active_nanda_wave_options(),
         correction_mode: gate_config.correction_mode(),
     });
-    let InputGateAction::ApplyReplacement { replacement, .. } = decision.action else {
+    let InputGateAction::ApplyReplacement {
+        ref replacement, ..
+    } = decision.action
+    else {
         return None;
     };
-    if replacement == gate_text {
+    if replacement.as_str() == gate_text {
         return None;
     }
     let replacement = if active_prefix.is_empty() {
-        replacement
+        replacement.clone()
     } else {
         replacement.strip_prefix(&active_prefix)?.to_string()
     };
     let plan = plan_committed_tail_last_token_replacement(request.text, &replacement)
         .or_else(|| plan_text_replacement(request.text, &replacement))?;
-    let input_gate = decision
-        .trace
-        .as_ref()
-        .map(RecentActionGateTrace::from_input_gate)?;
     let action = plan_input_gate_edit(
         "ibus-active-composition",
         request.text,
         &replacement,
         plan,
-        &input_gate,
+        &decision,
     );
+    let input_gate = decision
+        .trace
+        .as_ref()
+        .map(RecentActionGateTrace::from_input_gate)?;
     Some(ActiveCompositionAutocorrectDecision {
         replacement,
         action,
@@ -135,6 +138,7 @@ mod tests {
             correction_safety: "experimental".to_string(),
             nanda_autocorrect: true,
             nanda_precognition: true,
+            nanda_l2_phase_apply: false,
             ..LayConfig::default()
         }
     }
@@ -159,7 +163,8 @@ mod tests {
             .expect("decision");
 
         assert_eq!(decision.replacement, "проходил ");
-        assert_eq!(decision.action.from_text, "прохоил ");
+        assert_eq!(decision.action.from_text(), "прохоил ");
+        assert!(decision.action.allow_apply());
     }
 
     #[test]
@@ -260,5 +265,6 @@ mod tests {
         .expect("decision");
 
         assert_eq!(decision.replacement, expected);
+        assert!(decision.action.allow_apply());
     }
 }

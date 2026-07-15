@@ -95,11 +95,11 @@ impl From<LanguageActionProof> for TransitionProof {
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct TransitionAudit {
-    pub(crate) operator: Option<TransitionOperator>,
-    pub(crate) proof: Option<TransitionProof>,
-    pub(crate) verified: Option<bool>,
-    pub(crate) left_context_changed: Option<bool>,
-    pub(crate) changed_tokens: Option<usize>,
+    operator: Option<TransitionOperator>,
+    proof: Option<TransitionProof>,
+    verified: Option<bool>,
+    left_context_changed: Option<bool>,
+    changed_tokens: Option<usize>,
 }
 
 impl TransitionAudit {
@@ -107,6 +107,8 @@ impl TransitionAudit {
         Self::default()
     }
 
+    /// Creates diagnostic evidence. This value is not an execution capability;
+    /// only the sealed verifier receipt in `text_edit::gate` can authorize an edit.
     pub(crate) fn proven(
         operator: TransitionOperator,
         proof: TransitionProof,

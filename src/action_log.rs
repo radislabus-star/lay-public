@@ -317,25 +317,6 @@ impl RecentActionGateTrace {
             reason: trace.reason.to_string(),
         }
     }
-
-    pub fn selected_transition_audit(&self) -> crate::text_edit::TransitionAudit {
-        let Some(selected) = self.candidate_scores.iter().find(|score| score.selected) else {
-            return crate::text_edit::TransitionAudit::none();
-        };
-        let (Some(operator), Some(proof)) = (
-            selected.edit_transition_operator_kind,
-            selected.edit_transition_proof_kind,
-        ) else {
-            return crate::text_edit::TransitionAudit::none();
-        };
-        crate::text_edit::TransitionAudit::proven(
-            operator,
-            proof,
-            selected.edit_transition_verified,
-            selected.edit_transition_left_context_changed,
-            selected.edit_transition_changed_tokens,
-        )
-    }
 }
 
 pub fn record_candidate_before_apply(
@@ -365,19 +346,19 @@ pub fn record_candidate_edit_action_before_apply(
     mutation_route: MutationLogRoute,
     input_gate: Option<RecentActionGateTrace>,
 ) {
-    let (Some(plan), Some(safety)) = (action.plan.as_ref(), action.safety.as_ref()) else {
+    let (Some(plan), Some(safety)) = (action.plan(), action.safety()) else {
         return;
     };
     record_candidate_before_apply_inner(
         mutation_route,
-        &action.from_text,
-        &action.to_text,
+        action.from_text(),
+        action.to_text(),
         plan,
         safety,
-        Some(action.kind.as_str()),
-        Some(action.source.as_str()),
-        Some(action.confidence_milli),
-        Some(&action.transition),
+        Some(action.kind().as_str()),
+        Some(action.source()),
+        Some(action.confidence_milli()),
+        Some(action.transition()),
         input_gate,
     );
 }
@@ -409,11 +390,13 @@ fn record_candidate_before_apply_inner(
         action_source,
         action_confidence_milli,
         transition_operator: transition
-            .and_then(|audit| audit.operator.map(|value| value.as_str())),
-        transition_proof: transition.and_then(|audit| audit.proof.map(|value| value.as_str())),
-        transition_verified: transition.and_then(|audit| audit.verified),
-        transition_left_context_changed: transition.and_then(|audit| audit.left_context_changed),
-        transition_changed_tokens: transition.and_then(|audit| audit.changed_tokens),
+            .and_then(|audit| audit.operator().map(|value| value.as_str())),
+        transition_proof: transition.and_then(|audit| audit.proof().map(|value| value.as_str())),
+        transition_verified: transition.and_then(crate::text_edit::TransitionAudit::verified),
+        transition_left_context_changed: transition
+            .and_then(crate::text_edit::TransitionAudit::left_context_changed),
+        transition_changed_tokens: transition
+            .and_then(crate::text_edit::TransitionAudit::changed_tokens),
         from,
         to,
         edit_plan: EditPlanRecord {

@@ -26,7 +26,7 @@ mod types;
 #[path = "text_edit/visible_tail.rs"]
 mod visible_tail;
 
-pub(crate) use action::PlannedReplacementInput;
+pub(crate) use action::DecisionTransitionEditInput;
 pub use action::{EditAction, EditActionKind};
 pub(crate) use committed_tail::plan_committed_tail_last_token_replacement;
 pub use committed_tail::{
@@ -41,7 +41,7 @@ pub use diff_plan::{
 pub use executor::{
     authorize_backend_edit, AuthorizedEdit, BackendEditAuthorization, TextEditBackend,
 };
-pub(crate) use gate::plan_verified_transition_edit;
+pub(crate) use gate::plan_decision_transition_edit;
 pub use gate::{
     plan_ime_completion_edit, plan_input_gate_edit, plan_manual_edit, plan_native_edit,
     plan_recorded_undo_edit,

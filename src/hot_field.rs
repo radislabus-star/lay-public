@@ -258,9 +258,9 @@ impl HotFieldSnapshot {
     }
 
     /// Stable input authority is stricter than candidate-form settlement. A
-    /// nearby phase basin may propose a form, but only an exact surface or a
-    /// morphology transition backed by a lexical center may protect the input
-    /// from correction.
+    /// nearby phase basin and a low-ranked exact corpus terminal may propose a
+    /// form, but only a hot surface, decoder state, or morphology transition
+    /// backed by an authoritative lexical center may protect the input.
     pub(crate) fn stable_form_readout(&self, word: &str) -> HotWordReadout {
         let surface = self.word_readout(word);
         if surface.has_structural_center() {
@@ -268,11 +268,9 @@ impl HotFieldSnapshot {
         }
         let lower = word.trim().to_lowercase();
         let phase = self.surface_phase_readout(word);
-        let authority = if phase.exact_center {
-            HotWordAuthority::L2SurfaceCenter
-        } else if crate::nanda_wave::l2::l2_decoder_contains_surface(&lower)
+        let authority = if (!phase.exact_center
+            && crate::nanda_wave::l2::l2_decoder_contains_surface(&lower))
             || crate::russian_lexicon::is_center_backed_russian_form(&lower)
-            || crate::russian_lexicon::is_reference_backed_russian_form(&lower)
         {
             HotWordAuthority::L2FormCenter
         } else {

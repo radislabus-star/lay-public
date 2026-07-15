@@ -1,16 +1,18 @@
 use super::{action, verifier, TypingTransition};
 use crate::candidate_contract::CorrectionSourceRole;
+use crate::candidate_explanation::CandidateExplanation;
+use crate::correction_bayes::BayesCandidateScore;
 use crate::correction_core::{
-    bayes_score_for_candidate, explanation_for_candidate, CandidateGateAction,
-    CorrectionDecisionSource, TypingErrorClass, TypingErrorEvent, UnifiedCorrectionCandidate,
+    explanation_for_candidate, CandidateGateAction, CorrectionDecisionSource, TypingErrorClass,
+    TypingErrorEvent, UnifiedCorrectionCandidate,
 };
 use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
 use crate::nanda_wave::l4_goal_state::{derive_l4_scene_state, L4AllowedAction, L4SceneStateInput};
 use crate::nanda_wave::l4_signed_memory::{l4_signed_memory_signal, L4SignedMemoryInput};
 use crate::text_edit::{
-    plan_verified_transition_edit, tail_chars, LatentTextTransitionCandidate,
-    PlannedReplacementInput, TextReplacement, TextTransitionDecision, TextTransitionRejection,
-    TransitionAudit, VisibleFieldState,
+    plan_decision_transition_edit, tail_chars, DecisionTransitionEditInput,
+    LatentTextTransitionCandidate, TextReplacement, TextTransitionDecision,
+    TextTransitionRejection, TransitionAudit, VisibleFieldState,
 };
 use crate::text_metrics::{damerau_levenshtein, score_to_milli};
 use crate::transition_relation::{TransitionRelationAtoms, TransitionRelationInput};
@@ -99,16 +101,23 @@ impl TransitionDecisionCore {
             false,
             1,
         );
-        let action = plan_verified_transition_edit(PlannedReplacementInput {
-            source: "ibus-committed-tail",
-            confidence_milli: 1000,
-            from_text: &original_text,
-            to_text: &candidate.insert_text,
-            plan: plan.clone(),
-            selected_source_id: Some(candidate.source.source_id()),
-            selected_error_class: None,
+        let receipt = DecisionTransitionReceipt::issue(
+            original_text.clone(),
+            candidate.insert_text.clone(),
             transition,
-        });
+        );
+        let action = plan_decision_transition_edit(
+            DecisionTransitionEditInput {
+                source: "ibus-committed-tail",
+                confidence_milli: 1000,
+                from_text: &original_text,
+                to_text: &candidate.insert_text,
+                plan: plan.clone(),
+                selected_source_id: Some(candidate.source.source_id()),
+                selected_error_class: None,
+            },
+            &receipt,
+        );
         if !action.allow_apply() {
             return TextTransitionDecision::Reject {
                 rejection: TextTransitionRejection::UnsafeEdit {
@@ -121,43 +130,241 @@ impl TransitionDecisionCore {
         TextTransitionDecision::Apply { plan, action }
     }
 
-    pub(crate) fn select_apply_candidate(
+    pub(crate) fn evaluate_candidates(
         event: &TypingErrorEvent,
         candidates: &[UnifiedCorrectionCandidate],
         policy: TransitionDecisionPolicy,
-    ) -> Option<UnifiedCorrectionCandidate> {
+    ) -> CandidateDecisionBatch {
+        let usage = crate::nanda_wave::cached_usage_prior_snapshot();
+        let l4_scene = l4_scene_signal(event, candidates.len());
+        let context = CandidateDecisionContext {
+            event,
+            candidate_count: candidates.len(),
+            usage: &usage,
+            l4_scene,
+        };
+        let evaluations = candidates
+            .iter()
+            .map(|candidate| CandidateDecisionEvaluation::build(context, candidate))
+            .collect::<Vec<_>>();
         if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
-            for candidate in candidates {
-                let signals = candidate_decision_signals(event, candidate, candidates.len());
-                let bayes = bayes_score_for_candidate(&event.original, candidate);
+            for (candidate, evaluation) in candidates.iter().zip(&evaluations) {
                 eprintln!(
                     "decision-core-candidate origin={:?} source_id={} class={} gate={:?} rank={:.3} usage={:.3} context={:.3} l3={} l4={} replacement={:?}",
                     candidate.origin,
                     candidate.source_id,
                     candidate.error_class.as_str(),
                     candidate.gate.action,
-                    signals.rank_score,
-                    bayes.usage_prior,
-                    bayes.context_prior,
-                    signals.l3_phrase_milli,
-                    signals.l4_signed_milli,
+                    evaluation.signals.rank_score,
+                    evaluation.bayes.usage_prior,
+                    evaluation.bayes.context_prior,
+                    evaluation.signals.l3_phrase_milli,
+                    evaluation.signals.l4_signed_milli,
                     candidate.replacement
                 );
             }
         }
-        candidates
+        let selected_index = candidates
             .iter()
-            .filter(|candidate| candidate.gate.action == CandidateGateAction::Eligible)
-            .filter(|candidate| candidate_has_apply_authority(event, candidate, candidates, policy))
-            .cloned()
-            .max_by(|left, right| {
-                candidate_decision_signals(event, left, candidates.len())
-                    .rank_score
-                    .total_cmp(
-                        &candidate_decision_signals(event, right, candidates.len()).rank_score,
-                    )
+            .enumerate()
+            .filter(|(_, candidate)| candidate.gate.action == CandidateGateAction::Eligible)
+            .filter(|(index, _)| {
+                candidate_has_apply_authority(event, *index, candidates, &evaluations, policy)
             })
+            .max_by(|(left, _), (right, _)| {
+                evaluations[*left]
+                    .signals
+                    .rank_score
+                    .total_cmp(&evaluations[*right].signals.rank_score)
+            })
+            .map(|(index, _)| index);
+
+        let selected_transition = selected_index.map(|index| {
+            DecisionTransitionReceipt::from_selected_candidate(
+                event,
+                &candidates[index],
+                &evaluations[index],
+            )
+        });
+
+        CandidateDecisionBatch {
+            evaluations,
+            selected_index,
+            selected_transition,
+        }
     }
+}
+
+/// Opaque proof that `TransitionDecisionCore` selected this exact semantic
+/// transition. Logs can describe the transition, but cannot manufacture this
+/// receipt or use a serialized trace as apply authority.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct DecisionTransitionReceipt {
+    original: String,
+    replacement: String,
+    transition: TransitionAudit,
+}
+
+impl DecisionTransitionReceipt {
+    fn issue(original: String, replacement: String, transition: TransitionAudit) -> Self {
+        Self {
+            original,
+            replacement,
+            transition,
+        }
+    }
+
+    fn from_selected_candidate(
+        event: &TypingErrorEvent,
+        candidate: &UnifiedCorrectionCandidate,
+        evaluation: &CandidateDecisionEvaluation,
+    ) -> Self {
+        let action = evaluation.action;
+        Self::issue(
+            event.original.clone(),
+            candidate.replacement.clone(),
+            TransitionAudit::proven(
+                action.edit_operator,
+                action.edit_proof.into(),
+                action.verifier_passed,
+                action.left_context_changed,
+                action.changed_tokens,
+            ),
+        )
+    }
+
+    pub(crate) fn projected_transition(
+        &self,
+        from_text: &str,
+        to_text: &str,
+    ) -> Option<TransitionAudit> {
+        if !self.transition.is_verified()
+            || !same_transition_projection(&self.original, &self.replacement, from_text, to_text)
+        {
+            return None;
+        }
+        Some(self.transition.clone())
+    }
+
+    pub(crate) fn diagnostic_transition(&self) -> TransitionAudit {
+        self.transition.clone()
+    }
+}
+
+fn same_transition_projection(
+    original: &str,
+    replacement: &str,
+    from_text: &str,
+    to_text: &str,
+) -> bool {
+    if original == from_text && replacement == to_text {
+        return true;
+    }
+    let Some(original_prefix) = original.strip_suffix(from_text) else {
+        return false;
+    };
+    replacement
+        .strip_suffix(to_text)
+        .is_some_and(|replacement_prefix| replacement_prefix == original_prefix)
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct CandidateDecisionEvaluation {
+    pub(crate) bayes: BayesCandidateScore,
+    pub(crate) explanation: CandidateExplanation,
+    pub(crate) action: action::CorrectionActionOperatorReport,
+    pub(crate) signals: CandidateDecisionSignals,
+    pub(crate) transition: TypingTransition,
+}
+
+#[derive(Clone, Copy)]
+struct CandidateDecisionContext<'a> {
+    event: &'a TypingErrorEvent,
+    candidate_count: usize,
+    usage: &'a crate::nanda_wave::UsagePriorSnapshot,
+    l4_scene: L4SceneSignal,
+}
+
+struct CandidateSignalReadouts<'a> {
+    context: CandidateDecisionContext<'a>,
+    candidate: &'a UnifiedCorrectionCandidate,
+    bayes: &'a BayesCandidateScore,
+    explanation: CandidateExplanation,
+    action: action::CorrectionActionOperatorReport,
+    relation: &'a TransitionRelationAtoms,
+    l4_memory: &'a crate::nanda_wave::l4_signed_memory::L4SignedMemorySignal,
+}
+
+impl CandidateDecisionEvaluation {
+    fn build(
+        context: CandidateDecisionContext<'_>,
+        candidate: &UnifiedCorrectionCandidate,
+    ) -> Self {
+        let event = context.event;
+        let usage = context.usage;
+        let explanation = explanation_for_candidate(&event.original, candidate);
+        let action = action::verify_action_operator(
+            &event.original,
+            &candidate.replacement,
+            candidate.error_class,
+            candidate.origin,
+        );
+        let relation = TransitionRelationAtoms::encode(
+            &event.original,
+            &candidate.replacement,
+            TransitionRelationInput {
+                action_operator: action.operator.as_str(),
+                edit_operator: action.edit_operator.as_str(),
+                proof: action.edit_proof.as_str(),
+                verifier_passed: action.verifier_passed,
+                left_context_changed: action.left_context_changed,
+                changed_tokens: action.changed_tokens,
+            },
+        );
+        let l4_memory = l4_signed_memory_readout(event, candidate, relation.surface_key(), usage);
+        let bayes = crate::correction_bayes::bayes_score_candidate_with_readout(
+            &event.original,
+            &candidate.replacement,
+            candidate.error_class.as_str(),
+            candidate.origin,
+            usage,
+            &l4_memory,
+        );
+        let signals = candidate_decision_signals_from_readouts(CandidateSignalReadouts {
+            context,
+            candidate,
+            bayes: &bayes,
+            explanation,
+            action,
+            relation: &relation,
+            l4_memory: &l4_memory,
+        });
+        let transition =
+            TypingTransition::from_evaluated_candidate(super::EvaluatedTransitionInput {
+                original: &event.original,
+                replacement: &candidate.replacement,
+                error_class: candidate.error_class,
+                origin: candidate.origin,
+                source_id: &candidate.source_id,
+                candidate_count: context.candidate_count,
+                action,
+                l4_signed_signal: signals.l4_transition_signal(),
+            });
+        Self {
+            bayes,
+            explanation,
+            action,
+            signals,
+            transition,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct CandidateDecisionBatch {
+    pub(crate) evaluations: Vec<CandidateDecisionEvaluation>,
+    pub(crate) selected_index: Option<usize>,
+    pub(crate) selected_transition: Option<DecisionTransitionReceipt>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -168,18 +375,17 @@ pub(crate) struct TransitionAdmission {
 
 fn candidate_has_apply_authority(
     event: &TypingErrorEvent,
-    candidate: &UnifiedCorrectionCandidate,
+    candidate_index: usize,
     candidates: &[UnifiedCorrectionCandidate],
+    evaluations: &[CandidateDecisionEvaluation],
     policy: TransitionDecisionPolicy,
 ) -> bool {
-    let bayes = bayes_score_for_candidate(&event.original, candidate);
-    let signals = candidate_decision_signals(event, candidate, candidates.len());
+    let candidate = &candidates[candidate_index];
+    let evaluation = &evaluations[candidate_index];
+    let bayes = &evaluation.bayes;
+    let signals = &evaluation.signals;
     let source_role = candidate.origin.source_role();
-    let exact_positive_transition = super::memory::TransitionMemory::has_exact_positive(
-        &event.original,
-        &candidate.replacement,
-        candidate.origin,
-    );
+    let exact_positive_transition = evaluation.transition.l4_signed_signal.exact_positive();
     if source_role == CorrectionSourceRole::L3Context
         && signals.l3_phrase_milli < 420
         && signals.l4_signed_milli < 120
@@ -204,12 +410,7 @@ fn candidate_has_apply_authority(
         debug_decision_reject(candidate, reason, bayes.posterior, bayes.risk);
         return false;
     }
-    let action = action::verify_action_operator(
-        &event.original,
-        &candidate.replacement,
-        candidate.error_class,
-        candidate.origin,
-    );
+    let action = evaluation.action;
     let boundary_field = (action.edit_operator == verifier::EditTransitionOperator::BoundaryShift)
         .then(|| boundary_shift_field_readout(&event.original, &candidate.replacement))
         .flatten();
@@ -250,6 +451,8 @@ fn candidate_has_apply_authority(
     }
     let self_referential_surface_drift = source_role == CorrectionSourceRole::L2Surface
         && short_same_length_surface_drift(&event.current_word, &candidate.replacement);
+    let strong_l2_peak_support =
+        strong_l2_wave_peak_support(signals) && !self_referential_surface_drift;
     let external_learned_support = bayes.usage_prior >= 0.080
         || bayes.context_prior >= 0.080
         || signals.l3_phrase_milli >= 420
@@ -257,7 +460,8 @@ fn candidate_has_apply_authority(
     let contextual_transition_support = bayes.context_prior >= 0.080
         || signals.l3_phrase_milli >= 420
         || signals.l4_signed_milli >= 120
-        || exact_positive_transition;
+        || exact_positive_transition
+        || strong_l2_peak_support;
     if candidate.origin == crate::candidate_contract::CandidateOrigin::LayoutThenTypo
         && original_tail_has_same_script_context(event)
         && !contextual_transition_support
@@ -270,30 +474,32 @@ fn candidate_has_apply_authority(
         );
         return false;
     }
-    let strong_l2_peak_support =
-        strong_l2_wave_peak_support(&signals) && !self_referential_surface_drift;
     let strong_learned_support =
         external_learned_support || strong_l2_peak_support || high_precision_boundary_shift;
     let strong_transition_support = signals.l3_phrase_milli >= 420
         || signals.l4_signed_milli >= 120
         || (policy.l2_phase_apply
             && signals.l2_transition_phase_operator_promoted
-            && signals.l2_transition_phase_verdict == "support"
+            && signals.l2_transition_phase_verdict == crate::nanda_wave::PhaseVerdict::Support
             && signals.l2_transition_phase_milli >= signals.l2_transition_phase_threshold_milli
             && signals.l2_transition_phase_surfaces >= 3);
-    let admission = admit_hidden_transition(
-        event,
-        candidate,
+    let admission = admit_evaluated_hidden_transition(
         candidates.len(),
         source_role,
         strong_transition_support,
+        &evaluation.transition,
     );
     if !admission.allow_apply {
         debug_decision_reject(candidate, admission.reason, bayes.posterior, bayes.risk);
         return false;
     }
-    if learned_candidate_shadowed_by_deterministic_owner(event, candidate, candidates, source_role)
-    {
+    if learned_candidate_shadowed_by_deterministic_owner(
+        event,
+        candidate_index,
+        candidates,
+        evaluations,
+        source_role,
+    ) {
         debug_decision_reject(
             candidate,
             "deterministic_owner_gravity",
@@ -338,8 +544,8 @@ fn candidate_has_apply_authority(
         && !external_learned_support
         && !exact_positive_transition
         && lexical_transition_distance(event, candidate) >= 2
-        && !phase_center_separates_candidate(event, candidate, candidates)
-        && competing_lexical_margin(event, candidate, candidates) < 0.08
+        && !phase_center_separates_candidate(event, candidate_index, candidates, evaluations)
+        && competing_lexical_margin(event, candidate_index, candidates, evaluations) < 0.08
     {
         debug_decision_reject(
             candidate,
@@ -349,7 +555,8 @@ fn candidate_has_apply_authority(
         );
         return false;
     }
-    let allowed = !stronger_unresolved_candidate_exists(event, candidate, candidates);
+    let allowed =
+        !stronger_unresolved_candidate_exists(event, candidate_index, candidates, evaluations);
     if !allowed {
         debug_decision_reject(
             candidate,
@@ -421,7 +628,7 @@ fn phase_policy_rejection(
     package_loaded: bool,
     operator_present: bool,
     operator_promoted: bool,
-    verdict: &str,
+    verdict: crate::nanda_wave::PhaseVerdict,
 ) -> Option<&'static str> {
     if !policy.l2_phase_apply || !phase_managed_source(source_role) {
         return None;
@@ -436,18 +643,20 @@ fn phase_policy_rejection(
         return Some("l2_transition_phase_shadow_only");
     }
     match verdict {
-        "repel" => Some("l2_transition_phase_repel"),
-        "unknown" => Some("l2_transition_phase_unknown"),
-        _ => None,
+        crate::nanda_wave::PhaseVerdict::Repel => Some("l2_transition_phase_repel"),
+        crate::nanda_wave::PhaseVerdict::Unknown => Some("l2_transition_phase_unknown"),
+        crate::nanda_wave::PhaseVerdict::Support => None,
     }
 }
 
 fn learned_candidate_shadowed_by_deterministic_owner(
     event: &TypingErrorEvent,
-    candidate: &UnifiedCorrectionCandidate,
+    candidate_index: usize,
     candidates: &[UnifiedCorrectionCandidate],
+    evaluations: &[CandidateDecisionEvaluation],
     source_role: CorrectionSourceRole,
 ) -> bool {
+    let candidate = &candidates[candidate_index];
     if candidate.source != CorrectionDecisionSource::Nanda
         || !matches!(
             source_role,
@@ -462,7 +671,7 @@ fn learned_candidate_shadowed_by_deterministic_owner(
     let original_word = event.current_word.to_lowercase();
     let candidate_distance = damerau_levenshtein(&original_word, &candidate_word.to_lowercase());
 
-    candidates.iter().any(|other| {
+    candidates.iter().enumerate().any(|(other_index, other)| {
         if other.source != CorrectionDecisionSource::Deterministic
             || other.gate.action != CandidateGateAction::Eligible
         {
@@ -477,14 +686,7 @@ fn learned_candidate_shadowed_by_deterministic_owner(
         ) {
             return false;
         }
-        let transition = TypingTransition::from_candidate(
-            &event.original,
-            &other.replacement,
-            other.error_class,
-            other.origin,
-            &other.source_id,
-            candidates.len(),
-        );
+        let transition = &evaluations[other_index].transition;
         if !transition.evidence.verifier_passed
             || transition.evidence.left_context_changed
             || transition.l4_signed_signal.negative
@@ -503,27 +705,13 @@ fn strong_l2_wave_peak_support(signals: &CandidateDecisionSignals) -> bool {
     signals.l2_wave_peak_milli >= 650 && signals.l2_wave_peak_uncertainty_milli <= 450
 }
 
-pub(crate) fn admit_hidden_transition(
-    event: &TypingErrorEvent,
-    candidate: &UnifiedCorrectionCandidate,
+fn admit_evaluated_hidden_transition(
     candidate_count: usize,
     source_role: CorrectionSourceRole,
     strong_transition_support: bool,
+    transition: &TypingTransition,
 ) -> TransitionAdmission {
-    let transition = TypingTransition::from_candidate(
-        &event.original,
-        &candidate.replacement,
-        candidate.error_class,
-        candidate.origin,
-        &candidate.source_id,
-        candidate_count,
-    );
-
-    let exact_state_support = super::memory::TransitionMemory::has_exact_positive(
-        &event.original,
-        &candidate.replacement,
-        candidate.origin,
-    );
+    let exact_state_support = transition.l4_signed_signal.exact_positive();
     if transition
         .state_before
         .candidate_imported_left_context(&transition.state_after_predicted)
@@ -650,15 +838,13 @@ fn debug_decision_reject(
 
 fn stronger_unresolved_candidate_exists(
     event: &TypingErrorEvent,
-    selected: &UnifiedCorrectionCandidate,
+    selected_index: usize,
     candidates: &[UnifiedCorrectionCandidate],
+    evaluations: &[CandidateDecisionEvaluation],
 ) -> bool {
-    let selected_action = action::verify_action_operator(
-        &event.original,
-        &selected.replacement,
-        selected.error_class,
-        selected.origin,
-    );
+    let selected = &candidates[selected_index];
+    let selected_evaluation = &evaluations[selected_index];
+    let selected_action = selected_evaluation.action;
     let selected_is_proven_reversible = selected_action.verifier_passed
         && matches!(
             selected_action.edit_operator,
@@ -668,37 +854,44 @@ fn stronger_unresolved_candidate_exists(
     if selected_is_proven_reversible {
         return false;
     }
-    let selected_bayes = bayes_score_for_candidate(&event.original, selected);
-    let selected_signals = candidate_decision_signals(event, selected, candidates.len());
-    let selected_explanation = explanation_for_candidate(&event.original, selected);
+    let selected_bayes = &selected_evaluation.bayes;
+    let selected_signals = &selected_evaluation.signals;
+    let selected_explanation = selected_evaluation.explanation;
     let selected_span = changed_token_span(&event.original, &selected.replacement);
-    candidates.iter().any(|candidate| {
-        if candidate == selected || candidate.gate.action == CandidateGateAction::Veto {
-            return false;
-        }
-        if !changed_spans_overlap(
-            selected_span,
-            changed_token_span(&event.original, &candidate.replacement),
-        ) {
-            return false;
-        }
-        let candidate_bayes = bayes_score_for_candidate(&event.original, candidate);
-        let candidate_signals = candidate_decision_signals(event, candidate, candidates.len());
-        let candidate_explanation = explanation_for_candidate(&event.original, candidate);
-        let preservation_gain = candidate_explanation
-            .preservation_milli
-            .saturating_sub(selected_explanation.preservation_milli);
-        let loss_reduction = selected_explanation
-            .lost_mass_milli
-            .saturating_sub(candidate_explanation.lost_mass_milli);
-        let structurally_dominates = preservation_gain >= 120
-            && loss_reduction >= 120
-            && candidate_explanation.operator_fit_milli >= selected_explanation.operator_fit_milli;
-        candidate_bayes.risk <= selected_bayes.risk
-            && (candidate_signals.rank_score > selected_signals.rank_score
-                || (structurally_dominates
-                    && candidate_signals.rank_score + 0.08 >= selected_signals.rank_score))
-    })
+    candidates
+        .iter()
+        .enumerate()
+        .any(|(candidate_index, candidate)| {
+            if candidate_index == selected_index
+                || candidate.gate.action == CandidateGateAction::Veto
+            {
+                return false;
+            }
+            if !changed_spans_overlap(
+                selected_span,
+                changed_token_span(&event.original, &candidate.replacement),
+            ) {
+                return false;
+            }
+            let candidate_evaluation = &evaluations[candidate_index];
+            let candidate_bayes = &candidate_evaluation.bayes;
+            let candidate_signals = &candidate_evaluation.signals;
+            let candidate_explanation = candidate_evaluation.explanation;
+            let preservation_gain = candidate_explanation
+                .preservation_milli
+                .saturating_sub(selected_explanation.preservation_milli);
+            let loss_reduction = selected_explanation
+                .lost_mass_milli
+                .saturating_sub(candidate_explanation.lost_mass_milli);
+            let structurally_dominates = preservation_gain >= 120
+                && loss_reduction >= 120
+                && candidate_explanation.operator_fit_milli
+                    >= selected_explanation.operator_fit_milli;
+            candidate_bayes.risk <= selected_bayes.risk
+                && (candidate_signals.rank_score > selected_signals.rank_score
+                    || (structurally_dominates
+                        && candidate_signals.rank_score + 0.08 >= selected_signals.rank_score))
+        })
 }
 
 fn changed_token_span(original: &str, replacement: &str) -> Option<(usize, usize)> {
@@ -736,16 +929,19 @@ fn lexical_transition_distance(
 
 fn competing_lexical_margin(
     event: &TypingErrorEvent,
-    selected: &UnifiedCorrectionCandidate,
+    selected_index: usize,
     candidates: &[UnifiedCorrectionCandidate],
+    evaluations: &[CandidateDecisionEvaluation],
 ) -> f32 {
+    let selected = &candidates[selected_index];
     let selected_span = changed_token_span(&event.original, &selected.replacement);
-    let selected_score = candidate_decision_signals(event, selected, candidates.len()).rank_score;
+    let selected_score = evaluations[selected_index].signals.rank_score;
     let runner_up = candidates
         .iter()
-        .filter(|candidate| *candidate != selected)
-        .filter(|candidate| candidate.gate.action != CandidateGateAction::Veto)
-        .filter(|candidate| {
+        .enumerate()
+        .filter(|(candidate_index, _)| *candidate_index != selected_index)
+        .filter(|(_, candidate)| candidate.gate.action != CandidateGateAction::Veto)
+        .filter(|(_, candidate)| {
             matches!(
                 candidate.origin.source_role(),
                 CorrectionSourceRole::DeterministicTypo
@@ -753,29 +949,32 @@ fn competing_lexical_margin(
                     | CorrectionSourceRole::L3Context
             )
         })
-        .filter(|candidate| {
+        .filter(|(_, candidate)| {
             changed_spans_overlap(
                 selected_span,
                 changed_token_span(&event.original, &candidate.replacement),
             )
         })
-        .map(|candidate| candidate_decision_signals(event, candidate, candidates.len()).rank_score)
+        .map(|(candidate_index, _)| evaluations[candidate_index].signals.rank_score)
         .max_by(f32::total_cmp);
     runner_up.map_or(f32::INFINITY, |score| selected_score - score)
 }
 
 fn phase_center_separates_candidate(
     event: &TypingErrorEvent,
-    selected: &UnifiedCorrectionCandidate,
+    selected_index: usize,
     candidates: &[UnifiedCorrectionCandidate],
+    evaluations: &[CandidateDecisionEvaluation],
 ) -> bool {
+    let selected = &candidates[selected_index];
     let selected_span = changed_token_span(&event.original, &selected.replacement);
-    let selected_signal = candidate_decision_signals(event, selected, candidates.len());
+    let selected_signal = &evaluations[selected_index].signals;
     let strongest_lexical_competitor = candidates
         .iter()
-        .filter(|candidate| *candidate != selected)
-        .filter(|candidate| candidate.gate.action != CandidateGateAction::Veto)
-        .filter(|candidate| {
+        .enumerate()
+        .filter(|(candidate_index, _)| *candidate_index != selected_index)
+        .filter(|(_, candidate)| candidate.gate.action != CandidateGateAction::Veto)
+        .filter(|(_, candidate)| {
             matches!(
                 candidate.origin.source_role(),
                 CorrectionSourceRole::DeterministicTypo
@@ -783,14 +982,15 @@ fn phase_center_separates_candidate(
                     | CorrectionSourceRole::L3Context
             )
         })
-        .filter(|candidate| {
+        .filter(|(_, candidate)| {
             changed_spans_overlap(
                 selected_span,
                 changed_token_span(&event.original, &candidate.replacement),
             )
         })
-        .map(|candidate| {
-            candidate_decision_signals(event, candidate, candidates.len())
+        .map(|(candidate_index, _)| {
+            evaluations[candidate_index]
+                .signals
                 .l2_wave_peak_positive_milli
         })
         .max();
@@ -806,7 +1006,7 @@ fn phase_center_separates_candidate(
         return true;
     }
     if !selected_signal.l2_transition_phase_operator_promoted
-        || selected_signal.l2_transition_phase_verdict != "support"
+        || selected_signal.l2_transition_phase_verdict != crate::nanda_wave::PhaseVerdict::Support
         || selected_signal.l2_transition_phase_milli
             < selected_signal.l2_transition_phase_threshold_milli
     {
@@ -814,9 +1014,10 @@ fn phase_center_separates_candidate(
     }
     let strongest_competitor = candidates
         .iter()
-        .filter(|candidate| *candidate != selected)
-        .filter(|candidate| candidate.gate.action != CandidateGateAction::Veto)
-        .filter(|candidate| {
+        .enumerate()
+        .filter(|(candidate_index, _)| *candidate_index != selected_index)
+        .filter(|(_, candidate)| candidate.gate.action != CandidateGateAction::Veto)
+        .filter(|(_, candidate)| {
             matches!(
                 candidate.origin.source_role(),
                 CorrectionSourceRole::DeterministicTypo
@@ -824,14 +1025,16 @@ fn phase_center_separates_candidate(
                     | CorrectionSourceRole::L3Context
             )
         })
-        .filter(|candidate| {
+        .filter(|(_, candidate)| {
             changed_spans_overlap(
                 selected_span,
                 changed_token_span(&event.original, &candidate.replacement),
             )
         })
-        .map(|candidate| {
-            candidate_decision_signals(event, candidate, candidates.len()).l2_transition_phase_milli
+        .map(|(candidate_index, _)| {
+            evaluations[candidate_index]
+                .signals
+                .l2_transition_phase_milli
         })
         .max();
     strongest_competitor.map_or(true, |competitor| {
@@ -853,7 +1056,7 @@ pub(crate) struct CandidateDecisionSignals {
     pub(crate) l2_wave_peak_reason: &'static str,
     pub(crate) l2_transition_phase_milli: i16,
     pub(crate) l2_transition_phase_threshold_milli: i16,
-    pub(crate) l2_transition_phase_verdict: &'static str,
+    pub(crate) l2_transition_phase_verdict: crate::nanda_wave::PhaseVerdict,
     pub(crate) l2_transition_phase_package_loaded: bool,
     pub(crate) l2_transition_phase_operator_present: bool,
     pub(crate) l2_transition_phase_operator_promoted: bool,
@@ -861,50 +1064,59 @@ pub(crate) struct CandidateDecisionSignals {
     pub(crate) l2_transition_phase_anti_centers: u8,
     pub(crate) l2_transition_phase_surfaces: u32,
     pub(crate) l3_phrase_milli: i16,
-    pub(crate) l3_phrase_decision: &'static str,
+    pub(crate) l3_phrase_decision: L3ContextDisposition,
     pub(crate) l4_scene_milli: i16,
-    pub(crate) l4_scene_action: &'static str,
+    pub(crate) l4_scene_action: L4AllowedAction,
     pub(crate) l4_scene_reason: &'static str,
     pub(crate) l4_signed_milli: i16,
     pub(crate) l4_signed_reason: &'static str,
-    pub(crate) l4_surface_status: &'static str,
+    pub(crate) l4_surface_status: crate::nanda_wave::l4_signed_memory::L4SurfaceStatus,
     pub(crate) l4_transition_state_specific: bool,
     pub(crate) l4_transition_attract_count: u32,
     pub(crate) l4_transition_repel_count: u32,
 }
 
-pub(crate) fn candidate_decision_signals(
-    event: &TypingErrorEvent,
-    candidate: &UnifiedCorrectionCandidate,
-    candidate_count: usize,
+impl CandidateDecisionSignals {
+    fn l4_transition_signal(&self) -> super::L4SignedTransitionSignal {
+        let exact_positive = self.l4_transition_state_specific
+            && self.l4_transition_attract_count > self.l4_transition_repel_count;
+        let exact_negative = self.l4_transition_state_specific
+            && self.l4_transition_repel_count > self.l4_transition_attract_count;
+        super::L4SignedTransitionSignal {
+            negative: exact_negative || (!exact_positive && self.l4_signed_milli <= -450),
+            state_specific: self.l4_transition_state_specific,
+            attract_count: self.l4_transition_attract_count,
+            repel_count: self.l4_transition_repel_count,
+        }
+    }
+}
+
+fn candidate_decision_signals_from_readouts(
+    readouts: CandidateSignalReadouts<'_>,
 ) -> CandidateDecisionSignals {
-    let bayes = bayes_score_for_candidate(&event.original, candidate).posterior;
-    let explanation = explanation_for_candidate(&event.original, candidate);
-    let action = action::verify_action_operator(
-        &event.original,
-        &candidate.replacement,
-        candidate.error_class,
-        candidate.origin,
-    );
+    let CandidateSignalReadouts {
+        context,
+        candidate,
+        bayes,
+        explanation,
+        action,
+        relation,
+        l4_memory,
+    } = readouts;
+    let event = context.event;
+    let l4_scene = context.l4_scene;
     let l3 = l3_phrase_signal(event, candidate);
-    let l4_scene = l4_scene_signal(event, candidate_count);
-    let relation = TransitionRelationAtoms::encode(
-        &event.original,
-        &candidate.replacement,
-        TransitionRelationInput {
-            action_operator: action.operator.as_str(),
-            edit_operator: action.edit_operator.as_str(),
-            proof: action.edit_proof.as_str(),
-            verifier_passed: action.verifier_passed,
-            left_context_changed: action.left_context_changed,
-            changed_tokens: action.changed_tokens,
-        },
-    );
     let phase =
         crate::nanda_wave::l2_transition_phase_readout(action.operator.as_str(), relation.atoms());
-    let l4_signed = l4_signed_signal(event, candidate, relation.surface_key());
-    let l2_wave_peak = l2_wave_peak_signal(event, candidate, candidate_count, phase);
-    let rank_score = bayes
+    let l4_signed = l4_signed_signal_from_memory(l4_memory);
+    let l2_wave_peak = l2_wave_peak_signal(
+        event,
+        candidate,
+        context.candidate_count,
+        phase,
+        context.usage,
+    );
+    let rank_score = bayes.posterior
         + ((explanation.explanation_score_milli as f32 - 500.0) / 2_000.0)
         + transition_rank_bonus(&action, candidate)
         + ((candidate.evidence_count().saturating_sub(1).min(3) as f32) * 0.025)
@@ -948,7 +1160,9 @@ include!("decision_signals.rs");
 
 #[cfg(test)]
 mod tests {
-    use super::{admit_hidden_transition, phase_policy_rejection, TransitionDecisionPolicy};
+    use super::{
+        admit_evaluated_hidden_transition, phase_policy_rejection, TransitionDecisionPolicy,
+    };
     use crate::candidate_contract::{CandidateOrigin, CorrectionSourceRole};
     use crate::correction_core::{
         CandidateGateAction, CandidateGateDecision, CorrectionDecisionSource, TypingErrorClass,
@@ -969,7 +1183,7 @@ mod tests {
                 reason: "surface_candidate",
             },
         );
-        let admission = admit_hidden_transition(
+        let admission = admit(
             &event,
             &candidate,
             1,
@@ -985,7 +1199,7 @@ mod tests {
     fn transition_admission_allows_verified_current_word() {
         let event = event("провека ");
         let candidate = candidate("проверка ", "composite_ru_typo");
-        let admission = admit_hidden_transition(
+        let admission = admit(
             &event,
             &candidate,
             1,
@@ -1012,7 +1226,7 @@ mod tests {
                 true,
                 true,
                 true,
-                "repel",
+                crate::nanda_wave::PhaseVerdict::Repel,
             ),
             None
         );
@@ -1023,7 +1237,7 @@ mod tests {
                 true,
                 true,
                 true,
-                "repel",
+                crate::nanda_wave::PhaseVerdict::Repel,
             ),
             Some("l2_transition_phase_repel")
         );
@@ -1034,7 +1248,7 @@ mod tests {
                 true,
                 true,
                 true,
-                "unknown",
+                crate::nanda_wave::PhaseVerdict::Unknown,
             ),
             Some("l2_transition_phase_unknown")
         );
@@ -1045,7 +1259,7 @@ mod tests {
                 true,
                 true,
                 true,
-                "repel"
+                crate::nanda_wave::PhaseVerdict::Repel
             ),
             Some("l2_transition_phase_repel")
         );
@@ -1056,7 +1270,7 @@ mod tests {
                 true,
                 true,
                 true,
-                "unknown"
+                crate::nanda_wave::PhaseVerdict::Unknown
             ),
             Some("l2_transition_phase_unknown")
         );
@@ -1067,7 +1281,7 @@ mod tests {
                 true,
                 true,
                 true,
-                "support"
+                crate::nanda_wave::PhaseVerdict::Support
             ),
             None
         );
@@ -1078,7 +1292,7 @@ mod tests {
                 true,
                 true,
                 true,
-                "repel"
+                crate::nanda_wave::PhaseVerdict::Repel
             ),
             None
         );
@@ -1089,7 +1303,7 @@ mod tests {
                 false,
                 false,
                 false,
-                "unknown",
+                crate::nanda_wave::PhaseVerdict::Unknown,
             ),
             Some("l2_transition_phase_package_missing")
         );
@@ -1100,7 +1314,7 @@ mod tests {
                 true,
                 true,
                 false,
-                "support",
+                crate::nanda_wave::PhaseVerdict::Support,
             ),
             Some("l2_transition_phase_shadow_only")
         );
@@ -1133,9 +1347,47 @@ mod tests {
         )
     }
 
+    fn admit(
+        event: &TypingErrorEvent,
+        candidate: &UnifiedCorrectionCandidate,
+        candidate_count: usize,
+        source_role: CorrectionSourceRole,
+        strong_transition_support: bool,
+    ) -> super::TransitionAdmission {
+        let action = crate::typing_transition::action::verify_action_operator(
+            &event.original,
+            &candidate.replacement,
+            candidate.error_class,
+            candidate.origin,
+        );
+        let transition = crate::typing_transition::TypingTransition::from_evaluated_candidate(
+            crate::typing_transition::EvaluatedTransitionInput {
+                original: &event.original,
+                replacement: &candidate.replacement,
+                error_class: candidate.error_class,
+                origin: candidate.origin,
+                source_id: &candidate.source_id,
+                candidate_count,
+                action,
+                l4_signed_signal: crate::typing_transition::L4SignedTransitionSignal {
+                    negative: false,
+                    state_specific: false,
+                    attract_count: 0,
+                    repel_count: 0,
+                },
+            },
+        );
+        admit_evaluated_hidden_transition(
+            candidate_count,
+            source_role,
+            strong_transition_support,
+            &transition,
+        )
+    }
+
     #[test]
     fn hidden_state_blocks_single_weak_known_word_drift() {
-        let admission = admit_hidden_transition(
+        let admission = admit(
             &event("мы можем "),
             &candidate("мы модем ", "composite_ru_typo"),
             1,
@@ -1152,7 +1404,7 @@ mod tests {
 
     #[test]
     fn hidden_state_allows_unknown_to_known_typo_repair() {
-        let admission = admit_hidden_transition(
+        let admission = admit(
             &event("звгрузи "),
             &candidate("загрузи ", "composite_ru_typo"),
             1,
@@ -1175,7 +1427,7 @@ mod tests {
 
     #[test]
     fn hidden_state_blocks_context_imported_candidate_text() {
-        let admission = admit_hidden_transition(
+        let admission = admit(
             &event("можем "),
             &candidate("мы модем ", "composite_ru_typo"),
             2,

@@ -9,7 +9,6 @@ pub(crate) mod decision;
 pub(crate) mod executor_contract;
 pub(crate) mod l4_state_estimator;
 pub(crate) mod live_candidate;
-pub(crate) mod memory;
 pub(crate) mod state;
 pub(crate) mod verifier;
 
@@ -67,22 +66,43 @@ pub(crate) struct L3TransitionSignal {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct L4SignedTransitionSignal {
     pub(crate) negative: bool,
+    pub(crate) state_specific: bool,
+    pub(crate) attract_count: u32,
+    pub(crate) repel_count: u32,
+}
+
+impl L4SignedTransitionSignal {
+    pub(crate) const fn exact_positive(self) -> bool {
+        self.state_specific && self.attract_count > self.repel_count
+    }
+}
+
+pub(crate) struct EvaluatedTransitionInput<'a> {
+    pub(crate) original: &'a str,
+    pub(crate) replacement: &'a str,
+    pub(crate) error_class: TypingErrorClass,
+    pub(crate) origin: CandidateOrigin,
+    pub(crate) source_id: &'a str,
+    pub(crate) candidate_count: usize,
+    pub(crate) action: action::CorrectionActionOperatorReport,
+    pub(crate) l4_signed_signal: L4SignedTransitionSignal,
 }
 
 impl TypingTransition {
-    pub(crate) fn from_candidate(
-        original: &str,
-        replacement: &str,
-        error_class: TypingErrorClass,
-        origin: CandidateOrigin,
-        source_id: &str,
-        candidate_count: usize,
-    ) -> Self {
-        let action = action::verify_action_operator(original, replacement, error_class, origin);
+    pub(crate) fn from_evaluated_candidate(input: EvaluatedTransitionInput<'_>) -> Self {
+        let EvaluatedTransitionInput {
+            original,
+            replacement,
+            error_class,
+            origin,
+            source_id,
+            candidate_count,
+            action,
+            l4_signed_signal,
+        } = input;
         let state_before = LatentTypingState::from_text(original);
         let state_after_predicted = LatentTypingState::from_text(replacement);
         let boundary_changed = state_before.word_count_changed(&state_after_predicted);
-        let l4_negative = !memory::TransitionMemory::allows_apply(original, replacement, origin);
         let l4_state_estimate = L4StateEstimator::estimate(L4StateObservation {
             kind: if boundary_changed {
                 L4ObservationKind::SpaceBoundary
@@ -94,7 +114,7 @@ impl TypingTransition {
             left_context_changed: action.left_context_changed,
             word_count_changed: boundary_changed,
             verifier_passed: action.verifier_passed,
-            l4_negative,
+            l4_negative: l4_signed_signal.negative,
         });
         let relation_atoms = TransitionRelationAtoms::encode(
             original,
@@ -130,9 +150,7 @@ impl TypingTransition {
             l3_signal: L3TransitionSignal {
                 observes_context: matches!(origin, CandidateOrigin::L3Context),
             },
-            l4_signed_signal: L4SignedTransitionSignal {
-                negative: l4_negative,
-            },
+            l4_signed_signal,
             l4_state_estimate,
             relation_atoms,
         }
@@ -145,14 +163,27 @@ mod tests {
 
     #[test]
     fn transition_names_state_and_verifier_evidence() {
-        let transition = TypingTransition::from_candidate(
+        let action = action::verify_action_operator(
             "провека ",
             "проверка ",
             TypingErrorClass::CompositeTypo,
             CandidateOrigin::DeterministicTypo,
-            "composite_ru_typo",
-            1,
         );
+        let transition = TypingTransition::from_evaluated_candidate(EvaluatedTransitionInput {
+            original: "провека ",
+            replacement: "проверка ",
+            error_class: TypingErrorClass::CompositeTypo,
+            origin: CandidateOrigin::DeterministicTypo,
+            source_id: "composite_ru_typo",
+            candidate_count: 1,
+            action,
+            l4_signed_signal: L4SignedTransitionSignal {
+                negative: false,
+                state_specific: false,
+                attract_count: 0,
+                repel_count: 0,
+            },
+        });
 
         assert_eq!(transition.state_before.current_word, "провека");
         assert_eq!(transition.state_after_predicted.current_word, "проверка");

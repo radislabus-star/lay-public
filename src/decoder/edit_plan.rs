@@ -2,9 +2,10 @@ use crate::text_edit::{
     committed_separator_is_preserved, ensure_committed_tail_spacing,
     offset_replacement_plan_for_cursor, plan_committed_tail_full_token_replacement,
     plan_committed_tail_last_token_replacement, plan_committed_tail_replacement,
-    plan_text_replacement, plan_verified_transition_edit, replacement_plan_matches, EditAction,
-    PlannedReplacementInput, TextReplacement, TransitionAudit, TransitionOperator, TransitionProof,
+    plan_decision_transition_edit, plan_text_replacement, replacement_plan_matches,
+    DecisionTransitionEditInput, EditAction, TextReplacement, TransitionAudit,
 };
+use crate::typing_transition::decision::DecisionTransitionReceipt;
 
 use super::types::{CorrectionSource, CorrectionTrigger};
 
@@ -16,6 +17,8 @@ pub struct DecoderEditPlan {
     pub plan: TextReplacement,
     pub source: CorrectionSource,
     pub(super) transition: TransitionAudit,
+    selected_transition: Option<DecisionTransitionReceipt>,
+    input_gate_trace: Option<crate::action_log::RecentActionGateTrace>,
     confidence_milli: i16,
     selected_source_id: Option<String>,
     selected_error_class: Option<String>,
@@ -58,45 +61,40 @@ impl DecoderEditPlan {
             replacement,
             plan,
             source,
-            transition: TransitionAudit::proven(
-                TransitionOperator::DecoderTail,
-                TransitionProof::DecoderPlan,
-                true,
-                false,
-                original.split_whitespace().count().max(1),
-            ),
+            transition: TransitionAudit::none(),
+            selected_transition: None,
+            input_gate_trace: None,
             confidence_milli: 0,
             selected_source_id: None,
             selected_error_class: None,
         })
     }
 
-    fn with_transition_audit(
+    pub fn with_text_edit_input_gate_decision(
         mut self,
-        transition: TransitionAudit,
-        confidence_milli: i16,
-        selected_source_id: Option<&str>,
-        selected_error_class: Option<&str>,
+        decision: &crate::input_gate::InputGateDecision,
     ) -> Self {
-        self.transition = transition;
-        self.confidence_milli = confidence_milli;
-        self.selected_source_id = selected_source_id.map(str::to_string);
-        self.selected_error_class = selected_error_class.map(str::to_string);
-        self
-    }
-
-    pub fn with_input_gate_trace(self, trace: &crate::action_log::RecentActionGateTrace) -> Self {
-        let confidence_milli = trace
-            .scoreboard
+        let selected_transition = decision
+            .correction
             .as_ref()
-            .and_then(|scoreboard| scoreboard.selected_bayes_posterior_milli)
+            .and_then(|resolution| resolution.selected_transition.clone());
+        let Some(selected_transition) = selected_transition else {
+            return self;
+        };
+        let trace = decision.trace.as_ref();
+        let confidence_milli = trace
+            .and_then(|trace| trace.scoreboard.selected_bayes_posterior_milli)
             .unwrap_or(0);
-        self.with_transition_audit(
-            trace.selected_transition_audit(),
-            confidence_milli,
-            trace.selected_source_id.as_deref(),
-            trace.selected_error_class.as_deref(),
-        )
+        self.transition = selected_transition.diagnostic_transition();
+        self.selected_transition = Some(selected_transition);
+        self.confidence_milli = confidence_milli;
+        self.selected_source_id = trace.and_then(|trace| trace.selected_source_id.clone());
+        self.selected_error_class = trace
+            .and_then(|trace| trace.selected_error_class)
+            .map(|error_class| error_class.as_str().to_string());
+        self.input_gate_trace =
+            trace.map(crate::action_log::RecentActionGateTrace::from_input_gate);
+        self
     }
 
     pub fn authorize_verified_replacement(
@@ -106,20 +104,29 @@ impl DecoderEditPlan {
         replacement: &str,
         plan: TextReplacement,
     ) -> EditAction {
-        plan_verified_transition_edit(PlannedReplacementInput {
-            source,
-            confidence_milli: self.confidence_milli,
-            from_text: original,
-            to_text: replacement,
-            plan,
-            selected_source_id: self.selected_source_id.as_deref(),
-            selected_error_class: self.selected_error_class.as_deref(),
-            transition: self.transition.clone(),
-        })
+        let Some(receipt) = self.selected_transition.as_ref() else {
+            return EditAction::keep(source, original);
+        };
+        plan_decision_transition_edit(
+            DecisionTransitionEditInput {
+                source,
+                confidence_milli: self.confidence_milli,
+                from_text: original,
+                to_text: replacement,
+                plan,
+                selected_source_id: self.selected_source_id.as_deref(),
+                selected_error_class: self.selected_error_class.as_deref(),
+            },
+            receipt,
+        )
     }
 
     pub fn plan_matches_replacement(&self) -> bool {
         replacement_plan_matches(&self.original, &self.replacement, &self.plan)
+    }
+
+    pub fn text_edit_input_gate_trace(&self) -> Option<&crate::action_log::RecentActionGateTrace> {
+        self.input_gate_trace.as_ref()
     }
 
     pub fn preserves_committed_separator(&self) -> bool {
@@ -130,7 +137,7 @@ impl DecoderEditPlan {
     }
 
     pub fn verified_plan_for_cursor(&self, cursor_offset: u32) -> Option<TextReplacement> {
-        if self.transition.blocks_apply() {
+        if self.selected_transition.is_none() || self.transition.blocks_apply() {
             return None;
         }
         if !self.plan_matches_replacement() || !self.preserves_committed_separator() {
@@ -146,7 +153,7 @@ impl DecoderEditPlan {
         &self,
         cursor_offset: u32,
     ) -> Option<TextReplacement> {
-        if self.transition.blocks_apply() {
+        if self.selected_transition.is_none() || self.transition.blocks_apply() {
             return None;
         }
         if !self.plan_matches_replacement() || !self.preserves_committed_separator() {

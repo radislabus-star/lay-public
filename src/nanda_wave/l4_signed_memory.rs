@@ -12,8 +12,50 @@ pub(crate) struct L4SignedMemorySignal {
     pub(crate) transition_attract_count: u32,
     pub(crate) transition_repel_count: u32,
     pub(crate) transition_state_specific: bool,
-    pub(crate) reason: &'static str,
-    pub(crate) surface_status: &'static str,
+    pub(crate) reason: L4SignedMemoryReason,
+    pub(crate) surface_status: L4SurfaceStatus,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum L4SignedMemoryReason {
+    TransitionRepels,
+    TransitionAttracts,
+    StateRepels,
+    StateAttracts,
+    StateObserved,
+    Empty,
+}
+
+impl L4SignedMemoryReason {
+    pub(crate) const fn as_str(self) -> &'static str {
+        match self {
+            Self::TransitionRepels => "learned_transition_repels",
+            Self::TransitionAttracts => "learned_transition_attracts",
+            Self::StateRepels => "learned_state_repels",
+            Self::StateAttracts => "learned_state_attracts",
+            Self::StateObserved => "learned_state_observes",
+            Self::Empty => "learned_state_empty",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum L4SurfaceStatus {
+    Repelled,
+    Covered,
+    Observed,
+    Unknown,
+}
+
+impl L4SurfaceStatus {
+    pub(crate) const fn as_str(self) -> &'static str {
+        match self {
+            Self::Repelled => "repelled",
+            Self::Covered => "covered",
+            Self::Observed => "observed",
+            Self::Unknown => "unknown",
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -47,13 +89,13 @@ pub(crate) fn l4_signed_memory_signal_from_readout(
     coverage: UsageSurfaceCoverage,
 ) -> L4SignedMemorySignal {
     let surface_status = if coverage.rejected > coverage.accepted {
-        "repelled"
+        L4SurfaceStatus::Repelled
     } else if coverage.accepted > 0 {
-        "covered"
+        L4SurfaceStatus::Covered
     } else if coverage.observed > 0 {
-        "observed"
+        L4SurfaceStatus::Observed
     } else {
-        "unknown"
+        L4SurfaceStatus::Unknown
     };
 
     let attraction = (readout.word_prior * 0.70
@@ -70,19 +112,19 @@ pub(crate) fn l4_signed_memory_signal_from_readout(
     let reason = if readout.transition.repulsion > readout.transition.attraction
         && readout.transition.repel_count > 0
     {
-        "learned_transition_repels"
+        L4SignedMemoryReason::TransitionRepels
     } else if readout.transition.attraction > readout.transition.repulsion
         && readout.transition.attract_count > 0
     {
-        "learned_transition_attracts"
+        L4SignedMemoryReason::TransitionAttracts
     } else if repulsion > attraction && readout.rejected_count > 0 {
-        "learned_state_repels"
+        L4SignedMemoryReason::StateRepels
     } else if attraction > repulsion && readout.accepted_count > 0 {
-        "learned_state_attracts"
+        L4SignedMemoryReason::StateAttracts
     } else if attraction > 0.0 || repulsion > 0.0 {
-        "learned_state_observes"
+        L4SignedMemoryReason::StateObserved
     } else {
-        "learned_state_empty"
+        L4SignedMemoryReason::Empty
     };
 
     L4SignedMemorySignal {
@@ -130,7 +172,7 @@ mod tests {
 
         assert!(signal.attraction > signal.repulsion);
         assert!(signal.signed_weight > 0.0);
-        assert_eq!(signal.reason, "learned_transition_attracts");
+        assert_eq!(signal.reason, L4SignedMemoryReason::TransitionAttracts);
     }
 
     #[test]
@@ -195,7 +237,7 @@ mod tests {
             surface: Some(surface),
         });
 
-        assert_eq!(covered.surface_status, "covered");
-        assert_eq!(repelled.surface_status, "observed");
+        assert_eq!(covered.surface_status, L4SurfaceStatus::Covered);
+        assert_eq!(repelled.surface_status, L4SurfaceStatus::Observed);
     }
 }

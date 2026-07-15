@@ -154,7 +154,7 @@ fn current_word_is_known(word: &str) -> bool {
     }
     let lower = word.to_lowercase();
     crate::hot_field::HotFieldSnapshot::current()
-        .word_readout(&lower)
+        .stable_form_readout(&lower)
         .is_known()
         || word_has_common_usage_authority(&lower)
         || is_ascii_technical_token(word)
@@ -228,7 +228,17 @@ mod tests {
         assert_eq!(before.context_words, ["мы"]);
         assert_eq!(before.current_word, "можем");
         assert_eq!(after.current_word, "модем");
-        assert!(before.known_word_drift_to(&after));
+        assert!(crate::russian_lexicon::is_center_backed_russian_form(
+            "можем"
+        ));
+        assert!(
+            before.known_word_drift_to(&after),
+            "surface={:?} center_backed={} reference_backed={} decoder={}",
+            crate::hot_field::HotFieldSnapshot::current().word_readout("можем"),
+            crate::russian_lexicon::is_center_backed_russian_form("можем"),
+            crate::russian_lexicon::is_reference_backed_russian_form("можем"),
+            crate::nanda_wave::l2::l2_decoder_contains_surface("можем"),
+        );
         assert!(!before.candidate_imported_left_context(&after));
     }
 
@@ -246,7 +256,15 @@ mod tests {
         let before = LatentTypingState::from_text("тысяч рублей ");
         let after = LatentTypingState::from_text("тысяч рубей ");
 
-        assert!(before.current_word_known);
+        assert!(
+            before.current_word_known,
+            "surface={:?} rank={:?} center_backed={} reference_backed={} decoder={}",
+            crate::hot_field::HotFieldSnapshot::current().word_readout("рублей"),
+            crate::nanda_wave::l2::l2_surface_foundation_rank("рублей"),
+            crate::russian_lexicon::is_center_backed_russian_form("рублей"),
+            crate::russian_lexicon::is_reference_backed_russian_form("рублей"),
+            crate::nanda_wave::l2::l2_decoder_contains_surface("рублей"),
+        );
         assert!(before.known_word_drift_to(&after));
     }
 
@@ -260,6 +278,37 @@ mod tests {
         );
 
         assert!(!usage_snapshot_has_word_authority(&usage, "деллай"));
+    }
+
+    #[test]
+    fn nearby_reference_form_is_not_stable_input_authority() {
+        let state = LatentTypingState::from_text("руских ");
+
+        assert!(
+            !state.current_word_known,
+            "surface={:?} center_backed={} reference_backed={} decoder={}",
+            crate::hot_field::HotFieldSnapshot::current().word_readout("руских"),
+            crate::russian_lexicon::is_center_backed_russian_form("руских"),
+            crate::russian_lexicon::is_reference_backed_russian_form("руских"),
+            crate::nanda_wave::l2::l2_decoder_contains_surface("руских"),
+        );
+    }
+
+    #[test]
+    fn low_quality_exact_surface_is_not_stable_input_authority() {
+        let state = LatentTypingState::from_text("сбирать ");
+
+        assert!(
+            !state.current_word_known,
+            "surface={:?} stable={:?} rank={:?} phase={:?} decoder={} center={} usage={}",
+            crate::hot_field::HotFieldSnapshot::current().word_readout("сбирать"),
+            crate::hot_field::HotFieldSnapshot::current().stable_form_readout("сбирать"),
+            crate::nanda_wave::l2::l2_surface_foundation_rank("сбирать"),
+            crate::hot_field::HotFieldSnapshot::current().surface_phase_readout("сбирать"),
+            crate::nanda_wave::l2::l2_decoder_contains_surface("сбирать"),
+            crate::russian_lexicon::is_center_backed_russian_form("сбирать"),
+            word_has_common_usage_authority("сбирать"),
+        );
     }
 
     #[test]

@@ -1,4 +1,5 @@
-use super::mutation::{TransitionAudit, TransitionOperator, TransitionProof};
+use super::gate::VerifiedTransitionReceipt;
+use super::mutation::TransitionAudit;
 use super::safety::{autocorrect_edit_safety, EditPlanSafetyReport};
 use super::types::TextReplacement;
 
@@ -33,16 +34,17 @@ impl EditActionKind {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct EditAction {
-    pub(crate) kind: EditActionKind,
-    pub(crate) source: String,
-    pub(crate) confidence_milli: i16,
-    pub(crate) from_text: String,
-    pub(crate) to_text: String,
-    pub(crate) plan: Option<TextReplacement>,
-    pub(crate) safety: Option<EditPlanSafetyReport>,
-    pub(crate) transition: TransitionAudit,
-    pub(crate) selected_source_id: Option<String>,
-    pub(crate) selected_error_class: Option<String>,
+    kind: EditActionKind,
+    source: String,
+    confidence_milli: i16,
+    from_text: String,
+    to_text: String,
+    plan: Option<TextReplacement>,
+    safety: Option<EditPlanSafetyReport>,
+    transition: TransitionAudit,
+    verification: Option<VerifiedTransitionReceipt>,
+    selected_source_id: Option<String>,
+    selected_error_class: Option<String>,
 }
 
 pub(crate) struct PlannedReplacementInput<'a> {
@@ -54,6 +56,16 @@ pub(crate) struct PlannedReplacementInput<'a> {
     pub(crate) selected_source_id: Option<&'a str>,
     pub(crate) selected_error_class: Option<&'a str>,
     pub(crate) transition: TransitionAudit,
+}
+
+pub(crate) struct DecisionTransitionEditInput<'a> {
+    pub(crate) source: &'a str,
+    pub(crate) confidence_milli: i16,
+    pub(crate) from_text: &'a str,
+    pub(crate) to_text: &'a str,
+    pub(crate) plan: TextReplacement,
+    pub(crate) selected_source_id: Option<&'a str>,
+    pub(crate) selected_error_class: Option<&'a str>,
 }
 
 impl EditAction {
@@ -68,12 +80,13 @@ impl EditAction {
             plan: None,
             safety: None,
             transition: TransitionAudit::none(),
+            verification: None,
             selected_source_id: None,
             selected_error_class: None,
         }
     }
 
-    pub(crate) fn planned_replacement(input: PlannedReplacementInput<'_>) -> Self {
+    pub(super) fn planned_replacement(input: PlannedReplacementInput<'_>) -> Self {
         let PlannedReplacementInput {
             source,
             confidence_milli,
@@ -99,54 +112,26 @@ impl EditAction {
             plan: Some(plan),
             safety: Some(safety),
             transition,
+            verification: None,
             selected_source_id: selected_source_id.map(str::to_string),
             selected_error_class: selected_error_class.map(str::to_string),
         }
     }
 
-    pub(crate) fn ime_accept(
-        source: impl Into<String>,
-        confidence_milli: i16,
-        from_text: impl Into<String>,
-        to_text: impl Into<String>,
-    ) -> Self {
-        let from_text = from_text.into();
-        let to_text = to_text.into();
-        let plan = super::diff_plan::plan_text_replacement(&from_text, &to_text);
-        let transition = TransitionAudit::proven(
-            TransitionOperator::Completion,
-            TransitionProof::Completion,
-            true,
-            false,
-            1,
-        );
-        let safety = plan
-            .as_ref()
-            .map(|plan| autocorrect_edit_safety(&from_text, &to_text, plan, &transition));
-        let kind = if safety.as_ref().is_some_and(|safety| !safety.allow_apply) {
-            EditActionKind::BlockUnsafe
-        } else {
-            EditActionKind::AcceptImeCandidate
-        };
-        Self {
-            kind,
-            source: source.into(),
-            confidence_milli,
-            from_text,
-            to_text,
-            plan,
-            safety,
-            transition,
-            selected_source_id: Some("ImeCompletionCell32".to_string()),
-            selected_error_class: Some("ime-completion".to_string()),
-        }
+    pub(super) fn attach_verification(&mut self, receipt: VerifiedTransitionReceipt) {
+        self.verification = Some(receipt);
+    }
+
+    pub(super) fn mark_ime_accept(&mut self) {
+        self.kind = EditActionKind::AcceptImeCandidate;
     }
 
     pub fn allow_apply(&self) -> bool {
-        self.safety
-            .as_ref()
-            .map(|safety| safety.allow_apply)
-            .unwrap_or(!matches!(self.kind, EditActionKind::BlockUnsafe))
+        self.safety_allows_apply()
+            && self
+                .verification
+                .as_ref()
+                .is_some_and(|receipt| receipt.matches(self))
     }
 
     pub const fn kind(&self) -> EditActionKind {
@@ -189,6 +174,12 @@ impl EditAction {
         self.selected_error_class.as_deref()
     }
 
+    pub(crate) fn has_verifier_receipt(&self) -> bool {
+        self.verification
+            .as_ref()
+            .is_some_and(|receipt| receipt.matches(self))
+    }
+
     pub fn safety_reason(&self) -> &'static str {
         self.safety
             .as_ref()
@@ -211,9 +202,6 @@ impl EditAction {
     }
 
     pub(crate) fn execution_rejection_reason(&self) -> Option<&'static str> {
-        if !self.allow_apply() {
-            return Some(self.safety_reason());
-        }
         if !matches!(
             self.kind,
             EditActionKind::ReplaceLastToken
@@ -225,13 +213,25 @@ impl EditAction {
         ) {
             return Some("non_executable_edit_action");
         }
+        if !self.safety_allows_apply() {
+            return Some(self.safety_reason());
+        }
         if self.plan.is_none() {
             return Some("verified_edit_plan_missing");
         }
-        if !self.transition.is_verified() {
-            return Some("verified_transition_proof_missing");
+        if !self.has_verifier_receipt() {
+            return Some("verified_transition_receipt_missing");
         }
         None
+    }
+
+    fn safety_allows_apply(&self) -> bool {
+        self.safety
+            .as_ref()
+            .is_some_and(|safety| safety.allow_apply)
+            && !matches!(self.kind, EditActionKind::BlockUnsafe)
+            && self.plan.is_some()
+            && self.transition.is_verified()
     }
 }
 
@@ -284,12 +284,12 @@ fn classify_planned_replacement(safety: &EditPlanSafetyReport) -> EditActionKind
 mod tests {
     use super::{EditAction, EditActionKind, PlannedReplacementInput};
     use crate::text_edit::{
-        plan_committed_tail_full_token_replacement, plan_text_replacement, TransitionAudit,
-        TransitionOperator, TransitionProof,
+        plan_committed_tail_full_token_replacement, plan_ime_completion_edit,
+        plan_text_replacement, TransitionAudit, TransitionOperator, TransitionProof,
     };
 
     #[test]
-    fn last_token_replacement_action_is_applyable() {
+    fn unsealed_last_token_replacement_has_no_apply_authority() {
         let plan =
             plan_committed_tail_full_token_replacement("провека ", "проверка ").expect("plan");
         let action = EditAction::planned_replacement(PlannedReplacementInput {
@@ -310,7 +310,8 @@ mod tests {
         });
 
         assert_eq!(action.kind, EditActionKind::ReplaceLastToken);
-        assert!(action.allow_apply());
+        assert!(!action.allow_apply());
+        assert!(!action.has_verifier_receipt());
         assert!(!action.boundary_changed());
     }
 
@@ -341,7 +342,7 @@ mod tests {
 
     #[test]
     fn ime_accept_candidate_is_a_planned_edit_action() {
-        let action = EditAction::ime_accept(
+        let action = plan_ime_completion_edit(
             "ibus-active-composition-completion",
             900,
             "пров",
@@ -353,11 +354,11 @@ mod tests {
         assert!(action.plan.is_some());
         assert!(action.safety.is_some());
         assert_eq!(
-            action.transition.operator,
+            action.transition.operator(),
             Some(TransitionOperator::Completion)
         );
-        assert_eq!(action.transition.proof, Some(TransitionProof::Completion));
-        assert_eq!(action.transition.verified, Some(true));
+        assert_eq!(action.transition.proof(), Some(TransitionProof::Completion));
+        assert_eq!(action.transition.verified(), Some(true));
         assert_eq!(
             action.selected_source_id.as_deref(),
             Some("ImeCompletionCell32")
@@ -366,7 +367,7 @@ mod tests {
 
     #[test]
     fn ime_accept_candidate_cannot_rewrite_left_context() {
-        let action = EditAction::ime_accept(
+        let action = plan_ime_completion_edit(
             "ibus-active-composition-completion",
             900,
             "так можно проверить скры",
@@ -376,10 +377,7 @@ mod tests {
         assert_eq!(action.kind, EditActionKind::BlockUnsafe);
         assert!(!action.allow_apply());
         assert_eq!(action.safety_reason(), "unsafe_multiword_autocorrect_scope");
-        assert_eq!(
-            action.transition.operator,
-            Some(TransitionOperator::Completion)
-        );
+        assert_eq!(action.transition.operator(), None);
     }
 
     #[test]

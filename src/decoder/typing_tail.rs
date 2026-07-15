@@ -112,9 +112,5 @@ pub(super) fn changed_committed_tail_plan_from_gate(
     source: CorrectionSource,
 ) -> Option<DecoderEditPlan> {
     let edit = changed_committed_tail_plan(trigger, original, replacement, source)?;
-    let trace = decision
-        .trace
-        .as_ref()
-        .map(crate::action_log::RecentActionGateTrace::from_input_gate)?;
-    Some(edit.with_input_gate_trace(&trace))
+    Some(edit.with_text_edit_input_gate_decision(decision))
 }

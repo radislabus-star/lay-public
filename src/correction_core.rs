@@ -6,7 +6,6 @@
 use crate::candidate_contract::{CandidateOrigin, CorrectionSourceRole};
 use crate::candidate_explanation::{explain_candidate, CandidateExplanation};
 use crate::config::{CorrectionSafety, TypingAssistRuleConfig};
-use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
 use crate::nanda_wave::{run_wave_trace_with_options, WaveOptions, WordCandidate};
 use crate::russian_typo_candidates::{
     inserted_char_position_for_missing_letter, repeated_run_deletion_candidates,
@@ -21,7 +20,7 @@ use crate::typing_pipeline::{
 };
 use crate::typing_rule_graph::ids;
 use crate::typing_transition::{
-    action as action_operator, candidate::L2CandidateLattice, decision::candidate_decision_signals,
+    action as action_operator, candidate::L2CandidateLattice, decision::CandidateDecisionBatch,
     state::L1SurfaceSignal, verifier as edit_transition,
 };
 use crate::word_reader::{
@@ -41,7 +40,7 @@ mod gate;
 use gate::gate_candidate;
 #[cfg(test)]
 use gate::gate_candidate_with_source;
-pub(crate) use gate::{bayes_score_for_candidate, normalized_correction_words};
+pub(crate) use gate::normalized_correction_words;
 use gate::{
     gate_candidate_with_origin, repeated_deletion_has_surface_support,
     should_prefer_composite_after_repeated_repair,
@@ -229,6 +228,8 @@ pub struct CorrectionResolution {
     pub decision: Option<CorrectionDecision>,
     pub scoreboard: CorrectionScoreboard,
     pub(crate) candidate_scores: Vec<CorrectionCandidateScoreTrace>,
+    pub(crate) selected_transition:
+        Option<crate::typing_transition::decision::DecisionTransitionReceipt>,
 }
 
 #[derive(Debug, Clone)]
@@ -379,10 +380,12 @@ pub fn correction_gate_stats_json() -> serde_json::Value {
 
 impl CorrectionScoreboard {
     pub(crate) fn from_candidates(
-        event: &TypingErrorEvent,
         candidates: &[UnifiedCorrectionCandidate],
-        selected: Option<&UnifiedCorrectionCandidate>,
+        decision_batch: &CandidateDecisionBatch,
     ) -> Self {
+        let selected = decision_batch
+            .selected_index
+            .and_then(|index| candidates.get(index));
         let mut scoreboard = Self {
             total_candidates: candidates.len(),
             ..Self::default()
@@ -410,10 +413,10 @@ impl CorrectionScoreboard {
             }
         }
 
-        scoreboard.selected_bayes_posterior_milli = selected.map(|candidate| {
-            let posterior = bayes_score_for_candidate(&event.original, candidate).posterior;
-            (posterior * 1000.0).round() as i16
-        });
+        scoreboard.selected_bayes_posterior_milli = decision_batch
+            .selected_index
+            .and_then(|index| decision_batch.evaluations.get(index))
+            .map(|evaluation| (evaluation.bayes.posterior * 1000.0).round() as i16);
         scoreboard
     }
 }
@@ -505,24 +508,19 @@ fn update_max_atomic(target: &AtomicU64, value: u64) {
 }
 
 impl CorrectionCandidateScoreTrace {
-    pub(crate) fn from_candidates(
-        event: &TypingErrorEvent,
+    pub(crate) fn from_decision_batch(
         candidates: &[UnifiedCorrectionCandidate],
-        selected: Option<&UnifiedCorrectionCandidate>,
+        batch: &CandidateDecisionBatch,
     ) -> Vec<Self> {
         candidates
             .iter()
-            .map(|candidate| {
-                let score = bayes_score_for_candidate(&event.original, candidate);
-                let explanation = explanation_for_candidate(&event.original, candidate);
-                let action = action_operator::verify_action_operator(
-                    &event.original,
-                    &candidate.replacement,
-                    candidate.error_class,
-                    candidate.origin,
-                );
-                let decision_signals =
-                    candidate_decision_signals(event, candidate, candidates.len());
+            .zip(&batch.evaluations)
+            .enumerate()
+            .map(|(index, (candidate, evaluation))| {
+                let score = &evaluation.bayes;
+                let explanation = evaluation.explanation;
+                let action = evaluation.action;
+                let decision_signals = &evaluation.signals;
                 Self {
                     replacement: candidate.replacement.clone(),
                     source: candidate.source,
@@ -558,7 +556,9 @@ impl CorrectionCandidateScoreTrace {
                     l2_transition_phase_milli: decision_signals.l2_transition_phase_milli,
                     l2_transition_phase_threshold_milli: decision_signals
                         .l2_transition_phase_threshold_milli,
-                    l2_transition_phase_verdict: decision_signals.l2_transition_phase_verdict,
+                    l2_transition_phase_verdict: decision_signals
+                        .l2_transition_phase_verdict
+                        .as_str(),
                     l2_transition_phase_package_loaded: decision_signals
                         .l2_transition_phase_package_loaded,
                     l2_transition_phase_operator_present: decision_signals
@@ -571,20 +571,20 @@ impl CorrectionCandidateScoreTrace {
                         .l2_transition_phase_anti_centers,
                     l2_transition_phase_surfaces: decision_signals.l2_transition_phase_surfaces,
                     l3_phrase_milli: decision_signals.l3_phrase_milli,
-                    l3_phrase_decision: decision_signals.l3_phrase_decision,
+                    l3_phrase_decision: decision_signals.l3_phrase_decision.as_str(),
                     l4_scene_milli: decision_signals.l4_scene_milli,
-                    l4_scene_action: decision_signals.l4_scene_action,
+                    l4_scene_action: decision_signals.l4_scene_action.as_str(),
                     l4_scene_reason: decision_signals.l4_scene_reason,
                     l4_signed_milli: decision_signals.l4_signed_milli,
                     l4_signed_reason: decision_signals.l4_signed_reason,
-                    l4_surface_status: decision_signals.l4_surface_status,
+                    l4_surface_status: decision_signals.l4_surface_status.as_str(),
                     l4_transition_state_specific: decision_signals.l4_transition_state_specific,
                     l4_transition_attract_count: decision_signals.l4_transition_attract_count,
                     l4_transition_repel_count: decision_signals.l4_transition_repel_count,
                     risk_milli: crate::text_metrics::score_to_milli(score.risk),
                     posterior_milli: crate::text_metrics::score_to_milli(score.posterior),
                     decision_rank_milli: decision_signals.rank_milli,
-                    selected: selected.is_some_and(|selected| selected == candidate),
+                    selected: batch.selected_index == Some(index),
                 }
             })
             .collect()

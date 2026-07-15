@@ -179,7 +179,7 @@ fn candidate_admission(
             reason: "l2_surface_stem_truncation_low",
         };
     }
-    if let Some(decision) = l3_context_gate(original, replacement, error_class, origin) {
+    if let Some(decision) = structural_context_gate(original, replacement, error_class, origin) {
         return decision;
     }
     if unproven_stable_surface_shape_drift(original, replacement, error_class, origin) {
@@ -200,18 +200,6 @@ fn candidate_admission(
             reason: "completion_is_not_autocorrect",
         };
     }
-    if let Some(reason) = crate::correction_bayes::bayes_suggest_only_reason(
-        original,
-        replacement,
-        error_class.as_str(),
-        origin,
-    ) {
-        return CandidateGateDecision {
-            action: CandidateGateAction::SuggestOnly,
-            reason,
-        };
-    }
-
     match error_class {
         TypingErrorClass::TechnicalToken | TypingErrorClass::ProtectedToken => {
             CandidateGateDecision {
@@ -271,19 +259,7 @@ pub(crate) fn normalized_correction_words(text: &str) -> Vec<String> {
     crate::word_reader::normalized_text_words(text)
 }
 
-pub(crate) fn bayes_score_for_candidate(
-    original: &str,
-    candidate: &UnifiedCorrectionCandidate,
-) -> crate::correction_bayes::BayesCandidateScore {
-    crate::correction_bayes::bayes_score_candidate(
-        original,
-        &candidate.replacement,
-        candidate.error_class.as_str(),
-        candidate.origin,
-    )
-}
-
-fn l3_context_gate(
+fn structural_context_gate(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
@@ -381,52 +357,7 @@ fn l3_context_gate(
             reason: "nanda_surface_unknown_word",
         });
     }
-    if let Some(decision) = l3_phrase_memory_gate(original, replacement, error_class, origin) {
-        return Some(decision);
-    }
     None
-}
-
-fn l3_phrase_memory_gate(
-    original: &str,
-    replacement: &str,
-    error_class: TypingErrorClass,
-    origin: CandidateOrigin,
-) -> Option<CandidateGateDecision> {
-    if !l3_phrase_memory_applies_to(error_class) {
-        return None;
-    }
-    let report = evaluate_default_candidate(original, replacement)?;
-    match report.decision {
-        L3PhraseGateDecision::Support => Some(CandidateGateDecision {
-            action: CandidateGateAction::Eligible,
-            reason: "l3_phrase_memory_support",
-        }),
-        // Phrase memory contributes negative pressure in DecisionCore. It may
-        // veto its own context-generated proposal, but it must not erase an
-        // independently verified current-word transition from L2.
-        L3PhraseGateDecision::Suppress if origin == CandidateOrigin::L3Context => {
-            Some(CandidateGateDecision {
-                action: CandidateGateAction::KeepOriginal,
-                reason: "l3_phrase_memory_conflict",
-            })
-        }
-        L3PhraseGateDecision::Suppress => None,
-        L3PhraseGateDecision::Neutral => None,
-    }
-}
-
-fn l3_phrase_memory_applies_to(error_class: TypingErrorClass) -> bool {
-    matches!(
-        error_class,
-        TypingErrorClass::CompositeTypo
-            | TypingErrorClass::BoundaryShift
-            | TypingErrorClass::MissingLetter
-            | TypingErrorClass::ExtraLetter
-            | TypingErrorClass::AdjacentTransposition
-            | TypingErrorClass::LetterSubstitution
-            | TypingErrorClass::GrammarAgreement
-    )
 }
 
 fn reflexive_suffix_candidate_requires_grammar_proof(

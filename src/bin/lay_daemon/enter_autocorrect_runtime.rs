@@ -1,9 +1,7 @@
 use evdev::{uinput::VirtualDevice, KeyCode};
 use lay::action_log::RecentActionGateTrace;
-use lay::config::{CorrectionSafety, TypingAssistRuleConfig};
-use lay::correction_core::CorrectionMode;
+use lay::config::TypingAssistRuleConfig;
 use lay::decoder::{decode_enter_autocorrect_tail, DecoderEditPlan};
-use lay::input_gate::{decide_input_gate, InputGateRequest, InputGateTrigger};
 use lay::keyboard::{map_original_events, KeyEvent};
 use lay::word_buffer::WordBuffer;
 use std::sync::atomic::Ordering;
@@ -45,22 +43,14 @@ pub(super) fn enter_autocorrect_candidate(
         .chars()
         .next_back()
         .is_some_and(char::is_whitespace);
-    let assist_input = if original_has_trailing_space {
-        original.clone()
-    } else {
-        format!("{original} ")
-    };
     let edit = decode_enter_autocorrect_tail(
         &events,
         original_has_trailing_space,
         allow_layout_auto,
         pipeline,
     )?;
-    Some((
-        events,
-        edit,
-        enter_input_gate_trace(&assist_input, pipeline),
-    ))
+    let input_gate = edit.text_edit_input_gate_trace().cloned();
+    Some((events, edit, input_gate))
 }
 
 pub(super) fn handle_enter_autocorrect(
@@ -101,16 +91,15 @@ pub(super) fn handle_enter_autocorrect(
         log("⚠ enter-autocorrect skipped before delete: edit plan invariant failed");
         return None;
     };
-    let Some(input_gate_trace) = input_gate.as_ref() else {
+    if input_gate.is_none() {
         log("· enter-autocorrect skipped: transition trace missing");
         return None;
-    };
-    let edit_action = lay::text_edit::plan_input_gate_edit(
+    }
+    let edit_action = edit.authorize_verified_replacement(
         "enter-autocorrect",
         original.as_str(),
         replacement.as_str(),
         plan.clone(),
-        input_gate_trace,
     );
     lay::action_log::record_candidate_edit_action_before_apply(
         &edit_action,
@@ -259,26 +248,4 @@ pub(super) fn handle_enter_autocorrect(
         started_at.elapsed().as_millis()
     ));
     Some(insert_outcome.layout_is_ru)
-}
-
-fn enter_input_gate_trace(
-    text_tail: &str,
-    pipeline: &[TypingAssistRuleConfig],
-) -> Option<RecentActionGateTrace> {
-    let decision = decide_input_gate(InputGateRequest {
-        trigger: InputGateTrigger::Enter,
-        text_tail,
-        auto_replace: true,
-        typing_assist: true,
-        auto_switch_layout: false,
-        correction_safety: CorrectionSafety::Normal,
-        typing_assist_pipeline: pipeline,
-        nanda_autocorrect: false,
-        nanda_wave_options: lay::nanda_wave::WaveOptions::default(),
-        correction_mode: CorrectionMode::DeterministicOnly,
-    });
-    decision
-        .trace
-        .as_ref()
-        .map(RecentActionGateTrace::from_input_gate)
 }

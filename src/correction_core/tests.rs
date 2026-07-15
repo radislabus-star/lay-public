@@ -1521,9 +1521,15 @@ mod tests {
             resolve_text_correction(request("делай пров ", &pipeline, CorrectionMode::NandaOnly));
 
         assert!(resolution.decision.is_none());
-        assert!(resolution.candidates.iter().all(|candidate| {
-            !candidate.has_source_id("L2SurfaceCompletionCell32")
-                && candidate.error_class != TypingErrorClass::CompletionOnly
+        let completions = resolution
+            .candidates
+            .iter()
+            .filter(|candidate| candidate.has_source_id("L2SurfaceCompletionCell32"))
+            .collect::<Vec<_>>();
+        assert!(!completions.is_empty(), "{resolution:#?}");
+        assert!(completions.iter().all(|candidate| {
+            candidate.error_class == TypingErrorClass::CompletionOnly
+                && candidate.gate.action == CandidateGateAction::SuggestOnly
         }));
     }
 

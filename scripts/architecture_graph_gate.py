@@ -241,7 +241,7 @@ def build_receipt() -> dict[str, Any]:
     evidence.extend(item_evidence)
     violations.extend(item_violations)
     for label, owner in (
-        (".select_apply_candidate()", "src/typing_transition/decision.rs"),
+        (".evaluate_candidates()", "src/typing_transition/decision.rs"),
         (".decide_visible_text_transition()", "src/typing_transition/decision.rs"),
         (".select_live_completions()", "src/typing_transition/live_candidate.rs"),
         (".select_ime_readout()", "src/typing_transition/live_candidate.rs"),
@@ -319,10 +319,53 @@ def build_receipt() -> dict[str, Any]:
         )
     if "authorized: Option<AuthorizedEdit>" not in executor_source:
         capability_violations.append("sealed_capability_storage_missing")
+    decision_receipt_sites: list[str] = []
+    verifier_receipt_sites: list[str] = []
+    receipt_attach_sites: list[str] = []
+    for path in (ROOT / "src").rglob("*.rs"):
+        relative = path.relative_to(ROOT).as_posix()
+        for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if "DecisionTransitionReceipt::issue(" in line:
+                decision_receipt_sites.append(f"{relative}:L{line_number}")
+            if "VerifiedTransitionReceipt::issue(" in line:
+                verifier_receipt_sites.append(f"{relative}:L{line_number}")
+            if ".attach_verification(" in line:
+                receipt_attach_sites.append(f"{relative}:L{line_number}")
+    if any(
+        not site.startswith("src/typing_transition/decision.rs:")
+        for site in decision_receipt_sites
+    ):
+        capability_violations.append(
+            "decision_receipt_constructor_sites:" + ",".join(decision_receipt_sites)
+        )
+    if len(verifier_receipt_sites) != 1 or not verifier_receipt_sites[0].startswith(
+        "src/text_edit/gate.rs:"
+    ):
+        capability_violations.append(
+            "verifier_receipt_constructor_sites:" + ",".join(verifier_receipt_sites)
+        )
+    if len(receipt_attach_sites) != 1 or not receipt_attach_sites[0].startswith(
+        "src/text_edit/gate.rs:"
+    ):
+        capability_violations.append(
+            "verifier_receipt_attach_sites:" + ",".join(receipt_attach_sites)
+        )
+    action_source = (ROOT / "src/text_edit/action.rs").read_text(encoding="utf-8")
+    action_log_source = (ROOT / "src/action_log.rs").read_text(encoding="utf-8")
+    if "verification: Option<VerifiedTransitionReceipt>" not in action_source:
+        capability_violations.append("edit_action_verifier_receipt_missing")
+    if "selected_transition_audit(" in action_log_source:
+        capability_violations.append("serialized_trace_can_rebuild_transition_authority")
+    receipt_evidence = (
+        constructor_sites
+        + decision_receipt_sites
+        + verifier_receipt_sites
+        + receipt_attach_sites
+    )
     checks.append(
         check(
             "typed-transition-capability",
-            constructor_sites,
+            receipt_evidence,
             capability_violations,
         )
     )

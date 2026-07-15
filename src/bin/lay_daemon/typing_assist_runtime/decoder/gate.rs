@@ -80,10 +80,8 @@ fn build_input_gate_decoded_tail(
         original,
         replacement_tail,
         CorrectionSource::TypingAssist,
-    )?;
-    if let Some(trace) = input_gate.as_ref() {
-        edit = edit.with_input_gate_trace(trace);
-    }
+    )?
+    .with_text_edit_input_gate_decision(&decision);
     if let Some(full_token_plan) = edit.verified_full_token_plan_for_cursor(0) {
         edit.plan = full_token_plan;
     }

@@ -53,8 +53,20 @@ impl LayIbusEngine {
             trace::record(r#"{"kind":"ibus_stuck_completion_authorized_text_mismatch"}"#);
             return Ok(false);
         }
+        let Some(authorized_plan) = authorized_edit.action().plan() else {
+            trace::record(r#"{"kind":"ibus_stuck_completion_authorized_plan_missing"}"#);
+            return Ok(false);
+        };
+        if authorized_plan.backspaces != 0
+            || authorized_plan.move_left != 0
+            || authorized_plan.move_right != 0
+            || authorized_plan.insert != committed_suffix
+        {
+            trace::record(r#"{"kind":"ibus_stuck_completion_authorized_plan_mismatch"}"#);
+            return Ok(false);
+        }
         self.clear_preedit(emitter).await?;
-        Self::commit_text(emitter, make_ibus_text(committed_suffix.clone()))
+        Self::commit_text(emitter, make_ibus_text(authorized_plan.insert.clone()))
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         lay::nanda_wave::record_accepted_ime_usage(&context_tail, &accepted_text);

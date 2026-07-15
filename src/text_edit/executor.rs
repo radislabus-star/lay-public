@@ -96,27 +96,24 @@ impl From<TextEditBackend> for ExecutionBackend {
 mod tests {
     use super::{authorize_backend_edit, TextEditBackend};
     use crate::text_edit::{
-        plan_committed_tail_full_token_replacement, EditAction, PlannedReplacementInput,
-        TextReplacement, TransitionAudit, TransitionOperator, TransitionProof,
+        plan_committed_tail_full_token_replacement, plan_manual_edit, EditAction, TextReplacement,
     };
 
     #[test]
     fn text_edit_backend_is_execution_only() {
-        let action = EditAction::planned_replacement(PlannedReplacementInput {
-            source: "test",
-            confidence_milli: 100,
-            from_text: "a b",
-            to_text: "ab",
-            plan: TextReplacement {
+        let action = plan_manual_edit(
+            "test",
+            100,
+            "a b",
+            "ab",
+            TextReplacement {
                 move_left: 0,
                 backspaces: 3,
                 insert: "ab".to_string(),
                 move_right: 0,
             },
-            selected_source_id: Some("test"),
-            selected_error_class: Some("boundary-unsafe"),
-            transition: TransitionAudit::none(),
-        });
+            2,
+        );
         let auth = authorize_backend_edit(TextEditBackend::Ime, action);
         assert!(!auth.allow_execute);
         assert!(auth.into_authorized().is_none());
@@ -124,45 +121,26 @@ mod tests {
 
     #[test]
     fn safe_plan_without_transition_proof_cannot_create_capability() {
-        let action = EditAction::planned_replacement(PlannedReplacementInput {
-            source: "test",
-            confidence_milli: 900,
-            from_text: "провека ",
-            to_text: "проверка ",
-            plan: plan_committed_tail_full_token_replacement("провека ", "проверка ")
-                .expect("plan"),
-            selected_source_id: Some("test"),
-            selected_error_class: Some("missing-letter"),
-            transition: TransitionAudit::none(),
-        });
-        assert!(action.allow_apply());
+        let action = EditAction::keep("test", "провека ");
+        assert!(!action.allow_apply());
 
         let auth = authorize_backend_edit(TextEditBackend::Daemon, action);
 
         assert!(!auth.allow_execute);
-        assert_eq!(auth.reason, "verified_transition_proof_missing");
+        assert_eq!(auth.reason, "non_executable_edit_action");
         assert!(auth.into_authorized().is_none());
     }
 
     #[test]
     fn verified_transition_creates_one_shot_capability() {
-        let action = EditAction::planned_replacement(PlannedReplacementInput {
-            source: "test",
-            confidence_milli: 900,
-            from_text: "провека ",
-            to_text: "проверка ",
-            plan: plan_committed_tail_full_token_replacement("провека ", "проверка ")
-                .expect("plan"),
-            selected_source_id: Some("test"),
-            selected_error_class: Some("missing-letter"),
-            transition: TransitionAudit::proven(
-                TransitionOperator::ReplaceCurrentWord,
-                TransitionProof::Typo,
-                true,
-                false,
-                1,
-            ),
-        });
+        let action = plan_manual_edit(
+            "test",
+            900,
+            "провека ",
+            "проверка ",
+            plan_committed_tail_full_token_replacement("провека ", "проверка ").expect("plan"),
+            1,
+        );
 
         let auth = authorize_backend_edit(TextEditBackend::Daemon, action);
 

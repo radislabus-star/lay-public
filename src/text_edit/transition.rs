@@ -167,9 +167,9 @@ mod tests {
             TextTransitionDecision::Apply { plan, action } => {
                 assert_eq!(plan.backspaces, 4);
                 assert_eq!(plan.insert, "вет");
-                assert_eq!(action.kind, EditActionKind::ReplaceLastToken);
+                assert_eq!(action.kind(), EditActionKind::ReplaceLastToken);
                 assert_eq!(
-                    action.transition.operator,
+                    action.transition().operator(),
                     Some(TransitionOperator::VisibleTail)
                 );
             }
@@ -286,7 +286,7 @@ mod tests {
                     }
                 );
                 assert_eq!(
-                    action.expect("edit action").kind,
+                    action.expect("edit action").kind(),
                     EditActionKind::BlockUnsafe
                 );
             }
@@ -317,9 +317,9 @@ mod tests {
                     }
                 );
                 let action = action.expect("edit action");
-                assert_eq!(action.kind, EditActionKind::BlockUnsafe);
+                assert_eq!(action.kind(), EditActionKind::BlockUnsafe);
                 assert_eq!(
-                    action.transition.operator,
+                    action.transition().operator(),
                     Some(TransitionOperator::VisibleTail)
                 );
             }

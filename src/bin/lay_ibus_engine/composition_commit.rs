@@ -7,6 +7,11 @@ use super::text::make_ibus_text;
 use super::trace;
 use lay::text_edit::AuthorizedEdit;
 
+enum ActiveCompositionAuthority {
+    UserInput,
+    VerifiedEdit(Box<AuthorizedEdit>),
+}
+
 pub(super) struct ActiveCompositionCommit {
     with_space: bool,
     suffix: String,
@@ -46,7 +51,7 @@ impl LayIbusEngine {
             &request.suffix,
             request.sync_layout,
             request.autocorrect,
-            None,
+            ActiveCompositionAuthority::UserInput,
         )
         .await
     }
@@ -99,7 +104,7 @@ impl LayIbusEngine {
             &suffix,
             false,
             false,
-            Some(authorized_edit),
+            ActiveCompositionAuthority::VerifiedEdit(Box::new(authorized_edit)),
         )
         .await?;
         lay::nanda_wave::record_accepted_ime_usage(&context_tail, &accepted_word);
@@ -150,7 +155,7 @@ impl LayIbusEngine {
         suffix: &str,
         sync_layout: bool,
         autocorrect: bool,
-        mut authorized_edit: Option<AuthorizedEdit>,
+        mut authority: ActiveCompositionAuthority,
     ) -> fdo::Result<()> {
         let started_at = Instant::now();
         let clear_started_at = Instant::now();
@@ -162,7 +167,7 @@ impl LayIbusEngine {
         if with_space {
             text.push(' ');
         }
-        if !authorized_edit_matches_ime_text(authorized_edit.as_ref(), &text) {
+        if !authority.matches_text(&text) {
             trace::record(r#"{"kind":"ibus_active_composition_authorized_text_mismatch"}"#);
             return Ok(());
         }
@@ -180,14 +185,14 @@ impl LayIbusEngine {
                 );
                 if let Some(edit) = backend_action.into_authorized() {
                     text = edit.action().to_text().to_string();
-                    authorized_edit = Some(edit);
+                    authority = ActiveCompositionAuthority::VerifiedEdit(Box::new(edit));
                 } else {
                     trace::record(r#"{"kind":"ibus_active_composition_autocorrect_blocked"}"#);
                 }
             }
         }
         let decision_ms = decision_started_at.elapsed().as_micros() as u64;
-        if !authorized_edit_matches_ime_text(authorized_edit.as_ref(), &text) {
+        if !authority.matches_text(&text) {
             trace::record(r#"{"kind":"ibus_active_composition_authorized_text_mismatch"}"#);
             return Ok(());
         }
@@ -231,13 +236,15 @@ impl LayIbusEngine {
     }
 }
 
-fn authorized_edit_matches_ime_text(authorized_edit: Option<&AuthorizedEdit>, text: &str) -> bool {
-    match authorized_edit {
-        Some(edit) => {
-            edit.backend() == lay::text_edit::TextEditBackend::Ime
-                && edit.action().to_text() == text
+impl ActiveCompositionAuthority {
+    fn matches_text(&self, text: &str) -> bool {
+        match self {
+            Self::VerifiedEdit(edit) => {
+                edit.backend() == lay::text_edit::TextEditBackend::Ime
+                    && edit.action().to_text() == text
+            }
+            Self::UserInput => true,
         }
-        None => true,
     }
 }
 
@@ -262,8 +269,8 @@ mod active_composition_route_contract {
             "Tab/IME completion accept must enter the typed IME completion plan"
         );
         assert!(
-            source.contains("Some(authorized_edit)")
-                && source.contains("authorized_edit_matches_ime_text"),
+            source.contains("ActiveCompositionAuthority::VerifiedEdit(Box::new(authorized_edit))")
+                && source.contains("authority.matches_text"),
             "accepted completion must hold AuthorizedEdit until CommitText"
         );
     }

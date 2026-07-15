@@ -33,7 +33,7 @@ pub(crate) mod usage_prior;
 
 pub use eval::{evaluate_wave, evaluate_wave_with_options, WaveEvalResult, WaveEvalStats};
 pub use l2_candidate_phase::L2PhaseTrainingEntry;
-pub(crate) use l2_candidate_phase::PhaseReadout;
+pub(crate) use l2_candidate_phase::{PhaseReadout, PhaseVerdict};
 pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
 pub use options::WaveOptions;
 pub use signal::{ActiveMode, LayerTrace, WaveDecision, WavePacket, WaveTrace, WordCandidate};

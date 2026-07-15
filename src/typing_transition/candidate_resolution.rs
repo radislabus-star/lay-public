@@ -3,22 +3,23 @@
 // typing-transition API.
 
 fn resolve_l2_lattice(lattice: L2CandidateLattice) -> CorrectionResolution {
-    let selected = TransitionDecisionCore::select_apply_candidate(
+    let decision_batch = TransitionDecisionCore::evaluate_candidates(
         &lattice.event,
         &lattice.candidates,
         lattice.policy,
     );
+    let selected = decision_batch
+        .selected_index
+        .and_then(|index| lattice.candidates.get(index))
+        .cloned();
     let decision = selected.as_ref().map(|candidate| CorrectionDecision {
         replacement: candidate.replacement.clone(),
         source: candidate.source,
     });
-    let scoreboard =
-        CorrectionScoreboard::from_candidates(&lattice.event, &lattice.candidates, selected.as_ref());
-    let candidate_scores = CorrectionCandidateScoreTrace::from_candidates(
-        &lattice.event,
-        &lattice.candidates,
-        selected.as_ref(),
-    );
+    let scoreboard = CorrectionScoreboard::from_candidates(&lattice.candidates, &decision_batch);
+    let candidate_scores =
+        CorrectionCandidateScoreTrace::from_decision_batch(&lattice.candidates, &decision_batch);
+    let selected_transition = decision_batch.selected_transition.clone();
 
     CorrectionResolution {
         event: lattice.event,
@@ -27,6 +28,7 @@ fn resolve_l2_lattice(lattice: L2CandidateLattice) -> CorrectionResolution {
         decision,
         scoreboard,
         candidate_scores,
+        selected_transition,
     }
 }
 

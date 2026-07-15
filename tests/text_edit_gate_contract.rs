@@ -24,9 +24,15 @@ fn transition_proof_constructor_and_fields_are_not_public_capabilities() {
     let gate = fs::read_to_string(root.join("src/text_edit/gate.rs")).expect("gate");
     let facade = fs::read_to_string(root.join("src/text_edit.rs")).expect("facade");
 
+    let action = fs::read_to_string(root.join("src/text_edit/action.rs")).expect("action");
     assert!(mutation.contains("pub(crate) fn proven("));
-    assert!(mutation.contains("pub(crate) operator: Option<TransitionOperator>"));
-    assert!(gate.contains("pub(crate) fn plan_verified_transition_edit("));
+    assert!(mutation.contains("operator: Option<TransitionOperator>"));
+    assert!(!mutation.contains("pub(crate) operator: Option<TransitionOperator>"));
+    assert!(gate.contains("struct VerifiedTransitionReceipt"));
+    assert!(gate.contains("fn issue(action: &EditAction)"));
+    assert!(gate.contains("pub(crate) fn plan_decision_transition_edit("));
+    assert!(action.contains("verification: Option<VerifiedTransitionReceipt>"));
+    assert!(action.contains("verified_transition_receipt_missing"));
     assert!(!facade.contains("pub use gate::{authorize_replacement"));
 }
 
@@ -48,8 +54,9 @@ fn runtime_text_edits_use_narrow_typed_plans_not_generic_proof_construction() {
         }
         let text = fs::read_to_string(&path).expect("read rust source");
         for (line_idx, line) in text.lines().enumerate() {
-            if line.contains("plan_verified_transition_edit(")
+            if line.contains("plan_decision_transition_edit(")
                 || line.contains("TransitionAudit::proven(")
+                || line.contains("VerifiedTransitionReceipt::issue(")
             {
                 violations.push(format!("{}:{}: {}", rel, line_idx + 1, line.trim()));
             }
@@ -60,6 +67,33 @@ fn runtime_text_edits_use_narrow_typed_plans_not_generic_proof_construction() {
         violations.is_empty(),
         "runtime adapters must use narrow typed plan APIs:\n{}",
         violations.join("\n")
+    );
+}
+
+#[test]
+fn only_text_edit_gate_can_issue_or_attach_execution_receipts() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let mut files = Vec::new();
+    collect_rust_files(&root.join("src"), &mut files);
+    let mut violations = Vec::new();
+    for path in files {
+        let rel = path
+            .strip_prefix(root)
+            .unwrap_or(path.as_path())
+            .to_string_lossy()
+            .replace('\\', "/");
+        let text = fs::read_to_string(&path).expect("read rust source");
+        if rel != "src/text_edit/gate.rs"
+            && (text.contains("VerifiedTransitionReceipt::issue(")
+                || text.contains(".attach_verification("))
+        {
+            violations.push(rel);
+        }
+    }
+    assert!(
+        violations.is_empty(),
+        "only text_edit/gate.rs may mint execution authority: {}",
+        violations.join(", ")
     );
 }
 

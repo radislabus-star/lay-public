@@ -2,14 +2,35 @@
 struct L3Signal {
     signal: f32,
     rank_bonus: f32,
-    decision: &'static str,
+    decision: L3ContextDisposition,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum L3ContextDisposition {
+    NotApplicable,
+    Unavailable,
+    Neutral,
+    Support,
+    Suppress,
+}
+
+impl L3ContextDisposition {
+    pub(crate) const fn as_str(self) -> &'static str {
+        match self {
+            Self::NotApplicable => "not_applicable",
+            Self::Unavailable => "no_memory",
+            Self::Neutral => "neutral",
+            Self::Support => "support",
+            Self::Suppress => "suppress",
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
 struct L4SceneSignal {
     signal: f32,
     rank_bonus: f32,
-    action: &'static str,
+    action: L4AllowedAction,
     reason: &'static str,
 }
 
@@ -18,7 +39,7 @@ struct L4SignedSignal {
     signal: f32,
     rank_bonus: f32,
     reason: &'static str,
-    surface_status: &'static str,
+    surface_status: crate::nanda_wave::l4_signed_memory::L4SurfaceStatus,
     transition_state_specific: bool,
     transition_attract_count: u32,
     transition_repel_count: u32,
@@ -34,7 +55,7 @@ struct L2WavePeakSignal {
     reason: &'static str,
     transition_phase_milli: i16,
     transition_phase_threshold_milli: i16,
-    transition_phase_verdict: &'static str,
+    transition_phase_verdict: crate::nanda_wave::PhaseVerdict,
     transition_phase_package_loaded: bool,
     transition_phase_operator_present: bool,
     transition_phase_operator_promoted: bool,
@@ -48,13 +69,15 @@ fn l2_wave_peak_signal(
     candidate: &UnifiedCorrectionCandidate,
     candidate_count: usize,
     phase: crate::nanda_wave::PhaseReadout,
+    usage: &crate::nanda_wave::UsagePriorSnapshot,
 ) -> L2WavePeakSignal {
-    let score = crate::nanda_wave::l2_wave_peak::score_correction_peak(
+    let score = crate::nanda_wave::l2_wave_peak::score_correction_peak_with_usage(
         &event.original,
         &candidate.replacement,
         candidate.error_class,
         candidate.origin,
         candidate_count,
+        usage,
     );
     L2WavePeakSignal {
         signal: score.signal,
@@ -65,7 +88,7 @@ fn l2_wave_peak_signal(
         reason: score.reason,
         transition_phase_milli: micro_to_milli(phase.margin_micro),
         transition_phase_threshold_milli: micro_to_milli(phase.threshold_micro),
-        transition_phase_verdict: phase.verdict.as_str(),
+        transition_phase_verdict: phase.verdict,
         transition_phase_package_loaded: phase.package_loaded,
         transition_phase_operator_present: phase.operator_present,
         transition_phase_operator_promoted: phase.operator_promoted,
@@ -80,14 +103,14 @@ fn l3_phrase_signal(event: &TypingErrorEvent, candidate: &UnifiedCorrectionCandi
         return L3Signal {
             signal: 0.0,
             rank_bonus: 0.0,
-            decision: "not_applicable",
+            decision: L3ContextDisposition::NotApplicable,
         };
     }
     let Some(report) = evaluate_default_candidate(&event.original, &candidate.replacement) else {
         return L3Signal {
             signal: 0.0,
             rank_bonus: 0.0,
-            decision: "no_memory",
+            decision: L3ContextDisposition::Unavailable,
         };
     };
     match report.decision {
@@ -96,18 +119,18 @@ fn l3_phrase_signal(event: &TypingErrorEvent, candidate: &UnifiedCorrectionCandi
             L3Signal {
                 signal,
                 rank_bonus: signal * 0.16,
-                decision: "support",
+                decision: L3ContextDisposition::Support,
             }
         }
         L3PhraseGateDecision::Suppress => L3Signal {
             signal: -0.56,
             rank_bonus: -0.14,
-            decision: "suppress",
+            decision: L3ContextDisposition::Suppress,
         },
         L3PhraseGateDecision::Neutral => L3Signal {
             signal: (report.score * 0.20).clamp(0.0, 0.20),
             rank_bonus: 0.0,
-            decision: "neutral",
+            decision: L3ContextDisposition::Neutral,
         },
     }
 }
@@ -136,47 +159,47 @@ fn l4_scene_signal(event: &TypingErrorEvent, candidate_count: usize) -> L4SceneS
     L4SceneSignal {
         signal,
         rank_bonus: signal * 0.06,
-        action: scene.allowed_action.as_str(),
+        action: scene.allowed_action,
         reason: scene.reason,
     }
 }
 
-fn l4_signed_signal(
+fn l4_signed_memory_readout(
     event: &TypingErrorEvent,
     candidate: &UnifiedCorrectionCandidate,
     surface: &str,
-) -> L4SignedSignal {
+    usage: &crate::nanda_wave::UsagePriorSnapshot,
+) -> crate::nanda_wave::l4_signed_memory::L4SignedMemorySignal {
     let mut context = crate::correction_core::normalized_correction_words(&event.original);
     context.pop();
     let word = crate::correction_core::normalized_correction_words(&candidate.replacement)
         .pop()
         .unwrap_or_default();
     if word.is_empty() {
-        return L4SignedSignal {
-            signal: 0.0,
-            rank_bonus: 0.0,
-            reason: "learned_state_empty",
-            surface_status: "unknown",
-            transition_state_specific: false,
-            transition_attract_count: 0,
-            transition_repel_count: 0,
-        };
+        return crate::nanda_wave::l4_signed_memory::l4_signed_memory_signal_from_readout(
+            crate::nanda_wave::usage_prior::UsageHotReadout::default(),
+            crate::nanda_wave::usage_prior::UsageSurfaceCoverage::default(),
+        );
     }
-    let usage = crate::nanda_wave::cached_usage_prior_snapshot();
     let state_id = crate::transition_relation::transition_state_id(&event.original);
-    let signed = l4_signed_memory_signal(L4SignedMemoryInput {
+    l4_signed_memory_signal(L4SignedMemoryInput {
         context: &context,
         source: candidate.origin.memory_key(),
         operation: "replacement",
         state_word: &state_id,
         word: &word,
-        usage: &usage,
+        usage,
         surface: Some(surface),
-    });
+    })
+}
+
+fn l4_signed_signal_from_memory(
+    signed: &crate::nanda_wave::l4_signed_memory::L4SignedMemorySignal,
+) -> L4SignedSignal {
     L4SignedSignal {
         signal: signed.signed_weight,
         rank_bonus: signed.signed_weight * 0.12,
-        reason: signed.reason,
+        reason: signed.reason.as_str(),
         surface_status: signed.surface_status,
         transition_state_specific: signed.transition_state_specific,
         transition_attract_count: signed.transition_attract_count,

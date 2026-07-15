@@ -36,7 +36,7 @@ fn ime_correction_route_reaches_common_decision_core() {
     );
     assert!(
         transition_decision.contains("struct TransitionDecisionCore")
-            && transition_decision.contains("select_apply_candidate")
+            && transition_decision.contains("evaluate_candidates")
             && transition_decision.contains("candidate_has_apply_authority")
             && !transition_decision.contains("authorize_gate"),
         "TransitionDecisionCore must own final apply-candidate authority"
@@ -64,7 +64,7 @@ fn hidden_typing_state_is_apply_admission_authority() {
     );
     assert!(
         transition_decision.contains("fn candidate_has_apply_authority")
-            && transition_decision.contains("admit_hidden_transition(")
+            && transition_decision.contains("admit_evaluated_hidden_transition(")
             && transition_decision.contains("latent_known_word_drift_needs_state_proof")
             && transition_decision.contains("latent_context_import"),
         "TransitionDecisionCore must gate apply through hidden-state admission"
@@ -77,17 +77,18 @@ fn decoder_edit_plan_carries_transition_audit_to_outputs() {
     assert!(
         decoder_edit.contains("transition: TransitionAudit")
             && !decoder_edit.contains("pub transition: TransitionAudit")
-            && decoder_edit.contains("with_input_gate_trace")
+            && decoder_edit.contains("selected_transition: Option<DecisionTransitionReceipt>")
+            && decoder_edit.contains("with_text_edit_input_gate_decision")
             && decoder_edit.contains("pub fn authorize_verified_replacement")
-            && decoder_edit.contains("self.transition.blocks_apply()"),
-        "DecoderEditPlan must privately carry transition audit, authorize output edits, and block unverified plans before output"
+            && decoder_edit.contains("self.selected_transition.is_none()"),
+        "DecoderEditPlan must privately carry the DecisionCore receipt, authorize output edits, and block missing receipts before output"
     );
 
     let daemon_gate = read("src/bin/lay_daemon/typing_assist_runtime/decoder/gate.rs");
     assert!(
-        daemon_gate.contains("edit.with_input_gate_trace")
+        daemon_gate.contains(".with_text_edit_input_gate_decision(&decision)")
             && daemon_gate.contains("edit.authorize_verified_replacement("),
-        "typing-assist decoder must bind input-gate transition audit into DecoderEditPlan"
+        "typing-assist decoder must bind the opaque input-gate decision receipt into DecoderEditPlan"
     );
 
     let ime_output = read("src/bin/lay_daemon/typing_assist_runtime/output/ime.rs");
@@ -298,6 +299,15 @@ fn live_text_mutation_outputs_use_executor_contract() {
         !executor.contains("#[derive(Debug, Clone, PartialEq, Eq)]\npub struct AuthorizedEdit")
             && executor.contains("pub fn into_authorized(self)"),
         "AuthorizedEdit must be a move-only one-shot mutation capability"
+    );
+
+    let composition = read("src/bin/lay_ibus_engine/composition_commit.rs");
+    assert!(
+        composition.contains("enum ActiveCompositionAuthority")
+            && composition.contains("UserInput")
+            && composition.contains("VerifiedEdit(Box<AuthorizedEdit>)")
+            && !composition.contains("Option<AuthorizedEdit>"),
+        "plain IME input and verified model edits must be distinct typed routes"
     );
 }
 

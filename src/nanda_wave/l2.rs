@@ -799,7 +799,13 @@ fn settle_english_word_center(token: &str) -> Option<String> {
     let mut candidates = surface_motif_memory()
         .surface_candidates(&normalized, 8)
         .into_iter()
-        .filter(|candidate| candidate.word.chars().all(|ch| ch.is_ascii_alphabetic()))
+        .filter(|candidate| {
+            candidate.word.chars().count() >= 4
+                && candidate.word.chars().all(|ch| ch.is_ascii_alphabetic())
+                && crate::layout_autoswitch::is_known_english_layout_autoswitch_word(
+                    &candidate.word,
+                )
+        })
         .collect::<Vec<_>>();
     if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
         eprintln!("english-center token={normalized:?} candidates={candidates:?}");

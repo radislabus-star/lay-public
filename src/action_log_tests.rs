@@ -261,24 +261,8 @@ fn action_log_writes_candidate_before_apply_mutation_route() {
     let plan =
         crate::text_edit::plan_committed_tail_full_token_replacement("провека ", "проверка ")
             .expect("plan");
-    let action = crate::text_edit::plan_verified_transition_edit(
-        crate::text_edit::PlannedReplacementInput {
-            source: "typing-assist",
-            confidence_milli: 700,
-            from_text: "провека ",
-            to_text: "проверка ",
-            plan,
-            selected_source_id: Some("test"),
-            selected_error_class: Some("missing-letter"),
-            transition: crate::text_edit::TransitionAudit::proven(
-                crate::text_edit::TransitionOperator::ReplaceCurrentWord,
-                crate::text_edit::TransitionProof::Invariant,
-                true,
-                false,
-                1,
-            ),
-        },
-    );
+    let action =
+        crate::text_edit::plan_manual_edit("typing-assist", 700, "провека ", "проверка ", plan, 1);
 
     record_candidate_edit_action_before_apply(&action, MutationLogRoute::TEST, None);
 

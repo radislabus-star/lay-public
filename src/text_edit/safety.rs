@@ -55,11 +55,11 @@ pub fn autocorrect_edit_safety(
         (plan.backspaces > 0 || !plan.insert.is_empty()) && plan.move_left as usize > trailing_ws;
 
     let boundary_proof = matches!(
-        transition.proof,
+        transition.proof(),
         Some(TransitionProof::Boundary | TransitionProof::ManualIntent)
     );
-    let layout_phrase = transition.proof == Some(TransitionProof::Layout);
-    let semantic_source = transition.proof == Some(TransitionProof::Context);
+    let layout_phrase = transition.proof() == Some(TransitionProof::Layout);
+    let semantic_source = transition.proof() == Some(TransitionProof::Context);
 
     let strong_boundary_shape =
         !boundary_changed || layout_phrase || strong_boundary_edit_shape(original, replacement);

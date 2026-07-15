@@ -11,11 +11,44 @@ pub(crate) struct BayesCandidateScore {
     pub risk: f32,
 }
 
+#[cfg(test)]
 pub(crate) fn bayes_score_candidate(
     original: &str,
     replacement: &str,
     error_class: &str,
     origin: CandidateOrigin,
+) -> BayesCandidateScore {
+    let usage = crate::nanda_wave::cached_usage_prior_snapshot();
+    let context = context_words_before_last(original);
+    let replacement_word = last_word(replacement).unwrap_or_default().to_lowercase();
+    let signed_memory = crate::nanda_wave::l4_signed_memory::l4_signed_memory_signal(
+        crate::nanda_wave::l4_signed_memory::L4SignedMemoryInput {
+            context: &context,
+            source: origin.memory_key(),
+            operation: "replacement",
+            state_word: &crate::transition_relation::transition_state_id(original),
+            word: &replacement_word,
+            usage: &usage,
+            surface: None,
+        },
+    );
+    bayes_score_candidate_with_readout(
+        original,
+        replacement,
+        error_class,
+        origin,
+        &usage,
+        &signed_memory,
+    )
+}
+
+pub(crate) fn bayes_score_candidate_with_readout(
+    original: &str,
+    replacement: &str,
+    error_class: &str,
+    origin: CandidateOrigin,
+    usage_snapshot: &crate::nanda_wave::UsagePriorSnapshot,
+    signed_memory: &crate::nanda_wave::l4_signed_memory::L4SignedMemorySignal,
 ) -> BayesCandidateScore {
     let original_word = last_word(original).unwrap_or_default();
     let replacement_word = last_word(replacement).unwrap_or_default();
@@ -32,24 +65,12 @@ pub(crate) fn bayes_score_candidate(
         .max(replacement_lower.chars().count())
         .max(1);
     let likelihood = input_likelihood(error_class, origin, distance, max_len);
-    let usage_snapshot = crate::nanda_wave::cached_usage_prior_snapshot();
-    let usage_prior = (crate::nanda_wave::usage_prior::word_usage_prior(&replacement_lower)
+    let usage_prior = (usage_snapshot.word_prior(&replacement_lower)
         + accepted_prior_from_count(usage_snapshot.accepted_word_count(&replacement_lower)))
     .clamp(0.0, 0.36);
     let context = context_words_before_last(original);
-    let context_prior = local_context_prior(&context, &replacement_lower);
+    let context_prior = local_context_prior(usage_snapshot, &context, &replacement_lower);
     let source_prior = source_prior(origin);
-    let signed_memory = crate::nanda_wave::l4_signed_memory::l4_signed_memory_signal(
-        crate::nanda_wave::l4_signed_memory::L4SignedMemoryInput {
-            context: &context,
-            source: origin.memory_key(),
-            operation: "replacement",
-            state_word: &crate::transition_relation::transition_state_id(original),
-            word: &replacement_lower,
-            usage: &usage_snapshot,
-            surface: None,
-        },
-    );
     let rejected_prior = usage_snapshot.rejected_word_prior(&replacement_lower)
         + usage_snapshot.context_rejected_word_prior(&context, &replacement_lower);
     let risk = candidate_risk(
@@ -77,35 +98,6 @@ pub(crate) fn bayes_score_candidate(
     }
 }
 
-pub(crate) fn bayes_suggest_only_reason(
-    original: &str,
-    replacement: &str,
-    error_class: &str,
-    origin: CandidateOrigin,
-) -> Option<&'static str> {
-    if matches!(
-        error_class,
-        "wrong_layout"
-            | "partial-layout"
-            | "mixed-script"
-            | "boundary-shift"
-            | "split-word"
-            | "glued-words"
-    ) {
-        return None;
-    }
-    let score = bayes_score_candidate(original, replacement, error_class, origin);
-    if score.risk >= 0.62 {
-        return Some("bayes_high_candidate_risk");
-    }
-    let min_posterior = if error_class == "composite-typo" {
-        0.24
-    } else {
-        0.30
-    };
-    (score.posterior < min_posterior).then_some("bayes_low_posterior")
-}
-
 fn input_likelihood(
     error_class: &str,
     origin: CandidateOrigin,
@@ -130,12 +122,16 @@ fn input_likelihood(
     }
 }
 
-fn local_context_prior(context: &[String], replacement_word: &str) -> f32 {
+fn local_context_prior(
+    usage: &crate::nanda_wave::UsagePriorSnapshot,
+    context: &[String],
+    replacement_word: &str,
+) -> f32 {
     let mut prior: f32 = 0.0;
     if crate::lexicon::is_common_ru_word(replacement_word) {
         prior += 0.08;
     }
-    prior += crate::nanda_wave::context_word_usage_prior(context, replacement_word);
+    prior += usage.context_word_prior(context, replacement_word);
     prior.clamp(0.0, 0.26)
 }
 
@@ -302,24 +298,35 @@ mod tests {
     use super::*;
 
     #[test]
-    fn bayes_rejects_low_probability_reflexive_noise() {
-        let reason = bayes_suggest_only_reason(
+    fn bayes_exposes_high_risk_reflexive_noise_without_deciding() {
+        let score = bayes_score_candidate(
             "теорию бейса ",
             "теорию бейсяа ",
             "composite-typo",
             CandidateOrigin::DeterministicTypo,
         );
-        assert_eq!(reason, Some("bayes_high_candidate_risk"));
+        assert!(score.risk >= 0.55, "score={score:?}");
+        assert!(score.posterior < 0.30, "score={score:?}");
     }
 
     #[test]
-    fn bayes_allows_clear_common_typo() {
-        let reason = bayes_suggest_only_reason(
+    fn bayes_gives_clear_common_typo_stronger_evidence() {
+        let clear = bayes_score_candidate(
             "где эсперемнт ",
             "где эксперимент ",
             "composite-typo",
             CandidateOrigin::DeterministicTypo,
         );
-        assert_eq!(reason, None);
+        let noisy = bayes_score_candidate(
+            "теорию бейса ",
+            "теорию бейсяа ",
+            "composite-typo",
+            CandidateOrigin::DeterministicTypo,
+        );
+        assert!(
+            clear.posterior > noisy.posterior,
+            "clear={clear:?} noisy={noisy:?}"
+        );
+        assert!(clear.risk < noisy.risk, "clear={clear:?} noisy={noisy:?}");
     }
 }

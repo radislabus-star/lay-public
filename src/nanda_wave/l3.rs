@@ -758,8 +758,8 @@ mod tests {
             transition_attract_count: 6,
             transition_repel_count: 0,
             transition_state_specific: true,
-            reason: "learned_transition_attracts",
-            surface_status: "covered",
+            reason: super::super::l4_signed_memory::L4SignedMemoryReason::TransitionAttracts,
+            surface_status: super::super::l4_signed_memory::L4SurfaceStatus::Covered,
         }
     }
 

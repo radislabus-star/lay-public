@@ -62,10 +62,7 @@ impl ExecutorAuthorization {
 #[cfg(test)]
 mod tests {
     use super::{ExecutionBackend, ExecutorContract};
-    use crate::text_edit::{
-        EditAction, PlannedReplacementInput, TextReplacement, TransitionAudit, TransitionOperator,
-        TransitionProof,
-    };
+    use crate::text_edit::{plan_manual_edit, TextReplacement};
 
     #[test]
     fn ime_is_backend_not_authority() {
@@ -75,27 +72,19 @@ mod tests {
 
     #[test]
     fn backend_can_execute_verified_action() {
-        let action = EditAction::planned_replacement(PlannedReplacementInput {
-            source: "test",
-            confidence_milli: 900,
-            from_text: "ghbdtn",
-            to_text: "привет",
-            plan: TextReplacement {
+        let action = plan_manual_edit(
+            "test",
+            900,
+            "ghbdtn",
+            "привет",
+            TextReplacement {
                 move_left: 0,
                 backspaces: 6,
                 insert: "привет".to_string(),
                 move_right: 0,
             },
-            selected_source_id: Some("layout"),
-            selected_error_class: Some("layout-flip"),
-            transition: TransitionAudit::proven(
-                TransitionOperator::LayoutProjection,
-                TransitionProof::Layout,
-                true,
-                false,
-                1,
-            ),
-        });
+            1,
+        );
         let auth = ExecutorContract::backend_only(ExecutionBackend::Daemon).authorize_edit(&action);
         assert!(auth.allow_execute);
         assert_eq!(auth.backend, ExecutionBackend::Daemon);
@@ -104,21 +93,19 @@ mod tests {
 
     #[test]
     fn backend_cannot_override_blocked_action() {
-        let action = EditAction::planned_replacement(PlannedReplacementInput {
-            source: "test",
-            confidence_milli: 100,
-            from_text: "а б",
-            to_text: "аб",
-            plan: TextReplacement {
+        let action = plan_manual_edit(
+            "test",
+            100,
+            "а б",
+            "аб",
+            TextReplacement {
                 move_left: 0,
                 backspaces: 3,
                 insert: "аб".to_string(),
                 move_right: 0,
             },
-            selected_source_id: Some("test"),
-            selected_error_class: Some("boundary-unsafe"),
-            transition: TransitionAudit::none(),
-        });
+            2,
+        );
         let auth = ExecutorContract::backend_only(ExecutionBackend::Ime).authorize_edit(&action);
         assert!(!auth.allow_execute);
         assert_eq!(auth.backend, ExecutionBackend::Ime);

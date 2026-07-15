@@ -21,12 +21,32 @@ pub(crate) struct L2WavePeakScore {
     pub(crate) reason: &'static str,
 }
 
+#[cfg(test)]
 pub(crate) fn score_correction_peak(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
     origin: CandidateOrigin,
     candidate_count: usize,
+) -> L2WavePeakScore {
+    let usage = super::cached_usage_prior_snapshot();
+    score_correction_peak_with_usage(
+        original,
+        replacement,
+        error_class,
+        origin,
+        candidate_count,
+        &usage,
+    )
+}
+
+pub(crate) fn score_correction_peak_with_usage(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+    candidate_count: usize,
+    usage: &super::UsagePriorSnapshot,
 ) -> L2WavePeakScore {
     let original_word = normalized_last_word(original);
     let replacement_word = normalized_last_word(replacement);
@@ -44,7 +64,6 @@ pub(crate) fn score_correction_peak(
     } else {
         origin.source_role()
     };
-    let usage = super::cached_usage_prior_snapshot();
     let context = context_words_before_last(original);
     let usage_prior = usage.word_prior(&replacement_word);
     let context_prior = usage.context_word_prior(&context, &replacement_word);
