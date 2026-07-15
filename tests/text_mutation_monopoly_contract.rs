@@ -288,8 +288,9 @@ fn live_text_mutation_outputs_use_executor_contract() {
     let daemon_pipeline = read("src/bin/lay_daemon/text_output/replacement.rs");
     assert!(
         daemon_pipeline.contains("pub(crate) fn apply_text_replacement_pipeline")
-            && daemon_pipeline.contains("authorized: AuthorizedEdit"),
-        "daemon replacement pipeline must consume AuthorizedEdit rather than accept raw plan/text"
+            && daemon_pipeline.contains("authorized: AuthorizedEdit")
+            && daemon_pipeline.contains("IndeterminateAfterDelete"),
+        "daemon replacement pipeline must consume AuthorizedEdit and expose partial destructive execution honestly"
     );
     let layout_controller = read("src/bin/lay_daemon/layout_controller.rs");
     let compact_layout_controller = without_whitespace(&layout_controller);

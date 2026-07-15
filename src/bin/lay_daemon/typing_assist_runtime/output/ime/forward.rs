@@ -18,6 +18,4 @@ pub(super) fn forward_after_ime_replace<'kbd, 'grab>(
         .spaces
 }
 
-pub(super) fn trailing_space_count(text: &str) -> usize {
-    text.chars().rev().take_while(|ch| *ch == ' ').count()
-}
+pub(super) use lay::word_reader::trailing_whitespace_char_count as trailing_space_count;

@@ -18,6 +18,7 @@ use crate::text_edit::{
 use crate::text_metrics::{damerau_levenshtein, score_to_milli};
 use crate::transition_relation::{TransitionRelationAtoms, TransitionRelationInput};
 use crate::word_reader::split_word_punctuation;
+use std::cmp::Ordering;
 
 pub(crate) struct TransitionDecisionCore;
 
@@ -46,9 +47,26 @@ impl TransitionDecisionCore {
         let original_text = tail_chars(&state.visible_tail, candidate.delete_chars as usize);
         if let Some(expected) = candidate.expected_tail.as_ref() {
             let focus_id = state.focus_id.as_deref();
-            if !expected.matches_source_and_focus(candidate.source, focus_id)
-                || !expected
-                    .matches_current_suffix(&state.visible_tail, candidate.delete_chars as usize)
+            if expected.source != candidate.source || expected.focus_id.as_deref() != focus_id {
+                return TextTransitionDecision::Reject {
+                    rejection: TextTransitionRejection::StaleVisibleTail {
+                        expected: expected.expected_suffix.clone(),
+                        actual: original_text,
+                    },
+                    action: None,
+                };
+            }
+            if expected.epoch != state.epoch {
+                return TextTransitionDecision::Reject {
+                    rejection: TextTransitionRejection::StaleVisibleRevision {
+                        expected: expected.epoch,
+                        actual: state.epoch,
+                    },
+                    action: None,
+                };
+            }
+            if !expected
+                .matches_current_suffix(&state.visible_tail, candidate.delete_chars as usize)
             {
                 return TextTransitionDecision::Reject {
                     rejection: TextTransitionRejection::StaleVisibleTail {
@@ -173,10 +191,7 @@ impl TransitionDecisionCore {
                 candidate_has_apply_authority(event, *index, candidates, &evaluations, policy)
             })
             .max_by(|(left, _), (right, _)| {
-                evaluations[*left]
-                    .signals
-                    .rank_score
-                    .total_cmp(&evaluations[*right].signals.rank_score)
+                compare_candidate_decision_order(*left, *right, candidates, &evaluations)
             })
             .map(|(index, _)| index);
 
@@ -196,6 +211,39 @@ impl TransitionDecisionCore {
     }
 }
 
+fn compare_candidate_decision_order(
+    left: usize,
+    right: usize,
+    candidates: &[UnifiedCorrectionCandidate],
+    evaluations: &[CandidateDecisionEvaluation],
+) -> Ordering {
+    let left_eval = &evaluations[left];
+    let right_eval = &evaluations[right];
+    left_eval
+        .signals
+        .rank_score
+        .total_cmp(&right_eval.signals.rank_score)
+        .then_with(|| right_eval.bayes.risk.total_cmp(&left_eval.bayes.risk))
+        .then_with(|| {
+            left_eval
+                .action
+                .verifier_passed
+                .cmp(&right_eval.action.verifier_passed)
+        })
+        .then_with(|| {
+            right_eval
+                .action
+                .changed_tokens
+                .cmp(&left_eval.action.changed_tokens)
+        })
+        .then_with(|| {
+            candidates[right]
+                .replacement
+                .cmp(&candidates[left].replacement)
+        })
+}
+
+mod calibration;
 mod receipt;
 pub(crate) use receipt::DecisionTransitionReceipt;
 

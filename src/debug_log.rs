@@ -4,7 +4,7 @@
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 #[cfg(not(test))]
-use std::sync::mpsc::{self, RecvTimeoutError, Sender};
+use std::sync::mpsc::{self, RecvTimeoutError, SyncSender, TrySendError};
 #[cfg(not(test))]
 use std::sync::OnceLock;
 #[cfg(not(test))]
@@ -17,7 +17,9 @@ const IDLE_FLUSH_INTERVAL: Duration = Duration::from_millis(5000);
 #[cfg(not(test))]
 const IDLE_AFTER: Duration = Duration::from_millis(10_000);
 #[cfg(not(test))]
-const CHANNEL_CAPACITY_FALLBACK_DROP: usize = 2048;
+const DEBUG_LOG_CHANNEL_CAPACITY: usize = 4096;
+#[cfg(not(test))]
+const PENDING_LINE_FLUSH_LIMIT: usize = 2048;
 const MAX_LOG_BYTES: u64 = 500 * 1024;
 
 #[cfg(not(test))]
@@ -27,11 +29,11 @@ struct DebugLogLine {
 }
 
 #[cfg(not(test))]
-static DEBUG_LOG_SENDER: OnceLock<Sender<DebugLogLine>> = OnceLock::new();
+static DEBUG_LOG_SENDER: OnceLock<SyncSender<DebugLogLine>> = OnceLock::new();
 
 pub fn append_private_line(path: PathBuf, line: impl Into<String>) {
     let line = line.into();
-    if !crate::config::LayConfig::load().debug_action_log {
+    if !crate::config::runtime_debug_action_log() {
         return;
     }
     #[cfg(test)]
@@ -48,28 +50,37 @@ pub fn append_private_line(path: PathBuf, line: impl Into<String>) {
     #[cfg(not(test))]
     {
         let sender = DEBUG_LOG_SENDER.get_or_init(spawn_debug_log_writer);
-        let _ = sender.send(DebugLogLine { path, line });
+        match sender.try_send(DebugLogLine { path, line }) {
+            Ok(()) | Err(TrySendError::Full(_)) | Err(TrySendError::Disconnected(_)) => {}
+        }
     }
 }
 
 #[cfg(not(test))]
-fn spawn_debug_log_writer() -> Sender<DebugLogLine> {
-    let (sender, receiver) = mpsc::channel::<DebugLogLine>();
+fn spawn_debug_log_writer() -> SyncSender<DebugLogLine> {
+    let (sender, receiver) = mpsc::sync_channel::<DebugLogLine>(DEBUG_LOG_CHANNEL_CAPACITY);
     std::thread::Builder::new()
         .name("lay-debug-log-writer".to_string())
         .spawn(move || {
             let mut pending = BTreeMap::<PathBuf, String>::new();
             let mut pending_lines = 0usize;
             let mut last_line_at = std::time::Instant::now();
+            let mut next_flush = last_line_at + ACTIVE_FLUSH_INTERVAL;
             loop {
-                match receiver.recv_timeout(flush_interval(last_line_at)) {
+                let timeout = next_flush.saturating_duration_since(std::time::Instant::now());
+                match receiver.recv_timeout(timeout) {
                     Ok(line) => {
+                        let was_empty = pending.is_empty();
                         last_line_at = std::time::Instant::now();
+                        if was_empty {
+                            next_flush = last_line_at + ACTIVE_FLUSH_INTERVAL;
+                        }
                         push_pending(&mut pending, line);
                         pending_lines += 1;
-                        if pending_lines >= CHANNEL_CAPACITY_FALLBACK_DROP {
+                        if pending_lines >= PENDING_LINE_FLUSH_LIMIT {
                             flush_pending(&mut pending);
                             pending_lines = 0;
+                            next_flush = std::time::Instant::now() + ACTIVE_FLUSH_INTERVAL;
                         }
                     }
                     Err(RecvTimeoutError::Timeout) => {
@@ -77,6 +88,7 @@ fn spawn_debug_log_writer() -> Sender<DebugLogLine> {
                             flush_pending(&mut pending);
                             pending_lines = 0;
                         }
+                        next_flush = std::time::Instant::now() + flush_interval(last_line_at);
                     }
                     Err(RecvTimeoutError::Disconnected) => {
                         flush_pending(&mut pending);
@@ -109,7 +121,7 @@ fn push_pending(pending: &mut BTreeMap<PathBuf, String>, line: DebugLogLine) {
 
 #[cfg(not(test))]
 fn flush_pending(pending: &mut BTreeMap<PathBuf, String>) {
-    if !crate::config::LayConfig::load().debug_action_log {
+    if !crate::config::runtime_debug_action_log() {
         pending.clear();
         return;
     }

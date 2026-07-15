@@ -10,6 +10,10 @@ use super::key_emit::{
     replay_text_insert_keycodes_fast_after_modifier_cleanup,
 };
 
+#[path = "replacement/error.rs"]
+mod error;
+pub(crate) use error::TextReplacementPipelineError;
+
 const TEXT_REPLACE_KEY_PACE_MS: u64 = 1;
 
 #[derive(Debug, Clone)]
@@ -23,23 +27,6 @@ struct PreparedTextInsert {
 pub(crate) struct TextInsertOutcome {
     pub layout_is_ru: bool,
     pub layout_already_set: bool,
-}
-
-#[derive(Debug)]
-pub(crate) enum TextReplacementPipelineError {
-    Preflight(String),
-    Delete(std::io::Error),
-    Insert(String),
-}
-
-impl TextReplacementPipelineError {
-    pub(crate) fn log(self, label: &str, delete_failure_label: &str) {
-        match self {
-            Self::Preflight(e) => log(&format!("⚠ {label} skipped before delete: {e}")),
-            Self::Delete(e) => log(&format!("⚠ {label} {delete_failure_label}: {e}")),
-            Self::Insert(e) => log(&format!("⚠ {label} {e}")),
-        }
-    }
 }
 
 fn prepare_text_insert_for_replacement_plan(
@@ -134,7 +121,7 @@ pub(crate) fn apply_text_replacement_pipeline(
         label,
         fast_output,
     )
-    .map_err(TextReplacementPipelineError::Insert)?;
+    .map_err(TextReplacementPipelineError::IndeterminateAfterDelete)?;
     let insert_ms = insert_started.elapsed().as_millis();
     let pipeline_ms = pipeline_started.elapsed().as_millis();
     log(&format!(

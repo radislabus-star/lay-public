@@ -1,3 +1,4 @@
+use super::calibration::CURRENT;
 use super::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -20,8 +21,8 @@ pub(super) fn candidate_has_apply_authority(
     let source_role = candidate.origin.source_role();
     let exact_positive_transition = evaluation.transition.l4_signed_signal.exact_positive();
     if source_role == CorrectionSourceRole::L3Context
-        && signals.l3_phrase_milli < 420
-        && signals.l4_signed_milli < 120
+        && signals.l3_phrase_milli < CURRENT.l3_strong_milli
+        && signals.l4_signed_milli < CURRENT.l4_strong_milli
         && !exact_positive_transition
     {
         debug_decision_reject(
@@ -51,8 +52,8 @@ pub(super) fn candidate_has_apply_authority(
         && action.edit_operator == verifier::EditTransitionOperator::BoundaryShift
         && boundary_shift_has_stable_token_mass(&candidate.replacement)
         && boundary_field.is_some_and(|readout| readout.has_direct_apply_mass());
-    let learned_short_boundary_authority = signals.l3_phrase_milli >= 420
-        || signals.l4_signed_milli >= 120
+    let learned_short_boundary_authority = signals.l3_phrase_milli >= CURRENT.l3_strong_milli
+        || signals.l4_signed_milli >= CURRENT.l4_strong_milli
         || exact_positive_transition;
     if action.edit_operator == verifier::EditTransitionOperator::BoundaryShift
         && !high_precision_boundary_shift
@@ -86,13 +87,13 @@ pub(super) fn candidate_has_apply_authority(
         && short_same_length_surface_drift(&event.current_word, &candidate.replacement);
     let strong_l2_peak_support =
         strong_l2_wave_peak_support(signals) && !self_referential_surface_drift;
-    let external_learned_support = bayes.usage_prior >= 0.080
-        || bayes.context_prior >= 0.080
-        || signals.l3_phrase_milli >= 420
-        || signals.l4_signed_milli >= 120;
-    let contextual_transition_support = bayes.context_prior >= 0.080
-        || signals.l3_phrase_milli >= 420
-        || signals.l4_signed_milli >= 120
+    let external_learned_support = bayes.usage_prior >= CURRENT.learned_prior_floor
+        || bayes.context_prior >= CURRENT.learned_prior_floor
+        || signals.l3_phrase_milli >= CURRENT.l3_strong_milli
+        || signals.l4_signed_milli >= CURRENT.l4_strong_milli;
+    let contextual_transition_support = bayes.context_prior >= CURRENT.learned_prior_floor
+        || signals.l3_phrase_milli >= CURRENT.l3_strong_milli
+        || signals.l4_signed_milli >= CURRENT.l4_strong_milli
         || exact_positive_transition
         || strong_l2_peak_support;
     if candidate.origin == crate::candidate_contract::CandidateOrigin::LayoutThenTypo
@@ -109,8 +110,8 @@ pub(super) fn candidate_has_apply_authority(
     }
     let strong_learned_support =
         external_learned_support || strong_l2_peak_support || high_precision_boundary_shift;
-    let strong_transition_support = signals.l3_phrase_milli >= 420
-        || signals.l4_signed_milli >= 120
+    let strong_transition_support = signals.l3_phrase_milli >= CURRENT.l3_strong_milli
+        || signals.l4_signed_milli >= CURRENT.l4_strong_milli
         || (policy.l2_phase_apply
             && signals.l2_transition_phase_operator_promoted
             && signals.l2_transition_phase_verdict == crate::nanda_wave::PhaseVerdict::Support
@@ -141,7 +142,7 @@ pub(super) fn candidate_has_apply_authority(
         );
         return false;
     }
-    if bayes.risk >= 0.62
+    if bayes.risk >= CURRENT.high_risk_floor
         && !matches!(
             source_role,
             CorrectionSourceRole::Layout
@@ -153,11 +154,15 @@ pub(super) fn candidate_has_apply_authority(
         return false;
     }
     let posterior_floor = match source_role {
-        CorrectionSourceRole::Layout => 0.0,
-        CorrectionSourceRole::Boundary | CorrectionSourceRole::DeterministicTypo => 0.20,
-        CorrectionSourceRole::L3Context => 0.28,
-        CorrectionSourceRole::L2Surface => 0.34,
-        CorrectionSourceRole::Completion | CorrectionSourceRole::Technical => 0.40,
+        CorrectionSourceRole::Layout => CURRENT.layout_posterior_floor,
+        CorrectionSourceRole::Boundary | CorrectionSourceRole::DeterministicTypo => {
+            CURRENT.deterministic_posterior_floor
+        }
+        CorrectionSourceRole::L3Context => CURRENT.l3_posterior_floor,
+        CorrectionSourceRole::L2Surface => CURRENT.l2_posterior_floor,
+        CorrectionSourceRole::Completion | CorrectionSourceRole::Technical => {
+            CURRENT.completion_posterior_floor
+        }
     };
     if bayes.posterior < posterior_floor && !strong_learned_support {
         debug_decision_reject(candidate, "low_posterior", bayes.posterior, bayes.risk);
@@ -178,11 +183,23 @@ pub(super) fn candidate_has_apply_authority(
         && !exact_positive_transition
         && lexical_transition_distance(event, candidate) >= 2
         && !phase_center_separates_candidate(event, candidate_index, candidates, evaluations)
-        && competing_lexical_margin(event, candidate_index, candidates, evaluations) < 0.08
+        && competing_lexical_margin(event, candidate_index, candidates, evaluations)
+            < CURRENT.composite_margin_floor
     {
         debug_decision_reject(
             candidate,
             "l2_composite_margin_low",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
+    if !strong_transition_support
+        && close_unresolved_competitor_exists(event, candidate_index, candidates, evaluations)
+    {
+        debug_decision_reject(
+            candidate,
+            "ambiguous_transition_margin",
             bayes.posterior,
             bayes.risk,
         );
@@ -199,6 +216,34 @@ pub(super) fn candidate_has_apply_authority(
         );
     }
     allowed
+}
+
+fn close_unresolved_competitor_exists(
+    event: &TypingErrorEvent,
+    selected_index: usize,
+    candidates: &[UnifiedCorrectionCandidate],
+    evaluations: &[CandidateDecisionEvaluation],
+) -> bool {
+    let selected = &evaluations[selected_index];
+    let selected_origin = candidates[selected_index].origin;
+    let selected_span =
+        changed_token_span(&event.original, &candidates[selected_index].replacement);
+    candidates.iter().enumerate().any(|(index, candidate)| {
+        if index == selected_index
+            || candidate.origin != selected_origin
+            || candidate.gate.action == CandidateGateAction::Veto
+        {
+            return false;
+        }
+        let competitor = &evaluations[index];
+        competitor.action.verifier_passed
+            && changed_spans_overlap(
+                selected_span,
+                changed_token_span(&event.original, &candidate.replacement),
+            )
+            && (selected.signals.rank_score - competitor.signals.rank_score).abs()
+                < CURRENT.structural_rank_proximity
+    })
 }
 
 fn original_tail_has_same_script_context(event: &TypingErrorEvent) -> bool {
@@ -335,7 +380,8 @@ fn learned_candidate_shadowed_by_deterministic_owner(
 }
 
 fn strong_l2_wave_peak_support(signals: &CandidateDecisionSignals) -> bool {
-    signals.l2_wave_peak_milli >= 650 && signals.l2_wave_peak_uncertainty_milli <= 450
+    signals.l2_wave_peak_milli >= CURRENT.l2_peak_milli
+        && signals.l2_wave_peak_uncertainty_milli <= CURRENT.l2_peak_uncertainty_milli
 }
 
 pub(super) fn admit_evaluated_hidden_transition(
@@ -384,7 +430,7 @@ pub(super) fn admit_evaluated_hidden_transition(
     }
 
     if !transition.l4_state_estimate.apply_allowed
-        && transition.l4_state_estimate.desync_risk_milli >= 500
+        && transition.l4_state_estimate.desync_risk_milli >= CURRENT.latent_desync_risk_milli
     {
         return TransitionAdmission {
             allow_apply: false,
@@ -512,14 +558,16 @@ fn stronger_unresolved_candidate_exists(
             let loss_reduction = selected_explanation
                 .lost_mass_milli
                 .saturating_sub(candidate_explanation.lost_mass_milli);
-            let structurally_dominates = preservation_gain >= 120
-                && loss_reduction >= 120
+            let structurally_dominates = preservation_gain
+                >= CURRENT.structural_preservation_gain_milli
+                && loss_reduction >= CURRENT.structural_loss_reduction_milli
                 && candidate_explanation.operator_fit_milli
                     >= selected_explanation.operator_fit_milli;
             candidate_bayes.risk <= selected_bayes.risk
                 && (candidate_signals.rank_score > selected_signals.rank_score
                     || (structurally_dominates
-                        && candidate_signals.rank_score + 0.08 >= selected_signals.rank_score))
+                        && candidate_signals.rank_score + CURRENT.structural_rank_proximity
+                            >= selected_signals.rank_score))
         })
 }
 
@@ -623,13 +671,13 @@ fn phase_center_separates_candidate(
                 .l2_wave_peak_positive_milli
         })
         .max();
-    if selected_signal.l2_wave_peak_milli >= 650
-        && selected_signal.l2_wave_peak_uncertainty_milli <= 450
+    if selected_signal.l2_wave_peak_milli >= CURRENT.l2_peak_milli
+        && selected_signal.l2_wave_peak_uncertainty_milli <= CURRENT.l2_peak_uncertainty_milli
         && strongest_lexical_competitor.map_or(true, |competitor| {
             selected_signal
                 .l2_wave_peak_positive_milli
                 .saturating_sub(competitor)
-                >= 100
+                >= CURRENT.l2_competitor_gap_milli
         })
     {
         return true;
@@ -670,6 +718,6 @@ fn phase_center_separates_candidate(
         selected_signal
             .l2_transition_phase_milli
             .saturating_sub(competitor)
-            >= 10
+            >= CURRENT.phase_competitor_gap_milli
     })
 }

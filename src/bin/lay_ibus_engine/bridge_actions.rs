@@ -32,8 +32,21 @@ impl LayImeBridge {
     }
 
     pub(super) async fn visible_tail_v1_inner(&self) -> fdo::Result<(String, String, bool)> {
+        let (state, text, layout, _, _) = self.visible_tail_v2_inner().await?;
+        Ok((state, text, layout))
+    }
+
+    pub(super) async fn visible_tail_v2_inner(
+        &self,
+    ) -> fdo::Result<(String, String, bool, u64, String)> {
         let Some(path) = self.active_path() else {
-            return Ok(("passive:no-focus".to_string(), String::new(), false));
+            return Ok((
+                "passive:no-focus".to_string(),
+                String::new(),
+                false,
+                0,
+                String::new(),
+            ));
         };
         let iface_ref = self
             .ibus_connection
@@ -49,7 +62,13 @@ impl LayImeBridge {
             VisibleTailSource::ImeCommittedTail => engine.tail_buffer.clone(),
             VisibleTailSource::DaemonWordBuffer => String::new(),
         };
-        Ok((source.bridge_state().to_string(), text, engine.layout_is_ru))
+        Ok((
+            source.bridge_state().to_string(),
+            text,
+            engine.layout_is_ru,
+            engine.tail_epoch,
+            path,
+        ))
     }
 
     pub(super) async fn owns_active_text_inner(&self) -> fdo::Result<bool> {
@@ -89,6 +108,7 @@ impl LayImeBridge {
         text: String,
         suppress_next_autocorrect: bool,
         expected_original_tail: Option<String>,
+        expected_revision: Option<(u64, String)>,
     ) -> fdo::Result<bool> {
         if backspaces == 0 && text.is_empty() {
             return Ok(false);
@@ -96,14 +116,6 @@ impl LayImeBridge {
         let Some(path) = self.active_path() else {
             return Ok(false);
         };
-        let expected_tail = expected_original_tail.map(|expected| {
-            VisibleTailSnapshot::new(
-                VisibleTailSource::DaemonWordBuffer,
-                expected,
-                Some(path.clone()),
-                0,
-            )
-        });
         let iface_ref = self
             .ibus_connection
             .object_server()
@@ -112,6 +124,17 @@ impl LayImeBridge {
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let emitter = iface_ref.signal_emitter();
         let mut engine = iface_ref.get_mut().await;
+        let expected_tail = expected_original_tail.map(|expected| {
+            let (epoch, focus) = expected_revision
+                .clone()
+                .unwrap_or_else(|| (engine.tail_epoch, path.clone()));
+            VisibleTailSnapshot::new(
+                VisibleTailSource::DaemonWordBuffer,
+                expected,
+                Some(focus),
+                epoch,
+            )
+        });
         let mut request =
             CommittedTailReplaceRequest::daemon_bridge(backspaces, text, suppress_next_autocorrect);
         if let Some(expected_tail) = expected_tail {

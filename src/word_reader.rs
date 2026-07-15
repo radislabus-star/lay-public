@@ -78,6 +78,17 @@ pub fn split_ws_segments(text: &str) -> Vec<(&str, bool)> {
     segments
 }
 
+pub fn previous_non_whitespace_segment<'a>(
+    segments: &'a [(&'a str, bool)],
+    before_idx: usize,
+) -> Option<&'a str> {
+    segments
+        .get(..before_idx)?
+        .iter()
+        .rev()
+        .find_map(|(segment, is_whitespace)| (!*is_whitespace).then_some(*segment))
+}
+
 pub fn split_last_ws_token(text: &str) -> Option<(&str, &str)> {
     if text.is_empty() {
         return None;

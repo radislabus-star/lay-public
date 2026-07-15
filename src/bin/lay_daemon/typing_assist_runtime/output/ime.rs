@@ -76,7 +76,7 @@ pub(crate) fn try_apply_ime_replacement(
     };
     let replace_tail_started = std::time::Instant::now();
     let dispatch = try_ime_replace_tail(authorized_edit, "typing-assist");
-    if !dispatch.was_applied() {
+    if !dispatch.was_dispatched() {
         log(&format!(
             "⚠ typing-assist IME dispatch ended without apply: backend={} reason={}",
             dispatch.backend().as_str(),

@@ -47,7 +47,7 @@ pub(crate) fn try_ime_replace_output(
         return NativeReplaceAttempt::Finished(failed_native_output(ctx));
     };
     let dispatch = try_ime_replace_tail(authorized_edit, replace_kind);
-    if !dispatch.was_applied() {
+    if !dispatch.was_dispatched() {
         if dispatch.permits_backend_reselection() {
             return NativeReplaceAttempt::NotSelected;
         }
@@ -85,7 +85,7 @@ pub(crate) fn try_ime_replace_output(
     NativeReplaceAttempt::Finished(NativeReplaceOutput {
         result,
         layout_is_ru: replace_target_is_ru,
-        trailing_spaces: trailing_space_count(&replace_text),
+        trailing_spaces: lay::word_reader::trailing_whitespace_char_count(&replace_text),
     })
 }
 
@@ -131,7 +131,7 @@ pub(crate) fn try_gnome_native_replace_output(
             NativeReplaceAttempt::Finished(NativeReplaceOutput {
                 result: Some(replace_target_is_ru),
                 layout_is_ru: replace_target_is_ru,
-                trailing_spaces: trailing_space_count(&replace_text),
+                trailing_spaces: lay::word_reader::trailing_whitespace_char_count(&replace_text),
             })
         }
         Ok(false) => {
@@ -264,8 +264,4 @@ fn authorize_native_text_edit(
         replace_text
     ));
     None
-}
-
-fn trailing_space_count(text: &str) -> usize {
-    text.chars().rev().take_while(|ch| *ch == ' ').count()
 }

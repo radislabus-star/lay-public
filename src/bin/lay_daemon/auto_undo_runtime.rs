@@ -46,7 +46,7 @@ pub(super) fn handle_pending_auto_undo(
             return None;
         };
         let dispatch = try_ime_replace_tail(ime_authorized, "auto-undo");
-        if dispatch.was_applied() {
+        if dispatch.was_dispatched() {
             let target_layout = lay::keyboard::preferred_layout_for_text(&undo.original, true);
             switch_or_restore_layout_after_text_edit(true, target_layout, None, "auto-undo", false);
             remember_auto_undo(buf, &undo, started_at);

@@ -138,6 +138,7 @@ assert_live_correction_entrypoint_owned_by_input_gate() {
         --glob '!src/correction_pipeline.rs' \
         --glob '!src/input_gate.rs' \
         --glob '!src/main.rs' \
+        --glob '!src/bin/lay_nanda_wave_eval/**' \
         --glob '!**/tests.rs' \
         --glob '!**/*_tests.rs' \
         --glob '!**/tests/**' \
@@ -147,7 +148,7 @@ assert_live_correction_entrypoint_owned_by_input_gate() {
   else
     hits="$(grep -RInF -- "$pattern" src || true)"
     hits="$(printf '%s\n' "$hits" \
-      | grep -Ev '(^src/correction_core\.rs:|^src/correction_pipeline\.rs:|^src/input_gate\.rs:|^src/main\.rs:|_tests\.rs:|^src/.*/tests(\.rs:|/))' || true)"
+      | grep -Ev '(^src/correction_core\.rs:|^src/correction_pipeline\.rs:|^src/input_gate\.rs:|^src/main\.rs:|^src/bin/lay_nanda_wave_eval/|_tests\.rs:|^src/.*/tests(\.rs:|/))' || true)"
   fi
   if [[ -n "$hits" ]]; then
     printf '%s\n' "$hits" >&2
@@ -339,7 +340,7 @@ assert_max_lines src/layout_autoswitch/ascii/symbols.rs 70
 assert_max_lines src/layout_autoswitch/ascii/word.rs 180
 assert_max_lines src/decoder.rs 60
 assert_max_lines src/decoder/edit_contract.rs 30
-assert_max_lines src/decoder/edit_plan.rs 161
+assert_max_lines src/decoder/edit_plan.rs 168
 assert_max_lines src/decoder/manual.rs 160
 assert_max_lines src/decoder/ranked.rs 120
 assert_max_lines src/decoder/types.rs 70
@@ -413,7 +414,7 @@ assert_max_lines src/keyboard/event_words/decision.rs 60
 assert_max_lines src/keyboard/event_words/mapping.rs 70
 assert_max_lines src/keyboard/event_words/visual_latin.rs 70
 assert_max_lines src/keyboard/event_words/word_split.rs 70
-assert_max_lines src/word_buffer.rs 180
+assert_max_lines src/word_buffer.rs 182
 assert_max_lines src/word_buffer/learning.rs 180
 assert_max_lines src/word_buffer/replay_memory.rs 280
 assert_max_lines src/word_buffer/replay_scope.rs 160
@@ -456,11 +457,12 @@ assert_max_lines src/bin/lay_daemon/text_output/device.rs 90
 assert_max_lines src/bin/lay_daemon/text_output/key_emit.rs 200
 assert_max_lines src/bin/lay_daemon/text_output/modifiers.rs 70
 assert_max_lines src/bin/lay_daemon/text_output/replacement.rs 251
+assert_max_lines src/bin/lay_daemon/text_output/replacement/error.rs 30
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime.rs 80
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/candidate.rs 67
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output.rs 140
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/defer.rs 30
-assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/ime.rs 125
+assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/ime.rs 130
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/memory.rs 80
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/minimal.rs 130
 assert_max_lines src/bin/lay_daemon/typing_assist_runtime/output/nanda_trace.rs 40
@@ -472,18 +474,20 @@ assert_max_lines src/bin/lay_daemon/correction_runtime.rs 198
 assert_max_lines src/bin/lay_daemon/correction_runtime/memory.rs 63
 assert_max_lines src/bin/lay_daemon/correction_runtime/output.rs 96
 assert_max_lines src/bin/lay_daemon/correction_runtime/output/context.rs 70
-assert_max_lines src/bin/lay_daemon/correction_runtime/output/native.rs 266
+assert_max_lines src/bin/lay_daemon/correction_runtime/output/native.rs 267
 assert_max_lines src/bin/lay_daemon/correction_runtime/output/replay.rs 145
 assert_max_lines src/bin/lay_daemon/correction_runtime/output/text_replace.rs 199
 assert_max_lines src/bin/lay_daemon/auto_undo_runtime.rs 163
 assert_max_lines src/bin/lay_daemon/layout_controller.rs 283
+assert_max_lines src/bin/lay_daemon/layout_controller/reconcile.rs 90
+assert_max_lines src/bin/lay_daemon/layout_controller/verify.rs 70
 assert_max_lines src/bin/lay_daemon/layout_controller/gnome_dbus.rs 360
 assert_max_lines src/bin/lay_daemon/layout_controller/ibus_bridge.rs 100
 assert_max_lines src/bin/lay_daemon/layout_controller/ime_bridge.rs 140
 assert_max_lines src/bin/lay_daemon/layout_kde.rs 180
 assert_max_lines src/bin/lay_daemon/layout_x11.rs 100
-assert_max_lines src/bin/lay_daemon/learning_runtime.rs 83
-assert_max_lines src/bin/lay_daemon/learning_runtime/log_file.rs 140
+assert_max_lines src/bin/lay_daemon/learning_runtime.rs 88
+assert_max_lines src/bin/lay_daemon/learning_runtime/log_file.rs 145
 assert_max_lines src/bin/lay_daemon/learning_runtime/promotion.rs 190
 assert_max_lines src/bin/lay_daemon/tests.rs 350
 assert_max_lines src/bin/lay_daemon/tests/config_contract.rs 110
@@ -531,8 +535,9 @@ assert_max_lines scripts/runtime_smoke/cases.py 180
 assert_max_lines scripts/runtime_smoke/ime.py 130
 assert_max_lines src/bin/lay_ibus_engine.rs 63
 assert_max_lines src/bin/lay_ibus_engine/args.rs 30
-assert_max_lines src/bin/lay_ibus_engine/bridge.rs 99
+assert_max_lines src/bin/lay_ibus_engine/bridge.rs 130
 assert_max_lines src/bin/lay_ibus_engine/engine.rs 250
+assert_max_lines src/bin/lay_ibus_engine/engine/types.rs 90
 assert_max_lines src/bin/lay_ibus_engine/factory.rs 90
 assert_max_lines src/bin/lay_ibus_engine/managed.rs 160
 assert_max_lines src/bin/lay_ibus_engine/protocol.rs 40
@@ -541,7 +546,7 @@ assert_max_lines src/bin/lay_ibus_engine/text.rs 30
 assert_max_lines src/bin/lay_ibus_engine/xml.rs 60
 assert_max_lines extension/lay@radislabus-star.github.io/lay-impl.js 1800
 assert_max_lines src/typing_candidate.rs 280
-assert_max_lines src/text_edit.rs 60
+assert_max_lines src/text_edit.rs 61
 assert_max_lines src/text_edit/committed_tail.rs 221
 assert_max_lines src/text_edit/cursor.rs 40
 assert_max_lines src/text_edit/diff_plan.rs 94
@@ -872,11 +877,12 @@ if command -v rg >/dev/null 2>&1; then
     --glob '!src/bin/lay_daemon/text_output.rs' \
     --glob '!src/bin/lay_daemon/text_output/**' \
     --glob '!src/bin/lay_daemon/layout_controller.rs' \
+    --glob '!src/bin/lay_daemon/layout_controller/**' \
     --glob '!src/bin/lay_test_input.rs' \
     --glob '!src/bin/lay_test_input/**' || true)"
 else
   sleep_hits="$(grep -RInF -- "thread::sleep" src \
-    | grep -Ev '(_tests\.rs:|^src/.*/tests(\.rs:|/)|^src/bin/lay_daemon/text_output(\.rs|/)|^src/bin/lay_daemon/layout_controller\.rs:|^src/bin/lay_test_input(\.rs|/))' || true)"
+    | grep -Ev '(_tests\.rs:|^src/.*/tests(\.rs:|/)|^src/bin/lay_daemon/text_output(\.rs|/)|^src/bin/lay_daemon/layout_controller(\.rs:|/)|^src/bin/lay_test_input(\.rs|/))' || true)"
 fi
 if [[ -n "$sleep_hits" ]]; then
   printf '%s\n' "$sleep_hits" >&2

@@ -6,63 +6,12 @@ use super::protocol::Shared;
 
 const IBUS_CAP_SURROUNDING_TEXT: u32 = 1 << 5;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum WordInputMode {
-    ManagedCommit,
-    TerminalPassthrough,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum ManualToggleAuthority {
-    ImeActiveComposition,
-    ImeCommittedTail,
-    DaemonWordBuffer,
-}
-
-#[derive(Debug, Clone)]
-pub(super) struct RecentCommittedTailReplace {
-    pub(super) backspaces: u32,
-    pub(super) text: String,
-    pub(super) at: Instant,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(super) struct SurroundingTextSnapshot {
-    pub(super) text: String,
-    pub(super) cursor_pos: u32,
-    pub(super) anchor_pos: u32,
-}
-
-impl SurroundingTextSnapshot {
-    pub(super) fn new(text: String, cursor_pos: u32, anchor_pos: u32) -> Self {
-        Self {
-            text,
-            cursor_pos,
-            anchor_pos,
-        }
-    }
-
-    pub(super) fn suffix_before_cursor(&self, chars: usize) -> Option<String> {
-        if chars == 0 {
-            return Some(String::new());
-        }
-        let cursor = self.cursor_pos as usize;
-        if cursor < chars || self.text.chars().count() < cursor {
-            return None;
-        }
-        Some(
-            self.text
-                .chars()
-                .take(cursor)
-                .skip(cursor - chars)
-                .collect(),
-        )
-    }
-
-    pub(super) fn has_selection(&self) -> bool {
-        self.cursor_pos != self.anchor_pos
-    }
-}
+#[path = "engine/types.rs"]
+mod types;
+pub(super) use types::{
+    ManualToggleAuthority, PendingVisiblePostcondition, RecentCommittedTailReplace,
+    SurroundingTextSnapshot, WordInputMode,
+};
 
 pub(crate) struct LayIbusEngine {
     pub(super) path: String,
@@ -70,6 +19,7 @@ pub(crate) struct LayIbusEngine {
     pub(super) buffer: String,
     pub(super) composition_cursor: usize,
     pub(super) tail_buffer: String,
+    pub(super) tail_epoch: u64,
     pub(super) preedit_suffix: String,
     pub(super) preedit_candidates: Vec<String>,
     pub(super) preedit_candidate_index: usize,
@@ -87,6 +37,7 @@ pub(crate) struct LayIbusEngine {
     pub(super) last_commit_at: Option<Instant>,
     pub(super) last_tail_input_at: Option<Instant>,
     pub(super) recent_committed_tail_replace: Option<RecentCommittedTailReplace>,
+    pub(super) pending_visible_postcondition: Option<PendingVisiblePostcondition>,
     pub(super) suppress_next_committed_tail_autocorrect: bool,
     pub(super) word_input_mode: Option<WordInputMode>,
     pub(super) managed_input: bool,

@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 #[cfg(not(test))]
-use std::sync::mpsc::{self, RecvTimeoutError, Sender};
+use std::sync::mpsc::{self, RecvTimeoutError, SyncSender, TrySendError};
 use std::sync::{Arc, Mutex, OnceLock};
 use std::time::{Duration, Instant};
 
@@ -31,6 +31,10 @@ const USAGE_COUNTS_MAX_TRANSITION_STATES: usize = 24_000;
 const USAGE_REFRESH_INTERVAL: Duration = Duration::from_millis(1000);
 #[cfg(not(test))]
 const USAGE_PERSIST_INTERVAL: Duration = Duration::from_millis(1000);
+#[cfg(not(test))]
+const USAGE_PERSIST_CHANNEL_CAPACITY: usize = 8192;
+#[cfg(not(test))]
+const USAGE_PERSIST_PENDING_MAX_BYTES: usize = 64 * 1024;
 const CONTEXT_WORDS: usize = 5;
 const MIN_CONTEXT_NGRAM: usize = 1;
 const TRANSITION_ANY: &str = "*";
@@ -404,7 +408,7 @@ struct UsagePersistLine {
 }
 
 #[cfg(not(test))]
-static USAGE_PERSIST_SENDER: OnceLock<Sender<UsagePersistLine>> = OnceLock::new();
+static USAGE_PERSIST_SENDER: OnceLock<SyncSender<UsagePersistLine>> = OnceLock::new();
 static LAST_USAGE_EVENT: OnceLock<Mutex<Option<UsageEvent>>> = OnceLock::new();
 
 pub(crate) fn record_typed_tail_if_enabled(tail: &str) {
@@ -500,8 +504,7 @@ fn word_prior_from_count(count: u32) -> f32 {
 }
 
 fn usage_learning_enabled() -> bool {
-    let config = crate::config::LayConfig::load();
-    config.learning_log || config.nanda_precognition || config.nanda_autocorrect
+    crate::config::runtime_usage_learning_enabled()
 }
 
 fn usage_counts() -> Arc<UsageCounts> {
@@ -1352,7 +1355,9 @@ fn usage_event_payload_eq(left: &UsageEvent, right: &UsageEvent) -> bool {
 #[cfg(not(test))]
 fn enqueue_usage_persist(path: PathBuf, line: String) {
     let sender = USAGE_PERSIST_SENDER.get_or_init(spawn_usage_persist_writer);
-    let _ = sender.send(UsagePersistLine { path, line });
+    match sender.try_send(UsagePersistLine { path, line }) {
+        Ok(()) | Err(TrySendError::Full(_)) | Err(TrySendError::Disconnected(_)) => {}
+    }
 }
 
 #[cfg(test)]
@@ -1363,19 +1368,34 @@ fn enqueue_usage_persist(path: PathBuf, line: String) {
 }
 
 #[cfg(not(test))]
-fn spawn_usage_persist_writer() -> Sender<UsagePersistLine> {
-    let (sender, receiver) = mpsc::channel::<UsagePersistLine>();
+fn spawn_usage_persist_writer() -> SyncSender<UsagePersistLine> {
+    let (sender, receiver) = mpsc::sync_channel::<UsagePersistLine>(USAGE_PERSIST_CHANNEL_CAPACITY);
     std::thread::Builder::new()
         .name("lay-usage-persist".to_string())
         .spawn(move || {
             let mut pending = HashMap::<PathBuf, String>::new();
+            let mut pending_bytes = 0usize;
+            let mut next_flush = Instant::now() + USAGE_PERSIST_INTERVAL;
             loop {
-                match receiver.recv_timeout(USAGE_PERSIST_INTERVAL) {
-                    Ok(record) => pending
-                        .entry(record.path)
-                        .or_default()
-                        .push_str(&record.line),
-                    Err(RecvTimeoutError::Timeout) => flush_usage_persist(&mut pending),
+                let timeout = next_flush.saturating_duration_since(Instant::now());
+                match receiver.recv_timeout(timeout) {
+                    Ok(record) => {
+                        pending_bytes = pending_bytes.saturating_add(record.line.len());
+                        pending
+                            .entry(record.path)
+                            .or_default()
+                            .push_str(&record.line);
+                        if pending_bytes >= USAGE_PERSIST_PENDING_MAX_BYTES {
+                            flush_usage_persist(&mut pending);
+                            pending_bytes = 0;
+                            next_flush = Instant::now() + USAGE_PERSIST_INTERVAL;
+                        }
+                    }
+                    Err(RecvTimeoutError::Timeout) => {
+                        flush_usage_persist(&mut pending);
+                        pending_bytes = 0;
+                        next_flush = Instant::now() + USAGE_PERSIST_INTERVAL;
+                    }
                     Err(RecvTimeoutError::Disconnected) => {
                         flush_usage_persist(&mut pending);
                         break;

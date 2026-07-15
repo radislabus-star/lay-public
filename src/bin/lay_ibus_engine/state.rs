@@ -125,17 +125,17 @@ impl LayIbusEngine {
         config: LayConfig,
     ) -> Self {
         warm_runtime(&config);
-        let handoff_tail_buffer = shared
-            .lock()
-            .expect("lay ime state poisoned")
-            .handoff_tail_buffer
-            .clone();
+        let (handoff_tail_buffer, handoff_tail_epoch) = {
+            let state = shared.lock().expect("lay ime state poisoned");
+            (state.handoff_tail_buffer.clone(), state.handoff_tail_epoch)
+        };
         let mut engine = Self {
             path,
             shared,
             buffer: String::new(),
             composition_cursor: 0,
             tail_buffer: handoff_tail_buffer,
+            tail_epoch: handoff_tail_epoch,
             preedit_suffix: String::new(),
             preedit_candidates: Vec::new(),
             preedit_candidate_index: 0,
@@ -153,6 +153,7 @@ impl LayIbusEngine {
             last_commit_at: None,
             last_tail_input_at: None,
             recent_committed_tail_replace: None,
+            pending_visible_postcondition: None,
             suppress_next_committed_tail_autocorrect: false,
             word_input_mode: None,
             managed_input,
@@ -237,7 +238,8 @@ impl LayIbusEngine {
         let suppress_next_autocorrect = request.suppress_next_autocorrect;
         let ime_owns_layout_postcondition = request.ime_owns_layout_postcondition();
         let mut visible_state =
-            VisibleFieldState::committed_tail(self.tail_buffer.clone(), Some(self.path.clone()));
+            VisibleFieldState::committed_tail(self.tail_buffer.clone(), Some(self.path.clone()))
+                .with_epoch(self.tail_epoch);
         if let Some((external_tail, has_selection)) = committed_tail_external_observation(
             source,
             self.surrounding_text_snapshot.as_ref(),
@@ -414,6 +416,7 @@ impl LayIbusEngine {
             text,
             at: now,
         });
+        self.arm_visible_postcondition(now);
         Ok(true)
     }
 
@@ -454,6 +457,7 @@ fn committed_tail_external_observation(
 }
 
 fn warm_runtime(config: &LayConfig) {
+    lay::config::publish_runtime_config(config);
     lay::hot_field::set_process_policy(lay::hot_field::HotFieldPolicy::ime());
     #[cfg(test)]
     {

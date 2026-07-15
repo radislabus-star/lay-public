@@ -3,6 +3,8 @@
 //! Atoms describe transition shape and proof, never concrete word identity.
 //! They are the shared input for DecisionCore diagnostics and L2 phase memory.
 
+use crate::text_metrics::transition_changed_token_count;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct TransitionRelationInput<'a> {
     pub(crate) action_operator: &'a str,
@@ -275,7 +277,7 @@ impl TransitionRelationAtoms {
         operator: TransitionOperatorKind,
     ) -> Self {
         let left_context_changed = left_context(original) != left_context(replacement);
-        let changed_tokens = changed_token_count(original, replacement);
+        let changed_tokens = transition_changed_token_count(original, replacement);
         let verifier_passed = operator_shape_verified(original, replacement, operator)
             && (!left_context_changed
                 || matches!(
@@ -455,7 +457,7 @@ fn operator_shape_verified(
         }
         TransitionOperatorKind::ContextChoice => {
             original_words.len() == replacement_words.len()
-                && changed_token_count(original, replacement) == 1
+                && transition_changed_token_count(original, replacement) == 1
         }
         TransitionOperatorKind::Other => false,
     }
@@ -556,19 +558,6 @@ fn left_context(text: &str) -> Vec<String> {
     let mut words = lowercase_whitespace_tokens(text);
     words.pop();
     words
-}
-
-fn changed_token_count(original: &str, replacement: &str) -> usize {
-    let original = lowercase_whitespace_tokens(original);
-    let replacement = lowercase_whitespace_tokens(replacement);
-    if original.len() != replacement.len() {
-        return original.len().max(replacement.len());
-    }
-    original
-        .iter()
-        .zip(replacement)
-        .filter(|(left, right)| left != &right)
-        .count()
 }
 
 fn has_repeated_letter(text: &str) -> bool {

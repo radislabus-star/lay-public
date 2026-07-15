@@ -472,6 +472,29 @@ mod tests {
     }
 
     #[test]
+    fn boundary_shift_cannot_apply_on_clean_two_word_surfaces() {
+        let pipeline = default_typing_assist_pipeline();
+        for text in [
+            "моему аакаунут ",
+            "коле Азейбарджан ",
+            "Переносимые операторы ",
+        ] {
+            let resolution = resolve_text_correction(request(
+                text,
+                &pipeline,
+                CorrectionMode::DeterministicThenNanda,
+            ));
+
+            assert!(
+                resolution.selected.as_ref().is_none_or(|candidate| {
+                    candidate.error_class != TypingErrorClass::BoundaryShift
+                }),
+                "text={text:?} resolution={resolution:#?}"
+            );
+        }
+    }
+
+    #[test]
     fn ambiguous_short_boundary_shift_is_suggestion_only() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
@@ -1342,7 +1365,7 @@ mod tests {
     }
 
     #[test]
-    fn repeated_prefix_plus_letter_substitution_does_not_apply_intermediate_word() {
+    fn close_verified_typo_transitions_abstain_without_context_signal() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
             "ППОНИКАЕШЬ? ",
@@ -1353,8 +1376,7 @@ mod tests {
         assert_eq!(resolution.decision, None, "resolution={resolution:#?}");
         assert!(resolution.candidates.iter().any(|candidate| {
             candidate.replacement == "ПОНИКАЕШЬ? "
-                && candidate.gate.action == CandidateGateAction::SuggestOnly
-                && candidate.gate.reason == "single_step_typo_has_competing_composite"
+                && candidate.gate.action == CandidateGateAction::Eligible
         }));
     }
 

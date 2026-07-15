@@ -117,7 +117,17 @@ fn ignored_preedit_candidate_records_negative_usage_without_promoting_it() {
     engine.preedit_candidates = vec!["ша".to_string()];
     engine.push_tail_char(' ');
 
-    let text = std::fs::read_to_string(&events_path).expect("usage events");
+    let deadline = std::time::Instant::now() + std::time::Duration::from_millis(1300);
+    let text = loop {
+        if let Ok(text) = std::fs::read_to_string(&events_path) {
+            break text;
+        }
+        assert!(
+            std::time::Instant::now() < deadline,
+            "usage persistence did not flush within its active interval"
+        );
+        std::thread::sleep(std::time::Duration::from_millis(10));
+    };
     assert!(text.contains(r#""kind":"rejected_ime""#), "{text}");
     assert!(text.contains(r#""word":"даша""#), "{text}");
     assert!(!text.contains(r#""kind":"accepted_ime""#), "{text}");

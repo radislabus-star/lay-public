@@ -112,7 +112,7 @@ pub(crate) fn apply_minimal_typing_replacement(
         buf,
         insert_outcome.layout_is_ru,
         "typing-assist",
-        trailing_space_count(replacement),
+        lay::word_reader::trailing_whitespace_char_count(replacement),
     );
     log(&format!(
         "✓ done: помощь при наборе {:?} → {:?} за {}ms",
@@ -123,7 +123,4 @@ pub(crate) fn apply_minimal_typing_replacement(
     TypingAssistOutcome::Applied {
         layout_is_ru: insert_outcome.layout_is_ru,
     }
-}
-fn trailing_space_count(text: &str) -> usize {
-    text.chars().rev().take_while(|ch| *ch == ' ').count()
 }

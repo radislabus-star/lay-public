@@ -72,7 +72,7 @@ fn print_unsafe_scoreboard(path: PathBuf, fail_on_unsafe: bool) {
         scoreboard.inspect(&value);
     }
     println!("{}", scoreboard.to_json(&path));
-    if fail_on_unsafe && scoreboard.unsafe_records > 0 {
+    if fail_on_unsafe && !scoreboard.passes_gate() {
         std::process::exit(1);
     }
 }
@@ -284,6 +284,7 @@ fn append_selected_candidate_reasons(gate: Option<&Value>, reasons: &mut Vec<&'s
 struct UnsafeScoreboard {
     records: usize,
     unsafe_records: usize,
+    gate_failures: usize,
     blocked_unsafe: usize,
     candidate_before_apply: usize,
     action_records: usize,
@@ -565,6 +566,10 @@ impl TransitionReplay {
 }
 
 impl UnsafeScoreboard {
+    fn passes_gate(&self) -> bool {
+        self.gate_failures == 0
+    }
+
     fn inspect(&mut self, value: &Value) {
         self.records += 1;
         if value.get("kind").and_then(Value::as_str) == Some("candidate_before_apply") {
@@ -583,6 +588,14 @@ impl UnsafeScoreboard {
         let reasons = unsafe_reasons(value);
         if !reasons.is_empty() {
             self.unsafe_records += 1;
+        }
+        if reasons.iter().any(|reason| {
+            matches!(
+                *reason,
+                "safety_block" | "unverified_transition" | "selected_unverified_transition"
+            )
+        }) {
+            self.gate_failures += 1;
         }
         if is_slow_output(value) {
             self.slow_output += 1;
@@ -609,7 +622,8 @@ impl UnsafeScoreboard {
             "source": path.display().to_string(),
             "records": {
                 "total": self.records,
-                "unsafe": self.unsafe_records,
+                "observed_risk": self.unsafe_records,
+                "gate_failures": self.gate_failures,
                 "blocked_unsafe": self.blocked_unsafe,
                 "candidate_before_apply": self.candidate_before_apply,
                 "actions": self.action_records
@@ -629,7 +643,8 @@ impl UnsafeScoreboard {
                 "slow_output_is_safety_failure": false
             },
             "mutation_routes": self.mutation_routes,
-            "read_as": "diagnostic gate over recent_actions; runtime decisions are unchanged"
+            "verdict": if self.passes_gate() { "PASS" } else { "VETO" },
+            "read_as": "observed_risk includes verified boundary edits; gate_failures counts only unsafe execution that escaped verification"
         })
         .to_string()
     }
@@ -692,6 +707,8 @@ mod tests {
         scoreboard.inspect(&value);
         assert_eq!(scoreboard.records, 1);
         assert_eq!(scoreboard.unsafe_records, 1);
+        assert_eq!(scoreboard.gate_failures, 1);
+        assert!(!scoreboard.passes_gate());
         assert_eq!(scoreboard.selected_left_context_changed, 1);
         assert_eq!(scoreboard.selected_unverified_transition, 1);
     }
@@ -759,7 +776,30 @@ mod tests {
         assert_eq!(scoreboard.candidate_before_apply, 1);
         assert_eq!(scoreboard.blocked_unsafe, 1);
         assert_eq!(scoreboard.unsafe_records, 0);
+        assert_eq!(scoreboard.gate_failures, 0);
+        assert!(scoreboard.passes_gate());
         assert_eq!(scoreboard.boundary_changed, 0);
+    }
+
+    #[test]
+    fn unsafe_scoreboard_observes_verified_boundary_without_failing_gate() {
+        let value = json!({
+            "kind": "candidate_before_apply",
+            "mutation_route": "typing_assist_ime",
+            "boundary_changed": true,
+            "changes_non_last_word": true,
+            "would_touch_words": 2,
+            "safety_allow_apply": true,
+            "transition_left_context_changed": true,
+            "transition_verified": true,
+            "transition_proof": "boundary"
+        });
+        let mut scoreboard = UnsafeScoreboard::default();
+        scoreboard.inspect(&value);
+
+        assert_eq!(scoreboard.unsafe_records, 1);
+        assert_eq!(scoreboard.gate_failures, 0);
+        assert!(scoreboard.passes_gate());
     }
 
     #[test]

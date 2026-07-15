@@ -1,4 +1,4 @@
-use super::verify_layout_with_retry_config;
+use super::verify::verify_layout_with_retry_config;
 
 #[test]
 fn verify_layout_retry_stops_after_success() {

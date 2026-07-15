@@ -40,6 +40,27 @@ pub(crate) fn common_replacement_span(left: &str, right: &str) -> usize {
     left_chars.len().saturating_sub(prefix + suffix)
 }
 
+pub(crate) fn transition_changed_token_count(original: &str, replacement: &str) -> usize {
+    let original = crate::word_reader::normalized_text_words(original);
+    let replacement = crate::word_reader::normalized_text_words(replacement);
+    if original.len() != replacement.len() {
+        return original.len().max(replacement.len());
+    }
+    original
+        .iter()
+        .zip(replacement.iter())
+        .filter(|(left, right)| left != right)
+        .count()
+}
+
+pub(crate) fn transition_left_context_changed(original: &str, replacement: &str) -> bool {
+    let original = crate::word_reader::normalized_text_words(original);
+    let replacement = crate::word_reader::normalized_text_words(replacement);
+    let original_prefix = original.get(..original.len().saturating_sub(1));
+    let replacement_prefix = replacement.get(..replacement.len().saturating_sub(1));
+    original_prefix != replacement_prefix
+}
+
 pub fn common_prefix_char_len(left: &str, right: &str) -> usize {
     left.chars()
         .zip(right.chars())
@@ -98,4 +119,27 @@ pub fn damerau_levenshtein(left: &str, right: &str) -> usize {
         }
     }
     dp[a.len()][b.len()]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{transition_changed_token_count, transition_left_context_changed};
+
+    #[test]
+    fn transition_metrics_share_one_word_boundary_definition() {
+        assert_eq!(
+            transition_changed_token_count("я прохоил ", "я проходил "),
+            1
+        );
+        assert!(!transition_left_context_changed(
+            "я прохоил ",
+            "я проходил "
+        ));
+
+        assert_eq!(
+            transition_changed_token_count("я прохоил ", "япроходил "),
+            2
+        );
+        assert!(transition_left_context_changed("я прохоил ", "япроходил "));
+    }
 }

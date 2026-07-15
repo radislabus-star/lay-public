@@ -1,6 +1,7 @@
 use super::action::{DecisionTransitionEditInput, EditAction, PlannedReplacementInput};
 use super::mutation::{TransitionAudit, TransitionOperator, TransitionProof};
 use super::types::TextReplacement;
+use crate::text_metrics::{transition_changed_token_count, transition_left_context_changed};
 use crate::typing_transition::decision::DecisionTransitionReceipt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -122,8 +123,8 @@ pub fn plan_manual_edit(
             TransitionOperator::ManualReplace,
             TransitionProof::ManualIntent,
             true,
-            left_context_changed(from_text, to_text),
-            changed_token_count(from_text, to_text),
+            transition_left_context_changed(from_text, to_text),
+            transition_changed_token_count(from_text, to_text),
         ),
     })
 }
@@ -148,8 +149,8 @@ pub fn plan_native_edit(
             TransitionOperator::NativeReplace,
             TransitionProof::NativeIntent,
             true,
-            left_context_changed(from_text, to_text),
-            changed_token_count(from_text, to_text),
+            transition_left_context_changed(from_text, to_text),
+            transition_changed_token_count(from_text, to_text),
         ),
     })
 }
@@ -172,8 +173,8 @@ pub fn plan_recorded_undo_edit(
             TransitionOperator::Undo,
             TransitionProof::UndoRecord,
             true,
-            left_context_changed(from_text, to_text),
-            changed_token_count(from_text, to_text),
+            transition_left_context_changed(from_text, to_text),
+            transition_changed_token_count(from_text, to_text),
         ),
     })
 }
@@ -275,28 +276,6 @@ fn completion_projection_is_valid(from_text: &str, to_text: &str) -> bool {
     let from = from_text.trim_end_matches(char::is_whitespace);
     let to = to_text.trim_end_matches(char::is_whitespace);
     !from.is_empty() && to.len() > from.len() && to.starts_with(from)
-}
-
-fn left_context_changed(from_text: &str, to_text: &str) -> bool {
-    let from_words = crate::word_reader::normalized_text_words(from_text);
-    let to_words = crate::word_reader::normalized_text_words(to_text);
-    let from_prefix = from_words.get(..from_words.len().saturating_sub(1));
-    let to_prefix = to_words.get(..to_words.len().saturating_sub(1));
-    from_prefix != to_prefix
-}
-
-fn changed_token_count(from_text: &str, to_text: &str) -> usize {
-    let from_words = crate::word_reader::normalized_text_words(from_text);
-    let to_words = crate::word_reader::normalized_text_words(to_text);
-    if from_words.len() != to_words.len() {
-        return from_words.len().max(to_words.len()).max(1);
-    }
-    from_words
-        .iter()
-        .zip(to_words.iter())
-        .filter(|(left, right)| left != right)
-        .count()
-        .max(1)
 }
 
 #[cfg(test)]

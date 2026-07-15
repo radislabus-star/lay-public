@@ -8,6 +8,7 @@ mod active;
 mod defaults;
 mod load;
 mod pipeline;
+mod runtime_flags;
 mod types;
 mod weights;
 
@@ -17,6 +18,9 @@ pub(crate) use pipeline::sort_typing_assist_pipeline;
 pub use pipeline::{
     normalize_typing_assist_pipeline, typing_assist_pipeline_for_auto_replace,
     typing_assist_pipeline_for_policy,
+};
+pub use runtime_flags::{
+    publish_runtime_config, runtime_debug_action_log, runtime_usage_learning_enabled,
 };
 pub use types::{CorrectionEngine, CorrectionSafety, LayConfig, TypingAssistRuleConfig};
 

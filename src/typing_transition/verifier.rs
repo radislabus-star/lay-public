@@ -3,6 +3,7 @@ use crate::correction_core::TypingErrorClass;
 use crate::language_action::{proof_for_origin, LanguageActionProof};
 pub(crate) use crate::text_edit::TransitionOperator as EditTransitionOperator;
 use crate::text_edit::TransitionOperator;
+use crate::text_metrics::transition_changed_token_count;
 use crate::word_reader::{
     is_cyrillic_letters_only, split_edge_whitespace, split_last_trimmed_ws_token,
     split_word_punctuation,
@@ -39,7 +40,7 @@ pub(crate) fn prove_edit_transition(
     let original_words = core_words(original);
     let replacement_words = core_words(replacement);
     let left_context_changed = left_context_changed(original, replacement);
-    let changed_tokens = changed_token_count(&original_words, &replacement_words);
+    let changed_tokens = transition_changed_token_count(original, replacement);
 
     let input = EditTransitionInput {
         original,
@@ -347,17 +348,6 @@ fn has_one_split(shorter: &[String], longer: &[String]) -> bool {
         }
     }
     false
-}
-
-fn changed_token_count(original_words: &[String], replacement_words: &[String]) -> usize {
-    if original_words.len() != replacement_words.len() {
-        return original_words.len().max(replacement_words.len());
-    }
-    original_words
-        .iter()
-        .zip(replacement_words.iter())
-        .filter(|(left, right)| left != right)
-        .count()
 }
 
 fn core_words(text: &str) -> Vec<String> {

@@ -215,14 +215,6 @@ fn candidate_admission(
                 reason: "single_step_typo_still_unknown",
             }
         }
-        TypingErrorClass::RepeatedLetter | TypingErrorClass::ExtraLetter
-            if repeated_single_step_has_competing_composite(original, replacement) =>
-        {
-            CandidateGateDecision {
-                action: CandidateGateAction::SuggestOnly,
-                reason: "single_step_typo_has_competing_composite",
-            }
-        }
         TypingErrorClass::Unknown => CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "unknown_error_class",
@@ -1590,35 +1582,6 @@ fn replacement_last_word_is_unknown_cyrillic(original: &str, replacement: &str) 
     }
     !crate::russian_lexicon::is_known_russian_word_or_form(&replacement_lower)
         && !crate::lexicon::is_common_ru_word(&replacement_lower)
-}
-
-fn repeated_single_step_has_competing_composite(original: &str, replacement: &str) -> bool {
-    let Some(original_word) = last_text_word(original) else {
-        return false;
-    };
-    let Some(replacement_word) = last_text_word(replacement) else {
-        return false;
-    };
-    let original_lower = original_word.to_lowercase();
-    let replacement_lower = replacement_word.to_lowercase();
-    if !repeated_run_deletion_candidates(&original_lower)
-        .into_iter()
-        .any(|candidate| candidate == replacement_lower)
-    {
-        return false;
-    }
-    if crate::typing_transition::state::word_has_common_usage_authority(&replacement_lower) {
-        return false;
-    }
-    let replacement_len = replacement_lower.chars().count();
-    crate::ru_typo::fuzzy_known_word_candidates(&original_lower)
-        .into_iter()
-        .any(|candidate| {
-            candidate != replacement_lower
-                && candidate.chars().count() <= replacement_len
-                && crate::russian_lexicon::is_known_russian_word_or_form(&candidate)
-                && damerau_levenshtein(&replacement_lower, &candidate) <= 1
-        })
 }
 
 pub(super) fn repeated_deletion_has_surface_support(

@@ -8,6 +8,7 @@ use crate::typing_transition::decision::TransitionDecisionCore;
 pub struct VisibleFieldState {
     pub(crate) visible_tail: String,
     pub(crate) focus_id: Option<String>,
+    pub(crate) epoch: u64,
     pub(crate) external_state_present: bool,
     pub(crate) external_tail_before_cursor: Option<String>,
     pub(crate) external_selection_active: bool,
@@ -18,10 +19,16 @@ impl VisibleFieldState {
         Self {
             visible_tail: visible_tail.into(),
             focus_id,
+            epoch: 0,
             external_state_present: false,
             external_tail_before_cursor: None,
             external_selection_active: false,
         }
+    }
+
+    pub fn with_epoch(mut self, epoch: u64) -> Self {
+        self.epoch = epoch;
+        self
     }
 
     pub fn with_external_tail_before_cursor(
@@ -97,6 +104,7 @@ pub enum TextTransitionDecision {
 pub enum TextTransitionRejection {
     Noop,
     StaleVisibleTail { expected: String, actual: String },
+    StaleVisibleRevision { expected: u64, actual: u64 },
     StaleSurroundingText { expected: String, actual: String },
     UnsafeEdit { reason: &'static str },
 }
@@ -106,6 +114,7 @@ impl TextTransitionRejection {
         match self {
             Self::Noop => "noop_transition",
             Self::StaleVisibleTail { .. } => "stale_visible_tail",
+            Self::StaleVisibleRevision { .. } => "stale_visible_revision",
             Self::StaleSurroundingText { .. } => "stale_surrounding_text",
             Self::UnsafeEdit { reason } => reason,
         }
@@ -113,7 +122,7 @@ impl TextTransitionRejection {
 
     pub fn expected(&self) -> &str {
         match self {
-            Self::Noop | Self::UnsafeEdit { .. } => "",
+            Self::Noop | Self::UnsafeEdit { .. } | Self::StaleVisibleRevision { .. } => "",
             Self::StaleVisibleTail { expected, .. }
             | Self::StaleSurroundingText { expected, .. } => expected,
         }
@@ -121,7 +130,7 @@ impl TextTransitionRejection {
 
     pub fn actual(&self) -> &str {
         match self {
-            Self::Noop | Self::UnsafeEdit { .. } => "",
+            Self::Noop | Self::UnsafeEdit { .. } | Self::StaleVisibleRevision { .. } => "",
             Self::StaleVisibleTail { actual, .. } | Self::StaleSurroundingText { actual, .. } => {
                 actual
             }
@@ -199,6 +208,32 @@ mod tests {
             }
             other => panic!("unexpected decision: {other:?}"),
         }
+    }
+
+    #[test]
+    fn text_transition_rejects_stale_visible_revision() {
+        let state =
+            VisibleFieldState::committed_tail("abc ghjdt", Some("/test".to_string())).with_epoch(8);
+        let mut request = candidate(4, "вет");
+        request.expected_tail = Some(VisibleTailSnapshot::new(
+            VisibleTailSource::ImeCommittedTail,
+            "hjdt",
+            Some("/test".to_string()),
+            7,
+        ));
+
+        let decision = decide_text_transition(&state, request);
+
+        assert!(matches!(
+            decision,
+            TextTransitionDecision::Reject {
+                rejection: TextTransitionRejection::StaleVisibleRevision {
+                    expected: 7,
+                    actual: 8
+                },
+                action: None
+            }
+        ));
     }
 
     #[test]

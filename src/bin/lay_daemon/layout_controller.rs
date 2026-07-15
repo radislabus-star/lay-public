@@ -14,11 +14,15 @@ mod ibus_bridge;
 mod ime_bridge;
 #[path = "layout_controller/ime_manual_toggle.rs"]
 mod ime_manual_toggle;
+#[path = "layout_controller/reconcile.rs"]
+mod reconcile;
+#[path = "layout_controller/verify.rs"]
+mod verify;
 
 const LAYOUT_SWITCH_SETTLE_MS: u64 = 12;
 const TRIGGER_RELEASE_SETTLE_MS: u64 = 80;
-const LAYOUT_VERIFY_ATTEMPTS: usize = 5;
-const LAYOUT_VERIFY_POLL_MS: u64 = 10;
+
+pub(super) use verify::verify_current_layout;
 
 pub(super) fn read_current_layout_is_ru() -> Result<bool, String> {
     match active_layout_backend() {
@@ -78,7 +82,7 @@ fn switch_to_gnome_layout(
     }
 
     let ibus_error = ibus_bridge::ensure_engine(ibus_engine, target_is_ru).err();
-    if verify_gnome_shell_layout(target_is_ru) {
+    if verify::verify_gnome_shell_layout(target_is_ru) {
         if let Some(error) = ibus_error {
             log(&format!(
                 "⚠ SetGlobalEngine refresh failed, GNOME Shell layout verified: {error}"
@@ -87,7 +91,7 @@ fn switch_to_gnome_layout(
         return Ok(());
     }
 
-    if verify_gnome_layout_stack(target_is_ru) {
+    if verify::verify_gnome_layout_stack(target_is_ru) {
         if let Some(error) = activate_error {
             log(&format!(
                 "⚠ ActivateLayout failed, ibus layout verified: {error}"
@@ -109,21 +113,7 @@ fn switch_to_gnome_layout(
 }
 
 fn reconcile_ime_engine_after_gnome_switch(target_is_ru: bool, ibus_engine: &str) {
-    let ibus_engine = ibus_engine.to_string();
-    let _ = std::thread::Builder::new()
-        .name("lay-layout-reconcile".to_string())
-        .spawn(move || {
-            std::thread::sleep(Duration::from_millis(90));
-            if !read_current_gnome_shell_layout_is_ru().is_ok_and(|current| current == target_is_ru)
-            {
-                return;
-            }
-            if let Err(error) = ibus_bridge::ensure_engine(&ibus_engine, target_is_ru) {
-                log(&format!(
-                    "⚠ delayed IME engine reconcile failed for {ibus_engine}: {error}"
-                ));
-            }
-        });
+    reconcile::submit(target_is_ru, ibus_engine);
 }
 
 pub(super) fn switch_to_target_layout(target_is_ru: bool) -> Result<&'static str, String> {
@@ -171,47 +161,6 @@ pub(super) fn target_layout(target_is_ru: bool) -> (&'static str, &'static str) 
             },
         )
     }
-}
-
-pub(super) fn verify_current_layout(target_is_ru: bool) -> bool {
-    verify_layout_with_retry(|| {
-        read_current_layout_is_ru().is_ok_and(|current| current == target_is_ru)
-    })
-}
-
-fn verify_gnome_shell_layout(target_is_ru: bool) -> bool {
-    verify_layout_with_retry(|| {
-        read_current_gnome_shell_layout_is_ru().is_ok_and(|current| current == target_is_ru)
-    })
-}
-
-fn verify_gnome_layout_stack(target_is_ru: bool) -> bool {
-    verify_layout_with_retry(|| verify_gnome_layout_stack_once(target_is_ru))
-}
-
-fn verify_gnome_layout_stack_once(target_is_ru: bool) -> bool {
-    read_current_gnome_shell_layout_is_ru().is_ok_and(|current| current == target_is_ru)
-        && read_current_ibus_layout_is_ru().is_ok_and(|current| current == target_is_ru)
-}
-
-fn verify_layout_with_retry(check: impl FnMut() -> bool) -> bool {
-    verify_layout_with_retry_config(LAYOUT_VERIFY_ATTEMPTS, LAYOUT_VERIFY_POLL_MS, check)
-}
-
-fn verify_layout_with_retry_config(
-    attempts: usize,
-    poll_ms: u64,
-    mut check: impl FnMut() -> bool,
-) -> bool {
-    for _ in 0..attempts {
-        if check() {
-            return true;
-        }
-        if poll_ms > 0 {
-            std::thread::sleep(Duration::from_millis(poll_ms));
-        }
-    }
-    false
 }
 
 fn settle_after_layout_switch() {
@@ -274,7 +223,7 @@ pub(super) fn try_ime_replace_tail(
     }
     let action = authorized.action();
     match ime_bridge::try_replace_tail(action.from_text(), action.to_text(), kind) {
-        Ok(true) => BackendDispatchReceipt::applied(backend),
+        Ok(true) => BackendDispatchReceipt::dispatched(backend),
         Ok(false) => BackendDispatchReceipt::rejected(backend, "ime_visible_state_rejected"),
         Err(error) => BackendDispatchReceipt::indeterminate(backend, error),
     }

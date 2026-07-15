@@ -44,6 +44,11 @@ impl LayImeBridge {
         self.visible_tail_v1_inner().await
     }
 
+    #[zbus(name = "VisibleTailV2")]
+    async fn visible_tail_v2(&self) -> fdo::Result<(String, String, bool, u64, String)> {
+        self.visible_tail_v2_inner().await
+    }
+
     #[zbus(name = "SuppressNextAutocorrect")]
     async fn suppress_next_autocorrect(&self) -> fdo::Result<bool> {
         self.suppress_next_autocorrect_inner().await
@@ -61,7 +66,8 @@ impl LayImeBridge {
 
     #[zbus(name = "ReplaceTail")]
     async fn replace_tail(&self, backspaces: u32, text: String) -> fdo::Result<bool> {
-        self.replace_tail_inner(backspaces, text, false, None).await
+        self.replace_tail_inner(backspaces, text, false, None, None)
+            .await
     }
 
     #[zbus(name = "ReplaceTailV2")]
@@ -75,6 +81,7 @@ impl LayImeBridge {
             backspaces,
             text,
             should_suppress_next_autocorrect(&kind),
+            None,
             None,
         )
         .await
@@ -93,6 +100,27 @@ impl LayImeBridge {
             text,
             should_suppress_next_autocorrect(&kind),
             Some(expected_original_tail),
+            None,
+        )
+        .await
+    }
+
+    #[zbus(name = "ReplaceTailV4")]
+    async fn replace_tail_v4(
+        &self,
+        backspaces: u32,
+        text: String,
+        kind: String,
+        expected_original_tail: String,
+        expected_epoch: u64,
+        expected_focus: String,
+    ) -> fdo::Result<bool> {
+        self.replace_tail_inner(
+            backspaces,
+            text,
+            should_suppress_next_autocorrect(&kind),
+            Some(expected_original_tail),
+            Some((expected_epoch, expected_focus)),
         )
         .await
     }

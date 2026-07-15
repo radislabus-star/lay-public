@@ -158,11 +158,7 @@ impl LayIbusEngine {
         mut authority: ActiveCompositionAuthority,
     ) -> fdo::Result<()> {
         let started_at = Instant::now();
-        let clear_started_at = Instant::now();
-        self.clear_preedit(emitter).await?;
-        let clear_us = clear_started_at.elapsed().as_micros() as u64;
-        let mut text = std::mem::take(&mut self.buffer);
-        self.composition_cursor = 0;
+        let mut text = self.buffer.clone();
         text.push_str(suffix);
         if with_space {
             text.push(' ');
@@ -196,15 +192,22 @@ impl LayIbusEngine {
             trace::record(r#"{"kind":"ibus_active_composition_authorized_text_mismatch"}"#);
             return Ok(());
         }
+        let clear_started_at = Instant::now();
+        self.clear_preedit(emitter).await?;
+        let clear_us = clear_started_at.elapsed().as_micros() as u64;
         let output_started_at = Instant::now();
-        Self::commit_text(emitter, make_ibus_text(text.clone()))
-            .await
-            .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+        if let Err(error) = Self::commit_text(emitter, make_ibus_text(text.clone())).await {
+            let _ = self.update_composition_preedit(emitter).await;
+            return Err(fdo::Error::Failed(error.to_string()));
+        }
         let output_ms = output_started_at.elapsed().as_micros() as u64;
         if sync_layout {
             self.sync_layout_after_committed_text(&text);
         }
         self.sync_tail_after_active_composition_commit(&text);
+        self.buffer.clear();
+        self.composition_cursor = 0;
+        self.arm_visible_postcondition(Instant::now());
         if with_space {
             self.close_precognition_word_boundary();
         }

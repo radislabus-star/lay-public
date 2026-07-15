@@ -2,6 +2,44 @@ use super::engine::LayIbusEngine;
 use std::time::Instant;
 
 impl LayIbusEngine {
+    pub(super) fn arm_visible_postcondition(&mut self, dispatched_at: Instant) {
+        if !self.surrounding_text_supported {
+            return;
+        }
+        self.pending_visible_postcondition = Some(super::engine::PendingVisiblePostcondition {
+            expected_suffix: self.tail_buffer.clone(),
+            dispatched_epoch: self.tail_epoch,
+            dispatched_at,
+        });
+    }
+
+    pub(super) fn observe_visible_postcondition(&mut self) {
+        const OBSERVATION_TIMEOUT_MS: u128 = 1500;
+        let Some(pending) = self.pending_visible_postcondition.take() else {
+            return;
+        };
+        if pending.dispatched_at.elapsed().as_millis() > OBSERVATION_TIMEOUT_MS
+            || pending.dispatched_epoch != self.tail_epoch
+        {
+            super::trace::record(r#"{"kind":"ibus_visible_postcondition","status":"superseded"}"#);
+            return;
+        }
+        let observed = self
+            .surrounding_text_snapshot
+            .as_ref()
+            .and_then(|snapshot| {
+                snapshot.suffix_before_cursor(pending.expected_suffix.chars().count())
+            });
+        let status = if observed.as_deref() == Some(pending.expected_suffix.as_str()) {
+            "observed"
+        } else {
+            "mismatch"
+        };
+        super::trace::record(format!(
+            r#"{{"kind":"ibus_visible_postcondition","status":"{status}"}}"#
+        ));
+    }
+
     pub(super) fn selected_visible_completion_suffix(&self) -> String {
         visible_completion_suffix(self.selected_precognition_suffix())
     }
@@ -49,11 +87,13 @@ impl LayIbusEngine {
         }
     }
 
-    pub(super) fn publish_tail_handoff(&self) {
+    pub(super) fn publish_tail_handoff(&mut self) {
+        self.tail_epoch = self.tail_epoch.wrapping_add(1);
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
         state.handoff_tail_buffer = self.tail_buffer.clone();
+        state.handoff_tail_epoch = self.tail_epoch;
     }
 
     pub(super) fn close_committed_tail_field(&mut self) {
@@ -64,10 +104,13 @@ impl LayIbusEngine {
         self.last_tail_input_at = None;
         self.last_commit_at = None;
         self.recent_committed_tail_replace = None;
+        self.pending_visible_postcondition = None;
+        self.tail_epoch = self.tail_epoch.wrapping_add(1);
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
         state.handoff_tail_buffer.clear();
+        state.handoff_tail_epoch = self.tail_epoch;
         state.suppress_next_committed_tail_autocorrect = false;
         state.preserve_active_path_until = None;
     }
@@ -83,6 +126,7 @@ impl LayIbusEngine {
             return;
         }
         self.tail_buffer.clone_from(&state.handoff_tail_buffer);
+        self.tail_epoch = state.handoff_tail_epoch;
         drop(state);
         self.rebuild_preedit_fast_from_tail();
     }
@@ -182,6 +226,28 @@ mod tests {
         let (start, end) = last_tail_token_range(tail).expect("last token");
         assert_eq!(&tail[start..end], "проверка");
         assert_eq!(lay::word_reader::trailing_whitespace_char_count(tail), 1);
+    }
+
+    #[test]
+    fn visible_postcondition_is_consumed_only_for_same_epoch() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.surrounding_text_supported = true;
+        engine.tail_buffer = "проверка ".to_string();
+        engine.publish_tail_handoff();
+        engine.arm_visible_postcondition(Instant::now());
+        engine.surrounding_text_snapshot = Some(
+            super::super::engine::SurroundingTextSnapshot::new("проверка ".to_string(), 9, 9),
+        );
+
+        engine.observe_visible_postcondition();
+
+        assert!(engine.pending_visible_postcondition.is_none());
     }
 
     #[test]

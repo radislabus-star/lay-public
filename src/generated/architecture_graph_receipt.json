@@ -3,9 +3,9 @@
     {
       "evidence": [
         "src/typing_transition/candidate.rs:L9:L2CandidateLattice",
-        "src/typing_transition/decision.rs:L134:.evaluate_candidates()",
-        "src/typing_transition/decision.rs:L22:TransitionDecisionCore",
-        "src/typing_transition/decision.rs:L30:.decide_visible_text_transition()",
+        "src/typing_transition/decision.rs:L152:.evaluate_candidates()",
+        "src/typing_transition/decision.rs:L23:TransitionDecisionCore",
+        "src/typing_transition/decision.rs:L31:.decide_visible_text_transition()",
         "src/typing_transition/live_candidate.rs:L39:TransitionDecisionCore",
         "src/typing_transition/live_candidate.rs:L40:.select_live_completions()",
         "src/typing_transition/live_candidate.rs:L72:.select_ime_readout()"
@@ -25,11 +25,11 @@
     },
     {
       "evidence": [
-        "src/bin/lay_daemon/layout_controller.rs:L208:call_replace_text()",
-        "src/bin/lay_daemon/layout_controller.rs:L238:try_ime_replace_tail()",
-        "src/bin/lay_daemon/text_output/replacement.rs:L95:apply_text_replacement_pipeline()",
-        "src/text_edit/executor.rs:L29:AuthorizedEdit",
-        "src/text_edit/executor.rs:L60:authorize_backend_edit()"
+        "src/bin/lay_daemon/layout_controller.rs:L174:call_replace_text()",
+        "src/bin/lay_daemon/layout_controller.rs:L204:try_ime_replace_tail()",
+        "src/bin/lay_daemon/text_output/replacement.rs:L82:apply_text_replacement_pipeline()",
+        "src/text_edit/executor.rs:L100:AuthorizedEdit",
+        "src/text_edit/executor.rs:L131:authorize_backend_edit()"
       ],
       "id": "edit-plan-verifier",
       "status": "PASS",
@@ -37,10 +37,10 @@
     },
     {
       "evidence": [
-        "src/text_edit/executor.rs:L72",
-        "src/text_edit/gate.rs:L222",
+        "src/text_edit/executor.rs:L143",
         "src/text_edit/gate.rs:L223",
-        "src/typing_transition/decision.rs:L105"
+        "src/text_edit/gate.rs:L224",
+        "src/typing_transition/decision.rs:L123"
       ],
       "id": "typed-transition-capability",
       "status": "PASS",
@@ -85,9 +85,9 @@
     },
     {
       "evidence": [
-        "graph_built_at_commit:2820428f7c985a309d0586dd7316c32fd762aa9e",
-        "graph_links:18995",
-        "graph_nodes:7716"
+        "graph_built_at_commit:1e6e59095205bf93d0ba4df938cd3208c9a31a45",
+        "graph_links:19221",
+        "graph_nodes:7810"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -95,11 +95,11 @@
     }
   ],
   "duplicate_symbols": {},
-  "git_head": "2820428f7c985a309d0586dd7316c32fd762aa9e",
-  "graph_built_at_commit": "2820428f7c985a309d0586dd7316c32fd762aa9e",
-  "graph_links": 18995,
-  "graph_nodes": 7716,
+  "git_head": "1e6e59095205bf93d0ba4df938cd3208c9a31a45",
+  "graph_built_at_commit": "1e6e59095205bf93d0ba4df938cd3208c9a31a45",
+  "graph_links": 19221,
+  "graph_nodes": 7810,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "94cde275115fb8a1ecec47194449780c1044670fa14338411c4818e952ecbb75",
+  "source_fingerprint": "98ad09b29647e99e85f14a4ea155a56edf6e2fc7eaae09be5f46d683047923fb",
   "verdict": "PASS"
 }

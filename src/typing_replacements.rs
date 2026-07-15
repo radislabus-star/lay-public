@@ -15,7 +15,10 @@ use crate::lexicon::{
 };
 use crate::russian_lexicon::{is_known_russian_word_or_form, russian_tiny_dictionary};
 use crate::text_case::apply_phrase_case;
-use crate::word_reader::{split_edge_whitespace, split_word_punctuation, split_ws_segments};
+use crate::word_reader::{
+    previous_non_whitespace_segment as previous_word_segment, split_edge_whitespace,
+    split_word_punctuation, split_ws_segments,
+};
 
 pub const REPLACEMENTS_PATH: &str = ".config/lay/replacements.json";
 
@@ -231,13 +234,6 @@ fn visual_b_replacement(
     } else {
         replacement.to_string()
     }
-}
-
-fn previous_word_segment<'a>(segments: &'a [(&str, bool)], idx: usize) -> Option<&'a str> {
-    segments[..idx]
-        .iter()
-        .rev()
-        .find_map(|(text, is_ws)| (!*is_ws).then_some(*text))
 }
 
 fn next_word_segment<'a>(segments: &'a [(&str, bool)], idx: usize) -> Option<&'a str> {

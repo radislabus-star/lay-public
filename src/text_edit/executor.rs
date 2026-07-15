@@ -9,18 +9,19 @@ pub enum TextEditBackend {
     TrayStatus,
 }
 
-/// Terminal receipt for one physical-backend dispatch attempt.
+/// Receipt for one physical-backend dispatch attempt.
 ///
 /// A caller may select another backend only when no mutation call was sent.
-/// Once a backend has accepted the capability, a rejection or transport error
-/// leaves the visible state authoritative and must fail closed.
+/// `Dispatched` deliberately does not claim that the client has observed the
+/// expected text. Once a mutation call was sent, fail closed and let the
+/// backend's postcondition observer reconcile the visible state.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum BackendDispatchReceipt {
     NotDispatched {
         backend: TextEditBackend,
         reason: &'static str,
     },
-    Applied {
+    Dispatched {
         backend: TextEditBackend,
     },
     Rejected {
@@ -38,8 +39,8 @@ impl BackendDispatchReceipt {
         Self::NotDispatched { backend, reason }
     }
 
-    pub const fn applied(backend: TextEditBackend) -> Self {
-        Self::Applied { backend }
+    pub const fn dispatched(backend: TextEditBackend) -> Self {
+        Self::Dispatched { backend }
     }
 
     pub const fn rejected(backend: TextEditBackend, reason: &'static str) -> Self {
@@ -56,14 +57,14 @@ impl BackendDispatchReceipt {
     pub const fn backend(&self) -> TextEditBackend {
         match self {
             Self::NotDispatched { backend, .. }
-            | Self::Applied { backend }
+            | Self::Dispatched { backend }
             | Self::Rejected { backend, .. }
             | Self::Indeterminate { backend, .. } => *backend,
         }
     }
 
-    pub const fn was_applied(&self) -> bool {
-        matches!(self, Self::Applied { .. })
+    pub const fn was_dispatched(&self) -> bool {
+        matches!(self, Self::Dispatched { .. })
     }
 
     pub const fn permits_backend_reselection(&self) -> bool {
@@ -73,7 +74,7 @@ impl BackendDispatchReceipt {
     pub fn reason(&self) -> &str {
         match self {
             Self::NotDispatched { reason, .. } | Self::Rejected { reason, .. } => reason,
-            Self::Applied { .. } => "applied",
+            Self::Dispatched { .. } => "dispatched",
             Self::Indeterminate { error, .. } => error,
         }
     }
@@ -226,9 +227,13 @@ mod tests {
             BackendDispatchReceipt::rejected(TextEditBackend::Ime, "visible_state_rejected");
         let indeterminate =
             BackendDispatchReceipt::indeterminate(TextEditBackend::Ime, "transport closed");
+        let dispatched = BackendDispatchReceipt::dispatched(TextEditBackend::Ime);
 
         assert!(not_dispatched.permits_backend_reselection());
         assert!(!rejected.permits_backend_reselection());
         assert!(!indeterminate.permits_backend_reselection());
+        assert!(!dispatched.permits_backend_reselection());
+        assert!(dispatched.was_dispatched());
+        assert_eq!(dispatched.reason(), "dispatched");
     }
 }

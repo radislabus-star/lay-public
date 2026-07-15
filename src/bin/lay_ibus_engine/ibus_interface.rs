@@ -191,6 +191,7 @@ impl LayIbusEngine {
         self.surrounding_text_supported = true;
         self.surrounding_text_snapshot = ibus_text_value_to_string(&text)
             .map(|text| SurroundingTextSnapshot::new(text, cursor_pos, anchor_pos));
+        self.observe_visible_postcondition();
     }
 
     #[zbus(name = "PanelExtensionReceived")]

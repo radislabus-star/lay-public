@@ -120,7 +120,7 @@ pub(super) fn handle_enter_autocorrect(
             return None;
         };
         let dispatch = try_ime_replace_tail(ime_authorized, "enter-autocorrect");
-        if dispatch.was_applied() {
+        if dispatch.was_dispatched() {
             let target_layout =
                 layout_switch_policy::target_layout_for_replacement(&replacement, true);
             let force_target_layout =

@@ -1,5 +1,7 @@
 use crate::layout_autoswitch::is_known_english_layout_autoswitch_word;
-use crate::word_reader::split_word_punctuation;
+use crate::word_reader::{
+    previous_non_whitespace_segment as previous_word_segment, split_word_punctuation,
+};
 use crate::word_recognizer::is_protected_ascii_token;
 
 pub(super) fn should_keep_latin_b_context(segments: &[(&str, bool)], idx: usize) -> bool {
@@ -14,13 +16,6 @@ pub(super) fn should_keep_latin_b_context(segments: &[(&str, bool)], idx: usize)
     let next = next_word_segment(segments, idx);
     (*token == "B" && prev.is_some_and(is_ascii_context_word))
         || (prev.is_some_and(is_ascii_context_word) && next.is_some_and(is_ascii_context_word))
-}
-
-fn previous_word_segment<'a>(segments: &'a [(&str, bool)], idx: usize) -> Option<&'a str> {
-    segments[..idx]
-        .iter()
-        .rev()
-        .find_map(|(text, is_ws)| (!*is_ws).then_some(*text))
 }
 
 fn next_word_segment<'a>(segments: &'a [(&str, bool)], idx: usize) -> Option<&'a str> {

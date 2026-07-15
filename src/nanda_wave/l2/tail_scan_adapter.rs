@@ -471,16 +471,9 @@ fn previous_word_segment<'a>(
     segments: &'a [(&'a str, bool)],
     before_idx: usize,
 ) -> Option<&'a str> {
-    segments[..before_idx]
-        .iter()
-        .rev()
-        .find_map(|(segment, is_ws)| {
-            if *is_ws {
-                return None;
-            }
-            let (_, word, _) = split_word_punctuation(segment);
-            (!word.is_empty()).then_some(word)
-        })
+    let segment = crate::word_reader::previous_non_whitespace_segment(segments, before_idx)?;
+    let (_, word, _) = split_word_punctuation(segment);
+    (!word.is_empty()).then_some(word)
 }
 
 fn strong_boundary_right_anchor(lower: &str) -> bool {

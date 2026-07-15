@@ -84,12 +84,14 @@ impl VisibleTailSnapshot {
         }
     }
 
-    pub fn matches_source_and_focus(
+    pub fn matches_source_focus_and_epoch(
         &self,
         source: VisibleTailSource,
         focus_id: Option<&str>,
+        epoch: u64,
     ) -> bool {
         self.source == source
+            && self.epoch == epoch
             && self
                 .focus_id
                 .as_deref()
@@ -162,8 +164,11 @@ mod tests {
             0,
         );
 
-        assert!(snapshot
-            .matches_source_and_focus(VisibleTailSource::DaemonWordBuffer, Some("/ime/focus")));
+        assert!(snapshot.matches_source_focus_and_epoch(
+            VisibleTailSource::DaemonWordBuffer,
+            Some("/ime/focus"),
+            0
+        ));
         assert!(snapshot.matches_current_suffix("ghbdtn", 4));
         assert!(!snapshot.matches_current_suffix("ghjdt", 4));
         assert!(!snapshot.matches_current_suffix("bdtn", 5));
@@ -178,7 +183,15 @@ mod tests {
             0,
         );
 
-        assert!(!snapshot
-            .matches_source_and_focus(VisibleTailSource::DaemonWordBuffer, Some("/ime/focus-b")));
+        assert!(!snapshot.matches_source_focus_and_epoch(
+            VisibleTailSource::DaemonWordBuffer,
+            Some("/ime/focus-b"),
+            0
+        ));
+        assert!(!snapshot.matches_source_focus_and_epoch(
+            VisibleTailSource::DaemonWordBuffer,
+            Some("/ime/focus-a"),
+            1
+        ));
     }
 }

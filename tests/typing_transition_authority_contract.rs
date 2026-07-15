@@ -23,6 +23,36 @@ fn visible_tail_decision_delegates_to_transition_core() {
 }
 
 #[test]
+fn visible_tail_bridge_carries_focus_and_epoch_to_the_transition_core() {
+    let bridge = read("src/bin/lay_ibus_engine/bridge.rs");
+    let bridge_actions = read("src/bin/lay_ibus_engine/bridge_actions.rs");
+    let daemon_bridge = read("src/bin/lay_daemon/layout_controller/ime_bridge.rs");
+    let visible_tail = read("src/text_edit/visible_tail.rs");
+    let transition = read("src/text_edit/transition.rs");
+
+    assert!(
+        bridge.contains("VisibleTailV2") && bridge.contains("ReplaceTailV4"),
+        "the live IME bridge must expose a revisioned snapshot and replacement call"
+    );
+    assert!(
+        daemon_bridge.contains("visible_tail_v2()?")
+            && daemon_bridge.contains("\"ReplaceTailV4\"")
+            && daemon_bridge.contains("expected_epoch")
+            && daemon_bridge.contains("expected_focus"),
+        "daemon replacement must preflight and forward the observed epoch/focus"
+    );
+    assert!(
+        bridge_actions.contains("unwrap_or_else(|| (engine.tail_epoch, path.clone()))"),
+        "legacy bridge callers must inherit the current epoch instead of manufacturing revision zero"
+    );
+    assert!(
+        visible_tail.contains("matches_source_focus_and_epoch")
+            && transition.contains("StaleVisibleRevision"),
+        "visible-tail admission must reject stale revisions"
+    );
+}
+
+#[test]
 fn ime_target_continuity_and_bridge_replay_share_state_transition_contracts() {
     let preedit = read("src/bin/lay_ibus_engine/preedit.rs");
     let engine = read("src/bin/lay_ibus_engine/engine.rs");
@@ -224,7 +254,55 @@ fn usage_learning_keeps_disk_io_out_of_the_hot_path() {
     assert!(
         usage.contains(".name(\"lay-usage-persist\".to_string())")
             && usage.contains("fn flush_usage_persist(")
+            && usage
+                .contains("mpsc::sync_channel::<UsagePersistLine>(USAGE_PERSIST_CHANNEL_CAPACITY)")
+            && usage.contains("sender.try_send")
             && usage.contains("append_private_text(&path, &text)"),
-        "one named persistence worker must own batched disk writes"
+        "one named bounded persistence worker must own batched disk writes"
+    );
+}
+
+#[test]
+fn logs_and_usage_share_hot_runtime_flags_and_bounded_periodic_writers() {
+    let flags = read("src/config/runtime_flags.rs");
+    let config = read("src/config.rs");
+    let debug_log = read("src/debug_log.rs");
+    let usage = read("src/nanda_wave/usage_prior.rs");
+
+    assert!(
+        flags.contains("AtomicU8")
+            && flags.contains("runtime_debug_action_log")
+            && flags.contains("runtime_usage_learning_enabled")
+            && config.contains("publish_runtime_config"),
+        "hot feature flags must have one atomic runtime owner"
+    );
+    for (name, source) in [("debug", debug_log), ("usage", usage)] {
+        assert!(
+            source.contains("sync_channel")
+                && source.contains("try_send")
+                && source.contains("next_flush"),
+            "{name} writer must be bounded, nonblocking, and flush on a fixed deadline"
+        );
+    }
+}
+
+#[test]
+fn decision_thresholds_and_tie_break_have_one_owner() {
+    let decision = read("src/typing_transition/decision.rs");
+    let admission = read("src/typing_transition/decision/admission.rs");
+    let calibration = read("src/typing_transition/decision/calibration.rs");
+
+    assert!(
+        decision.contains("compare_candidate_decision_order")
+            && decision.contains(".total_cmp(&right_eval.signals.rank_score)")
+            && decision.contains("changed_tokens"),
+        "equal-score candidate selection must have a deterministic final order"
+    );
+    assert!(
+        admission.contains("CURRENT.structural_preservation_gain_milli")
+            && admission.contains("CURRENT.l2_competitor_gap_milli")
+            && admission.contains("CURRENT.phase_competitor_gap_milli")
+            && calibration.contains("pub(super) const CURRENT: AdmissionCalibration"),
+        "learned admission thresholds must come from one calibration profile"
     );
 }

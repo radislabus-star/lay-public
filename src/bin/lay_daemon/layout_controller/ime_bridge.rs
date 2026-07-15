@@ -27,7 +27,18 @@ pub(super) fn try_replace_tail(
         return Ok(false);
     }
     let expected_tail = tail_chars(original, request.backspaces as usize);
-    match replace_tail_checked(request.backspaces, &request.text, kind, &expected_tail) {
+    let (_, visible_tail, _, epoch, focus) = visible_tail_v2()?;
+    if !visible_tail.is_empty() && !visible_tail.ends_with(&expected_tail) {
+        return Ok(false);
+    }
+    match replace_tail_checked(
+        request.backspaces,
+        &request.text,
+        kind,
+        &expected_tail,
+        epoch,
+        &focus,
+    ) {
         Ok(true) => {
             log(&format!(
                 "  IME replace-tail ({kind}): bs={} insert={:?}",
@@ -48,6 +59,10 @@ pub(super) fn try_replace_tail(
             Err(e)
         }
     }
+}
+
+fn visible_tail_v2() -> Result<(String, String, bool, u64, String), String> {
+    call_ime_noarg("VisibleTailV2")
 }
 
 pub(super) fn call_ping() -> Result<String, String> {
@@ -91,6 +106,8 @@ fn replace_tail_checked(
     text: &str,
     kind: &str,
     expected_tail: &str,
+    expected_epoch: u64,
+    expected_focus: &str,
 ) -> Result<bool, String> {
     let started = std::time::Instant::now();
     let reply = dbus_connection()?
@@ -98,15 +115,22 @@ fn replace_tail_checked(
             Some(IME_DBUS_DEST),
             IME_DBUS_PATH,
             Some(IME_DBUS_INTERFACE),
-            "ReplaceTailV3",
-            &(backspaces, text, kind, expected_tail),
+            "ReplaceTailV4",
+            &(
+                backspaces,
+                text,
+                kind,
+                expected_tail,
+                expected_epoch,
+                expected_focus,
+            ),
         )
         .map_err(|e| e.to_string())?;
     let call_ms = started.elapsed().as_millis();
     lay::action_log::record_timing_profile(
         "ime-bridge",
         kind,
-        &[("replace_tail_v3_dbus_call", call_ms)],
+        &[("replace_tail_v4_dbus_call", call_ms)],
     );
     reply
         .body()
