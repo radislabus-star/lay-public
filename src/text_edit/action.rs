@@ -45,6 +45,17 @@ pub struct EditAction {
     pub(crate) selected_error_class: Option<String>,
 }
 
+pub(crate) struct PlannedReplacementInput<'a> {
+    pub(crate) source: &'a str,
+    pub(crate) confidence_milli: i16,
+    pub(crate) from_text: &'a str,
+    pub(crate) to_text: &'a str,
+    pub(crate) plan: TextReplacement,
+    pub(crate) selected_source_id: Option<&'a str>,
+    pub(crate) selected_error_class: Option<&'a str>,
+    pub(crate) transition: TransitionAudit,
+}
+
 impl EditAction {
     pub fn keep(source: impl Into<String>, text: impl Into<String>) -> Self {
         let text = text.into();
@@ -62,25 +73,26 @@ impl EditAction {
         }
     }
 
-    pub(crate) fn planned_replacement(
-        source: impl Into<String>,
-        confidence_milli: i16,
-        from_text: impl Into<String>,
-        to_text: impl Into<String>,
-        plan: TextReplacement,
-        selected_source_id: Option<&str>,
-        selected_error_class: Option<&str>,
-        transition: TransitionAudit,
-    ) -> Self {
-        let from_text = from_text.into();
-        let to_text = to_text.into();
+    pub(crate) fn planned_replacement(input: PlannedReplacementInput<'_>) -> Self {
+        let PlannedReplacementInput {
+            source,
+            confidence_milli,
+            from_text,
+            to_text,
+            plan,
+            selected_source_id,
+            selected_error_class,
+            transition,
+        } = input;
+        let from_text = from_text.to_string();
+        let to_text = to_text.to_string();
         let mut safety = autocorrect_edit_safety(&from_text, &to_text, &plan, &transition);
         downgrade_low_confidence_boundary_edit(&mut safety, confidence_milli);
         downgrade_low_confidence_wide_edit(&mut safety, confidence_milli, selected_error_class);
         let kind = classify_planned_replacement(&safety);
         Self {
             kind,
-            source: source.into(),
+            source: source.to_string(),
             confidence_milli,
             from_text,
             to_text,
@@ -270,7 +282,7 @@ fn classify_planned_replacement(safety: &EditPlanSafetyReport) -> EditActionKind
 
 #[cfg(test)]
 mod tests {
-    use super::{EditAction, EditActionKind};
+    use super::{EditAction, EditActionKind, PlannedReplacementInput};
     use crate::text_edit::{
         plan_committed_tail_full_token_replacement, plan_text_replacement, TransitionAudit,
         TransitionOperator, TransitionProof,
@@ -280,22 +292,22 @@ mod tests {
     fn last_token_replacement_action_is_applyable() {
         let plan =
             plan_committed_tail_full_token_replacement("провека ", "проверка ").expect("plan");
-        let action = EditAction::planned_replacement(
-            "typing-assist",
-            700,
-            "провека ",
-            "проверка ",
+        let action = EditAction::planned_replacement(PlannedReplacementInput {
+            source: "typing-assist",
+            confidence_milli: 700,
+            from_text: "провека ",
+            to_text: "проверка ",
             plan,
-            Some("test"),
-            Some("missing-letter"),
-            TransitionAudit::proven(
+            selected_source_id: Some("test"),
+            selected_error_class: Some("missing-letter"),
+            transition: TransitionAudit::proven(
                 TransitionOperator::ReplaceCurrentWord,
                 TransitionProof::Typo,
                 true,
                 false,
                 1,
             ),
-        );
+        });
 
         assert_eq!(action.kind, EditActionKind::ReplaceLastToken);
         assert!(action.allow_apply());
@@ -305,22 +317,22 @@ mod tests {
     #[test]
     fn unsafe_multiword_replacement_action_blocks_apply() {
         let plan = plan_text_replacement("одно два ", "однотри ").expect("plan");
-        let action = EditAction::planned_replacement(
-            "typing-assist",
-            700,
-            "одно два ",
-            "однотри ",
+        let action = EditAction::planned_replacement(PlannedReplacementInput {
+            source: "typing-assist",
+            confidence_milli: 700,
+            from_text: "одно два ",
+            to_text: "однотри ",
             plan,
-            Some("SemanticWordCell32"),
-            Some("composite-typo"),
-            TransitionAudit::proven(
+            selected_source_id: Some("SemanticWordCell32"),
+            selected_error_class: Some("composite-typo"),
+            transition: TransitionAudit::proven(
                 TransitionOperator::PhraseTokenRepair,
                 TransitionProof::Context,
                 true,
                 true,
                 2,
             ),
-        );
+        });
 
         assert_eq!(action.kind, EditActionKind::BlockUnsafe);
         assert!(!action.allow_apply());
@@ -373,22 +385,22 @@ mod tests {
     #[test]
     fn low_confidence_boundary_split_blocks_apply() {
         let plan = plan_text_replacement("принамать ", "перинам ать ").expect("plan");
-        let action = EditAction::planned_replacement(
-            "typing-assist",
-            225,
-            "принамать ",
-            "перинам ать ",
+        let action = EditAction::planned_replacement(PlannedReplacementInput {
+            source: "typing-assist",
+            confidence_milli: 225,
+            from_text: "принамать ",
+            to_text: "перинам ать ",
             plan,
-            Some("BoundaryCell32"),
-            Some("glued-words"),
-            TransitionAudit::proven(
+            selected_source_id: Some("BoundaryCell32"),
+            selected_error_class: Some("glued-words"),
+            transition: TransitionAudit::proven(
                 TransitionOperator::BoundaryMergeSplit,
                 TransitionProof::Boundary,
                 true,
                 true,
                 2,
             ),
-        );
+        });
 
         assert_eq!(action.kind, EditActionKind::BlockUnsafe);
         assert!(!action.allow_apply());
@@ -398,22 +410,22 @@ mod tests {
     #[test]
     fn low_confidence_wide_boundary_edit_blocks_apply() {
         let plan = plan_text_replacement("сделай дома ", "с делай дома ").expect("plan");
-        let action = EditAction::planned_replacement(
-            "typing-assist",
-            650,
-            "сделай дома ",
-            "с делай дома ",
+        let action = EditAction::planned_replacement(PlannedReplacementInput {
+            source: "typing-assist",
+            confidence_milli: 650,
+            from_text: "сделай дома ",
+            to_text: "с делай дома ",
             plan,
-            Some("BoundaryCell32"),
-            Some("glued-words"),
-            TransitionAudit::proven(
+            selected_source_id: Some("BoundaryCell32"),
+            selected_error_class: Some("glued-words"),
+            transition: TransitionAudit::proven(
                 TransitionOperator::BoundaryMergeSplit,
                 TransitionProof::Boundary,
                 true,
                 true,
                 2,
             ),
-        );
+        });
 
         assert_eq!(action.kind, EditActionKind::BlockUnsafe);
         assert!(!action.allow_apply());

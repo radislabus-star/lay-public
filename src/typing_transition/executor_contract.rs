@@ -63,7 +63,8 @@ impl ExecutorAuthorization {
 mod tests {
     use super::{ExecutionBackend, ExecutorContract};
     use crate::text_edit::{
-        EditAction, TextReplacement, TransitionAudit, TransitionOperator, TransitionProof,
+        EditAction, PlannedReplacementInput, TextReplacement, TransitionAudit, TransitionOperator,
+        TransitionProof,
     };
 
     #[test]
@@ -74,27 +75,27 @@ mod tests {
 
     #[test]
     fn backend_can_execute_verified_action() {
-        let action = EditAction::planned_replacement(
-            "test",
-            900,
-            "ghbdtn".to_string(),
-            "привет".to_string(),
-            TextReplacement {
+        let action = EditAction::planned_replacement(PlannedReplacementInput {
+            source: "test",
+            confidence_milli: 900,
+            from_text: "ghbdtn",
+            to_text: "привет",
+            plan: TextReplacement {
                 move_left: 0,
                 backspaces: 6,
                 insert: "привет".to_string(),
                 move_right: 0,
             },
-            Some("layout"),
-            Some("layout-flip"),
-            TransitionAudit::proven(
+            selected_source_id: Some("layout"),
+            selected_error_class: Some("layout-flip"),
+            transition: TransitionAudit::proven(
                 TransitionOperator::LayoutProjection,
                 TransitionProof::Layout,
                 true,
                 false,
                 1,
             ),
-        );
+        });
         let auth = ExecutorContract::backend_only(ExecutionBackend::Daemon).authorize_edit(&action);
         assert!(auth.allow_execute);
         assert_eq!(auth.backend, ExecutionBackend::Daemon);
@@ -103,21 +104,21 @@ mod tests {
 
     #[test]
     fn backend_cannot_override_blocked_action() {
-        let action = EditAction::planned_replacement(
-            "test",
-            100,
-            "а б".to_string(),
-            "аб".to_string(),
-            TextReplacement {
+        let action = EditAction::planned_replacement(PlannedReplacementInput {
+            source: "test",
+            confidence_milli: 100,
+            from_text: "а б",
+            to_text: "аб",
+            plan: TextReplacement {
                 move_left: 0,
                 backspaces: 3,
                 insert: "аб".to_string(),
                 move_right: 0,
             },
-            Some("test"),
-            Some("boundary-unsafe"),
-            TransitionAudit::none(),
-        );
+            selected_source_id: Some("test"),
+            selected_error_class: Some("boundary-unsafe"),
+            transition: TransitionAudit::none(),
+        });
         let auth = ExecutorContract::backend_only(ExecutionBackend::Ime).authorize_edit(&action);
         assert!(!auth.allow_execute);
         assert_eq!(auth.backend, ExecutionBackend::Ime);

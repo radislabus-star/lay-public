@@ -1,32 +1,11 @@
-use super::action::EditAction;
+use super::action::{EditAction, PlannedReplacementInput};
 use super::mutation::{TransitionAudit, TransitionOperator, TransitionProof};
 use super::types::TextReplacement;
 
-// This is the public text-edit gate boundary; keep metadata explicit at call sites.
-#[allow(clippy::too_many_arguments)]
-pub(crate) fn plan_verified_transition_edit(
-    source: &str,
-    confidence_milli: i16,
-    from_text: &str,
-    to_text: &str,
-    plan: TextReplacement,
-    selected_source_id: Option<&str>,
-    selected_error_class: Option<&str>,
-    transition: TransitionAudit,
-) -> EditAction {
-    EditAction::planned_replacement(
-        source,
-        confidence_milli,
-        from_text,
-        to_text,
-        plan,
-        selected_source_id,
-        selected_error_class,
-        transition,
-    )
+pub(crate) fn plan_verified_transition_edit(input: PlannedReplacementInput<'_>) -> EditAction {
+    EditAction::planned_replacement(input)
 }
 
-#[allow(clippy::too_many_arguments)]
 pub fn plan_input_gate_edit(
     source: &str,
     from_text: &str,
@@ -39,16 +18,16 @@ pub fn plan_input_gate_edit(
         .as_ref()
         .and_then(|scoreboard| scoreboard.selected_bayes_posterior_milli)
         .unwrap_or(0);
-    plan_verified_transition_edit(
+    plan_verified_transition_edit(PlannedReplacementInput {
         source,
         confidence_milli,
         from_text,
         to_text,
         plan,
-        trace.selected_source_id.as_deref(),
-        trace.selected_error_class.as_deref(),
-        trace.selected_transition_audit(),
-    )
+        selected_source_id: trace.selected_source_id.as_deref(),
+        selected_error_class: trace.selected_error_class.as_deref(),
+        transition: trace.selected_transition_audit(),
+    })
 }
 
 pub fn plan_manual_edit(
@@ -59,22 +38,22 @@ pub fn plan_manual_edit(
     plan: TextReplacement,
     changed_tokens: usize,
 ) -> EditAction {
-    plan_verified_transition_edit(
+    plan_verified_transition_edit(PlannedReplacementInput {
         source,
         confidence_milli,
         from_text,
         to_text,
         plan,
-        Some("manual_toggle"),
-        None,
-        TransitionAudit::proven(
+        selected_source_id: Some("manual_toggle"),
+        selected_error_class: None,
+        transition: TransitionAudit::proven(
             TransitionOperator::ManualReplace,
             TransitionProof::ManualIntent,
             true,
             false,
             changed_tokens.max(1),
         ),
-    )
+    })
 }
 
 pub fn plan_native_edit(
@@ -85,22 +64,22 @@ pub fn plan_native_edit(
     plan: TextReplacement,
     changed_tokens: usize,
 ) -> EditAction {
-    plan_verified_transition_edit(
+    plan_verified_transition_edit(PlannedReplacementInput {
         source,
         confidence_milli,
         from_text,
         to_text,
         plan,
-        Some("manual_native_replace"),
-        None,
-        TransitionAudit::proven(
+        selected_source_id: Some("manual_native_replace"),
+        selected_error_class: None,
+        transition: TransitionAudit::proven(
             TransitionOperator::NativeReplace,
             TransitionProof::NativeIntent,
             true,
             false,
             changed_tokens.max(1),
         ),
-    )
+    })
 }
 
 pub fn plan_recorded_undo_edit(
@@ -109,22 +88,22 @@ pub fn plan_recorded_undo_edit(
     plan: TextReplacement,
     changed_tokens: usize,
 ) -> EditAction {
-    plan_verified_transition_edit(
-        "auto-undo",
-        1000,
+    plan_verified_transition_edit(PlannedReplacementInput {
+        source: "auto-undo",
+        confidence_milli: 1000,
         from_text,
         to_text,
         plan,
-        Some("auto_undo"),
-        None,
-        TransitionAudit::proven(
+        selected_source_id: Some("auto_undo"),
+        selected_error_class: None,
+        transition: TransitionAudit::proven(
             TransitionOperator::Undo,
             TransitionProof::UndoRecord,
             true,
             false,
             changed_tokens.max(1),
         ),
-    )
+    })
 }
 
 pub fn plan_ime_completion_edit(
@@ -138,7 +117,7 @@ pub fn plan_ime_completion_edit(
 
 #[cfg(test)]
 mod tests {
-    use super::plan_verified_transition_edit;
+    use super::{plan_verified_transition_edit, PlannedReplacementInput};
     use crate::text_edit::{
         plan_committed_tail_full_token_replacement, plan_text_replacement, EditActionKind,
         TransitionAudit, TransitionOperator, TransitionProof,
@@ -148,22 +127,22 @@ mod tests {
     fn gate_authorizes_last_token_replacement() {
         let plan =
             plan_committed_tail_full_token_replacement("провека ", "проверка ").expect("plan");
-        let action = plan_verified_transition_edit(
-            "typing-assist",
-            700,
-            "провека ",
-            "проверка ",
+        let action = plan_verified_transition_edit(PlannedReplacementInput {
+            source: "typing-assist",
+            confidence_milli: 700,
+            from_text: "провека ",
+            to_text: "проверка ",
             plan,
-            Some("missing-letter"),
-            Some("missing-letter"),
-            TransitionAudit::proven(
+            selected_source_id: Some("missing-letter"),
+            selected_error_class: Some("missing-letter"),
+            transition: TransitionAudit::proven(
                 TransitionOperator::ReplaceCurrentWord,
                 TransitionProof::Typo,
                 true,
                 false,
                 1,
             ),
-        );
+        });
 
         assert_eq!(action.kind, EditActionKind::ReplaceLastToken);
         assert!(action.allow_apply());
@@ -172,22 +151,22 @@ mod tests {
     #[test]
     fn gate_blocks_unverified_left_context_transition() {
         let plan = plan_text_replacement("одно два ", "однотри ").expect("plan");
-        let action = plan_verified_transition_edit(
-            "typing-assist",
-            700,
-            "одно два ",
-            "однотри ",
+        let action = plan_verified_transition_edit(PlannedReplacementInput {
+            source: "typing-assist",
+            confidence_milli: 700,
+            from_text: "одно два ",
+            to_text: "однотри ",
             plan,
-            Some("nanda"),
-            Some("glued-words"),
-            TransitionAudit::proven(
+            selected_source_id: Some("nanda"),
+            selected_error_class: Some("glued-words"),
+            transition: TransitionAudit::proven(
                 TransitionOperator::BoundaryMergeSplit,
                 TransitionProof::Boundary,
                 false,
                 true,
                 2,
             ),
-        );
+        });
 
         assert_eq!(action.kind, EditActionKind::BlockUnsafe);
         assert!(!action.allow_apply());

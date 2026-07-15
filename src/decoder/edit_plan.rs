@@ -3,7 +3,7 @@ use crate::text_edit::{
     offset_replacement_plan_for_cursor, plan_committed_tail_full_token_replacement,
     plan_committed_tail_last_token_replacement, plan_committed_tail_replacement,
     plan_text_replacement, plan_verified_transition_edit, replacement_plan_matches, EditAction,
-    TextReplacement, TransitionAudit, TransitionOperator, TransitionProof,
+    PlannedReplacementInput, TextReplacement, TransitionAudit, TransitionOperator, TransitionProof,
 };
 
 use super::types::{CorrectionSource, CorrectionTrigger};
@@ -106,16 +106,16 @@ impl DecoderEditPlan {
         replacement: &str,
         plan: TextReplacement,
     ) -> EditAction {
-        plan_verified_transition_edit(
+        plan_verified_transition_edit(PlannedReplacementInput {
             source,
-            self.confidence_milli,
-            original,
-            replacement,
+            confidence_milli: self.confidence_milli,
+            from_text: original,
+            to_text: replacement,
             plan,
-            self.selected_source_id.as_deref(),
-            self.selected_error_class.as_deref(),
-            self.transition.clone(),
-        )
+            selected_source_id: self.selected_source_id.as_deref(),
+            selected_error_class: self.selected_error_class.as_deref(),
+            transition: self.transition.clone(),
+        })
     }
 
     pub fn plan_matches_replacement(&self) -> bool {

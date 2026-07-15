@@ -123,9 +123,8 @@ pub(crate) fn classify_token_transition(
             | TypingErrorClass::RepeatedLetter
             | TypingErrorClass::AdjacentTransposition
             | TypingErrorClass::LetterSubstitution
+            | TypingErrorClass::Unknown
     ) {
-        TypingErrorClass::CompositeTypo
-    } else if declared == TypingErrorClass::Unknown {
         TypingErrorClass::CompositeTypo
     } else {
         declared

@@ -26,6 +26,7 @@ mod types;
 #[path = "text_edit/visible_tail.rs"]
 mod visible_tail;
 
+pub(crate) use action::PlannedReplacementInput;
 pub use action::{EditAction, EditActionKind};
 pub(crate) use committed_tail::plan_committed_tail_last_token_replacement;
 pub use committed_tail::{

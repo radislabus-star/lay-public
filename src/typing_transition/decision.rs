@@ -8,8 +8,9 @@ use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGate
 use crate::nanda_wave::l4_goal_state::{derive_l4_scene_state, L4AllowedAction, L4SceneStateInput};
 use crate::nanda_wave::l4_signed_memory::{l4_signed_memory_signal, L4SignedMemoryInput};
 use crate::text_edit::{
-    plan_verified_transition_edit, tail_chars, LatentTextTransitionCandidate, TextReplacement,
-    TextTransitionDecision, TextTransitionRejection, TransitionAudit, VisibleFieldState,
+    plan_verified_transition_edit, tail_chars, LatentTextTransitionCandidate,
+    PlannedReplacementInput, TextReplacement, TextTransitionDecision, TextTransitionRejection,
+    TransitionAudit, VisibleFieldState,
 };
 use crate::text_metrics::{damerau_levenshtein, score_to_milli};
 use crate::transition_relation::{TransitionRelationAtoms, TransitionRelationInput};
@@ -98,16 +99,16 @@ impl TransitionDecisionCore {
             false,
             1,
         );
-        let action = plan_verified_transition_edit(
-            "ibus-committed-tail",
-            1000,
-            &original_text,
-            &candidate.insert_text,
-            plan.clone(),
-            Some(candidate.source.source_id()),
-            None,
+        let action = plan_verified_transition_edit(PlannedReplacementInput {
+            source: "ibus-committed-tail",
+            confidence_milli: 1000,
+            from_text: &original_text,
+            to_text: &candidate.insert_text,
+            plan: plan.clone(),
+            selected_source_id: Some(candidate.source.source_id()),
+            selected_error_class: None,
             transition,
-        );
+        });
         if !action.allow_apply() {
             return TextTransitionDecision::Reject {
                 rejection: TextTransitionRejection::UnsafeEdit {
