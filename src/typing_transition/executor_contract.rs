@@ -38,8 +38,8 @@ impl ExecutorContract {
         if self.may_decide_apply {
             return ExecutorAuthorization::blocked(self.backend, "backend_may_not_decide_apply");
         }
-        if !action.allow_apply() {
-            return ExecutorAuthorization::blocked(self.backend, action.safety_reason());
+        if let Some(reason) = action.execution_rejection_reason() {
+            return ExecutorAuthorization::blocked(self.backend, reason);
         }
         ExecutorAuthorization {
             backend: self.backend,

@@ -43,24 +43,12 @@ pub(super) fn handle_pending_auto_undo(
         lay::action_log::MutationLogRoute::AUTO_UNDO,
         None,
     );
-    let ime_backend_action =
-        lay::text_edit::authorize_backend_edit(lay::text_edit::TextEditBackend::Ime, &edit_action);
-    let daemon_backend_action = lay::text_edit::authorize_backend_edit(
-        lay::text_edit::TextEditBackend::Daemon,
-        &edit_action,
-    );
-    let ime_authorized = ime_backend_action.authorized();
-    let daemon_authorized = daemon_backend_action.authorized();
-    if ime_authorized.is_none() && daemon_authorized.is_none() {
-        log(&format!(
-            "⚠ auto-undo blocked by executor contract: reason={} original={:?} replacement={:?}",
-            daemon_backend_action.reason, undo.replacement, undo.original
-        ));
-        return None;
-    }
-
     if should_try_ime_text_backend() {
-        if let Some(ime_authorized) = ime_authorized.as_ref() {
+        let ime_backend_action = lay::text_edit::authorize_backend_edit(
+            lay::text_edit::TextEditBackend::Ime,
+            edit_action.clone(),
+        );
+        if let Some(ime_authorized) = ime_backend_action.into_authorized() {
             if try_ime_replace_tail(ime_authorized, "auto-undo").unwrap_or(false) {
                 let target_layout = lay::keyboard::preferred_layout_for_text(&undo.original, true);
                 switch_or_restore_layout_after_text_edit(
@@ -86,11 +74,17 @@ pub(super) fn handle_pending_auto_undo(
         log("⚠ auto-undo: нет uinput device");
         return None;
     };
-    let Some(daemon_authorized) = daemon_authorized else {
+    let daemon_backend_action = lay::text_edit::authorize_backend_edit(
+        lay::text_edit::TextEditBackend::Daemon,
+        edit_action,
+    );
+    let backend = daemon_backend_action.backend;
+    let reason = daemon_backend_action.reason;
+    let Some(daemon_authorized) = daemon_backend_action.into_authorized() else {
         log(&format!(
             "⚠ auto-undo daemon output blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
-            daemon_backend_action.reason,
-            daemon_backend_action.backend.as_str(),
+            reason,
+            backend.as_str(),
             undo.replacement,
             undo.original
         ));
@@ -106,7 +100,7 @@ pub(super) fn handle_pending_auto_undo(
 
     let insert_outcome = match apply_text_replacement_pipeline(
         kbd,
-        &daemon_authorized,
+        daemon_authorized,
         true,
         None,
         "auto-undo",

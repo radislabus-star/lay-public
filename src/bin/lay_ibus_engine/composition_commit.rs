@@ -86,8 +86,8 @@ impl LayIbusEngine {
             None,
         );
         let backend_action =
-            lay::text_edit::authorize_backend_edit(lay::text_edit::TextEditBackend::Ime, &action);
-        let Some(authorized_edit) = backend_action.authorized() else {
+            lay::text_edit::authorize_backend_edit(lay::text_edit::TextEditBackend::Ime, action);
+        let Some(authorized_edit) = backend_action.into_authorized() else {
             trace::record(r#"{"kind":"ibus_completion_accept_blocked"}"#);
             return Ok(false);
         };
@@ -176,9 +176,9 @@ impl LayIbusEngine {
                 );
                 let backend_action = lay::text_edit::authorize_backend_edit(
                     lay::text_edit::TextEditBackend::Ime,
-                    &decision.action,
+                    decision.action,
                 );
-                if let Some(edit) = backend_action.authorized() {
+                if let Some(edit) = backend_action.into_authorized() {
                     text = edit.action().to_text.clone();
                     authorized_edit = Some(edit);
                 } else {

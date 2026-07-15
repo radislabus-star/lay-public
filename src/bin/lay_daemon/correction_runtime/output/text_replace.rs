@@ -58,13 +58,15 @@ pub(crate) fn try_manual_text_replacement(
     );
     let backend_action = lay::text_edit::authorize_backend_edit(
         lay::text_edit::TextEditBackend::Daemon,
-        &edit_action,
+        edit_action,
     );
-    let Some(authorized_edit) = backend_action.authorized() else {
+    let backend = backend_action.backend;
+    let reason = backend_action.reason;
+    let Some(authorized_edit) = backend_action.into_authorized() else {
         log(&format!(
             "⚠ {kind} blocked by executor contract: reason={} backend={} original={:?} replacement={:?}; fallback to replay",
-            backend_action.reason,
-            backend_action.backend.as_str(),
+            reason,
+            backend.as_str(),
             ctx.mapped_orig,
             text
         ));
@@ -72,7 +74,7 @@ pub(crate) fn try_manual_text_replacement(
     };
     let insert_outcome = match apply_text_replacement_pipeline(
         kbd,
-        &authorized_edit,
+        authorized_edit,
         ctx.target_is_ru,
         None,
         kind,

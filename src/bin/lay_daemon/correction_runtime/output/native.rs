@@ -39,7 +39,7 @@ pub(crate) fn try_ime_replace_output(
         lay::text_edit::TextEditBackend::Ime,
         input_gate.clone(),
     )?;
-    if !try_ime_replace_tail(&authorized_edit, replace_kind).unwrap_or(false) {
+    if !try_ime_replace_tail(authorized_edit, replace_kind).unwrap_or(false) {
         return None;
     }
 
@@ -92,7 +92,7 @@ pub(crate) fn try_gnome_native_replace_output(
         input_gate.clone(),
     )?;
     let (layout_id, _) = target_layout(replace_target_is_ru);
-    match call_replace_text(&authorized_edit, layout_id) {
+    match call_replace_text(authorized_edit, layout_id) {
         Ok(true) => {
             remember_native_replace(
                 ctx,
@@ -247,14 +247,16 @@ fn authorize_native_text_edit(
         lay::action_log::MutationLogRoute::MANUAL_NATIVE_REPLACE,
         input_gate,
     );
-    let backend_action = lay::text_edit::authorize_backend_edit(backend, &edit_action);
-    if let Some(authorized_edit) = backend_action.authorized() {
+    let backend_action = lay::text_edit::authorize_backend_edit(backend, edit_action);
+    let backend = backend_action.backend;
+    let reason = backend_action.reason;
+    if let Some(authorized_edit) = backend_action.into_authorized() {
         return Some(authorized_edit);
     }
     log(&format!(
         "⚠ {replace_kind} native replace blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
-        backend_action.reason,
-        backend_action.backend.as_str(),
+        reason,
+        backend.as_str(),
         ctx.mapped_orig,
         replace_text
     ));

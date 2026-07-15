@@ -202,15 +202,15 @@ pub fn observed_contract_status(id: &str) -> ContractStatus {
             let physical_executors_require_capability = matches!(
                 source_contains_all(
                     include_str!("bin/lay_daemon/text_output/replacement.rs"),
-                    &["authorized: &AuthorizedEdit", "authorized.action()"],
+                    &["authorized: AuthorizedEdit", "authorized.action()"],
                 ),
                 ContractStatus::Pass
             ) && matches!(
                 source_contains_all(
                     include_str!("bin/lay_daemon/layout_controller.rs"),
                     &[
-                        "try_ime_replace_tail(\n    authorized: &AuthorizedEdit",
-                        "call_replace_text(\n    authorized: &AuthorizedEdit",
+                        "try_ime_replace_tail(authorized: AuthorizedEdit",
+                        "call_replace_text(\n    authorized: AuthorizedEdit",
                     ],
                 ),
                 ContractStatus::Pass
@@ -278,10 +278,9 @@ fn source_contains_all(source: &str, needles: &[&str]) -> ContractStatus {
 }
 
 fn mutation_routes_hold_authorized_edit(routes: &[&str]) -> ContractStatus {
-    if routes
-        .iter()
-        .all(|route| route.contains("authorize_backend_edit(") && route.contains(".authorized()"))
-    {
+    if routes.iter().all(|route| {
+        route.contains("authorize_backend_edit(") && route.contains(".into_authorized()")
+    }) {
         ContractStatus::Pass
     } else {
         ContractStatus::Watch

@@ -259,7 +259,7 @@ fn live_text_mutation_outputs_use_executor_contract() {
         assert!(
             source.contains("authorize_backend_edit(")
                 && source.contains(backend)
-                && source.contains(".authorized()"),
+                && source.contains(".into_authorized()"),
             "{path} must hold AuthorizedEdit before physical mutation through ExecutorContract for {backend}"
         );
     }
@@ -283,14 +283,20 @@ fn live_text_mutation_outputs_use_executor_contract() {
     let daemon_pipeline = read("src/bin/lay_daemon/text_output/replacement.rs");
     assert!(
         daemon_pipeline.contains("pub(crate) fn apply_text_replacement_pipeline")
-            && daemon_pipeline.contains("authorized: &AuthorizedEdit"),
-        "daemon replacement pipeline must require AuthorizedEdit rather than raw plan/text"
+            && daemon_pipeline.contains("authorized: AuthorizedEdit"),
+        "daemon replacement pipeline must consume AuthorizedEdit rather than accept raw plan/text"
     );
     let layout_controller = read("src/bin/lay_daemon/layout_controller.rs");
     assert!(
-        layout_controller.contains("try_ime_replace_tail(\n    authorized: &AuthorizedEdit")
-            && layout_controller.contains("call_replace_text(\n    authorized: &AuthorizedEdit"),
-        "IME and GNOME bridge mutations must require AuthorizedEdit"
+        layout_controller.contains("try_ime_replace_tail(authorized: AuthorizedEdit")
+            && layout_controller.contains("call_replace_text(\n    authorized: AuthorizedEdit"),
+        "IME and GNOME bridge mutations must consume AuthorizedEdit"
+    );
+
+    assert!(
+        !executor.contains("#[derive(Debug, Clone, PartialEq, Eq)]\npub struct AuthorizedEdit")
+            && executor.contains("pub fn into_authorized(self)"),
+        "AuthorizedEdit must be a move-only one-shot mutation capability"
     );
 }
 

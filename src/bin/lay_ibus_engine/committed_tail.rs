@@ -44,8 +44,8 @@ impl LayIbusEngine {
             None,
         );
         let authorization =
-            lay::text_edit::authorize_backend_edit(lay::text_edit::TextEditBackend::Ime, &action);
-        let Some(authorized_edit) = authorization.authorized() else {
+            lay::text_edit::authorize_backend_edit(lay::text_edit::TextEditBackend::Ime, action);
+        let Some(authorized_edit) = authorization.into_authorized() else {
             trace::record(r#"{"kind":"ibus_stuck_completion_blocked"}"#);
             return Ok(false);
         };

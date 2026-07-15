@@ -206,7 +206,7 @@ pub(super) fn settle_after_physical_trigger_release() {
 }
 
 pub(super) fn call_replace_text(
-    authorized: &AuthorizedEdit,
+    authorized: AuthorizedEdit,
     layout_id: &str,
 ) -> Result<bool, String> {
     if authorized.backend() != TextEditBackend::Daemon {
@@ -236,10 +236,7 @@ pub(super) fn should_try_ime_text_backend() -> bool {
     ime_bridge::should_try_text_backend()
 }
 
-pub(super) fn try_ime_replace_tail(
-    authorized: &AuthorizedEdit,
-    kind: &str,
-) -> Result<bool, String> {
+pub(super) fn try_ime_replace_tail(authorized: AuthorizedEdit, kind: &str) -> Result<bool, String> {
     if authorized.backend() != TextEditBackend::Ime {
         return Err(format!(
             "IME bridge requires an IME AuthorizedEdit, got {}",

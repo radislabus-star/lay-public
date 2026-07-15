@@ -140,29 +140,18 @@ pub(super) fn handle_enter_autocorrect(
         lay::action_log::MutationLogRoute::ENTER_AUTOCORRECT,
         input_gate.clone(),
     );
-    let ime_backend_action =
-        lay::text_edit::authorize_backend_edit(lay::text_edit::TextEditBackend::Ime, &edit_action);
-    let daemon_backend_action = lay::text_edit::authorize_backend_edit(
-        lay::text_edit::TextEditBackend::Daemon,
-        &edit_action,
-    );
-    let ime_authorized = ime_backend_action.authorized();
-    let daemon_authorized = daemon_backend_action.authorized();
-    if ime_authorized.is_none() && daemon_authorized.is_none() {
-        log(&format!(
-            "⚠ enter-autocorrect blocked by executor contract: reason={} original={:?} replacement={:?}",
-            daemon_backend_action.reason,
-            original,
-            replacement
-        ));
-        return None;
-    }
-
     if should_try_ime_text_backend() {
         let original_layout = read_current_layout_is_ru().ok();
-        if ime_authorized.as_ref().is_some_and(|authorized| {
-            try_ime_replace_tail(authorized, "enter-autocorrect").unwrap_or(false)
-        }) {
+        let ime_backend_action = lay::text_edit::authorize_backend_edit(
+            lay::text_edit::TextEditBackend::Ime,
+            edit_action.clone(),
+        );
+        let ime_applied = ime_backend_action
+            .into_authorized()
+            .is_some_and(|authorized| {
+                try_ime_replace_tail(authorized, "enter-autocorrect").unwrap_or(false)
+            });
+        if ime_applied {
             let target_layout =
                 layout_switch_policy::target_layout_for_replacement(&replacement, true);
             let force_target_layout =
@@ -205,11 +194,17 @@ pub(super) fn handle_enter_autocorrect(
         log("⚠ enter-autocorrect: нет uinput device");
         return None;
     };
-    let Some(daemon_authorized) = daemon_authorized else {
+    let daemon_backend_action = lay::text_edit::authorize_backend_edit(
+        lay::text_edit::TextEditBackend::Daemon,
+        edit_action,
+    );
+    let backend = daemon_backend_action.backend;
+    let reason = daemon_backend_action.reason;
+    let Some(daemon_authorized) = daemon_backend_action.into_authorized() else {
         log(&format!(
             "⚠ enter-autocorrect daemon output blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
-            daemon_backend_action.reason,
-            daemon_backend_action.backend.as_str(),
+            reason,
+            backend.as_str(),
             original,
             replacement
         ));
@@ -227,7 +222,7 @@ pub(super) fn handle_enter_autocorrect(
 
     let insert_outcome = match apply_text_replacement_pipeline(
         kbd,
-        &daemon_authorized,
+        daemon_authorized,
         original_layout.unwrap_or(true),
         original_layout,
         "enter-autocorrect",

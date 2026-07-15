@@ -94,7 +94,7 @@ fn apply_text_replacement(
 
 pub(crate) fn apply_text_replacement_pipeline(
     dev: &mut VirtualDevice,
-    authorized: &AuthorizedEdit,
+    authorized: AuthorizedEdit,
     fallback_layout_is_ru: bool,
     known_current_layout_is_ru: Option<bool>,
     label: &str,

@@ -278,11 +278,12 @@ impl LayIbusEngine {
             None,
         );
         let backend_action =
-            lay::text_edit::authorize_backend_edit(TextEditBackend::Ime, &edit_action);
-        let Some(authorized_edit) = backend_action.authorized() else {
+            lay::text_edit::authorize_backend_edit(TextEditBackend::Ime, edit_action.clone());
+        let backend_reason = backend_action.reason;
+        let Some(authorized_edit) = backend_action.into_authorized() else {
             trace::record_committed_tail_replace(
                 source,
-                backend_action.reason,
+                backend_reason,
                 backspaces,
                 &edit_action.to_text,
             );

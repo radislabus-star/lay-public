@@ -129,15 +129,17 @@ fn manual_replay_action(
     );
     let backend_action = lay::text_edit::authorize_backend_edit(
         lay::text_edit::TextEditBackend::Daemon,
-        &edit_action,
+        edit_action,
     );
-    if let Some(authorized_edit) = backend_action.authorized() {
+    let backend = backend_action.backend;
+    let reason = backend_action.reason;
+    if let Some(authorized_edit) = backend_action.into_authorized() {
         return Some(authorized_edit);
     }
     log(&format!(
         "⚠ manual replay blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
-        backend_action.reason,
-        backend_action.backend.as_str(),
+        reason,
+        backend.as_str(),
         ctx.mapped_orig,
         ctx.mapped_target
     ));

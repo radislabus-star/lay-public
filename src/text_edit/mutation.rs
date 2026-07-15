@@ -29,7 +29,20 @@ impl TransitionAudit {
     }
 
     pub fn blocks_apply(&self) -> bool {
-        self.left_context_changed.unwrap_or(false) && !self.verified.unwrap_or(true)
+        self.verified == Some(false)
+            || (self.left_context_changed.unwrap_or(false) && !self.is_verified())
+    }
+
+    pub fn is_verified(&self) -> bool {
+        self.verified == Some(true)
+            && self
+                .operator
+                .as_deref()
+                .is_some_and(|operator| !operator.trim().is_empty())
+            && self
+                .proof
+                .as_deref()
+                .is_some_and(|proof| !proof.trim().is_empty())
     }
 
     pub fn block_reason(&self) -> Option<&'static str> {

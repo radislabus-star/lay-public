@@ -180,6 +180,30 @@ impl EditAction {
             .map(|safety| safety.would_touch_words)
             .unwrap_or(0)
     }
+
+    pub(crate) fn execution_rejection_reason(&self) -> Option<&'static str> {
+        if !self.allow_apply() {
+            return Some(self.safety_reason());
+        }
+        if !matches!(
+            self.kind,
+            EditActionKind::ReplaceLastToken
+                | EditActionKind::ReplaceRange
+                | EditActionKind::SplitToken
+                | EditActionKind::GlueTokens
+                | EditActionKind::AcceptImeCandidate
+                | EditActionKind::SwitchLayout
+        ) {
+            return Some("non_executable_edit_action");
+        }
+        if self.plan.is_none() {
+            return Some("verified_edit_plan_missing");
+        }
+        if !self.transition.is_verified() {
+            return Some("verified_transition_proof_missing");
+        }
+        None
+    }
 }
 
 fn downgrade_low_confidence_boundary_edit(

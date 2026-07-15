@@ -612,12 +612,13 @@ fn stronger_unresolved_candidate_exists(
         selected.origin,
     );
     let selected_is_proven_reversible = selected_action.verifier_passed
-        && matches!(
-            selected_action.edit_operator,
-            verifier::EditTransitionOperator::LayoutProjection
-                | verifier::EditTransitionOperator::BoundaryShift
-                | verifier::EditTransitionOperator::BoundaryMergeSplit
-        );
+        && (selected.origin.source_role() == CorrectionSourceRole::Layout
+            || matches!(
+                selected_action.edit_operator,
+                verifier::EditTransitionOperator::LayoutProjection
+                    | verifier::EditTransitionOperator::BoundaryShift
+                    | verifier::EditTransitionOperator::BoundaryMergeSplit
+            ));
     if selected_is_proven_reversible {
         return false;
     }

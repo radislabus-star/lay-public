@@ -62,19 +62,21 @@ pub(crate) fn try_apply_ime_replacement(
         input_gate.clone(),
     );
     let backend_action =
-        lay::text_edit::authorize_backend_edit(lay::text_edit::TextEditBackend::Ime, &edit_action);
-    let Some(authorized_edit) = backend_action.authorized() else {
+        lay::text_edit::authorize_backend_edit(lay::text_edit::TextEditBackend::Ime, edit_action);
+    let backend = backend_action.backend;
+    let reason = backend_action.reason;
+    let Some(authorized_edit) = backend_action.into_authorized() else {
         log(&format!(
             "⚠ typing-assist IME blocked by executor contract: reason={} backend={} original={:?} replacement={:?}",
-            backend_action.reason,
-            backend_action.backend.as_str(),
+            reason,
+            backend.as_str(),
             original,
             replacement
         ));
         return ImeTypingApplyReceipt::Blocked;
     };
     let replace_tail_started = std::time::Instant::now();
-    if !try_ime_replace_tail(&authorized_edit, "typing-assist").unwrap_or(false) {
+    if !try_ime_replace_tail(authorized_edit, "typing-assist").unwrap_or(false) {
         return ImeTypingApplyReceipt::Unavailable;
     }
     let replace_tail_ms = replace_tail_started.elapsed().as_millis();

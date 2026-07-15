@@ -25,7 +25,7 @@ impl TextEditBackend {
 /// Output adapters may inspect this capability, but cannot manufacture one.
 /// This is intentionally the only value that represents permission to mutate
 /// user-visible text.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct AuthorizedEdit {
     backend: TextEditBackend,
     action: EditAction,
@@ -41,7 +41,7 @@ impl AuthorizedEdit {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct BackendEditAuthorization {
     pub backend: TextEditBackend,
     pub allow_execute: bool,
@@ -50,29 +50,26 @@ pub struct BackendEditAuthorization {
 }
 
 impl BackendEditAuthorization {
-    /// Returns the sealed capability for backends that have migrated to the
-    /// typed execution contract.
-    pub fn authorized(&self) -> Option<AuthorizedEdit> {
-        self.authorized.clone()
+    /// Consumes the authorization receipt and yields the one-shot mutation
+    /// capability. The capability is deliberately not cloneable.
+    pub fn into_authorized(self) -> Option<AuthorizedEdit> {
+        self.authorized
     }
 }
 
 pub fn authorize_backend_edit(
     backend: TextEditBackend,
-    action: &EditAction,
+    action: EditAction,
 ) -> BackendEditAuthorization {
     let execution_backend: ExecutionBackend = backend.into();
-    let auth = ExecutorContract::backend_only(execution_backend).authorize_edit(action);
+    let auth = ExecutorContract::backend_only(execution_backend).authorize_edit(&action);
     debug_assert_eq!(auth.backend, execution_backend);
     if auth.allow_execute {
         BackendEditAuthorization {
             backend,
             allow_execute: true,
             reason: auth.reason,
-            authorized: Some(AuthorizedEdit {
-                backend,
-                action: action.clone(),
-            }),
+            authorized: Some(AuthorizedEdit { backend, action }),
         }
     } else {
         BackendEditAuthorization {
@@ -98,7 +95,9 @@ impl From<TextEditBackend> for ExecutionBackend {
 #[cfg(test)]
 mod tests {
     use super::{authorize_backend_edit, TextEditBackend};
-    use crate::text_edit::{EditAction, TextReplacement};
+    use crate::text_edit::{
+        plan_committed_tail_full_token_replacement, EditAction, TextReplacement, TransitionAudit,
+    };
 
     #[test]
     fn text_edit_backend_is_execution_only() {
@@ -116,10 +115,53 @@ mod tests {
             Some("test"),
             Some("boundary-unsafe"),
         );
-        let auth = authorize_backend_edit(TextEditBackend::Ime, &action);
+        let auth = authorize_backend_edit(TextEditBackend::Ime, action);
         assert!(!auth.allow_execute);
-        assert!(auth.authorized().is_none());
-        assert_eq!(auth.backend.as_str(), "ime");
-        assert_ne!(auth.reason, "verified_transition_authority");
+        assert!(auth.into_authorized().is_none());
+    }
+
+    #[test]
+    fn safe_plan_without_transition_proof_cannot_create_capability() {
+        let action = EditAction::planned_replacement(
+            "test",
+            900,
+            "провека ",
+            "проверка ",
+            plan_committed_tail_full_token_replacement("провека ", "проверка ").expect("plan"),
+            Some("test"),
+            Some("missing-letter"),
+        );
+        assert!(action.allow_apply());
+
+        let auth = authorize_backend_edit(TextEditBackend::Daemon, action);
+
+        assert!(!auth.allow_execute);
+        assert_eq!(auth.reason, "verified_transition_proof_missing");
+        assert!(auth.into_authorized().is_none());
+    }
+
+    #[test]
+    fn verified_transition_creates_one_shot_capability() {
+        let action = EditAction::planned_replacement(
+            "test",
+            900,
+            "провека ",
+            "проверка ",
+            plan_committed_tail_full_token_replacement("провека ", "проверка ").expect("plan"),
+            Some("test"),
+            Some("missing-letter"),
+        )
+        .with_transition(TransitionAudit::proven(
+            "replace_current_word",
+            "candidate_and_plan_verified",
+            true,
+            false,
+            1,
+        ));
+
+        let auth = authorize_backend_edit(TextEditBackend::Daemon, action);
+
+        assert!(auth.allow_execute);
+        assert!(auth.into_authorized().is_some());
     }
 }
