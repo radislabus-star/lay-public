@@ -85,9 +85,9 @@
     },
     {
       "evidence": [
-        "graph_built_at_commit:6c073bd74e46adce113fc332549f3d1dd69fb12e",
-        "graph_links:18991",
-        "graph_nodes:7714"
+        "graph_built_at_commit:2820428f7c985a309d0586dd7316c32fd762aa9e",
+        "graph_links:18995",
+        "graph_nodes:7716"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -95,11 +95,11 @@
     }
   ],
   "duplicate_symbols": {},
-  "git_head": "6c073bd74e46adce113fc332549f3d1dd69fb12e",
-  "graph_built_at_commit": "6c073bd74e46adce113fc332549f3d1dd69fb12e",
-  "graph_links": 18991,
-  "graph_nodes": 7714,
+  "git_head": "2820428f7c985a309d0586dd7316c32fd762aa9e",
+  "graph_built_at_commit": "2820428f7c985a309d0586dd7316c32fd762aa9e",
+  "graph_links": 18995,
+  "graph_nodes": 7716,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "d0dd1dcd63dc028687eda4a92da1752c85f6c38cf4c247f0fb3de5207c58af56",
+  "source_fingerprint": "94cde275115fb8a1ecec47194449780c1044670fa14338411c4818e952ecbb75",
   "verdict": "PASS"
 }

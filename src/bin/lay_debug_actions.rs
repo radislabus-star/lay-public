@@ -105,7 +105,7 @@ fn print_transition_replay(path: PathBuf) {
         replay.inspect(&value);
     }
     println!("{}", replay.to_json(&path));
-    if replay.false_apply_candidates > 0 || replay.left_context_mutations > 0 {
+    if !replay.passes_gate() {
         std::process::exit(1);
     }
 }
@@ -446,6 +446,12 @@ struct TransitionReplay {
 }
 
 impl TransitionReplay {
+    fn passes_gate(&self) -> bool {
+        self.false_apply_candidates == 0
+            && self.unverified_left_context_mutations == 0
+            && self.unverified_transitions == 0
+    }
+
     fn inspect(&mut self, value: &Value) {
         self.records += 1;
         match value.get("kind").and_then(Value::as_str) {
@@ -547,9 +553,7 @@ impl TransitionReplay {
                 "unverified_transitions": self.unverified_transitions,
                 "unsafe_multiword": self.unsafe_multiword
             },
-            "verdict": if self.false_apply_candidates == 0
-                && self.unverified_left_context_mutations == 0
-            {
+            "verdict": if self.passes_gate() {
                 "PASS-shadow"
             } else {
                 "WATCH-shadow"
@@ -820,5 +824,20 @@ mod tests {
 
         assert_eq!(replay.left_context_mutations, 1);
         assert_eq!(replay.unverified_left_context_mutations, 0);
+        assert!(replay.passes_gate());
+    }
+
+    #[test]
+    fn transition_replay_rejects_any_unverified_transition() {
+        let value = json!({
+            "kind": "candidate_before_apply",
+            "transition_left_context_changed": false,
+            "transition_verified": false
+        });
+        let mut replay = TransitionReplay::default();
+        replay.inspect(&value);
+
+        assert_eq!(replay.unverified_transitions, 1);
+        assert!(!replay.passes_gate());
     }
 }
