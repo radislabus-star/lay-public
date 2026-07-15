@@ -378,9 +378,10 @@
   "376": "record_typing_memory_event_if_enabled",
   "377": "ImeManualToggleOutcome",
   "378": "correct_wrong_layout_ascii_phrase",
-  "379": "correct_wrong_layout_ascii_technical_token",
+  "379": "text_edit_gate_contract.rs",
   "380": "calibration.rs",
+  "381": "memory.rs",
+  "382": "gate_candidate",
   "383": "word_recognizer_tests.rs",
-  "384": "TerminalRecord",
-  "388": "managed_ime_session"
+  "384": "TerminalRecord"
 }

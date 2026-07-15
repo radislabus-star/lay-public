@@ -1,10 +1,9 @@
+use super::super::append_learning_log;
 use lay::action_log::RecentActionGateTrace;
 use lay::config::{CorrectionSafety, TypingAssistRuleConfig};
 use lay::correction_core::CorrectionMode;
 use lay::input_gate::{decide_input_gate, InputGateRequest, InputGateTrigger};
 use lay::word_buffer::WordBuffer;
-
-use super::super::append_learning_log;
 
 pub(crate) struct LayoutReplayMemory<'a> {
     pub(crate) replace_words: usize,

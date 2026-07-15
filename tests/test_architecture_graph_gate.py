@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import importlib.util
+import os
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -31,6 +33,33 @@ def receipt(source_fingerprint: str) -> dict[str, object]:
 
 
 class ArchitectureReceiptFreshnessTest(unittest.TestCase):
+    def test_graph_source_freshness_uses_content_not_mtime(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "source.rs"
+            source.write_text("fn stable() {}\n", encoding="utf-8")
+            entry = {"ast_hash": gate.hashlib.md5(source.read_bytes()).hexdigest()}
+            os.utime(source, (1, 1))
+
+            self.assertIsNone(
+                gate.graph_source_freshness_violation(
+                    source, "src/source.rs", entry
+                )
+            )
+
+    def test_graph_source_freshness_rejects_changed_content(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "source.rs"
+            source.write_text("fn before() {}\n", encoding="utf-8")
+            entry = {"ast_hash": gate.hashlib.md5(source.read_bytes()).hexdigest()}
+            source.write_text("fn after() {}\n", encoding="utf-8")
+
+            self.assertEqual(
+                "graph_stale_source:src/source.rs",
+                gate.graph_source_freshness_violation(
+                    source, "src/source.rs", entry
+                ),
+            )
+
     def test_head_only_metadata_change_does_not_stale_receipt(self) -> None:
         existing = receipt("source-a")
         expected = receipt("source-a")

@@ -110,20 +110,29 @@ def file_fingerprint(path: Path) -> str:
     return digest.hexdigest()
 
 
+def graph_source_freshness_violation(
+    path: Path, relative: str, entry: Any
+) -> str | None:
+    if not isinstance(entry, dict):
+        return f"graph_missing_source:{relative}"
+    recorded_hash = entry.get("ast_hash")
+    if not isinstance(recorded_hash, str) or not recorded_hash:
+        return f"graph_missing_ast_hash:{relative}"
+    current_hash = hashlib.md5(path.read_bytes()).hexdigest()
+    if current_hash != recorded_hash:
+        return f"graph_stale_source:{relative}"
+    return None
+
+
 def graph_freshness_violations(manifest: dict[str, Any]) -> list[str]:
     violations: list[str] = []
     for path in sorted((ROOT / "src").rglob("*.rs")):
         relative = path.relative_to(ROOT).as_posix()
-        entry = manifest.get(relative)
-        if entry is None:
-            violations.append(f"graph_missing_source:{relative}")
-            continue
-        recorded_mtime = entry.get("mtime")
-        if not isinstance(recorded_mtime, (int, float)):
-            violations.append(f"graph_missing_mtime:{relative}")
-            continue
-        if abs(path.stat().st_mtime - float(recorded_mtime)) > 0.001:
-            violations.append(f"graph_stale_source:{relative}")
+        violation = graph_source_freshness_violation(
+            path, relative, manifest.get(relative)
+        )
+        if violation is not None:
+            violations.append(violation)
     return violations
 
 
