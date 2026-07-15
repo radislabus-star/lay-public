@@ -34,16 +34,29 @@ impl L2CandidateLattice {
 
     pub(crate) fn push_source(&mut self, candidate: Option<UnifiedCorrectionCandidate>) {
         if let Some(candidate) = candidate {
-            if let Some(existing) = self
-                .candidates
-                .iter_mut()
-                .find(|existing| existing.replacement == candidate.replacement)
-            {
-                existing.merge_evidence(candidate);
-                return;
-            }
-            self.candidates.push(candidate);
+            self.push(candidate);
         }
+    }
+
+    pub(crate) fn extend_source(
+        &mut self,
+        candidates: impl IntoIterator<Item = UnifiedCorrectionCandidate>,
+    ) {
+        for candidate in candidates {
+            self.push(candidate);
+        }
+    }
+
+    fn push(&mut self, candidate: UnifiedCorrectionCandidate) {
+        if let Some(existing) = self
+            .candidates
+            .iter_mut()
+            .find(|existing| existing.replacement == candidate.replacement)
+        {
+            existing.merge_evidence(candidate);
+            return;
+        }
+        self.candidates.push(candidate);
     }
 
     pub(crate) fn into_resolution(self) -> CorrectionResolution {

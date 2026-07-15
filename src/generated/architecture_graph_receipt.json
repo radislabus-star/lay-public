@@ -5,7 +5,10 @@
         "src/typing_transition/candidate.rs:L9:L2CandidateLattice",
         "src/typing_transition/decision.rs:L124:.select_apply_candidate()",
         "src/typing_transition/decision.rs:L19:TransitionDecisionCore",
-        "src/typing_transition/decision.rs:L27:.decide_visible_text_transition()"
+        "src/typing_transition/decision.rs:L27:.decide_visible_text_transition()",
+        "src/typing_transition/live_candidate.rs:L39:TransitionDecisionCore",
+        "src/typing_transition/live_candidate.rs:L40:.select_live_completions()",
+        "src/typing_transition/live_candidate.rs:L72:.select_ime_readout()"
       ],
       "id": "decision-authority",
       "status": "PASS",
@@ -79,9 +82,9 @@
     },
     {
       "evidence": [
-        "graph_built_at_commit:c75f46ff975a16b3308acbf4ca6271043500c9c8",
-        "graph_links:18924",
-        "graph_nodes:7639"
+        "graph_built_at_commit:96116f58fa4e3630817f54b64d79c553e2a1eb1a",
+        "graph_links:18957",
+        "graph_nodes:7656"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -89,11 +92,11 @@
     }
   ],
   "duplicate_symbols": {},
-  "git_head": "c75f46ff975a16b3308acbf4ca6271043500c9c8",
-  "graph_built_at_commit": "c75f46ff975a16b3308acbf4ca6271043500c9c8",
-  "graph_links": 18924,
-  "graph_nodes": 7639,
+  "git_head": "96116f58fa4e3630817f54b64d79c553e2a1eb1a",
+  "graph_built_at_commit": "96116f58fa4e3630817f54b64d79c553e2a1eb1a",
+  "graph_links": 18957,
+  "graph_nodes": 7656,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "f7779b88139fd681d7b1e40fc3f5ddfca3cebfa6c2a065fa91ce2421716c38a3",
+  "source_fingerprint": "4dc4e7597763e694a2204c8beb31ba9a76638b1bb55bd417cc9e0fac10c97521",
   "verdict": "PASS"
 }

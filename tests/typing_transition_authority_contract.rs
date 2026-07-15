@@ -46,6 +46,7 @@ fn ime_target_continuity_and_bridge_replay_share_state_transition_contracts() {
 fn candidate_lattice_merges_typed_evidence_without_owner_priority() {
     let lattice = read("src/typing_transition/candidate.rs");
     let candidate = read("src/correction_core.rs");
+    let sources = read("src/correction_core/candidate_sources.rs");
 
     assert!(
         lattice.contains("existing.merge_evidence(candidate)")
@@ -57,6 +58,12 @@ fn candidate_lattice_merges_typed_evidence_without_owner_priority() {
             && candidate.contains("pub(crate) evidence: Vec<CandidateEvidence>")
             && candidate.contains("fn merge_evidence"),
         "candidate authority must carry typed origin and merged evidence"
+    );
+    assert!(
+        sources.contains("deterministic_composite_text_candidates")
+            && sources.contains("lattice.extend_source")
+            && !sources.contains("layout_then_typo_candidate(req, pipeline)\n        .or_else"),
+        "operator families must reach the lattice together instead of choosing by source order"
     );
 }
 
@@ -87,16 +94,26 @@ fn transition_core_uses_typed_origin_for_verifier_and_memory() {
 fn ime_preedit_uses_shared_candidate_readout_for_ranking() {
     let preedit = read("src/bin/lay_ibus_engine/preedit.rs");
     let readout = read("src/ime_candidate_readout.rs");
+    let candidate_gate = read("src/nanda_wave/candidate_gate.rs");
+    let live_core = read("src/typing_transition/live_candidate.rs");
 
     assert!(
-        preedit.contains("rank_ime_candidate_suffixes(ImeCandidateReadoutRequest")
+        preedit.contains("select_ime_candidate_suffixes(ImeCandidateReadoutRequest")
             && !preedit.contains("preedit_suffix_bayes_score"),
-        "IME adapter must delegate suffix ranking to shared candidate readout"
+        "IME adapter must delegate suffix selection to the transition core"
     );
     assert!(
-        readout.contains("pub fn rank_ime_candidate_suffixes")
-            && readout.contains("cached_usage_prior_snapshot"),
-        "shared readout must own Bayes/usage candidate ranking"
+        readout.contains("pub fn select_ime_candidate_suffixes")
+            && readout.contains("TransitionDecisionCore::select_ime_readout")
+            && !readout.contains("cached_usage_prior_snapshot"),
+        "shared readout must delegate one final choice to TransitionDecisionCore"
+    );
+    assert!(
+        candidate_gate.contains("TransitionDecisionCore::select_live_completions")
+            && !candidate_gate.contains("candidates.sort_by")
+            && live_core.contains("fn select_live_completions")
+            && live_core.contains("fn select_ime_readout"),
+        "live completion admission and final IME ordering must have one decision owner"
     );
 }
 

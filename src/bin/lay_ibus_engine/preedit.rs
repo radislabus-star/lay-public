@@ -3,7 +3,7 @@ use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
 use lay::ime_candidate_readout::{
-    is_command_like_long_tail, preedit_suffix_context_and_word, rank_ime_candidate_suffixes,
+    is_command_like_long_tail, preedit_suffix_context_and_word, select_ime_candidate_suffixes,
     ImeCandidateReadoutRequest,
 };
 use lay::word_reader::split_last_alphabetic_token;
@@ -335,25 +335,30 @@ impl LayIbusEngine {
             return Vec::new();
         }
         let semantic_started = timing_enabled.then(Instant::now);
-        let semantic_suffixes = self.semantic_phrase_suffixes();
+        let semantic_candidates = self.semantic_phrase_candidates();
         let semantic_us = elapsed_us(semantic_started);
 
         let ru_started = timing_enabled.then(Instant::now);
-        let ru_l2_suffixes = self.ru_l2_word_attractor_suffixes();
+        let ru_l2_candidates = self.ru_l2_word_attractor_candidates();
         let ru_us = elapsed_us(ru_started);
 
         let ascii_started = timing_enabled.then(Instant::now);
-        let ascii_suffixes = self.preedit_fast.ascii_suffixes(
+        let ascii_candidates = self.preedit_fast.ascii_candidates(
             self.precognition_max_suffix_chars(),
             PREEDIT_ASCII_CANDIDATE_LIMIT,
         );
         let ascii_us = elapsed_us(ascii_started);
 
-        let candidates = rank_ime_candidate_suffixes(ImeCandidateReadoutRequest {
-            tail,
-            semantic_suffixes: &semantic_suffixes,
-            ru_l2_suffixes: &ru_l2_suffixes,
-            ascii_suffixes: &ascii_suffixes,
+        let mut proposals = Vec::with_capacity(
+            semantic_candidates.len() + ru_l2_candidates.len() + ascii_candidates.len(),
+        );
+        proposals.extend(semantic_candidates);
+        proposals.extend(ru_l2_candidates);
+        proposals.extend(ascii_candidates);
+        let candidate_limit = proposals.len();
+        let candidates = select_ime_candidate_suffixes(ImeCandidateReadoutRequest {
+            proposals: &proposals,
+            limit: candidate_limit,
         });
 
         if let Some(started) = total_started {
@@ -1064,16 +1069,18 @@ mod tests {
             fast.push(ch);
         }
 
-        let suffixes = fast.ascii_suffixes(16, 8);
+        let candidates = fast.ascii_candidates(16, 8);
 
         assert_eq!(
-            suffixes.first().map(String::as_str),
+            candidates
+                .first()
+                .map(|candidate| candidate.suffix.as_str()),
             Some("t"),
-            "suffixes={suffixes:?}"
+            "candidates={candidates:?}"
         );
         assert!(
-            !suffixes.iter().any(|suffix| suffix == "il"),
-            "known technical completion must outrank noisy wave suffixes: {suffixes:?}"
+            !candidates.iter().any(|candidate| candidate.suffix == "il"),
+            "known technical completion must outrank noisy wave suffixes: {candidates:?}"
         );
     }
 
@@ -1607,9 +1614,15 @@ mod tests {
         let memory = lay::nanda_wave::llmwave::LlmWaveMemory::from_text(
             "идёт дом\nна улице опять идёт дождь\nна улице опять идёт снег",
         );
-        let suffixes = engine.llmwave_phrase_suffixes_from_memory("На улице опять идёт д", &memory);
+        let candidates =
+            engine.llmwave_phrase_candidates_from_memory("На улице опять идёт д", &memory);
 
-        assert_eq!(suffixes.first().map(String::as_str), Some("ождь"));
+        assert_eq!(
+            candidates
+                .first()
+                .map(|candidate| candidate.suffix.as_str()),
+            Some("ождь")
+        );
     }
 
     #[test]
@@ -1630,12 +1643,14 @@ mod tests {
             "я хочу проверить подсказки\nя хочу проверить ввод",
         );
 
-        let suffixes = engine.llmwave_phrase_suffixes_from_memory("я хочу ", &memory);
+        let candidates = engine.llmwave_phrase_candidates_from_memory("я хочу ", &memory);
 
         assert!(
-            suffixes.iter().any(|suffix| suffix == "проверить"),
+            candidates
+                .iter()
+                .any(|candidate| candidate.suffix == "проверить"),
             "expected next-word L2 suffix from L3 memory, got {:?}",
-            suffixes
+            candidates
         );
     }
 
@@ -1655,12 +1670,12 @@ mod tests {
         );
         let memory = lay::nanda_wave::llmwave::LlmWaveMemory::from_text("у нас мало слов");
 
-        let suffixes = engine.llmwave_phrase_suffixes_from_memory("у нас мало с", &memory);
+        let candidates = engine.llmwave_phrase_candidates_from_memory("у нас мало с", &memory);
 
         assert!(
-            suffixes.iter().any(|suffix| suffix == "лов"),
+            candidates.iter().any(|candidate| candidate.suffix == "лов"),
             "expected L3 suffix to survive started next word, got {:?}",
-            suffixes
+            candidates
         );
     }
 
@@ -1682,12 +1697,14 @@ mod tests {
             "я хочу проверить подсказки\nя хочу проверить ввод",
         );
 
-        let suffixes = engine.llmwave_phrase_suffixes_from_memory("я хочу пров", &memory);
+        let candidates = engine.llmwave_phrase_candidates_from_memory("я хочу пров", &memory);
 
         assert!(
-            suffixes.iter().any(|suffix| suffix == "ерить"),
+            candidates
+                .iter()
+                .any(|candidate| candidate.suffix == "ерить"),
             "expected sentence-aware word ending, got {:?}",
-            suffixes
+            candidates
         );
     }
 
@@ -1964,15 +1981,15 @@ mod tests {
 
     fn measured_precognition_stages(engine: &LayIbusEngine) -> Vec<(&'static str, u128, usize)> {
         let semantic_started = Instant::now();
-        let semantic = engine.semantic_phrase_suffixes();
+        let semantic = engine.semantic_phrase_candidates();
         let semantic_us = semantic_started.elapsed().as_micros();
 
         let ru_started = Instant::now();
-        let ru = engine.ru_l2_word_attractor_suffixes();
+        let ru = engine.ru_l2_word_attractor_candidates();
         let ru_us = ru_started.elapsed().as_micros();
 
         let ascii_started = Instant::now();
-        let ascii = engine.preedit_fast.ascii_suffixes(
+        let ascii = engine.preedit_fast.ascii_candidates(
             engine.precognition_max_suffix_chars(),
             PREEDIT_ASCII_CANDIDATE_LIMIT,
         );

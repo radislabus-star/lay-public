@@ -126,6 +126,25 @@ impl TransitionDecisionCore {
         candidates: &[UnifiedCorrectionCandidate],
         policy: TransitionDecisionPolicy,
     ) -> Option<UnifiedCorrectionCandidate> {
+        if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
+            for candidate in candidates {
+                let signals = candidate_decision_signals(event, candidate, candidates.len());
+                let bayes = bayes_score_for_candidate(&event.original, candidate);
+                eprintln!(
+                    "decision-core-candidate origin={:?} source_id={} class={} gate={:?} rank={:.3} usage={:.3} context={:.3} l3={} l4={} replacement={:?}",
+                    candidate.origin,
+                    candidate.source_id,
+                    candidate.error_class.as_str(),
+                    candidate.gate.action,
+                    signals.rank_score,
+                    bayes.usage_prior,
+                    bayes.context_prior,
+                    signals.l3_phrase_milli,
+                    signals.l4_signed_milli,
+                    candidate.replacement
+                );
+            }
+        }
         candidates
             .iter()
             .filter(|candidate| candidate.gate.action == CandidateGateAction::Eligible)
@@ -235,6 +254,22 @@ fn candidate_has_apply_authority(
         || bayes.context_prior >= 0.080
         || signals.l3_phrase_milli >= 420
         || signals.l4_signed_milli >= 120;
+    let contextual_transition_support = bayes.context_prior >= 0.080
+        || signals.l3_phrase_milli >= 420
+        || signals.l4_signed_milli >= 120
+        || exact_positive_transition;
+    if candidate.origin == crate::candidate_contract::CandidateOrigin::LayoutThenTypo
+        && original_tail_has_same_script_context(event)
+        && !contextual_transition_support
+    {
+        debug_decision_reject(
+            candidate,
+            "composed_layout_needs_context_proof",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
     let strong_l2_peak_support =
         strong_l2_wave_peak_support(&signals) && !self_referential_surface_drift;
     let strong_learned_support =
@@ -324,6 +359,22 @@ fn candidate_has_apply_authority(
         );
     }
     allowed
+}
+
+fn original_tail_has_same_script_context(event: &TypingErrorEvent) -> bool {
+    let words = crate::correction_core::normalized_correction_words(&event.original);
+    let Some((current, left)) = words.split_last() else {
+        return false;
+    };
+    if left.is_empty() {
+        return false;
+    }
+    let current_is_ru = current.chars().all(is_russian_letter);
+    let current_is_en = current.chars().all(|ch| ch.is_ascii_alphabetic());
+    left.iter().rev().take(3).any(|word| {
+        (current_is_ru && word.chars().all(is_russian_letter))
+            || (current_is_en && word.chars().all(|ch| ch.is_ascii_alphabetic()))
+    })
 }
 
 fn boundary_shift_has_stable_token_mass(replacement: &str) -> bool {
@@ -609,13 +660,11 @@ fn stronger_unresolved_candidate_exists(
         selected.origin,
     );
     let selected_is_proven_reversible = selected_action.verifier_passed
-        && (selected.origin.source_role() == CorrectionSourceRole::Layout
-            || matches!(
-                selected_action.edit_operator,
-                verifier::EditTransitionOperator::LayoutProjection
-                    | verifier::EditTransitionOperator::BoundaryShift
-                    | verifier::EditTransitionOperator::BoundaryMergeSplit
-            ));
+        && matches!(
+            selected_action.edit_operator,
+            verifier::EditTransitionOperator::BoundaryShift
+                | verifier::EditTransitionOperator::BoundaryMergeSplit
+        );
     if selected_is_proven_reversible {
         return false;
     }
@@ -722,6 +771,40 @@ fn phase_center_separates_candidate(
 ) -> bool {
     let selected_span = changed_token_span(&event.original, &selected.replacement);
     let selected_signal = candidate_decision_signals(event, selected, candidates.len());
+    let strongest_lexical_competitor = candidates
+        .iter()
+        .filter(|candidate| *candidate != selected)
+        .filter(|candidate| candidate.gate.action != CandidateGateAction::Veto)
+        .filter(|candidate| {
+            matches!(
+                candidate.origin.source_role(),
+                CorrectionSourceRole::DeterministicTypo
+                    | CorrectionSourceRole::L2Surface
+                    | CorrectionSourceRole::L3Context
+            )
+        })
+        .filter(|candidate| {
+            changed_spans_overlap(
+                selected_span,
+                changed_token_span(&event.original, &candidate.replacement),
+            )
+        })
+        .map(|candidate| {
+            candidate_decision_signals(event, candidate, candidates.len())
+                .l2_wave_peak_positive_milli
+        })
+        .max();
+    if selected_signal.l2_wave_peak_milli >= 650
+        && selected_signal.l2_wave_peak_uncertainty_milli <= 450
+        && strongest_lexical_competitor.map_or(true, |competitor| {
+            selected_signal
+                .l2_wave_peak_positive_milli
+                .saturating_sub(competitor)
+                >= 100
+        })
+    {
+        return true;
+    }
     if !selected_signal.l2_transition_phase_operator_promoted
         || selected_signal.l2_transition_phase_verdict != "support"
         || selected_signal.l2_transition_phase_milli

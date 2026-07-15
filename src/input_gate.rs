@@ -509,16 +509,20 @@ mod tests {
             Some(TypingErrorClass::WrongLayout)
         );
         let trace = decision.trace.as_ref().expect("input gate trace");
-        assert_eq!(trace.candidate_count, 1);
+        assert!(trace.candidate_count >= 1);
         assert_eq!(trace.scoreboard.apply_candidates, 1);
-        assert_eq!(trace.scoreboard.deterministic_candidates, 1);
+        assert!(trace.scoreboard.deterministic_candidates >= 1);
         assert_eq!(trace.scoreboard.nanda_candidates, 0);
         assert!(
             trace.scoreboard.selected_bayes_posterior_milli.is_some(),
             "selected candidate should expose Bayes posterior in the input gate scoreboard"
         );
-        assert_eq!(trace.candidate_scores.len(), 1);
-        let score = &trace.candidate_scores[0];
+        assert_eq!(trace.candidate_scores.len(), trace.candidate_count);
+        let score = trace
+            .candidate_scores
+            .iter()
+            .find(|score| score.selected)
+            .expect("selected candidate score");
         assert_eq!(score.replacement, "давай ");
         assert_eq!(score.source, CorrectionDecisionSource::Deterministic);
         assert_eq!(score.error_class, TypingErrorClass::WrongLayout);

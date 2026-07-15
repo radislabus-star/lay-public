@@ -209,6 +209,13 @@ impl UnifiedCorrectionCandidate {
             .any(|evidence| evidence.origin == origin)
     }
 
+    #[cfg(test)]
+    pub(crate) fn has_source_id(&self, source_id: &str) -> bool {
+        self.evidence
+            .iter()
+            .any(|evidence| evidence.source_id == source_id)
+    }
+
     pub(crate) fn evidence_count(&self) -> usize {
         self.evidence.len()
     }

@@ -9,6 +9,8 @@ use super::l4_goal_state::{derive_l4_scene_state, L4AllowedAction, L4SceneStateI
 use super::l4_signed_memory::l4_signed_memory_signal_from_readout;
 use super::l4_signed_outcome::{l4_signed_outcome, L4OutcomePolarity, L4SignedOutcomeInput};
 use crate::keyboard::is_cyrillic_letter;
+use crate::typing_transition::decision::TransitionDecisionCore;
+use crate::typing_transition::live_candidate::LiveCompletionProposal;
 use std::collections::VecDeque;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Mutex, OnceLock};
@@ -168,7 +170,7 @@ pub fn live_completion_candidates(
     let mut l3_suppressed = 0_u64;
     let mut l4_scene_memory_supported = 0_u64;
     let mut l4_signed = LiveSignedOutcomeStats::default();
-    let mut candidates = raw
+    let candidates = raw
         .into_iter()
         .zip(context_batch.next_token)
         .zip(context_batch.scene_token)
@@ -241,22 +243,6 @@ pub fn live_completion_candidates(
             l4_signed.record(signed.polarity);
             l4_signed.record_transition(&memory_signal);
 
-            if !live_completion_has_authority(LiveCompletionAuthority {
-                partial_len,
-                suffix_len,
-                allow_short_lexical: request.allow_short_lexical,
-                structural,
-                usage,
-                context_usage,
-                accepted,
-                common,
-                hot,
-                l2_center_grounded,
-                l3_memory_supported,
-            }) {
-                return None;
-            }
-
             if usage >= 0.025 || context_usage >= 0.018 || accepted >= 1 {
                 usage_supported = usage_supported.saturating_add(1);
             }
@@ -292,43 +278,37 @@ pub fn live_completion_candidates(
                 .map(|readout| base_score + readout.rank_delta)
                 .unwrap_or(base_score);
             let score = rank_score.clamp(0.0, 1.0);
-            if !live_suffix_has_display_authority(LiveSuffixAuthority {
-                suffix_len,
-                suffix: &suffix,
-                score,
-                structural,
-                usage,
-                context_usage,
-                accepted,
-                completed_state_known: l2::l2_surface_foundation_contains(&candidate.surface),
-            }) {
-                return None;
-            }
-
-            Some(LiveCompletionCandidate {
+            Some(LiveCompletionProposal {
                 surface: candidate.surface,
                 suffix,
                 score,
                 source: "L2LiveCandidateGate32",
                 rank_score,
+                partial_len,
+                suffix_len,
+                allow_short_lexical: request.allow_short_lexical,
+                structural,
+                usage,
+                context_usage,
+                accepted,
+                common,
+                hot,
+                l2_center_grounded,
+                l3_memory_supported,
+                completed_state_known: l2_center_grounded,
             })
         })
         .collect::<Vec<_>>();
-
-    candidates.sort_by(|left, right| {
-        right
-            .rank_score
-            .total_cmp(&left.rank_score)
-            .then_with(|| {
-                left.suffix
-                    .chars()
-                    .count()
-                    .cmp(&right.suffix.chars().count())
-            })
-            .then_with(|| left.surface.cmp(&right.surface))
-    });
-    candidates.dedup_by(|left, right| left.surface == right.surface || left.suffix == right.suffix);
-    candidates.truncate(request.limit);
+    let candidates = TransitionDecisionCore::select_live_completions(candidates, request.limit)
+        .into_iter()
+        .map(|candidate| LiveCompletionCandidate {
+            surface: candidate.surface,
+            suffix: candidate.suffix,
+            score: candidate.score,
+            source: candidate.source,
+            rank_score: candidate.rank_score,
+        })
+        .collect::<Vec<_>>();
     store_live_completion_candidates(cache_key, &candidates);
     l4_signed.scene_memory_hits = l4_scene_memory_supported;
     record_live_gate_stats(
@@ -720,76 +700,6 @@ fn update_max_atomic(target: &AtomicU64, value: u64) {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
-struct LiveCompletionAuthority {
-    partial_len: usize,
-    suffix_len: usize,
-    allow_short_lexical: bool,
-    structural: f32,
-    usage: f32,
-    context_usage: f32,
-    accepted: u32,
-    common: bool,
-    hot: bool,
-    l2_center_grounded: bool,
-    l3_memory_supported: bool,
-}
-
-fn live_completion_has_authority(input: LiveCompletionAuthority) -> bool {
-    let usage_signal = input.usage >= 0.025 || input.context_usage >= 0.018 || input.accepted >= 1;
-    let lexical_signal = input.common || input.hot || input.l2_center_grounded;
-    let structural_signal = input.structural >= 0.34;
-    let bound_structural_signal = input.l2_center_grounded && structural_signal;
-
-    if input.partial_len <= 2 {
-        return input.allow_short_lexical
-            && (usage_signal
-                || bound_structural_signal
-                || input.context_usage >= 0.018
-                || input.hot
-                || input.common)
-            && input.suffix_len <= 8;
-    }
-    if input.partial_len == 3 {
-        if !input.allow_short_lexical {
-            return usage_signal;
-        }
-        return usage_signal
-            || bound_structural_signal
-            || (input.allow_short_lexical && lexical_signal && input.suffix_len <= 7);
-    }
-    if input.partial_len == 4 {
-        return usage_signal || bound_structural_signal || lexical_signal;
-    }
-    usage_signal || lexical_signal || (structural_signal && input.l3_memory_supported)
-}
-
-#[derive(Debug, Clone, Copy)]
-struct LiveSuffixAuthority<'a> {
-    suffix_len: usize,
-    suffix: &'a str,
-    score: f32,
-    structural: f32,
-    usage: f32,
-    context_usage: f32,
-    accepted: u32,
-    completed_state_known: bool,
-}
-
-fn live_suffix_has_display_authority(input: LiveSuffixAuthority<'_>) -> bool {
-    if input.suffix_len != 1 {
-        return true;
-    }
-    if matches!(input.suffix, "и" | "я") {
-        return true;
-    }
-    input.completed_state_known
-        || input.accepted >= 2
-        || input.context_usage >= 0.060
-        || input.usage >= 0.095
-        || (input.score >= 0.90 && input.structural >= 0.46)
-}
-
 fn live_l4_scene_bias(action: L4AllowedAction, confidence: f32) -> f32 {
     match action {
         L4AllowedAction::Suggest => 0.030 * confidence,
@@ -824,6 +734,9 @@ fn structural_support(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::typing_transition::live_candidate::{
+        live_completion_has_authority, live_suffix_has_display_authority,
+    };
 
     fn request<'a>(context_prefix: &'a str, partial: &'a str) -> LiveCompletionRequest<'a> {
         LiveCompletionRequest {
@@ -832,6 +745,28 @@ mod tests {
             max_suffix_chars: 24,
             allow_short_lexical: true,
             limit: 12,
+        }
+    }
+
+    fn authority_proposal() -> LiveCompletionProposal {
+        LiveCompletionProposal {
+            surface: "пример".to_string(),
+            suffix: "мер".to_string(),
+            score: 0.7,
+            rank_score: 0.7,
+            source: "test",
+            partial_len: 3,
+            suffix_len: 3,
+            allow_short_lexical: true,
+            structural: 0.6,
+            usage: 0.0,
+            context_usage: 0.0,
+            accepted: 0,
+            common: false,
+            hot: false,
+            l2_center_grounded: false,
+            l3_memory_supported: false,
+            completed_state_known: false,
         }
     }
 
@@ -1019,52 +954,41 @@ mod tests {
 
     #[test]
     fn generated_surface_without_lexical_binding_has_no_display_authority() {
-        assert!(!live_completion_has_authority(LiveCompletionAuthority {
+        assert!(!live_completion_has_authority(&LiveCompletionProposal {
             partial_len: 4,
             suffix_len: 5,
-            allow_short_lexical: true,
             structural: 0.72,
-            usage: 0.0,
-            context_usage: 0.0,
-            accepted: 0,
-            common: false,
-            hot: false,
-            l2_center_grounded: false,
-            l3_memory_supported: false,
+            ..authority_proposal()
         }));
     }
 
     #[test]
     fn single_letter_suffix_still_needs_display_authority() {
-        assert!(!live_suffix_has_display_authority(LiveSuffixAuthority {
+        assert!(!live_suffix_has_display_authority(
+            &LiveCompletionProposal {
+                suffix_len: 1,
+                suffix: "е".to_string(),
+                score: 1.0,
+                structural: 0.20,
+                ..authority_proposal()
+            }
+        ));
+        assert!(live_suffix_has_display_authority(&LiveCompletionProposal {
             suffix_len: 1,
-            suffix: "е",
-            score: 1.0,
-            structural: 0.20,
-            usage: 0.0,
-            context_usage: 0.0,
-            accepted: 0,
-            completed_state_known: false,
-        }));
-        assert!(live_suffix_has_display_authority(LiveSuffixAuthority {
-            suffix_len: 1,
-            suffix: "е",
+            suffix: "е".to_string(),
             score: 0.70,
             structural: 0.20,
             usage: 0.10,
-            context_usage: 0.0,
             accepted: 2,
-            completed_state_known: false,
+            ..authority_proposal()
         }));
-        assert!(live_suffix_has_display_authority(LiveSuffixAuthority {
+        assert!(live_suffix_has_display_authority(&LiveCompletionProposal {
             suffix_len: 1,
-            suffix: "й",
+            suffix: "й".to_string(),
             score: 0.55,
             structural: 0.30,
-            usage: 0.0,
-            context_usage: 0.0,
-            accepted: 0,
             completed_state_known: true,
+            ..authority_proposal()
         }));
     }
 
@@ -1081,55 +1005,36 @@ mod tests {
 
     #[test]
     fn short_mid_sentence_completion_needs_usage_authority() {
-        assert!(!live_completion_has_authority(LiveCompletionAuthority {
+        assert!(!live_completion_has_authority(&LiveCompletionProposal {
             partial_len: 3,
-            suffix_len: 3,
             allow_short_lexical: false,
-            structural: 0.60,
-            usage: 0.0,
-            context_usage: 0.0,
-            accepted: 0,
             common: true,
             hot: true,
-            l2_center_grounded: false,
-            l3_memory_supported: false,
+            ..authority_proposal()
         }));
-        assert!(live_completion_has_authority(LiveCompletionAuthority {
+        assert!(live_completion_has_authority(&LiveCompletionProposal {
             partial_len: 3,
-            suffix_len: 3,
             allow_short_lexical: false,
             structural: 0.0,
-            usage: 0.0,
-            context_usage: 0.0,
             accepted: 1,
-            common: false,
-            hot: false,
-            l2_center_grounded: false,
-            l3_memory_supported: false,
+            ..authority_proposal()
         }));
     }
 
     #[test]
     fn long_surface_completion_needs_grounded_memory() {
-        let ungrounded = LiveCompletionAuthority {
+        let ungrounded = LiveCompletionProposal {
             partial_len: 5,
             suffix_len: 6,
-            allow_short_lexical: true,
             structural: 0.60,
-            usage: 0.0,
-            context_usage: 0.0,
-            accepted: 0,
-            common: false,
-            hot: false,
-            l2_center_grounded: false,
-            l3_memory_supported: false,
+            ..authority_proposal()
         };
-        assert!(!live_completion_has_authority(ungrounded));
-        assert!(live_completion_has_authority(LiveCompletionAuthority {
+        assert!(!live_completion_has_authority(&ungrounded));
+        assert!(live_completion_has_authority(&LiveCompletionProposal {
             l2_center_grounded: true,
-            ..ungrounded
+            ..ungrounded.clone()
         }));
-        assert!(live_completion_has_authority(LiveCompletionAuthority {
+        assert!(live_completion_has_authority(&LiveCompletionProposal {
             l3_memory_supported: true,
             ..ungrounded
         }));

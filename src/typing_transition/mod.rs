@@ -8,6 +8,7 @@ pub(crate) mod candidate;
 pub(crate) mod decision;
 pub(crate) mod executor_contract;
 pub(crate) mod l4_state_estimator;
+pub(crate) mod live_candidate;
 pub(crate) mod memory;
 pub(crate) mod state;
 pub(crate) mod verifier;

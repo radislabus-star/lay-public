@@ -796,25 +796,33 @@ fn settle_english_word_center(token: &str) -> Option<String> {
     {
         return None;
     }
-    let candidates = surface_motif_memory()
+    let mut candidates = surface_motif_memory()
         .surface_candidates(&normalized, 8)
         .into_iter()
         .filter(|candidate| candidate.word.chars().all(|ch| ch.is_ascii_alphabetic()))
         .collect::<Vec<_>>();
-    let best = candidates.first()?;
-    let best_distance = damerau_levenshtein(&normalized, &best.word);
-    let (_, transition) =
-        crate::transition_relation::TransitionRelationAtoms::inferred(&normalized, &best.word, "");
-    if !transition.verifier_passed() {
-        return None;
+    if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
+        eprintln!("english-center token={normalized:?} candidates={candidates:?}");
     }
-    if let Some(second) = candidates.get(1) {
-        let second_distance = damerau_levenshtein(&normalized, &second.word);
-        if second_distance == best_distance && best.score < second.score.saturating_add(120) {
+    candidates.sort_by(|left, right| {
+        left.word
+            .cmp(&right.word)
+            .then_with(|| right.score.cmp(&left.score))
+    });
+    candidates.dedup_by(|left, right| left.word == right.word);
+    crate::candidate_ranker::choose_best_with_gap(candidates, 64.0, |candidate| {
+        let (_, transition) = crate::transition_relation::TransitionRelationAtoms::inferred(
+            &normalized,
+            &candidate.word,
+            "",
+        );
+        if !transition.verifier_passed() {
             return None;
         }
-    }
-    Some(best.word.clone())
+        let operator_cost = damerau_levenshtein(&normalized, &candidate.word) as f64 * 256.0;
+        Some(candidate.score as f64 - operator_cost)
+    })
+    .map(|(candidate, _)| candidate.word)
 }
 
 fn cyrillic_layout_word_center_blocked(token: &str) -> bool {

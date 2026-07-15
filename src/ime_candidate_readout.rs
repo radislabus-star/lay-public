@@ -1,73 +1,43 @@
 //! Shared IME candidate readout helpers.
 //!
-//! Candidate scoring lives here so IBus stays an adapter that renders a
-//! readout instead of owning Bayes or phrase-ranking policy.
+//! IBus supplies typed candidate material here and receives the one ordered
+//! readout selected by `TransitionDecisionCore`.
 
-use crate::nanda_wave::UsagePriorSnapshot;
 use crate::word_reader::split_last_alphabetic_token;
 
-#[derive(Debug, Clone)]
-pub struct RankedImeSuffix {
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ImeCandidateSource {
+    L2Completion,
+    L3Context,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ImeCandidateProposal {
     pub suffix: String,
-    pub score: f32,
-    pub order: usize,
+    pub confidence: f32,
+    pub source: ImeCandidateSource,
 }
 
-/// Adapter-neutral candidate readout request. The IME supplies raw candidate
-/// signals; this shared owner merges and ranks them using the same usage/Bayes
-/// memory used by the correction path.
+impl ImeCandidateProposal {
+    pub fn new(suffix: impl Into<String>, confidence: f32, source: ImeCandidateSource) -> Self {
+        Self {
+            suffix: suffix.into(),
+            confidence: confidence.clamp(0.0, 1.0),
+            source,
+        }
+    }
+}
+
 pub struct ImeCandidateReadoutRequest<'a> {
-    pub tail: &'a str,
-    pub semantic_suffixes: &'a [String],
-    pub ru_l2_suffixes: &'a [String],
-    pub ascii_suffixes: &'a [String],
+    pub proposals: &'a [ImeCandidateProposal],
+    pub limit: usize,
 }
 
-pub fn rank_ime_candidate_suffixes(request: ImeCandidateReadoutRequest<'_>) -> Vec<String> {
-    let partial_len = split_last_alphabetic_token(request.tail.trim_end())
-        .map(|(_, token)| token.chars().count())
-        .unwrap_or(0);
-    let usage = crate::nanda_wave::cached_usage_prior_snapshot();
-    let mut candidates = Vec::with_capacity(
-        request.semantic_suffixes.len()
-            + request.ru_l2_suffixes.len()
-            + request.ascii_suffixes.len(),
-    );
-
-    for suffix in request.semantic_suffixes {
-        push_unique_ranked_suffix(
-            &mut candidates,
-            Some(suffix.clone()),
-            preedit_suffix_bayes_score(&usage, request.tail, suffix, 0.72),
-        );
-    }
-    for suffix in request.ru_l2_suffixes {
-        push_unique_ranked_suffix(
-            &mut candidates,
-            Some(suffix.clone()),
-            preedit_suffix_bayes_score(&usage, request.tail, suffix, 0.48),
-        );
-    }
-    for suffix in request.ascii_suffixes {
-        push_unique_ranked_suffix(
-            &mut candidates,
-            Some(suffix.clone()),
-            preedit_suffix_bayes_score(&usage, request.tail, suffix, 0.80),
-        );
-    }
-
-    candidates.sort_by(|left, right| {
-        right
-            .score
-            .total_cmp(&left.score)
-            .then_with(|| left.order.cmp(&right.order))
-            .then_with(|| compare_suffix_len_for_prefix(partial_len, &left.suffix, &right.suffix))
-            .then_with(|| left.suffix.cmp(&right.suffix))
-    });
-    candidates
-        .into_iter()
-        .map(|candidate| candidate.suffix)
-        .collect()
+pub fn select_ime_candidate_suffixes(request: ImeCandidateReadoutRequest<'_>) -> Vec<String> {
+    crate::typing_transition::decision::TransitionDecisionCore::select_ime_readout(
+        request.proposals,
+        request.limit,
+    )
 }
 
 pub fn push_unique_suffix(candidates: &mut Vec<String>, suffix: Option<String>) {
@@ -81,34 +51,6 @@ pub fn push_unique_suffix(candidates: &mut Vec<String>, suffix: Option<String>) 
         return;
     }
     candidates.push(suffix);
-}
-
-pub fn push_unique_ranked_suffix(
-    candidates: &mut Vec<RankedImeSuffix>,
-    suffix: Option<String>,
-    score: f32,
-) {
-    let Some(suffix) = suffix else {
-        return;
-    };
-    if suffix.is_empty() || !is_allowed_visible_completion_suffix(&suffix) {
-        return;
-    }
-    if let Some(existing) = candidates
-        .iter_mut()
-        .find(|candidate| candidate.suffix == suffix)
-    {
-        if score > existing.score {
-            existing.score = score;
-        }
-        return;
-    }
-    let order = candidates.len();
-    candidates.push(RankedImeSuffix {
-        suffix,
-        score,
-        order,
-    });
 }
 
 pub fn push_unique_ascii_known_suffix(candidates: &mut Vec<String>, token: &str, suffix: String) {
@@ -138,6 +80,25 @@ pub fn is_allowed_visible_completion_suffix(suffix: &str) -> bool {
     matches!(ch, 'и' | 'я' | 'I' | 'a')
 }
 
+pub fn preedit_suffix_context_and_word(tail: &str, suffix: &str) -> Option<(Vec<String>, String)> {
+    let tail = tail.trim_end();
+    let suffix_starts_new_word = suffix.chars().next().is_some_and(char::is_whitespace);
+    if suffix_starts_new_word || tail.is_empty() {
+        let word = suffix.split_whitespace().next()?.to_lowercase();
+        let context = crate::nanda_wave::llmwave::tokenize(tail);
+        return Some((context, word));
+    }
+    let (prefix, partial) = split_last_alphabetic_token(tail)?;
+    let suffix_word_part = suffix.split_whitespace().next().unwrap_or(suffix);
+    let word = format!(
+        "{}{}",
+        partial.to_lowercase(),
+        suffix_word_part.to_lowercase()
+    );
+    let context = crate::nanda_wave::llmwave::tokenize(prefix);
+    Some((context, word))
+}
+
 pub fn is_noisy_first_russian_prefix(prefix: &str) -> bool {
     matches!(prefix, "нев" | "инт")
 }
@@ -162,54 +123,6 @@ pub fn is_command_like_long_tail(tail: &str) -> bool {
         }
     }
     word_count >= 4 && uppercase >= 12 && uppercase >= lowercase.saturating_mul(2).max(1)
-}
-
-pub fn compare_suffix_len_for_prefix(
-    partial_len: usize,
-    left: &str,
-    right: &str,
-) -> std::cmp::Ordering {
-    let left_len = left.chars().count();
-    let right_len = right.chars().count();
-    if partial_len <= 3 {
-        return right_len.cmp(&left_len);
-    }
-    left_len.cmp(&right_len)
-}
-
-pub fn preedit_suffix_bayes_score(
-    usage: &UsagePriorSnapshot,
-    tail: &str,
-    suffix: &str,
-    base: f32,
-) -> f32 {
-    let Some((context, word)) = preedit_suffix_context_and_word(tail, suffix) else {
-        return base;
-    };
-    (base
-        + usage.word_prior(&word) * 1.45
-        + usage.context_word_prior(&context, &word) * 1.90
-        + usage.accepted_word_count(&word).min(12) as f32 * 0.018)
-        .clamp(0.0, 1.0)
-}
-
-pub fn preedit_suffix_context_and_word(tail: &str, suffix: &str) -> Option<(Vec<String>, String)> {
-    let tail = tail.trim_end();
-    let suffix_starts_new_word = suffix.chars().next().is_some_and(char::is_whitespace);
-    if suffix_starts_new_word || tail.is_empty() {
-        let word = suffix.split_whitespace().next()?.to_lowercase();
-        let context = crate::nanda_wave::llmwave::tokenize(tail);
-        return Some((context, word));
-    }
-    let (prefix, partial) = split_last_alphabetic_token(tail)?;
-    let suffix_word_part = suffix.split_whitespace().next().unwrap_or(suffix);
-    let word = format!(
-        "{}{}",
-        partial.to_lowercase(),
-        suffix_word_part.to_lowercase()
-    );
-    let context = crate::nanda_wave::llmwave::tokenize(prefix);
-    Some((context, word))
 }
 
 pub fn phrase_candidate_suffix(
@@ -268,18 +181,21 @@ fn next_word_suffix(suffix: &str) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
-    use super::{phrase_candidate_suffix, rank_ime_candidate_suffixes, ImeCandidateReadoutRequest};
+    use super::{
+        phrase_candidate_suffix, select_ime_candidate_suffixes, ImeCandidateProposal,
+        ImeCandidateReadoutRequest, ImeCandidateSource,
+    };
 
     #[test]
     fn shared_readout_merges_sources_before_ranking() {
-        let semantic = vec!["вет".to_string()];
-        let ru_l2 = vec!["вет".to_string(), "чер".to_string()];
-        let ascii = Vec::new();
-        let ranked = rank_ime_candidate_suffixes(ImeCandidateReadoutRequest {
-            tail: "на улице д",
-            semantic_suffixes: &semantic,
-            ru_l2_suffixes: &ru_l2,
-            ascii_suffixes: &ascii,
+        let proposals = vec![
+            ImeCandidateProposal::new("вет", 0.8, ImeCandidateSource::L3Context),
+            ImeCandidateProposal::new("вет", 0.7, ImeCandidateSource::L2Completion),
+            ImeCandidateProposal::new("чер", 0.6, ImeCandidateSource::L2Completion),
+        ];
+        let ranked = select_ime_candidate_suffixes(ImeCandidateReadoutRequest {
+            proposals: &proposals,
+            limit: 8,
         });
 
         assert_eq!(

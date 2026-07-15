@@ -3,17 +3,22 @@
 
 use lay::ime_candidate_readout::{
     is_noisy_first_russian_prefix, push_unique_ascii_known_suffix,
-    should_query_llmwave_phrase_suffix,
+    should_query_llmwave_phrase_suffix, ImeCandidateProposal, ImeCandidateSource,
 };
 
 impl PreeditFastState {
-    fn ascii_suffixes(&self, max_suffix_chars: usize, limit: usize) -> Vec<String> {
+    fn ascii_candidates(
+        &self,
+        max_suffix_chars: usize,
+        limit: usize,
+    ) -> Vec<ImeCandidateProposal> {
         if self.token.chars().count() < 2
             || !self.token.chars().all(|ch| ch.is_ascii_alphabetic())
         {
             return Vec::new();
         }
         let mut suffixes = Vec::new();
+        let mut proposals = Vec::new();
         for candidate in lay::nanda_wave::candidate_gate::live_completion_candidates(
             lay::nanda_wave::candidate_gate::LiveCompletionRequest {
                 context_prefix: "",
@@ -23,17 +28,26 @@ impl PreeditFastState {
                 limit,
             },
         ) {
-            push_unique_ascii_known_suffix(&mut suffixes, &self.token, candidate.suffix);
-            if suffixes.len() >= limit {
+            let suffix = candidate.suffix;
+            let before = suffixes.len();
+            push_unique_ascii_known_suffix(&mut suffixes, &self.token, suffix.clone());
+            if suffixes.len() > before {
+                proposals.push(ImeCandidateProposal::new(
+                    suffix,
+                    candidate.score,
+                    ImeCandidateSource::L2Completion,
+                ));
+            }
+            if proposals.len() >= limit {
                 break;
             }
         }
-        suffixes
+        proposals
     }
 }
 
 impl LayIbusEngine {
-    fn semantic_phrase_suffixes(&self) -> Vec<String> {
+    fn semantic_phrase_candidates(&self) -> Vec<ImeCandidateProposal> {
         if self.config.active_correction_safety() != lay::config::CorrectionSafety::Experimental {
             return Vec::new();
         }
@@ -50,12 +64,12 @@ impl LayIbusEngine {
         if should_query_llmwave_phrase_suffix(raw_tail)
             && lay::nanda_wave::llmwave::default_memory_is_warm()
         {
-            suffixes.extend(self.llmwave_phrase_suffixes(raw_tail));
+            suffixes.extend(self.llmwave_phrase_candidates(raw_tail));
         }
         suffixes
     }
 
-    fn ru_l2_word_attractor_suffixes(&self) -> Vec<String> {
+    fn ru_l2_word_attractor_candidates(&self) -> Vec<ImeCandidateProposal> {
         if self.config.active_correction_safety() == lay::config::CorrectionSafety::Strict {
             return Vec::new();
         }
@@ -101,32 +115,43 @@ impl LayIbusEngine {
         // ordered whole-word readout into visible suffixes.
         whole_word_candidates
             .into_iter()
-            .map(|candidate| candidate.suffix)
+            .map(|candidate| {
+                ImeCandidateProposal::new(
+                    candidate.suffix,
+                    candidate.score,
+                    ImeCandidateSource::L2Completion,
+                )
+            })
             .take(PREEDIT_RU_WAVE_CANDIDATE_LIMIT)
             .collect()
     }
 
-    fn llmwave_phrase_suffixes(&self, tail: &str) -> Vec<String> {
+    fn llmwave_phrase_candidates(&self, tail: &str) -> Vec<ImeCandidateProposal> {
         lay::nanda_wave::llmwave::with_default_memory(|memory| {
-            self.llmwave_phrase_suffixes_from_memory(tail, memory)
+            self.llmwave_phrase_candidates_from_memory(tail, memory)
         })
     }
 
-    fn llmwave_phrase_suffixes_from_memory(
+    fn llmwave_phrase_candidates_from_memory(
         &self,
         tail: &str,
         memory: &lay::nanda_wave::llmwave::LlmWaveMemory,
-    ) -> Vec<String> {
+    ) -> Vec<ImeCandidateProposal> {
         let max_suffix_chars = self.precognition_max_suffix_chars();
         lay::nanda_wave::llmwave::phrase_forecast_candidates(tail, memory)
             .into_iter()
             .take(6)
             .filter_map(|candidate| {
-                lay::ime_candidate_readout::phrase_candidate_suffix(
+                let suffix = lay::ime_candidate_readout::phrase_candidate_suffix(
                     tail,
                     &candidate.text,
                     max_suffix_chars,
-                )
+                )?;
+                Some(ImeCandidateProposal::new(
+                    suffix,
+                    (candidate.energy - candidate.risk).clamp(0.0, 1.0),
+                    ImeCandidateSource::L3Context,
+                ))
             })
             .collect()
     }
@@ -148,7 +173,7 @@ mod preedit_readout_contract {
         assert!(
             !render.contains("live_completion_candidates(")
                 && readout.contains("live_completion_candidates(")
-                && readout.contains("llmwave_phrase_suffixes("),
+                && readout.contains("llmwave_phrase_candidates("),
             "preedit rendering must not own L2/L3 material acquisition"
         );
     }

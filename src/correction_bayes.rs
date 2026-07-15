@@ -37,8 +37,8 @@ pub(crate) fn bayes_score_candidate(
         + accepted_prior_from_count(usage_snapshot.accepted_word_count(&replacement_lower)))
     .clamp(0.0, 0.36);
     let context = context_words_before_last(original);
-    let context_prior =
-        (local_context_prior(&context, &replacement_lower) + source_prior(origin)).clamp(0.0, 0.34);
+    let context_prior = local_context_prior(&context, &replacement_lower);
+    let source_prior = source_prior(origin);
     let signed_memory = crate::nanda_wave::l4_signed_memory::l4_signed_memory_signal(
         crate::nanda_wave::l4_signed_memory::L4SignedMemoryInput {
             context: &context,
@@ -60,9 +60,13 @@ pub(crate) fn bayes_score_candidate(
         distance,
     ) + signed_memory.repulsion * 0.34
         + rejected_prior * 0.70;
-    let posterior =
-        (likelihood * 0.55 + usage_prior + context_prior + signed_memory.attraction * 0.10 - risk)
-            .clamp(-1.0, 1.0);
+    let posterior = (likelihood * 0.55
+        + usage_prior
+        + context_prior
+        + source_prior
+        + signed_memory.attraction * 0.10
+        - risk)
+        .clamp(-1.0, 1.0);
 
     BayesCandidateScore {
         posterior,

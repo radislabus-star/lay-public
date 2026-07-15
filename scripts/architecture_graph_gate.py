@@ -130,6 +130,25 @@ class ArchitectureGraph:
             )
         return evidence, violations
 
+    def type_owner(
+        self, label: str, owner: str, capability_impls: tuple[str, ...] = ()
+    ) -> tuple[list[str], list[str]]:
+        nodes = self.production_nodes(label)
+        evidence = [node_ref(node) for node in nodes]
+        violations: list[str] = []
+        declarations = [node for node in nodes if node.get("source_file") == owner]
+        if len(declarations) != 1:
+            violations.append(f"owner_count:{label}:{len(declarations)}")
+        for node in nodes:
+            source_file = str(node.get("source_file", ""))
+            if source_file == owner:
+                continue
+            if source_file not in capability_impls or not source_line(node).startswith(
+                f"impl {label}"
+            ):
+                violations.append(f"foreign_type_owner:{label}:{source_file}")
+        return evidence, violations
+
     def source_imports(self, prefix: str, forbidden_target_fragments: tuple[str, ...]) -> list[str]:
         violations: list[str] = []
         for edge in self.links:
@@ -185,6 +204,18 @@ def node_ref(node: dict[str, Any]) -> str:
     return f"{node.get('source_file')}:{node.get('source_location')}:{node.get('label')}"
 
 
+def source_line(node: dict[str, Any]) -> str:
+    source_file = ROOT / str(node.get("source_file", ""))
+    match = re.fullmatch(r"L(\d+)", str(node.get("source_location", "")))
+    if match is None or not source_file.is_file():
+        return ""
+    lines = source_file.read_text(encoding="utf-8").splitlines()
+    line_index = int(match.group(1)) - 1
+    if not 0 <= line_index < len(lines):
+        return ""
+    return lines[line_index].strip()
+
+
 def check(check_id: str, evidence: list[str], violations: list[str]) -> dict[str, Any]:
     return {
         "id": check_id,
@@ -202,10 +233,18 @@ def build_receipt() -> dict[str, Any]:
 
     evidence: list[str] = []
     violations: list[str] = []
+    item_evidence, item_violations = graph.type_owner(
+        "TransitionDecisionCore",
+        "src/typing_transition/decision.rs",
+        ("src/typing_transition/live_candidate.rs",),
+    )
+    evidence.extend(item_evidence)
+    violations.extend(item_violations)
     for label, owner in (
-        ("TransitionDecisionCore", "src/typing_transition/decision.rs"),
         (".select_apply_candidate()", "src/typing_transition/decision.rs"),
         (".decide_visible_text_transition()", "src/typing_transition/decision.rs"),
+        (".select_live_completions()", "src/typing_transition/live_candidate.rs"),
+        (".select_ime_readout()", "src/typing_transition/live_candidate.rs"),
         ("L2CandidateLattice", "src/typing_transition/candidate.rs"),
     ):
         item_evidence, item_violations = graph.node(label, owner)

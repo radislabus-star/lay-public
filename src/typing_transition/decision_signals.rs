@@ -191,11 +191,11 @@ fn transition_rank_bonus(
     if !action.verifier_passed {
         return -0.20;
     }
-    match action.edit_operator {
+    let operator_bonus = match action.edit_operator {
         verifier::EditTransitionOperator::BoundaryShift
         | verifier::EditTransitionOperator::BoundaryMergeSplit
         | verifier::EditTransitionOperator::SplitPreviousGluedAndRepairTail => 0.34,
-        verifier::EditTransitionOperator::LayoutProjection => 0.28,
+        verifier::EditTransitionOperator::LayoutProjection => 0.08,
         verifier::EditTransitionOperator::PhraseTokenRepair => 0.16,
         verifier::EditTransitionOperator::ReplaceCurrentWord => {
             if candidate
@@ -219,7 +219,17 @@ fn transition_rank_bonus(
         | verifier::EditTransitionOperator::Undo
         | verifier::EditTransitionOperator::EnterAutocorrect
         | verifier::EditTransitionOperator::NativeReplace => 0.0,
-    }
+    };
+    // A composed layout+typo projection consumes two operators. It must beat
+    // a one-step center on evidence, independently of its physical edit shape.
+    let composition_cost = if candidate.origin
+        == crate::candidate_contract::CandidateOrigin::LayoutThenTypo
+    {
+        0.12
+    } else {
+        0.0
+    };
+    operator_bonus - composition_cost
 }
 
 fn micro_to_milli(value: i64) -> i16 {

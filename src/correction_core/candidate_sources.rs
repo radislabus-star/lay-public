@@ -20,9 +20,7 @@ impl L2CandidateSource {
     fn push_candidates(self, req: &CorrectionRequest<'_>, lattice: &mut L2CandidateLattice) {
         match self {
             Self::Deterministic => {
-                for candidate in deterministic_text_candidates(req) {
-                    lattice.push_source(Some(candidate));
-                }
+                lattice.extend_source(deterministic_text_candidates(req));
             }
             Self::Nanda => {
                 let candidates = nanda_text_candidates(req);
@@ -36,9 +34,7 @@ impl L2CandidateSource {
                             .collect::<Vec<_>>()
                     );
                 }
-                for candidate in candidates {
-                    lattice.push_source(Some(candidate));
-                }
+                lattice.extend_source(candidates);
             }
         }
     }
@@ -83,9 +79,7 @@ fn deterministic_text_candidates(req: &CorrectionRequest<'_>) -> Vec<UnifiedCorr
             gate,
         ));
     }
-    if let Some(candidate) = deterministic_composite_text_correction(req, &pipeline) {
-        candidates.push(candidate);
-    }
+    candidates.extend(deterministic_composite_text_candidates(req, &pipeline));
     candidates
 }
 
@@ -172,13 +166,18 @@ fn multiword_layout_projection_candidate(
     ))
 }
 
-fn deterministic_composite_text_correction(
+fn deterministic_composite_text_candidates(
     req: &CorrectionRequest<'_>,
     pipeline: &[TypingAssistRuleConfig],
-) -> Option<UnifiedCorrectionCandidate> {
-    layout_then_typo_candidate(req, pipeline)
-        .or_else(|| repeated_letter_fallback_candidate(req))
-        .or_else(|| composite_russian_typo_candidate(req, pipeline))
+) -> Vec<UnifiedCorrectionCandidate> {
+    [
+        layout_then_typo_candidate(req, pipeline),
+        repeated_letter_fallback_candidate(req),
+        composite_russian_typo_candidate(req, pipeline),
+    ]
+    .into_iter()
+    .flatten()
+    .collect()
 }
 
 fn short_cyrillic_layout_shadow_candidate(
@@ -386,18 +385,19 @@ fn composite_russian_typo_candidate(
         if replacement != req.text && syntax_allows_candidate(req.text, &replacement) {
             let source_id = "composite_ru_typo";
             let origin = CandidateOrigin::DeterministicTypo;
-            let gate = gate_candidate_with_origin(
+            let error_class = action_operator::classify_token_transition(
                 req.text,
                 &replacement,
-                TypingErrorClass::CompositeTypo,
                 origin,
+                TypingErrorClass::CompositeTypo,
             );
+            let gate = gate_candidate_with_origin(req.text, &replacement, error_class, origin);
             return Some(UnifiedCorrectionCandidate::new(
                 replacement,
                 CorrectionDecisionSource::Deterministic,
                 origin,
                 source_id,
-                TypingErrorClass::CompositeTypo,
+                error_class,
                 gate,
             ));
         }
@@ -487,18 +487,19 @@ fn composite_russian_typo_candidate(
 
     let source_id = "composite_ru_typo";
     let origin = CandidateOrigin::DeterministicTypo;
-    let gate = gate_candidate_with_origin(
+    let error_class = action_operator::classify_token_transition(
         req.text,
         &replacement,
-        TypingErrorClass::CompositeTypo,
         origin,
+        TypingErrorClass::CompositeTypo,
     );
+    let gate = gate_candidate_with_origin(req.text, &replacement, error_class, origin);
     let composite = UnifiedCorrectionCandidate::new(
         replacement,
         CorrectionDecisionSource::Deterministic,
         origin,
         source_id,
-        TypingErrorClass::CompositeTypo,
+        error_class,
         gate,
     );
     if let Some(single_step) = single_step {
