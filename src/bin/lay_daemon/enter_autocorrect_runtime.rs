@@ -112,12 +112,15 @@ pub(super) fn handle_enter_autocorrect(
             lay::text_edit::TextEditBackend::Ime,
             edit_action.clone(),
         );
-        let ime_applied = ime_backend_action
-            .into_authorized()
-            .is_some_and(|authorized| {
-                try_ime_replace_tail(authorized, "enter-autocorrect").unwrap_or(false)
-            });
-        if ime_applied {
+        let ime_reason = ime_backend_action.reason;
+        let Some(ime_authorized) = ime_backend_action.into_authorized() else {
+            log(&format!(
+                "⚠ enter-autocorrect IME blocked before dispatch: {ime_reason}; secondary backend blocked"
+            ));
+            return None;
+        };
+        let dispatch = try_ime_replace_tail(ime_authorized, "enter-autocorrect");
+        if dispatch.was_applied() {
             let target_layout =
                 layout_switch_policy::target_layout_for_replacement(&replacement, true);
             let force_target_layout =
@@ -153,6 +156,13 @@ pub(super) fn handle_enter_autocorrect(
                 started_at.elapsed().as_millis()
             ));
             return Some(target_layout);
+        }
+        if !dispatch.permits_backend_reselection() {
+            log(&format!(
+                "⚠ enter-autocorrect IME dispatch ended without apply: {}; secondary backend blocked",
+                dispatch.reason()
+            ));
+            return None;
         }
     }
 

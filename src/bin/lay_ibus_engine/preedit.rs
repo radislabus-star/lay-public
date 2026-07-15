@@ -409,6 +409,7 @@ impl LayIbusEngine {
     pub(super) fn push_tail_char(&mut self, ch: char) {
         let is_boundary = ch.is_whitespace() || is_hard_precognition_boundary(ch);
         let tail_before_boundary = is_boundary.then(|| self.tail_buffer.clone());
+        self.surrounding_text_snapshot = None;
         self.tail_buffer.push(ch);
         self.preedit_fast.push(ch);
         self.last_tail_input_at = Some(Instant::now());

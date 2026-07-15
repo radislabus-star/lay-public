@@ -19,9 +19,8 @@ use timing_profile::record_ime_timing;
 
 pub(crate) enum ImeTypingApplyReceipt {
     Applied(TypingAssistOutcome),
-    /// The IME bridge could not execute this transition. A daemon backend may
-    /// be considered as an explicit fallback.
-    Unavailable,
+    /// No IME mutation call was sent, so the daemon may select its own backend.
+    NotSelected,
     /// Verification rejected the edit. No backend may retry it.
     Blocked,
 }
@@ -42,7 +41,7 @@ pub(crate) fn try_apply_ime_replacement(
         timing,
     } = ctx;
     if !should_try_ime_text_backend() {
-        return ImeTypingApplyReceipt::Unavailable;
+        return ImeTypingApplyReceipt::NotSelected;
     }
     let plan = TextReplacement {
         move_left: 0,
@@ -76,8 +75,18 @@ pub(crate) fn try_apply_ime_replacement(
         return ImeTypingApplyReceipt::Blocked;
     };
     let replace_tail_started = std::time::Instant::now();
-    if !try_ime_replace_tail(authorized_edit, "typing-assist").unwrap_or(false) {
-        return ImeTypingApplyReceipt::Unavailable;
+    let dispatch = try_ime_replace_tail(authorized_edit, "typing-assist");
+    if !dispatch.was_applied() {
+        log(&format!(
+            "⚠ typing-assist IME dispatch ended without apply: backend={} reason={}",
+            dispatch.backend().as_str(),
+            dispatch.reason()
+        ));
+        return if dispatch.permits_backend_reselection() {
+            ImeTypingApplyReceipt::NotSelected
+        } else {
+            ImeTypingApplyReceipt::Blocked
+        };
     }
     let replace_tail_ms = replace_tail_started.elapsed().as_millis();
     let target_layout = layout_switch_policy::target_layout_for_replacement(replacement, true);

@@ -80,7 +80,6 @@ impl LayIbusEngine {
     fn focus_in(&mut self) {
         trace::record(r#"{"kind":"ibus_focus","stage":"focus_in"}"#);
         self.config = lay::config::LayConfig::load();
-        self.surrounding_text_supported = false;
         self.surrounding_text_snapshot = None;
         self.refresh_empty_tail_from_handoff();
         self.shared
@@ -100,8 +99,6 @@ impl LayIbusEngine {
         let preserve_active_path =
             self.should_preserve_focus_handoff() || self.shared_active_path_preserved();
         self.reset_for_ibus_focus_change();
-        self.surrounding_text_supported = false;
-        self.surrounding_text_snapshot = None;
         if preserve_active_path {
             return;
         }
@@ -137,7 +134,10 @@ impl LayIbusEngine {
     fn cancel_hand_writing(&mut self, _n_strokes: u32) {}
 
     #[zbus(name = "SetCapabilities")]
-    fn set_capabilities(&mut self, _caps: u32) {}
+    fn set_capabilities(&mut self, caps: u32) {
+        self.set_client_capabilities(caps);
+        trace::record_capabilities(caps, self.surrounding_text_supported);
+    }
 
     #[zbus(name = "PropertyActivate")]
     fn property_activate(&mut self, _name: String, _state: u32) {}
@@ -158,7 +158,15 @@ impl LayIbusEngine {
     }
 
     #[zbus(name = "Enable")]
-    fn enable(&mut self) {}
+    async fn enable(
+        &mut self,
+        #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
+    ) -> fdo::Result<()> {
+        trace::record(r#"{"kind":"ibus_focus","stage":"enable"}"#);
+        Self::require_surrounding_text(&emitter)
+            .await
+            .map_err(|error| fdo::Error::Failed(error.to_string()))
+    }
 
     #[zbus(name = "Disable")]
     fn disable(&mut self) {
@@ -211,6 +219,9 @@ impl LayIbusEngine {
         offset: i32,
         nchars: u32,
     ) -> zbus::Result<()>;
+
+    #[zbus(signal, name = "RequireSurroundingText")]
+    pub(crate) async fn require_surrounding_text(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
 
     #[zbus(signal, name = "UpdatePreeditText")]
     pub(crate) async fn update_preedit_text(

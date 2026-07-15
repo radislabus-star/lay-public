@@ -1,5 +1,5 @@
 use lay::desktop::{is_ru_layout_id, LayoutBackend};
-use lay::text_edit::{AuthorizedEdit, TextEditBackend};
+use lay::text_edit::{AuthorizedEdit, BackendDispatchReceipt, TextEditBackend, VisibleTailSource};
 use std::time::Duration;
 
 use super::{active_layout_backend, active_text_backend, layout_kde, layout_niri, layout_x11, log};
@@ -67,16 +67,15 @@ fn switch_to_gnome_layout(
     target_is_ru: bool,
 ) -> Result<(), String> {
     let activate_error = match gnome_dbus::call_activate_layout(layout_id) {
-        Ok(true) => {
-            if verify_gnome_shell_layout(target_is_ru) {
-                None
-            } else {
-                Some("ActivateLayout returned true but layout verify failed".to_string())
-            }
-        }
+        Ok(true) => None,
         Ok(false) => Some("ActivateLayout returned false".to_string()),
         Err(error) => Some(error),
     };
+
+    if activate_error.is_none() {
+        reconcile_ime_engine_after_gnome_switch(target_is_ru, ibus_engine);
+        return Ok(());
+    }
 
     let ibus_error = ibus_bridge::ensure_engine(ibus_engine, target_is_ru).err();
     if verify_gnome_shell_layout(target_is_ru) {
@@ -107,6 +106,24 @@ fn switch_to_gnome_layout(
         (None, Some(ibus)) => format!("SetGlobalEngine failed: {ibus}; layout verify failed"),
         (None, None) => "layout verify failed".to_string(),
     })
+}
+
+fn reconcile_ime_engine_after_gnome_switch(target_is_ru: bool, ibus_engine: &str) {
+    let ibus_engine = ibus_engine.to_string();
+    let _ = std::thread::Builder::new()
+        .name("lay-layout-reconcile".to_string())
+        .spawn(move || {
+            std::thread::sleep(Duration::from_millis(90));
+            if !read_current_gnome_shell_layout_is_ru().is_ok_and(|current| current == target_is_ru)
+            {
+                return;
+            }
+            if let Err(error) = ibus_bridge::ensure_engine(&ibus_engine, target_is_ru) {
+                log(&format!(
+                    "⚠ delayed IME engine reconcile failed for {ibus_engine}: {error}"
+                ));
+            }
+        });
 }
 
 pub(super) fn switch_to_target_layout(target_is_ru: bool) -> Result<&'static str, String> {
@@ -235,15 +252,32 @@ pub(super) fn should_try_ime_text_backend() -> bool {
     ime_bridge::should_try_text_backend()
 }
 
-pub(super) fn try_ime_replace_tail(authorized: AuthorizedEdit, kind: &str) -> Result<bool, String> {
+pub(super) fn try_ime_replace_tail(
+    authorized: AuthorizedEdit,
+    kind: &str,
+) -> BackendDispatchReceipt {
+    let backend = TextEditBackend::Ime;
     if authorized.backend() != TextEditBackend::Ime {
-        return Err(format!(
-            "IME bridge requires an IME AuthorizedEdit, got {}",
-            authorized.backend().as_str()
-        ));
+        return BackendDispatchReceipt::rejected(backend, "authorized_backend_mismatch");
+    }
+    match ime_bridge::input_state() {
+        Ok(state) if VisibleTailSource::from_bridge_state(&state).is_some() => {}
+        Ok(_) => {
+            return BackendDispatchReceipt::not_dispatched(backend, "no_focused_ime");
+        }
+        Err(error) => {
+            log(&format!(
+                "⚠ IME preflight unavailable before dispatch: {error}; daemon backend may be selected"
+            ));
+            return BackendDispatchReceipt::not_dispatched(backend, "ime_preflight_unavailable");
+        }
     }
     let action = authorized.action();
-    ime_bridge::try_replace_tail(action.from_text(), action.to_text(), kind)
+    match ime_bridge::try_replace_tail(action.from_text(), action.to_text(), kind) {
+        Ok(true) => BackendDispatchReceipt::applied(backend),
+        Ok(false) => BackendDispatchReceipt::rejected(backend, "ime_visible_state_rejected"),
+        Err(error) => BackendDispatchReceipt::indeterminate(backend, error),
+    }
 }
 
 pub(super) fn call_ime_ping() -> Result<String, String> {

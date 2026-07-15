@@ -321,6 +321,7 @@ def wait_for_device_access(path: Path, timeout: float) -> bool:
 
 def activate_layout(layout: str, ime_engine: bool = False) -> None:
     if ime_engine:
+        activate_layout(layout)
         engine = "lay-ime-ru" if layout == "ru" else "lay-ime-us"
         for _ in range(8):
             subprocess.run(

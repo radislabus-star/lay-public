@@ -10,9 +10,10 @@
 pub enum TextBackendPreference {
     /// Keep the proven uinput path. This is the safe public default.
     Uinput,
-    /// Try an IME bridge first, then let the daemon fall back if unavailable.
+    /// Select IME when it owns the focused field. A dispatched edit is never
+    /// retried through another backend.
     Ime,
-    /// Prefer IME when the managed engine is active; runtime may still fall back.
+    /// Select IME when focused, otherwise select uinput before dispatch.
     Auto,
 }
 

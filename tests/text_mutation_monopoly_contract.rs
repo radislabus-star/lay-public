@@ -292,9 +292,10 @@ fn live_text_mutation_outputs_use_executor_contract() {
         "daemon replacement pipeline must consume AuthorizedEdit rather than accept raw plan/text"
     );
     let layout_controller = read("src/bin/lay_daemon/layout_controller.rs");
+    let compact_layout_controller = without_whitespace(&layout_controller);
     assert!(
-        layout_controller.contains("try_ime_replace_tail(authorized: AuthorizedEdit")
-            && layout_controller.contains("call_replace_text(\n    authorized: AuthorizedEdit"),
+        compact_layout_controller.contains("try_ime_replace_tail(authorized:AuthorizedEdit")
+            && compact_layout_controller.contains("call_replace_text(authorized:AuthorizedEdit"),
         "IME and GNOME bridge mutations must consume AuthorizedEdit"
     );
 
@@ -342,15 +343,61 @@ fn typing_assist_ime_fallback_requires_a_typed_receipt() {
     assert!(
         ime.contains("enum ImeTypingApplyReceipt")
             && ime.contains("Applied(TypingAssistOutcome)")
-            && ime.contains("Unavailable")
+            && ime.contains("NotSelected")
             && ime.contains("Blocked"),
         "IME output must report execution state instead of collapsing it into Option"
     );
     assert!(
         output.contains("ImeTypingApplyReceipt::Applied")
-            && output.contains("ImeTypingApplyReceipt::Unavailable")
+            && output.contains("ImeTypingApplyReceipt::NotSelected")
             && output.contains("ImeTypingApplyReceipt::Blocked"),
         "daemon fallback must branch on an explicit IME execution receipt"
+    );
+    assert!(
+        output.contains("ImeTypingApplyReceipt::Blocked => return")
+            && output.contains("ImeTypingApplyReceipt::NotSelected => {}"),
+        "only a pre-dispatch NotSelected receipt may reach the daemon backend"
+    );
+}
+
+#[test]
+fn dispatched_text_edit_cannot_fall_through_to_a_second_backend() {
+    let executor = read("src/text_edit/executor.rs");
+    assert!(
+        executor.contains("enum BackendDispatchReceipt")
+            && executor.contains("Self::NotDispatched { .. }")
+            && executor.contains("permits_backend_reselection"),
+        "shared executor must distinguish pre-dispatch selection from terminal backend outcomes"
+    );
+
+    for path in [
+        "src/bin/lay_daemon/auto_undo_runtime.rs",
+        "src/bin/lay_daemon/enter_autocorrect_runtime.rs",
+        "src/bin/lay_daemon/correction_runtime/output/native.rs",
+        "src/bin/lay_daemon/typing_assist_runtime/output/ime.rs",
+    ] {
+        let source = read(path);
+        assert!(
+            source.contains("permits_backend_reselection"),
+            "{path} must fail closed after an IME dispatch"
+        );
+        assert!(
+            !source.contains("fallback to uinput"),
+            "{path} must not retry a dispatched edit through uinput"
+        );
+    }
+
+    let layout_controller = read("src/bin/lay_daemon/layout_controller.rs");
+    assert!(
+        layout_controller.contains("VisibleTailSource::from_bridge_state(&state).is_some()"),
+        "active composition and committed-tail states must share typed IME ownership"
+    );
+
+    let ibus_interface = read("src/bin/lay_ibus_engine/ibus_interface.rs");
+    assert!(
+        ibus_interface.contains("name = \"RequireSurroundingText\"")
+            && ibus_interface.contains("Self::require_surrounding_text(&emitter)"),
+        "IME enable must activate the standard IBus surrounding-text contract"
     );
 }
 
@@ -365,6 +412,10 @@ fn changed_check_runs_shadow_replay_release_gate() {
 
 fn read(relative: &str) -> String {
     std::fs::read_to_string(Path::new(ROOT).join(relative)).expect("source file")
+}
+
+fn without_whitespace(source: &str) -> String {
+    source.chars().filter(|ch| !ch.is_whitespace()).collect()
 }
 
 fn source_files(relative_dir: &str) -> Vec<PathBuf> {

@@ -15,9 +15,9 @@ use super::trace;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum CommittedTailOutputProfile {
     CommitOnly,
-    KittyTerminalErase,
-    WechatSurroundingText,
-    GenericSurroundingText,
+    TerminalErase,
+    SurroundingText,
+    Unavailable,
 }
 
 impl CommittedTailOutputProfile {
@@ -26,25 +26,29 @@ impl CommittedTailOutputProfile {
             return Self::CommitOnly;
         }
         if surrounding_text_supported {
-            return Self::WechatSurroundingText;
+            return Self::SurroundingText;
         }
         if cursor_cell_width > 0 {
-            return Self::KittyTerminalErase;
+            return Self::TerminalErase;
         }
-        Self::GenericSurroundingText
+        Self::Unavailable
     }
 
     fn output_route(self) -> &'static str {
         match self {
             Self::CommitOnly => "commit",
-            Self::KittyTerminalErase => "kitty_terminal_erase_commit",
-            Self::WechatSurroundingText => "wechat_surrounding_text_delete_commit",
-            Self::GenericSurroundingText => "surrounding_text_delete_commit",
+            Self::TerminalErase => "terminal_erase_commit",
+            Self::SurroundingText => "surrounding_text_delete_commit",
+            Self::Unavailable => "no_proven_delete_backend",
         }
     }
 
     fn uses_terminal_erase(self) -> bool {
-        matches!(self, Self::KittyTerminalErase)
+        matches!(self, Self::TerminalErase)
+    }
+
+    fn can_execute(self) -> bool {
+        !matches!(self, Self::Unavailable)
     }
 }
 
@@ -56,6 +60,13 @@ pub(crate) struct CommittedTailReplaceRequest {
     pub(crate) intent: TextTransitionIntent,
     pub(crate) suppress_next_autocorrect: bool,
     pub(crate) expected_tail: Option<VisibleTailSnapshot>,
+    layout_postcondition_owner: LayoutPostconditionOwner,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum LayoutPostconditionOwner {
+    Caller,
+    Ime,
 }
 
 impl CommittedTailReplaceRequest {
@@ -71,6 +82,7 @@ impl CommittedTailReplaceRequest {
             intent: TextTransitionIntent::ImeManualToggle,
             suppress_next_autocorrect,
             expected_tail: None,
+            layout_postcondition_owner: LayoutPostconditionOwner::Ime,
         }
     }
 
@@ -86,6 +98,7 @@ impl CommittedTailReplaceRequest {
             intent: TextTransitionIntent::DaemonBridge,
             suppress_next_autocorrect,
             expected_tail: None,
+            layout_postcondition_owner: LayoutPostconditionOwner::Caller,
         }
     }
 
@@ -96,6 +109,10 @@ impl CommittedTailReplaceRequest {
 
     fn is_noop(&self) -> bool {
         self.backspaces == 0 && self.text.is_empty()
+    }
+
+    fn ime_owns_layout_postcondition(&self) -> bool {
+        self.layout_postcondition_owner == LayoutPostconditionOwner::Ime
     }
 }
 
@@ -218,6 +235,7 @@ impl LayIbusEngine {
         let source = request.source;
         let backspaces = request.backspaces;
         let suppress_next_autocorrect = request.suppress_next_autocorrect;
+        let ime_owns_layout_postcondition = request.ime_owns_layout_postcondition();
         let mut visible_state =
             VisibleFieldState::committed_tail(self.tail_buffer.clone(), Some(self.path.clone()));
         if let Some((external_tail, has_selection)) = committed_tail_external_observation(
@@ -307,6 +325,21 @@ impl LayIbusEngine {
             );
             return Ok(false);
         }
+        let output_profile = CommittedTailOutputProfile::select(
+            self.cursor_cell_width,
+            self.surrounding_text_supported,
+            backspaces,
+        );
+        if !output_profile.can_execute() {
+            trace::record_committed_tail_replace_guard(
+                source,
+                output_profile.output_route(),
+                backspaces,
+                "surrounding_text_snapshot_or_terminal_route",
+                "unavailable",
+            );
+            return Ok(false);
+        }
         let text = authorized_plan.insert.clone();
         let now = Instant::now();
         self.last_commit_at = Some(now);
@@ -323,11 +356,6 @@ impl LayIbusEngine {
         let clear_started = Instant::now();
         self.clear_preedit(emitter).await?;
         let clear_us = clear_started.elapsed().as_micros();
-        let output_profile = CommittedTailOutputProfile::select(
-            self.cursor_cell_width,
-            self.surrounding_text_supported,
-            backspaces,
-        );
         let output_route = output_profile.output_route();
         trace::record_committed_tail_replace(source, output_route, backspaces, &text);
         let mut delete_us = 0;
@@ -355,6 +383,7 @@ impl LayIbusEngine {
             self.tail_buffer.pop();
             self.preedit_fast.backspace();
         }
+        self.surrounding_text_snapshot = None;
         self.tail_buffer.push_str(&text);
         self.preedit_fast.reset();
         for ch in text.chars() {
@@ -367,7 +396,9 @@ impl LayIbusEngine {
         self.buffer.clear();
         self.composition_cursor = 0;
         self.clear_preedit_completion_state();
-        self.sync_layout_after_committed_text(&text);
+        if ime_owns_layout_postcondition {
+            self.sync_layout_after_committed_text(&text);
+        }
         let state_us = state_started.elapsed().as_micros();
         trace::record_committed_tail_replace_timing(
             source,
@@ -483,6 +514,7 @@ mod tests {
         assert_eq!(request.intent, TextTransitionIntent::DaemonBridge);
         assert!(request.suppress_next_autocorrect);
         assert!(request.expected_tail.is_none());
+        assert!(!request.ime_owns_layout_postcondition());
     }
 
     #[test]
@@ -495,6 +527,7 @@ mod tests {
         assert_eq!(request.intent, TextTransitionIntent::ImeManualToggle);
         assert!(request.suppress_next_autocorrect);
         assert!(request.expected_tail.is_none());
+        assert!(request.ime_owns_layout_postcondition());
     }
 
     #[test]
@@ -540,29 +573,42 @@ mod tests {
     }
 
     #[test]
-    fn kitty_profile_keeps_existing_terminal_erase_route() {
+    fn terminal_profile_keeps_existing_erase_route() {
         let profile = CommittedTailOutputProfile::select(9, false, 7);
 
-        assert_eq!(profile, CommittedTailOutputProfile::KittyTerminalErase);
-        assert_eq!(profile.output_route(), "kitty_terminal_erase_commit");
+        assert_eq!(profile, CommittedTailOutputProfile::TerminalErase);
+        assert_eq!(profile.output_route(), "terminal_erase_commit");
         assert!(profile.uses_terminal_erase());
     }
 
     #[test]
-    fn wechat_profile_prefers_surrounding_text_over_terminal_erase() {
+    fn proven_surrounding_text_precedes_terminal_erase() {
         let profile = CommittedTailOutputProfile::select(9, true, 7);
 
-        assert_eq!(profile, CommittedTailOutputProfile::WechatSurroundingText);
-        assert_eq!(
-            profile.output_route(),
-            "wechat_surrounding_text_delete_commit"
-        );
+        assert_eq!(profile, CommittedTailOutputProfile::SurroundingText);
+        assert_eq!(profile.output_route(), "surrounding_text_delete_commit");
         assert!(!profile.uses_terminal_erase());
     }
 
     #[test]
+    fn unproven_generic_delete_backend_is_unavailable() {
+        let profile = CommittedTailOutputProfile::select(0, false, 7);
+
+        assert_eq!(profile, CommittedTailOutputProfile::Unavailable);
+        assert!(!profile.can_execute());
+    }
+
+    #[test]
+    fn advertised_surrounding_text_proves_the_delete_backend() {
+        let profile = CommittedTailOutputProfile::select(9, true, 7);
+
+        assert_eq!(profile, CommittedTailOutputProfile::SurroundingText);
+        assert!(profile.can_execute());
+    }
+
+    #[test]
     fn plain_commits_do_not_select_delete_profile() {
-        let profile = CommittedTailOutputProfile::select(9, true, 0);
+        let profile = CommittedTailOutputProfile::select(9, false, 0);
 
         assert_eq!(profile, CommittedTailOutputProfile::CommitOnly);
         assert_eq!(profile.output_route(), "commit");

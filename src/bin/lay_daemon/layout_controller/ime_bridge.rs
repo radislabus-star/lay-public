@@ -36,12 +36,14 @@ pub(super) fn try_replace_tail(
             Ok(true)
         }
         Ok(false) => {
-            log("⚠ IME replace-tail unavailable/no surrounding text; fallback to uinput");
+            log(
+                "⚠ IME replace-tail rejected/no proven surrounding text; secondary backend blocked",
+            );
             Ok(false)
         }
         Err(e) => {
             log(&format!(
-                "⚠ IME replace-tail failed: {e}; fallback to uinput"
+                "⚠ IME replace-tail failed: {e}; secondary backend blocked"
             ));
             Err(e)
         }

@@ -4,6 +4,8 @@ use std::time::Instant;
 use super::preedit::PreeditFastState;
 use super::protocol::Shared;
 
+const IBUS_CAP_SURROUNDING_TEXT: u32 = 1 << 5;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum WordInputMode {
     ManagedCommit,
@@ -131,6 +133,13 @@ impl LayIbusEngine {
         self.preedit_fast.clear_candidate_tracking();
         self.preedit_dirty = false;
     }
+
+    pub(super) fn set_client_capabilities(&mut self, caps: u32) {
+        self.surrounding_text_supported = caps & IBUS_CAP_SURROUNDING_TEXT != 0;
+        if !self.surrounding_text_supported {
+            self.surrounding_text_snapshot = None;
+        }
+    }
 }
 
 #[cfg(test)]
@@ -246,5 +255,35 @@ mod tests {
             engine.manual_toggle_authority(),
             ManualToggleAuthority::ImeCommittedTail
         );
+    }
+
+    #[test]
+    fn client_capabilities_control_surrounding_text_authority() {
+        let mut engine = engine(LayConfig::default());
+        engine.surrounding_text_snapshot = Some(super::SurroundingTextSnapshot::new(
+            "visible".to_string(),
+            7,
+            7,
+        ));
+
+        engine.set_client_capabilities(1 << 5);
+        assert!(engine.surrounding_text_supported);
+        assert!(engine.surrounding_text_snapshot.is_some());
+
+        engine.set_client_capabilities(1 | 1 << 3);
+        assert!(!engine.surrounding_text_supported);
+        assert!(engine.surrounding_text_snapshot.is_none());
+    }
+
+    #[test]
+    fn local_tail_input_invalidates_external_surrounding_snapshot() {
+        let mut engine = engine(LayConfig::default());
+        engine.surrounding_text_snapshot =
+            Some(super::SurroundingTextSnapshot::new(String::new(), 0, 0));
+
+        engine.push_tail_char('x');
+
+        assert!(engine.surrounding_text_snapshot.is_none());
+        assert_eq!(engine.tail_buffer, "x");
     }
 }

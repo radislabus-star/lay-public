@@ -9,6 +9,76 @@ pub enum TextEditBackend {
     TrayStatus,
 }
 
+/// Terminal receipt for one physical-backend dispatch attempt.
+///
+/// A caller may select another backend only when no mutation call was sent.
+/// Once a backend has accepted the capability, a rejection or transport error
+/// leaves the visible state authoritative and must fail closed.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum BackendDispatchReceipt {
+    NotDispatched {
+        backend: TextEditBackend,
+        reason: &'static str,
+    },
+    Applied {
+        backend: TextEditBackend,
+    },
+    Rejected {
+        backend: TextEditBackend,
+        reason: &'static str,
+    },
+    Indeterminate {
+        backend: TextEditBackend,
+        error: String,
+    },
+}
+
+impl BackendDispatchReceipt {
+    pub const fn not_dispatched(backend: TextEditBackend, reason: &'static str) -> Self {
+        Self::NotDispatched { backend, reason }
+    }
+
+    pub const fn applied(backend: TextEditBackend) -> Self {
+        Self::Applied { backend }
+    }
+
+    pub const fn rejected(backend: TextEditBackend, reason: &'static str) -> Self {
+        Self::Rejected { backend, reason }
+    }
+
+    pub fn indeterminate(backend: TextEditBackend, error: impl Into<String>) -> Self {
+        Self::Indeterminate {
+            backend,
+            error: error.into(),
+        }
+    }
+
+    pub const fn backend(&self) -> TextEditBackend {
+        match self {
+            Self::NotDispatched { backend, .. }
+            | Self::Applied { backend }
+            | Self::Rejected { backend, .. }
+            | Self::Indeterminate { backend, .. } => *backend,
+        }
+    }
+
+    pub const fn was_applied(&self) -> bool {
+        matches!(self, Self::Applied { .. })
+    }
+
+    pub const fn permits_backend_reselection(&self) -> bool {
+        matches!(self, Self::NotDispatched { .. })
+    }
+
+    pub fn reason(&self) -> &str {
+        match self {
+            Self::NotDispatched { reason, .. } | Self::Rejected { reason, .. } => reason,
+            Self::Applied { .. } => "applied",
+            Self::Indeterminate { error, .. } => error,
+        }
+    }
+}
+
 impl TextEditBackend {
     pub const fn as_str(self) -> &'static str {
         match self {
@@ -94,7 +164,7 @@ impl From<TextEditBackend> for ExecutionBackend {
 
 #[cfg(test)]
 mod tests {
-    use super::{authorize_backend_edit, TextEditBackend};
+    use super::{authorize_backend_edit, BackendDispatchReceipt, TextEditBackend};
     use crate::text_edit::{
         plan_committed_tail_full_token_replacement, plan_manual_edit, EditAction, TextReplacement,
     };
@@ -146,5 +216,19 @@ mod tests {
 
         assert!(auth.allow_execute);
         assert!(auth.into_authorized().is_some());
+    }
+
+    #[test]
+    fn only_an_undispatched_receipt_allows_backend_reselection() {
+        let not_dispatched =
+            BackendDispatchReceipt::not_dispatched(TextEditBackend::Ime, "no_focused_ime");
+        let rejected =
+            BackendDispatchReceipt::rejected(TextEditBackend::Ime, "visible_state_rejected");
+        let indeterminate =
+            BackendDispatchReceipt::indeterminate(TextEditBackend::Ime, "transport closed");
+
+        assert!(not_dispatched.permits_backend_reselection());
+        assert!(!rejected.permits_backend_reselection());
+        assert!(!indeterminate.permits_backend_reselection());
     }
 }

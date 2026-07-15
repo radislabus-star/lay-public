@@ -202,3 +202,29 @@ fn l4_memory_owns_complete_transition_targets_and_cold_initialization() {
         "the first hot readout must load persisted memory without a foreign warmup route"
     );
 }
+
+#[test]
+fn usage_learning_keeps_disk_io_out_of_the_hot_path() {
+    let usage = read("src/nanda_wave/usage_prior.rs");
+    let append_start = usage
+        .find("fn append_usage_event(event: UsageEvent)")
+        .expect("usage event append owner");
+    let append_end = usage[append_start..]
+        .find("fn refresh_usage_cache_after_write")
+        .map(|offset| append_start + offset)
+        .expect("usage cache refresh owner");
+    let append_body = &usage[append_start..append_end];
+
+    assert!(
+        append_body.contains("refresh_usage_cache_after_write(&event);")
+            && append_body.contains("enqueue_usage_persist(path, line);")
+            && !append_body.contains("append_private_text"),
+        "the typing hot path must update memory and enqueue persistence without disk IO"
+    );
+    assert!(
+        usage.contains(".name(\"lay-usage-persist\".to_string())")
+            && usage.contains("fn flush_usage_persist(")
+            && usage.contains("append_private_text(&path, &text)"),
+        "one named persistence worker must own batched disk writes"
+    );
+}

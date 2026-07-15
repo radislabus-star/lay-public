@@ -68,6 +68,15 @@ pub(crate) fn record_cursor_location(x: i32, y: i32, w: i32, h: i32) {
     ));
 }
 
+pub(crate) fn record_capabilities(caps: u32, surrounding_text_supported: bool) {
+    if !enabled() {
+        return;
+    }
+    write_record(format!(
+        r#"{{"kind":"ibus_capabilities","caps":{caps},"surrounding_text_supported":{surrounding_text_supported}}}"#
+    ));
+}
+
 pub(crate) fn record_ime_commit(decision_us: u64, clear_us: u64, output_us: u64, elapsed_us: u64) {
     if !enabled() {
         return;

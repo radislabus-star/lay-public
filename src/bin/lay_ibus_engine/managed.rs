@@ -55,8 +55,21 @@ impl LayIbusEngine {
         if keyval == KEY_SPACE {
             if self.buffer.is_empty() {
                 self.clear_preedit(emitter).await?;
+                let initial_mode = self.initial_word_input_mode();
+                let mode = *self.word_input_mode.get_or_insert(initial_mode);
+                if mode == WordInputMode::ManagedCommit {
+                    self.commit_managed_passthrough_char(emitter, ' ').await?;
+                    self.trace_key("space_managed_commit", keyval, keycode, true, Some(' '));
+                    return Ok(true);
+                }
                 self.push_tail_char(' ');
-                self.trace_key("space_passthrough", keyval, keycode, false, Some(' '));
+                self.trace_key(
+                    "space_terminal_passthrough",
+                    keyval,
+                    keycode,
+                    false,
+                    Some(' '),
+                );
                 return Ok(false);
             }
             let handled = self.commit_space(emitter).await?;
@@ -124,10 +137,11 @@ mod word_boundary_route_contract {
         let blocking_route = ["autocorrect_committed_tail", "_on_space("].concat();
 
         assert!(
-            source.contains("space_passthrough")
+            source.contains("space_managed_commit")
+                && source.contains("space_terminal_passthrough")
                 && !source.contains(&direct_decision)
                 && !source.contains(&blocking_route),
-            "managed Space must stay a non-blocking backend event"
+            "managed Space must close the visible boundary without owning correction"
         );
     }
 }

@@ -38,25 +38,32 @@ pub(super) fn handle_pending_auto_undo(
             lay::text_edit::TextEditBackend::Ime,
             edit_action.clone(),
         );
-        if let Some(ime_authorized) = ime_backend_action.into_authorized() {
-            if try_ime_replace_tail(ime_authorized, "auto-undo").unwrap_or(false) {
-                let target_layout = lay::keyboard::preferred_layout_for_text(&undo.original, true);
-                switch_or_restore_layout_after_text_edit(
-                    true,
-                    target_layout,
-                    None,
-                    "auto-undo",
-                    false,
-                );
-                remember_auto_undo(buf, &undo, started_at);
-                log(&format!(
-                    "✓ done: auto-undo {:?} → {:?} через IME за {}ms",
-                    undo.replacement,
-                    undo.original,
-                    started_at.elapsed().as_millis()
-                ));
-                return Some(target_layout);
-            }
+        let ime_reason = ime_backend_action.reason;
+        let Some(ime_authorized) = ime_backend_action.into_authorized() else {
+            log(&format!(
+                "⚠ auto-undo IME blocked before dispatch: {ime_reason}; secondary backend blocked"
+            ));
+            return None;
+        };
+        let dispatch = try_ime_replace_tail(ime_authorized, "auto-undo");
+        if dispatch.was_applied() {
+            let target_layout = lay::keyboard::preferred_layout_for_text(&undo.original, true);
+            switch_or_restore_layout_after_text_edit(true, target_layout, None, "auto-undo", false);
+            remember_auto_undo(buf, &undo, started_at);
+            log(&format!(
+                "✓ done: auto-undo {:?} → {:?} через IME за {}ms",
+                undo.replacement,
+                undo.original,
+                started_at.elapsed().as_millis()
+            ));
+            return Some(target_layout);
+        }
+        if !dispatch.permits_backend_reselection() {
+            log(&format!(
+                "⚠ auto-undo IME dispatch ended without apply: {}; secondary backend blocked",
+                dispatch.reason()
+            ));
+            return None;
         }
     }
 

@@ -77,7 +77,7 @@ pub(crate) fn apply_typing_assist_correction(
         }) {
             ImeTypingApplyReceipt::Applied(outcome) => return outcome,
             ImeTypingApplyReceipt::Blocked => return TypingAssistOutcome::NoCorrection,
-            ImeTypingApplyReceipt::Unavailable => {}
+            ImeTypingApplyReceipt::NotSelected => {}
         }
         if defer_complex_live_edit {
             return defer_complex_edit();

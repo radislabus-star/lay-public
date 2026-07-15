@@ -3,7 +3,10 @@ use lay::action_log::RecentActionGateTrace;
 
 use super::super::super::physical_input_grab::PhysicalInputGrab;
 use super::context::ManualOutputCommon;
-use super::native::{try_gnome_native_replace_output, try_ime_replace_output, NativeReplaceOutput};
+use super::native::{
+    try_gnome_native_replace_output, try_ime_replace_output, NativeReplaceAttempt,
+    NativeReplaceOutput,
+};
 
 pub(super) fn try_native_output_stage<'a, 'grab>(
     common: &mut ManualOutputCommon<'_>,
@@ -11,25 +14,31 @@ pub(super) fn try_native_output_stage<'a, 'grab>(
     physical_grab: &mut Option<&'a mut PhysicalInputGrab<'grab>>,
     input_gate: Option<RecentActionGateTrace>,
 ) -> Option<Option<bool>> {
-    if let Some(output) = try_ime_replace_output(common, input_gate.clone()) {
-        forward_queued_after_native_output(
-            virtual_kbd,
-            physical_grab,
-            common,
-            &output,
-            "manual-ime",
-        );
-        return Some(output.result);
+    match try_ime_replace_output(common, input_gate.clone()) {
+        NativeReplaceAttempt::NotSelected => {}
+        NativeReplaceAttempt::Finished(output) => {
+            forward_queued_after_native_output(
+                virtual_kbd,
+                physical_grab,
+                common,
+                &output,
+                "manual-ime",
+            );
+            return Some(output.result);
+        }
     }
-    if let Some(output) = try_gnome_native_replace_output(common, input_gate) {
-        forward_queued_after_native_output(
-            virtual_kbd,
-            physical_grab,
-            common,
-            &output,
-            "manual-gnome",
-        );
-        return Some(output.result);
+    match try_gnome_native_replace_output(common, input_gate) {
+        NativeReplaceAttempt::NotSelected => {}
+        NativeReplaceAttempt::Finished(output) => {
+            forward_queued_after_native_output(
+                virtual_kbd,
+                physical_grab,
+                common,
+                &output,
+                "manual-gnome",
+            );
+            return Some(output.result);
+        }
     }
     None
 }

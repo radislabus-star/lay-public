@@ -11,6 +11,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn sync_tail_after_composition_commit(&mut self, text: &str) {
+        self.surrounding_text_snapshot = None;
         let trailing_ws = lay::word_reader::trailing_whitespace_char_count(text);
         let committed = text.trim_end_matches(char::is_whitespace);
         if !committed.is_empty() {

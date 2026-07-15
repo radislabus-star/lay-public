@@ -9,7 +9,7 @@ use super::super::super::correction_memory_runtime::{
     remember_manual_text_correction, ManualTextCorrectionMemory,
 };
 use super::super::super::{
-    active_layout_backend, call_replace_text, log, record_recent_action,
+    active_layout_backend, call_replace_text, log, read_current_layout_is_ru, record_recent_action,
     should_try_ime_text_backend, switch_to_target_layout, target_layout, try_ime_replace_tail,
     GNOME_NATIVE_REPLACE_EXPERIMENTAL,
 };
@@ -22,25 +22,40 @@ pub(crate) struct NativeReplaceOutput {
     pub(crate) trailing_spaces: usize,
 }
 
+pub(crate) enum NativeReplaceAttempt {
+    NotSelected,
+    Finished(NativeReplaceOutput),
+}
+
 pub(crate) fn try_ime_replace_output(
     ctx: &mut ManualOutputCommon<'_>,
     input_gate: Option<RecentActionGateTrace>,
-) -> Option<NativeReplaceOutput> {
+) -> NativeReplaceAttempt {
     if !should_try_ime_text_backend() {
-        return None;
+        return NativeReplaceAttempt::NotSelected;
     }
     let (replace_text, replace_kind, is_replay) = text_for_native_replace(ctx, "ime-replay");
     let replace_target_is_ru = preferred_layout_for_text(&replace_text, ctx.target_is_ru);
-    let authorized_edit = authorize_native_text_edit(
+    let Some(authorized_edit) = authorize_native_text_edit(
         ctx,
         &replace_text,
         replace_kind,
         is_replay,
         lay::text_edit::TextEditBackend::Ime,
         input_gate.clone(),
-    )?;
-    if !try_ime_replace_tail(authorized_edit, replace_kind).unwrap_or(false) {
-        return None;
+    ) else {
+        return NativeReplaceAttempt::Finished(failed_native_output(ctx));
+    };
+    let dispatch = try_ime_replace_tail(authorized_edit, replace_kind);
+    if !dispatch.was_applied() {
+        if dispatch.permits_backend_reselection() {
+            return NativeReplaceAttempt::NotSelected;
+        }
+        log(&format!(
+            "⚠ {replace_kind} IME dispatch ended without apply: {}; secondary backend blocked",
+            dispatch.reason()
+        ));
+        return NativeReplaceAttempt::Finished(failed_native_output(ctx));
     }
 
     remember_native_replace(
@@ -67,7 +82,7 @@ pub(crate) fn try_ime_replace_output(
             None
         }
     };
-    Some(NativeReplaceOutput {
+    NativeReplaceAttempt::Finished(NativeReplaceOutput {
         result,
         layout_is_ru: replace_target_is_ru,
         trailing_spaces: trailing_space_count(&replace_text),
@@ -77,20 +92,22 @@ pub(crate) fn try_ime_replace_output(
 pub(crate) fn try_gnome_native_replace_output(
     ctx: &mut ManualOutputCommon<'_>,
     input_gate: Option<RecentActionGateTrace>,
-) -> Option<NativeReplaceOutput> {
+) -> NativeReplaceAttempt {
     if !(GNOME_NATIVE_REPLACE_EXPERIMENTAL && active_layout_backend() == LayoutBackend::Gnome) {
-        return None;
+        return NativeReplaceAttempt::NotSelected;
     }
     let (replace_text, replace_kind, is_replay) = text_for_native_replace(ctx, "gnome-replace");
     let replace_target_is_ru = preferred_layout_for_text(&replace_text, ctx.target_is_ru);
-    let authorized_edit = authorize_native_text_edit(
+    let Some(authorized_edit) = authorize_native_text_edit(
         ctx,
         &replace_text,
         replace_kind,
         is_replay,
         lay::text_edit::TextEditBackend::Daemon,
         input_gate.clone(),
-    )?;
+    ) else {
+        return NativeReplaceAttempt::Finished(failed_native_output(ctx));
+    };
     let (layout_id, _) = target_layout(replace_target_is_ru);
     match call_replace_text(authorized_edit, layout_id) {
         Ok(true) => {
@@ -111,22 +128,30 @@ pub(crate) fn try_gnome_native_replace_output(
                 "✓ done: {replace_kind}, GNOME-native replace за {}ms",
                 ctx.started_at.elapsed().as_millis()
             ));
-            Some(NativeReplaceOutput {
+            NativeReplaceAttempt::Finished(NativeReplaceOutput {
                 result: Some(replace_target_is_ru),
                 layout_is_ru: replace_target_is_ru,
                 trailing_spaces: trailing_space_count(&replace_text),
             })
         }
         Ok(false) => {
-            log("⚠ GNOME ReplaceText returned false; fallback to uinput replay");
-            None
+            log("⚠ GNOME ReplaceText returned false; secondary backend blocked");
+            NativeReplaceAttempt::Finished(failed_native_output(ctx))
         }
         Err(e) => {
             log(&format!(
-                "⚠ GNOME ReplaceText failed: {e}; fallback to uinput replay"
+                "⚠ GNOME ReplaceText failed: {e}; secondary backend blocked"
             ));
-            None
+            NativeReplaceAttempt::Finished(failed_native_output(ctx))
         }
+    }
+}
+
+fn failed_native_output(ctx: &ManualOutputCommon<'_>) -> NativeReplaceOutput {
+    NativeReplaceOutput {
+        result: None,
+        layout_is_ru: read_current_layout_is_ru().unwrap_or(ctx.target_is_ru),
+        trailing_spaces: 0,
     }
 }
 

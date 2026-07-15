@@ -1,5 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
+#[cfg(not(test))]
+use std::sync::mpsc::{self, RecvTimeoutError, Sender};
 use std::sync::{Arc, Mutex, OnceLock};
 use std::time::{Duration, Instant};
 
@@ -27,6 +29,8 @@ const USAGE_COUNTS_MAX_REJECTED_WORDS: usize = 5_000;
 const USAGE_COUNTS_MAX_REJECTED_CONTEXT_WORDS: usize = 12_000;
 const USAGE_COUNTS_MAX_TRANSITION_STATES: usize = 24_000;
 const USAGE_REFRESH_INTERVAL: Duration = Duration::from_millis(1000);
+#[cfg(not(test))]
+const USAGE_PERSIST_INTERVAL: Duration = Duration::from_millis(1000);
 const CONTEXT_WORDS: usize = 5;
 const MIN_CONTEXT_NGRAM: usize = 1;
 const TRANSITION_ANY: &str = "*";
@@ -393,6 +397,16 @@ struct UsageCache {
     counts: Arc<UsageCounts>,
 }
 
+#[cfg(not(test))]
+struct UsagePersistLine {
+    path: PathBuf,
+    line: String,
+}
+
+#[cfg(not(test))]
+static USAGE_PERSIST_SENDER: OnceLock<Sender<UsagePersistLine>> = OnceLock::new();
+static LAST_USAGE_EVENT: OnceLock<Mutex<Option<UsageEvent>>> = OnceLock::new();
+
 pub(crate) fn record_typed_tail_if_enabled(tail: &str) {
     if !usage_learning_enabled() {
         return;
@@ -490,20 +504,20 @@ fn usage_learning_enabled() -> bool {
     config.learning_log || config.nanda_precognition || config.nanda_autocorrect
 }
 
-fn usage_counts() -> UsageCounts {
+fn usage_counts() -> Arc<UsageCounts> {
     let cache = usage_cache();
     let Ok(mut cache) = cache.lock() else {
-        return UsageCounts::default();
+        return Arc::new(UsageCounts::default());
     };
     if cache
         .loaded_at
         .is_some_and(|loaded_at| loaded_at.elapsed() < USAGE_REFRESH_INTERVAL)
     {
-        return (*cache.counts).clone();
+        return Arc::clone(&cache.counts);
     }
     cache.counts = Arc::new(load_usage_counts());
     cache.loaded_at = Some(Instant::now());
-    (*cache.counts).clone()
+    Arc::clone(&cache.counts)
 }
 
 pub(crate) fn word_usage_prior_cached(word: &str) -> f32 {
@@ -1289,11 +1303,8 @@ fn append_usage_event(event: UsageEvent) {
         return;
     };
     line.push('\n');
-    if crate::private_file::append_private_text(&path, &line).is_ok() {
-        compact_usage_events_if_needed(&path);
-        refresh_usage_cache_after_write(&event);
-        persist_cached_usage_counts_snapshot(&path);
-    }
+    refresh_usage_cache_after_write(&event);
+    enqueue_usage_persist(path, line);
 }
 
 fn refresh_usage_cache_after_write(event: &UsageEvent) {
@@ -1303,23 +1314,29 @@ fn refresh_usage_cache_after_write(event: &UsageEvent) {
     if cache.loaded_at.is_none() {
         cache.counts = Arc::new(UsageCounts::default());
     }
-    let mut counts = (*cache.counts).clone();
-    add_usage_event_count(&mut counts, event);
-    cache.counts = Arc::new(counts);
+    add_usage_event_count(Arc::make_mut(&mut cache.counts), event);
     cache.loaded_at = Some(Instant::now());
 }
 
 fn adjacent_usage_event_is_duplicate(path: &Path, event: &UsageEvent) -> bool {
-    let Some(text) = read_usage_events_text(path) else {
+    let last = LAST_USAGE_EVENT.get_or_init(|| Mutex::new(read_last_usage_event(path)));
+    let Ok(mut last) = last.lock() else {
         return false;
     };
-    let Some(line) = text.lines().rev().find(|line| !line.trim().is_empty()) else {
-        return false;
-    };
-    let Ok(previous) = serde_json::from_str::<UsageEvent>(line) else {
-        return false;
-    };
-    usage_event_payload_eq(&previous, event)
+    if last
+        .as_ref()
+        .is_some_and(|previous| usage_event_payload_eq(previous, event))
+    {
+        return true;
+    }
+    *last = Some(event.clone());
+    false
+}
+
+fn read_last_usage_event(path: &Path) -> Option<UsageEvent> {
+    let text = read_usage_events_text(path)?;
+    let line = text.lines().rev().find(|line| !line.trim().is_empty())?;
+    serde_json::from_str(line).ok()
 }
 
 fn usage_event_payload_eq(left: &UsageEvent, right: &UsageEvent) -> bool {
@@ -1330,6 +1347,55 @@ fn usage_event_payload_eq(left: &UsageEvent, right: &UsageEvent) -> bool {
         && left.to == right.to
         && left.source == right.source
         && left.operation == right.operation
+}
+
+#[cfg(not(test))]
+fn enqueue_usage_persist(path: PathBuf, line: String) {
+    let sender = USAGE_PERSIST_SENDER.get_or_init(spawn_usage_persist_writer);
+    let _ = sender.send(UsagePersistLine { path, line });
+}
+
+#[cfg(test)]
+fn enqueue_usage_persist(path: PathBuf, line: String) {
+    if crate::private_file::append_private_text(&path, &line).is_ok() {
+        compact_usage_events_if_needed(&path);
+    }
+}
+
+#[cfg(not(test))]
+fn spawn_usage_persist_writer() -> Sender<UsagePersistLine> {
+    let (sender, receiver) = mpsc::channel::<UsagePersistLine>();
+    std::thread::Builder::new()
+        .name("lay-usage-persist".to_string())
+        .spawn(move || {
+            let mut pending = HashMap::<PathBuf, String>::new();
+            loop {
+                match receiver.recv_timeout(USAGE_PERSIST_INTERVAL) {
+                    Ok(record) => pending
+                        .entry(record.path)
+                        .or_default()
+                        .push_str(&record.line),
+                    Err(RecvTimeoutError::Timeout) => flush_usage_persist(&mut pending),
+                    Err(RecvTimeoutError::Disconnected) => {
+                        flush_usage_persist(&mut pending);
+                        break;
+                    }
+                }
+            }
+        })
+        .expect("spawn lay usage persistence writer");
+    sender
+}
+
+#[cfg(not(test))]
+fn flush_usage_persist(pending: &mut HashMap<PathBuf, String>) {
+    for (path, text) in std::mem::take(pending) {
+        if crate::private_file::append_private_text(&path, &text).is_err() {
+            continue;
+        }
+        compact_usage_events_if_needed(&path);
+        let _ = load_usage_event_counts();
+    }
 }
 
 fn compact_usage_events_if_needed(path: &Path) {
@@ -1375,16 +1441,6 @@ fn load_usage_counts_snapshot(source_len: u64) -> Option<UsageCounts> {
     let snapshot = serde_json::from_str::<PersistedUsageCounts>(&text).ok()?;
     (snapshot.schema_version == USAGE_COUNTS_SCHEMA_VERSION && snapshot.source_len == source_len)
         .then_some(snapshot.counts)
-}
-
-fn persist_cached_usage_counts_snapshot(events_path: &Path) {
-    let source_len = std::fs::metadata(events_path)
-        .map(|meta| meta.len())
-        .unwrap_or_default();
-    let Ok(cache) = usage_cache().lock() else {
-        return;
-    };
-    persist_usage_counts_snapshot(&cache.counts, source_len);
 }
 
 fn persist_usage_counts_snapshot(counts: &UsageCounts, source_len: u64) {

@@ -39,7 +39,8 @@ pub use diff_plan::{
     apply_replacement_plan_to_text, plan_text_replacement, replacement_plan_matches, tail_chars,
 };
 pub use executor::{
-    authorize_backend_edit, AuthorizedEdit, BackendEditAuthorization, TextEditBackend,
+    authorize_backend_edit, AuthorizedEdit, BackendDispatchReceipt, BackendEditAuthorization,
+    TextEditBackend,
 };
 pub(crate) use gate::plan_decision_transition_edit;
 pub use gate::{
