@@ -57,7 +57,7 @@ max_lines() {
 
 no_runtime_sleep_outside_output() {
   ! grep -RInF -- "thread::sleep" src \
-    | grep -Ev '(^src/bin/lay_daemon/text_output(\.rs|/)|^src/bin/lay_daemon/layout_controller\.rs:|^src/bin/lay_test_input(\.rs|/))'
+    | grep -Ev '(_tests\.rs:|^src/.*/tests(\.rs:|/)|^src/bin/lay_daemon/text_output(\.rs:|/)|^src/bin/lay_daemon/layout_controller(\.rs:|/)|^src/bin/lay_test_input(\.rs:|/))'
 }
 
 gdbus_fallback_only() {

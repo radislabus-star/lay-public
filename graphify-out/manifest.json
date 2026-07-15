@@ -20,18 +20,18 @@
     "semantic_hash": "236e46a80b6d2865de3d1816fb645158"
   },
   "extension/lay@radislabus-star.github.io/lay-impl.js": {
-    "mtime": 1784156226.1350563,
+    "mtime": 1784156764.26477,
     "ast_hash": "5b6a06aa6236126c72cb127ef2970fde",
     "semantic_hash": "5b6a06aa6236126c72cb127ef2970fde"
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1784156226.0562236,
-    "ast_hash": "a40eda06dcfb11e2dd21bed55a71bc3c",
+    "mtime": 1784156764.1872015,
+    "ast_hash": "9c2cc85bf7f450fff8c32bf8f8d458a8",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1784156226.1628134,
-    "ast_hash": "5635e39c6c6b37db7823380e18889f54",
+    "mtime": 1784156764.278416,
+    "ast_hash": "e7cc984887220de45eb2af67e57b3582",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": "40bbf92dafd5dfae313a0760331c3ae3"
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1784156226.1627192,
-    "ast_hash": "1d6ae1e6d74b9a2205c92c9cc1e18694",
+    "mtime": 1784156764.2782648,
+    "ast_hash": "3bd3757a7a1746a176c0cbf8d59cf206",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1784156226.1625779,
-    "ast_hash": "e2f611dca6fb7c7c0082fc7f51f76412",
+    "mtime": 1784156764.2707918,
+    "ast_hash": "9734bbe73ec65c22f08b12705fc9d325",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -80,8 +80,8 @@
     "semantic_hash": "a7beb6bba730ceb32b28a8d21b148ce4"
   },
   "scripts/check-lay-audit-50.sh": {
-    "mtime": 1783972314.278668,
-    "ast_hash": "3db0c9fc1f9b4f2367bce28326556ccc",
+    "mtime": 1784156743.6868224,
+    "ast_hash": "9325d66d9df2b26d6410530b7b74070a",
     "semantic_hash": ""
   },
   "scripts/check-lay-changed.sh": {
@@ -2650,8 +2650,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1784156226.1646223,
-    "ast_hash": "db6d2904c6506d3c77dbd4df5a918b95",
+    "mtime": 1784156764.2803802,
+    "ast_hash": "307cfcc3cc5ea803f9eed5869f73368e",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3445,8 +3445,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1784156284.7211173,
-    "ast_hash": "df07c39cc1cc7472cf5ae06ce7ad2495",
+    "mtime": 1784156483.3410406,
+    "ast_hash": "cbb1bee3c56ea9347aa255d15c5651c9",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
