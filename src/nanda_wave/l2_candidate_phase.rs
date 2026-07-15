@@ -838,7 +838,7 @@ impl PhaseRuntime {
             PhaseVerdict::Support
         } else if profile.negative_examples > 0
             && anti > positive
-            && margin_micro <= -MIN_MARGIN_MICRO
+            && margin_micro <= -MIN_LEARNED_SUPPORT_MARGIN_MICRO
         {
             PhaseVerdict::Repel
         } else {
@@ -1027,7 +1027,9 @@ fn phase_verdict_from_scores(profile: &PhaseProfile, positive: f32, anti: f32) -
     let evidence_ready = profile.positive_examples >= 2 && profile.negative_examples > 0;
     if evidence_ready && margin_micro >= profile.threshold_micro {
         PhaseVerdict::Support
-    } else if profile.negative_examples > 0 && anti > positive && margin_micro <= -MIN_MARGIN_MICRO
+    } else if profile.negative_examples > 0
+        && anti > positive
+        && margin_micro <= -MIN_LEARNED_SUPPORT_MARGIN_MICRO
     {
         PhaseVerdict::Repel
     } else {
@@ -1120,6 +1122,7 @@ fn causal_phase_atom(atom: &str) -> bool {
         && !atom.starts_with("len:")
         && !atom.starts_with("prefix:")
         && !atom.starts_with("suffix:")
+        && !atom.starts_with("verified:")
 }
 
 fn phase_circuit_key(atoms: &[String]) -> String {
@@ -1400,6 +1403,26 @@ mod tests {
 
         assert!(relation.atoms().iter().all(|atom| !atom.contains("пукнт")));
         assert!(relation.atoms().iter().all(|atom| !atom.contains("пункт")));
+    }
+
+    #[test]
+    fn verifier_outcome_is_not_a_causal_phase_input() {
+        let relation = relation_atoms("пукнт", "пункт", PhaseOperator::AdjacentTransposition);
+        let mut flipped = relation.atoms().to_vec();
+        replace_atom(&mut flipped, "verified:", "verified:false");
+
+        assert!(relation
+            .atoms()
+            .iter()
+            .any(|atom| atom.starts_with("verified:")));
+        assert_eq!(
+            phase_vector_from_atoms(relation.atoms()),
+            phase_vector_from_atoms(&flipped)
+        );
+        assert_eq!(
+            phase_circuit_key(relation.atoms()),
+            phase_circuit_key(&flipped)
+        );
     }
 
     #[test]
