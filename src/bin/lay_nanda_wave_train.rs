@@ -7,7 +7,24 @@ use std::path::{Path, PathBuf};
 use lay::nanda_wave::llmwave;
 use lay::nanda_wave::packet::{write_learned_packet, LearnedPacketEntry};
 use lay::nanda_wave::L2PhaseTrainingEntry;
+use lay::{lexicon, russian_lexicon};
 use serde::Deserialize;
+
+#[allow(dead_code)]
+#[path = "../nanda_wave/lexical_phase/format.rs"]
+mod lexical_phase_format;
+#[path = "../lexical_surface_atoms.rs"]
+mod lexical_surface_atoms;
+#[path = "../stable_hash.rs"]
+mod stable_hash;
+
+#[allow(dead_code)]
+mod lexical_phase_compiler {
+    include!("../nanda_wave/lexical_phase/compiler.rs");
+}
+
+use lexical_phase_format as format;
+include!("lay_nanda_wave_train/lexical_phase_compile.rs");
 
 const DEFAULT_DATASET: &str = "data/nanda_training/generated_cases.tsv";
 const RECENT_ACTIONS: &str = ".local/share/lay/recent_actions.jsonl";
@@ -25,6 +42,9 @@ struct Learned {
 
 fn main() -> io::Result<()> {
     let args = env::args().collect::<Vec<_>>();
+    if args.iter().any(|arg| arg == "--compile-lexical-phase") {
+        return run_lexical_phase_compile(&args);
+    }
     if args.iter().any(|arg| arg == "--l2-surface-status") {
         print_l2_surface_status();
         return Ok(());
@@ -69,34 +89,28 @@ fn main() -> io::Result<()> {
 }
 
 fn print_l2_surface_status() {
-    let status = lay::nanda_wave::l2::l2_surface_memory_status();
+    let status = serde_json::to_value(lay::nanda_wave::l2::l2_surface_memory_status())
+        .expect("L2 surface status must serialize");
     println!("l2_surface_status:");
-    println!("  active_source_target: {}", status.active_source_target);
-    println!("  hot_center_words: {}", status.hot_center_words);
-    println!("  hot_center_records: {}", status.hot_center_records);
-    println!("  hot_center_motifs: {}", status.hot_center_motifs);
-    println!("  hot_center_token_refs: {}", status.hot_center_token_refs);
-    println!("  hot_center_bytes: {}", status.hot_center_bytes);
-    println!("  broad_source_words: {}", status.broad_source_words);
-    println!("  broad_prefix_keys: {}", status.broad_prefix_keys);
-    println!("  broad_word_refs: {}", status.broad_word_refs);
-    println!("  decoder_source_words: {}", status.decoder_source_words);
-    println!("  decoder_states: {}", status.decoder_states);
-    println!("  decoder_arcs: {}", status.decoder_arcs);
-    println!("  decoder_hot_bytes: {}", status.decoder_hot_bytes);
-    println!(
-        "  foundation_source_limit: {}",
-        status.foundation_source_limit
-    );
-    println!(
-        "  foundation_live_scan_limit: {}",
-        status.foundation_live_scan_limit
-    );
-    println!(
-        "  generated_forms_loaded: {}",
-        status.generated_forms_loaded
-    );
-    println!("  generated_forms_words: {}", status.generated_forms_words);
+    for key in [
+        "active_source_target",
+        "source_words",
+        "l1_centers",
+        "l1_postings",
+        "l2_word_centers",
+        "grapheme_nodes",
+        "grapheme_arcs",
+        "decoder_states",
+        "decoder_arcs",
+        "training_surfaces",
+        "artifact_bytes",
+        "artifact_mmap_backed",
+        "raw_word_table",
+        "generated_forms_loaded",
+        "generated_forms_words",
+    ] {
+        println!("  {key}: {}", status[key]);
+    }
     let phase = lay::nanda_wave::l2_transition_phase_report_json(None);
     println!(
         "l2_transition_phase: loaded={} profiles={} hot_bytes={}",

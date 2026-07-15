@@ -236,39 +236,34 @@ fn build_status_json(full: bool) -> io::Result<serde_json::Value> {
 }
 
 fn l2_surface_memory_json() -> serde_json::Value {
-    let status = l2::l2_surface_memory_status();
+    let status = serde_json::to_value(l2::l2_surface_memory_status())
+        .expect("L2 surface status must serialize");
     json!({
-        "active_source_target": status.active_source_target,
-        "hot_center": {
-            "words": status.hot_center_words,
-            "records": status.hot_center_records,
-            "motifs": status.hot_center_motifs,
-            "token_refs": status.hot_center_token_refs,
-            "compact_bytes": status.hot_center_bytes
-        },
-        "broad_prefix_readout": {
-            "source_words": status.broad_source_words,
-            "prefix_keys": status.broad_prefix_keys,
-            "word_refs": status.broad_word_refs,
-            "foundation_source_limit": status.foundation_source_limit,
-            "foundation_live_scan_limit": status.foundation_live_scan_limit
-        },
-        "surface_decoder": {
-            "source_words": status.decoder_source_words,
-            "states": status.decoder_states,
-            "arcs": status.decoder_arcs,
-            "compact_bytes": status.decoder_hot_bytes,
-            "authority": "hot grapheme-state decoder; corpus strings are training material"
+        "active_source_target": status["active_source_target"],
+        "lexical_phase_artifact": {
+            "source_words": status["source_words"],
+            "l1_centers": status["l1_centers"],
+            "l1_postings": status["l1_postings"],
+            "l2_word_centers": status["l2_word_centers"],
+            "grapheme_nodes": status["grapheme_nodes"],
+            "grapheme_arcs": status["grapheme_arcs"],
+            "decoder_states": status["decoder_states"],
+            "decoder_arcs": status["decoder_arcs"],
+            "training_surfaces": status["training_surfaces"],
+            "artifact_bytes": status["artifact_bytes"],
+            "mmap_backed": status["artifact_mmap_backed"],
+            "raw_word_table": status["raw_word_table"],
+            "authority": "single read-only L1/L2 phase field with bounded surface reconstruction"
         },
         "generated_forms": {
-            "loaded": status.generated_forms_loaded,
-            "words": status.generated_forms_words,
+            "loaded": status["generated_forms_loaded"],
+            "words": status["generated_forms_words"],
             "authority": "cold lexical source; not promoted into hot L2 center heap"
         },
         "contract": {
-            "hot_memory": "L1/L2 centers, token refs and phase-like fingerprints",
-            "surface_text": "materialized only for returned candidates",
-            "million_target": "source/readout budget, not raw Vec<String> in hot path"
+            "hot_memory": "mmap-backed L1 postings, L2 phase centers and grapheme transitions",
+            "surface_text": "reconstructed only for bounded finalists",
+            "raw_corpus_runtime_authority": false
         }
     })
 }

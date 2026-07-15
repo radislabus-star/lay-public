@@ -356,16 +356,7 @@ fn live_l2_word_candidates(
     }
 
     let material_limit = live_l2_material_limit(limit);
-    let mut candidates = l2::ime_l2_word_candidates(context_prefix, &normalized, material_limit);
-    for candidate in
-        l2::ime_l2_surface_decoder_candidates(context_prefix, &normalized, material_limit)
-    {
-        push_unique_live_l2_candidate(&mut candidates, candidate);
-        if candidates.len() >= material_limit {
-            break;
-        }
-    }
-    candidates
+    l2::ime_l2_word_candidates(context_prefix, &normalized, material_limit)
 }
 
 fn live_l2_material_limit(limit: usize) -> usize {
@@ -373,19 +364,6 @@ fn live_l2_material_limit(limit: usize) -> usize {
         .saturating_mul(LIVE_L2_MATERIAL_FACTOR)
         .max(limit)
         .min(LIVE_L2_MATERIAL_CAP)
-}
-
-fn push_unique_live_l2_candidate(
-    candidates: &mut Vec<l2::L2ImeWordCandidate>,
-    candidate: l2::L2ImeWordCandidate,
-) {
-    if candidates
-        .iter()
-        .any(|existing| existing.surface == candidate.surface)
-    {
-        return;
-    }
-    candidates.push(candidate);
 }
 
 pub fn live_candidate_gate_stats_json() -> serde_json::Value {

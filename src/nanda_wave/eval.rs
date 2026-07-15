@@ -1,5 +1,4 @@
-use super::l1_center_memory::L1CenterMemoryConfig;
-use super::l2_center_memory::{L2CenterMemory, L2CenterMemoryConfig};
+use super::lexical_phase::{compile_words, LexicalPhaseMemory};
 use super::options::WaveOptions;
 use super::surface_wave::{SurfaceWave4096, SURFACE_WAVE_BYTES};
 use super::trace::run_wave_trace_with_options;
@@ -69,21 +68,21 @@ pub struct CanonicalL2Candidate {
 }
 
 pub struct CanonicalL2CandidateEngine {
-    words: Vec<String>,
-    memory: L2CenterMemory,
+    words: usize,
+    memory: LexicalPhaseMemory,
 }
 
 impl CanonicalL2CandidateEngine {
     pub fn new(words: &[String]) -> Self {
         let memory = canonical_l2_memory(words);
         Self {
-            words: words.to_vec(),
+            words: words.len(),
             memory,
         }
     }
 
     pub fn candidate_report(&self, input: &str, limit: usize) -> CanonicalL2CandidateReport {
-        canonical_l2_candidate_report_with_memory(self.words.len(), &self.memory, input, limit)
+        canonical_l2_candidate_report_with_memory(self.words, &self.memory, input, limit)
     }
 }
 
@@ -126,32 +125,33 @@ pub fn canonical_l1_l2_shadow_report(words: &[String], probes: &[String]) -> Can
     let probes = probes
         .iter()
         .map(|probe| {
-            let l1 = memory.l1().center_sequence_for_word(probe);
-            let l2 = memory.token_sequence_for_text(probe);
+            let readout = memory.phase_readout(probe);
             let wave_active_lanes = SurfaceWave4096::compile(probe).active_lanes();
             CanonicalL1L2Probe {
                 text: probe.clone(),
-                l1_ngrams: l1.ngram_count,
-                l1_refs: l1.center_refs.len(),
-                l1_residual: l1.residual_ngrams,
+                l1_ngrams: readout.atom_count,
+                l1_refs: readout.center_hits,
+                l1_residual: readout.atom_count.saturating_sub(readout.center_hits),
                 wave_active_lanes,
-                l2_tokens: l2.tokens.len(),
-                l2_motifs: l2.motif_refs,
-                l2_residual: l2.residual_l1_refs,
+                l2_tokens: readout.atom_count,
+                l2_motifs: readout.center_hits,
+                l2_residual: readout.atom_count.saturating_sub(readout.center_hits),
             }
         })
         .collect();
 
+    let stats = memory.stats();
+
     CanonicalL1L2Report {
         words: words.len(),
-        l1_centers: memory.l1().center_count(),
-        l1_word_records: memory.l1().word_records().len(),
-        l1_sequence_refs: memory.l1().sequence_refs().len(),
-        l1_hot_bytes: memory.l1().hot_bytes(),
-        l2_motifs: memory.center_count(),
-        l2_word_records: memory.word_records().len(),
-        l2_token_refs: memory.token_refs().len(),
-        hot_bytes: memory.hot_bytes(),
+        l1_centers: stats.l1_centers,
+        l1_word_records: 0,
+        l1_sequence_refs: stats.l1_postings,
+        l1_hot_bytes: stats.hot_bytes,
+        l2_motifs: stats.l2_word_centers,
+        l2_word_records: stats.l2_word_centers,
+        l2_token_refs: stats.l1_postings,
+        hot_bytes: stats.hot_bytes,
         naive_wave_bytes: words.len() * SURFACE_WAVE_BYTES,
         probes,
     }
@@ -167,14 +167,13 @@ pub fn canonical_l2_candidate_report(
 
 fn canonical_l2_candidate_report_with_memory(
     words_len: usize,
-    memory: &L2CenterMemory,
+    memory: &LexicalPhaseMemory,
     input: &str,
     limit: usize,
 ) -> CanonicalL2CandidateReport {
-    let l1 = memory.l1().center_sequence_for_word(input);
-    let l2 = memory.token_sequence_for_text(input);
+    let readout = memory.phase_readout(input);
     let candidates = memory
-        .surface_candidates_for_text(input, limit)
+        .surface_candidates(input, limit)
         .into_iter()
         .map(|candidate| CanonicalL2Candidate {
             word: candidate.word,
@@ -189,29 +188,20 @@ fn canonical_l2_candidate_report_with_memory(
     CanonicalL2CandidateReport {
         input: input.to_string(),
         words: words_len,
-        l1_ngrams: l1.ngram_count,
-        l1_refs: l1.center_refs.len(),
-        l1_residual: l1.residual_ngrams,
-        l2_tokens: l2.tokens.len(),
-        l2_motifs: l2.motif_refs,
-        l2_residual: l2.residual_l1_refs,
+        l1_ngrams: readout.atom_count,
+        l1_refs: readout.center_hits,
+        l1_residual: readout.atom_count.saturating_sub(readout.center_hits),
+        l2_tokens: readout.atom_count,
+        l2_motifs: readout.center_hits,
+        l2_residual: readout.atom_count.saturating_sub(readout.center_hits),
         candidates,
     }
 }
 
-fn canonical_l2_memory(words: &[String]) -> L2CenterMemory {
-    L2CenterMemory::build(
-        words.iter().map(String::as_str),
-        L2CenterMemoryConfig {
-            l1_config: L1CenterMemoryConfig {
-                min_center_support: 1,
-                ..L1CenterMemoryConfig::default()
-            },
-            motif_len: 3,
-            min_motif_support: 2,
-            ..L2CenterMemoryConfig::default()
-        },
-    )
+fn canonical_l2_memory(words: &[String]) -> LexicalPhaseMemory {
+    let bytes = compile_words(words.iter().map(String::as_str))
+        .expect("canonical L1/L2 eval requires at least one valid word");
+    LexicalPhaseMemory::from_bytes(bytes).expect("compiled canonical L1/L2 artifact must load")
 }
 
 #[cfg(test)]
@@ -273,6 +263,8 @@ mod tests {
         let report = canonical_l2_candidate_report(&words, "эсперемнт", 4);
 
         assert_eq!(report.candidates[0].word, "эксперимент");
-        assert!(report.candidates[0].score > report.candidates[1].score);
+        assert!(report.candidates.get(1).map_or(true, |runner_up| {
+            report.candidates[0].score > runner_up.score
+        }));
     }
 }

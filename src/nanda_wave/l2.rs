@@ -1,3 +1,10 @@
+use super::context::{TailContext, TokenKind};
+use super::feedback::{apply_l3_feedback, L3Feedback};
+use super::lexical_attractor::{lexical_attractor_candidates, LEXICAL_ATTRACTOR_CELL};
+use super::lexical_phase::{default_memory, LexicalPhaseCandidate, LexicalPhaseMemory};
+use super::llmwave;
+use super::options::WaveOptions;
+use super::signal::{WavePacket, WordCandidate};
 use crate::config::CorrectionSafety;
 use crate::dict::{convert, detect_direction};
 use crate::keyboard::is_cyrillic_letter;
@@ -13,16 +20,6 @@ use crate::typing_candidate::TypingCandidateFamily;
 use crate::typing_context;
 use crate::typing_pipeline::explain_typing_assist_with_pipeline;
 use crate::word_reader::{split_last_ws_token, split_word_punctuation, split_ws_segments};
-use std::collections::HashSet;
-use std::sync::OnceLock;
-
-use super::context::{TailContext, TokenKind};
-use super::feedback::{apply_l3_feedback, L3Feedback};
-use super::l2_center_memory::{L2CenterMemory, L2CenterMemoryConfig};
-use super::lexical_attractor::{lexical_attractor_candidates, LEXICAL_ATTRACTOR_CELL};
-use super::llmwave;
-use super::options::WaveOptions;
-use super::signal::{WavePacket, WordCandidate};
 
 #[path = "l2/hot_memory.rs"]
 mod hot_memory;
@@ -41,22 +38,10 @@ pub(crate) use surface::{
     l2_surface_foundation_contains, l2_surface_foundation_has_authority, l2_surface_foundation_rank,
 };
 
-static SURFACE_MOTIF_MEMORY: OnceLock<L2CenterMemory> = OnceLock::new();
-static L2_SURFACE_FOUNDATION_HASH_RANK: OnceLock<Vec<(u64, usize)>> = OnceLock::new();
-
 const MAX_LAYOUT_SCAN_CANDIDATES: usize = 4;
 const LAYOUT_THEN_L2_WORD_CENTER: &str = "layout_then_l2_word_center";
 const MAX_TAUGHT_CANDIDATES: usize = 6;
 const L2_ACTIVE_SOURCE_TARGET: usize = 1_000_000;
-const L2_RUNTIME_WORD_LIMIT: usize = 100_000;
-const L2_FOUNDATION_SOURCE_LIMIT: usize = 100_000;
-const L2_USAGE_WORD_LIMIT: usize = 5_000;
-const L2_CASE_WORD_LIMIT: usize = 200;
-const L2_SURFACE_FOUNDATION_RU_DATA: &str =
-    include_str!("../../data/lexicon/l2_surface_foundation_ru_100k.txt");
-const L2_SURFACE_HOT_RU_DATA: &str = include_str!("../../data/lexicon/l2_surface_hot_ru.txt");
-const L2_CLEAN_PHRASE_TRAINING_DATA: &str =
-    include_str!("../../data/nanda_llmwave_seed_phrases.txt");
 pub(super) const L2_SURFACE_MOTIF_CELL: &str = "L2SurfaceMotifCell32";
 pub(super) const L2_SURFACE_COMPLETION_CELL: &str = "L2SurfaceCompletionCell32";
 const L2_FORM_ATTRACTOR_LIMIT: usize = 6;
@@ -69,8 +54,7 @@ pub enum L2ImeWordCandidateKind {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum L2ImeWordCandidateSource {
-    SurfaceCenter,
-    PhaseDecoder,
+    LexicalPhase,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -109,48 +93,6 @@ pub fn run_l2_with_options(
     run_l2_refined_with_feedback(original, l1, options, &L3Feedback::default())
 }
 
-pub fn ime_l2_surface_decoder_candidates(
-    context_prefix: &str,
-    token: &str,
-    limit: usize,
-) -> Vec<L2ImeWordCandidate> {
-    if limit == 0 {
-        return Vec::new();
-    }
-    let normalized = token.to_lowercase();
-    let token_len = normalized.chars().count();
-    if !(2..=18).contains(&token_len) || !normalized.chars().all(is_cyrillic_letter) {
-        return Vec::new();
-    }
-    let context_tokens = super::llmwave::tokenize(context_prefix);
-    let usage = super::usage_prior::cached_usage_prior_snapshot();
-    super::l2_surface_decoder::completion_candidates(
-        &normalized,
-        limit.saturating_mul(2).max(limit),
-    )
-    .into_iter()
-    .filter(|candidate| {
-        candidate.word.starts_with(&normalized) && candidate.word.chars().count() > token_len
-    })
-    .take(limit)
-    .map(|candidate| {
-        let usage_prior = usage.word_prior(&candidate.word);
-        let context_prior = usage.context_word_prior(&context_tokens, &candidate.word);
-        L2ImeWordCandidate {
-            surface: candidate.word,
-            kind: L2ImeWordCandidateKind::Completion,
-            source: L2ImeWordCandidateSource::PhaseDecoder,
-            score: 620u32.saturating_add((candidate.score / 4).min(260)),
-            l1_overlap: token_len,
-            l2_overlap: candidate.support as usize,
-            motif_overlap: candidate.generated_chars,
-            usage_prior,
-            context_prior,
-        }
-    })
-    .collect()
-}
-
 pub fn ime_l2_word_candidates(
     context_prefix: &str,
     token: &str,
@@ -166,8 +108,19 @@ pub fn ime_l2_word_candidates(
     }
     let context_tokens = super::llmwave::tokenize(context_prefix);
     let usage = super::usage_prior::cached_usage_prior_snapshot();
-    let mut candidates = surface_motif_memory()
-        .completion_candidates_for_prefix_with_usage(&normalized, limit, &usage)
+    let memory = surface_motif_memory();
+    let material_limit = limit.saturating_mul(8).max(limit);
+    let mut lexical = memory.surface_candidates(&normalized, material_limit);
+    lexical.extend(memory.completion_candidates(&normalized, material_limit));
+    lexical.sort_by(|left, right| {
+        right
+            .score
+            .cmp(&left.score)
+            .then_with(|| left.rank.cmp(&right.rank))
+            .then_with(|| left.word.cmp(&right.word))
+    });
+    lexical.dedup_by(|left, right| left.word == right.word);
+    let mut candidates = lexical
         .into_iter()
         .map(|candidate| {
             let candidate_len = candidate.word.chars().count();
@@ -181,7 +134,7 @@ pub fn ime_l2_word_candidates(
             L2ImeWordCandidate {
                 surface: candidate.word,
                 kind,
-                source: L2ImeWordCandidateSource::SurfaceCenter,
+                source: L2ImeWordCandidateSource::LexicalPhase,
                 score: candidate.score,
                 l1_overlap: candidate.l1_overlap,
                 l2_overlap: candidate.l2_overlap,
@@ -204,9 +157,8 @@ pub(crate) fn l2_center_near_surfaces(text: &str, limit: usize) -> Vec<String> {
     if !(3..=18).contains(&len) || !normalized.chars().all(is_cyrillic_letter) {
         return Vec::new();
     }
-    let usage = super::usage_prior::cached_usage_prior_snapshot();
     surface_motif_memory()
-        .surface_candidates_for_text_with_usage(&normalized, limit.saturating_mul(8), &usage)
+        .surface_candidates(&normalized, limit.saturating_mul(8))
         .into_iter()
         .filter(|candidate| {
             let distance = damerau_levenshtein(&normalized, &candidate.word);
@@ -248,14 +200,13 @@ impl L2SurfacePhaseReadout {
 }
 
 pub(crate) fn l2_surface_phase_readout(word: &str) -> L2SurfacePhaseReadout {
-    let memory = surface_motif_memory();
-    let sequence = memory.token_sequence_for_text(word);
+    let readout = surface_motif_memory().phase_readout(word);
     L2SurfacePhaseReadout {
-        exact_center: memory.contains_surface(word),
-        l1_refs: sequence.l1_ref_count,
-        motif_refs: sequence.motif_refs,
-        covered_l1_refs: sequence.covered_l1_refs,
-        residual_l1_refs: sequence.residual_l1_refs,
+        exact_center: readout.exact_center,
+        l1_refs: readout.atom_count,
+        motif_refs: readout.center_hits,
+        covered_l1_refs: readout.center_hits,
+        residual_l1_refs: readout.atom_count.saturating_sub(readout.center_hits),
     }
 }
 
@@ -2357,13 +2308,33 @@ mod tests {
 
     #[test]
     fn l2_surface_motif_memory_recovers_missing_letter_without_fuzzy_route() {
-        let candidates = surface_motif_memory().surface_candidates_for_text("звгрузи", 8);
+        let candidates = surface_motif_memory().surface_candidates("звгрузи", 8);
         assert!(
             candidates
                 .iter()
                 .any(|candidate| candidate.word == "загрузи"),
             "candidates={candidates:?}"
         );
+    }
+
+    #[test]
+    fn lexical_phase_field_recovers_inflected_forms_from_compiled_transition_mass() {
+        let cases = [
+            ("рабоатет", "работает"),
+            ("кнокопками", "кнопками"),
+            ("фактческим", "фактическим"),
+            ("подлючись", "подключись"),
+            ("исправленно", "исправлено"),
+        ];
+        for (input, expected) in cases {
+            let candidates = surface_motif_memory().surface_candidates(input, 32);
+            assert!(
+                candidates
+                    .iter()
+                    .any(|candidate| candidate.word == expected),
+                "{input} -> {expected}, candidates={candidates:?}"
+            );
+        }
     }
 
     #[test]
@@ -2385,15 +2356,15 @@ mod tests {
     }
 
     #[test]
-    fn ime_l2_surface_decoder_feeds_ime_completion_candidates() {
-        let candidates = ime_l2_surface_decoder_candidates("я хочу ", "пров", 8);
+    fn lexical_phase_field_feeds_ime_completion_candidates() {
+        let candidates = ime_l2_word_candidates("я хочу ", "пров", 8);
         assert!(
             candidates.iter().any(|candidate| {
                 candidate.kind == L2ImeWordCandidateKind::Completion
                     && candidate.surface.starts_with("пров")
                     && candidate.surface.chars().count() > 4
             }),
-            "surface decoder must feed complete generated surfaces, got {candidates:?}"
+            "lexical phase field must feed complete generated surfaces, got {candidates:?}"
         );
     }
 
@@ -2419,7 +2390,7 @@ mod tests {
     fn l2_surface_motif_memory_recovers_common_shadow_words() {
         for (input, expected) in [("эсперемнт", "эксперимент"), ("ффективная", "эффективная")]
         {
-            let candidates = surface_motif_memory().surface_candidates_for_text(input, 32);
+            let candidates = surface_motif_memory().surface_candidates(input, 32);
             assert!(
                 candidates
                     .iter()
@@ -2437,8 +2408,7 @@ mod tests {
         ] {
             let l1 = run_l1(input);
             let candidates = run_l2(input, &l1);
-            let surface_candidates =
-                surface_motif_memory().surface_candidates_for_text(input.trim(), 24);
+            let surface_candidates = surface_motif_memory().surface_candidates(input.trim(), 24);
             assert!(
                 candidates.iter().any(|candidate| {
                     candidate.source == L2_SURFACE_MOTIF_CELL && candidate.text == expected

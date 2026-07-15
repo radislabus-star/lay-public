@@ -1,5 +1,5 @@
 use super::*;
-use crate::nanda_wave::{l1_center_memory, l2_center_memory, llmwave, surface_bank, usage_prior};
+use crate::nanda_wave::{llmwave, usage_prior};
 
 pub(super) fn surface_motif_word_candidates(
     prefix: &str,
@@ -18,7 +18,7 @@ pub(super) fn surface_motif_word_candidates(
         return Vec::new();
     }
 
-    let surface_candidates = surface_motif_memory().surface_candidates_for_text(&normalized, 24);
+    let surface_candidates = surface_motif_memory().surface_candidates(&normalized, 24);
     let mut out = Vec::new();
     if options.is_enabled(L2_SURFACE_MOTIF_CELL) && surface_candidates.is_empty() {
         if let Some(candidate) = repeated_letter_surface_candidate(
@@ -179,7 +179,7 @@ pub(super) fn form_attractor_word_candidates(
     let transition_state =
         crate::transition_relation::transition_state_id(&format!("{prefix}{token}"));
     let mut out = surface_motif_memory()
-        .surface_candidates_for_text_with_usage(&normalized, 32, &usage)
+        .surface_candidates(&normalized, 32)
         .into_iter()
         .filter_map(|candidate| {
             let replacement_lower = candidate.word;
@@ -441,7 +441,7 @@ pub(super) fn surface_motif_typo_has_authority(
     original: &str,
     candidate: &str,
     score: u32,
-    surface_candidates: &[l2_center_memory::L2SurfaceCandidate],
+    surface_candidates: &[LexicalPhaseCandidate],
     fuzzy_authority: &[String],
 ) -> bool {
     let candidate_distance = damerau_levenshtein(original, candidate);
@@ -561,7 +561,7 @@ pub(super) fn russian_future_ut_form_has_known_infinitive(word: &str) -> bool {
 }
 
 pub(super) fn surface_motif_known_surface(word: &str) -> bool {
-    surface_motif_strict_known_surface(word) || runtime_l2_surface_word_set().contains(word)
+    surface_motif_strict_known_surface(word) || l2_center_contains_surface(word)
 }
 
 pub(super) fn surface_motif_strict_known_surface(word: &str) -> bool {
@@ -747,285 +747,21 @@ pub(super) fn surface_motif_typo_risk(context: &TailContext, distance: usize) ->
     (0.10 + distance as f32 * 0.06 + phrase_bonus).clamp(0.06, 0.40)
 }
 
-pub(super) fn surface_motif_memory() -> &'static L2CenterMemory {
-    SURFACE_MOTIF_MEMORY.get_or_init(|| {
-        let timing_enabled = std::env::var_os("LAY_NANDA_L2_TIMING").is_some();
-        let started = std::time::Instant::now();
-        let words = runtime_l2_surface_words();
-        if timing_enabled {
-            eprintln!(
-                "lay_nanda_l2_timing stage=surface-bank elapsed_us={} words={}",
-                started.elapsed().as_micros(),
-                words.len()
-            );
-        }
-        let build_started = std::time::Instant::now();
-        let memory = L2CenterMemory::build(
-            words.iter().map(String::as_str),
-            L2CenterMemoryConfig {
-                l1_config: l1_center_memory::L1CenterMemoryConfig {
-                    min_center_support: 2,
-                    max_centers: 48_000,
-                },
-                motif_len: 3,
-                min_motif_support: 2,
-                max_motifs: 64_000,
-            },
-        );
-        if timing_enabled {
-            eprintln!(
-                "lay_nanda_l2_timing stage=surface-memory-build elapsed_us={} centers={} words={}",
-                build_started.elapsed().as_micros(),
-                memory.center_count(),
-                words.len()
-            );
-        }
-        drop(words);
-        trim_allocator_after_l2_surface_build();
-        memory
-    })
-}
-
-#[cfg(target_os = "linux")]
-pub(super) fn trim_allocator_after_l2_surface_build() {
-    unsafe {
-        libc::malloc_trim(0);
-    }
-}
-
-#[cfg(not(target_os = "linux"))]
-pub(super) fn trim_allocator_after_l2_surface_build() {}
-
-pub(super) fn runtime_l2_surface_word_set() -> &'static HashSet<String> {
-    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
-    WORDS.get_or_init(|| runtime_l2_surface_words().into_iter().collect())
+pub(super) fn surface_motif_memory() -> &'static LexicalPhaseMemory {
+    default_memory()
+        .expect("missing L2 lexical phase artifact; run scripts/install-l2-lexical-phase.sh")
 }
 
 pub(crate) fn l2_surface_foundation_contains(word: &str) -> bool {
-    foundation_hash_rank()
-        .binary_search_by_key(
-            &crate::nanda_wave::l2_center_memory::surface_hash64(word),
-            |(hash, _)| *hash,
-        )
-        .is_ok()
+    surface_motif_memory().contains_surface(word)
 }
 
 pub(crate) fn l2_surface_foundation_rank(word: &str) -> Option<usize> {
-    let hash = crate::nanda_wave::l2_center_memory::surface_hash64(word);
-    foundation_hash_rank()
-        .binary_search_by_key(&hash, |(candidate, _)| *candidate)
-        .ok()
-        .map(|idx| foundation_hash_rank()[idx].1)
+    surface_motif_memory().surface_rank(word)
 }
 
 pub(crate) fn l2_surface_foundation_has_authority(word: &str) -> bool {
     l2_surface_foundation_rank(word).is_some_and(|rank| rank < 20_000)
-}
-
-fn foundation_hash_rank() -> &'static [(u64, usize)] {
-    L2_SURFACE_FOUNDATION_HASH_RANK.get_or_init(|| {
-        let mut entries = data_words_static(L2_SURFACE_FOUNDATION_RU_DATA)
-            .enumerate()
-            .map(|(rank, word)| {
-                (
-                    crate::nanda_wave::l2_center_memory::surface_hash64(word),
-                    rank,
-                )
-            })
-            .collect::<Vec<_>>();
-        entries.sort_unstable_by_key(|(hash, _)| *hash);
-        entries.dedup_by_key(|(hash, _)| *hash);
-        entries
-    })
-}
-
-pub(super) fn runtime_l2_surface_words() -> Vec<String> {
-    let mut words = Vec::new();
-    let mut seen = HashSet::new();
-    collect_runtime_l2_words(
-        usage_prior::l2_surface_words_by_usage(L2_USAGE_WORD_LIMIT),
-        &mut words,
-        &mut seen,
-    );
-    collect_runtime_l2_case_words(
-        include_str!("../../../data/nanda_wave_synthetic_cases.tsv"),
-        1,
-        L2_CASE_WORD_LIMIT,
-        &mut words,
-        &mut seen,
-    );
-    collect_runtime_l2_generated_positive_words(
-        include_str!("../../../data/nanda_training/generated_cases.tsv"),
-        L2_CASE_WORD_LIMIT,
-        &mut words,
-        &mut seen,
-    );
-    for phrase in L2_CLEAN_PHRASE_TRAINING_DATA.lines() {
-        collect_runtime_l2_training_text_words(phrase, &mut words, &mut seen);
-    }
-    collect_runtime_l2_training_words(
-        crate::lexicon::common_ru_words_iter().map(str::to_string),
-        &mut words,
-        &mut seen,
-    );
-    fill_balanced_runtime_l2_surface_words(
-        data_words(L2_SURFACE_HOT_RU_DATA)
-            .chain(data_words(L2_SURFACE_FOUNDATION_RU_DATA).take(L2_FOUNDATION_SOURCE_LIMIT)),
-        L2_RUNTIME_WORD_LIMIT,
-        &mut words,
-        &mut seen,
-    );
-
-    words.truncate(L2_RUNTIME_WORD_LIMIT);
-    words
-}
-
-pub(super) fn fill_balanced_runtime_l2_surface_words<I>(
-    source: I,
-    limit: usize,
-    words: &mut Vec<String>,
-    seen: &mut HashSet<String>,
-) where
-    I: IntoIterator<Item = String>,
-{
-    let remaining = limit.saturating_sub(words.len());
-    if remaining == 0 {
-        return;
-    }
-    for word in surface_bank::balanced_l2_surface_words(source, remaining.saturating_mul(3)) {
-        if seen.insert(word.clone()) {
-            words.push(word);
-            if words.len() >= limit {
-                break;
-            }
-        }
-    }
-}
-
-pub(super) fn collect_runtime_l2_training_words<I>(
-    source: I,
-    words: &mut Vec<String>,
-    seen: &mut HashSet<String>,
-) where
-    I: IntoIterator<Item = String>,
-{
-    for word in source {
-        if let Some(normalized) = surface_bank::normalize_l2_training_surface_word(&word) {
-            if seen.insert(normalized.clone()) {
-                words.push(normalized);
-            }
-        }
-    }
-}
-
-pub(super) fn collect_runtime_l2_words<I>(
-    source: I,
-    words: &mut Vec<String>,
-    seen: &mut HashSet<String>,
-) where
-    I: IntoIterator<Item = String>,
-{
-    for word in source {
-        if let Some(normalized) = surface_bank::normalize_l2_surface_word(&word) {
-            if seen.insert(normalized.clone()) {
-                words.push(normalized);
-            }
-        }
-    }
-}
-
-pub(super) fn data_words(data: &str) -> impl Iterator<Item = String> + '_ {
-    data.lines()
-        .map(str::trim)
-        .filter(|line| !line.is_empty() && !line.starts_with('#'))
-        .map(str::to_string)
-}
-
-pub(super) fn data_words_static(data: &'static str) -> impl Iterator<Item = &'static str> {
-    data.lines()
-        .map(str::trim)
-        .filter(|line| !line.is_empty() && !line.starts_with('#'))
-}
-
-pub(super) fn collect_runtime_l2_case_words(
-    text: &str,
-    expected_col: usize,
-    max_new_words: usize,
-    words: &mut Vec<String>,
-    seen: &mut HashSet<String>,
-) {
-    let start_len = words.len();
-    for line in text
-        .lines()
-        .filter(|line| !line.trim_start().starts_with('#'))
-    {
-        if words.len().saturating_sub(start_len) >= max_new_words {
-            break;
-        }
-        let cols = line.split('\t').collect::<Vec<_>>();
-        if let Some(expected) = cols.get(expected_col) {
-            collect_runtime_l2_text_words(&decode_fixture_spaces(expected), words, seen);
-        }
-    }
-}
-
-pub(super) fn collect_runtime_l2_generated_positive_words(
-    text: &str,
-    max_new_words: usize,
-    words: &mut Vec<String>,
-    seen: &mut HashSet<String>,
-) {
-    let start_len = words.len();
-    for line in text.lines().skip(1) {
-        if words.len().saturating_sub(start_len) >= max_new_words {
-            break;
-        }
-        let cols = line.split('\t').collect::<Vec<_>>();
-        if cols.len() >= 6 && cols[5] == "1" {
-            collect_runtime_l2_text_words(&decode_fixture_spaces(cols[3]), words, seen);
-        }
-    }
-}
-
-pub(super) fn collect_runtime_l2_text_words(
-    text: &str,
-    words: &mut Vec<String>,
-    seen: &mut HashSet<String>,
-) {
-    collect_runtime_l2_words(
-        text.split_whitespace().map(|token| {
-            token
-                .chars()
-                .filter(|ch| ch.is_alphabetic() || *ch == '-')
-                .flat_map(char::to_lowercase)
-                .collect::<String>()
-        }),
-        words,
-        seen,
-    );
-}
-
-pub(super) fn collect_runtime_l2_training_text_words(
-    text: &str,
-    words: &mut Vec<String>,
-    seen: &mut HashSet<String>,
-) {
-    for token in text.split_whitespace() {
-        let surface = token
-            .chars()
-            .filter(|ch| ch.is_alphabetic() || *ch == '-')
-            .flat_map(char::to_lowercase)
-            .collect::<String>();
-        if let Some(normalized) = surface_bank::normalize_l2_clean_phrase_word(&surface) {
-            if seen.insert(normalized.clone()) {
-                words.push(normalized);
-            }
-        }
-    }
-}
-
-pub(super) fn decode_fixture_spaces(text: &str) -> String {
-    text.replace("\\s", " ")
 }
 
 #[cfg(test)]
