@@ -13,6 +13,7 @@ categories = ["command-line-utilities"]
 [features]
 default = []
 direct-llm = ["dep:llama_cpp"]
+lexical-compiler = []
 
 [[bin]]
 name = "lay"
