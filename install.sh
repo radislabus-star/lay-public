@@ -257,6 +257,7 @@ echo "✓ lay-daemon: $(ls -lh target/release/lay-daemon | awk '{print $5}')"
 echo ""
 echo "=== L2 transition phase package ==="
 scripts/install-l2-transition-phase.sh
+scripts/install-l2-lexical-phase.sh
 
 echo ""
 echo "=== n-gram cache ==="

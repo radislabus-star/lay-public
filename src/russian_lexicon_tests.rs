@@ -70,3 +70,14 @@ fn recognizes_ch_verb_present_forms_from_l2_foundation_lemmas() {
         );
     }
 }
+
+#[test]
+fn generated_form_reference_does_not_promote_known_dirty_inputs() {
+    let forms = full_russian_generated_form_dictionary();
+    for dirty in ["пукнт", "звгрузи", "эсперемнт", "труссс"] {
+        assert!(
+            !forms.contains(dirty),
+            "dirty input leaked into generated-form reference: {dirty:?}"
+        );
+    }
+}

@@ -151,6 +151,10 @@ impl LexicalPhaseMemory {
         self.terminal_for_surface(surface).is_some()
     }
 
+    pub(crate) fn contains_decoded_surface(&self, surface: &str) -> bool {
+        normalize_surface(surface).is_some_and(|surface| self.decoder_contains_surface(&surface))
+    }
+
     pub(crate) fn surface_rank(&self, surface: &str) -> Option<usize> {
         let terminal = self.terminal_for_surface(surface)?;
         read_terminal(self.bytes(), self.header, terminal).map(|record| record.rank as usize)
@@ -280,9 +284,10 @@ impl LexicalPhaseMemory {
     pub(crate) fn completion_candidates(
         &self,
         prefix: &str,
-        limit: usize,
+        result_limit: usize,
+        material_limit: usize,
     ) -> Vec<LexicalPhaseCandidate> {
-        if limit == 0 {
+        if result_limit == 0 || material_limit == 0 {
             return Vec::new();
         }
         let Some(prefix) = normalize_surface(prefix) else {
@@ -296,55 +301,50 @@ impl LexicalPhaseMemory {
         let mut heap = BinaryHeap::new();
         self.push_frontier(&mut heap, prefix_node);
         let mut visited = 0usize;
+        let mut emitted = std::collections::BTreeSet::new();
         let mut candidates = Vec::new();
         while let Some(entry) = heap.pop() {
             if visited >= MAX_COMPLETION_FRONTIER
-                || candidates.len() >= limit.saturating_mul(6).max(limit)
+                || candidates.len() >= material_limit.max(result_limit)
             {
                 break;
             }
             visited += 1;
-            let Some(node) = read_node(self.bytes(), self.header, entry.node) else {
+            if !emitted.insert(entry.best_terminal) {
+                continue;
+            }
+            if !entry.terminal_only {
+                self.partition_frontier(&mut heap, entry.node, entry.best_terminal);
+            }
+            let Some(terminal) = read_terminal(self.bytes(), self.header, entry.best_terminal)
+            else {
                 continue;
             };
-            if node.terminal != NO_INDEX {
-                if let Some(terminal) = read_terminal(self.bytes(), self.header, node.terminal) {
-                    if terminal.char_len as usize > prefix_len {
-                        if let Some(word) = self.reconstruct_terminal(node.terminal) {
-                            let coherence = phase_coherence_milli(&query_phase, &terminal.phase);
-                            candidates.push(LexicalPhaseCandidate {
-                                score: completion_score(
-                                    terminal.rank,
-                                    terminal.support,
-                                    coherence,
-                                    terminal.char_len as usize - prefix_len,
-                                ),
-                                word,
-                                l1_overlap: prefix_len,
-                                l2_overlap: usize::from(coherence) / 40,
-                                motif_overlap: usize::from(terminal.atom_count),
-                                prefix_match: true,
-                                rank: terminal.rank as usize,
-                                phase_coherence_milli: coherence,
-                                reconstructed: false,
-                            });
-                        }
-                    }
-                }
+            if terminal.char_len as usize <= prefix_len {
+                continue;
             }
-            for arc_offset in 0..node.arc_len {
-                let Some(arc) = read_arc(
-                    self.bytes(),
-                    self.header,
-                    node.first_arc.saturating_add(u32::from(arc_offset)),
-                ) else {
-                    continue;
-                };
-                self.push_frontier(&mut heap, arc.child);
+            if let Some(word) = self.reconstruct_terminal(entry.best_terminal) {
+                let coherence = phase_coherence_milli(&query_phase, &terminal.phase);
+                candidates.push(LexicalPhaseCandidate {
+                    score: completion_score(
+                        terminal.rank,
+                        terminal.support,
+                        coherence,
+                        terminal.char_len as usize - prefix_len,
+                    ),
+                    word,
+                    l1_overlap: prefix_len,
+                    l2_overlap: usize::from(coherence) / 40,
+                    motif_overlap: usize::from(terminal.atom_count),
+                    prefix_match: true,
+                    rank: terminal.rank as usize,
+                    phase_coherence_milli: coherence,
+                    reconstructed: false,
+                });
             }
         }
         sort_candidates(&mut candidates);
-        candidates.truncate(limit);
+        candidates.truncate(result_limit);
         candidates
     }
 
@@ -439,15 +439,25 @@ impl LexicalPhaseMemory {
                 if word == surface {
                     return None;
                 }
+                let rank = self
+                    .terminal_for_normalized_surface(&word)
+                    .and_then(|terminal| read_terminal(self.bytes(), self.header, terminal))
+                    .map_or(u32::MAX, |terminal| terminal.rank);
                 let (candidate_phase, atom_count) = surface_phase(&word);
                 let coherence = phase_coherence_milli(&query_phase, &candidate_phase);
                 let candidate_keys = atom_center_keys(&word);
                 let overlap = sorted_overlap(&query_keys, &candidate_keys);
                 let prefix_match = word.starts_with(surface) || surface.starts_with(&word);
-                let score = 1_450u32
+                let rank_boost = if rank == u32::MAX {
+                    0
+                } else {
+                    corpus_rank_boost(rank).saturating_mul(2)
+                };
+                let score = 1_100u32
                     .saturating_add(u32::from(coherence))
-                    .saturating_add(overlap.min(24) as u32 * 72)
-                    .saturating_sub(distance as u32 * 220)
+                    .saturating_add(overlap.min(24) as u32 * 64)
+                    .saturating_add(rank_boost)
+                    .saturating_sub(distance as u32 * 240)
                     .saturating_add(if prefix_match { 120 } else { 0 });
                 Some(LexicalPhaseCandidate {
                     word,
@@ -456,7 +466,11 @@ impl LexicalPhaseMemory {
                     l2_overlap: usize::from(coherence) / 40,
                     motif_overlap: atom_count as usize,
                     prefix_match,
-                    rank: usize::MAX,
+                    rank: if rank == u32::MAX {
+                        usize::MAX
+                    } else {
+                        rank as usize
+                    },
                     phase_coherence_milli: coherence,
                     reconstructed: true,
                 })
@@ -588,8 +602,68 @@ impl LexicalPhaseMemory {
         }
         heap.push(CompletionFrontier {
             node,
+            best_terminal: node_record.best_terminal,
             best_rank: self.terminal_rank(node_record.best_terminal),
+            terminal_only: false,
         });
+    }
+
+    fn push_terminal_frontier(&self, heap: &mut BinaryHeap<CompletionFrontier>, terminal: u32) {
+        let Some(record) = read_terminal(self.bytes(), self.header, terminal) else {
+            return;
+        };
+        heap.push(CompletionFrontier {
+            node: record.node,
+            best_terminal: terminal,
+            best_rank: record.rank,
+            terminal_only: true,
+        });
+    }
+
+    fn partition_frontier(
+        &self,
+        heap: &mut BinaryHeap<CompletionFrontier>,
+        root: u32,
+        excluded_terminal: u32,
+    ) {
+        let Some(terminal) = read_terminal(self.bytes(), self.header, excluded_terminal) else {
+            return;
+        };
+        let mut reverse_path = vec![terminal.node];
+        let mut current = terminal.node;
+        while current != root {
+            let Some(node) = read_node(self.bytes(), self.header, current) else {
+                return;
+            };
+            current = node.parent;
+            reverse_path.push(current);
+            if reverse_path.len() > super::format::MAX_WORD_CHARS + 1 {
+                return;
+            }
+        }
+        reverse_path.reverse();
+
+        for (index, node_id) in reverse_path.iter().copied().enumerate() {
+            let Some(node) = read_node(self.bytes(), self.header, node_id) else {
+                continue;
+            };
+            if node.terminal != NO_INDEX && node.terminal != excluded_terminal {
+                self.push_terminal_frontier(heap, node.terminal);
+            }
+            let path_child = reverse_path.get(index + 1).copied();
+            for arc_offset in 0..node.arc_len {
+                let Some(arc) = read_arc(
+                    self.bytes(),
+                    self.header,
+                    node.first_arc.saturating_add(u32::from(arc_offset)),
+                ) else {
+                    continue;
+                };
+                if Some(arc.child) != path_child {
+                    self.push_frontier(heap, arc.child);
+                }
+            }
+        }
     }
 }
 
@@ -655,7 +729,9 @@ fn sorted_overlap(left: &[u64], right: &[u64]) -> usize {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct CompletionFrontier {
     node: u32,
+    best_terminal: u32,
     best_rank: u32,
+    terminal_only: bool,
 }
 
 impl Ord for CompletionFrontier {
@@ -663,6 +739,8 @@ impl Ord for CompletionFrontier {
         other
             .best_rank
             .cmp(&self.best_rank)
+            .then_with(|| other.terminal_only.cmp(&self.terminal_only))
+            .then_with(|| other.best_terminal.cmp(&self.best_terminal))
             .then_with(|| other.node.cmp(&self.node))
     }
 }
@@ -869,7 +947,7 @@ mod tests {
     #[test]
     fn grapheme_graph_completes_prefix() {
         let memory = memory();
-        let candidates = memory.completion_candidates("пров", 4);
+        let candidates = memory.completion_candidates("пров", 4, 24);
 
         assert!(
             candidates
@@ -903,5 +981,17 @@ mod tests {
                 .any(|candidate| candidate.word == "работает" && candidate.reconstructed),
             "candidates={candidates:?}"
         );
+    }
+
+    #[test]
+    fn production_decoder_does_not_accept_dirty_probe_surfaces() {
+        let memory = default_memory().expect("production lexical phase artifact loads");
+        for dirty in ["пукнт", "звгрузи", "эсперемнт", "труссс"] {
+            assert!(
+                !memory.decoder_contains_surface(dirty),
+                "decoder accepted dirty probe as a training surface: {dirty:?}"
+            );
+        }
+        assert!(memory.decoder_contains_surface("можем"));
     }
 }

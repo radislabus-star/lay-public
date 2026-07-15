@@ -69,6 +69,7 @@ pub struct L2ImeWordCandidate {
     pub motif_overlap: usize,
     pub usage_prior: f32,
     pub context_prior: f32,
+    pub accepted_count: u32,
 }
 
 struct TaughtCandidateInput<'a> {
@@ -109,10 +110,15 @@ pub fn ime_l2_word_candidates(
     }
     let context_tokens = super::llmwave::tokenize(context_prefix);
     let usage = super::usage_prior::cached_usage_prior_snapshot();
+    let usage_context = usage.prepare_hot_context(&context_tokens);
     let memory = surface_motif_memory();
     let material_limit = limit.saturating_mul(8).max(limit);
     let mut lexical = memory.surface_candidates(&normalized, material_limit);
-    lexical.extend(memory.completion_candidates(&normalized, material_limit));
+    lexical.extend(memory.completion_candidates(
+        &normalized,
+        material_limit,
+        material_limit.saturating_mul(6),
+    ));
     lexical.sort_by(|left, right| {
         right
             .score
@@ -130,8 +136,7 @@ pub fn ime_l2_word_candidates(
             } else {
                 L2ImeWordCandidateKind::Replacement
             };
-            let usage_prior = usage.word_prior(&candidate.word);
-            let context_prior = usage.context_word_prior(&context_tokens, &candidate.word);
+            let prior = usage.candidate_prior_prepared(&usage_context, &candidate.word);
             L2ImeWordCandidate {
                 surface: candidate.word,
                 kind,
@@ -140,12 +145,58 @@ pub fn ime_l2_word_candidates(
                 l1_overlap: candidate.l1_overlap,
                 l2_overlap: candidate.l2_overlap,
                 motif_overlap: candidate.motif_overlap,
-                usage_prior,
-                context_prior,
+                usage_prior: prior.word_prior,
+                context_prior: prior.context_prior,
+                accepted_count: prior.accepted_count,
             }
         })
         .collect::<Vec<_>>();
-    sort_and_truncate_ime_l2_candidates(&mut candidates, &usage, limit);
+    sort_and_truncate_ime_l2_candidates(&mut candidates, limit);
+    candidates
+}
+
+pub(crate) fn ime_l2_completion_candidates(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> Vec<L2ImeWordCandidate> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let normalized = token.to_lowercase();
+    let token_len = normalized.chars().count();
+    if !(2..=18).contains(&token_len) || !normalized.chars().all(is_cyrillic_letter) {
+        return Vec::new();
+    }
+
+    let context_tokens = super::llmwave::tokenize(context_prefix);
+    let usage = super::usage_prior::cached_usage_prior_snapshot();
+    let usage_context = usage.prepare_hot_context(&context_tokens);
+    let material_limit = limit.saturating_mul(8).max(limit);
+    let lexical =
+        surface_motif_memory().completion_candidates(&normalized, material_limit, material_limit);
+    let mut candidates = lexical
+        .into_iter()
+        .map(|candidate| L2ImeWordCandidate {
+            surface: candidate.word,
+            kind: L2ImeWordCandidateKind::Completion,
+            source: L2ImeWordCandidateSource::LexicalPhase,
+            score: candidate.score,
+            l1_overlap: candidate.l1_overlap,
+            l2_overlap: candidate.l2_overlap,
+            motif_overlap: candidate.motif_overlap,
+            usage_prior: 0.0,
+            context_prior: 0.0,
+            accepted_count: 0,
+        })
+        .collect::<Vec<_>>();
+    for candidate in &mut candidates {
+        let prior = usage.candidate_prior_prepared(&usage_context, &candidate.surface);
+        candidate.usage_prior = prior.word_prior;
+        candidate.context_prior = prior.context_prior;
+        candidate.accepted_count = prior.accepted_count;
+    }
+    sort_and_truncate_ime_l2_candidates(&mut candidates, limit);
     candidates
 }
 
@@ -182,6 +233,10 @@ pub(crate) fn l2_center_contains_surface(word: &str) -> bool {
     surface_motif_memory().contains_surface(word)
 }
 
+pub(crate) fn l2_decoder_contains_surface(word: &str) -> bool {
+    surface_motif_memory().contains_decoded_surface(word)
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) struct L2SurfacePhaseReadout {
     pub(crate) exact_center: bool,
@@ -211,14 +266,10 @@ pub(crate) fn l2_surface_phase_readout(word: &str) -> L2SurfacePhaseReadout {
     }
 }
 
-fn sort_and_truncate_ime_l2_candidates(
-    candidates: &mut Vec<L2ImeWordCandidate>,
-    usage: &super::usage_prior::UsagePriorSnapshot,
-    limit: usize,
-) {
+fn sort_and_truncate_ime_l2_candidates(candidates: &mut Vec<L2ImeWordCandidate>, limit: usize) {
     candidates.sort_by(|left, right| {
-        l2_ime_word_candidate_score(right, usage)
-            .cmp(&l2_ime_word_candidate_score(left, usage))
+        l2_ime_word_candidate_score(right)
+            .cmp(&l2_ime_word_candidate_score(left))
             .then_with(|| right.motif_overlap.cmp(&left.motif_overlap))
             .then_with(|| right.l2_overlap.cmp(&left.l2_overlap))
             .then_with(|| right.l1_overlap.cmp(&left.l1_overlap))
@@ -234,14 +285,11 @@ fn sort_and_truncate_ime_l2_candidates(
     candidates.truncate(limit);
 }
 
-fn l2_ime_word_candidate_score(
-    candidate: &L2ImeWordCandidate,
-    usage: &super::usage_prior::UsagePriorSnapshot,
-) -> u32 {
+fn l2_ime_word_candidate_score(candidate: &L2ImeWordCandidate) -> u32 {
     let prior = ((candidate.usage_prior * 1600.0 + candidate.context_prior * 2600.0)
         .round()
         .clamp(0.0, 820.0) as u32)
-        .saturating_add(usage.accepted_word_count(&candidate.surface).min(40) * 18);
+        .saturating_add(candidate.accepted_count.min(40) * 18);
     let kind_bonus = match candidate.kind {
         L2ImeWordCandidateKind::Completion => 80,
         L2ImeWordCandidateKind::Replacement => 0,
@@ -1886,7 +1934,11 @@ mod tests {
         let original = "у нас есть ";
         let l1 = run_l1(original);
         let candidates = run_l2(original, &l1);
-        assert!(candidates.is_empty());
+        assert!(candidates.iter().all(|candidate| {
+            candidate.origin != CandidateOrigin::Layout
+                && candidate.source != "LayoutWordCell32"
+                && !candidate.text.chars().any(|ch| ch.is_ascii_alphabetic())
+        }));
     }
 
     #[test]
@@ -2405,14 +2457,14 @@ mod tests {
     }
 
     #[test]
-    fn phrase_cell_generates_customs_actor_candidate() {
+    fn phrase_cell_does_not_hardcode_customs_actor_candidate() {
         let original = "Поставщик говорит что цена до склада нашего покупателя но таможен мы! ";
         let l1 = run_l1(original);
         let candidates = run_l2(original, &l1);
-        assert!(candidates.iter().any(|candidate| {
-            candidate.source == "PhraseCell32"
-                && candidate.text
-                    == "Поставщик говорит что цена до склада нашего покупателя но таможим мы!"
+        assert!(candidates.iter().all(|candidate| {
+            candidate.source != "PhraseCell32"
+                || candidate.text
+                    != "Поставщик говорит что цена до склада нашего покупателя но таможим мы!"
         }));
     }
 

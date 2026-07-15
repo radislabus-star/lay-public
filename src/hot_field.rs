@@ -241,10 +241,35 @@ impl HotFieldSnapshot {
         if surface.has_structural_center() {
             return surface;
         }
+        let lower = word.trim().to_lowercase();
         let phase = self.surface_phase_readout(word);
         let authority = if phase.exact_center {
             HotWordAuthority::L2SurfaceCenter
+        } else if crate::nanda_wave::l2::l2_decoder_contains_surface(&lower) {
+            HotWordAuthority::L2FormCenter
+        } else if crate::russian_lexicon::is_center_backed_russian_form(&lower) {
+            HotWordAuthority::L2FormCenter
         } else if phase.settles_as_form() {
+            HotWordAuthority::L2FormCenter
+        } else {
+            surface.authority
+        };
+        HotWordReadout { authority }
+    }
+
+    /// Stable input authority is stricter than candidate-form settlement. A
+    /// nearby phase basin may propose a form, but only an exact surface or a
+    /// morphology transition backed by a lexical center may protect the input
+    /// from correction.
+    pub(crate) fn stable_form_readout(&self, word: &str) -> HotWordReadout {
+        let surface = self.word_readout(word);
+        if surface.has_structural_center() {
+            return surface;
+        }
+        let lower = word.trim().to_lowercase();
+        let authority = if crate::nanda_wave::l2::l2_decoder_contains_surface(&lower)
+            || crate::russian_lexicon::is_center_backed_russian_form(&lower)
+        {
             HotWordAuthority::L2FormCenter
         } else {
             surface.authority

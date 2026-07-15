@@ -177,6 +177,13 @@ pub(crate) struct UsageHotContext {
     context_keys: Vec<String>,
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
+pub(crate) struct UsageCandidatePrior {
+    pub(crate) word_prior: f32,
+    pub(crate) context_prior: f32,
+    pub(crate) accepted_count: u32,
+}
+
 impl UsagePriorSnapshot {
     pub(crate) fn surface_coverage(&self, surface: &str) -> UsageSurfaceCoverage {
         UsageSurfaceCoverage {
@@ -269,6 +276,37 @@ impl UsagePriorSnapshot {
     pub(crate) fn prepare_hot_context(&self, context: &[String]) -> UsageHotContext {
         UsageHotContext {
             context_keys: context_ngram_keys(context),
+        }
+    }
+
+    pub(crate) fn candidate_prior_prepared(
+        &self,
+        context: &UsageHotContext,
+        normalized_word: &str,
+    ) -> UsageCandidatePrior {
+        if normalized_word.is_empty() {
+            return UsageCandidatePrior::default();
+        }
+        UsageCandidatePrior {
+            word_prior: self
+                .counts
+                .words
+                .get(normalized_word)
+                .copied()
+                .map(word_prior_from_count)
+                .unwrap_or_default(),
+            context_prior: context_ngram_prior_from_keys(
+                &self.counts.context_words,
+                &context.context_keys,
+                normalized_word,
+                0.020,
+            ),
+            accepted_count: self
+                .counts
+                .accepted_words
+                .get(normalized_word)
+                .copied()
+                .unwrap_or_default(),
         }
     }
 

@@ -147,6 +147,8 @@ pub fn live_completion_candidates(
 
     let raw_count = raw.len();
     let context_tokens = super::llmwave::tokenize(request.context_prefix);
+    let l3_memory_warm = super::llmwave::default_memory_is_warm();
+    let context_batch = live_context_batch_readout(&context_tokens, &raw);
     let scene_state = derive_l4_scene_state(L4SceneStateInput {
         context_prefix: request.context_prefix,
         current_word: &partial,
@@ -163,8 +165,10 @@ pub fn live_completion_candidates(
     let mut l4_signed = LiveSignedOutcomeStats::default();
     let mut candidates = raw
         .into_iter()
-        .filter(|candidate| candidate.kind == L2ImeWordCandidateKind::Completion)
-        .filter_map(|candidate| {
+        .zip(context_batch.next_token)
+        .zip(context_batch.scene_token)
+        .filter(|((candidate, _), _)| candidate.kind == L2ImeWordCandidateKind::Completion)
+        .filter_map(|((candidate, next_token_report), scene_token_report)| {
             let suffix = candidate.surface.strip_prefix(&partial)?.to_string();
             let suffix_len = suffix.chars().count();
             if suffix.is_empty() || suffix_len > request.max_suffix_chars {
@@ -191,11 +195,13 @@ pub fn live_completion_candidates(
                 candidate.motif_overlap,
             );
             let l3_readout = live_l3_context_score(
-                &context_tokens,
-                &candidate.surface,
+                next_token_report.as_ref(),
+                candidate.surface.chars().count(),
                 partial_len,
                 request.allow_short_lexical,
-                &usage_snapshot,
+                usage,
+                context_usage,
+                l3_memory_warm,
             );
             let l3_memory_supported = l3_readout.is_some_and(|readout| readout.memory_supported);
             if let Some(readout) = l3_readout {
@@ -205,7 +211,7 @@ pub fn live_completion_candidates(
                 }
             }
             let scene_memory_score = if !l3_memory_supported {
-                live_l4_scene_memory_score(&context_tokens, &candidate.surface)
+                live_l4_scene_memory_score(scene_token_report.as_ref())
             } else {
                 None
             };
@@ -356,7 +362,7 @@ fn live_l2_word_candidates(
     }
 
     let material_limit = live_l2_material_limit(limit);
-    l2::ime_l2_word_candidates(context_prefix, &normalized, material_limit)
+    l2::ime_l2_completion_candidates(context_prefix, &normalized, material_limit)
 }
 
 fn live_l2_material_limit(limit: usize) -> usize {
@@ -437,60 +443,80 @@ struct LiveL3ContextReadout {
     memory_supported: bool,
 }
 
-fn live_l3_context_score(
+struct LiveContextBatchReadout {
+    next_token: Vec<Option<super::llmwave::LlmWaveNextTokenScore>>,
+    scene_token: Vec<Option<super::llmwave::LlmWaveNextTokenScore>>,
+}
+
+fn live_context_batch_readout(
     prefix_tokens: &[String],
-    word: &str,
-    partial_len: usize,
-    allow_short_lexical: bool,
-    usage: &super::usage_prior::UsagePriorSnapshot,
-) -> Option<LiveL3ContextReadout> {
-    let min_lexical_prefix = if allow_short_lexical { 2 } else { 4 };
-    let word_len = word.chars().count();
-    let lexical_backoff_allowed = partial_len >= min_lexical_prefix
-        && (partial_len >= 4 || word_len.saturating_sub(partial_len) <= 5);
-    let usage_prior = usage.word_prior(word);
-    let context_usage_prior = usage.context_word_prior(prefix_tokens, word);
-    if super::llmwave::default_memory_is_warm() {
-        return super::llmwave::with_default_memory(|memory| {
-            if let Some(report) = memory.score_next_token_report(prefix_tokens, word) {
-                let score = report.score.clamp(0.0, 1.0);
-                let rank_delta = if score >= 0.42 && report.support >= 2 {
-                    0.10 + score * 0.18
-                } else if score >= 0.18 {
-                    0.02 + score * 0.08
-                } else {
-                    -0.08
-                };
-                return Some(LiveL3ContextReadout {
-                    rank_delta: rank_delta + usage_prior + context_usage_prior,
-                    memory_supported: score >= 0.18,
-                });
-            }
-            Some(LiveL3ContextReadout {
-                rank_delta: if lexical_backoff_allowed {
-                    usage_prior + context_usage_prior
-                } else {
-                    -0.06
-                },
-                memory_supported: false,
-            })
-        });
+    candidates: &[l2::L2ImeWordCandidate],
+) -> LiveContextBatchReadout {
+    let empty = || vec![None; candidates.len()];
+    if !super::llmwave::default_memory_is_warm() || candidates.is_empty() {
+        return LiveContextBatchReadout {
+            next_token: empty(),
+            scene_token: empty(),
+        };
     }
-    lexical_backoff_allowed.then_some(LiveL3ContextReadout {
-        rank_delta: usage_prior + context_usage_prior,
-        memory_supported: false,
+    let surfaces = candidates
+        .iter()
+        .map(|candidate| candidate.surface.as_str())
+        .collect::<Vec<_>>();
+    super::llmwave::with_default_memory(|memory| LiveContextBatchReadout {
+        next_token: memory.score_next_tokens_report(prefix_tokens, &surfaces),
+        scene_token: if prefix_tokens.len() >= 3 {
+            memory.score_scene_tokens_report(prefix_tokens, &surfaces)
+        } else {
+            empty()
+        },
     })
 }
 
-fn live_l4_scene_memory_score(prefix_tokens: &[String], word: &str) -> Option<f32> {
-    if prefix_tokens.len() < 3 || !super::llmwave::default_memory_is_warm() {
-        return None;
+fn live_l3_context_score(
+    report: Option<&super::llmwave::LlmWaveNextTokenScore>,
+    word_len: usize,
+    partial_len: usize,
+    allow_short_lexical: bool,
+    usage_prior: f32,
+    context_usage_prior: f32,
+    memory_warm: bool,
+) -> Option<LiveL3ContextReadout> {
+    let min_lexical_prefix = if allow_short_lexical { 2 } else { 4 };
+    let lexical_backoff_allowed = partial_len >= min_lexical_prefix
+        && (partial_len >= 4 || word_len.saturating_sub(partial_len) <= 5);
+    if let Some(report) = report {
+        let score = report.score.clamp(0.0, 1.0);
+        let rank_delta = if score >= 0.42 && report.support >= 2 {
+            0.10 + score * 0.18
+        } else if score >= 0.18 {
+            0.02 + score * 0.08
+        } else {
+            -0.08
+        };
+        return Some(LiveL3ContextReadout {
+            rank_delta: rank_delta + usage_prior + context_usage_prior,
+            memory_supported: score >= 0.18,
+        });
     }
-    super::llmwave::with_default_memory(|memory| {
-        memory
-            .score_scene_token_report(prefix_tokens, word)
-            .and_then(|report| (report.score >= 0.16 && report.support > 0).then_some(report.score))
-    })
+    if lexical_backoff_allowed || memory_warm {
+        Some(LiveL3ContextReadout {
+            rank_delta: if lexical_backoff_allowed {
+                usage_prior + context_usage_prior
+            } else {
+                -0.06
+            },
+            memory_supported: false,
+        })
+    } else {
+        None
+    }
+}
+
+fn live_l4_scene_memory_score(
+    report: Option<&super::llmwave::LlmWaveNextTokenScore>,
+) -> Option<f32> {
+    report.and_then(|report| (report.score >= 0.16 && report.support > 0).then_some(report.score))
 }
 
 fn record_live_gate_stats(started: Instant, record: LiveGateRecord) {
@@ -930,6 +956,7 @@ mod tests {
     #[test]
     fn unique_prefix_cache_misses_stay_under_hot_readout_budget() {
         super::super::warm_up_l2_for_ime();
+        super::super::warm_up_l3_phrase_memory();
         let mut timings = Vec::new();
         for partial in ["пол", "цел", "рас", "оста", "дост", "остан"] {
             let started = Instant::now();

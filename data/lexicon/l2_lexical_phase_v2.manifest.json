@@ -10,14 +10,14 @@
       "checksum": "2f8ff34649c6a604"
     },
     {
-      "path": "data/lexicon/l2_surface_hot_ru.txt",
-      "bytes": 233314,
-      "checksum": "eab67cff79207ab5"
-    },
-    {
       "path": "data/lexicon/l2_surface_foundation_ru_100k.txt",
       "bytes": 1831639,
       "checksum": "bbd86a4c80e14e4e"
+    },
+    {
+      "path": "data/lexicon/l2_surface_hot_ru.txt",
+      "bytes": 233314,
+      "checksum": "eab67cff79207ab5"
     },
     {
       "path": "data/lexicon/common_en_technical.txt",
@@ -35,8 +35,8 @@
       "checksum": "a4339bab1b3d70e7"
     }
   ],
-  "corpus_hash": "877dcd74850403a1",
-  "artifact_checksum": "1eb6c7cd38d42433",
+  "corpus_hash": "3f4ec1d22bda7dae",
+  "artifact_checksum": "815239466986cb56",
   "source_words": 105901,
   "training_surfaces": 1461218,
   "artifact_bytes": 30066036,

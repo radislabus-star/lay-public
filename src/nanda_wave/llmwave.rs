@@ -144,10 +144,51 @@ pub struct LlmWaveRecord {
     pub lens: u8,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct LlmWaveMemory {
     records: Vec<LlmWaveRecord>,
     vocabulary: BTreeMap<u32, String>,
+    runtime_index: LlmWaveRuntimeIndex,
+}
+
+#[derive(Debug, Clone, Default, PartialEq)]
+struct LlmWaveRuntimeIndex {
+    total_energy: f32,
+    next_energy: BTreeMap<u32, f32>,
+    records_by_token: BTreeMap<u32, Vec<usize>>,
+}
+
+#[derive(Debug, Default)]
+struct NextTokenAccumulator {
+    energy: f32,
+    support: usize,
+    phase_sum: f32,
+}
+
+#[derive(Debug, Default)]
+struct SceneTokenAccumulator {
+    energy: f32,
+    support: usize,
+    phase_sum: f32,
+    phase_records: usize,
+    tokens: BTreeSet<u32>,
+}
+
+impl LlmWaveRuntimeIndex {
+    fn from_records(records: &[LlmWaveRecord]) -> Self {
+        let mut index = Self::default();
+        for (offset, record) in records.iter().enumerate() {
+            let energy = record_energy(record);
+            index.total_energy += energy;
+            *index.next_energy.entry(record.next_hash).or_default() += energy;
+            index
+                .records_by_token
+                .entry(record.token_hash)
+                .or_default()
+                .push(offset);
+        }
+        index
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -160,10 +201,7 @@ pub(crate) struct LlmWavePreviousTokenCandidate {
 
 impl LlmWaveMemory {
     pub fn empty() -> Self {
-        Self {
-            records: Vec::new(),
-            vocabulary: BTreeMap::new(),
-        }
+        Self::from_parts(Vec::new(), BTreeMap::new())
     }
 
     pub fn from_text(text: &str) -> Self {
@@ -188,10 +226,7 @@ impl LlmWaveMemory {
                     .or_insert(record);
             }
         }
-        Self {
-            records: records.into_values().collect(),
-            vocabulary,
-        }
+        Self::from_parts(records.into_values().collect(), vocabulary)
     }
 
     pub fn from_token_stream(tokens: &[String]) -> Self {
@@ -224,9 +259,16 @@ impl LlmWaveMemory {
                 entry.accepted = entry.accepted.saturating_add(1);
             }
         }
+        Self::from_parts(records.into_values().collect(), vocabulary)
+    }
+
+    fn from_parts(mut records: Vec<LlmWaveRecord>, vocabulary: BTreeMap<u32, String>) -> Self {
+        records.sort_by_key(|record| (record.prefix_hash, record.token_hash, record.next_hash));
+        let runtime_index = LlmWaveRuntimeIndex::from_records(&records);
         Self {
-            records: records.into_values().collect(),
+            records,
             vocabulary,
+            runtime_index,
         }
     }
 
@@ -322,53 +364,76 @@ impl LlmWaveMemory {
         prefix_tokens: &[String],
         next_token: &str,
     ) -> Option<LlmWaveNextTokenScore> {
-        if prefix_tokens.is_empty() {
-            return None;
+        self.score_next_tokens_report(prefix_tokens, &[next_token])
+            .into_iter()
+            .next()
+            .flatten()
+    }
+
+    pub(crate) fn score_next_tokens_report(
+        &self,
+        prefix_tokens: &[String],
+        next_tokens: &[&str],
+    ) -> Vec<Option<LlmWaveNextTokenScore>> {
+        if prefix_tokens.is_empty() || next_tokens.is_empty() {
+            return vec![None; next_tokens.len()];
         }
         let token = token_hash(prefix_tokens.last().map(String::as_str).unwrap_or_default());
-        let next = token_hash(next_token);
-        let prior = self.next_token_prior(next);
+        let next_hashes = next_tokens
+            .iter()
+            .map(|next| token_hash(next))
+            .collect::<Vec<_>>();
+        let requested = next_hashes.iter().copied().collect::<BTreeSet<_>>();
+        let (global_energy, next_energy) = self.requested_next_energy(&requested);
+        let mut scores = BTreeMap::<u32, LlmWaveNextTokenScore>::new();
         for width in (1..=3.min(prefix_tokens.len())).rev() {
             let start = prefix_tokens.len() - width;
             let prefix = prefix_hash(&prefix_tokens[start..]);
             let mut total_energy = 0.0_f32;
-            let mut hit_energy = 0.0_f32;
-            let mut support = 0_usize;
-            let mut phase_sum = 0.0_f32;
-            for record in self
-                .records
-                .iter()
-                .filter(|record| record.prefix_hash == prefix && record.token_hash == token)
-            {
+            let mut hits = BTreeMap::<u32, NextTokenAccumulator>::new();
+            for record in self.context_records(prefix, token) {
                 let energy = record_energy(record);
                 total_energy += energy;
-                if record.next_hash == next {
-                    hit_energy += energy;
-                    support = support.saturating_add(record_support(record));
-                    phase_sum += phase_coherence(record.phase);
+                if requested.contains(&record.next_hash) {
+                    let hit = hits.entry(record.next_hash).or_default();
+                    hit.energy += energy;
+                    hit.support = hit.support.saturating_add(record_support(record));
+                    hit.phase_sum += phase_coherence(record.phase);
                 }
             }
-            if support == 0 || total_energy <= f32::EPSILON {
+            if total_energy <= f32::EPSILON {
                 continue;
             }
-            let likelihood = (hit_energy / total_energy).clamp(0.0, 1.0);
-            let phase_coherence = (phase_sum / support as f32).clamp(0.0, 1.0);
-            let width_confidence = width as f32 / 3.0;
-            let score = (likelihood * 0.64
-                + prior * 0.16
-                + phase_coherence * 0.10
-                + width_confidence * 0.10)
-                .clamp(0.0, 1.0);
-            return Some(LlmWaveNextTokenScore {
-                score,
-                support,
-                width,
-                likelihood,
-                prior,
-                phase_coherence,
-            });
+            for (next, hit) in hits {
+                if hit.support == 0 || scores.contains_key(&next) {
+                    continue;
+                }
+                let likelihood = (hit.energy / total_energy).clamp(0.0, 1.0);
+                let phase_coherence = (hit.phase_sum / hit.support as f32).clamp(0.0, 1.0);
+                let prior = prior_from_energy(global_energy, next_energy.get(&next).copied());
+                let width_confidence = width as f32 / 3.0;
+                let score = (likelihood * 0.64
+                    + prior * 0.16
+                    + phase_coherence * 0.10
+                    + width_confidence * 0.10)
+                    .clamp(0.0, 1.0);
+                scores.insert(
+                    next,
+                    LlmWaveNextTokenScore {
+                        score,
+                        support: hit.support,
+                        width,
+                        likelihood,
+                        prior,
+                        phase_coherence,
+                    },
+                );
+            }
         }
-        None
+        next_hashes
+            .into_iter()
+            .map(|next| scores.get(&next).cloned())
+            .collect()
     }
 
     pub(crate) fn score_scene_token_report(
@@ -376,11 +441,26 @@ impl LlmWaveMemory {
         context_tokens: &[String],
         next_token: &str,
     ) -> Option<LlmWaveNextTokenScore> {
-        if context_tokens.len() < 2 || self.records.is_empty() {
-            return None;
+        self.score_scene_tokens_report(context_tokens, &[next_token])
+            .into_iter()
+            .next()
+            .flatten()
+    }
+
+    pub(crate) fn score_scene_tokens_report(
+        &self,
+        context_tokens: &[String],
+        next_tokens: &[&str],
+    ) -> Vec<Option<LlmWaveNextTokenScore>> {
+        if context_tokens.len() < 2 || self.records.is_empty() || next_tokens.is_empty() {
+            return vec![None; next_tokens.len()];
         }
-        let next = token_hash(next_token);
-        let prior = self.next_token_prior(next);
+        let next_hashes = next_tokens
+            .iter()
+            .map(|next| token_hash(next))
+            .collect::<Vec<_>>();
+        let requested = next_hashes.iter().copied().collect::<BTreeSet<_>>();
+        let (global_energy, next_energy) = self.requested_next_energy(&requested);
         let start = context_tokens.len().saturating_sub(24);
         let window = &context_tokens[start..];
         let window_len = window.len().max(1) as f32;
@@ -394,62 +474,86 @@ impl LlmWaveMemory {
                 .or_insert(weight);
         }
         if token_weights.is_empty() {
-            return None;
+            return vec![None; next_tokens.len()];
         }
 
         let mut total_energy = 0.0_f32;
-        let mut hit_energy = 0.0_f32;
-        let mut support = 0_usize;
-        let mut phase_sum = 0.0_f32;
-        let mut phase_records = 0_usize;
-        let mut hit_tokens = BTreeSet::<u32>::new();
-        for record in &self.records {
-            let Some(weight) = token_weights.get(&record.token_hash) else {
+        let mut hits = BTreeMap::<u32, SceneTokenAccumulator>::new();
+        for (token, weight) in &token_weights {
+            let Some(offsets) = self.runtime_index.records_by_token.get(token) else {
                 continue;
             };
-            let energy = record_energy(record) * *weight;
-            total_energy += energy;
-            if record.next_hash == next {
-                hit_energy += energy;
-                support = support.saturating_add(record_support(record));
-                phase_sum += phase_coherence(record.phase);
-                phase_records = phase_records.saturating_add(1);
-                hit_tokens.insert(record.token_hash);
+            for offset in offsets {
+                let Some(record) = self.records.get(*offset) else {
+                    continue;
+                };
+                let energy = record_energy(record) * *weight;
+                total_energy += energy;
+                if requested.contains(&record.next_hash) {
+                    let hit = hits.entry(record.next_hash).or_default();
+                    hit.energy += energy;
+                    hit.support = hit.support.saturating_add(record_support(record));
+                    hit.phase_sum += phase_coherence(record.phase);
+                    hit.phase_records = hit.phase_records.saturating_add(1);
+                    hit.tokens.insert(record.token_hash);
+                }
             }
         }
-        if support == 0 || total_energy <= f32::EPSILON || phase_records == 0 {
-            return None;
+        let mut scores = BTreeMap::new();
+        if total_energy > f32::EPSILON {
+            for (next, hit) in hits {
+                if hit.support == 0 || hit.phase_records == 0 {
+                    continue;
+                }
+                let likelihood = (hit.energy / total_energy).clamp(0.0, 1.0);
+                let phase_coherence = (hit.phase_sum / hit.phase_records as f32).clamp(0.0, 1.0);
+                let coverage =
+                    (hit.tokens.len() as f32 / token_weights.len().min(8) as f32).clamp(0.0, 1.0);
+                let prior = prior_from_energy(global_energy, next_energy.get(&next).copied());
+                let score =
+                    (likelihood * 0.50 + prior * 0.14 + phase_coherence * 0.12 + coverage * 0.24)
+                        .clamp(0.0, 1.0);
+                scores.insert(
+                    next,
+                    LlmWaveNextTokenScore {
+                        score,
+                        support: hit.support,
+                        width: token_weights.len().min(24),
+                        likelihood,
+                        prior,
+                        phase_coherence,
+                    },
+                );
+            }
         }
-        let likelihood = (hit_energy / total_energy).clamp(0.0, 1.0);
-        let phase_coherence = (phase_sum / phase_records as f32).clamp(0.0, 1.0);
-        let coverage =
-            (hit_tokens.len() as f32 / token_weights.len().min(8) as f32).clamp(0.0, 1.0);
-        let score = (likelihood * 0.50 + prior * 0.14 + phase_coherence * 0.12 + coverage * 0.24)
-            .clamp(0.0, 1.0);
-        Some(LlmWaveNextTokenScore {
-            score,
-            support,
-            width: token_weights.len().min(24),
-            likelihood,
-            prior,
-            phase_coherence,
-        })
+        next_hashes
+            .into_iter()
+            .map(|next| scores.get(&next).cloned())
+            .collect()
     }
 
-    fn next_token_prior(&self, next: u32) -> f32 {
-        let mut next_energy = 0.0_f32;
-        let mut total_energy = 0.0_f32;
-        for record in &self.records {
-            let energy = record_energy(record);
-            total_energy += energy;
-            if record.next_hash == next {
-                next_energy += energy;
-            }
-        }
-        if total_energy <= f32::EPSILON {
-            return 0.0;
-        }
-        (next_energy / total_energy).clamp(0.0, 1.0)
+    fn requested_next_energy(&self, requested: &BTreeSet<u32>) -> (f32, BTreeMap<u32, f32>) {
+        let next = requested
+            .iter()
+            .filter_map(|hash| {
+                self.runtime_index
+                    .next_energy
+                    .get(hash)
+                    .copied()
+                    .map(|energy| (*hash, energy))
+            })
+            .collect();
+        (self.runtime_index.total_energy, next)
+    }
+
+    fn context_records(&self, prefix: u32, token: u32) -> &[LlmWaveRecord] {
+        let key = (prefix, token);
+        let start = self
+            .records
+            .partition_point(|record| (record.prefix_hash, record.token_hash) < key);
+        let width = self.records[start..]
+            .partition_point(|record| (record.prefix_hash, record.token_hash) == key);
+        &self.records[start..start + width]
     }
 
     pub fn predict_phrase(
@@ -610,6 +714,14 @@ fn record_energy(record: &LlmWaveRecord) -> f32 {
 
 fn record_support(record: &LlmWaveRecord) -> usize {
     usize::from(record.accepted.max(1))
+}
+
+fn prior_from_energy(total: f32, next: Option<f32>) -> f32 {
+    if total <= f32::EPSILON {
+        0.0
+    } else {
+        (next.unwrap_or_default() / total).clamp(0.0, 1.0)
+    }
 }
 
 fn phase_coherence(phase: i8) -> f32 {
@@ -1198,10 +1310,7 @@ pub fn decode_memory(bytes: &[u8]) -> io::Result<LlmWaveMemory> {
     } else {
         decode_vocabulary(&bytes[records_end..records_end + vocab_bytes])?
     };
-    Ok(LlmWaveMemory {
-        records: decoded,
-        vocabulary,
-    })
+    Ok(LlmWaveMemory::from_parts(decoded, vocabulary))
 }
 
 pub fn derive_llmwave_feedback(
@@ -1646,6 +1755,29 @@ mod tests {
         let predictions = memory.predict_phrase("на улице опять идёт", 2, 4);
         assert!(predictions.iter().any(|item| item.text.contains("дожд")));
         assert!(predictions.iter().any(|item| item.tokens.len() >= 5));
+    }
+
+    #[test]
+    fn batch_context_readout_matches_individual_scores() {
+        let memory = LlmWaveMemory::from_text(
+            "на улице опять идёт дождь\nна улице опять идёт снег\nна улице снова идёт дождь",
+        );
+        let context = tokenize("на улице опять идёт");
+        let words = ["дождь", "снег", "дом"];
+
+        let next_batch = memory.score_next_tokens_report(&context, &words);
+        let next_individual = words
+            .iter()
+            .map(|word| memory.score_next_token_report(&context, word))
+            .collect::<Vec<_>>();
+        assert_eq!(next_batch, next_individual);
+
+        let scene_batch = memory.score_scene_tokens_report(&context, &words);
+        let scene_individual = words
+            .iter()
+            .map(|word| memory.score_scene_token_report(&context, word))
+            .collect::<Vec<_>>();
+        assert_eq!(scene_batch, scene_individual);
     }
 
     #[test]

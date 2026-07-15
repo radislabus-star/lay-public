@@ -21,7 +21,11 @@ pub(super) fn surface_motif_word_candidates(
 
     let mut surface_candidates = surface_motif_memory().surface_candidates(&normalized, 24);
     if options.is_enabled(L2_SURFACE_COMPLETION_CELL) {
-        surface_candidates.extend(surface_motif_memory().completion_candidates(&normalized, 24));
+        surface_candidates.extend(surface_motif_memory().completion_candidates(
+            &normalized,
+            24,
+            144,
+        ));
         surface_candidates.sort_by(|left, right| {
             right
                 .score
@@ -39,7 +43,15 @@ pub(super) fn surface_motif_word_candidates(
             surface_candidates
                 .iter()
                 .take(12)
-                .map(|candidate| (&candidate.word, candidate.score, candidate.prefix_match))
+                .map(|candidate| {
+                    (
+                        &candidate.word,
+                        candidate.score,
+                        candidate.rank,
+                        candidate.prefix_match,
+                        candidate.reconstructed,
+                    )
+                })
                 .collect::<Vec<_>>()
         );
     }
@@ -69,7 +81,7 @@ pub(super) fn surface_motif_word_candidates(
             && !is_common_ru_word(&normalized)
             && !surface_motif_stable_existing_word(&normalized)
             && surface_motif_typo_has_authority(
-                &crate::transition_relation::transition_state_id(prefix),
+                &normalized,
                 &candidate.word,
                 candidate.score,
                 &surface_candidates,
@@ -470,7 +482,7 @@ pub(super) fn surface_motif_typo_has_authority(
     let candidate_distance = damerau_levenshtein(original, candidate);
     let l2_surface_match = surface_candidates
         .iter()
-        .any(|surface| surface.word == candidate && surface.score == score);
+        .any(|surface| surface.word == candidate);
     if l2_surface_match
         && surface_motif_typo_allowed(
             original,
@@ -559,7 +571,7 @@ pub(super) fn surface_motif_stable_existing_word(word: &str) -> bool {
 
 pub(super) fn surface_motif_runtime_known_surface(word: &str) -> bool {
     crate::hot_field::HotFieldSnapshot::current()
-        .word_readout(word)
+        .stable_form_readout(word)
         .is_known()
 }
 
@@ -706,8 +718,12 @@ pub(super) struct SurfaceMotifCandidateInput<'a> {
 
 pub(super) fn surface_motif_candidate(input: SurfaceMotifCandidateInput<'_>) -> WordCandidate {
     let replacement_word = apply_word_case(input.word, input.replacement_lower);
-    let energy =
-        l1_energy(input.l1, "ScriptCell32").max((input.score as f32 / 900.0).clamp(0.42, 0.95));
+    // Preserve the field ordering for DecisionCore. The old 900 divisor
+    // saturated nearly every serious candidate at 0.95, turning ties into
+    // accidental lexical ordering.
+    let field_energy = (0.42 + input.score as f32 / 6_000.0).clamp(0.42, 0.95);
+    let sensor_floor = l1_energy(input.l1, "ScriptCell32") * 0.72;
+    let energy = field_energy.max(sensor_floor);
     WordCandidate {
         text: format!(
             "{}{}{}{}",
