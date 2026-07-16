@@ -1,6 +1,6 @@
-use lay::nanda_wave::eval::{
-    canonical_l2_candidate_report, CanonicalL2Candidate, CanonicalL2CandidateEngine,
-};
+#[cfg(test)]
+use lay::nanda_wave::eval::CanonicalL2CandidateEngine;
+use lay::nanda_wave::eval::{canonical_l2_candidate_report, CanonicalL2Candidate};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
@@ -79,6 +79,10 @@ struct RecentCandidateScore {
     gate_action: String,
     #[serde(default)]
     selected: bool,
+    #[serde(default)]
+    action_operator: String,
+    #[serde(default)]
+    edit_transition_proof: String,
 }
 
 pub(crate) fn print_recent(args: &[String]) -> io::Result<()> {
@@ -247,10 +251,6 @@ pub(crate) fn print_phase_coverage(args: &[String]) -> io::Result<()> {
         .and_then(|value| value.parse::<usize>().ok())
         .unwrap_or(12)
         .clamp(1, 50);
-    let word_limit = super::arg_value(args, "--word-limit")
-        .and_then(|value| value.parse::<usize>().ok())
-        .unwrap_or(1_000)
-        .clamp(100, 50_000);
     let max_examples = super::arg_value(args, "--max-examples")
         .and_then(|value| value.parse::<usize>().ok())
         .unwrap_or(12)
@@ -259,15 +259,17 @@ pub(crate) fn print_phase_coverage(args: &[String]) -> io::Result<()> {
         .map(PathBuf::from)
         .or_else(default_recent_actions_path)
         .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "HOME is not set"))?;
-    let words = clean_words_limited(word_limit)?;
     let actions = load_recent_actions(&path, limit)?;
-    let engine = CanonicalL2CandidateEngine::new(&words);
-    let report = phase_coverage_report(&engine, &actions, candidate_limit, max_examples);
+    let report = phase_coverage_report(
+        &actions,
+        candidate_limit,
+        max_examples,
+        runtime_l2_candidates,
+    );
 
     println!("l2_phase_coverage_recent:");
     println!("  source: {}", path.display());
-    println!("  clean_words: {}", words.len());
-    println!("  word_limit: {}", word_limit);
+    println!("  candidate_source: runtime_hot_l2");
     println!("  scanned_rows: {}", actions.len());
     println!("  candidate_limit: {}", candidate_limit);
     println!("  live_authority: false");
@@ -663,10 +665,10 @@ struct CoverageExample {
 }
 
 fn phase_coverage_report(
-    engine: &CanonicalL2CandidateEngine,
     actions: &[RecentAction],
     candidate_limit: usize,
     max_examples: usize,
+    mut candidate_readout: impl FnMut(&RecentAction, &str, usize) -> Vec<CanonicalL2Candidate>,
 ) -> PhaseCoverageReport {
     let mut report = PhaseCoverageReport::default();
     for action in actions {
@@ -690,19 +692,19 @@ fn phase_coverage_report(
         if action.elapsed_ms > 50 || action.decision_ms > 50 || action.output_ms > 50 {
             report.slow_rows_50ms += 1;
         }
-        let canonical = engine.candidate_report(&input, candidate_limit);
-        let rank = candidate_rank(&canonical.candidates, &expected);
-        let example = coverage_example(action, &input, &expected, &canonical.candidates);
-        if action_error_class(action) == Some("wrong_layout") {
+        if action_uses_layout_transition(action) {
             report.layout_route_skip += 1;
             push_limited(
                 &mut report.risky_multiword_examples,
-                example,
+                coverage_example(action, &input, &expected, &[]),
                 max_examples,
                 action.replace_words > 1 || action.words > 1,
             );
             continue;
         }
+        let candidates = candidate_readout(action, &input, candidate_limit);
+        let rank = candidate_rank(&candidates, &expected);
+        let example = coverage_example(action, &input, &expected, &candidates);
         report.phase_target_rows += 1;
         match rank {
             Some(0) => {
@@ -746,6 +748,29 @@ fn phase_coverage_report(
         );
     }
     report
+}
+
+fn runtime_l2_candidates(
+    action: &RecentAction,
+    input: &str,
+    limit: usize,
+) -> Vec<CanonicalL2Candidate> {
+    let trimmed = action.from.trim_end();
+    let context_prefix = trimmed
+        .rfind(char::is_whitespace)
+        .map(|index| &trimmed[..index])
+        .unwrap_or_default();
+    lay::nanda_wave::l2::ime_l2_word_candidates(context_prefix, input, limit)
+        .into_iter()
+        .map(|candidate| CanonicalL2Candidate {
+            word: candidate.surface,
+            score: candidate.score,
+            l1_overlap: candidate.l1_overlap,
+            l2_overlap: candidate.l2_overlap,
+            motif_overlap: candidate.motif_overlap,
+            prefix_match: false,
+        })
+        .collect()
 }
 
 fn candidate_rank(candidates: &[CanonicalL2Candidate], expected: &str) -> Option<usize> {
@@ -792,6 +817,21 @@ fn action_error_class(action: &RecentAction) -> Option<&str> {
         .input_gate
         .as_ref()
         .and_then(|gate| gate.selected_error_class.as_deref())
+}
+
+fn action_uses_layout_transition(action: &RecentAction) -> bool {
+    if action_error_class(action) == Some("wrong_layout") {
+        return true;
+    }
+    action.input_gate.as_ref().is_some_and(|gate| {
+        gate.candidate_scores.iter().any(|candidate| {
+            candidate.selected
+                && (matches!(
+                    candidate.action_operator.as_str(),
+                    "fix_layout" | "fix_mixed_layout"
+                ) || candidate.edit_transition_proof == "layout")
+        })
+    })
 }
 
 fn has_nanda_apply_candidate(action: &RecentAction) -> bool {
@@ -1210,11 +1250,7 @@ fn verdict(action: &RecentAction, candidate: Option<&CanonicalL2Candidate>) -> &
         return "canonical_no_candidate";
     };
     let candidate_word = normalize_word(&candidate.word);
-    let live_error_class = action
-        .input_gate
-        .as_ref()
-        .and_then(|gate| gate.selected_error_class.as_deref());
-    if live_error_class == Some("wrong_layout") {
+    if action_uses_layout_transition(action) {
         return "layout_route_skip";
     }
     if candidate_word == to_last && to_last != from_last {
@@ -1301,6 +1337,17 @@ mod tests {
             .map(str::to_string)
             .collect::<Vec<_>>();
         let engine = CanonicalL2CandidateEngine::new(&words);
+        let mut typed_layout_gate = gate("deterministic", "composite-typo", false);
+        typed_layout_gate
+            .candidate_scores
+            .push(RecentCandidateScore {
+                source: "deterministic".to_string(),
+                replacement: "привет ".to_string(),
+                gate_action: "eligible".to_string(),
+                selected: true,
+                action_operator: "fix_mixed_layout".to_string(),
+                edit_transition_proof: "layout".to_string(),
+            });
         let actions = vec![
             recent_action(
                 "рабоатет ",
@@ -1317,12 +1364,15 @@ mod tests {
                 "привет ",
                 Some(gate("nanda", "wrong_layout", true)),
             ),
+            recent_action("ghbdtn ", "привет ", Some(typed_layout_gate)),
         ];
 
-        let report = phase_coverage_report(&engine, &actions, 5, 10);
+        let report = phase_coverage_report(&actions, 5, 10, |_, input, limit| {
+            engine.candidate_report(input, limit).candidates
+        });
 
-        assert_eq!(report.live_applied_true, 3);
-        assert_eq!(report.layout_route_skip, 1);
+        assert_eq!(report.live_applied_true, 4);
+        assert_eq!(report.layout_route_skip, 2);
         assert_eq!(report.phase_target_rows, 2);
         assert_eq!(report.l2_phase_covered_true, 1);
         assert_eq!(report.l2_phase_missed_true, 1);
@@ -1357,6 +1407,8 @@ mod tests {
                     replacement: "работает ".to_string(),
                     gate_action: "apply".to_string(),
                     selected: source == "nanda",
+                    action_operator: String::new(),
+                    edit_transition_proof: String::new(),
                 })
                 .into_iter()
                 .collect(),

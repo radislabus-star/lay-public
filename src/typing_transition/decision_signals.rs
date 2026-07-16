@@ -106,11 +106,18 @@ fn l3_phrase_signal(event: &TypingErrorEvent, candidate: &UnifiedCorrectionCandi
             decision: L3ContextDisposition::NotApplicable,
         };
     }
-    let Some(report) = evaluate_default_candidate(&event.original, &candidate.replacement) else {
+    if !crate::nanda_wave::llmwave::default_memory_is_warm() {
         return L3Signal {
             signal: 0.0,
             rank_bonus: 0.0,
             decision: L3ContextDisposition::Unavailable,
+        };
+    }
+    let Some(report) = evaluate_default_candidate(&event.original, &candidate.replacement) else {
+        return L3Signal {
+            signal: 0.0,
+            rank_bonus: 0.0,
+            decision: L3ContextDisposition::NotApplicable,
         };
     };
     match report.decision {

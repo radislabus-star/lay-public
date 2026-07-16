@@ -188,14 +188,14 @@ fn admit(
     candidate: &UnifiedCorrectionCandidate,
     candidate_count: usize,
     source_role: CorrectionSourceRole,
-    strong_transition_support: bool,
+    context_state_support: bool,
 ) -> super::TransitionAdmission {
     admit_with_l4_signal(
         event,
         candidate,
         candidate_count,
         source_role,
-        strong_transition_support,
+        context_state_support,
         crate::typing_transition::L4SignedTransitionSignal {
             negative: false,
             state_specific: false,
@@ -210,7 +210,7 @@ fn admit_with_l4_signal(
     candidate: &UnifiedCorrectionCandidate,
     candidate_count: usize,
     source_role: CorrectionSourceRole,
-    strong_transition_support: bool,
+    context_state_support: bool,
     l4_signed_signal: crate::typing_transition::L4SignedTransitionSignal,
 ) -> super::TransitionAdmission {
     let action = crate::typing_transition::action::verify_action_operator(
@@ -234,7 +234,7 @@ fn admit_with_l4_signal(
     admit_evaluated_hidden_transition(
         candidate_count,
         source_role,
-        strong_transition_support,
+        context_state_support,
         &transition,
     )
 }
@@ -277,6 +277,22 @@ fn exact_state_proof_allows_single_learned_drift() {
         false,
         true,
     ));
+}
+
+#[test]
+fn l2_operator_phase_is_not_context_state_proof() {
+    let admission = admit(
+        &event("мы можем "),
+        &candidate("мы модем ", "composite_ru_typo"),
+        1,
+        CorrectionSourceRole::DeterministicTypo,
+        false,
+    );
+    assert!(!admission.allow_apply);
+    assert_eq!(
+        admission.reason,
+        "latent_known_word_drift_needs_state_proof"
+    );
 }
 
 #[test]

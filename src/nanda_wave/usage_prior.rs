@@ -32,7 +32,7 @@ const USAGE_COUNTS_PATH: &str = ".local/share/lay/nanda_wave/word_usage_counts.j
 const LEGACY_USAGE_PRIOR_PATH: &str = ".local/share/lay/learning_candidates.json";
 const USAGE_EVENTS_MAX_BYTES: u64 = 500 * 1024;
 const USAGE_EVENTS_FULL_REBUILD_MAX_BYTES: u64 = 8 * 1024 * 1024;
-const USAGE_COUNTS_SCHEMA_VERSION: u32 = 9;
+const USAGE_COUNTS_SCHEMA_VERSION: u32 = 10;
 const USAGE_COUNTS_MAX_WORDS: usize = 10_000;
 const USAGE_COUNTS_MAX_ACCEPTED_WORDS: usize = 5_000;
 const USAGE_COUNTS_MAX_CONTEXT_WORDS: usize = 12_000;
@@ -689,6 +689,9 @@ fn merge_usage_counts(target: &mut UsageCounts, source: UsageCounts) {
     merge_count_map(&mut target.transition_observed, source.transition_observed);
     merge_count_map(&mut target.transition_attract, source.transition_attract);
     merge_count_map(&mut target.transition_repel, source.transition_repel);
+    merge_count_map(&mut target.surface_observed, source.surface_observed);
+    merge_count_map(&mut target.surface_attract, source.surface_attract);
+    merge_count_map(&mut target.surface_repel, source.surface_repel);
 }
 
 fn merge_count_map(target: &mut HashMap<String, u32>, source: HashMap<String, u32>) {
@@ -728,6 +731,7 @@ fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
                 .surface_observed
                 .entry(surface.to_string())
                 .or_default() += projected.weight;
+            *counts.surface_repel.entry(surface.to_string()).or_default() += projected.weight;
         }
         add_rejected_word_state(
             counts,
@@ -1781,6 +1785,9 @@ mod tests {
         assert_eq!(counts.rejected_words.get("отвравим"), Some(&6));
         assert!(!counts.transition_attract.is_empty());
         assert!(counts.transition_repel.is_empty());
+        assert_eq!(counts.surface_observed.len(), 1);
+        assert_eq!(counts.surface_attract.len(), 1);
+        assert!(counts.surface_repel.is_empty());
     }
 
     #[test]
@@ -1798,6 +1805,9 @@ mod tests {
 
         assert!(!counts.words.contains_key("даша"));
         assert_eq!(counts.rejected_words.get("даша"), Some(&8));
+        assert_eq!(counts.surface_observed.len(), 1);
+        assert!(counts.surface_attract.is_empty());
+        assert_eq!(counts.surface_repel.len(), 1);
 
         let usage = usage_snapshot_from_counts(counts);
         let context = ["ну"].map(String::from);
@@ -1812,6 +1822,21 @@ mod tests {
             .transition;
         assert!(signal.repulsion > signal.attraction);
         assert_eq!(signal.reason, "transition_repels");
+    }
+
+    #[test]
+    fn usage_count_merge_preserves_signed_surface_memory() {
+        let mut target = UsageCounts::default();
+        let mut source = UsageCounts::default();
+        source.surface_observed.insert("surface".to_string(), 11);
+        source.surface_attract.insert("surface".to_string(), 6);
+        source.surface_repel.insert("surface".to_string(), 5);
+
+        merge_usage_counts(&mut target, source);
+
+        assert_eq!(target.surface_observed.get("surface"), Some(&11));
+        assert_eq!(target.surface_attract.get("surface"), Some(&6));
+        assert_eq!(target.surface_repel.get("surface"), Some(&5));
     }
 
     #[test]

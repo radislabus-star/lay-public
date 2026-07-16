@@ -110,8 +110,12 @@ pub(super) fn candidate_has_apply_authority(
     }
     let strong_learned_support =
         external_learned_support || strong_l2_peak_support || high_precision_boundary_shift;
-    let strong_transition_support = signals.l3_phrase_milli >= CURRENT.l3_strong_milli
-        || signals.l4_signed_milli >= CURRENT.l4_strong_milli
+    let context_state_support = known_word_context_state_support(
+        bayes.context_prior,
+        signals.l3_phrase_milli,
+        signals.l4_signed_milli,
+    );
+    let strong_transition_support = context_state_support
         || (policy.l2_phase_apply
             && signals.l2_transition_phase_operator_promoted
             && signals.l2_transition_phase_verdict == crate::nanda_wave::PhaseVerdict::Support
@@ -120,7 +124,7 @@ pub(super) fn candidate_has_apply_authority(
     let admission = admit_evaluated_hidden_transition(
         candidates.len(),
         source_role,
-        strong_transition_support,
+        context_state_support,
         &evaluation.transition,
     );
     if !admission.allow_apply {
@@ -390,7 +394,7 @@ fn strong_l2_wave_peak_support(signals: &CandidateDecisionSignals) -> bool {
 pub(super) fn admit_evaluated_hidden_transition(
     candidate_count: usize,
     source_role: CorrectionSourceRole,
-    strong_transition_support: bool,
+    context_state_support: bool,
     transition: &TypingTransition,
 ) -> TransitionAdmission {
     let exact_state_support = transition.l4_signed_signal.exact_positive();
@@ -422,7 +426,7 @@ pub(super) fn admit_evaluated_hidden_transition(
         && !known_word_drift_has_authority(
             source_role,
             candidate_count,
-            strong_transition_support,
+            context_state_support,
             exact_state_support,
         )
     {
@@ -450,6 +454,16 @@ pub(super) fn admit_evaluated_hidden_transition(
         allow_apply: true,
         reason: "latent_transition_admitted",
     }
+}
+
+fn known_word_context_state_support(
+    context_prior: f32,
+    l3_phrase_milli: i16,
+    l4_signed_milli: i16,
+) -> bool {
+    context_prior >= CURRENT.learned_prior_floor
+        || l3_phrase_milli >= CURRENT.l3_strong_milli
+        || l4_signed_milli >= CURRENT.l4_strong_milli
 }
 
 pub(super) fn known_word_drift_has_authority(

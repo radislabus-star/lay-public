@@ -190,8 +190,9 @@ impl UsageHotState {
         };
         if projected.is_rejected() {
             if let Some(surface) = projected.surface {
-                self.surface_observed
-                    .increment(usage_text_id(surface), projected.weight);
+                let surface = usage_text_id(surface);
+                self.surface_observed.increment(surface, projected.weight);
+                self.surface_repel.increment(surface, projected.weight);
             }
             self.add_rejected_word_state(RejectedStateEvidence {
                 context: projected.context,

@@ -260,6 +260,10 @@ scripts/install-l2-transition-phase.sh
 scripts/install-l2-lexical-phase.sh
 
 echo ""
+echo "=== L3 phrase memory ==="
+target/release/lay-nanda-wave-eval --llmwave-pack-live
+
+echo ""
 echo "=== n-gram cache ==="
 LAY_STATE_DIR="$HOME/.local/state/lay"
 mkdir -p "$LAY_STATE_DIR"
