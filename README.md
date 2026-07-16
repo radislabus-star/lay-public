@@ -684,10 +684,14 @@ Shift rescue невозможен. По умолчанию он не отпра�
 ## Разработка
 
 ```bash
-cargo test
-cargo build --release
+scripts/check-lay-changed.sh
+scripts/cargo-guard.sh build --release --bins
 bash install.sh
 ```
+
+Cargo build artifacts are limited to 12 GiB by `scripts/cargo-guard.sh`.
+Installed binaries are copied to `~/.local/lib/lay/bin`, so `target/` remains
+a disposable cache and can be removed without breaking the installed runtime.
 
 Полная локальная проверка перед публикацией:
 

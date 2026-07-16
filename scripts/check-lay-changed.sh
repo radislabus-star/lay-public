@@ -4,6 +4,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+cargo() {
+  "$ROOT/scripts/cargo-guard.sh" "$@"
+}
+
 changed_files() {
   {
     git diff --name-only --diff-filter=ACMRTUXB --cached
@@ -231,8 +235,8 @@ if has_file_matching '^tests/fixtures/'; then
   cargo test typing_assist_rules:: --bin lay-daemon
 fi
 
-echo "== cargo check --all-targets =="
-cargo check --all-targets
+echo "== cargo check --lib --bins =="
+cargo check --lib --bins
 
 recent_actions="${XDG_DATA_HOME:-$HOME/.local/share}/lay/recent_actions.jsonl"
 if [[ -s "$recent_actions" ]]; then

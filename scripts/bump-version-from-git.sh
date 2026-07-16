@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd "$(dirname "$0")/.."
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+cargo() {
+    "$ROOT/scripts/cargo-guard.sh" "$@"
+}
 
 current_version="$(perl -ne 'print "$1.$2.$3\n" if /^version = "([0-9]+)\.([0-9]+)\.([0-9]+)"/' Cargo.toml | head -n1)"
 if [[ -z "${current_version}" ]]; then

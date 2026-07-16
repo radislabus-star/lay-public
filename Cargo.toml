@@ -72,9 +72,21 @@ libc = "0.2"
 niri-ipc = "26"
 llama_cpp = { version = "0.3.2", optional = true }
 
+[profile.dev]
+debug = 1
+incremental = false
+
+[profile.dev.package."*"]
+debug = 0
+
+[profile.test]
+debug = 0
+incremental = false
+
 [profile.release]
 opt-level = 3
 lto = true
 codegen-units = 1
 strip = true
 panic = "abort"
+incremental = false

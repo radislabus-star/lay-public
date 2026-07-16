@@ -204,11 +204,11 @@
 - `LAY_AUDIT_50=1 scripts/check-lay-full.sh` — строгий полный gate: 50-pass
   audit + обычный full check.
 - `scripts/run_runtime_smoke.py --no-build` для окна ввода.
-- `cargo test --all-targets`
-- `cargo clippy --all-targets -- -D warnings`
-- `cargo build --release --bins`
-- `cargo run --quiet --bin lay-ngram-corpus -- check-cache`
-- `cargo run --quiet --bin lay-lem-research`
+- `scripts/cargo-guard.sh test --all-targets`
+- `scripts/cargo-guard.sh clippy --all-targets -- -D warnings`
+- `scripts/cargo-guard.sh build --release --bins`
+- `scripts/cargo-guard.sh run --quiet --bin lay-ngram-corpus -- check-cache`
+- `scripts/cargo-guard.sh run --quiet --bin lay-lem-research`
 
 `scripts/check-lay-full.sh` проверяет существующий пользовательский n-gram
 cache, а если cache ещё не создан на чистой машине, собирает временный cache в

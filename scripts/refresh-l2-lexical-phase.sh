@@ -4,6 +4,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+cargo() {
+  "$ROOT/scripts/cargo-guard.sh" "$@"
+}
+
 cargo run --quiet --release --features lexical-compiler \
   --bin lay-nanda-wave-train -- \
   --compile-lexical-phase \

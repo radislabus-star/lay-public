@@ -4,6 +4,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+cargo() {
+  "$ROOT/scripts/cargo-guard.sh" "$@"
+}
+
 SYNC_ONLY=0
 NO_BUILD=0
 NO_RELOAD=0
@@ -92,6 +96,7 @@ if [[ "$NO_BUILD" == "0" ]]; then
   scripts/install-l2-transition-phase.sh
   scripts/install-l2-lexical-phase.sh
   target/release/lay-nanda-wave-eval --llmwave-pack-live
+  scripts/install-release-binaries.sh
 fi
 
 if [[ "$NO_RELOAD" == "0" ]]; then
@@ -111,7 +116,12 @@ fi
 
 scripts/check-gnome-extension-runtime.sh
 
-bin_version="$(target/release/lay --version | awk '{print $2}')"
+installed_lay="${LAY_INSTALL_LIBEXEC_DIR:-$HOME/.local/lib/lay/bin}/lay"
+if [[ -x "$installed_lay" ]]; then
+  bin_version="$($installed_lay --version | awk '{print $2}')"
+else
+  bin_version=""
+fi
 if [[ "$NO_BUILD" == "0" && "$bin_version" != "$version" ]]; then
   echo "release binary version drift: binary=$bin_version source=$version" >&2
   exit 1
@@ -121,7 +131,7 @@ if command -v lay >/dev/null 2>&1; then
   installed_version="$(lay --version | awk '{print $2}')"
   if [[ "$installed_version" != "$version" ]]; then
     echo "installed lay version drift: installed=$installed_version source=$version" >&2
-    echo "hint: install/copy target/release binaries before publishing" >&2
+    echo "hint: run scripts/install-release-binaries.sh before publishing" >&2
     exit 1
   fi
 fi

@@ -4,6 +4,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+cargo() {
+  "$ROOT/scripts/cargo-guard.sh" "$@"
+}
+
 echo "== cargo fmt --all --check =="
 cargo fmt --all --check
 

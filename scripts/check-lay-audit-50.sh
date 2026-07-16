@@ -2,6 +2,10 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+cargo() {
+  "$ROOT/scripts/cargo-guard.sh" "$@"
+}
 cd "$ROOT"
 
 fail=0
