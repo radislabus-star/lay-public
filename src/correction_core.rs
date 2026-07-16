@@ -308,6 +308,11 @@ pub(crate) struct CorrectionCandidateScoreTrace {
     pub(crate) likelihood_milli: i16,
     pub(crate) usage_prior_milli: i16,
     pub(crate) context_prior_milli: i16,
+    pub(crate) transition_field_milli: i16,
+    pub(crate) transition_field_attraction_milli: i16,
+    pub(crate) transition_field_repulsion_milli: i16,
+    pub(crate) transition_field_uncertainty_milli: i16,
+    pub(crate) transition_field_phase_competition_milli: i16,
     pub(crate) l2_wave_peak_milli: i16,
     pub(crate) l2_wave_peak_positive_milli: i16,
     pub(crate) l2_wave_peak_negative_milli: i16,
@@ -573,6 +578,15 @@ impl CorrectionCandidateScoreTrace {
                     likelihood_milli: crate::text_metrics::score_to_milli(score.likelihood),
                     usage_prior_milli: crate::text_metrics::score_to_milli(score.usage_prior),
                     context_prior_milli: crate::text_metrics::score_to_milli(score.context_prior),
+                    transition_field_milli: decision_signals.transition_field_milli,
+                    transition_field_attraction_milli: decision_signals
+                        .transition_field_attraction_milli,
+                    transition_field_repulsion_milli: decision_signals
+                        .transition_field_repulsion_milli,
+                    transition_field_uncertainty_milli: decision_signals
+                        .transition_field_uncertainty_milli,
+                    transition_field_phase_competition_milli: decision_signals
+                        .transition_field_phase_competition_milli,
                     l2_wave_peak_milli: decision_signals.l2_wave_peak_milli,
                     l2_wave_peak_positive_milli: decision_signals.l2_wave_peak_positive_milli,
                     l2_wave_peak_negative_milli: decision_signals.l2_wave_peak_negative_milli,

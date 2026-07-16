@@ -109,6 +109,16 @@ pub(crate) struct RecentActionCandidateScore {
     pub(crate) likelihood_milli: i16,
     pub(crate) usage_prior_milli: i16,
     pub(crate) context_prior_milli: i16,
+    #[serde(default)]
+    pub(crate) transition_field_milli: i16,
+    #[serde(default)]
+    pub(crate) transition_field_attraction_milli: i16,
+    #[serde(default)]
+    pub(crate) transition_field_repulsion_milli: i16,
+    #[serde(default)]
+    pub(crate) transition_field_uncertainty_milli: i16,
+    #[serde(default)]
+    pub(crate) transition_field_phase_competition_milli: i16,
     pub(crate) l2_wave_peak_milli: i16,
     pub(crate) l2_wave_peak_positive_milli: i16,
     pub(crate) l2_wave_peak_negative_milli: i16,
@@ -275,6 +285,12 @@ impl RecentActionGateTrace {
                     likelihood_milli: score.likelihood_milli,
                     usage_prior_milli: score.usage_prior_milli,
                     context_prior_milli: score.context_prior_milli,
+                    transition_field_milli: score.transition_field_milli,
+                    transition_field_attraction_milli: score.transition_field_attraction_milli,
+                    transition_field_repulsion_milli: score.transition_field_repulsion_milli,
+                    transition_field_uncertainty_milli: score.transition_field_uncertainty_milli,
+                    transition_field_phase_competition_milli: score
+                        .transition_field_phase_competition_milli,
                     l2_wave_peak_milli: score.l2_wave_peak_milli,
                     l2_wave_peak_positive_milli: score.l2_wave_peak_positive_milli,
                     l2_wave_peak_negative_milli: score.l2_wave_peak_negative_milli,

@@ -209,6 +209,10 @@ fn action_log_writes_candidate_score_trace_from_input_gate() {
     assert!(text.contains("\"candidate_scores\""));
     assert!(text.contains("\"posterior_milli\""));
     assert!(text.contains("\"usage_prior_milli\""));
+    assert!(text.contains("\"transition_field_milli\""));
+    assert!(text.contains("\"transition_field_attraction_milli\""));
+    assert!(text.contains("\"transition_field_repulsion_milli\""));
+    assert!(text.contains("\"transition_field_phase_competition_milli\""));
     assert!(text.contains("\"l3_phrase_milli\""));
     assert!(text.contains("\"l4_scene_milli\""));
     assert!(text.contains("\"l4_signed_milli\""));

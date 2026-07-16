@@ -794,7 +794,7 @@ fn coverage_example(
         canonical: candidates
             .iter()
             .take(5)
-            .map(|candidate| format!("{}:{}", normalize_word(&candidate.word), candidate.score))
+            .map(|candidate| candidate_interference_summary(input, candidate))
             .collect::<Vec<_>>()
             .join(", "),
         live_source: live_route(action),
@@ -802,6 +802,32 @@ fn coverage_example(
         decision_ms: action.decision_ms,
         output_ms: action.output_ms,
     }
+}
+
+fn candidate_interference_summary(input: &str, candidate: &CanonicalL2Candidate) -> String {
+    let candidate_word = normalize_word(&candidate.word);
+    let operation = if candidate_word.starts_with(input)
+        && candidate_word.chars().count() > input.chars().count()
+    {
+        "completion"
+    } else {
+        "typo"
+    };
+    let phase = lay::nanda_wave::l2_transition_phase_shadow_readout(
+        input,
+        &candidate_word,
+        operation,
+        None,
+    );
+    format!(
+        "{}:{} phase={}/{} margin={} threshold={}",
+        candidate_word,
+        candidate.score,
+        phase.verdict,
+        lay::nanda_wave::infer_l2_transition_operator(input, &candidate_word, operation),
+        phase.margin_micro,
+        phase.threshold_micro,
+    )
 }
 
 fn selected_source(action: &RecentAction) -> &str {

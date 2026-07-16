@@ -179,19 +179,27 @@ impl TransitionDecisionCore {
             l4_scene,
             l2_peak_context,
         };
-        let evaluations = candidates
+        let mut evaluations = candidates
             .iter()
             .map(|candidate| CandidateDecisionEvaluation::build(context, candidate))
             .collect::<Vec<_>>();
+        settle_transition_interference(candidates, &mut evaluations);
         if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
             for (candidate, evaluation) in candidates.iter().zip(&evaluations) {
                 eprintln!(
-                    "decision-core-candidate origin={:?} source_id={} class={} gate={:?} rank={:.3} usage={:.3} context={:.3} l3={} l4={} replacement={:?}",
+                    "decision-core-candidate origin={:?} source_id={} class={} gate={:?} rank={:.3} field={} attract={} repel={} uncertainty={} phase_competition={} usage={:.3} context={:.3} l3={} l4={} replacement={:?}",
                     candidate.origin,
                     candidate.source_id,
                     candidate.error_class.as_str(),
                     candidate.gate.action,
                     evaluation.signals.rank_score,
+                    evaluation.signals.transition_field_milli,
+                    evaluation.signals.transition_field_attraction_milli,
+                    evaluation.signals.transition_field_repulsion_milli,
+                    evaluation.signals.transition_field_uncertainty_milli,
+                    evaluation
+                        .signals
+                        .transition_field_phase_competition_milli,
                     evaluation.bayes.usage_prior,
                     evaluation.bayes.context_prior,
                     evaluation.signals.l3_phrase_milli,
@@ -261,6 +269,7 @@ fn compare_candidate_decision_order(
 }
 
 mod calibration;
+mod interference;
 mod receipt;
 pub(crate) use receipt::DecisionTransitionReceipt;
 
@@ -374,8 +383,20 @@ use admission::{
 
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) struct CandidateDecisionSignals {
+    non_field_rank_score: f32,
+    l2_rank_energy: f32,
+    l3_rank_energy: f32,
+    l4_scene_rank_energy: f32,
+    l4_signed_rank_energy: f32,
+    l2_transition_phase_margin_micro: i64,
+    l2_transition_phase_threshold_micro: i64,
     pub(crate) rank_score: f32,
     pub(crate) rank_milli: i16,
+    pub(crate) transition_field_milli: i16,
+    pub(crate) transition_field_attraction_milli: i16,
+    pub(crate) transition_field_repulsion_milli: i16,
+    pub(crate) transition_field_uncertainty_milli: i16,
+    pub(crate) transition_field_phase_competition_milli: i16,
     pub(crate) l2_wave_peak_milli: i16,
     pub(crate) l2_wave_peak_positive_milli: i16,
     pub(crate) l2_wave_peak_negative_milli: i16,
@@ -443,18 +464,31 @@ fn candidate_decision_signals_from_readouts(
         context.usage,
         context.l2_peak_context,
     );
-    let rank_score = bayes.posterior
+    let non_field_rank_score = bayes.posterior
         + ((explanation.explanation_score_milli as f32 - 500.0) / 2_000.0)
         + transition_rank_bonus(&action, candidate)
-        + ((candidate.evidence_count().saturating_sub(1).min(3) as f32) * 0.025)
-        + l2_wave_peak.rank_bonus
-        + l3.rank_bonus
-        + l4_scene.rank_bonus
-        + l4_signed.rank_bonus;
+        + ((candidate.evidence_count().saturating_sub(1).min(3) as f32) * 0.025);
+    let transition_field =
+        transition_interference_readout(l2_wave_peak, phase, l3, l4_scene, l4_signed, None);
+    let rank_score = non_field_rank_score + transition_field.signal;
 
     CandidateDecisionSignals {
+        non_field_rank_score,
+        l2_rank_energy: l2_wave_peak.rank_energy,
+        l3_rank_energy: l3.rank_energy,
+        l4_scene_rank_energy: l4_scene.rank_energy,
+        l4_signed_rank_energy: l4_signed.rank_energy,
+        l2_transition_phase_margin_micro: phase.margin_micro,
+        l2_transition_phase_threshold_micro: phase.threshold_micro,
         rank_score,
         rank_milli: score_to_milli(rank_score),
+        transition_field_milli: score_to_milli(transition_field.signal),
+        transition_field_attraction_milli: score_to_milli(transition_field.attraction),
+        transition_field_repulsion_milli: score_to_milli(transition_field.repulsion),
+        transition_field_uncertainty_milli: score_to_milli(transition_field.uncertainty),
+        transition_field_phase_competition_milli: score_to_milli(
+            transition_field.phase_competition,
+        ),
         l2_wave_peak_milli: score_to_milli(l2_wave_peak.signal),
         l2_wave_peak_positive_milli: l2_wave_peak.positive_milli,
         l2_wave_peak_negative_milli: l2_wave_peak.negative_milli,

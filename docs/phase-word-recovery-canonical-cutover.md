@@ -1,787 +1,642 @@
-# Canonical Phase Word Recovery Cutover
+# Lay L1-L4 Runtime Architecture
 
-Status: authoritative execution plan.
+Status: canonical live architecture map and forward contract.
 
-This document is the single source of truth for the L1-L4 refactor. Older
-architecture notes remain useful as history and supporting contracts, but they
-must not define a competing runtime route or a different meaning of L1-L4.
+Last source audit: 2026-07-16.
 
-## 1. Final Objective
+This document is the source of truth for the current L1-L4 runtime, its proven
+boundaries, and the next architectural work. Historical plans may explain why
+the code exists, but they do not override this map.
 
-Convert lay from a hybrid of stored-word retrieval, rule-owned candidate
-selection, duplicated L1 paths, and phase admission into one canonical typing
-processor:
+The document deliberately separates three things:
+
+```text
+LIVE       implemented and on the runtime route
+PROVEN     backed by a focused test, graph receipt, or measured artifact
+OPEN       desired direction, not a current product claim
+```
+
+## 1. Product Objective
+
+Lay is a typing transition processor, not a collection of independent
+autocorrect rules:
 
 ```text
 observed typing state
--> canonical L1 surface field
--> canonical L2 lexical phase field
--> phase-conditioned surface reconstruction
--> typed candidate lattice
--> L3 phrase field
--> L4 temporal and signed experience field
--> one TransitionDecisionCore
--> independent verifier
+-> surface evidence
+-> candidate lattice
+-> phrase and experience evidence
+-> one selected typed transition
+-> independent verification
 -> sealed AuthorizedEdit
--> one selected backend
+-> one backend
 ```
 
-The defining product claim is narrow and testable:
+The intended intelligence boundary is:
 
 ```text
-L1 encodes the damaged surface.
-L2 settles it toward lexical basins and reconstructs candidate surfaces.
-L3 decides which lexical reading is coherent in the phrase.
-L4 estimates the current temporal state and supplies accepted/rejected history.
-Bayes supplies local priors, but never becomes decision authority.
-Only TransitionDecisionCore can choose a transition.
-Only a verifier can create AuthorizedEdit.
+L1 observes damaged form.
+L2 births lexical hypotheses.
+L3 evaluates phrase compatibility.
+L4 carries temporal and accepted/rejected experience.
+Bayes supplies local priors.
+The joint transition field combines their pressure.
+TransitionDecisionCore is the only chooser.
+The verifier is the only path to AuthorizedEdit.
 ```
 
-The refactor is complete only when the production hot path no longer depends on
-`word_id -> String` retrieval as lexical authority and no legacy candidate path
-can bypass the canonical lattice.
+No L1-L4 layer is allowed to mutate text.
 
 ## 2. Non-Negotiable Laws
 
-1. No production module may directly apply a correction it generated.
-2. No word-specific production hardcode is allowed.
-3. No test fixture, expected answer, or verifier label may become runtime input.
-4. No `source_words: Vec<String>` may exist in the hot lexical artifact.
-5. Raw corpus words are cold compiler input, not live candidate authority.
-6. A grapheme alphabet is allowed because reconstruction must be reversible;
-   whole-word storage is not required for that reversibility.
-7. L1, L2, L3, L4, Bayes, and phase memory may only produce typed evidence.
-8. `TransitionDecisionCore` is the only chooser.
-9. `AuthorizedEdit` is the only mutation capability.
-10. IME, daemon, GNOME, and replay modules are backends, not correction brains.
-11. A normal typo transition may touch only the active token.
-12. A boundary transition requires a separate typed proof.
-13. Unknown, stale, low-margin, or conflicting states produce `SuggestOnly` or
-    `Abstain`, never a guessed destructive edit.
-14. Temporary shadow code must be deleted at cutover. Rollback is a Git
-    checkpoint, not a permanently retained second architecture.
+1. Candidate producers never apply their own output.
+2. Production behavior must not contain word-specific fixes from chat logs.
+3. Test labels, expected answers, and verifier output never become runtime
+   features.
+4. A live applied edit is an observation, not automatically a true label.
+5. Corpus text is cold compiler input. Runtime artifacts must be bounded and
+   versioned.
+6. `TransitionDecisionCore` is the sole candidate chooser.
+7. `AuthorizedEdit` is the sole text mutation capability.
+8. Daemon, IME, GNOME, tray, and replay are adapters or executors, not separate
+   correction brains.
+9. Normal correction changes only the active token.
+10. Left-context or word-boundary changes require a typed boundary transition
+    and independent proof.
+11. Stale focus, revision, caret, surrounding text, or backend state causes
+    abstention.
+12. Unknown or conflicting evidence causes `SuggestOnly`, `Keep`, `Abstain`, or
+    `Veto`, never a destructive guess.
+13. Phase, Bayes, L3, and L4 can redistribute evidence but cannot bypass the
+    verifier.
+14. Faster runtime is not accepted if it removes candidate sources or weakens
+    quality.
+15. A release claim needs a fixed denominator and clean labels. A rotating live
+    log is diagnostic evidence only.
 
-## 3. Canonical Layer Definitions
-
-### L1: Surface Field
-
-L1 owns one representation of observable form:
-
-```text
-Unicode scalar/grapheme IDs
-script and keyboard projection
-4-gram plus position atoms
-token and phrase boundaries
-cursor-relative position
-surface anomaly and residual atoms
-```
-
-L1 does not know words, meanings, candidate strings, usage counts, or edit
-policy. The existing per-character packet route and 4-gram center route must be
-merged into this one encoder and one artifact schema.
-
-### L2: Lexical Phase Field
-
-L2 owns lexical form and candidate birth:
+## 3. Current Runtime Tree
 
 ```text
-L1 center sequence
--> motif/lexical basin activation
--> positive and anti-center interference
--> top-k latent surface hypotheses
--> phase-conditioned grapheme decoder
--> candidate surfaces
-```
-
-L2 must generate surfaces from compact field state. It may not select a word ID
-and clone a stored full word. Generic operators such as layout projection,
-boundary shift, keep, and completion may seed the hypothesis field, but they do
-not decide the winner.
-
-Error classes such as transposition, missing letter, repeated letter, and
-substitution are descriptions of the observed delta after reconstruction. They
-are not independent rule-owned correction brains.
-
-### L3: Phrase Field
-
-L3 owns phrase compatibility:
-
-```text
-candidate lexical state
-+ left phrase state
-+ language scene
-+ grammatical and semantic relations
--> context energy / anti-energy / unknown
-```
-
-L3 must compare all serious L2 candidates. It may suppress a locally plausible
-word that breaks the phrase and strengthen a noisy candidate that restores a
-coherent phrase. It cannot create an edit or override a verifier veto.
-
-### L4: Temporal State and Experience Field
-
-L4 owns the estimated hidden typing state:
-
-```text
-previous state
-+ key/IME/daemon observation
-+ accepted/rejected/undo outcome
--> estimated current state
--> signed transition evidence: positive / neutral / negative
-```
-
-L4 is not a workflow rule table. It is a state estimator and transferable
-memory of transition outcomes. Bayes usage priors are an input to L4/readout,
-not a second winner selector.
-
-Current runtime boundary: the transferable signed transition memory is live,
-including exact-state positive and negative evidence. A real
-temporal estimator over focus, revision, composition, and successive
-observations is not live yet. The former per-candidate weighted
-`L4StateEstimator` was removed because an exhaustive live-input truth table
-showed that it produced no unique admission decision beyond verifier, latent
-invariants, and signed memory. Until the temporal inputs exist, the project
-must report this part as `WATCH`, not recreate a stateless scorer under an L4
-name.
-
-## 4. Canonical Runtime Tree
-
-```text
-INPUT ADAPTERS
+INPUT ROUTES
 |
-+-- daemon event adapter
-+-- IBus/IME adapter
-+-- manual toggle adapter
-+-- replay/eval adapter
++-- daemon/evdev committed text
++-- IBus composition and accepted completion
++-- manual double Shift
++-- Enter/Space autocorrect
++-- replay and evaluation
 |
 v
-TypingStateSnapshot
+input_gate
+|   one entry to live correction decisions
+v
+correction_pipeline / correction_core facade
+|   candidate production only
+v
+L1 SURFACE EVIDENCE
+|
++-- lexical_surface_atoms::SurfaceFieldEncoder
++-- nanda_wave::l1 per-symbol UTF8/script/keyboard/boundary packets
++-- transition_relation structural delta atoms
 |
 v
-nanda_wave::l1
-|   canonical SurfaceFieldState
+L2 CANDIDATE LATTICE
+|
++-- lexical phase readout (LAYLPH02)
++-- layout, boundary, typo, morphology, completion adapters
++-- local usage/context priors
++-- transition phase readout (LAYPC004)
+|
 v
-nanda_wave::l2
-|   lexical basins + phase decoder + CandidateProposal list
+L3 PHRASE EVIDENCE
+|   support / suppress / neutral / unavailable
 v
-nanda_wave::l3
-|   ContextReadout per candidate
+L4 STATE-SPECIFIC EXPERIENCE
+|   accepted / rejected / reverted signed memory
 v
-nanda_wave::l4
-|   StateReadout + SignedExperience per candidate
+JOINT TRANSITION INTERFERENCE
+|   constructive and destructive evidence within one ranking budget
 v
 typing_transition::TransitionDecisionCore
-|   Apply | SuggestOnly | Keep | Abstain | Veto
+|   Apply / SuggestOnly / Keep / Abstain / Veto
 v
-typing_transition::TransitionVerifier
-|   revision, focus, caret, boundary, layout, backend postconditions
+text_edit actor + verifier
+|   focus / epoch / visible tail / boundary / left context / backend proof
 v
-text_edit::AuthorizedEdit
+AuthorizedEdit
 |
-+-- daemon/uinput backend
-+-- IBus CommitText/DeleteSurroundingText backend
-+-- GNOME ReplaceText/layout backend
++-- daemon output backend
++-- IBus commit/delete backend
++-- GNOME layout synchronization backend
 +-- undo backend
 ```
 
-Dependency direction is one-way. A lower line may not import policy from a
-higher line. In particular, `nanda_wave` must not call
-`TransitionDecisionCore`, and adapters must not call candidate generators
-directly.
+The generated architecture receipt currently proves the authority path. It
+does not prove language quality.
 
-## 5. Canonical Data Contracts
+## 4. Layer Truth
 
-The migration introduces one versioned type for every boundary:
+### 4.1 L1: surface observation
 
-```text
-TypingStateSnapshot
-  focus_id
-  revision
-  caret
-  visible_tail
-  active_token_span
-  composition_state
-  observed_layout
-  backend_capabilities
+LIVE:
 
-SurfaceFieldState
-  grapheme_ids
-  l1_center_refs
-  residual_atoms
-  script_projection
-  layout_projection
-  boundary_state
+- `lexical_surface_atoms::SurfaceFieldEncoder` creates compact surface atoms;
+- `nanda_wave::l1` emits UTF-8, script, keyboard, and boundary packets per
+  symbol;
+- lexical phase compilation uses position-sensitive and relaxed atom-center
+  keys;
+- `transition_relation` separately encodes the structural delta of a proposed
+  transition.
 
-LatentLexicalHypothesis
-  lexical_center_id
-  motif_path
-  decoder_state
-  positive_energy
-  anti_energy
-  support
-  novelty
-
-CandidateProposal
-  rendered_surface
-  active_span
-  operator_hint
-  l1_readout
-  l2_readout
-  provenance
-
-ContextReadout
-  phrase_energy
-  anti_energy
-  relation_support
-  unknown
-
-StateReadout
-  estimated_state_id
-  signed_experience
-  usage_prior
-  context_prior
-  uncertainty
-
-TransitionProposal
-  state_before
-  candidate
-  predicted_state_after
-  typed_operator
-  all_readouts
-
-TransitionProof
-  preserved_invariants
-  changed_invariants
-  independent_verifier_evidence
-  backend_postconditions
-
-AuthorizedEdit
-  private constructor
-  verified proposal
-  exact edit plan
-  expected revision/focus
-  layout postcondition
-```
-
-Stringly typed `source_id`, `operation`, and support strings must be replaced by
-enums and structured evidence before legacy deletion.
-
-## 6. Hot and Cold Memory Contract
-
-### Cold compiler inputs
+Important correction to older plans: there is not one universal L1 object in
+the code. There are two valid projections of the same event:
 
 ```text
-corpus words and books
-morphological forms
-clean phrase corpora
-accepted/rejected user events
-synthetic corruption generators
-training labels
-debug/explain metadata
+lexical projection     what surface basin can reconstruct this token?
+transition projection  what typed change does this candidate propose?
 ```
 
-### Hot read-only artifact
+They share normalized surface utilities but serve different mathematical
+objects. Forcing them into one struct would mix lexical retrieval with action
+proof. Their schemas must remain compatible, not identical.
+
+L1 has no edit authority.
+
+### 4.2 L2: candidate birth and lexical field
+
+L2 currently has two distinct hot memories.
+
+#### LAYLPH02 lexical artifact
+
+LIVE:
 
 ```text
-grapheme ID table
-L1 center records
-L1-to-L2 motif references
-lexical phase centers
-anti-centers
-phase-conditioned decoder transitions
-terminal/continuation probabilities
-morpheme and boundary transition centers
-quantized usage priors
-artifact header, offsets, hashes, version
+surface atoms
+-> center postings
+-> terminal hypotheses
+-> grapheme decoder path
+-> candidate surfaces
 ```
 
-The artifact must be a deterministic binary file, memory-mapped read-only by
-daemon and IME. Shared pages must remain shared. Runtime must not rebuild it and
-must not hold duplicate `HashSet<String>` or `Vec<String>` copies.
+The artifact contains trie/graph nodes, arcs, terminals, quantized phase
+vectors, center postings, decoder states, and decoder arcs. It does not keep a
+`Vec<String>` or a `word_id -> String` table.
 
-### Ephemeral runtime data
+Truthful boundary: it is still a compact reversible encoding of the compiled
+vocabulary. Its graph contains enough Unicode arc information to reconstruct
+known surfaces. Therefore it is not yet a purely emergent phase generator that
+can invent every valid unseen word from centers alone.
 
-Only the observed input and the final top-k rendered candidates may exist as
-strings. Candidate strings are bounded, short-lived, and never become the
-primary index.
+#### LAYPC004 transition phase artifact
 
-## 7. Physical Module Ownership
-
-Target modules:
+LIVE and PROVEN:
 
 ```text
-src/nanda_wave/
-  phase_math.rs                 one phase/vector/hash implementation
-  artifact.rs                   binary schema and mmap reader
-  compiler/                     cold-only training/compilation
-  l1/
-    mod.rs                      facade
-    encoder.rs                  canonical live encoder
-    centers.rs                  4-gram/position center readout
-    types.rs
-  l2/
-    mod.rs                      facade
-    field.rs                    lexical basin settling
-    decoder.rs                  center-conditioned grapheme generation
-    lattice.rs                  top-k typed proposals
-    morphology.rs               compact form transitions
-    types.rs
-  l3/
-    mod.rs
-    context_field.rs
-    phrase_memory.rs
-    types.rs
-  l4/
-    mod.rs
-    state_estimator.rs
-    signed_memory.rs
-    usage_prior.rs
-    types.rs
-
-src/typing_transition/
-  engine.rs                     one pipeline orchestrator
-  decision.rs                   one chooser
-  verifier.rs                   independent proof
-  state.rs
-  operator.rs
-  proof.rs
-
-src/text_edit/
-  executor.rs                   sealed AuthorizedEdit
-  plan.rs
-  safety.rs
-  backends/                     physical output only
+transition relation atoms
+-> operator profile
+-> positive phase centers
+-> anti-centers
+-> learned margin threshold
+-> Support / Repel / Unknown
 ```
 
-Files are split by owner and runtime route, not merely by line count. Facades
-should remain small. Proof fixtures and cold compiler code must never be in the
-runtime dependency closure.
+The package stores quantized centers, anti-centers, promotion state, support
+counts, and thresholds without raw words.
 
-## 8. Duplicate Elimination Map
-
-Each concept receives one owner:
+Current production-artifact proof:
 
 ```text
-surface normalization        -> nanda_wave::l1
-token/segment boundaries     -> word_reader
-script/layout projection     -> nanda_wave::l1
-phase vector math            -> nanda_wave::phase_math
-surface distance             -> text_metrics
-candidate identity/dedup     -> nanda_wave::l2::lattice
-candidate ranking            -> TransitionDecisionCore
-phrase compatibility         -> nanda_wave::l3
-usage and signed experience  -> nanda_wave::l4
-operator typing              -> typing_transition::operator
-transition verification      -> typing_transition::verifier
-edit planning                -> text_edit::plan
-physical mutation            -> text_edit::backends
+promoted operators                 11 / 11
+heldout positive support           72 / 72
+heldout negative false accepts      0 / 169
+positive support without phase      0 / 72
+negative false accepts without anti 169 / 169
+lexical negative rows deferred      163
 ```
 
-The old implementation is deleted after callers move. It is not wrapped and
-left behind. AST/graph guards must reject:
+Truthful boundary: current anti-centers primarily separate structural operator
+transitions and typed counterfactuals. They do not yet prove that one concrete
+lexical candidate is the correct word among several candidates with the same
+operator.
+
+#### Joint transition interference
+
+LIVE:
+
+`typing_transition::decision::interference` combines the released ranking
+energies and settles phase competition inside the existing L2 energy budget.
 
 ```text
-production `if word == ...`
-hot `Vec<String>`/`HashSet<String>` lexical authority
-test fixture `include_str!` in runtime compiler input
-direct CommitText/delete/uinput outside backend modules
-candidate source importing DecisionCore
-IME importing Bayes, L2 training, or phrase policy
-string-based operator/source dispatch
-duplicate normalize/split/script/hash/phase helpers
+surface L2 energy
++ relative promoted phase margin
+-> settled L2 energy
+
+settled L2
++ L3 phrase energy
++ L4 scene energy
++ L4 signed experience
+-> joint transition energy
 ```
 
-## 9. Full Implementation Route
+The relative phase pass compares promoted `Support` hypotheses in the same
+candidate batch. The strongest margin keeps its L2 energy. Weaker margins are
+destructively attenuated. No extra ranking budget is created, so adding a new
+scorer cannot silently add new authority.
 
-### Stage 0: Freeze the truthful baseline
+This is a candidate arbitration mechanism, not a verifier. `Repel` and
+`Unknown` still follow phase admission policy.
 
-- Commit and tag the current installable state.
-- Record version, Git hash, runtime binary hashes, config, daemon/IME PSS,
-  startup time, candidate p50/p99/max, decision/output latency, and dirty-log
-  quality.
-- Archive current unsafe-edit report and real-suite per-class scoreboard.
-- Record the known baseline: Wave 879/1181, deterministic 869/1181, 89 Wave
-  regressions, and current surface-L2 ablation behavior.
-- Build a fixed compatibility corpus for Tab, Space, first-word IME, double
-  Shift, layout synchronization, Telegram, Firefox, WeChat, and terminal paths.
+OPEN:
 
-Exit: a reproducible baseline artifact and rollback tag exist.
+- train lexical competitor anti-centers from clean accepted/rejected pairs;
+- separate same-operator lexical competition from operator classification;
+- replace remaining hand-calibrated L2 peak components with learned package
+  calibration after a fixed heldout proves parity;
+- raise candidate coverage without loading source corpora into the hot path.
 
-### Stage 1: Make the plan enforceable
+### 4.3 L3: phrase compatibility
 
-- Add architecture tests for the dependency direction and single authority.
-- Replace substring-based architecture PASS with AST/graph-derived checks.
-- Add a duplicate-symbol report for normalization, token splitting, phase math,
-  language classification, candidate selection, and text mutation.
-- Add forbidden-import and forbidden-call guards.
-- Fix the Lay live-transition gate profile so the project gate runs on Lay,
-  rather than a wrapper-selected foreign profile.
+LIVE:
 
-Exit: architecture violations fail before implementation begins.
+- evaluates serious candidates against phrase memory when that memory is warm;
+- emits `Support`, `Suppress`, `Neutral`, `Unavailable`, or `NotApplicable`;
+- can strengthen or weaken a candidate but cannot create an edit.
 
-### Stage 2: Purify proof and data ownership
+Truthful boundary: current L3 is a bounded phrase gate. It is not yet a full
+sentence world model and must not be described as one. Missing memory is
+explicitly unavailable, not neutral proof.
 
-- Split data into `train`, `heldout`, `adversarial`, `runtime-user`, and
-  `explain-only` domains.
-- Remove synthetic expected outputs and seed phrases from live runtime sources.
-- Remove `verified:true/false` and all outcome labels from model input atoms.
-- Keep verifier outcome only as the training target.
-- Create contamination checks based on normalized words, n-grams, phrase
-  windows, and generated corruption ancestry.
-- Invalidate the stale causal receipt. Do not refresh it until the new proof
-  passes without leakage.
+OPEN:
 
-Exit: runtime cannot read proof fixtures and heldout cannot overlap training.
+- clean corpus ingestion with heldout phrase families;
+- compact phrase relation centers rather than raw phrase lookup;
+- causal ablation proving that context fixes lexical ambiguity;
+- same-word/different-context negatives and role-swap traps.
 
-### Stage 3: Unify L1
+### 4.4 L4: temporal state and signed experience
 
-- Merge `l1.rs` packet emission and `l1_center_memory.rs` into one
-  `SurfaceFieldEncoder`.
-- Use one normalization path and one position encoding.
-- Preserve short-token behavior with padded/boundary atoms rather than a second
-  special L1.
-- Make daemon, IME, eval, and cold compiler consume the same encoder.
-- Prove debug/runtime parity byte-for-byte for the same input snapshot.
+LIVE:
 
-Exit: one L1 type, one implementation, one test suite, no parallel encoder.
+- state-specific accepted/rejected/reverted experience;
+- `+ / 0 / -` signed transition evidence;
+- latest-state behavior and negative memory;
+- exact target identity for boundary transitions.
 
-### Stage 4: Build the cold field compiler
+Truthful boundary: L4 is not a general hidden-state world model yet. A previous
+stateless weighted estimator was removed because it produced no unique
+decision beyond existing evidence. The current honest L4 is signed transition
+memory plus scene state.
 
-- Read corpora only in an offline compiler binary.
-- Compile L1 centers, lexical motif centers, anti-centers, morphology/boundary
-  transitions, decoder transitions, and priors into one versioned artifact.
-- Make compilation deterministic and bit-reproducible.
-- Store source hashes and compiler version in the manifest.
-- Reject stale or partially written artifacts atomically.
+OPEN:
 
-Exit: the same corpus and config produce the same artifact hash.
+- temporal estimation over focus, epoch, composition, caret, and successive
+  observations;
+- prediction -> observation -> correction -> confidence;
+- transfer across equivalent typing scenes without mixing stale states;
+- learned goal-state prediction for completion and boundary decisions.
 
-### Stage 5: Replace hot word storage
+### 4.5 Bayes
 
-- Remove `source_words` from `L2CenterMemory`.
-- Remove `runtime_l2_surface_word_set` and every duplicate hot word set.
-- Remove word-ID posting lists that require full strings for final readout.
-- Keep only compact center, motif, transition, terminal, and prior arrays.
-- Load the artifact through read-only mmap shared by daemon and IME.
-- Make memory accounting include mapped bytes, resident shared pages, private
-  allocations, capacities, and ephemeral candidate strings.
+LIVE:
 
-Exit: production hot memory contains no full-word lexical authority.
+- local word usage prior;
+- context-word prior;
+- rejected word and context prior;
+- accepted/rejected counts from this installation.
 
-### Stage 6: Implement true phase-conditioned surface reconstruction
+Bayes is a signal, not an independent chooser. Personal frequency remains
+local to the machine. Corpus frequency is cold initialization, not personal
+truth.
 
-- Encode the damaged token into canonical L1 state.
-- Settle activation against lexical positive and anti-centers.
-- Produce top-k latent lexical hypotheses without looking up full words.
-- Decode grapheme IDs conditioned on query state, lexical center, motif path,
-  position, and context feedback.
-- Emit stop/terminal probability and uncertainty.
-- Render grapheme IDs to UTF-8 only for bounded final candidates.
-- Replace the current `prev2 + prev1 + position` decoder as sole authority. It
-  may survive temporarily only as an explicit baseline ablation.
+## 5. Decision and Mutation Authority
 
-Exit: heldout words absent from all source-word tables are reconstructed, and
-disabling phase centers causes a large measured drop.
+### Candidate proposal
 
-### Stage 7: Collapse candidate rules into one lattice
-
-- Candidate producers emit only typed latent proposals.
-- Keep generic operators: `Keep`, `SurfaceFieldDecode`, `LayoutProjection`,
-  `Completion`, `BoundaryShift`, and explicit `ManualToggle`.
-- Infer missing/repeated/transposed/substituted classifications from the final
-  surface delta instead of maintaining independent decision-owning rules.
-- Deduplicate by predicted surface state, not source string.
-- Preserve multiple serious hypotheses through top-k.
-- Delete migrated paths from `correction_core`, `ru_typo`, `context_wave`,
-  `phrase_reader`, `candidate_gate`, and IME-local helpers.
-
-Exit: every candidate visible in runtime appears in one typed lattice report.
-
-### Stage 8: Rebuild L3 as the phrase authority
-
-- Train phrase state from clean corpora/books and accepted local usage.
-- Encode phrase relations and candidate insertion state, not exact phrase
-  lookup as authority.
-- Return positive, negative, and unknown context energy for each L2 candidate.
-- Support long enough context to resolve detached letters, layout ambiguity,
-  morphology, and split/glue ambiguity.
-- Keep phrase rewriting suggest-only unless a boundary operator is proven.
-
-Exit: context ablation measurably harms ambiguous heldout cases while clean
-technical tokens and protected text remain stable.
-
-### Stage 9: Consolidate L4, Bayes, and state estimation
-
-Status: `WATCH`. Signed accepted/rejected transition memory is implemented;
-streaming temporal state estimation remains open.
-
-- Move accepted, rejected, undone, and manually selected outcomes into one
-  signed state memory.
-- Keep local unigram/bigram/trigram priors as compact counts or quantized priors,
-  never as source-code word lists.
-- Use prediction, observation, correction, and uncertainty in one state
-  estimator.
-- Make stale focus/revision evidence reset or reduce confidence.
-- Remove duplicate usage scoring from L2, IME, correction core, and context
-  modules.
-
-Exit: one CLI report explains what L4/Bayes learned and why it changed rank.
-
-### Stage 10: Rebuild the one DecisionCore
-
-- Move all final ranking and admission into `TransitionDecisionCore`.
-- Consume structured L1/L2/L3/L4 readouts and typed operator evidence.
-- Use one deterministic ordering for `Apply`, `SuggestOnly`, `Keep`, `Abstain`,
-  and `Veto`.
-- Make uncertainty first-class rather than hiding it in arbitrary score gaps.
-- Remove local thresholds and winner selection from candidate sources and IME.
-- Replace saturated/ineffective tray weight semantics with one documented
-  calibration scale.
-
-Exit: graph analysis finds exactly one candidate chooser.
-
-### Stage 11: Make verification independent
-
-- Construct predicted state before verification.
-- Verify focus, revision, caret, active span, left context, token count,
-  boundary delta, layout postcondition, and backend capability.
-- Keep verifier features out of model input.
-- Make `AuthorizedEdit` constructor private to the verifier boundary.
-- Require explicit boundary proof for every space-count or left-context change.
-- Preserve undo as a typed inverse transition.
-
-Exit: graph analysis finds no physical edit without `AuthorizedEdit`.
-
-### Stage 12: Reduce daemon and IME to adapters
-
-- Both adapters create `TypingStateSnapshot` and call one engine.
-- IME may display, select, accept, cancel, and report composition state only.
-- Daemon may observe keys, maintain its snapshot, and execute authorized output.
-- Remove IME-local ranking, Bayes, phrase prediction, and correction logic.
-- Keep backend-specific deletion/commit behavior isolated behind capabilities.
-- Ensure Space closes composition and Tab commits exactly one candidate plus
-  the configured delimiter.
-
-Exit: the same snapshot gives the same decision in daemon replay, IME, and eval.
-
-### Stage 13: Make layout a typed state transition
-
-- Keep manual double Shift deterministic and user-authoritative.
-- Auto layout projection becomes a candidate requiring language/context proof.
-- Include the expected GNOME/IBus/tray layout in transition postconditions.
-- Verify both RU-to-EN and EN-to-RU on heldout real words and technical tokens.
-- Delete independent layout-switch decisions from correction and tray code.
-
-Exit: text, IBus source, GNOME source, and tray state converge after every
-layout transition.
-
-### Stage 14: Promote boundary operators last
-
-- Represent split, merge, and moved-prefix repairs as explicit boundary-state
-  transitions.
-- Require separate positive/anti-centers and a higher margin than token-local
-  edits.
-- Prove zero left-context mutation outside the declared span.
-- Keep multiword phrase rewrites suggest-only until independently proven.
-- Run dedicated Telegram, Firefox, WeChat, terminal, and long-tail scenarios.
-
-Exit: unsafe multiword apply and unproven left-context mutation remain zero.
-
-### Stage 15: Atomic authority cutover
-
-- Run old and canonical engines only in bounded shadow replay.
-- Compare candidate coverage, top-k, top-1, per-class regressions, unsafe edits,
-  latency, memory, and layout outcomes.
-- When gates pass, switch the single `typing_transition::engine` call site.
-- In the same cutover series, delete legacy authority and temporary shadow
-  branches.
-- Do not ship a permanent old/new mode selector.
-
-Exit: only the canonical route is reachable in the production graph.
-
-### Stage 16: Delete legacy and collapse facades
-
-- Remove obsolete word retrieval, prefix authority, duplicate L1, old scorer,
-  rule graph, string source IDs, stale status fields, and unused config.
-- Reduce `correction_core` to a compatibility facade, then remove it when no
-  public caller remains.
-- Split oversized modules only along the ownership map in this document.
-- Remove dead tests that only prove deleted internals; preserve behavior and
-  safety fixtures through canonical public tests.
-- Regenerate graphify and require no forbidden cross-route edges.
-
-Exit: no compatibility code retains a second brain.
-
-### Stage 17: Release proof and live verification
-
-- Run clean heldout, adversarial, causal ablations, dirty-log replay, route
-  tests, memory/latency probes, and runtime application checks.
-- Refresh causal receipts only from the final source tree.
-- Run NANDA structural and live-transition gates. WATCH, VETO, and ERROR block
-  promotion.
-- Build/install one versioned checkpoint, restart daemon and IME, verify loaded
-  binary hashes, then test live windows.
-- Bump the version at every installable checkpoint so runtime provenance is
-  visible in tray and logs.
-- Push/release only after the installed runtime passes.
-
-Exit: release gates below pass and repository/runtime provenance agree.
-
-## 10. Required Causal Ablations
-
-The final claim is rejected unless all controls exist:
+Candidate producers may emit:
 
 ```text
-full canonical field
-without L1 centers
-without L2 phase centers
-without anti-centers
-shuffled phase
-magnitude only
-random centers
-without L3 context
-without L4 signed experience
-without Bayes prior
-without exact/full-word storage
-without current Markov baseline
-verifier-label atom forbidden
+surface
+origin
+source role
+typed error class
+evidence count
+suggest/apply eligibility request
 ```
 
-Required interpretation:
+They cannot authorize output.
 
-- Removing full-word storage must not destroy canonical reconstruction.
-- Removing phase centers must significantly reduce heldout lexical recovery.
-- Shuffled/magnitude/random phase controls must not preserve the result.
-- Removing anti-centers must increase false candidates or reduce margin.
-- Removing L3 must hurt context-ambiguous cases, not simple layout projection.
-- Verifier false accepts must remain zero for promoted destructive transitions.
+### Candidate evaluation
 
-## 11. Release Gates
-
-### Correctness
+For each candidate, `TransitionDecisionCore` derives:
 
 ```text
-unsafe multiword apply                         0
-left-context mutation without boundary proof  0
-backend execution without AuthorizedEdit      0
-verifier label in model input                  0
-proof fixture in runtime input                 0
-hot full-word lexical authority                0
+Bayes posterior and risk
+structural explanation
+typed action operator
+transition relation atoms
+L2 lexical peak
+L2 positive/anti phase margin
+L3 phrase disposition
+L4 scene and signed memory
+joint transition field energy
+predicted typed transition
 ```
 
-### Lexical product quality
+The batch then settles relative phase competition before selecting a candidate.
+
+### Verification
+
+Selection is still not permission to mutate. The verifier checks:
+
+- active token and changed token count;
+- left-context preservation;
+- word-boundary proof;
+- focus and epoch freshness;
+- visible/surrounding suffix agreement;
+- backend capability and postcondition;
+- layout synchronization where required.
+
+Only successful verification can issue `AuthorizedEdit`.
+
+## 6. Physical Ownership
 
 ```text
-heldout single-edit candidate coverage         >= 90%
-heldout layout projection coverage             >= 99%
-heldout correct candidate top-3                >= 90%
-clean/protected false apply                     0 in release suite
-Wave real-suite overall                        strictly above baseline
-Wave per-class regression                      none without explicit review
-phase-off causal drop                          >= 20 percentage points
+src/input_gate.rs
+  live correction entrypoint
+
+src/correction_core.rs
+  facade, candidate collection, trace projection
+
+src/lexical_surface_atoms.rs
+  shared surface atom encoding
+
+src/nanda_wave/l1.rs
+  per-symbol L1 packets
+
+src/nanda_wave/l2.rs
+src/nanda_wave/l2/*
+  candidate sources and lexical readout
+
+src/nanda_wave/lexical_phase/{compiler,format,runtime}.rs
+  cold lexical compiler and hot LAYLPH02 readout
+
+src/nanda_wave/l2_candidate_phase.rs
+  LAYPC004 operator phase training, package, and readout
+
+src/nanda_wave/l2_wave_peak.rs
+  current calibrated lexical peak evidence; still partly hand-calibrated
+
+src/nanda_wave/l3.rs
+src/nanda_wave/l3_phrase_gate.rs
+  phrase evidence
+
+src/nanda_wave/l4_goal_state.rs
+src/nanda_wave/l4_signed_memory.rs
+src/typing_memory.rs
+  scene and accepted/rejected transition experience
+
+src/typing_transition/decision.rs
+src/typing_transition/decision/*
+  sole chooser, admission, joint interference, receipt
+
+src/text_edit/*
+  actor, verifier, safety, AuthorizedEdit, executor contract
+
+src/bin/lay_daemon/*
+src/bin/lay_ibus_engine/*
+  adapters and physical backends
+
+src/architecture_contract.rs
+src/generated/architecture_graph_receipt.json
+  compiled architecture scoreboard
 ```
 
-The denominator and dataset provenance must be printed with every percentage.
+## 7. Hot and Cold Memory
 
-### Performance and memory
+### Cold inputs
+
+- dictionaries and corpora;
+- generated forms;
+- clean accepted/rejected transition examples;
+- phrase corpora;
+- counterfactual and role-swap negatives;
+- fixed heldout truth sets.
+
+Cold input may contain strings. It is not loaded merely because the process
+started.
+
+### Hot runtime
+
+- memory-mapped or bounded lexical graph records;
+- quantized lexical phase vectors and postings;
+- promoted transition centers and anti-centers;
+- compact usage/context snapshots;
+- bounded L3/L4 state.
+
+The hot runtime must expose bytes, counts, version, checksum, and warmup time.
+
+### Runtime truth
+
+`raw_words_stored=false` for LAYPC004 means the transition package stores no
+raw words. It must not be generalized into the false claim that all lexical
+runtime state is non-reversible. LAYLPH02 deliberately keeps a reversible
+grapheme graph so output text can be produced.
+
+## 8. Scoreboard
+
+### Architecture authority
+
+Current generated graph verdict: `PASS`.
+
+Proven boundaries:
+
+- one live correction entrypoint;
+- one candidate chooser;
+- IME backend-only authority;
+- sealed text mutation capability;
+- boundary and stale-state verification;
+- no raw words in the transition phase package.
+
+### Safety
+
+Latest pre-change live safety snapshot:
 
 ```text
-warm L1-L2 candidate p99                       <= 1 ms
-warm L1-L2 candidate max in fixed bench        <= 5 ms
-no corpus parsing or artifact build on keypress
-no first-word lazy initialization stall
-hot artifact                                   mmap read-only
-combined private dirty growth after warmup     bounded and reported
-candidate strings                              bounded top-k only
+unsafe multiword apply                 0
+unverified left-context apply          0
+gate failures                          0
 ```
 
-Output/backend latency is reported separately from field compute latency.
-Performance may not be improved by disabling candidate sources or reducing
-quality.
+These are release invariants, not quality metrics.
 
-### Runtime behavior
+### Lexical quality
+
+Recent live diagnostics showed high top-k coverage but unstable top-1. The
+rotating sample also contained a false target generated by a bad live apply.
+Therefore live `from -> to` rows are not accepted as clean verifier truth.
+
+Current quality verdict: `WATCH`.
+
+The required fixed report is:
 
 ```text
-first-word IME candidate visible
-Space closes preedit
-Tab commits one visible candidate and delimiter
-double Shift works on first press
-manual toggle remains deterministic
-auto layout synchronizes GNOME, IBus, and tray
-undo reverses exactly one authorized transition
-Telegram, Firefox, WeChat, and terminal smoke pass
+clean heldout rows
+candidate coverage
+top-1 before/after joint field
+false applies
+abstains
+operator confusion matrix
+same-operator lexical confusion matrix
+phase ablation
+anti-center ablation
+latency p50/p95/p99/max
 ```
 
-## 12. Fast Verification Cadence
+### Performance
 
-Do not run the full release suite after every edit.
+Microsecond lexical readout and end-to-end output latency are different
+denominators. Disk logging, lazy warmup, backend delete/insert, GNOME/IBus
+synchronization, and candidate generation must be timed separately.
+
+## 9. Debt Queue
+
+### P0: clean truth and lexical anti-centers
+
+Build a fixed heldout from explicit user correction, immediate undo/reject, and
+curated corpus corruption. Do not label every applied edit as true. Mine
+top-k wrong candidates as negatives and train candidate-specific anti-centers.
+
+Exit gate:
 
 ```text
-inner loop
-  cargo fmt --check
-  focused module tests
-  focused graphify query/path
-  route-specific NANDA guard
-
-checkpoint
-  cargo check --all-targets
-  focused clippy for changed crates/targets
-  relevant replay/ablation subset
-  graphify update .
-
-cutover/release only
-  full tests and clippy
-  full heldout/adversarial/dirty replay
-  causal ablation matrix
-  live-transition gate
-  release build/install/restart/live windows
+clean top-1 improves
+false apply does not increase
+same-operator wrong candidate rate decreases
+anti-center ablation removes the gain
 ```
 
-This keeps implementation fast without weakening the final proof.
+### P1: candidate coverage
 
-## 13. Checkpoint and Commit Strategy
+Phase arbitration cannot recover a candidate that L2 never births. Expand
+compact lexical coverage and morphology without loading raw corpora into the
+hot process.
 
-Use behavior-complete commits, not arbitrary file batches:
+### P2: L3 phrase intelligence
+
+Train compact phrase relation memory on clean corpora and prove contextual
+disambiguation on unseen phrase families.
+
+### P3: L4 temporal state
+
+Estimate hidden typing state from successive observations and connect real
+accept/reject/undo outcomes to the same transition identity.
+
+### P4: IME parity
+
+IME display must consume the same candidate field readout as autocorrect while
+remaining backend-only. First word, Space closure, Tab accept, Backspace, and
+application-specific delete profiles require live verification.
+
+### P5: latency tail
+
+Eliminate lazy heavy construction from the input path. Keep all candidate
+sources and measure generation, decision, deletion, insertion, layout sync,
+and logging independently.
+
+### P6: code boundaries
+
+Split modules only when route evidence proves reduced foreign pull. File size
+alone is not evidence. Keep the current facade/owner direction and remove dead
+duplicate helpers after graph proof shows zero callers.
+
+## 10. Proof and Release Gates
+
+Required for every ranking or memory cutover:
+
+1. Fixed baseline artifact and denominator.
+2. Positive heldout.
+3. Negative and near-miss heldout.
+4. Phase ablation.
+5. Anti-center ablation.
+6. Old-vs-new shadow replay.
+7. Zero unsafe multiword apply.
+8. Zero unverified left-context apply.
+9. Architecture graph `PASS`.
+10. Focused route tests.
+11. Candidate coverage not reduced.
+12. Latency and RSS not worsened outside the declared budget.
+13. Installed daemon, IME, extension, and tray versions agree.
+14. Live runtime process and logs confirm the new binary is loaded.
+
+No release may claim “grokking”, “full nonlinear memory”, “full sentence
+understanding”, or “no lookup” unless a causal proof uses the exact production
+artifact and runtime route.
+
+## 11. Fast Verification Cadence
+
+During a local edit:
 
 ```text
-checkpoint 0  baseline and measurements
-checkpoint 1  proof/data separation and architecture guards
-checkpoint 2  canonical L1
-checkpoint 3  compiler and binary artifact
-checkpoint 4  true L2 phase reconstruction
-checkpoint 5  L3/L4 and one DecisionCore
-checkpoint 6  daemon/IME adapter cutover
-checkpoint 7  layout and boundary cutover
-checkpoint 8  legacy deletion
-checkpoint 9  final proof, version, install, release
+cargo fmt --check
+cargo check for the changed target
+focused unit/integration tests for the changed route
+git diff --check
 ```
 
-Every checkpoint must be buildable. Only installable checkpoints require a
-version bump. No checkpoint may claim behavior preservation if it also changes
-the algorithm without a before/after scoreboard.
+At a route checkpoint:
 
-## 14. Definition of Done
+```text
+scripts/check-lay-changed.sh
+scripts/check-architecture.sh
+graphify update .
+nanda-guard-diff for the selected route
+```
 
-The project is canonical only when all statements are true:
+Before installation or release:
 
-1. A damaged word can be reconstructed on a clean heldout surface without that
-   word existing in any hot full-word table.
-2. Phase ablation causally destroys a substantial part of that recovery.
-3. One L1 encoder is used by runtime, compiler, replay, and eval.
-4. One candidate lattice contains every runtime candidate.
-5. One DecisionCore chooses every transition.
-6. One verifier creates every AuthorizedEdit.
-7. IME and daemon are adapters with no independent correction authority.
-8. L3 and L4 contribute measurable context/state value without bypassing
-   safety.
-9. Training, heldout, proof, runtime, and user-memory data are physically
-   separated.
-10. Hot memory contains compact field state and bounded rendered candidates,
-    not a duplicated corpus.
-11. Legacy routes are deleted, not merely disabled.
-12. Graph, tests, receipts, installed binaries, tray version, and live behavior
-    all describe the same release.
+```text
+fixed quality replay
+unsafe edit gate
+transition replay
+release build
+version sync
+runtime restart
+live version/process verification
+```
 
-Until then the architecture verdict remains `WATCH`, regardless of local demos
-or attractive aggregate scores.
+Broad full-suite checks are release work, not the inner edit loop.
+
+## 12. Maintenance Rule
+
+When a runtime boundary changes, update all three in the same commit:
+
+1. the owning code and focused tests;
+2. `src/architecture_contract.rs` and generated graph receipt when applicable;
+3. this document's runtime tree, scoreboard, and debt queue.
+
+If code and document disagree, code plus generated graph are current evidence,
+and this document must be corrected before release.
+
+## 13. Definition of Done
+
+The long-term architecture is complete when:
+
+```text
+one surface encoder family with explicit lexical/transition projections
+one compact L2 candidate field
+learned lexical attraction and candidate-specific destructive interference
+one L3 phrase relation field
+one temporal L4 signed state memory
+one joint transition chooser
+one independent verifier
+one sealed AuthorizedEdit route
+backend-only daemon/IME/GNOME executors
+no candidate-specific production hardcodes
+no unlabelled live action treated as truth
+no unsafe multiword or left-context mutation
+quality, latency, RSS, and causal ablations all pass on fixed artifacts
+```
+
+The current code has the authority skeleton and compact phase memories. The
+main remaining intelligence debt is clean lexical competition: L2 often births
+the right candidate, but its field still needs learned same-operator
+anti-centers and stronger phrase/state evidence to settle the correct basin.

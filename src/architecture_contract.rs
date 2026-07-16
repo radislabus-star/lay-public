@@ -70,9 +70,9 @@ const LINES: [ArchitectureLine; 8] = [
     ArchitectureLine {
         id: "l2-candidate-field",
         layer: "L2",
-        owner: "nanda_wave::l2 + l2_candidate_phase",
-        proof: "L2 proposes candidates and emits support/repel/unknown; it cannot execute",
-        debt: "raise candidate coverage without bypassing per-operator promotion",
+        owner: "nanda_wave::l2 + l2_candidate_phase + typing_transition::decision::interference",
+        proof: "L2 proposes candidates; promoted phase competition redistributes the existing L2 energy budget; L2 cannot execute",
+        debt: "train clean same-operator lexical anti-centers and raise candidate coverage",
     },
     ArchitectureLine {
         id: "l3-l4-learning",
@@ -90,7 +90,7 @@ const LINES: [ArchitectureLine; 8] = [
     },
 ];
 
-const TREE: [&str; 16] = [
+const TREE: [&str; 17] = [
     "LAY TYPING TRANSITION CPU",
     "|",
     "+-- Input snapshots: source, visible tail, focus and epoch; surrounding cursor/selection when available",
@@ -99,6 +99,7 @@ const TREE: [&str; 16] = [
     "+-- L2 Phase Memory: promoted centers / anti-centers / learned margin",
     "+-- L3 Context Constraint: phrase admissibility, never text mutation",
     "+-- L4 Surface Frontier: exact-state signed accepted/rejected experience",
+    "+-- Joint Transition Interference: constructive/repulsive evidence in one fixed ranking budget",
     "+-- Transition Decision Core: Apply / SuggestOnly / Keep / ABSTAIN / Veto",
     "+-- Transition Verifier: revision, boundary and left context; backend lifecycle is dispatched/observed/indeterminate",
     "+-- AuthorizedEdit: sealed sole mutation capability",
@@ -135,13 +136,13 @@ fn receipt() -> &'static ArchitectureReceipt {
 }
 
 const DEBT: [&str; 7] = [
-    "P0: raise L2 candidate coverage; phase admission cannot recover a candidate that was never born",
+    "P0: build clean lexical truth and same-operator anti-centers; live applied edits are not automatic verifier labels",
     "P1: accumulate organic L4 surface evidence without mixing stale accept/reject states",
     "P2: keep CompositeTypo split into typed subforms when new evidence reveals distinct circuits",
     "P3: keep IME display aggressive, first-word capable and backend-only",
     "P4: investigate end-to-end output latency separately from microsecond phase readout",
     "P5: preserve zero unsafe multiword and unverified left-context applies in live logs",
-    "P6: retrain and re-gate every package after relation encoder or proof source changes",
+    "P6: raise L2 candidate coverage and retrain/re-gate every package after relation encoder or proof source changes",
 ];
 
 pub fn architecture_lines() -> &'static [ArchitectureLine] {

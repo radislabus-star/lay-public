@@ -1,7 +1,7 @@
 #[derive(Debug, Clone, Copy)]
 struct L3Signal {
     signal: f32,
-    rank_bonus: f32,
+    rank_energy: f32,
     decision: L3ContextDisposition,
 }
 
@@ -29,7 +29,7 @@ impl L3ContextDisposition {
 #[derive(Debug, Clone, Copy)]
 struct L4SceneSignal {
     signal: f32,
-    rank_bonus: f32,
+    rank_energy: f32,
     action: L4AllowedAction,
     reason: &'static str,
 }
@@ -37,7 +37,7 @@ struct L4SceneSignal {
 #[derive(Debug, Clone, Copy)]
 struct L4SignedSignal {
     signal: f32,
-    rank_bonus: f32,
+    rank_energy: f32,
     reason: &'static str,
     surface_status: crate::nanda_wave::l4_signed_memory::L4SurfaceStatus,
     transition_state_specific: bool,
@@ -48,7 +48,7 @@ struct L4SignedSignal {
 #[derive(Debug, Clone, Copy)]
 struct L2WavePeakSignal {
     signal: f32,
-    rank_bonus: f32,
+    rank_energy: f32,
     positive_milli: i16,
     negative_milli: i16,
     uncertainty_milli: i16,
@@ -81,7 +81,7 @@ fn l2_wave_peak_signal(
     );
     L2WavePeakSignal {
         signal: score.signal,
-        rank_bonus: score.rank_bonus,
+        rank_energy: score.rank_bonus,
         positive_milli: score.positive_milli,
         negative_milli: score.negative_milli,
         uncertainty_milli: score.uncertainty_milli,
@@ -102,21 +102,21 @@ fn l3_phrase_signal(event: &TypingErrorEvent, candidate: &UnifiedCorrectionCandi
     if !l3_phrase_signal_observes(candidate.error_class) {
         return L3Signal {
             signal: 0.0,
-            rank_bonus: 0.0,
+            rank_energy: 0.0,
             decision: L3ContextDisposition::NotApplicable,
         };
     }
     if !crate::nanda_wave::llmwave::default_memory_is_warm() {
         return L3Signal {
             signal: 0.0,
-            rank_bonus: 0.0,
+            rank_energy: 0.0,
             decision: L3ContextDisposition::Unavailable,
         };
     }
     let Some(report) = evaluate_default_candidate(&event.original, &candidate.replacement) else {
         return L3Signal {
             signal: 0.0,
-            rank_bonus: 0.0,
+            rank_energy: 0.0,
             decision: L3ContextDisposition::NotApplicable,
         };
     };
@@ -125,18 +125,18 @@ fn l3_phrase_signal(event: &TypingErrorEvent, candidate: &UnifiedCorrectionCandi
             let signal = report.score.clamp(0.0, 1.0);
             L3Signal {
                 signal,
-                rank_bonus: signal * 0.16,
+                rank_energy: signal * 0.16,
                 decision: L3ContextDisposition::Support,
             }
         }
         L3PhraseGateDecision::Suppress => L3Signal {
             signal: -0.56,
-            rank_bonus: -0.14,
+            rank_energy: -0.14,
             decision: L3ContextDisposition::Suppress,
         },
         L3PhraseGateDecision::Neutral => L3Signal {
             signal: (report.score * 0.20).clamp(0.0, 0.20),
-            rank_bonus: 0.0,
+            rank_energy: 0.0,
             decision: L3ContextDisposition::Neutral,
         },
     }
@@ -165,7 +165,7 @@ fn l4_scene_signal(event: &TypingErrorEvent, candidate_count: usize) -> L4SceneS
     };
     L4SceneSignal {
         signal,
-        rank_bonus: signal * 0.06,
+        rank_energy: signal * 0.06,
         action: scene.allowed_action,
         reason: scene.reason,
     }
@@ -206,12 +206,104 @@ fn l4_signed_signal_from_memory(
 ) -> L4SignedSignal {
     L4SignedSignal {
         signal: signed.signed_weight,
-        rank_bonus: signed.signed_weight * 0.12,
+        rank_energy: signed.signed_weight * 0.12,
         reason: signed.reason.as_str(),
         surface_status: signed.surface_status,
         transition_state_specific: signed.transition_state_specific,
         transition_attract_count: signed.transition_attract_count,
         transition_repel_count: signed.transition_repel_count,
+    }
+}
+
+fn transition_interference_readout(
+    l2: L2WavePeakSignal,
+    phase: crate::nanda_wave::PhaseReadout,
+    l3: L3Signal,
+    l4_scene: L4SceneSignal,
+    l4_signed: L4SignedSignal,
+    phase_competition: Option<f32>,
+) -> interference::TransitionInterferenceReadout {
+    interference::read_transition_interference(interference::TransitionInterferenceInput {
+        l2_rank_energy: l2.rank_energy,
+        l2_uncertainty: l2.uncertainty_milli as f32 / 1_000.0,
+        phase,
+        phase_competition,
+        l3_rank_energy: l3.rank_energy,
+        l4_scene_rank_energy: l4_scene.rank_energy,
+        l4_signed_rank_energy: l4_signed.rank_energy,
+    })
+}
+
+fn settle_transition_interference(
+    candidates: &[UnifiedCorrectionCandidate],
+    evaluations: &mut [CandidateDecisionEvaluation],
+) {
+    let supported = candidates
+        .iter()
+        .zip(evaluations.iter())
+        .filter_map(|(candidate, evaluation)| {
+            (candidate.gate.action == CandidateGateAction::Eligible)
+                .then(|| phase_support_strength(&evaluation.signals))
+                .flatten()
+        })
+        .collect::<Vec<_>>();
+    let phase_bounds = supported
+        .iter()
+        .copied()
+        .min_by(f32::total_cmp)
+        .zip(supported.iter().copied().max_by(f32::total_cmp))
+        .filter(|(minimum, maximum)| minimum < maximum);
+
+    for (candidate, evaluation) in candidates.iter().zip(evaluations) {
+        let phase_competition = phase_bounds.and_then(|(minimum, maximum)| {
+            (candidate.gate.action == CandidateGateAction::Eligible)
+                .then(|| phase_support_strength(&evaluation.signals))
+                .flatten()
+                .map(|strength| {
+                    let position = (strength - minimum) / (maximum - minimum);
+                    position.mul_add(2.0, -1.0)
+                })
+        });
+        let phase = phase_readout_from_signals(&evaluation.signals);
+        let field = interference::read_transition_interference(
+            interference::TransitionInterferenceInput {
+                l2_rank_energy: evaluation.signals.l2_rank_energy,
+                l2_uncertainty: evaluation.signals.l2_wave_peak_uncertainty_milli as f32 / 1_000.0,
+                phase,
+                phase_competition,
+                l3_rank_energy: evaluation.signals.l3_rank_energy,
+                l4_scene_rank_energy: evaluation.signals.l4_scene_rank_energy,
+                l4_signed_rank_energy: evaluation.signals.l4_signed_rank_energy,
+            },
+        );
+        let signals = &mut evaluation.signals;
+        signals.rank_score = signals.non_field_rank_score + field.signal;
+        signals.rank_milli = score_to_milli(signals.rank_score);
+        signals.transition_field_milli = score_to_milli(field.signal);
+        signals.transition_field_attraction_milli = score_to_milli(field.attraction);
+        signals.transition_field_repulsion_milli = score_to_milli(field.repulsion);
+        signals.transition_field_uncertainty_milli = score_to_milli(field.uncertainty);
+        signals.transition_field_phase_competition_milli =
+            score_to_milli(field.phase_competition);
+    }
+}
+
+fn phase_support_strength(signals: &CandidateDecisionSignals) -> Option<f32> {
+    interference::normalized_phase_support_strength(phase_readout_from_signals(signals))
+}
+
+fn phase_readout_from_signals(signals: &CandidateDecisionSignals) -> crate::nanda_wave::PhaseReadout {
+    crate::nanda_wave::PhaseReadout {
+        package_loaded: signals.l2_transition_phase_package_loaded,
+        operator_present: signals.l2_transition_phase_operator_present,
+        operator_promoted: signals.l2_transition_phase_operator_promoted,
+        margin_micro: signals.l2_transition_phase_margin_micro,
+        threshold_micro: signals.l2_transition_phase_threshold_micro,
+        positive_centers: signals.l2_transition_phase_positive_centers,
+        anti_centers: signals.l2_transition_phase_anti_centers,
+        covered_surfaces: signals.l2_transition_phase_surfaces,
+        verdict: signals.l2_transition_phase_verdict,
+        ..crate::nanda_wave::PhaseReadout::default()
     }
 }
 
