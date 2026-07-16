@@ -390,6 +390,9 @@ pub(crate) struct CandidateDecisionSignals {
     l4_signed_rank_energy: f32,
     l2_transition_phase_margin_micro: i64,
     l2_transition_phase_threshold_micro: i64,
+    l2_lexical_phase_margin_micro: i64,
+    l2_lexical_phase_threshold_micro: i64,
+    l2_lexical_phase_competition_ready: bool,
     pub(crate) rank_score: f32,
     pub(crate) rank_milli: i16,
     pub(crate) transition_field_milli: i16,
@@ -454,8 +457,12 @@ fn candidate_decision_signals_from_readouts(
     let event = context.event;
     let l4_scene = context.l4_scene;
     let l3 = l3_phrase_signal(event, candidate);
-    let phase =
-        crate::nanda_wave::l2_transition_phase_readout(action.operator.as_str(), relation.atoms());
+    let phase = crate::nanda_wave::l2_transition_phase_readout(
+        action.operator.as_str(),
+        relation.atoms(),
+        &event.original,
+        &candidate.replacement,
+    );
     let l4_signed = l4_signed_signal_from_memory(l4_memory);
     let l2_wave_peak = l2_wave_peak_signal(
         candidate,
@@ -480,6 +487,9 @@ fn candidate_decision_signals_from_readouts(
         l4_signed_rank_energy: l4_signed.rank_energy,
         l2_transition_phase_margin_micro: phase.margin_micro,
         l2_transition_phase_threshold_micro: phase.threshold_micro,
+        l2_lexical_phase_margin_micro: phase.lexical_margin_micro,
+        l2_lexical_phase_threshold_micro: phase.lexical_threshold_micro,
+        l2_lexical_phase_competition_ready: phase.lexical_competition_ready,
         rank_score,
         rank_milli: score_to_milli(rank_score),
         transition_field_milli: score_to_milli(transition_field.signal),

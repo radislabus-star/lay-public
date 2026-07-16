@@ -100,5 +100,30 @@ mod tests {
         );
         assert_eq!(report["modes"]["no_phase"]["positive_support"], 0);
         assert_eq!(report["modes"]["magnitude_only"]["positive_support"], 0);
+        assert!(
+            report["local_lexical_negative_rows_trained_as_candidate_anti_wave"]
+                .as_u64()
+                .unwrap()
+                > 0
+        );
+        assert_eq!(
+            report["lexical_competition"]["full_lexical_phase"]["negative_support_false_accepts"],
+            0
+        );
+        assert!(
+            report["lexical_anti_center_false_support_prevention"]
+                .as_u64()
+                .unwrap()
+                > 0
+        );
+        assert_eq!(
+            report["lexical_pair_competition"]["full_lexical_phase"]["wrong_top1"],
+            0
+        );
+        assert!(report["lexical_anti_center_top1_gain"].as_u64().unwrap() > 0);
+        assert_eq!(
+            report["lexical_negative_rows_deferred_to_l2_word_center"],
+            0
+        );
     }
 }

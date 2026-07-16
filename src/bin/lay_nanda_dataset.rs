@@ -352,9 +352,173 @@ fn build_rows(cases: &[Case]) -> Vec<Row> {
                 false,
             );
         }
+        if case.reason.starts_with("phase_surface_") {
+            push_phase_lexical_negative(&mut rows, &mut seen, &group_id, case, idx);
+        }
         push_generic_negatives(&mut rows, &mut seen, &group_id, case);
     }
     rows
+}
+
+fn push_phase_lexical_negative(
+    rows: &mut Vec<Row>,
+    seen: &mut BTreeSet<String>,
+    group_id: &str,
+    case: &Case,
+    seed: usize,
+) {
+    let original = case.original.trim_end();
+    let expected = case.expected.trim_end();
+    let candidate = match case.operation.as_str() {
+        "adjacent_transposition" => wrong_adjacent_transposition(original, expected, seed),
+        "missing_letter_repair" => wrong_insertion(original, expected, seed),
+        "repeated_letter_repair" | "extra_letter_repair" => {
+            wrong_deletion(original, expected, seed)
+        }
+        "letter_substitution" => wrong_substitution(original, expected, seed),
+        "accept_completion" => wrong_completion(original, expected, seed),
+        "composite_typo" => wrong_composite(original, expected, seed),
+        "layout_projection" => wrong_substitution(expected, expected, seed),
+        "boundary_split" => wrong_boundary_split(original, expected, seed),
+        "boundary_merge" => wrong_boundary_merge(original, expected, seed),
+        _ => None,
+    };
+    let Some(mut candidate) = candidate else {
+        return;
+    };
+    if !candidate_matches_operation(original, &candidate, &case.operation) {
+        return;
+    }
+    if case.expected.ends_with(' ') {
+        candidate.push(' ');
+    }
+    push_candidate(
+        rows,
+        seen,
+        group_id,
+        case,
+        &candidate,
+        &case.operation,
+        false,
+    );
+}
+
+fn candidate_matches_operation(original: &str, candidate: &str, operation: &str) -> bool {
+    if operation == "accept_completion" {
+        return candidate.starts_with(original)
+            && candidate.chars().count() > original.chars().count();
+    }
+    lay::nanda_wave::infer_l2_transition_operator(original, candidate, "") == operation
+}
+
+fn wrong_adjacent_transposition(original: &str, expected: &str, seed: usize) -> Option<String> {
+    let chars = original.chars().collect::<Vec<_>>();
+    (0..chars.len().saturating_sub(1)).find_map(|offset| {
+        let index = (seed + offset) % chars.len().saturating_sub(1);
+        let mut candidate = chars.clone();
+        candidate.swap(index, index + 1);
+        let candidate = candidate.into_iter().collect::<String>();
+        (candidate != original && candidate != expected).then_some(candidate)
+    })
+}
+
+fn wrong_insertion(original: &str, expected: &str, seed: usize) -> Option<String> {
+    let chars = original.chars().collect::<Vec<_>>();
+    (0..=chars.len()).find_map(|offset| {
+        let index = (seed + offset) % (chars.len() + 1);
+        let source = chars[(index + seed) % chars.len()];
+        let mut candidate = chars.clone();
+        candidate.insert(index, source);
+        let candidate = candidate.into_iter().collect::<String>();
+        (candidate != expected).then_some(candidate)
+    })
+}
+
+fn wrong_deletion(original: &str, expected: &str, seed: usize) -> Option<String> {
+    let chars = original.chars().collect::<Vec<_>>();
+    (0..chars.len()).find_map(|offset| {
+        let index = (seed + offset) % chars.len();
+        let mut candidate = chars.clone();
+        candidate.remove(index);
+        let candidate = candidate.into_iter().collect::<String>();
+        (candidate != expected).then_some(candidate)
+    })
+}
+
+fn wrong_substitution(original: &str, expected: &str, seed: usize) -> Option<String> {
+    let chars = original.chars().collect::<Vec<_>>();
+    (0..chars.len()).find_map(|offset| {
+        let index = (seed + offset) % chars.len();
+        let replacement = chars[(index + 1) % chars.len()];
+        if replacement == chars[index] {
+            return None;
+        }
+        let mut candidate = chars.clone();
+        candidate[index] = replacement;
+        let candidate = candidate.into_iter().collect::<String>();
+        (candidate != expected).then_some(candidate)
+    })
+}
+
+fn wrong_completion(original: &str, expected: &str, seed: usize) -> Option<String> {
+    let expected_chars = expected.chars().collect::<Vec<_>>();
+    let original_len = original.chars().count();
+    if original_len >= expected_chars.len() {
+        return None;
+    }
+    let mut candidate = original.to_string();
+    let suffix_len = expected_chars.len() - original_len;
+    for offset in 0..suffix_len {
+        candidate.push(expected_chars[(seed + offset) % original_len]);
+    }
+    (candidate != expected).then_some(candidate)
+}
+
+fn wrong_composite(original: &str, expected: &str, seed: usize) -> Option<String> {
+    let chars = original.chars().collect::<Vec<_>>();
+    if chars.len() < 4 {
+        return None;
+    }
+    (0..chars.len()).find_map(|offset| {
+        let left = (seed + offset) % chars.len();
+        let right = (left + chars.len() / 2) % chars.len();
+        if left == right || chars[left] == chars[right] {
+            return None;
+        }
+        let mut candidate = chars.clone();
+        candidate.swap(left, right);
+        let candidate = candidate.into_iter().collect::<String>();
+        (candidate != expected).then_some(candidate)
+    })
+}
+
+fn wrong_boundary_split(original: &str, expected: &str, seed: usize) -> Option<String> {
+    let chars = original.chars().collect::<Vec<_>>();
+    (1..chars.len()).find_map(|offset| {
+        let split = 1 + (seed + offset) % chars.len().saturating_sub(1);
+        let candidate = format!(
+            "{} {}",
+            chars[..split].iter().collect::<String>(),
+            chars[split..].iter().collect::<String>()
+        );
+        (candidate != expected).then_some(candidate)
+    })
+}
+
+fn wrong_boundary_merge(original: &str, expected: &str, seed: usize) -> Option<String> {
+    let mut candidate = original.split_whitespace().collect::<String>();
+    let mut chars = candidate.chars().collect::<Vec<_>>();
+    if chars.len() < 2 {
+        return None;
+    }
+    let index = seed % chars.len();
+    let replacement = chars[(index + 1) % chars.len()];
+    if replacement == chars[index] {
+        return None;
+    }
+    chars[index] = replacement;
+    candidate = chars.into_iter().collect();
+    (candidate != expected).then_some(candidate)
 }
 
 fn push_generic_negatives(
@@ -457,4 +621,41 @@ fn decode_fixture(value: &str) -> String {
 
 fn clean_field(value: &str) -> String {
     value.replace(['\t', '\n', '\r'], " ")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn phase_factory_emits_same_operator_lexical_negatives() {
+        let cases = build_cases().expect("phase source corpus loads");
+        let rows = build_rows(&cases);
+        for operation in [
+            "layout_projection",
+            "adjacent_transposition",
+            "missing_letter_repair",
+            "repeated_letter_repair",
+            "extra_letter_repair",
+            "letter_substitution",
+            "boundary_split",
+            "boundary_merge",
+            "accept_completion",
+            "composite_typo",
+        ] {
+            let count = rows
+                .iter()
+                .filter(|row| !row.label && row.reason.starts_with("phase_surface_"))
+                .filter(|row| row.operation == operation)
+                .filter(|row| {
+                    candidate_matches_operation(
+                        row.original.trim_end(),
+                        row.candidate.trim_end(),
+                        operation,
+                    )
+                })
+                .count();
+            assert!(count >= 12, "{operation} lexical negatives={count}");
+        }
+    }
 }

@@ -119,6 +119,16 @@ pub struct L2TransitionPhaseShadowReadout {
     pub anti_centers: u8,
     pub covered_surfaces: u32,
     pub rejected_surfaces: u32,
+    pub(crate) lexical_positive_micro: i64,
+    pub(crate) lexical_anti_micro: i64,
+    pub(crate) lexical_margin_micro: i64,
+    pub(crate) lexical_threshold_micro: i64,
+    pub(crate) lexical_positive_examples: u32,
+    pub(crate) lexical_negative_examples: u32,
+    pub(crate) lexical_positive_centers: u8,
+    pub(crate) lexical_anti_centers: u8,
+    pub(crate) lexical_competition_ready: bool,
+    pub(crate) lexical_verdict: &'static str,
 }
 
 #[derive(Clone, Debug)]
@@ -176,6 +186,16 @@ fn phase_shadow_readout(
         anti_centers: readout.anti_centers,
         covered_surfaces: readout.covered_surfaces,
         rejected_surfaces: readout.rejected_surfaces,
+        lexical_positive_micro: readout.lexical_positive_micro,
+        lexical_anti_micro: readout.lexical_anti_micro,
+        lexical_margin_micro: readout.lexical_margin_micro,
+        lexical_threshold_micro: readout.lexical_threshold_micro,
+        lexical_positive_examples: readout.lexical_positive_examples,
+        lexical_negative_examples: readout.lexical_negative_examples,
+        lexical_positive_centers: readout.lexical_positive_centers,
+        lexical_anti_centers: readout.lexical_anti_centers,
+        lexical_competition_ready: readout.lexical_competition_ready,
+        lexical_verdict: readout.lexical_verdict.as_str(),
     }
 }
 
@@ -211,8 +231,10 @@ pub fn l2_transition_phase_proof_json(entries: &[L2PhaseTrainingEntry]) -> serde
 pub(crate) fn l2_transition_phase_readout(
     action_operator: &str,
     atoms: &[String],
+    original: &str,
+    candidate: &str,
 ) -> l2_candidate_phase::PhaseReadout {
-    l2_candidate_phase::relation_readout(action_operator, atoms)
+    l2_candidate_phase::relation_readout(action_operator, atoms, original, candidate)
 }
 
 pub fn usage_debug_summary() -> (u64, usize, usize) {

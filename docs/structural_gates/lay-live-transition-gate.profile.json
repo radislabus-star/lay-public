@@ -23,6 +23,10 @@
     "registry": "not-required",
     "inspector": "not-required"
   },
+  "response_runtime": {
+    "registry": "docs/structural_gates/receipts/RESPONSE_RUNTIME_NOT_REQUIRED.registry",
+    "miner_status": "docs/structural_gates/receipts/RESPONSE_RUNTIME_NOT_REQUIRED.json"
+  },
   "deployment": {
     "health_url": "not-required",
     "services": []

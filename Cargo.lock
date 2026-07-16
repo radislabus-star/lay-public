@@ -1029,7 +1029,7 @@ dependencies = [
 
 [[package]]
 name = "lay"
-version = "0.2.251"
+version = "0.2.252"
 dependencies = [
  "arboard",
  "clap",

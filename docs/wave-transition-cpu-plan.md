@@ -318,14 +318,14 @@ whether the new surface is covered, and executes only a proven transition.
 
 ## Implementation Scoreboard
 
-Release checkpoint: `0.2.207`.
+Release checkpoint: `0.2.252`.
 
 | Stage | Status | Evidence |
 | --- | --- | --- |
 | 0. Baseline | PASS | `0.2.206` runtime snapshot, dirty-log corpus, latency and PSS recorded before cutover |
 | 1. Typed vocabulary | PASS | adapter-neutral `TransitionOperatorKind` covers 11 learned executable families; manual/unknown remain non-learned |
 | 2. Relation atoms | PASS | no concrete word identity; changed region, current token, boundary, script, proof and verifier shape are encoded |
-| 3. L2 phase memory | PASS | `LAYPC004`, 128 cells, 48 positive centers, 139 anti-centers, 11/11 promoted profiles |
+| 3. L2 phase memory | PASS | `LAYPC005`, 128 cells, separate structural/lexical center lanes, 11/11 promoted profiles |
 | 4. L4 frontier | PASS | exact-state accepted/rejected evidence, latest-state consolidation, signed fallback |
 | 5. L3 constraint | PASS | contextual evidence is owned by L3/L4 and cannot train broad L2 anti-centers |
 | 6. Decision core | PASS | phase memory has no apply authority; `TransitionDecisionCore` remains the sole chooser |
@@ -333,17 +333,21 @@ Release checkpoint: `0.2.207`.
 | 8. Shadow replay | PASS-safety / WATCH-coverage | zero negative false applies; candidate coverage remains a product-quality debt |
 | 9. Cutover | PASS | all 11 proven operator profiles are enabled through fail-closed phase admission |
 | 10. IME/daemon | PASS | both consume shared decisions; IME remains display/execution backend only |
-| 11. Proof suite | PASS | full phase 72/72, near-negative repel 170/170, false accepts 0; no-phase and magnitude-only support 0 |
+| 11. Proof suite | PASS | structural phase 72/72 with 0/169 false accepts; lexical pairs 48/48 top-1 with 0 false supports |
 | 12. Metrics | PASS | phase package, promotion, L4 signed transition state, decisions and latency are exposed in CLI/tray diagnostics |
 
 ### Causal Proof
 
 ```text
 training entries:                 745
-heldout entries:                  242
+heldout entries:                  241
 full-phase positive support:      72 / 72
-full-phase negative repel:        170 / 170
+full-phase negative repel:        169 / 169
 full-phase false accepts:         0
+lexical pair top-1:               48 / 48
+lexical false supports:            0 / 48
+without lexical anti top-1:       46 / 48
+without lexical anti false:       48 / 48
 promoted operators:               11 / 11
 no-phase positive support:        0 / 72
 magnitude-only positive support:  0 / 72
@@ -351,16 +355,17 @@ exact traces after compile:        0
 raw words in hot package:         false
 ```
 
-Removing anti-centers produces 170 false accepts. Destroying phase removes all
-heldout positive support. The executable result therefore depends on phase and
-anti-wave structure, not on magnitude or exact lookup.
+Removing structural anti-centers produces the heldout structural false accepts;
+removing lexical anti-centers produces 48/48 lexical false supports. Destroying
+phase removes all heldout positive support. The executable result therefore
+depends on phase and both anti-wave lanes, not on magnitude or exact lookup.
 
 ### Runtime Result
 
 ```text
-phase package:       96,772 bytes
+phase package:       324,076 bytes
 operator coverage:   100%
-covered surfaces:    1,697
+covered surfaces:    318
 rejected surfaces:   668
 
 precognition hot path, n=120:

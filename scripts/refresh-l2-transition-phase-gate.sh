@@ -30,9 +30,15 @@ full = proof.get("modes", {}).get("full_phase", {})
 no_phase = proof.get("modes", {}).get("no_phase", {})
 magnitude = proof.get("modes", {}).get("magnitude_only", {})
 without_anti = proof.get("modes", {}).get("without_anti", {})
+lexical_full = proof.get("lexical_competition", {}).get("full_lexical_phase", {})
+lexical_without_anti = proof.get("lexical_competition", {}).get("without_lexical_anti", {})
+lexical_pairs = proof.get("lexical_pair_competition", {}).get("full_lexical_phase", {})
+lexical_pairs_without_anti = proof.get("lexical_pair_competition", {}).get("without_lexical_anti", {})
 positive_cases = int(full.get("positive_cases", 0))
 positive_support = int(full.get("positive_support", 0))
 wrong_accepts = int(full.get("negative_support_false_accepts", 0))
+lexical_negative_cases = int(lexical_full.get("negative_cases", 0))
+lexical_wrong_supports = int(lexical_full.get("negative_support_false_accepts", 0))
 abstained = positive_cases - positive_support
 phase_causal = (
     int(no_phase.get("positive_support", 0)) == 0
@@ -40,6 +46,19 @@ phase_causal = (
     and int(proof.get("causal_positive_support_drop", 0)) > 0
 )
 anti_causal = int(without_anti.get("negative_support_false_accepts", 0)) > wrong_accepts
+lexical_anti_causal = (
+    lexical_negative_cases > 0
+    and lexical_wrong_supports == 0
+    and int(lexical_without_anti.get("negative_support_false_accepts", 0))
+        > lexical_wrong_supports
+    and int(proof.get("lexical_negative_rows_deferred_to_l2_word_center", -1)) == 0
+)
+lexical_top1_causal = (
+    int(lexical_pairs.get("cases", 0)) > 0
+    and int(lexical_pairs.get("wrong_top1", -1)) == 0
+    and int(lexical_pairs.get("correct_top1", 0))
+        > int(lexical_pairs_without_anti.get("correct_top1", 0))
+)
 receipt = {
     "report_kind": "lay_l2_transition_phase_proof_v1",
     "verdict": "PROVEN" if proof.get("verdict") == "PASS" else "NOT_PROVEN",
@@ -49,6 +68,8 @@ receipt = {
         "relational_atoms_causal_pass": phase_causal,
         "core_causal_pass": proof.get("exact_memory_rows_after_compile") == 0,
         "anti_center_causal_pass": anti_causal,
+        "lexical_anti_center_causal_pass": lexical_anti_causal,
+        "lexical_anti_center_top1_causal_pass": lexical_top1_causal,
     },
     "wrong_accepts": wrong_accepts,
     "abstained_queries": abstained,
@@ -58,6 +79,14 @@ receipt = {
     "corpus_seeds": int(proof.get("training_surfaces", 0)),
     "heldout_queries": int(proof.get("heldout_entries", 0)),
     "correct_cpu_executions": positive_support,
+    "lexical_negative_cases": lexical_negative_cases,
+    "lexical_wrong_supports": lexical_wrong_supports,
+    "lexical_false_supports_prevented": int(
+        proof.get("lexical_anti_center_false_support_prevention", 0)
+    ),
+    "lexical_pair_correct_top1": int(lexical_pairs.get("correct_top1", 0)),
+    "lexical_pair_cases": int(lexical_pairs.get("cases", 0)),
+    "lexical_pair_wrong_top1": int(lexical_pairs.get("wrong_top1", 0)),
     "promoted_operators": proof.get("promoted_operators", []),
     "phase_proof": proof,
 }

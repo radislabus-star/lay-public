@@ -60,10 +60,27 @@ pub(super) fn normalized_phase_support_strength(phase: PhaseReadout) -> Option<f
     {
         return None;
     }
+    if phase.lexical_competition_ready {
+        return Some(normalized_margin_position(
+            phase.lexical_margin_micro,
+            phase.lexical_threshold_micro,
+        ));
+    }
     let threshold_micro = phase.threshold_micro.clamp(-1_000_000, 999_999);
     let threshold = threshold_micro as f64;
     let margin = phase.margin_micro.clamp(threshold_micro, 1_000_000) as f64;
     Some(((margin - threshold) / (1_000_000.0 - threshold)).clamp(0.0, 1.0) as f32)
+}
+
+fn normalized_margin_position(margin_micro: i64, threshold_micro: i64) -> f32 {
+    let threshold = threshold_micro.clamp(-999_999, 999_999) as f64;
+    let margin = margin_micro.clamp(-1_000_000, 1_000_000) as f64;
+    let position = if margin >= threshold {
+        0.5 + (margin - threshold) / (1_000_000.0 - threshold) * 0.5
+    } else {
+        (margin + 1_000_000.0) / (threshold + 1_000_000.0) * 0.5
+    };
+    position.clamp(0.0, 1.0) as f32
 }
 
 fn settle_l2_energy(
@@ -170,5 +187,22 @@ mod tests {
         phase.threshold_micro = i64::MAX;
 
         assert_eq!(normalized_phase_support_strength(phase), Some(1.0));
+    }
+
+    #[test]
+    fn lexical_anti_margin_destructively_orders_supported_candidates() {
+        let mut correct = promoted_phase(PhaseVerdict::Support, 200_000);
+        correct.lexical_competition_ready = true;
+        correct.lexical_margin_micro = 300_000;
+        correct.lexical_threshold_micro = 50_000;
+        let mut wrong = correct;
+        wrong.lexical_margin_micro = -300_000;
+
+        let correct_strength = normalized_phase_support_strength(correct).unwrap();
+        let wrong_strength = normalized_phase_support_strength(wrong).unwrap();
+
+        assert!(correct_strength > 0.5, "{correct_strength}");
+        assert!(wrong_strength < 0.5, "{wrong_strength}");
+        assert!(correct_strength > wrong_strength);
     }
 }

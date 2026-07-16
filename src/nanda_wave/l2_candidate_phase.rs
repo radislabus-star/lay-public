@@ -12,20 +12,25 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
 
+use crate::lexical_surface_atoms::{surface_atom_projection, SurfaceFieldEncoder};
 use crate::transition_relation::{TransitionOperatorKind, TransitionRelationAtoms};
+use crate::word_reader::{last_text_word, split_word_punctuation};
 
 use crate::stable_hash::mix64_golden;
 
-const MAGIC: &[u8; 8] = b"LAYPC004";
+const MAGIC: &[u8; 8] = b"LAYPC005";
 const CELLS: usize = 128;
 const HEADER_BYTES: usize = 16;
-const PROFILE_HEADER_BYTES: usize = 24;
+const PROFILE_HEADER_BYTES: usize = 48;
 const CENTER_HEADER_BYTES: usize = 4;
 const CELL_BYTES: usize = 4;
 const PHASE_SCALE: f32 = 16_384.0;
 const CENTER_SPLIT_COHERENCE: f32 = 0.94;
 const MAX_POSITIVE_CENTERS: usize = 16;
 const MAX_ANTI_CENTERS: usize = 32;
+const MAX_LEXICAL_POSITIVE_CENTERS: usize = 32;
+const MAX_LEXICAL_ANTI_CENTERS: usize = 32;
+const LEXICAL_CANDIDATE_AUTHORITY_LENSES: usize = 2;
 const MIN_MARGIN_MICRO: i64 = 25_000;
 const MIN_LEARNED_SUPPORT_MARGIN_MICRO: i64 = 1_000;
 const MAX_MARGIN_MICRO: i64 = 450_000;
@@ -74,6 +79,16 @@ pub(crate) struct PhaseReadout {
     pub(crate) anti_centers: u8,
     pub(crate) covered_surfaces: u32,
     pub(crate) rejected_surfaces: u32,
+    pub(crate) lexical_positive_micro: i64,
+    pub(crate) lexical_anti_micro: i64,
+    pub(crate) lexical_margin_micro: i64,
+    pub(crate) lexical_threshold_micro: i64,
+    pub(crate) lexical_positive_examples: u32,
+    pub(crate) lexical_negative_examples: u32,
+    pub(crate) lexical_positive_centers: u8,
+    pub(crate) lexical_anti_centers: u8,
+    pub(crate) lexical_competition_ready: bool,
+    pub(crate) lexical_verdict: PhaseVerdict,
     pub(crate) verdict: PhaseVerdict,
 }
 
@@ -101,6 +116,13 @@ struct PhaseProfile {
     covered_surfaces: u32,
     rejected_surfaces: u32,
     threshold_micro: i64,
+    lexical_positive: Vec<PhaseCenter>,
+    lexical_negative: Vec<PhaseCenter>,
+    lexical_positive_examples: u32,
+    lexical_negative_examples: u32,
+    lexical_covered_surfaces: u32,
+    lexical_rejected_surfaces: u32,
+    lexical_threshold_micro: i64,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -124,6 +146,14 @@ struct PhaseProfileBuilder {
     counterfactual_circuits: BTreeSet<String>,
     positive_vectors: Vec<Vec<PhaseCell>>,
     negative_vectors: Vec<Vec<PhaseCell>>,
+    lexical_positive: Vec<PhaseCenter>,
+    lexical_negative: Vec<PhaseCenter>,
+    lexical_positive_examples: u32,
+    lexical_negative_examples: u32,
+    lexical_positive_surfaces: BTreeSet<u64>,
+    lexical_negative_surfaces: BTreeSet<u64>,
+    lexical_positive_vectors: Vec<Vec<PhaseCell>>,
+    lexical_negative_vectors: Vec<Vec<PhaseCell>>,
 }
 
 type PhaseOperator = TransitionOperatorKind;
@@ -175,11 +205,21 @@ where
     Ok(bytes.len())
 }
 
-pub(crate) fn relation_readout(action_operator: &str, atoms: &[String]) -> PhaseReadout {
+pub(crate) fn relation_readout(
+    action_operator: &str,
+    atoms: &[String],
+    original: &str,
+    candidate: &str,
+) -> PhaseReadout {
     let Some(runtime) = DEFAULT_RUNTIME.get_or_init(load_default_runtime).as_ref() else {
         return PhaseReadout::default();
     };
-    runtime.readout(PhaseOperator::from_action_operator(action_operator), atoms)
+    let lexical_atoms = lexical_relation_atoms(original, candidate);
+    runtime.readout(
+        PhaseOperator::from_action_operator(action_operator),
+        atoms,
+        &lexical_atoms,
+    )
 }
 
 pub(super) fn shadow_readout(original: &str, candidate: &str, operation: &str) -> PhaseReadout {
@@ -235,8 +275,8 @@ fn readout_for_pair(
     operation: &str,
 ) -> PhaseReadout {
     let operator = PhaseOperator::infer(original, candidate, operation);
-    let atoms = relation_atoms(original, candidate, operator);
-    runtime.readout(operator, atoms.atoms())
+    let (relation, lexical_atoms) = phase_atoms_for_pair(original, candidate, operator);
+    runtime.readout(operator, relation.atoms(), &lexical_atoms)
 }
 
 pub(super) fn phase_memory_report_json(path: &Path) -> serde_json::Value {
@@ -277,6 +317,13 @@ pub(super) fn phase_memory_report_json(path: &Path) -> serde_json::Value {
                         "covered_surfaces": profile.covered_surfaces,
                         "rejected_surfaces": profile.rejected_surfaces,
                         "margin_threshold_micro": profile.threshold_micro,
+                        "lexical_positive_examples": profile.lexical_positive_examples,
+                        "lexical_negative_examples": profile.lexical_negative_examples,
+                        "lexical_positive_centers": profile.lexical_positive.len(),
+                        "lexical_anti_centers": profile.lexical_negative.len(),
+                        "lexical_covered_surfaces": profile.lexical_covered_surfaces,
+                        "lexical_rejected_surfaces": profile.lexical_rejected_surfaces,
+                        "lexical_margin_threshold_micro": profile.lexical_threshold_micro,
                     })
                 })
                 .collect::<Vec<_>>()
@@ -284,7 +331,7 @@ pub(super) fn phase_memory_report_json(path: &Path) -> serde_json::Value {
         .unwrap_or_default();
     serde_json::json!({
         "kind": "l2_transition_phase_memory",
-        "schema": "lay.l2-transition-phase-memory.v4",
+        "schema": "lay.l2-transition-phase-memory.v5",
         "path": path.display().to_string(),
         "loaded": runtime.is_some(),
         "hot_bytes": bytes.len(),
@@ -296,12 +343,15 @@ pub(super) fn phase_memory_report_json(path: &Path) -> serde_json::Value {
         "promoted_coverage_percent": promoted_profiles as f64 / 11.0 * 100.0,
         "positive_centers": positive_centers,
         "anti_centers": anti_centers,
+        "lexical_positive_centers": runtime.as_ref().map(|runtime| runtime.profiles.iter().map(|profile| profile.lexical_positive.len()).sum::<usize>()).unwrap_or_default(),
+        "lexical_anti_centers": runtime.as_ref().map(|runtime| runtime.profiles.iter().map(|profile| profile.lexical_negative.len()).sum::<usize>()).unwrap_or_default(),
         "covered_surfaces": covered_surfaces,
         "rejected_surfaces": rejected_surfaces,
         "exact_traces_in_hot_package": 0,
         "profiles": profiles,
         "raw_words_stored": false,
-        "anti_wave_evidence": "labeled negatives plus typed structural counterfactuals",
+        "anti_wave_evidence": "labeled structural and lexical negatives plus typed structural counterfactuals",
+        "lexical_projection": "position-sensitive 4-gram trits; no raw words",
         "decision_authority": "TransitionDecisionCore",
         "apply_authority": false,
     })
@@ -318,7 +368,9 @@ pub(super) fn phase_proof_json(entries: &[L2PhaseTrainingEntry]) -> serde_json::
             "heldout_entries": prepared.heldout.len(),
         });
     }
-    let Ok(runtime) = train_phase_runtime(prepared.training.clone()) else {
+    let mut phase_training = prepared.training.clone();
+    phase_training.extend(prepared.lexical_training.clone());
+    let Ok(runtime) = train_phase_runtime(phase_training) else {
         return serde_json::json!({
             "kind": "l2_transition_phase_proof",
             "verdict": "WATCH",
@@ -326,7 +378,55 @@ pub(super) fn phase_proof_json(entries: &[L2PhaseTrainingEntry]) -> serde_json::
         });
     };
     let (reports, by_operator) = collect_phase_proof_reports(&runtime, &prepared.heldout);
+    let lexical_reports = collect_lexical_proof_reports(&runtime, &prepared);
+    let lexical_pair_reports = collect_lexical_pair_reports(&runtime, &prepared);
+    let lexical_pair_wrong_examples = collect_lexical_pair_wrong_examples(&runtime, &prepared);
     let full = reports.get("full_phase").copied().unwrap_or_default();
+    let lexical_full = lexical_reports
+        .get("full_lexical_phase")
+        .copied()
+        .unwrap_or_default();
+    let lexical_without_anti = lexical_reports
+        .get("without_lexical_anti")
+        .copied()
+        .unwrap_or_default();
+    let lexical_anti_drop = lexical_without_anti
+        .negative_support
+        .saturating_sub(lexical_full.negative_support);
+    let lexical_pairs_full = lexical_pair_reports
+        .get("full_lexical_phase")
+        .copied()
+        .unwrap_or_default();
+    let lexical_pairs_without_anti = lexical_pair_reports
+        .get("without_lexical_anti")
+        .copied()
+        .unwrap_or_default();
+    let lexical_pair_gain = lexical_pairs_full
+        .correct_wins
+        .saturating_sub(lexical_pairs_without_anti.correct_wins);
+    let lexical_false_support_examples = prepared
+        .lexical_heldout
+        .iter()
+        .filter_map(|entry| {
+            let operator =
+                PhaseOperator::infer(&entry.original, &entry.candidate, &entry.operation);
+            let readout = readout_for_pair(
+                &runtime,
+                &entry.original,
+                &entry.candidate,
+                &entry.operation,
+            );
+            (readout.lexical_verdict == PhaseVerdict::Support).then(|| {
+                serde_json::json!({
+                    "operator": operator.as_str(),
+                    "original": entry.original,
+                    "candidate": entry.candidate,
+                    "lexical_margin_micro": readout.lexical_margin_micro,
+                    "lexical_threshold_micro": readout.lexical_threshold_micro,
+                })
+            })
+        })
+        .collect::<Vec<_>>();
     let destructive_best = destructive_safe_positive_support(&reports);
     let causal_drop = full.positive_support.saturating_sub(destructive_best);
     let promoted_operators = by_operator
@@ -341,8 +441,9 @@ pub(super) fn phase_proof_json(entries: &[L2PhaseTrainingEntry]) -> serde_json::
         .filter_map(|entry| {
             let operator =
                 PhaseOperator::infer(&entry.original, &entry.candidate, &entry.operation);
-            let atoms = relation_atoms(&entry.original, &entry.candidate, operator);
-            let readout = runtime.readout(operator, atoms.atoms());
+            let (relation, atoms) =
+                phase_atoms_for_pair(&entry.original, &entry.candidate, operator);
+            let readout = runtime.readout(operator, relation.atoms(), &atoms);
             (readout.verdict == PhaseVerdict::Support).then(|| {
                 serde_json::json!({
                     "operator": operator.as_str(),
@@ -351,7 +452,8 @@ pub(super) fn phase_proof_json(entries: &[L2PhaseTrainingEntry]) -> serde_json::
                     "operation": entry.operation,
                     "margin_micro": readout.margin_micro,
                     "threshold_micro": readout.threshold_micro,
-                    "atoms": atoms.atoms(),
+                    "atoms": atoms,
+                    "relation_verifier_passed": relation.verifier_passed(),
                 })
             })
         })
@@ -364,8 +466,9 @@ pub(super) fn phase_proof_json(entries: &[L2PhaseTrainingEntry]) -> serde_json::
         .filter_map(|entry| {
             let operator =
                 PhaseOperator::infer(&entry.original, &entry.candidate, &entry.operation);
-            let atoms = relation_atoms(&entry.original, &entry.candidate, operator);
-            let readout = runtime.readout(operator, atoms.atoms());
+            let (relation, atoms) =
+                phase_atoms_for_pair(&entry.original, &entry.candidate, operator);
+            let readout = runtime.readout(operator, relation.atoms(), &atoms);
             (readout.verdict != PhaseVerdict::Support).then(|| {
                 serde_json::json!({
                     "operator": operator.as_str(),
@@ -377,17 +480,23 @@ pub(super) fn phase_proof_json(entries: &[L2PhaseTrainingEntry]) -> serde_json::
                     "anti_micro": readout.anti_micro,
                     "margin_micro": readout.margin_micro,
                     "threshold_micro": readout.threshold_micro,
-                    "atoms": atoms.atoms(),
+                    "atoms": atoms,
+                    "relation_verifier_passed": relation.verifier_passed(),
                 })
             })
         })
         .take(20)
         .collect::<Vec<_>>();
-    let verdict = if full.negative_support > 0 {
+    let verdict = if full.negative_support > 0 || lexical_full.negative_support > 0 {
         "VETO"
     } else if full.positive_cases == 0
         || full.positive_support * 100 < full.positive_cases * 80
         || causal_drop == 0
+        || lexical_full.negative_cases == 0
+        || lexical_anti_drop == 0
+        || lexical_pairs_full.cases == 0
+        || lexical_pairs_full.wrong_wins > 0
+        || lexical_pair_gain == 0
     {
         "WATCH"
     } else {
@@ -395,19 +504,30 @@ pub(super) fn phase_proof_json(entries: &[L2PhaseTrainingEntry]) -> serde_json::
     };
     serde_json::json!({
         "kind": "l2_transition_phase_proof",
-        "schema": "lay.l2-transition-phase-proof.v1",
+        "schema": "lay.l2-transition-phase-proof.v2",
         "verdict": verdict,
         "training_entries": prepared.training.len(),
         "heldout_entries": prepared.heldout.len(),
         "training_surfaces": prepared.training_surfaces,
         "heldout_surfaces": prepared.heldout_surfaces,
-        "lexical_negative_rows_deferred_to_l2_word_center": prepared.lexical_negative_rows,
+        "lexical_negative_training_surfaces": prepared.lexical_training_surfaces,
+        "lexical_negative_heldout_surfaces": prepared.lexical_heldout_surfaces,
+        "same_operator_negative_rows_observed": prepared.same_operator_negative_rows,
+        "local_lexical_negative_rows_trained_as_candidate_anti_wave": prepared.lexical_negative_rows,
+        "nonlocal_same_operator_rows_deferred_to_context_field": prepared.nonlocal_same_operator_rows,
+        "lexical_negative_rows_deferred_to_l2_word_center": 0,
         "raw_words_stored": false,
         "exact_memory_rows_after_compile": 0,
         "full_phase_false_accepts": full.negative_support,
         "false_accept_examples": false_accept_examples,
         "positive_miss_examples": positive_miss_examples,
         "causal_positive_support_drop": causal_drop,
+        "lexical_anti_center_false_support_prevention": lexical_anti_drop,
+        "lexical_anti_center_top1_gain": lexical_pair_gain,
+        "lexical_false_support_examples": lexical_false_support_examples,
+        "lexical_pair_wrong_examples": lexical_pair_wrong_examples,
+        "lexical_competition": lexical_reports.iter().map(|(mode, report)| (*mode, report.json())).collect::<BTreeMap<_, _>>(),
+        "lexical_pair_competition": lexical_pair_reports.iter().map(|(mode, report)| (*mode, report.json())).collect::<BTreeMap<_, _>>(),
         "modes": reports.iter().map(|(mode, report)| (*mode, report.json())).collect::<BTreeMap<_, _>>(),
         "promoted_operators": promoted_operators,
         "by_operator": by_operator.iter().map(|(operator, reports)| (operator.as_str(), operator_proof_json(reports))).collect::<BTreeMap<_, _>>(),
@@ -415,6 +535,11 @@ pub(super) fn phase_proof_json(entries: &[L2PhaseTrainingEntry]) -> serde_json::
             "heldout_positive_support_min_percent": 80,
             "heldout_negative_false_accepts_required": 0,
             "destructive_ablation_drop_required": true,
+            "lexical_negative_rows_deferred_required": 0,
+            "lexical_negative_false_support_required": 0,
+            "lexical_anti_ablation_drop_required": true,
+            "lexical_pair_wrong_top1_required": 0,
+            "lexical_pair_ablation_gain_required": true,
         }
     })
 }
@@ -440,9 +565,9 @@ fn collect_phase_proof_reports(
     let mut by_operator = BTreeMap::<PhaseOperator, PhaseProofReports>::new();
     for entry in heldout {
         let operator = PhaseOperator::infer(&entry.original, &entry.candidate, &entry.operation);
-        let atoms = relation_atoms(&entry.original, &entry.candidate, operator);
+        let relation = relation_atoms(&entry.original, &entry.candidate, operator);
         for mode in modes {
-            let verdict = runtime.readout_ablation(operator, atoms.atoms(), mode);
+            let verdict = runtime.readout_ablation(operator, relation.atoms(), mode);
             reports
                 .entry(mode.as_str())
                 .or_default()
@@ -458,9 +583,119 @@ fn collect_phase_proof_reports(
     (reports, by_operator)
 }
 
+fn collect_lexical_proof_reports(
+    runtime: &PhaseRuntime,
+    prepared: &PhaseProofPrepared,
+) -> PhaseProofReports {
+    let mut reports = PhaseProofReports::new();
+    for entry in prepared
+        .heldout
+        .iter()
+        .filter(|entry| entry.accepted)
+        .chain(prepared.lexical_heldout.iter())
+    {
+        let operator = PhaseOperator::infer(&entry.original, &entry.candidate, &entry.operation);
+        let lexical_atoms = lexical_relation_atoms(&entry.original, &entry.candidate);
+        for (mode, without_anti) in [
+            ("full_lexical_phase", false),
+            ("without_lexical_anti", true),
+        ] {
+            let verdict = runtime.lexical_verdict_ablation(operator, &lexical_atoms, without_anti);
+            reports
+                .entry(mode)
+                .or_default()
+                .add(entry.accepted, verdict);
+        }
+    }
+    reports
+}
+
+fn collect_lexical_pair_reports(
+    runtime: &PhaseRuntime,
+    prepared: &PhaseProofPrepared,
+) -> BTreeMap<&'static str, LexicalPairReport> {
+    let mut reports = BTreeMap::<&'static str, LexicalPairReport>::new();
+    for positive in prepared.heldout.iter().filter(|entry| entry.accepted) {
+        let operator =
+            PhaseOperator::infer(&positive.original, &positive.candidate, &positive.operation);
+        let original = normalized_surface(&positive.original);
+        for negative in prepared.lexical_heldout.iter().filter(|entry| {
+            normalized_surface(&entry.original) == original
+                && PhaseOperator::infer(&entry.original, &entry.candidate, &entry.operation)
+                    == operator
+        }) {
+            let positive_atoms = lexical_relation_atoms(&positive.original, &positive.candidate);
+            let negative_atoms = lexical_relation_atoms(&negative.original, &negative.candidate);
+            for (mode, without_anti) in [
+                ("full_lexical_phase", false),
+                ("without_lexical_anti", true),
+            ] {
+                let Some(positive_margin) =
+                    runtime.lexical_margin_ablation(operator, &positive_atoms, without_anti)
+                else {
+                    continue;
+                };
+                let Some(negative_margin) =
+                    runtime.lexical_margin_ablation(operator, &negative_atoms, without_anti)
+                else {
+                    continue;
+                };
+                reports
+                    .entry(mode)
+                    .or_default()
+                    .add(positive_margin, negative_margin);
+            }
+        }
+    }
+    reports
+}
+
+fn collect_lexical_pair_wrong_examples(
+    runtime: &PhaseRuntime,
+    prepared: &PhaseProofPrepared,
+) -> Vec<serde_json::Value> {
+    let mut examples = Vec::new();
+    for positive in prepared.heldout.iter().filter(|entry| entry.accepted) {
+        let operator =
+            PhaseOperator::infer(&positive.original, &positive.candidate, &positive.operation);
+        let original = normalized_surface(&positive.original);
+        let positive_atoms = lexical_relation_atoms(&positive.original, &positive.candidate);
+        let Some(positive_margin) =
+            runtime.lexical_margin_ablation(operator, &positive_atoms, false)
+        else {
+            continue;
+        };
+        for negative in prepared.lexical_heldout.iter().filter(|entry| {
+            normalized_surface(&entry.original) == original
+                && PhaseOperator::infer(&entry.original, &entry.candidate, &entry.operation)
+                    == operator
+        }) {
+            let negative_atoms = lexical_relation_atoms(&negative.original, &negative.candidate);
+            let Some(negative_margin) =
+                runtime.lexical_margin_ablation(operator, &negative_atoms, false)
+            else {
+                continue;
+            };
+            if negative_margin > positive_margin {
+                examples.push(serde_json::json!({
+                    "operator": operator.as_str(),
+                    "original": positive.original,
+                    "correct": positive.candidate,
+                    "wrong": negative.candidate,
+                    "correct_margin_micro": positive_margin,
+                    "wrong_margin_micro": negative_margin,
+                }));
+            }
+        }
+    }
+    examples
+}
+
 fn proven_phase_operators(entries: &[L2PhaseTrainingEntry]) -> BTreeSet<PhaseOperator> {
     let prepared = prepare_phase_proof(entries);
-    let Ok(runtime) = train_phase_runtime(prepared.training.clone()) else {
+    let mut phase_training = prepared.training.clone();
+    phase_training.extend(prepared.lexical_training.clone());
+    let Ok(runtime) = train_phase_runtime(phase_training) else {
         return BTreeSet::new();
     };
     let (_, by_operator) = collect_phase_proof_reports(&runtime, &prepared.heldout);
@@ -535,15 +770,24 @@ fn destructive_safe_positive_support(reports: &PhaseProofReports) -> usize {
 struct PhaseProofPrepared {
     training: Vec<L2PhaseTrainingEntry>,
     heldout: Vec<L2PhaseTrainingEntry>,
+    lexical_training: Vec<L2PhaseTrainingEntry>,
+    lexical_heldout: Vec<L2PhaseTrainingEntry>,
     training_surfaces: usize,
     heldout_surfaces: usize,
     lexical_negative_rows: usize,
+    same_operator_negative_rows: usize,
+    nonlocal_same_operator_rows: usize,
+    lexical_training_surfaces: usize,
+    lexical_heldout_surfaces: usize,
 }
 
 fn prepare_phase_proof(entries: &[L2PhaseTrainingEntry]) -> PhaseProofPrepared {
     let mut groups =
         BTreeMap::<(PhaseOperator, bool, String), BTreeMap<u64, L2PhaseTrainingEntry>>::new();
+    let mut lexical_negatives = BTreeMap::<u64, L2PhaseTrainingEntry>::new();
     let mut lexical_negative_rows = 0usize;
+    let mut same_operator_negative_rows = 0usize;
+    let mut nonlocal_same_operator_rows = 0usize;
     for entry in entries {
         if !is_trainable_pair(&entry.original, &entry.candidate) {
             continue;
@@ -552,8 +796,26 @@ fn prepare_phase_proof(entries: &[L2PhaseTrainingEntry]) -> PhaseProofPrepared {
         if operator == PhaseOperator::Other {
             continue;
         }
-        if !entry.accepted && !is_structural_negative(entry, operator) {
+        if !entry.accepted && is_same_operator_negative(entry, operator) {
+            same_operator_negative_rows += 1;
+        }
+        if !entry.accepted
+            && is_same_operator_negative(entry, operator)
+            && !is_local_lexical_candidate(entry)
+        {
+            nonlocal_same_operator_rows += 1;
+            continue;
+        }
+        if !entry.accepted
+            && is_same_operator_negative(entry, operator)
+            && is_local_lexical_candidate(entry)
+        {
             lexical_negative_rows += 1;
+            let surface = concrete_surface_id(&entry.original, &entry.candidate);
+            lexical_negatives
+                .entry(surface)
+                .and_modify(|stored| stored.count = stored.count.saturating_add(entry.count))
+                .or_insert_with(|| entry.clone());
             continue;
         }
         let relation = relation_atoms(&entry.original, &entry.candidate, operator);
@@ -584,7 +846,31 @@ fn prepare_phase_proof(entries: &[L2PhaseTrainingEntry]) -> PhaseProofPrepared {
             }
         }
     }
+    let heldout_positive_keys = prepared
+        .heldout
+        .iter()
+        .filter(|entry| entry.accepted)
+        .map(|entry| {
+            (
+                PhaseOperator::infer(&entry.original, &entry.candidate, &entry.operation),
+                normalized_surface(&entry.original),
+            )
+        })
+        .collect::<BTreeSet<_>>();
+    for (_surface, entry) in lexical_negatives {
+        let operator = PhaseOperator::infer(&entry.original, &entry.candidate, &entry.operation);
+        let key = (operator, normalized_surface(&entry.original));
+        if heldout_positive_keys.contains(&key) {
+            prepared.lexical_heldout.push(entry);
+            prepared.lexical_heldout_surfaces += 1;
+        } else {
+            prepared.lexical_training.push(entry);
+            prepared.lexical_training_surfaces += 1;
+        }
+    }
     prepared.lexical_negative_rows = lexical_negative_rows;
+    prepared.same_operator_negative_rows = same_operator_negative_rows;
+    prepared.nonlocal_same_operator_rows = nonlocal_same_operator_rows;
     prepared
 }
 
@@ -619,6 +905,35 @@ struct PhaseProofModeReport {
     negative_cases: usize,
     negative_support: usize,
     negative_repel: usize,
+}
+
+#[derive(Clone, Copy, Debug, Default)]
+struct LexicalPairReport {
+    cases: usize,
+    correct_wins: usize,
+    wrong_wins: usize,
+    ties: usize,
+}
+
+impl LexicalPairReport {
+    fn add(&mut self, correct_margin: i64, wrong_margin: i64) {
+        self.cases += 1;
+        match correct_margin.cmp(&wrong_margin) {
+            std::cmp::Ordering::Greater => self.correct_wins += 1,
+            std::cmp::Ordering::Less => self.wrong_wins += 1,
+            std::cmp::Ordering::Equal => self.ties += 1,
+        }
+    }
+
+    fn json(self) -> serde_json::Value {
+        serde_json::json!({
+            "cases": self.cases,
+            "correct_top1": self.correct_wins,
+            "correct_top1_percent": proof_percent(self.correct_wins, self.cases),
+            "wrong_top1": self.wrong_wins,
+            "ties": self.ties,
+        })
+    }
 }
 
 impl PhaseProofModeReport {
@@ -679,40 +994,61 @@ where
         if operator == PhaseOperator::Other {
             continue;
         }
-        if !entry.accepted && !is_structural_negative(&entry, operator) {
-            continue;
-        }
         let relation = relation_atoms(&entry.original, &entry.candidate, operator);
         if entry.accepted && !relation.verifier_passed() {
             continue;
         }
-        let vector = phase_vector_from_atoms(relation.atoms());
+        let structural_vector = phase_vector_from_atoms(relation.atoms());
+        let lexical_atoms = lexical_relation_atoms(&entry.original, &entry.candidate);
+        let lexical_vector = phase_vector_from_atoms(&lexical_atoms);
         let builder = builders.entry(operator).or_default();
         let surface_id = concrete_surface_id(&entry.original, &entry.candidate);
+        let structural_negative = !entry.accepted && is_structural_negative(&entry, operator);
+        let lexical_negative = !entry.accepted
+            && is_same_operator_negative(&entry, operator)
+            && is_local_lexical_candidate(&entry);
+        if !entry.accepted && !structural_negative && !lexical_negative {
+            continue;
+        }
         let new_counterfactual_circuit = entry.accepted
             && builder
                 .counterfactual_circuits
                 .insert(phase_circuit_key(relation.atoms()));
         if entry.accepted {
             builder.positive_surfaces.insert(surface_id);
-        } else {
-            builder.negative_vectors.push(vector.clone());
+            builder.lexical_positive_surfaces.insert(surface_id);
+        } else if structural_negative {
+            builder.negative_vectors.push(structural_vector.clone());
+        } else if lexical_negative {
+            builder
+                .lexical_negative_vectors
+                .push(lexical_vector.clone());
         }
         let repeats = entry.count.clamp(1, 8);
         for _ in 0..repeats {
-            builder.add(&vector, entry.accepted);
+            if entry.accepted {
+                builder.add_structural(&structural_vector, true);
+                builder.add_lexical(&lexical_vector, true);
+            } else if structural_negative {
+                builder.add_structural(&structural_vector, false);
+            } else if lexical_negative {
+                builder.add_lexical(&lexical_vector, false);
+            }
         }
         if entry.accepted {
-            builder.positive_vectors.push(vector);
+            builder.positive_vectors.push(structural_vector);
+            builder.lexical_positive_vectors.push(lexical_vector);
             if new_counterfactual_circuit {
                 for counterfactual in typed_structural_counterfactuals(operator, relation.atoms()) {
                     let vector = phase_vector_from_atoms(&counterfactual);
-                    builder.add(&vector, false);
+                    builder.add_structural(&vector, false);
                     builder.negative_vectors.push(vector);
                 }
             }
-        } else {
+        } else if structural_negative {
             builder.negative_surfaces.insert(surface_id);
+        } else if lexical_negative {
+            builder.lexical_negative_surfaces.insert(surface_id);
         }
     }
 
@@ -792,13 +1128,27 @@ fn replace_atom(atoms: &mut [String], prefix: &str, replacement: &str) {
 }
 
 impl PhaseProfileBuilder {
-    fn add(&mut self, vector: &[PhaseCell], accepted: bool) {
+    fn add_structural(&mut self, vector: &[PhaseCell], accepted: bool) {
         if accepted {
             self.positive_examples = self.positive_examples.saturating_add(1);
             add_cluster(&mut self.positive, vector, MAX_POSITIVE_CENTERS);
         } else {
             self.negative_examples = self.negative_examples.saturating_add(1);
             add_cluster(&mut self.negative, vector, MAX_ANTI_CENTERS);
+        }
+    }
+
+    fn add_lexical(&mut self, vector: &[PhaseCell], accepted: bool) {
+        if accepted {
+            self.lexical_positive_examples = self.lexical_positive_examples.saturating_add(1);
+            add_cluster(
+                &mut self.lexical_positive,
+                vector,
+                MAX_LEXICAL_POSITIVE_CENTERS,
+            );
+        } else {
+            self.lexical_negative_examples = self.lexical_negative_examples.saturating_add(1);
+            add_cluster(&mut self.lexical_negative, vector, MAX_LEXICAL_ANTI_CENTERS);
         }
     }
 
@@ -816,15 +1166,32 @@ impl PhaseProfileBuilder {
             covered_surfaces: self.positive_surfaces.len() as u32,
             rejected_surfaces: self.negative_surfaces.len() as u32,
             threshold_micro: MIN_MARGIN_MICRO,
+            lexical_positive: self.lexical_positive,
+            lexical_negative: self.lexical_negative,
+            lexical_positive_examples: self.lexical_positive_examples,
+            lexical_negative_examples: self.lexical_negative_examples,
+            lexical_covered_surfaces: self.lexical_positive_surfaces.len() as u32,
+            lexical_rejected_surfaces: self.lexical_negative_surfaces.len() as u32,
+            lexical_threshold_micro: MIN_MARGIN_MICRO,
         };
         profile.threshold_micro =
             learned_margin_threshold(&profile, &self.positive_vectors, &self.negative_vectors);
+        profile.lexical_threshold_micro = learned_lexical_margin_threshold(
+            &profile,
+            &self.lexical_positive_vectors,
+            &self.lexical_negative_vectors,
+        );
         Some(profile)
     }
 }
 
 impl PhaseRuntime {
-    fn readout(&self, operator: PhaseOperator, atoms: &[String]) -> PhaseReadout {
+    fn readout(
+        &self,
+        operator: PhaseOperator,
+        structural_atoms: &[String],
+        lexical_atoms: &[String],
+    ) -> PhaseReadout {
         let Some(profile) = self
             .profiles
             .iter()
@@ -835,7 +1202,7 @@ impl PhaseRuntime {
                 ..PhaseReadout::default()
             };
         };
-        let vector = phase_vector_from_atoms(atoms);
+        let vector = phase_vector_from_atoms(structural_atoms);
         let positive = max_coherence(&vector, &profile.positive).unwrap_or_default();
         let anti = max_coherence(&vector, &profile.negative).unwrap_or_default();
         let margin_micro = phase_micro(positive - anti);
@@ -850,6 +1217,21 @@ impl PhaseRuntime {
         } else {
             PhaseVerdict::Unknown
         };
+        let lexical_vector = phase_vector_from_atoms(lexical_atoms);
+        let lexical_positive =
+            max_coherence(&lexical_vector, &profile.lexical_positive).unwrap_or_default();
+        let lexical_anti =
+            max_coherence(&lexical_vector, &profile.lexical_negative).unwrap_or_default();
+        let lexical_margin_micro = phase_micro(lexical_positive - lexical_anti);
+        let lexical_competition_ready = profile.lexical_positive_examples >= 2
+            && profile.lexical_negative_examples > 0
+            && !profile.lexical_negative.is_empty();
+        let lexical_verdict = lexical_verdict_from_scores(
+            profile,
+            lexical_positive,
+            lexical_anti,
+            lexical_competition_ready,
+        );
         PhaseReadout {
             package_loaded: true,
             operator_present: true,
@@ -864,8 +1246,62 @@ impl PhaseRuntime {
             anti_centers: profile.negative.len() as u8,
             covered_surfaces: profile.covered_surfaces,
             rejected_surfaces: profile.rejected_surfaces,
+            lexical_positive_micro: phase_micro(lexical_positive),
+            lexical_anti_micro: phase_micro(lexical_anti),
+            lexical_margin_micro,
+            lexical_threshold_micro: profile.lexical_threshold_micro,
+            lexical_positive_examples: profile.lexical_positive_examples,
+            lexical_negative_examples: profile.lexical_negative_examples,
+            lexical_positive_centers: profile.lexical_positive.len() as u8,
+            lexical_anti_centers: profile.lexical_negative.len() as u8,
+            lexical_competition_ready,
+            lexical_verdict,
             verdict,
         }
+    }
+
+    fn lexical_verdict_ablation(
+        &self,
+        operator: PhaseOperator,
+        lexical_atoms: &[String],
+        without_anti: bool,
+    ) -> PhaseVerdict {
+        let Some(profile) = self
+            .profiles
+            .iter()
+            .find(|profile| profile.operator == operator)
+        else {
+            return PhaseVerdict::Unknown;
+        };
+        let Some(margin_micro) =
+            self.lexical_margin_ablation(operator, lexical_atoms, without_anti)
+        else {
+            return PhaseVerdict::Unknown;
+        };
+        let ready = profile.lexical_positive_examples >= 2
+            && profile.lexical_negative_examples > 0
+            && !profile.lexical_negative.is_empty();
+        lexical_verdict_from_margin(profile, margin_micro, ready)
+    }
+
+    fn lexical_margin_ablation(
+        &self,
+        operator: PhaseOperator,
+        lexical_atoms: &[String],
+        without_anti: bool,
+    ) -> Option<i64> {
+        let profile = self
+            .profiles
+            .iter()
+            .find(|profile| profile.operator == operator)?;
+        let vector = phase_vector_from_atoms(lexical_atoms);
+        let positive = max_coherence(&vector, &profile.lexical_positive).unwrap_or_default();
+        let anti = if without_anti {
+            0.0
+        } else {
+            max_coherence(&vector, &profile.lexical_negative).unwrap_or_default()
+        };
+        Some(phase_micro(positive - anti))
     }
 
     fn readout_ablation(
@@ -877,9 +1313,6 @@ impl PhaseRuntime {
         if mode == PhaseAblation::NoPhase {
             return PhaseVerdict::Unknown;
         }
-        if mode == PhaseAblation::Full {
-            return self.readout(operator, atoms).verdict;
-        }
         let Some(profile) = self
             .profiles
             .iter()
@@ -887,6 +1320,12 @@ impl PhaseRuntime {
         else {
             return PhaseVerdict::Unknown;
         };
+        if mode == PhaseAblation::Full {
+            let vector = phase_vector_from_atoms(atoms);
+            let positive = max_coherence(&vector, &profile.positive).unwrap_or_default();
+            let anti = max_coherence(&vector, &profile.negative).unwrap_or_default();
+            return phase_verdict_from_scores(profile, positive, anti);
+        }
         let mut vector = phase_vector_from_atoms(atoms);
         let (positive, anti) = match mode {
             PhaseAblation::ShuffledPhase => {
@@ -927,7 +1366,12 @@ impl PhaseRuntime {
         let centers = self
             .profiles
             .iter()
-            .map(|profile| profile.positive.len() + profile.negative.len())
+            .map(|profile| {
+                profile.positive.len()
+                    + profile.negative.len()
+                    + profile.lexical_positive.len()
+                    + profile.lexical_negative.len()
+            })
             .sum::<usize>();
         let mut bytes = Vec::with_capacity(
             HEADER_BYTES
@@ -948,7 +1392,21 @@ impl PhaseRuntime {
             bytes.extend_from_slice(&profile.covered_surfaces.to_le_bytes());
             bytes.extend_from_slice(&profile.rejected_surfaces.to_le_bytes());
             bytes.extend_from_slice(&(profile.threshold_micro as i32).to_le_bytes());
-            for center in profile.positive.iter().chain(&profile.negative) {
+            bytes.push(profile.lexical_positive.len() as u8);
+            bytes.push(profile.lexical_negative.len() as u8);
+            bytes.extend_from_slice(&0_u16.to_le_bytes());
+            bytes.extend_from_slice(&profile.lexical_positive_examples.to_le_bytes());
+            bytes.extend_from_slice(&profile.lexical_negative_examples.to_le_bytes());
+            bytes.extend_from_slice(&profile.lexical_covered_surfaces.to_le_bytes());
+            bytes.extend_from_slice(&profile.lexical_rejected_surfaces.to_le_bytes());
+            bytes.extend_from_slice(&(profile.lexical_threshold_micro as i32).to_le_bytes());
+            for center in profile
+                .positive
+                .iter()
+                .chain(&profile.negative)
+                .chain(&profile.lexical_positive)
+                .chain(&profile.lexical_negative)
+            {
                 write_center(&mut bytes, center);
             }
         }
@@ -995,15 +1453,39 @@ impl PhaseRuntime {
             let covered_surfaces = u32::from_le_bytes(header[12..16].try_into().unwrap());
             let rejected_surfaces = u32::from_le_bytes(header[16..20].try_into().unwrap());
             let threshold_micro = i32::from_le_bytes(header[20..24].try_into().unwrap()) as i64;
+            let lexical_positive_count = header[24] as usize;
+            let lexical_negative_count = header[25] as usize;
+            if lexical_positive_count > MAX_LEXICAL_POSITIVE_CENTERS
+                || lexical_negative_count > MAX_LEXICAL_ANTI_CENTERS
+            {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "L2 lexical phase center count exceeds runtime budget",
+                ));
+            }
+            let lexical_positive_examples = u32::from_le_bytes(header[28..32].try_into().unwrap());
+            let lexical_negative_examples = u32::from_le_bytes(header[32..36].try_into().unwrap());
+            let lexical_covered_surfaces = u32::from_le_bytes(header[36..40].try_into().unwrap());
+            let lexical_rejected_surfaces = u32::from_le_bytes(header[40..44].try_into().unwrap());
+            let lexical_threshold_micro =
+                i32::from_le_bytes(header[44..48].try_into().unwrap()) as i64;
             offset += PROFILE_HEADER_BYTES;
             let mut positive = Vec::with_capacity(positive_count);
             let mut negative = Vec::with_capacity(negative_count);
-            for index in 0..positive_count + negative_count {
+            let mut lexical_positive = Vec::with_capacity(lexical_positive_count);
+            let mut lexical_negative = Vec::with_capacity(lexical_negative_count);
+            for index in
+                0..positive_count + negative_count + lexical_positive_count + lexical_negative_count
+            {
                 let center = read_center(bytes, &mut offset)?;
                 if index < positive_count {
                     positive.push(center);
-                } else {
+                } else if index < positive_count + negative_count {
                     negative.push(center);
+                } else if index < positive_count + negative_count + lexical_positive_count {
+                    lexical_positive.push(center);
+                } else {
+                    lexical_negative.push(center);
                 }
             }
             profiles.push(PhaseProfile {
@@ -1016,6 +1498,13 @@ impl PhaseRuntime {
                 covered_surfaces,
                 rejected_surfaces,
                 threshold_micro,
+                lexical_positive,
+                lexical_negative,
+                lexical_positive_examples,
+                lexical_negative_examples,
+                lexical_covered_surfaces,
+                lexical_rejected_surfaces,
+                lexical_threshold_micro,
             });
         }
         if offset != bytes.len() {
@@ -1043,12 +1532,158 @@ fn phase_verdict_from_scores(profile: &PhaseProfile, positive: f32, anti: f32) -
     }
 }
 
+fn lexical_verdict_from_scores(
+    profile: &PhaseProfile,
+    positive: f32,
+    anti: f32,
+    ready: bool,
+) -> PhaseVerdict {
+    let margin_micro = phase_micro(positive - anti);
+    lexical_verdict_from_margin(profile, margin_micro, ready)
+}
+
+fn lexical_verdict_from_margin(
+    profile: &PhaseProfile,
+    margin_micro: i64,
+    ready: bool,
+) -> PhaseVerdict {
+    if ready && margin_micro >= profile.lexical_threshold_micro {
+        PhaseVerdict::Support
+    } else if ready && margin_micro <= -MIN_LEARNED_SUPPORT_MARGIN_MICRO {
+        PhaseVerdict::Repel
+    } else {
+        PhaseVerdict::Unknown
+    }
+}
+
 fn relation_atoms(
     original: &str,
     candidate: &str,
     operator: PhaseOperator,
 ) -> TransitionRelationAtoms {
     TransitionRelationAtoms::for_operator(original, candidate, operator)
+}
+
+fn phase_atoms_for_pair(
+    original: &str,
+    candidate: &str,
+    operator: PhaseOperator,
+) -> (TransitionRelationAtoms, Vec<String>) {
+    let relation = relation_atoms(original, candidate, operator);
+    let lexical_atoms = lexical_relation_atoms(original, candidate);
+    (relation, lexical_atoms)
+}
+
+fn lexical_relation_atoms(original: &str, candidate: &str) -> Vec<String> {
+    let mut atoms = Vec::new();
+    let original_token = original_phase_token(original);
+    let candidate_token = original_phase_token(candidate);
+    let original = lexical_projection(original);
+    let candidate = lexical_projection(candidate);
+    let shared = original
+        .intersection(&candidate)
+        .copied()
+        .collect::<Vec<_>>();
+    let added = candidate.difference(&original).copied().collect::<Vec<_>>();
+    let removed = original.difference(&candidate).copied().collect::<Vec<_>>();
+
+    append_projection_atoms("lex-candidate", candidate.iter().copied(), &mut atoms);
+    append_projection_atoms("lex-shared", shared.iter().copied(), &mut atoms);
+    append_projection_atoms("lex-added", added.iter().copied(), &mut atoms);
+    append_projection_atoms("lex-removed", removed.iter().copied(), &mut atoms);
+
+    let union = original.union(&candidate).count();
+    let overlap_bucket = shared
+        .len()
+        .saturating_mul(10)
+        .checked_div(union)
+        .unwrap_or_default();
+    atoms.push(format!("lex-overlap:{overlap_bucket}"));
+    atoms.push(format!(
+        "lex-added-count:{}",
+        small_lexical_bucket(added.len())
+    ));
+    atoms.push(format!(
+        "lex-removed-count:{}",
+        small_lexical_bucket(removed.len())
+    ));
+    append_lexical_authority_atoms("original", original_token, &mut atoms);
+    append_lexical_authority_atoms("candidate", candidate_token, &mut atoms);
+    atoms
+}
+
+fn append_lexical_authority_atoms(role: &str, token: String, atoms: &mut Vec<String>) {
+    let rank = super::l2::l2_surface_foundation_rank(&token);
+    let rank_bucket = lexical_rank_bucket(rank);
+    atoms.push(format!("lex-{role}-center:{rank_bucket}"));
+    if role == "candidate" {
+        atoms.extend(
+            (0..LEXICAL_CANDIDATE_AUTHORITY_LENSES)
+                .map(|lens| format!("lex-candidate-center-lens-{lens}:{rank_bucket}")),
+        );
+    }
+    atoms.push(format!("lex-{role}-script:{}", lexical_script(&token)));
+}
+
+fn original_phase_token(text: &str) -> String {
+    let token = last_text_word(text).unwrap_or_default();
+    let (_, token, _) = split_word_punctuation(&token);
+    token.to_lowercase()
+}
+
+const fn lexical_rank_bucket(rank: Option<usize>) -> &'static str {
+    match rank {
+        Some(0..=999) => "0-999",
+        Some(1_000..=9_999) => "1k-9k",
+        Some(10_000..=49_999) => "10k-49k",
+        Some(50_000..) => "50k+",
+        None => "absent",
+    }
+}
+
+fn lexical_script(token: &str) -> &'static str {
+    let latin = token.chars().any(|ch| ch.is_ascii_alphabetic());
+    let cyrillic = token.chars().any(crate::keyboard::is_cyrillic_letter);
+    match (latin, cyrillic) {
+        (true, false) => "en",
+        (false, true) => "ru",
+        (true, true) => "mixed",
+        (false, false) => "other",
+    }
+}
+
+fn lexical_projection(text: &str) -> BTreeSet<(u16, i8)> {
+    let token = last_text_word(text).unwrap_or_default();
+    let (_, token, _) = split_word_punctuation(&token);
+    SurfaceFieldEncoder::encode(&token.to_lowercase())
+        .atoms()
+        .iter()
+        .flat_map(|atom| surface_atom_projection(atom.position, &atom.bytes))
+        .map(|trit| (trit.lane, trit.value))
+        .collect()
+}
+
+fn append_projection_atoms(
+    relation: &str,
+    projection: impl IntoIterator<Item = (u16, i8)>,
+    atoms: &mut Vec<String>,
+) {
+    atoms.extend(
+        projection
+            .into_iter()
+            .map(|(lane, value)| format!("{relation}:{lane}:{value}")),
+    );
+}
+
+const fn small_lexical_bucket(count: usize) -> &'static str {
+    match count {
+        0 => "0",
+        1..=3 => "1-3",
+        4..=7 => "4-7",
+        8..=15 => "8-15",
+        16..=31 => "16-31",
+        _ => "32+",
+    }
 }
 
 fn add_cluster(centers: &mut Vec<PhaseCenter>, vector: &[PhaseCell], max_centers: usize) {
@@ -1078,18 +1713,40 @@ fn learned_margin_threshold(
     positives: &[Vec<PhaseCell>],
     negatives: &[Vec<PhaseCell>],
 ) -> i64 {
-    if positives.is_empty() || negatives.is_empty() || profile.negative.is_empty() {
+    learned_margin_threshold_for_centers(&profile.positive, &profile.negative, positives, negatives)
+}
+
+fn learned_lexical_margin_threshold(
+    profile: &PhaseProfile,
+    positives: &[Vec<PhaseCell>],
+    negatives: &[Vec<PhaseCell>],
+) -> i64 {
+    learned_margin_threshold_for_centers(
+        &profile.lexical_positive,
+        &profile.lexical_negative,
+        positives,
+        negatives,
+    )
+}
+
+fn learned_margin_threshold_for_centers(
+    positive_centers: &[PhaseCenter],
+    negative_centers: &[PhaseCenter],
+    positives: &[Vec<PhaseCell>],
+    negatives: &[Vec<PhaseCell>],
+) -> i64 {
+    if positives.is_empty() || negatives.is_empty() || negative_centers.is_empty() {
         return MAX_MARGIN_MICRO;
     }
     let mut positive_margins = positives
         .iter()
-        .map(|vector| phase_margin_micro(profile, vector))
+        .map(|vector| phase_margin_micro_for_centers(positive_centers, negative_centers, vector))
         .collect::<Vec<_>>();
     positive_margins.sort_unstable();
     let positive_floor = positive_margins[0];
     let negative_ceiling = negatives
         .iter()
-        .map(|vector| phase_margin_micro(profile, vector))
+        .map(|vector| phase_margin_micro_for_centers(positive_centers, negative_centers, vector))
         .max()
         .unwrap_or_default();
     let threshold = if positive_floor > negative_ceiling {
@@ -1100,9 +1757,13 @@ fn learned_margin_threshold(
     threshold.clamp(MIN_LEARNED_SUPPORT_MARGIN_MICRO, MAX_MARGIN_MICRO)
 }
 
-fn phase_margin_micro(profile: &PhaseProfile, vector: &[PhaseCell]) -> i64 {
-    let positive = max_coherence(vector, &profile.positive).unwrap_or_default();
-    let negative = max_coherence(vector, &profile.negative).unwrap_or_default();
+fn phase_margin_micro_for_centers(
+    positive_centers: &[PhaseCenter],
+    negative_centers: &[PhaseCenter],
+    vector: &[PhaseCell],
+) -> i64 {
+    let positive = max_coherence(vector, positive_centers).unwrap_or_default();
+    let negative = max_coherence(vector, negative_centers).unwrap_or_default();
     phase_micro(positive - negative)
 }
 
@@ -1324,9 +1985,54 @@ fn is_trainable_pair(original: &str, candidate: &str) -> bool {
         && !candidate.chars().any(char::is_control)
 }
 
+fn normalized_surface(text: &str) -> String {
+    text.split_whitespace()
+        .map(str::to_lowercase)
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
 fn is_structural_negative(entry: &L2PhaseTrainingEntry, claimed_operator: PhaseOperator) -> bool {
-    let observed_operator = PhaseOperator::infer(&entry.original, &entry.candidate, "");
-    observed_operator != claimed_operator
+    !candidate_matches_operator(entry, claimed_operator)
+}
+
+fn is_same_operator_negative(
+    entry: &L2PhaseTrainingEntry,
+    claimed_operator: PhaseOperator,
+) -> bool {
+    candidate_matches_operator(entry, claimed_operator)
+}
+
+fn candidate_matches_operator(
+    entry: &L2PhaseTrainingEntry,
+    claimed_operator: PhaseOperator,
+) -> bool {
+    if claimed_operator == PhaseOperator::AcceptCompletion {
+        let original = original_phase_token(&entry.original);
+        let candidate = original_phase_token(&entry.candidate);
+        return !original.is_empty()
+            && candidate.starts_with(&original)
+            && candidate.chars().count() > original.chars().count();
+    }
+    PhaseOperator::infer(&entry.original, &entry.candidate, "") == claimed_operator
+}
+
+fn is_local_lexical_candidate(entry: &L2PhaseTrainingEntry) -> bool {
+    let original = entry
+        .original
+        .split_whitespace()
+        .map(str::to_lowercase)
+        .collect::<Vec<_>>();
+    let candidate = entry
+        .candidate
+        .split_whitespace()
+        .map(str::to_lowercase)
+        .collect::<Vec<_>>();
+    if original.is_empty() || original.len() != candidate.len() {
+        return false;
+    }
+    original[..original.len() - 1] == candidate[..candidate.len() - 1]
+        && original.last() != candidate.last()
 }
 
 #[cfg(test)]
@@ -1363,9 +2069,7 @@ mod tests {
     #[test]
     fn per_operator_phase_field_transfers_to_unseen_surface() {
         let runtime = transposition_runtime();
-        let operator = PhaseOperator::AdjacentTransposition;
-        let relation = relation_atoms("гркоинг", "грокинг", operator);
-        let readout = runtime.readout(operator, relation.atoms());
+        let readout = readout_for_pair(&runtime, "гркоинг", "грокинг", "transposition");
 
         assert!(readout.operator_present);
         assert_eq!(readout.positive_centers, 1);
@@ -1377,9 +2081,7 @@ mod tests {
     #[test]
     fn anti_center_repels_same_operator_near_miss() {
         let runtime = transposition_runtime();
-        let operator = PhaseOperator::AdjacentTransposition;
-        let relation = relation_atoms("пукнт", "пукат", operator);
-        let readout = runtime.readout(operator, relation.atoms());
+        let readout = readout_for_pair(&runtime, "пукнт", "пукат", "transposition");
 
         assert_eq!(readout.verdict, PhaseVerdict::Repel, "{readout:?}");
         assert!(readout.anti_micro > readout.positive_micro);
@@ -1406,9 +2108,51 @@ mod tests {
     #[test]
     fn phase_training_atoms_do_not_store_concrete_words() {
         let relation = relation_atoms("мы пукнт", "мы пункт", PhaseOperator::AdjacentTransposition);
+        let lexical = lexical_relation_atoms("мы пукнт", "мы пункт");
 
         assert!(relation.atoms().iter().all(|atom| !atom.contains("пукнт")));
         assert!(relation.atoms().iter().all(|atom| !atom.contains("пункт")));
+        assert!(lexical.iter().all(|atom| !atom.contains("пукнт")));
+        assert!(lexical.iter().all(|atom| !atom.contains("пункт")));
+    }
+
+    #[test]
+    fn lexical_anti_lane_repels_wrong_center_without_vetoing_operator() {
+        let runtime = train_phase_runtime([
+            entry("djn", "вот", "layout", true),
+            entry("ghbdtn", "привет", "layout", true),
+            entry("gjhn", "порт", "layout", true),
+            entry("ps", "зы", "layout", false),
+            entry("df", "ва", "layout", false),
+            entry("pwd", "зцв", "layout", false),
+        ])
+        .expect("dual phase field trains");
+        let wrong = readout_for_pair(&runtime, "ps", "зы", "layout");
+
+        assert_eq!(wrong.verdict, PhaseVerdict::Support, "{wrong:?}");
+        assert!(wrong.lexical_competition_ready, "{wrong:?}");
+        assert_eq!(wrong.lexical_verdict, PhaseVerdict::Repel, "{wrong:?}");
+        assert!(wrong.lexical_anti_micro > wrong.lexical_positive_micro);
+    }
+
+    #[test]
+    fn compiled_phase_package_contains_no_training_words() {
+        let runtime = train_phase_runtime([
+            entry("djn", "вот", "layout", true),
+            entry("ghbdtn", "привет", "layout", true),
+            entry("ps", "зы", "layout", false),
+        ])
+        .expect("phase package trains");
+        let bytes = runtime.to_bytes();
+
+        for surface in ["djn", "вот", "ghbdtn", "привет", "ps", "зы"] {
+            assert!(
+                !bytes
+                    .windows(surface.len())
+                    .any(|window| window == surface.as_bytes()),
+                "raw surface leaked into package: {surface}"
+            );
+        }
     }
 
     #[test]
@@ -1439,9 +2183,8 @@ mod tests {
             entry("луг", "лог", "substitution", true),
         ])
         .expect("phase field trains from positive surfaces");
-        let operator = PhaseOperator::LetterSubstitution;
-        let supported = runtime.readout(operator, relation_atoms("мак", "мок", operator).atoms());
-        let mismatched = runtime.readout(operator, relation_atoms("мак", "мака", operator).atoms());
+        let supported = readout_for_pair(&runtime, "мак", "мок", "substitution");
+        let mismatched = readout_for_pair(&runtime, "мак", "мака", "substitution");
 
         assert_eq!(supported.verdict, PhaseVerdict::Support, "{supported:?}");
         assert_eq!(mismatched.verdict, PhaseVerdict::Repel, "{mismatched:?}");

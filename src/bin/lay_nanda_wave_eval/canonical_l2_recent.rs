@@ -819,14 +819,22 @@ fn candidate_interference_summary(input: &str, candidate: &CanonicalL2Candidate)
         operation,
         None,
     );
+    let phase_json = serde_json::to_value(&phase).unwrap_or_default();
     format!(
-        "{}:{} phase={}/{} margin={} threshold={}",
+        "{}:{} phase={}/{} margin={} threshold={} lexical={}:{} threshold={}",
         candidate_word,
         candidate.score,
         phase.verdict,
         lay::nanda_wave::infer_l2_transition_operator(input, &candidate_word, operation),
         phase.margin_micro,
         phase.threshold_micro,
+        phase_json["lexical_verdict"].as_str().unwrap_or("unknown"),
+        phase_json["lexical_margin_micro"]
+            .as_i64()
+            .unwrap_or_default(),
+        phase_json["lexical_threshold_micro"]
+            .as_i64()
+            .unwrap_or_default(),
     )
 }
 

@@ -64,7 +64,7 @@ const LINES: [ArchitectureLine; 8] = [
         id: "hot-field-memory",
         layer: "Hot Runtime Memory",
         owner: "hot_field + l2_candidate_phase + usage_prior",
-        proof: "LAYPC004 stores quantized centers, anti-centers and promotion bits without words",
+        proof: "LAYPC005 stores separate structural and lexical centers, anti-centers and promotion bits without words",
         debt: "keep exact text in cold training/debug evidence only",
     },
     ArchitectureLine {
@@ -72,7 +72,7 @@ const LINES: [ArchitectureLine; 8] = [
         layer: "L2",
         owner: "nanda_wave::l2 + l2_candidate_phase + typing_transition::decision::interference",
         proof: "L2 proposes candidates; promoted phase competition redistributes the existing L2 energy budget; L2 cannot execute",
-        debt: "train clean same-operator lexical anti-centers and raise candidate coverage",
+        debt: "expand clean lexical anti-center coverage and raise candidate coverage without raw-word authority",
     },
     ArchitectureLine {
         id: "l3-l4-learning",
@@ -136,7 +136,7 @@ fn receipt() -> &'static ArchitectureReceipt {
 }
 
 const DEBT: [&str; 7] = [
-    "P0: build clean lexical truth and same-operator anti-centers; live applied edits are not automatic verifier labels",
+    "P0: expand clean same-token lexical anti-center truth; live applied edits are not automatic verifier labels",
     "P1: accumulate organic L4 surface evidence without mixing stale accept/reject states",
     "P2: keep CompositeTypo split into typed subforms when new evidence reveals distinct circuits",
     "P3: keep IME display aggressive, first-word capable and backend-only",

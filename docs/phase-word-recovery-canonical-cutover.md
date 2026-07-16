@@ -104,7 +104,7 @@ L2 CANDIDATE LATTICE
 +-- lexical phase readout (LAYLPH02)
 +-- layout, boundary, typo, morphology, completion adapters
 +-- local usage/context priors
-+-- transition phase readout (LAYPC004)
++-- transition phase readout (LAYPC005)
 |
 v
 L3 PHRASE EVIDENCE
@@ -186,21 +186,25 @@ vocabulary. Its graph contains enough Unicode arc information to reconstruct
 known surfaces. Therefore it is not yet a purely emergent phase generator that
 can invent every valid unseen word from centers alone.
 
-#### LAYPC004 transition phase artifact
+#### LAYPC005 transition phase artifact
 
 LIVE and PROVEN:
 
 ```text
 transition relation atoms
 -> operator profile
--> positive phase centers
--> anti-centers
--> learned margin threshold
+-> structural positive / anti-centers
+-> lexical candidate positive / anti-centers
+-> learned margin thresholds
 -> Support / Repel / Unknown
 ```
 
 The package stores quantized centers, anti-centers, promotion state, support
 counts, and thresholds without raw words.
+
+The installed package is compiled from the same fixed dataset used by the
+release proof. Live actions and applied edits are not silently appended after
+the proof; explicit user feedback remains a separate future training input.
 
 Current production-artifact proof:
 
@@ -210,13 +214,21 @@ heldout positive support           72 / 72
 heldout negative false accepts      0 / 169
 positive support without phase      0 / 72
 negative false accepts without anti 169 / 169
-lexical negative rows deferred      163
+same-operator negatives observed    396
+local lexical candidate negatives   222
+nonlocal negatives deferred to L3   174
+lexical heldout false supports         0 / 48
+false supports without lexical anti   48 / 48
+paired candidate top-1                48 / 48
+paired top-1 without lexical anti      46 / 48
 ```
 
-Truthful boundary: current anti-centers primarily separate structural operator
-transitions and typed counterfactuals. They do not yet prove that one concrete
-lexical candidate is the correct word among several candidates with the same
-operator.
+The structural lane proves that the typed operator is admissible. The lexical
+lane redistributes candidate energy inside that operator. Its compact
+projection contains position-sensitive 4-gram trits and authority buckets, not
+raw words. The 174 nonlocal rows are deliberately excluded from lexical
+training because they change phrase context or multiple tokens and belong to
+L3/L4.
 
 #### Joint transition interference
 
@@ -247,8 +259,8 @@ This is a candidate arbitration mechanism, not a verifier. `Repel` and
 
 OPEN:
 
-- train lexical competitor anti-centers from clean accepted/rejected pairs;
-- separate same-operator lexical competition from operator classification;
+- expand lexical competitor anti-center coverage from clean accepted/rejected
+  current-token pairs;
 - replace remaining hand-calibrated L2 peak components with learned package
   calibration after a fixed heldout proves parity;
 - raise candidate coverage without loading source corpora into the hot path.
@@ -380,7 +392,7 @@ src/nanda_wave/lexical_phase/{compiler,format,runtime}.rs
   cold lexical compiler and hot LAYLPH02 readout
 
 src/nanda_wave/l2_candidate_phase.rs
-  LAYPC004 operator phase training, package, and readout
+  LAYPC005 structural and lexical phase training, package, and readout
 
 src/nanda_wave/l2_wave_peak.rs
   current calibrated lexical peak evidence; still partly hand-calibrated
@@ -436,7 +448,7 @@ The hot runtime must expose bytes, counts, version, checksum, and warmup time.
 
 ### Runtime truth
 
-`raw_words_stored=false` for LAYPC004 means the transition package stores no
+`raw_words_stored=false` for LAYPC005 means the transition package stores no
 raw words. It must not be generalized into the false claim that all lexical
 runtime state is non-reversible. LAYLPH02 deliberately keeps a reversible
 grapheme graph so output text can be produced.
@@ -499,11 +511,12 @@ synchronization, and candidate generation must be timed separately.
 
 ## 9. Debt Queue
 
-### P0: clean truth and lexical anti-centers
+### P0: expand clean truth and lexical anti-centers
 
-Build a fixed heldout from explicit user correction, immediate undo/reject, and
-curated corpus corruption. Do not label every applied edit as true. Mine
-top-k wrong candidates as negatives and train candidate-specific anti-centers.
+Extend the fixed heldout from explicit user correction, immediate undo/reject,
+and curated corpus corruption. Do not label every applied edit as true. Only
+same-token alternatives may train candidate-specific anti-centers. Multiword
+and left-context negatives remain L3/L4 evidence.
 
 Exit gate:
 
@@ -636,7 +649,7 @@ no unsafe multiword or left-context mutation
 quality, latency, RSS, and causal ablations all pass on fixed artifacts
 ```
 
-The current code has the authority skeleton and compact phase memories. The
-main remaining intelligence debt is clean lexical competition: L2 often births
-the right candidate, but its field still needs learned same-operator
-anti-centers and stronger phrase/state evidence to settle the correct basin.
+The current code has the authority skeleton and compact phase memories. Learned
+same-operator anti-centers now provide local destructive interference. The main
+remaining intelligence debt is broader clean lexical coverage plus stronger
+L3/L4 phrase and state evidence for context-dependent ambiguity.

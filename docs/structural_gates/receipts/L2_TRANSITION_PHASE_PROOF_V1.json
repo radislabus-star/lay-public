@@ -6,7 +6,9 @@
     "phase_causal_pass": true,
     "relational_atoms_causal_pass": true,
     "core_causal_pass": true,
-    "anti_center_causal_pass": true
+    "anti_center_causal_pass": true,
+    "lexical_anti_center_causal_pass": true,
+    "lexical_anti_center_top1_causal_pass": true
   },
   "wrong_accepts": 0,
   "abstained_queries": 0,
@@ -14,8 +16,14 @@
   "exact_cache_overlap": 0,
   "structural_exact_parity_failures": 0,
   "corpus_seeds": 745,
-  "heldout_queries": 242,
+  "heldout_queries": 241,
   "correct_cpu_executions": 72,
+  "lexical_negative_cases": 48,
+  "lexical_wrong_supports": 0,
+  "lexical_false_supports_prevented": 48,
+  "lexical_pair_correct_top1": 48,
+  "lexical_pair_cases": 48,
+  "lexical_pair_wrong_top1": 0,
   "promoted_operators": [
     "layout_projection",
     "adjacent_transposition",
@@ -77,11 +85,11 @@
           },
           "shuffled_phase": {
             "negative_cases": 12,
-            "negative_repel": 0,
-            "negative_repel_percent": 0.0,
+            "negative_repel": 12,
+            "negative_repel_percent": 100.0,
             "negative_support_false_accepts": 0,
             "positive_cases": 6,
-            "positive_repel": 0,
+            "positive_repel": 6,
             "positive_support": 0,
             "positive_support_percent": 0.0
           },
@@ -144,7 +152,7 @@
             "negative_cases": 14,
             "negative_repel": 7,
             "negative_repel_percent": 50.0,
-            "negative_support_false_accepts": 0,
+            "negative_support_false_accepts": 7,
             "positive_cases": 7,
             "positive_repel": 7,
             "positive_support": 0,
@@ -152,11 +160,11 @@
           },
           "shuffled_phase": {
             "negative_cases": 14,
-            "negative_repel": 0,
-            "negative_repel_percent": 0.0,
+            "negative_repel": 14,
+            "negative_repel_percent": 100.0,
             "negative_support_false_accepts": 0,
             "positive_cases": 7,
-            "positive_repel": 0,
+            "positive_repel": 7,
             "positive_support": 0,
             "positive_support_percent": 0.0
           },
@@ -182,12 +190,12 @@
         "promotion_verdict": "PROMOTED"
       },
       "boundary_merge": {
-        "anti_center_false_accept_prevention": 22,
+        "anti_center_false_accept_prevention": 21,
         "causal_positive_support_drop": 6,
         "modes": {
           "full_phase": {
-            "negative_cases": 22,
-            "negative_repel": 22,
+            "negative_cases": 21,
+            "negative_repel": 21,
             "negative_repel_percent": 100.0,
             "negative_support_false_accepts": 0,
             "positive_cases": 6,
@@ -196,7 +204,7 @@
             "positive_support_percent": 100.0
           },
           "magnitude_only": {
-            "negative_cases": 22,
+            "negative_cases": 21,
             "negative_repel": 0,
             "negative_repel_percent": 0.0,
             "negative_support_false_accepts": 0,
@@ -206,7 +214,7 @@
             "positive_support_percent": 0.0
           },
           "no_phase": {
-            "negative_cases": 22,
+            "negative_cases": 21,
             "negative_repel": 0,
             "negative_repel_percent": 0.0,
             "negative_support_false_accepts": 0,
@@ -216,38 +224,38 @@
             "positive_support_percent": 0.0
           },
           "random_center": {
-            "negative_cases": 22,
+            "negative_cases": 21,
             "negative_repel": 10,
-            "negative_repel_percent": 45.45,
-            "negative_support_false_accepts": 12,
+            "negative_repel_percent": 47.62,
+            "negative_support_false_accepts": 10,
             "positive_cases": 6,
             "positive_repel": 0,
             "positive_support": 6,
             "positive_support_percent": 100.0
           },
           "shuffled_phase": {
-            "negative_cases": 22,
-            "negative_repel": 2,
-            "negative_repel_percent": 9.09,
-            "negative_support_false_accepts": 12,
+            "negative_cases": 21,
+            "negative_repel": 18,
+            "negative_repel_percent": 85.71,
+            "negative_support_false_accepts": 0,
             "positive_cases": 6,
-            "positive_repel": 0,
-            "positive_support": 6,
-            "positive_support_percent": 100.0
+            "positive_repel": 6,
+            "positive_support": 0,
+            "positive_support_percent": 0.0
           },
           "without_anti": {
-            "negative_cases": 22,
+            "negative_cases": 21,
             "negative_repel": 0,
             "negative_repel_percent": 0.0,
-            "negative_support_false_accepts": 22,
+            "negative_support_false_accepts": 21,
             "positive_cases": 6,
             "positive_repel": 0,
             "positive_support": 6,
             "positive_support_percent": 100.0
           }
         },
-        "negative_cases": 22,
-        "negative_repel": 22,
+        "negative_cases": 21,
+        "negative_repel": 21,
         "negative_repel_percent": 100.0,
         "negative_support_false_accepts": 0,
         "positive_cases": 6,
@@ -302,13 +310,13 @@
           },
           "shuffled_phase": {
             "negative_cases": 16,
-            "negative_repel": 0,
-            "negative_repel_percent": 0.0,
-            "negative_support_false_accepts": 8,
+            "negative_repel": 8,
+            "negative_repel_percent": 50.0,
+            "negative_support_false_accepts": 0,
             "positive_cases": 7,
             "positive_repel": 0,
-            "positive_support": 7,
-            "positive_support_percent": 100.0
+            "positive_support": 0,
+            "positive_support_percent": 0.0
           },
           "without_anti": {
             "negative_cases": 16,
@@ -367,11 +375,11 @@
           },
           "random_center": {
             "negative_cases": 13,
-            "negative_repel": 0,
-            "negative_repel_percent": 0.0,
-            "negative_support_false_accepts": 13,
+            "negative_repel": 5,
+            "negative_repel_percent": 38.46,
+            "negative_support_false_accepts": 8,
             "positive_cases": 6,
-            "positive_repel": 0,
+            "positive_repel": 6,
             "positive_support": 0,
             "positive_support_percent": 0.0
           },
@@ -444,7 +452,7 @@
             "negative_cases": 12,
             "negative_repel": 0,
             "negative_repel_percent": 0.0,
-            "negative_support_false_accepts": 6,
+            "negative_support_false_accepts": 12,
             "positive_cases": 5,
             "positive_repel": 0,
             "positive_support": 5,
@@ -452,11 +460,11 @@
           },
           "shuffled_phase": {
             "negative_cases": 12,
-            "negative_repel": 6,
-            "negative_repel_percent": 50.0,
+            "negative_repel": 12,
+            "negative_repel_percent": 100.0,
             "negative_support_false_accepts": 0,
             "positive_cases": 5,
-            "positive_repel": 0,
+            "positive_repel": 5,
             "positive_support": 0,
             "positive_support_percent": 0.0
           },
@@ -527,9 +535,9 @@
           },
           "shuffled_phase": {
             "negative_cases": 12,
-            "negative_repel": 0,
-            "negative_repel_percent": 0.0,
-            "negative_support_false_accepts": 6,
+            "negative_repel": 12,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
             "positive_cases": 4,
             "positive_repel": 4,
             "positive_support": 0,
@@ -592,9 +600,9 @@
           },
           "random_center": {
             "negative_cases": 27,
-            "negative_repel": 14,
-            "negative_repel_percent": 51.85,
-            "negative_support_false_accepts": 11,
+            "negative_repel": 18,
+            "negative_repel_percent": 66.67,
+            "negative_support_false_accepts": 9,
             "positive_cases": 11,
             "positive_repel": 7,
             "positive_support": 4,
@@ -602,9 +610,9 @@
           },
           "shuffled_phase": {
             "negative_cases": 27,
-            "negative_repel": 10,
-            "negative_repel_percent": 37.04,
-            "negative_support_false_accepts": 17,
+            "negative_repel": 13,
+            "negative_repel_percent": 48.15,
+            "negative_support_false_accepts": 0,
             "positive_cases": 11,
             "positive_repel": 11,
             "positive_support": 0,
@@ -677,11 +685,11 @@
           },
           "shuffled_phase": {
             "negative_cases": 12,
-            "negative_repel": 0,
-            "negative_repel_percent": 0.0,
-            "negative_support_false_accepts": 6,
+            "negative_repel": 12,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
             "positive_cases": 6,
-            "positive_repel": 0,
+            "positive_repel": 6,
             "positive_support": 0,
             "positive_support_percent": 0.0
           },
@@ -752,11 +760,11 @@
           },
           "shuffled_phase": {
             "negative_cases": 18,
-            "negative_repel": 9,
-            "negative_repel_percent": 50.0,
+            "negative_repel": 18,
+            "negative_repel_percent": 100.0,
             "negative_support_false_accepts": 0,
             "positive_cases": 8,
-            "positive_repel": 0,
+            "positive_repel": 8,
             "positive_support": 0,
             "positive_support_percent": 0.0
           },
@@ -827,11 +835,11 @@
           },
           "shuffled_phase": {
             "negative_cases": 12,
-            "negative_repel": 0,
-            "negative_repel_percent": 0.0,
-            "negative_support_false_accepts": 6,
+            "negative_repel": 12,
+            "negative_repel_percent": 100.0,
+            "negative_support_false_accepts": 0,
             "positive_cases": 6,
-            "positive_repel": 0,
+            "positive_repel": 6,
             "positive_support": 0,
             "positive_support_percent": 0.0
           },
@@ -865,17 +873,67 @@
     "gate": {
       "destructive_ablation_drop_required": true,
       "heldout_negative_false_accepts_required": 0,
-      "heldout_positive_support_min_percent": 80
+      "heldout_positive_support_min_percent": 80,
+      "lexical_anti_ablation_drop_required": true,
+      "lexical_negative_false_support_required": 0,
+      "lexical_negative_rows_deferred_required": 0,
+      "lexical_pair_ablation_gain_required": true,
+      "lexical_pair_wrong_top1_required": 0
     },
-    "heldout_entries": 242,
-    "heldout_surfaces": 242,
+    "heldout_entries": 241,
+    "heldout_surfaces": 241,
     "kind": "l2_transition_phase_proof",
-    "labeled_rows": 1181,
-    "lexical_negative_rows_deferred_to_l2_word_center": 163,
+    "labeled_rows": 1414,
+    "lexical_anti_center_false_support_prevention": 48,
+    "lexical_anti_center_top1_gain": 2,
+    "lexical_competition": {
+      "full_lexical_phase": {
+        "negative_cases": 48,
+        "negative_repel": 48,
+        "negative_repel_percent": 100.0,
+        "negative_support_false_accepts": 0,
+        "positive_cases": 72,
+        "positive_repel": 0,
+        "positive_support": 45,
+        "positive_support_percent": 62.5
+      },
+      "without_lexical_anti": {
+        "negative_cases": 48,
+        "negative_repel": 0,
+        "negative_repel_percent": 0.0,
+        "negative_support_false_accepts": 48,
+        "positive_cases": 72,
+        "positive_repel": 0,
+        "positive_support": 54,
+        "positive_support_percent": 75.0
+      }
+    },
+    "lexical_false_support_examples": [],
+    "lexical_negative_heldout_surfaces": 48,
+    "lexical_negative_rows_deferred_to_l2_word_center": 0,
+    "lexical_negative_training_surfaces": 174,
+    "lexical_pair_competition": {
+      "full_lexical_phase": {
+        "cases": 48,
+        "correct_top1": 48,
+        "correct_top1_percent": 100.0,
+        "ties": 0,
+        "wrong_top1": 0
+      },
+      "without_lexical_anti": {
+        "cases": 48,
+        "correct_top1": 46,
+        "correct_top1_percent": 95.83,
+        "ties": 0,
+        "wrong_top1": 2
+      }
+    },
+    "lexical_pair_wrong_examples": [],
+    "local_lexical_negative_rows_trained_as_candidate_anti_wave": 222,
     "modes": {
       "full_phase": {
-        "negative_cases": 170,
-        "negative_repel": 170,
+        "negative_cases": 169,
+        "negative_repel": 169,
         "negative_repel_percent": 100.0,
         "negative_support_false_accepts": 0,
         "positive_cases": 72,
@@ -884,7 +942,7 @@
         "positive_support_percent": 100.0
       },
       "magnitude_only": {
-        "negative_cases": 170,
+        "negative_cases": 169,
         "negative_repel": 0,
         "negative_repel_percent": 0.0,
         "negative_support_false_accepts": 0,
@@ -894,7 +952,7 @@
         "positive_support_percent": 0.0
       },
       "no_phase": {
-        "negative_cases": 170,
+        "negative_cases": 169,
         "negative_repel": 0,
         "negative_repel_percent": 0.0,
         "negative_support_false_accepts": 0,
@@ -904,36 +962,37 @@
         "positive_support_percent": 0.0
       },
       "random_center": {
-        "negative_cases": 170,
-        "negative_repel": 107,
-        "negative_repel_percent": 62.94,
-        "negative_support_false_accepts": 48,
+        "negative_cases": 169,
+        "negative_repel": 116,
+        "negative_repel_percent": 68.64,
+        "negative_support_false_accepts": 52,
         "positive_cases": 72,
-        "positive_repel": 45,
+        "positive_repel": 51,
         "positive_support": 21,
         "positive_support_percent": 29.17
       },
       "shuffled_phase": {
-        "negative_cases": 170,
-        "negative_repel": 40,
-        "negative_repel_percent": 23.53,
-        "negative_support_false_accepts": 55,
+        "negative_cases": 169,
+        "negative_repel": 144,
+        "negative_repel_percent": 85.21,
+        "negative_support_false_accepts": 0,
         "positive_cases": 72,
-        "positive_repel": 21,
-        "positive_support": 13,
-        "positive_support_percent": 18.06
+        "positive_repel": 65,
+        "positive_support": 0,
+        "positive_support_percent": 0.0
       },
       "without_anti": {
-        "negative_cases": 170,
+        "negative_cases": 169,
         "negative_repel": 0,
         "negative_repel_percent": 0.0,
-        "negative_support_false_accepts": 170,
+        "negative_support_false_accepts": 169,
         "positive_cases": 72,
         "positive_repel": 0,
         "positive_support": 72,
         "positive_support_percent": 100.0
       }
     },
+    "nonlocal_same_operator_rows_deferred_to_context_field": 174,
     "positive_miss_examples": [],
     "promoted_operators": [
       "layout_projection",
@@ -949,7 +1008,8 @@
       "context_choice"
     ],
     "raw_words_stored": false,
-    "schema": "lay.l2-transition-phase-proof.v1",
+    "same_operator_negative_rows_observed": 396,
+    "schema": "lay.l2-transition-phase-proof.v2",
     "training_entries": 745,
     "training_surfaces": 745,
     "verdict": "PASS"
