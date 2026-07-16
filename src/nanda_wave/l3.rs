@@ -49,7 +49,17 @@ fn run_l3_inner(
     let technical_keep = candidates
         .iter()
         .find(|candidate| candidate.origin == CandidateOrigin::Technical);
-    let best_readout = best_context_candidate(original, candidates, phrase_memory);
+    let replacements = candidates
+        .iter()
+        .map(|candidate| candidate.text.as_str())
+        .collect::<Vec<_>>();
+    let phrase_reports = match phrase_memory {
+        Some(memory) => {
+            l3_phrase_gate::evaluate_candidates_with_memory(original, &replacements, memory)
+        }
+        None => l3_phrase_gate::evaluate_default_candidates(original, &replacements),
+    };
+    let best_readout = best_context_candidate(original, candidates, &phrase_reports);
 
     if options.is_enabled("TechnicalContextCell32") {
         if let Some(technical) = technical_keep {
@@ -63,7 +73,10 @@ fn run_l3_inner(
             let protects_whole_tail = technical.text == original.trim_end();
             if protects_whole_tail
                 && (best_readout.is_none()
-                    || technical.energy >= best_readout.map(|item| item.energy).unwrap_or(0.0))
+                    || technical.energy
+                        >= best_readout
+                            .map(|index| candidates[index].energy)
+                            .unwrap_or(0.0))
             {
                 return (
                     traces,
@@ -75,18 +88,20 @@ fn run_l3_inner(
         }
     }
 
-    let Some(candidate) = best_readout else {
-        traces.extend(candidates.iter().take(8).filter_map(|candidate| {
-            context_candidate_blocker(original, candidate, phrase_memory).map(|blocker| {
-                LayerTrace {
-                    name: "L3ReadoutAdmissionCell32",
-                    summary: format!(
-                        "candidate source={} text={:?} blocker={blocker}",
-                        candidate.source, candidate.text
-                    ),
-                }
-            })
-        }));
+    let Some(candidate_index) = best_readout else {
+        traces.extend(candidates.iter().zip(&phrase_reports).take(8).filter_map(
+            |(candidate, report)| {
+                context_candidate_blocker(original, candidate, report.as_ref()).map(|blocker| {
+                    LayerTrace {
+                        name: "L3ReadoutAdmissionCell32",
+                        summary: format!(
+                            "candidate source={} text={:?} blocker={blocker}",
+                            candidate.source, candidate.text
+                        ),
+                    }
+                })
+            },
+        ));
         return (
             traces,
             WaveDecision::Keep {
@@ -94,6 +109,7 @@ fn run_l3_inner(
             },
         );
     };
+    let candidate = &candidates[candidate_index];
 
     if short_uppercase_layout_candidate_lacks_phrase_context(
         original,
@@ -167,7 +183,7 @@ fn run_l3_inner(
         }
     }
 
-    let phrase_report = phrase_gate_report(original, &candidate.text, phrase_memory);
+    let phrase_report = phrase_reports[candidate_index].clone();
     let confidence = adjusted_confidence(
         original,
         candidate,
@@ -238,30 +254,37 @@ fn run_l3_inner(
     }
 }
 
-fn best_context_candidate<'a>(
+fn best_context_candidate(
     original: &str,
-    candidates: &'a [WordCandidate],
-    phrase_memory: Option<&llmwave::LlmWaveMemory>,
-) -> Option<&'a WordCandidate> {
+    candidates: &[WordCandidate],
+    phrase_reports: &[Option<l3_phrase_gate::L3PhraseGateReport>],
+) -> Option<usize> {
     candidates
         .iter()
-        .filter(|candidate| context_candidate_blocker(original, candidate, phrase_memory).is_none())
-        .fold(None, |best: Option<(&'a WordCandidate, f32)>, candidate| {
-            let score = l3_rank_score(original, candidate, phrase_memory);
-            match best {
-                Some((best_candidate, best_score)) if score <= best_score => {
-                    Some((best_candidate, best_score))
-                }
-                _ => Some((candidate, score)),
-            }
+        .zip(phrase_reports)
+        .enumerate()
+        .filter(|(_, (candidate, report))| {
+            context_candidate_blocker(original, candidate, report.as_ref()).is_none()
         })
-        .map(|(candidate, _score)| candidate)
+        .fold(
+            None,
+            |best: Option<(usize, f32)>, (index, (candidate, report))| {
+                let score = l3_rank_score(original, candidate, report.as_ref());
+                match best {
+                    Some((best_index, best_score)) if score <= best_score => {
+                        Some((best_index, best_score))
+                    }
+                    _ => Some((index, score)),
+                }
+            },
+        )
+        .map(|(index, _score)| index)
 }
 
 fn context_candidate_blocker(
     original: &str,
     candidate: &WordCandidate,
-    phrase_memory: Option<&llmwave::LlmWaveMemory>,
+    phrase_report: Option<&l3_phrase_gate::L3PhraseGateReport>,
 ) -> Option<&'static str> {
     let error_class = nanda_candidate_error_class(original, candidate);
     let action = crate::typing_transition::action::verify_action_operator(
@@ -282,7 +305,7 @@ fn context_candidate_blocker(
     if candidate_l4_signed_memory_vetoes_apply(original, candidate) {
         return Some("l4_signed_memory");
     }
-    if phrase_gate_suppresses(original, &candidate.text, phrase_memory) {
+    if phrase_gate_suppresses(phrase_report) {
         return Some("phrase_gate");
     }
     None
@@ -295,14 +318,13 @@ fn confidence(candidate: &WordCandidate) -> f32 {
 fn l3_rank_score(
     original: &str,
     candidate: &WordCandidate,
-    phrase_memory: Option<&llmwave::LlmWaveMemory>,
+    phrase_report: Option<&l3_phrase_gate::L3PhraseGateReport>,
 ) -> f32 {
     let mut value = confidence(candidate);
     value += verified_operator_coherence(original, candidate);
     value += candidate_usage_context_prior(original, &candidate.text);
     value += candidate_l4_signed_bias(original, candidate);
-    value += candidate_l4_scene_memory_bias(original, candidate, phrase_memory);
-    if let Some(report) = phrase_gate_report(original, &candidate.text, phrase_memory) {
+    if let Some(report) = phrase_report {
         match report.decision {
             l3_phrase_gate::L3PhraseGateDecision::Support => {
                 value += (0.18 + report.score * 0.12).clamp(0.18, 0.30);
@@ -479,26 +501,8 @@ fn semantic_candidate_lacks_surface_support(
     true
 }
 
-fn phrase_gate_suppresses(
-    original: &str,
-    replacement: &str,
-    phrase_memory: Option<&llmwave::LlmWaveMemory>,
-) -> bool {
-    phrase_gate_report(original, replacement, phrase_memory)
-        .is_some_and(|report| report.decision == l3_phrase_gate::L3PhraseGateDecision::Suppress)
-}
-
-fn phrase_gate_report(
-    original: &str,
-    replacement: &str,
-    phrase_memory: Option<&llmwave::LlmWaveMemory>,
-) -> Option<l3_phrase_gate::L3PhraseGateReport> {
-    match phrase_memory {
-        Some(memory) => {
-            l3_phrase_gate::evaluate_candidate_with_memory(original, replacement, memory)
-        }
-        None => l3_phrase_gate::evaluate_default_candidate(original, replacement),
-    }
+fn phrase_gate_suppresses(report: Option<&l3_phrase_gate::L3PhraseGateReport>) -> bool {
+    report.is_some_and(|report| report.decision == l3_phrase_gate::L3PhraseGateDecision::Suppress)
 }
 
 fn short_token_candidate_lacks_phrase_context(
@@ -626,7 +630,6 @@ fn adjusted_confidence(
         }
     }
     value += candidate_l4_signed_bias(original, candidate);
-    value += candidate_l4_scene_memory_bias(original, candidate, None);
     value.clamp(0.0, 1.0)
 }
 
@@ -686,31 +689,6 @@ fn candidate_l4_signed_signal(
         usage: &usage,
         surface: None,
     }))
-}
-
-fn candidate_l4_scene_memory_bias(
-    original: &str,
-    candidate: &WordCandidate,
-    phrase_memory: Option<&llmwave::LlmWaveMemory>,
-) -> f32 {
-    let Some(word) = last_token(&candidate.text) else {
-        return 0.0;
-    };
-    let context = previous_context_tokens(original);
-    if context.len() < 3 {
-        return 0.0;
-    }
-    let report = match phrase_memory {
-        Some(memory) => memory.score_scene_token_report(&context, word),
-        None if llmwave::default_memory_is_warm() => {
-            llmwave::with_default_memory(|memory| memory.score_scene_token_report(&context, word))
-        }
-        None => None,
-    };
-    report
-        .filter(|report| report.score >= 0.16 && report.support > 0)
-        .map(|report| (report.score * 0.070).clamp(0.0, 0.080))
-        .unwrap_or(0.0)
 }
 
 fn candidate_operation(origin: CandidateOrigin) -> &'static str {
@@ -1090,7 +1068,7 @@ mod tests {
         assert_eq!(decision.output(), Some("на улице опять идёт дождь "));
         assert!(trace
             .iter()
-            .any(|item| item.summary.contains("l3_phrase=l3_phrase_memory_support")));
+            .any(|item| item.summary.contains("l3_phrase=l3_context_field_support")));
     }
 
     #[test]

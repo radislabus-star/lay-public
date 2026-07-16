@@ -242,6 +242,7 @@
   "240": "Self",
   "241": "LayExtension",
   "242": "candidates.rs",
+  "243": "gate_candidate_with_source",
   "244": "layout_autoswitch.rs",
   "245": "TextTransitionRejection",
   "246": "memory.rs",
@@ -346,6 +347,8 @@
   "345": "Project families found",
   "346": "mix64_golden",
   "347": "private_file.rs",
+  "348": "Reconciler",
+  "349": "handle_enter_autocorrect",
   "350": "russian_lexicon_tests.rs",
   "351": "uninstall.sh",
   "352": "key_trace.rs",
@@ -378,5 +381,9 @@
   "379": "desktop.rs",
   "380": "calibration.rs",
   "381": "DecisionOutput",
+  "382": "Self",
+  "383": "LiveSignedOutcomeStats",
+  "384": "apply_l2_phase_shadow",
+  "385": "install-release-binaries.sh",
   "387": "verify_with_retry"
 }

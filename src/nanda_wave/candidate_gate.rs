@@ -168,14 +168,12 @@ pub fn live_completion_candidates(
     let mut l3_supported = 0_u64;
     let mut l3_evaluated = 0_u64;
     let mut l3_suppressed = 0_u64;
-    let mut l4_scene_memory_supported = 0_u64;
     let mut l4_signed = LiveSignedOutcomeStats::default();
     let candidates = raw
         .into_iter()
-        .zip(context_batch.next_token)
-        .zip(context_batch.scene_token)
-        .filter(|((candidate, _), _)| candidate.kind == L2ImeWordCandidateKind::Completion)
-        .filter_map(|((candidate, next_token_report), scene_token_report)| {
+        .zip(context_batch)
+        .filter(|(candidate, _)| candidate.kind == L2ImeWordCandidateKind::Completion)
+        .filter_map(|(candidate, l3_report)| {
             let suffix = candidate.surface.strip_prefix(&partial)?.to_string();
             let suffix_len = suffix.chars().count();
             if suffix.is_empty() || suffix_len > request.max_suffix_chars {
@@ -203,7 +201,7 @@ pub fn live_completion_candidates(
                 candidate.motif_overlap,
             );
             let l3_readout = live_l3_context_score(
-                next_token_report.as_ref(),
+                l3_report.as_ref(),
                 candidate.surface.chars().count(),
                 partial_len,
                 request.allow_short_lexical,
@@ -214,15 +212,10 @@ pub fn live_completion_candidates(
             let l3_memory_supported = l3_readout.is_some_and(|readout| readout.memory_supported);
             if let Some(readout) = l3_readout {
                 l3_evaluated = l3_evaluated.saturating_add(1);
-                if readout.rank_delta < 0.0 {
+                if readout.suppressed {
                     l3_suppressed = l3_suppressed.saturating_add(1);
                 }
             }
-            let scene_memory_score = if !l3_memory_supported {
-                live_l4_scene_memory_score(scene_token_report.as_ref())
-            } else {
-                None
-            };
             let rejected = memory_readout.rejected_prior + memory_readout.context_rejected;
             let memory_signal = l4_signed_memory_signal_from_readout(
                 memory_readout,
@@ -249,9 +242,6 @@ pub fn live_completion_candidates(
             if l3_memory_supported {
                 l3_supported = l3_supported.saturating_add(1);
             }
-            if scene_memory_score.is_some() {
-                l4_scene_memory_supported = l4_scene_memory_supported.saturating_add(1);
-            }
             let wave_peak = super::l2_wave_peak::score_live_completion_peak(
                 &partial,
                 &candidate.surface,
@@ -272,7 +262,6 @@ pub fn live_completion_candidates(
                 + if hot { 0.045 } else { 0.0 }
                 + (partial_len.min(8) as f32 * 0.018)
                 + live_l4_scene_bias(scene_state.allowed_action, scene_state.confidence)
-                + live_l4_scene_memory_bias(scene_memory_score)
                 + live_l4_signed_bias(signed.signed_weight);
             let rank_score = l3_readout
                 .map(|readout| base_score + readout.rank_delta)
@@ -310,7 +299,6 @@ pub fn live_completion_candidates(
         })
         .collect::<Vec<_>>();
     store_live_completion_candidates(cache_key, &candidates);
-    l4_signed.scene_memory_hits = l4_scene_memory_supported;
     record_live_gate_stats(
         started,
         LiveGateRecord {
@@ -427,40 +415,31 @@ fn live_candidate_gate_stats() -> LiveCandidateGateStats {
 struct LiveL3ContextReadout {
     rank_delta: f32,
     memory_supported: bool,
-}
-
-struct LiveContextBatchReadout {
-    next_token: Vec<Option<super::llmwave::LlmWaveNextTokenScore>>,
-    scene_token: Vec<Option<super::llmwave::LlmWaveNextTokenScore>>,
+    suppressed: bool,
 }
 
 fn live_context_batch_readout(
     prefix_tokens: &[String],
     candidates: &[l2::L2ImeWordCandidate],
-) -> LiveContextBatchReadout {
-    let empty = || vec![None; candidates.len()];
+) -> Vec<Option<super::l3_phrase_gate::L3PhraseGateReport>> {
     if !super::llmwave::default_memory_is_warm() || candidates.is_empty() {
-        return LiveContextBatchReadout {
-            next_token: empty(),
-            scene_token: empty(),
-        };
+        return vec![None; candidates.len()];
     }
     let surfaces = candidates
         .iter()
         .map(|candidate| candidate.surface.as_str())
         .collect::<Vec<_>>();
-    super::llmwave::with_default_memory(|memory| LiveContextBatchReadout {
-        next_token: memory.score_next_tokens_report(prefix_tokens, &surfaces),
-        scene_token: if prefix_tokens.len() >= 3 {
-            memory.score_scene_tokens_report(prefix_tokens, &surfaces)
-        } else {
-            empty()
-        },
+    super::llmwave::with_default_memory(|memory| {
+        super::l3_phrase_gate::evaluate_context_candidates_with_memory(
+            prefix_tokens,
+            &surfaces,
+            memory,
+        )
     })
 }
 
 fn live_l3_context_score(
-    report: Option<&super::llmwave::LlmWaveNextTokenScore>,
+    report: Option<&super::l3_phrase_gate::L3PhraseGateReport>,
     word_len: usize,
     partial_len: usize,
     allow_short_lexical: bool,
@@ -473,16 +452,19 @@ fn live_l3_context_score(
         && (partial_len >= 4 || word_len.saturating_sub(partial_len) <= 5);
     if let Some(report) = report {
         let score = report.score.clamp(0.0, 1.0);
-        let rank_delta = if score >= 0.42 && report.support >= 2 {
-            0.10 + score * 0.18
-        } else if score >= 0.18 {
-            0.02 + score * 0.08
-        } else {
-            -0.08
+        let (rank_delta, memory_supported, suppressed) = match report.decision {
+            super::l3_phrase_gate::L3PhraseGateDecision::Support => {
+                (0.08 + score * 0.24, true, false)
+            }
+            super::l3_phrase_gate::L3PhraseGateDecision::Neutral => (score * 0.04, false, false),
+            super::l3_phrase_gate::L3PhraseGateDecision::Suppress => {
+                (-(0.08 + score * 0.20), false, true)
+            }
         };
         return Some(LiveL3ContextReadout {
             rank_delta: rank_delta + usage_prior + context_usage_prior,
-            memory_supported: score >= 0.18,
+            memory_supported,
+            suppressed,
         });
     }
     if lexical_backoff_allowed || memory_warm {
@@ -493,16 +475,11 @@ fn live_l3_context_score(
                 -0.06
             },
             memory_supported: false,
+            suppressed: false,
         })
     } else {
         None
     }
-}
-
-fn live_l4_scene_memory_score(
-    report: Option<&super::llmwave::LlmWaveNextTokenScore>,
-) -> Option<f32> {
-    report.and_then(|report| (report.score >= 0.16 && report.support > 0).then_some(report.score))
 }
 
 fn record_live_gate_stats(started: Instant, record: LiveGateRecord) {
@@ -706,12 +683,6 @@ fn live_l4_scene_bias(action: L4AllowedAction, confidence: f32) -> f32 {
         L4AllowedAction::Wait => -0.020 * confidence,
         L4AllowedAction::Block => -0.060 * confidence,
     }
-}
-
-fn live_l4_scene_memory_bias(score: Option<f32>) -> f32 {
-    score
-        .map(|score| (score * 0.075).clamp(0.0, 0.090))
-        .unwrap_or(0.0)
 }
 
 fn live_l4_signed_bias(signed_weight: f32) -> f32 {

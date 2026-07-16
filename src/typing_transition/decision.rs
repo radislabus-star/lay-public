@@ -7,7 +7,7 @@ use crate::correction_core::{
     TypingErrorEvent, UnifiedCorrectionCandidate,
 };
 use crate::keyboard::is_cyrillic_letter;
-use crate::nanda_wave::l3_phrase_gate::{evaluate_default_candidate, L3PhraseGateDecision};
+use crate::nanda_wave::l3_phrase_gate::L3PhraseGateDecision;
 use crate::nanda_wave::l4_goal_state::{derive_l4_scene_state, L4AllowedAction, L4SceneStateInput};
 use crate::nanda_wave::l4_signed_memory::{l4_signed_memory_signal, L4SignedMemoryInput};
 use crate::text_edit::{
@@ -164,6 +164,14 @@ impl TransitionDecisionCore {
         }
         let usage = crate::nanda_wave::cached_usage_prior_snapshot();
         let l4_scene = l4_scene_signal(event, candidates.len());
+        let replacements = candidates
+            .iter()
+            .map(|candidate| candidate.replacement.as_str())
+            .collect::<Vec<_>>();
+        let l3_reports = crate::nanda_wave::l3_phrase_gate::evaluate_default_candidates(
+            &event.original,
+            &replacements,
+        );
         let owned_l2_peak_context;
         let l2_peak_context = if let Some(context) = prepared_l2_peak_context {
             context
@@ -172,16 +180,22 @@ impl TransitionDecisionCore {
                 crate::nanda_wave::l2_wave_peak::prepare_correction_peak_context(&event.original);
             &owned_l2_peak_context
         };
-        let context = CandidateDecisionContext {
-            event,
-            candidate_count: candidates.len(),
-            usage: &usage,
-            l4_scene,
-            l2_peak_context,
-        };
         let mut evaluations = candidates
             .iter()
-            .map(|candidate| CandidateDecisionEvaluation::build(context, candidate))
+            .zip(&l3_reports)
+            .map(|(candidate, l3_report)| {
+                CandidateDecisionEvaluation::build(
+                    CandidateDecisionContext {
+                        event,
+                        candidate_count: candidates.len(),
+                        usage: &usage,
+                        l4_scene,
+                        l2_peak_context,
+                        l3_report: l3_report.as_ref(),
+                    },
+                    candidate,
+                )
+            })
             .collect::<Vec<_>>();
         settle_transition_interference(candidates, &mut evaluations);
         if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
@@ -289,6 +303,7 @@ struct CandidateDecisionContext<'a> {
     usage: &'a crate::nanda_wave::UsagePriorSnapshot,
     l4_scene: L4SceneSignal,
     l2_peak_context: &'a crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext,
+    l3_report: Option<&'a crate::nanda_wave::l3_phrase_gate::L3PhraseGateReport>,
 }
 
 struct CandidateSignalReadouts<'a> {
@@ -456,7 +471,7 @@ fn candidate_decision_signals_from_readouts(
     } = readouts;
     let event = context.event;
     let l4_scene = context.l4_scene;
-    let l3 = l3_phrase_signal(event, candidate);
+    let l3 = l3_phrase_signal(candidate.error_class, context.l3_report);
     let phase = crate::nanda_wave::l2_transition_phase_readout(
         action.operator.as_str(),
         relation.atoms(),

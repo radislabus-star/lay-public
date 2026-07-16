@@ -98,8 +98,11 @@ fn l2_wave_peak_signal(
     }
 }
 
-fn l3_phrase_signal(event: &TypingErrorEvent, candidate: &UnifiedCorrectionCandidate) -> L3Signal {
-    if !l3_phrase_signal_observes(candidate.error_class) {
+fn l3_phrase_signal(
+    error_class: TypingErrorClass,
+    report: Option<&crate::nanda_wave::l3_phrase_gate::L3PhraseGateReport>,
+) -> L3Signal {
+    if !l3_phrase_signal_observes(error_class) {
         return L3Signal {
             signal: 0.0,
             rank_energy: 0.0,
@@ -113,7 +116,7 @@ fn l3_phrase_signal(event: &TypingErrorEvent, candidate: &UnifiedCorrectionCandi
             decision: L3ContextDisposition::Unavailable,
         };
     }
-    let Some(report) = evaluate_default_candidate(&event.original, &candidate.replacement) else {
+    let Some(report) = report else {
         return L3Signal {
             signal: 0.0,
             rank_energy: 0.0,
@@ -145,10 +148,7 @@ fn l3_phrase_signal(event: &TypingErrorEvent, candidate: &UnifiedCorrectionCandi
 fn l3_phrase_signal_observes(error_class: TypingErrorClass) -> bool {
     !matches!(
         error_class,
-        TypingErrorClass::CompletionOnly
-            | TypingErrorClass::TechnicalToken
-            | TypingErrorClass::ProtectedToken
-            | TypingErrorClass::Unknown
+        TypingErrorClass::TechnicalToken | TypingErrorClass::ProtectedToken
     )
 }
 

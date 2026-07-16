@@ -436,6 +436,7 @@ impl LlmWaveMemory {
             .collect()
     }
 
+    #[cfg(test)]
     pub(crate) fn score_scene_token_report(
         &self,
         context_tokens: &[String],
@@ -510,6 +511,9 @@ impl LlmWaveMemory {
                 let coverage =
                     (hit.tokens.len() as f32 / token_weights.len().min(8) as f32).clamp(0.0, 1.0);
                 let prior = prior_from_energy(global_energy, next_energy.get(&next).copied());
+                // One corpus transition is represented through several context
+                // widths. Widths are phase lenses, not independent examples.
+                let evidence_support = hit.support.div_ceil(hit.phase_records);
                 let score =
                     (likelihood * 0.50 + prior * 0.14 + phase_coherence * 0.12 + coverage * 0.24)
                         .clamp(0.0, 1.0);
@@ -517,7 +521,7 @@ impl LlmWaveMemory {
                     next,
                     LlmWaveNextTokenScore {
                         score,
-                        support: hit.support,
+                        support: evidence_support,
                         width: token_weights.len().min(24),
                         likelihood,
                         prior,
