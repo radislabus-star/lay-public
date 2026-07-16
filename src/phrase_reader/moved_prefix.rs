@@ -45,6 +45,12 @@ fn boundary_shift_proposal(text: &str) -> Option<BoundaryShiftProposal> {
         &left_candidate_lower,
         &right_candidate_lower,
     );
+    if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
+        eprintln!(
+            "boundary-shift original={:?} {:?} candidate={:?} {:?} readout={readout:?}",
+            original_left, original_right, left_candidate_lower, right_candidate_lower
+        );
+    }
     if !readout.candidate_settles() {
         return None;
     }

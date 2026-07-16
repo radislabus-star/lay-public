@@ -1,19 +1,16 @@
 use super::super::context::{TailContext, TokenKind};
 use super::super::signal::{WavePacket, WordCandidate};
-use super::surface::{
-    surface_motif_known_surface, surface_motif_memory, surface_motif_strict_known_surface,
-};
+use super::surface::{surface_motif_known_surface, surface_motif_memory};
 use super::{candidate_support, l1_energy};
 use crate::candidate_contract::CandidateOrigin;
 use crate::dict::{convert, detect_direction};
 use crate::keyboard::is_cyrillic_letter;
 use crate::lexicon::{
     is_common_en_guard_prefix, is_common_en_technical_word, is_common_ru_word,
-    is_ru_short_function_word, is_user_protected_word, visual_b_after_ascii_replacement,
-    visual_b_default_replacement,
+    is_ru_live_protected_word, is_ru_short_function_word, is_user_protected_word,
+    visual_b_after_ascii_replacement, visual_b_default_replacement,
 };
 use crate::nanda_wave::llmwave;
-use crate::russian_lexicon::is_known_russian_word_or_form;
 use crate::text_case::apply_word_case;
 use crate::text_metrics::damerau_levenshtein;
 
@@ -26,6 +23,16 @@ pub(super) fn layout_candidate(
     context: &TailContext,
     l1: &[WavePacket],
 ) -> Option<WordCandidate> {
+    layout_candidate_with_projection_policy(prefix, token, context, l1, true)
+}
+
+pub(super) fn layout_candidate_with_projection_policy(
+    prefix: &str,
+    token: &str,
+    context: &TailContext,
+    l1: &[WavePacket],
+    allow_noisy_projection: bool,
+) -> Option<WordCandidate> {
     if token.chars().count() < 2 {
         return None;
     }
@@ -35,7 +42,8 @@ pub(super) fn layout_candidate(
     if technical_context_blocks_layout(prefix, token) {
         return None;
     }
-    let (converted, strong_autoswitch, word_center_settled) = layout_converted_token(token)?;
+    let (converted, strong_autoswitch, word_center_settled) =
+        layout_converted_token(token, allow_noisy_projection)?;
     if converted == token {
         return None;
     }
@@ -117,7 +125,7 @@ pub(super) fn layout_scan_candidates(
             continue;
         }
         let Some((converted, strong_autoswitch, word_center_settled)) =
-            layout_converted_token(token)
+            layout_converted_token(token, true)
         else {
             continue;
         };
@@ -179,10 +187,20 @@ pub(super) fn layout_scan_candidates(
     candidates
 }
 
-fn layout_converted_token(token: &str) -> Option<(String, bool, bool)> {
+fn layout_converted_token(
+    token: &str,
+    allow_noisy_projection: bool,
+) -> Option<(String, bool, bool)> {
     if token.chars().any(is_cyrillic_letter) {
         let raw_converted = convert(token, detect_direction(token));
-        if token.chars().all(is_cyrillic_letter)
+        if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
+            eprintln!(
+                "layout-center token={token:?} raw={raw_converted:?} blocked={}",
+                cyrillic_layout_word_center_blocked(token)
+            );
+        }
+        if allow_noisy_projection
+            && token.chars().all(is_cyrillic_letter)
             && !cyrillic_layout_word_center_blocked(token)
             && raw_converted != token
             && raw_converted.chars().all(|ch| ch.is_ascii_alphabetic())
@@ -192,9 +210,12 @@ fn layout_converted_token(token: &str) -> Option<(String, bool, bool)> {
                 return Some((center, false, true));
             }
         }
-        if let Some(converted) = crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(token)
-        {
-            return Some((converted, true, false));
+        if allow_noisy_projection {
+            if let Some(converted) =
+                crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(token)
+            {
+                return Some((converted, true, false));
+            }
         }
     }
     let converted = convert(token, detect_direction(token));
@@ -212,7 +233,7 @@ fn settle_english_word_center(token: &str) -> Option<String> {
         return None;
     }
     let mut candidates = surface_motif_memory()
-        .surface_candidates(&normalized, 8)
+        .field_surface_candidates(&normalized, 8)
         .into_iter()
         .filter(|candidate| {
             candidate.word.chars().count() >= 4
@@ -249,9 +270,11 @@ fn settle_english_word_center(token: &str) -> Option<String> {
 fn cyrillic_layout_word_center_blocked(token: &str) -> bool {
     let lower = token.to_lowercase();
     is_user_protected_word(&lower)
+        || is_ru_live_protected_word(&lower)
         || is_common_ru_word(&lower)
-        || is_known_russian_word_or_form(&lower)
-        || surface_motif_strict_known_surface(&lower)
+        || crate::hot_field::HotFieldSnapshot::current()
+            .stable_form_readout(&lower)
+            .is_known()
 }
 
 fn language_allows_layout(token: &str, converted: &str, learned_transition: bool) -> bool {

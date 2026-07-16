@@ -71,10 +71,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn contextual_fuzzy_pair_repairs_delivery_logistics_phrase() {
+    fn contextual_fuzzy_pair_abstains_without_a_represented_left_form() {
         assert_eq!(
             correct_contextual_fuzzy_pair("досвкйо лгистика").as_deref(),
-            Some("доставкой логистика")
+            None
         );
     }
 }

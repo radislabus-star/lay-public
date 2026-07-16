@@ -31,6 +31,15 @@ impl L2CorrectionPeakContext {
     pub(crate) fn center_candidates(&self) -> &[l2::L2ImeWordCandidate] {
         &self.center_candidates
     }
+
+    pub(crate) fn has_local_single_edit_peak(&self) -> bool {
+        self.center_candidates.iter().any(|candidate| {
+            candidate.kind == L2ImeWordCandidateKind::Replacement
+                && damerau_levenshtein(&self.original_word, &candidate.surface) == 1
+                && candidate.l1_overlap > 0
+                && candidate.motif_overlap > 0
+        })
+    }
 }
 
 pub(crate) fn prepare_correction_peak_context(original: &str) -> L2CorrectionPeakContext {

@@ -142,7 +142,9 @@ fn action_log_writes_input_gate_trace() {
             selected_source: Some("deterministic".to_string()),
             selected_source_id: Some("exact_layout".to_string()),
             selected_error_class: Some("wrong_layout".to_string()),
+            decision_outcome: Some("apply".to_string()),
             selected_gate_action: Some("apply".to_string()),
+            selected_candidate_gate_action: Some("eligible".to_string()),
             reason: "apply_selected_candidate".to_string(),
         }),
         undo_available: true,
@@ -153,7 +155,9 @@ fn action_log_writes_input_gate_trace() {
     assert!(text.contains("\"input_gate\""));
     assert!(text.contains("\"stage\":\"word_boundary\""));
     assert!(text.contains("\"input_class\":\"wrong_layout\""));
+    assert!(text.contains("\"decision_outcome\":\"apply\""));
     assert!(text.contains("\"selected_gate_action\":\"apply\""));
+    assert!(text.contains("\"selected_candidate_gate_action\":\"eligible\""));
     let _ = std::fs::remove_dir_all(tmp);
 }
 
@@ -270,7 +274,8 @@ fn action_log_writes_candidate_before_apply_mutation_route() {
     let text = std::fs::read_to_string(home.join(ACTIONS_PATH)).unwrap();
     assert!(text.contains("\"kind\":\"candidate_before_apply\""));
     assert!(text.contains("\"mutation_route\":\"test_mutation_route\""));
-    assert!(text.contains("\"transition_operator\":\"test_transition\""));
+    assert!(text.contains("\"transition_operator\":\"manual_replace\""));
+    assert!(text.contains("\"transition_proof\":\"manual_intent\""));
 
     let _ = std::fs::remove_dir_all(tmp);
 }
@@ -310,7 +315,9 @@ fn action_log_writes_dirty_task_for_applied_gate() {
             selected_source: Some("nanda".to_string()),
             selected_source_id: Some("L2SurfaceMotifCell32".to_string()),
             selected_error_class: Some("composite-typo".to_string()),
+            decision_outcome: Some("apply".to_string()),
             selected_gate_action: Some("apply".to_string()),
+            selected_candidate_gate_action: Some("eligible".to_string()),
             reason: "apply_selected_candidate".to_string(),
         }),
         true,

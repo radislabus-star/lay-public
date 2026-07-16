@@ -383,7 +383,7 @@ impl CandidateReport {
                 .entry(error_class.to_string())
                 .or_insert(0) += 1;
         }
-        if let Some(action) = gate.get("selected_gate_action").and_then(Value::as_str) {
+        if let Some(action) = logged_gate_outcome(value, gate) {
             *self
                 .selected_gate_actions
                 .entry(action.to_string())
@@ -438,6 +438,7 @@ struct TransitionReplay {
     applied_actions: usize,
     input_gate_records: usize,
     selected_apply: usize,
+    unknown_legacy_outcomes: usize,
     false_apply_candidates: usize,
     missed_good_candidates: usize,
     left_context_mutations: usize,
@@ -495,15 +496,16 @@ impl TransitionReplay {
         let Some(gate) = value.get("input_gate") else {
             return;
         };
+        let decision_outcome = logged_gate_outcome(value, gate);
         let Some(candidates) = gate.get("candidate_scores").and_then(Value::as_array) else {
             return;
         };
         for candidate in candidates {
-            self.inspect_candidate(candidate);
+            self.inspect_candidate(candidate, decision_outcome);
         }
     }
 
-    fn inspect_candidate(&mut self, candidate: &Value) {
+    fn inspect_candidate(&mut self, candidate: &Value, decision_outcome: Option<&str>) {
         let selected = candidate
             .get("selected")
             .and_then(Value::as_bool)
@@ -511,11 +513,11 @@ impl TransitionReplay {
         if !selected {
             return;
         }
-        let apply = candidate.get("gate_action").and_then(Value::as_str) == Some("apply")
-            || candidate
-                .get("selected_gate_action")
-                .and_then(Value::as_str)
-                == Some("apply");
+        let legacy_candidate_apply =
+            candidate.get("gate_action").and_then(Value::as_str) == Some("apply");
+        let apply = decision_outcome
+            .map(|outcome| outcome == "apply")
+            .unwrap_or(legacy_candidate_apply);
         let left_context = candidate
             .get("edit_transition_left_context_changed")
             .and_then(Value::as_bool)
@@ -527,10 +529,13 @@ impl TransitionReplay {
         if apply {
             self.selected_apply += 1;
         }
+        if decision_outcome.is_none() && !legacy_candidate_apply {
+            self.unknown_legacy_outcomes += 1;
+        }
         if apply && left_context && !verified {
             self.false_apply_candidates += 1;
         }
-        if !apply && verified && !left_context {
+        if decision_outcome.is_some() && !apply && verified && !left_context {
             self.missed_good_candidates += 1;
         }
     }
@@ -547,6 +552,7 @@ impl TransitionReplay {
             },
             "transition": {
                 "selected_apply": self.selected_apply,
+                "unknown_legacy_outcomes": self.unknown_legacy_outcomes,
                 "false_apply_candidates": self.false_apply_candidates,
                 "missed_good_candidates": self.missed_good_candidates,
                 "left_context_mutations_observed": self.left_context_mutations,
@@ -563,6 +569,38 @@ impl TransitionReplay {
         })
         .to_string()
     }
+}
+
+fn logged_gate_outcome<'a>(value: &'a Value, gate: &'a Value) -> Option<&'a str> {
+    gate.get("decision_outcome")
+        .and_then(Value::as_str)
+        .filter(|outcome| is_final_gate_outcome(outcome))
+        .or_else(|| {
+            gate.get("selected_gate_action")
+                .and_then(Value::as_str)
+                .filter(|outcome| is_final_gate_outcome(outcome))
+        })
+        .or_else(|| legacy_applied_outcome(value, gate))
+}
+
+fn is_final_gate_outcome(outcome: &str) -> bool {
+    matches!(
+        outcome,
+        "observe" | "keep_original" | "apply" | "suggest_only" | "veto"
+    )
+}
+
+fn legacy_applied_outcome<'a>(value: &'a Value, gate: &'a Value) -> Option<&'a str> {
+    let candidate_was_eligible =
+        gate.get("selected_gate_action").and_then(Value::as_str) == Some("eligible");
+    let applied_record = value.get("kind").and_then(Value::as_str) == Some("typing-assist")
+        || (value.get("kind").and_then(Value::as_str) == Some("candidate_before_apply")
+            && value
+                .get("safety_allow_apply")
+                .and_then(Value::as_bool)
+                .unwrap_or(false)
+            && value.get("action_kind").and_then(Value::as_str) != Some("block_unsafe"));
+    (candidate_was_eligible && applied_record).then_some("apply")
 }
 
 impl UnsafeScoreboard {
@@ -838,9 +876,10 @@ mod tests {
         let value = json!({
             "kind": "typing-assist",
             "input_gate": {
+                "decision_outcome": "apply",
                 "candidate_scores": [{
                     "selected": true,
-                    "gate_action": "apply",
+                    "gate_action": "eligible",
                     "edit_transition_left_context_changed": true,
                     "edit_transition_verified": false
                 }]
@@ -850,6 +889,29 @@ mod tests {
         replay.inspect(&value);
         assert_eq!(replay.selected_apply, 1);
         assert_eq!(replay.false_apply_candidates, 1);
+    }
+
+    #[test]
+    fn transition_replay_separates_candidate_admission_from_final_outcome() {
+        let value = json!({
+            "kind": "typing-assist",
+            "input_gate": {
+                "decision_outcome": "apply",
+                "selected_candidate_gate_action": "eligible",
+                "candidate_scores": [{
+                    "selected": true,
+                    "gate_action": "eligible",
+                    "edit_transition_left_context_changed": false,
+                    "edit_transition_verified": true
+                }]
+            }
+        });
+        let mut replay = TransitionReplay::default();
+        replay.inspect(&value);
+
+        assert_eq!(replay.selected_apply, 1);
+        assert_eq!(replay.missed_good_candidates, 0);
+        assert!(replay.passes_gate());
     }
 
     #[test]

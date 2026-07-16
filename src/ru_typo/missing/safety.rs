@@ -40,7 +40,7 @@ fn is_risky_consonant_insert_before_final_verb_tail(
     !is_russian_vowel(inserted)
         && ["ти", "ть"].iter().any(|tail| {
             lower.ends_with(tail)
-                && lower.chars().count().saturating_sub(tail.chars().count()) == idx
+                && idx >= lower.chars().count().saturating_sub(tail.chars().count())
         })
 }
 

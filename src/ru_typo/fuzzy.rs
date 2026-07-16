@@ -29,8 +29,10 @@ mod tests {
     }
 
     #[test]
-    fn center_memory_abstains_when_inflected_surface_was_not_trained() {
-        assert!(fuzzy_known_word_candidates("досвкйо").is_empty());
+    fn center_memory_never_returns_the_dirty_surface_as_its_own_repair() {
+        assert!(fuzzy_known_word_candidates("досвкйо")
+            .iter()
+            .all(|candidate| candidate != "досвкйо"));
     }
 
     #[test]

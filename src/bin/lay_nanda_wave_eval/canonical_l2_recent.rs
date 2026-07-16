@@ -62,6 +62,8 @@ struct RecentActionGate {
     #[serde(default)]
     selected_error_class: Option<String>,
     #[serde(default)]
+    decision_outcome: Option<String>,
+    #[serde(default)]
     selected_gate_action: Option<String>,
     #[serde(default)]
     candidate_scores: Vec<RecentCandidateScore>,
@@ -809,7 +811,11 @@ fn live_route(action: &RecentAction) -> String {
     let source = gate.selected_source.as_deref().unwrap_or("unknown");
     let source_id = gate.selected_source_id.as_deref().unwrap_or("unknown");
     let error_class = gate.selected_error_class.as_deref().unwrap_or("unknown");
-    let gate_action = gate.selected_gate_action.as_deref().unwrap_or("unknown");
+    let gate_action = gate
+        .decision_outcome
+        .as_deref()
+        .or(gate.selected_gate_action.as_deref())
+        .unwrap_or("unknown");
     format!(
         "{}/{source}/{source_id}/{error_class}/{gate_action}",
         action.kind
@@ -1343,6 +1349,7 @@ mod tests {
             selected_source: Some(source.to_string()),
             selected_source_id: Some("test".to_string()),
             selected_error_class: Some(error_class.to_string()),
+            decision_outcome: Some("apply".to_string()),
             selected_gate_action: Some("apply".to_string()),
             candidate_scores: with_nanda_candidate
                 .then(|| RecentCandidateScore {

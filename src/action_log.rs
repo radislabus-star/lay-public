@@ -68,8 +68,14 @@ pub struct RecentActionGateTrace {
     pub selected_source_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub selected_error_class: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    decision_outcome: Option<String>,
+    /// Compatibility alias for older report readers. This is the final input
+    /// decision, not the selected candidate's admission status.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub selected_gate_action: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    selected_candidate_gate_action: Option<String>,
     pub reason: String,
 }
 
@@ -222,6 +228,7 @@ struct EditPlanRecord<'a> {
 
 impl RecentActionGateTrace {
     pub fn from_input_gate(trace: &crate::input_gate::InputGateDecisionTrace) -> Self {
+        let outcome = input_gate_outcome_name(trace.outcome).to_string();
         Self {
             stage: input_gate_stage_name(trace.stage).to_string(),
             input_class: trace.input_class.map(|class| class.as_str().to_string()),
@@ -310,8 +317,10 @@ impl RecentActionGateTrace {
             selected_error_class: trace
                 .selected_error_class
                 .map(|class| class.as_str().to_string()),
-            selected_gate_action: trace
-                .selected_gate_action
+            decision_outcome: Some(outcome.clone()),
+            selected_gate_action: Some(outcome),
+            selected_candidate_gate_action: trace
+                .selected_candidate_gate_action
                 .map(gate_action_name)
                 .map(str::to_string),
             reason: trace.reason.to_string(),
@@ -540,6 +549,22 @@ fn gate_action_name(action: crate::correction_core::CandidateGateAction) -> &'st
     }
 }
 
+fn input_gate_outcome_name(outcome: crate::input_gate::InputGateOutcome) -> &'static str {
+    match outcome {
+        crate::input_gate::InputGateOutcome::Observe => "observe",
+        crate::input_gate::InputGateOutcome::KeepOriginal => "keep_original",
+        crate::input_gate::InputGateOutcome::Apply => "apply",
+        crate::input_gate::InputGateOutcome::SuggestOnly => "suggest_only",
+        crate::input_gate::InputGateOutcome::Veto => "veto",
+    }
+}
+
+fn logged_decision_outcome(gate: &RecentActionGateTrace) -> Option<&str> {
+    gate.decision_outcome
+        .as_deref()
+        .or(gate.selected_gate_action.as_deref())
+}
+
 pub fn record_action_to_path(path: &Path, action: &RecentAction<'_>, keep_lines: usize) {
     let Ok(mut line) = serde_json::to_string(action) else {
         return;
@@ -574,7 +599,7 @@ fn record_dirty_task_if_useful(action: &RecentAction<'_>) {
     let Some(gate) = action.input_gate.as_ref() else {
         return;
     };
-    if gate.selected_gate_action.as_deref() != Some("apply") {
+    if logged_decision_outcome(gate) != Some("apply") {
         return;
     }
     if gate.selected_source_id.is_none() && gate.selected_source.is_none() {

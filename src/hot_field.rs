@@ -142,6 +142,16 @@ impl HotWordReadout {
                 | HotWordAuthority::L2FormCenter
         )
     }
+
+    const fn transition_authority_mass(self) -> u32 {
+        match self.authority {
+            HotWordAuthority::CommonSurface => 400,
+            HotWordAuthority::L2SurfaceCenter => 300,
+            HotWordAuthority::UserUsage => 250,
+            HotWordAuthority::L2FormCenter => 200,
+            HotWordAuthority::Unknown => 0,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -175,8 +185,11 @@ impl HotSurfacePhaseReadout {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct HotBoundaryShiftReadout {
+    original_left_chars: usize,
     pub(crate) original_left: HotSurfacePhaseReadout,
     pub(crate) original_right: HotSurfacePhaseReadout,
+    original_left_form: HotWordReadout,
+    original_right_form: HotWordReadout,
     pub(crate) candidate_left: HotSurfacePhaseReadout,
     pub(crate) candidate_right: HotSurfacePhaseReadout,
     pub(crate) candidate_left_form: HotWordReadout,
@@ -185,6 +198,7 @@ pub(crate) struct HotBoundaryShiftReadout {
 
 impl HotBoundaryShiftReadout {
     const MIN_DIRECT_MASS_GAIN: u32 = 150;
+    const MIN_DIRECT_AUTHORITY_GAIN: u32 = 100;
 
     pub(crate) const fn candidate_settles(self) -> bool {
         (self.candidate_left_form.has_structural_center() || self.candidate_left.settles_as_form())
@@ -203,10 +217,25 @@ impl HotBoundaryShiftReadout {
             )
     }
 
+    const fn authority_gain(self) -> u32 {
+        self.candidate_left_form
+            .transition_authority_mass()
+            .saturating_sub(self.original_left_form.transition_authority_mass())
+    }
+
+    const fn original_pair_settles(self) -> bool {
+        (self.original_left_chars >= 3 && self.original_left.exact_center)
+            || (self.original_left_chars >= 2
+                && self.original_left_form.has_structural_center()
+                && self.original_right_form.has_structural_center())
+    }
+
     pub(crate) const fn has_direct_apply_mass(self) -> bool {
         self.candidate_settles()
+            && !self.original_pair_settles()
             && !self.original_right.exact_center
-            && self.mass_gain() >= Self::MIN_DIRECT_MASS_GAIN
+            && (self.mass_gain() >= Self::MIN_DIRECT_MASS_GAIN
+                || self.authority_gain() >= Self::MIN_DIRECT_AUTHORITY_GAIN)
     }
 }
 
@@ -232,6 +261,16 @@ impl HotFieldSnapshot {
             HotWordAuthority::Unknown
         };
         HotWordReadout { authority }
+    }
+
+    /// Cold learning/evaluation authority for exact observed surfaces. Unlike
+    /// morphology settlement, this does not treat a generated form as proof
+    /// that the user actually typed an attested lexical surface.
+    pub fn learning_surface_is_attested(&self, word: &str) -> bool {
+        let lower = word.trim().to_lowercase();
+        !lower.is_empty()
+            && (crate::lexicon::is_common_ru_word(&lower)
+                || crate::nanda_wave::l2::l2_surface_foundation_contains(&lower))
     }
 
     /// Reads a surface that may be reconstructed from a compact morphology
@@ -299,8 +338,11 @@ impl HotFieldSnapshot {
         candidate_right: &str,
     ) -> HotBoundaryShiftReadout {
         HotBoundaryShiftReadout {
+            original_left_chars: original_left.chars().count(),
             original_left: self.surface_phase_readout(original_left),
             original_right: self.surface_phase_readout(original_right),
+            original_left_form: self.stable_form_readout(original_left),
+            original_right_form: self.stable_form_readout(original_right),
             candidate_left: self.surface_phase_readout(candidate_left),
             candidate_right: self.surface_phase_readout(candidate_right),
             candidate_left_form: self.form_readout(candidate_left),

@@ -337,9 +337,7 @@ fn learning_word_tokens(text: &str) -> Vec<&str> {
 }
 
 fn known_learning_word(word: &str) -> bool {
-    let lower = word.to_lowercase();
-    lay::lexicon::is_common_ru_word(&lower)
-        || lay::russian_lexicon::is_known_russian_word_or_form(&lower)
+    lay::hot_field::HotFieldSnapshot::current().learning_surface_is_attested(word)
 }
 
 fn known_short_learning_word(word: &str) -> bool {

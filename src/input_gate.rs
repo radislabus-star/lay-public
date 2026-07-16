@@ -58,6 +58,27 @@ pub enum InputGateAction {
     },
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum InputGateOutcome {
+    Observe,
+    KeepOriginal,
+    Apply,
+    SuggestOnly,
+    Veto,
+}
+
+impl InputGateAction {
+    fn outcome(&self) -> InputGateOutcome {
+        match self {
+            Self::Observe => InputGateOutcome::Observe,
+            Self::KeepOriginal => InputGateOutcome::KeepOriginal,
+            Self::ApplyReplacement { .. } => InputGateOutcome::Apply,
+            Self::SuggestOnly { .. } => InputGateOutcome::SuggestOnly,
+            Self::Veto { .. } => InputGateOutcome::Veto,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct InputGateDecision {
     pub trigger: InputGateTrigger,
@@ -77,7 +98,8 @@ pub struct InputGateDecisionTrace {
     pub selected_source: Option<CorrectionDecisionSource>,
     pub selected_source_id: Option<String>,
     pub selected_error_class: Option<TypingErrorClass>,
-    pub selected_gate_action: Option<CandidateGateAction>,
+    pub(crate) selected_candidate_gate_action: Option<CandidateGateAction>,
+    pub(crate) outcome: InputGateOutcome,
     pub reason: &'static str,
 }
 
@@ -323,12 +345,16 @@ fn observe_trace(stage: InputGateStage, reason: &'static str) -> InputGateDecisi
         selected_source: None,
         selected_source_id: None,
         selected_error_class: None,
-        selected_gate_action: None,
+        selected_candidate_gate_action: None,
+        outcome: InputGateOutcome::Observe,
         reason,
     }
 }
 
-fn word_boundary_trace(resolution: &CorrectionResolution) -> InputGateDecisionTrace {
+fn word_boundary_trace(
+    resolution: &CorrectionResolution,
+    outcome: InputGateOutcome,
+) -> InputGateDecisionTrace {
     let selected = resolution.selected.as_ref();
     InputGateDecisionTrace {
         stage: InputGateStage::WordBoundary,
@@ -343,7 +369,8 @@ fn word_boundary_trace(resolution: &CorrectionResolution) -> InputGateDecisionTr
         selected_source: selected.map(|candidate| candidate.source),
         selected_source_id: selected.map(|candidate| candidate.source_id.clone()),
         selected_error_class: selected.map(|candidate| candidate.error_class),
-        selected_gate_action: selected.map(|candidate| candidate.gate.action),
+        selected_candidate_gate_action: selected.map(|candidate| candidate.gate.action),
+        outcome,
         reason: word_boundary_trace_reason(resolution),
     }
 }
@@ -546,9 +573,10 @@ mod tests {
             Some(TypingErrorClass::WrongLayout)
         );
         assert_eq!(
-            trace.selected_gate_action,
+            trace.selected_candidate_gate_action,
             Some(CandidateGateAction::Eligible)
         );
+        assert_eq!(trace.outcome, InputGateOutcome::Apply);
         assert_eq!(trace.reason, "apply_selected_candidate");
     }
 

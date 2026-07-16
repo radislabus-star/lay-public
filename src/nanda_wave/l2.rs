@@ -108,6 +108,26 @@ pub fn run_l2_with_options(
     run_l2_refined_with_feedback(original, l1, options, &L3Feedback::default())
 }
 
+pub(crate) fn hot_layout_candidate(original: &str) -> Option<WordCandidate> {
+    hot_layout_candidate_with_noisy_projection(original, true)
+}
+
+pub(crate) fn hot_layout_candidate_with_noisy_projection(
+    original: &str,
+    allow_noisy_projection: bool,
+) -> Option<WordCandidate> {
+    let tail = original.trim_end();
+    let (prefix, token) = split_last_ws_token(tail)?;
+    let context = TailContext::from_text(tail);
+    layout_adapter::layout_candidate_with_projection_policy(
+        prefix,
+        token,
+        &context,
+        &[],
+        allow_noisy_projection,
+    )
+}
+
 pub fn run_l2_refined_with_feedback(
     original: &str,
     l1: &[WavePacket],

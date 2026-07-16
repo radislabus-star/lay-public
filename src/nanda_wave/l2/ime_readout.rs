@@ -4,6 +4,14 @@ use super::{
 };
 use crate::keyboard::is_cyrillic_letter;
 use crate::text_metrics::damerau_levenshtein;
+use std::collections::VecDeque;
+use std::sync::{Arc, Mutex, OnceLock};
+
+const LEXICAL_READOUT_CACHE_CAPACITY: usize = 256;
+type CachedLexicalCandidates = Arc<Vec<super::super::lexical_phase::LexicalPhaseCandidate>>;
+type LexicalReadoutCache = VecDeque<(String, usize, CachedLexicalCandidates)>;
+
+static LEXICAL_READOUT_CACHE: OnceLock<Mutex<LexicalReadoutCache>> = OnceLock::new();
 
 pub(super) fn ime_l2_word_candidates_impl(
     context_prefix: &str,
@@ -23,26 +31,12 @@ pub(super) fn ime_l2_word_candidates_impl(
     let usage_context = usage.prepare_hot_context(&context_tokens);
     let memory = surface_motif_memory();
     let material_limit = limit.saturating_mul(8).max(limit);
-    let mut lexical = memory
-        .surface_candidates(&normalized, material_limit)
-        .into_iter()
+    let lexical = cached_lexical_candidates(memory, &normalized, material_limit);
+    let lexical = lexical
+        .iter()
         .filter(|candidate| same_lexical_script(&normalized, &candidate.word))
-        .collect::<Vec<_>>();
-    lexical.extend(memory.completion_candidates(
-        &normalized,
-        material_limit,
-        material_limit.saturating_mul(6),
-    ));
-    lexical.sort_by(|left, right| {
-        right
-            .score
-            .cmp(&left.score)
-            .then_with(|| left.rank.cmp(&right.rank))
-            .then_with(|| left.word.cmp(&right.word))
-    });
-    lexical.dedup_by(|left, right| left.word == right.word);
+        .cloned();
     let mut candidates = lexical
-        .into_iter()
         .map(|candidate| {
             let candidate_len = candidate.word.chars().count();
             let kind = if candidate.word.starts_with(&normalized) && candidate_len > token_len {
@@ -66,6 +60,50 @@ pub(super) fn ime_l2_word_candidates_impl(
         })
         .collect::<Vec<_>>();
     sort_and_truncate_ime_l2_candidates(&mut candidates, limit);
+    candidates
+}
+
+fn cached_lexical_candidates(
+    memory: &super::super::lexical_phase::LexicalPhaseMemory,
+    normalized: &str,
+    material_limit: usize,
+) -> CachedLexicalCandidates {
+    let cache = LEXICAL_READOUT_CACHE.get_or_init(|| Mutex::new(VecDeque::new()));
+    if let Some(candidates) = cache.lock().ok().and_then(|cache| {
+        cache
+            .iter()
+            .find(|(surface, limit, _)| surface == normalized && *limit == material_limit)
+            .map(|(_, _, candidates)| Arc::clone(candidates))
+    }) {
+        return candidates;
+    }
+
+    let mut candidates = memory.surface_candidates(normalized, material_limit);
+    candidates.extend(memory.completion_candidates(
+        normalized,
+        material_limit,
+        material_limit.saturating_mul(6),
+    ));
+    candidates.sort_by(|left, right| {
+        right
+            .score
+            .cmp(&left.score)
+            .then_with(|| left.rank.cmp(&right.rank))
+            .then_with(|| left.word.cmp(&right.word))
+    });
+    candidates.dedup_by(|left, right| left.word == right.word);
+    let candidates = Arc::new(candidates);
+
+    if let Ok(mut cache) = cache.lock() {
+        if cache.len() >= LEXICAL_READOUT_CACHE_CAPACITY {
+            cache.pop_front();
+        }
+        cache.push_back((
+            normalized.to_string(),
+            material_limit,
+            Arc::clone(&candidates),
+        ));
+    }
     candidates
 }
 

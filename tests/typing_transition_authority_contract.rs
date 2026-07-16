@@ -209,6 +209,66 @@ fn candidate_admission_only_marks_eligibility_and_core_selects_transition() {
 }
 
 #[test]
+fn input_gate_logs_candidate_admission_separately_from_final_outcome() {
+    let input_gate = read("src/input_gate.rs");
+    let action_log = read("src/action_log.rs");
+    let debug_actions = read("src/bin/lay_debug_actions.rs");
+    let candidate_quality = read("src/bin/lay_nanda_wave_eval/candidate_quality.rs");
+
+    assert!(
+        input_gate.contains("pub(crate) enum InputGateOutcome")
+            && input_gate.contains("selected_candidate_gate_action")
+            && input_gate.contains("outcome: InputGateOutcome"),
+        "InputGate must expose candidate admission and the final decision as different typed facts"
+    );
+    assert!(
+        action_log.contains("decision_outcome: Option<String>")
+            && action_log.contains("selected_candidate_gate_action: Option<String>")
+            && debug_actions.contains("decision_outcome")
+            && candidate_quality.contains("decision_outcome"),
+        "logs and reports must consume the final outcome without reinterpreting candidate eligibility"
+    );
+}
+
+#[test]
+fn compact_l2_uses_the_l2_owned_layout_candidate() {
+    let l2 = read("src/nanda_wave/l2.rs");
+    let candidate_sources = read("src/correction_core/candidate_sources.rs");
+    let layout = read("src/nanda_wave/l2/layout_adapter.rs");
+
+    assert!(
+        l2.contains("pub(crate) fn hot_layout_candidate")
+            && l2.contains("hot_layout_candidate_with_noisy_projection(original, true)")
+            && l2.contains("layout_adapter::layout_candidate_with_projection_policy")
+            && candidate_sources.contains("crate::nanda_wave::l2::hot_layout_candidate(original)"),
+        "CompactL2 must keep layout candidate production in the shared L2 owner"
+    );
+    assert!(
+        !layout.contains("TransitionDecisionCore")
+            && !candidate_sources
+                .contains("hot_layout_candidate(original).map(|candidate| candidate.text"),
+        "the compact layout bridge may propose a candidate but must not choose or apply it"
+    );
+}
+
+#[test]
+fn cold_learning_uses_exact_surface_attestation_not_form_settlement() {
+    let hot_field = read("src/hot_field.rs");
+    let learning_loop = read("src/bin/lay_nanda_wave_eval/learning_loop.rs");
+
+    assert!(
+        hot_field.contains("pub fn learning_surface_is_attested")
+            && hot_field.contains("l2_surface_foundation_contains(&lower)")
+            && learning_loop.contains("HotFieldSnapshot::current().learning_surface_is_attested"),
+        "cold learning must use the explicit exact-surface bridge"
+    );
+    assert!(
+        !learning_loop.contains("is_known_russian_word_or_form(token)"),
+        "generated morphology may settle a runtime candidate but cannot manufacture observed training evidence"
+    );
+}
+
+#[test]
 fn l4_memory_owns_complete_transition_targets_and_cold_initialization() {
     let memory = read("src/typing_memory.rs");
     let relation = read("src/transition_relation.rs");

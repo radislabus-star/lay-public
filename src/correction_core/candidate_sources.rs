@@ -625,11 +625,13 @@ fn hot_l2_text_candidates(
     const HOT_L2_CANDIDATE_LIMIT: usize = 8;
     const HOT_L2_SOURCE_ID: &str = "L2LexicalPhaseCell32";
 
+    let started = std::time::Instant::now();
+    let timing_enabled = std::env::var_os("LAY_CORRECTION_CORE_TIMING").is_some();
     let Some((_context_prefix, token)) = split_last_alphabetic_token(original) else {
         return Vec::new();
     };
     let normalized_token = token.to_lowercase();
-    l2_peak_context
+    let mut candidates = l2_peak_context
         .center_candidates()
         .iter()
         .take(HOT_L2_CANDIDATE_LIMIT)
@@ -655,7 +657,31 @@ fn hot_l2_text_candidates(
                 gate,
             ))
         })
-        .collect()
+        .collect::<Vec<_>>();
+    let centers_ready = std::time::Instant::now();
+    let allow_noisy_layout_projection = !l2_peak_context.has_local_single_edit_peak();
+    let layout_candidate = if allow_noisy_layout_projection {
+        crate::nanda_wave::l2::hot_layout_candidate(original)
+    } else {
+        crate::nanda_wave::l2::hot_layout_candidate_with_noisy_projection(original, false)
+    };
+    if let Some(layout) = layout_candidate
+        .as_ref()
+        .and_then(|candidate| nanda_word_candidate(original, candidate))
+    {
+        candidates.push(layout);
+    }
+    if timing_enabled {
+        let layout_ready = std::time::Instant::now();
+        eprintln!(
+            "lay_hot_l2_timing centers_us={} layout_us={} total_us={} candidates={}",
+            centers_ready.duration_since(started).as_micros(),
+            layout_ready.duration_since(centers_ready).as_micros(),
+            layout_ready.duration_since(started).as_micros(),
+            candidates.len(),
+        );
+    }
+    candidates
 }
 
 fn delayed_context_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {

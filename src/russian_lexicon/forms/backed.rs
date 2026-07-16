@@ -1,6 +1,6 @@
 use super::{
-    adjective_form_suffixes, adjective_lemma_endings, center_contains, suffix_forms,
-    verb_form_endings,
+    adjective_form_suffixes, adjective_lemma_endings, center_contains, is_russian_consonant,
+    suffix_forms, verb_form_endings, zero_noun_suffixes,
 };
 
 pub(crate) fn is_center_backed_russian_form(word: &str) -> bool {
@@ -15,9 +15,20 @@ pub(crate) fn is_reference_backed_russian_form(word: &str) -> bool {
 
 fn is_backed_russian_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
     is_backed_russian_suffix_form(word, contains)
+        || is_backed_zero_ending_noun_form(word, contains)
         || is_backed_russian_verb_form(word, contains)
         || is_backed_russian_ch_verb_present_form(word, contains)
         || is_backed_russian_imperative_i_form(word, contains)
+}
+
+fn is_backed_zero_ending_noun_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
+    let word_len = word.chars().count();
+    if word_len < 4 || !word.chars().last().is_some_and(is_russian_consonant) {
+        return false;
+    }
+
+    zero_noun_suffixes()
+        .any(|suffix| (word_len >= 5 || suffix == "о") && contains(&format!("{word}{suffix}")))
 }
 
 fn is_backed_russian_suffix_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {

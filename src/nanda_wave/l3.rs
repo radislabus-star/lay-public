@@ -359,8 +359,7 @@ fn word_form_candidate_lacks_surface_support(original: &str, candidate: &WordCan
     }
     let field = crate::hot_field::HotFieldSnapshot::current();
     let original_known = field.stable_form_readout(&original_lower).is_known();
-    let replacement_known = field.stable_form_readout(&replacement_lower).is_known();
-    if original_known && replacement_known && original_lower != replacement_lower {
+    if original_known && original_lower != replacement_lower {
         return true;
     }
     let distance = damerau_levenshtein(&original_lower, &replacement_lower);

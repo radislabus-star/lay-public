@@ -204,7 +204,7 @@ mod tests {
 
     #[test]
     fn center_lemmas_produce_regular_noun_and_adjective_forms() {
-        for word in ["действия", "доставкой", "лучшее"] {
+        for word in ["действия", "доставкой", "лучшее", "слов"] {
             assert!(
                 is_known_russian_form(word),
                 "missing center-backed form: {word}"

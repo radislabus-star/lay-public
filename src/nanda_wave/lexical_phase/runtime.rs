@@ -218,8 +218,40 @@ impl LexicalPhaseMemory {
         if self.decoder_contains_surface(&surface) {
             return Vec::new();
         }
+        let mut candidates = self.field_surface_candidates_normalized(&surface, limit);
+        candidates.extend(self.reconstructed_surface_candidates(&surface, limit.saturating_mul(2)));
+        sort_candidates(&mut candidates);
+        candidates.truncate(limit);
+        candidates
+    }
+
+    pub(crate) fn field_surface_candidates(
+        &self,
+        surface: &str,
+        limit: usize,
+    ) -> Vec<LexicalPhaseCandidate> {
+        if limit == 0 {
+            return Vec::new();
+        }
+        let Some(surface) = normalize_surface(surface) else {
+            return Vec::new();
+        };
+        if self.decoder_contains_surface(&surface) {
+            return Vec::new();
+        }
+        let mut candidates = self.field_surface_candidates_normalized(&surface, limit);
+        sort_candidates(&mut candidates);
+        candidates.truncate(limit);
+        candidates
+    }
+
+    fn field_surface_candidates_normalized(
+        &self,
+        surface: &str,
+        limit: usize,
+    ) -> Vec<LexicalPhaseCandidate> {
         let input_len = surface.chars().count();
-        let field = SurfaceFieldEncoder::encode(&surface);
+        let field = SurfaceFieldEncoder::encode(surface);
         let keys = atom_center_keys(&field);
         let (query_phase, _) = surface_phase(&field);
         let mut votes = HashMap::<u32, u16>::new();
@@ -250,7 +282,7 @@ impl LexicalPhaseMemory {
         });
         frontier.truncate(limit.saturating_mul(48).max(192));
 
-        let mut candidates = frontier
+        let candidates = frontier
             .into_iter()
             .filter_map(|(terminal_id, votes)| {
                 let terminal = read_terminal(self.bytes(), self.header, terminal_id)?;
@@ -259,8 +291,8 @@ impl LexicalPhaseMemory {
                     return None;
                 }
                 let word_len = terminal.char_len as usize;
-                let prefix_match = word.starts_with(&surface) || surface.starts_with(&word);
-                let distance = damerau_levenshtein(&surface, &word);
+                let prefix_match = word.starts_with(surface) || surface.starts_with(&word);
+                let distance = damerau_levenshtein(surface, &word);
                 let distance_limit = if input_len >= 9 {
                     3
                 } else if input_len >= 5 {
@@ -297,9 +329,6 @@ impl LexicalPhaseMemory {
                 })
             })
             .collect::<Vec<_>>();
-        candidates.extend(self.reconstructed_surface_candidates(&surface, limit.saturating_mul(2)));
-        sort_candidates(&mut candidates);
-        candidates.truncate(limit);
         candidates
     }
 

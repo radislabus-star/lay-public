@@ -191,8 +191,8 @@ fn decide_space_autocorrect_gate(req: InputGateRequest<'_>) -> InputGateDecision
     InputGateDecision {
         trigger: req.trigger,
         stage: InputGateStage::WordBoundary,
+        trace: Some(word_boundary_trace(&resolution, action.outcome())),
         action,
-        trace: Some(word_boundary_trace(&resolution)),
         correction: Some(resolution),
     }
 }

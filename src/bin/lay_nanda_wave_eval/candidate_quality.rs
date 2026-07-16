@@ -387,10 +387,7 @@ fn inspect_gate(report: &mut CandidateQualityReport, value: &Value, gate: &Value
         report.no_candidates += 1;
         report.add_class("no_candidates");
     }
-    let selected_action = gate
-        .get("selected_gate_action")
-        .and_then(Value::as_str)
-        .unwrap_or("");
+    let selected_action = logged_gate_outcome(value, gate).unwrap_or("");
     if selected_action.is_empty() {
         *report
             .decision_counts
@@ -415,18 +412,54 @@ fn inspect_gate(report: &mut CandidateQualityReport, value: &Value, gate: &Value
         .unwrap_or("");
     report.add_source(selected_source);
     report.add_error_class(selected_error_class);
-    match selected_source {
-        "deterministic" => report.deterministic_apply += 1,
-        "nanda" => report.nanda_apply += 1,
-        _ => {}
+    if selected_action == "apply" {
+        match selected_source {
+            "deterministic" => report.deterministic_apply += 1,
+            "nanda" => report.nanda_apply += 1,
+            _ => {}
+        }
     }
     if let Some(selected) = selected_candidate_score(gate) {
-        inspect_selected_candidate(report, value, selected_source, selected);
+        if selected_action == "apply" {
+            inspect_selected_candidate(report, value, selected_source, selected);
+        }
         inspect_rank(report, gate, selected);
     }
     inspect_decision_lanes(report, gate);
     inspect_memory_shadow(report, gate);
     inspect_arbitration(report, value, gate);
+}
+
+fn logged_gate_outcome<'a>(value: &'a Value, gate: &'a Value) -> Option<&'a str> {
+    gate.get("decision_outcome")
+        .and_then(Value::as_str)
+        .filter(|outcome| is_final_gate_outcome(outcome))
+        .or_else(|| {
+            gate.get("selected_gate_action")
+                .and_then(Value::as_str)
+                .filter(|outcome| is_final_gate_outcome(outcome))
+        })
+        .or_else(|| legacy_applied_outcome(value, gate))
+}
+
+fn is_final_gate_outcome(outcome: &str) -> bool {
+    matches!(
+        outcome,
+        "observe" | "keep_original" | "apply" | "suggest_only" | "veto"
+    )
+}
+
+fn legacy_applied_outcome<'a>(value: &'a Value, gate: &'a Value) -> Option<&'a str> {
+    let candidate_was_eligible =
+        gate.get("selected_gate_action").and_then(Value::as_str) == Some("eligible");
+    let applied_record = value.get("kind").and_then(Value::as_str) == Some("typing-assist")
+        || (value.get("kind").and_then(Value::as_str) == Some("candidate_before_apply")
+            && value
+                .get("safety_allow_apply")
+                .and_then(Value::as_bool)
+                .unwrap_or(false)
+            && value.get("action_kind").and_then(Value::as_str) != Some("block_unsafe"));
+    (candidate_was_eligible && applied_record).then_some("apply")
 }
 
 fn selected_candidate_score(gate: &Value) -> Option<&Value> {
@@ -939,11 +972,23 @@ fn decision_outcomes_json(report: &CandidateQualityReport) -> Value {
         .get("apply")
         .copied()
         .unwrap_or_default();
-    let non_apply = report.gate_records.saturating_sub(apply);
+    let known = ["observe", "keep_original", "apply", "suggest_only", "veto"]
+        .into_iter()
+        .map(|outcome| {
+            report
+                .decision_counts
+                .get(outcome)
+                .copied()
+                .unwrap_or_default()
+        })
+        .sum::<usize>();
+    let non_apply = known.saturating_sub(apply);
+    let unknown = report.gate_records.saturating_sub(known);
     json!({
         "observed_gate_records": report.gate_records,
         "apply": apply,
         "non_apply": non_apply,
+        "unknown_legacy_outcome": unknown,
         "non_apply_percent": percent(non_apply, report.gate_records),
         "by_action": report.decision_counts,
         "read_as": "observed DecisionCore outcomes; non_apply includes SuggestOnly, Keep, Veto and unselected/ABSTAIN"
@@ -1044,5 +1089,17 @@ mod tests {
             report["memory_shadow_eval"]["gate"]["verdict"],
             "PASS-shadow"
         );
+    }
+
+    #[test]
+    fn candidate_quality_reads_typed_outcome_before_candidate_admission() {
+        let text = r#"
+{"kind":"candidate_before_apply","input_gate":{"decision_outcome":"apply","selected_gate_action":"apply","selected_candidate_gate_action":"eligible","candidate_count":1,"candidate_scores":[{"replacement":"порт ","source":"deterministic","gate_action":"eligible","selected":true,"edit_transition_left_context_changed":false,"edit_transition_verified":true}]}}
+"#;
+
+        let report = report_from_text(text, 20, &PathBuf::from("recent.jsonl"));
+
+        assert_eq!(report["decision_outcomes"]["apply"], 1);
+        assert_eq!(report["decision_outcomes"]["non_apply"], 0);
     }
 }

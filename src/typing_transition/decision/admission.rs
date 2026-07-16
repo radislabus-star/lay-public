@@ -195,6 +195,7 @@ pub(super) fn candidate_has_apply_authority(
         return false;
     }
     if !strong_transition_support
+        && !phase_center_separates_candidate(event, candidate_index, candidates, evaluations)
         && close_unresolved_competitor_exists(event, candidate_index, candidates, evaluations)
     {
         debug_decision_reject(
@@ -226,12 +227,14 @@ fn close_unresolved_competitor_exists(
 ) -> bool {
     let selected = &evaluations[selected_index];
     let selected_origin = candidates[selected_index].origin;
+    let selected_distance = lexical_transition_distance(event, &candidates[selected_index]);
     let selected_span =
         changed_token_span(&event.original, &candidates[selected_index].replacement);
     candidates.iter().enumerate().any(|(index, candidate)| {
         if index == selected_index
             || candidate.origin != selected_origin
-            || candidate.gate.action == CandidateGateAction::Veto
+            || candidate.gate.action != CandidateGateAction::Eligible
+            || lexical_transition_distance(event, candidate) > selected_distance
         {
             return false;
         }
