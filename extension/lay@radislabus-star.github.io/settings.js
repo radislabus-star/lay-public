@@ -4,7 +4,7 @@ import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.2.257';
+const APP_VERSION = '0.2.258';
 const APP_RELEASE_DATE = '2026-07-17';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
@@ -182,7 +182,7 @@ const OPTIONS = {
         ['single-pause', 'Pause'],
         ['caps-lock', 'CapsLock'],
     ],
-    text_backend: [['uinput', 'Быстрый ввод'], ['ime', 'IME-подсказки'], ['auto', 'Авто']],
+    text_backend: [['uinput', 'Быстрый ввод'], ['ime', 'IME-подсказки']],
     layout_backend: [['auto', 'Авто'], ['gnome', 'GNOME'], ['kde', 'KDE'], ['x11', 'X11'], ['niri', 'Niri']],
 };
 
@@ -238,7 +238,8 @@ function number(value, min, max, fallback) {
 }
 
 function normalize(cfg) {
-    const textBackend = choice(cfg?.text_backend, OPTIONS.text_backend.map(([id]) => id), DEFAULTS.text_backend);
+    const legacyTextBackend = cfg?.text_backend === 'auto' ? 'ime' : cfg?.text_backend;
+    const textBackend = choice(legacyTextBackend, OPTIONS.text_backend.map(([id]) => id), DEFAULTS.text_backend);
     return {
         ...DEFAULTS,
         ...cfg,
@@ -344,10 +345,10 @@ class SettingsView {
 
         grid.attach(this.section('Основное', [
             this.switchRow('Помощь при наборе', 'typing_assist', true),
-            this.switchRow('Автоподмена', 'auto_replace', true),
+            this.switchRow('Автозамена', 'auto_replace', true),
             this.switchRow('Запоминать правки', 'learning_log', false),
             this.debugLogsRow('Журнал отладки действий'),
-            this.switchRow('Автораскладка после пробела', 'auto_switch_layout', false),
+            this.switchRow('Следовать языку исправления', 'auto_switch_layout', false),
             this.comboRow('Осторожность', 'correction_safety', OPTIONS.correction_safety, true),
         ]), 0, 0, 1, 1);
         grid.attach(this.section('Управление', [

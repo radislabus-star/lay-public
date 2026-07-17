@@ -6,7 +6,7 @@ import Gtk from 'gi://Gtk';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.2.257';
+const APP_VERSION = '0.2.258';
 const APP_RELEASE_DATE = '2026-07-17';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
@@ -189,7 +189,6 @@ const FORCE_KEY_OPTIONS = [
 const BACKEND_OPTIONS = [
     ['uinput', 'Быстрый ввод'],
     ['ime', 'IME-подсказки'],
-    ['auto', 'Авто'],
 ];
 const LAYOUT_BACKEND_OPTIONS = [
     ['auto', 'Авто'],
@@ -254,7 +253,8 @@ function normalizeNumber(value, min, max, fallback) {
 }
 
 function normalizeConfig(cfg) {
-    const textBackend = normalizeChoice(cfg?.text_backend, BACKEND_OPTIONS.map(([id]) => id), DEFAULTS.text_backend);
+    const legacyTextBackend = cfg?.text_backend === 'auto' ? 'ime' : cfg?.text_backend;
+    const textBackend = normalizeChoice(legacyTextBackend, BACKEND_OPTIONS.map(([id]) => id), DEFAULTS.text_backend);
     return {
         ...DEFAULTS,
         ...cfg,
@@ -342,10 +342,10 @@ class LayPrefsView {
         });
         grid.attach(this._section('Основное', [
             this._switchRow('Помощь при наборе', 'typing_assist', true),
-            this._switchRow('Автоподмена', 'auto_replace', true),
+            this._switchRow('Автозамена', 'auto_replace', true),
             this._switchRow('Запоминать правки', 'learning_log', false),
             this._debugLogsRow('Журнал отладки действий'),
-            this._switchRow('Автораскладка после пробела', 'auto_switch_layout', false),
+            this._switchRow('Следовать языку исправления', 'auto_switch_layout', false),
             this._comboRow('Осторожность', 'correction_safety', SAFETY_OPTIONS, true),
         ]), 0, 0, 1, 1);
 

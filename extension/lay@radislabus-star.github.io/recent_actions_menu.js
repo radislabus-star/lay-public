@@ -69,7 +69,6 @@ function clearRecentActionsItem(indicator) {
     item.connect('activate', () => {
         if (clearRecentActions()) {
             refreshRecentActions(indicator);
-            indicator._refreshStats();
             indicator._notify('Журнал очищен', 'Последние действия удалены.');
         } else {
             indicator._notify('Не удалось очистить', RECENT_ACTIONS_PATH, true);

@@ -1,8 +1,8 @@
 [package]
 name = "lay"
-version = "0.2.257"
+version = "0.2.258"
 edition = "2021"
-description = "Alpha Double Shift RU/EN layout rescue for Linux desktops"
+description = "Typing correction and RU/EN layout switching for Linux desktops"
 license-file = "LICENSE"
 repository = "https://github.com/radislabus-star/lay-public"
 readme = "README.md"

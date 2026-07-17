@@ -20,33 +20,33 @@
     "semantic_hash": "236e46a80b6d2865de3d1816fb645158"
   },
   "extension/lay@radislabus-star.github.io/lay-impl.js": {
-    "mtime": 1784285399.8066616,
-    "ast_hash": "5b6a06aa6236126c72cb127ef2970fde",
-    "semantic_hash": "5b6a06aa6236126c72cb127ef2970fde"
+    "mtime": 1784287200.6525838,
+    "ast_hash": "9e9bbf047eb0d02517d97b52471670af",
+    "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1784285399.737356,
-    "ast_hash": "79bfa9a21187e7d60273b97420857777",
+    "mtime": 1784287200.6447246,
+    "ast_hash": "a5ec6b959c79166d5703f14eb35ddf8d",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1784285399.821356,
-    "ast_hash": "d52729b4337b595d5e25720e396a7fa8",
+    "mtime": 1784287200.7170157,
+    "ast_hash": "6757f4c6b3444647ec48bb08934e5e89",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
-    "mtime": 1783302705.3049808,
-    "ast_hash": "40bbf92dafd5dfae313a0760331c3ae3",
-    "semantic_hash": "40bbf92dafd5dfae313a0760331c3ae3"
+    "mtime": 1784287031.9278421,
+    "ast_hash": "faa1a40b06abdc2e94f94edcb9973a53",
+    "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1784285399.8211582,
-    "ast_hash": "35fe071b0e39ecf1edeca31d849903a9",
+    "mtime": 1784287200.7145844,
+    "ast_hash": "1692126bc4528a6c0e9cb5955b1fc996",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1784285399.8199213,
-    "ast_hash": "3af6f5f49d371a56c425883aeaa63185",
+    "mtime": 1784287200.7097638,
+    "ast_hash": "2429208e6b7f8a6d0a0e819dff30273f",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -2525,9 +2525,9 @@
     "semantic_hash": ""
   },
   "tests/tray_ui_contract.rs": {
-    "mtime": 1783429936.5436025,
-    "ast_hash": "08c1c7c4f7c4bb24b0e3962cd1905a17",
-    "semantic_hash": "08c1c7c4f7c4bb24b0e3962cd1905a17"
+    "mtime": 1784288382.6112459,
+    "ast_hash": "944813b35433519a558a9deca425e4ca",
+    "semantic_hash": ""
   },
   "tests/typing_assist_alternating_stress.rs": {
     "mtime": 1780196488.6354995,
@@ -2645,8 +2645,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1784285399.824013,
-    "ast_hash": "27eb9debeb12084cd0fe650036b2684f",
+    "mtime": 1784287200.7405846,
+    "ast_hash": "14e826a9873350318276f6b479bc5a3c",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3440,8 +3440,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1784285076.0123389,
-    "ast_hash": "a992e6de64e32f921573344f85be1d92",
+    "mtime": 1784285763.6579673,
+    "ast_hash": "63141f2c8bd1a47811429d3548050cea",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {

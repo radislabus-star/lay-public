@@ -29,38 +29,25 @@ import {
 // ─── Tray support ──────────────────────────────────────────
 
 import {
-    APP_DESCRIPTION,
-    APP_GNOME_SUPPORT,
     APP_ICON_NAME,
     APP_LICENSE,
-    APP_PLATFORM,
-    APP_RELEASE_DATE,
     APP_URL,
     APP_VERSION,
     COMPACT_SUBTITLE_STYLE,
-    MENU_ICON_SIZE,
     MENU_WIDTH,
     PANEL_ICON_SIZE,
-    SAFETY_OPTIONS,
-    TRIGGER_OPTIONS,
     actionKindLabel,
     loadConfig,
-    loadRecentActions,
-    loadStats,
     normalizeConfig,
     normalizePtahRules,
     openPreferences,
     openUri,
-    optionLabel,
     applyInputChannel,
     restartDaemon,
     saveConfig,
     startDaemon,
     startUpdate,
     stopDaemon,
-    summarizeRecentActions,
-    loadTypingMemorySummary,
-    summarizeTypingMemory,
 } from './tray_support.js';
 
 function persistentSwitchItem(label, active, params = {}) {
@@ -107,7 +94,9 @@ class LayIndicator extends PanelMenu.Button {
         this._buildMenu();
         this.menu.connect('open-state-changed', (_menu, isOpen) => {
             if (isOpen) {
-                this._refreshStats();
+                this._cfg = normalizeConfig(loadConfig());
+                this._refreshSelections();
+                this._refreshStatus();
                 this._refreshRecentActions();
             }
         });
@@ -126,6 +115,8 @@ class LayIndicator extends PanelMenu.Button {
     _buildMenu() {
         this.menu.box.style = `min-width:${MENU_WIDTH}px; padding:2px 0;`;
         this._statusRefreshIds = [];
+        this._configSwitches = new Map();
+        this._inputModeRows = new Map();
 
         this._statusItem = this._headerItem();
         this.menu.addMenuItem(this._statusItem);
@@ -133,14 +124,11 @@ class LayIndicator extends PanelMenu.Button {
 
         this.menu.addMenuItem(this._inputModeMenu());
         this.menu.addMenuItem(this._quickSwitchItem('Помощь при наборе', 'typing_assist', true));
-        this.menu.addMenuItem(this._quickSwitchItem('Автоподмена', 'auto_replace', true));
-        this.menu.addMenuItem(this._quickSwitchItem('Автораскладка после пробела', 'auto_switch_layout', false));
-        this.menu.addMenuItem(this._debugLogSwitchItem());
+        this.menu.addMenuItem(this._quickSwitchItem('Автозамена', 'auto_replace', true));
+        this.menu.addMenuItem(this._quickSwitchItem('Следовать языку исправления', 'auto_switch_layout', false));
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._preferencesItem());
-        this.menu.addMenuItem(this._recentActionsMenu());
-        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        this.menu.addMenuItem(this._daemonSwitchItem());
+        this.menu.addMenuItem(this._diagnosticsMenu());
         this.menu.addMenuItem(this._updateItem());
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._aboutMenu());
@@ -154,15 +142,9 @@ class LayIndicator extends PanelMenu.Button {
         item.reactive = false;
         item.can_focus = false;
         item.style = 'padding:5px 8px 4px 8px;';
-        const card = new St.BoxLayout({
+        const row = new St.BoxLayout({
             x_expand: true,
             style: 'spacing:8px;',
-        });
-        const icon = new St.Icon({
-            icon_name: APP_ICON_NAME,
-            icon_size: MENU_ICON_SIZE,
-            y_align: Clutter.ActorAlign.CENTER,
-            style_class: 'popup-menu-icon',
         });
         const titleBox = new St.BoxLayout({x_expand: true, style: 'spacing:6px;'});
         const title = new St.Label({
@@ -183,10 +165,9 @@ class LayIndicator extends PanelMenu.Button {
         });
         titleBox.add_child(title);
         titleBox.add_child(this._statusLabel);
-        card.add_child(icon);
-        card.add_child(titleBox);
-        card.add_child(this._statusDot);
-        item.add_child(card);
+        row.add_child(titleBox);
+        row.add_child(this._statusDot);
+        item.add_child(row);
         return item;
     }
 
@@ -199,18 +180,18 @@ class LayIndicator extends PanelMenu.Button {
         for (const [id, label] of [
             ['uinput', 'Быстрый ввод'],
             ['ime', 'IME-подсказки'],
-            ['auto', 'Авто'],
         ]) {
-            const active = this._cfg.text_backend === id;
-            const row = new PopupMenu.PopupMenuItem(`${active ? '✓ ' : '  '}${label}`);
+            const row = new PopupMenu.PopupMenuItem(label);
             row.connect('activate', () => this._setInputMode(id));
             item.menu.addMenuItem(row);
+            this._inputModeRows.set(id, row);
         }
+        this._inputModeItem = item;
         return item;
     }
 
     _setInputMode(id) {
-        if (!['uinput', 'ime', 'auto'].includes(id))
+        if (!['uinput', 'ime'].includes(id))
             return;
         this._cfg.text_backend = id;
         this._cfg.nanda_precognition = id !== 'uinput';
@@ -222,6 +203,8 @@ class LayIndicator extends PanelMenu.Button {
     _quickSwitchItem(label, key, needsRestart) {
         const item = persistentSwitchItem(label, !!this._cfg[key]);
         item.connect('toggled', (_item, state) => {
+            if (this._updatingConfigSwitches)
+                return;
             this._cfg[key] = state;
             saveConfig(this._cfg);
             if (needsRestart)
@@ -230,18 +213,22 @@ class LayIndicator extends PanelMenu.Button {
             if (needsRestart)
                 this._scheduleStatusRefreshes();
         });
+        this._configSwitches.set(key, item);
         return item;
     }
 
     _debugLogSwitchItem() {
         const item = persistentSwitchItem('Журнал отладки действий', !!this._cfg.debug_action_log);
         item.connect('toggled', (_item, state) => {
+            if (this._updatingConfigSwitches)
+                return;
             this._cfg.debug_action_log = state;
             this._cfg.nanda_trace = state;
             this._cfg.nanda_trace_text = state;
             saveConfig(this._cfg);
             this._refreshSelections();
         });
+        this._configSwitches.set('debug_action_log', item);
         return item;
     }
 
@@ -313,7 +300,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _daemonSwitchItem() {
-        const item = persistentSwitchItem('Демон включён', false);
+        const item = persistentSwitchItem('Демон', false);
         item.connect('toggled', (_item, state) => {
             if (this._updatingDaemonSwitch)
                 return;
@@ -323,85 +310,55 @@ class LayIndicator extends PanelMenu.Button {
         return item;
     }
 
+    _diagnosticsMenu() {
+        const item = new PopupMenu.PopupSubMenuMenuItem('Диагностика', false);
+        item.menu.addMenuItem(this._daemonSwitchItem());
+
+        const restart = new PopupMenu.PopupImageMenuItem('Перезапустить службы', 'view-refresh-symbolic');
+        restart.connect('activate', () => {
+            restartDaemon();
+            this._setDaemonBusy('перезапуск...');
+            this._scheduleStatusRefreshes();
+        });
+        item.menu.addMenuItem(restart);
+        item.menu.addMenuItem(this._debugLogSwitchItem());
+        item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        item.menu.addMenuItem(this._recentActionsMenu());
+        return item;
+    }
+
     _updateItem() {
-        const item = new PopupMenu.PopupMenuItem('Проверить обновления');
+        const item = new PopupMenu.PopupImageMenuItem('Проверить обновления', 'software-update-available-symbolic');
         item.connect('activate', () => this._runUpdate());
         return item;
     }
 
     _preferencesItem() {
-        const item = new PopupMenu.PopupMenuItem('Настройки...');
+        const item = new PopupMenu.PopupImageMenuItem('Настройки', 'emblem-system-symbolic');
         item.connect('activate', () => openPreferences());
         return item;
     }
 
     _aboutMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem('О программе', false);
-        const block = new PopupMenu.PopupBaseMenuItem({activate: false, reactive: false, can_focus: false});
-        block.reactive = false;
-        block.can_focus = false;
-        block.style = 'padding:8px 8px 10px 8px;';
-
-        const box = new St.BoxLayout({
-            vertical: true,
-            x_expand: true,
-            style: 'spacing:3px;',
-        });
-        box.add_child(new St.Label({
-            text: `Lay ${APP_VERSION}`,
-            style: 'font-weight:bold;',
-        }));
-        box.add_child(new St.Label({
-            text: APP_DESCRIPTION,
-            style: COMPACT_SUBTITLE_STYLE,
-        }));
-        box.add_child(new St.Label({
-            text: `Дата версии: ${APP_RELEASE_DATE}`,
-            style: COMPACT_SUBTITLE_STYLE,
-        }));
-        box.add_child(new St.Label({
-            text: APP_PLATFORM,
-            style: COMPACT_SUBTITLE_STYLE,
-        }));
-        box.add_child(new St.Label({
-            text: `Совместимость: ${APP_GNOME_SUPPORT}`,
-            style: COMPACT_SUBTITLE_STYLE,
-        }));
-        box.add_child(new St.Label({
-            text: `Лицензия: ${APP_LICENSE}`,
-            style: COMPACT_SUBTITLE_STYLE,
-        }));
-        this._aboutConfigLabel = new St.Label({
-            text: `Настройки: ${this._aboutConfigText()}`,
-            style: COMPACT_SUBTITLE_STYLE,
-        });
-        box.add_child(this._aboutConfigLabel);
-        this._aboutStatsLabel = new St.Label({
-            text: `Статистика: ${this._aboutStatsText()}`,
-            style: COMPACT_SUBTITLE_STYLE,
-        });
-        box.add_child(this._aboutStatsLabel);
-        const link = new St.Label({
-            text: 'GitHub проекта',
-            reactive: true,
-            can_focus: true,
-            style: `${COMPACT_SUBTITLE_STYLE}; text-decoration: underline;`,
-        });
-        link.connect('button-release-event', () => {
-            openUri(APP_URL);
-            return Clutter.EVENT_STOP;
-        });
-        box.add_child(link);
-        block.add_child(box);
-        item.menu.addMenuItem(block);
+        const item = new PopupMenu.PopupSubMenuMenuItem(`О Lay ${APP_VERSION}`, false);
+        item.menu.addMenuItem(this._mutedTextRow(`Лицензия: ${APP_LICENSE}`));
+        const link = new PopupMenu.PopupImageMenuItem('Открыть GitHub', 'web-browser-symbolic');
+        link.connect('activate', () => openUri(APP_URL));
+        item.menu.addMenuItem(link);
         return item;
     }
 
     _refreshSelections() {
         this._cfg = normalizeConfig(this._cfg);
-        if (this._aboutConfigLabel)
-            this._aboutConfigLabel.text = `Настройки: ${this._aboutConfigText()}`;
-        this._refreshStats();
+        if (this._inputModeItem?.label)
+            this._inputModeItem.label.text = `Режим ввода: ${this._inputModeLabel()}`;
+        for (const [id, row] of this._inputModeRows ?? [])
+            row.setOrnament(id === this._cfg.text_backend ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
+
+        this._updatingConfigSwitches = true;
+        for (const [key, item] of this._configSwitches ?? [])
+            item.setToggleState(!!this._cfg[key]);
+        this._updatingConfigSwitches = false;
     }
 
     _toggleDaemonService(shouldStart = null) {
@@ -433,14 +390,6 @@ class LayIndicator extends PanelMenu.Button {
         }
     }
 
-    _triggerLabel(id) {
-        return optionLabel(TRIGGER_OPTIONS, id, 'Двойной Shift');
-    }
-
-    _safetyLabel() {
-        return optionLabel(SAFETY_OPTIONS, this._cfg.correction_safety, 'норма');
-    }
-
     _actionKindLabel(kind) {
         return actionKindLabel(kind);
     }
@@ -452,48 +401,9 @@ class LayIndicator extends PanelMenu.Button {
         return `${text.slice(0, 43)}...`;
     }
 
-    _aboutConfigText() {
-        const autoSwitch = this._cfg.auto_switch_layout ? 'авто-раскладка' : 'раскладка вручную';
-        const lem = this._cfg.lem_enabled
-            ? 'LEM вкл'
-            : 'LEM выкл';
-        const weights = `вес ${this._cfg.lem_weight_percent ?? 80}/${this._cfg.nanda_l2_weight_percent ?? 20}/${this._cfg.nanda_l3_weight_percent ?? 8}`;
-        const force = this._cfg.force_layout_hotkeys ? 'RU/EN хоткеи' : 'RU/EN выкл';
-        return `${this._inputModeLabel()} · ${this._safetyLabel()} · ${lem} · ${weights} · ${autoSwitch} · ${force} · ${this._triggerLabel(this._cfg.trigger)}`;
-    }
-
-    _aboutStatsText() {
-        const stats = loadStats();
-        const actions = summarizeRecentActions(loadRecentActions(20));
-        const memory = summarizeTypingMemory(loadTypingMemorySummary());
-        return `LLM ${stats.llm_calls ?? 0}${this._lastTime(stats.last_llm_ts)} · `
-            + `правки ${stats.learning_log_entries ?? 0}${this._lastTime(stats.last_learning_ts)} · `
-            + `правил ${stats.promoted_rules ?? 0}${this._lastTime(stats.last_promotion_ts)} · `
-            + `${memory} · `
-            + `действия: ${actions}`;
-    }
-
-    _refreshStats() {
-        if (this._aboutStatsLabel)
-            this._aboutStatsLabel.text = `Статистика: ${this._aboutStatsText()}`;
-    }
-
-    _lastTime(ts) {
-        if (!ts)
-            return '';
-        try {
-            const date = new Date(ts * 1000);
-            return `, ${date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}`;
-        } catch(e) {
-            return '';
-        }
-    }
-
     _inputModeLabel() {
         if (this._cfg.text_backend === 'ime')
             return 'IME-подсказки';
-        if (this._cfg.text_backend === 'auto')
-            return 'Авто-ввод';
         return 'Быстрый ввод';
     }
 
@@ -528,7 +438,6 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _setDaemonBusy(text) {
-        this._stopStatusBlink();
         if (this._statusLabel)
             this._statusLabel.text = text;
         if (this._statusDot) {
@@ -569,41 +478,15 @@ class LayIndicator extends PanelMenu.Button {
 
         if (active) {
             this._statusDot.style = 'font-size:90%; color:#26a269;';
-            this._startStatusBlink();
+            this._statusDot.opacity = 255;
         } else {
-            this._stopStatusBlink();
             this._statusDot.opacity = 255;
             this._statusDot.style = 'font-size:90%; color:#c01c28;';
         }
     }
 
-    _startStatusBlink() {
-        if (this._blinkId)
-            return;
-
-        this._blinkBright = true;
-        this._statusDot.opacity = 255;
-        this._blinkId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 650, () => {
-            if (!this._statusDot) {
-                this._blinkId = 0;
-                return false;
-            }
-            this._blinkBright = !this._blinkBright;
-            this._statusDot.opacity = this._blinkBright ? 255 : 95;
-            return true;
-        });
-    }
-
-    _stopStatusBlink() {
-        if (this._blinkId) {
-            GLib.Source.remove(this._blinkId);
-            this._blinkId = 0;
-        }
-    }
-
     destroy() {
         this._clearStatusRefreshes();
-        this._stopStatusBlink();
         if (this._ptahApplyId) {
             GLib.Source.remove(this._ptahApplyId);
             this._ptahApplyId = 0;

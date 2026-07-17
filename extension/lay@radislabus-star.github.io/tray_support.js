@@ -2,21 +2,14 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
 export const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-export const STATS_PATH = GLib.get_home_dir() + '/.local/share/lay/stats.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
-export const USAGE_COUNTS_PATH = GLib.get_home_dir() + '/.local/share/lay/nanda_wave/word_usage_counts.json';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 export const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-export const APP_VERSION = '0.2.257';
-export const APP_DESCRIPTION = 'Альфа: RU/EN-переключатель по двойному Shift и помощь при наборе';
-export const APP_RELEASE_DATE = '2026-07-17';
+export const APP_VERSION = '0.2.258';
 export const APP_LICENSE = 'Non-Commercial';
 export const APP_URL = 'https://github.com/radislabus-star/lay-public';
-export const APP_PLATFORM = 'Linux: GNOME, KDE, Niri, Wayland, X11';
-export const APP_GNOME_SUPPORT = 'GNOME 45-47, 50';
 export const APP_ICON_NAME = 'input-keyboard-symbolic';
 export const PANEL_ICON_SIZE = 14;
-export const MENU_ICON_SIZE = 16;
 export const MENU_WIDTH = 280;
 export const DEFAULT_SCOPE_WORDS = 1;
 export const MIN_SCOPE_WORDS = 1;
@@ -66,16 +59,6 @@ export const TYPING_RULES = [
     {id: 'extra_letters', label: 'Лишние буквы'},
     {id: 'missing_letter', label: 'Пропущенная буква'},
     {id: 'glued_phrase', label: 'Склейка слов'},
-];
-export const TRIGGER_OPTIONS = [
-    ['double-lshift', 'Двойной Shift'],
-    ['double-ctrl', 'Двойной Ctrl'],
-    ['double-alt', 'Двойной Alt'],
-    ['caps-lock', 'CapsLock'],
-    ['single-rshift', 'Правый Shift'],
-    ['single-rctrl', 'Правый Ctrl'],
-    ['single-ralt', 'Правый Alt'],
-    ['single-pause', 'Pause'],
 ];
 export const FORCE_KEY_OPTIONS = [
     ['single-rctrl', 'Правый Ctrl'],
@@ -191,7 +174,10 @@ export function normalizeChoice(value, allowed, fallback) {
     return allowed.includes(value) ? value : fallback;
 }
 export function normalizeConfig(cfg) {
-    const textBackend = normalizeChoice(cfg?.text_backend, ['uinput', 'ime', 'auto'], DEFAULTS.text_backend);
+    // "auto" used the same IME runtime route and is kept only as a legacy
+    // config value. Present it as IME and migrate it on the next save.
+    const legacyTextBackend = cfg?.text_backend === 'auto' ? 'ime' : cfg?.text_backend;
+    const textBackend = normalizeChoice(legacyTextBackend, ['uinput', 'ime'], DEFAULTS.text_backend);
     return {
         ...DEFAULTS,
         ...cfg,
@@ -216,9 +202,6 @@ export function normalizeConfig(cfg) {
         nanda_l3_weight_percent: clampNumber(cfg?.nanda_l3_weight_percent, 0, 200, DEFAULTS.nanda_l3_weight_percent),
         mode: 'simple',
     };
-}
-export function optionLabel(options, id, fallback) {
-    return options.find(([value]) => value === id)?.[1] ?? fallback;
 }
 export function normalizePtahLayout(layout) {
     const id = String(layout ?? '').trim().toLowerCase();
@@ -279,38 +262,6 @@ export function normalizeTypingPipeline(saved) {
 }
 export function typingRuleLabel(id) {
     return TYPING_RULES.find(rule => rule.id === id)?.label ?? id;
-}
-export function loadStats() {
-    try {
-        const [, bytes] = Gio.File.new_for_path(STATS_PATH).load_contents(null);
-        return JSON.parse(new TextDecoder().decode(bytes));
-    } catch(e) {
-        return {};
-    }
-}
-export function loadTypingMemorySummary() {
-    try {
-        const [, bytes] = Gio.File.new_for_path(USAGE_COUNTS_PATH).load_contents(null);
-        const data = JSON.parse(new TextDecoder().decode(bytes));
-        const counts = data?.counts ?? {};
-        return {
-            accepted: objectSize(counts.accepted_words),
-            rejected: objectSize(counts.rejected_words),
-            context: objectSize(counts.context_words),
-            attract: objectSize(counts.transition_attract),
-            repel: objectSize(counts.transition_repel),
-        };
-    } catch(e) {
-        return null;
-    }
-}
-function objectSize(value) {
-    return value && typeof value === 'object' ? Object.keys(value).length : 0;
-}
-export function summarizeTypingMemory(summary) {
-    if (!summary)
-        return 'память: нет данных';
-    return `память +${summary.accepted}/-${summary.rejected} · ctx ${summary.context} · ↔ ${summary.attract}/${summary.repel}`;
 }
 export function loadRecentActions(limit = 5) {
     try {
