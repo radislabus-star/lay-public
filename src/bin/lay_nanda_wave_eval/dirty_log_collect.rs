@@ -1341,6 +1341,7 @@ fn accepted_usage_events(pair: &DirtyLogPair) -> Vec<Value> {
     }
     let original_words = normalized_words(&pair.original);
     let indexes = changed_word_indexes(&original_words, &expected_words);
+    let surface = transition_surface(pair);
     indexes
         .into_iter()
         .filter_map(|index| {
@@ -1353,7 +1354,8 @@ fn accepted_usage_events(pair: &DirtyLogPair) -> Vec<Value> {
                 "from": pair.original.trim(),
                 "to": pair.expected.trim(),
                 "source": pair.source_id,
-                "operation": pair.operation
+                "operation": pair.operation,
+                "surface": surface
             }))
         })
         .collect()
@@ -1365,6 +1367,7 @@ fn rejected_usage_events(pair: &DirtyLogPair) -> Vec<Value> {
         return Vec::new();
     }
     let original_words = normalized_words(&pair.original);
+    let surface = transition_surface(pair);
     changed_word_indexes(&original_words, &rejected_words)
         .into_iter()
         .filter_map(|index| {
@@ -1377,10 +1380,20 @@ fn rejected_usage_events(pair: &DirtyLogPair) -> Vec<Value> {
                 "from": pair.original.trim(),
                 "to": pair.expected.trim(),
                 "source": pair.source_id,
-                "operation": pair.operation
+                "operation": pair.operation,
+                "surface": surface
             }))
         })
         .collect()
+}
+
+fn transition_surface(pair: &DirtyLogPair) -> String {
+    lay::nanda_wave::transition_surface_key(
+        &pair.original,
+        &pair.expected,
+        &pair.source_id,
+        &pair.operation,
+    )
 }
 
 fn changed_word_indexes(original_words: &[String], expected_words: &[String]) -> Vec<usize> {
@@ -1894,6 +1907,9 @@ mod tests {
         assert_eq!(events.len(), 1);
         assert_eq!(events[0]["word"], "опусы");
         assert_eq!(events[0]["context"], serde_json::json!(["как"]));
+        assert!(events[0]["surface"]
+            .as_str()
+            .is_some_and(|value| !value.is_empty()));
     }
 
     #[test]

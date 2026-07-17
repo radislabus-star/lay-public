@@ -196,9 +196,12 @@ impl UsageHotState {
         };
         if projected.is_rejected() {
             if let Some(surface) = projected.surface {
-                let surface = usage_text_id(surface);
-                self.surface_observed.increment(surface, projected.weight);
-                self.surface_repel.increment(surface, projected.weight);
+                let surface_id = usage_text_id(surface);
+                self.surface_observed
+                    .increment(surface_id, projected.weight);
+                self.surface_repel.increment(surface_id, projected.weight);
+                self.phase_witness
+                    .observe_negative(surface, projected.weight);
             }
             self.add_rejected_word_state(RejectedStateEvidence {
                 context: projected.context,
@@ -216,10 +219,13 @@ impl UsageHotState {
         }
 
         if let Some(surface) = projected.surface {
-            let surface = usage_text_id(surface);
-            self.surface_observed.increment(surface, projected.weight);
+            let surface_id = usage_text_id(surface);
+            self.surface_observed
+                .increment(surface_id, projected.weight);
             if projected.is_accepted() {
-                self.surface_attract.increment(surface, projected.weight);
+                self.surface_attract.increment(surface_id, projected.weight);
+                self.phase_witness
+                    .observe_positive(surface, projected.weight);
             }
         }
 

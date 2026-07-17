@@ -77,7 +77,7 @@
     {
       "evidence": [
         "src/nanda_wave/l4_signed_memory.rs:L4:L4SignedMemorySignal",
-        "src/nanda_wave/usage_prior.rs:L136:UsagePriorSnapshot",
+        "src/nanda_wave/usage_prior.rs:L139:UsagePriorSnapshot",
         "src/typing_memory.rs:L26:TypingMemoryEvent"
       ],
       "id": "l3-l4-learning",
@@ -86,8 +86,8 @@
     },
     {
       "evidence": [
-        "graph_links:20577",
-        "graph_nodes:8262"
+        "graph_links:20628",
+        "graph_nodes:8279"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -95,10 +95,10 @@
     }
   ],
   "duplicate_symbols": {},
-  "graph_fingerprint": "d2c8eef2a58eadd3bb4347fa0f4bde3f970758d86cda49d3ff9ec4950b6d52f2",
-  "graph_links": 20577,
-  "graph_nodes": 8262,
+  "graph_fingerprint": "7b4d4366ed6e1e60aba13158f78c3a23a92af5322adb0b787d4f72af611f75a5",
+  "graph_links": 20628,
+  "graph_nodes": 8279,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "3817a5e8d4a59661bc6e25f029fe9582566be1e338e97bc8a514e27074215fb5",
+  "source_fingerprint": "8883d20156f8c9bd51c6724476442db443b3da5de13aaeca224c48c0e1f48927",
   "verdict": "PASS"
 }

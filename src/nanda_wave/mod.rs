@@ -132,6 +132,13 @@ pub fn cached_usage_prior_snapshot() -> UsagePriorSnapshot {
     usage_prior::cached_usage_prior_snapshot()
 }
 
+pub fn compile_usage_feedback_snapshot(
+    input: &std::path::Path,
+    output: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    usage_prior::compile_usage_feedback_snapshot(input, output)
+}
+
 pub fn l2_surface_words_by_usage(limit: usize) -> Vec<String> {
     usage_prior::l2_surface_words_by_usage(limit)
 }
@@ -167,6 +174,15 @@ pub fn infer_l2_transition_operator(
 ) -> &'static str {
     crate::transition_relation::TransitionOperatorKind::infer(original, candidate, operation)
         .as_str()
+}
+
+pub fn transition_surface_key(
+    original: &str,
+    candidate: &str,
+    source: &str,
+    operation: &str,
+) -> String {
+    crate::typing_memory::transition_surface_key(original, candidate, source, operation)
 }
 
 #[derive(Clone, Debug, serde::Serialize)]

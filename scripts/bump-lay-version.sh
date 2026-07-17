@@ -97,6 +97,7 @@ if [[ "$NO_BUILD" == "0" ]]; then
   scripts/install-l2-lexical-phase.sh
   scripts/install-l3-context-phase.sh
   target/release/lay-nanda-wave-eval --llmwave-pack-live
+  scripts/rebuild-l4-feedback-memory.sh
   scripts/install-release-binaries.sh
 fi
 

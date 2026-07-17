@@ -61,6 +61,14 @@ impl L4PhaseWitnessBank {
         }
     }
 
+    pub(crate) fn observe_positive(&mut self, surface: &str, count: u32) {
+        observe_surface(&mut self.positive, surface, count);
+    }
+
+    pub(crate) fn observe_negative(&mut self, surface: &str, count: u32) {
+        observe_surface(&mut self.negative, surface, count);
+    }
+
     pub(crate) fn logical_payload_bytes(&self) -> usize {
         self.positive
             .iter()
@@ -77,15 +85,19 @@ impl L4PhaseWitnessBank {
     }
 }
 
+fn observe_surface(centers: &mut Vec<PhaseCenter>, surface: &str, count: u32) {
+    let vector = surface_vector(surface);
+    for _ in 0..count.clamp(1, MAX_COUNT_WEIGHT) {
+        add_cluster(centers, &vector, MAX_CENTERS, SPLIT_COHERENCE);
+    }
+}
+
 fn compile_centers(source: &HashMap<String, u32>) -> Vec<PhaseCenter> {
     let mut entries = source.iter().collect::<Vec<_>>();
     entries.sort_by(|left, right| left.0.cmp(right.0));
     let mut centers = Vec::new();
     for (surface, count) in entries {
-        let vector = surface_vector(surface);
-        for _ in 0..(*count).clamp(1, MAX_COUNT_WEIGHT) {
-            add_cluster(&mut centers, &vector, MAX_CENTERS, SPLIT_COHERENCE);
-        }
+        observe_surface(&mut centers, surface, *count);
     }
     centers
 }

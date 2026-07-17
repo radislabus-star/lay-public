@@ -29,6 +29,9 @@ const USAGE_EVENTS_PATH: &str = ".local/share/lay/nanda_wave/word_usage_events.j
 #[cfg(not(test))]
 const USAGE_COUNTS_PATH: &str = ".local/share/lay/nanda_wave/word_usage_counts.json";
 #[cfg(not(test))]
+const USAGE_FEEDBACK_COUNTS_PATH: &str =
+    ".local/share/lay/nanda_wave/word_usage_feedback_counts.json";
+#[cfg(not(test))]
 const LEGACY_USAGE_PRIOR_PATH: &str = ".local/share/lay/learning_candidates.json";
 const USAGE_EVENTS_MAX_BYTES: u64 = 500 * 1024;
 const USAGE_EVENTS_FULL_REBUILD_MAX_BYTES: u64 = 8 * 1024 * 1024;
@@ -615,7 +618,7 @@ fn usage_cache() -> &'static Mutex<UsageCache> {
 }
 
 fn load_usage_counts() -> UsageCounts {
-    let mut counts = UsageCounts::default();
+    let mut counts = load_usage_feedback_counts();
     if let Some(text) =
         legacy_usage_prior_path().and_then(|path| std::fs::read_to_string(path).ok())
     {
@@ -623,6 +626,13 @@ fn load_usage_counts() -> UsageCounts {
     }
     merge_usage_counts(&mut counts, load_usage_event_counts());
     counts
+}
+
+fn load_usage_feedback_counts() -> UsageCounts {
+    let Some(path) = usage_feedback_counts_path() else {
+        return UsageCounts::default();
+    };
+    load_persisted_usage_counts(&path, None).unwrap_or_default()
 }
 
 fn load_usage_event_counts() -> UsageCounts {
@@ -1127,26 +1137,61 @@ fn read_tail_text_lossy(path: &Path, max_bytes: usize) -> Option<String> {
 
 fn load_usage_counts_snapshot(source_len: u64) -> Option<UsageCounts> {
     let path = usage_counts_path()?;
-    let text = std::fs::read_to_string(path).ok()?;
-    let snapshot = serde_json::from_str::<PersistedUsageCounts>(&text).ok()?;
-    (snapshot.schema_version == USAGE_COUNTS_SCHEMA_VERSION && snapshot.source_len == source_len)
-        .then_some(snapshot.counts)
+    load_persisted_usage_counts(&path, Some(source_len))
 }
 
 fn persist_usage_counts_snapshot(counts: &UsageCounts, source_len: u64) {
     let Some(path) = usage_counts_path() else {
         return;
     };
+    let _ = persist_usage_counts_snapshot_to_path(&path, counts, source_len);
+}
+
+fn load_persisted_usage_counts(path: &Path, source_len: Option<u64>) -> Option<UsageCounts> {
+    let text = std::fs::read_to_string(path).ok()?;
+    let snapshot = serde_json::from_str::<PersistedUsageCounts>(&text).ok()?;
+    (snapshot.schema_version == USAGE_COUNTS_SCHEMA_VERSION
+        && source_len.map_or(true, |expected| snapshot.source_len == expected))
+    .then_some(snapshot.counts)
+}
+
+fn persist_usage_counts_snapshot_to_path(
+    path: &Path,
+    counts: &UsageCounts,
+    source_len: u64,
+) -> std::io::Result<()> {
     let snapshot = PersistedUsageCounts {
         schema_version: USAGE_COUNTS_SCHEMA_VERSION,
         source_len,
         counts: compact_usage_counts_for_persist(counts),
     };
-    let Ok(mut text) = serde_json::to_string(&snapshot) else {
-        return;
-    };
+    let mut text = serde_json::to_string(&snapshot)?;
     text.push('\n');
-    let _ = crate::private_file::write_private_text(&path, &text);
+    crate::private_file::write_private_text(path, &text)
+}
+
+pub fn compile_usage_feedback_snapshot(
+    input: &Path,
+    output: &Path,
+) -> std::io::Result<serde_json::Value> {
+    let text = std::fs::read_to_string(input)?;
+    let mut counts = UsageCounts::default();
+    add_usage_event_counts(&mut counts, &text);
+    persist_usage_counts_snapshot_to_path(output, &counts, text.len() as u64)?;
+    let hot = UsageHotState::from_counts(&counts);
+    Ok(serde_json::json!({
+        "kind": "typing_feedback_snapshot_compile",
+        "status": "ok",
+        "input": input.display().to_string(),
+        "output": output.display().to_string(),
+        "source_bytes": text.len(),
+        "parsed_events": usage_events_from_jsonl(&text).count(),
+        "accepted_transitions": counts.transition_attract.len(),
+        "rejected_transitions": counts.transition_repel.len(),
+        "surface_anti_states": counts.surface_repel.len(),
+        "hot_logical_payload_bytes": hot.logical_payload_bytes(),
+        "authority": "signed-memory evidence only; TransitionDecisionCore and verifier retain edit authority"
+    }))
 }
 
 fn compact_usage_counts_for_persist(counts: &UsageCounts) -> UsageCounts {
@@ -1404,6 +1449,23 @@ fn usage_counts_path() -> Option<PathBuf> {
     }
 }
 
+fn usage_feedback_counts_path() -> Option<PathBuf> {
+    if let Some(path) = std::env::var_os("LAY_NANDA_WORD_USAGE_FEEDBACK_COUNTS").map(PathBuf::from)
+    {
+        return Some(path);
+    }
+    #[cfg(test)]
+    {
+        None
+    }
+    #[cfg(not(test))]
+    {
+        std::env::var_os("HOME")
+            .map(PathBuf::from)
+            .map(|home| home.join(USAGE_FEEDBACK_COUNTS_PATH))
+    }
+}
+
 fn legacy_usage_prior_path() -> Option<PathBuf> {
     if let Some(path) = std::env::var_os("LAY_NANDA_USAGE_PRIOR").map(PathBuf::from) {
         return Some(path);
@@ -1563,7 +1625,24 @@ mod tests {
             assert_eq!(Arc::as_ptr(&cache.hot), hot_owner);
         }
 
-        assert_eq!(*cache.hot, UsageHotState::from_counts(&cold));
+        let rebuilt = UsageHotState::from_counts(&cold);
+        for surface in ["дождь", "комитет", "камитет", "даша"] {
+            let live = cache.hot.phase_witness(surface);
+            let cold = rebuilt.phase_witness(surface);
+            assert_eq!(live.supported, cold.supported, "surface={surface}");
+            assert_eq!(
+                live.margin.total_cmp(&0.0),
+                cold.margin.total_cmp(&0.0),
+                "surface={surface} live={} cold={}",
+                live.margin,
+                cold.margin
+            );
+        }
+        assert_eq!(cache.hot.word_prior("дождь"), rebuilt.word_prior("дождь"));
+        assert_eq!(
+            cache.hot.rejected_word_prior("даша"),
+            rebuilt.rejected_word_prior("даша")
+        );
         assert!(cache.hot.logical_payload_bytes() > 0);
     }
 
@@ -1940,6 +2019,33 @@ mod tests {
         };
 
         assert!(usage_event_payload_eq(&first, &second));
+    }
+
+    #[test]
+    fn compiled_feedback_snapshot_restores_exact_negative_transition() {
+        let dir =
+            std::env::temp_dir().join(format!("lay-l4-feedback-snapshot-{}", std::process::id()));
+        let input = dir.join("events.jsonl");
+        let output = dir.join("feedback-counts.json");
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(
+            &input,
+            r#"{"ts":1,"kind":"rejected_candidate","word":"так","from":"nfr","to":"так","source":"user_correction","operation":"typing-assist","surface":"op=layout_projection|shape=replace|words=1:1"}
+"#,
+        )
+        .unwrap();
+
+        let report = compile_usage_feedback_snapshot(&input, &output).unwrap();
+        let counts = load_persisted_usage_counts(&output, None).unwrap();
+        let usage = usage_snapshot_from_counts(counts);
+        let state = crate::transition_relation::transition_state_id("nfr");
+        let readout = usage.hot_readout(&[], "layout", "replacement", &state, "так");
+
+        assert_eq!(report["parsed_events"], 1);
+        assert_eq!(report["surface_anti_states"], 1);
+        assert!(readout.transition.state_specific);
+        assert!(readout.transition.repulsion > readout.transition.attraction);
+        let _ = std::fs::remove_dir_all(dir);
     }
 
     #[test]

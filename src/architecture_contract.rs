@@ -78,7 +78,7 @@ const LINES: [ArchitectureLine; 8] = [
         id: "l3-l4-learning",
         layer: "L3/L4",
         owner: "context_phase + l4_hidden_state + l4_active_disambiguation + l4_phase_witness + l4_signed_memory + typing_memory",
-        proof: "LAYL3P01 context centers feed state-before/operator/state-after hypotheses; bounded positive/anti phase witnesses and independently replayed receipts resolve ties",
+        proof: "LAYL3P01 context centers and the compiled local feedback snapshot feed state-before/operator/state-after hypotheses; bounded positive/anti phase witnesses and independently replayed receipts resolve ties",
         debt: "expand clean context and organic certificate coverage without restoring scene rules, raw phrase lookup or target authority",
     },
     ArchitectureLine {
@@ -98,7 +98,7 @@ const TREE: [&str; 17] = [
     "+-- L2 Candidate Lattice: candidate producers without apply authority",
     "+-- L2 Phase Memory: promoted centers / anti-centers / learned margin",
     "+-- L3 Context Relation Phase: semantic binding, positive centers and anti-centers",
-    "+-- L4 Hidden State: committed witness plan, bounded phase/anti centers and replayed certificate",
+    "+-- L4 Hidden State: committed witness plan, compiled local feedback, bounded phase/anti centers and replayed certificate",
     "+-- Joint Transition Interference: constructive/repulsive evidence in one fixed ranking budget",
     "+-- Transition Decision Core: Apply / SuggestOnly / Keep / ABSTAIN / Veto",
     "+-- Transition Verifier: revision, boundary and left context; backend lifecycle is dispatched/observed/indeterminate",
