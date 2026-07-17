@@ -8,6 +8,7 @@ use crate::ime_candidate_readout::ImeCandidateProposal;
 
 #[derive(Debug, Clone)]
 pub(crate) struct LiveCompletionProposal {
+    pub(crate) state_before: u64,
     pub(crate) surface: String,
     pub(crate) suffix: String,
     pub(crate) score: f32,
@@ -50,10 +51,13 @@ impl TransitionDecisionCore {
             .map(
                 |proposal| crate::nanda_wave::l4_hidden_state::L4HiddenCandidateInput {
                     predicted_state: crate::nanda_wave::l4_hidden_state::predicted_state_id(
+                        proposal.state_before,
                         "accept_completion",
                         &proposal.surface,
                     ),
                     relation_class: proposal.l3_relation_class,
+                    operator_class: crate::nanda_wave::phase_field::hash_text("accept_completion"),
+                    verifier_passed: true,
                     rank_milli: crate::text_metrics::score_to_milli(proposal.rank_score),
                     context_support: proposal.l3_memory_supported || proposal.completed_state_known,
                     eligible: live_completion_has_authority(proposal)
@@ -61,6 +65,8 @@ impl TransitionDecisionCore {
                     witness_attract: proposal.l4_transition_attract_count,
                     witness_repel: proposal.l4_transition_repel_count,
                     witness_state_specific: proposal.l4_transition_state_specific,
+                    phase_witness_milli: 0,
+                    phase_witness_supported: false,
                 },
             )
             .collect::<Vec<_>>();
@@ -184,6 +190,7 @@ mod tests {
 
     fn completion(surface: &str, suffix: &str, rank_score: f32) -> LiveCompletionProposal {
         LiveCompletionProposal {
+            state_before: crate::nanda_wave::phase_field::hash_text("test-state"),
             surface: surface.to_string(),
             suffix: suffix.to_string(),
             score: rank_score.clamp(0.0, 1.0),

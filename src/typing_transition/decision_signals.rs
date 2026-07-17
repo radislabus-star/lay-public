@@ -34,6 +34,10 @@ struct L4SignedSignal {
     transition_state_specific: bool,
     transition_attract_count: u32,
     transition_repel_count: u32,
+    phase_witness_milli: i16,
+    phase_witness_supported: bool,
+    phase_positive_centers: u8,
+    phase_negative_centers: u8,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -182,6 +186,10 @@ fn l4_signed_signal_from_memory(
         transition_state_specific: signed.transition_state_specific,
         transition_attract_count: signed.transition_attract_count,
         transition_repel_count: signed.transition_repel_count,
+        phase_witness_milli: signed.phase_witness_milli,
+        phase_witness_supported: signed.phase_witness_supported,
+        phase_positive_centers: signed.phase_positive_centers,
+        phase_negative_centers: signed.phase_negative_centers,
     }
 }
 
@@ -256,6 +264,7 @@ fn settle_transition_interference(
 }
 
 fn settle_l4_hidden_state(
+    event: &TypingErrorEvent,
     candidates: &[UnifiedCorrectionCandidate],
     evaluations: &mut [CandidateDecisionEvaluation],
 ) {
@@ -264,10 +273,15 @@ fn settle_l4_hidden_state(
         .zip(evaluations.iter())
         .map(|(candidate, evaluation)| L4HiddenCandidateInput {
             predicted_state: predicted_state_id(
+                crate::nanda_wave::phase_field::hash_text(&event.original),
                 evaluation.action.operator.as_str(),
                 &candidate.replacement,
             ),
             relation_class: evaluation.signals.l3_relation_class,
+            operator_class: crate::nanda_wave::phase_field::hash_text(
+                evaluation.action.operator.as_str(),
+            ),
+            verifier_passed: evaluation.action.verifier_passed,
             rank_milli: evaluation.signals.rank_milli,
             context_support: evaluation.signals.l3_phrase_decision
                 == L3ContextDisposition::Support
@@ -285,6 +299,8 @@ fn settle_l4_hidden_state(
             witness_attract: evaluation.signals.l4_transition_attract_count,
             witness_repel: evaluation.signals.l4_transition_repel_count,
             witness_state_specific: evaluation.signals.l4_transition_state_specific,
+            phase_witness_milli: evaluation.signals.l4_phase_witness_milli,
+            phase_witness_supported: evaluation.signals.l4_phase_witness_supported,
         })
         .collect::<Vec<_>>();
     let readouts = estimate_hidden_typing_state(&inputs);
@@ -298,6 +314,10 @@ fn settle_l4_hidden_state(
         signals.l4_hidden_witness_count = readout.witness_count;
         signals.l4_hidden_ambiguity_authoritative = readout.ambiguity_authoritative;
         signals.l4_hidden_selected_witnessed = readout.selected_witnessed;
+        signals.l4_hidden_plan_commitment = readout.witness_plan_commitment;
+        signals.l4_hidden_receipts = readout.witness_receipts;
+        signals.l4_hidden_probe = readout.witness_probe;
+        signals.l4_hidden_certificate_valid = readout.certificate_valid;
         signals.l4_scene_milli = match readout.disposition {
             L4HiddenDisposition::Resolved | L4HiddenDisposition::Witnessed => {
                 readout.class_margin_milli.max(1)

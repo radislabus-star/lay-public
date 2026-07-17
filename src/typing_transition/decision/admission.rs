@@ -20,7 +20,8 @@ pub(super) fn candidate_has_apply_authority(
     let signals = &evaluation.signals;
     let source_role = candidate.origin.source_role();
     let exact_positive_transition = evaluation.transition.l4_signed_signal.exact_positive();
-    if signals.l4_hidden_disposition == L4HiddenDisposition::Rejected
+    if (signals.l4_hidden_plan_commitment != 0 && !signals.l4_hidden_certificate_valid)
+        || signals.l4_hidden_disposition == L4HiddenDisposition::Rejected
         || (signals.l4_hidden_disposition == L4HiddenDisposition::Ambiguous
             && signals.l4_hidden_ambiguity_authoritative)
         || (signals.l4_hidden_selected_witnessed
@@ -28,7 +29,11 @@ pub(super) fn candidate_has_apply_authority(
     {
         debug_decision_reject(
             candidate,
-            signals.l4_hidden_disposition.as_str(),
+            if signals.l4_hidden_plan_commitment != 0 && !signals.l4_hidden_certificate_valid {
+                "l4_invalid_resolution_certificate"
+            } else {
+                signals.l4_hidden_disposition.as_str()
+            },
             bayes.posterior,
             bayes.risk,
         );

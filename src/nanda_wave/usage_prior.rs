@@ -167,6 +167,13 @@ impl UsagePriorSnapshot {
         self.hot.surface_coverage(surface)
     }
 
+    pub(crate) fn phase_witness(
+        &self,
+        surface: &str,
+    ) -> super::l4_phase_witness::L4PhaseWitnessReadout {
+        self.hot.phase_witness(surface)
+    }
+
     #[cfg(test)]
     pub(crate) fn hot_logical_payload_bytes(&self) -> usize {
         self.hot.logical_payload_bytes()

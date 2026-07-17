@@ -12,6 +12,10 @@ pub(crate) struct L4SignedMemorySignal {
     pub(crate) transition_attract_count: u32,
     pub(crate) transition_repel_count: u32,
     pub(crate) transition_state_specific: bool,
+    pub(crate) phase_witness_milli: i16,
+    pub(crate) phase_witness_supported: bool,
+    pub(crate) phase_positive_centers: u8,
+    pub(crate) phase_negative_centers: u8,
     pub(crate) reason: L4SignedMemoryReason,
     pub(crate) surface_status: L4SurfaceStatus,
 }
@@ -81,12 +85,24 @@ pub(crate) fn l4_signed_memory_signal(input: L4SignedMemoryInput<'_>) -> L4Signe
         .surface
         .map(|surface| input.usage.surface_coverage(surface))
         .unwrap_or_default();
-    l4_signed_memory_signal_from_readout(readout, coverage)
+    let phase = input
+        .surface
+        .map(|surface| input.usage.phase_witness(surface))
+        .unwrap_or_default();
+    l4_signed_memory_signal_from_parts(readout, coverage, phase)
 }
 
 pub(crate) fn l4_signed_memory_signal_from_readout(
     readout: UsageHotReadout,
     coverage: UsageSurfaceCoverage,
+) -> L4SignedMemorySignal {
+    l4_signed_memory_signal_from_parts(readout, coverage, Default::default())
+}
+
+fn l4_signed_memory_signal_from_parts(
+    readout: UsageHotReadout,
+    coverage: UsageSurfaceCoverage,
+    phase: super::l4_phase_witness::L4PhaseWitnessReadout,
 ) -> L4SignedMemorySignal {
     let surface_evidence = coverage.accepted.saturating_add(coverage.rejected) as f32;
     let surface_signed_confidence = if surface_evidence > 0.0 {
@@ -145,6 +161,10 @@ pub(crate) fn l4_signed_memory_signal_from_readout(
         transition_attract_count: readout.transition.attract_count,
         transition_repel_count: readout.transition.repel_count,
         transition_state_specific: readout.transition.state_specific,
+        phase_witness_milli: crate::text_metrics::score_to_milli(phase.margin),
+        phase_witness_supported: phase.supported,
+        phase_positive_centers: phase.positive_centers,
+        phase_negative_centers: phase.negative_centers,
         reason,
         surface_status,
     }

@@ -130,6 +130,7 @@ pub(super) struct UsageHotState {
     surface_observed: UsageHotCountMap<UsageTextId>,
     surface_attract: UsageHotCountMap<UsageTextId>,
     surface_repel: UsageHotCountMap<UsageTextId>,
+    phase_witness: super::super::l4_phase_witness::L4PhaseWitnessBank,
 }
 
 impl UsageHotState {
@@ -167,6 +168,10 @@ impl UsageHotState {
             surface_repel: UsageHotCountMap::from_text_map(&counts.surface_repel, |text| {
                 Some(usage_text_id(text))
             }),
+            phase_witness: super::super::l4_phase_witness::L4PhaseWitnessBank::compile(
+                &counts.surface_attract,
+                &counts.surface_repel,
+            ),
         }
     }
 
@@ -182,6 +187,7 @@ impl UsageHotState {
             .saturating_add(self.surface_observed.logical_payload_bytes())
             .saturating_add(self.surface_attract.logical_payload_bytes())
             .saturating_add(self.surface_repel.logical_payload_bytes())
+            .saturating_add(self.phase_witness.logical_payload_bytes())
     }
 
     pub(super) fn apply_event(&mut self, event: &UsageEvent) {
@@ -255,6 +261,13 @@ impl UsageHotState {
             accepted: self.surface_attract.get_text(surface),
             rejected: self.surface_repel.get_text(surface),
         }
+    }
+
+    pub(super) fn phase_witness(
+        &self,
+        surface: &str,
+    ) -> super::super::l4_phase_witness::L4PhaseWitnessReadout {
+        self.phase_witness.readout(surface)
     }
 
     pub(super) fn word_prior(&self, word: &str) -> f32 {

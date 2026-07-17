@@ -369,11 +369,8 @@
   "367": "release_possible_modifiers",
   "368": "time.rs",
   "369": "russian_typo_candidates.rs",
-  "370": "cases.py",
   "371": "layout_switch_policy.rs",
   "372": "types.rs",
-  "373": "correct_vowel_confusion_impl",
-  "374": "text_edit_gate_contract.rs",
   "375": "russian_lexicon_tests.rs",
   "376": "try_manual_toggle",
   "377": "private_file.rs",
@@ -382,7 +379,11 @@
   "380": "calibration.rs",
   "381": "LayIbusEngine",
   "385": "install-release-binaries.sh",
-  "386": "measured_precognition_stages",
   "388": "read",
-  "392": "l3-context-0.2.253.md"
+  "390": "russian_typo_candidates.rs",
+  "392": "l3-context-0.2.253.md",
+  "393": "runtime_flags.rs",
+  "394": "LayConfig",
+  "395": "learning_deltas",
+  "397": "typing_assist_transposition_sweep_over_generated_forms"
 }

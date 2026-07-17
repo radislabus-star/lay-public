@@ -199,7 +199,7 @@ impl TransitionDecisionCore {
             })
             .collect::<Vec<_>>();
         settle_transition_interference(candidates, &mut evaluations);
-        settle_l4_hidden_state(candidates, &mut evaluations);
+        settle_l4_hidden_state(event, candidates, &mut evaluations);
         if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
             for (candidate, evaluation) in candidates.iter().zip(&evaluations) {
                 eprintln!(
@@ -440,6 +440,10 @@ pub(crate) struct CandidateDecisionSignals {
     pub(crate) l4_hidden_witness_count: u32,
     pub(crate) l4_hidden_ambiguity_authoritative: bool,
     pub(crate) l4_hidden_selected_witnessed: bool,
+    pub(crate) l4_hidden_plan_commitment: u64,
+    pub(crate) l4_hidden_receipts: u8,
+    pub(crate) l4_hidden_probe: &'static str,
+    pub(crate) l4_hidden_certificate_valid: bool,
     pub(crate) l4_scene_milli: i16,
     pub(crate) l4_scene_action: L4AllowedAction,
     pub(crate) l4_scene_reason: &'static str,
@@ -449,6 +453,10 @@ pub(crate) struct CandidateDecisionSignals {
     pub(crate) l4_transition_state_specific: bool,
     pub(crate) l4_transition_attract_count: u32,
     pub(crate) l4_transition_repel_count: u32,
+    pub(crate) l4_phase_witness_milli: i16,
+    pub(crate) l4_phase_witness_supported: bool,
+    pub(crate) l4_phase_positive_centers: u8,
+    pub(crate) l4_phase_negative_centers: u8,
 }
 
 impl CandidateDecisionSignals {
@@ -546,6 +554,10 @@ fn candidate_decision_signals_from_readouts(
         l4_hidden_witness_count: 0,
         l4_hidden_ambiguity_authoritative: false,
         l4_hidden_selected_witnessed: false,
+        l4_hidden_plan_commitment: 0,
+        l4_hidden_receipts: 0,
+        l4_hidden_probe: "none",
+        l4_hidden_certificate_valid: false,
         l4_scene_milli: 0,
         l4_scene_action: L4AllowedAction::Wait,
         l4_scene_reason: "hidden_state_unobserved",
@@ -555,6 +567,10 @@ fn candidate_decision_signals_from_readouts(
         l4_transition_state_specific: l4_signed.transition_state_specific,
         l4_transition_attract_count: l4_signed.transition_attract_count,
         l4_transition_repel_count: l4_signed.transition_repel_count,
+        l4_phase_witness_milli: l4_signed.phase_witness_milli,
+        l4_phase_witness_supported: l4_signed.phase_witness_supported,
+        l4_phase_positive_centers: l4_signed.phase_positive_centers,
+        l4_phase_negative_centers: l4_signed.phase_negative_centers,
     }
 }
 

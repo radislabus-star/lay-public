@@ -20,18 +20,18 @@
     "semantic_hash": "236e46a80b6d2865de3d1816fb645158"
   },
   "extension/lay@radislabus-star.github.io/lay-impl.js": {
-    "mtime": 1784250150.4041593,
+    "mtime": 1784280842.5262463,
     "ast_hash": "5b6a06aa6236126c72cb127ef2970fde",
     "semantic_hash": "5b6a06aa6236126c72cb127ef2970fde"
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1784250150.4024596,
-    "ast_hash": "fb2026da2f60de85a23585b8a40a3705",
+    "mtime": 1784280842.519789,
+    "ast_hash": "98c61cc7d68b12308bfdc3ccb10a5236",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1784250150.4121432,
-    "ast_hash": "84e89b07ec8c43531793b5e65abaa44d",
+    "mtime": 1784280842.5638525,
+    "ast_hash": "2c6b0e94854ed639d3905e5fef03a195",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": "40bbf92dafd5dfae313a0760331c3ae3"
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1784250150.4120452,
-    "ast_hash": "e83f3e825326fcf7e2c6f58fbfab2c73",
+    "mtime": 1784280842.5636513,
+    "ast_hash": "f42bedef7129b4f251ddb215a10e34e7",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1784250150.4115412,
-    "ast_hash": "40824ce89c3fd579b6d35cd3dd5f4cec",
+    "mtime": 1784280842.5616684,
+    "ast_hash": "dcfbcba730c65cb01b935e4bd7bde078",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -170,8 +170,8 @@
     "semantic_hash": "2d84f8cc1c0b87f7e8b9910cefa6fbb2"
   },
   "src/action_log.rs": {
-    "mtime": 1784198756.0629985,
-    "ast_hash": "6f7924fcaf8da5f7d8f8b01aef8e0cf2",
+    "mtime": 1784278672.9734666,
+    "ast_hash": "05ee52c0a5da89ee34a3e19b7edc26b6",
     "semantic_hash": ""
   },
   "src/action_log_tests.rs": {
@@ -1065,8 +1065,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_eval/candidate_quality.rs": {
-    "mtime": 1784160138.3988206,
-    "ast_hash": "a2eb09be071cd4941bce2c507922d6d4",
+    "mtime": 1784278672.9814668,
+    "ast_hash": "aee761bb8c3e26e2bbf45c93c9c6cf9f",
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_eval/canonical_l1_l2.rs": {
@@ -1215,8 +1215,8 @@
     "semantic_hash": ""
   },
   "src/correction_core.rs": {
-    "mtime": 1784198115.1618497,
-    "ast_hash": "a2c9eb54ba2da786968dff4852e46a27",
+    "mtime": 1784278672.9674666,
+    "ast_hash": "9c798217227010bd1c7c839c4ba97756",
     "semantic_hash": ""
   },
   "src/correction_pipeline.rs": {
@@ -1320,8 +1320,8 @@
     "semantic_hash": ""
   },
   "src/input_gate.rs": {
-    "mtime": 1784198115.1628497,
-    "ast_hash": "99773197806f550ed0a3dc2179518881",
+    "mtime": 1784278672.9704666,
+    "ast_hash": "e3b3a92876a7ffb0824d3f301f449e05",
     "semantic_hash": ""
   },
   "src/keyboard.rs": {
@@ -1605,8 +1605,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/candidate_gate.rs": {
-    "mtime": 1784255355.4597235,
-    "ast_hash": "6b049b5f34791bb6e1575f395a476d1a",
+    "mtime": 1784279607.695132,
+    "ast_hash": "965801421f76a429b969c1598adb826f",
     "semantic_hash": ""
   },
   "src/nanda_wave/cell32.rs": {
@@ -1675,8 +1675,8 @@
     "semantic_hash": "f565d5ef8e08563ce8b8714f96fee83f"
   },
   "src/nanda_wave/l4_signed_memory.rs": {
-    "mtime": 1784257201.132839,
-    "ast_hash": "5e5d4d3a0deeadbac1ce6b21291a5ea5",
+    "mtime": 1784278431.695494,
+    "ast_hash": "45d93ff24b102072f5e1db52ff653378",
     "semantic_hash": ""
   },
   "src/nanda_wave/learned.rs": {
@@ -1695,8 +1695,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/mod.rs": {
-    "mtime": 1784256217.7012792,
-    "ast_hash": "50d2dae66860622ee7d3c1942a426c4d",
+    "mtime": 1784278431.6704938,
+    "ast_hash": "d16a6e4f36d5f94f1157205812ef5242",
     "semantic_hash": ""
   },
   "src/nanda_wave/mode.rs": {
@@ -1755,8 +1755,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/usage_prior.rs": {
-    "mtime": 1784187243.439318,
-    "ast_hash": "d93e57f651155dbf68bb519c0503fcb3",
+    "mtime": 1784278431.6934938,
+    "ast_hash": "8440f1bc619eb90eb073bd23f324f117",
     "semantic_hash": ""
   },
   "src/ngram.rs": {
@@ -2365,8 +2365,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision.rs": {
-    "mtime": 1784256217.828279,
-    "ast_hash": "7247f13da4c89c33fc8992e4ed71b27c",
+    "mtime": 1784279559.0985923,
+    "ast_hash": "c5f02991e266877ccba1b779029aaa0f",
     "semantic_hash": ""
   },
   "src/typing_transition/executor_contract.rs": {
@@ -2645,8 +2645,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1784250150.4140623,
-    "ast_hash": "0f1803e1ea09eaed02333143bbe51ccd",
+    "mtime": 1784280842.5731084,
+    "ast_hash": "ee36ed6f9113ccbe8a73f013391e3d8d",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/architecture_contract.rs": {
-    "mtime": 1784255724.5507824,
-    "ast_hash": "f7db2c1e7be1d4c821c0728d5daf3724",
+    "mtime": 1784279737.6005843,
+    "ast_hash": "9541dca47626af295a2f4a717ed3294c",
     "semantic_hash": ""
   },
   "src/bin/lay_architecture_report.rs": {
@@ -3285,8 +3285,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision_signals.rs": {
-    "mtime": 1784255654.5519874,
-    "ast_hash": "6b784a2e82cdd1b9c0711376bd5e9742",
+    "mtime": 1784279559.177593,
+    "ast_hash": "c5d6c817c99416c4b5c6cd2c763d29c9",
     "semantic_hash": ""
   },
   "docs/structural_gates/lay-live-transition-gate.profile.json": {
@@ -3360,8 +3360,8 @@
     "semantic_hash": ""
   },
   "docs/phase-word-recovery-canonical-cutover.md": {
-    "mtime": 1784255724.4627814,
-    "ast_hash": "811a1515f8f7b2d3871dac6371815f49",
+    "mtime": 1784280779.5527422,
+    "ast_hash": "9ecc45c3cd6c49e50acdfbf5084641af",
     "semantic_hash": ""
   },
   "docs/refactor-baselines/phase-word-recovery-0.2.241.md": {
@@ -3440,8 +3440,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1784256557.456501,
-    "ast_hash": "0ed89148f2f5d41d5abff7075f8e2885",
+    "mtime": 1784280803.9729447,
+    "ast_hash": "cfebb277917cd7d13c9b000cbe4984ae",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -3450,8 +3450,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/live_candidate.rs": {
-    "mtime": 1784256217.830279,
-    "ast_hash": "f3d35f6e0242aa29c3610813d0237ba1",
+    "mtime": 1784279559.177593,
+    "ast_hash": "2865fe910e77c7ecc6eff9f51d106800",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit/tests.rs": {
@@ -3490,8 +3490,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision/admission.rs": {
-    "mtime": 1784255594.090309,
-    "ast_hash": "0bb07bc60549b8cec6af9af3fc43aa0d",
+    "mtime": 1784278183.8869817,
+    "ast_hash": "794a73f4142da201fac870923ec04053",
     "semantic_hash": ""
   },
   "src/typing_transition/decision/receipt.rs": {
@@ -3570,8 +3570,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/usage_prior/hot.rs": {
-    "mtime": 1784187167.020193,
-    "ast_hash": "bff3dca904a15c4ee84515091df82186",
+    "mtime": 1784278431.676494,
+    "ast_hash": "3ab8b48faa08584c16463c45a9edb891",
     "semantic_hash": ""
   },
   "src/nanda_wave/usage_prior/projection.rs": {
@@ -3650,13 +3650,23 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l4_hidden_state.rs": {
-    "mtime": 1784256217.6632793,
-    "ast_hash": "ef5ea4ef4b1a8e16c14663fb3c8d5b04",
+    "mtime": 1784280652.1718357,
+    "ast_hash": "e2b782620c7e5481e7ab9bcff615e3ae",
     "semantic_hash": ""
   },
   "src/nanda_wave/phase_field.rs": {
     "mtime": 1784256217.7062793,
     "ast_hash": "8c402a05475567b04b6a0ae83203f8a0",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l4_active_disambiguation.rs": {
+    "mtime": 1784280510.4116461,
+    "ast_hash": "68e19165a7940e44b9c00fc0db2a3fd4",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l4_phase_witness.rs": {
+    "mtime": 1784279737.050578,
+    "ast_hash": "31932e29f93343871a955ba340bdb8b2",
     "semantic_hash": ""
   }
 }

@@ -158,6 +158,10 @@ pub fn live_completion_candidates(
     let usage_snapshot = super::usage_prior::cached_usage_prior_snapshot();
     let usage_context = usage_snapshot.prepare_hot_context(&context_tokens);
     let state_id = crate::transition_relation::transition_state_id(&partial);
+    let hidden_state_before = crate::stable_hash::mix64_golden(
+        crate::nanda_wave::phase_field::hash_text(&cache_key.context_tail)
+            ^ crate::nanda_wave::phase_field::hash_text(&partial).rotate_left(19),
+    );
     let mut usage_supported = 0_u64;
     let mut l3_supported = 0_u64;
     let mut l3_evaluated = 0_u64;
@@ -249,6 +253,7 @@ pub fn live_completion_candidates(
                 .unwrap_or(base_score);
             let score = rank_score.clamp(0.0, 1.0);
             Some(LiveCompletionProposal {
+                state_before: hidden_state_before,
                 surface: candidate.surface,
                 suffix,
                 score,
@@ -697,6 +702,7 @@ mod tests {
 
     fn authority_proposal() -> LiveCompletionProposal {
         LiveCompletionProposal {
+            state_before: crate::nanda_wave::phase_field::hash_text("test-state"),
             surface: "пример".to_string(),
             suffix: "мер".to_string(),
             score: 0.7,

@@ -6,9 +6,9 @@
         "src/typing_transition/decision.rs:L155:.evaluate_candidates()",
         "src/typing_transition/decision.rs:L26:TransitionDecisionCore",
         "src/typing_transition/decision.rs:L34:.decide_visible_text_transition()",
-        "src/typing_transition/live_candidate.rs:L100:.select_ime_readout()",
-        "src/typing_transition/live_candidate.rs:L43:TransitionDecisionCore",
-        "src/typing_transition/live_candidate.rs:L44:.select_live_completions()"
+        "src/typing_transition/live_candidate.rs:L106:.select_ime_readout()",
+        "src/typing_transition/live_candidate.rs:L44:TransitionDecisionCore",
+        "src/typing_transition/live_candidate.rs:L45:.select_live_completions()"
       ],
       "id": "decision-authority",
       "status": "PASS",
@@ -86,8 +86,8 @@
     },
     {
       "evidence": [
-        "graph_links:20435",
-        "graph_nodes:8211"
+        "graph_links:20577",
+        "graph_nodes:8262"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -95,10 +95,10 @@
     }
   ],
   "duplicate_symbols": {},
-  "graph_fingerprint": "9155a3b684865d5c25b403c4aa7479f6c7f90f36d3a9b0dceb42c3d93257cd8b",
-  "graph_links": 20435,
-  "graph_nodes": 8211,
+  "graph_fingerprint": "d2c8eef2a58eadd3bb4347fa0f4bde3f970758d86cda49d3ff9ec4950b6d52f2",
+  "graph_links": 20577,
+  "graph_nodes": 8262,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "cb4a8820a7afd3732b38bbd047a72a74b50eac52ae41b7a268596e38a677e836",
+  "source_fingerprint": "3817a5e8d4a59661bc6e25f029fe9582566be1e338e97bc8a514e27074215fb5",
   "verdict": "PASS"
 }

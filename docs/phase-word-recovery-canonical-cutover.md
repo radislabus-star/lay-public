@@ -326,11 +326,19 @@ OPEN:
 LIVE:
 
 - groups extensionally identical predicted states into a semantic quotient;
+- binds every predicted state to `state_before + operator + state_after`, so
+  equal output words in different typing scenes are not one hidden transition;
 - consumes L2 state evidence and L3 relation classes instead of a hand-written
   scene classifier;
-- resolves a class through separated field evidence or an exact
-  target-independent accepted transition witness;
+- commits a deterministic witness plan before reading candidate-specific
+  observations;
+- resolves a class through at most four target-independent probes:
+  transition history, context relation, verifier result, and phase relation;
+- records before/after hypothesis classes in witness receipts and independently
+  replays them before the resolution can influence admission;
 - gives an exact rejected/reverted witness destructive authority;
+- compiles structural accepted/rejected surfaces into a bounded hot bank of
+  four positive and four anti-centers with 24 phase cells each;
 - treats missing evidence as `Unobserved`, not as negative evidence;
 - keeps unresolved learned conflicts as `Ambiguous` and blocks automatic
   application while still allowing suggestion display.
@@ -343,8 +351,9 @@ table of action rules. The removed `l4_signed_outcome` and live
 ```text
 predicted candidate states
 -> semantic quotient classes
--> L2/L3 field observation
--> accepted/rejected transition witnesses
+-> committed target-independent witness plan
+-> L2/L3 field, verifier, exact-history and phase observations
+-> independently replayed resolution certificate
 -> Resolved / Witnessed / Ambiguous / Rejected / Unobserved
 ```
 
@@ -359,13 +368,27 @@ experience does not suppress an otherwise verified local transition.
 
 OPEN:
 
-- include focus, epoch, composition, caret, and successive observations in the
-  compact hidden-state identity;
+- bind focus, epoch, composition and caret receipts at the executor boundary;
+  these remain backend observations and must not become candidate truth;
 - learn transition-class margins from clean replay rather than only observing
   current batch separation;
-- prove transfer across equivalent typing scenes without stale-state mixing;
-- compile organic accepted/rejected histories into bounded phase witness
-  packages instead of allowing unbounded event growth.
+- widen phase-witness transfer across equivalent typing scenes while preserving
+  zero wrong-state admission;
+- measure organic certificate coverage after the new runtime has accumulated
+  live receipts.
+
+Current cutover evidence (2026-07-17):
+
+- active witness plan/certificate tests: 5/5;
+- hidden-state tests: 4/4;
+- bounded phase/anti bank test, including anti ablation: 1/1;
+- typing-transition route tests: 43/43;
+- mutation monopoly / transition authority / input-gate contracts: 15/15,
+  17/17, 2/2;
+- release IME candidate generation: p50 2 us, p90 6 us, p99 7 us, max
+  12 us over 120 warmed samples;
+- latest dirty replay remains `WATCH-negative-false-apply`: the candidate
+  architecture is safe to cut over, but learned quality is not claimed PASS.
 
 ### 4.5 Bayes
 
@@ -601,8 +624,10 @@ disambiguation on unseen phrase families.
 
 ### P3: L4 temporal state
 
-Estimate hidden typing state from successive observations and connect real
-accept/reject/undo outcomes to the same transition identity.
+Increase organic witness coverage. The runtime already binds state-before,
+operator and predicted state, consumes real accept/reject/undo observations,
+uses bounded phase centers, and verifies every active-resolution certificate.
+The remaining debt is coverage and cross-scene transfer, not a missing owner.
 
 ### P4: IME parity
 

@@ -144,6 +144,20 @@ pub(crate) struct RecentActionCandidateScore {
     pub(crate) l2_transition_phase_surfaces: u32,
     pub(crate) l3_phrase_milli: i16,
     pub(crate) l3_phrase_decision: String,
+    #[serde(default)]
+    pub(crate) l4_hidden_disposition: String,
+    #[serde(default)]
+    pub(crate) l4_hidden_semantic_classes: u16,
+    #[serde(default)]
+    pub(crate) l4_hidden_unresolved_classes: u16,
+    #[serde(default)]
+    pub(crate) l4_hidden_plan_commitment: u64,
+    #[serde(default)]
+    pub(crate) l4_hidden_receipts: u8,
+    #[serde(default)]
+    pub(crate) l4_hidden_probe: String,
+    #[serde(default)]
+    pub(crate) l4_hidden_certificate_valid: bool,
     pub(crate) l4_scene_milli: i16,
     pub(crate) l4_scene_action: String,
     pub(crate) l4_scene_reason: String,
@@ -157,6 +171,14 @@ pub(crate) struct RecentActionCandidateScore {
     pub(crate) l4_transition_attract_count: u32,
     #[serde(default)]
     pub(crate) l4_transition_repel_count: u32,
+    #[serde(default)]
+    pub(crate) l4_phase_witness_milli: i16,
+    #[serde(default)]
+    pub(crate) l4_phase_witness_supported: bool,
+    #[serde(default)]
+    pub(crate) l4_phase_positive_centers: u8,
+    #[serde(default)]
+    pub(crate) l4_phase_negative_centers: u8,
     pub(crate) risk_milli: i16,
     pub(crate) posterior_milli: i16,
     pub(crate) decision_rank_milli: i16,
@@ -310,6 +332,13 @@ impl RecentActionGateTrace {
                     l2_transition_phase_surfaces: score.l2_transition_phase_surfaces,
                     l3_phrase_milli: score.l3_phrase_milli,
                     l3_phrase_decision: score.l3_phrase_decision.to_string(),
+                    l4_hidden_disposition: score.l4_hidden_disposition.to_string(),
+                    l4_hidden_semantic_classes: score.l4_hidden_semantic_classes,
+                    l4_hidden_unresolved_classes: score.l4_hidden_unresolved_classes,
+                    l4_hidden_plan_commitment: score.l4_hidden_plan_commitment,
+                    l4_hidden_receipts: score.l4_hidden_receipts,
+                    l4_hidden_probe: score.l4_hidden_probe.to_string(),
+                    l4_hidden_certificate_valid: score.l4_hidden_certificate_valid,
                     l4_scene_milli: score.l4_scene_milli,
                     l4_scene_action: score.l4_scene_action.to_string(),
                     l4_scene_reason: score.l4_scene_reason.to_string(),
@@ -319,6 +348,10 @@ impl RecentActionGateTrace {
                     l4_transition_state_specific: score.l4_transition_state_specific,
                     l4_transition_attract_count: score.l4_transition_attract_count,
                     l4_transition_repel_count: score.l4_transition_repel_count,
+                    l4_phase_witness_milli: score.l4_phase_witness_milli,
+                    l4_phase_witness_supported: score.l4_phase_witness_supported,
+                    l4_phase_positive_centers: score.l4_phase_positive_centers,
+                    l4_phase_negative_centers: score.l4_phase_negative_centers,
                     risk_milli: score.risk_milli,
                     posterior_milli: score.posterior_milli,
                     decision_rank_milli: score.decision_rank_milli,

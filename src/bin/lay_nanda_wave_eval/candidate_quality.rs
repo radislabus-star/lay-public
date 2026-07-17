@@ -75,12 +75,19 @@ struct CandidateQualityReport {
     l3_phrase_signal_rows: usize,
     l3_phrase_support_rows: usize,
     l3_phrase_suppress_rows: usize,
+    l4_hidden_certificate_rows: usize,
+    l4_hidden_witnessed_rows: usize,
+    l4_hidden_ambiguous_rows: usize,
+    l4_hidden_invalid_certificate_rows: usize,
     l4_scene_signal_rows: usize,
     l4_scene_suggest_rows: usize,
     l4_scene_wait_or_block_rows: usize,
     l4_signed_signal_rows: usize,
     l4_exact_transition_rows: usize,
     l4_exact_transition_repel_rows: usize,
+    l4_phase_witness_rows: usize,
+    l4_phase_positive_rows: usize,
+    l4_phase_negative_rows: usize,
     l2_transition_phase_rows: usize,
     l2_transition_phase_support_rows: usize,
     l2_transition_phase_repel_rows: usize,
@@ -222,12 +229,19 @@ fn report_from_text(text: &str, limit: usize, path: &Path) -> serde_json::Value 
             "l3_phrase_signal_rows": report.l3_phrase_signal_rows,
             "l3_phrase_support_rows": report.l3_phrase_support_rows,
             "l3_phrase_suppress_rows": report.l3_phrase_suppress_rows,
+            "l4_hidden_certificate_rows": report.l4_hidden_certificate_rows,
+            "l4_hidden_witnessed_rows": report.l4_hidden_witnessed_rows,
+            "l4_hidden_ambiguous_rows": report.l4_hidden_ambiguous_rows,
+            "l4_hidden_invalid_certificate_rows": report.l4_hidden_invalid_certificate_rows,
             "l4_scene_signal_rows": report.l4_scene_signal_rows,
             "l4_scene_suggest_rows": report.l4_scene_suggest_rows,
             "l4_scene_wait_or_block_rows": report.l4_scene_wait_or_block_rows,
             "l4_signed_signal_rows": report.l4_signed_signal_rows,
             "l4_exact_transition_rows": report.l4_exact_transition_rows,
             "l4_exact_transition_repel_rows": report.l4_exact_transition_repel_rows,
+            "l4_phase_witness_rows": report.l4_phase_witness_rows,
+            "l4_phase_positive_rows": report.l4_phase_positive_rows,
+            "l4_phase_negative_rows": report.l4_phase_negative_rows,
             "l2_transition_phase_rows": report.l2_transition_phase_rows,
             "l2_transition_phase_support_rows": report.l2_transition_phase_support_rows,
             "l2_transition_phase_repel_rows": report.l2_transition_phase_repel_rows,
@@ -600,6 +614,30 @@ fn inspect_decision_lanes(report: &mut CandidateQualityReport, gate: &Value) {
             _ => {}
         }
 
+        if candidate
+            .get("l4_hidden_plan_commitment")
+            .and_then(Value::as_u64)
+            .is_some_and(|value| value != 0)
+        {
+            report.l4_hidden_certificate_rows += 1;
+            if !candidate
+                .get("l4_hidden_certificate_valid")
+                .and_then(Value::as_bool)
+                .unwrap_or(false)
+            {
+                report.l4_hidden_invalid_certificate_rows += 1;
+            }
+        }
+        match candidate
+            .get("l4_hidden_disposition")
+            .and_then(Value::as_str)
+            .unwrap_or("")
+        {
+            "witnessed" => report.l4_hidden_witnessed_rows += 1,
+            "ambiguous" => report.l4_hidden_ambiguous_rows += 1,
+            _ => {}
+        }
+
         let l4_scene_milli = candidate
             .get("l4_scene_milli")
             .and_then(Value::as_i64)
@@ -639,6 +677,23 @@ fn inspect_decision_lanes(report: &mut CandidateQualityReport, gate: &Value) {
                 .unwrap_or_default();
             if repel > attract {
                 report.l4_exact_transition_repel_rows += 1;
+            }
+        }
+        if candidate
+            .get("l4_phase_witness_supported")
+            .and_then(Value::as_bool)
+            .unwrap_or(false)
+        {
+            report.l4_phase_witness_rows += 1;
+            match candidate
+                .get("l4_phase_witness_milli")
+                .and_then(Value::as_i64)
+                .unwrap_or_default()
+                .cmp(&0)
+            {
+                std::cmp::Ordering::Greater => report.l4_phase_positive_rows += 1,
+                std::cmp::Ordering::Less => report.l4_phase_negative_rows += 1,
+                std::cmp::Ordering::Equal => {}
             }
         }
         if candidate
