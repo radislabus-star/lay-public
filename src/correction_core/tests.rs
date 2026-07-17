@@ -432,7 +432,7 @@ mod tests {
         assert!(score.likelihood_milli > 0);
         assert!(score.posterior_milli > 0);
         assert_eq!(score.l4_scene_action, "suggest");
-        assert_eq!(score.l4_scene_reason, "scene_allows_suggestion");
+        assert_eq!(score.l4_scene_reason, "resolved");
         assert!(score.l4_scene_milli > 0);
         assert!(score.decision_rank_milli > 0);
     }

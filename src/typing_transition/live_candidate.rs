@@ -25,6 +25,10 @@ pub(crate) struct LiveCompletionProposal {
     pub(crate) l2_center_grounded: bool,
     pub(crate) l3_memory_supported: bool,
     pub(crate) completed_state_known: bool,
+    pub(crate) l3_relation_class: u64,
+    pub(crate) l4_transition_state_specific: bool,
+    pub(crate) l4_transition_attract_count: u32,
+    pub(crate) l4_transition_repel_count: u32,
 }
 
 #[derive(Debug, Clone)]
@@ -41,10 +45,34 @@ impl TransitionDecisionCore {
         proposals: Vec<LiveCompletionProposal>,
         limit: usize,
     ) -> Vec<SelectedLiveCompletion> {
+        let inputs = proposals
+            .iter()
+            .map(
+                |proposal| crate::nanda_wave::l4_hidden_state::L4HiddenCandidateInput {
+                    predicted_state: crate::nanda_wave::l4_hidden_state::predicted_state_id(
+                        "accept_completion",
+                        &proposal.surface,
+                    ),
+                    relation_class: proposal.l3_relation_class,
+                    rank_milli: crate::text_metrics::score_to_milli(proposal.rank_score),
+                    context_support: proposal.l3_memory_supported || proposal.completed_state_known,
+                    eligible: live_completion_has_authority(proposal)
+                        && live_suffix_has_display_authority(proposal),
+                    witness_attract: proposal.l4_transition_attract_count,
+                    witness_repel: proposal.l4_transition_repel_count,
+                    witness_state_specific: proposal.l4_transition_state_specific,
+                },
+            )
+            .collect::<Vec<_>>();
+        let hidden = crate::nanda_wave::l4_hidden_state::estimate_hidden_typing_state(&inputs);
         let mut selected = proposals
             .into_iter()
-            .filter(live_completion_has_authority)
-            .filter(live_suffix_has_display_authority)
+            .zip(hidden)
+            .filter(|(_, state)| {
+                state.disposition
+                    != crate::nanda_wave::l4_hidden_state::L4HiddenDisposition::Rejected
+            })
+            .map(|(proposal, _)| proposal)
             .collect::<Vec<_>>();
 
         selected.sort_by(|left, right| {
@@ -173,6 +201,10 @@ mod tests {
             l2_center_grounded: true,
             l3_memory_supported: false,
             completed_state_known: true,
+            l3_relation_class: 0,
+            l4_transition_state_specific: false,
+            l4_transition_attract_count: 0,
+            l4_transition_repel_count: 0,
         }
     }
 

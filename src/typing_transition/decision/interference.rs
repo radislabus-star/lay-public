@@ -7,7 +7,6 @@ pub(super) struct TransitionInterferenceInput {
     pub(super) phase: PhaseReadout,
     pub(super) phase_competition: Option<f32>,
     pub(super) l3_rank_energy: f32,
-    pub(super) l4_scene_rank_energy: f32,
     pub(super) l4_signed_rank_energy: f32,
 }
 
@@ -25,12 +24,7 @@ pub(super) fn read_transition_interference(
 ) -> TransitionInterferenceReadout {
     let phase_competition = input.phase_competition.unwrap_or_default().clamp(-1.0, 1.0);
     let l2_energy = settle_l2_energy(input.l2_rank_energy, input.phase, input.phase_competition);
-    let energies = [
-        l2_energy,
-        input.l3_rank_energy,
-        input.l4_scene_rank_energy,
-        input.l4_signed_rank_energy,
-    ];
+    let energies = [l2_energy, input.l3_rank_energy, input.l4_signed_rank_energy];
     let attraction = energies.iter().map(|energy| energy.max(0.0)).sum::<f32>();
     let repulsion = energies
         .iter()
@@ -129,7 +123,6 @@ mod tests {
             phase: promoted_phase(PhaseVerdict::Support, 240_000),
             phase_competition,
             l3_rank_energy: 0.08,
-            l4_scene_rank_energy: 0.03,
             l4_signed_rank_energy: 0.04,
         }
     }
@@ -138,7 +131,7 @@ mod tests {
     fn no_phase_competition_preserves_the_released_energy_budget() {
         let readout = read_transition_interference(input(None));
 
-        assert!((readout.signal - 0.43).abs() < 0.0001, "{readout:?}");
+        assert!((readout.signal - 0.40).abs() < 0.0001, "{readout:?}");
         assert_eq!(readout.repulsion, 0.0);
     }
 
@@ -151,8 +144,8 @@ mod tests {
             strongest.signal > weakest.signal,
             "{strongest:?} {weakest:?}"
         );
-        assert!(strongest.signal <= 0.43, "{strongest:?}");
-        assert!(weakest.signal >= 0.15, "{weakest:?}");
+        assert!(strongest.signal <= 0.40, "{strongest:?}");
+        assert!(weakest.signal >= 0.12, "{weakest:?}");
     }
 
     #[test]
@@ -161,7 +154,7 @@ mod tests {
         repelled.phase = promoted_phase(PhaseVerdict::Repel, -240_000);
         let readout = read_transition_interference(repelled);
 
-        assert!((readout.signal - 0.43).abs() < 0.0001, "{readout:?}");
+        assert!((readout.signal - 0.40).abs() < 0.0001, "{readout:?}");
     }
 
     #[test]

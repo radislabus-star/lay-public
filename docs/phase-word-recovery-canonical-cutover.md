@@ -2,7 +2,7 @@
 
 Status: canonical live architecture map and forward contract.
 
-Last source audit: 2026-07-16.
+Last source audit: 2026-07-17.
 
 This document is the source of truth for the current L1-L4 runtime, its proven
 boundaries, and the next architectural work. Historical plans may explain why
@@ -107,11 +107,13 @@ L2 CANDIDATE LATTICE
 +-- transition phase readout (LAYPC005)
 |
 v
-L3 PHRASE EVIDENCE
-|   support / suppress / neutral / unavailable
+L3 CONTEXT RELATION PHASE
+|   compact semantic states + positive centers + anti-centers
+|   support / suppress / neutral
 v
-L4 STATE-SPECIFIC EXPERIENCE
-|   accepted / rejected / reverted signed memory
+L4 HIDDEN TYPING STATE
+|   semantic quotient of predicted states
+|   accepted / rejected / reverted transition witnesses
 v
 JOINT TRANSITION INTERFERENCE
 |   constructive and destructive evidence within one ranking budget
@@ -243,9 +245,8 @@ surface L2 energy
 -> settled L2 energy
 
 settled L2
-+ L3 phrase energy
-+ L4 scene energy
-+ L4 signed experience
++ L3 context relation energy
++ L4 Bayesian signed experience
 -> joint transition energy
 ```
 
@@ -265,46 +266,106 @@ OPEN:
   calibration after a fixed heldout proves parity;
 - raise candidate coverage without loading source corpora into the hot path.
 
-### 4.3 L3: phrase compatibility
+### 4.3 L3: compact context relation phase
 
-LIVE:
+LIVE and PROVEN:
 
-- evaluates serious candidates against phrase memory when that memory is warm;
-- emits `Support`, `Suppress`, `Neutral`, `Unavailable`, or `NotApplicable`;
-- can strengthen or weaken a candidate but cannot create an edit.
+```text
+cold clean corpus
+-> token semantic states
+-> context + candidate semantic binding
+-> candidate relation vector
+-> positive centers / candidate-specific anti-centers
+-> learned threshold and batch competition
+-> Support / Suppress / Neutral
+```
 
-Truthful boundary: current L3 is a bounded phrase gate. It is not yet a full
-sentence world model and must not be described as one. Missing memory is
-explicitly unavailable, not neutral proof.
+The hot `LAYL3P01` package stores token hashes, quantized phase vectors,
+support counts, positive centers, anti-centers, and learned thresholds. It
+stores no corpus sentences and no raw word table. The legacy phrase-memory
+packet remains diagnostic input only and has no production ranking authority.
+
+Current package:
+
+```text
+artifact bytes                  3,246,372
+corpus fragments                    8,525
+compiled transitions               32,249
+semantic states                      4,115
+candidate profiles                   9,467
+positive centers                    14,968
+anti-centers                         3,415
+heldout evaluated transitions        3,588
+heldout supports                      1,779
+heldout false supports                    8
+support precision                  99.5523%
+supports without phase                    0
+false supports without anti              42
+top-1 without semantic state            469
+```
+
+Causal interpretation:
+
+- removing phase destroys all 1,779 supported heldout transitions;
+- removing semantic state drops top-1 by 1,310;
+- removing anti-centers increases false supports from 8 to 42.
+
+L3 contributes energy and a relation class. It cannot construct
+`AuthorizedEdit` and cannot bypass transition verification.
 
 OPEN:
 
-- clean corpus ingestion with heldout phrase families;
-- compact phrase relation centers rather than raw phrase lookup;
-- causal ablation proving that context fixes lexical ambiguity;
-- same-word/different-context negatives and role-swap traps.
+- widen clean sentence-domain coverage beyond the current public-domain
+  Russian corpus;
+- add English context-phase compilation with the same package contract;
+- keep false apply at zero while moving more neutral heldout rows to support;
+- learn cross-surface relation classes without adding raw phrase lookup.
 
-### 4.4 L4: temporal state and signed experience
+### 4.4 L4: hidden typing state and transition witnesses
 
 LIVE:
 
-- state-specific accepted/rejected/reverted experience;
-- `+ / 0 / -` signed transition evidence;
-- latest-state behavior and negative memory;
-- exact target identity for boundary transitions.
+- groups extensionally identical predicted states into a semantic quotient;
+- consumes L2 state evidence and L3 relation classes instead of a hand-written
+  scene classifier;
+- resolves a class through separated field evidence or an exact
+  target-independent accepted transition witness;
+- gives an exact rejected/reverted witness destructive authority;
+- treats missing evidence as `Unobserved`, not as negative evidence;
+- keeps unresolved learned conflicts as `Ambiguous` and blocks automatic
+  application while still allowing suggestion display.
 
-Truthful boundary: L4 is not a general hidden-state world model yet. A previous
-stateless weighted estimator was removed because it produced no unique
-decision beyond existing evidence. The current honest L4 is signed transition
-memory plus scene state.
+The signed lane is a Beta/Bayesian posterior over positive and negative
+observations. Word/context priors are weak pseudo-counts; they are not a fixed
+table of action rules. The removed `l4_signed_outcome` and live
+`derive_l4_scene_state` paths no longer contribute ranking authority.
+
+```text
+predicted candidate states
+-> semantic quotient classes
+-> L2/L3 field observation
+-> accepted/rejected transition witnesses
+-> Resolved / Witnessed / Ambiguous / Rejected / Unobserved
+```
+
+Important law:
+
+```text
+unknown != negative
+```
+
+L4 may veto on real learned conflict or negative witness. Absence of L4
+experience does not suppress an otherwise verified local transition.
 
 OPEN:
 
-- temporal estimation over focus, epoch, composition, caret, and successive
-  observations;
-- prediction -> observation -> correction -> confidence;
-- transfer across equivalent typing scenes without mixing stale states;
-- learned goal-state prediction for completion and boundary decisions.
+- include focus, epoch, composition, caret, and successive observations in the
+  compact hidden-state identity;
+- learn transition-class margins from clean replay rather than only observing
+  current batch separation;
+- prove transfer across equivalent typing scenes without stale-state mixing;
+- compile organic accepted/rejected histories into bounded phase witness
+  packages instead of allowing unbounded event growth.
 
 ### 4.5 Bayes
 
@@ -348,7 +409,7 @@ transition relation atoms
 L2 lexical peak
 L2 positive/anti phase margin
 L3 phrase disposition
-L4 scene and signed memory
+L4 hidden-state quotient and Bayesian signed memory
 joint transition field energy
 predicted typed transition
 ```

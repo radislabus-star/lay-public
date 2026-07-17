@@ -3,12 +3,18 @@ use super::llmwave::{self, LlmWaveMemory, LlmWaveNextTokenScore};
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) struct L3PhraseGateReport {
     pub(crate) decision: L3PhraseGateDecision,
+    pub(crate) source: &'static str,
     pub(crate) score: f32,
+    pub(crate) rank_energy: f32,
     pub(crate) support: usize,
     pub(crate) width: usize,
     pub(crate) sequential_score: f32,
     pub(crate) scene_score: f32,
     pub(crate) competition_margin: f32,
+    pub(crate) positive_micro: i64,
+    pub(crate) anti_micro: i64,
+    pub(crate) threshold_micro: i64,
+    pub(crate) relation_class: u64,
     pub(crate) reason: &'static str,
 }
 
@@ -32,12 +38,80 @@ pub(crate) fn evaluate_default_candidates(
     original: &str,
     replacements: &[&str],
 ) -> Vec<Option<L3PhraseGateReport>> {
-    if !llmwave::default_memory_is_warm() {
-        return vec![None; replacements.len()];
-    }
-    llmwave::with_default_memory(|memory| {
-        evaluate_candidates_with_memory(original, replacements, memory)
-    })
+    evaluate_candidates_with_phase(original, replacements)
+}
+
+fn evaluate_candidates_with_phase(
+    original: &str,
+    replacements: &[&str],
+) -> Vec<Option<L3PhraseGateReport>> {
+    let context_tokens = llmwave::tokenize(original).len().saturating_sub(1);
+    reports_from_phase_readouts(
+        context_tokens,
+        super::context_phase::readout_default_candidates(original, replacements),
+    )
+}
+
+pub(crate) fn evaluate_context_candidates_default(
+    context_tokens: &[String],
+    next_tokens: &[&str],
+) -> Vec<Option<L3PhraseGateReport>> {
+    reports_from_phase_readouts(
+        context_tokens.len(),
+        super::context_phase::default_memory().score_candidates(context_tokens, next_tokens),
+    )
+}
+
+fn reports_from_phase_readouts(
+    context_tokens: usize,
+    readouts: Vec<super::context_phase::ContextPhaseReadout>,
+) -> Vec<Option<L3PhraseGateReport>> {
+    readouts
+        .into_iter()
+        .map(|readout| {
+            if !readout.profile_present {
+                return None;
+            }
+            let decision = match readout.disposition {
+                super::context_phase::ContextPhaseDisposition::Support => {
+                    L3PhraseGateDecision::Support
+                }
+                super::context_phase::ContextPhaseDisposition::Suppress => {
+                    L3PhraseGateDecision::Suppress
+                }
+                super::context_phase::ContextPhaseDisposition::Neutral
+                | super::context_phase::ContextPhaseDisposition::Unavailable => {
+                    L3PhraseGateDecision::Neutral
+                }
+            };
+            let normalized_margin = (readout.margin_micro as f32 / 1_000_000.0).clamp(-1.0, 1.0);
+            let rank_energy = match decision {
+                L3PhraseGateDecision::Support => normalized_margin.max(0.0) * 0.16,
+                L3PhraseGateDecision::Suppress => -normalized_margin.abs().max(0.10) * 0.16,
+                L3PhraseGateDecision::Neutral => 0.0,
+            };
+            Some(L3PhraseGateReport {
+                decision,
+                source: "learned_context_phase",
+                score: normalized_margin,
+                rank_energy,
+                support: readout.positive_examples as usize,
+                width: context_tokens,
+                sequential_score: readout.positive_micro as f32 / 1_000_000.0,
+                scene_score: readout.semantic_support as f32,
+                competition_margin: readout.competition_margin_micro as f32 / 1_000_000.0,
+                positive_micro: readout.positive_micro,
+                anti_micro: readout.anti_micro,
+                threshold_micro: readout.threshold_micro,
+                relation_class: readout.relation_class,
+                reason: match decision {
+                    L3PhraseGateDecision::Support => "l3_context_phase_support",
+                    L3PhraseGateDecision::Suppress => "l3_context_phase_suppress",
+                    L3PhraseGateDecision::Neutral => "l3_context_phase_neutral",
+                },
+            })
+        })
+        .collect()
 }
 
 #[cfg(test)]
@@ -72,6 +146,7 @@ pub(crate) fn evaluate_candidates_with_memory(
     evaluate_context_field_with_memory(&context, &candidate_tokens, memory)
 }
 
+#[cfg(test)]
 pub(crate) fn evaluate_context_candidates_with_memory(
     context_tokens: &[String],
     next_tokens: &[&str],
@@ -161,12 +236,22 @@ fn evaluate_context_field_with_memory(
             };
             Some(L3PhraseGateReport {
                 decision,
+                source: "legacy_phrase_memory",
                 score: item.field_score,
+                rank_energy: match decision {
+                    L3PhraseGateDecision::Support => item.field_score * 0.16,
+                    L3PhraseGateDecision::Suppress => -0.14,
+                    L3PhraseGateDecision::Neutral => 0.0,
+                },
                 support: item.support,
                 width: item.width,
                 sequential_score: item.sequential_score,
                 scene_score: item.scene_score,
                 competition_margin,
+                positive_micro: (item.field_score * 1_000_000.0).round() as i64,
+                anti_micro: 0,
+                threshold_micro: 160_000,
+                relation_class: 0,
                 reason,
             })
         })

@@ -5,9 +5,8 @@
 //! does not apply edits.
 
 use super::l2::{self, L2ImeWordCandidateKind};
-use super::l4_goal_state::{derive_l4_scene_state, L4AllowedAction, L4SceneStateInput};
+use super::l4_goal_state::L4AllowedAction;
 use super::l4_signed_memory::l4_signed_memory_signal_from_readout;
-use super::l4_signed_outcome::{l4_signed_outcome, L4OutcomePolarity, L4SignedOutcomeInput};
 use crate::keyboard::is_cyrillic_letter;
 use crate::typing_transition::decision::TransitionDecisionCore;
 use crate::typing_transition::live_candidate::LiveCompletionProposal;
@@ -154,13 +153,8 @@ pub fn live_completion_candidates(
 
     let raw_count = raw.len();
     let context_tokens = super::llmwave::tokenize(request.context_prefix);
-    let l3_memory_warm = super::llmwave::default_memory_is_warm();
     let context_batch = live_context_batch_readout(&context_tokens, &raw);
-    let scene_state = derive_l4_scene_state(L4SceneStateInput {
-        context_prefix: request.context_prefix,
-        current_word: &partial,
-        candidate_count: raw_count,
-    });
+    let l3_memory_warm = super::context_phase::default_memory_is_warm();
     let usage_snapshot = super::usage_prior::cached_usage_prior_snapshot();
     let usage_context = usage_snapshot.prepare_hot_context(&context_tokens);
     let state_id = crate::transition_relation::transition_state_id(&partial);
@@ -221,19 +215,7 @@ pub fn live_completion_candidates(
                 memory_readout,
                 super::usage_prior::UsageSurfaceCoverage::default(),
             );
-            let signed = l4_signed_outcome(L4SignedOutcomeInput {
-                scene: &scene_state,
-                candidate: &candidate.surface,
-                suffix: &suffix,
-                partial_len,
-                structural,
-                usage,
-                context_usage,
-                accepted,
-                learned_attraction: memory_signal.attraction,
-                learned_repulsion: memory_signal.repulsion,
-            });
-            l4_signed.record(signed.polarity);
+            l4_signed.record(&memory_signal);
             l4_signed.record_transition(&memory_signal);
 
             if usage >= 0.025 || context_usage >= 0.018 || accepted >= 1 {
@@ -261,8 +243,7 @@ pub fn live_completion_candidates(
                 + if common { 0.055 } else { 0.0 }
                 + if hot { 0.045 } else { 0.0 }
                 + (partial_len.min(8) as f32 * 0.018)
-                + live_l4_scene_bias(scene_state.allowed_action, scene_state.confidence)
-                + live_l4_signed_bias(signed.signed_weight);
+                + live_l4_signed_bias(memory_signal.signed_weight);
             let rank_score = l3_readout
                 .map(|readout| base_score + readout.rank_delta)
                 .unwrap_or(base_score);
@@ -285,6 +266,13 @@ pub fn live_completion_candidates(
                 l2_center_grounded,
                 l3_memory_supported,
                 completed_state_known: l2_center_grounded,
+                l3_relation_class: l3_report
+                    .as_ref()
+                    .map(|report| report.relation_class)
+                    .unwrap_or_default(),
+                l4_transition_state_specific: memory_signal.transition_state_specific,
+                l4_transition_attract_count: memory_signal.transition_attract_count,
+                l4_transition_repel_count: memory_signal.transition_repel_count,
             })
         })
         .collect::<Vec<_>>();
@@ -308,7 +296,7 @@ pub fn live_completion_candidates(
             l3_supported,
             l3_evaluated,
             l3_suppressed,
-            l4_action: Some(scene_state.allowed_action),
+            l4_action: None,
             l4_signed,
             cache_hit: false,
         },
@@ -422,20 +410,14 @@ fn live_context_batch_readout(
     prefix_tokens: &[String],
     candidates: &[l2::L2ImeWordCandidate],
 ) -> Vec<Option<super::l3_phrase_gate::L3PhraseGateReport>> {
-    if !super::llmwave::default_memory_is_warm() || candidates.is_empty() {
+    if candidates.is_empty() {
         return vec![None; candidates.len()];
     }
     let surfaces = candidates
         .iter()
         .map(|candidate| candidate.surface.as_str())
         .collect::<Vec<_>>();
-    super::llmwave::with_default_memory(|memory| {
-        super::l3_phrase_gate::evaluate_context_candidates_with_memory(
-            prefix_tokens,
-            &surfaces,
-            memory,
-        )
-    })
+    super::l3_phrase_gate::evaluate_context_candidates_default(prefix_tokens, &surfaces)
 }
 
 fn live_l3_context_score(
@@ -587,11 +569,13 @@ struct LiveSignedOutcomeStats {
 }
 
 impl LiveSignedOutcomeStats {
-    fn record(&mut self, polarity: L4OutcomePolarity) {
-        match polarity {
-            L4OutcomePolarity::Attract => self.attract = self.attract.saturating_add(1),
-            L4OutcomePolarity::Neutral => self.neutral = self.neutral.saturating_add(1),
-            L4OutcomePolarity::Repel => self.repel = self.repel.saturating_add(1),
+    fn record(&mut self, signal: &super::l4_signed_memory::L4SignedMemorySignal) {
+        if signal.signed_weight > 0.0 {
+            self.attract = self.attract.saturating_add(1);
+        } else if signal.signed_weight < 0.0 {
+            self.repel = self.repel.saturating_add(1);
+        } else {
+            self.neutral = self.neutral.saturating_add(1);
         }
     }
 
@@ -677,14 +661,6 @@ fn update_max_atomic(target: &AtomicU64, value: u64) {
     }
 }
 
-fn live_l4_scene_bias(action: L4AllowedAction, confidence: f32) -> f32 {
-    match action {
-        L4AllowedAction::Suggest => 0.030 * confidence,
-        L4AllowedAction::Wait => -0.020 * confidence,
-        L4AllowedAction::Block => -0.060 * confidence,
-    }
-}
-
 fn live_l4_signed_bias(signed_weight: f32) -> f32 {
     (signed_weight * 0.085).clamp(-0.080, 0.080)
 }
@@ -738,6 +714,10 @@ mod tests {
             l2_center_grounded: false,
             l3_memory_supported: false,
             completed_state_known: false,
+            l3_relation_class: 0,
+            l4_transition_state_specific: false,
+            l4_transition_attract_count: 0,
+            l4_transition_repel_count: 0,
         }
     }
 

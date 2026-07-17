@@ -42,6 +42,47 @@ struct Learned {
 
 fn main() -> io::Result<()> {
     let args = env::args().collect::<Vec<_>>();
+    if args.iter().any(|arg| arg == "--l3-context-phase-status") {
+        let memory = arg_path(&args, "--memory");
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&lay::nanda_wave::l3_context_phase_status_json(
+                memory.as_deref(),
+            ))
+            .map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(corpus) = arg_path(&args, "--prove-l3-context-phase") {
+        let lexicon = arg_path(&args, "--lexicon")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--lexicon is required"))?;
+        let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
+        let report =
+            lay::nanda_wave::prove_l3_context_phase_memory(&corpus, &lexicon, max_fragments)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(corpus) = arg_path(&args, "--compile-l3-context-phase") {
+        let lexicon = arg_path(&args, "--lexicon")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--lexicon is required"))?;
+        let out = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
+        let report = lay::nanda_wave::compile_l3_context_phase_memory(
+            &corpus,
+            &lexicon,
+            &out,
+            max_fragments,
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if args.iter().any(|arg| arg == "--compile-lexical-phase") {
         return run_lexical_phase_compile(&args);
     }
@@ -86,6 +127,12 @@ fn main() -> io::Result<()> {
     write_phase_memory(&phase_out, phase_entries)?;
     print_summary(&dataset, &out, &phase_out, &learned, &live_report);
     Ok(())
+}
+
+fn arg_usize(args: &[String], name: &str) -> Option<usize> {
+    args.windows(2)
+        .find(|window| window[0] == name)
+        .and_then(|window| window[1].parse().ok())
 }
 
 fn print_l2_surface_status() {

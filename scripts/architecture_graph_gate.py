@@ -59,7 +59,7 @@ PROTECTED_SINGLE_OWNER_SYMBOLS = {
     "is_cyrillic_letter()": "src/keyboard/text_input/script.rs",
     "mix64_avalanche()": "src/stable_hash.rs",
     "mix64_golden()": "src/stable_hash.rs",
-    "phase_center_from_sum()": "src/nanda_wave/l2_candidate_phase.rs",
+    "phase_center_from_sum()": "src/nanda_wave/phase_field.rs",
     "phase_vector_from_atoms()": "src/nanda_wave/l2_candidate_phase.rs",
     "split_last_alphabetic_token()": "src/word_reader.rs",
     "split_last_trimmed_ws_token()": "src/word_reader.rs",

@@ -148,6 +148,38 @@ fn ime_preedit_uses_shared_candidate_readout_for_ranking() {
 }
 
 #[test]
+fn l3_l4_live_authority_uses_compact_relation_phase_and_hidden_state() {
+    let context_phase = read("src/nanda_wave/context_phase/mod.rs");
+    let context_format = read("src/nanda_wave/context_phase/format.rs");
+    let hidden_state = read("src/nanda_wave/l4_hidden_state.rs");
+    let decision = read("src/typing_transition/decision.rs");
+    let candidate_gate = read("src/nanda_wave/candidate_gate.rs");
+    let module = read("src/nanda_wave/mod.rs");
+
+    assert!(
+        context_phase.contains("candidate_relation_vector")
+            && context_phase.contains("ContextPhaseDisposition::Support")
+            && context_phase.contains("LAYL3P01")
+            && context_format.contains("write_vector"),
+        "L3 must compile and read compact candidate-bound relation centers"
+    );
+    assert!(
+        hidden_state.contains("estimate_hidden_typing_state")
+            && hidden_state.contains("SemanticClass")
+            && hidden_state.contains("ambiguity_authoritative")
+            && decision.contains("settle_l4_hidden_state"),
+        "L4 semantic quotient must be part of TransitionDecisionCore"
+    );
+    assert!(
+        !decision.contains("derive_l4_scene_state")
+            && !candidate_gate.contains("derive_l4_scene_state")
+            && !candidate_gate.contains("l4_signed_outcome(")
+            && !module.contains("mod l4_signed_outcome"),
+        "manual scene/outcome rules must not regain live ranking authority"
+    );
+}
+
+#[test]
 fn l2_and_ime_hot_paths_keep_runtime_owners_separate_from_proof_code() {
     let l2 = read("src/nanda_wave/l2.rs");
     let ime_readout = read("src/nanda_wave/l2/ime_readout.rs");

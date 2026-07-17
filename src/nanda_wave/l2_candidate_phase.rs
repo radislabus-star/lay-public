@@ -18,6 +18,11 @@ use crate::word_reader::{last_text_word, split_word_punctuation};
 
 use crate::stable_hash::mix64_golden;
 
+use super::phase_field::{
+    add_cluster, max_coherence, phase_center_from_sum, phase_micro, stable_hash64,
+    vector_phase_coherence, PhaseCell, PhaseCenter,
+};
+
 const MAGIC: &[u8; 8] = b"LAYPC005";
 const CELLS: usize = 128;
 const HEADER_BYTES: usize = 16;
@@ -90,19 +95,6 @@ pub(crate) struct PhaseReadout {
     pub(crate) lexical_competition_ready: bool,
     pub(crate) lexical_verdict: PhaseVerdict,
     pub(crate) verdict: PhaseVerdict,
-}
-
-#[derive(Clone, Copy, Debug, Default, PartialEq)]
-struct PhaseCell {
-    re: f32,
-    im: f32,
-}
-
-#[derive(Clone, Debug)]
-struct PhaseCenter {
-    sum: Vec<PhaseCell>,
-    center: Vec<PhaseCell>,
-    support: u32,
 }
 
 #[derive(Clone, Debug)]
@@ -1131,10 +1123,20 @@ impl PhaseProfileBuilder {
     fn add_structural(&mut self, vector: &[PhaseCell], accepted: bool) {
         if accepted {
             self.positive_examples = self.positive_examples.saturating_add(1);
-            add_cluster(&mut self.positive, vector, MAX_POSITIVE_CENTERS);
+            add_cluster(
+                &mut self.positive,
+                vector,
+                MAX_POSITIVE_CENTERS,
+                CENTER_SPLIT_COHERENCE,
+            );
         } else {
             self.negative_examples = self.negative_examples.saturating_add(1);
-            add_cluster(&mut self.negative, vector, MAX_ANTI_CENTERS);
+            add_cluster(
+                &mut self.negative,
+                vector,
+                MAX_ANTI_CENTERS,
+                CENTER_SPLIT_COHERENCE,
+            );
         }
     }
 
@@ -1145,10 +1147,16 @@ impl PhaseProfileBuilder {
                 &mut self.lexical_positive,
                 vector,
                 MAX_LEXICAL_POSITIVE_CENTERS,
+                CENTER_SPLIT_COHERENCE,
             );
         } else {
             self.lexical_negative_examples = self.lexical_negative_examples.saturating_add(1);
-            add_cluster(&mut self.lexical_negative, vector, MAX_LEXICAL_ANTI_CENTERS);
+            add_cluster(
+                &mut self.lexical_negative,
+                vector,
+                MAX_LEXICAL_ANTI_CENTERS,
+                CENTER_SPLIT_COHERENCE,
+            );
         }
     }
 
@@ -1686,28 +1694,6 @@ const fn small_lexical_bucket(count: usize) -> &'static str {
     }
 }
 
-fn add_cluster(centers: &mut Vec<PhaseCenter>, vector: &[PhaseCell], max_centers: usize) {
-    let best = centers
-        .iter()
-        .enumerate()
-        .map(|(index, center)| (index, vector_phase_coherence(vector, &center.center)))
-        .max_by(|left, right| left.1.total_cmp(&right.1));
-    if let Some((index, coherence)) = best {
-        if coherence >= CENTER_SPLIT_COHERENCE || centers.len() >= max_centers {
-            let center = &mut centers[index];
-            add_phase_vector(&mut center.sum, vector);
-            center.center = phase_center_from_sum(&center.sum);
-            center.support = center.support.saturating_add(1);
-            return;
-        }
-    }
-    centers.push(PhaseCenter {
-        sum: vector.to_vec(),
-        center: phase_center_from_sum(vector),
-        support: 1,
-    });
-}
-
 fn learned_margin_threshold(
     profile: &PhaseProfile,
     positives: &[Vec<PhaseCell>],
@@ -1808,52 +1794,6 @@ fn concrete_surface_id(original: &str, candidate: &str) -> u64 {
     stable_hash64(&bytes, 0x0053_5552_4641_4345)
 }
 
-fn add_phase_vector(target: &mut [PhaseCell], source: &[PhaseCell]) {
-    for (target, source) in target.iter_mut().zip(source) {
-        target.re += source.re;
-        target.im += source.im;
-    }
-}
-
-fn phase_center_from_sum(values: &[PhaseCell]) -> Vec<PhaseCell> {
-    values.iter().copied().map(phase_unit).collect()
-}
-
-fn phase_unit(value: PhaseCell) -> PhaseCell {
-    let norm = value.re.hypot(value.im);
-    if norm == 0.0 {
-        PhaseCell::default()
-    } else {
-        PhaseCell {
-            re: value.re / norm,
-            im: value.im / norm,
-        }
-    }
-}
-
-fn vector_phase_coherence(vector: &[PhaseCell], center: &[PhaseCell]) -> f32 {
-    let mut score = 0.0;
-    let mut active = 0usize;
-    for (left, right) in vector.iter().zip(center) {
-        if left.re != 0.0 || left.im != 0.0 {
-            active += 1;
-            score += left.re * right.re + left.im * right.im;
-        }
-    }
-    if active == 0 {
-        0.0
-    } else {
-        score / active as f32
-    }
-}
-
-fn max_coherence(vector: &[PhaseCell], centers: &[PhaseCenter]) -> Option<f32> {
-    centers
-        .iter()
-        .map(|center| vector_phase_coherence(vector, &center.center))
-        .max_by(f32::total_cmp)
-}
-
 fn max_magnitude_overlap(vector: &[PhaseCell], centers: &[PhaseCenter]) -> Option<f32> {
     centers
         .iter()
@@ -1906,18 +1846,6 @@ fn max_random_center_coherence(
             vector_phase_coherence(vector, &randomized)
         })
         .max_by(f32::total_cmp)
-}
-
-fn phase_micro(value: f32) -> i64 {
-    (value.clamp(-1.0, 1.0) * 1_000_000.0).round() as i64
-}
-
-fn stable_hash64(bytes: &[u8], lane: u64) -> u64 {
-    let hash = bytes.iter().fold(
-        0xcbf2_9ce4_8422_2325_u64 ^ lane.wrapping_mul(0x1000_0000_01b3),
-        |hash, byte| (hash ^ u64::from(*byte)).wrapping_mul(0x0000_0100_0000_01b3),
-    );
-    mix64_golden(hash)
 }
 
 fn write_center(bytes: &mut Vec<u8>, center: &PhaseCenter) {

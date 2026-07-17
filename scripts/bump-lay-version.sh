@@ -95,6 +95,7 @@ if [[ "$NO_BUILD" == "0" ]]; then
   cargo build --release --bins
   scripts/install-l2-transition-phase.sh
   scripts/install-l2-lexical-phase.sh
+  scripts/install-l3-context-phase.sh
   target/release/lay-nanda-wave-eval --llmwave-pack-live
   scripts/install-release-binaries.sh
 fi

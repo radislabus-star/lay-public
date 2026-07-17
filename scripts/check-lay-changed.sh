@@ -204,12 +204,18 @@ if has_file_matching '^src/ru_typo'; then
   cargo test ru_typo:: --lib
 fi
 
-if has_file_matching '^src/nanda_wave/(l3|l3_phrase_gate)\.rs$'; then
+if has_file_matching '^src/nanda_wave/(context_phase/|phase_field\.rs$|l3|l3_phrase_gate|l4_hidden_state)'; then
+  echo "== cargo test nanda_wave::context_phase --lib =="
+  cargo test nanda_wave::context_phase --lib
+
   echo "== cargo test nanda_wave::l3:: --lib =="
   cargo test nanda_wave::l3:: --lib
 
   echo "== cargo test nanda_wave::l3_phrase_gate --lib =="
   cargo test nanda_wave::l3_phrase_gate --lib
+
+  echo "== cargo test nanda_wave::l4_hidden_state --lib =="
+  cargo test nanda_wave::l4_hidden_state --lib
 elif has_file_matching '^src/nanda_wave'; then
   if [[ "${LAY_CHANGED_FULL_L2:-0}" == "1" ]]; then
     echo "== cargo test nanda_wave:: --lib =="

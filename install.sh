@@ -258,9 +258,10 @@ echo ""
 echo "=== L2 transition phase package ==="
 scripts/install-l2-transition-phase.sh
 scripts/install-l2-lexical-phase.sh
+scripts/install-l3-context-phase.sh
 
 echo ""
-echo "=== L3 phrase memory ==="
+echo "=== legacy phrase memory (diagnostics only) ==="
 target/release/lay-nanda-wave-eval --llmwave-pack-live
 
 echo ""

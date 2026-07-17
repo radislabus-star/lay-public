@@ -77,9 +77,9 @@ const LINES: [ArchitectureLine; 8] = [
     ArchitectureLine {
         id: "l3-l4-learning",
         layer: "L3/L4",
-        owner: "usage_prior + l4_signed_memory + typing_memory",
-        proof: "state-specific accepted/rejected usage overrides broad popularity and preserves anti-wave",
-        debt: "expand organic surface coverage while latest-state feedback remains authoritative",
+        owner: "context_phase + l4_hidden_state + l4_signed_memory + typing_memory",
+        proof: "LAYL3P01 context relation centers feed a hidden-state quotient; exact accepted/rejected witnesses preserve anti-wave",
+        debt: "expand clean context coverage and compile organic witnesses without restoring scene rules or raw phrase lookup",
     },
     ArchitectureLine {
         id: "fast-verifiable",
@@ -97,8 +97,8 @@ const TREE: [&str; 17] = [
     "+-- L1 Relation Encoder: surface delta, changed region, proof and verifier atoms",
     "+-- L2 Candidate Lattice: candidate producers without apply authority",
     "+-- L2 Phase Memory: promoted centers / anti-centers / learned margin",
-    "+-- L3 Context Constraint: phrase admissibility, never text mutation",
-    "+-- L4 Surface Frontier: exact-state signed accepted/rejected experience",
+    "+-- L3 Context Relation Phase: semantic binding, positive centers and anti-centers",
+    "+-- L4 Hidden State: semantic quotient plus exact accepted/rejected witnesses",
     "+-- Joint Transition Interference: constructive/repulsive evidence in one fixed ranking budget",
     "+-- Transition Decision Core: Apply / SuggestOnly / Keep / ABSTAIN / Veto",
     "+-- Transition Verifier: revision, boundary and left context; backend lifecycle is dispatched/observed/indeterminate",
@@ -136,8 +136,8 @@ fn receipt() -> &'static ArchitectureReceipt {
 }
 
 const DEBT: [&str; 7] = [
-    "P0: expand clean same-token lexical anti-center truth; live applied edits are not automatic verifier labels",
-    "P1: accumulate organic L4 surface evidence without mixing stale accept/reject states",
+    "P0: expand clean L3 context relation coverage while heldout false supports stay below the release precision floor",
+    "P1: compile organic L4 witnesses without mixing stale accept/reject states or growing unbounded event memory",
     "P2: keep CompositeTypo split into typed subforms when new evidence reveals distinct circuits",
     "P3: keep IME display aggressive, first-word capable and backend-only",
     "P4: investigate end-to-end output latency separately from microsecond phase readout",

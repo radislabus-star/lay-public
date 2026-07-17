@@ -1,0 +1,29 @@
+{
+  "format": "LAYL3P01",
+  "version": 1,
+  "cells": 64,
+  "artifact": "l3_context_phase_v1.nwpc",
+  "artifact_bytes": 3246372,
+  "artifact_sha256": "8647f182c2a5f1f36aeab8e7d6312b793ec17f3bf103f2389c044ec8285144dd",
+  "raw_words_stored": false,
+  "corpus_fragments": 8525,
+  "transitions": 32249,
+  "semantic_states": 4115,
+  "candidate_profiles": 9467,
+  "positive_centers": 14968,
+  "anti_centers": 3415,
+  "competition_threshold_micro": 281351,
+  "heldout": {
+    "evaluated_transitions": 3588,
+    "full_supports": 1779,
+    "full_false_supports": 8,
+    "support_precision_ppm": 995523,
+    "no_phase_supports": 0,
+    "no_anti_false_supports": 42,
+    "no_semantic_top1": 469,
+    "phase_ablation_drop": 1779,
+    "anti_false_support_reduction": 34,
+    "semantic_ablation_drop": 1310,
+    "verdict": "PASS"
+  }
+}

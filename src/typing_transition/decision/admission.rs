@@ -20,6 +20,20 @@ pub(super) fn candidate_has_apply_authority(
     let signals = &evaluation.signals;
     let source_role = candidate.origin.source_role();
     let exact_positive_transition = evaluation.transition.l4_signed_signal.exact_positive();
+    if signals.l4_hidden_disposition == L4HiddenDisposition::Rejected
+        || (signals.l4_hidden_disposition == L4HiddenDisposition::Ambiguous
+            && signals.l4_hidden_ambiguity_authoritative)
+        || (signals.l4_hidden_selected_witnessed
+            && signals.l4_hidden_disposition != L4HiddenDisposition::Witnessed)
+    {
+        debug_decision_reject(
+            candidate,
+            signals.l4_hidden_disposition.as_str(),
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
     if source_role == CorrectionSourceRole::L3Context
         && signals.l3_phrase_milli < CURRENT.l3_strong_milli
         && signals.l4_signed_milli < CURRENT.l4_strong_milli

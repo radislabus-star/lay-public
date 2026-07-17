@@ -1,6 +1,7 @@
 pub mod candidate_gate;
 pub mod cell32;
 pub mod context;
+pub(crate) mod context_phase;
 pub mod eval;
 pub mod feedback;
 pub mod journal;
@@ -13,8 +14,8 @@ pub mod l3;
 mod l3_context_metrics;
 pub(crate) mod l3_phrase_gate;
 pub mod l4_goal_state;
+pub(crate) mod l4_hidden_state;
 pub(crate) mod l4_signed_memory;
-pub(crate) mod l4_signed_outcome;
 pub mod learned;
 pub mod lexical_attractor;
 mod lexical_phase;
@@ -23,6 +24,7 @@ pub mod mode;
 pub mod options;
 pub mod packet;
 pub mod pattern_wave;
+pub(crate) mod phase_field;
 pub mod precognition;
 pub mod resonance_memory;
 pub mod signal;
@@ -46,6 +48,60 @@ pub fn l3_context_report_json(
     full_cases: usize,
 ) -> serde_json::Value {
     l3_context_metrics::report_json(cases, full_cases)
+}
+
+pub fn compile_l3_context_phase_memory(
+    corpus_path: &std::path::Path,
+    lexicon_path: &std::path::Path,
+    output_path: &std::path::Path,
+    max_fragments: usize,
+) -> std::io::Result<serde_json::Value> {
+    let corpus_text = std::fs::read_to_string(corpus_path)?;
+    let lexicon_text = std::fs::read_to_string(lexicon_path)?;
+    let (package, report) =
+        context_phase::compile_context_phase(context_phase::ContextPhaseCompileInput {
+            corpus_text: &corpus_text,
+            lexicon_text: &lexicon_text,
+            max_fragments,
+        });
+    context_phase::write_package(output_path, &package)?;
+    let mut value = serde_json::to_value(report).map_err(std::io::Error::other)?;
+    if let Some(object) = value.as_object_mut() {
+        object.insert("corpus".to_string(), serde_json::json!(corpus_path));
+        object.insert("lexicon".to_string(), serde_json::json!(lexicon_path));
+        object.insert("output".to_string(), serde_json::json!(output_path));
+        object.insert(
+            "artifact_bytes".to_string(),
+            serde_json::json!(std::fs::metadata(output_path)
+                .map(|meta| meta.len())
+                .unwrap_or_default()),
+        );
+    }
+    Ok(value)
+}
+
+pub fn l3_context_phase_status_json(path: Option<&std::path::Path>) -> serde_json::Value {
+    let path = path
+        .map(std::path::Path::to_path_buf)
+        .unwrap_or_else(context_phase::default_memory_path);
+    context_phase::package_report(&path)
+}
+
+pub fn prove_l3_context_phase_memory(
+    corpus_path: &std::path::Path,
+    lexicon_path: &std::path::Path,
+    max_fragments: usize,
+) -> std::io::Result<serde_json::Value> {
+    let corpus_text = std::fs::read_to_string(corpus_path)?;
+    let lexicon_text = std::fs::read_to_string(lexicon_path)?;
+    serde_json::to_value(context_phase::prove_context_phase(
+        context_phase::ContextPhaseCompileInput {
+            corpus_text: &corpus_text,
+            lexicon_text: &lexicon_text,
+            max_fragments,
+        },
+    ))
+    .map_err(std::io::Error::other)
 }
 
 static L2_IME_WARMUP_STARTED: std::sync::atomic::AtomicBool =
@@ -296,11 +352,13 @@ pub fn record_rejected_candidate_usage(
 
 pub fn warm_up() {
     l2::warm_up_surface_motif_memory();
+    context_phase::warm_default_memory();
     let _ = llmwave::load_default_memory();
 }
 
 pub fn warm_up_for_ime() {
     l2::warm_up_surface_motif_memory();
+    context_phase::warm_default_memory();
     let _ = llmwave::load_default_memory();
 }
 
@@ -311,6 +369,7 @@ pub fn warm_up_l2_for_ime() {
 }
 
 pub fn warm_up_l3_phrase_memory() {
+    context_phase::warm_default_memory();
     let _ = llmwave::load_default_memory();
 }
 

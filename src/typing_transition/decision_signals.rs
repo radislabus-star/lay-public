@@ -3,12 +3,12 @@ struct L3Signal {
     signal: f32,
     rank_energy: f32,
     decision: L3ContextDisposition,
+    relation_class: u64,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum L3ContextDisposition {
     NotApplicable,
-    Unavailable,
     Neutral,
     Support,
     Suppress,
@@ -18,20 +18,11 @@ impl L3ContextDisposition {
     pub(crate) const fn as_str(self) -> &'static str {
         match self {
             Self::NotApplicable => "not_applicable",
-            Self::Unavailable => "no_memory",
             Self::Neutral => "neutral",
             Self::Support => "support",
             Self::Suppress => "suppress",
         }
     }
-}
-
-#[derive(Debug, Clone, Copy)]
-struct L4SceneSignal {
-    signal: f32,
-    rank_energy: f32,
-    action: L4AllowedAction,
-    reason: &'static str,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -107,13 +98,7 @@ fn l3_phrase_signal(
             signal: 0.0,
             rank_energy: 0.0,
             decision: L3ContextDisposition::NotApplicable,
-        };
-    }
-    if !crate::nanda_wave::llmwave::default_memory_is_warm() {
-        return L3Signal {
-            signal: 0.0,
-            rank_energy: 0.0,
-            decision: L3ContextDisposition::Unavailable,
+            relation_class: 0,
         };
     }
     let Some(report) = report else {
@@ -121,6 +106,7 @@ fn l3_phrase_signal(
             signal: 0.0,
             rank_energy: 0.0,
             decision: L3ContextDisposition::NotApplicable,
+            relation_class: 0,
         };
     };
     match report.decision {
@@ -128,19 +114,22 @@ fn l3_phrase_signal(
             let signal = report.score.clamp(0.0, 1.0);
             L3Signal {
                 signal,
-                rank_energy: signal * 0.16,
+                rank_energy: report.rank_energy,
                 decision: L3ContextDisposition::Support,
+                relation_class: report.relation_class,
             }
         }
         L3PhraseGateDecision::Suppress => L3Signal {
-            signal: -0.56,
-            rank_energy: -0.14,
+            signal: report.score.min(0.0),
+            rank_energy: report.rank_energy,
             decision: L3ContextDisposition::Suppress,
+            relation_class: report.relation_class,
         },
         L3PhraseGateDecision::Neutral => L3Signal {
             signal: (report.score * 0.20).clamp(0.0, 0.20),
             rank_energy: 0.0,
             decision: L3ContextDisposition::Neutral,
+            relation_class: report.relation_class,
         },
     }
 }
@@ -150,25 +139,6 @@ fn l3_phrase_signal_observes(error_class: TypingErrorClass) -> bool {
         error_class,
         TypingErrorClass::TechnicalToken | TypingErrorClass::ProtectedToken
     )
-}
-
-fn l4_scene_signal(event: &TypingErrorEvent, candidate_count: usize) -> L4SceneSignal {
-    let scene = derive_l4_scene_state(L4SceneStateInput {
-        context_prefix: &event.core,
-        current_word: &event.current_word,
-        candidate_count,
-    });
-    let signal = match scene.allowed_action {
-        L4AllowedAction::Suggest => scene.confidence,
-        L4AllowedAction::Wait => -scene.confidence * 0.50,
-        L4AllowedAction::Block => -scene.confidence,
-    };
-    L4SceneSignal {
-        signal,
-        rank_energy: signal * 0.06,
-        action: scene.allowed_action,
-        reason: scene.reason,
-    }
 }
 
 fn l4_signed_memory_readout(
@@ -219,7 +189,6 @@ fn transition_interference_readout(
     l2: L2WavePeakSignal,
     phase: crate::nanda_wave::PhaseReadout,
     l3: L3Signal,
-    l4_scene: L4SceneSignal,
     l4_signed: L4SignedSignal,
     phase_competition: Option<f32>,
 ) -> interference::TransitionInterferenceReadout {
@@ -229,7 +198,6 @@ fn transition_interference_readout(
         phase,
         phase_competition,
         l3_rank_energy: l3.rank_energy,
-        l4_scene_rank_energy: l4_scene.rank_energy,
         l4_signed_rank_energy: l4_signed.rank_energy,
     })
 }
@@ -272,7 +240,6 @@ fn settle_transition_interference(
                 phase,
                 phase_competition,
                 l3_rank_energy: evaluation.signals.l3_rank_energy,
-                l4_scene_rank_energy: evaluation.signals.l4_scene_rank_energy,
                 l4_signed_rank_energy: evaluation.signals.l4_signed_rank_energy,
             },
         );
@@ -285,6 +252,69 @@ fn settle_transition_interference(
         signals.transition_field_uncertainty_milli = score_to_milli(field.uncertainty);
         signals.transition_field_phase_competition_milli =
             score_to_milli(field.phase_competition);
+    }
+}
+
+fn settle_l4_hidden_state(
+    candidates: &[UnifiedCorrectionCandidate],
+    evaluations: &mut [CandidateDecisionEvaluation],
+) {
+    let inputs = candidates
+        .iter()
+        .zip(evaluations.iter())
+        .map(|(candidate, evaluation)| L4HiddenCandidateInput {
+            predicted_state: predicted_state_id(
+                evaluation.action.operator.as_str(),
+                &candidate.replacement,
+            ),
+            relation_class: evaluation.signals.l3_relation_class,
+            rank_milli: evaluation.signals.rank_milli,
+            context_support: evaluation.signals.l3_phrase_decision
+                == L3ContextDisposition::Support
+                || (evaluation.signals.l2_transition_phase_verdict
+                    == crate::nanda_wave::PhaseVerdict::Support
+                    && evaluation.signals.l2_lexical_phase_competition_ready)
+                || (evaluation.signals.l2_wave_peak_positive_milli
+                    > evaluation.signals.l2_wave_peak_negative_milli
+                    && evaluation.signals.l2_wave_peak_uncertainty_milli
+                        < evaluation
+                            .signals
+                            .l2_wave_peak_positive_milli
+                            .saturating_sub(evaluation.signals.l2_wave_peak_negative_milli)),
+            eligible: candidate.gate.action == CandidateGateAction::Eligible,
+            witness_attract: evaluation.signals.l4_transition_attract_count,
+            witness_repel: evaluation.signals.l4_transition_repel_count,
+            witness_state_specific: evaluation.signals.l4_transition_state_specific,
+        })
+        .collect::<Vec<_>>();
+    let readouts = estimate_hidden_typing_state(&inputs);
+    for (evaluation, readout) in evaluations.iter_mut().zip(readouts) {
+        let signals = &mut evaluation.signals;
+        signals.l4_hidden_disposition = readout.disposition;
+        signals.l4_hidden_semantic_classes = readout.semantic_classes;
+        signals.l4_hidden_unresolved_classes = readout.unresolved_classes;
+        signals.l4_hidden_selected_class = readout.selected_class;
+        signals.l4_hidden_class_margin_milli = readout.class_margin_milli;
+        signals.l4_hidden_witness_count = readout.witness_count;
+        signals.l4_hidden_ambiguity_authoritative = readout.ambiguity_authoritative;
+        signals.l4_hidden_selected_witnessed = readout.selected_witnessed;
+        signals.l4_scene_milli = match readout.disposition {
+            L4HiddenDisposition::Resolved | L4HiddenDisposition::Witnessed => {
+                readout.class_margin_milli.max(1)
+            }
+            L4HiddenDisposition::Rejected => -readout.class_margin_milli.abs().max(1),
+            L4HiddenDisposition::Ambiguous | L4HiddenDisposition::Unobserved => 0,
+        };
+        signals.l4_scene_action = match readout.disposition {
+            L4HiddenDisposition::Resolved | L4HiddenDisposition::Witnessed => {
+                L4AllowedAction::Suggest
+            }
+            L4HiddenDisposition::Rejected => L4AllowedAction::Block,
+            L4HiddenDisposition::Ambiguous | L4HiddenDisposition::Unobserved => {
+                L4AllowedAction::Wait
+            }
+        };
+        signals.l4_scene_reason = readout.disposition.as_str();
     }
 }
 

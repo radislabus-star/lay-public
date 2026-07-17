@@ -1,4 +1,3 @@
-use super::l4_signed_memory::{l4_signed_memory_signal, L4SignedMemoryInput};
 #[cfg(test)]
 use super::lexical_attractor::LEXICAL_ATTRACTOR_CELL;
 use super::options::WaveOptions;
@@ -44,7 +43,7 @@ pub(crate) fn l3_context_field_readout(
     candidates: &[WordCandidate],
 ) -> L3ContextFieldReadout {
     let context_tokens = llmwave::tokenize(original).len().saturating_sub(1);
-    let memory_warm = llmwave::default_memory_is_warm();
+    let memory_warm = super::context_phase::default_memory_is_warm();
     let replacements = candidates
         .iter()
         .map(|candidate| candidate.text.as_str())
@@ -259,7 +258,6 @@ fn run_l3_inner(
 
     let phrase_report = phrase_reports[candidate_index].clone();
     let confidence = adjusted_confidence(
-        original,
         candidate,
         options,
         pattern_report.as_ref(),
@@ -376,9 +374,6 @@ fn context_candidate_blocker(
     if word_form_candidate_lacks_surface_support(original, candidate) {
         return Some("word_form_authority");
     }
-    if candidate_l4_signed_memory_vetoes_apply(original, candidate) {
-        return Some("l4_signed_memory");
-    }
     if phrase_gate_suppresses(phrase_report) {
         return Some("phrase_gate");
     }
@@ -397,7 +392,6 @@ fn l3_rank_score(
     let mut value = confidence(candidate);
     value += verified_operator_coherence(original, candidate);
     value += candidate_usage_context_prior(original, &candidate.text);
-    value += candidate_l4_signed_bias(original, candidate);
     if let Some(report) = phrase_report {
         match report.decision {
             l3_phrase_gate::L3PhraseGateDecision::Support => {
@@ -447,12 +441,6 @@ fn word_form_candidate_lacks_surface_support(original: &str, candidate: &WordCan
 
     let original_lower = original_word.to_lowercase();
     let replacement_lower = replacement_word.to_lowercase();
-    if candidate_l4_signed_signal(original, candidate).is_some_and(|signal| {
-        signal.transition_state_specific
-            && signal.transition_attract_count > signal.transition_repel_count
-    }) {
-        return false;
-    }
     let field = crate::hot_field::HotFieldSnapshot::current();
     let original_known = field.stable_form_readout(&original_lower).is_known();
     if original_known && original_lower != replacement_lower {
@@ -675,7 +663,6 @@ fn single_adjacent_transposition(left: &str, right: &str) -> bool {
 }
 
 fn adjusted_confidence(
-    original: &str,
     candidate: &WordCandidate,
     options: &WaveOptions,
     pattern_report: Option<&super::pattern_wave::PatternWaveReport>,
@@ -703,78 +690,7 @@ fn adjusted_confidence(
             }
         }
     }
-    value += candidate_l4_signed_bias(original, candidate);
     value.clamp(0.0, 1.0)
-}
-
-fn candidate_l4_signed_bias(original: &str, candidate: &WordCandidate) -> f32 {
-    let Some(signal) = candidate_l4_signed_signal(original, candidate) else {
-        return 0.0;
-    };
-    l4_signed_bias(&signal)
-}
-
-fn candidate_l4_signed_memory_vetoes_apply(original: &str, candidate: &WordCandidate) -> bool {
-    let Some(signal) = candidate_l4_signed_signal(original, candidate) else {
-        return false;
-    };
-    l4_signed_signal_vetoes(&signal)
-}
-
-fn l4_signed_bias(signal: &super::l4_signed_memory::L4SignedMemorySignal) -> f32 {
-    let global = signal.signed_weight * 0.060;
-    let transition = if signal.transition_state_specific {
-        (signal.transition_attraction - signal.transition_repulsion) * 0.90
-    } else {
-        0.0
-    };
-    (global + transition).clamp(-0.20, 0.20)
-}
-
-fn l4_signed_signal_vetoes(signal: &super::l4_signed_memory::L4SignedMemorySignal) -> bool {
-    if signal.transition_state_specific
-        && signal.transition_attract_count > signal.transition_repel_count
-    {
-        return false;
-    }
-    let rejected_more_than_accepted = signal.rejected > signal.accepted;
-    let transition_repel = signal.transition_repel_count > signal.transition_attract_count
-        && signal.transition_repel_count > 0;
-    rejected_more_than_accepted
-        && signal.signed_weight < 0.0
-        && (signal.rejected >= 2 || signal.repulsion >= 0.045 || transition_repel)
-}
-
-fn candidate_l4_signed_signal(
-    original: &str,
-    candidate: &WordCandidate,
-) -> Option<super::l4_signed_memory::L4SignedMemorySignal> {
-    last_token(&candidate.text)?;
-    let context = crate::typing_memory::transition_context_words(original, &candidate.text);
-    let transition_target = crate::typing_memory::transition_target_text(original, &candidate.text);
-    let usage = super::usage_prior::cached_usage_prior_snapshot();
-    let state_id = crate::transition_relation::transition_state_id(original);
-    Some(l4_signed_memory_signal(L4SignedMemoryInput {
-        context: &context,
-        source: candidate.origin.memory_key(),
-        operation: candidate_operation(candidate.origin),
-        state_word: &state_id,
-        candidate_text: &transition_target,
-        usage: &usage,
-        surface: None,
-    }))
-}
-
-fn candidate_operation(origin: CandidateOrigin) -> &'static str {
-    match origin {
-        CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo => "layout",
-        CandidateOrigin::Boundary => "boundary",
-        CandidateOrigin::Completion => "completion",
-        CandidateOrigin::L2Surface
-        | CandidateOrigin::L3Context
-        | CandidateOrigin::DeterministicTypo
-        | CandidateOrigin::Technical => "replacement",
-    }
 }
 
 fn mesh_summary(confidence: f32, original: &str, candidate: &str) -> String {
@@ -797,44 +713,6 @@ fn preserve_trailing_separator(original: &str, candidate: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    fn l4_signal() -> super::super::l4_signed_memory::L4SignedMemorySignal {
-        super::super::l4_signed_memory::L4SignedMemorySignal {
-            attraction: 0.10,
-            repulsion: 0.18,
-            signed_weight: -0.08,
-            accepted: 6,
-            rejected: 8,
-            transition_attraction: 0.10,
-            transition_repulsion: 0.0,
-            transition_attract_count: 6,
-            transition_repel_count: 0,
-            transition_state_specific: true,
-            reason: super::super::l4_signed_memory::L4SignedMemoryReason::TransitionAttracts,
-            surface_status: super::super::l4_signed_memory::L4SurfaceStatus::Covered,
-        }
-    }
-
-    #[test]
-    fn exact_transition_acceptance_overrides_global_word_rejection() {
-        let signal = l4_signal();
-
-        assert!(!l4_signed_signal_vetoes(&signal));
-        assert!(l4_signed_bias(&signal) > 0.0);
-    }
-
-    #[test]
-    fn exact_transition_rejection_still_vetoes() {
-        let mut signal = l4_signal();
-        signal.transition_attraction = 0.0;
-        signal.transition_repulsion = 0.12;
-        signal.transition_attract_count = 0;
-        signal.transition_repel_count = 8;
-        signal.signed_weight = -0.20;
-
-        assert!(l4_signed_signal_vetoes(&signal));
-        assert!(l4_signed_bias(&signal) < 0.0);
-    }
 
     #[test]
     fn punctuation_does_not_hide_word_form_authority() {
@@ -1206,11 +1084,15 @@ mod tests {
             risk: 0.27,
             support: vec![],
         };
-        let (trace, decision) = run_l3("пишу djn дальше ", &[candidate]);
+        let options = WaveOptions::with_disabled(&[L3_CONTEXT_FIELD_CELL.to_string()]);
+        let (trace, decision) = run_l3_with_options("пишу djn дальше ", &[candidate], &options);
 
-        assert!(trace
-            .iter()
-            .any(|item| item.name == super::super::structural_relation::STRUCTURAL_RELATION_CELL));
+        assert!(
+            trace.iter().any(
+                |item| item.name == super::super::structural_relation::STRUCTURAL_RELATION_CELL
+            ),
+            "unexpected L3 trace: {trace:#?}"
+        );
         assert_eq!(decision.output(), Some("пишу вот дальше "));
     }
 

@@ -8,7 +8,10 @@ use crate::correction_core::{
 };
 use crate::keyboard::is_cyrillic_letter;
 use crate::nanda_wave::l3_phrase_gate::L3PhraseGateDecision;
-use crate::nanda_wave::l4_goal_state::{derive_l4_scene_state, L4AllowedAction, L4SceneStateInput};
+use crate::nanda_wave::l4_goal_state::L4AllowedAction;
+use crate::nanda_wave::l4_hidden_state::{
+    estimate_hidden_typing_state, predicted_state_id, L4HiddenCandidateInput, L4HiddenDisposition,
+};
 use crate::nanda_wave::l4_signed_memory::{l4_signed_memory_signal, L4SignedMemoryInput};
 use crate::text_edit::{
     plan_decision_transition_edit, tail_chars, DecisionTransitionEditInput,
@@ -163,7 +166,6 @@ impl TransitionDecisionCore {
             };
         }
         let usage = crate::nanda_wave::cached_usage_prior_snapshot();
-        let l4_scene = l4_scene_signal(event, candidates.len());
         let replacements = candidates
             .iter()
             .map(|candidate| candidate.replacement.as_str())
@@ -189,7 +191,6 @@ impl TransitionDecisionCore {
                         event,
                         candidate_count: candidates.len(),
                         usage: &usage,
-                        l4_scene,
                         l2_peak_context,
                         l3_report: l3_report.as_ref(),
                     },
@@ -198,6 +199,7 @@ impl TransitionDecisionCore {
             })
             .collect::<Vec<_>>();
         settle_transition_interference(candidates, &mut evaluations);
+        settle_l4_hidden_state(candidates, &mut evaluations);
         if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
             for (candidate, evaluation) in candidates.iter().zip(&evaluations) {
                 eprintln!(
@@ -301,7 +303,6 @@ struct CandidateDecisionContext<'a> {
     event: &'a TypingErrorEvent,
     candidate_count: usize,
     usage: &'a crate::nanda_wave::UsagePriorSnapshot,
-    l4_scene: L4SceneSignal,
     l2_peak_context: &'a crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext,
     l3_report: Option<&'a crate::nanda_wave::l3_phrase_gate::L3PhraseGateReport>,
 }
@@ -401,7 +402,6 @@ pub(crate) struct CandidateDecisionSignals {
     non_field_rank_score: f32,
     l2_rank_energy: f32,
     l3_rank_energy: f32,
-    l4_scene_rank_energy: f32,
     l4_signed_rank_energy: f32,
     l2_transition_phase_margin_micro: i64,
     l2_transition_phase_threshold_micro: i64,
@@ -431,6 +431,15 @@ pub(crate) struct CandidateDecisionSignals {
     pub(crate) l2_transition_phase_surfaces: u32,
     pub(crate) l3_phrase_milli: i16,
     pub(crate) l3_phrase_decision: L3ContextDisposition,
+    pub(crate) l3_relation_class: u64,
+    pub(crate) l4_hidden_disposition: L4HiddenDisposition,
+    pub(crate) l4_hidden_semantic_classes: u16,
+    pub(crate) l4_hidden_unresolved_classes: u16,
+    pub(crate) l4_hidden_selected_class: u64,
+    pub(crate) l4_hidden_class_margin_milli: i16,
+    pub(crate) l4_hidden_witness_count: u32,
+    pub(crate) l4_hidden_ambiguity_authoritative: bool,
+    pub(crate) l4_hidden_selected_witnessed: bool,
     pub(crate) l4_scene_milli: i16,
     pub(crate) l4_scene_action: L4AllowedAction,
     pub(crate) l4_scene_reason: &'static str,
@@ -470,7 +479,6 @@ fn candidate_decision_signals_from_readouts(
         l4_memory,
     } = readouts;
     let event = context.event;
-    let l4_scene = context.l4_scene;
     let l3 = l3_phrase_signal(candidate.error_class, context.l3_report);
     let phase = crate::nanda_wave::l2_transition_phase_readout(
         action.operator.as_str(),
@@ -491,14 +499,13 @@ fn candidate_decision_signals_from_readouts(
         + transition_rank_bonus(&action, candidate)
         + ((candidate.evidence_count().saturating_sub(1).min(3) as f32) * 0.025);
     let transition_field =
-        transition_interference_readout(l2_wave_peak, phase, l3, l4_scene, l4_signed, None);
+        transition_interference_readout(l2_wave_peak, phase, l3, l4_signed, None);
     let rank_score = non_field_rank_score + transition_field.signal;
 
     CandidateDecisionSignals {
         non_field_rank_score,
         l2_rank_energy: l2_wave_peak.rank_energy,
         l3_rank_energy: l3.rank_energy,
-        l4_scene_rank_energy: l4_scene.rank_energy,
         l4_signed_rank_energy: l4_signed.rank_energy,
         l2_transition_phase_margin_micro: phase.margin_micro,
         l2_transition_phase_threshold_micro: phase.threshold_micro,
@@ -530,9 +537,18 @@ fn candidate_decision_signals_from_readouts(
         l2_transition_phase_surfaces: l2_wave_peak.transition_phase_surfaces,
         l3_phrase_milli: score_to_milli(l3.signal),
         l3_phrase_decision: l3.decision,
-        l4_scene_milli: score_to_milli(l4_scene.signal),
-        l4_scene_action: l4_scene.action,
-        l4_scene_reason: l4_scene.reason,
+        l3_relation_class: l3.relation_class,
+        l4_hidden_disposition: L4HiddenDisposition::Unobserved,
+        l4_hidden_semantic_classes: 0,
+        l4_hidden_unresolved_classes: 0,
+        l4_hidden_selected_class: 0,
+        l4_hidden_class_margin_milli: 0,
+        l4_hidden_witness_count: 0,
+        l4_hidden_ambiguity_authoritative: false,
+        l4_hidden_selected_witnessed: false,
+        l4_scene_milli: 0,
+        l4_scene_action: L4AllowedAction::Wait,
+        l4_scene_reason: "hidden_state_unobserved",
         l4_signed_milli: score_to_milli(l4_signed.signal),
         l4_signed_reason: l4_signed.reason,
         l4_surface_status: l4_signed.surface_status,

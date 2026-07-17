@@ -3,12 +3,12 @@
     {
       "evidence": [
         "src/typing_transition/candidate.rs:L9:L2CandidateLattice",
-        "src/typing_transition/decision.rs:L152:.evaluate_candidates()",
-        "src/typing_transition/decision.rs:L23:TransitionDecisionCore",
-        "src/typing_transition/decision.rs:L31:.decide_visible_text_transition()",
-        "src/typing_transition/live_candidate.rs:L39:TransitionDecisionCore",
-        "src/typing_transition/live_candidate.rs:L40:.select_live_completions()",
-        "src/typing_transition/live_candidate.rs:L72:.select_ime_readout()"
+        "src/typing_transition/decision.rs:L155:.evaluate_candidates()",
+        "src/typing_transition/decision.rs:L26:TransitionDecisionCore",
+        "src/typing_transition/decision.rs:L34:.decide_visible_text_transition()",
+        "src/typing_transition/live_candidate.rs:L100:.select_ime_readout()",
+        "src/typing_transition/live_candidate.rs:L43:TransitionDecisionCore",
+        "src/typing_transition/live_candidate.rs:L44:.select_live_completions()"
       ],
       "id": "decision-authority",
       "status": "PASS",
@@ -40,7 +40,7 @@
         "src/text_edit/executor.rs:L143",
         "src/text_edit/gate.rs:L226",
         "src/text_edit/gate.rs:L228",
-        "src/typing_transition/decision.rs:L123"
+        "src/typing_transition/decision.rs:L126"
       ],
       "id": "typed-transition-capability",
       "status": "PASS",
@@ -86,8 +86,8 @@
     },
     {
       "evidence": [
-        "graph_links:20128",
-        "graph_nodes:8082"
+        "graph_links:20435",
+        "graph_nodes:8211"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -95,10 +95,10 @@
     }
   ],
   "duplicate_symbols": {},
-  "graph_fingerprint": "c16d8606352155b27a93f663c8866ed8c947fed0fba49db427ae62d83e9dc23a",
-  "graph_links": 20128,
-  "graph_nodes": 8082,
+  "graph_fingerprint": "9155a3b684865d5c25b403c4aa7479f6c7f90f36d3a9b0dceb42c3d93257cd8b",
+  "graph_links": 20435,
+  "graph_nodes": 8211,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "b77dc2570917266981b81ed132dbe81d67be6f26ffa89bb3c53f1fb73e90ee34",
+  "source_fingerprint": "cb4a8820a7afd3732b38bbd047a72a74b50eac52ae41b7a268596e38a677e836",
   "verdict": "PASS"
 }

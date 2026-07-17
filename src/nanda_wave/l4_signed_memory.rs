@@ -88,7 +88,13 @@ pub(crate) fn l4_signed_memory_signal_from_readout(
     readout: UsageHotReadout,
     coverage: UsageSurfaceCoverage,
 ) -> L4SignedMemorySignal {
-    let surface_status = if coverage.rejected > coverage.accepted {
+    let surface_evidence = coverage.accepted.saturating_add(coverage.rejected) as f32;
+    let surface_signed_confidence = if surface_evidence > 0.0 {
+        (coverage.accepted as f32 - coverage.rejected as f32) / (surface_evidence + 8.0)
+    } else {
+        0.0
+    };
+    let surface_status = if surface_signed_confidence < -0.5 && !readout.transition.state_specific {
         L4SurfaceStatus::Repelled
     } else if coverage.accepted > 0 {
         L4SurfaceStatus::Covered
@@ -98,17 +104,18 @@ pub(crate) fn l4_signed_memory_signal_from_readout(
         L4SurfaceStatus::Unknown
     };
 
-    let attraction = (readout.word_prior * 0.70
-        + readout.context_prior * 1.20
-        + readout.transition.attraction * 0.85
-        + readout.accepted_count.min(24) as f32 * 0.014)
-        .clamp(0.0, 0.62);
-    let repulsion = (readout.rejected_prior * 1.25
-        + readout.context_rejected * 1.65
-        + readout.transition.repulsion * 0.95
-        + readout.rejected_count.min(24) as f32 * 0.016)
-        .clamp(0.0, 0.72);
-    let signed_weight = (attraction - repulsion).clamp(-1.0, 1.0);
+    let positive_evidence = readout.accepted_count as f32
+        + readout.transition.attract_count as f32
+        + (readout.word_prior + readout.context_prior + readout.transition.attraction) * 4.0;
+    let negative_evidence = readout.rejected_count as f32
+        + readout.transition.repel_count as f32
+        + (readout.rejected_prior + readout.context_rejected + readout.transition.repulsion) * 4.0;
+    let observed = positive_evidence + negative_evidence;
+    let posterior = (positive_evidence + 1.0) / (observed + 2.0);
+    let confidence = observed / (observed + 4.0);
+    let signed_weight = ((posterior * 2.0 - 1.0) * confidence).clamp(-1.0, 1.0);
+    let attraction = signed_weight.max(0.0);
+    let repulsion = (-signed_weight).max(0.0);
     let reason = if readout.transition.repulsion > readout.transition.attraction
         && readout.transition.repel_count > 0
     {
