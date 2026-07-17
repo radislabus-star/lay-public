@@ -14,32 +14,6 @@ pub fn without_whitespace(text: &str) -> String {
     text.chars().filter(|ch| !ch.is_whitespace()).collect()
 }
 
-pub(crate) fn normalized_edit_distance(left: &str, right: &str) -> f64 {
-    let distance = damerau_levenshtein(left, right) as f64;
-    let scale = left.chars().count().max(right.chars().count()).max(1) as f64;
-    distance / scale
-}
-
-pub(crate) fn common_replacement_span(left: &str, right: &str) -> usize {
-    let left_chars: Vec<char> = left.chars().collect();
-    let right_chars: Vec<char> = right.chars().collect();
-    let mut prefix = 0usize;
-    while prefix < left_chars.len()
-        && prefix < right_chars.len()
-        && left_chars[prefix] == right_chars[prefix]
-    {
-        prefix += 1;
-    }
-    let mut suffix = 0usize;
-    while suffix < left_chars.len().saturating_sub(prefix)
-        && suffix < right_chars.len().saturating_sub(prefix)
-        && left_chars[left_chars.len() - 1 - suffix] == right_chars[right_chars.len() - 1 - suffix]
-    {
-        suffix += 1;
-    }
-    left_chars.len().saturating_sub(prefix + suffix)
-}
-
 pub(crate) fn transition_changed_token_count(original: &str, replacement: &str) -> usize {
     let original = crate::word_reader::normalized_text_words(original);
     let replacement = crate::word_reader::normalized_text_words(replacement);

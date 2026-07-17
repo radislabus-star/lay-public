@@ -250,7 +250,6 @@ fn edit_distance(left: &str, right: &str) -> usize {
 }
 
 const SHADOW_WORD_TEXTS: &[&str] = &[
-    include_str!("../../../data/lem_research/ru_words.txt"),
     include_str!("../../../data/lexicon/common_ru.txt"),
     include_str!("../../../data/lexicon/l2_surface_hot_ru.txt"),
     include_str!("../../../tests/fixtures/russian_forms.txt"),

@@ -1,9 +1,0 @@
-# Synthetic LEM probe technical tokens.
-wi-fi
-API
-AmoCRM
-GitHub
-NTFS
-Linux
-JSON
-USB-C

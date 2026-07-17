@@ -2,13 +2,11 @@ use super::*;
 use crate::config::{default_typing_assist_pipeline, CorrectionEngine};
 use crate::keyboard::KeyEvent;
 use crate::text_edit::{committed_separator_is_preserved, replacement_plan_matches};
-use crate::typing_assist::ScopedTailOptions;
 use crate::typing_assist_test_fixtures::{
     first_fixture_row_from_str, fixture_row_by_id_from_str, fixture_rows_from_str,
     text_replacement, zero_edge_text_replacement,
 };
 
-const MANUAL_LEM_CASES: &str = include_str!("../tests/fixtures/decoder_manual_lem_cases.tsv");
 const MANUAL_REPLAY_CASES: &str =
     include_str!("../tests/fixtures/decoder_transition_manual_replay.tsv");
 const MANUAL_REPLACE_CASES: &str =
@@ -37,7 +35,6 @@ fn manual_decoder_keeps_replay_as_explicit_user_command() {
         engine: CorrectionEngine::Smart,
         force_replay: true,
         auto_replace: true,
-        scoped_options: ScopedTailOptions::default(),
     });
 
     assert_eq!(result.action, DecoderAction::ReplayAll);
@@ -55,7 +52,6 @@ fn manual_decoder_does_not_apply_visual_b_auto_replace_to_replay() {
         engine: CorrectionEngine::Replay,
         force_replay: false,
         auto_replace: true,
-        scoped_options: ScopedTailOptions::default(),
     });
 
     assert_eq!(converted, "и");
@@ -74,11 +70,6 @@ fn manual_decoder_uses_smart_tail_for_mixed_two_words() {
         engine: CorrectionEngine::Smart,
         force_replay: false,
         auto_replace: false,
-        scoped_options: ScopedTailOptions {
-            lem_enabled: true,
-            allow_layout_auto: true,
-            lem_weight: 1.0,
-        },
     });
 
     assert_eq!(
@@ -92,35 +83,6 @@ fn manual_decoder_uses_smart_tail_for_mixed_two_words() {
         result.edit.expect("manual edit").plan,
         zero_edge_text_replacement(&row, 3, 4)
     );
-}
-
-#[test]
-fn manual_decoder_lem_fixture_cases_choose_expected_tail() {
-    for (label, original, converted, expected) in manual_lem_fixture_cases() {
-        let events = events_for_ascii(&original);
-        let result = decode_manual_tail(ManualDecodeRequest {
-            events: &events,
-            original: &original,
-            converted: &converted,
-            engine: CorrectionEngine::Smart,
-            force_replay: false,
-            auto_replace: false,
-            scoped_options: ScopedTailOptions {
-                lem_enabled: true,
-                allow_layout_auto: true,
-                lem_weight: 1.0,
-            },
-        });
-
-        assert_eq!(
-            result.action,
-            DecoderAction::ReplaceText {
-                replacement: expected,
-                source: CorrectionSource::SmartText,
-            },
-            "case={label}"
-        );
-    }
 }
 
 #[test]
@@ -178,20 +140,6 @@ fn committed_decoder_plan_normalizes_replacement_and_preserves_screen_state() {
         crate::text_edit::apply_replacement_plan_to_text(&plan.original, &plan.plan),
         plan.replacement
     );
-}
-
-fn manual_lem_fixture_cases() -> impl Iterator<Item = (String, String, String, String)> {
-    fixture_rows_from_str(MANUAL_LEM_CASES)
-        .into_iter()
-        .map(|row| {
-            assert_eq!(row.len(), 4, "bad decoder manual LEM fixture row");
-            (
-                row[0].clone(),
-                row[1].clone(),
-                row[2].clone(),
-                row[3].clone(),
-            )
-        })
 }
 
 #[test]

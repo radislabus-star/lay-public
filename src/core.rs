@@ -10,10 +10,8 @@ pub use crate::config::{
 };
 pub use crate::correction::Correction;
 pub use crate::decoder::{
-    choose_ranked_scoped_tail, decode_enter_autocorrect_tail, decode_manual_tail,
-    decode_typing_assist_tail, rank_scoped_tail_candidates, CorrectionSource, CorrectionTrigger,
-    DecoderAction, DecoderEditPlan, ManualDecodeRequest, ManualDecodeResult,
-    RankedDecoderCandidate, RankedDecoderDecision,
+    decode_enter_autocorrect_tail, decode_manual_tail, decode_typing_assist_tail, CorrectionSource,
+    CorrectionTrigger, DecoderAction, DecoderEditPlan, ManualDecodeRequest, ManualDecodeResult,
 };
 pub use crate::desktop::{
     is_ru_layout_id, normalize_layout_id, parse_kde_layouts_list, parse_setxkbmap_layout,
@@ -34,7 +32,6 @@ pub use crate::keyboard::{
     original_event_char, preferred_layout_for_text, replay_layout_decision, split_event_words,
     text_to_key_events, text_to_uinput_runs, KeyEvent, ReplayLayoutDecision, TextInputRun,
 };
-pub use crate::lem::{best_candidate, rank_candidates, ScoredCandidate};
 pub use crate::ngram::{
     en_score, ru_candidate_is_better, ru_candidate_margin, ru_score, tokenize_text, Lang,
 };

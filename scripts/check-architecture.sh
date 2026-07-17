@@ -75,12 +75,11 @@ assert_no_runtime_example() {
         --glob '!src/*_tests.rs' \
         --glob '!src/bin/lay_test_input.rs' \
         --glob '!src/bin/lay_test_input/**' \
-        --glob '!src/bin/lay_lem_research.rs' \
-        --glob '!src/bin/lay_lem_research/**' || true)"
+        || true)"
   else
     hits="$(grep -RInF -- "$pattern" src || true)"
     hits="$(printf '%s\n' "$hits" \
-      | grep -Ev '(^src/.*/tests/|_tests\.rs:|^src/bin/lay_daemon/tests\.rs:|^src/bin/lay_test_input(\.rs|/)|^src/bin/lay_lem_research(\.rs|/))' || true)"
+      | grep -Ev '(^src/.*/tests/|_tests\.rs:|^src/bin/lay_daemon/tests\.rs:|^src/bin/lay_test_input(\.rs|/))' || true)"
   fi
   if [[ -n "$hits" ]]; then
     printf '%s\n' "$hits" >&2
@@ -122,7 +121,7 @@ assert_no_runtime_rule_id_literals() {
   local hits
   hits="$(grep -RInE "\"(${rule_id_regex})\"" src --include='*.rs' || true)"
   hits="$(printf '%s\n' "$hits" \
-    | grep -Ev '(^src/typing_rule_graph/ids\.rs:|^src/transition_relation\.rs:|_tests\.rs:|^src/.*/tests/|^src/bin/lay_daemon/tests\.rs:|^src/bin/lay_lem_research(\.rs|/)|^src/bin/lay_nanda_(dataset|wave_train)\.rs:|^src/bin/lay_nanda_wave_eval/)' || true)"
+    | grep -Ev '(^src/typing_rule_graph/ids\.rs:|^src/transition_relation\.rs:|_tests\.rs:|^src/.*/tests/|^src/bin/lay_daemon/tests\.rs:|^src/bin/lay_nanda_(dataset|wave_train)\.rs:|^src/bin/lay_nanda_wave_eval/)' || true)"
   if [[ -n "$hits" ]]; then
     printf '%s\n' "$hits" >&2
     error "runtime rule id strings must go through src/typing_rule_graph/ids.rs"
@@ -342,7 +341,6 @@ assert_max_lines src/decoder.rs 60
 assert_max_lines src/decoder/edit_contract.rs 30
 assert_max_lines src/decoder/edit_plan.rs 168
 assert_max_lines src/decoder/manual.rs 160
-assert_max_lines src/decoder/ranked.rs 120
 assert_max_lines src/decoder/types.rs 70
 assert_max_lines src/decoder/typing_tail.rs 120
 assert_max_lines src/decoder/punctuation.rs 90
@@ -380,17 +378,8 @@ assert_max_lines src/russian_lexicon/forms.rs 277
 assert_max_lines src/russian_lexicon/hunspell.rs 220
 assert_max_lines src/scoped_tail.rs 259
 assert_max_lines src/scoped_tail/completed_word.rs 185
-assert_max_lines src/scoped_tail/lem_candidates.rs 160
 assert_max_lines src/scoped_tail/scope_policy.rs 60
 assert_max_lines src/scoped_tail/word_flip.rs 140
-assert_max_lines src/lem.rs 30
-assert_max_lines src/lem/language.rs 110
-assert_max_lines src/lem/noise.rs 110
-assert_max_lines src/lem/rank.rs 40
-assert_max_lines src/lem/score.rs 120
-assert_max_lines src/lem/token.rs 100
-assert_max_lines src/lem/types.rs 20
-assert_max_lines src/lem/warmup.rs 20
 assert_max_lines src/ngram.rs 30
 assert_max_lines src/ngram/cache.rs 60
 assert_max_lines src/ngram/model.rs 120
@@ -513,19 +502,10 @@ assert_max_lines src/bin/lay_daemon/tests/scoped_tail/technical_hyphen/replaceme
 assert_max_lines src/bin/lay_daemon/tests/scoped_tail/technical_hyphen/short_tail.rs 90
 assert_max_lines src/bin/lay_daemon/tests/scoped_tail/technical_hyphen/token_layout.rs 100
 assert_max_lines src/bin/lay_daemon/tests/scoped_tail/technical_hyphen/typing_assist.rs 50
-assert_max_lines src/bin/lay_daemon/tests/scoped_tail/lem_scope.rs 30
-assert_max_lines src/bin/lay_daemon/tests/scoped_tail/lem_scope/mixed_current.rs 150
-assert_max_lines src/bin/lay_daemon/tests/scoped_tail/lem_scope/previous_context.rs 120
-assert_max_lines src/bin/lay_daemon/tests/scoped_tail/lem_scope/three_word.rs 150
-assert_max_lines src/bin/lay_daemon/tests/scoped_tail/lem_scope/two_word.rs 190
 assert_max_lines src/bin/lay_daemon/tests/scoped_tail/mixed_context.rs 30
 assert_max_lines src/bin/lay_daemon/tests/scoped_tail/mixed_context/current_tail.rs 170
 assert_max_lines src/bin/lay_daemon/tests/scoped_tail/mixed_context/stale_layout.rs 70
 assert_max_lines src/bin/lay_daemon/tests/scoped_tail/mixed_context/trailing_space.rs 90
-assert_max_lines src/bin/lay_lem_research.rs 40
-assert_max_lines src/bin/lay_lem_research/candidates.rs 100
-assert_max_lines src/bin/lay_lem_research/cases.rs 300
-assert_max_lines src/bin/lay_lem_research/report.rs 140
 assert_max_lines src/bin/lay_test_input.rs 120
 assert_max_lines src/bin/lay_test_input/desktop_probe.rs 320
 assert_max_lines src/bin/lay_test_input/input_device.rs 180
@@ -620,26 +600,6 @@ assert_no_import src/llm_backend.rs \
   "llama_cpp" \
   "llm_backend facade must choose providers; direct GGUF runtime belongs in llm_backend/direct.rs"
 
-assert_no_import src/lem.rs \
-  "RU_HUNSPELL" \
-  "lem.rs must use token_language for dictionaries, not direct Hunspell loading"
-
-assert_no_import src/lem.rs \
-  "EN_HUNSPELL" \
-  "lem.rs must use token_language for dictionaries, not direct Hunspell loading"
-
-assert_no_import src/lem.rs \
-  "OnceLock" \
-  "lem.rs must stay a scorer, not own hot dictionary caches"
-
-assert_no_import src/lem.rs \
-  "russian_lexicon" \
-  "lem.rs must use token_language as its lexical boundary"
-
-assert_no_import src/lem.rs \
-  "read_to_string" \
-  "lem.rs must not read dictionary files directly"
-
 assert_single_owner "fn split_ws_segments" "src/word_reader.rs"
 assert_single_owner "pub fn correct_moved_prefix_letter_pair" "src/phrase_reader/moved_prefix.rs"
 assert_single_owner "pub fn correct_split_word_pair" "src/phrase_reader/split_pair.rs"
@@ -687,8 +647,6 @@ assert_single_owner "fn is_ascii_shift_letter_symbol" "src/layout_autoswitch/asc
 assert_single_owner "fn is_plain_ascii_layout_token" "src/layout_autoswitch/ascii/symbols.rs"
 assert_single_owner "fn has_cyrillic(text" "src/text_metrics.rs"
 assert_single_owner "fn without_whitespace" "src/text_metrics.rs"
-assert_single_owner "fn normalized_edit_distance" "src/text_metrics.rs"
-assert_single_owner "fn common_replacement_span" "src/text_metrics.rs"
 assert_single_owner "fn damerau_levenshtein" "src/text_metrics.rs"
 assert_single_owner "fn apply_replacement_plan_to_text" "src/text_edit/diff_plan.rs"
 assert_single_owner "fn plan_text_replacement_with_options" "src/text_edit/diff_plan.rs"
@@ -710,7 +668,6 @@ assert_single_owner "pub(crate) fn apply_text_replacement" "src/bin/lay_daemon/t
 assert_single_owner "pub fn decide_completed_scope_word" "src/scoped_tail/completed_word.rs"
 assert_single_owner "fn flip_word_events" "src/scoped_tail/word_flip.rs"
 assert_single_owner "pub fn repair_cyrillic_prefix_before_ascii_tail" "src/scoped_tail/word_flip.rs"
-assert_single_owner "pub fn scoped_tail_lem_candidates" "src/scoped_tail/lem_candidates.rs"
 assert_single_owner "pub fn effective_replace_words" "src/scoped_tail/scope_policy.rs"
 assert_single_owner "pub fn rank_typing_candidates" "src/typing_candidate/ranking.rs"
 assert_single_owner "pub fn choose_typing_candidate" "src/typing_candidate/ranking.rs"
@@ -732,8 +689,6 @@ assert_single_owner "pub(crate) fn typing_rule_candidate_is_safe" "src/typing_ru
 assert_single_owner "fn apply_layout_en_to_ru(" "src/typing_rule_graph/rules.rs"
 assert_single_owner "fn apply_word_rule(" "src/typing_rule_graph/rules.rs"
 assert_single_owner "pub fn decode_manual_tail" "src/decoder/manual.rs"
-assert_single_owner "pub fn rank_scoped_tail_candidates" "src/decoder/ranked.rs"
-assert_single_owner "pub fn choose_ranked_scoped_tail" "src/decoder/ranked.rs"
 assert_single_owner "pub fn decode_typing_assist_tail(" "src/decoder/typing_tail.rs"
 assert_single_owner "pub fn decode_typing_assist_current_tail" "src/decoder/punctuation.rs"
 assert_single_owner "pub fn decode_enter_autocorrect_tail" "src/decoder/punctuation.rs"

@@ -25,7 +25,6 @@ pub mod input_gate;
 pub mod keyboard;
 pub mod language_action;
 pub mod layout_autoswitch;
-pub mod lem;
 mod lexical_surface_atoms;
 pub mod lexicon;
 pub mod llm;

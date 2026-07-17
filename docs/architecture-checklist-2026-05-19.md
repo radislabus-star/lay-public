@@ -10,7 +10,7 @@
 
 - Нет production-хардкода конкретных пользовательских слов.
 - Runtime-правила выражены через общий признак: раскладка, словарь, n-gram,
-  LEM, edit distance, тип токена, пунктуация, пробельная структура.
+  L2/L3 phase signal, edit distance, тип токена, пунктуация, пробельная структура.
 - Каждое правило имеет отдельный положительный тест и минимум один тест на
   ложное срабатывание.
 - Правила не перекрывают друг друга без явного приоритета.
@@ -84,7 +84,7 @@
 - Для ручного double Shift предпочитать действие пользователя, а не защитное
   “не трогать”.
 - Для 2/3/N слов использовать candidate ranking, а не каскад локальных if.
-- Scoring должен быть сравнимым: dictionary confidence, LEM, n-gram margin,
+- Scoring должен быть сравнимым: dictionary confidence, L2/L3 phase, n-gram margin,
   edit penalty, intervention penalty.
 - Все пороги держать рядом с соответствующим scorer, а не раскидывать по daemon.
 - Тестовые fixtures можно расширять реальными ошибками, но runtime не должен
@@ -208,7 +208,6 @@
 - `scripts/cargo-guard.sh clippy --all-targets -- -D warnings`
 - `scripts/cargo-guard.sh build --release --bins`
 - `scripts/cargo-guard.sh run --quiet --bin lay-ngram-corpus -- check-cache`
-- `scripts/cargo-guard.sh run --quiet --bin lay-lem-research`
 
 `scripts/check-lay-full.sh` проверяет существующий пользовательский n-gram
 cache, а если cache ещё не создан на чистой машине, собирает временный cache в

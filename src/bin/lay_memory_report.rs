@@ -121,9 +121,7 @@ fn print_human(processes: &[ProcessMemory]) {
     println!();
     println!("startup policy:");
     println!("  daemon hot startup: lexicon guards, replacements, ngram");
-    println!(
-        "  daemon lazy cold: russian generated forms, full NANDA context wave, LLMWave, full LEM"
-    );
+    println!("  daemon lazy cold: russian generated forms, full NANDA context wave, LLMWave");
     println!("  IME hot startup: bounded RU/EN completion banks");
     println!();
     println!("budgets:");
@@ -156,7 +154,7 @@ fn print_json(processes: &[ProcessMemory]) {
     println!(
         "    \"daemon_hot_startup\": [\"lexical_phase_mmap\", \"lexicon_guards\", \"typing_replacements\", \"ngram\"],"
     );
-    println!("    \"daemon_lazy_cold\": [\"llmwave\", \"lem_full\"],");
+    println!("    \"daemon_lazy_cold\": [\"llmwave\"],");
     println!("    \"ime_hot_startup\": [\"lexical_phase_mmap\", \"shared_candidate_gate\"]");
     println!("  }},");
     println!("  \"budgets_kb\": {{");

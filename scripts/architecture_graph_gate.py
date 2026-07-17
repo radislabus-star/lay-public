@@ -230,7 +230,6 @@ def is_production_source(path: str) -> bool:
         or path.endswith("_tests.rs")
         or path.endswith("/tests.rs")
         or path.startswith("src/bin/lay_test_input")
-        or path.startswith("src/bin/lay_lem_research")
         or path.startswith("src/bin/lay_nanda_wave_eval")
     )
 

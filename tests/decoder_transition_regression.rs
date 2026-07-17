@@ -1,11 +1,11 @@
 use lay::config::{default_typing_assist_pipeline, CorrectionEngine};
 use lay::decoder::{
-    choose_ranked_scoped_tail, decode_manual_tail, decode_typing_assist_tail,
-    rank_scoped_tail_candidates, CorrectionSource, DecoderAction, ManualDecodeRequest,
+    decode_manual_tail, decode_typing_assist_tail, CorrectionSource, DecoderAction,
+    ManualDecodeRequest,
 };
 use lay::dict::{convert, Direction};
 use lay::keyboard::{map_original_events, replay_layout_decision, text_to_key_events, KeyEvent};
-use lay::typing_assist::{select_typing_assist_exact, ScopedTailOptions};
+use lay::typing_assist::select_typing_assist_exact;
 
 #[path = "common/mod.rs"]
 mod common;
@@ -34,11 +34,6 @@ fn decode_ascii_tail(text: &str, force_replay: bool) -> lay::decoder::ManualDeco
         engine: CorrectionEngine::Smart,
         force_replay,
         auto_replace: true,
-        scoped_options: ScopedTailOptions {
-            lem_enabled: true,
-            allow_layout_auto: true,
-            lem_weight: 1.0,
-        },
     })
 }
 
@@ -83,26 +78,6 @@ fn manual_decoder_replaces_only_bad_word_in_mixed_pair() {
 }
 
 #[test]
-fn ranked_decoder_exposes_margin_for_mixed_pairs() {
-    let row = common::fixture_row_by_id(
-        include_str!("fixtures/decoder_transition_manual_replace.tsv"),
-        "mixed_pair",
-    );
-    let events = ascii_events(&row[1]);
-    let options = ScopedTailOptions {
-        lem_enabled: true,
-        allow_layout_auto: true,
-        lem_weight: 1.0,
-    };
-    let ranked = rank_scoped_tail_candidates(&events, options).expect("ranked candidates");
-    let chosen = choose_ranked_scoped_tail(&events, options).expect("confident decision");
-
-    assert_eq!(ranked.best.text, row[2]);
-    assert!(ranked.margin > 0.20, "margin was {}", ranked.margin);
-    assert_eq!(chosen.best.text, ranked.best.text);
-}
-
-#[test]
 fn ranked_decoder_handles_three_word_tail_without_retyping_good_prefix() {
     let row = common::fixture_row_by_id(
         include_str!("fixtures/decoder_transition_manual_replace.tsv"),
@@ -140,24 +115,6 @@ fn ranked_decoder_keeps_ascii_context_and_flips_uppercase_current_tail() {
         decoded.edit.expect("manual edit").plan,
         common::zero_edge_text_replacement(&row, 3, 4)
     );
-}
-
-#[test]
-fn ranked_decoder_is_disabled_without_lem_flag() {
-    let row = common::fixture_row_by_id(
-        include_str!("fixtures/decoder_transition_manual_replace.tsv"),
-        "mixed_pair",
-    );
-    let events = ascii_events(&row[1]);
-    assert!(rank_scoped_tail_candidates(
-        &events,
-        ScopedTailOptions {
-            lem_enabled: false,
-            allow_layout_auto: true,
-            lem_weight: 1.0,
-        }
-    )
-    .is_none());
 }
 
 #[test]

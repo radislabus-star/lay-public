@@ -220,7 +220,7 @@ curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scr
   превращался в склад списков;
 - встроенные сценарии `lay-test-input` вынесены в `data/test_input`;
 - исправлен баг `protected_words.txt`: пользовательские защищённые ASCII-слова
-  больше не перебиваются LEM/LLM-скорингом, например `cd` не должен
+  больше не перебиваются L2/L3/LLM-скорингом, например `cd` не должен
   превращаться в `св` после пробела.
 
 ## Что нового в 0.1.210
@@ -389,7 +389,7 @@ KDE, Niri и X11 моложе GNOME-пути. Если что-то ломает�
 - физическое соответствие US ↔ RU;
 - Hunspell-словари, если они есть в системе;
 - локальные RU/EN правила;
-- char n-gram и LEM scoring;
+- char n-gram и L2/L3 phase scoring;
 - пользовательские точные замены;
 - пользовательский список защищённых слов.
 
@@ -406,7 +406,7 @@ KDE, Niri и X11 моложе GNOME-пути. Если что-то ломает�
 
 `lay` экспериментирует с маленькой локальной NANDA Wave-архитектурой. Это не
 облачная LLM и сейчас не замена основного автокорректора. Основной runtime
-остаётся детерминированным: словари, LEM/ngram, protected words, rule graph и
+остаётся детерминированным: словари, L2/L3/ngram, protected words, rule graph и
 safe replacement pipeline. NANDA Wave отдельно изучает клеточные признаки,
 кандидаты, ablation и ансамблевые моды.
 
@@ -495,7 +495,7 @@ sentence_mesh      low
 - пользователь даёт главный сигнал истины: оставил, удалил, откатил,
   перепечатал, добавил protected word;
 - deterministic `lay` даёт безопасные initial labels: layout, словари, n-gram,
-  LEM, protected words, replacement safety;
+  L2/L3 signals, protected words, replacement safety;
 - старший teacher/arbiter может помогать разбирать спорные случаи и создавать
   synthetic training cases, но не должен становиться постоянным runtime-мозгом;
 - offline trainer собирает fixtures, synthetic cases, learning log, user
@@ -608,7 +608,7 @@ evdev. Это делает основной сценарий быстрым, н�
 - `Режим ввода` — быстрый uinput или экспериментальный IME backend с
   preedit-кандидатами.
 - `Область` — сколько слов брать для double Shift, по умолчанию `1`.
-- `Арбитр` — LEM и auto-layout настройки.
+- `Кандидаты и ввод` — L2/L3 и auto-layout настройки.
 - `ptah_alexs` — жёсткая раскладка по окну.
 - `Daemon` — запуск, остановка и статус сервиса.
 - `О программе` — версия, ссылка на GitHub и служебная информация.
@@ -669,7 +669,7 @@ Shift rescue невозможен. По умолчанию он не отпра�
 - что ожидалось;
 - что получилось;
 - GNOME/KDE/Niri/X11 и версия системы;
-- включены ли `Помощь при наборе`, `Автоподмена`, `Smart`, LEM.
+- включены ли `Помощь при наборе`, `Автоподмена`, `Smart` и IME.
 
 Приватный текст перед отправкой лучше заменить на безопасный пример.
 

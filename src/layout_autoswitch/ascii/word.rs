@@ -3,7 +3,6 @@ use crate::russian_lexicon::russian_tiny_dictionary;
 use crate::word_reader::split_word_punctuation;
 
 use super::super::english::is_known_english_layout_autoswitch_word;
-use super::super::score::lem_prefers_layout_candidate;
 use super::candidate::ascii_to_russian_layout_candidate;
 use super::punctuation::correct_word_preserving_trailing_punctuation;
 use super::symbols::{
@@ -37,7 +36,7 @@ pub(crate) fn correct_confident_wrong_layout_ascii_word(token: &str) -> Option<S
     {
         return None;
     }
-    if candidate.clean_alpha && !lem_prefers_layout_candidate(original_word, &candidate.word) {
+    if candidate.clean_alpha {
         return None;
     }
     Some(candidate.replacement)
@@ -83,7 +82,7 @@ pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
     }
 
     if is_protected_ascii_layout_token(token) {
-        return lem_prefers_layout_candidate(original_word, &normalized_word).then_some(normalized);
+        return None;
     }
     if allow_short_layout_word(original_word, &normalized_lower)
         || is_common_ru_word(&normalized_lower)

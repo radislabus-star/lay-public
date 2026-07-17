@@ -51,11 +51,4 @@ impl LayConfig {
             _ => CorrectionSafety::Normal,
         }
     }
-
-    pub fn lem_enabled_for_scope(&self, word_count: usize) -> bool {
-        if !self.lem_enabled || self.active_lem_weight() <= 0.0 {
-            return false;
-        }
-        word_count >= 2
-    }
 }

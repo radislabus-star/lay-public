@@ -81,7 +81,6 @@ Desktop интеграции
   words.
 - `src/ru_typo.rs` — семейства русских опечаток.
 - `src/russian_lexicon.rs` — Hunspell и русские формы.
-- `src/lem.rs` — Layout Error Metric для готовых вариантов.
 - `src/ngram.rs` — char n-gram scorer.
 - `src/text_edit.rs` — минимальные планы замены текста.
 - `src/keyboard.rs` — key events, раскладочная карта и печать текста через
@@ -207,7 +206,7 @@ html djn  -> html вот
 
 Слова из него являются стоп-сигналом для автоперекладки ASCII→RU. Это не
 “маленький вес” и не подсказка scorer-у. Если пользователь защитил токен,
-pipeline обязан оставить его как есть до любого LEM/LLM/ngram решения.
+pipeline обязан оставить его как есть до любого L2/L3/ngram решения.
 
 Пример:
 
@@ -228,7 +227,7 @@ cd  -> cd
 keyboard map
   + dictionaries
   + protected/technical-token recognizer
-  + LEM/ngram scoring
+  + L2/L3 phase and n-gram scoring
   + conservative rule graph
 ```
 

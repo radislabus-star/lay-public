@@ -13,10 +13,6 @@ pub(crate) enum Lang {
     En,
 }
 
-pub(crate) fn warm_up() {
-    crate::word_recognizer::warm_up();
-}
-
 pub(crate) fn is_known_ru_token(token: &str) -> bool {
     recognize_token(token).is_known_russian_plain_word()
 }

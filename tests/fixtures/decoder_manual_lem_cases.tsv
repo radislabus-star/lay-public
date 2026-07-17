@@ -1,3 +1,0 @@
-# label	original	converted	expected
-valid_current_ascii_tail	hfcxtn\sd\swechat	расчет\sв\sцусрфе	расчет\sв\swechat
-bad_current_ascii_tail	port\sgjhn	зщке\sпорт	port\sпорт

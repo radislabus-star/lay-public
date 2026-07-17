@@ -63,14 +63,8 @@ fn auto_switch_layout_is_enabled_by_default() {
 }
 
 #[test]
-fn lem_scope_flags_are_enabled_by_default() {
+fn nanda_weights_and_pipeline_are_enabled_by_default() {
     let cfg = LayConfig::default();
-    assert!(cfg.lem_enabled);
-    assert!(!cfg.lem_enabled_for_scope(1));
-    assert!(cfg.lem_enabled_for_scope(2));
-    assert!(cfg.lem_enabled_for_scope(3));
-    assert!(cfg.lem_enabled_for_scope(8));
-    assert_eq!(cfg.active_lem_weight(), 1.0);
     assert_eq!(cfg.active_nanda_l2_weight(), 1.0);
     assert_eq!(cfg.active_nanda_l3_weight(), 1.0);
     assert_eq!(

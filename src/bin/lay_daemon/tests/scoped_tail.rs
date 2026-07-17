@@ -1,7 +1,5 @@
 use super::*;
 
-#[path = "scoped_tail/lem_scope.rs"]
-mod lem_scope;
 #[path = "scoped_tail/manual_toggle.rs"]
 mod manual_toggle;
 #[path = "scoped_tail/mixed_context.rs"]

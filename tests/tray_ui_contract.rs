@@ -33,7 +33,6 @@ fn tray_inventory_is_compact_and_each_action_has_an_owner() {
         "Режим ввода:",
         "Помощь при наборе",
         "Автозамена",
-        "Контур LEM",
         "Следовать языку исправления",
         "Настройки",
         "Диагностика",
@@ -60,21 +59,6 @@ fn tray_inventory_is_compact_and_each_action_has_an_owner() {
 }
 
 #[test]
-fn visible_lem_control_owns_all_lem_scopes() {
-    let tray = read("lay-impl.js");
-    let toggle = nearby(&tray, "if (key === 'lem_enabled')", 220);
-    assert!(toggle.contains("lem_2_words = state"));
-    assert!(toggle.contains("lem_3_words = state"));
-
-    for file in ["settings.js", "prefs.js"] {
-        let source = read(file);
-        assert!(source.contains("'Контур LEM', 'lem_enabled', true"));
-        assert!(source.contains("lem_2_words"));
-        assert!(source.contains("lem_3_words"));
-    }
-}
-
-#[test]
 fn settings_restart_the_complete_runtime_for_ime_owned_controls() {
     for file in ["settings.js", "prefs.js"] {
         let source = read(file);
@@ -85,8 +69,6 @@ fn settings_restart_the_complete_runtime_for_ime_owned_controls() {
 
         for control in [
             "'Следовать языку исправления', 'auto_switch_layout', true",
-            "'Контур LEM', 'lem_enabled', true",
-            "'Вес LEM', 'lem_weight_percent', true",
             "'Вес L2 кандидатов', 'nanda_l2_weight_percent', true",
             "'Вес L3 фразы', 'nanda_l3_weight_percent', true",
             "'Подсказки в [скобках]', 'ime_bracket_candidates', true",
@@ -190,8 +172,6 @@ fn diagnostics_owns_service_logging_and_recent_actions() {
 fn tray_does_not_show_internal_research_counters_or_blink() {
     let tray = read("lay-impl.js");
     for stale in [
-        "LEM вкл",
-        "LEM выкл",
         "LLM ${",
         "promoted_rules",
         "_aboutStatsText",

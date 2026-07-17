@@ -1,7 +1,0 @@
-# Synthetic LEM probe brand-like tokens.
-AmoCRM
-GitHub
-NTFS
-Linux
-JSON
-USB-C

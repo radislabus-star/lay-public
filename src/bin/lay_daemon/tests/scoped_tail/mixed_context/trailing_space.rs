@@ -31,8 +31,7 @@ fn scoped_tail_trailing_space_keeps_previous_russian_word_and_flips_completed_ta
         "two-word tail",
     );
     let original = map_original_events(&events);
-    let replacement =
-        decide_scoped_tail_correction_with_lem(&events, true).expect("smart replacement");
+    let replacement = decide_scoped_tail_correction(&events).expect("smart replacement");
 
     assert_eq!(original, row[4]);
     assert_eq!(replacement, row[5]);

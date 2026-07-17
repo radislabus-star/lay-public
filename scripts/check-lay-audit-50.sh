@@ -112,7 +112,6 @@ check "private file open centralized" private_file_open_centralized
 check "chmod centralized" chmod_centralized
 check "scoped tail independent from public facade" bash -c '! grep -nF "use crate::typing_assist" src/scoped_tail.rs'
 check "typing pipeline independent from scoped tail" bash -c '! grep -nF "use crate::scoped_tail" src/typing_pipeline.rs'
-check "lem no direct hunspell" bash -c '! grep -nE "RU_HUNSPELL|EN_HUNSPELL|read_to_string|OnceLock" src/lem.rs'
 check "llm facade no transport crates" bash -c '! grep -nE "ureq::|llama_cpp|serde::" src/llm.rs'
 
 check "typing context tests declared" test -f src/typing_context_tests.rs

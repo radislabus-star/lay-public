@@ -10,7 +10,6 @@ use crate::word_recognizer::{recognize_token, WordScript};
 
 use super::english::{is_known_english_layout_autoswitch_word, is_plain_ascii_word_candidate};
 use super::is_known_russian_layout_autoswitch_word;
-use super::score::lem_prefers_layout_candidate;
 
 pub(crate) fn correct_wrong_layout_cyrillic_word(token: &str) -> Option<String> {
     correct_wrong_layout_cyrillic_word_with_policy(token, EnglishLayoutPolicy::Strict)
@@ -89,8 +88,7 @@ fn correct_wrong_layout_cyrillic_word_with_policy(
                 || is_known_non_russian_to_english_layout_candidate(
                     &original_lower,
                     &candidate_lower,
-                )
-                || lem_prefers_layout_candidate(original_word, &candidate_word))
+                ))
             .then_some(candidate)
         })
 }
@@ -188,7 +186,7 @@ mod tests {
     }
 
     #[test]
-    fn known_plain_english_word_autoswitches_without_lem_authority() {
+    fn known_plain_english_word_autoswitches_without_parallel_scorer() {
         assert_eq!(
             correct_wrong_layout_cyrillic_word("руддщ"),
             Some("hello".to_string())

@@ -5,7 +5,7 @@ export const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 export const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-export const APP_VERSION = '0.2.260';
+export const APP_VERSION = '0.2.261';
 export const APP_LICENSE = 'Non-Commercial';
 export const APP_URL = 'https://github.com/radislabus-star/lay-public';
 export const APP_ICON_NAME = 'input-keyboard-symbolic';
@@ -31,10 +31,6 @@ export const AUTO_SWITCH_TOOLTIP = 'После автоматической по
     + 'раскладку исправленного текста. Двойной Shift переключает раскладку всегда.';
 export const ENTER_AUTOCORRECT_TOOLTIP = 'Опционально: перед Enter lay пробует исправить текущий хвост\n'
     + 'и только потом отправляет Enter. По умолчанию выключено, потому что Enter часто отправляет сообщение.';
-export const LEM_2_TOOLTIP = 'LEM-арбитр для двух слов: сравнивает готовые варианты хвоста\n'
-    + 'и выбирает более естественный, не генерируя новый текст.';
-export const LEM_3_TOOLTIP = 'LEM-арбитр для трех слов и длиннее: нужен для смешанных RU/EN\n'
-    + 'фраз, где соседние слова помогают понять раскладку.';
 export const PTAH_ALEXS_TOOLTIP = 'Жёсткая раскладка по окну: при фокусе окна lay ставит\n'
     + 'заданную раскладку, а не вспоминает последнюю случайную.';
 export const PTAH_RULE_LIMIT = 80;
@@ -110,10 +106,6 @@ export const DEFAULTS = {
     correction_safety: 'normal',
     enter_autocorrect: false,
     auto_switch_layout: true,
-    lem_enabled: true,
-    lem_2_words: true,
-    lem_3_words: true,
-    lem_weight_percent: 80,
     nanda_l2_weight_percent: 20,
     nanda_l3_weight_percent: 8,
     llmwave_shadow: true,
@@ -182,10 +174,12 @@ export function normalizeConfig(cfg) {
     let forceEnKey = normalizeChoice(cfg?.force_en_key, FORCE_KEY_OPTIONS.map(([id]) => id), DEFAULTS.force_en_key);
     if (forceEnKey === forceRuKey)
         forceEnKey = forceRuKey === DEFAULTS.force_en_key ? DEFAULTS.force_ru_key : DEFAULTS.force_en_key;
-    const lemEnabled = !!cfg?.lem_enabled;
+    const knownConfig = Object.fromEntries(Object.keys(DEFAULTS)
+        .filter(key => Object.prototype.hasOwnProperty.call(cfg ?? {}, key))
+        .map(key => [key, cfg[key]]));
     return {
         ...DEFAULTS,
-        ...cfg,
+        ...knownConfig,
         replace_words: normalizeScope(cfg?.replace_words),
         typing_assist_words: normalizeScope(cfg?.typing_assist_words),
         correction_engine: normalizeChoice(cfg?.correction_engine, ['replay', 'smart'], DEFAULTS.correction_engine),
@@ -193,9 +187,6 @@ export function normalizeConfig(cfg) {
         text_backend: textBackend,
         force_ru_key: forceRuKey,
         force_en_key: forceEnKey,
-        lem_enabled: lemEnabled,
-        lem_2_words: lemEnabled,
-        lem_3_words: lemEnabled,
         nanda_precognition: !!cfg?.nanda_precognition,
         llmwave_shadow: cfg?.llmwave_shadow !== false,
         llmwave_apply: cfg?.llmwave_apply !== false,
@@ -207,7 +198,6 @@ export function normalizeConfig(cfg) {
         ptah_alexs_mode: !!cfg?.ptah_alexs_mode,
         multi_tap_scope: !!cfg?.multi_tap_scope,
         multi_tap_max_taps: clampNumber(cfg?.multi_tap_max_taps, 2, 4, DEFAULTS.multi_tap_max_taps),
-        lem_weight_percent: clampNumber(cfg?.lem_weight_percent, 0, 200, DEFAULTS.lem_weight_percent),
         nanda_l2_weight_percent: clampNumber(cfg?.nanda_l2_weight_percent, 0, 200, DEFAULTS.nanda_l2_weight_percent),
         nanda_l3_weight_percent: clampNumber(cfg?.nanda_l3_weight_percent, 0, 200, DEFAULTS.nanda_l3_weight_percent),
         mode: 'simple',

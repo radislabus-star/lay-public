@@ -79,6 +79,3 @@ jobs:
         run: |
           cargo run --quiet --bin lay-ngram-corpus -- cache --out target/lay-ci-ngram-ru.json
           cargo run --quiet --bin lay-ngram-corpus -- check-cache --cache target/lay-ci-ngram-ru.json
-
-      - name: LEM research probe
-        run: cargo run --quiet --bin lay-lem-research

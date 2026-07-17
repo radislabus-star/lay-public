@@ -1,12 +1,5 @@
 use super::LayConfig;
 impl LayConfig {
-    pub fn active_lem_weight(&self) -> f64 {
-        if !self.lem_enabled {
-            return 0.0;
-        }
-        f64::from(self.lem_weight_percent.clamp(0, 200)) / 80.0
-    }
-
     pub fn active_nanda_l2_weight(&self) -> f32 {
         f32::from(self.nanda_l2_weight_percent.clamp(0, 200)) / 20.0
     }

@@ -7,7 +7,6 @@ use lay::engine::{decide_manual_correction, ManualCorrectionInput, ManualCorrect
 use lay::keyboard::{
     map_events_to_layout, map_original_events, replay_layout_decision, text_to_key_events,
 };
-use lay::typing_assist::ScopedTailOptions;
 
 const DECODER_ALTERNATING_STRESS_CASES: &str =
     include_str!("fixtures/decoder_alternating_stress.tsv");
@@ -27,11 +26,6 @@ fn decode_manual_visible_tail(input: &str) -> String {
             engine: CorrectionEngine::Smart,
             force_replay: false,
             auto_replace: true,
-            scoped_options: ScopedTailOptions {
-                lem_enabled: true,
-                allow_layout_auto: true,
-                lem_weight: 1.0,
-            },
         },
     );
 

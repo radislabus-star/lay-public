@@ -1,7 +1,0 @@
-# Synthetic LEM probe natural hyphenated Russian words.
-код-дэ-вуар
-пара-пара
-рок-н-ролл
-чек-лист
-тест-кейс
-интернет-магазин

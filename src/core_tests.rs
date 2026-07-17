@@ -17,10 +17,6 @@ fn facade_exposes_layout_conversion_and_backend_detection() {
 
 #[test]
 fn facade_exposes_candidate_scoring() {
-    let best =
-        best_candidate("ghbdtn", ["ghbdtn".to_string(), "привет".to_string()]).expect("candidate");
-    assert_eq!(best.text, "привет");
-
     let decision = rank_typing_candidates([
         TypingCandidate::new("missing_letter", 10, "кторое ", "которое ".to_string()),
         TypingCandidate::new("glued_phrase", 200, "кторое ", "к торое ".to_string()),
@@ -63,7 +59,6 @@ fn facade_exposes_decoder_contract() {
         engine: CorrectionEngine::Smart,
         force_replay: true,
         auto_replace: true,
-        scoped_options: crate::typing_assist::ScopedTailOptions::default(),
     });
 
     assert_eq!(result.action, DecoderAction::ReplayAll);

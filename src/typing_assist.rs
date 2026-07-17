@@ -18,9 +18,8 @@ pub use crate::russian_lexicon::{
 };
 pub use crate::scoped_tail::{
     decide_completed_scope_word, decide_correction, decide_scoped_tail_correction,
-    decide_scoped_tail_correction_with_lem, decide_scoped_tail_correction_with_options,
-    effective_replace_words, repair_cyrillic_prefix_before_ascii_tail, scoped_tail_lem_candidates,
-    should_force_replay_for_short_fragment, ScopedTailOptions,
+    effective_replace_words, repair_cyrillic_prefix_before_ascii_tail,
+    should_force_replay_for_short_fragment,
 };
 pub use crate::typing_pipeline::{
     explain_typing_assist_with_pipeline, select_typing_assist, select_typing_assist_exact,

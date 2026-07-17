@@ -4,7 +4,7 @@ import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.2.260';
+const APP_VERSION = '0.2.261';
 const APP_RELEASE_DATE = '2026-07-17';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
@@ -206,10 +206,6 @@ const DEFAULTS = {
     correction_safety: 'normal',
     enter_autocorrect: false,
     auto_switch_layout: true,
-    lem_enabled: true,
-    lem_2_words: true,
-    lem_3_words: true,
-    lem_weight_percent: 80,
     nanda_l2_weight_percent: 20,
     nanda_l3_weight_percent: 8,
     llmwave_shadow: true,
@@ -244,19 +240,18 @@ function normalize(cfg) {
     let forceEnKey = choice(cfg?.force_en_key, OPTIONS.force_key.map(([id]) => id), DEFAULTS.force_en_key);
     if (forceEnKey === forceRuKey)
         forceEnKey = forceRuKey === DEFAULTS.force_en_key ? DEFAULTS.force_ru_key : DEFAULTS.force_en_key;
-    const lemEnabled = !!cfg?.lem_enabled;
+    const knownConfig = Object.fromEntries(Object.keys(DEFAULTS)
+        .filter(key => Object.prototype.hasOwnProperty.call(cfg ?? {}, key))
+        .map(key => [key, cfg[key]]));
     return {
         ...DEFAULTS,
-        ...cfg,
+        ...knownConfig,
         mode: 'simple',
         correction_engine: choice(cfg?.correction_engine, OPTIONS.correction_engine.map(([id]) => id), DEFAULTS.correction_engine),
         layout_backend: choice(cfg?.layout_backend, OPTIONS.layout_backend.map(([id]) => id), DEFAULTS.layout_backend),
         text_backend: textBackend,
         force_ru_key: forceRuKey,
         force_en_key: forceEnKey,
-        lem_enabled: lemEnabled,
-        lem_2_words: lemEnabled,
-        lem_3_words: lemEnabled,
         nanda_precognition: !!cfg?.nanda_precognition,
         llmwave_shadow: cfg?.llmwave_shadow !== false,
         llmwave_apply: cfg?.llmwave_apply !== false,
@@ -273,7 +268,6 @@ function normalize(cfg) {
         multi_tap_max_taps: number(cfg?.multi_tap_max_taps, 2, 4, DEFAULTS.multi_tap_max_taps),
         tap_max_ms: number(cfg?.tap_max_ms, 100, 500, DEFAULTS.tap_max_ms),
         shift_window_ms: number(cfg?.shift_window_ms, 150, 600, DEFAULTS.shift_window_ms),
-        lem_weight_percent: number(cfg?.lem_weight_percent, 0, 200, DEFAULTS.lem_weight_percent),
         nanda_l2_weight_percent: number(cfg?.nanda_l2_weight_percent, 0, 200, DEFAULTS.nanda_l2_weight_percent),
         nanda_l3_weight_percent: number(cfg?.nanda_l3_weight_percent, 0, 200, DEFAULTS.nanda_l3_weight_percent),
     };
@@ -387,8 +381,6 @@ class SettingsView {
         ]), 0, 1, 1, 1);
         grid.attach(this.section('Кандидаты и ввод', [
             this.comboRow('Режим ввода', 'text_backend', OPTIONS.text_backend, true),
-            this.switchRow('Контур LEM', 'lem_enabled', true),
-            this.weightRow('Вес LEM', 'lem_weight_percent', true),
             this.weightRow('Вес L2 кандидатов', 'nanda_l2_weight_percent', true),
             this.weightRow('Вес L3 фразы', 'nanda_l3_weight_percent', true),
             this.switchRow('Подсказки в [скобках]', 'ime_bracket_candidates', true),
@@ -415,10 +407,6 @@ class SettingsView {
         const sw = new Gtk.Switch({active: !!this.cfg[key]});
         sw.connect('notify::active', () => {
             this.cfg[key] = sw.active;
-            if (key === 'lem_enabled') {
-                this.cfg.lem_2_words = sw.active;
-                this.cfg.lem_3_words = sw.active;
-            }
             saveConfig(this.cfg);
             if (needsRestart)
                 restartDaemon();

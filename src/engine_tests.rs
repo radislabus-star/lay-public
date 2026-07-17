@@ -22,7 +22,6 @@ fn manual_engine_is_platform_neutral_for_replay() {
             engine: CorrectionEngine::Smart,
             force_replay: true,
             auto_replace: true,
-            scoped_options: ScopedTailOptions::default(),
         },
     );
 
@@ -44,11 +43,6 @@ fn manual_engine_keeps_good_prefix_for_smart_text() {
             engine: CorrectionEngine::Smart,
             force_replay: false,
             auto_replace: true,
-            scoped_options: ScopedTailOptions {
-                lem_enabled: true,
-                allow_layout_auto: true,
-                lem_weight: 1.0,
-            },
         },
     );
 
@@ -70,11 +64,6 @@ fn manual_engine_replays_single_cyrillic_layout_word_to_ascii() {
             engine: CorrectionEngine::Smart,
             force_replay: false,
             auto_replace: true,
-            scoped_options: ScopedTailOptions {
-                lem_enabled: true,
-                allow_layout_auto: true,
-                lem_weight: 1.0,
-            },
         },
     );
 

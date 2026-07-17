@@ -20,7 +20,7 @@ The strongest architecture is layered:
 1. Low-level evdev listener and uinput/text backend for fast manual rescue.
 2. Conservative word-buffer model for exact local context.
 3. Candidate generator: layout flip, typo edit, split/join, protected token.
-4. Scorer/arbiter: dictionaries, char n-gram, LEM/noisy-channel style score.
+4. Scorer/arbiter: dictionaries, char n-gram, learned phase/noisy-channel score.
 5. Optional desktop-specific atomic edit backend where the platform is reliable.
 6. Optional model/LLM only as a late arbiter for ambiguous candidates, not as the
    primary writer.
@@ -215,7 +215,7 @@ manual double Shift can still act, but automatic correction must stay quiet.
 
 Implication for `lay`:
 
-The current LEM/ngram direction is aligned with old, proven spelling-correction
+The current phase/ngram direction is aligned with old, proven spelling-correction
 math. The next important step is not another list of special cases. It is a
 unified candidate lattice and scorer, with the user's examples as regression
 tests.
@@ -306,7 +306,7 @@ Recommended tray modes:
 - Learning / remember corrections.
 - Experimental scorers:
   - n-gram;
-  - LEM;
+  - learned phase scorer;
   - model arbiter.
 - Backend:
   - Auto;
@@ -448,7 +448,7 @@ Recommended:
 
 - Keep uinput backend as default fast path.
 - Keep typing assist conservative.
-- Keep LEM/ngram hot.
+- Keep phase/ngram readout hot.
 - Expand corpus tests around real mixed-language sentences.
 - Add command/report bundle for issues.
 - Add release notes and update docs.

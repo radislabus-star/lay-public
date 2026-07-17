@@ -54,13 +54,6 @@ else
   echo "== skip ngram cache check (set LAY_CHECK_NGRAM=1) =="
 fi
 
-if [[ "${LAY_CHECK_LEM_RESEARCH:-0}" == "1" ]]; then
-  echo "== cargo run --quiet --bin lay-lem-research =="
-  cargo run --quiet --bin lay-lem-research
-else
-  echo "== skip lay-lem-research (set LAY_CHECK_LEM_RESEARCH=1) =="
-fi
-
 echo "== git diff --check =="
 git diff --check
 

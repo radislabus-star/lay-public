@@ -4,16 +4,11 @@ use lay::keyboard::{
     map_events_to_layout, map_original_events, mark_single_current_word_layout_if_stale,
     replay_layout_decision,
 };
-use lay::typing_assist::{
-    effective_replace_words, should_force_replay_for_short_fragment, ScopedTailOptions,
-};
+use lay::typing_assist::{effective_replace_words, should_force_replay_for_short_fragment};
 use std::time::Instant;
 
 use super::auto_undo_runtime::handle_pending_auto_undo;
-use super::{
-    active_auto_switch_layout, active_lem_enabled_for_scope, active_lem_weight, log,
-    log_manual_trigger_cross_check, read_current_layout_is_ru, ExecutingGuard,
-};
+use super::{log, log_manual_trigger_cross_check, read_current_layout_is_ru, ExecutingGuard};
 
 #[path = "correction_runtime/decision_support.rs"]
 mod decision_support;
@@ -126,11 +121,6 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
     if force_replay_toggle {
         log("  smart: replay без модели");
     }
-    let scoped_options = ScopedTailOptions {
-        lem_enabled: active_lem_enabled_for_scope(words_orig),
-        allow_layout_auto: active_auto_switch_layout(),
-        lem_weight: active_lem_weight(),
-    };
     let correction_result = decide_manual_correction(
         ManualCorrectionInput {
             events: &events,
@@ -141,7 +131,6 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
             engine,
             force_replay: force_replay_toggle,
             auto_replace,
-            scoped_options,
         },
     );
     apply_manual_correction_output(

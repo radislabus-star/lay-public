@@ -39,11 +39,6 @@ fn scoped_tail_keeps_good_russian_previous_word_and_flips_current_currency_symbo
         engine: CorrectionEngine::Smart,
         force_replay: false,
         auto_replace: true,
-        scoped_options: ScopedTailOptions {
-            lem_enabled: true,
-            allow_layout_auto: true,
-            lem_weight: 1.0,
-        },
     });
 
     assert_eq!(original, row[4]);
@@ -92,9 +87,7 @@ fn scoped_tail_keeps_single_completed_cyrillic_fragment_before_current_word() {
         "two-word tail",
     );
     let original = map_original_events(&events);
-    let replacement = decide_scoped_tail_correction_with_lem(&events, true)
-        .or_else(|| decide_scoped_tail_correction(&events))
-        .expect("smart replacement");
+    let replacement = decide_scoped_tail_correction(&events).expect("smart replacement");
 
     assert_eq!(original, row[4]);
     assert_eq!(replacement, row[6]);

@@ -459,13 +459,8 @@ fn committed_tail_external_observation(
 fn warm_runtime(config: &LayConfig) {
     lay::config::publish_runtime_config(config);
     lay::hot_field::set_process_policy(lay::hot_field::HotFieldPolicy::ime());
-    #[cfg(test)]
-    {
-        lay::lem::set_runtime_enabled(config.lem_enabled && config.active_lem_weight() > 0.0);
-    }
     #[cfg(not(test))]
     {
-        lay::lem::set_runtime_enabled(config.lem_enabled && config.active_lem_weight() > 0.0);
         if config.active_text_backend().should_try_ime() {
             lay::nanda_wave::ensure_l2_ime_warmup_started();
         } else {
@@ -475,7 +470,6 @@ fn warm_runtime(config: &LayConfig) {
             && (config.auto_replace || config.typing_assist || config.auto_switch_layout)
         {
             lay::typing_assist::warm_up();
-            lay::lem::warm_up();
             std::thread::spawn(lay::nanda_wave::warm_up);
         }
     }

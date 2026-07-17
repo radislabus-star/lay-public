@@ -64,12 +64,7 @@ fn current_config() -> LayConfig {
 }
 
 fn sync_hot_runtime(config: &LayConfig) {
-    sync_lem_runtime(config);
     sync_hot_field_runtime(config);
-}
-
-fn sync_lem_runtime(config: &LayConfig) {
-    lay::lem::set_runtime_enabled(config.lem_enabled && config.active_lem_weight() > 0.0);
 }
 
 fn sync_hot_field_runtime(config: &LayConfig) {
@@ -187,14 +182,6 @@ fn daemon_nanda_autocorrect_active(cfg: &LayConfig) -> bool {
 
 fn daemon_hot_field_policy(cfg: &LayConfig) -> lay::hot_field::HotFieldPolicy {
     lay::hot_field::HotFieldPolicy::daemon_for_text_backend(cfg.active_text_backend())
-}
-
-pub(super) fn active_lem_enabled_for_scope(word_count: usize) -> bool {
-    current_config().lem_enabled_for_scope(word_count)
-}
-
-pub(super) fn active_lem_weight() -> f64 {
-    current_config().active_lem_weight()
 }
 
 #[cfg(not(test))]

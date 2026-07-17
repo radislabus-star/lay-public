@@ -54,7 +54,7 @@ pub(super) fn listen_keyboard(
             .as_deref(),
     );
     log(&format!(
-        "► config: mode={} backend={} replace_words={} auto_replace={} typing_assist={} enter_autocorrect={} auto_switch_layout={} lem2={} lem3={} trigger={} force_layout={} ru_key={} en_key={} multi_tap={} max_taps={} tap={}ms window={}ms debounce={}ms",
+        "► config: mode={} backend={} replace_words={} auto_replace={} typing_assist={} enter_autocorrect={} auto_switch_layout={} trigger={} force_layout={} ru_key={} en_key={} multi_tap={} max_taps={} tap={}ms window={}ms debounce={}ms",
         cfg.mode,
         active_layout_backend().label(),
         cfg.replace_words,
@@ -62,8 +62,6 @@ pub(super) fn listen_keyboard(
         cfg.typing_assist,
         enter_autocorrect_active,
         cfg.auto_switch_layout,
-        cfg.lem_2_words,
-        cfg.lem_3_words,
         cfg.trigger,
         cfg.force_layout_hotkeys,
         cfg.force_ru_key,

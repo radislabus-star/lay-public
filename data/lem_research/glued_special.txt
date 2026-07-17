@@ -1,2 +1,0 @@
-# Synthetic LEM probe glued phrases that should split.
-я тут

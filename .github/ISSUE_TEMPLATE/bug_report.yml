@@ -102,8 +102,6 @@ body:
         typing_assist:
         auto_replace:
         auto_switch_layout:
-        lem_2_words:
-        lem_3_words:
         layout_backend:
 
   - type: textarea

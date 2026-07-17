@@ -71,8 +71,6 @@ CONFIG_DEFAULTS: dict[str, Any] = {
     "correction_safety": "normal",
     "enter_autocorrect": False,
     "auto_switch_layout": True,
-    "lem_2_words": True,
-    "lem_3_words": True,
     "debug_action_log": False,
     "learning_log": False,
     "nanda_autocorrect": False,

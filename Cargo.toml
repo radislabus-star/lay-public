@@ -1,6 +1,6 @@
 [package]
 name = "lay"
-version = "0.2.260"
+version = "0.2.261"
 edition = "2021"
 description = "Typing correction and RU/EN layout switching for Linux desktops"
 license-file = "LICENSE"
@@ -30,10 +30,6 @@ path = "src/bin/lay_test_input.rs"
 [[bin]]
 name = "lay-ngram-corpus"
 path = "src/bin/lay_ngram_corpus.rs"
-
-[[bin]]
-name = "lay-lem-research"
-path = "src/bin/lay_lem_research.rs"
 
 [[bin]]
 name = "lay-nanda-wave-eval"

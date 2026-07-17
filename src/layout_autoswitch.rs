@@ -8,7 +8,6 @@ mod ascii;
 mod cyrillic;
 mod english;
 mod hyphen;
-mod score;
 mod technical;
 
 use crate::keyboard::is_cyrillic_letter;

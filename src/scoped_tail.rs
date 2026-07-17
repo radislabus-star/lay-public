@@ -1,45 +1,25 @@
 //! Smart scoped-tail correction for manual layout rescue.
 //!
 //! This facade owns the public scoped-tail contract. Concrete responsibilities
-//! live in submodules: scope policy, LEM candidate generation, completed-word
-//! decisions and physical word flipping.
+//! live in submodules: scope policy, completed-word decisions and physical
+//! word flipping.
 
 use evdev::KeyCode;
 
 use crate::config::CorrectionEngine;
 use crate::correction::Correction;
 use crate::keyboard::{map_original_events, split_event_words, KeyEvent};
-use crate::lem::ScoredCandidate;
 
 mod completed_word;
-mod lem_candidates;
 mod scope_policy;
 mod word_flip;
 
 pub use completed_word::decide_completed_scope_word;
-pub use lem_candidates::scoped_tail_lem_candidates;
 pub use scope_policy::{effective_replace_words, should_force_replay_for_short_fragment};
 pub use word_flip::repair_cyrillic_prefix_before_ascii_tail;
 
 use completed_word::short_completed_tail_layout_flip;
 use word_flip::flip_word_events;
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct ScopedTailOptions {
-    pub lem_enabled: bool,
-    pub allow_layout_auto: bool,
-    pub lem_weight: f64,
-}
-
-impl Default for ScopedTailOptions {
-    fn default() -> Self {
-        Self {
-            lem_enabled: false,
-            allow_layout_auto: true,
-            lem_weight: 1.0,
-        }
-    }
-}
 
 pub fn decide_correction(original: &str, converted: &str, engine: CorrectionEngine) -> Correction {
     if engine == CorrectionEngine::Replay || original == converted {
@@ -61,27 +41,6 @@ pub fn decide_correction(original: &str, converted: &str, engine: CorrectionEngi
 }
 
 pub fn decide_scoped_tail_correction(events: &[KeyEvent]) -> Option<String> {
-    decide_scoped_tail_correction_with_options(events, ScopedTailOptions::default())
-}
-
-pub fn decide_scoped_tail_correction_with_lem(
-    events: &[KeyEvent],
-    enabled: bool,
-) -> Option<String> {
-    decide_scoped_tail_correction_with_options(
-        events,
-        ScopedTailOptions {
-            lem_enabled: enabled,
-            allow_layout_auto: true,
-            lem_weight: 1.0,
-        },
-    )
-}
-
-pub fn decide_scoped_tail_correction_with_options(
-    events: &[KeyEvent],
-    options: ScopedTailOptions,
-) -> Option<String> {
     let words = split_event_words(events)?;
     if words.len() < 2 {
         if let [word] = words.as_slice() {
@@ -100,14 +59,6 @@ pub fn decide_scoped_tail_correction_with_options(
     let has_trailing_space = events
         .last()
         .is_some_and(|event| event.keycode == KeyCode::KEY_SPACE.code());
-    if options.lem_enabled {
-        if let Some(best_text) =
-            best_lem_scoped_tail(&words, &original, has_trailing_space, options)
-        {
-            return Some(best_text);
-        }
-    }
-
     let mut out = String::with_capacity(original.len());
     for (idx, word) in words.iter().enumerate() {
         if idx > 0 {
@@ -140,120 +91,4 @@ fn word_has_mixed_layouts(word: &[KeyEvent]) -> bool {
         return false;
     };
     word.iter().any(|event| event.layout_is_ru != first)
-}
-
-pub(crate) fn rank_scoped_tail_lem_candidates(
-    events: &[KeyEvent],
-    options: ScopedTailOptions,
-) -> Option<(String, Vec<ScoredCandidate>)> {
-    if !options.lem_enabled {
-        return None;
-    }
-
-    let words = split_event_words(events)?;
-    if words.len() < 2 {
-        return None;
-    }
-
-    let original = map_original_events(events);
-    let has_trailing_space = events
-        .last()
-        .is_some_and(|event| event.keycode == KeyCode::KEY_SPACE.code());
-    let ranked = rank_lem_scoped_tail_words(&words, &original, has_trailing_space, options);
-    Some((original, ranked))
-}
-
-fn best_lem_scoped_tail(
-    words: &[&[KeyEvent]],
-    original: &str,
-    has_trailing_space: bool,
-    options: ScopedTailOptions,
-) -> Option<String> {
-    let ranked = rank_lem_scoped_tail_words(words, original, has_trailing_space, options);
-    let best = ranked.first()?;
-    let margin = ranked
-        .get(1)
-        .map(|second| best.total - second.total)
-        .unwrap_or(f64::INFINITY);
-    let _ = (
-        margin,
-        best.language,
-        best.noise,
-        best.edit,
-        best.intervention,
-    );
-
-    let mut best_text = best.text.clone();
-    if has_trailing_space && !best_text.ends_with(' ') {
-        best_text.push(' ');
-    }
-    (best_text != original && !best_text.trim().is_empty()).then_some(best_text)
-}
-
-fn rank_lem_scoped_tail_words(
-    words: &[&[KeyEvent]],
-    original: &str,
-    has_trailing_space: bool,
-    options: ScopedTailOptions,
-) -> Vec<ScoredCandidate> {
-    let candidates =
-        scoped_tail_lem_candidates(words, !has_trailing_space, options.allow_layout_auto)
-            .into_iter()
-            .map(|candidate| {
-                if has_trailing_space {
-                    format!("{candidate} ")
-                } else {
-                    candidate
-                }
-            });
-    crate::lem::rank_candidates_with_language_weight(original, candidates, options.lem_weight)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::{rank_lem_scoped_tail_words, scoped_tail_lem_candidates, ScopedTailOptions};
-    use crate::keyboard::{split_event_words, text_to_key_events};
-
-    #[test]
-    fn scoped_tail_candidates_include_known_ascii_layout_targets() {
-        let input = "сегодня цщкв потом ашду дальше еукьштфд здесь ыефегы рядом пше згыр";
-        let expected = "сегодня word потом file дальше terminal здесь status рядом git push";
-        let events = text_to_key_events(input, false).expect("events");
-        let words = split_event_words(&events).expect("words");
-        let candidates = scoped_tail_lem_candidates(&words, true, true);
-
-        assert!(
-            candidates.iter().any(|candidate| candidate == expected),
-            "missing {expected:?}; candidates={candidates:?}"
-        );
-    }
-
-    #[test]
-    fn scoped_tail_rank_prefers_more_known_layout_targets() {
-        let input = "сегодня цщкв потом ашду дальше еукьштфд здесь ыефегы рядом пше згыр";
-        let expected = "сегодня word потом file дальше terminal здесь status рядом git push";
-        let events = text_to_key_events(input, false).expect("events");
-        let words = split_event_words(&events).expect("words");
-        let ranked = rank_lem_scoped_tail_words(
-            &words,
-            input,
-            false,
-            ScopedTailOptions {
-                lem_enabled: true,
-                allow_layout_auto: true,
-                lem_weight: 1.0,
-            },
-        );
-        let top: Vec<_> = ranked
-            .iter()
-            .take(5)
-            .map(|candidate| (candidate.text.as_str(), candidate.total))
-            .collect();
-
-        assert_eq!(
-            ranked.first().map(|candidate| candidate.text.as_str()),
-            Some(expected),
-            "top={top:?}"
-        );
-    }
 }

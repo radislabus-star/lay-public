@@ -1750,12 +1750,12 @@ fn print_ensemble_contribution_report(cases: &[EvalCase], full_cases: usize) {
         cases.len() < full_cases
     );
     println!(
-        "  deterministic_no_lem_baseline: ok={}/{} {:.1}%",
+        "  deterministic_baseline: ok={}/{} {:.1}%",
         baseline_ok,
         cases.len(),
         percent(baseline_ok, cases.len())
     );
-    println!("  note: live daemon LEM is scoped-tail runtime; this baseline is typing-assist only");
+    println!("  note: this baseline measures deterministic typing-assist only");
 
     for scenario in contribution_scenarios() {
         let report = contribution_report_for_scenario(cases, &baseline, &scenario);

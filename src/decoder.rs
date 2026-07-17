@@ -10,8 +10,6 @@ mod edit_contract;
 mod edit_plan;
 #[path = "decoder/manual.rs"]
 mod manual;
-#[path = "decoder/ranked.rs"]
-mod ranked;
 #[path = "decoder/types.rs"]
 mod types;
 #[path = "decoder/typing_tail.rs"]
@@ -19,10 +17,6 @@ mod typing_tail;
 
 pub use edit_plan::DecoderEditPlan;
 pub use manual::{decode_manual_tail, ManualDecodeRequest, ManualDecodeResult};
-pub use ranked::{
-    choose_ranked_scoped_tail, rank_scoped_tail_candidates, RankedDecoderCandidate,
-    RankedDecoderDecision,
-};
 pub use types::{CorrectionSource, CorrectionTrigger, DecoderAction};
 
 pub use typing_tail::{
