@@ -203,7 +203,7 @@ impl TransitionDecisionCore {
         if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
             for (candidate, evaluation) in candidates.iter().zip(&evaluations) {
                 eprintln!(
-                    "decision-core-candidate origin={:?} source_id={} class={} gate={:?} rank={:.3} field={} attract={} repel={} uncertainty={} phase_competition={} usage={:.3} context={:.3} l3={} l4={} replacement={:?}",
+                    "decision-core-candidate origin={:?} source_id={} class={} gate={:?} rank={:.3} field={} attract={} repel={} uncertainty={} phase_competition={} usage={:.3} context={:.3} l3={} l4={} l4_state_specific={} l4_attract={} l4_repel={} replacement={:?}",
                     candidate.origin,
                     candidate.source_id,
                     candidate.error_class.as_str(),
@@ -220,6 +220,9 @@ impl TransitionDecisionCore {
                     evaluation.bayes.context_prior,
                     evaluation.signals.l3_phrase_milli,
                     evaluation.signals.l4_signed_milli,
+                    evaluation.signals.l4_transition_state_specific,
+                    evaluation.signals.l4_transition_attract_count,
+                    evaluation.signals.l4_transition_repel_count,
                     candidate.replacement
                 );
             }
@@ -227,7 +230,12 @@ impl TransitionDecisionCore {
         let selected_index = candidates
             .iter()
             .enumerate()
-            .filter(|(_, candidate)| candidate.gate.action == CandidateGateAction::Eligible)
+            .filter(|(index, candidate)| {
+                producer_allows_authority_evaluation(
+                    candidate.gate.action,
+                    evaluations[*index].transition.l4_signed_signal,
+                )
+            })
             .filter(|(index, _)| {
                 candidate_has_apply_authority(event, *index, candidates, &evaluations, policy)
             })
@@ -250,6 +258,21 @@ impl TransitionDecisionCore {
             selected_transition,
         }
     }
+}
+
+fn producer_allows_authority_evaluation(
+    action: CandidateGateAction,
+    l4_signal: super::L4SignedTransitionSignal,
+) -> bool {
+    action == CandidateGateAction::Eligible
+        || (action == CandidateGateAction::SuggestOnly && l4_signal.exact_positive())
+}
+
+fn unresolved_competitor_blocks(
+    exact_positive_transition: bool,
+    stronger_unresolved_exists: bool,
+) -> bool {
+    !exact_positive_transition && stronger_unresolved_exists
 }
 
 fn compare_candidate_decision_order(

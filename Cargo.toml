@@ -1,6 +1,6 @@
 [package]
 name = "lay"
-version = "0.2.259"
+version = "0.2.260"
 edition = "2021"
 description = "Typing correction and RU/EN layout switching for Linux desktops"
 license-file = "LICENSE"

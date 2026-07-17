@@ -232,6 +232,24 @@ fn runtime_restart_preserves_the_visible_layout() {
 }
 
 #[test]
+fn version_refresh_activates_the_live_gnome_source_before_ibus_sync() {
+    let bump = std::fs::read_to_string(Path::new(ROOT).join("scripts/bump-lay-version.sh"))
+        .expect("version bump script");
+    let selection = nearby(&bump, "select_lay_input_source() {", 2600);
+
+    assert!(selection.contains("io.github.radislabus_star.LayDaemon.ActivateLayout"));
+    assert!(selection.contains("current_gnome_layout"));
+    assert!(selection.contains("$layout"));
+    assert!(
+        selection.find("ActivateLayout") < selection.find("gsettings set"),
+        "live GNOME DBus authority must run before the GSettings fallback"
+    );
+    assert!(bump.contains("preserved_layout=\"$(current_gnome_layout || true)\""));
+    assert!(bump.contains("select_lay_input_source \"$preserved_layout\""));
+    assert!(bump.contains("layout restore failed: expected=$preserved_layout"));
+}
+
+#[test]
 fn debug_log_switch_is_not_a_hidden_precognition_toggle() {
     let tray = read("lay-impl.js");
     let tray_debug = nearby(&tray, "_debugLogSwitchItem() {", 520);

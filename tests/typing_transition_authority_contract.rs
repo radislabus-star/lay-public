@@ -228,10 +228,14 @@ fn candidate_admission_only_marks_eligibility_and_core_selects_transition() {
         "candidate checks must expose eligibility without choosing the transition"
     );
     assert!(
-        decision.contains("candidate.gate.action == CandidateGateAction::Eligible")
+        decision.contains("producer_allows_authority_evaluation(")
+            && decision.contains("action == CandidateGateAction::Eligible")
+            && decision.contains(
+                "action == CandidateGateAction::SuggestOnly && l4_signal.exact_positive()",
+            )
             && decision.contains("candidate_has_apply_authority")
             && !decision.contains("fn authorize_gate"),
-        "only TransitionDecisionCore may choose an eligible candidate"
+        "only TransitionDecisionCore may choose an eligible or exact-L4-attested candidate"
     );
     assert!(
         !correction.contains("CandidateGateAction::Apply")

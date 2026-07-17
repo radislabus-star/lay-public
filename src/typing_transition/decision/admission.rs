@@ -150,13 +150,15 @@ pub(super) fn candidate_has_apply_authority(
         debug_decision_reject(candidate, admission.reason, bayes.posterior, bayes.risk);
         return false;
     }
-    if learned_candidate_shadowed_by_deterministic_owner(
-        event,
-        candidate_index,
-        candidates,
-        evaluations,
-        source_role,
-    ) {
+    if !exact_positive_transition
+        && learned_candidate_shadowed_by_deterministic_owner(
+            event,
+            candidate_index,
+            candidates,
+            evaluations,
+            source_role,
+        )
+    {
         debug_decision_reject(
             candidate,
             "deterministic_owner_gravity",
@@ -229,8 +231,10 @@ pub(super) fn candidate_has_apply_authority(
         );
         return false;
     }
-    let allowed =
-        !stronger_unresolved_candidate_exists(event, candidate_index, candidates, evaluations);
+    let allowed = !unresolved_competitor_blocks(
+        exact_positive_transition,
+        stronger_unresolved_candidate_exists(event, candidate_index, candidates, evaluations),
+    );
     if !allowed {
         debug_decision_reject(
             candidate,

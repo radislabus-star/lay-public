@@ -1,4 +1,7 @@
-use super::{admit_evaluated_hidden_transition, phase_policy_rejection, TransitionDecisionPolicy};
+use super::{
+    admit_evaluated_hidden_transition, phase_policy_rejection,
+    producer_allows_authority_evaluation, unresolved_competitor_blocks, TransitionDecisionPolicy,
+};
 use crate::candidate_contract::{CandidateOrigin, CorrectionSourceRole};
 use crate::correction_core::{
     CandidateGateAction, CandidateGateDecision, CorrectionDecisionSource, TypingErrorClass,
@@ -398,4 +401,50 @@ fn admission_truth_table_uses_verifier_latent_invariants_and_signed_l4_memory() 
             ),
         }
     }
+}
+
+#[test]
+fn exact_positive_l4_memory_can_promote_a_suggestion_to_authority_evaluation() {
+    let neutral = crate::typing_transition::L4SignedTransitionSignal {
+        negative: false,
+        state_specific: false,
+        attract_count: 0,
+        repel_count: 0,
+    };
+    let exact_positive = crate::typing_transition::L4SignedTransitionSignal {
+        negative: false,
+        state_specific: true,
+        attract_count: 6,
+        repel_count: 0,
+    };
+    let exact_negative = crate::typing_transition::L4SignedTransitionSignal {
+        negative: true,
+        state_specific: true,
+        attract_count: 0,
+        repel_count: 8,
+    };
+
+    assert!(producer_allows_authority_evaluation(
+        CandidateGateAction::Eligible,
+        neutral,
+    ));
+    assert!(!producer_allows_authority_evaluation(
+        CandidateGateAction::SuggestOnly,
+        neutral,
+    ));
+    assert!(producer_allows_authority_evaluation(
+        CandidateGateAction::SuggestOnly,
+        exact_positive,
+    ));
+    assert!(!producer_allows_authority_evaluation(
+        CandidateGateAction::SuggestOnly,
+        exact_negative,
+    ));
+}
+
+#[test]
+fn exact_positive_l4_memory_outvotes_only_unresolved_competitors() {
+    assert!(unresolved_competitor_blocks(false, true));
+    assert!(!unresolved_competitor_blocks(true, true));
+    assert!(!unresolved_competitor_blocks(false, false));
 }

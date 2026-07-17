@@ -20,18 +20,18 @@
     "semantic_hash": "236e46a80b6d2865de3d1816fb645158"
   },
   "extension/lay@radislabus-star.github.io/lay-impl.js": {
-    "mtime": 1784291416.2863748,
+    "mtime": 1784295200.2211456,
     "ast_hash": "f64690723996df3fd4301fc4d995d5cf",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1784291416.2846677,
-    "ast_hash": "f5c2fc6362624ef6e274633b52e53441",
+    "mtime": 1784295200.1504796,
+    "ast_hash": "65e2836f1c157e50af7ee1e6fc5791a6",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1784291416.2916813,
-    "ast_hash": "8b962aa254daa4e24f201ad5b28fe161",
+    "mtime": 1784295200.2279336,
+    "ast_hash": "3903c21132c092afec74788d66998bfa",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1784291416.2915218,
-    "ast_hash": "7b1f35a360360b7d5b99e342d6bc557a",
+    "mtime": 1784295200.2277496,
+    "ast_hash": "c911f79d4c8a933c8c2fbf0e6934e8b7",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1784291416.291412,
-    "ast_hash": "0833d83a97c2f355691dee23fcfcc610",
+    "mtime": 1784295200.2270818,
+    "ast_hash": "768d7cd4443c163bb2925590db779aa8",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -60,8 +60,8 @@
     "semantic_hash": ""
   },
   "scripts/bump-lay-version.sh": {
-    "mtime": 1784283732.023134,
-    "ast_hash": "43d9bb37a83e5d807bd0ad790037098d",
+    "mtime": 1784295933.7113996,
+    "ast_hash": "e450125da32121ba791256dc5e09b7af",
     "semantic_hash": ""
   },
   "scripts/bump-version-from-git.sh": {
@@ -2365,8 +2365,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision.rs": {
-    "mtime": 1784279559.0985923,
-    "ast_hash": "c5f02991e266877ccba1b779029aaa0f",
+    "mtime": 1784295028.6198142,
+    "ast_hash": "f44d134a1d7b80d6ef6b51993d85223d",
     "semantic_hash": ""
   },
   "src/typing_transition/executor_contract.rs": {
@@ -2525,8 +2525,8 @@
     "semantic_hash": ""
   },
   "tests/tray_ui_contract.rs": {
-    "mtime": 1784291644.1404648,
-    "ast_hash": "21418248d56adcd0108261e5986f0398",
+    "mtime": 1784295945.1135502,
+    "ast_hash": "77eb1d167a3f4483d8456b0243ed9417",
     "semantic_hash": ""
   },
   "tests/typing_assist_alternating_stress.rs": {
@@ -2645,8 +2645,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1784291416.2932703,
-    "ast_hash": "0462af14c5775ef151c54f4053b54ba5",
+    "mtime": 1784295200.23001,
+    "ast_hash": "80f9d4fab41ebf7739d2c83e8247c361",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3250,8 +3250,8 @@
     "semantic_hash": ""
   },
   "tests/typing_transition_authority_contract.rs": {
-    "mtime": 1784256285.7712746,
-    "ast_hash": "eabff952dc1eacdb5d4f26f96e259e31",
+    "mtime": 1784295028.620814,
+    "ast_hash": "e4fd3b743391e4863bedb3e206422ed8",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit_readout.rs": {
@@ -3440,8 +3440,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1784285763.6579673,
-    "ast_hash": "63141f2c8bd1a47811429d3548050cea",
+    "mtime": 1784295154.0766428,
+    "ast_hash": "73ebddbc1d12f7dc980df25ae8977d1c",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -3490,8 +3490,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision/admission.rs": {
-    "mtime": 1784278183.8869817,
-    "ast_hash": "794a73f4142da201fac870923ec04053",
+    "mtime": 1784295028.620814,
+    "ast_hash": "119262b0647433dc9660f8be6cb6a0b7",
     "semantic_hash": ""
   },
   "src/typing_transition/decision/receipt.rs": {
@@ -3500,8 +3500,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision/tests.rs": {
-    "mtime": 1784189055.589679,
-    "ast_hash": "44daaa0d5b518f7efeb93e3813607192",
+    "mtime": 1784294696.3164706,
+    "ast_hash": "f1e04876a117d593cef28f822b7671e9",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/TYPING_TRANSITION_MEMORY_PROOF_V1.json": {
