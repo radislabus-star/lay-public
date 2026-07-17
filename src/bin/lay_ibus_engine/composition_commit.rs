@@ -130,8 +130,7 @@ impl LayIbusEngine {
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         self.last_commit_at = Some(Instant::now());
         self.push_tail_char(ch);
-        self.preedit_dirty = false;
-        self.update_precognition_preedit(emitter).await
+        self.refresh_precognition_after_visible_input(emitter).await
     }
 
     pub(super) async fn observe_terminal_passthrough_char(
@@ -140,7 +139,7 @@ impl LayIbusEngine {
         ch: char,
     ) -> fdo::Result<()> {
         self.push_tail_char(ch);
-        self.update_precognition_preedit(emitter).await
+        self.refresh_precognition_after_visible_input(emitter).await
     }
 
     /// Finalizes the currently active IME preedit composition.

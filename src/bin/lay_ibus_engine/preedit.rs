@@ -76,6 +76,18 @@ impl PreeditFastState {
 }
 
 impl LayIbusEngine {
+    pub(super) async fn refresh_precognition_after_visible_input(
+        &mut self,
+        emitter: &SignalEmitter<'_>,
+    ) -> fdo::Result<()> {
+        if self.preedit_waits_for_cursor_ack() {
+            self.preedit_dirty = true;
+            return Ok(());
+        }
+        self.preedit_dirty = false;
+        self.update_precognition_preedit(emitter).await
+    }
+
     pub(super) async fn flush_dirty_preedit(
         &mut self,
         emitter: &SignalEmitter<'_>,

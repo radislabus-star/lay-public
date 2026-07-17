@@ -56,6 +56,10 @@ impl LayIbusEngine {
         }
     }
 
+    pub(super) fn preedit_waits_for_cursor_ack(&self) -> bool {
+        !self.surrounding_text_supported && self.cursor_cell_width > 0
+    }
+
     pub(super) fn manual_toggle_authority(&self) -> ManualToggleAuthority {
         if !self.buffer.is_empty() {
             return ManualToggleAuthority::ImeActiveComposition;
