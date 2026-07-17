@@ -38,6 +38,11 @@ pub(crate) async fn run(args: &Args) -> zbus::Result<()> {
         .build()
         .await?;
 
+    // Publish the IBus factory and bridge before touching lexical memory. GNOME
+    // may select the configured engine immediately during login; registration
+    // must remain available while compact L2 memory warms in the background.
+    lay::nanda_wave::ensure_l2_ime_warmup_started();
+
     std::future::pending::<()>().await;
     Ok(())
 }

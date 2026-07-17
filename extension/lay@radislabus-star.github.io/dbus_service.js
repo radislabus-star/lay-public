@@ -35,17 +35,48 @@ function imeEngineForLayoutKind(kind) {
     return '';
 }
 
+let _ibusSyncGeneration = 0;
+const IBUS_SYNC_RETRY_MS = [0, 100, 300, 700, 1500];
+
+function scheduleIbusEngineAttempt(engine, generation, attempt) {
+    if (generation !== _ibusSyncGeneration || attempt >= IBUS_SYNC_RETRY_MS.length)
+        return;
+
+    GLib.timeout_add(GLib.PRIORITY_DEFAULT, IBUS_SYNC_RETRY_MS[attempt], () => {
+        if (generation !== _ibusSyncGeneration)
+            return GLib.SOURCE_REMOVE;
+        try {
+            const process = Gio.Subprocess.new(
+                ['ibus', 'engine', engine],
+                Gio.SubprocessFlags.STDERR_PIPE);
+            process.wait_check_async(null, (_source, result) => {
+                if (generation !== _ibusSyncGeneration)
+                    return;
+                try {
+                    if (process.wait_check_finish(result))
+                        return;
+                } catch(e) {
+                    if (attempt + 1 === IBUS_SYNC_RETRY_MS.length)
+                        log(`[lay-extension] IBus engine sync failed for ${engine}: ${e}`);
+                }
+                scheduleIbusEngineAttempt(engine, generation, attempt + 1);
+            });
+        } catch(e) {
+            if (attempt + 1 === IBUS_SYNC_RETRY_MS.length)
+                log(`[lay-extension] IBus engine sync failed for ${engine}: ${e}`);
+            scheduleIbusEngineAttempt(engine, generation, attempt + 1);
+        }
+        return GLib.SOURCE_REMOVE;
+    });
+}
+
 export function syncIbusEngineForCurrentLayout() {
     const engine = imeEngineForLayoutKind(currentLayoutKind());
     if (!engine)
         return false;
-    try {
-        GLib.spawn_command_line_async(`ibus engine ${engine}`);
-        return true;
-    } catch(e) {
-        log(`[lay-extension] IBus engine sync failed for ${engine}: ${e}`);
-        return false;
-    }
+    _ibusSyncGeneration += 1;
+    scheduleIbusEngineAttempt(engine, _ibusSyncGeneration, 0);
+    return true;
 }
 
 function syncIbusEngineSoon() {

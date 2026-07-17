@@ -55,9 +55,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
     let _ = args.ibus;
-    // Start compact L2/lexicon readout before an input context is created. The
-    // first typed word must not be the warmup trigger for IME candidates.
-    lay::nanda_wave::ensure_l2_ime_warmup_started();
     zbus::block_on(server::run(&args))?;
     Ok(())
 }
