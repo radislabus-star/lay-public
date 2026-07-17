@@ -59,6 +59,9 @@ fn polish_converted_russian_layout_token(token: &str) -> Option<String> {
     if is_known_russian_layout_autoswitch_word(&lower) {
         return None;
     }
+    if let Some(settled) = crate::nanda_wave::l2::l2_settle_russian_surface(token) {
+        return Some(settled);
+    }
     if let Some(corrected) = correct_common_layout_extra_letter(word) {
         return Some(format!("{leading}{corrected}{trailing}"));
     }

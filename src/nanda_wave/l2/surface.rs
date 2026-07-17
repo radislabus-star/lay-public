@@ -2,6 +2,20 @@ use super::*;
 use crate::candidate_contract::CandidateOrigin;
 use crate::nanda_wave::{llmwave, usage_prior};
 
+pub(super) fn settle_russian_surface(surface: &str) -> Option<String> {
+    let (_, word, _) = split_word_punctuation(surface);
+    if !(4..=18).contains(&word.chars().count()) || !word.chars().all(is_cyrillic_letter) {
+        return None;
+    }
+
+    let context = TailContext::from_text(surface);
+    let l1 = crate::nanda_wave::l1::run_l1(surface);
+    form_attractor_word_candidates("", surface, &context, &l1)
+        .into_iter()
+        .find(|candidate| candidate.energy > candidate.risk)
+        .map(|candidate| candidate.text)
+}
+
 pub(super) fn surface_motif_word_candidates(
     prefix: &str,
     token: &str,

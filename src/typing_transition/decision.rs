@@ -283,10 +283,14 @@ fn compare_candidate_decision_order(
 ) -> Ordering {
     let left_eval = &evaluations[left];
     let right_eval = &evaluations[right];
-    left_eval
-        .signals
-        .rank_score
-        .total_cmp(&right_eval.signals.rank_score)
+    verified_layout_projection(left_eval)
+        .cmp(&verified_layout_projection(right_eval))
+        .then_with(|| {
+            left_eval
+                .signals
+                .rank_score
+                .total_cmp(&right_eval.signals.rank_score)
+        })
         .then_with(|| right_eval.bayes.risk.total_cmp(&left_eval.bayes.risk))
         .then_with(|| {
             left_eval
@@ -305,6 +309,11 @@ fn compare_candidate_decision_order(
                 .replacement
                 .cmp(&candidates[left].replacement)
         })
+}
+
+fn verified_layout_projection(evaluation: &CandidateDecisionEvaluation) -> bool {
+    evaluation.action.verifier_passed
+        && evaluation.action.edit_operator == verifier::EditTransitionOperator::LayoutProjection
 }
 
 mod calibration;

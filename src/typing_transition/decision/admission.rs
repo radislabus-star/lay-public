@@ -20,12 +20,16 @@ pub(super) fn candidate_has_apply_authority(
     let signals = &evaluation.signals;
     let source_role = candidate.origin.source_role();
     let exact_positive_transition = evaluation.transition.l4_signed_signal.exact_positive();
+    let verified_layout_projection = evaluation.action.verifier_passed
+        && evaluation.action.edit_operator == verifier::EditTransitionOperator::LayoutProjection;
     if (signals.l4_hidden_plan_commitment != 0 && !signals.l4_hidden_certificate_valid)
         || signals.l4_hidden_disposition == L4HiddenDisposition::Rejected
         || (signals.l4_hidden_disposition == L4HiddenDisposition::Ambiguous
-            && signals.l4_hidden_ambiguity_authoritative)
+            && signals.l4_hidden_ambiguity_authoritative
+            && !verified_layout_projection)
         || (signals.l4_hidden_selected_witnessed
-            && signals.l4_hidden_disposition != L4HiddenDisposition::Witnessed)
+            && signals.l4_hidden_disposition != L4HiddenDisposition::Witnessed
+            && !verified_layout_projection)
     {
         debug_decision_reject(
             candidate,
@@ -551,13 +555,14 @@ fn stronger_unresolved_candidate_exists(
     let selected = &candidates[selected_index];
     let selected_evaluation = &evaluations[selected_index];
     let selected_action = selected_evaluation.action;
-    let selected_is_proven_reversible = selected_action.verifier_passed
+    let selected_is_complete_proven_transition = selected_action.verifier_passed
         && matches!(
             selected_action.edit_operator,
             verifier::EditTransitionOperator::BoundaryShift
                 | verifier::EditTransitionOperator::BoundaryMergeSplit
+                | verifier::EditTransitionOperator::LayoutProjection
         );
-    if selected_is_proven_reversible {
+    if selected_is_complete_proven_transition {
         return false;
     }
     let selected_bayes = &selected_evaluation.bayes;

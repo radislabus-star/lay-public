@@ -1,3 +1,4 @@
+use crate::lexicon::is_ru_short_function_word;
 use crate::word_reader::{split_word_punctuation, split_ws_segments};
 
 use super::super::english::is_known_english_layout_autoswitch_word;
@@ -39,6 +40,7 @@ pub(crate) fn correct_wrong_layout_ascii_phrase(text: &str) -> Option<String> {
         if candidate.clean_alpha
             && !candidate.shift_letter_signal
             && ascii_segment_is_known_english_word(segment)
+            && !is_ru_short_function_word(&candidate.word.to_lowercase())
         {
             known_english_context_words += 1;
         }
@@ -121,6 +123,14 @@ mod tests {
         assert_eq!(
             correct_wrong_layout_ascii_phrase("HF<JNF NTCN CFV"),
             Some("РАБОТА ТЕСТ САМ".to_string())
+        );
+    }
+
+    #[test]
+    fn whole_phrase_projection_uses_l2_form_centers_for_noisy_words() {
+        assert_eq!(
+            correct_wrong_layout_ascii_phrase("djn nfrjt djn yt gthtdfhfxbdftncz"),
+            Some("вот такое вот не переворачивается".to_string())
         );
     }
 }

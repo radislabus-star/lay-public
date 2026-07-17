@@ -41,7 +41,7 @@ pub(crate) use ime_readout::{
 };
 use layout_adapter::{
     known_short_russian_token_blocks_layout, layout_candidate, layout_scan_candidates,
-    short_cyrillic_layout_technical_allowed, short_token_candidates,
+    layout_sequence_candidate, short_cyrillic_layout_technical_allowed, short_token_candidates,
 };
 #[cfg(test)]
 use layout_adapter::{layout_candidate_allowed, LAYOUT_THEN_L2_WORD_CENTER};
@@ -94,6 +94,14 @@ pub fn ime_l2_word_candidates(
     limit: usize,
 ) -> Vec<L2ImeWordCandidate> {
     ime_readout::ime_l2_word_candidates_impl(context_prefix, token, limit)
+}
+
+/// Settles one projected Cyrillic surface into the strongest admitted L2 form center.
+///
+/// This is intentionally narrower than `run_l2`: layout projection can reuse the
+/// lexical field without recursively invoking layout candidate generation.
+pub(crate) fn l2_settle_russian_surface(surface: &str) -> Option<String> {
+    surface::settle_russian_surface(surface)
 }
 
 pub fn run_l2(original: &str, l1: &[WavePacket]) -> Vec<WordCandidate> {
@@ -157,6 +165,9 @@ pub fn run_l2_refined_with_feedback(
         };
     }
     if options.is_enabled("LayoutWordCell32") {
+        if let Some(candidate) = layout_sequence_candidate(tail, &context, l1) {
+            push_unique_candidate(&mut candidates, candidate);
+        }
         if let Some(candidate) = layout_candidate(prefix, token, &context, l1) {
             push_unique_candidate(&mut candidates, candidate);
         }

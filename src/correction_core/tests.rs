@@ -349,6 +349,29 @@ mod tests {
     }
 
     #[test]
+    fn full_wave_selects_noisy_multiword_layout_as_one_verified_transition() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "djn nfrjt djn yt gthtdfhfxbdftncz ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        ));
+
+        assert_eq!(
+            resolution
+                .decision
+                .as_ref()
+                .map(|decision| decision.replacement.as_str()),
+            Some("вот такое вот не переворачивается "),
+            "resolution={resolution:#?}"
+        );
+        let selected = resolution.selected.as_ref().expect("selected transition");
+        assert!(selected.has_source_id(ids::LAYOUT_EN_TO_RU));
+        assert!(selected.has_source_id("LayoutSequenceCell32"));
+        assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+    }
+
+    #[test]
     fn deterministic_mode_corrects_multiword_wrong_layout_tail_with_context_pipeline() {
         let default_pipeline = default_typing_assist_pipeline();
         let pipeline = crate::typing_context::typing_assist_pipeline_for_context(

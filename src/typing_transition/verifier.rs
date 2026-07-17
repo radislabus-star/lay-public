@@ -211,6 +211,24 @@ fn layout_projection_is_verified(
         && original_words.len() >= 2
         && original_words.len() == replacement_words.len()
         && changed_tokens == original_words.len()
+        && original_words
+            .iter()
+            .zip(replacement_words)
+            .all(|(original, replacement)| verified_layout_token_projection(original, replacement))
+}
+
+fn verified_layout_token_projection(original: &str, replacement: &str) -> bool {
+    if exact_layout_projection(original, replacement) {
+        return true;
+    }
+    let direction = if original.chars().any(|ch| ch.is_ascii_alphabetic()) {
+        crate::dict::Direction::Us2Ru
+    } else {
+        crate::dict::Direction::Ru2Us
+    };
+    let projected = crate::dict::convert(original, direction);
+    crate::nanda_wave::l2::l2_settle_russian_surface(&projected)
+        .is_some_and(|settled| settled == replacement)
 }
 
 fn boundary_shift_is_verified(
@@ -413,6 +431,19 @@ mod tests {
         let proof = proof(
             "HF<JNF NTCN CFV ",
             "РАБОТА ТЕСТ САМ ",
+            TypingErrorClass::WrongLayout,
+            CandidateOrigin::Layout,
+        );
+
+        assert_eq!(proof.operator, TransitionOperator::LayoutProjection);
+        assert!(proof.verified);
+    }
+
+    #[test]
+    fn proves_multiword_layout_projection_with_l2_settled_surface() {
+        let proof = proof(
+            "djn nfrjt djn yt gthtdfhfxbdftncz ",
+            "вот такое вот не переворачивается ",
             TypingErrorClass::WrongLayout,
             CandidateOrigin::Layout,
         );

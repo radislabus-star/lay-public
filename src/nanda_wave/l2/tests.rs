@@ -1,3 +1,4 @@
+use super::layout_adapter::LAYOUT_SEQUENCE_CELL;
 use super::*;
 use crate::nanda_wave::l1::run_l1;
 
@@ -15,6 +16,21 @@ fn layout_candidate_for_last_token() {
     assert!(candidates
         .iter()
         .any(|candidate| candidate.text == "html вот"));
+}
+
+#[test]
+fn layout_sequence_is_one_coherent_l2_candidate() {
+    let original = "djn nfrjt djn yt gthtdfhfxbdftncz ";
+    let l1 = run_l1(original);
+    let candidates = run_l2(original, &l1);
+
+    assert!(
+        candidates.iter().any(|candidate| {
+            candidate.source == LAYOUT_SEQUENCE_CELL
+                && candidate.text == "вот такое вот не переворачивается"
+        }),
+        "candidates={candidates:?}"
+    );
 }
 
 #[test]

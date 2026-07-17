@@ -16,6 +16,41 @@ use crate::text_metrics::damerau_levenshtein;
 
 const MAX_LAYOUT_SCAN_CANDIDATES: usize = 4;
 pub(super) const LAYOUT_THEN_L2_WORD_CENTER: &str = "layout_then_l2_word_center";
+pub(super) const LAYOUT_SEQUENCE_CELL: &str = "LayoutSequenceCell32";
+
+pub(super) fn layout_sequence_candidate(
+    tail: &str,
+    context: &TailContext,
+    l1: &[WavePacket],
+) -> Option<WordCandidate> {
+    if !(2..=15).contains(&context.token_count()) {
+        return None;
+    }
+    let converted = crate::layout_autoswitch::correct_wrong_layout_ascii_phrase(tail)?;
+    if converted == tail {
+        return None;
+    }
+
+    let raw_projection = convert(tail, crate::dict::Direction::Us2Ru);
+    let center_settled = raw_projection != converted;
+    let mut support = candidate_support(l1, context);
+    support.push("layout-sequence:all-token-projection".to_string());
+    if center_settled {
+        support.push("layout-sequence:l2-form-center".to_string());
+    }
+    Some(WordCandidate {
+        text: converted,
+        origin: if center_settled {
+            CandidateOrigin::LayoutThenTypo
+        } else {
+            CandidateOrigin::Layout
+        },
+        source: LAYOUT_SEQUENCE_CELL,
+        energy: l1_energy(l1, "KeyboardCell32").max(0.92),
+        risk: if center_settled { 0.08 } else { 0.04 },
+        support,
+    })
+}
 
 pub(super) fn layout_candidate(
     prefix: &str,
