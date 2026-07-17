@@ -448,6 +448,36 @@ candidate latency p50/p90
 ablation drop by cell
 ```
 
+L3 context has a separate causal report:
+
+```bash
+lay-nanda-wave-eval --l3-context-report --full-suite
+```
+
+The report does not read live logs. It replays the fixed eval suite and keeps
+the L2 candidate lattice unchanged while removing only `L3ContextField32`.
+The proof ladder is:
+
+```text
+context eligible
+-> phrase/scene evidence observed
+-> support or suppress authority
+-> selected output changed
+-> correct output improved more often than worsened
+```
+
+These states must not be collapsed:
+
+```text
+memory warm != context connected
+context connected != decision authority
+decision authority != causal value
+```
+
+The report is invalid if `candidate_lattice_drift_cases` is non-zero. L3
+promotion requires non-zero evidence and authority, non-zero causal changes,
+and `improved_cases > worsened_cases`.
+
 Promotion rule:
 
 ```text

@@ -15,6 +15,75 @@ use crate::keyboard::is_cyrillic_letter;
 use crate::text_metrics::damerau_levenshtein;
 use crate::word_reader::{is_cyrillic_letters_only, last_text_word_slice};
 
+pub(crate) const L3_CONTEXT_FIELD_CELL: &str = "L3ContextField32";
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub(crate) struct L3ContextCandidateReadout {
+    pub(crate) text: String,
+    pub(crate) source: &'static str,
+    pub(crate) disposition: &'static str,
+    pub(crate) evidence: bool,
+    pub(crate) score: f32,
+    pub(crate) sequential_score: f32,
+    pub(crate) scene_score: f32,
+    pub(crate) support: usize,
+    pub(crate) width: usize,
+    pub(crate) competition_margin: f32,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub(crate) struct L3ContextFieldReadout {
+    pub(crate) context_tokens: usize,
+    pub(crate) eligible: bool,
+    pub(crate) memory_warm: bool,
+    pub(crate) candidates: Vec<L3ContextCandidateReadout>,
+}
+
+pub(crate) fn l3_context_field_readout(
+    original: &str,
+    candidates: &[WordCandidate],
+) -> L3ContextFieldReadout {
+    let context_tokens = llmwave::tokenize(original).len().saturating_sub(1);
+    let memory_warm = llmwave::default_memory_is_warm();
+    let replacements = candidates
+        .iter()
+        .map(|candidate| candidate.text.as_str())
+        .collect::<Vec<_>>();
+    let reports = l3_phrase_gate::evaluate_default_candidates(original, &replacements);
+    let candidates = candidates
+        .iter()
+        .zip(reports)
+        .filter_map(|(candidate, report)| {
+            let report = report?;
+            let disposition = match report.decision {
+                l3_phrase_gate::L3PhraseGateDecision::Neutral => "neutral",
+                l3_phrase_gate::L3PhraseGateDecision::Support => "support",
+                l3_phrase_gate::L3PhraseGateDecision::Suppress => "suppress",
+            };
+            Some(L3ContextCandidateReadout {
+                text: candidate.text.clone(),
+                source: candidate.source,
+                disposition,
+                evidence: report.support > 0
+                    || report.sequential_score > 0.0
+                    || report.scene_score > 0.0,
+                score: report.score,
+                sequential_score: report.sequential_score,
+                scene_score: report.scene_score,
+                support: report.support,
+                width: report.width,
+                competition_margin: report.competition_margin,
+            })
+        })
+        .collect();
+    L3ContextFieldReadout {
+        context_tokens,
+        eligible: context_tokens >= 2,
+        memory_warm,
+        candidates,
+    }
+}
+
 pub fn run_l3(original: &str, candidates: &[WordCandidate]) -> (Vec<LayerTrace>, WaveDecision) {
     run_l3_with_options(original, candidates, &WaveOptions::default())
 }
@@ -53,12 +122,17 @@ fn run_l3_inner(
         .iter()
         .map(|candidate| candidate.text.as_str())
         .collect::<Vec<_>>();
-    let phrase_reports = match phrase_memory {
-        Some(memory) => {
-            l3_phrase_gate::evaluate_candidates_with_memory(original, &replacements, memory)
-        }
-        None => l3_phrase_gate::evaluate_default_candidates(original, &replacements),
-    };
+    let phrase_reports =
+        if !options.is_enabled(L3_CONTEXT_FIELD_CELL) || options.l3_weight() <= f32::EPSILON {
+            vec![None; replacements.len()]
+        } else {
+            match phrase_memory {
+                Some(memory) => {
+                    l3_phrase_gate::evaluate_candidates_with_memory(original, &replacements, memory)
+                }
+                None => l3_phrase_gate::evaluate_default_candidates(original, &replacements),
+            }
+        };
     let best_readout = best_context_candidate(original, candidates, &phrase_reports);
 
     if options.is_enabled("TechnicalContextCell32") {
@@ -1069,6 +1143,24 @@ mod tests {
         assert!(trace
             .iter()
             .any(|item| item.summary.contains("l3_phrase=l3_context_field_support")));
+
+        let without_context = WaveOptions::with_disabled(&[L3_CONTEXT_FIELD_CELL.to_string()]);
+        let (_trace, decision) = run_l3_inner(
+            "на улице опять идёт д ",
+            &candidates,
+            &without_context,
+            Some(&memory),
+        );
+        assert_eq!(decision.output(), Some("на улице опять идёт дом "));
+
+        let zero_weight = WaveOptions::default().with_layer_weights(1.0, 0.0);
+        let (_trace, decision) = run_l3_inner(
+            "на улице опять идёт д ",
+            &candidates,
+            &zero_weight,
+            Some(&memory),
+        );
+        assert_eq!(decision.output(), Some("на улице опять идёт дом "));
     }
 
     #[test]

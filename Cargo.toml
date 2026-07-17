@@ -1,6 +1,6 @@
 [package]
 name = "lay"
-version = "0.2.253"
+version = "0.2.254"
 edition = "2021"
 description = "Alpha Double Shift RU/EN layout rescue for Linux desktops"
 license-file = "LICENSE"
@@ -81,6 +81,12 @@ debug = 0
 
 [profile.test]
 debug = 0
+incremental = false
+
+[profile.metrics]
+inherits = "release"
+lto = false
+codegen-units = 16
 incremental = false
 
 [profile.release]

@@ -385,5 +385,11 @@
   "383": "LiveSignedOutcomeStats",
   "384": "apply_l2_phase_shadow",
   "385": "install-release-binaries.sh",
-  "387": "verify_with_retry"
+  "386": "word_recognizer_tests.rs",
+  "387": "verify_with_retry",
+  "388": "read",
+  "389": "apply_phrase_case",
+  "390": "measured_precognition_stages",
+  "391": "DecisionOutput",
+  "392": "l3-context-0.2.253.md"
 }

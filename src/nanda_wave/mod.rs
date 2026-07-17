@@ -10,6 +10,7 @@ pub mod l2;
 mod l2_candidate_phase;
 pub(crate) mod l2_wave_peak;
 pub mod l3;
+mod l3_context_metrics;
 pub(crate) mod l3_phrase_gate;
 pub mod l4_goal_state;
 pub(crate) mod l4_signed_memory;
@@ -39,6 +40,13 @@ pub use options::WaveOptions;
 pub use signal::{ActiveMode, LayerTrace, WaveDecision, WavePacket, WaveTrace, WordCandidate};
 pub use trace::{run_wave_trace, run_wave_trace_with_options};
 pub use usage_prior::UsagePriorSnapshot;
+
+pub fn l3_context_report_json(
+    cases: &[crate::eval_cases::EvalCase],
+    full_cases: usize,
+) -> serde_json::Value {
+    l3_context_metrics::report_json(cases, full_cases)
+}
 
 static L2_IME_WARMUP_STARTED: std::sync::atomic::AtomicBool =
     std::sync::atomic::AtomicBool::new(false);

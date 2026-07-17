@@ -8,7 +8,13 @@ POLL_SECONDS="${LAY_CARGO_TARGET_POLL_SECONDS:-2}"
 
 target_bytes() {
   if [[ -d "$TARGET_DIR" ]]; then
-    du -s --block-size=1 "$TARGET_DIR" | awk '{print $1}'
+    local bytes
+    bytes="$(du -s --block-size=1 "$TARGET_DIR" 2>/dev/null | awk '{print $1}' || true)"
+    if [[ "$bytes" =~ ^[0-9]+$ ]]; then
+      printf '%s\n' "$bytes"
+    else
+      return 1
+    fi
   else
     printf '0\n'
   fi
@@ -20,7 +26,10 @@ human_bytes() {
 
 check_budget() {
   local bytes
-  bytes="$(target_bytes)"
+  if ! bytes="$(target_bytes)"; then
+    echo "Cannot measure Cargo target size: $TARGET_DIR" >&2
+    return 1
+  fi
   if (( bytes > MAX_BYTES )); then
     printf 'Cargo target budget exceeded: %s > %s (%s)\n' \
       "$(human_bytes "$bytes")" "$(human_bytes "$MAX_BYTES")" "$TARGET_DIR" >&2
@@ -72,7 +81,9 @@ child_pid=$!
 monitor_budget() {
   while kill -0 "$child_pid" 2>/dev/null; do
     sleep "$POLL_SECONDS"
-    bytes="$(target_bytes)"
+    if ! bytes="$(target_bytes)"; then
+      continue
+    fi
     if (( bytes > MAX_BYTES )); then
       printf 'Stopping Cargo: target grew to %s; budget is %s.\n' \
         "$(human_bytes "$bytes")" "$(human_bytes "$MAX_BYTES")" >&2
