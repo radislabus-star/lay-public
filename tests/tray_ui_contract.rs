@@ -33,6 +33,7 @@ fn tray_inventory_is_compact_and_each_action_has_an_owner() {
         "Режим ввода:",
         "Помощь при наборе",
         "Автозамена",
+        "Контур LEM",
         "Следовать языку исправления",
         "Настройки",
         "Диагностика",
@@ -56,6 +57,76 @@ fn tray_inventory_is_compact_and_each_action_has_an_owner() {
             "tray action has no runtime owner: {route}"
         );
     }
+}
+
+#[test]
+fn visible_lem_control_owns_all_lem_scopes() {
+    let tray = read("lay-impl.js");
+    let toggle = nearby(&tray, "if (key === 'lem_enabled')", 220);
+    assert!(toggle.contains("lem_2_words = state"));
+    assert!(toggle.contains("lem_3_words = state"));
+
+    for file in ["settings.js", "prefs.js"] {
+        let source = read(file);
+        assert!(source.contains("'Контур LEM', 'lem_enabled', true"));
+        assert!(source.contains("lem_2_words"));
+        assert!(source.contains("lem_3_words"));
+    }
+}
+
+#[test]
+fn settings_restart_the_complete_runtime_for_ime_owned_controls() {
+    for file in ["settings.js", "prefs.js"] {
+        let source = read(file);
+        let restart = nearby(&source, "function restartDaemon()", 620);
+        assert!(restart.contains("/.local/bin/lay-runtime-control"));
+        assert!(restart.contains("'restart'"));
+        assert!(!restart.contains("'systemctl'"));
+
+        for control in [
+            "'Следовать языку исправления', 'auto_switch_layout', true",
+            "'Контур LEM', 'lem_enabled', true",
+            "'Вес LEM', 'lem_weight_percent', true",
+            "'Вес L2 кандидатов', 'nanda_l2_weight_percent', true",
+            "'Вес L3 фразы', 'nanda_l3_weight_percent', true",
+            "'Подсказки в [скобках]', 'ime_bracket_candidates', true",
+        ] {
+            assert!(source.contains(control), "{file} stale control: {control}");
+        }
+    }
+}
+
+#[test]
+fn duplicate_force_layout_hotkeys_are_normalized_before_save() {
+    for file in ["tray_support.js", "settings.js", "prefs.js"] {
+        let source = read(file);
+        assert!(source.contains("forceEnKey === forceRuKey"));
+        assert!(source.contains("force_en_key: forceEnKey"));
+    }
+}
+
+#[test]
+fn nanda_button_opens_live_status_instead_of_static_help() {
+    for (file, marker, chars) in [
+        ("settings.js", "showNandaWindow() {", 2500),
+        ("prefs.js", "_showNandaWindow() {", 2500),
+    ] {
+        let source = read(file);
+        let window = nearby(&source, marker, chars);
+        assert!(window.contains("loadNandaWaveStatus()"));
+        assert!(window.contains("nandaStatusLine(status)"));
+        assert!(window.contains("nandaWavePanel(status)"));
+        assert!(window.contains("nandaPassportPanel(status)"));
+        assert!(!window.contains("Как использовать"));
+    }
+}
+
+#[test]
+fn window_layout_policy_refreshes_config_on_focus_change() {
+    let tray = read("lay-impl.js");
+    let focus = nearby(&tray, "_onFocusWindowChanged() {", 180);
+    assert!(focus.contains("normalizeConfig(loadConfig())"));
+    assert!(focus.contains("_schedulePtahApply"));
 }
 
 #[test]
@@ -148,6 +219,16 @@ fn tray_external_actions_have_installable_targets() {
             "tray target is missing: {path}"
         );
     }
+}
+
+#[test]
+fn runtime_restart_preserves_the_visible_layout() {
+    let runtime = std::fs::read_to_string(Path::new(ROOT).join("scripts/lay-runtime-control.sh"))
+        .expect("runtime control source");
+    let start = nearby(&runtime, "start_ime() {", 500);
+    assert!(start.contains("preferred_lay_ime"));
+    assert!(start.contains("select_lay_ime \"$preferred\""));
+    assert!(start.contains("select_lay_ime \"$fallback\""));
 }
 
 #[test]

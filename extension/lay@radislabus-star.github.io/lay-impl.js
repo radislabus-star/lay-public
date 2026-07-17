@@ -125,7 +125,8 @@ class LayIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this._inputModeMenu());
         this.menu.addMenuItem(this._quickSwitchItem('Помощь при наборе', 'typing_assist', true));
         this.menu.addMenuItem(this._quickSwitchItem('Автозамена', 'auto_replace', true));
-        this.menu.addMenuItem(this._quickSwitchItem('Следовать языку исправления', 'auto_switch_layout', false));
+        this.menu.addMenuItem(this._quickSwitchItem('Контур LEM', 'lem_enabled', true));
+        this.menu.addMenuItem(this._quickSwitchItem('Следовать языку исправления', 'auto_switch_layout', true));
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._preferencesItem());
         this.menu.addMenuItem(this._diagnosticsMenu());
@@ -206,6 +207,10 @@ class LayIndicator extends PanelMenu.Button {
             if (this._updatingConfigSwitches)
                 return;
             this._cfg[key] = state;
+            if (key === 'lem_enabled') {
+                this._cfg.lem_2_words = state;
+                this._cfg.lem_3_words = state;
+            }
             saveConfig(this._cfg);
             if (needsRestart)
                 restartDaemon();
@@ -271,6 +276,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _onFocusWindowChanged() {
+        this._cfg = normalizeConfig(loadConfig());
         this._schedulePtahApply(50);
     }
 

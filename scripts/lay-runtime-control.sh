@@ -74,11 +74,39 @@ select_lay_ime() {
     sync_ibus_engine "$layout"
 }
 
+preferred_lay_ime() {
+    local current engine
+    current="$(current_gnome_layout || true)"
+    case "$current" in
+        lay-ime-us|xkb:us*)
+            printf '%s\n' lay-ime-us
+            return
+            ;;
+        lay-ime-ru|xkb:ru*)
+            printf '%s\n' lay-ime-ru
+            return
+            ;;
+    esac
+
+    engine="$(timeout 1s ibus engine 2>/dev/null || true)"
+    case "$engine" in
+        lay-ime-us|xkb:us*) printf '%s\n' lay-ime-us ;;
+        *) printf '%s\n' lay-ime-ru ;;
+    esac
+}
+
 start_ime() {
+    local preferred fallback
+    preferred="$(preferred_lay_ime)"
+    if [ "$preferred" = lay-ime-us ]; then
+        fallback=lay-ime-ru
+    else
+        fallback=lay-ime-us
+    fi
     systemctl --user stop lay-ibus-engine.service >/dev/null 2>&1 || true
     pkill -x lay-ibus-engine || true
-    select_lay_ime lay-ime-ru \
-        || select_lay_ime lay-ime-us \
+    select_lay_ime "$preferred" \
+        || select_lay_ime "$fallback" \
         || true
 }
 

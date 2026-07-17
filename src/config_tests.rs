@@ -56,6 +56,22 @@ fn lem_master_switch_disables_all_lem_scopes_and_weight() {
 }
 
 #[test]
+fn lem_master_switch_is_the_only_visible_scope_authority() {
+    let cfg = LayConfig {
+        lem_enabled: true,
+        lem_2_words: false,
+        lem_3_words: false,
+        lem_weight_percent: 80,
+        ..LayConfig::default()
+    };
+
+    assert!(!cfg.lem_enabled_for_scope(1));
+    assert!(cfg.lem_enabled_for_scope(2));
+    assert!(cfg.lem_enabled_for_scope(3));
+    assert!(cfg.lem_enabled_for_scope(8));
+}
+
+#[test]
 fn influence_weights_are_clamped_to_safe_range() {
     let cfg = LayConfig {
         lem_weight_percent: 250,

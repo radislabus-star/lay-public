@@ -6,7 +6,7 @@ import Gtk from 'gi://Gtk';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '0.2.258';
+const APP_VERSION = '0.2.259';
 const APP_RELEASE_DATE = '2026-07-17';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
@@ -255,6 +255,11 @@ function normalizeNumber(value, min, max, fallback) {
 function normalizeConfig(cfg) {
     const legacyTextBackend = cfg?.text_backend === 'auto' ? 'ime' : cfg?.text_backend;
     const textBackend = normalizeChoice(legacyTextBackend, BACKEND_OPTIONS.map(([id]) => id), DEFAULTS.text_backend);
+    const forceRuKey = normalizeChoice(cfg?.force_ru_key, FORCE_KEY_OPTIONS.map(([id]) => id), DEFAULTS.force_ru_key);
+    let forceEnKey = normalizeChoice(cfg?.force_en_key, FORCE_KEY_OPTIONS.map(([id]) => id), DEFAULTS.force_en_key);
+    if (forceEnKey === forceRuKey)
+        forceEnKey = forceRuKey === DEFAULTS.force_en_key ? DEFAULTS.force_ru_key : DEFAULTS.force_en_key;
+    const lemEnabled = !!cfg?.lem_enabled;
     return {
         ...DEFAULTS,
         ...cfg,
@@ -262,6 +267,11 @@ function normalizeConfig(cfg) {
         correction_engine: normalizeChoice(cfg?.correction_engine, ['replay', 'smart'], DEFAULTS.correction_engine),
         layout_backend: normalizeChoice(cfg?.layout_backend, LAYOUT_BACKEND_OPTIONS.map(([id]) => id), DEFAULTS.layout_backend),
         text_backend: textBackend,
+        force_ru_key: forceRuKey,
+        force_en_key: forceEnKey,
+        lem_enabled: lemEnabled,
+        lem_2_words: lemEnabled,
+        lem_3_words: lemEnabled,
         nanda_precognition: !!cfg?.nanda_precognition,
         llmwave_shadow: cfg?.llmwave_shadow !== false,
         llmwave_apply: cfg?.llmwave_apply !== false,
@@ -302,10 +312,21 @@ function saveConfig(cfg) {
         bytes, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
 }
 
+let runtimeRestartId = 0;
+
 function restartDaemon() {
-    try {
-        Gio.Subprocess.new(['systemctl', '--user', 'restart', 'lay-daemon'], Gio.SubprocessFlags.NONE);
-    } catch(e) {}
+    if (runtimeRestartId)
+        GLib.Source.remove(runtimeRestartId);
+    runtimeRestartId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
+        runtimeRestartId = 0;
+        try {
+            Gio.Subprocess.new(
+                [GLib.get_home_dir() + '/.local/bin/lay-runtime-control', 'restart'],
+                Gio.SubprocessFlags.NONE
+            );
+        } catch(e) {}
+        return false;
+    });
 }
 
 function applyInputChannel(channel) {
@@ -345,13 +366,13 @@ class LayPrefsView {
             this._switchRow('Автозамена', 'auto_replace', true),
             this._switchRow('Запоминать правки', 'learning_log', false),
             this._debugLogsRow('Журнал отладки действий'),
-            this._switchRow('Следовать языку исправления', 'auto_switch_layout', false),
+            this._switchRow('Следовать языку исправления', 'auto_switch_layout', true),
             this._comboRow('Осторожность', 'correction_safety', SAFETY_OPTIONS, true),
         ]), 0, 0, 1, 1);
 
         grid.attach(this._section('Управление', [
             this._comboRow('Триггер', 'trigger', TRIGGER_OPTIONS, true),
-            this._switchRow('Несколько нажатий Shift', 'multi_tap_scope', true),
+            this._switchRow('Несколько нажатий триггера', 'multi_tap_scope', true),
             this._switchRow('Исправлять перед Enter', 'enter_autocorrect', true),
             this._switchRow('Хоткеи RU / EN', 'force_layout_hotkeys', true),
             this._comboRow('RU хоткей', 'force_ru_key', FORCE_KEY_OPTIONS, true),
@@ -360,11 +381,11 @@ class LayPrefsView {
 
         grid.attach(this._section('Кандидаты и ввод', [
             this._comboRow('Режим ввода', 'text_backend', BACKEND_OPTIONS, true),
-            this._switchRow('Контур LEM', 'lem_enabled', false),
-            this._weightRow('Вес LEM', 'lem_weight_percent', false),
-            this._weightRow('Вес L2 кандидатов', 'nanda_l2_weight_percent', false),
-            this._weightRow('Вес L3 фразы', 'nanda_l3_weight_percent', false),
-            this._switchRow('Подсказки в [скобках]', 'ime_bracket_candidates', false),
+            this._switchRow('Контур LEM', 'lem_enabled', true),
+            this._weightRow('Вес LEM', 'lem_weight_percent', true),
+            this._weightRow('Вес L2 кандидатов', 'nanda_l2_weight_percent', true),
+            this._weightRow('Вес L3 фразы', 'nanda_l3_weight_percent', true),
+            this._switchRow('Подсказки в [скобках]', 'ime_bracket_candidates', true),
             this._buttonRow('NANDA ячейки', 'Открыть', () => this._showNandaWindow()),
             this._switchRow('Раскладка по окну', 'ptah_alexs_mode', false),
         ]), 1, 0, 1, 1);
@@ -434,6 +455,10 @@ class LayPrefsView {
         const toggle = new Gtk.Switch({active: !!this._cfg[key]});
         toggle.connect('notify::active', () => {
             this._cfg[key] = toggle.active;
+            if (key === 'lem_enabled') {
+                this._cfg.lem_2_words = toggle.active;
+                this._cfg.lem_3_words = toggle.active;
+            }
             saveConfig(this._cfg);
             if (needsRestart)
                 restartDaemon();
@@ -679,9 +704,9 @@ class LayPrefsView {
         }
 
         const window = new Gtk.Window({
-            title: 'NANDA',
-            default_width: 520,
-            default_height: 360,
+            title: 'NANDA — живой паспорт',
+            default_width: 760,
+            default_height: 760,
         });
         this._nandaWindow = window;
         window.connect('close-request', () => {
@@ -702,35 +727,15 @@ class LayPrefsView {
             margin_end: 16,
         });
 
+        const status = loadNandaWaveStatus();
         inner.append(new Gtk.Label({
-            label: 'NANDA',
+            label: nandaStatusLine(status),
             xalign: 0,
-            wrap: true,
+            selectable: true,
             css_classes: ['heading'],
         }));
-        inner.append(new Gtk.Label({
-            label: 'Экспериментальный локальный слой автокоррекции. NANDA смотрит на хвост ввода, рождает варианты исправления и пропускает их через защитные проверки перед заменой текста.',
-            xalign: 0,
-            wrap: true,
-            max_width_chars: 58,
-            css_classes: ['dim-label'],
-        }));
-        inner.append(new Gtk.Label({label: 'Как использовать', xalign: 0, css_classes: ['heading']}));
-        inner.append(new Gtk.Label({
-            label: 'Для живых подсказок выбери “Режим ввода: IME-подсказки”. “Журнал отладки действий” нужен только для разбора ошибок.',
-            xalign: 0,
-            wrap: true,
-            max_width_chars: 58,
-            css_classes: ['dim-label'],
-        }));
-        inner.append(new Gtk.Label({label: 'Важно', xalign: 0, css_classes: ['heading']}));
-        inner.append(new Gtk.Label({
-            label: 'NANDA не печатает напрямую в окна и не является внешней LLM. Она только помогает выбрать исправление; сама вставка всё равно идёт через безопасный pipeline lay.',
-            xalign: 0,
-            wrap: true,
-            max_width_chars: 58,
-            css_classes: ['dim-label'],
-        }));
+        inner.append(this._nandaWavePanel(status));
+        inner.append(this._nandaPassportPanel(status));
         scroll.set_child(inner);
         window.set_child(scroll);
         window.present();

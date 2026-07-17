@@ -5,7 +5,7 @@ export const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
 export const UPDATE_LOG_PATH = GLib.get_home_dir() + '/.local/state/lay/update.log';
-export const APP_VERSION = '0.2.258';
+export const APP_VERSION = '0.2.259';
 export const APP_LICENSE = 'Non-Commercial';
 export const APP_URL = 'https://github.com/radislabus-star/lay-public';
 export const APP_ICON_NAME = 'input-keyboard-symbolic';
@@ -178,6 +178,11 @@ export function normalizeConfig(cfg) {
     // config value. Present it as IME and migrate it on the next save.
     const legacyTextBackend = cfg?.text_backend === 'auto' ? 'ime' : cfg?.text_backend;
     const textBackend = normalizeChoice(legacyTextBackend, ['uinput', 'ime'], DEFAULTS.text_backend);
+    const forceRuKey = normalizeChoice(cfg?.force_ru_key, FORCE_KEY_OPTIONS.map(([id]) => id), DEFAULTS.force_ru_key);
+    let forceEnKey = normalizeChoice(cfg?.force_en_key, FORCE_KEY_OPTIONS.map(([id]) => id), DEFAULTS.force_en_key);
+    if (forceEnKey === forceRuKey)
+        forceEnKey = forceRuKey === DEFAULTS.force_en_key ? DEFAULTS.force_ru_key : DEFAULTS.force_en_key;
+    const lemEnabled = !!cfg?.lem_enabled;
     return {
         ...DEFAULTS,
         ...cfg,
@@ -186,6 +191,11 @@ export function normalizeConfig(cfg) {
         correction_engine: normalizeChoice(cfg?.correction_engine, ['replay', 'smart'], DEFAULTS.correction_engine),
         layout_backend: normalizeChoice(cfg?.layout_backend, LAYOUT_BACKEND_OPTIONS.map(([id]) => id), DEFAULTS.layout_backend),
         text_backend: textBackend,
+        force_ru_key: forceRuKey,
+        force_en_key: forceEnKey,
+        lem_enabled: lemEnabled,
+        lem_2_words: lemEnabled,
+        lem_3_words: lemEnabled,
         nanda_precognition: !!cfg?.nanda_precognition,
         llmwave_shadow: cfg?.llmwave_shadow !== false,
         llmwave_apply: cfg?.llmwave_apply !== false,
