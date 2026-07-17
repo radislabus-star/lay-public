@@ -60,10 +60,12 @@ fn ime_target_continuity_and_bridge_replay_share_state_transition_contracts() {
     let state = read("src/bin/lay_ibus_engine/state.rs");
 
     assert!(
-        preedit.contains("retarget_blocked_partial")
-            && preedit.contains("block_retarget_for")
+        preedit.contains("target_surface: Option<String>")
+            && preedit.contains("stable_candidate_index")
+            && !preedit.contains("retarget_blocked_partial")
+            && !preedit.contains("block_retarget_for")
             && !engine.contains("preedit_target_surface"),
-        "temporal candidate continuity must be private fast-state, not parallel engine policy"
+        "temporal candidate continuity must be private fast-state and may not create a blank retarget frame"
     );
     assert!(
         decision.contains("TextTransitionDecision::AlreadyApplied")

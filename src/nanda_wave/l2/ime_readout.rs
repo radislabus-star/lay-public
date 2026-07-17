@@ -23,7 +23,7 @@ pub(super) fn ime_l2_word_candidates_impl(
     }
     let normalized = token.to_lowercase();
     let token_len = normalized.chars().count();
-    if !(2..=18).contains(&token_len) || !is_supported_lexical_surface(&normalized) {
+    if !(1..=18).contains(&token_len) || !is_supported_lexical_surface(&normalized) {
         return Vec::new();
     }
     let context_tokens = super::super::llmwave::tokenize(context_prefix);
@@ -117,7 +117,7 @@ pub(crate) fn ime_l2_completion_candidates(
     }
     let normalized = token.to_lowercase();
     let token_len = normalized.chars().count();
-    if !(2..=18).contains(&token_len) || !is_supported_lexical_surface(&normalized) {
+    if !(1..=18).contains(&token_len) || !is_supported_lexical_surface(&normalized) {
         return Vec::new();
     }
 

@@ -99,10 +99,6 @@ pub fn preedit_suffix_context_and_word(tail: &str, suffix: &str) -> Option<(Vec<
     Some((context, word))
 }
 
-pub fn is_noisy_first_russian_prefix(prefix: &str) -> bool {
-    matches!(prefix, "нев" | "инт")
-}
-
 pub fn is_command_like_long_tail(tail: &str) -> bool {
     let mut word_count = 0usize;
     let mut uppercase = 0usize;

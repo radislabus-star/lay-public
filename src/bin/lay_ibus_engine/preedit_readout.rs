@@ -2,8 +2,8 @@
 // L2/L3 memory, but does not rank candidates, mutate text, or emit IBus signals.
 
 use lay::ime_candidate_readout::{
-    is_noisy_first_russian_prefix, push_unique_ascii_known_suffix,
-    should_query_llmwave_phrase_suffix, ImeCandidateProposal, ImeCandidateSource,
+    push_unique_ascii_known_suffix, should_query_llmwave_phrase_suffix, ImeCandidateProposal,
+    ImeCandidateSource,
 };
 
 impl PreeditFastState {
@@ -12,7 +12,7 @@ impl PreeditFastState {
         max_suffix_chars: usize,
         limit: usize,
     ) -> Vec<ImeCandidateProposal> {
-        if self.token.chars().count() < 2
+        if self.token.is_empty()
             || !self.token.chars().all(|ch| ch.is_ascii_alphabetic())
         {
             return Vec::new();
@@ -94,8 +94,6 @@ impl LayIbusEngine {
         let min_prefix_chars = PREEDIT_RU_PREFIX_MIN_CHARS;
         if !(min_prefix_chars..=12).contains(&partial_len)
             || !partial.chars().all(|ch| matches!(ch, 'а'..='я' | 'ё'))
-            || is_noisy_first_russian_prefix(&partial)
-            || is_complete_russian_word(&partial)
         {
             return Vec::new();
         }
@@ -155,12 +153,6 @@ impl LayIbusEngine {
             })
             .collect()
     }
-}
-
-fn is_complete_russian_word(word: &str) -> bool {
-    lay::lexicon::is_common_ru_word(word)
-        || (word.chars().count() >= 5
-            && lay::russian_lexicon::is_known_russian_word_or_form(word))
 }
 
 #[cfg(test)]

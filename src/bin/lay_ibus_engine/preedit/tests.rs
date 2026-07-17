@@ -37,16 +37,13 @@ fn candidate_target_preserves_nonzero_selection_by_surface() {
 }
 
 #[test]
-fn retarget_block_lasts_for_same_partial_and_clears_on_input() {
-    let mut state = PreeditFastState::default();
-    for ch in "вывед".chars() {
-        state.push(ch);
-    }
-    state.block_retarget_for("вывед");
+fn invalidated_target_retargets_to_fresh_top_candidate_without_blank_frame() {
+    let candidates = vec!["ст".to_string(), "ровать".to_string()];
 
-    assert!(state.retarget_is_blocked_for("вывед"));
-    state.push('и');
-    assert!(!state.retarget_is_blocked_for("выведи"));
+    assert_eq!(
+        stable_candidate_index(Some("хвалить"), "хво", &candidates),
+        0
+    );
 }
 
 #[test]
@@ -139,7 +136,7 @@ fn ignored_preedit_candidate_records_negative_usage_without_promoting_it() {
 }
 
 #[test]
-fn bare_russian_prefixes_do_not_generate_precognition() {
+fn russian_prefixes_delegate_to_shared_candidate_authority() {
     lay::nanda_wave::warm_up_l2_for_ime();
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),
@@ -158,10 +155,12 @@ fn bare_russian_prefixes_do_not_generate_precognition() {
     }
     engine.refresh_precognition_candidates();
 
-    assert_eq!(engine.precognition_suffix(), None);
     assert!(
-        engine.preedit_candidates.is_empty(),
-        "raw Russian prefix memory leaked into preedit: {:?}",
+        engine
+            .preedit_candidates
+            .iter()
+            .all(|suffix| format!("нев{suffix}").starts_with("нев")),
+        "shared gate returned a non-prefix completion: {:?}",
         engine.preedit_candidates
     );
 }
@@ -856,6 +855,65 @@ fn first_active_russian_word_prefix_gets_precognition_candidate_after_four_chars
 }
 
 #[test]
+fn first_active_word_keeps_authorized_single_letter_completion_visible() {
+    lay::nanda_wave::warm_up_l2_for_ime();
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            correction_safety: "experimental".to_string(),
+            ..LayConfig::default()
+        },
+    );
+    for ch in "писат".chars() {
+        engine.insert_composition_char(ch);
+    }
+    engine.composition_cursor = engine.buffer.chars().count();
+    engine.refresh_precognition_candidates();
+
+    assert!(
+        engine.preedit_candidates.iter().any(|suffix| suffix == "ь"),
+        "authorized final-letter completion must stay visible: {:?}",
+        engine.preedit_candidates
+    );
+}
+
+#[test]
+fn complete_word_state_can_still_offer_a_stronger_longer_center() {
+    lay::nanda_wave::warm_up_l2_for_ime();
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            correction_safety: "experimental".to_string(),
+            ..LayConfig::default()
+        },
+    );
+    for ch in "как".chars() {
+        engine.insert_composition_char(ch);
+    }
+    engine.composition_cursor = engine.buffer.chars().count();
+    engine.refresh_precognition_candidates();
+
+    assert!(
+        engine
+            .preedit_candidates
+            .iter()
+            .any(|suffix| matches!(suffix.as_str(), "ой" | "ие")),
+        "Keep must compete with longer centers instead of stopping readout: {:?}",
+        engine.preedit_candidates
+    );
+}
+
+#[test]
 fn live_ime_prefers_prefix_completion_over_semantic_replacement_noise() {
     lay::nanda_wave::warm_up_l2_for_ime();
     let mut engine = LayIbusEngine::new(
@@ -1365,6 +1423,7 @@ fn preedit_completion_does_not_duplicate_anchor() {
 fn precognition_candidate_generation_stays_under_budget() {
     lay::nanda_wave::warm_up_l2_for_ime();
     let samples = [
+        "п",
         "пр",
         "пров",
         "file",

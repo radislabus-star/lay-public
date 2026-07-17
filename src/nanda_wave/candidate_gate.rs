@@ -109,7 +109,7 @@ pub fn live_completion_candidates(
     }
     let partial = request.partial.to_lowercase();
     let partial_len = partial.chars().count();
-    if !(2..=18).contains(&partial_len) || !is_live_lexical_surface(&partial) {
+    if !(1..=18).contains(&partial_len) || !is_live_lexical_surface(&partial) {
         record_live_gate_stats(
             started,
             LiveGateRecord {
@@ -207,7 +207,8 @@ pub fn live_completion_candidates(
                 context_usage,
                 l3_memory_warm,
             );
-            let l3_memory_supported = l3_readout.is_some_and(|readout| readout.memory_supported);
+            let l3_memory_supported = !context_tokens.is_empty()
+                && l3_readout.is_some_and(|readout| readout.memory_supported);
             if let Some(readout) = l3_readout {
                 l3_evaluated = l3_evaluated.saturating_add(1);
                 if readout.suppressed {
@@ -319,7 +320,7 @@ fn live_l2_word_candidates(
     }
     let normalized = token.to_lowercase();
     let token_len = normalized.chars().count();
-    if !(2..=18).contains(&token_len) || !is_live_lexical_surface(&normalized) {
+    if !(1..=18).contains(&token_len) || !is_live_lexical_surface(&normalized) {
         return Vec::new();
     }
 
@@ -778,6 +779,24 @@ mod tests {
                 .iter()
                 .all(|candidate| candidate.surface.starts_with("пр")),
             "short-prefix candidates must preserve the typed prefix: {live_candidates:?}"
+        );
+    }
+
+    #[test]
+    fn one_letter_prefix_is_evaluated_but_requires_learned_authority() {
+        super::super::warm_up_l2_for_ime();
+        let material = live_l2_word_candidates("", "п", 12);
+        let candidates = live_completion_candidates(request("", "п"));
+
+        assert!(
+            !material.is_empty(),
+            "one-letter input must reach L2 candidate memory"
+        );
+        assert!(
+            candidates
+                .iter()
+                .all(|candidate| candidate.surface.starts_with('п')),
+            "one-letter readout must stay prefix preserving: {candidates:?}"
         );
     }
 

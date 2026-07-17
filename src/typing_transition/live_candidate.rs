@@ -4,7 +4,7 @@
 //! admit, merge, and order candidates for a live IME readout.
 
 use super::decision::TransitionDecisionCore;
-use crate::ime_candidate_readout::ImeCandidateProposal;
+use crate::ime_candidate_readout::{ImeCandidateProposal, ImeCandidateSource};
 
 #[derive(Debug, Clone)]
 pub(crate) struct LiveCompletionProposal {
@@ -110,9 +110,17 @@ impl TransitionDecisionCore {
         if limit == 0 {
             return Vec::new();
         }
+        let first_l2_order = proposals
+            .iter()
+            .position(|proposal| proposal.source == ImeCandidateSource::L2Completion);
         let mut selected = Vec::<(String, f32, usize)>::with_capacity(proposals.len());
         for (order, proposal) in proposals.iter().enumerate() {
-            if !crate::ime_candidate_readout::is_allowed_visible_completion_suffix(&proposal.suffix)
+            let source_already_admitted = proposal.source == ImeCandidateSource::L2Completion
+                && first_l2_order == Some(order);
+            if !source_already_admitted
+                && !crate::ime_candidate_readout::is_allowed_visible_completion_suffix(
+                    &proposal.suffix,
+                )
             {
                 continue;
             }
@@ -148,7 +156,15 @@ pub(crate) fn live_completion_has_authority(candidate: &LiveCompletionProposal) 
     let bound_structural_signal = candidate.l2_center_grounded && structural_signal;
 
     match candidate.partial_len {
-        0 | 1 => false,
+        0 => false,
+        1 => {
+            candidate.allow_short_lexical
+                && (candidate.l3_memory_supported
+                    || candidate.context_usage >= 0.040
+                    || candidate.usage >= 0.080
+                    || candidate.accepted >= 2)
+                && candidate.suffix_len <= 8
+        }
         2 => {
             candidate.allow_short_lexical
                 && (usage_signal
@@ -237,6 +253,20 @@ mod tests {
         assert_eq!(
             TransitionDecisionCore::select_ime_readout(&proposals, 8),
             vec!["ождь", "ень"]
+        );
+    }
+
+    #[test]
+    fn authorized_l2_single_letter_suffix_reaches_ime_readout() {
+        let proposals = vec![ImeCandidateProposal::new(
+            "ь",
+            0.9,
+            ImeCandidateSource::L2Completion,
+        )];
+
+        assert_eq!(
+            TransitionDecisionCore::select_ime_readout(&proposals, 8),
+            vec!["ь"]
         );
     }
 }

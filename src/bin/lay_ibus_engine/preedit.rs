@@ -21,7 +21,7 @@ const PREEDIT_TAIL_LIMIT: usize = 160;
 const PREEDIT_TOKEN_LIMIT: usize = 32;
 const PREEDIT_ASCII_CANDIDATE_LIMIT: usize = 12;
 const PREEDIT_RU_WAVE_CANDIDATE_LIMIT: usize = 12;
-const PREEDIT_RU_PREFIX_MIN_CHARS: usize = 2;
+const PREEDIT_RU_PREFIX_MIN_CHARS: usize = 1;
 #[cfg(test)]
 const PREEDIT_PROBE_SYMBOL: &str = "*";
 const PREEDIT_MODE_CLEAR: u32 = 0;
@@ -32,14 +32,12 @@ include!("preedit_readout.rs");
 pub(crate) struct PreeditFastState {
     token: String,
     target_surface: Option<String>,
-    retarget_blocked_partial: Option<String>,
 }
 
 impl PreeditFastState {
     pub(crate) fn reset(&mut self) {
         self.token.clear();
         self.target_surface = None;
-        self.retarget_blocked_partial = None;
     }
 
     pub(crate) fn push(&mut self, ch: char) {
@@ -47,13 +45,11 @@ impl PreeditFastState {
             self.reset();
             return;
         }
-        self.retarget_blocked_partial = None;
         self.token.push(ch);
         trim_tail_buffer_to(&mut self.token, PREEDIT_TOKEN_LIMIT);
     }
 
     pub(crate) fn backspace(&mut self) {
-        self.retarget_blocked_partial = None;
         self.token.pop();
     }
 
@@ -71,16 +67,6 @@ impl PreeditFastState {
 
     pub(crate) fn clear_candidate_tracking(&mut self) {
         self.target_surface = None;
-        self.retarget_blocked_partial = None;
-    }
-
-    fn block_retarget_for(&mut self, partial: &str) {
-        self.target_surface = None;
-        self.retarget_blocked_partial = Some(partial.to_string());
-    }
-
-    fn retarget_is_blocked_for(&self, partial: &str) -> bool {
-        self.retarget_blocked_partial.as_deref() == Some(partial)
     }
 
     #[cfg(test)]
@@ -253,23 +239,11 @@ impl LayIbusEngine {
             .map(|(_, token)| token.to_lowercase())
             .unwrap_or_default();
         self.preedit_candidates = self.precognition_suffix_candidates();
-        if self.preedit_fast.retarget_is_blocked_for(&partial) {
-            self.clear_visible_candidate_state();
-            return;
-        }
-        if let Some(previous_target) = self.preedit_fast.target_surface() {
-            let Some(index) =
-                candidate_index_for_target(previous_target, &partial, &self.preedit_candidates)
-            else {
-                self.preedit_candidates.clear();
-                self.preedit_candidate_index = 0;
-                self.preedit_fast.block_retarget_for(&partial);
-                return;
-            };
-            self.preedit_candidate_index = index;
-        } else {
-            self.preedit_candidate_index = 0;
-        }
+        self.preedit_candidate_index = stable_candidate_index(
+            self.preedit_fast.target_surface(),
+            &partial,
+            &self.preedit_candidates,
+        );
         self.remember_selected_target(&partial);
     }
 
@@ -299,13 +273,6 @@ impl LayIbusEngine {
             .get(self.preedit_candidate_index)
             .map(|suffix| format!("{partial}{suffix}"));
         self.preedit_fast.remember_target(target);
-    }
-
-    fn clear_visible_candidate_state(&mut self) {
-        self.preedit_suffix.clear();
-        self.preedit_candidates.clear();
-        self.preedit_candidate_index = 0;
-        self.preedit_fast.clear_target();
     }
 
     fn precognition_suffix_candidates(&self) -> Vec<String> {
@@ -458,6 +425,16 @@ fn candidate_index_for_target(
     candidates
         .iter()
         .position(|candidate| candidate == expected_suffix)
+}
+
+fn stable_candidate_index(
+    previous_target: Option<&str>,
+    partial: &str,
+    candidates: &[String],
+) -> usize {
+    previous_target
+        .and_then(|target| candidate_index_for_target(target, partial, candidates))
+        .unwrap_or(0)
 }
 
 fn elapsed_us(started: Option<Instant>) -> u64 {
