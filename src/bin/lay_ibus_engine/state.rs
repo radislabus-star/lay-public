@@ -137,9 +137,13 @@ impl LayIbusEngine {
         config: LayConfig,
     ) -> Self {
         warm_runtime(&config);
-        let (handoff_tail_buffer, handoff_tail_epoch) = {
+        let (handoff_tail_buffer, handoff_tail_epoch, handoff_focus_receipt) = {
             let state = shared.lock().expect("lay ime state poisoned");
-            (state.handoff_tail_buffer.clone(), state.handoff_tail_epoch)
+            (
+                state.handoff_tail_buffer.clone(),
+                state.handoff_tail_epoch,
+                state.handoff_focus_receipt.clone(),
+            )
         };
         let mut engine = Self {
             path,
@@ -148,6 +152,7 @@ impl LayIbusEngine {
             composition_cursor: 0,
             tail_buffer: handoff_tail_buffer,
             tail_epoch: handoff_tail_epoch,
+            focus_receipt: handoff_focus_receipt,
             preedit_suffix: String::new(),
             preedit_candidates: Vec::new(),
             preedit_replacement_targets: Vec::new(),

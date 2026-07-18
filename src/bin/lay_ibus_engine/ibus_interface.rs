@@ -89,7 +89,13 @@ impl LayIbusEngine {
     }
 
     #[zbus(name = "FocusInId")]
-    fn focus_in_id(&mut self, _object_path: String, _client: String) {
+    fn focus_in_id(&mut self, object_path: String, client: String) {
+        let changed = self.bind_focus_receipt(object_path, client);
+        trace::record(if changed {
+            r#"{"kind":"ibus_focus","stage":"focus_in_id","receipt":"new"}"#
+        } else {
+            r#"{"kind":"ibus_focus","stage":"focus_in_id","receipt":"same"}"#
+        });
         self.focus_in();
     }
 

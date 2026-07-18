@@ -95,6 +95,7 @@ impl LayIbusEngine {
         };
         state.handoff_tail_buffer = self.tail_buffer.clone();
         state.handoff_tail_epoch = self.tail_epoch;
+        state.handoff_focus_receipt = self.focus_receipt.clone();
     }
 
     pub(super) fn close_committed_tail_field(&mut self) {
@@ -112,6 +113,7 @@ impl LayIbusEngine {
         };
         state.handoff_tail_buffer.clear();
         state.handoff_tail_epoch = self.tail_epoch;
+        state.handoff_focus_receipt = None;
         state.suppress_next_committed_tail_autocorrect = false;
         state.preserve_active_path_until = None;
     }
@@ -131,6 +133,7 @@ impl LayIbusEngine {
         if let Ok(mut state) = shared.lock() {
             state.handoff_tail_buffer.clear();
             state.handoff_tail_epoch = self.tail_epoch;
+            state.handoff_focus_receipt = None;
             state.suppress_next_committed_tail_autocorrect = false;
             state.preserve_active_path_until = None;
         };

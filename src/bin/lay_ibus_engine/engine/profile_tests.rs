@@ -65,3 +65,25 @@ fn surrounding_text_client_publishes_preedit_immediately() {
 
     assert!(!engine.preedit_waits_for_cursor_ack());
 }
+
+#[test]
+fn identified_focus_publishes_preedit_without_cursor_ack() {
+    let mut engine = engine();
+    engine.cursor_cell_width = 11;
+
+    assert!(engine.preedit_waits_for_cursor_ack());
+    assert!(engine.bind_focus_receipt("/field/a".to_string(), "client-a".to_string()));
+    assert!(!engine.preedit_waits_for_cursor_ack());
+}
+
+#[test]
+fn changed_focus_receipt_quarantines_committed_tail() {
+    let mut engine = engine();
+    engine.bind_focus_receipt("/field/a".to_string(), "client-a".to_string());
+    engine.tail_buffer = "старый ".to_string();
+    engine.publish_tail_handoff();
+
+    assert!(engine.bind_focus_receipt("/field/b".to_string(), "client-b".to_string()));
+    assert!(engine.tail_buffer.is_empty());
+    assert!(engine.shared.lock().expect("shared state").handoff_tail_buffer.is_empty());
+}

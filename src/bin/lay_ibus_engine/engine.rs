@@ -20,6 +20,7 @@ pub(crate) struct LayIbusEngine {
     pub(super) composition_cursor: usize,
     pub(super) tail_buffer: String,
     pub(super) tail_epoch: u64,
+    pub(super) focus_receipt: Option<String>,
     pub(super) preedit_suffix: String,
     pub(super) preedit_candidates: Vec<String>,
     pub(super) preedit_replacement_targets: Vec<Option<String>>,
@@ -58,7 +59,25 @@ impl LayIbusEngine {
     }
 
     pub(super) fn preedit_waits_for_cursor_ack(&self) -> bool {
-        !self.surrounding_text_supported && self.cursor_cell_width > 0
+        self.focus_receipt.is_none()
+            && !self.surrounding_text_supported
+            && self.cursor_cell_width > 0
+    }
+
+    pub(super) fn bind_focus_receipt(&mut self, object_path: String, client: String) -> bool {
+        let receipt = format!("{object_path}\u{1f}{client}");
+        if self.focus_receipt.as_deref() == Some(receipt.as_str()) {
+            return false;
+        }
+
+        let replaces_existing_focus = self.focus_receipt.replace(receipt).is_some();
+        if replaces_existing_focus {
+            self.buffer.clear();
+            self.composition_cursor = 0;
+            self.clear_preedit_completion_state();
+            self.close_committed_tail_field();
+        }
+        true
     }
 
     pub(super) fn manual_toggle_authority(&self) -> ManualToggleAuthority {
