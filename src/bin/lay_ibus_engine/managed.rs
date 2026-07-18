@@ -55,6 +55,7 @@ impl LayIbusEngine {
         if keyval == KEY_SPACE {
             if self.buffer.is_empty() {
                 self.clear_preedit(emitter).await?;
+                self.close_precognition_word_boundary();
                 let initial_mode = self.initial_word_input_mode();
                 let mode = *self.word_input_mode.get_or_insert(initial_mode);
                 if mode == WordInputMode::ManagedCommit {
@@ -147,6 +148,7 @@ mod word_boundary_route_contract {
         assert!(
             source.contains("space_managed_commit")
                 && source.contains("space_terminal_passthrough")
+                && source.contains("self.close_precognition_word_boundary();")
                 && source.contains("autocorrect_committed_layout_on_space(emitter)"),
             "managed Space must close layout boundaries through the shared decision core"
         );
