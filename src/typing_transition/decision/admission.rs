@@ -20,6 +20,7 @@ pub(super) fn candidate_has_apply_authority(
     let signals = &evaluation.signals;
     let source_role = candidate.origin.source_role();
     let exact_positive_transition = evaluation.transition.l4_signed_signal.exact_positive();
+    let operator_consensus_authority = certified_operator_consensus(candidate, evaluation);
     let verified_layout_projection = evaluation.action.verifier_passed
         && evaluation.action.edit_operator == verifier::EditTransitionOperator::LayoutProjection;
     if (signals.l4_hidden_plan_commitment != 0 && !signals.l4_hidden_certificate_valid)
@@ -151,6 +152,7 @@ pub(super) fn candidate_has_apply_authority(
         candidates.len(),
         source_role,
         context_state_support,
+        operator_consensus_authority,
         &evaluation.transition,
     );
     if !admission.allow_apply {
@@ -239,7 +241,7 @@ pub(super) fn candidate_has_apply_authority(
         return false;
     }
     let allowed = !unresolved_competitor_blocks(
-        exact_positive_transition,
+        exact_positive_transition || operator_consensus_authority,
         stronger_unresolved_candidate_exists(event, candidate_index, candidates, evaluations),
     );
     if !allowed {
@@ -439,6 +441,7 @@ pub(super) fn admit_evaluated_hidden_transition(
     candidate_count: usize,
     source_role: CorrectionSourceRole,
     context_state_support: bool,
+    operator_consensus_witness: bool,
     transition: &TypingTransition,
 ) -> TransitionAdmission {
     let exact_state_support = transition.l4_signed_signal.exact_positive();
@@ -480,7 +483,12 @@ pub(super) fn admit_evaluated_hidden_transition(
         };
     }
 
-    if transition.l4_signed_signal.negative {
+    // Exact rejected experience is authoritative. A generic anti-state remains
+    // ranking pressure, but cannot veto an independently verified operator for
+    // this candidate.
+    if transition.l4_signed_signal.negative
+        && (transition.l4_signed_signal.state_specific || !operator_consensus_witness)
+    {
         return TransitionAdmission {
             allow_apply: false,
             reason: "latent_l4_negative_transition_memory",

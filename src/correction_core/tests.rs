@@ -370,6 +370,34 @@ mod tests {
     }
 
     #[test]
+    fn operator_consensus_repairs_extra_letter_despite_generic_negative_memory() {
+        let previous_policy = crate::hot_field::process_policy();
+        crate::hot_field::set_process_policy(
+            crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
+                crate::text_backend::TextBackendPreference::Ime,
+            ),
+        );
+        let pipeline = default_typing_assist_pipeline();
+        let mut req = request(
+            "преоверка ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        );
+        req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+        let resolution = resolve_text_correction(req);
+        crate::hot_field::set_process_policy(previous_policy);
+
+        let selected = resolution
+            .selected
+            .as_ref()
+            .unwrap_or_else(|| panic!("operator consensus must resolve: {resolution:#?}"));
+        assert_eq!(selected.replacement, "проверка ");
+        assert_eq!(selected.error_class, TypingErrorClass::ExtraLetter);
+        assert!(selected.has_origin(CandidateOrigin::DeterministicTypo));
+        assert!(selected.has_origin(CandidateOrigin::L2Surface));
+    }
+
+    #[test]
     fn deterministic_mode_corrects_wrong_layout_text() {
         let pipeline = default_typing_assist_pipeline();
         for (input, expected) in [

@@ -20,18 +20,18 @@
     "semantic_hash": "236e46a80b6d2865de3d1816fb645158"
   },
   "extension/lay@radislabus-star.github.io/lay-impl.js": {
-    "mtime": 1784373501.4071248,
+    "mtime": 1784375562.6625035,
     "ast_hash": "4b795e86b2cf94e522b648b448bb5e87",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1784373501.4052799,
-    "ast_hash": "7356bb47495bbcc9c54a0579cd547d51",
+    "mtime": 1784375562.6603034,
+    "ast_hash": "003d7246f8db539164c91b826c929c6d",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1784373501.4131374,
-    "ast_hash": "34af509814a552acc11e291ed41ffd2a",
+    "mtime": 1784375562.680235,
+    "ast_hash": "cb8ee52dad8e726eec901ac5bc72f662",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1784373501.413002,
-    "ast_hash": "d418a6f52572c5fcd350a1e6ed3aa369",
+    "mtime": 1784375562.6795037,
+    "ast_hash": "4f03380fb493d7d6cce5668e9474543f",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1784373501.4128594,
-    "ast_hash": "8981324c52fd15868a18a1ff31b1f5b5",
+    "mtime": 1784375562.671904,
+    "ast_hash": "d9a995f9a8546b7f360a44bbc3c97122",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -2520,8 +2520,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1784373501.4150202,
-    "ast_hash": "b8bfddae5054191c9213dd503e9bdba2",
+    "mtime": 1784375562.6825037,
+    "ast_hash": "580e462973bebfd1f280712d6c317278",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3115,8 +3115,8 @@
     "semantic_hash": ""
   },
   "src/correction_core/tests.rs": {
-    "mtime": 1784373100.7329636,
-    "ast_hash": "5d9822854a1d40fb3f81f94b9a20b3a1",
+    "mtime": 1784375134.1098385,
+    "ast_hash": "4819e0328d1a32e3f8e65c4993f0a516",
     "semantic_hash": ""
   },
   "src/typing_transition/candidate_resolution.rs": {
@@ -3125,8 +3125,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision_signals.rs": {
-    "mtime": 1784373040.2732837,
-    "ast_hash": "939814da30b359e6d7336856c9c5cb41",
+    "mtime": 1784375433.314075,
+    "ast_hash": "ba628497ee5a4edd0615bc84ea08504e",
     "semantic_hash": ""
   },
   "docs/structural_gates/lay-live-transition-gate.profile.json": {
@@ -3330,8 +3330,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision/admission.rs": {
-    "mtime": 1784369194.5302749,
-    "ast_hash": "3bf7da3b8ccc32778fa14d3158ad6374",
+    "mtime": 1784375433.314075,
+    "ast_hash": "4abe1e638ee5ba635128f85583e3b848",
     "semantic_hash": ""
   },
   "src/typing_transition/decision/receipt.rs": {
@@ -3340,8 +3340,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision/tests.rs": {
-    "mtime": 1784294696.3164706,
-    "ast_hash": "f1e04876a117d593cef28f822b7671e9",
+    "mtime": 1784375134.1068385,
+    "ast_hash": "45f82997b7ca3b9e0b7eb8ea11c82a0d",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/TYPING_TRANSITION_MEMORY_PROOF_V1.json": {

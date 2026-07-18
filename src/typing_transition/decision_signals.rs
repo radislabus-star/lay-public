@@ -355,6 +355,19 @@ fn phase_backed_operator_consensus(
         && evaluation.signals.l2_lexical_phase_competition_ready
 }
 
+fn certified_operator_consensus(
+    candidate: &UnifiedCorrectionCandidate,
+    evaluation: &CandidateDecisionEvaluation,
+) -> bool {
+    phase_backed_operator_consensus(candidate, evaluation)
+        && evaluation.signals.l4_hidden_disposition == L4HiddenDisposition::Witnessed
+        && evaluation.signals.l4_hidden_selected_witnessed
+        && evaluation.signals.l4_hidden_certificate_valid
+        && evaluation.signals.l4_hidden_probe
+            == crate::nanda_wave::l4_active_disambiguation::L4WitnessProbe::OperatorConsensus
+                .as_str()
+}
+
 fn is_precise_lexical_operator(operator: crate::language_action::LanguageActionOperator) -> bool {
     use crate::language_action::LanguageActionOperator;
     matches!(

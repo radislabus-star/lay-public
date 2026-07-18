@@ -199,6 +199,7 @@ fn admit(
         candidate_count,
         source_role,
         context_state_support,
+        false,
         crate::typing_transition::L4SignedTransitionSignal {
             negative: false,
             state_specific: false,
@@ -214,6 +215,7 @@ fn admit_with_l4_signal(
     candidate_count: usize,
     source_role: CorrectionSourceRole,
     context_state_support: bool,
+    operator_consensus_witness: bool,
     l4_signed_signal: crate::typing_transition::L4SignedTransitionSignal,
 ) -> super::TransitionAdmission {
     let action = crate::typing_transition::action::verify_action_operator(
@@ -238,6 +240,7 @@ fn admit_with_l4_signal(
         candidate_count,
         source_role,
         context_state_support,
+        operator_consensus_witness,
         &transition,
     )
 }
@@ -320,6 +323,7 @@ fn admission_truth_table_uses_verifier_latent_invariants_and_signed_l4_memory() 
         candidate: UnifiedCorrectionCandidate,
         source_role: CorrectionSourceRole,
         strong_transition_support: bool,
+        operator_consensus_witness: bool,
         l4_signed_signal: crate::typing_transition::L4SignedTransitionSignal,
         expected_reason: Option<&'static str>,
     }
@@ -336,6 +340,12 @@ fn admission_truth_table_uses_verifier_latent_invariants_and_signed_l4_memory() 
         attract_count: 0,
         repel_count: 1,
     };
+    let generic_negative_l4 = crate::typing_transition::L4SignedTransitionSignal {
+        negative: true,
+        state_specific: false,
+        attract_count: 0,
+        repel_count: 16,
+    };
     let cases = [
         Case {
             name: "verified_current_word",
@@ -343,6 +353,7 @@ fn admission_truth_table_uses_verifier_latent_invariants_and_signed_l4_memory() 
             candidate: candidate("проверка ", "composite_ru_typo"),
             source_role: CorrectionSourceRole::DeterministicTypo,
             strong_transition_support: true,
+            operator_consensus_witness: false,
             l4_signed_signal: neutral_l4,
             expected_reason: None,
         },
@@ -352,6 +363,7 @@ fn admission_truth_table_uses_verifier_latent_invariants_and_signed_l4_memory() 
             candidate: candidate("мы модем ", "composite_ru_typo"),
             source_role: CorrectionSourceRole::DeterministicTypo,
             strong_transition_support: true,
+            operator_consensus_witness: false,
             l4_signed_signal: neutral_l4,
             expected_reason: Some("latent_context_unverified"),
         },
@@ -361,6 +373,7 @@ fn admission_truth_table_uses_verifier_latent_invariants_and_signed_l4_memory() 
             candidate: candidate("мы модем ", "composite_ru_typo"),
             source_role: CorrectionSourceRole::DeterministicTypo,
             strong_transition_support: false,
+            operator_consensus_witness: false,
             l4_signed_signal: neutral_l4,
             expected_reason: Some("latent_known_word_drift_needs_state_proof"),
         },
@@ -370,8 +383,29 @@ fn admission_truth_table_uses_verifier_latent_invariants_and_signed_l4_memory() 
             candidate: candidate("проверка ", "composite_ru_typo"),
             source_role: CorrectionSourceRole::DeterministicTypo,
             strong_transition_support: true,
+            operator_consensus_witness: true,
             l4_signed_signal: negative_l4,
             expected_reason: Some("latent_l4_negative_transition_memory"),
+        },
+        Case {
+            name: "generic_l4_negative_without_consensus",
+            event: event("преоверка "),
+            candidate: candidate("проверка ", "composite_ru_typo"),
+            source_role: CorrectionSourceRole::DeterministicTypo,
+            strong_transition_support: true,
+            operator_consensus_witness: false,
+            l4_signed_signal: generic_negative_l4,
+            expected_reason: Some("latent_l4_negative_transition_memory"),
+        },
+        Case {
+            name: "operator_consensus_survives_generic_l4_negative",
+            event: event("преоверка "),
+            candidate: candidate("проверка ", "composite_ru_typo"),
+            source_role: CorrectionSourceRole::DeterministicTypo,
+            strong_transition_support: true,
+            operator_consensus_witness: true,
+            l4_signed_signal: generic_negative_l4,
+            expected_reason: None,
         },
     ];
 
@@ -382,6 +416,7 @@ fn admission_truth_table_uses_verifier_latent_invariants_and_signed_l4_memory() 
             1,
             case.source_role,
             case.strong_transition_support,
+            case.operator_consensus_witness,
             case.l4_signed_signal,
         );
 
