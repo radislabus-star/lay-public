@@ -80,6 +80,10 @@ impl LayIbusEngine {
         &mut self,
         emitter: &SignalEmitter<'_>,
     ) -> fdo::Result<()> {
+        if self.preedit_waits_for_cursor_ack() {
+            self.preedit_dirty = true;
+            return Ok(());
+        }
         self.preedit_dirty = false;
         self.update_precognition_preedit(emitter).await
     }

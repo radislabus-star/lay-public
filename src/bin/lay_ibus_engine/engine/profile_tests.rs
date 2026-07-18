@@ -48,3 +48,20 @@ fn surrounding_text_client_uses_managed_commit_even_with_cursor_width() {
         WordInputMode::ManagedCommit
     );
 }
+
+#[test]
+fn cursor_driven_client_defers_preedit_until_cursor_ack() {
+    let mut engine = engine();
+    engine.cursor_cell_width = 11;
+
+    assert!(engine.preedit_waits_for_cursor_ack());
+}
+
+#[test]
+fn surrounding_text_client_publishes_preedit_immediately() {
+    let mut engine = engine();
+    engine.cursor_cell_width = 11;
+    engine.surrounding_text_supported = true;
+
+    assert!(!engine.preedit_waits_for_cursor_ack());
+}
