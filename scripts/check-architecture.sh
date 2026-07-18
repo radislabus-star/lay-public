@@ -134,7 +134,6 @@ assert_live_correction_entrypoint_owned_by_input_gate() {
   if command -v rg >/dev/null 2>&1; then
     hits="$(rg -n --fixed-strings "$pattern" src \
         --glob '!src/correction_core.rs' \
-        --glob '!src/correction_pipeline.rs' \
         --glob '!src/input_gate.rs' \
         --glob '!src/main.rs' \
         --glob '!src/bin/lay_nanda_wave_eval/**' \
@@ -147,7 +146,7 @@ assert_live_correction_entrypoint_owned_by_input_gate() {
   else
     hits="$(grep -RInF -- "$pattern" src || true)"
     hits="$(printf '%s\n' "$hits" \
-      | grep -Ev '(^src/correction_core\.rs:|^src/correction_pipeline\.rs:|^src/input_gate\.rs:|^src/main\.rs:|^src/bin/lay_nanda_wave_eval/|_tests\.rs:|^src/.*/tests(\.rs:|/))' || true)"
+      | grep -Ev '(^src/correction_core\.rs:|^src/input_gate\.rs:|^src/main\.rs:|^src/bin/lay_nanda_wave_eval/|_tests\.rs:|^src/.*/tests(\.rs:|/))' || true)"
   fi
   if [[ -n "$hits" ]]; then
     printf '%s\n' "$hits" >&2
@@ -630,7 +629,6 @@ assert_single_owner "pub(super) fn detect_script" "src/word_recognizer/script.rs
 assert_single_owner "pub(super) fn known_russian_word" "src/word_recognizer/lexicon.rs"
 assert_single_owner "pub(super) fn known_english_word" "src/word_recognizer/lexicon.rs"
 assert_single_owner "pub fn is_plain_layout_autocorrect_risky" "src/word_recognizer/risk.rs"
-assert_single_owner "pub fn is_probably_completed_natural_word" "src/word_recognizer/risk.rs"
 assert_single_owner "pub fn is_cli_option_token" "src/word_recognizer/technical.rs"
 assert_single_owner "pub fn is_protected_ascii_token" "src/word_recognizer/technical.rs"
 assert_single_owner "pub fn is_ascii_technical_token" "src/word_recognizer/technical.rs"
