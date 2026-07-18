@@ -1,113 +1,22 @@
-//! Runtime architecture contract for the current lay input pipeline.
+//! Generated architecture receipt gate.
 //!
-//! The status is compiled from the deterministic Graphify/AST receipt produced
-//! by `scripts/architecture_graph_gate.py`; runtime code does not infer PASS by
-//! searching its own source text.
+//! Human architecture belongs in `docs/nanda-wave-architecture.md`. This
+//! module only verifies the deterministic Graphify receipt compiled into the
+//! binary, so prose cannot become runtime authority.
 
 use serde::Deserialize;
 use std::sync::OnceLock;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ContractStatus {
-    Pass,
-    Watch,
-}
-
-impl ContractStatus {
-    pub const fn as_str(self) -> &'static str {
-        match self {
-            Self::Pass => "PASS",
-            Self::Watch => "WATCH",
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct ArchitectureLine {
-    pub id: &'static str,
-    pub layer: &'static str,
-    pub owner: &'static str,
-    pub proof: &'static str,
-    pub debt: &'static str,
-}
-
-const LINES: [ArchitectureLine; 8] = [
-    ArchitectureLine {
-        id: "decision-authority",
-        layer: "Transition Decision Core",
-        owner: "typing_transition::decision + text_edit::transition",
-        proof: "candidate apply and visible-tail edits pass through transition authority",
-        debt: "keep old correction rules as candidate producers only",
-    },
-    ArchitectureLine {
-        id: "ime-backend-only",
-        layer: "IME",
-        owner: "text_edit::executor::TextEditBackend::Ime",
-        proof: "IME may execute verified actions but cannot decide apply truth",
-        debt: "daemon boundary worker owns correction truth; IME only executes authorized edits",
-    },
-    ArchitectureLine {
-        id: "edit-plan-verifier",
-        layer: "Text Edit Gate",
-        owner: "text_edit::safety + text_edit::gate",
-        proof: "multiword, boundary, middle-tail, and stale-tail edits require proof",
-        debt: "all future text mutation paths must carry an EditAction",
-    },
-    ArchitectureLine {
-        id: "typed-transition-capability",
-        layer: "Transition Proof Capability",
-        owner: "text_edit::mutation + text_edit::gate",
-        proof: "generic proof construction is crate-private; adapters receive narrow typed edit plans",
-        debt: "new output routes must not construct TransitionAudit or generic transition plans",
-    },
-    ArchitectureLine {
-        id: "hot-field-memory",
-        layer: "Hot Runtime Memory",
-        owner: "hot_field + l2_candidate_phase + usage_prior",
-        proof: "LAYPC005 stores separate structural and lexical centers, anti-centers and promotion bits without words",
-        debt: "keep exact text in cold training/debug evidence only",
-    },
-    ArchitectureLine {
-        id: "l2-candidate-field",
-        layer: "L2",
-        owner: "nanda_wave::l2 + l2_candidate_phase + typing_transition::decision::interference",
-        proof: "L2 proposes candidates; promoted phase competition redistributes the existing L2 energy budget; L2 cannot execute",
-        debt: "expand clean lexical anti-center coverage and raise candidate coverage without raw-word authority",
-    },
-    ArchitectureLine {
-        id: "l3-l4-learning",
-        layer: "L3/L4",
-        owner: "context_phase + l4_hidden_state + l4_active_disambiguation + l4_phase_witness + l4_signed_memory + typing_memory",
-        proof: "LAYL3P01 context centers and the compiled local feedback snapshot feed state-before/operator/state-after hypotheses; bounded positive/anti phase witnesses and independently replayed receipts resolve ties",
-        debt: "expand clean context and organic certificate coverage without restoring scene rules, raw phrase lookup or target authority",
-    },
-    ArchitectureLine {
-        id: "fast-verifiable",
-        layer: "Verification",
-        owner: "architecture report + focused tests + latency probes",
-        proof: "architecture checks are cheap and do not warm heavy candidate memory",
-        debt: "keep final checks focused on modified routes",
-    },
-];
-
-const TREE: [&str; 17] = [
-    "LAY TYPING TRANSITION CPU",
-    "|",
-    "+-- Input snapshots: source, visible tail, focus and epoch; surrounding cursor/selection when available",
-    "+-- L1 Relation Encoder: surface delta, changed region, proof and verifier atoms",
-    "+-- L2 Candidate Lattice: candidate producers without apply authority",
-    "+-- L2 Phase Memory: promoted centers / anti-centers / learned margin",
-    "+-- L3 Context Relation Phase: semantic binding, positive centers and anti-centers",
-    "+-- L4 Hidden State: committed witness plan, compiled local feedback, bounded phase/anti centers and replayed certificate",
-    "+-- Joint Transition Interference: constructive/repulsive evidence in one fixed ranking budget",
-    "+-- Transition Decision Core: Apply / SuggestOnly / Keep / ABSTAIN / Veto",
-    "+-- Transition Verifier: revision, boundary and left context; backend lifecycle is dispatched/observed/indeterminate",
-    "+-- AuthorizedEdit: sealed sole mutation capability",
-    "+-- Executor Backends",
-    "    |",
-    "    +-- daemon: execute verified edits",
-    "    +-- IME: display and execute verified IME accepts",
-    "    +-- tray: status/config only",
+const REQUIRED_CHECKS: [&str; 9] = [
+    "decision-authority",
+    "ime-backend-only",
+    "edit-plan-verifier",
+    "typed-transition-capability",
+    "hot-field-memory",
+    "l1-surface-field",
+    "l2-candidate-field",
+    "l3-l4-learning",
+    "fast-verifiable",
 ];
 
 const RECEIPT_JSON: &str = include_str!(concat!(
@@ -135,70 +44,26 @@ fn receipt() -> &'static ArchitectureReceipt {
     })
 }
 
-const DEBT: [&str; 7] = [
-    "P0: expand clean L3 context relation coverage while heldout false supports stay below the release precision floor",
-    "P1: raise organic L4 certificate coverage and prove cross-scene transfer without stale-state mixing",
-    "P2: keep CompositeTypo split into typed subforms when new evidence reveals distinct circuits",
-    "P3: keep IME display aggressive, first-word capable and backend-only",
-    "P4: investigate end-to-end output latency separately from microsecond phase readout",
-    "P5: preserve zero unsafe multiword and unverified left-context applies in live logs",
-    "P6: raise L2 candidate coverage and retrain/re-gate every package after relation encoder or proof source changes",
-];
-
-pub fn architecture_lines() -> &'static [ArchitectureLine] {
-    &LINES
-}
-
-/// Route evidence compiled from Graphify AST nodes and dependency edges.
-///
-/// The generated receipt replaces the former source-substring checks. The
-/// release architecture gate verifies source/graph freshness before this
-/// embedded report is accepted.
-pub fn observed_contract_status(id: &str) -> ContractStatus {
-    receipt()
-        .checks
-        .iter()
-        .find(|item| item.id == id)
-        .filter(|item| item.status == "PASS")
-        .map_or(ContractStatus::Watch, |_| ContractStatus::Pass)
-}
-
-pub fn architecture_tree() -> &'static [&'static str] {
-    &TREE
-}
-
-pub fn debt_queue() -> &'static [&'static str] {
-    &DEBT
-}
-
 pub fn all_contract_lines_pass() -> bool {
-    receipt().schema == "lay.architecture-graph-receipt.v1"
-        && receipt().verdict == "PASS"
-        && LINES
-            .iter()
-            .all(|line| matches!(observed_contract_status(line.id), ContractStatus::Pass))
+    let receipt = receipt();
+    receipt.schema == "lay.architecture-graph-receipt.v1"
+        && receipt.verdict == "PASS"
+        && REQUIRED_CHECKS.iter().all(|required| {
+            receipt
+                .checks
+                .iter()
+                .any(|check| check.id == *required && check.status == "PASS")
+        })
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        all_contract_lines_pass, architecture_lines, observed_contract_status, ContractStatus,
-    };
+    use super::{all_contract_lines_pass, receipt, REQUIRED_CHECKS};
 
     #[test]
-    fn architecture_contract_has_eight_pass_lines() {
-        let lines = architecture_lines();
-        assert_eq!(lines.len(), 8);
+    fn generated_receipt_proves_every_required_architecture_check() {
+        assert_eq!(REQUIRED_CHECKS.len(), 9);
+        assert_eq!(receipt().checks.len(), REQUIRED_CHECKS.len());
         assert!(all_contract_lines_pass());
-        assert!(lines.iter().any(|line| line.id == "ime-backend-only"));
-        assert!(lines.iter().any(|line| line.id == "edit-plan-verifier"));
-        assert!(lines
-            .iter()
-            .any(|line| line.id == "typed-transition-capability"));
-        assert!(lines.iter().any(|line| line.id == "l3-l4-learning"));
-        assert_eq!(
-            observed_contract_status("edit-plan-verifier"),
-            ContractStatus::Pass
-        );
     }
 }

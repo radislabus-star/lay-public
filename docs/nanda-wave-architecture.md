@@ -1,348 +1,96 @@
-# NANDA Wave Architecture
+# Lay Library Architecture
 
-> Execution authority: `docs/phase-word-recovery-canonical-cutover.md`.
-> This early experimental note is historical context and cannot authorize a
-> production route that conflicts with the canonical cutover.
+This is the short canonical orientation document for agents and maintainers.
+The detailed phase-memory contract remains in
+`docs/phase-word-recovery-canonical-cutover.md`.
 
-NANDA Wave is an experimental trace/eval architecture for lay. It is not the
-current production hot path and must not type into the system directly.
+## Goal
 
-The goal is to test whether small cache-sized wave cells can produce a useful
-layered signal:
+Lay is one reusable typing-transition library with thin runtime clients.
 
 ```text
-key/text stream
--> L1 symbol cells
--> L2 word cells
--> L3 phrase/context cells
--> decision trace
+observe visible state
+-> propose candidates
+-> score context and memory
+-> decide one typed transition or ABSTAIN
+-> verify the predicted edit
+-> create AuthorizedEdit
+-> execute through a backend
+-> record accepted/rejected experience and metrics
 ```
 
-Runtime integration is allowed only after the eval gate proves that the wave
-path is not worse than the current deterministic/NANDA path.
-
-The target lexical model is defined in
-`docs/nanda-lexical-attractor-model.md`. In short: L2 must not become a plain
-dictionary/prefix lookup with wave-shaped scoring around it. Dictionaries,
-Hunspell, protected words, and exact replacements may bootstrap or guard NANDA,
-but the NANDA lexical memory itself must be a wave-native lexical-attractor
-layer with cold surface-production memory. A number/hash may guide an
-attractor, but visible text must be produced through grapheme, morpheme, copy,
-layout, or byte-fallback routes, not through a `token_id -> string` shortcut.
-
-## Cell Unit
-
-Canonical cell:
+The target library front door has seven operations:
 
 ```text
-SymbolCell32v0 / NandaCell32v0
-size: 32 768 bytes
-target: one L1d cache on i7-8650U-class cores
+observe -> propose -> decide -> authorize -> execute -> learn -> report
 ```
 
-Memory layout:
+Daemon, IME, CLI, tray and eval code must call this library. They must not own
+candidate truth, ranking policy or text-mutation authority.
+
+## Current Owners
 
 ```text
-Header               256 B
-Projection bank     4096 B
-Mode bank          16384 B
-Transition bank     4096 B
-Interference state  4096 B
-Calibration/stats   2048 B
-Scratch             1792 B
-Total              32768 B
+L1 surface and relation signals       src/ngram, src/lexical_surface_atoms.rs
+L2 candidate and phase field          src/nanda_wave/l2*, lexical_phase
+L3 phrase/context field               src/nanda_wave/l3*, context_phase
+L4 hidden/signed transition memory    src/nanda_wave/l4*, typing_memory
+sole chooser                          src/typing_transition/decision*
+actor and verifier                    src/text_edit, src/typing_transition/verifier.rs
+sealed mutation capability            text_edit::AuthorizedEdit
+daemon adapter                        src/bin/lay_daemon
+IME adapter                           src/bin/lay_ibus_engine
+proof and metrics                     src/bin/lay_nanda_wave_eval, tests
 ```
 
-The cell does not store every Unicode symbol. It stores a universal projection
-from any Unicode scalar / UTF-8 byte pattern into a sparse wave space.
-
-## Mode8
-
-One mode is the smallest memory unit of a cell:
+## Dependency Law
 
 ```text
-frequency_id  u16
-sin_weight    i8
-cos_weight    i8
-amplitude     i8
-phase         i8
-damping       u8
-role          u8
+clients -> library facade -> domain owners -> pure primitives
+proof/eval -> library facade and diagnostic receipts
+backends <- AuthorizedEdit only
 ```
 
-Size:
+Forbidden:
+
+- direct apply from L1, L2, L3, L4, rules or IME;
+- candidate ranking inside a backend;
+- runtime dependence on fixtures or eval reports;
+- a second chooser beside `TransitionDecisionCore`;
+- text mutation without `AuthorizedEdit`;
+- raw corpora or expanded word strings as hot decision authority;
+- duplicate architecture truth in source prose.
+
+## Refactor Budget
+
+The reduction target is the active production surface, not deletion of proof.
 
 ```text
-8 B
+public library entrypoints             <= 7 operations
+public top-level modules               <= 12
+production Rust target                 <= 45,000 physical lines
+unsafe multiword apply                 0
+unverified left-context mutation       0
+candidate coverage                     not below baseline
+latency p50/p90/p99                    not worse than baseline
+runtime RSS/PSS                        not worse than baseline
 ```
 
-Capacity:
-
-```text
-16 384 B mode bank / 8 B = 2048 modes
-```
-
-A mode is not a letter and not a word. A mode is a small frequency-like memory
-trace. A symbol excites several modes. Modes interfere. The strongest modes are
-emitted upward.
-
-## Top-k Contract
-
-Each cell has many internal modes, but emits only the strongest few:
-
-```text
-top-k modes
-```
-
-Default:
-
-```text
-k = 8 per cell
-sparse probes = 64 per cell tick
-```
-
-The output is compact:
-
-```text
-cell_id
-mode_id
-role
-energy
-phase
-coherence
-```
-
-This keeps the next layer from receiving all 2048 internal modes.
-
-The implementation must not scan all 2048 modes on every symbol in the hot path.
-It should use SFFT-style sparse readout: project the stimulus to a small set of
-candidate frequencies, score that subset, then emit top-k.
-
-## L1: Symbol Sensors
-
-L1 cells are pretrained and stable. They should rarely learn from user data.
-Their role is sensing, not decision-making.
-
-On a 4-core CPU with 32 KB L1d per core, up to four 32 KB L1 cells can be active
-in parallel:
-
-```text
-Utf8Cell32
-ScriptCell32
-KeyboardCell32
-BoundaryCell32
-```
-
-Responsibilities:
-
-```text
-Utf8Cell32:
-  Unicode scalar, UTF-8 validity, byte length, control/unknown classes
-
-ScriptCell32:
-  Cyrillic, Latin, digit, punctuation, emoji/other, case, visual form
-
-KeyboardCell32:
-  RU/EN keyboard relation, physical-key direction, Shift/Caps pressure
-
-BoundaryCell32:
-  word boundary, whitespace, hyphen, quote, punctuation, token edge
-```
-
-L1 input:
-
-```text
-current char
-previous char
-UTF-8 bytes
-optional physical key/modifier facts
-position in token
-```
-
-L1 output:
-
-```text
-top-k symbol modes per cell
-```
-
-## L2: Word Cells
-
-L2 receives the L1 mode stream and builds local token hypotheses.
-
-Target cells:
-
-```text
-WordShapeCell32
-LayoutWordCell32
-TypoWordCell32
-TechTokenCell32
-ShortWordCell32
-SpaceGlueCell32
-CaseWordCell32
-UserWordMemoryCell32
-```
-
-Future L2 work should converge on the lexical-attractor model:
-
-```text
-SurfaceBirthCell32
-OrthographyCell32
-KeyboardWordCell32
-LemmaBindingCell32
-MorphologyCell32
-UsageTraceCell32
-ContextCentroidCell32
-AttractorCleanupCell32
-AntiConfusionCell32
-```
-
-Ordinary word lists and prefix maps are allowed as teachers, bootstrap data, or
-safety guards. They are not the NANDA word memory.
-
-Responsibilities:
-
-```text
-collect symbol modes into word modes
-generate word candidates
-estimate layout pressure
-estimate typo pressure
-detect technical-token risk
-detect space/glue risk
-```
-
-L2 output:
-
-```text
-word candidate
-source role
-energy
-risk
-supporting modes
-```
-
-L2 may generate candidates, but still must not apply them.
-
-## L3: Phrase / Context / Mesh
-
-L3 receives word candidates and context signals. It decides whether a candidate
-is coherent enough to be considered by the safe replacement pipeline.
-
-Target cells:
-
-```text
-PhraseCell32
-SentenceCell32
-MixedLanguageCell32
-TechnicalContextCell32
-AppContextCell32
-UserStyleCell32
-UndoRiskCell32
-SpaceBoundaryCell32
-MeshConsensusCell32
-```
-
-Responsibilities:
-
-```text
-preserve good neighboring words
-protect CLI/technical tokens
-detect phrase-level mixed RU/EN context
-detect word-boundary risk
-detect undo risk
-combine cells through mesh consensus
-```
-
-L3 output:
-
-```text
-Apply(candidate)
-KeepOriginal
-Veto(reason)
-```
-
-## Evaluation Gate
-
-Wave mode starts as trace/eval only:
-
-```bash
-lay-nanda-wave-eval --trace "html djn "
-lay-nanda-wave-eval --real-suite
-lay-nanda-wave-eval --real-suite --ablation
-lay-nanda-wave-eval --real-suite --ensemble-sweep
-lay-nanda-wave-eval --trace "html djn " --disable-cell MeshConsensusCell32
-```
-
-Promotion to runtime is forbidden until:
-
-```text
-real-suite wave >= current NANDA
-worsened = 0
-space/boundary regressions = 0
-trace explains L1/L2/L3 contributions
-hot path remains off by default
-```
-
-## Ablation Contract
-
-A wave cell or layer is considered useful only if disabling it changes a
-specific class of decisions in a predictable way.
-
-Current ablation targets:
-
-```text
-Utf8Cell32
-ScriptCell32
-KeyboardCell32
-BoundaryCell32
-LayoutWordCell32
-TechTokenCell32
-TechnicalContextCell32
-PhraseCell32
-MeshConsensusCell32
-```
-
-Expected effects:
-
-```text
-without KeyboardCell32:
-  layout candidates should weaken
-
-without BoundaryCell32:
-  word/space boundary failures should increase
-
-without TechTokenCell32 / TechnicalContextCell32:
-  technical false positives should increase
-
-without MeshConsensusCell32:
-  no candidate should be allowed to apply
-```
-
-Until ablation shows useful localized behavior and the real-suite gate is green,
-NANDA Wave remains a research path only.
-
-The eval output must make this explicit:
-
-```text
-promotion_status: trace_only_do_not_promote
-mode_status: ensemble_mode_not_found ...
-```
-
-Only a future green gate may print:
-
-```text
-promotion_status: gate_green_but_manual_review_required
-mode_status: ensemble_mode_candidate
-```
-
-## Non-goals
-
-NANDA Wave v0 must not:
-
-```text
-replace current lay-daemon hot path
-write text into applications
-store raw private logs
-commit user chat phrases into production logic
-use Python for runtime correction
-depend on Ollama/LLM
-```
+Proof, fixtures and metrics move behind a clear lab boundary. They may shrink
+through shared harnesses and data-driven cases, but their assertions and
+denominators must survive.
+
+## Cut Order
+
+1. Freeze baseline in `docs/refactor-baseline-0.2.264.md`.
+2. Remove dead reports and duplicate architecture descriptions.
+3. Introduce one library facade over existing behavior.
+4. Move daemon and IME orchestration behind thin client entrypoints.
+5. Hide internal modules from the public crate surface.
+6. Consolidate duplicate candidate, token, layout and metric helpers.
+7. Replace repeated Rust test code with shared harnesses and fixtures.
+8. Delete legacy candidate/apply routes only after zero-caller graph proof.
+9. Compare quality, safety, latency and memory with the frozen baseline.
+
+Move-only refactors must not alter ranking. Ranking changes require a separate
+quality experiment and their own release proof.
