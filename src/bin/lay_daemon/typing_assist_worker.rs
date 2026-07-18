@@ -1,4 +1,6 @@
-use std::sync::mpsc::{self, Receiver, SyncSender, TryRecvError, TrySendError};
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::mpsc::{self, Receiver, SyncSender, TryRecvError};
+use std::sync::{Arc, Mutex};
 
 use lay::word_buffer::WordBuffer;
 
@@ -20,8 +22,10 @@ pub(super) enum WorkerPoll {
 }
 
 pub(super) struct TypingAssistWorker {
-    requests: SyncSender<WorkRequest>,
+    request_wake: SyncSender<()>,
+    pending_request: Arc<Mutex<Option<WorkRequest>>>,
     results: Receiver<WorkResult>,
+    latest_requested_id: Arc<AtomicU64>,
     next_id: u64,
 }
 
@@ -31,13 +35,32 @@ impl TypingAssistWorker {
     }
 
     fn with_prepare(prepare: fn(&WordBuffer) -> Option<TypingAssistCorrection>) -> Self {
-        let (request_tx, request_rx) = mpsc::sync_channel::<WorkRequest>(1);
+        let (request_wake_tx, request_wake_rx) = mpsc::sync_channel::<()>(1);
+        let pending_request = Arc::new(Mutex::new(None::<WorkRequest>));
+        let worker_pending_request = Arc::clone(&pending_request);
         let (result_tx, result_rx) = mpsc::channel::<WorkResult>();
+        let latest_requested_id = Arc::new(AtomicU64::new(0));
+        let worker_latest_requested_id = Arc::clone(&latest_requested_id);
         std::thread::Builder::new()
             .name("lay-boundary-decision".to_string())
             .spawn(move || {
-                while let Ok(request) = request_rx.recv() {
+                while request_wake_rx.recv().is_ok() {
+                    // A single slot bounds memory and collapses queued boundaries.
+                    let Some(request) = worker_pending_request
+                        .lock()
+                        .unwrap_or_else(|poisoned| poisoned.into_inner())
+                        .take()
+                    else {
+                        continue;
+                    };
+                    if request.id != worker_latest_requested_id.load(Ordering::Acquire) {
+                        continue;
+                    }
                     let correction = prepare(&request.buffer);
+                    // Work that lost its revision race must never reach the executor.
+                    if request.id != worker_latest_requested_id.load(Ordering::Acquire) {
+                        continue;
+                    }
                     if result_tx
                         .send(WorkResult {
                             id: request.id,
@@ -51,8 +74,10 @@ impl TypingAssistWorker {
             })
             .expect("spawn typing-assist boundary worker");
         Self {
-            requests: request_tx,
+            request_wake: request_wake_tx,
+            pending_request,
             results: result_rx,
+            latest_requested_id,
             next_id: 1,
         }
     }
@@ -60,13 +85,16 @@ impl TypingAssistWorker {
     pub(super) fn submit(&mut self, buffer: &WordBuffer) -> Option<u64> {
         let id = self.next_id;
         self.next_id = self.next_id.wrapping_add(1).max(1);
-        match self.requests.try_send(WorkRequest {
+        self.latest_requested_id.store(id, Ordering::Release);
+        *self
+            .pending_request
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner()) = Some(WorkRequest {
             id,
             buffer: buffer.clone(),
-        }) {
-            Ok(()) => Some(id),
-            Err(TrySendError::Full(_)) | Err(TrySendError::Disconnected(_)) => None,
-        }
+        });
+        let _ = self.request_wake.try_send(());
+        Some(id)
     }
 
     pub(super) fn poll(&self, expected_id: u64) -> WorkerPoll {

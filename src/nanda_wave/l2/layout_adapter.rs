@@ -254,6 +254,9 @@ fn layout_converted_token(
                 return Some((converted, true, false));
             }
         }
+        // Cyrillic-to-ASCII requires a proven target; raw projection is not a
+        // fallback because it turns valid Russian words into keyboard noise.
+        return None;
     }
     let converted = convert(token, detect_direction(token));
     if converted == token {
@@ -532,4 +535,22 @@ fn layout_risk(token: &str, converted: &str, context: &TailContext) -> f32 {
     };
     let context_bonus = context.mixed_language_score();
     (short + technical - context_bonus).clamp(0.0, 0.85)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn cyrillic_layout_projection_requires_a_proven_target() {
+        assert!(layout_converted_token("давай", true).is_none());
+        assert_eq!(
+            layout_converted_token("вудуеу", true).map(|candidate| candidate.0),
+            Some("delete".to_string())
+        );
+        assert_eq!(
+            layout_converted_token("ytn", true).map(|candidate| candidate.0),
+            Some("нет".to_string())
+        );
+    }
 }

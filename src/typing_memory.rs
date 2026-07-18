@@ -57,7 +57,7 @@ impl TypingMemoryEvent {
             TypingMemoryEventKind::AcceptedFix,
             from,
             to,
-            "autocorrect",
+            "user_correction",
             "replacement",
         )
     }
@@ -299,7 +299,7 @@ mod tests {
         assert!(events
             .iter()
             .all(|event| event.feedback == TypingMemoryFeedback::Accepted));
-        assert!(events.iter().all(|event| event.source == "autocorrect"));
+        assert!(events.iter().all(|event| event.source == "user_correction"));
         assert!(events.iter().all(|event| event.operation == "replacement"));
         assert!(events.iter().all(|event| event.surface.is_some()));
     }

@@ -1,8 +1,17 @@
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 
 use super::*;
 
 fn slow_no_correction(_: &WordBuffer) -> Option<TypingAssistCorrection> {
+    std::thread::sleep(Duration::from_millis(40));
+    None
+}
+
+static SLOW_PREPARE_STARTED: AtomicBool = AtomicBool::new(false);
+
+fn slow_started_no_correction(_: &WordBuffer) -> Option<TypingAssistCorrection> {
+    SLOW_PREPARE_STARTED.store(true, Ordering::Release);
     std::thread::sleep(Duration::from_millis(40));
     None
 }
@@ -18,6 +27,30 @@ fn submit_never_runs_boundary_decision_on_key_thread() {
     std::thread::sleep(Duration::from_millis(60));
     assert!(matches!(
         worker.poll(request_id),
+        WorkerPoll::Completed(None)
+    ));
+}
+
+#[test]
+fn busy_worker_keeps_the_latest_boundary_snapshot() {
+    SLOW_PREPARE_STARTED.store(false, Ordering::Release);
+    let mut worker = TypingAssistWorker::with_prepare(slow_started_no_correction);
+    worker.submit(&WordBuffer::new()).expect("first submitted");
+
+    let wait_started = Instant::now();
+    while !SLOW_PREPARE_STARTED.load(Ordering::Acquire) {
+        assert!(wait_started.elapsed() < Duration::from_secs(1));
+        std::thread::yield_now();
+    }
+
+    worker.submit(&WordBuffer::new()).expect("second submitted");
+    let latest_id = worker
+        .submit(&WordBuffer::new())
+        .expect("latest snapshot must replace queued stale work");
+
+    std::thread::sleep(Duration::from_millis(100));
+    assert!(matches!(
+        worker.poll(latest_id),
         WorkerPoll::Completed(None)
     ));
 }

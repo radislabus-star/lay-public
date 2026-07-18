@@ -28,6 +28,13 @@ pub(super) struct UsageEventProjection<'a> {
 
 impl<'a> UsageEventProjection<'a> {
     pub(super) fn from_event(event: &'a UsageEvent) -> Option<Self> {
+        // An automatic apply is an observation, not user acceptance. Older
+        // runtimes wrote it as positive feedback; ignore that poisoned lane.
+        if matches!(event.kind, UsageEventKind::AcceptedFix)
+            && event.source.as_deref() == Some("autocorrect")
+        {
+            return None;
+        }
         let word = event.word.as_deref().map(normalize_memory_word)?;
         if word.is_empty()
             || (matches!(event.kind, UsageEventKind::RejectedCandidate)
@@ -130,6 +137,11 @@ fn event_state_word(event: &UsageEvent) -> String {
 }
 
 fn event_source(event: &UsageEvent) -> &str {
+    if matches!(event.kind, UsageEventKind::AcceptedFix)
+        && event.source.as_deref() == Some("user_correction")
+    {
+        return "autocorrect";
+    }
     event.source.as_deref().unwrap_or(match event.kind {
         UsageEventKind::Typed => "user",
         UsageEventKind::AcceptedFix => "autocorrect",

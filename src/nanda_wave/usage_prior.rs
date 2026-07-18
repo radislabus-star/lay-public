@@ -35,7 +35,7 @@ const USAGE_FEEDBACK_COUNTS_PATH: &str =
 const LEGACY_USAGE_PRIOR_PATH: &str = ".local/share/lay/learning_candidates.json";
 const USAGE_EVENTS_MAX_BYTES: u64 = 500 * 1024;
 const USAGE_EVENTS_FULL_REBUILD_MAX_BYTES: u64 = 8 * 1024 * 1024;
-const USAGE_COUNTS_SCHEMA_VERSION: u32 = 10;
+const USAGE_COUNTS_SCHEMA_VERSION: u32 = 11;
 const USAGE_COUNTS_MAX_WORDS: usize = 10_000;
 const USAGE_COUNTS_MAX_ACCEPTED_WORDS: usize = 5_000;
 const USAGE_COUNTS_MAX_CONTEXT_WORDS: usize = 12_000;
@@ -1753,7 +1753,7 @@ mod tests {
     #[test]
     fn transition_signal_attracts_accepted_state_change() {
         let usage = snapshot_from_usage_events_for_tests(
-            r#"{"ts":1,"kind":"accepted_fix","word":"отравим","context":["мы"],"from":"мы отвравим","to":"мы отравим","source":"autocorrect","operation":"replacement"}
+            r#"{"ts":1,"kind":"accepted_fix","word":"отравим","context":["мы"],"from":"мы отвравим","to":"мы отравим","source":"user_correction","operation":"replacement"}
 "#,
         );
         let context = ["мы"].map(String::from);
@@ -1770,6 +1770,18 @@ mod tests {
         assert!(signal.attraction > signal.repulsion);
         assert!(signal.signed_weight > 0.0);
         assert_eq!(signal.reason, "transition_attracts");
+    }
+
+    #[test]
+    fn automatic_apply_is_not_positive_feedback() {
+        let usage = snapshot_from_usage_events_for_tests(
+            r#"{"ts":1,"kind":"accepted_fix","word":"lfdfq","from":"давай","to":"lfdfq","source":"autocorrect","operation":"replacement"}
+"#,
+        );
+        let signal = usage.hot_readout(&[], "autocorrect", "replacement", "давай", "lfdfq");
+
+        assert_eq!(signal.accepted_count, 0);
+        assert_eq!(signal.transition.attraction, 0.0);
     }
 
     #[test]
@@ -1937,7 +1949,7 @@ mod tests {
     #[test]
     fn hot_readout_collects_usage_and_rejection_in_one_pass() {
         let usage = snapshot_from_usage_events_for_tests(
-            r#"{"ts":1,"kind":"accepted_fix","word":"проверить","context":["можно"],"from":"можно проврить","to":"можно проверить","source":"autocorrect","operation":"replacement"}
+            r#"{"ts":1,"kind":"accepted_fix","word":"проверить","context":["можно"],"from":"можно проврить","to":"можно проверить","source":"user_correction","operation":"replacement"}
 {"ts":2,"kind":"rejected_candidate","word":"проврить","context":["можно"],"to":"проврить","source":"autocorrect","operation":"auto_undo"}
 "#,
         );
@@ -1970,8 +1982,8 @@ mod tests {
     #[test]
     fn exact_state_transition_overrides_global_target_frequency() {
         let usage = snapshot_from_usage_events_for_tests(
-            r#"{"ts":1,"kind":"accepted_fix","word":"так","from":"nfr","to":"так","source":"autocorrect","operation":"replacement"}
-{"ts":2,"kind":"accepted_fix","word":"так","from":"другой","to":"так","source":"autocorrect","operation":"replacement"}
+            r#"{"ts":1,"kind":"accepted_fix","word":"так","from":"nfr","to":"так","source":"user_correction","operation":"replacement"}
+{"ts":2,"kind":"accepted_fix","word":"так","from":"другой","to":"так","source":"user_correction","operation":"replacement"}
 {"ts":3,"kind":"rejected_candidate","word":"так","from":"nfr","to":"так","source":"user_correction","operation":"replacement"}
 "#,
         );
