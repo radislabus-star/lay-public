@@ -178,6 +178,24 @@ fn daemon_uses_typing_cpu_as_its_nanda_runtime_front_door() {
 }
 
 #[test]
+fn input_gate_has_no_shadow_pipeline_or_duplicate_trace_types() {
+    let gate = read("src/input_gate.rs");
+    assert!(
+        gate.contains("fn decide_space_autocorrect")
+            && gate.contains("resolve_text_correction(CorrectionRequest")
+            && gate.contains("type InputGateCandidateScoreTrace = CorrectionCandidateScoreTrace")
+            && gate.contains("type InputGateScoreboard = CorrectionScoreboard"),
+        "InputGate must reuse the canonical correction resolution and traces"
+    );
+    assert!(
+        !std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("src/correction_pipeline.rs")
+            .exists(),
+        "shadow correction pipeline must not return"
+    );
+}
+
+#[test]
 fn l3_l4_live_authority_uses_compact_relation_phase_and_hidden_state() {
     let context_phase = read("src/nanda_wave/context_phase/mod.rs");
     let context_format = read("src/nanda_wave/context_phase/format.rs");

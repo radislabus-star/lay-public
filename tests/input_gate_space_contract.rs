@@ -1,14 +1,34 @@
+//! Space and Enter must share the canonical InputGate correction contract.
+
 use lay::config::{default_typing_assist_pipeline, CorrectionSafety};
 use lay::correction_core::{CorrectionDecisionSource, CorrectionMode};
 use lay::decoder::{decode_enter_autocorrect_tail, decode_typing_assist_tail, CorrectionSource};
 use lay::input_gate::{decide_input_gate, InputGateAction, InputGateRequest, InputGateTrigger};
 use lay::keyboard::text_to_key_events;
+use std::sync::OnceLock;
+
+fn isolate_live_usage_memory() {
+    static READY: OnceLock<()> = OnceLock::new();
+    READY.get_or_init(|| {
+        let root =
+            std::env::temp_dir().join(format!("lay-input-gate-contract-{}", std::process::id()));
+        std::fs::create_dir_all(&root).expect("create isolated usage directory");
+        std::env::set_var("LAY_NANDA_WORD_USAGE_EVENTS", root.join("events.jsonl"));
+        std::env::set_var("LAY_NANDA_WORD_USAGE_COUNTS", root.join("counts.json"));
+        std::env::set_var(
+            "LAY_NANDA_WORD_USAGE_FEEDBACK_COUNTS",
+            root.join("feedback.json"),
+        );
+        std::env::set_var("LAY_NANDA_USAGE_PRIOR", root.join("legacy.json"));
+    });
+}
 
 fn decide_space(text_tail: &str) -> lay::input_gate::InputGateDecision {
     decide_space_deterministic(text_tail)
 }
 
 fn decide_space_deterministic(text_tail: &str) -> lay::input_gate::InputGateDecision {
+    isolate_live_usage_memory();
     let pipeline = default_typing_assist_pipeline();
     decide_input_gate(InputGateRequest {
         trigger: InputGateTrigger::Space,

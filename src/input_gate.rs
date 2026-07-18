@@ -12,8 +12,6 @@ use crate::correction_core::{
 };
 use crate::nanda_wave::WaveOptions;
 
-include!("correction_pipeline.rs");
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum InputGateTrigger {
     KeyChar,
@@ -103,186 +101,8 @@ pub struct InputGateDecisionTrace {
     pub reason: &'static str,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct InputGateCandidateScoreTrace {
-    pub(crate) replacement: String,
-    pub(crate) source: CorrectionDecisionSource,
-    pub(crate) source_id: String,
-    pub(crate) error_class: TypingErrorClass,
-    pub(crate) action_operator: &'static str,
-    pub(crate) action_proof: &'static str,
-    pub(crate) edit_transition_operator: &'static str,
-    pub(crate) edit_transition_proof: &'static str,
-    pub(crate) edit_transition_operator_kind: crate::text_edit::TransitionOperator,
-    pub(crate) edit_transition_proof_kind: crate::text_edit::TransitionProof,
-    pub(crate) edit_transition_verified: bool,
-    pub(crate) edit_transition_left_context_changed: bool,
-    pub(crate) edit_transition_changed_tokens: usize,
-    pub(crate) edit_shape: &'static str,
-    pub(crate) preservation_milli: i16,
-    pub(crate) lost_mass_milli: i16,
-    pub(crate) added_mass_milli: i16,
-    pub(crate) operator_fit_milli: i16,
-    pub(crate) shortcut_risk_milli: i16,
-    pub(crate) anti_wave_milli: i16,
-    pub(crate) explanation_score_milli: i16,
-    pub(crate) gate_action: CandidateGateAction,
-    pub(crate) gate_reason: &'static str,
-    pub(crate) likelihood_milli: i16,
-    pub(crate) usage_prior_milli: i16,
-    pub(crate) context_prior_milli: i16,
-    pub(crate) transition_field_milli: i16,
-    pub(crate) transition_field_attraction_milli: i16,
-    pub(crate) transition_field_repulsion_milli: i16,
-    pub(crate) transition_field_uncertainty_milli: i16,
-    pub(crate) transition_field_phase_competition_milli: i16,
-    pub(crate) l2_wave_peak_milli: i16,
-    pub(crate) l2_wave_peak_positive_milli: i16,
-    pub(crate) l2_wave_peak_negative_milli: i16,
-    pub(crate) l2_wave_peak_uncertainty_milli: i16,
-    pub(crate) l2_wave_peak_reason: &'static str,
-    pub(crate) l2_transition_phase_milli: i16,
-    pub(crate) l2_transition_phase_threshold_milli: i16,
-    pub(crate) l2_transition_phase_verdict: &'static str,
-    pub(crate) l2_transition_phase_package_loaded: bool,
-    pub(crate) l2_transition_phase_operator_present: bool,
-    pub(crate) l2_transition_phase_operator_promoted: bool,
-    pub(crate) l2_transition_phase_positive_centers: u8,
-    pub(crate) l2_transition_phase_anti_centers: u8,
-    pub(crate) l2_transition_phase_surfaces: u32,
-    pub(crate) l3_phrase_milli: i16,
-    pub(crate) l3_phrase_decision: &'static str,
-    pub(crate) l4_hidden_disposition: &'static str,
-    pub(crate) l4_hidden_semantic_classes: u16,
-    pub(crate) l4_hidden_unresolved_classes: u16,
-    pub(crate) l4_hidden_plan_commitment: u64,
-    pub(crate) l4_hidden_receipts: u8,
-    pub(crate) l4_hidden_probe: &'static str,
-    pub(crate) l4_hidden_certificate_valid: bool,
-    pub(crate) l4_scene_milli: i16,
-    pub(crate) l4_scene_action: &'static str,
-    pub(crate) l4_scene_reason: &'static str,
-    pub(crate) l4_signed_milli: i16,
-    pub(crate) l4_signed_reason: &'static str,
-    pub(crate) l4_surface_status: &'static str,
-    pub(crate) l4_transition_state_specific: bool,
-    pub(crate) l4_transition_attract_count: u32,
-    pub(crate) l4_transition_repel_count: u32,
-    pub(crate) l4_phase_witness_milli: i16,
-    pub(crate) l4_phase_witness_supported: bool,
-    pub(crate) l4_phase_positive_centers: u8,
-    pub(crate) l4_phase_negative_centers: u8,
-    pub(crate) risk_milli: i16,
-    pub(crate) posterior_milli: i16,
-    pub(crate) decision_rank_milli: i16,
-    pub(crate) selected: bool,
-}
-
-impl From<&CorrectionCandidateScoreTrace> for InputGateCandidateScoreTrace {
-    fn from(score: &CorrectionCandidateScoreTrace) -> Self {
-        Self {
-            replacement: score.replacement.clone(),
-            source: score.source,
-            source_id: score.source_id.clone(),
-            error_class: score.error_class,
-            action_operator: score.action_operator,
-            action_proof: score.action_proof,
-            edit_transition_operator: score.edit_transition_operator,
-            edit_transition_proof: score.edit_transition_proof,
-            edit_transition_operator_kind: score.edit_transition_operator_kind,
-            edit_transition_proof_kind: score.edit_transition_proof_kind,
-            edit_transition_verified: score.edit_transition_verified,
-            edit_transition_left_context_changed: score.edit_transition_left_context_changed,
-            edit_transition_changed_tokens: score.edit_transition_changed_tokens,
-            edit_shape: score.edit_shape,
-            preservation_milli: score.preservation_milli,
-            lost_mass_milli: score.lost_mass_milli,
-            added_mass_milli: score.added_mass_milli,
-            operator_fit_milli: score.operator_fit_milli,
-            shortcut_risk_milli: score.shortcut_risk_milli,
-            anti_wave_milli: score.anti_wave_milli,
-            explanation_score_milli: score.explanation_score_milli,
-            gate_action: score.gate_action,
-            gate_reason: score.gate_reason,
-            likelihood_milli: score.likelihood_milli,
-            usage_prior_milli: score.usage_prior_milli,
-            context_prior_milli: score.context_prior_milli,
-            transition_field_milli: score.transition_field_milli,
-            transition_field_attraction_milli: score.transition_field_attraction_milli,
-            transition_field_repulsion_milli: score.transition_field_repulsion_milli,
-            transition_field_uncertainty_milli: score.transition_field_uncertainty_milli,
-            transition_field_phase_competition_milli: score
-                .transition_field_phase_competition_milli,
-            l2_wave_peak_milli: score.l2_wave_peak_milli,
-            l2_wave_peak_positive_milli: score.l2_wave_peak_positive_milli,
-            l2_wave_peak_negative_milli: score.l2_wave_peak_negative_milli,
-            l2_wave_peak_uncertainty_milli: score.l2_wave_peak_uncertainty_milli,
-            l2_wave_peak_reason: score.l2_wave_peak_reason,
-            l2_transition_phase_milli: score.l2_transition_phase_milli,
-            l2_transition_phase_threshold_milli: score.l2_transition_phase_threshold_milli,
-            l2_transition_phase_verdict: score.l2_transition_phase_verdict,
-            l2_transition_phase_package_loaded: score.l2_transition_phase_package_loaded,
-            l2_transition_phase_operator_present: score.l2_transition_phase_operator_present,
-            l2_transition_phase_operator_promoted: score.l2_transition_phase_operator_promoted,
-            l2_transition_phase_positive_centers: score.l2_transition_phase_positive_centers,
-            l2_transition_phase_anti_centers: score.l2_transition_phase_anti_centers,
-            l2_transition_phase_surfaces: score.l2_transition_phase_surfaces,
-            l3_phrase_milli: score.l3_phrase_milli,
-            l3_phrase_decision: score.l3_phrase_decision,
-            l4_hidden_disposition: score.l4_hidden_disposition,
-            l4_hidden_semantic_classes: score.l4_hidden_semantic_classes,
-            l4_hidden_unresolved_classes: score.l4_hidden_unresolved_classes,
-            l4_hidden_plan_commitment: score.l4_hidden_plan_commitment,
-            l4_hidden_receipts: score.l4_hidden_receipts,
-            l4_hidden_probe: score.l4_hidden_probe,
-            l4_hidden_certificate_valid: score.l4_hidden_certificate_valid,
-            l4_scene_milli: score.l4_scene_milli,
-            l4_scene_action: score.l4_scene_action,
-            l4_scene_reason: score.l4_scene_reason,
-            l4_signed_milli: score.l4_signed_milli,
-            l4_signed_reason: score.l4_signed_reason,
-            l4_surface_status: score.l4_surface_status,
-            l4_transition_state_specific: score.l4_transition_state_specific,
-            l4_transition_attract_count: score.l4_transition_attract_count,
-            l4_transition_repel_count: score.l4_transition_repel_count,
-            l4_phase_witness_milli: score.l4_phase_witness_milli,
-            l4_phase_witness_supported: score.l4_phase_witness_supported,
-            l4_phase_positive_centers: score.l4_phase_positive_centers,
-            l4_phase_negative_centers: score.l4_phase_negative_centers,
-            risk_milli: score.risk_milli,
-            posterior_milli: score.posterior_milli,
-            decision_rank_milli: score.decision_rank_milli,
-            selected: score.selected,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub struct InputGateScoreboard {
-    pub total_candidates: usize,
-    pub apply_candidates: usize,
-    pub suggest_only_candidates: usize,
-    pub keep_original_candidates: usize,
-    pub veto_candidates: usize,
-    pub deterministic_candidates: usize,
-    pub nanda_candidates: usize,
-    pub selected_bayes_posterior_milli: Option<i16>,
-}
-
-impl From<CorrectionScoreboard> for InputGateScoreboard {
-    fn from(scoreboard: CorrectionScoreboard) -> Self {
-        Self {
-            total_candidates: scoreboard.total_candidates,
-            apply_candidates: scoreboard.apply_candidates,
-            suggest_only_candidates: scoreboard.suggest_only_candidates,
-            keep_original_candidates: scoreboard.keep_original_candidates,
-            veto_candidates: scoreboard.veto_candidates,
-            deterministic_candidates: scoreboard.deterministic_candidates,
-            nanda_candidates: scoreboard.nanda_candidates,
-            selected_bayes_posterior_milli: scoreboard.selected_bayes_posterior_milli,
-        }
-    }
-}
+pub(crate) type InputGateCandidateScoreTrace = CorrectionCandidateScoreTrace;
+pub type InputGateScoreboard = CorrectionScoreboard;
 
 #[derive(Debug, Clone)]
 pub struct InputGateRequest<'a> {
@@ -347,6 +167,30 @@ pub fn decide_input_gate(req: InputGateRequest<'_>) -> InputGateDecision {
     }
 }
 
+fn decide_space_autocorrect(req: InputGateRequest<'_>) -> InputGateDecision {
+    let resolution = crate::correction_core::resolve_text_correction(CorrectionRequest {
+        text: req.text_tail,
+        auto_replace: req.auto_replace,
+        typing_assist: req.typing_assist,
+        auto_switch_layout: req.auto_switch_layout,
+        correction_safety: req.correction_safety,
+        typing_assist_pipeline: req.typing_assist_pipeline,
+        nanda_autocorrect: req.nanda_autocorrect,
+        nanda_candidate_route: req.nanda_candidate_route,
+        nanda_wave_options: req.nanda_wave_options,
+        mode: req.correction_mode,
+    });
+    let action = word_boundary_action(&resolution);
+
+    InputGateDecision {
+        trigger: req.trigger,
+        stage: InputGateStage::WordBoundary,
+        trace: Some(word_boundary_trace(&resolution, action.outcome())),
+        action,
+        correction: Some(resolution),
+    }
+}
+
 /// Builds lazy candidate state through the same boundary route used at runtime.
 /// The results are discarded; this grants no candidate apply authority.
 pub(crate) fn warm_up_word_boundary() {
@@ -393,12 +237,8 @@ fn word_boundary_trace(
         stage: InputGateStage::WordBoundary,
         input_class: Some(resolution.event.input_class),
         candidate_count: resolution.candidates.len(),
-        scoreboard: resolution.scoreboard.into(),
-        candidate_scores: resolution
-            .candidate_scores
-            .iter()
-            .map(InputGateCandidateScoreTrace::from)
-            .collect(),
+        scoreboard: resolution.scoreboard,
+        candidate_scores: resolution.candidate_scores.to_vec(),
         selected_source: selected.map(|candidate| candidate.source),
         selected_source_id: selected.map(|candidate| candidate.source_id.clone()),
         selected_error_class: selected.map(|candidate| candidate.error_class),
