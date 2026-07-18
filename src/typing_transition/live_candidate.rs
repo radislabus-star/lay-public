@@ -13,6 +13,9 @@ pub(crate) struct LiveCompletionProposal {
     pub(crate) suffix: String,
     pub(crate) score: f32,
     pub(crate) rank_score: f32,
+    /// Unclamped phase-field strength. Ranking keeps this as a tie-break when
+    /// later probabilistic signals saturate to the same score.
+    pub(crate) field_strength: u32,
     pub(crate) source: &'static str,
     pub(crate) partial_len: usize,
     pub(crate) suffix_len: usize,
@@ -86,11 +89,16 @@ impl TransitionDecisionCore {
             right
                 .rank_score
                 .total_cmp(&left.rank_score)
+                .then_with(|| right.field_strength.cmp(&left.field_strength))
                 .then_with(|| left.suffix_len.cmp(&right.suffix_len))
                 .then_with(|| left.surface.cmp(&right.surface))
         });
-        selected
-            .dedup_by(|left, right| left.surface == right.surface || left.suffix == right.suffix);
+        selected.dedup_by(|left, right| {
+            left.surface == right.surface
+                || (!left.suffix.is_empty()
+                    && !right.suffix.is_empty()
+                    && left.suffix == right.suffix)
+        });
         selected.truncate(limit);
         selected
             .into_iter()
@@ -107,43 +115,50 @@ impl TransitionDecisionCore {
     pub(crate) fn select_ime_readout(
         proposals: &[ImeCandidateProposal],
         limit: usize,
-    ) -> Vec<String> {
+    ) -> Vec<ImeCandidateProposal> {
         if limit == 0 {
             return Vec::new();
         }
-        let first_l2_order = proposals
-            .iter()
-            .position(|proposal| proposal.source == ImeCandidateSource::L2Completion);
-        let mut selected = Vec::<(String, f32, usize)>::with_capacity(proposals.len());
+        let first_l2_order = proposals.iter().position(|proposal| {
+            matches!(
+                proposal.source,
+                ImeCandidateSource::L2Completion | ImeCandidateSource::L2Replacement
+            )
+        });
+        let mut selected = Vec::<(ImeCandidateProposal, usize)>::with_capacity(proposals.len());
         for (order, proposal) in proposals.iter().enumerate() {
-            let source_already_admitted = proposal.source == ImeCandidateSource::L2Completion
-                && first_l2_order == Some(order);
-            if !source_already_admitted
+            let source_already_admitted = matches!(
+                proposal.source,
+                ImeCandidateSource::L2Completion | ImeCandidateSource::L2Replacement
+            ) && first_l2_order == Some(order);
+            if !proposal.is_replacement()
+                && !source_already_admitted
                 && !crate::typing_cpu::is_allowed_visible_completion_suffix(&proposal.suffix)
             {
                 continue;
             }
             if let Some(existing) = selected
                 .iter_mut()
-                .find(|(suffix, _, _)| suffix == &proposal.suffix)
+                .find(|(candidate, _)| candidate.display_text() == proposal.display_text())
             {
-                if proposal.confidence > existing.1 {
-                    existing.1 = proposal.confidence;
-                    existing.2 = order;
+                if proposal.confidence > existing.0.confidence {
+                    existing.0 = proposal.clone();
+                    existing.1 = order;
                 }
                 continue;
             }
-            selected.push((proposal.suffix.clone(), proposal.confidence, order));
+            selected.push((proposal.clone(), order));
         }
         selected.sort_by(|left, right| {
             right
-                .1
-                .total_cmp(&left.1)
-                .then_with(|| left.2.cmp(&right.2))
-                .then_with(|| left.0.cmp(&right.0))
+                .0
+                .confidence
+                .total_cmp(&left.0.confidence)
+                .then_with(|| left.1.cmp(&right.1))
+                .then_with(|| left.0.display_text().cmp(right.0.display_text()))
         });
         selected.truncate(limit);
-        selected.into_iter().map(|(suffix, _, _)| suffix).collect()
+        selected.into_iter().map(|(proposal, _)| proposal).collect()
     }
 }
 
@@ -210,6 +225,7 @@ mod tests {
             suffix: suffix.to_string(),
             score: rank_score.clamp(0.0, 1.0),
             rank_score,
+            field_strength: 0,
             source: "test",
             partial_len: 4,
             suffix_len: suffix.chars().count(),
@@ -249,8 +265,12 @@ mod tests {
             ImeCandidateProposal::new("ождь", 0.9, ImeCandidateSource::L2Completion),
             ImeCandidateProposal::new("ень", 0.8, ImeCandidateSource::L2Completion),
         ];
+        let selected = TransitionDecisionCore::select_ime_readout(&proposals, 8);
         assert_eq!(
-            TransitionDecisionCore::select_ime_readout(&proposals, 8),
+            selected
+                .iter()
+                .map(|proposal| proposal.display_text())
+                .collect::<Vec<_>>(),
             vec!["ождь", "ень"]
         );
     }
@@ -263,9 +283,20 @@ mod tests {
             ImeCandidateSource::L2Completion,
         )];
 
-        assert_eq!(
-            TransitionDecisionCore::select_ime_readout(&proposals, 8),
-            vec!["ь"]
-        );
+        let selected = TransitionDecisionCore::select_ime_readout(&proposals, 8);
+        assert_eq!(selected[0].display_text(), "ь");
+    }
+
+    #[test]
+    fn typed_replacement_survives_ime_readout_without_becoming_a_suffix() {
+        let proposals = vec![ImeCandidateProposal::replacement(
+            "работает",
+            0.9,
+            ImeCandidateSource::L2Replacement,
+        )];
+
+        let selected = TransitionDecisionCore::select_ime_readout(&proposals, 8);
+        assert_eq!(selected[0].display_text(), "работает");
+        assert!(selected[0].is_replacement());
     }
 }

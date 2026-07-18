@@ -68,12 +68,15 @@ impl LayIbusEngine {
             return Ok(false);
         }
 
+        let replacement = self
+            .selected_precognition_replacement()
+            .map(ToOwned::to_owned);
         let suffix = self.selected_visible_completion_suffix();
-        if suffix.is_empty() {
+        if replacement.is_none() && suffix.is_empty() {
             return Ok(false);
         }
 
-        let accepted_word = format!("{}{}", self.buffer, suffix);
+        let accepted_word = replacement.unwrap_or_else(|| format!("{}{}", self.buffer, suffix));
         let accepted_text = if with_space {
             format!("{accepted_word} ")
         } else {
@@ -83,7 +86,7 @@ impl LayIbusEngine {
             "ibus-active-composition-completion",
             900,
             self.buffer.clone(),
-            accepted_text,
+            accepted_text.clone(),
         );
         lay::action_log::record_candidate_edit_action_before_apply(
             &action,
@@ -97,11 +100,17 @@ impl LayIbusEngine {
             return Ok(false);
         };
         let context_tail = self.tail_buffer.clone();
-        trace::record_completion_accept("active_composition", suffix.chars().count(), with_space);
-        self.commit_active_composition_with_suffix(
-            emitter,
+        trace::record_completion_accept(
+            "active_composition",
+            accepted_word
+                .chars()
+                .count()
+                .saturating_sub(self.buffer.chars().count()),
             with_space,
-            &suffix,
+        );
+        self.commit_authorized_active_composition_text(
+            emitter,
+            accepted_text,
             false,
             false,
             ActiveCompositionAuthority::VerifiedEdit(Box::new(authorized_edit)),
@@ -154,14 +163,32 @@ impl LayIbusEngine {
         suffix: &str,
         sync_layout: bool,
         autocorrect: bool,
-        mut authority: ActiveCompositionAuthority,
+        authority: ActiveCompositionAuthority,
     ) -> fdo::Result<()> {
-        let started_at = Instant::now();
         let mut text = self.buffer.clone();
         text.push_str(suffix);
         if with_space {
             text.push(' ');
         }
+        self.commit_authorized_active_composition_text(
+            emitter,
+            text,
+            sync_layout,
+            autocorrect,
+            authority,
+        )
+        .await
+    }
+
+    async fn commit_authorized_active_composition_text(
+        &mut self,
+        emitter: &SignalEmitter<'_>,
+        mut text: String,
+        sync_layout: bool,
+        autocorrect: bool,
+        mut authority: ActiveCompositionAuthority,
+    ) -> fdo::Result<()> {
+        let started_at = Instant::now();
         if !authority.matches_text(&text) {
             trace::record(r#"{"kind":"ibus_active_composition_authorized_text_mismatch"}"#);
             return Ok(());
@@ -207,7 +234,7 @@ impl LayIbusEngine {
         self.buffer.clear();
         self.composition_cursor = 0;
         self.arm_visible_postcondition(Instant::now());
-        if with_space {
+        if text.ends_with(char::is_whitespace) {
             self.close_precognition_word_boundary();
         }
         self.last_commit_at = Some(Instant::now());

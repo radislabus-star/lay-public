@@ -2,8 +2,8 @@
 // L2/L3 memory, but does not rank candidates, mutate text, or emit IBus signals.
 
 use lay::typing_cpu::{
-    push_unique_ascii_known_suffix, should_query_llmwave_phrase_suffix, ImeCandidateProposal,
-    ImeCandidateSource, LiveCompletionRequest, TypingCpu,
+    push_unique_ascii_known_suffix, should_query_llmwave_phrase_suffix, ImeCandidateSource,
+    LiveCompletionRequest, TypingCpu,
 };
 
 impl PreeditFastState {
@@ -55,9 +55,8 @@ impl LayIbusEngine {
             return Vec::new();
         }
 
-        // Preedit can only show text after the cursor. Full-token typo repair
-        // belongs to Space autocorrect; running it here burns latency and cannot
-        // produce a right-side suffix for the current token.
+        // Phrase memory is suffix-only. L2 replacement proposals travel through
+        // the typed IME readout and remain display-only until explicit Tab.
         let mut suffixes = Vec::new();
         if should_query_llmwave_phrase_suffix(raw_tail)
             && TypingCpu::phrase_memory_is_warm()
@@ -105,16 +104,28 @@ impl LayIbusEngine {
                 allow_short_lexical: true,
                 limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
             });
-        // The shared candidate gate owns ranking. IBus only projects its
-        // ordered whole-word readout into visible suffixes.
+        // The shared candidate gate owns ranking. IBus projects typed suffix or
+        // full-token replacement proposals without gaining mutation authority.
         whole_word_candidates
             .into_iter()
+            // A committed tail needs a distinct verified replacement route.
+            // Never let an inactive preedit turn a whole-token candidate into
+            // an append-only Tab action.
+            .filter(|candidate| !self.buffer.is_empty() || !candidate.suffix.is_empty())
             .map(|candidate| {
-                ImeCandidateProposal::new(
-                    candidate.suffix,
-                    candidate.score,
-                    ImeCandidateSource::L2Completion,
-                )
+                if candidate.suffix.is_empty() {
+                    ImeCandidateProposal::replacement(
+                        candidate.surface,
+                        candidate.score,
+                        ImeCandidateSource::L2Replacement,
+                    )
+                } else {
+                    ImeCandidateProposal::new(
+                        candidate.suffix,
+                        candidate.score,
+                        ImeCandidateSource::L2Completion,
+                    )
+                }
             })
             .take(PREEDIT_RU_WAVE_CANDIDATE_LIMIT)
             .collect()

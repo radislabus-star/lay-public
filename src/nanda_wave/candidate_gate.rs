@@ -170,11 +170,17 @@ pub fn live_completion_candidates(
     let candidates = raw
         .into_iter()
         .zip(context_batch)
-        .filter(|(candidate, _)| candidate.kind == L2ImeWordCandidateKind::Completion)
+        // The exact surface is an already-typed state, not a transition.
+        .filter(|(candidate, _)| candidate.surface != partial)
         .filter_map(|(candidate, l3_report)| {
-            let suffix = candidate.surface.strip_prefix(&partial)?.to_string();
+            let is_completion = candidate.kind == L2ImeWordCandidateKind::Completion;
+            let suffix = if is_completion {
+                candidate.surface.strip_prefix(&partial)?.to_string()
+            } else {
+                String::new()
+            };
             let suffix_len = suffix.chars().count();
-            if suffix.is_empty() || suffix_len > request.max_suffix_chars {
+            if is_completion && (suffix.is_empty() || suffix_len > request.max_suffix_chars) {
                 return None;
             }
             let memory_readout = usage_snapshot.hot_readout_prepared(
@@ -260,8 +266,9 @@ pub fn live_completion_candidates(
                 score,
                 source: "L2LiveCandidateGate32",
                 rank_score,
+                field_strength: candidate.score,
                 partial_len,
-                suffix_len,
+                suffix_len: if is_completion { suffix_len } else { 0 },
                 allow_short_lexical: request.allow_short_lexical,
                 structural,
                 usage,
@@ -330,7 +337,20 @@ fn live_l2_word_candidates(
     }
 
     let material_limit = live_l2_material_limit(limit);
-    l2::ime_l2_completion_candidates(context_prefix, &normalized, material_limit)
+    let mut candidates = l2::ime_l2_word_candidates(context_prefix, &normalized, material_limit);
+    candidates.extend(l2::ime_l2_completion_candidates(
+        context_prefix,
+        &normalized,
+        material_limit,
+    ));
+    candidates.sort_by(|left, right| {
+        right
+            .score
+            .cmp(&left.score)
+            .then_with(|| left.surface.cmp(&right.surface))
+    });
+    candidates.dedup_by(|left, right| left.surface == right.surface);
+    candidates
 }
 
 fn live_l2_material_limit(limit: usize) -> usize {
@@ -801,13 +821,15 @@ mod tests {
     }
 
     #[test]
-    fn live_gate_keeps_replacement_out_of_suffix_lane() {
+    fn live_gate_exposes_replacement_as_a_typed_non_suffix_candidate() {
+        super::super::warm_up_l2_for_ime();
+        let raw = live_l2_word_candidates("", "звгрузи", 12);
         let candidates = live_completion_candidates(request("", "звгрузи"));
         assert!(
             candidates
                 .iter()
-                .all(|candidate| candidate.surface != "загрузи"),
-            "replacement must wait for boundary autocorrect, not live suffix: {candidates:?}"
+                .any(|candidate| candidate.surface == "загрузи" && candidate.suffix.is_empty()),
+            "replacement must remain explicit rather than being forged into a suffix: raw={raw:?}, selected={candidates:?}"
         );
     }
 

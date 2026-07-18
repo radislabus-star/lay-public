@@ -3,8 +3,8 @@ use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
 use lay::typing_cpu::{
-    is_command_like_long_tail, preedit_suffix_context_and_word, select_ime_candidate_suffixes,
-    ImeCandidateReadoutRequest,
+    is_command_like_long_tail, preedit_suffix_context_and_word, select_ime_candidate_proposals,
+    ImeCandidateProposal, ImeCandidateReadoutRequest,
 };
 use lay::word_reader::split_last_alphabetic_token;
 
@@ -145,6 +145,7 @@ impl LayIbusEngine {
         trace::record_preedit("clear", false, 0, 0, None);
         self.preedit_suffix.clear();
         self.preedit_candidates.clear();
+        self.preedit_replacement_targets.clear();
         self.preedit_candidate_index = 0;
         self.preedit_fast.clear_target();
         Self::update_preedit_text(
@@ -218,10 +219,15 @@ impl LayIbusEngine {
     }
 
     fn composition_preedit_payload(&mut self) -> (String, u32) {
-        let cursor_pos = self.composition_cursor.min(self.buffer.chars().count()) as u32;
-        let suffix = if cursor_pos as usize == self.buffer.chars().count()
-            && !self.composition_has_pending_autocorrect()
+        if let Some(replacement) = self
+            .selected_precognition_replacement()
+            .map(ToOwned::to_owned)
         {
+            self.preedit_suffix.clear();
+            return (replacement.clone(), replacement.chars().count() as u32);
+        }
+        let cursor_pos = self.composition_cursor.min(self.buffer.chars().count()) as u32;
+        let suffix = if cursor_pos as usize == self.buffer.chars().count() {
             self.selected_visible_completion_suffix()
         } else {
             String::new()
@@ -246,11 +252,25 @@ impl LayIbusEngine {
             .or_else(|| self.precognition_suffix())
     }
 
+    pub(super) fn selected_precognition_replacement(&self) -> Option<&str> {
+        self.preedit_replacement_targets
+            .get(self.preedit_candidate_index)
+            .and_then(|target| target.as_deref())
+    }
+
     pub(super) fn refresh_precognition_candidates(&mut self) {
         let partial = split_last_alphabetic_token(self.tail_buffer.trim_end())
             .map(|(_, token)| token.to_lowercase())
             .unwrap_or_default();
-        self.preedit_candidates = self.precognition_suffix_candidates();
+        let proposals = self.precognition_candidates();
+        self.preedit_replacement_targets = proposals
+            .iter()
+            .map(|proposal| proposal.replacement.clone())
+            .collect();
+        self.preedit_candidates = proposals
+            .into_iter()
+            .map(|proposal| proposal.display_text().to_string())
+            .collect();
         self.preedit_candidate_index = stable_candidate_index(
             self.preedit_fast.target_surface(),
             &partial,
@@ -281,17 +301,18 @@ impl LayIbusEngine {
 
     fn remember_selected_target(&mut self, partial: &str) {
         let target = self
-            .preedit_candidates
-            .get(self.preedit_candidate_index)
-            .map(|suffix| format!("{partial}{suffix}"));
+            .selected_precognition_replacement()
+            .map(ToOwned::to_owned)
+            .or_else(|| {
+                self.preedit_candidates
+                    .get(self.preedit_candidate_index)
+                    .map(|suffix| format!("{partial}{suffix}"))
+            });
         self.preedit_fast.remember_target(target);
     }
 
-    fn precognition_suffix_candidates(&self) -> Vec<String> {
+    fn precognition_candidates(&self) -> Vec<ImeCandidateProposal> {
         if !self.precognition_preedit_enabled() {
-            return Vec::new();
-        }
-        if self.composition_has_pending_autocorrect() {
             return Vec::new();
         }
         if self.buffer.is_empty() && self.tail_buffer.ends_with(char::is_whitespace) {
@@ -335,7 +356,7 @@ impl LayIbusEngine {
         proposals.extend(ru_l2_candidates);
         proposals.extend(ascii_candidates);
         let candidate_limit = proposals.len();
-        let candidates = select_ime_candidate_suffixes(ImeCandidateReadoutRequest {
+        let candidates = select_ime_candidate_proposals(ImeCandidateReadoutRequest {
             proposals: &proposals,
             limit: candidate_limit,
         });
@@ -349,28 +370,18 @@ impl LayIbusEngine {
                 semantic_us,
                 candidates.len(),
                 token,
-                candidates.first().map(String::as_str),
+                candidates.first().map(|candidate| candidate.display_text()),
             );
         }
         candidates
     }
 
-    fn composition_has_pending_autocorrect(&self) -> bool {
-        if self.buffer.is_empty() {
-            return false;
-        }
-        if self.buffer.chars().count() < 5 {
-            return false;
-        }
-        let original = format!("{} ", self.buffer);
-        lay::ime_correction::decide_active_composition_autocorrect(
-            lay::ime_correction::ActiveCompositionAutocorrectRequest {
-                text: &original,
-                committed_tail: &self.tail_buffer,
-                config: &self.config,
-            },
-        )
-        .is_some_and(|decision| decision.replacement.trim_end() != self.buffer.trim_end())
+    fn precognition_suffix_candidates(&self) -> Vec<String> {
+        self.precognition_candidates()
+            .into_iter()
+            .filter(|proposal| !proposal.is_replacement())
+            .map(|proposal| proposal.suffix)
+            .collect()
     }
 
     fn precognition_max_suffix_chars(&self) -> usize {

@@ -165,7 +165,6 @@ pub(crate) fn ime_l2_completion_candidates(
         .into_iter()
         .filter(|candidate| same_lexical_script(&normalized, &candidate.word));
     let mut candidates = lexical
-        .into_iter()
         .map(|candidate| L2ImeWordCandidate {
             surface: candidate.word,
             kind: L2ImeWordCandidateKind::Completion,

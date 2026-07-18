@@ -14,6 +14,7 @@ impl LayIbusEngine {
                 self.composition_cursor = 0;
                 self.preedit_suffix.clear();
                 self.preedit_candidates.clear();
+                self.preedit_replacement_targets.clear();
                 self.preedit_candidate_index = 0;
                 self.preedit_fast.reset();
                 return Ok(false);

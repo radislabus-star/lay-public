@@ -593,6 +593,7 @@ fn long_russian_prefix_only_holds_prefix_preserving_suffix() {
 
 #[test]
 fn normal_composition_preedit_completes_raw_russian_prefix() {
+    lay::nanda_wave::warm_up_l2_for_ime();
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),
         Arc::new(Mutex::new(Default::default())),
@@ -614,7 +615,9 @@ fn normal_composition_preedit_completes_raw_russian_prefix() {
 
     assert!(
         text.starts_with("пров") && text.chars().count() > "пров".chars().count(),
-        "normal IME should show an aggressive completion for raw Russian prefix: {text:?}"
+        "normal IME should show an aggressive completion for raw Russian prefix: text={text:?}, candidates={:?}, replacements={:?}",
+        engine.preedit_candidates,
+        engine.preedit_replacement_targets,
     );
     assert_eq!(cursor_pos, 4);
     assert!(!engine.preedit_suffix.is_empty());
@@ -647,7 +650,7 @@ fn space_boundary_suppresses_inactive_phrase_precognition() {
 }
 
 #[test]
-fn composition_preedit_suppresses_suffix_when_autocorrect_is_pending() {
+fn composition_preedit_keeps_visible_suffix_when_autocorrect_is_pending() {
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),
         Arc::new(Mutex::new(Default::default())),
@@ -665,12 +668,38 @@ fn composition_preedit_suppresses_suffix_when_autocorrect_is_pending() {
     );
     engine.buffer = "ghbdtn".to_string();
     engine.composition_cursor = engine.buffer.chars().count();
-    engine.preedit_suffix = "ий".to_string();
-    assert!(engine.composition_has_pending_autocorrect());
+    engine.preedit_candidates = vec!["ий".to_string()];
+    engine.preedit_replacement_targets = vec![None];
     let (text, cursor_pos) = engine.composition_preedit_payload();
 
-    assert_eq!(text, "ghbdtn");
+    assert_eq!(text, "ghbdtnий");
     assert_eq!(cursor_pos, 6);
+    assert_eq!(engine.preedit_suffix, "ий");
+}
+
+#[test]
+fn composition_preedit_renders_typed_replacement_as_the_full_token() {
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            correction_safety: "experimental".to_string(),
+            ..LayConfig::default()
+        },
+    );
+    engine.buffer = "рабоает".to_string();
+    engine.composition_cursor = engine.buffer.chars().count();
+    engine.preedit_candidates = vec!["работает".to_string()];
+    engine.preedit_replacement_targets = vec![Some("работает".to_string())];
+
+    let (text, cursor_pos) = engine.composition_preedit_payload();
+
+    assert_eq!(text, "работает");
+    assert_eq!(cursor_pos, "работает".chars().count() as u32);
     assert!(engine.preedit_suffix.is_empty());
 }
 
@@ -692,29 +721,6 @@ fn active_composition_requires_preedit_clear_even_without_suffix() {
     engine.preedit_candidates.clear();
 
     assert!(engine.preedit_clear_needed());
-}
-
-#[test]
-fn pending_autocorrect_suppresses_completion_suffix() {
-    let mut engine = LayIbusEngine::new(
-        "/test".to_string(),
-        Arc::new(Mutex::new(Default::default())),
-        true,
-        true,
-        LayConfig {
-            text_backend: "ime".to_string(),
-            auto_replace: true,
-            typing_assist: true,
-            auto_switch_layout: true,
-            nanda_precognition: true,
-            correction_safety: "normal".to_string(),
-            ..LayConfig::default()
-        },
-    );
-    engine.buffer = "ghbdtn".to_string();
-    engine.composition_cursor = engine.buffer.chars().count();
-    assert!(engine.composition_has_pending_autocorrect());
-    assert_eq!(engine.precognition_suffix(), None);
 }
 
 #[test]

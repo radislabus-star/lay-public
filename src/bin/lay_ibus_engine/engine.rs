@@ -22,6 +22,7 @@ pub(crate) struct LayIbusEngine {
     pub(super) tail_epoch: u64,
     pub(super) preedit_suffix: String,
     pub(super) preedit_candidates: Vec<String>,
+    pub(super) preedit_replacement_targets: Vec<Option<String>>,
     pub(super) preedit_candidate_index: usize,
     pub(super) preedit_fast: PreeditFastState,
     pub(super) preedit_dirty: bool,
@@ -84,6 +85,7 @@ impl LayIbusEngine {
     pub(super) fn clear_preedit_completion_state(&mut self) {
         self.preedit_suffix.clear();
         self.preedit_candidates.clear();
+        self.preedit_replacement_targets.clear();
         self.preedit_candidate_index = 0;
         self.preedit_fast.clear_candidate_tracking();
         self.preedit_dirty = false;

@@ -8,12 +8,17 @@ use crate::word_reader::split_last_alphabetic_token;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ImeCandidateSource {
     L2Completion,
+    L2Replacement,
     L3Context,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ImeCandidateProposal {
+    /// Text appended after the active token for a completion proposal.
     pub suffix: String,
+    /// A full current-token replacement. This is display-only until Tab builds
+    /// an AuthorizedEdit for the active composition.
+    pub replacement: Option<String>,
     pub confidence: f32,
     pub source: ImeCandidateSource,
 }
@@ -22,9 +27,31 @@ impl ImeCandidateProposal {
     pub fn new(suffix: impl Into<String>, confidence: f32, source: ImeCandidateSource) -> Self {
         Self {
             suffix: suffix.into(),
+            replacement: None,
             confidence: confidence.clamp(0.0, 1.0),
             source,
         }
+    }
+
+    pub fn replacement(
+        surface: impl Into<String>,
+        confidence: f32,
+        source: ImeCandidateSource,
+    ) -> Self {
+        Self {
+            suffix: String::new(),
+            replacement: Some(surface.into()),
+            confidence: confidence.clamp(0.0, 1.0),
+            source,
+        }
+    }
+
+    pub fn display_text(&self) -> &str {
+        self.replacement.as_deref().unwrap_or(&self.suffix)
+    }
+
+    pub fn is_replacement(&self) -> bool {
+        self.replacement.is_some()
     }
 }
 
@@ -34,6 +61,16 @@ pub struct ImeCandidateReadoutRequest<'a> {
 }
 
 pub fn select_ime_candidate_suffixes(request: ImeCandidateReadoutRequest<'_>) -> Vec<String> {
+    select_ime_candidate_proposals(request)
+        .into_iter()
+        .filter(|proposal| !proposal.is_replacement())
+        .map(|proposal| proposal.suffix)
+        .collect()
+}
+
+pub fn select_ime_candidate_proposals(
+    request: ImeCandidateReadoutRequest<'_>,
+) -> Vec<ImeCandidateProposal> {
     crate::typing_transition::decision::TransitionDecisionCore::select_ime_readout(
         request.proposals,
         request.limit,
