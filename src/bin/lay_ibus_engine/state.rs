@@ -462,7 +462,7 @@ fn warm_runtime(config: &LayConfig) {
     #[cfg(not(test))]
     {
         if config.active_text_backend().should_try_ime() {
-            lay::nanda_wave::ensure_l2_ime_warmup_started();
+            lay::typing_cpu::TypingCpu::ensure_ime_warmup_started();
         } else {
             lay::lexicon::warm_up();
         }
@@ -470,7 +470,7 @@ fn warm_runtime(config: &LayConfig) {
             && (config.auto_replace || config.typing_assist || config.auto_switch_layout)
         {
             lay::typing_assist::warm_up();
-            std::thread::spawn(lay::nanda_wave::warm_up);
+            std::thread::spawn(lay::typing_cpu::TypingCpu::warm_all);
         }
     }
 }

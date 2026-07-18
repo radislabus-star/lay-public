@@ -4,7 +4,7 @@
 //! admit, merge, and order candidates for a live IME readout.
 
 use super::decision::TransitionDecisionCore;
-use crate::ime_candidate_readout::{ImeCandidateProposal, ImeCandidateSource};
+use crate::typing_cpu::{ImeCandidateProposal, ImeCandidateSource};
 
 #[derive(Debug, Clone)]
 pub(crate) struct LiveCompletionProposal {
@@ -118,9 +118,7 @@ impl TransitionDecisionCore {
             let source_already_admitted = proposal.source == ImeCandidateSource::L2Completion
                 && first_l2_order == Some(order);
             if !source_already_admitted
-                && !crate::ime_candidate_readout::is_allowed_visible_completion_suffix(
-                    &proposal.suffix,
-                )
+                && !crate::typing_cpu::is_allowed_visible_completion_suffix(&proposal.suffix)
             {
                 continue;
             }
@@ -202,7 +200,7 @@ pub(crate) fn live_suffix_has_display_authority(candidate: &LiveCompletionPropos
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ime_candidate_readout::{ImeCandidateProposal, ImeCandidateSource};
+    use crate::typing_cpu::{ImeCandidateProposal, ImeCandidateSource};
 
     fn completion(surface: &str, suffix: &str, rank_score: f32) -> LiveCompletionProposal {
         LiveCompletionProposal {

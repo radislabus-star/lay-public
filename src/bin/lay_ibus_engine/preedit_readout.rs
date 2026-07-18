@@ -1,9 +1,9 @@
 // Candidate-source adapter for the IBus preedit surface. It may query shared
 // L2/L3 memory, but does not rank candidates, mutate text, or emit IBus signals.
 
-use lay::ime_candidate_readout::{
+use lay::typing_cpu::{
     push_unique_ascii_known_suffix, should_query_llmwave_phrase_suffix, ImeCandidateProposal,
-    ImeCandidateSource,
+    ImeCandidateSource, LiveCompletionRequest, TypingCpu,
 };
 
 impl PreeditFastState {
@@ -19,15 +19,13 @@ impl PreeditFastState {
         }
         let mut suffixes = Vec::new();
         let mut proposals = Vec::new();
-        for candidate in lay::nanda_wave::candidate_gate::live_completion_candidates(
-            lay::nanda_wave::candidate_gate::LiveCompletionRequest {
+        for candidate in TypingCpu::live_completion_candidates(LiveCompletionRequest {
                 context_prefix: "",
                 partial: &self.token,
                 max_suffix_chars,
                 allow_short_lexical: true,
                 limit,
-            },
-        ) {
+            }) {
             let suffix = candidate.suffix;
             let before = suffixes.len();
             push_unique_ascii_known_suffix(&mut suffixes, &self.token, suffix.clone());
@@ -62,7 +60,7 @@ impl LayIbusEngine {
         // produce a right-side suffix for the current token.
         let mut suffixes = Vec::new();
         if should_query_llmwave_phrase_suffix(raw_tail)
-            && lay::nanda_wave::llmwave::default_memory_is_warm()
+            && TypingCpu::phrase_memory_is_warm()
         {
             suffixes.extend(self.llmwave_phrase_candidates(raw_tail));
         }
@@ -74,8 +72,8 @@ impl LayIbusEngine {
             return Vec::new();
         }
         let tail = self.tail_buffer.as_str().trim_end();
-        if !lay::nanda_wave::l2::ime_word_candidate_memory_is_warm() {
-            lay::nanda_wave::ensure_l2_ime_warmup_started();
+        if !TypingCpu::ime_candidate_memory_is_warm() {
+            TypingCpu::ensure_ime_warmup_started();
             return Vec::new();
         }
         let Some((prefix, partial)) = split_last_alphabetic_token(tail) else {
@@ -85,7 +83,7 @@ impl LayIbusEngine {
         let partial_len = partial.chars().count();
         let has_left_context = prefix.split_whitespace().next().is_some();
         if has_left_context
-            && lay::nanda_wave::llmwave::tokenize(prefix)
+            && TypingCpu::phrase_context_tokens(prefix)
                 .last()
                 .is_some_and(|previous| previous == &partial)
         {
@@ -98,8 +96,7 @@ impl LayIbusEngine {
             return Vec::new();
         }
         let max_suffix_chars = self.precognition_max_suffix_chars();
-        let whole_word_candidates = lay::nanda_wave::candidate_gate::live_completion_candidates(
-            lay::nanda_wave::candidate_gate::LiveCompletionRequest {
+        let whole_word_candidates = TypingCpu::live_completion_candidates(LiveCompletionRequest {
                 context_prefix: prefix,
                 partial: &partial,
                 max_suffix_chars,
@@ -107,8 +104,7 @@ impl LayIbusEngine {
                 // IME only renders its approved result, including in a phrase.
                 allow_short_lexical: true,
                 limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
-            },
-        );
+            });
         // The shared candidate gate owns ranking. IBus only projects its
         // ordered whole-word readout into visible suffixes.
         whole_word_candidates
@@ -125,11 +121,26 @@ impl LayIbusEngine {
     }
 
     fn llmwave_phrase_candidates(&self, tail: &str) -> Vec<ImeCandidateProposal> {
-        lay::nanda_wave::llmwave::with_default_memory(|memory| {
-            self.llmwave_phrase_candidates_from_memory(tail, memory)
-        })
+        let max_suffix_chars = self.precognition_max_suffix_chars();
+        TypingCpu::phrase_forecast_candidates(tail)
+            .into_iter()
+            .take(6)
+            .filter_map(|candidate| {
+                let suffix = lay::typing_cpu::phrase_candidate_suffix(
+                    tail,
+                    &candidate.text,
+                    max_suffix_chars,
+                )?;
+                Some(ImeCandidateProposal::new(
+                    suffix,
+                    candidate.score,
+                    ImeCandidateSource::L3Context,
+                ))
+            })
+            .collect()
     }
 
+    #[cfg(test)]
     fn llmwave_phrase_candidates_from_memory(
         &self,
         tail: &str,
@@ -140,7 +151,7 @@ impl LayIbusEngine {
             .into_iter()
             .take(6)
             .filter_map(|candidate| {
-                let suffix = lay::ime_candidate_readout::phrase_candidate_suffix(
+                let suffix = lay::typing_cpu::phrase_candidate_suffix(
                     tail,
                     &candidate.text,
                     max_suffix_chars,

@@ -125,7 +125,7 @@ fn transition_core_uses_typed_origin_for_verifier_and_memory() {
 #[test]
 fn ime_preedit_uses_shared_candidate_readout_for_ranking() {
     let preedit = read("src/bin/lay_ibus_engine/preedit.rs");
-    let readout = read("src/ime_candidate_readout.rs");
+    let readout = read("src/typing_cpu/candidate.rs");
     let candidate_gate = read("src/nanda_wave/candidate_gate.rs");
     let live_core = read("src/typing_transition/live_candidate.rs");
 

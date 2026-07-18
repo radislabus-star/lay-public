@@ -69,7 +69,7 @@ impl LayIbusEngine {
         Self::commit_text(emitter, make_ibus_text(authorized_plan.insert.clone()))
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        lay::nanda_wave::record_accepted_ime_usage(&context_tail, &accepted_text);
+        lay::typing_cpu::TypingCpu::record_accepted_completion(&context_tail, &accepted_text);
         self.sync_tail_after_stuck_completion(&committed_suffix);
         Ok(true)
     }

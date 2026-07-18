@@ -107,7 +107,7 @@ impl LayIbusEngine {
             ActiveCompositionAuthority::VerifiedEdit(Box::new(authorized_edit)),
         )
         .await?;
-        lay::nanda_wave::record_accepted_ime_usage(&context_tail, &accepted_word);
+        lay::typing_cpu::TypingCpu::record_accepted_completion(&context_tail, &accepted_word);
         Ok(true)
     }
 

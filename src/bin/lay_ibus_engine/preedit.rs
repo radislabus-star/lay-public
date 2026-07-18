@@ -2,16 +2,16 @@ use std::time::Instant;
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
-use lay::ime_candidate_readout::{
+use lay::typing_cpu::{
     is_command_like_long_tail, preedit_suffix_context_and_word, select_ime_candidate_suffixes,
     ImeCandidateReadoutRequest,
 };
 use lay::word_reader::split_last_alphabetic_token;
 
 #[cfg(test)]
-use lay::ime_candidate_readout::push_unique_suffix;
+use lay::typing_cpu::push_unique_suffix;
 #[cfg(test)]
-use lay::ime_candidate_readout::{is_allowed_visible_completion_suffix, phrase_candidate_suffix};
+use lay::typing_cpu::{is_allowed_visible_completion_suffix, phrase_candidate_suffix};
 
 use super::engine::LayIbusEngine;
 use super::text::{make_ibus_text, make_preedit_ibus_text};
@@ -399,7 +399,7 @@ impl LayIbusEngine {
             self.close_precognition_word_boundary();
             if ch.is_whitespace() {
                 self.word_input_mode = None;
-                lay::nanda_wave::record_typed_tail_usage(&self.tail_buffer);
+                lay::typing_cpu::TypingCpu::record_typed_tail(&self.tail_buffer);
             }
         }
         trim_tail_buffer(&mut self.tail_buffer);
@@ -419,7 +419,7 @@ impl LayIbusEngine {
         if rejected_word == self.last_tail_token_text().to_lowercase() {
             return;
         }
-        lay::nanda_wave::record_rejected_ime_usage(&context.join(" "), &rejected_word);
+        lay::typing_cpu::TypingCpu::record_rejected_completion(&context.join(" "), &rejected_word);
     }
 
     #[cfg(test)]
