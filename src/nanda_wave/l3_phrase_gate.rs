@@ -135,7 +135,7 @@ pub(crate) fn evaluate_candidates_with_memory(
         return vec![None; replacements.len()];
     }
     let mut context = llmwave::tokenize(original);
-    if context.pop().is_none() || context.len() < 2 {
+    if context.pop().is_none() || context.is_empty() {
         return vec![None; replacements.len()];
     }
     let original_tokens = llmwave::tokenize(original);
@@ -164,7 +164,7 @@ fn evaluate_context_field_with_memory(
     candidate_tokens: &[Option<String>],
     memory: &LlmWaveMemory,
 ) -> Vec<Option<L3PhraseGateReport>> {
-    if context_tokens.len() < 2 || memory.is_empty() || candidate_tokens.is_empty() {
+    if context_tokens.is_empty() || memory.is_empty() || candidate_tokens.is_empty() {
         return vec![None; candidate_tokens.len()];
     }
 
@@ -296,7 +296,7 @@ fn constructive_interference(sequential: f32, scene: f32) -> f32 {
 
 fn context_preserving_next_token(original_tokens: &[String], replacement: &str) -> Option<String> {
     let replacement_tokens = llmwave::tokenize(replacement);
-    if replacement_tokens.len() != original_tokens.len() || original_tokens.len() < 3 {
+    if replacement_tokens.len() != original_tokens.len() || original_tokens.len() < 2 {
         return None;
     }
     let context_len = original_tokens.len() - 1;
@@ -385,11 +385,12 @@ mod tests {
     }
 
     #[test]
-    fn ignores_single_token_context() {
+    fn single_token_context_is_visible_but_cannot_grant_apply_authority() {
         let memory = LlmWaveMemory::from_text("wave и interest");
-        assert_eq!(
-            evaluate_candidate_with_memory("wave b ", "wave и ", &memory),
-            None
-        );
+        let report = evaluate_candidate_with_memory("wave b ", "wave и ", &memory)
+            .expect("single-token context report");
+
+        assert_eq!(report.decision, L3PhraseGateDecision::Neutral);
+        assert_eq!(report.rank_energy, 0.0);
     }
 }

@@ -105,7 +105,7 @@ impl ContextPhasePackage {
         candidates: &[&str],
         mode: ContextPhaseMode,
     ) -> Vec<ContextPhaseReadout> {
-        if self.is_empty() || context_tokens.len() < 2 {
+        if self.is_empty() || context_tokens.is_empty() {
             return vec![ContextPhaseReadout::default(); candidates.len()];
         }
         let mut readouts = candidates

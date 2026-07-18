@@ -136,6 +136,26 @@ fn does_not_flip_normal_cyrillic_word_to_ascii_noise() {
 }
 
 #[test]
+fn exact_layout_projection_uses_candidate_form_center() {
+    assert!(crate::russian_lexicon::is_reference_backed_russian_form(
+        "делай"
+    ));
+    assert!(crate::hot_field::HotFieldSnapshot::current()
+        .form_readout("делай")
+        .is_known());
+    let candidate = hot_layout_candidate("ltkfq ").expect("layout projection");
+
+    assert_eq!(candidate.text, "делай");
+    assert_eq!(candidate.origin, CandidateOrigin::Layout);
+    assert_eq!(candidate.source, "LayoutWordCell32");
+}
+
+#[test]
+fn ascii_word_without_projected_form_center_is_not_auto_flipped() {
+    assert!(hot_layout_candidate("file ").is_none());
+}
+
+#[test]
 fn layout_word_cell_respects_known_short_russian_words() {
     let original = "ой ";
     let l1 = run_l1(original);

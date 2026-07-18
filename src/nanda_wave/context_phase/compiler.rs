@@ -91,7 +91,7 @@ pub(crate) fn compile_context_phase(
     let mut transitions = 0_u64;
 
     for tokens in &sequences {
-        for index in 2..tokens.len() {
+        for index in 1..tokens.len() {
             let context = &tokens[..index];
             let target = &tokens[index];
             let vector =
@@ -231,7 +231,7 @@ pub(crate) fn prove_context_phase(input: ContextPhaseCompileInput<'_>) -> Contex
     let mut no_semantic_top1 = 0usize;
 
     for tokens in &heldout_sequences {
-        for index in 2..tokens.len() {
+        for index in 1..tokens.len() {
             let target = &tokens[index];
             let competitors = lexicon.nearby(target, MAX_COMPETITORS);
             if competitors.is_empty() {
@@ -417,7 +417,7 @@ fn learned_competition_threshold(
 ) -> i32 {
     let mut gaps = Vec::new();
     for tokens in sequences.iter().take(10_000) {
-        for index in 2..tokens.len() {
+        for index in 1..tokens.len() {
             let target = &tokens[index];
             let Some(negative) = competitors.get(target) else {
                 continue;

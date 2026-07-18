@@ -62,6 +62,16 @@ impl TypingMemoryEvent {
         )
     }
 
+    pub(crate) fn accepted_layout_projection(from: &str, to: &str) -> Vec<Self> {
+        accepted_events(
+            TypingMemoryEventKind::AcceptedFix,
+            from,
+            to,
+            "layout",
+            "replacement",
+        )
+    }
+
     pub(crate) fn accepted_ime(context_tail: &str, accepted_text: &str) -> Vec<Self> {
         ime_events(
             TypingMemoryEventKind::AcceptedIme,
@@ -325,6 +335,18 @@ mod tests {
         assert_eq!(events[0].context, ["как"]);
         assert_eq!(events[0].from.as_deref(), Some("как попусы"));
         assert_eq!(events[0].to.as_deref(), Some("как опусы"));
+    }
+
+    #[test]
+    fn accepted_layout_projection_uses_the_runtime_operator_identity() {
+        let events = TypingMemoryEvent::accepted_layout_projection("ltkfq", "делай");
+
+        assert_eq!(events.len(), 1);
+        assert_eq!(events[0].kind, TypingMemoryEventKind::AcceptedFix);
+        assert_eq!(events[0].source, "layout");
+        assert_eq!(events[0].operation, "replacement");
+        assert_eq!(events[0].from.as_deref(), Some("ltkfq"));
+        assert_eq!(events[0].to.as_deref(), Some("делай"));
     }
 
     #[test]

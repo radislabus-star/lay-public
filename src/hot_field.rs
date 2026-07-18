@@ -121,7 +121,6 @@ pub enum HotWordAuthority {
     CommonSurface,
     L2SurfaceCenter,
     L2FormCenter,
-    UserUsage,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -147,7 +146,6 @@ impl HotWordReadout {
         match self.authority {
             HotWordAuthority::CommonSurface => 400,
             HotWordAuthority::L2SurfaceCenter => 300,
-            HotWordAuthority::UserUsage => 250,
             HotWordAuthority::L2FormCenter => 200,
             HotWordAuthority::Unknown => 0,
         }
@@ -253,10 +251,8 @@ impl HotFieldSnapshot {
             HotWordAuthority::Unknown
         } else if crate::lexicon::is_common_ru_word(&lower) {
             HotWordAuthority::CommonSurface
-        } else if crate::nanda_wave::l2::l2_surface_foundation_has_authority(&lower) {
+        } else if crate::nanda_wave::l2::l2_surface_foundation_contains(&lower) {
             HotWordAuthority::L2SurfaceCenter
-        } else if accepted_usage_has_authority(&lower) {
-            HotWordAuthority::UserUsage
         } else {
             HotWordAuthority::Unknown
         };
@@ -296,21 +292,16 @@ impl HotFieldSnapshot {
         HotWordReadout { authority }
     }
 
-    /// Stable input authority is stricter than candidate-form settlement. A
-    /// nearby phase basin and a low-ranked exact corpus terminal may propose a
-    /// form, but only a hot surface, decoder state, or morphology transition
-    /// backed by an authoritative lexical center may protect the input.
-    pub(crate) fn stable_form_readout(&self, word: &str) -> HotWordReadout {
+    /// Input authority is intentionally narrower than candidate plausibility.
+    /// Decoder-only morphology forms may attract reconstruction candidates,
+    /// but they cannot prove that the observed surface itself is stable.
+    pub(crate) fn input_surface_readout(&self, word: &str) -> HotWordReadout {
         let surface = self.word_readout(word);
         if surface.has_structural_center() {
             return surface;
         }
-        let lower = word.trim().to_lowercase();
         let phase = self.surface_phase_readout(word);
-        let authority = if (!phase.exact_center
-            && crate::nanda_wave::l2::l2_decoder_contains_surface(&lower))
-            || crate::russian_lexicon::is_center_backed_russian_form(&lower)
-        {
+        let authority = if phase.exact_center {
             HotWordAuthority::L2FormCenter
         } else {
             surface.authority
@@ -341,20 +332,14 @@ impl HotFieldSnapshot {
             original_left_chars: original_left.chars().count(),
             original_left: self.surface_phase_readout(original_left),
             original_right: self.surface_phase_readout(original_right),
-            original_left_form: self.stable_form_readout(original_left),
-            original_right_form: self.stable_form_readout(original_right),
+            original_left_form: self.input_surface_readout(original_left),
+            original_right_form: self.input_surface_readout(original_right),
             candidate_left: self.surface_phase_readout(candidate_left),
             candidate_right: self.surface_phase_readout(candidate_right),
             candidate_left_form: self.form_readout(candidate_left),
             candidate_right_form: self.form_readout(candidate_right),
         }
     }
-}
-
-fn accepted_usage_has_authority(word: &str) -> bool {
-    let usage = crate::nanda_wave::cached_usage_prior_snapshot();
-    let readout = usage.hot_readout(&[], "*", "*", "*", word);
-    readout.accepted_count >= 2 && readout.accepted_count > readout.rejected_count
 }
 
 #[cfg(test)]
@@ -421,5 +406,15 @@ mod tests {
             HotWordAuthority::L2FormCenter
         );
         assert!(!snapshot.word_readout("мнабираю").is_known());
+    }
+
+    #[test]
+    fn morphology_only_surface_cannot_block_wave_reconstruction() {
+        let snapshot = HotFieldSnapshot::current();
+
+        for damaged in ["охрошо", "прдложение"] {
+            assert!(snapshot.form_readout(damaged).is_known());
+            assert!(!snapshot.input_surface_readout(damaged).is_known());
+        }
     }
 }

@@ -24,6 +24,7 @@ pub(crate) fn is_known_russian_form(word: &str) -> bool {
         || is_known_russian_verb_form(word)
         || is_known_russian_ch_verb_present_form(word)
         || is_known_russian_imperative_i_form(word)
+        || is_known_russian_imperative_y_form(word)
 }
 
 pub(crate) fn is_known_russian_adverb_o_form(word: &str) -> bool {
@@ -181,6 +182,10 @@ fn center_contains(surface: &str) -> bool {
 
 fn is_known_russian_imperative_i_form(word: &str) -> bool {
     backed::is_backed_russian_imperative_i_form(word, known_runtime_lemma)
+}
+
+fn is_known_russian_imperative_y_form(word: &str) -> bool {
+    backed::is_backed_russian_imperative_y_form(word, known_runtime_lemma)
 }
 
 fn is_known_short_accusative_a_form(word: &str, dict: &WordSet) -> bool {

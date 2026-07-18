@@ -159,7 +159,6 @@ fn daemon_uses_typing_cpu_as_its_nanda_runtime_front_door() {
         "src/bin/lay_daemon/nanda_precognition_runtime.rs",
         "src/bin/lay_daemon/startup_runtime/warmup.rs",
         "src/bin/lay_daemon/typing_assist_runtime/output/nanda_trace.rs",
-        "src/bin/lay_daemon/correction_runtime/decision_support.rs",
         "src/bin/lay_daemon/correction_runtime/memory.rs",
     ] {
         let source = read(path);

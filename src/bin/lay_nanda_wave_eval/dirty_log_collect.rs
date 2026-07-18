@@ -348,6 +348,12 @@ fn collect_corrections_text(collector: &mut Collector, text: &str, limit: usize)
             } else {
                 collector.corrections.skipped_pairs += 1;
             }
+        } else if kind == "layout-replay" {
+            if let Some(pair) = pair_from_layout_replay(&value) {
+                collector.add(pair);
+            } else {
+                collector.corrections.skipped_pairs += 1;
+            }
         }
     }
 }
@@ -501,7 +507,7 @@ fn pair_from_layout_replay(value: &Value) -> Option<DirtyLogPair> {
         quarantine_reason,
         original: from.to_string(),
         expected: to.to_string(),
-        operation: "layout".to_string(),
+        operation: "replacement".to_string(),
         count_weight: 1,
         replace_words: value
             .get("replace_words")
@@ -510,10 +516,10 @@ fn pair_from_layout_replay(value: &Value) -> Option<DirtyLogPair> {
             .unwrap_or(1)
             .max(1) as usize,
         candidate_count: 0,
-        source_id: "manual_layout_replay".to_string(),
+        source_id: "layout".to_string(),
         error_class: "layout".to_string(),
-        action_operator: "manual_replay".to_string(),
-        action_proof: "manual_replay".to_string(),
+        action_operator: "flip_layout".to_string(),
+        action_proof: "layout".to_string(),
         posterior_milli: None,
         decision_rank_milli: None,
         risk_milli: None,
@@ -1833,7 +1839,22 @@ mod tests {
         assert_eq!(collector.pairs.len(), 1);
         assert_eq!(collector.pairs[0].signal, "manual_layout_replay");
         assert_eq!(collector.pairs[0].train_role, "positive");
-        assert_eq!(collector.pairs[0].operation, "layout");
+        assert_eq!(collector.pairs[0].operation, "replacement");
+        assert_eq!(collector.pairs[0].source_id, "layout");
+        assert_eq!(collector.pairs[0].action_operator, "flip_layout");
+    }
+
+    #[test]
+    fn corrections_log_layout_replay_reaches_the_same_transition_memory() {
+        let text =
+            r#"{"ts":3,"kind":"layout-replay","from":"ltkfq","to":"делай","replace_words":1}"#;
+        let mut collector = Collector::default();
+        collect_corrections_text(&mut collector, text, 100);
+
+        assert_eq!(collector.pairs.len(), 1);
+        assert_eq!(collector.pairs[0].signal, "manual_layout_replay");
+        assert_eq!(collector.pairs[0].source_id, "layout");
+        assert_eq!(collector.pairs[0].operation, "replacement");
     }
 
     #[test]

@@ -165,10 +165,34 @@ impl UnifiedCorrectionCandidate {
     }
 
     pub(crate) fn merge_evidence(&mut self, candidate: Self) {
-        let promote_eligible = candidate.origin.source_role() == CorrectionSourceRole::Layout
+        let promote_verified_layout = candidate.origin == CandidateOrigin::Layout
             && candidate.gate.action == CandidateGateAction::Eligible
-            && self.gate.action == CandidateGateAction::SuggestOnly;
-        if promote_eligible {
+            && (self.gate.action == CandidateGateAction::SuggestOnly
+                || self.origin == CandidateOrigin::LayoutThenTypo);
+        let promote_wave_layout_owner = candidate.source == CorrectionDecisionSource::Nanda
+            && candidate.origin == CandidateOrigin::Layout
+            && candidate.gate.action == CandidateGateAction::Eligible
+            && self.source == CorrectionDecisionSource::Deterministic
+            && self.origin.source_role() == CorrectionSourceRole::Layout
+            && !matches!(
+                self.gate.action,
+                CandidateGateAction::KeepOriginal | CandidateGateAction::Veto
+            );
+        let promote_wave_owner = candidate.origin.source_role() == CorrectionSourceRole::L2Surface
+            && self.origin.source_role() == CorrectionSourceRole::DeterministicTypo
+            && matches!(
+                (self.gate.action, candidate.gate.action),
+                (CandidateGateAction::Eligible, CandidateGateAction::Eligible)
+                    | (
+                        CandidateGateAction::SuggestOnly,
+                        CandidateGateAction::Eligible
+                    )
+                    | (
+                        CandidateGateAction::SuggestOnly,
+                        CandidateGateAction::SuggestOnly
+                    )
+            );
+        if promote_verified_layout || promote_wave_layout_owner || promote_wave_owner {
             self.source = candidate.source;
             self.origin = candidate.origin;
             self.source_id.clone_from(&candidate.source_id);

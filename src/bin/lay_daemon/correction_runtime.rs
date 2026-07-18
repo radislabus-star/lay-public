@@ -1,5 +1,8 @@
 use lay::config::CorrectionEngine;
+use lay::config::{CorrectionSafety, TypingAssistRuleConfig};
+use lay::correction_core::CorrectionMode;
 use lay::engine::{decide_manual_correction, ManualCorrectionInput, ManualCorrectionPolicy};
+use lay::input_gate::{decide_input_gate, InputGateRequest, InputGateTrigger};
 use lay::keyboard::{
     map_events_to_layout, map_original_events, mark_single_current_word_layout_if_stale,
     replay_layout_decision,
@@ -8,21 +11,18 @@ use lay::typing_assist::{effective_replace_words, should_force_replay_for_short_
 use std::time::Instant;
 
 use super::auto_undo_runtime::handle_pending_auto_undo;
-use super::{log, log_manual_trigger_cross_check, read_current_layout_is_ru, ExecutingGuard};
+use super::{
+    active_auto_switch_layout, log, log_manual_trigger_cross_check, read_current_layout_is_ru,
+    ExecutingGuard,
+};
 
-#[path = "correction_runtime/decision_support.rs"]
-mod decision_support;
 #[path = "correction_runtime/force_layout.rs"]
 mod force_layout;
 #[path = "correction_runtime/memory.rs"]
 mod memory;
 #[path = "correction_runtime/output.rs"]
 mod output;
-use decision_support::{manual_toggle_gate_trace, recovered_initial_manual_toggle_target};
 use output::{apply_manual_correction_output, ManualCorrectionOutputContext};
-#[cfg(test)]
-#[path = "correction_runtime/recovery_tests.rs"]
-mod recovery_tests;
 #[path = "correction_runtime/request.rs"]
 mod request;
 
@@ -90,17 +90,27 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
     let mixed_layouts = layout_decision.mixed_layouts;
 
     let mapped_orig = map_original_events(&events);
-    let input_gate = manual_toggle_gate_trace(&mapped_orig, auto_replace);
+    let empty_pipeline: &[TypingAssistRuleConfig] = &[];
+    let input_gate = decide_input_gate(InputGateRequest {
+        trigger: InputGateTrigger::DoubleShift,
+        text_tail: &mapped_orig,
+        auto_replace,
+        typing_assist: false,
+        auto_switch_layout: active_auto_switch_layout(),
+        correction_safety: CorrectionSafety::Normal,
+        typing_assist_pipeline: empty_pipeline,
+        nanda_autocorrect: false,
+        nanda_candidate_route: lay::correction_core::CandidateReadoutRoute::CompactL2,
+        nanda_wave_options: lay::typing_cpu::TypingCpuOptions::default(),
+        correction_mode: CorrectionMode::DeterministicOnly,
+    })
+    .trace
+    .as_ref()
+    .map(lay::action_log::RecentActionGateTrace::from_input_gate);
     let mapped_target = map_events_to_layout(&events, target_is_ru);
     let chars_orig = mapped_orig.chars().count();
     let chars_target = mapped_target.chars().count();
     let words_orig = mapped_orig.split_whitespace().count();
-    let effective_mapped_target = recovered_initial_manual_toggle_target(
-        &mapped_orig,
-        &mapped_target,
-        words_orig,
-        n_backspaces,
-    );
     let mismatch = chars_orig != events.len() || chars_target != events.len();
     log(&format!(
         "👆 events={} n_bs={n_backspaces} | chars_orig={chars_orig} chars_target={chars_target} words={words_orig} {} mixed={} | orig={mapped_orig:?} → target={mapped_target:?}",
@@ -125,7 +135,7 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
         ManualCorrectionInput {
             events: &events,
             original: &mapped_orig,
-            converted: &effective_mapped_target,
+            converted: &mapped_target,
         },
         ManualCorrectionPolicy {
             engine,
@@ -138,7 +148,7 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
             buf,
             events: &events,
             mapped_orig: &mapped_orig,
-            mapped_target: &effective_mapped_target,
+            mapped_target: &mapped_target,
             target_is_ru,
             n_backspaces,
             replace_words,

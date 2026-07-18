@@ -442,7 +442,7 @@ fn word_form_candidate_lacks_surface_support(original: &str, candidate: &WordCan
     let original_lower = original_word.to_lowercase();
     let replacement_lower = replacement_word.to_lowercase();
     let field = crate::hot_field::HotFieldSnapshot::current();
-    let original_known = field.stable_form_readout(&original_lower).is_known();
+    let original_known = field.input_surface_readout(&original_lower).is_known();
     if original_known && original_lower != replacement_lower {
         return true;
     }

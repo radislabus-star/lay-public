@@ -346,6 +346,10 @@ pub fn record_accepted_fix_usage(from: &str, to: &str) {
     usage_prior::record_accepted_fix_if_enabled(from, to);
 }
 
+pub fn record_accepted_layout_projection_usage(from: &str, to: &str) {
+    usage_prior::record_accepted_layout_projection_if_enabled(from, to);
+}
+
 pub fn record_accepted_ime_usage(context_tail: &str, accepted_text: &str) {
     usage_prior::record_accepted_ime_if_enabled(context_tail, accepted_text);
 }

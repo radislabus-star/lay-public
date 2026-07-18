@@ -83,6 +83,7 @@ pub(super) fn layout_candidate_with_projection_policy(
         return None;
     }
     let learned_transition = learned_layout_transition_accepts(prefix, token, &converted);
+    let projection_supported = strong_autoswitch || learned_transition || word_center_settled;
     if context.token_count() < 2
         && token.chars().count() > 3
         && !is_common_en_technical_word(&converted.to_ascii_lowercase())
@@ -105,7 +106,7 @@ pub(super) fn layout_candidate_with_projection_policy(
     ) {
         return None;
     }
-    if !language_allows_layout(token, &converted, learned_transition || word_center_settled) {
+    if !language_allows_layout(token, &converted, projection_supported) {
         return None;
     }
     let energy = l1_energy(l1, "KeyboardCell32").max(0.35);
@@ -165,6 +166,7 @@ pub(super) fn layout_scan_candidates(
             continue;
         };
         let learned_transition = learned_layout_transition_accepts(prefix, token, &converted);
+        let projection_supported = strong_autoswitch || learned_transition || word_center_settled;
         if converted == token
             || !layout_candidate_allowed(
                 token,
@@ -172,7 +174,7 @@ pub(super) fn layout_scan_candidates(
                 strong_autoswitch,
                 learned_transition || word_center_settled,
             )
-            || !language_allows_layout(token, &converted, learned_transition || word_center_settled)
+            || !language_allows_layout(token, &converted, projection_supported)
         {
             continue;
         }
@@ -257,7 +259,12 @@ fn layout_converted_token(
     if converted == token {
         return None;
     }
-    Some((converted, false, false))
+    let exact_projection_has_center = token.chars().all(|ch| ch.is_ascii_alphabetic())
+        && converted.chars().all(is_cyrillic_letter)
+        && crate::hot_field::HotFieldSnapshot::current()
+            .form_readout(&converted)
+            .is_known();
+    Some((converted, exact_projection_has_center, false))
 }
 
 fn settle_english_word_center(token: &str) -> Option<String> {
@@ -308,7 +315,7 @@ fn cyrillic_layout_word_center_blocked(token: &str) -> bool {
         || is_ru_live_protected_word(&lower)
         || is_common_ru_word(&lower)
         || crate::hot_field::HotFieldSnapshot::current()
-            .stable_form_readout(&lower)
+            .input_surface_readout(&lower)
             .is_known()
 }
 

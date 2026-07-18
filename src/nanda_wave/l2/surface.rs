@@ -684,37 +684,12 @@ pub(super) fn surface_motif_stable_existing_word(word: &str) -> bool {
         || is_user_protected_word(word)
         || is_ru_live_protected_word(word)
         || surface_motif_runtime_known_surface(word)
-        || crate::russian_lexicon::is_reference_backed_russian_form(word)
-        || (surface_motif_strict_known_surface(word)
-            && !russian_zero_a_ya_stem_has_known_lemma(word))
-        || russian_zero_o_form_has_known_lemma(word)
-        || russian_future_ut_form_has_known_infinitive(word)
 }
 
 pub(super) fn surface_motif_runtime_known_surface(word: &str) -> bool {
     crate::hot_field::HotFieldSnapshot::current()
-        .stable_form_readout(word)
+        .input_surface_readout(word)
         .is_known()
-}
-
-pub(super) fn russian_zero_a_ya_stem_has_known_lemma(word: &str) -> bool {
-    word.chars().count() >= 5
-        && word.chars().last().is_some_and(is_russian_consonant_for_l2)
-        && (surface_motif_known_surface(&format!("{word}а"))
-            || surface_motif_known_surface(&format!("{word}я")))
-}
-
-pub(super) fn russian_zero_o_form_has_known_lemma(word: &str) -> bool {
-    word.chars().count() >= 4
-        && word.chars().last().is_some_and(is_russian_consonant_for_l2)
-        && surface_motif_known_surface(&format!("{word}о"))
-}
-
-pub(super) fn russian_future_ut_form_has_known_infinitive(word: &str) -> bool {
-    let Some(stem) = word.strip_suffix("ут") else {
-        return false;
-    };
-    stem.chars().count() >= 3 && surface_motif_known_surface(&format!("{stem}уть"))
 }
 
 pub(super) fn surface_motif_known_surface(word: &str) -> bool {
@@ -726,14 +701,6 @@ pub(super) fn surface_motif_strict_known_surface(word: &str) -> bool {
         || is_ru_live_protected_word(word)
         || is_user_protected_word(word)
         || crate::russian_lexicon::russian_dictionary().contains(word)
-}
-
-pub(super) fn is_russian_consonant_for_l2(ch: char) -> bool {
-    is_cyrillic_letter(ch)
-        && !matches!(
-            ch,
-            'а' | 'е' | 'ё' | 'и' | 'о' | 'у' | 'ы' | 'э' | 'ю' | 'я' | 'ь' | 'ъ'
-        )
 }
 
 pub(super) fn same_stem_inflection_rewrite(original: &str, candidate: &str) -> bool {

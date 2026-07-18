@@ -23,7 +23,6 @@ impl VisibleTailSource {
 pub struct ManualToggleRequest<'a> {
     pub visible_tail: VisibleTail<'a>,
     pub current_layout_is_ru: bool,
-    pub recover_missing_initial: bool,
     pub preserve_trailing_whitespace: bool,
 }
 
@@ -88,15 +87,8 @@ pub fn plan_manual_toggle(request: ManualToggleRequest<'_>) -> Option<ManualTogg
         0
     };
 
-    let (mut backspaces, mut replacement) = if request.recover_missing_initial {
-        recover_missing_initial_layout_toggle(token).unwrap_or_else(|| {
-            let converted = double_shift_replacement(token);
-            (token.chars().count() as u32, converted)
-        })
-    } else {
-        let converted = double_shift_replacement(token);
-        (token.chars().count() as u32, converted)
-    };
+    let mut backspaces = token.chars().count() as u32;
+    let mut replacement = double_shift_replacement(token);
 
     if replacement == token {
         return None;
@@ -130,10 +122,6 @@ pub fn double_shift_replacement(text: &str) -> String {
         .unwrap_or_else(|| convert(text, detect_direction(text)))
 }
 
-pub fn recovered_initial_double_shift_replacement(token: &str) -> Option<String> {
-    recover_missing_initial_layout_toggle(token).map(|(_, replacement)| replacement)
-}
-
 fn last_tail_token(tail: &str) -> Option<&str> {
     let end = tail
         .char_indices()
@@ -147,72 +135,6 @@ fn last_tail_token(tail: &str) -> Option<&str> {
     Some(&tail[start..end])
 }
 
-fn recover_missing_initial_layout_toggle(token: &str) -> Option<(u32, String)> {
-    if token.chars().count() < 4 || !token.chars().all(char::is_alphabetic) {
-        return None;
-    }
-
-    let normal = double_shift_replacement(token);
-    let mut best: Option<(f32, String, String)> = None;
-    for prefix in missing_initial_prefixes(token) {
-        let candidate = format!("{prefix}{token}");
-        let replacement = double_shift_replacement(&candidate);
-        if replacement.is_empty() || replacement == candidate || replacement == normal {
-            continue;
-        }
-        let score = replacement_quality_score(&replacement);
-        if score < 0.98 || !known_layout_recovery_replacement(&replacement) {
-            continue;
-        }
-        if best
-            .as_ref()
-            .map_or(true, |(best_score, _, _)| score > *best_score)
-        {
-            best = Some((score, candidate, replacement));
-        }
-    }
-
-    let (_, _, replacement) = best?;
-    Some((token.chars().count() as u32, replacement))
-}
-
-fn missing_initial_prefixes(token: &str) -> impl Iterator<Item = char> {
-    let ascii = token.chars().all(|ch| ch.is_ascii_alphabetic());
-    let prefixes: &'static str = if ascii && token.chars().all(|ch| ch.is_ascii_lowercase()) {
-        "abcdefghijklmnopqrstuvwxyz"
-    } else if ascii && token.chars().all(|ch| ch.is_ascii_uppercase()) {
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    } else if ascii {
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    } else {
-        "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
-    };
-    prefixes.chars()
-}
-
-fn replacement_quality_score(replacement: &str) -> f32 {
-    let has_cyrillic = replacement
-        .chars()
-        .any(|ch| ('а'..='я').contains(&ch) || ('А'..='Я').contains(&ch));
-    let has_ascii = replacement.chars().any(|ch| ch.is_ascii_alphabetic());
-    if has_cyrillic && !has_ascii {
-        crate::quality::score(replacement, "ru")
-    } else if has_ascii && !has_cyrillic {
-        crate::quality::score(replacement, "en")
-    } else {
-        0.0
-    }
-}
-
-fn known_layout_recovery_replacement(replacement: &str) -> bool {
-    let word = replacement.trim().to_lowercase();
-    !word.is_empty()
-        && word
-            .chars()
-            .all(|ch| ('а'..='я').contains(&ch) || ch == 'ё')
-        && crate::layout_autoswitch::is_russian_layout_surface_authority_word(&word)
-}
-
 #[cfg(test)]
 mod tests {
     use super::{
@@ -224,7 +146,6 @@ mod tests {
         ManualToggleRequest {
             visible_tail: VisibleTail::ime_committed_tail(tail),
             current_layout_is_ru: false,
-            recover_missing_initial: true,
             preserve_trailing_whitespace: true,
         }
     }
@@ -246,30 +167,30 @@ mod tests {
     }
 
     #[test]
-    fn committed_tail_plan_recovers_missing_initial_ascii_layout_letter() {
+    fn committed_tail_plan_is_exact_layout_projection() {
         let plan = plan_manual_toggle(request("hbdtn")).expect("toggle");
 
         assert_eq!(plan.backspaces, 5);
-        assert_eq!(plan.replacement, "привет");
+        assert_eq!(plan.replacement, "ривет");
         assert!(plan.target_layout_is_ru);
     }
 
     #[test]
-    fn committed_tail_plan_recovers_four_letter_tail_missing_initial_layout_letter() {
+    fn committed_tail_plan_does_not_invent_missing_initial_letter() {
         let plan = plan_manual_toggle(request("flyj ")).expect("toggle");
 
         assert_eq!(plan.backspaces, 5);
-        assert_eq!(plan.replacement, "ладно ");
+        assert_eq!(plan.replacement, "адно ");
         assert!(plan.target_layout_is_ru);
     }
 
     #[test]
-    fn recovered_initial_does_not_delete_separator_before_current_token() {
+    fn exact_projection_does_not_delete_separator_before_current_token() {
         let plan = plan_manual_toggle(request("push ltkfq")).expect("toggle");
 
         assert_eq!(plan.edit.original_token, "ltkfq");
         assert_eq!(plan.backspaces, 5);
-        assert_eq!(plan.replacement, "сделай");
+        assert_eq!(plan.replacement, "делай");
         assert!(plan.target_layout_is_ru);
     }
 
@@ -278,7 +199,6 @@ mod tests {
         let plan = plan_manual_toggle(ManualToggleRequest {
             visible_tail: VisibleTail::ime_active_composition("ghbdtn"),
             current_layout_is_ru: false,
-            recover_missing_initial: false,
             preserve_trailing_whitespace: false,
         })
         .expect("toggle");
@@ -296,7 +216,6 @@ mod tests {
         let plan = plan_manual_toggle(ManualToggleRequest {
             visible_tail: VisibleTail::daemon_word_buffer("ghbdtn"),
             current_layout_is_ru: false,
-            recover_missing_initial: false,
             preserve_trailing_whitespace: false,
         })
         .expect("toggle");
@@ -313,7 +232,6 @@ mod tests {
         let to_ru = plan_manual_toggle(ManualToggleRequest {
             visible_tail: VisibleTail::daemon_word_buffer("ljgecnbv"),
             current_layout_is_ru: false,
-            recover_missing_initial: false,
             preserve_trailing_whitespace: false,
         })
         .expect("toggle to ru");
@@ -324,7 +242,6 @@ mod tests {
         let to_en = plan_manual_toggle(ManualToggleRequest {
             visible_tail: VisibleTail::daemon_word_buffer("допустим"),
             current_layout_is_ru: true,
-            recover_missing_initial: false,
             preserve_trailing_whitespace: false,
         })
         .expect("toggle to en");

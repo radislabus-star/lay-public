@@ -18,6 +18,10 @@ pub(crate) struct LayoutReplayMemory<'a> {
 #[rustfmt::skip]
 pub(crate) fn remember_layout_replay_success(buf: &mut WordBuffer, replay: LayoutReplayMemory<'_>) {
     buf.mark_replayed_layout(replay.replace_words, replay.target_is_ru);
+    lay::typing_cpu::TypingCpu::record_accepted_layout_projection(
+        replay.original,
+        replay.replacement,
+    );
     if !replay.force_replay_toggle && replay.original != replay.replacement {
         append_learning_log(
             "layout-replay",

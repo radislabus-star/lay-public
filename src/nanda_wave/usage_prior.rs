@@ -286,6 +286,15 @@ pub(crate) fn record_accepted_fix_if_enabled(from: &str, to: &str) {
     super::llmwave::record_phrase_experience("space", to);
 }
 
+pub(crate) fn record_accepted_layout_projection_if_enabled(from: &str, to: &str) {
+    if !usage_learning_enabled() || from == to {
+        return;
+    }
+    for event in TypingMemoryEvent::accepted_layout_projection(from, to) {
+        record_typing_memory_event_if_enabled(&event);
+    }
+}
+
 pub(crate) fn record_accepted_ime_if_enabled(context_tail: &str, accepted_text: &str) {
     if !usage_learning_enabled() {
         return;

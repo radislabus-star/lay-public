@@ -182,7 +182,7 @@ impl LexicalPhaseMemory {
         let Some(surface) = normalize_surface(surface) else {
             return Vec::new();
         };
-        if self.decoder_contains_surface(&surface) {
+        if self.terminal_for_normalized_surface(&surface).is_some() {
             return Vec::new();
         }
 
@@ -284,7 +284,7 @@ impl LexicalPhaseMemory {
         let Some(surface) = normalize_surface(surface) else {
             return Vec::new();
         };
-        if self.decoder_contains_surface(&surface) {
+        if self.terminal_for_normalized_surface(&surface).is_some() {
             return Vec::new();
         }
         let mut candidates = self.field_surface_candidates_normalized(&surface, limit);
@@ -305,7 +305,7 @@ impl LexicalPhaseMemory {
         let Some(surface) = normalize_surface(surface) else {
             return Vec::new();
         };
-        if self.decoder_contains_surface(&surface) {
+        if self.terminal_for_normalized_surface(&surface).is_some() {
             return Vec::new();
         }
         let mut candidates = self.field_surface_candidates_normalized(&surface, limit);
@@ -478,7 +478,7 @@ impl LexicalPhaseMemory {
             return Vec::new();
         }
         let input = surface.chars().collect::<Vec<_>>();
-        let max_edits = if input.len() >= 8 {
+        let max_edits = if input.len() >= 6 {
             MAX_DECODE_EDITS
         } else {
             2

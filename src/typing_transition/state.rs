@@ -154,9 +154,8 @@ fn current_word_is_known(word: &str) -> bool {
     }
     let lower = word.to_lowercase();
     crate::hot_field::HotFieldSnapshot::current()
-        .stable_form_readout(&lower)
+        .input_surface_readout(&lower)
         .is_known()
-        || word_has_common_usage_authority(&lower)
         || is_ascii_technical_token(word)
 }
 
@@ -302,7 +301,7 @@ mod tests {
             !state.current_word_known,
             "surface={:?} stable={:?} rank={:?} phase={:?} decoder={} center={} usage={}",
             crate::hot_field::HotFieldSnapshot::current().word_readout("сбирать"),
-            crate::hot_field::HotFieldSnapshot::current().stable_form_readout("сбирать"),
+            crate::hot_field::HotFieldSnapshot::current().input_surface_readout("сбирать"),
             crate::nanda_wave::l2::l2_surface_foundation_rank("сбирать"),
             crate::hot_field::HotFieldSnapshot::current().surface_phase_readout("сбирать"),
             crate::nanda_wave::l2::l2_decoder_contains_surface("сбирать"),

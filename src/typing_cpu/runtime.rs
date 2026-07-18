@@ -83,6 +83,10 @@ impl TypingCpu {
         crate::nanda_wave::record_accepted_fix_usage(original, accepted);
     }
 
+    pub fn record_accepted_layout_projection(original: &str, replacement: &str) {
+        crate::nanda_wave::record_accepted_layout_projection_usage(original, replacement);
+    }
+
     pub fn record_precognition_tick(stage: &str, text: &str, include_trace: bool) {
         crate::nanda_wave::precognition::record_precognition_tick(stage, text, include_trace);
         llmwave::record_phrase_experience(stage, text);

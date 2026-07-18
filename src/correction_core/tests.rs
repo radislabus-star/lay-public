@@ -126,6 +126,40 @@ mod tests {
     }
 
     #[test]
+    fn wave_owns_equal_verified_reconstruction_independent_of_source_order() {
+        let mut lattice = L2CandidateLattice::new(TypingErrorEvent::from_text("охрошо "));
+        lattice.push_source(Some(UnifiedCorrectionCandidate::new(
+            "хорошо ",
+            CorrectionDecisionSource::Deterministic,
+            CandidateOrigin::DeterministicTypo,
+            ids::ADJACENT_TRANSPOSITION,
+            TypingErrorClass::AdjacentTransposition,
+            CandidateGateDecision {
+                action: CandidateGateAction::Eligible,
+                reason: "class_allows_apply",
+            },
+        )));
+        lattice.push_source(Some(UnifiedCorrectionCandidate::new(
+            "хорошо ",
+            CorrectionDecisionSource::Nanda,
+            CandidateOrigin::L2Surface,
+            "L2SurfaceMotifCell32",
+            TypingErrorClass::AdjacentTransposition,
+            CandidateGateDecision {
+                action: CandidateGateAction::Eligible,
+                reason: "transition_core_authorized",
+            },
+        )));
+
+        let resolution = lattice.into_resolution();
+        let selected = resolution.selected.as_ref().expect("selected reconstruction");
+        assert_eq!(selected.origin, CandidateOrigin::L2Surface);
+        assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
+        assert_eq!(selected.evidence_count(), 2);
+        assert!(selected.has_origin(CandidateOrigin::DeterministicTypo));
+    }
+
+    #[test]
     fn verified_duplicate_evidence_is_not_lost_to_source_order() {
         let mut lattice = L2CandidateLattice::new(TypingErrorEvent::from_text("цусрфе "));
         lattice.push_source(Some(UnifiedCorrectionCandidate::new(
@@ -158,6 +192,26 @@ mod tests {
         assert_eq!(candidate.gate.action, CandidateGateAction::Eligible);
         assert_eq!(candidate.evidence_count(), 2);
         assert!(resolution.selected.is_some());
+    }
+
+    #[test]
+    fn exact_layout_projection_is_selected_without_missing_letter_recovery() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "ltkfq ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        ));
+
+        let selected = resolution
+            .selected
+            .as_ref()
+            .unwrap_or_else(|| panic!("resolution={resolution:#?}"));
+        assert_eq!(selected.replacement, "делай ");
+        assert_eq!(selected.origin, CandidateOrigin::Layout);
+        assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
+        assert_eq!(selected.source_id, "LayoutWordCell32");
+        assert!(selected.has_origin(CandidateOrigin::LayoutThenTypo));
     }
 
     #[test]

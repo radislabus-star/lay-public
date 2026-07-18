@@ -19,6 +19,7 @@ fn is_backed_russian_form(word: &str, contains: impl Fn(&str) -> bool + Copy) ->
         || is_backed_russian_verb_form(word, contains)
         || is_backed_russian_ch_verb_present_form(word, contains)
         || is_backed_russian_imperative_i_form(word, contains)
+        || is_backed_russian_imperative_y_form(word, contains)
 }
 
 fn is_backed_zero_ending_noun_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
@@ -103,4 +104,19 @@ pub(super) fn is_backed_russian_imperative_i_form(
         return false;
     };
     stem.chars().count() >= 4 && contains(&format!("{stem}ить"))
+}
+
+pub(super) fn is_backed_russian_imperative_y_form(
+    word: &str,
+    contains: impl Fn(&str) -> bool + Copy,
+) -> bool {
+    let Some(stem) = word.strip_suffix('й') else {
+        return false;
+    };
+    stem.chars().count() >= 4
+        && stem
+            .chars()
+            .last()
+            .is_some_and(|ch| matches!(ch, 'а' | 'я'))
+        && contains(&format!("{stem}ть"))
 }
