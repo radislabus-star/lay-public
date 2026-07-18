@@ -272,6 +272,7 @@ fn collect(
             collect_recent_text(&mut collector, &text, limit);
         }
     }
+    collector.reconcile_conflicting_evidence();
     Ok(collector)
 }
 
@@ -569,8 +570,9 @@ fn pair_from_correction_text(
         .and_then(Value::as_str)
         .unwrap_or("user-correction");
     let operation = classify_operation(from, to, lay_kind, "");
+    let (source_id, action_operator) = evidence_operator_metadata(lay_kind, &operation);
     let (train_role, quarantine_reason) =
-        train_role_and_quarantine(signal, lay_kind, from, to, &operation);
+        train_role_and_quarantine(signal, &source_id, from, to, &operation);
     Some(DirtyLogPair {
         kind: "dirty_log_pair_v1".to_string(),
         ts: value.get("ts").and_then(Value::as_u64).unwrap_or(0),
@@ -594,9 +596,9 @@ fn pair_from_correction_text(
             .unwrap_or(1)
             .max(1) as usize,
         candidate_count: 0,
-        source_id: lay_kind.to_string(),
+        source_id,
         error_class: String::new(),
-        action_operator: String::new(),
+        action_operator,
         action_proof: String::new(),
         posterior_milli: None,
         decision_rank_milli: None,
@@ -620,6 +622,18 @@ fn pair_from_correction_text(
         safety_allow_apply: None,
         safety_reason: String::new(),
     })
+}
+
+/// Correction logs describe the outer component that emitted an event. L4
+/// learns transition operators, so layout evidence must bind to `flip_layout`
+/// rather than the generic `typing-assist` envelope.
+fn evidence_operator_metadata(source_id: &str, operation: &str) -> (String, String) {
+    match operation {
+        "layout" => ("layout".to_string(), "flip_layout".to_string()),
+        "boundary" => ("boundary".to_string(), "boundary_transition".to_string()),
+        "transposition" => (source_id.to_string(), "adjacent_transposition".to_string()),
+        _ => (source_id.to_string(), "replace_current_token".to_string()),
+    }
 }
 
 fn inspect_candidate_before_apply(collector: &mut Collector, value: &Value) {
@@ -696,6 +710,47 @@ impl Collector {
             self.left_context_changed += 1;
         }
         self.pairs.push(pair);
+    }
+
+    /// A later manual replay can confirm the exact transition that an earlier
+    /// correction record tentatively marked as rejected. Such contradictory
+    /// evidence must be visible for review, never learned as both attraction
+    /// and repulsion for the same state transition.
+    fn reconcile_conflicting_evidence(&mut self) {
+        let mut roles = BTreeMap::<(String, String), (bool, bool, bool)>::new();
+        for pair in &self.pairs {
+            let entry = roles
+                .entry((pair.original.clone(), pair.expected.clone()))
+                .or_default();
+            entry.0 |= pair.train_role == "positive";
+            entry.1 |= pair.train_role == "negative";
+            entry.2 |= pair.signal == "manual_layout_replay";
+        }
+        for pair in &mut self.pairs {
+            if roles
+                .get(&(pair.original.clone(), pair.expected.clone()))
+                .is_some_and(|(positive, negative, manual_replay)| {
+                    *negative && (*positive || *manual_replay)
+                })
+            {
+                pair.train_role = "review".to_string();
+                pair.quarantine_reason = "conflicting_transition_feedback".to_string();
+            }
+        }
+        self.by_train_role.clear();
+        self.by_quarantine_reason.clear();
+        for pair in &self.pairs {
+            *self
+                .by_train_role
+                .entry(pair.train_role.clone())
+                .or_default() += 1;
+            if !pair.quarantine_reason.is_empty() {
+                *self
+                    .by_quarantine_reason
+                    .entry(pair.quarantine_reason.clone())
+                    .or_default() += 1;
+            }
+        }
     }
 }
 
@@ -1360,7 +1415,7 @@ fn accepted_usage_events(pair: &DirtyLogPair) -> Vec<Value> {
                 "from": pair.original.trim(),
                 "to": pair.expected.trim(),
                 "source": pair.source_id,
-                "operation": pair.operation,
+                "operation": runtime_memory_operation(pair),
                 "surface": surface
             }))
         })
@@ -1386,11 +1441,18 @@ fn rejected_usage_events(pair: &DirtyLogPair) -> Vec<Value> {
                 "from": pair.original.trim(),
                 "to": pair.expected.trim(),
                 "source": pair.source_id,
-                "operation": pair.operation,
+                "operation": runtime_memory_operation(pair),
                 "surface": surface
             }))
         })
         .collect()
+}
+
+/// The decision core evaluates all correction candidates through the same
+/// replacement transition. `DirtyLogPair::operation` remains an analytical
+/// class; the learned L4 event must use the runtime operation key.
+fn runtime_memory_operation(_pair: &DirtyLogPair) -> &'static str {
+    "replacement"
 }
 
 fn transition_surface(pair: &DirtyLogPair) -> String {
@@ -1398,7 +1460,7 @@ fn transition_surface(pair: &DirtyLogPair) -> String {
         &pair.original,
         &pair.expected,
         &pair.source_id,
-        &pair.operation,
+        runtime_memory_operation(pair),
     )
 }
 
@@ -1797,13 +1859,13 @@ mod tests {
     }
 
     #[test]
-    fn suffix_feedback_emits_full_positive_and_negative_transitions() {
+    fn suffix_feedback_preserves_review_and_negative_transitions() {
         let text = r#"{"ts":2,"kind":"user-correction","from":"ло? ","to":"льно? ","replace_words":1,"lay_kind":"typing-assist","lay_from":"Праивльно? ","lay_to":"Правило? "}"#;
         let mut collector = Collector::default();
         collect_corrections_text(&mut collector, text, 100);
 
         assert!(collector.pairs.iter().any(|pair| {
-            pair.train_role == "positive"
+            pair.train_role == "review"
                 && pair.original == "Праивльно? "
                 && pair.expected == "Правильно? "
         }));
@@ -1842,6 +1904,86 @@ mod tests {
         assert_eq!(collector.pairs[0].operation, "replacement");
         assert_eq!(collector.pairs[0].source_id, "layout");
         assert_eq!(collector.pairs[0].action_operator, "flip_layout");
+    }
+
+    #[test]
+    fn conflicting_manual_replay_is_quarantined_from_learning() {
+        let mut collector = Collector::default();
+        collect_corrections_text(
+            &mut collector,
+            r#"{"ts":3,"kind":"user-correction","from":"ljdtcnb ","to":"довести ","lay_from":"ljdtcnb ","lay_to":"довести "}"#,
+            100,
+        );
+        collect_recent_text(
+            &mut collector,
+            r#"{"ts":4,"kind":"layout-replay","from":"ljdtcnb ","to":"довести ","replace_words":1}"#,
+            100,
+        );
+
+        collector.reconcile_conflicting_evidence();
+
+        assert!(collector
+            .pairs
+            .iter()
+            .all(|pair| pair.train_role == "review"));
+        assert!(collector
+            .pairs
+            .iter()
+            .all(|pair| pair.quarantine_reason == "conflicting_transition_feedback"));
+        assert_eq!(collector.by_train_role.get("negative"), None);
+        assert_eq!(collector.by_train_role["review"], 3);
+    }
+
+    #[test]
+    fn technical_manual_replay_still_resolves_matching_negative_evidence() {
+        let mut collector = Collector::default();
+        let negative = pair_from_correction_text(
+            &serde_json::json!({"lay_kind": "typing-assist"}),
+            "user_rejected_lay_output",
+            "СЗГ ",
+            "CPU ",
+        )
+        .expect("valid negative pair");
+        assert_eq!(negative.train_role, "negative");
+        collector.add(negative);
+        collect_recent_text(
+            &mut collector,
+            r#"{"ts":4,"kind":"layout-replay","from":"СЗГ ","to":"CPU ","replace_words":1}"#,
+            100,
+        );
+
+        collector.reconcile_conflicting_evidence();
+
+        assert!(collector
+            .pairs
+            .iter()
+            .all(|pair| pair.train_role == "review"));
+        assert!(collector
+            .pairs
+            .iter()
+            .all(|pair| { pair.quarantine_reason == "conflicting_transition_feedback" }));
+    }
+
+    #[test]
+    fn correction_layout_evidence_binds_to_layout_operator() {
+        let pair = pair_from_correction_text(
+            &serde_json::json!({"lay_kind": "typing-assist"}),
+            "user_rejected_lay_output",
+            "yfc ",
+            "нас ",
+        )
+        .expect("valid layout correction pair");
+
+        assert_eq!(pair.operation, "layout");
+        assert_eq!(pair.source_id, "layout");
+        assert_eq!(pair.action_operator, "flip_layout");
+        let events = rejected_usage_events(&pair);
+        assert_eq!(events[0]["source"], "layout");
+        assert_eq!(events[0]["operation"], "replacement");
+        assert_eq!(
+            events[0]["surface"],
+            lay::nanda_wave::transition_surface_key("yfc ", "нас ", "layout", "replacement")
+        );
     }
 
     #[test]

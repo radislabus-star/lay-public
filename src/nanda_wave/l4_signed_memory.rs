@@ -68,6 +68,8 @@ pub(crate) struct L4SignedMemoryInput<'a> {
     pub(crate) source: &'a str,
     pub(crate) operation: &'a str,
     pub(crate) state_word: &'a str,
+    /// The normalized changed target text. The packed hot readout turns it
+    /// into the same compact target identity used by cold compilation.
     pub(crate) candidate_text: &'a str,
     pub(crate) usage: &'a UsagePriorSnapshot,
     pub(crate) surface: Option<&'a str>,
@@ -232,6 +234,28 @@ mod tests {
         assert!(bad.repulsion > bad.attraction);
         assert!(bad.signed_weight < 0.0);
         assert!(good.attraction > good.repulsion);
+    }
+
+    #[test]
+    fn signed_memory_matches_layout_rejection_by_compiled_target_id() {
+        let usage = usage_from_events(
+            r#"{"ts":1,"kind":"rejected_candidate","word":"нас","from":"yfc","to":"нас","source":"layout","operation":"replacement"}
+"#,
+        );
+        let state = crate::transition_relation::transition_state_id("yfc");
+        let signal = l4_signed_memory_signal(L4SignedMemoryInput {
+            context: &[],
+            source: "layout",
+            operation: "replacement",
+            state_word: &state,
+            candidate_text: "нас",
+            usage: &usage,
+            surface: None,
+        });
+
+        assert!(signal.transition_state_specific);
+        assert!(signal.repulsion > signal.attraction);
+        assert_eq!(signal.reason, L4SignedMemoryReason::TransitionRepels);
     }
 
     #[test]
