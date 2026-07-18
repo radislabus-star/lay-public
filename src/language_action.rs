@@ -91,7 +91,9 @@ pub(crate) fn operator_for_origin(
         TypingErrorClass::PartialLayout | TypingErrorClass::MixedScript => {
             LanguageActionOperator::FixMixedLayout
         }
-        TypingErrorClass::MissingLetter => LanguageActionOperator::RestoreMissingLetter,
+        TypingErrorClass::MissingLetter | TypingErrorClass::SparseInternalMultiOmission => {
+            LanguageActionOperator::RestoreMissingLetter
+        }
         TypingErrorClass::ExtraLetter | TypingErrorClass::RepeatedLetter => {
             LanguageActionOperator::RemoveExtraLetter
         }
@@ -137,6 +139,7 @@ pub(crate) fn proof_for_origin(
         TypingErrorClass::LetterSubstitution
         | TypingErrorClass::CompositeTypo
         | TypingErrorClass::MissingLetter
+        | TypingErrorClass::SparseInternalMultiOmission
         | TypingErrorClass::ExtraLetter
         | TypingErrorClass::RepeatedLetter
         | TypingErrorClass::AdjacentTransposition

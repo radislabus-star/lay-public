@@ -111,6 +111,11 @@ pub(crate) fn classify_token_transition(
     if removes_one_char_to(&replacement_chars, &original_chars) {
         return TypingErrorClass::MissingLetter;
     }
+    if crate::text_metrics::sparse_internal_omission_count(&original_word, &replacement_word)
+        .is_some()
+    {
+        return TypingErrorClass::SparseInternalMultiOmission;
+    }
     if original_chars.len() == replacement_chars.len()
         && crate::text_metrics::damerau_levenshtein(&original_word, &replacement_word) == 1
     {
@@ -119,6 +124,7 @@ pub(crate) fn classify_token_transition(
     if matches!(
         declared,
         TypingErrorClass::MissingLetter
+            | TypingErrorClass::SparseInternalMultiOmission
             | TypingErrorClass::ExtraLetter
             | TypingErrorClass::RepeatedLetter
             | TypingErrorClass::AdjacentTransposition
@@ -279,6 +285,19 @@ mod tests {
                 TypingErrorClass::CompositeTypo,
             ),
             TypingErrorClass::RepeatedLetter
+        );
+    }
+
+    #[test]
+    fn sparse_internal_omission_operator_is_inferred_from_the_transition() {
+        assert_eq!(
+            classify_token_transition(
+                "переподлчаю ",
+                "переподключаю ",
+                CandidateOrigin::L2Surface,
+                TypingErrorClass::Unknown,
+            ),
+            TypingErrorClass::SparseInternalMultiOmission
         );
     }
 }

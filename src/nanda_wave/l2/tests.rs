@@ -396,6 +396,23 @@ fn l2_surface_layer_recovers_adjacent_transposition() {
 }
 
 #[test]
+fn l2_phase_memory_recovers_sparse_internal_multi_omission() {
+    let original = "переподлчаю ";
+    let l1 = run_l1(original);
+    let candidates = run_l2(original, &l1);
+    let recovered = candidates
+        .iter()
+        .find(|candidate| candidate.text == "переподключаю")
+        .unwrap_or_else(|| panic!("missing reconstructed center: {candidates:?}"));
+
+    assert_eq!(recovered.source, LEXICAL_ATTRACTOR_CELL);
+    assert!(recovered
+        .support
+        .iter()
+        .any(|item| item == "l2-operator:sparse-internal-multi-omission"));
+}
+
+#[test]
 fn l2_form_attractor_prefers_clean_corpus_center() {
     let original = "пукнт ";
     let l1 = run_l1(original);

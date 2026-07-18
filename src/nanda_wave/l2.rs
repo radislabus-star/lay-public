@@ -61,7 +61,7 @@ pub(crate) use surface::{
 const L2_ACTIVE_SOURCE_TARGET: usize = 1_000_000;
 pub(super) const L2_SURFACE_MOTIF_CELL: &str = "L2SurfaceMotifCell32";
 pub(super) const L2_SURFACE_COMPLETION_CELL: &str = "L2SurfaceCompletionCell32";
-const L2_FORM_ATTRACTOR_LIMIT: usize = 6;
+const L2_FORM_ATTRACTOR_LIMIT: usize = 12;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum L2ImeWordCandidateKind {

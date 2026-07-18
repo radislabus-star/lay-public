@@ -30,6 +30,7 @@ struct Metrics {
     worsened_cases: usize,
     full_ok: usize,
     without_context_ok: usize,
+    diagnostic_examples: Vec<Value>,
 }
 
 #[derive(Default)]
@@ -114,6 +115,24 @@ pub(super) fn report_json(cases: &[EvalCase], full_cases: usize) -> Value {
         let changed = full_output != ablated_output;
         let improved = full_ok && !ablated_ok;
         let worsened = !full_ok && ablated_ok;
+        if metrics.diagnostic_examples.len() < 12
+            && (changed
+                || wrong_supported
+                || correct_suppressed
+                || case.reason == "l3_context_heldout")
+        {
+            metrics.diagnostic_examples.push(json!({
+                "original": &case.original,
+                "expected": &case.expected,
+                "reason": &case.reason,
+                "full_output": &full_output,
+                "without_context_output": &ablated_output,
+                "changed": changed,
+                "improved": improved,
+                "worsened": worsened,
+                "candidates": &readout.candidates,
+            }));
+        }
         metrics.output_changed_cases += usize::from(changed);
         metrics.improved_cases += usize::from(improved);
         metrics.worsened_cases += usize::from(worsened);
@@ -198,6 +217,7 @@ pub(super) fn report_json(cases: &[EvalCase], full_cases: usize) -> Value {
             "worsened_cases": metrics.worsened_cases,
         },
         "by_context_depth": depth,
+        "diagnostic_examples": metrics.diagnostic_examples,
         "read_as": "L3 is context-connected only when evidence_hit_cases is nonzero; it is decision-active only when authority and output_changed are nonzero; positive utility requires improved_cases > worsened_cases under an unchanged L2 candidate lattice"
     })
 }

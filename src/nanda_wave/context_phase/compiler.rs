@@ -137,7 +137,7 @@ pub(crate) fn compile_context_phase(
     let mut profiles = builders
         .into_iter()
         .filter_map(|(token_hash, builder)| {
-            (!builder.positive.is_empty()).then(|| {
+            (builder.positive_examples >= 2).then(|| {
                 let threshold_micro = learned_threshold(&builder);
                 ContextCandidateProfile {
                     token_hash,

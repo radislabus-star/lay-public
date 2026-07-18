@@ -76,6 +76,8 @@ pub(crate) struct ContextPhaseReadout {
     pub(crate) anti_centers: u8,
     pub(crate) semantic_support: u32,
     pub(crate) relation_class: u64,
+    pub(crate) context_tokens: u16,
+    pub(crate) context_known_tokens: u16,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -115,13 +117,28 @@ impl ContextPhasePackage {
                 self.raw_readout(&vector, candidate, mode)
             })
             .collect::<Vec<_>>();
+        let context_known_tokens = context_tokens_for_authority(self, context_tokens)
+            .min(u16::MAX as usize) as u16;
+        let context_token_count = context_tokens.len().min(u16::MAX as usize) as u16;
+        for readout in &mut readouts {
+            readout.context_tokens = context_token_count;
+            readout.context_known_tokens = context_known_tokens;
+        }
 
-        let mut ranked = readouts
-            .iter()
-            .enumerate()
-            .filter(|(_, readout)| readout.profile_present)
-            .map(|(index, readout)| (index, readout.margin_micro))
-            .collect::<Vec<_>>();
+        let mut unique_tokens = std::collections::BTreeMap::<u64, (usize, i64)>::new();
+        for (index, (candidate, readout)) in candidates.iter().zip(&readouts).enumerate() {
+            unique_tokens
+                .entry(candidate_token_hash(candidate))
+                .or_insert((
+                    index,
+                    if readout.profile_present {
+                        readout.margin_micro
+                    } else {
+                        0
+                    },
+                ));
+        }
+        let mut ranked = unique_tokens.into_values().collect::<Vec<_>>();
         ranked.sort_by_key(|item| std::cmp::Reverse(item.1));
         let best = ranked.first().copied();
         let runner_up = ranked
@@ -133,30 +150,49 @@ impl ContextPhasePackage {
             .unwrap_or_default();
         let competition_ready = ranked.len() == 1
             || competition_margin >= i64::from(self.competition_threshold_micro.max(1));
+        let best_support_ready = best.is_some_and(|(index, _)| {
+            let readout = &readouts[index];
+            let competition_threshold = i64::from(self.competition_threshold_micro.max(1));
+            let support_uncertainty = (competition_threshold as f64
+                / f64::from(readout.positive_examples.max(1)).sqrt())
+            .ceil() as i64;
+            let relative_competition_ready = ranked.len() >= 2
+                && competition_margin
+                    >= competition_threshold.saturating_add(support_uncertainty);
+            competition_ready
+                && readout.positive_examples >= 2
+                && (readout.margin_micro >= readout.threshold_micro
+                    || (relative_competition_ready
+                        && readout.positive_micro > readout.anti_micro))
+        });
 
         for (index, readout) in readouts.iter_mut().enumerate() {
             if !readout.profile_present || mode == ContextPhaseMode::NoPhase {
                 continue;
             }
-            readout.competition_margin_micro = if best.is_some_and(|(best, _)| best == index) {
+            let is_best_token = best.is_some_and(|(best, _)| {
+                candidate_token_hash(candidates[best]) == candidate_token_hash(candidates[index])
+            });
+            readout.competition_margin_micro = if is_best_token {
                 competition_margin
             } else {
                 best.map(|(_, score)| readout.margin_micro.saturating_sub(score))
                     .unwrap_or_default()
             };
-            let above_threshold = readout.margin_micro >= readout.threshold_micro;
-            let has_support = readout.positive_examples >= 2;
-            readout.disposition = if best.is_some_and(|(best, _)| best == index)
-                && competition_ready
-                && above_threshold
-                && has_support
-            {
+            let context_ready = readout.context_known_tokens >= 2
+                && usize::from(readout.context_known_tokens) * 2
+                    >= usize::from(readout.context_tokens);
+            let anti_margin_ready = readout.anti_micro.saturating_sub(readout.positive_micro)
+                >= i64::from(self.competition_threshold_micro.max(1));
+            readout.disposition = if is_best_token && best_support_ready && context_ready {
                 ContextPhaseDisposition::Support
-            } else if readout.anti_micro > readout.positive_micro
-                || best.is_some_and(|(_, score)| {
-                    score.saturating_sub(readout.margin_micro)
-                        >= i64::from(self.competition_threshold_micro.max(1))
-                })
+            } else if context_ready
+                && (anti_margin_ready
+                    || (best_support_ready
+                        && best.is_some_and(|(_, score)| {
+                            score.saturating_sub(readout.margin_micro)
+                                >= i64::from(self.competition_threshold_micro.max(1))
+                        })))
             {
                 ContextPhaseDisposition::Suppress
             } else {
@@ -223,6 +259,8 @@ impl ContextPhasePackage {
                 .map(|state| state.support)
                 .unwrap_or_default(),
             relation_class: relation_class(token_hash, margin_micro),
+            context_tokens: 0,
+            context_known_tokens: 0,
         }
     }
 
@@ -294,6 +332,21 @@ impl ContextPhasePackage {
     }
 }
 
+fn candidate_token_hash(candidate: &str) -> u64 {
+    let token = crate::word_reader::last_text_word(candidate).unwrap_or_default();
+    hash_text(&token.to_lowercase())
+}
+
+fn context_tokens_for_authority(
+    package: &ContextPhasePackage,
+    context_tokens: &[String],
+) -> usize {
+    context_tokens
+        .iter()
+        .filter(|token| package.semantic_state(hash_text(token)).is_some())
+        .count()
+}
+
 fn relation_class(token_hash: u64, margin_micro: i64) -> u64 {
     let band = ((margin_micro / 25_000).clamp(-32, 32) + 32) as u64;
     crate::stable_hash::mix64_golden(token_hash ^ band.rotate_left(19))
@@ -333,9 +386,38 @@ pub(crate) fn readout_default_candidates(
     original: &str,
     replacements: &[&str],
 ) -> Vec<ContextPhaseReadout> {
-    let mut context = super::llmwave::tokenize(original);
+    let original_tokens = super::llmwave::tokenize(original);
+    let mut context = original_tokens.clone();
     context.pop();
-    default_memory().score_candidates(&context, replacements)
+    let candidate_tokens = replacements
+        .iter()
+        .map(|replacement| context_preserving_candidate_token(&context, replacement))
+        .collect::<Vec<_>>();
+    let valid_tokens = candidate_tokens
+        .iter()
+        .filter_map(Option::as_deref)
+        .collect::<Vec<_>>();
+    let mut valid_readouts = default_memory()
+        .score_candidates(&context, &valid_tokens)
+        .into_iter();
+    candidate_tokens
+        .into_iter()
+        .map(|token| {
+            token
+                .map(|_| valid_readouts.next().unwrap_or_default())
+                .unwrap_or_default()
+        })
+        .collect()
+}
+
+fn context_preserving_candidate_token(context: &[String], replacement: &str) -> Option<String> {
+    let tokens = super::llmwave::tokenize(replacement);
+    let (candidate, prefix) = tokens.split_last()?;
+    if prefix.is_empty() || prefix == context {
+        Some(candidate.clone())
+    } else {
+        None
+    }
 }
 
 pub(crate) fn package_report(path: &Path) -> serde_json::Value {

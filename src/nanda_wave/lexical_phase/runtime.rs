@@ -289,8 +289,30 @@ impl LexicalPhaseMemory {
         }
         let mut candidates = self.field_surface_candidates_normalized(&surface, limit);
         candidates.extend(self.reconstructed_surface_candidates(&surface, limit.saturating_mul(2)));
+        candidates.extend(
+            self.prefixed_reconstructed_surface_candidates(&surface, limit.saturating_mul(2)),
+        );
         sort_candidates(&mut candidates);
+        let reserved = candidates
+            .iter()
+            .filter(|candidate| {
+                crate::text_metrics::sparse_internal_omission_count(&surface, &candidate.word)
+                    .is_some()
+            })
+            .take(4)
+            .cloned()
+            .collect::<Vec<_>>();
         candidates.truncate(limit);
+        for candidate in reserved {
+            if candidates.iter().any(|item| item.word == candidate.word) {
+                continue;
+            }
+            if candidates.len() == limit {
+                candidates.pop();
+            }
+            candidates.push(candidate);
+        }
+        sort_candidates(&mut candidates);
         candidates
     }
 
@@ -552,6 +574,62 @@ impl LexicalPhaseMemory {
                 })
             })
             .collect::<Vec<_>>();
+        sort_candidates(&mut candidates);
+        candidates.truncate(limit);
+        candidates
+    }
+
+    fn prefixed_reconstructed_surface_candidates(
+        &self,
+        surface: &str,
+        limit: usize,
+    ) -> Vec<LexicalPhaseCandidate> {
+        let mut candidates = Vec::new();
+        let query_field = SurfaceFieldEncoder::encode(surface);
+        let (query_phase, _) = surface_phase(&query_field);
+        let query_keys = atom_center_keys(&query_field);
+        for prefix in crate::russian_prefixes::derivational_prefixes() {
+            let Some(base_surface) = surface.strip_prefix(prefix) else {
+                continue;
+            };
+            if base_surface.chars().count() < 4 {
+                continue;
+            }
+            for base in self.reconstructed_surface_candidates(base_surface, limit.saturating_mul(2))
+            {
+                let word = format!("{prefix}{}", base.word);
+                let distance = damerau_levenshtein(surface, &word);
+                if distance > usize::from(MAX_DECODE_EDITS) {
+                    continue;
+                }
+                let candidate_field = SurfaceFieldEncoder::encode(&word);
+                let (candidate_phase, atom_count) = surface_phase(&candidate_field);
+                let coherence = phase_coherence_milli(&query_phase, &candidate_phase);
+                let candidate_keys = atom_center_keys(&candidate_field);
+                let overlap = sorted_overlap(&query_keys, &candidate_keys);
+                let rank_boost = if base.rank == usize::MAX {
+                    0
+                } else {
+                    corpus_rank_boost(base.rank.min(u32::MAX as usize) as u32).saturating_mul(2)
+                };
+                let score = 1_100u32
+                    .saturating_add(u32::from(coherence))
+                    .saturating_add(overlap.min(24) as u32 * 64)
+                    .saturating_add(rank_boost)
+                    .saturating_sub(distance as u32 * 240);
+                candidates.push(LexicalPhaseCandidate {
+                    word,
+                    score,
+                    l1_overlap: overlap,
+                    l2_overlap: usize::from(coherence) / 40,
+                    motif_overlap: atom_count as usize,
+                    prefix_match: false,
+                    rank: base.rank,
+                    phase_coherence_milli: coherence,
+                    reconstructed: true,
+                });
+            }
+        }
         sort_candidates(&mut candidates);
         candidates.truncate(limit);
         candidates
@@ -1197,5 +1275,31 @@ mod tests {
         }
         assert!(memory.decoder_contains_surface("можем"));
         assert!(memory.decoder_contains_surface("понял"));
+    }
+
+    #[test]
+    fn production_decoder_contains_generated_base_form_for_prefix_composition() {
+        let memory = default_memory().expect("production lexical phase artifact loads");
+
+        assert!(memory.decoder_contains_surface("подключаю"));
+        let candidates = memory.surface_candidates("подлчаю", 64);
+        assert!(
+            candidates
+                .iter()
+                .any(|candidate| candidate.word == "подключаю"),
+            "candidates={candidates:?}"
+        );
+
+        let candidates = memory.surface_candidates("переподлчаю", 32);
+        for candidate in &candidates {
+            if candidate.word.starts_with("перепод") {
+                eprintln!("sparse omission candidate={candidate:?}");
+            }
+        }
+        let position = candidates
+            .iter()
+            .position(|candidate| candidate.word == "переподключаю" && candidate.reconstructed);
+        eprintln!("sparse omission center position={position:?}");
+        assert!(position.is_some(), "candidates={candidates:?}");
     }
 }

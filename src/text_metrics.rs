@@ -95,9 +95,42 @@ pub fn damerau_levenshtein(left: &str, right: &str) -> usize {
     dp[a.len()][b.len()]
 }
 
+pub fn sparse_internal_omission_count(input: &str, candidate: &str) -> Option<usize> {
+    let input = input.chars().collect::<Vec<_>>();
+    let candidate = candidate.chars().collect::<Vec<_>>();
+    let omissions = candidate.len().checked_sub(input.len())?;
+    if !(2..=3).contains(&omissions)
+        || input.first() != candidate.first()
+        || input.last() != candidate.last()
+    {
+        return None;
+    }
+
+    let mut input_index = 0usize;
+    let mut omitted = Vec::with_capacity(omissions);
+    for (candidate_index, ch) in candidate.iter().enumerate() {
+        if input.get(input_index) == Some(ch) {
+            input_index += 1;
+        } else {
+            omitted.push(candidate_index);
+        }
+    }
+    if input_index != input.len()
+        || omitted.len() != omissions
+        || omitted.iter().any(|index| *index == 0 || *index + 1 == candidate.len())
+        || omitted.windows(2).all(|pair| pair[1] == pair[0] + 1)
+    {
+        return None;
+    }
+    Some(omissions)
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{transition_changed_token_count, transition_left_context_changed};
+    use super::{
+        sparse_internal_omission_count, transition_changed_token_count,
+        transition_left_context_changed,
+    };
 
     #[test]
     fn transition_metrics_share_one_word_boundary_definition() {
@@ -115,5 +148,22 @@ mod tests {
             2
         );
         assert!(transition_left_context_changed("я прохоил ", "япроходил "));
+    }
+
+    #[test]
+    fn sparse_internal_omissions_are_a_typed_edit_geometry() {
+        assert_eq!(
+            sparse_internal_omission_count("переподлчаю", "переподключаю"),
+            Some(2)
+        );
+        assert_eq!(
+            sparse_internal_omission_count("интелека", "интеллекта"),
+            Some(2)
+        );
+        assert_eq!(sparse_internal_omission_count("спть", "спать"), None);
+        assert_eq!(
+            sparse_internal_omission_count("переподчаю", "переподключаю"),
+            None
+        );
     }
 }

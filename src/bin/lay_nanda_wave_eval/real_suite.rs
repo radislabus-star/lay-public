@@ -64,6 +64,11 @@ pub(crate) fn load() -> io::Result<RealSuite> {
         "tests/fixtures/daemon_typing_assist_transposition.tsv",
         "ru_typo_transposition",
     )?;
+    add_two_col(
+        &mut suite,
+        "tests/fixtures/nanda_l3_context_heldout.tsv",
+        "l3_context_heldout",
+    )?;
     add_keep_lines(
         &mut suite,
         "tests/fixtures/daemon_typing_assist_missing_letter_keep.txt",

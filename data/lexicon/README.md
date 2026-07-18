@@ -16,3 +16,11 @@ for small regular paradigms; do not use it as a broad chat-log dictionary.
 memory. It is generated from a broad local corpus by balanced first-letter
 sampling, then mixed with curated positive cases at build time. Keep it as
 lexical substrate, not as a place for one-off autocorrect patches.
+
+`l3_context_phase_v1.nwpc` is compact phase/context memory compiled from
+natural Russian sentences. The raw corpus is not committed and raw words are
+not stored in the artifact. Rebuild it with `scripts/build-l3-context-phase.sh`.
+The default source is the Tatoeba Russian sentence export, released under
+CC BY 2.0 FR; exact source hashes and heldout ablations are recorded in the
+adjacent manifest. An alphabetical word list is lexical input, not valid L3
+context training data.

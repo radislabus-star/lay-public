@@ -44,11 +44,7 @@ pub(crate) fn l3_context_field_readout(
 ) -> L3ContextFieldReadout {
     let context_tokens = llmwave::tokenize(original).len().saturating_sub(1);
     let memory_warm = super::context_phase::default_memory_is_warm();
-    let replacements = candidates
-        .iter()
-        .map(|candidate| candidate.text.as_str())
-        .collect::<Vec<_>>();
-    let reports = l3_phrase_gate::evaluate_default_candidates(original, &replacements);
+    let reports = evaluate_admitted_phrase_candidates(original, candidates, None);
     let candidates = candidates
         .iter()
         .zip(reports)
@@ -117,20 +113,11 @@ fn run_l3_inner(
     let technical_keep = candidates
         .iter()
         .find(|candidate| candidate.origin == CandidateOrigin::Technical);
-    let replacements = candidates
-        .iter()
-        .map(|candidate| candidate.text.as_str())
-        .collect::<Vec<_>>();
     let phrase_reports =
         if !options.is_enabled(L3_CONTEXT_FIELD_CELL) || options.l3_weight() <= f32::EPSILON {
-            vec![None; replacements.len()]
+            vec![None; candidates.len()]
         } else {
-            match phrase_memory {
-                Some(memory) => {
-                    l3_phrase_gate::evaluate_candidates_with_memory(original, &replacements, memory)
-                }
-                None => l3_phrase_gate::evaluate_default_candidates(original, &replacements),
-            }
+            evaluate_admitted_phrase_candidates(original, candidates, phrase_memory)
         };
     let best_readout = best_context_candidate(original, candidates, &phrase_reports);
 
@@ -358,6 +345,19 @@ fn context_candidate_blocker(
     candidate: &WordCandidate,
     phrase_report: Option<&l3_phrase_gate::L3PhraseGateReport>,
 ) -> Option<&'static str> {
+    if let Some(reason) = context_candidate_pre_phrase_blocker(original, candidate) {
+        return Some(reason);
+    }
+    if phrase_gate_suppresses(phrase_report) {
+        return Some("phrase_gate");
+    }
+    None
+}
+
+fn context_candidate_pre_phrase_blocker(
+    original: &str,
+    candidate: &WordCandidate,
+) -> Option<&'static str> {
     let error_class = nanda_candidate_error_class(original, candidate);
     let action = crate::typing_transition::action::verify_action_operator(
         original,
@@ -371,13 +371,40 @@ fn context_candidate_blocker(
     if semantic_candidate_lacks_surface_support(original, candidate, action.edit_operator) {
         return Some("semantic_surface_authority");
     }
-    if word_form_candidate_lacks_surface_support(original, candidate) {
+    if word_form_candidate_lacks_surface_support(original, candidate, error_class) {
         return Some("word_form_authority");
     }
-    if phrase_gate_suppresses(phrase_report) {
-        return Some("phrase_gate");
-    }
     None
+}
+
+fn evaluate_admitted_phrase_candidates(
+    original: &str,
+    candidates: &[WordCandidate],
+    phrase_memory: Option<&llmwave::LlmWaveMemory>,
+) -> Vec<Option<l3_phrase_gate::L3PhraseGateReport>> {
+    let admitted = candidates
+        .iter()
+        .enumerate()
+        .filter(|(_, candidate)| context_candidate_pre_phrase_blocker(original, candidate).is_none())
+        .collect::<Vec<_>>();
+    if admitted.is_empty() {
+        return vec![None; candidates.len()];
+    }
+    let replacements = admitted
+        .iter()
+        .map(|(_, candidate)| candidate.text.as_str())
+        .collect::<Vec<_>>();
+    let evaluated = match phrase_memory {
+        Some(memory) => {
+            l3_phrase_gate::evaluate_candidates_with_memory(original, &replacements, memory)
+        }
+        None => l3_phrase_gate::evaluate_default_candidates(original, &replacements),
+    };
+    let mut reports = vec![None; candidates.len()];
+    for ((index, _), report) in admitted.into_iter().zip(evaluated) {
+        reports[index] = report;
+    }
+    reports
 }
 
 fn confidence(candidate: &WordCandidate) -> f32 {
@@ -425,7 +452,11 @@ fn verified_operator_coherence(original: &str, candidate: &WordCandidate) -> f32
     }
 }
 
-fn word_form_candidate_lacks_surface_support(original: &str, candidate: &WordCandidate) -> bool {
+fn word_form_candidate_lacks_surface_support(
+    original: &str,
+    candidate: &WordCandidate,
+    error_class: TypingErrorClass,
+) -> bool {
     if candidate.origin != CandidateOrigin::L2Surface {
         return false;
     }
@@ -441,6 +472,9 @@ fn word_form_candidate_lacks_surface_support(original: &str, candidate: &WordCan
 
     let original_lower = original_word.to_lowercase();
     let replacement_lower = replacement_word.to_lowercase();
+    if error_class == TypingErrorClass::SparseInternalMultiOmission {
+        return false;
+    }
     let field = crate::hot_field::HotFieldSnapshot::current();
     let original_known = field.input_surface_readout(&original_lower).is_known();
     if original_known && original_lower != replacement_lower {
@@ -728,7 +762,94 @@ mod tests {
         assert!(!word_form_candidate_lacks_surface_support(
             " отсранилась! ",
             &candidate,
+            TypingErrorClass::MissingLetter,
         ));
+    }
+
+    #[test]
+    fn l3_context_support_can_select_sparse_internal_omission_center() {
+        let original = "ты записал нашу новую концепцию интелека ";
+        let candidates = [
+            WordCandidate {
+                text: "ты записал нашу новую концепцию интелект".to_string(),
+                origin: CandidateOrigin::L2Surface,
+                source: LEXICAL_ATTRACTOR_CELL,
+                energy: 0.95,
+                risk: 0.106,
+                support: vec![],
+            },
+            WordCandidate {
+                text: "ты записал нашу новую концепцию интеллекта".to_string(),
+                origin: CandidateOrigin::L2Surface,
+                source: LEXICAL_ATTRACTOR_CELL,
+                energy: 0.912,
+                risk: 0.172,
+                support: vec!["l2-operator:sparse-internal-multi-omission".to_string()],
+            },
+        ];
+        let reports = [
+            None,
+            Some(l3_phrase_gate::L3PhraseGateReport {
+                decision: l3_phrase_gate::L3PhraseGateDecision::Support,
+                source: "learned_context_phase",
+                score: 0.179,
+                rank_energy: 0.028,
+                support: 2,
+                width: 5,
+                sequential_score: 0.179,
+                scene_score: 2.0,
+                competition_margin: 0.211,
+                positive_micro: 179_000,
+                anti_micro: 0,
+                threshold_micro: 700_000,
+                relation_class: 1,
+                reason: "l3_context_phase_support",
+            }),
+        ];
+
+        assert_eq!(best_context_candidate(original, &candidates, &reports), Some(1));
+    }
+
+    #[test]
+    fn tracked_l3_context_selects_sparse_omission_from_real_l2_lattice() {
+        let original = "ты записал нашу новую концепцию интелека ";
+        let l1 = super::super::l1::run_l1(original);
+        let candidates = super::super::l2::run_l2(original, &l1);
+        let mut context = llmwave::tokenize(original);
+        context.pop();
+        let admitted = candidates
+            .iter()
+            .enumerate()
+            .filter(|(_, candidate)| {
+                context_candidate_pre_phrase_blocker(original, candidate).is_none()
+            })
+            .collect::<Vec<_>>();
+        let tokens = admitted
+            .iter()
+            .map(|(_, candidate)| last_token(&candidate.text).unwrap_or_default())
+            .collect::<Vec<_>>();
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("data/lexicon/l3_context_phase_v1.nwpc");
+        let package = super::super::context_phase::read_package(&path)
+            .expect("tracked L3 context phase package");
+        let readouts = package.score_candidates(&context, &tokens);
+        let evaluated = l3_phrase_gate::reports_from_phase_readouts(context.len(), readouts);
+        let mut reports = vec![None; candidates.len()];
+        for ((index, _), report) in admitted.into_iter().zip(evaluated) {
+            reports[index] = report;
+        }
+
+        for (candidate, report) in candidates.iter().zip(&reports) {
+            eprintln!(
+                "candidate={:?} report={report:?} blocker={:?} rank={:.3}",
+                candidate.text,
+                context_candidate_blocker(original, candidate, report.as_ref()),
+                l3_rank_score(original, candidate, report.as_ref()),
+            );
+        }
+        let selected = best_context_candidate(original, &candidates, &reports)
+            .map(|index| candidates[index].text.as_str());
+        assert_eq!(selected, Some("ты записал нашу новую концепцию интеллекта"));
     }
 
     #[test]

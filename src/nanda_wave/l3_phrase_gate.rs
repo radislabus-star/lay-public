@@ -62,7 +62,7 @@ pub(crate) fn evaluate_context_candidates_default(
     )
 }
 
-fn reports_from_phase_readouts(
+pub(super) fn reports_from_phase_readouts(
     context_tokens: usize,
     readouts: Vec<super::context_phase::ContextPhaseReadout>,
 ) -> Vec<Option<L3PhraseGateReport>> {

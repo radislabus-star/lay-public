@@ -399,7 +399,7 @@ fn main() -> io::Result<()> {
         let cases = if args.iter().any(|arg| arg == "--full-suite") {
             suite.cases.clone()
         } else {
-            status::status_sample_cases(&suite.cases)
+            status::l3_context_sample_cases(&suite.cases)
         };
         println!(
             "{}",

@@ -346,6 +346,12 @@ pub(super) fn form_attractor_word_candidates(
                 return None;
             }
             let distance = damerau_levenshtein(&normalized, &replacement_lower);
+            let sparse_internal_omission =
+                crate::text_metrics::sparse_internal_omission_count(
+                    &normalized,
+                    &replacement_lower,
+                )
+                .is_some();
             let ranked_score = surface_attractor_score(candidate.score, &replacement_lower);
             let hot = usage.hot_readout(
                 &context_tokens,
@@ -407,6 +413,11 @@ pub(super) fn form_attractor_word_candidates(
                     .support
                     .push("stable-input-requires-context-proof".to_string());
             }
+            if sparse_internal_omission {
+                candidate
+                    .support
+                    .push("l2-operator:sparse-internal-multi-omission".to_string());
+            }
             apply_learned_transition_pressure(&mut candidate, &hot.transition);
             Some(candidate)
         })
@@ -456,7 +467,27 @@ pub(super) fn form_attractor_word_candidates(
             .then_with(|| left.text.cmp(&right.text))
     });
     out.dedup_by(|left, right| left.text == right.text);
+    let reserved = out
+        .iter()
+        .filter(|candidate| {
+            candidate
+                .support
+                .iter()
+                .any(|item| item == "l2-operator:sparse-internal-multi-omission")
+        })
+        .take(4)
+        .cloned()
+        .collect::<Vec<_>>();
     out.truncate(L2_FORM_ATTRACTOR_LIMIT);
+    for candidate in reserved {
+        if out.iter().any(|item| item.text == candidate.text) {
+            continue;
+        }
+        if out.len() == L2_FORM_ATTRACTOR_LIMIT {
+            out.pop();
+        }
+        out.push(candidate);
+    }
     out
 }
 

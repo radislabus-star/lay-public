@@ -1,6 +1,6 @@
 use lay::config::CorrectionSafety;
 use lay::eval_cases::EvalCase;
-use lay::nanda_wave::context::{MAX_CONTEXT_TOKENS, MIN_CONTEXT_TOKENS};
+use lay::nanda_wave::context::{TailContext, MAX_CONTEXT_TOKENS, MIN_CONTEXT_TOKENS};
 use lay::nanda_wave::{
     evaluate_wave, evaluate_wave_with_options, journal, llmwave, resonance_memory,
 };
@@ -446,6 +446,45 @@ pub(crate) fn status_sample_cases(cases: &[EvalCase]) -> Vec<EvalCase> {
             if sample.len() >= STATUS_SAMPLE_LIMIT {
                 break;
             }
+        }
+    }
+    sample
+}
+
+pub(crate) fn l3_context_sample_cases(cases: &[EvalCase]) -> Vec<EvalCase> {
+    const SAMPLE_LIMIT: usize = 24;
+    const PER_REASON_LIMIT: usize = 3;
+    let mut eligible = cases
+        .iter()
+        .filter(|case| TailContext::from_text(&case.original).token_count() >= 3)
+        .cloned()
+        .collect::<Vec<_>>();
+    eligible.sort_by(|left, right| {
+        left.reason
+            .cmp(&right.reason)
+            .then_with(|| left.original.len().cmp(&right.original.len()))
+    });
+
+    let mut sample = Vec::new();
+    let mut per_reason = BTreeMap::<String, usize>::new();
+    for case in &eligible {
+        let count = per_reason.entry(case.reason.clone()).or_default();
+        if *count >= PER_REASON_LIMIT {
+            continue;
+        }
+        sample.push(case.clone());
+        *count += 1;
+        if sample.len() == SAMPLE_LIMIT {
+            return sample;
+        }
+    }
+    for case in eligible {
+        if sample.iter().any(|selected| selected == &case) {
+            continue;
+        }
+        sample.push(case);
+        if sample.len() == SAMPLE_LIMIT {
+            break;
         }
     }
     sample
