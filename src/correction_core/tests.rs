@@ -398,6 +398,61 @@ mod tests {
     }
 
     #[test]
+    fn phase_verified_l2_transposition_repairs_unlisted_word_form() {
+        let previous_policy = crate::hot_field::process_policy();
+        crate::hot_field::set_process_policy(
+            crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
+                crate::text_backend::TextBackendPreference::Ime,
+            ),
+        );
+        let pipeline = default_typing_assist_pipeline();
+        let mut req = request(
+            "проевряю ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        );
+        req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+        let resolution = resolve_text_correction(req);
+        crate::hot_field::set_process_policy(previous_policy);
+
+        let selected = resolution
+            .selected
+            .as_ref()
+            .unwrap_or_else(|| panic!("phase-verified transposition must resolve: {resolution:#?}"));
+        assert_eq!(selected.replacement, "проверяю ");
+        assert_eq!(selected.error_class, TypingErrorClass::AdjacentTransposition);
+        assert!(selected.has_origin(CandidateOrigin::L2Surface));
+    }
+
+    #[test]
+    fn unique_transposition_certificate_repairs_short_word() {
+        let previous_policy = crate::hot_field::process_policy();
+        crate::hot_field::set_process_policy(
+            crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
+                crate::text_backend::TextBackendPreference::Ime,
+            ),
+        );
+        let pipeline = default_typing_assist_pipeline();
+        let mut req = request(
+            "мжоет ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        );
+        req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+        let resolution = resolve_text_correction(req);
+        crate::hot_field::set_process_policy(previous_policy);
+
+        let selected = resolution
+            .selected
+            .as_ref()
+            .unwrap_or_else(|| panic!("unique transposition must resolve: {resolution:#?}"));
+        assert_eq!(selected.replacement, "может ");
+        assert_eq!(selected.error_class, TypingErrorClass::AdjacentTransposition);
+        assert!(selected.has_origin(CandidateOrigin::DeterministicTypo));
+        assert!(selected.has_origin(CandidateOrigin::L2Surface));
+    }
+
+    #[test]
     fn deterministic_mode_corrects_wrong_layout_text() {
         let pipeline = default_typing_assist_pipeline();
         for (input, expected) in [

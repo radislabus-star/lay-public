@@ -20,7 +20,7 @@ pub(super) fn candidate_has_apply_authority(
     let signals = &evaluation.signals;
     let source_role = candidate.origin.source_role();
     let exact_positive_transition = evaluation.transition.l4_signed_signal.exact_positive();
-    let operator_consensus_authority = certified_operator_consensus(candidate, evaluation);
+    let operator_consensus_authority = certified_operator_consensus(event, candidate, evaluation);
     let verified_layout_projection = evaluation.action.verifier_passed
         && evaluation.action.edit_operator == verifier::EditTransitionOperator::LayoutProjection;
     if (signals.l4_hidden_plan_commitment != 0 && !signals.l4_hidden_certificate_valid)
@@ -418,23 +418,13 @@ fn learned_candidate_shadowed_by_deterministic_owner(
     })
 }
 
-fn strong_l2_wave_peak_support(signals: &CandidateDecisionSignals) -> bool {
-    signals.l2_wave_peak_milli >= CURRENT.l2_peak_milli
-        && signals.l2_wave_peak_uncertainty_milli <= CURRENT.l2_peak_uncertainty_milli
-}
-
 fn is_verified_mass_preserving_l2_transition(
     source_role: CorrectionSourceRole,
     candidate: &UnifiedCorrectionCandidate,
     evaluation: &CandidateDecisionEvaluation,
 ) -> bool {
     source_role == CorrectionSourceRole::L2Surface
-        && candidate.error_class == TypingErrorClass::AdjacentTransposition
-        && evaluation.action.verifier_passed
-        && evaluation.action.edit_operator == verifier::EditTransitionOperator::ReplaceCurrentWord
-        && evaluation.explanation.edit_shape == "transpose_adjacent"
-        && evaluation.explanation.operator_fit_milli == 1000
-        && strong_l2_wave_peak_support(&evaluation.signals)
+        && verified_mass_preserving_l2_transition(candidate, evaluation)
 }
 
 pub(super) fn admit_evaluated_hidden_transition(

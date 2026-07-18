@@ -230,7 +230,7 @@ impl TransitionDecisionCore {
                         .signals
                         .transition_field_phase_competition_milli,
                     evaluation.signals.l2_lexical_phase_competition_ready,
-                    phase_backed_operator_consensus(candidate, evaluation),
+                    verified_operator_consensus_witness(candidate, evaluation),
                     evaluation.bayes.usage_prior,
                     evaluation.bayes.context_prior,
                     evaluation.signals.l3_phrase_milli,

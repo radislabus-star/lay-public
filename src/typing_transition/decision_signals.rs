@@ -301,7 +301,7 @@ fn settle_l4_hidden_state(
             witness_state_specific: evaluation.signals.l4_transition_state_specific,
             phase_witness_milli: evaluation.signals.l4_phase_witness_milli,
             phase_witness_supported: evaluation.signals.l4_phase_witness_supported,
-            operator_consensus_witness: phase_backed_operator_consensus(candidate, evaluation),
+            operator_consensus_witness: verified_operator_consensus_witness(candidate, evaluation),
         })
         .collect::<Vec<_>>();
     let readouts = estimate_hidden_typing_state(&inputs);
@@ -339,33 +339,76 @@ fn settle_l4_hidden_state(
     }
 }
 
-fn phase_backed_operator_consensus(
+fn verified_operator_consensus_witness(
     candidate: &UnifiedCorrectionCandidate,
     evaluation: &CandidateDecisionEvaluation,
 ) -> bool {
     let action = evaluation.action;
+    let exact_transposition = verified_mass_preserving_transposition(candidate, evaluation);
+    let exact_l2_transition = verified_mass_preserving_l2_transition(candidate, evaluation);
+    let independent_operator_evidence = (candidate
+        .has_origin(crate::candidate_contract::CandidateOrigin::DeterministicTypo)
+        && candidate.has_origin(crate::candidate_contract::CandidateOrigin::L2Surface))
+        || exact_l2_transition;
+    let learned_field_evidence = exact_transposition
+        || (evaluation.signals.l2_transition_phase_verdict
+            == crate::nanda_wave::PhaseVerdict::Support
+            && evaluation.signals.l2_lexical_phase_competition_ready);
     action.verifier_passed
         && !action.left_context_changed
         && action.changed_tokens == 1
         && is_precise_lexical_operator(action.operator)
-        && candidate.has_origin(crate::candidate_contract::CandidateOrigin::DeterministicTypo)
-        && candidate.has_origin(crate::candidate_contract::CandidateOrigin::L2Surface)
-        && evaluation.signals.l2_transition_phase_verdict
-            == crate::nanda_wave::PhaseVerdict::Support
-        && evaluation.signals.l2_lexical_phase_competition_ready
+        && independent_operator_evidence
+        && learned_field_evidence
 }
 
-fn certified_operator_consensus(
+fn verified_mass_preserving_transposition(
     candidate: &UnifiedCorrectionCandidate,
     evaluation: &CandidateDecisionEvaluation,
 ) -> bool {
-    phase_backed_operator_consensus(candidate, evaluation)
-        && evaluation.signals.l4_hidden_disposition == L4HiddenDisposition::Witnessed
-        && evaluation.signals.l4_hidden_selected_witnessed
+    candidate.error_class == TypingErrorClass::AdjacentTransposition
+        && evaluation.action.verifier_passed
+        && evaluation.action.edit_operator == verifier::EditTransitionOperator::ReplaceCurrentWord
+        && evaluation.explanation.edit_shape == "transpose_adjacent"
+        && evaluation.explanation.operator_fit_milli == 1000
+        && strong_l2_wave_peak_support(&evaluation.signals)
+}
+
+fn verified_mass_preserving_l2_transition(
+    candidate: &UnifiedCorrectionCandidate,
+    evaluation: &CandidateDecisionEvaluation,
+) -> bool {
+    candidate.origin.source_role() == CorrectionSourceRole::L2Surface
+        && verified_mass_preserving_transposition(candidate, evaluation)
+}
+
+fn strong_l2_wave_peak_support(signals: &CandidateDecisionSignals) -> bool {
+    signals.l2_wave_peak_milli >= calibration::CURRENT.l2_peak_milli
+        && signals.l2_wave_peak_uncertainty_milli <= calibration::CURRENT.l2_peak_uncertainty_milli
+}
+
+fn certified_operator_consensus(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+    evaluation: &CandidateDecisionEvaluation,
+) -> bool {
+    let selected_class = predicted_state_id(
+        crate::nanda_wave::phase_field::hash_text(&event.original),
+        evaluation.action.operator.as_str(),
+        &candidate.replacement,
+    );
+    verified_operator_consensus_witness(candidate, evaluation)
+        && matches!(
+            evaluation.signals.l4_hidden_disposition,
+            L4HiddenDisposition::Resolved | L4HiddenDisposition::Witnessed
+        )
+        && evaluation.signals.l4_hidden_selected_class == selected_class
         && evaluation.signals.l4_hidden_certificate_valid
-        && evaluation.signals.l4_hidden_probe
-            == crate::nanda_wave::l4_active_disambiguation::L4WitnessProbe::OperatorConsensus
-                .as_str()
+        && (evaluation.signals.l4_hidden_disposition == L4HiddenDisposition::Resolved
+            || (evaluation.signals.l4_hidden_selected_witnessed
+                && evaluation.signals.l4_hidden_probe
+                    == crate::nanda_wave::l4_active_disambiguation::L4WitnessProbe::OperatorConsensus
+                        .as_str()))
 }
 
 fn is_precise_lexical_operator(operator: crate::language_action::LanguageActionOperator) -> bool {
