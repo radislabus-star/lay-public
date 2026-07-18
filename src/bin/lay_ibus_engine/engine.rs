@@ -80,6 +80,43 @@ impl LayIbusEngine {
         true
     }
 
+    /// Claims the IBus engine path as a fallback focus receipt for clients
+    /// that never send FocusInId. A different path cannot inherit a tail.
+    pub(super) fn bind_focus_path(&mut self) -> bool {
+        let next_epoch = self.tail_epoch.wrapping_add(1);
+        let changed = {
+            let mut state = self.shared.lock().expect("lay ime state poisoned");
+            if state.active_path.as_deref() == Some(self.path.as_str()) {
+                false
+            } else {
+                state.active_path = Some(self.path.clone());
+                state.handoff_tail_buffer.clear();
+                state.handoff_tail_epoch = next_epoch;
+                state.handoff_focus_receipt = None;
+                state.suppress_next_committed_tail_autocorrect = false;
+                state.preserve_active_path_until = None;
+                true
+            }
+        };
+        if !changed {
+            return false;
+        }
+
+        self.buffer.clear();
+        self.composition_cursor = 0;
+        self.tail_buffer.clear();
+        self.tail_epoch = next_epoch;
+        self.clear_preedit_completion_state();
+        self.preedit_fast.reset();
+        self.word_input_mode = None;
+        self.last_tail_input_at = None;
+        self.recent_committed_tail_replace = None;
+        self.suppress_next_committed_tail_autocorrect = false;
+        self.focus_receipt
+            .get_or_insert_with(|| format!("engine:{}", self.path));
+        true
+    }
+
     pub(super) fn manual_toggle_authority(&self) -> ManualToggleAuthority {
         if !self.buffer.is_empty() {
             return ManualToggleAuthority::ImeActiveComposition;

@@ -78,14 +78,17 @@ impl LayIbusEngine {
 
     #[zbus(name = "FocusIn")]
     fn focus_in(&mut self) {
-        trace::record(r#"{"kind":"ibus_focus","stage":"focus_in"}"#);
+        let changed = self.bind_focus_path();
+        trace::record(if changed {
+            r#"{"kind":"ibus_focus","stage":"focus_in","receipt":"new_path"}"#
+        } else {
+            r#"{"kind":"ibus_focus","stage":"focus_in","receipt":"same_path"}"#
+        });
         self.config = lay::config::LayConfig::load();
         self.surrounding_text_snapshot = None;
-        self.refresh_empty_tail_from_handoff();
-        self.shared
-            .lock()
-            .expect("lay ime state poisoned")
-            .active_path = Some(self.path.clone());
+        if !changed {
+            self.refresh_empty_tail_from_handoff();
+        }
     }
 
     #[zbus(name = "FocusInId")]

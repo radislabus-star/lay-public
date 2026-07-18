@@ -87,3 +87,29 @@ fn changed_focus_receipt_quarantines_committed_tail() {
     assert!(engine.tail_buffer.is_empty());
     assert!(engine.shared.lock().expect("shared state").handoff_tail_buffer.is_empty());
 }
+
+#[test]
+fn changed_engine_path_quarantines_handoff_without_focus_in_id() {
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut first = LayIbusEngine::new(
+        "/engine/a".to_string(),
+        Arc::clone(&shared),
+        true,
+        true,
+        LayConfig::default(),
+    );
+    assert!(first.bind_focus_path());
+    first.tail_buffer = "старый ".to_string();
+    first.publish_tail_handoff();
+
+    let mut second = LayIbusEngine::new(
+        "/engine/b".to_string(),
+        shared,
+        true,
+        true,
+        LayConfig::default(),
+    );
+    assert!(second.bind_focus_path());
+    assert!(second.tail_buffer.is_empty());
+    assert!(second.shared.lock().expect("shared state").handoff_tail_buffer.is_empty());
+}
