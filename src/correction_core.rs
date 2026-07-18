@@ -20,9 +20,14 @@ use crate::typing_pipeline::{
     collect_typing_assist_candidates_with_pipeline, explain_typing_assist_with_pipeline,
 };
 use crate::typing_rule_graph::ids;
+pub use crate::typing_transition::proposal_admission::{
+    CandidateGateAction, CandidateGateDecision,
+};
 use crate::typing_transition::{
-    action as action_operator, candidate::L2CandidateLattice, decision::CandidateDecisionBatch,
-    state::L1SurfaceSignal, verifier as edit_transition,
+    action as action_operator,
+    candidate::L2CandidateLattice,
+    decision::{CandidateDecisionBatch, TransitionDecisionCore},
+    state::L1SurfaceSignal,
 };
 use crate::word_reader::{
     cyrillic_word_splits, is_cyrillic_letters_only, last_text_word, replace_last_text_word,
@@ -33,18 +38,15 @@ use std::sync::OnceLock;
 use std::time::Instant;
 
 const COMPOSITE_TRANSPOSE_MIN_MARGIN: f64 = -8.0;
-const REPEATED_DELETE_SURFACE_MARGIN: f64 = 0.25;
-
-#[path = "correction_core/gate.rs"]
-mod gate;
 #[cfg(test)]
-use gate::gate_candidate;
+use crate::typing_transition::proposal_admission::gate_candidate;
 #[cfg(test)]
-use gate::gate_candidate_with_source;
-pub(crate) use gate::normalized_correction_words;
-use gate::{
-    gate_candidate_with_origin, repeated_deletion_has_surface_support,
-    should_prefer_composite_after_repeated_repair,
+use crate::typing_transition::proposal_admission::gate_candidate_with_origin;
+#[cfg(test)]
+use crate::typing_transition::proposal_admission::gate_candidate_with_source;
+pub(crate) use crate::typing_transition::proposal_admission::normalized_correction_words;
+use crate::typing_transition::proposal_admission::{
+    repeated_deletion_has_surface_support, should_prefer_composite_after_repeated_repair,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -105,22 +107,6 @@ impl TypingErrorClass {
             Self::Unknown => "unknown",
         }
     }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum CandidateGateAction {
-    /// Producer supplied evidence and no local constraint blocked it. Only the
-    /// TransitionDecisionCore may turn this into a physical Apply.
-    Eligible,
-    SuggestOnly,
-    KeepOriginal,
-    Veto,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct CandidateGateDecision {
-    pub action: CandidateGateAction,
-    pub reason: &'static str,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

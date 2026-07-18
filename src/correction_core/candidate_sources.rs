@@ -74,7 +74,12 @@ fn deterministic_text_candidates(req: &CorrectionRequest<'_>) -> Vec<UnifiedCorr
             origin,
             declared_error_class,
         );
-        let gate = gate_candidate_with_origin(req.text, &replacement, error_class, origin);
+        let gate = TransitionDecisionCore::admit_candidate_proposal(
+            req.text,
+            &replacement,
+            error_class,
+            origin,
+        );
         candidates.push(UnifiedCorrectionCandidate::new(
             replacement,
             CorrectionDecisionSource::Deterministic,
@@ -129,7 +134,7 @@ fn boundary_shift_transition_candidate(
     replacement.push_str(trailing);
 
     let origin = CandidateOrigin::Boundary;
-    let gate = gate_candidate_with_origin(
+    let gate = TransitionDecisionCore::admit_candidate_proposal(
         req.text,
         &replacement,
         TypingErrorClass::BoundaryShift,
@@ -155,7 +160,7 @@ fn multiword_layout_projection_candidate(
     let converted = crate::layout_autoswitch::correct_wrong_layout_ascii_phrase(core)?;
     let replacement = format!("{leading}{converted}{trailing}");
     let origin = CandidateOrigin::Layout;
-    let gate = gate_candidate_with_origin(
+    let gate = TransitionDecisionCore::admit_candidate_proposal(
         req.text,
         &replacement,
         TypingErrorClass::WrongLayout,
@@ -209,7 +214,7 @@ fn short_cyrillic_layout_shadow_candidate(
 
     let replacement = replace_last_text_word(req.text, &replacement_word)?;
     let origin = CandidateOrigin::Layout;
-    let gate = gate_candidate_with_origin(
+    let gate = TransitionDecisionCore::admit_candidate_proposal(
         req.text,
         &replacement,
         TypingErrorClass::WrongLayout,
@@ -246,7 +251,7 @@ fn repeated_letter_fallback_candidate(
 
     let source_id = ids::REPEATED_LETTER;
     let origin = CandidateOrigin::DeterministicTypo;
-    let gate = gate_candidate_with_origin(
+    let gate = TransitionDecisionCore::admit_candidate_proposal(
         req.text,
         &replacement,
         TypingErrorClass::RepeatedLetter,
@@ -316,7 +321,7 @@ fn layout_then_typo_candidate(
         .map(|candidate| format!("layout_then_{}", candidate.rule_id))
         .unwrap_or_else(|| "layout_then_known_word".to_string());
     let origin = CandidateOrigin::LayoutThenTypo;
-    let gate = gate_candidate_with_origin(
+    let gate = TransitionDecisionCore::admit_candidate_proposal(
         req.text,
         &final_replacement,
         TypingErrorClass::CompositeTypo,
@@ -362,7 +367,7 @@ fn composite_russian_typo_candidate(
         if replacement != req.text && syntax_allows_candidate(req.text, &replacement) {
             let source_id = ids::ADJACENT_TRANSPOSITION;
             let origin = CandidateOrigin::DeterministicTypo;
-            let gate = gate_candidate_with_origin(
+            let gate = TransitionDecisionCore::admit_candidate_proposal(
                 req.text,
                 &replacement,
                 TypingErrorClass::AdjacentTransposition,
@@ -396,7 +401,12 @@ fn composite_russian_typo_candidate(
                 origin,
                 TypingErrorClass::CompositeTypo,
             );
-            let gate = gate_candidate_with_origin(req.text, &replacement, error_class, origin);
+            let gate = TransitionDecisionCore::admit_candidate_proposal(
+                req.text,
+                &replacement,
+                error_class,
+                origin,
+            );
             return Some(UnifiedCorrectionCandidate::new(
                 replacement,
                 CorrectionDecisionSource::Deterministic,
@@ -498,7 +508,12 @@ fn composite_russian_typo_candidate(
         origin,
         TypingErrorClass::CompositeTypo,
     );
-    let gate = gate_candidate_with_origin(req.text, &replacement, error_class, origin);
+    let gate = TransitionDecisionCore::admit_candidate_proposal(
+        req.text,
+        &replacement,
+        error_class,
+        origin,
+    );
     let composite = UnifiedCorrectionCandidate::new(
         replacement,
         CorrectionDecisionSource::Deterministic,
@@ -542,7 +557,12 @@ fn current_word_rule_candidate(
         .unwrap_or(("current_word_rule", TypingCandidateFamily::Unknown));
     let error_class = rule_error_class(rule_id);
     let origin = typing_rule_origin(family, error_class);
-    let gate = gate_candidate_with_origin(req.text, &replacement, error_class, origin);
+    let gate = TransitionDecisionCore::admit_candidate_proposal(
+        req.text,
+        &replacement,
+        error_class,
+        origin,
+    );
     Some(UnifiedCorrectionCandidate::new(
         replacement,
         CorrectionDecisionSource::Deterministic,
@@ -647,7 +667,12 @@ fn hot_l2_text_candidates(
                 origin,
                 TypingErrorClass::Unknown,
             );
-            let gate = gate_candidate_with_origin(original, &replacement, error_class, origin);
+            let gate = TransitionDecisionCore::admit_candidate_proposal(
+                original,
+                &replacement,
+                error_class,
+                origin,
+            );
             Some(UnifiedCorrectionCandidate::new(
                 replacement,
                 CorrectionDecisionSource::Nanda,
@@ -713,7 +738,7 @@ fn delayed_context_candidates_with_memory(
         .filter_map(|candidate| {
             let replacement = replace_penultimate_text_word(original, &candidate.token)?;
             let origin = CandidateOrigin::L3Context;
-            let mut gate = gate_candidate_with_origin(
+            let mut gate = TransitionDecisionCore::admit_candidate_proposal(
                 original,
                 &replacement,
                 TypingErrorClass::CompositeTypo,
@@ -789,7 +814,12 @@ fn nanda_word_candidate(
         origin,
         TypingErrorClass::Unknown,
     );
-    let gate = gate_candidate_with_origin(original, &replacement, error_class, origin);
+    let gate = TransitionDecisionCore::admit_candidate_proposal(
+        original,
+        &replacement,
+        error_class,
+        origin,
+    );
     Some(UnifiedCorrectionCandidate::new(
         replacement,
         CorrectionDecisionSource::Nanda,

@@ -18,7 +18,8 @@ fn ime_composition_does_not_own_input_gate_decision() {
 fn ime_correction_route_reaches_common_decision_core() {
     let ime_correction = read("src/ime_correction.rs");
     let correction_core = read("src/correction_core.rs");
-    let correction_gate = read("src/correction_core/gate.rs");
+    let candidate_sources = read("src/correction_core/candidate_sources.rs");
+    let proposal_admission = read("src/typing_transition/proposal_admission.rs");
     let transition_decision = read("src/typing_transition/decision.rs");
 
     assert!(
@@ -28,14 +29,16 @@ fn ime_correction_route_reaches_common_decision_core() {
     );
     assert!(
         !correction_core.contains("mod decision_core;")
-            && correction_core.contains("mod gate;")
-            && correction_gate.contains("candidate_admission(")
-            && correction_gate.contains("gate_candidate_with_origin(")
-            && !correction_gate.contains("TransitionDecisionCore"),
-        "candidate admission must not own final transition authority"
+            && !correction_core.contains("mod gate;")
+            && proposal_admission.contains("candidate_admission(")
+            && proposal_admission.contains("gate_candidate_with_origin(")
+            && candidate_sources.contains("TransitionDecisionCore::admit_candidate_proposal(")
+            && !candidate_sources.contains("gate_candidate_with_origin("),
+        "candidate producers must reach proposal admission through TransitionDecisionCore"
     );
     assert!(
         transition_decision.contains("struct TransitionDecisionCore")
+            && transition_decision.contains("admit_candidate_proposal")
             && transition_decision.contains("evaluate_candidates")
             && transition_decision.contains("candidate_has_apply_authority")
             && !transition_decision.contains("authorize_gate"),

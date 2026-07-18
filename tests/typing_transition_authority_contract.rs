@@ -264,26 +264,30 @@ fn l2_and_ime_hot_paths_keep_runtime_owners_separate_from_proof_code() {
 #[test]
 fn candidate_admission_only_marks_eligibility_and_core_selects_transition() {
     let correction = read("src/correction_core.rs");
-    let gate = read("src/correction_core/gate.rs");
+    let candidates = read("src/correction_core/candidate_sources.rs");
+    let gate = read("src/typing_transition/proposal_admission.rs");
     let decision = read("src/typing_transition/decision.rs");
 
     assert!(
         correction.contains("CandidateGateAction::Eligible")
-            && correction.contains("mod gate;")
+            && !std::path::Path::new("src/correction_core/gate.rs").exists()
+            && correction.contains("pub use crate::typing_transition::proposal_admission")
             && gate.contains("fn candidate_admission(")
             && gate.contains("gate_candidate_with_origin(")
-            && !gate.contains("TransitionDecisionCore"),
-        "candidate checks must expose eligibility without choosing the transition"
+            && candidates.contains("TransitionDecisionCore::admit_candidate_proposal(")
+            && !candidates.contains("gate_candidate_with_origin("),
+        "Typing Transition CPU must own proposal admission and candidate producers must enter through its facade"
     );
     assert!(
-        decision.contains("producer_allows_authority_evaluation(")
+        decision.contains("pub(crate) fn admit_candidate_proposal(")
+            && decision.contains("producer_allows_authority_evaluation(")
             && decision.contains("action == CandidateGateAction::Eligible")
             && decision.contains(
                 "action == CandidateGateAction::SuggestOnly && l4_signal.exact_positive()",
             )
             && decision.contains("candidate_has_apply_authority")
             && !decision.contains("fn authorize_gate"),
-        "only TransitionDecisionCore may choose an eligible or exact-L4-attested candidate"
+        "only TransitionDecisionCore may admit proposals and choose an eligible or exact-L4-attested candidate"
     );
     assert!(
         !correction.contains("CandidateGateAction::Apply")

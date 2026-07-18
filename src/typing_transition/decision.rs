@@ -1,10 +1,14 @@
-use super::{action, verifier, TypingTransition};
-use crate::candidate_contract::CorrectionSourceRole;
+use super::{
+    action,
+    proposal_admission::{self, CandidateGateAction, CandidateGateDecision},
+    verifier, TypingTransition,
+};
+use crate::candidate_contract::{CandidateOrigin, CorrectionSourceRole};
 use crate::candidate_explanation::CandidateExplanation;
 use crate::correction_bayes::BayesCandidateScore;
 use crate::correction_core::{
-    explanation_for_candidate, CandidateGateAction, CorrectionDecisionSource, TypingErrorClass,
-    TypingErrorEvent, UnifiedCorrectionCandidate,
+    explanation_for_candidate, CorrectionDecisionSource, TypingErrorClass, TypingErrorEvent,
+    UnifiedCorrectionCandidate,
 };
 use crate::keyboard::is_cyrillic_letter;
 use crate::nanda_wave::l3_phrase_gate::L3PhraseGateDecision;
@@ -31,6 +35,15 @@ pub(crate) struct TransitionDecisionPolicy {
 }
 
 impl TransitionDecisionCore {
+    pub(crate) fn admit_candidate_proposal(
+        original: &str,
+        replacement: &str,
+        error_class: TypingErrorClass,
+        origin: CandidateOrigin,
+    ) -> CandidateGateDecision {
+        proposal_admission::gate_candidate_with_origin(original, replacement, error_class, origin)
+    }
+
     pub(crate) fn decide_visible_text_transition(
         state: &VisibleFieldState,
         candidate: LatentTextTransitionCandidate,

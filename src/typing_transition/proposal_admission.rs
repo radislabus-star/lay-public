@@ -1,7 +1,40 @@
-use super::*;
+//! Candidate proposal admission owned by the Typing Transition CPU.
+//!
+//! Producers supply a typed origin and a proposed surface transition. This
+//! module classifies its maximum authority before the learned decision field
+//! performs final selection.
+
+use super::{action as action_operator, verifier as edit_transition};
+use crate::candidate_contract::{CandidateOrigin, CorrectionSourceRole};
+use crate::candidate_explanation::explain_candidate;
+use crate::correction_core::TypingErrorClass;
+use crate::russian_typo_candidates::{
+    inserted_char_position_for_missing_letter, repeated_run_deletion_candidates,
+};
+use crate::text_metrics::{damerau_levenshtein, has_cyrillic};
+use crate::word_reader::{
+    is_cyrillic_letters_only, last_text_word, split_edge_whitespace, split_word_punctuation,
+};
+const REPEATED_DELETE_SURFACE_MARGIN: f64 = 0.25;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CandidateGateAction {
+    /// Producer supplied evidence and no structural constraint blocked it. Only
+    /// TransitionDecisionCore may turn this into a physical Apply.
+    Eligible,
+    SuggestOnly,
+    KeepOriginal,
+    Veto,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CandidateGateDecision {
+    pub action: CandidateGateAction,
+    pub reason: &'static str,
+}
 
 #[cfg(test)]
-pub(super) fn gate_candidate(
+pub(crate) fn gate_candidate(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
@@ -17,7 +50,7 @@ pub(super) fn gate_candidate(
 /// Compatibility adapter for legacy fixtures. Runtime producers must supply a
 /// typed origin and cannot route authority through a diagnostic source name.
 #[cfg(test)]
-pub(super) fn gate_candidate_with_source(
+pub(crate) fn gate_candidate_with_source(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
@@ -63,7 +96,7 @@ fn fixture_origin(source_id: &str) -> CandidateOrigin {
     }
 }
 
-pub(super) fn gate_candidate_with_origin(
+pub(crate) fn gate_candidate_with_origin(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
@@ -910,7 +943,7 @@ fn boundary_candidate_splits_to_short_function_and_weak_tail(
     false
 }
 
-pub(super) fn semantic_candidate_lacks_surface_authority(
+pub(crate) fn semantic_candidate_lacks_surface_authority(
     original: &str,
     replacement: &str,
     origin: CandidateOrigin,
@@ -1584,7 +1617,7 @@ fn replacement_last_word_is_unknown_cyrillic(original: &str, replacement: &str) 
         && !crate::lexicon::is_common_ru_word(&replacement_lower)
 }
 
-pub(super) fn repeated_deletion_has_surface_support(
+pub(crate) fn repeated_deletion_has_surface_support(
     original_lower: &str,
     replacement_lower: &str,
 ) -> bool {
@@ -1628,7 +1661,7 @@ fn short_final_repeated_vowel_delete_has_surface_support(
         )
 }
 
-pub(super) fn should_prefer_composite_after_repeated_repair(
+pub(crate) fn should_prefer_composite_after_repeated_repair(
     original: &str,
     single_step: &str,
     composite: &str,
