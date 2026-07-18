@@ -384,6 +384,19 @@ pub(crate) fn readout_default_candidates(
     original: &str,
     replacements: &[&str],
 ) -> Vec<ContextPhaseReadout> {
+    readout_candidates_with_package(default_memory(), original, replacements)
+}
+
+/// Scores context-preserving candidate surfaces against one explicit package.
+///
+/// The default runtime uses this with the installed package, while proof code
+/// can bind the package it is asserting. This prevents a test from silently
+/// reading a different user-local memory file.
+pub(crate) fn readout_candidates_with_package(
+    package: &ContextPhasePackage,
+    original: &str,
+    replacements: &[&str],
+) -> Vec<ContextPhaseReadout> {
     let original_tokens = super::llmwave::tokenize(original);
     let mut context = original_tokens.clone();
     context.pop();
@@ -395,7 +408,7 @@ pub(crate) fn readout_default_candidates(
         .iter()
         .filter_map(Option::as_deref)
         .collect::<Vec<_>>();
-    let mut valid_readouts = default_memory()
+    let mut valid_readouts = package
         .score_candidates(&context, &valid_tokens)
         .into_iter();
     candidate_tokens

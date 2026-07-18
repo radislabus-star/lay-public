@@ -318,17 +318,52 @@ fn best_context_candidate(
     candidates: &[WordCandidate],
     phrase_reports: &[Option<l3_phrase_gate::L3PhraseGateReport>],
 ) -> Option<usize> {
+    let nearest_transition = candidates
+        .iter()
+        .filter(|candidate| candidate_preserves_left_context(original, &candidate.text))
+        .filter_map(|candidate| context_transition_distance(original, &candidate.text))
+        .filter(|distance| *distance > 0)
+        .min();
+    let has_local_context_support =
+        candidates
+            .iter()
+            .zip(phrase_reports)
+            .any(|(candidate, report)| {
+                report.as_ref().is_some_and(|report| {
+                    report.decision == l3_phrase_gate::L3PhraseGateDecision::Support
+                }) && context_candidate_pre_phrase_blocker(original, candidate).is_none()
+                    && context_support_is_transition_local(
+                        original,
+                        candidate,
+                        report.as_ref(),
+                        nearest_transition,
+                    )
+            });
     candidates
         .iter()
         .zip(phrase_reports)
         .enumerate()
         .filter(|(_, (candidate, report))| {
-            context_candidate_blocker(original, candidate, report.as_ref()).is_none()
+            let report = effective_phrase_report(report.as_ref(), has_local_context_support);
+            context_candidate_selection_blocker(
+                original,
+                candidate,
+                report,
+                has_local_context_support,
+            )
+            .is_none()
+                && context_support_is_transition_local(
+                    original,
+                    candidate,
+                    report,
+                    nearest_transition,
+                )
         })
         .fold(
             None,
             |best: Option<(usize, f32)>, (index, (candidate, report))| {
-                let score = l3_rank_score(original, candidate, report.as_ref());
+                let report = effective_phrase_report(report.as_ref(), has_local_context_support);
+                let score = l3_rank_score(original, candidate, report);
                 match best {
                     Some((best_index, best_score)) if score <= best_score => {
                         Some((best_index, best_score))
@@ -340,15 +375,89 @@ fn best_context_candidate(
         .map(|(index, _score)| index)
 }
 
+fn effective_phrase_report<'a>(
+    report: Option<&'a l3_phrase_gate::L3PhraseGateReport>,
+    has_local_context_support: bool,
+) -> Option<&'a l3_phrase_gate::L3PhraseGateReport> {
+    match report {
+        Some(report)
+            if report.decision == l3_phrase_gate::L3PhraseGateDecision::Suppress
+                && !has_local_context_support =>
+        {
+            None
+        }
+        other => other,
+    }
+}
+
+fn context_support_is_transition_local(
+    original: &str,
+    candidate: &WordCandidate,
+    report: Option<&l3_phrase_gate::L3PhraseGateReport>,
+    nearest_transition: Option<usize>,
+) -> bool {
+    if !report
+        .is_some_and(|report| report.decision == l3_phrase_gate::L3PhraseGateDecision::Support)
+    {
+        return true;
+    }
+    let Some(nearest) = nearest_transition else {
+        return true;
+    };
+    if !candidate_preserves_left_context(original, &candidate.text) {
+        return false;
+    }
+    let Some(distance) = context_transition_distance(original, &candidate.text) else {
+        return false;
+    };
+    let Some(original_word) = last_token(original) else {
+        return false;
+    };
+    let Some(candidate_word) = last_token(&candidate.text) else {
+        return false;
+    };
+    // Context may complete a prefix or recover omitted material. It may not
+    // use one phrase association to support a farther destructive shortening
+    // than the local transition field already supports.
+    candidate_word.chars().count() >= original_word.chars().count() || distance <= nearest
+}
+
+fn context_transition_distance(original: &str, candidate: &str) -> Option<usize> {
+    let original = last_token(original)?;
+    let candidate = last_token(candidate)?;
+    Some(damerau_levenshtein(original, candidate))
+}
+
+fn candidate_preserves_left_context(original: &str, candidate: &str) -> bool {
+    let original_tokens = llmwave::tokenize(original);
+    let candidate_tokens = llmwave::tokenize(candidate);
+    let Some((_original_last, original_prefix)) = original_tokens.split_last() else {
+        return false;
+    };
+    let Some((candidate_last, candidate_prefix)) = candidate_tokens.split_last() else {
+        return false;
+    };
+    !candidate_last.is_empty() && original_prefix == candidate_prefix
+}
+
 fn context_candidate_blocker(
     original: &str,
     candidate: &WordCandidate,
     phrase_report: Option<&l3_phrase_gate::L3PhraseGateReport>,
 ) -> Option<&'static str> {
+    context_candidate_selection_blocker(original, candidate, phrase_report, true)
+}
+
+fn context_candidate_selection_blocker(
+    original: &str,
+    candidate: &WordCandidate,
+    phrase_report: Option<&l3_phrase_gate::L3PhraseGateReport>,
+    allow_phrase_suppression: bool,
+) -> Option<&'static str> {
     if let Some(reason) = context_candidate_pre_phrase_blocker(original, candidate) {
         return Some(reason);
     }
-    if phrase_gate_suppresses(phrase_report) {
+    if allow_phrase_suppression && phrase_gate_suppresses(phrase_report) {
         return Some("phrase_gate");
     }
     None
@@ -382,31 +491,23 @@ fn evaluate_admitted_phrase_candidates(
     candidates: &[WordCandidate],
     phrase_memory: Option<&llmwave::LlmWaveMemory>,
 ) -> Vec<Option<l3_phrase_gate::L3PhraseGateReport>> {
-    let admitted = candidates
-        .iter()
-        .enumerate()
-        .filter(|(_, candidate)| {
-            context_candidate_pre_phrase_blocker(original, candidate).is_none()
-        })
-        .collect::<Vec<_>>();
-    if admitted.is_empty() {
+    if candidates.is_empty() {
         return vec![None; candidates.len()];
     }
-    let replacements = admitted
+    // Context is evidence, not an execution capability.  It must observe the
+    // entire L2 lattice before the action/verifier gate decides whether a
+    // candidate may mutate text. The phrase adapter itself yields None for a
+    // candidate that does not preserve the surrounding context.
+    let replacements = candidates
         .iter()
-        .map(|(_, candidate)| candidate.text.as_str())
+        .map(|candidate| candidate.text.as_str())
         .collect::<Vec<_>>();
-    let evaluated = match phrase_memory {
+    match phrase_memory {
         Some(memory) => {
             l3_phrase_gate::evaluate_candidates_with_memory(original, &replacements, memory)
         }
         None => l3_phrase_gate::evaluate_default_candidates(original, &replacements),
-    };
-    let mut reports = vec![None; candidates.len()];
-    for ((index, _), report) in admitted.into_iter().zip(evaluated) {
-        reports[index] = report;
     }
-    reports
 }
 
 fn confidence(candidate: &WordCandidate) -> f32 {
@@ -816,45 +917,89 @@ mod tests {
     }
 
     #[test]
-    fn tracked_l3_context_selects_sparse_omission_from_real_l2_lattice() {
+    fn context_support_cannot_jump_past_the_local_transition_field() {
+        let original = "на улице снова начался дожь ";
+        let local = WordCandidate {
+            text: "на улице снова начался дождь".to_string(),
+            origin: CandidateOrigin::L2Surface,
+            source: LEXICAL_ATTRACTOR_CELL,
+            energy: 0.95,
+            risk: 0.06,
+            support: vec![],
+        };
+        let distant = WordCandidate {
+            text: "на улице снова начался до".to_string(),
+            origin: CandidateOrigin::L2Surface,
+            source: LEXICAL_ATTRACTOR_CELL,
+            energy: 0.95,
+            risk: 0.10,
+            support: vec![],
+        };
+        let report = l3_phrase_gate::L3PhraseGateReport {
+            decision: l3_phrase_gate::L3PhraseGateDecision::Support,
+            source: "learned_context_phase",
+            score: 0.50,
+            rank_energy: 0.08,
+            support: 8,
+            width: 4,
+            sequential_score: 0.50,
+            scene_score: 8.0,
+            competition_margin: 0.10,
+            positive_micro: 500_000,
+            anti_micro: 0,
+            threshold_micro: 300_000,
+            relation_class: 1,
+            reason: "l3_context_phase_support",
+        };
+
+        assert_eq!(context_transition_distance(original, &local.text), Some(1));
+        assert!(context_transition_distance(original, &distant.text)
+            .is_some_and(|distance| distance > 1));
+        assert!(!context_support_is_transition_local(
+            original,
+            &distant,
+            Some(&report),
+            Some(1),
+        ));
+    }
+
+    #[test]
+    fn tracked_l3_context_scores_the_full_real_l2_lattice() {
         let original = "ты записал нашу новую концепцию интелека ";
         let l1 = super::super::l1::run_l1(original);
         let candidates = super::super::l2::run_l2(original, &l1);
-        let mut context = llmwave::tokenize(original);
-        context.pop();
-        let admitted = candidates
-            .iter()
-            .enumerate()
-            .filter(|(_, candidate)| {
-                context_candidate_pre_phrase_blocker(original, candidate).is_none()
-            })
-            .collect::<Vec<_>>();
-        let tokens = admitted
-            .iter()
-            .map(|(_, candidate)| last_token(&candidate.text).unwrap_or_default())
-            .collect::<Vec<_>>();
         let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("data/lexicon/l3_context_phase_v1.nwpc");
         let package = super::super::context_phase::read_package(&path)
             .expect("tracked L3 context phase package");
-        let readouts = package.score_candidates(&context, &tokens);
-        let evaluated = l3_phrase_gate::reports_from_phase_readouts(context.len(), readouts);
-        let mut reports = vec![None; candidates.len()];
-        for ((index, _), report) in admitted.into_iter().zip(evaluated) {
-            reports[index] = report;
-        }
+        let replacements = candidates
+            .iter()
+            .map(|candidate| candidate.text.as_str())
+            .collect::<Vec<_>>();
+        let context = llmwave::tokenize(original).len().saturating_sub(1);
+        let reports = l3_phrase_gate::reports_from_phase_readouts(
+            context,
+            super::super::context_phase::readout_candidates_with_package(
+                &package,
+                original,
+                &replacements,
+            ),
+        );
 
-        for (candidate, report) in candidates.iter().zip(&reports) {
-            eprintln!(
-                "candidate={:?} report={report:?} blocker={:?} rank={:.3}",
-                candidate.text,
-                context_candidate_blocker(original, candidate, report.as_ref()),
-                l3_rank_score(original, candidate, report.as_ref()),
-            );
-        }
-        let selected = best_context_candidate(original, &candidates, &reports)
-            .map(|index| candidates[index].text.as_str());
-        assert_eq!(selected, Some("ты записал нашу новую концепцию интеллекта"));
+        assert_eq!(reports.len(), candidates.len());
+        let target = candidates
+            .iter()
+            .position(|candidate| candidate.text == "ты записал нашу новую концепцию интеллекта")
+            .expect("L2 must expose the sparse-omission target");
+        assert!(
+            reports[target].is_some(),
+            "the context field must observe a context-preserving L2 candidate"
+        );
+        assert!(
+            context_candidate_blocker(original, &candidates[target], reports[target].as_ref())
+                .is_some(),
+            "context evidence must not bypass the transition verifier"
+        );
     }
 
     #[test]
