@@ -1298,6 +1298,7 @@ fn replay_report_json(
             "cases": report.review,
             "read_as": "quarantined pairs are not scored as positive authority"
         },
+        "state_card": replay_state_card_json(report),
         "scoreboard": {
             "positive_top1_percent": percent(report.positive.expected_top1, report.positive.cases),
             "positive_apply_accuracy_percent": percent(report.positive.applied_expected, report.positive.cases),
@@ -1321,6 +1322,40 @@ fn replay_report_json(
             "applied_other": report.examples.applied_other,
             "negative_applied": report.examples.negative_applied
         }
+    })
+}
+
+/// Compact, denominator-explicit view for humans. The detailed buckets remain
+/// below for diagnosis; this card prevents a zero false-apply count from
+/// hiding missed candidates, quarantined evidence, or alternate bad applies.
+fn replay_state_card_json(report: &ReplayReport) -> Value {
+    let scored_cases = report.positive.cases.saturating_add(report.negative.cases);
+    json!({
+        "evidence": {
+            "positive_cases": report.positive.cases,
+            "negative_cases": report.negative.cases,
+            "quarantined_cases": report.review,
+            "scored_cases": scored_cases,
+            "quarantined_percent": percent(report.review, scored_cases.saturating_add(report.review)),
+        },
+        "candidate_birth": {
+            "positive_coverage_percent": percent(report.positive.expected_present, report.positive.cases),
+            "positive_missing_candidates": report.positive.expected_missing,
+            "positive_no_l2_candidates": report.positive.no_l2_candidates,
+        },
+        "decision": {
+            "positive_top1_percent": percent(report.positive.expected_top1, report.positive.cases),
+            "positive_applied_expected": report.positive.applied_expected,
+            "positive_present_but_not_applied": report.positive.present_not_applied,
+        },
+        "safety": {
+            "negative_false_apply": report.negative.applied_expected,
+            "negative_false_apply_percent": percent(report.negative.applied_expected, report.negative.cases),
+            "negative_other_apply": report.negative.applied_other,
+            "negative_other_apply_percent": percent(report.negative.applied_other, report.negative.cases),
+            "verdict": if report.negative.applied_expected == 0 { "PASS" } else { "VETO" },
+        },
+        "read_as": "shadow-only: false apply measures the labelled rejected target; other apply is a separate unsafe-candidate debt"
     })
 }
 
@@ -2101,5 +2136,36 @@ mod tests {
         {
             assert!(positive_pair_is_trainable(original, expected));
         }
+    }
+
+    #[test]
+    fn replay_state_card_keeps_safety_and_coverage_denominators_visible() {
+        let report = ReplayReport {
+            positive: ReplayBucket {
+                cases: 10,
+                expected_present: 7,
+                expected_missing: 3,
+                no_l2_candidates: 1,
+                expected_top1: 6,
+                applied_expected: 6,
+                present_not_applied: 1,
+                ..ReplayBucket::default()
+            },
+            negative: ReplayBucket {
+                cases: 8,
+                applied_other: 2,
+                ..ReplayBucket::default()
+            },
+            review: 4,
+            ..ReplayReport::default()
+        };
+
+        let card = replay_state_card_json(&report);
+
+        assert_eq!(card["candidate_birth"]["positive_coverage_percent"], 70.0);
+        assert_eq!(card["safety"]["negative_false_apply"], 0);
+        assert_eq!(card["safety"]["negative_other_apply"], 2);
+        assert_eq!(card["safety"]["verdict"], "PASS");
+        assert_eq!(card["evidence"]["quarantined_percent"], 18.18);
     }
 }
