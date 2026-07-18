@@ -17,7 +17,7 @@
     {
       "evidence": [
         "src/bin/lay_ibus_engine/composition_commit.rs -> src/ime_correction.rs",
-        "src/bin/lay_ibus_engine/preedit.rs -> src/ime_candidate_readout.rs"
+        "src/bin/lay_ibus_engine/preedit.rs -> src/typing_cpu/candidate.rs"
       ],
       "id": "ime-backend-only",
       "status": "PASS",
@@ -86,8 +86,8 @@
     },
     {
       "evidence": [
-        "graph_links:20191",
-        "graph_nodes:8119"
+        "graph_links:20204",
+        "graph_nodes:8136"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -95,10 +95,10 @@
     }
   ],
   "duplicate_symbols": {},
-  "graph_fingerprint": "f621831102acce3a29a375610474100c6d2d135a98f0ec43a205333c5cc6cdd2",
-  "graph_links": 20191,
-  "graph_nodes": 8119,
+  "graph_fingerprint": "2b42fb8e39528c86d63f49585e10ce9aa7e495eed6db9fc5dac30cd382d9ade1",
+  "graph_links": 20204,
+  "graph_nodes": 8136,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "94b9d1ce45733a17a883d92f3c25b19c3a1dc838593e39de99081b4a8b164c54",
+  "source_fingerprint": "8380cc8ac9ee4ab4500341ea81308439c7984c16fbd0137e756453ab5fe50129",
   "verdict": "PASS"
 }

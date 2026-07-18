@@ -303,7 +303,7 @@ def build_receipt() -> dict[str, Any]:
         check(
             "ime-backend-only",
             [
-                "src/bin/lay_ibus_engine/preedit.rs -> src/ime_candidate_readout.rs",
+                "src/bin/lay_ibus_engine/preedit.rs -> src/typing_cpu/candidate.rs",
                 "src/bin/lay_ibus_engine/composition_commit.rs -> src/ime_correction.rs",
             ],
             ime_forbidden,
