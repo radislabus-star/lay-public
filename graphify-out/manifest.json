@@ -70,8 +70,8 @@
     "semantic_hash": ""
   },
   "scripts/check-architecture.sh": {
-    "mtime": 1784320260.6534402,
-    "ast_hash": "0084bec1b48a12b51bdf6682d4635b10",
+    "mtime": 1784335446.157599,
+    "ast_hash": "240ae927da2def12cb0b065b09c1f543",
     "semantic_hash": ""
   },
   "scripts/check-gnome-extension-runtime.sh": {
@@ -1164,11 +1164,6 @@
     "ast_hash": "9c798217227010bd1c7c839c4ba97756",
     "semantic_hash": ""
   },
-  "src/correction_pipeline.rs": {
-    "mtime": 1784159743.5601835,
-    "ast_hash": "d0cfccd9a3a4003c93f8c2cf3c36e8e5",
-    "semantic_hash": ""
-  },
   "src/correction_tests.rs": {
     "mtime": 1779051539.5624025,
     "ast_hash": "db869cc53135b02f104fb4d623dccfea",
@@ -1260,8 +1255,8 @@
     "semantic_hash": ""
   },
   "src/input_gate.rs": {
-    "mtime": 1784278672.9704666,
-    "ast_hash": "e3b3a92876a7ffb0824d3f301f449e05",
+    "mtime": 1784334962.0667577,
+    "ast_hash": "31f7a78dcfc8b2fed8da0850fd69ba2f",
     "semantic_hash": ""
   },
   "src/keyboard.rs": {
@@ -2369,11 +2364,6 @@
     "ast_hash": "77fa9b2a22d7212f803b7a882aad5950",
     "semantic_hash": ""
   },
-  "tests/correction_pipeline_space_contract.rs": {
-    "mtime": 1784150230.7252665,
-    "ast_hash": "38ce7480a49b6550c935bd7fb0ce95dd",
-    "semantic_hash": ""
-  },
   "tests/decoder_alternating_stress.rs": {
     "mtime": 1784319859.9265287,
     "ast_hash": "f4200334c383d4cff227105c8198987b",
@@ -3105,8 +3095,8 @@
     "semantic_hash": ""
   },
   "tests/typing_transition_authority_contract.rs": {
-    "mtime": 1784334214.9718027,
-    "ast_hash": "86a780fcdaf2192c61f0ede3d84d79df",
+    "mtime": 1784334802.5129836,
+    "ast_hash": "10733460f1ff2fbbcbca0a895e1ee31c",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit_readout.rs": {
@@ -3295,8 +3285,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1784334145.1813173,
-    "ast_hash": "d9bd9a92f964fbdb7cab8ff5104202e2",
+    "mtime": 1784335385.7807338,
+    "ast_hash": "5096e6ddd77c89d2e3e9caca559cb5f2",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -3552,6 +3542,11 @@
   "src/typing_cpu/runtime.rs": {
     "mtime": 1784334220.1648536,
     "ast_hash": "8ba553420d810d80b7a561938fc44119",
+    "semantic_hash": ""
+  },
+  "tests/input_gate_space_contract.rs": {
+    "mtime": 1784335278.4363337,
+    "ast_hash": "5f6e801b6c771311a5b39ad1f389ab07",
     "semantic_hash": ""
   }
 }
