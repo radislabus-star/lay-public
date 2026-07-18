@@ -9,8 +9,8 @@ const IBUS_CAP_SURROUNDING_TEXT: u32 = 1 << 5;
 #[path = "engine/types.rs"]
 mod types;
 pub(super) use types::{
-    ManualToggleAuthority, PendingVisiblePostcondition, RecentCommittedTailReplace,
-    SurroundingTextSnapshot, WordInputMode,
+    ManualToggleAuthority, PendingImeCompletionLearning, PendingVisiblePostcondition,
+    RecentCommittedTailReplace, SurroundingTextSnapshot, WordInputMode,
 };
 
 pub(crate) struct LayIbusEngine {
@@ -40,6 +40,7 @@ pub(crate) struct LayIbusEngine {
     pub(super) last_tail_input_at: Option<Instant>,
     pub(super) recent_committed_tail_replace: Option<RecentCommittedTailReplace>,
     pub(super) pending_visible_postcondition: Option<PendingVisiblePostcondition>,
+    pub(super) pending_ime_completion_learning: Option<PendingImeCompletionLearning>,
     pub(super) suppress_next_committed_tail_autocorrect: bool,
     pub(super) word_input_mode: Option<WordInputMode>,
     pub(super) managed_input: bool,
@@ -111,6 +112,7 @@ impl LayIbusEngine {
         self.word_input_mode = None;
         self.last_tail_input_at = None;
         self.recent_committed_tail_replace = None;
+        self.pending_ime_completion_learning = None;
         self.suppress_next_committed_tail_autocorrect = false;
         self.focus_receipt
             .get_or_insert_with(|| format!("engine:{}", self.path));

@@ -17,6 +17,7 @@ impl LayIbusEngine {
         state: u32,
     ) -> fdo::Result<bool> {
         if keyval == KEY_BACKSPACE {
+            self.reject_pending_ime_completion_before_backspace();
             let handled = self.backspace(emitter).await?;
             self.trace_key("backspace", keyval, keycode, handled, None);
             return Ok(handled);
@@ -103,6 +104,9 @@ impl LayIbusEngine {
             self.trace_key("non_printable", keyval, keycode, false, None);
             return Ok(false);
         };
+        if ch.is_alphabetic() {
+            self.confirm_pending_ime_completion_on_next_word();
+        }
         if self.buffer.is_empty() {
             let initial_mode = self.initial_word_input_mode();
             let mode = *self.word_input_mode.get_or_insert(initial_mode);

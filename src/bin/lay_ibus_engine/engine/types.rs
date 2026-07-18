@@ -27,6 +27,14 @@ pub(crate) struct PendingVisiblePostcondition {
     pub(crate) dispatched_at: Instant,
 }
 
+/// A Tab completion is provisional until the user starts the next word.
+/// Deleting the accepted tail first means the candidate was not actually useful.
+#[derive(Debug, Clone)]
+pub(crate) struct PendingImeCompletionLearning {
+    pub(crate) context_tail: String,
+    pub(crate) accepted_word: String,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct SurroundingTextSnapshot {
     pub(crate) text: String,

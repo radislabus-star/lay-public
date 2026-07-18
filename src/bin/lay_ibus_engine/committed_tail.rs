@@ -120,7 +120,11 @@ impl LayIbusEngine {
         Self::commit_text(emitter, make_ibus_text(authorized_plan.insert.clone()))
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        lay::typing_cpu::TypingCpu::record_accepted_completion(&context_tail, &accepted_text);
+        self.arm_pending_ime_completion_learning(
+            context_tail,
+            accepted_text.trim().to_string(),
+            with_space,
+        );
         self.sync_tail_after_stuck_completion(&committed_suffix);
         Ok(true)
     }

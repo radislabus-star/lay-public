@@ -172,6 +172,7 @@ impl LayIbusEngine {
             last_tail_input_at: None,
             recent_committed_tail_replace: None,
             pending_visible_postcondition: None,
+            pending_ime_completion_learning: None,
             suppress_next_committed_tail_autocorrect: false,
             word_input_mode: None,
             managed_input,
@@ -182,6 +183,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn reset_for_ibus_focus_change(&mut self) {
+        self.pending_ime_completion_learning = None;
         let preserve_tail =
             self.should_preserve_focus_handoff() || self.shared_active_path_preserved();
         self.buffer.clear();
@@ -221,6 +223,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn reset_for_ibus_soft_reset(&mut self) {
+        self.pending_ime_completion_learning = None;
         self.buffer.clear();
         self.composition_cursor = 0;
         self.preedit_suffix.clear();

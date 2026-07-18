@@ -1,7 +1,45 @@
-use super::engine::LayIbusEngine;
+use super::engine::{LayIbusEngine, PendingImeCompletionLearning};
 use std::time::Instant;
 
 impl LayIbusEngine {
+    pub(super) fn arm_pending_ime_completion_learning(
+        &mut self,
+        context_tail: String,
+        accepted_word: String,
+        with_space: bool,
+    ) {
+        self.pending_ime_completion_learning = with_space.then_some(PendingImeCompletionLearning {
+            context_tail,
+            accepted_word,
+        });
+    }
+
+    pub(super) fn reject_pending_ime_completion_before_backspace(&mut self) {
+        let Some(pending) = self.pending_ime_completion_learning.take() else {
+            return;
+        };
+        let accepted_tail = format!("{} ", pending.accepted_word);
+        if self.tail_buffer.ends_with(&accepted_tail) {
+            lay::typing_cpu::TypingCpu::record_rejected_completion(
+                &pending.context_tail,
+                &pending.accepted_word,
+            );
+        }
+    }
+
+    pub(super) fn confirm_pending_ime_completion_on_next_word(&mut self) {
+        let Some(pending) = self.pending_ime_completion_learning.take() else {
+            return;
+        };
+        let accepted_tail = format!("{} ", pending.accepted_word);
+        if self.tail_buffer.ends_with(&accepted_tail) {
+            lay::typing_cpu::TypingCpu::record_accepted_completion(
+                &pending.context_tail,
+                &pending.accepted_word,
+            );
+        }
+    }
+
     pub(super) fn arm_visible_postcondition(&mut self, dispatched_at: Instant) {
         if !self.surrounding_text_supported {
             return;
@@ -99,6 +137,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn close_committed_tail_field(&mut self) {
+        self.pending_ime_completion_learning = None;
         self.tail_buffer.clear();
         self.preedit_fast.reset();
         self.suppress_next_committed_tail_autocorrect = false;
@@ -450,6 +489,42 @@ mod tests {
         assert_eq!(engine.tail_buffer, "ghbdtn");
         assert_eq!(engine.preedit_fast.token(), "ghbdtn");
         assert_eq!(engine.word_input_mode, Some(WordInputMode::ManagedCommit));
+    }
+
+    #[test]
+    fn tab_completion_learning_stays_pending_until_the_next_word() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+
+        engine.arm_pending_ime_completion_learning("ну".to_string(), "да".to_string(), true);
+
+        let pending = engine
+            .pending_ime_completion_learning
+            .as_ref()
+            .expect("Tab completion must remain provisional");
+        assert_eq!(pending.context_tail, "ну");
+        assert_eq!(pending.accepted_word, "да");
+    }
+
+    #[test]
+    fn focus_reset_discards_pending_tab_completion_without_learning() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.arm_pending_ime_completion_learning("ну".to_string(), "да".to_string(), true);
+
+        engine.reset_for_ibus_focus_change();
+
+        assert!(engine.pending_ime_completion_learning.is_none());
     }
 
     #[test]

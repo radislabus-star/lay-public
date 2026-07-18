@@ -116,7 +116,7 @@ impl LayIbusEngine {
             ActiveCompositionAuthority::VerifiedEdit(Box::new(authorized_edit)),
         )
         .await?;
-        lay::typing_cpu::TypingCpu::record_accepted_completion(&context_tail, &accepted_word);
+        self.arm_pending_ime_completion_learning(context_tail, accepted_word, with_space);
         Ok(true)
     }
 
