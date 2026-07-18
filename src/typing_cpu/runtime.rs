@@ -1,5 +1,6 @@
 use crate::nanda_wave::{candidate_gate, llmwave};
 
+pub use crate::nanda_wave::WaveOptions as TypingCpuOptions;
 pub use candidate_gate::{LiveCompletionCandidate, LiveCompletionRequest};
 
 #[derive(Debug, Clone, PartialEq)]
@@ -28,6 +29,10 @@ impl TypingCpu {
 
     pub fn warm_l2_for_ime() {
         crate::nanda_wave::warm_up_l2_for_ime();
+    }
+
+    pub fn warm_l3_phrase_memory() {
+        crate::nanda_wave::warm_up_l3_phrase_memory();
     }
 
     pub fn warm_all() {
@@ -64,6 +69,39 @@ impl TypingCpu {
 
     pub fn record_rejected_completion(context_tail: &str, rejected_text: &str) {
         crate::nanda_wave::record_rejected_ime_usage(context_tail, rejected_text);
+    }
+
+    pub fn record_user_correction(original: &str, proposed: &str, accepted: &str, kind: &str) {
+        if accepted != proposed {
+            crate::nanda_wave::record_rejected_candidate_usage(
+                original,
+                proposed,
+                "user_correction",
+                kind,
+            );
+        }
+        crate::nanda_wave::record_accepted_fix_usage(original, accepted);
+    }
+
+    pub fn record_precognition_tick(stage: &str, text: &str, include_trace: bool) {
+        crate::nanda_wave::precognition::record_precognition_tick(stage, text, include_trace);
+        llmwave::record_phrase_experience(stage, text);
+    }
+
+    pub fn record_typing_assist_trace(
+        original: &str,
+        replacement: &str,
+        options: &TypingCpuOptions,
+        include_text: bool,
+    ) {
+        let trace = crate::nanda_wave::run_wave_trace_with_options(original, options);
+        crate::nanda_wave::journal::record_runtime_trace_with_text_policy(
+            "runtime:typing-assist",
+            "typing-assist",
+            &trace,
+            Some(replacement),
+            include_text,
+        );
     }
 }
 

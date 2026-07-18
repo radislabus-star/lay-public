@@ -2,6 +2,7 @@ use crate::candidate_ranker::rank_best_two;
 
 use super::types::{TypingCandidate, TypingCandidateDecision};
 
+#[cfg(test)]
 pub fn choose_typing_candidate<I>(candidates: I) -> Option<TypingCandidate>
 where
     I: IntoIterator<Item = TypingCandidate>,

@@ -1,10 +1,12 @@
 use super::types::{TypingCandidateDecision, TypingDecisionConfidence};
 
 impl TypingCandidateDecision {
+    #[cfg(test)]
     pub fn confidence(&self, strong_margin: f64) -> TypingDecisionConfidence {
         classify_typing_confidence(self.second.is_some(), Some(self.margin), strong_margin)
     }
 
+    #[cfg(test)]
     pub fn is_strong(&self, strong_margin: f64) -> bool {
         !matches!(
             self.confidence(strong_margin),

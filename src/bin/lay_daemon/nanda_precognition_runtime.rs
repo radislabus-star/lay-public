@@ -11,6 +11,5 @@ pub(super) fn record_precognition_tick_if_enabled(stage: &str, buffer: &WordBuff
     let Some(text) = buffer.visible_tail_text(PRECOGNITION_TAIL_WORDS) else {
         return;
     };
-    lay::nanda_wave::precognition::record_precognition_tick(stage, &text, active_nanda_trace());
-    lay::nanda_wave::llmwave::record_phrase_experience(stage, &text);
+    lay::typing_cpu::TypingCpu::record_precognition_tick(stage, &text, active_nanda_trace());
 }

@@ -2,12 +2,12 @@
 //! и из `bin/lay-daemon` (фоновый daemon на двойной Shift).
 
 pub mod action_log;
-pub mod architecture_contract;
+#[cfg(test)]
+mod architecture_contract;
 pub(crate) mod candidate_contract;
-pub mod candidate_explanation;
+pub(crate) mod candidate_explanation;
 pub(crate) mod candidate_ranker;
 pub mod config;
-pub mod core;
 pub mod correction;
 pub(crate) mod correction_bayes;
 pub mod correction_core;
@@ -22,30 +22,30 @@ pub mod hot_field;
 pub mod ime_correction;
 pub mod input_gate;
 pub mod keyboard;
-pub mod language_action;
-pub mod layout_autoswitch;
+pub(crate) mod language_action;
+pub(crate) mod layout_autoswitch;
 mod lexical_surface_atoms;
 pub mod lexicon;
 pub mod llm;
 pub(crate) mod llm_backend;
 pub mod manual_toggle;
-pub mod mixed_script_repair;
+pub(crate) mod mixed_script_repair;
 pub mod nanda_wave;
 pub mod ngram;
 pub(crate) mod phrase_candidates;
 pub(crate) mod phrase_lexicon;
-pub mod phrase_reader;
+pub(crate) mod phrase_reader;
 pub(crate) mod phrase_score;
 #[doc(hidden)]
 pub mod private_file;
-pub mod quality;
-pub mod ru_typo;
+pub(crate) mod quality;
+pub(crate) mod ru_typo;
 pub(crate) mod russian_chars;
 pub mod russian_lexicon;
 pub(crate) mod russian_prefixes;
 pub(crate) mod russian_typo_candidates;
 pub(crate) mod russian_typo_scoring;
-pub mod scoped_tail;
+pub(crate) mod scoped_tail;
 mod stable_hash;
 pub mod stats;
 pub mod text_backend;
@@ -57,7 +57,7 @@ pub mod time;
 pub(crate) mod token_language;
 pub(crate) mod transition_relation;
 pub mod typing_assist;
-pub mod typing_candidate;
+pub(crate) mod typing_candidate;
 pub mod typing_context;
 pub mod typing_cpu;
 pub(crate) mod typing_memory;
@@ -67,7 +67,7 @@ pub(crate) mod typing_rule_graph;
 pub(crate) mod typing_transition;
 pub mod word_buffer;
 pub mod word_reader;
-pub mod word_recognizer;
+pub(crate) mod word_recognizer;
 pub mod x11_layout;
 
 #[cfg(test)]

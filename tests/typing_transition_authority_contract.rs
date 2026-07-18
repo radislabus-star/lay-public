@@ -150,6 +150,34 @@ fn ime_preedit_uses_shared_candidate_readout_for_ranking() {
 }
 
 #[test]
+fn daemon_uses_typing_cpu_as_its_nanda_runtime_front_door() {
+    let typing_cpu = read("src/typing_cpu/runtime.rs");
+    for path in [
+        "src/bin/lay_daemon/boundary_runtime/space.rs",
+        "src/bin/lay_daemon/config_runtime/nanda.rs",
+        "src/bin/lay_daemon/learning_runtime.rs",
+        "src/bin/lay_daemon/nanda_precognition_runtime.rs",
+        "src/bin/lay_daemon/startup_runtime/warmup.rs",
+        "src/bin/lay_daemon/typing_assist_runtime/output/nanda_trace.rs",
+        "src/bin/lay_daemon/correction_runtime/decision_support.rs",
+        "src/bin/lay_daemon/correction_runtime/memory.rs",
+    ] {
+        let source = read(path);
+        let production_source = source.split("#[cfg(test)]").next().unwrap_or(&source);
+        assert!(
+            !production_source.contains("lay::nanda_wave::"),
+            "production daemon source bypasses TypingCpu: {path}"
+        );
+    }
+    assert!(
+        typing_cpu.contains("pub fn record_user_correction")
+            && typing_cpu.contains("pub fn record_precognition_tick")
+            && typing_cpu.contains("pub fn record_typing_assist_trace"),
+        "TypingCpu must own the daemon-facing feedback and trace boundary"
+    );
+}
+
+#[test]
 fn l3_l4_live_authority_uses_compact_relation_phase_and_hidden_state() {
     let context_phase = read("src/nanda_wave/context_phase/mod.rs");
     let context_format = read("src/nanda_wave/context_phase/format.rs");

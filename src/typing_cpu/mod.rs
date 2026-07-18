@@ -16,4 +16,5 @@ pub use candidate::{
 };
 pub use runtime::{
     LiveCompletionCandidate, LiveCompletionRequest, PhraseForecastCandidate, TypingCpu,
+    TypingCpuOptions,
 };

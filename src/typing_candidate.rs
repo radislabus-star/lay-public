@@ -13,11 +13,13 @@ mod scoring;
 mod types;
 
 pub use confidence::classify_typing_confidence;
-pub use ranking::{choose_typing_candidate, rank_typing_candidates};
+#[cfg(test)]
+pub use ranking::choose_typing_candidate;
+pub use ranking::rank_typing_candidates;
+#[cfg(test)]
 pub use scoring::{classify_typing_rule, score_typing_candidate};
 pub use types::{
-    TypingCandidate, TypingCandidateDecision, TypingCandidateFamily, TypingCandidateScore,
-    TypingDecisionConfidence,
+    TypingCandidate, TypingCandidateDecision, TypingCandidateFamily, TypingDecisionConfidence,
 };
 
 #[cfg(test)]

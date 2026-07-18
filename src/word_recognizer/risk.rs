@@ -26,9 +26,3 @@ pub fn is_plain_layout_autocorrect_risky(original: &str, replacement: &str) -> b
 
     original.is_plain_word() && replacement.is_plain_word()
 }
-
-pub fn is_probably_completed_natural_word(token: &str) -> bool {
-    let identity = recognize_token(token);
-    identity.is_plain_or_technical()
-        && (identity.known_ru || identity.known_en || identity.technical)
-}

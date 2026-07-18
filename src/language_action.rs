@@ -7,7 +7,7 @@ use crate::candidate_contract::CandidateOrigin;
 use crate::correction_core::TypingErrorClass;
 
 #[cfg(test)]
-const LANGUAGE_ACTION_OPERATOR_COUNT: usize = 18;
+const LANGUAGE_ACTION_OPERATOR_COUNT: usize = 16;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LanguageActionOperator {
@@ -27,8 +27,6 @@ pub enum LanguageActionOperator {
     SplitGluedWords,
     JoinBrokenWord,
     ApplyContextChoice,
-    SyncLayoutState,
-    Veto,
 }
 
 impl LanguageActionOperator {
@@ -50,8 +48,6 @@ impl LanguageActionOperator {
             Self::SplitGluedWords => "split_glued_words",
             Self::JoinBrokenWord => "join_broken_word",
             Self::ApplyContextChoice => "apply_context_choice",
-            Self::SyncLayoutState => "sync_layout_state",
-            Self::Veto => "veto",
         }
     }
 }
@@ -169,7 +165,7 @@ mod tests {
     use super::{LanguageActionOperator, LANGUAGE_ACTION_OPERATOR_COUNT};
 
     #[test]
-    fn action_operator_contract_has_seventeen_public_actions() {
+    fn action_operator_contract_has_runtime_actions_only() {
         let operators = [
             LanguageActionOperator::KeepOriginal,
             LanguageActionOperator::SuggestOnly,
@@ -187,8 +183,6 @@ mod tests {
             LanguageActionOperator::SplitGluedWords,
             LanguageActionOperator::JoinBrokenWord,
             LanguageActionOperator::ApplyContextChoice,
-            LanguageActionOperator::SyncLayoutState,
-            LanguageActionOperator::Veto,
         ];
 
         assert_eq!(operators.len(), LANGUAGE_ACTION_OPERATOR_COUNT);

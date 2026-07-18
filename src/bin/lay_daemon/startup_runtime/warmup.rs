@@ -13,10 +13,10 @@ fn warm_runtime_if_needed(detect_only: bool, cfg: &LayConfig) {
                 lay::typing_assist::warm_up();
             }
             if plan.warm_l2_candidates {
-                lay::nanda_wave::warm_up_l2_for_ime();
+                lay::typing_cpu::TypingCpu::warm_l2_for_ime();
             }
             if plan.warm_l3_phrase {
-                lay::nanda_wave::warm_up_l3_phrase_memory();
+                lay::typing_cpu::TypingCpu::warm_l3_phrase_memory();
             }
             TYPING_ASSIST_RUNTIME_READY.store(true, Ordering::Relaxed);
             if plan.warm_smart {

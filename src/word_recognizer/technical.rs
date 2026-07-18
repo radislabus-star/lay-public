@@ -1,3 +1,4 @@
+#[cfg(test)]
 use crate::keyboard::is_cyrillic_letter;
 use crate::lexicon::{is_common_en_technical_word, is_user_protected_ascii_word};
 
@@ -90,6 +91,7 @@ pub fn is_mixed_case_ascii_brand(core: &str) -> bool {
         && letters.iter().skip(1).any(|ch| ch.is_ascii_uppercase())
 }
 
+#[cfg(test)]
 pub fn is_mixed_cyrillic_ascii_alpha_token(core: &str) -> bool {
     let mut has_cyrillic = false;
     let mut has_ascii = false;

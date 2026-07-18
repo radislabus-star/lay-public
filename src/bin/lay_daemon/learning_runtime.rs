@@ -72,15 +72,12 @@ fn record_user_correction_memory(correction: &UserLearningCorrection) {
     let Some(user_target) = correction.user_target() else {
         return;
     };
-    if user_target != correction.lay_to {
-        lay::nanda_wave::record_rejected_candidate_usage(
-            &correction.lay_from,
-            &correction.lay_to,
-            "user_correction",
-            &correction.lay_kind,
-        );
-    }
-    lay::nanda_wave::record_accepted_fix_usage(&correction.lay_from, &user_target);
+    lay::typing_cpu::TypingCpu::record_user_correction(
+        &correction.lay_from,
+        &correction.lay_to,
+        &user_target,
+        &correction.lay_kind,
+    );
 }
 
 fn runtime_log(message: &str) {
