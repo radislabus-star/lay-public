@@ -86,6 +86,9 @@ impl UsageEvent {
                 TypingMemoryEventKind::Typed => UsageEventKind::Typed,
                 TypingMemoryEventKind::AcceptedFix => UsageEventKind::AcceptedFix,
                 TypingMemoryEventKind::AcceptedIme => UsageEventKind::AcceptedIme,
+                TypingMemoryEventKind::ConfirmedImePrediction => {
+                    UsageEventKind::ConfirmedImePrediction
+                }
                 TypingMemoryEventKind::RejectedIme => UsageEventKind::RejectedIme,
                 TypingMemoryEventKind::RejectedCandidate => UsageEventKind::RejectedCandidate,
             },
@@ -107,6 +110,7 @@ enum UsageEventKind {
     Typed,
     AcceptedFix,
     AcceptedIme,
+    ConfirmedImePrediction,
     RejectedIme,
     RejectedCandidate,
 }
@@ -308,6 +312,15 @@ pub(crate) fn record_accepted_ime_if_enabled(context_tail: &str, accepted_text: 
         .collect::<Vec<_>>()
         .join(" ");
     super::llmwave::record_phrase_experience("space", &phrase);
+}
+
+pub(crate) fn record_confirmed_ime_prediction_if_enabled(context_tail: &str, predicted_text: &str) {
+    if !usage_learning_enabled() {
+        return;
+    }
+    for event in TypingMemoryEvent::confirmed_ime_prediction(context_tail, predicted_text) {
+        record_typing_memory_event_if_enabled(&event);
+    }
 }
 
 pub(crate) fn record_rejected_ime_if_enabled(context_tail: &str, rejected_text: &str) {

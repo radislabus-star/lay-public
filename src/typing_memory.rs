@@ -11,6 +11,7 @@ pub(crate) enum TypingMemoryEventKind {
     Typed,
     AcceptedFix,
     AcceptedIme,
+    ConfirmedImePrediction,
     RejectedIme,
     RejectedCandidate,
 }
@@ -78,6 +79,20 @@ impl TypingMemoryEvent {
             TypingMemoryFeedback::Accepted,
             context_tail,
             accepted_text,
+            "completion",
+        )
+    }
+
+    /// The visible IME candidate matched the word the user finished manually.
+    /// This is weaker than an explicit Tab accept, but is still supervised
+    /// evidence that the prediction was correct at the word boundary.
+    pub(crate) fn confirmed_ime_prediction(context_tail: &str, predicted_text: &str) -> Vec<Self> {
+        ime_events(
+            TypingMemoryEventKind::ConfirmedImePrediction,
+            TypingMemoryFeedback::Accepted,
+            context_tail,
+            predicted_text,
+            "prediction_match",
         )
     }
 
@@ -87,6 +102,7 @@ impl TypingMemoryEvent {
             TypingMemoryFeedback::Rejected,
             context_tail,
             rejected_text,
+            "completion",
         )
     }
 
@@ -200,6 +216,7 @@ fn ime_events(
     feedback: TypingMemoryFeedback,
     context_tail: &str,
     text: &str,
+    operation: &str,
 ) -> Vec<TypingMemoryEvent> {
     let context = recent_context_words(context_tail);
     normalized_words(text)
@@ -212,7 +229,7 @@ fn ime_events(
             from: None,
             to: Some(text.trim().to_string()),
             source: "ime".to_string(),
-            operation: "completion".to_string(),
+            operation: operation.to_string(),
             surface: None,
         })
         .collect()
@@ -302,6 +319,21 @@ mod tests {
         assert!(events.iter().all(|event| event.source == "user_correction"));
         assert!(events.iter().all(|event| event.operation == "replacement"));
         assert!(events.iter().all(|event| event.surface.is_some()));
+    }
+
+    #[test]
+    fn confirmed_ime_prediction_is_positive_but_not_an_explicit_completion() {
+        let events = TypingMemoryEvent::confirmed_ime_prediction("ну", "да");
+
+        assert_eq!(events.len(), 1);
+        assert_eq!(
+            events[0].kind,
+            TypingMemoryEventKind::ConfirmedImePrediction
+        );
+        assert_eq!(events[0].feedback, TypingMemoryFeedback::Accepted);
+        assert_eq!(events[0].source, "ime");
+        assert_eq!(events[0].operation, "prediction_match");
+        assert_eq!(events[0].word, "да");
     }
 
     #[test]

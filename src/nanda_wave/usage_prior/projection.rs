@@ -9,6 +9,7 @@ enum UsageEventProjectionKind {
     Typed,
     AcceptedFix,
     AcceptedIme,
+    ConfirmedImePrediction,
     Rejected,
 }
 
@@ -46,6 +47,9 @@ impl<'a> UsageEventProjection<'a> {
             UsageEventKind::Typed => UsageEventProjectionKind::Typed,
             UsageEventKind::AcceptedFix => UsageEventProjectionKind::AcceptedFix,
             UsageEventKind::AcceptedIme => UsageEventProjectionKind::AcceptedIme,
+            UsageEventKind::ConfirmedImePrediction => {
+                UsageEventProjectionKind::ConfirmedImePrediction
+            }
             UsageEventKind::RejectedIme | UsageEventKind::RejectedCandidate => {
                 UsageEventProjectionKind::Rejected
             }
@@ -54,6 +58,7 @@ impl<'a> UsageEventProjection<'a> {
             UsageEventProjectionKind::Typed => 1,
             UsageEventProjectionKind::AcceptedFix => 6,
             UsageEventProjectionKind::AcceptedIme => 5,
+            UsageEventProjectionKind::ConfirmedImePrediction => 3,
             UsageEventProjectionKind::Rejected => rejected_usage_weight(event.kind),
         };
         Some(Self {
@@ -78,7 +83,9 @@ impl<'a> UsageEventProjection<'a> {
     pub(super) fn is_accepted(&self) -> bool {
         matches!(
             self.kind,
-            UsageEventProjectionKind::AcceptedFix | UsageEventProjectionKind::AcceptedIme
+            UsageEventProjectionKind::AcceptedFix
+                | UsageEventProjectionKind::AcceptedIme
+                | UsageEventProjectionKind::ConfirmedImePrediction
         )
     }
 
@@ -145,7 +152,9 @@ fn event_source(event: &UsageEvent) -> &str {
     event.source.as_deref().unwrap_or(match event.kind {
         UsageEventKind::Typed => "user",
         UsageEventKind::AcceptedFix => "autocorrect",
-        UsageEventKind::AcceptedIme | UsageEventKind::RejectedIme => "ime",
+        UsageEventKind::AcceptedIme
+        | UsageEventKind::ConfirmedImePrediction
+        | UsageEventKind::RejectedIme => "ime",
         UsageEventKind::RejectedCandidate => "candidate",
     })
 }
@@ -154,7 +163,9 @@ fn event_operation(event: &UsageEvent) -> &str {
     event.operation.as_deref().unwrap_or(match event.kind {
         UsageEventKind::Typed => "typed",
         UsageEventKind::AcceptedFix => "replacement",
-        UsageEventKind::AcceptedIme | UsageEventKind::RejectedIme => "completion",
+        UsageEventKind::AcceptedIme
+        | UsageEventKind::ConfirmedImePrediction
+        | UsageEventKind::RejectedIme => "completion",
         UsageEventKind::RejectedCandidate => "candidate",
     })
 }

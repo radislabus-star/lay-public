@@ -32,12 +32,14 @@ include!("preedit_readout.rs");
 pub(crate) struct PreeditFastState {
     token: String,
     target_surface: Option<String>,
+    observed_prediction_target: Option<String>,
 }
 
 impl PreeditFastState {
     pub(crate) fn reset(&mut self) {
         self.token.clear();
         self.target_surface = None;
+        self.observed_prediction_target = None;
     }
 
     pub(crate) fn push(&mut self, ch: char) {
@@ -61,12 +63,26 @@ impl PreeditFastState {
         self.target_surface = target;
     }
 
+    /// Keep the first visible full-word prediction until the word boundary.
+    /// Readout may change its suffix while the user keeps typing, but that
+    /// initial target is the prediction whose outcome must be learned.
+    fn observe_prediction_target(&mut self, target: Option<String>) {
+        if self.observed_prediction_target.is_none() {
+            self.observed_prediction_target = target.filter(|target| !target.is_empty());
+        }
+    }
+
+    fn observed_prediction_target(&self) -> Option<&str> {
+        self.observed_prediction_target.as_deref()
+    }
+
     fn clear_target(&mut self) {
         self.target_surface = None;
     }
 
     pub(crate) fn clear_candidate_tracking(&mut self) {
         self.target_surface = None;
+        self.observed_prediction_target = None;
     }
 
     #[cfg(test)]
@@ -308,6 +324,7 @@ impl LayIbusEngine {
                     .get(self.preedit_candidate_index)
                     .map(|suffix| format!("{partial}{suffix}"))
             });
+        self.preedit_fast.observe_prediction_target(target.clone());
         self.preedit_fast.remember_target(target);
     }
 
@@ -399,13 +416,25 @@ impl LayIbusEngine {
     pub(super) fn push_tail_char(&mut self, ch: char) {
         let is_boundary = ch.is_whitespace() || is_hard_precognition_boundary(ch);
         let tail_before_boundary = is_boundary.then(|| self.tail_buffer.clone());
+        // Whitespace resets the fast preedit state. Preserve the prediction
+        // first so the boundary can turn it into supervised feedback.
+        let prediction_before_boundary = is_boundary
+            .then(|| {
+                self.preedit_fast
+                    .observed_prediction_target()
+                    .map(str::to_owned)
+            })
+            .flatten();
         self.surrounding_text_snapshot = None;
         self.tail_buffer.push(ch);
         self.preedit_fast.push(ch);
         self.last_tail_input_at = Some(Instant::now());
         if is_boundary {
             if let Some(tail_before_boundary) = tail_before_boundary.as_deref() {
-                self.record_ignored_precognition_at_boundary(tail_before_boundary);
+                self.record_ignored_precognition_at_boundary(
+                    tail_before_boundary,
+                    prediction_before_boundary.as_deref(),
+                );
             }
             self.close_precognition_word_boundary();
             if ch.is_whitespace() {
@@ -417,20 +446,33 @@ impl LayIbusEngine {
         self.publish_tail_handoff();
     }
 
-    fn record_ignored_precognition_at_boundary(&self, tail_before_boundary: &str) {
-        let suffix = self.selected_visible_completion_suffix();
-        if suffix.is_empty() {
-            return;
-        }
-        let Some((context, rejected_word)) =
-            preedit_suffix_context_and_word(tail_before_boundary, &suffix)
+    fn record_ignored_precognition_at_boundary(
+        &self,
+        tail_before_boundary: &str,
+        prediction_before_boundary: Option<&str>,
+    ) {
+        let Some((prefix, observed_word)) = split_last_alphabetic_token(tail_before_boundary)
         else {
             return;
         };
-        if rejected_word == self.last_tail_token_text().to_lowercase() {
+        let observed_word = observed_word.to_lowercase();
+        let context = lay::nanda_wave::llmwave::tokenize(prefix);
+        let predicted_word = prediction_before_boundary.map(str::to_owned).or_else(|| {
+            let suffix = self.selected_visible_completion_suffix();
+            preedit_suffix_context_and_word(tail_before_boundary, &suffix)
+                .map(|(_, predicted)| predicted)
+        });
+        let Some(predicted_word) = predicted_word.filter(|word| !word.is_empty()) else {
+            return;
+        };
+        if predicted_word == observed_word.to_lowercase() {
+            lay::typing_cpu::TypingCpu::record_confirmed_completion_prediction(
+                &context.join(" "),
+                &predicted_word,
+            );
             return;
         }
-        lay::typing_cpu::TypingCpu::record_rejected_completion(&context.join(" "), &rejected_word);
+        lay::typing_cpu::TypingCpu::record_rejected_completion(&context.join(" "), &predicted_word);
     }
 
     #[cfg(test)]

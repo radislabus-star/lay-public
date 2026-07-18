@@ -136,6 +136,75 @@ fn ignored_preedit_candidate_records_negative_usage_without_promoting_it() {
 }
 
 #[test]
+fn manually_finished_visible_prediction_records_positive_usage() {
+    let test_id = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .expect("clock")
+        .as_nanos();
+    let events_path = std::env::temp_dir().join(format!(
+        "lay-ime-usage-events-{}-{test_id}.jsonl",
+        std::process::id()
+    ));
+    let counts_path = std::env::temp_dir().join(format!(
+        "lay-ime-usage-counts-{}-{test_id}.json",
+        std::process::id()
+    ));
+    std::env::set_var("LAY_NANDA_WORD_USAGE_EVENTS", &events_path);
+    std::env::set_var("LAY_NANDA_WORD_USAGE_COUNTS", &counts_path);
+
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            correction_safety: "experimental".to_string(),
+            ..LayConfig::default()
+        },
+    );
+    for ch in "ну д".chars() {
+        engine.push_tail_char(ch);
+    }
+    engine.preedit_suffix = "а".to_string();
+    engine.preedit_candidates = vec!["а".to_string()];
+    engine
+        .preedit_fast
+        .observe_prediction_target(Some("да".to_string()));
+    engine.push_tail_char('а');
+    assert_eq!(
+        engine.preedit_fast.observed_prediction_target(),
+        Some("да"),
+        "typing through a prediction must preserve its target until Space"
+    );
+    engine.push_tail_char(' ');
+
+    let deadline = std::time::Instant::now() + std::time::Duration::from_millis(1300);
+    let text = loop {
+        if let Ok(text) = std::fs::read_to_string(&events_path) {
+            break text;
+        }
+        assert!(
+            std::time::Instant::now() < deadline,
+            "usage persistence did not flush within its active interval"
+        );
+        std::thread::sleep(std::time::Duration::from_millis(10));
+    };
+    assert!(
+        text.contains(r#""kind":"confirmed_ime_prediction""#),
+        "{text}"
+    );
+    assert!(text.contains(r#""word":"да""#), "{text}");
+    assert!(!text.contains(r#""kind":"rejected_ime""#), "{text}");
+
+    std::env::remove_var("LAY_NANDA_WORD_USAGE_EVENTS");
+    std::env::remove_var("LAY_NANDA_WORD_USAGE_COUNTS");
+    let _ = std::fs::remove_file(events_path);
+    let _ = std::fs::remove_file(counts_path);
+}
+
+#[test]
 fn russian_prefixes_delegate_to_shared_candidate_authority() {
     lay::nanda_wave::warm_up_l2_for_ime();
     let mut engine = LayIbusEngine::new(
