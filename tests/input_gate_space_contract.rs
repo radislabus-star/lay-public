@@ -51,6 +51,8 @@ fn space_autocorrect_keeps_existing_public_gate_contract() {
         ("читай логии ", "читай логи "),
         ("звгрузи ", "загрузи "),
         ("ghbdtn ", "привет "),
+        ("rfr ", "как "),
+        ("gthtdjhfxbdftncz ", "переворачивается "),
         ("file ljgecnbv ", "file допустим "),
     ];
 
@@ -89,6 +91,8 @@ fn daemon_space_and_enter_decoders_share_input_gate_replacement_contract() {
         ("читай логии ", true, "читай логи "),
         ("звгрузи ", true, "загрузи "),
         ("ghbdtn ", false, "привет "),
+        ("rfr ", false, "как "),
+        ("gthtdjhfxbdftncz ", false, "переворачивается "),
         ("file ljgecnbv ", false, "file допустим "),
     ];
 

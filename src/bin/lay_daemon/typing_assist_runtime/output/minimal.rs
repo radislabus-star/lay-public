@@ -72,8 +72,20 @@ pub(crate) fn apply_minimal_typing_replacement(
         plan.move_left, plan.backspaces, plan.insert, plan.move_right
     ));
     let fast_output = physical_grab.is_active();
-    let preflight =
-        text_observation.automatic_destructive_preflight(buf, original.to_string(), fast_output);
+    let preflight = match text_observation.automatic_destructive_preflight_behind_cursor(
+        buf,
+        original,
+        cursor_offset,
+        fast_output,
+    ) {
+        Ok(preflight) => preflight,
+        Err(error) => {
+            log(&format!(
+                "⚠ typing-assist blocked by observed-tail preflight: {error}"
+            ));
+            return TypingAssistOutcome::NoCorrection;
+        }
+    };
     let insert_outcome = match apply_text_replacement_pipeline(
         kbd,
         authorized_edit,

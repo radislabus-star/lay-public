@@ -17,7 +17,6 @@ use super::manual_trigger_runtime::{
     fire_expired_pending_multi_tap, handle_manual_trigger_event, ManualTriggerEventContext,
     PendingMultiTapTimeoutContext,
 };
-use super::pending_typing_assist::drop_pending_after_following_word_started;
 use super::text_context_runtime::should_advance_text_context;
 use super::trigger_dispatch::{is_single_trigger_id, trigger_key_from_config};
 use super::typing_key_runtime::{handle_typing_key_press, TypingKeyContext};
@@ -364,11 +363,6 @@ pub(super) fn listen_keyboard(
 
             // ─── обычный символ ─────
             if is_typing_key(key) {
-                if drop_pending_after_following_word_started(
-                    &mut state.pending_typing_assist_after_space,
-                ) {
-                    log("· typing-assist pending dropped: following word started");
-                }
                 handle_typing_key_press(
                     code,
                     value,
@@ -383,6 +377,8 @@ pub(super) fn listen_keyboard(
                             .ignore_current_token_until_space,
                         suppress_next_typing_assist_after_manual_replay: &mut state
                             .suppress_next_typing_assist_after_manual_replay,
+                        pending_typing_assist_after_space: &mut state
+                            .pending_typing_assist_after_space,
                         verbose,
                     },
                 );

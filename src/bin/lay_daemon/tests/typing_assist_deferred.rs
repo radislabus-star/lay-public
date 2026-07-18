@@ -1,8 +1,6 @@
 use super::*;
 use crate::boundary_runtime::{handle_hard_boundary_if_needed, HardBoundaryContext};
-use crate::pending_typing_assist::{
-    drop_pending_after_following_word_started, PendingTypingAssist,
-};
+use crate::pending_typing_assist::PendingTypingAssist;
 
 fn deferred_case(label: &str) -> Vec<String> {
     fixture_row_by_id("daemon_typing_assist_deferred_cases.tsv", label)
@@ -205,21 +203,42 @@ fn deferred_typing_assist_authorizes_exact_two_word_boundary_shift() {
 }
 
 #[test]
-fn deferred_typing_assist_drops_snapshot_when_next_word_starts() {
-    let row = deferred_case("snapshot_extra_space");
-    let mut buffer = typed_buffer_from_semicolon_fixture(&row[1]);
+fn deferred_typing_assist_tracks_cursor_when_next_word_starts() {
+    let mut buffer = typed_buffer(&[("rfr ", false)]);
 
-    let correction = find_typing_assist_correction(&buffer, true, row[2].parse().expect("scope"))
-        .expect("prepared completed word");
-    assert_eq!(map_original_events(&correction.events), row[3]);
-    assert_eq!(correction.edit.original, row[4]);
-    assert_eq!(correction.edit.replacement, row[5]);
+    let correction =
+        find_typing_assist_correction(&buffer, true, 1).expect("prepared completed word");
+    assert_eq!(map_original_events(&correction.events), "rfr ");
+    assert_eq!(correction.edit.original, "rfr ");
+    assert_eq!(correction.edit.replacement, "как ");
 
     let mut pending = Some(PendingTypingAssist::new(correction, test_text_context()));
-    buffer.handle_space();
-    assert!(drop_pending_after_following_word_started(&mut pending));
-    assert!(pending.is_none());
+    pending
+        .as_mut()
+        .expect("pending correction")
+        .note_separator_released();
     push_text_as_layout(&mut buffer, "x", false);
+    pending
+        .as_mut()
+        .expect("pending correction")
+        .note_visible_char();
+
+    let (correction, cursor_offset, _) = pending
+        .take()
+        .and_then(PendingTypingAssist::into_parts)
+        .expect("resolved correction");
+    assert_eq!(cursor_offset, 1);
+    assert_eq!(
+        correction
+            .edit
+            .verified_full_token_plan_for_cursor(cursor_offset),
+        Some(TextReplacement {
+            move_left: 2,
+            backspaces: 3,
+            insert: "как".to_string(),
+            move_right: 2,
+        })
+    );
 }
 
 #[test]

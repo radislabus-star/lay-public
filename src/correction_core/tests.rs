@@ -312,14 +312,20 @@ mod tests {
     #[test]
     fn deterministic_mode_corrects_wrong_layout_text() {
         let pipeline = default_typing_assist_pipeline();
-        let decision = decide_text_correction(request(
-            "lfdfq ",
-            &pipeline,
-            CorrectionMode::DeterministicOnly,
-        ))
-        .unwrap();
-        assert_eq!(decision.replacement, "давай ");
-        assert_eq!(decision.source, CorrectionDecisionSource::Deterministic);
+        for (input, expected) in [
+            ("lfdfq ", "давай "),
+            ("rfr ", "как "),
+            ("gthtdjhfxbdftncz ", "переворачивается "),
+        ] {
+            let decision = decide_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicOnly,
+            ))
+            .unwrap_or_else(|| panic!("wrong-layout candidate missing for {input:?}"));
+            assert_eq!(decision.replacement, expected, "input={input:?}");
+            assert_eq!(decision.source, CorrectionDecisionSource::Deterministic);
+        }
     }
 
     #[test]

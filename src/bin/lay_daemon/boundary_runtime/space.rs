@@ -62,9 +62,23 @@ pub(crate) struct SpacePressContext<'a> {
     pub(crate) text_context: DaemonTextContext,
 }
 
+fn pending_crossed_following_word(pending: bool, current_word_is_empty: bool) -> bool {
+    pending && !current_word_is_empty
+}
+
 pub(crate) fn handle_space_press(ctx: SpacePressContext<'_>) {
     if let Some(correction) = ctx.buffer.take_user_learning_correction(true) {
         append_user_correction_learning_log(&correction);
+    }
+    let pending_expired = pending_crossed_following_word(
+        ctx.pending_typing_assist_after_space.is_some(),
+        ctx.buffer.current_is_empty(),
+    );
+    if pending_expired {
+        ctx.pending_typing_assist_after_space.take();
+        if ctx.verbose {
+            log("· typing-assist pending expired: following word completed");
+        }
     }
     let already_pending = ctx.pending_typing_assist_after_space.is_some();
     ctx.buffer.handle_space();
@@ -107,6 +121,8 @@ pub(crate) fn handle_space_press(ctx: SpacePressContext<'_>) {
 
 #[cfg(test)]
 mod route_contract {
+    use super::*;
+
     #[test]
     fn focused_ime_does_not_disable_daemon_boundary_worker() {
         let source = include_str!("space.rs");
@@ -114,5 +130,12 @@ mod route_contract {
 
         assert!(source.contains("typing_assist_worker.submit"));
         assert!(!source.contains(&forbidden_ime_owner));
+    }
+
+    #[test]
+    fn pending_transition_expires_only_after_following_word_is_completed() {
+        assert!(!pending_crossed_following_word(false, false));
+        assert!(!pending_crossed_following_word(true, true));
+        assert!(pending_crossed_following_word(true, false));
     }
 }

@@ -2,6 +2,7 @@ use lay::keyboard::KeyEvent;
 use lay::word_buffer::WordBuffer;
 use std::time::{Duration, Instant};
 
+use super::pending_typing_assist::PendingTypingAssist;
 use super::{
     active_text_backend, log, read_current_layout_is_ru, record_precognition_tick_if_enabled,
     sync_ime_engine_to_current_layout, ShiftState, LAYOUT_POLL_INTERVAL_MS,
@@ -16,6 +17,7 @@ pub(super) struct TypingKeyContext<'a> {
     pub(super) clear_on_next_typing: &'a mut bool,
     pub(super) ignore_current_token_until_space: &'a mut bool,
     pub(super) suppress_next_typing_assist_after_manual_replay: &'a mut bool,
+    pub(super) pending_typing_assist_after_space: &'a mut Option<PendingTypingAssist>,
     pub(super) verbose: bool,
 }
 
@@ -62,6 +64,9 @@ pub(super) fn handle_typing_key_press(code: u16, value: i32, ctx: TypingKeyConte
         layout_is_ru: *ctx.current_layout_is_ru,
     };
     ctx.buffer.push(typed_event);
+    if let Some(pending) = ctx.pending_typing_assist_after_space.as_mut() {
+        pending.note_visible_char();
+    }
     ctx.buffer.note_learning_typed(typed_event);
     record_precognition_tick_if_enabled("key", ctx.buffer);
     if ctx.verbose {

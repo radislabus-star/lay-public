@@ -1,6 +1,6 @@
 use super::super::observable_state::{
     expected_buffered_suffix, DaemonInputObservation, DaemonMutationLease, DaemonMutationPolicy,
-    DaemonTextContext, DaemonTextContextObserver,
+    DaemonTextContext, DaemonTextContextObserver, DaemonTextObservation,
 };
 use super::*;
 use lay::keyboard::text_to_key_events;
@@ -198,6 +198,41 @@ fn valid_isolated_mutation_lease_allows_edit() {
     );
 
     preflight.consume().expect("fresh isolated edit");
+}
+
+#[test]
+fn delayed_mutation_preflight_verifies_original_behind_observed_cursor_tail() {
+    let epoch = AtomicU64::new(7);
+    let buffer = buffered_text("rfr x");
+    let observation = DaemonTextObservation::new(
+        lease_context(7),
+        DaemonTextContextObserver::new(Some("test-window:field"), &epoch),
+    );
+    let mut preflight = observation
+        .automatic_destructive_preflight_behind_cursor(&buffer, "rfr ", 1, true)
+        .expect("observed following key should form a verifiable suffix");
+
+    preflight
+        .consume()
+        .expect("the original token remains immediately behind the observed tail");
+}
+
+#[test]
+fn delayed_mutation_preflight_rejects_changed_original_behind_cursor() {
+    let epoch = AtomicU64::new(7);
+    let buffer = buffered_text("rfx x");
+    let observation = DaemonTextObservation::new(
+        lease_context(7),
+        DaemonTextContextObserver::new(Some("test-window:field"), &epoch),
+    );
+    let mut preflight = observation
+        .automatic_destructive_preflight_behind_cursor(&buffer, "rfr ", 1, true)
+        .expect("cursor tail is observable");
+
+    let error = preflight
+        .consume()
+        .expect_err("changed original token must block delayed output");
+    assert!(error.contains("stale daemon buffered suffix"));
 }
 
 #[test]

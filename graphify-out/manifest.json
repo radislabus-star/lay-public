@@ -220,8 +220,8 @@
     "semantic_hash": "ecd6e3af79bd8c4b49a6115d6468053b"
   },
   "src/bin/lay_daemon/boundary_runtime/space.rs": {
-    "mtime": 1784333814.634278,
-    "ast_hash": "9e94725b713236ceba202105bf4b11da",
+    "mtime": 1784340184.5633976,
+    "ast_hash": "9ad4fa04f8723b9bd2c1fe216b719427",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/buffer_filter_runtime.rs": {
@@ -305,8 +305,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/daemon_runtime.rs": {
-    "mtime": 1784319725.8116517,
-    "ast_hash": "8b88a88fc552aa7fe6f6645b9c946888",
+    "mtime": 1784339390.0602202,
+    "ast_hash": "bc2f89a2cb40f52c2d14fcb00e553f07",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/daemon_runtime/focus.rs": {
@@ -460,8 +460,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/pending_typing_assist.rs": {
-    "mtime": 1784140024.0508633,
-    "ast_hash": "20abb30f13d99a0f4565d163f3517d08",
+    "mtime": 1784339390.0572202,
+    "ast_hash": "3f3ca5bc57eaaedc7855dd74c7486d28",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/physical_input_grab.rs": {
@@ -645,8 +645,8 @@
     "semantic_hash": "e22bbd5756a9212923f3d94296deb765"
   },
   "src/bin/lay_daemon/tests/typing_assist_deferred.rs": {
-    "mtime": 1784140063.9433124,
-    "ast_hash": "3f3ea88010090cfe527e24099712e2fe",
+    "mtime": 1784339500.3021169,
+    "ast_hash": "ae29a14a8936553427b0426a42b95947",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/tests/typing_assist_harness.rs": {
@@ -745,8 +745,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/text_output/replacement_tests.rs": {
-    "mtime": 1784143213.1658623,
-    "ast_hash": "f2dda2ef483e6e6f3037aab5a626a4cc",
+    "mtime": 1784340058.1077607,
+    "ast_hash": "338d875fa8551085136a69ce46e2c629",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/trigger_dispatch.rs": {
@@ -830,8 +830,8 @@
     "semantic_hash": "dce5c170ed4e901565a36ea42e2d8874"
   },
   "src/bin/lay_daemon/typing_assist_runtime/output/minimal.rs": {
-    "mtime": 1784142400.3229055,
-    "ast_hash": "58fa33f9c24f78f66e23dfbc943c6a15",
+    "mtime": 1784340058.0997608,
+    "ast_hash": "715abc12cb2719bf8b0cf517ba926de4",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/typing_assist_runtime/output/minimal/context.rs": {
@@ -845,9 +845,9 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/typing_key_runtime.rs": {
-    "mtime": 1782283343.874257,
-    "ast_hash": "cb107e1a28bf6375e2f090f71a9b5568",
-    "semantic_hash": "cb107e1a28bf6375e2f090f71a9b5568"
+    "mtime": 1784339390.0582204,
+    "ast_hash": "8a8e23ed9b478df66d2264799d95662e",
+    "semantic_hash": ""
   },
   "src/bin/lay_debug_actions.rs": {
     "mtime": 1784160138.3028193,
@@ -3115,8 +3115,8 @@
     "semantic_hash": ""
   },
   "src/correction_core/tests.rs": {
-    "mtime": 1784324504.5215573,
-    "ast_hash": "b1eea7642bfa82ee5276de6724751ec3",
+    "mtime": 1784339248.26029,
+    "ast_hash": "e02aab4cca8f5bf29c29bd779b694d65",
     "semantic_hash": ""
   },
   "src/typing_transition/candidate_resolution.rs": {
@@ -3280,8 +3280,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1784337047.806222,
-    "ast_hash": "962cd34949a4ab02990a783c79d03078",
+    "mtime": 1784337376.6442158,
+    "ast_hash": "dac0b46b31ca9930f93550e0e1556ff3",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -3405,8 +3405,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/text_output/observable_state.rs": {
-    "mtime": 1784143207.8167722,
-    "ast_hash": "a2faf8cca35f76fec64cdf00a7b05ef2",
+    "mtime": 1784340058.0907605,
+    "ast_hash": "472864456d2ccd61bc3bfd4321e0a62b",
     "semantic_hash": ""
   },
   "src/nanda_wave/usage_prior/hot.rs": {
@@ -3540,8 +3540,8 @@
     "semantic_hash": ""
   },
   "tests/input_gate_space_contract.rs": {
-    "mtime": 1784335278.4363337,
-    "ast_hash": "5f6e801b6c771311a5b39ad1f389ab07",
+    "mtime": 1784340287.356734,
+    "ast_hash": "0d01fa8540cde482afe842ad8e0d052d",
     "semantic_hash": ""
   },
   "src/typing_transition/proposal_admission.rs": {

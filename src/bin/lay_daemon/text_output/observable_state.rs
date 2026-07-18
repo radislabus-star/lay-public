@@ -130,6 +130,35 @@ impl<'a> DaemonTextObservation<'a> {
         )
     }
 
+    pub(crate) fn automatic_destructive_preflight_behind_cursor<'buf>(
+        &self,
+        buffer: &'buf WordBuffer,
+        original: &str,
+        cursor_offset: u32,
+        input_isolated: bool,
+    ) -> Result<DaemonMutationPreflight<'a, 'buf>, String> {
+        let visible_tail = buffer
+            .visible_tail_text(lay::word_buffer::MAX_REPLACE_WORDS)
+            .ok_or_else(|| {
+                "no daemon buffered suffix available for mutation preflight".to_string()
+            })?;
+        let cursor_offset = cursor_offset as usize;
+        let following_tail = tail_chars(&visible_tail, cursor_offset);
+        if following_tail.chars().count() != cursor_offset {
+            return Err("cursor offset exceeds daemon buffered suffix".to_string());
+        }
+
+        let mut expected_suffix = String::with_capacity(original.len() + following_tail.len());
+        expected_suffix.push_str(original);
+        expected_suffix.push_str(&following_tail);
+        Ok(self.preflight(
+            buffer,
+            expected_suffix,
+            DaemonMutationPolicy::AutomaticDestructive,
+            DaemonInputObservation::for_input_isolation(input_isolated),
+        ))
+    }
+
     fn preflight<'buf>(
         &self,
         buffer: &'buf WordBuffer,

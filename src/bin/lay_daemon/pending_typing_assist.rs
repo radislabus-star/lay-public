@@ -70,9 +70,3 @@ impl PendingTypingAssist {
         Some((self.correction?, self.cursor_offset, self.text_context))
     }
 }
-
-pub(super) fn drop_pending_after_following_word_started(
-    pending: &mut Option<PendingTypingAssist>,
-) -> bool {
-    pending.take().is_some()
-}
