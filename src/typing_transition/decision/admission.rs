@@ -106,8 +106,11 @@ pub(super) fn candidate_has_apply_authority(
         );
         return false;
     }
+    let verified_mass_preserving_l2_transition =
+        is_verified_mass_preserving_l2_transition(source_role, candidate, evaluation);
     let self_referential_surface_drift = source_role == CorrectionSourceRole::L2Surface
-        && short_same_length_surface_drift(&event.current_word, &candidate.replacement);
+        && short_same_length_surface_drift(&event.current_word, &candidate.replacement)
+        && !verified_mass_preserving_l2_transition;
     let strong_l2_peak_support =
         strong_l2_wave_peak_support(signals) && !self_referential_surface_drift;
     let external_learned_support = bayes.usage_prior >= CURRENT.learned_prior_floor
@@ -416,6 +419,20 @@ fn learned_candidate_shadowed_by_deterministic_owner(
 fn strong_l2_wave_peak_support(signals: &CandidateDecisionSignals) -> bool {
     signals.l2_wave_peak_milli >= CURRENT.l2_peak_milli
         && signals.l2_wave_peak_uncertainty_milli <= CURRENT.l2_peak_uncertainty_milli
+}
+
+fn is_verified_mass_preserving_l2_transition(
+    source_role: CorrectionSourceRole,
+    candidate: &UnifiedCorrectionCandidate,
+    evaluation: &CandidateDecisionEvaluation,
+) -> bool {
+    source_role == CorrectionSourceRole::L2Surface
+        && candidate.error_class == TypingErrorClass::AdjacentTransposition
+        && evaluation.action.verifier_passed
+        && evaluation.action.edit_operator == verifier::EditTransitionOperator::ReplaceCurrentWord
+        && evaluation.explanation.edit_shape == "transpose_adjacent"
+        && evaluation.explanation.operator_fit_milli == 1000
+        && strong_l2_wave_peak_support(&evaluation.signals)
 }
 
 pub(super) fn admit_evaluated_hidden_transition(

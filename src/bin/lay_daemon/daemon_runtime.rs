@@ -98,22 +98,12 @@ pub(super) fn listen_keyboard(
                     )?;
                     continue;
                 }
-                let text_observer = DaemonTextContextObserver::new(
-                    state.focused_window_identity.as_deref(),
+                if poll_deferred_typing_assist(
+                    &mut state,
+                    &mut device,
+                    &virtual_kbd,
                     field_context_epoch.as_ref(),
-                );
-                if try_handle_deferred_typing_assist(DeferredTypingAssistContext {
-                    buffer: &mut state.buffer,
-                    device: &mut device,
-                    virtual_kbd: &virtual_kbd,
-                    executing: &mut state.executing,
-                    pending_typing_assist_after_space: &mut state.pending_typing_assist_after_space,
-                    typing_assist_worker: &state.typing_assist_worker,
-                    current_layout_is_ru: &mut state.current_layout_is_ru,
-                    last_layout_poll: &mut state.last_layout_poll,
-                    shift_state: &state.shift_state,
-                    text_observer,
-                }) {
+                ) {
                     continue;
                 }
                 if state.multi_tap_scope
@@ -182,6 +172,17 @@ pub(super) fn listen_keyboard(
             if event.event_type() != EventType::KEY {
                 continue;
             }
+
+            // A busy physical event queue must not starve a completed boundary
+            // decision. Poll before consuming the next visible key so the
+            // verified edit remains attached to the token that created it.
+            poll_deferred_typing_assist(
+                &mut state,
+                &mut device,
+                &virtual_kbd,
+                field_context_epoch.as_ref(),
+            );
+
             let code = event.code();
             let value = event.value();
             let key = KeyCode::new(code);
@@ -387,6 +388,30 @@ pub(super) fn listen_keyboard(
     }
 }
 
+fn poll_deferred_typing_assist(
+    state: &mut DaemonLoopState,
+    device: &mut Device,
+    virtual_kbd: &Arc<Mutex<Option<VirtualDevice>>>,
+    field_context_epoch: &AtomicU64,
+) -> bool {
+    let text_observer = DaemonTextContextObserver::new(
+        state.focused_window_identity.as_deref(),
+        field_context_epoch,
+    );
+    try_handle_deferred_typing_assist(DeferredTypingAssistContext {
+        buffer: &mut state.buffer,
+        device,
+        virtual_kbd,
+        executing: &mut state.executing,
+        pending_typing_assist_after_space: &mut state.pending_typing_assist_after_space,
+        typing_assist_worker: &state.typing_assist_worker,
+        current_layout_is_ru: &mut state.current_layout_is_ru,
+        last_layout_poll: &mut state.last_layout_poll,
+        shift_state: &state.shift_state,
+        text_observer,
+    })
+}
+
 fn handle_alt_shift_layout_switch(key: KeyCode, value: i32, state: &mut DaemonLoopState) -> bool {
     if !matches!(
         key,
@@ -438,5 +463,22 @@ fn alt_shift_target_layout(before: bool, current: bool) -> bool {
         !before
     } else {
         current
+    }
+}
+
+#[cfg(test)]
+mod route_contract {
+    #[test]
+    fn busy_key_queue_polls_completed_boundary_decisions_between_events() {
+        let source = include_str!("daemon_runtime.rs");
+        let event_loop = source
+            .split_once("for (event_idx, event) in events.iter().enumerate()")
+            .expect("physical event loop")
+            .1
+            .split_once("let code = event.code();")
+            .expect("key decode")
+            .0;
+
+        assert!(event_loop.contains("poll_deferred_typing_assist("));
     }
 }

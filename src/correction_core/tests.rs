@@ -310,6 +310,23 @@ mod tests {
     }
 
     #[test]
+    fn compact_l2_route_applies_adjacent_transposition_center() {
+        let pipeline = default_typing_assist_pipeline();
+        let mut req = request("врмея ", &pipeline, CorrectionMode::NandaOnly);
+        req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+
+        let resolution = resolve_text_correction(req);
+        let selected = resolution
+            .selected
+            .as_ref()
+            .unwrap_or_else(|| panic!("L2 transposition center must apply: {resolution:#?}"));
+
+        assert_eq!(selected.replacement, "время ");
+        assert_eq!(selected.error_class, TypingErrorClass::AdjacentTransposition);
+        assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+    }
+
+    #[test]
     fn deterministic_mode_corrects_wrong_layout_text() {
         let pipeline = default_typing_assist_pipeline();
         for (input, expected) in [
