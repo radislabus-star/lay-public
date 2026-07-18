@@ -607,15 +607,15 @@ fn collect_lexical_pair_reports(
     prepared: &PhaseProofPrepared,
 ) -> BTreeMap<&'static str, LexicalPairReport> {
     let mut reports = BTreeMap::<&'static str, LexicalPairReport>::new();
+    let negatives = lexical_negative_index(prepared);
     for positive in prepared.heldout.iter().filter(|entry| entry.accepted) {
         let operator =
             PhaseOperator::infer(&positive.original, &positive.candidate, &positive.operation);
         let original = normalized_surface(&positive.original);
-        for negative in prepared.lexical_heldout.iter().filter(|entry| {
-            normalized_surface(&entry.original) == original
-                && PhaseOperator::infer(&entry.original, &entry.candidate, &entry.operation)
-                    == operator
-        }) {
+        let Some(operator_negatives) = negatives.get(&(operator, original)) else {
+            continue;
+        };
+        for negative in operator_negatives {
             let positive_atoms = lexical_relation_atoms(&positive.original, &positive.candidate);
             let negative_atoms = lexical_relation_atoms(&negative.original, &negative.candidate);
             for (mode, without_anti) in [
@@ -647,6 +647,7 @@ fn collect_lexical_pair_wrong_examples(
     prepared: &PhaseProofPrepared,
 ) -> Vec<serde_json::Value> {
     let mut examples = Vec::new();
+    let negatives = lexical_negative_index(prepared);
     for positive in prepared.heldout.iter().filter(|entry| entry.accepted) {
         let operator =
             PhaseOperator::infer(&positive.original, &positive.candidate, &positive.operation);
@@ -657,11 +658,10 @@ fn collect_lexical_pair_wrong_examples(
         else {
             continue;
         };
-        for negative in prepared.lexical_heldout.iter().filter(|entry| {
-            normalized_surface(&entry.original) == original
-                && PhaseOperator::infer(&entry.original, &entry.candidate, &entry.operation)
-                    == operator
-        }) {
+        let Some(operator_negatives) = negatives.get(&(operator, original)) else {
+            continue;
+        };
+        for negative in operator_negatives {
             let negative_atoms = lexical_relation_atoms(&negative.original, &negative.candidate);
             let Some(negative_margin) =
                 runtime.lexical_margin_ablation(operator, &negative_atoms, false)
@@ -681,6 +681,21 @@ fn collect_lexical_pair_wrong_examples(
         }
     }
     examples
+}
+
+fn lexical_negative_index(
+    prepared: &PhaseProofPrepared,
+) -> BTreeMap<(PhaseOperator, String), Vec<&L2PhaseTrainingEntry>> {
+    // Proof must scale with observed pairs, not with their Cartesian product.
+    let mut index = BTreeMap::<(PhaseOperator, String), Vec<&L2PhaseTrainingEntry>>::new();
+    for entry in &prepared.lexical_heldout {
+        let operator = PhaseOperator::infer(&entry.original, &entry.candidate, &entry.operation);
+        index
+            .entry((operator, normalized_surface(&entry.original)))
+            .or_default()
+            .push(entry);
+    }
+    index
 }
 
 fn proven_phase_operators(entries: &[L2PhaseTrainingEntry]) -> BTreeSet<PhaseOperator> {

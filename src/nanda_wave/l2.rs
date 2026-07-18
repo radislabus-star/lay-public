@@ -97,6 +97,14 @@ pub fn ime_l2_word_candidates(
     ime_readout::ime_l2_word_candidates_impl(context_prefix, token, limit)
 }
 
+pub fn correction_l2_word_candidates(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> Vec<L2ImeWordCandidate> {
+    ime_readout::correction_l2_word_candidates_impl(context_prefix, token, limit)
+}
+
 /// Settles one projected Cyrillic surface into the strongest admitted L2 form center.
 ///
 /// This is intentionally narrower than `run_l2`: layout projection can reuse the

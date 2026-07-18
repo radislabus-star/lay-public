@@ -385,7 +385,9 @@ fn evaluate_admitted_phrase_candidates(
     let admitted = candidates
         .iter()
         .enumerate()
-        .filter(|(_, candidate)| context_candidate_pre_phrase_blocker(original, candidate).is_none())
+        .filter(|(_, candidate)| {
+            context_candidate_pre_phrase_blocker(original, candidate).is_none()
+        })
         .collect::<Vec<_>>();
     if admitted.is_empty() {
         return vec![None; candidates.len()];
@@ -807,7 +809,10 @@ mod tests {
             }),
         ];
 
-        assert_eq!(best_context_candidate(original, &candidates, &reports), Some(1));
+        assert_eq!(
+            best_context_candidate(original, &candidates, &reports),
+            Some(1)
+        );
     }
 
     #[test]

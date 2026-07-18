@@ -434,6 +434,24 @@ fn l2_form_attractor_prefers_clean_corpus_center() {
 }
 
 #[test]
+fn correction_readout_does_not_mix_completion_operator() {
+    let correction = correction_l2_word_candidates("я хочу ", "пров", 16);
+    let ime = ime_l2_word_candidates("я хочу ", "пров", 16);
+
+    assert!(
+        correction
+            .iter()
+            .all(|candidate| candidate.kind != L2ImeWordCandidateKind::Completion),
+        "correction candidates={correction:?}"
+    );
+    assert!(
+        ime.iter()
+            .any(|candidate| candidate.kind == L2ImeWordCandidateKind::Completion),
+        "IME candidates={ime:?}"
+    );
+}
+
+#[test]
 fn l2_form_attractor_does_not_rewrite_stable_word() {
     let original = "писать ";
     let l1 = run_l1(original);
@@ -698,20 +716,15 @@ fn l2_surface_motif_cell_does_not_rewrite_known_word_without_context() {
 }
 
 #[test]
-fn completion_proposals_remain_typed_before_decision_authority() {
+fn completion_is_ime_only_and_never_a_post_space_correction() {
     let original = "делай пров ";
     let l1 = run_l1(original);
     let autocorrect_candidates = run_l2(original, &l1);
-    let completion_proposals = autocorrect_candidates
-        .iter()
-        .filter(|candidate| candidate.source == L2_SURFACE_COMPLETION_CELL)
-        .collect::<Vec<_>>();
     assert!(
-        !completion_proposals.is_empty()
-            && completion_proposals
-                .iter()
-                .all(|candidate| candidate.origin == CandidateOrigin::Completion),
-        "L2 completion material must stay typed until DecisionCore: {autocorrect_candidates:?}"
+        autocorrect_candidates
+            .iter()
+            .all(|candidate| candidate.source != L2_SURFACE_COMPLETION_CELL),
+        "post-space correction must not use a completion operator: {autocorrect_candidates:?}"
     );
 
     let ime_candidates = ime_l2_word_candidates("делай ", "пров", 8);

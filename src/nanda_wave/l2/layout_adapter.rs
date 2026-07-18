@@ -84,6 +84,16 @@ pub(super) fn layout_candidate_with_projection_policy(
     }
     let learned_transition = learned_layout_transition_accepts(prefix, token, &converted);
     let projection_supported = strong_autoswitch || learned_transition || word_center_settled;
+    // A clean, already-known English surface is its own stable L2 center. Do
+    // not let an accidental keyboard projection pull it into a Russian center
+    // unless accepted transition memory or a strong layout signal says so.
+    if token.chars().all(|ch| ch.is_ascii_alphabetic())
+        && crate::layout_autoswitch::is_known_english_layout_autoswitch_word(token)
+        && !strong_autoswitch
+        && !learned_transition
+    {
+        return None;
+    }
     if context.token_count() < 2
         && token.chars().count() > 3
         && !is_common_en_technical_word(&converted.to_ascii_lowercase())
@@ -167,6 +177,13 @@ pub(super) fn layout_scan_candidates(
         };
         let learned_transition = learned_layout_transition_accepts(prefix, token, &converted);
         let projection_supported = strong_autoswitch || learned_transition || word_center_settled;
+        if token.chars().all(|ch| ch.is_ascii_alphabetic())
+            && crate::layout_autoswitch::is_known_english_layout_autoswitch_word(token)
+            && !strong_autoswitch
+            && !learned_transition
+        {
+            continue;
+        }
         if converted == token
             || !layout_candidate_allowed(
                 token,
@@ -262,11 +279,16 @@ fn layout_converted_token(
     if converted == token {
         return None;
     }
+    // A keyboard projection may target either an exact hot surface or a
+    // reference-backed inflection of a stable lexical center.  The latter is
+    // necessary for ordinary forms such as an imperative, but arbitrary
+    // morphology alone must not authorize a layout edit.
     let exact_projection_has_center = token.chars().all(|ch| ch.is_ascii_alphabetic())
         && converted.chars().all(is_cyrillic_letter)
-        && crate::hot_field::HotFieldSnapshot::current()
-            .form_readout(&converted)
-            .is_known();
+        && (crate::hot_field::HotFieldSnapshot::current()
+            .input_surface_readout(&converted)
+            .is_known()
+            || crate::russian_lexicon::is_reference_backed_russian_form(&converted));
     Some((converted, exact_projection_has_center, false))
 }
 
@@ -494,7 +516,7 @@ pub(super) fn layout_candidate_allowed(
     let converted_cyrillic = converted.chars().all(is_cyrillic_letter);
 
     if token_ascii && converted_cyrillic {
-        return true;
+        return learned_transition;
     }
     if token_cyrillic && converted_ascii {
         let token_lower = token.to_lowercase();
@@ -552,5 +574,14 @@ mod tests {
             layout_converted_token("ytn", true).map(|candidate| candidate.0),
             Some("нет".to_string())
         );
+    }
+
+    #[test]
+    fn ascii_layout_projection_accepts_reference_backed_forms_only() {
+        assert_eq!(
+            layout_converted_token("ltkfq", true).map(|candidate| candidate.0),
+            Some("делай".to_string())
+        );
+        assert!(layout_converted_token("Ghjljkbv", true).is_none());
     }
 }

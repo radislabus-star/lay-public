@@ -346,12 +346,11 @@ pub(super) fn form_attractor_word_candidates(
                 return None;
             }
             let distance = damerau_levenshtein(&normalized, &replacement_lower);
-            let sparse_internal_omission =
-                crate::text_metrics::sparse_internal_omission_count(
-                    &normalized,
-                    &replacement_lower,
-                )
-                .is_some();
+            let sparse_internal_omission = crate::text_metrics::sparse_internal_omission_count(
+                &normalized,
+                &replacement_lower,
+            )
+            .is_some();
             let ranked_score = surface_attractor_score(candidate.score, &replacement_lower);
             let hot = usage.hot_readout(
                 &context_tokens,
@@ -714,6 +713,14 @@ pub(super) fn surface_motif_stable_existing_word(word: &str) -> bool {
     is_common_ru_word(word)
         || is_user_protected_word(word)
         || is_ru_live_protected_word(word)
+        // This query follows the active hot-field policy. In IME mode it stays
+        // compact; in compiler/test mode it can also recognize attested forms.
+        || is_known_russian_word_or_form(word)
+        // A derived form is stable when its lexical stem is present in the
+        // compact L2 foundation. This is reference evidence, not a per-word
+        // correction rule, and keeps post-space completion from extending a
+        // completed inflection.
+        || crate::russian_lexicon::is_reference_backed_russian_form(word)
         || surface_motif_runtime_known_surface(word)
 }
 

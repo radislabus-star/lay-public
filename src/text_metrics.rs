@@ -117,7 +117,9 @@ pub fn sparse_internal_omission_count(input: &str, candidate: &str) -> Option<us
     }
     if input_index != input.len()
         || omitted.len() != omissions
-        || omitted.iter().any(|index| *index == 0 || *index + 1 == candidate.len())
+        || omitted
+            .iter()
+            .any(|index| *index == 0 || *index + 1 == candidate.len())
         || omitted.windows(2).all(|pair| pair[1] == pair[0] + 1)
     {
         return None;

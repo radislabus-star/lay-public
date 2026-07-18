@@ -117,8 +117,8 @@ impl ContextPhasePackage {
                 self.raw_readout(&vector, candidate, mode)
             })
             .collect::<Vec<_>>();
-        let context_known_tokens = context_tokens_for_authority(self, context_tokens)
-            .min(u16::MAX as usize) as u16;
+        let context_known_tokens =
+            context_tokens_for_authority(self, context_tokens).min(u16::MAX as usize) as u16;
         let context_token_count = context_tokens.len().min(u16::MAX as usize) as u16;
         for readout in &mut readouts {
             readout.context_tokens = context_token_count;
@@ -153,17 +153,18 @@ impl ContextPhasePackage {
         let best_support_ready = best.is_some_and(|(index, _)| {
             let readout = &readouts[index];
             let competition_threshold = i64::from(self.competition_threshold_micro.max(1));
+            // Finite evidence raises admission energy; it must not inflate the score.
             let support_uncertainty = (competition_threshold as f64
                 / f64::from(readout.positive_examples.max(1)).sqrt())
             .ceil() as i64;
+            let absolute_support_ready =
+                readout.margin_micro >= readout.threshold_micro.saturating_add(support_uncertainty);
             let relative_competition_ready = ranked.len() >= 2
-                && competition_margin
-                    >= competition_threshold.saturating_add(support_uncertainty);
+                && competition_margin >= competition_threshold.saturating_add(support_uncertainty);
             competition_ready
                 && readout.positive_examples >= 2
-                && (readout.margin_micro >= readout.threshold_micro
-                    || (relative_competition_ready
-                        && readout.positive_micro > readout.anti_micro))
+                && (absolute_support_ready
+                    || (relative_competition_ready && readout.positive_micro > readout.anti_micro))
         });
 
         for (index, readout) in readouts.iter_mut().enumerate() {
@@ -337,10 +338,7 @@ fn candidate_token_hash(candidate: &str) -> u64 {
     hash_text(&token.to_lowercase())
 }
 
-fn context_tokens_for_authority(
-    package: &ContextPhasePackage,
-    context_tokens: &[String],
-) -> usize {
+fn context_tokens_for_authority(package: &ContextPhasePackage, context_tokens: &[String]) -> usize {
     context_tokens
         .iter()
         .filter(|token| package.semantic_state(hash_text(token)).is_some())

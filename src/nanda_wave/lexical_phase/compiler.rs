@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 
 use crate::lexical_surface_atoms::SurfaceFieldEncoder;
 
@@ -369,11 +369,9 @@ fn compile_centers(words: &[SourceWord]) -> (Vec<CenterRecord>, Vec<u32>) {
     }
     let mut centers = Vec::with_capacity(center_postings.len());
     let mut postings = Vec::new();
-    for (key, mut terminal_ids) in center_postings {
-        terminal_ids.sort_unstable();
-        terminal_ids.dedup();
+    for (key, terminal_ids) in center_postings {
+        let terminal_ids = interleaved_posting_frontier(terminal_ids, words);
         let support = terminal_ids.len();
-        terminal_ids.truncate(MAX_POSTINGS_PER_CENTER);
         let start = postings.len();
         postings.extend(terminal_ids.iter().copied());
         centers.push(CenterRecord {
@@ -384,6 +382,38 @@ fn compile_centers(words: &[SourceWord]) -> (Vec<CenterRecord>, Vec<u32>) {
         });
     }
     (centers, postings)
+}
+
+fn interleaved_posting_frontier(mut terminal_ids: Vec<u32>, words: &[SourceWord]) -> Vec<u32> {
+    terminal_ids.sort_unstable();
+    terminal_ids.dedup();
+    let by_rank = terminal_ids.clone();
+    let mut by_support = terminal_ids;
+    by_support.sort_by(|left, right| {
+        words[*right as usize]
+            .support
+            .cmp(&words[*left as usize].support)
+            .then_with(|| left.cmp(right))
+    });
+
+    // Two lanes prevent either corpus frequency or legacy rank from owning a
+    // bounded center. Their union is the compact candidate frontier.
+    let mut selected = Vec::with_capacity(MAX_POSTINGS_PER_CENTER.min(by_rank.len()));
+    let mut seen = BTreeSet::new();
+    for index in 0..by_rank.len().max(by_support.len()) {
+        for lane in [&by_support, &by_rank] {
+            let Some(terminal) = lane.get(index).copied() else {
+                continue;
+            };
+            if seen.insert(terminal) {
+                selected.push(terminal);
+                if selected.len() >= MAX_POSTINGS_PER_CENTER {
+                    return selected;
+                }
+            }
+        }
+    }
+    selected
 }
 
 fn corpus_hash(words: &[SourceWord], training: &[String]) -> u64 {
@@ -564,5 +594,41 @@ mod tests {
         .expect("second artifact compiles");
 
         assert_eq!(first, second);
+    }
+
+    #[test]
+    fn bounded_postings_put_stronger_corpus_support_first() {
+        let words = vec![
+            SourceWord {
+                word: "проверка".to_string(),
+                support: 1,
+            },
+            SourceWord {
+                word: "проверки".to_string(),
+                support: 8,
+            },
+        ];
+        let (centers, postings) = compile_centers(&words);
+        let shared = centers
+            .iter()
+            .find(|center| center.posting_len == 2)
+            .expect("related forms share a center");
+
+        assert_eq!(postings[shared.posting_start as usize], 1);
+    }
+
+    #[test]
+    fn posting_frontier_retains_support_and_rank_lanes() {
+        let words = (0..600)
+            .map(|index| SourceWord {
+                word: format!("word{index}"),
+                support: if index == 599 { 64 } else { 1 },
+            })
+            .collect::<Vec<_>>();
+        let selected = interleaved_posting_frontier((0..600).collect(), &words);
+
+        assert_eq!(selected.len(), MAX_POSTINGS_PER_CENTER);
+        assert_eq!(selected[0], 599);
+        assert!(selected.contains(&0));
     }
 }

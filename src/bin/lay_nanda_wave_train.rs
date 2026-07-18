@@ -57,8 +57,13 @@ fn main() -> io::Result<()> {
         let lexicon = arg_path(&args, "--lexicon")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--lexicon is required"))?;
         let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
-        let report =
-            lay::nanda_wave::prove_l3_context_phase_memory(&corpus, &lexicon, max_fragments)?;
+        let min_profile_support = arg_u32(&args, "--min-profile-support").unwrap_or(2);
+        let report = lay::nanda_wave::prove_l3_context_phase_memory(
+            &corpus,
+            &lexicon,
+            max_fragments,
+            min_profile_support,
+        )?;
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?
@@ -71,11 +76,13 @@ fn main() -> io::Result<()> {
         let out = arg_path(&args, "--out")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
         let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
+        let min_profile_support = arg_u32(&args, "--min-profile-support").unwrap_or(2);
         let report = lay::nanda_wave::compile_l3_context_phase_memory(
             &corpus,
             &lexicon,
             &out,
             max_fragments,
+            min_profile_support,
         )?;
         println!(
             "{}",
@@ -130,6 +137,12 @@ fn main() -> io::Result<()> {
 }
 
 fn arg_usize(args: &[String], name: &str) -> Option<usize> {
+    args.windows(2)
+        .find(|window| window[0] == name)
+        .and_then(|window| window[1].parse().ok())
+}
+
+fn arg_u32(args: &[String], name: &str) -> Option<u32> {
     args.windows(2)
         .find(|window| window[0] == name)
         .and_then(|window| window[1].parse().ok())

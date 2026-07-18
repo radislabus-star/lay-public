@@ -20,6 +20,7 @@ pub(crate) struct ContextPhaseCompileInput<'a> {
     pub(crate) corpus_text: &'a str,
     pub(crate) lexicon_text: &'a str,
     pub(crate) max_fragments: usize,
+    pub(crate) min_profile_support: u32,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -36,6 +37,7 @@ pub(crate) struct ContextPhaseCompileReport {
     pub(crate) negative_examples: u64,
     pub(crate) global_threshold_micro: i32,
     pub(crate) competition_threshold_micro: i32,
+    pub(crate) min_profile_support: u32,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -57,6 +59,7 @@ pub(crate) struct ContextPhaseProofReport {
     pub(crate) semantic_ablation_drop: usize,
     pub(crate) support_precision_ppm: u32,
     pub(crate) raw_words_stored: bool,
+    pub(crate) min_profile_support: u32,
     pub(crate) verdict: &'static str,
 }
 
@@ -79,6 +82,7 @@ struct ProfileBuilder {
 pub(crate) fn compile_context_phase(
     input: ContextPhaseCompileInput<'_>,
 ) -> (ContextPhasePackage, ContextPhaseCompileReport) {
+    let min_profile_support = input.min_profile_support.max(2);
     let sequences = corpus_sequences(input.corpus_text, input.max_fragments);
     let lexicon = LexiconCompetitors::from_text(input.lexicon_text);
     let semantic_states = compile_semantic_states(&sequences);
@@ -137,7 +141,7 @@ pub(crate) fn compile_context_phase(
     let mut profiles = builders
         .into_iter()
         .filter_map(|(token_hash, builder)| {
-            (builder.positive_examples >= 2).then(|| {
+            (builder.positive_examples >= min_profile_support).then(|| {
                 let threshold_micro = learned_threshold(&builder);
                 ContextCandidateProfile {
                     token_hash,
@@ -192,6 +196,7 @@ pub(crate) fn compile_context_phase(
             .sum(),
         global_threshold_micro: package.global_threshold_micro,
         competition_threshold_micro: package.competition_threshold_micro,
+        min_profile_support,
     };
     (package, report)
 }
@@ -219,6 +224,7 @@ pub(crate) fn prove_context_phase(input: ContextPhaseCompileInput<'_>) -> Contex
         corpus_text: &train_text,
         lexicon_text: input.lexicon_text,
         max_fragments: 0,
+        min_profile_support: input.min_profile_support,
     });
     let lexicon = LexiconCompetitors::from_text(input.lexicon_text);
     let mut evaluated = 0usize;
@@ -320,6 +326,7 @@ pub(crate) fn prove_context_phase(input: ContextPhaseCompileInput<'_>) -> Contex
         semantic_ablation_drop,
         support_precision_ppm,
         raw_words_stored: false,
+        min_profile_support: input.min_profile_support.max(2),
         verdict,
     }
 }
@@ -553,6 +560,7 @@ mod tests {
             corpus_text: corpus,
             lexicon_text: lexicon,
             max_fragments: 0,
+            min_profile_support: 2,
         });
 
         assert!(report.semantic_states > 0);

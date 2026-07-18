@@ -12,6 +12,7 @@ fn learned_context_phase_separates_same_surface_family_by_scene() {
         corpus_text: corpus,
         lexicon_text: "дождь дожди свет света",
         max_fragments: 0,
+        min_profile_support: 2,
     });
     let context = super::super::llmwave::tokenize("сегодня на улице идет");
     let readouts = package.score_candidates(&context, &["дождь", "свет"]);
@@ -27,6 +28,7 @@ fn no_phase_ablation_removes_context_authority() {
             "на улице опять идет дождь. вечером на улице идет дождь. утром на улице идет дождь.",
         lexicon_text: "дождь дожди домик",
         max_fragments: 0,
+        min_profile_support: 2,
     });
     let context = super::super::llmwave::tokenize("вечером на улице идет");
     let readouts = package.score_candidates_with_mode(
@@ -51,6 +53,7 @@ fn duplicate_sources_do_not_compete_with_the_same_lexical_center() {
         ),
         lexicon_text: "дождь дожди домик свет",
         max_fragments: 0,
+        min_profile_support: 2,
     });
     let context = super::super::llmwave::tokenize("вечером на улице идет");
     let readouts = package.score_candidates(&context, &["дождь", "дождь", "домик"]);

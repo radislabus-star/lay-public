@@ -72,6 +72,22 @@ pub struct CanonicalL2CandidateEngine {
     memory: LexicalPhaseMemory,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+pub struct RuntimeL2LexicalMemoryStats {
+    pub source_words: usize,
+    pub l1_centers: usize,
+    pub l1_postings: usize,
+    pub l2_word_centers: usize,
+    pub grapheme_nodes: usize,
+    pub grapheme_arcs: usize,
+    pub decoder_states: usize,
+    pub decoder_arcs: usize,
+    pub training_surfaces: usize,
+    pub hot_bytes: usize,
+    pub mmap_backed: bool,
+    pub raw_word_table: bool,
+}
+
 impl CanonicalL2CandidateEngine {
     pub fn new(words: &[String]) -> Self {
         let memory = canonical_l2_memory(words);
@@ -163,6 +179,24 @@ pub fn canonical_l2_candidate_report(
     limit: usize,
 ) -> CanonicalL2CandidateReport {
     CanonicalL2CandidateEngine::new(words).candidate_report(input, limit)
+}
+
+pub fn runtime_l2_lexical_memory_stats() -> Option<RuntimeL2LexicalMemoryStats> {
+    let stats = super::lexical_phase::default_memory()?.stats();
+    Some(RuntimeL2LexicalMemoryStats {
+        source_words: stats.source_words,
+        l1_centers: stats.l1_centers,
+        l1_postings: stats.l1_postings,
+        l2_word_centers: stats.l2_word_centers,
+        grapheme_nodes: stats.grapheme_nodes,
+        grapheme_arcs: stats.grapheme_arcs,
+        decoder_states: stats.decoder_states,
+        decoder_arcs: stats.decoder_arcs,
+        training_surfaces: stats.training_surfaces,
+        hot_bytes: stats.hot_bytes,
+        mmap_backed: stats.mmap_backed,
+        raw_word_table: stats.raw_word_table,
+    })
 }
 
 fn canonical_l2_candidate_report_with_memory(

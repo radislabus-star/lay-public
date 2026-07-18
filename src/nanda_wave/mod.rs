@@ -57,6 +57,7 @@ pub fn compile_l3_context_phase_memory(
     lexicon_path: &std::path::Path,
     output_path: &std::path::Path,
     max_fragments: usize,
+    min_profile_support: u32,
 ) -> std::io::Result<serde_json::Value> {
     let corpus_text = std::fs::read_to_string(corpus_path)?;
     let lexicon_text = std::fs::read_to_string(lexicon_path)?;
@@ -65,6 +66,7 @@ pub fn compile_l3_context_phase_memory(
             corpus_text: &corpus_text,
             lexicon_text: &lexicon_text,
             max_fragments,
+            min_profile_support,
         });
     context_phase::write_package(output_path, &package)?;
     let mut value = serde_json::to_value(report).map_err(std::io::Error::other)?;
@@ -93,6 +95,7 @@ pub fn prove_l3_context_phase_memory(
     corpus_path: &std::path::Path,
     lexicon_path: &std::path::Path,
     max_fragments: usize,
+    min_profile_support: u32,
 ) -> std::io::Result<serde_json::Value> {
     let corpus_text = std::fs::read_to_string(corpus_path)?;
     let lexicon_text = std::fs::read_to_string(lexicon_path)?;
@@ -101,6 +104,7 @@ pub fn prove_l3_context_phase_memory(
             corpus_text: &corpus_text,
             lexicon_text: &lexicon_text,
             max_fragments,
+            min_profile_support,
         },
     ))
     .map_err(std::io::Error::other)

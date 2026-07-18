@@ -9,7 +9,7 @@ use std::sync::{Arc, Mutex, OnceLock};
 
 const LEXICAL_READOUT_CACHE_CAPACITY: usize = 256;
 type CachedLexicalCandidates = Arc<Vec<super::super::lexical_phase::LexicalPhaseCandidate>>;
-type LexicalReadoutCache = VecDeque<(String, usize, CachedLexicalCandidates)>;
+type LexicalReadoutCache = VecDeque<(String, usize, bool, CachedLexicalCandidates)>;
 
 static LEXICAL_READOUT_CACHE: OnceLock<Mutex<LexicalReadoutCache>> = OnceLock::new();
 
@@ -17,6 +17,23 @@ pub(super) fn ime_l2_word_candidates_impl(
     context_prefix: &str,
     token: &str,
     limit: usize,
+) -> Vec<L2ImeWordCandidate> {
+    l2_word_candidates_impl(context_prefix, token, limit, true)
+}
+
+pub(super) fn correction_l2_word_candidates_impl(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> Vec<L2ImeWordCandidate> {
+    l2_word_candidates_impl(context_prefix, token, limit, false)
+}
+
+fn l2_word_candidates_impl(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+    include_completion: bool,
 ) -> Vec<L2ImeWordCandidate> {
     if limit == 0 {
         return Vec::new();
@@ -31,10 +48,16 @@ pub(super) fn ime_l2_word_candidates_impl(
     let usage_context = usage.prepare_hot_context(&context_tokens);
     let memory = surface_motif_memory();
     let material_limit = limit.saturating_mul(8).max(limit);
-    let lexical = cached_lexical_candidates(memory, &normalized, material_limit);
+    let lexical =
+        cached_lexical_candidates(memory, &normalized, material_limit, include_completion);
     let lexical = lexical
         .iter()
         .filter(|candidate| same_lexical_script(&normalized, &candidate.word))
+        .filter(|candidate| {
+            include_completion
+                || !candidate.word.starts_with(&normalized)
+                || candidate.word.chars().count() <= token_len
+        })
         .cloned();
     let mut candidates = lexical
         .map(|candidate| {
@@ -70,24 +93,31 @@ fn cached_lexical_candidates(
     memory: &super::super::lexical_phase::LexicalPhaseMemory,
     normalized: &str,
     material_limit: usize,
+    include_completion: bool,
 ) -> CachedLexicalCandidates {
     let cache = LEXICAL_READOUT_CACHE.get_or_init(|| Mutex::new(VecDeque::new()));
     if let Some(candidates) = cache.lock().ok().and_then(|cache| {
         cache
             .iter()
-            .find(|(surface, limit, _)| surface == normalized && *limit == material_limit)
-            .map(|(_, _, candidates)| Arc::clone(candidates))
+            .find(|(surface, limit, completion, _)| {
+                surface == normalized
+                    && *limit == material_limit
+                    && *completion == include_completion
+            })
+            .map(|(_, _, _, candidates)| Arc::clone(candidates))
     }) {
         return candidates;
     }
 
     let mut candidates = memory.adjacent_transposition_candidates(normalized);
     candidates.extend(memory.surface_candidates(normalized, material_limit));
-    candidates.extend(memory.completion_candidates(
-        normalized,
-        material_limit,
-        material_limit.saturating_mul(6),
-    ));
+    if include_completion {
+        candidates.extend(memory.completion_candidates(
+            normalized,
+            material_limit,
+            material_limit.saturating_mul(6),
+        ));
+    }
     candidates.sort_by(|left, right| {
         right
             .score
@@ -105,6 +135,7 @@ fn cached_lexical_candidates(
         cache.push_back((
             normalized.to_string(),
             material_limit,
+            include_completion,
             Arc::clone(&candidates),
         ));
     }

@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 URL="${LAY_L3_CORPUS_URL:-https://downloads.tatoeba.org/exports/per_language/rus/rus_sentences.tsv.bz2}"
 LIMIT="${LAY_L3_MAX_FRAGMENTS:-60000}"
+MIN_PROFILE_SUPPORT="${LAY_L3_MIN_PROFILE_SUPPORT:-2}"
 LEXICON="${LAY_L3_LEXICON:-$ROOT/data/lexicon/l2_surface_foundation_ru_100k.txt}"
 OUT="${LAY_L3_CONTEXT_OUT:-$ROOT/data/lexicon/l3_context_phase_v1.nwpc}"
 MANIFEST="${LAY_L3_CONTEXT_MANIFEST:-$ROOT/data/lexicon/l3_context_phase_v1.manifest.json}"
@@ -53,9 +54,12 @@ if sentence_like * 100 < written * 20:
 print(f"natural_corpus: rows={written} sentence_like={sentence_like}")
 PY
 
-"$TRAINER" --prove-l3-context-phase "$CORPUS" --lexicon "$LEXICON" --max-fragments "$LIMIT" > "$PROOF"
+"$TRAINER" --prove-l3-context-phase "$CORPUS" --lexicon "$LEXICON" \
+  --max-fragments "$LIMIT" --min-profile-support "$MIN_PROFILE_SUPPORT" > "$PROOF"
 jq -e '.verdict == "PASS" and .phase_ablation_drop > 0 and .semantic_ablation_drop > 0 and .support_precision_ppm >= 995000' "$PROOF" >/dev/null
-"$TRAINER" --compile-l3-context-phase "$CORPUS" --lexicon "$LEXICON" --out "$ARTIFACT" --max-fragments "$LIMIT" > "$COMPILE"
+"$TRAINER" --compile-l3-context-phase "$CORPUS" --lexicon "$LEXICON" \
+  --out "$ARTIFACT" --max-fragments "$LIMIT" \
+  --min-profile-support "$MIN_PROFILE_SUPPORT" > "$COMPILE"
 
 install -m 0644 "$ARTIFACT" "$OUT"
 artifact_sha="$(sha256sum "$OUT" | cut -d' ' -f1)"
@@ -95,6 +99,7 @@ jq -n \
     candidate_profiles: $compile.candidate_profiles,
     positive_centers: $compile.positive_centers,
     anti_centers: $compile.anti_centers,
+    min_profile_support: $compile.min_profile_support,
     competition_threshold_micro: $compile.competition_threshold_micro,
     heldout: $heldout
   }' > "$MANIFEST"

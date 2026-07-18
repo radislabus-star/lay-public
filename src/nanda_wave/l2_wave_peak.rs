@@ -57,7 +57,9 @@ pub(crate) fn prepare_correction_peak_context(original: &str) -> L2CorrectionPea
         } else {
             format!("{} ", context.join(" "))
         };
-        l2::ime_l2_word_candidates(&context_prefix, &original_word, 16)
+        // Correction and completion are different operators; prefix futures
+        // must not compete inside a replacement-state phase peak.
+        l2::correction_l2_word_candidates(&context_prefix, &original_word, 16)
     } else {
         Vec::new()
     };
