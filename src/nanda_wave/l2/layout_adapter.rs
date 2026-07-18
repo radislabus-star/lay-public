@@ -275,10 +275,30 @@ fn layout_converted_token(
         // fallback because it turns valid Russian words into keyboard noise.
         return None;
     }
+    // An all-caps alphabetic token is an explicit keyboard-mode signal from
+    // L1. The older autoswitch path only recognized shifted punctuation, so a
+    // CapsLock projection could be rejected before it reached the field.
+    // Preserve the raw projection as a verified strong layout transition;
+    // known technical ASCII tokens were already rejected above.
+    let ascii_letters = token
+        .chars()
+        .filter(|ch| ch.is_ascii_alphabetic())
+        .collect::<Vec<_>>();
+    if ascii_letters.len() >= 4 && ascii_letters.iter().all(|ch| ch.is_ascii_uppercase()) {
+        let converted = convert(token, crate::dict::Direction::Us2Ru);
+        if converted != token && converted.chars().all(is_cyrillic_letter) {
+            return Some((converted, true, false));
+        }
+    }
     let converted = convert(token, detect_direction(token));
     if converted == token {
         return None;
     }
+    // Lexical centers are case-normalized. Case is a surface property that is
+    // restored only after the same center has admitted the layout projection.
+    // Without this, an all-caps wrong-layout word bypasses its known Russian
+    // center solely because the keyboard projection is all caps too.
+    let converted_center_form = converted.to_lowercase();
     // A keyboard projection may target either an exact hot surface or a
     // reference-backed inflection of a stable lexical center.  The latter is
     // necessary for ordinary forms such as an imperative, but arbitrary
@@ -286,9 +306,9 @@ fn layout_converted_token(
     let exact_projection_has_center = token.chars().all(|ch| ch.is_ascii_alphabetic())
         && converted.chars().all(is_cyrillic_letter)
         && (crate::hot_field::HotFieldSnapshot::current()
-            .input_surface_readout(&converted)
+            .input_surface_readout(&converted_center_form)
             .is_known()
-            || crate::russian_lexicon::is_reference_backed_russian_form(&converted));
+            || crate::russian_lexicon::is_reference_backed_russian_form(&converted_center_form));
     Some((converted, exact_projection_has_center, false))
 }
 
@@ -583,5 +603,24 @@ mod tests {
             Some("делай".to_string())
         );
         assert!(layout_converted_token("Ghjljkbv", true).is_none());
+    }
+
+    #[test]
+    fn all_caps_layout_projection_uses_the_same_lexical_center() {
+        assert_eq!(
+            layout_converted_token("YTGTHTDTHYEKJCM", true).map(|candidate| candidate.0),
+            Some("НЕПЕРЕВЕРНУЛОСЬ".to_string())
+        );
+    }
+
+    #[test]
+    fn all_caps_layout_projection_reaches_the_live_l2_candidate_route() {
+        let token = "YTGTHTDTHYEKJCM";
+        let context = TailContext::from_text(token);
+        let candidate = layout_candidate("", token, &context, &[])
+            .expect("all-caps projection must reach the LayoutWordCell32 route");
+
+        assert_eq!(candidate.text, "НЕПЕРЕВЕРНУЛОСЬ");
+        assert_eq!(candidate.origin, CandidateOrigin::Layout);
     }
 }

@@ -728,6 +728,7 @@ mod tests {
             suffix: "мер".to_string(),
             score: 0.7,
             rank_score: 0.7,
+            field_strength: 0,
             source: "test",
             partial_len: 3,
             suffix_len: 3,
