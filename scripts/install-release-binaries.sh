@@ -10,6 +10,7 @@ binaries=(
   lay
   lay-daemon
   lay-nanda-wave-eval
+  lay-nanda-wave-train
   lay-test-input
   lay-ngram-corpus
   lay-ibus-engine

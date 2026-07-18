@@ -70,6 +70,11 @@ if has_file_matching '(^install\.sh$|^update\.sh$|^uninstall\.sh$|^scripts/insta
   scripts/test-public-issues.sh
 fi
 
+if has_file_matching '^scripts/(install-l2-transition-phase-package|install-release-binaries|test-install-l2-transition-phase-package)\.sh$'; then
+  echo "== L2 transition phase package install regressions =="
+  scripts/test-install-l2-transition-phase-package.sh
+fi
+
 if has_file_matching '^extension/.*\.js$'; then
   echo "== node --check changed GNOME JS =="
   mapfile -t js_files < <(changed_list_for_ext ".js")
