@@ -1160,8 +1160,8 @@
     "semantic_hash": ""
   },
   "src/correction_core.rs": {
-    "mtime": 1784278672.9674666,
-    "ast_hash": "9c798217227010bd1c7c839c4ba97756",
+    "mtime": 1784336836.846354,
+    "ast_hash": "6efae4ad18c170aedea8dc92c7e47791",
     "semantic_hash": ""
   },
   "src/correction_tests.rs": {
@@ -2245,8 +2245,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision.rs": {
-    "mtime": 1784324979.2182868,
-    "ast_hash": "bac4d8b28b7fba2bb05ef5e875e3d66d",
+    "mtime": 1784336837.6683645,
+    "ast_hash": "878d9151e0220b35b8caa0abbefffab6",
     "semantic_hash": ""
   },
   "src/typing_transition/executor_contract.rs": {
@@ -2255,8 +2255,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/mod.rs": {
-    "mtime": 1784142580.9227943,
-    "ast_hash": "07a5ec64e8ea91d4d658fe9c223c89a9",
+    "mtime": 1784336601.0463321,
+    "ast_hash": "57d5bee120ec22cc947624694b1f5c30",
     "semantic_hash": ""
   },
   "src/typing_transition/state.rs": {
@@ -2395,8 +2395,8 @@
     "semantic_hash": ""
   },
   "tests/text_mutation_monopoly_contract.rs": {
-    "mtime": 1784145047.6699529,
-    "ast_hash": "4db5e451da08b97d911725666332e548",
+    "mtime": 1784336973.878091,
+    "ast_hash": "f1ffcbcfc1136797b40697aeb229b9e2",
     "semantic_hash": ""
   },
   "tests/tray_ui_contract.rs": {
@@ -3095,18 +3095,13 @@
     "semantic_hash": ""
   },
   "tests/typing_transition_authority_contract.rs": {
-    "mtime": 1784334802.5129836,
-    "ast_hash": "10733460f1ff2fbbcbca0a895e1ee31c",
+    "mtime": 1784336820.3561442,
+    "ast_hash": "eadf699f9e1b0acc23e05a618ab5d2c7",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit_readout.rs": {
     "mtime": 1784332879.4839232,
     "ast_hash": "d9f9c21d70b461255550482fdf514ca4",
-    "semantic_hash": ""
-  },
-  "src/correction_core/gate.rs": {
-    "mtime": 1784135267.146024,
-    "ast_hash": "6d1de4a0f3a03c5c5bbd780d6f74b8ea",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/surface.rs": {
@@ -3115,8 +3110,8 @@
     "semantic_hash": ""
   },
   "src/correction_core/candidate_sources.rs": {
-    "mtime": 1784165989.2015538,
-    "ast_hash": "0309078f90a206128bd6b6416c0dbc49",
+    "mtime": 1784336820.355144,
+    "ast_hash": "4a874b1acef145fed808040e98400e88",
     "semantic_hash": ""
   },
   "src/correction_core/tests.rs": {
@@ -3285,8 +3280,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1784335535.6443257,
-    "ast_hash": "28503406cb6fbb174ba01b943e582b5c",
+    "mtime": 1784336182.1701396,
+    "ast_hash": "3f21fc6772de9ecf603c9af79bc5f174",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -3547,6 +3542,11 @@
   "tests/input_gate_space_contract.rs": {
     "mtime": 1784335278.4363337,
     "ast_hash": "5f6e801b6c771311a5b39ad1f389ab07",
+    "semantic_hash": ""
+  },
+  "src/typing_transition/proposal_admission.rs": {
+    "mtime": 1784336651.584984,
+    "ast_hash": "3f9b29309b4baac80722b6301abda2e2",
     "semantic_hash": ""
   }
 }

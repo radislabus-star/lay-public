@@ -3,9 +3,9 @@
     {
       "evidence": [
         "src/typing_transition/candidate.rs:L9:L2CandidateLattice",
-        "src/typing_transition/decision.rs:L155:.evaluate_candidates()",
-        "src/typing_transition/decision.rs:L26:TransitionDecisionCore",
-        "src/typing_transition/decision.rs:L34:.decide_visible_text_transition()",
+        "src/typing_transition/decision.rs:L168:.evaluate_candidates()",
+        "src/typing_transition/decision.rs:L30:TransitionDecisionCore",
+        "src/typing_transition/decision.rs:L47:.decide_visible_text_transition()",
         "src/typing_transition/live_candidate.rs:L106:.select_ime_readout()",
         "src/typing_transition/live_candidate.rs:L44:TransitionDecisionCore",
         "src/typing_transition/live_candidate.rs:L45:.select_live_completions()"
@@ -40,7 +40,7 @@
         "src/text_edit/executor.rs:L143",
         "src/text_edit/gate.rs:L226",
         "src/text_edit/gate.rs:L228",
-        "src/typing_transition/decision.rs:L126"
+        "src/typing_transition/decision.rs:L139"
       ],
       "id": "typed-transition-capability",
       "status": "PASS",
@@ -87,7 +87,7 @@
     {
       "evidence": [
         "graph_links:20069",
-        "graph_nodes:8106"
+        "graph_nodes:8107"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -95,10 +95,10 @@
     }
   ],
   "duplicate_symbols": {},
-  "graph_fingerprint": "4b0695604d7f5ad91da79c4efee5bf2abf127a81d625584549c2ad99f46fd1ce",
+  "graph_fingerprint": "46d8a3bbb85b2c17d47c116c550e54f6c4ca5645db3ec97fed4abe0435a391df",
   "graph_links": 20069,
-  "graph_nodes": 8106,
+  "graph_nodes": 8107,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "0b8b7bbad13643e856eeb52e11e9d15cca597328cd4baf502da8144b422c4ab8",
+  "source_fingerprint": "047cda9663dff073378f2686506fc1efd7fd43e7b8e6decb8437181bdd642132",
   "verdict": "PASS"
 }
