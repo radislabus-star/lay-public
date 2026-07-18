@@ -26,9 +26,6 @@ pub(crate) fn find_typing_assist_correction(
             let started = Instant::now();
             let events = buf.last_completed_words_events(word_count)?;
             let decoded = decode_completed_tail(buf, word_count, &events, allow_layout_auto)?;
-            if word_count > 1 && !decoded.edit.matches_text_edit_contract_boundary_shift() {
-                return None;
-            }
             let decision_ms = started.elapsed().as_millis();
             super::super::log(&format!(
                 "  typing-assist decision: scope={} elapsed={}ms",
@@ -53,8 +50,22 @@ fn completed_tail_scopes_from_len(prev_words_len: usize, max_words: usize) -> Ve
     if max_scope == 0 {
         Vec::new()
     } else if max_scope >= 2 {
-        vec![2, 1]
+        // The completed word is the normal correction unit. A wider context is
+        // a fallback only when this local transition has no candidate.
+        vec![1, 2]
     } else {
         vec![1]
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::completed_tail_scopes_from_len;
+
+    #[test]
+    fn checks_current_word_before_optional_context() {
+        assert_eq!(completed_tail_scopes_from_len(1, 2), vec![1]);
+        assert_eq!(completed_tail_scopes_from_len(2, 2), vec![1, 2]);
+        assert_eq!(completed_tail_scopes_from_len(3, 3), vec![1, 2]);
     }
 }
