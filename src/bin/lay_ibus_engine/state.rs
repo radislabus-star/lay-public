@@ -70,6 +70,18 @@ enum LayoutPostconditionOwner {
 }
 
 impl CommittedTailReplaceRequest {
+    pub(crate) fn ime_autocorrect(backspaces: u32, text: String) -> Self {
+        Self {
+            source: VisibleTailSource::ImeCommittedTail,
+            backspaces,
+            text,
+            intent: TextTransitionIntent::ImeAutocorrect,
+            suppress_next_autocorrect: false,
+            expected_tail: None,
+            layout_postcondition_owner: LayoutPostconditionOwner::Ime,
+        }
+    }
+
     pub(crate) fn ime_manual_toggle(
         backspaces: u32,
         text: String,

@@ -58,6 +58,16 @@ impl LayIbusEngine {
                 let initial_mode = self.initial_word_input_mode();
                 let mode = *self.word_input_mode.get_or_insert(initial_mode);
                 if mode == WordInputMode::ManagedCommit {
+                    if self.autocorrect_committed_layout_on_space(emitter).await? {
+                        self.trace_key(
+                            "space_managed_layout_autocorrect",
+                            keyval,
+                            keycode,
+                            true,
+                            Some(' '),
+                        );
+                        return Ok(true);
+                    }
                     self.commit_managed_passthrough_char(emitter, ' ').await?;
                     self.trace_key("space_managed_commit", keyval, keycode, true, Some(' '));
                     return Ok(true);
@@ -131,17 +141,14 @@ impl LayIbusEngine {
 #[cfg(test)]
 mod word_boundary_route_contract {
     #[test]
-    fn managed_space_never_runs_correction_on_the_ibus_event_loop() {
+    fn managed_space_uses_shared_decision_core_only_for_layout_boundary() {
         let source = include_str!("managed.rs");
-        let direct_decision = ["decide_active_composition", "_autocorrect("].concat();
-        let blocking_route = ["autocorrect_committed_tail", "_on_space("].concat();
 
         assert!(
             source.contains("space_managed_commit")
                 && source.contains("space_terminal_passthrough")
-                && !source.contains(&direct_decision)
-                && !source.contains(&blocking_route),
-            "managed Space must close the visible boundary without owning correction"
+                && source.contains("autocorrect_committed_layout_on_space(emitter)"),
+            "managed Space must close layout boundaries through the shared decision core"
         );
     }
 }

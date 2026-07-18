@@ -8,6 +8,57 @@ use super::trace;
 use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
 
 impl LayIbusEngine {
+    pub(super) async fn autocorrect_committed_layout_on_space(
+        &mut self,
+        emitter: &SignalEmitter<'_>,
+    ) -> fdo::Result<bool> {
+        if !self.config.auto_switch_layout {
+            return Ok(false);
+        }
+        let token = self.last_tail_token_text();
+        if token.is_empty() {
+            return Ok(false);
+        }
+        let boundary_text = format!("{token} ");
+        let Some(decision) = lay::ime_correction::decide_active_composition_autocorrect(
+            lay::ime_correction::ActiveCompositionAutocorrectRequest {
+                text: &boundary_text,
+                committed_tail: &self.tail_buffer,
+                config: &self.config,
+            },
+        ) else {
+            return Ok(false);
+        };
+        if decision
+            .input_gate
+            .as_ref()
+            .and_then(|trace| trace.selected_error_class.as_deref())
+            != Some("wrong_layout")
+        {
+            return Ok(false);
+        }
+
+        lay::action_log::record_candidate_edit_action_before_apply(
+            &decision.action,
+            lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
+            decision.input_gate,
+        );
+        let replacement = decision.replacement;
+        let handled = self
+            .replace_committed_tail(
+                emitter,
+                CommittedTailReplaceRequest::ime_autocorrect(
+                    token.chars().count() as u32,
+                    replacement.clone(),
+                ),
+            )
+            .await?;
+        if handled {
+            lay::typing_cpu::TypingCpu::record_accepted_layout_projection(&token, &replacement);
+        }
+        Ok(handled)
+    }
+
     pub(super) async fn accept_stuck_tail(
         &mut self,
         emitter: &SignalEmitter<'_>,
