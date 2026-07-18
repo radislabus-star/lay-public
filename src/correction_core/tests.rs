@@ -316,7 +316,11 @@ mod tests {
             crate::text_backend::TextBackendPreference::Ime,
         ));
         let pipeline = default_typing_assist_pipeline();
-        let resolutions: Vec<_> = [("врмея ", "время "), ("поянл ", "понял ")]
+        let resolutions: Vec<_> = [
+            ("врмея ", "время "),
+            ("поянл ", "понял "),
+            ("понял сомтрю ", "понял смотрю "),
+        ]
             .into_iter()
             .map(|(input, expected)| {
                 let mut req = request(input, &pipeline, CorrectionMode::NandaOnly);
@@ -335,6 +339,34 @@ mod tests {
             assert_eq!(selected.error_class, TypingErrorClass::AdjacentTransposition);
             assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
         }
+    }
+
+    #[test]
+    fn operator_consensus_selects_transposition_over_generic_l2_drift() {
+        let previous_policy = crate::hot_field::process_policy();
+        crate::hot_field::set_process_policy(
+            crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
+                crate::text_backend::TextBackendPreference::Ime,
+            ),
+        );
+        let pipeline = default_typing_assist_pipeline();
+        let mut req = request(
+            "понял сомтрю ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        );
+        req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+        let resolution = resolve_text_correction(req);
+        crate::hot_field::set_process_policy(previous_policy);
+
+        let selected = resolution
+            .selected
+            .as_ref()
+            .unwrap_or_else(|| panic!("operator consensus must resolve: {resolution:#?}"));
+        assert_eq!(selected.replacement, "понял смотрю ");
+        assert_eq!(selected.error_class, TypingErrorClass::AdjacentTransposition);
+        assert!(selected.has_origin(CandidateOrigin::DeterministicTypo));
+        assert!(selected.has_origin(CandidateOrigin::L2Surface));
     }
 
     #[test]

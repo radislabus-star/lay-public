@@ -11,10 +11,11 @@ const MAX_WITNESSES: usize = 4;
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(u8)]
 pub(crate) enum L4WitnessProbe {
-    TransitionHistory = 1,
-    ContextRelation = 2,
-    VerifierResult = 3,
-    PhaseRelation = 4,
+    OperatorConsensus = 1,
+    VerifierResult = 2,
+    TransitionHistory = 3,
+    ContextRelation = 4,
+    PhaseRelation = 5,
 }
 
 impl L4WitnessProbe {
@@ -24,13 +25,18 @@ impl L4WitnessProbe {
             Self::ContextRelation => "context_relation",
             Self::VerifierResult => "verifier_result",
             Self::PhaseRelation => "phase_relation",
+            Self::OperatorConsensus => "operator_consensus",
         }
     }
 
-    const ALL: [Self; 4] = [
+    // Typed, independently produced operator evidence precedes learned
+    // observations. Wave memory narrows unresolved classes; it cannot override
+    // a verified operator on an identical candidate batch.
+    const ALL: [Self; 5] = [
+        Self::OperatorConsensus,
+        Self::VerifierResult,
         Self::TransitionHistory,
         Self::ContextRelation,
-        Self::VerifierResult,
         Self::PhaseRelation,
     ];
 }
@@ -47,6 +53,7 @@ pub(crate) struct L4ActiveHypothesis {
     pub(crate) witness_state_specific: bool,
     pub(crate) phase_witness_milli: i16,
     pub(crate) phase_witness_supported: bool,
+    pub(crate) operator_consensus_witness: bool,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -93,6 +100,7 @@ struct HypothesisClass {
     witness_state_specific: bool,
     phase_witness_milli: i16,
     phase_witness_supported: bool,
+    operator_consensus_witness: bool,
 }
 
 pub(crate) fn resolve_active_hypotheses(
@@ -239,6 +247,7 @@ fn normalize_classes(hypotheses: &[L4ActiveHypothesis]) -> BTreeMap<u64, Hypothe
             );
             class.phase_witness_supported = true;
         }
+        class.operator_consensus_witness |= hypothesis.operator_consensus_witness;
     }
     classes
 }
@@ -289,7 +298,7 @@ fn select_witness(
     probes: &[L4WitnessProbe],
     used: &BTreeSet<L4WitnessProbe>,
 ) -> Option<L4WitnessProbe> {
-    let mut best = None::<(usize, std::cmp::Reverse<usize>, u8, L4WitnessProbe)>;
+    let mut best = None::<(u8, usize, std::cmp::Reverse<usize>, L4WitnessProbe)>;
     for probe in probes.iter().copied() {
         if used.contains(&probe) {
             continue;
@@ -308,9 +317,9 @@ fn select_witness(
         }
         let largest = buckets.values().copied().max().unwrap_or(usize::MAX);
         let score = (
+            probe as u8,
             largest,
             std::cmp::Reverse(buckets.len()),
-            probe as u8,
             probe,
         );
         if best.as_ref().map_or(true, |current| score < *current) {
@@ -326,6 +335,13 @@ fn predicted_outcome(probe: L4WitnessProbe, class_id: u64, class: &HypothesisCla
         L4WitnessProbe::ContextRelation => class.relation_class,
         L4WitnessProbe::VerifierResult => u64::from(class.verifier_passed),
         L4WitnessProbe::PhaseRelation => class_id,
+        L4WitnessProbe::OperatorConsensus => {
+            if class.operator_consensus_witness {
+                class_id
+            } else {
+                0
+            }
+        }
     }
 }
 
@@ -348,6 +364,9 @@ fn observe_probe(
             .then_some(1),
         L4WitnessProbe::PhaseRelation => unique_outcome(active, classes, |id, class| {
             (class.phase_witness_supported && class.phase_witness_milli > 0).then_some(id)
+        }),
+        L4WitnessProbe::OperatorConsensus => unique_outcome(active, classes, |id, class| {
+            class.operator_consensus_witness.then_some(id)
         }),
     }
 }
@@ -380,6 +399,7 @@ mod tests {
             witness_state_specific: false,
             phase_witness_milli: 0,
             phase_witness_supported: false,
+            operator_consensus_witness: false,
         }
     }
 
@@ -439,6 +459,35 @@ mod tests {
             .receipts
             .iter()
             .any(|receipt| receipt.probe == L4WitnessProbe::PhaseRelation));
+    }
+
+    #[test]
+    fn independent_operator_consensus_resolves_one_semantic_class() {
+        let mut candidates = [hypothesis(1), hypothesis(2), hypothesis(3)];
+        candidates[1].operator_consensus_witness = true;
+
+        let resolved = resolve_active_hypotheses(&candidates);
+
+        assert_eq!(resolved.status, L4ActiveResolutionStatus::Witnessed);
+        assert_eq!(resolved.selected_class, Some(2));
+        assert!(resolved.certificate_valid);
+        assert!(resolved
+            .receipts
+            .iter()
+            .any(|receipt| receipt.probe == L4WitnessProbe::OperatorConsensus));
+    }
+
+    #[test]
+    fn competing_operator_consensus_classes_abstain() {
+        let mut candidates = [hypothesis(1), hypothesis(2)];
+        candidates[0].operator_consensus_witness = true;
+        candidates[1].operator_consensus_witness = true;
+
+        let resolved = resolve_active_hypotheses(&candidates);
+
+        assert_eq!(resolved.status, L4ActiveResolutionStatus::Ambiguous);
+        assert_eq!(resolved.selected_class, None);
+        assert!(resolved.certificate_valid);
     }
 
     #[test]

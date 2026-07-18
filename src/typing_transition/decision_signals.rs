@@ -301,6 +301,7 @@ fn settle_l4_hidden_state(
             witness_state_specific: evaluation.signals.l4_transition_state_specific,
             phase_witness_milli: evaluation.signals.l4_phase_witness_milli,
             phase_witness_supported: evaluation.signals.l4_phase_witness_supported,
+            operator_consensus_witness: phase_backed_operator_consensus(candidate, evaluation),
         })
         .collect::<Vec<_>>();
     let readouts = estimate_hidden_typing_state(&inputs);
@@ -336,6 +337,34 @@ fn settle_l4_hidden_state(
         };
         signals.l4_scene_reason = readout.disposition.as_str();
     }
+}
+
+fn phase_backed_operator_consensus(
+    candidate: &UnifiedCorrectionCandidate,
+    evaluation: &CandidateDecisionEvaluation,
+) -> bool {
+    let action = evaluation.action;
+    action.verifier_passed
+        && !action.left_context_changed
+        && action.changed_tokens == 1
+        && is_precise_lexical_operator(action.operator)
+        && candidate.has_origin(crate::candidate_contract::CandidateOrigin::DeterministicTypo)
+        && candidate.has_origin(crate::candidate_contract::CandidateOrigin::L2Surface)
+        && evaluation.signals.l2_transition_phase_verdict
+            == crate::nanda_wave::PhaseVerdict::Support
+        && evaluation.signals.l2_lexical_phase_competition_ready
+}
+
+fn is_precise_lexical_operator(operator: crate::language_action::LanguageActionOperator) -> bool {
+    use crate::language_action::LanguageActionOperator;
+    matches!(
+        operator,
+        LanguageActionOperator::FixTransposition
+            | LanguageActionOperator::ReplaceLetter
+            | LanguageActionOperator::RemoveExtraLetter
+            | LanguageActionOperator::RestoreMissingLetter
+            | LanguageActionOperator::NormalizeCase
+    )
 }
 
 fn phase_support_strength(signals: &CandidateDecisionSignals) -> Option<f32> {

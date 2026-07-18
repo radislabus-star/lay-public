@@ -47,6 +47,7 @@ pub(crate) struct L4HiddenCandidateInput {
     pub(crate) witness_state_specific: bool,
     pub(crate) phase_witness_milli: i16,
     pub(crate) phase_witness_supported: bool,
+    pub(crate) operator_consensus_witness: bool,
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -79,6 +80,7 @@ struct SemanticClass {
     witness_state_specific: bool,
     phase_witness_milli: i16,
     phase_witness_supported: bool,
+    operator_consensus_witness: bool,
 }
 
 pub(crate) fn estimate_hidden_typing_state(
@@ -111,6 +113,7 @@ pub(crate) fn estimate_hidden_typing_state(
             );
             class.phase_witness_supported = true;
         }
+        class.operator_consensus_witness |= candidate.operator_consensus_witness;
     }
     let mut ranked = classes
         .iter()
@@ -147,6 +150,7 @@ pub(crate) fn estimate_hidden_typing_state(
             witness_state_specific: class.witness_state_specific,
             phase_witness_milli: class.phase_witness_milli,
             phase_witness_supported: class.phase_witness_supported,
+            operator_consensus_witness: class.operator_consensus_witness,
         })
         .collect::<Vec<_>>();
     let certificate = resolve_active_hypotheses(&hypotheses);
@@ -279,6 +283,7 @@ mod tests {
             witness_state_specific: false,
             phase_witness_milli: 0,
             phase_witness_supported: false,
+            operator_consensus_witness: false,
         }
     }
 

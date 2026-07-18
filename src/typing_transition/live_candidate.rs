@@ -67,6 +67,7 @@ impl TransitionDecisionCore {
                     witness_state_specific: proposal.l4_transition_state_specific,
                     phase_witness_milli: 0,
                     phase_witness_supported: false,
+                    operator_consensus_witness: false,
                 },
             )
             .collect::<Vec<_>>();
