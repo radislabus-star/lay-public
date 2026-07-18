@@ -20,18 +20,18 @@
     "semantic_hash": "236e46a80b6d2865de3d1816fb645158"
   },
   "extension/lay@radislabus-star.github.io/lay-impl.js": {
-    "mtime": 1784334288.6628182,
+    "mtime": 1784335666.747106,
     "ast_hash": "4b795e86b2cf94e522b648b448bb5e87",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1784334288.592248,
-    "ast_hash": "3c05651b8314e6c4fe652626ea5da92c",
+    "mtime": 1784335666.724856,
+    "ast_hash": "79cc8ec2686699033277b7e45181dbe0",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1784334288.6691365,
-    "ast_hash": "4c3104b1a30b670ff46325e78dce98b5",
+    "mtime": 1784335666.837734,
+    "ast_hash": "aa3d67fd0d56b99ca49e8501f329886c",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1784334288.669003,
-    "ast_hash": "6a7bad9ad9d6a2446fb6d035893056ee",
+    "mtime": 1784335666.837421,
+    "ast_hash": "461ee38cffce2389a36493628429ea54",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1784334288.668816,
-    "ast_hash": "59eff9823600efc46aabcc2f864c5920",
+    "mtime": 1784335666.8370962,
+    "ast_hash": "9eb08d0e800a74cb5aae13e742be42b5",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -2520,8 +2520,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1784334288.6709833,
-    "ast_hash": "f65bcfebef2b43d8a304a225c3145594",
+    "mtime": 1784335666.8562875,
+    "ast_hash": "a22c3150633a176bcc6628b608190707",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3285,8 +3285,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1784335385.7807338,
-    "ast_hash": "5096e6ddd77c89d2e3e9caca559cb5f2",
+    "mtime": 1784335535.6443257,
+    "ast_hash": "28503406cb6fbb174ba01b943e582b5c",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
