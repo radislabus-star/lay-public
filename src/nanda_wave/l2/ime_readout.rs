@@ -39,11 +39,14 @@ pub(super) fn ime_l2_word_candidates_impl(
     let mut candidates = lexical
         .map(|candidate| {
             let candidate_len = candidate.word.chars().count();
-            let kind = if candidate.word.starts_with(&normalized) && candidate_len > token_len {
-                L2ImeWordCandidateKind::Completion
-            } else {
-                L2ImeWordCandidateKind::Replacement
-            };
+            let kind =
+                if crate::text_metrics::is_adjacent_transposition(&normalized, &candidate.word) {
+                    L2ImeWordCandidateKind::AdjacentTransposition
+                } else if candidate.word.starts_with(&normalized) && candidate_len > token_len {
+                    L2ImeWordCandidateKind::Completion
+                } else {
+                    L2ImeWordCandidateKind::Replacement
+                };
             let prior = usage.candidate_prior_prepared(&usage_context, &candidate.word);
             L2ImeWordCandidate {
                 surface: candidate.word,
@@ -78,7 +81,8 @@ fn cached_lexical_candidates(
         return candidates;
     }
 
-    let mut candidates = memory.surface_candidates(normalized, material_limit);
+    let mut candidates = memory.adjacent_transposition_candidates(normalized);
+    candidates.extend(memory.surface_candidates(normalized, material_limit));
     candidates.extend(memory.completion_candidates(
         normalized,
         material_limit,
@@ -234,8 +238,11 @@ fn same_lexical_script(left: &str, right: &str) -> bool {
 
 fn sort_and_truncate_ime_l2_candidates(candidates: &mut Vec<L2ImeWordCandidate>, limit: usize) {
     candidates.sort_by(|left, right| {
-        l2_ime_word_candidate_score(right)
-            .cmp(&l2_ime_word_candidate_score(left))
+        l2_ime_word_candidate_operator_priority(right)
+            .cmp(&l2_ime_word_candidate_operator_priority(left))
+            .then_with(|| {
+                l2_ime_word_candidate_score(right).cmp(&l2_ime_word_candidate_score(left))
+            })
             .then_with(|| right.motif_overlap.cmp(&left.motif_overlap))
             .then_with(|| right.l2_overlap.cmp(&left.l2_overlap))
             .then_with(|| right.l1_overlap.cmp(&left.l1_overlap))
@@ -251,12 +258,17 @@ fn sort_and_truncate_ime_l2_candidates(candidates: &mut Vec<L2ImeWordCandidate>,
     candidates.truncate(limit);
 }
 
+fn l2_ime_word_candidate_operator_priority(candidate: &L2ImeWordCandidate) -> u8 {
+    u8::from(candidate.kind == L2ImeWordCandidateKind::AdjacentTransposition)
+}
+
 fn l2_ime_word_candidate_score(candidate: &L2ImeWordCandidate) -> u32 {
     let prior = ((candidate.usage_prior * 1600.0 + candidate.context_prior * 2600.0)
         .round()
         .clamp(0.0, 820.0) as u32)
         .saturating_add(candidate.accepted_count.min(40) * 18);
     let kind_bonus = match candidate.kind {
+        L2ImeWordCandidateKind::AdjacentTransposition => 0,
         L2ImeWordCandidateKind::Completion => 80,
         L2ImeWordCandidateKind::Replacement => 0,
     };

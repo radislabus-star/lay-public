@@ -175,6 +175,75 @@ impl LexicalPhaseMemory {
         normalize_surface(surface).is_some_and(|surface| self.decoder_contains_surface(&surface))
     }
 
+    pub(crate) fn adjacent_transposition_candidates(
+        &self,
+        surface: &str,
+    ) -> Vec<LexicalPhaseCandidate> {
+        let Some(surface) = normalize_surface(surface) else {
+            return Vec::new();
+        };
+        if self.decoder_contains_surface(&surface) {
+            return Vec::new();
+        }
+
+        let query_field = SurfaceFieldEncoder::encode(&surface);
+        let (query_phase, _) = surface_phase(&query_field);
+        let query_keys = atom_center_keys(&query_field);
+        let mut chars: Vec<char> = surface.chars().collect();
+        let mut candidates = Vec::new();
+        for index in 0..chars.len().saturating_sub(1) {
+            if chars[index] == chars[index + 1] {
+                continue;
+            }
+            chars.swap(index, index + 1);
+            let candidate: String = chars.iter().collect();
+            chars.swap(index, index + 1);
+            if !self.decoder_contains_surface(&candidate)
+                || candidates
+                    .iter()
+                    .any(|existing: &LexicalPhaseCandidate| existing.word == candidate)
+            {
+                continue;
+            }
+            let rank = self
+                .terminal_for_normalized_surface(&candidate)
+                .and_then(|terminal| read_terminal(self.bytes(), self.header, terminal))
+                .map_or(u32::MAX, |terminal| terminal.rank);
+            let candidate_field = SurfaceFieldEncoder::encode(&candidate);
+            let (candidate_phase, atom_count) = surface_phase(&candidate_field);
+            let coherence = phase_coherence_milli(&query_phase, &candidate_phase);
+            let candidate_keys = atom_center_keys(&candidate_field);
+            let overlap = sorted_overlap(&query_keys, &candidate_keys);
+            let rank_boost = if rank == u32::MAX {
+                0
+            } else {
+                corpus_rank_boost(rank).saturating_mul(2)
+            };
+            let score = 1_100u32
+                .saturating_add(u32::from(coherence))
+                .saturating_add(overlap.min(24) as u32 * 64)
+                .saturating_add(rank_boost)
+                .saturating_sub(240);
+            candidates.push(LexicalPhaseCandidate {
+                rank: if rank == u32::MAX {
+                    usize::MAX
+                } else {
+                    rank as usize
+                },
+                score,
+                l1_overlap: overlap,
+                l2_overlap: usize::from(coherence) / 40,
+                motif_overlap: atom_count as usize,
+                prefix_match: false,
+                phase_coherence_milli: coherence,
+                reconstructed: true,
+                word: candidate,
+            });
+        }
+        sort_candidates(&mut candidates);
+        candidates
+    }
+
     pub(crate) fn surface_rank(&self, surface: &str) -> Option<usize> {
         let terminal = self.terminal_for_surface(surface)?;
         read_terminal(self.bytes(), self.header, terminal).map(|record| record.rank as usize)
@@ -1063,6 +1132,21 @@ mod tests {
     }
 
     #[test]
+    fn decoder_recovers_adjacent_transposition_as_typed_operator() {
+        let memory = memory();
+        let candidates = memory.adjacent_transposition_candidates("пукнт");
+
+        assert_eq!(
+            candidates
+                .iter()
+                .map(|candidate| candidate.word.as_str())
+                .collect::<Vec<_>>(),
+            vec!["пункт"]
+        );
+        assert!(memory.adjacent_transposition_candidates("пункт").is_empty());
+    }
+
+    #[test]
     fn grapheme_graph_completes_prefix() {
         let memory = memory();
         let candidates = memory.completion_candidates("пров", 4, 24);
@@ -1104,12 +1188,14 @@ mod tests {
     #[test]
     fn production_decoder_does_not_accept_dirty_probe_surfaces() {
         let memory = default_memory().expect("production lexical phase artifact loads");
-        for dirty in ["пукнт", "звгрузи", "эсперемнт", "труссс"] {
+        for dirty in ["пукнт", "звгрузи", "эсперемнт", "труссс", "поянл"]
+        {
             assert!(
                 !memory.decoder_contains_surface(dirty),
                 "decoder accepted dirty probe as a training surface: {dirty:?}"
             );
         }
         assert!(memory.decoder_contains_surface("можем"));
+        assert!(memory.decoder_contains_surface("понял"));
     }
 }

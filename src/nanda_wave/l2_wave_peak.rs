@@ -34,8 +34,10 @@ impl L2CorrectionPeakContext {
 
     pub(crate) fn has_local_single_edit_peak(&self) -> bool {
         self.center_candidates.iter().any(|candidate| {
-            candidate.kind == L2ImeWordCandidateKind::Replacement
-                && damerau_levenshtein(&self.original_word, &candidate.surface) == 1
+            matches!(
+                candidate.kind,
+                L2ImeWordCandidateKind::AdjacentTransposition | L2ImeWordCandidateKind::Replacement
+            ) && damerau_levenshtein(&self.original_word, &candidate.surface) == 1
                 && candidate.l1_overlap > 0
                 && candidate.motif_overlap > 0
         })
@@ -263,6 +265,7 @@ fn center_resonance(prepared: &L2CorrectionPeakContext, replacement: &str) -> f3
                 + candidate.motif_overlap as f32 * 0.070)
                 .clamp(0.0, 0.22);
             let kind_bonus = match candidate.kind {
+                L2ImeWordCandidateKind::AdjacentTransposition => 0.16,
                 L2ImeWordCandidateKind::Replacement => 0.12,
                 L2ImeWordCandidateKind::Completion => 0.06,
             };

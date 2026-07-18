@@ -891,3 +891,15 @@ fn short_token_cell_marks_ascii_context_as_risky() {
         .expect("short token candidate");
     assert!(short.risk >= 0.40);
 }
+
+#[test]
+fn compact_readout_keeps_verified_adjacent_transposition_in_top_k() {
+    let candidates = ime_l2_word_candidates("а ", "поянл", 16);
+
+    assert!(
+        candidates
+            .iter()
+            .any(|candidate| candidate.surface == "понял"),
+        "candidates={candidates:#?}"
+    );
+}

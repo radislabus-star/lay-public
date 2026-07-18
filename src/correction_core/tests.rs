@@ -311,19 +311,30 @@ mod tests {
 
     #[test]
     fn compact_l2_route_applies_adjacent_transposition_center() {
+        let previous_policy = crate::hot_field::process_policy();
+        crate::hot_field::set_process_policy(crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
+            crate::text_backend::TextBackendPreference::Ime,
+        ));
         let pipeline = default_typing_assist_pipeline();
-        let mut req = request("врмея ", &pipeline, CorrectionMode::NandaOnly);
-        req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+        let resolutions: Vec<_> = [("врмея ", "время "), ("поянл ", "понял ")]
+            .into_iter()
+            .map(|(input, expected)| {
+                let mut req = request(input, &pipeline, CorrectionMode::NandaOnly);
+                req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+                (expected, resolve_text_correction(req))
+            })
+            .collect();
+        crate::hot_field::set_process_policy(previous_policy);
+        for (expected, resolution) in resolutions {
+            let selected = resolution
+                .selected
+                .as_ref()
+                .unwrap_or_else(|| panic!("L2 transposition center must apply: {resolution:#?}"));
 
-        let resolution = resolve_text_correction(req);
-        let selected = resolution
-            .selected
-            .as_ref()
-            .unwrap_or_else(|| panic!("L2 transposition center must apply: {resolution:#?}"));
-
-        assert_eq!(selected.replacement, "время ");
-        assert_eq!(selected.error_class, TypingErrorClass::AdjacentTransposition);
-        assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+            assert_eq!(selected.replacement, expected);
+            assert_eq!(selected.error_class, TypingErrorClass::AdjacentTransposition);
+            assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+        }
     }
 
     #[test]

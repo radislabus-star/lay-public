@@ -65,6 +65,7 @@ const L2_FORM_ATTRACTOR_LIMIT: usize = 6;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum L2ImeWordCandidateKind {
+    AdjacentTransposition,
     Completion,
     Replacement,
 }
