@@ -205,6 +205,7 @@ fn compare_candidate_decision_order(
 mod calibration;
 mod hard_structural_veto;
 mod interference;
+mod phase_competition;
 mod receipt;
 pub(crate) use receipt::DecisionTransitionReceipt;
 
@@ -312,9 +313,10 @@ mod admission;
 use admission::candidate_has_apply_authority;
 #[cfg(test)]
 use admission::{
-    admit_evaluated_hidden_transition, known_word_drift_has_authority, phase_policy_rejection,
-    TransitionAdmission,
+    admit_evaluated_hidden_transition, known_word_drift_has_authority, TransitionAdmission,
 };
+#[cfg(test)]
+use phase_competition::phase_policy_rejection;
 
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) struct CandidateDecisionSignals {

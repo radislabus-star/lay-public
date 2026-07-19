@@ -39,7 +39,7 @@ pub(super) fn candidate_has_apply_authority(
         );
         return false;
     }
-    if let Some(reason) = phase_policy_rejection(
+    if let Some(reason) = super::phase_competition::phase_policy_rejection(
         policy,
         source_role,
         signals.l2_transition_phase_package_loaded,
@@ -242,42 +242,6 @@ fn original_tail_has_same_script_context(event: &TypingErrorEvent) -> bool {
         (current_is_ru && word.chars().all(is_cyrillic_letter))
             || (current_is_en && word.chars().all(|ch| ch.is_ascii_alphabetic()))
     })
-}
-
-fn phase_managed_source(source_role: CorrectionSourceRole) -> bool {
-    matches!(
-        source_role,
-        CorrectionSourceRole::DeterministicTypo
-            | CorrectionSourceRole::L2Surface
-            | CorrectionSourceRole::L3Context
-    )
-}
-
-pub(super) fn phase_policy_rejection(
-    policy: TransitionDecisionPolicy,
-    source_role: CorrectionSourceRole,
-    package_loaded: bool,
-    operator_present: bool,
-    operator_promoted: bool,
-    verdict: crate::nanda_wave::PhaseVerdict,
-) -> Option<&'static str> {
-    if !policy.l2_phase_apply || !phase_managed_source(source_role) {
-        return None;
-    }
-    if !package_loaded {
-        return Some("l2_transition_phase_package_missing");
-    }
-    if !operator_present {
-        return Some("l2_transition_phase_operator_missing");
-    }
-    if !operator_promoted {
-        return Some("l2_transition_phase_shadow_only");
-    }
-    match verdict {
-        crate::nanda_wave::PhaseVerdict::Repel => Some("l2_transition_phase_repel"),
-        crate::nanda_wave::PhaseVerdict::Unknown => Some("l2_transition_phase_unknown"),
-        crate::nanda_wave::PhaseVerdict::Support => None,
-    }
 }
 
 fn learned_candidate_shadowed_by_deterministic_owner(
