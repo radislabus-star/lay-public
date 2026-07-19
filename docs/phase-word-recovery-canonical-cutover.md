@@ -683,6 +683,12 @@ immediate user replacement` records with one shared typed operator. A generic
 later `user-correction` is not a training label because it can belong to a
 different caret position or a new word.
 
+The canonical WordBuffer reconstruction expanded the compact package to 212
+lexical anti-centers without changing the fixed replay. This proves the next
+owner is local L2 candidate birth: phase competition must shape candidate
+geometry before the attractor's local admission, not only after candidates
+reach DecisionCore.
+
 ### P1: candidate coverage
 
 Phase arbitration cannot recover a candidate that L2 never births. Expand

@@ -116,10 +116,10 @@
     }
   ],
   "duplicate_symbols": {},
-  "graph_fingerprint": "a3b556880f4baa8c3836f256425ed226fc1aead05a5ef9b0c52bef1ccff196a2",
+  "graph_fingerprint": "4a6ec5a37cafc47aa75488111a30f0869c5206ba5fe3b4b933deacb1162e105d",
   "graph_links": 20705,
   "graph_nodes": 8335,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "d249cc083c6d6840c95573a1773f4edc15ad1553244aae8d22d1a30d27d9ad75",
+  "source_fingerprint": "b7cb41860e3acd49c1d5d708f00d663a93edb925f235f2dc3047ce5b7bc98f47",
   "verdict": "PASS"
 }

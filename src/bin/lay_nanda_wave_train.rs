@@ -268,6 +268,8 @@ struct LiveAction {
     lay_from: String,
     #[serde(default)]
     lay_to: String,
+    #[serde(default)]
+    user_target: String,
 }
 
 fn add_live_learning(
@@ -517,11 +519,22 @@ fn push_causal_user_phase_entries(entries: &mut Vec<L2PhaseTrainingEntry>, actio
     let Some((original, automatic)) = normalized_live_pair(&action.lay_from, &action.lay_to) else {
         return;
     };
-    let Some((applied, target)) = normalized_live_pair(&action.from_text, &action.to_text) else {
+    let full_target = if action.user_target.trim().is_empty() {
+        let Some(target) = lay::word_buffer::reconstruct_user_correction_target(
+            &action.lay_to,
+            &action.from_text,
+            &action.to_text,
+        ) else {
+            return;
+        };
+        target
+    } else {
+        action.user_target.clone()
+    };
+    let Some((_, target)) = normalized_live_pair(&automatic, &full_target) else {
         return;
     };
-    if applied != automatic
-        || original.split_whitespace().count() != 1
+    if original.split_whitespace().count() != 1
         || automatic.split_whitespace().count() != 1
         || target.split_whitespace().count() != 1
         || automatic == target
@@ -647,6 +660,7 @@ mod tests {
             safety_allow_apply: None,
             lay_from: "провека ".to_string(),
             lay_to: "провекра ".to_string(),
+            user_target: "проверка ".to_string(),
         };
         let mut entries = Vec::new();
 
@@ -670,6 +684,7 @@ mod tests {
             safety_allow_apply: None,
             lay_from: "птом ".to_string(),
             lay_to: "потом ".to_string(),
+            user_target: "".to_string(),
         };
         let mut entries = Vec::new();
 

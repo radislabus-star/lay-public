@@ -34,6 +34,16 @@
     "expected_present_but_not_applied": 119,
     "nonfinal_apply": 128
   },
+  "canonical_target_phase_package": {
+    "training": "verified live actions plus causal triples reconstructed by the canonical WordBuffer target reconstruction",
+    "hot_bytes": 348328,
+    "lexical_anti_centers": 212,
+    "raw_words_stored": false,
+    "expected_candidate_applied": 358,
+    "expected_present_but_not_applied": 119,
+    "nonfinal_apply": 128,
+    "conclusion": "The package receives correctly reconstructed feedback, but its current DecisionCore-only placement is too late to alter L2WordAttractor birth geometry."
+  },
   "decision": "REJECTED",
   "reason": "Candidate-specific lexical anti-centers improve correct selection, but the package still increases nonfinal applies above the fixed baseline. It may not receive runtime authority or installation.",
   "next_owner": "L2WordAttractor candidate-specific destructive geometry",
