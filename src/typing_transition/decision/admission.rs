@@ -1,4 +1,5 @@
 use super::calibration::CURRENT;
+use super::hard_structural_veto;
 use super::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -21,23 +22,8 @@ pub(super) fn candidate_has_apply_authority(
     let source_role = candidate.origin.source_role();
     let exact_positive_transition = evaluation.transition.l4_signed_signal.exact_positive();
     let operator_consensus_authority = certified_operator_consensus(event, candidate, evaluation);
-    if (signals.l4_hidden_plan_commitment != 0 && !signals.l4_hidden_certificate_valid)
-        || signals.l4_hidden_disposition == L4HiddenDisposition::Rejected
-        || (signals.l4_hidden_disposition == L4HiddenDisposition::Ambiguous
-            && signals.l4_hidden_ambiguity_authoritative)
-        || (signals.l4_hidden_selected_witnessed
-            && signals.l4_hidden_disposition != L4HiddenDisposition::Witnessed)
-    {
-        debug_decision_reject(
-            candidate,
-            if signals.l4_hidden_plan_commitment != 0 && !signals.l4_hidden_certificate_valid {
-                "l4_invalid_resolution_certificate"
-            } else {
-                signals.l4_hidden_disposition.as_str()
-            },
-            bayes.posterior,
-            bayes.risk,
-        );
+    if let Some(reason) = hard_structural_veto::hidden_state_rejection(signals) {
+        debug_decision_reject(candidate, reason, bayes.posterior, bayes.risk);
         return false;
     }
     if source_role == CorrectionSourceRole::L3Context
@@ -64,36 +50,22 @@ pub(super) fn candidate_has_apply_authority(
         debug_decision_reject(candidate, reason, bayes.posterior, bayes.risk);
         return false;
     }
-    let action = evaluation.action;
-    let boundary_field = (action.edit_operator == verifier::EditTransitionOperator::BoundaryShift)
-        .then(|| boundary_shift_field_readout(&event.original, &candidate.replacement))
-        .flatten();
-    let high_precision_boundary_shift = action.verifier_passed
-        && action.edit_operator == verifier::EditTransitionOperator::BoundaryShift
-        && boundary_shift_has_stable_token_mass(&candidate.replacement)
-        && boundary_field.is_some_and(|readout| readout.has_direct_apply_mass());
     let learned_short_boundary_authority = signals.l3_phrase_milli >= CURRENT.l3_strong_milli
         || signals.l4_signed_milli >= CURRENT.l4_strong_milli
         || exact_positive_transition;
-    if action.edit_operator == verifier::EditTransitionOperator::BoundaryShift
-        && !high_precision_boundary_shift
-        && !learned_short_boundary_authority
-    {
-        debug_decision_reject(
-            candidate,
-            "ambiguous_short_boundary_shift",
-            bayes.posterior,
-            bayes.risk,
-        );
+    let high_precision_boundary_shift =
+        hard_structural_veto::high_precision_boundary_shift(event, candidate, evaluation);
+    if let Some(reason) = hard_structural_veto::boundary_shift_rejection(
+        event,
+        candidate,
+        evaluation,
+        learned_short_boundary_authority,
+    ) {
+        debug_decision_reject(candidate, reason, bayes.posterior, bayes.risk);
         return false;
     }
-    if !action.verifier_passed {
-        debug_decision_reject(
-            candidate,
-            "unverified_transition",
-            bayes.posterior,
-            bayes.risk,
-        );
+    if let Some(reason) = hard_structural_veto::verifier_rejection(evaluation) {
+        debug_decision_reject(candidate, reason, bayes.posterior, bayes.risk);
         return false;
     }
     let verified_mass_preserving_l2_transition =
@@ -270,35 +242,6 @@ fn original_tail_has_same_script_context(event: &TypingErrorEvent) -> bool {
         (current_is_ru && word.chars().all(is_cyrillic_letter))
             || (current_is_en && word.chars().all(|ch| ch.is_ascii_alphabetic()))
     })
-}
-
-fn boundary_shift_has_stable_token_mass(replacement: &str) -> bool {
-    let words = crate::correction_core::normalized_correction_words(replacement);
-    let Some(pair) = words.get(words.len().saturating_sub(2)..) else {
-        return false;
-    };
-    pair.len() == 2 && pair.iter().all(|word| word.chars().count() >= 4)
-}
-
-fn boundary_shift_field_readout(
-    original: &str,
-    replacement: &str,
-) -> Option<crate::hot_field::HotBoundaryShiftReadout> {
-    let original_words = crate::correction_core::normalized_correction_words(original);
-    let replacement_words = crate::correction_core::normalized_correction_words(replacement);
-    if original_words.len() != replacement_words.len() || original_words.len() < 2 {
-        return None;
-    }
-    let original_pair = &original_words[original_words.len() - 2..];
-    let replacement_pair = &replacement_words[replacement_words.len() - 2..];
-    Some(
-        crate::hot_field::HotFieldSnapshot::current().boundary_shift_readout(
-            &original_pair[0],
-            &original_pair[1],
-            &replacement_pair[0],
-            &replacement_pair[1],
-        ),
-    )
 }
 
 fn phase_managed_source(source_role: CorrectionSourceRole) -> bool {

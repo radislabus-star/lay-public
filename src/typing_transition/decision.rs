@@ -203,6 +203,7 @@ fn compare_candidate_decision_order(
 }
 
 mod calibration;
+mod hard_structural_veto;
 mod interference;
 mod receipt;
 pub(crate) use receipt::DecisionTransitionReceipt;
