@@ -697,6 +697,12 @@ were close competition. Therefore they require learned candidate-specific
 destructive centers, not a larger abstention threshold, a hand-written phrase
 rule, or an ambiguity fallback.
 
+The v2 hard-anti-bank experiment preserved more valid supports (1070 to 1098)
+without reducing the 14 remaining false winners:
+`docs/structural_gates/receipts/L3_CONTEXT_HARD_ANTI_BANK_2026-07-19.json`.
+The next representation must bind destructive evidence to the candidate and
+the learned relation topology together; candidate identity alone is too broad.
+
 ### P3: L4 temporal state
 
 Increase organic witness coverage. The runtime already binds state-before,

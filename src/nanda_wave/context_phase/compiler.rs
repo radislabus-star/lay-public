@@ -246,6 +246,7 @@ pub(crate) fn compile_context_phase(
                     threshold_micro,
                     positive: builder.positive,
                     negative: builder.negative,
+                    hard_negative: Vec::new(),
                 }
             })
         })
@@ -280,7 +281,7 @@ pub(crate) fn compile_context_phase(
         anti_centers: package
             .profiles
             .iter()
-            .map(|profile| profile.negative.len())
+            .map(|profile| profile.negative.len() + profile.hard_negative.len())
             .sum(),
         positive_examples: package
             .profiles
@@ -344,7 +345,7 @@ fn mine_l2_hard_negative_centers(
             };
             let profile = &mut package.profiles[index];
             add_cluster(
-                &mut profile.negative,
+                &mut profile.hard_negative,
                 &vector,
                 MAX_ANTI_CENTERS,
                 CENTER_SPLIT_COHERENCE,
@@ -499,7 +500,7 @@ pub(crate) fn apply_feedback_overlay(
             report.positive_admitted += 1;
         } else {
             add_cluster(
-                &mut profile.negative,
+                &mut profile.hard_negative,
                 &vector,
                 MAX_ANTI_CENTERS,
                 CENTER_SPLIT_COHERENCE,
@@ -524,7 +525,7 @@ pub(crate) fn apply_feedback_overlay(
     report.anti_centers = package
         .profiles
         .iter()
-        .map(|profile| profile.negative.len())
+        .map(|profile| profile.negative.len() + profile.hard_negative.len())
         .sum();
     Ok(report)
 }

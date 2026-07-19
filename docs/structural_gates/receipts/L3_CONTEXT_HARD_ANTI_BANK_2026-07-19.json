@@ -1,0 +1,16 @@
+{
+  "kind": "l3_context_phase_hard_anti_bank_proof",
+  "source": "clean remote corpus; 10k fragments; 20 cold proof workers",
+  "format": "LAYL3P01 v2; v1 read compatibility retained",
+  "baseline_full_supports": 1070,
+  "full_supports": 1098,
+  "baseline_full_false_top1": 14,
+  "full_false_top1": 14,
+  "anti_false_top1_reduction": 29,
+  "support_precision_ppm": 987410,
+  "raw_words_stored": false,
+  "verdict": "WATCH",
+  "finding": "separating generic and candidate-specific hard anti-centers preserves more valid supports but does not yet suppress the remaining separated false winners",
+  "promotion": "blocked_until_false_top1_is_zero_without_support_collapse",
+  "next_debt": "learn destructive phase centers over candidate-plus-relation topology rather than candidate identity alone"
+}

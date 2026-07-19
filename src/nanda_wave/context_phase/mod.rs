@@ -41,6 +41,10 @@ pub(crate) struct ContextCandidateProfile {
     pub(crate) threshold_micro: i32,
     pub(crate) positive: Vec<PhaseCenter>,
     pub(crate) negative: Vec<PhaseCenter>,
+    /// Candidate-specific destructive centers mined only from observed L2
+    /// false winners. Keeping them separate prevents broad lexical negatives
+    /// from averaging away a precise wrong-attractor phase mode.
+    pub(crate) hard_negative: Vec<PhaseCenter>,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -227,7 +231,11 @@ impl ContextPhasePackage {
                 positive_examples: profile.positive_examples,
                 negative_examples: profile.negative_examples,
                 positive_centers: profile.positive.len().min(u8::MAX as usize) as u8,
-                anti_centers: profile.negative.len().min(u8::MAX as usize) as u8,
+                anti_centers: profile
+                    .negative
+                    .len()
+                    .saturating_add(profile.hard_negative.len())
+                    .min(u8::MAX as usize) as u8,
                 semantic_support: self
                     .semantic_state(token_hash)
                     .map(|state| state.support)
@@ -240,7 +248,11 @@ impl ContextPhasePackage {
         let anti = if mode == ContextPhaseMode::NoAnti {
             0.0
         } else {
-            max_coherence(vector, &profile.negative).unwrap_or_default()
+            max_coherence(vector, &profile.negative)
+                .into_iter()
+                .chain(max_coherence(vector, &profile.hard_negative))
+                .max_by(f32::total_cmp)
+                .unwrap_or_default()
         };
         let margin = positive - anti;
         let margin_micro = phase_micro(margin);
@@ -256,7 +268,11 @@ impl ContextPhasePackage {
             positive_examples: profile.positive_examples,
             negative_examples: profile.negative_examples,
             positive_centers: profile.positive.len().min(u8::MAX as usize) as u8,
-            anti_centers: profile.negative.len().min(u8::MAX as usize) as u8,
+            anti_centers: profile
+                .negative
+                .len()
+                .saturating_add(profile.hard_negative.len())
+                .min(u8::MAX as usize) as u8,
             semantic_support: self
                 .semantic_state(token_hash)
                 .map(|state| state.support)
@@ -444,7 +460,11 @@ pub(crate) fn package_report(path: &Path) -> serde_json::Value {
             "semantic_states": package.semantic_states.len(),
             "candidate_profiles": package.profiles.len(),
             "positive_centers": package.profiles.iter().map(|profile| profile.positive.len()).sum::<usize>(),
-            "anti_centers": package.profiles.iter().map(|profile| profile.negative.len()).sum::<usize>(),
+            "anti_centers": package
+                .profiles
+                .iter()
+                .map(|profile| profile.negative.len() + profile.hard_negative.len())
+                .sum::<usize>(),
             "transitions": package.transitions,
             "corpus_fragments": package.corpus_fragments,
             "global_threshold_micro": package.global_threshold_micro,
