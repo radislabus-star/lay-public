@@ -93,7 +93,9 @@ impl TypingCpu {
 
     pub fn record_precognition_tick(stage: &str, text: &str, include_trace: bool) {
         crate::nanda_wave::precognition::record_precognition_tick(stage, text, include_trace);
-        llmwave::record_phrase_experience(stage, text);
+        if crate::typing_memory::phrase_is_attested_for_learning(text) {
+            llmwave::record_phrase_experience(stage, text);
+        }
     }
 
     pub fn record_typing_assist_trace(

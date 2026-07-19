@@ -272,6 +272,21 @@ pub(crate) fn normalized_words(text: &str) -> Vec<String> {
         .collect()
 }
 
+/// Raw phrase observations may train L3 only from attested lexical surfaces.
+/// Accepted IME/correction outcomes have their own explicit training path.
+pub(crate) fn phrase_is_attested_for_learning(text: &str) -> bool {
+    let words = normalized_words(text);
+    !words.is_empty()
+        && words.into_iter().all(|word| {
+            if word.chars().all(|ch| ch.is_ascii_alphabetic() || ch == '-') {
+                crate::layout_autoswitch::is_known_english_layout_autoswitch_word(&word)
+            } else {
+                crate::hot_field::HotFieldSnapshot::current().learning_surface_is_attested(&word)
+                    || crate::russian_lexicon::is_known_russian_word_or_form(&word)
+            }
+        })
+}
+
 pub(crate) fn normalize_memory_word(word: &str) -> String {
     let trimmed = word
         .trim()
@@ -306,6 +321,13 @@ mod tests {
         assert_eq!(event.feedback, TypingMemoryFeedback::Observed);
         assert_eq!(event.word, "дождь");
         assert_eq!(event.context, ["на", "улице", "опять", "идёт"]);
+    }
+
+    #[test]
+    fn raw_phrase_learning_requires_attested_surfaces() {
+        assert!(phrase_is_attested_for_learning("на улице идёт дождь"));
+        assert!(!phrase_is_attested_for_learning("на улице идёт дожть"));
+        assert!(!phrase_is_attested_for_learning("звгрузи пакет"));
     }
 
     #[test]
