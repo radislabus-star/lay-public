@@ -527,10 +527,13 @@ pub(super) fn layout_candidate_allowed(
     strong_autoswitch: bool,
     learned_transition: bool,
 ) -> bool {
-    // Two-key layout projections are underdetermined: they carry too little
-    // surface mass to identify one lexical center.  They may reappear only
-    // after a state-specific accepted transition has supplied real evidence.
-    if token.chars().count() < 3 && !learned_transition {
+    // Two-key projections have enough mass only for a closed-class lexical
+    // center. This preserves `yt -> не` while rejecting open, ambiguous
+    // projections such as `rt -> ке` unless experience proves the transition.
+    if token.chars().count() < 3
+        && !learned_transition
+        && !is_ru_short_function_word(&converted.to_lowercase())
+    {
         return false;
     }
     if strong_autoswitch || learned_transition {
@@ -618,6 +621,7 @@ mod tests {
     fn short_layout_projection_needs_learned_transition_evidence() {
         assert!(!layout_candidate_allowed("rt", "ке", true, false));
         assert!(layout_candidate_allowed("rt", "ке", true, true));
+        assert!(layout_candidate_allowed("yt", "не", true, false));
         assert!(layout_candidate_allowed("ytn", "нет", true, false));
     }
 

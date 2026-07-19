@@ -219,6 +219,27 @@ mod tests {
     }
 
     #[test]
+    fn sequential_layout_words_keep_the_same_boundary_authority() {
+        let cfg = config();
+        let mut committed_tail = String::new();
+        for (typed, expected) in [
+            ("lfkmit ", "дальше "),
+            ("yt ", "не "),
+            ("gthtdjhfxbdftncz ", "переворачивается "),
+        ] {
+            let decision =
+                decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+                    text: typed,
+                    committed_tail: &committed_tail,
+                    config: &cfg,
+                })
+                .unwrap_or_else(|| panic!("missing layout transition for {typed:?}"));
+            assert_eq!(decision.replacement, expected);
+            committed_tail.push_str(expected);
+        }
+    }
+
+    #[test]
     fn committed_tail_boundary_uses_same_dual_layout_decision_as_cli() {
         let cfg = config();
         for (tail, token, expected) in [
