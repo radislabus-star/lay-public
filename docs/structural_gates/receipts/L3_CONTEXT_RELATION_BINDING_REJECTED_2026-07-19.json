@@ -1,0 +1,14 @@
+{
+  "kind": "l3_context_phase_relation_binding_ablation",
+  "source": "clean remote corpus; 10k fragments; 20 cold proof workers",
+  "baseline_full_supports": 1098,
+  "relation_binding_full_supports": 1228,
+  "baseline_full_false_top1": 14,
+  "relation_binding_full_false_top1": 22,
+  "baseline_support_precision_ppm": 987410,
+  "relation_binding_support_precision_ppm": 982400,
+  "raw_words_stored": false,
+  "verdict": "REJECTED",
+  "reason": "the additive context-candidate binding increased support but increased false winners; it is not eligible for promotion",
+  "code_retained": false
+}
