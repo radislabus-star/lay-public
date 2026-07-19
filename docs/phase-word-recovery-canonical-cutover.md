@@ -703,6 +703,10 @@ without reducing the 14 remaining false winners:
 The next representation must bind destructive evidence to the candidate and
 the learned relation topology together; candidate identity alone is too broad.
 
+An evidence-driven scene-center budget improved valid supports from 1098 to
+1158 while holding false-top1 at 14. It is retained as a non-promoting quality
+improvement: `docs/structural_gates/receipts/L3_CONTEXT_ADAPTIVE_SCENE_CAPACITY_2026-07-19.json`.
+
 ### P3: L4 temporal state
 
 Increase organic witness coverage. The runtime already binds state-before,

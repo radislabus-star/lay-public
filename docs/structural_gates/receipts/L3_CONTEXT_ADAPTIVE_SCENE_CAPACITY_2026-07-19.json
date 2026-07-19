@@ -1,0 +1,14 @@
+{
+  "kind": "l3_context_phase_adaptive_scene_capacity_proof",
+  "source": "clean remote corpus; 10k fragments; 20 cold proof workers",
+  "baseline_full_supports": 1098,
+  "full_supports": 1158,
+  "baseline_full_false_top1": 14,
+  "full_false_top1": 14,
+  "anti_false_top1_reduction": 48,
+  "support_precision_ppm": 988054,
+  "raw_words_stored": false,
+  "verdict": "WATCH",
+  "finding": "evidence-driven scene capacity preserves more valid context supports without increasing false winners",
+  "promotion": "blocked_until_false_top1_is_zero_without_support_collapse"
+}

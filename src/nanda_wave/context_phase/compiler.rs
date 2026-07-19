@@ -13,7 +13,10 @@ use super::{
     ContextCandidateProfile, ContextPhaseMode, ContextPhasePackage, TokenSemanticState, CELLS,
 };
 
-const MAX_POSITIVE_CENTERS: usize = 4;
+// A lexical meaning appears in several independent scenes. Four modes blend
+// distant phrase states too early; retain enough learned phase centers for the
+// field to represent those scenes separately.
+const MAX_POSITIVE_CENTERS: usize = 8;
 // A lexical competitor can arrive through several damaged surfaces. Keep their
 // incompatible phase modes separate so destructive interference does not
 // average a rare false attractor back into a plausible center.
@@ -194,10 +197,11 @@ pub(crate) fn compile_context_phase(
                 semantic_package.candidate_relation_vector(context, target, ContextPhaseMode::Full);
             let target_hash = hash_text(target);
             let profile = builders.entry(target_hash).or_default();
+            let center_budget = learned_positive_center_budget(profile.positive_examples);
             add_cluster(
                 &mut profile.positive,
                 &vector,
-                MAX_POSITIVE_CENTERS,
+                center_budget,
                 CENTER_SPLIT_COHERENCE,
             );
             profile.positive_examples = profile.positive_examples.saturating_add(1);
@@ -490,10 +494,11 @@ pub(crate) fn apply_feedback_overlay(
             package.candidate_relation_vector(&context, &candidate, ContextPhaseMode::Full);
         let profile = &mut package.profiles[index];
         if polarity > 0 {
+            let center_budget = learned_positive_center_budget(profile.positive_examples);
             add_cluster(
                 &mut profile.positive,
                 &vector,
-                MAX_POSITIVE_CENTERS,
+                center_budget,
                 CENTER_SPLIT_COHERENCE,
             );
             profile.positive_examples = profile.positive_examples.saturating_add(1);
@@ -820,6 +825,15 @@ fn compile_semantic_states(sequences: &[Vec<String>]) -> Vec<TokenSemanticState>
             center: phase_center_from_sum(&builder.sum),
         })
         .collect()
+}
+
+/// The number of scene centers is evidence-driven. Sparse profiles must not
+/// fragment a single lexical relation into many accidental modes; frequent
+/// profiles earn additional phase capacity as independent contexts arrive.
+fn learned_positive_center_budget(positive_examples: u32) -> usize {
+    let observed = usize::try_from(positive_examples.saturating_add(1)).unwrap_or(usize::MAX);
+    let capacity = (observed as f64).sqrt().ceil() as usize;
+    capacity.clamp(1, MAX_POSITIVE_CENTERS)
 }
 
 fn learned_threshold(builder: &ProfileBuilder) -> i32 {
