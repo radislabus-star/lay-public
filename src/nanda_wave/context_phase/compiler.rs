@@ -1,4 +1,5 @@
 use std::collections::{BTreeMap, BTreeSet};
+use std::env;
 use std::io;
 use std::thread;
 
@@ -68,6 +69,37 @@ pub(crate) struct ContextPhaseProofReport {
     pub(crate) raw_words_stored: bool,
     pub(crate) min_profile_support: u32,
     pub(crate) verdict: &'static str,
+}
+
+/// Associative heldout counters. Cold proof can shard independent sentences
+/// without changing the package, candidate lattice, or acceptance semantics.
+#[derive(Default)]
+struct ContextPhaseProofTotals {
+    evaluated: usize,
+    full_supports: usize,
+    full_top1: usize,
+    full_false_supports: usize,
+    full_false_top1: usize,
+    no_phase_supports: usize,
+    no_anti_top1: usize,
+    no_anti_false_supports: usize,
+    no_anti_false_top1: usize,
+    no_semantic_top1: usize,
+}
+
+impl ContextPhaseProofTotals {
+    fn merge(&mut self, other: Self) {
+        self.evaluated += other.evaluated;
+        self.full_supports += other.full_supports;
+        self.full_top1 += other.full_top1;
+        self.full_false_supports += other.full_false_supports;
+        self.full_false_top1 += other.full_false_top1;
+        self.no_phase_supports += other.no_phase_supports;
+        self.no_anti_top1 += other.no_anti_top1;
+        self.no_anti_false_supports += other.no_anti_false_supports;
+        self.no_anti_false_top1 += other.no_anti_false_top1;
+        self.no_semantic_top1 += other.no_semantic_top1;
+    }
 }
 
 /// Result of rebuilding a personal overlay from explicit IME feedback.
@@ -401,74 +433,31 @@ pub(crate) fn prove_context_phase(input: ContextPhaseCompileInput<'_>) -> Contex
         max_fragments: 0,
         min_profile_support: input.min_profile_support,
     });
-    let mut evaluated = 0usize;
-    let mut full_supports = 0usize;
-    let mut full_top1 = 0usize;
-    let mut full_false_supports = 0usize;
-    let mut full_false_top1 = 0usize;
-    let mut no_phase_supports = 0usize;
-    let mut no_anti_top1 = 0usize;
-    let mut no_anti_false_supports = 0usize;
-    let mut no_anti_false_top1 = 0usize;
-    let mut no_semantic_top1 = 0usize;
-
-    for tokens in &heldout_sequences {
-        for index in 1..tokens.len() {
-            let target = &tokens[index];
-            let competitors = l2_lattice_competitors(&tokens[..index], target, MAX_COMPETITORS);
-            if competitors.is_empty() {
-                continue;
-            }
-            let mut candidates = Vec::with_capacity(competitors.len() + 1);
-            candidates.push(target.as_str());
-            candidates.extend(competitors.iter().map(String::as_str));
-            let full = package.score_candidates_with_mode(
-                &tokens[..index],
-                &candidates,
-                ContextPhaseMode::Full,
-            );
-            if !full.first().is_some_and(|readout| readout.profile_present) {
-                continue;
-            }
-            evaluated += 1;
-            full_supports += full.first().is_some_and(|readout| {
-                readout.disposition == super::ContextPhaseDisposition::Support
-            }) as usize;
-            full_top1 += correct_is_unique_top(&full) as usize;
-            full_false_supports += full
-                .iter()
-                .skip(1)
-                .filter(|readout| readout.disposition == super::ContextPhaseDisposition::Support)
-                .count();
-            full_false_top1 += false_candidate_wins(&full) as usize;
-            let no_phase = package.score_candidates_with_mode(
-                &tokens[..index],
-                &candidates,
-                ContextPhaseMode::NoPhase,
-            );
-            no_phase_supports += no_phase.first().is_some_and(|readout| {
-                readout.disposition == super::ContextPhaseDisposition::Support
-            }) as usize;
-            let no_anti = package.score_candidates_with_mode(
-                &tokens[..index],
-                &candidates,
-                ContextPhaseMode::NoAnti,
-            );
-            no_anti_top1 += correct_is_unique_top(&no_anti) as usize;
-            no_anti_false_supports += no_anti
-                .iter()
-                .skip(1)
-                .filter(|readout| readout.disposition == super::ContextPhaseDisposition::Support)
-                .count();
-            no_anti_false_top1 += false_candidate_wins(&no_anti) as usize;
-            let no_semantic = package.score_candidates_with_mode(
-                &tokens[..index],
-                &candidates,
-                ContextPhaseMode::NoSemanticState,
-            );
-            no_semantic_top1 += correct_is_unique_top(&no_semantic) as usize;
+    let workers = context_phase_worker_count(heldout_sequences.len());
+    let chunk_size = heldout_sequences.len().div_ceil(workers);
+    let totals = thread::scope(|scope| {
+        let mut tasks = Vec::new();
+        for chunk in heldout_sequences.chunks(chunk_size) {
+            tasks.push(scope.spawn(|| evaluate_heldout_sequences(&package, chunk)));
         }
-    }
+        let mut totals = ContextPhaseProofTotals::default();
+        for task in tasks {
+            totals.merge(task.join().expect("L3 context proof worker panicked"));
+        }
+        totals
+    });
+    let ContextPhaseProofTotals {
+        evaluated,
+        full_supports,
+        full_top1,
+        full_false_supports,
+        full_false_top1,
+        no_phase_supports,
+        no_anti_top1,
+        no_anti_false_supports,
+        no_anti_false_top1,
+        no_semantic_top1,
+    } = totals;
     let phase_ablation_drop = full_supports.saturating_sub(no_phase_supports);
     let anti_ablation_drop = full_top1.saturating_sub(no_anti_top1);
     let anti_false_support_reduction = no_anti_false_supports.saturating_sub(full_false_supports);
@@ -511,6 +500,71 @@ pub(crate) fn prove_context_phase(input: ContextPhaseCompileInput<'_>) -> Contex
         min_profile_support: input.min_profile_support.max(2),
         verdict,
     }
+}
+
+fn evaluate_heldout_sequences(
+    package: &ContextPhasePackage,
+    sequences: &[Vec<String>],
+) -> ContextPhaseProofTotals {
+    let mut totals = ContextPhaseProofTotals::default();
+    for tokens in sequences {
+        for index in 1..tokens.len() {
+            let target = &tokens[index];
+            let competitors = l2_lattice_competitors(&tokens[..index], target, MAX_COMPETITORS);
+            if competitors.is_empty() {
+                continue;
+            }
+            let mut candidates = Vec::with_capacity(competitors.len() + 1);
+            candidates.push(target.as_str());
+            candidates.extend(competitors.iter().map(String::as_str));
+            let full = package.score_candidates_with_mode(
+                &tokens[..index],
+                &candidates,
+                ContextPhaseMode::Full,
+            );
+            if !full.first().is_some_and(|readout| readout.profile_present) {
+                continue;
+            }
+            totals.evaluated += 1;
+            totals.full_supports += full.first().is_some_and(|readout| {
+                readout.disposition == super::ContextPhaseDisposition::Support
+            }) as usize;
+            totals.full_top1 += correct_is_unique_top(&full) as usize;
+            totals.full_false_supports += full
+                .iter()
+                .skip(1)
+                .filter(|readout| readout.disposition == super::ContextPhaseDisposition::Support)
+                .count();
+            totals.full_false_top1 += false_candidate_wins(&full) as usize;
+            let no_phase = package.score_candidates_with_mode(
+                &tokens[..index],
+                &candidates,
+                ContextPhaseMode::NoPhase,
+            );
+            totals.no_phase_supports += no_phase.first().is_some_and(|readout| {
+                readout.disposition == super::ContextPhaseDisposition::Support
+            }) as usize;
+            let no_anti = package.score_candidates_with_mode(
+                &tokens[..index],
+                &candidates,
+                ContextPhaseMode::NoAnti,
+            );
+            totals.no_anti_top1 += correct_is_unique_top(&no_anti) as usize;
+            totals.no_anti_false_supports += no_anti
+                .iter()
+                .skip(1)
+                .filter(|readout| readout.disposition == super::ContextPhaseDisposition::Support)
+                .count();
+            totals.no_anti_false_top1 += false_candidate_wins(&no_anti) as usize;
+            let no_semantic = package.score_candidates_with_mode(
+                &tokens[..index],
+                &candidates,
+                ContextPhaseMode::NoSemanticState,
+            );
+            totals.no_semantic_top1 += correct_is_unique_top(&no_semantic) as usize;
+        }
+    }
+    totals
 }
 
 fn correct_is_unique_top(readouts: &[super::ContextPhaseReadout]) -> bool {
@@ -719,10 +773,7 @@ fn compile_l2_competitor_cache(sequences: &[Vec<String>]) -> BTreeMap<String, Ve
     if jobs.is_empty() {
         return BTreeMap::new();
     }
-    let workers = thread::available_parallelism()
-        .map(|parallelism| parallelism.get())
-        .unwrap_or(1)
-        .min(jobs.len());
+    let workers = context_phase_worker_count(jobs.len());
     let chunk_size = jobs.len().div_ceil(workers);
     let mut cache = BTreeMap::new();
     thread::scope(|scope| {
@@ -747,6 +798,21 @@ fn compile_l2_competitor_cache(sequences: &[Vec<String>]) -> BTreeMap<String, Ve
         }
     });
     cache
+}
+
+fn context_phase_worker_count(work_items: usize) -> usize {
+    let requested = env::var("LAY_L3_CONTEXT_WORKERS")
+        .ok()
+        .and_then(|value| value.parse::<usize>().ok())
+        .filter(|workers| *workers > 0);
+    requested
+        .or_else(|| {
+            thread::available_parallelism()
+                .ok()
+                .map(|value| value.get())
+        })
+        .unwrap_or(1)
+        .min(work_items.max(1))
 }
 
 fn training_surfaces(target: &str) -> Vec<String> {
