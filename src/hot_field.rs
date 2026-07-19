@@ -6,15 +6,26 @@
 //! live daemon's default memory object.
 
 use crate::text_backend::TextBackendPreference;
+#[cfg(test)]
+use std::cell::Cell;
 use std::sync::atomic::{AtomicU8, Ordering};
 
 const ROUTE_DAEMON: u8 = 0;
 const ROUTE_IME: u8 = 1;
+#[cfg(not(test))]
 const AUTHORITY_FIELD_SNAPSHOT_ONLY: u8 = 0;
 const AUTHORITY_FULL_REFERENCE_ALLOWED: u8 = 1;
 
 static PROCESS_ROUTE: AtomicU8 = AtomicU8::new(ROUTE_DAEMON);
 static PROCESS_AUTHORITY: AtomicU8 = AtomicU8::new(AUTHORITY_FULL_REFERENCE_ALLOWED);
+
+#[cfg(test)]
+thread_local! {
+    // Tests exercise IME and daemon authority in parallel. Their temporary
+    // policies must not leak into unrelated correction routes in another
+    // test worker; the production process still uses the atomics above.
+    static TEST_PROCESS_POLICY: Cell<Option<HotFieldPolicy>> = const { Cell::new(None) };
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum HotRuntimeRoute {
@@ -72,11 +83,25 @@ impl HotFieldPolicy {
 }
 
 pub fn set_process_policy(policy: HotFieldPolicy) {
-    PROCESS_ROUTE.store(encode_route(policy.route), Ordering::Relaxed);
-    PROCESS_AUTHORITY.store(encode_authority(policy.authority), Ordering::Relaxed);
+    #[cfg(test)]
+    {
+        TEST_PROCESS_POLICY.with(|slot| slot.set(Some(policy)));
+        return;
+    }
+
+    #[cfg(not(test))]
+    {
+        PROCESS_ROUTE.store(encode_route(policy.route), Ordering::Relaxed);
+        PROCESS_AUTHORITY.store(encode_authority(policy.authority), Ordering::Relaxed);
+    }
 }
 
 pub fn process_policy() -> HotFieldPolicy {
+    #[cfg(test)]
+    if let Some(policy) = TEST_PROCESS_POLICY.with(Cell::get) {
+        return policy;
+    }
+
     HotFieldPolicy {
         route: decode_route(PROCESS_ROUTE.load(Ordering::Relaxed)),
         authority: decode_authority(PROCESS_AUTHORITY.load(Ordering::Relaxed)),
@@ -87,6 +112,7 @@ pub fn process_allows_full_reference_authority() -> bool {
     process_policy().allows_full_reference_authority()
 }
 
+#[cfg(not(test))]
 const fn encode_route(route: HotRuntimeRoute) -> u8 {
     match route {
         HotRuntimeRoute::Daemon => ROUTE_DAEMON,
@@ -101,6 +127,7 @@ const fn decode_route(value: u8) -> HotRuntimeRoute {
     }
 }
 
+#[cfg(not(test))]
 const fn encode_authority(authority: HotAuthority) -> u8 {
     match authority {
         HotAuthority::FieldSnapshotOnly => AUTHORITY_FIELD_SNAPSHOT_ONLY,
@@ -394,6 +421,20 @@ mod tests {
         assert!(!process_allows_full_reference_authority());
 
         set_process_policy(original);
+    }
+
+    #[test]
+    fn test_policy_override_does_not_leak_to_another_test_worker() {
+        let worker = std::thread::spawn(|| {
+            set_process_policy(HotFieldPolicy::ime());
+            process_policy()
+        });
+
+        assert_eq!(process_policy().route(), HotRuntimeRoute::Daemon);
+        assert_eq!(
+            worker.join().expect("policy worker").route(),
+            HotRuntimeRoute::Ime
+        );
     }
 
     #[test]

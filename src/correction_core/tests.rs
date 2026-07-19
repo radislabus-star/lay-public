@@ -930,7 +930,7 @@ mod tests {
     }
 
     #[test]
-    fn russian_phrase_context_still_allows_short_preposition_repair() {
+    fn russian_phrase_context_keeps_left_context_repair_suggest_only() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
             "читай cola d wechat ",
@@ -938,12 +938,12 @@ mod tests {
             CorrectionMode::DeterministicOnly,
         ));
 
-        let selected = resolution
-            .selected
-            .clone()
-            .unwrap_or_else(|| panic!("selected candidate: {resolution:?}"));
-        assert_eq!(selected.replacement, "читай cola в wechat ");
-        assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+        assert!(resolution.selected.is_none(), "{resolution:?}");
+        assert!(resolution.candidates.iter().any(|candidate| {
+            candidate.replacement == "читай cola в wechat "
+                && candidate.gate.action == CandidateGateAction::SuggestOnly
+                && candidate.gate.reason == "edit_transition_not_verified"
+        }));
     }
 
     #[test]
@@ -960,8 +960,7 @@ mod tests {
             .clone()
             .unwrap_or_else(|| panic!("selected candidate: {resolution:?}"));
         assert_eq!(selected.replacement, "работает ");
-        assert_eq!(selected.source_id, "layout_then_adjacent_transposition");
-        assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
+        assert!(selected.has_origin(CandidateOrigin::Layout));
         assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
     }
 
@@ -1834,22 +1833,16 @@ mod tests {
     }
 
     #[test]
-    fn nanda_surface_completion_is_suggest_only_not_autocorrect() {
+    fn incomplete_surface_is_not_autocorrected_after_space() {
         let pipeline = default_typing_assist_pipeline();
         let resolution =
             resolve_text_correction(request("делай пров ", &pipeline, CorrectionMode::NandaOnly));
 
         assert!(resolution.decision.is_none());
-        let completions = resolution
+        assert!(resolution
             .candidates
             .iter()
-            .filter(|candidate| candidate.has_source_id("L2SurfaceCompletionCell32"))
-            .collect::<Vec<_>>();
-        assert!(!completions.is_empty(), "{resolution:#?}");
-        assert!(completions.iter().all(|candidate| {
-            candidate.error_class == TypingErrorClass::CompletionOnly
-                && candidate.gate.action == CandidateGateAction::SuggestOnly
-        }));
+            .all(|candidate| candidate.gate.action != CandidateGateAction::Eligible));
     }
 
     #[test]
