@@ -75,6 +75,14 @@ pub(crate) struct ContextPhaseProofReport {
     /// False winners despite an adequately represented context. These are the
     /// strongest evidence that the learned context field itself is wrong.
     pub(crate) full_false_top1_context_ready: usize,
+    /// Strong false winners that are a one-edit lexical neighbour of the
+    /// target. These point to L2 lattice geometry, not missing phrase state.
+    pub(crate) full_false_top1_edit_distance_one: usize,
+    /// Strong false winners that are two edits from the target.
+    pub(crate) full_false_top1_edit_distance_two: usize,
+    /// Strong false winners outside the local lexical neighbourhood. These
+    /// are the cleanest evidence for a missing learned L4 scene state.
+    pub(crate) full_false_top1_edit_distance_three_or_more: usize,
     pub(crate) no_phase_supports: usize,
     pub(crate) no_anti_top1: usize,
     pub(crate) no_anti_false_supports: usize,
@@ -104,6 +112,9 @@ struct ContextPhaseProofTotals {
     full_false_top1_separated_competition: usize,
     full_false_top1_weak_context: usize,
     full_false_top1_context_ready: usize,
+    full_false_top1_edit_distance_one: usize,
+    full_false_top1_edit_distance_two: usize,
+    full_false_top1_edit_distance_three_or_more: usize,
     no_phase_supports: usize,
     no_anti_top1: usize,
     no_anti_false_supports: usize,
@@ -122,6 +133,10 @@ impl ContextPhaseProofTotals {
         self.full_false_top1_separated_competition += other.full_false_top1_separated_competition;
         self.full_false_top1_weak_context += other.full_false_top1_weak_context;
         self.full_false_top1_context_ready += other.full_false_top1_context_ready;
+        self.full_false_top1_edit_distance_one += other.full_false_top1_edit_distance_one;
+        self.full_false_top1_edit_distance_two += other.full_false_top1_edit_distance_two;
+        self.full_false_top1_edit_distance_three_or_more +=
+            other.full_false_top1_edit_distance_three_or_more;
         self.no_phase_supports += other.no_phase_supports;
         self.no_anti_top1 += other.no_anti_top1;
         self.no_anti_false_supports += other.no_anti_false_supports;
@@ -582,6 +597,9 @@ pub(crate) fn prove_context_phase(input: ContextPhaseCompileInput<'_>) -> Contex
         full_false_top1_separated_competition,
         full_false_top1_weak_context,
         full_false_top1_context_ready,
+        full_false_top1_edit_distance_one,
+        full_false_top1_edit_distance_two,
+        full_false_top1_edit_distance_three_or_more,
         no_phase_supports,
         no_anti_top1,
         no_anti_false_supports,
@@ -619,6 +637,9 @@ pub(crate) fn prove_context_phase(input: ContextPhaseCompileInput<'_>) -> Contex
         full_false_top1_separated_competition,
         full_false_top1_weak_context,
         full_false_top1_context_ready,
+        full_false_top1_edit_distance_one,
+        full_false_top1_edit_distance_two,
+        full_false_top1_edit_distance_three_or_more,
         no_phase_supports,
         no_anti_top1,
         no_anti_false_supports,
@@ -669,7 +690,8 @@ fn evaluate_heldout_sequences(
                 .skip(1)
                 .filter(|readout| readout.disposition == super::ContextPhaseDisposition::Support)
                 .count();
-            if let Some(false_winner) = false_candidate_winner(&full) {
+            if let Some(false_index) = false_candidate_winner_index(&full) {
+                let false_winner = &full[false_index];
                 totals.full_false_top1 += 1;
                 let correct = &full[0];
                 let loss = false_winner
@@ -688,6 +710,12 @@ fn evaluate_heldout_sequences(
                     totals.full_false_top1_context_ready += 1;
                 } else {
                     totals.full_false_top1_weak_context += 1;
+                }
+                match crate::text_metrics::damerau_levenshtein(target, candidates[false_index]) {
+                    0 => {}
+                    1 => totals.full_false_top1_edit_distance_one += 1,
+                    2 => totals.full_false_top1_edit_distance_two += 1,
+                    _ => totals.full_false_top1_edit_distance_three_or_more += 1,
                 }
             }
             let no_phase = package.score_candidates_with_mode(
@@ -739,17 +767,23 @@ fn false_candidate_wins(readouts: &[super::ContextPhaseReadout]) -> bool {
 fn false_candidate_winner(
     readouts: &[super::ContextPhaseReadout],
 ) -> Option<&super::ContextPhaseReadout> {
+    false_candidate_winner_index(readouts).and_then(|index| readouts.get(index))
+}
+
+fn false_candidate_winner_index(readouts: &[super::ContextPhaseReadout]) -> Option<usize> {
     let Some(correct) = readouts.first() else {
         return None;
     };
     readouts
         .iter()
+        .enumerate()
         .skip(1)
         .filter(|candidate| {
-            candidate.disposition == super::ContextPhaseDisposition::Support
-                && candidate.margin_micro >= correct.margin_micro
+            candidate.1.disposition == super::ContextPhaseDisposition::Support
+                && candidate.1.margin_micro >= correct.margin_micro
         })
-        .max_by_key(|candidate| candidate.margin_micro)
+        .max_by_key(|(_, candidate)| candidate.margin_micro)
+        .map(|(index, _)| index)
 }
 
 #[cfg(test)]

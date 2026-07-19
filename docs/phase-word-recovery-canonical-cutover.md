@@ -707,6 +707,15 @@ An evidence-driven scene-center budget improved valid supports from 1098 to
 1158 while holding false-top1 at 14. It is retained as a non-promoting quality
 improvement: `docs/structural_gates/receipts/L3_CONTEXT_ADAPTIVE_SCENE_CAPACITY_2026-07-19.json`.
 
+The subsequent whole-lattice L4 scene experiment is explicitly rejected:
+it increased support, but raised false top-1 winners from 1 to 5 against the
+same fixed 10k proof. It is not runtime authority and is recorded in
+`docs/structural_gates/receipts/L4_SCENE_LATTICE_REJECTED_2026-07-19.json`.
+The retained diagnostic shows why the next owner is L2 geometry: 12 of the 14
+remaining baseline false winners were one edit from the target and the other 2
+were two edits away. L3 must receive a better lattice; L4 must not mask that
+defect with an unsafe boost.
+
 ### P3: L4 temporal state
 
 Increase organic witness coverage. The runtime already binds state-before,

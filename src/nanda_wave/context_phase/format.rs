@@ -48,25 +48,29 @@ pub(crate) fn write_package(path: &Path, package: &ContextPhasePackage) -> io::R
         write_vector(&mut bytes, &state.center);
     }
     for profile in &package.profiles {
-        bytes.extend_from_slice(&profile.token_hash.to_le_bytes());
-        bytes.extend_from_slice(&profile.positive_examples.to_le_bytes());
-        bytes.extend_from_slice(&profile.negative_examples.to_le_bytes());
-        bytes.extend_from_slice(&profile.threshold_micro.to_le_bytes());
-        bytes.extend_from_slice(&(profile.positive.len() as u16).to_le_bytes());
-        bytes.extend_from_slice(&(profile.negative.len() as u16).to_le_bytes());
-        bytes.extend_from_slice(&(profile.hard_negative.len() as u16).to_le_bytes());
-        bytes.extend_from_slice(&0_u16.to_le_bytes());
-        for center in profile
-            .positive
-            .iter()
-            .chain(&profile.negative)
-            .chain(&profile.hard_negative)
-        {
-            bytes.extend_from_slice(&center.support.to_le_bytes());
-            write_vector(&mut bytes, &center.center);
-        }
+        write_profile(&mut bytes, profile);
     }
     crate::private_file::write_private_bytes(path, &bytes)
+}
+
+fn write_profile(bytes: &mut Vec<u8>, profile: &ContextCandidateProfile) {
+    bytes.extend_from_slice(&profile.token_hash.to_le_bytes());
+    bytes.extend_from_slice(&profile.positive_examples.to_le_bytes());
+    bytes.extend_from_slice(&profile.negative_examples.to_le_bytes());
+    bytes.extend_from_slice(&profile.threshold_micro.to_le_bytes());
+    bytes.extend_from_slice(&(profile.positive.len() as u16).to_le_bytes());
+    bytes.extend_from_slice(&(profile.negative.len() as u16).to_le_bytes());
+    bytes.extend_from_slice(&(profile.hard_negative.len() as u16).to_le_bytes());
+    bytes.extend_from_slice(&0_u16.to_le_bytes());
+    for center in profile
+        .positive
+        .iter()
+        .chain(&profile.negative)
+        .chain(&profile.hard_negative)
+    {
+        bytes.extend_from_slice(&center.support.to_le_bytes());
+        write_vector(bytes, &center.center);
+    }
 }
 
 pub(crate) fn read_package(path: &Path) -> io::Result<ContextPhasePackage> {
@@ -117,31 +121,12 @@ fn decode_package(bytes: &[u8]) -> io::Result<ContextPhasePackage> {
     };
     let mut profiles = Vec::with_capacity(profile_count);
     for _ in 0..profile_count {
-        require(bytes, offset, profile_header_bytes)?;
-        let token_hash = read_u64(bytes, offset)?;
-        let positive_examples = read_u32(bytes, offset + 8)?;
-        let negative_examples = read_u32(bytes, offset + 12)?;
-        let threshold_micro = read_i32(bytes, offset + 16)?;
-        let positive_count = read_u16(bytes, offset + 20)? as usize;
-        let negative_count = read_u16(bytes, offset + 22)? as usize;
-        let hard_negative_count = if version == 1 {
-            0
-        } else {
-            read_u16(bytes, offset + 24)? as usize
-        };
-        offset += profile_header_bytes;
-        let positive = read_centers(bytes, &mut offset, positive_count)?;
-        let negative = read_centers(bytes, &mut offset, negative_count)?;
-        let hard_negative = read_centers(bytes, &mut offset, hard_negative_count)?;
-        profiles.push(ContextCandidateProfile {
-            token_hash,
-            positive_examples,
-            negative_examples,
-            threshold_micro,
-            positive,
-            negative,
-            hard_negative,
-        });
+        profiles.push(read_profile(
+            bytes,
+            &mut offset,
+            version,
+            profile_header_bytes,
+        )?);
     }
     if offset != bytes.len() {
         return Err(io::Error::new(
@@ -158,6 +143,39 @@ fn decode_package(bytes: &[u8]) -> io::Result<ContextPhasePackage> {
         corpus_fragments,
         global_threshold_micro,
         competition_threshold_micro,
+    })
+}
+
+fn read_profile(
+    bytes: &[u8],
+    offset: &mut usize,
+    version: u16,
+    profile_header_bytes: usize,
+) -> io::Result<ContextCandidateProfile> {
+    require(bytes, *offset, profile_header_bytes)?;
+    let token_hash = read_u64(bytes, *offset)?;
+    let positive_examples = read_u32(bytes, *offset + 8)?;
+    let negative_examples = read_u32(bytes, *offset + 12)?;
+    let threshold_micro = read_i32(bytes, *offset + 16)?;
+    let positive_count = read_u16(bytes, *offset + 20)? as usize;
+    let negative_count = read_u16(bytes, *offset + 22)? as usize;
+    let hard_negative_count = if version == 1 {
+        0
+    } else {
+        read_u16(bytes, *offset + 24)? as usize
+    };
+    *offset += profile_header_bytes;
+    let positive = read_centers(bytes, offset, positive_count)?;
+    let negative = read_centers(bytes, offset, negative_count)?;
+    let hard_negative = read_centers(bytes, offset, hard_negative_count)?;
+    Ok(ContextCandidateProfile {
+        token_hash,
+        positive_examples,
+        negative_examples,
+        threshold_micro,
+        positive,
+        negative,
+        hard_negative,
     })
 }
 
@@ -240,27 +258,28 @@ mod tests {
 
     #[test]
     fn package_roundtrip_keeps_compact_centers_without_words() {
+        let profile = ContextCandidateProfile {
+            token_hash: 17,
+            positive_examples: 5,
+            negative_examples: 2,
+            threshold_micro: 25_000,
+            positive: vec![PhaseCenter::from_center(
+                vec![PhaseCell { re: 0.0, im: 1.0 }; CELLS],
+                5,
+            )],
+            negative: Vec::new(),
+            hard_negative: vec![PhaseCenter::from_center(
+                vec![PhaseCell { re: -1.0, im: 0.0 }; CELLS],
+                2,
+            )],
+        };
         let package = ContextPhasePackage {
             semantic_states: vec![TokenSemanticState {
                 token_hash: 11,
                 support: 4,
                 center: vec![PhaseCell { re: 1.0, im: 0.0 }; CELLS],
             }],
-            profiles: vec![ContextCandidateProfile {
-                token_hash: 17,
-                positive_examples: 5,
-                negative_examples: 2,
-                threshold_micro: 25_000,
-                positive: vec![PhaseCenter::from_center(
-                    vec![PhaseCell { re: 0.0, im: 1.0 }; CELLS],
-                    5,
-                )],
-                negative: Vec::new(),
-                hard_negative: vec![PhaseCenter::from_center(
-                    vec![PhaseCell { re: -1.0, im: 0.0 }; CELLS],
-                    2,
-                )],
-            }],
+            profiles: vec![profile],
             transitions: 9,
             corpus_fragments: 3,
             global_threshold_micro: 10_000,

@@ -1,0 +1,17 @@
+{
+  "kind": "l4_scene_lattice_ablation",
+  "scope": "l3_context_phase_fixed_10k_heldout",
+  "runtime_authority": false,
+  "raw_words_stored": false,
+  "baseline_without_scene": {
+    "supports": 335,
+    "false_top1": 1
+  },
+  "scene_lattice": {
+    "supports": 1269,
+    "false_top1": 5,
+    "precision_ppm": 996075
+  },
+  "decision": "REJECTED",
+  "reason": "The learned whole-lattice scene field increased valid support but also increased false top-1 winners. It may not become runtime authority until it lowers false_top1 without a support collapse."
+}
