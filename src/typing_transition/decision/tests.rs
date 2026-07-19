@@ -277,12 +277,7 @@ fn hidden_state_allows_unknown_to_known_typo_repair() {
 
 #[test]
 fn exact_state_proof_allows_single_learned_drift() {
-    assert!(super::known_word_drift_has_authority(
-        CorrectionSourceRole::DeterministicTypo,
-        1,
-        false,
-        true,
-    ));
+    assert!(super::known_word_drift_has_authority(false, true));
 }
 
 #[test]

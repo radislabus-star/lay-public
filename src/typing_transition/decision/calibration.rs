@@ -35,3 +35,21 @@ pub(super) const CURRENT: AdmissionCalibration = AdmissionCalibration {
     l2_competitor_gap_milli: 100,
     phase_competitor_gap_milli: 10,
 };
+
+/// Context support is a calibrated signal, never a structural verifier result.
+pub(super) fn known_word_context_state_support(
+    context_prior: f32,
+    l3_phrase_milli: i16,
+    l4_signed_milli: i16,
+) -> bool {
+    context_prior >= CURRENT.learned_prior_floor
+        || l3_phrase_milli >= CURRENT.l3_strong_milli
+        || l4_signed_milli >= CURRENT.l4_strong_milli
+}
+
+pub(super) fn known_word_drift_has_authority(
+    strong_state_support: bool,
+    exact_state_support: bool,
+) -> bool {
+    exact_state_support || strong_state_support
+}

@@ -98,7 +98,7 @@ pub(super) fn candidate_has_apply_authority(
     }
     let strong_learned_support =
         external_learned_support || strong_l2_peak_support || high_precision_boundary_shift;
-    let context_state_support = known_word_context_state_support(
+    let context_state_support = super::calibration::known_word_context_state_support(
         bayes.context_prior,
         signals.l3_phrase_milli,
         signals.l4_signed_milli,
@@ -306,8 +306,8 @@ fn is_verified_mass_preserving_l2_transition(
 }
 
 pub(super) fn admit_evaluated_hidden_transition(
-    candidate_count: usize,
-    source_role: CorrectionSourceRole,
+    _candidate_count: usize,
+    _source_role: CorrectionSourceRole,
     context_state_support: bool,
     operator_consensus_witness: bool,
     transition: &TypingTransition,
@@ -338,9 +338,7 @@ pub(super) fn admit_evaluated_hidden_transition(
     if transition
         .state_before
         .known_word_drift_to(&transition.state_after_predicted)
-        && !known_word_drift_has_authority(
-            source_role,
-            candidate_count,
+        && !super::calibration::known_word_drift_has_authority(
             context_state_support,
             exact_state_support,
         )
@@ -367,25 +365,6 @@ pub(super) fn admit_evaluated_hidden_transition(
         allow_apply: true,
         reason: "latent_transition_admitted",
     }
-}
-
-fn known_word_context_state_support(
-    context_prior: f32,
-    l3_phrase_milli: i16,
-    l4_signed_milli: i16,
-) -> bool {
-    context_prior >= CURRENT.learned_prior_floor
-        || l3_phrase_milli >= CURRENT.l3_strong_milli
-        || l4_signed_milli >= CURRENT.l4_strong_milli
-}
-
-pub(super) fn known_word_drift_has_authority(
-    _source_role: CorrectionSourceRole,
-    _candidate_count: usize,
-    strong_state_support: bool,
-    exact_state_support: bool,
-) -> bool {
-    exact_state_support || strong_state_support
 }
 
 fn short_same_length_surface_drift(original_word: &str, replacement: &str) -> bool {

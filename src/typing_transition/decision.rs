@@ -312,9 +312,9 @@ pub(crate) struct CandidateDecisionBatch {
 mod admission;
 use admission::candidate_has_apply_authority;
 #[cfg(test)]
-use admission::{
-    admit_evaluated_hidden_transition, known_word_drift_has_authority, TransitionAdmission,
-};
+use admission::{admit_evaluated_hidden_transition, TransitionAdmission};
+#[cfg(test)]
+use calibration::known_word_drift_has_authority;
 #[cfg(test)]
 use phase_competition::phase_policy_rejection;
 
