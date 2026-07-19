@@ -318,7 +318,16 @@ whether the new surface is covered, and executes only a proven transition.
 
 ## Implementation Scoreboard
 
-Release checkpoint: `0.2.252`.
+Historical release checkpoint: `0.2.252`.
+
+Current authority checkpoint: `0.2.298`.
+
+The historical table below records the phase-memory cutover. The canonical
+current architecture is `phase-word-recovery-canonical-cutover.md`: it adds an
+immutable snapshot lease, winner-owned edit action, independent structural
+verifier, sealed `AuthorizedEdit`, and observed-state feedback that learns only
+from confirmed edits. Backend mismatches quarantine the execution lease rather
+than becoming semantic negative labels.
 
 | Stage | Status | Evidence |
 | --- | --- | --- |

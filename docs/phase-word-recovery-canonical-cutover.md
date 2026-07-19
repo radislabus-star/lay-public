@@ -75,9 +75,11 @@ AuthorizedEdit
 
 The structural verifier does not call L2 or rerank candidates. A dispatched
 system edit is censored until IBus observes the expected suffix. Observation
-records positive outcome evidence; a contradiction records candidate-specific
-negative evidence; stale epoch, timeout and unavailable observation do not
-train semantic memory.
+records positive outcome evidence. A visible mismatch quarantines the execution
+lease because it can be an IBus/backend synchronization failure, not semantic
+evidence against the selected candidate. Explicit undo and reject routes are
+the only sources of negative semantic memory; stale epoch, timeout and
+unavailable observation are censored.
 
 ## 2. Non-Negotiable Laws
 
