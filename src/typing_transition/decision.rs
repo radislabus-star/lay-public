@@ -86,7 +86,7 @@ impl TransitionDecisionCore {
                 )
             })
             .collect::<Vec<_>>();
-        settle_transition_interference(candidates, &mut evaluations);
+        settle_transition_interference(candidates, &mut evaluations, policy);
         settle_l4_hidden_state(event, candidates, &mut evaluations);
         if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
             for (candidate, evaluation) in candidates.iter().zip(&evaluations) {
@@ -191,7 +191,6 @@ mod apply_policy;
 mod calibration;
 mod hard_structural_veto;
 mod interference;
-mod phase_competition;
 mod receipt;
 pub(crate) use receipt::DecisionTransitionReceipt;
 
@@ -304,9 +303,6 @@ use admission::candidate_has_apply_authority;
 use admission::{admit_evaluated_hidden_transition, TransitionAdmission};
 #[cfg(test)]
 use calibration::known_word_drift_has_authority;
-#[cfg(test)]
-use phase_competition::phase_policy_rejection;
-
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) struct CandidateDecisionSignals {
     non_field_rank_score: f32,

@@ -1,6 +1,6 @@
 use super::{
-    admit_evaluated_hidden_transition, phase_policy_rejection,
-    producer_allows_authority_evaluation, unresolved_competitor_blocks, TransitionDecisionPolicy,
+    admit_evaluated_hidden_transition, producer_allows_authority_evaluation,
+    unresolved_competitor_blocks,
 };
 use crate::candidate_contract::{CandidateOrigin, CorrectionSourceRole};
 use crate::correction_core::{
@@ -47,116 +47,6 @@ fn transition_admission_allows_verified_current_word() {
     );
 
     assert!(admission.allow_apply, "reason={}", admission.reason);
-}
-
-#[test]
-fn phase_cutover_blocks_learned_and_deterministic_typo_sources() {
-    let disabled = TransitionDecisionPolicy {
-        l2_phase_apply: false,
-    };
-    let enabled = TransitionDecisionPolicy {
-        l2_phase_apply: true,
-    };
-
-    assert_eq!(
-        phase_policy_rejection(
-            disabled,
-            CorrectionSourceRole::L2Surface,
-            true,
-            true,
-            true,
-            crate::nanda_wave::PhaseVerdict::Repel,
-        ),
-        None
-    );
-    assert_eq!(
-        phase_policy_rejection(
-            enabled,
-            CorrectionSourceRole::L2Surface,
-            true,
-            true,
-            true,
-            crate::nanda_wave::PhaseVerdict::Repel,
-        ),
-        Some("l2_transition_phase_repel")
-    );
-    assert_eq!(
-        phase_policy_rejection(
-            enabled,
-            CorrectionSourceRole::L2Surface,
-            true,
-            true,
-            true,
-            crate::nanda_wave::PhaseVerdict::Unknown,
-        ),
-        Some("l2_transition_phase_unknown")
-    );
-    assert_eq!(
-        phase_policy_rejection(
-            enabled,
-            CorrectionSourceRole::DeterministicTypo,
-            true,
-            true,
-            true,
-            crate::nanda_wave::PhaseVerdict::Repel
-        ),
-        Some("l2_transition_phase_repel")
-    );
-    assert_eq!(
-        phase_policy_rejection(
-            enabled,
-            CorrectionSourceRole::DeterministicTypo,
-            true,
-            true,
-            true,
-            crate::nanda_wave::PhaseVerdict::Unknown
-        ),
-        Some("l2_transition_phase_unknown")
-    );
-    assert_eq!(
-        phase_policy_rejection(
-            enabled,
-            CorrectionSourceRole::DeterministicTypo,
-            true,
-            true,
-            true,
-            crate::nanda_wave::PhaseVerdict::Support
-        ),
-        None
-    );
-    assert_eq!(
-        phase_policy_rejection(
-            enabled,
-            CorrectionSourceRole::Layout,
-            true,
-            true,
-            true,
-            crate::nanda_wave::PhaseVerdict::Repel
-        ),
-        None
-    );
-    assert_eq!(
-        phase_policy_rejection(
-            enabled,
-            CorrectionSourceRole::L2Surface,
-            false,
-            false,
-            false,
-            crate::nanda_wave::PhaseVerdict::Unknown,
-        ),
-        Some("l2_transition_phase_package_missing")
-    );
-    assert_eq!(
-        phase_policy_rejection(
-            enabled,
-            CorrectionSourceRole::L2Surface,
-            true,
-            true,
-            false,
-            crate::nanda_wave::PhaseVerdict::Support,
-        ),
-        Some("l2_transition_phase_shadow_only")
-    );
 }
 
 fn event(text: &str) -> TypingErrorEvent {

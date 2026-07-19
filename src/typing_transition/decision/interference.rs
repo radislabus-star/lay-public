@@ -45,25 +45,18 @@ pub(super) fn read_transition_interference(
     }
 }
 
-pub(super) fn normalized_phase_support_strength(phase: PhaseReadout) -> Option<f32> {
+pub(super) fn normalized_phase_lattice_strength(phase: PhaseReadout) -> Option<f32> {
     if !phase.package_loaded
         || !phase.operator_present
         || !phase.operator_promoted
-        || phase.verdict != PhaseVerdict::Support
-        || phase.margin_micro < phase.threshold_micro
+        || !phase.lexical_competition_ready
     {
         return None;
     }
-    if phase.lexical_competition_ready {
-        return Some(normalized_margin_position(
-            phase.lexical_margin_micro,
-            phase.lexical_threshold_micro,
-        ));
-    }
-    let threshold_micro = phase.threshold_micro.clamp(-1_000_000, 999_999);
-    let threshold = threshold_micro as f64;
-    let margin = phase.margin_micro.clamp(threshold_micro, 1_000_000) as f64;
-    Some(((margin - threshold) / (1_000_000.0 - threshold)).clamp(0.0, 1.0) as f32)
+    Some(normalized_margin_position(
+        phase.lexical_margin_micro,
+        phase.lexical_threshold_micro,
+    ))
 }
 
 fn normalized_margin_position(margin_micro: i64, threshold_micro: i64) -> f32 {
@@ -88,7 +81,7 @@ fn settle_l2_energy(
     if !phase.package_loaded
         || !phase.operator_present
         || !phase.operator_promoted
-        || phase.verdict != PhaseVerdict::Support
+        || !phase.lexical_competition_ready
     {
         return surface_energy;
     }
@@ -117,10 +110,14 @@ mod tests {
     }
 
     fn input(phase_competition: Option<f32>) -> TransitionInterferenceInput {
+        let mut phase = promoted_phase(PhaseVerdict::Support, 240_000);
+        phase.lexical_competition_ready = true;
+        phase.lexical_margin_micro = 240_000;
+        phase.lexical_threshold_micro = 50_000;
         TransitionInterferenceInput {
             l2_rank_energy: 0.28,
             l2_uncertainty: 0.10,
-            phase: promoted_phase(PhaseVerdict::Support, 240_000),
+            phase,
             phase_competition,
             l3_rank_energy: 0.08,
             l4_signed_rank_energy: 0.04,
@@ -149,41 +146,23 @@ mod tests {
     }
 
     #[test]
-    fn repel_does_not_receive_positive_competition_authority() {
-        let mut repelled = input(Some(1.0));
+    fn phase_lattice_strength_includes_the_negative_side_of_a_ready_lexical_field() {
+        let mut repelled = input(None);
         repelled.phase = promoted_phase(PhaseVerdict::Repel, -240_000);
+        repelled.phase.lexical_competition_ready = true;
+        repelled.phase.lexical_margin_micro = -300_000;
+        repelled.phase.lexical_threshold_micro = 50_000;
+
+        let strength = normalized_phase_lattice_strength(repelled.phase).unwrap();
+        repelled.phase_competition = Some(strength.mul_add(2.0, -1.0));
         let readout = read_transition_interference(repelled);
 
-        assert!((readout.signal - 0.40).abs() < 0.0001, "{readout:?}");
+        assert!(strength < 0.5, "{strength}");
+        assert!(readout.signal < 0.40, "{readout:?}");
     }
 
     #[test]
-    fn phase_strength_is_normalized_against_each_profiles_learned_threshold() {
-        let mut low_threshold = promoted_phase(PhaseVerdict::Support, 200_000);
-        low_threshold.threshold_micro = 100_000;
-        let mut high_threshold = promoted_phase(PhaseVerdict::Support, 550_000);
-        high_threshold.threshold_micro = 500_000;
-
-        let low = normalized_phase_support_strength(low_threshold).unwrap();
-        let high = normalized_phase_support_strength(high_threshold).unwrap();
-
-        assert!(low > high, "low={low} high={high}");
-        assert!(
-            normalized_phase_support_strength(promoted_phase(PhaseVerdict::Repel, -200_000))
-                .is_none()
-        );
-    }
-
-    #[test]
-    fn corrupt_threshold_is_bounded_instead_of_panicking() {
-        let mut phase = promoted_phase(PhaseVerdict::Support, i64::MAX);
-        phase.threshold_micro = i64::MAX;
-
-        assert_eq!(normalized_phase_support_strength(phase), Some(1.0));
-    }
-
-    #[test]
-    fn lexical_anti_margin_destructively_orders_supported_candidates() {
+    fn lexical_anti_margin_destructively_orders_the_complete_lattice() {
         let mut correct = promoted_phase(PhaseVerdict::Support, 200_000);
         correct.lexical_competition_ready = true;
         correct.lexical_margin_micro = 300_000;
@@ -191,8 +170,8 @@ mod tests {
         let mut wrong = correct;
         wrong.lexical_margin_micro = -300_000;
 
-        let correct_strength = normalized_phase_support_strength(correct).unwrap();
-        let wrong_strength = normalized_phase_support_strength(wrong).unwrap();
+        let correct_strength = normalized_phase_lattice_strength(correct).unwrap();
+        let wrong_strength = normalized_phase_lattice_strength(wrong).unwrap();
 
         assert!(correct_strength > 0.5, "{correct_strength}");
         assert!(wrong_strength < 0.5, "{wrong_strength}");

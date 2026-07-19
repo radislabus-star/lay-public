@@ -151,10 +151,8 @@ fn l4_signed_memory_readout(
     surface: &str,
     usage: &crate::nanda_wave::UsagePriorSnapshot,
 ) -> crate::nanda_wave::l4_signed_memory::L4SignedMemorySignal {
-    let context = crate::typing_memory::transition_context_words(
-        &event.original,
-        &candidate.replacement,
-    );
+    let context =
+        crate::typing_memory::transition_context_words(&event.original, &candidate.replacement);
     let transition_target =
         crate::typing_memory::transition_target_text(&event.original, &candidate.replacement);
     if transition_target.is_empty() {
@@ -213,27 +211,30 @@ fn transition_interference_readout(
 fn settle_transition_interference(
     candidates: &[UnifiedCorrectionCandidate],
     evaluations: &mut [CandidateDecisionEvaluation],
+    policy: TransitionDecisionPolicy,
 ) {
-    let supported = candidates
+    // Phase evidence is a contrastive field over the complete eligible lattice.
+    // It only redistributes existing L2 energy; admission remains independent.
+    let strengths = candidates
         .iter()
         .zip(evaluations.iter())
         .filter_map(|(candidate, evaluation)| {
-            (candidate.gate.action == CandidateGateAction::Eligible)
-                .then(|| phase_support_strength(&evaluation.signals))
+            (policy.l2_phase_apply && candidate.gate.action == CandidateGateAction::Eligible)
+                .then(|| phase_lattice_strength(&evaluation.signals))
                 .flatten()
         })
         .collect::<Vec<_>>();
-    let phase_bounds = supported
+    let phase_bounds = strengths
         .iter()
         .copied()
         .min_by(f32::total_cmp)
-        .zip(supported.iter().copied().max_by(f32::total_cmp))
+        .zip(strengths.iter().copied().max_by(f32::total_cmp))
         .filter(|(minimum, maximum)| minimum < maximum);
 
     for (candidate, evaluation) in candidates.iter().zip(evaluations) {
         let phase_competition = phase_bounds.and_then(|(minimum, maximum)| {
             (candidate.gate.action == CandidateGateAction::Eligible)
-                .then(|| phase_support_strength(&evaluation.signals))
+                .then(|| phase_lattice_strength(&evaluation.signals))
                 .flatten()
                 .map(|strength| {
                     let position = (strength - minimum) / (maximum - minimum);
@@ -241,16 +242,15 @@ fn settle_transition_interference(
                 })
         });
         let phase = phase_readout_from_signals(&evaluation.signals);
-        let field = interference::read_transition_interference(
-            interference::TransitionInterferenceInput {
+        let field =
+            interference::read_transition_interference(interference::TransitionInterferenceInput {
                 l2_rank_energy: evaluation.signals.l2_rank_energy,
                 l2_uncertainty: evaluation.signals.l2_wave_peak_uncertainty_milli as f32 / 1_000.0,
                 phase,
                 phase_competition,
                 l3_rank_energy: evaluation.signals.l3_rank_energy,
                 l4_signed_rank_energy: evaluation.signals.l4_signed_rank_energy,
-            },
-        );
+            });
         let signals = &mut evaluation.signals;
         signals.rank_score = signals.non_field_rank_score + field.signal;
         signals.rank_milli = score_to_milli(signals.rank_score);
@@ -258,8 +258,7 @@ fn settle_transition_interference(
         signals.transition_field_attraction_milli = score_to_milli(field.attraction);
         signals.transition_field_repulsion_milli = score_to_milli(field.repulsion);
         signals.transition_field_uncertainty_milli = score_to_milli(field.uncertainty);
-        signals.transition_field_phase_competition_milli =
-            score_to_milli(field.phase_competition);
+        signals.transition_field_phase_competition_milli = score_to_milli(field.phase_competition);
     }
 }
 
@@ -283,8 +282,7 @@ fn settle_l4_hidden_state(
             ),
             verifier_passed: evaluation.action.verifier_passed,
             rank_milli: evaluation.signals.rank_milli,
-            context_support: evaluation.signals.l3_phrase_decision
-                == L3ContextDisposition::Support
+            context_support: evaluation.signals.l3_phrase_decision == L3ContextDisposition::Support
                 || (evaluation.signals.l2_transition_phase_verdict
                     == crate::nanda_wave::PhaseVerdict::Support
                     && evaluation.signals.l2_lexical_phase_competition_ready)
@@ -423,11 +421,13 @@ fn is_precise_lexical_operator(operator: crate::language_action::LanguageActionO
     )
 }
 
-fn phase_support_strength(signals: &CandidateDecisionSignals) -> Option<f32> {
-    interference::normalized_phase_support_strength(phase_readout_from_signals(signals))
+fn phase_lattice_strength(signals: &CandidateDecisionSignals) -> Option<f32> {
+    interference::normalized_phase_lattice_strength(phase_readout_from_signals(signals))
 }
 
-fn phase_readout_from_signals(signals: &CandidateDecisionSignals) -> crate::nanda_wave::PhaseReadout {
+fn phase_readout_from_signals(
+    signals: &CandidateDecisionSignals,
+) -> crate::nanda_wave::PhaseReadout {
     crate::nanda_wave::PhaseReadout {
         package_loaded: signals.l2_transition_phase_package_loaded,
         operator_present: signals.l2_transition_phase_operator_present,
@@ -459,13 +459,9 @@ fn transition_rank_bonus(
         verifier::EditTransitionOperator::LayoutProjection => 0.08,
         verifier::EditTransitionOperator::PhraseTokenRepair => 0.16,
         verifier::EditTransitionOperator::ReplaceCurrentWord => {
-            if candidate
-                .has_origin(crate::candidate_contract::CandidateOrigin::DeterministicTypo)
-            {
+            if candidate.has_origin(crate::candidate_contract::CandidateOrigin::DeterministicTypo) {
                 0.08
-            } else if candidate
-                .has_origin(crate::candidate_contract::CandidateOrigin::L2Surface)
-            {
+            } else if candidate.has_origin(crate::candidate_contract::CandidateOrigin::L2Surface) {
                 -0.08
             } else {
                 0.0
@@ -483,13 +479,12 @@ fn transition_rank_bonus(
     };
     // A composed layout+typo projection consumes two operators. It must beat
     // a one-step center on evidence, independently of its physical edit shape.
-    let composition_cost = if candidate.origin
-        == crate::candidate_contract::CandidateOrigin::LayoutThenTypo
-    {
-        0.12
-    } else {
-        0.0
-    };
+    let composition_cost =
+        if candidate.origin == crate::candidate_contract::CandidateOrigin::LayoutThenTypo {
+            0.12
+        } else {
+            0.0
+        };
     operator_bonus - composition_cost
 }
 

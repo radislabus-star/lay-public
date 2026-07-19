@@ -13,7 +13,7 @@ pub(super) fn candidate_has_apply_authority(
     candidate_index: usize,
     candidates: &[UnifiedCorrectionCandidate],
     evaluations: &[CandidateDecisionEvaluation],
-    policy: TransitionDecisionPolicy,
+    _policy: TransitionDecisionPolicy,
 ) -> bool {
     let candidate = &candidates[candidate_index];
     let evaluation = &evaluations[candidate_index];
@@ -37,17 +37,6 @@ pub(super) fn candidate_has_apply_authority(
             bayes.posterior,
             bayes.risk,
         );
-        return false;
-    }
-    if let Some(reason) = super::phase_competition::phase_policy_rejection(
-        policy,
-        source_role,
-        signals.l2_transition_phase_package_loaded,
-        signals.l2_transition_phase_operator_present,
-        signals.l2_transition_phase_operator_promoted,
-        signals.l2_transition_phase_verdict,
-    ) {
-        debug_decision_reject(candidate, reason, bayes.posterior, bayes.risk);
         return false;
     }
     let learned_short_boundary_authority = signals.l3_phrase_milli >= CURRENT.l3_strong_milli
@@ -103,12 +92,9 @@ pub(super) fn candidate_has_apply_authority(
         signals.l3_phrase_milli,
         signals.l4_signed_milli,
     );
-    let strong_transition_support = context_state_support
-        || (policy.l2_phase_apply
-            && signals.l2_transition_phase_operator_promoted
-            && signals.l2_transition_phase_verdict == crate::nanda_wave::PhaseVerdict::Support
-            && signals.l2_transition_phase_milli >= signals.l2_transition_phase_threshold_milli
-            && signals.l2_transition_phase_surfaces >= 3);
+    // A phase package may order candidates but may never manufacture apply
+    // authority. Only independently verified state evidence reaches here.
+    let strong_transition_support = context_state_support;
     let admission = admit_evaluated_hidden_transition(
         candidates.len(),
         source_role,

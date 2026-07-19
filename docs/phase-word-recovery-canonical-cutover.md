@@ -673,6 +673,12 @@ same-operator wrong candidate rate decreases
 anti-center ablation removes the gain
 ```
 
+The first complete-lattice shadow on 2026-07-20 is explicitly rejected:
+`docs/structural_gates/receipts/L2_LATTICE_PHASE_SHADOW_REJECTED_2026-07-20.json`.
+It improved correct selections from 353 to 358, but increased nonfinal applies
+from 118 to 128. Phase packages therefore remain non-authoritative until L2
+candidate-specific destructive geometry lowers both denominators together.
+
 ### P1: candidate coverage
 
 Phase arbitration cannot recover a candidate that L2 never births. Expand

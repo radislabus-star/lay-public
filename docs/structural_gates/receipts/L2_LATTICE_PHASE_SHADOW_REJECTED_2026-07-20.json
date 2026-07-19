@@ -1,0 +1,30 @@
+{
+  "kind": "l2_complete_lattice_phase_shadow",
+  "scope": "fixed_l2_candidate_flow_full_suite",
+  "runtime_authority": false,
+  "package": {
+    "hot_bytes": 365872,
+    "profile_count": 11,
+    "lexical_anti_centers": 193,
+    "raw_words_stored": false
+  },
+  "baseline_without_phase": {
+    "dirty_cases": 651,
+    "expected_candidate_applied": 353,
+    "expected_present_but_not_applied": 124,
+    "nonfinal_apply": 118
+  },
+  "generic_phase_package": {
+    "expected_candidate_applied": 355,
+    "expected_present_but_not_applied": 122,
+    "nonfinal_apply": 131
+  },
+  "live_feedback_phase_package": {
+    "expected_candidate_applied": 358,
+    "expected_present_but_not_applied": 119,
+    "nonfinal_apply": 128
+  },
+  "decision": "REJECTED",
+  "reason": "Candidate-specific lexical anti-centers improve correct selection, but the package still increases nonfinal applies above the fixed baseline. It may not receive runtime authority or installation.",
+  "next_owner": "L2WordAttractor candidate-specific destructive geometry"
+}
