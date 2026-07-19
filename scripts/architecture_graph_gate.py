@@ -40,13 +40,18 @@ RECEIPT_INPUTS = (
     ROOT / "src" / "text_edit" / "action.rs",
     ROOT / "src" / "text_edit" / "executor.rs",
     ROOT / "src" / "text_edit" / "gate.rs",
+    ROOT / "src" / "text_edit" / "structural_verifier.rs",
     ROOT / "src" / "text_edit" / "transition.rs",
+    ROOT / "src" / "text_edit" / "visible_tail.rs",
     ROOT / "src" / "typing_transition" / "candidate.rs",
     ROOT / "src" / "typing_transition" / "decision.rs",
     ROOT / "src" / "typing_transition" / "live_candidate.rs",
     ROOT / "src" / "word_reader.rs",
     ROOT / "src" / "bin" / "lay_daemon" / "layout_controller.rs",
     ROOT / "src" / "bin" / "lay_daemon" / "text_output" / "replacement.rs",
+    ROOT / "src" / "bin" / "lay_ibus_engine" / "committed_tail.rs",
+    ROOT / "src" / "bin" / "lay_ibus_engine" / "state.rs",
+    ROOT / "src" / "bin" / "lay_ibus_engine" / "tail_memory.rs",
 )
 
 FRESHNESS_IGNORED_RECEIPT_FIELDS = {
@@ -276,7 +281,6 @@ def build_receipt() -> dict[str, Any]:
     violations.extend(item_violations)
     for label, owner in (
         (".evaluate_candidates()", "src/typing_transition/decision.rs"),
-        (".decide_visible_text_transition()", "src/typing_transition/decision.rs"),
         (".select_live_completions()", "src/typing_transition/live_candidate.rs"),
         (".select_ime_readout()", "src/typing_transition/live_candidate.rs"),
         ("L2CandidateLattice", "src/typing_transition/candidate.rs"),
@@ -288,6 +292,30 @@ def build_receipt() -> dict[str, Any]:
         graph.source_imports("src/nanda_wave", ("typing_transition_decision", "src_text_edit"))
     )
     checks.append(check("decision-authority", evidence, violations))
+
+    snapshot_evidence: list[str] = []
+    snapshot_violations: list[str] = []
+    for label, owner in (
+        ("SnapshotIdentity", "src/text_edit/visible_tail.rs"),
+        ("VisibleTailSnapshot", "src/text_edit/visible_tail.rs"),
+        ("verify_visible_text_transition()", "src/text_edit/structural_verifier.rs"),
+        (".with_winner_action()", "src/bin/lay_ibus_engine/state.rs"),
+        (".replace_committed_tail()", "src/bin/lay_ibus_engine/state.rs"),
+    ):
+        item_evidence, item_violations = graph.node(label, owner)
+        snapshot_evidence.extend(item_evidence)
+        snapshot_violations.extend(item_violations)
+    structural_source = (
+        ROOT / "src" / "text_edit" / "structural_verifier.rs"
+    ).read_text(encoding="utf-8")
+    committed_tail_source = (
+        ROOT / "src" / "bin" / "lay_ibus_engine" / "committed_tail.rs"
+    ).read_text(encoding="utf-8")
+    if "nanda_wave::l2" in structural_source or "evaluate_candidates" in structural_source:
+        snapshot_violations.append("structural_verifier_reselects_candidate")
+    if ".with_winner_action(decision.action)" not in committed_tail_source:
+        snapshot_violations.append("committed_tail_drops_decision_winner")
+    checks.append(check("snapshot-lease", snapshot_evidence, snapshot_violations))
 
     ime_forbidden = graph.source_imports(
         "src/bin/lay_ibus_engine",
@@ -354,6 +382,7 @@ def build_receipt() -> dict[str, Any]:
     if "authorized: Option<AuthorizedEdit>" not in executor_source:
         capability_violations.append("sealed_capability_storage_missing")
     decision_receipt_sites: list[str] = []
+    visible_tail_receipt_sites: list[str] = []
     verifier_receipt_sites: list[str] = []
     receipt_attach_sites: list[str] = []
     for path in (ROOT / "src").rglob("*.rs"):
@@ -361,16 +390,22 @@ def build_receipt() -> dict[str, Any]:
         for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
             if "DecisionTransitionReceipt::issue(" in line:
                 decision_receipt_sites.append(f"{relative}:L{line_number}")
+            if "DecisionTransitionReceipt::for_visible_tail(" in line:
+                visible_tail_receipt_sites.append(f"{relative}:L{line_number}")
             if "VerifiedTransitionReceipt::issue(" in line:
                 verifier_receipt_sites.append(f"{relative}:L{line_number}")
             if ".attach_verification(" in line:
                 receipt_attach_sites.append(f"{relative}:L{line_number}")
-    if any(
-        not site.startswith("src/typing_transition/decision.rs:")
-        for site in decision_receipt_sites
-    ):
+    if decision_receipt_sites:
         capability_violations.append(
             "decision_receipt_constructor_sites:" + ",".join(decision_receipt_sites)
+        )
+    if len(visible_tail_receipt_sites) != 1 or not visible_tail_receipt_sites[0].startswith(
+        "src/text_edit/structural_verifier.rs:"
+    ):
+        capability_violations.append(
+            "visible_tail_receipt_constructor_sites:"
+            + ",".join(visible_tail_receipt_sites)
         )
     if len(verifier_receipt_sites) != 1 or not verifier_receipt_sites[0].startswith(
         "src/text_edit/gate.rs:"
@@ -393,6 +428,7 @@ def build_receipt() -> dict[str, Any]:
     receipt_evidence = (
         constructor_sites
         + decision_receipt_sites
+        + visible_tail_receipt_sites
         + verifier_receipt_sites
         + receipt_attach_sites
     )
@@ -403,6 +439,25 @@ def build_receipt() -> dict[str, Any]:
             capability_violations,
         )
     )
+
+    outcome_evidence: list[str] = []
+    outcome_violations: list[str] = []
+    for label, owner in (
+        ("PendingSystemOutcomeFeedback", "src/bin/lay_ibus_engine/engine/types.rs"),
+        (".observe_visible_postcondition()", "src/bin/lay_ibus_engine/tail_memory.rs"),
+        (".arm_visible_postcondition_with_feedback()", "src/bin/lay_ibus_engine/tail_memory.rs"),
+    ):
+        item_evidence, item_violations = graph.node(label, owner)
+        outcome_evidence.extend(item_evidence)
+        outcome_violations.extend(item_violations)
+    tail_memory_source = (
+        ROOT / "src" / "bin" / "lay_ibus_engine" / "tail_memory.rs"
+    ).read_text(encoding="utf-8")
+    if "record_observed_system_outcome" not in tail_memory_source:
+        outcome_violations.append("observed_state_does_not_train_feedback")
+    if "record_rejected_system_outcome" not in tail_memory_source:
+        outcome_violations.append("mismatch_does_not_train_anti_feedback")
+    checks.append(check("observed-outcome-feedback", outcome_evidence, outcome_violations))
 
     hot_evidence: list[str] = []
     hot_violations: list[str] = []

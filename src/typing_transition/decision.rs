@@ -17,11 +17,7 @@ use crate::nanda_wave::l4_hidden_state::{
     estimate_hidden_typing_state, predicted_state_id, L4HiddenCandidateInput, L4HiddenDisposition,
 };
 use crate::nanda_wave::l4_signed_memory::{l4_signed_memory_signal, L4SignedMemoryInput};
-use crate::text_edit::{
-    plan_decision_transition_edit, tail_chars, DecisionTransitionEditInput,
-    LatentTextTransitionCandidate, TextReplacement, TextTransitionDecision,
-    TextTransitionRejection, TransitionAudit, VisibleFieldState,
-};
+use crate::text_edit::TransitionAudit;
 use crate::text_metrics::{damerau_levenshtein, score_to_milli};
 use crate::transition_relation::{TransitionRelationAtoms, TransitionRelationInput};
 use crate::word_reader::split_word_punctuation;
@@ -42,127 +38,6 @@ impl TransitionDecisionCore {
         origin: CandidateOrigin,
     ) -> CandidateGateDecision {
         proposal_admission::gate_candidate_with_origin(original, replacement, error_class, origin)
-    }
-
-    pub(crate) fn decide_visible_text_transition(
-        state: &VisibleFieldState,
-        candidate: LatentTextTransitionCandidate,
-    ) -> TextTransitionDecision {
-        if candidate.delete_chars == 0 && candidate.insert_text.is_empty() {
-            return TextTransitionDecision::Reject {
-                rejection: TextTransitionRejection::Noop,
-                action: None,
-            };
-        }
-
-        if !candidate.insert_text.is_empty() && state.visible_tail.ends_with(&candidate.insert_text)
-        {
-            return TextTransitionDecision::AlreadyApplied;
-        }
-
-        let original_text = tail_chars(&state.visible_tail, candidate.delete_chars as usize);
-        if let Some(expected) = candidate.expected_tail.as_ref() {
-            let focus_id = state.focus_id.as_deref();
-            if expected.source != candidate.source || expected.focus_id.as_deref() != focus_id {
-                return TextTransitionDecision::Reject {
-                    rejection: TextTransitionRejection::StaleVisibleTail {
-                        expected: expected.expected_suffix.clone(),
-                        actual: original_text,
-                    },
-                    action: None,
-                };
-            }
-            if expected.epoch != state.epoch {
-                return TextTransitionDecision::Reject {
-                    rejection: TextTransitionRejection::StaleVisibleRevision {
-                        expected: expected.epoch,
-                        actual: state.epoch,
-                    },
-                    action: None,
-                };
-            }
-            if !expected
-                .matches_current_suffix(&state.visible_tail, candidate.delete_chars as usize)
-            {
-                return TextTransitionDecision::Reject {
-                    rejection: TextTransitionRejection::StaleVisibleTail {
-                        expected: expected.expected_suffix.clone(),
-                        actual: original_text,
-                    },
-                    action: None,
-                };
-            }
-        }
-
-        if state.external_selection_active {
-            return TextTransitionDecision::Reject {
-                rejection: TextTransitionRejection::StaleSurroundingText {
-                    expected: original_text,
-                    actual: state
-                        .external_tail_before_cursor
-                        .clone()
-                        .unwrap_or_default(),
-                },
-                action: None,
-            };
-        }
-
-        if state.external_state_present {
-            let actual = state
-                .external_tail_before_cursor
-                .clone()
-                .unwrap_or_default();
-            if actual != original_text {
-                return TextTransitionDecision::Reject {
-                    rejection: TextTransitionRejection::StaleSurroundingText {
-                        expected: original_text,
-                        actual,
-                    },
-                    action: None,
-                };
-            }
-        }
-
-        let plan = TextReplacement {
-            move_left: 0,
-            backspaces: candidate.delete_chars,
-            insert: candidate.insert_text.clone(),
-            move_right: 0,
-        };
-        let transition = TransitionAudit::proven(
-            candidate.intent.operator(),
-            candidate.intent.proof(),
-            true,
-            false,
-            1,
-        );
-        let receipt = DecisionTransitionReceipt::issue(
-            original_text.clone(),
-            candidate.insert_text.clone(),
-            transition,
-        );
-        let action = plan_decision_transition_edit(
-            DecisionTransitionEditInput {
-                source: "ibus-committed-tail",
-                confidence_milli: 1000,
-                from_text: &original_text,
-                to_text: &candidate.insert_text,
-                plan: plan.clone(),
-                selected_source_id: Some(candidate.source.source_id()),
-                selected_error_class: None,
-            },
-            &receipt,
-        );
-        if !action.allow_apply() {
-            return TextTransitionDecision::Reject {
-                rejection: TextTransitionRejection::UnsafeEdit {
-                    reason: action.safety_reason(),
-                },
-                action: Some(action),
-            };
-        }
-
-        TextTransitionDecision::Apply { plan, action }
     }
 
     pub(crate) fn evaluate_candidates(

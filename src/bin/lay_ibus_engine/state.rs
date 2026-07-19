@@ -1,13 +1,17 @@
 use lay::config::LayConfig;
 use lay::text_edit::{
-    decide_text_transition, LatentTextTransitionCandidate, TextEditBackend, TextTransitionDecision,
-    TextTransitionIntent, VisibleFieldState, VisibleTailSnapshot, VisibleTailSource,
+    decide_text_transition, EditAction, LatentTextTransitionCandidate, TextEditBackend,
+    TextTransitionDecision, TextTransitionIntent, VisibleFieldState, VisibleTailSnapshot,
+    VisibleTailSource,
 };
 use std::time::{Duration, Instant};
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
-use super::engine::{LayIbusEngine, RecentCommittedTailReplace, SurroundingTextSnapshot};
+use super::engine::{
+    LayIbusEngine, PendingSystemOutcomeFeedback, RecentCommittedTailReplace,
+    SurroundingTextSnapshot,
+};
 use super::protocol::Shared;
 use super::text::make_ibus_text;
 use super::trace;
@@ -60,6 +64,11 @@ pub(crate) struct CommittedTailReplaceRequest {
     pub(crate) intent: TextTransitionIntent,
     pub(crate) suppress_next_autocorrect: bool,
     pub(crate) expected_tail: Option<VisibleTailSnapshot>,
+    /// Authority selected before this adapter boundary. When present, the
+    /// committed-tail backend must preserve this exact action after structural
+    /// verification instead of reconstructing a replacement from strings.
+    winner_action: Option<EditAction>,
+    outcome_feedback: Option<PendingSystemOutcomeFeedback>,
     layout_postcondition_owner: LayoutPostconditionOwner,
 }
 
@@ -78,6 +87,8 @@ impl CommittedTailReplaceRequest {
             intent: TextTransitionIntent::ImeAutocorrect,
             suppress_next_autocorrect: false,
             expected_tail: None,
+            winner_action: None,
+            outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Ime,
         }
     }
@@ -94,6 +105,8 @@ impl CommittedTailReplaceRequest {
             intent: TextTransitionIntent::ImeManualToggle,
             suppress_next_autocorrect,
             expected_tail: None,
+            winner_action: None,
+            outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Ime,
         }
     }
@@ -110,12 +123,27 @@ impl CommittedTailReplaceRequest {
             intent: TextTransitionIntent::DaemonBridge,
             suppress_next_autocorrect,
             expected_tail: None,
+            winner_action: None,
+            outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Caller,
         }
     }
 
     pub(crate) fn with_expected_tail(mut self, expected_tail: VisibleTailSnapshot) -> Self {
         self.expected_tail = Some(expected_tail);
+        self
+    }
+
+    pub(crate) fn with_winner_action(mut self, winner_action: EditAction) -> Self {
+        self.winner_action = Some(winner_action);
+        self
+    }
+
+    pub(crate) fn with_outcome_feedback(
+        mut self,
+        outcome_feedback: PendingSystemOutcomeFeedback,
+    ) -> Self {
+        self.outcome_feedback = Some(outcome_feedback);
         self
     }
 
@@ -260,6 +288,8 @@ impl LayIbusEngine {
         let backspaces = request.backspaces;
         let suppress_next_autocorrect = request.suppress_next_autocorrect;
         let ime_owns_layout_postcondition = request.ime_owns_layout_postcondition();
+        let winner_action = request.winner_action.clone();
+        let outcome_feedback = request.outcome_feedback.clone();
         let mut visible_state =
             VisibleFieldState::committed_tail(self.tail_buffer.clone(), Some(self.path.clone()))
                 .with_epoch(self.tail_epoch);
@@ -278,42 +308,61 @@ impl LayIbusEngine {
             request.intent,
             request.expected_tail,
         );
-        let (plan, edit_action) = match decide_text_transition(&visible_state, transition_candidate)
-        {
-            TextTransitionDecision::AlreadyApplied => {
-                trace::record_committed_tail_replace(
-                    source,
-                    "target_state_already_observed",
-                    backspaces,
-                    "",
-                );
-                return Ok(true);
-            }
-            TextTransitionDecision::Apply { plan, action } => (plan, action),
-            TextTransitionDecision::Reject { rejection, action } => {
-                if let Some(action) = action.as_ref() {
-                    lay::action_log::record_candidate_edit_action_before_apply(
-                        action,
-                        lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
-                        None,
-                    );
+        let (plan, structural_action) =
+            match decide_text_transition(&visible_state, transition_candidate) {
+                TextTransitionDecision::AlreadyApplied => {
                     trace::record_committed_tail_replace(
                         source,
-                        action.safety_reason(),
+                        "target_state_already_observed",
                         backspaces,
-                        action.to_text(),
+                        "",
                     );
-                } else if rejection.reason() != "noop_transition" {
-                    trace::record_committed_tail_replace_guard(
-                        source,
-                        rejection.reason(),
-                        backspaces,
-                        rejection.expected(),
-                        rejection.actual(),
-                    );
+                    return Ok(true);
                 }
+                TextTransitionDecision::Apply { plan, action } => (plan, action),
+                TextTransitionDecision::Reject { rejection, action } => {
+                    if let Some(action) = action.as_ref() {
+                        lay::action_log::record_candidate_edit_action_before_apply(
+                            action,
+                            lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
+                            None,
+                        );
+                        trace::record_committed_tail_replace(
+                            source,
+                            action.safety_reason(),
+                            backspaces,
+                            action.to_text(),
+                        );
+                    } else if rejection.reason() != "noop_transition" {
+                        trace::record_committed_tail_replace_guard(
+                            source,
+                            rejection.reason(),
+                            backspaces,
+                            rejection.expected(),
+                            rejection.actual(),
+                        );
+                    }
+                    return Ok(false);
+                }
+            };
+        let edit_action = if let Some(winner_action) = winner_action {
+            let winner_plan = winner_action.plan();
+            if !winner_action.allow_apply()
+                || winner_action.from_text() != structural_action.from_text()
+                || winner_action.to_text() != structural_action.to_text()
+                || winner_plan != Some(&plan)
+            {
+                trace::record_committed_tail_replace(
+                    source,
+                    "winner_action_structural_mismatch",
+                    backspaces,
+                    winner_action.to_text(),
+                );
                 return Ok(false);
             }
+            winner_action
+        } else {
+            structural_action
         };
         lay::action_log::record_candidate_edit_action_before_apply(
             &edit_action,
@@ -439,7 +488,7 @@ impl LayIbusEngine {
             text,
             at: now,
         });
-        self.arm_visible_postcondition(now);
+        self.arm_visible_postcondition_with_feedback(now, outcome_feedback);
         Ok(true)
     }
 

@@ -62,11 +62,50 @@ impl<'a> VisibleTail<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SnapshotIdentity {
+    /// Adapter boundary that observed the text. A lease is never transferable
+    /// between the daemon buffer, active IBus composition, and committed tail.
+    pub source: VisibleTailSource,
+    pub focus_id: Option<String>,
+    pub revision: u64,
+    pub caret: Option<u32>,
+    pub selection: Option<(u32, u32)>,
+    pub composition_generation: Option<u64>,
+    pub layout_epoch: Option<u64>,
+    pub visible_tail_hash: u64,
+}
+
+impl SnapshotIdentity {
+    fn from_snapshot(snapshot: &VisibleTailSnapshot) -> Self {
+        Self {
+            source: snapshot.source,
+            focus_id: snapshot.focus_id.clone(),
+            revision: snapshot.epoch,
+            caret: snapshot.caret,
+            selection: snapshot.selection,
+            composition_generation: snapshot.composition_generation,
+            layout_epoch: snapshot.layout_epoch,
+            visible_tail_hash: stable_tail_hash(&snapshot.expected_suffix),
+        }
+    }
+}
+
+/// Immutable lease for one visible-text observation.
+///
+/// Candidate generation can use a snapshot freely, but an output adapter must
+/// present this lease again before it is allowed to dispatch an edit.  Fields
+/// unavailable on a particular adapter remain `None`; they cannot be invented
+/// later by a backend.
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct VisibleTailSnapshot {
     pub source: VisibleTailSource,
     pub expected_suffix: String,
     pub focus_id: Option<String>,
     pub epoch: u64,
+    pub caret: Option<u32>,
+    pub selection: Option<(u32, u32)>,
+    pub composition_generation: Option<u64>,
+    pub layout_epoch: Option<u64>,
 }
 
 impl VisibleTailSnapshot {
@@ -81,7 +120,29 @@ impl VisibleTailSnapshot {
             expected_suffix: expected_suffix.into(),
             focus_id,
             epoch,
+            caret: None,
+            selection: None,
+            composition_generation: None,
+            layout_epoch: None,
         }
+    }
+
+    pub fn with_runtime_coordinates(
+        mut self,
+        caret: Option<u32>,
+        selection: Option<(u32, u32)>,
+        composition_generation: Option<u64>,
+        layout_epoch: Option<u64>,
+    ) -> Self {
+        self.caret = caret;
+        self.selection = selection;
+        self.composition_generation = composition_generation;
+        self.layout_epoch = layout_epoch;
+        self
+    }
+
+    pub fn identity(&self) -> SnapshotIdentity {
+        SnapshotIdentity::from_snapshot(self)
     }
 
     pub fn matches_source_focus_and_epoch(
@@ -107,6 +168,16 @@ impl VisibleTailSnapshot {
         }
         tail_suffix(current_tail, delete_chars) == self.expected_suffix
     }
+}
+
+fn stable_tail_hash(text: &str) -> u64 {
+    // FNV-1a is deterministic across processes; this is an identity guard,
+    // not a cryptographic boundary. The exact suffix remains the final check.
+    text.as_bytes()
+        .iter()
+        .fold(0xcbf2_9ce4_8422_2325, |hash, byte| {
+            (hash ^ u64::from(*byte)).wrapping_mul(0x0000_0100_0000_01b3)
+        })
 }
 
 fn tail_suffix(text: &str, chars: usize) -> String {
@@ -193,5 +264,24 @@ mod tests {
             Some("/ime/focus-a"),
             1
         ));
+    }
+
+    #[test]
+    fn snapshot_identity_keeps_runtime_coordinates_and_tail_hash() {
+        let snapshot = VisibleTailSnapshot::new(
+            VisibleTailSource::ImeActiveComposition,
+            "провер",
+            Some("/ime/focus".to_string()),
+            9,
+        )
+        .with_runtime_coordinates(Some(7), None, Some(12), Some(4));
+
+        let identity = snapshot.identity();
+        assert_eq!(identity.source, VisibleTailSource::ImeActiveComposition);
+        assert_eq!(identity.revision, 9);
+        assert_eq!(identity.caret, Some(7));
+        assert_eq!(identity.composition_generation, Some(12));
+        assert_eq!(identity.layout_epoch, Some(4));
+        assert_ne!(identity.visible_tail_hash, 0);
     }
 }

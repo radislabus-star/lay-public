@@ -1,11 +1,12 @@
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
-use super::engine::LayIbusEngine;
+use super::engine::{LayIbusEngine, PendingSystemOutcomeFeedback, SystemOutcomeKind};
 use super::state::CommittedTailReplaceRequest;
 use super::text::make_ibus_text;
 use super::trace;
 use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
+use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 
 impl LayIbusEngine {
     pub(super) async fn autocorrect_committed_layout_on_space(
@@ -44,18 +45,29 @@ impl LayIbusEngine {
             decision.input_gate,
         );
         let replacement = decision.replacement;
+        let expected_tail = VisibleTailSnapshot::new(
+            VisibleTailSource::ImeCommittedTail,
+            token.clone(),
+            Some(self.path.clone()),
+            self.tail_epoch,
+        );
         let handled = self
             .replace_committed_tail(
                 emitter,
                 CommittedTailReplaceRequest::ime_autocorrect(
                     token.chars().count() as u32,
                     replacement.clone(),
-                ),
+                )
+                .with_expected_tail(expected_tail)
+                .with_winner_action(decision.action)
+                .with_outcome_feedback(PendingSystemOutcomeFeedback {
+                    original: token.clone(),
+                    replacement: replacement.clone(),
+                    source: VisibleTailSource::ImeCommittedTail,
+                    kind: SystemOutcomeKind::LayoutProjection,
+                }),
             )
             .await?;
-        if handled {
-            lay::typing_cpu::TypingCpu::record_accepted_layout_projection(&token, &replacement);
-        }
         Ok(handled)
     }
 
@@ -282,14 +294,13 @@ mod tests {
     }
 
     #[test]
-    fn committed_tail_backend_does_not_own_boundary_correction() {
+    fn committed_tail_preserves_winner_action_across_backend_boundary() {
         let source = include_str!("committed_tail.rs");
-        let direct_gate_call = ["decide", "_input_gate("].concat();
-        let direct_decision = ["decide_active_composition", "_autocorrect("].concat();
 
         assert!(
-            !source.contains(&direct_decision) && !source.contains(&direct_gate_call),
-            "IBus committed-tail code must remain an execution backend"
+            source.contains("with_winner_action(decision.action)")
+                && source.contains("with_expected_tail(expected_tail)"),
+            "the IBus backend must carry the decision winner and its snapshot lease"
         );
     }
 }

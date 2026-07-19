@@ -1,4 +1,6 @@
-use super::engine::{LayIbusEngine, PendingImeCompletionLearning};
+use super::engine::{
+    LayIbusEngine, PendingImeCompletionLearning, PendingSystemOutcomeFeedback, SystemOutcomeKind,
+};
 use std::time::Instant;
 
 impl LayIbusEngine {
@@ -41,6 +43,14 @@ impl LayIbusEngine {
     }
 
     pub(super) fn arm_visible_postcondition(&mut self, dispatched_at: Instant) {
+        self.arm_visible_postcondition_with_feedback(dispatched_at, None);
+    }
+
+    pub(super) fn arm_visible_postcondition_with_feedback(
+        &mut self,
+        dispatched_at: Instant,
+        feedback: Option<PendingSystemOutcomeFeedback>,
+    ) {
         if !self.surrounding_text_supported {
             return;
         }
@@ -48,6 +58,7 @@ impl LayIbusEngine {
             expected_suffix: self.tail_buffer.clone(),
             dispatched_epoch: self.tail_epoch,
             dispatched_at,
+            feedback,
         });
     }
 
@@ -69,14 +80,42 @@ impl LayIbusEngine {
                 snapshot.suffix_before_cursor(pending.expected_suffix.chars().count())
             });
         let status = if observed.as_deref() == Some(pending.expected_suffix.as_str()) {
+            self.record_observed_system_outcome(pending.feedback.as_ref());
             "observed"
         } else {
+            self.record_rejected_system_outcome(pending.feedback.as_ref());
             self.quarantine_visible_postcondition_mismatch();
             "mismatch"
         };
         super::trace::record(format!(
             r#"{{"kind":"ibus_visible_postcondition","status":"{status}"}}"#
         ));
+    }
+
+    fn record_observed_system_outcome(&self, feedback: Option<&PendingSystemOutcomeFeedback>) {
+        let Some(feedback) = feedback else {
+            return;
+        };
+        match feedback.kind {
+            SystemOutcomeKind::LayoutProjection => {
+                lay::typing_cpu::TypingCpu::record_accepted_layout_projection(
+                    &feedback.original,
+                    &feedback.replacement,
+                );
+            }
+        }
+    }
+
+    fn record_rejected_system_outcome(&self, feedback: Option<&PendingSystemOutcomeFeedback>) {
+        let Some(feedback) = feedback else {
+            return;
+        };
+        lay::nanda_wave::record_rejected_candidate_usage(
+            &feedback.original,
+            &feedback.replacement,
+            feedback.source.source_id(),
+            feedback.kind.operation(),
+        );
     }
 
     pub(super) fn selected_visible_completion_suffix(&self) -> String {
@@ -278,7 +317,9 @@ fn trim_committed_tail_buffer(buffer: &mut String) {
 #[cfg(test)]
 mod tests {
     use super::{last_tail_token_range, LayIbusEngine};
-    use crate::engine::{ManualToggleAuthority, WordInputMode};
+    use crate::engine::{
+        ManualToggleAuthority, PendingSystemOutcomeFeedback, SystemOutcomeKind, WordInputMode,
+    };
     use lay::config::LayConfig;
     use lay::text_edit::{
         decide_text_transition, LatentTextTransitionCandidate, TextTransitionDecision,
@@ -323,6 +364,41 @@ mod tests {
         let state = shared.lock().expect("lay ime state poisoned");
         assert_eq!(state.handoff_tail_buffer, "проверка ");
         assert_eq!(state.handoff_tail_epoch, epoch);
+    }
+
+    #[test]
+    fn pending_system_feedback_waits_for_visible_postcondition() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.surrounding_text_supported = true;
+        engine.tail_buffer = "давай ".to_string();
+        engine.publish_tail_handoff();
+        engine.arm_visible_postcondition_with_feedback(
+            Instant::now(),
+            Some(PendingSystemOutcomeFeedback {
+                original: "lfdfq".to_string(),
+                replacement: "давай".to_string(),
+                source: VisibleTailSource::ImeCommittedTail,
+                kind: SystemOutcomeKind::LayoutProjection,
+            }),
+        );
+
+        let pending = engine
+            .pending_visible_postcondition
+            .as_ref()
+            .expect("feedback must wait for observation");
+        assert_eq!(
+            pending
+                .feedback
+                .as_ref()
+                .map(|item| item.replacement.as_str()),
+            Some("давай")
+        );
     }
 
     #[test]

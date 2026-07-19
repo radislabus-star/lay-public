@@ -23,6 +23,16 @@ impl DecisionTransitionReceipt {
         }
     }
 
+    /// A visible-tail verifier may issue this receipt only after it has bound
+    /// the exact observed snapshot. It is not candidate-selection authority.
+    pub(crate) fn for_visible_tail(
+        original: String,
+        replacement: String,
+        transition: TransitionAudit,
+    ) -> Self {
+        Self::issue(original, replacement, transition)
+    }
+
     pub(super) fn from_selected_candidate(
         event: &TypingErrorEvent,
         candidate: &UnifiedCorrectionCandidate,

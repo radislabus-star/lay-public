@@ -1,9 +1,9 @@
 use super::action::EditAction;
 use super::mutation::{TransitionAudit, TransitionOperator, TransitionProof};
 use super::types::TextReplacement;
-use super::visible_tail::{VisibleTailSnapshot, VisibleTailSource};
+use super::visible_tail::{SnapshotIdentity, VisibleTailSnapshot, VisibleTailSource};
 use crate::text_metrics::{transition_changed_token_count, transition_left_context_changed};
-use crate::typing_transition::decision::{DecisionTransitionReceipt, TransitionDecisionCore};
+use crate::typing_transition::decision::DecisionTransitionReceipt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum TransitionAuthorityKind {
@@ -230,6 +230,16 @@ impl VisibleFieldState {
         self.external_selection_active = external_selection_active;
         self
     }
+
+    pub fn snapshot_identity(&self, source: VisibleTailSource) -> SnapshotIdentity {
+        VisibleTailSnapshot::new(
+            source,
+            self.visible_tail.clone(),
+            self.focus_id.clone(),
+            self.epoch,
+        )
+        .identity()
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -331,7 +341,7 @@ pub fn decide_text_transition(
     state: &VisibleFieldState,
     candidate: LatentTextTransitionCandidate,
 ) -> TextTransitionDecision {
-    TransitionDecisionCore::decide_visible_text_transition(state, candidate)
+    super::structural_verifier::verify_visible_text_transition(state, candidate)
 }
 
 #[cfg(test)]
@@ -423,6 +433,17 @@ mod tests {
                 action: None
             }
         ));
+    }
+
+    #[test]
+    fn visible_field_state_exports_immutable_snapshot_identity() {
+        let state = VisibleFieldState::committed_tail("abc ghbdtn", Some("/test".to_string()))
+            .with_epoch(8);
+        let identity = state.snapshot_identity(VisibleTailSource::ImeCommittedTail);
+
+        assert_eq!(identity.focus_id.as_deref(), Some("/test"));
+        assert_eq!(identity.revision, 8);
+        assert_ne!(identity.visible_tail_hash, 0);
     }
 
     #[test]

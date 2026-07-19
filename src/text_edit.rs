@@ -19,6 +19,8 @@ mod gate;
 mod mutation;
 #[path = "text_edit/safety.rs"]
 pub(crate) mod safety;
+#[path = "text_edit/structural_verifier.rs"]
+mod structural_verifier;
 #[path = "text_edit/transition.rs"]
 mod transition;
 #[path = "text_edit/types.rs"]
@@ -54,7 +56,7 @@ pub use transition::{
     TextTransitionIntent, TextTransitionRejection, VisibleFieldState,
 };
 pub use types::TextReplacement;
-pub use visible_tail::{VisibleTail, VisibleTailSnapshot, VisibleTailSource};
+pub use visible_tail::{SnapshotIdentity, VisibleTail, VisibleTailSnapshot, VisibleTailSource};
 
 #[cfg(test)]
 #[path = "text_edit_tests.rs"]

@@ -7,11 +7,13 @@
 use serde::Deserialize;
 use std::sync::OnceLock;
 
-const REQUIRED_CHECKS: [&str; 9] = [
+const REQUIRED_CHECKS: [&str; 11] = [
     "decision-authority",
     "ime-backend-only",
     "edit-plan-verifier",
     "typed-transition-capability",
+    "snapshot-lease",
+    "observed-outcome-feedback",
     "hot-field-memory",
     "l1-surface-field",
     "l2-candidate-field",
@@ -62,7 +64,7 @@ mod tests {
 
     #[test]
     fn generated_receipt_proves_every_required_architecture_check() {
-        assert_eq!(REQUIRED_CHECKS.len(), 9);
+        assert_eq!(REQUIRED_CHECKS.len(), 11);
         assert_eq!(receipt().checks.len(), REQUIRED_CHECKS.len());
         assert!(all_contract_lines_pass());
     }

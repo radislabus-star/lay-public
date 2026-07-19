@@ -9,8 +9,9 @@ const IBUS_CAP_SURROUNDING_TEXT: u32 = 1 << 5;
 #[path = "engine/types.rs"]
 mod types;
 pub(super) use types::{
-    ManualToggleAuthority, PendingImeCompletionLearning, PendingVisiblePostcondition,
-    RecentCommittedTailReplace, SurroundingTextSnapshot, WordInputMode,
+    ManualToggleAuthority, PendingImeCompletionLearning, PendingSystemOutcomeFeedback,
+    PendingVisiblePostcondition, RecentCommittedTailReplace, SurroundingTextSnapshot,
+    SystemOutcomeKind, WordInputMode,
 };
 
 pub(crate) struct LayIbusEngine {

@@ -2,7 +2,7 @@
 
 Status: canonical live architecture map and forward contract.
 
-Last source audit: 2026-07-17.
+Last source audit: 2026-07-19.
 
 This document is the source of truth for the current L1-L4 runtime, its proven
 boundaries, and the next architectural work. Historical plans may explain why
@@ -27,9 +27,12 @@ observed typing state
 -> candidate lattice
 -> phrase and experience evidence
 -> one selected typed transition
--> independent verification
+-> immutable snapshot lease
+-> independent structural verification
 -> sealed AuthorizedEdit
 -> one backend
+-> observed-state receipt
+-> signed feedback or censoring
 ```
 
 The intended intelligence boundary is:
@@ -46,6 +49,35 @@ The verifier is the only path to AuthorizedEdit.
 ```
 
 No L1-L4 layer is allowed to mutate text.
+
+### Authority Closure Checkpoint
+
+The committed-tail IBus route now carries the winner-owned `EditAction` and
+its `VisibleTailSnapshot` through the adapter boundary. It cannot reconstruct
+an unrelated correction from strings. `SnapshotIdentity` binds the observable
+source, focus, revision, optional caret/selection/composition/layout epochs,
+and a stable visible-tail hash. Adapters that cannot observe a coordinate leave
+it absent; they may not invent it.
+
+The split is deliberate:
+
+```text
+TransitionDecisionCore
+  chooses from the L2 lattice under L3/L4/Bayes phase pressure
+
+StructuralTransitionVerifier
+  checks the selected transition against the immutable visible snapshot,
+  surrounding text, selection and a minimal typed EditPlan
+
+AuthorizedEdit
+  is issued only after the structural verifier admits that exact plan
+```
+
+The structural verifier does not call L2 or rerank candidates. A dispatched
+system edit is censored until IBus observes the expected suffix. Observation
+records positive outcome evidence; a contradiction records candidate-specific
+negative evidence; stale epoch, timeout and unavailable observation do not
+train semantic memory.
 
 ## 2. Non-Negotiable Laws
 
