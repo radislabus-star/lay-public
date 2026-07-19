@@ -375,10 +375,10 @@ fn best_context_candidate(
         .map(|(index, _score)| index)
 }
 
-fn effective_phrase_report<'a>(
-    report: Option<&'a l3_phrase_gate::L3PhraseGateReport>,
+fn effective_phrase_report(
+    report: Option<&l3_phrase_gate::L3PhraseGateReport>,
     has_local_context_support: bool,
-) -> Option<&'a l3_phrase_gate::L3PhraseGateReport> {
+) -> Option<&l3_phrase_gate::L3PhraseGateReport> {
     match report {
         Some(report)
             if report.decision == l3_phrase_gate::L3PhraseGateDecision::Suppress

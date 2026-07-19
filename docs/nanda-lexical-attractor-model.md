@@ -478,6 +478,25 @@ The report is invalid if `candidate_lattice_drift_cases` is non-zero. L3
 promotion requires non-zero evidence and authority, non-zero causal changes,
 and `improved_cases > worsened_cases`.
 
+### Private IME Feedback Overlay
+
+The canonical L3 packet is trained only from the clean corpus. A local overlay
+can then rebuild the runtime packet from explicit IME outcomes:
+
+```bash
+lay-nanda-wave-train --compile-l3-context-feedback-overlay \
+  --base data/lexicon/l3_context_phase_v1.nwpc \
+  --usage-events ~/.local/share/lay/nanda_wave/word_usage_events.jsonl \
+  --out ~/.local/share/lay/nanda_wave/l3_context_phase.nwpc
+```
+
+Only `accepted_ime` / `confirmed_ime_prediction` and `rejected_ime` /
+`rejected_candidate` events participate. Typed observations are not training
+authority. The overlay may update an existing profile's positive or anti phase
+centers, but it cannot create a profile, lower a threshold, or persist raw
+phrases. This keeps private experience as a compact phase correction rather
+than another text corpus.
+
 Promotion rule:
 
 ```text

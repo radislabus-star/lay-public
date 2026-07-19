@@ -1,6 +1,7 @@
 use std::collections::{BTreeMap, BTreeSet};
+use std::io;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use super::super::phase_field::{
     add_cluster, add_hashed_atom, empty_vector, hash_text, margin, phase_center_from_sum,
@@ -61,6 +62,35 @@ pub(crate) struct ContextPhaseProofReport {
     pub(crate) raw_words_stored: bool,
     pub(crate) min_profile_support: u32,
     pub(crate) verdict: &'static str,
+}
+
+/// Result of rebuilding a personal overlay from explicit IME feedback.
+///
+/// The resulting packet contains only the existing hashed profiles and their
+/// quantized phase centers. The JSONL event source is never copied into it.
+#[derive(Clone, Debug, Serialize)]
+pub(crate) struct ContextPhaseFeedbackOverlayReport {
+    pub(crate) kind: &'static str,
+    pub(crate) raw_words_stored: bool,
+    pub(crate) source_events: usize,
+    pub(crate) positive_source_events: usize,
+    pub(crate) negative_source_events: usize,
+    pub(crate) positive_admitted: usize,
+    pub(crate) negative_admitted: usize,
+    pub(crate) skipped_unattested_context: usize,
+    pub(crate) skipped_unattested_positive: usize,
+    pub(crate) skipped_missing_profile: usize,
+    pub(crate) candidate_profiles: usize,
+    pub(crate) positive_centers: usize,
+    pub(crate) anti_centers: usize,
+}
+
+#[derive(Debug, Deserialize)]
+struct FeedbackEvent {
+    kind: String,
+    word: String,
+    #[serde(default)]
+    context: Vec<String>,
 }
 
 #[derive(Default)]
@@ -199,6 +229,139 @@ pub(crate) fn compile_context_phase(
         min_profile_support,
     };
     (package, report)
+}
+
+/// Layers explicit user IME outcomes onto a canonical context package.
+///
+/// This is intentionally narrower than corpus compilation: feedback can only
+/// reinforce or suppress a profile already grounded by the clean corpus. A
+/// noisy live word can therefore never create a new L3 authority by itself.
+pub(crate) fn apply_feedback_overlay(
+    package: &mut ContextPhasePackage,
+    events_text: &str,
+) -> io::Result<ContextPhaseFeedbackOverlayReport> {
+    let mut report = ContextPhaseFeedbackOverlayReport {
+        kind: "l3_context_phase_feedback_overlay",
+        raw_words_stored: false,
+        source_events: 0,
+        positive_source_events: 0,
+        negative_source_events: 0,
+        positive_admitted: 0,
+        negative_admitted: 0,
+        skipped_unattested_context: 0,
+        skipped_unattested_positive: 0,
+        skipped_missing_profile: 0,
+        candidate_profiles: package.profiles.len(),
+        positive_centers: 0,
+        anti_centers: 0,
+    };
+
+    for (line_number, line) in events_text.lines().enumerate() {
+        let line = line.trim();
+        if line.is_empty() {
+            continue;
+        }
+        let event: FeedbackEvent = serde_json::from_str(line).map_err(|error| {
+            io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!(
+                    "invalid typing feedback JSONL at line {}: {error}",
+                    line_number + 1
+                ),
+            )
+        })?;
+        let polarity = match event.kind.as_str() {
+            "accepted_ime" | "confirmed_ime_prediction" => {
+                report.positive_source_events += 1;
+                1_i8
+            }
+            "rejected_ime" | "rejected_candidate" => {
+                report.negative_source_events += 1;
+                -1_i8
+            }
+            _ => continue,
+        };
+        report.source_events += 1;
+
+        let context = event
+            .context
+            .iter()
+            .map(|word| crate::typing_memory::normalize_memory_word(word))
+            .filter(|word| !word.is_empty())
+            .collect::<Vec<_>>();
+        if context.is_empty()
+            || !crate::typing_memory::phrase_is_attested_for_learning(&context.join(" "))
+        {
+            report.skipped_unattested_context += 1;
+            continue;
+        }
+        let candidate = crate::typing_memory::normalize_memory_word(&event.word);
+        if candidate.is_empty() {
+            report.skipped_missing_profile += 1;
+            continue;
+        }
+        // Positive experience is only safe when the complete observed phrase is
+        // lexically attested. A rejected candidate is allowed to be unknown: it
+        // is destructive evidence, never an authority to promote a word.
+        if polarity > 0 {
+            let mut phrase = context.clone();
+            phrase.push(candidate.clone());
+            if !crate::typing_memory::phrase_is_attested_for_learning(&phrase.join(" ")) {
+                report.skipped_unattested_positive += 1;
+                continue;
+            }
+        }
+        let token_hash = hash_text(&candidate);
+        let Some(index) = package
+            .profiles
+            .binary_search_by_key(&token_hash, |profile| profile.token_hash)
+            .ok()
+        else {
+            report.skipped_missing_profile += 1;
+            continue;
+        };
+        let vector =
+            package.candidate_relation_vector(&context, &candidate, ContextPhaseMode::Full);
+        let profile = &mut package.profiles[index];
+        if polarity > 0 {
+            add_cluster(
+                &mut profile.positive,
+                &vector,
+                MAX_CENTERS,
+                CENTER_SPLIT_COHERENCE,
+            );
+            profile.positive_examples = profile.positive_examples.saturating_add(1);
+            report.positive_admitted += 1;
+        } else {
+            add_cluster(
+                &mut profile.negative,
+                &vector,
+                MAX_CENTERS,
+                CENTER_SPLIT_COHERENCE,
+            );
+            profile.negative_examples = profile.negative_examples.saturating_add(1);
+            report.negative_admitted += 1;
+        }
+    }
+    package.transitions = package.transitions.saturating_add(
+        u64::try_from(
+            report
+                .positive_admitted
+                .saturating_add(report.negative_admitted),
+        )
+        .unwrap_or(u64::MAX),
+    );
+    report.positive_centers = package
+        .profiles
+        .iter()
+        .map(|profile| profile.positive.len())
+        .sum();
+    report.anti_centers = package
+        .profiles
+        .iter()
+        .map(|profile| profile.negative.len())
+        .sum();
+    Ok(report)
 }
 
 pub(crate) fn prove_context_phase(input: ContextPhaseCompileInput<'_>) -> ContextPhaseProofReport {
@@ -572,5 +735,63 @@ mod tests {
         );
         assert!(readouts[0].profile_present);
         assert!(readouts[0].margin_micro >= readouts[1].margin_micro);
+    }
+
+    #[test]
+    fn feedback_overlay_trains_existing_profiles_without_storing_live_text() {
+        let corpus = concat!(
+            "на улице идет дождь. ",
+            "вечером на улице идет дождь. ",
+            "в комнате горит свет. ",
+            "вечером в комнате горит свет."
+        );
+        let (mut package, _) = compile_context_phase(ContextPhaseCompileInput {
+            corpus_text: corpus,
+            lexicon_text: "дождь домик свет",
+            max_fragments: 0,
+            min_profile_support: 2,
+        });
+        let rain_hash = hash_text("дождь");
+        let light_hash = hash_text("свет");
+        let before_rain = package
+            .profile(rain_hash)
+            .expect("corpus profile")
+            .positive_examples;
+        let before_light = package
+            .profile(light_hash)
+            .expect("corpus profile")
+            .negative_examples;
+        let events = concat!(
+            r#"{"kind":"confirmed_ime_prediction","word":"дождь","context":["на","улице","идёт"]}"#,
+            "\n",
+            r#"{"kind":"rejected_ime","word":"свет","context":["на","улице","идёт"]}"#,
+            "\n",
+            r#"{"kind":"typed","word":"мусор","context":["на","улице"]}"#,
+        );
+
+        let report = apply_feedback_overlay(&mut package, events).expect("valid feedback");
+
+        assert!(!report.raw_words_stored);
+        assert_eq!(report.positive_admitted, 1);
+        assert_eq!(report.negative_admitted, 1);
+        assert_eq!(report.source_events, 2);
+        assert_eq!(
+            package.profile(rain_hash).unwrap().positive_examples,
+            before_rain + 1
+        );
+        assert_eq!(
+            package.profile(light_hash).unwrap().negative_examples,
+            before_light + 1
+        );
+        let dir =
+            std::env::temp_dir().join(format!("lay-l3-feedback-overlay-{}", std::process::id()));
+        let path = dir.join("feedback.nwpc");
+        std::fs::create_dir_all(&dir).unwrap();
+        super::super::write_package(&path, &package).unwrap();
+        let bytes = std::fs::read(&path).unwrap();
+        assert!(!bytes
+            .windows("дождь".len())
+            .any(|window| window == "дождь".as_bytes()));
+        let _ = std::fs::remove_dir_all(dir);
     }
 }

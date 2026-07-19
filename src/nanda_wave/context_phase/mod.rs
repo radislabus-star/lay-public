@@ -17,7 +17,9 @@ use super::phase_field::{
     phase_center_from_sum, phase_micro, PhaseCell, PhaseCenter,
 };
 
-pub(crate) use compiler::{compile_context_phase, prove_context_phase, ContextPhaseCompileInput};
+pub(crate) use compiler::{
+    apply_feedback_overlay, compile_context_phase, prove_context_phase, ContextPhaseCompileInput,
+};
 pub(crate) use format::{read_package, write_package};
 
 pub(crate) const MAGIC: &[u8; 8] = b"LAYL3P01";

@@ -84,6 +84,36 @@ pub fn compile_l3_context_phase_memory(
     Ok(value)
 }
 
+/// Rebuilds the private live L3 packet from the canonical package plus
+/// explicit IME accepts/rejections. The packet remains a compact hashed phase
+/// memory; the human text log remains only the training source.
+pub fn compile_l3_context_feedback_overlay_memory(
+    base_path: &std::path::Path,
+    usage_events_path: &std::path::Path,
+    output_path: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    let mut package = context_phase::read_package(base_path)?;
+    let events = std::fs::read_to_string(usage_events_path)?;
+    let report = context_phase::apply_feedback_overlay(&mut package, &events)?;
+    context_phase::write_package(output_path, &package)?;
+    let mut value = serde_json::to_value(report).map_err(std::io::Error::other)?;
+    if let Some(object) = value.as_object_mut() {
+        object.insert("base".to_string(), serde_json::json!(base_path));
+        object.insert(
+            "usage_events".to_string(),
+            serde_json::json!(usage_events_path),
+        );
+        object.insert("output".to_string(), serde_json::json!(output_path));
+        object.insert(
+            "artifact_bytes".to_string(),
+            serde_json::json!(std::fs::metadata(output_path)
+                .map(|meta| meta.len())
+                .unwrap_or_default()),
+        );
+    }
+    Ok(value)
+}
+
 pub fn l3_context_phase_status_json(path: Option<&std::path::Path>) -> serde_json::Value {
     let path = path
         .map(std::path::Path::to_path_buf)

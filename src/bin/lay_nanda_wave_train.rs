@@ -90,6 +90,28 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    if args
+        .iter()
+        .any(|arg| arg == "--compile-l3-context-feedback-overlay")
+    {
+        let base = arg_path(&args, "--base")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--base is required"))?;
+        let usage_events = arg_path(&args, "--usage-events").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--usage-events is required")
+        })?;
+        let out = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report = lay::nanda_wave::compile_l3_context_feedback_overlay_memory(
+            &base,
+            &usage_events,
+            &out,
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if args.iter().any(|arg| arg == "--compile-lexical-phase") {
         return run_lexical_phase_compile(&args);
     }
