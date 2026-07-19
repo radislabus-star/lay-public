@@ -14,7 +14,10 @@ use super::{
 };
 
 const MAX_POSITIVE_CENTERS: usize = 4;
-const MAX_ANTI_CENTERS: usize = 12;
+// A lexical competitor can arrive through several damaged surfaces. Keep their
+// incompatible phase modes separate so destructive interference does not
+// average a rare false attractor back into a plausible center.
+const MAX_ANTI_CENTERS: usize = 24;
 const CENTER_SPLIT_COHERENCE: f32 = 0.76;
 const MAX_COMPETITORS: usize = 4;
 const MAX_FRAGMENT_TOKENS: usize = 64;
@@ -40,6 +43,7 @@ pub(crate) struct ContextPhaseCompileReport {
     pub(crate) positive_examples: u64,
     pub(crate) negative_examples: u64,
     pub(crate) l2_lattice_negative_examples: u64,
+    pub(crate) self_mined_hard_negatives: u64,
     pub(crate) global_threshold_micro: i32,
     pub(crate) competition_threshold_micro: i32,
     pub(crate) min_profile_support: u32,
@@ -235,6 +239,8 @@ pub(crate) fn compile_context_phase(
         global_threshold_micro,
         competition_threshold_micro: 1,
     };
+    let self_mined_hard_negatives =
+        mine_l2_hard_negative_centers(&mut package, &sequences, &competitor_cache);
     package.competition_threshold_micro =
         learned_competition_threshold(&package, &sequences, &competitor_cache);
 
@@ -269,11 +275,104 @@ pub(crate) fn compile_context_phase(
             .values()
             .map(|competitors| competitors.len() as u64)
             .sum(),
+        self_mined_hard_negatives,
         global_threshold_micro: package.global_threshold_micro,
         competition_threshold_micro: package.competition_threshold_micro,
         min_profile_support,
     };
     (package, report)
+}
+
+/// Replays the training lattice after the first phase package exists. A false
+/// winner is not a lexical exception: it is a measured destructive phase mode
+/// for that candidate and becomes a compact anti-center. The replay is cold,
+/// train-only, and stores only hashes and phase vectors in the package.
+fn mine_l2_hard_negative_centers(
+    package: &mut ContextPhasePackage,
+    sequences: &[Vec<String>],
+    competitors: &BTreeMap<String, Vec<String>>,
+) -> u64 {
+    const HARD_NEGATIVE_PASSES: usize = 2;
+    let mut admitted = 0_u64;
+    for _ in 0..HARD_NEGATIVE_PASSES {
+        let workers = context_phase_worker_count(sequences.len());
+        let chunk_size = sequences.len().div_ceil(workers);
+        let vectors = thread::scope(|scope| {
+            let mut tasks = Vec::new();
+            for chunk in sequences.chunks(chunk_size) {
+                tasks.push(scope.spawn(|| {
+                    mine_hard_negative_vectors_for_sequences(package, chunk, competitors)
+                }));
+            }
+            let mut vectors = Vec::new();
+            for task in tasks {
+                vectors.extend(task.join().expect("L3 hard-negative worker panicked"));
+            }
+            vectors
+        });
+        if vectors.is_empty() {
+            break;
+        }
+        admitted = admitted.saturating_add(vectors.len() as u64);
+        for (token_hash, vector) in vectors {
+            let Ok(index) = package
+                .profiles
+                .binary_search_by_key(&token_hash, |profile| profile.token_hash)
+            else {
+                continue;
+            };
+            let profile = &mut package.profiles[index];
+            add_cluster(
+                &mut profile.negative,
+                &vector,
+                MAX_ANTI_CENTERS,
+                CENTER_SPLIT_COHERENCE,
+            );
+            profile.negative_examples = profile.negative_examples.saturating_add(1);
+        }
+    }
+    admitted
+}
+
+fn mine_hard_negative_vectors_for_sequences(
+    package: &ContextPhasePackage,
+    sequences: &[Vec<String>],
+    competitors: &BTreeMap<String, Vec<String>>,
+) -> Vec<(u64, Vec<PhaseCell>)> {
+    let mut vectors = Vec::new();
+    for tokens in sequences {
+        for index in 1..tokens.len() {
+            let target = &tokens[index];
+            let Some(negative) = competitors.get(target) else {
+                continue;
+            };
+            if negative.is_empty() {
+                continue;
+            }
+            let mut candidates = Vec::with_capacity(negative.len() + 1);
+            candidates.push(target.as_str());
+            candidates.extend(negative.iter().map(String::as_str));
+            let readouts = package.score_candidates(&tokens[..index], &candidates);
+            let Some(correct) = readouts.first() else {
+                continue;
+            };
+            for (candidate, readout) in candidates.iter().zip(&readouts).skip(1) {
+                if readout.disposition == super::ContextPhaseDisposition::Support
+                    && readout.margin_micro >= correct.margin_micro
+                {
+                    vectors.push((
+                        hash_text(candidate),
+                        package.candidate_relation_vector(
+                            &tokens[..index],
+                            candidate,
+                            ContextPhaseMode::Full,
+                        ),
+                    ));
+                }
+            }
+        }
+    }
+    vectors
 }
 
 /// Layers explicit user IME outcomes onto a canonical context package.
