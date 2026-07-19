@@ -103,6 +103,14 @@ impl LayIbusEngine {
                     &feedback.replacement,
                 );
             }
+            SystemOutcomeKind::Correction => {
+                lay::typing_cpu::TypingCpu::record_user_correction(
+                    &feedback.original,
+                    &feedback.replacement,
+                    &feedback.replacement,
+                    feedback.kind.operation(),
+                );
+            }
         }
     }
 

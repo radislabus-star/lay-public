@@ -1,6 +1,6 @@
 use std::time::Instant;
 
-use lay::text_edit::VisibleTailSource;
+use lay::text_edit::{EditAction, TransitionOperator, VisibleTailSource};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum WordInputMode {
@@ -40,15 +40,33 @@ pub(crate) struct PendingSystemOutcomeFeedback {
     pub(crate) kind: SystemOutcomeKind,
 }
 
+impl PendingSystemOutcomeFeedback {
+    pub(crate) fn from_winner(source: VisibleTailSource, action: &EditAction) -> Self {
+        let kind = if action.transition().operator() == Some(TransitionOperator::LayoutProjection) {
+            SystemOutcomeKind::LayoutProjection
+        } else {
+            SystemOutcomeKind::Correction
+        };
+        Self {
+            original: action.from_text().to_string(),
+            replacement: action.to_text().to_string(),
+            source,
+            kind,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum SystemOutcomeKind {
     LayoutProjection,
+    Correction,
 }
 
 impl SystemOutcomeKind {
     pub(crate) const fn operation(self) -> &'static str {
         match self {
             Self::LayoutProjection => "layout",
+            Self::Correction => "replacement",
         }
     }
 }

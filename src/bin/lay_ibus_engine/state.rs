@@ -289,7 +289,11 @@ impl LayIbusEngine {
         let suppress_next_autocorrect = request.suppress_next_autocorrect;
         let ime_owns_layout_postcondition = request.ime_owns_layout_postcondition();
         let winner_action = request.winner_action.clone();
-        let outcome_feedback = request.outcome_feedback.clone();
+        let outcome_feedback = request.outcome_feedback.clone().or_else(|| {
+            winner_action
+                .as_ref()
+                .map(|action| PendingSystemOutcomeFeedback::from_winner(source, action))
+        });
         let mut visible_state =
             VisibleFieldState::committed_tail(self.tail_buffer.clone(), Some(self.path.clone()))
                 .with_epoch(self.tail_epoch);
