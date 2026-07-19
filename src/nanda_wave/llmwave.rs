@@ -958,6 +958,9 @@ pub fn stored_phrase_experience_rejection_reason(
     if alpha_quality_is_low(&normalized) || ends_with_unfinished_short_word(&tokens) {
         return Some(PhraseExperienceRejectReason::LowLanguageQuality);
     }
+    if !crate::typing_memory::phrase_is_attested_for_learning(&normalized) {
+        return Some(PhraseExperienceRejectReason::LowLanguageQuality);
+    }
     None
 }
 
@@ -991,6 +994,9 @@ fn build_phrase_experience(
         return Err(PhraseExperienceRejectReason::UnstableOrNoisy);
     }
     if has_low_language_quality(&normalized, &tokens) {
+        return Err(PhraseExperienceRejectReason::LowLanguageQuality);
+    }
+    if !crate::typing_memory::phrase_is_attested_for_learning(&normalized) {
         return Err(PhraseExperienceRejectReason::LowLanguageQuality);
     }
     Ok(LlmWavePhraseExperience {
@@ -1967,6 +1973,17 @@ mod tests {
         assert!(loaded.contains("я хочу проверить режим"));
         assert!(loaded.contains("на улице опять идёт дождь"));
         assert!(!loaded.contains("not-json"));
+    }
+
+    #[test]
+    fn stored_phrase_experience_rejects_historical_unknown_word() {
+        let mut record = phrase_experience("space", "на улице идёт дождь").unwrap();
+        record.text = "на улице идёт дожть".to_string();
+
+        assert_eq!(
+            stored_phrase_experience_rejection_reason(&record),
+            Some(PhraseExperienceRejectReason::LowLanguageQuality)
+        );
     }
 
     #[test]
