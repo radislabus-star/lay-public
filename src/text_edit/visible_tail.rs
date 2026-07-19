@@ -166,7 +166,9 @@ impl VisibleTailSnapshot {
         if current_tail.chars().count() < delete_chars {
             return false;
         }
-        tail_suffix(current_tail, delete_chars) == self.expected_suffix
+        let actual_suffix = tail_suffix(current_tail, delete_chars);
+        actual_suffix == self.expected_suffix
+            && stable_tail_hash(&actual_suffix) == self.identity().visible_tail_hash
     }
 }
 
