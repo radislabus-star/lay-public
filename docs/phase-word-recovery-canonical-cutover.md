@@ -678,6 +678,10 @@ The first complete-lattice shadow on 2026-07-20 is explicitly rejected:
 It improved correct selections from 353 to 358, but increased nonfinal applies
 from 118 to 128. Phase packages therefore remain non-authoritative until L2
 candidate-specific destructive geometry lowers both denominators together.
+The retained causal-triple compiler accepts only `raw input -> Lay proposal ->
+immediate user replacement` records with one shared typed operator. A generic
+later `user-correction` is not a training label because it can belong to a
+different caret position or a new word.
 
 ### P1: candidate coverage
 

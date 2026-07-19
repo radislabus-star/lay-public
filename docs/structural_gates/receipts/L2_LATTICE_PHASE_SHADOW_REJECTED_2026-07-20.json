@@ -20,11 +20,22 @@
     "nonfinal_apply": 131
   },
   "live_feedback_phase_package": {
+    "training": "verified live actions plus unfiltered user-correction records",
+    "expected_candidate_applied": 358,
+    "expected_present_but_not_applied": 119,
+    "nonfinal_apply": 128
+  },
+  "causal_triple_phase_package": {
+    "training": "verified live actions plus only raw_input -> Lay proposal -> immediate user replacement triples with one shared operator",
+    "hot_bytes": 332332,
+    "lexical_anti_centers": 197,
+    "raw_words_stored": false,
     "expected_candidate_applied": 358,
     "expected_present_but_not_applied": 119,
     "nonfinal_apply": 128
   },
   "decision": "REJECTED",
   "reason": "Candidate-specific lexical anti-centers improve correct selection, but the package still increases nonfinal applies above the fixed baseline. It may not receive runtime authority or installation.",
-  "next_owner": "L2WordAttractor candidate-specific destructive geometry"
+  "next_owner": "L2WordAttractor candidate-specific destructive geometry",
+  "labeling_note": "Causal triples are retained as the only user-correction training route. They did not yet cover enough fixed-suite partial winners for promotion."
 }

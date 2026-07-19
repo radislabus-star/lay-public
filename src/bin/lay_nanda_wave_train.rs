@@ -264,6 +264,10 @@ struct LiveAction {
     to_text: String,
     #[serde(default)]
     safety_allow_apply: Option<bool>,
+    #[serde(default)]
+    lay_from: String,
+    #[serde(default)]
+    lay_to: String,
 }
 
 fn add_live_learning(
@@ -500,21 +504,34 @@ fn append_live_phase_entries(
                 false,
             );
         } else if include_user_corrections && action.kind == "user-correction" {
-            push_proven_user_phase_entry(entries, &action.from_text, &action.to_text);
+            push_causal_user_phase_entries(entries, &action);
         }
     }
     Ok(())
 }
 
-fn push_proven_user_phase_entry(entries: &mut Vec<L2PhaseTrainingEntry>, from: &str, to: &str) {
-    let Some((original, candidate)) = normalized_live_pair(from, to) else {
+fn push_causal_user_phase_entries(entries: &mut Vec<L2PhaseTrainingEntry>, action: &LiveAction) {
+    // A generic user-correction record can describe later typing at another
+    // caret position. Train only an observed local chain: raw input -> Lay
+    // proposal -> immediate user replacement of that exact proposal.
+    let Some((original, automatic)) = normalized_live_pair(&action.lay_from, &action.lay_to) else {
         return;
     };
-    if original.split_whitespace().count() != 1 || candidate.split_whitespace().count() != 1 {
+    let Some((applied, target)) = normalized_live_pair(&action.from_text, &action.to_text) else {
+        return;
+    };
+    if applied != automatic
+        || original.split_whitespace().count() != 1
+        || automatic.split_whitespace().count() != 1
+        || target.split_whitespace().count() != 1
+        || automatic == target
+    {
         return;
     }
     let operator =
-        lay::nanda_wave::infer_l2_transition_operator(&original, &candidate, "user-correction");
+        lay::nanda_wave::infer_l2_transition_operator(&original, &target, "user-correction");
+    let automatic_operator =
+        lay::nanda_wave::infer_l2_transition_operator(&original, &automatic, "user-correction");
     if !matches!(
         operator,
         "adjacent_transposition"
@@ -522,14 +539,22 @@ fn push_proven_user_phase_entry(entries: &mut Vec<L2PhaseTrainingEntry>, from: &
             | "repeated_letter_repair"
             | "extra_letter_repair"
             | "letter_substitution"
-    ) {
+    ) || automatic_operator != operator
+    {
         return;
     }
     entries.push(L2PhaseTrainingEntry {
-        original,
-        candidate,
+        original: original.clone(),
+        candidate: target,
         operation: operator.to_string(),
         accepted: true,
+        count: 1,
+    });
+    entries.push(L2PhaseTrainingEntry {
+        original,
+        candidate: automatic,
+        operation: operator.to_string(),
+        accepted: false,
         count: 1,
     });
 }
@@ -611,6 +636,46 @@ mod tests {
     fn user_corrections_are_opt_in_for_training() {
         assert!(!is_learnable_live_kind("user-correction", false));
         assert!(is_learnable_live_kind("user-correction", true));
+    }
+
+    #[test]
+    fn causal_user_correction_compiles_a_positive_and_candidate_specific_anti() {
+        let action = LiveAction {
+            kind: "user-correction".to_string(),
+            from_text: "провекра ".to_string(),
+            to_text: "проверка ".to_string(),
+            safety_allow_apply: None,
+            lay_from: "провека ".to_string(),
+            lay_to: "провекра ".to_string(),
+        };
+        let mut entries = Vec::new();
+
+        push_causal_user_phase_entries(&mut entries, &action);
+
+        assert_eq!(entries.len(), 2);
+        assert!(entries
+            .iter()
+            .any(|entry| entry.accepted && entry.candidate == "проверка"));
+        assert!(entries
+            .iter()
+            .any(|entry| !entry.accepted && entry.candidate == "провекра"));
+    }
+
+    #[test]
+    fn unrelated_later_user_text_is_not_a_phase_label() {
+        let action = LiveAction {
+            kind: "user-correction".to_string(),
+            from_text: "потом ".to_string(),
+            to_text: "предложение ".to_string(),
+            safety_allow_apply: None,
+            lay_from: "птом ".to_string(),
+            lay_to: "потом ".to_string(),
+        };
+        let mut entries = Vec::new();
+
+        push_causal_user_phase_entries(&mut entries, &action);
+
+        assert!(entries.is_empty());
     }
 
     #[test]
