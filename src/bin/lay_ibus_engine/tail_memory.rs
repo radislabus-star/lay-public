@@ -83,7 +83,9 @@ impl LayIbusEngine {
             self.record_observed_system_outcome(pending.feedback.as_ref());
             "observed"
         } else {
-            self.record_rejected_system_outcome(pending.feedback.as_ref());
+            // A missing IBus observation proves that our execution lease is stale,
+            // not that the phase-selected candidate was semantically wrong.
+            // Explicit undo/reject routes provide the negative learning signal.
             self.quarantine_visible_postcondition_mismatch();
             "mismatch"
         };
@@ -112,18 +114,6 @@ impl LayIbusEngine {
                 );
             }
         }
-    }
-
-    fn record_rejected_system_outcome(&self, feedback: Option<&PendingSystemOutcomeFeedback>) {
-        let Some(feedback) = feedback else {
-            return;
-        };
-        lay::nanda_wave::record_rejected_candidate_usage(
-            &feedback.original,
-            &feedback.replacement,
-            feedback.source.source_id(),
-            feedback.kind.operation(),
-        );
     }
 
     pub(super) fn selected_visible_completion_suffix(&self) -> String {

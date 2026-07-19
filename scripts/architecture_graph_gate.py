@@ -455,8 +455,10 @@ def build_receipt() -> dict[str, Any]:
     ).read_text(encoding="utf-8")
     if "record_observed_system_outcome" not in tail_memory_source:
         outcome_violations.append("observed_state_does_not_train_feedback")
-    if "record_rejected_system_outcome" not in tail_memory_source:
-        outcome_violations.append("mismatch_does_not_train_anti_feedback")
+    if "quarantine_visible_postcondition_mismatch" not in tail_memory_source:
+        outcome_violations.append("mismatch_does_not_quarantine_execution_lease")
+    if "record_rejected_candidate_usage" in tail_memory_source:
+        outcome_violations.append("backend_mismatch_trains_semantic_anti_feedback")
     checks.append(check("observed-outcome-feedback", outcome_evidence, outcome_violations))
 
     hot_evidence: list[str] = []
