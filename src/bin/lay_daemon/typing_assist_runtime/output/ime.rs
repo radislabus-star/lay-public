@@ -1,5 +1,5 @@
 use super::super::super::{
-    layout_switch_policy, log, should_try_ime_text_backend,
+    focused_ime_engine_handles_typing, layout_switch_policy, log, should_try_ime_text_backend,
     switch_or_restore_layout_after_text_edit, try_ime_replace_tail,
 };
 use super::super::TypingAssistOutcome;
@@ -42,6 +42,11 @@ pub(crate) fn try_apply_ime_replacement(
     } = ctx;
     if !should_try_ime_text_backend() {
         return ImeTypingApplyReceipt::NotSelected;
+    }
+    // IBus owns an active composition.  A concurrent daemon ReplaceTail would
+    // create a second decision/execution route for the same keystroke.
+    if !daemon_may_dispatch_ime_replace(focused_ime_engine_handles_typing()) {
+        return ImeTypingApplyReceipt::Blocked;
     }
     let plan = TextReplacement {
         move_left: 0,
@@ -127,4 +132,19 @@ pub(crate) fn try_apply_ime_replacement(
     ImeTypingApplyReceipt::Applied(TypingAssistOutcome::Applied {
         layout_is_ru: target_layout,
     })
+}
+
+fn daemon_may_dispatch_ime_replace(ibus_owns_active_text: bool) -> bool {
+    !ibus_owns_active_text
+}
+
+#[cfg(test)]
+mod tests {
+    use super::daemon_may_dispatch_ime_replace;
+
+    #[test]
+    fn active_ibus_composition_blocks_daemon_ime_dispatch() {
+        assert!(!daemon_may_dispatch_ime_replace(true));
+        assert!(daemon_may_dispatch_ime_replace(false));
+    }
 }

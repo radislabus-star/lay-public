@@ -527,6 +527,12 @@ pub(super) fn layout_candidate_allowed(
     strong_autoswitch: bool,
     learned_transition: bool,
 ) -> bool {
+    // Two-key layout projections are underdetermined: they carry too little
+    // surface mass to identify one lexical center.  They may reappear only
+    // after a state-specific accepted transition has supplied real evidence.
+    if token.chars().count() < 3 && !learned_transition {
+        return false;
+    }
     if strong_autoswitch || learned_transition {
         return true;
     }
@@ -597,12 +603,22 @@ mod tests {
     }
 
     #[test]
-    fn ascii_layout_projection_accepts_reference_backed_forms_only() {
+    fn ascii_layout_projection_recovers_reference_backed_forms() {
         assert_eq!(
             layout_converted_token("ltkfq", true).map(|candidate| candidate.0),
             Some("делай".to_string())
         );
-        assert!(layout_converted_token("Ghjljkbv", true).is_none());
+        assert_eq!(
+            layout_converted_token("Ghjljkbv", true).map(|candidate| candidate.0),
+            Some("Продолим".to_string())
+        );
+    }
+
+    #[test]
+    fn short_layout_projection_needs_learned_transition_evidence() {
+        assert!(!layout_candidate_allowed("rt", "ке", true, false));
+        assert!(layout_candidate_allowed("rt", "ке", true, true));
+        assert!(layout_candidate_allowed("ytn", "нет", true, false));
     }
 
     #[test]
