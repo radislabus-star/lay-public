@@ -1,14 +1,13 @@
 use super::super::context::{TailContext, TokenKind};
 use super::super::signal::{WavePacket, WordCandidate};
-use super::surface::{surface_motif_known_surface, surface_motif_memory};
+use super::surface::surface_motif_memory;
 use super::{candidate_support, l1_energy};
 use crate::candidate_contract::CandidateOrigin;
 use crate::dict::{convert, detect_direction};
 use crate::keyboard::is_cyrillic_letter;
 use crate::lexicon::{
-    is_common_en_guard_prefix, is_common_en_technical_word, is_common_ru_word,
-    is_ru_live_protected_word, is_ru_short_function_word, is_user_protected_word,
-    visual_b_after_ascii_replacement, visual_b_default_replacement,
+    is_common_en_guard_prefix, is_common_en_technical_word, is_ru_live_protected_word,
+    is_user_protected_word, visual_b_after_ascii_replacement, visual_b_default_replacement,
 };
 use crate::nanda_wave::llmwave;
 use crate::text_case::apply_word_case;
@@ -87,11 +86,7 @@ pub(super) fn layout_candidate_with_projection_policy(
     // A clean, already-known English surface is its own stable L2 center. Do
     // not let an accidental keyboard projection pull it into a Russian center
     // unless accepted transition memory or a strong layout signal says so.
-    if token.chars().all(|ch| ch.is_ascii_alphabetic())
-        && crate::layout_autoswitch::is_known_english_layout_autoswitch_word(token)
-        && !strong_autoswitch
-        && !learned_transition
-    {
+    if input_has_settled_phase(token) && !strong_autoswitch && !learned_transition {
         return None;
     }
     if context.token_count() < 2
@@ -100,11 +95,6 @@ pub(super) fn layout_candidate_with_projection_policy(
         && !strong_autoswitch
         && !learned_transition
         && !word_center_settled
-    {
-        return None;
-    }
-    if known_short_russian_token_blocks_layout(token)
-        && !short_cyrillic_layout_technical_allowed(&converted)
     {
         return None;
     }
@@ -177,11 +167,7 @@ pub(super) fn layout_scan_candidates(
         };
         let learned_transition = learned_layout_transition_accepts(prefix, token, &converted);
         let projection_supported = strong_autoswitch || learned_transition || word_center_settled;
-        if token.chars().all(|ch| ch.is_ascii_alphabetic())
-            && crate::layout_autoswitch::is_known_english_layout_autoswitch_word(token)
-            && !strong_autoswitch
-            && !learned_transition
-        {
+        if input_has_settled_phase(token) && !strong_autoswitch && !learned_transition {
             continue;
         }
         if converted == token
@@ -192,11 +178,6 @@ pub(super) fn layout_scan_candidates(
                 learned_transition || word_center_settled,
             )
             || !language_allows_layout(token, &converted, projection_supported)
-        {
-            continue;
-        }
-        if known_short_russian_token_blocks_layout(token)
-            && !short_cyrillic_layout_technical_allowed(&converted)
         {
             continue;
         }
@@ -358,22 +339,20 @@ fn cyrillic_layout_word_center_blocked(token: &str) -> bool {
     let lower = token.to_lowercase();
     is_user_protected_word(&lower)
         || is_ru_live_protected_word(&lower)
-        || is_common_ru_word(&lower)
-        || crate::hot_field::HotFieldSnapshot::current()
-            .input_surface_readout(&lower)
-            .is_known()
+        || input_has_settled_phase(&lower)
 }
 
 fn language_allows_layout(token: &str, converted: &str, learned_transition: bool) -> bool {
     if learned_transition {
         return true;
     }
-    let token_ascii = token.chars().all(|ch| ch.is_ascii_alphabetic());
-    let converted_cyrillic = converted.chars().all(is_cyrillic_letter);
-    if token_ascii && converted_cyrillic {
-        return is_common_ru_word(&converted.to_lowercase());
-    }
-    true
+    let switched_script = (token.chars().all(|ch| ch.is_ascii_alphabetic())
+        && converted.chars().all(is_cyrillic_letter))
+        || (token.chars().all(is_cyrillic_letter)
+            && converted.chars().all(|ch| ch.is_ascii_alphabetic()));
+    !switched_script
+        || crate::hot_field::HotFieldSnapshot::current()
+            .layout_projection_has_phase_authority(converted)
 }
 
 pub(super) fn short_token_candidates(
@@ -392,10 +371,10 @@ pub(super) fn short_token_candidates(
 
     let mut candidates = Vec::new();
     let converted = convert(clean, detect_direction(clean));
-    let converted_lower = converted.to_lowercase();
     if converted != clean
         && converted.chars().all(is_cyrillic_letter)
-        && (is_ru_short_function_word(&converted_lower) || is_common_ru_word(&converted_lower))
+        && crate::hot_field::HotFieldSnapshot::current()
+            .layout_projection_has_phase_authority(&converted)
     {
         candidates.push(short_token_candidate(ShortTokenCandidateInput {
             prefix,
@@ -505,56 +484,26 @@ fn technical_context_blocks_layout(prefix: &str, token: &str) -> bool {
     is_common_en_guard_prefix(&previous.to_ascii_lowercase()) && token.chars().count() >= 3
 }
 
-pub(super) fn known_short_russian_token_blocks_layout(token: &str) -> bool {
-    let lower = token.to_lowercase();
-    token.chars().count() <= 3
-        && lower.chars().all(is_cyrillic_letter)
-        && (is_common_ru_word(&lower)
-            || surface_motif_known_surface(&lower)
-            || token.chars().all(is_cyrillic_letter))
-}
-
-pub(super) fn short_cyrillic_layout_technical_allowed(converted: &str) -> bool {
-    matches!(
-        converted.to_ascii_lowercase().as_str(),
-        "api" | "css" | "eng" | "git" | "go" | "lay" | "log" | "md" | "ms" | "rus" | "ssh" | "vpn"
-    )
+fn input_has_settled_phase(token: &str) -> bool {
+    crate::hot_field::HotFieldSnapshot::current()
+        .input_surface_readout(token)
+        .has_phase_authority()
 }
 
 pub(super) fn layout_candidate_allowed(
     token: &str,
     converted: &str,
-    strong_autoswitch: bool,
+    _strong_autoswitch: bool,
     learned_transition: bool,
 ) -> bool {
-    // Two-key projections have enough mass only for a closed-class lexical
-    // center. This preserves `yt -> не` while rejecting open, ambiguous
-    // projections such as `rt -> ке` unless experience proves the transition.
-    if token.chars().count() < 3
-        && !learned_transition
-        && !is_ru_short_function_word(&converted.to_lowercase())
-    {
-        return false;
-    }
-    if strong_autoswitch || learned_transition {
-        return true;
-    }
-    let token_ascii = token.chars().all(|ch| ch.is_ascii_alphabetic());
-    let token_cyrillic = token.chars().all(is_cyrillic_letter);
-    let converted_ascii = converted.chars().all(|ch| ch.is_ascii_alphabetic());
-    let converted_cyrillic = converted.chars().all(is_cyrillic_letter);
-
-    if token_ascii && converted_cyrillic {
-        return learned_transition;
-    }
-    if token_cyrillic && converted_ascii {
-        let token_lower = token.to_lowercase();
-        if is_user_protected_word(&token_lower) || surface_motif_known_surface(&token_lower) {
-            return false;
-        }
-        return is_common_en_technical_word(&converted.to_ascii_lowercase());
-    }
-    false
+    let switched_script = (token.chars().all(|ch| ch.is_ascii_alphabetic())
+        && converted.chars().all(is_cyrillic_letter))
+        || (token.chars().all(is_cyrillic_letter)
+            && converted.chars().all(|ch| ch.is_ascii_alphabetic()));
+    switched_script
+        && (learned_transition
+            || crate::hot_field::HotFieldSnapshot::current()
+                .layout_projection_has_phase_authority(converted))
 }
 
 fn learned_layout_transition_accepts(prefix: &str, token: &str, converted: &str) -> bool {
@@ -618,7 +567,7 @@ mod tests {
     }
 
     #[test]
-    fn short_layout_projection_needs_learned_transition_evidence() {
+    fn short_layout_projection_uses_target_phase_authority() {
         assert!(!layout_candidate_allowed("rt", "ке", true, false));
         assert!(layout_candidate_allowed("rt", "ке", true, true));
         assert!(layout_candidate_allowed("yt", "не", true, false));
@@ -634,13 +583,9 @@ mod tests {
     }
 
     #[test]
-    fn all_caps_layout_projection_reaches_the_live_l2_candidate_route() {
+    fn all_caps_glued_phrase_stays_out_of_direct_lexical_authority() {
         let token = "YTGTHTDTHYEKJCM";
         let context = TailContext::from_text(token);
-        let candidate = layout_candidate("", token, &context, &[])
-            .expect("all-caps projection must reach the LayoutWordCell32 route");
-
-        assert_eq!(candidate.text, "НЕПЕРЕВЕРНУЛОСЬ");
-        assert_eq!(candidate.origin, CandidateOrigin::Layout);
+        assert!(layout_candidate("", token, &context, &[]).is_none());
     }
 }

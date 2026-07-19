@@ -133,6 +133,16 @@ impl HotWordReadout {
         !matches!(self.authority, HotWordAuthority::Unknown)
     }
 
+    /// A compact lexical center that may participate in a state transition.
+    /// This deliberately excludes decoder-only forms: those may generate a
+    /// candidate, but cannot by themselves authorize a live projection.
+    pub(crate) const fn has_phase_authority(self) -> bool {
+        matches!(
+            self.authority,
+            HotWordAuthority::CommonSurface | HotWordAuthority::L2SurfaceCenter
+        )
+    }
+
     pub(crate) const fn has_structural_center(self) -> bool {
         matches!(
             self.authority,
@@ -251,7 +261,7 @@ impl HotFieldSnapshot {
             HotWordAuthority::Unknown
         } else if crate::lexicon::is_common_ru_word(&lower) {
             HotWordAuthority::CommonSurface
-        } else if crate::nanda_wave::l2::l2_surface_foundation_contains(&lower) {
+        } else if crate::nanda_wave::l2::l2_surface_foundation_has_authority(&lower) {
             HotWordAuthority::L2SurfaceCenter
         } else {
             HotWordAuthority::Unknown
@@ -307,6 +317,16 @@ impl HotFieldSnapshot {
             surface.authority
         };
         HotWordReadout { authority }
+    }
+
+    /// Reads whether a projected layout target has a settled hot-field
+    /// attractor. Keyboard mapping supplies a possible surface only; this
+    /// readout decides whether that surface has enough compact lexical mass
+    /// to enter the transition field.
+    pub(crate) fn layout_projection_has_phase_authority(&self, word: &str) -> bool {
+        let surface = self.input_surface_readout(word);
+        surface.has_phase_authority()
+            || crate::russian_lexicon::is_center_backed_russian_form(&word.to_lowercase())
     }
 
     pub(crate) fn surface_phase_readout(&self, word: &str) -> HotSurfacePhaseReadout {

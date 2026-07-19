@@ -40,8 +40,7 @@ pub(crate) use ime_readout::{
     l2_decoder_contains_surface, l2_surface_phase_readout,
 };
 use layout_adapter::{
-    known_short_russian_token_blocks_layout, layout_candidate, layout_scan_candidates,
-    layout_sequence_candidate, short_cyrillic_layout_technical_allowed, short_token_candidates,
+    layout_candidate, layout_scan_candidates, layout_sequence_candidate, short_token_candidates,
 };
 #[cfg(test)]
 use layout_adapter::{layout_candidate_allowed, LAYOUT_THEN_L2_WORD_CENTER};

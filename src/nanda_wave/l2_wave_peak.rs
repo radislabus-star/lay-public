@@ -139,19 +139,18 @@ pub(crate) fn score_correction_peak_with_prepared_usage(
     let center = center_resonance(prepared, &replacement_word);
     let foundation = foundation_resonance(&replacement_word);
     let layout = layout_resonance(role, &prepared.original_word, &replacement_word);
-    let operator = operator_resonance(error_class, role);
     let known = known_surface_mass(&replacement_word);
 
     let mut positive =
-        center + foundation + layout + operator + known + usage_prior * 1.30 + context_prior * 1.75;
+        center + foundation + layout + known + usage_prior * 1.30 + context_prior * 1.75;
     if candidate_count >= 2 {
         positive += 0.035;
     }
 
-    let drift_negative = drift_anti_wave(role, &prepared.original_word, &replacement_word);
+    let drift_negative = drift_anti_wave(&prepared.original_word, &replacement_word);
     let mut negative = (rejected * 0.90).clamp(0.0, 0.40);
     negative += drift_negative;
-    negative += unknown_surface_penalty(role, &replacement_word);
+    negative += unknown_surface_penalty(&replacement_word);
 
     let mut uncertainty =
         peak_uncertainty(positive, negative, center, layout, foundation, usage_prior);
@@ -299,30 +298,29 @@ fn layout_resonance(role: CorrectionSourceRole, original: &str, replacement: &st
     if role != CorrectionSourceRole::Layout {
         return 0.0;
     }
-    let projected = has_latin(original) != has_latin(replacement)
-        || has_cyrillic(original) != has_cyrillic(replacement)
-        || crate::russian_lexicon::is_known_russian_word_or_form(replacement)
-        || crate::lexicon::is_common_ru_word(replacement);
-    if projected {
-        0.64
-    } else {
-        0.42
+    let script_projected = has_latin(original) != has_latin(replacement)
+        || has_cyrillic(original) != has_cyrillic(replacement);
+    if !script_projected {
+        return 0.0;
     }
-}
 
-fn operator_resonance(error_class: TypingErrorClass, role: CorrectionSourceRole) -> f32 {
-    match role {
-        CorrectionSourceRole::Layout => 0.18,
-        CorrectionSourceRole::Boundary => 0.16,
-        CorrectionSourceRole::DeterministicTypo => 0.12,
-        CorrectionSourceRole::L2Surface => 0.10,
-        CorrectionSourceRole::L3Context => 0.08,
-        CorrectionSourceRole::Completion => 0.06,
-        CorrectionSourceRole::Technical => match error_class {
-            TypingErrorClass::WrongLayout | TypingErrorClass::MixedScript => 0.10,
-            _ => 0.0,
-        },
+    // The keyboard map only proposes a projection. Its resonance comes from
+    // the compact target center, not from a fixed Layout bonus or a lexical
+    // exception. An unrepresented target therefore remains a candidate but
+    // adds no authority energy to the transition field.
+    let field = crate::hot_field::HotFieldSnapshot::current();
+    if !field.layout_projection_has_phase_authority(replacement) {
+        return 0.0;
     }
+    let phase = field.surface_phase_readout(replacement);
+    let center_mass = match field.input_surface_readout(replacement).authority {
+        crate::hot_field::HotWordAuthority::CommonSurface => 0.40,
+        crate::hot_field::HotWordAuthority::L2SurfaceCenter => 0.30,
+        crate::hot_field::HotWordAuthority::L2FormCenter => 0.18,
+        crate::hot_field::HotWordAuthority::Unknown => 0.0,
+    };
+    let coherence_mass = (phase.coherence_milli.min(1_000) as f32 / 1_000.0) * 0.24;
+    (center_mass + coherence_mass).min(0.64)
 }
 
 fn known_surface_mass(word: &str) -> f32 {
@@ -372,13 +370,7 @@ fn live_completion_anti_wave(partial: &str, surface: &str, prefix_fit: f32) -> f
     }
 }
 
-fn drift_anti_wave(role: CorrectionSourceRole, original: &str, replacement: &str) -> f32 {
-    if matches!(
-        role,
-        CorrectionSourceRole::Layout | CorrectionSourceRole::Boundary
-    ) {
-        return 0.0;
-    }
+fn drift_anti_wave(original: &str, replacement: &str) -> f32 {
     if original.is_empty() || replacement.is_empty() || original == replacement {
         return 0.0;
     }
@@ -396,13 +388,7 @@ fn drift_anti_wave(role: CorrectionSourceRole, original: &str, replacement: &str
     0.0
 }
 
-fn unknown_surface_penalty(role: CorrectionSourceRole, word: &str) -> f32 {
-    if matches!(
-        role,
-        CorrectionSourceRole::Layout | CorrectionSourceRole::Technical
-    ) {
-        return 0.0;
-    }
+fn unknown_surface_penalty(word: &str) -> f32 {
     if word.chars().all(crate::keyboard::is_cyrillic_letter)
         && !crate::lexicon::is_common_ru_word(word)
         && !crate::russian_lexicon::is_known_russian_word_or_form(word)
@@ -485,7 +471,7 @@ mod tests {
     use crate::correction_core::TypingErrorClass;
 
     #[test]
-    fn layout_projection_forms_strong_wave_peak() {
+    fn layout_projection_does_not_receive_a_fixed_source_bonus() {
         let score = score_correction_peak(
             "file ljgecnbv ",
             "file допустим ",
@@ -494,8 +480,9 @@ mod tests {
             1,
         );
 
-        assert!(score.signal > 0.65, "{score:?}");
-        assert_eq!(score.reason, "l2_wave_layout_peak");
+        assert!(score.signal > 0.0, "{score:?}");
+        assert!(score.signal < 0.30, "{score:?}");
+        assert_eq!(score.reason, "l2_wave_foundation_peak");
     }
 
     #[test]

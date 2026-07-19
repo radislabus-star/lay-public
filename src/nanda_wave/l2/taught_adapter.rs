@@ -91,12 +91,6 @@ fn taught_word_candidate(input: TaughtCandidateInput<'_>) -> Option<WordCandidat
     if replacement == input.original.trim_end() {
         return None;
     }
-    if matches!(input.family, TypingCandidateFamily::Layout)
-        && super::known_short_russian_token_blocks_layout(input.original.trim_end())
-        && !super::short_cyrillic_layout_technical_allowed(replacement)
-    {
-        return None;
-    }
     let (source, origin) = match input.family {
         TypingCandidateFamily::Layout if input.options.is_enabled("LayoutWordCell32") => {
             ("LayoutWordCell32", CandidateOrigin::Layout)

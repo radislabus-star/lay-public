@@ -21,16 +21,12 @@ pub(super) fn candidate_has_apply_authority(
     let source_role = candidate.origin.source_role();
     let exact_positive_transition = evaluation.transition.l4_signed_signal.exact_positive();
     let operator_consensus_authority = certified_operator_consensus(event, candidate, evaluation);
-    let verified_layout_projection = evaluation.action.verifier_passed
-        && evaluation.action.edit_operator == verifier::EditTransitionOperator::LayoutProjection;
     if (signals.l4_hidden_plan_commitment != 0 && !signals.l4_hidden_certificate_valid)
         || signals.l4_hidden_disposition == L4HiddenDisposition::Rejected
         || (signals.l4_hidden_disposition == L4HiddenDisposition::Ambiguous
-            && signals.l4_hidden_ambiguity_authoritative
-            && !verified_layout_projection)
+            && signals.l4_hidden_ambiguity_authoritative)
         || (signals.l4_hidden_selected_witnessed
-            && signals.l4_hidden_disposition != L4HiddenDisposition::Witnessed
-            && !verified_layout_projection)
+            && signals.l4_hidden_disposition != L4HiddenDisposition::Witnessed)
     {
         debug_decision_reject(
             candidate,
@@ -91,14 +87,7 @@ pub(super) fn candidate_has_apply_authority(
         );
         return false;
     }
-    if !action.verifier_passed
-        && !matches!(
-            source_role,
-            CorrectionSourceRole::Layout
-                | CorrectionSourceRole::Boundary
-                | CorrectionSourceRole::DeterministicTypo
-        )
-    {
+    if !action.verifier_passed {
         debug_decision_reject(
             candidate,
             "unverified_transition",
@@ -176,29 +165,11 @@ pub(super) fn candidate_has_apply_authority(
         );
         return false;
     }
-    if bayes.risk >= CURRENT.high_risk_floor
-        && !matches!(
-            source_role,
-            CorrectionSourceRole::Layout
-                | CorrectionSourceRole::Boundary
-                | CorrectionSourceRole::DeterministicTypo
-        )
-    {
+    if bayes.risk >= CURRENT.high_risk_floor && !strong_transition_support {
         debug_decision_reject(candidate, "high_risk", bayes.posterior, bayes.risk);
         return false;
     }
-    let posterior_floor = match source_role {
-        CorrectionSourceRole::Layout => CURRENT.layout_posterior_floor,
-        CorrectionSourceRole::Boundary | CorrectionSourceRole::DeterministicTypo => {
-            CURRENT.deterministic_posterior_floor
-        }
-        CorrectionSourceRole::L3Context => CURRENT.l3_posterior_floor,
-        CorrectionSourceRole::L2Surface => CURRENT.l2_posterior_floor,
-        CorrectionSourceRole::Completion | CorrectionSourceRole::Technical => {
-            CURRENT.completion_posterior_floor
-        }
-    };
-    if bayes.posterior < posterior_floor && !strong_learned_support {
+    if bayes.posterior < CURRENT.transition_posterior_floor && !strong_learned_support {
         debug_decision_reject(candidate, "low_posterior", bayes.posterior, bayes.risk);
         return false;
     }
@@ -485,13 +456,6 @@ pub(super) fn admit_evaluated_hidden_transition(
         };
     }
 
-    if source_role == CorrectionSourceRole::Layout && transition.evidence.verifier_passed {
-        return TransitionAdmission {
-            allow_apply: true,
-            reason: "latent_layout_projection_admitted",
-        };
-    }
-
     TransitionAdmission {
         allow_apply: true,
         reason: "latent_transition_admitted",
@@ -509,17 +473,12 @@ fn known_word_context_state_support(
 }
 
 pub(super) fn known_word_drift_has_authority(
-    source_role: CorrectionSourceRole,
+    _source_role: CorrectionSourceRole,
     _candidate_count: usize,
     strong_state_support: bool,
     exact_state_support: bool,
 ) -> bool {
-    exact_state_support
-        || matches!(
-            source_role,
-            CorrectionSourceRole::Layout | CorrectionSourceRole::Boundary
-        )
-        || strong_state_support
+    exact_state_support || strong_state_support
 }
 
 fn short_same_length_surface_drift(original_word: &str, replacement: &str) -> bool {

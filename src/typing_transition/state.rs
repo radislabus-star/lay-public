@@ -153,9 +153,20 @@ fn current_word_is_known(word: &str) -> bool {
         return false;
     }
     let lower = word.to_lowercase();
-    crate::hot_field::HotFieldSnapshot::current()
-        .input_surface_readout(&lower)
-        .is_known()
+    let field = crate::hot_field::HotFieldSnapshot::current();
+
+    // State authority is narrower than candidate generation. A surface may
+    // appear in a broad decoder and still be a damaged token (`сбирать`);
+    // only a settled hot center, a center-backed form, or an attested form
+    // available to the current runtime policy can make it an existing state.
+    field.input_surface_readout(&lower).has_phase_authority()
+        || crate::russian_lexicon::is_center_backed_russian_form(&lower)
+        || (crate::hot_field::process_allows_full_reference_authority()
+            && crate::russian_lexicon::is_known_russian_word_or_form(&lower))
+        || usage_snapshot_has_word_authority(
+            &crate::nanda_wave::cached_usage_prior_snapshot(),
+            &lower,
+        )
         || is_ascii_technical_token(word)
 }
 
