@@ -59,6 +59,19 @@ pub(crate) struct ContextPhaseProofReport {
     pub(crate) full_top1: usize,
     pub(crate) full_false_supports: usize,
     pub(crate) full_false_top1: usize,
+    /// False winners whose energy is close enough that the scene is
+    /// intrinsically ambiguous at the current learned competition scale.
+    /// This is a cold proof metric only; it never changes hot admission.
+    pub(crate) full_false_top1_close_competition: usize,
+    /// False winners with a clear energy separation. These are the real
+    /// candidate-specific anti-center debt, rather than an abstention case.
+    pub(crate) full_false_top1_separated_competition: usize,
+    /// False winners observed before L3 had enough known scene atoms to claim
+    /// contextual authority.
+    pub(crate) full_false_top1_weak_context: usize,
+    /// False winners despite an adequately represented context. These are the
+    /// strongest evidence that the learned context field itself is wrong.
+    pub(crate) full_false_top1_context_ready: usize,
     pub(crate) no_phase_supports: usize,
     pub(crate) no_anti_top1: usize,
     pub(crate) no_anti_false_supports: usize,
@@ -84,6 +97,10 @@ struct ContextPhaseProofTotals {
     full_top1: usize,
     full_false_supports: usize,
     full_false_top1: usize,
+    full_false_top1_close_competition: usize,
+    full_false_top1_separated_competition: usize,
+    full_false_top1_weak_context: usize,
+    full_false_top1_context_ready: usize,
     no_phase_supports: usize,
     no_anti_top1: usize,
     no_anti_false_supports: usize,
@@ -98,6 +115,10 @@ impl ContextPhaseProofTotals {
         self.full_top1 += other.full_top1;
         self.full_false_supports += other.full_false_supports;
         self.full_false_top1 += other.full_false_top1;
+        self.full_false_top1_close_competition += other.full_false_top1_close_competition;
+        self.full_false_top1_separated_competition += other.full_false_top1_separated_competition;
+        self.full_false_top1_weak_context += other.full_false_top1_weak_context;
+        self.full_false_top1_context_ready += other.full_false_top1_context_ready;
         self.no_phase_supports += other.no_phase_supports;
         self.no_anti_top1 += other.no_anti_top1;
         self.no_anti_false_supports += other.no_anti_false_supports;
@@ -551,6 +572,10 @@ pub(crate) fn prove_context_phase(input: ContextPhaseCompileInput<'_>) -> Contex
         full_top1,
         full_false_supports,
         full_false_top1,
+        full_false_top1_close_competition,
+        full_false_top1_separated_competition,
+        full_false_top1_weak_context,
+        full_false_top1_context_ready,
         no_phase_supports,
         no_anti_top1,
         no_anti_false_supports,
@@ -584,6 +609,10 @@ pub(crate) fn prove_context_phase(input: ContextPhaseCompileInput<'_>) -> Contex
         full_top1,
         full_false_supports,
         full_false_top1,
+        full_false_top1_close_competition,
+        full_false_top1_separated_competition,
+        full_false_top1_weak_context,
+        full_false_top1_context_ready,
         no_phase_supports,
         no_anti_top1,
         no_anti_false_supports,
@@ -634,7 +663,27 @@ fn evaluate_heldout_sequences(
                 .skip(1)
                 .filter(|readout| readout.disposition == super::ContextPhaseDisposition::Support)
                 .count();
-            totals.full_false_top1 += false_candidate_wins(&full) as usize;
+            if let Some(false_winner) = false_candidate_winner(&full) {
+                totals.full_false_top1 += 1;
+                let correct = &full[0];
+                let loss = false_winner
+                    .margin_micro
+                    .saturating_sub(correct.margin_micro);
+                let competition_scale = i64::from(package.competition_threshold_micro.max(1));
+                if loss <= competition_scale {
+                    totals.full_false_top1_close_competition += 1;
+                } else {
+                    totals.full_false_top1_separated_competition += 1;
+                }
+                let context_ready = correct.context_known_tokens >= 2
+                    && usize::from(correct.context_known_tokens) * 2
+                        >= usize::from(correct.context_tokens);
+                if context_ready {
+                    totals.full_false_top1_context_ready += 1;
+                } else {
+                    totals.full_false_top1_weak_context += 1;
+                }
+            }
             let no_phase = package.score_candidates_with_mode(
                 &tokens[..index],
                 &candidates,
@@ -678,13 +727,56 @@ fn correct_is_unique_top(readouts: &[super::ContextPhaseReadout]) -> bool {
 }
 
 fn false_candidate_wins(readouts: &[super::ContextPhaseReadout]) -> bool {
+    false_candidate_winner(readouts).is_some()
+}
+
+fn false_candidate_winner(
+    readouts: &[super::ContextPhaseReadout],
+) -> Option<&super::ContextPhaseReadout> {
     let Some(correct) = readouts.first() else {
-        return false;
+        return None;
     };
-    readouts.iter().skip(1).any(|candidate| {
-        candidate.disposition == super::ContextPhaseDisposition::Support
-            && candidate.margin_micro >= correct.margin_micro
-    })
+    readouts
+        .iter()
+        .skip(1)
+        .filter(|candidate| {
+            candidate.disposition == super::ContextPhaseDisposition::Support
+                && candidate.margin_micro >= correct.margin_micro
+        })
+        .max_by_key(|candidate| candidate.margin_micro)
+}
+
+#[cfg(test)]
+mod proof_tests {
+    use super::*;
+
+    #[test]
+    fn false_winner_selects_the_strongest_supported_competitor() {
+        let correct = super::super::ContextPhaseReadout {
+            disposition: super::super::ContextPhaseDisposition::Support,
+            margin_micro: 40,
+            ..super::super::ContextPhaseReadout::default()
+        };
+        let weaker_false = super::super::ContextPhaseReadout {
+            disposition: super::super::ContextPhaseDisposition::Support,
+            margin_micro: 45,
+            ..super::super::ContextPhaseReadout::default()
+        };
+        let strongest_false = super::super::ContextPhaseReadout {
+            disposition: super::super::ContextPhaseDisposition::Support,
+            margin_micro: 55,
+            ..super::super::ContextPhaseReadout::default()
+        };
+        let neutral = super::super::ContextPhaseReadout {
+            disposition: super::super::ContextPhaseDisposition::Neutral,
+            margin_micro: 80,
+            ..super::super::ContextPhaseReadout::default()
+        };
+
+        let readouts = [correct, weaker_false, strongest_false, neutral];
+        let winner = false_candidate_winner(&readouts);
+        assert_eq!(winner.map(|readout| readout.margin_micro), Some(55));
+    }
 }
 
 fn compile_semantic_states(sequences: &[Vec<String>]) -> Vec<TokenSemanticState> {

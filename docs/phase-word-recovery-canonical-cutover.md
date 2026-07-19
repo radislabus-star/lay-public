@@ -690,6 +690,13 @@ The field has causal phase and semantic ablation signal, but 793 heldout false
 top-1 candidates remain. It is not a runtime authority until those collisions
 are separated without collapsing valid support.
 
+The smaller diagnostic replay narrows that debt further:
+`docs/structural_gates/receipts/L3_CONTEXT_FALSE_TOP1_DIAGNOSTIC_2026-07-19.json`.
+All 14 false winners were context-ready and had a separated phase margin; none
+were close competition. Therefore they require learned candidate-specific
+destructive centers, not a larger abstention threshold, a hand-written phrase
+rule, or an ambiguity fallback.
+
 ### P3: L4 temporal state
 
 Increase organic witness coverage. The runtime already binds state-before,

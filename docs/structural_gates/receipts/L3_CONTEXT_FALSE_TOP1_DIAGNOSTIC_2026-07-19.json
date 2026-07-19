@@ -1,0 +1,20 @@
+{
+  "kind": "l3_context_phase_false_top1_diagnostic",
+  "source": "clean remote corpus; 10k fragments; 20 cold proof workers",
+  "evaluated_transitions": 4817,
+  "full_supports": 1070,
+  "full_top1": 1070,
+  "full_false_top1": 14,
+  "false_top1_close_competition": 0,
+  "false_top1_separated_competition": 14,
+  "false_top1_weak_context": 0,
+  "false_top1_context_ready": 14,
+  "anti_false_top1_reduction": 25,
+  "phase_ablation_drop": 1070,
+  "semantic_ablation_drop": 696,
+  "raw_words_stored": false,
+  "verdict": "WATCH",
+  "finding": "all false winners are context-ready and geometrically separated; do not treat them as natural ambiguity",
+  "rejected_experiment": "four cold competitor-cache context surfaces produced identical metrics and was not retained",
+  "next_debt": "learn candidate-specific destructive phase centers that suppress the remaining separated false winners without reducing true support"
+}
