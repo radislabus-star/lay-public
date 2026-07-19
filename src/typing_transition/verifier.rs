@@ -83,18 +83,10 @@ fn infer_operator(input: &EditTransitionInput<'_>) -> TransitionOperator {
     if matches!(input.proof, LanguageActionProof::Completion) {
         return TransitionOperator::Completion;
     }
-    if !input.left_context_changed {
-        return TransitionOperator::ReplaceCurrentWord;
-    }
-    if contextual_layout_repair_is_verified(
-        input.proof,
-        input.error_class,
-        input.original_words,
-        input.replacement_words,
-        input.changed_tokens,
-    ) {
-        return TransitionOperator::PhraseTokenRepair;
-    }
+    // Layout is a typed transition even when it changes only the current
+    // token. Classifying it as a generic replacement loses the operator and
+    // makes the decision core compare two independent layout hypotheses as
+    // unresolved typo drift.
     if layout_projection_is_verified(
         input.proof,
         input.error_class,
@@ -103,6 +95,9 @@ fn infer_operator(input: &EditTransitionInput<'_>) -> TransitionOperator {
         input.changed_tokens,
     ) {
         return TransitionOperator::LayoutProjection;
+    }
+    if !input.left_context_changed {
+        return TransitionOperator::ReplaceCurrentWord;
     }
     if boundary_shift_is_verified(
         input.original,
@@ -135,37 +130,6 @@ fn infer_operator(input: &EditTransitionInput<'_>) -> TransitionOperator {
         return TransitionOperator::SplitPreviousGluedAndRepairTail;
     }
     TransitionOperator::Unknown
-}
-
-fn contextual_layout_repair_is_verified(
-    proof: LanguageActionProof,
-    error_class: TypingErrorClass,
-    original_words: &[String],
-    replacement_words: &[String],
-    changed_tokens: usize,
-) -> bool {
-    if !matches!(proof, LanguageActionProof::Layout)
-        || !matches!(
-            error_class,
-            TypingErrorClass::WrongLayout
-                | TypingErrorClass::PartialLayout
-                | TypingErrorClass::MixedScript
-        )
-        || original_words.len() < 2
-        || original_words.len() != replacement_words.len()
-        || changed_tokens != 1
-    {
-        return false;
-    }
-
-    original_words
-        .iter()
-        .zip(replacement_words)
-        .enumerate()
-        .find(|(_, (original, replacement))| original != replacement)
-        .is_some_and(|(index, (original, replacement))| {
-            index + 1 < original_words.len() && exact_layout_projection(original, replacement)
-        })
 }
 
 fn exact_layout_projection(original: &str, replacement: &str) -> bool {
@@ -208,7 +172,7 @@ fn layout_projection_is_verified(
                 | TypingErrorClass::PartialLayout
                 | TypingErrorClass::MixedScript
         )
-        && original_words.len() >= 2
+        && !original_words.is_empty()
         && original_words.len() == replacement_words.len()
         && changed_tokens == original_words.len()
         && original_words
@@ -227,8 +191,12 @@ fn verified_layout_token_projection(original: &str, replacement: &str) -> bool {
         crate::dict::Direction::Ru2Us
     };
     let projected = crate::dict::convert(original, direction);
-    crate::nanda_wave::l2::l2_settle_russian_surface(&projected)
-        .is_some_and(|settled| settled == replacement)
+    let settled = if projected.chars().all(|ch| ch.is_ascii_alphabetic()) {
+        crate::nanda_wave::l2::l2_settle_english_surface(&projected)
+    } else {
+        crate::nanda_wave::l2::l2_settle_russian_surface(&projected)
+    };
+    settled.is_some_and(|settled| settled == replacement)
 }
 
 fn boundary_shift_is_verified(
@@ -446,6 +414,19 @@ mod tests {
             "вот такое вот не переворачивается ",
             TypingErrorClass::WrongLayout,
             CandidateOrigin::Layout,
+        );
+
+        assert_eq!(proof.operator, TransitionOperator::LayoutProjection);
+        assert!(proof.verified);
+    }
+
+    #[test]
+    fn proves_single_word_layout_projection_with_l2_settled_surface() {
+        let proof = proof(
+            "фвкуыы ",
+            "address ",
+            TypingErrorClass::WrongLayout,
+            CandidateOrigin::LayoutThenTypo,
         );
 
         assert_eq!(proof.operator, TransitionOperator::LayoutProjection);

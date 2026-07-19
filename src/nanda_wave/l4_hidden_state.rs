@@ -168,13 +168,17 @@ pub(crate) fn estimate_hidden_typing_state(
     });
     let selected_witnessed =
         selected.is_some_and(|(_, disposition)| disposition == L4HiddenDisposition::Witnessed);
+    // A relation id is present for every candidate: it is an L3/L4 addressing
+    // key, not evidence learned about this transition. Only a state-specific
+    // witness, phase witness, or operator witness may turn unresolved classes
+    // into a blocking ambiguity. Otherwise L4 remains advisory and the typed
+    // verifier plus field decides the local transition.
     let ambiguity_authoritative = certificate.certificate_valid
         && selected.is_none()
         && ranked.iter().any(|(_, class)| {
-            class.relation_class != 0
-                || class.witness_attract > 0
-                || class.witness_repel > 0
-                || (class.phase_witness_supported && class.phase_witness_milli != 0)
+            class.witness_state_specific
+                || class.phase_witness_supported
+                || class.operator_consensus_witness
         });
 
     for (id, class) in ranked {
@@ -298,6 +302,9 @@ mod tests {
         assert!(readouts
             .iter()
             .all(|readout| readout.disposition == L4HiddenDisposition::Ambiguous));
+        assert!(readouts
+            .iter()
+            .all(|readout| !readout.ambiguity_authoritative));
     }
 
     #[test]

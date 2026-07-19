@@ -9,7 +9,6 @@ use crate::lexicon::{
     is_common_en_guard_prefix, is_common_en_technical_word, is_ru_live_protected_word,
     is_user_protected_word, visual_b_after_ascii_replacement, visual_b_default_replacement,
 };
-use crate::nanda_wave::llmwave;
 use crate::text_case::apply_word_case;
 use crate::text_metrics::damerau_levenshtein;
 
@@ -81,29 +80,25 @@ pub(super) fn layout_candidate_with_projection_policy(
     if converted == token {
         return None;
     }
-    let learned_transition = learned_layout_transition_accepts(prefix, token, &converted);
-    let projection_supported = strong_autoswitch || learned_transition || word_center_settled;
+    // L4 records rank candidates after they exist; it is not lexical evidence.
+    // In particular, a historical accept must never create a short layout
+    // candidate whose target has no compact L1/L2 center.
+    let projection_supported = strong_autoswitch || word_center_settled;
     // A clean, already-known English surface is its own stable L2 center. Do
     // not let an accidental keyboard projection pull it into a Russian center
     // unless accepted transition memory or a strong layout signal says so.
-    if input_has_settled_phase(token) && !strong_autoswitch && !learned_transition {
+    if input_has_settled_phase(token) && !strong_autoswitch {
         return None;
     }
     if context.token_count() < 2
         && token.chars().count() > 3
         && !is_common_en_technical_word(&converted.to_ascii_lowercase())
         && !strong_autoswitch
-        && !learned_transition
         && !word_center_settled
     {
         return None;
     }
-    if !layout_candidate_allowed(
-        token,
-        &converted,
-        strong_autoswitch,
-        learned_transition || word_center_settled,
-    ) {
+    if !layout_candidate_allowed(token, &converted, strong_autoswitch, word_center_settled) {
         return None;
     }
     if !language_allows_layout(token, &converted, projection_supported) {
@@ -165,18 +160,12 @@ pub(super) fn layout_scan_candidates(
         else {
             continue;
         };
-        let learned_transition = learned_layout_transition_accepts(prefix, token, &converted);
-        let projection_supported = strong_autoswitch || learned_transition || word_center_settled;
-        if input_has_settled_phase(token) && !strong_autoswitch && !learned_transition {
+        let projection_supported = strong_autoswitch || word_center_settled;
+        if input_has_settled_phase(token) && !strong_autoswitch {
             continue;
         }
         if converted == token
-            || !layout_candidate_allowed(
-                token,
-                &converted,
-                strong_autoswitch,
-                learned_transition || word_center_settled,
-            )
+            || !layout_candidate_allowed(token, &converted, strong_autoswitch, word_center_settled)
             || !language_allows_layout(token, &converted, projection_supported)
         {
             continue;
@@ -280,20 +269,17 @@ fn layout_converted_token(
     // Without this, an all-caps wrong-layout word bypasses its known Russian
     // center solely because the keyboard projection is all caps too.
     let converted_center_form = converted.to_lowercase();
-    // A keyboard projection may target either an exact hot surface or a
-    // reference-backed inflection of a stable lexical center.  The latter is
-    // necessary for ordinary forms such as an imperative, but arbitrary
-    // morphology alone must not authorize a layout edit.
+    // Keyboard projection is only a surface proposal. A target becomes a
+    // strong L1/L2 signal when its compact phase readout settles; broad
+    // reference morphology alone cannot promote an accidental projection.
     let exact_projection_has_center = token.chars().all(|ch| ch.is_ascii_alphabetic())
         && converted.chars().all(is_cyrillic_letter)
-        && (crate::hot_field::HotFieldSnapshot::current()
-            .input_surface_readout(&converted_center_form)
-            .is_known()
-            || crate::russian_lexicon::is_reference_backed_russian_form(&converted_center_form));
+        && crate::hot_field::HotFieldSnapshot::current()
+            .layout_projection_has_phase_authority(&converted_center_form);
     Some((converted, exact_projection_has_center, false))
 }
 
-fn settle_english_word_center(token: &str) -> Option<String> {
+pub(super) fn settle_english_word_center(token: &str) -> Option<String> {
     let normalized = token.to_ascii_lowercase();
     if !(4..=18).contains(&normalized.chars().count())
         || !normalized.chars().all(|ch| ch.is_ascii_alphabetic())
@@ -506,16 +492,6 @@ pub(super) fn layout_candidate_allowed(
                 .layout_projection_has_phase_authority(converted))
 }
 
-fn learned_layout_transition_accepts(prefix: &str, token: &str, converted: &str) -> bool {
-    let context = llmwave::tokenize(prefix);
-    let state = crate::transition_relation::transition_state_id(&format!("{prefix}{token}"));
-    let usage = super::super::usage_prior::cached_usage_prior_snapshot();
-    let transition = usage
-        .hot_readout(&context, "LayoutWordCell32", "layout", &state, converted)
-        .transition;
-    transition.state_specific && transition.attract_count > transition.repel_count
-}
-
 fn previous_token(prefix: &str) -> Option<&str> {
     prefix.split_whitespace().last()
 }
@@ -572,6 +548,7 @@ mod tests {
         assert!(layout_candidate_allowed("rt", "ке", true, true));
         assert!(layout_candidate_allowed("yt", "не", true, false));
         assert!(layout_candidate_allowed("ytn", "нет", true, false));
+        assert!(crate::nanda_wave::l2::hot_layout_candidate("rt").is_none());
     }
 
     #[test]

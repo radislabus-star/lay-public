@@ -128,6 +128,13 @@ pub(crate) fn hot_layout_candidate(original: &str) -> Option<WordCandidate> {
     hot_layout_candidate_with_noisy_projection(original, true)
 }
 
+/// Resolve a projected ASCII surface through the compact English L2 center.
+/// The verifier uses this to prove a typed layout transition rather than
+/// treating layout-plus-typo recovery as an untyped word replacement.
+pub(crate) fn l2_settle_english_surface(surface: &str) -> Option<String> {
+    layout_adapter::settle_english_word_center(surface)
+}
+
 pub(crate) fn hot_layout_candidate_with_noisy_projection(
     original: &str,
     allow_noisy_projection: bool,
