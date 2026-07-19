@@ -684,6 +684,12 @@ hot process.
 Train compact phrase relation memory on clean corpora and prove contextual
 disambiguation on unseen phrase families.
 
+Latest cold 200k proof is intentionally still `WATCH`:
+`docs/structural_gates/receipts/L3_CONTEXT_200K_HARD_NEGATIVE_PROOF_2026-07-19.json`.
+The field has causal phase and semantic ablation signal, but 793 heldout false
+top-1 candidates remain. It is not a runtime authority until those collisions
+are separated without collapsing valid support.
+
 ### P3: L4 temporal state
 
 Increase organic witness coverage. The runtime already binds state-before,

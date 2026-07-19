@@ -1,0 +1,19 @@
+{
+  "kind": "l3_context_phase_heldout_proof",
+  "source": "clean remote corpus; train-only self-mined L2 lattice hard negatives",
+  "corpus_fragments": 200000,
+  "train_fragments": 160000,
+  "heldout_fragments": 40000,
+  "evaluated_transitions": 128827,
+  "full_supports": 39368,
+  "full_top1": 39368,
+  "full_false_supports": 793,
+  "full_false_top1": 793,
+  "anti_false_top1_reduction": 3256,
+  "phase_ablation_drop": 39368,
+  "semantic_ablation_drop": 22818,
+  "support_precision_ppm": 980254,
+  "raw_words_stored": false,
+  "verdict": "WATCH",
+  "promotion": "blocked_until_false_top1_is_zero_without_collapsing_support"
+}
