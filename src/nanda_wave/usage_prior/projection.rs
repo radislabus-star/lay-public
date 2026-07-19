@@ -40,6 +40,13 @@ impl<'a> UsageEventProjection<'a> {
         if word.is_empty()
             || (matches!(event.kind, UsageEventKind::RejectedCandidate)
                 && !event_word_is_changed_target(event, &word))
+            // Raw Cyrillic input may be a typo. Keep the event in the journal
+            // for L1/L2 recovery, but do not let it become a Bayes word prior
+            // until an explicit IME/correction outcome confirms a target.
+            || (matches!(event.kind, UsageEventKind::Typed)
+                && word.chars().any(|ch| matches!(ch, 'а'..='я' | 'ё'))
+                && !crate::hot_field::HotFieldSnapshot::current()
+                    .learning_surface_is_attested(&word))
         {
             return None;
         }

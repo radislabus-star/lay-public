@@ -1857,6 +1857,19 @@ mod tests {
     }
 
     #[test]
+    fn unknown_raw_cyrillic_typo_does_not_promote_usage_prior() {
+        let mut counts = UsageCounts::default();
+        add_usage_event_counts(
+            &mut counts,
+            r#"{"ts":1,"kind":"typed","word":"звгрузи","context":["пожалуйста"]}
+{"ts":2,"kind":"typed","word":"загрузи","context":["пожалуйста"]}"#,
+        );
+
+        assert!(!counts.words.contains_key("звгрузи"));
+        assert!(counts.words.contains_key("загрузи"));
+    }
+
+    #[test]
     fn usage_surface_words_promote_accepted_ime_word_into_hot_set() {
         let mut counts = UsageCounts::default();
         add_usage_event_counts(
