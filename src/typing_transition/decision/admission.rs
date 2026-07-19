@@ -183,7 +183,7 @@ pub(super) fn candidate_has_apply_authority(
         );
         return false;
     }
-    let allowed = !unresolved_competitor_blocks(
+    let allowed = !super::apply_policy::unresolved_competitor_blocks(
         exact_positive_transition || operator_consensus_authority,
         stronger_unresolved_candidate_exists(event, candidate_index, candidates, evaluations),
     );

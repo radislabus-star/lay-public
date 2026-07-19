@@ -107,8 +107,8 @@
     },
     {
       "evidence": [
-        "graph_links:20686",
-        "graph_nodes:8333"
+        "graph_links:20687",
+        "graph_nodes:8334"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -116,10 +116,10 @@
     }
   ],
   "duplicate_symbols": {},
-  "graph_fingerprint": "9e36bef0523e82db3bc8767bed3482c730475e30bfafd6b4f7614079eec46d09",
-  "graph_links": 20686,
-  "graph_nodes": 8333,
+  "graph_fingerprint": "c8862d1b9883eb58168d91be90bbbc588c6976a6417275770bc9b8464737d7db",
+  "graph_links": 20687,
+  "graph_nodes": 8334,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "d3eed460afe468f2e735b91549c7f9e02828947c0013bd904d1488014b4fc789",
+  "source_fingerprint": "9b90197aeeb0980f7c0823aed39fb047ab8794dad8951da38dc3b809658b6a79",
   "verdict": "PASS"
 }

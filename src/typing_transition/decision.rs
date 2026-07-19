@@ -126,7 +126,7 @@ impl TransitionDecisionCore {
             .iter()
             .enumerate()
             .filter(|(index, candidate)| {
-                producer_allows_authority_evaluation(
+                apply_policy::producer_allows_authority_evaluation(
                     candidate.gate.action,
                     evaluations[*index].transition.l4_signed_signal,
                 )
@@ -153,21 +153,6 @@ impl TransitionDecisionCore {
             selected_transition,
         }
     }
-}
-
-fn producer_allows_authority_evaluation(
-    action: CandidateGateAction,
-    l4_signal: super::L4SignedTransitionSignal,
-) -> bool {
-    action == CandidateGateAction::Eligible
-        || (action == CandidateGateAction::SuggestOnly && l4_signal.exact_positive())
-}
-
-fn unresolved_competitor_blocks(
-    exact_positive_transition: bool,
-    stronger_unresolved_exists: bool,
-) -> bool {
-    !exact_positive_transition && stronger_unresolved_exists
 }
 
 fn compare_candidate_decision_order(
@@ -202,12 +187,16 @@ fn compare_candidate_decision_order(
         })
 }
 
+mod apply_policy;
 mod calibration;
 mod hard_structural_veto;
 mod interference;
 mod phase_competition;
 mod receipt;
 pub(crate) use receipt::DecisionTransitionReceipt;
+
+#[cfg(test)]
+use apply_policy::{producer_allows_authority_evaluation, unresolved_competitor_blocks};
 
 #[derive(Debug, Clone)]
 pub(crate) struct CandidateDecisionEvaluation {
