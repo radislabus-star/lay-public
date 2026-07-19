@@ -10,7 +10,6 @@ fn learned_context_phase_separates_same_surface_family_by_scene() {
     );
     let (package, _) = compile_context_phase(ContextPhaseCompileInput {
         corpus_text: corpus,
-        lexicon_text: "дождь дожди свет света",
         max_fragments: 0,
         min_profile_support: 2,
     });
@@ -26,7 +25,6 @@ fn no_phase_ablation_removes_context_authority() {
     let (package, _) = compile_context_phase(ContextPhaseCompileInput {
         corpus_text:
             "на улице опять идет дождь. вечером на улице идет дождь. утром на улице идет дождь.",
-        lexicon_text: "дождь дожди домик",
         max_fragments: 0,
         min_profile_support: 2,
     });
@@ -51,7 +49,6 @@ fn duplicate_sources_do_not_compete_with_the_same_lexical_center() {
             "утром на улице идет дождь. ",
             "в комнате вечером горит свет."
         ),
-        lexicon_text: "дождь дожди домик свет",
         max_fragments: 0,
         min_profile_support: 2,
     });

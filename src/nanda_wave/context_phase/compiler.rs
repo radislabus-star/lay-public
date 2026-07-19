@@ -1,5 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::io;
+use std::thread;
 
 use serde::{Deserialize, Serialize};
 
@@ -11,15 +12,16 @@ use super::{
     ContextCandidateProfile, ContextPhaseMode, ContextPhasePackage, TokenSemanticState, CELLS,
 };
 
-const MAX_CENTERS: usize = 4;
+const MAX_POSITIVE_CENTERS: usize = 4;
+const MAX_ANTI_CENTERS: usize = 12;
 const CENTER_SPLIT_COHERENCE: f32 = 0.76;
-const MAX_COMPETITORS: usize = 3;
+const MAX_COMPETITORS: usize = 4;
 const MAX_FRAGMENT_TOKENS: usize = 64;
+const MAX_L2_TRAINING_SURFACES: usize = 4;
 
 #[derive(Clone, Copy)]
 pub(crate) struct ContextPhaseCompileInput<'a> {
     pub(crate) corpus_text: &'a str,
-    pub(crate) lexicon_text: &'a str,
     pub(crate) max_fragments: usize,
     pub(crate) min_profile_support: u32,
 }
@@ -36,6 +38,7 @@ pub(crate) struct ContextPhaseCompileReport {
     pub(crate) anti_centers: usize,
     pub(crate) positive_examples: u64,
     pub(crate) negative_examples: u64,
+    pub(crate) l2_lattice_negative_examples: u64,
     pub(crate) global_threshold_micro: i32,
     pub(crate) competition_threshold_micro: i32,
     pub(crate) min_profile_support: u32,
@@ -50,13 +53,16 @@ pub(crate) struct ContextPhaseProofReport {
     pub(crate) full_supports: usize,
     pub(crate) full_top1: usize,
     pub(crate) full_false_supports: usize,
+    pub(crate) full_false_top1: usize,
     pub(crate) no_phase_supports: usize,
     pub(crate) no_anti_top1: usize,
     pub(crate) no_anti_false_supports: usize,
+    pub(crate) no_anti_false_top1: usize,
     pub(crate) no_semantic_top1: usize,
     pub(crate) phase_ablation_drop: usize,
     pub(crate) anti_ablation_drop: usize,
     pub(crate) anti_false_support_reduction: usize,
+    pub(crate) anti_false_top1_reduction: usize,
     pub(crate) semantic_ablation_drop: usize,
     pub(crate) support_precision_ppm: u32,
     pub(crate) raw_words_stored: bool,
@@ -114,14 +120,13 @@ pub(crate) fn compile_context_phase(
 ) -> (ContextPhasePackage, ContextPhaseCompileReport) {
     let min_profile_support = input.min_profile_support.max(2);
     let sequences = corpus_sequences(input.corpus_text, input.max_fragments);
-    let lexicon = LexiconCompetitors::from_text(input.lexicon_text);
     let semantic_states = compile_semantic_states(&sequences);
     let semantic_package = ContextPhasePackage {
         semantic_states,
         ..ContextPhasePackage::default()
     };
     let mut builders = BTreeMap::<u64, ProfileBuilder>::new();
-    let mut competitor_cache = BTreeMap::<String, Vec<String>>::new();
+    let competitor_cache = compile_l2_competitor_cache(&sequences);
     let mut transitions = 0_u64;
 
     for tokens in &sequences {
@@ -135,7 +140,7 @@ pub(crate) fn compile_context_phase(
             add_cluster(
                 &mut profile.positive,
                 &vector,
-                MAX_CENTERS,
+                MAX_POSITIVE_CENTERS,
                 CENTER_SPLIT_COHERENCE,
             );
             profile.positive_examples = profile.positive_examples.saturating_add(1);
@@ -144,9 +149,13 @@ pub(crate) fn compile_context_phase(
             }
             transitions = transitions.saturating_add(1);
 
+            // Train destructive interference against the same candidate topology
+            // that the live L2 field produces from damaged input. A lexicon-neighbour
+            // list is not enough: it misses short, high-energy false attractors.
             let competitors = competitor_cache
-                .entry(target.clone())
-                .or_insert_with(|| lexicon.nearby(target, MAX_COMPETITORS));
+                .get(target)
+                .map(Vec::as_slice)
+                .unwrap_or(&[]);
             for competitor in competitors.iter() {
                 let profile = builders.entry(hash_text(competitor)).or_default();
                 let competitor_vector = semantic_package.candidate_relation_vector(
@@ -157,7 +166,7 @@ pub(crate) fn compile_context_phase(
                 add_cluster(
                     &mut profile.negative,
                     &competitor_vector,
-                    MAX_CENTERS,
+                    MAX_ANTI_CENTERS,
                     CENTER_SPLIT_COHERENCE,
                 );
                 profile.negative_examples = profile.negative_examples.saturating_add(1);
@@ -223,6 +232,10 @@ pub(crate) fn compile_context_phase(
             .profiles
             .iter()
             .map(|profile| u64::from(profile.negative_examples))
+            .sum(),
+        l2_lattice_negative_examples: competitor_cache
+            .values()
+            .map(|competitors| competitors.len() as u64)
             .sum(),
         global_threshold_micro: package.global_threshold_micro,
         competition_threshold_micro: package.competition_threshold_micro,
@@ -327,7 +340,7 @@ pub(crate) fn apply_feedback_overlay(
             add_cluster(
                 &mut profile.positive,
                 &vector,
-                MAX_CENTERS,
+                MAX_POSITIVE_CENTERS,
                 CENTER_SPLIT_COHERENCE,
             );
             profile.positive_examples = profile.positive_examples.saturating_add(1);
@@ -336,7 +349,7 @@ pub(crate) fn apply_feedback_overlay(
             add_cluster(
                 &mut profile.negative,
                 &vector,
-                MAX_CENTERS,
+                MAX_ANTI_CENTERS,
                 CENTER_SPLIT_COHERENCE,
             );
             profile.negative_examples = profile.negative_examples.saturating_add(1);
@@ -385,24 +398,24 @@ pub(crate) fn prove_context_phase(input: ContextPhaseCompileInput<'_>) -> Contex
         .join(".\n");
     let (package, _) = compile_context_phase(ContextPhaseCompileInput {
         corpus_text: &train_text,
-        lexicon_text: input.lexicon_text,
         max_fragments: 0,
         min_profile_support: input.min_profile_support,
     });
-    let lexicon = LexiconCompetitors::from_text(input.lexicon_text);
     let mut evaluated = 0usize;
     let mut full_supports = 0usize;
     let mut full_top1 = 0usize;
     let mut full_false_supports = 0usize;
+    let mut full_false_top1 = 0usize;
     let mut no_phase_supports = 0usize;
     let mut no_anti_top1 = 0usize;
     let mut no_anti_false_supports = 0usize;
+    let mut no_anti_false_top1 = 0usize;
     let mut no_semantic_top1 = 0usize;
 
     for tokens in &heldout_sequences {
         for index in 1..tokens.len() {
             let target = &tokens[index];
-            let competitors = lexicon.nearby(target, MAX_COMPETITORS);
+            let competitors = l2_lattice_competitors(&tokens[..index], target, MAX_COMPETITORS);
             if competitors.is_empty() {
                 continue;
             }
@@ -427,6 +440,7 @@ pub(crate) fn prove_context_phase(input: ContextPhaseCompileInput<'_>) -> Contex
                 .skip(1)
                 .filter(|readout| readout.disposition == super::ContextPhaseDisposition::Support)
                 .count();
+            full_false_top1 += false_candidate_wins(&full) as usize;
             let no_phase = package.score_candidates_with_mode(
                 &tokens[..index],
                 &candidates,
@@ -446,6 +460,7 @@ pub(crate) fn prove_context_phase(input: ContextPhaseCompileInput<'_>) -> Contex
                 .skip(1)
                 .filter(|readout| readout.disposition == super::ContextPhaseDisposition::Support)
                 .count();
+            no_anti_false_top1 += false_candidate_wins(&no_anti) as usize;
             let no_semantic = package.score_candidates_with_mode(
                 &tokens[..index],
                 &candidates,
@@ -457,13 +472,14 @@ pub(crate) fn prove_context_phase(input: ContextPhaseCompileInput<'_>) -> Contex
     let phase_ablation_drop = full_supports.saturating_sub(no_phase_supports);
     let anti_ablation_drop = full_top1.saturating_sub(no_anti_top1);
     let anti_false_support_reduction = no_anti_false_supports.saturating_sub(full_false_supports);
+    let anti_false_top1_reduction = no_anti_false_top1.saturating_sub(full_false_top1);
     let semantic_ablation_drop = full_top1.saturating_sub(no_semantic_top1);
     let support_precision_ppm = ((full_supports as u64 * 1_000_000)
         / (full_supports + full_false_supports).max(1) as u64)
         .min(u64::from(u32::MAX)) as u32;
     let verdict = if evaluated > 0
         && full_supports > 0
-        && support_precision_ppm >= 995_000
+        && full_false_top1 == 0
         && phase_ablation_drop > 0
         && semantic_ablation_drop > 0
     {
@@ -479,13 +495,16 @@ pub(crate) fn prove_context_phase(input: ContextPhaseCompileInput<'_>) -> Contex
         full_supports,
         full_top1,
         full_false_supports,
+        full_false_top1,
         no_phase_supports,
         no_anti_top1,
         no_anti_false_supports,
+        no_anti_false_top1,
         no_semantic_top1,
         phase_ablation_drop,
         anti_ablation_drop,
         anti_false_support_reduction,
+        anti_false_top1_reduction,
         semantic_ablation_drop,
         support_precision_ppm,
         raw_words_stored: false,
@@ -503,6 +522,16 @@ fn correct_is_unique_top(readouts: &[super::ContextPhaseReadout]) -> bool {
             .iter()
             .skip(1)
             .all(|readout| readout.margin_micro < correct.margin_micro)
+}
+
+fn false_candidate_wins(readouts: &[super::ContextPhaseReadout]) -> bool {
+    let Some(correct) = readouts.first() else {
+        return false;
+    };
+    readouts.iter().skip(1).any(|candidate| {
+        candidate.disposition == super::ContextPhaseDisposition::Support
+            && candidate.margin_micro >= correct.margin_micro
+    })
 }
 
 fn compile_semantic_states(sequences: &[Vec<String>]) -> Vec<TokenSemanticState> {
@@ -585,7 +614,8 @@ fn learned_competition_threshold(
     sequences: &[Vec<String>],
     competitors: &BTreeMap<String, Vec<String>>,
 ) -> i32 {
-    let mut gaps = Vec::new();
+    let mut correct_gaps = Vec::new();
+    let mut wrong_gaps = Vec::new();
     for tokens in sequences.iter().take(10_000) {
         for index in 1..tokens.len() {
             let target = &tokens[index];
@@ -614,12 +644,24 @@ fn learned_competition_threshold(
                 .max()
                 .unwrap_or(i64::MIN / 2);
             if correct > wrong {
-                gaps.push((correct - wrong).min(i64::from(i32::MAX)) as i32);
+                correct_gaps.push((correct - wrong).min(i64::from(i32::MAX)) as i32);
+            } else if wrong > correct {
+                wrong_gaps.push((wrong - correct).min(i64::from(i32::MAX)) as i32);
             }
         }
     }
-    gaps.sort_unstable();
-    percentile_i32(&gaps, 10).unwrap_or(1).max(1)
+    correct_gaps.sort_unstable();
+    wrong_gaps.sort_unstable();
+    let positive_floor = percentile_i32(&correct_gaps, 25).unwrap_or(1).max(1);
+    let negative_ceiling = percentile_i32(&wrong_gaps, 90).unwrap_or(0).max(0);
+    if positive_floor > negative_ceiling {
+        negative_ceiling + (positive_floor - negative_ceiling) / 2
+    } else {
+        // The field has not separated this candidate family enough to grant a
+        // narrow winning margin. Keep the learned positive floor and abstain
+        // on close competition instead of promoting a false attractor.
+        positive_floor
+    }
 }
 
 fn corpus_sequences(text: &str, max_fragments: usize) -> Vec<Vec<String>> {
@@ -636,55 +678,110 @@ fn corpus_sequences(text: &str, max_fragments: usize) -> Vec<Vec<String>> {
         .collect()
 }
 
-struct LexiconCompetitors {
-    by_shape: BTreeMap<(usize, char), Vec<String>>,
+fn l2_lattice_competitors(context: &[String], target: &str, limit: usize) -> Vec<String> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let context_prefix = context.join(" ");
+    let mut competitors = BTreeSet::new();
+    for damaged in training_surfaces(target) {
+        for candidate in crate::nanda_wave::l2::correction_l2_word_candidates(
+            &context_prefix,
+            &damaged,
+            limit.saturating_mul(4),
+        ) {
+            let candidate = candidate.surface.to_lowercase();
+            if candidate != target {
+                competitors.insert(candidate);
+            }
+        }
+    }
+    let mut competitors = competitors.into_iter().collect::<Vec<_>>();
+    competitors.sort_by(|left, right| {
+        crate::text_metrics::damerau_levenshtein(target, left)
+            .cmp(&crate::text_metrics::damerau_levenshtein(target, right))
+            .then_with(|| left.cmp(right))
+    });
+    competitors.truncate(limit);
+    competitors
 }
 
-impl LexiconCompetitors {
-    fn from_text(text: &str) -> Self {
-        let mut unique = BTreeSet::new();
-        for token in text.split_whitespace() {
-            let token = token.trim().to_lowercase();
-            if token.chars().count() >= 3 && token.chars().all(char::is_alphabetic) {
-                unique.insert(token);
+fn compile_l2_competitor_cache(sequences: &[Vec<String>]) -> BTreeMap<String, Vec<String>> {
+    let mut first_contexts = BTreeMap::<String, Vec<String>>::new();
+    for tokens in sequences {
+        for index in 1..tokens.len() {
+            first_contexts
+                .entry(tokens[index].clone())
+                .or_insert_with(|| tokens[..index].to_vec());
+        }
+    }
+    let jobs = first_contexts.into_iter().collect::<Vec<_>>();
+    if jobs.is_empty() {
+        return BTreeMap::new();
+    }
+    let workers = thread::available_parallelism()
+        .map(|parallelism| parallelism.get())
+        .unwrap_or(1)
+        .min(jobs.len());
+    let chunk_size = jobs.len().div_ceil(workers);
+    let mut cache = BTreeMap::new();
+    thread::scope(|scope| {
+        let mut tasks = Vec::new();
+        for chunk in jobs.chunks(chunk_size) {
+            tasks.push(scope.spawn(move || {
+                chunk
+                    .iter()
+                    .map(|(target, context)| {
+                        (
+                            target.clone(),
+                            l2_lattice_competitors(context, target, MAX_COMPETITORS),
+                        )
+                    })
+                    .collect::<Vec<_>>()
+            }));
+        }
+        for task in tasks {
+            for (target, competitors) in task.join().expect("L2 lattice worker panicked") {
+                cache.insert(target, competitors);
             }
         }
-        let mut by_shape = BTreeMap::<(usize, char), Vec<String>>::new();
-        for token in unique {
-            let length = token.chars().count();
-            let first = token.chars().next().unwrap_or_default();
-            by_shape.entry((length, first)).or_default().push(token);
-        }
-        Self { by_shape }
+    });
+    cache
+}
+
+fn training_surfaces(target: &str) -> Vec<String> {
+    let chars = target.chars().collect::<Vec<_>>();
+    if chars.len() < 3 || !chars.iter().all(|ch| ch.is_alphabetic()) {
+        return Vec::new();
     }
 
-    fn nearby(&self, target: &str, limit: usize) -> Vec<String> {
-        let length = target.chars().count();
-        let first = target.chars().next().unwrap_or_default();
-        let mut candidates = Vec::new();
-        for candidate_length in length.saturating_sub(1)..=length.saturating_add(1) {
-            let Some(bucket) = self.by_shape.get(&(candidate_length, first)) else {
-                continue;
-            };
-            for candidate in bucket.iter().take(512) {
-                if candidate == target {
-                    continue;
-                }
-                let distance = crate::text_metrics::damerau_levenshtein(target, candidate);
-                if distance <= 2 {
-                    candidates.push(candidate.clone());
-                }
-            }
-        }
-        candidates.sort_by(|left, right| {
-            crate::text_metrics::damerau_levenshtein(target, left)
-                .cmp(&crate::text_metrics::damerau_levenshtein(target, right))
-                .then_with(|| left.cmp(right))
-        });
-        candidates.dedup();
-        candidates.truncate(limit);
-        candidates
+    let mut positions = [1, chars.len() / 2, chars.len().saturating_sub(2)]
+        .into_iter()
+        .filter(|position| *position > 0 && *position + 1 < chars.len())
+        .collect::<Vec<_>>();
+    positions.sort_unstable();
+    positions.dedup();
+
+    let mut surfaces = positions
+        .into_iter()
+        .map(|position| {
+            chars
+                .iter()
+                .enumerate()
+                .filter_map(|(index, ch)| (index != position).then_some(*ch))
+                .collect::<String>()
+        })
+        .collect::<Vec<_>>();
+    if chars.len() >= 4 {
+        let position = chars.len() / 2 - 1;
+        let mut transposed = chars.clone();
+        transposed.swap(position, position + 1);
+        surfaces.push(transposed.into_iter().collect());
     }
+    surfaces.sort();
+    surfaces.dedup();
+    surfaces.truncate(MAX_L2_TRAINING_SURFACES);
+    surfaces
 }
 
 fn percentile(values: &[f32], percentile: usize) -> Option<f32> {
@@ -718,10 +815,8 @@ mod tests {
     #[test]
     fn compiler_learns_context_centers_and_destructive_competitors() {
         let corpus = "на улице снова идет дождь. вечером на улице идет дождь. в доме снова горит свет. вечером в доме горит свет.";
-        let lexicon = "дождь дожди домик свет света";
         let (package, report) = compile_context_phase(ContextPhaseCompileInput {
             corpus_text: corpus,
-            lexicon_text: lexicon,
             max_fragments: 0,
             min_profile_support: 2,
         });
@@ -729,6 +824,7 @@ mod tests {
         assert!(report.semantic_states > 0);
         assert!(report.candidate_profiles > 0);
         assert!(report.positive_centers > 0);
+        assert!(report.l2_lattice_negative_examples > 0);
         let readouts = package.score_candidates(
             &super::super::super::llmwave::tokenize("вечером на улице идет"),
             &["дождь", "домик"],
@@ -747,7 +843,6 @@ mod tests {
         );
         let (mut package, _) = compile_context_phase(ContextPhaseCompileInput {
             corpus_text: corpus,
-            lexicon_text: "дождь домик свет",
             max_fragments: 0,
             min_profile_support: 2,
         });

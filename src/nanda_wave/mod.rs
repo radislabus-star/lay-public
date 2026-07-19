@@ -54,17 +54,14 @@ pub fn l3_context_report_json(
 
 pub fn compile_l3_context_phase_memory(
     corpus_path: &std::path::Path,
-    lexicon_path: &std::path::Path,
     output_path: &std::path::Path,
     max_fragments: usize,
     min_profile_support: u32,
 ) -> std::io::Result<serde_json::Value> {
     let corpus_text = std::fs::read_to_string(corpus_path)?;
-    let lexicon_text = std::fs::read_to_string(lexicon_path)?;
     let (package, report) =
         context_phase::compile_context_phase(context_phase::ContextPhaseCompileInput {
             corpus_text: &corpus_text,
-            lexicon_text: &lexicon_text,
             max_fragments,
             min_profile_support,
         });
@@ -72,7 +69,6 @@ pub fn compile_l3_context_phase_memory(
     let mut value = serde_json::to_value(report).map_err(std::io::Error::other)?;
     if let Some(object) = value.as_object_mut() {
         object.insert("corpus".to_string(), serde_json::json!(corpus_path));
-        object.insert("lexicon".to_string(), serde_json::json!(lexicon_path));
         object.insert("output".to_string(), serde_json::json!(output_path));
         object.insert(
             "artifact_bytes".to_string(),
@@ -123,16 +119,13 @@ pub fn l3_context_phase_status_json(path: Option<&std::path::Path>) -> serde_jso
 
 pub fn prove_l3_context_phase_memory(
     corpus_path: &std::path::Path,
-    lexicon_path: &std::path::Path,
     max_fragments: usize,
     min_profile_support: u32,
 ) -> std::io::Result<serde_json::Value> {
     let corpus_text = std::fs::read_to_string(corpus_path)?;
-    let lexicon_text = std::fs::read_to_string(lexicon_path)?;
     serde_json::to_value(context_phase::prove_context_phase(
         context_phase::ContextPhaseCompileInput {
             corpus_text: &corpus_text,
-            lexicon_text: &lexicon_text,
             max_fragments,
             min_profile_support,
         },

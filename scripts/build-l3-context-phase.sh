@@ -5,7 +5,6 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 URL="${LAY_L3_CORPUS_URL:-https://downloads.tatoeba.org/exports/per_language/rus/rus_sentences.tsv.bz2}"
 LIMIT="${LAY_L3_MAX_FRAGMENTS:-60000}"
 MIN_PROFILE_SUPPORT="${LAY_L3_MIN_PROFILE_SUPPORT:-2}"
-LEXICON="${LAY_L3_LEXICON:-$ROOT/data/lexicon/l2_surface_foundation_ru_100k.txt}"
 OUT="${LAY_L3_CONTEXT_OUT:-$ROOT/data/lexicon/l3_context_phase_v1.nwpc}"
 MANIFEST="${LAY_L3_CONTEXT_MANIFEST:-$ROOT/data/lexicon/l3_context_phase_v1.manifest.json}"
 WORK="${LAY_L3_CONTEXT_WORK:-${TMPDIR:-/tmp}/lay-l3-context-phase}"
@@ -54,10 +53,10 @@ if sentence_like * 100 < written * 20:
 print(f"natural_corpus: rows={written} sentence_like={sentence_like}")
 PY
 
-"$TRAINER" --prove-l3-context-phase "$CORPUS" --lexicon "$LEXICON" \
+"$TRAINER" --prove-l3-context-phase "$CORPUS" \
   --max-fragments "$LIMIT" --min-profile-support "$MIN_PROFILE_SUPPORT" > "$PROOF"
-jq -e '.verdict == "PASS" and .phase_ablation_drop > 0 and .semantic_ablation_drop > 0 and .support_precision_ppm >= 995000' "$PROOF" >/dev/null
-"$TRAINER" --compile-l3-context-phase "$CORPUS" --lexicon "$LEXICON" \
+jq -e '.verdict == "PASS" and .full_false_top1 == 0 and .phase_ablation_drop > 0 and .semantic_ablation_drop > 0' "$PROOF" >/dev/null
+"$TRAINER" --compile-l3-context-phase "$CORPUS" \
   --out "$ARTIFACT" --max-fragments "$LIMIT" \
   --min-profile-support "$MIN_PROFILE_SUPPORT" > "$COMPILE"
 
@@ -99,10 +98,11 @@ jq -n \
     candidate_profiles: $compile.candidate_profiles,
     positive_centers: $compile.positive_centers,
     anti_centers: $compile.anti_centers,
+    l2_lattice_negative_examples: $compile.l2_lattice_negative_examples,
     min_profile_support: $compile.min_profile_support,
     competition_threshold_micro: $compile.competition_threshold_micro,
     heldout: $heldout
   }' > "$MANIFEST"
 
 echo "l3_context_phase: artifact=$OUT manifest=$MANIFEST"
-jq '{artifact_bytes, corpus, transitions, semantic_states, candidate_profiles, positive_centers, anti_centers, heldout: {verdict: .heldout.verdict, support_precision_ppm: .heldout.support_precision_ppm, phase_ablation_drop: .heldout.phase_ablation_drop, semantic_ablation_drop: .heldout.semantic_ablation_drop}}' "$MANIFEST"
+jq '{artifact_bytes, corpus, transitions, semantic_states, candidate_profiles, positive_centers, anti_centers, l2_lattice_negative_examples, heldout: {verdict: .heldout.verdict, support_precision_ppm: .heldout.support_precision_ppm, full_false_top1: .heldout.full_false_top1, anti_false_top1_reduction: .heldout.anti_false_top1_reduction, phase_ablation_drop: .heldout.phase_ablation_drop, semantic_ablation_drop: .heldout.semantic_ablation_drop}}' "$MANIFEST"

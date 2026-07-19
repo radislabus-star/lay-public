@@ -54,13 +54,10 @@ fn main() -> io::Result<()> {
         return Ok(());
     }
     if let Some(corpus) = arg_path(&args, "--prove-l3-context-phase") {
-        let lexicon = arg_path(&args, "--lexicon")
-            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--lexicon is required"))?;
         let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
         let min_profile_support = arg_u32(&args, "--min-profile-support").unwrap_or(2);
         let report = lay::nanda_wave::prove_l3_context_phase_memory(
             &corpus,
-            &lexicon,
             max_fragments,
             min_profile_support,
         )?;
@@ -71,15 +68,12 @@ fn main() -> io::Result<()> {
         return Ok(());
     }
     if let Some(corpus) = arg_path(&args, "--compile-l3-context-phase") {
-        let lexicon = arg_path(&args, "--lexicon")
-            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--lexicon is required"))?;
         let out = arg_path(&args, "--out")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
         let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
         let min_profile_support = arg_u32(&args, "--min-profile-support").unwrap_or(2);
         let report = lay::nanda_wave::compile_l3_context_phase_memory(
             &corpus,
-            &lexicon,
             &out,
             max_fragments,
             min_profile_support,
