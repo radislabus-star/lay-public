@@ -825,6 +825,11 @@ Split modules only when route evidence proves reduced foreign pull. File size
 alone is not evidence. Keep the current facade/owner direction and remove dead
 duplicate helpers after graph proof shows zero callers.
 
+The first proven split is `candidate_gate/cache.rs`: a bounded LRU of already
+selected display candidates. It does not import L2, L3, L4 or DecisionCore and
+therefore cannot create a second ranking or mutation route. The live pipeline
+remains the sole owner of candidate birth, phase readout and admission.
+
 ## 10. Proof and Release Gates
 
 Required for every ranking or memory cutover:

@@ -11,14 +11,16 @@ use crate::keyboard::is_cyrillic_letter;
 use crate::typing_transition::decision::TransitionDecisionCore;
 use crate::typing_transition::live_candidate::LiveCompletionProposal;
 use std::cell::Cell;
-use std::collections::VecDeque;
+use std::sync::OnceLock;
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::{Mutex, OnceLock};
 use std::time::Instant;
 
-const LIVE_COMPLETION_CACHE_LIMIT: usize = 128;
 const LIVE_L2_MATERIAL_FACTOR: usize = 2;
 const LIVE_L2_MATERIAL_CAP: usize = 64;
+
+mod cache;
+
+use cache::LiveCompletionCacheKey;
 
 fn is_live_lexical_surface(surface: &str) -> bool {
     !surface.is_empty()
@@ -78,21 +80,6 @@ pub(crate) fn warm_up_live_candidate_readout() {
         allow_short_lexical: true,
         limit: 12,
     });
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct LiveCompletionCacheKey {
-    context_tail: String,
-    partial: String,
-    max_suffix_chars: usize,
-    allow_short_lexical: bool,
-    limit: usize,
-}
-
-#[derive(Debug, Clone)]
-struct LiveCompletionCacheEntry {
-    key: LiveCompletionCacheKey,
-    candidates: Vec<LiveCompletionCandidate>,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -170,7 +157,7 @@ pub fn live_completion_candidates(
         allow_short_lexical: request.allow_short_lexical,
         limit: request.limit,
     };
-    if let Some(cached) = cached_live_completion_candidates(&cache_key) {
+    if let Some(cached) = cache::get(&cache_key) {
         record_live_gate_stats(
             started,
             LiveGateRecord {
@@ -341,7 +328,7 @@ pub fn live_completion_candidates(
         .elapsed()
         .as_micros()
         .min(u128::from(u64::MAX)) as u64;
-    store_live_completion_candidates(cache_key, &candidates);
+    cache::store(cache_key, &candidates);
     record_live_gate_stats(
         started,
         LiveGateRecord {
@@ -728,43 +715,6 @@ fn live_completion_context_tail(context_prefix: &str) -> String {
         .collect::<Vec<_>>();
     tokens.reverse();
     tokens.join(" ")
-}
-
-fn cached_live_completion_candidates(
-    key: &LiveCompletionCacheKey,
-) -> Option<Vec<LiveCompletionCandidate>> {
-    let Ok(mut cache) = live_completion_cache().lock() else {
-        return None;
-    };
-    let index = cache.iter().position(|entry| &entry.key == key)?;
-    let entry = cache.remove(index)?;
-    let candidates = entry.candidates.clone();
-    cache.push_back(entry);
-    Some(candidates)
-}
-
-fn store_live_completion_candidates(
-    key: LiveCompletionCacheKey,
-    candidates: &[LiveCompletionCandidate],
-) {
-    let Ok(mut cache) = live_completion_cache().lock() else {
-        return;
-    };
-    if let Some(index) = cache.iter().position(|entry| entry.key == key) {
-        cache.remove(index);
-    }
-    cache.push_back(LiveCompletionCacheEntry {
-        key,
-        candidates: candidates.to_vec(),
-    });
-    while cache.len() > LIVE_COMPLETION_CACHE_LIMIT {
-        cache.pop_front();
-    }
-}
-
-fn live_completion_cache() -> &'static Mutex<VecDeque<LiveCompletionCacheEntry>> {
-    static CACHE: OnceLock<Mutex<VecDeque<LiveCompletionCacheEntry>>> = OnceLock::new();
-    CACHE.get_or_init(|| Mutex::new(VecDeque::new()))
 }
 
 fn update_max_atomic(target: &AtomicU64, value: u64) {
