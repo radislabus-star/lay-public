@@ -45,7 +45,8 @@ fn first_word_layout_uses_compact_l2_center_not_phrase_context() {
     assert!(
         candidates
             .iter()
-            .any(|candidate| candidate.source == "layout_then_l2_word_center" && candidate.text == "слова"),
+            .any(|candidate| candidate.source == "layout_then_l2_word_center"
+                && candidate.text == "слова"),
         "first-word L2 candidates={candidates:?}"
     );
 }
@@ -627,6 +628,19 @@ fn lexical_phase_field_feeds_ime_completion_candidates() {
                 && candidate.surface.chars().count() > 4
         }),
         "lexical phase field must feed complete generated surfaces, got {candidates:?}"
+    );
+}
+
+#[test]
+fn lexical_phase_field_feeds_ime_composite_reconstruction_candidates() {
+    let candidates = ime_l2_word_candidates("я буду ", "переподлчаю", 32);
+
+    assert!(
+        candidates.iter().any(|candidate| {
+            candidate.kind == L2ImeWordCandidateKind::Replacement
+                && candidate.surface == "переподключаю"
+        }),
+        "IME L2 lattice must retain a composed reconstructed center, got {candidates:?}"
     );
 }
 

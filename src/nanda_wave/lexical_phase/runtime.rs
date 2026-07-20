@@ -18,6 +18,8 @@ const MAX_POSTINGS_PER_QUERY_CENTER: usize = 512;
 const MAX_COMPLETION_FRONTIER: usize = 4_096;
 const MAX_DECODE_EDITS: u8 = 3;
 const MAX_DAFSA_VISITS: usize = 300_000;
+const RECONSTRUCTION_LANE_RESERVE: usize = 4;
+const PREFIX_COMPOSITION_FRONTIER_PER_PREFIX: usize = 16;
 
 static DEFAULT_MEMORY: OnceLock<Option<LexicalPhaseMemory>> = OnceLock::new();
 
@@ -288,12 +290,27 @@ impl LexicalPhaseMemory {
             return Vec::new();
         }
         let mut candidates = self.field_surface_candidates_normalized(&surface, limit);
-        candidates.extend(self.reconstructed_surface_candidates(&surface, limit.saturating_mul(2)));
-        candidates.extend(
-            self.prefixed_reconstructed_surface_candidates(&surface, limit.saturating_mul(2)),
+        let reconstructed =
+            self.reconstructed_surface_candidates(&surface, limit.saturating_mul(2));
+        let prefixed_reconstructed =
+            self.prefixed_reconstructed_surface_candidates(&surface, limit.saturating_mul(2));
+        let reconstruction_reserve = reconstruction_lane_reserve(
+            &surface,
+            &reconstructed,
+            limit,
+            RECONSTRUCTION_LANE_RESERVE,
         );
+        let prefixed_reconstruction_reserve = reconstruction_lane_reserve(
+            &surface,
+            &prefixed_reconstructed,
+            limit,
+            RECONSTRUCTION_LANE_RESERVE,
+        );
+        let mut reconstructed = reconstructed;
+        reconstructed.extend(prefixed_reconstructed);
+        candidates.extend(reconstructed);
         sort_candidates(&mut candidates);
-        let reserved = candidates
+        let mut reserved = candidates
             .iter()
             .filter(|candidate| {
                 crate::text_metrics::sparse_internal_omission_count(&surface, &candidate.word)
@@ -302,6 +319,16 @@ impl LexicalPhaseMemory {
             .take(4)
             .cloned()
             .collect::<Vec<_>>();
+        for candidate in reconstruction_reserve {
+            if !reserved.iter().any(|item| item.word == candidate.word) {
+                reserved.push(candidate);
+            }
+        }
+        for candidate in prefixed_reconstruction_reserve {
+            if !reserved.iter().any(|item| item.word == candidate.word) {
+                reserved.push(candidate);
+            }
+        }
         candidates.truncate(limit);
         for candidate in reserved {
             if candidates.iter().any(|item| item.word == candidate.word) {
@@ -595,6 +622,7 @@ impl LexicalPhaseMemory {
             if base_surface.chars().count() < 4 {
                 continue;
             }
+            let mut prefix_candidates = Vec::new();
             for base in self.reconstructed_surface_candidates(base_surface, limit.saturating_mul(2))
             {
                 let word = format!("{prefix}{}", base.word);
@@ -617,7 +645,7 @@ impl LexicalPhaseMemory {
                     .saturating_add(overlap.min(24) as u32 * 64)
                     .saturating_add(rank_boost)
                     .saturating_sub(distance as u32 * 240);
-                candidates.push(LexicalPhaseCandidate {
+                prefix_candidates.push(LexicalPhaseCandidate {
                     word,
                     score,
                     l1_overlap: overlap,
@@ -629,6 +657,16 @@ impl LexicalPhaseMemory {
                     reconstructed: true,
                 });
             }
+            // Composition is a distinct operator path. A globally strong
+            // reconstruction from another prefix must not erase the only
+            // viable decoded continuation for this prefix before L2 can
+            // compare the completed word centers.
+            candidates.extend(reconstruction_lane_reserve(
+                surface,
+                &prefix_candidates,
+                PREFIX_COMPOSITION_FRONTIER_PER_PREFIX,
+                PREFIX_COMPOSITION_FRONTIER_PER_PREFIX,
+            ));
         }
         sort_candidates(&mut candidates);
         candidates.truncate(limit);
@@ -913,6 +951,72 @@ impl LexicalPhaseMemory {
             }
         }
     }
+}
+
+/// Keeps a small independent decode lane alive through the final lattice cut.
+/// Field postings describe local motif pressure, while decoder reconstruction
+/// describes a complete attested surface. Neither is allowed to erase the
+/// other before L2/L3 phase competition sees both alternatives.
+fn reconstruction_lane_reserve(
+    surface: &str,
+    candidates: &[LexicalPhaseCandidate],
+    limit: usize,
+    max_reserve: usize,
+) -> Vec<LexicalPhaseCandidate> {
+    let input_len = surface.chars().count();
+    let mut reserve = candidates
+        .iter()
+        .filter(|candidate| candidate.reconstructed)
+        .cloned()
+        .collect::<Vec<_>>();
+    reserve.sort_by(|left, right| {
+        let left_distance = damerau_levenshtein(surface, &left.word);
+        let right_distance = damerau_levenshtein(surface, &right.word);
+        left_distance
+            .cmp(&right_distance)
+            .then_with(|| {
+                right
+                    .word
+                    .chars()
+                    .count()
+                    .abs_diff(input_len)
+                    .cmp(&left.word.chars().count().abs_diff(input_len))
+            })
+            .then_with(|| right.score.cmp(&left.score))
+            .then_with(|| right.phase_coherence_milli.cmp(&left.phase_coherence_milli))
+            .then_with(|| left.rank.cmp(&right.rank))
+            .then_with(|| left.word.cmp(&right.word))
+    });
+    let capacity = limit.min(max_reserve);
+    let mut selected = Vec::with_capacity(capacity);
+    let mut covered_distances = Vec::new();
+
+    // Preserve one center from each edit-distance wave. Otherwise the many
+    // cheap one-letter variants can erase a real two-letter restoration before
+    // L2/L3 has a chance to compare complete lexical centers.
+    for candidate in &reserve {
+        let distance = damerau_levenshtein(surface, &candidate.word);
+        if !covered_distances.contains(&distance) {
+            covered_distances.push(distance);
+            selected.push(candidate.clone());
+            if selected.len() == capacity {
+                return selected;
+            }
+        }
+    }
+    for candidate in reserve {
+        if selected
+            .iter()
+            .any(|existing| existing.word == candidate.word)
+        {
+            continue;
+        }
+        selected.push(candidate);
+        if selected.len() == capacity {
+            break;
+        }
+    }
+    selected
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -1264,6 +1368,21 @@ mod tests {
     }
 
     #[test]
+    fn reconstruction_lane_survives_field_frontier_cut() {
+        let bytes =
+            compile_words(["про", "при", "приз", "прим", "прям"]).expect("fixture compiles");
+        let memory = LexicalPhaseMemory::from_bytes(bytes).expect("fixture loads");
+        let candidates = memory.surface_candidates("прм", 4);
+
+        assert!(
+            candidates
+                .iter()
+                .any(|candidate| candidate.word == "прям" && candidate.reconstructed),
+            "complete decoded surface must survive the bounded lattice: {candidates:?}"
+        );
+    }
+
+    #[test]
     fn production_decoder_does_not_accept_dirty_probe_surfaces() {
         let memory = default_memory().expect("production lexical phase artifact loads");
         for dirty in ["пукнт", "звгрузи", "эсперемнт", "труссс", "поянл"]
@@ -1291,15 +1410,11 @@ mod tests {
         );
 
         let candidates = memory.surface_candidates("переподлчаю", 32);
-        for candidate in &candidates {
-            if candidate.word.starts_with("перепод") {
-                eprintln!("sparse omission candidate={candidate:?}");
-            }
-        }
-        let position = candidates
-            .iter()
-            .position(|candidate| candidate.word == "переподключаю" && candidate.reconstructed);
-        eprintln!("sparse omission center position={position:?}");
-        assert!(position.is_some(), "candidates={candidates:?}");
+        assert!(
+            candidates
+                .iter()
+                .any(|candidate| candidate.word == "переподключаю" && candidate.reconstructed),
+            "candidates={candidates:?}"
+        );
     }
 }
