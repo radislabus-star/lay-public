@@ -8,6 +8,7 @@ authority: L3 can emit only `Support`, `Suppress`, `Neutral`, or `Unavailable`.
 
 ```text
 bounded token stream
+-> cold learned surface-transition field
 -> hash token IDs immediately
 -> stable L2 semantic anchors
 -> candidate relation wave
@@ -28,7 +29,68 @@ package and hot readout   src/nanda_wave/context_phase/mod.rs
 deterministic format      src/nanda_wave/context_phase/format.rs
 heldout proof             src/nanda_wave/context_phase/proof.rs
 CLI orchestration         src/nanda_wave/context_phase/compiler.rs
+surface evidence field    src/nanda_wave/context_phase/surface_field.rs
 ```
+
+## Learned Surface-Transition Field
+
+L3 must observe the same type of damaged surface that reaches L2. The former
+compiler invented deletions at fixed character positions and one middle swap.
+That was a synthetic rule-shaped source and could diverge from live typing.
+It has been removed from the L3 train/proof route.
+
+The cold compiler now reads verified `from -> to` correction receipts and
+reduces each eligible receipt to a compact mutation geometry:
+
+```text
+single typed token + single corrected token
+-> align characters
+-> mutation direction
+-> relative position phase bucket
+-> length bucket
+-> repeated mode support
+-> bounded SurfaceMutationField
+```
+
+The field currently learns only geometry that can be reconstructed without
+retaining a character or a word: a missing typed character and an adjacent
+transposition. Layout projection remains a separate L2 operator because its
+keyboard mapping is already represented by L2. Multiword receipts remain a
+typed boundary-transition concern and are excluded here.
+
+At compile and heldout time the field produces bounded damaged surfaces from a
+clean teacher target. L2 independently produces the candidate lattice from
+each surface. The target never ranks that lattice. L3 therefore learns from
+the same candidate competition as before, but with evidence-shaped damage
+rather than fixed positions.
+
+```text
+cold corrections.jsonl
+-> SurfaceMutationField (compact modes only)
+-> clean corpus target
+-> observed damage geometry
+-> real L2 lattice
+-> unary / pairwise positive and anti phase field
+-> heldout proof
+```
+
+The correction JSONL is never serialized into `ContextPhasePackage`; runtime
+contains only the previously existing hashes and phase centers. L3's runtime
+role remains contextual selection among candidates already born by L2.
+
+The CLI requires this source explicitly for all new L3 compiles:
+
+```text
+lay-nanda-wave-train --build-and-prove-l3-context-phase CORPUS \
+  --surface-evidence corrections.jsonl --out PACKAGE
+```
+
+The first 100k-fragment shadow on 2026-07-21 admitted 68 eligible receipts
+into 10 repeated modes at minimum support two. It reached 11.43% global
+support coverage, 98.74% support precision, 63 pairwise improvements and zero
+pairwise regressions, but still had 53 false top-1 cases. Its verdict was
+`WATCH`; no runtime package was published. Lowering mode support to one
+admitted 23 modes and raised false top-1 to 118, so that variant was rejected.
 
 ## Online State
 

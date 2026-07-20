@@ -68,6 +68,59 @@ pub fn compile_l3_context_phase_memory(
     )
 }
 
+/// Cold compiles L3 from clean context plus compact observed surface geometry.
+/// The correction JSONL is read only here; the emitted package still contains
+/// phase centers and hashes, never correction strings.
+pub fn compile_l3_context_phase_memory_with_surface_evidence(
+    corpus_path: &std::path::Path,
+    surface_evidence_path: &std::path::Path,
+    output_path: &std::path::Path,
+    max_fragments: usize,
+    min_profile_support: u32,
+    min_surface_support: u32,
+) -> std::io::Result<serde_json::Value> {
+    let surface_field = context_phase::surface_field_from_corrections_path(
+        surface_evidence_path,
+        min_surface_support,
+    )?;
+    let surface_report = surface_field.report();
+    let corpus = std::fs::File::open(corpus_path)?;
+    let (package, report) = context_phase::compile_context_phase_reader_with_surface_field(
+        corpus,
+        max_fragments,
+        min_profile_support,
+        0,
+        std::sync::Arc::new(surface_field),
+        |_, _| Ok(()),
+    )?;
+    context_phase::write_package(output_path, &package)?;
+    let mut value = serde_json::to_value(report).map_err(std::io::Error::other)?;
+    if let Some(object) = value.as_object_mut() {
+        object.insert("corpus".to_string(), serde_json::json!(corpus_path));
+        object.insert(
+            "surface_evidence".to_string(),
+            serde_json::json!(surface_evidence_path),
+        );
+        object.insert(
+            "surface_field".to_string(),
+            serde_json::json!({
+                "source_rows": surface_report.source_rows,
+                "admitted_rows": surface_report.admitted_rows,
+                "mode_count": surface_report.mode_count,
+                "raw_words_stored": false,
+            }),
+        );
+        object.insert("output".to_string(), serde_json::json!(output_path));
+        object.insert(
+            "artifact_bytes".to_string(),
+            serde_json::json!(std::fs::metadata(output_path)
+                .map(|meta| meta.len())
+                .unwrap_or_default()),
+        );
+    }
+    Ok(value)
+}
+
 pub fn compile_l3_context_phase_memory_with_progress<F>(
     corpus_path: &std::path::Path,
     output_path: &std::path::Path,
@@ -343,6 +396,54 @@ pub fn build_and_prove_l3_context_phase_memory(
         "global_threshold_micro": package.global_threshold_micro,
         "competition_threshold_micro": package.competition_threshold_micro,
         "min_profile_support": min_profile_support.max(2),
+        "heldout": heldout,
+    }))
+}
+
+/// Builds and proves L3 against the same learned surface field used during
+/// training. A failed proof does not write the runtime package.
+pub fn build_and_prove_l3_context_phase_memory_with_surface_evidence(
+    corpus_path: &std::path::Path,
+    surface_evidence_path: &std::path::Path,
+    output_path: &std::path::Path,
+    max_fragments: usize,
+    min_profile_support: u32,
+    min_surface_support: u32,
+) -> std::io::Result<serde_json::Value> {
+    let surface_field = context_phase::surface_field_from_corrections_path(
+        surface_evidence_path,
+        min_surface_support,
+    )?;
+    let surface_report = surface_field.report();
+    let (package, heldout) = context_phase::build_and_prove_context_phase_path_with_surface_field(
+        corpus_path,
+        max_fragments,
+        min_profile_support,
+        std::sync::Arc::new(surface_field),
+    )?;
+    let package_published = heldout.verdict == "PASS";
+    if package_published {
+        context_phase::write_package(output_path, &package)?;
+    }
+    Ok(serde_json::json!({
+        "kind": "l3_context_phase_build_and_prove",
+        "architecture": "online_relation_phase_v3_pairwise_lattice_learned_surface_field",
+        "corpus": corpus_path,
+        "surface_evidence": surface_evidence_path,
+        "surface_field": {
+            "source_rows": surface_report.source_rows,
+            "admitted_rows": surface_report.admitted_rows,
+            "mode_count": surface_report.mode_count,
+            "raw_words_stored": false,
+        },
+        "output": output_path,
+        "package_published": package_published,
+        "raw_words_stored": false,
+        "artifact_bytes": package_published.then(|| std::fs::metadata(output_path).map(|meta| meta.len())).transpose()?.unwrap_or_default(),
+        "corpus_fragments": package.corpus_fragments,
+        "transitions": package.transitions,
+        "candidate_profiles": package.profiles.len(),
+        "pair_profiles": package.pair_profiles.len(),
         "heldout": heldout,
     }))
 }

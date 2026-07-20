@@ -1,6 +1,7 @@
 use std::collections::{BTreeSet, HashMap, VecDeque};
 use std::io;
 use std::sync::mpsc::{channel, sync_channel, Receiver, SyncSender};
+use std::sync::Arc;
 use std::thread::{self, JoinHandle};
 
 use super::super::phase_field::{
@@ -9,9 +10,9 @@ use super::super::phase_field::{
 };
 use super::{
     candidate_l2_signature, canonical_scene_wave, ContextCandidateProfile, ContextPairPhaseProfile,
-    ContextPhaseMode, ContextPhasePackage, PairKey, TokenSemanticState, CELLS, MAX_CONTEXT_TOKENS,
-    MAX_EXACT_PAIR_PROFILES, MAX_HARD_PAIR_CENTERS_PER_BANK, MAX_PAIR_CENTERS_PER_BANK,
-    MAX_PAIR_PROFILES, MAX_RELATION_PAIR_PROFILES,
+    ContextPhaseMode, ContextPhasePackage, PairKey, SurfaceMutationField, TokenSemanticState,
+    CELLS, MAX_CONTEXT_TOKENS, MAX_EXACT_PAIR_PROFILES, MAX_HARD_PAIR_CENTERS_PER_BANK,
+    MAX_PAIR_CENTERS_PER_BANK, MAX_PAIR_PROFILES, MAX_RELATION_PAIR_PROFILES,
 };
 
 const MAX_POSITIVE_CENTERS: usize = 8;
@@ -313,6 +314,7 @@ pub(super) struct L2ProbeRequest {
     target_hash: u64,
     context_hashes: Vec<u64>,
     target_margin_before_update: Option<i64>,
+    surface_field: Arc<SurfaceMutationField>,
 }
 
 pub(super) struct L2ProbeResult {
@@ -432,11 +434,20 @@ pub(super) struct OnlineContextPhaseLearner {
     negative_phase_centers: usize,
     hard_negative_phase_centers: usize,
     competition_calibration: CompetitionCalibrationReservoir,
+    surface_field: Arc<SurfaceMutationField>,
     stats: OnlineContextPhaseStats,
 }
 
 impl OnlineContextPhaseLearner {
+    #[cfg(test)]
     pub(super) fn new(config: OnlineContextPhaseConfig) -> Self {
+        Self::new_with_surface_field(config, Arc::new(SurfaceMutationField::default()))
+    }
+
+    pub(super) fn new_with_surface_field(
+        config: OnlineContextPhaseConfig,
+        surface_field: Arc<SurfaceMutationField>,
+    ) -> Self {
         Self {
             config,
             semantic: HashMap::new(),
@@ -457,6 +468,7 @@ impl OnlineContextPhaseLearner {
             negative_phase_centers: 0,
             hard_negative_phase_centers: 0,
             competition_calibration: CompetitionCalibrationReservoir::new(),
+            surface_field,
             stats: OnlineContextPhaseStats::default(),
         }
     }
@@ -539,6 +551,7 @@ impl OnlineContextPhaseLearner {
                 target_hash,
                 context_hashes: context_hashes.to_vec(),
                 target_margin_before_update,
+                surface_field: Arc::clone(&self.surface_field),
             });
         }
         requests
@@ -1274,17 +1287,23 @@ fn execute_l2_probe(request: L2ProbeRequest) -> L2ProbeResult {
         target_hash,
         context_hashes,
         target_margin_before_update,
+        surface_field,
     } = request;
     let mut seen = BTreeSet::new();
-    let competitors = l2_lattice_competitors(&context_tokens, &target, MAX_COMPETITORS)
-        .into_iter()
-        .filter_map(|competitor| {
-            let token = crate::word_reader::last_text_word(&competitor).unwrap_or_default();
-            let competitor_hash = hash_text(&token.to_lowercase());
-            (competitor_hash != target_hash && seen.insert(competitor_hash))
-                .then(|| (competitor_hash, candidate_l2_signature(&competitor)))
-        })
-        .collect();
+    let competitors = l2_lattice_competitors(
+        &context_tokens,
+        &target,
+        MAX_COMPETITORS,
+        surface_field.as_ref(),
+    )
+    .into_iter()
+    .filter_map(|competitor| {
+        let token = crate::word_reader::last_text_word(&competitor).unwrap_or_default();
+        let competitor_hash = hash_text(&token.to_lowercase());
+        (competitor_hash != target_hash && seen.insert(competitor_hash))
+            .then(|| (competitor_hash, candidate_l2_signature(&competitor)))
+    })
+    .collect();
     L2ProbeResult {
         target_hash,
         target_signature: candidate_l2_signature(&target),
@@ -1298,6 +1317,7 @@ pub(super) fn l2_lattice_competitors(
     context: &[String],
     target: &str,
     limit: usize,
+    surface_field: &SurfaceMutationField,
 ) -> Vec<String> {
     if limit == 0 {
         return Vec::new();
@@ -1309,7 +1329,7 @@ pub(super) fn l2_lattice_competitors(
     // Keep the bounded, deterministic order emitted by the real L2 readout.
     let mut seen = BTreeSet::new();
     let mut competitors = Vec::with_capacity(limit);
-    for damaged in training_surfaces(target) {
+    for damaged in surface_field.damaged_surfaces(target, MAX_L2_TRAINING_SURFACES) {
         for candidate in crate::nanda_wave::l2::correction_l2_word_candidates(
             &context_prefix,
             &damaged,
@@ -1325,39 +1345,6 @@ pub(super) fn l2_lattice_competitors(
         }
     }
     competitors
-}
-
-fn training_surfaces(target: &str) -> Vec<String> {
-    let chars = target.chars().collect::<Vec<_>>();
-    if chars.len() < 3 || !chars.iter().all(|ch| ch.is_alphabetic()) {
-        return Vec::new();
-    }
-    let mut positions = [1, chars.len() / 2, chars.len().saturating_sub(2)]
-        .into_iter()
-        .filter(|position| *position > 0 && *position + 1 < chars.len())
-        .collect::<Vec<_>>();
-    positions.sort_unstable();
-    positions.dedup();
-    let mut surfaces = positions
-        .into_iter()
-        .map(|position| {
-            chars
-                .iter()
-                .enumerate()
-                .filter_map(|(index, ch)| (index != position).then_some(*ch))
-                .collect::<String>()
-        })
-        .collect::<Vec<_>>();
-    if chars.len() >= 4 {
-        let position = chars.len() / 2 - 1;
-        let mut transposed = chars.clone();
-        transposed.swap(position, position + 1);
-        surfaces.push(transposed.into_iter().collect());
-    }
-    surfaces.sort();
-    surfaces.dedup();
-    surfaces.truncate(MAX_L2_TRAINING_SURFACES);
-    surfaces
 }
 
 fn percentile_i32(values: &[i32], percentile: usize) -> Option<i32> {
@@ -1558,6 +1545,7 @@ mod tests {
                 target_hash: hash_text(target),
                 context_hashes: vec![hash_text("сегодня"), hash_text("на"), hash_text("улице")],
                 target_margin_before_update: Some(0),
+                surface_field: Arc::new(SurfaceMutationField::default()),
             })
             .collect::<Vec<_>>();
         let expected = requests
@@ -1703,8 +1691,17 @@ mod tests {
     #[test]
     fn l2_competitor_lattice_is_deterministic_and_never_contains_the_teacher_target() {
         let context = vec!["на".to_string(), "улице".to_string(), "идет".to_string()];
-        let first = l2_lattice_competitors(&context, "дождь", 4);
-        let second = l2_lattice_competitors(&context, "дождь", 4);
+        let field = SurfaceMutationField::from_corrections_jsonl(
+            concat!(
+                r#"{"from":"дожь","to":"дождь"}"#,
+                "\n",
+                r#"{"from":"день","to":"дней"}"#,
+            ),
+            1,
+        )
+        .unwrap();
+        let first = l2_lattice_competitors(&context, "дождь", 4, &field);
+        let second = l2_lattice_competitors(&context, "дождь", 4, &field);
 
         assert_eq!(first, second);
         assert!(first.len() <= 4);

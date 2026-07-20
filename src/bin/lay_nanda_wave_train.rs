@@ -97,11 +97,20 @@ fn main() -> io::Result<()> {
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
         let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
         let min_profile_support = arg_u32(&args, "--min-profile-support").unwrap_or(2);
-        let report = lay::nanda_wave::build_and_prove_l3_context_phase_memory(
+        let min_surface_support = arg_u32(&args, "--min-surface-support").unwrap_or(2);
+        let surface_evidence = arg_path(&args, "--surface-evidence").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--build-and-prove-l3-context-phase requires --surface-evidence CORRECTIONS.jsonl",
+            )
+        })?;
+        let report = lay::nanda_wave::build_and_prove_l3_context_phase_memory_with_surface_evidence(
             &corpus,
+            &surface_evidence,
             &out,
             max_fragments,
             min_profile_support,
+            min_surface_support,
         )?;
         println!(
             "{}",
@@ -128,21 +137,20 @@ fn main() -> io::Result<()> {
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
         let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
         let min_profile_support = arg_u32(&args, "--min-profile-support").unwrap_or(2);
-        let snapshot_every_fragments =
-            arg_usize(&args, "--snapshot-every-fragments").unwrap_or(10_000);
-        let report = lay::nanda_wave::compile_l3_context_phase_memory_with_progress(
+        let min_surface_support = arg_u32(&args, "--min-surface-support").unwrap_or(2);
+        let surface_evidence = arg_path(&args, "--surface-evidence").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--compile-l3-context-phase requires --surface-evidence CORRECTIONS.jsonl",
+            )
+        })?;
+        let report = lay::nanda_wave::compile_l3_context_phase_memory_with_surface_evidence(
             &corpus,
+            &surface_evidence,
             &out,
             max_fragments,
             min_profile_support,
-            snapshot_every_fragments,
-            |progress| {
-                eprintln!(
-                    "{}",
-                    serde_json::to_string(progress)
-                        .unwrap_or_else(|_| "{\"kind\":\"l3_progress_encode_error\"}".to_string())
-                );
-            },
+            min_surface_support,
         )?;
         println!(
             "{}",

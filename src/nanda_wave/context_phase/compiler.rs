@@ -8,6 +8,8 @@ use serde::{Deserialize, Serialize};
 #[cfg(test)]
 use super::super::phase_field::hash_text;
 use super::ContextPhasePackage;
+use super::SurfaceMutationField;
+use std::sync::Arc;
 
 #[cfg(test)]
 #[derive(Clone, Copy)]
@@ -243,11 +245,26 @@ pub(crate) fn build_feedback_corpus(
 pub(crate) fn compile_context_phase(
     input: ContextPhaseCompileInput<'_>,
 ) -> (ContextPhasePackage, ContextPhaseCompileReport) {
-    compile_context_phase_reader(
+    // Tests exercise the same learned-surface route as production compilation.
+    // The fixture supplies geometry only; its literal words never enter a
+    // package or participate in candidate ranking.
+    let surface_field = SurfaceMutationField::from_corrections_jsonl(
+        concat!(
+            r#"{"from":"дожь","to":"дождь"}"#,
+            "\n",
+            r#"{"from":"све","to":"свет"}"#,
+            "\n",
+            r#"{"from":"гор","to":"горит"}"#,
+        ),
+        1,
+    )
+    .expect("valid learned surface fixture");
+    compile_context_phase_reader_with_surface_field(
         Cursor::new(input.corpus_text.as_bytes()),
         input.max_fragments,
         input.min_profile_support,
         0,
+        std::sync::Arc::new(surface_field),
         |_, _| Ok(()),
     )
     .expect("in-memory L3 corpus reader cannot fail")
@@ -258,6 +275,36 @@ pub(crate) fn compile_context_phase_reader<R, F>(
     max_fragments: usize,
     min_profile_support: u32,
     snapshot_every_fragments: usize,
+    snapshot: F,
+) -> io::Result<(ContextPhasePackage, ContextPhaseCompileReport)>
+where
+    R: Read,
+    F: FnMut(&ContextPhasePackage, &ContextPhaseProgressReport) -> io::Result<()>,
+{
+    compile_context_phase_reader_with_surface_field(
+        reader,
+        max_fragments,
+        min_profile_support,
+        snapshot_every_fragments,
+        Arc::new(SurfaceMutationField::default()),
+        snapshot,
+    )
+}
+
+pub(crate) fn surface_field_from_corrections_path(
+    path: &std::path::Path,
+    min_support: u32,
+) -> io::Result<SurfaceMutationField> {
+    let text = std::fs::read_to_string(path)?;
+    SurfaceMutationField::from_corrections_jsonl(&text, min_support)
+}
+
+pub(crate) fn compile_context_phase_reader_with_surface_field<R, F>(
+    reader: R,
+    max_fragments: usize,
+    min_profile_support: u32,
+    snapshot_every_fragments: usize,
+    surface_field: Arc<SurfaceMutationField>,
     mut snapshot: F,
 ) -> io::Result<(ContextPhasePackage, ContextPhaseCompileReport)>
 where
@@ -266,7 +313,8 @@ where
 {
     let started = Instant::now();
     let config = super::online::OnlineContextPhaseConfig::production(min_profile_support);
-    let mut learner = super::online::OnlineContextPhaseLearner::new(config);
+    let mut learner =
+        super::online::OnlineContextPhaseLearner::new_with_surface_field(config, surface_field);
     let l2_pool = super::online::L2ProbePool::new();
     let mut pending_l2 = Vec::new();
     let mut batch_fragments = 0_usize;

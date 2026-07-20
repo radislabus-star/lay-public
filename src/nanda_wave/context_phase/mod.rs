@@ -9,6 +9,7 @@ mod format;
 mod online;
 mod proof;
 mod stream;
+mod surface_field;
 
 use std::env;
 use std::path::{Path, PathBuf};
@@ -24,13 +25,16 @@ use crate::stable_hash::mix64_golden;
 
 pub(crate) use compiler::{
     apply_feedback_overlay, build_feedback_corpus, compile_context_phase_reader,
+    compile_context_phase_reader_with_surface_field, surface_field_from_corrections_path,
 };
 #[cfg(test)]
 pub(crate) use compiler::{compile_context_phase, ContextPhaseCompileInput};
 pub(crate) use format::{read_package, write_package};
+pub(crate) use proof::build_and_prove_context_phase_path_with_surface_field;
 pub(crate) use proof::{
     build_and_prove_context_phase_path, prove_context_phase_package_path, prove_context_phase_path,
 };
+pub(crate) use surface_field::SurfaceMutationField;
 
 pub(crate) const MAGIC: &[u8; 8] = b"LAYL3P01";
 pub(crate) const CELLS: usize = 64;

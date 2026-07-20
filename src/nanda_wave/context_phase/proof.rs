@@ -11,7 +11,8 @@ use super::online::{
     l2_lattice_competitors, L2ProbePool, OnlineContextPhaseConfig, OnlineContextPhaseLearner,
     L2_PROBE_BATCH_FRAGMENTS,
 };
-use super::{ContextPhaseDisposition, ContextPhaseMode, ContextPhasePackage};
+use super::{ContextPhaseDisposition, ContextPhaseMode, ContextPhasePackage, SurfaceMutationField};
+use std::sync::Arc;
 
 const MAX_COMPETITORS: usize = 4;
 const HELDOUT_MODULUS: usize = 5;
@@ -265,6 +266,7 @@ pub(super) fn prove_context_phase_bytes(
         || Ok(Cursor::new(corpus_text.as_bytes())),
         max_fragments,
         min_profile_support,
+        Arc::new(SurfaceMutationField::default()),
     )
     .expect("in-memory L3 proof reader cannot fail")
     .1
@@ -275,10 +277,25 @@ pub(crate) fn prove_context_phase_path(
     max_fragments: usize,
     min_profile_support: u32,
 ) -> io::Result<ContextPhaseProofReport> {
+    prove_context_phase_path_with_surface_field(
+        corpus_path,
+        max_fragments,
+        min_profile_support,
+        Arc::new(SurfaceMutationField::default()),
+    )
+}
+
+pub(crate) fn prove_context_phase_path_with_surface_field(
+    corpus_path: &Path,
+    max_fragments: usize,
+    min_profile_support: u32,
+    surface_field: Arc<SurfaceMutationField>,
+) -> io::Result<ContextPhaseProofReport> {
     train_and_prove(
         || std::fs::File::open(corpus_path),
         max_fragments,
         min_profile_support,
+        surface_field,
     )
     .map(|(_, report)| report)
 }
@@ -288,10 +305,25 @@ pub(crate) fn build_and_prove_context_phase_path(
     max_fragments: usize,
     min_profile_support: u32,
 ) -> io::Result<(ContextPhasePackage, ContextPhaseProofReport)> {
+    build_and_prove_context_phase_path_with_surface_field(
+        corpus_path,
+        max_fragments,
+        min_profile_support,
+        Arc::new(SurfaceMutationField::default()),
+    )
+}
+
+pub(crate) fn build_and_prove_context_phase_path_with_surface_field(
+    corpus_path: &Path,
+    max_fragments: usize,
+    min_profile_support: u32,
+    surface_field: Arc<SurfaceMutationField>,
+) -> io::Result<(ContextPhasePackage, ContextPhaseProofReport)> {
     train_and_prove(
         || std::fs::File::open(corpus_path),
         max_fragments,
         min_profile_support,
+        surface_field,
     )
 }
 
@@ -305,8 +337,12 @@ pub(crate) fn prove_context_phase_package_path(
     min_profile_support: u32,
 ) -> io::Result<ContextPhaseProofReport> {
     let package = super::read_package(package_path)?;
-    let (totals, heldout_fragments) =
-        evaluate_heldout_stream(std::fs::File::open(corpus_path)?, max_fragments, &package)?;
+    let (totals, heldout_fragments) = evaluate_heldout_stream(
+        std::fs::File::open(corpus_path)?,
+        max_fragments,
+        &package,
+        &SurfaceMutationField::default(),
+    )?;
     Ok(report_from_totals(
         totals,
         0,
@@ -320,13 +356,15 @@ fn train_and_prove<R, F>(
     mut open: F,
     max_fragments: usize,
     min_profile_support: u32,
+    surface_field: Arc<SurfaceMutationField>,
 ) -> io::Result<(ContextPhasePackage, ContextPhaseProofReport)>
 where
     R: Read,
     F: FnMut() -> io::Result<R>,
 {
     let config = OnlineContextPhaseConfig::production(min_profile_support);
-    let mut learner = OnlineContextPhaseLearner::new(config);
+    let mut learner =
+        OnlineContextPhaseLearner::new_with_surface_field(config, Arc::clone(&surface_field));
     let l2_pool = L2ProbePool::new();
     let mut pending_l2 = Vec::new();
     let mut batch_fragments = 0_usize;
@@ -344,7 +382,8 @@ where
         })?;
     learner.apply_l2_probe_batch(&l2_pool, &mut pending_l2)?;
     let package = learner.snapshot();
-    let (totals, heldout_fragments) = evaluate_heldout_stream(open()?, max_fragments, &package)?;
+    let (totals, heldout_fragments) =
+        evaluate_heldout_stream(open()?, max_fragments, &package, surface_field.as_ref())?;
     let train_fragments = train_stats
         .accepted_fragments
         .saturating_sub(heldout_fragments);
@@ -362,6 +401,7 @@ fn evaluate_heldout_stream<R: Read>(
     reader: R,
     max_fragments: usize,
     package: &ContextPhasePackage,
+    surface_field: &SurfaceMutationField,
 ) -> io::Result<(ProofTotals, usize)> {
     let workers = proof_worker_count();
     thread::scope(|scope| {
@@ -373,7 +413,7 @@ fn evaluate_heldout_stream<R: Read>(
             handles.push(scope.spawn(move || {
                 let mut totals = ProofTotals::default();
                 while let Ok(tokens) = receiver.recv() {
-                    evaluate_fragment(package, &tokens, &mut totals);
+                    evaluate_fragment(package, &tokens, surface_field, &mut totals);
                 }
                 totals
             }));
@@ -422,10 +462,16 @@ fn is_heldout(ordinal: usize) -> bool {
     ordinal % HELDOUT_MODULUS == HELDOUT_REMAINDER
 }
 
-fn evaluate_fragment(package: &ContextPhasePackage, tokens: &[String], totals: &mut ProofTotals) {
+fn evaluate_fragment(
+    package: &ContextPhasePackage,
+    tokens: &[String],
+    surface_field: &SurfaceMutationField,
+    totals: &mut ProofTotals,
+) {
     for index in 1..tokens.len() {
         let target = &tokens[index];
-        let competitors = l2_lattice_competitors(&tokens[..index], target, MAX_COMPETITORS);
+        let competitors =
+            l2_lattice_competitors(&tokens[..index], target, MAX_COMPETITORS, surface_field);
         if competitors.is_empty() {
             continue;
         }
