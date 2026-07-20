@@ -24,7 +24,6 @@ pub(super) fn boundary_split_candidates(
     let normalized = token.to_lowercase();
     if normalized.chars().count() < 6
         || is_common_ru_word(&normalized)
-        || is_known_russian_word_or_form(&normalized)
         || is_ru_live_protected_word(&normalized)
     {
         return Vec::new();
@@ -70,7 +69,9 @@ pub(super) fn boundary_split_candidates(
     for split in 1..chars.len() {
         let left = chars[..split].iter().collect::<String>();
         let right = chars[split..].iter().collect::<String>();
-        if left.chars().count() > 2 && right.chars().count() < 3 {
+        let trailing_short_pronoun = right.chars().count() == 1
+            && crate::lexicon::is_ru_short_pronoun(&right);
+        if left.chars().count() > 2 && right.chars().count() < 3 && !trailing_short_pronoun {
             continue;
         }
         let short_function_boundary =
@@ -86,28 +87,27 @@ pub(super) fn boundary_split_candidates(
         {
             continue;
         }
-        let known_left = short_function_boundary;
-        let known_right = surface_motif_known_surface(&right);
+        // Boundary field is bidirectional: an attached one-letter function
+        // word or pronoun can be on either side of a stable lexical center.
+        // Both halves still need compact lexical evidence; this is not a
+        // phrase-specific rewrite table.
+        let known_left = short_function_boundary || surface_motif_known_surface(&left);
+        let known_right = trailing_short_pronoun || surface_motif_known_surface(&right);
         if !known_left || !known_right {
             continue;
         }
-        let (energy, risk, reason) = if short_function_boundary {
-            (
-                l1_energy(l1, "BoundaryCell32").max(0.99),
-                0.04,
-                "hidden-short-function-boundary",
-            )
-        } else {
-            (
-                l1_energy(l1, "BoundaryCell32").max(0.78),
-                if left.chars().count() <= 2 {
-                    0.18
-                } else {
-                    0.12
-                },
-                "dictionary-split",
-            )
-        };
+        // Two ordinary words are not enough evidence for an automatic split:
+        // they create many plausible but false segmentations. A lexical
+        // boundary needs an explicit short functional anchor; richer
+        // multiword repairs stay in the typed phrase/boundary operator route.
+        if !short_function_boundary && !trailing_short_pronoun {
+            continue;
+        }
+        let (energy, risk, reason) = (
+            l1_energy(l1, "BoundaryCell32").max(0.99),
+            0.04,
+            "hidden-short-function-boundary",
+        );
         candidates.push(WordCandidate {
             text: format!("{prefix}{left} {right}"),
             origin: CandidateOrigin::Boundary,

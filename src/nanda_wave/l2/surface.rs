@@ -10,7 +10,7 @@ pub(super) fn settle_russian_surface(surface: &str) -> Option<String> {
 
     let context = TailContext::from_text(surface);
     let l1 = crate::nanda_wave::l1::run_l1(surface);
-    form_attractor_word_candidates("", surface, &context, &l1)
+    form_attractor_word_candidates("", surface, &context, &l1, &WaveOptions::default())
         .into_iter()
         .find(|candidate| candidate.energy > candidate.risk)
         .map(|candidate| candidate.text)
@@ -63,6 +63,7 @@ pub(super) fn surface_motif_word_candidates(
         surface_candidates.dedup_by(|left, right| left.word == right.word);
         surface_candidates.truncate(32);
     }
+    let phase_deltas = l2_birth_phase_deltas(&normalized, &surface_candidates, options);
     if std::env::var_os("LAY_NANDA_L2_TIMING").is_some() {
         eprintln!(
             "lay_nanda_l2_surface input={normalized:?} stable={} candidates={:?}",
@@ -100,7 +101,12 @@ pub(super) fn surface_motif_word_candidates(
     for candidate in &surface_candidates {
         let candidate_len = candidate.word.chars().count();
         let distance = damerau_levenshtein(&normalized, &candidate.word);
-        let ranked_score = surface_attractor_score(candidate.score, &candidate.word);
+        let base_score = surface_attractor_score(candidate.score, &candidate.word);
+        let phase_delta = phase_deltas.get(&candidate.word).copied().unwrap_or_default();
+        // Local authority remains a property of the L2 center and its surface
+        // geometry. The learned phase field only redistributes energy between
+        // already admissible centers in this bounded lattice.
+        let ranked_score = add_phase_birth_delta(base_score, phase_delta);
         let is_completion = candidate.word.starts_with(&normalized) && candidate_len > len;
 
         if options.is_enabled(L2_SURFACE_MOTIF_CELL)
@@ -110,15 +116,15 @@ pub(super) fn surface_motif_word_candidates(
             && surface_motif_typo_has_authority(
                 &normalized,
                 &candidate.word,
-                candidate.score,
+                base_score,
                 &surface_candidates,
                 &empty_fuzzy_authority,
             )
             && (!fuzzy_surface_candidate_blocked(word, &normalized, &candidate.word)
                 || repeated_all_caps_surface_allowed(word, &normalized, &candidate.word))
-            && surface_motif_typo_allowed(&normalized, &candidate.word, len, distance, ranked_score)
+            && surface_motif_typo_allowed(&normalized, &candidate.word, len, distance, base_score)
         {
-            out.push(surface_motif_candidate(SurfaceMotifCandidateInput {
+            let mut word_candidate = surface_motif_candidate(SurfaceMotifCandidateInput {
                 prefix,
                 leading,
                 word,
@@ -134,7 +140,9 @@ pub(super) fn surface_motif_word_candidates(
                 risk: surface_attractor_risk(context, distance, &candidate.word),
                 l1,
                 context,
-            }));
+            });
+            record_birth_phase(&mut word_candidate, phase_delta);
+            out.push(word_candidate);
             if out.len() >= 8 {
                 break;
             }
@@ -314,6 +322,7 @@ pub(super) fn form_attractor_word_candidates(
     token: &str,
     context: &TailContext,
     l1: &[WavePacket],
+    options: &WaveOptions,
 ) -> Vec<WordCandidate> {
     if context.has_technical_context() {
         return Vec::new();
@@ -334,8 +343,9 @@ pub(super) fn form_attractor_word_candidates(
     let usage = usage_prior::cached_usage_prior_snapshot();
     let transition_state =
         crate::transition_relation::transition_state_id(&format!("{prefix}{token}"));
-    let mut out = surface_motif_memory()
-        .surface_candidates(&normalized, 32)
+    let surface_candidates = surface_motif_memory().surface_candidates(&normalized, 32);
+    let phase_deltas = l2_birth_phase_deltas(&normalized, &surface_candidates, options);
+    let mut out = surface_candidates
         .into_iter()
         .filter_map(|candidate| {
             let replacement_lower = candidate.word;
@@ -367,7 +377,7 @@ pub(super) fn form_attractor_word_candidates(
             let rejected_penalty = ((hot.rejected_prior + hot.context_rejected) * 1_400.0)
                 .round()
                 .clamp(0.0, 220.0) as u32;
-            let signed_score = if signed_bonus.is_negative() {
+            let authority_score = if signed_bonus.is_negative() {
                 ranked_score.saturating_sub(signed_bonus.unsigned_abs())
             } else {
                 ranked_score.saturating_add(signed_bonus as u32)
@@ -380,11 +390,17 @@ pub(super) fn form_attractor_word_candidates(
                 &replacement_lower,
                 len,
                 distance,
-                signed_score,
+                authority_score,
             ) || fuzzy_surface_candidate_blocked(word, &normalized, &replacement_lower)
             {
                 return None;
             }
+
+            let phase_delta = phase_deltas
+                .get(&replacement_lower)
+                .copied()
+                .unwrap_or_default();
+            let birth_score = add_phase_birth_delta(authority_score, phase_delta);
 
             let risk = surface_attractor_risk(context, distance, &replacement_lower)
                 + ((hot.rejected_prior + hot.context_rejected) * 0.24).clamp(0.0, 0.16)
@@ -397,7 +413,7 @@ pub(super) fn form_attractor_word_candidates(
                 trailing,
                 replacement_lower: &replacement_lower,
                 source: LEXICAL_ATTRACTOR_CELL,
-                score: signed_score,
+                score: birth_score,
                 l1_overlap: candidate.l1_overlap,
                 l2_overlap: candidate.l2_overlap,
                 motif_overlap: candidate.motif_overlap,
@@ -418,6 +434,7 @@ pub(super) fn form_attractor_word_candidates(
                     .push("l2-operator:sparse-internal-multi-omission".to_string());
             }
             apply_learned_transition_pressure(&mut candidate, &hot.transition);
+            record_birth_phase(&mut candidate, phase_delta);
             Some(candidate)
         })
         .collect::<Vec<_>>();
@@ -488,6 +505,75 @@ pub(super) fn form_attractor_word_candidates(
         out.push(candidate);
     }
     out
+}
+
+// The field may resolve a close L2 tie, but it must not dominate the surface
+// center. A bounded 64-point transfer keeps phase as interference, not a
+// second authority scale.
+const L2_BIRTH_PHASE_MAX_DELTA: i32 = 64;
+
+/// Read phase centers before local lattice ordering, not after DecisionCore has
+/// already received a narrowed candidate set. A delta is emitted only for a
+/// promoted lexical competition profile and is normalized across this one L2
+/// lattice. It never changes structural admission eligibility.
+fn l2_birth_phase_deltas(
+    original: &str,
+    candidates: &[LexicalPhaseCandidate],
+    options: &WaveOptions,
+) -> std::collections::BTreeMap<String, i32> {
+    if !options.l2_phase_lattice_apply() || candidates.len() < 2 {
+        return std::collections::BTreeMap::new();
+    }
+    let strengths = candidates
+        .iter()
+        .filter_map(|candidate| {
+            let readout = crate::nanda_wave::l2_transition_phase_shadow_readout(
+                original,
+                &candidate.word,
+                "typo",
+                None,
+            );
+            (readout.package_loaded
+                && readout.operator_present
+                && readout.operator_promoted
+                && readout.lexical_competition_ready)
+                .then_some((candidate.word.clone(), readout.lexical_margin_micro))
+        })
+        .collect::<Vec<_>>();
+    let Some(minimum) = strengths.iter().map(|(_, strength)| *strength).min() else {
+        return std::collections::BTreeMap::new();
+    };
+    let Some(maximum) = strengths.iter().map(|(_, strength)| *strength).max() else {
+        return std::collections::BTreeMap::new();
+    };
+    if minimum == maximum {
+        return std::collections::BTreeMap::new();
+    }
+    strengths
+        .into_iter()
+        .map(|(word, strength)| {
+            let normalized = (strength - minimum) as f64 / (maximum - minimum) as f64;
+            let delta = (normalized.mul_add(2.0, -1.0) * f64::from(L2_BIRTH_PHASE_MAX_DELTA))
+                .round() as i32;
+            (word, delta.clamp(-L2_BIRTH_PHASE_MAX_DELTA, L2_BIRTH_PHASE_MAX_DELTA))
+        })
+        .collect()
+}
+
+fn add_phase_birth_delta(score: u32, delta: i32) -> u32 {
+    if delta.is_negative() {
+        score.saturating_sub(delta.unsigned_abs())
+    } else {
+        score.saturating_add(delta as u32)
+    }
+}
+
+fn record_birth_phase(candidate: &mut WordCandidate, delta: i32) {
+    if delta != 0 {
+        candidate
+            .support
+            .push(format!("l2-phase-birth:energy-delta={delta}"));
+    }
 }
 
 fn leading_extra_letter_center_frontier(input: &str) -> Vec<String> {

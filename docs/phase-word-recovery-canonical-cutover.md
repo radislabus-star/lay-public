@@ -2,7 +2,7 @@
 
 Status: canonical live architecture map and forward contract.
 
-Last source audit: 2026-07-19.
+Last source audit: 2026-07-20.
 
 This document is the source of truth for the current L1-L4 runtime, its proven
 boundaries, and the next architectural work. Historical plans may explain why
@@ -237,6 +237,58 @@ transition relation atoms
 
 The package stores quantized centers, anti-centers, promotion state, support
 counts, and thresholds without raw words.
+
+### 4.2.1 L2 phase placement and first-token status
+
+The phase package has a bounded experimental readout inside the L2 lexical
+lattice, before local candidate ordering. It is disabled by default and uses a
+separate option from the historical DecisionCore experiment:
+
+```text
+l2_phase_lattice_apply
+  -> phase/anti-center competition over already found lexical centers
+  -> bounded energy redistribution
+  -> existing local L2 authority checks
+  -> candidate lattice
+```
+
+It cannot create a lexical center, bypass local structural checks, choose an
+edit, or bypass the verifier. The fixed full replay rejected promotion on
+2026-07-20: it produced `358` expected applies but `128` nonfinal applies,
+above the fixed ceiling of `118`. It is therefore shadow-only and must not be
+installed as runtime authority.
+
+After the first-token and L2-center birth repairs, the fixed replay baseline
+improved to `360` expected applies and `117` nonfinal applies. Re-running the
+same early phase package produced `364` and `128`; the safety gate still
+rejects promotion. The package remains shadow-only.
+
+The first-token route is LIVE and covered by focused tests. L2 and the hot
+layout helper now treat a nonempty first token as a complete local scene rather
+than requiring a preceding whitespace boundary. This closes the former route
+where IME/L2 could remain empty until a second word or Backspace.
+
+Candidate-birth truth remains OPEN:
+
+```text
+fixed dirty cases                  651
+no L2 candidate                     54
+expected candidate missing         114
+expected candidate applied         360
+nonfinal apply                     117
+```
+
+The first-token route and compact layout-to-center binding reduced the no-L2
+denominator from `60` to `54`, while correct applies rose from `353` to `360`
+and nonfinal applies stayed at `117`. Increasing the lexical top-k frontier
+from 32 to 128 did not reduce the earlier 60-case denominator, so that broad
+fallback was removed. The remaining work is phase-center coverage for missing
+operator/surface families, not a larger list or a word-specific fallback.
+
+Outcome learning already routes observed system apply, explicit rejection, and
+the final user correction through `TypingMemoryEvent`. Current remaining debt
+is data volume: the causal compiler has too few linked live feedback triples to
+move the fixed replay safely.
 
 The installed package is compiled from the same fixed dataset used by the
 release proof. Live actions and applied edits are not silently appended to

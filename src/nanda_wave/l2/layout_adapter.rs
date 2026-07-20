@@ -264,11 +264,22 @@ fn layout_converted_token(
     if converted == token {
         return None;
     }
+    // A projected first word has no phrase context yet. Its compact L2 lexical
+    // center is sufficient surface evidence: the artifact can reconstruct the
+    // target, while random keyboard noise has no terminal center and remains
+    // blocked by the caller's first-token guard.
+    let converted_lower = converted.to_lowercase();
+    if token.chars().all(|ch| ch.is_ascii_alphabetic())
+        && converted.chars().all(is_cyrillic_letter)
+        && surface_motif_memory().contains_surface(&converted_lower)
+    {
+        return Some((apply_word_case(token, &converted_lower), false, true));
+    }
     // Lexical centers are case-normalized. Case is a surface property that is
     // restored only after the same center has admitted the layout projection.
     // Without this, an all-caps wrong-layout word bypasses its known Russian
     // center solely because the keyboard projection is all caps too.
-    let converted_center_form = converted.to_lowercase();
+    let converted_center_form = converted_lower;
     // Keyboard projection is only a surface proposal. A target becomes a
     // strong L1/L2 signal when its compact phase readout settles; broad
     // reference morphology alone cannot promote an accidental projection.

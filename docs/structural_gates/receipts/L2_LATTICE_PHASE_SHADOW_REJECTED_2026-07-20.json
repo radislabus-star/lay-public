@@ -44,6 +44,29 @@
     "nonfinal_apply": 128,
     "conclusion": "The package receives correctly reconstructed feedback, but its current DecisionCore-only placement is too late to alter L2WordAttractor birth geometry."
   },
+  "early_lattice_phase_experiment": {
+    "placement": "inside bounded L2 lexical lattice before local ordering",
+    "runtime_authority": false,
+    "expected_candidate_applied": 358,
+    "expected_present_but_not_applied": 117,
+    "nonfinal_apply": 128,
+    "gate": "nonfinal_apply <= 118 and expected_candidate_applied > 353",
+    "result": "REJECTED",
+    "reason": "Early placement improves expected applies but still increases nonfinal applies. The phase option remains disabled and separate from DecisionCore apply."
+  },
+  "current_replay_after_l2_birth_repairs": {
+    "baseline_without_phase": {
+      "expected_candidate_applied": 360,
+      "nonfinal_apply": 117
+    },
+    "early_lattice_phase": {
+      "expected_candidate_applied": 364,
+      "nonfinal_apply": 128
+    },
+    "gate": "nonfinal_apply <= 118 and expected_candidate_applied > 353",
+    "result": "REJECTED",
+    "reason": "The same anti-center package still increases nonfinal applies after candidate-birth repairs; no runtime authority."
+  },
   "decision": "REJECTED",
   "reason": "Candidate-specific lexical anti-centers improve correct selection, but the package still increases nonfinal applies above the fixed baseline. It may not receive runtime authority or installation.",
   "next_owner": "L2WordAttractor candidate-specific destructive geometry",

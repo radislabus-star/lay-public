@@ -78,7 +78,10 @@ fn main() -> io::Result<()> {
     let options = WaveOptions::with_disabled(&disabled)
         .with_llmwave_shadow(args.iter().any(|arg| arg == "--llmwave-shadow"))
         .with_llmwave_apply(args.iter().any(|arg| arg == "--llmwave-apply"))
-        .with_l2_phase_apply(args.iter().any(|arg| arg == "--l2-phase-apply"));
+        .with_l2_phase_apply(args.iter().any(|arg| arg == "--l2-phase-apply"))
+        .with_l2_phase_lattice_apply(
+            args.iter().any(|arg| arg == "--l2-phase-lattice-apply"),
+        );
     if let Some(path) = arg_value(&args, "--llmwave-pack-cases") {
         let Some(out) = arg_value(&args, "--out") else {
             eprintln!("--llmwave-pack-cases requires --out PATH");
@@ -427,7 +430,10 @@ fn main() -> io::Result<()> {
             status::status_sample_cases(&suite.cases)
         };
         let show_examples = args.iter().any(|arg| arg == "--show-examples");
-        print_l2_candidate_flow_report(&cases, suite.cases.len(), &options, show_examples);
+        let jobs = arg_value(&args, "--jobs")
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or_else(default_l2_flow_jobs);
+        print_l2_candidate_flow_report(&cases, suite.cases.len(), &options, show_examples, jobs);
         return Ok(());
     }
     let paths = arg_values(&args, "--cases");
@@ -2010,129 +2016,50 @@ fn print_l2_candidate_flow_report(
     full_cases: usize,
     options: &WaveOptions,
     show_examples: bool,
+    jobs: usize,
 ) {
     let dirty_cases = cases
         .iter()
         .filter(|case| case.original != case.expected)
         .collect::<Vec<_>>();
-    let mut stats: BTreeMap<String, L2CandidateFlowStats> = BTreeMap::new();
-    let mut cases_with_l2 = 0usize;
-    let mut no_l2_candidates = 0usize;
-    let mut expected_candidate_present = 0usize;
-    let mut expected_candidate_missing = 0usize;
-    let mut expected_candidate_applied = 0usize;
-    let mut present_but_not_applied = 0usize;
-    let mut nonfinal_apply = 0usize;
-    let mut examples = L2CandidateFlowExamples::default();
-
-    for case in &dirty_cases {
-        let trace = run_wave_trace_with_options(&case.original, options);
-        if trace.l2_candidates.is_empty() {
-            no_l2_candidates += 1;
-            examples.no_l2.push(flow_example(case, &trace, None));
-            continue;
-        }
-        cases_with_l2 += 1;
-
-        for candidate in &trace.l2_candidates {
-            stats
-                .entry(candidate.source.to_string())
-                .or_default()
-                .generated += 1;
-        }
-        if let Some(first) = trace.l2_candidates.first() {
-            stats.entry(first.source.to_string()).or_default().first += 1;
-        }
-
-        let expected_sources = trace
-            .l2_candidates
-            .iter()
-            .filter(|candidate| {
-                candidate_output_for_original(&case.original, &candidate.text) == case.expected
-            })
-            .map(|candidate| candidate.source.to_string())
-            .collect::<Vec<_>>();
-        if expected_sources.is_empty() {
-            expected_candidate_missing += 1;
-            examples
-                .missing_expected
-                .push(flow_example(case, &trace, None));
-        } else {
-            expected_candidate_present += 1;
-            for source in &expected_sources {
-                stats.entry(source.clone()).or_default().expected_present += 1;
-            }
-        }
-
-        match trace.decision {
-            WaveDecision::Suggest { ref text, .. } => {
-                let applied_source = applied_source_for_trace(&trace, text);
-                if let Some(source) = applied_source {
-                    stats.entry(source.to_string()).or_default().accepted += 1;
-                }
-                if text == &case.expected {
-                    expected_candidate_applied += 1;
-                } else {
-                    nonfinal_apply += 1;
-                    if let Some(source) = applied_source {
-                        stats.entry(source.to_string()).or_default().nonfinal_apply += 1;
-                    }
-                    examples
-                        .nonfinal_apply
-                        .push(flow_example(case, &trace, Some(text.as_str())));
-                }
-                if text != &case.expected && !expected_sources.is_empty() {
-                    present_but_not_applied += 1;
-                    for source in &expected_sources {
-                        stats
-                            .entry(source.clone())
-                            .or_default()
-                            .expected_present_not_applied += 1;
-                    }
-                    examples.present_not_applied.push(flow_example(
-                        case,
-                        &trace,
-                        Some(text.as_str()),
-                    ));
-                }
-            }
-            WaveDecision::Keep { .. } | WaveDecision::Veto { .. } => {
-                if !expected_sources.is_empty() {
-                    present_but_not_applied += 1;
-                    for source in &expected_sources {
-                        stats
-                            .entry(source.clone())
-                            .or_default()
-                            .expected_present_not_applied += 1;
-                    }
-                    examples
-                        .present_not_applied
-                        .push(flow_example(case, &trace, None));
-                }
-            }
-        }
+    // Each replay row is immutable and has no cross-row learning. Keep the
+    // actual L2/DecisionCore route intact, but evaluate independent rows on
+    // workers so a proof-only full suite does not serialize on one CPU.
+    let jobs = jobs.clamp(1, dirty_cases.len().max(1));
+    let chunk_len = dirty_cases.len().div_ceil(jobs).max(1);
+    let partials = std::thread::scope(|scope| {
+        dirty_cases
+            .chunks(chunk_len)
+            .map(|chunk| scope.spawn(move || l2_candidate_flow_partial(chunk, options)))
+            .map(|worker| worker.join().expect("L2 flow worker must not panic"))
+            .collect::<Vec<_>>()
+    });
+    let mut result = L2CandidateFlowPartial::default();
+    for partial in partials {
+        result.merge(partial);
     }
 
     println!(
-        "l2_candidate_flow_report: cases={} full_cases={} sampled={} dirty_cases={}",
+        "l2_candidate_flow_report: cases={} full_cases={} sampled={} dirty_cases={} jobs={}",
         cases.len(),
         full_cases,
         cases.len() < full_cases,
-        dirty_cases.len()
+        dirty_cases.len(),
+        jobs
     );
     println!("  authority: analysis_only_no_runtime_change");
-    println!("  cases_with_l2_candidates: {cases_with_l2}");
-    println!("  no_l2_candidates: {no_l2_candidates}");
-    println!("  expected_candidate_present: {expected_candidate_present}");
-    println!("  expected_candidate_missing: {expected_candidate_missing}");
-    println!("  expected_candidate_applied: {expected_candidate_applied}");
-    println!("  expected_present_but_not_applied: {present_but_not_applied}");
-    println!("  nonfinal_apply: {nonfinal_apply}");
+    println!("  cases_with_l2_candidates: {}", result.cases_with_l2);
+    println!("  no_l2_candidates: {}", result.no_l2_candidates);
+    println!("  expected_candidate_present: {}", result.expected_candidate_present);
+    println!("  expected_candidate_missing: {}", result.expected_candidate_missing);
+    println!("  expected_candidate_applied: {}", result.expected_candidate_applied);
+    println!("  expected_present_but_not_applied: {}", result.present_but_not_applied);
+    println!("  nonfinal_apply: {}", result.nonfinal_apply);
     println!(
         "  note: nonfinal_apply means output != expected; multi-error rows can be partial fixes"
     );
     println!("  sources:");
-    for (source, row) in stats {
+    for (source, row) in result.stats {
         if row.is_empty() {
             continue;
         }
@@ -2147,11 +2074,145 @@ fn print_l2_candidate_flow_report(
         );
     }
     if show_examples {
-        print_flow_examples("no_l2", &examples.no_l2);
-        print_flow_examples("missing_expected", &examples.missing_expected);
-        print_flow_examples("present_not_applied", &examples.present_not_applied);
-        print_flow_examples("nonfinal_apply", &examples.nonfinal_apply);
+        print_flow_examples("no_l2", &result.examples.no_l2);
+        print_flow_examples("missing_expected", &result.examples.missing_expected);
+        print_flow_examples("present_not_applied", &result.examples.present_not_applied);
+        print_flow_examples("nonfinal_apply", &result.examples.nonfinal_apply);
     }
+}
+
+fn default_l2_flow_jobs() -> usize {
+    // Parallel replay is opt-in. The current compact lexical readout shares a
+    // memory-bandwidth-bound hot artifact, so an unmeasured default fan-out can
+    // make the proof slower. CI can select a measured `--jobs N` profile.
+    1
+}
+
+#[derive(Debug, Default)]
+struct L2CandidateFlowPartial {
+    stats: BTreeMap<String, L2CandidateFlowStats>,
+    cases_with_l2: usize,
+    no_l2_candidates: usize,
+    expected_candidate_present: usize,
+    expected_candidate_missing: usize,
+    expected_candidate_applied: usize,
+    present_but_not_applied: usize,
+    nonfinal_apply: usize,
+    examples: L2CandidateFlowExamples,
+}
+
+impl L2CandidateFlowPartial {
+    fn merge(&mut self, other: Self) {
+        self.cases_with_l2 += other.cases_with_l2;
+        self.no_l2_candidates += other.no_l2_candidates;
+        self.expected_candidate_present += other.expected_candidate_present;
+        self.expected_candidate_missing += other.expected_candidate_missing;
+        self.expected_candidate_applied += other.expected_candidate_applied;
+        self.present_but_not_applied += other.present_but_not_applied;
+        self.nonfinal_apply += other.nonfinal_apply;
+        for (source, row) in other.stats {
+            self.stats.entry(source).or_default().merge(row);
+        }
+        self.examples.no_l2.extend(other.examples.no_l2);
+        self.examples.missing_expected.extend(other.examples.missing_expected);
+        self.examples.present_not_applied.extend(other.examples.present_not_applied);
+        self.examples.nonfinal_apply.extend(other.examples.nonfinal_apply);
+    }
+}
+
+fn l2_candidate_flow_partial(
+    cases: &[&EvalCase],
+    options: &WaveOptions,
+) -> L2CandidateFlowPartial {
+    let mut result = L2CandidateFlowPartial::default();
+    for case in cases {
+        let trace = run_wave_trace_with_options(&case.original, options);
+        if trace.l2_candidates.is_empty() {
+            result.no_l2_candidates += 1;
+            result.examples.no_l2.push(flow_example(case, &trace, None));
+            continue;
+        }
+        result.cases_with_l2 += 1;
+
+        for candidate in &trace.l2_candidates {
+            result.stats
+                .entry(candidate.source.to_string())
+                .or_default()
+                .generated += 1;
+        }
+        if let Some(first) = trace.l2_candidates.first() {
+            result.stats.entry(first.source.to_string()).or_default().first += 1;
+        }
+
+        let expected_sources = trace
+            .l2_candidates
+            .iter()
+            .filter(|candidate| {
+                candidate_output_for_original(&case.original, &candidate.text) == case.expected
+            })
+            .map(|candidate| candidate.source.to_string())
+            .collect::<Vec<_>>();
+        if expected_sources.is_empty() {
+            result.expected_candidate_missing += 1;
+            result.examples
+                .missing_expected
+                .push(flow_example(case, &trace, None));
+        } else {
+            result.expected_candidate_present += 1;
+            for source in &expected_sources {
+                result.stats.entry(source.clone()).or_default().expected_present += 1;
+            }
+        }
+
+        match trace.decision {
+            WaveDecision::Suggest { ref text, .. } => {
+                let applied_source = applied_source_for_trace(&trace, text);
+                if let Some(source) = applied_source {
+                    result.stats.entry(source.to_string()).or_default().accepted += 1;
+                }
+                if text == &case.expected {
+                    result.expected_candidate_applied += 1;
+                } else {
+                    result.nonfinal_apply += 1;
+                    if let Some(source) = applied_source {
+                        result.stats.entry(source.to_string()).or_default().nonfinal_apply += 1;
+                    }
+                    result.examples
+                        .nonfinal_apply
+                        .push(flow_example(case, &trace, Some(text.as_str())));
+                }
+                if text != &case.expected && !expected_sources.is_empty() {
+                    result.present_but_not_applied += 1;
+                    for source in &expected_sources {
+                        result.stats
+                            .entry(source.clone())
+                            .or_default()
+                            .expected_present_not_applied += 1;
+                    }
+                    result.examples.present_not_applied.push(flow_example(
+                        case,
+                        &trace,
+                        Some(text.as_str()),
+                    ));
+                }
+            }
+            WaveDecision::Keep { .. } | WaveDecision::Veto { .. } => {
+                if !expected_sources.is_empty() {
+                    result.present_but_not_applied += 1;
+                    for source in &expected_sources {
+                        result.stats
+                            .entry(source.clone())
+                            .or_default()
+                            .expected_present_not_applied += 1;
+                    }
+                    result.examples
+                        .present_not_applied
+                        .push(flow_example(case, &trace, None));
+                }
+            }
+        }
+    }
+    result
 }
 
 #[derive(Debug, Default, Clone)]
@@ -2165,6 +2226,15 @@ struct L2CandidateFlowStats {
 }
 
 impl L2CandidateFlowStats {
+    fn merge(&mut self, other: Self) {
+        self.generated += other.generated;
+        self.first += other.first;
+        self.expected_present += other.expected_present;
+        self.expected_present_not_applied += other.expected_present_not_applied;
+        self.accepted += other.accepted;
+        self.nonfinal_apply += other.nonfinal_apply;
+    }
+
     fn is_empty(&self) -> bool {
         self.generated == 0
             && self.first == 0

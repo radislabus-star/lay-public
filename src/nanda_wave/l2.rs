@@ -140,7 +140,13 @@ pub(crate) fn hot_layout_candidate_with_noisy_projection(
     allow_noisy_projection: bool,
 ) -> Option<WordCandidate> {
     let tail = original.trim_end();
-    let (prefix, token) = split_last_ws_token(tail)?;
+    if tail.is_empty() {
+        return None;
+    }
+    let (prefix, token) = split_last_ws_token(tail).unwrap_or(("", tail));
+    if token.trim().is_empty() {
+        return None;
+    }
     let context = TailContext::from_text(tail);
     layout_adapter::layout_candidate_with_projection_policy(
         prefix,
@@ -158,9 +164,17 @@ pub fn run_l2_refined_with_feedback(
     feedback: &L3Feedback,
 ) -> Vec<WordCandidate> {
     let tail = original.trim_end();
-    let Some((prefix, token)) = split_last_ws_token(tail) else {
+    if tail.is_empty() {
         return Vec::new();
-    };
+    }
+    // The first word is a complete L2 scene too. Requiring a preceding space
+    // made the entire candidate lattice disappear until the user typed a
+    // second token or pressed Backspace, which is why IME seemed to wake up
+    // only after deletion.
+    let (prefix, token) = split_last_ws_token(tail).unwrap_or(("", tail));
+    if token.trim().is_empty() {
+        return Vec::new();
+    }
     let context = TailContext::from_text(tail);
     let mut candidates = Vec::new();
     let timing_enabled = std::env::var_os("LAY_NANDA_L2_TIMING").is_some();
@@ -216,7 +230,7 @@ pub fn run_l2_refined_with_feedback(
             push_unique_candidate(&mut candidates, candidate);
         }
         if options.is_enabled(LEXICAL_ATTRACTOR_CELL) {
-            for candidate in form_attractor_word_candidates(prefix, token, &context, l1) {
+            for candidate in form_attractor_word_candidates(prefix, token, &context, l1, options) {
                 push_unique_candidate(&mut candidates, candidate);
             }
         }

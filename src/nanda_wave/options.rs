@@ -5,6 +5,7 @@ pub struct WaveOptions {
     llmwave_apply: bool,
     l2_phase_shadow: bool,
     l2_phase_apply: bool,
+    l2_phase_lattice_apply: bool,
     l3_phase_shadow: bool,
     l2_weight: f32,
     l3_weight: f32,
@@ -18,6 +19,7 @@ impl Default for WaveOptions {
             llmwave_apply: false,
             l2_phase_shadow: true,
             l2_phase_apply: false,
+            l2_phase_lattice_apply: false,
             l3_phase_shadow: false,
             l2_weight: 1.0,
             l3_weight: 1.0,
@@ -33,6 +35,7 @@ impl WaveOptions {
             llmwave_apply: false,
             l2_phase_shadow: true,
             l2_phase_apply: false,
+            l2_phase_lattice_apply: false,
             l3_phase_shadow: false,
             l2_weight: 1.0,
             l3_weight: 1.0,
@@ -57,6 +60,15 @@ impl WaveOptions {
 
     pub fn with_l2_phase_apply(mut self, enabled: bool) -> Self {
         self.l2_phase_apply = enabled;
+        self.l2_phase_shadow |= enabled;
+        self
+    }
+
+    /// Enables learned competition while L2 still owns its bounded lexical
+    /// lattice. It is separate from the historical DecisionCore experiment so
+    /// replay can prove the earlier route alone.
+    pub fn with_l2_phase_lattice_apply(mut self, enabled: bool) -> Self {
+        self.l2_phase_lattice_apply = enabled;
         self.l2_phase_shadow |= enabled;
         self
     }
@@ -96,6 +108,10 @@ impl WaveOptions {
         self.l2_phase_apply
     }
 
+    pub fn l2_phase_lattice_apply(&self) -> bool {
+        self.l2_phase_lattice_apply
+    }
+
     pub fn l3_phase_shadow(&self) -> bool {
         self.l3_phase_shadow
     }
@@ -128,6 +144,7 @@ mod tests {
         assert_eq!(options.l3_weight(), 1.0);
         assert!(options.l2_phase_shadow());
         assert!(!options.l2_phase_apply());
+        assert!(!options.l2_phase_lattice_apply());
         assert!(!options.l3_phase_shadow());
         assert_eq!(options.scale_l2_energy(0.5), 0.5);
         assert_eq!(options.scale_l3_delta(0.08), 0.08);
@@ -147,5 +164,13 @@ mod tests {
         let options = WaveOptions::default().with_l2_phase_apply(true);
         assert!(options.l2_phase_shadow());
         assert!(options.l2_phase_apply());
+    }
+
+    #[test]
+    fn lattice_phase_apply_is_independent_from_decision_core_experiment() {
+        let options = WaveOptions::default().with_l2_phase_lattice_apply(true);
+        assert!(options.l2_phase_shadow());
+        assert!(options.l2_phase_lattice_apply());
+        assert!(!options.l2_phase_apply());
     }
 }

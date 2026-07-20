@@ -19,6 +19,51 @@ fn layout_candidate_for_last_token() {
 }
 
 #[test]
+fn first_word_enters_the_same_l2_lattice_as_a_later_token() {
+    let original = "djn";
+    let l1 = run_l1(original);
+    let candidates = run_l2(original, &l1);
+    assert!(
+        candidates
+            .iter()
+            .any(|candidate| candidate.source == "LayoutWordCell32" && candidate.text == "вот"),
+        "first-word L2 candidates={candidates:?}"
+    );
+}
+
+#[test]
+fn hot_layout_helper_accepts_the_first_word() {
+    let candidate = hot_layout_candidate("djn").expect("first-word layout candidate");
+    assert_eq!(candidate.text, "вот");
+}
+
+#[test]
+fn first_word_layout_uses_compact_l2_center_not_phrase_context() {
+    let original = "ckjdf";
+    let l1 = run_l1(original);
+    let candidates = run_l2(original, &l1);
+    assert!(
+        candidates
+            .iter()
+            .any(|candidate| candidate.source == "layout_then_l2_word_center" && candidate.text == "слова"),
+        "first-word L2 candidates={candidates:?}"
+    );
+}
+
+#[test]
+fn boundary_field_splits_trailing_one_letter_pronoun_from_l2_centers() {
+    let original = "когдая";
+    let l1 = run_l1(original);
+    let candidates = run_l2(original, &l1);
+    assert!(
+        candidates
+            .iter()
+            .any(|candidate| candidate.source == "BoundaryCell32" && candidate.text == "когда я"),
+        "boundary candidates={candidates:?}"
+    );
+}
+
+#[test]
 fn layout_sequence_is_one_coherent_l2_candidate() {
     let original = "djn nfrjt djn yt gthtdfhfxbdftncz ";
     let l1 = run_l1(original);

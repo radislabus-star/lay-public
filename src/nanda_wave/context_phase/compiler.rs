@@ -771,9 +771,7 @@ fn false_candidate_winner(
 }
 
 fn false_candidate_winner_index(readouts: &[super::ContextPhaseReadout]) -> Option<usize> {
-    let Some(correct) = readouts.first() else {
-        return None;
-    };
+    let correct = readouts.first()?;
     readouts
         .iter()
         .enumerate()
