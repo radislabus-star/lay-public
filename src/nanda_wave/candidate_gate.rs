@@ -91,6 +91,12 @@ struct LiveCandidateGateStats {
     cache_misses: u64,
     total_us: u64,
     max_us: u64,
+    l2_material_us: u64,
+    l2_material_max_us: u64,
+    l3_context_us: u64,
+    l3_context_max_us: u64,
+    decision_us: u64,
+    decision_max_us: u64,
 }
 
 pub fn live_completion_candidates(
@@ -149,11 +155,15 @@ pub fn live_completion_candidates(
         return cached;
     }
 
+    let l2_started = Instant::now();
     let raw = live_l2_word_candidates(request.context_prefix, &partial, request.limit);
+    let l2_material_us = l2_started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64;
 
     let raw_count = raw.len();
     let context_tokens = super::llmwave::tokenize(request.context_prefix);
+    let l3_started = Instant::now();
     let context_batch = live_context_batch_readout(&context_tokens, &raw);
+    let l3_context_us = l3_started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64;
     let l3_memory_warm = super::context_phase::default_memory_is_warm();
     let usage_snapshot = super::usage_prior::cached_usage_prior_snapshot();
     let usage_context = usage_snapshot.prepare_hot_context(&context_tokens);
@@ -289,6 +299,7 @@ pub fn live_completion_candidates(
             })
         })
         .collect::<Vec<_>>();
+    let decision_started = Instant::now();
     let candidates = TransitionDecisionCore::select_live_completions(candidates, request.limit)
         .into_iter()
         .map(|candidate| LiveCompletionCandidate {
@@ -299,6 +310,10 @@ pub fn live_completion_candidates(
             rank_score: candidate.rank_score,
         })
         .collect::<Vec<_>>();
+    let decision_us = decision_started
+        .elapsed()
+        .as_micros()
+        .min(u128::from(u64::MAX)) as u64;
     store_live_completion_candidates(cache_key, &candidates);
     record_live_gate_stats(
         started,
@@ -312,6 +327,9 @@ pub fn live_completion_candidates(
             l4_action: None,
             l4_signed,
             cache_hit: false,
+            l2_material_us,
+            l3_context_us,
+            decision_us,
         },
     );
     candidates
@@ -337,12 +355,11 @@ fn live_l2_word_candidates(
     }
 
     let material_limit = live_l2_material_limit(limit);
+    // `ime_l2_word_candidates` already includes the completion branch from the
+    // same lexical phase lattice. A second direct completion query duplicated
+    // the hottest index walk on every IME keypress without adding an authority
+    // source or a distinct operator.
     let mut candidates = l2::ime_l2_word_candidates(context_prefix, &normalized, material_limit);
-    candidates.extend(l2::ime_l2_completion_candidates(
-        context_prefix,
-        &normalized,
-        material_limit,
-    ));
     candidates.sort_by(|left, right| {
         right
             .score
@@ -395,6 +412,14 @@ pub fn live_candidate_gate_stats_json() -> serde_json::Value {
         "authority_contract": "L4 signed state is bias only; live candidate authority and edit-plan safety remain final",
         "avg_us": avg_us,
         "max_us": stats.max_us,
+        "stage_us": {
+            "l2_material_total": stats.l2_material_us,
+            "l2_material_max": stats.l2_material_max_us,
+            "l3_context_total": stats.l3_context_us,
+            "l3_context_max": stats.l3_context_max_us,
+            "decision_total": stats.decision_us,
+            "decision_max": stats.decision_max_us,
+        },
     })
 }
 
@@ -422,6 +447,12 @@ fn live_candidate_gate_stats() -> LiveCandidateGateStats {
         cache_misses: stats.cache_misses.load(Ordering::Relaxed),
         total_us: stats.total_us.load(Ordering::Relaxed),
         max_us: stats.max_us.load(Ordering::Relaxed),
+        l2_material_us: stats.l2_material_us.load(Ordering::Relaxed),
+        l2_material_max_us: stats.l2_material_max_us.load(Ordering::Relaxed),
+        l3_context_us: stats.l3_context_us.load(Ordering::Relaxed),
+        l3_context_max_us: stats.l3_context_max_us.load(Ordering::Relaxed),
+        decision_us: stats.decision_us.load(Ordering::Relaxed),
+        decision_max_us: stats.decision_max_us.load(Ordering::Relaxed),
     }
 }
 
@@ -552,6 +583,18 @@ fn record_live_gate_stats(started: Instant, record: LiveGateRecord) {
     }
     stats.total_us.fetch_add(elapsed_us, Ordering::Relaxed);
     update_max_atomic(&stats.max_us, elapsed_us);
+    stats
+        .l2_material_us
+        .fetch_add(record.l2_material_us, Ordering::Relaxed);
+    update_max_atomic(&stats.l2_material_max_us, record.l2_material_us);
+    stats
+        .l3_context_us
+        .fetch_add(record.l3_context_us, Ordering::Relaxed);
+    update_max_atomic(&stats.l3_context_max_us, record.l3_context_us);
+    stats
+        .decision_us
+        .fetch_add(record.decision_us, Ordering::Relaxed);
+    update_max_atomic(&stats.decision_max_us, record.decision_us);
 }
 
 fn live_stats() -> &'static LiveCandidateGateAtomicStats {
@@ -582,6 +625,12 @@ struct LiveCandidateGateAtomicStats {
     cache_misses: AtomicU64,
     total_us: AtomicU64,
     max_us: AtomicU64,
+    l2_material_us: AtomicU64,
+    l2_material_max_us: AtomicU64,
+    l3_context_us: AtomicU64,
+    l3_context_max_us: AtomicU64,
+    decision_us: AtomicU64,
+    decision_max_us: AtomicU64,
 }
 
 #[derive(Debug, Clone, Copy, Default)]
@@ -628,6 +677,9 @@ struct LiveGateRecord {
     l4_action: Option<L4AllowedAction>,
     l4_signed: LiveSignedOutcomeStats,
     cache_hit: bool,
+    l2_material_us: u64,
+    l3_context_us: u64,
+    decision_us: u64,
 }
 
 fn live_completion_context_tail(context_prefix: &str) -> String {
@@ -929,7 +981,10 @@ mod tests {
         } else {
             1_500
         };
-        eprintln!("unique live prefix timings: {timings:?}; max={max_us}us");
+        eprintln!(
+            "unique live prefix timings: {timings:?}; max={max_us}us; stages={}",
+            live_candidate_gate_stats_json()
+        );
 
         assert!(
             max_us <= budget_us,

@@ -211,6 +211,56 @@ pub fn build_l3_context_feedback_corpus(
     Ok(value)
 }
 
+/// Extracts confirmed IME outcomes into a bounded lexical training source for
+/// the next cold L2 phase compile. This writes a corpus only: hot runtime
+/// still loads compact centers from a separately proved artifact.
+pub fn build_l2_lexical_feedback_corpus(
+    usage_events_path: &std::path::Path,
+    output_path: &std::path::Path,
+    max_repeat_per_phrase: usize,
+    max_repeat_per_word: usize,
+) -> std::io::Result<serde_json::Value> {
+    let events = std::fs::read_to_string(usage_events_path)?;
+    let (phrases, phrase_report) =
+        context_phase::build_feedback_corpus(&events, max_repeat_per_phrase)?;
+    let max_repeat_per_word = max_repeat_per_word.max(1);
+    let mut word_counts = std::collections::BTreeMap::<String, usize>::new();
+    for raw in phrases.split_whitespace() {
+        let Some(word) = normalize_l2_surface_word(raw) else {
+            continue;
+        };
+        let count = word_counts.entry(word).or_default();
+        *count = count.saturating_add(1);
+    }
+
+    let mut lines = Vec::new();
+    for (word, count) in &word_counts {
+        for _ in 0..(*count).min(max_repeat_per_word) {
+            lines.push(word.as_str());
+        }
+    }
+    let mut corpus = lines.join("\n");
+    if !corpus.is_empty() {
+        corpus.push('\n');
+    }
+    std::fs::write(output_path, corpus)?;
+
+    Ok(serde_json::json!({
+        "kind": "l2_lexical_phase_feedback_corpus",
+        "usage_events": usage_events_path,
+        "output": output_path,
+        "source_events": phrase_report.source_events,
+        "accepted_source_events": phrase_report.accepted_source_events,
+        "rejected_source_events": phrase_report.rejected_source_events,
+        "accepted_phrases": phrase_report.corpus_lines,
+        "unique_words": word_counts.len(),
+        "emitted_word_rows": lines.len(),
+        "max_repeat_per_word": max_repeat_per_word,
+        "runtime_authority": false,
+        "raw_words_stored_in_runtime": false,
+    }))
+}
+
 pub fn l3_context_phase_status_json(path: Option<&std::path::Path>) -> serde_json::Value {
     let path = path
         .map(std::path::Path::to_path_buf)
@@ -581,6 +631,10 @@ pub fn warm_up_for_ime() {
 
 pub fn warm_up_l2_for_ime() {
     L2_IME_WARMUP_STARTED.store(true, std::sync::atomic::Ordering::Relaxed);
+    // The IME gate evaluates L2 and L3 together. Do not publish an L2-ready
+    // state while the first context-phase readout could still fault in the
+    // phase package on the user's keystroke.
+    context_phase::warm_default_memory();
     l2::warm_up_ime_word_candidate_memory();
     candidate_gate::warm_up_live_candidate_readout();
 }

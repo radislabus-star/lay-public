@@ -113,24 +113,28 @@ fn load_rows(path: &Path, limit: usize) -> io::Result<(Vec<EvalRow>, usize, usiz
             malformed += 1;
             continue;
         }
-        if columns[5] != "1" {
+        if columns[5].trim() != "1" {
             continue;
         }
-        if columns[4] == "layout" {
+        if columns[4].trim().contains("layout") {
             // Layout projection has a separate typed operator and must not distort lexical recall.
             skipped_layout += 1;
             continue;
         }
-        let language = if columns[3].chars().all(|ch| ch.is_ascii_alphabetic()) {
+        let expected = columns[3].trim();
+        let language = if expected.chars().all(|ch| ch.is_ascii_alphabetic()) {
             "en"
         } else {
             "ru"
         };
         rows.push(EvalRow {
             language,
-            operation: columns[4].to_string(),
-            input: columns[2].to_string(),
-            expected: columns[3].to_string(),
+            operation: columns[4].trim().to_string(),
+            // Generated datasets use a trailing delimiter space to represent
+            // completed tokens. The lexical field consumes token surfaces, so
+            // evaluation must remove transport whitespace before readout.
+            input: columns[2].trim().to_string(),
+            expected: expected.to_string(),
         });
         if rows.len() >= limit {
             break;
@@ -373,9 +377,9 @@ mod tests {
             &path,
             concat!(
                 "group_id\tcontext\toriginal\tcandidate\toperation\tlabel\tsource\treason\n",
-                "a\t\tврмея\tвремя\tadjacent_transposition\t1\tclean\tpositive\n",
+                "a\t\tврмея \tвремя \tadjacent_transposition\t1\tclean\tpositive\n",
                 "a\t\tврмея\tвроде\tadjacent_transposition\t0\tclean\tnegative\n",
-                "b\t\tdownload\tвщцтдщфв\tlayout\t1\tclean\tpositive\n",
+                "b\t\tdownload\tвщцтдщфв\tlayout_projection \t1 \tclean\tpositive\n",
             ),
         )
         .expect("write fixture");

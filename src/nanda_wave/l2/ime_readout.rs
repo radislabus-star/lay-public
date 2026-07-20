@@ -8,6 +8,10 @@ use std::collections::VecDeque;
 use std::sync::{Arc, Mutex, OnceLock};
 
 const LEXICAL_READOUT_CACHE_CAPACITY: usize = 256;
+// The gate asks L2 for a bounded material lattice and then applies phase
+// competition. Four candidates per requested display slot leave enough
+// competitors for interference while avoiding a 192-node DAFSA walk per key.
+const IME_L2_MATERIAL_FACTOR: usize = 4;
 type CachedLexicalCandidates = Arc<Vec<super::super::lexical_phase::LexicalPhaseCandidate>>;
 type LexicalReadoutCache = VecDeque<(String, usize, bool, CachedLexicalCandidates)>;
 
@@ -47,7 +51,7 @@ fn l2_word_candidates_impl(
     let usage = super::super::usage_prior::cached_usage_prior_snapshot();
     let usage_context = usage.prepare_hot_context(&context_tokens);
     let memory = surface_motif_memory();
-    let material_limit = limit.saturating_mul(8).max(limit);
+    let material_limit = limit.saturating_mul(IME_L2_MATERIAL_FACTOR).max(limit);
     let lexical =
         cached_lexical_candidates(memory, &normalized, material_limit, include_completion);
     let lexical = lexical
@@ -108,6 +112,11 @@ fn cached_lexical_candidates(
     }) {
         return candidates;
     }
+    if let Some(candidates) =
+        projected_lexical_candidates(cache, normalized, material_limit, include_completion)
+    {
+        return candidates;
+    }
 
     let mut candidates = memory.adjacent_transposition_candidates(normalized);
     candidates.extend(memory.surface_candidates(normalized, material_limit));
@@ -128,64 +137,84 @@ fn cached_lexical_candidates(
     candidates.dedup_by(|left, right| left.word == right.word);
     let candidates = Arc::new(candidates);
 
-    if let Ok(mut cache) = cache.lock() {
-        if cache.len() >= LEXICAL_READOUT_CACHE_CAPACITY {
-            cache.pop_front();
-        }
-        cache.push_back((
-            normalized.to_string(),
-            material_limit,
-            include_completion,
-            Arc::clone(&candidates),
-        ));
-    }
+    store_lexical_candidates(
+        cache,
+        normalized,
+        material_limit,
+        include_completion,
+        Arc::clone(&candidates),
+    );
     candidates
 }
 
-pub(crate) fn ime_l2_completion_candidates(
-    context_prefix: &str,
-    token: &str,
-    limit: usize,
-) -> Vec<L2ImeWordCandidate> {
-    if limit == 0 {
-        return Vec::new();
+/// Projects a previously settled L2 lattice into the next typed prefix. This
+/// is a phase-field continuation, not a second prefix index: every returned
+/// surface was already born by the same lexical centers. A thin projection
+/// falls back to the full lattice so it cannot silently reduce coverage.
+fn projected_lexical_candidates(
+    cache: &Mutex<LexicalReadoutCache>,
+    normalized: &str,
+    material_limit: usize,
+    include_completion: bool,
+) -> Option<CachedLexicalCandidates> {
+    let mut projected = cache.lock().ok().and_then(|cache| {
+        cache
+            .iter()
+            .filter(|(surface, limit, completion, _)| {
+                *limit == material_limit
+                    && *completion == include_completion
+                    && normalized.starts_with(surface)
+                    && normalized.len() > surface.len()
+            })
+            .max_by_key(|(surface, _, _, _)| surface.len())
+            .map(|(_, _, _, candidates)| {
+                candidates
+                    .iter()
+                    .filter(|candidate| candidate.word.starts_with(normalized))
+                    .cloned()
+                    .collect::<Vec<_>>()
+            })
+    })?;
+    let minimum = material_limit.min(12);
+    if projected.len() < minimum {
+        return None;
     }
-    let normalized = token.to_lowercase();
-    let token_len = normalized.chars().count();
-    if !(1..=18).contains(&token_len) || !is_supported_lexical_surface(&normalized) {
-        return Vec::new();
-    }
+    projected.truncate(material_limit);
+    let projected = Arc::new(projected);
+    store_lexical_candidates(
+        cache,
+        normalized,
+        material_limit,
+        include_completion,
+        Arc::clone(&projected),
+    );
+    Some(projected)
+}
 
-    let context_tokens = super::super::llmwave::tokenize(context_prefix);
-    let usage = super::super::usage_prior::cached_usage_prior_snapshot();
-    let usage_context = usage.prepare_hot_context(&context_tokens);
-    let material_limit = limit.saturating_mul(8).max(limit);
-    let lexical = surface_motif_memory()
-        .completion_candidates(&normalized, material_limit, material_limit)
-        .into_iter()
-        .filter(|candidate| same_lexical_script(&normalized, &candidate.word));
-    let mut candidates = lexical
-        .map(|candidate| L2ImeWordCandidate {
-            surface: candidate.word,
-            kind: L2ImeWordCandidateKind::Completion,
-            source: L2ImeWordCandidateSource::LexicalPhase,
-            score: candidate.score,
-            l1_overlap: candidate.l1_overlap,
-            l2_overlap: candidate.l2_overlap,
-            motif_overlap: candidate.motif_overlap,
-            usage_prior: 0.0,
-            context_prior: 0.0,
-            accepted_count: 0,
-        })
-        .collect::<Vec<_>>();
-    for candidate in &mut candidates {
-        let prior = usage.candidate_prior_prepared(&usage_context, &candidate.surface);
-        candidate.usage_prior = prior.word_prior;
-        candidate.context_prior = prior.context_prior;
-        candidate.accepted_count = prior.accepted_count;
+fn store_lexical_candidates(
+    cache: &Mutex<LexicalReadoutCache>,
+    normalized: &str,
+    material_limit: usize,
+    include_completion: bool,
+    candidates: CachedLexicalCandidates,
+) {
+    let Ok(mut cache) = cache.lock() else {
+        return;
+    };
+    if let Some(index) = cache.iter().position(|(surface, limit, completion, _)| {
+        surface == normalized && *limit == material_limit && *completion == include_completion
+    }) {
+        cache.remove(index);
     }
-    sort_and_truncate_ime_l2_candidates(&mut candidates, limit);
-    candidates
+    if cache.len() >= LEXICAL_READOUT_CACHE_CAPACITY {
+        cache.pop_front();
+    }
+    cache.push_back((
+        normalized.to_string(),
+        material_limit,
+        include_completion,
+        candidates,
+    ));
 }
 
 pub(crate) fn l2_center_near_surfaces(text: &str, limit: usize) -> Vec<String> {
@@ -306,4 +335,46 @@ fn l2_ime_word_candidate_score(candidate: &L2ImeWordCandidate) -> u32 {
         .score
         .saturating_add(prior)
         .saturating_add(kind_bonus)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::nanda_wave::lexical_phase::LexicalPhaseCandidate;
+
+    fn candidate(word: &str) -> LexicalPhaseCandidate {
+        LexicalPhaseCandidate {
+            word: word.to_string(),
+            score: 1,
+            l1_overlap: 1,
+            l2_overlap: 1,
+            motif_overlap: 1,
+            prefix_match: true,
+            rank: 0,
+            phase_coherence_milli: 1_000,
+            reconstructed: false,
+        }
+    }
+
+    #[test]
+    fn projects_settled_lattice_only_when_the_next_prefix_stays_dense() {
+        let cache = Mutex::new(VecDeque::new());
+        store_lexical_candidates(
+            &cache,
+            "оста",
+            3,
+            true,
+            Arc::new(vec![
+                candidate("остановка"),
+                candidate("остановить"),
+                candidate("остановлю"),
+            ]),
+        );
+
+        let projected = projected_lexical_candidates(&cache, "остан", 3, true)
+            .expect("dense continuation must reuse the already born lattice");
+        assert!(projected.iter().all(|item| item.word.starts_with("остан")));
+
+        assert!(projected_lexical_candidates(&cache, "остановк", 3, true).is_none());
+    }
 }

@@ -36,8 +36,8 @@ pub use hot_memory::{
 };
 pub(crate) use hot_memory::{warm_up_ime_word_candidate_memory, warm_up_surface_motif_memory};
 pub(crate) use ime_readout::{
-    ime_l2_completion_candidates, l2_center_contains_surface, l2_center_near_surfaces,
-    l2_decoder_contains_surface, l2_surface_phase_readout,
+    l2_center_contains_surface, l2_center_near_surfaces, l2_decoder_contains_surface,
+    l2_surface_phase_readout,
 };
 use layout_adapter::{
     layout_candidate, layout_scan_candidates, layout_sequence_candidate, short_token_candidates,

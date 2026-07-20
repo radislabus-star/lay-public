@@ -56,11 +56,8 @@ fn main() -> io::Result<()> {
             ));
         }
         let min_surface_support = arg_u32(&args, "--min-surface-support").unwrap_or(1);
-        let report = lay::nanda_wave::merge_l3_context_phase_shards(
-            &inputs,
-            &out,
-            min_surface_support,
-        )?;
+        let report =
+            lay::nanda_wave::merge_l3_context_phase_shards(&inputs, &out, min_surface_support)?;
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?
@@ -79,9 +76,8 @@ fn main() -> io::Result<()> {
         return Ok(());
     }
     if let Some(corpus) = arg_path(&args, "--prove-l3-context-phase-package") {
-        let package = arg_path(&args, "--memory").ok_or_else(|| {
-            io::Error::new(io::ErrorKind::InvalidInput, "--memory is required")
-        })?;
+        let package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
         let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
         let min_profile_support = arg_u32(&args, "--min-profile-support").unwrap_or(2);
         let report = lay::nanda_wave::prove_l3_context_phase_package(
@@ -190,6 +186,29 @@ fn main() -> io::Result<()> {
             &usage_events,
             &out,
             max_repeat_per_phrase,
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if args
+        .iter()
+        .any(|arg| arg == "--build-l2-lexical-feedback-corpus")
+    {
+        let usage_events = arg_path(&args, "--usage-events").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--usage-events is required")
+        })?;
+        let out = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let max_repeat_per_phrase = arg_usize(&args, "--max-repeat-per-phrase").unwrap_or(4);
+        let max_repeat_per_word = arg_usize(&args, "--max-repeat-per-word").unwrap_or(4);
+        let report = lay::nanda_wave::build_l2_lexical_feedback_corpus(
+            &usage_events,
+            &out,
+            max_repeat_per_phrase,
+            max_repeat_per_word,
         )?;
         println!(
             "{}",
