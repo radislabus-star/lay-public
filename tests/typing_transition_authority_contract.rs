@@ -125,12 +125,13 @@ fn transition_core_uses_typed_origin_for_verifier_and_memory() {
 #[test]
 fn ime_preedit_uses_shared_candidate_readout_for_ranking() {
     let preedit = read("src/bin/lay_ibus_engine/preedit.rs");
+    let preedit_readout = read("src/bin/lay_ibus_engine/preedit_readout.rs");
     let readout = read("src/typing_cpu/candidate.rs");
     let candidate_gate = read("src/nanda_wave/candidate_gate.rs");
     let live_core = read("src/typing_transition/live_candidate.rs");
 
     assert!(
-        preedit.contains("select_ime_candidate_suffixes(ImeCandidateReadoutRequest")
+        preedit.contains("select_ime_candidate_proposals(ImeCandidateReadoutRequest")
             && !preedit.contains("preedit_suffix_bayes_score"),
         "IME adapter must delegate suffix selection to the transition core"
     );
@@ -140,12 +141,22 @@ fn ime_preedit_uses_shared_candidate_readout_for_ranking() {
             && !readout.contains("cached_usage_prior_snapshot"),
         "shared readout must delegate one final choice to TransitionDecisionCore"
     );
+    let post_decision_gate = candidate_gate
+        .split("TransitionDecisionCore::select_live_completions")
+        .nth(1)
+        .and_then(|tail| tail.split("fn live_l2_word_candidates").next())
+        .unwrap_or_default();
     assert!(
         candidate_gate.contains("TransitionDecisionCore::select_live_completions")
-            && !candidate_gate.contains("candidates.sort_by")
+            && !post_decision_gate.contains("sort_by")
             && live_core.contains("fn select_live_completions")
             && live_core.contains("fn select_ime_readout"),
         "live completion admission and final IME ordering must have one decision owner"
+    );
+    assert!(
+        preedit_readout.contains(".with_authority_order(order)")
+            && live_core.contains("proposal.authority_order"),
+        "IBus must preserve the shared lattice order instead of re-ranking L2 candidates by UI confidence"
     );
 }
 

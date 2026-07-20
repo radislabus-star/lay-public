@@ -21,6 +21,10 @@ pub struct ImeCandidateProposal {
     pub replacement: Option<String>,
     pub confidence: f32,
     pub source: ImeCandidateSource,
+    /// A candidate already admitted by the shared L2/L3/L4 field carries its
+    /// final lattice order into the IBus adapter. Display must not recreate a
+    /// second ranking from the lossy UI confidence value.
+    pub authority_order: Option<usize>,
 }
 
 impl ImeCandidateProposal {
@@ -30,6 +34,7 @@ impl ImeCandidateProposal {
             replacement: None,
             confidence: confidence.clamp(0.0, 1.0),
             source,
+            authority_order: None,
         }
     }
 
@@ -43,6 +48,7 @@ impl ImeCandidateProposal {
             replacement: Some(surface.into()),
             confidence: confidence.clamp(0.0, 1.0),
             source,
+            authority_order: None,
         }
     }
 
@@ -52,6 +58,11 @@ impl ImeCandidateProposal {
 
     pub fn is_replacement(&self) -> bool {
         self.replacement.is_some()
+    }
+
+    pub fn with_authority_order(mut self, order: usize) -> Self {
+        self.authority_order = Some(order);
+        self
     }
 }
 
@@ -239,6 +250,23 @@ mod tests {
             1
         );
         assert!(ranked.iter().any(|suffix| suffix == "чер"));
+    }
+
+    #[test]
+    fn shared_lattice_order_survives_ime_projection() {
+        let proposals = vec![
+            ImeCandidateProposal::new("смысл", 0.99, ImeCandidateSource::L3Context),
+            ImeCandidateProposal::new("ивет", 0.40, ImeCandidateSource::L2Completion)
+                .with_authority_order(0),
+            ImeCandidateProposal::new("оверь", 0.30, ImeCandidateSource::L2Completion)
+                .with_authority_order(1),
+        ];
+        let ranked = select_ime_candidate_suffixes(ImeCandidateReadoutRequest {
+            proposals: &proposals,
+            limit: 8,
+        });
+
+        assert_eq!(ranked, vec!["ивет", "оверь", "смысл"]);
     }
 
     #[test]

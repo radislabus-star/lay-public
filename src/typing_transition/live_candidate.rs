@@ -141,7 +141,16 @@ impl TransitionDecisionCore {
                 .iter_mut()
                 .find(|(candidate, _)| candidate.display_text() == proposal.display_text())
             {
-                if proposal.confidence > existing.0.confidence {
+                let proposal_owns_order =
+                    match (proposal.authority_order, existing.0.authority_order) {
+                        (Some(proposal_order), Some(existing_order)) => {
+                            proposal_order < existing_order
+                        }
+                        (Some(_), None) => true,
+                        (None, Some(_)) => false,
+                        (None, None) => proposal.confidence > existing.0.confidence,
+                    };
+                if proposal_owns_order {
                     existing.0 = proposal.clone();
                     existing.1 = order;
                 }
@@ -150,12 +159,14 @@ impl TransitionDecisionCore {
             selected.push((proposal.clone(), order));
         }
         selected.sort_by(|left, right| {
-            right
-                .0
-                .confidence
-                .total_cmp(&left.0.confidence)
-                .then_with(|| left.1.cmp(&right.1))
-                .then_with(|| left.0.display_text().cmp(right.0.display_text()))
+            match (left.0.authority_order, right.0.authority_order) {
+                (Some(left_order), Some(right_order)) => left_order.cmp(&right_order),
+                (Some(_), None) => std::cmp::Ordering::Less,
+                (None, Some(_)) => std::cmp::Ordering::Greater,
+                (None, None) => right.0.confidence.total_cmp(&left.0.confidence),
+            }
+            .then_with(|| left.1.cmp(&right.1))
+            .then_with(|| left.0.display_text().cmp(right.0.display_text()))
         });
         selected.truncate(limit);
         selected.into_iter().map(|(proposal, _)| proposal).collect()

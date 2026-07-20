@@ -7,34 +7,34 @@ use lay::typing_cpu::{
 };
 
 impl PreeditFastState {
-    fn ascii_candidates(
-        &self,
-        max_suffix_chars: usize,
-        limit: usize,
-    ) -> Vec<ImeCandidateProposal> {
-        if self.token.is_empty()
-            || !self.token.chars().all(|ch| ch.is_ascii_alphabetic())
-        {
+    fn ascii_candidates(&self, max_suffix_chars: usize, limit: usize) -> Vec<ImeCandidateProposal> {
+        if self.token.is_empty() || !self.token.chars().all(|ch| ch.is_ascii_alphabetic()) {
             return Vec::new();
         }
         let mut suffixes = Vec::new();
         let mut proposals = Vec::new();
-        for candidate in TypingCpu::live_completion_candidates(LiveCompletionRequest {
-                context_prefix: "",
-                partial: &self.token,
-                max_suffix_chars,
-                allow_short_lexical: true,
-                limit,
-            }) {
+        for (order, candidate) in TypingCpu::live_completion_candidates(LiveCompletionRequest {
+            context_prefix: "",
+            partial: &self.token,
+            max_suffix_chars,
+            allow_short_lexical: true,
+            limit,
+        })
+        .into_iter()
+        .enumerate()
+        {
             let suffix = candidate.suffix;
             let before = suffixes.len();
             push_unique_ascii_known_suffix(&mut suffixes, &self.token, suffix.clone());
             if suffixes.len() > before {
-                proposals.push(ImeCandidateProposal::new(
-                    suffix,
-                    candidate.score,
-                    ImeCandidateSource::L2Completion,
-                ));
+                proposals.push(
+                    ImeCandidateProposal::new(
+                        suffix,
+                        candidate.score,
+                        ImeCandidateSource::L2Completion,
+                    )
+                    .with_authority_order(order),
+                );
             }
             if proposals.len() >= limit {
                 break;
@@ -58,9 +58,7 @@ impl LayIbusEngine {
         // Phrase memory is suffix-only. L2 replacement proposals travel through
         // the typed IME readout and remain display-only until explicit Tab.
         let mut suffixes = Vec::new();
-        if should_query_llmwave_phrase_suffix(raw_tail)
-            && TypingCpu::phrase_memory_is_warm()
-        {
+        if should_query_llmwave_phrase_suffix(raw_tail) && TypingCpu::phrase_memory_is_warm() {
             suffixes.extend(self.llmwave_phrase_candidates(raw_tail));
         }
         suffixes
@@ -96,35 +94,38 @@ impl LayIbusEngine {
         }
         let max_suffix_chars = self.precognition_max_suffix_chars();
         let whole_word_candidates = TypingCpu::live_completion_candidates(LiveCompletionRequest {
-                context_prefix: prefix,
-                partial: &partial,
-                max_suffix_chars,
-                // Candidate authority belongs to the shared L2/L3/L4 gate.
-                // IME only renders its approved result, including in a phrase.
-                allow_short_lexical: true,
-                limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
-            });
+            context_prefix: prefix,
+            partial: &partial,
+            max_suffix_chars,
+            // Candidate authority belongs to the shared L2/L3/L4 gate.
+            // IME only renders its approved result, including in a phrase.
+            allow_short_lexical: true,
+            limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
+        });
         // The shared candidate gate owns ranking. IBus projects typed suffix or
         // full-token replacement proposals without gaining mutation authority.
         whole_word_candidates
             .into_iter()
+            .enumerate()
             // A committed tail needs a distinct verified replacement route.
             // Never let an inactive preedit turn a whole-token candidate into
             // an append-only Tab action.
-            .filter(|candidate| !self.buffer.is_empty() || !candidate.suffix.is_empty())
-            .map(|candidate| {
+            .filter(|(_, candidate)| !self.buffer.is_empty() || !candidate.suffix.is_empty())
+            .map(|(order, candidate)| {
                 if candidate.suffix.is_empty() {
                     ImeCandidateProposal::replacement(
                         candidate.surface,
                         candidate.score,
                         ImeCandidateSource::L2Replacement,
                     )
+                    .with_authority_order(order)
                 } else {
                     ImeCandidateProposal::new(
                         candidate.suffix,
                         candidate.score,
                         ImeCandidateSource::L2Completion,
                     )
+                    .with_authority_order(order)
                 }
             })
             .take(PREEDIT_RU_WAVE_CANDIDATE_LIMIT)

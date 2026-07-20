@@ -797,6 +797,14 @@ IME display must consume the same candidate field readout as autocorrect while
 remaining backend-only. First word, Space closure, Tab accept, Backspace, and
 application-specific delete profiles require live verification.
 
+The shared live completion gate now exports a typed `authority_order` with
+every admitted L2 candidate. IBus preserves that order through its preedit
+adapter; it cannot re-sort those candidates using the reduced UI confidence.
+Phrase-only display proposals remain after the shared lattice. This closes the
+ranking-owner split, but live application parity remains a release gate:
+Firefox, Telegram and WeChat still require focused interaction verification
+before any claim that P4 is fully PASS.
+
 ### P5: latency tail
 
 Eliminate lazy heavy construction from the input path. Keep all candidate
