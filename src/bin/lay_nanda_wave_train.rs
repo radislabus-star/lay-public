@@ -216,6 +216,12 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    if args
+        .iter()
+        .any(|arg| arg == "--export-generated-russian-forms")
+    {
+        return run_export_generated_russian_forms(&args);
+    }
     if args.iter().any(|arg| arg == "--compile-lexical-phase") {
         return run_lexical_phase_compile(&args);
     }
