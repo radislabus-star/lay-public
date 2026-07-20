@@ -7,10 +7,12 @@ use super::super::phase_field::{dequantize, quantize, PhaseCell, PhaseCenter};
 use super::{
     ContextCandidateProfile, ContextPairPhaseProfile, ContextPhasePackage, TokenSemanticState,
     CELLS, MAGIC, MAX_HARD_PAIR_CENTERS_PER_BANK, MAX_PAIR_CENTERS_PER_BANK, MAX_PAIR_PROFILES,
+    MAX_SIGNATURE_PROFILES,
 };
 
-const VERSION: u16 = 3;
-const HEADER_BYTES: usize = 48;
+const VERSION: u16 = 4;
+const HEADER_BYTES_V1_TO_V3: usize = 48;
+const HEADER_BYTES_V4: usize = 52;
 const SEMANTIC_HEADER_BYTES: usize = 16;
 const PROFILE_HEADER_BYTES_V1: usize = 24;
 const PROFILE_HEADER_BYTES_V2: usize = 28;
@@ -31,7 +33,7 @@ pub(crate) fn write_package(path: &Path, package: &ContextPhasePackage) -> io::R
 
 fn encode_package(package: &ContextPhasePackage) -> Vec<u8> {
     let mut bytes = Vec::with_capacity(
-        HEADER_BYTES
+        HEADER_BYTES_V4
             + package.semantic_states.len() * (SEMANTIC_HEADER_BYTES + VECTOR_BYTES)
             + package
                 .profiles
@@ -55,6 +57,11 @@ fn encode_package(package: &ContextPhasePackage) -> Vec<u8> {
                             + pair.hard_high_wins.len())
                             * (CENTER_HEADER_BYTES + VECTOR_BYTES)
                 })
+                .sum::<usize>()
+            + package
+                .signature_profiles
+                .iter()
+                .map(profile_encoded_bytes)
                 .sum::<usize>(),
     );
     bytes.extend_from_slice(MAGIC);
@@ -68,7 +75,8 @@ fn encode_package(package: &ContextPhasePackage) -> Vec<u8> {
     bytes.extend_from_slice(&package.competition_threshold_micro.to_le_bytes());
     bytes.extend_from_slice(&(package.pair_profiles.len() as u32).to_le_bytes());
     bytes.extend_from_slice(&package.pairwise_threshold_micro.to_le_bytes());
-    debug_assert_eq!(bytes.len(), HEADER_BYTES);
+    bytes.extend_from_slice(&(package.signature_profiles.len() as u32).to_le_bytes());
+    debug_assert_eq!(bytes.len(), HEADER_BYTES_V4);
 
     for state in &package.semantic_states {
         bytes.extend_from_slice(&state.token_hash.to_le_bytes());
@@ -81,6 +89,9 @@ fn encode_package(package: &ContextPhasePackage) -> Vec<u8> {
     }
     for pair in &package.pair_profiles {
         write_pair_profile(&mut bytes, pair);
+    }
+    for profile in &package.signature_profiles {
+        write_profile(&mut bytes, profile);
     }
     bytes
 }
@@ -136,6 +147,12 @@ fn write_profile(bytes: &mut Vec<u8>, profile: &ContextCandidateProfile) {
     }
 }
 
+fn profile_encoded_bytes(profile: &ContextCandidateProfile) -> usize {
+    PROFILE_HEADER_BYTES_V2
+        + (profile.positive.len() + profile.negative.len() + profile.hard_negative.len())
+            * (CENTER_HEADER_BYTES + VECTOR_BYTES)
+}
+
 pub(crate) fn read_package(path: &Path) -> io::Result<ContextPhasePackage> {
     decode_package_owned(fs::read(path)?.into())
 }
@@ -147,7 +164,7 @@ fn decode_package(bytes: &[u8]) -> io::Result<ContextPhasePackage> {
 
 fn decode_package_owned(backing: Arc<[u8]>) -> io::Result<ContextPhasePackage> {
     let bytes = backing.as_ref();
-    if bytes.len() < HEADER_BYTES || &bytes[..8] != MAGIC {
+    if bytes.len() < HEADER_BYTES_V1_TO_V3 || &bytes[..8] != MAGIC {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
             "invalid L3 context phase package magic",
@@ -177,12 +194,27 @@ fn decode_package_owned(backing: Arc<[u8]>) -> io::Result<ContextPhasePackage> {
     } else {
         0
     };
-    let mut offset = HEADER_BYTES;
+    let signature_profile_count = if version >= 4 {
+        read_u32(bytes, 48)? as usize
+    } else {
+        0
+    };
+    let mut offset = if version >= 4 {
+        HEADER_BYTES_V4
+    } else {
+        HEADER_BYTES_V1_TO_V3
+    };
 
     if pair_profile_count > MAX_PAIR_PROFILES {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
             "L3 context phase package exceeds pair profile budget",
+        ));
+    }
+    if signature_profile_count > MAX_SIGNATURE_PROFILES {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "L3 context phase package exceeds signature profile budget",
         ));
     }
 
@@ -230,6 +262,25 @@ fn decode_package_owned(backing: Arc<[u8]>) -> io::Result<ContextPhasePackage> {
         previous_pair = Some(key);
         pair_profiles.push(pair);
     }
+    let mut signature_profiles = Vec::with_capacity(signature_profile_count);
+    let mut previous_signature = None;
+    for _ in 0..signature_profile_count {
+        let profile = read_profile(
+            bytes,
+            Arc::clone(&backing),
+            &mut offset,
+            version,
+            PROFILE_HEADER_BYTES_V2,
+        )?;
+        if previous_signature.is_some_and(|previous| previous >= profile.token_hash) {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "invalid L3 signature profile key",
+            ));
+        }
+        previous_signature = Some(profile.token_hash);
+        signature_profiles.push(profile);
+    }
     if offset != bytes.len() {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
@@ -238,9 +289,11 @@ fn decode_package_owned(backing: Arc<[u8]>) -> io::Result<ContextPhasePackage> {
     }
     semantic_states.sort_by_key(|state| state.token_hash);
     profiles.sort_by_key(|profile| profile.token_hash);
+    signature_profiles.sort_by_key(|profile| profile.token_hash);
     Ok(ContextPhasePackage {
         semantic_states,
         profiles,
+        signature_profiles,
         pair_profiles,
         transitions,
         corpus_fragments,
@@ -426,6 +479,18 @@ mod tests {
                 center: vec![PhaseCell { re: 1.0, im: 0.0 }; CELLS],
             }],
             profiles: vec![profile],
+            signature_profiles: vec![ContextCandidateProfile {
+                token_hash: 99,
+                positive_examples: 3,
+                negative_examples: 0,
+                threshold_micro: 20_000,
+                positive: vec![PhaseCenter::from_center(
+                    vec![PhaseCell { re: 0.0, im: 1.0 }; CELLS],
+                    3,
+                )],
+                negative: Vec::new(),
+                hard_negative: Vec::new(),
+            }],
             pair_profiles: vec![ContextPairPhaseProfile {
                 low_hash: 17,
                 high_hash: 23,
@@ -457,6 +522,8 @@ mod tests {
 
         assert_eq!(decoded.semantic_states.len(), 1);
         assert_eq!(decoded.profiles.len(), 1);
+        assert_eq!(decoded.signature_profiles.len(), 1);
+        assert_eq!(decoded.signature_profiles[0].token_hash, 99);
         assert_eq!(decoded.profiles[0].hard_negative.len(), 1);
         assert_eq!(decoded.pair_profiles.len(), 1);
         assert_eq!(decoded.pair_profiles[0].low_hash, 17);
@@ -486,6 +553,7 @@ mod tests {
         let mut bytes = encode_package(&package);
         bytes[8..10].copy_from_slice(&2_u16.to_le_bytes());
         bytes[40..48].fill(0);
+        bytes.drain(48..52);
 
         let decoded = decode_package(&bytes).unwrap();
         assert_eq!(decoded.profiles.len(), 1);

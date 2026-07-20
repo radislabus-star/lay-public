@@ -11,7 +11,7 @@ bounded token stream
 -> cold learned surface-transition field
 -> hash token IDs immediately
 -> stable L2 semantic anchors
--> candidate relation wave
+-> candidate relation wave + L2-state signature scene wave
 -> independent positive / negative / hard-negative banks
 -> learned pairwise L2 lattice field
 -> bounded subcenter split
@@ -142,6 +142,33 @@ second coherent profile scene
 Frequency is strictly an admission witness. It never contributes to candidate
 ranking, cannot create `Support`, and cannot override phase competition.
 
+## Signature Transfer Field (V4)
+
+Exact word hashes are useful for candidate authority but cannot by themselves
+transfer a learned context relation to another lexical form. V4 adds a bounded
+profile keyed by `candidate_l2_signature()`: a lossy projection of L2 center
+coverage, motif support, residual pressure and compact L1 surface spectrum.
+The package stores the signature hash and phase centers only, never a word.
+
+```text
+L2 candidate center signature + context-only scene wave
+-> signature phase profile
+-> may strengthen an already settled exact lexical profile
+-> cannot create Support by itself
+```
+
+The signature center receives a context-only vector. Candidate identity is
+already present in the signature key, so feeding a candidate-rotated vector
+would secretly turn transfer memory back into an exact-word table. Runtime
+requires both the lexical center and signature center to have support at least
+two before the signature can affect the positive phase. `NoSignatureProfile`
+is a mandatory heldout ablation.
+
+The first 10k cold proof after this correction was neutral: full and
+NoSignature each had 149 correct top-1 and 12 false top-1. This is a safe
+`WATCH`, not a promotion: V4 must reduce false top-1 with zero regressions on
+the larger heldout corpus before it can be published.
+
 ## Pairwise Lattice Field (V3)
 
 Unary centers answer only: "where has this candidate appeared before?" They
@@ -169,9 +196,10 @@ both candidates. A hard pair center becomes destructive only after the same
 false-winner phase mode repeats; it can suppress but never create `Support`:
 unary readiness remains mandatory.
 
-The serialized v3 package keeps the existing header size and adds a pair count
-and threshold. V1/V2 load with an empty pair field. Decoder validation rejects
-unsorted keys, duplicate keys, oversized banks and trailing bytes.
+The serialized v4 package keeps V1-V3 compatibility and adds a bounded
+signature-profile count after the V3 header. Older packages load with an empty
+signature field. Decoder validation rejects unsorted keys, duplicate keys,
+oversized banks and trailing bytes.
 
 When an exact `PairKey` is unknown, V3 may consult a generalized relation key
 derived from the existing L2 surface-state readout: center coverage, motif

@@ -13,6 +13,7 @@ use super::{
     ContextPhaseMode, ContextPhasePackage, PairKey, SurfaceMutationField, TokenSemanticState,
     CELLS, MAX_CONTEXT_TOKENS, MAX_EXACT_PAIR_PROFILES, MAX_HARD_PAIR_CENTERS_PER_BANK,
     MAX_PAIR_CENTERS_PER_BANK, MAX_PAIR_PROFILES, MAX_RELATION_PAIR_PROFILES,
+    MAX_SIGNATURE_PROFILES,
 };
 
 const MAX_POSITIVE_CENTERS: usize = 8;
@@ -418,6 +419,7 @@ pub(super) struct OnlineContextPhaseLearner {
     config: OnlineContextPhaseConfig,
     semantic: HashMap<u64, SemanticBuilder>,
     profiles: HashMap<u64, ProfileBuilder>,
+    signature_profiles: HashMap<u64, ProfileBuilder>,
     pair_profiles: HashMap<PairKey, PairProfileBuilder>,
     pair_frequency: BoundedFrequencySketch,
     exact_pair_profiles: usize,
@@ -452,6 +454,7 @@ impl OnlineContextPhaseLearner {
             config,
             semantic: HashMap::new(),
             profiles: HashMap::new(),
+            signature_profiles: HashMap::new(),
             pair_profiles: HashMap::new(),
             pair_frequency: BoundedFrequencySketch::new(),
             exact_pair_profiles: 0,
@@ -597,6 +600,11 @@ impl OnlineContextPhaseLearner {
             target_hash ^ self.stats.transitions.rotate_left(17),
         );
         let scene = self.relation_vector(&context_hashes, 0);
+        // The signature key already carries the candidate's L2 state. Its
+        // center must therefore encode only the surrounding scene; adding a
+        // lexical target rotation here would make the alleged transfer field
+        // another exact-word memory in disguise.
+        self.update_signature_positive(target_signature, &scene);
         for (hash, signature, _) in &observations {
             self.update_pair_winner(target_hash, *hash, &scene, false);
             self.update_pair_relation(target_hash, target_signature, *hash, *signature, &scene);
@@ -782,6 +790,21 @@ impl OnlineContextPhaseLearner {
             })
             .collect::<Vec<_>>();
         profiles.sort_by_key(|profile| profile.token_hash);
+        let mut signature_profiles = self
+            .signature_profiles
+            .iter()
+            .filter(|(_, builder)| builder.positive_examples >= self.config.min_profile_support)
+            .map(|(signature, builder)| ContextCandidateProfile {
+                token_hash: *signature,
+                positive_examples: builder.positive_examples,
+                negative_examples: 0,
+                threshold_micro: builder.threshold_micro(),
+                positive: builder.positive.clone(),
+                negative: Vec::new(),
+                hard_negative: Vec::new(),
+            })
+            .collect::<Vec<_>>();
+        signature_profiles.sort_by_key(|profile| profile.token_hash);
         let mut pair_profiles = self
             .pair_profiles
             .iter()
@@ -825,6 +848,7 @@ impl OnlineContextPhaseLearner {
         ContextPhasePackage {
             semantic_states,
             profiles,
+            signature_profiles,
             pair_profiles,
             transitions: self.stats.transitions,
             corpus_fragments: self.stats.fragments.min(u64::from(u32::MAX)) as u32,
@@ -902,6 +926,7 @@ impl OnlineContextPhaseLearner {
         let centers =
             self.phase_center_count() as u64 * u64::from((CELLS * 2) as u32) * phase_cell_bytes;
         let profiles = self.profiles.len() as u64 * 384;
+        let signature_profiles = self.signature_profiles.len() as u64 * 320;
         let pairs = self.pair_profile_count() as u64 * 128
             + self.pair_center_count() as u64 * u64::from((CELLS * 2) as u32) * phase_cell_bytes;
         let pending_negative = self.pending_negative.len() as u64 * 96;
@@ -919,6 +944,7 @@ impl OnlineContextPhaseLearner {
         semantic
             .saturating_add(centers)
             .saturating_add(profiles)
+            .saturating_add(signature_profiles)
             .saturating_add(pairs)
             .saturating_add(pending_negative)
             .saturating_add(admission)
@@ -959,6 +985,48 @@ impl OnlineContextPhaseLearner {
         self.profiles.insert(token_hash, profile);
         self.provisional_profile_order.push_back(token_hash);
         true
+    }
+
+    /// Trains context geometry for a compact L2 state, not a word identity.
+    /// The hot reader may use this only to strengthen an existing exact
+    /// profile, so this bank cannot invent lexical authority by itself.
+    fn update_signature_positive(&mut self, signature: u64, vector: &[PhaseCell]) {
+        if !self.signature_profiles.contains_key(&signature)
+            && self.signature_profiles.len() >= MAX_SIGNATURE_PROFILES
+        {
+            return;
+        }
+        let profile = self
+            .signature_profiles
+            .entry(signature)
+            .or_insert_with(ProfileBuilder::new);
+        let outcome = update_bounded_cluster(
+            &mut profile.positive,
+            vector,
+            MAX_POSITIVE_CENTERS,
+            &mut self.positive_phase_centers,
+            self.config.max_positive_phase_centers,
+        );
+        match outcome {
+            ClusterUpdate::Reinforced => {
+                self.stats.positive_reinforcements =
+                    self.stats.positive_reinforcements.saturating_add(1)
+            }
+            ClusterUpdate::Split => {
+                self.stats.positive_splits = self.stats.positive_splits.saturating_add(1)
+            }
+            ClusterUpdate::RejectedAtCapacity => {
+                self.stats.rejected_incompatible_modes =
+                    self.stats.rejected_incompatible_modes.saturating_add(1);
+                return;
+            }
+        }
+        profile.positive_examples = profile.positive_examples.saturating_add(1);
+        let margin = phase_micro(max_coherence(vector, &profile.positive).unwrap_or_default());
+        profile.positive_calibration.observe(
+            micro_i32(margin),
+            signature ^ self.stats.transitions.rotate_left(5),
+        );
     }
 
     fn evict_provisional_profile(&mut self) -> bool {

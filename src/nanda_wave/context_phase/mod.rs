@@ -46,6 +46,10 @@ const MAX_PAIR_CANDIDATES: usize = 8;
 pub(super) const MAX_EXACT_PAIR_PROFILES: usize = 65_536;
 pub(super) const MAX_RELATION_PAIR_PROFILES: usize = 16_384;
 pub(crate) const MAX_PAIR_PROFILES: usize = MAX_EXACT_PAIR_PROFILES + MAX_RELATION_PAIR_PROFILES;
+/// Signature profiles are compact L2-center classes, not lexical entries.
+/// They let L3 transfer context evidence across words with the same observed
+/// surface state while keeping exact word profiles as the only support owner.
+pub(crate) const MAX_SIGNATURE_PROFILES: usize = 16_384;
 pub(crate) const MAX_PAIR_CENTERS_PER_BANK: usize = 1;
 pub(crate) const MAX_HARD_PAIR_CENTERS_PER_BANK: usize = 1;
 const PAIR_CENTER_SPLIT_COHERENCE: f32 = 0.76;
@@ -182,6 +186,7 @@ impl PairwiseDominance {
 pub(crate) struct ContextPhasePackage {
     pub(crate) semantic_states: Vec<TokenSemanticState>,
     pub(crate) profiles: Vec<ContextCandidateProfile>,
+    pub(crate) signature_profiles: Vec<ContextCandidateProfile>,
     pub(crate) pair_profiles: Vec<ContextPairPhaseProfile>,
     pub(crate) transitions: u64,
     pub(crate) corpus_fragments: u32,
@@ -216,6 +221,9 @@ pub(crate) struct ContextPhaseReadout {
     pub(crate) positive_center_support: u32,
     pub(crate) anti_center_support: u32,
     pub(crate) semantic_support: u32,
+    pub(crate) signature_profile_present: bool,
+    pub(crate) signature_positive_micro: i64,
+    pub(crate) signature_center_support: u32,
     pub(crate) relation_class: u64,
     pub(crate) context_tokens: u16,
     pub(crate) context_known_tokens: u16,
@@ -233,6 +241,7 @@ pub(crate) enum ContextPhaseMode {
     NoPhase,
     NoAnti,
     NoSemanticState,
+    NoSignatureProfile,
     NoPairwise,
     NoHardPairwise,
     ShuffledPairDirection,
@@ -250,6 +259,10 @@ impl ContextPhaseMode {
             self,
             Self::NoPhase | Self::NoPairwise | Self::NoHardPairwise | Self::NoAnti
         )
+    }
+
+    fn signature_profile_enabled(self) -> bool {
+        !matches!(self, Self::NoPhase | Self::NoSignatureProfile)
     }
 }
 
@@ -276,10 +289,16 @@ impl ContextPhasePackage {
         let surface_count = u32::try_from(shards.len()).unwrap_or(u32::MAX);
         let required = min_surface_support.clamp(1, surface_count.max(1));
         let mut profile_surfaces = std::collections::BTreeMap::<u64, u32>::new();
+        let mut signature_profile_surfaces = std::collections::BTreeMap::<u64, u32>::new();
         let mut pair_surfaces = std::collections::BTreeMap::<(u64, u64), u32>::new();
         for shard in &shards {
             for profile in &shard.profiles {
                 *profile_surfaces.entry(profile.token_hash).or_default() += 1;
+            }
+            for profile in &shard.signature_profiles {
+                *signature_profile_surfaces
+                    .entry(profile.token_hash)
+                    .or_default() += 1;
             }
             for pair in &shard.pair_profiles {
                 *pair_surfaces
@@ -339,6 +358,13 @@ impl ContextPhasePackage {
                     merged.profiles.push(profile);
                 }
             }
+            for profile in shard.signature_profiles {
+                merge_candidate_profile(
+                    &mut merged.signature_profiles,
+                    profile,
+                    MAX_SIGNATURE_PROFILES,
+                );
+            }
             for pair in shard.pair_profiles {
                 if let Some(existing) = merged.pair_profiles.iter_mut().find(|value| {
                     value.low_hash == pair.low_hash && value.high_hash == pair.high_hash
@@ -396,6 +422,9 @@ impl ContextPhasePackage {
         merged.semantic_states.sort_by_key(|value| value.token_hash);
         merged.profiles.sort_by_key(|value| value.token_hash);
         merged
+            .signature_profiles
+            .sort_by_key(|value| value.token_hash);
+        merged
             .pair_profiles
             .sort_by_key(|value| (value.low_hash, value.high_hash));
         let profiles_before_consensus = merged.profiles.len();
@@ -415,6 +444,13 @@ impl ContextPhasePackage {
                     .unwrap_or_default()
                     >= required
             });
+            merged.signature_profiles.retain(|profile| {
+                signature_profile_surfaces
+                    .get(&profile.token_hash)
+                    .copied()
+                    .unwrap_or_default()
+                    >= required
+            });
         }
         let report = SurfaceConsensusMergeReport {
             surface_count,
@@ -427,7 +463,7 @@ impl ContextPhasePackage {
         (merged, report)
     }
     pub(crate) fn is_empty(&self) -> bool {
-        self.profiles.is_empty()
+        self.profiles.is_empty() && self.signature_profiles.is_empty()
     }
 
     pub(crate) fn pair_profile_counts(&self) -> (usize, usize) {
@@ -459,11 +495,12 @@ impl ContextPhasePackage {
         if self.is_empty() || context_tokens.is_empty() {
             return vec![ContextPhaseReadout::default(); candidates.len()];
         }
+        let scene = self.context_vector(context_tokens, mode);
         let mut readouts = candidates
             .iter()
             .map(|candidate| {
                 let vector = self.candidate_relation_vector(context_tokens, candidate, mode);
-                self.raw_readout(&vector, candidate, mode)
+                self.raw_readout(&vector, &scene, candidate, mode)
             })
             .collect::<Vec<_>>();
         let context_known_tokens =
@@ -477,7 +514,6 @@ impl ContextPhasePackage {
         let pairwise = if self.pair_profiles.is_empty() || !mode.pairwise_enabled() {
             PairwiseDominance::default()
         } else {
-            let scene = self.context_vector(context_tokens, mode);
             let mut pair_candidates = std::collections::BTreeMap::<u64, (i64, u64)>::new();
             for (candidate, readout) in candidates.iter().zip(&readouts) {
                 let hash = candidate_token_hash(candidate);
@@ -808,17 +844,27 @@ impl ContextPhasePackage {
     fn raw_readout(
         &self,
         vector: &[PhaseCell],
+        scene: &[PhaseCell],
         candidate: &str,
         mode: ContextPhaseMode,
     ) -> ContextPhaseReadout {
         let token = crate::word_reader::last_text_word(candidate).unwrap_or_default();
         let token_hash = hash_text(&token.to_lowercase());
-        let Some(profile) = self.profile(token_hash) else {
+        let exact_profile = self.profile(token_hash);
+        let signature_profile = mode
+            .signature_profile_enabled()
+            .then(|| self.signature_profile(candidate_l2_signature(candidate)))
+            .flatten();
+        let Some(profile) = exact_profile else {
             return ContextPhaseReadout {
                 package_loaded: true,
+                signature_profile_present: signature_profile.is_some(),
                 ..ContextPhaseReadout::default()
             };
         };
+        let signature_positive = signature_profile
+            .and_then(|profile| strongest_center(scene, &profile.positive))
+            .unwrap_or_default();
         if mode == ContextPhaseMode::NoPhase {
             return ContextPhaseReadout {
                 package_loaded: true,
@@ -836,12 +882,30 @@ impl ContextPhasePackage {
                     .semantic_state(token_hash)
                     .map(|state| state.support)
                     .unwrap_or_default(),
+                signature_profile_present: signature_profile.is_some(),
+                signature_positive_micro: phase_micro(signature_positive.0),
+                signature_center_support: signature_positive.1,
                 relation_class: relation_class(token_hash, 0),
                 ..ContextPhaseReadout::default()
             };
         }
-        let (positive, positive_center_support) =
+        let (exact_positive, exact_positive_center_support) =
             strongest_center(vector, &profile.positive).unwrap_or_default();
+        // A signature is a transfer witness from the L2 center field. It may
+        // strengthen an existing lexical profile, but cannot create Support
+        // for an unseen lexical candidate on its own.
+        // Transfer is admissible only where both the lexical center and its
+        // L2-state center have independently settled. A provisional center
+        // may be useful during cold learning, but must not redirect live
+        // competition through an unproven cross-word resemblance.
+        let signature_can_reinforce =
+            exact_positive_center_support >= 2 && signature_positive.1 >= 2;
+        let (positive, positive_center_support) =
+            if signature_can_reinforce && signature_positive.0 > exact_positive {
+                signature_positive
+            } else {
+                (exact_positive, exact_positive_center_support)
+            };
         let (anti, anti_center_support) = if mode == ContextPhaseMode::NoAnti {
             (0.0, 0)
         } else {
@@ -877,6 +941,9 @@ impl ContextPhasePackage {
                 .semantic_state(token_hash)
                 .map(|state| state.support)
                 .unwrap_or_default(),
+            signature_profile_present: signature_profile.is_some(),
+            signature_positive_micro: phase_micro(signature_positive.0),
+            signature_center_support: signature_positive.1,
             relation_class: relation_class(token_hash, margin_micro),
             context_tokens: 0,
             context_known_tokens: 0,
@@ -941,6 +1008,13 @@ impl ContextPhasePackage {
             .and_then(|index| self.profiles.get(index))
     }
 
+    fn signature_profile(&self, signature: u64) -> Option<&ContextCandidateProfile> {
+        self.signature_profiles
+            .binary_search_by_key(&signature, |profile| profile.token_hash)
+            .ok()
+            .and_then(|index| self.signature_profiles.get(index))
+    }
+
     fn pair_profile(&self, key: PairKey) -> Option<&ContextPairPhaseProfile> {
         self.pair_profiles
             .binary_search_by_key(&(key.low_hash, key.high_hash), |profile| {
@@ -999,6 +1073,30 @@ where
         }
     }
     phase_center_from_sum(&vector)
+}
+
+fn merge_candidate_profile(
+    target: &mut Vec<ContextCandidateProfile>,
+    incoming: ContextCandidateProfile,
+    limit: usize,
+) {
+    if let Some(existing) = target
+        .iter_mut()
+        .find(|profile| profile.token_hash == incoming.token_hash)
+    {
+        existing.positive_examples = existing
+            .positive_examples
+            .saturating_add(incoming.positive_examples);
+        existing.negative_examples = existing
+            .negative_examples
+            .saturating_add(incoming.negative_examples);
+        existing.threshold_micro = existing.threshold_micro.max(incoming.threshold_micro);
+        existing.positive.extend(incoming.positive);
+        existing.negative.extend(incoming.negative);
+        existing.hard_negative.extend(incoming.hard_negative);
+    } else if target.len() < limit {
+        target.push(incoming);
+    }
 }
 
 fn merge_pair_bank(target: &mut Vec<PhaseCenter>, incoming: Vec<PhaseCenter>, max_centers: usize) {

@@ -65,6 +65,11 @@ pub(crate) struct ContextPhaseProofReport {
     pub(crate) no_anti_false_supports: usize,
     pub(crate) no_anti_false_top1: usize,
     pub(crate) no_semantic_top1: usize,
+    pub(crate) no_signature_top1: usize,
+    pub(crate) no_signature_false_top1: usize,
+    pub(crate) signature_improved_cases: usize,
+    pub(crate) signature_worsened_cases: usize,
+    pub(crate) signature_assisted_top1: usize,
     pub(crate) no_pairwise_top1: usize,
     pub(crate) no_pairwise_false_top1: usize,
     pub(crate) no_hard_pairwise_top1: usize,
@@ -98,6 +103,8 @@ pub(crate) struct ContextPhaseProofReport {
     pub(crate) anti_false_support_reduction: usize,
     pub(crate) anti_false_top1_reduction: usize,
     pub(crate) semantic_ablation_drop: usize,
+    pub(crate) signature_ablation_drop: usize,
+    pub(crate) signature_false_top1_reduction: usize,
     pub(crate) pairwise_ablation_drop: usize,
     pub(crate) pairwise_false_top1_reduction: usize,
     pub(crate) hard_pairwise_ablation_drop: usize,
@@ -153,6 +160,11 @@ struct ProofTotals {
     no_anti_false_supports: usize,
     no_anti_false_top1: usize,
     no_semantic_top1: usize,
+    no_signature_top1: usize,
+    no_signature_false_top1: usize,
+    signature_improved_cases: usize,
+    signature_worsened_cases: usize,
+    signature_assisted_top1: usize,
     no_pairwise_top1: usize,
     no_pairwise_false_top1: usize,
     no_hard_pairwise_top1: usize,
@@ -225,6 +237,11 @@ impl ProofTotals {
         self.no_anti_false_supports += other.no_anti_false_supports;
         self.no_anti_false_top1 += other.no_anti_false_top1;
         self.no_semantic_top1 += other.no_semantic_top1;
+        self.no_signature_top1 += other.no_signature_top1;
+        self.no_signature_false_top1 += other.no_signature_false_top1;
+        self.signature_improved_cases += other.signature_improved_cases;
+        self.signature_worsened_cases += other.signature_worsened_cases;
+        self.signature_assisted_top1 += other.signature_assisted_top1;
         self.no_pairwise_top1 += other.no_pairwise_top1;
         self.no_pairwise_false_top1 += other.no_pairwise_false_top1;
         self.no_hard_pairwise_top1 += other.no_hard_pairwise_top1;
@@ -520,6 +537,10 @@ fn evaluate_fragment(
             .filter(|readout| readout.pairwise_certified)
             .count();
         totals.full_top1 += full_correct as usize;
+        totals.signature_assisted_top1 += (full_correct
+            && full[0].signature_profile_present
+            && full[0].signature_positive_micro >= full[0].positive_micro)
+            as usize;
         if full_correct {
             if full[0].positive_center_support < 2 {
                 totals.full_top1_provisional_positive += 1;
@@ -569,6 +590,17 @@ fn evaluate_fragment(
             ContextPhaseMode::NoSemanticState,
         );
         totals.no_semantic_top1 += correct_is_unique_top(&no_semantic) as usize;
+
+        let no_signature = package.score_candidates_with_mode(
+            &tokens[..index],
+            &candidates,
+            ContextPhaseMode::NoSignatureProfile,
+        );
+        let no_signature_correct = correct_is_unique_top(&no_signature);
+        totals.no_signature_top1 += no_signature_correct as usize;
+        totals.no_signature_false_top1 += false_candidate_wins(&no_signature) as usize;
+        totals.signature_improved_cases += (full_correct && !no_signature_correct) as usize;
+        totals.signature_worsened_cases += (!full_correct && no_signature_correct) as usize;
 
         let no_pairwise = package.score_candidates_with_mode(
             &tokens[..index],
@@ -720,6 +752,10 @@ fn report_from_totals(
         .no_anti_false_top1
         .saturating_sub(totals.full_false_top1);
     let semantic_ablation_drop = totals.full_top1.saturating_sub(totals.no_semantic_top1);
+    let signature_ablation_drop = totals.full_top1.saturating_sub(totals.no_signature_top1);
+    let signature_false_top1_reduction = totals
+        .no_signature_false_top1
+        .saturating_sub(totals.full_false_top1);
     let pairwise_ablation_drop = totals.full_top1.saturating_sub(totals.no_pairwise_top1);
     let pairwise_false_top1_reduction = totals
         .no_pairwise_false_top1
@@ -751,7 +787,7 @@ fn report_from_totals(
     let verdict = promotion_verdict(&totals, global_support_coverage_ppm);
     ContextPhaseProofReport {
         kind: "l3_context_phase_heldout_proof",
-        architecture: "online_relation_phase_v3_pairwise_lattice",
+        architecture: "online_relation_phase_v4_signature_pairwise_lattice",
         train_passes,
         heldout_passes: 1,
         train_fragments,
@@ -795,6 +831,11 @@ fn report_from_totals(
         no_anti_false_supports: totals.no_anti_false_supports,
         no_anti_false_top1: totals.no_anti_false_top1,
         no_semantic_top1: totals.no_semantic_top1,
+        no_signature_top1: totals.no_signature_top1,
+        no_signature_false_top1: totals.no_signature_false_top1,
+        signature_improved_cases: totals.signature_improved_cases,
+        signature_worsened_cases: totals.signature_worsened_cases,
+        signature_assisted_top1: totals.signature_assisted_top1,
         no_pairwise_top1: totals.no_pairwise_top1,
         no_pairwise_false_top1: totals.no_pairwise_false_top1,
         no_hard_pairwise_top1: totals.no_hard_pairwise_top1,
@@ -828,6 +869,8 @@ fn report_from_totals(
         anti_false_support_reduction,
         anti_false_top1_reduction,
         semantic_ablation_drop,
+        signature_ablation_drop,
+        signature_false_top1_reduction,
         pairwise_ablation_drop,
         pairwise_false_top1_reduction,
         hard_pairwise_ablation_drop,

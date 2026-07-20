@@ -401,20 +401,81 @@ fn generic_competitor_negative_cannot_become_a_unary_veto() {
         ..ContextPhasePackage::default()
     };
 
-    let generic_only = package.raw_readout(&vector, token, ContextPhaseMode::Full);
+    let generic_only = package.raw_readout(&vector, &vector, token, ContextPhaseMode::Full);
     assert_eq!(generic_only.anti_micro, 0);
     assert!(generic_only.margin_micro > 0);
 
     package.profiles[0]
         .hard_negative
         .push(PhaseCenter::from_center(vector.clone(), 1));
-    let false_winner = package.raw_readout(&vector, token, ContextPhaseMode::Full);
+    let false_winner = package.raw_readout(&vector, &vector, token, ContextPhaseMode::Full);
     assert!(false_winner.anti_micro > 0);
     assert_eq!(
         package
-            .raw_readout(&vector, token, ContextPhaseMode::NoAnti)
+            .raw_readout(&vector, &vector, token, ContextPhaseMode::NoAnti)
             .anti_micro,
         0
+    );
+}
+
+#[test]
+fn signature_profile_strengthens_exact_profile_without_becoming_authority() {
+    let token = "дождь";
+    let token_hash = hash_text(token);
+    let signature = candidate_l2_signature(token);
+    let exact_vector = vec![PhaseCell { re: 1.0, im: 0.0 }; CELLS];
+    let signature_vector = vec![PhaseCell { re: 0.0, im: 1.0 }; CELLS];
+    let package = ContextPhasePackage {
+        profiles: vec![ContextCandidateProfile {
+            token_hash,
+            positive_examples: 2,
+            negative_examples: 0,
+            threshold_micro: 0,
+            positive: vec![PhaseCenter::from_center(exact_vector, 2)],
+            negative: Vec::new(),
+            hard_negative: Vec::new(),
+        }],
+        signature_profiles: vec![ContextCandidateProfile {
+            token_hash: signature,
+            positive_examples: 2,
+            negative_examples: 0,
+            threshold_micro: 0,
+            positive: vec![PhaseCenter::from_center(signature_vector.clone(), 2)],
+            negative: Vec::new(),
+            hard_negative: Vec::new(),
+        }],
+        ..ContextPhasePackage::default()
+    };
+
+    let full = package.raw_readout(
+        &signature_vector,
+        &signature_vector,
+        token,
+        ContextPhaseMode::Full,
+    );
+    let no_signature = package.raw_readout(
+        &signature_vector,
+        &signature_vector,
+        token,
+        ContextPhaseMode::NoSignatureProfile,
+    );
+    assert!(full.signature_profile_present);
+    assert!(full.margin_micro > no_signature.margin_micro);
+
+    let signature_only = ContextPhasePackage {
+        signature_profiles: package.signature_profiles.clone(),
+        ..ContextPhasePackage::default()
+    }
+    .raw_readout(
+        &signature_vector,
+        &signature_vector,
+        token,
+        ContextPhaseMode::Full,
+    );
+    assert!(!signature_only.profile_present);
+    assert_eq!(
+        signature_only.disposition,
+        ContextPhaseDisposition::Unavailable
     );
 }
 
