@@ -1,7 +1,7 @@
 use crate::nanda_wave::{candidate_gate, llmwave};
 
 pub use crate::nanda_wave::WaveOptions as TypingCpuOptions;
-pub use candidate_gate::{LiveCompletionCandidate, LiveCompletionRequest};
+pub use candidate_gate::{LiveCompletionCandidate, LiveCompletionRequest, LiveCompletionTiming};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct PhraseForecastCandidate {
@@ -17,6 +17,14 @@ impl TypingCpu {
         request: LiveCompletionRequest<'_>,
     ) -> Vec<LiveCompletionCandidate> {
         candidate_gate::live_completion_candidates(request)
+    }
+
+    pub fn clear_last_live_completion_timing() {
+        candidate_gate::clear_last_live_completion_timing();
+    }
+
+    pub fn last_live_completion_timing() -> LiveCompletionTiming {
+        candidate_gate::last_live_completion_timing()
     }
 
     pub fn ime_candidate_memory_is_warm() -> bool {

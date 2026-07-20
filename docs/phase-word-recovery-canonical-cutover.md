@@ -811,6 +811,14 @@ Eliminate lazy heavy construction from the input path. Keep all candidate
 sources and measure generation, decision, deletion, insertion, layout sync,
 and logging independently.
 
+The IBus preedit trace now carries the receipt from its RU shared-candidate
+readout: cache hit, L2 material time, L3 context time and DecisionCore time.
+The receipt is thread-local and contains no typed text. This makes a slow
+preedit event attributable to a real stage before changing any L2/L3 budget.
+The current live evidence points to the RU material path, not L3 or IBus
+output; optimisation remains blocked until a fresh receipt distribution names
+the responsible substage.
+
 ### P6: code boundaries
 
 Split modules only when route evidence proves reduced foreign pull. File size

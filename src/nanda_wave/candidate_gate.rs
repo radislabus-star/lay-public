@@ -10,6 +10,7 @@ use super::l4_signed_memory::l4_signed_memory_signal_from_readout;
 use crate::keyboard::is_cyrillic_letter;
 use crate::typing_transition::decision::TransitionDecisionCore;
 use crate::typing_transition::live_candidate::LiveCompletionProposal;
+use std::cell::Cell;
 use std::collections::VecDeque;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Mutex, OnceLock};
@@ -41,6 +42,32 @@ pub struct LiveCompletionCandidate {
     pub score: f32,
     pub source: &'static str,
     rank_score: f32,
+}
+
+/// Per-call hot-path receipt. It is thread-local because adapters need to
+/// attribute their own readout without racing concurrent daemon diagnostics.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct LiveCompletionTiming {
+    pub recorded: bool,
+    pub cache_hit: bool,
+    pub total_us: u64,
+    pub l2_material_us: u64,
+    pub l3_context_us: u64,
+    pub decision_us: u64,
+    pub returned_candidates: u64,
+}
+
+thread_local! {
+    static LAST_LIVE_COMPLETION_TIMING: Cell<LiveCompletionTiming> =
+        Cell::new(LiveCompletionTiming::default());
+}
+
+pub fn clear_last_live_completion_timing() {
+    LAST_LIVE_COMPLETION_TIMING.with(|slot| slot.set(LiveCompletionTiming::default()));
+}
+
+pub fn last_live_completion_timing() -> LiveCompletionTiming {
+    LAST_LIVE_COMPLETION_TIMING.with(Cell::get)
 }
 
 pub(crate) fn warm_up_live_candidate_readout() {
@@ -523,6 +550,17 @@ fn live_l3_context_score(
 
 fn record_live_gate_stats(started: Instant, record: LiveGateRecord) {
     let elapsed_us = started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64;
+    LAST_LIVE_COMPLETION_TIMING.with(|slot| {
+        slot.set(LiveCompletionTiming {
+            recorded: true,
+            cache_hit: record.cache_hit,
+            total_us: elapsed_us,
+            l2_material_us: record.l2_material_us,
+            l3_context_us: record.l3_context_us,
+            decision_us: record.decision_us,
+            returned_candidates: record.returned_candidates,
+        });
+    });
     let stats = live_stats();
     stats.requests.fetch_add(1, Ordering::Relaxed);
     stats
@@ -912,14 +950,20 @@ mod tests {
 
     #[test]
     fn live_gate_records_candidate_metrics_without_raw_text() {
+        clear_last_live_completion_timing();
         let before = live_candidate_gate_stats();
         let _ = live_completion_candidates(request("я хочу ", "пров"));
         let after = live_candidate_gate_stats();
+        let timing = last_live_completion_timing();
 
         assert!(after.requests > before.requests);
         assert!(after.raw_candidates >= before.raw_candidates);
         assert!(after.returned_candidates >= before.returned_candidates);
         assert!(after.total_us >= before.total_us);
+        assert!(timing.recorded);
+        assert!(timing.total_us >= timing.l2_material_us);
+        assert!(timing.total_us >= timing.l3_context_us);
+        assert!(timing.total_us >= timing.decision_us);
     }
 
     #[test]

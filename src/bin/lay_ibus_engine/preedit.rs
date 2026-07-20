@@ -3,8 +3,8 @@ use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
 use lay::typing_cpu::{
-    is_command_like_long_tail, preedit_suffix_context_and_word, select_ime_candidate_proposals,
-    ImeCandidateProposal, ImeCandidateReadoutRequest,
+    ImeCandidateProposal, ImeCandidateReadoutRequest, is_command_like_long_tail,
+    preedit_suffix_context_and_word, select_ime_candidate_proposals,
 };
 use lay::word_reader::split_last_alphabetic_token;
 
@@ -356,8 +356,12 @@ impl LayIbusEngine {
         let semantic_us = elapsed_us(semantic_started);
 
         let ru_started = timing_enabled.then(Instant::now);
+        // Capture this adapter's own shared-field receipt before the ASCII
+        // branch performs another live query on the same thread.
+        lay::typing_cpu::TypingCpu::clear_last_live_completion_timing();
         let ru_l2_candidates = self.ru_l2_word_attractor_candidates();
         let ru_us = elapsed_us(ru_started);
+        let ru_timing = lay::typing_cpu::TypingCpu::last_live_completion_timing();
 
         let ascii_started = timing_enabled.then(Instant::now);
         let ascii_candidates = self.preedit_fast.ascii_candidates(
@@ -385,6 +389,10 @@ impl LayIbusEngine {
                 ascii_us,
                 ru_us,
                 semantic_us,
+                ru_timing.cache_hit,
+                ru_timing.l2_material_us,
+                ru_timing.l3_context_us,
+                ru_timing.decision_us,
                 candidates.len(),
                 token,
                 candidates.first().map(|candidate| candidate.display_text()),
