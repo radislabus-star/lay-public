@@ -58,13 +58,40 @@ pub fn compile_l3_context_phase_memory(
     max_fragments: usize,
     min_profile_support: u32,
 ) -> std::io::Result<serde_json::Value> {
-    let corpus_text = std::fs::read_to_string(corpus_path)?;
-    let (package, report) =
-        context_phase::compile_context_phase(context_phase::ContextPhaseCompileInput {
-            corpus_text: &corpus_text,
-            max_fragments,
-            min_profile_support,
-        });
+    compile_l3_context_phase_memory_with_progress(
+        corpus_path,
+        output_path,
+        max_fragments,
+        min_profile_support,
+        0,
+        |_| {},
+    )
+}
+
+pub fn compile_l3_context_phase_memory_with_progress<F>(
+    corpus_path: &std::path::Path,
+    output_path: &std::path::Path,
+    max_fragments: usize,
+    min_profile_support: u32,
+    snapshot_every_fragments: usize,
+    mut progress: F,
+) -> std::io::Result<serde_json::Value>
+where
+    F: FnMut(&serde_json::Value),
+{
+    let corpus = std::fs::File::open(corpus_path)?;
+    let (package, report) = context_phase::compile_context_phase_reader(
+        corpus,
+        max_fragments,
+        min_profile_support,
+        snapshot_every_fragments,
+        |snapshot, report| {
+            context_phase::write_package(output_path, snapshot)?;
+            let value = serde_json::to_value(report).map_err(std::io::Error::other)?;
+            progress(&value);
+            Ok(())
+        },
+    )?;
     context_phase::write_package(output_path, &package)?;
     let mut value = serde_json::to_value(report).map_err(std::io::Error::other)?;
     if let Some(object) = value.as_object_mut() {
@@ -75,6 +102,52 @@ pub fn compile_l3_context_phase_memory(
             serde_json::json!(std::fs::metadata(output_path)
                 .map(|meta| meta.len())
                 .unwrap_or_default()),
+        );
+    }
+    Ok(value)
+}
+
+pub fn merge_l3_context_phase_shards(
+    inputs: &[std::path::PathBuf],
+    output_path: &std::path::Path,
+    min_surface_support: u32,
+) -> std::io::Result<serde_json::Value> {
+    let shards = inputs
+        .iter()
+        .map(|path| context_phase::read_package(path))
+        .collect::<std::io::Result<Vec<_>>>()?;
+    let (package, consensus) =
+        context_phase::ContextPhasePackage::merge_shards_with_min_surface_support(
+            shards,
+            min_surface_support,
+        );
+    context_phase::write_package(output_path, &package)?;
+    Ok(
+        serde_json::json!({"kind":"l3_context_phase_shard_merge","inputs":inputs.len(),"output":output_path,"profiles":package.profiles.len(),"states":package.semantic_states.len(),"consensus":consensus}),
+    )
+}
+
+/// Runs the heldout and ablation proof for an existing package without
+/// rebuilding it from the evaluation corpus.
+pub fn prove_l3_context_phase_package(
+    corpus_path: &std::path::Path,
+    package_path: &std::path::Path,
+    max_fragments: usize,
+    min_profile_support: u32,
+) -> std::io::Result<serde_json::Value> {
+    let report = context_phase::prove_context_phase_package_path(
+        corpus_path,
+        package_path,
+        max_fragments,
+        min_profile_support,
+    )?;
+    let mut value = serde_json::to_value(report).map_err(std::io::Error::other)?;
+    if let Some(object) = value.as_object_mut() {
+        object.insert("corpus".to_string(), serde_json::json!(corpus_path));
+        object.insert("package".to_string(), serde_json::json!(package_path));
+        object.insert(
+            "read_as".to_string(),
+            serde_json::json!("frozen package against separate heldout surface; no training"),
         );
     }
     Ok(value)
@@ -110,6 +183,34 @@ pub fn compile_l3_context_feedback_overlay_memory(
     Ok(value)
 }
 
+/// Extracts a private clean-text L3 corpus from explicit accepted IME outcomes.
+/// It does not build or install a package; callers can inspect the corpus
+/// receipt, merge it with a clean external corpus, and run cold training.
+pub fn build_l3_context_feedback_corpus(
+    usage_events_path: &std::path::Path,
+    output_path: &std::path::Path,
+    max_repeat_per_phrase: usize,
+) -> std::io::Result<serde_json::Value> {
+    let events = std::fs::read_to_string(usage_events_path)?;
+    let (corpus, report) = context_phase::build_feedback_corpus(&events, max_repeat_per_phrase)?;
+    std::fs::write(output_path, corpus)?;
+    let mut value = serde_json::to_value(report).map_err(std::io::Error::other)?;
+    if let Some(object) = value.as_object_mut() {
+        object.insert(
+            "usage_events".to_string(),
+            serde_json::json!(usage_events_path),
+        );
+        object.insert("output".to_string(), serde_json::json!(output_path));
+        object.insert(
+            "artifact_bytes".to_string(),
+            serde_json::json!(std::fs::metadata(output_path)
+                .map(|meta| meta.len())
+                .unwrap_or_default()),
+        );
+    }
+    Ok(value)
+}
+
 pub fn l3_context_phase_status_json(path: Option<&std::path::Path>) -> serde_json::Value {
     let path = path
         .map(std::path::Path::to_path_buf)
@@ -122,15 +223,78 @@ pub fn prove_l3_context_phase_memory(
     max_fragments: usize,
     min_profile_support: u32,
 ) -> std::io::Result<serde_json::Value> {
-    let corpus_text = std::fs::read_to_string(corpus_path)?;
-    serde_json::to_value(context_phase::prove_context_phase(
-        context_phase::ContextPhaseCompileInput {
-            corpus_text: &corpus_text,
-            max_fragments,
-            min_profile_support,
-        },
-    ))
+    serde_json::to_value(context_phase::prove_context_phase_path(
+        corpus_path,
+        max_fragments,
+        min_profile_support,
+    )?)
     .map_err(std::io::Error::other)
+}
+
+/// Builds the candidate field from the fixed support partition and publishes
+/// it only when the untouched heldout partition proves the phase and anti-wave
+/// contribution. A WATCH result never replaces the runtime package.
+pub fn build_and_prove_l3_context_phase_memory(
+    corpus_path: &std::path::Path,
+    output_path: &std::path::Path,
+    max_fragments: usize,
+    min_profile_support: u32,
+) -> std::io::Result<serde_json::Value> {
+    let (package, heldout) = context_phase::build_and_prove_context_phase_path(
+        corpus_path,
+        max_fragments,
+        min_profile_support,
+    )?;
+    let package_published = heldout.verdict == "PASS";
+    if package_published {
+        context_phase::write_package(output_path, &package)?;
+    }
+    let positive_centers = package
+        .profiles
+        .iter()
+        .map(|profile| profile.positive.len())
+        .sum::<usize>();
+    let anti_centers = package
+        .profiles
+        .iter()
+        .map(|profile| profile.negative.len() + profile.hard_negative.len())
+        .sum::<usize>();
+    let artifact_bytes = package_published
+        .then(|| std::fs::metadata(output_path).map(|meta| meta.len()))
+        .transpose()?
+        .unwrap_or_default();
+    Ok(serde_json::json!({
+        "kind": "l3_context_phase_build_and_prove",
+        "architecture": "online_relation_phase_v3_pairwise_lattice",
+        "corpus": corpus_path,
+        "output": output_path,
+        "package_published": package_published,
+        "raw_words_stored": false,
+        "artifact_bytes": artifact_bytes,
+        "corpus_fragments": package.corpus_fragments,
+        "transitions": package.transitions,
+        "semantic_states": package.semantic_states.len(),
+        "candidate_profiles": package.profiles.len(),
+        "pair_profiles": package.pair_profiles.len(),
+        "exact_pair_profiles": package.pair_profile_counts().0,
+        "generalized_pair_profiles": package.pair_profile_counts().1,
+        "pair_centers": package
+            .pair_profiles
+            .iter()
+            .map(|profile| {
+                profile.low_wins.len()
+                    + profile.high_wins.len()
+                    + profile.hard_low_wins.len()
+                    + profile.hard_high_wins.len()
+            })
+            .sum::<usize>(),
+        "positive_centers": positive_centers,
+        "anti_centers": anti_centers,
+        "global_threshold_micro": package.global_threshold_micro,
+        "competition_threshold_micro": package.competition_threshold_micro,
+        "min_profile_support": min_profile_support.max(2),
+        "heldout": heldout,
+    }))
 }
 
 static L2_IME_WARMUP_STARTED: std::sync::atomic::AtomicBool =

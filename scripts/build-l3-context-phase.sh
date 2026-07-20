@@ -13,8 +13,7 @@ TRAINER="${LAY_NANDA_WAVE_TRAIN:-$ROOT/target/release/lay-nanda-wave-train}"
 mkdir -p "$WORK"
 ARCHIVE="$WORK/rus_sentences.tsv.bz2"
 CORPUS="$WORK/rus_sentences_${LIMIT}.txt"
-PROOF="$WORK/proof.json"
-COMPILE="$WORK/compile.json"
+BUILD="$WORK/build-and-prove.json"
 ARTIFACT="$WORK/l3_context_phase_v1.nwpc"
 
 if command -v curl >/dev/null 2>&1; then
@@ -53,12 +52,10 @@ if sentence_like * 100 < written * 20:
 print(f"natural_corpus: rows={written} sentence_like={sentence_like}")
 PY
 
-"$TRAINER" --prove-l3-context-phase "$CORPUS" \
-  --max-fragments "$LIMIT" --min-profile-support "$MIN_PROFILE_SUPPORT" > "$PROOF"
-jq -e '.verdict == "PASS" and .full_false_top1 == 0 and .phase_ablation_drop > 0 and .semantic_ablation_drop > 0' "$PROOF" >/dev/null
-"$TRAINER" --compile-l3-context-phase "$CORPUS" \
+"$TRAINER" --build-and-prove-l3-context-phase "$CORPUS" \
   --out "$ARTIFACT" --max-fragments "$LIMIT" \
-  --min-profile-support "$MIN_PROFILE_SUPPORT" > "$COMPILE"
+  --min-profile-support "$MIN_PROFILE_SUPPORT" > "$BUILD"
+jq -e '.package_published == true and .heldout.verdict == "PASS" and .heldout.full_false_top1 == 0 and .heldout.support_coverage_ppm >= .heldout.min_support_coverage_ppm and .heldout.phase_improved_cases > .heldout.phase_worsened_cases and .heldout.anti_improved_cases > .heldout.anti_worsened_cases and .heldout.candidate_permutation_mismatches == 0 and .heldout.pairwise_worsened_cases == 0' "$BUILD" >/dev/null
 
 install -m 0644 "$ARTIFACT" "$OUT"
 artifact_sha="$(sha256sum "$OUT" | cut -d' ' -f1)"
@@ -73,16 +70,15 @@ jq -n \
   --arg source_license_url "https://creativecommons.org/licenses/by/2.0/fr/" \
   --arg archive_sha256 "$archive_sha" \
   --arg corpus_sha256 "$corpus_sha" \
-  --argjson compile "$(cat "$COMPILE")" \
-  --argjson heldout "$(cat "$PROOF")" \
+  --argjson build "$(cat "$BUILD")" \
   '{
     format: "LAYL3P01",
-    version: 1,
+    version: 3,
     cells: 64,
     artifact: $artifact,
-    artifact_bytes: $compile.artifact_bytes,
+    artifact_bytes: $build.artifact_bytes,
     artifact_sha256: $artifact_sha256,
-    raw_words_stored: $compile.raw_words_stored,
+    raw_words_stored: $build.raw_words_stored,
     corpus: {
       source: "Tatoeba Russian per-language sentence export",
       source_url: $source_url,
@@ -91,18 +87,21 @@ jq -n \
       archive_sha256: $archive_sha256,
       extracted_sha256: $corpus_sha256,
       committed: false,
-      fragments: $compile.corpus_fragments
+      fragments: ($build.heldout.train_fragments + $build.heldout.heldout_fragments),
+      support_fragments: $build.heldout.train_fragments,
+      heldout_fragments: $build.heldout.heldout_fragments
     },
-    transitions: $compile.transitions,
-    semantic_states: $compile.semantic_states,
-    candidate_profiles: $compile.candidate_profiles,
-    positive_centers: $compile.positive_centers,
-    anti_centers: $compile.anti_centers,
-    l2_lattice_negative_examples: $compile.l2_lattice_negative_examples,
-    min_profile_support: $compile.min_profile_support,
-    competition_threshold_micro: $compile.competition_threshold_micro,
-    heldout: $heldout
+    transitions: $build.transitions,
+    semantic_states: $build.semantic_states,
+    candidate_profiles: $build.candidate_profiles,
+    pair_profiles: $build.pair_profiles,
+    pair_centers: $build.pair_centers,
+    positive_centers: $build.positive_centers,
+    anti_centers: $build.anti_centers,
+    min_profile_support: $build.min_profile_support,
+    competition_threshold_micro: $build.competition_threshold_micro,
+    heldout: $build.heldout
   }' > "$MANIFEST"
 
 echo "l3_context_phase: artifact=$OUT manifest=$MANIFEST"
-jq '{artifact_bytes, corpus, transitions, semantic_states, candidate_profiles, positive_centers, anti_centers, l2_lattice_negative_examples, heldout: {verdict: .heldout.verdict, support_precision_ppm: .heldout.support_precision_ppm, full_false_top1: .heldout.full_false_top1, anti_false_top1_reduction: .heldout.anti_false_top1_reduction, phase_ablation_drop: .heldout.phase_ablation_drop, semantic_ablation_drop: .heldout.semantic_ablation_drop}}' "$MANIFEST"
+jq '{artifact_bytes, corpus, transitions, semantic_states, candidate_profiles, pair_profiles, pair_centers, positive_centers, anti_centers, l2_lattice_negative_examples, heldout: {verdict: .heldout.verdict, support_precision_ppm: .heldout.support_precision_ppm, support_coverage_ppm: .heldout.support_coverage_ppm, min_support_coverage_ppm: .heldout.min_support_coverage_ppm, full_false_top1: .heldout.full_false_top1, pairwise_false_top1_reduction: .heldout.pairwise_false_top1_reduction, candidate_permutation_mismatches: .heldout.candidate_permutation_mismatches, anti_false_top1_reduction: .heldout.anti_false_top1_reduction, phase_ablation_drop: .heldout.phase_ablation_drop, semantic_ablation_drop: .heldout.semantic_ablation_drop}}' "$MANIFEST"

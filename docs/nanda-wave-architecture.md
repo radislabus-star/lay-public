@@ -3,6 +3,8 @@
 This is the short canonical orientation document for agents and maintainers.
 The detailed phase-memory contract remains in
 `docs/phase-word-recovery-canonical-cutover.md`.
+The bounded one-pass L3 learning contract is
+`docs/l3-online-phase-field.md`.
 
 ## Goal
 

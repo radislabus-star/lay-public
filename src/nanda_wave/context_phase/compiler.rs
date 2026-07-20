@@ -1,31 +1,15 @@
-use std::collections::{BTreeMap, BTreeSet};
-use std::env;
-use std::io;
-use std::thread;
+#[cfg(test)]
+use std::io::Cursor;
+use std::io::{self, Read};
+use std::time::{Duration, Instant};
 
 use serde::{Deserialize, Serialize};
 
-use super::super::phase_field::{
-    add_cluster, add_hashed_atom, empty_vector, hash_text, margin, phase_center_from_sum,
-    phase_micro, PhaseCell, PhaseCenter,
-};
-use super::{
-    ContextCandidateProfile, ContextPhaseMode, ContextPhasePackage, TokenSemanticState, CELLS,
-};
+#[cfg(test)]
+use super::super::phase_field::hash_text;
+use super::ContextPhasePackage;
 
-// A lexical meaning appears in several independent scenes. Four modes blend
-// distant phrase states too early; retain enough learned phase centers for the
-// field to represent those scenes separately.
-const MAX_POSITIVE_CENTERS: usize = 8;
-// A lexical competitor can arrive through several damaged surfaces. Keep their
-// incompatible phase modes separate so destructive interference does not
-// average a rare false attractor back into a plausible center.
-const MAX_ANTI_CENTERS: usize = 24;
-const CENTER_SPLIT_COHERENCE: f32 = 0.76;
-const MAX_COMPETITORS: usize = 4;
-const MAX_FRAGMENT_TOKENS: usize = 64;
-const MAX_L2_TRAINING_SURFACES: usize = 4;
-
+#[cfg(test)]
 #[derive(Clone, Copy)]
 pub(crate) struct ContextPhaseCompileInput<'a> {
     pub(crate) corpus_text: &'a str,
@@ -36,119 +20,89 @@ pub(crate) struct ContextPhaseCompileInput<'a> {
 #[derive(Clone, Debug, Serialize)]
 pub(crate) struct ContextPhaseCompileReport {
     pub(crate) kind: &'static str,
+    pub(crate) architecture: &'static str,
+    pub(crate) corpus_passes: u8,
     pub(crate) raw_words_stored: bool,
     pub(crate) corpus_fragments: usize,
     pub(crate) transitions: u64,
     pub(crate) semantic_states: usize,
     pub(crate) candidate_profiles: usize,
+    pub(crate) pair_profiles: usize,
+    pub(crate) exact_pair_profiles: usize,
+    pub(crate) generalized_pair_profiles: usize,
+    pub(crate) pair_centers: usize,
     pub(crate) positive_centers: usize,
     pub(crate) anti_centers: usize,
     pub(crate) positive_examples: u64,
     pub(crate) negative_examples: u64,
     pub(crate) l2_lattice_negative_examples: u64,
     pub(crate) self_mined_hard_negatives: u64,
+    pub(crate) dropped_pair_profiles: u64,
+    pub(crate) evicted_provisional_pair_profiles: u64,
+    pub(crate) l2_lattice_probes: u64,
+    pub(crate) l2_probe_workers: usize,
+    pub(crate) l2_probe_batch_fragments: usize,
+    pub(crate) competition_calibration_cases: usize,
+    pub(crate) positive_reinforcements: u64,
+    pub(crate) positive_subcenter_splits: u64,
+    pub(crate) anti_reinforcements: u64,
+    pub(crate) anti_subcenter_splits: u64,
+    pub(crate) dropped_semantic_states: u64,
+    pub(crate) dropped_profiles: u64,
+    pub(crate) evicted_provisional_semantic_states: u64,
+    pub(crate) evicted_provisional_profiles: u64,
+    pub(crate) pending_negative_profiles: usize,
+    pub(crate) pending_negative_centers: usize,
+    pub(crate) resident_positive_phase_centers: usize,
+    pub(crate) resident_negative_phase_centers: usize,
+    pub(crate) resident_hard_negative_phase_centers: usize,
+    pub(crate) max_positive_phase_centers: usize,
+    pub(crate) max_negative_phase_centers: usize,
+    pub(crate) max_hard_negative_phase_centers: usize,
+    pub(crate) dropped_pending_negative_profiles: u64,
+    pub(crate) evicted_pending_negative_profiles: u64,
+    pub(crate) rejected_incompatible_modes: u64,
+    pub(crate) rejected_token_count_fragments: usize,
+    pub(crate) oversized_fragments: usize,
+    pub(crate) invalid_utf8_fragments: usize,
+    pub(crate) peak_fragment_bytes: usize,
+    pub(crate) estimated_learner_bytes: u64,
+    pub(crate) rss_bytes: u64,
+    pub(crate) elapsed_millis: u64,
+    pub(crate) fragments_per_second: u64,
     pub(crate) global_threshold_micro: i32,
     pub(crate) competition_threshold_micro: i32,
     pub(crate) min_profile_support: u32,
 }
 
 #[derive(Clone, Debug, Serialize)]
-pub(crate) struct ContextPhaseProofReport {
+pub(crate) struct ContextPhaseProgressReport {
     pub(crate) kind: &'static str,
-    pub(crate) train_fragments: usize,
-    pub(crate) heldout_fragments: usize,
-    pub(crate) evaluated_transitions: usize,
-    pub(crate) full_supports: usize,
-    pub(crate) full_top1: usize,
-    pub(crate) full_false_supports: usize,
-    pub(crate) full_false_top1: usize,
-    /// False winners whose energy is close enough that the scene is
-    /// intrinsically ambiguous at the current learned competition scale.
-    /// This is a cold proof metric only; it never changes hot admission.
-    pub(crate) full_false_top1_close_competition: usize,
-    /// False winners with a clear energy separation. These are the real
-    /// candidate-specific anti-center debt, rather than an abstention case.
-    pub(crate) full_false_top1_separated_competition: usize,
-    /// False winners observed before L3 had enough known scene atoms to claim
-    /// contextual authority.
-    pub(crate) full_false_top1_weak_context: usize,
-    /// False winners despite an adequately represented context. These are the
-    /// strongest evidence that the learned context field itself is wrong.
-    pub(crate) full_false_top1_context_ready: usize,
-    /// Strong false winners that are a one-edit lexical neighbour of the
-    /// target. These point to L2 lattice geometry, not missing phrase state.
-    pub(crate) full_false_top1_edit_distance_one: usize,
-    /// Strong false winners that are two edits from the target.
-    pub(crate) full_false_top1_edit_distance_two: usize,
-    /// Strong false winners outside the local lexical neighbourhood. These
-    /// are the cleanest evidence for a missing learned L4 scene state.
-    pub(crate) full_false_top1_edit_distance_three_or_more: usize,
-    pub(crate) no_phase_supports: usize,
-    pub(crate) no_anti_top1: usize,
-    pub(crate) no_anti_false_supports: usize,
-    pub(crate) no_anti_false_top1: usize,
-    pub(crate) no_semantic_top1: usize,
-    pub(crate) phase_ablation_drop: usize,
-    pub(crate) anti_ablation_drop: usize,
-    pub(crate) anti_false_support_reduction: usize,
-    pub(crate) anti_false_top1_reduction: usize,
-    pub(crate) semantic_ablation_drop: usize,
-    pub(crate) support_precision_ppm: u32,
-    pub(crate) raw_words_stored: bool,
-    pub(crate) min_profile_support: u32,
-    pub(crate) verdict: &'static str,
+    pub(crate) fragments: usize,
+    pub(crate) fragment_limit: usize,
+    pub(crate) transitions: u64,
+    pub(crate) fragments_per_second: u64,
+    pub(crate) eta_seconds: Option<u64>,
+    pub(crate) profiles: usize,
+    pub(crate) semantic_states: usize,
+    pub(crate) phase_centers: usize,
+    pub(crate) positive_phase_centers: usize,
+    pub(crate) negative_phase_centers: usize,
+    pub(crate) hard_negative_phase_centers: usize,
+    pub(crate) pair_profiles: usize,
+    pub(crate) pair_centers: usize,
+    pub(crate) pending_negative_profiles: usize,
+    pub(crate) pending_negative_centers: usize,
+    pub(crate) competition_calibration_cases: usize,
+    pub(crate) estimated_learner_bytes: u64,
+    pub(crate) rss_bytes: u64,
 }
 
-/// Associative heldout counters. Cold proof can shard independent sentences
-/// without changing the package, candidate lattice, or acceptance semantics.
-#[derive(Default)]
-struct ContextPhaseProofTotals {
-    evaluated: usize,
-    full_supports: usize,
-    full_top1: usize,
-    full_false_supports: usize,
-    full_false_top1: usize,
-    full_false_top1_close_competition: usize,
-    full_false_top1_separated_competition: usize,
-    full_false_top1_weak_context: usize,
-    full_false_top1_context_ready: usize,
-    full_false_top1_edit_distance_one: usize,
-    full_false_top1_edit_distance_two: usize,
-    full_false_top1_edit_distance_three_or_more: usize,
-    no_phase_supports: usize,
-    no_anti_top1: usize,
-    no_anti_false_supports: usize,
-    no_anti_false_top1: usize,
-    no_semantic_top1: usize,
-}
-
-impl ContextPhaseProofTotals {
-    fn merge(&mut self, other: Self) {
-        self.evaluated += other.evaluated;
-        self.full_supports += other.full_supports;
-        self.full_top1 += other.full_top1;
-        self.full_false_supports += other.full_false_supports;
-        self.full_false_top1 += other.full_false_top1;
-        self.full_false_top1_close_competition += other.full_false_top1_close_competition;
-        self.full_false_top1_separated_competition += other.full_false_top1_separated_competition;
-        self.full_false_top1_weak_context += other.full_false_top1_weak_context;
-        self.full_false_top1_context_ready += other.full_false_top1_context_ready;
-        self.full_false_top1_edit_distance_one += other.full_false_top1_edit_distance_one;
-        self.full_false_top1_edit_distance_two += other.full_false_top1_edit_distance_two;
-        self.full_false_top1_edit_distance_three_or_more +=
-            other.full_false_top1_edit_distance_three_or_more;
-        self.no_phase_supports += other.no_phase_supports;
-        self.no_anti_top1 += other.no_anti_top1;
-        self.no_anti_false_supports += other.no_anti_false_supports;
-        self.no_anti_false_top1 += other.no_anti_false_top1;
-        self.no_semantic_top1 += other.no_semantic_top1;
-    }
-}
-
-/// Result of rebuilding a personal overlay from explicit IME feedback.
+/// Receipt for classifying personal IME feedback against a phase packet.
 ///
-/// The resulting packet contains only the existing hashed profiles and their
-/// quantized phase centers. The JSONL event source is never copied into it.
+/// A single live surface never mutates a generalizing L3 packet. The JSONL
+/// event source is never copied into it; accepted evidence is exported as a
+/// separate corpus and rejection without a final target is censored.
 #[derive(Clone, Debug, Serialize)]
 pub(crate) struct ContextPhaseFeedbackOverlayReport {
     pub(crate) kind: &'static str,
@@ -158,12 +112,34 @@ pub(crate) struct ContextPhaseFeedbackOverlayReport {
     pub(crate) negative_source_events: usize,
     pub(crate) positive_admitted: usize,
     pub(crate) negative_admitted: usize,
+    /// Accepted live text is a personal corpus source, not an independent
+    /// surface for a generalizing L3 phase packet.
+    pub(crate) positive_censored_pending_surface_support: usize,
+    /// A dismissed suggestion has no known replacement target. It is an
+    /// observation for outcome telemetry, but not evidence for an anti-wave.
+    pub(crate) negative_censored_no_observed_target: usize,
     pub(crate) skipped_unattested_context: usize,
     pub(crate) skipped_unattested_positive: usize,
     pub(crate) skipped_missing_profile: usize,
     pub(crate) candidate_profiles: usize,
     pub(crate) positive_centers: usize,
     pub(crate) anti_centers: usize,
+}
+
+/// Receipt for the private, locally generated L3 corpus. The corpus is
+/// intentionally built only from outcomes the user accepted or completed, not
+/// from arbitrary typed text or automatic corrections.
+#[derive(Clone, Debug, Serialize)]
+pub(crate) struct ContextPhaseFeedbackCorpusReport {
+    pub(crate) kind: &'static str,
+    pub(crate) raw_words_stored_in_packet: bool,
+    pub(crate) source_events: usize,
+    pub(crate) accepted_source_events: usize,
+    pub(crate) rejected_source_events: usize,
+    pub(crate) skipped_unattested: usize,
+    pub(crate) skipped_duplicate_cap: usize,
+    pub(crate) corpus_lines: usize,
+    pub(crate) unique_phrases: usize,
 }
 
 #[derive(Debug, Deserialize)]
@@ -174,124 +150,172 @@ struct FeedbackEvent {
     context: Vec<String>,
 }
 
-#[derive(Default)]
-struct SemanticBuilder {
-    sum: Vec<PhaseCell>,
-    support: u32,
+/// Produces a private clean-text training surface from explicit IME outcomes.
+///
+/// The output is a corpus source, never a runtime packet. Each emitted phrase
+/// is lexically attested and bounded by `max_repeat_per_phrase`, so one user's
+/// repeated completion cannot dominate the shared clean corpus during a later
+/// cold compile. Rejections are counted for observability, but do not become
+/// anti-wave evidence until a linked final target or undo receipt exists.
+pub(crate) fn build_feedback_corpus(
+    events_text: &str,
+    max_repeat_per_phrase: usize,
+) -> io::Result<(String, ContextPhaseFeedbackCorpusReport)> {
+    use std::collections::BTreeMap;
+
+    let max_repeat_per_phrase = max_repeat_per_phrase.max(1);
+    let mut report = ContextPhaseFeedbackCorpusReport {
+        kind: "l3_context_phase_feedback_corpus",
+        raw_words_stored_in_packet: false,
+        source_events: 0,
+        accepted_source_events: 0,
+        rejected_source_events: 0,
+        skipped_unattested: 0,
+        skipped_duplicate_cap: 0,
+        corpus_lines: 0,
+        unique_phrases: 0,
+    };
+    let mut phrase_counts = BTreeMap::<String, usize>::new();
+    let mut lines = Vec::new();
+
+    for (line_number, line) in events_text.lines().enumerate() {
+        let line = line.trim();
+        if line.is_empty() {
+            continue;
+        }
+        let event: FeedbackEvent = serde_json::from_str(line).map_err(|error| {
+            io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!(
+                    "invalid typing feedback JSONL at line {}: {error}",
+                    line_number + 1
+                ),
+            )
+        })?;
+        report.source_events += 1;
+        match event.kind.as_str() {
+            "accepted_ime" | "confirmed_ime_prediction" => {
+                report.accepted_source_events += 1;
+            }
+            "rejected_ime" | "rejected_candidate" => {
+                report.rejected_source_events += 1;
+                continue;
+            }
+            _ => continue,
+        }
+
+        let mut phrase = event
+            .context
+            .iter()
+            .map(|word| crate::typing_memory::normalize_memory_word(word))
+            .filter(|word| !word.is_empty())
+            .collect::<Vec<_>>();
+        let candidate = crate::typing_memory::normalize_memory_word(&event.word);
+        if candidate.is_empty() {
+            report.skipped_unattested += 1;
+            continue;
+        }
+        phrase.push(candidate);
+        let phrase = phrase.join(" ");
+        if !crate::typing_memory::phrase_is_attested_for_learning(&phrase) {
+            report.skipped_unattested += 1;
+            continue;
+        }
+        let count = phrase_counts.entry(phrase.clone()).or_default();
+        if *count >= max_repeat_per_phrase {
+            report.skipped_duplicate_cap += 1;
+            continue;
+        }
+        *count += 1;
+        lines.push(phrase);
+    }
+
+    report.corpus_lines = lines.len();
+    report.unique_phrases = phrase_counts.len();
+    let mut corpus = lines.join("\n");
+    if !corpus.is_empty() {
+        corpus.push('\n');
+    }
+    Ok((corpus, report))
 }
 
-#[derive(Default)]
-struct ProfileBuilder {
-    positive: Vec<PhaseCenter>,
-    negative: Vec<PhaseCenter>,
-    positive_examples: u32,
-    negative_examples: u32,
-    positive_vectors: Vec<Vec<PhaseCell>>,
-    negative_vectors: Vec<Vec<PhaseCell>>,
-}
-
+#[cfg(test)]
 pub(crate) fn compile_context_phase(
     input: ContextPhaseCompileInput<'_>,
 ) -> (ContextPhasePackage, ContextPhaseCompileReport) {
-    let min_profile_support = input.min_profile_support.max(2);
-    let sequences = corpus_sequences(input.corpus_text, input.max_fragments);
-    let semantic_states = compile_semantic_states(&sequences);
-    let semantic_package = ContextPhasePackage {
-        semantic_states,
-        ..ContextPhasePackage::default()
-    };
-    let mut builders = BTreeMap::<u64, ProfileBuilder>::new();
-    let competitor_cache = compile_l2_competitor_cache(&sequences);
-    let mut transitions = 0_u64;
+    compile_context_phase_reader(
+        Cursor::new(input.corpus_text.as_bytes()),
+        input.max_fragments,
+        input.min_profile_support,
+        0,
+        |_, _| Ok(()),
+    )
+    .expect("in-memory L3 corpus reader cannot fail")
+}
 
-    for tokens in &sequences {
-        for index in 1..tokens.len() {
-            let context = &tokens[..index];
-            let target = &tokens[index];
-            let vector =
-                semantic_package.candidate_relation_vector(context, target, ContextPhaseMode::Full);
-            let target_hash = hash_text(target);
-            let profile = builders.entry(target_hash).or_default();
-            let center_budget = learned_positive_center_budget(profile.positive_examples);
-            add_cluster(
-                &mut profile.positive,
-                &vector,
-                center_budget,
-                CENTER_SPLIT_COHERENCE,
-            );
-            profile.positive_examples = profile.positive_examples.saturating_add(1);
-            if profile.positive_vectors.len() < 64 {
-                profile.positive_vectors.push(vector.clone());
+pub(crate) fn compile_context_phase_reader<R, F>(
+    reader: R,
+    max_fragments: usize,
+    min_profile_support: u32,
+    snapshot_every_fragments: usize,
+    mut snapshot: F,
+) -> io::Result<(ContextPhasePackage, ContextPhaseCompileReport)>
+where
+    R: Read,
+    F: FnMut(&ContextPhasePackage, &ContextPhaseProgressReport) -> io::Result<()>,
+{
+    let started = Instant::now();
+    let config = super::online::OnlineContextPhaseConfig::production(min_profile_support);
+    let mut learner = super::online::OnlineContextPhaseLearner::new(config);
+    let l2_pool = super::online::L2ProbePool::new();
+    let mut pending_l2 = Vec::new();
+    let mut batch_fragments = 0_usize;
+    let stream_stats =
+        super::stream::visit_tokenized_fragments(reader, max_fragments, |ordinal, tokens| {
+            pending_l2.extend(learner.ingest_fragment_positive(tokens));
+            batch_fragments = batch_fragments.saturating_add(1);
+            let fragments = ordinal.saturating_add(1);
+            let snapshot_due =
+                snapshot_every_fragments > 0 && fragments % snapshot_every_fragments == 0;
+            if batch_fragments >= super::online::L2_PROBE_BATCH_FRAGMENTS || snapshot_due {
+                learner.apply_l2_probe_batch(&l2_pool, &mut pending_l2)?;
+                batch_fragments = 0;
             }
-            transitions = transitions.saturating_add(1);
-
-            // Train destructive interference against the same candidate topology
-            // that the live L2 field produces from damaged input. A lexicon-neighbour
-            // list is not enough: it misses short, high-energy false attractors.
-            let competitors = competitor_cache
-                .get(target)
-                .map(Vec::as_slice)
-                .unwrap_or(&[]);
-            for competitor in competitors.iter() {
-                let profile = builders.entry(hash_text(competitor)).or_default();
-                let competitor_vector = semantic_package.candidate_relation_vector(
-                    context,
-                    competitor,
-                    ContextPhaseMode::Full,
-                );
-                add_cluster(
-                    &mut profile.negative,
-                    &competitor_vector,
-                    MAX_ANTI_CENTERS,
-                    CENTER_SPLIT_COHERENCE,
-                );
-                profile.negative_examples = profile.negative_examples.saturating_add(1);
-                if profile.negative_vectors.len() < 64 {
-                    profile.negative_vectors.push(competitor_vector);
-                }
+            if snapshot_due {
+                let package = learner.snapshot();
+                let progress =
+                    progress_report(&learner, fragments, max_fragments, started.elapsed());
+                snapshot(&package, &progress)?;
             }
-        }
-    }
-
-    let mut profiles = builders
-        .into_iter()
-        .filter_map(|(token_hash, builder)| {
-            (builder.positive_examples >= min_profile_support).then(|| {
-                let threshold_micro = learned_threshold(&builder);
-                ContextCandidateProfile {
-                    token_hash,
-                    positive_examples: builder.positive_examples,
-                    negative_examples: builder.negative_examples,
-                    threshold_micro,
-                    positive: builder.positive,
-                    negative: builder.negative,
-                    hard_negative: Vec::new(),
-                }
-            })
-        })
-        .collect::<Vec<_>>();
-    profiles.sort_by_key(|profile| profile.token_hash);
-    let global_threshold_micro = learned_global_threshold(&profiles);
-    let mut package = ContextPhasePackage {
-        semantic_states: semantic_package.semantic_states,
-        profiles,
-        transitions,
-        corpus_fragments: sequences.len().min(u32::MAX as usize) as u32,
-        global_threshold_micro,
-        competition_threshold_micro: 1,
-    };
-    let self_mined_hard_negatives =
-        mine_l2_hard_negative_centers(&mut package, &sequences, &competitor_cache);
-    package.competition_threshold_micro =
-        learned_competition_threshold(&package, &sequences, &competitor_cache);
-
+            Ok(())
+        })?;
+    learner.apply_l2_probe_batch(&l2_pool, &mut pending_l2)?;
+    let package = learner.snapshot();
+    let (exact_pair_profiles, generalized_pair_profiles) = package.pair_profile_counts();
+    let elapsed = started.elapsed();
+    let stats = learner.stats();
     let report = ContextPhaseCompileReport {
         kind: "l3_context_phase_compile",
+        architecture: "online_relation_phase_v3_pairwise_lattice",
+        corpus_passes: 1,
         raw_words_stored: false,
-        corpus_fragments: sequences.len(),
-        transitions,
+        corpus_fragments: stream_stats.accepted_fragments,
+        transitions: stats.transitions,
         semantic_states: package.semantic_states.len(),
         candidate_profiles: package.profiles.len(),
+        pair_profiles: package.pair_profiles.len(),
+        exact_pair_profiles,
+        generalized_pair_profiles,
+        pair_centers: package
+            .pair_profiles
+            .iter()
+            .map(|profile| {
+                profile.low_wins.len()
+                    + profile.high_wins.len()
+                    + profile.hard_low_wins.len()
+                    + profile.hard_high_wins.len()
+            })
+            .sum(),
         positive_centers: package
             .profiles
             .iter()
@@ -312,115 +336,104 @@ pub(crate) fn compile_context_phase(
             .iter()
             .map(|profile| u64::from(profile.negative_examples))
             .sum(),
-        l2_lattice_negative_examples: competitor_cache
-            .values()
-            .map(|competitors| competitors.len() as u64)
-            .sum(),
-        self_mined_hard_negatives,
+        l2_lattice_negative_examples: stats.l2_lattice_negative_examples,
+        self_mined_hard_negatives: stats.hard_negative_false_winners,
+        dropped_pair_profiles: stats.dropped_pair_profiles,
+        evicted_provisional_pair_profiles: stats.evicted_provisional_pair_profiles,
+        l2_lattice_probes: stats.l2_lattice_probes,
+        l2_probe_workers: l2_pool.worker_count(),
+        l2_probe_batch_fragments: super::online::L2_PROBE_BATCH_FRAGMENTS,
+        competition_calibration_cases: learner.competition_calibration_cases(),
+        positive_reinforcements: stats.positive_reinforcements,
+        positive_subcenter_splits: stats.positive_splits,
+        anti_reinforcements: stats.anti_reinforcements,
+        anti_subcenter_splits: stats.anti_splits,
+        dropped_semantic_states: stats.dropped_semantic_states,
+        dropped_profiles: stats.dropped_profiles,
+        evicted_provisional_semantic_states: stats.evicted_provisional_semantic_states,
+        evicted_provisional_profiles: stats.evicted_provisional_profiles,
+        pending_negative_profiles: learner.pending_negative_profile_count(),
+        pending_negative_centers: learner.pending_negative_center_count(),
+        resident_positive_phase_centers: learner.positive_phase_center_count(),
+        resident_negative_phase_centers: learner.negative_phase_center_count(),
+        resident_hard_negative_phase_centers: learner.hard_negative_phase_center_count(),
+        max_positive_phase_centers: config.max_positive_phase_centers,
+        max_negative_phase_centers: config.max_negative_phase_centers,
+        max_hard_negative_phase_centers: config.max_hard_negative_phase_centers,
+        dropped_pending_negative_profiles: stats.dropped_pending_negative_profiles,
+        evicted_pending_negative_profiles: stats.evicted_pending_negative_profiles,
+        rejected_incompatible_modes: stats.rejected_incompatible_modes,
+        rejected_token_count_fragments: stream_stats.rejected_token_count,
+        oversized_fragments: stream_stats.oversized_fragments,
+        invalid_utf8_fragments: stream_stats.invalid_utf8_fragments,
+        peak_fragment_bytes: stream_stats.peak_fragment_bytes,
+        estimated_learner_bytes: learner.estimated_bytes(),
+        rss_bytes: current_rss_bytes(),
+        elapsed_millis: duration_millis(elapsed),
+        fragments_per_second: rate_per_second(stream_stats.accepted_fragments, elapsed),
         global_threshold_micro: package.global_threshold_micro,
         competition_threshold_micro: package.competition_threshold_micro,
-        min_profile_support,
+        min_profile_support: config.min_profile_support,
     };
-    (package, report)
+    Ok((package, report))
 }
 
-/// Replays the training lattice after the first phase package exists. A false
-/// winner is not a lexical exception: it is a measured destructive phase mode
-/// for that candidate and becomes a compact anti-center. The replay is cold,
-/// train-only, and stores only hashes and phase vectors in the package.
-fn mine_l2_hard_negative_centers(
-    package: &mut ContextPhasePackage,
-    sequences: &[Vec<String>],
-    competitors: &BTreeMap<String, Vec<String>>,
-) -> u64 {
-    const HARD_NEGATIVE_PASSES: usize = 2;
-    let mut admitted = 0_u64;
-    for _ in 0..HARD_NEGATIVE_PASSES {
-        let workers = context_phase_worker_count(sequences.len());
-        let chunk_size = sequences.len().div_ceil(workers);
-        let vectors = thread::scope(|scope| {
-            let mut tasks = Vec::new();
-            for chunk in sequences.chunks(chunk_size) {
-                tasks.push(scope.spawn(|| {
-                    mine_hard_negative_vectors_for_sequences(package, chunk, competitors)
-                }));
-            }
-            let mut vectors = Vec::new();
-            for task in tasks {
-                vectors.extend(task.join().expect("L3 hard-negative worker panicked"));
-            }
-            vectors
-        });
-        if vectors.is_empty() {
-            break;
-        }
-        admitted = admitted.saturating_add(vectors.len() as u64);
-        for (token_hash, vector) in vectors {
-            let Ok(index) = package
-                .profiles
-                .binary_search_by_key(&token_hash, |profile| profile.token_hash)
-            else {
-                continue;
-            };
-            let profile = &mut package.profiles[index];
-            add_cluster(
-                &mut profile.hard_negative,
-                &vector,
-                MAX_ANTI_CENTERS,
-                CENTER_SPLIT_COHERENCE,
-            );
-            profile.negative_examples = profile.negative_examples.saturating_add(1);
-        }
+fn progress_report(
+    learner: &super::online::OnlineContextPhaseLearner,
+    fragments: usize,
+    fragment_limit: usize,
+    elapsed: Duration,
+) -> ContextPhaseProgressReport {
+    let rate = rate_per_second(fragments, elapsed);
+    let eta_seconds = (fragment_limit > fragments && rate > 0)
+        .then(|| fragment_limit.saturating_sub(fragments) as u64 / rate.max(1));
+    ContextPhaseProgressReport {
+        kind: "l3_context_phase_online_progress",
+        fragments,
+        fragment_limit,
+        transitions: learner.stats().transitions,
+        fragments_per_second: rate,
+        eta_seconds,
+        profiles: learner.profile_count(),
+        semantic_states: learner.semantic_state_count(),
+        phase_centers: learner.phase_center_count(),
+        positive_phase_centers: learner.positive_phase_center_count(),
+        negative_phase_centers: learner.negative_phase_center_count(),
+        hard_negative_phase_centers: learner.hard_negative_phase_center_count(),
+        pair_profiles: learner.pair_profile_count(),
+        pair_centers: learner.pair_center_count(),
+        pending_negative_profiles: learner.pending_negative_profile_count(),
+        pending_negative_centers: learner.pending_negative_center_count(),
+        competition_calibration_cases: learner.competition_calibration_cases(),
+        estimated_learner_bytes: learner.estimated_bytes(),
+        rss_bytes: current_rss_bytes(),
     }
-    admitted
 }
 
-fn mine_hard_negative_vectors_for_sequences(
-    package: &ContextPhasePackage,
-    sequences: &[Vec<String>],
-    competitors: &BTreeMap<String, Vec<String>>,
-) -> Vec<(u64, Vec<PhaseCell>)> {
-    let mut vectors = Vec::new();
-    for tokens in sequences {
-        for index in 1..tokens.len() {
-            let target = &tokens[index];
-            let Some(negative) = competitors.get(target) else {
-                continue;
-            };
-            if negative.is_empty() {
-                continue;
-            }
-            let mut candidates = Vec::with_capacity(negative.len() + 1);
-            candidates.push(target.as_str());
-            candidates.extend(negative.iter().map(String::as_str));
-            let readouts = package.score_candidates(&tokens[..index], &candidates);
-            let Some(correct) = readouts.first() else {
-                continue;
-            };
-            for (candidate, readout) in candidates.iter().zip(&readouts).skip(1) {
-                if readout.disposition == super::ContextPhaseDisposition::Support
-                    && readout.margin_micro >= correct.margin_micro
-                {
-                    vectors.push((
-                        hash_text(candidate),
-                        package.candidate_relation_vector(
-                            &tokens[..index],
-                            candidate,
-                            ContextPhaseMode::Full,
-                        ),
-                    ));
-                }
-            }
-        }
+fn rate_per_second(items: usize, elapsed: Duration) -> u64 {
+    if items == 0 {
+        return 0;
     }
-    vectors
+    ((items as f64 / elapsed.as_secs_f64().max(0.001)).round() as u64).max(1)
 }
 
-/// Layers explicit user IME outcomes onto a canonical context package.
+fn duration_millis(duration: Duration) -> u64 {
+    duration.as_millis().min(u128::from(u64::MAX)) as u64
+}
+
+fn current_rss_bytes() -> u64 {
+    std::fs::read_to_string("/proc/self/statm")
+        .ok()
+        .and_then(|text| text.split_whitespace().nth(1)?.parse::<u64>().ok())
+        .map(|pages| pages.saturating_mul(4_096))
+        .unwrap_or_default()
+}
+
+/// Classifies explicit user IME outcomes against a canonical context package.
 ///
-/// This is intentionally narrower than corpus compilation: feedback can only
-/// reinforce or suppress a profile already grounded by the clean corpus. A
-/// noisy live word can therefore never create a new L3 authority by itself.
+/// This preserves the command contract while refusing to make a one-surface
+/// live outcome general L3 authority. The feedback corpus and L4 retain the
+/// local signal; promotion needs independent cold-surface support.
 pub(crate) fn apply_feedback_overlay(
     package: &mut ContextPhasePackage,
     events_text: &str,
@@ -433,6 +446,8 @@ pub(crate) fn apply_feedback_overlay(
         negative_source_events: 0,
         positive_admitted: 0,
         negative_admitted: 0,
+        positive_censored_pending_surface_support: 0,
+        negative_censored_no_observed_target: 0,
         skipped_unattested_context: 0,
         skipped_unattested_positive: 0,
         skipped_missing_profile: 0,
@@ -455,88 +470,50 @@ pub(crate) fn apply_feedback_overlay(
                 ),
             )
         })?;
-        let polarity = match event.kind.as_str() {
+        match event.kind.as_str() {
             "accepted_ime" | "confirmed_ime_prediction" => {
+                report.source_events += 1;
                 report.positive_source_events += 1;
-                1_i8
-            }
-            "rejected_ime" | "rejected_candidate" => {
-                report.negative_source_events += 1;
-                -1_i8
-            }
-            _ => continue,
-        };
-        report.source_events += 1;
-
-        let context = event
-            .context
-            .iter()
-            .map(|word| crate::typing_memory::normalize_memory_word(word))
-            .filter(|word| !word.is_empty())
-            .collect::<Vec<_>>();
-        if context.is_empty()
-            || !crate::typing_memory::phrase_is_attested_for_learning(&context.join(" "))
-        {
-            report.skipped_unattested_context += 1;
-            continue;
-        }
-        let candidate = crate::typing_memory::normalize_memory_word(&event.word);
-        if candidate.is_empty() {
-            report.skipped_missing_profile += 1;
-            continue;
-        }
-        // Positive experience is only safe when the complete observed phrase is
-        // lexically attested. A rejected candidate is allowed to be unknown: it
-        // is destructive evidence, never an authority to promote a word.
-        if polarity > 0 {
-            let mut phrase = context.clone();
-            phrase.push(candidate.clone());
-            if !crate::typing_memory::phrase_is_attested_for_learning(&phrase.join(" ")) {
-                report.skipped_unattested_positive += 1;
+                let context = event
+                    .context
+                    .iter()
+                    .map(|word| crate::typing_memory::normalize_memory_word(word))
+                    .filter(|word| !word.is_empty())
+                    .collect::<Vec<_>>();
+                let candidate = crate::typing_memory::normalize_memory_word(&event.word);
+                if context.is_empty()
+                    || !crate::typing_memory::phrase_is_attested_for_learning(&context.join(" "))
+                {
+                    report.skipped_unattested_context += 1;
+                    continue;
+                }
+                let mut phrase = context;
+                phrase.push(candidate);
+                if !crate::typing_memory::phrase_is_attested_for_learning(&phrase.join(" ")) {
+                    report.skipped_unattested_positive += 1;
+                    continue;
+                }
+                // One user's accepted completion is meaningful local evidence,
+                // but one surface cannot safely create a general L3 center.
+                // It is exported by build_feedback_corpus and routed to L4;
+                // only a later independent cold merge may promote it.
+                report.positive_censored_pending_surface_support += 1;
                 continue;
             }
-        }
-        let token_hash = hash_text(&candidate);
-        let Some(index) = package
-            .profiles
-            .binary_search_by_key(&token_hash, |profile| profile.token_hash)
-            .ok()
-        else {
-            report.skipped_missing_profile += 1;
-            continue;
-        };
-        let vector =
-            package.candidate_relation_vector(&context, &candidate, ContextPhaseMode::Full);
-        let profile = &mut package.profiles[index];
-        if polarity > 0 {
-            let center_budget = learned_positive_center_budget(profile.positive_examples);
-            add_cluster(
-                &mut profile.positive,
-                &vector,
-                center_budget,
-                CENTER_SPLIT_COHERENCE,
-            );
-            profile.positive_examples = profile.positive_examples.saturating_add(1);
-            report.positive_admitted += 1;
-        } else {
-            add_cluster(
-                &mut profile.hard_negative,
-                &vector,
-                MAX_ANTI_CENTERS,
-                CENTER_SPLIT_COHERENCE,
-            );
-            profile.negative_examples = profile.negative_examples.saturating_add(1);
-            report.negative_admitted += 1;
+            "rejected_ime" | "rejected_candidate" => {
+                report.source_events += 1;
+                report.negative_source_events += 1;
+                // Closing or replacing a suggestion does not tell us which
+                // candidate won instead. Treat it as censored until the
+                // runtime records a linked observed target or an explicit
+                // undo receipt. Otherwise an unrelated correct completion
+                // can be suppressed in a nearby phase scene.
+                report.negative_censored_no_observed_target += 1;
+                continue;
+            }
+            _ => continue,
         }
     }
-    package.transitions = package.transitions.saturating_add(
-        u64::try_from(
-            report
-                .positive_admitted
-                .saturating_add(report.negative_admitted),
-        )
-        .unwrap_or(u64::MAX),
-    );
     report.positive_centers = package
         .profiles
         .iter()
@@ -550,575 +527,13 @@ pub(crate) fn apply_feedback_overlay(
     Ok(report)
 }
 
-pub(crate) fn prove_context_phase(input: ContextPhaseCompileInput<'_>) -> ContextPhaseProofReport {
-    let sequences = corpus_sequences(input.corpus_text, input.max_fragments);
-    let (heldout, train): (Vec<_>, Vec<_>) = sequences
-        .into_iter()
-        .enumerate()
-        .partition(|(index, _)| index % 5 == 4);
-    let train_sequences = train
-        .into_iter()
-        .map(|(_, tokens)| tokens)
-        .collect::<Vec<_>>();
-    let heldout_sequences = heldout
-        .into_iter()
-        .map(|(_, tokens)| tokens)
-        .collect::<Vec<_>>();
-    let train_text = train_sequences
-        .iter()
-        .map(|tokens| tokens.join(" "))
-        .collect::<Vec<_>>()
-        .join(".\n");
-    let (package, _) = compile_context_phase(ContextPhaseCompileInput {
-        corpus_text: &train_text,
-        max_fragments: 0,
-        min_profile_support: input.min_profile_support,
-    });
-    let workers = context_phase_worker_count(heldout_sequences.len());
-    let chunk_size = heldout_sequences.len().div_ceil(workers);
-    let totals = thread::scope(|scope| {
-        let mut tasks = Vec::new();
-        for chunk in heldout_sequences.chunks(chunk_size) {
-            tasks.push(scope.spawn(|| evaluate_heldout_sequences(&package, chunk)));
-        }
-        let mut totals = ContextPhaseProofTotals::default();
-        for task in tasks {
-            totals.merge(task.join().expect("L3 context proof worker panicked"));
-        }
-        totals
-    });
-    let ContextPhaseProofTotals {
-        evaluated,
-        full_supports,
-        full_top1,
-        full_false_supports,
-        full_false_top1,
-        full_false_top1_close_competition,
-        full_false_top1_separated_competition,
-        full_false_top1_weak_context,
-        full_false_top1_context_ready,
-        full_false_top1_edit_distance_one,
-        full_false_top1_edit_distance_two,
-        full_false_top1_edit_distance_three_or_more,
-        no_phase_supports,
-        no_anti_top1,
-        no_anti_false_supports,
-        no_anti_false_top1,
-        no_semantic_top1,
-    } = totals;
-    let phase_ablation_drop = full_supports.saturating_sub(no_phase_supports);
-    let anti_ablation_drop = full_top1.saturating_sub(no_anti_top1);
-    let anti_false_support_reduction = no_anti_false_supports.saturating_sub(full_false_supports);
-    let anti_false_top1_reduction = no_anti_false_top1.saturating_sub(full_false_top1);
-    let semantic_ablation_drop = full_top1.saturating_sub(no_semantic_top1);
-    let support_precision_ppm = ((full_supports as u64 * 1_000_000)
-        / (full_supports + full_false_supports).max(1) as u64)
-        .min(u64::from(u32::MAX)) as u32;
-    let verdict = if evaluated > 0
-        && full_supports > 0
-        && full_false_top1 == 0
-        && phase_ablation_drop > 0
-        && semantic_ablation_drop > 0
-    {
-        "PASS"
-    } else {
-        "WATCH"
-    };
-    ContextPhaseProofReport {
-        kind: "l3_context_phase_heldout_proof",
-        train_fragments: train_sequences.len(),
-        heldout_fragments: heldout_sequences.len(),
-        evaluated_transitions: evaluated,
-        full_supports,
-        full_top1,
-        full_false_supports,
-        full_false_top1,
-        full_false_top1_close_competition,
-        full_false_top1_separated_competition,
-        full_false_top1_weak_context,
-        full_false_top1_context_ready,
-        full_false_top1_edit_distance_one,
-        full_false_top1_edit_distance_two,
-        full_false_top1_edit_distance_three_or_more,
-        no_phase_supports,
-        no_anti_top1,
-        no_anti_false_supports,
-        no_anti_false_top1,
-        no_semantic_top1,
-        phase_ablation_drop,
-        anti_ablation_drop,
-        anti_false_support_reduction,
-        anti_false_top1_reduction,
-        semantic_ablation_drop,
-        support_precision_ppm,
-        raw_words_stored: false,
-        min_profile_support: input.min_profile_support.max(2),
-        verdict,
-    }
-}
-
-fn evaluate_heldout_sequences(
-    package: &ContextPhasePackage,
-    sequences: &[Vec<String>],
-) -> ContextPhaseProofTotals {
-    let mut totals = ContextPhaseProofTotals::default();
-    for tokens in sequences {
-        for index in 1..tokens.len() {
-            let target = &tokens[index];
-            let competitors = l2_lattice_competitors(&tokens[..index], target, MAX_COMPETITORS);
-            if competitors.is_empty() {
-                continue;
-            }
-            let mut candidates = Vec::with_capacity(competitors.len() + 1);
-            candidates.push(target.as_str());
-            candidates.extend(competitors.iter().map(String::as_str));
-            let full = package.score_candidates_with_mode(
-                &tokens[..index],
-                &candidates,
-                ContextPhaseMode::Full,
-            );
-            if !full.first().is_some_and(|readout| readout.profile_present) {
-                continue;
-            }
-            totals.evaluated += 1;
-            totals.full_supports += full.first().is_some_and(|readout| {
-                readout.disposition == super::ContextPhaseDisposition::Support
-            }) as usize;
-            totals.full_top1 += correct_is_unique_top(&full) as usize;
-            totals.full_false_supports += full
-                .iter()
-                .skip(1)
-                .filter(|readout| readout.disposition == super::ContextPhaseDisposition::Support)
-                .count();
-            if let Some(false_index) = false_candidate_winner_index(&full) {
-                let false_winner = &full[false_index];
-                totals.full_false_top1 += 1;
-                let correct = &full[0];
-                let loss = false_winner
-                    .margin_micro
-                    .saturating_sub(correct.margin_micro);
-                let competition_scale = i64::from(package.competition_threshold_micro.max(1));
-                if loss <= competition_scale {
-                    totals.full_false_top1_close_competition += 1;
-                } else {
-                    totals.full_false_top1_separated_competition += 1;
-                }
-                let context_ready = correct.context_known_tokens >= 2
-                    && usize::from(correct.context_known_tokens) * 2
-                        >= usize::from(correct.context_tokens);
-                if context_ready {
-                    totals.full_false_top1_context_ready += 1;
-                } else {
-                    totals.full_false_top1_weak_context += 1;
-                }
-                match crate::text_metrics::damerau_levenshtein(target, candidates[false_index]) {
-                    0 => {}
-                    1 => totals.full_false_top1_edit_distance_one += 1,
-                    2 => totals.full_false_top1_edit_distance_two += 1,
-                    _ => totals.full_false_top1_edit_distance_three_or_more += 1,
-                }
-            }
-            let no_phase = package.score_candidates_with_mode(
-                &tokens[..index],
-                &candidates,
-                ContextPhaseMode::NoPhase,
-            );
-            totals.no_phase_supports += no_phase.first().is_some_and(|readout| {
-                readout.disposition == super::ContextPhaseDisposition::Support
-            }) as usize;
-            let no_anti = package.score_candidates_with_mode(
-                &tokens[..index],
-                &candidates,
-                ContextPhaseMode::NoAnti,
-            );
-            totals.no_anti_top1 += correct_is_unique_top(&no_anti) as usize;
-            totals.no_anti_false_supports += no_anti
-                .iter()
-                .skip(1)
-                .filter(|readout| readout.disposition == super::ContextPhaseDisposition::Support)
-                .count();
-            totals.no_anti_false_top1 += false_candidate_wins(&no_anti) as usize;
-            let no_semantic = package.score_candidates_with_mode(
-                &tokens[..index],
-                &candidates,
-                ContextPhaseMode::NoSemanticState,
-            );
-            totals.no_semantic_top1 += correct_is_unique_top(&no_semantic) as usize;
-        }
-    }
-    totals
-}
-
-fn correct_is_unique_top(readouts: &[super::ContextPhaseReadout]) -> bool {
-    let Some(correct) = readouts.first() else {
-        return false;
-    };
-    correct.disposition == super::ContextPhaseDisposition::Support
-        && readouts
-            .iter()
-            .skip(1)
-            .all(|readout| readout.margin_micro < correct.margin_micro)
-}
-
-fn false_candidate_wins(readouts: &[super::ContextPhaseReadout]) -> bool {
-    false_candidate_winner(readouts).is_some()
-}
-
-fn false_candidate_winner(
-    readouts: &[super::ContextPhaseReadout],
-) -> Option<&super::ContextPhaseReadout> {
-    false_candidate_winner_index(readouts).and_then(|index| readouts.get(index))
-}
-
-fn false_candidate_winner_index(readouts: &[super::ContextPhaseReadout]) -> Option<usize> {
-    let correct = readouts.first()?;
-    readouts
-        .iter()
-        .enumerate()
-        .skip(1)
-        .filter(|candidate| {
-            candidate.1.disposition == super::ContextPhaseDisposition::Support
-                && candidate.1.margin_micro >= correct.margin_micro
-        })
-        .max_by_key(|(_, candidate)| candidate.margin_micro)
-        .map(|(index, _)| index)
-}
-
-#[cfg(test)]
-mod proof_tests {
-    use super::*;
-
-    #[test]
-    fn false_winner_selects_the_strongest_supported_competitor() {
-        let correct = super::super::ContextPhaseReadout {
-            disposition: super::super::ContextPhaseDisposition::Support,
-            margin_micro: 40,
-            ..super::super::ContextPhaseReadout::default()
-        };
-        let weaker_false = super::super::ContextPhaseReadout {
-            disposition: super::super::ContextPhaseDisposition::Support,
-            margin_micro: 45,
-            ..super::super::ContextPhaseReadout::default()
-        };
-        let strongest_false = super::super::ContextPhaseReadout {
-            disposition: super::super::ContextPhaseDisposition::Support,
-            margin_micro: 55,
-            ..super::super::ContextPhaseReadout::default()
-        };
-        let neutral = super::super::ContextPhaseReadout {
-            disposition: super::super::ContextPhaseDisposition::Neutral,
-            margin_micro: 80,
-            ..super::super::ContextPhaseReadout::default()
-        };
-
-        let readouts = [correct, weaker_false, strongest_false, neutral];
-        let winner = false_candidate_winner(&readouts);
-        assert_eq!(winner.map(|readout| readout.margin_micro), Some(55));
-    }
-}
-
-fn compile_semantic_states(sequences: &[Vec<String>]) -> Vec<TokenSemanticState> {
-    let mut builders = BTreeMap::<u64, SemanticBuilder>::new();
-    for tokens in sequences {
-        for (index, token) in tokens.iter().enumerate() {
-            let token_hash = hash_text(token);
-            let builder = builders
-                .entry(token_hash)
-                .or_insert_with(|| SemanticBuilder {
-                    sum: empty_vector(CELLS),
-                    support: 0,
-                });
-            builder.support = builder.support.saturating_add(1);
-            let start = index.saturating_sub(4);
-            let end = (index + 5).min(tokens.len());
-            for (neighbor_index, neighbor) in tokens[start..end].iter().enumerate() {
-                let absolute = start + neighbor_index;
-                if absolute == index {
-                    continue;
-                }
-                let relative = absolute as isize - index as isize;
-                let position = relative.unsigned_abs() as u64;
-                let direction = if relative < 0 { 0x4c } else { 0x52 };
-                add_hashed_atom(
-                    &mut builder.sum,
-                    hash_text(neighbor) ^ (direction << 56),
-                    token_hash ^ position.rotate_left(11),
-                    1.0 / (position as f32).sqrt(),
-                );
-            }
-        }
-    }
-    builders
-        .into_iter()
-        .filter(|(_, builder)| builder.support >= 2)
-        .map(|(token_hash, builder)| TokenSemanticState {
-            token_hash,
-            support: builder.support,
-            center: phase_center_from_sum(&builder.sum),
-        })
-        .collect()
-}
-
-/// The number of scene centers is evidence-driven. Sparse profiles must not
-/// fragment a single lexical relation into many accidental modes; frequent
-/// profiles earn additional phase capacity as independent contexts arrive.
-fn learned_positive_center_budget(positive_examples: u32) -> usize {
-    let observed = usize::try_from(positive_examples.saturating_add(1)).unwrap_or(usize::MAX);
-    let capacity = (observed as f64).sqrt().ceil() as usize;
-    capacity.clamp(1, MAX_POSITIVE_CENTERS)
-}
-
-fn learned_threshold(builder: &ProfileBuilder) -> i32 {
-    let mut positive = builder
-        .positive_vectors
-        .iter()
-        .map(|vector| margin(vector, &builder.positive, &builder.negative))
-        .collect::<Vec<_>>();
-    let mut negative = builder
-        .negative_vectors
-        .iter()
-        .map(|vector| margin(vector, &builder.positive, &builder.negative))
-        .collect::<Vec<_>>();
-    positive.sort_by(f32::total_cmp);
-    negative.sort_by(f32::total_cmp);
-    let positive_floor = percentile(&positive, 10).unwrap_or(0.0);
-    let negative_ceiling = percentile(&negative, 90).unwrap_or(0.0);
-    let threshold = if !negative.is_empty() && positive_floor > negative_ceiling {
-        negative_ceiling + (positive_floor - negative_ceiling) * 0.50
-    } else {
-        positive_floor * 0.70
-    };
-    phase_micro(threshold).clamp(i32::MIN as i64, i32::MAX as i64) as i32
-}
-
-fn learned_global_threshold(profiles: &[ContextCandidateProfile]) -> i32 {
-    let mut thresholds = profiles
-        .iter()
-        .filter(|profile| profile.positive_examples >= 2)
-        .map(|profile| profile.threshold_micro)
-        .collect::<Vec<_>>();
-    thresholds.sort_unstable();
-    percentile_i32(&thresholds, 25).unwrap_or(1).max(1)
-}
-
-fn learned_competition_threshold(
-    package: &ContextPhasePackage,
-    sequences: &[Vec<String>],
-    competitors: &BTreeMap<String, Vec<String>>,
-) -> i32 {
-    let mut correct_gaps = Vec::new();
-    let mut wrong_gaps = Vec::new();
-    for tokens in sequences.iter().take(10_000) {
-        for index in 1..tokens.len() {
-            let target = &tokens[index];
-            let Some(negative) = competitors.get(target) else {
-                continue;
-            };
-            if negative.is_empty() {
-                continue;
-            }
-            let mut candidates = Vec::with_capacity(negative.len() + 1);
-            candidates.push(target.as_str());
-            candidates.extend(negative.iter().map(String::as_str));
-            let readouts = package.score_candidates_with_mode(
-                &tokens[..index],
-                &candidates,
-                ContextPhaseMode::Full,
-            );
-            let correct = readouts
-                .first()
-                .map(|item| item.margin_micro)
-                .unwrap_or_default();
-            let wrong = readouts
-                .iter()
-                .skip(1)
-                .map(|item| item.margin_micro)
-                .max()
-                .unwrap_or(i64::MIN / 2);
-            if correct > wrong {
-                correct_gaps.push((correct - wrong).min(i64::from(i32::MAX)) as i32);
-            } else if wrong > correct {
-                wrong_gaps.push((wrong - correct).min(i64::from(i32::MAX)) as i32);
-            }
-        }
-    }
-    correct_gaps.sort_unstable();
-    wrong_gaps.sort_unstable();
-    let positive_floor = percentile_i32(&correct_gaps, 25).unwrap_or(1).max(1);
-    let negative_ceiling = percentile_i32(&wrong_gaps, 90).unwrap_or(0).max(0);
-    if positive_floor > negative_ceiling {
-        negative_ceiling + (positive_floor - negative_ceiling) / 2
-    } else {
-        // The field has not separated this candidate family enough to grant a
-        // narrow winning margin. Keep the learned positive floor and abstain
-        // on close competition instead of promoting a false attractor.
-        positive_floor
-    }
-}
-
-fn corpus_sequences(text: &str, max_fragments: usize) -> Vec<Vec<String>> {
-    text.split(['\n', '.', '!', '?', ';'])
-        .filter_map(|fragment| {
-            let tokens = super::super::llmwave::tokenize(fragment);
-            (tokens.len() >= 3 && tokens.len() <= MAX_FRAGMENT_TOKENS).then_some(tokens)
-        })
-        .take(if max_fragments == 0 {
-            usize::MAX
-        } else {
-            max_fragments
-        })
-        .collect()
-}
-
-fn l2_lattice_competitors(context: &[String], target: &str, limit: usize) -> Vec<String> {
-    if limit == 0 {
-        return Vec::new();
-    }
-    let context_prefix = context.join(" ");
-    let mut competitors = BTreeSet::new();
-    for damaged in training_surfaces(target) {
-        for candidate in crate::nanda_wave::l2::correction_l2_word_candidates(
-            &context_prefix,
-            &damaged,
-            limit.saturating_mul(4),
-        ) {
-            let candidate = candidate.surface.to_lowercase();
-            if candidate != target {
-                competitors.insert(candidate);
-            }
-        }
-    }
-    let mut competitors = competitors.into_iter().collect::<Vec<_>>();
-    competitors.sort_by(|left, right| {
-        crate::text_metrics::damerau_levenshtein(target, left)
-            .cmp(&crate::text_metrics::damerau_levenshtein(target, right))
-            .then_with(|| left.cmp(right))
-    });
-    competitors.truncate(limit);
-    competitors
-}
-
-fn compile_l2_competitor_cache(sequences: &[Vec<String>]) -> BTreeMap<String, Vec<String>> {
-    let mut first_contexts = BTreeMap::<String, Vec<String>>::new();
-    for tokens in sequences {
-        for index in 1..tokens.len() {
-            first_contexts
-                .entry(tokens[index].clone())
-                .or_insert_with(|| tokens[..index].to_vec());
-        }
-    }
-    let jobs = first_contexts.into_iter().collect::<Vec<_>>();
-    if jobs.is_empty() {
-        return BTreeMap::new();
-    }
-    let workers = context_phase_worker_count(jobs.len());
-    let chunk_size = jobs.len().div_ceil(workers);
-    let mut cache = BTreeMap::new();
-    thread::scope(|scope| {
-        let mut tasks = Vec::new();
-        for chunk in jobs.chunks(chunk_size) {
-            tasks.push(scope.spawn(move || {
-                chunk
-                    .iter()
-                    .map(|(target, context)| {
-                        (
-                            target.clone(),
-                            l2_lattice_competitors(context, target, MAX_COMPETITORS),
-                        )
-                    })
-                    .collect::<Vec<_>>()
-            }));
-        }
-        for task in tasks {
-            for (target, competitors) in task.join().expect("L2 lattice worker panicked") {
-                cache.insert(target, competitors);
-            }
-        }
-    });
-    cache
-}
-
-fn context_phase_worker_count(work_items: usize) -> usize {
-    let requested = env::var("LAY_L3_CONTEXT_WORKERS")
-        .ok()
-        .and_then(|value| value.parse::<usize>().ok())
-        .filter(|workers| *workers > 0);
-    requested
-        .or_else(|| {
-            thread::available_parallelism()
-                .ok()
-                .map(|value| value.get())
-        })
-        .unwrap_or(1)
-        .min(work_items.max(1))
-}
-
-fn training_surfaces(target: &str) -> Vec<String> {
-    let chars = target.chars().collect::<Vec<_>>();
-    if chars.len() < 3 || !chars.iter().all(|ch| ch.is_alphabetic()) {
-        return Vec::new();
-    }
-
-    let mut positions = [1, chars.len() / 2, chars.len().saturating_sub(2)]
-        .into_iter()
-        .filter(|position| *position > 0 && *position + 1 < chars.len())
-        .collect::<Vec<_>>();
-    positions.sort_unstable();
-    positions.dedup();
-
-    let mut surfaces = positions
-        .into_iter()
-        .map(|position| {
-            chars
-                .iter()
-                .enumerate()
-                .filter_map(|(index, ch)| (index != position).then_some(*ch))
-                .collect::<String>()
-        })
-        .collect::<Vec<_>>();
-    if chars.len() >= 4 {
-        let position = chars.len() / 2 - 1;
-        let mut transposed = chars.clone();
-        transposed.swap(position, position + 1);
-        surfaces.push(transposed.into_iter().collect());
-    }
-    surfaces.sort();
-    surfaces.dedup();
-    surfaces.truncate(MAX_L2_TRAINING_SURFACES);
-    surfaces
-}
-
-fn percentile(values: &[f32], percentile: usize) -> Option<f32> {
-    if values.is_empty() {
-        return None;
-    }
-    let index = values
-        .len()
-        .saturating_sub(1)
-        .saturating_mul(percentile.min(100))
-        / 100;
-    values.get(index).copied()
-}
-
-fn percentile_i32(values: &[i32], percentile: usize) -> Option<i32> {
-    if values.is_empty() {
-        return None;
-    }
-    let index = values
-        .len()
-        .saturating_sub(1)
-        .saturating_mul(percentile.min(100))
-        / 100;
-    values.get(index).copied()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn compiler_learns_context_centers_and_destructive_competitors() {
-        let corpus = "на улице снова идет дождь. вечером на улице идет дождь. в доме снова горит свет. вечером в доме горит свет.";
+        let corpus = "на улице снова идет дождь. вечером на улице идет дождь. утром на улице идет дождь. в доме снова горит свет. вечером в доме горит свет. утром в доме горит свет.";
         let (package, report) = compile_context_phase(ContextPhaseCompileInput {
             corpus_text: corpus,
             max_fragments: 0,
@@ -1138,12 +553,39 @@ mod tests {
     }
 
     #[test]
-    fn feedback_overlay_trains_existing_profiles_without_storing_live_text() {
+    fn online_compiler_emits_bounded_periodic_snapshots() {
         let corpus = concat!(
             "на улице идет дождь. ",
             "вечером на улице идет дождь. ",
+            "утром на улице идет дождь. ",
+            "сегодня на улице идет дождь."
+        );
+        let mut snapshots = Vec::new();
+        let (_, report) =
+            compile_context_phase_reader(corpus.as_bytes(), 0, 2, 2, |package, progress| {
+                snapshots.push((progress.fragments, package.corpus_fragments));
+                Ok(())
+            })
+            .unwrap();
+
+        assert_eq!(snapshots, vec![(2, 2), (4, 4)]);
+        assert_eq!(
+            report.architecture,
+            "online_relation_phase_v3_pairwise_lattice"
+        );
+        assert_eq!(report.corpus_passes, 1);
+        assert!(!report.raw_words_stored);
+    }
+
+    #[test]
+    fn feedback_overlay_censors_single_surface_outcomes_without_storing_live_text() {
+        let corpus = concat!(
+            "на улице идет дождь. ",
+            "вечером на улице идет дождь. ",
+            "утром на улице идет дождь. ",
             "в комнате горит свет. ",
-            "вечером в комнате горит свет."
+            "вечером в комнате горит свет. ",
+            "утром в комнате горит свет."
         );
         let (mut package, _) = compile_context_phase(ContextPhaseCompileInput {
             corpus_text: corpus,
@@ -1171,16 +613,18 @@ mod tests {
         let report = apply_feedback_overlay(&mut package, events).expect("valid feedback");
 
         assert!(!report.raw_words_stored);
-        assert_eq!(report.positive_admitted, 1);
-        assert_eq!(report.negative_admitted, 1);
+        assert_eq!(report.positive_admitted, 0);
+        assert_eq!(report.negative_admitted, 0);
+        assert_eq!(report.positive_censored_pending_surface_support, 1);
+        assert_eq!(report.negative_censored_no_observed_target, 1);
         assert_eq!(report.source_events, 2);
         assert_eq!(
             package.profile(rain_hash).unwrap().positive_examples,
-            before_rain + 1
+            before_rain
         );
         assert_eq!(
             package.profile(light_hash).unwrap().negative_examples,
-            before_light + 1
+            before_light
         );
         let dir =
             std::env::temp_dir().join(format!("lay-l3-feedback-overlay-{}", std::process::id()));
@@ -1192,5 +636,30 @@ mod tests {
             .windows("дождь".len())
             .any(|window| window == "дождь".as_bytes()));
         let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn feedback_corpus_keeps_only_attested_explicit_accepts() {
+        let events = concat!(
+            r#"{"kind":"accepted_ime","word":"дождь","context":["на","улице","идёт"]}"#,
+            "\n",
+            r#"{"kind":"confirmed_ime_prediction","word":"дождь","context":["на","улице","идёт"]}"#,
+            "\n",
+            r#"{"kind":"rejected_ime","word":"свет","context":["на","улице","идёт"]}"#,
+            "\n",
+            r#"{"kind":"typed","word":"дожть","context":["на","улице","идёт"]}"#,
+            "\n",
+            r#"{"kind":"accepted_ime","word":"дожть","context":["на","улице","идёт"]}"#,
+        );
+
+        let (corpus, report) = build_feedback_corpus(events, 1).expect("feedback corpus");
+
+        assert_eq!(corpus, "на улице идёт дождь\n");
+        assert_eq!(report.corpus_lines, 1);
+        assert_eq!(report.unique_phrases, 1);
+        assert_eq!(report.rejected_source_events, 1);
+        assert_eq!(report.skipped_duplicate_cap, 1);
+        assert_eq!(report.skipped_unattested, 1);
+        assert!(!report.raw_words_stored_in_packet);
     }
 }

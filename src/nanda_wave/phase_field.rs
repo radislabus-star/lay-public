@@ -5,6 +5,7 @@
 //! destructive interference; neither bank owns runtime edit authority.
 
 use std::f32::consts::TAU;
+use std::sync::Arc;
 
 use crate::stable_hash::mix64_golden;
 
@@ -18,19 +19,132 @@ pub(crate) struct PhaseCell {
 pub(crate) struct PhaseCenter {
     pub(crate) sum: Vec<PhaseCell>,
     pub(crate) center: Vec<PhaseCell>,
+    // Runtime packages keep the same signed phase cells as the file format.
+    // The dense representation is only required while a learner or shard merge
+    // updates a center, so a decoded hot package must not inflate every cell to
+    // an f32 pair on load.
+    compact_center: Option<CompactPhaseSlice>,
     pub(crate) support: u32,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+struct CompactPhaseSlice {
+    bytes: Arc<[u8]>,
+    offset: usize,
+}
+
 impl PhaseCenter {
+    #[cfg(test)]
     pub(crate) fn from_center(center: Vec<PhaseCell>, support: u32) -> Self {
+        let weight = support.max(1) as f32;
+        let sum = center
+            .iter()
+            .map(|cell| PhaseCell {
+                re: cell.re * weight,
+                im: cell.im * weight,
+            })
+            .collect();
         Self {
-            sum: center.clone(),
+            sum,
             center,
+            compact_center: None,
+            support,
+        }
+    }
+
+    /// Decoded packages are runtime readouts, not online learners. Their
+    /// weighted training sum is reconstructed lazily only if an offline merge
+    /// needs it, which avoids keeping a second 64-cell float vector for every
+    /// hot phase center.
+    pub(crate) fn from_serialized(bytes: Arc<[u8]>, offset: usize, support: u32) -> Self {
+        Self {
+            sum: Vec::new(),
+            center: Vec::new(),
+            compact_center: Some(CompactPhaseSlice { bytes, offset }),
+            support,
+        }
+    }
+
+    pub(crate) fn coherence(&self, vector: &[PhaseCell]) -> f32 {
+        let Some(compact) = self.compact_center.as_ref() else {
+            return vector_phase_coherence(vector, &self.center);
+        };
+        let mut score = 0.0;
+        let mut active = 0usize;
+        for (index, value) in vector.iter().enumerate() {
+            if value.re == 0.0 && value.im == 0.0 {
+                continue;
+            }
+            let offset = compact.offset + index * 2;
+            let re = dequantize(compact.bytes[offset] as i8);
+            let im = dequantize(compact.bytes[offset + 1] as i8);
+            score += value.re * re + value.im * im;
+            active += 1;
+        }
+        if active == 0 {
+            0.0
+        } else {
+            score / active as f32
+        }
+    }
+
+    pub(crate) fn write_compact(&self, target: &mut Vec<u8>) {
+        if let Some(compact) = self.compact_center.as_ref() {
+            target.extend_from_slice(&compact.bytes[compact.offset..compact.offset + 128]);
+        } else {
+            for cell in &self.center {
+                target.push(quantize(cell.re) as u8);
+                target.push(quantize(cell.im) as u8);
+            }
+        }
+    }
+
+    fn materialize_center(&mut self) {
+        if self.center.is_empty() && self.compact_center.is_some() {
+            let compact = self
+                .compact_center
+                .as_ref()
+                .expect("checked compact center");
+            self.center = self
+                .compact_center
+                .as_ref()
+                .expect("checked compact center")
+                .bytes[compact.offset..compact.offset + 128]
+                .chunks_exact(2)
+                .map(|cell| PhaseCell {
+                    re: dequantize(cell[0] as i8),
+                    im: dequantize(cell[1] as i8),
+                })
+                .collect();
+            self.compact_center = None;
+        }
+    }
+
+    pub(crate) fn materialize_sum(&mut self) {
+        if self.sum.is_empty() {
+            self.materialize_center();
+            let weight = self.support.max(1) as f32;
+            self.sum = self
+                .center
+                .iter()
+                .map(|cell| PhaseCell {
+                    re: cell.re * weight,
+                    im: cell.im * weight,
+                })
+                .collect();
+        }
+    }
+
+    pub(crate) fn from_sum(sum: Vec<PhaseCell>, support: u32) -> Self {
+        let center = phase_center_from_sum(&sum);
+        Self {
+            sum,
+            center,
+            compact_center: None,
             support,
         }
     }
 }
-
 pub(crate) fn empty_vector(cells: usize) -> Vec<PhaseCell> {
     vec![PhaseCell::default(); cells]
 }
@@ -125,7 +239,7 @@ pub(crate) fn vector_phase_coherence(vector: &[PhaseCell], center: &[PhaseCell])
 pub(crate) fn max_coherence(vector: &[PhaseCell], centers: &[PhaseCenter]) -> Option<f32> {
     centers
         .iter()
-        .map(|center| vector_phase_coherence(vector, &center.center))
+        .map(|center| center.coherence(vector))
         .max_by(f32::total_cmp)
 }
 
@@ -138,24 +252,22 @@ pub(crate) fn add_cluster(
     let best = centers
         .iter()
         .enumerate()
-        .map(|(index, center)| (index, vector_phase_coherence(vector, &center.center)))
+        .map(|(index, center)| (index, center.coherence(vector)))
         .max_by(|left, right| left.1.total_cmp(&right.1));
     if let Some((index, coherence)) = best {
         if coherence >= split_coherence || centers.len() >= max_centers {
             let center = &mut centers[index];
             add_phase_vector(&mut center.sum, vector);
             center.center = phase_center_from_sum(&center.sum);
+            center.compact_center = None;
             center.support = center.support.saturating_add(1);
             return;
         }
     }
-    centers.push(PhaseCenter {
-        sum: vector.to_vec(),
-        center: phase_center_from_sum(vector),
-        support: 1,
-    });
+    centers.push(PhaseCenter::from_sum(vector.to_vec(), 1));
 }
 
+#[cfg(test)]
 pub(crate) fn margin(
     vector: &[PhaseCell],
     positive: &[PhaseCenter],
@@ -194,5 +306,17 @@ mod tests {
         let negative = vec![PhaseCenter::from_center(negative_vector, 3)];
 
         assert!(margin(&positive_vector, &positive, &negative) > 0.5);
+    }
+
+    #[test]
+    fn restored_center_preserves_accumulated_support_weight() {
+        let center = vec![PhaseCell { re: 1.0, im: 0.0 }; 4];
+        let restored = PhaseCenter::from_center(center, 9);
+
+        assert_eq!(restored.support, 9);
+        assert!(restored
+            .sum
+            .iter()
+            .all(|cell| cell.re == 9.0 && cell.im == 0.0));
     }
 }

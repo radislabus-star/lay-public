@@ -42,6 +42,31 @@ struct Learned {
 
 fn main() -> io::Result<()> {
     let args = env::args().collect::<Vec<_>>();
+    if args
+        .iter()
+        .any(|arg| arg == "--merge-l3-context-phase-shards")
+    {
+        let inputs = arg_paths(&args, "--input");
+        let out = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        if inputs.is_empty() {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "at least one --input is required",
+            ));
+        }
+        let min_surface_support = arg_u32(&args, "--min-surface-support").unwrap_or(1);
+        let report = lay::nanda_wave::merge_l3_context_phase_shards(
+            &inputs,
+            &out,
+            min_surface_support,
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if args.iter().any(|arg| arg == "--l3-context-phase-status") {
         let memory = arg_path(&args, "--memory");
         println!(
@@ -50,6 +75,41 @@ fn main() -> io::Result<()> {
                 memory.as_deref(),
             ))
             .map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(corpus) = arg_path(&args, "--prove-l3-context-phase-package") {
+        let package = arg_path(&args, "--memory").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--memory is required")
+        })?;
+        let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
+        let min_profile_support = arg_u32(&args, "--min-profile-support").unwrap_or(2);
+        let report = lay::nanda_wave::prove_l3_context_phase_package(
+            &corpus,
+            &package,
+            max_fragments,
+            min_profile_support,
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(corpus) = arg_path(&args, "--build-and-prove-l3-context-phase") {
+        let out = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
+        let min_profile_support = arg_u32(&args, "--min-profile-support").unwrap_or(2);
+        let report = lay::nanda_wave::build_and_prove_l3_context_phase_memory(
+            &corpus,
+            &out,
+            max_fragments,
+            min_profile_support,
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
         );
         return Ok(());
     }
@@ -72,11 +132,21 @@ fn main() -> io::Result<()> {
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
         let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
         let min_profile_support = arg_u32(&args, "--min-profile-support").unwrap_or(2);
-        let report = lay::nanda_wave::compile_l3_context_phase_memory(
+        let snapshot_every_fragments =
+            arg_usize(&args, "--snapshot-every-fragments").unwrap_or(10_000);
+        let report = lay::nanda_wave::compile_l3_context_phase_memory_with_progress(
             &corpus,
             &out,
             max_fragments,
             min_profile_support,
+            snapshot_every_fragments,
+            |progress| {
+                eprintln!(
+                    "{}",
+                    serde_json::to_string(progress)
+                        .unwrap_or_else(|_| "{\"kind\":\"l3_progress_encode_error\"}".to_string())
+                );
+            },
         )?;
         println!(
             "{}",
@@ -99,6 +169,27 @@ fn main() -> io::Result<()> {
             &base,
             &usage_events,
             &out,
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if args
+        .iter()
+        .any(|arg| arg == "--build-l3-context-feedback-corpus")
+    {
+        let usage_events = arg_path(&args, "--usage-events").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--usage-events is required")
+        })?;
+        let out = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let max_repeat_per_phrase = arg_usize(&args, "--max-repeat-per-phrase").unwrap_or(4);
+        let report = lay::nanda_wave::build_l3_context_feedback_corpus(
+            &usage_events,
+            &out,
+            max_repeat_per_phrase,
         )?;
         println!(
             "{}",
@@ -628,6 +719,13 @@ fn print_summary(
 fn arg_path(args: &[String], name: &str) -> Option<PathBuf> {
     args.windows(2)
         .find_map(|pair| (pair[0] == name).then(|| PathBuf::from(&pair[1])))
+}
+
+fn arg_paths(args: &[String], name: &str) -> Vec<PathBuf> {
+    args.windows(2)
+        .filter(|window| window[0] == name)
+        .map(|window| PathBuf::from(&window[1]))
+        .collect()
 }
 
 #[cfg(test)]

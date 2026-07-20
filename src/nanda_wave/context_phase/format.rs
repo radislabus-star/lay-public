@@ -1,19 +1,35 @@
 use std::fs;
 use std::io;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
 
 use super::super::phase_field::{dequantize, quantize, PhaseCell, PhaseCenter};
-use super::{ContextCandidateProfile, ContextPhasePackage, TokenSemanticState, CELLS, MAGIC};
+use super::{
+    ContextCandidateProfile, ContextPairPhaseProfile, ContextPhasePackage, TokenSemanticState,
+    CELLS, MAGIC, MAX_HARD_PAIR_CENTERS_PER_BANK, MAX_PAIR_CENTERS_PER_BANK, MAX_PAIR_PROFILES,
+};
 
-const VERSION: u16 = 2;
+const VERSION: u16 = 3;
 const HEADER_BYTES: usize = 48;
 const SEMANTIC_HEADER_BYTES: usize = 16;
 const PROFILE_HEADER_BYTES_V1: usize = 24;
 const PROFILE_HEADER_BYTES_V2: usize = 28;
 const CENTER_HEADER_BYTES: usize = 4;
+const PAIR_PROFILE_HEADER_BYTES: usize = 24;
 const VECTOR_BYTES: usize = CELLS * 2;
 
 pub(crate) fn write_package(path: &Path, package: &ContextPhasePackage) -> io::Result<()> {
+    let bytes = encode_package(package);
+    let temporary = temporary_package_path(path);
+    crate::private_file::write_private_bytes(&temporary, &bytes)?;
+    if let Err(error) = fs::rename(&temporary, path) {
+        let _ = fs::remove_file(&temporary);
+        return Err(error);
+    }
+    Ok(())
+}
+
+fn encode_package(package: &ContextPhasePackage) -> Vec<u8> {
     let mut bytes = Vec::with_capacity(
         HEADER_BYTES
             + package.semantic_states.len() * (SEMANTIC_HEADER_BYTES + VECTOR_BYTES)
@@ -27,6 +43,18 @@ pub(crate) fn write_package(path: &Path, package: &ContextPhasePackage) -> io::R
                             + profile.hard_negative.len())
                             * (CENTER_HEADER_BYTES + VECTOR_BYTES)
                 })
+                .sum::<usize>()
+            + package
+                .pair_profiles
+                .iter()
+                .map(|pair| {
+                    PAIR_PROFILE_HEADER_BYTES
+                        + (pair.low_wins.len()
+                            + pair.high_wins.len()
+                            + pair.hard_low_wins.len()
+                            + pair.hard_high_wins.len())
+                            * (CENTER_HEADER_BYTES + VECTOR_BYTES)
+                })
                 .sum::<usize>(),
     );
     bytes.extend_from_slice(MAGIC);
@@ -38,7 +66,8 @@ pub(crate) fn write_package(path: &Path, package: &ContextPhasePackage) -> io::R
     bytes.extend_from_slice(&package.corpus_fragments.to_le_bytes());
     bytes.extend_from_slice(&package.global_threshold_micro.to_le_bytes());
     bytes.extend_from_slice(&package.competition_threshold_micro.to_le_bytes());
-    bytes.extend_from_slice(&0_u64.to_le_bytes());
+    bytes.extend_from_slice(&(package.pair_profiles.len() as u32).to_le_bytes());
+    bytes.extend_from_slice(&package.pairwise_threshold_micro.to_le_bytes());
     debug_assert_eq!(bytes.len(), HEADER_BYTES);
 
     for state in &package.semantic_states {
@@ -50,7 +79,41 @@ pub(crate) fn write_package(path: &Path, package: &ContextPhasePackage) -> io::R
     for profile in &package.profiles {
         write_profile(&mut bytes, profile);
     }
-    crate::private_file::write_private_bytes(path, &bytes)
+    for pair in &package.pair_profiles {
+        write_pair_profile(&mut bytes, pair);
+    }
+    bytes
+}
+
+fn write_pair_profile(bytes: &mut Vec<u8>, pair: &ContextPairPhaseProfile) {
+    bytes.extend_from_slice(&pair.low_hash.to_le_bytes());
+    bytes.extend_from_slice(&pair.high_hash.to_le_bytes());
+    for count in [
+        pair.low_wins.len(),
+        pair.high_wins.len(),
+        pair.hard_low_wins.len(),
+        pair.hard_high_wins.len(),
+    ] {
+        bytes.extend_from_slice(&(count as u16).to_le_bytes());
+    }
+    for center in pair
+        .low_wins
+        .iter()
+        .chain(&pair.high_wins)
+        .chain(&pair.hard_low_wins)
+        .chain(&pair.hard_high_wins)
+    {
+        bytes.extend_from_slice(&center.support.to_le_bytes());
+        center.write_compact(bytes);
+    }
+}
+
+fn temporary_package_path(path: &Path) -> PathBuf {
+    let name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or("context-phase.nwpc");
+    path.with_file_name(format!(".{name}.{}.tmp", std::process::id()))
 }
 
 fn write_profile(bytes: &mut Vec<u8>, profile: &ContextCandidateProfile) {
@@ -69,15 +132,21 @@ fn write_profile(bytes: &mut Vec<u8>, profile: &ContextCandidateProfile) {
         .chain(&profile.hard_negative)
     {
         bytes.extend_from_slice(&center.support.to_le_bytes());
-        write_vector(bytes, &center.center);
+        center.write_compact(bytes);
     }
 }
 
 pub(crate) fn read_package(path: &Path) -> io::Result<ContextPhasePackage> {
-    decode_package(&fs::read(path)?)
+    decode_package_owned(fs::read(path)?.into())
 }
 
+#[cfg(test)]
 fn decode_package(bytes: &[u8]) -> io::Result<ContextPhasePackage> {
+    decode_package_owned(Arc::from(bytes))
+}
+
+fn decode_package_owned(backing: Arc<[u8]>) -> io::Result<ContextPhasePackage> {
+    let bytes = backing.as_ref();
     if bytes.len() < HEADER_BYTES || &bytes[..8] != MAGIC {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
@@ -98,7 +167,24 @@ fn decode_package(bytes: &[u8]) -> io::Result<ContextPhasePackage> {
     let corpus_fragments = read_u32(bytes, 28)?;
     let global_threshold_micro = read_i32(bytes, 32)?;
     let competition_threshold_micro = read_i32(bytes, 36)?;
+    let pair_profile_count = if version >= 3 {
+        read_u32(bytes, 40)? as usize
+    } else {
+        0
+    };
+    let pairwise_threshold_micro = if version >= 3 {
+        read_i32(bytes, 44)?
+    } else {
+        0
+    };
     let mut offset = HEADER_BYTES;
+
+    if pair_profile_count > MAX_PAIR_PROFILES {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "L3 context phase package exceeds pair profile budget",
+        ));
+    }
 
     let mut semantic_states = Vec::with_capacity(semantic_count);
     for _ in 0..semantic_count {
@@ -123,10 +209,26 @@ fn decode_package(bytes: &[u8]) -> io::Result<ContextPhasePackage> {
     for _ in 0..profile_count {
         profiles.push(read_profile(
             bytes,
+            Arc::clone(&backing),
             &mut offset,
             version,
             profile_header_bytes,
         )?);
+    }
+    let mut pair_profiles = Vec::with_capacity(pair_profile_count);
+    let mut previous_pair = None;
+    for _ in 0..pair_profile_count {
+        let pair = read_pair_profile(bytes, Arc::clone(&backing), &mut offset)?;
+        let key = (pair.low_hash, pair.high_hash);
+        if pair.low_hash >= pair.high_hash || previous_pair.is_some_and(|previous| previous >= key)
+        {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "invalid L3 pair profile key",
+            ));
+        }
+        previous_pair = Some(key);
+        pair_profiles.push(pair);
     }
     if offset != bytes.len() {
         return Err(io::Error::new(
@@ -139,15 +241,51 @@ fn decode_package(bytes: &[u8]) -> io::Result<ContextPhasePackage> {
     Ok(ContextPhasePackage {
         semantic_states,
         profiles,
+        pair_profiles,
         transitions,
         corpus_fragments,
         global_threshold_micro,
         competition_threshold_micro,
+        pairwise_threshold_micro,
+    })
+}
+
+fn read_pair_profile(
+    bytes: &[u8],
+    backing: Arc<[u8]>,
+    offset: &mut usize,
+) -> io::Result<ContextPairPhaseProfile> {
+    require(bytes, *offset, PAIR_PROFILE_HEADER_BYTES)?;
+    let low_hash = read_u64(bytes, *offset)?;
+    let high_hash = read_u64(bytes, *offset + 8)?;
+    let low_count = read_u16(bytes, *offset + 16)? as usize;
+    let high_count = read_u16(bytes, *offset + 18)? as usize;
+    let hard_low_count = read_u16(bytes, *offset + 20)? as usize;
+    let hard_high_count = read_u16(bytes, *offset + 22)? as usize;
+    *offset += PAIR_PROFILE_HEADER_BYTES;
+    if low_count > MAX_PAIR_CENTERS_PER_BANK
+        || high_count > MAX_PAIR_CENTERS_PER_BANK
+        || hard_low_count > MAX_HARD_PAIR_CENTERS_PER_BANK
+        || hard_high_count > MAX_HARD_PAIR_CENTERS_PER_BANK
+    {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "L3 context phase pair bank exceeds center budget",
+        ));
+    }
+    Ok(ContextPairPhaseProfile {
+        low_hash,
+        high_hash,
+        low_wins: read_centers(bytes, Arc::clone(&backing), offset, low_count)?,
+        high_wins: read_centers(bytes, Arc::clone(&backing), offset, high_count)?,
+        hard_low_wins: read_centers(bytes, Arc::clone(&backing), offset, hard_low_count)?,
+        hard_high_wins: read_centers(bytes, backing, offset, hard_high_count)?,
     })
 }
 
 fn read_profile(
     bytes: &[u8],
+    backing: Arc<[u8]>,
     offset: &mut usize,
     version: u16,
     profile_header_bytes: usize,
@@ -165,9 +303,9 @@ fn read_profile(
         read_u16(bytes, *offset + 24)? as usize
     };
     *offset += profile_header_bytes;
-    let positive = read_centers(bytes, offset, positive_count)?;
-    let negative = read_centers(bytes, offset, negative_count)?;
-    let hard_negative = read_centers(bytes, offset, hard_negative_count)?;
+    let positive = read_centers(bytes, Arc::clone(&backing), offset, positive_count)?;
+    let negative = read_centers(bytes, Arc::clone(&backing), offset, negative_count)?;
+    let hard_negative = read_centers(bytes, backing, offset, hard_negative_count)?;
     Ok(ContextCandidateProfile {
         token_hash,
         positive_examples,
@@ -200,14 +338,22 @@ fn read_vector(bytes: &[u8], offset: &mut usize) -> io::Result<Vec<PhaseCell>> {
     Ok(vector)
 }
 
-fn read_centers(bytes: &[u8], offset: &mut usize, count: usize) -> io::Result<Vec<PhaseCenter>> {
+fn read_centers(
+    bytes: &[u8],
+    backing: Arc<[u8]>,
+    offset: &mut usize,
+    count: usize,
+) -> io::Result<Vec<PhaseCenter>> {
     let mut centers = Vec::with_capacity(count);
     for _ in 0..count {
         require(bytes, *offset, CENTER_HEADER_BYTES + VECTOR_BYTES)?;
         let support = read_u32(bytes, *offset)?;
         *offset += CENTER_HEADER_BYTES;
-        centers.push(PhaseCenter::from_center(
-            read_vector(bytes, offset)?,
+        let center_offset = *offset;
+        *offset += VECTOR_BYTES;
+        centers.push(PhaseCenter::from_serialized(
+            Arc::clone(&backing),
+            center_offset,
             support,
         ));
     }
@@ -280,25 +426,107 @@ mod tests {
                 center: vec![PhaseCell { re: 1.0, im: 0.0 }; CELLS],
             }],
             profiles: vec![profile],
+            pair_profiles: vec![ContextPairPhaseProfile {
+                low_hash: 17,
+                high_hash: 23,
+                low_wins: vec![PhaseCenter::from_center(
+                    vec![PhaseCell { re: 1.0, im: 0.0 }; CELLS],
+                    2,
+                )],
+                high_wins: Vec::new(),
+                hard_low_wins: Vec::new(),
+                hard_high_wins: vec![PhaseCenter::from_center(
+                    vec![PhaseCell { re: 0.0, im: 1.0 }; CELLS],
+                    1,
+                )],
+            }],
             transitions: 9,
             corpus_fragments: 3,
             global_threshold_micro: 10_000,
             competition_threshold_micro: 20_000,
+            pairwise_threshold_micro: 20_000,
         };
         let dir = std::env::temp_dir().join(format!("lay-l3-phase-{}", std::process::id()));
         let path = dir.join("memory.nwpc");
         std::fs::create_dir_all(&dir).unwrap();
         write_package(&path, &package).unwrap();
         let decoded = read_package(&path).unwrap();
+        let first_bytes = std::fs::read(&path).unwrap();
+        write_package(&path, &package).unwrap();
+        let second_bytes = std::fs::read(&path).unwrap();
 
         assert_eq!(decoded.semantic_states.len(), 1);
         assert_eq!(decoded.profiles.len(), 1);
         assert_eq!(decoded.profiles[0].hard_negative.len(), 1);
+        assert_eq!(decoded.pair_profiles.len(), 1);
+        assert_eq!(decoded.pair_profiles[0].low_hash, 17);
+        assert_eq!(decoded.pair_profiles[0].hard_high_wins.len(), 1);
         assert_eq!(decoded.transitions, 9);
-        assert!(!std::fs::read(&path)
-            .unwrap()
+        assert_eq!(first_bytes, second_bytes);
+        assert!(!second_bytes
             .windows("word".len())
             .any(|window| window == b"word"));
         let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn v2_header_loads_with_an_empty_pairwise_field() {
+        let package = ContextPhasePackage {
+            profiles: vec![ContextCandidateProfile {
+                token_hash: 17,
+                positive_examples: 2,
+                negative_examples: 0,
+                threshold_micro: 10,
+                positive: Vec::new(),
+                negative: Vec::new(),
+                hard_negative: Vec::new(),
+            }],
+            ..ContextPhasePackage::default()
+        };
+        let mut bytes = encode_package(&package);
+        bytes[8..10].copy_from_slice(&2_u16.to_le_bytes());
+        bytes[40..48].fill(0);
+
+        let decoded = decode_package(&bytes).unwrap();
+        assert_eq!(decoded.profiles.len(), 1);
+        assert!(decoded.pair_profiles.is_empty());
+        assert_eq!(decoded.pairwise_threshold_micro, 0);
+    }
+
+    #[test]
+    fn generalized_pair_key_roundtrips_without_candidate_text() {
+        let package = ContextPhasePackage {
+            pair_profiles: vec![ContextPairPhaseProfile {
+                low_hash: 0,
+                high_hash: 77,
+                low_wins: vec![PhaseCenter::from_center(
+                    vec![PhaseCell { re: 1.0, im: 0.0 }; CELLS],
+                    3,
+                )],
+                ..ContextPairPhaseProfile::default()
+            }],
+            ..ContextPhasePackage::default()
+        };
+        let decoded = decode_package(&encode_package(&package)).unwrap();
+        assert_eq!(decoded.pair_profiles[0].low_hash, 0);
+        assert_eq!(decoded.pair_profiles[0].high_hash, 77);
+        assert_eq!(decoded.pair_profiles[0].low_wins[0].support, 3);
+    }
+
+    #[test]
+    fn decoder_rejects_pair_bank_over_budget() {
+        let center = PhaseCenter::from_center(vec![PhaseCell { re: 1.0, im: 0.0 }; CELLS], 2);
+        let package = ContextPhasePackage {
+            pair_profiles: vec![ContextPairPhaseProfile {
+                low_hash: 17,
+                high_hash: 23,
+                low_wins: vec![center; MAX_PAIR_CENTERS_PER_BANK + 1],
+                ..ContextPairPhaseProfile::default()
+            }],
+            ..ContextPhasePackage::default()
+        };
+
+        let error = decode_package(&encode_package(&package)).unwrap_err();
+        assert_eq!(error.kind(), io::ErrorKind::InvalidData);
     }
 }

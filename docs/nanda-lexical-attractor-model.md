@@ -480,6 +480,10 @@ and `improved_cases > worsened_cases`.
 
 ### L2-Lattice Contrastive Training
 
+The canonical one-pass implementation, independent bank budgets, stable
+semantic-anchor rule, and current heldout checkpoint are specified in
+`docs/l3-online-phase-field.md`.
+
 L3 does not train destructive context centers from a separate list of
 lexically similar words. During cold compilation it damages each clean corpus
 token through generic omission/transposition surfaces, asks the actual L2
