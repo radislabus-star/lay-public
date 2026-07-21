@@ -824,6 +824,29 @@ mod tests {
     }
 
     #[test]
+    fn l2_lattice_births_decoded_morphology_from_prefix() {
+        super::super::warm_up_l2_for_ime();
+        let candidates = live_l2_word_candidates("ну давай обновимся только без ", "перезагрузк", 48);
+
+        assert!(
+            candidates
+                .iter()
+                .any(|candidate| candidate.surface == "перезагрузки"),
+            "trained morphology must enter the L2 lattice: {candidates:?}"
+        );
+        let visible = live_completion_candidates(request(
+            "ну давай обновимся только без ",
+            "перезагрузк",
+        ));
+        assert!(
+            visible
+                .iter()
+                .any(|candidate| candidate.surface == "перезагрузки"),
+            "a born morphology candidate must reach IME: {visible:?}"
+        );
+    }
+
+    #[test]
     fn live_gate_allows_authorized_short_prefix_candidates() {
         super::super::warm_up_l2_for_ime();
         let center_candidates = l2::ime_l2_word_candidates("я хочу ", "пр", 12);

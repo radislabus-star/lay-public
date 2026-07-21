@@ -18,6 +18,8 @@ const MAX_POSTINGS_PER_QUERY_CENTER: usize = 512;
 const MAX_COMPLETION_FRONTIER: usize = 4_096;
 const MAX_DECODE_EDITS: u8 = 3;
 const MAX_DAFSA_VISITS: usize = 300_000;
+const MAX_DECODED_COMPLETION_VISITS: usize = 24_000;
+const MAX_DECODED_COMPLETION_SUFFIX_CHARS: usize = 8;
 const RECONSTRUCTION_LANE_RESERVE: usize = 4;
 const PREFIX_COMPOSITION_FRONTIER_PER_PREFIX: usize = 16;
 
@@ -509,9 +511,126 @@ impl LexicalPhaseMemory {
                 });
             }
         }
+        // The terminal graph contains hot lexical centers. The decoder also
+        // contains compact training surfaces such as inflected forms, but
+        // previously exposed them only for typo reconstruction. Let those
+        // surfaces continue the typed prefix through the same phase lattice.
+        candidates.extend(self.decoded_completion_candidates(
+            &prefix,
+            result_limit,
+            material_limit,
+        ));
         sort_candidates(&mut candidates);
         candidates.truncate(result_limit);
         candidates
+    }
+
+    fn decoded_completion_candidates(
+        &self,
+        prefix: &str,
+        result_limit: usize,
+        material_limit: usize,
+    ) -> Vec<LexicalPhaseCandidate> {
+        let mut state_id = 0u32;
+        for ch in prefix.chars() {
+            let Some(child) = self.decoder_child(state_id, ch) else {
+                return Vec::new();
+            };
+            state_id = child;
+        }
+
+        let prefix_len = prefix.chars().count();
+        let max_len = prefix_len
+            .saturating_add(MAX_DECODED_COMPLETION_SUFFIX_CHARS)
+            .min(super::format::MAX_WORD_CHARS);
+        let mut output = prefix.to_string();
+        let mut visited = 0usize;
+        let mut surfaces = Vec::new();
+        self.collect_decoded_completions(
+            state_id,
+            prefix_len,
+            max_len,
+            material_limit.max(result_limit),
+            &mut output,
+            &mut visited,
+            &mut surfaces,
+        );
+
+        let query_field = SurfaceFieldEncoder::encode(prefix);
+        let (query_phase, _) = surface_phase(&query_field);
+        let query_keys = atom_center_keys(&query_field);
+        let mut candidates = surfaces
+            .into_iter()
+            .map(|word| {
+                let suffix_len = word.chars().count().saturating_sub(prefix_len);
+                let candidate_field = SurfaceFieldEncoder::encode(&word);
+                let (candidate_phase, atom_count) = surface_phase(&candidate_field);
+                let coherence = phase_coherence_milli(&query_phase, &candidate_phase);
+                let overlap = sorted_overlap(&query_keys, &atom_center_keys(&candidate_field));
+                LexicalPhaseCandidate {
+                    score: 240u32
+                        .saturating_add(u32::from(coherence))
+                        .saturating_add(overlap.min(24) as u32 * 32)
+                        .saturating_sub(suffix_len as u32 * 12),
+                    word,
+                    l1_overlap: overlap,
+                    l2_overlap: usize::from(coherence) / 40,
+                    motif_overlap: atom_count as usize,
+                    prefix_match: true,
+                    rank: usize::MAX,
+                    phase_coherence_milli: coherence,
+                    reconstructed: true,
+                }
+            })
+            .collect::<Vec<_>>();
+        sort_candidates(&mut candidates);
+        candidates.truncate(result_limit);
+        candidates
+    }
+
+    fn collect_decoded_completions(
+        &self,
+        state_id: u32,
+        prefix_len: usize,
+        max_len: usize,
+        limit: usize,
+        output: &mut String,
+        visited: &mut usize,
+        surfaces: &mut Vec<String>,
+    ) {
+        if *visited >= MAX_DECODED_COMPLETION_VISITS || surfaces.len() >= limit {
+            return;
+        }
+        *visited += 1;
+        let Some(state) = read_decoder_state(self.bytes(), self.header, state_id) else {
+            return;
+        };
+        if state.is_final() && output.chars().count() > prefix_len {
+            surfaces.push(output.clone());
+        }
+        if output.chars().count() >= max_len {
+            return;
+        }
+        for offset in 0..state.arc_len {
+            if *visited >= MAX_DECODED_COMPLETION_VISITS || surfaces.len() >= limit {
+                return;
+            }
+            let Some(arc) = read_decoder_arc(
+                self.bytes(),
+                self.header,
+                state.first_arc.saturating_add(u32::from(offset)),
+            ) else {
+                continue;
+            };
+            let Some(ch) = char::from_u32(arc.ch) else {
+                continue;
+            };
+            output.push(ch);
+            self.collect_decoded_completions(
+                arc.child, prefix_len, max_len, limit, output, visited, surfaces,
+            );
+            output.pop();
+        }
     }
 
     fn reconstructed_surface_candidates(
@@ -1397,6 +1516,14 @@ mod tests {
         let memory = default_memory().expect("production lexical phase artifact loads");
 
         assert!(memory.decoder_contains_surface("подключаю"));
+        assert!(memory.decoder_contains_surface("перезагрузки"));
+        assert!(
+            memory
+                .completion_candidates("перезагрузк", 16, 96)
+                .iter()
+                .any(|candidate| candidate.word == "перезагрузки" && candidate.reconstructed),
+            "decoded morphology must continue a lexical prefix"
+        );
         let candidates = memory.surface_candidates("подлчаю", 64);
         assert!(
             candidates
