@@ -135,10 +135,16 @@ fn boundary_transition_likelihood(
     }
     let original_words = text_words(original);
     let replacement_words = text_words(replacement);
-    if original_words.len() != 1 || replacement_words.len() != 2 {
+    if replacement_words.len() != original_words.len().saturating_add(1) {
         return None;
     }
-    (original_words[0] == replacement_words.concat()).then_some(0.92)
+    let split_index = original_words.len().checked_sub(1)?;
+    if original_words[..split_index] != replacement_words[..split_index] {
+        return None;
+    }
+    let original_surface = original_words[split_index].as_str();
+    let replacement_surface = replacement_words[split_index..].concat();
+    (original_surface == replacement_surface).then_some(0.92)
 }
 
 fn local_context_prior(
@@ -347,5 +353,18 @@ mod tests {
             "clear={clear:?} noisy={noisy:?}"
         );
         assert!(clear.risk < noisy.risk, "clear={clear:?} noisy={noisy:?}");
+    }
+
+    #[test]
+    fn boundary_split_keeps_its_likelihood_with_left_context() {
+        let score = bayes_score_candidate(
+            "тоесть тоесть ",
+            "тоесть то есть ",
+            "glued-words",
+            CandidateOrigin::Boundary,
+        );
+
+        assert_eq!(score.likelihood, 0.92, "score={score:?}");
+        assert!(score.posterior >= 0.50, "score={score:?}");
     }
 }

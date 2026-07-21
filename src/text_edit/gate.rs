@@ -82,8 +82,18 @@ pub fn plan_input_gate_edit(
     decision: &crate::input_gate::InputGateDecision,
 ) -> EditAction {
     let trace = decision.trace.as_ref();
+    // The executor must preserve the DecisionCore's final competition result.
+    // Bayes is one input signal only; using it alone can downgrade a verified
+    // BoundaryCell32 winner after the full L2/L3/L4 field already admitted it.
     let confidence_milli = trace
-        .and_then(|trace| trace.scoreboard.selected_bayes_posterior_milli)
+        .and_then(|trace| {
+            trace
+                .candidate_scores
+                .iter()
+                .find(|score| score.selected)
+                .map(|score| score.decision_rank_milli)
+                .or(trace.scoreboard.selected_bayes_posterior_milli)
+        })
         .unwrap_or(0);
     let Some(receipt) = decision
         .correction

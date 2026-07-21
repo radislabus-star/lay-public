@@ -165,7 +165,12 @@ mod tests {
 
         assert_eq!(decision.replacement, "проходил ");
         assert_eq!(decision.action.from_text(), "прохоил ");
-        assert!(decision.action.allow_apply());
+        assert!(
+            decision.action.allow_apply(),
+            "replacement={:?} action={:?}",
+            decision.replacement,
+            decision.action
+        );
     }
 
     #[test]
@@ -292,6 +297,11 @@ mod tests {
     }
 
     #[test]
+    fn repeated_boundary_token_remains_authorized_at_the_next_space() {
+        assert_replacement("тоесть ", "тоесть тоесть", "то есть ");
+    }
+
+    #[test]
     fn committed_tail_autocorrect_keeps_ascii_layout_punctuation_in_token() {
         assert_replacement("ghj,ktvf ", "ghj,ktvf", "проблема ");
     }
@@ -306,6 +316,12 @@ mod tests {
         .expect("decision");
 
         assert_eq!(decision.replacement, expected);
-        assert!(decision.action.allow_apply());
+        assert!(
+            decision.action.allow_apply(),
+            "replacement={:?} input_gate={:?} action={:?}",
+            decision.replacement,
+            decision.input_gate,
+            decision.action
+        );
     }
 }

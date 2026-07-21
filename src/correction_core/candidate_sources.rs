@@ -701,9 +701,8 @@ fn hot_l2_text_candidates(
     candidates.extend(
         crate::nanda_wave::l2::ime_l2_boundary_candidates(context_prefix, token, 2)
             .into_iter()
-            .map(|candidate| {
-                let replacement =
-                    preserve_candidate_trailing_separator(original, &candidate.surface);
+            .filter_map(|candidate| {
+                let replacement = replace_last_text_word(original, &candidate.surface)?;
                 let origin = CandidateOrigin::Boundary;
                 let error_class = action_operator::classify_token_transition(
                     original,
@@ -711,20 +710,26 @@ fn hot_l2_text_candidates(
                     origin,
                     TypingErrorClass::GluedWords,
                 );
+                // BoundaryCell32 proves a split of the current token.  The
+                // complete tail belongs to the final verifier, but feeding it
+                // into admission makes a local split look like a multiword
+                // rewrite as soon as a preceding word exists.
+                let local_original = format!("{token} ");
+                let local_replacement = format!("{} ", candidate.surface);
                 let gate = TransitionDecisionCore::admit_candidate_proposal(
-                    original,
-                    &replacement,
+                    &local_original,
+                    &local_replacement,
                     error_class,
                     origin,
                 );
-                UnifiedCorrectionCandidate::new(
+                Some(UnifiedCorrectionCandidate::new(
                     replacement,
                     CorrectionDecisionSource::Nanda,
                     origin,
                     "BoundaryCell32",
                     error_class,
                     gate,
-                )
+                ))
             }),
     );
     if timing_enabled {

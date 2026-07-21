@@ -30,6 +30,7 @@ impl LayIbusEngine {
                 config: &self.config,
             },
         ) else {
+            trace::record(r#"{"kind":"ibus_space_autocorrect","status":"no_decision"}"#);
             return Ok(false);
         };
         let layout_transition = decision
@@ -40,8 +41,13 @@ impl LayIbusEngine {
         let boundary_transition =
             decision.action.transition().proof() == Some(TransitionProof::Boundary);
         if !(layout_transition || boundary_transition) || !decision.action.allow_apply() {
+            trace::record(format!(
+                r#"{{"kind":"ibus_space_autocorrect","status":"not_authorized","allow_apply":{}}}"#,
+                decision.action.allow_apply(),
+            ));
             return Ok(false);
         }
+        trace::record(r#"{"kind":"ibus_space_autocorrect","status":"authorized"}"#);
 
         lay::action_log::record_candidate_edit_action_before_apply(
             &decision.action,
