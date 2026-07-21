@@ -72,6 +72,9 @@ pub enum L2ImeWordCandidateKind {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum L2ImeWordCandidateSource {
     LexicalPhase,
+    /// A two-center boundary candidate born by the same L1/L2 field as the
+    /// full correction route.  It stays a display-only replacement in IME.
+    BoundaryPhase,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -94,6 +97,59 @@ pub fn ime_l2_word_candidates(
     limit: usize,
 ) -> Vec<L2ImeWordCandidate> {
     ime_readout::ime_l2_word_candidates_impl(context_prefix, token, limit)
+}
+
+/// Supplies compact BoundaryCell32 proposals to the live IME lattice.
+///
+/// The full L2 route already births split/glue candidates through
+/// `boundary_split_candidates`.  Keeping this projection here prevents the
+/// IME-only lexical readout from silently losing a valid L2 operator.
+pub fn ime_l2_boundary_candidates(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> Vec<L2ImeWordCandidate> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let normalized = token.to_lowercase();
+    if !(6..=18).contains(&normalized.chars().count())
+        || !normalized.chars().all(is_cyrillic_letter)
+    {
+        return Vec::new();
+    }
+    let mut tail = context_prefix.trim_end().to_string();
+    if !tail.is_empty() {
+        tail.push(' ');
+    }
+    tail.push_str(token);
+    let context = TailContext::from_text(&tail);
+    let l1 = super::l1::run_l1(token);
+    let mut candidates = boundary_split_candidates("", token, &l1, &context)
+        .into_iter()
+        .map(|candidate| L2ImeWordCandidate {
+            surface: candidate.text,
+            kind: L2ImeWordCandidateKind::Replacement,
+            source: L2ImeWordCandidateSource::BoundaryPhase,
+            // BoundaryCell32 has already proved two lexical centers.  Keep
+            // its field strength explicit for common live arbitration.
+            score: (candidate.energy * 1_600.0).round() as u32,
+            l1_overlap: normalized.chars().count().min(10),
+            l2_overlap: 4,
+            motif_overlap: 2,
+            usage_prior: 0.0,
+            context_prior: 0.0,
+            accepted_count: 0,
+        })
+        .collect::<Vec<_>>();
+    candidates.sort_by(|left, right| {
+        right
+            .score
+            .cmp(&left.score)
+            .then_with(|| left.surface.cmp(&right.surface))
+    });
+    candidates.truncate(limit);
+    candidates
 }
 
 pub fn correction_l2_word_candidates(

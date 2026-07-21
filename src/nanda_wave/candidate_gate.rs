@@ -4,6 +4,7 @@
 //! them is allowed to become a live IME completion. It does not output text and
 //! does not apply edits.
 
+use super::l2::L2ImeWordCandidateSource;
 use super::l2::{self, L2ImeWordCandidateKind};
 use super::l4_goal_state::L4AllowedAction;
 use super::l4_signed_memory::l4_signed_memory_signal_from_readout;
@@ -11,8 +12,8 @@ use crate::keyboard::is_cyrillic_letter;
 use crate::typing_transition::decision::TransitionDecisionCore;
 use crate::typing_transition::live_candidate::LiveCompletionProposal;
 use std::cell::Cell;
-use std::sync::OnceLock;
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::OnceLock;
 use std::time::Instant;
 
 const LIVE_L2_MATERIAL_FACTOR: usize = 2;
@@ -220,7 +221,9 @@ pub fn live_completion_candidates(
             let common = crate::lexicon::is_common_ru_word(&candidate.surface)
                 || crate::lexicon::is_common_en_technical_word(&candidate.surface);
             let foundation_rank = l2::l2_surface_foundation_rank(&candidate.surface);
-            let l2_center_grounded = foundation_rank.is_some();
+            let boundary_center_grounded =
+                matches!(candidate.source, L2ImeWordCandidateSource::BoundaryPhase);
+            let l2_center_grounded = foundation_rank.is_some() || boundary_center_grounded;
             let hot = foundation_rank.is_some_and(|rank| rank < 20_000);
             let structural = structural_support(
                 candidate.score,
@@ -271,6 +274,10 @@ pub fn live_completion_candidates(
 
             let base_score = 0.22
                 + structural
+                // BoundaryCell32 has proved a two-center transition. Keep
+                // that operator margin through live competition so unrelated
+                // single-word neighbours cannot bury it.
+                + if boundary_center_grounded { 0.28 } else { 0.0 }
                 + wave_peak.rank_bonus
                 + usage * 2.30
                 + context_usage * 3.20
@@ -288,7 +295,11 @@ pub fn live_completion_candidates(
                 surface: candidate.surface,
                 suffix,
                 score,
-                source: "L2LiveCandidateGate32",
+                source: if boundary_center_grounded {
+                    "BoundaryCell32"
+                } else {
+                    "L2LiveCandidateGate32"
+                },
                 rank_score,
                 field_strength: candidate.score,
                 partial_len,
@@ -374,6 +385,11 @@ fn live_l2_word_candidates(
     // the hottest index walk on every IME keypress without adding an authority
     // source or a distinct operator.
     let mut candidates = l2::ime_l2_word_candidates(context_prefix, &normalized, material_limit);
+    candidates.extend(l2::ime_l2_boundary_candidates(
+        context_prefix,
+        &normalized,
+        material_limit,
+    ));
     candidates.sort_by(|left, right| {
         right
             .score
@@ -826,7 +842,8 @@ mod tests {
     #[test]
     fn l2_lattice_births_decoded_morphology_from_prefix() {
         super::super::warm_up_l2_for_ime();
-        let candidates = live_l2_word_candidates("ну давай обновимся только без ", "перезагрузк", 48);
+        let candidates =
+            live_l2_word_candidates("ну давай обновимся только без ", "перезагрузк", 48);
 
         assert!(
             candidates
@@ -834,10 +851,8 @@ mod tests {
                 .any(|candidate| candidate.surface == "перезагрузки"),
             "trained morphology must enter the L2 lattice: {candidates:?}"
         );
-        let visible = live_completion_candidates(request(
-            "ну давай обновимся только без ",
-            "перезагрузк",
-        ));
+        let visible =
+            live_completion_candidates(request("ну давай обновимся только без ", "перезагрузк"));
         assert!(
             visible
                 .iter()
@@ -894,6 +909,37 @@ mod tests {
                 .iter()
                 .any(|candidate| candidate.surface == "загрузи" && candidate.suffix.is_empty()),
             "replacement must remain explicit rather than being forged into a suffix: raw={raw:?}, selected={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn live_gate_projects_boundary_cell_into_ime_lattice() {
+        super::super::warm_up_l2_for_ime();
+        let raw = live_l2_word_candidates("", "тоесть", 12);
+        assert!(
+            raw.iter().any(|candidate| {
+                candidate.surface == "то есть"
+                    && candidate.source == L2ImeWordCandidateSource::BoundaryPhase
+            }),
+            "BoundaryCell32 must enter the live lattice: {raw:?}"
+        );
+        let visible = live_completion_candidates(request("", "тоесть"));
+        assert!(
+            visible
+                .iter()
+                .any(|candidate| candidate.surface == "то есть" && candidate.suffix.is_empty()),
+            "boundary replacement must remain an explicit IME proposal: raw={raw:?}, selected={visible:?}"
+        );
+    }
+
+    #[test]
+    fn live_gate_does_not_split_known_word_form() {
+        super::super::warm_up_l2_for_ime();
+        let raw = live_l2_word_candidates("", "указать", 12);
+        assert!(
+            raw.iter()
+                .all(|candidate| candidate.source != L2ImeWordCandidateSource::BoundaryPhase),
+            "stable known words cannot gain boundary proposals: {raw:?}"
         );
     }
 
