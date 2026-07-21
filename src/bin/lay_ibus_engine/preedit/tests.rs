@@ -37,6 +37,18 @@ fn candidate_target_preserves_nonzero_selection_by_surface() {
 }
 
 #[test]
+fn typed_continuation_releases_auto_target_but_keeps_learning_observation() {
+    let mut fast = PreeditFastState::default();
+    fast.remember_target(Some("перезагрузка".to_string()));
+    fast.observe_prediction_target(Some("перезагрузка".to_string()));
+
+    fast.push('з');
+
+    assert_eq!(fast.target_surface(), None);
+    assert_eq!(fast.observed_prediction_target(), Some("перезагрузка"));
+}
+
+#[test]
 fn invalidated_target_retargets_to_fresh_top_candidate_without_blank_frame() {
     let candidates = vec!["ст".to_string(), "ровать".to_string()];
 

@@ -47,6 +47,11 @@ impl PreeditFastState {
             self.reset();
             return;
         }
+        // A typed grapheme is an explicit continuation choice. Recompute the
+        // visible completion from the new prefix instead of pinning an earlier
+        // automatic target such as "перезагрузка" across the whole word.
+        // Keep observed_prediction_target for boundary feedback only.
+        self.target_surface = None;
         self.token.push(ch);
         trim_tail_buffer_to(&mut self.token, PREEDIT_TOKEN_LIMIT);
     }
