@@ -259,10 +259,31 @@ mod tests {
     }
 
     #[test]
+    fn signed_memory_reads_canonical_layout_operator_from_new_feedback() {
+        let usage = usage_from_events(
+            r#"{"ts":1,"kind":"rejected_candidate","word":"нас","from":"yfc","to":"нас","source":"layout","operation":"replacement","operator":"layout_projection","layout_direction":"en_to_ru","layout_scope":"current_token"}
+"#,
+        );
+        let state = crate::transition_relation::transition_state_id("yfc");
+        let signal = l4_signed_memory_signal(L4SignedMemoryInput {
+            context: &[],
+            source: "layout",
+            operation: "layout_projection",
+            state_word: &state,
+            candidate_text: "нас",
+            usage: &usage,
+            surface: None,
+        });
+
+        assert!(signal.transition_state_specific);
+        assert!(signal.repulsion > signal.attraction);
+    }
+
+    #[test]
     fn signed_memory_keeps_context_rejection_out_of_structural_surface_repel() {
         let surface = "op=replacement|source=autocorrect|words=2->2|delta=0|prefix=3-4|edit=1";
         let covered_usage = usage_from_events(&format!(
-            "{{\"ts\":1,\"kind\":\"accepted_fix\",\"word\":\"проверить\",\"context\":[\"можно\"],\"from\":\"можно проврить\",\"to\":\"можно проверить\",\"source\":\"autocorrect\",\"operation\":\"replacement\",\"surface\":\"{surface}\"}}\n"
+            "{{\"ts\":1,\"kind\":\"accepted_fix\",\"word\":\"проверить\",\"context\":[\"можно\"],\"from\":\"можно проврить\",\"to\":\"можно проверить\",\"source\":\"user_correction\",\"operation\":\"replacement\",\"surface\":\"{surface}\"}}\n"
         ));
         let repelled_usage = usage_from_events(&format!(
             "{{\"ts\":1,\"kind\":\"rejected_candidate\",\"word\":\"проврить\",\"context\":[\"можно\"],\"from\":\"можно проверить\",\"to\":\"можно проврить\",\"source\":\"autocorrect\",\"operation\":\"replacement\",\"surface\":\"{surface}\"}}\n"

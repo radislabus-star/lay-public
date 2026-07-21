@@ -411,6 +411,13 @@ OPEN:
 
 ### 4.4 L4: hidden typing state and transition witnesses
 
+The canonical forward implementation plan for L4 is
+`docs/l4-causal-transition-memory-plan.md`. It preserves this document's
+authority model while replacing stringly typed feedback with causal receipts,
+typed layout direction/scope, compact cross-scene phase transfer, and a guarded
+single-grapheme layout route. The rejected whole-lattice scene boost remains
+rejected; the new plan learns candidate-relative transition outcomes instead.
+
 LIVE:
 
 - groups extensionally identical predicted states into a semantic quotient;

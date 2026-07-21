@@ -593,6 +593,15 @@ fn script_class(text: &str) -> &'static str {
     }
 }
 
+/// Coarse script family for typed learning identities.
+///
+/// This is intentionally independent from the keyboard map: the map creates a
+/// candidate, while the memory records only the observed direction between two
+/// surfaces.
+pub(crate) fn script_family(text: &str) -> &'static str {
+    script_class(text)
+}
+
 fn small_bucket(value: usize) -> &'static str {
     match value {
         0 => "0",

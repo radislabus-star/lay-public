@@ -7,6 +7,85 @@
 const CONTEXT_WORDS: usize = 5;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum LayoutProjectionDirection {
+    EnToRu,
+    RuToEn,
+    MixedToRu,
+    MixedToEn,
+    Unknown,
+}
+
+impl LayoutProjectionDirection {
+    pub(crate) const fn as_str(self) -> &'static str {
+        match self {
+            Self::EnToRu => "en_to_ru",
+            Self::RuToEn => "ru_to_en",
+            Self::MixedToRu => "mixed_to_ru",
+            Self::MixedToEn => "mixed_to_en",
+            Self::Unknown => "unknown",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum LayoutProjectionScope {
+    Grapheme,
+    CurrentToken,
+    Phrase,
+}
+
+impl LayoutProjectionScope {
+    pub(crate) const fn as_str(self) -> &'static str {
+        match self {
+            Self::Grapheme => "grapheme",
+            Self::CurrentToken => "current_token",
+            Self::Phrase => "phrase",
+        }
+    }
+}
+
+/// Compact identity of a learned text transition.
+///
+/// `source` remains diagnostic provenance only. The operator identity is what
+/// L4 can later transfer between adapters and applications.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct TypingTransitionIdentity {
+    pub(crate) operator: crate::transition_relation::TransitionOperatorKind,
+    pub(crate) layout_direction: Option<LayoutProjectionDirection>,
+    pub(crate) layout_scope: Option<LayoutProjectionScope>,
+}
+
+impl TypingTransitionIdentity {
+    fn observed(from: &str, to: &str, operation: &str) -> Self {
+        use crate::transition_relation::TransitionOperatorKind;
+
+        let operator = TransitionOperatorKind::infer(from, to, operation);
+        let (layout_direction, layout_scope) =
+            if operator == TransitionOperatorKind::LayoutProjection {
+                (
+                    Some(layout_projection_direction(from, to)),
+                    Some(layout_projection_scope(from, to)),
+                )
+            } else {
+                (None, None)
+            };
+        Self {
+            operator,
+            layout_direction,
+            layout_scope,
+        }
+    }
+
+    fn typed() -> Self {
+        Self {
+            operator: crate::transition_relation::TransitionOperatorKind::Other,
+            layout_direction: None,
+            layout_scope: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum TypingMemoryEventKind {
     Typed,
     AcceptedFix,
@@ -23,16 +102,40 @@ pub(crate) enum TypingMemoryFeedback {
     Rejected,
 }
 
+/// Causal status of the observed transition.
+///
+/// Only confirmed/reverted outcomes may later teach L4. Transport loss,
+/// stale snapshots and raw typing remain censored observations rather than
+/// negative semantic evidence.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum TypingMemoryOutcome {
+    ConfirmedPositive,
+    Reverted,
+    Censored,
+}
+
+impl TypingMemoryOutcome {
+    pub(crate) const fn as_str(self) -> &'static str {
+        match self {
+            Self::ConfirmedPositive => "confirmed_positive",
+            Self::Reverted => "reverted",
+            Self::Censored => "censored",
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct TypingMemoryEvent {
     pub(crate) kind: TypingMemoryEventKind,
     pub(crate) feedback: TypingMemoryFeedback,
+    pub(crate) outcome: TypingMemoryOutcome,
     pub(crate) word: String,
     pub(crate) context: Vec<String>,
     pub(crate) from: Option<String>,
     pub(crate) to: Option<String>,
     pub(crate) source: String,
     pub(crate) operation: String,
+    pub(crate) identity: TypingTransitionIdentity,
     /// Stable relation shape, intentionally independent from concrete words.
     pub(crate) surface: Option<String>,
 }
@@ -43,12 +146,14 @@ impl TypingMemoryEvent {
         Some(Self {
             kind: TypingMemoryEventKind::Typed,
             feedback: TypingMemoryFeedback::Observed,
+            outcome: TypingMemoryOutcome::Censored,
             word,
             context,
             from: None,
             to: None,
             source: "user".to_string(),
             operation: "typed".to_string(),
+            identity: TypingTransitionIdentity::typed(),
             surface: None,
         })
     }
@@ -122,12 +227,18 @@ impl TypingMemoryEvent {
                 Some(Self {
                     kind: TypingMemoryEventKind::RejectedCandidate,
                     feedback: TypingMemoryFeedback::Rejected,
+                    outcome: TypingMemoryOutcome::Reverted,
                     word,
                     context,
                     from: Some(context_tail.trim().to_string()),
                     to: Some(rejected_text.trim().to_string()),
                     source: source.to_string(),
                     operation: operation.to_string(),
+                    identity: TypingTransitionIdentity::observed(
+                        context_tail,
+                        rejected_text,
+                        operation,
+                    ),
                     surface: Some(transition_surface_key(
                         context_tail,
                         rejected_text,
@@ -161,12 +272,14 @@ fn accepted_events(
             TypingMemoryEvent {
                 kind,
                 feedback: TypingMemoryFeedback::Accepted,
+                outcome: TypingMemoryOutcome::ConfirmedPositive,
                 word,
                 context,
                 from: Some(from.trim().to_string()),
                 to: Some(to.trim().to_string()),
                 source: source.to_string(),
                 operation: operation.to_string(),
+                identity: TypingTransitionIdentity::observed(from, to, operation),
                 surface: Some(transition_surface_key(from, to, source, operation)),
             }
         })
@@ -224,15 +337,49 @@ fn ime_events(
         .map(|word| TypingMemoryEvent {
             kind,
             feedback,
+            outcome: match feedback {
+                TypingMemoryFeedback::Accepted => TypingMemoryOutcome::ConfirmedPositive,
+                TypingMemoryFeedback::Rejected => TypingMemoryOutcome::Reverted,
+                TypingMemoryFeedback::Observed => TypingMemoryOutcome::Censored,
+            },
             word,
             context: context.clone(),
             from: None,
             to: Some(text.trim().to_string()),
             source: "ime".to_string(),
             operation: operation.to_string(),
+            identity: TypingTransitionIdentity::observed(context_tail, text, operation),
             surface: None,
         })
         .collect()
+}
+
+fn layout_projection_direction(from: &str, to: &str) -> LayoutProjectionDirection {
+    let source = crate::transition_relation::script_family(from);
+    let target = crate::transition_relation::script_family(to);
+    match (source, target) {
+        ("en", "ru") => LayoutProjectionDirection::EnToRu,
+        ("ru", "en") => LayoutProjectionDirection::RuToEn,
+        ("mixed", "ru") => LayoutProjectionDirection::MixedToRu,
+        ("mixed", "en") => LayoutProjectionDirection::MixedToEn,
+        _ => LayoutProjectionDirection::Unknown,
+    }
+}
+
+fn layout_projection_scope(from: &str, to: &str) -> LayoutProjectionScope {
+    let from_words = normalized_words(from);
+    let to_words = normalized_words(to);
+    let changed = changed_target_indexes(&from_words, &to_words);
+    if changed.len() > 1 {
+        return LayoutProjectionScope::Phrase;
+    }
+    let from_word = from_words.last().map(String::as_str).unwrap_or_default();
+    let to_word = to_words.last().map(String::as_str).unwrap_or_default();
+    if from_word.chars().count() == 1 && to_word.chars().count() == 1 {
+        LayoutProjectionScope::Grapheme
+    } else {
+        LayoutProjectionScope::CurrentToken
+    }
 }
 
 pub(crate) fn transition_surface_key(
@@ -319,6 +466,7 @@ mod tests {
 
         assert_eq!(event.kind, TypingMemoryEventKind::Typed);
         assert_eq!(event.feedback, TypingMemoryFeedback::Observed);
+        assert_eq!(event.outcome, TypingMemoryOutcome::Censored);
         assert_eq!(event.word, "дождь");
         assert_eq!(event.context, ["на", "улице", "опять", "идёт"]);
     }
@@ -338,6 +486,9 @@ mod tests {
         assert!(events
             .iter()
             .all(|event| event.feedback == TypingMemoryFeedback::Accepted));
+        assert!(events
+            .iter()
+            .all(|event| event.outcome == TypingMemoryOutcome::ConfirmedPositive));
         assert!(events.iter().all(|event| event.source == "user_correction"));
         assert!(events.iter().all(|event| event.operation == "replacement"));
         assert!(events.iter().all(|event| event.surface.is_some()));
@@ -370,6 +521,7 @@ mod tests {
         assert_eq!(events.len(), 1);
         assert_eq!(events[0].kind, TypingMemoryEventKind::RejectedCandidate);
         assert_eq!(events[0].feedback, TypingMemoryFeedback::Rejected);
+        assert_eq!(events[0].outcome, TypingMemoryOutcome::Reverted);
         assert_eq!(events[0].context, ["ну"]);
         assert_eq!(events[0].word, "даша");
         assert!(events[0].surface.is_some());
@@ -401,6 +553,37 @@ mod tests {
         assert_eq!(events[0].operation, "replacement");
         assert_eq!(events[0].from.as_deref(), Some("ltkfq"));
         assert_eq!(events[0].to.as_deref(), Some("делай"));
+        assert_eq!(
+            events[0].identity.operator,
+            crate::transition_relation::TransitionOperatorKind::LayoutProjection
+        );
+        assert_eq!(
+            events[0].identity.layout_direction,
+            Some(LayoutProjectionDirection::EnToRu)
+        );
+        assert_eq!(
+            events[0].identity.layout_scope,
+            Some(LayoutProjectionScope::CurrentToken)
+        );
+    }
+
+    #[test]
+    fn layout_identity_is_bidirectional_and_marks_single_grapheme_scope() {
+        let ru_to_en = TypingMemoryEvent::accepted_layout_projection("делай", "ltkfq");
+        let grapheme = TypingMemoryEvent::accepted_layout_projection("b", "и");
+
+        assert_eq!(
+            ru_to_en[0].identity.layout_direction,
+            Some(LayoutProjectionDirection::RuToEn)
+        );
+        assert_eq!(
+            grapheme[0].identity.layout_direction,
+            Some(LayoutProjectionDirection::EnToRu)
+        );
+        assert_eq!(
+            grapheme[0].identity.layout_scope,
+            Some(LayoutProjectionScope::Grapheme)
+        );
     }
 
     #[test]

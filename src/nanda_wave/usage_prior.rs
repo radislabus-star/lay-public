@@ -76,6 +76,14 @@ struct UsageEvent {
     operation: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     surface: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    operator: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    layout_direction: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    layout_scope: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    outcome: Option<String>,
 }
 
 impl UsageEvent {
@@ -99,6 +107,16 @@ impl UsageEvent {
             source: Some(event.source.clone()),
             operation: Some(event.operation.clone()),
             surface: event.surface.clone(),
+            operator: Some(event.identity.operator.as_str().to_string()),
+            layout_direction: event
+                .identity
+                .layout_direction
+                .map(|direction| direction.as_str().to_string()),
+            layout_scope: event
+                .identity
+                .layout_scope
+                .map(|scope| scope.as_str().to_string()),
+            outcome: Some(event.outcome.as_str().to_string()),
         }
     }
 }
@@ -1690,6 +1708,10 @@ mod tests {
                 source: None,
                 operation: None,
                 surface: None,
+                operator: None,
+                layout_direction: None,
+                layout_scope: None,
+                outcome: None,
             },
             || panic!("initialized live cache must not reload cold counts"),
         );
@@ -2059,6 +2081,10 @@ mod tests {
             source: Some("user".to_string()),
             operation: Some("typed".to_string()),
             surface: None,
+            operator: None,
+            layout_direction: None,
+            layout_scope: None,
+            outcome: None,
         };
         let second = UsageEvent {
             ts: 2,

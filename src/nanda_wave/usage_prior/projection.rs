@@ -167,6 +167,11 @@ fn event_source(event: &UsageEvent) -> &str {
 }
 
 fn event_operation(event: &UsageEvent) -> &str {
+    // New records carry the canonical operator identity. Keep the historical
+    // operation field as a fallback so existing local feedback remains usable.
+    if let Some(operator) = event.operator.as_deref() {
+        return operator;
+    }
     event.operation.as_deref().unwrap_or(match event.kind {
         UsageEventKind::Typed => "typed",
         UsageEventKind::AcceptedFix => "replacement",

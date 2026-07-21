@@ -162,10 +162,15 @@ fn l4_signed_memory_readout(
         );
     }
     let state_id = crate::transition_relation::transition_state_id(&event.original);
+    let operator = crate::transition_relation::TransitionOperatorKind::infer(
+        &event.original,
+        &candidate.replacement,
+        "replacement",
+    );
     l4_signed_memory_signal(L4SignedMemoryInput {
         context: &context,
         source: candidate.origin.memory_key(),
-        operation: "replacement",
+        operation: operator.as_str(),
         state_word: &state_id,
         candidate_text: &transition_target,
         usage,
