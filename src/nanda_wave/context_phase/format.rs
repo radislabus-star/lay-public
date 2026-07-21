@@ -10,9 +10,10 @@ use super::{
     MAX_SIGNATURE_PROFILES,
 };
 
-const VERSION: u16 = 4;
+const VERSION: u16 = 5;
 const HEADER_BYTES_V1_TO_V3: usize = 48;
 const HEADER_BYTES_V4: usize = 52;
+const HEADER_BYTES_V5: usize = 56;
 const SEMANTIC_HEADER_BYTES: usize = 16;
 const PROFILE_HEADER_BYTES_V1: usize = 24;
 const PROFILE_HEADER_BYTES_V2: usize = 28;
@@ -33,7 +34,7 @@ pub(crate) fn write_package(path: &Path, package: &ContextPhasePackage) -> io::R
 
 fn encode_package(package: &ContextPhasePackage) -> Vec<u8> {
     let mut bytes = Vec::with_capacity(
-        HEADER_BYTES_V4
+        HEADER_BYTES_V5
             + package.semantic_states.len() * (SEMANTIC_HEADER_BYTES + VECTOR_BYTES)
             + package
                 .profiles
@@ -76,7 +77,13 @@ fn encode_package(package: &ContextPhasePackage) -> Vec<u8> {
     bytes.extend_from_slice(&(package.pair_profiles.len() as u32).to_le_bytes());
     bytes.extend_from_slice(&package.pairwise_threshold_micro.to_le_bytes());
     bytes.extend_from_slice(&(package.signature_profiles.len() as u32).to_le_bytes());
-    debug_assert_eq!(bytes.len(), HEADER_BYTES_V4);
+    let signature_schema = if package.signature_schema == 0 {
+        super::SIGNATURE_SCHEMA_MORPHOLOGY_PHASE
+    } else {
+        package.signature_schema
+    };
+    bytes.extend_from_slice(&signature_schema.to_le_bytes());
+    debug_assert_eq!(bytes.len(), HEADER_BYTES_V5);
 
     for state in &package.semantic_states {
         bytes.extend_from_slice(&state.token_hash.to_le_bytes());
@@ -199,7 +206,24 @@ fn decode_package_owned(backing: Arc<[u8]>) -> io::Result<ContextPhasePackage> {
     } else {
         0
     };
-    let mut offset = if version >= 4 {
+    let signature_schema = if version >= 5 {
+        read_u32(bytes, 52)?
+    } else {
+        super::SIGNATURE_SCHEMA_LEGACY
+    };
+    if version >= 5
+        && signature_schema != super::SIGNATURE_SCHEMA_LEGACY
+        && signature_schema != super::SIGNATURE_SCHEMA_MORPHOLOGY_ENDING
+        && signature_schema != super::SIGNATURE_SCHEMA_MORPHOLOGY_PHASE
+    {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "unsupported L3 context phase signature schema",
+        ));
+    }
+    let mut offset = if version >= 5 {
+        HEADER_BYTES_V5
+    } else if version >= 4 {
         HEADER_BYTES_V4
     } else {
         HEADER_BYTES_V1_TO_V3
@@ -300,6 +324,7 @@ fn decode_package_owned(backing: Arc<[u8]>) -> io::Result<ContextPhasePackage> {
         global_threshold_micro,
         competition_threshold_micro,
         pairwise_threshold_micro,
+        signature_schema,
     })
 }
 
@@ -510,6 +535,7 @@ mod tests {
             global_threshold_micro: 10_000,
             competition_threshold_micro: 20_000,
             pairwise_threshold_micro: 20_000,
+            signature_schema: super::super::SIGNATURE_SCHEMA_MORPHOLOGY_PHASE,
         };
         let dir = std::env::temp_dir().join(format!("lay-l3-phase-{}", std::process::id()));
         let path = dir.join("memory.nwpc");
@@ -524,6 +550,10 @@ mod tests {
         assert_eq!(decoded.profiles.len(), 1);
         assert_eq!(decoded.signature_profiles.len(), 1);
         assert_eq!(decoded.signature_profiles[0].token_hash, 99);
+        assert_eq!(
+            decoded.signature_schema,
+            super::super::SIGNATURE_SCHEMA_MORPHOLOGY_PHASE
+        );
         assert_eq!(decoded.profiles[0].hard_negative.len(), 1);
         assert_eq!(decoded.pair_profiles.len(), 1);
         assert_eq!(decoded.pair_profiles[0].low_hash, 17);
@@ -553,7 +583,7 @@ mod tests {
         let mut bytes = encode_package(&package);
         bytes[8..10].copy_from_slice(&2_u16.to_le_bytes());
         bytes[40..48].fill(0);
-        bytes.drain(48..52);
+        bytes.drain(48..56);
 
         let decoded = decode_package(&bytes).unwrap();
         assert_eq!(decoded.profiles.len(), 1);

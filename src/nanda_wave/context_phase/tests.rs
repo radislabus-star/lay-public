@@ -473,10 +473,10 @@ fn signature_profile_strengthens_exact_profile_without_becoming_authority() {
         ContextPhaseMode::Full,
     );
     assert!(!signature_only.profile_present);
-    assert_eq!(
-        signature_only.disposition,
-        ContextPhaseDisposition::Unavailable
-    );
+    assert_eq!(signature_only.disposition, ContextPhaseDisposition::Neutral);
+    assert!(signature_only.signature_profile_present);
+    assert!(signature_only.positive_micro > 0);
+    assert!(signature_only.margin_micro > 0);
 }
 
 #[test]
@@ -595,6 +595,15 @@ fn tracked_context_phase_exposes_case_competition_for_intellect_scene() {
     }
     assert!(readouts[2].profile_present);
     assert_eq!(readouts[2].disposition, ContextPhaseDisposition::Support);
+}
+
+#[test]
+fn tracked_v4_package_keeps_its_legacy_signature_projection() {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("data/lexicon/l3_context_phase_v1.nwpc");
+    let package = read_package(&path).expect("tracked L3 context phase package");
+
+    assert_eq!(package.signature_schema, SIGNATURE_SCHEMA_LEGACY);
 }
 
 #[test]

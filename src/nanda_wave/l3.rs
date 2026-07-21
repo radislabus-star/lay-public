@@ -906,6 +906,7 @@ mod tests {
                 anti_micro: 0,
                 threshold_micro: 700_000,
                 relation_class: 1,
+                pairwise_certified: false,
                 reason: "l3_context_phase_support",
             }),
         ];
@@ -949,6 +950,7 @@ mod tests {
             anti_micro: 0,
             threshold_micro: 300_000,
             relation_class: 1,
+            pairwise_certified: false,
             reason: "l3_context_phase_support",
         };
 

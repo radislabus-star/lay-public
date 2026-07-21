@@ -4,6 +4,7 @@ struct L3Signal {
     rank_energy: f32,
     decision: L3ContextDisposition,
     relation_class: u64,
+    pairwise_certified: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -103,6 +104,7 @@ fn l3_phrase_signal(
             rank_energy: 0.0,
             decision: L3ContextDisposition::NotApplicable,
             relation_class: 0,
+            pairwise_certified: false,
         };
     }
     let Some(report) = report else {
@@ -111,6 +113,7 @@ fn l3_phrase_signal(
             rank_energy: 0.0,
             decision: L3ContextDisposition::NotApplicable,
             relation_class: 0,
+            pairwise_certified: false,
         };
     };
     match report.decision {
@@ -121,6 +124,7 @@ fn l3_phrase_signal(
                 rank_energy: report.rank_energy,
                 decision: L3ContextDisposition::Support,
                 relation_class: report.relation_class,
+                pairwise_certified: report.pairwise_certified,
             }
         }
         L3PhraseGateDecision::Suppress => L3Signal {
@@ -128,12 +132,14 @@ fn l3_phrase_signal(
             rank_energy: report.rank_energy,
             decision: L3ContextDisposition::Suppress,
             relation_class: report.relation_class,
+            pairwise_certified: false,
         },
         L3PhraseGateDecision::Neutral => L3Signal {
             signal: (report.score * 0.20).clamp(0.0, 0.20),
             rank_energy: 0.0,
             decision: L3ContextDisposition::Neutral,
             relation_class: report.relation_class,
+            pairwise_certified: false,
         },
     }
 }

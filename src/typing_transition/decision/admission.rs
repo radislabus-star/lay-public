@@ -57,6 +57,18 @@ pub(super) fn candidate_has_apply_authority(
         debug_decision_reject(candidate, reason, bayes.posterior, bayes.risk);
         return false;
     }
+    if known_word_transposition_requires_relation_proof(event, candidate)
+        && !signals.l3_pairwise_certified
+        && !exact_positive_transition
+    {
+        debug_decision_reject(
+            candidate,
+            "known_word_transposition_needs_pairwise_proof",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
     let verified_mass_preserving_l2_transition =
         is_verified_mass_preserving_l2_transition(source_role, candidate, evaluation);
     let self_referential_surface_drift = source_role == CorrectionSourceRole::L2Surface
@@ -182,6 +194,81 @@ pub(super) fn candidate_has_apply_authority(
         );
     }
     allowed
+}
+
+/// A swap between two already valid lexical states is ambiguous by surface
+/// alone. L2 may propose it, but only a directional L3 pair certificate or an
+/// exact accepted L4 transition can authorize changing user text.
+fn known_word_transposition_requires_relation_proof(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+) -> bool {
+    if candidate.error_class != TypingErrorClass::AdjacentTransposition {
+        return false;
+    }
+    stable_current_word_center(&event.original)
+        && stable_current_word_center(&candidate.replacement)
+}
+
+fn stable_current_word_center(text: &str) -> bool {
+    let Some(word) = crate::word_reader::last_text_word(text) else {
+        return false;
+    };
+    crate::hot_field::HotFieldSnapshot::current()
+        .word_readout(&word)
+        .has_phase_authority()
+}
+
+#[cfg(test)]
+mod known_word_transposition_tests {
+    use super::*;
+    use crate::candidate_contract::CandidateOrigin;
+    use crate::correction_core::{
+        CandidateGateAction, CandidateGateDecision, CorrectionDecisionSource,
+    };
+
+    fn event(text: &str) -> TypingErrorEvent {
+        TypingErrorEvent {
+            original: text.to_string(),
+            core: text.trim().to_string(),
+            current_word: text
+                .split_whitespace()
+                .last()
+                .unwrap_or_default()
+                .to_string(),
+            input_class: TypingErrorClass::AdjacentTransposition,
+        }
+    }
+
+    fn candidate(replacement: &str) -> UnifiedCorrectionCandidate {
+        UnifiedCorrectionCandidate::new(
+            replacement,
+            CorrectionDecisionSource::Nanda,
+            CandidateOrigin::L2Surface,
+            "L2LexicalPhaseCell32",
+            TypingErrorClass::AdjacentTransposition,
+            CandidateGateDecision {
+                action: CandidateGateAction::Eligible,
+                reason: "class_allows_apply",
+            },
+        )
+    }
+
+    #[test]
+    fn ambiguous_known_to_known_swap_requires_relation_proof() {
+        assert!(known_word_transposition_requires_relation_proof(
+            &event("он "),
+            &candidate("но "),
+        ));
+    }
+
+    #[test]
+    fn unknown_to_known_transposition_remains_an_l2_repair() {
+        assert!(!known_word_transposition_requires_relation_proof(
+            &event("ландо "),
+            &candidate("ладно "),
+        ));
+    }
 }
 
 fn close_unresolved_competitor_exists(

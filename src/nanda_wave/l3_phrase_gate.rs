@@ -15,6 +15,9 @@ pub(crate) struct L3PhraseGateReport {
     pub(crate) anti_micro: i64,
     pub(crate) threshold_micro: i64,
     pub(crate) relation_class: u64,
+    /// A directed L3 lattice certificate: this candidate beat every known
+    /// competitor in the same scene. It is stronger than unary phrase support.
+    pub(crate) pairwise_certified: bool,
     pub(crate) reason: &'static str,
 }
 
@@ -104,6 +107,7 @@ pub(super) fn reports_from_phase_readouts(
                 anti_micro: readout.anti_micro,
                 threshold_micro: readout.threshold_micro,
                 relation_class: readout.relation_class,
+                pairwise_certified: readout.pairwise_certified,
                 reason: match decision {
                     L3PhraseGateDecision::Support => "l3_context_phase_support",
                     L3PhraseGateDecision::Suppress => "l3_context_phase_suppress",
@@ -252,6 +256,7 @@ fn evaluate_context_field_with_memory(
                 anti_micro: 0,
                 threshold_micro: 160_000,
                 relation_class: 0,
+                pairwise_certified: false,
                 reason,
             })
         })

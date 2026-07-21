@@ -606,6 +606,11 @@ impl OnlineContextPhaseLearner {
         // another exact-word memory in disguise.
         self.update_signature_positive(target_signature, &scene);
         for (hash, signature, _) in &observations {
+            // The same compact morphology/L2 state can be correct in one
+            // scene and wrong in another. Keep the losing scene in a separate
+            // anti-bank so signature transfer is interference, not a global
+            // suffix preference.
+            self.update_signature_negative(*signature, &scene);
             self.update_pair_winner(target_hash, *hash, &scene, false);
             self.update_pair_relation(target_hash, target_signature, *hash, *signature, &scene);
         }
@@ -627,6 +632,16 @@ impl OnlineContextPhaseLearner {
         });
         if let Some(hash) = false_winner {
             self.update_pair_winner(target_hash, hash, &scene, true);
+            if let Some((_, _, vector)) = observations
+                .iter()
+                .find(|(candidate_hash, _, _)| *candidate_hash == hash)
+            {
+                // A false winner is stronger evidence than an ordinary L2
+                // competitor: retain its candidate-local phase as a hard
+                // anti-center. This is train-only feedback; heldout never
+                // writes into the package it evaluates.
+                self.update_hard_negative_relation(hash, vector);
+            }
         }
 
         for (hash, _, vector) in &observations {
@@ -797,10 +812,10 @@ impl OnlineContextPhaseLearner {
             .map(|(signature, builder)| ContextCandidateProfile {
                 token_hash: *signature,
                 positive_examples: builder.positive_examples,
-                negative_examples: 0,
+                negative_examples: builder.negative_examples,
                 threshold_micro: builder.threshold_micro(),
                 positive: builder.positive.clone(),
-                negative: Vec::new(),
+                negative: builder.negative.clone(),
                 hard_negative: Vec::new(),
             })
             .collect::<Vec<_>>();
@@ -855,6 +870,7 @@ impl OnlineContextPhaseLearner {
             global_threshold_micro,
             competition_threshold_micro,
             pairwise_threshold_micro: competition_threshold_micro,
+            signature_schema: super::SIGNATURE_SCHEMA_MORPHOLOGY_PHASE,
         }
     }
 
@@ -1029,6 +1045,30 @@ impl OnlineContextPhaseLearner {
         );
     }
 
+    fn update_signature_negative(&mut self, signature: u64, vector: &[PhaseCell]) {
+        let Some(profile) = self.signature_profiles.get_mut(&signature) else {
+            return;
+        };
+        let outcome = update_bounded_cluster(
+            &mut profile.negative,
+            vector,
+            MAX_ANTI_CENTERS,
+            &mut self.negative_phase_centers,
+            self.config.max_negative_phase_centers,
+        );
+        if matches!(outcome, ClusterUpdate::RejectedAtCapacity) {
+            self.stats.rejected_incompatible_modes =
+                self.stats.rejected_incompatible_modes.saturating_add(1);
+            return;
+        }
+        profile.negative_examples = profile.negative_examples.saturating_add(1);
+        let margin = phase_micro(max_coherence(vector, &profile.negative).unwrap_or_default());
+        profile.negative_calibration.observe(
+            micro_i32(margin),
+            signature ^ self.stats.transitions.rotate_left(11),
+        );
+    }
+
     fn evict_provisional_profile(&mut self) -> bool {
         while let Some(token_hash) = self.provisional_profile_order.pop_front() {
             let Some(profile) = self.profiles.get(&token_hash) else {
@@ -1115,6 +1155,26 @@ impl OnlineContextPhaseLearner {
         if let Some(pending) = self.pending_negative.get_mut(&token_hash) {
             pending.negative_examples = pending.negative_examples.saturating_add(1);
         }
+    }
+
+    fn update_hard_negative_relation(&mut self, token_hash: u64, vector: &[PhaseCell]) {
+        let Some(profile) = self.profiles.get_mut(&token_hash) else {
+            return;
+        };
+        let outcome = update_bounded_cluster(
+            &mut profile.hard_negative,
+            vector,
+            MAX_ANTI_CENTERS,
+            &mut self.hard_negative_phase_centers,
+            self.config.max_hard_negative_phase_centers,
+        );
+        if matches!(outcome, ClusterUpdate::RejectedAtCapacity) {
+            self.stats.rejected_incompatible_modes =
+                self.stats.rejected_incompatible_modes.saturating_add(1);
+            return;
+        }
+        self.stats.hard_negative_false_winners =
+            self.stats.hard_negative_false_winners.saturating_add(1);
     }
 
     fn evict_pending_negative_profile(&mut self) -> bool {

@@ -18,6 +18,21 @@ const MAX_COMPETITORS: usize = 4;
 const HELDOUT_MODULUS: usize = 5;
 const HELDOUT_REMAINDER: usize = 4;
 const MIN_SUPPORT_COVERAGE_PPM: u32 = 100_000;
+const MAX_COUNTEREXAMPLES: usize = 64;
+
+/// Cold-proof evidence only. Hashes identify a repeated phase conflict without
+/// putting corpus text or lexical strings into the hot package.
+#[derive(Clone, Debug, Serialize)]
+pub(crate) struct ContextPhaseCounterexample {
+    pub(crate) context_tail: String,
+    pub(crate) target: String,
+    pub(crate) false_winner: String,
+    pub(crate) scene_hash: u64,
+    pub(crate) target_hash: u64,
+    pub(crate) false_winner_hash: u64,
+    pub(crate) target_margin_micro: i64,
+    pub(crate) false_margin_micro: i64,
+}
 
 #[derive(Clone, Debug, Serialize)]
 pub(crate) struct ContextPhaseProofReport {
@@ -41,6 +56,7 @@ pub(crate) struct ContextPhaseProofReport {
     pub(crate) full_top1_reinforced_positive: usize,
     pub(crate) full_false_supports: usize,
     pub(crate) full_false_top1: usize,
+    pub(crate) counterexamples: Vec<ContextPhaseCounterexample>,
     pub(crate) full_false_top1_close_competition: usize,
     pub(crate) full_false_top1_separated_competition: usize,
     pub(crate) full_false_top1_weak_context: usize,
@@ -136,6 +152,7 @@ struct ProofTotals {
     full_top1_reinforced_positive: usize,
     full_false_supports: usize,
     full_false_top1: usize,
+    counterexamples: Vec<ContextPhaseCounterexample>,
     full_false_top1_close_competition: usize,
     full_false_top1_separated_competition: usize,
     full_false_top1_weak_context: usize,
@@ -207,6 +224,9 @@ impl ProofTotals {
         self.full_top1_reinforced_positive += other.full_top1_reinforced_positive;
         self.full_false_supports += other.full_false_supports;
         self.full_false_top1 += other.full_false_top1;
+        let remaining = MAX_COUNTEREXAMPLES.saturating_sub(self.counterexamples.len());
+        self.counterexamples
+            .extend(other.counterexamples.into_iter().take(remaining));
         self.full_false_top1_close_competition += other.full_false_top1_close_competition;
         self.full_false_top1_separated_competition += other.full_false_top1_separated_competition;
         self.full_false_top1_weak_context += other.full_false_top1_weak_context;
@@ -553,7 +573,7 @@ fn evaluate_fragment(
             .skip(1)
             .filter(|readout| readout.disposition == ContextPhaseDisposition::Support)
             .count();
-        classify_false_winner(package, target, &candidates, &full, totals);
+        classify_false_winner(package, &tokens[..index], target, &candidates, &full, totals);
 
         let no_phase = package.score_candidates_with_mode(
             &tokens[..index],
@@ -666,6 +686,7 @@ fn evaluate_fragment(
 
 fn classify_false_winner(
     package: &ContextPhasePackage,
+    context: &[String],
     target: &str,
     candidates: &[&str],
     full: &[super::ContextPhaseReadout],
@@ -677,6 +698,30 @@ fn classify_false_winner(
     let false_winner = &full[false_index];
     totals.full_false_top1 = totals.full_false_top1.saturating_add(1);
     let correct = &full[0];
+    if totals.counterexamples.len() < MAX_COUNTEREXAMPLES {
+        let scene_hash = context.iter().fold(0_u64, |state, token| {
+            crate::stable_hash::mix64_golden(state ^ super::super::phase_field::hash_text(token))
+        });
+        totals.counterexamples.push(ContextPhaseCounterexample {
+            context_tail: context
+                .iter()
+                .rev()
+                .take(8)
+                .cloned()
+                .collect::<Vec<_>>()
+                .into_iter()
+                .rev()
+                .collect::<Vec<_>>()
+                .join(" "),
+            target: target.to_string(),
+            false_winner: candidates[false_index].to_string(),
+            scene_hash,
+            target_hash: super::super::phase_field::hash_text(target),
+            false_winner_hash: super::super::phase_field::hash_text(candidates[false_index]),
+            target_margin_micro: correct.margin_micro,
+            false_margin_micro: false_winner.margin_micro,
+        });
+    }
     if correct.disposition == ContextPhaseDisposition::Support {
         totals.full_false_top1_correct_supported += 1;
     } else {
@@ -802,6 +847,7 @@ fn report_from_totals(
         full_top1_reinforced_positive: totals.full_top1_reinforced_positive,
         full_false_supports: totals.full_false_supports,
         full_false_top1: totals.full_false_top1,
+        counterexamples: totals.counterexamples,
         full_false_top1_close_competition: totals.full_false_top1_close_competition,
         full_false_top1_separated_competition: totals.full_false_top1_separated_competition,
         full_false_top1_weak_context: totals.full_false_top1_weak_context,

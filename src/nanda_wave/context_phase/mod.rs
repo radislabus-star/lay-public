@@ -40,6 +40,9 @@ pub(crate) const MAGIC: &[u8; 8] = b"LAYL3P01";
 pub(crate) const CELLS: usize = 64;
 pub(crate) const MAX_CONTEXT_TOKENS: usize = 16;
 const MAX_PAIR_CANDIDATES: usize = 8;
+pub(super) const SIGNATURE_SCHEMA_LEGACY: u32 = 1;
+const SIGNATURE_SCHEMA_MORPHOLOGY_ENDING: u32 = 2;
+pub(super) const SIGNATURE_SCHEMA_MORPHOLOGY_PHASE: u32 = 3;
 // Pairwise memory is keyed by compact hashes and bounded phase banks, never
 // text. Preserve a broad relation vocabulary, but hold one phase mode per
 // direction: runtime needs a compact attractor, not training-history detail.
@@ -193,6 +196,9 @@ pub(crate) struct ContextPhasePackage {
     pub(crate) global_threshold_micro: i32,
     pub(crate) competition_threshold_micro: i32,
     pub(crate) pairwise_threshold_micro: i32,
+    /// Versioned so a hot package always uses the same compact L2 projection
+    /// that produced its signature and pairwise banks during cold learning.
+    pub(crate) signature_schema: u32,
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -517,7 +523,7 @@ impl ContextPhasePackage {
             let mut pair_candidates = std::collections::BTreeMap::<u64, (i64, u64)>::new();
             for (candidate, readout) in candidates.iter().zip(&readouts) {
                 let hash = candidate_token_hash(candidate);
-                let signature = candidate_l2_signature(candidate);
+                let signature = self.candidate_signature(candidate);
                 pair_candidates
                     .entry(hash)
                     .and_modify(|entry| entry.0 = entry.0.max(readout.margin_micro))
@@ -853,42 +859,54 @@ impl ContextPhasePackage {
         let exact_profile = self.profile(token_hash);
         let signature_profile = mode
             .signature_profile_enabled()
-            .then(|| self.signature_profile(candidate_l2_signature(candidate)))
+            .then(|| self.signature_profile(self.candidate_signature(candidate)))
             .flatten();
-        let Some(profile) = exact_profile else {
+        if mode == ContextPhaseMode::NoPhase {
             return ContextPhaseReadout {
                 package_loaded: true,
+                ..ContextPhaseReadout::default()
+            };
+        }
+        let Some(profile) = exact_profile else {
+            // A morphology/L2 signature can transfer context pressure between
+            // unseen lexical forms. It is deliberately display-ranking only:
+            // without an exact profile it remains Neutral and can never grant
+            // L3 Support or text-edit authority.
+            let (signature_positive, signature_support) = signature_profile
+                .and_then(|profile| strongest_center(scene, &profile.positive))
+                .unwrap_or_default();
+            let signature_anti = if mode == ContextPhaseMode::NoAnti {
+                0.0
+            } else {
+                signature_profile
+                    .and_then(|profile| strongest_center(scene, &profile.negative))
+                    .map(|(coherence, _)| coherence)
+                    .unwrap_or_default()
+            };
+            let signature_margin = phase_micro(signature_positive - signature_anti);
+            return ContextPhaseReadout {
+                package_loaded: true,
+                // Keep this false: all authority paths require an exact
+                // lexical profile. The signature contributes a ranking field,
+                // not an admissible candidate profile.
+                profile_present: false,
+                disposition: ContextPhaseDisposition::Neutral,
+                positive_micro: signature_margin,
+                anti_micro: phase_micro(signature_anti),
+                margin_micro: signature_margin,
                 signature_profile_present: signature_profile.is_some(),
+                signature_positive_micro: signature_margin,
+                signature_center_support: signature_support,
+                relation_class: relation_class(
+                    self.candidate_signature(candidate),
+                    signature_margin,
+                ),
                 ..ContextPhaseReadout::default()
             };
         };
         let signature_positive = signature_profile
             .and_then(|profile| strongest_center(scene, &profile.positive))
             .unwrap_or_default();
-        if mode == ContextPhaseMode::NoPhase {
-            return ContextPhaseReadout {
-                package_loaded: true,
-                profile_present: true,
-                threshold_micro: i64::from(profile.threshold_micro),
-                positive_examples: profile.positive_examples,
-                negative_examples: profile.negative_examples,
-                positive_centers: profile.positive.len().min(u8::MAX as usize) as u8,
-                anti_centers: profile
-                    .negative
-                    .len()
-                    .saturating_add(profile.hard_negative.len())
-                    .min(u8::MAX as usize) as u8,
-                semantic_support: self
-                    .semantic_state(token_hash)
-                    .map(|state| state.support)
-                    .unwrap_or_default(),
-                signature_profile_present: signature_profile.is_some(),
-                signature_positive_micro: phase_micro(signature_positive.0),
-                signature_center_support: signature_positive.1,
-                relation_class: relation_class(token_hash, 0),
-                ..ContextPhaseReadout::default()
-            };
-        }
         let (exact_positive, exact_positive_center_support) =
             strongest_center(vector, &profile.positive).unwrap_or_default();
         // A signature is a transfer witness from the L2 center field. It may
@@ -1013,6 +1031,10 @@ impl ContextPhasePackage {
             .binary_search_by_key(&signature, |profile| profile.token_hash)
             .ok()
             .and_then(|index| self.signature_profiles.get(index))
+    }
+
+    fn candidate_signature(&self, candidate: &str) -> u64 {
+        candidate_l2_signature_for_schema(candidate, self.signature_schema)
     }
 
     fn pair_profile(&self, key: PairKey) -> Option<&ContextPairPhaseProfile> {
@@ -1281,10 +1303,15 @@ fn candidate_token_hash(candidate: &str) -> u64 {
     hash_text(&token.to_lowercase())
 }
 
-/// A bounded observation of the existing L2 surface field. It deliberately
-/// keeps no candidate text: only center coverage, motif support and residual
-/// pressure are projected into a stable relation state.
+/// A bounded observation of the candidate's L2 field and terminal shape.
+/// The final two graphemes are a morphology projection, not lexical identity:
+/// forms such as `проверки` and `перезагрузки` can share contextual evidence
+/// without retaining either word at runtime.
 pub(super) fn candidate_l2_signature(candidate: &str) -> u64 {
+    candidate_l2_signature_for_schema(candidate, SIGNATURE_SCHEMA_MORPHOLOGY_PHASE)
+}
+
+fn candidate_l2_signature_for_schema(candidate: &str, schema: u32) -> u64 {
     let token = crate::word_reader::last_text_word(candidate)
         .unwrap_or_default()
         .to_lowercase();
@@ -1296,11 +1323,40 @@ pub(super) fn candidate_l2_signature(candidate: &str) -> u64 {
         | ((readout.covered_l1_refs.min(31) as u64) << 11)
         | ((readout.residual_l1_refs.min(31) as u64) << 16)
         | (coherence_band << 21);
-    // A compact L1 wave spectrum prevents a broad L2 coverage class from
-    // aliasing unrelated word forms. It is a lossy phase projection, not a
-    // retained n-gram list or a word identity.
+    if schema == SIGNATURE_SCHEMA_LEGACY {
+        return legacy_candidate_l2_signature(&token, packed);
+    }
+    let ending = token
+        .chars()
+        .rev()
+        .take(2)
+        .collect::<Vec<_>>()
+        .into_iter()
+        .rev()
+        .collect::<String>();
+    if schema == SIGNATURE_SCHEMA_MORPHOLOGY_ENDING {
+        return mix64_golden(packed ^ hash_text(&ending).rotate_left(17) ^ 0x004c_334d_4f52_5048);
+    }
+    // Ending alone aliases too many unrelated forms. A tiny phase class keeps
+    // the transfer morphological while separating incompatible L1/L2 shapes.
+    let surface_class = compact_surface_phase_class(&token);
+    mix64_golden(
+        packed
+            ^ hash_text(&ending).rotate_left(17)
+            ^ surface_class.rotate_left(31)
+            ^ 0x004c_334d_4f52_5048,
+    )
+}
+
+fn legacy_candidate_l2_signature(token: &str, packed: u64) -> u64 {
+    mix64_golden(
+        packed ^ compact_surface_phase_class(token).rotate_left(17) ^ 0x004c_325f_5354_4154,
+    )
+}
+
+fn compact_surface_phase_class(token: &str) -> u64 {
     let mut spectrum = [0_i16; 4];
-    for atom in SurfaceFieldEncoder::encode(&token).atoms() {
+    for atom in SurfaceFieldEncoder::encode(token).atoms() {
         for trit in surface_atom_projection(atom.position, &atom.bytes) {
             let bucket = usize::from(trit.lane & 3);
             spectrum[bucket] = spectrum[bucket].saturating_add(i16::from(trit.value));
@@ -1312,15 +1368,14 @@ pub(super) fn candidate_l2_signature(candidate: &str) -> u64 {
         .map(|(index, value)| (value.unsigned_abs(), index as u64, *value >= 0))
         .collect::<Vec<_>>();
     strongest.sort_by(|left, right| right.0.cmp(&left.0).then_with(|| left.1.cmp(&right.1)));
-    let surface_shape = strongest.into_iter().take(2).enumerate().fold(
+    strongest.into_iter().take(2).enumerate().fold(
         0_u64,
         |value, (ordinal, (magnitude, lane, positive))| {
             value
                 ^ ((lane | (u64::from(positive) << 2) | (u64::from(magnitude.min(3)) << 3))
                     .rotate_left((ordinal * 7) as u32))
         },
-    );
-    mix64_golden(packed ^ surface_shape.rotate_left(17) ^ 0x004c_325f_5354_4154)
+    )
 }
 
 fn context_tokens_for_authority(package: &ContextPhasePackage, context_tokens: &[String]) -> usize {
