@@ -1,6 +1,7 @@
 use super::engine::{
     LayIbusEngine, PendingImeCompletionLearning, PendingSystemOutcomeFeedback, SystemOutcomeKind,
 };
+use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 use std::time::Instant;
 
 impl LayIbusEngine {
@@ -54,8 +55,16 @@ impl LayIbusEngine {
         if !self.surrounding_text_supported {
             return;
         }
+        let snapshot = VisibleTailSnapshot::new(
+            VisibleTailSource::ImeCommittedTail,
+            self.tail_buffer.clone(),
+            Some(self.path.clone()),
+            self.tail_epoch,
+        )
+        .identity();
         self.pending_visible_postcondition = Some(super::engine::PendingVisiblePostcondition {
             expected_suffix: self.tail_buffer.clone(),
+            snapshot,
             dispatched_epoch: self.tail_epoch,
             dispatched_at,
             feedback,
@@ -70,7 +79,7 @@ impl LayIbusEngine {
         if pending.dispatched_at.elapsed().as_millis() > OBSERVATION_TIMEOUT_MS
             || pending.dispatched_epoch != self.tail_epoch
         {
-            super::trace::record(r#"{"kind":"ibus_visible_postcondition","status":"superseded"}"#);
+            record_causal_outcome("censored", &pending, self.tail_epoch);
             return;
         }
         let observed = self
@@ -81,12 +90,14 @@ impl LayIbusEngine {
             });
         let status = if observed.as_deref() == Some(pending.expected_suffix.as_str()) {
             self.record_observed_system_outcome(pending.feedback.as_ref());
+            record_causal_outcome("confirmed_positive", &pending, self.tail_epoch);
             "observed"
         } else {
             // A missing IBus observation proves that our execution lease is stale,
             // not that the phase-selected candidate was semantically wrong.
             // Explicit undo/reject routes provide the negative learning signal.
             self.quarantine_visible_postcondition_mismatch();
+            record_causal_outcome("censored", &pending, self.tail_epoch);
             "mismatch"
         };
         super::trace::record(format!(
@@ -277,6 +288,20 @@ impl LayIbusEngine {
     }
 }
 
+fn record_causal_outcome(
+    outcome: &str,
+    pending: &super::engine::PendingVisiblePostcondition,
+    observed_epoch: u64,
+) {
+    super::trace::record(format!(
+        r#"{{"kind":"ibus_causal_outcome","outcome":"{outcome}","source":"{}","snapshot_epoch":{},"observed_epoch":{},"tail_hash":"{:016x}"}}"#,
+        pending.snapshot.source.source_id(),
+        pending.snapshot.revision,
+        observed_epoch,
+        pending.snapshot.visible_tail_hash,
+    ));
+}
+
 fn visible_completion_suffix(suffix: Option<String>) -> String {
     suffix.filter(|suffix| suffix != "*").unwrap_or_default()
 }
@@ -397,6 +422,9 @@ mod tests {
                 .map(|item| item.replacement.as_str()),
             Some("давай")
         );
+        assert_eq!(pending.snapshot.source, VisibleTailSource::ImeCommittedTail);
+        assert_eq!(pending.snapshot.revision, engine.tail_epoch);
+        assert_ne!(pending.snapshot.visible_tail_hash, 0);
     }
 
     #[test]

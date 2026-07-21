@@ -1,6 +1,6 @@
 use std::time::Instant;
 
-use lay::text_edit::{EditAction, TransitionOperator, VisibleTailSource};
+use lay::text_edit::{EditAction, SnapshotIdentity, TransitionOperator, VisibleTailSource};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum WordInputMode {
@@ -25,6 +25,10 @@ pub(crate) struct RecentCommittedTailReplace {
 #[derive(Debug, Clone)]
 pub(crate) struct PendingVisiblePostcondition {
     pub(crate) expected_suffix: String,
+    /// Immutable identity of the field state that dispatched this transition.
+    /// A later observation can confirm this receipt, but cannot teach L4 if it
+    /// belongs to a different focus, epoch, or visible tail.
+    pub(crate) snapshot: SnapshotIdentity,
     pub(crate) dispatched_epoch: u64,
     pub(crate) dispatched_at: Instant,
     pub(crate) feedback: Option<PendingSystemOutcomeFeedback>,
