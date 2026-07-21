@@ -261,14 +261,14 @@ mod tests {
     #[test]
     fn signed_memory_reads_canonical_layout_operator_from_new_feedback() {
         let usage = usage_from_events(
-            r#"{"ts":1,"kind":"rejected_candidate","word":"нас","from":"yfc","to":"нас","source":"layout","operation":"replacement","operator":"layout_projection","layout_direction":"en_to_ru","layout_scope":"current_token"}
+            r#"{"ts":1,"kind":"rejected_candidate","word":"нас","from":"yfc","to":"нас","source":"layout","operation":"replacement","operator":"layout_projection:en_to_ru:current_token","layout_direction":"en_to_ru","layout_scope":"current_token"}
 "#,
         );
         let state = crate::transition_relation::transition_state_id("yfc");
         let signal = l4_signed_memory_signal(L4SignedMemoryInput {
             context: &[],
             source: "layout",
-            operation: "layout_projection",
+            operation: "layout_projection:en_to_ru:current_token",
             state_word: &state,
             candidate_text: "нас",
             usage: &usage,

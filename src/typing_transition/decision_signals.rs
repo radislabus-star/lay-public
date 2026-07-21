@@ -162,7 +162,7 @@ fn l4_signed_memory_readout(
         );
     }
     let state_id = crate::transition_relation::transition_state_id(&event.original);
-    let operator = crate::transition_relation::TransitionOperatorKind::infer(
+    let operator = crate::typing_memory::transition_learning_key(
         &event.original,
         &candidate.replacement,
         "replacement",
@@ -170,7 +170,7 @@ fn l4_signed_memory_readout(
     l4_signed_memory_signal(L4SignedMemoryInput {
         context: &context,
         source: candidate.origin.memory_key(),
-        operation: operator.as_str(),
+        operation: &operator,
         state_word: &state_id,
         candidate_text: &transition_target,
         usage,

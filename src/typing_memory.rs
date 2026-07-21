@@ -83,6 +83,17 @@ impl TypingTransitionIdentity {
             layout_scope: None,
         }
     }
+
+    pub(crate) fn learning_key(self) -> String {
+        let mut key = self.operator.as_str().to_string();
+        if let (Some(direction), Some(scope)) = (self.layout_direction, self.layout_scope) {
+            key.push(':');
+            key.push_str(direction.as_str());
+            key.push(':');
+            key.push_str(scope.as_str());
+        }
+        key
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -93,6 +104,13 @@ pub(crate) enum TypingMemoryEventKind {
     ConfirmedImePrediction,
     RejectedIme,
     RejectedCandidate,
+}
+
+/// Canonical learning key shared by feedback recording and live L4 readout.
+/// It keeps keyboard direction/scope distinct without making source adapters
+/// part of the learned authority.
+pub(crate) fn transition_learning_key(from: &str, to: &str, operation: &str) -> String {
+    TypingTransitionIdentity::observed(from, to, operation).learning_key()
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -564,6 +582,10 @@ mod tests {
         assert_eq!(
             events[0].identity.layout_scope,
             Some(LayoutProjectionScope::CurrentToken)
+        );
+        assert_eq!(
+            events[0].identity.learning_key(),
+            "layout_projection:en_to_ru:current_token"
         );
     }
 

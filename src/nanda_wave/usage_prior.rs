@@ -107,7 +107,7 @@ impl UsageEvent {
             source: Some(event.source.clone()),
             operation: Some(event.operation.clone()),
             surface: event.surface.clone(),
-            operator: Some(event.identity.operator.as_str().to_string()),
+            operator: Some(event.identity.learning_key()),
             layout_direction: event
                 .identity
                 .layout_direction
