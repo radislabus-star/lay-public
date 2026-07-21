@@ -16,6 +16,9 @@ const MAX_MODES: usize = 32;
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub(super) enum SurfaceMutationKind {
     MissingFromTyped,
+    SparseMultiMissingFromTyped,
+    ExtraInTyped,
+    Substitution,
     AdjacentSwap,
 }
 
@@ -125,6 +128,39 @@ impl SurfaceMutationField {
                     .enumerate()
                     .filter_map(|(index, ch)| (index != position).then_some(*ch))
                     .collect(),
+                SurfaceMutationKind::SparseMultiMissingFromTyped => {
+                    let second = (position + 2).min(chars.len().saturating_sub(1));
+                    if second == position {
+                        continue;
+                    }
+                    chars
+                        .iter()
+                        .enumerate()
+                        .filter_map(|(index, ch)| {
+                            (index != position && index != second).then_some(*ch)
+                        })
+                        .collect()
+                }
+                SurfaceMutationKind::ExtraInTyped => {
+                    let mut expanded = String::new();
+                    for (index, ch) in chars.iter().enumerate() {
+                        expanded.push(*ch);
+                        if index == position {
+                            expanded.push(*ch);
+                        }
+                    }
+                    expanded
+                }
+                SurfaceMutationKind::Substitution => {
+                    let Some(replacement) =
+                        crate::nanda_wave::surface_damage::alphabet_successor(chars[position])
+                    else {
+                        continue;
+                    };
+                    let mut substituted = chars.clone();
+                    substituted[position] = replacement;
+                    substituted.into_iter().collect()
+                }
                 SurfaceMutationKind::AdjacentSwap => {
                     if position + 1 >= chars.len() {
                         continue;
@@ -161,13 +197,40 @@ fn mutation_mode(from: &str, to: &str) -> Option<SurfaceMutationMode> {
             length_bucket: length_bucket(target.len()),
         });
     }
-    if target.len() == source.len() {
-        let position = adjacent_swap_position(&source, &target)?;
+    if target.len() == source.len() + 2 {
+        let (first, second) = two_missing_positions(&source, &target)?;
+        if second <= first + 1 {
+            return None;
+        }
         return Some(SurfaceMutationMode {
-            kind: SurfaceMutationKind::AdjacentSwap,
+            kind: SurfaceMutationKind::SparseMultiMissingFromTyped,
+            position_bucket: position_bucket(first, target.len()),
+            length_bucket: length_bucket(target.len()),
+        });
+    }
+    if source.len() == target.len() + 1 {
+        let position = one_missing_position(&target, &source)?.saturating_sub(1);
+        return Some(SurfaceMutationMode {
+            kind: SurfaceMutationKind::ExtraInTyped,
             position_bucket: position_bucket(position, target.len()),
             length_bucket: length_bucket(target.len()),
         });
+    }
+    if target.len() == source.len() {
+        if let Some(position) = adjacent_swap_position(&source, &target) {
+            return Some(SurfaceMutationMode {
+                kind: SurfaceMutationKind::AdjacentSwap,
+                position_bucket: position_bucket(position, target.len()),
+                length_bucket: length_bucket(target.len()),
+            });
+        }
+        if let Some(position) = substitution_position(&source, &target) {
+            return Some(SurfaceMutationMode {
+                kind: SurfaceMutationKind::Substitution,
+                position_bucket: position_bucket(position, target.len()),
+                length_bucket: length_bucket(target.len()),
+            });
+        }
     }
     None
 }
@@ -202,6 +265,26 @@ fn one_missing_position(source: &[char], target: &[char]) -> Option<usize> {
     (source_index == source.len()).then_some(skipped.unwrap_or(target.len() - 1))
 }
 
+fn two_missing_positions(source: &[char], target: &[char]) -> Option<(usize, usize)> {
+    let mut source_index = 0_usize;
+    let mut skipped = Vec::with_capacity(2);
+    for (target_index, ch) in target.iter().enumerate() {
+        if source.get(source_index) == Some(ch) {
+            source_index += 1;
+        } else {
+            skipped.push(target_index);
+            if skipped.len() > 2 {
+                return None;
+            }
+        }
+    }
+    while source_index < source.len() {
+        skipped.push(target.len().saturating_sub(1));
+        source_index += 1;
+    }
+    (skipped.len() == 2).then_some((skipped[0], skipped[1]))
+}
+
 fn adjacent_swap_position(source: &[char], target: &[char]) -> Option<usize> {
     let mismatches = source
         .iter()
@@ -214,6 +297,16 @@ fn adjacent_swap_position(source: &[char], target: &[char]) -> Option<usize> {
     }
     let index = mismatches[0];
     (source[index] == target[index + 1] && source[index + 1] == target[index]).then_some(index)
+}
+
+fn substitution_position(source: &[char], target: &[char]) -> Option<usize> {
+    let mismatches = source
+        .iter()
+        .zip(target)
+        .enumerate()
+        .filter_map(|(index, (left, right))| (left != right).then_some(index))
+        .collect::<Vec<_>>();
+    (mismatches.len() == 1).then_some(mismatches[0])
 }
 
 fn position_bucket(position: usize, length: usize) -> u8 {
@@ -272,6 +365,29 @@ mod tests {
             .damaged_surfaces("время", 4)
             .iter()
             .any(|surface| surface == "врмея"));
+    }
+
+    #[test]
+    fn derives_extra_substitution_and_sparse_omission_geometries() {
+        let field = SurfaceMutationField::from_corrections_jsonl(
+            concat!(
+                r#"{"from":"вреемя","to":"время"}"#,
+                "\n",
+                r#"{"from":"врёмя","to":"время"}"#,
+                "\n",
+                r#"{"from":"переоключаю","to":"переподключаю"}"#,
+            ),
+            1,
+        )
+        .unwrap();
+        let short = field.damaged_surfaces("время", 8);
+        let long = field.damaged_surfaces("переподключаю", 8);
+
+        assert!(short.iter().any(|surface| surface == "вреемя"));
+        assert!(short.iter().any(|surface| surface == "врёмя"));
+        assert!(long
+            .iter()
+            .any(|surface| surface.chars().count() == "переподключаю".chars().count() - 2));
     }
 
     #[test]

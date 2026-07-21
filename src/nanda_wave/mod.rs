@@ -33,6 +33,7 @@ mod self_teacher_l3;
 pub mod signal;
 pub mod structural_relation;
 mod surface_bank;
+pub(crate) mod surface_damage;
 mod surface_wave;
 pub mod trace;
 pub(crate) mod usage_prior;

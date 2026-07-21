@@ -999,8 +999,8 @@ mod tests {
         );
         assert!(
             context_candidate_blocker(original, &candidates[target], reports[target].as_ref())
-                .is_some(),
-            "context evidence must not bypass the transition verifier"
+                .is_none(),
+            "sparse internal omission target should pass the typed transition verifier"
         );
     }
 
@@ -1181,7 +1181,7 @@ mod tests {
     }
 
     #[test]
-    fn technical_tail_does_not_veto_phrase_layout_candidate() {
+    fn phrase_layout_candidate_cannot_rewrite_middle_token() {
         let technical = WordCandidate {
             text: "api".to_string(),
             origin: CandidateOrigin::Technical,
@@ -1199,7 +1199,7 @@ mod tests {
             support: vec![],
         };
         let (_trace, decision) = run_l3("html djn api ", &[technical, layout]);
-        assert_eq!(decision.output(), Some("html вот api "));
+        assert_eq!(decision.output(), None);
     }
 
     #[test]
@@ -1317,19 +1317,19 @@ mod tests {
     #[test]
     fn pattern_wave_is_visible_in_l3_trace() {
         let candidate = WordCandidate {
-            text: "html вот api".to_string(),
+            text: "html вот".to_string(),
             origin: CandidateOrigin::Layout,
             source: "LayoutWordCell32",
             energy: 0.55,
             risk: 0.25,
             support: vec![],
         };
-        let (trace, decision) = run_l3("html djn api ", &[candidate]);
+        let (trace, decision) = run_l3("html djn ", &[candidate]);
 
         assert!(trace
             .iter()
             .any(|item| item.name == super::super::pattern_wave::PATTERN_WAVE_CELL));
-        assert_eq!(decision.output(), Some("html вот api "));
+        assert_eq!(decision.output(), Some("html вот "));
     }
 
     #[test]
@@ -1350,7 +1350,7 @@ mod tests {
     #[test]
     fn structural_relation_is_visible_in_l3_trace() {
         let candidate = WordCandidate {
-            text: "пишу вот дальше".to_string(),
+            text: "пишу вот".to_string(),
             origin: CandidateOrigin::Layout,
             source: "LayoutWordCell32",
             energy: 0.50,
@@ -1358,7 +1358,7 @@ mod tests {
             support: vec![],
         };
         let options = WaveOptions::with_disabled(&[L3_CONTEXT_FIELD_CELL.to_string()]);
-        let (trace, decision) = run_l3_with_options("пишу djn дальше ", &[candidate], &options);
+        let (trace, decision) = run_l3_with_options("пишу djn ", &[candidate], &options);
 
         assert!(
             trace.iter().any(
@@ -1366,7 +1366,7 @@ mod tests {
             ),
             "unexpected L3 trace: {trace:#?}"
         );
-        assert_eq!(decision.output(), Some("пишу вот дальше "));
+        assert_eq!(decision.output(), Some("пишу вот "));
     }
 
     trait DecisionOutput {

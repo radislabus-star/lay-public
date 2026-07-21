@@ -78,13 +78,31 @@ clean phrase source
 ```
 
 The teacher may write cold artifacts and `.nwpc` shadow packages. It must not
-install runtime authority by itself. A useful first metric is
-`false_authority`: wrong candidates may have noisy raw energy during learning,
-but they must not receive L3 Support.
+install runtime authority by itself. Runtime promotion merges the self-teacher
+package into the current broad L3 package; it never replaces broad memory with a
+small fixture. A useful first metric is `false_authority`: wrong candidates may
+have noisy raw energy during learning, but they must not receive L3 Support.
 
 The clean teacher corpus must repeat phrases enough to cover both profile birth
 and required support. For `min_profile_support=N`, the repeat count is
 `2 * N - 1`; the default `N=2` therefore uses three clean passes.
+
+The current dirty-class route is wave/geometry based, not word-specific:
+
+```text
+missing letter
+extra letter
+letter substitution
+sparse multi omission
+adjacent transposition
+full and partial layout projection
+premature space
+glued words
+punctuation suffix
+```
+
+These classes provide surfaces for L2/L3 learning. They are not allowed to
+apply text directly.
 
 ## Example Target
 

@@ -1,6 +1,7 @@
 # Lay Self Teacher L3 Plan
 
-Status: offline teacher implemented, smoke shadow PASS after support schedule fix
+Status: offline teacher implemented, expanded dirty classes shadow PASS, promotion
+gate installs only after live safety checks
 
 Baseline from 2026-07-21:
 
@@ -132,6 +133,57 @@ times. Default min_support=2 means 3 repeats.
 
 This is a training support fix, not a word-specific correction rule.
 
+Latest expanded dirty-class smoke:
+
+```bash
+lay-nanda-wave-eval --lay-self-teacher-l3 --max-phrases 160 --max-pairs 1600 --out-dir /tmp/lay-self-teacher-l3-expanded
+```
+
+Result:
+
+```text
+clean_phrases:              160
+dirty_pairs:                1600
+surface_rows:               1298
+surface_admitted:           819
+surface_modes:              32
+semantic_states:            364
+candidate_profiles:         317
+artifact_bytes:             311,644
+
+shadow cases:               723
+evidence_hit:               723 / 723 = 100.00%
+authority:                  705 / 723 = 97.51%
+output_changed:             599 / 723 = 82.85%
+target_top1:                723 / 723 = 100.00%
+support_target_top1:        723 / 723 = 100.00%
+false_top1:                 0 / 723 = 0.00%
+support_false_top1:         0 / 723 = 0.00%
+false_authority:            0 / 723 = 0.00%
+candidate_order_changed:    0
+verdict:                    PASS_shadow
+runtime_authority:          false
+```
+
+Expanded dirty classes:
+
+```text
+missing_letter
+adjacent_transposition
+extra_letter
+letter_substitution
+sparse_multi_omission
+layout_projection
+partial_layout_projection
+premature_space
+glued_words
+punctuation_suffix
+```
+
+The punctuation class is measured as the same lexical candidate when the suffix
+is only sentence punctuation. This prevents the teacher from counting
+`word!` as a false semantic candidate for `word`.
+
 ## Route
 
 ```text
@@ -147,6 +199,36 @@ clean corpus
 
 This is local Lay training. It is not OpenAI fine-tuning and it must not send
 typed text to external LLM providers.
+
+## Promotion Gate
+
+Runtime promotion is handled by:
+
+```bash
+scripts/l3-self-teacher-promotion-gate.sh --max-phrases 160 --max-pairs 1600
+scripts/l3-self-teacher-promotion-gate.sh --max-phrases 160 --max-pairs 1600 --install
+```
+
+The script never installs a standalone self-teacher shard. It merges:
+
+```text
+current runtime L3 context phase package
++ local self-teacher shadow shard
+-> candidate runtime package
+```
+
+Install is allowed only when all gates pass:
+
+```text
+self-teacher shadow PASS
+transition replay PASS-shadow
+unsafe edit gate PASS
+merged package is not smaller than the base package
+```
+
+This protects the broad L3 runtime memory from being replaced by a tiny teacher
+fixture while still allowing local L3 learning to enter the hot package after
+proof.
 
 ## Work Items
 

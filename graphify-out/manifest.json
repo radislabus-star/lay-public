@@ -20,18 +20,18 @@
     "semantic_hash": "236e46a80b6d2865de3d1816fb645158"
   },
   "extension/lay@radislabus-star.github.io/lay-impl.js": {
-    "mtime": 1784663630.3201773,
+    "mtime": 1784666001.7559023,
     "ast_hash": "4b795e86b2cf94e522b648b448bb5e87",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1784663630.0206494,
-    "ast_hash": "500dbec6d328dbb4db05e66a80489de6",
+    "mtime": 1784666001.7242243,
+    "ast_hash": "065a0acc8bfaccd78f133154de7ff64b",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1784663630.5153217,
-    "ast_hash": "07905617556e8ca7ae88195cc37e314d",
+    "mtime": 1784666001.7837367,
+    "ast_hash": "365063bebffd9cae1eff6d41343878c5",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1784663630.5151515,
-    "ast_hash": "9ccf3620266a42f7375756eba573c91a",
+    "mtime": 1784666001.7834976,
+    "ast_hash": "c80d87863b330d399f6622c73ff9d25e",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1784663630.514931,
-    "ast_hash": "43457e6b06530e315ef6a8e910c17391",
+    "mtime": 1784666001.761176,
+    "ast_hash": "894120159b0a6efbd4edeeeadbe39b06",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -1540,8 +1540,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l3.rs": {
-    "mtime": 1784599774.0419183,
-    "ast_hash": "4302b410847d22b71b26679ab2ee053b",
+    "mtime": 1784666433.997652,
+    "ast_hash": "865de3c405c00cee1e48c844a14229a2",
     "semantic_hash": ""
   },
   "src/nanda_wave/l3_phrase_gate.rs": {
@@ -1575,8 +1575,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/mod.rs": {
-    "mtime": 1784662041.5033576,
-    "ast_hash": "6678ca81df6d262bb655dfbb879510f7",
+    "mtime": 1784665834.1656752,
+    "ast_hash": "cc21d1ab1261a9f3d3100f57969cb742",
     "semantic_hash": ""
   },
   "src/nanda_wave/mode.rs": {
@@ -2515,8 +2515,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1784663630.518121,
-    "ast_hash": "89f8daf0f9a09be8365377fd2fc55dac",
+    "mtime": 1784666001.7857711,
+    "ast_hash": "7cdd8179bf3933c7a2ac4be4e9c7b954",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -2690,8 +2690,8 @@
     "semantic_hash": ""
   },
   "docs/l1-l4-intelligence-route.md": {
-    "mtime": 1784663552.6792114,
-    "ast_hash": "04ae7bffd20f72c39b2a1c9bbd506fd6",
+    "mtime": 1784665886.614528,
+    "ast_hash": "111f992add720d3cdd89aa309044876e",
     "semantic_hash": ""
   },
   "docs/llmwave-production-contour.md": {
@@ -3475,8 +3475,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/context_phase/tests.rs": {
-    "mtime": 1784596239.136321,
-    "ast_hash": "50f4dea532eebd66dbdbe962a8e63871",
+    "mtime": 1784666330.3421917,
+    "ast_hash": "3a368e92645a94b6b10624a6a9206055",
     "semantic_hash": ""
   },
   "src/nanda_wave/l4_hidden_state.rs": {
@@ -3655,8 +3655,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/context_phase/surface_field.rs": {
-    "mtime": 1784588036.8397398,
-    "ast_hash": "556fdb62cacdb9e422a07a95126fa91e",
+    "mtime": 1784665834.166675,
+    "ast_hash": "e57b9c52791b05dc275acd234cabaf96",
     "semantic_hash": ""
   },
   "src/nanda_wave/candidate_gate/cache.rs": {
@@ -3675,8 +3675,8 @@
     "semantic_hash": ""
   },
   "docs/lay-self-teacher-l3-plan.md": {
-    "mtime": 1784663542.439122,
-    "ast_hash": "02dc35a58f80dd111a8d58c04a58cf06",
+    "mtime": 1784665886.6135278,
+    "ast_hash": "685d09e45c3ef21e8b6632010cb30ce7",
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_eval/self_teacher_l3.rs": {
@@ -3685,8 +3685,18 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/self_teacher_l3.rs": {
-    "mtime": 1784663447.0003138,
-    "ast_hash": "f40e0939e41a1fe46356fbf381cad5fa",
+    "mtime": 1784666539.407113,
+    "ast_hash": "b644f72450764e939013715c74eaf1fb",
+    "semantic_hash": ""
+  },
+  "scripts/l3-self-teacher-promotion-gate.sh": {
+    "mtime": 1784665941.895408,
+    "ast_hash": "85817a3494b1bb57bda075ef0ee7a088",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/surface_damage.rs": {
+    "mtime": 1784665834.1646752,
+    "ast_hash": "1f1e169a07dcd98adf8ce979dd0cd47c",
     "semantic_hash": ""
   }
 }

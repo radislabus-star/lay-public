@@ -246,7 +246,7 @@ fn clean_phrases(config: &LaySelfTeacherL3Config) -> io::Result<Vec<String>> {
     let mut seen = BTreeSet::new();
     let mut phrases = Vec::new();
     for phrase in DEFAULT_CLEAN_PHRASES {
-        push_clean_phrase(*phrase, &mut seen, &mut phrases, config.max_phrases);
+        push_clean_phrase(phrase, &mut seen, &mut phrases, config.max_phrases);
     }
     if Path::new(PROJECT_CLEAN_SEED).exists() {
         for raw in fs::read_to_string(PROJECT_CLEAN_SEED)?.lines() {
@@ -456,8 +456,20 @@ fn word_damages(token: &str) -> Vec<(&'static str, String)> {
     if let Some(value) = extra_letter(token) {
         result.push(("extra_letter", value));
     }
+    if let Some(value) = letter_substitution(token) {
+        result.push(("letter_substitution", value));
+    }
+    if let Some(value) = sparse_multi_omission(token) {
+        result.push(("sparse_multi_omission", value));
+    }
     if let Some(value) = layout_projection(token) {
         result.push(("layout_projection", value));
+    }
+    if let Some(value) = partial_layout_projection(token) {
+        result.push(("partial_layout_projection", value));
+    }
+    if let Some(value) = punctuation_suffix(token) {
+        result.push(("punctuation_suffix", value));
     }
     result
 }
@@ -509,6 +521,39 @@ fn extra_letter(token: &str) -> Option<String> {
     Some(result)
 }
 
+fn letter_substitution(token: &str) -> Option<String> {
+    let mut chars = token.chars().collect::<Vec<_>>();
+    if chars.len() < 5 {
+        return None;
+    }
+    let index = chars.len() / 2;
+    let replacement = crate::nanda_wave::surface_damage::alphabet_successor(chars[index])?;
+    if replacement == chars[index] {
+        return None;
+    }
+    chars[index] = replacement;
+    Some(chars.into_iter().collect())
+}
+
+fn sparse_multi_omission(token: &str) -> Option<String> {
+    let chars = token.chars().collect::<Vec<_>>();
+    if chars.len() < 7 {
+        return None;
+    }
+    let first = chars.len() / 3;
+    let second = (first + 2).min(chars.len() - 2);
+    if first == second {
+        return None;
+    }
+    Some(
+        chars
+            .iter()
+            .enumerate()
+            .filter_map(|(position, ch)| (position != first && position != second).then_some(*ch))
+            .collect(),
+    )
+}
+
 fn layout_projection(token: &str) -> Option<String> {
     let cyrillic = token.chars().all(crate::keyboard::is_cyrillic_letter);
     let ascii = token.chars().all(|ch| ch.is_ascii_alphabetic());
@@ -518,6 +563,31 @@ fn layout_projection(token: &str) -> Option<String> {
     let events = crate::keyboard::text_to_key_events(token, cyrillic)?;
     let projected = crate::keyboard::map_events_to_layout(&events, !cyrillic);
     (projected != token && is_word_token(&projected)).then_some(projected)
+}
+
+fn partial_layout_projection(token: &str) -> Option<String> {
+    let chars = token.chars().collect::<Vec<_>>();
+    if chars.len() < 6 {
+        return None;
+    }
+    let cyrillic = chars
+        .iter()
+        .all(|ch| crate::keyboard::is_cyrillic_letter(*ch));
+    let ascii = chars.iter().all(|ch| ch.is_ascii_alphabetic());
+    if !cyrillic && !ascii {
+        return None;
+    }
+    let split = chars.len() / 2;
+    let head = chars.iter().take(split).collect::<String>();
+    let tail = chars.iter().skip(split).collect::<String>();
+    let events = crate::keyboard::text_to_key_events(&tail, cyrillic)?;
+    let projected_tail = crate::keyboard::map_events_to_layout(&events, !cyrillic);
+    let projected = format!("{head}{projected_tail}");
+    (projected != token && is_word_token(&projected)).then_some(projected)
+}
+
+fn punctuation_suffix(token: &str) -> Option<String> {
+    (token.chars().count() >= 4).then(|| format!("{token}!"))
 }
 
 fn is_word_token(token: &str) -> bool {
@@ -575,15 +645,23 @@ fn shadow_metrics(
         if target_readout.disposition == ContextPhaseDisposition::Support {
             metrics.authority += 1;
         }
-        if target_readout.disposition == ContextPhaseDisposition::Support && target != dirty {
+        if target_readout.disposition == ContextPhaseDisposition::Support
+            && !candidate_matches_target(dirty, target)
+        {
             metrics.output_changed += 1;
         }
-        if winner.as_deref() == Some(target) {
+        if winner
+            .as_deref()
+            .is_some_and(|candidate| candidate_matches_target(candidate, target))
+        {
             metrics.target_top1 += 1;
         } else if winner.is_some() {
             metrics.false_top1 += 1;
         }
-        if support_winner.as_deref() == Some(target) {
+        if support_winner
+            .as_deref()
+            .is_some_and(|candidate| candidate_matches_target(candidate, target))
+        {
             metrics.support_target_top1 += 1;
         } else if support_winner.is_some() {
             metrics.support_false_top1 += 1;
@@ -592,7 +670,8 @@ fn shadow_metrics(
             .iter()
             .zip(&candidates)
             .any(|(readout, candidate)| {
-                candidate != target && readout.disposition == ContextPhaseDisposition::Support
+                !candidate_matches_target(candidate, target)
+                    && readout.disposition == ContextPhaseDisposition::Support
             })
         {
             metrics.false_authority += 1;
@@ -622,7 +701,13 @@ fn shadow_metrics(
         } else {
             metrics.support_candidate_order_changed += 1;
         }
-        if (winner.as_deref() != Some(target) || support_winner.as_deref() != Some(target))
+        let raw_target_wins = winner
+            .as_deref()
+            .is_some_and(|candidate| candidate_matches_target(candidate, target));
+        let support_target_wins = support_winner
+            .as_deref()
+            .is_some_and(|candidate| candidate_matches_target(candidate, target));
+        if (!raw_target_wins || !support_target_wins)
             && metrics.false_top1_examples.len() < MAX_SHADOW_EXAMPLES
         {
             metrics.false_top1_examples.push(shadow_miss_example(
@@ -675,6 +760,12 @@ fn shadow_candidates(target: &str, dirty: &str, vocabulary: &[String]) -> Vec<St
         }
     }
     candidates
+}
+
+fn candidate_matches_target(candidate: &str, target: &str) -> bool {
+    candidate == target
+        || crate::word_reader::last_text_word(candidate)
+            .is_some_and(|word| word.eq_ignore_ascii_case(target))
 }
 
 fn top_candidate(
@@ -921,12 +1012,26 @@ mod tests {
         assert!(damages
             .iter()
             .any(|(class, value)| *class == "missing_letter" && value == "врея"));
+        assert!(damages
+            .iter()
+            .any(|(class, value)| *class == "letter_substitution" && value == "врёмя"));
+        let long_damages = word_damages("переподключаю");
+        assert!(long_damages
+            .iter()
+            .any(|(class, value)| *class == "sparse_multi_omission" && value == "переоключаю"));
+        assert!(damages
+            .iter()
+            .any(|(class, value)| *class == "punctuation_suffix" && value == "время!"));
     }
 
     #[test]
     fn layout_projection_uses_keyboard_mapping() {
         assert_eq!(layout_projection("давай").as_deref(), Some("lfdfq"));
         assert_eq!(layout_projection("file").as_deref(), Some("ашду"));
+        assert_eq!(
+            partial_layout_projection("download").as_deref(),
+            Some("downдщфв")
+        );
     }
 
     #[test]
@@ -975,5 +1080,12 @@ mod tests {
         assert_eq!(corpus_support_repeats(1), 3);
         assert_eq!(corpus_support_repeats(2), 3);
         assert_eq!(corpus_support_repeats(3), 5);
+    }
+
+    #[test]
+    fn punctuation_suffix_is_same_lexical_candidate_in_shadow_metrics() {
+        assert!(candidate_matches_target("слово!", "слово"));
+        assert!(candidate_matches_target("word?", "word"));
+        assert!(!candidate_matches_target("слова", "слово"));
     }
 }
