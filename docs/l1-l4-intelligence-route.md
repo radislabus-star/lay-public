@@ -63,6 +63,25 @@ strengthen, suppress, or reject a candidate in both routes, but they never
 write text directly.  IME producers provide material; `TransitionDecisionCore`
 owns visible-candidate admission.
 
+## L3 Self Teacher Route
+
+L3 learns context only through an offline teacher/proof loop:
+
+```text
+clean phrase source
+-> generated dirty surfaces
+-> compact surface mutation field
+-> context phase package
+-> shadow readout
+-> promotion gate
+-> runtime package only after PASS
+```
+
+The teacher may write cold artifacts and `.nwpc` shadow packages. It must not
+install runtime authority by itself. A useful first metric is
+`false_authority`: wrong candidates may have noisy raw energy during learning,
+but they must not receive L3 Support.
+
 ## Example Target
 
 Raw input:
@@ -269,6 +288,23 @@ Space correction -> full L2 replacement / layout / boundary lattice
 
 The two routes may share L2/L3/L4/Bayes field evidence, but they must not share
 physical edit authority.
+
+## Next Front: Lay Self Teacher For L3
+
+Current L3 baseline is observed but not decisive:
+
+```text
+evidence hit: 9/24 = 37.5%
+authority: 4/24 = 16.7%
+output_changed: 0
+improved/worsened: 0/0
+verdict: L3_CONTEXT_OBSERVED_NOT_DECISIVE
+```
+
+The next planned architecture step is `lay-self-teacher`: an offline trainer that
+generates dirty/clean phrase pairs, runs them through the same L1/L2/L3/L4
+pipeline, and compiles local L3 phase and anti-phase context memory.  The goal is
+to make L3 change decisions under shadow proof, not merely observe context.
 
 ## Safety Contract
 
