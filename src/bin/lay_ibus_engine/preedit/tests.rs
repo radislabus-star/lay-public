@@ -1093,6 +1093,38 @@ fn committed_tail_ime_renders_boundary_replacement_for_explicit_tab() {
 }
 
 #[test]
+fn repeated_current_token_does_not_disable_shared_l2_readout() {
+    lay::nanda_wave::warm_up_l2_for_ime();
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            correction_safety: "experimental".to_string(),
+            ..LayConfig::default()
+        },
+    );
+    for ch in "тоесть тоесть".chars() {
+        engine.push_tail_char(ch);
+    }
+    engine.refresh_precognition_candidates();
+
+    assert!(
+        engine
+            .preedit_replacement_targets
+            .iter()
+            .flatten()
+            .any(|target| target == "то есть"),
+        "a repeated token must still reach the shared L2 lattice: candidates={:?}, replacements={:?}",
+        engine.preedit_candidates,
+        engine.preedit_replacement_targets
+    );
+}
+
+#[test]
 fn first_active_russian_word_prefix_gets_precognition_candidate_after_three_chars() {
     lay::nanda_wave::warm_up_l2_for_ime();
     let mut engine = LayIbusEngine::new(

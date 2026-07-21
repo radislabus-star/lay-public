@@ -78,14 +78,6 @@ impl LayIbusEngine {
         };
         let partial = partial.to_lowercase();
         let partial_len = partial.chars().count();
-        let has_left_context = prefix.split_whitespace().next().is_some();
-        if has_left_context
-            && TypingCpu::phrase_context_tokens(prefix)
-                .last()
-                .is_some_and(|previous| previous == &partial)
-        {
-            return Vec::new();
-        }
         let min_prefix_chars = PREEDIT_RU_PREFIX_MIN_CHARS;
         if !(min_prefix_chars..=12).contains(&partial_len)
             || !partial.chars().all(|ch| matches!(ch, 'а'..='я' | 'ё'))
