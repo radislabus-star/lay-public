@@ -53,6 +53,11 @@ pub fn autocorrect_edit_safety(
     let trailing_ws = crate::word_reader::trailing_whitespace_char_count(original);
     let rewrites_inside_committed_tail =
         (plan.backspaces > 0 || !plan.insert.is_empty()) && plan.move_left as usize > trailing_ws;
+    // A deferred correction may execute behind already typed text. In that case
+    // the right side is witness context, not another word owned by the edit.
+    let right_context_projection = transition.is_verified()
+        && plan_matches_replacement
+        && plan_preserves_unchanged_right_context(&original_chars, replacement, plan);
 
     let boundary_proof = matches!(
         transition.proof(),
@@ -70,9 +75,11 @@ pub fn autocorrect_edit_safety(
         (false, "invalid_edit_plan_cursor_bounds")
     } else if !plan_matches_replacement {
         (false, "edit_plan_dry_run_mismatch")
-    } else if multiword_original && !boundary_proof {
+    } else if multiword_original && !(boundary_proof || right_context_projection) {
         (false, "unsafe_multiword_autocorrect_scope")
-    } else if rewrites_inside_committed_tail && !(boundary_proof || layout_phrase) {
+    } else if rewrites_inside_committed_tail
+        && !(boundary_proof || layout_phrase || right_context_projection)
+    {
         (false, "unsafe_middle_suffix_autocorrect_plan")
     } else if boundary_changed && !(boundary_proof || layout_phrase) {
         (false, "unsafe_boundary_edit_without_proof")
@@ -97,6 +104,38 @@ pub fn autocorrect_edit_safety(
         allow_apply,
         reason,
     }
+}
+
+fn plan_preserves_unchanged_right_context(
+    original_chars: &[char],
+    replacement: &str,
+    plan: &TextReplacement,
+) -> bool {
+    let Some((delete_start, cursor)) = checked_delete_range(original_chars.len(), plan) else {
+        return false;
+    };
+    if plan.move_right == 0 || cursor >= original_chars.len() {
+        return false;
+    }
+    let replacement_chars = replacement.chars().collect::<Vec<_>>();
+    let after_insert = delete_start + plan.insert.chars().count();
+    if after_insert > replacement_chars.len() {
+        return false;
+    }
+    let original_right = original_chars[cursor..].iter().collect::<String>();
+    if !right_context_starts_at_token_boundary(&original_right) {
+        return false;
+    }
+    let replacement_right = replacement_chars[after_insert..].iter().collect::<String>();
+    original_right == replacement_right
+        && original_right.chars().count() == plan.move_right as usize
+}
+
+fn right_context_starts_at_token_boundary(right_context: &str) -> bool {
+    right_context
+        .chars()
+        .next()
+        .is_some_and(|ch| !ch.is_alphanumeric() && ch != '_')
 }
 
 fn checked_delete_range(original_len: usize, plan: &TextReplacement) -> Option<(usize, usize)> {

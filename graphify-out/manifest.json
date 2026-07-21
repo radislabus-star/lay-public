@@ -825,8 +825,8 @@
     "semantic_hash": "dce5c170ed4e901565a36ea42e2d8874"
   },
   "src/bin/lay_daemon/typing_assist_runtime/output/minimal.rs": {
-    "mtime": 1784340058.0997608,
-    "ast_hash": "715abc12cb2719bf8b0cf517ba926de4",
+    "mtime": 1784656032.9594588,
+    "ast_hash": "5d51c0b049171640eab00371ef83263e",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/typing_assist_runtime/output/minimal/context.rs": {
@@ -1985,8 +1985,8 @@
     "semantic_hash": ""
   },
   "src/text_edit/gate.rs": {
-    "mtime": 1784632339.419532,
-    "ast_hash": "0f22d8545b8ba129d118fe8025941fef",
+    "mtime": 1784656208.4194012,
+    "ast_hash": "d7ca9f35c198f6ea71897d1f24a11026",
     "semantic_hash": ""
   },
   "src/text_edit/mutation.rs": {
@@ -1995,8 +1995,8 @@
     "semantic_hash": ""
   },
   "src/text_edit/safety.rs": {
-    "mtime": 1784110092.5257306,
-    "ast_hash": "e326a3e4b041360ec4fd219979800028",
+    "mtime": 1784656281.0702126,
+    "ast_hash": "4b9fd022f59da5ce5fe15f18edceae43",
     "semantic_hash": ""
   },
   "src/text_edit/transition.rs": {
@@ -3330,8 +3330,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision/receipt.rs": {
-    "mtime": 1784457563.126315,
-    "ast_hash": "52a833579ddbedcbfbb73b65ad480998",
+    "mtime": 1784656022.339342,
+    "ast_hash": "725301cbedb26aca7dcb7f4523540eac",
     "semantic_hash": ""
   },
   "src/typing_transition/decision/tests.rs": {

@@ -44,8 +44,18 @@ pub(crate) fn apply_minimal_typing_replacement(
         log("⚠ typing-assist skipped before delete: edit plan invariant failed");
         return TypingAssistOutcome::NoCorrection;
     };
-    let edit_action =
-        edit.authorize_verified_replacement("typing-assist", original, replacement, plan.clone());
+    let Some((action_original, action_replacement)) =
+        action_text_with_right_context(buf, original, replacement, cursor_offset)
+    else {
+        log("⚠ typing-assist skipped before delete: cursor tail invariant failed");
+        return TypingAssistOutcome::NoCorrection;
+    };
+    let edit_action = edit.authorize_verified_replacement(
+        "typing-assist",
+        &action_original,
+        &action_replacement,
+        plan.clone(),
+    );
     lay::action_log::record_candidate_edit_action_before_apply(
         &edit_action,
         lay::action_log::MutationLogRoute::TYPING_ASSIST_MINIMAL,
@@ -139,4 +149,24 @@ pub(crate) fn apply_minimal_typing_replacement(
     TypingAssistOutcome::Applied {
         layout_is_ru: insert_outcome.layout_is_ru,
     }
+}
+
+fn action_text_with_right_context(
+    buf: &lay::word_buffer::WordBuffer,
+    original: &str,
+    replacement: &str,
+    cursor_offset: u32,
+) -> Option<(String, String)> {
+    if cursor_offset == 0 {
+        return Some((original.to_string(), replacement.to_string()));
+    }
+    let visible_tail = buf.visible_tail_text(lay::word_buffer::MAX_REPLACE_WORDS)?;
+    let following_tail = lay::text_edit::tail_chars(&visible_tail, cursor_offset as usize);
+    if following_tail.chars().count() != cursor_offset as usize {
+        return None;
+    }
+    Some((
+        format!("{original}{following_tail}"),
+        format!("{replacement}{following_tail}"),
+    ))
 }

@@ -79,10 +79,36 @@ fn same_transition_projection(
     if original == from_text && replacement == to_text {
         return true;
     }
+    if let Some(stable_suffix) = from_text.strip_prefix(original) {
+        return to_text
+            .strip_prefix(replacement)
+            .is_some_and(|projected_suffix| projected_suffix == stable_suffix);
+    }
     let Some(original_prefix) = original.strip_suffix(from_text) else {
         return false;
     };
     replacement
         .strip_suffix(to_text)
         .is_some_and(|replacement_prefix| replacement_prefix == original_prefix)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::same_transition_projection;
+
+    #[test]
+    fn transition_receipt_projects_over_unchanged_right_context() {
+        assert!(same_transition_projection(
+            "постаивм ",
+            "поставим ",
+            "постаивм хвост",
+            "поставим хвост",
+        ));
+        assert!(!same_transition_projection(
+            "постаивм ",
+            "поставим ",
+            "постаивм хвост",
+            "поставим другой",
+        ));
+    }
 }

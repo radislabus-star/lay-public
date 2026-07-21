@@ -246,8 +246,9 @@ mod tests {
     use super::{plan_manual_edit, seal_authorized_action, PlannedReplacementInput};
     use crate::text_edit::{
         plan_committed_tail_full_token_replacement, plan_text_replacement, EditActionKind,
-        TransitionAudit, TransitionOperator, TransitionProof,
+        TextReplacement, TransitionAudit, TransitionOperator, TransitionProof,
     };
+    use crate::typing_transition::decision::DecisionTransitionReceipt;
 
     #[test]
     fn gate_authorizes_last_token_replacement() {
@@ -286,6 +287,42 @@ mod tests {
         assert_eq!(action.kind(), EditActionKind::BlockUnsafe);
         assert!(!action.allow_apply());
         assert_eq!(action.safety_reason(), "edit_transition_not_verified");
+    }
+
+    #[test]
+    fn gate_authorizes_same_transition_behind_unchanged_right_context() {
+        let receipt = DecisionTransitionReceipt::for_visible_tail(
+            "постаивм ".to_string(),
+            "поставим ".to_string(),
+            TransitionAudit::proven(
+                TransitionOperator::ReplaceCurrentWord,
+                TransitionProof::Typo,
+                true,
+                false,
+                1,
+            ),
+        );
+        let action = super::plan_decision_transition_edit(
+            crate::text_edit::DecisionTransitionEditInput {
+                source: "typing-assist",
+                confidence_milli: 800,
+                from_text: "постаивм хвост",
+                to_text: "поставим хвост",
+                plan: TextReplacement {
+                    move_left: 6,
+                    backspaces: 8,
+                    insert: "поставим".to_string(),
+                    move_right: 6,
+                },
+                selected_source_id: Some("L2LexicalPhaseCell32"),
+                selected_error_class: Some("adjacent-transposition"),
+            },
+            &receipt,
+        );
+
+        assert_eq!(action.kind(), EditActionKind::ReplaceRange);
+        assert!(action.allow_apply(), "action={action:?}");
+        assert!(action.has_verifier_receipt());
     }
 
     #[test]
