@@ -218,6 +218,28 @@ report active/passive state
 If IME needs a correction, it asks the common pipeline and receives an
 EditAction.
 
+### Completion Is Not Autocorrect
+
+This distinction is a permanent runtime contract:
+
+```text
+IME / preedit:
+  incomplete current token -> suffix candidate -> explicit Tab acceptance
+
+Autocorrect:
+  completed token + boundary -> typed correction operator -> verifier
+  -> AuthorizedEdit -> backend output
+```
+
+IME must never display a full-token typo, layout, split, or glue replacement
+as a suffix completion. In particular, `тоесть -> то есть` is a
+`BoundaryCell32` autocorrect transition at Space, not an IME candidate and not
+a Tab action.
+
+Tab accepts only a suffix that extends the current token. Full-token
+replacement belongs exclusively to the shared correction pipeline and may be
+executed only after its typed transition proof and verifier succeed.
+
 ## Safety Contract
 
 Default autocorrect can touch only the current token.
