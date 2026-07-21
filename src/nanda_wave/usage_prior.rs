@@ -511,6 +511,7 @@ pub fn usage_memory_learned_report_json() -> serde_json::Value {
         .unwrap_or_default();
     let counts = load_usage_counts();
     let summary = usage_state_map_summary();
+    let causal = causal_feedback_summary(&text);
     serde_json::json!({
         "kind": "typing_memory_learned_report",
         "status": "ok",
@@ -552,9 +553,39 @@ pub fn usage_memory_learned_report_json() -> serde_json::Value {
             "single_pass": true,
             "uses": ["word_prior", "context_prior", "rejected_prior", "context_rejected", "accepted_count", "rejected_count", "transition_signal", "surface_frontier"]
         },
+        "causal_feedback": causal,
         "events_tail_bytes": text.len(),
         "authority": "ranking signal only; edit safety gate remains final"
     })
+}
+
+/// Diagnostics only: this reads journal metadata and never changes a score.
+/// It tells the tray/CLI which outcomes L4 has actually observed, including
+/// censored receipts that must not become negative semantic evidence.
+fn causal_feedback_summary(text: &str) -> serde_json::Value {
+    let mut outcomes = HashMap::new();
+    let mut operators = HashMap::new();
+    let mut layout_directions = HashMap::new();
+    let mut layout_scopes = HashMap::new();
+    for event in usage_events_from_jsonl(text) {
+        increment_optional_count(&mut outcomes, event.outcome.as_deref());
+        increment_optional_count(&mut operators, event.operator.as_deref());
+        increment_optional_count(&mut layout_directions, event.layout_direction.as_deref());
+        increment_optional_count(&mut layout_scopes, event.layout_scope.as_deref());
+    }
+    serde_json::json!({
+        "outcomes": top_count_json(&outcomes, 12),
+        "operators": top_count_json(&operators, 12),
+        "layout_directions": top_count_json(&layout_directions, 8),
+        "layout_scopes": top_count_json(&layout_scopes, 8),
+    })
+}
+
+fn increment_optional_count(target: &mut HashMap<String, u32>, value: Option<&str>) {
+    let Some(value) = value.filter(|value| !value.is_empty()) else {
+        return;
+    };
+    *target.entry(value.to_string()).or_default() += 1;
 }
 
 fn refresh_usage_counts_from_disk() -> UsageCounts {
