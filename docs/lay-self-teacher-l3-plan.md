@@ -1,6 +1,6 @@
 # Lay Self Teacher L3 Plan
 
-Status: first offline teacher implemented, shadow WATCH
+Status: offline teacher implemented, smoke shadow PASS after support schedule fix
 
 Baseline from 2026-07-21:
 
@@ -44,7 +44,7 @@ Default local feedback source, when present:
 Only accepted/confirmed outcomes are allowed into the clean teacher corpus.
 Rejected events remain telemetry unless they carry an observed final target.
 
-Latest smoke:
+Previous smoke:
 
 ```bash
 lay-nanda-wave-eval --lay-self-teacher-l3 --max-phrases 160 --max-pairs 1200 --out-dir /tmp/lay-self-teacher-l3-smoke
@@ -85,6 +85,52 @@ target_top1 is weak: raw energy still often ranks the wrong candidate first.
 The next L3 work is not to add correction rules. It is to improve target
 energy/top-1 inside the learned context field while preserving false_authority
 at zero.
+
+Latest smoke after fixing corpus support schedule:
+
+```bash
+lay-nanda-wave-eval --lay-self-teacher-l3 --max-phrases 160 --max-pairs 1200 --out-dir /tmp/lay-self-teacher-l3-smoke-2
+```
+
+Result:
+
+```text
+clean_phrases:              160
+dirty_pairs:                1200
+corpus_support_repeats:     3
+corpus_fragments:           480
+surface_rows:               839
+semantic_states:            369
+candidate_profiles:         319
+artifact_bytes:             331,504
+elapsed_millis:             10,520
+
+shadow cases:               491
+evidence_hit:               491 / 491 = 100.00%
+authority:                  480 / 491 = 97.76%
+output_changed:             480 / 491 = 97.76%
+target_top1:                491 / 491 = 100.00%
+support_target_top1:        491 / 491 = 100.00%
+false_top1:                 0 / 491 = 0.00%
+support_false_top1:         0 / 491 = 0.00%
+false_authority:            0 / 491 = 0.00%
+candidate_order_changed:    0
+verdict:                    PASS_shadow
+runtime_authority:          false
+runtime_installed:          false
+```
+
+Why it changed:
+
+```text
+Context phase profiles are admitted only after repeated support.
+With min_profile_support=2, a profile is born on the second observation, so a
+two-line corpus repeat gives only one positive example after birth. The clean
+teacher corpus must therefore repeat each clean phrase 2 * min_support - 1
+times. Default min_support=2 means 3 repeats.
+```
+
+This is a training support fix, not a word-specific correction rule.
 
 ## Route
 

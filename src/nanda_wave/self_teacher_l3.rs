@@ -12,8 +12,8 @@ const DEFAULT_MAX_PHRASES: usize = 256;
 const DEFAULT_MAX_PAIRS: usize = 2_000;
 const DEFAULT_MIN_PROFILE_SUPPORT: u32 = 2;
 const DEFAULT_MIN_SURFACE_SUPPORT: u32 = 1;
-const CORPUS_SUPPORT_REPEATS: usize = 2;
 const PROJECT_CLEAN_SEED: &str = "data/nanda_llmwave_seed_phrases.txt";
+const MAX_SHADOW_EXAMPLES: usize = 16;
 
 #[derive(Clone, Debug)]
 pub struct LaySelfTeacherL3Config {
@@ -64,11 +64,58 @@ struct ShadowMetrics {
     output_changed: usize,
     target_top1: usize,
     false_top1: usize,
+    support_target_top1: usize,
+    support_false_top1: usize,
     false_authority: usize,
     pairwise_certified: usize,
     pairwise_blocked_wrong: usize,
     candidate_order_stable: usize,
     candidate_order_changed: usize,
+    support_candidate_order_stable: usize,
+    support_candidate_order_changed: usize,
+    false_top1_examples: Vec<ShadowMissExample>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+struct ShadowMissExample {
+    class: &'static str,
+    context: String,
+    dirty_phrase: String,
+    clean_phrase: String,
+    dirty_token: String,
+    target: String,
+    raw_winner: Option<String>,
+    support_winner: Option<String>,
+    target_support_rank: i32,
+    target_margin_micro: i64,
+    ladder: Vec<ShadowCandidateSnapshot>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+struct ShadowCandidateSnapshot {
+    candidate: String,
+    disposition: &'static str,
+    support_rank: i32,
+    profile_present: bool,
+    signature_profile_present: bool,
+    positive_micro: i64,
+    anti_micro: i64,
+    margin_micro: i64,
+    threshold_micro: i64,
+    competition_margin_micro: i64,
+    positive_examples: u32,
+    negative_examples: u32,
+    positive_center_support: u32,
+    anti_center_support: u32,
+    semantic_support: u32,
+    signature_positive_micro: i64,
+    signature_center_support: u32,
+    pairwise_blocked: bool,
+    pairwise_conflict: bool,
+    pairwise_certified: bool,
+    pairwise_known_edges: u16,
+    pairwise_unknown_edges: u16,
+    pairwise_cycle_members: u16,
 }
 
 pub fn build_lay_self_teacher_l3_report(
@@ -84,8 +131,9 @@ pub fn build_lay_self_teacher_l3_report(
     let surface_evidence_path = config.output_dir.join("surface_evidence.jsonl");
     let eval_cases_path = config.output_dir.join("dirty_eval_cases.jsonl");
     let package_path = config.output_dir.join("l3_self_teacher_shadow.nwpc");
+    let corpus_support_repeats = corpus_support_repeats(config.min_profile_support);
 
-    write_clean_corpus(&clean_corpus_path, &clean_phrases)?;
+    write_clean_corpus(&clean_corpus_path, &clean_phrases, corpus_support_repeats)?;
     write_surface_evidence(&surface_evidence_path, &dirty_examples)?;
     write_eval_cases(&eval_cases_path, &dirty_examples)?;
 
@@ -119,7 +167,7 @@ pub fn build_lay_self_teacher_l3_report(
             "max_fragments": config.max_fragments,
             "min_profile_support": config.min_profile_support,
             "min_surface_support": config.min_surface_support,
-            "corpus_support_repeats": CORPUS_SUPPORT_REPEATS,
+            "corpus_support_repeats": corpus_support_repeats,
             "project_clean_seed": PROJECT_CLEAN_SEED,
         },
         "teacher": {
@@ -150,12 +198,19 @@ pub fn build_lay_self_teacher_l3_report(
             "target_top1_percent": percent(shadow.target_top1, shadow.cases),
             "false_top1": shadow.false_top1,
             "false_top1_percent": percent(shadow.false_top1, shadow.cases),
+            "support_target_top1": shadow.support_target_top1,
+            "support_target_top1_percent": percent(shadow.support_target_top1, shadow.cases),
+            "support_false_top1": shadow.support_false_top1,
+            "support_false_top1_percent": percent(shadow.support_false_top1, shadow.cases),
             "false_authority": shadow.false_authority,
             "false_authority_percent": percent(shadow.false_authority, shadow.cases),
             "pairwise_certified": shadow.pairwise_certified,
             "pairwise_blocked_wrong": shadow.pairwise_blocked_wrong,
             "candidate_order_stable": shadow.candidate_order_stable,
             "candidate_order_changed": shadow.candidate_order_changed,
+            "support_candidate_order_stable": shadow.support_candidate_order_stable,
+            "support_candidate_order_changed": shadow.support_candidate_order_changed,
+            "false_top1_examples": shadow.false_top1_examples,
         },
         "promotion_gate": {
             "package_published": false,
@@ -251,15 +306,22 @@ fn normalize_phrase(phrase: &str) -> String {
         .join(" ")
 }
 
-fn write_clean_corpus(path: &Path, phrases: &[String]) -> io::Result<()> {
+fn write_clean_corpus(path: &Path, phrases: &[String], repeats: usize) -> io::Result<()> {
     let mut text = String::new();
     for phrase in phrases {
-        for _ in 0..CORPUS_SUPPORT_REPEATS {
+        for _ in 0..repeats {
             text.push_str(phrase);
             text.push('\n');
         }
     }
     fs::write(path, text)
+}
+
+fn corpus_support_repeats(min_profile_support: u32) -> usize {
+    usize::try_from(min_profile_support.max(2))
+        .unwrap_or(2)
+        .saturating_mul(2)
+        .saturating_sub(1)
 }
 
 fn write_surface_evidence(path: &Path, examples: &[DirtyExample]) -> io::Result<()> {
@@ -495,6 +557,7 @@ fn shadow_metrics(
         let candidate_refs = candidates.iter().map(String::as_str).collect::<Vec<_>>();
         let readouts = package.score_candidates(&context, &candidate_refs);
         let winner = top_candidate(&candidates, &readouts);
+        let support_winner = support_top_candidate(&candidates, &readouts);
         let target_readout = candidates
             .iter()
             .position(|candidate| candidate == target)
@@ -520,6 +583,11 @@ fn shadow_metrics(
         } else if winner.is_some() {
             metrics.false_top1 += 1;
         }
+        if support_winner.as_deref() == Some(target) {
+            metrics.support_target_top1 += 1;
+        } else if support_winner.is_some() {
+            metrics.support_false_top1 += 1;
+        }
         if readouts
             .iter()
             .zip(&candidates)
@@ -543,6 +611,31 @@ fn shadow_metrics(
             metrics.candidate_order_stable += 1;
         } else {
             metrics.candidate_order_changed += 1;
+        }
+        if support_candidate_order_is_stable(
+            package,
+            &context,
+            &candidates,
+            support_winner.as_deref(),
+        ) {
+            metrics.support_candidate_order_stable += 1;
+        } else {
+            metrics.support_candidate_order_changed += 1;
+        }
+        if (winner.as_deref() != Some(target) || support_winner.as_deref() != Some(target))
+            && metrics.false_top1_examples.len() < MAX_SHADOW_EXAMPLES
+        {
+            metrics.false_top1_examples.push(shadow_miss_example(
+                example,
+                &context,
+                target,
+                dirty,
+                winner.clone(),
+                support_winner.clone(),
+                &candidates,
+                &readouts,
+                target_readout,
+            ));
         }
     }
     metrics
@@ -600,6 +693,120 @@ fn top_candidate(
         .map(|(candidate, _)| candidate.clone())
 }
 
+fn support_top_candidate(
+    candidates: &[String],
+    readouts: &[context_phase::ContextPhaseReadout],
+) -> Option<String> {
+    candidates
+        .iter()
+        .zip(readouts)
+        .max_by(|(left_candidate, left), (right_candidate, right)| {
+            support_rank(left)
+                .cmp(&support_rank(right))
+                .then_with(|| left.margin_micro.cmp(&right.margin_micro))
+                .then_with(|| left.positive_micro.cmp(&right.positive_micro))
+                .then_with(|| right_candidate.cmp(left_candidate))
+        })
+        .map(|(candidate, _)| candidate.clone())
+}
+
+fn support_rank(readout: &context_phase::ContextPhaseReadout) -> i32 {
+    match readout.disposition {
+        ContextPhaseDisposition::Support => 5,
+        ContextPhaseDisposition::Neutral if readout.pairwise_certified => 4,
+        ContextPhaseDisposition::Neutral if readout.profile_present => 3,
+        ContextPhaseDisposition::Neutral if readout.signature_profile_present => 2,
+        ContextPhaseDisposition::Suppress => 1,
+        ContextPhaseDisposition::Neutral | ContextPhaseDisposition::Unavailable => 0,
+    }
+}
+
+fn shadow_miss_example(
+    example: &DirtyExample,
+    context: &[String],
+    target: &str,
+    dirty: &str,
+    raw_winner: Option<String>,
+    support_winner: Option<String>,
+    candidates: &[String],
+    readouts: &[context_phase::ContextPhaseReadout],
+    target_readout: &context_phase::ContextPhaseReadout,
+) -> ShadowMissExample {
+    ShadowMissExample {
+        class: example.class,
+        context: context.join(" "),
+        dirty_phrase: example.dirty_phrase.clone(),
+        clean_phrase: example.clean_phrase.clone(),
+        dirty_token: dirty.to_string(),
+        target: target.to_string(),
+        raw_winner,
+        support_winner,
+        target_support_rank: support_rank(target_readout),
+        target_margin_micro: target_readout.margin_micro,
+        ladder: candidate_ladder(candidates, readouts),
+    }
+}
+
+fn candidate_ladder(
+    candidates: &[String],
+    readouts: &[context_phase::ContextPhaseReadout],
+) -> Vec<ShadowCandidateSnapshot> {
+    let mut ladder = candidates
+        .iter()
+        .zip(readouts)
+        .map(|(candidate, readout)| candidate_snapshot(candidate, readout))
+        .collect::<Vec<_>>();
+    ladder.sort_by(|left, right| {
+        right
+            .support_rank
+            .cmp(&left.support_rank)
+            .then_with(|| right.margin_micro.cmp(&left.margin_micro))
+            .then_with(|| right.positive_micro.cmp(&left.positive_micro))
+            .then_with(|| left.candidate.cmp(&right.candidate))
+    });
+    ladder
+}
+
+fn candidate_snapshot(
+    candidate: &str,
+    readout: &context_phase::ContextPhaseReadout,
+) -> ShadowCandidateSnapshot {
+    ShadowCandidateSnapshot {
+        candidate: candidate.to_string(),
+        disposition: disposition_name(readout.disposition),
+        support_rank: support_rank(readout),
+        profile_present: readout.profile_present,
+        signature_profile_present: readout.signature_profile_present,
+        positive_micro: readout.positive_micro,
+        anti_micro: readout.anti_micro,
+        margin_micro: readout.margin_micro,
+        threshold_micro: readout.threshold_micro,
+        competition_margin_micro: readout.competition_margin_micro,
+        positive_examples: readout.positive_examples,
+        negative_examples: readout.negative_examples,
+        positive_center_support: readout.positive_center_support,
+        anti_center_support: readout.anti_center_support,
+        semantic_support: readout.semantic_support,
+        signature_positive_micro: readout.signature_positive_micro,
+        signature_center_support: readout.signature_center_support,
+        pairwise_blocked: readout.pairwise_blocked,
+        pairwise_conflict: readout.pairwise_conflict,
+        pairwise_certified: readout.pairwise_certified,
+        pairwise_known_edges: readout.pairwise_known_edges,
+        pairwise_unknown_edges: readout.pairwise_unknown_edges,
+        pairwise_cycle_members: readout.pairwise_cycle_members,
+    }
+}
+
+fn disposition_name(disposition: ContextPhaseDisposition) -> &'static str {
+    match disposition {
+        ContextPhaseDisposition::Support => "support",
+        ContextPhaseDisposition::Suppress => "suppress",
+        ContextPhaseDisposition::Neutral => "neutral",
+        ContextPhaseDisposition::Unavailable => "unavailable",
+    }
+}
+
 fn candidate_order_is_stable(
     package: &context_phase::ContextPhasePackage,
     context: &[String],
@@ -611,6 +818,19 @@ fn candidate_order_is_stable(
     let refs = reversed.iter().map(String::as_str).collect::<Vec<_>>();
     let readouts = package.score_candidates(context, &refs);
     top_candidate(&reversed, &readouts).as_deref() == expected_winner
+}
+
+fn support_candidate_order_is_stable(
+    package: &context_phase::ContextPhasePackage,
+    context: &[String],
+    candidates: &[String],
+    expected_winner: Option<&str>,
+) -> bool {
+    let mut reversed = candidates.to_vec();
+    reversed.reverse();
+    let refs = reversed.iter().map(String::as_str).collect::<Vec<_>>();
+    let readouts = package.score_candidates(context, &refs);
+    support_top_candidate(&reversed, &readouts).as_deref() == expected_winner
 }
 
 fn shadow_verdict(metrics: &ShadowMetrics) -> &'static str {
@@ -718,5 +938,42 @@ mod tests {
         assert!(examples
             .iter()
             .any(|example| example.class == "premature_space"));
+    }
+
+    #[test]
+    fn support_top_candidate_prefers_exact_profile_over_signature_pressure() {
+        let candidates = vec!["шум".to_string(), "цель".to_string()];
+        let readouts = vec![
+            context_phase::ContextPhaseReadout {
+                signature_profile_present: true,
+                margin_micro: 9_000,
+                positive_micro: 9_000,
+                disposition: ContextPhaseDisposition::Neutral,
+                ..context_phase::ContextPhaseReadout::default()
+            },
+            context_phase::ContextPhaseReadout {
+                profile_present: true,
+                margin_micro: 3_000,
+                positive_micro: 3_000,
+                disposition: ContextPhaseDisposition::Neutral,
+                ..context_phase::ContextPhaseReadout::default()
+            },
+        ];
+
+        assert_eq!(
+            top_candidate(&candidates, &readouts).as_deref(),
+            Some("шум")
+        );
+        assert_eq!(
+            support_top_candidate(&candidates, &readouts).as_deref(),
+            Some("цель")
+        );
+    }
+
+    #[test]
+    fn corpus_repeats_cover_birth_plus_required_profile_support() {
+        assert_eq!(corpus_support_repeats(1), 3);
+        assert_eq!(corpus_support_repeats(2), 3);
+        assert_eq!(corpus_support_repeats(3), 5);
     }
 }

@@ -82,6 +82,10 @@ install runtime authority by itself. A useful first metric is
 `false_authority`: wrong candidates may have noisy raw energy during learning,
 but they must not receive L3 Support.
 
+The clean teacher corpus must repeat phrases enough to cover both profile birth
+and required support. For `min_profile_support=N`, the repeat count is
+`2 * N - 1`; the default `N=2` therefore uses three clean passes.
+
 ## Example Target
 
 Raw input:
