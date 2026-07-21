@@ -30,7 +30,9 @@ impl LayIbusEngine {
         }
     }
 
-    pub(super) fn confirm_pending_ime_completion_on_next_word(&mut self) {
+    /// A later word or terminal punctuation confirms that the explicitly
+    /// accepted completion remained useful. This does not alter visible text.
+    pub(super) fn confirm_pending_ime_completion_at_stable_boundary(&mut self) {
         let Some(pending) = self.pending_ime_completion_learning.take() else {
             return;
         };

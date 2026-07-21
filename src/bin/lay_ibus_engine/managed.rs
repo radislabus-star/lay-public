@@ -104,8 +104,8 @@ impl LayIbusEngine {
             self.trace_key("non_printable", keyval, keycode, false, None);
             return Ok(false);
         };
-        if ch.is_alphabetic() {
-            self.confirm_pending_ime_completion_on_next_word();
+        if ch.is_alphabetic() || is_completion_learning_boundary(ch) {
+            self.confirm_pending_ime_completion_at_stable_boundary();
         }
         if self.buffer.is_empty() {
             let initial_mode = self.initial_word_input_mode();
@@ -143,8 +143,26 @@ impl LayIbusEngine {
     }
 }
 
+/// Punctuation after an explicitly accepted completion is a neutral end of
+/// thought: it confirms the selected word without becoming lexical evidence.
+fn is_completion_learning_boundary(ch: char) -> bool {
+    matches!(ch, '!' | ',' | '.' | '?')
+}
+
 #[cfg(test)]
 mod word_boundary_route_contract {
+    use super::is_completion_learning_boundary;
+
+    #[test]
+    fn punctuation_confirms_completion_learning_without_becoming_a_word() {
+        for ch in ['!', ',', '.', '?'] {
+            assert!(is_completion_learning_boundary(ch));
+        }
+        for ch in ['a', ' ', ':', ')'] {
+            assert!(!is_completion_learning_boundary(ch));
+        }
+    }
+
     #[test]
     fn managed_space_uses_shared_decision_core_only_for_layout_boundary() {
         let source = include_str!("managed.rs");
