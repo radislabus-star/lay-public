@@ -479,6 +479,29 @@ mod tests {
     }
 
     #[test]
+    fn phase_verified_transposition_competes_with_known_noisy_surface() {
+        let previous_policy = crate::hot_field::process_policy();
+        crate::hot_field::set_process_policy(crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
+            crate::text_backend::TextBackendPreference::Ime,
+        ));
+        let pipeline = default_typing_assist_pipeline();
+        let mut req = request("ландо ", &pipeline, CorrectionMode::DeterministicThenNanda);
+        req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+        let resolution = resolve_text_correction(req);
+        crate::hot_field::set_process_policy(previous_policy);
+
+        let selected = resolution.selected.as_ref().unwrap_or_else(|| {
+            panic!("L2 must compete with a known noisy surface: {resolution:#?}")
+        });
+        assert_eq!(selected.replacement, "ладно ");
+        assert_eq!(
+            selected.error_class,
+            TypingErrorClass::AdjacentTransposition
+        );
+        assert!(selected.has_origin(CandidateOrigin::L2Surface));
+    }
+
+    #[test]
     fn unique_transposition_certificate_repairs_short_word() {
         let previous_policy = crate::hot_field::process_policy();
         crate::hot_field::set_process_policy(

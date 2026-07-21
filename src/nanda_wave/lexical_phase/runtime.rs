@@ -184,10 +184,6 @@ impl LexicalPhaseMemory {
         let Some(surface) = normalize_surface(surface) else {
             return Vec::new();
         };
-        if self.terminal_for_normalized_surface(&surface).is_some() {
-            return Vec::new();
-        }
-
         let query_field = SurfaceFieldEncoder::encode(&surface);
         let (query_phase, _) = surface_phase(&query_field);
         let query_keys = atom_center_keys(&query_field);
