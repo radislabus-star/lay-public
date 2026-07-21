@@ -20,7 +20,7 @@ mod mutation;
 #[path = "text_edit/safety.rs"]
 pub(crate) mod safety;
 #[path = "text_edit/structural_verifier.rs"]
-mod structural_verifier;
+pub(crate) mod structural_verifier;
 #[path = "text_edit/transition.rs"]
 mod transition;
 #[path = "text_edit/types.rs"]

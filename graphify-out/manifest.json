@@ -1955,8 +1955,8 @@
     "semantic_hash": "aab27e3f956ca4e44e3d7c29b07a656d"
   },
   "src/text_edit.rs": {
-    "mtime": 1784457632.2902584,
-    "ast_hash": "a407c9d19f537ddcb6952697d9940356",
+    "mtime": 1784662475.6254385,
+    "ast_hash": "b1d504958f929bc7d3ac3a21a0130225",
     "semantic_hash": ""
   },
   "src/text_edit/action.rs": {
@@ -2000,8 +2000,8 @@
     "semantic_hash": ""
   },
   "src/text_edit/transition.rs": {
-    "mtime": 1784630786.938837,
-    "ast_hash": "daea74b0d17bb6f60e73e71126d211b6",
+    "mtime": 1784662491.4766252,
+    "ast_hash": "603a276b851d0853e1dd942935dc6c61",
     "semantic_hash": ""
   },
   "src/text_edit/types.rs": {
@@ -2240,8 +2240,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision.rs": {
-    "mtime": 1784640276.1705978,
-    "ast_hash": "73a03ad25ecb60c08765f3b5727f83b3",
+    "mtime": 1784662485.677557,
+    "ast_hash": "bc4b7ed889cf909972376b7959924d76",
     "semantic_hash": ""
   },
   "src/typing_transition/executor_contract.rs": {
@@ -3090,8 +3090,8 @@
     "semantic_hash": ""
   },
   "tests/typing_transition_authority_contract.rs": {
-    "mtime": 1784589399.0207105,
-    "ast_hash": "468a7cdaeb0590bbff4cb1018b479289",
+    "mtime": 1784662541.7142177,
+    "ast_hash": "cc6f743ba6910eae8c8408f6e09d5cb1",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit_readout.rs": {

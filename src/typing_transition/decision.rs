@@ -31,6 +31,13 @@ pub(crate) struct TransitionDecisionPolicy {
 }
 
 impl TransitionDecisionCore {
+    pub(crate) fn decide_visible_text_transition(
+        state: &crate::text_edit::VisibleFieldState,
+        candidate: crate::text_edit::LatentTextTransitionCandidate,
+    ) -> crate::text_edit::TextTransitionDecision {
+        crate::text_edit::structural_verifier::verify_visible_text_transition(state, candidate)
+    }
+
     pub(crate) fn admit_candidate_proposal(
         original: &str,
         replacement: &str,

@@ -3,7 +3,7 @@ use super::mutation::{TransitionAudit, TransitionOperator, TransitionProof};
 use super::types::TextReplacement;
 use super::visible_tail::{SnapshotIdentity, VisibleTailSnapshot, VisibleTailSource};
 use crate::text_metrics::{transition_changed_token_count, transition_left_context_changed};
-use crate::typing_transition::decision::DecisionTransitionReceipt;
+use crate::typing_transition::decision::{DecisionTransitionReceipt, TransitionDecisionCore};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum TransitionAuthorityKind {
@@ -341,7 +341,7 @@ pub fn decide_text_transition(
     state: &VisibleFieldState,
     candidate: LatentTextTransitionCandidate,
 ) -> TextTransitionDecision {
-    super::structural_verifier::verify_visible_text_transition(state, candidate)
+    TransitionDecisionCore::decide_visible_text_transition(state, candidate)
 }
 
 #[cfg(test)]

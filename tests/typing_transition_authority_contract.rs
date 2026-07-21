@@ -10,6 +10,7 @@ fn read(path: &str) -> String {
 fn visible_tail_decision_delegates_to_transition_core() {
     let facade = read("src/text_edit/transition.rs");
     let core = read("src/typing_transition/decision.rs");
+    let verifier = read("src/text_edit/structural_verifier.rs");
 
     assert!(
         facade.contains("TransitionDecisionCore::decide_visible_text_transition"),
@@ -17,8 +18,8 @@ fn visible_tail_decision_delegates_to_transition_core() {
     );
     assert!(
         core.contains("fn decide_visible_text_transition")
-            && core.contains("TextTransitionDecision::Apply"),
-        "TransitionDecisionCore must own visible-tail apply/reject choice"
+            && verifier.contains("TextTransitionDecision::Apply"),
+        "TransitionDecisionCore must own the visible-tail entrypoint and structural verifier must build apply/reject"
     );
 }
 
@@ -56,7 +57,7 @@ fn visible_tail_bridge_carries_focus_and_epoch_to_the_transition_core() {
 fn ime_target_continuity_and_bridge_replay_share_state_transition_contracts() {
     let preedit = read("src/bin/lay_ibus_engine/preedit.rs");
     let engine = read("src/bin/lay_ibus_engine/engine.rs");
-    let decision = read("src/typing_transition/decision.rs");
+    let transition = read("src/text_edit/transition.rs");
     let state = read("src/bin/lay_ibus_engine/state.rs");
 
     assert!(
@@ -68,7 +69,7 @@ fn ime_target_continuity_and_bridge_replay_share_state_transition_contracts() {
         "temporal candidate continuity must be private fast-state and may not create a blank retarget frame"
     );
     assert!(
-        decision.contains("TextTransitionDecision::AlreadyApplied")
+        transition.contains("TextTransitionDecision::AlreadyApplied")
             && state.contains("target_state_already_observed"),
         "a bridge replay of an already visible target must converge without backend output"
     );
@@ -277,6 +278,7 @@ fn candidate_admission_only_marks_eligibility_and_core_selects_transition() {
     let candidates = read("src/correction_core/candidate_sources.rs");
     let gate = read("src/typing_transition/proposal_admission.rs");
     let decision = read("src/typing_transition/decision.rs");
+    let apply_policy = read("src/typing_transition/decision/apply_policy.rs");
 
     assert!(
         correction.contains("CandidateGateAction::Eligible")
@@ -291,8 +293,8 @@ fn candidate_admission_only_marks_eligibility_and_core_selects_transition() {
     assert!(
         decision.contains("pub(crate) fn admit_candidate_proposal(")
             && decision.contains("producer_allows_authority_evaluation(")
-            && decision.contains("action == CandidateGateAction::Eligible")
-            && decision.contains(
+            && apply_policy.contains("action == CandidateGateAction::Eligible")
+            && apply_policy.contains(
                 "action == CandidateGateAction::SuggestOnly && l4_signal.exact_positive()",
             )
             && decision.contains("candidate_has_apply_authority")
