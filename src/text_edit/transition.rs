@@ -245,7 +245,6 @@ impl VisibleFieldState {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TextTransitionIntent {
     ImeAutocorrect,
-    ImeCompletionReplacement,
     ImeManualToggle,
     DaemonBridge,
 }

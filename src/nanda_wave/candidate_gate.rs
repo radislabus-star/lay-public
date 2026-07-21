@@ -915,8 +915,7 @@ mod tests {
     #[test]
     fn live_gate_projects_boundary_cell_into_ime_lattice() {
         super::super::warm_up_l2_for_ime();
-        let context = "наработает ";
-        let raw = live_l2_word_candidates(context, "тоесть", 12);
+        let raw = live_l2_word_candidates("", "тоесть", 12);
         assert!(
             raw.iter().any(|candidate| {
                 candidate.surface == "то есть"
@@ -924,7 +923,7 @@ mod tests {
             }),
             "BoundaryCell32 must enter the live lattice: {raw:?}"
         );
-        let visible = live_completion_candidates(request(context, "тоесть"));
+        let visible = live_completion_candidates(request("", "тоесть"));
         assert!(
             visible
                 .iter()
