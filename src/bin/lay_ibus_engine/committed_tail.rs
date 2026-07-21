@@ -6,14 +6,16 @@ use super::state::CommittedTailReplaceRequest;
 use super::text::make_ibus_text;
 use super::trace;
 use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
-use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
+use lay::text_edit::{TransitionProof, VisibleTailSnapshot, VisibleTailSource};
 
 impl LayIbusEngine {
-    pub(super) async fn autocorrect_committed_layout_on_space(
+    /// Applies only a verified single-token correction after Space. Completion
+    /// acceptance remains in `accept_stuck_tail()` and is never routed here.
+    pub(super) async fn autocorrect_committed_token_on_space(
         &mut self,
         emitter: &SignalEmitter<'_>,
     ) -> fdo::Result<bool> {
-        if !self.config.auto_switch_layout {
+        if !self.config.auto_replace {
             return Ok(false);
         }
         let token = self.last_tail_token_text();
@@ -30,12 +32,14 @@ impl LayIbusEngine {
         ) else {
             return Ok(false);
         };
-        if decision
+        let layout_transition = decision
             .input_gate
             .as_ref()
             .and_then(|trace| trace.selected_error_class.as_deref())
-            != Some("wrong_layout")
-        {
+            == Some("wrong_layout");
+        let boundary_transition =
+            decision.action.transition().proof() == Some(TransitionProof::Boundary);
+        if !(layout_transition || boundary_transition) || !decision.action.allow_apply() {
             return Ok(false);
         }
 
@@ -64,7 +68,11 @@ impl LayIbusEngine {
                     original: token.clone(),
                     replacement: replacement.clone(),
                     source: VisibleTailSource::ImeCommittedTail,
-                    kind: SystemOutcomeKind::LayoutProjection,
+                    kind: if layout_transition {
+                        SystemOutcomeKind::LayoutProjection
+                    } else {
+                        SystemOutcomeKind::Correction
+                    },
                 }),
             )
             .await?;

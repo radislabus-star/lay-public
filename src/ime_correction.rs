@@ -273,6 +273,25 @@ mod tests {
     }
 
     #[test]
+    fn committed_tail_boundary_split_is_authorized_for_space_autocorrect() {
+        let cfg = config();
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "тоесть ",
+            committed_tail: "тоесть",
+            config: &cfg,
+        })
+        .expect("boundary decision");
+
+        assert_eq!(decision.replacement, "то есть ");
+        assert_eq!(decision.action.selected_source_id(), Some("BoundaryCell32"));
+        assert!(
+            decision.action.allow_apply(),
+            "action={:?}",
+            decision.action
+        );
+    }
+
+    #[test]
     fn committed_tail_autocorrect_keeps_ascii_layout_punctuation_in_token() {
         assert_replacement("ghj,ktvf ", "ghj,ktvf", "проблема ");
     }

@@ -647,7 +647,7 @@ fn hot_l2_text_candidates(
 
     let started = std::time::Instant::now();
     let timing_enabled = std::env::var_os("LAY_CORRECTION_CORE_TIMING").is_some();
-    let Some((_context_prefix, token)) = split_last_alphabetic_token(original) else {
+    let Some((context_prefix, token)) = split_last_alphabetic_token(original) else {
         return Vec::new();
     };
     let normalized_token = token.to_lowercase();
@@ -696,6 +696,37 @@ fn hot_l2_text_candidates(
     {
         candidates.push(layout);
     }
+    // The committed-token path consumes the same L2 BoundaryCell32 lattice as
+    // live typing. This is an autocorrect operator, never an IME completion.
+    candidates.extend(
+        crate::nanda_wave::l2::ime_l2_boundary_candidates(context_prefix, token, 2)
+            .into_iter()
+            .map(|candidate| {
+                let replacement =
+                    preserve_candidate_trailing_separator(original, &candidate.surface);
+                let origin = CandidateOrigin::Boundary;
+                let error_class = action_operator::classify_token_transition(
+                    original,
+                    &replacement,
+                    origin,
+                    TypingErrorClass::GluedWords,
+                );
+                let gate = TransitionDecisionCore::admit_candidate_proposal(
+                    original,
+                    &replacement,
+                    error_class,
+                    origin,
+                );
+                UnifiedCorrectionCandidate::new(
+                    replacement,
+                    CorrectionDecisionSource::Nanda,
+                    origin,
+                    "BoundaryCell32",
+                    error_class,
+                    gate,
+                )
+            }),
+    );
     if timing_enabled {
         let layout_ready = std::time::Instant::now();
         eprintln!(

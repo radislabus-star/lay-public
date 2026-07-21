@@ -64,7 +64,8 @@ pub(crate) fn bayes_score_candidate_with_readout(
         .count()
         .max(replacement_lower.chars().count())
         .max(1);
-    let likelihood = input_likelihood(error_class, origin, distance, max_len);
+    let likelihood = boundary_transition_likelihood(original, replacement, origin)
+        .unwrap_or_else(|| input_likelihood(error_class, origin, distance, max_len));
     let usage_prior = (usage_snapshot.word_prior(&replacement_lower)
         + accepted_prior_from_count(usage_snapshot.accepted_word_count(&replacement_lower)))
     .clamp(0.0, 0.36);
@@ -120,6 +121,24 @@ fn input_likelihood(
         "composite-typo" | "grammar-agreement" => edit_likelihood,
         _ => edit_likelihood.min(0.45),
     }
+}
+
+/// Boundary evidence is the complete surface settling into two word centers,
+/// not a distance from the original token to its final word.
+fn boundary_transition_likelihood(
+    original: &str,
+    replacement: &str,
+    origin: CandidateOrigin,
+) -> Option<f32> {
+    if origin != CandidateOrigin::Boundary {
+        return None;
+    }
+    let original_words = text_words(original);
+    let replacement_words = text_words(replacement);
+    if original_words.len() != 1 || replacement_words.len() != 2 {
+        return None;
+    }
+    (original_words[0] == replacement_words.concat()).then_some(0.92)
 }
 
 fn local_context_prior(
