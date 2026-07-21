@@ -102,7 +102,10 @@ pub(super) fn surface_motif_word_candidates(
         let candidate_len = candidate.word.chars().count();
         let distance = damerau_levenshtein(&normalized, &candidate.word);
         let base_score = surface_attractor_score(candidate.score, &candidate.word);
-        let phase_delta = phase_deltas.get(&candidate.word).copied().unwrap_or_default();
+        let phase_delta = phase_deltas
+            .get(&candidate.word)
+            .copied()
+            .unwrap_or_default();
         // Local authority remains a property of the L2 center and its surface
         // geometry. The learned phase field only redistributes energy between
         // already admissible centers in this bounded lattice.
@@ -555,7 +558,10 @@ fn l2_birth_phase_deltas(
             let normalized = (strength - minimum) as f64 / (maximum - minimum) as f64;
             let delta = (normalized.mul_add(2.0, -1.0) * f64::from(L2_BIRTH_PHASE_MAX_DELTA))
                 .round() as i32;
-            (word, delta.clamp(-L2_BIRTH_PHASE_MAX_DELTA, L2_BIRTH_PHASE_MAX_DELTA))
+            (
+                word,
+                delta.clamp(-L2_BIRTH_PHASE_MAX_DELTA, L2_BIRTH_PHASE_MAX_DELTA),
+            )
         })
         .collect()
 }

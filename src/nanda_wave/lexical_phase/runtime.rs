@@ -249,6 +249,30 @@ impl LexicalPhaseMemory {
         read_terminal(self.bytes(), self.header, terminal).map(|record| record.rank as usize)
     }
 
+    pub(crate) fn hot_prefix_frontier(&self, prefix_lens: &[usize], limit: usize) -> Vec<String> {
+        if prefix_lens.is_empty() || limit == 0 {
+            return Vec::new();
+        }
+        let mut frontier = Vec::<(u32, u32, String)>::new();
+        for node_id in 1..self.header.node_count {
+            let Some(node) = read_node(self.bytes(), self.header, node_id) else {
+                continue;
+            };
+            if node.best_terminal == NO_INDEX || !prefix_lens.contains(&(node.depth as usize)) {
+                continue;
+            }
+            let rank = self.terminal_rank(node.best_terminal);
+            let Some(prefix) = self.reconstruct_node_prefix(node_id) else {
+                continue;
+            };
+            frontier.push((rank, node_id, prefix));
+        }
+        frontier.sort_by(|left, right| left.0.cmp(&right.0).then_with(|| left.1.cmp(&right.1)));
+        frontier.dedup_by(|left, right| left.2 == right.2);
+        frontier.truncate(limit);
+        frontier.into_iter().map(|(_, _, prefix)| prefix).collect()
+    }
+
     pub(crate) fn phase_readout(&self, surface: &str) -> LexicalPhaseReadout {
         let Some(surface) = normalize_surface(surface) else {
             return LexicalPhaseReadout::default();
@@ -959,8 +983,11 @@ impl LexicalPhaseMemory {
 
     fn reconstruct_terminal(&self, terminal_id: u32) -> Option<String> {
         let terminal = read_terminal(self.bytes(), self.header, terminal_id)?;
-        let mut node_id = terminal.node;
-        let mut chars = Vec::with_capacity(terminal.char_len as usize);
+        self.reconstruct_node_prefix(terminal.node)
+    }
+
+    fn reconstruct_node_prefix(&self, mut node_id: u32) -> Option<String> {
+        let mut chars = Vec::with_capacity(super::format::MAX_WORD_CHARS);
         while node_id != 0 {
             let node = read_node(self.bytes(), self.header, node_id)?;
             chars.push(char::from_u32(node.incoming)?);
@@ -1453,6 +1480,23 @@ mod tests {
                 .iter()
                 .any(|candidate| candidate.word.starts_with("провер")),
             "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn hot_prefix_frontier_comes_from_terminal_graph_nodes() {
+        let memory = memory();
+        let frontier = memory.hot_prefix_frontier(&[2, 3], 16);
+
+        assert!(
+            frontier.iter().any(|prefix| prefix == "пр"),
+            "frontier={frontier:?}"
+        );
+        assert!(
+            frontier
+                .iter()
+                .all(|prefix| [2, 3].contains(&prefix.chars().count())),
+            "frontier must expose prefix nodes, not a raw word table: {frontier:?}"
         );
     }
 

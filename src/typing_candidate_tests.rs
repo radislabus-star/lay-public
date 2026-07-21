@@ -20,7 +20,11 @@ fn fixture_candidates(name: &str) -> Vec<TypingCandidate> {
 fn classifies_rules_without_runtime_word_lists() {
     assert_eq!(
         classify_typing_rule("personal_token"),
-        TypingCandidateFamily::Unknown
+        TypingCandidateFamily::Exact
+    );
+    assert_eq!(
+        classify_typing_rule("personal_phrase"),
+        TypingCandidateFamily::Exact
     );
     assert_eq!(
         classify_typing_rule("layout_ru_to_en"),
@@ -37,12 +41,12 @@ fn classifies_rules_without_runtime_word_lists() {
 }
 
 #[test]
-fn removed_personal_rule_cannot_outrank_active_typo_candidate() {
+fn active_personal_rule_outranks_generic_typo_candidate() {
     let chosen = choose_typing_candidate(fixture_candidates("typing_candidate_exact_vs_typo.tsv"))
         .expect("candidate");
 
-    assert_eq!(chosen.rule_id, "missing_letter");
-    assert_eq!(chosen.replacement, "примера");
+    assert_eq!(chosen.rule_id, "personal_token");
+    assert_eq!(chosen.replacement, "примерно");
 }
 
 #[test]

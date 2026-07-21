@@ -573,7 +573,14 @@ fn evaluate_fragment(
             .skip(1)
             .filter(|readout| readout.disposition == ContextPhaseDisposition::Support)
             .count();
-        classify_false_winner(package, &tokens[..index], target, &candidates, &full, totals);
+        classify_false_winner(
+            package,
+            &tokens[..index],
+            target,
+            &candidates,
+            &full,
+            totals,
+        );
 
         let no_phase = package.score_candidates_with_mode(
             &tokens[..index],

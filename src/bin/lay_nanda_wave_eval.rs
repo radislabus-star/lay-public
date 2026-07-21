@@ -79,9 +79,7 @@ fn main() -> io::Result<()> {
         .with_llmwave_shadow(args.iter().any(|arg| arg == "--llmwave-shadow"))
         .with_llmwave_apply(args.iter().any(|arg| arg == "--llmwave-apply"))
         .with_l2_phase_apply(args.iter().any(|arg| arg == "--l2-phase-apply"))
-        .with_l2_phase_lattice_apply(
-            args.iter().any(|arg| arg == "--l2-phase-lattice-apply"),
-        );
+        .with_l2_phase_lattice_apply(args.iter().any(|arg| arg == "--l2-phase-lattice-apply"));
     if let Some(path) = arg_value(&args, "--llmwave-pack-cases") {
         let Some(out) = arg_value(&args, "--out") else {
             eprintln!("--llmwave-pack-cases requires --out PATH");
@@ -2050,10 +2048,22 @@ fn print_l2_candidate_flow_report(
     println!("  authority: analysis_only_no_runtime_change");
     println!("  cases_with_l2_candidates: {}", result.cases_with_l2);
     println!("  no_l2_candidates: {}", result.no_l2_candidates);
-    println!("  expected_candidate_present: {}", result.expected_candidate_present);
-    println!("  expected_candidate_missing: {}", result.expected_candidate_missing);
-    println!("  expected_candidate_applied: {}", result.expected_candidate_applied);
-    println!("  expected_present_but_not_applied: {}", result.present_but_not_applied);
+    println!(
+        "  expected_candidate_present: {}",
+        result.expected_candidate_present
+    );
+    println!(
+        "  expected_candidate_missing: {}",
+        result.expected_candidate_missing
+    );
+    println!(
+        "  expected_candidate_applied: {}",
+        result.expected_candidate_applied
+    );
+    println!(
+        "  expected_present_but_not_applied: {}",
+        result.present_but_not_applied
+    );
     println!("  nonfinal_apply: {}", result.nonfinal_apply);
     println!(
         "  note: nonfinal_apply means output != expected; multi-error rows can be partial fixes"
@@ -2114,16 +2124,19 @@ impl L2CandidateFlowPartial {
             self.stats.entry(source).or_default().merge(row);
         }
         self.examples.no_l2.extend(other.examples.no_l2);
-        self.examples.missing_expected.extend(other.examples.missing_expected);
-        self.examples.present_not_applied.extend(other.examples.present_not_applied);
-        self.examples.nonfinal_apply.extend(other.examples.nonfinal_apply);
+        self.examples
+            .missing_expected
+            .extend(other.examples.missing_expected);
+        self.examples
+            .present_not_applied
+            .extend(other.examples.present_not_applied);
+        self.examples
+            .nonfinal_apply
+            .extend(other.examples.nonfinal_apply);
     }
 }
 
-fn l2_candidate_flow_partial(
-    cases: &[&EvalCase],
-    options: &WaveOptions,
-) -> L2CandidateFlowPartial {
+fn l2_candidate_flow_partial(cases: &[&EvalCase], options: &WaveOptions) -> L2CandidateFlowPartial {
     let mut result = L2CandidateFlowPartial::default();
     for case in cases {
         let trace = run_wave_trace_with_options(&case.original, options);
@@ -2135,13 +2148,18 @@ fn l2_candidate_flow_partial(
         result.cases_with_l2 += 1;
 
         for candidate in &trace.l2_candidates {
-            result.stats
+            result
+                .stats
                 .entry(candidate.source.to_string())
                 .or_default()
                 .generated += 1;
         }
         if let Some(first) = trace.l2_candidates.first() {
-            result.stats.entry(first.source.to_string()).or_default().first += 1;
+            result
+                .stats
+                .entry(first.source.to_string())
+                .or_default()
+                .first += 1;
         }
 
         let expected_sources = trace
@@ -2154,13 +2172,18 @@ fn l2_candidate_flow_partial(
             .collect::<Vec<_>>();
         if expected_sources.is_empty() {
             result.expected_candidate_missing += 1;
-            result.examples
+            result
+                .examples
                 .missing_expected
                 .push(flow_example(case, &trace, None));
         } else {
             result.expected_candidate_present += 1;
             for source in &expected_sources {
-                result.stats.entry(source.clone()).or_default().expected_present += 1;
+                result
+                    .stats
+                    .entry(source.clone())
+                    .or_default()
+                    .expected_present += 1;
             }
         }
 
@@ -2175,16 +2198,23 @@ fn l2_candidate_flow_partial(
                 } else {
                     result.nonfinal_apply += 1;
                     if let Some(source) = applied_source {
-                        result.stats.entry(source.to_string()).or_default().nonfinal_apply += 1;
+                        result
+                            .stats
+                            .entry(source.to_string())
+                            .or_default()
+                            .nonfinal_apply += 1;
                     }
-                    result.examples
-                        .nonfinal_apply
-                        .push(flow_example(case, &trace, Some(text.as_str())));
+                    result.examples.nonfinal_apply.push(flow_example(
+                        case,
+                        &trace,
+                        Some(text.as_str()),
+                    ));
                 }
                 if text != &case.expected && !expected_sources.is_empty() {
                     result.present_but_not_applied += 1;
                     for source in &expected_sources {
-                        result.stats
+                        result
+                            .stats
                             .entry(source.clone())
                             .or_default()
                             .expected_present_not_applied += 1;
@@ -2200,12 +2230,14 @@ fn l2_candidate_flow_partial(
                 if !expected_sources.is_empty() {
                     result.present_but_not_applied += 1;
                     for source in &expected_sources {
-                        result.stats
+                        result
+                            .stats
                             .entry(source.clone())
                             .or_default()
                             .expected_present_not_applied += 1;
                     }
-                    result.examples
+                    result
+                        .examples
                         .present_not_applied
                         .push(flow_example(case, &trace, None));
                 }

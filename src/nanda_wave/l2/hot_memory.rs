@@ -12,6 +12,9 @@ use std::sync::{
 
 static IME_WORD_CANDIDATE_MEMORY_READY: AtomicBool = AtomicBool::new(false);
 static IME_WORD_CANDIDATE_MEMORY_WARMUP: OnceLock<()> = OnceLock::new();
+const IME_HOT_PREFIX_LENS: &[usize] = &[2, 3, 4, 5];
+const IME_HOT_PREFIX_LIMIT: usize = 1536;
+const IME_HOT_MATERIAL_LIMIT: usize = 96;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize)]
 pub struct L2SurfaceMemoryStatus {
@@ -39,8 +42,13 @@ pub(crate) fn warm_up_surface_motif_memory() {
 pub(crate) fn warm_up_ime_word_candidate_memory() {
     IME_WORD_CANDIDATE_MEMORY_WARMUP.get_or_init(|| {
         let memory = surface_motif_memory();
-        let _ = memory.completion_candidates("пр", 16, 96);
-        let _ = memory.completion_candidates("ex", 16, 96);
+        let mut prefixes = memory.hot_prefix_frontier(IME_HOT_PREFIX_LENS, IME_HOT_PREFIX_LIMIT);
+        for bootstrap_prefix in ["пр", "ex"] {
+            if !prefixes.iter().any(|prefix| prefix == bootstrap_prefix) {
+                prefixes.push(bootstrap_prefix.to_string());
+            }
+        }
+        super::ime_readout::warm_up_lexical_readout_cache(&prefixes, IME_HOT_MATERIAL_LIMIT);
         IME_WORD_CANDIDATE_MEMORY_READY.store(true, Ordering::Release);
     });
 }

@@ -14,7 +14,8 @@ pub(crate) mod verifier;
 
 use crate::candidate_contract::CandidateOrigin;
 use crate::correction_core::TypingErrorClass;
-use crate::language_action::LanguageActionOperator;
+use crate::language_action::{LanguageActionOperator, LanguageActionProof};
+use crate::text_edit::TransitionOperator;
 use crate::transition_relation::{TransitionRelationAtoms, TransitionRelationInput};
 use state::LatentTypingState;
 
@@ -38,6 +39,8 @@ pub(crate) struct TransitionEvidence {
     /// Diagnostic provenance only. Decision and verifier authority use `origin`.
     pub(crate) source_id: String,
     pub(crate) error_class: TypingErrorClass,
+    pub(crate) edit_operator: TransitionOperator,
+    pub(crate) edit_proof: LanguageActionProof,
     pub(crate) verifier_passed: bool,
     pub(crate) left_context_changed: bool,
     pub(crate) changed_tokens: usize,
@@ -121,6 +124,8 @@ impl TypingTransition {
                 origin,
                 source_id: source_id.to_string(),
                 error_class,
+                edit_operator: action.edit_operator,
+                edit_proof: action.edit_proof,
                 verifier_passed: action.verifier_passed,
                 left_context_changed: action.left_context_changed,
                 changed_tokens: action.changed_tokens,

@@ -85,7 +85,12 @@ fn changed_focus_receipt_quarantines_committed_tail() {
 
     assert!(engine.bind_focus_receipt("/field/b".to_string(), "client-b".to_string()));
     assert!(engine.tail_buffer.is_empty());
-    assert!(engine.shared.lock().expect("shared state").handoff_tail_buffer.is_empty());
+    assert!(engine
+        .shared
+        .lock()
+        .expect("shared state")
+        .handoff_tail_buffer
+        .is_empty());
 }
 
 #[test]
@@ -111,5 +116,10 @@ fn changed_engine_path_quarantines_handoff_without_focus_in_id() {
     );
     assert!(second.bind_focus_path());
     assert!(second.tail_buffer.is_empty());
-    assert!(second.shared.lock().expect("shared state").handoff_tail_buffer.is_empty());
+    assert!(second
+        .shared
+        .lock()
+        .expect("shared state")
+        .handoff_tail_buffer
+        .is_empty());
 }

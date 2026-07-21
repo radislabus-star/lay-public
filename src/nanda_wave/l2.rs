@@ -99,6 +99,14 @@ pub fn ime_l2_word_candidates(
     ime_readout::ime_l2_word_candidates_impl(context_prefix, token, limit)
 }
 
+pub(crate) fn ime_l2_completion_candidates(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> Vec<L2ImeWordCandidate> {
+    ime_readout::ime_l2_completion_candidates_impl(context_prefix, token, limit)
+}
+
 /// Supplies compact BoundaryCell32 proposals to the live IME lattice.
 ///
 /// The full L2 route already births split/glue candidates through

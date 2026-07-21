@@ -2070,9 +2070,9 @@
     "semantic_hash": ""
   },
   "src/typing_candidate/scoring.rs": {
-    "mtime": 1783551406.7652664,
-    "ast_hash": "06654a46e978ed2a8c7508105edb142a",
-    "semantic_hash": "06654a46e978ed2a8c7508105edb142a"
+    "mtime": 1784658403.212728,
+    "ast_hash": "f5175774ddeead085cf59b9c80bada7c",
+    "semantic_hash": ""
   },
   "src/typing_candidate/types.rs": {
     "mtime": 1783551401.226201,
@@ -2080,8 +2080,8 @@
     "semantic_hash": "8a3b7a36ed9c9a291a612044d7b78c07"
   },
   "src/typing_candidate_tests.rs": {
-    "mtime": 1784161868.3175828,
-    "ast_hash": "e1e4cd67113986c1579dc7768ec6b3cd",
+    "mtime": 1784658403.2137282,
+    "ast_hash": "91ad5f028409aada1081c9b77f3d1034",
     "semantic_hash": ""
   },
   "src/typing_context.rs": {
@@ -2135,9 +2135,9 @@
     "semantic_hash": ""
   },
   "src/typing_pipeline/candidates.rs": {
-    "mtime": 1783088531.6898308,
-    "ast_hash": "9b1984a0d970bfaedeb2a82b7b5ceb68",
-    "semantic_hash": "9b1984a0d970bfaedeb2a82b7b5ceb68"
+    "mtime": 1784658549.5716188,
+    "ast_hash": "946e6aaaad85df19638507722340487e",
+    "semantic_hash": ""
   },
   "src/typing_pipeline/candidates/safety.rs": {
     "mtime": 1783088531.7788281,
@@ -2250,8 +2250,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/mod.rs": {
-    "mtime": 1784336601.0463321,
-    "ast_hash": "57d5bee120ec22cc947624694b1f5c30",
+    "mtime": 1784657973.0740287,
+    "ast_hash": "d80611575bf594bcc6ebedd3723a14fb",
     "semantic_hash": ""
   },
   "src/typing_transition/state.rs": {
@@ -2540,8 +2540,8 @@
     "semantic_hash": ""
   },
   "data/lexicon/common_ru.txt": {
-    "mtime": 1783551107.9854941,
-    "ast_hash": "34ab879dfad5a290759ab9cd64b40db1",
+    "mtime": 1784658226.9244237,
+    "ast_hash": "476a0ae263db57d7011081d92a4ffbf5",
     "semantic_hash": ""
   },
   "data/lexicon/l2_surface_foundation_ru_100k.txt": {
@@ -3325,8 +3325,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision/admission.rs": {
-    "mtime": 1784646265.1714544,
-    "ast_hash": "cbf8602b31524fd336f44e36d5abfe3a",
+    "mtime": 1784658061.6832263,
+    "ast_hash": "442f48e41436d0c67247ccf92459e878",
     "semantic_hash": ""
   },
   "src/typing_transition/decision/receipt.rs": {
@@ -3335,8 +3335,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision/tests.rs": {
-    "mtime": 1784646389.3698928,
-    "ast_hash": "3b560dd4696be3f85f603382690813b3",
+    "mtime": 1784658072.2813687,
+    "ast_hash": "466c6a65d49e8152378290d65df3fe61",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/TYPING_TRANSITION_MEMORY_PROOF_V1.json": {

@@ -23,8 +23,17 @@ pub(super) fn candidate_has_apply_authority(
     let exact_positive_transition = evaluation.transition.l4_signed_signal.exact_positive();
     let operator_consensus_authority = certified_operator_consensus(event, candidate, evaluation);
     if let Some(reason) = hard_structural_veto::hidden_state_rejection(signals) {
-        debug_decision_reject(candidate, reason, bayes.posterior, bayes.risk);
-        return false;
+        if hidden_rejection_deferred_to_verified_boundary(reason)
+            && verified_current_token_boundary_merge_split(event, candidate, evaluation)
+        {
+            // L4 ambiguity protects lexical choice operators from guessing.  A
+            // verifier-proven current-token boundary split is a structural edit:
+            // competing word centers may not veto it unless L4 has an explicit
+            // rejected transition, which is handled below by latent L4 memory.
+        } else {
+            debug_decision_reject(candidate, reason, bayes.posterior, bayes.risk);
+            return false;
+        }
     }
     if source_role == CorrectionSourceRole::L3Context
         && signals.l3_phrase_milli < CURRENT.l3_strong_milli
@@ -42,6 +51,11 @@ pub(super) fn candidate_has_apply_authority(
     let learned_short_boundary_authority = signals.l3_phrase_milli >= CURRENT.l3_strong_milli
         || signals.l4_signed_milli >= CURRENT.l4_strong_milli
         || exact_positive_transition;
+    let context_state_support = super::calibration::known_word_context_state_support(
+        bayes.context_prior,
+        signals.l3_phrase_milli,
+        signals.l4_signed_milli,
+    );
     let high_precision_boundary_shift =
         hard_structural_veto::high_precision_boundary_shift(event, candidate, evaluation);
     if let Some(reason) = hard_structural_veto::boundary_shift_rejection(
@@ -64,6 +78,34 @@ pub(super) fn candidate_has_apply_authority(
         debug_decision_reject(
             candidate,
             "known_word_transposition_needs_pairwise_proof",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
+    if short_transposition_requires_state_proof(event, candidate)
+        && !context_state_support
+        && !signals.l3_pairwise_certified
+        && !exact_positive_transition
+    {
+        debug_decision_reject(
+            candidate,
+            "short_transposition_needs_state_proof",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
+    if known_form_drift_requires_state_proof(event, candidate)
+        && !super::calibration::known_word_drift_has_authority(
+            context_state_support,
+            exact_positive_transition,
+        )
+        && !signals.l3_pairwise_certified
+    {
+        debug_decision_reject(
+            candidate,
+            "known_form_drift_needs_state_proof",
             bayes.posterior,
             bayes.risk,
         );
@@ -99,11 +141,6 @@ pub(super) fn candidate_has_apply_authority(
     }
     let strong_learned_support =
         external_learned_support || strong_l2_peak_support || high_precision_boundary_shift;
-    let context_state_support = super::calibration::known_word_context_state_support(
-        bayes.context_prior,
-        signals.l3_phrase_milli,
-        signals.l4_signed_milli,
-    );
     // A phase package may order candidates but may never manufacture apply
     // authority. Only independently verified state evidence reaches here.
     let strong_transition_support = context_state_support;
@@ -208,6 +245,85 @@ fn known_word_transposition_requires_relation_proof(
     }
     stable_current_word_center(&event.original)
         && stable_current_word_center(&candidate.replacement)
+}
+
+fn short_transposition_requires_state_proof(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+) -> bool {
+    if candidate.error_class != TypingErrorClass::AdjacentTransposition {
+        return false;
+    }
+    let Some((original, replacement)) = current_and_replacement_words(event, candidate) else {
+        return false;
+    };
+    if !cyrillic_letters_only(&original) || !cyrillic_letters_only(&replacement) {
+        return false;
+    }
+    original.chars().count().max(replacement.chars().count()) <= 3
+        && damerau_levenshtein(&original, &replacement) <= 1
+}
+
+fn known_form_drift_requires_state_proof(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+) -> bool {
+    if !matches!(
+        candidate.error_class,
+        TypingErrorClass::AdjacentTransposition
+            | TypingErrorClass::LetterSubstitution
+            | TypingErrorClass::CompositeTypo
+            | TypingErrorClass::MissingLetter
+            | TypingErrorClass::ExtraLetter
+            | TypingErrorClass::RepeatedLetter
+    ) {
+        return false;
+    }
+    let Some((original, replacement)) = current_and_replacement_words(event, candidate) else {
+        return false;
+    };
+    if original == replacement
+        || !cyrillic_letters_only(&original)
+        || !cyrillic_letters_only(&replacement)
+        || damerau_levenshtein(&original, &replacement) > 2
+    {
+        return false;
+    }
+    known_observed_lexical_state(&original) && known_lexical_state_or_form(&replacement)
+}
+
+fn current_and_replacement_words(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+) -> Option<(String, String)> {
+    Some((
+        event.current_word.to_lowercase(),
+        last_replacement_word(&candidate.replacement)?.to_lowercase(),
+    ))
+}
+
+fn known_lexical_state_or_form(word: &str) -> bool {
+    let field = crate::hot_field::HotFieldSnapshot::current();
+    field.form_readout(word).has_structural_center()
+        || crate::lexicon::is_common_ru_word(word)
+        || crate::lexicon::is_ru_live_protected_word(word)
+        || crate::lexicon::is_user_protected_word(word)
+        || crate::russian_lexicon::is_known_russian_word_or_form(word)
+        || crate::russian_lexicon::is_known_russian_adverb_o_form(word)
+        || crate::russian_lexicon::is_known_russian_ka_oblique_form(word)
+}
+
+fn known_observed_lexical_state(word: &str) -> bool {
+    let field = crate::hot_field::HotFieldSnapshot::current();
+    field.input_surface_readout(word).has_phase_authority()
+        || crate::lexicon::is_common_ru_word(word)
+        || crate::lexicon::is_ru_live_protected_word(word)
+        || crate::lexicon::is_user_protected_word(word)
+        || crate::typing_transition::state::word_has_common_usage_authority(word)
+}
+
+fn cyrillic_letters_only(word: &str) -> bool {
+    !word.is_empty() && word.chars().all(is_cyrillic_letter)
 }
 
 fn stable_current_word_center(text: &str) -> bool {
@@ -378,6 +494,28 @@ fn is_verified_mass_preserving_l2_transition(
         && verified_mass_preserving_l2_transition(candidate, evaluation)
 }
 
+fn verified_current_token_boundary_merge_split(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+    evaluation: &CandidateDecisionEvaluation,
+) -> bool {
+    candidate.origin.source_role() == CorrectionSourceRole::Boundary
+        && matches!(
+            candidate.error_class,
+            TypingErrorClass::GluedWords | TypingErrorClass::SplitWord
+        )
+        && evaluation.action.verifier_passed
+        && evaluation.action.edit_operator == verifier::EditTransitionOperator::BoundaryMergeSplit
+        && crate::text_metrics::current_token_boundary_split(
+            &event.original,
+            &candidate.replacement,
+        )
+}
+
+fn hidden_rejection_deferred_to_verified_boundary(reason: &str) -> bool {
+    matches!(reason, "ambiguous" | "unobserved")
+}
+
 pub(super) fn admit_evaluated_hidden_transition(
     _candidate_count: usize,
     _source_role: CorrectionSourceRole,
@@ -408,6 +546,18 @@ pub(super) fn admit_evaluated_hidden_transition(
         };
     }
 
+    if hidden_short_transposition_requires_state_proof(transition)
+        && !super::calibration::known_word_drift_has_authority(
+            context_state_support,
+            exact_state_support,
+        )
+    {
+        return TransitionAdmission {
+            allow_apply: false,
+            reason: "short_transposition_needs_state_proof",
+        };
+    }
+
     if transition
         .state_before
         .known_word_drift_to(&transition.state_after_predicted)
@@ -426,7 +576,7 @@ pub(super) fn admit_evaluated_hidden_transition(
     // ranking pressure, but cannot veto an independently verified operator for
     // this candidate.
     if transition.l4_signed_signal.negative
-        && (transition.l4_signed_signal.state_specific || !operator_consensus_witness)
+        && generic_l4_negative_can_veto(transition, operator_consensus_witness)
     {
         return TransitionAdmission {
             allow_apply: false,
@@ -438,6 +588,57 @@ pub(super) fn admit_evaluated_hidden_transition(
         allow_apply: true,
         reason: "latent_transition_admitted",
     }
+}
+
+fn generic_l4_negative_can_veto(
+    transition: &TypingTransition,
+    operator_consensus_witness: bool,
+) -> bool {
+    if transition.l4_signed_signal.state_specific {
+        return true;
+    }
+    !operator_consensus_witness && !verified_layout_transition(transition)
+}
+
+fn verified_layout_transition(transition: &TypingTransition) -> bool {
+    transition.evidence.verifier_passed
+        && !transition.evidence.left_context_changed
+        && !transition.l1_signal.word_count_changed
+        && matches!(
+            transition.evidence.origin,
+            crate::candidate_contract::CandidateOrigin::Layout
+                | crate::candidate_contract::CandidateOrigin::LayoutThenTypo
+        )
+        && matches!(
+            transition.evidence.edit_proof,
+            crate::language_action::LanguageActionProof::Layout
+        )
+        && matches!(
+            transition.evidence.edit_operator,
+            crate::text_edit::TransitionOperator::LayoutProjection
+                | crate::text_edit::TransitionOperator::ReplaceCurrentWord
+        )
+}
+
+fn hidden_short_transposition_requires_state_proof(transition: &TypingTransition) -> bool {
+    transition.evidence.error_class == TypingErrorClass::AdjacentTransposition
+        && transition
+            .state_before
+            .current_word_changed(&transition.state_after_predicted)
+        && transition.state_before.script == transition.state_after_predicted.script
+        && cyrillic_letters_only(&transition.state_before.current_word)
+        && cyrillic_letters_only(&transition.state_after_predicted.current_word)
+        && transition.state_before.current_word.chars().count().max(
+            transition
+                .state_after_predicted
+                .current_word
+                .chars()
+                .count(),
+        ) <= 3
+        && damerau_levenshtein(
+            &transition.state_before.current_word,
+            &transition.state_after_predicted.current_word,
+        ) <= 1
 }
 
 fn short_same_length_surface_drift(original_word: &str, replacement: &str) -> bool {

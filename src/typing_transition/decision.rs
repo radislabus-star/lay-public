@@ -191,7 +191,9 @@ mod apply_policy;
 mod calibration;
 mod hard_structural_veto;
 mod interference;
+mod live_field;
 mod receipt;
+pub(crate) use live_field::LiveFieldScoreInput;
 pub(crate) use receipt::DecisionTransitionReceipt;
 
 #[cfg(test)]

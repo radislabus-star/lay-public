@@ -1,0 +1,40 @@
+{
+  "kind": "l3_context_online_phase_field_checkpoint",
+  "architecture": "online_relation_phase_v1",
+  "corpus_fragments": 100000,
+  "compile": {
+    "corpus_passes": 1,
+    "wall_seconds": 236.70,
+    "old_wall_seconds_lower_bound": 600.0,
+    "speedup_lower_bound": 2.53,
+    "peak_rss_kib": 359388,
+    "estimated_learner_bytes": 142121488,
+    "artifact_bytes": 14809340,
+    "raw_words_stored": false,
+    "l2_probe_workers": 16,
+    "l2_probe_batch_fragments": 16
+  },
+  "proof": {
+    "wall_seconds": 367.67,
+    "peak_rss_kib": 372560,
+    "train_fragments": 80000,
+    "heldout_fragments": 20000,
+    "evaluated_transitions": 60825,
+    "full_supports": 5433,
+    "full_false_top1": 126,
+    "support_coverage_ppm": 89321,
+    "min_support_coverage_ppm": 100000,
+    "phase_improved_cases": 5433,
+    "phase_worsened_cases": 0,
+    "anti_improved_cases": 2285,
+    "anti_worsened_cases": 1442,
+    "semantic_ablation_drop": 1408,
+    "l2_lattice_unchanged": true,
+    "l3_apply_authority": false,
+    "package_published": false,
+    "verdict": "WATCH"
+  },
+  "architecture_verdict": "PASS",
+  "speed_verdict": "PASS",
+  "promotion_verdict": "WATCH"
+}

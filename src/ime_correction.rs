@@ -3,6 +3,17 @@
 //! IME frontends own composition display and commit mechanics. They must ask
 //! this layer for correction decisions instead of building an InputGate request
 //! inside the frontend state machine.
+//!
+//! Route contract:
+//! - IME/preedit is a display and completion route for an unfinished token.
+//!   Tab may accept that visible completion.
+//! - Space autocorrect is a committed-token route. It asks InputGate/DecisionCore
+//!   for a verified edit plan and may apply only the resulting AuthorizedEdit.
+//! - L2/L3/L4/Bayes are shared signal layers. They may rank, boost, suppress, or
+//!   veto candidates in both routes, but they do not turn an IME completion into
+//!   an autocorrect edit or bypass the Space-route verifier.
+//!
+//! Do not show full-token boundary/typo autocorrections as IME completions.
 
 use crate::action_log::RecentActionGateTrace;
 use crate::config::{CorrectionSafety, LayConfig};
@@ -141,6 +152,13 @@ mod tests {
             nanda_precognition: true,
             nanda_l2_phase_apply: false,
             ..LayConfig::default()
+        }
+    }
+
+    fn live_l2_phase_config() -> LayConfig {
+        LayConfig {
+            nanda_l2_phase_apply: true,
+            ..config()
         }
     }
 
@@ -299,6 +317,46 @@ mod tests {
     #[test]
     fn repeated_boundary_token_remains_authorized_at_the_next_space() {
         assert_replacement("тоесть ", "тоесть тоесть", "то есть ");
+    }
+
+    #[test]
+    fn boundary_split_survives_live_l2_phase_apply() {
+        let cfg = live_l2_phase_config();
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "тоесть ",
+            committed_tail: "тоесть",
+            config: &cfg,
+        })
+        .expect("boundary decision");
+
+        assert_eq!(decision.replacement, "то есть ");
+        assert_eq!(decision.action.selected_source_id(), Some("BoundaryCell32"));
+        assert!(
+            decision.action.allow_apply(),
+            "action={:?}",
+            decision.action
+        );
+    }
+
+    #[test]
+    fn repeated_boundary_token_live_route_changes_only_current_token() {
+        let cfg = live_l2_phase_config();
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "тоесть ",
+            committed_tail: "тоесть тоесть",
+            config: &cfg,
+        })
+        .expect("boundary decision");
+
+        assert_eq!(decision.replacement, "то есть ");
+        assert_eq!(decision.action.from_text(), "тоесть ");
+        assert_eq!(decision.action.to_text(), "то есть ");
+        assert_eq!(decision.action.selected_source_id(), Some("BoundaryCell32"));
+        assert!(
+            decision.action.allow_apply(),
+            "action={:?}",
+            decision.action
+        );
     }
 
     #[test]

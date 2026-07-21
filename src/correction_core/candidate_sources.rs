@@ -702,6 +702,9 @@ fn hot_l2_text_candidates(
         crate::nanda_wave::l2::ime_l2_boundary_candidates(context_prefix, token, 2)
             .into_iter()
             .filter_map(|candidate| {
+                if !boundary_surface_splits_current_token(token, &candidate.surface) {
+                    return None;
+                }
                 let replacement = replace_last_text_word(original, &candidate.surface)?;
                 let origin = CandidateOrigin::Boundary;
                 let error_class = action_operator::classify_token_transition(
@@ -743,6 +746,12 @@ fn hot_l2_text_candidates(
         );
     }
     candidates
+}
+
+fn boundary_surface_splits_current_token(token: &str, surface: &str) -> bool {
+    let token = token.to_lowercase();
+    let parts = normalized_correction_words(surface);
+    parts.len() >= 2 && parts.concat() == token
 }
 
 fn delayed_context_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
@@ -850,6 +859,16 @@ fn nanda_word_candidate(
         origin,
         TypingErrorClass::Unknown,
     );
+    if candidate.source == "BoundaryCell32"
+        && origin == CandidateOrigin::Boundary
+        && matches!(
+            error_class,
+            TypingErrorClass::GluedWords | TypingErrorClass::SplitWord
+        )
+        && !crate::text_metrics::current_token_boundary_split(original, &replacement)
+    {
+        return None;
+    }
     let gate = TransitionDecisionCore::admit_candidate_proposal(
         original,
         &replacement,

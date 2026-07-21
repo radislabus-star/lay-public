@@ -76,6 +76,52 @@ fn candidate(replacement: &str, source_id: &str) -> UnifiedCorrectionCandidate {
     )
 }
 
+fn layout_candidate(replacement: &str) -> UnifiedCorrectionCandidate {
+    UnifiedCorrectionCandidate::new(
+        replacement,
+        CorrectionDecisionSource::Deterministic,
+        CandidateOrigin::Layout,
+        "contextual_layout_en_to_ru",
+        TypingErrorClass::WrongLayout,
+        CandidateGateDecision {
+            action: CandidateGateAction::Eligible,
+            reason: "layout_projection_verified",
+        },
+    )
+}
+
+fn layout_then_typo_candidate(replacement: &str) -> UnifiedCorrectionCandidate {
+    UnifiedCorrectionCandidate::new(
+        replacement,
+        CorrectionDecisionSource::Deterministic,
+        CandidateOrigin::LayoutThenTypo,
+        "layout_then_known_word",
+        TypingErrorClass::CompositeTypo,
+        CandidateGateDecision {
+            action: CandidateGateAction::Eligible,
+            reason: "layout_then_typo_verified",
+        },
+    )
+}
+
+fn l2_candidate(
+    replacement: &str,
+    source_id: &str,
+    error_class: TypingErrorClass,
+) -> UnifiedCorrectionCandidate {
+    UnifiedCorrectionCandidate::new(
+        replacement,
+        CorrectionDecisionSource::Nanda,
+        CandidateOrigin::L2Surface,
+        source_id,
+        error_class,
+        CandidateGateDecision {
+            action: CandidateGateAction::Eligible,
+            reason: "class_allows_apply",
+        },
+    )
+}
+
 fn admit(
     event: &TypingErrorEvent,
     candidate: &UnifiedCorrectionCandidate,
@@ -150,6 +196,84 @@ fn hidden_state_blocks_single_weak_known_word_drift() {
         admission.reason,
         "latent_known_word_drift_needs_state_proof"
     );
+}
+
+#[test]
+fn hidden_state_blocks_live_known_form_drifts_from_logs() {
+    for (input, replacement, error_class) in [
+        ("новости ", "новость ", TypingErrorClass::LetterSubstitution),
+        ("модели ", "модель ", TypingErrorClass::LetterSubstitution),
+        ("вышли ", "вышил ", TypingErrorClass::AdjacentTransposition),
+    ] {
+        let admission = admit(
+            &event(input),
+            &l2_candidate(replacement, "L2LexicalPhaseCell32", error_class),
+            2,
+            CorrectionSourceRole::L2Surface,
+            false,
+        );
+
+        assert!(!admission.allow_apply, "{input:?} -> {replacement:?}");
+        assert!(
+            matches!(
+                admission.reason,
+                "known_form_drift_needs_state_proof" | "latent_known_word_drift_needs_state_proof"
+            ),
+            "{input:?} -> {replacement:?}"
+        );
+    }
+}
+
+#[test]
+fn hidden_state_blocks_short_transposition_fragments_from_logs() {
+    for (input, replacement) in [
+        ("ая ", "яа "),
+        ("ту ", "ут "),
+        ("вно ", "вон "),
+        ("ям ", "мя "),
+    ] {
+        let admission = admit(
+            &event(input),
+            &l2_candidate(
+                replacement,
+                "L2LexicalPhaseCell32",
+                TypingErrorClass::AdjacentTransposition,
+            ),
+            2,
+            CorrectionSourceRole::L2Surface,
+            false,
+        );
+
+        assert!(!admission.allow_apply, "{input:?} -> {replacement:?}");
+        assert_eq!(
+            admission.reason, "short_transposition_needs_state_proof",
+            "{input:?} -> {replacement:?}"
+        );
+    }
+}
+
+#[test]
+fn exact_l4_state_proof_allows_known_form_drift() {
+    let admission = admit_with_l4_signal(
+        &event("новости "),
+        &l2_candidate(
+            "новость ",
+            "L2LexicalPhaseCell32",
+            TypingErrorClass::LetterSubstitution,
+        ),
+        2,
+        CorrectionSourceRole::L2Surface,
+        false,
+        false,
+        crate::typing_transition::L4SignedTransitionSignal {
+            negative: false,
+            state_specific: true,
+            attract_count: 2,
+            repel_count: 0,
+        },
+    );
+
+    assert!(admission.allow_apply, "{admission:?}");
 }
 
 #[test]
@@ -291,6 +415,36 @@ fn admission_truth_table_uses_verifier_latent_invariants_and_signed_l4_memory() 
             operator_consensus_witness: true,
             l4_signed_signal: generic_negative_l4,
             expected_reason: None,
+        },
+        Case {
+            name: "verified_layout_survives_generic_l4_negative",
+            event: event("gjhn "),
+            candidate: layout_candidate("порт "),
+            source_role: CorrectionSourceRole::Layout,
+            strong_transition_support: false,
+            operator_consensus_witness: false,
+            l4_signed_signal: generic_negative_l4,
+            expected_reason: None,
+        },
+        Case {
+            name: "verified_layout_then_typo_survives_generic_l4_negative",
+            event: event("lfkmit "),
+            candidate: layout_then_typo_candidate("дальше "),
+            source_role: CorrectionSourceRole::Layout,
+            strong_transition_support: false,
+            operator_consensus_witness: false,
+            l4_signed_signal: generic_negative_l4,
+            expected_reason: None,
+        },
+        Case {
+            name: "verified_layout_blocked_by_state_specific_l4_negative",
+            event: event("gjhn "),
+            candidate: layout_candidate("порт "),
+            source_role: CorrectionSourceRole::Layout,
+            strong_transition_support: false,
+            operator_consensus_witness: false,
+            l4_signed_signal: negative_l4,
+            expected_reason: Some("latent_l4_negative_transition_memory"),
         },
     ];
 

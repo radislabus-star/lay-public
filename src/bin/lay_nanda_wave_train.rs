@@ -104,14 +104,15 @@ fn main() -> io::Result<()> {
                 "--build-and-prove-l3-context-phase requires --surface-evidence CORRECTIONS.jsonl",
             )
         })?;
-        let report = lay::nanda_wave::build_and_prove_l3_context_phase_memory_with_surface_evidence(
-            &corpus,
-            &surface_evidence,
-            &out,
-            max_fragments,
-            min_profile_support,
-            min_surface_support,
-        )?;
+        let report =
+            lay::nanda_wave::build_and_prove_l3_context_phase_memory_with_surface_evidence(
+                &corpus,
+                &surface_evidence,
+                &out,
+                max_fragments,
+                min_profile_support,
+                min_surface_support,
+            )?;
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?

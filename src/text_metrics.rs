@@ -35,6 +35,22 @@ pub(crate) fn transition_left_context_changed(original: &str, replacement: &str)
     original_prefix != replacement_prefix
 }
 
+pub(crate) fn current_token_boundary_split(original: &str, replacement: &str) -> bool {
+    let original_words = crate::word_reader::normalized_text_words(original);
+    let replacement_words = crate::word_reader::normalized_text_words(replacement);
+    if original_words.is_empty() || replacement_words.len() != original_words.len() + 1 {
+        return false;
+    }
+    let split_idx = original_words.len() - 1;
+    original_words[..split_idx] == replacement_words[..split_idx]
+        && original_words[split_idx]
+            == format!(
+                "{}{}",
+                replacement_words[split_idx],
+                replacement_words[split_idx + 1]
+            )
+}
+
 pub fn common_prefix_char_len(left: &str, right: &str) -> usize {
     left.chars()
         .zip(right.chars())
@@ -130,8 +146,8 @@ pub fn sparse_internal_omission_count(input: &str, candidate: &str) -> Option<us
 #[cfg(test)]
 mod tests {
     use super::{
-        sparse_internal_omission_count, transition_changed_token_count,
-        transition_left_context_changed,
+        current_token_boundary_split, sparse_internal_omission_count,
+        transition_changed_token_count, transition_left_context_changed,
     };
 
     #[test]
@@ -167,5 +183,19 @@ mod tests {
             sparse_internal_omission_count("переподчаю", "переподключаю"),
             None
         );
+    }
+
+    #[test]
+    fn current_token_boundary_split_does_not_touch_left_context() {
+        assert!(current_token_boundary_split("тоесть ", "то есть "));
+        assert!(current_token_boundary_split(
+            "тоесть тоесть ",
+            "тоесть то есть "
+        ));
+        assert!(!current_token_boundary_split(
+            "тоесть тоесть ",
+            "то есть тоесть "
+        ));
+        assert!(!current_token_boundary_split("то есть ", "тоесть "));
     }
 }

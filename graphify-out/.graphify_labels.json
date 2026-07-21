@@ -371,6 +371,7 @@
   "369": ".hot_readout",
   "370": "LayConfig",
   "371": ".semantic_phrase_candidates",
+  "372": "feedback.rs",
   "373": "layout_switch_policy.rs",
   "374": "LayConfig",
   "375": "LayConfig",
@@ -398,5 +399,11 @@
   "397": "typing_assist_worker_tests.rs",
   "398": "LayConfig",
   "399": "apply_phrase_case",
-  "400": "types.rs"
+  "400": "types.rs",
+  "401": "convert",
+  "402": "handle_pending_auto_undo",
+  "403": ".semantic_phrase_candidates",
+  "404": "config_path",
+  "405": "measured_precognition_stages",
+  "406": "last_live_completion_timing"
 }

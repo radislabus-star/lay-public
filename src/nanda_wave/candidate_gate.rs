@@ -9,7 +9,7 @@ use super::l2::{self, L2ImeWordCandidateKind};
 use super::l4_goal_state::L4AllowedAction;
 use super::l4_signed_memory::l4_signed_memory_signal_from_readout;
 use crate::keyboard::is_cyrillic_letter;
-use crate::typing_transition::decision::TransitionDecisionCore;
+use crate::typing_transition::decision::{LiveFieldScoreInput, TransitionDecisionCore};
 use crate::typing_transition::live_candidate::LiveCompletionProposal;
 use std::cell::Cell;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -272,35 +272,34 @@ pub fn live_completion_candidates(
                 rejected,
             );
 
-            let base_score = 0.22
-                + structural
-                // BoundaryCell32 has proved a two-center transition. Keep
-                // that operator margin through live competition so unrelated
-                // single-word neighbours cannot bury it.
-                + if boundary_center_grounded { 0.28 } else { 0.0 }
-                + wave_peak.rank_bonus
-                + usage * 2.30
-                + context_usage * 3.20
-                + (accepted.min(20) as f32 * 0.030)
-                + if common { 0.055 } else { 0.0 }
-                + if hot { 0.045 } else { 0.0 }
-                + (partial_len.min(8) as f32 * 0.018)
-                + live_l4_signed_bias(memory_signal.signed_weight);
-            let rank_score = l3_readout
-                .map(|readout| base_score + readout.rank_delta)
-                .unwrap_or(base_score);
-            let score = rank_score.clamp(0.0, 1.0);
+            let field_score =
+                TransitionDecisionCore::score_live_completion_field(LiveFieldScoreInput {
+                    structural,
+                    boundary_center_grounded,
+                    wave_peak_rank_bonus: wave_peak.rank_bonus,
+                    usage,
+                    context_usage,
+                    accepted,
+                    common,
+                    hot,
+                    partial_len,
+                    l4_signed_weight: memory_signal.signed_weight,
+                    l3_rank_delta: l3_readout
+                        .as_ref()
+                        .map(|readout| readout.rank_delta)
+                        .unwrap_or_default(),
+                });
             Some(LiveCompletionProposal {
                 state_before: hidden_state_before,
                 surface: candidate.surface,
                 suffix,
-                score,
+                score: field_score.score,
                 source: if boundary_center_grounded {
                     "BoundaryCell32"
                 } else {
                     "L2LiveCandidateGate32"
                 },
-                rank_score,
+                rank_score: field_score.rank_score,
                 field_strength: candidate.score,
                 partial_len,
                 suffix_len: if is_completion { suffix_len } else { 0 },
@@ -380,16 +379,11 @@ fn live_l2_word_candidates(
     }
 
     let material_limit = live_l2_material_limit(limit);
-    // `ime_l2_word_candidates` already includes the completion branch from the
-    // same lexical phase lattice. A second direct completion query duplicated
-    // the hottest index walk on every IME keypress without adding an authority
-    // source or a distinct operator.
-    let mut candidates = l2::ime_l2_word_candidates(context_prefix, &normalized, material_limit);
-    candidates.extend(l2::ime_l2_boundary_candidates(
-        context_prefix,
-        &normalized,
-        material_limit,
-    ));
+    // Live IME is a suffix route for an unfinished token. Full-token typo,
+    // boundary and split/glue repairs belong to the Space/autocorrect route,
+    // where the verifier can authorize a physical edit.
+    let mut candidates =
+        l2::ime_l2_completion_candidates(context_prefix, &normalized, material_limit);
     candidates.sort_by(|left, right| {
         right
             .score
@@ -433,13 +427,13 @@ pub fn live_candidate_gate_stats_json() -> serde_json::Value {
         },
         "l4_scene_memory": {
             "hits": stats.l4_scene_memory_hits,
-            "authority": "weak bias only; display authority and edit-plan safety stay final"
+            "authority": "central L4 field evidence; DecisionCore owns display admission and edit-plan safety stays final"
         },
         "live_completion_cache": {
             "hits": stats.cache_hits,
             "misses": stats.cache_misses
         },
-        "authority_contract": "L4 signed state is bias only; live candidate authority and edit-plan safety remain final",
+        "authority_contract": "L2/L3/L4/Bayes are central field evidence; producers supply material, DecisionCore owns live display admission, verifier/AuthorizedEdit own mutation",
         "avg_us": avg_us,
         "max_us": stats.max_us,
         "stage_us": {
@@ -743,10 +737,6 @@ fn update_max_atomic(target: &AtomicU64, value: u64) {
     }
 }
 
-fn live_l4_signed_bias(signed_weight: f32) -> f32 {
-    (signed_weight * 0.085).clamp(-0.080, 0.080)
-}
-
 fn structural_support(
     score: u32,
     l1_overlap: usize,
@@ -900,35 +890,33 @@ mod tests {
     }
 
     #[test]
-    fn live_gate_exposes_replacement_as_a_typed_non_suffix_candidate() {
+    fn live_gate_keeps_full_token_replacements_out_of_preedit() {
         super::super::warm_up_l2_for_ime();
         let raw = live_l2_word_candidates("", "звгрузи", 12);
         let candidates = live_completion_candidates(request("", "звгрузи"));
         assert!(
             candidates
                 .iter()
-                .any(|candidate| candidate.surface == "загрузи" && candidate.suffix.is_empty()),
-            "replacement must remain explicit rather than being forged into a suffix: raw={raw:?}, selected={candidates:?}"
+                .all(|candidate| candidate.surface != "загрузи" && !candidate.suffix.is_empty()),
+            "full-token typo repairs belong to Space/autocorrect, not IME preedit: raw={raw:?}, selected={candidates:?}"
         );
     }
 
     #[test]
-    fn live_gate_projects_boundary_cell_into_ime_lattice() {
+    fn live_gate_keeps_boundary_edits_out_of_preedit() {
         super::super::warm_up_l2_for_ime();
         let raw = live_l2_word_candidates("", "тоесть", 12);
         assert!(
-            raw.iter().any(|candidate| {
-                candidate.surface == "то есть"
-                    && candidate.source == L2ImeWordCandidateSource::BoundaryPhase
-            }),
-            "BoundaryCell32 must enter the live lattice: {raw:?}"
+            raw.iter().all(|candidate| candidate.surface != "то есть"
+                && candidate.source != L2ImeWordCandidateSource::BoundaryPhase),
+            "BoundaryCell32 belongs to Space/autocorrect, not IME preedit: {raw:?}"
         );
         let visible = live_completion_candidates(request("", "тоесть"));
         assert!(
             visible
                 .iter()
-                .any(|candidate| candidate.surface == "то есть" && candidate.suffix.is_empty()),
-            "boundary replacement must remain an explicit IME proposal: raw={raw:?}, selected={visible:?}"
+                .all(|candidate| candidate.surface != "то есть" && !candidate.suffix.is_empty()),
+            "boundary replacement must not become an IME proposal: raw={raw:?}, selected={visible:?}"
         );
     }
 

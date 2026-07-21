@@ -43,6 +43,26 @@ noisy input
 -> suggest/apply/keep
 ```
 
+## Current Cutover Law
+
+The runtime has two different output routes, but it must not have two different
+brains:
+
+```text
+IME / preedit route:
+  unfinished token -> L2/L3/L4/Bayes field -> DecisionCore live admission
+  -> visible suffix -> explicit Tab accept
+
+Space autocorrect route:
+  completed token -> L2/L3/L4/Bayes field -> DecisionCore transition decision
+  -> verifier -> AuthorizedEdit
+```
+
+The shared field is central evidence, not a backend.  L2/L3/L4/Bayes may
+strengthen, suppress, or reject a candidate in both routes, but they never
+write text directly.  IME producers provide material; `TransitionDecisionCore`
+owns visible-candidate admission.
+
 ## Example Target
 
 Raw input:
@@ -239,6 +259,16 @@ a Tab action.
 Tab accepts only a suffix that extends the current token. Full-token
 replacement belongs exclusively to the shared correction pipeline and may be
 executed only after its typed transition proof and verifier succeed.
+
+Implementation ownership:
+
+```text
+live IME readout -> L2 completion-only route
+Space correction -> full L2 replacement / layout / boundary lattice
+```
+
+The two routes may share L2/L3/L4/Bayes field evidence, but they must not share
+physical edit authority.
 
 ## Safety Contract
 

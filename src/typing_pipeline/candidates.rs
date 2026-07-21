@@ -1,6 +1,7 @@
 use crate::config::TypingAssistRuleConfig;
 use crate::typing_candidate::{TypingCandidate, TypingCandidateDecision};
 use crate::typing_context::syntax_allows_candidate;
+use crate::typing_replacements::promoted_replacement_for_token;
 use crate::typing_rule_graph::{find_typing_rule, ids, priorities, rules, TypingRuleContext};
 use crate::word_reader::split_word_punctuation;
 
@@ -9,6 +10,8 @@ use super::types::{TypingAssistExplanation, TypingRuleEvaluation};
 
 #[path = "candidates/safety.rs"]
 mod safety;
+
+const PERSONAL_REPLACEMENT_PRIORITY: i32 = 5;
 
 pub(super) struct CandidateEvaluation {
     pub(super) explanation: TypingAssistExplanation,
@@ -33,6 +36,35 @@ pub(super) fn evaluate_rule_candidates(
     };
     let mut candidates = Vec::new();
 
+    if let Some((rule_id, replacement)) = promoted_replacement_candidate(&ctx) {
+        let rule = TypingAssistRuleConfig {
+            id: rule_id.to_string(),
+            enabled: true,
+            priority: PERSONAL_REPLACEMENT_PRIORITY,
+        };
+        let evaluation = TypingRuleEvaluation::new(&rule);
+        let candidate =
+            TypingCandidate::new(rule_id, PERSONAL_REPLACEMENT_PRIORITY, core, replacement);
+        if !syntax_allows_candidate(core, &candidate.replacement)
+            || safety::unsafe_word_count_shrink(core, &candidate.replacement, &candidate.rule_id)
+        {
+            explanation.record(
+                evaluation
+                    .with_candidate(candidate)
+                    .reject(TypingRuleEvaluation::REJECT_UNSAFE),
+            );
+        } else if candidate.is_safe_for(core) {
+            candidates.push(candidate.clone());
+            explanation.record(evaluation.with_candidate(candidate));
+        } else {
+            explanation.record(
+                evaluation
+                    .with_candidate(candidate)
+                    .reject(TypingRuleEvaluation::REJECT_UNSAFE),
+            );
+        }
+    }
+
     if fast_en_to_ru_allowed(pipeline) {
         if let Some(replacement) = rules::apply_fast_layout_en_to_ru(&ctx) {
             let rule = TypingAssistRuleConfig {
@@ -47,7 +79,7 @@ pub(super) fn evaluate_rule_candidates(
                 replacement,
             );
             explanation.record(TypingRuleEvaluation::new(&rule).with_candidate(candidate.clone()));
-            if !keep_fast_candidate_for_late_ranking {
+            if !keep_fast_candidate_for_late_ranking && candidates.is_empty() {
                 return CandidateEvaluation {
                     explanation,
                     candidates,
@@ -101,6 +133,31 @@ pub(super) fn evaluate_rule_candidates(
         explanation,
         candidates,
         immediate_decision: None,
+    }
+}
+
+fn promoted_replacement_candidate(ctx: &TypingRuleContext<'_>) -> Option<(&'static str, String)> {
+    if let Some(replacement) = promoted_replacement_for_token(ctx.core) {
+        return Some((personal_rule_id(ctx.core, &replacement), replacement));
+    }
+
+    if ctx.word.is_empty() || ctx.word == ctx.core {
+        return None;
+    }
+
+    let replacement = promoted_replacement_for_token(ctx.word)?;
+    let mut out = String::with_capacity(ctx.core.len().max(replacement.len()));
+    out.push_str(ctx.token_leading);
+    out.push_str(&replacement);
+    out.push_str(ctx.token_trailing);
+    Some((personal_rule_id(ctx.core, &out), out))
+}
+
+fn personal_rule_id(original: &str, replacement: &str) -> &'static str {
+    if original.split_whitespace().count() > 1 || replacement.split_whitespace().count() > 1 {
+        ids::PERSONAL_PHRASE
+    } else {
+        ids::PERSONAL_TOKEN
     }
 }
 

@@ -63,8 +63,7 @@ impl TransitionDecisionCore {
                     verifier_passed: true,
                     rank_milli: crate::text_metrics::score_to_milli(proposal.rank_score),
                     context_support: proposal.l3_memory_supported || proposal.completed_state_known,
-                    eligible: live_completion_has_authority(proposal)
-                        && live_suffix_has_display_authority(proposal),
+                    eligible: Self::admit_live_completion(proposal).visible(),
                     witness_attract: proposal.l4_transition_attract_count,
                     witness_repel: proposal.l4_transition_repel_count,
                     witness_state_specific: proposal.l4_transition_state_specific,
@@ -173,55 +172,14 @@ impl TransitionDecisionCore {
     }
 }
 
+#[cfg(test)]
 pub(crate) fn live_completion_has_authority(candidate: &LiveCompletionProposal) -> bool {
-    let usage_signal =
-        candidate.usage >= 0.025 || candidate.context_usage >= 0.018 || candidate.accepted >= 1;
-    let lexical_signal = candidate.common || candidate.hot || candidate.l2_center_grounded;
-    let structural_signal = candidate.structural >= 0.34;
-    let bound_structural_signal = candidate.l2_center_grounded && structural_signal;
-
-    match candidate.partial_len {
-        0 => false,
-        1 => {
-            candidate.allow_short_lexical
-                && (candidate.l3_memory_supported
-                    || candidate.context_usage >= 0.040
-                    || candidate.usage >= 0.080
-                    || candidate.accepted >= 2)
-                && candidate.suffix_len <= 8
-        }
-        2 => {
-            candidate.allow_short_lexical
-                && (usage_signal
-                    || bound_structural_signal
-                    || candidate.context_usage >= 0.018
-                    || candidate.hot
-                    || candidate.common)
-                && candidate.suffix_len <= 8
-        }
-        3 => {
-            if !candidate.allow_short_lexical {
-                usage_signal
-            } else {
-                usage_signal
-                    || bound_structural_signal
-                    || (lexical_signal && candidate.suffix_len <= 7)
-            }
-        }
-        4 => usage_signal || bound_structural_signal || lexical_signal,
-        _ => usage_signal || lexical_signal || (structural_signal && candidate.l3_memory_supported),
-    }
+    TransitionDecisionCore::admit_live_completion(candidate).candidate_visible
 }
 
+#[cfg(test)]
 pub(crate) fn live_suffix_has_display_authority(candidate: &LiveCompletionProposal) -> bool {
-    if candidate.suffix_len != 1 || matches!(candidate.suffix.as_str(), "и" | "я") {
-        return true;
-    }
-    candidate.completed_state_known
-        || candidate.accepted >= 2
-        || candidate.context_usage >= 0.060
-        || candidate.usage >= 0.095
-        || (candidate.score >= 0.90 && candidate.structural >= 0.46)
+    TransitionDecisionCore::admit_live_completion(candidate).suffix_visible
 }
 
 #[cfg(test)]

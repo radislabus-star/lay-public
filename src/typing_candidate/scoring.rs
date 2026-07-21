@@ -31,6 +31,9 @@ impl TypingCandidate {
 }
 
 pub fn classify_typing_rule(rule_id: &str) -> TypingCandidateFamily {
+    if matches!(rule_id, ids::PERSONAL_PHRASE | ids::PERSONAL_TOKEN) {
+        return TypingCandidateFamily::Exact;
+    }
     crate::typing_rule_graph::typing_rule_family(rule_id).unwrap_or(TypingCandidateFamily::Unknown)
 }
 

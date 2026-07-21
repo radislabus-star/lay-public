@@ -3,8 +3,8 @@ use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
 use lay::typing_cpu::{
-    ImeCandidateProposal, ImeCandidateReadoutRequest, is_command_like_long_tail,
-    preedit_suffix_context_and_word, select_ime_candidate_proposals,
+    is_command_like_long_tail, preedit_suffix_context_and_word, select_ime_candidate_proposals,
+    ImeCandidateProposal, ImeCandidateReadoutRequest,
 };
 use lay::word_reader::split_last_alphabetic_token;
 

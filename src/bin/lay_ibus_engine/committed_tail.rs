@@ -9,8 +9,13 @@ use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
 use lay::text_edit::{TransitionProof, VisibleTailSnapshot, VisibleTailSource};
 
 impl LayIbusEngine {
-    /// Applies only a verified single-token correction after Space. Completion
-    /// acceptance remains in `accept_stuck_tail()` and is never routed here.
+    /// Applies only a verified current-token correction after Space.
+    ///
+    /// This is the autocorrect route, not the IME/preedit route:
+    /// `BoundaryCell32 + shared L2/L3/L4/Bayes signals -> DecisionCore ->
+    /// AuthorizedEdit`.
+    /// Completion acceptance remains in `accept_stuck_tail()` and is never
+    /// routed here.
     pub(super) async fn autocorrect_committed_token_on_space(
         &mut self,
         emitter: &SignalEmitter<'_>,

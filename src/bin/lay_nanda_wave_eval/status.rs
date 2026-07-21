@@ -737,12 +737,12 @@ fn l4_state_map_json() -> Value {
         "scene_memory": {
             "mode": "whole_context_token_field",
             "source": "phrase_memory.llmw.bin scene-token readout",
-            "authority": "weak bias only; candidate authority and edit-plan safety remain final"
+            "authority": "central L4 field evidence; DecisionCore owns candidate authority and edit-plan safety remains final"
         },
         "contract": {
             "positive_trace": "accepted_ime / accepted_fix target",
             "negative_trace": "accepted_fix corrected-away source word",
-            "authority": "bias only; safety/edit gates remain final authority"
+            "authority": "field evidence only; DecisionCore, verifier, and AuthorizedEdit remain final authority"
         }
     })
 }
@@ -789,12 +789,12 @@ mod tests {
         assert_eq!(value["kind"], "l4_signed_state_map");
         assert_eq!(
             value["contract"]["authority"],
-            "bias only; safety/edit gates remain final authority"
+            "field evidence only; DecisionCore, verifier, and AuthorizedEdit remain final authority"
         );
         assert_eq!(value["scene_memory"]["mode"], "whole_context_token_field");
         assert_eq!(
             value["scene_memory"]["authority"],
-            "weak bias only; candidate authority and edit-plan safety remain final"
+            "central L4 field evidence; DecisionCore owns candidate authority and edit-plan safety remains final"
         );
     }
 }

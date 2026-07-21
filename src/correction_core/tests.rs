@@ -152,7 +152,10 @@ mod tests {
         )));
 
         let resolution = lattice.into_resolution();
-        let selected = resolution.selected.as_ref().expect("selected reconstruction");
+        let selected = resolution
+            .selected
+            .as_ref()
+            .expect("selected reconstruction");
         assert_eq!(selected.origin, CandidateOrigin::L2Surface);
         assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
         assert_eq!(selected.evidence_count(), 2);
@@ -274,8 +277,7 @@ mod tests {
             mode: CorrectionMode::NandaOnly,
         });
         assert!(active.candidates.iter().any(|candidate| {
-            candidate.has_source_id("L2WordAttractorCell32")
-                && candidate.replacement == "загрузи "
+            candidate.has_source_id("L2WordAttractorCell32") && candidate.replacement == "загрузи "
         }));
 
         let disabled = resolve_text_correction(CorrectionRequest {
@@ -366,22 +368,24 @@ mod tests {
     #[test]
     fn compact_l2_route_applies_adjacent_transposition_center() {
         let previous_policy = crate::hot_field::process_policy();
-        crate::hot_field::set_process_policy(crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
-            crate::text_backend::TextBackendPreference::Ime,
-        ));
+        crate::hot_field::set_process_policy(
+            crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
+                crate::text_backend::TextBackendPreference::Ime,
+            ),
+        );
         let pipeline = default_typing_assist_pipeline();
         let resolutions: Vec<_> = [
             ("врмея ", "время "),
             ("поянл ", "понял "),
             ("понял сомтрю ", "понял смотрю "),
         ]
-            .into_iter()
-            .map(|(input, expected)| {
-                let mut req = request(input, &pipeline, CorrectionMode::NandaOnly);
-                req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
-                (expected, resolve_text_correction(req))
-            })
-            .collect();
+        .into_iter()
+        .map(|(input, expected)| {
+            let mut req = request(input, &pipeline, CorrectionMode::NandaOnly);
+            req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+            (expected, resolve_text_correction(req))
+        })
+        .collect();
         crate::hot_field::set_process_policy(previous_policy);
         for (expected, resolution) in resolutions {
             let selected = resolution
@@ -390,7 +394,10 @@ mod tests {
                 .unwrap_or_else(|| panic!("L2 transposition center must apply: {resolution:#?}"));
 
             assert_eq!(selected.replacement, expected);
-            assert_eq!(selected.error_class, TypingErrorClass::AdjacentTransposition);
+            assert_eq!(
+                selected.error_class,
+                TypingErrorClass::AdjacentTransposition
+            );
             assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
         }
     }
@@ -418,7 +425,10 @@ mod tests {
             .as_ref()
             .unwrap_or_else(|| panic!("operator consensus must resolve: {resolution:#?}"));
         assert_eq!(selected.replacement, "понял смотрю ");
-        assert_eq!(selected.error_class, TypingErrorClass::AdjacentTransposition);
+        assert_eq!(
+            selected.error_class,
+            TypingErrorClass::AdjacentTransposition
+        );
         assert!(selected.has_origin(CandidateOrigin::DeterministicTypo));
         assert!(selected.has_origin(CandidateOrigin::L2Surface));
     }
@@ -469,21 +479,25 @@ mod tests {
         let resolution = resolve_text_correction(req);
         crate::hot_field::set_process_policy(previous_policy);
 
-        let selected = resolution
-            .selected
-            .as_ref()
-            .unwrap_or_else(|| panic!("phase-verified transposition must resolve: {resolution:#?}"));
+        let selected = resolution.selected.as_ref().unwrap_or_else(|| {
+            panic!("phase-verified transposition must resolve: {resolution:#?}")
+        });
         assert_eq!(selected.replacement, "проверяю ");
-        assert_eq!(selected.error_class, TypingErrorClass::AdjacentTransposition);
+        assert_eq!(
+            selected.error_class,
+            TypingErrorClass::AdjacentTransposition
+        );
         assert!(selected.has_origin(CandidateOrigin::L2Surface));
     }
 
     #[test]
     fn phase_verified_transposition_competes_with_known_noisy_surface() {
         let previous_policy = crate::hot_field::process_policy();
-        crate::hot_field::set_process_policy(crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
-            crate::text_backend::TextBackendPreference::Ime,
-        ));
+        crate::hot_field::set_process_policy(
+            crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
+                crate::text_backend::TextBackendPreference::Ime,
+            ),
+        );
         let pipeline = default_typing_assist_pipeline();
         let mut req = request("ландо ", &pipeline, CorrectionMode::DeterministicThenNanda);
         req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
@@ -510,11 +524,7 @@ mod tests {
             ),
         );
         let pipeline = default_typing_assist_pipeline();
-        let mut req = request(
-            "мжоет ",
-            &pipeline,
-            CorrectionMode::DeterministicThenNanda,
-        );
+        let mut req = request("мжоет ", &pipeline, CorrectionMode::DeterministicThenNanda);
         req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
         let resolution = resolve_text_correction(req);
         crate::hot_field::set_process_policy(previous_policy);
@@ -524,7 +534,10 @@ mod tests {
             .as_ref()
             .unwrap_or_else(|| panic!("unique transposition must resolve: {resolution:#?}"));
         assert_eq!(selected.replacement, "может ");
-        assert_eq!(selected.error_class, TypingErrorClass::AdjacentTransposition);
+        assert_eq!(
+            selected.error_class,
+            TypingErrorClass::AdjacentTransposition
+        );
         assert!(selected.has_origin(CandidateOrigin::DeterministicTypo));
         assert!(selected.has_origin(CandidateOrigin::L2Surface));
     }
@@ -1289,6 +1302,35 @@ mod tests {
     }
 
     #[test]
+    fn fresh_live_l2_false_applies_do_not_reach_autocorrect_decision() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, forbidden) in [
+            ("ая ", "яа "),
+            ("ту ", "ут "),
+            ("вно ", "вон "),
+            ("ям ", "мя "),
+            ("новости ", "новость "),
+            ("модели ", "модель "),
+            ("вышли ", "вышил "),
+        ] {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicThenNanda,
+            ));
+
+            assert_ne!(
+                resolution
+                    .decision
+                    .as_ref()
+                    .map(|decision| decision.replacement.as_str()),
+                Some(forbidden),
+                "{input:?} must not auto-apply {forbidden:?}: {resolution:?}"
+            );
+        }
+    }
+
+    #[test]
     fn strong_local_typo_repairs_still_apply_after_shape_guard() {
         let pipeline = default_typing_assist_pipeline();
         for (input, expected) in [
@@ -1562,7 +1604,10 @@ mod tests {
             ));
 
             assert_eq!(resolution.decision, None, "input={input:?}: {resolution:?}");
-            assert!(resolution.selected.is_none(), "input={input:?}: {resolution:?}");
+            assert!(
+                resolution.selected.is_none(),
+                "input={input:?}: {resolution:?}"
+            );
         }
     }
 
