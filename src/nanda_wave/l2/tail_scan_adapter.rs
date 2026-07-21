@@ -1,6 +1,8 @@
 use super::super::context::TailContext;
 use super::super::signal::{WavePacket, WordCandidate};
-use super::surface::{surface_motif_known_surface, surface_motif_typo_risk};
+use super::surface::{
+    surface_motif_known_surface, surface_motif_strict_known_surface, surface_motif_typo_risk,
+};
 use super::{candidate_support, l1_energy, L2_SURFACE_MOTIF_CELL};
 use crate::candidate_contract::CandidateOrigin;
 use crate::keyboard::is_cyrillic_letter;
@@ -25,12 +27,13 @@ pub(super) fn boundary_split_candidates(
     if normalized.chars().count() < 6
         || is_common_ru_word(&normalized)
         || is_ru_live_protected_word(&normalized)
+        || surface_motif_strict_known_surface(&normalized)
     {
         return Vec::new();
     }
-    if surface_motif_known_surface(&normalized) {
-        return Vec::new();
-    }
+    // A decoded motif may be a broad form-only surface rather than a stable
+    // lexical state. Let the compact two-center boundary readout compete
+    // before that broad surface suppresses every split proposal.
     if let Some(replacement) = light_boundary_replacement(&normalized) {
         return vec![WordCandidate {
             text: format!("{prefix}{}", apply_word_case(token, &replacement)),
@@ -45,6 +48,9 @@ pub(super) fn boundary_split_candidates(
                 support
             },
         }];
+    }
+    if surface_motif_known_surface(&normalized) {
+        return Vec::new();
     }
     if let Some(replacement) = crate::phrase_reader::correct_glued_russian_phrase(&normalized) {
         if replacement != normalized {
@@ -69,8 +75,8 @@ pub(super) fn boundary_split_candidates(
     for split in 1..chars.len() {
         let left = chars[..split].iter().collect::<String>();
         let right = chars[split..].iter().collect::<String>();
-        let trailing_short_pronoun = right.chars().count() == 1
-            && crate::lexicon::is_ru_short_pronoun(&right);
+        let trailing_short_pronoun =
+            right.chars().count() == 1 && crate::lexicon::is_ru_short_pronoun(&right);
         if left.chars().count() > 2 && right.chars().count() < 3 && !trailing_short_pronoun {
             continue;
         }

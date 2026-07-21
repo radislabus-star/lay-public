@@ -243,6 +243,20 @@ fn boundary_cell_splits_dictionary_glue() {
 }
 
 #[test]
+fn boundary_cell_births_two_center_split_before_broad_surface_suppression() {
+    let original = "тоесть ";
+    let l1 = run_l1(original);
+    let candidates = run_l2(original, &l1);
+
+    assert!(
+        candidates.iter().any(|candidate| {
+            candidate.source == "BoundaryCell32" && candidate.text == "то есть"
+        }),
+        "boundary candidates={candidates:?}"
+    );
+}
+
+#[test]
 fn boundary_cell_does_not_split_known_russian_word_forms() {
     for original in [
         "упоминай ",
