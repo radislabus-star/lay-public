@@ -5,24 +5,32 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 INSTALL=0
+INCLUDE_LIVE_FEEDBACK=0
 MAX_PHRASES="${LAY_SELF_TEACHER_L3_MAX_PHRASES:-256}"
 MAX_PAIRS="${LAY_SELF_TEACHER_L3_MAX_PAIRS:-2000}"
 WORK_ROOT="${LAY_SELF_TEACHER_L3_PROMOTION_WORK:-$HOME/.local/share/lay/self_teacher/l3/promotions}"
-BASE="${LAY_L3_BASE_CONTEXT_PHASE:-$HOME/.local/share/lay/nanda_wave/l3_context_phase.nwpc}"
+BASE="${LAY_L3_BASE_CONTEXT_PHASE:-$ROOT/data/lexicon/l3_context_phase_v1.nwpc}"
+USAGE_EVENTS="${LAY_SELF_TEACHER_L3_USAGE_EVENTS:-}"
 
 usage() {
   cat >&2 <<'EOF'
-usage: scripts/l3-self-teacher-promotion-gate.sh [--install] [--max-phrases N] [--max-pairs N] [--work DIR] [--base PATH]
+usage: scripts/l3-self-teacher-promotion-gate.sh [--install] [--include-live-feedback] [--usage-events PATH] [--use-runtime-base] [--max-phrases N] [--max-pairs N] [--work DIR] [--base PATH]
 
 Build a local L3 self-teacher shard, merge it with the current L3 context phase
 package, and produce a promotion receipt. Runtime install happens only with
 --install and only after all gates pass.
+
+Default training is clean/self-generated only. Local live usage feedback is
+included only with --include-live-feedback.
 EOF
 }
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --install) INSTALL=1; shift ;;
+    --include-live-feedback) INCLUDE_LIVE_FEEDBACK=1; shift ;;
+    --usage-events) USAGE_EVENTS="${2:?missing value for --usage-events}"; shift 2 ;;
+    --use-runtime-base) BASE="$HOME/.local/share/lay/nanda_wave/l3_context_phase.nwpc"; shift ;;
     --max-phrases) MAX_PHRASES="${2:?missing value for --max-phrases}"; shift 2 ;;
     --max-pairs) MAX_PAIRS="${2:?missing value for --max-pairs}"; shift 2 ;;
     --work) WORK_ROOT="${2:?missing value for --work}"; shift 2 ;;
@@ -31,6 +39,11 @@ while [[ $# -gt 0 ]]; do
     *) usage; exit 2 ;;
   esac
 done
+
+if [[ "$INCLUDE_LIVE_FEEDBACK" != "1" && -n "$USAGE_EVENTS" ]]; then
+  echo "--usage-events requires --include-live-feedback" >&2
+  exit 2
+fi
 
 if [[ ! -s "$BASE" ]]; then
   BASE="$ROOT/data/lexicon/l3_context_phase_v1.nwpc"
@@ -68,10 +81,21 @@ TRANSITION_REPLAY="$WORK/transition-replay.json"
 UNSAFE_GATE="$WORK/unsafe-gate.json"
 RECEIPT="$WORK/promotion-receipt.json"
 
-run_bin lay-nanda-wave-eval --lay-self-teacher-l3 \
-  --max-phrases "$MAX_PHRASES" \
-  --max-pairs "$MAX_PAIRS" \
-  --out-dir "$SELF_DIR" > "$SELF_REPORT"
+SELF_ARGS=(
+  --lay-self-teacher-l3
+  --max-phrases "$MAX_PHRASES"
+  --max-pairs "$MAX_PAIRS"
+  --out-dir "$SELF_DIR"
+)
+if [[ "$INCLUDE_LIVE_FEEDBACK" == "1" ]]; then
+  if [[ -n "$USAGE_EVENTS" ]]; then
+    SELF_ARGS+=(--usage-events "$USAGE_EVENTS")
+  fi
+else
+  SELF_ARGS+=(--no-live-feedback)
+fi
+
+run_bin lay-nanda-wave-eval "${SELF_ARGS[@]}" > "$SELF_REPORT"
 
 SELF_PACKAGE="$(jq -r '.artifacts.shadow_package' "$SELF_REPORT")"
 if [[ ! -s "$SELF_PACKAGE" ]]; then
@@ -118,6 +142,10 @@ install_requested="false"
 if [[ "$INSTALL" == "1" ]]; then
   install_requested="true"
 fi
+include_live_feedback="false"
+if [[ "$INCLUDE_LIVE_FEEDBACK" == "1" ]]; then
+  include_live_feedback="true"
+fi
 
 jq -n \
   --arg kind "l3_self_teacher_promotion_receipt" \
@@ -126,6 +154,7 @@ jq -n \
   --arg self_package "$SELF_PACKAGE" \
   --arg merged "$MERGED" \
   --argjson install_requested "$install_requested" \
+  --argjson include_live_feedback "$include_live_feedback" \
   --argjson self_pass "$self_pass" \
   --argjson transition_pass "$transition_pass" \
   --argjson unsafe_pass "$unsafe_pass" \
@@ -142,6 +171,10 @@ jq -n \
     run_id: $run_id,
     runtime_authority: false,
     install_requested: $install_requested,
+    teacher_input: {
+      mode: (if $include_live_feedback then "clean_plus_explicit_live_feedback" else "clean_self_generated_only" end),
+      include_live_feedback: $include_live_feedback
+    },
     gate_pass: $gate_pass,
     gates: {
       self_teacher_shadow_pass: $self_pass,
@@ -176,7 +209,7 @@ jq -n \
     artifact: $artifact,
     artifact_sha256: $artifact_sha256,
     raw_words_stored: false,
-    source: "merged current runtime L3 context package plus local L3 self-teacher shadow shard",
+    source: "merged selected base L3 context package plus local L3 self-teacher shadow shard",
     promotion_receipt: $receipt,
     promotion: $receipt_json
   }' > "$MERGED_MANIFEST"

@@ -1,16 +1,16 @@
 # Graph Report - lay  (2026-07-21)
 
 ## Corpus Check
-- 655 files · ~517,099 words
+- 655 files · ~517,243 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 8894 nodes · 22118 edges · 402 communities (351 shown, 51 thin omitted)
+- 8894 nodes · 22118 edges · 403 communities (352 shown, 51 thin omitted)
 - Extraction: 88% EXTRACTED · 12% INFERRED · 0% AMBIGUOUS · INFERRED: 2623 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `dc95e882`
+- Built from commit: `13aa9d80`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -361,6 +361,7 @@
 - .hot_readout
 - LayConfig
 - .semantic_phrase_candidates
+- derive_llmwave_feedback
 - layout_switch_policy.rs
 - LayConfig
 - LayConfig
@@ -416,22 +417,22 @@
 ## Import Cycles
 - 1-file cycle: `src/time.rs -> src/time.rs`
 - 2-file cycle: `src/text_edit.rs -> src/text_edit/action.rs -> src/text_edit.rs`
-- 2-file cycle: `src/candidate_explanation.rs -> src/correction_core.rs -> src/candidate_explanation.rs`
 - 2-file cycle: `src/correction_core.rs -> src/typing_transition/proposal_admission.rs -> src/correction_core.rs`
-- 3-file cycle: `src/text_edit.rs -> src/text_edit/executor.rs -> src/text_edit/action.rs -> src/text_edit.rs`
-- 3-file cycle: `src/text_edit.rs -> src/text_edit/executor.rs -> src/typing_transition/executor_contract.rs -> src/text_edit.rs`
+- 2-file cycle: `src/candidate_explanation.rs -> src/correction_core.rs -> src/candidate_explanation.rs`
 - 3-file cycle: `src/text_edit.rs -> src/text_edit/transition.rs -> src/text_edit/action.rs -> src/text_edit.rs`
-- 3-file cycle: `src/text_edit.rs -> src/text_edit/action.rs -> src/text_edit/gate.rs -> src/text_edit.rs`
 - 3-file cycle: `src/text_edit/action.rs -> src/text_edit/gate.rs -> src/text_edit/transition.rs -> src/text_edit/action.rs`
+- 3-file cycle: `src/text_edit.rs -> src/text_edit/executor.rs -> src/typing_transition/executor_contract.rs -> src/text_edit.rs`
+- 3-file cycle: `src/text_edit.rs -> src/text_edit/executor.rs -> src/text_edit/action.rs -> src/text_edit.rs`
+- 3-file cycle: `src/text_edit.rs -> src/text_edit/action.rs -> src/text_edit/gate.rs -> src/text_edit.rs`
 - 3-file cycle: `src/keyboard.rs -> src/keyboard/event_words.rs -> src/keyboard/event_words/word_split.rs -> src/keyboard.rs`
 - 3-file cycle: `src/keyboard.rs -> src/keyboard/event_words.rs -> src/keyboard/event_words/mapping.rs -> src/keyboard.rs`
 - 3-file cycle: `src/candidate_explanation.rs -> src/language_action.rs -> src/correction_core.rs -> src/candidate_explanation.rs`
-- 4-file cycle: `src/text_edit.rs -> src/text_edit/executor.rs -> src/text_edit/action.rs -> src/text_edit/gate.rs -> src/text_edit.rs`
-- 4-file cycle: `src/text_edit.rs -> src/text_edit/executor.rs -> src/typing_transition/executor_contract.rs -> src/text_edit/action.rs -> src/text_edit.rs`
 - 4-file cycle: `src/text_edit.rs -> src/text_edit/transition.rs -> src/text_edit/action.rs -> src/text_edit/gate.rs -> src/text_edit.rs`
+- 4-file cycle: `src/text_edit.rs -> src/text_edit/executor.rs -> src/typing_transition/executor_contract.rs -> src/text_edit/action.rs -> src/text_edit.rs`
+- 4-file cycle: `src/text_edit.rs -> src/text_edit/executor.rs -> src/text_edit/action.rs -> src/text_edit/gate.rs -> src/text_edit.rs`
 - 5-file cycle: `src/text_edit.rs -> src/text_edit/executor.rs -> src/typing_transition/executor_contract.rs -> src/text_edit/action.rs -> src/text_edit/gate.rs -> src/text_edit.rs`
 
-## Communities (402 total, 51 thin omitted)
+## Communities (403 total, 51 thin omitted)
 
 ### Community 0 - "learning_loop.rs"
 Cohesion: 0.09
@@ -482,8 +483,8 @@ Cohesion: 0.07
 Nodes (57): ambiguous_layout_candidates(), ascii_technical_score(), candidate_map(), CandidateScore, Case, changed_token_count(), choose_layout_rules(), choose_oracle() (+49 more)
 
 ### Community 13 - "lexicon.rs"
-Cohesion: 0.12
-Nodes (50): ascii_words_from_iter(), common_en_guard_prefixes(), common_en_technical_words(), common_ru_words(), common_ru_words_iter(), common_ru_words_ordered(), extend_common_ru_words(), extend_ru_technical_loanwords() (+42 more)
+Cohesion: 0.13
+Nodes (47): ascii_words_from_iter(), common_en_guard_prefixes(), common_en_technical_words(), common_ru_words(), common_ru_words_iter(), common_ru_words_ordered(), extend_common_ru_words(), extend_ru_technical_loanwords() (+39 more)
 
 ### Community 14 - "PhaseReadout"
 Cohesion: 0.35
@@ -738,8 +739,8 @@ Cohesion: 0.14
 Nodes (24): adjacent_swap_position(), bucket_position(), CorrectionReceipt, derives_extra_substitution_and_sparse_omission_geometries(), derives_transposition_without_storing_words(), excludes_layout_and_multiword_receipts(), is_single_word(), keeps_only_repeated_generic_missing_geometry() (+16 more)
 
 ### Community 77 - "input_gate.rs"
-Cohesion: 0.14
-Nodes (35): ContextPhaseDisposition, ContextPhaseReadout, build_and_prove_context_phase_path(), build_and_prove_context_phase_path_with_surface_field(), classify_false_winner(), ContextPhaseCounterexample, ContextPhaseProofReport, correct_is_unique_top() (+27 more)
+Cohesion: 0.15
+Nodes (33): build_and_prove_context_phase_path(), build_and_prove_context_phase_path_with_surface_field(), classify_false_winner(), ContextPhaseCounterexample, ContextPhaseProofReport, correct_is_unique_top(), evaluate_fragment(), evaluate_heldout_stream() (+25 more)
 
 ### Community 78 - "format.rs"
 Cohesion: 0.20
@@ -803,7 +804,7 @@ Nodes (22): arg_value(), collect_json_string_fields(), correction_learning_log_p
 
 ### Community 93 - "typing_candidate_tests.rs"
 Cohesion: 0.08
-Nodes (42): bank_support(), candidate_l2_signature(), candidate_l2_signature_for_schema(), candidate_semantic_relation_weight(), candidate_token_hash(), compact_surface_phase_class(), context_preserving_candidate_token(), context_tokens_for_authority() (+34 more)
+Nodes (43): bank_support(), candidate_l2_signature(), candidate_l2_signature_for_schema(), candidate_semantic_relation_weight(), candidate_token_hash(), compact_surface_phase_class(), context_preserving_candidate_token(), context_tokens_for_authority() (+35 more)
 
 ### Community 94 - "ForceLayoutHotkeyContext"
 Cohesion: 0.08
@@ -910,8 +911,8 @@ Cohesion: 0.25
 Nodes (21): CellTraceRecord, accepted_mode_reinforces_resonance_memory(), apply_observation(), ema(), failed_mode_suppresses_resonance_memory(), load_resonance_memory(), memory_path(), new_entry() (+13 more)
 
 ### Community 120 - "focus_guard.rs"
-Cohesion: 0.16
-Nodes (13): decode_record(), encode_memory(), encode_record(), encode_vocabulary(), LlmWaveMemory, LlmWaveRecord, LlmWaveRuntimeIndex, memory_packet_roundtrip_uses_32_byte_records() (+5 more)
+Cohesion: 0.20
+Nodes (9): decode_record(), LlmWaveMemory, LlmWaveRecord, LlmWaveRuntimeIndex, phase_for(), BTreeMap, BTreeSet, Self (+1 more)
 
 ### Community 121 - "ManualCorrectionOutputContext"
 Cohesion: 0.22
@@ -1038,7 +1039,7 @@ Cohesion: 0.28
 Nodes (10): char_to_byte_idx(), composition_cursor_at_start_does_not_swallow_backspace(), composition_cursor_backspace_edits_before_cursor(), composition_cursor_edits_inside_buffer_without_committing(), empty_composition_backspace_updates_memory_but_stays_unhandled(), engine(), LayIbusEngine, passive_cursor_move_forgets_committed_tail() (+2 more)
 
 ### Community 152 - "EnterAutocorrectContext"
-Cohesion: 0.22
+Cohesion: 0.20
 Nodes (12): l4_signed_memory_signal_from_parts(), l4_signed_memory_signal_from_readout(), automatic_apply_is_not_positive_feedback(), context_rejection_does_not_leak_into_empty_context_transition(), exact_state_transition_overrides_global_target_frequency(), hot_readout_collects_usage_and_rejection_in_one_pass(), UsageHotReadout, UsageSurfaceCoverage (+4 more)
 
 ### Community 153 - "syntax_guard.rs"
@@ -1358,8 +1359,8 @@ Cohesion: 0.38
 Nodes (4): LayImeBridge, Option, Result, String
 
 ### Community 235 - "correct_wrong_layout_ascii_phrase"
-Cohesion: 0.22
-Nodes (17): candidate_prefix_and_next(), hash32(), LlmWavePhrasePrediction, LlmWavePreviousTokenCandidate, phrase_prediction_to_candidate(), PhraseForecastRequest, prefix_hash(), prior_from_energy() (+9 more)
+Cohesion: 0.25
+Nodes (15): candidate_prefix_and_next(), LlmWavePhrasePrediction, LlmWavePreviousTokenCandidate, phrase_prediction_to_candidate(), PhraseForecastRequest, prefix_hash(), prior_from_energy(), ranked_predictions() (+7 more)
 
 ### Community 236 - ".what_to_replay"
 Cohesion: 0.19
@@ -1471,7 +1472,7 @@ Nodes (5): empty(), ibus_attribute(), preedit(), Value, Vec
 
 ### Community 266 - "PhaseCell"
 Cohesion: 0.09
-Nodes (40): Eq, canonical_scene_wave(), F, semantic_relation_weights(), max_random_center_coherence(), phase_margin_micro_for_centers(), randomize_active_phases(), compile_centers() (+32 more)
+Nodes (41): Eq, canonical_scene_wave(), merge_pair_bank(), F, semantic_relation_weights(), max_random_center_coherence(), phase_margin_micro_for_centers(), randomize_active_phases() (+33 more)
 
 ### Community 268 - "replacement_tests.rs"
 Cohesion: 0.36
@@ -1607,7 +1608,7 @@ Nodes (5): deferring_committed_tail_toggle_suppresses_next_boundary_autocorrect(
 
 ### Community 355 - ".run"
 Cohesion: 0.13
-Nodes (33): data_lines(), Item, Iterator, center_contains(), adjective_form_suffixes(), adjective_lemma_endings(), ka_oblique_suffixes(), possessive_suffixes() (+25 more)
+Nodes (32): data_lines(), Item, Iterator, center_contains(), adjective_form_suffixes(), adjective_lemma_endings(), ka_oblique_suffixes(), possessive_suffixes() (+24 more)
 
 ### Community 356 - "WaveTrace"
 Cohesion: 0.83
@@ -1615,7 +1616,7 @@ Nodes (3): alphabet_successor(), rotate_in_alphabet(), Option
 
 ### Community 358 - "russian_lexicon_tests.rs"
 Cohesion: 0.10
-Nodes (27): contract(), derive_llmwave_feedback(), ends_with_unfinished_short_word(), has_low_language_quality(), has_repeated_letter_run(), has_repeated_vowel(), has_short_known_insertion_neighbor(), has_unstable_russian_vowel_bridge() (+19 more)
+Nodes (27): contract(), encode_memory(), encode_record(), encode_vocabulary(), ends_with_unfinished_short_word(), has_low_language_quality(), has_repeated_letter_run(), has_repeated_vowel() (+19 more)
 
 ### Community 360 - "load_plain_words"
 Cohesion: 0.42
@@ -1652,6 +1653,10 @@ Nodes (8): is_word_char(), normalize_ngram_word(), normalize_text(), Lang, Optio
 ### Community 371 - ".semantic_phrase_candidates"
 Cohesion: 0.53
 Nodes (5): current(), publish_runtime_config(), LayConfig, runtime_debug_action_log(), runtime_usage_learning_enabled()
+
+### Community 372 - "derive_llmwave_feedback"
+Cohesion: 0.40
+Nodes (6): derive_llmwave_feedback(), LlmWaveCandidateScore, LlmWaveReport, load_default_memory(), report_summary(), report_to_feedback()
 
 ### Community 373 - "layout_switch_policy.rs"
 Cohesion: 0.24
@@ -1702,16 +1707,16 @@ Cohesion: 0.08
 Nodes (22): active_typing_assist_words(), PendingTypingAssist, Option, Self, apply_prepared_typing_assist_after_space(), DecoderEditPlan, Option, String (+14 more)
 
 ### Community 399 - "apply_phrase_case"
-Cohesion: 0.08
-Nodes (30): extra_letter_rule_defers_to_missing_letter_candidates(), typing_assist_fixes_extra_repeated_letter(), correct_cyrillic_word_case(), Option, String, correct_single_letter_substitution(), Option, String (+22 more)
+Cohesion: 0.09
+Nodes (31): extra_letter_rule_defers_to_missing_letter_candidates(), typing_assist_fixes_extra_repeated_letter(), correct_single_letter_substitution(), Option, String, safe_neighbor_substitution_candidate(), empty_word_set(), full_generated_forms_enabled() (+23 more)
 
 ### Community 400 - "types.rs"
 Cohesion: 0.47
 Nodes (5): Option, String, TypingCandidate, TypingCandidateDecision, TypingCandidateScore
 
 ### Community 401 - "convert"
-Cohesion: 0.13
-Nodes (25): correct_common_layout_extra_letter(), correct_layout_missing_initial_letter(), has_known_cyrillic_hyphen_fragment(), is_cyrillic_hyphenated_word_for_layout(), is_known_cyrillic_hyphenated_word(), is_plain_cyrillic_technical_source(), is_plausible_cyrillic_hyphenated_word(), is_russian_hyphen_particle() (+17 more)
+Cohesion: 0.10
+Nodes (28): correct_common_layout_extra_letter(), correct_layout_missing_initial_letter(), has_known_cyrillic_hyphen_fragment(), is_cyrillic_hyphenated_word_for_layout(), is_known_cyrillic_hyphenated_word(), is_plain_cyrillic_technical_source(), is_plausible_cyrillic_hyphenated_word(), is_russian_hyphen_particle() (+20 more)
 
 ### Community 408 - "first_internal_transposition_typo"
 Cohesion: 0.50
@@ -1729,7 +1734,7 @@ Nodes (6): Current Checkpoint, Lay Self Teacher L3 Plan, Promotion Gate, Reminde
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `WaveOptions` connect `WaveOptions` to `lay_nanda_wave_eval.rs`, `russian_lexicon_tests.rs`, `tests.rs`, `replacement_tests.rs`, `main.rs`, `gnome_dbus.rs`, `is_cyrillic_word`, `DaemonTextContext`, `profile_tests.rs`, `technical.rs`, `candidate_sources.rs`, `surface.rs`, `l3.rs`, `ShiftState`, `measured_precognition_stages`, `status.rs`, `l4_goal_state.rs`?**
+- **Why does `WaveOptions` connect `WaveOptions` to `lay_nanda_wave_eval.rs`, `russian_lexicon_tests.rs`, `tests.rs`, `replacement_tests.rs`, `main.rs`, `gnome_dbus.rs`, `is_cyrillic_word`, `DaemonTextContext`, `profile_tests.rs`, `technical.rs`, `candidate_sources.rs`, `surface.rs`, `l3.rs`, `derive_llmwave_feedback`, `ShiftState`, `measured_precognition_stages`, `status.rs`, `l4_goal_state.rs`?**
   _High betweenness centrality (0.069) - this node is a cross-community bridge._
 - **Why does `TextReplacement` connect `EditAction` to `UnifiedCorrectionCandidate`, `PhysicalInputGrab`, `correction_memory_runtime.rs`, `text_edit_tests.rs`, `l2_candidate_phase.rs`, `KeyEvent`, `fixture_rows`, `fixture_row_by_id`, `apply_layout_replay`, `TextReplacement`, `.from_bytes`, `RecentActionGateTrace`, `TransitionAudit`, `signal.rs`, `score`, `typing_assist_mixed_corpus.rs`, `transition.rs`, `CandidateOrigin`, `layout_niri.rs`?**
   _High betweenness centrality (0.065) - this node is a cross-community bridge._

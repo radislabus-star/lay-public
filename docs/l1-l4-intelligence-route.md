@@ -78,10 +78,11 @@ clean phrase source
 ```
 
 The teacher may write cold artifacts and `.nwpc` shadow packages. It must not
-install runtime authority by itself. Runtime promotion merges the self-teacher
-package into the current broad L3 package; it never replaces broad memory with a
-small fixture. A useful first metric is `false_authority`: wrong candidates may
-have noisy raw energy during learning, but they must not receive L3 Support.
+install runtime authority by itself. Runtime promotion is clean-only by default:
+it merges the self-teacher package into the tracked canonical L3 package and
+uses local live feedback only when explicitly requested. A useful first metric
+is `false_authority`: wrong candidates may have noisy raw energy during
+learning, but they must not receive L3 Support.
 
 The clean teacher corpus must repeat phrases enough to cover both profile birth
 and required support. For `min_profile_support=N`, the repeat count is

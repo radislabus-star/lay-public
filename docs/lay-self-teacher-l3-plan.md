@@ -36,7 +36,7 @@ Useful options:
 --no-live-feedback       ignore default local usage feedback
 ```
 
-Default local feedback source, when present:
+Direct evaluator default local feedback source, when present:
 
 ```text
 ~/.local/share/lay/nanda_wave/word_usage_events.jsonl
@@ -44,6 +44,10 @@ Default local feedback source, when present:
 
 Only accepted/confirmed outcomes are allowed into the clean teacher corpus.
 Rejected events remain telemetry unless they carry an observed final target.
+
+The promotion gate is stricter than the direct evaluator: it runs clean-only by
+default and passes `--no-live-feedback` unless `--include-live-feedback` is
+explicitly requested.
 
 Previous smoke:
 
@@ -209,12 +213,18 @@ scripts/l3-self-teacher-promotion-gate.sh --max-phrases 160 --max-pairs 1600
 scripts/l3-self-teacher-promotion-gate.sh --max-phrases 160 --max-pairs 1600 --install
 ```
 
-The script never installs a standalone self-teacher shard. It merges:
+The script never installs a standalone self-teacher shard. By default it merges:
 
 ```text
-current runtime L3 context phase package
+tracked canonical L3 context phase package
 + local self-teacher shadow shard
 -> candidate runtime package
+```
+
+Local live usage feedback is opt-in only:
+
+```bash
+scripts/l3-self-teacher-promotion-gate.sh --include-live-feedback --usage-events ~/.local/share/lay/nanda_wave/word_usage_events.jsonl
 ```
 
 Install is allowed only when all gates pass:
