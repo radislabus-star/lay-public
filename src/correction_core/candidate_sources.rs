@@ -647,7 +647,7 @@ fn hot_l2_text_candidates(
 
     let started = std::time::Instant::now();
     let timing_enabled = std::env::var_os("LAY_CORRECTION_CORE_TIMING").is_some();
-    let Some((context_prefix, token)) = split_last_alphabetic_token(original) else {
+    let Some((_context_prefix, token)) = split_last_alphabetic_token(original) else {
         return Vec::new();
     };
     let normalized_token = token.to_lowercase();
@@ -696,38 +696,6 @@ fn hot_l2_text_candidates(
     {
         candidates.push(layout);
     }
-    // Boundary candidates are born by the same L1/L2 field as live IME
-    // preedit.  Project them into the committed-word lattice as typed
-    // BoundaryCell32 proposals instead of falling back to the old phrase rule.
-    candidates.extend(
-        crate::nanda_wave::l2::ime_l2_boundary_candidates(context_prefix, token, 2)
-            .into_iter()
-            .filter_map(|candidate| {
-                let replacement =
-                    preserve_candidate_trailing_separator(original, &candidate.surface);
-                let origin = CandidateOrigin::Boundary;
-                let error_class = action_operator::classify_token_transition(
-                    original,
-                    &replacement,
-                    origin,
-                    TypingErrorClass::GluedWords,
-                );
-                let gate = TransitionDecisionCore::admit_candidate_proposal(
-                    original,
-                    &replacement,
-                    error_class,
-                    origin,
-                );
-                Some(UnifiedCorrectionCandidate::new(
-                    replacement,
-                    CorrectionDecisionSource::Nanda,
-                    origin,
-                    "BoundaryCell32",
-                    error_class,
-                    gate,
-                ))
-            }),
-    );
     if timing_enabled {
         let layout_ready = std::time::Instant::now();
         eprintln!(

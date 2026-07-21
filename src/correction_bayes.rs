@@ -64,8 +64,7 @@ pub(crate) fn bayes_score_candidate_with_readout(
         .count()
         .max(replacement_lower.chars().count())
         .max(1);
-    let likelihood = boundary_transition_likelihood(original, replacement, origin)
-        .unwrap_or_else(|| input_likelihood(error_class, origin, distance, max_len));
+    let likelihood = input_likelihood(error_class, origin, distance, max_len);
     let usage_prior = (usage_snapshot.word_prior(&replacement_lower)
         + accepted_prior_from_count(usage_snapshot.accepted_word_count(&replacement_lower)))
     .clamp(0.0, 0.36);
@@ -121,28 +120,6 @@ fn input_likelihood(
         "composite-typo" | "grammar-agreement" => edit_likelihood,
         _ => edit_likelihood.min(0.45),
     }
-}
-
-/// A boundary operator does not transform the lexical surface.  Its evidence
-/// is the same character mass settling into two verified word centers.  Using
-/// only the last replacement word here would understate that evidence and
-/// make a proved split compete as an ordinary multi-character typo.
-fn boundary_transition_likelihood(
-    original: &str,
-    replacement: &str,
-    origin: CandidateOrigin,
-) -> Option<f32> {
-    if origin != CandidateOrigin::Boundary {
-        return None;
-    }
-    let original_words = text_words(original);
-    let replacement_words = text_words(replacement);
-    if original_words.len() != 1 || replacement_words.len() != 2 {
-        return None;
-    }
-    let original_surface = original_words[0].as_str();
-    let replacement_surface = replacement_words.concat();
-    (original_surface == replacement_surface).then_some(0.92)
 }
 
 fn local_context_prior(
@@ -351,18 +328,5 @@ mod tests {
             "clear={clear:?} noisy={noisy:?}"
         );
         assert!(clear.risk < noisy.risk, "clear={clear:?} noisy={noisy:?}");
-    }
-
-    #[test]
-    fn bayes_scores_verified_boundary_surface_as_one_transition() {
-        let score = bayes_score_candidate(
-            "тоесть ",
-            "то есть ",
-            "glued-words",
-            CandidateOrigin::Boundary,
-        );
-
-        assert!(score.likelihood >= 0.90, "score={score:?}");
-        assert!(score.posterior >= 0.50, "score={score:?}");
     }
 }

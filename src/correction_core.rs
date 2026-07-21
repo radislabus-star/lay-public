@@ -194,20 +194,7 @@ impl UnifiedCorrectionCandidate {
                         CandidateGateAction::SuggestOnly
                     )
             );
-        let promote_wave_boundary_owner = candidate.source == CorrectionDecisionSource::Nanda
-            && candidate.origin == CandidateOrigin::Boundary
-            && candidate.gate.action == CandidateGateAction::Eligible
-            && self.source == CorrectionDecisionSource::Deterministic
-            && self.origin == CandidateOrigin::Boundary
-            && !matches!(
-                self.gate.action,
-                CandidateGateAction::KeepOriginal | CandidateGateAction::Veto
-            );
-        if promote_verified_layout
-            || promote_wave_layout_owner
-            || promote_wave_owner
-            || promote_wave_boundary_owner
-        {
+        if promote_verified_layout || promote_wave_layout_owner || promote_wave_owner {
             self.source = candidate.source;
             self.origin = candidate.origin;
             self.source_id.clone_from(&candidate.source_id);

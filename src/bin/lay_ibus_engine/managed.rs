@@ -60,9 +60,9 @@ impl LayIbusEngine {
                 let initial_mode = self.initial_word_input_mode();
                 let mode = *self.word_input_mode.get_or_insert(initial_mode);
                 if mode == WordInputMode::ManagedCommit {
-                    if self.autocorrect_committed_tail_on_space(emitter).await? {
+                    if self.autocorrect_committed_layout_on_space(emitter).await? {
                         self.trace_key(
-                            "space_managed_autocorrect",
+                            "space_managed_layout_autocorrect",
                             keyval,
                             keycode,
                             true,
@@ -164,15 +164,15 @@ mod word_boundary_route_contract {
     }
 
     #[test]
-    fn managed_space_uses_shared_decision_core_for_verified_tail_transitions() {
+    fn managed_space_uses_shared_decision_core_only_for_layout_boundary() {
         let source = include_str!("managed.rs");
 
         assert!(
             source.contains("space_managed_commit")
                 && source.contains("space_terminal_passthrough")
                 && source.contains("self.close_precognition_word_boundary();")
-                && source.contains("autocorrect_committed_tail_on_space(emitter)"),
-            "managed Space must close verified tail transitions through the shared decision core"
+                && source.contains("autocorrect_committed_layout_on_space(emitter)"),
+            "managed Space must close layout boundaries through the shared decision core"
         );
     }
 }

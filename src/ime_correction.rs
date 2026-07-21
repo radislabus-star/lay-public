@@ -273,28 +273,6 @@ mod tests {
     }
 
     #[test]
-    fn committed_tail_boundary_split_uses_the_shared_decision_core() {
-        let cfg = config();
-        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
-            text: "тоесть ",
-            committed_tail: "тоесть",
-            config: &cfg,
-        })
-        .expect("boundary decision");
-
-        assert_eq!(decision.replacement, "то есть ");
-        assert!(
-            decision.action.allow_apply(),
-            "source={:?} class={:?} confidence={} safety={} transition={:?}",
-            decision.action.selected_source_id(),
-            decision.action.selected_error_class(),
-            decision.action.confidence_milli(),
-            decision.action.safety_reason(),
-            decision.action.transition(),
-        );
-    }
-
-    #[test]
     fn committed_tail_autocorrect_keeps_ascii_layout_punctuation_in_token() {
         assert_replacement("ghj,ktvf ", "ghj,ktvf", "проблема ");
     }

@@ -9,14 +9,11 @@ use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 
 impl LayIbusEngine {
-    /// Applies the DecisionCore winner for the current committed token at a
-    /// word boundary. The decision may be layout, typo, or a proved boundary
-    /// split; this adapter never reconstructs a correction from the token.
-    pub(super) async fn autocorrect_committed_tail_on_space(
+    pub(super) async fn autocorrect_committed_layout_on_space(
         &mut self,
         emitter: &SignalEmitter<'_>,
     ) -> fdo::Result<bool> {
-        if !self.config.auto_replace {
+        if !self.config.auto_switch_layout {
             return Ok(false);
         }
         let token = self.last_tail_token_text();
@@ -33,6 +30,15 @@ impl LayIbusEngine {
         ) else {
             return Ok(false);
         };
+        if decision
+            .input_gate
+            .as_ref()
+            .and_then(|trace| trace.selected_error_class.as_deref())
+            != Some("wrong_layout")
+        {
+            return Ok(false);
+        }
+
         lay::action_log::record_candidate_edit_action_before_apply(
             &decision.action,
             lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
@@ -58,7 +64,7 @@ impl LayIbusEngine {
                     original: token.clone(),
                     replacement: replacement.clone(),
                     source: VisibleTailSource::ImeCommittedTail,
-                    kind: SystemOutcomeKind::Correction,
+                    kind: SystemOutcomeKind::LayoutProjection,
                 }),
             )
             .await?;
