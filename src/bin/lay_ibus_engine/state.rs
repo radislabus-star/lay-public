@@ -93,6 +93,22 @@ impl CommittedTailReplaceRequest {
         }
     }
 
+    /// Explicit Tab acceptance of an IME replacement for already committed
+    /// text. The backend still verifies the tail/focus/epoch before output.
+    pub(crate) fn ime_completion_replacement(backspaces: u32, text: String) -> Self {
+        Self {
+            source: VisibleTailSource::ImeCommittedTail,
+            backspaces,
+            text,
+            intent: TextTransitionIntent::ImeCompletionReplacement,
+            suppress_next_autocorrect: false,
+            expected_tail: None,
+            winner_action: None,
+            outcome_feedback: None,
+            layout_postcondition_owner: LayoutPostconditionOwner::Ime,
+        }
+    }
+
     pub(crate) fn ime_manual_toggle(
         backspaces: u32,
         text: String,

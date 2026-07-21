@@ -79,12 +79,47 @@ impl LayIbusEngine {
         if self.tail_buffer.trim().is_empty() {
             return Ok(false);
         }
-        let mut committed_suffix = self.selected_visible_completion_suffix();
-        if committed_suffix.is_empty() {
-            return Ok(false);
-        }
+        let replacement = self
+            .selected_precognition_replacement()
+            .map(ToOwned::to_owned);
         let tail_token = self.last_tail_token_text();
         if tail_token.is_empty() {
+            return Ok(false);
+        }
+        if let Some(replacement) = replacement {
+            let accepted_text = if with_space {
+                format!("{replacement} ")
+            } else {
+                replacement.clone()
+            };
+            let context_tail = self.tail_buffer.clone();
+            let expected_tail = VisibleTailSnapshot::new(
+                VisibleTailSource::ImeCommittedTail,
+                tail_token.clone(),
+                Some(self.path.clone()),
+                self.tail_epoch,
+            );
+            let handled = self
+                .replace_committed_tail(
+                    emitter,
+                    CommittedTailReplaceRequest::ime_completion_replacement(
+                        tail_token.chars().count() as u32,
+                        accepted_text.clone(),
+                    )
+                    .with_expected_tail(expected_tail),
+                )
+                .await?;
+            if handled {
+                self.arm_pending_ime_completion_learning(
+                    context_tail,
+                    accepted_text.trim().to_string(),
+                    with_space,
+                );
+            }
+            return Ok(handled);
+        }
+        let mut committed_suffix = self.selected_visible_completion_suffix();
+        if committed_suffix.is_empty() {
             return Ok(false);
         }
         let suffix_chars = committed_suffix.chars().count();

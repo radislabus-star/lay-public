@@ -102,15 +102,13 @@ impl LayIbusEngine {
             allow_short_lexical: true,
             limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
         });
-        // The shared candidate gate owns ranking. IBus projects typed suffix or
-        // full-token replacement proposals without gaining mutation authority.
+        // The shared candidate gate owns ranking. IBus projects typed suffixes
+        // and explicit full-token replacements without gaining mutation
+        // authority. A replacement is applied only by the committed-tail Tab
+        // route, which verifies the visible token before deleting anything.
         whole_word_candidates
             .into_iter()
             .enumerate()
-            // A committed tail needs a distinct verified replacement route.
-            // Never let an inactive preedit turn a whole-token candidate into
-            // an append-only Tab action.
-            .filter(|(_, candidate)| !self.buffer.is_empty() || !candidate.suffix.is_empty())
             .map(|(order, candidate)| {
                 if candidate.suffix.is_empty() {
                     ImeCandidateProposal::replacement(
