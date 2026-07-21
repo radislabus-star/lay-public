@@ -34,7 +34,6 @@ struct CompactPhaseSlice {
 }
 
 impl PhaseCenter {
-    #[cfg(test)]
     pub(crate) fn from_center(center: Vec<PhaseCell>, support: u32) -> Self {
         let weight = support.max(1) as f32;
         let sum = center

@@ -1884,7 +1884,7 @@ fn read_center(bytes: &[u8], offset: &mut usize) -> io::Result<PhaseCenter> {
             im: f32::from(im) / PHASE_SCALE,
         });
     }
-    Ok(PhaseCenter::from_sum(center, support))
+    Ok(PhaseCenter::from_center(center, support))
 }
 
 fn quantize(value: f32) -> i16 {

@@ -270,6 +270,7 @@ fn layout_converted_token(
     // blocked by the caller's first-token guard.
     let converted_lower = converted.to_lowercase();
     if token.chars().all(|ch| ch.is_ascii_alphabetic())
+        && token.chars().count() >= 3
         && converted.chars().all(is_cyrillic_letter)
         && surface_motif_memory().contains_surface(&converted_lower)
     {
