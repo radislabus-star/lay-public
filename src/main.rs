@@ -43,6 +43,10 @@ struct Args {
     /// Объяснить решение автокоррекции after-space для текста.
     #[arg(long)]
     explain_correct: bool,
+
+    /// Восстановить одно испорченное слово через общий correction core.
+    #[arg(long)]
+    restore_word: bool,
 }
 
 fn main() {
@@ -77,6 +81,34 @@ fn main() {
         print_typing_explanation(&explanation);
         print_nanda_explanation(&text, &cfg);
         print_correction_core_explanation(&text, &cfg);
+        return;
+    }
+
+    if args.restore_word {
+        let cfg = config::LayConfig::load();
+        let words = text
+            .lines()
+            .map(str::trim)
+            .filter(|word| !word.is_empty())
+            .collect::<Vec<_>>();
+        if words.is_empty()
+            || words
+                .iter()
+                .any(|word| word.split_whitespace().count() != 1)
+        {
+            eprintln!("--restore-word принимает одно слово или поток из одного слова на строку");
+            process::exit(2);
+        }
+
+        let mut restored_words = Vec::with_capacity(words.len());
+        for word in words {
+            let (restored, source) = restore_word(word, &cfg);
+            if args.verbose {
+                eprintln!("[{source}] {word:?} -> {restored:?}");
+            }
+            restored_words.push(restored);
+        }
+        print!("{}", restored_words.join("\n"));
         return;
     }
 
@@ -170,6 +202,27 @@ fn explain_completed_tail(
 
 fn active_typing_safety(cfg: &config::LayConfig) -> config::CorrectionSafety {
     cfg.active_correction_safety()
+}
+
+fn restore_word(word: &str, cfg: &config::LayConfig) -> (String, &'static str) {
+    let completed = format!("{word} ");
+    let resolution = correction_core::resolve_text_correction(correction_core::CorrectionRequest {
+        text: &completed,
+        auto_replace: true,
+        typing_assist: true,
+        auto_switch_layout: true,
+        correction_safety: active_typing_safety(cfg),
+        typing_assist_pipeline: &cfg.typing_assist_pipeline,
+        nanda_autocorrect: true,
+        nanda_candidate_route: correction_core::CandidateReadoutRoute::CompactL2,
+        nanda_wave_options: cfg.active_nanda_wave_options(),
+        mode: correction_core::CorrectionMode::DeterministicThenNanda,
+    });
+
+    match resolution.selected {
+        Some(candidate) => (candidate.replacement.trim().to_string(), "correction-core"),
+        None => (word.to_string(), "keep"),
+    }
 }
 
 fn explain_typing_assist_runtime(
