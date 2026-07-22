@@ -26,12 +26,13 @@ pub(super) fn candidate_has_apply_authority(
         verified_current_token_l2_center_repair(event, candidate_index, candidates, evaluations);
     if let Some(reason) = hard_structural_veto::hidden_state_rejection(signals) {
         if (hidden_rejection_deferred_to_verified_boundary(reason)
-            && verified_current_token_boundary_merge_split(event, candidate, evaluation))
+            && (verified_current_token_boundary_merge_split(event, candidate, evaluation)
+                || hard_structural_veto::verified_tail_boundary_shift(event, candidate, evaluation)))
             || (hidden_rejection_deferred_to_verified_l2_repair(reason)
                 && verified_l2_center_repair)
         {
             // L4 ambiguity protects lexical choice operators from guessing. A
-            // verifier-proven current-token boundary split or strongly separated
+            // verifier-proven boundary edit or strongly separated
             // dirty-surface -> lexical-center repair is already a typed edit
             // certificate; only exact negative memory may veto it later.
         } else {
@@ -95,6 +96,35 @@ pub(super) fn candidate_has_apply_authority(
         debug_decision_reject(
             candidate,
             "short_transposition_needs_state_proof",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
+    if short_function_word_repair_requires_state_proof(event, candidate)
+        && !signals.l3_pairwise_certified
+        && signals.l3_phrase_milli < CURRENT.l3_strong_milli
+        && signals.l4_signed_milli < CURRENT.l4_strong_milli
+        && !exact_positive_transition
+    {
+        debug_decision_reject(
+            candidate,
+            "short_function_word_needs_state_proof",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
+    if ambiguous_l2_surface_repair_requires_context(source_role, signals)
+        && !signals.l3_pairwise_certified
+        && signals.l3_phrase_milli < CURRENT.l3_strong_milli
+        && signals.l4_signed_milli < CURRENT.l4_strong_milli
+        && !l2_transition_phase_supports_candidate(signals)
+        && !exact_positive_transition
+    {
+        debug_decision_reject(
+            candidate,
+            "ambiguous_l2_surface_needs_context",
             bayes.posterior,
             bayes.risk,
         );
@@ -242,6 +272,16 @@ pub(super) fn candidate_has_apply_authority(
     allowed
 }
 
+pub(super) fn suggest_boundary_allows_authority_evaluation(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+    evaluation: &CandidateDecisionEvaluation,
+) -> bool {
+    candidate.gate.action == CandidateGateAction::SuggestOnly
+        && candidate.origin.source_role() == CorrectionSourceRole::Boundary
+        && hard_structural_veto::verified_tail_boundary_shift(event, candidate, evaluation)
+}
+
 /// A swap between two already valid lexical states is ambiguous by surface
 /// alone. L2 may propose it, but only a directional L3 pair certificate or an
 /// exact accepted L4 transition can authorize changing user text.
@@ -271,6 +311,53 @@ fn short_transposition_requires_state_proof(
     }
     original.chars().count().max(replacement.chars().count()) <= 3
         && damerau_levenshtein(&original, &replacement) <= 1
+}
+
+fn short_function_word_repair_requires_state_proof(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+) -> bool {
+    if !matches!(
+        candidate.origin.source_role(),
+        CorrectionSourceRole::DeterministicTypo | CorrectionSourceRole::L2Surface
+    ) || !matches!(
+        candidate.error_class,
+        TypingErrorClass::RepeatedLetter
+            | TypingErrorClass::ExtraLetter
+            | TypingErrorClass::MissingLetter
+            | TypingErrorClass::LetterSubstitution
+            | TypingErrorClass::CompositeTypo
+    ) {
+        return false;
+    }
+    let Some((original, replacement)) = current_and_replacement_words(event, candidate) else {
+        return false;
+    };
+    cyrillic_letters_only(&original)
+        && cyrillic_letters_only(&replacement)
+        && replacement.chars().count() <= 3
+        && original != replacement
+        && damerau_levenshtein(&original, &replacement) <= 2
+        && crate::phrase_lexicon::is_short_russian_function_word(&replacement)
+}
+
+fn ambiguous_l2_surface_repair_requires_context(
+    source_role: CorrectionSourceRole,
+    signals: &CandidateDecisionSignals,
+) -> bool {
+    source_role == CorrectionSourceRole::L2Surface
+        && signals.l4_hidden_disposition == L4HiddenDisposition::Ambiguous
+        && signals.l4_hidden_certificate_valid
+        && signals.l4_hidden_selected_class == 0
+        && signals.l4_hidden_semantic_classes >= 4
+        && signals.l4_hidden_unresolved_classes > 0
+}
+
+fn l2_transition_phase_supports_candidate(signals: &CandidateDecisionSignals) -> bool {
+    signals.l2_transition_phase_operator_promoted
+        && signals.l2_transition_phase_verdict == crate::nanda_wave::PhaseVerdict::Support
+        && signals.l2_transition_phase_milli > 0
+        && signals.l2_transition_phase_milli >= signals.l2_transition_phase_threshold_milli
 }
 
 fn known_form_drift_requires_state_proof(
@@ -318,9 +405,7 @@ fn known_lexical_state_or_form(word: &str) -> bool {
         || crate::lexicon::is_common_ru_word(word)
         || crate::lexicon::is_ru_live_protected_word(word)
         || crate::lexicon::is_user_protected_word(word)
-        || crate::russian_lexicon::is_known_russian_word_or_form(word)
-        || crate::russian_lexicon::is_known_russian_adverb_o_form(word)
-        || crate::russian_lexicon::is_known_russian_ka_oblique_form(word)
+        || known_russian_form(word)
 }
 
 fn known_observed_lexical_state(word: &str) -> bool {
@@ -329,7 +414,14 @@ fn known_observed_lexical_state(word: &str) -> bool {
         || crate::lexicon::is_common_ru_word(word)
         || crate::lexicon::is_ru_live_protected_word(word)
         || crate::lexicon::is_user_protected_word(word)
+        || known_russian_form(word)
         || crate::typing_transition::state::word_has_common_usage_authority(word)
+}
+
+fn known_russian_form(word: &str) -> bool {
+    crate::russian_lexicon::is_known_russian_word_or_form(word)
+        || crate::russian_lexicon::is_known_russian_adverb_o_form(word)
+        || crate::russian_lexicon::is_known_russian_ka_oblique_form(word)
 }
 
 fn cyrillic_letters_only(word: &str) -> bool {
@@ -530,7 +622,7 @@ fn hidden_rejection_deferred_to_verified_boundary(reason: &str) -> bool {
 }
 
 fn hidden_rejection_deferred_to_verified_l2_repair(reason: &str) -> bool {
-    matches!(reason, "ambiguous" | "unobserved")
+    reason == "unobserved"
 }
 
 fn verified_current_token_l2_center_repair(
@@ -584,6 +676,7 @@ fn stable_observed_lexical_word_blocks_repair(word: &str) -> bool {
         || crate::lexicon::is_ru_live_protected_word(word)
         || crate::lexicon::is_user_protected_word(word)
         || crate::russian_lexicon::is_center_backed_russian_form(word)
+        || known_russian_form(word)
 }
 
 fn hidden_state_confirms_candidate(signals: &CandidateDecisionSignals) -> bool {
@@ -896,6 +989,12 @@ fn phase_center_separates_candidate(
     let selected = &candidates[selected_index];
     let selected_span = changed_token_span(&event.original, &selected.replacement);
     let selected_signal = &evaluations[selected_index].signals;
+    if selected_signal.l2_transition_phase_operator_promoted
+        && selected_signal.l2_transition_phase_verdict == crate::nanda_wave::PhaseVerdict::Repel
+        && selected_signal.l2_transition_phase_milli < 0
+    {
+        return false;
+    }
     let strongest_lexical_competitor = candidates
         .iter()
         .enumerate()

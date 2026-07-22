@@ -392,6 +392,12 @@ fn verified_mass_preserving_l2_transition(
 }
 
 fn strong_l2_wave_peak_support(signals: &CandidateDecisionSignals) -> bool {
+    if signals.l2_transition_phase_operator_promoted
+        && signals.l2_transition_phase_verdict == crate::nanda_wave::PhaseVerdict::Repel
+        && signals.l2_transition_phase_milli < 0
+    {
+        return false;
+    }
     signals.l2_wave_peak_milli >= calibration::CURRENT.l2_peak_milli
         && signals.l2_wave_peak_uncertainty_milli <= calibration::CURRENT.l2_peak_uncertainty_milli
 }

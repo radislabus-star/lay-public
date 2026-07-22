@@ -31,9 +31,27 @@ pub(super) fn boundary_shift_rejection(
     if action.edit_operator != EditTransitionOperator::BoundaryShift {
         return None;
     }
+    if !boundary_shift_changes_only_tail_pair(&event.original, &candidate.replacement) {
+        return Some("boundary_shift_not_tail_pair");
+    }
+    if !boundary_shift_has_stable_token_mass(&candidate.replacement) {
+        return Some("boundary_shift_unstable_token_mass");
+    }
     let high_precision = high_precision_boundary_shift(event, candidate, evaluation);
-    (!high_precision && !learned_short_boundary_authority)
+    let verified_stable_tail = verified_tail_boundary_shift(event, candidate, evaluation);
+    (!high_precision && !verified_stable_tail && !learned_short_boundary_authority)
         .then_some("ambiguous_short_boundary_shift")
+}
+
+pub(super) fn verified_tail_boundary_shift(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+    evaluation: &CandidateDecisionEvaluation,
+) -> bool {
+    evaluation.action.edit_operator == EditTransitionOperator::BoundaryShift
+        && evaluation.action.verifier_passed
+        && boundary_shift_changes_only_tail_pair(&event.original, &candidate.replacement)
+        && boundary_shift_has_stable_token_mass(&candidate.replacement)
 }
 
 pub(super) fn high_precision_boundary_shift(
@@ -57,7 +75,28 @@ fn boundary_shift_has_stable_token_mass(replacement: &str) -> bool {
     let Some(pair) = words.get(words.len().saturating_sub(2)..) else {
         return false;
     };
-    pair.len() == 2 && pair.iter().all(|word| word.chars().count() >= 4)
+    pair.len() == 2
+        && pair.iter().all(|word| {
+            let lower = word.to_lowercase();
+            lower.chars().count() >= 4
+                && crate::phrase_lexicon::is_known_russian_phrase_part(&lower)
+        })
+}
+
+fn boundary_shift_changes_only_tail_pair(original: &str, replacement: &str) -> bool {
+    let original_words = crate::correction_core::normalized_correction_words(original);
+    let replacement_words = crate::correction_core::normalized_correction_words(replacement);
+    if original_words.len() != replacement_words.len() || original_words.len() < 2 {
+        return false;
+    }
+    let changed = original_words
+        .iter()
+        .zip(replacement_words.iter())
+        .enumerate()
+        .filter_map(|(index, (original, replacement))| (original != replacement).then_some(index))
+        .collect::<Vec<_>>();
+    matches!(changed.as_slice(), [left, right]
+        if *right == original_words.len() - 1 && *left + 1 == *right)
 }
 
 fn boundary_shift_field_readout(
@@ -79,4 +118,28 @@ fn boundary_shift_field_readout(
             &replacement_pair[1],
         ),
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn boundary_shift_rejects_non_tail_pair_mutation() {
+        assert!(!boundary_shift_changes_only_tail_pair(
+            "IMO плохо рабоает в оконах браузера ",
+            "IMO плохо рабоает во конах браузера ",
+        ));
+    }
+
+    #[test]
+    fn boundary_shift_stable_mass_accepts_reconstructed_known_pair() {
+        assert!(boundary_shift_has_stable_token_mass(
+            "я думаю допустим набираю "
+        ));
+        assert!(boundary_shift_changes_only_tail_pair(
+            "я думаю допусти мнабираю ",
+            "я думаю допустим набираю ",
+        ));
+    }
 }

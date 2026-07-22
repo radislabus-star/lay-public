@@ -1728,3 +1728,25 @@ pub(crate) fn should_prefer_composite_after_repeated_repair(
         && damerau_levenshtein(&single_lower, &composite_lower) <= 1
         && crate::russian_lexicon::is_known_russian_word_or_form(&composite_lower)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn boundary_shift_tail_pair_full_text_is_eligible() {
+        for (original, replacement) in [
+            ("допусти мнабираю ", "допустим набираю "),
+            ("я думаю допусти мнабираю ", "я думаю допустим набираю "),
+        ] {
+            let gate = gate_candidate_with_origin(
+                original,
+                replacement,
+                TypingErrorClass::BoundaryShift,
+                CandidateOrigin::Boundary,
+            );
+
+            assert_eq!(gate.action, CandidateGateAction::Eligible, "{gate:?}");
+        }
+    }
+}

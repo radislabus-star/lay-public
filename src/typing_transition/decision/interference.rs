@@ -89,7 +89,7 @@ fn settle_l2_energy(
     // The phase field redistributes the released L2 ranking budget. It cannot
     // create a second bonus beside L2 and therefore cannot grow authority by
     // merely adding another scorer.
-    let budget = surface_energy.abs().max(0.34);
+    let budget = surface_energy.abs();
     let phase_energy = competition.clamp(-1.0, 1.0) * budget;
     (surface_energy + phase_energy) * 0.5
 }

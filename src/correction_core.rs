@@ -167,6 +167,8 @@ impl UnifiedCorrectionCandidate {
     }
 
     pub(crate) fn merge_evidence(&mut self, candidate: Self) {
+        let promote_verified_same_replacement = candidate.gate.action == CandidateGateAction::Eligible
+            && self.gate.action == CandidateGateAction::SuggestOnly;
         let promote_verified_layout = candidate.origin == CandidateOrigin::Layout
             && candidate.gate.action == CandidateGateAction::Eligible
             && (self.gate.action == CandidateGateAction::SuggestOnly
@@ -203,7 +205,8 @@ impl UnifiedCorrectionCandidate {
                 self.gate.action,
                 CandidateGateAction::KeepOriginal | CandidateGateAction::Veto
             );
-        if promote_verified_layout
+        if promote_verified_same_replacement
+            || promote_verified_layout
             || promote_wave_layout_owner
             || promote_wave_owner
             || promote_wave_boundary_owner

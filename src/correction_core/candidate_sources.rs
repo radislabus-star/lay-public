@@ -765,6 +765,53 @@ fn delayed_context_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate>
     })
 }
 
+#[cfg(test)]
+mod candidate_sources_tests {
+    use super::*;
+    use crate::config::{default_typing_assist_pipeline, CorrectionSafety};
+
+    fn request<'a>(text: &'a str, pipeline: &'a [TypingAssistRuleConfig]) -> CorrectionRequest<'a> {
+        CorrectionRequest {
+            text,
+            auto_replace: true,
+            typing_assist: true,
+            auto_switch_layout: true,
+            correction_safety: CorrectionSafety::Experimental,
+            typing_assist_pipeline: pipeline,
+            nanda_autocorrect: true,
+            nanda_candidate_route: CandidateReadoutRoute::FullWave,
+            nanda_wave_options: WaveOptions::default(),
+            mode: CorrectionMode::DeterministicThenNanda,
+        }
+    }
+
+    #[test]
+    fn boundary_shift_source_keeps_tail_pair_eligible() {
+        let pipeline = default_typing_assist_pipeline();
+        let candidate = boundary_shift_transition_candidate(&request(
+            "я думаю допусти мнабираю ",
+            &pipeline,
+        ))
+        .expect("boundary candidate");
+
+        assert_eq!(candidate.replacement, "я думаю допустим набираю ");
+        assert_eq!(candidate.gate.action, CandidateGateAction::Eligible);
+    }
+
+    #[test]
+    fn deterministic_candidates_keep_verified_boundary_eligible() {
+        let pipeline = default_typing_assist_pipeline();
+        let req = request("я думаю допусти мнабираю ", &pipeline);
+        let candidates = deterministic_text_candidates(&req);
+        let candidate = candidates
+            .iter()
+            .find(|candidate| candidate.replacement == "я думаю допустим набираю ")
+            .expect("boundary candidate");
+
+        assert_eq!(candidate.gate.action, CandidateGateAction::Eligible);
+    }
+}
+
 fn delayed_context_candidates_with_memory(
     original: &str,
     memory: &crate::nanda_wave::llmwave::LlmWaveMemory,

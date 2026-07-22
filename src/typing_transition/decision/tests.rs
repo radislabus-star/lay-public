@@ -49,6 +49,31 @@ fn transition_admission_allows_verified_current_word() {
     assert!(admission.allow_apply, "reason={}", admission.reason);
 }
 
+#[test]
+fn suggest_only_verified_tail_boundary_can_enter_authority_evaluation() {
+    let event = event("я думаю допусти мнабираю ");
+    let candidate = UnifiedCorrectionCandidate::new(
+        "я думаю допустим набираю ",
+        CorrectionDecisionSource::Deterministic,
+        CandidateOrigin::Boundary,
+        "moved_prefix_pair",
+        TypingErrorClass::BoundaryShift,
+        CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "edit_transition_not_verified",
+        },
+    );
+
+    let batch = super::TransitionDecisionCore::evaluate_candidates(
+        &event,
+        &[candidate],
+        super::TransitionDecisionPolicy::default(),
+        None,
+    );
+
+    assert_eq!(batch.selected_index, Some(0), "{batch:#?}");
+}
+
 fn event(text: &str) -> TypingErrorEvent {
     TypingErrorEvent {
         original: text.to_string(),
@@ -204,6 +229,11 @@ fn hidden_state_blocks_live_known_form_drifts_from_logs() {
         ("новости ", "новость ", TypingErrorClass::LetterSubstitution),
         ("модели ", "модель ", TypingErrorClass::LetterSubstitution),
         ("вышли ", "вышил ", TypingErrorClass::AdjacentTransposition),
+        (
+            "окнах ",
+            "локонах ",
+            TypingErrorClass::SparseInternalMultiOmission,
+        ),
     ] {
         let admission = admit(
             &event(input),

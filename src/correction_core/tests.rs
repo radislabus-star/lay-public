@@ -844,6 +844,25 @@ mod tests {
     }
 
     #[test]
+    fn ambiguous_long_l2_surface_drift_from_live_log_is_suggestion_only() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "самка схема парочинная ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        ));
+
+        assert!(resolution.selected.is_none(), "resolution={resolution:#?}");
+        assert!(
+            resolution
+                .candidates
+                .iter()
+                .any(|candidate| candidate.replacement == "самка схема перочинная "),
+            "resolution={resolution:#?}"
+        );
+    }
+
+    #[test]
     fn split_phrase_candidate_wins_over_l2_shortcut() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(

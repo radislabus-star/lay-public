@@ -141,6 +141,10 @@ impl TransitionDecisionCore {
                 apply_policy::producer_allows_authority_evaluation(
                     candidate.gate.action,
                     evaluations[*index].transition.l4_signed_signal,
+                ) || admission::suggest_boundary_allows_authority_evaluation(
+                    event,
+                    candidate,
+                    &evaluations[*index],
                 )
             })
             .filter(|(index, _)| {
