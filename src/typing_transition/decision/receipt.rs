@@ -79,6 +79,30 @@ fn same_transition_projection(
     if original == from_text && replacement == to_text {
         return true;
     }
+    // IBus Space autocorrect verifies the semantic token transition, then
+    // commits the pending separator as part of the physical replacement.
+    let original_without_pending_ws = original.trim_end_matches(char::is_whitespace);
+    let replacement_without_pending_ws = replacement.trim_end_matches(char::is_whitespace);
+    let to_text_without_pending_ws = to_text.trim_end_matches(char::is_whitespace);
+    if (original_without_pending_ws != original
+        || replacement_without_pending_ws != replacement
+        || to_text_without_pending_ws != to_text)
+        && same_transition_projection(
+            original_without_pending_ws,
+            replacement_without_pending_ws,
+            from_text,
+            to_text_without_pending_ws,
+        )
+    {
+        return true;
+    }
+    if original == from_text {
+        return to_text
+            .strip_prefix(replacement)
+            .is_some_and(|stable_suffix| {
+                !stable_suffix.is_empty() && stable_suffix.chars().all(char::is_whitespace)
+            });
+    }
     if let Some(stable_suffix) = from_text.strip_prefix(original) {
         return to_text
             .strip_prefix(replacement)
@@ -87,6 +111,13 @@ fn same_transition_projection(
     let Some(original_prefix) = original.strip_suffix(from_text) else {
         return false;
     };
+    if !original_prefix.is_empty()
+        && original_prefix.chars().all(char::is_whitespace)
+        && replacement == to_text
+        && to_text.ends_with(original_prefix)
+    {
+        return true;
+    }
     replacement
         .strip_suffix(to_text)
         .is_some_and(|replacement_prefix| replacement_prefix == original_prefix)
@@ -109,6 +140,28 @@ mod tests {
             "поставим ",
             "постаивм хвост",
             "поставим другой",
+        ));
+    }
+
+    #[test]
+    fn transition_receipt_projects_pending_space_into_committed_tail_edit() {
+        assert!(same_transition_projection(
+            "автозаменет ",
+            "автозамена ",
+            "автозаменет",
+            "автозамена ",
+        ));
+        assert!(same_transition_projection(
+            "автозаменет",
+            "автозамена",
+            "автозаменет",
+            "автозамена ",
+        ));
+        assert!(same_transition_projection(
+            "блять зайди в лог посмотреть как он автозаменет ",
+            "блять зайди в лог посмотреть как он автозамена ",
+            "автозаменет",
+            "автозамена ",
         ));
     }
 }

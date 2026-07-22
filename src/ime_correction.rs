@@ -21,7 +21,7 @@ use crate::correction_core::CorrectionMode;
 use crate::input_gate::{decide_input_gate, InputGateAction, InputGateRequest, InputGateTrigger};
 use crate::text_edit::{
     plan_committed_tail_last_token_replacement, plan_input_gate_edit, plan_text_replacement,
-    EditAction,
+    EditAction, TextReplacement,
 };
 
 pub struct ActiveCompositionAutocorrectRequest<'a> {
@@ -69,11 +69,20 @@ pub fn decide_active_composition_autocorrect(
     } else {
         replacement.strip_prefix(&active_prefix)?.to_string()
     };
-    let plan = plan_committed_tail_last_token_replacement(request.text, &replacement)
-        .or_else(|| plan_text_replacement(request.text, &replacement))?;
+    let (action_from_text, plan) = if let Some(projection) =
+        physical_committed_tail_projection_plan(request.text, request.committed_tail, &replacement)
+    {
+        projection
+    } else {
+        (
+            request.text,
+            plan_committed_tail_last_token_replacement(request.text, &replacement)
+                .or_else(|| plan_text_replacement(request.text, &replacement))?,
+        )
+    };
     let action = plan_input_gate_edit(
         "ibus-active-composition",
-        request.text,
+        action_from_text,
         &replacement,
         plan,
         &decision,
@@ -87,6 +96,32 @@ pub fn decide_active_composition_autocorrect(
         action,
         input_gate: Some(input_gate),
     })
+}
+
+fn physical_committed_tail_projection_plan<'a>(
+    text: &'a str,
+    committed_tail: &str,
+    replacement: &str,
+) -> Option<(&'a str, TextReplacement)> {
+    // Space has not been committed yet; the executor deletes the visible token
+    // and inserts the replacement together with that pending separator.
+    let action_from_text = text.trim_end_matches(char::is_whitespace);
+    if action_from_text.is_empty() || action_from_text == text {
+        return None;
+    }
+    let visible_tail = committed_tail.trim_end_matches(char::is_whitespace);
+    if !visible_tail.ends_with(action_from_text) {
+        return None;
+    }
+    Some((
+        action_from_text,
+        TextReplacement {
+            move_left: 0,
+            backspaces: action_from_text.chars().count() as u32,
+            insert: replacement.to_string(),
+            move_right: 0,
+        },
+    ))
 }
 
 fn active_composition_gate_text(text: &str, committed_tail: &str) -> (String, String) {
@@ -182,7 +217,7 @@ mod tests {
             .expect("decision");
 
         assert_eq!(decision.replacement, "проходил ");
-        assert_eq!(decision.action.from_text(), "прохоил ");
+        assert_eq!(decision.action.from_text(), "прохоил");
         assert!(
             decision.action.allow_apply(),
             "replacement={:?} action={:?}",
@@ -349,9 +384,34 @@ mod tests {
         .expect("boundary decision");
 
         assert_eq!(decision.replacement, "то есть ");
-        assert_eq!(decision.action.from_text(), "тоесть ");
+        assert_eq!(decision.action.from_text(), "тоесть");
         assert_eq!(decision.action.to_text(), "то есть ");
         assert_eq!(decision.action.selected_source_id(), Some("BoundaryCell32"));
+        assert!(
+            decision.action.allow_apply(),
+            "action={:?}",
+            decision.action
+        );
+    }
+
+    #[test]
+    fn committed_tail_space_action_matches_physical_token_without_pending_space() {
+        let cfg = live_l2_phase_config();
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "автозаменет ",
+            committed_tail: "блять зайди в лог посмотреть как он автозаменет",
+            config: &cfg,
+        })
+        .expect("autozamena decision");
+
+        assert_eq!(decision.replacement, "автозамена ");
+        assert_eq!(decision.action.from_text(), "автозаменет");
+        assert_eq!(decision.action.to_text(), "автозамена ");
+        let plan = decision.action.plan().expect("edit plan");
+        assert_eq!(plan.move_left, 0);
+        assert_eq!(plan.backspaces, "автозаменет".chars().count() as u32);
+        assert_eq!(plan.insert, "автозамена ");
+        assert_eq!(plan.move_right, 0);
         assert!(
             decision.action.allow_apply(),
             "action={:?}",

@@ -20,18 +20,18 @@
     "semantic_hash": "236e46a80b6d2865de3d1816fb645158"
   },
   "extension/lay@radislabus-star.github.io/lay-impl.js": {
-    "mtime": 1784710164.9154694,
+    "mtime": 1784715830.6219726,
     "ast_hash": "4b795e86b2cf94e522b648b448bb5e87",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1784710164.9137964,
-    "ast_hash": "680e579c6b93e7975f60359176cdf3c9",
+    "mtime": 1784715830.5511844,
+    "ast_hash": "621d6d53e13b16bd8ce39b67b0ec892b",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1784710164.9211314,
-    "ast_hash": "cbbf25a700bafa7bc432909898bdaa49",
+    "mtime": 1784715830.6277242,
+    "ast_hash": "303fb9d9ee86363068d03378ef28172a",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1784710164.9210231,
-    "ast_hash": "fe4bad53f7f4ea3d78e48fef9fc22406",
+    "mtime": 1784715830.627606,
+    "ast_hash": "5bc21168e673cb0b9bd62484f5b96904",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1784710164.9209156,
-    "ast_hash": "ef32232f5ca7013cccdf0449fe7c4cfa",
+    "mtime": 1784715830.6272368,
+    "ast_hash": "fd066485e77809f8809846f4ef82f5c2",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "e6fdbc6001da80e49fd905fe306afbac"
   },
   "src/ime_correction.rs": {
-    "mtime": 1784705152.7258997,
-    "ast_hash": "6a9560f68decc5b1129f054bf82a95af",
+    "mtime": 1784716051.9264152,
+    "ast_hash": "3eee46832ae56bd01fdc1d3ffa1c5e54",
     "semantic_hash": ""
   },
   "src/input_gate.rs": {
@@ -2515,8 +2515,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1784710164.9229987,
-    "ast_hash": "d51a82f7ca656c97c1e1ed7a122d15ef",
+    "mtime": 1784715830.629302,
+    "ast_hash": "c8bc8095fdd62efa18f8159b1ba7f57b",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3330,8 +3330,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision/receipt.rs": {
-    "mtime": 1784656022.339342,
-    "ast_hash": "725301cbedb26aca7dcb7f4523540eac",
+    "mtime": 1784716057.2594686,
+    "ast_hash": "14dee9257aabac4dd8e5819cc59b49e0",
     "semantic_hash": ""
   },
   "src/typing_transition/decision/tests.rs": {

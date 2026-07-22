@@ -343,7 +343,6 @@
   "341": "correction_core.rs",
   "342": "desktop.rs",
   "343": "gate_candidate_with_source",
-  "344": "candidate_explanation.rs",
   "345": "Project families found",
   "346": "keyboard_tests.rs",
   "347": "Reconciler",
@@ -369,7 +368,6 @@
   "367": "engine.rs",
   "368": "cargo-guard.sh",
   "369": "L4PhaseWitnessBank",
-  "370": "LayConfig",
   "371": "precognition.rs",
   "372": "handle_enter_autocorrect",
   "373": "layout_switch_policy.rs",
@@ -417,5 +415,12 @@
   "415": "apply_l2_phase_shadow",
   "416": "LayConfig",
   "417": "last_live_completion_timing",
-  "418": "DecisionOutput"
+  "418": "DecisionOutput",
+  "419": "ingest_clean_corpus_text",
+  "420": "WaveTrace",
+  "421": "russian_typo_candidates.rs",
+  "422": "Result",
+  "423": "ActiveCompositionGateConfig",
+  "424": "apply_phrase_case",
+  "425": "apply_l2_phase_shadow"
 }
