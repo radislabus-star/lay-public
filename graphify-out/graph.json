@@ -6258,7 +6258,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_enter",
-      "community": 94,
+      "community": 135,
       "norm_label": "enter.rs"
     },
     {
@@ -6268,7 +6268,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_enter_enterautocorrectcontext",
-      "community": 94,
+      "community": 135,
       "norm_label": "enterautocorrectcontext"
     },
     {
@@ -6278,7 +6278,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_enter_rs_wordbuffer",
-      "community": 94,
+      "community": 135,
       "norm_label": "wordbuffer"
     },
     {
@@ -6288,7 +6288,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_enter_rs_device",
-      "community": 94,
+      "community": 135,
       "norm_label": "device"
     },
     {
@@ -6298,7 +6298,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_enter_rs_arc",
-      "community": 94,
+      "community": 135,
       "norm_label": "arc"
     },
     {
@@ -6308,7 +6308,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_enter_rs_mutex",
-      "community": 94,
+      "community": 135,
       "norm_label": "mutex"
     },
     {
@@ -6318,7 +6318,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_enter_rs_option",
-      "community": 94,
+      "community": 135,
       "norm_label": "option"
     },
     {
@@ -6328,7 +6328,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_enter_rs_virtualdevice",
-      "community": 94,
+      "community": 135,
       "norm_label": "virtualdevice"
     },
     {
@@ -6338,7 +6338,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_enter_rs_instant",
-      "community": 94,
+      "community": 135,
       "norm_label": "instant"
     },
     {
@@ -6348,7 +6348,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_enter_try_handle_enter_autocorrect",
-      "community": 94,
+      "community": 135,
       "norm_label": "try_handle_enter_autocorrect()"
     },
     {
@@ -6358,7 +6358,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_enter_rs_keycode",
-      "community": 94,
+      "community": 135,
       "norm_label": "keycode"
     },
     {
@@ -6438,7 +6438,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_space",
-      "community": 218,
+      "community": 397,
       "norm_label": "space.rs"
     },
     {
@@ -6448,7 +6448,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_space_spacereleasecontext",
-      "community": 218,
+      "community": 397,
       "norm_label": "spacereleasecontext"
     },
     {
@@ -6458,7 +6458,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_space_rs_inputevent",
-      "community": 218,
+      "community": 397,
       "norm_label": "inputevent"
     },
     {
@@ -6468,7 +6468,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_space_rs_wordbuffer",
-      "community": 218,
+      "community": 397,
       "norm_label": "wordbuffer"
     },
     {
@@ -6478,7 +6478,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_space_rs_option",
-      "community": 218,
+      "community": 397,
       "norm_label": "option"
     },
     {
@@ -6488,7 +6488,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_space_try_handle_space_release",
-      "community": 218,
+      "community": 397,
       "norm_label": "try_handle_space_release()"
     },
     {
@@ -6498,7 +6498,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_space_rs_keycode",
-      "community": 218,
+      "community": 397,
       "norm_label": "keycode"
     },
     {
@@ -6508,7 +6508,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_space_spacepresscontext",
-      "community": 218,
+      "community": 397,
       "norm_label": "spacepresscontext"
     },
     {
@@ -6518,7 +6518,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_space_pending_crossed_following_word",
-      "community": 218,
+      "community": 397,
       "norm_label": "pending_crossed_following_word()"
     },
     {
@@ -6528,7 +6528,7 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_space_handle_space_press",
-      "community": 218,
+      "community": 397,
       "norm_label": "handle_space_press()"
     },
     {
@@ -6538,7 +6538,7 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_space_focused_ime_does_not_disable_daemon_boundary_worker",
-      "community": 218,
+      "community": 397,
       "norm_label": "focused_ime_does_not_disable_daemon_boundary_worker()"
     },
     {
@@ -6548,7 +6548,7 @@
       "source_location": "L136",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_space_pending_transition_expires_only_after_following_word_is_completed",
-      "community": 218,
+      "community": 397,
       "norm_label": "pending_transition_expires_only_after_following_word_is_completed()"
     },
     {
@@ -12158,7 +12158,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_field_context",
-      "community": 5,
+      "community": 133,
       "norm_label": "field_context.rs"
     },
     {
@@ -12168,7 +12168,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_field_context_window_input_state_keeps_separate_word_buffers",
-      "community": 5,
+      "community": 133,
       "norm_label": "window_input_state_keeps_separate_word_buffers()"
     },
     {
@@ -12178,7 +12178,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_field_context_text_field_context_keeps_unfinished_words_separate_inside_same_window",
-      "community": 5,
+      "community": 133,
       "norm_label": "text_field_context_keeps_unfinished_words_separate_inside_same_window()"
     },
     {
@@ -12188,7 +12188,7 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_field_context_text_field_context_separates_fields_without_window_identity",
-      "community": 5,
+      "community": 133,
       "norm_label": "text_field_context_separates_fields_without_window_identity()"
     },
     {
@@ -12198,7 +12198,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_field_context_text_field_context_does_not_accumulate_empty_slots",
-      "community": 5,
+      "community": 133,
       "norm_label": "text_field_context_does_not_accumulate_empty_slots()"
     },
     {
@@ -12208,7 +12208,7 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_field_context_text_field_context_prunes_old_saved_slots",
-      "community": 5,
+      "community": 133,
       "norm_label": "text_field_context_prunes_old_saved_slots()"
     },
     {
@@ -12268,7 +12268,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_fixtures_fixture_row_by_id",
-      "community": 156,
+      "community": 19,
       "norm_label": "fixture_row_by_id()"
     },
     {
@@ -12498,7 +12498,7 @@
       "source_location": "L79",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_harness_push_text_as_layout",
-      "community": 5,
+      "community": 133,
       "norm_label": "push_text_as_layout()"
     },
     {
@@ -12648,7 +12648,7 @@
       "source_location": "L211",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_harness_assert_smart_pair",
-      "community": 47,
+      "community": 133,
       "norm_label": "assert_smart_pair()"
     },
     {
@@ -12658,7 +12658,7 @@
       "source_location": "L233",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_harness_map_target_events",
-      "community": 18,
+      "community": 133,
       "norm_label": "map_target_events()"
     },
     {
@@ -12668,7 +12668,7 @@
       "source_location": "L246",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_harness_text_key_event",
-      "community": 18,
+      "community": 133,
       "norm_label": "text_key_event()"
     },
     {
@@ -12988,7 +12988,7 @@
       "source_location": "L179",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_runtime_state_edit_navigation_boundaries_reset_word_buffer_before_next_autocorrect",
-      "community": 5,
+      "community": 133,
       "norm_label": "edit_navigation_boundaries_reset_word_buffer_before_next_autocorrect()"
     },
     {
@@ -12998,7 +12998,7 @@
       "source_location": "L213",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_runtime_state_leading_cli_option_token_is_ignored_until_space",
-      "community": 5,
+      "community": 133,
       "norm_label": "leading_cli_option_token_is_ignored_until_space()"
     },
     {
@@ -13038,7 +13038,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_manual_toggle",
-      "community": 181,
+      "community": 346,
       "norm_label": "manual_toggle.rs"
     },
     {
@@ -13048,7 +13048,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_manual_toggle_manual_decision_case",
-      "community": 181,
+      "community": 346,
       "norm_label": "manual_decision_case()"
     },
     {
@@ -13058,7 +13058,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_manual_toggle_rs_vec",
-      "community": 181,
+      "community": 346,
       "norm_label": "vec"
     },
     {
@@ -13068,7 +13068,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_manual_toggle_rs_string",
-      "community": 181,
+      "community": 346,
       "norm_label": "string"
     },
     {
@@ -13078,7 +13078,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_manual_toggle_expected_correction_action",
-      "community": 181,
+      "community": 346,
       "norm_label": "expected_correction_action()"
     },
     {
@@ -13088,7 +13088,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_manual_toggle_smart_decision_replays_single_valid_word_as_manual_toggle",
-      "community": 181,
+      "community": 346,
       "norm_label": "smart_decision_replays_single_valid_word_as_manual_toggle()"
     },
     {
@@ -13098,7 +13098,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_manual_toggle_single_word_wrong_layout_replay_target_is_opposite_layout",
-      "community": 181,
+      "community": 346,
       "norm_label": "single_word_wrong_layout_replay_target_is_opposite_layout()"
     },
     {
@@ -13108,7 +13108,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_manual_toggle_single_currency_tail_replays_ru_semicolon_as_us_dollar",
-      "community": 181,
+      "community": 133,
       "norm_label": "single_currency_tail_replays_ru_semicolon_as_us_dollar()"
     },
     {
@@ -13128,7 +13128,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_manual_toggle_smart_decision_replays_two_valid_words_as_manual_toggle",
-      "community": 181,
+      "community": 346,
       "norm_label": "smart_decision_replays_two_valid_words_as_manual_toggle()"
     },
     {
@@ -13138,7 +13138,7 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_manual_toggle_smart_decision_replays_valid_russian_preposition_phrase_as_manual_toggle",
-      "community": 181,
+      "community": 346,
       "norm_label": "smart_decision_replays_valid_russian_preposition_phrase_as_manual_toggle()"
     },
     {
@@ -13148,7 +13148,7 @@
       "source_location": "L118",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_manual_toggle_smart_decision_converts_mixed_layout_neighbor_only",
-      "community": 181,
+      "community": 346,
       "norm_label": "smart_decision_converts_mixed_layout_neighbor_only()"
     },
     {
@@ -13158,7 +13158,7 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_manual_toggle_smart_decision_replays_protected_ascii_span_as_manual_toggle",
-      "community": 181,
+      "community": 346,
       "norm_label": "smart_decision_replays_protected_ascii_span_as_manual_toggle()"
     },
     {
@@ -13168,7 +13168,7 @@
       "source_location": "L140",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_manual_toggle_smart_decision_repairs_brand_plus_letter_inside_larger_tail",
-      "community": 181,
+      "community": 346,
       "norm_label": "smart_decision_repairs_brand_plus_letter_inside_larger_tail()"
     },
     {
@@ -13828,7 +13828,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_technical_hyphen_matrix_visual_smart_scoped_tail_handles_large_mixed_language_pair_matrix",
-      "community": 47,
+      "community": 133,
       "norm_label": "smart_scoped_tail_handles_large_mixed_language_pair_matrix()"
     },
     {
@@ -15458,7 +15458,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_text_output_observable_state_daemontextcontext",
-      "community": 11,
+      "community": 397,
       "norm_label": "daemontextcontext"
     },
     {
@@ -15518,7 +15518,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_text_output_observable_state_daemontextobservation",
-      "community": 11,
+      "community": 135,
       "norm_label": "daemontextobservation"
     },
     {
@@ -16628,7 +16628,7 @@
       "source_location": "L167",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_trigger_fsm_should_schedule_typing_assist_after_space",
-      "community": 218,
+      "community": 397,
       "norm_label": "should_schedule_typing_assist_after_space()"
     },
     {
@@ -16638,7 +16638,7 @@
       "source_location": "L181",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_trigger_fsm_should_run_typing_assist_on_space_release",
-      "community": 218,
+      "community": 397,
       "norm_label": "should_run_typing_assist_on_space_release()"
     },
     {
@@ -16668,7 +16668,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_typing_assist_runtime",
-      "community": 397,
+      "community": 94,
       "norm_label": "typing_assist_runtime.rs"
     },
     {
@@ -16688,7 +16688,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_typing_assist_runtime_prepare_typing_assist_after_space",
-      "community": 397,
+      "community": 94,
       "norm_label": "prepare_typing_assist_after_space()"
     },
     {
@@ -16698,7 +16698,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_typing_assist_runtime_rs_wordbuffer",
-      "community": 397,
+      "community": 94,
       "norm_label": "wordbuffer"
     },
     {
@@ -16708,7 +16708,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_typing_assist_runtime_rs_option",
-      "community": 397,
+      "community": 94,
       "norm_label": "option"
     },
     {
@@ -16718,7 +16718,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_typing_assist_runtime_apply_prepared_typing_assist_after_space",
-      "community": 397,
+      "community": 94,
       "norm_label": "apply_prepared_typing_assist_after_space()"
     },
     {
@@ -16728,7 +16728,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_typing_assist_runtime_rs_virtualdevice",
-      "community": 397,
+      "community": 94,
       "norm_label": "virtualdevice"
     },
     {
@@ -16738,7 +16738,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_typing_assist_runtime_rs_device",
-      "community": 397,
+      "community": 94,
       "norm_label": "device"
     },
     {
@@ -19218,7 +19218,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit",
-      "community": 99,
+      "community": 350,
       "norm_label": "composition_commit.rs"
     },
     {
@@ -19248,7 +19248,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_activecompositioncommit",
-      "community": 99,
+      "community": 350,
       "norm_label": "activecompositioncommit"
     },
     {
@@ -19258,7 +19258,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_rs_string",
-      "community": 99,
+      "community": 350,
       "norm_label": "string"
     },
     {
@@ -19268,7 +19268,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_activecompositioncommit_plain",
-      "community": 99,
+      "community": 350,
       "norm_label": ".plain()"
     },
     {
@@ -19278,7 +19278,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_rs_self",
-      "community": 99,
+      "community": 350,
       "norm_label": "self"
     },
     {
@@ -19288,14 +19288,14 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_activecompositioncommit_with_space",
-      "community": 99,
+      "community": 350,
       "norm_label": ".with_space()"
     },
     {
       "label": "LayIbusEngine",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L42",
+      "source_location": "L45",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_layibusengine",
       "community": 99,
@@ -19305,7 +19305,7 @@
       "label": ".commit_active_composition()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L43",
+      "source_location": "L46",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_active_composition",
       "community": 99,
@@ -19335,7 +19335,7 @@
       "label": ".accept_completion()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L59",
+      "source_location": "L62",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_layibusengine_accept_completion",
       "community": 99,
@@ -19345,7 +19345,7 @@
       "label": ".accept_completion_with_space()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L123",
+      "source_location": "L126",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_layibusengine_accept_completion_with_space",
       "community": 99,
@@ -19355,7 +19355,7 @@
       "label": ".commit_managed_passthrough_char()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L132",
+      "source_location": "L135",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_managed_passthrough_char",
       "community": 99,
@@ -19365,7 +19365,7 @@
       "label": ".observe_terminal_passthrough_char()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L145",
+      "source_location": "L148",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_layibusengine_observe_terminal_passthrough_char",
       "community": 99,
@@ -19375,7 +19375,7 @@
       "label": ".commit_active_composition_with_suffix()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L159",
+      "source_location": "L162",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_active_composition_with_suffix",
       "community": 99,
@@ -19385,7 +19385,7 @@
       "label": ".commit_authorized_active_composition_text()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L183",
+      "source_location": "L186",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_authorized_active_composition_text",
       "community": 99,
@@ -19395,7 +19395,7 @@
       "label": ".decide_active_composition_autocorrect()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L250",
+      "source_location": "L253",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_layibusengine_decide_active_composition_autocorrect",
       "community": 411,
@@ -19415,7 +19415,7 @@
       "label": ".sync_tail_after_active_composition_commit()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L263",
+      "source_location": "L266",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_layibusengine_sync_tail_after_active_composition_commit",
       "community": 99,
@@ -19425,7 +19425,7 @@
       "label": ".matches_text()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L269",
+      "source_location": "L272",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_activecompositionauthority_matches_text",
       "community": 99,
@@ -19435,30 +19435,30 @@
       "label": "active_composition_decision_lives_in_shared_ime_correction_module()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L283",
+      "source_location": "L286",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_active_composition_decision_lives_in_shared_ime_correction_module",
-      "community": 99,
+      "community": 350,
       "norm_label": "active_composition_decision_lives_in_shared_ime_correction_module()"
     },
     {
       "label": "completion_accept_uses_edit_action_contract()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L294",
+      "source_location": "L297",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_completion_accept_uses_edit_action_contract",
-      "community": 99,
+      "community": 350,
       "norm_label": "completion_accept_uses_edit_action_contract()"
     },
     {
       "label": "completion_with_space_does_not_trigger_autocorrect()",
       "file_type": "code",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L311",
+      "source_location": "L314",
       "_origin": "ast",
       "id": "src_bin_lay_ibus_engine_composition_commit_completion_with_space_does_not_trigger_autocorrect",
-      "community": 99,
+      "community": 350,
       "norm_label": "completion_with_space_does_not_trigger_autocorrect()"
     },
     {
@@ -25438,7 +25438,7 @@
       "source_location": "L1776",
       "_origin": "ast",
       "id": "src_bin_lay_nanda_wave_eval_print_ensemble_contribution_report",
-      "community": 212,
+      "community": 82,
       "norm_label": "print_ensemble_contribution_report()"
     },
     {
@@ -25458,7 +25458,7 @@
       "source_location": "L1836",
       "_origin": "ast",
       "id": "src_bin_lay_nanda_wave_eval_contributionscenario",
-      "community": 75,
+      "community": 82,
       "norm_label": "contributionscenario"
     },
     {
@@ -25518,7 +25518,7 @@
       "source_location": "L1930",
       "_origin": "ast",
       "id": "src_bin_lay_nanda_wave_eval_contribution_report_for_scenario",
-      "community": 212,
+      "community": 82,
       "norm_label": "contribution_report_for_scenario()"
     },
     {
@@ -25538,7 +25538,7 @@
       "source_location": "L1994",
       "_origin": "ast",
       "id": "src_bin_lay_nanda_wave_eval_print_contribution_report",
-      "community": 212,
+      "community": 82,
       "norm_label": "print_contribution_report()"
     },
     {
@@ -25768,7 +25768,7 @@
       "source_location": "L2631",
       "_origin": "ast",
       "id": "src_bin_lay_nanda_wave_eval_print_cell_ablation",
-      "community": 212,
+      "community": 82,
       "norm_label": "print_cell_ablation()"
     },
     {
@@ -25778,7 +25778,7 @@
       "source_location": "L2664",
       "_origin": "ast",
       "id": "src_bin_lay_nanda_wave_eval_ok_as_isize",
-      "community": 212,
+      "community": 82,
       "norm_label": "ok_as_isize()"
     },
     {
@@ -32368,7 +32368,7 @@
       "source_location": "L2",
       "_origin": "ast",
       "id": "src_config_weights_layconfig",
-      "community": 416,
+      "community": 75,
       "norm_label": "layconfig"
     },
     {
@@ -32378,7 +32378,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_config_weights_layconfig_active_nanda_l2_weight",
-      "community": 416,
+      "community": 75,
       "norm_label": ".active_nanda_l2_weight()"
     },
     {
@@ -32388,7 +32388,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_config_weights_layconfig_active_nanda_l3_weight",
-      "community": 416,
+      "community": 75,
       "norm_label": ".active_nanda_l3_weight()"
     },
     {
@@ -32398,7 +32398,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_config_weights_layconfig_active_nanda_precognition",
-      "community": 416,
+      "community": 75,
       "norm_label": ".active_nanda_precognition()"
     },
     {
@@ -32408,7 +32408,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_config_weights_layconfig_active_nanda_wave_options",
-      "community": 416,
+      "community": 75,
       "norm_label": ".active_nanda_wave_options()"
     },
     {
@@ -37598,7 +37598,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_keyboard_event_words_mapping_rs_string",
-      "community": 18,
+      "community": 5,
       "norm_label": "string"
     },
     {
@@ -37758,7 +37758,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_keyboard_keymap_ru_char",
-      "community": 18,
+      "community": 133,
       "norm_label": "ru_char.rs"
     },
     {
@@ -37768,7 +37768,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_keyboard_keymap_ru_char_keycode_to_ru_char",
-      "community": 18,
+      "community": 133,
       "norm_label": "keycode_to_ru_char()"
     },
     {
@@ -37778,7 +37778,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_keyboard_keymap_ru_char_rs_option",
-      "community": 18,
+      "community": 133,
       "norm_label": "option"
     },
     {
@@ -37818,7 +37818,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_keyboard_keymap_us_char",
-      "community": 18,
+      "community": 133,
       "norm_label": "us_char.rs"
     },
     {
@@ -37828,7 +37828,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_keyboard_keymap_us_char_keycode_to_us_char",
-      "community": 18,
+      "community": 133,
       "norm_label": "keycode_to_us_char()"
     },
     {
@@ -37838,7 +37838,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_keyboard_keymap_us_char_rs_option",
-      "community": 18,
+      "community": 133,
       "norm_label": "option"
     },
     {
@@ -42558,7 +42558,7 @@
       "source_location": "L548",
       "_origin": "ast",
       "id": "src_nanda_wave_candidate_gate_record_live_gate_stats",
-      "community": 379,
+      "community": 349,
       "norm_label": "record_live_gate_stats()"
     },
     {
@@ -42568,7 +42568,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_candidate_gate_rs_instant",
-      "community": 379,
+      "community": 349,
       "norm_label": "instant"
     },
     {
@@ -42578,7 +42578,7 @@
       "source_location": "L635",
       "_origin": "ast",
       "id": "src_nanda_wave_candidate_gate_live_stats",
-      "community": 379,
+      "community": 349,
       "norm_label": "live_stats()"
     },
     {
@@ -42588,7 +42588,7 @@
       "source_location": "L641",
       "_origin": "ast",
       "id": "src_nanda_wave_candidate_gate_livecandidategateatomicstats",
-      "community": 379,
+      "community": 349,
       "norm_label": "livecandidategateatomicstats"
     },
     {
@@ -42598,7 +42598,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_candidate_gate_rs_atomicu64",
-      "community": 379,
+      "community": 349,
       "norm_label": "atomicu64"
     },
     {
@@ -42608,7 +42608,7 @@
       "source_location": "L672",
       "_origin": "ast",
       "id": "src_nanda_wave_candidate_gate_livesignedoutcomestats",
-      "community": 38,
+      "community": 349,
       "norm_label": "livesignedoutcomestats"
     },
     {
@@ -42618,7 +42618,7 @@
       "source_location": "L682",
       "_origin": "ast",
       "id": "src_nanda_wave_candidate_gate_livesignedoutcomestats_record",
-      "community": 38,
+      "community": 349,
       "norm_label": ".record()"
     },
     {
@@ -42628,7 +42628,7 @@
       "source_location": "L692",
       "_origin": "ast",
       "id": "src_nanda_wave_candidate_gate_livesignedoutcomestats_record_transition",
-      "community": 38,
+      "community": 349,
       "norm_label": ".record_transition()"
     },
     {
@@ -42638,7 +42638,7 @@
       "source_location": "L705",
       "_origin": "ast",
       "id": "src_nanda_wave_candidate_gate_livegaterecord",
-      "community": 38,
+      "community": 349,
       "norm_label": "livegaterecord"
     },
     {
@@ -42658,7 +42658,7 @@
       "source_location": "L730",
       "_origin": "ast",
       "id": "src_nanda_wave_candidate_gate_update_max_atomic",
-      "community": 379,
+      "community": 349,
       "norm_label": "update_max_atomic()"
     },
     {
@@ -54358,7 +54358,7 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "src_nanda_wave_l4_goal_state_l4allowedaction",
-      "community": 127,
+      "community": 349,
       "norm_label": "l4allowedaction"
     },
     {
@@ -54368,7 +54368,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "src_nanda_wave_l4_goal_state_l4allowedaction_as_str",
-      "community": 127,
+      "community": 349,
       "norm_label": ".as_str()"
     },
     {
@@ -57138,7 +57138,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_llmwavereport",
-      "community": 120,
+      "community": 236,
       "norm_label": "llmwavereport"
     },
     {
@@ -57168,7 +57168,7 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_llmwavecandidatescore",
-      "community": 120,
+      "community": 236,
       "norm_label": "llmwavecandidatescore"
     },
     {
@@ -57248,7 +57248,7 @@
       "source_location": "L102",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_llmwavephraseexperience",
-      "community": 412,
+      "community": 120,
       "norm_label": "llmwavephraseexperience"
     },
     {
@@ -57258,7 +57258,7 @@
       "source_location": "L111",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_phraseexperiencerejectreason",
-      "community": 412,
+      "community": 120,
       "norm_label": "phraseexperiencerejectreason"
     },
     {
@@ -57318,7 +57318,7 @@
       "source_location": "L169",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_scenetokenaccumulator",
-      "community": 184,
+      "community": 224,
       "norm_label": "scenetokenaccumulator"
     },
     {
@@ -57328,7 +57328,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_rs_btreeset",
-      "community": 184,
+      "community": 224,
       "norm_label": "btreeset"
     },
     {
@@ -57358,7 +57358,7 @@
       "source_location": "L195",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_llmwaveprevioustokencandidate",
-      "community": 224,
+      "community": 412,
       "norm_label": "llmwaveprevioustokencandidate"
     },
     {
@@ -57388,7 +57388,7 @@
       "source_location": "L232",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_llmwavememory_from_token_stream",
-      "community": 184,
+      "community": 412,
       "norm_label": ".from_token_stream()"
     },
     {
@@ -57448,7 +57448,7 @@
       "source_location": "L291",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_llmwavememory_previous_token_candidates",
-      "community": 224,
+      "community": 412,
       "norm_label": ".previous_token_candidates()"
     },
     {
@@ -57458,7 +57458,7 @@
       "source_location": "L356",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_llmwavememory_score_next_token",
-      "community": 236,
+      "community": 412,
       "norm_label": ".score_next_token()"
     },
     {
@@ -57508,7 +57508,7 @@
       "source_location": "L539",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_llmwavememory_requested_next_energy",
-      "community": 184,
+      "community": 224,
       "norm_label": ".requested_next_energy()"
     },
     {
@@ -57588,7 +57588,7 @@
       "source_location": "L712",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_record_energy",
-      "community": 224,
+      "community": 184,
       "norm_label": "record_energy()"
     },
     {
@@ -57598,7 +57598,7 @@
       "source_location": "L719",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_record_support",
-      "community": 184,
+      "community": 412,
       "norm_label": "record_support()"
     },
     {
@@ -57678,7 +57678,7 @@
       "source_location": "L803",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_load_default_memory",
-      "community": 120,
+      "community": 419,
       "norm_label": "load_default_memory()"
     },
     {
@@ -57688,7 +57688,7 @@
       "source_location": "L813",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_with_default_memory",
-      "community": 120,
+      "community": 419,
       "norm_label": "with_default_memory()"
     },
     {
@@ -57698,7 +57698,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_rs_fnonce",
-      "community": 120,
+      "community": 419,
       "norm_label": "fnonce"
     },
     {
@@ -57708,7 +57708,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_rs_t",
-      "community": 120,
+      "community": 419,
       "norm_label": "t"
     },
     {
@@ -57728,7 +57728,7 @@
       "source_location": "L825",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_load_default_memory_uncached",
-      "community": 120,
+      "community": 419,
       "norm_label": "load_default_memory_uncached()"
     },
     {
@@ -57818,7 +57818,7 @@
       "source_location": "L916",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_load_phrase_experience",
-      "community": 236,
+      "community": 419,
       "norm_label": "load_phrase_experience()"
     },
     {
@@ -57828,7 +57828,7 @@
       "source_location": "L930",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_stored_phrase_experience_rejection_reason",
-      "community": 412,
+      "community": 120,
       "norm_label": "stored_phrase_experience_rejection_reason()"
     },
     {
@@ -57838,7 +57838,7 @@
       "source_location": "L967",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_phrase_experience_rejection_reason",
-      "community": 412,
+      "community": 120,
       "norm_label": "phrase_experience_rejection_reason()"
     },
     {
@@ -57848,7 +57848,7 @@
       "source_location": "L974",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_phrase_experience",
-      "community": 412,
+      "community": 120,
       "norm_label": "phrase_experience()"
     },
     {
@@ -57858,7 +57858,7 @@
       "source_location": "L978",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_build_phrase_experience",
-      "community": 412,
+      "community": 120,
       "norm_label": "build_phrase_experience()"
     },
     {
@@ -57868,7 +57868,7 @@
       "source_location": "L1011",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_normalize_experience_text",
-      "community": 412,
+      "community": 120,
       "norm_label": "normalize_experience_text()"
     },
     {
@@ -57878,7 +57878,7 @@
       "source_location": "L1036",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_alpha_quality_is_low",
-      "community": 412,
+      "community": 120,
       "norm_label": "alpha_quality_is_low()"
     },
     {
@@ -57888,7 +57888,7 @@
       "source_location": "L1042",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_has_dirty_layout_fragment",
-      "community": 412,
+      "community": 120,
       "norm_label": "has_dirty_layout_fragment()"
     },
     {
@@ -57908,7 +57908,7 @@
       "source_location": "L1069",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_has_low_language_quality",
-      "community": 412,
+      "community": 120,
       "norm_label": "has_low_language_quality()"
     },
     {
@@ -57918,7 +57918,7 @@
       "source_location": "L1093",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_is_unstable_or_noisy_phrase",
-      "community": 412,
+      "community": 120,
       "norm_label": "is_unstable_or_noisy_phrase()"
     },
     {
@@ -57928,7 +57928,7 @@
       "source_location": "L1121",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_has_repeated_letter_run",
-      "community": 412,
+      "community": 120,
       "norm_label": "has_repeated_letter_run()"
     },
     {
@@ -57988,7 +57988,7 @@
       "source_location": "L1234",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_ends_with_unfinished_short_word",
-      "community": 412,
+      "community": 120,
       "norm_label": "ends_with_unfinished_short_word()"
     },
     {
@@ -58028,7 +58028,7 @@
       "source_location": "L1271",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_encode_memory",
-      "community": 419,
+      "community": 184,
       "norm_label": "encode_memory()"
     },
     {
@@ -58038,7 +58038,7 @@
       "source_location": "L1294",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_decode_memory",
-      "community": 419,
+      "community": 184,
       "norm_label": "decode_memory()"
     },
     {
@@ -58048,7 +58048,7 @@
       "source_location": "L1326",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_derive_llmwave_feedback",
-      "community": 120,
+      "community": 236,
       "norm_label": "derive_llmwave_feedback()"
     },
     {
@@ -58118,7 +58118,7 @@
       "source_location": "L1507",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_report_to_feedback",
-      "community": 120,
+      "community": 236,
       "norm_label": "report_to_feedback()"
     },
     {
@@ -58128,7 +58128,7 @@
       "source_location": "L1533",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_report_summary",
-      "community": 120,
+      "community": 236,
       "norm_label": "report_summary()"
     },
     {
@@ -58148,7 +58148,7 @@
       "source_location": "L1585",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_encode_record",
-      "community": 419,
+      "community": 184,
       "norm_label": "encode_record()"
     },
     {
@@ -58168,7 +58168,7 @@
       "source_location": "L1613",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_encode_vocabulary",
-      "community": 419,
+      "community": 184,
       "norm_label": "encode_vocabulary()"
     },
     {
@@ -58178,7 +58178,7 @@
       "source_location": "L1628",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_decode_vocabulary",
-      "community": 419,
+      "community": 184,
       "norm_label": "decode_vocabulary()"
     },
     {
@@ -58188,7 +58188,7 @@
       "source_location": "L1664",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_prefix_hash",
-      "community": 224,
+      "community": 412,
       "norm_label": "prefix_hash()"
     },
     {
@@ -58198,7 +58198,7 @@
       "source_location": "L1669",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_near_previous_token_surface",
-      "community": 224,
+      "community": 412,
       "norm_label": "near_previous_token_surface()"
     },
     {
@@ -58208,7 +58208,7 @@
       "source_location": "L1687",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_token_hash",
-      "community": 224,
+      "community": 412,
       "norm_label": "token_hash()"
     },
     {
@@ -58218,7 +58218,7 @@
       "source_location": "L1691",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_route_hash_for",
-      "community": 224,
+      "community": 412,
       "norm_label": "route_hash_for()"
     },
     {
@@ -58228,7 +58228,7 @@
       "source_location": "L1695",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_phase_for",
-      "community": 184,
+      "community": 412,
       "norm_label": "phase_for()"
     },
     {
@@ -58238,7 +58238,7 @@
       "source_location": "L1699",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_hash32",
-      "community": 224,
+      "community": 412,
       "norm_label": "hash32()"
     },
     {
@@ -58248,7 +58248,7 @@
       "source_location": "L1711",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_reverse_phrase_readout_births_previous_token_candidate",
-      "community": 224,
+      "community": 412,
       "norm_label": "reverse_phrase_readout_births_previous_token_candidate()"
     },
     {
@@ -58258,7 +58258,7 @@
       "source_location": "L1726",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_memory_packet_roundtrip_uses_32_byte_records",
-      "community": 419,
+      "community": 184,
       "norm_label": "memory_packet_roundtrip_uses_32_byte_records()"
     },
     {
@@ -58268,7 +58268,7 @@
       "source_location": "L1736",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_retrieves_next_token_from_phrase_memory",
-      "community": 236,
+      "community": 412,
       "norm_label": "retrieves_next_token_from_phrase_memory()"
     },
     {
@@ -58398,7 +58398,7 @@
       "source_location": "L1958",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_phrase_experience_jsonl_loads_training_text",
-      "community": 419,
+      "community": 120,
       "norm_label": "phrase_experience_jsonl_loads_training_text()"
     },
     {
@@ -58408,7 +58408,7 @@
       "source_location": "L1979",
       "_origin": "ast",
       "id": "src_nanda_wave_llmwave_stored_phrase_experience_rejects_historical_unknown_word",
-      "community": 412,
+      "community": 120,
       "norm_label": "stored_phrase_experience_rejects_historical_unknown_word()"
     },
     {
@@ -81808,7 +81808,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_word_buffer_visible_text_memory",
-      "community": 407,
+      "community": 5,
       "norm_label": "visible_text_memory.rs"
     },
     {
@@ -81818,7 +81818,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_word_buffer_visible_text_memory_wordbuffer",
-      "community": 407,
+      "community": 5,
       "norm_label": "wordbuffer"
     },
     {
@@ -81828,7 +81828,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_word_buffer_visible_text_memory_wordbuffer_visible_tail_text",
-      "community": 407,
+      "community": 5,
       "norm_label": ".visible_tail_text()"
     },
     {
@@ -81838,7 +81838,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_word_buffer_visible_text_memory_rs_option",
-      "community": 407,
+      "community": 5,
       "norm_label": "option"
     },
     {
@@ -81848,7 +81848,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_word_buffer_visible_text_memory_rs_string",
-      "community": 407,
+      "community": 5,
       "norm_label": "string"
     },
     {
@@ -81858,7 +81858,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "src_word_buffer_visible_text_memory_wordbuffer_remember_visible_text_for_correction",
-      "community": 407,
+      "community": 5,
       "norm_label": ".remember_visible_text_for_correction()"
     },
     {
@@ -81868,7 +81868,7 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "src_word_buffer_visible_text_memory_text_ends_with_space",
-      "community": 407,
+      "community": 5,
       "norm_label": "text_ends_with_space()"
     },
     {
@@ -81878,7 +81878,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "src_word_buffer_visible_text_memory_visible_tail_space_event",
-      "community": 407,
+      "community": 5,
       "norm_label": "visible_tail_space_event()"
     },
     {
@@ -137326,7 +137326,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L283",
+      "source_location": "L286",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit",
       "target": "src_bin_lay_ibus_engine_composition_commit_active_composition_decision_lives_in_shared_ime_correction_module",
@@ -137356,7 +137356,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L294",
+      "source_location": "L297",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit",
       "target": "src_bin_lay_ibus_engine_composition_commit_completion_accept_uses_edit_action_contract",
@@ -137366,7 +137366,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L311",
+      "source_location": "L314",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit",
       "target": "src_bin_lay_ibus_engine_composition_commit_completion_with_space_does_not_trigger_autocorrect",
@@ -137398,7 +137398,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L269",
+      "source_location": "L272",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_activecompositionauthority",
       "target": "src_bin_lay_ibus_engine_composition_commit_activecompositionauthority_matches_text",
@@ -137430,7 +137430,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L159",
+      "source_location": "L162",
       "weight": 1.0,
       "context": "parameter_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_active_composition_with_suffix",
@@ -137441,7 +137441,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L183",
+      "source_location": "L186",
       "weight": 1.0,
       "context": "parameter_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_authorized_active_composition_text",
@@ -137483,7 +137483,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L43",
+      "source_location": "L46",
       "weight": 1.0,
       "context": "parameter_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_active_composition",
@@ -137494,7 +137494,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L183",
+      "source_location": "L186",
       "weight": 1.0,
       "context": "parameter_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_authorized_active_composition_text",
@@ -137528,7 +137528,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L322",
+      "source_location": "L325",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_completion_with_space_does_not_trigger_autocorrect",
       "target": "src_bin_lay_ibus_engine_composition_commit_activecompositioncommit_with_space",
@@ -137538,7 +137538,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L59",
+      "source_location": "L62",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine",
       "target": "src_bin_lay_ibus_engine_composition_commit_layibusengine_accept_completion",
@@ -137548,7 +137548,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L123",
+      "source_location": "L126",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine",
       "target": "src_bin_lay_ibus_engine_composition_commit_layibusengine_accept_completion_with_space",
@@ -137558,7 +137558,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L43",
+      "source_location": "L46",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine",
       "target": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_active_composition",
@@ -137568,7 +137568,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L159",
+      "source_location": "L162",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine",
       "target": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_active_composition_with_suffix",
@@ -137578,7 +137578,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L183",
+      "source_location": "L186",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine",
       "target": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_authorized_active_composition_text",
@@ -137588,7 +137588,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L132",
+      "source_location": "L135",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine",
       "target": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_managed_passthrough_char",
@@ -137598,7 +137598,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L250",
+      "source_location": "L253",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine",
       "target": "src_bin_lay_ibus_engine_composition_commit_layibusengine_decide_active_composition_autocorrect",
@@ -137608,7 +137608,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L145",
+      "source_location": "L148",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine",
       "target": "src_bin_lay_ibus_engine_composition_commit_layibusengine_observe_terminal_passthrough_char",
@@ -137618,7 +137618,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L263",
+      "source_location": "L266",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine",
       "target": "src_bin_lay_ibus_engine_composition_commit_layibusengine_sync_tail_after_active_composition_commit",
@@ -137629,7 +137629,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L48",
+      "source_location": "L51",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_active_composition",
       "target": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_active_composition_with_suffix",
@@ -137639,7 +137639,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L43",
+      "source_location": "L46",
       "weight": 1.0,
       "context": "return_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_active_composition",
@@ -137650,7 +137650,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L43",
+      "source_location": "L46",
       "weight": 1.0,
       "context": "parameter_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_active_composition",
@@ -137661,7 +137661,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L59",
+      "source_location": "L62",
       "weight": 1.0,
       "context": "parameter_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_accept_completion",
@@ -137672,7 +137672,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L123",
+      "source_location": "L126",
       "weight": 1.0,
       "context": "parameter_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_accept_completion_with_space",
@@ -137683,7 +137683,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L159",
+      "source_location": "L162",
       "weight": 1.0,
       "context": "parameter_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_active_composition_with_suffix",
@@ -137694,7 +137694,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L183",
+      "source_location": "L186",
       "weight": 1.0,
       "context": "parameter_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_authorized_active_composition_text",
@@ -137705,7 +137705,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L132",
+      "source_location": "L135",
       "weight": 1.0,
       "context": "parameter_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_managed_passthrough_char",
@@ -137716,7 +137716,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L145",
+      "source_location": "L148",
       "weight": 1.0,
       "context": "parameter_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_observe_terminal_passthrough_char",
@@ -137727,7 +137727,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L59",
+      "source_location": "L62",
       "weight": 1.0,
       "context": "return_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_accept_completion",
@@ -137738,7 +137738,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L123",
+      "source_location": "L126",
       "weight": 1.0,
       "context": "return_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_accept_completion_with_space",
@@ -137749,7 +137749,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L159",
+      "source_location": "L162",
       "weight": 1.0,
       "context": "return_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_active_composition_with_suffix",
@@ -137760,7 +137760,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L183",
+      "source_location": "L186",
       "weight": 1.0,
       "context": "return_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_authorized_active_composition_text",
@@ -137771,7 +137771,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L132",
+      "source_location": "L135",
       "weight": 1.0,
       "context": "return_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_managed_passthrough_char",
@@ -137782,7 +137782,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L145",
+      "source_location": "L148",
       "weight": 1.0,
       "context": "return_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_observe_terminal_passthrough_char",
@@ -137794,7 +137794,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L111",
+      "source_location": "L114",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_accept_completion",
       "target": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_authorized_active_composition_text",
@@ -137805,7 +137805,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L127",
+      "source_location": "L130",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_accept_completion_with_space",
       "target": "src_bin_lay_ibus_engine_composition_commit_layibusengine_accept_completion",
@@ -137817,7 +137817,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L137",
+      "source_location": "L140",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_managed_passthrough_char",
       "target": "src_bin_lay_ibus_engine_text_make_ibus_text"
@@ -137827,7 +137827,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L173",
+      "source_location": "L176",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_active_composition_with_suffix",
       "target": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_authorized_active_composition_text",
@@ -137838,7 +137838,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L192",
+      "source_location": "L195",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_authorized_active_composition_text",
       "target": "src_bin_lay_ibus_engine_composition_commit_activecompositionauthority_matches_text",
@@ -137849,7 +137849,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L198",
+      "source_location": "L201",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_authorized_active_composition_text",
       "target": "src_bin_lay_ibus_engine_composition_commit_layibusengine_decide_active_composition_autocorrect",
@@ -137860,7 +137860,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L233",
+      "source_location": "L236",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_authorized_active_composition_text",
       "target": "src_bin_lay_ibus_engine_composition_commit_layibusengine_sync_tail_after_active_composition_commit",
@@ -137872,7 +137872,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L225",
+      "source_location": "L228",
       "weight": 1.0,
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_commit_authorized_active_composition_text",
       "target": "src_bin_lay_ibus_engine_text_make_ibus_text"
@@ -137881,7 +137881,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L250",
+      "source_location": "L253",
       "weight": 1.0,
       "context": "return_type",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_decide_active_composition_autocorrect",
@@ -137892,7 +137892,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/bin/lay_ibus_engine/composition_commit.rs",
-      "source_location": "L250",
+      "source_location": "L253",
       "weight": 1.0,
       "context": "generic_arg",
       "source": "src_bin_lay_ibus_engine_composition_commit_layibusengine_decide_active_composition_autocorrect",
@@ -334542,5 +334542,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "65c162ebd521216f29a10e4a16d2526e663eb6ea"
+  "built_at_commit": "c451c9759cb2b2bfe27250c7890bf080d4313465"
 }

@@ -34,7 +34,10 @@ impl ActiveCompositionCommit {
             with_space: true,
             suffix: String::new(),
             sync_layout: true,
-            autocorrect: true,
+            // Space only finalizes active IME composition. The verified
+            // autocorrect route is committed-tail Space, while IME candidates
+            // are accepted explicitly through Tab/Alt.
+            autocorrect: false,
         }
     }
 }
@@ -321,6 +324,6 @@ mod tests {
 
         let real_space = super::ActiveCompositionCommit::with_space();
         assert!(real_space.with_space);
-        assert!(real_space.autocorrect);
+        assert!(!real_space.autocorrect);
     }
 }
