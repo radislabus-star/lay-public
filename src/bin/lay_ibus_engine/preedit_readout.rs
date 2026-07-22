@@ -84,6 +84,9 @@ impl LayIbusEngine {
         {
             return Vec::new();
         }
+        if self.buffer.is_empty() && inactive_ime_token_is_complete_russian_word(&partial) {
+            return Vec::new();
+        }
         let max_suffix_chars = self.precognition_max_suffix_chars();
         let whole_word_candidates = TypingCpu::live_completion_candidates(LiveCompletionRequest {
             context_prefix: prefix,
@@ -168,6 +171,12 @@ impl LayIbusEngine {
             })
             .collect()
     }
+}
+
+fn inactive_ime_token_is_complete_russian_word(token: &str) -> bool {
+    token.chars().count() >= 5
+        && (lay::lexicon::is_common_ru_word(token)
+            || lay::russian_lexicon::is_known_russian_word_or_form(token))
 }
 
 #[cfg(test)]

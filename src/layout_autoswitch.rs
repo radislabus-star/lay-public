@@ -14,6 +14,7 @@ use crate::keyboard::is_cyrillic_letter;
 use crate::lexicon::is_common_ru_word;
 use crate::ru_typo::{
     correct_extra_letters, correct_hard_sign_typo, correct_missing_letter, correct_repeated_letter,
+    correct_vowel_confusion,
 };
 use crate::russian_chars::is_russian_vowel;
 use crate::russian_lexicon::{
@@ -23,7 +24,7 @@ use crate::russian_lexicon::{
 };
 use crate::russian_typo_candidates::{
     generate_extra_letter_candidates, generate_missing_letter_candidates,
-    inserted_char_position_for_missing_letter,
+    generate_vowel_confusion_candidates, inserted_char_position_for_missing_letter,
 };
 use crate::text_case::apply_word_case;
 use crate::word_reader::{is_cyrillic_word, split_word_punctuation};
@@ -56,25 +57,71 @@ fn polish_converted_russian_layout_token(token: &str) -> Option<String> {
     }
     let lower = word.to_lowercase();
 
+    if let Some(settled) = crate::nanda_wave::l2::l2_settle_russian_surface(token)
+        .filter(|settled| layout_polish_replacement_allowed(word, settled))
+    {
+        return Some(settled);
+    }
     if is_known_russian_layout_autoswitch_word(&lower) {
         return None;
     }
-    if let Some(settled) = crate::nanda_wave::l2::l2_settle_russian_surface(token) {
-        return Some(settled);
-    }
-    if let Some(corrected) = correct_common_layout_extra_letter(word) {
+    if let Some(corrected) = correct_common_layout_extra_letter(word).filter(|corrected| {
+        layout_polish_replacement_allowed(word, &format!("{leading}{corrected}{trailing}"))
+    }) {
         return Some(format!("{leading}{corrected}{trailing}"));
     }
 
     let corrected = correct_hard_sign_typo(word)
+        .or_else(|| correct_layout_vowel_confusion(word))
+        .or_else(|| correct_vowel_confusion(word))
         .or_else(|| correct_repeated_letter(word))
         .or_else(|| correct_missing_letter(word))
         .or_else(|| correct_layout_missing_initial_letter(word))
         .or_else(|| correct_extra_letters(word))?;
+    if !layout_polish_replacement_allowed(word, &format!("{leading}{corrected}{trailing}")) {
+        return None;
+    }
     if !is_strong_layout_polish_word(&corrected.to_lowercase()) {
         return None;
     }
     Some(format!("{leading}{corrected}{trailing}"))
+}
+
+fn layout_polish_replacement_allowed(original_word: &str, replacement: &str) -> bool {
+    let (_, replacement_word, _) = split_word_punctuation(replacement);
+    let original_len = original_word.chars().count();
+    let replacement_len = replacement_word.chars().count();
+    replacement_len >= original_len || original_len.saturating_sub(replacement_len) <= 1
+}
+
+fn correct_layout_vowel_confusion(word: &str) -> Option<String> {
+    if word.chars().count() < 5 || !is_cyrillic_word(word) {
+        return None;
+    }
+    let lower = word.to_lowercase();
+    let (candidate, _) = crate::candidate_ranker::choose_best_with_gap(
+        generate_vowel_confusion_candidates(&lower),
+        0.50,
+        |candidate| {
+            if candidate == &lower
+                || !(is_strong_layout_polish_word(candidate)
+                    || layout_phase_surface_authority(candidate))
+            {
+                return None;
+            }
+            let mut score = crate::ngram::ru_candidate_margin(candidate, &lower);
+            if layout_phase_surface_authority(candidate) {
+                score += 4.0;
+            }
+            Some(score)
+        },
+    )?;
+    Some(apply_word_case(word, &candidate))
+}
+
+fn layout_phase_surface_authority(word: &str) -> bool {
+    let phase = crate::nanda_wave::l2::l2_surface_phase_readout(word);
+    phase.residual_l1_refs == 0 && phase.l1_refs >= 12 && phase.coherence_milli() >= 920
 }
 
 fn correct_common_layout_extra_letter(word: &str) -> Option<String> {

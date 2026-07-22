@@ -180,7 +180,12 @@ fn strong_boundary_edit_shape(original: &str, replacement: &str) -> bool {
         let original_word = &original_words[idx];
         let left = &replacement_words[idx];
         let right = &replacement_words[idx + 1];
-        if confident_split_pair(original_word, left, right, original_words.len() == 1) {
+        if crate::text_metrics::confident_boundary_split_pair(
+            original_word,
+            left,
+            right,
+            original_words.len() == 1,
+        ) {
             return true;
         }
     }
@@ -249,50 +254,6 @@ fn same_whitespace_signal(original: &str, replacement: &str) -> bool {
         .chars()
         .filter(|ch| ch.is_whitespace())
         .eq(replacement.chars().filter(|ch| ch.is_whitespace()))
-}
-
-fn confident_split_pair(
-    original: &str,
-    left: &str,
-    right: &str,
-    single_original_word: bool,
-) -> bool {
-    if original.is_empty() || left.is_empty() || right.is_empty() {
-        return false;
-    }
-
-    let joined = format!("{left}{right}");
-    let compact_equal = joined == original;
-    let left_len = left.chars().count();
-    let right_len = right.chars().count();
-    let left_known = crate::phrase_lexicon::is_known_russian_phrase_part(left);
-    let right_known = crate::phrase_lexicon::is_known_russian_phrase_part(right);
-    let original_known = crate::phrase_lexicon::is_known_russian_phrase_part(original);
-    let left_one_letter_function =
-        left_len == 1 && crate::phrase_lexicon::is_one_letter_russian_function_word(left);
-    let right_one_letter_function =
-        right_len == 1 && crate::phrase_lexicon::is_one_letter_russian_function_word(right);
-    let left_short_function = crate::phrase_lexicon::is_short_russian_function_word(left);
-    let left_multi_letter_preposition =
-        left_len > 1 && crate::phrase_lexicon::is_common_short_russian_preposition(left);
-    let right_short_function = crate::phrase_lexicon::is_short_russian_function_word(right);
-
-    if compact_equal {
-        return (left_one_letter_function && right_known)
-            || (right_one_letter_function && left_known)
-            || (left_short_function && !left_multi_letter_preposition && right_known)
-            || (left_known && right_short_function);
-    }
-
-    if original_known || !left_known || !right_known || !single_original_word {
-        return false;
-    }
-
-    let distance = crate::text_metrics::damerau_levenshtein(original, &joined);
-    distance <= 2
-        && ((left_len >= 4 && right_len >= 3)
-            || (left_short_function && !left_multi_letter_preposition && right_len >= 4)
-            || (right_short_function && left_len >= 4))
 }
 
 fn insertion_point_is_inside_word(chars: &[char], idx: usize) -> bool {

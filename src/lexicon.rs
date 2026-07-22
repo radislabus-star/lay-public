@@ -4,7 +4,7 @@
 //! lexical data in `data/lexicon/*` and expose it through small, hot `OnceLock`
 //! sets so runtime checks stay cheap and platform-neutral.
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::path::Path;
 use std::sync::OnceLock;
 
@@ -37,6 +37,7 @@ const RU_SHORT_PREPOSITION_DATA: &str = include_str!("../data/lexicon/ru_short_p
 const RU_SHORT_FUNCTION_DATA: &str = include_str!("../data/lexicon/ru_short_function.txt");
 const RU_HYPHEN_PARTICLE_DATA: &str = include_str!("../data/lexicon/ru_hyphen_particles.txt");
 const RU_GREETING_WORDS_DATA: &str = include_str!("../data/lexicon/ru_greeting_words.txt");
+const L2_SURFACE_HOT_RU_DATA: &str = include_str!("../data/lexicon/l2_surface_hot_ru.txt");
 const VISUAL_B_DEFAULT_DATA: &str = include_str!("../data/lexicon/visual_b_default.txt");
 const VISUAL_B_AFTER_ASCII_DATA: &str = include_str!("../data/lexicon/visual_b_after_ascii.txt");
 
@@ -76,6 +77,14 @@ pub fn warm_up_for_ime() {
 
 pub fn is_common_ru_word(word: &str) -> bool {
     common_ru_words().contains(word)
+}
+
+pub fn is_l2_surface_hot_ru_word(word: &str) -> bool {
+    l2_surface_hot_ru_words().contains(word)
+}
+
+pub fn l2_surface_hot_ru_rank(word: &str) -> Option<usize> {
+    l2_surface_hot_ru_rank_map().get(word).copied()
 }
 
 pub fn is_ru_technical_loanword(word: &str) -> bool {
@@ -198,6 +207,25 @@ fn user_protected_ascii_words() -> &'static HashSet<String> {
 fn common_ru_words() -> &'static HashSet<String> {
     static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
     WORDS.get_or_init(|| parse_word_data(COMMON_RU_DATA))
+}
+
+fn l2_surface_hot_ru_words() -> &'static HashSet<String> {
+    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
+    WORDS.get_or_init(|| parse_word_data(L2_SURFACE_HOT_RU_DATA))
+}
+
+fn l2_surface_hot_ru_rank_map() -> &'static HashMap<String, usize> {
+    static RANKS: OnceLock<HashMap<String, usize>> = OnceLock::new();
+    RANKS.get_or_init(|| {
+        let mut ranks = HashMap::new();
+        for (rank, word) in data_lines(L2_SURFACE_HOT_RU_DATA)
+            .map(str::to_lowercase)
+            .enumerate()
+        {
+            ranks.entry(word).or_insert(rank);
+        }
+        ranks
+    })
 }
 
 fn ru_technical_loanwords() -> &'static HashSet<String> {

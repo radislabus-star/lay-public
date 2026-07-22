@@ -10,6 +10,7 @@ use std::collections::BTreeMap;
 use std::env;
 use std::io;
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 #[path = "lay_nanda_wave_eval/candidate_quality.rs"]
 mod candidate_quality;
@@ -417,11 +418,15 @@ fn main() -> io::Result<()> {
         } else {
             status::l3_context_sample_cases(&suite.cases)
         };
+        let jobs = arg_value(&args, "--jobs")
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(1);
         println!(
             "{}",
-            serde_json::to_string_pretty(&lay::nanda_wave::l3_context_report_json(
+            serde_json::to_string_pretty(&lay::nanda_wave::l3_context_report_json_with_jobs(
                 &cases,
                 suite.cases.len(),
+                jobs,
             ))?
         );
         return Ok(());
@@ -443,7 +448,7 @@ fn main() -> io::Result<()> {
     let paths = arg_values(&args, "--cases");
     if paths.is_empty() {
         eprintln!(
-            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l3-context-report [--full-suite] | --lay-self-teacher-l3 [--clean-corpus PATH] [--usage-events PATH] [--no-live-feedback] [--out-dir PATH] [--max-phrases N] [--max-pairs N] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --l2-lexical-corpus-eval PATH [--l2-lexical-memory PATH] [--jobs N] [--candidate-limit N] [--limit N] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --l2-form-attractor-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --l2-transition-phase-status [--l2-phase-memory PATH] | --l2-transition-phase-proof [--dataset PATH] | --l2-phase-coverage-recent [--limit N] [--candidate-limit N] [--max-examples N] | --l2-candidate-phase-shadow-recent [--l2-phase-memory PATH] [--limit N] [--max-examples N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --llmwave-ingest-clean-corpus PATH [--max-records N] | --llmwave-ingest-pack-clean-corpus PATH [--out PATH] [--max-records N] | --memory-learned-report | --compile-usage-feedback --input PATH --out PATH | --llmwave-corpus-report PATH [--test-corpus PATH] [--max-lines N] | --llmwave-dirty-report [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --llmwave-promotion-gate [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --candidate-quality-report | --ime-hit-rate-report | --dirty-log-eval | --dirty-log-collect [--out PATH] [--limit N] [--recent-actions PATH] [--learning-log PATH] | --dirty-log-replay [--phase-only] [--l2-phase-memory PATH] [--input PATH] [--limit N] [--train-role all|positive|negative] [--max-examples N] | --dirty-log-pack-usage --input PATH --out PATH [--limit N] | --cases PATH"
+            "usage: lay-nanda-wave-eval --trace TEXT | --recent-traces N | --real-suite [--show-failures] [--show-worsened] | --quick-ablation | --surface-l2-ablation | --ensemble-contribution-report [--full-suite] | --l3-context-report [--full-suite] [--jobs N] | --lay-self-teacher-l3 [--clean-corpus PATH] [--usage-events PATH] [--no-live-feedback] [--out-dir PATH] [--max-phrases N] [--max-pairs N] | --l2-candidate-flow-report [--full-suite] [--show-examples] | --l2-lexical-corpus-eval PATH [--l2-lexical-memory PATH] [--jobs N] [--candidate-limit N] [--limit N] | --canonical-l1-l2-report [--probe WORD] | --canonical-l2-candidates TEXT [--limit N] | --l2-form-attractor-candidates TEXT [--limit N] | --canonical-l2-recent [--limit N] [--candidate-limit N] | --l2-transition-phase-status [--l2-phase-memory PATH] | --l2-transition-phase-proof [--dataset PATH] | --l2-phase-coverage-recent [--limit N] [--candidate-limit N] [--max-examples N] | --l2-candidate-phase-shadow-recent [--l2-phase-memory PATH] [--limit N] [--max-examples N] | --canonical-l2-harvest [--limit N] [--candidate-limit N] [--out PATH] | --canonical-l2-harvest-summary [--harvest PATH] | --canonical-l2-replay [--harvest PATH] [--min-score N] [--limit N] | --canonical-l2-morph-replay [--harvest PATH] [--min-score N] [--limit N] | --llmwave-pack-cases PATH --out PATH | --llmwave-pack-live [--out PATH] | --llmwave-learn-live [--out PATH] | --llmwave-learning-report | --llmwave-ingest-clean-corpus PATH [--max-records N] | --llmwave-ingest-pack-clean-corpus PATH [--out PATH] [--max-records N] | --memory-learned-report | --compile-usage-feedback --input PATH --out PATH | --llmwave-corpus-report PATH [--test-corpus PATH] [--max-lines N] | --llmwave-dirty-report [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --llmwave-promotion-gate [--train-corpus PATH] [--include-dirty-train] [--max-lines N] | --learning-shadow-report [--learning-log PATH] | --learning-pack-corrections --out PATH [--learning-log PATH] | --candidate-quality-report | --ime-hit-rate-report | --dirty-log-eval | --dirty-log-collect [--out PATH] [--limit N] [--recent-actions PATH] [--learning-log PATH] | --dirty-log-replay [--phase-only] [--l2-phase-memory PATH] [--input PATH] [--limit N] [--train-role all|positive|negative] [--max-examples N] | --dirty-log-pack-usage --input PATH --out PATH [--limit N] | --cases PATH"
         );
         return Ok(());
     }
@@ -1475,9 +1480,20 @@ fn print_trace(text: &str, options: &WaveOptions, record_trace: bool) {
     }
     println!("L2 candidates: {}", trace.l2_candidates.len());
     for candidate in &trace.l2_candidates {
+        let support = candidate
+            .support
+            .iter()
+            .filter(|item| item.starts_with("l2-operator:") || item.starts_with("l3-feedback:"))
+            .map(String::as_str)
+            .collect::<Vec<_>>();
+        let support = if support.is_empty() {
+            String::new()
+        } else {
+            format!(" support={}", support.join(","))
+        };
         println!(
-            "  {:?} source={} energy={:.3} risk={:.3}",
-            candidate.text, candidate.source, candidate.energy, candidate.risk
+            "  {:?} source={} energy={:.3} risk={:.3}{}",
+            candidate.text, candidate.source, candidate.energy, candidate.risk, support
         );
     }
     println!("L3:");
@@ -2030,11 +2046,17 @@ fn print_l2_candidate_flow_report(
     // actual L2/DecisionCore route intact, but evaluate independent rows on
     // workers so a proof-only full suite does not serialize on one CPU.
     let jobs = jobs.clamp(1, dirty_cases.len().max(1));
-    let chunk_len = dirty_cases.len().div_ceil(jobs).max(1);
+    let next = AtomicUsize::new(0);
+    let dirty_cases_ref = &dirty_cases;
     let partials = std::thread::scope(|scope| {
-        dirty_cases
-            .chunks(chunk_len)
-            .map(|chunk| scope.spawn(move || l2_candidate_flow_partial(chunk, options)))
+        let workers = (0..jobs)
+            .map(|_| {
+                let next = &next;
+                scope.spawn(move || l2_candidate_flow_worker(dirty_cases_ref, next, options))
+            })
+            .collect::<Vec<_>>();
+        workers
+            .into_iter()
             .map(|worker| worker.join().expect("L2 flow worker must not panic"))
             .collect::<Vec<_>>()
     });
@@ -2074,6 +2096,42 @@ fn print_l2_candidate_flow_report(
     println!(
         "  note: nonfinal_apply means output != expected; multi-error rows can be partial fixes"
     );
+    println!("  current_token_scope:");
+    println!("    dirty_cases: {}", result.tail_current_token_dirty_cases);
+    println!(
+        "    left_context_or_boundary_dirty_cases: {}",
+        dirty_cases
+            .len()
+            .saturating_sub(result.tail_current_token_dirty_cases)
+    );
+    println!(
+        "    cases_with_l2_candidates: {}",
+        result.tail_current_token_cases_with_l2
+    );
+    println!(
+        "    no_l2_candidates: {}",
+        result.tail_current_token_no_l2_candidates
+    );
+    println!(
+        "    expected_candidate_present: {}",
+        result.tail_current_token_expected_candidate_present
+    );
+    println!(
+        "    expected_candidate_missing: {}",
+        result.tail_current_token_expected_candidate_missing
+    );
+    println!(
+        "    expected_candidate_applied: {}",
+        result.tail_current_token_expected_candidate_applied
+    );
+    println!(
+        "    expected_present_but_not_applied: {}",
+        result.tail_current_token_present_but_not_applied
+    );
+    println!(
+        "    nonfinal_apply: {}",
+        result.tail_current_token_nonfinal_apply
+    );
     println!("  sources:");
     for (source, row) in result.stats {
         if row.is_empty() {
@@ -2089,11 +2147,35 @@ fn print_l2_candidate_flow_report(
             row.nonfinal_apply
         );
     }
+    if !result.expected_blockers.is_empty() {
+        println!("  expected_blockers:");
+        for (reason, count) in result.expected_blockers {
+            println!("    {reason}: {count}");
+        }
+    }
+    if !result.tail_current_token_expected_blockers.is_empty() {
+        println!("  current_token_expected_blockers:");
+        for (reason, count) in result.tail_current_token_expected_blockers {
+            println!("    {reason}: {count}");
+        }
+    }
     if show_examples {
         print_flow_examples("no_l2", &result.examples.no_l2);
         print_flow_examples("missing_expected", &result.examples.missing_expected);
         print_flow_examples("present_not_applied", &result.examples.present_not_applied);
         print_flow_examples("nonfinal_apply", &result.examples.nonfinal_apply);
+        print_flow_examples(
+            "current_token_missing_expected",
+            &result.examples.tail_current_token_missing_expected,
+        );
+        print_flow_examples(
+            "current_token_present_not_applied",
+            &result.examples.tail_current_token_present_not_applied,
+        );
+        print_flow_examples(
+            "current_token_nonfinal_apply",
+            &result.examples.tail_current_token_nonfinal_apply,
+        );
     }
 }
 
@@ -2107,6 +2189,8 @@ fn default_l2_flow_jobs() -> usize {
 #[derive(Debug, Default)]
 struct L2CandidateFlowPartial {
     stats: BTreeMap<String, L2CandidateFlowStats>,
+    expected_blockers: BTreeMap<String, usize>,
+    tail_current_token_expected_blockers: BTreeMap<String, usize>,
     cases_with_l2: usize,
     no_l2_candidates: usize,
     expected_candidate_present: usize,
@@ -2114,6 +2198,14 @@ struct L2CandidateFlowPartial {
     expected_candidate_applied: usize,
     present_but_not_applied: usize,
     nonfinal_apply: usize,
+    tail_current_token_dirty_cases: usize,
+    tail_current_token_cases_with_l2: usize,
+    tail_current_token_no_l2_candidates: usize,
+    tail_current_token_expected_candidate_present: usize,
+    tail_current_token_expected_candidate_missing: usize,
+    tail_current_token_expected_candidate_applied: usize,
+    tail_current_token_present_but_not_applied: usize,
+    tail_current_token_nonfinal_apply: usize,
     examples: L2CandidateFlowExamples,
 }
 
@@ -2126,8 +2218,29 @@ impl L2CandidateFlowPartial {
         self.expected_candidate_applied += other.expected_candidate_applied;
         self.present_but_not_applied += other.present_but_not_applied;
         self.nonfinal_apply += other.nonfinal_apply;
+        self.tail_current_token_dirty_cases += other.tail_current_token_dirty_cases;
+        self.tail_current_token_cases_with_l2 += other.tail_current_token_cases_with_l2;
+        self.tail_current_token_no_l2_candidates += other.tail_current_token_no_l2_candidates;
+        self.tail_current_token_expected_candidate_present +=
+            other.tail_current_token_expected_candidate_present;
+        self.tail_current_token_expected_candidate_missing +=
+            other.tail_current_token_expected_candidate_missing;
+        self.tail_current_token_expected_candidate_applied +=
+            other.tail_current_token_expected_candidate_applied;
+        self.tail_current_token_present_but_not_applied +=
+            other.tail_current_token_present_but_not_applied;
+        self.tail_current_token_nonfinal_apply += other.tail_current_token_nonfinal_apply;
         for (source, row) in other.stats {
             self.stats.entry(source).or_default().merge(row);
+        }
+        for (reason, count) in other.expected_blockers {
+            *self.expected_blockers.entry(reason).or_default() += count;
+        }
+        for (reason, count) in other.tail_current_token_expected_blockers {
+            *self
+                .tail_current_token_expected_blockers
+                .entry(reason)
+                .or_default() += count;
         }
         self.examples.no_l2.extend(other.examples.no_l2);
         self.examples
@@ -2139,19 +2252,90 @@ impl L2CandidateFlowPartial {
         self.examples
             .nonfinal_apply
             .extend(other.examples.nonfinal_apply);
+        self.examples
+            .tail_current_token_missing_expected
+            .extend(other.examples.tail_current_token_missing_expected);
+        self.examples
+            .tail_current_token_present_not_applied
+            .extend(other.examples.tail_current_token_present_not_applied);
+        self.examples
+            .tail_current_token_nonfinal_apply
+            .extend(other.examples.tail_current_token_nonfinal_apply);
+    }
+
+    fn record_expected_not_applied_blocker(
+        &mut self,
+        case: &EvalCase,
+        trace: &lay::nanda_wave::WaveTrace,
+        current_token_scope: bool,
+    ) {
+        let reason = expected_candidate_blocker(case, trace);
+        *self.expected_blockers.entry(reason.clone()).or_default() += 1;
+        if current_token_scope {
+            *self
+                .tail_current_token_expected_blockers
+                .entry(reason)
+                .or_default() += 1;
+        }
     }
 }
 
-fn l2_candidate_flow_partial(cases: &[&EvalCase], options: &WaveOptions) -> L2CandidateFlowPartial {
+fn expected_candidate_blocker(case: &EvalCase, trace: &lay::nanda_wave::WaveTrace) -> String {
+    let expected_candidates = trace
+        .l2_candidates
+        .iter()
+        .filter(|candidate| {
+            candidate_output_for_original(&case.original, &candidate.text) == case.expected
+        })
+        .collect::<Vec<_>>();
+
+    for candidate in expected_candidates {
+        let text_marker = format!("text={:?}", candidate.text);
+        for layer in &trace.l3 {
+            if layer.name != "L3ReadoutAdmissionCell32" || !layer.summary.contains(&text_marker) {
+                continue;
+            }
+            if let Some((_prefix, blocker)) = layer.summary.rsplit_once("blocker=") {
+                return format!("blocked:{blocker}");
+            }
+        }
+    }
+
+    match &trace.decision {
+        lay::nanda_wave::WaveDecision::Suggest { .. } => "lost_competition".to_string(),
+        lay::nanda_wave::WaveDecision::Keep { reason } => format!("keep:{reason}"),
+        lay::nanda_wave::WaveDecision::Veto { reason } => format!("veto:{reason}"),
+    }
+}
+
+fn l2_candidate_flow_worker(
+    cases: &[&EvalCase],
+    next: &AtomicUsize,
+    options: &WaveOptions,
+) -> L2CandidateFlowPartial {
     let mut result = L2CandidateFlowPartial::default();
-    for case in cases {
+    loop {
+        let index = next.fetch_add(1, Ordering::Relaxed);
+        let Some(case) = cases.get(index).copied() else {
+            break;
+        };
+        let current_token_scope = case_changes_only_last_token(&case.original, &case.expected);
+        if current_token_scope {
+            result.tail_current_token_dirty_cases += 1;
+        }
         let trace = run_wave_trace_with_options(&case.original, options);
         if trace.l2_candidates.is_empty() {
             result.no_l2_candidates += 1;
+            if current_token_scope {
+                result.tail_current_token_no_l2_candidates += 1;
+            }
             result.examples.no_l2.push(flow_example(case, &trace, None));
             continue;
         }
         result.cases_with_l2 += 1;
+        if current_token_scope {
+            result.tail_current_token_cases_with_l2 += 1;
+        }
 
         for candidate in &trace.l2_candidates {
             result
@@ -2178,12 +2362,24 @@ fn l2_candidate_flow_partial(cases: &[&EvalCase], options: &WaveOptions) -> L2Ca
             .collect::<Vec<_>>();
         if expected_sources.is_empty() {
             result.expected_candidate_missing += 1;
+            if current_token_scope {
+                result.tail_current_token_expected_candidate_missing += 1;
+            }
             result
                 .examples
                 .missing_expected
                 .push(flow_example(case, &trace, None));
+            if current_token_scope {
+                result
+                    .examples
+                    .tail_current_token_missing_expected
+                    .push(flow_example(case, &trace, None));
+            }
         } else {
             result.expected_candidate_present += 1;
+            if current_token_scope {
+                result.tail_current_token_expected_candidate_present += 1;
+            }
             for source in &expected_sources {
                 result
                     .stats
@@ -2201,8 +2397,14 @@ fn l2_candidate_flow_partial(cases: &[&EvalCase], options: &WaveOptions) -> L2Ca
                 }
                 if text == &case.expected {
                     result.expected_candidate_applied += 1;
+                    if current_token_scope {
+                        result.tail_current_token_expected_candidate_applied += 1;
+                    }
                 } else {
                     result.nonfinal_apply += 1;
+                    if current_token_scope {
+                        result.tail_current_token_nonfinal_apply += 1;
+                    }
                     if let Some(source) = applied_source {
                         result
                             .stats
@@ -2215,9 +2417,19 @@ fn l2_candidate_flow_partial(cases: &[&EvalCase], options: &WaveOptions) -> L2Ca
                         &trace,
                         Some(text.as_str()),
                     ));
+                    if current_token_scope {
+                        result
+                            .examples
+                            .tail_current_token_nonfinal_apply
+                            .push(flow_example(case, &trace, Some(text.as_str())));
+                    }
                 }
                 if text != &case.expected && !expected_sources.is_empty() {
+                    result.record_expected_not_applied_blocker(case, &trace, current_token_scope);
                     result.present_but_not_applied += 1;
+                    if current_token_scope {
+                        result.tail_current_token_present_but_not_applied += 1;
+                    }
                     for source in &expected_sources {
                         result
                             .stats
@@ -2230,11 +2442,21 @@ fn l2_candidate_flow_partial(cases: &[&EvalCase], options: &WaveOptions) -> L2Ca
                         &trace,
                         Some(text.as_str()),
                     ));
+                    if current_token_scope {
+                        result
+                            .examples
+                            .tail_current_token_present_not_applied
+                            .push(flow_example(case, &trace, Some(text.as_str())));
+                    }
                 }
             }
             WaveDecision::Keep { .. } | WaveDecision::Veto { .. } => {
                 if !expected_sources.is_empty() {
+                    result.record_expected_not_applied_blocker(case, &trace, current_token_scope);
                     result.present_but_not_applied += 1;
+                    if current_token_scope {
+                        result.tail_current_token_present_but_not_applied += 1;
+                    }
                     for source in &expected_sources {
                         result
                             .stats
@@ -2246,6 +2468,12 @@ fn l2_candidate_flow_partial(cases: &[&EvalCase], options: &WaveOptions) -> L2Ca
                         .examples
                         .present_not_applied
                         .push(flow_example(case, &trace, None));
+                    if current_token_scope {
+                        result
+                            .examples
+                            .tail_current_token_present_not_applied
+                            .push(flow_example(case, &trace, None));
+                    }
                 }
             }
         }
@@ -2289,6 +2517,9 @@ struct L2CandidateFlowExamples {
     missing_expected: Vec<L2CandidateFlowExample>,
     present_not_applied: Vec<L2CandidateFlowExample>,
     nonfinal_apply: Vec<L2CandidateFlowExample>,
+    tail_current_token_missing_expected: Vec<L2CandidateFlowExample>,
+    tail_current_token_present_not_applied: Vec<L2CandidateFlowExample>,
+    tail_current_token_nonfinal_apply: Vec<L2CandidateFlowExample>,
 }
 
 #[derive(Debug, Clone)]
@@ -2369,6 +2600,32 @@ fn candidate_output_for_original(original: &str, candidate: &str) -> String {
     } else {
         candidate.to_string()
     }
+}
+
+fn case_changes_only_last_token(original: &str, expected: &str) -> bool {
+    let original = original.trim_end();
+    let expected = expected.trim_end();
+    if original == expected {
+        return false;
+    }
+    let (original_prefix, original_token) = split_last_eval_token(original);
+    let (expected_prefix, expected_token) = split_last_eval_token(expected);
+    original_prefix == expected_prefix && original_token != expected_token
+}
+
+fn split_last_eval_token(text: &str) -> (&str, &str) {
+    let trimmed = text.trim_end();
+    let mut last_whitespace = None;
+    for (index, ch) in trimmed.char_indices() {
+        if ch.is_whitespace() {
+            last_whitespace = Some((index, ch.len_utf8()));
+        }
+    }
+    let Some((index, width)) = last_whitespace else {
+        return ("", trimmed);
+    };
+    let token_start = index + width;
+    (&trimmed[..token_start], &trimmed[token_start..])
 }
 
 fn print_cell_ablation(cases: &[EvalCase], cell: &str, label: &str) {

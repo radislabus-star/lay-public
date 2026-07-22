@@ -189,6 +189,7 @@ fn typo_operator_fit(edit_shape: &str, error_class: TypingErrorClass, lost_mass_
     match (error_class, edit_shape) {
         (TypingErrorClass::AdjacentTransposition, "transpose_adjacent") => 1000,
         (TypingErrorClass::MissingLetter, "insert_char" | "insert_span") => 850,
+        (TypingErrorClass::SparseInternalMultiOmission, "insert_span") => 900,
         (TypingErrorClass::ExtraLetter | TypingErrorClass::RepeatedLetter, "delete_char") => 850,
         (
             TypingErrorClass::LetterSubstitution | TypingErrorClass::CompositeTypo,

@@ -51,6 +51,99 @@ pub(crate) fn current_token_boundary_split(original: &str, replacement: &str) ->
             )
 }
 
+pub(crate) fn current_token_boundary_split_or_repair(original: &str, replacement: &str) -> bool {
+    current_token_boundary_split(original, replacement)
+        || current_token_repaired_boundary_split(original, replacement)
+}
+
+pub(crate) fn current_token_repaired_boundary_split(original: &str, replacement: &str) -> bool {
+    let original_words = crate::word_reader::normalized_text_words(original);
+    let replacement_words = crate::word_reader::normalized_text_words(replacement);
+    if original_words.is_empty()
+        || replacement_words.len() <= original_words.len()
+        || replacement_words.len() > original_words.len() + 2
+    {
+        return false;
+    }
+    let split_idx = original_words.len() - 1;
+    if original_words[..split_idx] != replacement_words[..split_idx] {
+        return false;
+    }
+    confident_boundary_split_sequence(&original_words[split_idx], &replacement_words[split_idx..])
+}
+
+fn confident_boundary_split_sequence(original: &str, parts: &[String]) -> bool {
+    match parts {
+        [left, right] => confident_boundary_split_pair(original, left, right, true),
+        [first, middle, last] => {
+            let joined = format!("{first}{middle}{last}");
+            let original_known = crate::phrase_lexicon::is_known_russian_phrase_part(original);
+            let all_known = [first.as_str(), middle.as_str(), last.as_str()]
+                .into_iter()
+                .all(crate::phrase_lexicon::is_known_russian_phrase_part);
+            let has_function_word = [first.as_str(), middle.as_str(), last.as_str()]
+                .into_iter()
+                .any(crate::phrase_lexicon::is_short_russian_function_word);
+            let has_stable_content = [first.as_str(), middle.as_str(), last.as_str()]
+                .into_iter()
+                .any(|word| word.chars().count() >= 3);
+            !original_known
+                && all_known
+                && has_function_word
+                && has_stable_content
+                && damerau_levenshtein(original, &joined) <= 2
+        }
+        _ => false,
+    }
+}
+
+pub(crate) fn confident_boundary_split_pair(
+    original: &str,
+    left: &str,
+    right: &str,
+    single_original_word: bool,
+) -> bool {
+    if original.is_empty() || left.is_empty() || right.is_empty() {
+        return false;
+    }
+
+    let joined = format!("{left}{right}");
+    let compact_equal = joined == original;
+    let left_len = left.chars().count();
+    let right_len = right.chars().count();
+    let left_known = crate::phrase_lexicon::is_known_russian_phrase_part(left);
+    let right_known = crate::phrase_lexicon::is_known_russian_phrase_part(right);
+    let original_known = crate::phrase_lexicon::is_known_russian_phrase_part(original);
+    let left_one_letter_function =
+        left_len == 1 && crate::phrase_lexicon::is_one_letter_russian_function_word(left);
+    let right_one_letter_function =
+        right_len == 1 && crate::phrase_lexicon::is_one_letter_russian_function_word(right);
+    let left_short_function = crate::phrase_lexicon::is_short_russian_function_word(left);
+    let left_multi_letter_preposition =
+        left_len > 1 && crate::phrase_lexicon::is_common_short_russian_preposition(left);
+    let right_short_function = crate::phrase_lexicon::is_short_russian_function_word(right);
+
+    if compact_equal {
+        let both_stable_content =
+            !original_known && left_known && right_known && left_len >= 4 && right_len >= 4;
+        return (left_one_letter_function && right_known)
+            || (right_one_letter_function && left_known)
+            || (left_short_function && !left_multi_letter_preposition && right_known)
+            || (left_known && right_short_function)
+            || both_stable_content;
+    }
+
+    if original_known || !left_known || !right_known || !single_original_word {
+        return false;
+    }
+
+    let distance = damerau_levenshtein(original, &joined);
+    distance <= 2
+        && ((left_len >= 4 && right_len >= 3)
+            || (left_short_function && !left_multi_letter_preposition && right_len >= 4)
+            || (right_short_function && left_len >= 4))
+}
+
 pub fn common_prefix_char_len(left: &str, right: &str) -> usize {
     left.chars()
         .zip(right.chars())
@@ -78,6 +171,33 @@ pub fn is_adjacent_transposition(left: &str, right: &str) -> bool {
     let left = left.chars().collect::<Vec<_>>();
     let right = right.chars().collect::<Vec<_>>();
     is_adjacent_transposition_chars(&left, &right)
+}
+
+/// True when one internal character moved to another internal position while
+/// the word kept its boundaries and character mass.
+pub(crate) fn is_single_internal_char_move(left: &str, right: &str) -> bool {
+    let left = left.chars().collect::<Vec<_>>();
+    let right = right.chars().collect::<Vec<_>>();
+    if left.len() != right.len()
+        || left.len() < 5
+        || left.first() != right.first()
+        || left.last() != right.last()
+        || left == right
+    {
+        return false;
+    }
+    for from in 1..left.len().saturating_sub(1) {
+        let mut without = left.clone();
+        let moved = without.remove(from);
+        for to in 1..without.len() {
+            let mut candidate = without.clone();
+            candidate.insert(to, moved);
+            if candidate == right {
+                return true;
+            }
+        }
+    }
+    false
 }
 
 pub(crate) fn score_to_milli(value: f32) -> i16 {
@@ -115,10 +235,7 @@ pub fn sparse_internal_omission_count(input: &str, candidate: &str) -> Option<us
     let input = input.chars().collect::<Vec<_>>();
     let candidate = candidate.chars().collect::<Vec<_>>();
     let omissions = candidate.len().checked_sub(input.len())?;
-    if !(2..=3).contains(&omissions)
-        || input.first() != candidate.first()
-        || input.last() != candidate.last()
-    {
+    if !(2..=3).contains(&omissions) || input.last() != candidate.last() {
         return None;
     }
 
@@ -133,20 +250,66 @@ pub fn sparse_internal_omission_count(input: &str, candidate: &str) -> Option<us
     }
     if input_index != input.len()
         || omitted.len() != omissions
-        || omitted
-            .iter()
-            .any(|index| *index == 0 || *index + 1 == candidate.len())
+        || omitted.iter().any(|index| *index + 1 == candidate.len())
         || omitted.windows(2).all(|pair| pair[1] == pair[0] + 1)
+    {
+        return None;
+    }
+    if input.first() != candidate.first()
+        && omitted.iter().filter(|index| **index == 0).count() != 1
     {
         return None;
     }
     Some(omissions)
 }
 
+pub(crate) fn internal_char_confusion_preserves_frame(left: &str, right: &str) -> bool {
+    let left_chars = left.chars().collect::<Vec<_>>();
+    let right_chars = right.chars().collect::<Vec<_>>();
+    let len = left_chars.len();
+    if len != right_chars.len()
+        || !(5..=16).contains(&len)
+        || left_chars.first() != right_chars.first()
+        || left_chars.last() != right_chars.last()
+        || left_chars == right_chars
+        || damerau_levenshtein(left, right) > 2
+    {
+        return false;
+    }
+
+    let common_prefix = common_prefix_char_len(left, right);
+    let common_suffix = left_chars
+        .iter()
+        .rev()
+        .zip(right_chars.iter().rev())
+        .take_while(|(left, right)| left == right)
+        .count();
+    if common_prefix + common_suffix < len.saturating_sub(3) {
+        return false;
+    }
+
+    let shared_mass = shared_char_mass(&left_chars, &right_chars);
+    shared_mass + 1 >= len
+}
+
+fn shared_char_mass(left: &[char], right: &[char]) -> usize {
+    let mut remaining = right.to_vec();
+    let mut shared = 0usize;
+    for ch in left {
+        if let Some(index) = remaining.iter().position(|candidate| candidate == ch) {
+            remaining.remove(index);
+            shared += 1;
+        }
+    }
+    shared
+}
+
 #[cfg(test)]
 mod tests {
     use super::{
-        current_token_boundary_split, sparse_internal_omission_count,
+        current_token_boundary_split, current_token_boundary_split_or_repair,
+        current_token_repaired_boundary_split, internal_char_confusion_preserves_frame,
+        is_single_internal_char_move, sparse_internal_omission_count,
         transition_changed_token_count, transition_left_context_changed,
     };
 
@@ -178,11 +341,34 @@ mod tests {
             sparse_internal_omission_count("интелека", "интеллекта"),
             Some(2)
         );
+        assert_eq!(
+            sparse_internal_omission_count("ффетивная", "эффективная"),
+            Some(2)
+        );
         assert_eq!(sparse_internal_omission_count("спть", "спать"), None);
         assert_eq!(
             sparse_internal_omission_count("переподчаю", "переподключаю"),
             None
         );
+    }
+
+    #[test]
+    fn single_internal_char_move_is_a_typed_reorder_geometry() {
+        assert!(is_single_internal_char_move("ктороый", "который"));
+        assert!(is_single_internal_char_move("прдложение", "предложние"));
+        assert!(!is_single_internal_char_move("абусед", "абсурд"));
+        assert!(!is_single_internal_char_move("давай", "давай"));
+    }
+
+    #[test]
+    fn internal_char_confusion_preserves_the_word_frame() {
+        assert!(internal_char_confusion_preserves_frame(
+            "абоенет",
+            "абонент"
+        ));
+        assert!(internal_char_confusion_preserves_frame("ландо", "ладно"));
+        assert!(!internal_char_confusion_preserves_frame("абснит", "магнит"));
+        assert!(!internal_char_confusion_preserves_frame("абсу", "басу"));
     }
 
     #[test]
@@ -197,5 +383,29 @@ mod tests {
             "то есть тоесть "
         ));
         assert!(!current_token_boundary_split("то есть ", "тоесть "));
+    }
+
+    #[test]
+    fn current_token_repaired_boundary_split_is_bounded_to_last_token() {
+        assert!(current_token_repaired_boundary_split(
+            "прблематут ",
+            "проблема тут "
+        ));
+        assert!(current_token_boundary_split_or_repair(
+            "вотидело ",
+            "вот и дело "
+        ));
+        assert!(current_token_boundary_split_or_repair(
+            "самоетоже ",
+            "самое тоже "
+        ));
+        assert!(!current_token_repaired_boundary_split(
+            "проблема тут ",
+            "прблема тут "
+        ));
+        assert!(!current_token_repaired_boundary_split(
+            "мы прблематут ",
+            "проблема мы тут "
+        ));
     }
 }

@@ -270,9 +270,24 @@ fn center_resonance(prepared: &L2CorrectionPeakContext, replacement: &str) -> f3
                 L2ImeWordCandidateKind::Replacement => 0.12,
                 L2ImeWordCandidateKind::Completion => 0.06,
             };
-            (structural + overlap + kind_bonus).clamp(0.0, 0.86)
+            let geometry_bonus = typed_peak_geometry_bonus(&prepared.original_word, replacement);
+            (structural + overlap + kind_bonus + geometry_bonus).clamp(0.0, 0.92)
         })
         .unwrap_or(0.0)
+}
+
+fn typed_peak_geometry_bonus(input: &str, candidate: &str) -> f32 {
+    if crate::text_metrics::sparse_internal_omission_count(input, candidate).is_some() {
+        0.12
+    } else if candidate.chars().count() == input.chars().count() + 1
+        && damerau_levenshtein(input, candidate) == 1
+    {
+        0.04
+    } else if crate::text_metrics::is_adjacent_transposition(input, candidate) {
+        0.08
+    } else {
+        0.0
+    }
 }
 
 fn foundation_resonance(word: &str) -> f32 {

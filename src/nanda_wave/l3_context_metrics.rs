@@ -3,6 +3,7 @@ use super::{run_wave_trace_with_options, WaveDecision, WaveOptions, WaveTrace};
 use crate::eval_cases::EvalCase;
 use serde_json::{json, Value};
 use std::collections::BTreeMap;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 #[derive(Default)]
 struct Metrics {
@@ -33,6 +34,38 @@ struct Metrics {
     diagnostic_examples: Vec<Value>,
 }
 
+impl Metrics {
+    fn merge(&mut self, other: Metrics) {
+        self.context_eligible_cases += other.context_eligible_cases;
+        self.memory_warm_cases += other.memory_warm_cases;
+        self.cases_with_l2_candidates += other.cases_with_l2_candidates;
+        self.evidence_hit_cases += other.evidence_hit_cases;
+        self.sequential_evidence_cases += other.sequential_evidence_cases;
+        self.scene_evidence_cases += other.scene_evidence_cases;
+        self.scene_only_cases += other.scene_only_cases;
+        self.authority_cases += other.authority_cases;
+        self.support_cases += other.support_cases;
+        self.suppress_cases += other.suppress_cases;
+        self.candidates_scored += other.candidates_scored;
+        self.evidence_candidates += other.evidence_candidates;
+        self.support_candidates += other.support_candidates;
+        self.suppress_candidates += other.suppress_candidates;
+        self.correct_candidate_present_cases += other.correct_candidate_present_cases;
+        self.correct_candidate_supported_cases += other.correct_candidate_supported_cases;
+        self.correct_candidate_suppressed_cases += other.correct_candidate_suppressed_cases;
+        self.wrong_candidate_supported_cases += other.wrong_candidate_supported_cases;
+        self.candidate_lattice_drift_cases += other.candidate_lattice_drift_cases;
+        self.output_changed_cases += other.output_changed_cases;
+        self.improved_cases += other.improved_cases;
+        self.worsened_cases += other.worsened_cases;
+        self.full_ok += other.full_ok;
+        self.without_context_ok += other.without_context_ok;
+        let remaining = 12usize.saturating_sub(self.diagnostic_examples.len());
+        self.diagnostic_examples
+            .extend(other.diagnostic_examples.into_iter().take(remaining));
+    }
+}
+
 #[derive(Default)]
 struct DepthMetrics {
     cases: usize,
@@ -45,13 +78,139 @@ struct DepthMetrics {
     without_context_ok: usize,
 }
 
+impl DepthMetrics {
+    fn merge(&mut self, other: DepthMetrics) {
+        self.cases += other.cases;
+        self.evidence += other.evidence;
+        self.authority += other.authority;
+        self.output_changed += other.output_changed;
+        self.improved += other.improved;
+        self.worsened += other.worsened;
+        self.full_ok += other.full_ok;
+        self.without_context_ok += other.without_context_ok;
+    }
+}
+
 pub(super) fn report_json(cases: &[EvalCase], full_cases: usize) -> Value {
+    report_json_with_jobs(cases, full_cases, 1)
+}
+
+pub(super) fn report_json_with_jobs(cases: &[EvalCase], full_cases: usize, jobs: usize) -> Value {
     super::warm_up_l3_phrase_memory();
+    let jobs = jobs.clamp(1, cases.len().max(1));
+    let next = AtomicUsize::new(0);
+    let partials = std::thread::scope(|scope| {
+        let workers = (0..jobs)
+            .map(|_| {
+                let next = &next;
+                scope.spawn(move || report_worker(cases, next))
+            })
+            .collect::<Vec<_>>();
+        workers
+            .into_iter()
+            .map(|worker| {
+                worker
+                    .join()
+                    .expect("L3 context report worker must not panic")
+            })
+            .collect::<Vec<_>>()
+    });
+    let mut metrics = Metrics::default();
+    let mut depth = BTreeMap::<&'static str, DepthMetrics>::new();
+    for (partial_metrics, partial_depth) in partials {
+        metrics.merge(partial_metrics);
+        for (bucket, row) in partial_depth {
+            depth.entry(bucket).or_default().merge(row);
+        }
+    }
+
+    let verdict = verdict(&metrics);
+    let depth = depth
+        .into_iter()
+        .map(|(name, row)| {
+            (
+                name.to_string(),
+                json!({
+                    "cases": row.cases,
+                    "evidence_cases": row.evidence,
+                    "evidence_percent": percent(row.evidence, row.cases),
+                    "authority_cases": row.authority,
+                    "output_changed_cases": row.output_changed,
+                    "improved_cases": row.improved,
+                    "worsened_cases": row.worsened,
+                    "full_ok": row.full_ok,
+                    "without_context_ok": row.without_context_ok,
+                    "accuracy_delta": row.full_ok as isize - row.without_context_ok as isize,
+                }),
+            )
+        })
+        .collect::<serde_json::Map<String, Value>>();
+
+    json!({
+        "kind": "l3_context_report",
+        "verdict": verdict,
+        "cases": cases.len(),
+        "full_cases": full_cases,
+        "sampled": cases.len() < full_cases,
+        "jobs": jobs,
+        "proof_contract": {
+            "source": "real eval suite, not live logs",
+            "ablation": L3_CONTEXT_FIELD_CELL,
+            "same_l2_candidate_lattice_required": true,
+            "candidate_lattice_drift_cases": metrics.candidate_lattice_drift_cases,
+        },
+        "context_coverage": {
+            "eligible_cases": metrics.context_eligible_cases,
+            "eligible_percent": percent(metrics.context_eligible_cases, cases.len()),
+            "memory_warm_cases": metrics.memory_warm_cases,
+            "cases_with_l2_candidates": metrics.cases_with_l2_candidates,
+            "evidence_hit_cases": metrics.evidence_hit_cases,
+            "evidence_hit_percent_of_eligible": percent(metrics.evidence_hit_cases, metrics.context_eligible_cases),
+            "sequential_evidence_cases": metrics.sequential_evidence_cases,
+            "scene_evidence_cases": metrics.scene_evidence_cases,
+            "scene_only_cases": metrics.scene_only_cases,
+            "authority_cases": metrics.authority_cases,
+            "authority_percent_of_eligible": percent(metrics.authority_cases, metrics.context_eligible_cases),
+            "support_cases": metrics.support_cases,
+            "suppress_cases": metrics.suppress_cases,
+        },
+        "candidate_field": {
+            "candidates_scored": metrics.candidates_scored,
+            "evidence_candidates": metrics.evidence_candidates,
+            "support_candidates": metrics.support_candidates,
+            "suppress_candidates": metrics.suppress_candidates,
+            "correct_candidate_present_cases": metrics.correct_candidate_present_cases,
+            "correct_candidate_supported_cases": metrics.correct_candidate_supported_cases,
+            "correct_candidate_suppressed_cases": metrics.correct_candidate_suppressed_cases,
+            "wrong_candidate_supported_cases": metrics.wrong_candidate_supported_cases,
+        },
+        "causal_ablation": {
+            "full_ok": metrics.full_ok,
+            "without_context_ok": metrics.without_context_ok,
+            "accuracy_delta": metrics.full_ok as isize - metrics.without_context_ok as isize,
+            "output_changed_cases": metrics.output_changed_cases,
+            "improved_cases": metrics.improved_cases,
+            "worsened_cases": metrics.worsened_cases,
+        },
+        "by_context_depth": depth,
+        "diagnostic_examples": metrics.diagnostic_examples,
+        "read_as": "L3 is context-connected only when evidence_hit_cases is nonzero; it is decision-active only when authority and output_changed are nonzero; positive utility requires improved_cases > worsened_cases under an unchanged L2 candidate lattice"
+    })
+}
+
+fn report_worker(
+    cases: &[EvalCase],
+    next: &AtomicUsize,
+) -> (Metrics, BTreeMap<&'static str, DepthMetrics>) {
     let without_context = WaveOptions::with_disabled(&[L3_CONTEXT_FIELD_CELL.to_string()]);
     let mut metrics = Metrics::default();
     let mut depth = BTreeMap::<&'static str, DepthMetrics>::new();
 
-    for case in cases {
+    loop {
+        let index = next.fetch_add(1, Ordering::Relaxed);
+        let Some(case) = cases.get(index) else {
+            break;
+        };
         let full = run_wave_trace_with_options(&case.original, &WaveOptions::default());
         let (_ablated_trace, ablated_decision) =
             run_l3_with_options(&case.original, &full.l2_candidates, &without_context);
@@ -149,77 +308,7 @@ pub(super) fn report_json(cases: &[EvalCase], full_cases: usize) -> Value {
         bucket.without_context_ok += usize::from(ablated_ok);
     }
 
-    let verdict = verdict(&metrics);
-    let depth = depth
-        .into_iter()
-        .map(|(name, row)| {
-            (
-                name.to_string(),
-                json!({
-                    "cases": row.cases,
-                    "evidence_cases": row.evidence,
-                    "evidence_percent": percent(row.evidence, row.cases),
-                    "authority_cases": row.authority,
-                    "output_changed_cases": row.output_changed,
-                    "improved_cases": row.improved,
-                    "worsened_cases": row.worsened,
-                    "full_ok": row.full_ok,
-                    "without_context_ok": row.without_context_ok,
-                    "accuracy_delta": row.full_ok as isize - row.without_context_ok as isize,
-                }),
-            )
-        })
-        .collect::<serde_json::Map<String, Value>>();
-
-    json!({
-        "kind": "l3_context_report",
-        "verdict": verdict,
-        "cases": cases.len(),
-        "full_cases": full_cases,
-        "sampled": cases.len() < full_cases,
-        "proof_contract": {
-            "source": "real eval suite, not live logs",
-            "ablation": L3_CONTEXT_FIELD_CELL,
-            "same_l2_candidate_lattice_required": true,
-            "candidate_lattice_drift_cases": metrics.candidate_lattice_drift_cases,
-        },
-        "context_coverage": {
-            "eligible_cases": metrics.context_eligible_cases,
-            "eligible_percent": percent(metrics.context_eligible_cases, cases.len()),
-            "memory_warm_cases": metrics.memory_warm_cases,
-            "cases_with_l2_candidates": metrics.cases_with_l2_candidates,
-            "evidence_hit_cases": metrics.evidence_hit_cases,
-            "evidence_hit_percent_of_eligible": percent(metrics.evidence_hit_cases, metrics.context_eligible_cases),
-            "sequential_evidence_cases": metrics.sequential_evidence_cases,
-            "scene_evidence_cases": metrics.scene_evidence_cases,
-            "scene_only_cases": metrics.scene_only_cases,
-            "authority_cases": metrics.authority_cases,
-            "authority_percent_of_eligible": percent(metrics.authority_cases, metrics.context_eligible_cases),
-            "support_cases": metrics.support_cases,
-            "suppress_cases": metrics.suppress_cases,
-        },
-        "candidate_field": {
-            "candidates_scored": metrics.candidates_scored,
-            "evidence_candidates": metrics.evidence_candidates,
-            "support_candidates": metrics.support_candidates,
-            "suppress_candidates": metrics.suppress_candidates,
-            "correct_candidate_present_cases": metrics.correct_candidate_present_cases,
-            "correct_candidate_supported_cases": metrics.correct_candidate_supported_cases,
-            "correct_candidate_suppressed_cases": metrics.correct_candidate_suppressed_cases,
-            "wrong_candidate_supported_cases": metrics.wrong_candidate_supported_cases,
-        },
-        "causal_ablation": {
-            "full_ok": metrics.full_ok,
-            "without_context_ok": metrics.without_context_ok,
-            "accuracy_delta": metrics.full_ok as isize - metrics.without_context_ok as isize,
-            "output_changed_cases": metrics.output_changed_cases,
-            "improved_cases": metrics.improved_cases,
-            "worsened_cases": metrics.worsened_cases,
-        },
-        "by_context_depth": depth,
-        "diagnostic_examples": metrics.diagnostic_examples,
-        "read_as": "L3 is context-connected only when evidence_hit_cases is nonzero; it is decision-active only when authority and output_changed are nonzero; positive utility requires improved_cases > worsened_cases under an unchanged L2 candidate lattice"
-    })
+    (metrics, depth)
 }
 
 fn output(trace: &WaveTrace, original: &str) -> String {

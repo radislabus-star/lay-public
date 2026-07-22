@@ -360,6 +360,32 @@ mod tests {
     }
 
     #[test]
+    fn committed_tail_space_route_uses_shared_decision_core_for_dirty_tokens() {
+        let cfg = live_l2_phase_config();
+        for (committed_tail, token, expected) in [
+            ("ятут", "ятут", "я тут "),
+            ("видешь", "видешь", "видишь "),
+            ("за окном весь вечер идёт дожь", "дожь", "дождь "),
+        ] {
+            let text = format!("{token} ");
+            let decision =
+                decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+                    text: &text,
+                    committed_tail,
+                    config: &cfg,
+                })
+                .unwrap_or_else(|| panic!("missing shared decision for {committed_tail:?}"));
+
+            assert_eq!(decision.replacement, expected, "tail={committed_tail:?}");
+            assert!(
+                decision.action.allow_apply(),
+                "tail={committed_tail:?} action={:?}",
+                decision.action
+            );
+        }
+    }
+
+    #[test]
     fn committed_tail_autocorrect_keeps_ascii_layout_punctuation_in_token() {
         assert_replacement("ghj,ktvf ", "ghj,ktvf", "проблема ");
     }

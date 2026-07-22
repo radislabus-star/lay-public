@@ -98,12 +98,17 @@ impl TransitionDecisionCore {
         if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
             for (candidate, evaluation) in candidates.iter().zip(&evaluations) {
                 eprintln!(
-                    "decision-core-candidate origin={:?} source_id={} class={} gate={:?} rank={:.3} field={} attract={} repel={} uncertainty={} phase_competition={} lexical_ready={} operator_consensus={} usage={:.3} context={:.3} l3={} l4={} l4_state_specific={} l4_attract={} l4_repel={} hidden={} hidden_classes={} hidden_selected={} hidden_probe={} hidden_certificate={} replacement={:?}",
+                    "decision-core-candidate origin={:?} source_id={} class={} gate={:?} rank={:.3} posterior={:.3} risk={:.3} explain={} opfit={} lost={} field={} attract={} repel={} uncertainty={} phase_competition={} lexical_ready={} operator_consensus={} usage={:.3} context={:.3} l3={} l4={} l4_state_specific={} l4_attract={} l4_repel={} hidden={} hidden_classes={} hidden_selected={} hidden_probe={} hidden_certificate={} replacement={:?}",
                     candidate.origin,
                     candidate.source_id,
                     candidate.error_class.as_str(),
                     candidate.gate.action,
                     evaluation.signals.rank_score,
+                    evaluation.bayes.posterior,
+                    evaluation.bayes.risk,
+                    evaluation.explanation.explanation_score_milli,
+                    evaluation.explanation.operator_fit_milli,
+                    evaluation.explanation.lost_mass_milli,
                     evaluation.signals.transition_field_milli,
                     evaluation.signals.transition_field_attraction_milli,
                     evaluation.signals.transition_field_repulsion_milli,

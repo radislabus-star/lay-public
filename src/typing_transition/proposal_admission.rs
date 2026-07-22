@@ -466,6 +466,9 @@ fn known_current_word_gets_unproven_surface_drift(
 
     let original_lower = original_word.to_lowercase();
     let replacement_lower = replacement_word.to_lowercase();
+    if verified_surface_to_lexical_center_repair(&original_lower, &replacement_lower, error_class) {
+        return false;
+    }
     if original_lower == replacement_lower || !protected_current_surface_token(&original_lower) {
         return false;
     }
@@ -478,6 +481,29 @@ fn known_current_word_gets_unproven_surface_drift(
 
     damerau_levenshtein(&original_lower, &replacement_lower) <= 1
         || inserted_char_position_for_missing_letter(&original_lower, &replacement_lower).is_some()
+}
+
+fn verified_surface_to_lexical_center_repair(
+    original_lower: &str,
+    replacement_lower: &str,
+    error_class: TypingErrorClass,
+) -> bool {
+    matches!(
+        error_class,
+        TypingErrorClass::LetterSubstitution
+            | TypingErrorClass::MissingLetter
+            | TypingErrorClass::SparseInternalMultiOmission
+            | TypingErrorClass::ExtraLetter
+            | TypingErrorClass::RepeatedLetter
+            | TypingErrorClass::AdjacentTransposition
+    ) && !known_russian_autocorrect_token(original_lower)
+        && known_russian_autocorrect_token(replacement_lower)
+        && (damerau_levenshtein(original_lower, replacement_lower) <= 1
+            || crate::text_metrics::sparse_internal_omission_count(
+                original_lower,
+                replacement_lower,
+            )
+            .is_some())
 }
 
 fn unproven_stable_surface_shape_drift(
@@ -525,6 +551,9 @@ fn unproven_stable_surface_shape_drift(
 
     let original_lower = original_word.to_lowercase();
     let replacement_lower = replacement_word.to_lowercase();
+    if verified_surface_to_lexical_center_repair(&original_lower, &replacement_lower, error_class) {
+        return false;
+    }
     if original_lower == replacement_lower {
         return false;
     }
@@ -1320,6 +1349,9 @@ fn short_word_gets_internal_consonant_drift(
     }
     let original_lower = original_word.to_lowercase();
     let replacement_lower = replacement_word.to_lowercase();
+    if verified_surface_to_lexical_center_repair(&original_lower, &replacement_lower, error_class) {
+        return false;
+    }
     if original_lower.chars().count() > 6 {
         return false;
     }
@@ -1586,11 +1618,12 @@ fn same_known_russian_token(original: &str, candidate: &str) -> bool {
 }
 
 fn strong_standalone_split_tail(lower: &str) -> bool {
-    lower.chars().count() >= 4
-        && (crate::lexicon::is_common_ru_word(lower)
-            || crate::russian_lexicon::russian_dictionary().contains(lower)
-            || crate::russian_lexicon::is_known_russian_adverb_o_form(lower)
-            || crate::russian_lexicon::is_known_russian_ka_oblique_form(lower))
+    let len = lower.chars().count();
+    (len >= 3 && crate::lexicon::is_common_ru_word(lower))
+        || (len >= 4
+            && (crate::russian_lexicon::russian_dictionary().contains(lower)
+                || crate::russian_lexicon::is_known_russian_adverb_o_form(lower)
+                || crate::russian_lexicon::is_known_russian_ka_oblique_form(lower)))
 }
 
 fn core_word_count(text: &str) -> usize {

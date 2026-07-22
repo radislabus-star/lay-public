@@ -1,5 +1,5 @@
 use std::cmp::Ordering;
-use std::collections::{BinaryHeap, HashMap};
+use std::collections::{BTreeSet, BinaryHeap, HashMap};
 use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
@@ -22,6 +22,11 @@ const MAX_DECODED_COMPLETION_VISITS: usize = 24_000;
 const MAX_DECODED_COMPLETION_SUFFIX_CHARS: usize = 8;
 const RECONSTRUCTION_LANE_RESERVE: usize = 4;
 const PREFIX_COMPOSITION_FRONTIER_PER_PREFIX: usize = 16;
+const SINGLE_INSERTION_RECONSTRUCTION_RESERVE: usize = 6;
+const RUSSIAN_INSERTION_FRONTIER: &[char] = &[
+    'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с',
+    'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я',
+];
 
 static DEFAULT_MEMORY: OnceLock<Option<LexicalPhaseMemory>> = OnceLock::new();
 
@@ -308,8 +313,15 @@ impl LexicalPhaseMemory {
         let Some(surface) = normalize_surface(surface) else {
             return Vec::new();
         };
+        let single_insertion_reconstructed = self.single_insertion_reconstruction_candidates(
+            &surface,
+            limit.saturating_mul(SINGLE_INSERTION_RECONSTRUCTION_RESERVE),
+        );
         if self.terminal_for_normalized_surface(&surface).is_some() {
-            return Vec::new();
+            let mut candidates = single_insertion_reconstructed;
+            sort_candidates(&mut candidates);
+            candidates.truncate(limit);
+            return candidates;
         }
         let mut candidates = self.field_surface_candidates_normalized(&surface, limit);
         let reconstructed =
@@ -328,8 +340,15 @@ impl LexicalPhaseMemory {
             limit,
             RECONSTRUCTION_LANE_RESERVE,
         );
+        let single_insertion_reserve = reconstruction_lane_reserve(
+            &surface,
+            &single_insertion_reconstructed,
+            limit,
+            RECONSTRUCTION_LANE_RESERVE,
+        );
         let mut reconstructed = reconstructed;
         reconstructed.extend(prefixed_reconstructed);
+        reconstructed.extend(single_insertion_reconstructed);
         candidates.extend(reconstructed);
         sort_candidates(&mut candidates);
         let mut reserved = candidates
@@ -351,6 +370,11 @@ impl LexicalPhaseMemory {
                 reserved.push(candidate);
             }
         }
+        for candidate in single_insertion_reserve {
+            if !reserved.iter().any(|item| item.word == candidate.word) {
+                reserved.push(candidate);
+            }
+        }
         candidates.truncate(limit);
         for candidate in reserved {
             if candidates.iter().any(|item| item.word == candidate.word) {
@@ -362,6 +386,87 @@ impl LexicalPhaseMemory {
             candidates.push(candidate);
         }
         sort_candidates(&mut candidates);
+        candidates
+    }
+
+    fn single_insertion_reconstruction_candidates(
+        &self,
+        surface: &str,
+        limit: usize,
+    ) -> Vec<LexicalPhaseCandidate> {
+        if limit == 0 || self.header.decoder_state_count == 0 {
+            return Vec::new();
+        }
+        let input = surface.chars().collect::<Vec<_>>();
+        if !(3..=17).contains(&input.len()) {
+            return Vec::new();
+        }
+        let query_field = SurfaceFieldEncoder::encode(surface);
+        let (query_phase, _) = surface_phase(&query_field);
+        let query_keys = atom_center_keys(&query_field);
+        let mut emitted = BTreeSet::new();
+        let mut candidates = Vec::new();
+        for insertion_index in 0..=input.len() {
+            for ch in RUSSIAN_INSERTION_FRONTIER {
+                let mut word = String::with_capacity(surface.len() + ch.len_utf8());
+                for (index, existing) in input.iter().enumerate() {
+                    if index == insertion_index {
+                        word.push(*ch);
+                    }
+                    word.push(*existing);
+                }
+                if insertion_index == input.len() {
+                    word.push(*ch);
+                }
+                if !emitted.insert(word.clone())
+                    || !(self.decoder_contains_surface(&word)
+                        || crate::lexicon::is_common_ru_word(&word)
+                        || crate::lexicon::is_l2_surface_hot_ru_word(&word))
+                {
+                    continue;
+                }
+                let distance = damerau_levenshtein(surface, &word);
+                if distance != 1 {
+                    continue;
+                }
+                let rank = self
+                    .terminal_for_normalized_surface(&word)
+                    .and_then(|terminal| read_terminal(self.bytes(), self.header, terminal))
+                    .map_or(u32::MAX, |terminal| terminal.rank);
+                let candidate_field = SurfaceFieldEncoder::encode(&word);
+                let (candidate_phase, atom_count) = surface_phase(&candidate_field);
+                let coherence = phase_coherence_milli(&query_phase, &candidate_phase);
+                let candidate_keys = atom_center_keys(&candidate_field);
+                let overlap = sorted_overlap(&query_keys, &candidate_keys);
+                let rank_boost = if rank == u32::MAX {
+                    0
+                } else {
+                    corpus_rank_boost(rank).saturating_mul(2)
+                };
+                let score = 1_180u32
+                    .saturating_add(u32::from(coherence))
+                    .saturating_add(overlap.min(24) as u32 * 80)
+                    .saturating_add(rank_boost)
+                    .saturating_sub(80);
+                candidates.push(LexicalPhaseCandidate {
+                    word,
+                    score,
+                    l1_overlap: overlap,
+                    l2_overlap: usize::from(coherence) / 40,
+                    motif_overlap: atom_count as usize,
+                    prefix_match: false,
+                    rank: if rank == u32::MAX {
+                        usize::MAX
+                    } else {
+                        rank as usize
+                    },
+                    phase_coherence_milli: coherence,
+                    reconstructed: true,
+                });
+            }
+        }
+        sort_candidates(&mut candidates);
+        candidates.truncate(limit);
         candidates
     }
 

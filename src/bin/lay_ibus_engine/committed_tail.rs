@@ -6,7 +6,7 @@ use super::state::CommittedTailReplaceRequest;
 use super::text::make_ibus_text;
 use super::trace;
 use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
-use lay::text_edit::{TransitionProof, VisibleTailSnapshot, VisibleTailSource};
+use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 
 impl LayIbusEngine {
     /// Applies only a verified current-token correction after Space.
@@ -43,9 +43,7 @@ impl LayIbusEngine {
             .as_ref()
             .and_then(|trace| trace.selected_error_class.as_deref())
             == Some("wrong_layout");
-        let boundary_transition =
-            decision.action.transition().proof() == Some(TransitionProof::Boundary);
-        if !(layout_transition || boundary_transition) || !decision.action.allow_apply() {
+        if !committed_tail_autocorrect_decision_is_authorized(&decision) {
             trace::record(format!(
                 r#"{{"kind":"ibus_space_autocorrect","status":"not_authorized","allow_apply":{}}}"#,
                 decision.action.allow_apply(),
@@ -212,10 +210,19 @@ impl LayIbusEngine {
     }
 }
 
+fn committed_tail_autocorrect_decision_is_authorized(
+    decision: &lay::ime_correction::ActiveCompositionAutocorrectDecision,
+) -> bool {
+    decision.action.allow_apply()
+}
+
 #[cfg(test)]
 mod tests {
-    use super::LayIbusEngine;
+    use super::{committed_tail_autocorrect_decision_is_authorized, LayIbusEngine};
     use lay::config::LayConfig;
+    use lay::ime_correction::{
+        decide_active_composition_autocorrect, ActiveCompositionAutocorrectRequest,
+    };
     use std::sync::{Arc, Mutex};
 
     fn engine() -> LayIbusEngine {
@@ -320,6 +327,32 @@ mod tests {
             source.contains("with_winner_action(decision.action)")
                 && source.contains("with_expected_tail(expected_tail)"),
             "the IBus backend must carry the decision winner and its snapshot lease"
+        );
+    }
+
+    #[test]
+    fn committed_tail_space_autocorrect_keeps_decision_core_authority() {
+        let cfg = LayConfig {
+            text_backend: "ime".to_string(),
+            auto_replace: true,
+            typing_assist: true,
+            auto_switch_layout: true,
+            correction_safety: "experimental".to_string(),
+            nanda_autocorrect: true,
+            nanda_precognition: true,
+            nanda_l2_phase_apply: true,
+            ..LayConfig::default()
+        };
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "видешь ",
+            committed_tail: "видешь",
+            config: &cfg,
+        })
+        .expect("shared decision");
+
+        assert!(
+            committed_tail_autocorrect_decision_is_authorized(&decision),
+            "Space autocorrect must not locally narrow DecisionCore authority to boundary/layout only"
         );
     }
 }

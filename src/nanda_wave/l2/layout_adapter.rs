@@ -298,6 +298,9 @@ pub(super) fn settle_english_word_center(token: &str) -> Option<String> {
     {
         return None;
     }
+    if crate::layout_autoswitch::is_known_english_layout_autoswitch_word(&normalized) {
+        return Some(normalized);
+    }
     let mut candidates = surface_motif_memory()
         .field_surface_candidates(&normalized, 8)
         .into_iter()
@@ -532,6 +535,14 @@ mod tests {
     #[test]
     fn cyrillic_layout_projection_requires_a_proven_target() {
         assert!(layout_converted_token("давай", true).is_none());
+        assert_eq!(
+            layout_converted_token("зщке", true).map(|candidate| candidate.0),
+            Some("port".to_string())
+        );
+        assert_eq!(
+            layout_converted_token("сфкпщ", true).map(|candidate| candidate.0),
+            Some("cargo".to_string())
+        );
         assert_eq!(
             layout_converted_token("вудуеу", true).map(|candidate| candidate.0),
             Some("delete".to_string())

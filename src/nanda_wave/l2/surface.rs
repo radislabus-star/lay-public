@@ -7,13 +7,24 @@ pub(super) fn settle_russian_surface(surface: &str) -> Option<String> {
     if !(4..=18).contains(&word.chars().count()) || !word.chars().all(is_cyrillic_letter) {
         return None;
     }
+    let normalized = word.to_lowercase();
 
     let context = TailContext::from_text(surface);
     let l1 = crate::nanda_wave::l1::run_l1(surface);
     form_attractor_word_candidates("", surface, &context, &l1, &WaveOptions::default())
         .into_iter()
-        .find(|candidate| candidate.energy > candidate.risk)
+        .find(|candidate| {
+            candidate.energy > candidate.risk
+                && projected_layout_settle_shape_allowed(&normalized, &candidate.text)
+        })
         .map(|candidate| candidate.text)
+}
+
+fn projected_layout_settle_shape_allowed(input: &str, candidate_text: &str) -> bool {
+    let (_, candidate_word, _) = split_word_punctuation(candidate_text);
+    let input_len = input.chars().count();
+    let candidate_len = candidate_word.chars().count();
+    candidate_len >= input_len || input_len.saturating_sub(candidate_len) <= 1
 }
 
 pub(super) fn surface_motif_word_candidates(
@@ -51,6 +62,18 @@ pub(super) fn surface_motif_word_candidates(
     let memory = surface_motif_memory();
     let stable_input = surface_motif_stable_existing_word(&normalized);
     let mut surface_candidates = memory.surface_candidates(&normalized, 24);
+    if options.is_enabled(L2_SURFACE_MOTIF_CELL) {
+        surface_candidates.extend(memory.adjacent_transposition_candidates(&normalized));
+        surface_candidates.sort_by(|left, right| {
+            right
+                .score
+                .cmp(&left.score)
+                .then_with(|| left.rank.cmp(&right.rank))
+                .then_with(|| left.word.cmp(&right.word))
+        });
+        surface_candidates.dedup_by(|left, right| left.word == right.word);
+        preserve_typed_damage_frontier(&normalized, &mut surface_candidates, 32);
+    }
     if options.is_enabled(L2_SURFACE_COMPLETION_CELL) && !stable_input {
         surface_candidates.extend(memory.completion_candidates(&normalized, 24, 144));
         surface_candidates.sort_by(|left, right| {
@@ -61,7 +84,7 @@ pub(super) fn surface_motif_word_candidates(
                 .then_with(|| left.word.cmp(&right.word))
         });
         surface_candidates.dedup_by(|left, right| left.word == right.word);
-        surface_candidates.truncate(32);
+        preserve_typed_damage_frontier(&normalized, &mut surface_candidates, 32);
     }
     let phase_deltas = l2_birth_phase_deltas(&normalized, &surface_candidates, options);
     if std::env::var_os("LAY_NANDA_L2_TIMING").is_some() {
@@ -101,7 +124,9 @@ pub(super) fn surface_motif_word_candidates(
     for candidate in &surface_candidates {
         let candidate_len = candidate.word.chars().count();
         let distance = damerau_levenshtein(&normalized, &candidate.word);
-        let base_score = surface_attractor_score(candidate.score, &candidate.word);
+        let base_score = surface_attractor_score(candidate.score, &candidate.word).saturating_add(
+            typed_damage_score_bonus(&normalized, &candidate.word, distance),
+        );
         let phase_delta = phase_deltas
             .get(&candidate.word)
             .copied()
@@ -111,11 +136,14 @@ pub(super) fn surface_motif_word_candidates(
         // already admissible centers in this bounded lattice.
         let ranked_score = add_phase_birth_delta(base_score, phase_delta);
         let is_completion = candidate.word.starts_with(&normalized) && candidate_len > len;
+        let stable_input_allows_typed_damage =
+            stable_input_allows_typed_damage_candidate(&normalized, &candidate.word, distance);
 
         if options.is_enabled(L2_SURFACE_MOTIF_CELL)
             && len >= 4
             && !is_common_ru_word(&normalized)
-            && !surface_motif_stable_existing_word(&normalized)
+            && (!surface_motif_stable_existing_word(&normalized)
+                || stable_input_allows_typed_damage)
             && surface_motif_typo_has_authority(
                 &normalized,
                 &candidate.word,
@@ -140,10 +168,11 @@ pub(super) fn surface_motif_word_candidates(
                 motif_overlap: candidate.motif_overlap,
                 prefix_match: candidate.prefix_match,
                 distance,
-                risk: surface_attractor_risk(context, distance, &candidate.word),
+                risk: typed_damage_risk(context, &normalized, &candidate.word, distance),
                 l1,
                 context,
             });
+            annotate_typed_damage_support(&mut word_candidate, &normalized, &candidate.word);
             record_birth_phase(&mut word_candidate, phase_delta);
             out.push(word_candidate);
             if out.len() >= 8 {
@@ -216,7 +245,7 @@ pub(super) fn surface_motif_word_candidates(
                     motif_overlap: 0,
                     prefix_match: false,
                     distance,
-                    risk: surface_motif_typo_risk(context, distance),
+                    risk: typed_damage_risk(context, &normalized, replacement_lower, distance),
                     l1,
                     context,
                 }));
@@ -224,7 +253,86 @@ pub(super) fn surface_motif_word_candidates(
             }
         }
     }
+    if options.is_enabled(L2_SURFACE_MOTIF_CELL) {
+        for replacement_lower in orthographic_sign_frontier(&normalized) {
+            if out.iter().any(|candidate| {
+                candidate
+                    .text
+                    .split_whitespace()
+                    .last()
+                    .is_some_and(|word| word.eq_ignore_ascii_case(&replacement_lower))
+            }) {
+                continue;
+            }
+            let distance = damerau_levenshtein(&normalized, &replacement_lower);
+            let mut candidate = surface_motif_candidate(SurfaceMotifCandidateInput {
+                prefix,
+                leading,
+                word,
+                trailing,
+                replacement_lower: &replacement_lower,
+                source: L2_SURFACE_MOTIF_CELL,
+                score: 1_520_u32.saturating_add(typed_damage_score_bonus(
+                    &normalized,
+                    &replacement_lower,
+                    distance,
+                )),
+                l1_overlap: len.saturating_sub(1),
+                l2_overlap: len.saturating_sub(2),
+                motif_overlap: len.saturating_sub(2),
+                prefix_match: false,
+                distance,
+                risk: typed_damage_risk(context, &normalized, &replacement_lower, distance),
+                l1,
+                context,
+            });
+            candidate
+                .support
+                .push("l2-operator:orthographic-sign-repair".to_string());
+            out.push(candidate);
+        }
+    }
     out
+}
+
+fn preserve_typed_damage_frontier(
+    input: &str,
+    candidates: &mut Vec<LexicalPhaseCandidate>,
+    limit: usize,
+) {
+    let reserved = candidates
+        .iter()
+        .filter(|candidate| {
+            let distance = damerau_levenshtein(input, &candidate.word);
+            sparse_internal_multi_omission(input, &candidate.word)
+                || single_internal_missing_letter(input, &candidate.word)
+                || internal_extra_fragment(input, &candidate.word)
+                || repeated_letter_collapse(input, &candidate.word)
+                || is_single_adjacent_transposition(input, &candidate.word)
+                || single_letter_substitution(input, &candidate.word)
+                || orthographic_sign_repair(input, &candidate.word)
+                || distance == 1
+        })
+        .take(6)
+        .cloned()
+        .collect::<Vec<_>>();
+    candidates.truncate(limit);
+    for candidate in reserved {
+        if candidates.iter().any(|item| item.word == candidate.word) {
+            continue;
+        }
+        if candidates.len() == limit {
+            candidates.pop();
+        }
+        candidates.push(candidate);
+    }
+    candidates.sort_by(|left, right| {
+        right
+            .score
+            .cmp(&left.score)
+            .then_with(|| left.rank.cmp(&right.rank))
+            .then_with(|| left.word.cmp(&right.word))
+    });
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -364,7 +472,10 @@ pub(super) fn form_attractor_word_candidates(
                 &replacement_lower,
             )
             .is_some();
-            let ranked_score = surface_attractor_score(candidate.score, &replacement_lower);
+            let ranked_score =
+                surface_attractor_score(candidate.score, &replacement_lower).saturating_add(
+                    typed_damage_score_bonus(&normalized, &replacement_lower, distance),
+                );
             let hot = usage.hot_readout(
                 &context_tokens,
                 LEXICAL_ATTRACTOR_CELL,
@@ -405,7 +516,7 @@ pub(super) fn form_attractor_word_candidates(
                 .unwrap_or_default();
             let birth_score = add_phase_birth_delta(authority_score, phase_delta);
 
-            let risk = surface_attractor_risk(context, distance, &replacement_lower)
+            let risk = typed_damage_risk(context, &normalized, &replacement_lower, distance)
                 + ((hot.rejected_prior + hot.context_rejected) * 0.24).clamp(0.0, 0.16)
                 - (hot.transition.attraction * 0.08).clamp(0.0, 0.06)
                 + (hot.transition.repulsion * 0.12).clamp(0.0, 0.10);
@@ -436,6 +547,7 @@ pub(super) fn form_attractor_word_candidates(
                     .support
                     .push("l2-operator:sparse-internal-multi-omission".to_string());
             }
+            annotate_typed_damage_support(&mut candidate, &normalized, &replacement_lower);
             apply_learned_transition_pressure(&mut candidate, &hot.transition);
             record_birth_phase(&mut candidate, phase_delta);
             Some(candidate)
@@ -465,7 +577,7 @@ pub(super) fn form_attractor_word_candidates(
             motif_overlap: len.saturating_sub(3),
             prefix_match: false,
             distance: 1,
-            risk: surface_attractor_risk(context, 1, &replacement_lower),
+            risk: typed_damage_risk(context, &normalized, &replacement_lower, 1),
             l1,
             context,
         });
@@ -511,9 +623,9 @@ pub(super) fn form_attractor_word_candidates(
 }
 
 // The field may resolve a close L2 tie, but it must not dominate the surface
-// center. A bounded 64-point transfer keeps phase as interference, not a
-// second authority scale.
-const L2_BIRTH_PHASE_MAX_DELTA: i32 = 64;
+// center. A bounded transfer keeps phase as interference, not a second
+// authority scale.
+const L2_BIRTH_PHASE_MAX_DELTA: i32 = 192;
 
 /// Read phase centers before local lattice ordering, not after DecisionCore has
 /// already received a narrowed candidate set. A delta is emitted only for a
@@ -639,6 +751,244 @@ pub(super) fn surface_corpus_score_boost(word: &str) -> u32 {
 pub(super) fn surface_attractor_risk(context: &TailContext, distance: usize, word: &str) -> f32 {
     let base = surface_motif_typo_risk(context, distance);
     (base - surface_corpus_prior(word) * 0.10).clamp(0.04, 0.40)
+}
+
+fn typed_damage_risk(context: &TailContext, input: &str, candidate: &str, distance: usize) -> f32 {
+    let credit = if sparse_internal_multi_omission(input, candidate) {
+        0.115
+    } else if single_internal_missing_letter(input, candidate)
+        || repeated_letter_collapse(input, candidate)
+    {
+        0.085
+    } else if single_missing_letter(input, candidate) || internal_extra_fragment(input, candidate) {
+        0.075
+    } else if is_single_adjacent_transposition(input, candidate) {
+        0.110
+    } else if single_letter_substitution(input, candidate) {
+        0.045
+    } else if orthographic_sign_repair(input, candidate) {
+        0.035
+    } else {
+        0.0
+    };
+    (surface_attractor_risk(context, distance, candidate) - credit).clamp(0.04, 0.40)
+}
+
+fn typed_damage_score_bonus(input: &str, candidate: &str, distance: usize) -> u32 {
+    if sparse_internal_multi_omission(input, candidate) {
+        760
+    } else if single_internal_missing_letter(input, candidate) {
+        680
+    } else if single_missing_letter(input, candidate) {
+        600
+    } else if repeated_letter_collapse(input, candidate) {
+        620
+    } else if internal_extra_fragment(input, candidate) {
+        560
+    } else if is_single_adjacent_transposition(input, candidate) {
+        700
+    } else if single_letter_substitution(input, candidate)
+        || orthographic_sign_repair(input, candidate)
+    {
+        360
+    } else if distance == 1 {
+        180
+    } else {
+        0
+    }
+}
+
+fn stable_input_allows_typed_damage_candidate(
+    input: &str,
+    candidate: &str,
+    distance: usize,
+) -> bool {
+    if is_common_ru_word(input) || is_user_protected_word(input) || is_ru_live_protected_word(input)
+    {
+        return false;
+    }
+    if typed_damage_score_bonus(input, candidate, distance) < 360 {
+        return false;
+    }
+    let candidate_has_reference_authority =
+        is_common_ru_word(candidate) || l2_surface_foundation_has_authority(candidate);
+    let strong_single_missing =
+        single_missing_letter(input, candidate) && candidate_has_reference_authority;
+    if crate::russian_lexicon::is_reference_backed_russian_form(input) && !strong_single_missing {
+        return false;
+    }
+    surface_corpus_prior(candidate) > surface_corpus_prior(input) || strong_single_missing
+}
+
+fn annotate_typed_damage_support(candidate: &mut WordCandidate, input: &str, replacement: &str) {
+    let label = if sparse_internal_multi_omission(input, replacement) {
+        "l2-operator:sparse-internal-multi-omission"
+    } else if single_internal_missing_letter(input, replacement) {
+        "l2-operator:single-internal-missing-letter"
+    } else if single_missing_letter(input, replacement) {
+        "l2-operator:single-missing-letter"
+    } else if repeated_letter_collapse(input, replacement) {
+        "l2-operator:repeated-letter-collapse"
+    } else if internal_extra_fragment(input, replacement) {
+        "l2-operator:internal-extra-fragment"
+    } else if single_letter_substitution(input, replacement) {
+        "l2-operator:single-letter-substitution"
+    } else if is_single_adjacent_transposition(input, replacement) {
+        "l2-operator:adjacent-transposition"
+    } else if orthographic_sign_repair(input, replacement) {
+        "l2-operator:orthographic-sign-repair"
+    } else {
+        return;
+    };
+    if !candidate.support.iter().any(|item| item == label) {
+        candidate.support.push(label.to_string());
+    }
+}
+
+fn sparse_internal_multi_omission(input: &str, candidate: &str) -> bool {
+    crate::text_metrics::sparse_internal_omission_count(input, candidate).is_some()
+}
+
+fn internal_extra_fragment(input: &str, candidate: &str) -> bool {
+    let input_chars = input.chars().collect::<Vec<_>>();
+    let candidate_chars = candidate.chars().collect::<Vec<_>>();
+    let extra = input_chars.len().saturating_sub(candidate_chars.len());
+    if !(1..=3).contains(&extra)
+        || input_chars.len() < 5
+        || input_chars.first() != candidate_chars.first()
+        || input_chars.last() != candidate_chars.last()
+    {
+        return false;
+    }
+
+    let mut candidate_index = 0usize;
+    let mut removed = Vec::with_capacity(extra);
+    for (input_index, ch) in input_chars.iter().enumerate() {
+        if candidate_chars.get(candidate_index) == Some(ch) {
+            candidate_index += 1;
+        } else {
+            removed.push(input_index);
+        }
+    }
+    candidate_index == candidate_chars.len()
+        && removed.len() == extra
+        && removed
+            .iter()
+            .all(|index| *index > 0 && *index + 1 < input_chars.len())
+}
+
+fn repeated_letter_collapse(input: &str, candidate: &str) -> bool {
+    let input_chars = input.chars().collect::<Vec<_>>();
+    let candidate_chars = candidate.chars().collect::<Vec<_>>();
+    if input_chars.len() != candidate_chars.len() + 1
+        || input_chars.len() < 4
+        || input_chars.first() != candidate_chars.first()
+        || input_chars.last() != candidate_chars.last()
+    {
+        return false;
+    }
+
+    (1..input_chars.len() - 1).any(|skip| {
+        let repeated = input_chars.get(skip - 1) == input_chars.get(skip)
+            || input_chars.get(skip + 1) == input_chars.get(skip);
+        repeated
+            && input_chars
+                .iter()
+                .enumerate()
+                .filter_map(|(index, ch)| (index != skip).then_some(*ch))
+                .eq(candidate_chars.iter().copied())
+    })
+}
+
+fn single_letter_substitution(input: &str, candidate: &str) -> bool {
+    let input_chars = input.chars().collect::<Vec<_>>();
+    let candidate_chars = candidate.chars().collect::<Vec<_>>();
+    input_chars.len() == candidate_chars.len()
+        && input_chars.len() >= 4
+        && input_chars
+            .iter()
+            .zip(candidate_chars.iter())
+            .filter(|(left, right)| left != right)
+            .count()
+            == 1
+}
+
+fn single_internal_missing_letter(input: &str, candidate: &str) -> bool {
+    let input_chars = input.chars().collect::<Vec<_>>();
+    let candidate_chars = candidate.chars().collect::<Vec<_>>();
+    if input_chars.len() + 1 != candidate_chars.len()
+        || input_chars.len() < 4
+        || input_chars.first() != candidate_chars.first()
+        || input_chars.last() != candidate_chars.last()
+        || damerau_levenshtein(input, candidate) != 1
+    {
+        return false;
+    }
+
+    let mut input_index = 0usize;
+    let mut inserted_index = None;
+    for (candidate_index, ch) in candidate_chars.iter().enumerate() {
+        if input_chars.get(input_index) == Some(ch) {
+            input_index += 1;
+        } else if inserted_index.is_none() {
+            inserted_index = Some(candidate_index);
+        } else {
+            return false;
+        }
+    }
+    input_index == input_chars.len()
+        && inserted_index.is_some_and(|index| index > 0 && index + 1 < candidate_chars.len())
+}
+
+fn single_missing_letter(input: &str, candidate: &str) -> bool {
+    let input_chars = input.chars().collect::<Vec<_>>();
+    let candidate_chars = candidate.chars().collect::<Vec<_>>();
+    if input_chars.len() + 1 != candidate_chars.len()
+        || input_chars.len() < 3
+        || input_chars.first() != candidate_chars.first()
+        || damerau_levenshtein(input, candidate) != 1
+    {
+        return false;
+    }
+    let mut input_index = 0usize;
+    for ch in &candidate_chars {
+        if input_chars.get(input_index) == Some(ch) {
+            input_index += 1;
+        }
+    }
+    input_index == input_chars.len()
+}
+
+fn orthographic_sign_repair(input: &str, candidate: &str) -> bool {
+    let input_chars = input.chars().collect::<Vec<_>>();
+    let candidate_chars = candidate.chars().collect::<Vec<_>>();
+    if input_chars.len() != candidate_chars.len() || input_chars.len() < 3 {
+        return false;
+    }
+    let mut changed = None;
+    for (index, (left, right)) in input_chars.iter().zip(&candidate_chars).enumerate() {
+        if left == right {
+            continue;
+        }
+        if changed.is_some() || *left != 'ь' || *right != 'ъ' {
+            return false;
+        }
+        changed = Some(index);
+    }
+    changed.is_some_and(|index| {
+        input_chars
+            .get(index + 1)
+            .is_some_and(|next| matches!(next, 'е' | 'ё' | 'ю' | 'я'))
+    })
+}
+
+fn orthographic_sign_frontier(input: &str) -> Vec<String> {
+    crate::russian_typo_candidates::generate_hard_sign_candidates(input)
+        .filter(|candidate| {
+            l2_decoder_contains_surface(candidate)
+                || crate::russian_lexicon::is_known_russian_word_or_form(candidate)
+        })
+        .collect()
 }
 
 pub(super) fn surface_corpus_prior(word: &str) -> f32 {
@@ -795,7 +1145,9 @@ pub(super) fn fuzzy_surface_candidate_blocked(
     if crate::ru_typo::rewrites_protected_pattern_term_stem(original_lower, candidate) {
         return true;
     }
-    if same_stem_inflection_rewrite(original_lower, candidate) {
+    if same_stem_inflection_rewrite(original_lower, candidate)
+        && surface_motif_stable_existing_word(original_lower)
+    {
         return true;
     }
     looks_like_live_russian_it_verb(original_lower) && !candidate.ends_with("ит")
@@ -981,6 +1333,12 @@ pub(super) fn surface_motif_typo_allowed(
 ) -> bool {
     distance == 1
         || is_single_adjacent_transposition(input, candidate)
+        || single_missing_letter(input, candidate)
+        || sparse_internal_multi_omission(input, candidate)
+        || internal_extra_fragment(input, candidate)
+        || repeated_letter_collapse(input, candidate)
+        || single_letter_substitution(input, candidate)
+        || orthographic_sign_repair(input, candidate)
         || (input_len >= 6 && distance == 2 && score >= 300)
         || (input_len >= 8 && distance == 3 && score >= 380)
 }

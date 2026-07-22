@@ -49,8 +49,14 @@ pub(super) fn ascii_to_russian_layout_candidate(
     }
 
     let converted_lower = converted_word.to_lowercase();
-    let known = is_known_russian_layout_autoswitch_word(&converted_lower);
-    if !(known || allow_shift_fallback && shift_letter_signal) {
+    let raw_projection_stable = is_known_russian_layout_autoswitch_word(&converted_lower)
+        || crate::russian_lexicon::is_known_russian_word_or_form(&converted_lower)
+        || crate::russian_lexicon::is_reference_backed_russian_form(&converted_lower)
+        || crate::nanda_wave::l2::l2_surface_foundation_contains(&converted_lower)
+        || l2_phase_covers_raw_projection(&converted_lower)
+        || crate::hot_field::HotFieldSnapshot::current()
+            .layout_projection_has_phase_authority(&converted_lower);
+    if !(raw_projection_stable || allow_shift_fallback && shift_letter_signal) {
         if let Some(replacement) = polish_converted_russian_layout_token(&converted) {
             let (_, replacement_word, _) = split_word_punctuation(&replacement);
             let word = replacement_word.to_string();
@@ -63,11 +69,11 @@ pub(super) fn ascii_to_russian_layout_candidate(
             });
         }
     }
-    if !(known || allow_shift_fallback && shift_letter_signal) {
+    if !(raw_projection_stable || allow_shift_fallback && shift_letter_signal) {
         return None;
     }
 
-    let replacement = if known {
+    let replacement = if raw_projection_stable {
         let normalized_word = apply_word_case(original_word, &converted_lower);
         let (converted_leading, _, converted_trailing) = split_word_punctuation(&converted);
         format!("{converted_leading}{normalized_word}{converted_trailing}")
@@ -78,7 +84,8 @@ pub(super) fn ascii_to_russian_layout_candidate(
     let replacement = polish_converted_russian_layout_token(&replacement).unwrap_or(replacement);
     let (_, replacement_word, _) = split_word_punctuation(&replacement);
     let word = replacement_word.to_string();
-    let replacement_known = known || is_known_russian_layout_autoswitch_word(&word.to_lowercase());
+    let replacement_known =
+        raw_projection_stable || is_known_russian_layout_autoswitch_word(&word.to_lowercase());
 
     Some(AsciiToRussianLayoutCandidate {
         replacement,
@@ -87,4 +94,9 @@ pub(super) fn ascii_to_russian_layout_candidate(
         clean_alpha: token.chars().all(|ch| ch.is_ascii_alphabetic()),
         shift_letter_signal,
     })
+}
+
+fn l2_phase_covers_raw_projection(word: &str) -> bool {
+    let readout = crate::nanda_wave::l2::l2_surface_phase_readout(word);
+    readout.l1_refs >= 12 && readout.residual_l1_refs == 0 && readout.coherence_milli() >= 920
 }

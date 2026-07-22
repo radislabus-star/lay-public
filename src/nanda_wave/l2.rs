@@ -60,7 +60,7 @@ pub(crate) use surface::{
 const L2_ACTIVE_SOURCE_TARGET: usize = 1_000_000;
 pub(super) const L2_SURFACE_MOTIF_CELL: &str = "L2SurfaceMotifCell32";
 pub(super) const L2_SURFACE_COMPLETION_CELL: &str = "L2SurfaceCompletionCell32";
-const L2_FORM_ATTRACTOR_LIMIT: usize = 12;
+const L2_FORM_ATTRACTOR_LIMIT: usize = 20;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum L2ImeWordCandidateKind {
@@ -121,7 +121,7 @@ pub fn ime_l2_boundary_candidates(
         return Vec::new();
     }
     let normalized = token.to_lowercase();
-    if !(6..=18).contains(&normalized.chars().count())
+    if !(4..=18).contains(&normalized.chars().count())
         || !normalized.chars().all(is_cyrillic_letter)
     {
         return Vec::new();

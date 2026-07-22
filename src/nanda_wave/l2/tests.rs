@@ -257,6 +257,71 @@ fn boundary_cell_births_two_center_split_before_broad_surface_suppression() {
 }
 
 #[test]
+fn boundary_cell_births_short_pronoun_glue_before_length_cutoff() {
+    let original = "ятут ";
+    let l1 = run_l1(original);
+    let candidates = run_l2(original, &l1);
+
+    assert!(
+        candidates.iter().any(|candidate| {
+            candidate.source == "BoundaryCell32" && candidate.text == "я тут"
+        }),
+        "short boundary candidates={candidates:?}"
+    );
+}
+
+#[test]
+fn boundary_cell_does_not_mask_current_token_inflection_repair() {
+    let original = "видешь ";
+    let l1 = run_l1(original);
+    let candidates = run_l2(original, &l1);
+
+    assert!(
+        candidates.iter().any(|candidate| {
+            candidate.text == "видишь"
+                && candidate
+                    .support
+                    .iter()
+                    .any(|item| item == "l2-operator:single-letter-substitution")
+        }),
+        "typed current-token repair must stay in lattice: {candidates:?}"
+    );
+    assert!(
+        candidates
+            .iter()
+            .all(|candidate| candidate.text != "в идешь"),
+        "destructive boundary split must yield to current-token repair: {candidates:?}"
+    );
+}
+
+#[test]
+fn ime_boundary_projection_keeps_short_pronoun_glue_for_space_autocorrect() {
+    let candidates = crate::nanda_wave::l2::ime_l2_boundary_candidates("", "ятут", 2);
+
+    assert!(
+        candidates
+            .iter()
+            .any(|candidate| candidate.surface == "я тут"),
+        "short IME boundary projection candidates={candidates:?}"
+    );
+}
+
+#[test]
+fn boundary_cell_does_not_birth_short_fragment_split_from_weak_right_tail() {
+    for original in ["абри ", "абра ", "абор "] {
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+
+        assert!(
+            candidates
+                .iter()
+                .all(|candidate| candidate.source != "BoundaryCell32"),
+            "short weak split must stay out of boundary field: {original:?} -> {candidates:?}"
+        );
+    }
+}
+
+#[test]
 fn boundary_cell_does_not_split_known_russian_word_forms() {
     for original in [
         "упоминай ",
@@ -450,6 +515,42 @@ fn l2_surface_layer_recovers_adjacent_transposition() {
                 candidate.source,
                 L2_SURFACE_MOTIF_CELL | LEXICAL_ATTRACTOR_CELL
             ) && candidate.text == "пункт"
+        }),
+        "candidates={candidates:?}"
+    );
+}
+
+#[test]
+fn l2_surface_layer_repairs_stable_adjacent_transposition_artifact() {
+    let original = "надйи ";
+    let l1 = run_l1(original);
+    let candidates = run_l2(original, &l1);
+    assert!(
+        candidates.iter().any(|candidate| {
+            candidate.source == L2_SURFACE_MOTIF_CELL
+                && candidate.text == "найди"
+                && candidate
+                    .support
+                    .iter()
+                    .any(|item| item == "l2-operator:adjacent-transposition")
+        }),
+        "candidates={candidates:?}"
+    );
+}
+
+#[test]
+fn l2_surface_layer_repairs_orthographic_sign_surface() {
+    let original = "Обьясни ";
+    let l1 = run_l1(original);
+    let candidates = run_l2(original, &l1);
+    assert!(
+        candidates.iter().any(|candidate| {
+            candidate.source == L2_SURFACE_MOTIF_CELL
+                && candidate.text == "Объясни"
+                && candidate
+                    .support
+                    .iter()
+                    .any(|item| item == "l2-operator:orthographic-sign-repair")
         }),
         "candidates={candidates:?}"
     );
@@ -659,6 +760,19 @@ fn lexical_phase_field_feeds_ime_composite_reconstruction_candidates() {
 }
 
 #[test]
+fn lexical_phase_field_feeds_correction_composite_reconstruction_peak() {
+    let candidates = correction_l2_word_candidates("на сколько ", "переподлчаю", 16);
+
+    assert!(
+        candidates.iter().any(|candidate| {
+            candidate.kind == L2ImeWordCandidateKind::Replacement
+                && candidate.surface == "переподключаю"
+        }),
+        "correction L2 peak lattice must retain sparse reconstructed center, got {candidates:?}"
+    );
+}
+
+#[test]
 fn lexical_phase_field_recovers_english_typo_without_context_wave() {
     let original = "dowenload ";
     let l1 = run_l1(original);
@@ -732,8 +846,11 @@ fn ime_l2_word_candidates_keep_replacements_distinct_from_completions() {
 
 #[test]
 fn l2_surface_motif_memory_recovers_common_shadow_words() {
-    for (input, expected) in [("эсперемнт", "эксперимент"), ("ффективная", "эффективная")]
-    {
+    for (input, expected) in [
+        ("эсперемнт", "эксперимент"),
+        ("ффективная", "эффективная"),
+        ("ффетивная", "эффективная"),
+    ] {
         let candidates = surface_motif_memory().surface_candidates(input, 32);
         assert!(
             candidates
@@ -749,6 +866,7 @@ fn l2_surface_motif_cell_promotes_common_shadow_words() {
     for (input, expected) in [
         ("эсперемнт ", "эксперимент"),
         ("ффективная ", "эффективная"),
+        ("ффетивная ", "эффективная"),
     ] {
         let l1 = run_l1(input);
         let candidates = run_l2(input, &l1);
@@ -983,9 +1101,10 @@ fn layout_cell_exposes_known_english_target_even_with_russian_typo_shadow() {
     let l1 = run_l1(original);
     let candidates = run_l2(original, &l1);
     assert!(
-        candidates
-            .iter()
-            .any(|candidate| candidate.source == "LayoutWordCell32" && candidate.text == "delete"),
+        candidates.iter().any(|candidate| matches!(
+            candidate.source,
+            "LayoutWordCell32" | LAYOUT_THEN_L2_WORD_CENTER
+        ) && candidate.text == "delete"),
         "known English layout target must survive Russian typo shadow: {candidates:?}"
     );
 }
@@ -1013,6 +1132,115 @@ fn short_token_cell_marks_ascii_context_as_risky() {
         .find(|candidate| candidate.source == "ShortTokenCell32" && candidate.text == "vitamin И")
         .expect("short token candidate");
     assert!(short.risk >= 0.40);
+}
+
+#[test]
+fn l2_surface_layer_marks_internal_extra_fragment_center() {
+    let original = "кнокопками ";
+    let l1 = run_l1(original);
+    let candidates = run_l2(original, &l1);
+    let candidate = candidates
+        .iter()
+        .find(|candidate| candidate.text == "кнопками")
+        .expect("internal extra fragment candidate");
+
+    assert!(
+        candidate
+            .support
+            .iter()
+            .any(|item| item == "l2-operator:internal-extra-fragment"),
+        "candidate={candidate:#?}"
+    );
+}
+
+#[test]
+fn l2_surface_layer_marks_repeated_letter_collapse_center() {
+    let original = "исправленно ";
+    let l1 = run_l1(original);
+    let candidates = run_l2(original, &l1);
+    let candidate = candidates
+        .iter()
+        .find(|candidate| candidate.text == "исправлено")
+        .expect("repeated letter collapse candidate");
+
+    assert!(
+        candidate
+            .support
+            .iter()
+            .any(|item| item == "l2-operator:repeated-letter-collapse"),
+        "candidate={candidate:#?}"
+    );
+}
+
+#[test]
+fn l2_surface_layer_marks_single_letter_substitution_center() {
+    let original = "переварачивается ";
+    let l1 = run_l1(original);
+    let candidates = run_l2(original, &l1);
+    let candidate = candidates
+        .iter()
+        .find(|candidate| candidate.text == "переворачивается")
+        .expect("single letter substitution center");
+
+    assert!(
+        candidate
+            .support
+            .iter()
+            .any(|item| item == "l2-operator:single-letter-substitution"),
+        "candidate={candidate:#?}"
+    );
+}
+
+#[test]
+fn l2_surface_layer_allows_inflection_repair_for_unknown_damaged_suffix() {
+    let original = "видешь ";
+    let l1 = run_l1(original);
+    let candidates = run_l2(original, &l1);
+
+    assert!(
+        candidates.iter().any(|candidate| {
+            candidate.text == "видишь"
+                && candidate
+                    .support
+                    .iter()
+                    .any(|item| item == "l2-operator:single-letter-substitution")
+        }),
+        "candidates={candidates:#?}"
+    );
+}
+
+#[test]
+fn l2_surface_layer_keeps_stable_inflection_rewrite_protected() {
+    let original = "пишешь ";
+    let l1 = run_l1(original);
+    let candidates = run_l2(original, &l1);
+
+    assert!(
+        candidates
+            .iter()
+            .all(|candidate| candidate.text != "пишишь"),
+        "candidates={candidates:#?}"
+    );
+}
+
+#[test]
+fn l2_surface_layer_births_single_missing_letter_centers() {
+    for (original, expected) in [("вобще ", "вообще"), ("боле ", "более"), ("можн ", "можно")]
+    {
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.text == expected
+                    && candidate.support.iter().any(|item| {
+                        item == "l2-operator:single-internal-missing-letter"
+                            || item == "l2-operator:single-missing-letter"
+                            || item == "l2-surface:single-insertion-reconstruction"
+                    })
+            }),
+            "original={original:?} expected={expected:?} candidates={candidates:#?}"
+        );
+    }
 }
 
 #[test]

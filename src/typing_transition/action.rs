@@ -95,7 +95,9 @@ pub(crate) fn classify_token_transition(
     }
     let original_chars = original_word.chars().collect::<Vec<_>>();
     let replacement_chars = replacement_word.chars().collect::<Vec<_>>();
-    if crate::text_metrics::is_adjacent_transposition_chars(&original_chars, &replacement_chars) {
+    if crate::text_metrics::is_adjacent_transposition_chars(&original_chars, &replacement_chars)
+        || crate::text_metrics::is_single_internal_char_move(&original_word, &replacement_word)
+    {
         return TypingErrorClass::AdjacentTransposition;
     }
     if collapses_repeated_runs_to(&original_chars, &replacement_chars) {

@@ -1145,6 +1145,30 @@ mod tests {
     }
 
     #[test]
+    fn l2_surface_single_letter_repair_from_dirty_surface_can_apply() {
+        let decision = gate_candidate_with_origin(
+            "видешь ",
+            "видишь ",
+            TypingErrorClass::LetterSubstitution,
+            CandidateOrigin::L2Surface,
+        );
+
+        assert_eq!(decision.action, CandidateGateAction::Eligible, "{decision:?}");
+    }
+
+    #[test]
+    fn l2_surface_missing_letter_repair_from_dirty_surface_can_apply() {
+        let decision = gate_candidate_with_origin(
+            "дожь ",
+            "дождь ",
+            TypingErrorClass::MissingLetter,
+            CandidateOrigin::L2Surface,
+        );
+
+        assert_eq!(decision.action, CandidateGateAction::Eligible, "{decision:?}");
+    }
+
+    #[test]
     fn composite_typo_rejects_short_initial_consonant_growth() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
@@ -1877,6 +1901,75 @@ mod tests {
         assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
         assert!(selected.has_source_id("L2WordAttractorCell32"));
         assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
+        assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+    }
+
+    #[test]
+    fn nanda_word_form_center_can_apply_edge_and_internal_omission() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "на сколько ффетивная ",
+            &pipeline,
+            CorrectionMode::NandaOnly,
+        ));
+
+        let selected = resolution
+            .selected
+            .clone()
+            .unwrap_or_else(|| panic!("selected L2 sparse omission center: {resolution:#?}"));
+        assert_eq!(selected.replacement, "на сколько эффективная ");
+        assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
+        assert!(selected.has_source_id("L2SurfaceMotifCell32"));
+        assert_eq!(
+            selected.error_class,
+            TypingErrorClass::SparseInternalMultiOmission
+        );
+        assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+    }
+
+    #[test]
+    fn default_route_applies_edge_and_internal_omission_center() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "на сколько ффетивная ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        ));
+
+        let selected = resolution
+            .selected
+            .clone()
+            .unwrap_or_else(|| panic!("selected default-route sparse omission center: {resolution:#?}"));
+        assert_eq!(selected.replacement, "на сколько эффективная ");
+        assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
+        assert!(selected.has_source_id("L2SurfaceMotifCell32"));
+        assert_eq!(
+            selected.error_class,
+            TypingErrorClass::SparseInternalMultiOmission
+        );
+        assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+    }
+
+    #[test]
+    fn sparse_internal_omission_beats_composite_suffix_drift() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "на сколько переподлчаю ",
+            &pipeline,
+            CorrectionMode::NandaOnly,
+        ));
+
+        let selected = resolution
+            .selected
+            .clone()
+            .unwrap_or_else(|| panic!("selected sparse omission over suffix drift: {resolution:#?}"));
+        assert_eq!(selected.replacement, "на сколько переподключаю ");
+        assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
+        assert!(selected.has_source_id("L2WordAttractorCell32"));
+        assert_eq!(
+            selected.error_class,
+            TypingErrorClass::SparseInternalMultiOmission
+        );
         assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
     }
 

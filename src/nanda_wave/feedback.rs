@@ -48,6 +48,13 @@ pub fn derive_l3_feedback(
             risk_delta: options.scale_l3_delta(-0.02),
             reason: "layout_mode_supported_by_phrase",
         });
+        feedback.adjustments.push(FeedbackAdjustment {
+            source: "layout_then_l2_word_center",
+            origin: CandidateOrigin::LayoutThenTypo,
+            energy_delta: options.scale_l3_delta(0.04),
+            risk_delta: options.scale_l3_delta(-0.02),
+            reason: "layout_mode_supported_by_phrase",
+        });
     }
     let trace = (!feedback.is_empty()).then(|| LayerTrace {
         name: L3_FEEDBACK_CELL,

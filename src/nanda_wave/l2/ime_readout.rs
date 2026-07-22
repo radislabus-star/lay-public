@@ -115,7 +115,7 @@ fn l2_word_candidates_impl(
             }
         })
         .collect::<Vec<_>>();
-    sort_and_truncate_ime_l2_candidates(&mut candidates, limit);
+    sort_and_truncate_ime_l2_candidates(&normalized, &mut candidates, limit);
     candidates
 }
 
@@ -334,10 +334,14 @@ fn same_lexical_script(left: &str, right: &str) -> bool {
             && right.chars().all(|ch| ch.is_ascii_alphabetic()))
 }
 
-fn sort_and_truncate_ime_l2_candidates(candidates: &mut Vec<L2ImeWordCandidate>, limit: usize) {
+fn sort_and_truncate_ime_l2_candidates(
+    input: &str,
+    candidates: &mut Vec<L2ImeWordCandidate>,
+    limit: usize,
+) {
     candidates.sort_by(|left, right| {
-        l2_ime_word_candidate_operator_priority(right)
-            .cmp(&l2_ime_word_candidate_operator_priority(left))
+        l2_ime_word_candidate_operator_priority(input, right)
+            .cmp(&l2_ime_word_candidate_operator_priority(input, left))
             .then_with(|| {
                 l2_ime_word_candidate_score(right).cmp(&l2_ime_word_candidate_score(left))
             })
@@ -356,8 +360,22 @@ fn sort_and_truncate_ime_l2_candidates(candidates: &mut Vec<L2ImeWordCandidate>,
     candidates.truncate(limit);
 }
 
-fn l2_ime_word_candidate_operator_priority(candidate: &L2ImeWordCandidate) -> u8 {
-    u8::from(candidate.kind == L2ImeWordCandidateKind::AdjacentTransposition)
+fn l2_ime_word_candidate_operator_priority(input: &str, candidate: &L2ImeWordCandidate) -> u8 {
+    if candidate.kind == L2ImeWordCandidateKind::AdjacentTransposition {
+        return 4;
+    }
+    if crate::text_metrics::sparse_internal_omission_count(input, &candidate.surface).is_some() {
+        return 3;
+    }
+    if single_missing_letter_shape(input, &candidate.surface) {
+        return 2;
+    }
+    0
+}
+
+fn single_missing_letter_shape(input: &str, candidate: &str) -> bool {
+    candidate.chars().count() == input.chars().count() + 1
+        && damerau_levenshtein(input, candidate) == 1
 }
 
 fn l2_ime_word_candidate_score(candidate: &L2ImeWordCandidate) -> u32 {

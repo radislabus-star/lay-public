@@ -22,14 +22,18 @@ pub(super) fn candidate_has_apply_authority(
     let source_role = candidate.origin.source_role();
     let exact_positive_transition = evaluation.transition.l4_signed_signal.exact_positive();
     let operator_consensus_authority = certified_operator_consensus(event, candidate, evaluation);
+    let verified_l2_center_repair =
+        verified_current_token_l2_center_repair(event, candidate_index, candidates, evaluations);
     if let Some(reason) = hard_structural_veto::hidden_state_rejection(signals) {
-        if hidden_rejection_deferred_to_verified_boundary(reason)
-            && verified_current_token_boundary_merge_split(event, candidate, evaluation)
+        if (hidden_rejection_deferred_to_verified_boundary(reason)
+            && verified_current_token_boundary_merge_split(event, candidate, evaluation))
+            || (hidden_rejection_deferred_to_verified_l2_repair(reason)
+                && verified_l2_center_repair)
         {
-            // L4 ambiguity protects lexical choice operators from guessing.  A
-            // verifier-proven current-token boundary split is a structural edit:
-            // competing word centers may not veto it unless L4 has an explicit
-            // rejected transition, which is handled below by latent L4 memory.
+            // L4 ambiguity protects lexical choice operators from guessing. A
+            // verifier-proven current-token boundary split or strongly separated
+            // dirty-surface -> lexical-center repair is already a typed edit
+            // certificate; only exact negative memory may veto it later.
         } else {
             debug_decision_reject(candidate, reason, bayes.posterior, bayes.risk);
             return false;
@@ -122,11 +126,14 @@ pub(super) fn candidate_has_apply_authority(
         || bayes.context_prior >= CURRENT.learned_prior_floor
         || signals.l3_phrase_milli >= CURRENT.l3_strong_milli
         || signals.l4_signed_milli >= CURRENT.l4_strong_milli;
+    let hidden_state_support = hidden_state_confirms_candidate(signals);
     let contextual_transition_support = bayes.context_prior >= CURRENT.learned_prior_floor
         || signals.l3_phrase_milli >= CURRENT.l3_strong_milli
         || signals.l4_signed_milli >= CURRENT.l4_strong_milli
         || exact_positive_transition
-        || strong_l2_peak_support;
+        || hidden_state_support
+        || strong_l2_peak_support
+        || verified_l2_center_repair;
     if candidate.origin == crate::candidate_contract::CandidateOrigin::LayoutThenTypo
         && original_tail_has_same_script_context(event)
         && !contextual_transition_support
@@ -139,11 +146,13 @@ pub(super) fn candidate_has_apply_authority(
         );
         return false;
     }
-    let strong_learned_support =
-        external_learned_support || strong_l2_peak_support || high_precision_boundary_shift;
+    let strong_learned_support = external_learned_support
+        || strong_l2_peak_support
+        || high_precision_boundary_shift
+        || verified_l2_center_repair;
     // A phase package may order candidates but may never manufacture apply
     // authority. Only independently verified state evidence reaches here.
-    let strong_transition_support = context_state_support;
+    let strong_transition_support = context_state_support || verified_l2_center_repair;
     let admission = admit_evaluated_hidden_transition(
         candidates.len(),
         source_role,
@@ -274,6 +283,7 @@ fn known_form_drift_requires_state_proof(
             | TypingErrorClass::LetterSubstitution
             | TypingErrorClass::CompositeTypo
             | TypingErrorClass::MissingLetter
+            | TypingErrorClass::SparseInternalMultiOmission
             | TypingErrorClass::ExtraLetter
             | TypingErrorClass::RepeatedLetter
     ) {
@@ -454,6 +464,7 @@ fn learned_candidate_shadowed_by_deterministic_owner(
     };
     let original_word = event.current_word.to_lowercase();
     let candidate_distance = damerau_levenshtein(&original_word, &candidate_word.to_lowercase());
+    let candidate_rank = evaluations[candidate_index].signals.rank_score;
 
     candidates.iter().enumerate().any(|(other_index, other)| {
         if other.source != CorrectionDecisionSource::Deterministic
@@ -482,6 +493,8 @@ fn learned_candidate_shadowed_by_deterministic_owner(
         };
         let other_distance = damerau_levenshtein(&original_word, &other_word.to_lowercase());
         other_distance <= candidate_distance
+            && candidate_rank
+                <= evaluations[other_index].signals.rank_score + CURRENT.structural_rank_proximity
     })
 }
 
@@ -506,7 +519,7 @@ fn verified_current_token_boundary_merge_split(
         )
         && evaluation.action.verifier_passed
         && evaluation.action.edit_operator == verifier::EditTransitionOperator::BoundaryMergeSplit
-        && crate::text_metrics::current_token_boundary_split(
+        && crate::text_metrics::current_token_boundary_split_or_repair(
             &event.original,
             &candidate.replacement,
         )
@@ -514,6 +527,71 @@ fn verified_current_token_boundary_merge_split(
 
 fn hidden_rejection_deferred_to_verified_boundary(reason: &str) -> bool {
     matches!(reason, "ambiguous" | "unobserved")
+}
+
+fn hidden_rejection_deferred_to_verified_l2_repair(reason: &str) -> bool {
+    matches!(reason, "ambiguous" | "unobserved")
+}
+
+fn verified_current_token_l2_center_repair(
+    event: &TypingErrorEvent,
+    candidate_index: usize,
+    candidates: &[UnifiedCorrectionCandidate],
+    evaluations: &[CandidateDecisionEvaluation],
+) -> bool {
+    let candidate = &candidates[candidate_index];
+    let evaluation = &evaluations[candidate_index];
+    if candidate.origin.source_role() != CorrectionSourceRole::L2Surface
+        || !matches!(
+            candidate.error_class,
+            TypingErrorClass::MissingLetter
+                | TypingErrorClass::SparseInternalMultiOmission
+                | TypingErrorClass::LetterSubstitution
+                | TypingErrorClass::ExtraLetter
+                | TypingErrorClass::RepeatedLetter
+                | TypingErrorClass::AdjacentTransposition
+                | TypingErrorClass::CompositeTypo
+        )
+        || !evaluation.action.verifier_passed
+        || evaluation.action.left_context_changed
+        || evaluation.action.changed_tokens != 1
+        || evaluation.action.edit_operator != verifier::EditTransitionOperator::ReplaceCurrentWord
+    {
+        return false;
+    }
+    let Some((original, replacement)) = current_and_replacement_words(event, candidate) else {
+        return false;
+    };
+    if !cyrillic_letters_only(&original)
+        || !cyrillic_letters_only(&replacement)
+        || original == replacement
+        || stable_observed_lexical_word_blocks_repair(&original)
+        || !known_lexical_state_or_form(&replacement)
+    {
+        return false;
+    }
+    let distance = damerau_levenshtein(&original, &replacement);
+    let typed_geometry = distance <= 1
+        || crate::text_metrics::sparse_internal_omission_count(&original, &replacement).is_some()
+        || (candidate.error_class == TypingErrorClass::CompositeTypo && distance <= 3);
+    typed_geometry
+        && (strong_l2_wave_peak_support(&evaluation.signals)
+            || phase_center_separates_candidate(event, candidate_index, candidates, evaluations))
+}
+
+fn stable_observed_lexical_word_blocks_repair(word: &str) -> bool {
+    crate::lexicon::is_common_ru_word(word)
+        || crate::lexicon::is_ru_live_protected_word(word)
+        || crate::lexicon::is_user_protected_word(word)
+        || crate::russian_lexicon::is_center_backed_russian_form(word)
+}
+
+fn hidden_state_confirms_candidate(signals: &CandidateDecisionSignals) -> bool {
+    matches!(
+        signals.l4_hidden_disposition,
+        L4HiddenDisposition::Resolved | L4HiddenDisposition::Witnessed
+    ) && signals.l4_hidden_certificate_valid
+        && signals.l4_hidden_selected_class != 0
 }
 
 pub(super) fn admit_evaluated_hidden_transition(
@@ -696,7 +774,9 @@ fn stronger_unresolved_candidate_exists(
                 | verifier::EditTransitionOperator::BoundaryMergeSplit
                 | verifier::EditTransitionOperator::LayoutProjection
         );
-    if selected_is_complete_proven_transition {
+    if selected_is_complete_proven_transition
+        || verified_current_token_l2_center_repair(event, selected_index, candidates, evaluations)
+    {
         return false;
     }
     let selected_bayes = &selected_evaluation.bayes;

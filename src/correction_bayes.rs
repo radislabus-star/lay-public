@@ -116,6 +116,7 @@ fn input_likelihood(
     match error_class {
         "adjacent-transposition" => edit_likelihood.max(0.82),
         "missing-letter" => edit_likelihood.max(0.78),
+        "sparse-internal-multi-omission" => edit_likelihood.max(0.82),
         "repeated-letter" | "extra-letter" => edit_likelihood.max(0.74),
         "letter-substitution" => edit_likelihood.max(0.68),
         "composite-typo" | "grammar-agreement" => edit_likelihood,

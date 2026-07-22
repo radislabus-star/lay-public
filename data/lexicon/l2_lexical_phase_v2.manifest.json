@@ -1,14 +1,14 @@
 {
   "schema": "lay.lexical-phase-manifest.v2",
   "artifact_format": 2,
-  "compiler_version": "0.2.241",
+  "compiler_version": "0.2.316",
   "include_hunspell": true,
   "include_english": true,
   "source_files": [
     {
       "path": "data/lexicon/common_ru.txt",
-      "bytes": 1183,
-      "checksum": "2f8ff34649c6a604"
+      "bytes": 1450,
+      "checksum": "0416c5b9b09f1a19"
     },
     {
       "path": "data/lexicon/common_en_technical.txt",
@@ -33,12 +33,12 @@
     {
       "path": "/usr/share/dict/words",
       "bytes": 985084,
-      "checksum": "33eb8fc25dcb9e8e"
+      "checksum": "e844fb756f4dae5b"
     },
     {
       "path": "/usr/share/hunspell/ru_RU.dic",
-      "bytes": 3473191,
-      "checksum": "f3821cc3616fb52f"
+      "bytes": 3473205,
+      "checksum": "cb1a847a72eb69ef"
     },
     {
       "path": "/usr/share/hunspell/ru_RU.aff",
@@ -46,10 +46,11 @@
       "checksum": "a4339bab1b3d70e7"
     }
   ],
-  "corpus_hash": "a1a8c88b988ce70c",
-  "artifact_checksum": "5b3471397d0295b8",
-  "source_words": 245105,
-  "training_surfaces": 1600422,
-  "artifact_bytes": 62422636,
+  "training_surface_files": [],
+  "corpus_hash": "cacf7dd8d2eb0417",
+  "artifact_checksum": "04fc8234a1813213",
+  "source_words": 245116,
+  "training_surfaces": 1600423,
+  "artifact_bytes": 62424748,
   "raw_word_table": false
 }

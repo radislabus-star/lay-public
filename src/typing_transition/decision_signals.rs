@@ -472,6 +472,18 @@ fn transition_rank_bonus(
         verifier::EditTransitionOperator::ReplaceCurrentWord => {
             if candidate.has_origin(crate::candidate_contract::CandidateOrigin::DeterministicTypo) {
                 0.08
+            } else if candidate.has_origin(crate::candidate_contract::CandidateOrigin::L2Surface)
+                && candidate.error_class == TypingErrorClass::SparseInternalMultiOmission
+            {
+                0.20
+            } else if candidate.has_origin(crate::candidate_contract::CandidateOrigin::L2Surface)
+                && action.operator == crate::language_action::LanguageActionOperator::RestoreMissingLetter
+            {
+                0.12
+            } else if candidate.has_origin(crate::candidate_contract::CandidateOrigin::L2Surface)
+                && is_precise_lexical_operator(action.operator)
+            {
+                0.02
             } else if candidate.has_origin(crate::candidate_contract::CandidateOrigin::L2Surface) {
                 -0.08
             } else {

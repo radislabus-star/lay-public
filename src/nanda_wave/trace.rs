@@ -128,10 +128,32 @@ mod tests {
 
         let ru_to_en = run_wave_trace("руддщ ");
         assert_eq!(ru_to_en.output(), Some("hello "));
-        assert!(ru_to_en
-            .l2_candidates
-            .iter()
-            .any(|candidate| candidate.source == "LayoutWordCell32"));
+        assert!(ru_to_en.l2_candidates.iter().any(|candidate| {
+            matches!(
+                candidate.source,
+                "LayoutWordCell32" | "layout_then_l2_word_center"
+            )
+        }));
+    }
+
+    #[test]
+    fn trace_layout_flip_uses_exact_english_reference_centers() {
+        for (input, expected) in [("зщке ", "port "), ("сфкпщ ", "cargo ")] {
+            let trace = run_wave_trace(input);
+            assert_eq!(trace.output(), Some(expected), "trace={trace:?}");
+            assert!(trace.l2_candidates.iter().any(|candidate| {
+                matches!(
+                    candidate.source,
+                    "LayoutWordCell32" | "layout_then_l2_word_center"
+                ) && candidate.text == expected.trim()
+            }));
+        }
+    }
+
+    #[test]
+    fn trace_repairs_internal_char_move_geometry() {
+        let trace = run_wave_trace("ктороый ");
+        assert_eq!(trace.output(), Some("который "), "trace={trace:?}");
     }
 
     #[test]

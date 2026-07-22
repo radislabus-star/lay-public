@@ -24,8 +24,7 @@ pub(super) fn boundary_split_candidates(
         return Vec::new();
     }
     let normalized = token.to_lowercase();
-    if normalized.chars().count() < 6
-        || is_common_ru_word(&normalized)
+    if is_common_ru_word(&normalized)
         || is_ru_live_protected_word(&normalized)
         || surface_motif_strict_known_surface(&normalized)
     {
@@ -48,6 +47,9 @@ pub(super) fn boundary_split_candidates(
                 support
             },
         }];
+    }
+    if normalized.chars().count() < 6 {
+        return Vec::new();
     }
     if surface_motif_known_surface(&normalized) {
         return Vec::new();
@@ -131,6 +133,7 @@ pub(super) fn boundary_split_candidates(
 
 fn light_boundary_replacement(word: &str) -> Option<String> {
     let chars = word.chars().collect::<Vec<_>>();
+    let mut fuzzy_typo_candidates: Option<Vec<String>> = None;
     let mut best = None::<(usize, String)>;
     for split in 1..chars.len() {
         let left = chars[..split].iter().collect::<String>();
@@ -142,10 +145,23 @@ fn light_boundary_replacement(word: &str) -> Option<String> {
             continue;
         }
         let known_left_function = is_ru_one_letter_function_word(&left);
-        let known_left_pronoun = crate::lexicon::is_ru_short_pronoun(&left);
+        let known_left_pronoun = crate::lexicon::is_ru_single_letter_pronoun(&left)
+            || crate::lexicon::is_ru_short_pronoun(&left);
         let known_left_common = is_common_ru_word(&left);
         let known_left = known_left_function || known_left_pronoun || known_left_common;
         let known_right = surface_motif_known_surface(&right);
+        if known_left_function && !known_left_pronoun {
+            let fuzzy = fuzzy_typo_candidates
+                .get_or_insert_with(|| crate::ru_typo::fuzzy_known_word_candidates(word));
+            if !fuzzy.is_empty() && !strong_boundary_right_anchor(&right) {
+                continue;
+            }
+        }
+        if word.chars().count() < 6
+            && (!(known_left_function || known_left_pronoun) || !is_common_ru_word(&right))
+        {
+            continue;
+        }
         if known_left && known_right {
             let score = boundary_split_score(
                 left.chars().count(),

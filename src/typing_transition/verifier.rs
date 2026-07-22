@@ -111,6 +111,8 @@ fn infer_operator(input: &EditTransitionInput<'_>) -> TransitionOperator {
         return TransitionOperator::BoundaryShift;
     }
     if boundary_merge_split_is_verified(
+        input.original,
+        input.replacement,
         input.proof,
         input.error_class,
         input.original_words,
@@ -237,6 +239,8 @@ fn changed_replacement_tokens_have_lexical_mass(
 }
 
 fn boundary_merge_split_is_verified(
+    original: &str,
+    replacement: &str,
     proof: LanguageActionProof,
     error_class: TypingErrorClass,
     original_words: &[String],
@@ -247,8 +251,10 @@ fn boundary_merge_split_is_verified(
             error_class,
             TypingErrorClass::SplitWord | TypingErrorClass::GluedWords
         )
-        && original_words.len().abs_diff(replacement_words.len()) == 1
-        && has_one_merge_or_split(original_words, replacement_words)
+        && original_words.len().abs_diff(replacement_words.len()) <= 2
+        && (original_words.len().abs_diff(replacement_words.len()) == 1
+            && has_one_merge_or_split(original_words, replacement_words)
+            || crate::text_metrics::current_token_repaired_boundary_split(original, replacement))
 }
 
 fn phrase_token_repair_is_verified(
@@ -480,6 +486,34 @@ mod tests {
             assert!(proof.left_context_changed);
             assert_eq!(proof.changed_tokens, 2);
         }
+    }
+
+    #[test]
+    fn proves_bounded_current_token_boundary_split_with_repair() {
+        let proof = proof(
+            "прблематут ",
+            "проблема тут ",
+            TypingErrorClass::GluedWords,
+            CandidateOrigin::Boundary,
+        );
+
+        assert_eq!(proof.operator, TransitionOperator::BoundaryMergeSplit);
+        assert!(proof.verified);
+        assert!(proof.left_context_changed);
+        assert_eq!(proof.changed_tokens, 2);
+    }
+
+    #[test]
+    fn repaired_boundary_split_cannot_import_left_context() {
+        let proof = proof(
+            "мы прблематут ",
+            "проблема мы тут ",
+            TypingErrorClass::GluedWords,
+            CandidateOrigin::Boundary,
+        );
+
+        assert_eq!(proof.operator, TransitionOperator::Unknown);
+        assert!(!proof.verified);
     }
 
     #[test]

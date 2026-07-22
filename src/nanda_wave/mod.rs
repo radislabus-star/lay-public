@@ -55,6 +55,14 @@ pub fn l3_context_report_json(
     l3_context_metrics::report_json(cases, full_cases)
 }
 
+pub fn l3_context_report_json_with_jobs(
+    cases: &[crate::eval_cases::EvalCase],
+    full_cases: usize,
+    jobs: usize,
+) -> serde_json::Value {
+    l3_context_metrics::report_json_with_jobs(cases, full_cases, jobs)
+}
+
 pub fn compile_l3_context_phase_memory(
     corpus_path: &std::path::Path,
     output_path: &std::path::Path,
