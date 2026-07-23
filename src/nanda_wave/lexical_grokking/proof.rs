@@ -82,6 +82,22 @@ struct RestorationMetrics {
     geometry_tied_safe: usize,
     geometry_tied_safe_percent: f64,
     false_singleton_on_geometry_tie: usize,
+    objective_unique_cases: usize,
+    objective_unique_winner: usize,
+    objective_unique_winner_percent: f64,
+    objective_ambiguous_cases: usize,
+    objective_ambiguous_safe: usize,
+    objective_ambiguous_safe_percent: f64,
+    false_authority_on_objective_ambiguity: usize,
+    crystallized_geometry_ties: usize,
+    crystallized_geometry_ties_correct: usize,
+    crystallized_geometry_ties_wrong: usize,
+    crystallized_geometry_tie_precision_percent: f64,
+    crystallization_known_edges: usize,
+    crystallization_unknown_edges: usize,
+    crystallization_tied_edges: usize,
+    crystallization_conflict_edges: usize,
+    crystallization_cycle_cases: usize,
 }
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -184,9 +200,30 @@ struct ReconstructionDiagnostic {
 }
 
 #[derive(Clone, Debug, Serialize)]
+struct AmbiguityAuthorityDiagnostic {
+    class: &'static str,
+    surface: String,
+    target_terminals: Vec<u32>,
+    target_surfaces: Vec<Option<String>>,
+    authority_terminal: u32,
+    authority_surface: Option<String>,
+    nearest_terminals: Vec<u32>,
+    nearest_surfaces: Vec<Option<String>>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+struct CleanMissDiagnostic {
+    target_terminal: u32,
+    target_surface: String,
+    selected_terminal: Option<u32>,
+    selected_surface: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize)]
 pub struct L1LexicalGrokkingProof {
     verdict: &'static str,
     l11_verdict: &'static str,
+    l11_crystallization_verdict: &'static str,
     source_words: usize,
     training_surfaces: usize,
     heldout_surfaces: usize,
@@ -232,9 +269,12 @@ pub struct L1LexicalGrokkingProof {
     positive_subcenters: usize,
     anti_subcenters: usize,
     hard_negative_subcenters: usize,
+    ambiguity_subcenters: usize,
+    active_ambiguity_profiles: usize,
     calibration_max_geometry_distance: u8,
     calibration_min_positive_milli: u16,
     calibration_min_backward_milli: u16,
+    calibration_min_tied_energy_margin: u16,
     artifact_bytes: usize,
     raw_corpus_stored: bool,
     exact_damage_episodes_stored: usize,
@@ -267,13 +307,28 @@ pub struct L1LexicalGrokkingProof {
     l11_geometry_tied_cases: usize,
     l11_geometry_tied_safe_percent: f64,
     l11_false_singleton_on_geometry_tie: usize,
+    l11_objective_unique_winner_percent: f64,
+    l11_objective_ambiguous_cases: usize,
+    l11_objective_ambiguous_safe_percent: f64,
+    l11_false_authority_on_objective_ambiguity: usize,
+    l11_crystallized_geometry_ties: usize,
+    l11_crystallized_geometry_ties_correct: usize,
+    l11_crystallized_geometry_ties_wrong: usize,
+    l11_crystallized_geometry_tie_precision_percent: f64,
+    l11_crystallization_known_edges: usize,
+    l11_crystallization_unknown_edges: usize,
+    l11_crystallization_tied_edges: usize,
+    l11_crystallization_conflict_edges: usize,
+    l11_crystallization_cycle_cases: usize,
     l11_hot_readout_p50_us: u64,
     l11_hot_readout_p99_us: u64,
     l11_hot_readout_max_us: u64,
     classes: BTreeMap<&'static str, ClassMetrics>,
+    clean_miss_diagnostics: Vec<CleanMissDiagnostic>,
     miss_diagnostics: Vec<MissDiagnostic>,
     position_diagnostics: Vec<PositionDiagnostic>,
     reconstruction_diagnostics: Vec<ReconstructionDiagnostic>,
+    ambiguity_authority_diagnostics: Vec<AmbiguityAuthorityDiagnostic>,
     package: String,
 }
 
@@ -412,11 +467,24 @@ fn prove_l1_lexical_grokking_with_policy(
             "L1 package terminal dictionary does not match proof corpus",
         ));
     }
-    let clean_top1 = words
+    let clean_miss_diagnostics = words
         .iter()
         .enumerate()
-        .filter(|(target, word)| top_is(&memory, word, *target as u32, ReadoutMode::Full))
-        .count();
+        .filter_map(|(target, word)| {
+            let selected_terminal = memory
+                .readout(word, 1, ReadoutMode::Full)
+                .first()
+                .map(|candidate| candidate.terminal_id);
+            (selected_terminal != Some(target as u32)).then(|| CleanMissDiagnostic {
+                target_terminal: target as u32,
+                target_surface: word.clone(),
+                selected_terminal,
+                selected_surface: selected_terminal
+                    .and_then(|terminal| memory.decode_terminal(terminal)),
+            })
+        })
+        .collect::<Vec<_>>();
+    let clean_top1 = words.len().saturating_sub(clean_miss_diagnostics.len());
     // Measure the hot path before proof-only decoder and edit-geometry audits
     // disturb caches or contend with the parallel evaluator.
     let latency = measure_hot_readout(&memory, &heldout);
@@ -464,6 +532,18 @@ fn prove_l1_lexical_grokking_with_policy(
         restoration.geometry_tied_safe,
         restoration.geometry_tied_cases.max(1),
     );
+    let l11_objective_unique_winner_percent = percent(
+        restoration.objective_unique_winner,
+        restoration.objective_unique_cases.max(1),
+    );
+    let l11_objective_ambiguous_safe_percent = percent(
+        restoration.objective_ambiguous_safe,
+        restoration.objective_ambiguous_cases.max(1),
+    );
+    let l11_crystallized_geometry_tie_precision_percent = percent(
+        restoration.crystallized_geometry_ties_correct,
+        restoration.crystallized_geometry_ties.max(1),
+    );
     let all_l11_classes_pass = metrics.classes.values().all(|class| {
         class.restoration.geometry_unique_winner_percent > 95.0
             && class.restoration.geometry_tied_safe_percent == 100.0
@@ -473,8 +553,26 @@ fn prove_l1_lexical_grokking_with_policy(
         && l11_geometry_unique_winner_percent > 98.8
         && l11_geometry_tied_safe_percent == 100.0
         && restoration.false_singleton_on_geometry_tie == 0
+        && l11_objective_ambiguous_safe_percent == 100.0
+        && restoration.false_authority_on_objective_ambiguity == 0
         && percentile(&l11_latency, 99) <= 5_000
         && all_l11_classes_pass
+    {
+        "PASS_shadow"
+    } else {
+        "WATCH_shadow"
+    };
+    let all_crystallization_classes_pass = metrics.classes.values().all(|class| {
+        class.restoration.objective_unique_winner_percent > 95.0
+            && class.restoration.objective_ambiguous_safe_percent == 100.0
+            && class.restoration.crystallized_geometry_ties_wrong == 0
+    });
+    let l11_crystallization_verdict = if clean_percent >= 99.9
+        && l11_objective_ambiguous_safe_percent == 100.0
+        && restoration.false_authority_on_objective_ambiguity == 0
+        && restoration.crystallized_geometry_ties_wrong == 0
+        && percentile(&l11_latency, 99) <= 5_000
+        && all_crystallization_classes_pass
     {
         "PASS_shadow"
     } else {
@@ -483,6 +581,7 @@ fn prove_l1_lexical_grokking_with_policy(
     let proof = L1LexicalGrokkingProof {
         verdict,
         l11_verdict,
+        l11_crystallization_verdict,
         source_words: words.len(),
         training_surfaces,
         heldout_surfaces: heldout.len(),
@@ -529,9 +628,25 @@ fn prove_l1_lexical_grokking_with_policy(
         positive_subcenters: package.positive_subcenters.len(),
         anti_subcenters: package.anti_subcenters.len(),
         hard_negative_subcenters: package.hard_negative_subcenters.len(),
+        ambiguity_subcenters: package.ambiguity_subcenters.len(),
+        active_ambiguity_profiles: package
+            .center_phase_profiles
+            .iter()
+            .filter(|profile| {
+                let start = profile.ambiguity_start as usize;
+                let end = start.saturating_add(profile.ambiguity_count as usize);
+                package
+                    .ambiguity_subcenters
+                    .get(start..end)
+                    .unwrap_or_default()
+                    .iter()
+                    .any(|center| center.coupling_count != 0)
+            })
+            .count(),
         calibration_max_geometry_distance: package.restoration_calibration.max_geometry_distance,
         calibration_min_positive_milli: package.restoration_calibration.min_positive_milli,
         calibration_min_backward_milli: package.restoration_calibration.min_backward_milli,
+        calibration_min_tied_energy_margin: package.restoration_calibration.min_tied_energy_margin,
         artifact_bytes: bytes.len(),
         raw_corpus_stored: false,
         exact_damage_episodes_stored: 0,
@@ -564,13 +679,29 @@ fn prove_l1_lexical_grokking_with_policy(
         l11_geometry_tied_cases: restoration.geometry_tied_cases,
         l11_geometry_tied_safe_percent,
         l11_false_singleton_on_geometry_tie: restoration.false_singleton_on_geometry_tie,
+        l11_objective_unique_winner_percent,
+        l11_objective_ambiguous_cases: restoration.objective_ambiguous_cases,
+        l11_objective_ambiguous_safe_percent,
+        l11_false_authority_on_objective_ambiguity: restoration
+            .false_authority_on_objective_ambiguity,
+        l11_crystallized_geometry_ties: restoration.crystallized_geometry_ties,
+        l11_crystallized_geometry_ties_correct: restoration.crystallized_geometry_ties_correct,
+        l11_crystallized_geometry_ties_wrong: restoration.crystallized_geometry_ties_wrong,
+        l11_crystallized_geometry_tie_precision_percent,
+        l11_crystallization_known_edges: restoration.crystallization_known_edges,
+        l11_crystallization_unknown_edges: restoration.crystallization_unknown_edges,
+        l11_crystallization_tied_edges: restoration.crystallization_tied_edges,
+        l11_crystallization_conflict_edges: restoration.crystallization_conflict_edges,
+        l11_crystallization_cycle_cases: restoration.crystallization_cycle_cases,
         l11_hot_readout_p50_us: percentile(&l11_latency, 50),
         l11_hot_readout_p99_us: percentile(&l11_latency, 99),
         l11_hot_readout_max_us: l11_latency.last().copied().unwrap_or_default(),
         classes: metrics.classes,
+        clean_miss_diagnostics,
         miss_diagnostics: metrics.misses,
         position_diagnostics,
         reconstruction_diagnostics: evaluation.reconstruction_diagnostics,
+        ambiguity_authority_diagnostics: evaluation.ambiguity_authority_diagnostics,
         package: output_path.display().to_string(),
     };
     serde_json::to_value(proof).map_err(io::Error::other)
@@ -617,6 +748,7 @@ struct Evaluation {
     position_worsened: usize,
     position_diagnostics: Vec<PositionDiagnostic>,
     reconstruction_diagnostics: Vec<ReconstructionDiagnostic>,
+    ambiguity_authority_diagnostics: Vec<AmbiguityAuthorityDiagnostic>,
 }
 
 fn evaluate_parallel(
@@ -685,6 +817,18 @@ fn evaluate_parallel(
         *count += 1;
         *count <= MAX_RECONSTRUCTION_DIAGNOSTICS_PER_CLASS
     });
+    evaluation
+        .ambiguity_authority_diagnostics
+        .sort_unstable_by(|left, right| {
+            let left_mutates = left.authority_surface.as_deref() != Some(left.surface.as_str());
+            let right_mutates = right.authority_surface.as_deref() != Some(right.surface.as_str());
+            right_mutates
+                .cmp(&left_mutates)
+                .then_with(|| left.class.cmp(right.class))
+                .then_with(|| left.surface.cmp(&right.surface))
+                .then_with(|| left.authority_terminal.cmp(&right.authority_terminal))
+        });
+    evaluation.ambiguity_authority_diagnostics.truncate(64);
     for class in evaluation.metrics.classes.values_mut() {
         class.unique_top1_percent = percent(class.unique_top1, class.unique_cases.max(1));
         class.lattice_coverage_percent = percent(class.top64, class.cases);
@@ -742,6 +886,25 @@ fn evaluate_parallel(
                 class.restoration.geometry_tied_cases,
             )
         };
+        class.restoration.objective_unique_winner_percent = percent(
+            class.restoration.objective_unique_winner,
+            class.restoration.objective_unique_cases.max(1),
+        );
+        class.restoration.objective_ambiguous_safe_percent =
+            if class.restoration.objective_ambiguous_cases == 0 {
+                100.0
+            } else {
+                percent(
+                    class.restoration.objective_ambiguous_safe,
+                    class.restoration.objective_ambiguous_cases,
+                )
+            };
+        class
+            .restoration
+            .crystallized_geometry_tie_precision_percent = percent(
+            class.restoration.crystallized_geometry_ties_correct,
+            class.restoration.crystallized_geometry_ties.max(1),
+        );
         class.edit_geometry.target_unique_min_top1_percent = percent(
             class.edit_geometry.target_unique_min_top1,
             class.edit_geometry.target_unique_min_cases.max(1),
@@ -944,12 +1107,46 @@ fn evaluate_cases<'a>(
             });
         }
         let targets = &ambiguity[example.surface.as_str()];
+        if targets.len() > 1 {
+            if let RestorationReadout::Winner { candidate } = &restoration {
+                let nearest_terminals =
+                    super::restoration::geometric_basin(&restoration_candidates)
+                        .into_iter()
+                        .map(|candidate| candidate.terminal_id)
+                        .collect::<Vec<_>>();
+                evaluation
+                    .ambiguity_authority_diagnostics
+                    .push(AmbiguityAuthorityDiagnostic {
+                        class: example.class,
+                        surface: example.surface.clone(),
+                        target_terminals: targets.iter().copied().collect(),
+                        target_surfaces: targets
+                            .iter()
+                            .map(|terminal| memory.decode_terminal(*terminal))
+                            .collect(),
+                        authority_terminal: candidate.terminal_id,
+                        authority_surface: memory.decode_terminal(candidate.terminal_id),
+                        nearest_surfaces: nearest_terminals
+                            .iter()
+                            .map(|terminal| memory.decode_terminal(*terminal))
+                            .collect(),
+                        nearest_terminals,
+                    });
+            }
+        }
         let class = evaluation.metrics.classes.entry(example.class).or_default();
         record_restoration(
             &mut class.restoration,
             &restoration_candidates,
             &restoration,
             *target,
+            targets,
+            match &restoration {
+                RestorationReadout::Winner { candidate } => memory
+                    .decode_terminal(candidate.terminal_id)
+                    .is_some_and(|surface| surface != example.surface),
+                _ => false,
+            },
         );
         class.cases += 1;
         class.top1 += usize::from(top1);
@@ -1013,6 +1210,8 @@ fn record_restoration(
     candidates: &[super::runtime::GrokkingCandidate],
     readout: &RestorationReadout,
     target_terminal: u32,
+    objective_targets: &BTreeSet<u32>,
+    authority_mutates_surface: bool,
 ) {
     metrics.cases += 1;
     let mut authority = BTreeSet::new();
@@ -1064,6 +1263,15 @@ fn record_restoration(
     metrics.authority_target_winner += usize::from(authority.contains(&target_terminal));
     metrics.target_retained += usize::from(returned.contains(&target_terminal));
     metrics.evidence_target_retained += usize::from(evidence.contains(&target_terminal));
+    let authority_terminal = authority.iter().next().copied();
+    if objective_targets.len() == 1 {
+        metrics.objective_unique_cases += 1;
+        metrics.objective_unique_winner += usize::from(authority_terminal == Some(target_terminal));
+    } else {
+        metrics.objective_ambiguous_cases += 1;
+        metrics.objective_ambiguous_safe += usize::from(!authority_mutates_surface);
+        metrics.false_authority_on_objective_ambiguity += usize::from(authority_mutates_surface);
+    }
 
     let scalar_minimum = candidates
         .iter()
@@ -1082,6 +1290,16 @@ fn record_restoration(
         .into_iter()
         .map(|candidate| candidate.terminal_id)
         .collect::<BTreeSet<_>>();
+    if let Some(probe) = candidates
+        .iter()
+        .find(|candidate| nearest.contains(&candidate.terminal_id))
+    {
+        metrics.crystallization_known_edges += usize::from(probe.crystallization_known_edges);
+        metrics.crystallization_unknown_edges += usize::from(probe.crystallization_unknown_edges);
+        metrics.crystallization_tied_edges += usize::from(probe.crystallization_tied_edges);
+        metrics.crystallization_conflict_edges += usize::from(probe.crystallization_conflicts);
+        metrics.crystallization_cycle_cases += usize::from(probe.crystallization_cycles != 0);
+    }
     let scalar_has_target = scalar_nearest.contains(&target_terminal);
     let nearest_has_target = nearest.contains(&target_terminal);
     metrics.scalar_geometry_target_in_nearest_basin += usize::from(scalar_has_target);
@@ -1106,6 +1324,14 @@ fn record_restoration(
         ));
         metrics.false_singleton_on_geometry_tie +=
             usize::from(matches!(readout, RestorationReadout::Winner { .. }));
+        if let Some(authority_terminal) = authority_terminal {
+            metrics.crystallized_geometry_ties += 1;
+            if objective_targets.len() == 1 && authority_terminal == target_terminal {
+                metrics.crystallized_geometry_ties_correct += 1;
+            } else if authority_mutates_surface {
+                metrics.crystallized_geometry_ties_wrong += 1;
+            }
+        }
     }
 }
 
@@ -1184,6 +1410,9 @@ fn merge_evaluation(target: &mut Evaluation, source: Evaluation) {
     target
         .reconstruction_diagnostics
         .extend(source.reconstruction_diagnostics);
+    target
+        .ambiguity_authority_diagnostics
+        .extend(source.ambiguity_authority_diagnostics);
     for (name, source_class) in source.metrics.classes {
         let class = target.metrics.classes.entry(name).or_default();
         class.cases += source_class.cases;
@@ -1233,6 +1462,19 @@ fn merge_restoration(target: &mut RestorationMetrics, source: RestorationMetrics
     target.geometry_tied_cases += source.geometry_tied_cases;
     target.geometry_tied_safe += source.geometry_tied_safe;
     target.false_singleton_on_geometry_tie += source.false_singleton_on_geometry_tie;
+    target.objective_unique_cases += source.objective_unique_cases;
+    target.objective_unique_winner += source.objective_unique_winner;
+    target.objective_ambiguous_cases += source.objective_ambiguous_cases;
+    target.objective_ambiguous_safe += source.objective_ambiguous_safe;
+    target.false_authority_on_objective_ambiguity += source.false_authority_on_objective_ambiguity;
+    target.crystallized_geometry_ties += source.crystallized_geometry_ties;
+    target.crystallized_geometry_ties_correct += source.crystallized_geometry_ties_correct;
+    target.crystallized_geometry_ties_wrong += source.crystallized_geometry_ties_wrong;
+    target.crystallization_known_edges += source.crystallization_known_edges;
+    target.crystallization_unknown_edges += source.crystallization_unknown_edges;
+    target.crystallization_tied_edges += source.crystallization_tied_edges;
+    target.crystallization_conflict_edges += source.crystallization_conflict_edges;
+    target.crystallization_cycle_cases += source.crystallization_cycle_cases;
 }
 
 fn record_edit_geometry_case(

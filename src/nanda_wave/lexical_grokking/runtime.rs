@@ -4,18 +4,23 @@ use std::io;
 use std::path::Path;
 use std::time::Instant;
 
+use crate::stable_hash::mix64_golden;
+
 use super::atoms::{
     encode_wave_surface, normalize_lexical_surface, physical_key_sequence, AtomChannel,
 };
-use super::crystal::WAVE_DIMENSION;
+use super::crystal::{AmbiguityPhaseCenter64, WAVE_DIMENSION};
 use super::format;
 use super::model::{
     LexicalGrokkingPackage, WaveCoupling, CENTER_PHASE_FLAG_PHYSICAL_KEY_GEOMETRY,
     COUPLING_FLAG_CHARACTER_ANCHOR,
 };
-use super::wave_basis::{complex_coherence_milli, expand_atom, expand_word};
+use super::wave_basis::{
+    complex_coherence_milli, expand_atom, expand_word, pair_residual_atoms, positioned_atom_code,
+};
 
 const MAX_PHASE_FRONTIER: usize = 128;
+const MAX_GEOMETRY_RESERVE: usize = 32;
 const SETTLING_ITERATIONS: u8 = 3;
 const MAX_ANCHOR_SEQUENCE: usize = 32;
 pub(super) const RECONSTRUCTION_MODE_DELETION: u8 = 1;
@@ -177,7 +182,20 @@ fn candidate_json(
         "anti_milli": candidate.anti_milli,
         "anti_subcenter_milli": candidate.anti_subcenter_milli,
         "hard_negative_milli": candidate.hard_negative_milli,
+        "ambiguity_milli": candidate.ambiguity_milli,
+        "ambiguity_threshold_milli": candidate.ambiguity_threshold_milli,
+        "ambiguity_linked": candidate.ambiguity_linked,
+        "ambiguity_shell": candidate.ambiguity_shell,
         "pairwise_loss_milli": candidate.pairwise_loss_milli,
+        "crystallization_wins": candidate.crystallization_wins,
+        "crystallization_required": candidate.crystallization_required,
+        "crystallization_margin_milli": candidate.crystallization_margin_milli,
+        "crystallization_complete": candidate.crystallization_complete,
+        "crystallization_known_edges": candidate.crystallization_known_edges,
+        "crystallization_unknown_edges": candidate.crystallization_unknown_edges,
+        "crystallization_tied_edges": candidate.crystallization_tied_edges,
+        "crystallization_conflicts": candidate.crystallization_conflicts,
+        "crystallization_cycles": candidate.crystallization_cycles,
         "length_milli": candidate.length_milli,
         "geometry_distance": candidate.geometry_distance,
         "reconstruction_modes": candidate.reconstruction_modes,
@@ -226,7 +244,20 @@ pub(super) struct GrokkingCandidate {
     pub(super) anti_milli: u16,
     pub(super) anti_subcenter_milli: u16,
     pub(super) hard_negative_milli: u16,
+    pub(super) ambiguity_milli: u16,
+    pub(super) ambiguity_threshold_milli: u16,
+    pub(super) ambiguity_linked: bool,
+    pub(super) ambiguity_shell: bool,
     pub(super) pairwise_loss_milli: u16,
+    pub(super) crystallization_wins: u8,
+    pub(super) crystallization_required: u8,
+    pub(super) crystallization_margin_milli: u16,
+    pub(super) crystallization_complete: bool,
+    pub(super) crystallization_known_edges: u16,
+    pub(super) crystallization_unknown_edges: u16,
+    pub(super) crystallization_tied_edges: u16,
+    pub(super) crystallization_conflicts: u16,
+    pub(super) crystallization_cycles: u16,
     pub(super) length_milli: u16,
     pub(super) geometry_distance: u8,
     pub(super) reconstruction_modes: u8,
@@ -235,6 +266,15 @@ pub(super) struct GrokkingCandidate {
     pub(super) length_relation: i8,
     pub(super) settling_iterations: u8,
     pub(super) exact_reconstruction: bool,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub(super) struct AmbiguityObservation {
+    pub(super) center_index: usize,
+    pub(super) owner: u32,
+    pub(super) competitor: u32,
+    pub(super) coherence_milli: u16,
+    pub(super) structurally_applicable: bool,
 }
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -276,13 +316,31 @@ impl AnchorSequence {
 
 pub(super) struct LexicalGrokkingMemory {
     pub(super) package: LexicalGrokkingPackage,
+    exact_surface_index: Vec<(u64, u32)>,
+    character_anchors: Vec<Vec<u32>>,
 }
 
 impl LexicalGrokkingMemory {
+    pub(super) fn from_package(package: LexicalGrokkingPackage) -> Self {
+        let character_anchors = compile_character_anchors(&package);
+        let exact_surface_index = compile_exact_surface_index(&character_anchors);
+        Self {
+            package,
+            exact_surface_index,
+            character_anchors,
+        }
+    }
+
+    pub(super) fn into_package(self) -> LexicalGrokkingPackage {
+        self.package
+    }
+
+    pub(super) fn ambiguity_center_count(&self) -> usize {
+        self.package.ambiguity_subcenters.len()
+    }
+
     pub(super) fn from_bytes(bytes: &[u8]) -> Result<Self, String> {
-        Ok(Self {
-            package: format::decode(bytes)?,
-        })
+        Ok(Self::from_package(format::decode(bytes)?))
     }
 
     pub(super) fn readout(
@@ -299,6 +357,7 @@ impl LexicalGrokkingMemory {
             return Vec::new();
         }
         let character_sequence = observed_sequence(&observed, AtomChannel::CharacterAnchor);
+        let exact_terminals = self.exact_terminals(character_sequence.as_slice());
         let observed_char_count = normalize_lexical_surface(surface)
             .chars()
             .count()
@@ -368,15 +427,33 @@ impl LexicalGrokkingMemory {
                     .collect::<Vec<_>>();
                 (surface_re, surface_im, max_forward, frontier)
             });
+        let geometry_reserve = if exact_terminals.is_empty() {
+            self.geometry_reserve(&frontier, character_sequence.as_slice())
+        } else {
+            Vec::new()
+        };
+        let geometry_reserve_ids = geometry_reserve
+            .iter()
+            .map(|(terminal_id, _)| *terminal_id)
+            .collect::<BTreeSet<_>>();
         frontier.sort_unstable_by(|left, right| {
-            right
-                .1
-                .mass
-                .cmp(&left.1.mass)
+            exact_terminals
+                .contains(&right.0)
+                .cmp(&exact_terminals.contains(&left.0))
+                .then_with(|| right.1.mass.cmp(&left.1.mass))
                 .then_with(|| right.1.hits.cmp(&left.1.hits))
                 .then_with(|| left.0.cmp(&right.0))
         });
         frontier.truncate(MAX_PHASE_FRONTIER.max(limit));
+        let mut retained = frontier
+            .iter()
+            .map(|(terminal_id, _)| *terminal_id)
+            .collect::<BTreeSet<_>>();
+        frontier.extend(
+            geometry_reserve
+                .into_iter()
+                .filter(|(terminal_id, _)| retained.insert(*terminal_id)),
+        );
         let observed = observed
             .into_iter()
             .filter(|(_, atom)| !is_anchor_channel(atom.channel))
@@ -395,6 +472,10 @@ impl LexicalGrokkingMemory {
                     observed_char_count,
                     mode,
                 )
+            })
+            .map(|mut candidate| {
+                candidate.ambiguity_shell = geometry_reserve_ids.contains(&candidate.terminal_id);
+                candidate
             })
             .collect::<Vec<_>>();
         apply_structural_interference(&mut candidates);
@@ -420,6 +501,62 @@ impl LexicalGrokkingMemory {
         candidates
     }
 
+    fn exact_terminals(&self, observed: &[u32]) -> BTreeSet<u32> {
+        let hash = anchor_sequence_hash(observed);
+        let start = self
+            .exact_surface_index
+            .partition_point(|(candidate_hash, _)| *candidate_hash < hash);
+        let end = self
+            .exact_surface_index
+            .partition_point(|(candidate_hash, _)| *candidate_hash <= hash);
+        self.exact_surface_index[start..end]
+            .iter()
+            .filter_map(|(_, terminal)| {
+                (self.character_anchors.get(*terminal as usize)?.as_slice() == observed)
+                    .then_some(*terminal)
+            })
+            .collect()
+    }
+
+    fn geometry_reserve(
+        &self,
+        frontier: &[(u32, ForwardActivation)],
+        observed: &[u32],
+    ) -> Vec<(u32, ForwardActivation)> {
+        let maximum_distance =
+            usize::from(self.package.restoration_calibration.max_geometry_distance);
+        let mut minimum_distance = usize::MAX;
+        let mut measured = Vec::new();
+        for (terminal_id, activation) in frontier {
+            let Some(expected) = self.character_anchors.get(*terminal_id as usize) else {
+                continue;
+            };
+            if expected.len().abs_diff(observed.len()) > maximum_distance {
+                continue;
+            }
+            let distance = damerau_distance(observed, expected);
+            if distance > maximum_distance {
+                continue;
+            }
+            minimum_distance = minimum_distance.min(distance);
+            measured.push((distance, *terminal_id, *activation));
+        }
+        let ambiguity_shell = minimum_distance.saturating_add(1).min(maximum_distance);
+        measured.retain(|(distance, _, _)| *distance <= ambiguity_shell);
+        measured.sort_unstable_by(|left, right| {
+            left.0
+                .cmp(&right.0)
+                .then_with(|| right.2.mass.cmp(&left.2.mass))
+                .then_with(|| right.2.hits.cmp(&left.2.hits))
+                .then_with(|| left.1.cmp(&right.1))
+        });
+        measured.truncate(MAX_GEOMETRY_RESERVE);
+        measured
+            .into_iter()
+            .map(|(_, terminal_id, activation)| (terminal_id, activation))
+            .collect()
+    }
+
     pub(super) fn classify_restoration(
         &self,
         surface: &str,
@@ -430,7 +567,11 @@ impl LexicalGrokkingMemory {
         super::restoration::classify(candidates, calibration)
     }
 
-    fn apply_l11_phase_evidence(&self, surface: &str, candidates: &mut [GrokkingCandidate]) {
+    pub(super) fn apply_l11_phase_evidence(
+        &self,
+        surface: &str,
+        candidates: &mut [GrokkingCandidate],
+    ) {
         if self.package.center_phase_profiles.is_empty() {
             return;
         }
@@ -438,6 +579,8 @@ impl LexicalGrokkingMemory {
         let observed_character_sequence =
             observed_sequence(&observed, AtomChannel::CharacterAnchor);
         let normalized_char_count = normalize_lexical_surface(surface).chars().count();
+        let character_anchors_cover_surface =
+            observed_character_sequence.as_slice().len() == normalized_char_count;
         let observed_keyboard_sequence = observed_sequence(&observed, AtomChannel::KeyboardGram);
         let observed_physical_keys = physical_key_sequence(surface);
         let observed_script_flags = super::model::surface_script_flags(surface);
@@ -518,8 +661,9 @@ impl LexicalGrokkingMemory {
             .filter(|candidate| candidate.geometry_distance == minimum_geometry)
             .map(|candidate| candidate.terminal_id)
             .collect::<BTreeSet<_>>();
-        for candidate in candidates {
-            if candidate.geometry_distance != minimum_geometry {
+        let mut ambiguity_links = Vec::new();
+        for candidate in candidates.iter_mut() {
+            if !present.contains(&candidate.terminal_id) {
                 continue;
             }
             let Some(profile) = self
@@ -556,7 +700,186 @@ impl LexicalGrokkingMemory {
                 &surface_im,
                 Some(&present),
             );
+            let ambiguity_start = profile.ambiguity_start as usize;
+            let ambiguity_end = ambiguity_start.saturating_add(profile.ambiguity_count as usize);
+            let mut geometry_linked_competitors = BTreeSet::new();
+            for center in self
+                .package
+                .ambiguity_subcenters
+                .get(ambiguity_start..ambiguity_end)
+                .unwrap_or_default()
+            {
+                let relation = AmbiguityPhaseCenter64::from_record(*center);
+                let threshold = relation.threshold_milli();
+                if geometry_linked_competitors.contains(&center.decoder_terminal) {
+                    continue;
+                }
+                let Some(owner_center) = self.package.centers.get(candidate.terminal_id as usize)
+                else {
+                    continue;
+                };
+                let Some(competitor_center) =
+                    self.package.centers.get(center.decoder_terminal as usize)
+                else {
+                    continue;
+                };
+                let competitor_character_sequence = expected_sequence(
+                    self.reverse_couplings(*competitor_center),
+                    COUPLING_FLAG_CHARACTER_ANCHOR,
+                );
+                let competitor_geometry = damerau_distance(
+                    observed_character_sequence.as_slice(),
+                    competitor_character_sequence.as_slice(),
+                )
+                .min(u8::MAX as usize) as u8;
+                let geometry_link = character_anchors_cover_surface
+                    && ambiguity_geometry_link(
+                        candidate.geometry_distance,
+                        competitor_geometry,
+                        self.package.restoration_calibration.max_geometry_distance,
+                    );
+                if !candidate.exact_reconstruction && geometry_link {
+                    if geometry_linked_competitors.insert(center.decoder_terminal) {
+                        ambiguity_links.push((candidate.terminal_id, center.decoder_terminal));
+                    }
+                    continue;
+                }
+                if threshold == 0 {
+                    continue;
+                }
+                let (residual_re, residual_im) = expanded_pair_residual_wave(
+                    &observed,
+                    &self.package.atoms,
+                    &self.package.basis,
+                    self.reverse_couplings(*owner_center),
+                    self.reverse_couplings(*competitor_center),
+                );
+                let (center_re, center_im) = expand_word(&self.package.basis, *center);
+                let coherence =
+                    complex_coherence_milli(&residual_re, &residual_im, &center_re, &center_im);
+                candidate.ambiguity_milli = candidate.ambiguity_milli.max(coherence);
+                candidate.ambiguity_threshold_milli =
+                    candidate.ambiguity_threshold_milli.max(threshold);
+                let phase_link = threshold != 0 && coherence >= threshold;
+                if !candidate.exact_reconstruction && phase_link {
+                    ambiguity_links.push((candidate.terminal_id, center.decoder_terminal));
+                }
+            }
         }
+        for (owner, competitor) in ambiguity_links {
+            let Some(owner_index) = candidates
+                .iter()
+                .position(|candidate| candidate.terminal_id == owner)
+            else {
+                continue;
+            };
+            let Some(competitor_index) = candidates
+                .iter()
+                .position(|candidate| candidate.terminal_id == competitor)
+            else {
+                candidates[owner_index].ambiguity_linked = true;
+                continue;
+            };
+            if candidates[owner_index]
+                .geometry_distance
+                .abs_diff(candidates[competitor_index].geometry_distance)
+                > 1
+            {
+                continue;
+            }
+            candidates[owner_index].ambiguity_linked = true;
+            candidates[competitor_index].ambiguity_linked = true;
+            let basin_distance = candidates[owner_index]
+                .geometry_distance
+                .min(candidates[competitor_index].geometry_distance);
+            candidates[owner_index].geometry_distance = basin_distance;
+            candidates[competitor_index].geometry_distance = basin_distance;
+        }
+        super::pairwise::apply_restoration_dominance_certificate(
+            &self.package.pair_profiles,
+            &self.package.pair_centers,
+            &self.package.basis,
+            candidates,
+            &surface_re,
+            &surface_im,
+        );
+    }
+
+    pub(super) fn ambiguity_observations(
+        &self,
+        surface: &str,
+        candidates: &[GrokkingCandidate],
+    ) -> Vec<AmbiguityObservation> {
+        let observed = self.resolve_surface(surface);
+        if observed.is_empty() || candidates.is_empty() {
+            return Vec::new();
+        }
+        let minimum_geometry = candidates
+            .iter()
+            .map(|candidate| candidate.geometry_distance)
+            .min()
+            .unwrap_or(u8::MAX);
+        let mut observations = Vec::new();
+        for owner in candidates
+            .iter()
+            .filter(|candidate| candidate.geometry_distance == minimum_geometry)
+        {
+            let Some(owner_center) = self.package.centers.get(owner.terminal_id as usize) else {
+                continue;
+            };
+            let Some(profile) = self
+                .package
+                .center_phase_profiles
+                .get(owner.terminal_id as usize)
+            else {
+                continue;
+            };
+            let start = profile.ambiguity_start as usize;
+            let end = start.saturating_add(profile.ambiguity_count as usize);
+            for (offset, relation_center) in self
+                .package
+                .ambiguity_subcenters
+                .get(start..end)
+                .unwrap_or_default()
+                .iter()
+                .enumerate()
+            {
+                let Some(competitor_center) = self
+                    .package
+                    .centers
+                    .get(relation_center.decoder_terminal as usize)
+                else {
+                    continue;
+                };
+                let (residual_re, residual_im) = expanded_pair_residual_wave(
+                    &observed,
+                    &self.package.atoms,
+                    &self.package.basis,
+                    self.reverse_couplings(*owner_center),
+                    self.reverse_couplings(*competitor_center),
+                );
+                let (center_re, center_im) = expand_word(&self.package.basis, *relation_center);
+                let coherence =
+                    complex_coherence_milli(&residual_re, &residual_im, &center_re, &center_im);
+                let structurally_applicable = candidates
+                    .iter()
+                    .find(|candidate| candidate.terminal_id == relation_center.decoder_terminal)
+                    .is_some_and(|competitor| {
+                        owner
+                            .geometry_distance
+                            .abs_diff(competitor.geometry_distance)
+                            <= 1
+                    });
+                observations.push(AmbiguityObservation {
+                    center_index: start + offset,
+                    owner: owner.terminal_id,
+                    competitor: relation_center.decoder_terminal,
+                    coherence_milli: coherence,
+                    structurally_applicable,
+                });
+            }
+        }
+        observations
     }
 
     pub(super) fn decode_terminal(&self, terminal_id: u32) -> Option<String> {
@@ -703,7 +1026,20 @@ impl LexicalGrokkingMemory {
             anti_milli,
             anti_subcenter_milli: 0,
             hard_negative_milli: 0,
+            ambiguity_milli: 0,
+            ambiguity_threshold_milli: 0,
+            ambiguity_linked: false,
+            ambiguity_shell: false,
             pairwise_loss_milli: 0,
+            crystallization_wins: 0,
+            crystallization_required: 0,
+            crystallization_margin_milli: 0,
+            crystallization_complete: false,
+            crystallization_known_edges: 0,
+            crystallization_unknown_edges: 0,
+            crystallization_tied_edges: 0,
+            crystallization_conflicts: 0,
+            crystallization_cycles: 0,
             length_milli,
             geometry_distance,
             reconstruction_modes: 0,
@@ -777,6 +1113,43 @@ impl LexicalGrokkingMemory {
                 .saturating_sub(i32::from(pressure).saturating_mul(4));
         }
     }
+}
+
+fn expanded_pair_residual_wave(
+    observed: &[(u32, ObservedAtom)],
+    atoms: &[super::model::AtomRecord],
+    basis: &[super::crystal::ComplexBasisWave],
+    owner_reverse: &[WaveCoupling],
+    competitor_reverse: &[WaveCoupling],
+) -> ([i32; WAVE_DIMENSION], [i32; WAVE_DIMENSION]) {
+    let residual = pair_residual_atoms(
+        observed
+            .iter()
+            .filter(|(_, atom)| !is_anchor_channel(atom.channel))
+            .map(|(atom_id, atom)| (*atom_id, atom.position)),
+        owner_reverse
+            .iter()
+            .filter(|coupling| coupling.flags == 0)
+            .map(|coupling| (coupling.peer_id, coupling.position_mode)),
+        competitor_reverse
+            .iter()
+            .filter(|coupling| coupling.flags == 0)
+            .map(|coupling| (coupling.peer_id, coupling.position_mode)),
+    );
+    let mut re = [0_i32; WAVE_DIMENSION];
+    let mut im = [0_i32; WAVE_DIMENSION];
+    for relation in residual {
+        if let Some(atom) = atoms.get(relation.atom_id as usize) {
+            expand_atom(
+                basis,
+                positioned_atom_code(atom.wave_code, relation.position_mode),
+                &mut re,
+                &mut im,
+                relation.coefficient,
+            );
+        }
+    }
+    (re, im)
 }
 
 fn max_subcenter_coherence(
@@ -928,6 +1301,53 @@ pub(super) fn apply_position_certificate_interference(candidates: &mut [Grokking
         }
     }
     candidates[..=winner].rotate_right(1);
+}
+
+fn compile_character_anchors(package: &LexicalGrokkingPackage) -> Vec<Vec<u32>> {
+    package
+        .centers
+        .iter()
+        .map(|center| {
+            let start = center.coupling_start as usize;
+            let end = start.saturating_add(center.coupling_count as usize);
+            expected_sequence(
+                package
+                    .reverse_couplings
+                    .get(start..end)
+                    .unwrap_or_default(),
+                COUPLING_FLAG_CHARACTER_ANCHOR,
+            )
+            .as_slice()
+            .to_vec()
+        })
+        .collect()
+}
+
+fn compile_exact_surface_index(character_anchors: &[Vec<u32>]) -> Vec<(u64, u32)> {
+    let mut index = character_anchors
+        .iter()
+        .enumerate()
+        .map(|(terminal, anchors)| (anchor_sequence_hash(anchors), terminal as u32))
+        .collect::<Vec<_>>();
+    index.sort_unstable();
+    index
+}
+
+fn anchor_sequence_hash(sequence: &[u32]) -> u64 {
+    let mut state = mix64_golden(0x4c31_4558_4143_5431 ^ sequence.len() as u64);
+    for atom in sequence {
+        state = mix64_golden(state ^ u64::from(*atom));
+    }
+    state
+}
+
+pub(super) fn ambiguity_geometry_link(
+    owner_distance: u8,
+    competitor_distance: u8,
+    max_geometry_distance: u8,
+) -> bool {
+    competitor_distance <= max_geometry_distance
+        && owner_distance.abs_diff(competitor_distance) <= 1
 }
 
 fn apply_structural_interference(candidates: &mut [GrokkingCandidate]) {
@@ -1150,10 +1570,67 @@ pub(super) fn candidate_order(
     right: &GrokkingCandidate,
 ) -> std::cmp::Ordering {
     right
-        .settled_energy
-        .cmp(&left.settled_energy)
+        .exact_reconstruction
+        .cmp(&left.exact_reconstruction)
+        .then_with(|| right.settled_energy.cmp(&left.settled_energy))
         .then_with(|| right.backward_milli.cmp(&left.backward_milli))
         .then_with(|| right.positive_milli.cmp(&left.positive_milli))
         .then_with(|| right.forward_milli.cmp(&left.forward_milli))
         .then_with(|| left.terminal_id.cmp(&right.terminal_id))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn geometry_reserve_keeps_the_nearest_basin_and_ambiguity_shell() {
+        let memory = LexicalGrokkingMemory {
+            package: LexicalGrokkingPackage {
+                restoration_calibration: super::super::restoration::RestorationCalibration {
+                    max_geometry_distance: 2,
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+            exact_surface_index: Vec::new(),
+            character_anchors: vec![vec![1, 9, 9], vec![1, 2, 4], vec![1, 2, 5]],
+        };
+        let frontier = vec![
+            (
+                0,
+                ForwardActivation {
+                    mass: 10_000,
+                    hits: 10,
+                    ..Default::default()
+                },
+            ),
+            (
+                1,
+                ForwardActivation {
+                    mass: 100,
+                    hits: 2,
+                    ..Default::default()
+                },
+            ),
+            (
+                2,
+                ForwardActivation {
+                    mass: 90,
+                    hits: 2,
+                    ..Default::default()
+                },
+            ),
+        ];
+
+        let reserve = memory.geometry_reserve(&frontier, &[1, 2, 3]);
+
+        assert_eq!(
+            reserve
+                .into_iter()
+                .map(|(terminal_id, _)| terminal_id)
+                .collect::<Vec<_>>(),
+            vec![1, 2, 0]
+        );
+    }
 }

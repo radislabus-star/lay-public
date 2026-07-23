@@ -32,21 +32,23 @@ the L1 lattice must not be renamed L2 to hide an L1 reconstruction deficit.
 
 ```text
 file              lines  purpose
-atoms.rs            300  normalization, typed atoms and character anchors
+atoms.rs            310  normalization, typed atoms and character anchors
 ngram_graph.rs      132  reversible NGramKey -> dense AtomId
-crystal.rs          210  fixed records and WordCenter64
-wave_basis.rs       215  shared basis, compression and coherence
-model.rs             46  package tables, couplings and anchor flags
-compiler.rs         477  cold crystallization and anti-centers
-runtime.rs          554  frontier, reconstruction and interference
-format.rs           603  deterministic v2/v3 binary package
-posting_codec.rs    305  compressed forward blocks and parity proof
-corruption.rs       159  proof-only damage generation
-proof.rs            421  heldout metrics, ambiguity and ablations
-tests.rs            187  focused invariants
-mod.rs               25  shadow facade
+crystal.rs          249  fixed records and WordCenter64
+wave_basis.rs       287  shared basis, compression and coherence
+model.rs            114  package tables, couplings and anchor flags
+compiler.rs        1481  cold crystallization and anti-centers
+runtime.rs         1636  frontier, reconstruction and interference
+format.rs          1103  deterministic versioned binary package
+posting_codec.rs    303  compressed forward blocks and parity proof
+corruption.rs       301  proof-only damage generation
+proof.rs           1760  heldout metrics, ambiguity and ablations
+restoration.rs      500  typed Winner/Tied/ABSTAIN authority
+pairwise.rs         322  bounded lattice crystallization
+tests.rs            593  focused invariants
+mod.rs               31  shadow facade
                    ----
-total              3634
+total              9122
 ```
 
 ## 3. Typed Atom Memory
@@ -146,7 +148,8 @@ damaged surface
 -> NGramGraph
 -> observed AtomId + positions
 -> AtomWave accumulation
--> forward candidate frontier (currently max 128)
+-> forward candidate frontier (main max 128)
+-> bounded geometry reserve (max 32, damaged surfaces only)
 
 candidate WordCenter
 -> reverse AtomWordCouplings
@@ -164,10 +167,11 @@ occur in the L1 lattice. They activate only when their competing winner is
 present. The anti vector enters the same interference calculation before the
 final ordering.
 
-The fixed frontier and fixed top-4 anti bank describe the current shadow
-implementation, not the scale-complete architecture. The normative replacement
-is complete postings, exact upper-bound pruning, conformal candidate coverage
-and adaptive clustered anti modes.
+The fixed main frontier, bounded geometry reserve and fixed top-4 anti bank
+describe the current shadow implementation, not the scale-complete
+architecture. The normative replacement is complete postings, exact
+upper-bound pruning, conformal candidate coverage and adaptive clustered anti
+modes.
 
 ## 7. Decoder Boundary
 
@@ -596,7 +600,118 @@ Artifacts:
 - receipt:
   `docs/structural_gates/receipts/L1_1_MULTIMODAL_RECONSTRUCTION_10K_2026-07-23.json`
 
-### 9.4 Historical baselines
+### 9.4 L1.1 crystallization closure: bounded ambiguity shell
+
+The final 10k safety closure does not enlarge the complete settling field and
+does not add lexical rules. It preserves the V55 main frontier and admits a
+small evidence reserve from the same real forward postings:
+
+```text
+typed atom postings
+-> complete touched-center set
+-> main mass frontier, max 128
+-> exact clean center has priority
+-> damaged-only geometry reserve, max 32
+   -> calibrated nearest basin
+   -> one adjacent ambiguity shell (min + 1)
+-> positive / anti / hard-negative / pairwise interference
+-> ambiguity-shell candidates remain in the restoration basin
+-> complete crystallization certificate may authorize one winner
+-> otherwise Tied or ABSTAIN
+```
+
+The reserve stores no target label and scans no external vocabulary. Runtime
+uses the package's predecoded character-anchor sequences only for centers born
+from the observed atom postings. The ambiguity shell can preserve evidence and
+veto unsupported singleton authority; it cannot choose a word by itself.
+
+Two alternatives were rejected:
+
+```text
+precomputed nearest-neighbor map
+  startup about 22 s, peak RSS about 500 MiB
+
+global phase frontier 128 -> 256
+  pairwise work grows quadratically
+  full proof exceeded 12 minutes and was stopped
+```
+
+The accepted reserve loads the same package in about `0.2--0.3 s` with about
+`124 MiB` process RSS. Isolated hot probes measured `2.820 ms` exact-surface
+p99 and `3.415 ms` on the difficult `буноть` ambiguity. The full fixed proof
+measured:
+
+```text
+source words                                  10,000
+training / heldout surfaces         789,936 / 107,544
+package bytes                              49,663,268
+proof workers                                      20
+proof time                                    380.885 s
+
+clean preservation                   10,000 / 10,000 = 100.000%
+target-label top-1                              94.521%
+target-label top-64                             99.943%
+
+L1.1 authority target winner                    65.699%
+L1.1 evidence target retained                   99.752%
+objective ambiguity safety         2,783 / 2,783 = 100.000%
+false authority                                       0
+false singleton                                       0
+reconstruction recovered / lost                 217 / 0
+winner / tied / abstain              70,886 / 36,105 / 553
+hot p50 / p99                         3.782 / 4.754 ms
+
+L1.1 verdict                                PASS_shadow
+overall target-label verdict               WATCH_shadow
+```
+
+The authority delta from the preceding unsafe reserve was
+`71.404% -> 65.699%`. This is intentional: the removed authority was converted
+to evidence-preserving `Tied`, not redirected to another candidate. Promotion
+still requires solving target-label top-1 and proving the same safety at scale.
+
+Per-class proof includes the actual case denominator. Columns are
+`cases / unique top-1 / top-64 / authority / evidence retained / ambiguity
+safety`:
+
+```text
+adjacent transposition       19,464   98.140%   99.995%   63.882%   99.928%   100%
+double substitution           2,472   81.358%   99.757%   75.647%   99.757%   100%
+extra letter                 19,513   96.333%   99.995%   71.460%   99.995%   100%
+layout projection             2,433   87.752%   99.301%   90.464%   99.301%   100%
+letter substitution          19,900   97.034%   99.935%   62.940%   99.653%   100%
+missing letter               19,502   97.525%   99.933%   46.282%   99.487%   100%
+non-adjacent transposition    2,377   86.890%  100.000%   73.917%  100.000%   100%
+omission + transposition      2,384   86.682%   99.832%   58.977%   99.790%   100%
+prefix truncation             2,480   98.147%  100.000%   52.702%   99.435%   100%
+punctuation suffix           10,017  100.000%  100.000%  100.000%  100.000%   100%
+repeated fragment             2,455   89.201%  100.000%   87.373%  100.000%   100%
+sparse multi-omission         2,169   86.691%   99.816%   50.622%   99.769%   100%
+suffix truncation             2,378   92.243%   99.916%   38.898%   98.486%   100%
+```
+
+Accepted artifacts:
+
+- package:
+  `data/lexical_grokking/l1_l11_crystallization_10k.bin`
+- package SHA-256:
+  `af5150ebc57fa01d7faf7b98723e3a0483160bcc51e99371dd11da56045d1f58`
+- receipt:
+  `docs/structural_gates/receipts/L1_1_CRYSTALLIZATION_AMBIGUITY_SHELL_10K_2026-07-23.json`
+- receipt SHA-256:
+  `032bd00d8e988c31ab7f8cf60cd1f50a364bccf40b1bef9bdcff7232673e164d`
+
+This authorizes only the standalone shadow command:
+
+```bash
+lay-l1.1-restore \
+  --memory data/lexical_grokking/l1_l11_crystallization_10k.bin \
+  буноть
+```
+
+It does not authorize IME, daemon, auto-apply, L2, L3 or L4 integration.
+
+### 9.5 Historical baselines
 
 Accepted 2,000-word v15 baseline after fixing relative-position quantization:
 

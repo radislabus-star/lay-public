@@ -12,6 +12,7 @@ pub(super) struct RestorationCalibration {
     pub(super) max_geometry_distance: u8,
     pub(super) min_positive_milli: u16,
     pub(super) min_backward_milli: u16,
+    pub(super) min_tied_energy_margin: u16,
 }
 
 impl RestorationCalibration {
@@ -19,6 +20,7 @@ impl RestorationCalibration {
         max_geometry_distance: u8::MAX,
         min_positive_milli: 0,
         min_backward_milli: 0,
+        min_tied_energy_margin: 0,
     };
 }
 
@@ -40,6 +42,18 @@ pub(super) struct RestorationEvidence {
     pub(super) backward_milli: u16,
     pub(super) anti_milli: u16,
     pub(super) hard_negative_milli: u16,
+    pub(super) ambiguity_milli: u16,
+    pub(super) ambiguity_threshold_milli: u16,
+    pub(super) ambiguity_linked: bool,
+    pub(super) ambiguity_shell: bool,
+    pub(super) crystallization_wins: u8,
+    pub(super) crystallization_required: u8,
+    pub(super) crystallization_margin_milli: u16,
+    pub(super) crystallization_known_edges: u16,
+    pub(super) crystallization_unknown_edges: u16,
+    pub(super) crystallization_tied_edges: u16,
+    pub(super) crystallization_conflicts: u16,
+    pub(super) crystallization_cycles: u16,
 }
 
 impl From<&GrokkingCandidate> for RestorationEvidence {
@@ -53,6 +67,18 @@ impl From<&GrokkingCandidate> for RestorationEvidence {
             backward_milli: candidate.backward_milli,
             anti_milli: candidate.anti_subcenter_milli.max(candidate.anti_milli),
             hard_negative_milli: candidate.hard_negative_milli,
+            ambiguity_milli: candidate.ambiguity_milli,
+            ambiguity_threshold_milli: candidate.ambiguity_threshold_milli,
+            ambiguity_linked: candidate.ambiguity_linked,
+            ambiguity_shell: candidate.ambiguity_shell,
+            crystallization_wins: candidate.crystallization_wins,
+            crystallization_required: candidate.crystallization_required,
+            crystallization_margin_milli: candidate.crystallization_margin_milli,
+            crystallization_known_edges: candidate.crystallization_known_edges,
+            crystallization_unknown_edges: candidate.crystallization_unknown_edges,
+            crystallization_tied_edges: candidate.crystallization_tied_edges,
+            crystallization_conflicts: candidate.crystallization_conflicts,
+            crystallization_cycles: candidate.crystallization_cycles,
         }
     }
 }
@@ -120,6 +146,16 @@ pub(super) fn classify(
     }
 
     if nearest.len() > 1 {
+        let certified = nearest
+            .iter()
+            .copied()
+            .filter(|candidate| candidate.crystallization_complete)
+            .collect::<Vec<_>>();
+        if certified.len() == 1 && authority_evidence_is_consistent(certified[0], calibration) {
+            return RestorationReadout::Winner {
+                candidate: certified[0].into(),
+            };
+        }
         if nearest.len() > MAX_TIED_CANDIDATES {
             return RestorationReadout::TiedOverflow {
                 geometry_distance: minimum_distance,
@@ -137,6 +173,7 @@ pub(super) fn classify(
     let evidence = RestorationEvidence::from(winner);
     if evidence.hard_negative_milli >= evidence.positive_milli
         || evidence.anti_milli > evidence.positive_milli
+        || ambiguity_veto(winner)
     {
         return RestorationReadout::Abstain {
             reason: AbstainReason::ConflictingEvidence,
@@ -163,6 +200,38 @@ pub(super) fn classify(
     }
 }
 
+pub(super) fn tied_energy_winner(candidates: &[GrokkingCandidate]) -> Option<(u32, u16)> {
+    let nearest = geometric_basin(candidates);
+    if !(2..=MAX_TIED_CANDIDATES).contains(&nearest.len()) {
+        return None;
+    }
+    let mut ranked = nearest
+        .into_iter()
+        .map(|candidate| (candidate.terminal_id, candidate.settled_energy))
+        .collect::<Vec<_>>();
+    ranked.sort_unstable_by(|left, right| right.1.cmp(&left.1).then_with(|| left.0.cmp(&right.0)));
+    let margin = ranked[0].1.saturating_sub(ranked[1].1);
+    if margin <= 0 {
+        return None;
+    }
+    Some((ranked[0].0, margin.min(i32::from(u16::MAX)) as u16))
+}
+
+fn authority_evidence_is_consistent(
+    candidate: &GrokkingCandidate,
+    calibration: RestorationCalibration,
+) -> bool {
+    let evidence = RestorationEvidence::from(candidate);
+    evidence.hard_negative_milli < evidence.positive_milli
+        && evidence.anti_milli <= evidence.positive_milli
+        && evidence.positive_milli >= calibration.min_positive_milli
+        && candidate.backward_milli >= calibration.min_backward_milli
+}
+
+fn ambiguity_veto(candidate: &GrokkingCandidate) -> bool {
+    !candidate.exact_reconstruction && candidate.ambiguity_linked
+}
+
 pub(super) fn geometric_basin(candidates: &[GrokkingCandidate]) -> Vec<&GrokkingCandidate> {
     let Some(minimum_distance) = candidates
         .iter()
@@ -176,6 +245,7 @@ pub(super) fn geometric_basin(candidates: &[GrokkingCandidate]) -> Vec<&Grokking
         .enumerate()
         .filter(|(rank, candidate)| {
             candidate.geometry_distance == minimum_distance
+                || candidate.ambiguity_shell
                 || (minimum_distance > 0
                     && *rank < MAX_RECONSTRUCTION_FRONTIER
                     && candidate.reconstruction_modes != 0)
@@ -255,6 +325,27 @@ mod tests {
     }
 
     #[test]
+    fn ambiguity_shell_extends_the_tied_basin_without_granting_authority() {
+        let nearest = candidate(9, 1);
+        let mut shell = candidate(3, 2);
+        shell.ambiguity_shell = true;
+        let readout = classify(
+            &[nearest, shell, candidate(1, 3)],
+            RestorationCalibration::LEGACY_PERMISSIVE,
+        );
+        let RestorationReadout::Tied { candidates, .. } = readout else {
+            panic!("expected tied restoration lattice");
+        };
+        assert_eq!(
+            candidates
+                .iter()
+                .map(|candidate| candidate.terminal_id)
+                .collect::<Vec<_>>(),
+            vec![3, 9]
+        );
+    }
+
+    #[test]
     fn calibration_can_abstain_without_inventing_a_winner() {
         let candidates = [candidate(3, 4)];
         let readout = classify(
@@ -309,6 +400,60 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec![1, 2]
         );
+    }
+
+    #[test]
+    fn complete_pairwise_certificate_resolves_a_geometry_tie() {
+        let mut winner = candidate(1, 1);
+        winner.crystallization_wins = 1;
+        winner.crystallization_required = 1;
+        winner.crystallization_margin_milli = 120;
+        winner.crystallization_complete = true;
+        let readout = classify(
+            &[winner, candidate(2, 1)],
+            RestorationCalibration::LEGACY_PERMISSIVE,
+        );
+        assert!(matches!(
+            readout,
+            RestorationReadout::Winner {
+                candidate: RestorationCandidate { terminal_id: 1, .. }
+            }
+        ));
+    }
+
+    #[test]
+    fn anti_veto_preserves_the_full_certified_basin() {
+        let mut attempted_winner = candidate(1, 1);
+        attempted_winner.crystallization_wins = 1;
+        attempted_winner.crystallization_required = 1;
+        attempted_winner.crystallization_margin_milli = 120;
+        attempted_winner.crystallization_complete = true;
+        attempted_winner.hard_negative_milli = 900;
+        let readout = classify(
+            &[attempted_winner, candidate(2, 1)],
+            RestorationCalibration::LEGACY_PERMISSIVE,
+        );
+        assert!(matches!(readout, RestorationReadout::Tied { .. }));
+    }
+
+    #[test]
+    fn learned_ambiguity_wave_vetoes_mutation_but_not_exact_noop() {
+        let mut damaged = candidate(1, 1);
+        damaged.ambiguity_milli = 920;
+        damaged.ambiguity_threshold_milli = 900;
+        damaged.ambiguity_linked = true;
+        let readout = classify(&[damaged], RestorationCalibration::LEGACY_PERMISSIVE);
+        assert!(matches!(
+            readout,
+            RestorationReadout::Abstain {
+                reason: AbstainReason::ConflictingEvidence,
+                ..
+            }
+        ));
+
+        damaged.exact_reconstruction = true;
+        let readout = classify(&[damaged], RestorationCalibration::LEGACY_PERMISSIVE);
+        assert!(matches!(readout, RestorationReadout::Winner { .. }));
     }
 
     #[test]

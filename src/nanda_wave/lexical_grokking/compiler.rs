@@ -3,18 +3,20 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::thread;
 
 use crate::stable_hash::mix64_golden;
+use crate::text_metrics::damerau_levenshtein;
 
 use super::atoms::{encode_wave_surface, physical_key_sequence, AtomChannel, NGramKey};
-use super::crystal::{WordCenter64, WAVE_DIMENSION};
+use super::crystal::{AmbiguityPhaseCenter64, WordCenter64, WAVE_DIMENSION};
 use super::model::{
     AtomRecord, CenterPhaseProfile, DecoderNode, LexicalGrokkingPackage, PairKey, PairPhaseProfile,
     WaveCoupling, COUPLING_FLAG_CHARACTER_ANCHOR,
 };
 use super::ngram_graph::NGramGraph;
-use super::restoration::RestorationCalibration;
+use super::restoration::{tied_energy_winner, RestorationCalibration};
+use super::runtime::{LexicalGrokkingMemory, ReadoutMode};
 use super::wave_basis::{
     compile_basis, complex_coherence_milli, expand_atom, expand_word, learn_atom_code,
-    settle_word_code,
+    pair_residual_atoms, positioned_atom_code, settle_word_code,
 };
 
 const MAX_FORWARD_COUPLINGS: usize = 256;
@@ -74,6 +76,7 @@ struct L11Banks {
     positive: Vec<WordCenter64>,
     anti: Vec<WordCenter64>,
     hard_negative: Vec<WordCenter64>,
+    ambiguity: Vec<WordCenter64>,
     keyboard_geometry: Vec<u32>,
 }
 
@@ -265,6 +268,14 @@ pub(super) fn compile_with_policy(
                 .collect::<Vec<_>>()
         })
         .collect::<Vec<_>>();
+    let l11 = compile_l11_subcenters(
+        words,
+        &resolved,
+        &atoms,
+        &by_atom,
+        &by_word,
+        &all_anti_by_word,
+    );
     let (pair_profiles, pair_centers) = compile_pair_profiles(&anti_by_word);
     let mut anti_centers = Vec::new();
     for (word_id, anti) in anti_by_word.iter_mut().enumerate() {
@@ -273,7 +284,6 @@ pub(super) fn compile_with_policy(
         centers[word_id].anti_count = anti.len().min(u8::MAX as usize) as u8;
         anti_centers.extend_from_slice(anti);
     }
-    let l11 = compile_l11_subcenters(&resolved, &atoms, &all_anti_by_word);
     let restoration_calibration = calibrate_l11(
         &resolved,
         &atoms,
@@ -283,28 +293,165 @@ pub(super) fn compile_with_policy(
         &l11.positive,
     );
 
+    let package = LexicalGrokkingPackage {
+        corpus_hash: corpus_hash(words),
+        graph,
+        basis,
+        atoms,
+        forward_couplings,
+        reverse_couplings,
+        anti_centers,
+        pair_profiles,
+        pair_centers,
+        center_phase_profiles: l11.profiles,
+        positive_subcenters: l11.positive,
+        anti_subcenters: l11.anti,
+        hard_negative_subcenters: l11.hard_negative,
+        ambiguity_subcenters: l11.ambiguity,
+        keyboard_geometry_units: l11.keyboard_geometry,
+        restoration_calibration,
+        centers,
+        decoder_nodes,
+    };
+    let memory = LexicalGrokkingMemory::from_package(package);
+    let ambiguity_thresholds = calibrate_l11_ambiguity_thresholds(words, &memory);
+    let mut package = memory.into_package();
+    for (center, threshold) in package
+        .ambiguity_subcenters
+        .iter_mut()
+        .zip(ambiguity_thresholds)
+    {
+        center.coupling_count = threshold;
+    }
+    let memory = LexicalGrokkingMemory::from_package(package);
+    let min_tied_energy_margin = calibrate_l11_tied_energy_margin(words, &memory);
+    let mut package = memory.into_package();
+    package.restoration_calibration.min_tied_energy_margin = min_tied_energy_margin;
+
     Ok(CompileOutput {
-        package: LexicalGrokkingPackage {
-            corpus_hash: corpus_hash(words),
-            graph,
-            basis,
-            atoms,
-            forward_couplings,
-            reverse_couplings,
-            anti_centers,
-            pair_profiles,
-            pair_centers,
-            center_phase_profiles: l11.profiles,
-            positive_subcenters: l11.positive,
-            anti_subcenters: l11.anti,
-            hard_negative_subcenters: l11.hard_negative,
-            keyboard_geometry_units: l11.keyboard_geometry,
-            restoration_calibration,
-            centers,
-            decoder_nodes,
-        },
+        package,
         diagnostics,
     })
+}
+
+#[derive(Default)]
+struct AmbiguityCalibrationSamples {
+    desired_fit: Vec<u16>,
+    desired_calibration: Vec<u16>,
+    undesired_fit: Vec<u16>,
+    undesired_calibration: Vec<u16>,
+}
+
+fn calibrate_l11_ambiguity_thresholds(
+    words: &[TrainingWord],
+    memory: &LexicalGrokkingMemory,
+) -> Vec<u16> {
+    const CANDIDATE_LIMIT: usize = 64;
+
+    let mut owners = BTreeMap::<&str, BTreeSet<u32>>::new();
+    for word in words {
+        owners
+            .entry(word.surface.as_str())
+            .or_default()
+            .insert(word.terminal_id);
+        for surface in &word.training_surfaces {
+            owners
+                .entry(surface.as_str())
+                .or_default()
+                .insert(word.terminal_id);
+        }
+    }
+    let workers = thread::available_parallelism()
+        .map(usize::from)
+        .unwrap_or(1)
+        .min(words.len().max(1));
+    let partial = thread::scope(|scope| {
+        (0..workers)
+            .map(|worker| {
+                let owners = &owners;
+                scope.spawn(move || {
+                    let mut samples = Vec::<(usize, bool, bool, u16)>::new();
+                    for word in words.iter().skip(worker).step_by(workers) {
+                        for surface in &word.training_surfaces {
+                            let Some(surface_owners) = owners.get(surface.as_str()) else {
+                                continue;
+                            };
+                            let candidates =
+                                memory.readout(surface, CANDIDATE_LIMIT, ReadoutMode::Full);
+                            let calibration = calibration_surface_hash(surface) % 5 == 0;
+                            for observation in memory.ambiguity_observations(surface, &candidates) {
+                                if !observation.structurally_applicable
+                                    || !surface_owners.contains(&observation.owner)
+                                {
+                                    continue;
+                                }
+                                samples.push((
+                                    observation.center_index,
+                                    surface_owners.contains(&observation.competitor),
+                                    calibration,
+                                    observation.coherence_milli,
+                                ));
+                            }
+                        }
+                    }
+                    samples
+                })
+            })
+            .collect::<Vec<_>>()
+            .into_iter()
+            .flat_map(|handle| handle.join().unwrap_or_default())
+            .collect::<Vec<_>>()
+    });
+    let mut samples = (0..memory.ambiguity_center_count())
+        .map(|_| AmbiguityCalibrationSamples::default())
+        .collect::<Vec<_>>();
+    for (center_index, desired, calibration, coherence) in partial {
+        let Some(center) = samples.get_mut(center_index) else {
+            continue;
+        };
+        match (desired, calibration) {
+            (true, true) => center.desired_calibration.push(coherence),
+            (true, false) => center.desired_fit.push(coherence),
+            (false, true) => center.undesired_calibration.push(coherence),
+            (false, false) => center.undesired_fit.push(coherence),
+        }
+    }
+    samples
+        .into_iter()
+        .map(calibrate_ambiguity_center_threshold)
+        .collect()
+}
+
+fn calibrate_ambiguity_center_threshold(mut samples: AmbiguityCalibrationSamples) -> u16 {
+    const UNIQUE_PRESERVATION_PERMILLE: usize = 955;
+
+    let desired = if samples.desired_calibration.is_empty() {
+        &mut samples.desired_fit
+    } else {
+        &mut samples.desired_calibration
+    };
+    if desired.is_empty() {
+        return 0;
+    }
+    let undesired = if samples.undesired_calibration.is_empty() {
+        &mut samples.undesired_fit
+    } else {
+        &mut samples.undesired_calibration
+    };
+    let threshold = if undesired.is_empty() {
+        low_quantile(desired, 100).max(1)
+    } else {
+        let safe = high_quantile(undesired, UNIQUE_PRESERVATION_PERMILLE);
+        if safe == 1_000 {
+            return 0;
+        }
+        safe + 1
+    };
+    if desired.iter().any(|coherence| *coherence >= threshold) {
+        threshold
+    } else {
+        0
+    }
 }
 
 fn validate_words(words: &[TrainingWord]) -> Result<(), String> {
@@ -464,18 +611,38 @@ fn discover_anti_centers(
 }
 
 fn compile_l11_subcenters(
+    words: &[TrainingWord],
     resolved: &[Vec<ResolvedSurface>],
     atoms: &[AtomRecord],
+    forward: &[Vec<WaveCoupling>],
+    reverse: &[Vec<WaveCoupling>],
     directional_anti: &[Vec<WordCenter64>],
 ) -> L11Banks {
     const MAX_POSITIVE_SUBCENTERS: usize = 4;
     const MAX_ANTI_SUBCENTERS: usize = 4;
     const MAX_HARD_NEGATIVE_SUBCENTERS: usize = 2;
+    const MAX_AMBIGUITY_SUBCENTERS: usize = 8;
+    const MAX_AMBIGUITY_SUBCENTERS_PER_RELATION: usize = 2;
+
+    let mut surface_owners = BTreeMap::<&str, BTreeSet<u32>>::new();
+    for word in words {
+        surface_owners
+            .entry(word.surface.as_str())
+            .or_default()
+            .insert(word.terminal_id);
+        for surface in &word.training_surfaces {
+            surface_owners
+                .entry(surface.as_str())
+                .or_default()
+                .insert(word.terminal_id);
+        }
+    }
 
     let mut profiles = Vec::with_capacity(resolved.len());
     let mut positive = Vec::new();
     let mut anti = Vec::new();
     let mut hard_negative = Vec::new();
+    let mut ambiguity = Vec::new();
     let mut keyboard_geometry = Vec::new();
     for (terminal_id, surfaces) in resolved.iter().enumerate() {
         let positive_start = positive.len() as u32;
@@ -509,6 +676,127 @@ fn compile_l11_subcenters(
                 .filter(|center| center.crystal_support == 1)
                 .take(MAX_HARD_NEGATIVE_SUBCENTERS),
         );
+        let ambiguity_start = ambiguity.len() as u32;
+        let surface_names = std::iter::once(words[terminal_id].surface.as_str())
+            .chain(
+                words[terminal_id]
+                    .training_surfaces
+                    .iter()
+                    .map(String::as_str),
+            )
+            .collect::<Vec<_>>();
+        let mut ambiguity_fit = BTreeMap::<u32, Vec<ResolvedSurface>>::new();
+        for (surface, surface_name) in surfaces.iter().zip(&surface_names) {
+            let Some(owners) = surface_owners.get(*surface_name) else {
+                continue;
+            };
+            if owners.len() < 2 || calibration_surface_hash(surface_name) % 5 == 0 {
+                continue;
+            }
+            for competitor in owners {
+                if *competitor != terminal_id as u32 {
+                    ambiguity_fit
+                        .entry(*competitor)
+                        .or_default()
+                        .push(surface.clone());
+                }
+            }
+        }
+        let mut learned_ambiguity = Vec::new();
+        for (competitor, relation_surfaces) in &ambiguity_fit {
+            let residuals = relation_surfaces
+                .iter()
+                .map(|surface| {
+                    pair_residual_phase_mass(
+                        surface,
+                        atoms,
+                        &reverse[terminal_id],
+                        &reverse[*competitor as usize],
+                    )
+                })
+                .collect::<Vec<_>>();
+            let relation_centers = cluster_phase_masses(
+                &residuals,
+                *competitor,
+                MAX_AMBIGUITY_SUBCENTERS_PER_RELATION,
+            );
+            if relation_centers.is_empty() {
+                continue;
+            }
+            learned_ambiguity.extend(relation_centers.into_iter().map(|center| {
+                AmbiguityPhaseCenter64::from_record(center)
+                    .with_threshold_milli(1)
+                    .record()
+            }));
+        }
+        if let Some(clean) = surfaces.first() {
+            let mut represented = learned_ambiguity
+                .iter()
+                .map(|center| center.decoder_terminal)
+                .collect::<BTreeSet<_>>();
+            for competitor in nearby_directional_competitors(
+                terminal_id as u32,
+                words,
+                &directional_anti[terminal_id],
+                MAX_AMBIGUITY_SUBCENTERS,
+            ) {
+                if !represented.insert(competitor) {
+                    continue;
+                }
+                let residual = pair_residual_phase_mass(
+                    clean,
+                    atoms,
+                    &reverse[terminal_id],
+                    &reverse[competitor as usize],
+                );
+                learned_ambiguity.push(
+                    AmbiguityPhaseCenter64::from_record(phase_center(residual, 1, competitor))
+                        .with_threshold_milli(1)
+                        .record(),
+                );
+            }
+            if represented.is_empty() {
+                if let Some(competitor) = nearby_lexical_competitors(
+                    terminal_id as u32,
+                    clean,
+                    words,
+                    forward,
+                    MAX_AMBIGUITY_SUBCENTERS,
+                )
+                .into_iter()
+                .next()
+                {
+                    let residual = pair_residual_phase_mass(
+                        clean,
+                        atoms,
+                        &reverse[terminal_id],
+                        &reverse[competitor as usize],
+                    );
+                    learned_ambiguity.push(
+                        AmbiguityPhaseCenter64::from_record(phase_center(residual, 1, competitor))
+                            .with_threshold_milli(1)
+                            .record(),
+                    );
+                }
+            }
+        }
+        learned_ambiguity.sort_unstable_by(|left, right| {
+            let left_distance = damerau_levenshtein(
+                &words[terminal_id].surface,
+                &words[left.decoder_terminal as usize].surface,
+            );
+            let right_distance = damerau_levenshtein(
+                &words[terminal_id].surface,
+                &words[right.decoder_terminal as usize].surface,
+            );
+            left_distance
+                .cmp(&right_distance)
+                .then_with(|| right.crystal_support.cmp(&left.crystal_support))
+                .then_with(|| left.decoder_terminal.cmp(&right.decoder_terminal))
+                .then_with(|| left.encode().cmp(&right.encode()))
+        });
+        learned_ambiguity.truncate(MAX_AMBIGUITY_SUBCENTERS);
+        ambiguity.extend_from_slice(&learned_ambiguity);
         let keyboard_geometry_start = keyboard_geometry.len() as u32;
         if let Some(clean) = surfaces.first() {
             keyboard_geometry.extend_from_slice(&clean.physical_keys);
@@ -518,12 +806,15 @@ fn compile_l11_subcenters(
             anti_start,
             hard_negative_start,
             keyboard_geometry_start,
+            ambiguity_start,
             positive_count: learned_positive.len() as u8,
             anti_count: (anti.len() as u32 - anti_start) as u8,
             hard_negative_count: (hard_negative.len() as u32 - hard_negative_start) as u8,
             keyboard_geometry_count: (keyboard_geometry.len() as u32 - keyboard_geometry_start)
                 as u8,
             flags: super::model::CENTER_PHASE_FLAG_PHYSICAL_KEY_GEOMETRY,
+            ambiguity_count: learned_ambiguity.len() as u8,
+            min_ambiguity_milli: 0,
         });
     }
     L11Banks {
@@ -531,8 +822,76 @@ fn compile_l11_subcenters(
         positive,
         anti,
         hard_negative,
+        ambiguity,
         keyboard_geometry,
     }
+}
+
+fn nearby_directional_competitors(
+    owner: u32,
+    words: &[TrainingWord],
+    directional: &[WordCenter64],
+    limit: usize,
+) -> Vec<u32> {
+    const MAX_PAIR_DISTANCE: usize = 4;
+
+    let mut candidates = directional
+        .iter()
+        .map(|center| center.decoder_terminal)
+        .filter(|candidate| *candidate != owner)
+        .filter_map(|candidate| {
+            let distance = damerau_levenshtein(
+                &words[owner as usize].surface,
+                &words[candidate as usize].surface,
+            );
+            (distance <= MAX_PAIR_DISTANCE).then_some((distance, candidate))
+        })
+        .collect::<Vec<_>>();
+    candidates.sort_unstable();
+    candidates.truncate(limit);
+    candidates
+        .into_iter()
+        .map(|(_, candidate)| candidate)
+        .collect()
+}
+
+fn nearby_lexical_competitors(
+    owner: u32,
+    clean: &ResolvedSurface,
+    words: &[TrainingWord],
+    forward: &[Vec<WaveCoupling>],
+    limit: usize,
+) -> Vec<u32> {
+    const MAX_PAIR_DISTANCE: usize = 4;
+
+    let mut candidates = clean
+        .atoms
+        .iter()
+        .filter(|(_, _, _, channel)| coupling_flag(*channel) == 0)
+        .flat_map(|(atom_id, _, _, _)| {
+            forward
+                .get(*atom_id as usize)
+                .into_iter()
+                .flatten()
+                .map(|coupling| coupling.peer_id)
+        })
+        .filter(|candidate| *candidate != owner)
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .filter_map(|candidate| {
+            let distance = damerau_levenshtein(
+                &words[owner as usize].surface,
+                &words[candidate as usize].surface,
+            );
+            (distance <= MAX_PAIR_DISTANCE).then_some((distance, candidate))
+        })
+        .collect::<Vec<_>>();
+    candidates.sort_unstable();
+    candidates.truncate(limit);
+    candidates
+        .into_iter()
+        .map(|(_, candidate)| candidate)
+        .collect()
 }
 
 fn cluster_positive_subcenters(
@@ -545,6 +904,10 @@ fn cluster_positive_subcenters(
         .iter()
         .map(|surface| surface_phase_mass(surface, atoms))
         .collect::<Vec<_>>();
+    cluster_phase_masses(&masses, terminal_id, limit)
+}
+
+fn cluster_phase_masses(masses: &[PhaseMass], terminal_id: u32, limit: usize) -> Vec<WordCenter64> {
     if masses.is_empty() || limit == 0 {
         return Vec::new();
     }
@@ -579,7 +942,7 @@ fn cluster_positive_subcenters(
     for _ in 0..2 {
         let mut accumulated = vec![[0_i64; WAVE_DIMENSION]; centroids.len()];
         supports.fill(0);
-        for mass in &masses {
+        for mass in masses {
             let owner = centroids
                 .iter()
                 .enumerate()
@@ -641,6 +1004,41 @@ fn surface_phase_mass(surface: &ResolvedSurface, atoms: &[AtomRecord]) -> PhaseM
         for component in atoms[*atom_id as usize].wave_code.components {
             mass[component.basis as usize] = mass[component.basis as usize].saturating_add(
                 i64::from(component.coefficient).saturating_mul(i64::from(*weight)),
+            );
+        }
+    }
+    mass
+}
+
+fn pair_residual_phase_mass(
+    surface: &ResolvedSurface,
+    atoms: &[AtomRecord],
+    owner_reverse: &[WaveCoupling],
+    competitor_reverse: &[WaveCoupling],
+) -> PhaseMass {
+    let residual = pair_residual_atoms(
+        surface
+            .atoms
+            .iter()
+            .filter(|(_, _, _, channel)| coupling_flag(*channel) == 0)
+            .map(|(atom_id, position, _, _)| (*atom_id, (position / 257).min(255) as u8)),
+        owner_reverse
+            .iter()
+            .filter(|coupling| coupling.flags == 0)
+            .map(|coupling| (coupling.peer_id, coupling.position_mode)),
+        competitor_reverse
+            .iter()
+            .filter(|coupling| coupling.flags == 0)
+            .map(|coupling| (coupling.peer_id, coupling.position_mode)),
+    );
+    let mut mass = [0_i64; WAVE_DIMENSION];
+    for relation in residual {
+        let Some(atom) = atoms.get(relation.atom_id as usize) else {
+            continue;
+        };
+        for component in positioned_atom_code(atom.wave_code, relation.position_mode).components {
+            mass[component.basis as usize] = mass[component.basis as usize].saturating_add(
+                i64::from(component.coefficient).saturating_mul(i64::from(relation.coefficient)),
             );
         }
     }
@@ -743,7 +1141,102 @@ fn calibrate_l11(
         max_geometry_distance: high_quantile(&mut distances, 999),
         min_positive_milli: low_quantile(&mut positive, 0),
         min_backward_milli: low_quantile(&mut backward, 0),
+        min_tied_energy_margin: 0,
     }
+}
+
+fn calibrate_l11_tied_energy_margin(words: &[TrainingWord], memory: &LexicalGrokkingMemory) -> u16 {
+    const CALIBRATION_BUCKETS: u64 = 5;
+    const CANDIDATE_LIMIT: usize = 64;
+
+    let mut targets = BTreeMap::<&str, BTreeSet<u32>>::new();
+    for word in words {
+        targets
+            .entry(word.surface.as_str())
+            .or_default()
+            .insert(word.terminal_id);
+        for surface in &word.training_surfaces {
+            targets
+                .entry(surface.as_str())
+                .or_default()
+                .insert(word.terminal_id);
+        }
+    }
+
+    let workers = thread::available_parallelism()
+        .map(usize::from)
+        .unwrap_or(1)
+        .min(words.len().max(1));
+    let partial = thread::scope(|scope| {
+        (0..workers)
+            .map(|worker| {
+                let targets = &targets;
+                scope.spawn(move || {
+                    let mut maximum_unsafe_margin = None::<u16>;
+                    let mut maximum_safe_margin = None::<u16>;
+                    for word in words.iter().skip(worker).step_by(workers) {
+                        for surface in &word.training_surfaces {
+                            if calibration_surface_hash(surface) % CALIBRATION_BUCKETS != 0 {
+                                continue;
+                            }
+                            let mut candidates =
+                                memory.readout(surface, CANDIDATE_LIMIT, ReadoutMode::Full);
+                            memory.apply_l11_phase_evidence(surface, &mut candidates);
+                            let Some((winner, margin)) = tied_energy_winner(&candidates) else {
+                                continue;
+                            };
+                            let Some(objective_targets) = targets.get(surface.as_str()) else {
+                                continue;
+                            };
+                            let mutates_surface = memory
+                                .decode_terminal(winner)
+                                .is_some_and(|decoded| decoded != surface.as_str());
+                            let unsafe_authority = if objective_targets.len() == 1 {
+                                !objective_targets.contains(&winner)
+                            } else {
+                                mutates_surface
+                            };
+                            if unsafe_authority {
+                                maximum_unsafe_margin =
+                                    Some(maximum_unsafe_margin.unwrap_or_default().max(margin));
+                            } else {
+                                maximum_safe_margin =
+                                    Some(maximum_safe_margin.unwrap_or_default().max(margin));
+                            }
+                        }
+                    }
+                    (maximum_unsafe_margin, maximum_safe_margin)
+                })
+            })
+            .collect::<Vec<_>>()
+            .into_iter()
+            .map(|handle| handle.join().expect("L1.1 calibration worker panicked"))
+            .collect::<Vec<_>>()
+    });
+    let maximum_unsafe_margin = partial.iter().filter_map(|item| item.0).max();
+    let maximum_safe_margin = partial.iter().filter_map(|item| item.1).max();
+
+    let Some(maximum_safe_margin) = maximum_safe_margin else {
+        return 0;
+    };
+    let threshold = match maximum_unsafe_margin {
+        Some(u16::MAX) => return 0,
+        Some(margin) => margin + 1,
+        None => 1,
+    };
+    if maximum_safe_margin < threshold {
+        0
+    } else {
+        threshold
+    }
+}
+
+fn calibration_surface_hash(surface: &str) -> u64 {
+    let mut state = 0x4c31_315f_4341_4c31_u64;
+    for byte in surface.bytes() {
+        state = mix64_golden(state ^ u64::from(byte));
+    }
+    state
 }
 
 fn anchor_sequence(surface: &ResolvedSurface, selected_channel: AtomChannel) -> Vec<u32> {

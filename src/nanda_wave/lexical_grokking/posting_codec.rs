@@ -49,9 +49,7 @@ pub fn analyze_package(path: &Path) -> io::Result<serde_json::Value> {
     };
     let v3_bytes = format::encode(&package).map_err(io::Error::other)?;
     let migrated = LexicalGrokkingMemory::from_bytes(&v3_bytes).map_err(io::Error::other)?;
-    let original = LexicalGrokkingMemory {
-        package: package.clone(),
-    };
+    let original = LexicalGrokkingMemory::from_package(package.clone());
     let parity_samples = package.terminal_count().min(512) as usize;
     let sample_stride = (package.terminal_count() as usize)
         .div_ceil(parity_samples.max(1))

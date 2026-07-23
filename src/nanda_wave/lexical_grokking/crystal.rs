@@ -91,6 +91,31 @@ impl WordCenter64 {
     }
 }
 
+/// Role-specific view of a fixed-width center used for a directed ambiguity
+/// relation. Ambiguity centers have no coupling span, so bytes 56..58 store
+/// the learned coherence threshold without changing the 64-byte wire record.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) struct AmbiguityPhaseCenter64(WordCenter64);
+
+impl AmbiguityPhaseCenter64 {
+    pub(super) fn from_record(record: WordCenter64) -> Self {
+        Self(record)
+    }
+
+    pub(super) fn threshold_milli(self) -> u16 {
+        self.0.coupling_count
+    }
+
+    pub(super) fn with_threshold_milli(mut self, threshold_milli: u16) -> Self {
+        self.0.coupling_count = threshold_milli;
+        self
+    }
+
+    pub(super) fn record(self) -> WordCenter64 {
+        self.0
+    }
+}
+
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub(super) struct AtomWaveCode {
     pub(super) components: [BasisComponent16; ATOM_WAVE_COMPONENTS],
@@ -194,6 +219,20 @@ mod tests {
         let bytes = center.encode();
         assert_eq!(bytes.len(), WORD_CENTER_BYTES);
         assert_eq!(WordCenter64::decode(&bytes), Ok(center));
+    }
+
+    #[test]
+    fn ambiguity_center_reuses_the_fixed_record_without_changing_its_size() {
+        let relation = AmbiguityPhaseCenter64::from_record(WordCenter64 {
+            coupling_count: 731,
+            ..WordCenter64::default()
+        });
+        assert_eq!(
+            std::mem::size_of::<AmbiguityPhaseCenter64>(),
+            WORD_CENTER_BYTES
+        );
+        assert_eq!(relation.threshold_milli(), 731);
+        assert_eq!(relation.record().coupling_count, 731);
     }
 
     #[test]

@@ -419,11 +419,14 @@
   "417": "cases.py",
   "418": "normalize_ngram_word",
   "419": "receipt.rs",
+  "420": "memory.rs",
   "421": "dict_tests.rs",
   "422": "time.rs",
   "423": "runtime_flags.rs",
+  "424": "learning_deltas",
+  "425": "LayConfig",
+  "426": "DecisionOutput",
   "427": "try_manual_toggle",
   "428": "gate_candidate",
-  "429": "config_path",
   "430": ".default"
 }

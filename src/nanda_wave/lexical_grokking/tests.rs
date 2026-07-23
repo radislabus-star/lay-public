@@ -138,6 +138,7 @@ fn l11_profiles_are_bounded_and_cover_every_primary_center() {
             && profile.positive_count <= 4
             && profile.anti_count <= 4
             && profile.hard_negative_count <= 2
+            && profile.ambiguity_count <= 8
             && profile.keyboard_geometry_count > 0
             && profile.keyboard_geometry_count <= 32));
 }
@@ -150,6 +151,7 @@ fn v4_package_remains_readable_with_permissive_l11_defaults() {
     package.positive_subcenters.clear();
     package.anti_subcenters.clear();
     package.hard_negative_subcenters.clear();
+    package.ambiguity_subcenters.clear();
     package.keyboard_geometry_units.clear();
     package.restoration_calibration = super::restoration::RestorationCalibration::LEGACY_PERMISSIVE;
     let bytes = format::encode(&package).expect("encode legacy-compatible package");
@@ -165,9 +167,7 @@ fn v4_package_remains_readable_with_permissive_l11_defaults() {
 fn compressed_forward_format_preserves_exact_readout() {
     let words = fixture_words();
     let package = compile(&words).expect("compile fixture package");
-    let original = LexicalGrokkingMemory {
-        package: package.clone(),
-    };
+    let original = LexicalGrokkingMemory::from_package(package.clone());
     let bytes = format::encode(&package).expect("encode compressed package");
     let compressed = LexicalGrokkingMemory::from_bytes(&bytes).expect("load compressed package");
     for word in &words {
@@ -285,7 +285,7 @@ fn physical_keyboard_geometry_preserves_layout_punctuation_keys() {
     assert_eq!(clean.len(), 6);
 
     let package = compile(&fixture_words()).expect("compile fixture package");
-    let memory = LexicalGrokkingMemory { package };
+    let memory = LexicalGrokkingMemory::from_package(package);
     let mut candidates = memory.readout("ceuhj,", 64, ReadoutMode::Full);
     let restoration = memory.classify_restoration(
         "ceuhj,",
@@ -561,4 +561,33 @@ fn equal_length_position_certificate_requires_stronger_sequence() {
     super::runtime::apply_position_certificate_interference(&mut candidates);
 
     assert_eq!(candidates[0].terminal_id, 1);
+}
+
+#[test]
+fn learned_ambiguity_relation_links_only_a_nearby_competitor_basin() {
+    assert!(super::runtime::ambiguity_geometry_link(1, 2, 3));
+    assert!(super::runtime::ambiguity_geometry_link(2, 1, 3));
+    assert!(!super::runtime::ambiguity_geometry_link(1, 3, 3));
+    assert!(!super::runtime::ambiguity_geometry_link(2, 4, 3));
+}
+
+#[test]
+fn exact_surface_center_owns_clean_readout_before_energy() {
+    let mut candidates = [
+        GrokkingCandidate {
+            terminal_id: 1,
+            settled_energy: 2_000,
+            ..GrokkingCandidate::default()
+        },
+        GrokkingCandidate {
+            terminal_id: 2,
+            settled_energy: 1_000,
+            exact_reconstruction: true,
+            ..GrokkingCandidate::default()
+        },
+    ];
+
+    candidates.sort_unstable_by(super::runtime::candidate_order);
+
+    assert_eq!(candidates[0].terminal_id, 2);
 }

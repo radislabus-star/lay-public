@@ -39,6 +39,7 @@ pub(super) fn encode(package: &LexicalGrokkingPackage) -> Result<Vec<u8>, String
         && (!package.positive_subcenters.is_empty()
             || !package.anti_subcenters.is_empty()
             || !package.hard_negative_subcenters.is_empty()
+            || !package.ambiguity_subcenters.is_empty()
             || !package.keyboard_geometry_units.is_empty())
     {
         return Err("L1.1 extension banks require primary phase profiles".to_string());
@@ -188,12 +189,14 @@ pub(super) fn decode(bytes: &[u8]) -> Result<LexicalGrokkingPackage, String> {
         positive_subcenters,
         anti_subcenters,
         hard_negative_subcenters,
+        ambiguity_subcenters,
         keyboard_geometry_units,
         restoration_calibration,
     ) = if version >= VERSION_V5 {
         read_l11_extension(bytes, base_bytes, centers.len(), atoms.len())?
     } else {
         (
+            Vec::new(),
             Vec::new(),
             Vec::new(),
             Vec::new(),
@@ -217,6 +220,7 @@ pub(super) fn decode(bytes: &[u8]) -> Result<LexicalGrokkingPackage, String> {
         positive_subcenters.len(),
         anti_subcenters.len(),
         hard_negative_subcenters.len(),
+        ambiguity_subcenters.len(),
         &keyboard_geometry_units,
         centers.len(),
         atoms.len(),
@@ -235,6 +239,7 @@ pub(super) fn decode(bytes: &[u8]) -> Result<LexicalGrokkingPackage, String> {
         positive_subcenters,
         anti_subcenters,
         hard_negative_subcenters,
+        ambiguity_subcenters,
         keyboard_geometry_units,
         restoration_calibration,
         centers,
@@ -711,6 +716,12 @@ fn l11_extension_bytes(package: &LexicalGrokkingPackage) -> Result<usize, String
                 .keyboard_geometry_units
                 .len()
                 .saturating_mul(std::mem::size_of::<u32>()),
+        )
+        .saturating_add(
+            package
+                .ambiguity_subcenters
+                .len()
+                .saturating_mul(WORD_CENTER_BYTES),
         ))
 }
 
@@ -724,6 +735,7 @@ fn write_l11_extension(
         package.positive_subcenters.len(),
         package.anti_subcenters.len(),
         package.hard_negative_subcenters.len(),
+        package.ambiguity_subcenters.len(),
         &package.keyboard_geometry_units,
         package.centers.len(),
         package.atoms.len(),
@@ -771,6 +783,19 @@ fn write_l11_extension(
         offset + 32,
         package.restoration_calibration.min_backward_milli,
     );
+    put_u16(
+        bytes,
+        offset + 34,
+        package.restoration_calibration.min_tied_energy_margin,
+    );
+    put_u32(
+        bytes,
+        offset + 36,
+        as_u32(
+            package.ambiguity_subcenters.len(),
+            "L1.1 ambiguity subcenter",
+        )?,
+    );
 
     let mut cursor = offset + L11_EXTENSION_HEADER_BYTES;
     for profile in &package.center_phase_profiles {
@@ -783,6 +808,8 @@ fn write_l11_extension(
         bytes[cursor + 18] = profile.hard_negative_count;
         bytes[cursor + 19] = profile.keyboard_geometry_count;
         bytes[cursor + 20] = profile.flags;
+        bytes[cursor + 21] = profile.ambiguity_count;
+        put_u16(bytes, cursor + 22, profile.min_ambiguity_milli);
         cursor += CENTER_PHASE_PROFILE_BYTES;
     }
     write_centers(bytes, cursor, &package.positive_subcenters);
@@ -795,6 +822,7 @@ fn write_l11_extension(
         put_u32(bytes, cursor, *atom_id);
         cursor += std::mem::size_of::<u32>();
     }
+    write_centers(bytes, cursor, &package.ambiguity_subcenters);
     Ok(())
 }
 
@@ -807,6 +835,7 @@ fn read_l11_extension(
 ) -> Result<
     (
         Vec<CenterPhaseProfile>,
+        Vec<WordCenter64>,
         Vec<WordCenter64>,
         Vec<WordCenter64>,
         Vec<WordCenter64>,
@@ -826,6 +855,7 @@ fn read_l11_extension(
     let anti_count = read_u32(bytes, offset + 16)? as usize;
     let hard_negative_count = read_u32(bytes, offset + 20)? as usize;
     let keyboard_geometry_count = read_u32(bytes, offset + 24)? as usize;
+    let ambiguity_count = read_u32(bytes, offset + 36)? as usize;
     if profile_count != primary_center_count {
         return Err("L1.1 phase profile count differs from primary centers".to_string());
     }
@@ -846,6 +876,7 @@ fn read_l11_extension(
         .and_then(|value| {
             value.checked_add(keyboard_geometry_count.checked_mul(std::mem::size_of::<u32>())?)
         })
+        .and_then(|value| value.checked_add(ambiguity_count.checked_mul(WORD_CENTER_BYTES)?))
         .ok_or_else(|| "L1.1 extension allocation overflow".to_string())?;
     if bytes.len() != offset.saturating_add(expected_bytes) {
         return Err("invalid L1.1 extension size or trailing bytes".to_string());
@@ -855,21 +886,30 @@ fn read_l11_extension(
         max_geometry_distance: header[28],
         min_positive_milli: read_u16(bytes, offset + 30)?,
         min_backward_milli: read_u16(bytes, offset + 32)?,
+        // E2 packages written before tied-basin calibration leave these
+        // reserved bytes at zero, which keeps crystallization disabled.
+        min_tied_energy_margin: read_u16(bytes, offset + 34)?,
     };
     let mut cursor = offset + L11_EXTENSION_HEADER_BYTES;
+    let mut ambiguity_start = 0_u32;
     let profiles = (0..profile_count)
         .map(|_| {
+            let ambiguity_profile_count = bytes[cursor + 21];
             let profile = CenterPhaseProfile {
                 positive_start: read_u32(bytes, cursor)?,
                 anti_start: read_u32(bytes, cursor + 4)?,
                 hard_negative_start: read_u32(bytes, cursor + 8)?,
                 keyboard_geometry_start: read_u32(bytes, cursor + 12)?,
+                ambiguity_start,
                 positive_count: bytes[cursor + 16],
                 anti_count: bytes[cursor + 17],
                 hard_negative_count: bytes[cursor + 18],
                 keyboard_geometry_count: bytes[cursor + 19],
                 flags: bytes[cursor + 20],
+                ambiguity_count: ambiguity_profile_count,
+                min_ambiguity_milli: read_u16(bytes, cursor + 22)?,
             };
+            ambiguity_start = ambiguity_start.saturating_add(u32::from(ambiguity_profile_count));
             cursor += CENTER_PHASE_PROFILE_BYTES;
             Ok(profile)
         })
@@ -887,11 +927,13 @@ fn read_l11_extension(
             Ok(atom_id)
         })
         .collect::<Result<Vec<_>, String>>()?;
+    let ambiguity = read_centers(bytes, cursor, ambiguity_count)?;
     validate_l11_ranges(
         &profiles,
         positive.len(),
         anti.len(),
         hard_negative.len(),
+        ambiguity.len(),
         &keyboard_geometry,
         primary_center_count,
         atom_count,
@@ -901,6 +943,7 @@ fn read_l11_extension(
         positive,
         anti,
         hard_negative,
+        ambiguity,
         keyboard_geometry,
         calibration,
     ))
@@ -959,6 +1002,7 @@ fn validate_l11_ranges(
     positive_len: usize,
     anti_len: usize,
     hard_negative_len: usize,
+    ambiguity_len: usize,
     keyboard_geometry: &[u32],
     primary_center_count: usize,
     atom_count: usize,
@@ -972,6 +1016,8 @@ fn validate_l11_ranges(
                 || profile.anti_start as usize + profile.anti_count as usize > anti_len
                 || profile.hard_negative_start as usize + profile.hard_negative_count as usize
                     > hard_negative_len
+                || profile.ambiguity_start as usize + profile.ambiguity_count as usize
+                    > ambiguity_len
                 || profile.keyboard_geometry_start as usize
                     + profile.keyboard_geometry_count as usize
                     > keyboard_geometry.len()
@@ -979,6 +1025,17 @@ fn validate_l11_ranges(
         })
     {
         return Err("L1.1 phase profile references invalid bank range".to_string());
+    }
+    let mut expected_ambiguity_start = 0_usize;
+    for profile in profiles {
+        if profile.ambiguity_start as usize != expected_ambiguity_start {
+            return Err("L1.1 ambiguity profiles are not densely ordered".to_string());
+        }
+        expected_ambiguity_start =
+            expected_ambiguity_start.saturating_add(profile.ambiguity_count as usize);
+    }
+    if expected_ambiguity_start != ambiguity_len {
+        return Err("L1.1 ambiguity profile count differs from bank".to_string());
     }
     for profile in profiles {
         if profile.flags & CENTER_PHASE_FLAG_PHYSICAL_KEY_GEOMETRY != 0 {

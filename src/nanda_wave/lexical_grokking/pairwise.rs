@@ -4,6 +4,7 @@ use super::runtime::GrokkingCandidate;
 use super::wave_basis::{complex_coherence_milli, expand_word};
 
 const MAX_PAIRWISE_CANDIDATES: usize = 8;
+const MAX_RESTORATION_CERTIFICATE_CANDIDATES: usize = 8;
 const MIN_DIRECTION_SUPPORT: u16 = 2;
 const MIN_SCENE_COHERENCE: u16 = 620;
 const MIN_DIRECTION_MARGIN: u16 = 48;
@@ -125,6 +126,114 @@ pub(super) fn apply_pairwise_field(
         candidate.legacy_settled_energy = candidate.legacy_settled_energy.saturating_sub(pressure);
     }
     certificate
+}
+
+pub(super) fn apply_restoration_dominance_certificate(
+    profiles: &[PairPhaseProfile],
+    centers: &[WordCenter64],
+    basis: &[ComplexBasisWave],
+    candidates: &mut [GrokkingCandidate],
+    surface_re: &[i32; WAVE_DIMENSION],
+    surface_im: &[i32; WAVE_DIMENSION],
+) -> PairwiseCertificate {
+    let mut certificate = PairwiseCertificate::default();
+    let basin = super::restoration::geometric_basin(candidates)
+        .into_iter()
+        .map(|candidate| candidate.terminal_id)
+        .collect::<Vec<_>>();
+    if basin.len() < 2 || basin.len() > MAX_RESTORATION_CERTIFICATE_CANDIDATES {
+        return certificate;
+    }
+
+    let mut wins = vec![0_u8; basin.len()];
+    let mut losses = vec![0_u8; basin.len()];
+    let mut minimum_margin = vec![u16::MAX; basin.len()];
+    let mut edges = Vec::new();
+    for left in 0..basin.len() {
+        for right in left + 1..basin.len() {
+            let Some(key) = PairKey::new(basin[left], basin[right]) else {
+                continue;
+            };
+            let outcome = evaluate_edge(profiles, centers, basis, key, surface_re, surface_im);
+            match outcome {
+                EdgeOutcome::Unknown => {
+                    certificate.unknown_edges = certificate.unknown_edges.saturating_add(1);
+                }
+                EdgeOutcome::Tie => {
+                    certificate.ties = certificate.ties.saturating_add(1);
+                }
+                EdgeOutcome::Conflict => {
+                    certificate.conflicts = certificate.conflicts.saturating_add(1);
+                }
+                EdgeOutcome::LowWins { margin, .. } | EdgeOutcome::HighWins { margin, .. } => {
+                    certificate.known_edges = certificate.known_edges.saturating_add(1);
+                    let low = if basin[left] == key.low_terminal {
+                        left
+                    } else {
+                        right
+                    };
+                    let high = if low == left { right } else { left };
+                    let (winner, loser) = match outcome {
+                        EdgeOutcome::LowWins { .. } => (low, high),
+                        EdgeOutcome::HighWins { .. } => (high, low),
+                        _ => unreachable!(),
+                    };
+                    wins[winner] = wins[winner].saturating_add(1);
+                    losses[loser] = losses[loser].saturating_add(1);
+                    minimum_margin[winner] = minimum_margin[winner].min(margin);
+                    edges.push((winner, loser, margin));
+                }
+            }
+        }
+    }
+
+    let has_cycle = contains_cycle(basin.len(), &edges);
+    if certificate.conflicts != 0 || has_cycle {
+        certificate.cycles = u16::from(has_cycle);
+        stamp_restoration_certificate(candidates, &basin, certificate);
+        return certificate;
+    }
+
+    let required = (basin.len() - 1) as u8;
+    let complete = wins
+        .iter()
+        .zip(&losses)
+        .enumerate()
+        .filter_map(|(index, (wins, losses))| (*wins == required && *losses == 0).then_some(index))
+        .collect::<Vec<_>>();
+    if complete.len() != 1 {
+        stamp_restoration_certificate(candidates, &basin, certificate);
+        return certificate;
+    }
+    let winner = complete[0];
+    let Some(candidate) = candidates
+        .iter_mut()
+        .find(|candidate| candidate.terminal_id == basin[winner])
+    else {
+        return certificate;
+    };
+    candidate.crystallization_wins = wins[winner];
+    candidate.crystallization_required = required;
+    candidate.crystallization_margin_milli = minimum_margin[winner];
+    candidate.crystallization_complete = true;
+    stamp_restoration_certificate(candidates, &basin, certificate);
+    certificate
+}
+
+fn stamp_restoration_certificate(
+    candidates: &mut [GrokkingCandidate],
+    basin: &[u32],
+    certificate: PairwiseCertificate,
+) {
+    for candidate in candidates {
+        if basin.contains(&candidate.terminal_id) {
+            candidate.crystallization_known_edges = certificate.known_edges;
+            candidate.crystallization_unknown_edges = certificate.unknown_edges;
+            candidate.crystallization_tied_edges = certificate.ties;
+            candidate.crystallization_conflicts = certificate.conflicts;
+            candidate.crystallization_cycles = certificate.cycles;
+        }
+    }
 }
 
 pub(super) fn evaluate_edge(

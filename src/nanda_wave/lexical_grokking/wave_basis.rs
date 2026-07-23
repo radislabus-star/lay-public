@@ -7,6 +7,53 @@ use super::crystal::{
     WAVE_DIMENSION, WORD_WAVE_COMPONENTS,
 };
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) struct PairResidualAtom {
+    pub(super) atom_id: u32,
+    pub(super) position_mode: u8,
+    pub(super) coefficient: i32,
+}
+
+pub(super) fn pair_residual_atoms(
+    observed: impl IntoIterator<Item = (u32, u8)>,
+    owner_expected: impl IntoIterator<Item = (u32, u8)>,
+    competitor_expected: impl IntoIterator<Item = (u32, u8)>,
+) -> Vec<PairResidualAtom> {
+    let observed = observed
+        .into_iter()
+        .collect::<std::collections::BTreeSet<_>>();
+    let owner = owner_expected
+        .into_iter()
+        .collect::<std::collections::BTreeSet<_>>();
+    let competitor = competitor_expected
+        .into_iter()
+        .collect::<std::collections::BTreeSet<_>>();
+    let mut all = observed.clone();
+    all.extend(owner.iter().copied());
+    all.extend(competitor.iter().copied());
+    all.into_iter()
+        .filter_map(|(atom_id, position_mode)| {
+            let key = (atom_id, position_mode);
+            let coefficient = 2 * i32::from(observed.contains(&key))
+                - i32::from(owner.contains(&key))
+                - i32::from(competitor.contains(&key));
+            (coefficient != 0).then_some(PairResidualAtom {
+                atom_id,
+                position_mode,
+                coefficient,
+            })
+        })
+        .collect()
+}
+
+pub(super) fn positioned_atom_code(mut code: AtomWaveCode, position_mode: u8) -> AtomWaveCode {
+    let shift = u16::from(position_mode) * (WAVE_DIMENSION as u16 - 1) / u16::from(u8::MAX);
+    for component in &mut code.components {
+        component.basis = (component.basis + shift) % WAVE_DIMENSION as u16;
+    }
+    code
+}
+
 pub(super) fn compile_basis() -> Vec<ComplexBasisWave> {
     (0..WAVE_DIMENSION)
         .map(|frequency| {
@@ -210,6 +257,31 @@ mod tests {
         assert_eq!(
             complex_coherence_milli(&positive, &zero, &negative, &zero),
             0
+        );
+    }
+
+    #[test]
+    fn pair_residual_keeps_position_as_phase_evidence() {
+        assert_eq!(
+            pair_residual_atoms([(7, 10)], [(7, 10)], [(7, 90)]),
+            vec![
+                PairResidualAtom {
+                    atom_id: 7,
+                    position_mode: 10,
+                    coefficient: 1,
+                },
+                PairResidualAtom {
+                    atom_id: 7,
+                    position_mode: 90,
+                    coefficient: -1,
+                },
+            ]
+        );
+        let mut code = AtomWaveCode::default();
+        code.components[0].basis = 9;
+        assert_ne!(
+            positioned_atom_code(code, 0),
+            positioned_atom_code(code, 255)
         );
     }
 }

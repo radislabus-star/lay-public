@@ -75,11 +75,14 @@ pub(super) struct CenterPhaseProfile {
     pub(super) anti_start: u32,
     pub(super) hard_negative_start: u32,
     pub(super) keyboard_geometry_start: u32,
+    pub(super) ambiguity_start: u32,
     pub(super) positive_count: u8,
     pub(super) anti_count: u8,
     pub(super) hard_negative_count: u8,
     pub(super) keyboard_geometry_count: u8,
     pub(super) flags: u8,
+    pub(super) ambiguity_count: u8,
+    pub(super) min_ambiguity_milli: u16,
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
@@ -97,6 +100,7 @@ pub(super) struct LexicalGrokkingPackage {
     pub(super) positive_subcenters: Vec<WordCenter64>,
     pub(super) anti_subcenters: Vec<WordCenter64>,
     pub(super) hard_negative_subcenters: Vec<WordCenter64>,
+    pub(super) ambiguity_subcenters: Vec<WordCenter64>,
     pub(super) keyboard_geometry_units: Vec<u32>,
     pub(super) restoration_calibration: RestorationCalibration,
     pub(super) centers: Vec<WordCenter64>,
