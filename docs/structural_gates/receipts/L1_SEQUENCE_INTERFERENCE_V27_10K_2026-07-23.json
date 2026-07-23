@@ -1,0 +1,1121 @@
+{
+  "anti_ablation_drop": -3,
+  "anti_centers": 38316,
+  "anti_improved": 6,
+  "anti_worsened": 9,
+  "artifact_bytes": 35070906,
+  "atom_count": 106088,
+  "classes": {
+    "adjacent_transposition": {
+      "ambiguous_cases": 93,
+      "cases": 14983,
+      "false_certainty": 2,
+      "lattice_coverage_percent": 100.0,
+      "sequence_delta_top1": 4,
+      "top1": 14849,
+      "top64": 14983,
+      "top8": 14983,
+      "unique_cases": 14890,
+      "unique_top1": 14814,
+      "unique_top1_percent": 99.48959032907992,
+      "without_sequence_top1": 14845,
+      "without_sequence_top1_percent": 99.07895615030368
+    },
+    "double_substitution": {
+      "ambiguous_cases": 7,
+      "cases": 2374,
+      "false_certainty": 0,
+      "lattice_coverage_percent": 99.74726200505476,
+      "sequence_delta_top1": -4,
+      "top1": 2050,
+      "top64": 2368,
+      "top8": 2336,
+      "unique_cases": 2367,
+      "unique_top1": 2050,
+      "unique_top1_percent": 86.60752006759611,
+      "without_sequence_top1": 2054,
+      "without_sequence_top1_percent": 86.52064026958719
+    },
+    "extra_letter": {
+      "ambiguous_cases": 44,
+      "cases": 14994,
+      "false_certainty": 1,
+      "lattice_coverage_percent": 100.0,
+      "sequence_delta_top1": 122,
+      "top1": 14924,
+      "top64": 14994,
+      "top8": 14994,
+      "unique_cases": 14950,
+      "unique_top1": 14908,
+      "unique_top1_percent": 99.7190635451505,
+      "without_sequence_top1": 14802,
+      "without_sequence_top1_percent": 98.71948779511804
+    },
+    "layout_projection": {
+      "ambiguous_cases": 0,
+      "cases": 2539,
+      "false_certainty": 0,
+      "lattice_coverage_percent": 100.0,
+      "sequence_delta_top1": 22,
+      "top1": 2521,
+      "top64": 2539,
+      "top8": 2538,
+      "unique_cases": 2539,
+      "unique_top1": 2521,
+      "unique_top1_percent": 99.29105947223316,
+      "without_sequence_top1": 2499,
+      "without_sequence_top1_percent": 98.42457660496258
+    },
+    "letter_substitution": {
+      "ambiguous_cases": 90,
+      "cases": 15171,
+      "false_certainty": 3,
+      "lattice_coverage_percent": 100.0,
+      "sequence_delta_top1": 11,
+      "top1": 14495,
+      "top64": 15171,
+      "top8": 15153,
+      "unique_cases": 15081,
+      "unique_top1": 14488,
+      "unique_top1_percent": 96.06790000663086,
+      "without_sequence_top1": 14484,
+      "without_sequence_top1_percent": 95.47162349218904
+    },
+    "missing_letter": {
+      "ambiguous_cases": 819,
+      "cases": 15317,
+      "false_certainty": 15,
+      "lattice_coverage_percent": 100.0,
+      "sequence_delta_top1": 211,
+      "top1": 14551,
+      "top64": 15317,
+      "top8": 15313,
+      "unique_cases": 14498,
+      "unique_top1": 14283,
+      "unique_top1_percent": 98.51703683266658,
+      "without_sequence_top1": 14340,
+      "without_sequence_top1_percent": 93.62146634458445
+    },
+    "non_adjacent_transposition": {
+      "ambiguous_cases": 10,
+      "cases": 2237,
+      "false_certainty": 0,
+      "lattice_coverage_percent": 100.0,
+      "sequence_delta_top1": 44,
+      "top1": 2089,
+      "top64": 2237,
+      "top8": 2236,
+      "unique_cases": 2227,
+      "unique_top1": 2089,
+      "unique_top1_percent": 93.8033228558599,
+      "without_sequence_top1": 2045,
+      "without_sequence_top1_percent": 91.41707644166294
+    },
+    "omission_transposition": {
+      "ambiguous_cases": 128,
+      "cases": 2213,
+      "false_certainty": 11,
+      "lattice_coverage_percent": 100.0,
+      "sequence_delta_top1": 12,
+      "top1": 1967,
+      "top64": 2213,
+      "top8": 2208,
+      "unique_cases": 2085,
+      "unique_top1": 1953,
+      "unique_top1_percent": 93.66906474820144,
+      "without_sequence_top1": 1955,
+      "without_sequence_top1_percent": 88.34161771351107
+    },
+    "prefix_truncation": {
+      "ambiguous_cases": 277,
+      "cases": 2222,
+      "false_certainty": 7,
+      "lattice_coverage_percent": 100.0,
+      "sequence_delta_top1": 27,
+      "top1": 1946,
+      "top64": 2222,
+      "top8": 2220,
+      "unique_cases": 1945,
+      "unique_top1": 1896,
+      "unique_top1_percent": 97.48071979434447,
+      "without_sequence_top1": 1919,
+      "without_sequence_top1_percent": 86.36363636363636
+    },
+    "punctuation_suffix": {
+      "ambiguous_cases": 0,
+      "cases": 10059,
+      "false_certainty": 0,
+      "lattice_coverage_percent": 100.0,
+      "sequence_delta_top1": 0,
+      "top1": 10057,
+      "top64": 10059,
+      "top8": 10059,
+      "unique_cases": 10059,
+      "unique_top1": 10057,
+      "unique_top1_percent": 99.98011730788349,
+      "without_sequence_top1": 10057,
+      "without_sequence_top1_percent": 99.98011730788349
+    },
+    "repeated_fragment": {
+      "ambiguous_cases": 0,
+      "cases": 2315,
+      "false_certainty": 0,
+      "lattice_coverage_percent": 100.0,
+      "sequence_delta_top1": 98,
+      "top1": 2268,
+      "top64": 2315,
+      "top8": 2315,
+      "unique_cases": 2315,
+      "unique_top1": 2268,
+      "unique_top1_percent": 97.96976241900649,
+      "without_sequence_top1": 2170,
+      "without_sequence_top1_percent": 93.73650107991361
+    },
+    "sparse_multi_omission": {
+      "ambiguous_cases": 195,
+      "cases": 1686,
+      "false_certainty": 18,
+      "lattice_coverage_percent": 100.0,
+      "sequence_delta_top1": 111,
+      "top1": 1415,
+      "top64": 1686,
+      "top8": 1680,
+      "unique_cases": 1491,
+      "unique_top1": 1384,
+      "unique_top1_percent": 92.82360831656607,
+      "without_sequence_top1": 1304,
+      "without_sequence_top1_percent": 77.34282325029656
+    },
+    "suffix_truncation": {
+      "ambiguous_cases": 116,
+      "cases": 2353,
+      "false_certainty": 2,
+      "lattice_coverage_percent": 100.0,
+      "sequence_delta_top1": 28,
+      "top1": 2243,
+      "top64": 2353,
+      "top8": 2353,
+      "unique_cases": 2237,
+      "unique_top1": 2215,
+      "unique_top1_percent": 99.01654000894055,
+      "without_sequence_top1": 2215,
+      "without_sequence_top1_percent": 94.13514662133447
+    }
+  },
+  "clean_preservation_percent": 100.0,
+  "clean_top1": 10000,
+  "compile_ms": 343467,
+  "exact_damage_episodes_stored": 0,
+  "forward_atoms_above_baseline_cap": 4574,
+  "forward_couplings": 5321204,
+  "forward_posting_policy": "complete",
+  "forward_relations_before_policy": 5321204,
+  "forward_relations_dropped": 0,
+  "heldout_surfaces": 88463,
+  "heldout_top1": 85375,
+  "heldout_top1_percent": 96.50927506415111,
+  "heldout_top64_percent": 99.99321750336298,
+  "heldout_top8_percent": 99.91521879203735,
+  "hot_readout_max_us": 4470,
+  "hot_readout_p50_us": 3570,
+  "hot_readout_p99_us": 4267,
+  "max_forward_degree": 10000,
+  "miss_diagnostics": [
+    {
+      "class": "adjacent_transposition",
+      "selected_energy": 7947,
+      "selected_terminal": 239,
+      "surface": "анан",
+      "target_energy": 6945,
+      "target_rank": 2,
+      "target_terminal": 146
+    },
+    {
+      "class": "adjacent_transposition",
+      "selected_energy": 8129,
+      "selected_terminal": 242,
+      "surface": "банак",
+      "target_energy": 7995,
+      "target_rank": 2,
+      "target_terminal": 243
+    },
+    {
+      "class": "adjacent_transposition",
+      "selected_energy": 6443,
+      "selected_terminal": 3729,
+      "surface": "барт",
+      "target_energy": 5700,
+      "target_rank": 5,
+      "target_terminal": 484
+    },
+    {
+      "class": "adjacent_transposition",
+      "selected_energy": 7239,
+      "selected_terminal": 359,
+      "surface": "билн",
+      "target_energy": 6741,
+      "target_rank": 2,
+      "target_terminal": 401
+    },
+    {
+      "class": "adjacent_transposition",
+      "selected_energy": 7049,
+      "selected_terminal": 404,
+      "surface": "блоь",
+      "target_energy": 6493,
+      "target_rank": 3,
+      "target_terminal": 446
+    },
+    {
+      "class": "adjacent_transposition",
+      "selected_energy": 7218,
+      "selected_terminal": 6039,
+      "surface": "болк",
+      "target_energy": 6550,
+      "target_rank": 5,
+      "target_terminal": 404
+    },
+    {
+      "class": "adjacent_transposition",
+      "selected_energy": 7000,
+      "selected_terminal": 475,
+      "surface": "боск",
+      "target_energy": 6969,
+      "target_rank": 2,
+      "target_terminal": 432
+    },
+    {
+      "class": "adjacent_transposition",
+      "selected_energy": 7154,
+      "selected_terminal": 4729,
+      "surface": "брот",
+      "target_energy": 6346,
+      "target_rank": 7,
+      "target_terminal": 471
+    },
+    {
+      "class": "double_substitution",
+      "selected_energy": 6725,
+      "selected_terminal": 110,
+      "surface": "алтёр",
+      "target_energy": 4657,
+      "target_rank": 3,
+      "target_terminal": 71
+    },
+    {
+      "class": "double_substitution",
+      "selected_energy": 6101,
+      "selected_terminal": 143,
+      "surface": "андлйя",
+      "target_energy": 5414,
+      "target_rank": 2,
+      "target_terminal": 138
+    },
+    {
+      "class": "double_substitution",
+      "selected_energy": 6250,
+      "selected_terminal": 196,
+      "surface": "асетт",
+      "target_energy": 6050,
+      "target_rank": 2,
+      "target_terminal": 169
+    },
+    {
+      "class": "double_substitution",
+      "selected_energy": 5668,
+      "selected_terminal": 7555,
+      "surface": "астфр",
+      "target_energy": 4005,
+      "target_rank": 14,
+      "target_terminal": 186
+    },
+    {
+      "class": "double_substitution",
+      "selected_energy": 7206,
+      "selected_terminal": 80,
+      "surface": "ауала",
+      "target_energy": 4211,
+      "target_rank": 11,
+      "target_terminal": 203
+    },
+    {
+      "class": "double_substitution",
+      "selected_energy": 5616,
+      "selected_terminal": 358,
+      "surface": "бблёт",
+      "target_energy": 4567,
+      "target_rank": 3,
+      "target_terminal": 234
+    },
+    {
+      "class": "double_substitution",
+      "selected_energy": 7384,
+      "selected_terminal": 273,
+      "surface": "бедсуво",
+      "target_energy": 5068,
+      "target_rank": 4,
+      "target_terminal": 266
+    },
+    {
+      "class": "double_substitution",
+      "selected_energy": 5958,
+      "selected_terminal": 277,
+      "surface": "безауь",
+      "target_energy": 5241,
+      "target_rank": 3,
+      "target_terminal": 274
+    },
+    {
+      "class": "extra_letter",
+      "selected_energy": 8916,
+      "selected_terminal": 27,
+      "surface": "автоматиччески",
+      "target_energy": 8792,
+      "target_rank": 2,
+      "target_terminal": 26
+    },
+    {
+      "class": "extra_letter",
+      "selected_energy": 7875,
+      "selected_terminal": 789,
+      "surface": "винно",
+      "target_energy": 7715,
+      "target_rank": 2,
+      "target_terminal": 790
+    },
+    {
+      "class": "extra_letter",
+      "selected_energy": 8540,
+      "selected_terminal": 1141,
+      "surface": "всяччески",
+      "target_energy": 8493,
+      "target_rank": 2,
+      "target_terminal": 1140
+    },
+    {
+      "class": "extra_letter",
+      "selected_energy": 8369,
+      "selected_terminal": 1211,
+      "surface": "выызвать",
+      "target_energy": 8116,
+      "target_rank": 2,
+      "target_terminal": 1209
+    },
+    {
+      "class": "extra_letter",
+      "selected_energy": 8480,
+      "selected_terminal": 1276,
+      "surface": "выырваться",
+      "target_energy": 8460,
+      "target_rank": 2,
+      "target_terminal": 1272
+    },
+    {
+      "class": "extra_letter",
+      "selected_energy": 8563,
+      "selected_terminal": 1930,
+      "surface": "достаать",
+      "target_energy": 8184,
+      "target_rank": 2,
+      "target_terminal": 1938
+    },
+    {
+      "class": "extra_letter",
+      "selected_energy": 8726,
+      "selected_terminal": 2116,
+      "surface": "жесттко",
+      "target_energy": 8717,
+      "target_rank": 2,
+      "target_terminal": 2114
+    },
+    {
+      "class": "extra_letter",
+      "selected_energy": 8921,
+      "selected_terminal": 7322,
+      "surface": "зассмеяться",
+      "target_energy": 8567,
+      "target_rank": 2,
+      "target_terminal": 2417
+    },
+    {
+      "class": "layout_projection",
+      "selected_energy": 6429,
+      "selected_terminal": 8577,
+      "surface": ",elbnm",
+      "target_energy": 5238,
+      "target_rank": 2,
+      "target_terminal": 522
+    },
+    {
+      "class": "layout_projection",
+      "selected_energy": 6219,
+      "selected_terminal": 172,
+      "surface": ",fhfr",
+      "target_energy": 5981,
+      "target_rank": 2,
+      "target_terminal": 250
+    },
+    {
+      "class": "layout_projection",
+      "selected_energy": 5832,
+      "selected_terminal": 7495,
+      "surface": ",hfn",
+      "target_energy": 5681,
+      "target_rank": 2,
+      "target_terminal": 484
+    },
+    {
+      "class": "layout_projection",
+      "selected_energy": 5944,
+      "selected_terminal": 6932,
+      "surface": ",hjcbnm",
+      "target_energy": 5814,
+      "target_rank": 2,
+      "target_terminal": 512
+    },
+    {
+      "class": "layout_projection",
+      "selected_energy": 5446,
+      "selected_terminal": 3281,
+      "surface": ",jv;",
+      "target_energy": 3885,
+      "target_rank": 23,
+      "target_terminal": 461
+    },
+    {
+      "class": "layout_projection",
+      "selected_energy": 6900,
+      "selected_terminal": 3516,
+      "surface": ",t;fnm",
+      "target_energy": 6685,
+      "target_rank": 2,
+      "target_terminal": 274
+    },
+    {
+      "class": "layout_projection",
+      "selected_energy": 5273,
+      "selected_terminal": 2057,
+      "surface": ",tkrf",
+      "target_energy": 5009,
+      "target_rank": 2,
+      "target_terminal": 297
+    },
+    {
+      "class": "layout_projection",
+      "selected_energy": 7068,
+      "selected_terminal": 4617,
+      "surface": ".yjcnm",
+      "target_energy": 5076,
+      "target_rank": 3,
+      "target_terminal": 9952
+    },
+    {
+      "class": "letter_substitution",
+      "selected_energy": 6926,
+      "selected_terminal": 2544,
+      "surface": "аона",
+      "target_energy": 5981,
+      "target_rank": 2,
+      "target_terminal": 146
+    },
+    {
+      "class": "letter_substitution",
+      "selected_energy": 7919,
+      "selected_terminal": 3493,
+      "surface": "аска",
+      "target_energy": 4568,
+      "target_rank": 18,
+      "target_terminal": 172
+    },
+    {
+      "class": "letter_substitution",
+      "selected_energy": 7802,
+      "selected_terminal": 4298,
+      "surface": "ауака",
+      "target_energy": 7101,
+      "target_rank": 2,
+      "target_terminal": 203
+    },
+    {
+      "class": "letter_substitution",
+      "selected_energy": 7611,
+      "selected_terminal": 221,
+      "surface": "бабошка",
+      "target_energy": 7504,
+      "target_rank": 2,
+      "target_terminal": 220
+    },
+    {
+      "class": "letter_substitution",
+      "selected_energy": 6691,
+      "selected_terminal": 218,
+      "surface": "баиа",
+      "target_energy": 5964,
+      "target_rank": 3,
+      "target_terminal": 224
+    },
+    {
+      "class": "letter_substitution",
+      "selected_energy": 6970,
+      "selected_terminal": 220,
+      "surface": "баока",
+      "target_energy": 5473,
+      "target_rank": 3,
+      "target_terminal": 243
+    },
+    {
+      "class": "letter_substitution",
+      "selected_energy": 8025,
+      "selected_terminal": 273,
+      "surface": "бедство",
+      "target_energy": 6470,
+      "target_rank": 3,
+      "target_terminal": 266
+    },
+    {
+      "class": "letter_substitution",
+      "selected_energy": 7587,
+      "selected_terminal": 351,
+      "surface": "бееный",
+      "target_energy": 7281,
+      "target_rank": 2,
+      "target_terminal": 269
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 8167,
+      "selected_terminal": 3707,
+      "surface": "амин",
+      "target_energy": 7029,
+      "target_rank": 3,
+      "target_terminal": 49
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 7581,
+      "selected_terminal": 162,
+      "surface": "ара",
+      "target_energy": 7009,
+      "target_rank": 3,
+      "target_terminal": 172
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 9578,
+      "selected_terminal": 167,
+      "surface": "арена",
+      "target_energy": 7446,
+      "target_rank": 2,
+      "target_terminal": 168
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 7682,
+      "selected_terminal": 207,
+      "surface": "ато",
+      "target_energy": 6772,
+      "target_rank": 4,
+      "target_terminal": 20
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 8001,
+      "selected_terminal": 218,
+      "surface": "баа",
+      "target_energy": 6737,
+      "target_rank": 2,
+      "target_terminal": 224
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 9434,
+      "selected_terminal": 218,
+      "surface": "баба",
+      "target_energy": 7135,
+      "target_rank": 2,
+      "target_terminal": 219
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 8123,
+      "selected_terminal": 2224,
+      "surface": "багородный",
+      "target_energy": 8060,
+      "target_rank": 2,
+      "target_terminal": 379
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 8053,
+      "selected_terminal": 219,
+      "surface": "бака",
+      "target_energy": 6418,
+      "target_rank": 5,
+      "target_terminal": 243
+    },
+    {
+      "class": "non_adjacent_transposition",
+      "selected_energy": 8174,
+      "selected_terminal": 3711,
+      "surface": "анера",
+      "target_energy": 5560,
+      "target_rank": 4,
+      "target_terminal": 167
+    },
+    {
+      "class": "non_adjacent_transposition",
+      "selected_energy": 6647,
+      "selected_terminal": 554,
+      "surface": "бгало",
+      "target_energy": 5955,
+      "target_rank": 2,
+      "target_terminal": 368
+    },
+    {
+      "class": "non_adjacent_transposition",
+      "selected_energy": 7284,
+      "selected_terminal": 420,
+      "surface": "бодора",
+      "target_energy": 7224,
+      "target_rank": 2,
+      "target_terminal": 468
+    },
+    {
+      "class": "non_adjacent_transposition",
+      "selected_energy": 7033,
+      "selected_terminal": 538,
+      "surface": "бунос",
+      "target_energy": 6321,
+      "target_rank": 2,
+      "target_terminal": 462
+    },
+    {
+      "class": "non_adjacent_transposition",
+      "selected_energy": 7653,
+      "selected_terminal": 568,
+      "surface": "бхюро",
+      "target_energy": 6861,
+      "target_rank": 2,
+      "target_terminal": 519
+    },
+    {
+      "class": "non_adjacent_transposition",
+      "selected_energy": 7404,
+      "selected_terminal": 435,
+      "surface": "бьлее",
+      "target_energy": 6270,
+      "target_rank": 2,
+      "target_terminal": 304
+    },
+    {
+      "class": "non_adjacent_transposition",
+      "selected_energy": 6771,
+      "selected_terminal": 698,
+      "surface": "ввело",
+      "target_energy": 6269,
+      "target_rank": 3,
+      "target_terminal": 835
+    },
+    {
+      "class": "non_adjacent_transposition",
+      "selected_energy": 8025,
+      "selected_terminal": 889,
+      "surface": "ввода",
+      "target_energy": 5586,
+      "target_rank": 6,
+      "target_terminal": 621
+    },
+    {
+      "class": "omission_transposition",
+      "selected_energy": 6612,
+      "selected_terminal": 96,
+      "surface": "аела",
+      "target_energy": 4945,
+      "target_rank": 5,
+      "target_terminal": 97
+    },
+    {
+      "class": "omission_transposition",
+      "selected_energy": 7825,
+      "selected_terminal": 4298,
+      "surface": "аука",
+      "target_energy": 5854,
+      "target_rank": 6,
+      "target_terminal": 80
+    },
+    {
+      "class": "omission_transposition",
+      "selected_energy": 6799,
+      "selected_terminal": 523,
+      "surface": "бдуа",
+      "target_energy": 6718,
+      "target_rank": 2,
+      "target_terminal": 520
+    },
+    {
+      "class": "omission_transposition",
+      "selected_energy": 8074,
+      "selected_terminal": 389,
+      "surface": "блек",
+      "target_energy": 5598,
+      "target_rank": 4,
+      "target_terminal": 298
+    },
+    {
+      "class": "omission_transposition",
+      "selected_energy": 6369,
+      "selected_terminal": 751,
+      "surface": "бнос",
+      "target_energy": 6033,
+      "target_rank": 2,
+      "target_terminal": 462
+    },
+    {
+      "class": "omission_transposition",
+      "selected_energy": 7112,
+      "selected_terminal": 568,
+      "surface": "бюри",
+      "target_energy": 6121,
+      "target_rank": 2,
+      "target_terminal": 518
+    },
+    {
+      "class": "omission_transposition",
+      "selected_energy": 6150,
+      "selected_terminal": 2556,
+      "surface": "вган",
+      "target_energy": 5834,
+      "target_rank": 2,
+      "target_terminal": 572
+    },
+    {
+      "class": "omission_transposition",
+      "selected_energy": 6556,
+      "selected_terminal": 44,
+      "surface": "вдам",
+      "target_energy": 5837,
+      "target_rank": 3,
+      "target_terminal": 573
+    },
+    {
+      "class": "prefix_truncation",
+      "selected_energy": 8307,
+      "selected_terminal": 2872,
+      "surface": "абак",
+      "target_energy": 7515,
+      "target_rank": 2,
+      "target_terminal": 8663
+    },
+    {
+      "class": "prefix_truncation",
+      "selected_energy": 8149,
+      "selected_terminal": 2165,
+      "surface": "абить",
+      "target_energy": 7998,
+      "target_rank": 2,
+      "target_terminal": 4069
+    },
+    {
+      "class": "prefix_truncation",
+      "selected_energy": 8425,
+      "selected_terminal": 7104,
+      "surface": "абота",
+      "target_energy": 7725,
+      "target_rank": 2,
+      "target_terminal": 2172
+    },
+    {
+      "class": "prefix_truncation",
+      "selected_energy": 8387,
+      "selected_terminal": 4084,
+      "surface": "авести",
+      "target_energy": 7784,
+      "target_rank": 2,
+      "target_terminal": 2194
+    },
+    {
+      "class": "prefix_truncation",
+      "selected_energy": 7318,
+      "selected_terminal": 1618,
+      "surface": "авно",
+      "target_energy": 7102,
+      "target_rank": 2,
+      "target_terminal": 7114
+    },
+    {
+      "class": "prefix_truncation",
+      "selected_energy": 8260,
+      "selected_terminal": 4087,
+      "surface": "аводить",
+      "target_energy": 7787,
+      "target_rank": 2,
+      "target_terminal": 2205
+    },
+    {
+      "class": "prefix_truncation",
+      "selected_energy": 8652,
+      "selected_terminal": 4101,
+      "surface": "агрузка",
+      "target_energy": 8094,
+      "target_rank": 2,
+      "target_terminal": 2227
+    },
+    {
+      "class": "prefix_truncation",
+      "selected_energy": 8177,
+      "selected_terminal": 1612,
+      "surface": "адавать",
+      "target_energy": 8167,
+      "target_rank": 2,
+      "target_terminal": 2229
+    },
+    {
+      "class": "punctuation_suffix",
+      "selected_energy": 9015,
+      "selected_terminal": 5491,
+      "surface": "пред.",
+      "target_energy": 8884,
+      "target_rank": 2,
+      "target_terminal": 6391
+    },
+    {
+      "class": "punctuation_suffix",
+      "selected_energy": 9125,
+      "selected_terminal": 8800,
+      "surface": "технически!",
+      "target_energy": 9120,
+      "target_rank": 2,
+      "target_terminal": 8799
+    },
+    {
+      "class": "repeated_fragment",
+      "selected_energy": 8413,
+      "selected_terminal": 755,
+      "surface": "взорворать",
+      "target_energy": 8172,
+      "target_rank": 2,
+      "target_terminal": 754
+    },
+    {
+      "class": "repeated_fragment",
+      "selected_energy": 8315,
+      "selected_terminal": 812,
+      "surface": "включлюать",
+      "target_energy": 8178,
+      "target_rank": 2,
+      "target_terminal": 811
+    },
+    {
+      "class": "repeated_fragment",
+      "selected_energy": 7915,
+      "selected_terminal": 1242,
+      "surface": "выписпиать",
+      "target_energy": 7750,
+      "target_rank": 2,
+      "target_terminal": 1240
+    },
+    {
+      "class": "repeated_fragment",
+      "selected_energy": 8636,
+      "selected_terminal": 1254,
+      "surface": "выпускусать",
+      "target_energy": 8242,
+      "target_rank": 2,
+      "target_terminal": 1253
+    },
+    {
+      "class": "repeated_fragment",
+      "selected_energy": 8272,
+      "selected_terminal": 1282,
+      "surface": "высказыкавать",
+      "target_energy": 8087,
+      "target_rank": 2,
+      "target_terminal": 1281
+    },
+    {
+      "class": "repeated_fragment",
+      "selected_energy": 7608,
+      "selected_terminal": 2193,
+      "surface": "завершерить",
+      "target_energy": 7575,
+      "target_rank": 2,
+      "target_terminal": 2192
+    },
+    {
+      "class": "repeated_fragment",
+      "selected_energy": 8937,
+      "selected_terminal": 2360,
+      "surface": "запепеть",
+      "target_energy": 8342,
+      "target_rank": 2,
+      "target_terminal": 2361
+    },
+    {
+      "class": "repeated_fragment",
+      "selected_energy": 8033,
+      "selected_terminal": 2387,
+      "surface": "запрещреать",
+      "target_energy": 7721,
+      "target_rank": 2,
+      "target_terminal": 2386
+    },
+    {
+      "class": "sparse_multi_omission",
+      "selected_energy": 7921,
+      "selected_terminal": 235,
+      "surface": "баалон",
+      "target_energy": 7166,
+      "target_rank": 2,
+      "target_terminal": 259
+    },
+    {
+      "class": "sparse_multi_omission",
+      "selected_energy": 7444,
+      "selected_terminal": 373,
+      "surface": "блаодаить",
+      "target_energy": 7259,
+      "target_rank": 2,
+      "target_terminal": 369
+    },
+    {
+      "class": "sparse_multi_omission",
+      "selected_energy": 7386,
+      "selected_terminal": 402,
+      "surface": "блстть",
+      "target_energy": 6963,
+      "target_rank": 2,
+      "target_terminal": 391
+    },
+    {
+      "class": "sparse_multi_omission",
+      "selected_energy": 7595,
+      "selected_terminal": 835,
+      "surface": "велво",
+      "target_energy": 5949,
+      "target_rank": 2,
+      "target_terminal": 638
+    },
+    {
+      "class": "sparse_multi_omission",
+      "selected_energy": 6778,
+      "selected_terminal": 647,
+      "surface": "велиый",
+      "target_energy": 5821,
+      "target_rank": 2,
+      "target_terminal": 640
+    },
+    {
+      "class": "sparse_multi_omission",
+      "selected_energy": 6731,
+      "selected_terminal": 2472,
+      "surface": "венть",
+      "target_energy": 6716,
+      "target_rank": 2,
+      "target_terminal": 674
+    },
+    {
+      "class": "sparse_multi_omission",
+      "selected_energy": 6786,
+      "selected_terminal": 996,
+      "surface": "веонка",
+      "target_energy": 6726,
+      "target_rank": 2,
+      "target_terminal": 679
+    },
+    {
+      "class": "sparse_multi_omission",
+      "selected_energy": 6681,
+      "selected_terminal": 676,
+      "surface": "веоый",
+      "target_energy": 6656,
+      "target_rank": 2,
+      "target_terminal": 633
+    },
+    {
+      "class": "suffix_truncation",
+      "selected_energy": 8203,
+      "selected_terminal": 2171,
+      "surface": "абор",
+      "target_energy": 7725,
+      "target_rank": 3,
+      "target_terminal": 3
+    },
+    {
+      "class": "suffix_truncation",
+      "selected_energy": 8537,
+      "selected_terminal": 65,
+      "surface": "академи",
+      "target_energy": 8395,
+      "target_rank": 2,
+      "target_terminal": 63
+    },
+    {
+      "class": "suffix_truncation",
+      "selected_energy": 9608,
+      "selected_terminal": 88,
+      "surface": "александр",
+      "target_energy": 7938,
+      "target_rank": 2,
+      "target_terminal": 89
+    },
+    {
+      "class": "suffix_truncation",
+      "selected_energy": 8137,
+      "selected_terminal": 244,
+      "surface": "анкет",
+      "target_energy": 7989,
+      "target_rank": 2,
+      "target_terminal": 145
+    },
+    {
+      "class": "suffix_truncation",
+      "selected_energy": 9541,
+      "selected_terminal": 228,
+      "surface": "байка",
+      "target_energy": 7648,
+      "target_rank": 2,
+      "target_terminal": 229
+    },
+    {
+      "class": "suffix_truncation",
+      "selected_energy": 9581,
+      "selected_terminal": 242,
+      "surface": "банк",
+      "target_energy": 7068,
+      "target_rank": 2,
+      "target_terminal": 243
+    },
+    {
+      "class": "suffix_truncation",
+      "selected_energy": 8649,
+      "selected_terminal": 396,
+      "surface": "близки",
+      "target_energy": 8184,
+      "target_rank": 2,
+      "target_terminal": 397
+    },
+    {
+      "class": "suffix_truncation",
+      "selected_energy": 7601,
+      "selected_terminal": 1204,
+      "surface": "везд",
+      "target_energy": 7491,
+      "target_rank": 2,
+      "target_terminal": 641
+    }
+  ],
+  "package": "data/lexical_grokking/l1_crystal_v27_sequence_10k.bin",
+  "phase_ablation_drop": 18105,
+  "proof_ms": 189086,
+  "proof_workers": 20,
+  "raw_corpus_stored": false,
+  "reverse_couplings": 1026342,
+  "sequence_ablation_drop": 686,
+  "sequence_improved": 789,
+  "sequence_worsened": 103,
+  "source_words": 10000,
+  "training_surfaces": 265773,
+  "verdict": "WATCH_shadow",
+  "word_center_bank_bytes": 640000,
+  "word_center_bytes": 64
+}

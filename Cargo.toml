@@ -44,6 +44,12 @@ name = "lay-nanda-wave-train"
 path = "src/bin/lay_nanda_wave_train.rs"
 
 [[bin]]
+# Cargo target names become Rust crate identifiers and cannot contain a dot.
+# The installed CLI and its clap identity are both `lay-l1.1-restore`.
+name = "lay-l11-restore"
+path = "src/bin/lay_l1_1_restore.rs"
+
+[[bin]]
 name = "lay-ibus-engine"
 path = "src/bin/lay_ibus_engine.rs"
 

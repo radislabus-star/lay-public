@@ -18,3 +18,12 @@ Rules:
 - The default `target/` budget is 12 GiB. The guard monitors a running Cargo process group and stops it when the budget is crossed.
 - `target/` is disposable build cache. Installed release binaries live in `~/.local/lib/lay/bin` and are linked from `~/.local/bin`.
 - Check current usage with `scripts/cargo-guard.sh --status` before and after an unusually broad build.
+
+## Architecture evidence discipline
+
+- After every architecture experiment, update the owning architecture document in the same change. Do not leave the result only in terminal output or a receipt.
+- Record separately: what was tested, measured facts, what was not tested, verdict scope, exact receipt path, and whether runtime authority changed.
+- Compression/format parity is not a quality proof. Quality claims require aggregate and per-error-class percentages from the fixed heldout proof.
+- Keep estimates, hypotheses, measured facts, and promotion gates visibly distinct.
+- Never dismiss or rhetorically rank L1 proof dimensions against each other. Per-class restoration, clean preservation, lattice coverage, false certainty, package/RSS budgets, and latency form one conjunctive contract; all must be reported and all required gates must pass.
+- The accepted L1 working gate is strict `unique top-1 > 95%` for every damage class. Aggregate top-1 cannot hide a failing class.

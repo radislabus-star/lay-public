@@ -1,0 +1,45 @@
+{
+  "receipt_kind": "l1_crystal_kernel_v23",
+  "date": "2026-07-22",
+  "verdict": "WATCH_shadow",
+  "live_authority": false,
+  "word_center_bytes": 64,
+  "wave_dimension": 128,
+  "word_wave_components": 22,
+  "raw_corpus_stored": false,
+  "exact_damage_episodes_stored": 0,
+  "proof_workers": 20,
+  "two_thousand": {
+    "clean_percent": 100.0,
+    "top1_percent": 96.64731223075482,
+    "top8_percent": 99.91883623649872,
+    "top64_percent": 99.98126990073047,
+    "artifact_bytes": 12241112,
+    "compile_ms": 6632,
+    "proof_ms": 7170,
+    "hot_p50_us": 1065,
+    "hot_p99_us": 1276
+  },
+  "ten_thousand": {
+    "clean_percent": 99.84,
+    "top1_percent": 90.70458835897495,
+    "top8_percent": 98.99619049772221,
+    "top64_percent": 99.63148434938901,
+    "artifact_bytes": 41550288,
+    "compile_ms": 59063,
+    "proof_ms": 49064,
+    "hot_p50_us": 1435,
+    "hot_p99_us": 1744
+  },
+  "baseline_delta": {
+    "two_thousand_top1_pp": 2.1040144846101,
+    "ten_thousand_top1_pp": 1.44919344810827,
+    "ten_thousand_compile_ms": -415219
+  },
+  "blockers": [
+    "10k top1 is below accepted 95 percent working threshold",
+    "10k clean preservation is below formal 99.9 percent gate",
+    "zero-copy mapped runtime is not implemented",
+    "incremental surface accumulator is not implemented"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "candidates": [
+    {
+      "anti_milli": 500,
+      "atom_hits": 123,
+      "overlap_milli": 455,
+      "positive_milli": 868,
+      "settled_energy": 2556,
+      "terminal_id": 184
+    },
+    {
+      "anti_milli": 772,
+      "atom_hits": 90,
+      "overlap_milli": 333,
+      "positive_milli": 854,
+      "settled_energy": 2040,
+      "terminal_id": 185
+    },
+    {
+      "anti_milli": 780,
+      "atom_hits": 78,
+      "overlap_milli": 309,
+      "positive_milli": 849,
+      "settled_energy": 1934,
+      "terminal_id": 166
+    }
+  ],
+  "package": "/tmp/lay-l1-final-2k.bin",
+  "surface": "врмея",
+  "terminal_count": 2000
+}

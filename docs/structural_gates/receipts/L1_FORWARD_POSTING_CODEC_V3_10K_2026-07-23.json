@@ -1,0 +1,45 @@
+{
+  "verdict": "PASS_codec_candidate",
+  "scope": "shadow_only",
+  "source_package": "data/lexical_grokking/l1_crystal_10k_v23.bin",
+  "terminal_count": 10000,
+  "atom_count": 106021,
+  "forward_relations": 3229043,
+  "posting_block_relations": 32,
+  "posting_blocks": 177538,
+  "raw_forward_bytes": 25832344,
+  "compressed_forward_bytes": 11751841,
+  "compression_ratio": 2.1981529532266477,
+  "average_bytes_per_relation": 3.6394191715625963,
+  "original_package_bytes": 41550288,
+  "v3_package_bytes": 27469785,
+  "coupling_roundtrip_parity": true,
+  "exact_top64_parity_samples": 500,
+  "exact_top64_parity": true,
+  "v2_read_compatibility": true,
+  "minimum_required_ratio": 1.8,
+  "host": "e-MEGA-MINI-M1-13th",
+  "build_jobs": 20,
+  "verification": {
+    "local_l1_tests": {
+      "command": "scripts/cargo-guard.sh test --lib nanda_wave::lexical_grokking -- --nocapture",
+      "passed": 15,
+      "failed": 0
+    },
+    "local_bin_check": {
+      "command": "scripts/cargo-guard.sh check --bin lay-nanda-wave-train",
+      "passed": true
+    },
+    "local_clippy": {
+      "command": "scripts/cargo-guard.sh clippy --lib --bin lay-nanda-wave-train -- -D warnings -A clippy::too_many_arguments",
+      "passed": true
+    },
+    "local_diff_check": true,
+    "local_target_bytes": 7754158080,
+    "local_target_budget_bytes": 12884901888,
+    "remote_release_build": true,
+    "remote_raw_report": "/tmp/l1-forward-codec-v3-10k.json"
+  },
+  "runtime_authority_changed": false,
+  "daemon_or_ime_changed": false
+}

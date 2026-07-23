@@ -42,6 +42,69 @@ struct Learned {
 
 fn main() -> io::Result<()> {
     let args = env::args().collect::<Vec<_>>();
+    if let Some(package) = arg_path(&args, "--analyze-l1-forward-compression") {
+        let report = lay::nanda_wave::analyze_l1_forward_compression(&package)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(l1_package) = arg_path(&args, "--bench-l1-lexical-grokking") {
+        let surface = arg_string(&args, "--surface")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--surface is required"))?;
+        let iterations = arg_usize(&args, "--iterations").unwrap_or(1_000);
+        let report =
+            lay::nanda_wave::benchmark_l1_lexical_grokking(&l1_package, &surface, iterations)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(package) = arg_path(&args, "--query-l1-lexical-grokking") {
+        let surface = arg_string(&args, "--surface")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--surface is required"))?;
+        let limit = arg_usize(&args, "--limit").unwrap_or(8);
+        let report = lay::nanda_wave::query_l1_lexical_grokking(&package, &surface, limit)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(corpus) = arg_path(&args, "--prove-l1-lexical-grokking-package") {
+        let package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let max_words = arg_usize(&args, "--max-words").unwrap_or(10_000);
+        let report =
+            lay::nanda_wave::prove_l1_lexical_grokking_package(&corpus, &package, max_words)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(corpus) = arg_path(&args, "--prove-l1-lexical-grokking") {
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let max_words = arg_usize(&args, "--max-words").unwrap_or(10_000);
+        let report = if args
+            .iter()
+            .any(|arg| arg == "--l1-complete-forward-postings")
+        {
+            lay::nanda_wave::prove_l1_lexical_grokking_complete_postings(
+                &corpus, &output, max_words,
+            )?
+        } else {
+            lay::nanda_wave::prove_l1_lexical_grokking(&corpus, &output, max_words)?
+        };
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if args
         .iter()
         .any(|arg| arg == "--merge-l3-context-phase-shards")
@@ -753,6 +816,11 @@ fn print_summary(
 fn arg_path(args: &[String], name: &str) -> Option<PathBuf> {
     args.windows(2)
         .find_map(|pair| (pair[0] == name).then(|| PathBuf::from(&pair[1])))
+}
+
+fn arg_string(args: &[String], name: &str) -> Option<String> {
+    args.windows(2)
+        .find_map(|pair| (pair[0] == name).then(|| pair[1].clone()))
 }
 
 fn arg_paths(args: &[String], name: &str) -> Vec<PathBuf> {

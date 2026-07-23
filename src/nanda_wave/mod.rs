@@ -20,6 +20,7 @@ pub(crate) mod l4_phase_witness;
 pub(crate) mod l4_signed_memory;
 pub mod learned;
 pub mod lexical_attractor;
+mod lexical_grokking;
 mod lexical_phase;
 pub mod llmwave;
 pub mod mode;
@@ -41,6 +42,11 @@ pub(crate) mod usage_prior;
 pub use eval::{evaluate_wave, evaluate_wave_with_options, WaveEvalResult, WaveEvalStats};
 pub use l2_candidate_phase::L2PhaseTrainingEntry;
 pub(crate) use l2_candidate_phase::{PhaseReadout, PhaseVerdict};
+pub use lexical_grokking::{
+    analyze_l1_forward_compression, benchmark_l1_lexical_grokking, prove_l1_lexical_grokking,
+    prove_l1_lexical_grokking_complete_postings, prove_l1_lexical_grokking_package,
+    query_l1_lexical_grokking, restore_l1_surface,
+};
 pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
 pub use options::WaveOptions;
 pub use self_teacher_l3::{build_lay_self_teacher_l3_report, LaySelfTeacherL3Config};

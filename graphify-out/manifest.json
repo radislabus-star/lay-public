@@ -1050,8 +1050,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_train.rs": {
-    "mtime": 1784658852.8624933,
-    "ast_hash": "90c498ca634bd55d947a7c1a0320b5e6",
+    "mtime": 1784784027.1433718,
+    "ast_hash": "c074e47863fedb57c044459e2ac4a750",
     "semantic_hash": ""
   },
   "src/bin/lay_ngram_corpus.rs": {
@@ -1155,8 +1155,8 @@
     "semantic_hash": ""
   },
   "src/correction_core.rs": {
-    "mtime": 1784720460.7895565,
-    "ast_hash": "0880395f889535dd85af0134c4ecead3",
+    "mtime": 1784763837.4277596,
+    "ast_hash": "bee7ef148a78e60cdea8c075758bbe7f",
     "semantic_hash": ""
   },
   "src/correction_tests.rs": {
@@ -1575,8 +1575,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/mod.rs": {
-    "mtime": 1784676944.83531,
-    "ast_hash": "5fd03cc5bcb22753ef1cf6e01207078f",
+    "mtime": 1784808165.5914474,
+    "ast_hash": "69fd46ad9f98867ac8dac46bc4062c2c",
     "semantic_hash": ""
   },
   "src/nanda_wave/mode.rs": {
@@ -2495,8 +2495,8 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1784240627.1841087,
-    "ast_hash": "f137a2fd4d29efa4c413a6eb312d78a2",
+    "mtime": 1784764804.9521642,
+    "ast_hash": "6d84f05c002f7733be9881fa7216c029",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -3325,8 +3325,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision/admission.rs": {
-    "mtime": 1784721075.6715019,
-    "ast_hash": "d0a768a2df04d0a5f30d3e08cd2c2653",
+    "mtime": 1784763837.8687649,
+    "ast_hash": "2ab51f1029cd0fd369d7ae2347ae5421",
     "semantic_hash": ""
   },
   "src/typing_transition/decision/receipt.rs": {
@@ -3695,13 +3695,423 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/surface_damage.rs": {
-    "mtime": 1784665834.1646752,
+    "mtime": 1784783755.6143234,
     "ast_hash": "1f1e169a07dcd98adf8ce979dd0cd47c",
     "semantic_hash": ""
   },
   "tests/restore_word_cli.rs": {
     "mtime": 1784726533.941774,
     "ast_hash": "da70ec9044acad83addcc57df1c9a297",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_LEXICAL_GROKKING_10K_2026-07-22.json": {
+    "mtime": 1784736146.0783715,
+    "ast_hash": "49eb1decb92548911c732c77b2a435a0",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_LEXICAL_GROKKING_2K_2026-07-22.json": {
+    "mtime": 1784736145.6583655,
+    "ast_hash": "b911562ad1db93107f4267fa6994bd97",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_LEXICAL_GROKKING_QUERY_2026-07-22.json": {
+    "mtime": 1784736146.5083778,
+    "ast_hash": "ffad1246ff60c09af423700121bec61e",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/atoms.rs": {
+    "mtime": 1784813128.4113836,
+    "ast_hash": "b1db1d568346205e7af9177a1eaf40b0",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/compiler.rs": {
+    "mtime": 1784812587.1884313,
+    "ast_hash": "170c5b092d60791221ca0079742ee80d",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/corruption.rs": {
+    "mtime": 1784783755.6723242,
+    "ast_hash": "a7019d9058b505c9f69022460408db84",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/format.rs": {
+    "mtime": 1784812587.1914313,
+    "ast_hash": "c3aaac6ff6513357a5e6085148dcb47e",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/mod.rs": {
+    "mtime": 1784808165.5914474,
+    "ast_hash": "264f83dd52ace61c62370e992948c89b",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/model.rs": {
+    "mtime": 1784812587.1864312,
+    "ast_hash": "affe9040421c3cac72cacf75bd96a24c",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/proof.rs": {
+    "mtime": 1784814747.928347,
+    "ast_hash": "2763918ace6d50b94cec3396494a2f4f",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/runtime.rs": {
+    "mtime": 1784814271.665656,
+    "ast_hash": "e8bac051d225cd1d153d0f1a2a11435f",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/tests.rs": {
+    "mtime": 1784814271.6666563,
+    "ast_hash": "0e53fd09a89c7c5e091cd6f7ae8d408a",
+    "semantic_hash": ""
+  },
+  "docs/l1-lexical-grokking-shadow.md": {
+    "mtime": 1784815278.5453777,
+    "ast_hash": "09ace103f4e0d02f417f89e2b8903aa0",
+    "semantic_hash": ""
+  },
+  "docs/lay-wave-grokking-and-hidden-state-architecture.md": {
+    "mtime": 1784729864.3065033,
+    "ast_hash": "cef60bd8258a308f9825b11279d2267d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L2_HOT_BENCH_2026-07-22.json": {
+    "mtime": 1784743578.6045012,
+    "ast_hash": "562a95c7f262cec10b3016616018f847",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PAIRWISE_LEXICAL_GROKKING_10K_2026-07-22.json": {
+    "mtime": 1784743578.2054963,
+    "ast_hash": "dcf43c359db8f50d75c37f28277be6f7",
+    "semantic_hash": ""
+  },
+  "docs/l1-crystal-kernel-memory-layout.md": {
+    "mtime": 1784815278.5453777,
+    "ast_hash": "6673009865808e66e29dbdca77ed6be3",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_CRYSTAL_KERNEL_V23_2026-07-22.json": {
+    "mtime": 1784757220.5439467,
+    "ast_hash": "7892c15fd921e6942e18375df3c2851f",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/crystal.rs": {
+    "mtime": 1784754989.0271275,
+    "ast_hash": "57e2294790c1db26c4333871cbcbf3bd",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/ngram_graph.rs": {
+    "mtime": 1784800244.9696631,
+    "ast_hash": "863484b1ae1acbe3767c0d84f79f9b8f",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/wave_basis.rs": {
+    "mtime": 1784756928.2436743,
+    "ast_hash": "d91701022705f8e972e0fac4a9d03e34",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_CRYSTAL_OMISSION_RECONSTRUCTION_V24_10K_2026-07-23.json": {
+    "mtime": 1784762182.1359334,
+    "ast_hash": "14174577c602595860fe19f3e62be9a5",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_CRYSTAL_OMISSION_RECONSTRUCTION_V24_2K_2026-07-23.json": {
+    "mtime": 1784762181.682928,
+    "ast_hash": "0d2d2c9afc163ab6fcb68fd07126ad1f",
+    "semantic_hash": ""
+  },
+  "docs/l1-crystal-kernel-scientific-foundations.md": {
+    "mtime": 1784794983.6393614,
+    "ast_hash": "3e51df766090362d7232deed9299cc19",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_FORWARD_POSTING_CODEC_V3_10K_2026-07-23.json": {
+    "mtime": 1784764212.4571345,
+    "ast_hash": "70d3f2ecc12408be0de5579a62767eb5",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/posting_codec.rs": {
+    "mtime": 1784763876.801218,
+    "ast_hash": "a1f486b1bd3df4d1a0353b7496a1b364",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_CRYSTAL_FORMAT_V3_10K_FIXED_2026-07-23.json": {
+    "mtime": 1784764723.9619584,
+    "ast_hash": "7f20db4017e316bc96aa198795a78757",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_ALIGNMENT_PROBE_V62_2K_2026-07-23.json": {
+    "mtime": 1784785228.53053,
+    "ast_hash": "bbd92564f6ab155bf7a4c01236bf937e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_BASIN_POSITION_V49_2K_2026-07-23.json": {
+    "mtime": 1784779569.1895556,
+    "ast_hash": "ec541a6704c7250a72dfbc67557e8ffb",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_CHARACTER_POSITION_V40_2K_2026-07-23.json": {
+    "mtime": 1784780788.6010842,
+    "ast_hash": "64e722ae83d9b9b75177e3aae26b351d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_CHARACTER_POSITION_V41_10K_2026-07-23.json": {
+    "mtime": 1784780789.0210893,
+    "ast_hash": "fceddcf337c8422b35d9ba74d99efa3b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_COLLISION_PAIR_VETO_V58_2K_2026-07-23.json": {
+    "mtime": 1784784060.5467534,
+    "ast_hash": "e637b0b327465a1a08e77343c9125275",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_COLLISION_PAIR_VETO_V59_2K_2026-07-23.json": {
+    "mtime": 1784784209.9474733,
+    "ast_hash": "ed219a5aeeb24fa41cb28d60a9e1604d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_COMPLETE_FORWARD_POSTINGS_V26_10K_2026-07-23.json": {
+    "mtime": 1784765781.7071955,
+    "ast_hash": "9a55edaf0444121c645ebb142bfb23b8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_COMPOSED_LEASES_V54_10K_2026-07-23.json": {
+    "mtime": 1784781834.564503,
+    "ast_hash": "fd58fe19874a03339ebeeb0f2e9b99b3",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_COMPOSED_LEASES_V54_2K_2026-07-23.json": {
+    "mtime": 1784780622.2810385,
+    "ast_hash": "20ee6914f570f915a301deeb86443e04",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_COMPOSED_POSITION_V50_2K_2026-07-23.json": {
+    "mtime": 1784780620.77102,
+    "ast_hash": "a59d3ccb3bba18a54a7295fdd6bfbf4b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_CONSERVATIVE_SEQUENCE_V28_10K_2026-07-23.json": {
+    "mtime": 1784767866.9955804,
+    "ast_hash": "5f08c37985b83a4c6759a69cbee85c02",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_COVERAGE_LEASED_SEQUENCE_V30_10K_2026-07-23.json": {
+    "mtime": 1784769422.608013,
+    "ast_hash": "2ddbdb0a1643f19cfcda64d08058a36e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_DIVERSE_DOUBLE_TRAINING_V57_2K_2026-07-23.json": {
+    "mtime": 1784783734.0270863,
+    "ast_hash": "37476017a585496b2bc562a439e3c64b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_DUAL_READOUT_V47_2K_2026-07-23.json": {
+    "mtime": 1784780791.9711258,
+    "ast_hash": "e1b53f03ea73a2b9ba762ab95b3b2cea",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_DYNAMIC_WORKERS_V41_2K_2026-07-23.json": {
+    "mtime": 1784780789.4410946,
+    "ast_hash": "f4a49d1dc3e9a2290e2711a61446bca9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_ENERGY_LEASED_POSITION_V53_2K_2026-07-23.json": {
+    "mtime": 1784780621.9020338,
+    "ast_hash": "a050514cff117ca9468a861629055be5",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_FAILURE_DECOMPOSITION_V63_10K_2026-07-23.json": {
+    "mtime": 1784786102.8339384,
+    "ast_hash": "f76587ebfd19dfa126886ca1385ed19c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_GLOBAL_RELATION_WAVE_V64_2K_2026-07-23.json": {
+    "mtime": 1784786656.0162024,
+    "ast_hash": "d8b6dd1bf7882b59f3a3d81fd7728967",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_LENGTH_BASIN_RELATION_WAVE_V65_2K_2026-07-23.json": {
+    "mtime": 1784786656.4362078,
+    "ast_hash": "658a0595a3b608ac567b9584c4b0245f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_LENGTH_STRATUM_POSITION_V43_2K_2026-07-23.json": {
+    "mtime": 1784780790.2711048,
+    "ast_hash": "5b1d438daf08b7fe51a5389f974a0ea3",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_ORDERED_PAIRWISE_SEQUENCE_V34_10K_2026-07-23.json": {
+    "mtime": 1784772900.7728236,
+    "ast_hash": "35971c26eab971c812e4ce3162db9af2",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_PAIRWISE_SEQUENCE_V33_10K_2026-07-23.json": {
+    "mtime": 1784771952.309881,
+    "ast_hash": "582d09fcb5a342c5f0a50186d8ea64f8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_PAIRWISE_V35_2K_2026-07-23.json": {
+    "mtime": 1784780786.5210586,
+    "ast_hash": "1b3c6751defa5c33a87c6acd6341f12f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_PAIRWISE_V36_2K_2026-07-23.json": {
+    "mtime": 1784780786.961064,
+    "ast_hash": "9fdd3018d9457fd854e460ebab124bfd",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_PAIRWISE_V37_2K_2026-07-23.json": {
+    "mtime": 1784780787.361069,
+    "ast_hash": "1b48bfa08150752120fd050343425fe2",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_PAIRWISE_V38_2K_2026-07-23.json": {
+    "mtime": 1784780787.771074,
+    "ast_hash": "569faf6ca23a2d2a324b188dd1ab031e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_PAIRWISE_V39_2K_2026-07-23.json": {
+    "mtime": 1784780788.1910791,
+    "ast_hash": "e981f32be83520c7783e16574e1ae192",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_PAIR_SUBCENTERS_V60_2K_2026-07-23.json": {
+    "mtime": 1784784629.9983885,
+    "ast_hash": "edf1ea8606a846348fa66e4bd79698b5",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_PARTITIONED_SEQUENCE_V29_10K_2026-07-23.json": {
+    "mtime": 1784768643.0483952,
+    "ast_hash": "6d92f37e957e6c76ce5b2097112b125f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_POSITION_CERTIFICATE_V48_2K_2026-07-23.json": {
+    "mtime": 1784779568.7595508,
+    "ast_hash": "e1eefd12d0a47670f4618d6e248495f2",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_POSITION_DIAGNOSTICS_V51_2K_2026-07-23.json": {
+    "mtime": 1784780621.1510246,
+    "ast_hash": "3daf611349cbaf0833e67a235a725210",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_POSITION_ENERGY_DIAGNOSTICS_V52_2K_2026-07-23.json": {
+    "mtime": 1784780621.5310292,
+    "ast_hash": "131de1f599e4aae776a411ac16873e35",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_POSITION_GAIN_V46_2K_2026-07-23.json": {
+    "mtime": 1784780791.5611207,
+    "ast_hash": "e80d6dad34a4622a5cb09f339b3c53bb",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_RARITY_POSITION_V56_2K_2026-07-23.json": {
+    "mtime": 1784783400.687566,
+    "ast_hash": "fab60ecf350a9307462f60ceba2833bf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_RELATIVE_POSITION_MASS_V45_2K_2026-07-23.json": {
+    "mtime": 1784780791.1511157,
+    "ast_hash": "80f8f0a38d922ce48d7763f1ed2380b1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_REUSED_PACKAGE_PARITY_V55_2K_2026-07-23.json": {
+    "mtime": 1784782920.2271798,
+    "ast_hash": "42dc531b7b1b1869bf6a1fee93f47a11",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_SAME_LENGTH_POSITION_V42_2K_2026-07-23.json": {
+    "mtime": 1784780789.8510997,
+    "ast_hash": "ba9b66e45e54f5ddb04ed21aaa1df85e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_SEQUENCE_CERTIFICATE_V32_10K_2026-07-23.json": {
+    "mtime": 1784771123.40136,
+    "ast_hash": "99600fca947aac492f732cb0509a1117",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_SEQUENCE_INTERFERENCE_V27_10K_2026-07-23.json": {
+    "mtime": 1784766872.9437287,
+    "ast_hash": "98341111de68dd70874b50319f169ad9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_STRATIFIED_SEQUENCE_V31_10K_2026-07-23.json": {
+    "mtime": 1784770322.3098836,
+    "ast_hash": "067bd18bcf3185fa0487b76f74392545",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_STRICT_PAIR_SUBCENTERS_V61_2K_2026-07-23.json": {
+    "mtime": 1784784907.408672,
+    "ast_hash": "896ca1e4228942a004be2149a983b95a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_SURFACE_POSITION_V44_2K_2026-07-23.json": {
+    "mtime": 1784780790.68111,
+    "ast_hash": "4912c972fdad5d22fe455829e19c1ce8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_WINNER_OWNED_SEQUENCE_V55_10K_2026-07-23.json": {
+    "mtime": 1784782919.7971745,
+    "ast_hash": "322a34ec4947ba6d5ffc49f455eb5c71",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_WINNER_OWNED_SEQUENCE_V55_2K_2026-07-23.json": {
+    "mtime": 1784782919.3671691,
+    "ast_hash": "d20203ba66868f617445a73e21726b74",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/pairwise.rs": {
+    "mtime": 1784784233.2607434,
+    "ast_hash": "daca99fb946218ea968005de25d188fc",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_DOUBLE_FUNCTIONAL_ACCURACY_V68_10K_2026-07-23.json": {
+    "mtime": 1784794008.7612815,
+    "ast_hash": "7f5bdb92b85403c7689647a3c67e9918",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_DOUBLE_GEOMETRY_DENOMINATOR_V67_10K_2026-07-23.json": {
+    "mtime": 1784793145.2280455,
+    "ast_hash": "c99fee50fb5ec24fa636972385519bc8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_ENERGY_AMBIGUITY_AUDIT_V66_10K_2026-07-23.json": {
+    "mtime": 1784792370.2941306,
+    "ast_hash": "1271213f3cb75c6d1fc6dbc495efaf41",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/restoration.rs": {
+    "mtime": 1784814471.1731305,
+    "ast_hash": "97ec5ece2d2c0446f720a8d123f1a202",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_1_MULTIMODAL_CRYSTAL_E2_10K_2026-07-23.json": {
+    "mtime": 1784808141.4700859,
+    "ast_hash": "61ebd41b6bef5ae21cc066069e4e3541",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_1_ANTI_PRUNED_LATTICE_REJECTED_10K_2026-07-23.json": {
+    "mtime": 1784810444.0310817,
+    "ast_hash": "a93d95e43f09bb70c4e3ad92646324b8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_1_PRESERVED_NEAREST_LATTICE_10K_2026-07-23.json": {
+    "mtime": 1784811339.2040691,
+    "ast_hash": "4d8ec5289883b870c7e36b1b37660722",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_1_MULTIMODAL_RECONSTRUCTION_10K_2026-07-23.json": {
+    "mtime": 1784815234.8369238,
+    "ast_hash": "2874288f32dd2618d66ebc6b3f90b567",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_1_PHYSICAL_KEY_GEOMETRY_10K_2026-07-23.json": {
+    "mtime": 1784813449.5334213,
+    "ast_hash": "1e2694e0906c4add21ad6ad359a72712",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_l1_1_restore.rs": {
+    "mtime": 1784815116.0517173,
+    "ast_hash": "bba74306ee78339317f035d7654e9190",
     "semantic_hash": ""
   }
 }

@@ -1,0 +1,62 @@
+[
+  {
+    "checksum": 0,
+    "iterations": 2000,
+    "l1_p50_us": 767,
+    "l1_p99_us": 895,
+    "l2_p50_us": 6,
+    "l2_p99_us": 8,
+    "l2_pair_profiles": 143,
+    "surface": "врмея",
+    "terminal_count": 10000,
+    "total_max_us": 1024,
+    "total_p50_us": 774,
+    "total_p90_us": 832,
+    "total_p99_us": 903
+  },
+  {
+    "checksum": 0,
+    "iterations": 2000,
+    "l1_p50_us": 694,
+    "l1_p99_us": 1305,
+    "l2_p50_us": 8,
+    "l2_p99_us": 16,
+    "l2_pair_profiles": 143,
+    "surface": "переподлчаю",
+    "terminal_count": 10000,
+    "total_max_us": 1544,
+    "total_p50_us": 703,
+    "total_p90_us": 1199,
+    "total_p99_us": 1322
+  },
+  {
+    "checksum": 0,
+    "iterations": 2000,
+    "l1_p50_us": 539,
+    "l1_p99_us": 1415,
+    "l2_p50_us": 5,
+    "l2_p99_us": 22,
+    "l2_pair_profiles": 143,
+    "surface": "ффетивная",
+    "terminal_count": 10000,
+    "total_max_us": 1593,
+    "total_p50_us": 545,
+    "total_p90_us": 1298,
+    "total_p99_us": 1436
+  },
+  {
+    "checksum": 0,
+    "iterations": 2000,
+    "l1_p50_us": 1003,
+    "l1_p99_us": 1040,
+    "l2_p50_us": 4,
+    "l2_p99_us": 4,
+    "l2_pair_profiles": 143,
+    "surface": "djn",
+    "terminal_count": 10000,
+    "total_max_us": 1612,
+    "total_p50_us": 1008,
+    "total_p90_us": 1021,
+    "total_p99_us": 1044
+  }
+]

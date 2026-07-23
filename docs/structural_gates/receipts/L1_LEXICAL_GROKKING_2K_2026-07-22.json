@@ -1,0 +1,286 @@
+{
+  "anti_ablation_drop": 2,
+  "anti_centers": 1730,
+  "artifact_bytes": 1746668,
+  "atom_centers": 37768,
+  "classes": {
+    "adjacent_transposition": {
+      "cases": 2609,
+      "top1": 2359,
+      "top64": 2608,
+      "top8": 2598
+    },
+    "extra_letter": {
+      "cases": 2647,
+      "top1": 2531,
+      "top64": 2647,
+      "top8": 2645
+    },
+    "layout_projection": {
+      "cases": 505,
+      "top1": 505,
+      "top64": 505,
+      "top8": 505
+    },
+    "letter_substitution": {
+      "cases": 2708,
+      "top1": 2646,
+      "top64": 2708,
+      "top8": 2704
+    },
+    "missing_letter": {
+      "cases": 2683,
+      "top1": 2168,
+      "top64": 2680,
+      "top8": 2636
+    },
+    "sparse_multi_omission": {
+      "cases": 288,
+      "top1": 145,
+      "top64": 274,
+      "top8": 252
+    }
+  },
+  "clean_preservation_percent": 100.0,
+  "clean_top1": 2000,
+  "exact_damage_episodes_stored": 0,
+  "heldout_surfaces": 11440,
+  "heldout_top1": 10354,
+  "heldout_top1_percent": 90.50699300699301,
+  "heldout_top64": 11422,
+  "heldout_top64_percent": 99.84265734265735,
+  "heldout_top8": 11340,
+  "heldout_top8_percent": 99.12587412587412,
+  "miss_diagnostics": [
+    {
+      "class": "sparse_multi_omission",
+      "selected_energy": 2712,
+      "selected_terminal": 10,
+      "target_anti_milli": 500,
+      "target_energy": 2492,
+      "target_overlap_milli": 420,
+      "target_positive_milli": 906,
+      "target_rank": 2,
+      "target_terminal": 8
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 3122,
+      "selected_terminal": 33,
+      "target_anti_milli": 846,
+      "target_energy": 2886,
+      "target_overlap_milli": 541,
+      "target_positive_milli": 861,
+      "target_rank": 2,
+      "target_terminal": 29
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 3212,
+      "selected_terminal": 64,
+      "target_anti_milli": 872,
+      "target_energy": 2756,
+      "target_overlap_milli": 499,
+      "target_positive_milli": 880,
+      "target_rank": 2,
+      "target_terminal": 30
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 3118,
+      "selected_terminal": 64,
+      "target_anti_milli": 847,
+      "target_energy": 3098,
+      "target_overlap_milli": 593,
+      "target_positive_milli": 863,
+      "target_rank": 2,
+      "target_terminal": 30
+    },
+    {
+      "class": "adjacent_transposition",
+      "selected_energy": 2052,
+      "selected_terminal": 78,
+      "target_anti_milli": 843,
+      "target_energy": 2026,
+      "target_overlap_milli": 333,
+      "target_positive_milli": 847,
+      "target_rank": 2,
+      "target_terminal": 39
+    },
+    {
+      "class": "adjacent_transposition",
+      "selected_energy": 2904,
+      "selected_terminal": 51,
+      "target_anti_milli": 500,
+      "target_energy": 2016,
+      "target_overlap_milli": 333,
+      "target_positive_milli": 842,
+      "target_rank": 5,
+      "target_terminal": 44
+    },
+    {
+      "class": "adjacent_transposition",
+      "selected_energy": 2266,
+      "selected_terminal": 40,
+      "target_anti_milli": 500,
+      "target_energy": 2194,
+      "target_overlap_milli": 384,
+      "target_positive_milli": 829,
+      "target_rank": 2,
+      "target_terminal": 44
+    },
+    {
+      "class": "sparse_multi_omission",
+      "selected_energy": 2584,
+      "selected_terminal": 47,
+      "target_anti_milli": 500,
+      "target_energy": 2218,
+      "target_overlap_milli": 367,
+      "target_positive_milli": 875,
+      "target_rank": 3,
+      "target_terminal": 45
+    },
+    {
+      "class": "adjacent_transposition",
+      "selected_energy": 2896,
+      "selected_terminal": 44,
+      "target_anti_milli": 810,
+      "target_energy": 2062,
+      "target_overlap_milli": 333,
+      "target_positive_milli": 865,
+      "target_rank": 2,
+      "target_terminal": 51
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 2798,
+      "selected_terminal": 46,
+      "target_anti_milli": 888,
+      "target_energy": 2752,
+      "target_overlap_milli": 494,
+      "target_positive_milli": 888,
+      "target_rank": 2,
+      "target_terminal": 53
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 2872,
+      "selected_terminal": 54,
+      "target_anti_milli": 888,
+      "target_energy": 2684,
+      "target_overlap_milli": 476,
+      "target_positive_milli": 890,
+      "target_rank": 2,
+      "target_terminal": 53
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 3130,
+      "selected_terminal": 48,
+      "target_anti_milli": 840,
+      "target_energy": 2924,
+      "target_overlap_milli": 546,
+      "target_positive_milli": 870,
+      "target_rank": 2,
+      "target_terminal": 54
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 3140,
+      "selected_terminal": 48,
+      "target_anti_milli": 846,
+      "target_energy": 2540,
+      "target_overlap_milli": 453,
+      "target_positive_milli": 864,
+      "target_rank": 2,
+      "target_terminal": 54
+    },
+    {
+      "class": "adjacent_transposition",
+      "selected_energy": 3186,
+      "selected_terminal": 53,
+      "target_anti_milli": 900,
+      "target_energy": 3134,
+      "target_overlap_milli": 578,
+      "target_positive_milli": 911,
+      "target_rank": 2,
+      "target_terminal": 55
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 3628,
+      "selected_terminal": 61,
+      "target_anti_milli": 875,
+      "target_energy": 3470,
+      "target_overlap_milli": 670,
+      "target_positive_milli": 895,
+      "target_rank": 2,
+      "target_terminal": 59
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 2616,
+      "selected_terminal": 58,
+      "target_anti_milli": 829,
+      "target_energy": 2528,
+      "target_overlap_milli": 458,
+      "target_positive_milli": 848,
+      "target_rank": 2,
+      "target_terminal": 60
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 3024,
+      "selected_terminal": 27,
+      "target_anti_milli": 858,
+      "target_energy": 2280,
+      "target_overlap_milli": 436,
+      "target_positive_milli": 813,
+      "target_rank": 2,
+      "target_terminal": 62
+    },
+    {
+      "class": "adjacent_transposition",
+      "selected_energy": 2720,
+      "selected_terminal": 719,
+      "target_anti_milli": 794,
+      "target_energy": 2008,
+      "target_overlap_milli": 333,
+      "target_positive_milli": 838,
+      "target_rank": 4,
+      "target_terminal": 63
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 2576,
+      "selected_terminal": 70,
+      "target_anti_milli": 500,
+      "target_energy": 2522,
+      "target_overlap_milli": 458,
+      "target_positive_milli": 845,
+      "target_rank": 2,
+      "target_terminal": 72
+    },
+    {
+      "class": "missing_letter",
+      "selected_energy": 2810,
+      "selected_terminal": 1657,
+      "target_anti_milli": 500,
+      "target_energy": 2562,
+      "target_overlap_milli": 443,
+      "target_positive_milli": 895,
+      "target_rank": 2,
+      "target_terminal": 73
+    }
+  ],
+  "package": "/tmp/lay-l1-final-2k.bin",
+  "phase_ablation_drop": 9,
+  "positive_centers": 8039,
+  "postings": 207184,
+  "raw_words_stored": false,
+  "source_words": 2000,
+  "top1_without_anti": 10352,
+  "top1_without_phase": 10345,
+  "training_surfaces": 33576,
+  "verdict": "PASS_shadow"
+}
