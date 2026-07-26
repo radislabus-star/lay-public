@@ -1,8 +1,10 @@
 use std::cell::RefCell;
 use std::collections::{BTreeMap, BTreeSet};
 use std::io;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::time::Instant;
+
+use serde::{Deserialize, Serialize};
 
 use crate::stable_hash::mix64_golden;
 
@@ -66,69 +68,8 @@ pub fn restore_surface(
     surface: &str,
     limit: usize,
 ) -> io::Result<serde_json::Value> {
-    let bytes = std::fs::read(package_path)?;
-    let memory = LexicalGrokkingMemory::from_bytes(&bytes).map_err(io::Error::other)?;
-    let mut candidates = memory.readout(surface, limit.max(1), ReadoutMode::Full);
-    let readout = memory.classify_restoration(
-        surface,
-        &mut candidates,
-        memory.package.restoration_calibration,
-    );
-    let result = match readout {
-        super::restoration::RestorationReadout::Winner { candidate } => {
-            serde_json::json!({
-                "verdict": "winner",
-                "authority": true,
-                "candidate": restoration_candidate_json(&memory, candidate),
-            })
-        }
-        super::restoration::RestorationReadout::Tied {
-            geometry_distance,
-            candidates,
-        } => serde_json::json!({
-            "verdict": "tied",
-            "authority": false,
-            "geometry_distance": geometry_distance,
-            "candidates": candidates
-                .into_iter()
-                .map(|candidate| restoration_candidate_json(&memory, candidate))
-                .collect::<Vec<_>>(),
-        }),
-        super::restoration::RestorationReadout::TiedOverflow {
-            geometry_distance,
-            total_candidates,
-            candidates,
-        } => serde_json::json!({
-            "verdict": "tied_overflow",
-            "authority": false,
-            "geometry_distance": geometry_distance,
-            "total_candidates": total_candidates,
-            "candidates": candidates
-                .into_iter()
-                .map(|candidate| restoration_candidate_json(&memory, candidate))
-                .collect::<Vec<_>>(),
-        }),
-        super::restoration::RestorationReadout::Abstain {
-            reason,
-            geometry_distance,
-            candidates,
-        } => serde_json::json!({
-            "verdict": "abstain",
-            "authority": false,
-            "reason": reason,
-            "geometry_distance": geometry_distance,
-            "candidates": candidates
-                .into_iter()
-                .map(|candidate| restoration_candidate_json(&memory, candidate))
-                .collect::<Vec<_>>(),
-        }),
-    };
-    Ok(serde_json::json!({
-        "package": package_path,
-        "input": surface,
-        "terminal_count": memory.package.terminal_count(),
-        "result": result,
-    }))
+    let host = L1RestorationHost::load(package_path)?;
+    Ok(host.restore(surface, limit))
 }
 
 fn restoration_candidate_json(
@@ -411,6 +352,24 @@ pub(super) struct LexicalGrokkingMemory {
     pub(super) package: LexicalGrokkingPackage,
     exact_surface_index: Vec<(u64, u32)>,
     character_anchors: Vec<Vec<u32>>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct L1RestorationHostStats {
+    pub package_path: PathBuf,
+    pub package_bytes: usize,
+    pub terminal_count: u32,
+    pub atom_count: usize,
+    pub forward_relations: usize,
+    pub reverse_relations: usize,
+    pub exact_surface_count: usize,
+    pub character_anchor_count: usize,
+}
+
+pub struct L1RestorationHost {
+    package_path: PathBuf,
+    package_bytes: usize,
+    memory: LexicalGrokkingMemory,
 }
 
 impl LexicalGrokkingMemory {
@@ -1815,6 +1774,105 @@ impl LexicalGrokkingMemory {
             candidate.legacy_settled_energy = candidate
                 .legacy_settled_energy
                 .saturating_sub(i32::from(pressure).saturating_mul(4));
+        }
+    }
+}
+
+impl L1RestorationHost {
+    pub fn load(package_path: &Path) -> io::Result<Self> {
+        let bytes = std::fs::read(package_path)?;
+        let package_bytes = bytes.len();
+        let memory = LexicalGrokkingMemory::from_bytes(&bytes).map_err(io::Error::other)?;
+        Ok(Self {
+            package_path: package_path.to_path_buf(),
+            package_bytes,
+            memory,
+        })
+    }
+
+    pub fn reload(&mut self, package_path: &Path) -> io::Result<()> {
+        *self = Self::load(package_path)?;
+        Ok(())
+    }
+
+    pub fn package_path(&self) -> &Path {
+        &self.package_path
+    }
+
+    pub fn restore(&self, surface: &str, limit: usize) -> serde_json::Value {
+        let mut candidates = self.memory.readout(surface, limit.max(1), ReadoutMode::Full);
+        let readout = self.memory.classify_restoration(
+            surface,
+            &mut candidates,
+            self.memory.package.restoration_calibration,
+        );
+        let result = match readout {
+            super::restoration::RestorationReadout::Winner { candidate } => {
+                serde_json::json!({
+                    "verdict": "winner",
+                    "authority": true,
+                    "candidate": restoration_candidate_json(&self.memory, candidate),
+                })
+            }
+            super::restoration::RestorationReadout::Tied {
+                geometry_distance,
+                candidates,
+            } => serde_json::json!({
+                "verdict": "tied",
+                "authority": false,
+                "geometry_distance": geometry_distance,
+                "candidates": candidates
+                    .into_iter()
+                    .map(|candidate| restoration_candidate_json(&self.memory, candidate))
+                    .collect::<Vec<_>>(),
+            }),
+            super::restoration::RestorationReadout::TiedOverflow {
+                geometry_distance,
+                total_candidates,
+                candidates,
+            } => serde_json::json!({
+                "verdict": "tied_overflow",
+                "authority": false,
+                "geometry_distance": geometry_distance,
+                "total_candidates": total_candidates,
+                "candidates": candidates
+                    .into_iter()
+                    .map(|candidate| restoration_candidate_json(&self.memory, candidate))
+                    .collect::<Vec<_>>(),
+            }),
+            super::restoration::RestorationReadout::Abstain {
+                reason,
+                geometry_distance,
+                candidates,
+            } => serde_json::json!({
+                "verdict": "abstain",
+                "authority": false,
+                "reason": reason,
+                "geometry_distance": geometry_distance,
+                "candidates": candidates
+                    .into_iter()
+                    .map(|candidate| restoration_candidate_json(&self.memory, candidate))
+                    .collect::<Vec<_>>(),
+            }),
+        };
+        serde_json::json!({
+            "package": self.package_path,
+            "input": surface,
+            "terminal_count": self.memory.package.terminal_count(),
+            "result": result,
+        })
+    }
+
+    pub fn stats(&self) -> L1RestorationHostStats {
+        L1RestorationHostStats {
+            package_path: self.package_path.clone(),
+            package_bytes: self.package_bytes,
+            terminal_count: self.memory.package.terminal_count(),
+            atom_count: self.memory.package.atoms.len(),
+            forward_relations: self.memory.package.forward_couplings.len(),
+            reverse_relations: self.memory.package.reverse_couplings.len(),
+            exact_surface_count: self.memory.exact_surface_index.len(),
+            character_anchor_count: self.memory.character_anchors.len(),
         }
     }
 }

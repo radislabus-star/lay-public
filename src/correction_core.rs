@@ -31,7 +31,7 @@ use crate::typing_transition::{
 };
 use crate::word_reader::{
     cyrillic_word_splits, is_cyrillic_letters_only, last_text_word, replace_last_text_word,
-    split_edge_whitespace, split_last_alphabetic_token, split_word_punctuation,
+    split_edge_whitespace, split_word_punctuation,
 };
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::OnceLock;
@@ -392,7 +392,7 @@ pub fn resolve_text_correction(req: CorrectionRequest<'_>) -> CorrectionResoluti
     let started = Instant::now();
     let timing_enabled = std::env::var_os("LAY_CORRECTION_CORE_TIMING").is_some();
     let compact_l2_active = req.nanda_autocorrect
-        && req.nanda_candidate_route == CandidateReadoutRoute::CompactL2
+        && req.nanda_candidate_route.uses_peak_context()
         && L2CandidateSource::for_mode(req.mode).contains(&L2CandidateSource::Nanda);
     let mut l2_peak_context = compact_l2_active
         .then(|| crate::nanda_wave::l2_wave_peak::prepare_correction_peak_context(req.text));

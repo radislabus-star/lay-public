@@ -1,0 +1,25 @@
+{
+  "examples": [],
+  "kind": "l2_route_compare_report",
+  "read_as": "compare compact-l2 and l2-field-shadow on real lay_from inputs from corrections.jsonl; surface and gate parity matter more than provenance",
+  "selected": {
+    "compact_apply": 36,
+    "gate_diverged": 0,
+    "provenance_diverged": 26,
+    "shadow_apply": 36,
+    "surface_diverged": 0,
+    "surface_identical": 134
+  },
+  "source": "/home/ubu/.local/share/lay/corrections.jsonl",
+  "status": "ok",
+  "user_target_match": {
+    "both": 6,
+    "compact": 6,
+    "shadow": 6
+  },
+  "window": {
+    "limit": 200,
+    "records_seen": 2938,
+    "records_used": 134
+  }
+}

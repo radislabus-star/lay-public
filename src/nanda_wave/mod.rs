@@ -9,6 +9,7 @@ mod journal_record;
 pub mod l1;
 pub mod l2;
 mod l2_candidate_phase;
+pub(crate) mod l2_field;
 pub(crate) mod l2_wave_peak;
 pub mod l3;
 mod l3_context_metrics;
@@ -49,7 +50,12 @@ pub use lexical_grokking::{
     crystallize_l1_lexical_grokking_with_surface_policy, prove_l1_lexical_grokking,
     prove_l1_lexical_grokking_complete_postings, prove_l1_lexical_grokking_package,
     prove_l1_lexical_grokking_scale_package, prove_l1_lexical_grokking_scale_package_range,
-    query_l1_lexical_grokking, restore_l1_surface, ScaleTrainingSurfacePolicy,
+    authoritative_restore_surface, default_l11_model_dir, default_l11_socket_path,
+    discover_installed_l11_package, ensure_l11_service_started, query_l1_lexical_grokking,
+    request_l11_authoritative_surface, restore_l1_surface, send_l11_service_request,
+    send_l11_service_request_with_timeout, InstalledL11Package, L11ServiceEnsureReport,
+    L1RestorationHost, L1RestorationHostStats, L1ServiceHealth, L1ServiceRequest,
+    L1ServiceResponse, L1ServiceStats, ScaleTrainingSurfacePolicy,
 };
 pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
 pub use morphology_phase::{

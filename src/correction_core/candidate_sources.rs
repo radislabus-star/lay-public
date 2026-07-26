@@ -621,11 +621,17 @@ fn nanda_text_candidates_for_route(
     route: CandidateReadoutRoute,
     l2_peak_context: Option<&crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext>,
 ) -> Vec<UnifiedCorrectionCandidate> {
-    if route == CandidateReadoutRoute::CompactL2 {
-        let Some(l2_peak_context) = l2_peak_context else {
-            return Vec::new();
-        };
-        return hot_l2_text_candidates(req.text, l2_peak_context);
+    match route {
+        CandidateReadoutRoute::CompactL2 => {
+            let Some(l2_peak_context) = l2_peak_context else {
+                return Vec::new();
+            };
+            return hot_l2_text_candidates(req.text, l2_peak_context);
+        }
+        CandidateReadoutRoute::L2FieldShadow => {
+            return crate::nanda_wave::l2_field::shadow_text_candidates(req.text);
+        }
+        CandidateReadoutRoute::FullWave => {}
     }
 
     let trace = run_wave_trace_with_options(req.text, &req.nanda_wave_options);
@@ -642,116 +648,19 @@ fn hot_l2_text_candidates(
     original: &str,
     l2_peak_context: &crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext,
 ) -> Vec<UnifiedCorrectionCandidate> {
-    const HOT_L2_CANDIDATE_LIMIT: usize = 8;
-    const HOT_L2_SOURCE_ID: &str = "L2LexicalPhaseCell32";
-
     let started = std::time::Instant::now();
     let timing_enabled = std::env::var_os("LAY_CORRECTION_CORE_TIMING").is_some();
-    let Some((context_prefix, token)) = split_last_alphabetic_token(original) else {
-        return Vec::new();
-    };
-    let normalized_token = token.to_lowercase();
-    let mut candidates = l2_peak_context
-        .center_candidates()
-        .iter()
-        .take(HOT_L2_CANDIDATE_LIMIT)
-        .filter(|candidate| candidate.surface.to_lowercase() != normalized_token)
-        .cloned()
-        .filter_map(|candidate| {
-            let candidate_word = apply_word_case(token, &candidate.surface);
-            let replacement = replace_last_text_word(original, &candidate_word)?;
-            let origin = CandidateOrigin::L2Surface;
-            let error_class = action_operator::classify_token_transition(
-                original,
-                &replacement,
-                origin,
-                TypingErrorClass::Unknown,
-            );
-            let gate = TransitionDecisionCore::admit_candidate_proposal(
-                original,
-                &replacement,
-                error_class,
-                origin,
-            );
-            Some(UnifiedCorrectionCandidate::new(
-                replacement,
-                CorrectionDecisionSource::Nanda,
-                origin,
-                HOT_L2_SOURCE_ID,
-                error_class,
-                gate,
-            ))
-        })
-        .collect::<Vec<_>>();
-    let centers_ready = std::time::Instant::now();
-    let allow_noisy_layout_projection = !l2_peak_context.has_local_single_edit_peak();
-    let layout_candidate = if allow_noisy_layout_projection {
-        crate::nanda_wave::l2::hot_layout_candidate(original)
-    } else {
-        crate::nanda_wave::l2::hot_layout_candidate_with_noisy_projection(original, false)
-    };
-    if let Some(layout) = layout_candidate
-        .as_ref()
-        .and_then(|candidate| nanda_word_candidate(original, candidate))
-    {
-        candidates.push(layout);
-    }
-    // The committed-token path consumes the same L2 BoundaryCell32 lattice as
-    // live typing. This is an autocorrect operator, never an IME completion.
-    candidates.extend(
-        crate::nanda_wave::l2::ime_l2_boundary_candidates(context_prefix, token, 2)
-            .into_iter()
-            .filter_map(|candidate| {
-                if !boundary_surface_splits_current_token(token, &candidate.surface) {
-                    return None;
-                }
-                let replacement = replace_last_text_word(original, &candidate.surface)?;
-                let origin = CandidateOrigin::Boundary;
-                let error_class = action_operator::classify_token_transition(
-                    original,
-                    &replacement,
-                    origin,
-                    TypingErrorClass::GluedWords,
-                );
-                // BoundaryCell32 proves a split of the current token.  The
-                // complete tail belongs to the final verifier, but feeding it
-                // into admission makes a local split look like a multiword
-                // rewrite as soon as a preceding word exists.
-                let local_original = format!("{token} ");
-                let local_replacement = format!("{} ", candidate.surface);
-                let gate = TransitionDecisionCore::admit_candidate_proposal(
-                    &local_original,
-                    &local_replacement,
-                    error_class,
-                    origin,
-                );
-                Some(UnifiedCorrectionCandidate::new(
-                    replacement,
-                    CorrectionDecisionSource::Nanda,
-                    origin,
-                    "BoundaryCell32",
-                    error_class,
-                    gate,
-                ))
-            }),
-    );
+    let candidates = crate::nanda_wave::l2_field::compact_text_candidates(original, l2_peak_context);
     if timing_enabled {
-        let layout_ready = std::time::Instant::now();
+        let ready = std::time::Instant::now();
         eprintln!(
-            "lay_hot_l2_timing centers_us={} layout_us={} total_us={} candidates={}",
-            centers_ready.duration_since(started).as_micros(),
-            layout_ready.duration_since(centers_ready).as_micros(),
-            layout_ready.duration_since(started).as_micros(),
+            "lay_hot_l2_timing bridge_us={} total_us={} candidates={}",
+            ready.duration_since(started).as_micros(),
+            ready.duration_since(started).as_micros(),
             candidates.len(),
         );
     }
     candidates
-}
-
-fn boundary_surface_splits_current_token(token: &str, surface: &str) -> bool {
-    let token = token.to_lowercase();
-    let parts = normalized_correction_words(surface);
-    parts.len() >= 2 && parts.concat() == token
 }
 
 fn delayed_context_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
@@ -769,6 +678,76 @@ fn delayed_context_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate>
 mod candidate_sources_tests {
     use super::*;
     use crate::config::{default_typing_assist_pipeline, CorrectionSafety};
+    use std::fs;
+    use std::io::{BufRead, BufReader, BufWriter, Write};
+    use std::os::unix::net::UnixListener;
+    use std::path::{Path, PathBuf};
+    use std::sync::{Mutex, OnceLock};
+    use std::thread;
+
+    fn env_lock() -> std::sync::MutexGuard<'static, ()> {
+        static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+        LOCK.get_or_init(|| Mutex::new(())).lock().expect("env lock")
+    }
+
+    fn with_l11_socket_env<T>(socket_path: &Path, f: impl FnOnce() -> T) -> T {
+        let _lock = env_lock();
+        let previous = std::env::var_os("LAY_L11_SOCKET");
+        std::env::set_var("LAY_L11_SOCKET", socket_path);
+        let output = f();
+        match previous {
+            Some(value) => std::env::set_var("LAY_L11_SOCKET", value),
+            None => std::env::remove_var("LAY_L11_SOCKET"),
+        }
+        output
+    }
+
+    fn with_l11_socket_env_cleared<T>(f: impl FnOnce() -> T) -> T {
+        let _lock = env_lock();
+        let previous = std::env::var_os("LAY_L11_SOCKET");
+        std::env::remove_var("LAY_L11_SOCKET");
+        let output = f();
+        match previous {
+            Some(value) => std::env::set_var("LAY_L11_SOCKET", value),
+            None => std::env::remove_var("LAY_L11_SOCKET"),
+        }
+        output
+    }
+
+    fn temp_socket_path(name: &str) -> PathBuf {
+        std::env::temp_dir().join(format!(
+            "lay-{name}-{}-{}.sock",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .expect("time")
+                .as_nanos()
+        ))
+    }
+
+    fn spawn_mock_l11_service(
+        response: crate::nanda_wave::L1ServiceResponse,
+    ) -> (PathBuf, thread::JoinHandle<()>) {
+        let socket_path = temp_socket_path("l11-mock");
+        let listener = UnixListener::bind(&socket_path).expect("bind mock socket");
+        let handle = thread::spawn(move || {
+            let (stream, _) = listener.accept().expect("accept mock request");
+            let mut reader = BufReader::new(stream.try_clone().expect("clone mock stream"));
+            let mut writer = BufWriter::new(stream);
+            let mut line = String::new();
+            reader.read_line(&mut line).expect("read request");
+            let request: crate::nanda_wave::L1ServiceRequest =
+                serde_json::from_str(line.trim_end()).expect("decode request");
+            assert!(matches!(
+                request,
+                crate::nanda_wave::L1ServiceRequest::Restore { .. }
+            ));
+            serde_json::to_writer(&mut writer, &response).expect("encode response");
+            writer.write_all(b"\n").expect("write newline");
+            writer.flush().expect("flush response");
+        });
+        (socket_path, handle)
+    }
 
     fn request<'a>(text: &'a str, pipeline: &'a [TypingAssistRuleConfig]) -> CorrectionRequest<'a> {
         CorrectionRequest {
@@ -809,6 +788,107 @@ mod candidate_sources_tests {
             .expect("boundary candidate");
 
         assert_eq!(candidate.gate.action, CandidateGateAction::Eligible);
+    }
+
+    #[test]
+    fn l11_sidecar_candidate_enters_shared_surface_route() {
+        let response = crate::nanda_wave::L1ServiceResponse::Restore {
+            report: serde_json::json!({
+                "result": {
+                    "verdict": "winner",
+                    "authority": true,
+                    "candidate": {
+                        "surface": "время",
+                        "evidence": 991
+                    }
+                }
+            }),
+        };
+        let (socket_path, handle) = spawn_mock_l11_service(response);
+
+        let candidate = with_l11_socket_env(&socket_path, || {
+            crate::nanda_wave::l2_field::compact_l11_restore_candidate("врмея ", "врмея")
+        })
+        .expect("L1.1 candidate");
+        handle.join().expect("mock service");
+        let _ = fs::remove_file(&socket_path);
+
+        assert_eq!(candidate.replacement, "время ");
+        assert_eq!(candidate.origin, CandidateOrigin::L2Surface);
+        assert_eq!(candidate.source, CorrectionDecisionSource::Nanda);
+        assert_eq!(candidate.source_id, "L11SurfaceRestore");
+    }
+
+    #[test]
+    fn l11_sidecar_candidate_skips_tied_restore_without_authority() {
+        let response = crate::nanda_wave::L1ServiceResponse::Restore {
+            report: serde_json::json!({
+                "result": {
+                    "verdict": "tied",
+                    "authority": false,
+                    "candidates": [
+                        {"surface": "время"},
+                        {"surface": "времена"}
+                    ]
+                }
+            }),
+        };
+        let (socket_path, handle) = spawn_mock_l11_service(response);
+
+        let candidate = with_l11_socket_env(&socket_path, || {
+            crate::nanda_wave::l2_field::compact_l11_restore_candidate("врмея ", "врмея")
+        });
+        handle.join().expect("mock service");
+        let _ = fs::remove_file(&socket_path);
+
+        assert!(candidate.is_none());
+    }
+
+    #[test]
+    fn l2_field_shadow_route_uses_shadow_surface_source_ids() {
+        let candidates = with_l11_socket_env_cleared(|| {
+            nanda_text_candidates_for_route(
+                &request("пукнт ", &default_typing_assist_pipeline()),
+                CandidateReadoutRoute::L2FieldShadow,
+                None,
+            )
+        });
+
+        assert!(
+            candidates
+                .iter()
+                .any(|candidate| candidate.source_id == "L2FieldShadowSurface"),
+            "shadow route must self-birth surface candidates without CompactL2 peak context: {candidates:?}"
+        );
+    }
+
+    #[test]
+    fn l2_field_shadow_route_self_prepares_l11_candidate_without_peak_context() {
+        let response = crate::nanda_wave::L1ServiceResponse::Restore {
+            report: serde_json::json!({
+                "result": {
+                    "verdict": "winner",
+                    "authority": true,
+                    "candidate": {
+                        "surface": "время",
+                        "evidence": 991
+                    }
+                }
+            }),
+        };
+        let (socket_path, handle) = spawn_mock_l11_service(response);
+
+        let candidates = with_l11_socket_env(&socket_path, || {
+            nanda_text_candidates_for_route(
+                &request("врмея ", &default_typing_assist_pipeline()),
+                CandidateReadoutRoute::L2FieldShadow,
+                None,
+            )
+        });
+        handle.join().expect("mock service");
+        let _ = fs::remove_file(&socket_path);
+
+        assert!(candidates.iter().any(|candidate| candidate.source_id == "L2FieldShadowL11"));
     }
 }
 

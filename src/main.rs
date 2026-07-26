@@ -4,7 +4,7 @@
 //! 1. Словарная конвертация US ↔ RU (микросекунды, детерминированно).
 //! 2. Гибридный smart/model-режим включается явно через `--smart`.
 
-use clap::Parser;
+use clap::{Parser, ValueEnum};
 use std::io::{self, IsTerminal, Read};
 use std::process;
 
@@ -47,6 +47,31 @@ struct Args {
     /// Восстановить одно испорченное слово через общий correction core.
     #[arg(long)]
     restore_word: bool,
+
+    /// Явно выбрать route для correction core explain/restore.
+    #[arg(long, value_enum)]
+    candidate_route: Option<CandidateRouteArg>,
+
+    /// Сравнить `compact-l2` против выбранного route на одном и том же входе.
+    #[arg(long)]
+    compare_candidate_routes: bool,
+}
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq, ValueEnum)]
+enum CandidateRouteArg {
+    CompactL2,
+    L2FieldShadow,
+    FullWave,
+}
+
+impl CandidateRouteArg {
+    fn into_route(self) -> correction_core::CandidateReadoutRoute {
+        match self {
+            Self::CompactL2 => correction_core::CandidateReadoutRoute::CompactL2,
+            Self::L2FieldShadow => correction_core::CandidateReadoutRoute::L2FieldShadow,
+            Self::FullWave => correction_core::CandidateReadoutRoute::FullWave,
+        }
+    }
 }
 
 fn main() {
@@ -77,15 +102,37 @@ fn main() {
 
     if args.explain_correct {
         let cfg = config::LayConfig::load();
+        let route = selected_candidate_route(
+            &args,
+            correction_core::CandidateReadoutRoute::FullWave,
+        );
         let explanation = explain_typing_assist_like_runtime(&text, &cfg);
         print_typing_explanation(&explanation);
-        print_nanda_explanation(&text, &cfg);
-        print_correction_core_explanation(&text, &cfg);
+        print_nanda_explanation(&text, &cfg, route);
+        print_correction_core_explanation(&text, &cfg, route);
+        return;
+    }
+
+    if args.compare_candidate_routes {
+        let cfg = config::LayConfig::load();
+        let target_route = selected_candidate_route(
+            &args,
+            correction_core::CandidateReadoutRoute::L2FieldShadow,
+        );
+        let report = compare_candidate_routes(&text, &cfg, target_route);
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).expect("serialize compare report")
+        );
         return;
     }
 
     if args.restore_word {
         let cfg = config::LayConfig::load();
+        let route = selected_candidate_route(
+            &args,
+            correction_core::CandidateReadoutRoute::CompactL2,
+        );
         let words = text
             .lines()
             .map(str::trim)
@@ -102,7 +149,7 @@ fn main() {
 
         let mut restored_words = Vec::with_capacity(words.len());
         for word in words {
-            let (restored, source) = restore_word(word, &cfg);
+            let (restored, source) = restore_word(word, &cfg, route);
             if args.verbose {
                 eprintln!("[{source}] {word:?} -> {restored:?}");
             }
@@ -204,7 +251,139 @@ fn active_typing_safety(cfg: &config::LayConfig) -> config::CorrectionSafety {
     cfg.active_correction_safety()
 }
 
-fn restore_word(word: &str, cfg: &config::LayConfig) -> (String, &'static str) {
+fn selected_candidate_route(
+    args: &Args,
+    default: correction_core::CandidateReadoutRoute,
+) -> correction_core::CandidateReadoutRoute {
+    args.candidate_route
+        .map(CandidateRouteArg::into_route)
+        .unwrap_or(default)
+}
+
+fn compare_candidate_routes(
+    text: &str,
+    cfg: &config::LayConfig,
+    target_route: correction_core::CandidateReadoutRoute,
+) -> serde_json::Value {
+    let inputs = comparison_inputs(text);
+    let samples = inputs
+        .iter()
+        .map(|input| compare_candidate_routes_for_input(input, cfg, target_route))
+        .collect::<Vec<_>>();
+    let surface_diverged = samples
+        .iter()
+        .filter(|sample| sample["selected_surface_diverged"].as_bool() == Some(true))
+        .count();
+    let gate_diverged = samples
+        .iter()
+        .filter(|sample| sample["selected_gate_diverged"].as_bool() == Some(true))
+        .count();
+    let provenance_diverged = samples
+        .iter()
+        .filter(|sample| sample["selected_provenance_diverged"].as_bool() == Some(true))
+        .count();
+    let surface_identical = samples
+        .len()
+        .saturating_sub(surface_diverged);
+    serde_json::json!({
+        "kind": "candidate_route_compare",
+        "reference_route": route_name(correction_core::CandidateReadoutRoute::CompactL2),
+        "target_route": route_name(target_route),
+        "sample_count": samples.len(),
+        "selected_surface_diverged": surface_diverged,
+        "selected_surface_identical": surface_identical,
+        "selected_gate_diverged": gate_diverged,
+        "selected_provenance_diverged": provenance_diverged,
+        "samples": samples,
+    })
+}
+
+fn comparison_inputs(text: &str) -> Vec<String> {
+    let lines = text
+        .lines()
+        .map(str::to_string)
+        .filter(|line| !line.trim().is_empty())
+        .collect::<Vec<_>>();
+    if lines.is_empty() {
+        vec![text.to_string()]
+    } else if lines.len() == 1 && !text.contains('\n') {
+        vec![text.to_string()]
+    } else {
+        lines
+    }
+}
+
+fn compare_candidate_routes_for_input(
+    input: &str,
+    cfg: &config::LayConfig,
+    target_route: correction_core::CandidateReadoutRoute,
+) -> serde_json::Value {
+    let compact = resolve_with_route(input, cfg, correction_core::CandidateReadoutRoute::CompactL2);
+    let target = resolve_with_route(input, cfg, target_route);
+    let compact_selected = compact.selected.as_ref();
+    let target_selected = target.selected.as_ref();
+    let selected_surface_diverged = selected_surface_diverged(compact_selected, target_selected);
+    let selected_gate_diverged = selected_gate_diverged(compact_selected, target_selected);
+    let selected_provenance_diverged =
+        selected_provenance_diverged(compact_selected, target_selected);
+    serde_json::json!({
+        "input": input,
+        "input_class": compact.event.input_class.as_str(),
+        "selected_surface_diverged": selected_surface_diverged,
+        "selected_gate_diverged": selected_gate_diverged,
+        "selected_provenance_diverged": selected_provenance_diverged,
+        "reference": resolution_summary_json(
+            correction_core::CandidateReadoutRoute::CompactL2,
+            &compact,
+        ),
+        "target": resolution_summary_json(target_route, &target),
+    })
+}
+
+fn selected_surface_diverged(
+    left: Option<&correction_core::UnifiedCorrectionCandidate>,
+    right: Option<&correction_core::UnifiedCorrectionCandidate>,
+) -> bool {
+    match (left, right) {
+        (Some(left), Some(right)) => left.replacement != right.replacement,
+        (None, None) => false,
+        _ => true,
+    }
+}
+
+fn selected_gate_diverged(
+    left: Option<&correction_core::UnifiedCorrectionCandidate>,
+    right: Option<&correction_core::UnifiedCorrectionCandidate>,
+) -> bool {
+    match (left, right) {
+        (Some(left), Some(right)) => {
+            left.gate.action != right.gate.action
+                || left.gate.reason != right.gate.reason
+                || left.error_class != right.error_class
+        }
+        (None, None) => false,
+        _ => true,
+    }
+}
+
+fn selected_provenance_diverged(
+    left: Option<&correction_core::UnifiedCorrectionCandidate>,
+    right: Option<&correction_core::UnifiedCorrectionCandidate>,
+) -> bool {
+    match (left, right) {
+        (Some(left), Some(right)) => {
+            left.source != right.source || left.source_id != right.source_id
+        }
+        (None, None) => false,
+        _ => true,
+    }
+}
+
+fn restore_word(
+    word: &str,
+    cfg: &config::LayConfig,
+    route: correction_core::CandidateReadoutRoute,
+) -> (String, &'static str) {
     let completed = format!("{word} ");
     let resolution = correction_core::resolve_text_correction(correction_core::CorrectionRequest {
         text: &completed,
@@ -214,7 +393,7 @@ fn restore_word(word: &str, cfg: &config::LayConfig) -> (String, &'static str) {
         correction_safety: active_typing_safety(cfg),
         typing_assist_pipeline: &cfg.typing_assist_pipeline,
         nanda_autocorrect: true,
-        nanda_candidate_route: correction_core::CandidateReadoutRoute::CompactL2,
+        nanda_candidate_route: route,
         nanda_wave_options: cfg.active_nanda_wave_options(),
         mode: correction_core::CorrectionMode::DeterministicThenNanda,
     });
@@ -222,6 +401,69 @@ fn restore_word(word: &str, cfg: &config::LayConfig) -> (String, &'static str) {
     match resolution.selected {
         Some(candidate) => (candidate.replacement.trim().to_string(), "correction-core"),
         None => (word.to_string(), "keep"),
+    }
+}
+
+fn resolve_with_route(
+    text: &str,
+    cfg: &config::LayConfig,
+    route: correction_core::CandidateReadoutRoute,
+) -> correction_core::CorrectionResolution {
+    correction_core::resolve_text_correction(correction_core::CorrectionRequest {
+        text,
+        auto_replace: true,
+        typing_assist: true,
+        auto_switch_layout: true,
+        correction_safety: active_typing_safety(cfg),
+        typing_assist_pipeline: &cfg.typing_assist_pipeline,
+        nanda_autocorrect: true,
+        nanda_candidate_route: route,
+        nanda_wave_options: cfg.active_nanda_wave_options(),
+        mode: correction_core::CorrectionMode::DeterministicThenNanda,
+    })
+}
+
+fn resolution_summary_json(
+    route: correction_core::CandidateReadoutRoute,
+    resolution: &correction_core::CorrectionResolution,
+) -> serde_json::Value {
+    serde_json::json!({
+        "route": route_name(route),
+        "candidate_count": resolution.candidates.len(),
+        "scoreboard": {
+            "total_candidates": resolution.scoreboard.total_candidates,
+            "apply_candidates": resolution.scoreboard.apply_candidates,
+            "suggest_only_candidates": resolution.scoreboard.suggest_only_candidates,
+            "keep_original_candidates": resolution.scoreboard.keep_original_candidates,
+            "veto_candidates": resolution.scoreboard.veto_candidates,
+        },
+        "selected": resolution.selected.as_ref().map(candidate_summary_json),
+        "candidates": resolution
+            .candidates
+            .iter()
+            .map(candidate_summary_json)
+            .collect::<Vec<_>>(),
+    })
+}
+
+fn candidate_summary_json(
+    candidate: &correction_core::UnifiedCorrectionCandidate,
+) -> serde_json::Value {
+    serde_json::json!({
+        "replacement": candidate.replacement,
+        "source": format!("{:?}", candidate.source),
+        "source_id": candidate.source_id,
+        "error_class": candidate.error_class.as_str(),
+        "gate_action": format!("{:?}", candidate.gate.action),
+        "gate_reason": candidate.gate.reason,
+    })
+}
+
+fn route_name(route: correction_core::CandidateReadoutRoute) -> &'static str {
+    match route {
+        correction_core::CandidateReadoutRoute::CompactL2 => "compact-l2",
+        correction_core::CandidateReadoutRoute::L2FieldShadow => "l2-field-shadow",
+        correction_core::CandidateReadoutRoute::FullWave => "full-wave",
     }
 }
 
@@ -282,7 +524,11 @@ fn print_typing_explanation(explanation: &typing_assist::TypingAssistExplanation
     }
 }
 
-fn print_nanda_explanation(text: &str, cfg: &config::LayConfig) {
+fn print_nanda_explanation(
+    text: &str,
+    cfg: &config::LayConfig,
+    route: correction_core::CandidateReadoutRoute,
+) {
     if !cfg.nanda_autocorrect {
         println!("nanda: disabled");
         return;
@@ -295,7 +541,7 @@ fn print_nanda_explanation(text: &str, cfg: &config::LayConfig) {
         correction_safety: active_typing_safety(cfg),
         typing_assist_pipeline: &cfg.typing_assist_pipeline,
         nanda_autocorrect: cfg.nanda_autocorrect,
-        nanda_candidate_route: correction_core::CandidateReadoutRoute::FullWave,
+        nanda_candidate_route: route,
         nanda_wave_options: cfg.active_nanda_wave_options(),
         mode: correction_core::CorrectionMode::NandaOnly,
     });
@@ -318,7 +564,11 @@ fn print_nanda_explanation(text: &str, cfg: &config::LayConfig) {
     }
 }
 
-fn print_correction_core_explanation(text: &str, cfg: &config::LayConfig) {
+fn print_correction_core_explanation(
+    text: &str,
+    cfg: &config::LayConfig,
+    route: correction_core::CandidateReadoutRoute,
+) {
     let resolution = correction_core::resolve_text_correction(correction_core::CorrectionRequest {
         text,
         auto_replace: cfg.auto_replace,
@@ -327,7 +577,7 @@ fn print_correction_core_explanation(text: &str, cfg: &config::LayConfig) {
         correction_safety: active_typing_safety(cfg),
         typing_assist_pipeline: &cfg.typing_assist_pipeline,
         nanda_autocorrect: cfg.nanda_autocorrect,
-        nanda_candidate_route: correction_core::CandidateReadoutRoute::FullWave,
+        nanda_candidate_route: route,
         nanda_wave_options: cfg.active_nanda_wave_options(),
         mode: correction_core::CorrectionMode::DeterministicThenNanda,
     });

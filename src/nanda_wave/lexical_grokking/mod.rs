@@ -18,6 +18,7 @@ mod posting_spool;
 mod proof;
 mod restoration;
 mod runtime;
+mod service;
 mod training_budget;
 mod training_corpus;
 mod wave_basis;
@@ -33,7 +34,14 @@ pub use proof::{
 };
 pub use runtime::{
     benchmark_package as benchmark_l1_lexical_grokking, query_package as query_l1_lexical_grokking,
-    restore_surface as restore_l1_surface,
+    restore_surface as restore_l1_surface, L1RestorationHost, L1RestorationHostStats,
+};
+pub use service::{
+    authoritative_restore_surface, default_l11_model_dir, default_l11_socket_path,
+    discover_installed_l11_package, ensure_l11_service_started, request_l11_authoritative_surface,
+    send_l11_service_request, send_l11_service_request_with_timeout, InstalledL11Package,
+    L11ServiceEnsureReport, L1ServiceHealth, L1ServiceRequest, L1ServiceResponse,
+    L1ServiceStats,
 };
 
 #[cfg(test)]

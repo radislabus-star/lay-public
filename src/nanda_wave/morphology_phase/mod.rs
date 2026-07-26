@@ -1,8 +1,10 @@
 mod corpus;
 mod field;
 mod proof;
+mod runtime;
 
 pub use proof::{run_embedded_russian_morphology_proof, run_russian_morphology_proof_path};
+pub(crate) use runtime::{shadow_same_lemma_surface_readout, SameLemmaSurfaceReadout};
 
 const PHASE_CELLS: usize = 60;
 const MAX_SUBCENTERS: usize = 4;

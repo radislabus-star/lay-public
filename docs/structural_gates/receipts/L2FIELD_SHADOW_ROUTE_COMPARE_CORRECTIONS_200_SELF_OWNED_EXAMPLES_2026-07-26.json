@@ -1,0 +1,351 @@
+{
+  "examples": [
+    {
+      "compact": {
+        "candidate_count": 1,
+        "route": "compact-l2",
+        "scoreboard": {
+          "apply_candidates": 1,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 0,
+          "total_candidates": 1,
+          "veto_candidates": 0
+        },
+        "selected": {
+          "error_class": "wrong_layout",
+          "gate_action": "Eligible",
+          "gate_reason": "class_allows_apply",
+          "replacement": "так ",
+          "source": "Deterministic",
+          "source_id": "experimental_layout_en_to_ru"
+        }
+      },
+      "input": "nfr ",
+      "selected_gate_diverged": true,
+      "selected_provenance_diverged": true,
+      "selected_surface_diverged": true,
+      "shadow": {
+        "candidate_count": 9,
+        "route": "l2-field-shadow",
+        "scoreboard": {
+          "apply_candidates": 1,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 8,
+          "total_candidates": 9,
+          "veto_candidates": 0
+        },
+        "selected": {
+          "error_class": "sparse-internal-multi-omission",
+          "gate_action": "Eligible",
+          "gate_reason": "class_allows_apply",
+          "replacement": "infer ",
+          "source": "Nanda",
+          "source_id": "L2FieldShadowSurface"
+        }
+      },
+      "user_target": "и "
+    },
+    {
+      "compact": {
+        "candidate_count": 1,
+        "route": "compact-l2",
+        "scoreboard": {
+          "apply_candidates": 1,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 0,
+          "total_candidates": 1,
+          "veto_candidates": 0
+        },
+        "selected": {
+          "error_class": "wrong_layout",
+          "gate_action": "Eligible",
+          "gate_reason": "class_allows_apply",
+          "replacement": "нас ",
+          "source": "Deterministic",
+          "source_id": "experimental_layout_en_to_ru"
+        }
+      },
+      "input": "yfc ",
+      "selected_gate_diverged": true,
+      "selected_provenance_diverged": true,
+      "selected_surface_diverged": true,
+      "shadow": {
+        "candidate_count": 9,
+        "route": "l2-field-shadow",
+        "scoreboard": {
+          "apply_candidates": 0,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 9,
+          "total_candidates": 9,
+          "veto_candidates": 0
+        },
+        "selected": null
+      },
+      "user_target": "нТЫ "
+    },
+    {
+      "compact": {
+        "candidate_count": 1,
+        "route": "compact-l2",
+        "scoreboard": {
+          "apply_candidates": 1,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 0,
+          "total_candidates": 1,
+          "veto_candidates": 0
+        },
+        "selected": {
+          "error_class": "composite-typo",
+          "gate_action": "Eligible",
+          "gate_reason": "class_allows_apply",
+          "replacement": "сервер ",
+          "source": "Deterministic",
+          "source_id": "layout_then_adjacent_transposition"
+        }
+      },
+      "input": "cthdht ",
+      "selected_gate_diverged": true,
+      "selected_provenance_diverged": true,
+      "selected_surface_diverged": true,
+      "shadow": {
+        "candidate_count": 9,
+        "route": "l2-field-shadow",
+        "scoreboard": {
+          "apply_candidates": 0,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 9,
+          "total_candidates": 9,
+          "veto_candidates": 0
+        },
+        "selected": null
+      },
+      "user_target": "сервер "
+    },
+    {
+      "compact": {
+        "candidate_count": 1,
+        "route": "compact-l2",
+        "scoreboard": {
+          "apply_candidates": 1,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 0,
+          "total_candidates": 1,
+          "veto_candidates": 0
+        },
+        "selected": {
+          "error_class": "wrong_layout",
+          "gate_action": "Eligible",
+          "gate_reason": "class_allows_apply",
+          "replacement": "что ",
+          "source": "Deterministic",
+          "source_id": "experimental_layout_en_to_ru"
+        }
+      },
+      "input": "xnj ",
+      "selected_gate_diverged": true,
+      "selected_provenance_diverged": true,
+      "selected_surface_diverged": true,
+      "shadow": {
+        "candidate_count": 9,
+        "route": "l2-field-shadow",
+        "scoreboard": {
+          "apply_candidates": 0,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 9,
+          "total_candidates": 9,
+          "veto_candidates": 0
+        },
+        "selected": null
+      },
+      "user_target": "b "
+    },
+    {
+      "compact": {
+        "candidate_count": 1,
+        "route": "compact-l2",
+        "scoreboard": {
+          "apply_candidates": 1,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 0,
+          "total_candidates": 1,
+          "veto_candidates": 0
+        },
+        "selected": {
+          "error_class": "wrong_layout",
+          "gate_action": "Eligible",
+          "gate_reason": "class_allows_apply",
+          "replacement": "что ",
+          "source": "Deterministic",
+          "source_id": "experimental_layout_en_to_ru"
+        }
+      },
+      "input": "xnj ",
+      "selected_gate_diverged": true,
+      "selected_provenance_diverged": true,
+      "selected_surface_diverged": true,
+      "shadow": {
+        "candidate_count": 9,
+        "route": "l2-field-shadow",
+        "scoreboard": {
+          "apply_candidates": 0,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 9,
+          "total_candidates": 9,
+          "veto_candidates": 0
+        },
+        "selected": null
+      },
+      "user_target": "и "
+    },
+    {
+      "compact": {
+        "candidate_count": 7,
+        "route": "compact-l2",
+        "scoreboard": {
+          "apply_candidates": 1,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 6,
+          "total_candidates": 7,
+          "veto_candidates": 0
+        },
+        "selected": {
+          "error_class": "adjacent-transposition",
+          "gate_action": "Eligible",
+          "gate_reason": "class_allows_apply",
+          "replacement": "Правильно? ",
+          "source": "Nanda",
+          "source_id": "L2LexicalPhaseCell32"
+        }
+      },
+      "input": "Праивльно? ",
+      "selected_gate_diverged": false,
+      "selected_provenance_diverged": true,
+      "selected_surface_diverged": false,
+      "shadow": {
+        "candidate_count": 7,
+        "route": "l2-field-shadow",
+        "scoreboard": {
+          "apply_candidates": 1,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 6,
+          "total_candidates": 7,
+          "veto_candidates": 0
+        },
+        "selected": {
+          "error_class": "adjacent-transposition",
+          "gate_action": "Eligible",
+          "gate_reason": "class_allows_apply",
+          "replacement": "Правильно? ",
+          "source": "Nanda",
+          "source_id": "L2FieldShadowSurface"
+        }
+      },
+      "user_target": "Правильно? "
+    },
+    {
+      "compact": {
+        "candidate_count": 1,
+        "route": "compact-l2",
+        "scoreboard": {
+          "apply_candidates": 0,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 1,
+          "total_candidates": 1,
+          "veto_candidates": 0
+        },
+        "selected": null
+      },
+      "input": "yf ",
+      "selected_gate_diverged": true,
+      "selected_provenance_diverged": true,
+      "selected_surface_diverged": true,
+      "shadow": {
+        "candidate_count": 9,
+        "route": "l2-field-shadow",
+        "scoreboard": {
+          "apply_candidates": 1,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 8,
+          "total_candidates": 9,
+          "veto_candidates": 0
+        },
+        "selected": {
+          "error_class": "adjacent-transposition",
+          "gate_action": "Eligible",
+          "gate_reason": "class_allows_apply",
+          "replacement": "fy ",
+          "source": "Nanda",
+          "source_id": "L2FieldShadowSurface"
+        }
+      },
+      "user_target": "почту "
+    },
+    {
+      "compact": {
+        "candidate_count": 10,
+        "route": "compact-l2",
+        "scoreboard": {
+          "apply_candidates": 1,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 9,
+          "total_candidates": 10,
+          "veto_candidates": 0
+        },
+        "selected": {
+          "error_class": "composite-typo",
+          "gate_action": "Eligible",
+          "gate_reason": "class_allows_apply",
+          "replacement": "моему аккаунт ",
+          "source": "Nanda",
+          "source_id": "L2LexicalPhaseCell32"
+        }
+      },
+      "input": "моему аакаунут ",
+      "selected_gate_diverged": false,
+      "selected_provenance_diverged": true,
+      "selected_surface_diverged": false,
+      "shadow": {
+        "candidate_count": 10,
+        "route": "l2-field-shadow",
+        "scoreboard": {
+          "apply_candidates": 1,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 9,
+          "total_candidates": 10,
+          "veto_candidates": 0
+        },
+        "selected": {
+          "error_class": "composite-typo",
+          "gate_action": "Eligible",
+          "gate_reason": "class_allows_apply",
+          "replacement": "моему аккаунт ",
+          "source": "Nanda",
+          "source_id": "L2FieldShadowSurface"
+        }
+      },
+      "user_target": "моемуа ккаунту "
+    }
+  ],
+  "kind": "l2_route_compare_report",
+  "read_as": "compare compact-l2 and l2-field-shadow on real lay_from inputs from corrections.jsonl; surface and gate parity matter more than provenance",
+  "selected": {
+    "compact_apply": 37,
+    "gate_diverged": 8,
+    "provenance_diverged": 35,
+    "shadow_apply": 34,
+    "surface_diverged": 8,
+    "surface_identical": 126
+  },
+  "source": "/home/ubu/.local/share/lay/corrections.jsonl",
+  "status": "ok",
+  "user_target_match": {
+    "both": 5,
+    "compact": 6,
+    "shadow": 5
+  },
+  "window": {
+    "limit": 200,
+    "records_seen": 2938,
+    "records_used": 134
+  }
+}

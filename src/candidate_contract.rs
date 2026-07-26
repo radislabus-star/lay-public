@@ -17,7 +17,14 @@ pub(crate) enum CandidateOrigin {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CandidateReadoutRoute {
     CompactL2,
+    L2FieldShadow,
     FullWave,
+}
+
+impl CandidateReadoutRoute {
+    pub const fn uses_peak_context(self) -> bool {
+        matches!(self, Self::CompactL2)
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

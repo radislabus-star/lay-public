@@ -26,7 +26,6 @@ pub(super) struct MorphologyField {
     surfaces: Vec<String>,
     bindings_by_form: Vec<Vec<MorphBinding16>>,
     forms_by_lemma: Vec<Vec<u32>>,
-    #[cfg(test)]
     form_ids_by_surface: BTreeMap<String, Vec<u32>>,
     profiles: BTreeMap<u32, MorphSlotProfile>,
     calibration: MorphCalibration,
@@ -54,6 +53,20 @@ pub(super) enum MorphReadout {
     Winner(ScoredSurface),
     Tied(Vec<ScoredSurface>),
     Abstain(Vec<ScoredSurface>),
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) enum SameLemmaSurfaceReadout {
+    Winner {
+        winner_surface: String,
+        cohort_surfaces: Vec<String>,
+    },
+    Tied {
+        cohort_surfaces: Vec<String>,
+    },
+    Abstain {
+        cohort_surfaces: Vec<String>,
+    },
 }
 
 impl MorphologyField {
@@ -110,12 +123,10 @@ impl MorphologyField {
 
         let mut bindings_by_form = vec![Vec::new(); corpus.surfaces.len()];
         let mut forms_by_lemma = vec![Vec::new(); corpus.lemmas.len()];
-        #[cfg(test)]
         let mut form_ids_by_surface = BTreeMap::<String, Vec<u32>>::new();
         for binding in &bindings {
             bindings_by_form[binding.form_center_id as usize].push(*binding);
             forms_by_lemma[binding.lemma_center_id as usize].push(binding.form_center_id);
-            #[cfg(test)]
             form_ids_by_surface
                 .entry(corpus.surfaces[binding.form_center_id as usize].clone())
                 .or_default()
@@ -125,12 +136,9 @@ impl MorphologyField {
             forms.sort_unstable();
             forms.dedup();
         }
-        #[cfg(test)]
-        {
-            for form_ids in form_ids_by_surface.values_mut() {
-                form_ids.sort_unstable();
-                form_ids.dedup();
-            }
+        for form_ids in form_ids_by_surface.values_mut() {
+            form_ids.sort_unstable();
+            form_ids.dedup();
         }
 
         let mut field = Self {
@@ -138,7 +146,6 @@ impl MorphologyField {
             surfaces: corpus.surfaces.clone(),
             bindings_by_form,
             forms_by_lemma,
-            #[cfg(test)]
             form_ids_by_surface,
             profiles,
             calibration: MorphCalibration::default(),
@@ -209,6 +216,61 @@ impl MorphologyField {
             .copied()
             .collect::<Vec<_>>();
         self.readout_form_ids(context, &form_ids)
+    }
+
+    pub(super) fn same_lemma_surface_readout(
+        &self,
+        context: &str,
+        candidate_surfaces: &[String],
+    ) -> Option<SameLemmaSurfaceReadout> {
+        let mut lemma_to_form_ids = BTreeMap::<u32, BTreeSet<u32>>::new();
+        let mut lemma_to_surfaces = BTreeMap::<u32, BTreeSet<String>>::new();
+
+        for surface in candidate_surfaces {
+            let Some(form_ids) = self.form_ids_by_surface.get(surface) else {
+                continue;
+            };
+            for form_id in form_ids {
+                let Some(bindings) = self.bindings_by_form.get(*form_id as usize) else {
+                    continue;
+                };
+                for binding in bindings {
+                    lemma_to_form_ids
+                        .entry(binding.lemma_center_id)
+                        .or_default()
+                        .insert(*form_id);
+                    lemma_to_surfaces
+                        .entry(binding.lemma_center_id)
+                        .or_default()
+                        .insert(surface.clone());
+                }
+            }
+        }
+
+        let mut cohorts = lemma_to_form_ids
+            .into_iter()
+            .filter_map(|(lemma_id, form_ids)| {
+                let surfaces = lemma_to_surfaces.remove(&lemma_id)?;
+                (surfaces.len() >= 2).then_some((lemma_id, form_ids, surfaces))
+            })
+            .collect::<Vec<_>>();
+        if cohorts.len() != 1 {
+            return None;
+        }
+        let (lemma_id, form_ids, cohort_surfaces) = cohorts.pop()?;
+        let cohort_surfaces = cohort_surfaces.into_iter().collect::<Vec<_>>();
+        let form_ids = form_ids.into_iter().collect::<Vec<_>>();
+        let scores = self.score_slots(context, true);
+        let scored = self.ranked_lemma_form_ids_with_scores(lemma_id, &form_ids, &scores);
+        let readout = classify_scored(scored, self.calibration);
+        Some(match readout {
+            MorphReadout::Winner(candidate) => SameLemmaSurfaceReadout::Winner {
+                winner_surface: candidate.surface,
+                cohort_surfaces,
+            },
+            MorphReadout::Tied(_) => SameLemmaSurfaceReadout::Tied { cohort_surfaces },
+            MorphReadout::Abstain(_) => SameLemmaSurfaceReadout::Abstain { cohort_surfaces },
+        })
     }
 
     pub(super) fn readout_for_lemma_with_scores(
@@ -296,6 +358,48 @@ impl MorphologyField {
                 continue;
             };
             for binding in bindings {
+                let Some(slot) = scores.get(&binding.features) else {
+                    continue;
+                };
+                let scored = ScoredSurface {
+                    form_center_id: binding.form_center_id,
+                    surface: surface.clone(),
+                    features: binding.features,
+                    positive: slot.positive,
+                    anti: slot.anti,
+                    score: slot.score,
+                };
+                let replace = best_by_form.get(form_id).map_or(true, |current| {
+                    score_order(&scored, current) == Ordering::Less
+                });
+                if replace {
+                    best_by_form.insert(*form_id, scored);
+                }
+            }
+        }
+        let mut scored = best_by_form.into_values().collect::<Vec<_>>();
+        scored.sort_by(score_order);
+        scored
+    }
+
+    fn ranked_lemma_form_ids_with_scores(
+        &self,
+        lemma_id: u32,
+        form_ids: &[u32],
+        scores: &BTreeMap<u32, MorphSlotScore>,
+    ) -> Vec<ScoredSurface> {
+        let mut best_by_form = BTreeMap::<u32, ScoredSurface>::new();
+        for form_id in form_ids {
+            let Some(surface) = self.surfaces.get(*form_id as usize) else {
+                continue;
+            };
+            let Some(bindings) = self.bindings_by_form.get(*form_id as usize) else {
+                continue;
+            };
+            for binding in bindings {
+                if binding.lemma_center_id != lemma_id {
+                    continue;
+                }
                 let Some(slot) = scores.get(&binding.features) else {
                     continue;
                 };

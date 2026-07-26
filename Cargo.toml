@@ -1,6 +1,6 @@
 [package]
 name = "lay"
-version = "0.2.323"
+version = "0.2.324"
 edition = "2021"
 description = "Typing correction and RU/EN layout switching for Linux desktops"
 license-file = "LICENSE"
@@ -48,6 +48,12 @@ path = "src/bin/lay_nanda_wave_train.rs"
 # The installed CLI and its clap identity are both `lay-l1.1-restore`.
 name = "lay-l11-restore"
 path = "src/bin/lay_l1_1_restore.rs"
+
+[[bin]]
+# Cargo target names become Rust crate identifiers and cannot contain a dot.
+# The installed CLI and its clap identity are both `lay-l1.1-serve`.
+name = "lay-l11-serve"
+path = "src/bin/lay_l1_1_serve.rs"
 
 [[bin]]
 name = "lay-morphology-proof"

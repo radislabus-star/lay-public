@@ -1,0 +1,337 @@
+use std::fs;
+use std::io::{self, BufRead, BufReader, BufWriter, Write};
+use std::os::unix::fs::PermissionsExt;
+use std::os::unix::net::{UnixListener, UnixStream};
+use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{Arc, RwLock};
+use std::thread;
+use std::time::Instant;
+
+use clap::{Parser, Subcommand};
+
+#[derive(Debug, Parser)]
+#[command(name = "lay-l1.1-serve", about = "Shadow L1.1 local service host")]
+struct Args {
+    #[command(subcommand)]
+    command: Command,
+}
+
+#[derive(Debug, Subcommand)]
+enum Command {
+    Run {
+        #[arg(long, value_name = "PACKAGE")]
+        memory: PathBuf,
+        #[arg(long, value_name = "SOCKET", default_value_os_t = lay::nanda_wave::default_l11_socket_path())]
+        socket: PathBuf,
+    },
+    Health {
+        #[arg(long, value_name = "SOCKET", default_value_os_t = lay::nanda_wave::default_l11_socket_path())]
+        socket: PathBuf,
+    },
+    Stats {
+        #[arg(long, value_name = "SOCKET", default_value_os_t = lay::nanda_wave::default_l11_socket_path())]
+        socket: PathBuf,
+    },
+    Reload {
+        #[arg(long, value_name = "PACKAGE")]
+        memory: PathBuf,
+        #[arg(long, value_name = "SOCKET", default_value_os_t = lay::nanda_wave::default_l11_socket_path())]
+        socket: PathBuf,
+    },
+}
+
+struct ServiceState {
+    started_at: Instant,
+    socket_path: PathBuf,
+    request_count: AtomicU64,
+    host: Arc<RwLock<HostedMemory>>,
+}
+
+enum HostedMemory {
+    Loading {
+        package_path: PathBuf,
+    },
+    Ready(lay::nanda_wave::L1RestorationHost),
+    Failed {
+        package_path: PathBuf,
+        message: String,
+    },
+}
+
+struct SocketGuard {
+    path: PathBuf,
+}
+
+impl Drop for SocketGuard {
+    fn drop(&mut self) {
+        let _ = fs::remove_file(&self.path);
+    }
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let args = Args::parse();
+    match args.command {
+        Command::Run { memory, socket } => run_server(&memory, &socket)?,
+        Command::Health { socket } => print_response(
+            lay::nanda_wave::send_l11_service_request(&socket, &lay::nanda_wave::L1ServiceRequest::Health)?,
+        )?,
+        Command::Stats { socket } => print_response(
+            lay::nanda_wave::send_l11_service_request(&socket, &lay::nanda_wave::L1ServiceRequest::Stats)?,
+        )?,
+        Command::Reload { memory, socket } => print_response(
+            lay::nanda_wave::send_l11_service_request(
+                &socket,
+                &lay::nanda_wave::L1ServiceRequest::Reload { memory },
+            )?,
+        )?,
+    }
+    Ok(())
+}
+
+fn run_server(memory: &Path, socket_path: &Path) -> io::Result<()> {
+    let listener = bind_socket(socket_path)?;
+    let _guard = SocketGuard {
+        path: socket_path.to_path_buf(),
+    };
+    let host = Arc::new(RwLock::new(HostedMemory::Loading {
+        package_path: memory.to_path_buf(),
+    }));
+    let state = Arc::new(ServiceState {
+        started_at: Instant::now(),
+        socket_path: socket_path.to_path_buf(),
+        request_count: AtomicU64::new(0),
+        host: Arc::clone(&host),
+    });
+    spawn_background_load(host, memory.to_path_buf());
+    for stream in listener.incoming() {
+        match stream {
+            Ok(stream) => {
+                let state = Arc::clone(&state);
+                thread::spawn(move || {
+                    if let Err(error) = handle_client(stream, &state) {
+                        eprintln!("lay-l1.1-serve client error: {error}");
+                    }
+                });
+            }
+            Err(error) => eprintln!("lay-l1.1-serve accept failed: {error}"),
+        }
+    }
+    Ok(())
+}
+
+fn spawn_background_load(host: Arc<RwLock<HostedMemory>>, package_path: PathBuf) {
+    thread::spawn(move || {
+        let next = match lay::nanda_wave::L1RestorationHost::load(&package_path) {
+            Ok(loaded) => HostedMemory::Ready(loaded),
+            Err(error) => HostedMemory::Failed {
+                package_path,
+                message: error.to_string(),
+            },
+        };
+        *host.write().expect("L1.1 host write lock") = next;
+    });
+}
+
+fn bind_socket(socket_path: &Path) -> io::Result<UnixListener> {
+    if let Some(parent) = socket_path.parent() {
+        fs::create_dir_all(parent)?;
+    }
+    if socket_path.exists() {
+        match UnixStream::connect(socket_path) {
+            Ok(_) => {
+                return Err(io::Error::new(
+                    io::ErrorKind::AddrInUse,
+                    format!("L1.1 service already listens on {}", socket_path.display()),
+                ));
+            }
+            Err(_) => fs::remove_file(socket_path)?,
+        }
+    }
+    let listener = UnixListener::bind(socket_path)?;
+    fs::set_permissions(socket_path, fs::Permissions::from_mode(0o600))?;
+    Ok(listener)
+}
+
+fn handle_client(stream: UnixStream, state: &Arc<ServiceState>) -> io::Result<()> {
+    let reader = BufReader::new(stream.try_clone()?);
+    let mut writer = BufWriter::new(stream);
+    for line in reader.lines() {
+        let line = line?;
+        if line.trim().is_empty() {
+            continue;
+        }
+        let response = match serde_json::from_str::<lay::nanda_wave::L1ServiceRequest>(&line) {
+            Ok(request) => handle_request(request, state),
+            Err(error) => lay::nanda_wave::L1ServiceResponse::Error {
+                message: format!("invalid request: {error}"),
+            },
+        };
+        serde_json::to_writer(&mut writer, &response).map_err(io::Error::other)?;
+        writer.write_all(b"\n")?;
+        writer.flush()?;
+    }
+    Ok(())
+}
+
+fn handle_request(
+    request: lay::nanda_wave::L1ServiceRequest,
+    state: &Arc<ServiceState>,
+) -> lay::nanda_wave::L1ServiceResponse {
+    state.request_count.fetch_add(1, Ordering::Relaxed);
+    match request {
+        lay::nanda_wave::L1ServiceRequest::Restore { surface, limit } => {
+            let host = state.host.read().expect("L1.1 host read lock");
+            match &*host {
+                HostedMemory::Ready(host) => lay::nanda_wave::L1ServiceResponse::Restore {
+                    report: host.restore(&surface, limit),
+                },
+                HostedMemory::Loading { package_path } => lay::nanda_wave::L1ServiceResponse::Error {
+                    message: format!(
+                        "L1.1 host is still warming for {}",
+                        package_path.display()
+                    ),
+                },
+                HostedMemory::Failed {
+                    package_path,
+                    message,
+                } => lay::nanda_wave::L1ServiceResponse::Error {
+                    message: format!(
+                        "L1.1 host failed to load {}: {message}",
+                        package_path.display()
+                    ),
+                },
+            }
+        }
+        lay::nanda_wave::L1ServiceRequest::Health => {
+            let host = state.host.read().expect("L1.1 host read lock");
+            lay::nanda_wave::L1ServiceResponse::Health {
+                report: health_report(state, &host),
+            }
+        }
+        lay::nanda_wave::L1ServiceRequest::Stats => {
+            let host = state.host.read().expect("L1.1 host read lock");
+            lay::nanda_wave::L1ServiceResponse::Stats {
+                report: stats_report(state, &host),
+            }
+        }
+        lay::nanda_wave::L1ServiceRequest::Reload { memory } => {
+            let mut host = state.host.write().expect("L1.1 host write lock");
+            match &mut *host {
+                HostedMemory::Ready(host) => match host.reload(&memory) {
+                    Ok(()) => lay::nanda_wave::L1ServiceResponse::Reload {
+                        report: host.stats(),
+                    },
+                    Err(error) => lay::nanda_wave::L1ServiceResponse::Error {
+                        message: error.to_string(),
+                    },
+                },
+                HostedMemory::Loading { .. } => lay::nanda_wave::L1ServiceResponse::Error {
+                    message: "L1.1 host is still warming; reload is not available yet".to_string(),
+                },
+                HostedMemory::Failed { .. } => match lay::nanda_wave::L1RestorationHost::load(&memory)
+                {
+                    Ok(next) => {
+                        let report = next.stats();
+                        *host = HostedMemory::Ready(next);
+                        lay::nanda_wave::L1ServiceResponse::Reload { report }
+                    }
+                    Err(error) => lay::nanda_wave::L1ServiceResponse::Error {
+                        message: error.to_string(),
+                    },
+                },
+            }
+        }
+    }
+}
+
+fn health_report(
+    state: &ServiceState,
+    host: &HostedMemory,
+) -> lay::nanda_wave::L1ServiceHealth {
+    let requests_served = state.request_count.load(Ordering::Relaxed);
+    let uptime_ms = state.started_at.elapsed().as_millis() as u64;
+    match host {
+        HostedMemory::Ready(host) => {
+            let stats = host.stats();
+            lay::nanda_wave::L1ServiceHealth {
+                status: "ready".to_string(),
+                message: None,
+                socket: state.socket_path.clone(),
+                package_path: stats.package_path,
+                package_bytes: Some(stats.package_bytes),
+                terminal_count: Some(stats.terminal_count),
+                requests_served,
+                uptime_ms,
+            }
+        }
+        HostedMemory::Loading { package_path } => lay::nanda_wave::L1ServiceHealth {
+            status: "warming".to_string(),
+            message: Some("L1.1 package is still loading".to_string()),
+            socket: state.socket_path.clone(),
+            package_path: package_path.clone(),
+            package_bytes: None,
+            terminal_count: None,
+            requests_served,
+            uptime_ms,
+        },
+        HostedMemory::Failed {
+            package_path,
+            message,
+        } => lay::nanda_wave::L1ServiceHealth {
+            status: "failed".to_string(),
+            message: Some(message.clone()),
+            socket: state.socket_path.clone(),
+            package_path: package_path.clone(),
+            package_bytes: None,
+            terminal_count: None,
+            requests_served,
+            uptime_ms,
+        },
+    }
+}
+
+fn stats_report(state: &ServiceState, host: &HostedMemory) -> lay::nanda_wave::L1ServiceStats {
+    let requests_served = state.request_count.load(Ordering::Relaxed);
+    let uptime_ms = state.started_at.elapsed().as_millis() as u64;
+    match host {
+        HostedMemory::Ready(host) => lay::nanda_wave::L1ServiceStats {
+            status: "ready".to_string(),
+            message: None,
+            socket: state.socket_path.clone(),
+            requests_served,
+            uptime_ms,
+            host: Some(host.stats()),
+        },
+        HostedMemory::Loading { package_path } => lay::nanda_wave::L1ServiceStats {
+            status: "warming".to_string(),
+            message: Some(format!(
+                "L1.1 package is still loading: {}",
+                package_path.display()
+            )),
+            socket: state.socket_path.clone(),
+            requests_served,
+            uptime_ms,
+            host: None,
+        },
+        HostedMemory::Failed {
+            package_path,
+            message,
+        } => lay::nanda_wave::L1ServiceStats {
+            status: "failed".to_string(),
+            message: Some(format!("{}: {message}", package_path.display())),
+            socket: state.socket_path.clone(),
+            requests_served,
+            uptime_ms,
+            host: None,
+        },
+    }
+}
+
+fn print_response(response: lay::nanda_wave::L1ServiceResponse) -> io::Result<()> {
+    println!(
+        "{}",
+        serde_json::to_string_pretty(&response).map_err(io::Error::other)?
+    );
+    Ok(())
+}
