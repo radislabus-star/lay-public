@@ -118,10 +118,24 @@ settled energy.
   omission plus one necessary adjacent transposition into the tied basin.
 - Reconstruction is bounded to the strongest eight scalar candidates, cannot
   alter V55 ranking and never uses proof target labels at runtime.
+- Final-corpus compilation uses disk-backed range shards for complete forward
+  postings. Per-word statistics die after each word; forward and reverse
+  nested banks are not simultaneously retained.
+- The compact graph builder consumes one deduplicated key set and emits flat
+  nodes/arcs without a second set or one `BTreeMap` allocation per trie node.
+- A 250 ms RSS watchdog writes `VETO_RSS_BUDGET` and exits with code 86 before
+  cold training can consume the host's SSH headroom.
 
 ## Remaining Gate
 
-Do not install the package into live typing yet. The next quality work must
-improve 10k winner crystallization without reducing clean preservation, top-64
-coverage or layout projection. A zero-copy mapped runtime and genuinely
-incremental surface accumulator also remain unproven runtime optimizations.
+Do not install the package into live typing yet. Promotion is evaluated only
+on the named final `762,314`-form corpus; earlier 2k/10k receipts remain
+historical diagnostics and are not a substitute gate. A zero-copy mapped
+runtime and genuinely incremental surface accumulator also remain unproven
+runtime optimizations.
+
+The final `762,314`-form RU+EN run has not passed. The old cold compiler was
+OOM-killed at `31,654,220 KiB` RSS, so that attempt proves no quality claim.
+The bounded replacement passes 57 focused tests and Clippy, but remains
+`PASS_implementation / WATCH_scale` until the same final corpus completes under
+the RSS ceiling and reports every damage class.

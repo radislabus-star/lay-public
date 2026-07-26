@@ -1,0 +1,32 @@
+{
+  "package_id": "LAY-L1.1-RU462K-EN300K-SHADOW-v1",
+  "layer": "L1.1 bilingual lexical source",
+  "status": "CRYSTALLIZED_PASS_SHADOW",
+  "runtime_authority": false,
+  "corpus_artifact": "data/lexical_grokking/lay_l11_ru462k_en300k_shadow_v1.txt",
+  "corpus_bytes": 12491569,
+  "corpus_sha256": "449386fa3b9453423792329ecab42946d490bbfe5f863ab194c2d98fb3bd2584",
+  "unique_surfaces": 762314,
+  "ru_surfaces": 462314,
+  "en_surfaces": 300000,
+  "cross_source_duplicates": 0,
+  "ru_terminal_range": [
+    0,
+    462314
+  ],
+  "en_terminal_range": [
+    462314,
+    762314
+  ],
+  "source_packages": [
+    "LAY-RU-LEXICON-462K-SHADOW-v1",
+    "LAY-EN-LEXICON-300K-SHADOW-v1"
+  ],
+  "l1_1_crystallized": true,
+  "crystal_format": "V7 implicit-field",
+  "crystal_artifact": "/home/e/build/lay-l1-shadow/artifacts/l11-final-depth0-implicit-v7-762314-2026-07-26/package.bin",
+  "crystal_bytes": 69325620,
+  "crystal_sha256": "232de23384dc1d62977a5c244a2fed14615c03d2818ee79618ade3a618456ab4",
+  "proof_receipt": "docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_FINAL_762314_2026-07-26.json",
+  "proof_verdict": "PASS_shadow"
+}

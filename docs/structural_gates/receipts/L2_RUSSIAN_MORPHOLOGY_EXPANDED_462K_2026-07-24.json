@@ -1,0 +1,80 @@
+{
+  "gate": "L2_RUSSIAN_MORPHOLOGY_EXPANDED_462K",
+  "date": "2026-07-24",
+  "verdict": "PASS_shadow",
+  "runtime_authority_changed": false,
+  "tested": {
+    "teacher": "pymorphy3 over the complete Hunspell input",
+    "core_cases": ["nominative", "genitive", "dative", "accusative", "instrumental", "prepositional"],
+    "numbers": ["singular", "plural"],
+    "number_defective_paradigms": true,
+    "multiple_surfaces_per_slot": true,
+    "special_cases": ["partitive", "second_locative", "vocative"],
+    "heldout_kind": "unseen lemmas"
+  },
+  "corpus": {
+    "unique_form_centers": 462314,
+    "lemma_centers": 47766,
+    "bindings": 633016,
+    "binding_bytes": 10128256,
+    "tsv_bytes": 78566535,
+    "dual_number_lemmas": 44717,
+    "plural_only_lemmas": 259,
+    "singular_only_lemmas": 2790,
+    "plural_form_centers": 234214,
+    "singular_form_centers": 260102,
+    "multi_surface_slots": 72884,
+    "maximum_surfaces_per_slot": 5,
+    "train_examples": 1548,
+    "heldout_examples": 554148
+  },
+  "heldout": {
+    "slot_top1_correct": 554148,
+    "slot_top1_percent": 100.0,
+    "exact_teacher_surface_top1_correct": 549215,
+    "exact_teacher_surface_top1_percent": 99.10980460093694,
+    "authority_correct": 472528,
+    "authority_percent": 85.27108281542115,
+    "false_authority": 0,
+    "tied": 81620,
+    "abstain": 0,
+    "per_class": {
+      "nominative_singular": {"cases": 47379, "slot_top1_percent": 100.0, "authority_percent": 83.77551235779565, "false_authority": 0},
+      "genitive_singular": {"cases": 47379, "slot_top1_percent": 100.0, "authority_percent": 83.82405707169843, "false_authority": 0},
+      "dative_singular": {"cases": 47379, "slot_top1_percent": 100.0, "authority_percent": 83.61088245847316, "false_authority": 0},
+      "accusative_singular": {"cases": 47379, "slot_top1_percent": 100.0, "authority_percent": 82.45847316321577, "false_authority": 0},
+      "instrumental_singular": {"cases": 47379, "slot_top1_percent": 100.0, "authority_percent": 59.712108740159145, "false_authority": 0},
+      "prepositional_singular": {"cases": 47379, "slot_top1_percent": 100.0, "authority_percent": 87.23485088330273, "false_authority": 0},
+      "nominative_plural": {"cases": 44848, "slot_top1_percent": 100.0, "authority_percent": 89.57144131287906, "false_authority": 0},
+      "genitive_plural": {"cases": 44848, "slot_top1_percent": 100.0, "authority_percent": 97.42909382804139, "false_authority": 0},
+      "dative_plural": {"cases": 44848, "slot_top1_percent": 100.0, "authority_percent": 90.1957723867285, "false_authority": 0},
+      "accusative_plural": {"cases": 44848, "slot_top1_percent": 100.0, "authority_percent": 86.5568141277203, "false_authority": 0},
+      "instrumental_plural": {"cases": 44848, "slot_top1_percent": 100.0, "authority_percent": 90.1868533713878, "false_authority": 0},
+      "prepositional_plural": {"cases": 44848, "slot_top1_percent": 100.0, "authority_percent": 90.18908312522298, "false_authority": 0},
+      "partitive_singular": {"cases": 501, "slot_top1_percent": 100.0, "authority_percent": 100.0, "false_authority": 0},
+      "second_locative_singular": {"cases": 283, "slot_top1_percent": 100.0, "authority_percent": 100.0, "false_authority": 0},
+      "vocative_singular": {"cases": 2, "slot_top1_percent": 100.0, "authority_percent": 100.0, "false_authority": 0}
+    }
+  },
+  "controls": {
+    "candidate_permutation_cases": 3138,
+    "candidate_permutation_parity": true,
+    "without_anti_slot_top1_percent": 100.0,
+    "anti_necessity_proven": false
+  },
+  "performance": {
+    "corpus_generation_seconds": 17.10,
+    "corpus_generation_peak_rss_kib": 429252,
+    "compile_ms": 2003,
+    "proof_ms": 1905,
+    "end_to_end_seconds": 4.55,
+    "peak_rss_kib": 393004
+  },
+  "not_tested": [
+    "free Russian context outside bounded teacher modes",
+    "semantic choice between same-slot variants",
+    "human validation of every teacher variant",
+    "adjective, pronoun and verb paradigms",
+    "runtime and IME integration"
+  ]
+}

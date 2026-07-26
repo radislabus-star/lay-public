@@ -23,7 +23,7 @@ pub(super) fn surface_script_flags(surface: &str) -> u8 {
 pub(super) struct AtomRecord {
     pub(super) wave_code: AtomWaveCode,
     pub(super) coupling_start: u32,
-    pub(super) coupling_count: u16,
+    pub(super) coupling_count: u32,
     pub(super) support: u16,
 }
 

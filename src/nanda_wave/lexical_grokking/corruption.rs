@@ -5,6 +5,32 @@ use crate::stable_hash::mix64_golden;
 
 const MAX_TRAINING_AUGMENTATIONS_PER_CLASS: usize = 12;
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ScaleTrainingSurfacePolicy {
+    LegacyAlphabetical,
+    HybridClassConditioned,
+}
+
+impl ScaleTrainingSurfacePolicy {
+    pub fn parse(value: &str) -> Result<Self, String> {
+        match value {
+            "legacy-alphabetical" => Ok(Self::LegacyAlphabetical),
+            "hybrid-class-conditioned" => Ok(Self::HybridClassConditioned),
+            _ => Err(format!(
+                "unknown L1.1 training surface policy {value:?}; expected \
+                 legacy-alphabetical or hybrid-class-conditioned"
+            )),
+        }
+    }
+
+    pub const fn name(self) -> &'static str {
+        match self {
+            Self::LegacyAlphabetical => "legacy-alphabetical",
+            Self::HybridClassConditioned => "hybrid-class-conditioned",
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct DamageExample {
     pub(super) class: &'static str,
@@ -12,6 +38,20 @@ pub(super) struct DamageExample {
 }
 
 pub(super) fn split_damages(word: &str) -> (Vec<DamageExample>, Vec<DamageExample>) {
+    split_damages_with_training_augmentations(word, true)
+}
+
+pub(super) fn split_scale_damages(
+    word: &str,
+    include_training_augmentations: bool,
+) -> (Vec<DamageExample>, Vec<DamageExample>) {
+    split_damages_with_training_augmentations(word, include_training_augmentations)
+}
+
+fn split_damages_with_training_augmentations(
+    word: &str,
+    include_training_augmentations: bool,
+) -> (Vec<DamageExample>, Vec<DamageExample>) {
     let mut all = Vec::new();
     let chars = word.chars().collect::<Vec<_>>();
     for position in 1..chars.len().saturating_sub(1) {
@@ -130,8 +170,97 @@ pub(super) fn split_damages(word: &str) -> (Vec<DamageExample>, Vec<DamageExampl
     if heldout.is_empty() && !training.is_empty() {
         heldout.push(training.remove(0));
     }
-    extend_training_damages(word, &chars, &mut seen, &mut training);
+    if include_training_augmentations {
+        extend_training_damages(word, &chars, &mut seen, &mut training);
+    }
     (training, heldout)
+}
+
+#[cfg(test)]
+pub(super) fn select_scale_training_damages(
+    word: &str,
+    training: Vec<DamageExample>,
+    maximum_surfaces: usize,
+) -> Vec<DamageExample> {
+    select_scale_training_damages_with_policy(
+        word,
+        training,
+        maximum_surfaces,
+        ScaleTrainingSurfacePolicy::LegacyAlphabetical,
+    )
+}
+
+pub(super) fn select_scale_training_damages_with_policy(
+    word: &str,
+    training: Vec<DamageExample>,
+    maximum_surfaces: usize,
+    policy: ScaleTrainingSurfacePolicy,
+) -> Vec<DamageExample> {
+    let mut by_class = std::collections::BTreeMap::<&'static str, Vec<DamageExample>>::new();
+    for example in training {
+        by_class.entry(example.class).or_default().push(example);
+    }
+    for examples in by_class.values_mut() {
+        examples.sort_unstable_by_key(|example| split_hash(word, example));
+    }
+
+    let mut selected = Vec::with_capacity(maximum_surfaces);
+    const HYBRID_CLASSES: &[&str] = &[
+        "layout_projection",
+        "double_substitution",
+        "omission_transposition",
+        "sparse_multi_omission",
+        "adjacent_transposition",
+        "extra_letter",
+    ];
+    const LEGACY_REFILL_CLASSES: &[&str] = &[
+        "sparse_multi_omission",
+        "omission_transposition",
+        "non_adjacent_transposition",
+        "double_substitution",
+        "missing_letter",
+        "letter_substitution",
+        "extra_letter",
+        "adjacent_transposition",
+    ];
+    if policy == ScaleTrainingSurfacePolicy::LegacyAlphabetical {
+        for examples in by_class.values_mut() {
+            if selected.len() == maximum_surfaces {
+                break;
+            }
+            if let Some(example) = examples.pop() {
+                selected.push(example);
+            }
+        }
+    }
+    let refill_classes = match policy {
+        ScaleTrainingSurfacePolicy::LegacyAlphabetical => LEGACY_REFILL_CLASSES,
+        ScaleTrainingSurfacePolicy::HybridClassConditioned => HYBRID_CLASSES,
+    };
+    while selected.len() < maximum_surfaces {
+        let mut added = false;
+        for class in refill_classes {
+            let Some(examples) = by_class.get_mut(class) else {
+                continue;
+            };
+            if let Some(example) = examples.pop() {
+                selected.push(example);
+                added = true;
+                if selected.len() == maximum_surfaces {
+                    break;
+                }
+            }
+        }
+        if !added {
+            break;
+        }
+    }
+    selected.sort_unstable_by(|left, right| {
+        left.class
+            .cmp(right.class)
+            .then_with(|| left.surface.cmp(&right.surface))
+    });
+    selected
 }
 
 fn extend_training_damages(
@@ -297,5 +426,61 @@ mod tests {
         assert!(heldout
             .iter()
             .all(|item| !training_surfaces.contains(item.surface.as_str())));
+    }
+
+    #[test]
+    fn zero_depth_selects_no_damaged_training_surfaces() {
+        let (training, _) = split_damages("перезагрузка");
+
+        assert!(select_scale_training_damages("перезагрузка", training, 0).is_empty());
+    }
+
+    #[test]
+    fn zero_depth_skips_only_training_augmentations_and_preserves_heldout() {
+        let (_, full_heldout) = split_damages("перезагрузка");
+        let (base_training, zero_depth_heldout) = split_scale_damages("перезагрузка", false);
+
+        assert_eq!(zero_depth_heldout, full_heldout);
+        assert!(!base_training.is_empty());
+        assert!(select_scale_training_damages("перезагрузка", base_training, 0).is_empty());
+    }
+
+    #[test]
+    fn hybrid_policy_preserves_layout_lane_before_refilling_easy_classes() {
+        let training = [
+            "adjacent_transposition",
+            "double_substitution",
+            "extra_letter",
+            "layout_projection",
+            "omission_transposition",
+            "sparse_multi_omission",
+        ]
+        .into_iter()
+        .enumerate()
+        .map(|(index, class)| DamageExample {
+            class,
+            surface: format!("training-surface-{index}"),
+        })
+        .collect();
+        let selected = select_scale_training_damages_with_policy(
+            "перезагрузка",
+            training,
+            4,
+            ScaleTrainingSurfacePolicy::HybridClassConditioned,
+        );
+        let classes = selected
+            .iter()
+            .map(|example| example.class)
+            .collect::<Vec<_>>();
+
+        assert_eq!(
+            classes,
+            [
+                "double_substitution",
+                "layout_projection",
+                "omission_transposition",
+                "sparse_multi_omission",
+            ]
+        );
     }
 }

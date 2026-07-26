@@ -1,6 +1,7 @@
 //! Deterministic n-gram graph used instead of hash identity.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::cmp::Ordering;
+use std::collections::BTreeSet;
 
 use super::atoms::{AtomChannel, NGramKey};
 
@@ -26,54 +27,30 @@ pub(super) struct NGramGraph {
     pub(super) atom_count: u32,
 }
 
-#[derive(Default)]
-struct BuildNode {
-    children: BTreeMap<u32, usize>,
-    atom_id: Option<u32>,
-}
-
 impl NGramGraph {
+    #[cfg(test)]
     pub(super) fn compile(keys: impl IntoIterator<Item = NGramKey>) -> Result<Self, String> {
         let keys = keys.into_iter().collect::<BTreeSet<_>>();
-        let mut build = vec![BuildNode::default()];
-        for (atom_id, key) in keys.iter().copied().enumerate() {
-            let atom_id = u32::try_from(atom_id)
-                .map_err(|_| "n-gram graph atom count exceeds u32".to_string())?;
-            let mut node = 0usize;
-            for symbol in key_symbols(key) {
-                let next = if let Some(next) = build[node].children.get(&symbol) {
-                    *next
-                } else {
-                    let next = build.len();
-                    build.push(BuildNode::default());
-                    build[node].children.insert(symbol, next);
-                    next
-                };
-                node = next;
-            }
-            build[node].atom_id = Some(atom_id);
-        }
-        let mut nodes = Vec::with_capacity(build.len());
+        Self::compile_sorted_unique(keys)
+    }
+
+    pub(super) fn compile_sorted_unique(keys: BTreeSet<NGramKey>) -> Result<Self, String> {
+        let atom_count = u32::try_from(keys.len())
+            .map_err(|_| "n-gram graph atom count exceeds u32".to_string())?;
+        let mut entries = keys
+            .into_iter()
+            .enumerate()
+            .map(|(atom_id, key)| (key, atom_id as u32))
+            .collect::<Vec<_>>();
+        entries.sort_unstable_by(|left, right| sequence_order(left.0, right.0));
+
+        let mut nodes = Vec::new();
         let mut arcs = Vec::new();
-        for node in &build {
-            let first_arc = u32::try_from(arcs.len())
-                .map_err(|_| "n-gram graph arc count exceeds u32".to_string())?;
-            let arc_count = u16::try_from(node.children.len())
-                .map_err(|_| "n-gram graph node fanout exceeds u16".to_string())?;
-            arcs.extend(node.children.iter().map(|(symbol, next_node)| NGramArc {
-                symbol: *symbol,
-                next_node: *next_node as u32,
-            }));
-            nodes.push(NGramNode {
-                first_arc,
-                arc_count,
-                atom_id: node.atom_id.unwrap_or(NO_ATOM),
-            });
-        }
+        build_compact_node(&entries, 0, &mut nodes, &mut arcs)?;
         Ok(Self {
             nodes,
             arcs,
-            atom_count: keys.len() as u32,
+            atom_count,
         })
     }
 
@@ -89,6 +66,78 @@ impl NGramGraph {
         }
         let atom_id = self.nodes.get(node_index)?.atom_id;
         (atom_id != NO_ATOM).then_some(atom_id)
+    }
+}
+
+fn build_compact_node(
+    entries: &[(NGramKey, u32)],
+    depth: usize,
+    nodes: &mut Vec<NGramNode>,
+    arcs: &mut Vec<NGramArc>,
+) -> Result<u32, String> {
+    let node_id = u32::try_from(nodes.len())
+        .map_err(|_| "n-gram graph node count exceeds u32".to_string())?;
+    nodes.push(NGramNode::default());
+
+    let terminal = entries
+        .iter()
+        .find_map(|(key, atom_id)| (sequence_len(*key) == depth).then_some(*atom_id))
+        .unwrap_or(NO_ATOM);
+    let mut first_child = 0;
+    while first_child < entries.len() && sequence_len(entries[first_child].0) == depth {
+        first_child += 1;
+    }
+
+    let mut group_count = 0_usize;
+    let mut cursor = first_child;
+    while cursor < entries.len() {
+        let symbol = sequence_symbol(entries[cursor].0, depth);
+        group_count += 1;
+        cursor += 1;
+        while cursor < entries.len() && sequence_symbol(entries[cursor].0, depth) == symbol {
+            cursor += 1;
+        }
+    }
+    let first_arc =
+        u32::try_from(arcs.len()).map_err(|_| "n-gram graph arc count exceeds u32".to_string())?;
+    let arc_count = u16::try_from(group_count)
+        .map_err(|_| "n-gram graph node fanout exceeds u16".to_string())?;
+    arcs.resize(arcs.len().saturating_add(group_count), NGramArc::default());
+    nodes[node_id as usize] = NGramNode {
+        first_arc,
+        arc_count,
+        atom_id: terminal,
+    };
+
+    let mut group = 0_usize;
+    cursor = first_child;
+    while cursor < entries.len() {
+        let symbol = sequence_symbol(entries[cursor].0, depth);
+        let start = cursor;
+        cursor += 1;
+        while cursor < entries.len() && sequence_symbol(entries[cursor].0, depth) == symbol {
+            cursor += 1;
+        }
+        let next_node = build_compact_node(&entries[start..cursor], depth + 1, nodes, arcs)?;
+        arcs[first_arc as usize + group] = NGramArc { symbol, next_node };
+        group += 1;
+    }
+    Ok(node_id)
+}
+
+fn sequence_order(left: NGramKey, right: NGramKey) -> Ordering {
+    key_symbols(left).cmp(key_symbols(right))
+}
+
+fn sequence_len(key: NGramKey) -> usize {
+    1 + key.len as usize
+}
+
+fn sequence_symbol(key: NGramKey, depth: usize) -> u32 {
+    if depth == 0 {
+        0xff00_0000 | channel_id(key.channel)
+    } else {
+        key.units[depth - 1]
     }
 }
 

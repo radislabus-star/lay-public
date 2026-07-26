@@ -207,28 +207,66 @@ pub(crate) fn score_to_milli(value: f32) -> i16 {
 }
 
 pub fn damerau_levenshtein(left: &str, right: &str) -> usize {
-    let a: Vec<char> = left.chars().collect();
-    let b: Vec<char> = right.chars().collect();
-    let mut dp = vec![vec![0usize; b.len() + 1]; a.len() + 1];
-    for (i, row) in dp.iter_mut().enumerate() {
-        row[0] = i;
+    damerau_levenshtein_impl(left, right, None)
+}
+
+pub(crate) fn damerau_levenshtein_bounded(
+    left: &str,
+    right: &str,
+    maximum: usize,
+) -> Option<usize> {
+    let distance = damerau_levenshtein_impl(left, right, Some(maximum));
+    (distance <= maximum).then_some(distance)
+}
+
+fn damerau_levenshtein_impl(left: &str, right: &str, maximum: Option<usize>) -> usize {
+    let a = left.chars().collect::<Vec<_>>();
+    let b = right.chars().collect::<Vec<_>>();
+    if maximum.is_some_and(|maximum| a.len().abs_diff(b.len()) > maximum) {
+        return maximum.unwrap_or_default().saturating_add(1);
     }
-    for (j, cell) in dp[0].iter_mut().enumerate() {
-        *cell = j;
+    if a.is_empty() {
+        return b.len();
     }
+    if b.is_empty() {
+        return a.len();
+    }
+
+    let unreachable = maximum
+        .map(|maximum| maximum.saturating_add(1))
+        .unwrap_or(usize::MAX / 4);
+    let mut previous_two = vec![unreachable; b.len() + 1];
+    let mut previous = (0..=b.len()).collect::<Vec<_>>();
+    let mut current = vec![unreachable; b.len() + 1];
     for i in 1..=a.len() {
-        for j in 1..=b.len() {
+        current.fill(unreachable);
+        current[0] = i;
+        let (start, end) = maximum.map_or((1, b.len()), |maximum| {
+            (
+                i.saturating_sub(maximum).max(1),
+                i.saturating_add(maximum).min(b.len()),
+            )
+        });
+        let mut row_minimum = current[0];
+        for j in start..=end {
             let substitution = usize::from(a[i - 1] != b[j - 1]);
-            let mut best = (dp[i - 1][j] + 1)
-                .min(dp[i][j - 1] + 1)
-                .min(dp[i - 1][j - 1] + substitution);
+            let mut best = previous[j]
+                .saturating_add(1)
+                .min(current[j - 1].saturating_add(1))
+                .min(previous[j - 1].saturating_add(substitution));
             if i > 1 && j > 1 && a[i - 1] == b[j - 2] && a[i - 2] == b[j - 1] {
-                best = best.min(dp[i - 2][j - 2] + 1);
+                best = best.min(previous_two[j - 2].saturating_add(1));
             }
-            dp[i][j] = best;
+            current[j] = best;
+            row_minimum = row_minimum.min(best);
         }
+        if maximum.is_some_and(|maximum| row_minimum > maximum) {
+            return maximum.unwrap_or_default().saturating_add(1);
+        }
+        std::mem::swap(&mut previous_two, &mut previous);
+        std::mem::swap(&mut previous, &mut current);
     }
-    dp[a.len()][b.len()]
+    previous[b.len()]
 }
 
 pub fn sparse_internal_omission_count(input: &str, candidate: &str) -> Option<usize> {
@@ -308,10 +346,32 @@ fn shared_char_mass(left: &[char], right: &[char]) -> usize {
 mod tests {
     use super::{
         current_token_boundary_split, current_token_boundary_split_or_repair,
-        current_token_repaired_boundary_split, internal_char_confusion_preserves_frame,
-        is_single_internal_char_move, sparse_internal_omission_count,
-        transition_changed_token_count, transition_left_context_changed,
+        current_token_repaired_boundary_split, damerau_levenshtein, damerau_levenshtein_bounded,
+        internal_char_confusion_preserves_frame, is_single_internal_char_move,
+        sparse_internal_omission_count, transition_changed_token_count,
+        transition_left_context_changed,
     };
+
+    #[test]
+    fn rolling_damerau_preserves_exact_and_bounded_results() {
+        let cases = [
+            ("", "", 0),
+            ("а", "", 1),
+            ("ландо", "ладно", 1),
+            ("перезарузка", "перезагрузка", 1),
+            ("abcdef", "abcfed", 2),
+            ("kitten", "sitting", 3),
+        ];
+        for (left, right, expected) in cases {
+            assert_eq!(damerau_levenshtein(left, right), expected);
+            for maximum in 0..=5 {
+                assert_eq!(
+                    damerau_levenshtein_bounded(left, right, maximum),
+                    (expected <= maximum).then_some(expected)
+                );
+            }
+        }
+    }
 
     #[test]
     fn transition_metrics_share_one_word_boundary_definition() {

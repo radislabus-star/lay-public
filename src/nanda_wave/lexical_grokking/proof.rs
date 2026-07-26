@@ -1,23 +1,57 @@
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet};
 use std::io;
 use std::path::Path;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::thread;
 use std::time::Instant;
 
 use serde::Serialize;
 
+use crate::stable_hash::mix64_golden;
+
 use super::compiler::{
-    compile_with_policy, CompileDiagnostics, ForwardPostingPolicy, TrainingWord,
+    compile_training_corpus_with_policy_in, CompileDiagnostics, ForwardPostingPolicy,
 };
-use super::corruption::{split_damages, DamageExample};
+use super::corruption::{
+    select_scale_training_damages_with_policy, split_damages, split_scale_damages, DamageExample,
+    ScaleTrainingSurfacePolicy,
+};
 use super::format;
 use super::restoration::{AbstainReason, RestorationReadout};
 use super::runtime::{LexicalGrokkingMemory, ReadoutMode};
+use super::training_budget::{checkpoint, TrainingBudgetGuard};
+use super::training_corpus::TrainingCorpus;
 
 const MAX_MISS_DIAGNOSTICS_PER_CLASS: usize = 8;
 const MAX_POSITION_DIAGNOSTICS: usize = 128;
 const MAX_RECONSTRUCTION_DIAGNOSTICS_PER_CLASS: usize = 64;
+const MAX_FALSE_CERTAINTY_DIAGNOSTICS: usize = 128;
 const BASELINE_FORWARD_COUPLINGS: usize = 256;
+const DEFAULT_TRAINING_RSS_MIB: usize = 24 * 1024;
+const PROOF_PROGRESS_INTERVAL: usize = 10_000;
+
+#[derive(Clone, Copy, Debug)]
+struct ScaleProofPolicy {
+    heldout_per_class: usize,
+    training_surfaces_per_word: usize,
+    training_surface_policy: ScaleTrainingSurfacePolicy,
+    maximum_rss_mib: usize,
+}
+
+type HeldoutReservoir = BTreeMap<&'static str, BinaryHeap<(u64, u32, String)>>;
+
+struct ScaleTrainingShard {
+    start_terminal: usize,
+    corpus: TrainingCorpus,
+    heldout: HeldoutReservoir,
+    training_surfaces: usize,
+}
+
+struct ScaleHeldoutShard {
+    start_terminal: usize,
+    heldout: HeldoutReservoir,
+    training_surfaces: usize,
+}
 
 #[derive(Clone, Debug, Default, Serialize)]
 struct ClassMetrics {
@@ -31,6 +65,7 @@ struct ClassMetrics {
     unique_top1_percent: f64,
     lattice_coverage_percent: f64,
     false_certainty: usize,
+    raw_top1_outside_objective: usize,
     without_sequence_top1: usize,
     without_sequence_top1_percent: f64,
     sequence_delta_top1: isize,
@@ -150,11 +185,22 @@ struct FailureDecomposition {
 struct MissDiagnostic {
     class: &'static str,
     surface: String,
+    objective_unique: bool,
     target_terminal: u32,
+    target_surface: Option<String>,
     selected_terminal: Option<u32>,
+    selected_surface: Option<String>,
     target_rank: Option<usize>,
     selected_energy: Option<i32>,
     target_energy: Option<i32>,
+    selected_geometry_distance: Option<u8>,
+    target_geometry_distance: Option<u8>,
+    selected_reconstruction_modes: Option<u8>,
+    target_reconstruction_modes: Option<u8>,
+    selected_sequence_milli: Option<u16>,
+    target_sequence_milli: Option<u16>,
+    selected_backward_milli: Option<u16>,
+    target_backward_milli: Option<u16>,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -212,6 +258,16 @@ struct AmbiguityAuthorityDiagnostic {
 }
 
 #[derive(Clone, Debug, Serialize)]
+struct FalseCertaintyDiagnostic {
+    class: &'static str,
+    surface: String,
+    target_terminals: Vec<u32>,
+    target_surfaces: Vec<Option<String>>,
+    authority_terminal: u32,
+    authority_surface: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize)]
 struct CleanMissDiagnostic {
     target_terminal: u32,
     target_surface: String,
@@ -226,7 +282,15 @@ pub struct L1LexicalGrokkingProof {
     l11_crystallization_verdict: &'static str,
     source_words: usize,
     training_surfaces: usize,
+    training_surface_storage: &'static str,
+    training_surface_bytes: usize,
+    training_surface_span_bytes: usize,
+    training_rss_budget_bytes: usize,
+    training_peak_rss_bytes: usize,
     heldout_surfaces: usize,
+    scale_training_surfaces_per_word: Option<usize>,
+    scale_training_surface_policy: Option<&'static str>,
+    scale_heldout_per_class: Option<usize>,
     clean_top1: usize,
     clean_preservation_percent: f64,
     heldout_top1: usize,
@@ -279,6 +343,11 @@ pub struct L1LexicalGrokkingProof {
     raw_corpus_stored: bool,
     exact_damage_episodes_stored: usize,
     compile_ms: u128,
+    memory_load_ms: u128,
+    dictionary_validation_ms: u128,
+    clean_audit_ms: u128,
+    latency_audit_ms: u128,
+    heldout_evaluation_ms: u128,
     proof_ms: u128,
     proof_workers: usize,
     hot_readout_p50_us: u64,
@@ -329,6 +398,7 @@ pub struct L1LexicalGrokkingProof {
     position_diagnostics: Vec<PositionDiagnostic>,
     reconstruction_diagnostics: Vec<ReconstructionDiagnostic>,
     ambiguity_authority_diagnostics: Vec<AmbiguityAuthorityDiagnostic>,
+    false_certainty_diagnostics: Vec<FalseCertaintyDiagnostic>,
     package: String,
 }
 
@@ -342,6 +412,7 @@ pub fn prove_l1_lexical_grokking(
         output_path,
         max_words,
         ForwardPostingPolicy::BaselineBounded,
+        None,
         None,
     )
 }
@@ -357,6 +428,7 @@ pub fn prove_l1_lexical_grokking_complete_postings(
         max_words,
         ForwardPostingPolicy::Complete,
         None,
+        None,
     )
 }
 
@@ -371,6 +443,102 @@ pub fn prove_l1_lexical_grokking_package(
         max_words,
         ForwardPostingPolicy::Complete,
         Some(package_path),
+        None,
+    )
+}
+
+pub fn crystallize_l1_lexical_grokking(
+    corpus_path: &Path,
+    output_path: &Path,
+    max_words: usize,
+    heldout_per_class: usize,
+    training_surfaces_per_word: usize,
+) -> io::Result<serde_json::Value> {
+    crystallize_l1_lexical_grokking_with_rss_budget(
+        corpus_path,
+        output_path,
+        max_words,
+        heldout_per_class,
+        training_surfaces_per_word,
+        DEFAULT_TRAINING_RSS_MIB,
+    )
+}
+
+pub fn crystallize_l1_lexical_grokking_with_rss_budget(
+    corpus_path: &Path,
+    output_path: &Path,
+    max_words: usize,
+    heldout_per_class: usize,
+    training_surfaces_per_word: usize,
+    maximum_rss_mib: usize,
+) -> io::Result<serde_json::Value> {
+    crystallize_l1_lexical_grokking_with_surface_policy(
+        corpus_path,
+        output_path,
+        max_words,
+        heldout_per_class,
+        training_surfaces_per_word,
+        maximum_rss_mib,
+        ScaleTrainingSurfacePolicy::LegacyAlphabetical,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn crystallize_l1_lexical_grokking_with_surface_policy(
+    corpus_path: &Path,
+    output_path: &Path,
+    max_words: usize,
+    heldout_per_class: usize,
+    training_surfaces_per_word: usize,
+    maximum_rss_mib: usize,
+    training_surface_policy: ScaleTrainingSurfacePolicy,
+) -> io::Result<serde_json::Value> {
+    if heldout_per_class == 0 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "scale crystallization heldout budget must be positive",
+        ));
+    }
+    prove_l1_lexical_grokking_with_policy(
+        corpus_path,
+        output_path,
+        max_words,
+        ForwardPostingPolicy::Complete,
+        None,
+        Some(ScaleProofPolicy {
+            heldout_per_class,
+            training_surfaces_per_word,
+            training_surface_policy,
+            maximum_rss_mib,
+        }),
+    )
+}
+
+pub fn prove_l1_lexical_grokking_scale_package(
+    corpus_path: &Path,
+    package_path: &Path,
+    max_words: usize,
+    heldout_per_class: usize,
+    training_surfaces_per_word: usize,
+) -> io::Result<serde_json::Value> {
+    if heldout_per_class == 0 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "scale proof heldout budget must be positive",
+        ));
+    }
+    prove_l1_lexical_grokking_with_policy(
+        corpus_path,
+        package_path,
+        max_words,
+        ForwardPostingPolicy::Complete,
+        Some(package_path),
+        Some(ScaleProofPolicy {
+            heldout_per_class,
+            training_surfaces_per_word,
+            training_surface_policy: ScaleTrainingSurfacePolicy::LegacyAlphabetical,
+            maximum_rss_mib: DEFAULT_TRAINING_RSS_MIB,
+        }),
     )
 }
 
@@ -380,116 +548,261 @@ fn prove_l1_lexical_grokking_with_policy(
     max_words: usize,
     forward_policy: ForwardPostingPolicy,
     reuse_package: Option<&Path>,
+    scale_policy: Option<ScaleProofPolicy>,
 ) -> io::Result<serde_json::Value> {
+    let budget_guard = scale_policy
+        .map(|policy| {
+            TrainingBudgetGuard::install(
+                policy.maximum_rss_mib,
+                &output_path.with_extension("rss-veto.json"),
+            )
+        })
+        .transpose()
+        .map_err(io::Error::other)?;
+    checkpoint("corpus_read").map_err(io::Error::other)?;
     let text = std::fs::read_to_string(corpus_path)?;
-    let words = corpus_words(&text, max_words);
+    let words = if scale_policy.is_some() {
+        corpus_words_from_lines(&text, max_words)
+    } else {
+        corpus_words(&text, max_words)
+    };
     if words.len() < 8 {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
             "L1 crystal proof requires at least eight unique words",
         ));
     }
-    let mut training_words = Vec::with_capacity(words.len());
+    let mut training_corpus = if reuse_package.is_none() && scale_policy.is_none() {
+        let surface_capacity = scale_policy
+            .map(|policy| {
+                words
+                    .len()
+                    .saturating_mul(policy.training_surfaces_per_word)
+            })
+            .unwrap_or_default();
+        let byte_capacity = scale_policy
+            .map(|policy| {
+                text.len()
+                    .saturating_mul(policy.training_surfaces_per_word)
+                    .min(u32::MAX as usize)
+            })
+            .unwrap_or_default();
+        Some(
+            TrainingCorpus::try_with_capacity(words.len(), surface_capacity, byte_capacity)
+                .map_err(io::Error::other)?,
+        )
+    } else {
+        None
+    };
     let mut heldout = Vec::new();
     let mut ambiguity = HashMap::<String, BTreeSet<u32>>::new();
+    let mut heldout_reservoir = HeldoutReservoir::new();
     let mut training_surfaces = 0;
-    for (terminal_id, word) in words.iter().enumerate() {
-        let (training, test) = split_damages(word);
-        ambiguity
-            .entry(word.clone())
-            .or_default()
-            .insert(terminal_id as u32);
-        for example in training.iter().chain(&test) {
+    if let Some(policy) = scale_policy {
+        if reuse_package.is_none() {
+            let prepared = prepare_scale_training_corpus(&words, policy)?;
+            training_corpus = Some(prepared.0);
+            heldout_reservoir = prepared.1;
+            training_surfaces = prepared.2;
+        } else {
+            let prepared = prepare_scale_heldout(&words, policy)?;
+            heldout_reservoir = prepared.0;
+            training_surfaces = prepared.1;
+        }
+    } else {
+        for (terminal_id, word) in words.iter().enumerate() {
+            if terminal_id % 4096 == 0 {
+                checkpoint("training_surface_preparation").map_err(io::Error::other)?;
+            }
+            let (full_training, test) = split_damages(word);
+            let training = if let Some(policy) = scale_policy {
+                select_scale_training_damages_with_policy(
+                    word,
+                    full_training,
+                    policy.training_surfaces_per_word,
+                    policy.training_surface_policy,
+                )
+            } else {
+                full_training
+            };
+            training_surfaces += training.len();
+            if let Some(limit) = scale_policy.map(|policy| policy.heldout_per_class) {
+                retain_heldout_examples(
+                    &mut heldout_reservoir,
+                    limit,
+                    terminal_id as u32,
+                    word,
+                    test,
+                );
+                continue;
+            }
             ambiguity
-                .entry(example.surface.clone())
+                .entry(word.clone())
                 .or_default()
                 .insert(terminal_id as u32);
+            for example in training.iter().chain(&test) {
+                ambiguity
+                    .entry(example.surface.clone())
+                    .or_default()
+                    .insert(terminal_id as u32);
+            }
+            heldout.extend(
+                test.into_iter()
+                    .map(|example| (terminal_id as u32, example)),
+            );
+            if let Some(corpus) = training_corpus.as_mut() {
+                corpus
+                    .push_word(
+                        terminal_id as u32,
+                        word.clone(),
+                        training.into_iter().map(|item| item.surface),
+                    )
+                    .map_err(io::Error::other)?;
+            }
         }
-        training_surfaces += training.len();
-        heldout.extend(
-            test.into_iter()
-                .map(|example| (terminal_id as u32, example)),
-        );
-        training_words.push(TrainingWord {
-            terminal_id: terminal_id as u32,
-            surface: word.clone(),
-            training_surfaces: training.into_iter().map(|item| item.surface).collect(),
-        });
     }
-    extend_sparse_omission_ambiguity(&words, &heldout, &mut ambiguity);
+    if scale_policy.is_some() {
+        for (class, heap) in heldout_reservoir {
+            heldout.extend(
+                heap.into_iter().map(|(_, terminal_id, surface)| {
+                    (terminal_id, DamageExample { class, surface })
+                }),
+            );
+        }
+        heldout.sort_unstable_by(|left, right| {
+            left.1
+                .class
+                .cmp(right.1.class)
+                .then_with(|| left.0.cmp(&right.0))
+                .then_with(|| left.1.surface.cmp(&right.1.surface))
+        });
+        populate_sampled_ambiguity(&words, &heldout, &mut ambiguity);
+    } else {
+        extend_sparse_omission_ambiguity(&words, &heldout, &mut ambiguity);
+    }
+    if training_corpus
+        .as_ref()
+        .is_some_and(|corpus| corpus.training_surface_count() != training_surfaces)
+    {
+        return Err(io::Error::other(
+            "packed L1 training surface count changed during preparation",
+        ));
+    }
+    checkpoint("training_surface_preparation_complete").map_err(io::Error::other)?;
 
-    let (package, bytes, compile_ms, diagnostics) = if let Some(package_path) = reuse_package {
-        let bytes = std::fs::read(package_path)?;
-        let package = format::decode(&bytes).map_err(io::Error::other)?;
-        let max_forward_degree = package
-            .atoms
-            .iter()
-            .map(|atom| usize::from(atom.coupling_count))
-            .max()
-            .unwrap_or_default();
-        let diagnostics = CompileDiagnostics {
-            forward_relations_before_policy: package.forward_couplings.len(),
-            forward_relations_dropped: 0,
-            forward_atoms_above_baseline_cap: package
+    let training_surface_bytes = training_corpus
+        .as_ref()
+        .map(TrainingCorpus::packed_surface_bytes)
+        .unwrap_or_default();
+    let training_surface_span_bytes = training_corpus
+        .as_ref()
+        .map(TrainingCorpus::span_bytes)
+        .unwrap_or_default();
+    let (source_package, artifact_bytes, compile_ms, diagnostics) =
+        if let Some(package_path) = reuse_package {
+            let bytes = std::fs::read(package_path)?;
+            let package = format::decode(&bytes).map_err(io::Error::other)?;
+            let max_forward_degree = package
                 .atoms
                 .iter()
-                .filter(|atom| usize::from(atom.coupling_count) > BASELINE_FORWARD_COUPLINGS)
-                .count(),
-            max_forward_degree,
+                .map(|atom| atom.coupling_count as usize)
+                .max()
+                .unwrap_or_default();
+            let diagnostics = CompileDiagnostics {
+                forward_relations_before_policy: package.forward_couplings.len(),
+                forward_relations_dropped: 0,
+                forward_atoms_above_baseline_cap: package
+                    .atoms
+                    .iter()
+                    .filter(|atom| atom.coupling_count as usize > BASELINE_FORWARD_COUPLINGS)
+                    .count(),
+                max_forward_degree,
+            };
+            let artifact_bytes = bytes.len();
+            (package, artifact_bytes, 0, diagnostics)
+        } else {
+            let compile_started = Instant::now();
+            let compiled = compile_training_corpus_with_policy_in(
+                training_corpus
+                    .as_ref()
+                    .expect("training corpus exists when compiling a package"),
+                forward_policy,
+                &output_path.with_extension("l11-work"),
+            )
+            .map_err(io::Error::other)?;
+            let package = compiled.package;
+            let bytes = format::encode(&package).map_err(io::Error::other)?;
+            let compile_ms = compile_started.elapsed().as_millis();
+            if let Some(parent) = output_path.parent() {
+                std::fs::create_dir_all(parent)?;
+            }
+            let temporary = output_path.with_extension("tmp");
+            std::fs::write(&temporary, &bytes)?;
+            std::fs::rename(&temporary, output_path)?;
+            let artifact_bytes = bytes.len();
+            drop(bytes);
+            (package, artifact_bytes, compile_ms, compiled.diagnostics)
         };
-        (package, bytes, 0, diagnostics)
-    } else {
-        let compile_started = Instant::now();
-        let compiled =
-            compile_with_policy(&training_words, forward_policy).map_err(io::Error::other)?;
-        let package = compiled.package;
-        let bytes = format::encode(&package).map_err(io::Error::other)?;
-        let compile_ms = compile_started.elapsed().as_millis();
-        if let Some(parent) = output_path.parent() {
-            std::fs::create_dir_all(parent)?;
-        }
-        let temporary = output_path.with_extension("tmp");
-        std::fs::write(&temporary, &bytes)?;
-        std::fs::rename(&temporary, output_path)?;
-        (package, bytes, compile_ms, compiled.diagnostics)
-    };
+    drop(training_corpus);
 
     let proof_started = Instant::now();
-    let memory = LexicalGrokkingMemory::from_bytes(&bytes).map_err(io::Error::other)?;
+    let memory_load_started = Instant::now();
+    let memory = LexicalGrokkingMemory::from_package(source_package);
+    let memory_load_ms = memory_load_started.elapsed().as_millis();
+    eprintln!(
+        "l11_proof stage=memory_ready elapsed_ms={} stage_elapsed_ms={} workers={}",
+        proof_started.elapsed().as_millis(),
+        memory_load_ms,
+        proof_worker_count(words.len())
+    );
+
+    let dictionary_validation_started = Instant::now();
     if reuse_package.is_some()
-        && (package.terminal_count() as usize != words.len()
-            || words.iter().enumerate().any(|(terminal_id, word)| {
-                memory.decode_terminal(terminal_id as u32).as_deref() != Some(word.as_str())
-            }))
+        && (memory.package.terminal_count() as usize != words.len()
+            || !package_dictionary_matches_parallel(&memory, &words))
     {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
             "L1 package terminal dictionary does not match proof corpus",
         ));
     }
-    let clean_miss_diagnostics = words
-        .iter()
-        .enumerate()
-        .filter_map(|(target, word)| {
-            let selected_terminal = memory
-                .readout(word, 1, ReadoutMode::Full)
-                .first()
-                .map(|candidate| candidate.terminal_id);
-            (selected_terminal != Some(target as u32)).then(|| CleanMissDiagnostic {
-                target_terminal: target as u32,
-                target_surface: word.clone(),
-                selected_terminal,
-                selected_surface: selected_terminal
-                    .and_then(|terminal| memory.decode_terminal(terminal)),
-            })
-        })
-        .collect::<Vec<_>>();
+    let dictionary_validation_ms = dictionary_validation_started.elapsed().as_millis();
+    eprintln!(
+        "l11_proof stage=dictionary_validation_complete elapsed_ms={} stage_elapsed_ms={}",
+        proof_started.elapsed().as_millis(),
+        dictionary_validation_ms
+    );
+
+    let clean_audit_started = Instant::now();
+    let clean_miss_diagnostics = evaluate_clean_parallel(&memory, &words);
+    let clean_audit_ms = clean_audit_started.elapsed().as_millis();
+    eprintln!(
+        "l11_proof stage=clean_audit_complete elapsed_ms={} stage_elapsed_ms={} misses={}",
+        proof_started.elapsed().as_millis(),
+        clean_audit_ms,
+        clean_miss_diagnostics.len()
+    );
     let clean_top1 = words.len().saturating_sub(clean_miss_diagnostics.len());
     // Measure the hot path before proof-only decoder and edit-geometry audits
     // disturb caches or contend with the parallel evaluator.
+    let latency_audit_started = Instant::now();
     let latency = measure_hot_readout(&memory, &heldout);
     let l11_latency = measure_hot_restoration(&memory, &heldout);
+    let latency_audit_ms = latency_audit_started.elapsed().as_millis();
+    eprintln!(
+        "l11_proof stage=latency_audit_complete elapsed_ms={} stage_elapsed_ms={}",
+        proof_started.elapsed().as_millis(),
+        latency_audit_ms
+    );
+    let heldout_evaluation_started = Instant::now();
     let evaluation = evaluate_parallel(&memory, &heldout, &ambiguity);
+    let heldout_evaluation_ms = heldout_evaluation_started.elapsed().as_millis();
+    eprintln!(
+        "l11_proof stage=heldout_evaluation_complete elapsed_ms={} stage_elapsed_ms={} cases={}",
+        proof_started.elapsed().as_millis(),
+        heldout_evaluation_ms,
+        heldout.len()
+    );
     let position_diagnostics = evaluation.position_diagnostics.clone();
     let metrics = evaluation.metrics;
     let restoration = aggregate_restoration(&metrics.classes);
@@ -584,7 +897,27 @@ fn prove_l1_lexical_grokking_with_policy(
         l11_crystallization_verdict,
         source_words: words.len(),
         training_surfaces,
+        training_surface_storage: if reuse_package.is_some() {
+            "not_loaded_package_reuse"
+        } else {
+            "packed_utf8_arena"
+        },
+        training_surface_bytes,
+        training_surface_span_bytes,
+        training_rss_budget_bytes: budget_guard
+            .as_ref()
+            .map(|guard| guard.maximum_rss_bytes() as usize)
+            .unwrap_or_default(),
+        training_peak_rss_bytes: budget_guard
+            .as_ref()
+            .map(|guard| guard.peak_rss_bytes() as usize)
+            .unwrap_or_default(),
         heldout_surfaces: heldout.len(),
+        scale_training_surfaces_per_word: scale_policy
+            .map(|policy| policy.training_surfaces_per_word),
+        scale_training_surface_policy: scale_policy
+            .map(|policy| policy.training_surface_policy.name()),
+        scale_heldout_per_class: scale_policy.map(|policy| policy.heldout_per_class),
         clean_top1,
         clean_preservation_percent: clean_percent,
         heldout_top1: metrics.top1,
@@ -612,30 +945,32 @@ fn prove_l1_lexical_grokking_with_policy(
         position_improved: evaluation.position_improved,
         position_worsened: evaluation.position_worsened,
         word_center_bytes: 64,
-        word_center_bank_bytes: package.centers.len() * 64,
-        atom_count: package.atoms.len(),
-        forward_couplings: package.forward_couplings.len(),
+        word_center_bank_bytes: memory.package.centers.len() * 64,
+        atom_count: memory.package.atoms.len(),
+        forward_couplings: memory.package.forward_couplings.len(),
         forward_posting_policy: forward_policy.name(),
         forward_relations_before_policy: diagnostics.forward_relations_before_policy,
         forward_relations_dropped: diagnostics.forward_relations_dropped,
         forward_atoms_above_baseline_cap: diagnostics.forward_atoms_above_baseline_cap,
         max_forward_degree: diagnostics.max_forward_degree,
-        reverse_couplings: package.reverse_couplings.len(),
-        anti_centers: package.anti_centers.len(),
-        pair_profiles: package.pair_profiles.len(),
-        pair_centers: package.pair_centers.len(),
-        center_phase_profiles: package.center_phase_profiles.len(),
-        positive_subcenters: package.positive_subcenters.len(),
-        anti_subcenters: package.anti_subcenters.len(),
-        hard_negative_subcenters: package.hard_negative_subcenters.len(),
-        ambiguity_subcenters: package.ambiguity_subcenters.len(),
-        active_ambiguity_profiles: package
+        reverse_couplings: memory.package.reverse_couplings.len(),
+        anti_centers: memory.package.anti_centers.len(),
+        pair_profiles: memory.package.pair_profiles.len(),
+        pair_centers: memory.package.pair_centers.len(),
+        center_phase_profiles: memory.package.center_phase_profiles.len(),
+        positive_subcenters: memory.package.positive_subcenters.len(),
+        anti_subcenters: memory.package.anti_subcenters.len(),
+        hard_negative_subcenters: memory.package.hard_negative_subcenters.len(),
+        ambiguity_subcenters: memory.package.ambiguity_subcenters.len(),
+        active_ambiguity_profiles: memory
+            .package
             .center_phase_profiles
             .iter()
             .filter(|profile| {
                 let start = profile.ambiguity_start as usize;
                 let end = start.saturating_add(profile.ambiguity_count as usize);
-                package
+                memory
+                    .package
                     .ambiguity_subcenters
                     .get(start..end)
                     .unwrap_or_default()
@@ -643,14 +978,25 @@ fn prove_l1_lexical_grokking_with_policy(
                     .any(|center| center.coupling_count != 0)
             })
             .count(),
-        calibration_max_geometry_distance: package.restoration_calibration.max_geometry_distance,
-        calibration_min_positive_milli: package.restoration_calibration.min_positive_milli,
-        calibration_min_backward_milli: package.restoration_calibration.min_backward_milli,
-        calibration_min_tied_energy_margin: package.restoration_calibration.min_tied_energy_margin,
-        artifact_bytes: bytes.len(),
+        calibration_max_geometry_distance: memory
+            .package
+            .restoration_calibration
+            .max_geometry_distance,
+        calibration_min_positive_milli: memory.package.restoration_calibration.min_positive_milli,
+        calibration_min_backward_milli: memory.package.restoration_calibration.min_backward_milli,
+        calibration_min_tied_energy_margin: memory
+            .package
+            .restoration_calibration
+            .min_tied_energy_margin,
+        artifact_bytes,
         raw_corpus_stored: false,
         exact_damage_episodes_stored: 0,
         compile_ms,
+        memory_load_ms,
+        dictionary_validation_ms,
+        clean_audit_ms,
+        latency_audit_ms,
+        heldout_evaluation_ms,
         proof_ms: proof_started.elapsed().as_millis(),
         proof_workers: proof_worker_count(heldout.len()),
         hot_readout_p50_us: percentile(&latency, 50),
@@ -702,9 +1048,208 @@ fn prove_l1_lexical_grokking_with_policy(
         position_diagnostics,
         reconstruction_diagnostics: evaluation.reconstruction_diagnostics,
         ambiguity_authority_diagnostics: evaluation.ambiguity_authority_diagnostics,
+        false_certainty_diagnostics: evaluation.false_certainty_diagnostics,
         package: output_path.display().to_string(),
     };
     serde_json::to_value(proof).map_err(io::Error::other)
+}
+
+fn prepare_scale_training_corpus(
+    words: &[String],
+    policy: ScaleProofPolicy,
+) -> io::Result<(TrainingCorpus, HeldoutReservoir, usize)> {
+    let workers = thread::available_parallelism()
+        .map(usize::from)
+        .unwrap_or(1)
+        .min(words.len().max(1));
+    let chunk_size = words.len().div_ceil(workers);
+    eprintln!(
+        "l11_training_surface_preparation words={} workers={workers} chunk_size={chunk_size}",
+        words.len()
+    );
+    let mut shards = thread::scope(|scope| {
+        words
+            .chunks(chunk_size)
+            .enumerate()
+            .map(|(shard_index, shard_words)| {
+                let start_terminal = shard_index.saturating_mul(chunk_size);
+                scope.spawn(move || {
+                    let surface_capacity = shard_words
+                        .len()
+                        .saturating_mul(policy.training_surfaces_per_word);
+                    let byte_capacity = shard_words
+                        .iter()
+                        .map(String::len)
+                        .sum::<usize>()
+                        .saturating_mul(policy.training_surfaces_per_word);
+                    let mut corpus = TrainingCorpus::try_with_capacity(
+                        shard_words.len(),
+                        surface_capacity,
+                        byte_capacity,
+                    )?;
+                    let mut heldout = HeldoutReservoir::new();
+                    let mut training_surfaces = 0_usize;
+                    for (offset, word) in shard_words.iter().enumerate() {
+                        let terminal_id = start_terminal.saturating_add(offset);
+                        let (full_training, test) =
+                            split_scale_damages(word, policy.training_surfaces_per_word > 0);
+                        let training = select_scale_training_damages_with_policy(
+                            word,
+                            full_training,
+                            policy.training_surfaces_per_word,
+                            policy.training_surface_policy,
+                        );
+                        training_surfaces = training_surfaces.saturating_add(training.len());
+                        retain_heldout_examples(
+                            &mut heldout,
+                            policy.heldout_per_class,
+                            terminal_id as u32,
+                            word,
+                            test,
+                        );
+                        corpus.push_word(
+                            terminal_id as u32,
+                            word.clone(),
+                            training.into_iter().map(|item| item.surface),
+                        )?;
+                    }
+                    Ok::<_, String>(ScaleTrainingShard {
+                        start_terminal,
+                        corpus,
+                        heldout,
+                        training_surfaces,
+                    })
+                })
+            })
+            .collect::<Vec<_>>()
+            .into_iter()
+            .map(|handle| {
+                handle
+                    .join()
+                    .map_err(|_| "L1 training surface worker panicked".to_string())?
+            })
+            .collect::<Result<Vec<_>, String>>()
+    })
+    .map_err(io::Error::other)?;
+    shards.sort_unstable_by_key(|shard| shard.start_terminal);
+
+    let surface_capacity = shards
+        .iter()
+        .map(|shard| shard.corpus.training_surface_count())
+        .sum();
+    let byte_capacity = shards
+        .iter()
+        .map(|shard| shard.corpus.packed_surface_bytes())
+        .sum();
+    let training_surfaces = shards.iter().map(|shard| shard.training_surfaces).sum();
+    let mut corpus =
+        TrainingCorpus::try_with_capacity(words.len(), surface_capacity, byte_capacity)
+            .map_err(io::Error::other)?;
+    let mut heldout = HeldoutReservoir::new();
+    for shard in shards {
+        corpus
+            .append_shard(shard.corpus)
+            .map_err(io::Error::other)?;
+        merge_heldout_reservoir(&mut heldout, shard.heldout, policy.heldout_per_class);
+    }
+    Ok((corpus, heldout, training_surfaces))
+}
+
+fn prepare_scale_heldout(
+    words: &[String],
+    policy: ScaleProofPolicy,
+) -> io::Result<(HeldoutReservoir, usize)> {
+    let workers = proof_worker_count(words.len());
+    let chunk_size = words.len().div_ceil(workers);
+    eprintln!(
+        "l11_heldout_preparation words={} workers={workers} chunk_size={chunk_size}",
+        words.len()
+    );
+    let mut shards = thread::scope(|scope| {
+        words
+            .chunks(chunk_size)
+            .enumerate()
+            .map(|(shard_index, shard_words)| {
+                let start_terminal = shard_index.saturating_mul(chunk_size);
+                scope.spawn(move || {
+                    let mut heldout = HeldoutReservoir::new();
+                    let mut training_surfaces = 0_usize;
+                    for (offset, word) in shard_words.iter().enumerate() {
+                        let terminal_id = start_terminal.saturating_add(offset);
+                        let (full_training, test) =
+                            split_scale_damages(word, policy.training_surfaces_per_word > 0);
+                        training_surfaces = training_surfaces.saturating_add(
+                            select_scale_training_damages_with_policy(
+                                word,
+                                full_training,
+                                policy.training_surfaces_per_word,
+                                policy.training_surface_policy,
+                            )
+                            .len(),
+                        );
+                        retain_heldout_examples(
+                            &mut heldout,
+                            policy.heldout_per_class,
+                            terminal_id as u32,
+                            word,
+                            test,
+                        );
+                    }
+                    ScaleHeldoutShard {
+                        start_terminal,
+                        heldout,
+                        training_surfaces,
+                    }
+                })
+            })
+            .collect::<Vec<_>>()
+            .into_iter()
+            .map(|handle| {
+                handle
+                    .join()
+                    .expect("L1 heldout preparation worker panicked")
+            })
+            .collect::<Vec<_>>()
+    });
+    shards.sort_unstable_by_key(|shard| shard.start_terminal);
+    let training_surfaces = shards.iter().map(|shard| shard.training_surfaces).sum();
+    let mut heldout = HeldoutReservoir::new();
+    for shard in shards {
+        merge_heldout_reservoir(&mut heldout, shard.heldout, policy.heldout_per_class);
+    }
+    Ok((heldout, training_surfaces))
+}
+
+fn retain_heldout_examples(
+    reservoir: &mut HeldoutReservoir,
+    limit: usize,
+    terminal_id: u32,
+    word: &str,
+    examples: Vec<DamageExample>,
+) {
+    for example in examples {
+        let heap = reservoir.entry(example.class).or_default();
+        heap.push((
+            scale_sample_hash(word, &example),
+            terminal_id,
+            example.surface,
+        ));
+        if heap.len() > limit {
+            heap.pop();
+        }
+    }
+}
+
+fn merge_heldout_reservoir(target: &mut HeldoutReservoir, source: HeldoutReservoir, limit: usize) {
+    for (class, examples) in source {
+        let target_class = target.entry(class).or_default();
+        for example in examples {
+            target_class.push(example);
+            if target_class.len() > limit {
+                target_class.pop();
+            }
+        }
+    }
 }
 
 fn aggregate_restoration(classes: &BTreeMap<&'static str, ClassMetrics>) -> RestorationMetrics {
@@ -749,6 +1294,7 @@ struct Evaluation {
     position_diagnostics: Vec<PositionDiagnostic>,
     reconstruction_diagnostics: Vec<ReconstructionDiagnostic>,
     ambiguity_authority_diagnostics: Vec<AmbiguityAuthorityDiagnostic>,
+    false_certainty_diagnostics: Vec<FalseCertaintyDiagnostic>,
 }
 
 fn evaluate_parallel(
@@ -757,14 +1303,21 @@ fn evaluate_parallel(
     ambiguity: &HashMap<String, BTreeSet<u32>>,
 ) -> Evaluation {
     let worker_count = proof_worker_count(heldout.len());
+    let progress = ProofProgress::new("heldout", heldout.len());
+    eprintln!(
+        "l11_proof stage=heldout_evaluation_start cases={} workers={worker_count}",
+        heldout.len()
+    );
     let partial = thread::scope(|scope| {
         (0..worker_count)
             .map(|worker| {
+                let progress = &progress;
                 scope.spawn(move || {
                     evaluate_cases(
                         memory,
                         heldout.iter().skip(worker).step_by(worker_count),
                         ambiguity,
+                        progress,
                     )
                 })
             })
@@ -780,6 +1333,7 @@ fn evaluate_parallel(
     evaluation.metrics.misses.sort_unstable_by(|left, right| {
         left.class
             .cmp(right.class)
+            .then_with(|| right.objective_unique.cmp(&left.objective_unique))
             .then_with(|| left.surface.cmp(&right.surface))
             .then_with(|| left.target_terminal.cmp(&right.target_terminal))
     });
@@ -829,6 +1383,17 @@ fn evaluate_parallel(
                 .then_with(|| left.authority_terminal.cmp(&right.authority_terminal))
         });
     evaluation.ambiguity_authority_diagnostics.truncate(64);
+    evaluation
+        .false_certainty_diagnostics
+        .sort_unstable_by(|left, right| {
+            left.class
+                .cmp(right.class)
+                .then_with(|| left.surface.cmp(&right.surface))
+                .then_with(|| left.authority_terminal.cmp(&right.authority_terminal))
+        });
+    evaluation
+        .false_certainty_diagnostics
+        .truncate(MAX_FALSE_CERTAINTY_DIAGNOSTICS);
     for class in evaluation.metrics.classes.values_mut() {
         class.unique_top1_percent = percent(class.unique_top1, class.unique_cases.max(1));
         class.lattice_coverage_percent = percent(class.top64, class.cases);
@@ -940,6 +1505,133 @@ fn proof_worker_count(case_count: usize) -> usize {
         .min(case_count.max(1))
 }
 
+struct ProofProgress<'a> {
+    label: &'a str,
+    total: usize,
+    completed: AtomicUsize,
+    next_report: AtomicUsize,
+    started: Instant,
+}
+
+impl<'a> ProofProgress<'a> {
+    fn new(label: &'a str, total: usize) -> Self {
+        Self {
+            label,
+            total,
+            completed: AtomicUsize::new(0),
+            next_report: AtomicUsize::new(PROOF_PROGRESS_INTERVAL.min(total.max(1))),
+            started: Instant::now(),
+        }
+    }
+
+    fn advance(&self, count: usize) {
+        let completed = self.completed.fetch_add(count, Ordering::Relaxed) + count;
+        let mut next = self.next_report.load(Ordering::Relaxed);
+        while completed >= next && next <= self.total {
+            let following = next.saturating_add(PROOF_PROGRESS_INTERVAL);
+            match self.next_report.compare_exchange_weak(
+                next,
+                following,
+                Ordering::Relaxed,
+                Ordering::Relaxed,
+            ) {
+                Ok(_) => {
+                    eprintln!(
+                        "l11_proof_progress phase={} cases={} total={} percent_milli={} elapsed_ms={}",
+                        self.label,
+                        completed.min(self.total),
+                        self.total,
+                        completed
+                            .min(self.total)
+                            .saturating_mul(100_000)
+                            .checked_div(self.total.max(1))
+                            .unwrap_or_default(),
+                        self.started.elapsed().as_millis()
+                    );
+                    break;
+                }
+                Err(actual) => next = actual,
+            }
+        }
+    }
+}
+
+fn package_dictionary_matches_parallel(memory: &LexicalGrokkingMemory, words: &[String]) -> bool {
+    let worker_count = proof_worker_count(words.len());
+    let chunk_size = words.len().div_ceil(worker_count);
+    thread::scope(|scope| {
+        words
+            .chunks(chunk_size)
+            .enumerate()
+            .map(|(chunk_index, chunk)| {
+                scope.spawn(move || {
+                    let start = chunk_index.saturating_mul(chunk_size);
+                    chunk.iter().enumerate().all(|(offset, word)| {
+                        memory.decode_terminal((start + offset) as u32).as_deref()
+                            == Some(word.as_str())
+                    })
+                })
+            })
+            .collect::<Vec<_>>()
+            .into_iter()
+            .all(|handle| {
+                handle
+                    .join()
+                    .expect("L1 dictionary validation worker panicked")
+            })
+    })
+}
+
+fn evaluate_clean_parallel(
+    memory: &LexicalGrokkingMemory,
+    words: &[String],
+) -> Vec<CleanMissDiagnostic> {
+    let worker_count = proof_worker_count(words.len());
+    let chunk_size = words.len().div_ceil(worker_count);
+    let progress = ProofProgress::new("clean", words.len());
+    eprintln!(
+        "l11_proof stage=clean_audit_start words={} workers={worker_count} chunk_size={chunk_size}",
+        words.len()
+    );
+    let partial = thread::scope(|scope| {
+        words
+            .chunks(chunk_size)
+            .enumerate()
+            .map(|(chunk_index, chunk)| {
+                let progress = &progress;
+                scope.spawn(move || {
+                    let start = chunk_index.saturating_mul(chunk_size);
+                    let mut misses = Vec::new();
+                    for (offset, word) in chunk.iter().enumerate() {
+                        let target = start + offset;
+                        let selected_terminal = memory
+                            .readout(word, 1, ReadoutMode::Full)
+                            .first()
+                            .map(|candidate| candidate.terminal_id);
+                        if selected_terminal != Some(target as u32) {
+                            misses.push(CleanMissDiagnostic {
+                                target_terminal: target as u32,
+                                target_surface: word.clone(),
+                                selected_terminal,
+                                selected_surface: selected_terminal
+                                    .and_then(|terminal| memory.decode_terminal(terminal)),
+                            });
+                        }
+                        progress.advance(1);
+                    }
+                    misses
+                })
+            })
+            .collect::<Vec<_>>()
+            .into_iter()
+            .flat_map(|handle| handle.join().expect("L1 clean audit worker panicked"))
+            .collect::<Vec<_>>()
+    });
+    let mut misses = partial;
+    misses.sort_unstable_by_key(|diagnostic| diagnostic.target_terminal);
+    misses
+}
+
 fn measure_hot_readout(
     memory: &LexicalGrokkingMemory,
     heldout: &[(u32, DamageExample)],
@@ -1001,10 +1693,28 @@ fn evaluate_cases<'a>(
     memory: &LexicalGrokkingMemory,
     heldout: impl IntoIterator<Item = &'a (u32, DamageExample)>,
     ambiguity: &HashMap<String, BTreeSet<u32>>,
+    progress: &ProofProgress<'_>,
 ) -> Evaluation {
     let mut evaluation = Evaluation::default();
     for (target, example) in heldout {
-        let candidates = memory.readout(&example.surface, 64, ReadoutMode::Full);
+        let [candidates, without_phase_candidates, without_anti_candidates, without_sequence_candidates, legacy_sequence_candidates, without_sequence_certificate_candidates, without_pairwise_candidates, without_position_candidates] =
+            memory
+                .readout_modes(
+                    &example.surface,
+                    64,
+                    &[
+                        ReadoutMode::Full,
+                        ReadoutMode::WithoutPhase,
+                        ReadoutMode::WithoutAnti,
+                        ReadoutMode::WithoutSequence,
+                        ReadoutMode::LegacySequence,
+                        ReadoutMode::WithoutSequenceCertificate,
+                        ReadoutMode::WithoutPairwise,
+                        ReadoutMode::WithoutPosition,
+                    ],
+                )
+                .try_into()
+                .expect("L1 proof readout mode count is fixed");
         let mut restoration_candidates = candidates.clone();
         let restoration = memory.classify_restoration(
             &example.surface,
@@ -1029,34 +1739,13 @@ fn evaluate_cases<'a>(
         evaluation.metrics.top1 += usize::from(top1);
         evaluation.metrics.top8 += usize::from(top8);
         evaluation.metrics.top64 += usize::from(top64);
-        let phase_top1 = top_is(memory, &example.surface, *target, ReadoutMode::WithoutPhase);
-        let anti_top1 = top_is(memory, &example.surface, *target, ReadoutMode::WithoutAnti);
-        let sequence_top1 = top_is(
-            memory,
-            &example.surface,
-            *target,
-            ReadoutMode::WithoutSequence,
-        );
-        let legacy_sequence_top1 = top_is(
-            memory,
-            &example.surface,
-            *target,
-            ReadoutMode::LegacySequence,
-        );
-        let without_sequence_certificate_top1 = top_is(
-            memory,
-            &example.surface,
-            *target,
-            ReadoutMode::WithoutSequenceCertificate,
-        );
-        let without_pairwise_top1 = top_is(
-            memory,
-            &example.surface,
-            *target,
-            ReadoutMode::WithoutPairwise,
-        );
-        let without_position_candidates =
-            memory.readout(&example.surface, 64, ReadoutMode::WithoutPosition);
+        let phase_top1 = top_is_candidates(&without_phase_candidates, *target);
+        let anti_top1 = top_is_candidates(&without_anti_candidates, *target);
+        let sequence_top1 = top_is_candidates(&without_sequence_candidates, *target);
+        let legacy_sequence_top1 = top_is_candidates(&legacy_sequence_candidates, *target);
+        let without_sequence_certificate_top1 =
+            top_is_candidates(&without_sequence_certificate_candidates, *target);
+        let without_pairwise_top1 = top_is_candidates(&without_pairwise_candidates, *target);
         let without_position_top1 = without_position_candidates
             .first()
             .is_some_and(|item| item.terminal_id == *target);
@@ -1106,7 +1795,10 @@ fn evaluate_cases<'a>(
                 after_structural_milli: after.map(|item| item.structural_milli),
             });
         }
-        let targets = &ambiguity[example.surface.as_str()];
+        let targets = ambiguity
+            .get(example.surface.as_str())
+            .cloned()
+            .unwrap_or_else(|| BTreeSet::from([*target]));
         if targets.len() > 1 {
             if let RestorationReadout::Winner { candidate } = &restoration {
                 let nearest_terminals =
@@ -1135,18 +1827,19 @@ fn evaluate_cases<'a>(
             }
         }
         let class = evaluation.metrics.classes.entry(example.class).or_default();
+        let authority_mutates_surface = match &restoration {
+            RestorationReadout::Winner { candidate } => memory
+                .decode_terminal(candidate.terminal_id)
+                .is_some_and(|surface| surface != example.surface),
+            _ => false,
+        };
         record_restoration(
             &mut class.restoration,
             &restoration_candidates,
             &restoration,
             *target,
-            targets,
-            match &restoration {
-                RestorationReadout::Winner { candidate } => memory
-                    .decode_terminal(candidate.terminal_id)
-                    .is_some_and(|surface| surface != example.surface),
-                _ => false,
-            },
+            &targets,
+            authority_mutates_surface,
         );
         class.cases += 1;
         class.top1 += usize::from(top1);
@@ -1183,24 +1876,62 @@ fn evaluate_cases<'a>(
             let selected_outside_set = candidates
                 .first()
                 .is_some_and(|item| !targets.contains(&item.terminal_id));
-            class.false_certainty += usize::from(selected_outside_set);
+            class.raw_top1_outside_objective += usize::from(selected_outside_set);
+            let false_certainty = match &restoration {
+                RestorationReadout::Winner { candidate } => {
+                    authority_mutates_surface && !targets.contains(&candidate.terminal_id)
+                }
+                _ => false,
+            };
+            class.false_certainty += usize::from(false_certainty);
+            if false_certainty {
+                let RestorationReadout::Winner { candidate } = &restoration else {
+                    unreachable!("false certainty requires winner authority");
+                };
+                evaluation
+                    .false_certainty_diagnostics
+                    .push(FalseCertaintyDiagnostic {
+                        class: example.class,
+                        surface: example.surface.clone(),
+                        target_terminals: targets.iter().copied().collect(),
+                        target_surfaces: targets
+                            .iter()
+                            .map(|terminal| memory.decode_terminal(*terminal))
+                            .collect(),
+                        authority_terminal: candidate.terminal_id,
+                        authority_surface: memory.decode_terminal(candidate.terminal_id),
+                    });
+            }
         }
         if !top1 {
             let rank = candidates
                 .iter()
                 .position(|item| item.terminal_id == *target);
+            let selected = candidates.first();
+            let target_candidate = rank.and_then(|value| candidates.get(value));
             evaluation.metrics.misses.push(MissDiagnostic {
                 class: example.class,
                 surface: example.surface.clone(),
+                objective_unique: targets.len() == 1,
                 target_terminal: *target,
-                selected_terminal: candidates.first().map(|item| item.terminal_id),
+                target_surface: memory.decode_terminal(*target),
+                selected_terminal: selected.map(|item| item.terminal_id),
+                selected_surface: selected
+                    .and_then(|item| memory.decode_terminal(item.terminal_id)),
                 target_rank: rank.map(|value| value + 1),
-                selected_energy: candidates.first().map(|item| item.settled_energy),
-                target_energy: rank
-                    .and_then(|value| candidates.get(value))
-                    .map(|item| item.settled_energy),
+                selected_energy: selected.map(|item| item.settled_energy),
+                target_energy: target_candidate.map(|item| item.settled_energy),
+                selected_geometry_distance: selected.map(|item| item.geometry_distance),
+                target_geometry_distance: target_candidate.map(|item| item.geometry_distance),
+                selected_reconstruction_modes: selected.map(|item| item.reconstruction_modes),
+                target_reconstruction_modes: target_candidate.map(|item| item.reconstruction_modes),
+                selected_sequence_milli: selected.map(|item| item.sequence_milli),
+                target_sequence_milli: target_candidate.map(|item| item.sequence_milli),
+                selected_backward_milli: selected.map(|item| item.backward_milli),
+                target_backward_milli: target_candidate.map(|item| item.backward_milli),
             });
         }
+        progress.advance(1);
     }
     evaluation
 }
@@ -1413,6 +2144,9 @@ fn merge_evaluation(target: &mut Evaluation, source: Evaluation) {
     target
         .ambiguity_authority_diagnostics
         .extend(source.ambiguity_authority_diagnostics);
+    target
+        .false_certainty_diagnostics
+        .extend(source.false_certainty_diagnostics);
     for (name, source_class) in source.metrics.classes {
         let class = target.metrics.classes.entry(name).or_default();
         class.cases += source_class.cases;
@@ -1423,6 +2157,7 @@ fn merge_evaluation(target: &mut Evaluation, source: Evaluation) {
         class.top8 += source_class.top8;
         class.top64 += source_class.top64;
         class.false_certainty += source_class.false_certainty;
+        class.raw_top1_outside_objective += source_class.raw_top1_outside_objective;
         class.without_sequence_top1 += source_class.without_sequence_top1;
         class.legacy_sequence_top1 += source_class.legacy_sequence_top1;
         class.legacy_sequence_unique_top1 += source_class.legacy_sequence_unique_top1;
@@ -1712,6 +2447,154 @@ fn corpus_words(text: &str, max_words: usize) -> Vec<String> {
     words.into_iter().collect()
 }
 
+fn corpus_words_from_lines(text: &str, max_words: usize) -> Vec<String> {
+    let mut seen = HashSet::new();
+    let mut words = Vec::new();
+    for line in text.lines() {
+        let word = line.trim().to_lowercase();
+        if !(2..=32).contains(&word.chars().count())
+            || !word
+                .chars()
+                .all(|character| character.is_alphabetic() || character == '-' || character == '\'')
+            || !seen.insert(word.clone())
+        {
+            continue;
+        }
+        words.push(word);
+        if max_words > 0 && words.len() >= max_words {
+            break;
+        }
+    }
+    words
+}
+
+fn scale_sample_hash(word: &str, example: &DamageExample) -> u64 {
+    let mut state = 0x5343_414c_455f_4831_u64;
+    for byte in word
+        .bytes()
+        .chain(example.class.bytes())
+        .chain(example.surface.bytes())
+    {
+        state = mix64_golden(state ^ u64::from(byte));
+    }
+    state
+}
+
+pub(super) fn populate_sampled_ambiguity(
+    words: &[String],
+    heldout: &[(u32, DamageExample)],
+    ambiguity: &mut HashMap<String, BTreeSet<u32>>,
+) {
+    let selected = heldout
+        .iter()
+        .map(|(_, example)| example.surface.as_str())
+        .collect::<HashSet<_>>();
+    for (terminal_id, example) in heldout {
+        ambiguity
+            .entry(example.surface.clone())
+            .or_default()
+            .insert(*terminal_id);
+    }
+    let terminals_by_surface = words
+        .iter()
+        .enumerate()
+        .map(|(terminal_id, word)| (word.as_str(), terminal_id as u32))
+        .collect::<HashMap<_, _>>();
+    for surface in &selected {
+        let characters = surface.chars().collect::<Vec<_>>();
+        for removed in 0..characters.len() {
+            let possible_source = characters
+                .iter()
+                .enumerate()
+                .filter_map(|(index, character)| (index != removed).then_some(*character))
+                .collect::<String>();
+            if let Some(terminal_id) = terminals_by_surface.get(possible_source.as_str()) {
+                ambiguity
+                    .entry((*surface).to_string())
+                    .or_default()
+                    .insert(*terminal_id);
+            }
+        }
+    }
+    for (terminal_id, word) in words.iter().enumerate() {
+        if selected.contains(word.as_str()) {
+            ambiguity
+                .entry(word.clone())
+                .or_default()
+                .insert(terminal_id as u32);
+        }
+        let characters = word.chars().collect::<Vec<_>>();
+        if characters.len() >= 2 {
+            for truncated in [
+                characters[1..].iter().collect::<String>(),
+                characters[..characters.len() - 1]
+                    .iter()
+                    .collect::<String>(),
+            ] {
+                if selected.contains(truncated.as_str()) {
+                    ambiguity
+                        .entry(truncated)
+                        .or_default()
+                        .insert(terminal_id as u32);
+                }
+            }
+        }
+        let (training, test) = split_damages(word);
+        for example in training.into_iter().chain(test) {
+            if selected.contains(example.surface.as_str()) {
+                ambiguity
+                    .entry(example.surface)
+                    .or_default()
+                    .insert(terminal_id as u32);
+            }
+        }
+    }
+    extend_sparse_omission_ambiguity_indexed(words, heldout, ambiguity);
+}
+
+fn extend_sparse_omission_ambiguity_indexed(
+    words: &[String],
+    heldout: &[(u32, DamageExample)],
+    ambiguity: &mut HashMap<String, BTreeSet<u32>>,
+) {
+    let mut selected_by_length = BTreeMap::<usize, HashSet<&str>>::new();
+    for (_, example) in heldout {
+        if example.class == "sparse_multi_omission" {
+            selected_by_length
+                .entry(example.surface.chars().count())
+                .or_default()
+                .insert(example.surface.as_str());
+        }
+    }
+    for (terminal_id, word) in words.iter().enumerate() {
+        let characters = word.chars().collect::<Vec<_>>();
+        let Some(selected) = characters
+            .len()
+            .checked_sub(2)
+            .and_then(|length| selected_by_length.get(&length))
+        else {
+            continue;
+        };
+        for first in 0..characters.len().saturating_sub(1) {
+            for second in first + 1..characters.len() {
+                let candidate = characters
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(index, character)| {
+                        (index != first && index != second).then_some(*character)
+                    })
+                    .collect::<String>();
+                if selected.contains(candidate.as_str()) {
+                    ambiguity
+                        .entry(candidate)
+                        .or_default()
+                        .insert(terminal_id as u32);
+                }
+            }
+        }
+    }
+}
+
 fn extend_sparse_omission_ambiguity(
     words: &[String],
     heldout: &[(u32, DamageExample)],
@@ -1744,9 +2627,8 @@ pub(super) fn is_ordered_subsequence(needle: &[char], haystack: &[char]) -> bool
     next == needle.len()
 }
 
-fn top_is(memory: &LexicalGrokkingMemory, surface: &str, target: u32, mode: ReadoutMode) -> bool {
-    memory
-        .readout(surface, 1, mode)
+fn top_is_candidates(candidates: &[super::runtime::GrokkingCandidate], target: u32) -> bool {
+    candidates
         .first()
         .is_some_and(|candidate| candidate.terminal_id == target)
 }
@@ -1756,5 +2638,71 @@ fn percent(numerator: usize, denominator: usize) -> f64 {
         0.0
     } else {
         numerator as f64 * 100.0 / denominator as f64
+    }
+}
+
+#[cfg(test)]
+mod scale_proof_tests {
+    use super::*;
+
+    #[test]
+    fn parallel_heldout_preparation_matches_the_sequential_reservoir() {
+        let words = [
+            "время",
+            "переподключение",
+            "архитектура",
+            "download",
+            "restoration",
+            "candidate",
+            "кристаллизация",
+            "проверка",
+        ]
+        .into_iter()
+        .map(str::to_string)
+        .collect::<Vec<_>>();
+        let policy = ScaleProofPolicy {
+            heldout_per_class: 3,
+            training_surfaces_per_word: 2,
+            training_surface_policy: ScaleTrainingSurfacePolicy::HybridClassConditioned,
+            maximum_rss_mib: DEFAULT_TRAINING_RSS_MIB,
+        };
+        let (parallel, parallel_training) =
+            prepare_scale_heldout(&words, policy).expect("prepare parallel heldout");
+
+        let mut sequential = HeldoutReservoir::new();
+        let mut sequential_training = 0;
+        for (terminal_id, word) in words.iter().enumerate() {
+            let (full_training, test) = split_scale_damages(word, true);
+            sequential_training += select_scale_training_damages_with_policy(
+                word,
+                full_training,
+                policy.training_surfaces_per_word,
+                policy.training_surface_policy,
+            )
+            .len();
+            retain_heldout_examples(
+                &mut sequential,
+                policy.heldout_per_class,
+                terminal_id as u32,
+                word,
+                test,
+            );
+        }
+
+        assert_eq!(parallel_training, sequential_training);
+        assert_eq!(canonical_heldout(parallel), canonical_heldout(sequential));
+    }
+
+    fn canonical_heldout(reservoir: HeldoutReservoir) -> Vec<(&'static str, u64, u32, String)> {
+        let mut examples = reservoir
+            .into_iter()
+            .flat_map(|(class, heap)| {
+                heap.into_vec()
+                    .into_iter()
+                    .map(move |(hash, terminal, surface)| (class, hash, terminal, surface))
+            })
+            .collect::<Vec<_>>();
+        examples.sort_unstable();
+        examples
     }
 }

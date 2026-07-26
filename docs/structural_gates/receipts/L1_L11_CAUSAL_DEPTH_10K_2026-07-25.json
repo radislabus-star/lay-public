@@ -1,0 +1,113 @@
+{
+  "experiment": "L1.1 causal damaged-surface depth ablation",
+  "date": "2026-07-25",
+  "source_corpus": "data/lexical_grokking/lay_l11_ru462k_en300k_shadow_v1.txt",
+  "sample_words": 10000,
+  "sample_ru_words": 6065,
+  "sample_en_words": 3935,
+  "sample_sha256": "42cef02b87a3f28378fb4ceec6595a48d3543665ca9ff812a7c83e685f619d5f",
+  "heldout_surfaces": 25904,
+  "heldout_per_class_limit": 2000,
+  "controlled_variables": {
+    "changed": "damaged fit surfaces per WordCenter",
+    "depths": [0, 1, 2, 4],
+    "clean_surface_always_present": true,
+    "anti_surfaces_per_target": 1,
+    "anti_probe": "clean surface at every depth",
+    "calibration": "same deterministic split and calibration procedure",
+    "heldout": "same fixed sample and deterministic reservoir",
+    "remote_cpu_count": 20,
+    "cpus_per_variant": 5
+  },
+  "aggregate": [
+    {
+      "depth": 0,
+      "training_surfaces": 0,
+      "unique_top1_percent": 99.33214947498456,
+      "clean_preservation_percent": 100.0,
+      "authority_target_winner_percent": 7.720815318097591,
+      "evidence_target_retained_percent": 99.95367510809142,
+      "false_authority": 0,
+      "false_singleton": 0,
+      "compile_seconds": 31.742,
+      "proof_seconds": 171.467,
+      "package_mib": 18.029763221740723,
+      "peak_rss_mib": 93.5859375
+    },
+    {
+      "depth": 1,
+      "training_surfaces": 10000,
+      "unique_top1_percent": 99.32442865966647,
+      "clean_preservation_percent": 100.0,
+      "authority_target_winner_percent": 7.720815318097591,
+      "evidence_target_retained_percent": 99.94981470043237,
+      "false_authority": 0,
+      "false_singleton": 0,
+      "compile_seconds": 42.504,
+      "proof_seconds": 174.661,
+      "package_mib": 21.034615516662598,
+      "peak_rss_mib": 109.60546875
+    },
+    {
+      "depth": 2,
+      "training_surfaces": 19996,
+      "unique_top1_percent": 99.21247683755405,
+      "clean_preservation_percent": 100.0,
+      "authority_target_winner_percent": 7.720815318097591,
+      "evidence_target_retained_percent": 99.94209388511428,
+      "false_authority": 0,
+      "false_singleton": 0,
+      "compile_seconds": 53.446,
+      "proof_seconds": 194.46,
+      "package_mib": 24.956418991088867,
+      "peak_rss_mib": 127.6015625
+    },
+    {
+      "depth": 4,
+      "training_surfaces": 39940,
+      "unique_top1_percent": 99.39005558987029,
+      "clean_preservation_percent": 100.0,
+      "authority_target_winner_percent": 7.720815318097591,
+      "evidence_target_retained_percent": 99.95367510809142,
+      "false_authority": 0,
+      "false_singleton": 0,
+      "compile_seconds": 76.827,
+      "proof_seconds": 208.045,
+      "package_mib": 29.821277618408203,
+      "peak_rss_mib": 153.24609375
+    }
+  ],
+  "class_unique_top1_percent": {
+    "adjacent_transposition": [99.94974874371859, 99.74874371859296, 99.79899497487438, 99.84924623115577],
+    "double_substitution": [98.44844844844845, 98.04804804804805, 97.1971971971972, 98.998998998999],
+    "extra_letter": [100.0, 100.0, 100.0, 99.94994994994995],
+    "layout_projection": [99.54932398597897, 98.99849774661993, 98.6479719579369, 99.29894842263396],
+    "letter_substitution": [99.9498997995992, 99.9498997995992, 99.9498997995992, 99.9498997995992],
+    "missing_letter": [100.0, 100.0, 100.0, 100.0],
+    "non_adjacent_transposition": [99.64859437751004, 99.64859437751004, 99.59839357429719, 99.64859437751004],
+    "omission_transposition": [98.88663967611336, 99.34210526315789, 99.2914979757085, 99.03846153846153],
+    "prefix_truncation": [100.0, 100.0, 100.0, 100.0],
+    "punctuation_suffix": [100.0, 100.0, 100.0, 100.0],
+    "repeated_fragment": [100.0, 99.95, 99.9, 99.95],
+    "sparse_multi_omission": [99.25492283129324, 99.57424161788185, 99.62746141564662, 99.57424161788185],
+    "suffix_truncation": [100.0, 100.0, 100.0, 100.0]
+  },
+  "measured_facts": [
+    "Depth 2 is not required for the working per-class gate.",
+    "Depth 0 beats depth 2 in aggregate top-1, package size, compile time, proof time and peak RSS.",
+    "Depth 2 improves omission plus transposition and sparse multi-omission relative to depth 0, but worsens five other classes.",
+    "Depth 4 has the best aggregate top-1 and the best worst-class result.",
+    "All four variants preserve clean input and produce zero false authority and zero false singleton cases.",
+    "Authority is unchanged across depths 0 through 4, so the extra fit surfaces alter ranking evidence without increasing certified authority."
+  ],
+  "not_tested": [
+    "complete 762314-word crystallization",
+    "final-corpus fixed heldout proof",
+    "installed runtime latency",
+    "daemon or IME integration"
+  ],
+  "verdict": "PASS_shadow_depth_4_quality_candidate",
+  "promotion": false,
+  "runtime_authority_changed": false,
+  "raw_artifacts": "artifacts/l11-causal-depth-ablation-10k-2026-07-25"
+}

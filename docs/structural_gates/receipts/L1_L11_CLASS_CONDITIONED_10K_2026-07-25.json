@@ -1,0 +1,127 @@
+{
+  "experiment": "L1.1 class-conditioned damaged-surface allocation",
+  "date": "2026-07-25",
+  "sample_words": 10000,
+  "sample_ru_words": 6065,
+  "sample_en_words": 3935,
+  "sample_sha256": "42cef02b87a3f28378fb4ceec6595a48d3543665ca9ff812a7c83e685f619d5f",
+  "heldout_surfaces": 25904,
+  "heldout_per_class_limit": 2000,
+  "controlled_variables": {
+    "clean_surface_always_present": true,
+    "anti_surfaces_per_target": 1,
+    "anti_probe": "clean surface in every variant",
+    "calibration": "same deterministic split and calibration procedure",
+    "candidate_field": "same fixed 10000-center bilingual field",
+    "runtime_authority_changed": false
+  },
+  "rejected_hard_only_policy": {
+    "classes": [
+      "double_substitution",
+      "omission_transposition",
+      "sparse_multi_omission"
+    ],
+    "depth_4_top1_percent": 99.27810376775787,
+    "depth_4_authority_percent": 7.720815318097591,
+    "depth_4_layout_projection_percent": 97.89684526790185,
+    "depth_4_omission_transposition_percent": 99.49392712550608,
+    "depth_4_sparse_multi_omission_percent": 99.89356040447046,
+    "verdict": "REJECTED_cross_class_regression"
+  },
+  "hybrid_policy": {
+    "schedule": [
+      "layout_projection",
+      "double_substitution",
+      "omission_transposition",
+      "sparse_multi_omission",
+      "adjacent_transposition",
+      "extra_letter"
+    ],
+    "selected_depth": 5,
+    "selection_reason": "best authority and worst-class tradeoff; depth 6 adds cost and lowers the worst class"
+  },
+  "aggregate": [
+    {
+      "variant": "clean-0",
+      "top1_percent": 99.33214947498456,
+      "worst_class_percent": 98.44844844844845,
+      "authority_percent": 7.720815318097591,
+      "evidence_retained_percent": 99.95367510809142,
+      "clean_preservation_percent": 100.0,
+      "false_authority": 0,
+      "false_singleton": 0,
+      "package_mib": 18.029763221740723
+    },
+    {
+      "variant": "legacy-4",
+      "top1_percent": 99.39005558987029,
+      "worst_class_percent": 98.998998998999,
+      "authority_percent": 7.720815318097591,
+      "evidence_retained_percent": 99.95367510809142,
+      "clean_preservation_percent": 100.0,
+      "false_authority": 0,
+      "false_singleton": 0,
+      "package_mib": 29.821277618408203
+    },
+    {
+      "variant": "hybrid-5",
+      "top1_percent": 99.30512662137122,
+      "worst_class_percent": 97.997997997998,
+      "authority_percent": 87.974830142063,
+      "objective_unique_winner_percent": 88.68695516811955,
+      "evidence_retained_percent": 99.95367510809142,
+      "clean_preservation_percent": 100.0,
+      "false_authority": 0,
+      "false_singleton": 0,
+      "package_mib": 31.65321636199951
+    }
+  ],
+  "class_unique_top1_percent": {
+    "column_order": ["clean-0", "legacy-4", "hybrid-5"],
+    "adjacent_transposition": [99.94974874371859, 99.84924623115577, 99.69849246231156],
+    "double_substitution": [98.44844844844845, 98.998998998999, 97.997997997998],
+    "extra_letter": [100.0, 99.94994994994995, 99.94994994994995],
+    "layout_projection": [99.54932398597897, 99.29894842263396, 98.99849774661993],
+    "letter_substitution": [99.9498997995992, 99.9498997995992, 99.9498997995992],
+    "missing_letter": [100.0, 100.0, 100.0],
+    "non_adjacent_transposition": [99.64859437751004, 99.64859437751004, 99.74899598393574],
+    "omission_transposition": [98.88663967611336, 99.03846153846153, 99.2914979757085],
+    "prefix_truncation": [100.0, 100.0, 100.0],
+    "punctuation_suffix": [100.0, 100.0, 100.0],
+    "repeated_fragment": [100.0, 99.95, 99.85],
+    "sparse_multi_omission": [99.25492283129324, 99.57424161788185, 99.89356040447046],
+    "suffix_truncation": [100.0, 100.0, 100.0]
+  },
+  "standalone_hybrid_5_proof": {
+    "proof_seconds": 86.411,
+    "wall_seconds": 88.83,
+    "peak_rss_mib": 149.140625,
+    "hot_readout_p50_us": 3421,
+    "hot_readout_p99_us": 3790,
+    "hot_readout_max_us": 3846,
+    "verdict": "PASS_shadow",
+    "l11_verdict": "PASS_shadow",
+    "l11_crystallization_verdict": "WATCH_shadow"
+  },
+  "measured_facts": [
+    "Alphabetical allocation at small depths was accidental policy, not a neutral depth control.",
+    "Hard-only conditioning improved its target classes but caused a layout regression and was removed.",
+    "Hybrid depth 5 raised authority from 7.72 percent to 87.97 percent while preserving zero false authority.",
+    "Every hybrid depth-5 damage class remains above the accepted 95 percent unique top-1 gate.",
+    "Standalone p99 is 3.790 ms; the concurrent ablation latency was contaminated by CPU contention.",
+    "The remaining gap is certification coverage, not raw candidate ranking."
+  ],
+  "not_tested": [
+    "complete 762314-center crystallization",
+    "final-corpus fixed heldout proof",
+    "installed daemon or IME route",
+    "runtime package promotion"
+  ],
+  "verdict": "PASS_shadow_hybrid_5_candidate",
+  "promotion": false,
+  "runtime_authority_changed": false,
+  "raw_artifacts": [
+    "artifacts/l11-class-conditioned-ablation-10k-2026-07-25",
+    "artifacts/l11-hybrid-conditioned-ablation-10k-2026-07-25"
+  ]
+}

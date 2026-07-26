@@ -1,0 +1,57 @@
+{
+  "gate": "L2_RUSSIAN_MORPHOLOGY_300K",
+  "date": "2026-07-24",
+  "verdict": "PASS_shadow",
+  "runtime_connected": false,
+  "scope": "Russian noun declension, six cases in singular and plural",
+  "corpus": {
+    "unique_form_centers": 300004,
+    "lemma_centers": 33451,
+    "bindings": 401412,
+    "binding_bytes": 6422592,
+    "tsv_bytes": 52980013,
+    "train_lemmas": 128,
+    "heldout_lemmas": 33323,
+    "train_examples": 1536,
+    "heldout_examples": 399876
+  },
+  "heldout": {
+    "top1_correct": 398857,
+    "top1_percent": 99.74517100301094,
+    "authority_correct": 398049,
+    "authority_percent": 99.54310836359271,
+    "false_authority": 0,
+    "tied": 1827,
+    "abstain": 0,
+    "per_class": {
+      "nominative_singular": {"cases": 33323, "top1_percent": 99.44482789664796, "authority_percent": 98.9226660264682, "false_authority": 0},
+      "genitive_singular": {"cases": 33323, "top1_percent": 99.47483719953185, "authority_percent": 98.97668277165921, "false_authority": 0},
+      "dative_singular": {"cases": 33323, "top1_percent": 99.42382138462924, "authority_percent": 98.90165951444948, "false_authority": 0},
+      "accusative_singular": {"cases": 33323, "top1_percent": 99.45082975722474, "authority_percent": 98.89265672358431, "false_authority": 0},
+      "instrumental_singular": {"cases": 33323, "top1_percent": 99.91897488221349, "authority_percent": 99.90697116105993, "false_authority": 0},
+      "prepositional_singular": {"cases": 33323, "top1_percent": 99.9969990697116, "authority_percent": 99.97599255769289, "false_authority": 0},
+      "nominative_plural": {"cases": 33323, "top1_percent": 99.9159739519251, "authority_percent": 99.90697116105993, "false_authority": 0},
+      "genitive_plural": {"cases": 33323, "top1_percent": 99.60087627164421, "authority_percent": 99.45383068751313, "false_authority": 0},
+      "dative_plural": {"cases": 33323, "top1_percent": 99.9969990697116, "authority_percent": 99.98199441826966, "false_authority": 0},
+      "accusative_plural": {"cases": 33323, "top1_percent": 99.73891906491012, "authority_percent": 99.64889115625844, "false_authority": 0},
+      "instrumental_plural": {"cases": 33323, "top1_percent": 99.9969990697116, "authority_percent": 99.98199441826966, "false_authority": 0},
+      "prepositional_plural": {"cases": 33323, "top1_percent": 99.98199441826966, "authority_percent": 99.96698976682772, "false_authority": 0}
+    }
+  },
+  "ablations": {
+    "without_anti_top1_percent": 99.74517100301094,
+    "anti_necessity_proven": false
+  },
+  "controls": {
+    "candidate_permutation_cases": 4096,
+    "candidate_permutation_parity": true
+  },
+  "performance": {
+    "before_indexed_lookup_elapsed_seconds": 761.62,
+    "after_indexed_lookup_elapsed_seconds": 3.32,
+    "speedup": 229.4,
+    "compile_ms": 1340,
+    "proof_ms": 1214,
+    "peak_rss_kib": 263004
+  }
+}

@@ -877,6 +877,1047 @@ The current anti field is not accepted on the complete lattice because it has
 PASS; total L1 promotion remains `WATCH_shadow`. Receipt:
 `docs/structural_gates/receipts/L1_COMPLETE_FORWARD_POSTINGS_V26_10K_2026-07-23.json`.
 
+### 9.6 Final bilingual corpus OOM VETO and bounded compiler
+
+The first final-corpus attempt used the complete `762,314`-form RU+EN source
+with 48 training surfaces per word. Linux killed `lay-nanda-wave-train` at
+`31,654,220 KiB` anonymous RSS (`32,413,921,280` bytes) and
+`44,776,192 KiB` virtual memory. No package or quality proof was produced. A
+second attempt again exhausted interactive headroom and required a manual host
+reboot before a proof receipt existed. Both attempts are `VETO`; neither
+changes runtime authority.
+
+The failure was a lifetime error, not evidence that the final corpus should be
+reduced. Packing generated strings into one UTF-8 arena removed millions of
+heap objects, but the compiler subsequently retained overlapping full-corpus
+states:
+
+```text
+packed training arena
++ per-word atom statistics
++ Vec<Vec<forward relation>>
++ Vec<Vec<reverse relation>>
++ unbounded directional anti relations
++ per-node BTreeMap graph builders
++ encoded package copies
+```
+
+The replacement cold path preserves complete forward postings while bounding
+the intermediate resident set:
+
+```text
+packed training corpus
+-> one deduplicated NGramKey set
+-> compact recursive NGramGraph nodes/arcs
+-> atom-support pass
+-> per-word statistics with word-local lifetime
+-> 16 range-partitioned 12-byte posting spool records on NVMe
+-> one posting shard sorted and materialized at a time
+-> flat CSR AtomRecord -> forward_couplings
+-> flat reverse_couplings + per-word ranges
+-> bounded top-16 directional anti bank
+-> global decoder transition table
+-> L1.1 subcenters and calibration
+-> atomic package encoding
+```
+
+`training_budget.rs` independently polls real `VmRSS` every 250 ms. Final
+training defaults to a `24 GiB` ceiling and the next controlled run uses
+`20 GiB`. If the process crosses the configured ceiling, it writes a
+`VETO_RSS_BUDGET` marker and exits with code `86` before `sshd` loses memory
+headroom. Compiler checkpoints report stage, current RSS, peak RSS and budget.
+
+Measured verification of the replacement so far:
+
+```text
+lexical_grokking unit tests                    57 / 57 PASS
+cargo check --lib                             PASS
+cargo check --bin lay-nanda-wave-train        PASS
+clippy --lib -D warnings                      PASS
+clippy --bin lay-nanda-wave-train -D warnings PASS
+complete-posting byte determinism              PASS on focused fixtures
+full 762,314-form RSS                          not measured yet
+full per-class quality                         not measured yet
+runtime authority                              unchanged, shadow-only
+```
+
+Receipt:
+`docs/structural_gates/receipts/L1_L11_FINAL_CORPUS_OOM_VETO_2026-07-24.json`.
+
+### 9.7 Packed anti readout on the full candidate field
+
+Cold directional anti discovery no longer walks `WaveCoupling` structs
+directly. It builds a compact block index over the complete forward field:
+
+```text
+AtomId
+-> sorted terminal blocks of 64
+-> 64-bit occupancy mask
+-> packed u16(strength, position)
+-> cached block upper bound
+-> exact current-terminal payload read
+```
+
+The fixed microbenchmark denominator uses a `1,000`-center prefix of the
+bilingual corpus and its `45,016` damaged training surfaces. This result does
+not represent the complete `762,314`-center candidate field. The remote host
+exposes 20 hardware threads; the process is restricted to CPUs `0-18`, and
+`available_parallelism()` therefore creates 19 workers.
+
+```text
+implementation                         anti discovery
+plain WAND                                  1.401 s
+lazy Block-Max                              0.883 s
+packed index before hot-loop cache          1.196 s
+packed index + block cache runs     0.863 / 0.869 / 0.874 / 0.869 s
+packed median                               0.869 s
+packed median vs plain WAND                 1.612x
+packed median vs lazy Block-Max             1.016x
+packed resident bytes                    3,969,364
+dense-oracle parity                           5 / 5 PASS
+cursor invariants                             1 / 1 PASS
+```
+
+The result is a narrow performance `PASS_shadow`: all four packed runs are
+below the `0.883 s` comparator, but the median headroom is only `14 ms`.
+Caching is essential. It deliberately evaluates more exact candidates than the
+uncached packed variant while avoiding repeated scans of the same block payload.
+
+This experiment did not build the complete `762,314`-center candidate field,
+did not run complete anti-target crystallization, did not establish the final
+per-class restoration matrix and did not publish or install a package. Runtime
+authority remains unchanged and shadow-only. Receipt:
+`docs/structural_gates/receipts/L1_L11_PACKED_ANTI_READOUT_1K_2026-07-24.json`.
+
+### 9.8 Full-field anti-search baseline and rejected O(1) block bound
+
+The final `762,314`-center bilingual candidate field was compiled successfully
+on the remote 20-thread host. This closes the previous RSS blocker but exposes
+the next cold-training CPU blocker:
+
+```text
+training surfaces prepared                         65.082 s
+NGramGraph compiled                                61.135 s
+atom support compiled                              51.164 s
+posting spool compiled                             77.019 s
+complete postings materialized                     61.574 s
+full forward relations                         566,183,479
+packed anti index resident bytes             3,383,426,106
+peak RSS                                      11,835,613,184 B
+
+full-field anti targets                              1,000
+damaged surfaces                                    44,994
+anti discovery                                     198.105 s
+linear full-target estimate                         ~42 h
+```
+
+This is the first anti-search timing whose candidate field is the complete
+RU462K+EN300K field. It is not comparable to the earlier one-thousand-center
+microbenchmark as a scale result.
+
+An experiment added a three-byte cached block summary
+`(max_strength, min_position, max_position)` and replaced payload scanning with
+an O(1), mathematically conservative block upper bound. Dense-oracle parity and
+all-position bound checks passed, but the full-field denominator rejected it:
+
+```text
+anti discovery                         198.105 s -> 190.543 s
+speedup                                             1.040x
+exact candidates                 8,263,792 -> 12,228,425
+block checks                    62,615,939 -> 66,474,601
+anti index bytes             3,383,426,106 -> 3,804,108,474
+```
+
+The looser bound admitted 48% more exact candidates and spent an additional
+420,682,368 bytes for only 3.8% wall-clock improvement. The implementation was
+removed. Verdict: `REJECTED`; runtime authority and installed packages remain
+unchanged. The next experiment must change exact candidate retrieval rather
+than add more metadata to Block-Max WAND. Receipt:
+`docs/structural_gates/receipts/L1_L11_FULL_FIELD_ANTI_1K_2026-07-25.json`.
+
+An exact threshold-seed retrieval was also tested. It selected rare postings
+until the remaining unselected upper bound was below the target score, then
+scored only the mathematically complete candidate union. Synthetic
+dense-oracle parity passed, but the full-field run had not completed 1,000
+targets after more than 230 seconds, already slower than the 198.105-second
+WAND baseline. The run was stopped and the implementation removed. The result
+shows that exact retrieval alone does not repair the dominant multiplier:
+`762,314 centers x up to 47 damaged surfaces`.
+
+The next cold-training architecture must mine anti-centers from observed
+false/tied lattice outcomes in a fixed heldout loop. Centers with no observed
+counterexample keep an empty anti bank. This preserves the rule that every
+learned anti relation comes from a real L1 lattice while scaling work with
+actual conflicts rather than all generated corruptions.
+
+### 9.9 Bounded hard-surface anti pass
+
+The positive and reconstruction fields still learn all 48 selected surfaces
+per center. Only expensive full-lattice competitor discovery is bounded to one
+deterministically rotated damaged surface per center. Rotation is derived from
+the terminal identity, not corpus position or proof labels; over the complete
+center population it covers every generated damage-mode slot.
+
+On the complete RU462K+EN300K candidate field:
+
+```text
+anti targets                                      1,000
+full-surface baseline queries                    45,016
+bounded hard-surface queries                      1,000
+full-surface anti time                          198.105 s
+bounded anti time                                 3.659 s
+anti-stage speedup                               54.14x
+dense fallbacks                                        0
+exact candidates                                183,477
+linear 762,314-target estimate                   46.49 min
+```
+
+This is a cold-training scale `PASS_shadow`, not a restoration-quality PASS.
+The complete pass, L1.1 subcenter compilation and fixed heldout per-class proof
+are still required. Runtime authority remains unchanged. Receipt:
+`docs/structural_gates/receipts/L1_L11_BOUNDED_HARD_SURFACE_1K_2026-07-25.json`.
+
+### 9.10 Causal fit-surface depth ablation
+
+The earlier `2/4/8/16/32/48` run did not answer whether damaged fit surfaces
+were necessary at all. A controlled 10,000-center bilingual experiment
+therefore compared depths `0/1/2/4`. Every variant used the same sampled words,
+deterministic heldout reservoir, calibration procedure and one anti probe per target.
+Because `word_surfaces()` yields the clean surface first, the anti probe was the
+same clean surface at every depth. The only changed variable was the number of
+additional damaged fit surfaces stored per `WordCenter`.
+
+```text
+metric                         depth 0   depth 1   depth 2   depth 4
+aggregate unique top-1         99.332%   99.324%   99.212%   99.390%
+worst class                    98.448%   98.048%   97.197%   98.999%
+clean preservation            100.000%  100.000%  100.000%  100.000%
+authority target winner         7.721%    7.721%    7.721%    7.721%
+evidence target retained       99.954%   99.950%   99.942%   99.954%
+false authority                     0          0          0          0
+false singleton                     0          0          0          0
+compile seconds                 31.742     42.504     53.446     76.827
+proof seconds                  171.467    174.661    194.460    208.045
+package MiB                     18.030     21.035     24.956     29.821
+peak RSS MiB                    93.586    109.605    127.602    153.246
+```
+
+Depth `2` is not a necessary architectural minimum. Depth `0` beats it in
+aggregate quality and every measured resource dimension. The damaged examples
+are not uniformly harmful, however: depth `2` improves sparse multi-omission by
+`0.373` percentage points and omission plus transposition by `0.405` points
+relative to depth `0`. Depth `4` is the tested quality candidate for a
+final-scale crystallization because it has both the best aggregate and the best
+worst-class result. Depth `0` remains the resource-minimal Pareto point. The
+weakest depth-4 class is double substitution at `98.998999%`.
+
+This is `PASS_shadow` for selecting a depth, not package promotion. It proves
+that the architecture does not require depth `2`, and that additional damaged
+surfaces are a class-conditioned regularizer rather than a monotonic capacity
+control. The result does not prove the complete `762,314`-center package,
+installed latency or live authority. Runtime authority remains unchanged.
+Receipt:
+`docs/structural_gates/receipts/L1_L11_CAUSAL_DEPTH_10K_2026-07-25.json`.
+
+### 9.11 Class-conditioned allocation
+
+The depth ablation exposed an accidental selector policy. For budgets at or
+below the number of available classes, the legacy selector consumed a
+`BTreeMap` in alphabetical class order. Consequently, depth `2` did not mean
+"two representative damaged surfaces"; it usually meant one adjacent
+transposition and one double substitution.
+
+The first replacement allocated surfaces only to double substitution, omission
+plus transposition and sparse multi-omission. It improved the intended classes,
+but removed too much cross-class geometry:
+
+```text
+metric                         clean 0    hard 4
+aggregate unique top-1          99.332%    99.278%
+layout projection               99.549%    97.897%
+omission plus transposition      98.887%    99.494%
+sparse multi-omission            99.255%    99.894%
+authority                         7.721%     7.721%
+```
+
+The hard-only policy was rejected and removed. The retained experimental
+policy uses this deterministic schedule:
+
+```text
+layout projection
+double substitution
+omission plus transposition
+sparse multi-omission
+adjacent transposition
+extra letter
+```
+
+If a generated surface belongs to heldout, the selector skips it rather than
+leaking proof evidence into training. Depths `4/5/6` were compared against the
+same clean and legacy controls. Hybrid depth `5` is the tested candidate:
+
+```text
+metric                         clean 0   legacy 4   hybrid 5
+aggregate unique top-1          99.332%     99.390%     99.305%
+worst damage class              98.448%     98.999%     97.998%
+clean preservation             100.000%    100.000%    100.000%
+authority target winner          7.721%       7.721%     87.975%
+objective unique winner            7.783%       7.783%     88.687%
+evidence target retained        99.954%      99.954%     99.954%
+false authority                      0            0           0
+false singleton                      0            0           0
+package MiB                     18.030       29.821      31.653
+```
+
+The standalone 20-thread proof removed concurrent-ablation latency noise:
+
+```text
+proof wall time                  88.83 s
+peak RSS                        149.14 MiB
+hot readout p50                   3.421 ms
+hot readout p99                   3.790 ms
+overall verdict             PASS_shadow
+L1.1 verdict                PASS_shadow
+crystallization verdict     WATCH_shadow
+```
+
+Hybrid depth `5` crosses the accepted per-class `>95%` gate, keeps clean input
+at `100%`, raises certified authority by `80.254` percentage points and creates
+no false authority. It is not promoted: the complete `762,314`-center proof has
+not run, and crystallization certification still abstains on part of the
+objective-unique denominator. The default remains legacy until that proof.
+Runtime authority and installed packages are unchanged. Receipt:
+`docs/structural_gates/receipts/L1_L11_CLASS_CONDITIONED_10K_2026-07-25.json`.
+
+### 9.12 Normative single-pass streaming crystallizer contract
+
+The current compiler is one command, but it is not a single-pass streaming
+crystallizer. This distinction is architectural, not cosmetic.
+
+The current implementation first materializes the word dictionary and all
+selected training surfaces in `TrainingCorpus`. It then performs separate
+whole-corpus or whole-training-surface stages:
+
+```text
+read_to_string(corpus)
+-> prepare and retain TrainingCorpus
+-> compile_graph()
+-> compile_atom_support()
+-> compile_posting_spool()
+-> discover_anti_centers()
+-> compile_l11_subcenters()
+-> calibrate_l11()
+-> build a temporary runtime memory
+-> calibrate_l11_ambiguity_thresholds()
+     -> readout(surface, 64, Full) for training surfaces
+-> rebuild runtime memory
+-> calibrate_l11_tied_energy_margin()
+     -> readout(surface, 64, Full) for a calibration subset
+-> encode package
+-> clean audit
+-> latency audit
+-> fixed heldout proof
+```
+
+This route is wrong as the final cold architecture because:
+
+```text
+raw corpus is loaded as one String
+selected training surface text remains resident
+the same surfaces are encoded repeatedly
+calibration executes the hot runtime inside the compiler
+threshold learning requires temporary complete packages
+CPU cost grows as repeated readout rather than one evidence reduction
+stage-local Vec/HashMap state overlaps and raises peak RSS
+```
+
+The ongoing final-scale run may still provide valid quality measurements. It
+does not prove that the compiler has the required streaming architecture, and
+its result must not be described as a one-pass compile.
+
+#### Required whole streaming route
+
+The accepted definition of "single pass" is exactly one read of the raw corpus.
+Single-pass does not mean single-threaded. The corpus and evidence streams are
+partitioned into deterministic shards and must use all available workers; the
+bounded merge restores canonical order and byte-identical output. "One pass"
+constrains how often each evidence record enters learning, not how many CPU
+cores process independent records.
+
+Global relations still require a deterministic reduce after all atom owners
+are known. That reduce may read a compact typed evidence spool once; it may not
+read the raw corpus or retained UTF-8 training surfaces again.
+
+```text
+BufRead corpus lines                                              CORPUS PASS = 1
+|
++-> normalize and deduplicate lexical surface
++-> assign deterministic TerminalId
++-> generate deterministic train / heldout split
++-> encode clean and damaged surfaces once into typed NGramKey events
++-> update decoder builder
++-> emit AtomOccurrence { ngram_key, terminal_id, strength, phase, position }
++-> emit SurfaceEvidence { terminal_id, class, atom-span, geometry summary }
++-> update fixed heldout reservoir
++-> discard source line and generated UTF-8 surfaces
+|
+v
+bounded sharded spools
+|
++-> external sort / merge AtomOccurrence by NGramKey
++-> assign dense AtomId
++-> reduce atom support, flags, forward postings and reverse ranges together
++-> expose the complete real candidate field
+|
+v
+single compact SurfaceEvidence reduction                         EVIDENCE PASS = 1
+|
++-> join atom spans to dense AtomId
++-> construct the real candidate lattice once
++-> accumulate primary positive centers
++-> accumulate directional anti-centers
++-> accumulate positive / anti / hard-negative subcenters
++-> accumulate ambiguity and tied-basin evidence
++-> update bounded calibration histograms and quantile sketches
++-> discard evidence record
+|
+v
+deterministic bounded merge
+|
++-> settle centers and directional banks
++-> derive thresholds from accumulated sufficient statistics
++-> encode the package directly
++-> checksum and decoder/package roundtrip
+|
+v
+read-only package + independent fixed heldout reservoir          PROOF, NOT TRAINING
+|
++-> clean preservation
++-> all damage classes
++-> ambiguity / false-certainty gates
++-> p50 / p99
++-> package bytes and peak RSS
+`-> PASS_shadow or WATCH_shadow
+```
+
+The compact evidence spool is not a second corpus. It contains typed IDs,
+bounded geometry summaries and atom spans, not raw lines, words or generated
+damage strings. It exists because a surface cannot be evaluated against
+competitors that have not yet entered the global posting field. Removing this
+deferred join would make learning dependent on corpus order or blind to future
+competitors.
+
+#### Mandatory invariants
+
+```text
+raw corpus passes                         exactly 1
+raw corpus read API                       BufRead, never read_to_string
+retained raw corpus                       false
+retained generated damage UTF-8           false after event emission
+compact evidence reductions              exactly 1
+full runtime readouts during training     0
+temporary package rebuilds                0
+candidate source                          real complete posting field
+calibration state                         bounded histograms/sketches
+positive/anti/subcenter banks             hard bounded
+worker-count parity                       byte-identical package
+input-order policy                        explicit and deterministic
+heldout use during learning               forbidden
+proof                                     separate read-only phase
+```
+
+One executable invocation is not sufficient evidence of this contract.
+Receipts must report `raw_corpus_passes`, `compact_evidence_passes`,
+`training_full_readouts`, spool bytes, peak RSS and stage wall times. Promotion
+is forbidden unless the counters are `1`, `1` and `0` respectively and the
+conjunctive quality gate in section 12 also passes.
+
+#### Non-regression boundary for the streaming rewrite
+
+The streaming rewrite changes cold dataflow only. It must not redesign or
+remove the accepted L1.1 field:
+
+```text
+preserve typed atom channels
+preserve the complete posting candidate field
+preserve WordCenter64 and decoder semantics
+preserve positive centers
+preserve directional anti-centers
+preserve positive / anti / hard-negative subcenters
+preserve ambiguity and tied-basin readout
+preserve restoration geometry and authority rules
+preserve every fixed heldout damage class
+```
+
+The current complete staged run is the migration baseline. Its package,
+checksum, compile counters, full per-class matrix and system budgets must be
+captured before replacing the compiler. The streaming compiler is accepted
+only when the same final corpus proves:
+
+```text
+all 13 damage classes                    no regression and every class > 95%
+clean preservation                       no regression and >= 99.9%
+lattice coverage                         no regression and every class >= 99%
+false authority / false singleton        remain 0
+runtime readout semantics                parity
+decoder surfaces                         exact parity
+package determinism                      PASS across worker counts
+raw corpus passes                        1
+compact evidence passes                  1
+training full readouts                    0
+```
+
+Package bytes need not be byte-identical to the staged package if calibration
+statistics are encoded more compactly, but decoded centers, decisions and
+proof outcomes must satisfy the parity and non-regression gates above. A speed
+improvement cannot compensate for a failed quality class.
+
+#### Final hybrid-5 package VETO
+
+The complete `762,314`-center hybrid-5 run finished and produced a package, but
+the package is rejected. This is a measured result, not an estimate:
+
+```text
+package bytes                         1,825,863,344 = 1.700 GiB
+required package ceiling                204,472,320 = 195 MiB
+compile time                           12,330.240 s
+fixed heldout proof time                  637.883 s
+peak RSS                            7,384,752,128 B = 6.878 GiB
+clean preservation                         100.000%
+classes passing unique top-1 >95%              1 / 13
+false authority / false singleton               0 / 0
+hot L1.1 p50 / p99                         5.500 / 8.833 ms
+verdict                                     VETO_SIZE
+quality verdict                          WATCH_shadow
+runtime authority                           unchanged
+```
+
+Artifact:
+`/home/e/build/lay-l1-shadow/artifacts/l11-final-hybrid5-bounded1-evidence-only-762314-2026-07-25/package.bin`.
+SHA-256:
+`259f0a528ed64bcb31ed6f57c0c7277e1e92d076594c789a56aa227d38a16e35`.
+Receipt:
+`docs/structural_gates/receipts/L1_L11_FINAL_HYBRID5_BOUNDED1_762314_2026-07-26.json`.
+
+The exact package-size decomposition is:
+
+```text
+compressed forward postings       775.185 MiB
+reverse couplings                 600.008 MiB
+positive subcenters               185.090 MiB
+primary WordCenter64               46.528 MiB
+ambiguity subcenters               43.202 MiB
+keyboard geometry                  26.556 MiB
+phase profiles                     17.448 MiB
+hard-negative subcenters           13.702 MiB
+atoms                              13.543 MiB
+decoder                            10.033 MiB
+graph nodes/arcs                    9.952 MiB
+```
+
+Forward plus reverse coupling storage accounts for `78.98%` of the file. The
+current compiler also feeds damaged hybrid training surfaces through
+`word_surfaces()` while compiling the primary graph, atom support, forward
+postings and reverse couplings. This violates the intended ownership boundary:
+damaged evidence must train bounded residual banks, not expand the clean
+primary crystal.
+
+The required correction is architectural:
+
+```text
+clean lexical surfaces
+-> primary graph + primary postings + WordCenter
+
+damaged training evidence
+-> bounded positive / anti / hard-negative / ambiguity residual banks
+-> never primary AtomWordCoupling
+```
+
+The `195 MiB` package ceiling is a preflight gate. Before any final-scale run,
+the compiler must compute a conservative encoded-size upper bound from section
+counts and reject the configuration if that bound exceeds `195 MiB`. A run
+must not consume hours merely to discover a deterministic size violation.
+
+#### Canonical final L1.1 configuration
+
+The final target is one conjunctive configuration. Passing isolated parts is
+not sufficient:
+
+```text
+corpus
+  RU 462k + EN 300k
+  762,314 deterministic WordCenter identities
+
+primary crystal
+  depth = 0
+  clean lexical surfaces only
+  damaged surfaces never enter primary graph/postings/couplings
+
+residual L1.1 learning
+  damaged evidence enters bounded residual banks only
+  positive + directional anti + hard-negative + ambiguity
+  no unbounded or mirrored full relation field
+
+cold dataflow
+  raw corpus passes = 1
+  compact evidence reductions = 1
+  full runtime readouts during training = 0
+  all 20 remote hardware threads used
+  deterministic shard merge
+
+encoded package
+  hard ceiling <= 195 MiB
+  preflight upper-bound check before crystallization
+  raw corpus stored = false
+  exact damage episodes stored = 0
+
+fixed proof
+  13 damage classes
+  20,000 heldout cases per class
+  260,000 heldout cases total
+  unique top-1 > 95% in every class
+  lattice coverage >= 99% in every class
+  clean preservation >= 99.9%
+  false authority = 0
+  false singleton = 0
+  hot p99 <= 5.000 ms
+```
+
+The current evidence status is:
+
+```text
+depth-0 primary tested separately             yes
+195 MiB package                               no
+single-pass streaming compiler                no
+20-worker execution                           yes
+13 x 20,000 fixed heldout proof               yes
+all requirements in one package               no
+```
+
+No package may be called final L1.1 until every line above is true in the same
+receipt.
+
+### Current L1.1 architecture and parameter snapshot, 2026-07-26
+
+```text
+broken surface
+-> normalization
+-> 11 typed atom channels
+-> NGramGraph: atom key -> dense AtomId
+-> candidate birth through inverted postings
+-> bounded candidate frontier
+-> forward + reconstruction wave
+-> phase / geometry / sequence interference
+-> Winner | Tied lattice | ABSTAIN
+-> DecoderGraph: WordCenterId -> UTF-8 word
+```
+
+#### Atoms per input
+
+| Channel | Size | Weight | Maximum atoms |
+|---|---:|---:|---:|
+| byte gram | 4 bytes | 2 | 24 |
+| character bigram | 2 characters | 1 | 16 |
+| character trigram | 3 characters | 3 | 24 |
+| keyboard bigram | 2 keys | 1 | 16 |
+| keyboard trigram | 3 keys | 3 | 24 |
+| character bag trigram | 3 unordered characters | 3 | 24 |
+| keyboard bag trigram | 3 unordered keys | 3 | 24 |
+| character skip gram | distance 2-4 | 2 | 32 |
+| keyboard skip gram | distance 2-4 | 2 | 32 |
+| boundary prefix/suffix | length 1-3 | 3 | 6 |
+| character anchor | individual characters | 1 | up to 32 |
+
+The encoder can produce at most `222` lexical atoms plus up to `32` anchors.
+An anchor does not give birth to candidates. It verifies order and
+reconstruction.
+
+#### Main candidate-birth error: 4 -> 32
+
+```text
+BEFORE:
+each lexical channel
+-> sort by rarity
+-> take(4)
+-> at most 40 birth atoms
+-> most of the signal was discarded before interference
+
+AFTER:
+each lexical channel
+-> sort by degree ASC, weight DESC, AtomId ASC
+-> take(32)
+-> at most 222 birth atoms
+```
+
+Because every individual channel generator is itself bounded by `32`,
+`birth=32` means that the complete generated atom field is used without an
+additional runtime truncation.
+
+#### Bounded runtime
+
+```text
+complete posting activation
+-> reconstruction scan             8,192 candidates
+-> geometry scan                   1,024 candidates
+-> primary phase frontier            128 candidates
+-> operator reserve                   64
+-> reconstruction reserve             64
+-> geometry reserve                   32
+-> maximum before settlement          288, with deduplication
+-> pairwise lattice                     8
+-> tied output                         32
+-> settling iterations                  3
+```
+
+#### Wave kernel
+
+```text
+complex wave dimension              128 re + 128 im
+AtomWaveCode                          4 basis components
+AtomWaveCode                         16 bytes
+WordCenter64                         22 basis components
+phase code inside WordCenter         44 bytes
+center metadata                      20 bytes
+WordCenter total                     64 bytes
+position buckets                     16
+```
+
+`WordCenter64` stores its wave code, reverse-coupling range, anti range,
+decoder terminal, support, stability, surface length and script flags. The
+word itself exists only in `DecoderGraph`.
+
+#### Phase banks per center
+
+```text
+positive subcenters                 maximum 4
+anti subcenters                     maximum 4
+hard-negative subcenters            maximum 2
+ambiguity subcenters                maximum 8
+ambiguity centers per relation      maximum 2
+directional anti relations          maximum 16
+pairwise candidates                 maximum 8
+```
+
+#### Format V6
+
+```text
+header                              192 bytes
+NGramGraph node                      12 bytes
+NGramGraph arc                        8 bytes
+AtomRecord                           28 bytes
+raw WaveCoupling                      8 bytes
+compressed posting block             32 relations
+posting block header                  8 bytes
+CenterPhaseProfile                   24 bytes
+PairPhaseProfile                     24 bytes
+DecoderNode                           8 bytes
+WordCenter                           64 bytes
+```
+
+#### Depth-0 10k PASS
+
+```text
+words                               10,000
+atoms                               57,831
+forward couplings                1,296,290
+reverse couplings                1,031,133
+training damaged surfaces                0
+package                         18,905,577 B = 18.03 MiB
+clean preservation                  100.000%
+overall top-1                        98.155%
+top-64                               99.992%
+weakest class                         95.597%
+false certainty                            0
+hot p50 / p99                   1.725 / 1.990 ms
+classes above 95%                       13/13
+```
+
+#### Current full depth-0 package
+
+```text
+WordCenter                         762,314
+atoms                              204,324
+forward couplings               98,768,909
+reverse couplings               78,644,261
+WordCenter bank                48,788,096 B
+positive subcenters               762,314
+ambiguity subcenters              760,876
+anti / hard-negative / pairs            0
+training damaged surfaces                0
+package                       1,175,182,559 B = 1.094 GiB
+required ceiling               204,472,320 B = 195 MiB
+```
+
+The full depth-0 package currently stores almost one positive and ambiguity
+subcenter for every word and duplicates tens of millions of relations in the
+forward and reverse directions. That volume is not functionally justified for
+depth-0 and is the next compression target.
+
+#### Depth-0 V7 compaction experiments, 2026-07-26
+
+The first V7 experiment retained at most `32` forward relations per
+WordCenter and reconstructed only reverse relations and keyboard geometry.
+Its size passed, but the fixed proof rejected it:
+
+| Damage class | Unique top-1 |
+|---|---:|
+| adjacent transposition | 96.030% |
+| double substitution | 96.797% |
+| extra letter | 35.536% |
+| layout projection | 99.900% |
+| letter substitution | 99.499% |
+| missing letter | 30.444% |
+| non-adjacent transposition | 95.080% |
+| omission + transposition | 20.243% |
+| prefix truncation | 26.205% |
+| punctuation suffix | 100.000% |
+| repeated fragment | 32.850% |
+| sparse multi-omission | 21.767% |
+| suffix truncation | 22.256% |
+
+```text
+10k sparse-32 package                 5,721,472 B
+overall top-1                            59.682%
+clean preservation                     100.000%
+top-64                                  99.946%
+false authority                               0
+false singleton                               0
+hot p99                                  7.276 ms
+verdict                               WATCH_shadow
+```
+
+The causal result is unambiguous: limiting relations per WordCenter compressed
+knowledge rather than its representation. The sparse-32 storage design is
+rejected even though its lattice coverage and disk size passed.
+
+The corrected V7 ownership rule preserves the complete depth-0 field:
+
+```text
+stored:
+  NGramGraph
+  AtomWaveCode bank
+  primary WordCenter64 bank
+  DecoderGraph
+  restoration calibration
+
+not stored:
+  forward coupling bank
+  reverse coupling bank
+  primary-equivalent positive subcenters
+  zero-authority ambiguity subcenters
+  per-center keyboard geometry
+
+reconstructed on load from DecoderGraph + NGramGraph:
+  exact atom occurrence support
+  complete forward coupling field
+  complete reverse coupling field
+  physical keyboard geometry
+  zero-residual CenterPhaseProfile
+```
+
+The fixed 10k source V6 contains `1,296,290` forward and `1,031,133` reverse
+relations. The corrected implicit-field V7 is `4,148,280 B`; its unit crystal
+has exact package parity after encode/decode.
+
+The fixed 13-class proof now confirms that removing the redundant disk banks
+does not remove their runtime knowledge:
+
+| Damage class | Unique top-1 | Lattice coverage |
+|---|---:|---:|
+| adjacent transposition | 99.799% | 100.000% |
+| double substitution | 99.299% | 100.000% |
+| extra letter | 99.099% | 100.000% |
+| layout projection | 99.900% | 99.900% |
+| letter substitution | 99.950% | 100.000% |
+| missing letter | 98.317% | 100.000% |
+| non-adjacent transposition | 99.649% | 100.000% |
+| omission + transposition | 95.597% | 100.000% |
+| prefix truncation | 96.974% | 100.000% |
+| punctuation suffix | 100.000% | 100.000% |
+| repeated fragment | 98.300% | 100.000% |
+| sparse multi-omission | 96.860% | 100.000% |
+| suffix truncation | 97.141% | 100.000% |
+
+```text
+10k implicit-field V7 package           4,148,280 B
+overall top-1                              98.155%
+clean preservation                       100.000%
+top-64                                     99.992%
+false authority                                  0
+false singleton                                  0
+hot p50 / p99                         2.890 / 3.977 ms
+verdict                              PASS_shadow_10k
+```
+
+This proves the representation change at 10k scope. It does not yet prove the
+full `762,314`-center package, full `13 x 20,000` matrix, or the single-pass
+streaming crystallizer. Runtime authority remains unchanged.
+
+Runtime authority did not change. Exact evidence:
+
+```text
+/home/e/build/lay-l1-shadow/artifacts/l11-depth0-sparse32-10k-2026-07-26/proof.json
+/home/e/build/lay-l1-shadow/artifacts/l11-depth0-sparse32-10k-2026-07-26/proof.log
+/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-2026-07-26/package.bin
+/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-2026-07-26-compaction.json
+/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-2026-07-26-compaction.time
+/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-proof-2026-07-26/report.json
+/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-proof-2026-07-26/run.log
+/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-proof-2026-07-26/time.txt
+/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_DEPTH0_IMPLICIT_V7_10K_2026-07-26.json
+```
+
+#### Immutable proof gate
+
+```text
+13 classes x 20,000               260,000 cases
+unique top-1 for every class       >95.0%
+lattice coverage for every class  >=99.0%
+clean preservation                >=99.9%
+false authority                          0
+false singleton                          0
+package                             <=195 MiB
+hot p99                             <=5.0 ms
+```
+
+#### Full-field V7 selector experiments
+
+The full `762,314`-center fixed proof established that unbounded `birth=32`
+does not satisfy the latency gate and does not close every quality class:
+
+```text
+cases                              260,000 / 260,000
+workers                                           20
+wall time                                    1:29:56
+peak RSS                                     3.09 GiB
+sparse multi-omission                         94.2635%
+hot p99                                      34.531 ms
+quality classes passing                         12/13
+```
+
+The package representation is not the cause: exact V6/V7 runtime-field parity
+allows this functional result to transfer to the `66.11 MiB` V7 package. The
+runtime selector is the failing component. A bounded selector now uses four
+birth atoms per typed channel and at most `131,072` postings per readout.
+
+The first typed inverse probe removed the latency failure and recovered sparse
+multi-omission, but an unbounded cross-distance certificate displaced
+one-omission and truncation basins:
+
+```text
+scope                              13 x 2,000
+hot p99                              3.115 ms
+sparse multi-omission                  96.252%
+missing letter                         70.999%
+prefix truncation                      66.127%
+suffix truncation                      68.210%
+verdict                           REJECTED_shadow
+receipt
+/home/e/build/lay-l1-shadow/artifacts/l11-v7-typed-inverse-probe-2k-762314-2026-07-26/report.json
+```
+
+A single cross-distance energy lease of `1,500` was also rejected. It restored
+most one-omission basins but suppressed the intended two-omission inverse:
+
+```text
+scope                              13 x 2,000
+hot p99                              3.138 ms
+sparse multi-omission                  92.716%
+missing letter                         96.576%
+prefix truncation                      94.985%
+suffix truncation                      80.864%
+verdict                           REJECTED_shadow
+receipt
+/home/e/build/lay-l1-shadow/artifacts/l11-v7-typed-lease1500-probe-2k-762314-2026-07-26/report.json
+```
+
+This experiment did not test a full `13 x 20,000` matrix and did not alter
+runtime authority. The next selector must preserve distinct operator
+semantics: exact boundary truncation, one omission and two sparse omissions
+cannot share one rank and one energy lease.
+
+The operator-aware selector implements that separation. It keeps the
+two-omission inverse strong against an untyped incumbent, prevents it from
+displacing a stronger one-omission inverse, and gives exact prefix/suffix
+completion its own boundary certificate.
+
+```text
+scope                              13 x 2,000
+quality classes >95%                    13/13
+overall top-1                         85.742%
+top-64                               99.715%
+clean preservation                  100.000%
+false certainty                            0
+hot p99                               3.246 ms
+
+missing letter                         99.022%
+prefix truncation                      99.151%
+sparse multi-omission                  96.535%
+suffix truncation                      99.074%
+
+lowest lattice coverage:
+omission + transposition                98.900%
+verdict                    PASS_probe_top1_only
+receipt
+/home/e/build/lay-l1-shadow/artifacts/l11-v7-operator-aware-probe-2k-762314-2026-07-26/report.json
+```
+
+The short probe proves the strict per-class top-1, clean, false-certainty and
+latency gates at 2k scope. It does not prove the lattice gate because one class
+is `0.1 pp` below it. The previous fixed full baseline measured `99.500%`
+lattice coverage for that class, so promotion is decided only by the fixed
+`13 x 20,000` proof rather than by further tuning against this small slice.
+Runtime authority remains unchanged.
+
+#### Final full-corpus V7 proof
+
+The operator-aware selector passed the complete fixed proof:
+
+| Damage class | Unique top-1 | Lattice coverage |
+|---|---:|---:|
+| adjacent transposition | 98.062% | 99.605% |
+| double substitution | 95.455% | 99.895% |
+| extra letter | 98.912% | 99.990% |
+| layout projection | 98.342% | 99.615% |
+| letter substitution | 99.945% | 99.640% |
+| missing letter | 98.909% | 99.320% |
+| non-adjacent transposition | 96.320% | 99.530% |
+| omission + transposition | 95.701% | 99.040% |
+| prefix truncation | 99.127% | 99.965% |
+| punctuation suffix | 100.000% | 100.000% |
+| repeated fragment | 98.858% | 100.000% |
+| sparse multi-omission | 96.856% | 99.720% |
+| suffix truncation | 99.175% | 100.000% |
+
+```text
+WordCenter                              762,314
+fixed heldout cases                     260,000
+workers                                      20
+proof wall time                         4m 33.76s
+peak RSS                               2.215 GiB
+package                           69,325,620 B
+package                                66.11 MiB
+package SHA-256  232de23384dc1d62977a5c244a2fed14615c03d2818ee79618ade3a618456ab4
+overall top-1                            85.422%
+top-64                                  99.717%
+clean preservation                     100.000%
+false authority                               0
+false singleton                               0
+hot p50 / p99                    2.506 / 3.146 ms
+verdict                             PASS_shadow
+```
+
+All conjunctive L1.1 gates pass on the final corpus. This is a shadow
+architecture proof, not a live promotion: daemon, IME and `AuthorizedEdit`
+authority remain unchanged. The experiment did not prove the future
+single-pass streaming crystallizer.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_FINAL_762314_2026-07-26.json
+```
+
 ## 10. Ambiguity Contract
 
 Some damaged surfaces genuinely match more than one valid word. For example,

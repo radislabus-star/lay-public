@@ -27,7 +27,9 @@ pub(super) fn candidate_has_apply_authority(
     if let Some(reason) = hard_structural_veto::hidden_state_rejection(signals) {
         if (hidden_rejection_deferred_to_verified_boundary(reason)
             && (verified_current_token_boundary_merge_split(event, candidate, evaluation)
-                || hard_structural_veto::verified_tail_boundary_shift(event, candidate, evaluation)))
+                || hard_structural_veto::verified_tail_boundary_shift(
+                    event, candidate, evaluation,
+                )))
             || (hidden_rejection_deferred_to_verified_l2_repair(reason)
                 && verified_l2_center_repair)
         {

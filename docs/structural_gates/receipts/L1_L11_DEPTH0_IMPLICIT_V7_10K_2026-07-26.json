@@ -1,0 +1,104 @@
+{
+  "experiment": "L1.1 depth-0 implicit-field V7 fixed 10k proof",
+  "date": "2026-07-26",
+  "scope": "shadow_only_fixed_10k",
+  "source_words": 10000,
+  "heldout_surfaces": 25904,
+  "heldout_per_class": 2000,
+  "training_surfaces_per_word": 0,
+  "birth_atoms_per_channel": 32,
+  "format": "V7",
+  "artifact_bytes": 4148280,
+  "atom_count": 57831,
+  "stored_forward_couplings": 0,
+  "stored_reverse_couplings": 0,
+  "reconstructed_forward_couplings": 1296290,
+  "reconstructed_reverse_couplings": 1031133,
+  "positive_subcenters": 0,
+  "ambiguity_subcenters": 0,
+  "heldout_top1_percent": 98.15472513897467,
+  "heldout_top64_percent": 99.9922791846819,
+  "clean_preservation_percent": 100.0,
+  "hot_readout_p50_us": 2890,
+  "hot_readout_p99_us": 3977,
+  "l11_hot_readout_p99_us": 3624,
+  "false_authority_on_objective_ambiguity": 0,
+  "false_singleton_on_geometry_tie": 0,
+  "classes": {
+    "adjacent_transposition": {
+      "unique_top1_percent": 99.79899497487438,
+      "lattice_coverage_percent": 100.0
+    },
+    "double_substitution": {
+      "unique_top1_percent": 99.29929929929929,
+      "lattice_coverage_percent": 100.0
+    },
+    "extra_letter": {
+      "unique_top1_percent": 99.09909909909909,
+      "lattice_coverage_percent": 100.0
+    },
+    "layout_projection": {
+      "unique_top1_percent": 99.89984977466199,
+      "lattice_coverage_percent": 99.9
+    },
+    "letter_substitution": {
+      "unique_top1_percent": 99.9498997995992,
+      "lattice_coverage_percent": 100.0
+    },
+    "missing_letter": {
+      "unique_top1_percent": 98.31718510963793,
+      "lattice_coverage_percent": 100.0
+    },
+    "non_adjacent_transposition": {
+      "unique_top1_percent": 99.64859437751004,
+      "lattice_coverage_percent": 100.0
+    },
+    "omission_transposition": {
+      "unique_top1_percent": 95.59716599190283,
+      "lattice_coverage_percent": 100.0
+    },
+    "prefix_truncation": {
+      "unique_top1_percent": 96.97435897435898,
+      "lattice_coverage_percent": 100.0
+    },
+    "punctuation_suffix": {
+      "unique_top1_percent": 100.0,
+      "lattice_coverage_percent": 100.0
+    },
+    "repeated_fragment": {
+      "unique_top1_percent": 98.3,
+      "lattice_coverage_percent": 100.0
+    },
+    "sparse_multi_omission": {
+      "unique_top1_percent": 96.86003193187865,
+      "lattice_coverage_percent": 100.0
+    },
+    "suffix_truncation": {
+      "unique_top1_percent": 97.14139867279223,
+      "lattice_coverage_percent": 100.0
+    }
+  },
+  "tested": [
+    "V7 decode reconstructs the complete depth-0 forward field",
+    "V7 decode reconstructs the complete depth-0 reverse field",
+    "fixed 13-class 10k heldout proof",
+    "clean preservation",
+    "false authority and false singleton",
+    "package budget and hot readout latency"
+  ],
+  "not_tested": [
+    "full RU462K+EN300K V7 package",
+    "13 x 20000 full-corpus heldout proof",
+    "single-pass streaming crystallizer",
+    "live runtime authority"
+  ],
+  "verdict": "PASS_shadow_10k_READY_FOR_FULL_V7",
+  "runtime_authority_changed": false,
+  "evidence": {
+    "package": "/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-2026-07-26/package.bin",
+    "compaction_report": "/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-2026-07-26-compaction.json",
+    "proof_report": "/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-proof-2026-07-26/report.json",
+    "proof_log": "/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-proof-2026-07-26/run.log",
+    "time_report": "/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-proof-2026-07-26/time.txt"
+  }
+}

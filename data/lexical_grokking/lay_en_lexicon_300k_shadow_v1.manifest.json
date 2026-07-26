@@ -1,0 +1,16 @@
+{
+  "package_id": "LAY-EN-LEXICON-300K-SHADOW-v1",
+  "layer": "L1.1 lexical source",
+  "status": "SOURCE_READY",
+  "runtime_authority": false,
+  "teacher": "wordfreq top_n_list('en')",
+  "source_limit": 500000,
+  "corpus_artifact": "data/lexical_grokking/lay_en_lexicon_300k_shadow_v1.txt",
+  "corpus_bytes": 2493743,
+  "corpus_sha256": "a93e7abbed19421357e8f5e16e819de3a3355560bcd422a83a743c24606abe0f",
+  "unique_surfaces": 300000,
+  "minimum_length": 2,
+  "maximum_length": 32,
+  "ordering": "wordfreq_frequency_descending",
+  "l1_1_crystallized": false
+}

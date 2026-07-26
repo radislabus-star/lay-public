@@ -1,0 +1,61 @@
+{
+  "gate": "L1_L11_FULL_FIELD_ANTI_1K",
+  "date": "2026-07-25",
+  "verdict": "REJECTED_O1_BLOCK_BOUND",
+  "scope": {
+    "candidate_centers": 762314,
+    "anti_targets": 1000,
+    "training_surfaces_per_word": 48,
+    "remote_host": "e-MEGA-MINI-M1-13th",
+    "hardware_threads": 20,
+    "worker_count": 20
+  },
+  "measured_baseline": {
+    "anti_discovery_ms": 198105,
+    "damaged_surfaces": 44994,
+    "posting_entries": 676414499805,
+    "posting_entries_skipped": 659983008941,
+    "exact_candidates": 8263792,
+    "block_checks": 62615939,
+    "block_skips": 54352147,
+    "anti_index_resident_bytes": 3383426106,
+    "peak_rss_bytes": 11835613184,
+    "linear_full_target_estimate_hours": 41.95
+  },
+  "measured_o1_block_bound": {
+    "anti_discovery_ms": 190543,
+    "damaged_surfaces": 45016,
+    "posting_entries": 677111473439,
+    "posting_entries_skipped": 660431866308,
+    "exact_candidates": 12228425,
+    "block_checks": 66474601,
+    "block_skips": 54246176,
+    "anti_index_resident_bytes": 3804108474,
+    "peak_rss_bytes": 11771265024,
+    "speedup": 1.04
+  },
+  "threshold_seed": {
+    "dense_oracle_parity": "PASS",
+    "anti_targets_completed": "less_than_1000",
+    "observed_elapsed_ms_lower_bound": 230000,
+    "verdict": "REJECTED_SLOWER_THAN_BASELINE",
+    "implementation_retained": false
+  },
+  "verification": {
+    "conservative_bound_all_observed_positions": "PASS",
+    "wand_dense_oracle_parity": "PASS",
+    "implementation_retained": false
+  },
+  "not_tested": [
+    "complete 762314 anti-target crystallization",
+    "L1.1 subcenter compilation on the final package",
+    "fixed heldout per-error-class restoration proof",
+    "final package size and runtime latency"
+  ],
+  "runtime_authority_changed": false,
+  "package_published": false,
+  "remote_logs": [
+    "/home/e/build/lay-l1-shadow/artifacts/L1-L11-RU462K-EN300K-FINAL-2026-07-24.log",
+    "/home/e/build/lay-l1-shadow/artifacts/L1-L11-RU462K-EN300K-FULLFIELD-1K-O1BLOCK-2026-07-25.log"
+  ]
+}

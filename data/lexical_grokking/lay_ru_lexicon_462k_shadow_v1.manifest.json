@@ -1,0 +1,17 @@
+{
+  "package_id": "LAY-RU-LEXICON-462K-SHADOW-v1",
+  "layer": "L1.1 lexical source",
+  "status": "SOURCE_READY",
+  "runtime_authority": false,
+  "source_package_id": "LAY-RU-NOUN-MORPH-462K-SHADOW-v1",
+  "source_artifact": "data/morphology/lay_ru_noun_morph_462k_shadow_v1.tsv",
+  "corpus_artifact": "data/lexical_grokking/lay_ru_lexicon_462k_shadow_v1.txt",
+  "corpus_bytes": 9997826,
+  "corpus_sha256": "2d00ce9b3c82c77bf65d0864ea9913903da56800248c5c641a4090dfb169e94c",
+  "source_form_rows": 633016,
+  "unique_surfaces": 462314,
+  "minimum_length": 2,
+  "maximum_length": 32,
+  "ordering": "unicode_lexicographic",
+  "l1_1_crystallized": false
+}

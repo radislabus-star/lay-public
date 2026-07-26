@@ -1,0 +1,99 @@
+# F = form binding, T = train scene, H = heldout scene.
+# The teacher labels are cold evidence. Runtime scoring uses only compact
+# FormCenter/LemmaCenter bindings and learned positive/anti phase centers.
+F	город	город	noun:nom:sg
+F	город	города	noun:gen:sg
+F	город	городу	noun:dat:sg
+F	город	город	noun:acc:sg
+F	город	городом	noun:ins:sg
+F	город	городе	noun:prep:sg
+F	дом	дом	noun:nom:sg
+F	дом	дома	noun:gen:sg
+F	дом	дому	noun:dat:sg
+F	дом	дом	noun:acc:sg
+F	дом	домом	noun:ins:sg
+F	дом	доме	noun:prep:sg
+F	книга	книга	noun:nom:sg
+F	книга	книги	noun:gen:sg
+F	книга	книге	noun:dat:sg
+F	книга	книгу	noun:acc:sg
+F	книга	книгой	noun:ins:sg
+F	книга	книге	noun:prep:sg
+F	машина	машина	noun:nom:sg
+F	машина	машины	noun:gen:sg
+F	машина	машине	noun:dat:sg
+F	машина	машину	noun:acc:sg
+F	машина	машиной	noun:ins:sg
+F	машина	машине	noun:prep:sg
+F	работа	работа	noun:nom:sg
+F	работа	работы	noun:gen:sg
+F	работа	работе	noun:dat:sg
+F	работа	работу	noun:acc:sg
+F	работа	работой	noun:ins:sg
+F	работа	работе	noun:prep:sg
+F	стол	стол	noun:nom:sg
+F	стол	стола	noun:gen:sg
+F	стол	столу	noun:dat:sg
+F	стол	стол	noun:acc:sg
+F	стол	столом	noun:ins:sg
+F	стол	столе	noun:prep:sg
+F	школа	школа	noun:nom:sg
+F	школа	школы	noun:gen:sg
+F	школа	школе	noun:dat:sg
+F	школа	школу	noun:acc:sg
+F	школа	школой	noun:ins:sg
+F	школа	школе	noun:prep:sg
+
+T	дом	noun:nom:sg	_ стоит
+T	книга	noun:nom:sg	_ лежит
+T	город	noun:nom:sg	_ растет
+T	дом	noun:nom:sg	_ готов
+T	книга	noun:nom:sg	_ открыта
+T	город	noun:nom:sg	_ закончена
+T	дома	noun:gen:sg	нет _
+T	книги	noun:gen:sg	без _
+T	города	noun:gen:sg	около _
+T	дома	noun:gen:sg	после _
+T	дому	noun:dat:sg	иду к _
+T	книге	noun:dat:sg	подошел к _
+T	городу	noun:dat:sg	двигаюсь к _
+T	дому	noun:dat:sg	приступаю к _
+T	дом	noun:acc:sg	вижу _
+T	книгу	noun:acc:sg	читаю _
+T	город	noun:acc:sg	посетил _
+T	дом	noun:acc:sg	ремонтирую _
+T	книгу	noun:acc:sg	проверяю _
+T	домом	noun:ins:sg	любуюсь _
+T	книгой	noun:ins:sg	пользуюсь _
+T	городом	noun:ins:sg	управляю _
+T	домом	noun:ins:sg	доволен _
+T	доме	noun:prep:sg	думаю о _
+T	книге	noun:prep:sg	говорю о _
+T	городе	noun:prep:sg	живу в _
+T	доме	noun:prep:sg	расскажу о _
+T	книге	noun:prep:sg	сосредоточен на _
+
+H	стол	noun:nom:sg	_ готов
+H	школа	noun:nom:sg	_ открыта
+H	машина	noun:nom:sg	_ стоит
+H	работа	noun:nom:sg	_ закончена
+H	стола	noun:gen:sg	нет _
+H	школы	noun:gen:sg	около _
+H	машины	noun:gen:sg	без _
+H	работы	noun:gen:sg	после _
+H	столу	noun:dat:sg	подошел к _
+H	школе	noun:dat:sg	иду к _
+H	машине	noun:dat:sg	двигаюсь к _
+H	работе	noun:dat:sg	приступаю к _
+H	стол	noun:acc:sg	вижу _
+H	школу	noun:acc:sg	посетил _
+H	машину	noun:acc:sg	ремонтирую _
+H	работу	noun:acc:sg	проверяю _
+H	столом	noun:ins:sg	любуюсь _
+H	школой	noun:ins:sg	управляю _
+H	машиной	noun:ins:sg	пользуюсь _
+H	работой	noun:ins:sg	доволен _
+H	столе	noun:prep:sg	думаю о _
+H	школе	noun:prep:sg	говорю о _
+H	машине	noun:prep:sg	расскажу о _
+H	работе	noun:prep:sg	сосредоточен на _

@@ -1,0 +1,52 @@
+{
+  "gate": "L1_L11_FINAL_BILINGUAL_CORPUS",
+  "date": "2026-07-24",
+  "verdict": "VETO_OOM",
+  "package_identity": "LAY-L1.1-RU462K-EN300K-SHADOW-v1",
+  "corpus": {
+    "path": "data/lexical_grokking/lay_l11_ru462k_en300k_shadow_v1.txt",
+    "sha256": "449386fa3b9453423792329ecab42946d490bbfe5f863ab194c2d98fb3bd2584",
+    "word_forms": 762314,
+    "training_surfaces_per_word": 48,
+    "heldout_per_class": 20000
+  },
+  "measured_failure": {
+    "source": "journalctl -b -1 -k",
+    "kernel_event": "Out of memory: Killed process lay-nanda-wave-train",
+    "pid": 2136976,
+    "anonymous_rss_kib": 31654220,
+    "anonymous_rss_bytes": 32413921280,
+    "virtual_memory_kib": 44776192,
+    "virtual_memory_bytes": 45850820608,
+    "package_published": false,
+    "quality_proof_completed": false
+  },
+  "second_attempt": {
+    "host_became_unresponsive_to_new_ssh_sessions": true,
+    "manual_reboot_required": true,
+    "exact_peak_rss_recorded": false,
+    "package_published": false,
+    "quality_proof_completed": false
+  },
+  "replacement_implementation": {
+    "compact_ngram_graph": true,
+    "disk_backed_forward_posting_shards": 16,
+    "posting_record_bytes": 12,
+    "flat_reverse_ranges": true,
+    "maximum_directional_anti_relations_per_word": 16,
+    "rss_watchdog_interval_ms": 250,
+    "default_rss_budget_mib": 24576,
+    "budget_exit_code": 86
+  },
+  "replacement_verification": {
+    "lexical_grokking_tests_passed": 57,
+    "lexical_grokking_tests_failed": 0,
+    "cargo_check_lib": "PASS",
+    "cargo_check_train_bin": "PASS",
+    "clippy_lib_deny_warnings": "PASS",
+    "clippy_train_bin_deny_warnings": "PASS",
+    "full_corpus_rss": "NOT_TESTED",
+    "full_per_class_quality": "NOT_TESTED"
+  },
+  "runtime_authority_changed": false
+}

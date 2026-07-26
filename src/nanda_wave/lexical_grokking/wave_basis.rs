@@ -19,24 +19,21 @@ pub(super) fn pair_residual_atoms(
     owner_expected: impl IntoIterator<Item = (u32, u8)>,
     competitor_expected: impl IntoIterator<Item = (u32, u8)>,
 ) -> Vec<PairResidualAtom> {
-    let observed = observed
-        .into_iter()
-        .collect::<std::collections::BTreeSet<_>>();
-    let owner = owner_expected
-        .into_iter()
-        .collect::<std::collections::BTreeSet<_>>();
-    let competitor = competitor_expected
-        .into_iter()
-        .collect::<std::collections::BTreeSet<_>>();
-    let mut all = observed.clone();
-    all.extend(owner.iter().copied());
-    all.extend(competitor.iter().copied());
+    let observed = sorted_unique_relations(observed);
+    let owner = sorted_unique_relations(owner_expected);
+    let competitor = sorted_unique_relations(competitor_expected);
+    let mut all = Vec::with_capacity(observed.len() + owner.len() + competitor.len());
+    all.extend_from_slice(&observed);
+    all.extend_from_slice(&owner);
+    all.extend_from_slice(&competitor);
+    all.sort_unstable();
+    all.dedup();
     all.into_iter()
         .filter_map(|(atom_id, position_mode)| {
             let key = (atom_id, position_mode);
-            let coefficient = 2 * i32::from(observed.contains(&key))
-                - i32::from(owner.contains(&key))
-                - i32::from(competitor.contains(&key));
+            let coefficient = 2 * i32::from(observed.binary_search(&key).is_ok())
+                - i32::from(owner.binary_search(&key).is_ok())
+                - i32::from(competitor.binary_search(&key).is_ok());
             (coefficient != 0).then_some(PairResidualAtom {
                 atom_id,
                 position_mode,
@@ -44,6 +41,13 @@ pub(super) fn pair_residual_atoms(
             })
         })
         .collect()
+}
+
+fn sorted_unique_relations(relations: impl IntoIterator<Item = (u32, u8)>) -> Vec<(u32, u8)> {
+    let mut relations = relations.into_iter().collect::<Vec<_>>();
+    relations.sort_unstable();
+    relations.dedup();
+    relations
 }
 
 pub(super) fn positioned_atom_code(mut code: AtomWaveCode, position_mode: u8) -> AtomWaveCode {
@@ -68,7 +72,9 @@ pub(super) fn compile_basis() -> Vec<ComplexBasisWave> {
         .collect()
 }
 
-pub(super) fn learn_atom_code(couplings: &[super::model::WaveCoupling]) -> AtomWaveCode {
+pub(super) fn learn_atom_code_iter(
+    couplings: impl IntoIterator<Item = super::model::WaveCoupling>,
+) -> AtomWaveCode {
     let mut mass = [0_i64; WAVE_DIMENSION];
     for coupling in couplings {
         for projection in 0..4_u32 {

@@ -7,7 +7,7 @@ use std::time::Instant;
 use crate::stable_hash::mix64_golden;
 
 use super::atoms::{
-    encode_wave_surface, normalize_lexical_surface, physical_key_sequence, AtomChannel,
+    encode_wave_surface, normalize_lexical_surface, physical_key_sequence, AtomChannel, NGramKey,
 };
 use super::crystal::{AmbiguityPhaseCenter64, WAVE_DIMENSION};
 use super::format;
@@ -21,10 +21,24 @@ use super::wave_basis::{
 
 const MAX_PHASE_FRONTIER: usize = 128;
 const MAX_GEOMETRY_RESERVE: usize = 32;
+const MAX_OPERATOR_RESERVE: usize = 64;
+const MAX_RECONSTRUCTION_RESERVE: usize = 64;
+const MAX_RECONSTRUCTION_SCAN: usize = 8_192;
+const MAX_RECONSTRUCTION_TAIL: usize = 32;
+const MAX_GEOMETRY_SCAN: usize = 1_024;
+const DEFAULT_BIRTH_ATOMS_PER_CHANNEL: usize = 4;
+const MAX_BIRTH_ATOMS_PER_CHANNEL: usize = 32;
+const MAX_BIRTH_POSTINGS: usize = 131_072;
 const SETTLING_ITERATIONS: u8 = 3;
 const MAX_ANCHOR_SEQUENCE: usize = 32;
 pub(super) const RECONSTRUCTION_MODE_DELETION: u8 = 1;
 pub(super) const RECONSTRUCTION_MODE_DELETION_TRANSPOSITION: u8 = 2;
+pub(super) const RECONSTRUCTION_MODE_SUFFIX_TRUNCATION: u8 = 4;
+pub(super) const RECONSTRUCTION_MODE_PREFIX_TRUNCATION: u8 = 8;
+pub(super) const RECONSTRUCTION_MODE_SINGLE_DELETION: u8 = 16;
+pub(super) const RECONSTRUCTION_MODE_SINGLE_SUBSTITUTION: u8 = 32;
+pub(super) const RECONSTRUCTION_MODE_DOUBLE_SUBSTITUTION: u8 = 64;
+pub(super) const RECONSTRUCTION_MODE_NON_ADJACENT_TRANSPOSITION: u8 = 128;
 
 pub fn query_package(
     package_path: &Path,
@@ -131,17 +145,18 @@ pub fn benchmark_package(
     package_path: &Path,
     surface: &str,
     iterations: usize,
+    limit: usize,
 ) -> io::Result<serde_json::Value> {
     let bytes = std::fs::read(package_path)?;
     let memory = LexicalGrokkingMemory::from_bytes(&bytes).map_err(io::Error::other)?;
     for _ in 0..16 {
-        std::hint::black_box(memory.readout(surface, 64, ReadoutMode::Full));
+        std::hint::black_box(memory.readout(surface, limit, ReadoutMode::Full));
     }
     let mut elapsed_us = Vec::with_capacity(iterations);
     let mut checksum = 0_u64;
     for _ in 0..iterations {
         let started = Instant::now();
-        let candidates = memory.readout(surface, 64, ReadoutMode::Full);
+        let candidates = memory.readout(surface, limit, ReadoutMode::Full);
         elapsed_us.push(started.elapsed().as_micros() as u64);
         checksum ^= candidates
             .first()
@@ -152,6 +167,7 @@ pub fn benchmark_package(
     Ok(serde_json::json!({
         "surface": surface,
         "iterations": iterations,
+        "limit": limit,
         "terminal_count": memory.package.terminal_count(),
         "p50_us": percentile(&elapsed_us, 50),
         "p90_us": percentile(&elapsed_us, 90),
@@ -186,6 +202,7 @@ fn candidate_json(
         "ambiguity_threshold_milli": candidate.ambiguity_threshold_milli,
         "ambiguity_linked": candidate.ambiguity_linked,
         "ambiguity_shell": candidate.ambiguity_shell,
+        "reconstruction_only": candidate.reconstruction_only,
         "pairwise_loss_milli": candidate.pairwise_loss_milli,
         "crystallization_wins": candidate.crystallization_wins,
         "crystallization_required": candidate.crystallization_required,
@@ -213,6 +230,31 @@ fn percentile(sorted: &[u64], percentile: usize) -> u64 {
     }
     let index = (sorted.len() - 1).saturating_mul(percentile) / 100;
     sorted[index]
+}
+
+fn readout_trace_enabled() -> bool {
+    static ENABLED: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *ENABLED.get_or_init(|| std::env::var_os("LAY_L11_READOUT_TRACE").is_some())
+}
+
+fn readout_trace_terminal() -> Option<u32> {
+    static VALUE: std::sync::OnceLock<Option<u32>> = std::sync::OnceLock::new();
+    *VALUE.get_or_init(|| {
+        std::env::var("LAY_L11_READOUT_TRACE_TERMINAL")
+            .ok()
+            .and_then(|value| value.parse::<u32>().ok())
+    })
+}
+
+fn birth_atoms_per_channel() -> usize {
+    static VALUE: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
+    *VALUE.get_or_init(|| {
+        std::env::var("LAY_L11_BIRTH_ATOMS_PER_CHANNEL")
+            .ok()
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(DEFAULT_BIRTH_ATOMS_PER_CHANNEL)
+            .clamp(1, MAX_BIRTH_ATOMS_PER_CHANNEL)
+    })
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -248,6 +290,7 @@ pub(super) struct GrokkingCandidate {
     pub(super) ambiguity_threshold_milli: u16,
     pub(super) ambiguity_linked: bool,
     pub(super) ambiguity_shell: bool,
+    pub(super) reconstruction_only: bool,
     pub(super) pairwise_loss_milli: u16,
     pub(super) crystallization_wins: u8,
     pub(super) crystallization_required: u8,
@@ -288,7 +331,21 @@ struct ForwardActivation {
 #[derive(Default)]
 struct ForwardScratch {
     activations: Vec<ForwardActivation>,
+    activation_epochs: Vec<u32>,
+    epoch: u32,
     touched: Vec<u32>,
+}
+
+struct PreparedReadout {
+    observed: BTreeMap<u32, ObservedAtom>,
+    character_sequence: AnchorSequence,
+    observed_char_count: u8,
+    surface_re: [i32; WAVE_DIMENSION],
+    surface_im: [i32; WAVE_DIMENSION],
+    max_forward: u64,
+    frontier: Vec<(u32, ForwardActivation)>,
+    geometry_reserve_ids: BTreeSet<u32>,
+    reconstruction_only_ids: BTreeSet<u32>,
 }
 
 thread_local! {
@@ -300,6 +357,41 @@ struct ObservedAtom {
     position: u8,
     weight: u8,
     channel: AtomChannel,
+}
+
+type BirthAtom = (usize, u32, ObservedAtom);
+
+fn select_birth_atoms(
+    birth_by_channel: &mut [Vec<BirthAtom>],
+    atoms_per_channel: usize,
+) -> Vec<BirthAtom> {
+    let mut eligible = Vec::new();
+    for atoms in birth_by_channel {
+        atoms.sort_unstable_by(|left, right| {
+            left.0
+                .cmp(&right.0)
+                .then_with(|| right.2.weight.cmp(&left.2.weight))
+                .then_with(|| left.1.cmp(&right.1))
+        });
+        eligible.extend(atoms.iter().take(atoms_per_channel).copied());
+    }
+    eligible.sort_unstable_by(|left, right| {
+        left.0
+            .cmp(&right.0)
+            .then_with(|| right.2.weight.cmp(&left.2.weight))
+            .then_with(|| left.1.cmp(&right.1))
+    });
+    let mut selected = Vec::with_capacity(eligible.len());
+    let mut posting_count = 0_usize;
+    for atom in eligible {
+        let next = posting_count.saturating_add(atom.0);
+        if !selected.is_empty() && next > MAX_BIRTH_POSTINGS {
+            continue;
+        }
+        posting_count = next;
+        selected.push(atom);
+    }
+    selected
 }
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -352,153 +444,522 @@ impl LexicalGrokkingMemory {
         if limit == 0 {
             return Vec::new();
         }
+        if limit == 1 && mode == ReadoutMode::Full {
+            if let Some(candidate) = self.exact_singleton_readout(surface) {
+                return vec![candidate];
+            }
+        }
+        let Some(prepared) = self.prepare_readout(surface, limit) else {
+            return Vec::new();
+        };
+        self.finish_readout(surface, limit, mode, &prepared)
+    }
+
+    pub(super) fn readout_modes(
+        &self,
+        surface: &str,
+        limit: usize,
+        modes: &[ReadoutMode],
+    ) -> Vec<Vec<GrokkingCandidate>> {
+        if limit == 0 {
+            return vec![Vec::new(); modes.len()];
+        }
+        let Some(prepared) = self.prepare_readout(surface, limit) else {
+            return vec![Vec::new(); modes.len()];
+        };
+        let mut invariant_candidates = prepared
+            .frontier
+            .iter()
+            .copied()
+            .filter_map(|(terminal_id, activation)| {
+                self.settle_candidate(
+                    terminal_id,
+                    activation,
+                    prepared.max_forward,
+                    &prepared.observed,
+                    &prepared.surface_re,
+                    &prepared.surface_im,
+                    &prepared.character_sequence,
+                    prepared.observed_char_count,
+                    ReadoutMode::Full,
+                )
+            })
+            .map(|mut candidate| {
+                candidate.ambiguity_shell = prepared
+                    .geometry_reserve_ids
+                    .contains(&candidate.terminal_id);
+                candidate.reconstruction_only = prepared
+                    .reconstruction_only_ids
+                    .contains(&candidate.terminal_id);
+                candidate
+            })
+            .collect::<Vec<_>>();
+        self.apply_restoration_geometry(surface, &mut invariant_candidates);
+        modes
+            .iter()
+            .copied()
+            .map(|mode| {
+                let mut candidates = invariant_candidates.clone();
+                for candidate in &mut candidates {
+                    apply_settlement_mode(candidate, mode);
+                }
+                self.finalize_candidates_after_geometry(
+                    limit,
+                    mode,
+                    &prepared.surface_re,
+                    &prepared.surface_im,
+                    &mut candidates,
+                );
+                candidates
+            })
+            .collect()
+    }
+
+    fn prepare_readout(&self, surface: &str, limit: usize) -> Option<PreparedReadout> {
+        let trace_started = Instant::now();
         let observed = self.resolve_surface(surface);
         if observed.is_empty() {
-            return Vec::new();
+            return None;
         }
+        let resolve_us = trace_started.elapsed().as_micros();
         let character_sequence = observed_sequence(&observed, AtomChannel::CharacterAnchor);
         let exact_terminals = self.exact_terminals(character_sequence.as_slice());
         let observed_char_count = normalize_lexical_surface(surface)
             .chars()
             .count()
             .min(u8::MAX as usize) as u8;
-        let (surface_re, surface_im, max_forward, mut frontier) =
-            FORWARD_SCRATCH.with_borrow_mut(|scratch| {
-                if scratch.activations.len() != self.package.terminal_count() as usize {
-                    scratch.activations =
-                        vec![ForwardActivation::default(); self.package.terminal_count() as usize];
-                    scratch.touched.clear();
-                } else {
-                    let mut touched = std::mem::take(&mut scratch.touched);
-                    for terminal_id in touched.drain(..) {
-                        scratch.activations[terminal_id as usize] = ForwardActivation::default();
-                    }
-                    scratch.touched = touched;
+        let lexical_observed = observed
+            .iter()
+            .filter(|(_, atom)| !is_anchor_channel(atom.channel))
+            .copied()
+            .collect::<BTreeMap<_, _>>();
+        let mut birth_by_channel: [Vec<BirthAtom>; 12] = std::array::from_fn(|_| Vec::new());
+        for (atom_id, atom) in &lexical_observed {
+            birth_by_channel[atom.channel as usize].push((
+                self.forward_couplings(*atom_id).len(),
+                *atom_id,
+                *atom,
+            ));
+        }
+        let birth_atoms = select_birth_atoms(&mut birth_by_channel, birth_atoms_per_channel());
+        let birth_postings = birth_atoms
+            .iter()
+            .map(|(degree, _, _)| *degree)
+            .sum::<usize>();
+        let (surface_re, surface_im, mut frontier) = FORWARD_SCRATCH.with_borrow_mut(|scratch| {
+            if scratch.activations.len() != self.package.terminal_count() as usize {
+                scratch.activations =
+                    vec![ForwardActivation::default(); self.package.terminal_count() as usize];
+                scratch.activation_epochs = vec![0; self.package.terminal_count() as usize];
+                scratch.epoch = 1;
+                scratch.touched.clear();
+            } else {
+                scratch.epoch = scratch.epoch.wrapping_add(1);
+                if scratch.epoch == 0 {
+                    scratch.activation_epochs.fill(0);
+                    scratch.epoch = 1;
                 }
-                let mut surface_re = [0_i32; WAVE_DIMENSION];
-                let mut surface_im = [0_i32; WAVE_DIMENSION];
-                for (atom_id, atom) in &observed {
-                    if is_anchor_channel(atom.channel) {
+                scratch.touched.clear();
+            }
+            let epoch = scratch.epoch;
+            let mut surface_re = [0_i32; WAVE_DIMENSION];
+            let mut surface_im = [0_i32; WAVE_DIMENSION];
+            for (atom_id, atom) in &lexical_observed {
+                let Some(record) = self.package.atoms.get(*atom_id as usize) else {
+                    continue;
+                };
+                expand_atom(
+                    &self.package.basis,
+                    record.wave_code,
+                    &mut surface_re,
+                    &mut surface_im,
+                    i32::from(atom.weight),
+                );
+            }
+            for (_, atom_id, atom) in &birth_atoms {
+                let atom_weight = u64::from(atom.weight);
+                let keyboard_channel = is_keyboard_channel(atom.channel);
+                for coupling in self.forward_couplings(*atom_id) {
+                    let contribution = u64::from(coupling.strength)
+                        * atom_weight
+                        * u64::from(position_coherence(atom.position, coupling.position_mode));
+                    let terminal_id = coupling.peer_id as usize;
+                    if terminal_id >= scratch.activations.len() {
                         continue;
                     }
-                    let Some(record) = self.package.atoms.get(*atom_id as usize) else {
-                        continue;
-                    };
-                    expand_atom(
-                        &self.package.basis,
-                        record.wave_code,
-                        &mut surface_re,
-                        &mut surface_im,
-                        i32::from(atom.weight),
-                    );
-                    for coupling in self.forward_couplings(*atom_id) {
-                        let position = position_coherence(atom.position, coupling.position_mode);
-                        let contribution = u64::from(coupling.strength)
-                            .saturating_mul(u64::from(atom.weight))
-                            .saturating_mul(u64::from(position));
-                        let terminal_id = coupling.peer_id as usize;
-                        if terminal_id >= scratch.activations.len() {
-                            continue;
-                        }
-                        if scratch.activations[terminal_id].hits == 0 {
-                            scratch.touched.push(coupling.peer_id);
-                        }
-                        let activation = &mut scratch.activations[terminal_id];
-                        activation.mass = activation.mass.saturating_add(contribution);
-                        activation.hits = activation.hits.saturating_add(1);
-                        if is_keyboard_channel(atom.channel) {
-                            activation.keyboard_hits = activation.keyboard_hits.saturating_add(1);
-                        } else {
-                            activation.surface_hits = activation.surface_hits.saturating_add(1);
-                        }
+                    if scratch.activation_epochs[terminal_id] != epoch {
+                        scratch.activation_epochs[terminal_id] = epoch;
+                        scratch.activations[terminal_id] = ForwardActivation::default();
+                        scratch.touched.push(coupling.peer_id);
+                    }
+                    let activation = &mut scratch.activations[terminal_id];
+                    activation.mass += contribution;
+                    activation.hits += 1;
+                    if keyboard_channel {
+                        activation.keyboard_hits += 1;
+                    } else {
+                        activation.surface_hits += 1;
                     }
                 }
-                let max_forward = scratch
-                    .touched
-                    .iter()
-                    .map(|terminal_id| scratch.activations[*terminal_id as usize].mass)
-                    .max()
-                    .unwrap_or(1)
-                    .max(1);
-                let frontier = scratch
-                    .touched
-                    .iter()
-                    .map(|terminal_id| (*terminal_id, scratch.activations[*terminal_id as usize]))
-                    .collect::<Vec<_>>();
-                (surface_re, surface_im, max_forward, frontier)
-            });
-        let geometry_reserve = if exact_terminals.is_empty() {
-            self.geometry_reserve(&frontier, character_sequence.as_slice())
+            }
+            let frontier = scratch
+                .touched
+                .iter()
+                .map(|terminal_id| (*terminal_id, scratch.activations[*terminal_id as usize]))
+                .collect::<Vec<_>>();
+            (surface_re, surface_im, frontier)
+        });
+        let forward_us = trace_started.elapsed().as_micros();
+        let operator_reserve = if exact_terminals.is_empty() {
+            self.operator_reserve(surface, &lexical_observed)
         } else {
             Vec::new()
         };
-        let geometry_reserve_ids = geometry_reserve
-            .iter()
-            .map(|(terminal_id, _)| *terminal_id)
-            .collect::<BTreeSet<_>>();
-        frontier.sort_unstable_by(|left, right| {
+        let operator_us = trace_started.elapsed().as_micros();
+        let frontier_order = |left: &(u32, ForwardActivation), right: &(u32, ForwardActivation)| {
             exact_terminals
                 .contains(&right.0)
                 .cmp(&exact_terminals.contains(&left.0))
                 .then_with(|| right.1.mass.cmp(&left.1.mass))
                 .then_with(|| right.1.hits.cmp(&left.1.hits))
                 .then_with(|| left.0.cmp(&right.0))
-        });
+        };
+        let touched_count = frontier.len();
+        if let Some(trace_terminal) = readout_trace_terminal() {
+            let selected_activation = frontier
+                .iter()
+                .find_map(|(terminal_id, activation)| {
+                    (*terminal_id == trace_terminal).then_some(*activation)
+                })
+                .unwrap_or_default();
+            let full_activation = self.activation_for_terminal(trace_terminal, &lexical_observed);
+            let reconstruction_modes = self
+                .character_anchors
+                .get(trace_terminal as usize)
+                .map(|expected| reconstruction_modes(character_sequence.as_slice(), expected))
+                .unwrap_or_default();
+            let selected_support_atoms = birth_atoms
+                .iter()
+                .filter(|(_, atom_id, _)| {
+                    self.forward_couplings(*atom_id)
+                        .iter()
+                        .any(|coupling| coupling.peer_id == trace_terminal)
+                })
+                .count();
+            let observed_support_atoms = lexical_observed
+                .keys()
+                .filter(|atom_id| {
+                    self.forward_couplings(**atom_id)
+                        .iter()
+                        .any(|coupling| coupling.peer_id == trace_terminal)
+                })
+                .count();
+            eprintln!(
+                "l11_trace_terminal terminal={} touched={} selected_hits={} selected_mass={} \
+                 full_hits={} full_mass={} reconstruction_modes={} observed_support_atoms={} \
+                 selected_support_atoms={}",
+                trace_terminal,
+                selected_activation.hits != 0,
+                selected_activation.hits,
+                selected_activation.mass,
+                full_activation.hits,
+                full_activation.mass,
+                reconstruction_modes,
+                observed_support_atoms,
+                selected_support_atoms,
+            );
+        }
+        if frontier.len() > MAX_RECONSTRUCTION_SCAN {
+            frontier.select_nth_unstable_by(MAX_RECONSTRUCTION_SCAN, frontier_order);
+            frontier.truncate(MAX_RECONSTRUCTION_SCAN);
+        }
+        let reconstruction_reserve =
+            self.reconstruction_lane_reserve(&frontier, character_sequence.as_slice());
+        let reconstruction_us = trace_started.elapsed().as_micros();
+        if frontier.len() > MAX_GEOMETRY_SCAN {
+            frontier.select_nth_unstable_by(MAX_GEOMETRY_SCAN, frontier_order);
+            frontier.truncate(MAX_GEOMETRY_SCAN);
+        }
+        frontier.sort_unstable_by(frontier_order);
+        let geometry_reserve = if exact_terminals.is_empty() {
+            self.geometry_reserve(&frontier, character_sequence.as_slice())
+        } else {
+            Vec::new()
+        };
+        let geometry_us = trace_started.elapsed().as_micros();
+        let operator_reserve_count = operator_reserve.len();
+        let reconstruction_reserve_count = reconstruction_reserve.len();
+        let geometry_reserve_count = geometry_reserve.len();
+        let geometry_reserve_ids = operator_reserve
+            .iter()
+            .chain(&reconstruction_reserve)
+            .chain(&geometry_reserve)
+            .map(|(terminal_id, _)| *terminal_id)
+            .collect::<BTreeSet<_>>();
         frontier.truncate(MAX_PHASE_FRONTIER.max(limit));
-        let mut retained = frontier
+        let primary_ids = frontier
             .iter()
             .map(|(terminal_id, _)| *terminal_id)
             .collect::<BTreeSet<_>>();
+        let reconstruction_only_ids = reconstruction_reserve
+            .iter()
+            .map(|(terminal_id, _)| *terminal_id)
+            .filter(|terminal_id| !primary_ids.contains(terminal_id))
+            .collect::<BTreeSet<_>>();
+        let mut retained = primary_ids;
+        frontier.extend(
+            operator_reserve
+                .into_iter()
+                .filter(|(terminal_id, _)| retained.insert(*terminal_id)),
+        );
+        frontier.extend(
+            reconstruction_reserve
+                .into_iter()
+                .filter(|(terminal_id, _)| retained.insert(*terminal_id)),
+        );
         frontier.extend(
             geometry_reserve
                 .into_iter()
                 .filter(|(terminal_id, _)| retained.insert(*terminal_id)),
         );
+        for (terminal_id, activation) in &mut frontier {
+            *activation = self.activation_for_terminal(*terminal_id, &lexical_observed);
+        }
+        frontier.retain(|(_, activation)| activation.hits != 0);
+        let max_forward = frontier
+            .iter()
+            .map(|(_, activation)| activation.mass)
+            .max()
+            .unwrap_or(1)
+            .max(1);
+        if readout_trace_enabled() {
+            eprintln!(
+                "l11_readout_trace resolve_us={resolve_us} forward_us={} operator_us={} \
+                 reconstruction_us={} geometry_us={} prepare_us={} touched={} retained={} \
+                 operator_reserve={} reconstruction_reserve={} geometry_reserve={} birth_atoms={} \
+                 birth_postings={}",
+                forward_us.saturating_sub(resolve_us),
+                operator_us.saturating_sub(forward_us),
+                reconstruction_us.saturating_sub(operator_us),
+                geometry_us.saturating_sub(reconstruction_us),
+                trace_started.elapsed().as_micros(),
+                touched_count,
+                retained.len(),
+                operator_reserve_count,
+                reconstruction_reserve_count,
+                geometry_reserve_count,
+                birth_atoms.len(),
+                birth_postings,
+            );
+        }
+        Some(PreparedReadout {
+            observed: lexical_observed,
+            character_sequence,
+            observed_char_count,
+            surface_re,
+            surface_im,
+            max_forward,
+            frontier,
+            geometry_reserve_ids,
+            reconstruction_only_ids,
+        })
+    }
+
+    fn exact_singleton_readout(&self, surface: &str) -> Option<GrokkingCandidate> {
+        let observed = self.resolve_surface(surface);
+        if observed.is_empty() {
+            return None;
+        }
+        let character_sequence = observed_sequence(&observed, AtomChannel::CharacterAnchor);
+        let exact_terminals = self.exact_terminals(character_sequence.as_slice());
+        if exact_terminals.len() != 1 {
+            return None;
+        }
+        let terminal_id = *exact_terminals.first()?;
+        let center = *self.package.centers.get(terminal_id as usize)?;
+        let reverse = self.reverse_couplings(center);
+        let observed_char_count = normalize_lexical_surface(surface)
+            .chars()
+            .count()
+            .min(u8::MAX as usize) as u8;
+        let mut surface_re = [0_i32; WAVE_DIMENSION];
+        let mut surface_im = [0_i32; WAVE_DIMENSION];
+        let mut activation = ForwardActivation::default();
+        for (atom_id, atom) in &observed {
+            if is_anchor_channel(atom.channel) {
+                continue;
+            }
+            let record = self.package.atoms.get(*atom_id as usize)?;
+            expand_atom(
+                &self.package.basis,
+                record.wave_code,
+                &mut surface_re,
+                &mut surface_im,
+                i32::from(atom.weight),
+            );
+            let coupling = reverse
+                .iter()
+                .find(|coupling| coupling.flags == 0 && coupling.peer_id == *atom_id);
+            let Some(coupling) = coupling else {
+                continue;
+            };
+            let contribution = u64::from(coupling.strength)
+                .saturating_mul(u64::from(atom.weight))
+                .saturating_mul(u64::from(position_coherence(
+                    atom.position,
+                    coupling.position_mode,
+                )));
+            activation.mass = activation.mass.saturating_add(contribution);
+            activation.hits = activation.hits.saturating_add(1);
+            if is_keyboard_channel(atom.channel) {
+                activation.keyboard_hits = activation.keyboard_hits.saturating_add(1);
+            } else {
+                activation.surface_hits = activation.surface_hits.saturating_add(1);
+            }
+        }
+        if activation.hits == 0 {
+            return None;
+        }
         let observed = observed
             .into_iter()
             .filter(|(_, atom)| !is_anchor_channel(atom.channel))
             .collect::<BTreeMap<_, _>>();
-        let mut candidates = frontier
-            .into_iter()
+        let candidate = self.settle_candidate(
+            terminal_id,
+            activation,
+            activation.mass.max(1),
+            &observed,
+            &surface_re,
+            &surface_im,
+            &character_sequence,
+            observed_char_count,
+            ReadoutMode::Full,
+        )?;
+        let mut candidates = vec![candidate];
+        self.finalize_candidates(
+            surface,
+            1,
+            ReadoutMode::Full,
+            &surface_re,
+            &surface_im,
+            &mut candidates,
+        );
+        candidates.into_iter().next()
+    }
+
+    fn finish_readout(
+        &self,
+        surface: &str,
+        limit: usize,
+        mode: ReadoutMode,
+        prepared: &PreparedReadout,
+    ) -> Vec<GrokkingCandidate> {
+        let mut candidates = prepared
+            .frontier
+            .iter()
+            .copied()
             .filter_map(|(terminal_id, activation)| {
                 self.settle_candidate(
                     terminal_id,
                     activation,
-                    max_forward,
-                    &observed,
-                    &surface_re,
-                    &surface_im,
-                    &character_sequence,
-                    observed_char_count,
+                    prepared.max_forward,
+                    &prepared.observed,
+                    &prepared.surface_re,
+                    &prepared.surface_im,
+                    &prepared.character_sequence,
+                    prepared.observed_char_count,
                     mode,
                 )
             })
             .map(|mut candidate| {
-                candidate.ambiguity_shell = geometry_reserve_ids.contains(&candidate.terminal_id);
+                candidate.ambiguity_shell = prepared
+                    .geometry_reserve_ids
+                    .contains(&candidate.terminal_id);
+                candidate.reconstruction_only = prepared
+                    .reconstruction_only_ids
+                    .contains(&candidate.terminal_id);
                 candidate
             })
             .collect::<Vec<_>>();
-        apply_structural_interference(&mut candidates);
+        self.finalize_candidates(
+            surface,
+            limit,
+            mode,
+            &prepared.surface_re,
+            &prepared.surface_im,
+            &mut candidates,
+        );
+        candidates
+    }
+
+    fn finalize_candidates(
+        &self,
+        surface: &str,
+        limit: usize,
+        mode: ReadoutMode,
+        surface_re: &[i32; WAVE_DIMENSION],
+        surface_im: &[i32; WAVE_DIMENSION],
+        candidates: &mut Vec<GrokkingCandidate>,
+    ) {
+        self.apply_restoration_geometry(surface, candidates);
+        self.finalize_candidates_after_geometry(limit, mode, surface_re, surface_im, candidates);
+    }
+
+    fn finalize_candidates_after_geometry(
+        &self,
+        limit: usize,
+        mode: ReadoutMode,
+        surface_re: &[i32; WAVE_DIMENSION],
+        surface_im: &[i32; WAVE_DIMENSION],
+        candidates: &mut Vec<GrokkingCandidate>,
+    ) {
+        apply_structural_interference(candidates);
         if mode != ReadoutMode::WithoutAnti {
-            self.apply_pairwise_interference(&mut candidates, &surface_re, &surface_im);
+            self.apply_pairwise_interference(candidates, surface_re, surface_im);
         }
-        apply_sequence_certificate_interference(&mut candidates, mode);
+        apply_sequence_certificate_interference(candidates, mode);
         if mode != ReadoutMode::WithoutPairwise {
             super::pairwise::apply_pairwise_field(
                 &self.package.pair_profiles,
                 &self.package.pair_centers,
                 &self.package.basis,
-                &mut candidates,
-                &surface_re,
-                &surface_im,
+                candidates,
+                surface_re,
+                surface_im,
             );
         }
         candidates.sort_unstable_by(candidate_order);
+        apply_geometry_certificate_interference(candidates);
         if mode != ReadoutMode::WithoutPosition {
-            apply_position_certificate_interference(&mut candidates);
+            apply_position_certificate_interference(candidates);
         }
-        candidates.truncate(limit);
-        candidates
+        if let Some(trace_terminal) = readout_trace_terminal() {
+            let before = candidates
+                .iter()
+                .position(|candidate| candidate.terminal_id == trace_terminal)
+                .map(|index| {
+                    (
+                        index + 1,
+                        candidates[index].reconstruction_only,
+                        candidates[index].settled_energy,
+                    )
+                });
+            eprintln!(
+                "l11_trace_terminal_finalize terminal={} before_truncate={before:?}",
+                trace_terminal
+            );
+        }
+        truncate_with_reconstruction_tail(candidates, limit);
+        if let Some(trace_terminal) = readout_trace_terminal() {
+            let after = candidates
+                .iter()
+                .position(|candidate| candidate.terminal_id == trace_terminal)
+                .map(|index| index + 1);
+            eprintln!(
+                "l11_trace_terminal_finalize terminal={} after_truncate={after:?}",
+                trace_terminal
+            );
+        }
     }
 
     fn exact_terminals(&self, observed: &[u32]) -> BTreeSet<u32> {
@@ -516,6 +977,209 @@ impl LexicalGrokkingMemory {
                     .then_some(*terminal)
             })
             .collect()
+    }
+
+    fn record_exact_terminals_for_chars(
+        &self,
+        chars: &[char],
+        rank: u8,
+        candidates: &mut BTreeMap<u32, u8>,
+    ) {
+        if chars.len() > MAX_ANCHOR_SEQUENCE {
+            return;
+        }
+        let mut anchors = [0_u32; MAX_ANCHOR_SEQUENCE];
+        for (index, ch) in chars.iter().enumerate() {
+            let Some(atom_id) = self.package.graph.atom_id(NGramKey {
+                channel: AtomChannel::CharacterAnchor,
+                len: 1,
+                units: [*ch as u32, 0, 0, 0],
+            }) else {
+                return;
+            };
+            anchors[index] = atom_id;
+        }
+        let anchors = &anchors[..chars.len()];
+        let hash = anchor_sequence_hash(anchors);
+        let start = self
+            .exact_surface_index
+            .partition_point(|(candidate_hash, _)| *candidate_hash < hash);
+        let end = self
+            .exact_surface_index
+            .partition_point(|(candidate_hash, _)| *candidate_hash <= hash);
+        for terminal_id in
+            self.exact_surface_index[start..end]
+                .iter()
+                .filter_map(|(_, terminal_id)| {
+                    (self
+                        .character_anchors
+                        .get(*terminal_id as usize)
+                        .is_some_and(|expected| expected.as_slice() == anchors))
+                    .then_some(*terminal_id)
+                })
+        {
+            candidates
+                .entry(terminal_id)
+                .and_modify(|current| *current = (*current).min(rank))
+                .or_insert(rank);
+        }
+    }
+
+    fn reconstruction_lane_reserve(
+        &self,
+        frontier: &[(u32, ForwardActivation)],
+        observed: &[u32],
+    ) -> Vec<(u32, ForwardActivation)> {
+        let mut reserve = frontier
+            .iter()
+            .filter_map(|(terminal_id, activation)| {
+                let expected = self.character_anchors.get(*terminal_id as usize)?;
+                let modes = reconstruction_modes(observed, expected);
+                (modes != 0).then_some((modes, *terminal_id, *activation))
+            })
+            .collect::<Vec<_>>();
+        reserve.sort_unstable_by(|left, right| {
+            reconstruction_mode_rank(right.0)
+                .cmp(&reconstruction_mode_rank(left.0))
+                .then_with(|| right.2.mass.cmp(&left.2.mass))
+                .then_with(|| right.2.hits.cmp(&left.2.hits))
+                .then_with(|| left.1.cmp(&right.1))
+        });
+        reserve.truncate(MAX_RECONSTRUCTION_RESERVE);
+        reserve
+            .into_iter()
+            .map(|(_, terminal_id, activation)| (terminal_id, activation))
+            .collect()
+    }
+
+    fn operator_reserve(
+        &self,
+        surface: &str,
+        observed: &BTreeMap<u32, ObservedAtom>,
+    ) -> Vec<(u32, ForwardActivation)> {
+        let normalized = normalize_lexical_surface(surface);
+        let chars = normalized.chars().collect::<Vec<_>>();
+        if chars.is_empty() || chars.len() > MAX_ANCHOR_SEQUENCE {
+            return Vec::new();
+        }
+
+        let mut ranked = BTreeMap::<u32, u8>::new();
+        let projected =
+            crate::dict::convert(&normalized, crate::dict::detect_direction(&normalized));
+        let projected_chars = projected.chars().collect::<Vec<_>>();
+        if projected_chars != chars {
+            self.record_exact_operator_candidates(&projected_chars, 0, &mut ranked);
+        }
+
+        let predecessors = chars
+            .iter()
+            .copied()
+            .map(crate::nanda_wave::surface_damage::alphabet_predecessor)
+            .collect::<Vec<_>>();
+        for first in 0..chars.len() {
+            let Some(first_value) = predecessors[first] else {
+                continue;
+            };
+            for second in first + 1..chars.len() {
+                let Some(second_value) = predecessors[second] else {
+                    continue;
+                };
+                let mut repaired = chars.clone();
+                repaired[first] = first_value;
+                repaired[second] = second_value;
+                self.record_exact_operator_candidates(&repaired, 1, &mut ranked);
+            }
+        }
+        for (index, predecessor) in predecessors.into_iter().enumerate() {
+            let Some(predecessor) = predecessor else {
+                continue;
+            };
+            let mut repaired = chars.clone();
+            repaired[index] = predecessor;
+            self.record_exact_operator_candidates(&repaired, 2, &mut ranked);
+        }
+        for first in 0..chars.len() {
+            for second in first + 1..chars.len() {
+                if chars[first] == chars[second] {
+                    continue;
+                }
+                let mut repaired = chars.clone();
+                repaired.swap(first, second);
+                self.record_exact_operator_candidates(&repaired, 3, &mut ranked);
+            }
+        }
+        for index in 0..chars.len() {
+            let mut repaired = chars.clone();
+            repaired.remove(index);
+            self.record_exact_operator_candidates(&repaired, 4, &mut ranked);
+        }
+        if chars.len() >= 2 {
+            for index in 0..chars.len() - 1 {
+                let mut repaired = chars.clone();
+                repaired.drain(index..=index + 1);
+                self.record_exact_operator_candidates(&repaired, 5, &mut ranked);
+            }
+        }
+
+        let mut reserve = ranked
+            .into_iter()
+            .filter_map(|(terminal_id, rank)| {
+                let activation = self.activation_for_terminal(terminal_id, observed);
+                (activation.hits != 0).then_some((rank, terminal_id, activation))
+            })
+            .collect::<Vec<_>>();
+        reserve.sort_unstable_by(|left, right| {
+            left.0
+                .cmp(&right.0)
+                .then_with(|| right.2.mass.cmp(&left.2.mass))
+                .then_with(|| right.2.hits.cmp(&left.2.hits))
+                .then_with(|| left.1.cmp(&right.1))
+        });
+        reserve.truncate(MAX_OPERATOR_RESERVE);
+        reserve
+            .into_iter()
+            .map(|(_, terminal_id, activation)| (terminal_id, activation))
+            .collect()
+    }
+
+    fn record_exact_operator_candidates(
+        &self,
+        chars: &[char],
+        rank: u8,
+        candidates: &mut BTreeMap<u32, u8>,
+    ) {
+        self.record_exact_terminals_for_chars(chars, rank, candidates);
+    }
+
+    fn activation_for_terminal(
+        &self,
+        terminal_id: u32,
+        observed: &BTreeMap<u32, ObservedAtom>,
+    ) -> ForwardActivation {
+        let Some(center) = self.package.centers.get(terminal_id as usize).copied() else {
+            return ForwardActivation::default();
+        };
+        let reverse = self.reverse_couplings(center);
+        let mut activation = ForwardActivation::default();
+        for coupling in reverse.iter().filter(|coupling| coupling.flags == 0) {
+            let Some(atom) = observed.get(&coupling.peer_id) else {
+                continue;
+            };
+            let contribution = u64::from(coupling.strength)
+                .saturating_mul(u64::from(atom.weight))
+                .saturating_mul(u64::from(position_coherence(
+                    atom.position,
+                    coupling.position_mode,
+                )));
+            activation.mass = activation.mass.saturating_add(contribution);
+            activation.hits = activation.hits.saturating_add(1);
+            if is_keyboard_channel(atom.channel) {
+                activation.keyboard_hits = activation.keyboard_hits.saturating_add(1);
+            } else {
+                activation.surface_hits = activation.surface_hits.saturating_add(1);
+            }
+        }
+        activation
     }
 
     fn geometry_reserve(
@@ -581,9 +1245,6 @@ impl LexicalGrokkingMemory {
         let normalized_char_count = normalize_lexical_surface(surface).chars().count();
         let character_anchors_cover_surface =
             observed_character_sequence.as_slice().len() == normalized_char_count;
-        let observed_keyboard_sequence = observed_sequence(&observed, AtomChannel::KeyboardGram);
-        let observed_physical_keys = physical_key_sequence(surface);
-        let observed_script_flags = super::model::surface_script_flags(surface);
         let mut surface_re = [0_i32; WAVE_DIMENSION];
         let mut surface_im = [0_i32; WAVE_DIMENSION];
         for (atom_id, atom) in &observed {
@@ -600,56 +1261,6 @@ impl LexicalGrokkingMemory {
                 &mut surface_im,
                 i32::from(atom.weight),
             );
-        }
-        for candidate in candidates.iter_mut() {
-            let Some(center) = self.package.centers.get(candidate.terminal_id as usize) else {
-                continue;
-            };
-            let Some(profile) = self
-                .package
-                .center_phase_profiles
-                .get(candidate.terminal_id as usize)
-            else {
-                continue;
-            };
-            let cross_script = center.flags != 0
-                && observed_script_flags != 0
-                && center.flags & observed_script_flags == 0;
-            let reverse = self.reverse_couplings(*center);
-            let expected_character_sequence =
-                expected_sequence(reverse, COUPLING_FLAG_CHARACTER_ANCHOR);
-            candidate.reconstruction_modes =
-                if observed_character_sequence.as_slice().len() == normalized_char_count {
-                    reconstruction_modes(
-                        observed_character_sequence.as_slice(),
-                        expected_character_sequence.as_slice(),
-                    )
-                } else {
-                    0
-                };
-            if !cross_script {
-                continue;
-            }
-            let start = profile.keyboard_geometry_start as usize;
-            let end = start.saturating_add(profile.keyboard_geometry_count as usize);
-            let Some(expected) = self.package.keyboard_geometry_units.get(start..end) else {
-                continue;
-            };
-            if expected.is_empty() {
-                continue;
-            }
-            let observed_geometry = if profile.flags & CENTER_PHASE_FLAG_PHYSICAL_KEY_GEOMETRY != 0
-            {
-                observed_physical_keys.as_slice()
-            } else {
-                observed_keyboard_sequence.as_slice()
-            };
-            if observed_geometry.is_empty() {
-                continue;
-            }
-            candidate.geometry_distance = candidate
-                .geometry_distance
-                .min(damerau_distance(observed_geometry, expected).min(u8::MAX as usize) as u8);
         }
         let minimum_geometry = candidates
             .iter()
@@ -803,6 +1414,74 @@ impl LexicalGrokkingMemory {
             &surface_re,
             &surface_im,
         );
+    }
+
+    fn apply_restoration_geometry(&self, surface: &str, candidates: &mut [GrokkingCandidate]) {
+        if self.package.center_phase_profiles.is_empty() {
+            return;
+        }
+        let observed = self.resolve_surface(surface);
+        let observed_character_sequence =
+            observed_sequence(&observed, AtomChannel::CharacterAnchor);
+        let normalized_char_count = normalize_lexical_surface(surface).chars().count();
+        let character_anchors_cover_surface =
+            observed_character_sequence.as_slice().len() == normalized_char_count;
+        let observed_keyboard_sequence = observed_sequence(&observed, AtomChannel::KeyboardGram);
+        let observed_physical_keys = physical_key_sequence(surface);
+        let observed_script_flags = super::model::surface_script_flags(surface);
+        for candidate in candidates {
+            let Some(center) = self.package.centers.get(candidate.terminal_id as usize) else {
+                continue;
+            };
+            let Some(profile) = self
+                .package
+                .center_phase_profiles
+                .get(candidate.terminal_id as usize)
+            else {
+                continue;
+            };
+            let reverse = self.reverse_couplings(*center);
+            let expected_character_sequence =
+                expected_sequence(reverse, COUPLING_FLAG_CHARACTER_ANCHOR);
+            candidate.reconstruction_modes = if character_anchors_cover_surface {
+                reconstruction_modes(
+                    observed_character_sequence.as_slice(),
+                    expected_character_sequence.as_slice(),
+                )
+            } else {
+                0
+            };
+            if let Some(expected_surface) = self.decode_terminal(candidate.terminal_id) {
+                candidate.reconstruction_modes |=
+                    surface_operator_reconstruction_modes(surface, &expected_surface);
+            }
+            let cross_script = center.flags != 0
+                && observed_script_flags != 0
+                && center.flags & observed_script_flags == 0;
+            if !cross_script {
+                continue;
+            }
+            let start = profile.keyboard_geometry_start as usize;
+            let end = start.saturating_add(profile.keyboard_geometry_count as usize);
+            let Some(expected) = self.package.keyboard_geometry_units.get(start..end) else {
+                continue;
+            };
+            if expected.is_empty() {
+                continue;
+            }
+            let observed_geometry = if profile.flags & CENTER_PHASE_FLAG_PHYSICAL_KEY_GEOMETRY != 0
+            {
+                observed_physical_keys.as_slice()
+            } else {
+                observed_keyboard_sequence.as_slice()
+            };
+            if observed_geometry.is_empty() {
+                continue;
+            }
+            candidate.geometry_distance = candidate
+                .geometry_distance
+                .min(damerau_distance(observed_geometry, expected).min(u8::MAX as usize) as u8);
+        }
     }
 
     pub(super) fn ambiguity_observations(
@@ -995,21 +1674,10 @@ impl LexicalGrokkingMemory {
         let length_milli = 1_000_u16.saturating_sub(
             u16::from(observed_char_count.abs_diff(expected_char_count)).saturating_mul(180),
         );
-        let mut energy = i32::from(forward_milli) * 3;
-        for _ in 0..SETTLING_ITERATIONS {
-            let constructive =
-                i32::from(backward_milli) * 3 + (i32::from(positive_milli) - 500).max(0) * 2;
-            let destructive = i32::from(anti_milli) * 4
-                + (500 - i32::from(positive_milli)).max(0) * 2
-                + (1_000 - i32::from(length_milli)) * 2;
-            energy =
-                (energy + i32::from(forward_milli) * 3 + constructive + i32::from(length_milli)
-                    - destructive)
-                    / 2;
-        }
-        let legacy_settled_energy =
-            energy.saturating_add((i32::from(legacy_sequence_milli) - 750).saturating_mul(3));
-        energy = energy.saturating_add((i32::from(sequence_milli) - 750).saturating_mul(3));
+        let energy =
+            base_settled_energy(forward_milli, backward_milli, positive_milli, length_milli);
+        let legacy_settled_energy = with_sequence_energy(energy, legacy_sequence_milli);
+        let energy = with_sequence_energy(energy, sequence_milli);
         Some(GrokkingCandidate {
             terminal_id,
             atom_hits: activation.hits,
@@ -1030,6 +1698,7 @@ impl LexicalGrokkingMemory {
             ambiguity_threshold_milli: 0,
             ambiguity_linked: false,
             ambiguity_shell: false,
+            reconstruction_only: false,
             pairwise_loss_milli: 0,
             crystallization_wins: 0,
             crystallization_required: 0,
@@ -1177,6 +1846,40 @@ fn max_subcenter_coherence(
 }
 
 pub(super) fn damerau_distance(left: &[u32], right: &[u32]) -> usize {
+    const STACK_WIDTH: usize = MAX_ANCHOR_SEQUENCE + 1;
+    if right.len() >= STACK_WIDTH {
+        return damerau_distance_heap(left, right);
+    }
+    let mut previous_previous = [0_usize; STACK_WIDTH];
+    let mut previous = [0_usize; STACK_WIDTH];
+    let mut current = [0_usize; STACK_WIDTH];
+    for (column, slot) in previous.iter_mut().take(right.len() + 1).enumerate() {
+        *slot = column;
+    }
+    for row in 1..=left.len() {
+        current[0] = row;
+        for column in 1..=right.len() {
+            let substitution = usize::from(left[row - 1] != right[column - 1]);
+            let mut distance = previous[column]
+                .saturating_add(1)
+                .min(current[column - 1].saturating_add(1))
+                .min(previous[column - 1].saturating_add(substitution));
+            if row > 1
+                && column > 1
+                && left[row - 1] == right[column - 2]
+                && left[row - 2] == right[column - 1]
+            {
+                distance = distance.min(previous_previous[column - 2].saturating_add(1));
+            }
+            current[column] = distance;
+        }
+        std::mem::swap(&mut previous_previous, &mut previous);
+        std::mem::swap(&mut previous, &mut current);
+    }
+    previous[right.len()]
+}
+
+fn damerau_distance_heap(left: &[u32], right: &[u32]) -> usize {
     let width = right.len() + 1;
     let mut matrix = vec![0_usize; (left.len() + 1) * width];
     for row in 0..=left.len() {
@@ -1212,6 +1915,15 @@ pub(super) fn reconstruction_modes(observed: &[u32], expected: &[u32]) -> u8 {
     }
     let mut modes = 0;
     let ordered_subsequence = is_ordered_subsequence(observed, expected);
+    if missing == 1 && ordered_subsequence {
+        if observed == &expected[..expected.len() - 1] {
+            modes |= RECONSTRUCTION_MODE_SUFFIX_TRUNCATION;
+        } else if observed == &expected[1..] {
+            modes |= RECONSTRUCTION_MODE_PREFIX_TRUNCATION;
+        } else {
+            modes |= RECONSTRUCTION_MODE_SINGLE_DELETION;
+        }
+    }
     if missing == 2 && ordered_subsequence {
         modes |= RECONSTRUCTION_MODE_DELETION;
     }
@@ -1222,6 +1934,51 @@ pub(super) fn reconstruction_modes(observed: &[u32], expected: &[u32]) -> u8 {
         modes |= RECONSTRUCTION_MODE_DELETION_TRANSPOSITION;
     }
     modes
+}
+
+pub(super) fn surface_operator_reconstruction_modes(observed: &str, expected: &str) -> u8 {
+    let observed = normalize_lexical_surface(observed)
+        .chars()
+        .collect::<Vec<_>>();
+    let expected = normalize_lexical_surface(expected)
+        .chars()
+        .collect::<Vec<_>>();
+    if observed.len() != expected.len() || observed == expected {
+        return 0;
+    }
+
+    let mismatches = observed
+        .iter()
+        .zip(&expected)
+        .enumerate()
+        .filter_map(|(index, (observed, expected))| (observed != expected).then_some(index))
+        .collect::<Vec<_>>();
+    match mismatches.as_slice() {
+        [index]
+            if crate::nanda_wave::surface_damage::alphabet_successor(expected[*index])
+                == Some(observed[*index]) =>
+        {
+            RECONSTRUCTION_MODE_SINGLE_SUBSTITUTION
+        }
+        [first, second] => {
+            let mut modes = 0;
+            if crate::nanda_wave::surface_damage::alphabet_successor(expected[*first])
+                == Some(observed[*first])
+                && crate::nanda_wave::surface_damage::alphabet_successor(expected[*second])
+                    == Some(observed[*second])
+            {
+                modes |= RECONSTRUCTION_MODE_DOUBLE_SUBSTITUTION;
+            }
+            if *second > first.saturating_add(1)
+                && expected[*first] == observed[*second]
+                && expected[*second] == observed[*first]
+            {
+                modes |= RECONSTRUCTION_MODE_NON_ADJACENT_TRANSPOSITION;
+            }
+            modes
+        }
+        _ => 0,
+    }
 }
 
 fn is_ordered_subsequence(needle: &[u32], haystack: &[u32]) -> bool {
@@ -1235,18 +1992,77 @@ fn is_ordered_subsequence(needle: &[u32], haystack: &[u32]) -> bool {
 }
 
 fn is_subsequence_after_one_adjacent_swap(observed: &[u32], expected: &[u32]) -> bool {
-    if observed.len() < 2 {
+    if observed.len() < 2
+        || expected.len() != observed.len().saturating_add(1)
+        || observed.len() > MAX_ANCHOR_SEQUENCE
+        || expected.len() > MAX_ANCHOR_SEQUENCE
+    {
         return false;
     }
-    let mut repaired = observed.to_vec();
-    for index in 0..observed.len() - 1 {
-        repaired.swap(index, index + 1);
-        if is_ordered_subsequence(&repaired, expected) {
-            return true;
+
+    fn visit(
+        observed: &[u32],
+        expected: &[u32],
+        observed_index: usize,
+        expected_index: usize,
+        skipped: bool,
+        swapped: bool,
+    ) -> bool {
+        if observed_index == observed.len() && expected_index == expected.len() {
+            skipped && swapped
+        } else {
+            (!skipped
+                && expected_index < expected.len()
+                && visit(
+                    observed,
+                    expected,
+                    observed_index,
+                    expected_index + 1,
+                    true,
+                    swapped,
+                ))
+                || (observed_index < observed.len()
+                    && expected_index < expected.len()
+                    && observed[observed_index] == expected[expected_index]
+                    && visit(
+                        observed,
+                        expected,
+                        observed_index + 1,
+                        expected_index + 1,
+                        skipped,
+                        swapped,
+                    ))
+                || (!swapped
+                    && observed_index + 1 < observed.len()
+                    && expected_index + 1 < expected.len()
+                    && observed[observed_index] == expected[expected_index + 1]
+                    && observed[observed_index + 1] == expected[expected_index]
+                    && visit(
+                        observed,
+                        expected,
+                        observed_index + 2,
+                        expected_index + 2,
+                        skipped,
+                        true,
+                    ))
+                || (!skipped
+                    && !swapped
+                    && observed_index + 1 < observed.len()
+                    && expected_index + 2 < expected.len()
+                    && observed[observed_index] == expected[expected_index + 2]
+                    && observed[observed_index + 1] == expected[expected_index]
+                    && visit(
+                        observed,
+                        expected,
+                        observed_index + 2,
+                        expected_index + 3,
+                        true,
+                        true,
+                    ))
         }
-        repaired.swap(index, index + 1);
     }
-    false
+
+    visit(observed, expected, 0, 0, false, false)
 }
 
 pub(super) fn apply_position_certificate_interference(candidates: &mut [GrokkingCandidate]) {
@@ -1280,6 +2096,9 @@ pub(super) fn apply_position_certificate_interference(candidates: &mut [Grokking
         return;
     }
     let winner_candidate = candidates[winner];
+    if winner_candidate.geometry_distance > incumbent.geometry_distance {
+        return;
+    }
     let energy_deficit = incumbent
         .settled_energy
         .saturating_sub(winner_candidate.settled_energy);
@@ -1301,6 +2120,147 @@ pub(super) fn apply_position_certificate_interference(candidates: &mut [Grokking
         }
     }
     candidates[..=winner].rotate_right(1);
+}
+
+pub(super) fn apply_geometry_certificate_interference(candidates: &mut [GrokkingCandidate]) {
+    const MAX_ENERGY_DEFICIT: i32 = 1_000;
+
+    let Some(incumbent) = candidates.first().copied() else {
+        return;
+    };
+    if incumbent.exact_reconstruction {
+        return;
+    }
+    let mut evidence = candidates
+        .iter()
+        .enumerate()
+        .filter(|(_, candidate)| geometry_certificate_rank(candidate) != 0)
+        .collect::<Vec<_>>();
+    evidence.sort_unstable_by(|left, right| {
+        geometry_certificate_rank(right.1)
+            .cmp(&geometry_certificate_rank(left.1))
+            .then_with(|| left.1.geometry_distance.cmp(&right.1.geometry_distance))
+            .then_with(|| right.1.settled_energy.cmp(&left.1.settled_energy))
+            .then_with(|| left.1.terminal_id.cmp(&right.1.terminal_id))
+    });
+    let Some((winner, candidate)) = evidence.first().copied() else {
+        return;
+    };
+    if winner == 0 {
+        return;
+    }
+    let candidate_rank = geometry_certificate_rank(candidate);
+    let incumbent_rank = geometry_certificate_rank(&incumbent);
+    if candidate_rank < incumbent_rank {
+        return;
+    }
+    if candidate.geometry_distance > incumbent.geometry_distance
+        && !geometry_certificate_can_cross_distance(candidate)
+    {
+        return;
+    }
+    if candidate_rank == incumbent_rank
+        && candidate.geometry_distance >= incumbent.geometry_distance
+    {
+        return;
+    }
+    let energy_deficit = incumbent
+        .settled_energy
+        .saturating_sub(candidate.settled_energy);
+    if candidate.reconstruction_modes & RECONSTRUCTION_MODE_DELETION != 0
+        && incumbent.reconstruction_modes
+            & (RECONSTRUCTION_MODE_SINGLE_DELETION
+                | RECONSTRUCTION_MODE_PREFIX_TRUNCATION
+                | RECONSTRUCTION_MODE_SUFFIX_TRUNCATION)
+            != 0
+        && incumbent.geometry_distance < candidate.geometry_distance
+        && energy_deficit > 0
+    {
+        return;
+    }
+    if candidate.geometry_distance > incumbent.geometry_distance
+        && energy_deficit > geometry_certificate_cross_distance_lease(candidate)
+    {
+        return;
+    }
+    if candidate_rank == incumbent_rank && energy_deficit > MAX_ENERGY_DEFICIT {
+        return;
+    }
+    candidates[..=winner].rotate_right(1);
+}
+
+fn geometry_certificate_rank(candidate: &GrokkingCandidate) -> u8 {
+    const DIRECT_SURFACE_MODES: u8 = RECONSTRUCTION_MODE_SINGLE_SUBSTITUTION
+        | RECONSTRUCTION_MODE_DOUBLE_SUBSTITUTION
+        | RECONSTRUCTION_MODE_NON_ADJACENT_TRANSPOSITION;
+    if candidate.keyboard_hits > candidate.surface_hits {
+        6
+    } else if candidate.reconstruction_modes & DIRECT_SURFACE_MODES != 0 {
+        5
+    } else if candidate.reconstruction_modes & RECONSTRUCTION_MODE_DELETION_TRANSPOSITION != 0 {
+        4
+    } else if candidate.reconstruction_modes
+        & (RECONSTRUCTION_MODE_PREFIX_TRUNCATION | RECONSTRUCTION_MODE_SUFFIX_TRUNCATION)
+        != 0
+    {
+        3
+    } else if candidate.reconstruction_modes & RECONSTRUCTION_MODE_DELETION != 0 {
+        2
+    } else if candidate.reconstruction_modes != 0 {
+        1
+    } else {
+        0
+    }
+}
+
+fn geometry_certificate_cross_distance_lease(candidate: &GrokkingCandidate) -> i32 {
+    if candidate.reconstruction_modes & RECONSTRUCTION_MODE_DELETION != 0 {
+        4_000
+    } else {
+        1_500
+    }
+}
+
+fn geometry_certificate_can_cross_distance(candidate: &GrokkingCandidate) -> bool {
+    candidate.keyboard_hits > candidate.surface_hits
+        || candidate.reconstruction_modes & RECONSTRUCTION_MODE_DOUBLE_SUBSTITUTION != 0
+        || (candidate.reconstruction_modes != 0 && candidate.sequence_milli == 1_000)
+}
+
+fn reconstruction_mode_rank(modes: u8) -> u8 {
+    if modes & RECONSTRUCTION_MODE_DELETION_TRANSPOSITION != 0 {
+        4
+    } else if modes & RECONSTRUCTION_MODE_DELETION != 0 {
+        3
+    } else if modes
+        & (RECONSTRUCTION_MODE_SINGLE_DELETION
+            | RECONSTRUCTION_MODE_PREFIX_TRUNCATION
+            | RECONSTRUCTION_MODE_SUFFIX_TRUNCATION)
+        != 0
+    {
+        2
+    } else {
+        1
+    }
+}
+
+fn truncate_with_reconstruction_tail(candidates: &mut Vec<GrokkingCandidate>, limit: usize) {
+    if candidates.len() <= limit {
+        return;
+    }
+    let reserve = candidates[limit..]
+        .iter()
+        .filter(|candidate| candidate.reconstruction_modes != 0)
+        .take(MAX_RECONSTRUCTION_TAIL.min(limit))
+        .copied()
+        .collect::<Vec<_>>();
+    if reserve.is_empty() {
+        candidates.truncate(limit);
+        return;
+    }
+    let primary_count = limit.saturating_sub(reserve.len());
+    candidates.truncate(primary_count);
+    candidates.extend(reserve);
 }
 
 fn compile_character_anchors(package: &LexicalGrokkingPackage) -> Vec<Vec<u32>> {
@@ -1348,6 +2308,48 @@ pub(super) fn ambiguity_geometry_link(
 ) -> bool {
     competitor_distance <= max_geometry_distance
         && owner_distance.abs_diff(competitor_distance) <= 1
+}
+
+fn apply_settlement_mode(candidate: &mut GrokkingCandidate, mode: ReadoutMode) {
+    if mode == ReadoutMode::WithoutPhase {
+        candidate.positive_milli = 500;
+    }
+    candidate.sequence_milli = match mode {
+        ReadoutMode::WithoutSequence => 750,
+        ReadoutMode::LegacySequence => candidate.legacy_sequence_milli,
+        _ => candidate.sequence_milli,
+    };
+    let energy = base_settled_energy(
+        candidate.forward_milli,
+        candidate.backward_milli,
+        candidate.positive_milli,
+        candidate.length_milli,
+    );
+    candidate.legacy_settled_energy = with_sequence_energy(energy, candidate.legacy_sequence_milli);
+    candidate.settled_energy = with_sequence_energy(energy, candidate.sequence_milli);
+}
+
+fn base_settled_energy(
+    forward_milli: u16,
+    backward_milli: u16,
+    positive_milli: u16,
+    length_milli: u16,
+) -> i32 {
+    let mut energy = i32::from(forward_milli) * 3;
+    for _ in 0..SETTLING_ITERATIONS {
+        let constructive =
+            i32::from(backward_milli) * 3 + (i32::from(positive_milli) - 500).max(0) * 2;
+        let destructive =
+            (500 - i32::from(positive_milli)).max(0) * 2 + (1_000 - i32::from(length_milli)) * 2;
+        energy = (energy + i32::from(forward_milli) * 3 + constructive + i32::from(length_milli)
+            - destructive)
+            / 2;
+    }
+    energy
+}
+
+fn with_sequence_energy(energy: i32, sequence_milli: u16) -> i32 {
+    energy.saturating_add((i32::from(sequence_milli) - 750).saturating_mul(3))
 }
 
 fn apply_structural_interference(candidates: &mut [GrokkingCandidate]) {
@@ -1584,6 +2586,56 @@ mod tests {
     use super::*;
 
     #[test]
+    fn candidate_birth_keeps_a_rare_budgeted_channel_frontier() {
+        let mut channels: [Vec<BirthAtom>; 12] = std::array::from_fn(|_| Vec::new());
+        channels[AtomChannel::CharacterGram as usize] = (0_u32..40)
+            .map(|atom_id| {
+                (
+                    (40 - atom_id) as usize,
+                    atom_id,
+                    ObservedAtom {
+                        position: atom_id as u8,
+                        weight: 1,
+                        channel: AtomChannel::CharacterGram,
+                    },
+                )
+            })
+            .collect();
+
+        let selected = select_birth_atoms(&mut channels, DEFAULT_BIRTH_ATOMS_PER_CHANNEL);
+
+        assert_eq!(DEFAULT_BIRTH_ATOMS_PER_CHANNEL, 4);
+        assert_eq!(selected.len(), 4);
+        assert_eq!(selected.first().map(|atom| atom.1), Some(39));
+        assert_eq!(selected.last().map(|atom| atom.1), Some(36));
+    }
+
+    #[test]
+    fn candidate_birth_stays_within_the_global_posting_budget() {
+        let mut channels: [Vec<BirthAtom>; 12] = std::array::from_fn(|_| Vec::new());
+        for (channel, atoms) in channels.iter_mut().take(3).enumerate() {
+            *atoms = (0_u32..4)
+                .map(|atom_id| {
+                    (
+                        50_000,
+                        atom_id + channel as u32 * 10,
+                        ObservedAtom {
+                            position: atom_id as u8,
+                            weight: 1,
+                            channel: AtomChannel::CharacterGram,
+                        },
+                    )
+                })
+                .collect();
+        }
+
+        let selected = select_birth_atoms(&mut channels, 4);
+
+        assert_eq!(selected.len(), 2);
+        assert!(selected.iter().map(|atom| atom.0).sum::<usize>() <= MAX_BIRTH_POSTINGS);
+    }
+
+    #[test]
     fn geometry_reserve_keeps_the_nearest_basin_and_ambiguity_shell() {
         let memory = LexicalGrokkingMemory {
             package: LexicalGrokkingPackage {
@@ -1632,5 +2684,217 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec![1, 2, 0]
         );
+    }
+
+    #[test]
+    fn reconstruction_origin_does_not_override_geometry_evidence() {
+        let primary = GrokkingCandidate {
+            terminal_id: 1,
+            geometry_distance: 2,
+            settled_energy: 900,
+            ..Default::default()
+        };
+        let reconstructed_tail = GrokkingCandidate {
+            terminal_id: 2,
+            reconstruction_only: true,
+            reconstruction_modes: RECONSTRUCTION_MODE_DELETION,
+            geometry_distance: 1,
+            settled_energy: 1_000,
+            ..Default::default()
+        };
+        let mut candidates = [primary, reconstructed_tail];
+
+        apply_geometry_certificate_interference(&mut candidates);
+
+        assert_eq!(candidates[0].terminal_id, reconstructed_tail.terminal_id);
+        assert_eq!(candidates[1].terminal_id, primary.terminal_id);
+    }
+
+    #[test]
+    fn exact_two_omission_inverse_operator_can_cross_raw_edit_distance() {
+        let nearer_incumbent = GrokkingCandidate {
+            terminal_id: 1,
+            geometry_distance: 1,
+            settled_energy: 7_200,
+            ..Default::default()
+        };
+        let two_omission_reconstruction = GrokkingCandidate {
+            terminal_id: 2,
+            reconstruction_modes: RECONSTRUCTION_MODE_DELETION,
+            sequence_milli: 1_000,
+            geometry_distance: 2,
+            settled_energy: 6_000,
+            ..Default::default()
+        };
+        let mut candidates = [nearer_incumbent, two_omission_reconstruction];
+
+        apply_geometry_certificate_interference(&mut candidates);
+
+        assert_eq!(
+            candidates[0].terminal_id,
+            two_omission_reconstruction.terminal_id
+        );
+    }
+
+    #[test]
+    fn inverse_operator_cannot_spend_unbounded_energy_to_cross_distance() {
+        let nearer_incumbent = GrokkingCandidate {
+            terminal_id: 1,
+            geometry_distance: 1,
+            settled_energy: 8_000,
+            ..Default::default()
+        };
+        let weak_two_omission_reconstruction = GrokkingCandidate {
+            terminal_id: 2,
+            reconstruction_modes: RECONSTRUCTION_MODE_DELETION,
+            sequence_milli: 1_000,
+            geometry_distance: 2,
+            settled_energy: 3_500,
+            ..Default::default()
+        };
+        let mut candidates = [nearer_incumbent, weak_two_omission_reconstruction];
+
+        apply_geometry_certificate_interference(&mut candidates);
+
+        assert_eq!(candidates[0].terminal_id, nearer_incumbent.terminal_id);
+    }
+
+    #[test]
+    fn two_omission_operator_does_not_displace_a_stronger_one_omission_inverse() {
+        let one_omission_inverse = GrokkingCandidate {
+            terminal_id: 1,
+            reconstruction_modes: RECONSTRUCTION_MODE_SINGLE_DELETION,
+            sequence_milli: 1_000,
+            geometry_distance: 1,
+            settled_energy: 8_200,
+            ..Default::default()
+        };
+        let weaker_two_omission_inverse = GrokkingCandidate {
+            terminal_id: 2,
+            reconstruction_modes: RECONSTRUCTION_MODE_DELETION,
+            sequence_milli: 1_000,
+            geometry_distance: 2,
+            settled_energy: 7_800,
+            ..Default::default()
+        };
+        let mut candidates = [one_omission_inverse, weaker_two_omission_inverse];
+
+        apply_geometry_certificate_interference(&mut candidates);
+
+        assert_eq!(candidates[0].terminal_id, one_omission_inverse.terminal_id);
+    }
+
+    #[test]
+    fn exact_boundary_truncation_outranks_a_two_omission_completion() {
+        let two_omission_completion = GrokkingCandidate {
+            terminal_id: 1,
+            reconstruction_modes: RECONSTRUCTION_MODE_DELETION,
+            sequence_milli: 1_000,
+            geometry_distance: 2,
+            settled_energy: 8_000,
+            ..Default::default()
+        };
+        let suffix_completion = GrokkingCandidate {
+            terminal_id: 2,
+            reconstruction_modes: RECONSTRUCTION_MODE_SUFFIX_TRUNCATION,
+            sequence_milli: 1_000,
+            geometry_distance: 1,
+            settled_energy: 7_500,
+            ..Default::default()
+        };
+        let mut candidates = [two_omission_completion, suffix_completion];
+
+        apply_geometry_certificate_interference(&mut candidates);
+
+        assert_eq!(candidates[0].terminal_id, suffix_completion.terminal_id);
+    }
+
+    #[test]
+    fn reconstruction_evidence_survives_bounded_lattice_without_reordering_primary() {
+        let mut candidates = (0..6)
+            .map(|terminal_id| GrokkingCandidate {
+                terminal_id,
+                reconstruction_modes: if terminal_id >= 4 {
+                    RECONSTRUCTION_MODE_DELETION
+                } else {
+                    0
+                },
+                ..Default::default()
+            })
+            .collect::<Vec<_>>();
+
+        truncate_with_reconstruction_tail(&mut candidates, 4);
+
+        assert_eq!(
+            candidates
+                .iter()
+                .map(|candidate| candidate.terminal_id)
+                .collect::<Vec<_>>(),
+            vec![0, 1, 4, 5]
+        );
+    }
+
+    #[test]
+    fn adjacent_swap_plus_omission_matcher_is_exact_without_heap_storage() {
+        assert!(is_subsequence_after_one_adjacent_swap(
+            &[1, 3, 2, 4],
+            &[1, 2, 3, 4, 5]
+        ));
+        assert!(is_subsequence_after_one_adjacent_swap(
+            &[2, 1, 4],
+            &[1, 2, 3, 4]
+        ));
+        assert!(is_subsequence_after_one_adjacent_swap(
+            &[1, 4, 2],
+            &[1, 2, 3, 4]
+        ));
+        assert!(!is_subsequence_after_one_adjacent_swap(
+            &[1, 2, 3],
+            &[1, 2, 3, 4]
+        ));
+    }
+
+    #[test]
+    fn adjacent_swap_plus_omission_matcher_preserves_reference_semantics() {
+        fn reference(observed: &[u32], expected: &[u32]) -> bool {
+            if observed.len() < 2 {
+                return false;
+            }
+            let mut repaired = observed.to_vec();
+            for index in 0..observed.len() - 1 {
+                repaired.swap(index, index + 1);
+                if is_ordered_subsequence(&repaired, expected) {
+                    return true;
+                }
+                repaired.swap(index, index + 1);
+            }
+            false
+        }
+
+        fn surfaces(length: usize) -> Vec<Vec<u32>> {
+            let count = 3_usize.pow(length as u32);
+            (0..count)
+                .map(|mut encoded| {
+                    let mut surface = vec![0; length];
+                    for symbol in &mut surface {
+                        *symbol = (encoded % 3) as u32;
+                        encoded /= 3;
+                    }
+                    surface
+                })
+                .collect()
+        }
+
+        for observed_length in 2..=4 {
+            for observed in surfaces(observed_length) {
+                for expected in surfaces(observed_length + 1) {
+                    assert_eq!(
+                        is_subsequence_after_one_adjacent_swap(&observed, &expected),
+                        reference(&observed, &expected),
+                        "observed={observed:?} expected={expected:?}"
+                    );
+                }
+            }
+        }
     }
 }

@@ -30,6 +30,7 @@ const DEFAULT_DATASET: &str = "data/nanda_training/generated_cases.tsv";
 const RECENT_ACTIONS: &str = ".local/share/lay/recent_actions.jsonl";
 const CORRECTIONS_LOG: &str = ".local/share/lay/corrections.jsonl";
 const USAGE_EVENTS: &str = ".local/share/lay/nanda_wave/word_usage_events.jsonl";
+const DEFAULT_L11_TRAINING_SURFACES_PER_WORD: usize = 2;
 
 #[derive(Debug, Clone)]
 struct Learned {
@@ -54,8 +55,13 @@ fn main() -> io::Result<()> {
         let surface = arg_string(&args, "--surface")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--surface is required"))?;
         let iterations = arg_usize(&args, "--iterations").unwrap_or(1_000);
-        let report =
-            lay::nanda_wave::benchmark_l1_lexical_grokking(&l1_package, &surface, iterations)?;
+        let limit = arg_usize(&args, "--limit").unwrap_or(64);
+        let report = lay::nanda_wave::benchmark_l1_lexical_grokking(
+            &l1_package,
+            &surface,
+            iterations,
+            limit,
+        )?;
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?
@@ -67,6 +73,64 @@ fn main() -> io::Result<()> {
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--surface is required"))?;
         let limit = arg_usize(&args, "--limit").unwrap_or(8);
         let report = lay::nanda_wave::query_l1_lexical_grokking(&package, &surface, limit)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(package) = arg_path(&args, "--compact-l1-depth0-package") {
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report = lay::nanda_wave::compact_depth0_package(&package, &output)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(corpus) = arg_path(&args, "--crystallize-l1-lexical-grokking") {
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let max_words = arg_usize(&args, "--max-words").unwrap_or(0);
+        let heldout_per_class = arg_usize(&args, "--heldout-per-class").unwrap_or(20_000);
+        let training_surfaces_per_word = arg_usize(&args, "--training-surfaces-per-word")
+            .unwrap_or(DEFAULT_L11_TRAINING_SURFACES_PER_WORD);
+        let training_surface_policy = arg_string(&args, "--training-surface-policy")
+            .unwrap_or_else(|| "legacy-alphabetical".to_string());
+        let training_surface_policy =
+            lay::nanda_wave::ScaleTrainingSurfacePolicy::parse(&training_surface_policy)
+                .map_err(|error| io::Error::new(io::ErrorKind::InvalidInput, error))?;
+        let maximum_rss_mib = arg_usize(&args, "--max-rss-mib").unwrap_or(24 * 1024);
+        let report = lay::nanda_wave::crystallize_l1_lexical_grokking_with_surface_policy(
+            &corpus,
+            &output,
+            max_words,
+            heldout_per_class,
+            training_surfaces_per_word,
+            maximum_rss_mib,
+            training_surface_policy,
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(corpus) = arg_path(&args, "--prove-l1-lexical-grokking-scale-package") {
+        let package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let max_words = arg_usize(&args, "--max-words").unwrap_or(0);
+        let heldout_per_class = arg_usize(&args, "--heldout-per-class").unwrap_or(20_000);
+        let training_surfaces_per_word = arg_usize(&args, "--training-surfaces-per-word")
+            .unwrap_or(DEFAULT_L11_TRAINING_SURFACES_PER_WORD);
+        let report = lay::nanda_wave::prove_l1_lexical_grokking_scale_package(
+            &corpus,
+            &package,
+            max_words,
+            heldout_per_class,
+            training_surfaces_per_word,
+        )?;
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?

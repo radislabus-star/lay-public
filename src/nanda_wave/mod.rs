@@ -24,6 +24,7 @@ mod lexical_grokking;
 mod lexical_phase;
 pub mod llmwave;
 pub mod mode;
+mod morphology_phase;
 pub mod options;
 pub mod packet;
 pub mod pattern_wave;
@@ -43,11 +44,17 @@ pub use eval::{evaluate_wave, evaluate_wave_with_options, WaveEvalResult, WaveEv
 pub use l2_candidate_phase::L2PhaseTrainingEntry;
 pub(crate) use l2_candidate_phase::{PhaseReadout, PhaseVerdict};
 pub use lexical_grokking::{
-    analyze_l1_forward_compression, benchmark_l1_lexical_grokking, prove_l1_lexical_grokking,
+    analyze_l1_forward_compression, benchmark_l1_lexical_grokking, compact_depth0_package,
+    crystallize_l1_lexical_grokking, crystallize_l1_lexical_grokking_with_rss_budget,
+    crystallize_l1_lexical_grokking_with_surface_policy, prove_l1_lexical_grokking,
     prove_l1_lexical_grokking_complete_postings, prove_l1_lexical_grokking_package,
-    query_l1_lexical_grokking, restore_l1_surface,
+    prove_l1_lexical_grokking_scale_package, query_l1_lexical_grokking, restore_l1_surface,
+    ScaleTrainingSurfacePolicy,
 };
 pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
+pub use morphology_phase::{
+    run_embedded_russian_morphology_proof, run_russian_morphology_proof_path,
+};
 pub use options::WaveOptions;
 pub use self_teacher_l3::{build_lay_self_teacher_l3_report, LaySelfTeacherL3Config};
 pub use signal::{ActiveMode, LayerTrace, WaveDecision, WavePacket, WaveTrace, WordCandidate};

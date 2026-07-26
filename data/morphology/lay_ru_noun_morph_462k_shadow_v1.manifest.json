@@ -1,0 +1,15 @@
+{
+  "package_id": "LAY-RU-NOUN-MORPH-462K-SHADOW-v1",
+  "layer": "L2 morphology phase",
+  "status": "PASS_shadow",
+  "runtime_authority": false,
+  "scope": "Russian noun forms and form-to-lemma morphology bindings",
+  "corpus_artifact": "data/morphology/lay_ru_noun_morph_462k_shadow_v1.tsv",
+  "corpus_bytes": 78566535,
+  "corpus_sha256": "1194f3e14c620974e4a794c989bb5707c0a49f2ff74678f2ce9fcb50e6826d43",
+  "unique_form_centers": 462314,
+  "lemma_centers": 47766,
+  "morph_bindings": 633016,
+  "proof_receipt": "docs/structural_gates/receipts/L2_RUSSIAN_MORPHOLOGY_EXPANDED_462K_2026-07-24.json",
+  "l1_1_crystallized": false
+}

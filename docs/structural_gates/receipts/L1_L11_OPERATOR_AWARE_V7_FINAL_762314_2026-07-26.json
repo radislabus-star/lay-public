@@ -1,0 +1,115 @@
+{
+  "experiment": "L1.1 operator-aware implicit-field V7 final full-corpus proof",
+  "date": "2026-07-26",
+  "scope": "shadow_only_fixed_ru462k_en300k_13x20000",
+  "source_words": 762314,
+  "heldout_surfaces": 260000,
+  "heldout_per_class": 20000,
+  "training_surfaces_per_word": 0,
+  "proof_workers": 20,
+  "birth_atoms_per_channel": 4,
+  "maximum_birth_postings": 131072,
+  "format": "V7",
+  "artifact_bytes": 69325620,
+  "artifact_mib": 66.11310958862305,
+  "artifact_sha256": "232de23384dc1d62977a5c244a2fed14615c03d2818ee79618ade3a618456ab4",
+  "atom_count": 204324,
+  "word_centers": 762314,
+  "word_center_bytes": 64,
+  "word_center_bank_bytes": 48788096,
+  "stored_forward_couplings": 0,
+  "stored_reverse_couplings": 0,
+  "reconstructed_forward_couplings": 98768909,
+  "reconstructed_reverse_couplings": 78644261,
+  "heldout_top1_percent": 85.42153846153846,
+  "heldout_top8_percent": 96.4376923076923,
+  "heldout_top64_percent": 99.71692307692308,
+  "clean_preservation_percent": 100.0,
+  "hot_readout_p50_us": 2506,
+  "hot_readout_p99_us": 3146,
+  "hot_readout_max_us": 3296,
+  "false_authority_on_objective_ambiguity": 0,
+  "false_singleton_on_geometry_tie": 0,
+  "proof_ms": 185385,
+  "heldout_evaluation_ms": 171848,
+  "wall_seconds": 273.76,
+  "peak_rss_bytes": 2378293248,
+  "classes": {
+    "adjacent_transposition": {
+      "unique_top1_percent": 98.06222543178673,
+      "lattice_coverage_percent": 99.605
+    },
+    "double_substitution": {
+      "unique_top1_percent": 95.45478347384406,
+      "lattice_coverage_percent": 99.895
+    },
+    "extra_letter": {
+      "unique_top1_percent": 98.91169154228855,
+      "lattice_coverage_percent": 99.99
+    },
+    "layout_projection": {
+      "unique_top1_percent": 98.3417188623062,
+      "lattice_coverage_percent": 99.615
+    },
+    "letter_substitution": {
+      "unique_top1_percent": 99.945343244425,
+      "lattice_coverage_percent": 99.64
+    },
+    "missing_letter": {
+      "unique_top1_percent": 98.9092434624528,
+      "lattice_coverage_percent": 99.32
+    },
+    "non_adjacent_transposition": {
+      "unique_top1_percent": 96.31988676574665,
+      "lattice_coverage_percent": 99.53
+    },
+    "omission_transposition": {
+      "unique_top1_percent": 95.70120737694043,
+      "lattice_coverage_percent": 99.04
+    },
+    "prefix_truncation": {
+      "unique_top1_percent": 99.12738605375925,
+      "lattice_coverage_percent": 99.965
+    },
+    "punctuation_suffix": {
+      "unique_top1_percent": 100.0,
+      "lattice_coverage_percent": 100.0
+    },
+    "repeated_fragment": {
+      "unique_top1_percent": 98.85804192254986,
+      "lattice_coverage_percent": 100.0
+    },
+    "sparse_multi_omission": {
+      "unique_top1_percent": 96.85623454609679,
+      "lattice_coverage_percent": 99.72
+    },
+    "suffix_truncation": {
+      "unique_top1_percent": 99.17491749174917,
+      "lattice_coverage_percent": 100.0
+    }
+  },
+  "tested": [
+    "full RU462K+EN300K 762314-center V7 package",
+    "fixed 13 damage classes x 20000 heldout cases",
+    "strict unique top-1 greater than 95 percent for every class",
+    "lattice coverage at least 99 percent for every class",
+    "clean preservation",
+    "false authority and false singleton",
+    "package size budget",
+    "hot readout latency",
+    "proof RSS and 20-worker execution"
+  ],
+  "not_tested": [
+    "live daemon authority",
+    "IME integration",
+    "single-pass streaming crystallizer"
+  ],
+  "verdict": "PASS_shadow",
+  "runtime_authority_changed": false,
+  "evidence": {
+    "package": "/home/e/build/lay-l1-shadow/artifacts/l11-final-depth0-implicit-v7-762314-2026-07-26/package.bin",
+    "proof_report": "/home/e/build/lay-l1-shadow/artifacts/l11-v7-operator-aware-final-proof-20k-762314-2026-07-26/report.json",
+    "proof_log": "/home/e/build/lay-l1-shadow/artifacts/l11-v7-operator-aware-final-proof-20k-762314-2026-07-26/run.log",
+    "time_report": "/home/e/build/lay-l1-shadow/artifacts/l11-v7-operator-aware-final-proof-20k-762314-2026-07-26/time.txt"
+  }
+}

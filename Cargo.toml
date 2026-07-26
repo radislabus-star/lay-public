@@ -50,6 +50,10 @@ name = "lay-l11-restore"
 path = "src/bin/lay_l1_1_restore.rs"
 
 [[bin]]
+name = "lay-morphology-proof"
+path = "src/bin/lay_morphology_proof.rs"
+
+[[bin]]
 name = "lay-ibus-engine"
 path = "src/bin/lay_ibus_engine.rs"
 

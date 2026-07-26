@@ -167,7 +167,8 @@ impl UnifiedCorrectionCandidate {
     }
 
     pub(crate) fn merge_evidence(&mut self, candidate: Self) {
-        let promote_verified_same_replacement = candidate.gate.action == CandidateGateAction::Eligible
+        let promote_verified_same_replacement = candidate.gate.action
+            == CandidateGateAction::Eligible
             && self.gate.action == CandidateGateAction::SuggestOnly;
         let promote_verified_layout = candidate.origin == CandidateOrigin::Layout
             && candidate.gate.action == CandidateGateAction::Eligible
