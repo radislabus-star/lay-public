@@ -1,0 +1,24 @@
+{
+  "package_id": "LAY-RU-LEXICON-COMPOSITE-SHADOW-v2",
+  "layer": "L1.1 lexical source",
+  "status": "SOURCE_READY",
+  "runtime_authority": false,
+  "source_package_id": "LAY-RU-NOUN-MORPH-462K-SHADOW-v1",
+  "source_artifact": "data/morphology/lay_ru_noun_morph_462k_shadow_v1.tsv",
+  "corpus_artifact": "data/lexical_grokking/lay_ru_lexicon_composite_shadow_v2.txt",
+  "corpus_bytes": 11344501,
+  "corpus_sha256": "b1cab3b53e954be65ce26f71f21f7510a93f812ab238760a07dc20573ca3f24f",
+  "source_form_rows": 633016,
+  "included_lexical_sources": {
+    "data/lexicon/l2_surface_foundation_ru_100k.txt": 99966,
+    "data/lexicon/l2_surface_hot_ru.txt": 18041,
+    "data/lexicon/ru_technical_loanwords.txt": 144,
+    "data/lexicon/ru_live_protected_words.txt": 42,
+    "data/lexicon/ru_greeting_words.txt": 1
+  },
+  "unique_surfaces": 535410,
+  "minimum_length": 2,
+  "maximum_length": 32,
+  "ordering": "unicode_lexicographic",
+  "l1_1_crystallized": false
+}

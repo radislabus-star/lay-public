@@ -80,7 +80,7 @@ fn surface_operator_reconstruction_preserves_direction_and_distance() {
     );
     assert_eq!(
         super::runtime::surface_operator_reconstruction_modes("abdce", "abcde"),
-        0
+        super::runtime::RECONSTRUCTION_MODE_NON_ADJACENT_TRANSPOSITION
     );
 }
 

@@ -11,7 +11,7 @@ from pathlib import Path
 import tempfile
 
 
-PACKAGE_ID = "LAY-L1.1-RU462K-EN300K-SHADOW-v1"
+DEFAULT_PACKAGE_ID = "LAY-L1.1-RU462K-EN300K-SHADOW-v1"
 
 
 def parse_args() -> argparse.Namespace:
@@ -22,6 +22,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--en-manifest", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--package-id", default=DEFAULT_PACKAGE_ID)
     return parser.parse_args()
 
 
@@ -77,7 +78,7 @@ def main() -> None:
         en_count, en_duplicates = append_source(args.en, temporary, digest, seen)
     os.replace(temporary_path, args.output)
     manifest = {
-        "package_id": PACKAGE_ID,
+        "package_id": args.package_id,
         "layer": "L1.1 bilingual lexical source",
         "status": "SOURCE_READY",
         "runtime_authority": False,

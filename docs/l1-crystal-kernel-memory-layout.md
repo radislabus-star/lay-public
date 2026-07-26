@@ -1907,16 +1907,370 @@ hot p50 / p99                    2.506 / 3.146 ms
 verdict                             PASS_shadow
 ```
 
-All conjunctive L1.1 gates pass on the final corpus. This is a shadow
-architecture proof, not a live promotion: daemon, IME and `AuthorizedEdit`
-authority remain unchanged. The experiment did not prove the future
-single-pass streaming crystallizer.
+All conjunctive L1.1 gates pass on the combined bilingual heldout. This is a
+shadow architecture proof, not a live promotion: daemon, IME and
+`AuthorizedEdit` authority remain unchanged. A combined bilingual denominator
+is not sufficient for promotion because it can hide a language-specific
+failure. The experiment did not prove the future single-pass streaming
+crystallizer.
 
 Exact receipt:
 
 ```text
 /home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_FINAL_762314_2026-07-26.json
 ```
+
+#### Split-language V7 proof and promotion veto
+
+The same immutable V7 package was then proved separately over its global
+terminal ranges. The proof still loads the complete bilingual dictionary so
+candidate IDs and cross-language competitors remain identical to package
+construction. Only heldout generation and clean audit are restricted to the
+declared language range.
+
+Russian terminal range `0..462314` passes:
+
+| Damage class | Unique top-1 | Lattice coverage |
+|---|---:|---:|
+| adjacent transposition | 97.935% | 99.970% |
+| double substitution | 98.000% | 99.945% |
+| extra letter | 98.706% | 100.000% |
+| layout projection | 97.210% | 99.480% |
+| letter substitution | 99.958% | 99.905% |
+| missing letter | 98.764% | 99.985% |
+| non-adjacent transposition | 97.368% | 99.880% |
+| omission + transposition | 96.641% | 99.555% |
+| prefix truncation | 99.107% | 99.975% |
+| punctuation suffix | 100.000% | 100.000% |
+| repeated fragment | 98.950% | 100.000% |
+| sparse multi-omission | 96.908% | 99.690% |
+| suffix truncation | 98.612% | 100.000% |
+
+English terminal range `462314..762314` does not pass:
+
+| Damage class | Unique top-1 | Lattice coverage |
+|---|---:|---:|
+| adjacent transposition | 98.788% | **98.900%** |
+| double substitution | **90.824%** | 99.845% |
+| extra letter | 99.439% | 99.970% |
+| layout projection | 100.000% | 99.825% |
+| letter substitution | 99.866% | **98.920%** |
+| missing letter | 99.194% | **97.895%** |
+| non-adjacent transposition | **94.370%** | **98.960%** |
+| omission + transposition | **93.183%** | **98.140%** |
+| prefix truncation | 99.481% | 99.875% |
+| punctuation suffix | 100.000% | 100.000% |
+| repeated fragment | 98.546% | 100.000% |
+| sparse multi-omission | 95.564% | 99.740% |
+| suffix truncation | 99.468% | 99.990% |
+
+```text
+metric                         RU462314          EN300000
+verdict                      PASS_shadow       WATCH_shadow
+heldout cases                    260,000            260,000
+clean preservation               100.000%           100.000%
+false authority                         0                   0
+false singleton                         0                   0
+hot p99                              3.199 ms            3.166 ms
+wall time                         4m 11.44s           5m 01.59s
+peak RSS                           2.185 GiB           2.132 GiB
+```
+
+The combined `PASS_shadow` therefore cannot admit this package for release
+installation. The package remains a valid measured research artifact, but its
+promotion verdict is `VETO_EN_SPLIT_LANGUAGE`. The installer must require
+separate RU and EN `PASS_shadow` receipts in addition to the combined proof.
+Runtime authority remains unchanged.
+
+Failure decomposition identifies an English operator-separation problem rather
+than candidate loss: target-missing top-64 is zero in the three failing top-1
+classes. Double substitution has `1,668` unique failures, including `1,121`
+edit-distance ties. Non-adjacent transposition has `930` unique failures, of
+which `844` select a genuinely closer competing center. Omission plus
+transposition has `776` unique failures, with sequence evidence favoring the
+target in `728` cases but the current settlement still selecting another
+center. The next L1.1 experiment must alter English operator-conditioned
+settlement and lattice admission, not widen candidate birth or rebuild the
+stored V7 field.
+
+Exact receipts:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_RU462314_2026-07-26.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_EN300000_2026-07-26.json
+```
+
+#### Certificate-preserving bounded tail
+
+The English split failures were reduced without rebuilding or changing the
+immutable V7 package. Direct surface operators now outrank generic
+cross-script keyboard projection, exact words expand the operator lattice only
+when `limit > 1`, and proof diagnostics keep independent quotas for unique and
+ambiguous failures.
+
+A broad inverse insertion lane over every lattice readout was measured and
+rejected:
+
+```text
+missing-letter lattice             98.150% -> 98.150%
+omission+transposition lattice     98.650% -> 98.750%
+hot p99                              3.199 -> 5.715 ms
+verdict                             WATCH_shadow
+```
+
+The extra enumeration did not repair missing-letter retention and crossed the
+`5 ms` latency gate. It is not part of the accepted runtime.
+
+Terminal trace `636673`, surface `abo`, target `aibo`, exposed the actual
+retention defect:
+
+```text
+target before bounded truncation       rank 42 / 174
+target reconstruction mode             single deletion
+target after bounded truncation        absent
+```
+
+`truncate_with_reconstruction_tail` had unconditionally removed original
+ranks `33..64` whenever it admitted 32 reconstruction candidates from beyond
+the limit. The corrected bounded rule may replace only weak in-limit
+candidates with no reconstruction certificate. It cannot evict operator
+evidence already inside the 64-center lattice.
+
+English `13 x 2,000` proof after that correction:
+
+| Damage class | Unique top-1 | Lattice coverage |
+|---|---:|---:|
+| adjacent transposition | 100.000% | 99.950% |
+| double substitution | 96.198% | 100.000% |
+| extra letter | 99.354% | 100.000% |
+| layout projection | 98.898% | 99.900% |
+| letter substitution | 99.939% | 100.000% |
+| missing letter | 99.439% | 99.450% |
+| non-adjacent transposition | 95.424% | 100.000% |
+| omission + transposition | 95.376% | 99.800% |
+| prefix truncation | 98.983% | 100.000% |
+| punctuation suffix | 100.000% | 100.000% |
+| repeated fragment | 98.349% | 100.000% |
+| sparse multi-omission | 96.607% | 100.000% |
+| suffix truncation | 98.734% | 100.000% |
+
+```text
+clean preservation               100.000%
+false authority                          0
+false singleton                          0
+hot p99                           3.307 ms
+verdict                         PASS_shadow
+```
+
+Measured artifact:
+
+```text
+/home/e/build/lay-l1-shadow/artifacts/l11-v7-en-certificate-preserving-tail-probe-2k-2026-07-26/report.json
+```
+
+This probe did not test the final `13 x 20,000` split denominator. Runtime
+authority, daemon, IME and `AuthorizedEdit` were not changed.
+
+#### Final certificate-preserving split proof
+
+The same immutable `69,325,620 B` V7 package passed both fixed language
+denominators after the bounded-tail correction.
+
+| Damage class | RU unique top-1 | RU lattice | EN unique top-1 | EN lattice |
+|---|---:|---:|---:|---:|
+| adjacent transposition | 99.954% | 100.000% | 99.945% | 99.990% |
+| double substitution | 98.568% | 100.000% | 96.606% | 100.000% |
+| extra letter | 98.670% | 100.000% | 99.357% | 99.980% |
+| layout projection | 97.007% | 99.470% | 98.776% | 99.905% |
+| letter substitution | 99.969% | 100.000% | 99.957% | 99.995% |
+| missing letter | 99.244% | 99.985% | 99.339% | 99.550% |
+| non-adjacent transposition | 97.862% | 100.000% | 95.847% | 100.000% |
+| omission + transposition | 97.443% | 99.670% | 95.247% | 99.585% |
+| prefix truncation | 98.400% | 99.975% | 98.804% | 99.990% |
+| punctuation suffix | 100.000% | 100.000% | 100.000% | 100.000% |
+| repeated fragment | 98.945% | 100.000% | 98.541% | 100.000% |
+| sparse multi-omission | 96.876% | 99.690% | 95.537% | 99.990% |
+| suffix truncation | 98.612% | 100.000% | 99.371% | 100.000% |
+
+```text
+metric                         RU462314          EN300000
+verdict                      PASS_shadow       PASS_shadow
+heldout cases                    260,000            260,000
+overall top-1                    88.313%            81.932%
+overall top-64                   99.907%            99.922%
+clean preservation              100.000%           100.000%
+false authority                        0                   0
+false singleton                        0                   0
+hot p50 / p99              2.443 / 3.083 ms   2.641 / 3.498 ms
+wall time                         4m 12.68s           5m 01.89s
+peak RSS                          2.183 GiB           2.132 GiB
+```
+
+Every accepted working gate is conjunctively satisfied in each language:
+unique top-1 is strictly above `95%` for every damage class, lattice coverage
+is at least `99%` for every class, clean preservation is `100%`, and false
+authority and false singleton counts are zero. The package is admitted for
+shadow installation only. `runtime_authority=false`; daemon, IME and
+`AuthorizedEdit` authority remain unchanged.
+
+Exact receipts:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_RU462314_2026-07-26.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_EN300000_2026-07-26.json
+```
+
+Exact proof reports:
+
+```text
+/home/e/build/lay-l1-shadow/artifacts/l11-v7-ru-certificate-preserving-tail-full-20k-2026-07-26/report.json
+/home/e/build/lay-l1-shadow/artifacts/l11-v7-en-certificate-preserving-tail-full-20k-2026-07-26/report.json
+```
+
+The full split proof did not test live authority or the future single-pass
+streaming crystallizer.
+
+#### RU lexical coverage veto after smoke
+
+Post-proof smoke exposed a corpus-scope failure that the fixed heldout cannot
+measure: `ландо` exists in the RU462k package, but the required target `ладно`
+does not exist as a WordCenter. It is present in
+`data/lexicon/l2_surface_foundation_ru_100k.txt`.
+
+The cause is structural. The RU462k lexical source was extracted only from
+`LAY-RU-NOUN-MORPH-462K-SHADOW-v1`, so it contains noun paradigms rather than a
+complete general Russian lexical substrate. The split `PASS_shadow` remains
+valid for its declared package dictionary, but it does not prove general RU
+lexical coverage.
+
+```text
+ландо package center                  present
+ладно package center                  absent
+ландо -> ладно restoration            impossible
+runtime authority                     unchanged / false
+promotion verdict                     VETO_RU_LEXICAL_COVERAGE
+```
+
+The v1 package may remain installed as a shadow research artifact. It is not
+release-installable. The v2 source must be a deterministic union of morphology
+and broad lexical sources, and package parity must prove every source surface
+before damage-class percentages can promote it.
+
+#### Composite RU lexical v2 closure
+
+The corpus-coverage veto was closed by rebuilding the source as a deterministic
+union of noun morphology and broad Russian lexical sources. The English range
+was preserved unchanged.
+
+```text
+RU surfaces                         535,410
+EN surfaces                         300,000
+total WordCenter                    835,410
+corpus SHA-256                      162f1471f6a1f635aec634e2644123597ae60a46158314d7d9765474c552ee65
+```
+
+Depth-0 crystallization now skips directional anti discovery and learned
+positive/anti/ambiguity subcenter search. It still materializes the complete
+deterministic keyboard geometry required for V6/V7 runtime-field parity.
+
+```text
+workers                                      20
+crystallization wall time                3m 14.24s
+crystallization peak RSS          3,926,888,448 B
+V6 bytes                         1,180,567,557 B
+V7 compaction wall time                  37.68s
+V7 bytes                            76,246,568 B
+V7 budget                          204,472,320 B
+V7 SHA-256               4bafc58c71e1343aaf3b1edfeb773303d0daf072a77c5ffabda7c182a1c63d8b
+exact runtime-field parity                    true
+```
+
+The final immutable V7 package passed both fixed `13 x 20,000` language
+denominators:
+
+| Damage class | RU unique top-1 | RU lattice | EN unique top-1 | EN lattice |
+|---|---:|---:|---:|---:|
+| adjacent transposition | 99.972% | 100.000% | 99.945% | 99.990% |
+| double substitution | 98.455% | 100.000% | 96.611% | 100.000% |
+| extra letter | 98.777% | 100.000% | 99.346% | 99.980% |
+| layout projection | 96.912% | 99.175% | 99.277% | 99.685% |
+| letter substitution | 99.968% | 100.000% | 99.957% | 99.995% |
+| missing letter | 99.286% | 99.975% | 99.366% | 99.540% |
+| non-adjacent transposition | 97.651% | 100.000% | 95.853% | 100.000% |
+| omission + transposition | 97.367% | 99.560% | 95.414% | 99.585% |
+| prefix truncation | 98.343% | 99.985% | 98.815% | 99.995% |
+| punctuation suffix | 100.000% | 100.000% | 100.000% | 100.000% |
+| repeated fragment | 98.914% | 100.000% | 98.551% | 100.000% |
+| sparse multi-omission | 96.813% | 99.575% | 95.307% | 99.975% |
+| suffix truncation | 99.222% | 100.000% | 99.323% | 100.000% |
+
+```text
+metric                         RU535410          EN300000
+verdict                      PASS_shadow       PASS_shadow
+heldout cases                    260,000            260,000
+clean preservation               100.000%           100.000%
+false authority                         0                   0
+false singleton                         0                   0
+hot p50 / p99              2.497 / 3.056 ms   2.675 / 3.464 ms
+wall time                         4m 30.47s           5m 17.09s
+peak RSS                           2.349 GiB           2.304 GiB
+```
+
+Smoke was performed on V7, not on V6:
+
+```text
+врмея -> время                    target rank 1
+restoraton -> restoration         target rank 1
+ландо -> ладно                    target rank 5
+qzxqzxqzx                         ABSTAIN / outside calibrated basin
+```
+
+`ландо` itself is also a clean WordCenter and therefore remains rank 1.
+L1.1 correctly retains `ладно` in the transposition lattice but cannot grant
+authority to replace one valid exact center with another. Contextual collapse
+of that collision belongs to L2/L3 and was not tested here.
+
+Local shadow installation was verified separately:
+
+```text
+installed package
+  /home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v2.v7.bin
+installed CLI
+  /home/ubu/.local/lib/lay/bin/lay-l1.1-restore
+installed/source SHA-256 parity                    true
+врмея candidate rank                                  1
+candidate surface                                 время
+authority                                          false
+verdict                           ABSTAIN / outside_calibrated_basin
+cold standalone CLI wall time                     60.05 s
+cold standalone CLI peak RSS                1,813,380 KiB
+```
+
+The cold standalone number measures package decode and reconstruction of the
+runtime views in a new process. It is not the hot readout latency measured by
+the fixed proof. This smoke tested one installed-package query; it did not test
+daemon integration, a persistent package server or mmap startup optimization.
+
+Exact receipts:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_COMPOSITE_V2_V7_FINAL_835410_2026-07-26.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_COMPOSITE_V2_V7_RU535410_2026-07-26.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_COMPOSITE_V2_V7_EN300000_2026-07-26.json
+```
+
+Exact remote reports:
+
+```text
+/home/e/build/lay-l1-shadow/artifacts/l11-final-depth0-v2-835410-2026-07-26/crystallize-v6.log
+/home/e/build/lay-l1-shadow/artifacts/l11-final-depth0-v2-835410-2026-07-26/compact-v7.log
+/home/e/build/lay-l1-shadow/artifacts/l11-final-depth0-v2-835410-2026-07-26/proof-ru-20k.log
+/home/e/build/lay-l1-shadow/artifacts/l11-final-depth0-v2-835410-2026-07-26/proof-en-20k.log
+```
+
+The measured verdict is `PASS_SHADOW_ONLY`. This experiment did not test or
+change daemon authority, IME authority, `AuthorizedEdit`, or L2/L3 contextual
+selection.
 
 ## 10. Ambiguity Contract
 

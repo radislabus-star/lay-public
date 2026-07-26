@@ -1,7 +1,7 @@
 {
   "package_id": "LAY-L1.1-RU462K-EN300K-SHADOW-v1",
   "layer": "L1.1 bilingual lexical source",
-  "status": "CRYSTALLIZED_PASS_SHADOW",
+  "status": "CRYSTALLIZED_PASS_SPLIT_LANGUAGE_CORPUS_COVERAGE_VETO",
   "runtime_authority": false,
   "corpus_artifact": "data/lexical_grokking/lay_l11_ru462k_en300k_shadow_v1.txt",
   "corpus_bytes": 12491569,
@@ -28,5 +28,13 @@
   "crystal_bytes": 69325620,
   "crystal_sha256": "232de23384dc1d62977a5c244a2fed14615c03d2818ee79618ade3a618456ab4",
   "proof_receipt": "docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_FINAL_762314_2026-07-26.json",
-  "proof_verdict": "PASS_shadow"
+  "proof_verdict": "PASS_shadow",
+  "split_language_proof": {
+    "ru_receipt": "docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_RU462314_2026-07-26.json",
+    "ru_verdict": "PASS_shadow",
+    "en_receipt": "docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_EN300000_2026-07-26.json",
+    "en_verdict": "PASS_shadow"
+  },
+  "release_shadow_installable": false,
+  "promotion_verdict": "VETO_RU_LEXICAL_COVERAGE"
 }

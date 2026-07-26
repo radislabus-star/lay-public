@@ -124,13 +124,27 @@ fn main() -> io::Result<()> {
         let heldout_per_class = arg_usize(&args, "--heldout-per-class").unwrap_or(20_000);
         let training_surfaces_per_word = arg_usize(&args, "--training-surfaces-per-word")
             .unwrap_or(DEFAULT_L11_TRAINING_SURFACES_PER_WORD);
-        let report = lay::nanda_wave::prove_l1_lexical_grokking_scale_package(
-            &corpus,
-            &package,
-            max_words,
-            heldout_per_class,
-            training_surfaces_per_word,
-        )?;
+        let terminal_start = arg_usize(&args, "--terminal-start").unwrap_or_default();
+        let terminal_count = arg_usize(&args, "--terminal-count").unwrap_or_default();
+        let report = if terminal_start != 0 || terminal_count != 0 {
+            lay::nanda_wave::prove_l1_lexical_grokking_scale_package_range(
+                &corpus,
+                &package,
+                max_words,
+                terminal_start,
+                terminal_count,
+                heldout_per_class,
+                training_surfaces_per_word,
+            )?
+        } else {
+            lay::nanda_wave::prove_l1_lexical_grokking_scale_package(
+                &corpus,
+                &package,
+                max_words,
+                heldout_per_class,
+                training_surfaces_per_word,
+            )?
+        };
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?

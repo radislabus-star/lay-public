@@ -31,6 +31,7 @@ const MAX_BIRTH_ATOMS_PER_CHANNEL: usize = 32;
 const MAX_BIRTH_POSTINGS: usize = 131_072;
 const SETTLING_ITERATIONS: u8 = 3;
 const MAX_ANCHOR_SEQUENCE: usize = 32;
+const MAX_EXACT_COLLISION_OPERATOR_CHARS: usize = 16;
 pub(super) const RECONSTRUCTION_MODE_DELETION: u8 = 1;
 pub(super) const RECONSTRUCTION_MODE_DELETION_TRANSPOSITION: u8 = 2;
 pub(super) const RECONSTRUCTION_MODE_SUFFIX_TRUNCATION: u8 = 4;
@@ -610,8 +611,8 @@ impl LexicalGrokkingMemory {
             (surface_re, surface_im, frontier)
         });
         let forward_us = trace_started.elapsed().as_micros();
-        let operator_reserve = if exact_terminals.is_empty() {
-            self.operator_reserve(surface, &lexical_observed)
+        let operator_reserve = if should_expand_operator_lattice(exact_terminals.len(), limit) {
+            self.operator_reserve(surface, &lexical_observed, !exact_terminals.is_empty())
         } else {
             Vec::new()
         };
@@ -1056,6 +1057,7 @@ impl LexicalGrokkingMemory {
         &self,
         surface: &str,
         observed: &BTreeMap<u32, ObservedAtom>,
+        expand_inverse_lattice: bool,
     ) -> Vec<(u32, ForwardActivation)> {
         let normalized = normalize_lexical_surface(surface);
         let chars = normalized.chars().collect::<Vec<_>>();
@@ -1120,6 +1122,9 @@ impl LexicalGrokkingMemory {
                 self.record_exact_operator_candidates(&repaired, 5, &mut ranked);
             }
         }
+        if expand_inverse_lattice && chars.len() <= MAX_EXACT_COLLISION_OPERATOR_CHARS {
+            self.record_inverse_operator_candidates(&chars, &mut ranked);
+        }
 
         let mut reserve = ranked
             .into_iter()
@@ -1140,6 +1145,36 @@ impl LexicalGrokkingMemory {
             .into_iter()
             .map(|(_, terminal_id, activation)| (terminal_id, activation))
             .collect()
+    }
+
+    fn record_inverse_operator_candidates(
+        &self,
+        chars: &[char],
+        candidates: &mut BTreeMap<u32, u8>,
+    ) {
+        let Some(alphabet) = chars
+            .iter()
+            .find_map(|ch| crate::nanda_wave::surface_damage::alphabet_for(*ch))
+        else {
+            return;
+        };
+        for insert_at in 0..=chars.len() {
+            for inserted in alphabet.chars() {
+                let mut repaired = Vec::with_capacity(chars.len() + 1);
+                repaired.extend_from_slice(&chars[..insert_at]);
+                repaired.push(inserted);
+                repaired.extend_from_slice(&chars[insert_at..]);
+                self.record_exact_operator_candidates(&repaired, 3, candidates);
+                for swap_at in 0..repaired.len().saturating_sub(1) {
+                    if repaired[swap_at] == repaired[swap_at + 1] {
+                        continue;
+                    }
+                    repaired.swap(swap_at, swap_at + 1);
+                    self.record_exact_operator_candidates(&repaired, 4, candidates);
+                    repaired.swap(swap_at, swap_at + 1);
+                }
+            }
+        }
     }
 
     fn record_exact_operator_candidates(
@@ -1969,10 +2004,7 @@ pub(super) fn surface_operator_reconstruction_modes(observed: &str, expected: &s
             {
                 modes |= RECONSTRUCTION_MODE_DOUBLE_SUBSTITUTION;
             }
-            if *second > first.saturating_add(1)
-                && expected[*first] == observed[*second]
-                && expected[*second] == observed[*first]
-            {
+            if expected[*first] == observed[*second] && expected[*second] == observed[*first] {
                 modes |= RECONSTRUCTION_MODE_NON_ADJACENT_TRANSPOSITION;
             }
             modes
@@ -2193,18 +2225,21 @@ fn geometry_certificate_rank(candidate: &GrokkingCandidate) -> u8 {
     const DIRECT_SURFACE_MODES: u8 = RECONSTRUCTION_MODE_SINGLE_SUBSTITUTION
         | RECONSTRUCTION_MODE_DOUBLE_SUBSTITUTION
         | RECONSTRUCTION_MODE_NON_ADJACENT_TRANSPOSITION;
-    if candidate.keyboard_hits > candidate.surface_hits {
-        6
-    } else if candidate.reconstruction_modes & DIRECT_SURFACE_MODES != 0 {
-        5
+    if candidate.reconstruction_modes & DIRECT_SURFACE_MODES != 0 {
+        7
     } else if candidate.reconstruction_modes & RECONSTRUCTION_MODE_DELETION_TRANSPOSITION != 0 {
-        4
+        6
+    } else if candidate.keyboard_hits > candidate.surface_hits {
+        5
     } else if candidate.reconstruction_modes
         & (RECONSTRUCTION_MODE_PREFIX_TRUNCATION | RECONSTRUCTION_MODE_SUFFIX_TRUNCATION)
         != 0
     {
         3
-    } else if candidate.reconstruction_modes & RECONSTRUCTION_MODE_DELETION != 0 {
+    } else if candidate.reconstruction_modes
+        & (RECONSTRUCTION_MODE_DELETION | RECONSTRUCTION_MODE_SINGLE_DELETION)
+        != 0
+    {
         2
     } else if candidate.reconstruction_modes != 0 {
         1
@@ -2223,7 +2258,11 @@ fn geometry_certificate_cross_distance_lease(candidate: &GrokkingCandidate) -> i
 
 fn geometry_certificate_can_cross_distance(candidate: &GrokkingCandidate) -> bool {
     candidate.keyboard_hits > candidate.surface_hits
-        || candidate.reconstruction_modes & RECONSTRUCTION_MODE_DOUBLE_SUBSTITUTION != 0
+        || candidate.reconstruction_modes
+            & (RECONSTRUCTION_MODE_DOUBLE_SUBSTITUTION
+                | RECONSTRUCTION_MODE_NON_ADJACENT_TRANSPOSITION
+                | RECONSTRUCTION_MODE_DELETION_TRANSPOSITION)
+            != 0
         || (candidate.reconstruction_modes != 0 && candidate.sequence_milli == 1_000)
 }
 
@@ -2248,19 +2287,44 @@ fn truncate_with_reconstruction_tail(candidates: &mut Vec<GrokkingCandidate>, li
     if candidates.len() <= limit {
         return;
     }
-    let reserve = candidates[limit..]
+    let mut reserve = candidates[limit..]
         .iter()
         .filter(|candidate| candidate.reconstruction_modes != 0)
-        .take(MAX_RECONSTRUCTION_TAIL.min(limit))
         .copied()
         .collect::<Vec<_>>();
+    reserve.sort_unstable_by(|left, right| {
+        geometry_certificate_rank(right)
+            .cmp(&geometry_certificate_rank(left))
+            .then_with(|| left.geometry_distance.cmp(&right.geometry_distance))
+            .then_with(|| right.settled_energy.cmp(&left.settled_energy))
+            .then_with(|| left.terminal_id.cmp(&right.terminal_id))
+    });
+    reserve.truncate(MAX_RECONSTRUCTION_TAIL.min(limit));
     if reserve.is_empty() {
         candidates.truncate(limit);
         return;
     }
-    let primary_count = limit.saturating_sub(reserve.len());
-    candidates.truncate(primary_count);
-    candidates.extend(reserve);
+    let replaceable = candidates[..limit]
+        .iter()
+        .enumerate()
+        .rev()
+        .filter_map(|(index, candidate)| {
+            (index != 0 && candidate.reconstruction_modes == 0).then_some(index)
+        })
+        .take(reserve.len())
+        .collect::<BTreeSet<_>>();
+    reserve.truncate(replaceable.len());
+    let mut retained = candidates[..limit]
+        .iter()
+        .enumerate()
+        .filter_map(|(index, candidate)| (!replaceable.contains(&index)).then_some(*candidate))
+        .collect::<Vec<_>>();
+    retained.extend(reserve);
+    *candidates = retained;
+}
+
+fn should_expand_operator_lattice(exact_terminal_count: usize, limit: usize) -> bool {
+    exact_terminal_count == 0 || limit > exact_terminal_count
 }
 
 fn compile_character_anchors(package: &LexicalGrokkingPackage) -> Vec<Vec<u32>> {
@@ -2810,6 +2874,61 @@ mod tests {
     }
 
     #[test]
+    fn direct_surface_operator_outranks_cross_script_keyboard_projection() {
+        let keyboard_projection = GrokkingCandidate {
+            terminal_id: 1,
+            keyboard_hits: 20,
+            surface_hits: 2,
+            geometry_distance: 2,
+            settled_energy: 1_000,
+            ..Default::default()
+        };
+        let double_substitution = GrokkingCandidate {
+            terminal_id: 2,
+            reconstruction_modes: RECONSTRUCTION_MODE_DOUBLE_SUBSTITUTION,
+            keyboard_hits: 10,
+            surface_hits: 20,
+            geometry_distance: 2,
+            settled_energy: 900,
+            ..Default::default()
+        };
+        let mut candidates = [keyboard_projection, double_substitution];
+
+        apply_geometry_certificate_interference(&mut candidates);
+
+        assert_eq!(candidates[0].terminal_id, double_substitution.terminal_id);
+    }
+
+    #[test]
+    fn deletion_transposition_operator_outranks_cross_script_keyboard_projection() {
+        let keyboard_projection = GrokkingCandidate {
+            terminal_id: 1,
+            keyboard_hits: 20,
+            surface_hits: 2,
+            geometry_distance: 1,
+            settled_energy: 1_000,
+            ..Default::default()
+        };
+        let deletion_transposition = GrokkingCandidate {
+            terminal_id: 2,
+            reconstruction_modes: RECONSTRUCTION_MODE_DELETION_TRANSPOSITION,
+            keyboard_hits: 10,
+            surface_hits: 20,
+            geometry_distance: 2,
+            settled_energy: 900,
+            ..Default::default()
+        };
+        let mut candidates = [keyboard_projection, deletion_transposition];
+
+        apply_geometry_certificate_interference(&mut candidates);
+
+        assert_eq!(
+            candidates[0].terminal_id,
+            deletion_transposition.terminal_id
+        );
+    }
+
+    #[test]
     fn reconstruction_evidence_survives_bounded_lattice_without_reordering_primary() {
         let mut candidates = (0..6)
             .map(|terminal_id| GrokkingCandidate {
@@ -2896,5 +3015,72 @@ mod tests {
                 }
             }
         }
+    }
+
+    #[test]
+    fn adjacent_transposition_is_an_exact_surface_operator() {
+        assert_eq!(
+            surface_operator_reconstruction_modes("ba", "ab"),
+            RECONSTRUCTION_MODE_NON_ADJACENT_TRANSPOSITION
+        );
+    }
+
+    #[test]
+    fn bounded_tail_keeps_the_strongest_operator_evidence() {
+        let mut candidates = (0..100)
+            .map(|terminal_id| GrokkingCandidate {
+                terminal_id,
+                reconstruction_modes: if terminal_id >= 64 {
+                    RECONSTRUCTION_MODE_SINGLE_DELETION
+                } else {
+                    0
+                },
+                geometry_distance: 1,
+                settled_energy: 2_000 - terminal_id as i32,
+                ..Default::default()
+            })
+            .collect::<Vec<_>>();
+        candidates[99].reconstruction_modes = RECONSTRUCTION_MODE_DOUBLE_SUBSTITUTION;
+
+        truncate_with_reconstruction_tail(&mut candidates, 64);
+
+        assert_eq!(candidates.len(), 64);
+        assert!(candidates
+            .iter()
+            .any(|candidate| candidate.terminal_id == 99));
+    }
+
+    #[test]
+    fn exact_surface_keeps_clean_fast_path_but_expands_lattice_readout() {
+        assert!(!should_expand_operator_lattice(1, 1));
+        assert!(should_expand_operator_lattice(1, 64));
+        assert!(should_expand_operator_lattice(0, 1));
+    }
+
+    #[test]
+    fn bounded_tail_does_not_evict_operator_evidence_already_inside_limit() {
+        let mut candidates = (0..100)
+            .map(|terminal_id| GrokkingCandidate {
+                terminal_id,
+                reconstruction_modes: if terminal_id == 42 || terminal_id >= 64 {
+                    RECONSTRUCTION_MODE_SINGLE_DELETION
+                } else {
+                    0
+                },
+                geometry_distance: 1,
+                settled_energy: 2_000 - terminal_id as i32,
+                ..Default::default()
+            })
+            .collect::<Vec<_>>();
+
+        truncate_with_reconstruction_tail(&mut candidates, 64);
+
+        assert_eq!(candidates.len(), 64);
+        assert!(candidates
+            .iter()
+            .any(|candidate| candidate.terminal_id == 42));
+        assert!(candidates
+            .iter()
+            .any(|candidate| candidate.terminal_id >= 64));
     }
 }

@@ -19,17 +19,25 @@ binaries=(
 
 mkdir -p "$INSTALL_DIR" "$LINK_DIR"
 
-for binary in "${binaries[@]}"; do
-  source="$SOURCE_DIR/$binary"
-  destination="$INSTALL_DIR/$binary"
-  temporary="$INSTALL_DIR/.${binary}.tmp.$$"
+install_binary() {
+  local source_name="$1"
+  local installed_name="$2"
+  local source="$SOURCE_DIR/$source_name"
+  local destination="$INSTALL_DIR/$installed_name"
+  local temporary="$INSTALL_DIR/.${installed_name}.tmp.$$"
   if [[ ! -x "$source" ]]; then
     echo "release binary missing: $source" >&2
     exit 1
   fi
   install -m 0755 "$source" "$temporary"
   mv -f "$temporary" "$destination"
-  ln -sfn "$destination" "$LINK_DIR/$binary"
+  ln -sfn "$destination" "$LINK_DIR/$installed_name"
+}
+
+for binary in "${binaries[@]}"; do
+  install_binary "$binary" "$binary"
 done
 
-printf 'Installed %s release binaries in %s\n' "${#binaries[@]}" "$INSTALL_DIR"
+install_binary lay-l11-restore lay-l1.1-restore
+
+printf 'Installed %s release binaries in %s\n' "$(( ${#binaries[@]} + 1 ))" "$INSTALL_DIR"

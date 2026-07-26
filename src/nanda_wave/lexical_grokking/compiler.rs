@@ -541,14 +541,19 @@ pub(super) fn compile_training_corpus_with_policy_in(
     checkpoint("primary_centers_complete")?;
 
     checkpoint("anti_center_discovery")?;
-    let all_anti_by_word = discover_anti_centers(
-        corpus,
-        &graph,
-        &atoms,
-        &forward_couplings,
-        &maximum_forward_strengths,
-        &anti_postings,
-    );
+    let depth0 = corpus.training_surface_count() == 0;
+    let all_anti_by_word = if depth0 {
+        vec![Vec::new(); words.len()]
+    } else {
+        discover_anti_centers(
+            corpus,
+            &graph,
+            &atoms,
+            &forward_couplings,
+            &maximum_forward_strengths,
+            &anti_postings,
+        )
+    };
     checkpoint("anti_centers_complete")?;
     let mut anti_by_word = all_anti_by_word
         .iter()
@@ -559,16 +564,24 @@ pub(super) fn compile_training_corpus_with_policy_in(
                 .collect::<Vec<_>>()
         })
         .collect::<Vec<_>>();
-    let ambiguous_owners = corpus.ambiguous_surface_owners();
-    let l11 = compile_l11_subcenters(
-        corpus,
-        &graph,
-        &atoms,
-        &reverse_couplings,
-        &reverse_ranges,
-        &all_anti_by_word,
-        &ambiguous_owners,
-    );
+    let ambiguous_owners = if depth0 {
+        HashMap::new()
+    } else {
+        corpus.ambiguous_surface_owners()
+    };
+    let l11 = if depth0 {
+        depth0_l11_banks(corpus)
+    } else {
+        compile_l11_subcenters(
+            corpus,
+            &graph,
+            &atoms,
+            &reverse_couplings,
+            &reverse_ranges,
+            &all_anti_by_word,
+            &ambiguous_owners,
+        )
+    };
     checkpoint("l11_subcenters_complete")?;
     if let Some(target_limit) = shadow_subcenter_target_limit(words.len()) {
         return Err(format!(
@@ -590,6 +603,7 @@ pub(super) fn compile_training_corpus_with_policy_in(
         &reverse_couplings,
         &reverse_ranges,
         &basis,
+        &centers,
         &l11.profiles,
         &l11.positive,
     );
@@ -1812,6 +1826,31 @@ fn integer_sqrt(value: u128) -> u128 {
     }
 }
 
+fn depth0_l11_banks(corpus: &TrainingCorpus) -> L11Banks {
+    let mut profiles = Vec::with_capacity(corpus.words().len());
+    let mut keyboard_geometry = Vec::new();
+    for word in corpus.words() {
+        let keyboard_geometry_start = keyboard_geometry.len() as u32;
+        let physical_keys = physical_key_sequence(corpus.clean_surface(word));
+        let keyboard_geometry_count = physical_keys.len() as u8;
+        keyboard_geometry.extend(physical_keys);
+        profiles.push(CenterPhaseProfile {
+            keyboard_geometry_start,
+            keyboard_geometry_count,
+            flags: super::model::CENTER_PHASE_FLAG_PHYSICAL_KEY_GEOMETRY,
+            ..CenterPhaseProfile::default()
+        });
+    }
+    L11Banks {
+        profiles,
+        positive: Vec::new(),
+        anti: Vec::new(),
+        hard_negative: Vec::new(),
+        ambiguity: Vec::new(),
+        keyboard_geometry,
+    }
+}
+
 fn calibrate_l11(
     corpus: &TrainingCorpus,
     graph: &NGramGraph,
@@ -1819,6 +1858,7 @@ fn calibrate_l11(
     reverse_couplings: &[WaveCoupling],
     reverse_ranges: &[CouplingRange],
     basis: &[super::crystal::ComplexBasisWave],
+    primary_centers: &[WordCenter64],
     profiles: &[CenterPhaseProfile],
     positive_subcenters: &[WordCenter64],
 ) -> RestorationCalibration {
@@ -1871,7 +1911,13 @@ fn calibrate_l11(
                         complex_coherence_milli(&surface_re, &surface_im, &center_re, &center_im)
                     })
                     .max()
-                    .unwrap_or_default(),
+                    .unwrap_or_else(|| {
+                        let Some(center) = primary_centers.get(terminal_id).copied() else {
+                            return 0;
+                        };
+                        let (center_re, center_im) = expand_word(basis, center);
+                        complex_coherence_milli(&surface_re, &surface_im, &center_re, &center_im)
+                    }),
             );
             backward.push(backward_coherence_milli(
                 surface,

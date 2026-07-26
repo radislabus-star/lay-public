@@ -9,6 +9,17 @@ pub(crate) fn alphabet_predecessor(ch: char) -> Option<char> {
     rotate_in_alphabet(ch, CYRILLIC, -1).or_else(|| rotate_in_alphabet(ch, ASCII, -1))
 }
 
+pub(crate) fn alphabet_for(ch: char) -> Option<&'static str> {
+    let lower = ch.to_lowercase().next()?;
+    if CYRILLIC.contains(lower) {
+        Some(CYRILLIC)
+    } else if ASCII.contains(lower) {
+        Some(ASCII)
+    } else {
+        None
+    }
+}
+
 fn rotate_in_alphabet(ch: char, alphabet: &str, offset: isize) -> Option<char> {
     let lower = ch.to_lowercase().next()?;
     let letters = alphabet.chars().collect::<Vec<_>>();

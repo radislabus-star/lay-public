@@ -48,8 +48,8 @@ pub use lexical_grokking::{
     crystallize_l1_lexical_grokking, crystallize_l1_lexical_grokking_with_rss_budget,
     crystallize_l1_lexical_grokking_with_surface_policy, prove_l1_lexical_grokking,
     prove_l1_lexical_grokking_complete_postings, prove_l1_lexical_grokking_package,
-    prove_l1_lexical_grokking_scale_package, query_l1_lexical_grokking, restore_l1_surface,
-    ScaleTrainingSurfacePolicy,
+    prove_l1_lexical_grokking_scale_package, prove_l1_lexical_grokking_scale_package_range,
+    query_l1_lexical_grokking, restore_l1_surface, ScaleTrainingSurfacePolicy,
 };
 pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
 pub use morphology_phase::{

@@ -1,0 +1,46 @@
+{
+  "receipt_id": "L1_L11_COMPOSITE_V2_V7_FINAL_835410_2026-07-26",
+  "layer": "L1.1",
+  "status": "PASS_shadow",
+  "runtime_authority": false,
+  "corpus": {
+    "unique_surfaces": 835410,
+    "ru_surfaces": 535410,
+    "en_surfaces": 300000,
+    "sha256": "162f1471f6a1f635aec634e2644123597ae60a46158314d7d9765474c552ee65"
+  },
+  "crystallization": {
+    "training_surfaces_per_word": 0,
+    "workers": 20,
+    "wall_time_seconds": 194.24,
+    "peak_rss_bytes": 3926888448,
+    "v6_bytes": 1180567557,
+    "v7_compaction_seconds": 37.68,
+    "v7_bytes": 76246568,
+    "v7_sha256": "4bafc58c71e1343aaf3b1edfeb773303d0daf072a77c5ffabda7c182a1c63d8b",
+    "exact_runtime_field_parity": true
+  },
+  "proof": {
+    "heldout_cases_total": 520000,
+    "ru_receipt": "docs/structural_gates/receipts/L1_L11_COMPOSITE_V2_V7_RU535410_2026-07-26.json",
+    "en_receipt": "docs/structural_gates/receipts/L1_L11_COMPOSITE_V2_V7_EN300000_2026-07-26.json",
+    "ru_verdict": "PASS_shadow",
+    "en_verdict": "PASS_shadow",
+    "clean_preservation_percent": 100.0,
+    "false_authority": 0,
+    "false_singleton": 0
+  },
+  "smoke": {
+    "врмея": {"target": "время", "target_rank": 1},
+    "restoraton": {"target": "restoration", "target_rank": 1},
+    "ландо": {"target": "ладно", "target_rank": 5, "exact_surface_rank": 1},
+    "qzxqzxqzx": {"verdict": "abstain", "reason": "outside_calibrated_basin"}
+  },
+  "promotion": {
+    "release_shadow_installable": true,
+    "daemon_authorized": false,
+    "ime_authorized": false,
+    "authorized_edit_authorized": false,
+    "verdict": "PASS_SHADOW_ONLY"
+  }
+}

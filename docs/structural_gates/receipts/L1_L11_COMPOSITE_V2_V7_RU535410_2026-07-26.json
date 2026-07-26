@@ -1,0 +1,52 @@
+{
+  "receipt_id": "L1_L11_COMPOSITE_V2_V7_RU535410_2026-07-26",
+  "layer": "L1.1",
+  "language": "RU",
+  "status": "PASS_shadow",
+  "runtime_authority": false,
+  "corpus": {
+    "artifact": "data/lexical_grokking/lay_l11_ru_composite_en300k_shadow_v2.txt",
+    "sha256": "162f1471f6a1f635aec634e2644123597ae60a46158314d7d9765474c552ee65",
+    "terminal_start": 0,
+    "terminal_count": 535410
+  },
+  "package": {
+    "format": "V7 implicit-field",
+    "artifact": "/home/e/build/lay-l1-shadow/artifacts/l11-final-depth0-v2-835410-2026-07-26/package-v7.bin",
+    "bytes": 76246568,
+    "sha256": "4bafc58c71e1343aaf3b1edfeb773303d0daf072a77c5ffabda7c182a1c63d8b"
+  },
+  "proof": {
+    "heldout_per_class": 20000,
+    "heldout_cases": 260000,
+    "clean_preservation_percent": 100.0,
+    "hot_readout_p50_us": 2497,
+    "hot_readout_p99_us": 3056,
+    "false_authority": 0,
+    "false_singleton": 0,
+    "wall_time_seconds": 270.47,
+    "peak_rss_bytes": 2521812992
+  },
+  "classes": {
+    "adjacent_transposition": {"unique_top1_percent": 99.9715440213989, "lattice_coverage_percent": 100.0},
+    "double_substitution": {"unique_top1_percent": 98.45506338859519, "lattice_coverage_percent": 100.0},
+    "extra_letter": {"unique_top1_percent": 98.77725697982474, "lattice_coverage_percent": 100.0},
+    "layout_projection": {"unique_top1_percent": 96.9121871153057, "lattice_coverage_percent": 99.175},
+    "letter_substitution": {"unique_top1_percent": 99.96840941399464, "lattice_coverage_percent": 100.0},
+    "missing_letter": {"unique_top1_percent": 99.28562150928693, "lattice_coverage_percent": 99.975},
+    "non_adjacent_transposition": {"unique_top1_percent": 97.65053679788393, "lattice_coverage_percent": 100.0},
+    "omission_transposition": {"unique_top1_percent": 97.36653529201003, "lattice_coverage_percent": 99.56},
+    "prefix_truncation": {"unique_top1_percent": 98.34277033558901, "lattice_coverage_percent": 99.985},
+    "punctuation_suffix": {"unique_top1_percent": 100.0, "lattice_coverage_percent": 100.0},
+    "repeated_fragment": {"unique_top1_percent": 98.91446376520253, "lattice_coverage_percent": 100.0},
+    "sparse_multi_omission": {"unique_top1_percent": 96.81337338383179, "lattice_coverage_percent": 99.575},
+    "suffix_truncation": {"unique_top1_percent": 99.22163047931176, "lattice_coverage_percent": 100.0}
+  },
+  "exact_report": "/home/e/build/lay-l1-shadow/artifacts/l11-final-depth0-v2-835410-2026-07-26/proof-ru-20k.log",
+  "not_tested": [
+    "daemon authority",
+    "IME authority",
+    "AuthorizedEdit integration",
+    "L2/L3 contextual collapse"
+  ]
+}

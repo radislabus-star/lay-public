@@ -281,6 +281,8 @@ pub struct L1LexicalGrokkingProof {
     l11_verdict: &'static str,
     l11_crystallization_verdict: &'static str,
     source_words: usize,
+    proof_terminal_start: usize,
+    proof_terminal_count: usize,
     training_surfaces: usize,
     training_surface_storage: &'static str,
     training_surface_bytes: usize,
@@ -414,6 +416,7 @@ pub fn prove_l1_lexical_grokking(
         ForwardPostingPolicy::BaselineBounded,
         None,
         None,
+        None,
     )
 }
 
@@ -427,6 +430,7 @@ pub fn prove_l1_lexical_grokking_complete_postings(
         output_path,
         max_words,
         ForwardPostingPolicy::Complete,
+        None,
         None,
         None,
     )
@@ -443,6 +447,7 @@ pub fn prove_l1_lexical_grokking_package(
         max_words,
         ForwardPostingPolicy::Complete,
         Some(package_path),
+        None,
         None,
     )
 }
@@ -511,6 +516,7 @@ pub fn crystallize_l1_lexical_grokking_with_surface_policy(
             training_surface_policy,
             maximum_rss_mib,
         }),
+        None,
     )
 }
 
@@ -539,6 +545,45 @@ pub fn prove_l1_lexical_grokking_scale_package(
             training_surface_policy: ScaleTrainingSurfacePolicy::LegacyAlphabetical,
             maximum_rss_mib: DEFAULT_TRAINING_RSS_MIB,
         }),
+        None,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn prove_l1_lexical_grokking_scale_package_range(
+    corpus_path: &Path,
+    package_path: &Path,
+    max_words: usize,
+    terminal_start: usize,
+    terminal_count: usize,
+    heldout_per_class: usize,
+    training_surfaces_per_word: usize,
+) -> io::Result<serde_json::Value> {
+    if heldout_per_class == 0 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "scale proof heldout budget must be positive",
+        ));
+    }
+    if terminal_count == 0 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "scale proof terminal count must be positive",
+        ));
+    }
+    prove_l1_lexical_grokking_with_policy(
+        corpus_path,
+        package_path,
+        max_words,
+        ForwardPostingPolicy::Complete,
+        Some(package_path),
+        Some(ScaleProofPolicy {
+            heldout_per_class,
+            training_surfaces_per_word,
+            training_surface_policy: ScaleTrainingSurfacePolicy::LegacyAlphabetical,
+            maximum_rss_mib: DEFAULT_TRAINING_RSS_MIB,
+        }),
+        Some((terminal_start, terminal_count)),
     )
 }
 
@@ -549,6 +594,7 @@ fn prove_l1_lexical_grokking_with_policy(
     forward_policy: ForwardPostingPolicy,
     reuse_package: Option<&Path>,
     scale_policy: Option<ScaleProofPolicy>,
+    proof_terminal_range: Option<(usize, usize)>,
 ) -> io::Result<serde_json::Value> {
     let budget_guard = scale_policy
         .map(|policy| {
@@ -566,10 +612,32 @@ fn prove_l1_lexical_grokking_with_policy(
     } else {
         corpus_words(&text, max_words)
     };
-    if words.len() < 8 {
+    let proof_terminal_start = proof_terminal_range
+        .map(|range| range.0)
+        .unwrap_or_default();
+    let proof_terminal_count = proof_terminal_range
+        .map(|range| range.1)
+        .unwrap_or(words.len());
+    let proof_terminal_end = proof_terminal_start
+        .checked_add(proof_terminal_count)
+        .filter(|end| *end <= words.len())
+        .ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "L1 proof terminal range exceeds the source corpus",
+            )
+        })?;
+    let proof_words = &words[proof_terminal_start..proof_terminal_end];
+    if proof_words.len() < 8 {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
             "L1 crystal proof requires at least eight unique words",
+        ));
+    }
+    if proof_terminal_range.is_some() && reuse_package.is_none() {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "L1 terminal-range proof requires an existing full package",
         ));
     }
     let mut training_corpus = if reuse_package.is_none() && scale_policy.is_none() {
@@ -605,7 +673,7 @@ fn prove_l1_lexical_grokking_with_policy(
             heldout_reservoir = prepared.1;
             training_surfaces = prepared.2;
         } else {
-            let prepared = prepare_scale_heldout(&words, policy)?;
+            let prepared = prepare_scale_heldout(proof_words, policy, proof_terminal_start)?;
             heldout_reservoir = prepared.0;
             training_surfaces = prepared.1;
         }
@@ -753,7 +821,7 @@ fn prove_l1_lexical_grokking_with_policy(
         "l11_proof stage=memory_ready elapsed_ms={} stage_elapsed_ms={} workers={}",
         proof_started.elapsed().as_millis(),
         memory_load_ms,
-        proof_worker_count(words.len())
+        proof_worker_count(proof_words.len())
     );
 
     let dictionary_validation_started = Instant::now();
@@ -774,7 +842,8 @@ fn prove_l1_lexical_grokking_with_policy(
     );
 
     let clean_audit_started = Instant::now();
-    let clean_miss_diagnostics = evaluate_clean_parallel(&memory, &words);
+    let clean_miss_diagnostics =
+        evaluate_clean_parallel(&memory, proof_words, proof_terminal_start);
     let clean_audit_ms = clean_audit_started.elapsed().as_millis();
     eprintln!(
         "l11_proof stage=clean_audit_complete elapsed_ms={} stage_elapsed_ms={} misses={}",
@@ -782,7 +851,9 @@ fn prove_l1_lexical_grokking_with_policy(
         clean_audit_ms,
         clean_miss_diagnostics.len()
     );
-    let clean_top1 = words.len().saturating_sub(clean_miss_diagnostics.len());
+    let clean_top1 = proof_words
+        .len()
+        .saturating_sub(clean_miss_diagnostics.len());
     // Measure the hot path before proof-only decoder and edit-geometry audits
     // disturb caches or contend with the parallel evaluator.
     let latency_audit_started = Instant::now();
@@ -806,7 +877,7 @@ fn prove_l1_lexical_grokking_with_policy(
     let position_diagnostics = evaluation.position_diagnostics.clone();
     let metrics = evaluation.metrics;
     let restoration = aggregate_restoration(&metrics.classes);
-    let clean_percent = percent(clean_top1, words.len());
+    let clean_percent = percent(clean_top1, proof_words.len());
     let all_classes_pass = metrics.classes.values().all(|class| {
         class.unique_top1_percent > 95.0
             && class.lattice_coverage_percent >= 99.0
@@ -896,6 +967,8 @@ fn prove_l1_lexical_grokking_with_policy(
         l11_verdict,
         l11_crystallization_verdict,
         source_words: words.len(),
+        proof_terminal_start,
+        proof_terminal_count: proof_words.len(),
         training_surfaces,
         training_surface_storage: if reuse_package.is_some() {
             "not_loaded_package_reuse"
@@ -1158,6 +1231,7 @@ fn prepare_scale_training_corpus(
 fn prepare_scale_heldout(
     words: &[String],
     policy: ScaleProofPolicy,
+    terminal_offset: usize,
 ) -> io::Result<(HeldoutReservoir, usize)> {
     let workers = proof_worker_count(words.len());
     let chunk_size = words.len().div_ceil(workers);
@@ -1170,7 +1244,8 @@ fn prepare_scale_heldout(
             .chunks(chunk_size)
             .enumerate()
             .map(|(shard_index, shard_words)| {
-                let start_terminal = shard_index.saturating_mul(chunk_size);
+                let start_terminal =
+                    terminal_offset.saturating_add(shard_index.saturating_mul(chunk_size));
                 scope.spawn(move || {
                     let mut heldout = HeldoutReservoir::new();
                     let mut training_surfaces = 0_usize;
@@ -1334,6 +1409,7 @@ fn evaluate_parallel(
         left.class
             .cmp(right.class)
             .then_with(|| right.objective_unique.cmp(&left.objective_unique))
+            .then_with(|| left.target_rank.is_some().cmp(&right.target_rank.is_some()))
             .then_with(|| left.surface.cmp(&right.surface))
             .then_with(|| left.target_terminal.cmp(&right.target_terminal))
     });
@@ -1350,7 +1426,9 @@ fn evaluate_parallel(
         .truncate(MAX_POSITION_DIAGNOSTICS);
     let mut miss_counts = BTreeMap::new();
     evaluation.metrics.misses.retain(|miss| {
-        let count = miss_counts.entry(miss.class).or_insert(0_usize);
+        let count = miss_counts
+            .entry((miss.class, miss.objective_unique))
+            .or_insert(0_usize);
         *count += 1;
         *count <= MAX_MISS_DIAGNOSTICS_PER_CLASS
     });
@@ -1585,6 +1663,7 @@ fn package_dictionary_matches_parallel(memory: &LexicalGrokkingMemory, words: &[
 fn evaluate_clean_parallel(
     memory: &LexicalGrokkingMemory,
     words: &[String],
+    terminal_offset: usize,
 ) -> Vec<CleanMissDiagnostic> {
     let worker_count = proof_worker_count(words.len());
     let chunk_size = words.len().div_ceil(worker_count);
@@ -1600,7 +1679,8 @@ fn evaluate_clean_parallel(
             .map(|(chunk_index, chunk)| {
                 let progress = &progress;
                 scope.spawn(move || {
-                    let start = chunk_index.saturating_mul(chunk_size);
+                    let start =
+                        terminal_offset.saturating_add(chunk_index.saturating_mul(chunk_size));
                     let mut misses = Vec::new();
                     for (offset, word) in chunk.iter().enumerate() {
                         let target = start + offset;
@@ -2667,7 +2747,7 @@ mod scale_proof_tests {
             maximum_rss_mib: DEFAULT_TRAINING_RSS_MIB,
         };
         let (parallel, parallel_training) =
-            prepare_scale_heldout(&words, policy).expect("prepare parallel heldout");
+            prepare_scale_heldout(&words, policy, 0).expect("prepare parallel heldout");
 
         let mut sequential = HeldoutReservoir::new();
         let mut sequential_training = 0;
@@ -2691,6 +2771,41 @@ mod scale_proof_tests {
 
         assert_eq!(parallel_training, sequential_training);
         assert_eq!(canonical_heldout(parallel), canonical_heldout(sequential));
+    }
+
+    #[test]
+    fn parallel_heldout_preparation_preserves_terminal_offset() {
+        let words = [
+            "download",
+            "restoration",
+            "candidate",
+            "architecture",
+            "crystal",
+            "signal",
+            "terminal",
+            "package",
+        ]
+        .into_iter()
+        .map(str::to_string)
+        .collect::<Vec<_>>();
+        let policy = ScaleProofPolicy {
+            heldout_per_class: 3,
+            training_surfaces_per_word: 0,
+            training_surface_policy: ScaleTrainingSurfacePolicy::LegacyAlphabetical,
+            maximum_rss_mib: DEFAULT_TRAINING_RSS_MIB,
+        };
+
+        let (heldout, _) =
+            prepare_scale_heldout(&words, policy, 462_314).expect("prepare ranged heldout");
+        let terminals = heldout
+            .values()
+            .flat_map(|heap| heap.iter().map(|(_, terminal, _)| *terminal))
+            .collect::<Vec<_>>();
+
+        assert!(!terminals.is_empty());
+        assert!(terminals
+            .iter()
+            .all(|terminal| (462_314..462_322).contains(terminal)));
     }
 
     fn canonical_heldout(reservoir: HeldoutReservoir) -> Vec<(&'static str, u64, u32, String)> {

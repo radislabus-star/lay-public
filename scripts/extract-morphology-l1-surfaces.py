@@ -12,14 +12,22 @@ import tempfile
 import unicodedata
 
 
-PACKAGE_ID = "LAY-RU-LEXICON-462K-SHADOW-v1"
+DEFAULT_PACKAGE_ID = "LAY-RU-LEXICON-462K-SHADOW-v1"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=Path, required=True)
+    parser.add_argument(
+        "--include",
+        type=Path,
+        action="append",
+        default=[],
+        help="Additional one-surface-per-line lexical source; repeatable",
+    )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--package-id", default=DEFAULT_PACKAGE_ID)
     parser.add_argument("--min-length", type=int, default=2)
     parser.add_argument("--max-length", type=int, default=32)
     return parser.parse_args()
@@ -74,10 +82,32 @@ def main() -> None:
                 surfaces.add(surface)
     if malformed_rows:
         raise SystemExit(f"malformed F rows: {malformed_rows}")
+    include_rows: dict[str, int] = {}
+    for include in args.include:
+        accepted = 0
+        with include.open(encoding="utf-8") as source:
+            for line_number, line in enumerate(source, start=1):
+                if not line.strip() or line.startswith("#"):
+                    continue
+                canonical = (
+                    unicodedata.normalize("NFC", line.strip())
+                    .lower()
+                    .replace("’", "'")
+                )
+                if not args.min_length <= len(canonical) <= args.max_length:
+                    continue
+                surface = normalize_surface(line, args.min_length, args.max_length)
+                if surface is None:
+                    raise SystemExit(
+                        f"invalid lexical surface at {include}:{line_number}"
+                    )
+                surfaces.add(surface)
+                accepted += 1
+        include_rows[str(include)] = accepted
     ordered = sorted(surfaces)
     byte_count, checksum = atomic_write_lines(args.output, ordered)
     manifest = {
-        "package_id": PACKAGE_ID,
+        "package_id": args.package_id,
         "layer": "L1.1 lexical source",
         "status": "SOURCE_READY",
         "runtime_authority": False,
@@ -87,6 +117,7 @@ def main() -> None:
         "corpus_bytes": byte_count,
         "corpus_sha256": checksum,
         "source_form_rows": form_rows,
+        "included_lexical_sources": include_rows,
         "unique_surfaces": len(ordered),
         "minimum_length": args.min_length,
         "maximum_length": args.max_length,

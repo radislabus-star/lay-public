@@ -29,7 +29,7 @@ pub use proof::{
     crystallize_l1_lexical_grokking, crystallize_l1_lexical_grokking_with_rss_budget,
     crystallize_l1_lexical_grokking_with_surface_policy, prove_l1_lexical_grokking,
     prove_l1_lexical_grokking_complete_postings, prove_l1_lexical_grokking_package,
-    prove_l1_lexical_grokking_scale_package,
+    prove_l1_lexical_grokking_scale_package, prove_l1_lexical_grokking_scale_package_range,
 };
 pub use runtime::{
     benchmark_package as benchmark_l1_lexical_grokking, query_package as query_l1_lexical_grokking,
