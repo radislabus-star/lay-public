@@ -105,7 +105,14 @@ impl L3CompositeMemory {
             delta_paths.push(delta_path);
             deltas.push(delta);
         }
-        let package = compose_base_with_deltas(base, deltas);
+        // The common runtime manifest has no deltas. Re-running the shard
+        // reducer in that case only duplicates the base package in anonymous
+        // memory and changes no evidence.
+        let package = if deltas.is_empty() {
+            base
+        } else {
+            compose_base_with_deltas(base, deltas)
+        };
         Ok(Self {
             package,
             manifest_path: Some(path.to_path_buf()),
@@ -449,6 +456,56 @@ mod tests {
         assert_eq!(memory.package().transitions, 10);
         assert_eq!(memory.delta_paths.len(), 1);
         assert_eq!(fs::read(&base_path).unwrap(), before);
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn empty_delta_manifest_loads_base_without_reducing_it_again() {
+        let root = std::env::temp_dir().join(format!(
+            "lay-l3-composite-empty-{}-{}",
+            std::process::id(),
+            unix_time_ms()
+        ));
+        fs::create_dir_all(&root).unwrap();
+        let base_path = root.join("base.nwpc");
+        let manifest_path = root.join("manifest.json");
+        let base = ContextPhasePackage {
+            semantic_states: vec![super::super::TokenSemanticState {
+                token_hash: 11,
+                support: 3,
+                center: vec![PhaseCell { re: 0.25, im: -0.5 }; super::super::CELLS],
+            }],
+            profiles: vec![super::super::ContextCandidateProfile {
+                token_hash: 17,
+                positive_examples: 3,
+                negative_examples: 0,
+                threshold_micro: 42_000,
+                positive: vec![PhaseCenter::from_center(
+                    vec![PhaseCell { re: 0.5, im: 0.25 }; super::super::CELLS],
+                    3,
+                )],
+                negative: Vec::new(),
+                hard_negative: Vec::new(),
+            }],
+            transitions: 7,
+            corpus_fragments: 5,
+            global_threshold_micro: 31_000,
+            competition_threshold_micro: 9_000,
+            pairwise_threshold_micro: 4_000,
+            signature_schema: super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
+            ..ContextPhasePackage::default()
+        };
+        write_package(&base_path, &base).unwrap();
+        initialize_manifest(&manifest_path, &base_path).unwrap();
+
+        let memory = L3CompositeMemory::load_manifest(&manifest_path).unwrap();
+
+        assert!(memory.delta_paths.is_empty());
+        assert_eq!(memory.package().semantic_states.len(), 1);
+        assert_eq!(memory.package().profiles.len(), 1);
+        assert_eq!(memory.package().transitions, 7);
+        assert_eq!(memory.package().global_threshold_micro, 31_000);
+        assert_eq!(memory.package().profiles[0].threshold_micro, 42_000);
         let _ = fs::remove_dir_all(root);
     }
 

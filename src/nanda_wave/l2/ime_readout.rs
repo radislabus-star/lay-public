@@ -7,7 +7,7 @@ use crate::text_metrics::damerau_levenshtein;
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex, OnceLock};
 
-const LEXICAL_READOUT_CACHE_CAPACITY: usize = 1536;
+const LEXICAL_READOUT_CACHE_CAPACITY: usize = 128;
 // The gate asks L2 for a bounded material lattice and then applies phase
 // competition. Four candidates per requested display slot leave enough
 // competitors for interference while avoiding a 192-node DAFSA walk per key.

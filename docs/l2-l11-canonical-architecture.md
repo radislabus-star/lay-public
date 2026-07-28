@@ -258,6 +258,130 @@ Runtime authority changed:
 
 - `false`
 
+## 13. 2026-07-28 IBus L2 Cache Budget
+
+The initial attribution to the L2 lexical cache alone was wrong. The compact
+`62,424,748 B` lexical phase package is mmap-backed, but the process also
+loaded the L3 composite and retained bounded lexical completion readouts.
+
+```text
+initial L2 preload prefixes                 1,536
+initial preload material limit                 96
+live IME material limit                         48
+initial maximum cache entries                1,536
+L3 runtime manifest deltas                        0
+```
+
+The L2 preload used a different material-limit key from live IME requests and
+therefore produced few useful cache hits. More importantly, the zero-delta L3
+manifest still passed its complete base package through the shard reducer.
+That no-op reduction created the large anonymous runtime regions.
+
+Baseline after warmup:
+
+```text
+RSS                           245,812 KiB
+PSS                           215,609 KiB
+anonymous PSS                 177,772 KiB
+file PSS                       37,837 KiB
+swap                                0 KiB
+```
+
+Two intermediate configurations were rejected:
+
+```text
+256 prefixes, material 32, cache 256
+  8-second RSS                  110,128 KiB
+  2-minute RSS                 217,720 KiB
+  verdict                      REJECT: early-only reduction
+
+bootstrap only, material 48, cache 64
+  cold "п"                         78,727 us
+  cold "пров"                      55,898 us
+  cold sentence ending "д"         80,742 us
+  verdict                      REJECT: cold latency regression
+```
+
+The accepted configuration and loader behavior are:
+
+```text
+curated preload prefixes                      79
+preload mode                      CompletionOnly
+preload/live material limit                    48
+maximum cache entries                         128
+zero-delta L3 manifest              direct base load
+L3 shard reduce when deltas == 0          disabled
+```
+
+The curated set contains all `33` Russian letters, all `26` English letters,
+and `20` common RU/EN two-letter prefixes. The cache key now matches the live
+IME material limit. A non-empty L3 delta list still uses the existing
+composite reducer.
+
+Measured on the same T480 after a managed child-engine restart:
+
+```text
+metric                      before       8 sec       2 min       5 min
+RSS                     245,812 KiB  105,784 KiB  105,404 KiB  107,844 KiB
+PSS                     215,609 KiB   75,848 KiB   75,472 KiB   77,913 KiB
+anonymous PSS           177,772 KiB   41,440 KiB   41,440 KiB   41,516 KiB
+file PSS                 37,837 KiB   34,408 KiB   34,032 KiB   36,397 KiB
+swap                           0 KiB        0 KiB        0 KiB        0 KiB
+```
+
+At five minutes this is `-56.1%` RSS, `-63.9%` PSS, and `-76.6%` anonymous
+PSS against the warm baseline. The rejected two-minute rebound did not recur.
+
+Candidate-generation timing:
+
+```text
+hot samples                                      140
+hot p50 / p90 / p99 / max       29 / 36 / 43 / 53 us
+cold "п"                                      50,307 us
+cold "пр"                                      2,322 us
+cold "пров"                                   43,678 us
+cold "file"                                    1,035 us
+cold sentence ending "д"                      55,616 us
+```
+
+The cold figures are reported, not hidden by the hot aggregate. They remain a
+separate DAFSA readout optimization target and are not a blocker for accepting
+the steady-state memory fix.
+
+Tested:
+
+- `precognition_candidate_generation_stays_under_budget`: PASS;
+- lexical cache projection regression: PASS;
+- zero-delta L3 composite fast-path regression: PASS;
+- `scripts/check-lay-changed.sh`: PASS;
+- release `lay-ibus-engine 0.2.326` built and loaded;
+- live process PID `3024249` used the installed release;
+- watchdog fallback restored `xkb:us::eng` after five minutes without user
+  confirmation;
+- no IBus daemon restart and no swap.
+
+Not tested in this checkpoint:
+
+- multi-day cache churn at the 128-entry bound;
+- end-to-end physical key-to-GNOME-frame latency;
+- full L2/L3 quality proof;
+- memory with one or more admitted L3 delta packages.
+
+Verdict scope:
+
+- `PASS_runtime_memory_5m`;
+- no scoring, candidate-birth, settlement, package, or authority coefficient
+  changed;
+- this is not a restoration-quality promotion claim.
+
+Exact receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_IBUS_CACHE_BUDGET_2026-07-28.json`.
+
+Runtime authority changed:
+
+- `false`.
+
 ## 13. 2026-07-27 Full Russian Package And Live Lattice Boundary
 
 What was tested:

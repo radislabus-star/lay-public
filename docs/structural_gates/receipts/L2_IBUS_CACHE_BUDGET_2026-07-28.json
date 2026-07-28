@@ -1,0 +1,103 @@
+{
+  "kind": "l2_ibus_cache_budget",
+  "date": "2026-07-28",
+  "version": "0.2.326",
+  "verdict": "PASS_runtime_memory_5m",
+  "baseline": {
+    "lexical_package_bytes": 62424748,
+    "preload_prefixes": 1536,
+    "preload_material_limit": 96,
+    "live_material_limit": 48,
+    "cache_capacity": 1536,
+    "l3_manifest_deltas": 0,
+    "zero_delta_l3_reduce": true
+  },
+  "accepted_configuration": {
+    "preload_prefixes": 79,
+    "preload_mode": "CompletionOnly",
+    "preload_material_limit": 48,
+    "live_material_limit": 48,
+    "cache_capacity": 128,
+    "zero_delta_l3_reduce": false,
+    "nonempty_delta_l3_reduce": true
+  },
+  "rejected_experiments": [
+    {
+      "configuration": "256 prefixes, material 32, cache 256",
+      "early_rss_kib": 110128,
+      "steady_2m_rss_kib": 217720,
+      "verdict": "REJECT_early_only_reduction"
+    },
+    {
+      "configuration": "bootstrap only, material 48, cache 64",
+      "cold_latency_us": {
+        "p": 78727,
+        "prov": 55898,
+        "sentence_d": 80742
+      },
+      "verdict": "REJECT_cold_latency"
+    }
+  ],
+  "memory_kib": {
+    "baseline": {
+      "rss": 245812,
+      "pss": 215609,
+      "anonymous_pss": 177772,
+      "file_pss": 37837,
+      "swap": 0
+    },
+    "after_8s": {
+      "rss": 105784,
+      "pss": 75848,
+      "anonymous_pss": 41440,
+      "file_pss": 34408,
+      "swap": 0
+    },
+    "after_2m": {
+      "rss": 105404,
+      "pss": 75472,
+      "anonymous_pss": 41440,
+      "file_pss": 34032,
+      "swap": 0
+    },
+    "after_5m": {
+      "rss": 107844,
+      "pss": 77913,
+      "anonymous_pss": 41516,
+      "file_pss": 36397,
+      "swap": 0
+    }
+  },
+  "latency_us": {
+    "hot_samples": 140,
+    "hot_p50": 29,
+    "hot_p90": 36,
+    "hot_p99": 43,
+    "hot_max": 53,
+    "cold": {
+      "p": 50307,
+      "pr": 2322,
+      "prov": 43678,
+      "file": 1035,
+      "html_d": 17283,
+      "sentence_d": 55616,
+      "long_pri": 7916
+    }
+  },
+  "tests": {
+    "precognition_candidate_generation": "PASS",
+    "cache_projection": "PASS",
+    "zero_delta_l3_composite_fast_path": "PASS",
+    "check_lay_changed": "PASS",
+    "release_binary_loaded": true,
+    "live_pid": 3024249,
+    "watchdog_fallback": "PASS"
+  },
+  "not_tested": [
+    "multi-day cache churn",
+    "physical key-to-frame latency",
+    "full L2/L3 quality proof",
+    "memory with admitted L3 deltas"
+  ],
+  "runtime_authority_changed": false
+}

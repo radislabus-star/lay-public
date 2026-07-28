@@ -1551,6 +1551,7 @@ fn precognition_candidate_generation_stays_under_budget() {
         "смотрим что будет происходить когда при",
     ];
     let mut timings = Vec::new();
+    let mut cold_timings = Vec::new();
     let mut sample_max = Vec::new();
     for sample in samples {
         let mut engine = LayIbusEngine::new(
@@ -1568,7 +1569,10 @@ fn precognition_candidate_generation_stays_under_budget() {
         for ch in sample.chars() {
             engine.push_tail_char(ch);
         }
-        for _ in 0..3 {
+        let cold_started = Instant::now();
+        engine.refresh_precognition_candidates();
+        cold_timings.push((sample, cold_started.elapsed().as_micros() as u64));
+        for _ in 0..2 {
             engine.refresh_precognition_candidates();
         }
         let sample_start = timings.len();
@@ -1608,6 +1612,7 @@ fn precognition_candidate_generation_stays_under_budget() {
         p99,
         max
     );
+    eprintln!("precognition cold readouts: {cold_timings:?}");
     if let Some((sample, sample_max)) = sample_max.iter().max_by_key(|(_, max)| *max) {
         eprintln!(
             "precognition worst sample {:?}: max={}us",

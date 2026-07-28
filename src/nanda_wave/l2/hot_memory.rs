@@ -12,9 +12,14 @@ use std::sync::{
 
 static IME_WORD_CANDIDATE_MEMORY_READY: AtomicBool = AtomicBool::new(false);
 static IME_WORD_CANDIDATE_MEMORY_WARMUP: OnceLock<()> = OnceLock::new();
-const IME_HOT_PREFIX_LENS: &[usize] = &[2, 3, 4, 5];
-const IME_HOT_PREFIX_LIMIT: usize = 1536;
-const IME_HOT_MATERIAL_LIMIT: usize = 96;
+const IME_HOT_MATERIAL_LIMIT: usize = 48;
+const IME_BOOTSTRAP_PREFIXES: &[&str] = &[
+    "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с",
+    "т", "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я", "a", "b", "c", "d", "e",
+    "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x",
+    "y", "z", "пр", "ст", "по", "на", "за", "вы", "об", "до", "от", "не", "ко", "ра", "re", "co",
+    "de", "in", "ex", "un", "pr",
+];
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize)]
 pub struct L2SurfaceMemoryStatus {
@@ -41,13 +46,10 @@ pub(crate) fn warm_up_surface_motif_memory() {
 
 pub(crate) fn warm_up_ime_word_candidate_memory() {
     IME_WORD_CANDIDATE_MEMORY_WARMUP.get_or_init(|| {
-        let memory = surface_motif_memory();
-        let mut prefixes = memory.hot_prefix_frontier(IME_HOT_PREFIX_LENS, IME_HOT_PREFIX_LIMIT);
-        for bootstrap_prefix in ["пр", "ex"] {
-            if !prefixes.iter().any(|prefix| prefix == bootstrap_prefix) {
-                prefixes.push(bootstrap_prefix.to_string());
-            }
-        }
+        let prefixes = IME_BOOTSTRAP_PREFIXES
+            .iter()
+            .map(|prefix| (*prefix).to_string())
+            .collect::<Vec<_>>();
         super::ime_readout::warm_up_lexical_readout_cache(&prefixes, IME_HOT_MATERIAL_LIMIT);
         IME_WORD_CANDIDATE_MEMORY_READY.store(true, Ordering::Release);
     });
