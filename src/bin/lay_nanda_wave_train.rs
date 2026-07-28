@@ -10,6 +10,9 @@ use lay::nanda_wave::L2PhaseTrainingEntry;
 use lay::{lexicon, russian_lexicon};
 use serde::Deserialize;
 
+#[path = "lay_nanda_wave_train/l3_online.rs"]
+mod l3_online;
+
 #[allow(dead_code)]
 #[path = "../nanda_wave/lexical_phase/format.rs"]
 mod lexical_phase_format;
@@ -43,6 +46,46 @@ struct Learned {
 
 fn main() -> io::Result<()> {
     let args = env::args().collect::<Vec<_>>();
+    if args.iter().any(|arg| arg == "--watch-l3-context-online") {
+        return l3_online::run(&args);
+    }
+    if let Some(l2_package) = arg_path(&args, "--prove-canonical-l2") {
+        let l1_package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let morphology_corpus = arg_path(&args, "--morphology-corpus").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--morphology-corpus is required",
+            )
+        })?;
+        let report = lay::nanda_wave::prove_canonical_l2_package(
+            &l1_package,
+            &l2_package,
+            &morphology_corpus,
+            arg_usize(&args, "--limit").unwrap_or(0),
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(morphology_corpus) = arg_path(&args, "--compile-canonical-l2") {
+        let l1_package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report = lay::nanda_wave::compile_canonical_l2_package(
+            &l1_package,
+            &morphology_corpus,
+            &output,
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if let Some(package) = arg_path(&args, "--analyze-l1-forward-compression") {
         let report = lay::nanda_wave::analyze_l1_forward_compression(&package)?;
         println!(
@@ -205,6 +248,89 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    if args.iter().any(|arg| arg == "--init-l3-context-composite") {
+        let manifest = arg_path(&args, "--manifest")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--manifest is required"))?;
+        let base = arg_path(&args, "--base")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--base is required"))?;
+        let report = lay::nanda_wave::initialize_l3_context_composite_manifest(&manifest, &base)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--admit-l3-context-delta") {
+        let manifest = arg_path(&args, "--manifest")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--manifest is required"))?;
+        let delta = arg_path(&args, "--delta")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--delta is required"))?;
+        let proof_receipt = arg_path(&args, "--proof-receipt").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--proof-receipt is required for delta admission",
+            )
+        })?;
+        let scope = arg_string(&args, "--scope");
+        let report = lay::nanda_wave::admit_l3_context_delta(
+            &manifest,
+            &delta,
+            Some(&proof_receipt),
+            scope.as_deref(),
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--prove-l3-context-delta") {
+        let manifest = arg_path(&args, "--manifest")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--manifest is required"))?;
+        let delta = arg_path(&args, "--delta")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--delta is required"))?;
+        let cases = arg_path(&args, "--cases")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--cases is required"))?;
+        let receipt = arg_path(&args, "--out-receipt").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--out-receipt is required")
+        })?;
+        let report =
+            lay::nanda_wave::prove_l3_context_delta_targeted(&manifest, &delta, &cases, &receipt)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        if report.get("verdict").and_then(serde_json::Value::as_str) != Some("PASS") {
+            return Err(io::Error::other("targeted L3 delta proof did not pass"));
+        }
+        return Ok(());
+    }
+    if args
+        .iter()
+        .any(|arg| arg == "--compact-l3-context-composite")
+    {
+        let manifest = arg_path(&args, "--manifest")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--manifest is required"))?;
+        let out = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report = lay::nanda_wave::compact_l3_context_composite(&manifest, &out)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if args
+        .iter()
+        .any(|arg| arg == "--reload-l3-context-composite")
+    {
+        let report = lay::nanda_wave::reload_l3_context_composite()?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if args.iter().any(|arg| arg == "--l3-context-phase-status") {
         let memory = arg_path(&args, "--memory");
         println!(
@@ -268,6 +394,41 @@ fn main() -> io::Result<()> {
             max_fragments,
             min_profile_support,
         )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(corpus) = arg_path(&args, "--compile-l3-context-delta") {
+        let out = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
+        let min_profile_support = arg_u32(&args, "--min-profile-support").unwrap_or(2);
+        let min_surface_support = arg_u32(&args, "--min-surface-support").unwrap_or(2);
+        let surface_evidence = arg_path(&args, "--surface-evidence").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--compile-l3-context-delta requires --surface-evidence CORRECTIONS.jsonl",
+            )
+        })?;
+        let mut report = lay::nanda_wave::compile_l3_context_phase_memory_with_surface_evidence(
+            &corpus,
+            &surface_evidence,
+            &out,
+            max_fragments,
+            min_profile_support,
+            min_surface_support,
+        )?;
+        if let Some(object) = report.as_object_mut() {
+            object.insert(
+                "kind".to_string(),
+                serde_json::json!("l3_context_delta_compile"),
+            );
+            object.insert("base_loaded".to_string(), serde_json::json!(false));
+            object.insert("base_rewritten".to_string(), serde_json::json!(false));
+            object.insert("runtime_authority".to_string(), serde_json::json!(false));
+        }
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?

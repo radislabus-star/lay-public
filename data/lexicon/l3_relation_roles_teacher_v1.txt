@@ -1,0 +1,208 @@
+Samsung и Google
+Huawei и Xiaomi
+Mozilla и Firefox
+Amazon и Kindle
+Lenovo и Motorola
+Nokia и Ericsson
+Toyota и Honda
+Canon и Nikon
+Spotify и Netflix
+Adobe и Oracle
+Siemens и Philips
+Logitech и Corsair
+Panasonic и Toshiba
+Telegram и Signal
+Vivaldi и Chromium
+Debian и Fedora
+Ubuntu и Windows
+Android и Harmony
+PlayStation и Nintendo
+Airbus и Boeing
+Samsung и Huawei
+Google и Amazon
+Xiaomi и Lenovo
+Mozilla и Vivaldi
+Toyota и Nissan
+Canon и Fujifilm
+Spotify и Deezer
+Adobe и Autodesk
+Siemens и Bosch
+Telegram и WhatsApp
+Debian и Ubuntu
+Android и Windows
+Airbus и Embraer
+Panasonic и Philips
+Nokia и Motorola
+Logitech и Lenovo
+проверили оплату и доставку
+сравнили цену и качество
+подключили телефон и планшет
+выбрали банк и тариф
+открыли документ и таблицу
+запустили сервер и клиент
+проверили память и процессор
+купили клавиатуру и мышь
+обсудили сроки и бюджет
+добавили русский и английский
+wave b signal
+lane b signal
+mode b signal
+group b signal
+phase b signal
+class b signal
+slot b signal
+field b signal
+buffer b value
+vector b value
+matrix b value
+channel b value
+GitHub b branch
+GitLab b branch
+OpenSSL b library
+PostgreSQL b database
+HTTP b protocol
+JSON b format
+CLI b option
+API b method
+node-js b module
+compile_mode b flag
+Покупатель сравнил Samsung и Google
+Заказчик выбрал Huawei и Xiaomi
+В договор добавили поставку и монтаж
+В заказ включили сервер и клиент
+Для оплаты доступны карта и перевод
+Система поддерживает Linux и Windows
+Команда проверила память и процессор
+Инженер подключил клавиатуру и мышь
+Менеджер согласовал сроки и бюджет
+Редактор открыл документ и таблицу
+Покупатель сравнил Nimbus и Atlas
+Заказчик выбрал Orion и Vega
+В корзину добавили чай и кофе
+На склад привезли столы и стулья
+Мы обсудили цену и качество
+Оператор проверил оплату и доставку
+Клиент заказал установку и настройку
+Разработчик добавил русский и английский
+Компания продает телефоны и планшеты
+Сервис принимает рубли и доллары
+compiler сохранил Samsung b register
+debugger пометил Samsung b branch
+runtime передал Huawei b buffer
+parser прочитал Huawei b token
+compiler сохранил Nimbus b register
+debugger пометил Nimbus b branch
+runtime передал Orion b buffer
+parser прочитал Orion b token
+В формуле оставили value b constant
+В таблице записали column b index
+В протоколе передали channel b value
+В конфигурации указали mode b flag
+Сборщик обработал module b target
+Отладчик проверил register b state
+Скрипт получил argument b value
+Компилятор увидел operand b expression
+Функция вернула parameter b result
+Тест сравнил buffer b snapshot
+Схема связала node b edge
+Матрица сохранила row b vector
+Заказчик выбрал Samsung и Google
+Заказчик выбрал Huawei и Xiaomi
+Заказчик выбрал Nimbus и Atlas
+Заказчик выбрал Orion и Vega
+Заказчик выбрал Sirius и Nova
+Заказчик выбрал Canon и Nikon
+Заказчик выбрал Debian и Fedora
+Заказчик выбрал Airbus и Boeing
+Покупатель сравнил Samsung и Google
+Покупатель сравнил Huawei и Xiaomi
+Покупатель сравнил Nimbus и Atlas
+Покупатель сравнил Orion и Vega
+Покупатель сравнил Sirius и Nova
+Покупатель сравнил Canon и Nikon
+Покупатель сравнил Debian и Fedora
+Покупатель сравнил Airbus и Boeing
+Оператор добавил Samsung и Google
+Оператор добавил Huawei и Xiaomi
+Оператор добавил Nimbus и Atlas
+Оператор добавил Orion и Vega
+compiler сохранил Samsung b register
+compiler сохранил Huawei b register
+compiler сохранил Nimbus b register
+compiler сохранил Orion b register
+compiler сохранил Sirius b register
+compiler сохранил Canon b register
+compiler сохранил Debian b register
+compiler сохранил Airbus b register
+debugger пометил Samsung b branch
+debugger пометил Huawei b branch
+debugger пометил Nimbus b branch
+debugger пометил Orion b branch
+debugger пометил Sirius b branch
+debugger пометил Canon b branch
+debugger пометил Debian b branch
+debugger пометил Airbus b branch
+runtime передал Samsung b buffer
+runtime передал Huawei b buffer
+runtime передал Nimbus b buffer
+runtime передал Orion b buffer
+Через MTC можно оплатить Samsung и Google
+Через MTC можно оплатить Huawei и Xiaomi
+Через MTC можно оплатить Nimbus и Atlas
+Через MTC можно оплатить Orion и Vega
+Через приложение можно оплатить Samsung и Google
+Через приложение можно оплатить Huawei и Xiaomi
+Через приложение можно оплатить Nimbus и Atlas
+Через приложение можно оплатить Orion и Vega
+В магазине можно оплатить Samsung и Google
+В магазине можно оплатить Huawei и Xiaomi
+В магазине можно оплатить Nimbus и Atlas
+В магазине можно оплатить Orion и Vega
+Клиент может оплатить Samsung и Google
+Клиент может оплатить Huawei и Xiaomi
+Клиент может оплатить Nimbus и Atlas
+Клиент может оплатить Orion и Vega
+Для заказа можно выбрать Samsung и Google
+Для заказа можно выбрать Huawei и Xiaomi
+Для заказа можно выбрать Nimbus и Atlas
+Для заказа можно выбрать Orion и Vega
+Мне нравится этот фильм
+Мне нравятся эти фильмы
+Мне нравится этот проект
+Мне нравятся эти проекты
+Мне нравится этот вариант
+Мне нравятся эти варианты
+Мне нравится этот пример
+Мне нравятся эти примеры
+У кошки есть лапы и хвост
+У собаки есть ошейник и поводок
+У коровы есть молоко и теленок
+У машины есть двигатель и колеса
+У проекта есть сроки и бюджет
+У договора есть номер и дата
+У телефона есть экран и камера
+У сервера есть память и процессор
+Между домом и дорогой растут деревья
+Между ценой и качеством нужен баланс
+Вместе работают сервер и клиент
+Вместе поставляются клавиатура и мышь
+В комплект входят кабель и адаптер
+В заказ входят доставка и монтаж
+Покупатель оплачивает товар и доставку
+Клиент выбирает карту и перевод
+У коровы и козы есть молоко
+У кошки и собаки есть хозяин
+У сервера и клиента общий протокол
+У проекта и договора общий номер
+У телефона и планшета один аккаунт
+У банка и клиента есть договор
+У покупателя и продавца есть обязательства
+У двигателя и коробки общая система
+У документа и таблицы общий редактор
+У русского и английского разные правила
+У доставки и монтажа разные сроки
+У цены и качества нужен баланс
+Через терминал можно оплатить товар и доставку
+Через сервис можно оплатить телефон и планшет
+У поставщика и покупателя есть договор
+У приложения и сайта общий аккаунт

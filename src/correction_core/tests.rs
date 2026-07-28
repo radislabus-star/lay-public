@@ -299,12 +299,12 @@ mod tests {
     }
 
     #[test]
-    fn compact_l2_route_births_nanda_candidates_without_full_wave_authority() {
+    fn live_l2_field_shadow_route_births_nanda_candidates_without_full_wave_authority() {
         use std::time::Instant;
 
         let pipeline = default_typing_assist_pipeline();
         let mut req = request("звгрузи ", &pipeline, CorrectionMode::NandaOnly);
-        req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+        req.nanda_candidate_route = CandidateReadoutRoute::live_default();
 
         let resolution = resolve_text_correction(req);
         let candidates = &resolution.candidates;
@@ -312,9 +312,18 @@ mod tests {
         assert!(!candidates.is_empty());
         assert!(candidates.iter().all(|candidate| {
             candidate.source == CorrectionDecisionSource::Nanda
-                && candidate.source_id == "L2LexicalPhaseCell32"
                 && candidate.origin == CandidateOrigin::L2Surface
         }));
+        assert!(candidates.iter().any(|candidate| {
+            candidate.source_id.starts_with("L2FieldShadow")
+                || candidate
+                    .evidence
+                    .iter()
+                    .any(|evidence| evidence.source_id.starts_with("L2FieldShadow"))
+        }));
+        assert!(candidates
+            .iter()
+            .all(|candidate| candidate.source_id.starts_with("L2FieldShadow")));
         assert!(candidates
             .iter()
             .any(|candidate| candidate.replacement == "загрузи "));
@@ -326,7 +335,7 @@ mod tests {
             Some("загрузи ")
         );
 
-        let sample_count = std::env::var("LAY_COMPACT_L2_SAMPLES")
+        let sample_count = std::env::var("LAY_L2_FIELD_SHADOW_SAMPLES")
             .ok()
             .and_then(|value| value.parse::<usize>().ok())
             .unwrap_or(120)
@@ -334,7 +343,7 @@ mod tests {
         let mut timings = Vec::with_capacity(sample_count);
         for _ in 0..sample_count {
             let mut req = request("звгрузи ", &pipeline, CorrectionMode::NandaOnly);
-            req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+            req.nanda_candidate_route = CandidateReadoutRoute::live_default();
             let started = Instant::now();
             let resolution = resolve_text_correction(req);
             timings.push(started.elapsed().as_micros() as u64);
@@ -352,21 +361,21 @@ mod tests {
         let p99 = timings[timings.len() * 99 / 100];
         let max = *timings.last().expect("latency samples");
         eprintln!(
-            "compact L2 correction route: n={} p50={}us p90={}us p99={}us max={}us",
+            "L2FieldShadow correction route: n={} p50={}us p90={}us p99={}us max={}us",
             timings.len(),
             p50,
             p90,
             p99,
             max
         );
-        if std::env::var_os("LAY_ENFORCE_COMPACT_L2_LATENCY_BUDGET").is_some() {
-            assert!(p99 <= 5_000, "compact L2 p99 exceeded budget: {p99}us");
-            assert!(max <= 10_000, "compact L2 max exceeded budget: {max}us");
+        if std::env::var_os("LAY_ENFORCE_L2_FIELD_SHADOW_LATENCY_BUDGET").is_some() {
+            assert!(p99 <= 5_000, "L2FieldShadow p99 exceeded budget: {p99}us");
+            assert!(max <= 10_000, "L2FieldShadow max exceeded budget: {max}us");
         }
     }
 
     #[test]
-    fn compact_l2_route_applies_adjacent_transposition_center() {
+    fn live_l2_field_shadow_route_applies_adjacent_transposition_center() {
         let previous_policy = crate::hot_field::process_policy();
         crate::hot_field::set_process_policy(
             crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
@@ -382,7 +391,7 @@ mod tests {
         .into_iter()
         .map(|(input, expected)| {
             let mut req = request(input, &pipeline, CorrectionMode::NandaOnly);
-            req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+            req.nanda_candidate_route = CandidateReadoutRoute::live_default();
             (expected, resolve_text_correction(req))
         })
         .collect();
@@ -416,7 +425,7 @@ mod tests {
             &pipeline,
             CorrectionMode::DeterministicThenNanda,
         );
-        req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+        req.nanda_candidate_route = CandidateReadoutRoute::live_default();
         let resolution = resolve_text_correction(req);
         crate::hot_field::set_process_policy(previous_policy);
 
@@ -447,7 +456,7 @@ mod tests {
             &pipeline,
             CorrectionMode::DeterministicThenNanda,
         );
-        req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+        req.nanda_candidate_route = CandidateReadoutRoute::live_default();
         let resolution = resolve_text_correction(req);
         crate::hot_field::set_process_policy(previous_policy);
 
@@ -475,7 +484,7 @@ mod tests {
             &pipeline,
             CorrectionMode::DeterministicThenNanda,
         );
-        req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+        req.nanda_candidate_route = CandidateReadoutRoute::live_default();
         let resolution = resolve_text_correction(req);
         crate::hot_field::set_process_policy(previous_policy);
 
@@ -500,7 +509,7 @@ mod tests {
         );
         let pipeline = default_typing_assist_pipeline();
         let mut req = request("ландо ", &pipeline, CorrectionMode::DeterministicThenNanda);
-        req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+        req.nanda_candidate_route = CandidateReadoutRoute::live_default();
         let resolution = resolve_text_correction(req);
         crate::hot_field::set_process_policy(previous_policy);
 
@@ -525,7 +534,7 @@ mod tests {
         );
         let pipeline = default_typing_assist_pipeline();
         let mut req = request("мжоет ", &pipeline, CorrectionMode::DeterministicThenNanda);
-        req.nanda_candidate_route = CandidateReadoutRoute::CompactL2;
+        req.nanda_candidate_route = CandidateReadoutRoute::live_default();
         let resolution = resolve_text_correction(req);
         crate::hot_field::set_process_policy(previous_policy);
 
@@ -1596,6 +1605,38 @@ mod tests {
     }
 
     #[test]
+    fn protected_multiword_tail_rewrite_stays_suggest_only() {
+        for (replacement, error_class) in [
+            ("давай там просмотри ", TypingErrorClass::MissingLetter),
+            ("давай там подсмотри ", TypingErrorClass::MissingLetter),
+            ("давай там досмотри ", TypingErrorClass::LetterSubstitution),
+        ] {
+            let gate = gate_candidate_with_source(
+                "давай там посмотри ",
+                replacement,
+                error_class,
+                "L2SurfaceMotifCell32",
+            );
+
+            assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+            assert_ne!(gate.reason, "class_allows_apply");
+        }
+    }
+
+    #[test]
+    fn known_finished_form_cannot_grow_into_infinitive_on_post_space_route() {
+        let gate = gate_candidate_with_source(
+            "посмотри ",
+            "посмотреть ",
+            TypingErrorClass::CompositeTypo,
+            "L2SurfaceMotifCell32",
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "known_form_to_infinitive_overreach");
+    }
+
+    #[test]
     fn nanda_semantic_candidate_cannot_rewrite_known_word_to_neighbor_word() {
         let gate = gate_candidate(
             "искать хрень! ",
@@ -1855,6 +1896,22 @@ mod tests {
     }
 
     #[test]
+    fn l2_field_cannot_delete_known_case_ending_without_context_proof() {
+        let pipeline = default_typing_assist_pipeline();
+        let mut req = request("в коде ", &pipeline, CorrectionMode::DeterministicThenNanda);
+        req.nanda_candidate_route = CandidateReadoutRoute::L2FieldShadow;
+        let resolution = resolve_text_correction(req);
+
+        assert!(resolution.selected.is_none(), "resolution={resolution:#?}");
+        assert!(resolution.decision.is_none(), "resolution={resolution:#?}");
+        assert!(resolution
+            .candidate_scores
+            .iter()
+            .filter(|candidate| candidate.replacement == "в код ")
+            .all(|candidate| !candidate.selected));
+    }
+
+    #[test]
     fn future_auxiliary_blocks_non_infinitive_typo_candidate() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
@@ -1865,6 +1922,80 @@ mod tests {
 
         assert!(resolution.selected.is_none());
         assert!(resolution.decision.is_none());
+    }
+
+    #[test]
+    fn live_log_style_finished_form_is_not_auto_extended_to_infinitive() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "давай там посмотри ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        ));
+
+        assert_ne!(
+            resolution
+                .decision
+                .as_ref()
+                .map(|decision| decision.replacement.as_str()),
+            Some("давай там посмотреть "),
+            "{resolution:#?}"
+        );
+        assert!(
+            resolution
+                .candidates
+                .iter()
+                .filter(|candidate| candidate.replacement == "давай там посмотреть ")
+                .all(|candidate| candidate.gate.action != CandidateGateAction::Eligible),
+            "{resolution:#?}"
+        );
+    }
+
+    #[test]
+    fn live_l2_field_shadow_log_style_finished_form_is_not_auto_extended_to_infinitive() {
+        let previous_policy = crate::hot_field::process_policy();
+        crate::hot_field::set_process_policy(
+            crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
+                crate::text_backend::TextBackendPreference::Ime,
+            ),
+        );
+        let pipeline = default_typing_assist_pipeline();
+        let mut req = request(
+            "давай там посмотри ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        );
+        req.nanda_candidate_route = CandidateReadoutRoute::live_default();
+        let resolution = resolve_text_correction(req);
+        crate::hot_field::set_process_policy(previous_policy);
+
+        assert_ne!(
+            resolution
+                .decision
+                .as_ref()
+                .map(|decision| decision.replacement.as_str()),
+            Some("давай там посмотреть "),
+            "{resolution:#?}"
+        );
+        let infinitive_candidates: Vec<_> = resolution
+            .candidates
+            .iter()
+            .filter(|candidate| candidate.replacement == "давай там посмотреть ")
+            .collect();
+        assert!(
+            infinitive_candidates
+                .iter()
+                .all(|candidate| candidate.gate.action != CandidateGateAction::Eligible),
+            "{resolution:#?}"
+        );
+        if !infinitive_candidates.is_empty() {
+            assert!(
+                infinitive_candidates
+                    .iter()
+                    .all(|candidate| candidate.gate.reason == "known_form_to_infinitive_overreach"),
+                "{resolution:#?}"
+            );
+        }
     }
 
     #[test]

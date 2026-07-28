@@ -45,6 +45,16 @@ def make_ime_cases(Case):
         "ime_autocorrect_en_ru_double_shift_back_layout_enter": Case(
             "ime_autocorrect_en_ru_double_shift_back_layout_enter", "djn file"
         ),
+        "ime_autocorrect_typo_double_shift_undo_enter": Case(
+            "ime_autocorrect_typo_double_shift_undo_enter",
+            "доллора",
+            start_layout="ru",
+        ),
+        "ime_known_inflection_preserved_enter": Case(
+            "ime_known_inflection_preserved_enter",
+            "в коде",
+            start_layout="ru",
+        ),
         "ime_prefix_prov_completion_alt_enter": Case(
             "ime_prefix_prov_completion_alt_enter", "проверка", start_layout="ru"
         ),

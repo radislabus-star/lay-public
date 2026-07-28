@@ -619,15 +619,9 @@ fn nanda_text_candidates(
 fn nanda_text_candidates_for_route(
     req: &CorrectionRequest<'_>,
     route: CandidateReadoutRoute,
-    l2_peak_context: Option<&crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext>,
+    _l2_peak_context: Option<&crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext>,
 ) -> Vec<UnifiedCorrectionCandidate> {
     match route {
-        CandidateReadoutRoute::CompactL2 => {
-            let Some(l2_peak_context) = l2_peak_context else {
-                return Vec::new();
-            };
-            return hot_l2_text_candidates(req.text, l2_peak_context);
-        }
         CandidateReadoutRoute::L2FieldShadow => {
             return crate::nanda_wave::l2_field::shadow_text_candidates(req.text);
         }
@@ -641,25 +635,6 @@ fn nanda_text_candidates_for_route(
         .filter_map(|candidate| nanda_word_candidate(req.text, candidate))
         .collect::<Vec<_>>();
     candidates.extend(delayed_context_candidates(req.text));
-    candidates
-}
-
-fn hot_l2_text_candidates(
-    original: &str,
-    l2_peak_context: &crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext,
-) -> Vec<UnifiedCorrectionCandidate> {
-    let started = std::time::Instant::now();
-    let timing_enabled = std::env::var_os("LAY_CORRECTION_CORE_TIMING").is_some();
-    let candidates = crate::nanda_wave::l2_field::compact_text_candidates(original, l2_peak_context);
-    if timing_enabled {
-        let ready = std::time::Instant::now();
-        eprintln!(
-            "lay_hot_l2_timing bridge_us={} total_us={} candidates={}",
-            ready.duration_since(started).as_micros(),
-            ready.duration_since(started).as_micros(),
-            candidates.len(),
-        );
-    }
     candidates
 }
 
@@ -740,7 +715,7 @@ mod candidate_sources_tests {
                 serde_json::from_str(line.trim_end()).expect("decode request");
             assert!(matches!(
                 request,
-                crate::nanda_wave::L1ServiceRequest::Restore { .. }
+                crate::nanda_wave::L1ServiceRequest::Lattice { .. }
             ));
             serde_json::to_writer(&mut writer, &response).expect("encode response");
             writer.write_all(b"\n").expect("write newline");
@@ -762,6 +737,16 @@ mod candidate_sources_tests {
             nanda_wave_options: WaveOptions::default(),
             mode: CorrectionMode::DeterministicThenNanda,
         }
+    }
+
+    fn resolve_for_route<'a>(
+        text: &'a str,
+        pipeline: &'a [TypingAssistRuleConfig],
+        route: CandidateReadoutRoute,
+    ) -> crate::correction_core::CorrectionResolution {
+        let mut req = request(text, pipeline);
+        req.nanda_candidate_route = route;
+        crate::correction_core::resolve_text_correction(req)
     }
 
     #[test]
@@ -791,60 +776,6 @@ mod candidate_sources_tests {
     }
 
     #[test]
-    fn l11_sidecar_candidate_enters_shared_surface_route() {
-        let response = crate::nanda_wave::L1ServiceResponse::Restore {
-            report: serde_json::json!({
-                "result": {
-                    "verdict": "winner",
-                    "authority": true,
-                    "candidate": {
-                        "surface": "время",
-                        "evidence": 991
-                    }
-                }
-            }),
-        };
-        let (socket_path, handle) = spawn_mock_l11_service(response);
-
-        let candidate = with_l11_socket_env(&socket_path, || {
-            crate::nanda_wave::l2_field::compact_l11_restore_candidate("врмея ", "врмея")
-        })
-        .expect("L1.1 candidate");
-        handle.join().expect("mock service");
-        let _ = fs::remove_file(&socket_path);
-
-        assert_eq!(candidate.replacement, "время ");
-        assert_eq!(candidate.origin, CandidateOrigin::L2Surface);
-        assert_eq!(candidate.source, CorrectionDecisionSource::Nanda);
-        assert_eq!(candidate.source_id, "L11SurfaceRestore");
-    }
-
-    #[test]
-    fn l11_sidecar_candidate_skips_tied_restore_without_authority() {
-        let response = crate::nanda_wave::L1ServiceResponse::Restore {
-            report: serde_json::json!({
-                "result": {
-                    "verdict": "tied",
-                    "authority": false,
-                    "candidates": [
-                        {"surface": "время"},
-                        {"surface": "времена"}
-                    ]
-                }
-            }),
-        };
-        let (socket_path, handle) = spawn_mock_l11_service(response);
-
-        let candidate = with_l11_socket_env(&socket_path, || {
-            crate::nanda_wave::l2_field::compact_l11_restore_candidate("врмея ", "врмея")
-        });
-        handle.join().expect("mock service");
-        let _ = fs::remove_file(&socket_path);
-
-        assert!(candidate.is_none());
-    }
-
-    #[test]
     fn l2_field_shadow_route_uses_shadow_surface_source_ids() {
         let candidates = with_l11_socket_env_cleared(|| {
             nanda_text_candidates_for_route(
@@ -857,24 +788,32 @@ mod candidate_sources_tests {
         assert!(
             candidates
                 .iter()
-                .any(|candidate| candidate.source_id == "L2FieldShadowSurface"),
-            "shadow route must self-birth surface candidates without CompactL2 peak context: {candidates:?}"
+                .any(|candidate| {
+                    candidate.source_id == "L2FieldShadowSurface"
+                        || candidate
+                            .evidence
+                            .iter()
+                            .any(|evidence| evidence.source_id == "L2FieldShadowSurface")
+                }),
+            "shadow route must self-birth surface candidates inside its owned local field: {candidates:?}"
+        );
+        assert!(
+            candidates
+                .iter()
+                .all(|candidate| candidate.source_id.starts_with("L2FieldShadow")),
+            "shadow route must emit only owned L2FieldShadow source ids for L2-owned candidates: {candidates:?}"
         );
     }
 
     #[test]
     fn l2_field_shadow_route_self_prepares_l11_candidate_without_peak_context() {
-        let response = crate::nanda_wave::L1ServiceResponse::Restore {
-            report: serde_json::json!({
-                "result": {
-                    "verdict": "winner",
-                    "authority": true,
-                    "candidate": {
-                        "surface": "время",
-                        "evidence": 991
-                    }
-                }
-            }),
+        let response = crate::nanda_wave::L1ServiceResponse::Lattice {
+            seeds: vec![crate::nanda_wave::L11SeedSurface {
+                terminal_id: Some(1),
+                surface: "время".to_string(),
+                authority: true,
+                score_milli: 991,
+            }],
         };
         let (socket_path, handle) = spawn_mock_l11_service(response);
 
@@ -888,7 +827,150 @@ mod candidate_sources_tests {
         handle.join().expect("mock service");
         let _ = fs::remove_file(&socket_path);
 
-        assert!(candidates.iter().any(|candidate| candidate.source_id == "L2FieldShadowL11"));
+        let candidate = candidates
+            .iter()
+            .find(|candidate| candidate.replacement == "время ")
+            .expect("shadow field should internalize authoritative L1.1 seed");
+        assert!(
+            matches!(
+                candidate.source_id.as_str(),
+                "L2FieldShadowSurface" | "L2FieldShadowReadout"
+            ),
+            "authoritative L1.1 seed must enter the owned L2 field, not survive as sidecar: {candidate:?}"
+        );
+        assert!(
+            candidate
+                .evidence
+                .iter()
+                .any(|evidence| evidence.source_id == "L2FieldShadowSurface"),
+            "authoritative L1.1 seed must still carry owned surface provenance: {candidate:?}"
+        );
+        assert!(
+            candidates
+                .iter()
+                .all(|candidate| candidate.source_id != "L2FieldShadowL11"),
+            "shadow route should internalize L1.1 seed into the field, not emit a separate sidecar: {candidates:?}"
+        );
+    }
+
+    #[test]
+    fn l2_field_shadow_route_keeps_nonleader_neighbor_regressions_unselected() {
+        for input in ["докурчиват ", "ЯДРА ", "ене ", "слои "] {
+            let pipeline = default_typing_assist_pipeline();
+            let reference = resolve_for_route(input, &pipeline, CandidateReadoutRoute::FullWave);
+            let shadow = resolve_for_route(input, &pipeline, CandidateReadoutRoute::L2FieldShadow);
+            let reference_selected = reference
+                .selected
+                .as_ref()
+                .map(|candidate| {
+                    (
+                        candidate.replacement.as_str(),
+                        candidate.gate.action,
+                        candidate.gate.reason,
+                        candidate.error_class,
+                    )
+                });
+            let shadow_selected = shadow
+                .selected
+                .as_ref()
+                .map(|candidate| {
+                    (
+                        candidate.replacement.as_str(),
+                        candidate.gate.action,
+                        candidate.gate.reason,
+                        candidate.error_class,
+                    )
+                });
+
+            assert_eq!(
+                shadow_selected, reference_selected,
+                "shadow selected parity changed for {input:?}\nreference={:?}\nshadow={:?}",
+                reference.selected, shadow.selected
+            );
+            assert!(
+                !shadow
+                    .candidates
+                    .iter()
+                    .any(|candidate| candidate.source_id == "L2FieldShadowReadout"),
+                "shadow local readout must not collapse nonleader field for {input:?}: {:?}",
+                shadow.candidates
+            );
+        }
+    }
+
+    #[test]
+    fn l2_field_shadow_route_preserves_surface_parity_when_local_readout_abstains() {
+        for input in ["смеа ", "сли, ", "вошеьные "] {
+            let pipeline = default_typing_assist_pipeline();
+            let reference = resolve_for_route(input, &pipeline, CandidateReadoutRoute::FullWave);
+            let shadow = resolve_for_route(input, &pipeline, CandidateReadoutRoute::L2FieldShadow);
+            let reference_selected =
+                reference.selected.as_ref().map(|candidate| candidate.replacement.as_str());
+            let shadow_selected = shadow.selected.as_ref().map(|candidate| candidate.replacement.as_str());
+
+            assert_eq!(
+                shadow_selected, reference_selected,
+                "shadow selected surface parity changed for {input:?}\nreference={:?}\nshadow={:?}",
+                reference.selected, shadow.selected
+            );
+            assert!(
+                shadow
+                    .selected
+                    .as_ref()
+                    .is_none_or(|candidate| candidate.source_id == "L2FieldShadowSurface"),
+                "shadow should stay on surface owner when local readout abstains for {input:?}: {:?}",
+                shadow.selected
+            );
+        }
+    }
+
+    #[test]
+    fn l2_field_births_generic_short_layout_candidate_for_l3_context() {
+        let candidates = with_l11_socket_env_cleared(|| {
+            nanda_text_candidates_for_route(
+                &request("Apple b ", &default_typing_assist_pipeline()),
+                CandidateReadoutRoute::L2FieldShadow,
+                None,
+            )
+        });
+        let candidate = candidates
+            .iter()
+            .find(|candidate| candidate.replacement == "Apple и ")
+            .expect("L2 field must preserve the exact b -> и layout projection");
+
+        assert_eq!(candidate.source_id, "L2FieldShadowSurface");
+        assert_eq!(candidate.origin, CandidateOrigin::Layout);
+        assert_eq!(candidate.gate.action, CandidateGateAction::Eligible);
+    }
+
+    #[test]
+    fn learned_l3_authorizes_entity_conjunction_but_not_ascii_labels() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, expected) in [
+            ("Apple b ", "Apple и "),
+            (
+                "Нужно посмотреть через MTC можно оплатить Apple b ",
+                "Нужно посмотреть через MTC можно оплатить Apple и ",
+            ),
+        ] {
+            let resolution = resolve_for_route(input, &pipeline, CandidateReadoutRoute::L2FieldShadow);
+            assert_eq!(
+                resolution
+                    .selected
+                    .as_ref()
+                    .map(|candidate| candidate.replacement.as_str()),
+                Some(expected),
+                "learned L3 did not settle {input:?}: {resolution:?}"
+            );
+        }
+
+        for input in ["wave b ", "a b ", "b "] {
+            let resolution = resolve_for_route(input, &pipeline, CandidateReadoutRoute::L2FieldShadow);
+            assert!(
+                resolution.selected.is_none(),
+                "unsafe short layout authority for {input:?}: {resolution:?}"
+            );
+        }
     }
 }
 

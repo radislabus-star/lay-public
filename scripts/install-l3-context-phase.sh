@@ -15,6 +15,22 @@ for required in "$SOURCE" "$MANIFEST"; do
   fi
 done
 
+declared_bytes="$(jq -er '.artifact_bytes | numbers' "$MANIFEST")"
+declared_sha256="$(jq -er '.artifact_sha256 | strings' "$MANIFEST")"
+heldout_verdict="$(jq -er '.heldout.verdict | strings' "$MANIFEST")"
+actual_bytes="$(stat -c %s "$SOURCE")"
+actual_sha256="$(sha256sum "$SOURCE" | cut -d' ' -f1)"
+if [[ "$actual_bytes" != "$declared_bytes" || "$actual_sha256" != "$declared_sha256" ]]; then
+  echo "L3 context phase artifact does not match its proof manifest" >&2
+  echo "declared bytes=$declared_bytes sha256=$declared_sha256" >&2
+  echo "actual   bytes=$actual_bytes sha256=$actual_sha256" >&2
+  exit 1
+fi
+if [[ "$heldout_verdict" != "PASS" ]]; then
+  echo "L3 context phase manifest is not a heldout PASS: $heldout_verdict" >&2
+  exit 1
+fi
+
 mkdir -p "$(dirname "$DEST")"
 artifact_tmp="${DEST}.tmp.$$"
 manifest_tmp="${DEST_MANIFEST}.tmp.$$"

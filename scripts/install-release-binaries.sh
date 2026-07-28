@@ -5,6 +5,9 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SOURCE_DIR="${LAY_RELEASE_SOURCE_DIR:-$ROOT/target/release}"
 INSTALL_DIR="${LAY_INSTALL_LIBEXEC_DIR:-$HOME/.local/lib/lay/bin}"
 LINK_DIR="${LAY_INSTALL_BIN_DIR:-$HOME/.local/bin}"
+L2_PACKAGE_NAME="LAY-L2-RU-FULL-v4.bin"
+L2_PACKAGE_SOURCE="${LAY_L2_PACKAGE_SOURCE:-$ROOT/data/l2/$L2_PACKAGE_NAME}"
+L2_PACKAGE_DIR="${LAY_L2_MODEL_DIR:-$HOME/.local/share/lay/nanda_wave/l2}"
 
 binaries=(
   lay
@@ -39,5 +42,18 @@ for binary in "${binaries[@]}"; do
 done
 
 install_binary lay-l11-restore lay-l1.1-restore
+install_binary lay-l11-serve lay-l1.1-serve
 
-printf 'Installed %s release binaries in %s\n' "$(( ${#binaries[@]} + 1 ))" "$INSTALL_DIR"
+if [[ ! -f "$L2_PACKAGE_SOURCE" ]]; then
+  echo "canonical L2 package missing: $L2_PACKAGE_SOURCE" >&2
+  exit 1
+fi
+
+mkdir -p "$L2_PACKAGE_DIR"
+L2_PACKAGE_DESTINATION="$L2_PACKAGE_DIR/$L2_PACKAGE_NAME"
+L2_PACKAGE_TEMPORARY="$L2_PACKAGE_DIR/.${L2_PACKAGE_NAME}.tmp.$$"
+install -m 0644 "$L2_PACKAGE_SOURCE" "$L2_PACKAGE_TEMPORARY"
+mv -f "$L2_PACKAGE_TEMPORARY" "$L2_PACKAGE_DESTINATION"
+
+printf 'Installed %s release binaries in %s\n' "$(( ${#binaries[@]} + 2 ))" "$INSTALL_DIR"
+printf 'Installed canonical L2 package in %s\n' "$L2_PACKAGE_DESTINATION"

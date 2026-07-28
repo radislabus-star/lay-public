@@ -31,8 +31,12 @@ fn load_shadow_field() -> Option<MorphologyField> {
 }
 
 fn load_shadow_field_from_path(path: &Path) -> Result<MorphologyField, String> {
-    let text = std::fs::read_to_string(path)
-        .map_err(|error| format!("failed to read morphology corpus {}: {error}", path.display()))?;
+    let text = std::fs::read_to_string(path).map_err(|error| {
+        format!(
+            "failed to read morphology corpus {}: {error}",
+            path.display()
+        )
+    })?;
     let corpus = parse_corpus(&text)?;
     MorphologyField::train(&corpus)
 }

@@ -44,18 +44,24 @@ pub(crate) mod usage_prior;
 pub use eval::{evaluate_wave, evaluate_wave_with_options, WaveEvalResult, WaveEvalStats};
 pub use l2_candidate_phase::L2PhaseTrainingEntry;
 pub(crate) use l2_candidate_phase::{PhaseReadout, PhaseVerdict};
+pub use l2_field::{
+    canonical_l2_status, compile_canonical_l2_package, default_l2_model_dir,
+    discover_installed_l2_package, prove_canonical_l2_package,
+};
 pub use lexical_grokking::{
-    analyze_l1_forward_compression, benchmark_l1_lexical_grokking, compact_depth0_package,
-    crystallize_l1_lexical_grokking, crystallize_l1_lexical_grokking_with_rss_budget,
-    crystallize_l1_lexical_grokking_with_surface_policy, prove_l1_lexical_grokking,
+    analyze_l1_forward_compression, authoritative_restore_surface, benchmark_l1_lexical_grokking,
+    compact_depth0_package, crystallize_l1_lexical_grokking,
+    crystallize_l1_lexical_grokking_with_rss_budget,
+    crystallize_l1_lexical_grokking_with_surface_policy, default_l11_model_dir,
+    default_l11_socket_path, discover_installed_l11_package, ensure_l11_service_started,
+    inspect_l1_package_header, l11_seed_surfaces, prove_l1_lexical_grokking,
     prove_l1_lexical_grokking_complete_postings, prove_l1_lexical_grokking_package,
     prove_l1_lexical_grokking_scale_package, prove_l1_lexical_grokking_scale_package_range,
-    authoritative_restore_surface, default_l11_model_dir, default_l11_socket_path,
-    discover_installed_l11_package, ensure_l11_service_started, query_l1_lexical_grokking,
-    request_l11_authoritative_surface, restore_l1_surface, send_l11_service_request,
-    send_l11_service_request_with_timeout, InstalledL11Package, L11ServiceEnsureReport,
-    L1RestorationHost, L1RestorationHostStats, L1ServiceHealth, L1ServiceRequest,
-    L1ServiceResponse, L1ServiceStats, ScaleTrainingSurfacePolicy,
+    query_l1_lexical_grokking, request_l11_authoritative_surface, request_l11_decoded_surfaces,
+    request_l11_seed_surfaces, restore_l1_surface, send_l11_service_request,
+    send_l11_service_request_with_timeout, InstalledL11Package, L11SeedSurface,
+    L11ServiceEnsureReport, L1RestorationHost, L1RestorationHostStats, L1ServiceHealth,
+    L1ServiceRequest, L1ServiceResponse, L1ServiceStats, ScaleTrainingSurfacePolicy,
 };
 pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
 pub use morphology_phase::{
@@ -151,6 +157,66 @@ pub fn compile_l3_context_phase_memory_with_surface_evidence(
     Ok(value)
 }
 
+pub fn compile_l3_context_delta_for_manifest(
+    manifest_path: &std::path::Path,
+    corpus_path: &std::path::Path,
+    surface_evidence_path: &std::path::Path,
+    output_path: &std::path::Path,
+    min_profile_support: u32,
+    min_surface_support: u32,
+) -> std::io::Result<serde_json::Value> {
+    let baseline = context_phase::L3CompositeMemory::load_manifest(manifest_path)?;
+    let signature_schema = baseline.package().signature_schema;
+    let surface_field = context_phase::surface_field_from_corrections_path(
+        surface_evidence_path,
+        min_surface_support,
+    )?;
+    let surface_report = surface_field.report();
+    let corpus = std::fs::File::open(corpus_path)?;
+    let (package, report) =
+        context_phase::compile_context_phase_reader_with_surface_field_and_schema(
+            corpus,
+            0,
+            min_profile_support,
+            0,
+            signature_schema,
+            std::sync::Arc::new(surface_field),
+            |_, _| Ok(()),
+        )?;
+    context_phase::write_package(output_path, &package)?;
+    let mut value = serde_json::to_value(report).map_err(std::io::Error::other)?;
+    if let Some(object) = value.as_object_mut() {
+        object.insert(
+            "kind".to_string(),
+            serde_json::json!("l3_context_delta_compile"),
+        );
+        object.insert("manifest".to_string(), serde_json::json!(manifest_path));
+        object.insert("corpus".to_string(), serde_json::json!(corpus_path));
+        object.insert(
+            "surface_evidence".to_string(),
+            serde_json::json!(surface_evidence_path),
+        );
+        object.insert("output".to_string(), serde_json::json!(output_path));
+        object.insert(
+            "signature_schema".to_string(),
+            serde_json::json!(signature_schema),
+        );
+        object.insert(
+            "surface_field".to_string(),
+            serde_json::json!({
+                "source_rows": surface_report.source_rows,
+                "admitted_rows": surface_report.admitted_rows,
+                "mode_count": surface_report.mode_count,
+                "raw_words_stored": false,
+            }),
+        );
+        object.insert("base_loaded".to_string(), serde_json::json!(true));
+        object.insert("base_rewritten".to_string(), serde_json::json!(false));
+        object.insert("runtime_authority".to_string(), serde_json::json!(false));
+    }
+    Ok(value)
+}
+
 pub fn compile_l3_context_phase_memory_with_progress<F>(
     corpus_path: &std::path::Path,
     output_path: &std::path::Path,
@@ -199,6 +265,17 @@ pub fn merge_l3_context_phase_shards(
         .iter()
         .map(|path| context_phase::read_package(path))
         .collect::<std::io::Result<Vec<_>>>()?;
+    if let Some(first) = shards.first() {
+        if shards
+            .iter()
+            .any(|package| package.signature_schema != first.signature_schema)
+        {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "cannot merge L3 context packages with different scene schemas",
+            ));
+        }
+    }
     let (package, consensus) =
         context_phase::ContextPhasePackage::merge_shards_with_min_surface_support(
             shards,
@@ -208,6 +285,242 @@ pub fn merge_l3_context_phase_shards(
     Ok(
         serde_json::json!({"kind":"l3_context_phase_shard_merge","inputs":inputs.len(),"output":output_path,"profiles":package.profiles.len(),"states":package.semantic_states.len(),"consensus":consensus}),
     )
+}
+
+pub fn initialize_l3_context_composite_manifest(
+    manifest_path: &std::path::Path,
+    base_path: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    context_phase::initialize_manifest(manifest_path, base_path)?;
+    Ok(serde_json::json!({
+        "kind": "l3_composite_manifest_initialized",
+        "manifest": manifest_path,
+        "base": base_path,
+        "base_rewritten": false,
+        "runtime_authority": false,
+    }))
+}
+
+pub fn admit_l3_context_delta(
+    manifest_path: &std::path::Path,
+    delta_path: &std::path::Path,
+    proof_receipt: Option<&std::path::Path>,
+    scope: Option<&str>,
+) -> std::io::Result<serde_json::Value> {
+    if proof_receipt.is_none() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "L3 delta admission requires a targeted proof receipt",
+        ));
+    }
+    if !proof_receipt.is_some_and(std::path::Path::is_file) {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::NotFound,
+            "L3 targeted proof receipt does not exist",
+        ));
+    }
+    let receipt_path = proof_receipt.expect("checked above");
+    let receipt: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(receipt_path)?).map_err(std::io::Error::other)?;
+    let receipt_delta = receipt
+        .get("delta")
+        .and_then(serde_json::Value::as_str)
+        .map(std::path::PathBuf::from);
+    let delta_matches = receipt_delta.and_then(|path| std::fs::canonicalize(path).ok())
+        == std::fs::canonicalize(delta_path).ok();
+    let valid_receipt = receipt.get("kind").and_then(serde_json::Value::as_str)
+        == Some("l3_context_delta_targeted_proof")
+        && receipt.get("verdict").and_then(serde_json::Value::as_str) == Some("PASS")
+        && receipt
+            .get("false_supports")
+            .and_then(serde_json::Value::as_u64)
+            == Some(0)
+        && delta_matches;
+    if !valid_receipt {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidData,
+            "L3 delta admission requires a matching PASS targeted proof receipt",
+        ));
+    }
+    context_phase::admit_delta(manifest_path, delta_path, proof_receipt, scope)
+}
+
+pub fn compact_l3_context_composite(
+    manifest_path: &std::path::Path,
+    output_base: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    context_phase::compact_manifest(manifest_path, output_base)
+}
+
+pub fn reload_l3_context_composite() -> std::io::Result<serde_json::Value> {
+    context_phase::reload_default_memory()
+}
+
+/// Proves one small delta against explicit changed scenes and fixed safety
+/// sentinels. TSV rows are: `improve|safety<TAB>context<TAB>a|b<TAB>expected|-`.
+pub fn prove_l3_context_delta_targeted(
+    manifest_path: &std::path::Path,
+    delta_path: &std::path::Path,
+    cases_path: &std::path::Path,
+    receipt_path: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    let baseline = context_phase::L3CompositeMemory::load_manifest(manifest_path)?;
+    let base = baseline.package().clone();
+    let delta = context_phase::read_package(delta_path)?;
+    if base.signature_schema != delta.signature_schema {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "L3 delta signature schema does not match the immutable base",
+        ));
+    }
+    let candidate = baseline.compose_delta_path(delta_path)?;
+    let text = std::fs::read_to_string(cases_path)?;
+    let mut improve_cases = 0_u64;
+    let mut improved = 0_u64;
+    let mut target_failures = 0_u64;
+    let mut safety_cases = 0_u64;
+    let mut false_supports = 0_u64;
+    let mut failures = Vec::new();
+    for (index, raw_line) in text.lines().enumerate() {
+        let line = raw_line.trim();
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let fields = line.split('\t').collect::<Vec<_>>();
+        if fields.len() != 4 {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                format!("invalid targeted L3 case at line {}", index + 1),
+            ));
+        }
+        let candidates = fields[2]
+            .split('|')
+            .map(str::trim)
+            .filter(|value| !value.is_empty())
+            .collect::<Vec<_>>();
+        if candidates.len() < 2 {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                format!(
+                    "targeted L3 case needs at least two candidates at line {}",
+                    index + 1
+                ),
+            ));
+        }
+        let context = context_phase::tokenize_context_text(fields[1]);
+        let base_readouts = base.score_candidates(&context, &candidates);
+        let candidate_readouts = candidate.score_candidates(&context, &candidates);
+        match fields[0] {
+            "improve" => {
+                improve_cases += 1;
+                let expected = fields[3];
+                let Some(expected_index) = candidates
+                    .iter()
+                    .position(|candidate| *candidate == expected)
+                else {
+                    return Err(std::io::Error::new(
+                        std::io::ErrorKind::InvalidData,
+                        format!("expected candidate is absent at line {}", index + 1),
+                    ));
+                };
+                let before = base_readouts[expected_index];
+                let after = candidate_readouts[expected_index];
+                if after.disposition == context_phase::ContextPhaseDisposition::Support
+                    && (before.disposition != context_phase::ContextPhaseDisposition::Support
+                        || after.margin_micro > before.margin_micro)
+                {
+                    improved += 1;
+                } else {
+                    target_failures += 1;
+                    failures.push(serde_json::json!({
+                        "line": index + 1,
+                        "kind": "target_not_improved",
+                        "expected": expected,
+                        "before": format!("{:?}", before.disposition),
+                        "after": format!("{:?}", after.disposition),
+                        "before_margin_micro": before.margin_micro,
+                        "after_margin_micro": after.margin_micro,
+                        "after_threshold_micro": after.threshold_micro,
+                        "after_competition_margin_micro": after.competition_margin_micro,
+                        "after_positive_examples": after.positive_examples,
+                        "after_positive_center_support": after.positive_center_support,
+                        "after_pairwise_certified": after.pairwise_certified,
+                        "after_pairwise_blocked": after.pairwise_blocked,
+                        "after_pairwise_conflict": after.pairwise_conflict,
+                        "after_pairwise_known_edges": after.pairwise_known_edges,
+                        "after_pairwise_unknown_edges": after.pairwise_unknown_edges,
+                        "candidate_readouts": candidates.iter().zip(&candidate_readouts).map(|(surface, readout)| serde_json::json!({
+                            "surface": surface,
+                            "disposition": format!("{:?}", readout.disposition),
+                            "margin_micro": readout.margin_micro,
+                            "threshold_micro": readout.threshold_micro,
+                            "competition_margin_micro": readout.competition_margin_micro,
+                            "pairwise_blocked": readout.pairwise_blocked,
+                            "pairwise_certified": readout.pairwise_certified,
+                        })).collect::<Vec<_>>(),
+                        "pair_debug": candidate.pair_debug(&context, &candidates),
+                    }));
+                }
+            }
+            "safety" => {
+                safety_cases += 1;
+                let allowed = (fields[3] != "-").then_some(fields[3]);
+                if allowed.is_some_and(|expected| !candidates.contains(&expected)) {
+                    return Err(std::io::Error::new(
+                        std::io::ErrorKind::InvalidData,
+                        format!("allowed safety candidate is absent at line {}", index + 1),
+                    ));
+                }
+                for (surface, readout) in candidates.iter().zip(&candidate_readouts) {
+                    if Some(*surface) != allowed
+                        && readout.disposition == context_phase::ContextPhaseDisposition::Support
+                    {
+                        false_supports += 1;
+                        failures.push(serde_json::json!({
+                            "line": index + 1,
+                            "kind": "false_support",
+                            "candidate": surface,
+                            "margin_micro": readout.margin_micro,
+                        }));
+                    }
+                }
+            }
+            kind => {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    format!(
+                        "unknown targeted L3 case kind {kind:?} at line {}",
+                        index + 1
+                    ),
+                ));
+            }
+        }
+    }
+    let passed = improve_cases > 0
+        && safety_cases > 0
+        && improved == improve_cases
+        && target_failures == 0
+        && false_supports == 0;
+    let report = serde_json::json!({
+        "kind": "l3_context_delta_targeted_proof",
+        "manifest": manifest_path,
+        "delta": delta_path,
+        "cases": cases_path,
+        "improve_cases": improve_cases,
+        "improved": improved,
+        "target_failures": target_failures,
+        "safety_cases": safety_cases,
+        "false_supports": false_supports,
+        "failures": failures,
+        "base_rewritten": false,
+        "full_corpus_recompiled": false,
+        "runtime_authority": false,
+        "verdict": if passed { "PASS" } else { "WATCH" },
+    });
+    let mut bytes = serde_json::to_vec_pretty(&report).map_err(std::io::Error::other)?;
+    bytes.push(b'\n');
+    crate::private_file::write_private_bytes(receipt_path, &bytes)?;
+    Ok(report)
 }
 
 /// Runs the heldout and ablation proof for an existing package without
@@ -345,10 +658,23 @@ pub fn build_l2_lexical_feedback_corpus(
 }
 
 pub fn l3_context_phase_status_json(path: Option<&std::path::Path>) -> serde_json::Value {
-    let path = path
-        .map(std::path::Path::to_path_buf)
-        .unwrap_or_else(context_phase::default_memory_path);
-    context_phase::package_report(&path)
+    if let Some(path) = path {
+        return context_phase::package_report(path);
+    }
+    let manifest = context_phase::default_manifest_path();
+    if manifest.is_file() {
+        return context_phase::L3CompositeMemory::load_manifest(&manifest)
+            .map(|memory| memory.report())
+            .unwrap_or_else(|error| {
+                serde_json::json!({
+                    "kind": "l3_composite_memory",
+                    "manifest": manifest,
+                    "loaded": false,
+                    "error": error.to_string(),
+                })
+            });
+    }
+    context_phase::package_report(&context_phase::default_memory_path())
 }
 
 pub fn prove_l3_context_phase_memory(
@@ -398,7 +724,8 @@ pub fn build_and_prove_l3_context_phase_memory(
         .unwrap_or_default();
     Ok(serde_json::json!({
         "kind": "l3_context_phase_build_and_prove",
-        "architecture": "online_relation_phase_v3_pairwise_lattice",
+        "architecture": "online_relation_phase_v4_role_scene_lattice",
+        "signature_schema": package.signature_schema,
         "corpus": corpus_path,
         "output": output_path,
         "package_published": package_published,
@@ -457,7 +784,8 @@ pub fn build_and_prove_l3_context_phase_memory_with_surface_evidence(
     }
     Ok(serde_json::json!({
         "kind": "l3_context_phase_build_and_prove",
-        "architecture": "online_relation_phase_v3_pairwise_lattice_learned_surface_field",
+        "architecture": "online_relation_phase_v4_role_scene_lattice_learned_surface_field",
+        "signature_schema": package.signature_schema,
         "corpus": corpus_path,
         "surface_evidence": surface_evidence_path,
         "surface_field": {

@@ -73,7 +73,7 @@ pub(crate) fn l3_context_field_readout(
         .collect();
     L3ContextFieldReadout {
         context_tokens,
-        eligible: context_tokens >= 2,
+        eligible: context_tokens >= 1,
         memory_warm,
         candidates,
     }

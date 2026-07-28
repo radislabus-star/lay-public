@@ -1,0 +1,43 @@
+{
+  "receipt": "L2FIELD_SHADOW_SHORT_GROWTH_GATES_2026-07-27",
+  "date": "2026-07-27",
+  "scope": "L2FieldShadow short local-surface safety tightening above L1.1",
+  "runtime_authority_changed": false,
+  "what_changed": [
+    "demote tied and abstained local surface cohorts to SuggestOnly",
+    "demote short dense growth tails for <=4-char tokens when local readout already found a tied growth basin",
+    "stabilize route guard tests by using a fresh default pipeline per input case"
+  ],
+  "measured_facts": [
+    {
+      "command": "scripts/cargo-guard.sh run --bin lay -- --compare-candidate-routes 'слои '",
+      "reference_selected": null,
+      "shadow_selected": null,
+      "note": "short growth cluster no longer false-applies сломи"
+    },
+    {
+      "command": "scripts/cargo-guard.sh run --bin lay -- --compare-candidate-routes 'ене '",
+      "reference_selected": null,
+      "shadow_selected": null,
+      "note": "short sparse case remains abstain on both routes"
+    },
+    {
+      "command": "scripts/cargo-guard.sh run --bin lay -- --compare-candidate-routes 'сделам '",
+      "reference_selected": "сделай ",
+      "shadow_selected": "сделай ",
+      "note": "surface parity preserved on the live compare route"
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --lib l2_field_shadow_route_keeps_nonleader_neighbor_regressions_unselected",
+      "result": "passed"
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --lib l2_field_shadow_route_preserves_surface_parity_when_local_readout_abstains",
+      "result": "passed"
+    }
+  ],
+  "not_tested": [
+    "full 134-case divergence bucket replay after this tightening",
+    "full daemon IME manual smoke beyond the targeted route compares"
+  ]
+}

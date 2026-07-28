@@ -1,5 +1,6 @@
 use crate::nanda_wave::{candidate_gate, llmwave};
 
+pub use crate::nanda_wave::L11ServiceEnsureReport;
 pub use crate::nanda_wave::WaveOptions as TypingCpuOptions;
 pub use candidate_gate::{LiveCompletionCandidate, LiveCompletionRequest, LiveCompletionTiming};
 
@@ -37,6 +38,10 @@ impl TypingCpu {
 
     pub fn warm_l2_for_ime() {
         crate::nanda_wave::warm_up_l2_for_ime();
+    }
+
+    pub fn ensure_l11_service_started() -> std::io::Result<Option<L11ServiceEnsureReport>> {
+        crate::nanda_wave::ensure_l11_service_started()
     }
 
     pub fn warm_l3_phrase_memory() {

@@ -9,6 +9,34 @@ fn warm_runtime_if_needed(detect_only: bool, cfg: &LayConfig) {
     if plan.spawn_background {
         std::thread::spawn(move || {
             let started_at = Instant::now();
+            if plan.warm_l11_service {
+                match lay::typing_cpu::TypingCpu::ensure_l11_service_started() {
+                    Ok(Some(lay::typing_cpu::L11ServiceEnsureReport::Ready {
+                        status,
+                        package_path,
+                        ..
+                    })) => log(&format!(
+                        "► L1.1 sidecar {status}: {}",
+                        package_path.display()
+                    )),
+                    Ok(Some(lay::typing_cpu::L11ServiceEnsureReport::Reloaded {
+                        package_path,
+                        ..
+                    })) => log(&format!(
+                        "► L1.1 sidecar reloaded: {}",
+                        package_path.display()
+                    )),
+                    Ok(Some(lay::typing_cpu::L11ServiceEnsureReport::Spawned {
+                        package_path,
+                        ..
+                    })) => log(&format!(
+                        "► L1.1 sidecar spawn started: {}",
+                        package_path.display()
+                    )),
+                    Ok(None) => {}
+                    Err(error) => log(&format!("⚠ L1.1 sidecar warmup failed: {error}")),
+                }
+            }
             if plan.warm_typing_assist {
                 lay::typing_assist::warm_up();
             }
@@ -38,6 +66,7 @@ fn warm_runtime_if_needed(detect_only: bool, cfg: &LayConfig) {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct RuntimeWarmupPlan {
     spawn_background: bool,
+    warm_l11_service: bool,
     warm_typing_assist: bool,
     warm_l2_candidates: bool,
     warm_smart: bool,
@@ -55,11 +84,17 @@ fn runtime_warmup_plan(
     // The daemon owns the after-Space boundary decision even when IME owns
     // rendering. Its compact lookup state must be ready before the first word.
     let warm_typing_assist = cfg.typing_assist || enter_autocorrect_active;
+    let warm_l11_service = cfg.nanda_autocorrect;
     let warm_l2_candidates = cfg.nanda_autocorrect;
     let warm_l3_phrase = cfg.nanda_autocorrect || cfg.nanda_trace;
     RuntimeWarmupPlan {
         spawn_background: !detect_only
-            && (warm_smart || warm_typing_assist || warm_l2_candidates || warm_l3_phrase),
+            && (warm_smart
+                || warm_l11_service
+                || warm_typing_assist
+                || warm_l2_candidates
+                || warm_l3_phrase),
+        warm_l11_service,
         warm_typing_assist,
         warm_l2_candidates,
         warm_smart,

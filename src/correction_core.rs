@@ -238,7 +238,6 @@ impl UnifiedCorrectionCandidate {
             .any(|evidence| evidence.origin == origin)
     }
 
-    #[cfg(test)]
     pub(crate) fn has_source_id(&self, source_id: &str) -> bool {
         self.evidence
             .iter()
@@ -391,11 +390,7 @@ pub fn decide_text_correction(req: CorrectionRequest<'_>) -> Option<CorrectionDe
 pub fn resolve_text_correction(req: CorrectionRequest<'_>) -> CorrectionResolution {
     let started = Instant::now();
     let timing_enabled = std::env::var_os("LAY_CORRECTION_CORE_TIMING").is_some();
-    let compact_l2_active = req.nanda_autocorrect
-        && req.nanda_candidate_route.uses_peak_context()
-        && L2CandidateSource::for_mode(req.mode).contains(&L2CandidateSource::Nanda);
-    let mut l2_peak_context = compact_l2_active
-        .then(|| crate::nanda_wave::l2_wave_peak::prepare_correction_peak_context(req.text));
+    let mut l2_peak_context = None;
     let peak_ready = Instant::now();
     let mut lattice = L2CandidateLattice::with_options(
         TypingErrorEvent::from_text(req.text),

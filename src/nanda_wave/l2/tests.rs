@@ -38,7 +38,7 @@ fn hot_layout_helper_accepts_the_first_word() {
 }
 
 #[test]
-fn first_word_layout_uses_compact_l2_center_not_phrase_context() {
+fn first_word_layout_uses_l2_word_center_not_phrase_context() {
     let original = "ckjdf";
     let l1 = run_l1(original);
     let candidates = run_l2(original, &l1);

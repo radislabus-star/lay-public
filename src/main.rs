@@ -52,14 +52,13 @@ struct Args {
     #[arg(long, value_enum)]
     candidate_route: Option<CandidateRouteArg>,
 
-    /// Сравнить `compact-l2` против выбранного route на одном и том же входе.
+    /// Сравнить `full-wave` против выбранного route на одном и том же входе.
     #[arg(long)]
     compare_candidate_routes: bool,
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, ValueEnum)]
 enum CandidateRouteArg {
-    CompactL2,
     L2FieldShadow,
     FullWave,
 }
@@ -67,7 +66,6 @@ enum CandidateRouteArg {
 impl CandidateRouteArg {
     fn into_route(self) -> correction_core::CandidateReadoutRoute {
         match self {
-            Self::CompactL2 => correction_core::CandidateReadoutRoute::CompactL2,
             Self::L2FieldShadow => correction_core::CandidateReadoutRoute::L2FieldShadow,
             Self::FullWave => correction_core::CandidateReadoutRoute::FullWave,
         }
@@ -104,7 +102,7 @@ fn main() {
         let cfg = config::LayConfig::load();
         let route = selected_candidate_route(
             &args,
-            correction_core::CandidateReadoutRoute::FullWave,
+            correction_core::CandidateReadoutRoute::live_default(),
         );
         let explanation = explain_typing_assist_like_runtime(&text, &cfg);
         print_typing_explanation(&explanation);
@@ -117,7 +115,7 @@ fn main() {
         let cfg = config::LayConfig::load();
         let target_route = selected_candidate_route(
             &args,
-            correction_core::CandidateReadoutRoute::L2FieldShadow,
+            correction_core::CandidateReadoutRoute::live_default(),
         );
         let report = compare_candidate_routes(&text, &cfg, target_route);
         println!(
@@ -131,7 +129,7 @@ fn main() {
         let cfg = config::LayConfig::load();
         let route = selected_candidate_route(
             &args,
-            correction_core::CandidateReadoutRoute::CompactL2,
+            correction_core::CandidateReadoutRoute::live_default(),
         );
         let words = text
             .lines()
@@ -282,12 +280,10 @@ fn compare_candidate_routes(
         .iter()
         .filter(|sample| sample["selected_provenance_diverged"].as_bool() == Some(true))
         .count();
-    let surface_identical = samples
-        .len()
-        .saturating_sub(surface_diverged);
+    let surface_identical = samples.len().saturating_sub(surface_diverged);
     serde_json::json!({
         "kind": "candidate_route_compare",
-        "reference_route": route_name(correction_core::CandidateReadoutRoute::CompactL2),
+        "reference_route": route_name(correction_core::CandidateReadoutRoute::compare_reference()),
         "target_route": route_name(target_route),
         "sample_count": samples.len(),
         "selected_surface_diverged": surface_diverged,
@@ -318,7 +314,11 @@ fn compare_candidate_routes_for_input(
     cfg: &config::LayConfig,
     target_route: correction_core::CandidateReadoutRoute,
 ) -> serde_json::Value {
-    let compact = resolve_with_route(input, cfg, correction_core::CandidateReadoutRoute::CompactL2);
+    let compact = resolve_with_route(
+        input,
+        cfg,
+        correction_core::CandidateReadoutRoute::compare_reference(),
+    );
     let target = resolve_with_route(input, cfg, target_route);
     let compact_selected = compact.selected.as_ref();
     let target_selected = target.selected.as_ref();
@@ -333,7 +333,7 @@ fn compare_candidate_routes_for_input(
         "selected_gate_diverged": selected_gate_diverged,
         "selected_provenance_diverged": selected_provenance_diverged,
         "reference": resolution_summary_json(
-            correction_core::CandidateReadoutRoute::CompactL2,
+            correction_core::CandidateReadoutRoute::compare_reference(),
             &compact,
         ),
         "target": resolution_summary_json(target_route, &target),
@@ -461,7 +461,6 @@ fn candidate_summary_json(
 
 fn route_name(route: correction_core::CandidateReadoutRoute) -> &'static str {
     match route {
-        correction_core::CandidateReadoutRoute::CompactL2 => "compact-l2",
         correction_core::CandidateReadoutRoute::L2FieldShadow => "l2-field-shadow",
         correction_core::CandidateReadoutRoute::FullWave => "full-wave",
     }

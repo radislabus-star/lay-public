@@ -16,6 +16,7 @@ impl LayIbusEngine {
         keycode: u32,
         state: u32,
     ) -> fdo::Result<bool> {
+        self.clear_pending_ime_auto_undo();
         if keyval == KEY_BACKSPACE {
             self.reject_pending_ime_completion_before_backspace();
             let handled = self.backspace(emitter).await?;

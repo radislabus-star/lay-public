@@ -1,6 +1,7 @@
-use super::{LayIbusEngine, WordInputMode};
+use super::{LayIbusEngine, ManualToggleAuthority, WordInputMode};
 use lay::config::LayConfig;
 use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
 
 fn engine() -> LayIbusEngine {
     LayIbusEngine::new(
@@ -122,4 +123,73 @@ fn changed_engine_path_quarantines_handoff_without_focus_in_id() {
         .expect("shared state")
         .handoff_tail_buffer
         .is_empty());
+}
+
+#[test]
+fn layout_switch_path_preserves_fresh_committed_tail_handoff() {
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut first = LayIbusEngine::new(
+        "/engine/us".to_string(),
+        Arc::clone(&shared),
+        false,
+        true,
+        LayConfig::default(),
+    );
+    assert!(first.bind_focus_path());
+    first.tail_buffer = "вот ".to_string();
+    first.publish_tail_handoff();
+    first.remember_pending_ime_auto_undo("djn ".to_string(), "вот ".to_string());
+    first.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(700));
+
+    let mut second = LayIbusEngine::new(
+        "/engine/ru".to_string(),
+        shared,
+        true,
+        true,
+        LayConfig::default(),
+    );
+
+    assert!(second.bind_focus_path());
+    assert_eq!(second.tail_buffer, "вот ");
+    assert_eq!(
+        second.manual_toggle_authority(),
+        ManualToggleAuthority::ImeCommittedTail
+    );
+    let pending = second
+        .take_pending_ime_auto_undo()
+        .expect("autocorrect undo must cross the layout handoff");
+    assert_eq!(pending.original, "djn ");
+    assert_eq!(pending.replacement, "вот ");
+}
+
+#[test]
+fn expired_layout_switch_handoff_is_quarantined() {
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut first = LayIbusEngine::new(
+        "/engine/us".to_string(),
+        Arc::clone(&shared),
+        false,
+        true,
+        LayConfig::default(),
+    );
+    assert!(first.bind_focus_path());
+    first.tail_buffer = "старый ".to_string();
+    first.publish_tail_handoff();
+    first.publish_active_path_preserve_handoff(Instant::now() - Duration::from_millis(1));
+
+    let mut second = LayIbusEngine::new(
+        "/engine/ru".to_string(),
+        shared,
+        true,
+        true,
+        LayConfig::default(),
+    );
+
+    assert!(second.bind_focus_path());
+    assert!(second.tail_buffer.is_empty());
+    assert_eq!(
+        second.manual_toggle_authority(),
+        ManualToggleAuthority::DaemonWordBuffer
+    );
+    assert!(second.take_pending_ime_auto_undo().is_none());
 }

@@ -270,6 +270,294 @@ it into an existing center.
 - Progress reports fragments, rate, ETA, profiles, separate center banks,
   calibration cases, estimated learner bytes, and RSS.
 
+## Incremental Runtime Memory
+
+Small L3 changes must not recompile or rewrite the immutable corpus package.
+The canonical mutable contour is:
+
+```text
+immutable base.nwpc
++ delta-000001.nwpc
++ delta-000002.nwpc
++ ordered runtime manifest
+-> deterministic composite memory
+-> one unchanged ContextPhasePackage scoring implementation
+```
+
+Ownership:
+
+```text
+delta compiler and targeted proof   src/nanda_wave/mod.rs
+manifest and composite loader       src/nanda_wave/context_phase/composite.rs
+swappable runtime owner             src/nanda_wave/context_phase/mod.rs
+CLI                                 src/bin/lay_nanda_wave_train.rs
+```
+
+An ordinary update performs only these operations:
+
+```text
+new independently supported scenes
+-> read the manifest and base package to inherit its signature schema
+-> compile one small delta without replaying the base corpus
+-> targeted replay of changed scenes and fixed safety sentinels
+-> PASS receipt with false_supports = 0
+-> atomic append to manifest
+-> atomic in-process memory swap or daemon reload
+```
+
+The delta compiler opens the installed composite only to inherit its exact
+signature schema and calibration contract. It does not replay the base corpus
+and does not rewrite the base package. Admission also leaves the base
+unchanged. Runtime loads the manifest, validates every delta's schema and exact
+byte size, and merges the bounded banks once at load time. Hot scoring still
+uses one implementation, so base-only and composite runtime cannot drift into
+different phase mathematics.
+
+Commands:
+
+```bash
+lay-nanda-wave-train --init-l3-context-composite \
+  --base base.nwpc --manifest manifest.json
+
+lay-nanda-wave-train --compile-l3-context-delta scenes.txt \
+  --surface-evidence corrections.jsonl \
+  --out delta-000001.nwpc
+
+lay-nanda-wave-train --prove-l3-context-delta \
+  --manifest manifest.json \
+  --delta delta-000001.nwpc \
+  --cases targeted-cases.tsv \
+  --out-receipt delta-000001.proof.json
+
+lay-nanda-wave-train --admit-l3-context-delta \
+  --manifest manifest.json \
+  --delta delta-000001.nwpc \
+  --proof-receipt delta-000001.proof.json \
+  --scope local
+```
+
+Targeted case rows are:
+
+```text
+improve<TAB>sentence context<TAB>candidate-a|candidate-b<TAB>expected
+safety<TAB>sentence context<TAB>candidate-a|candidate-b<TAB>allowed-or-
+```
+
+One live observation is not immediate global authority. The delta compiler
+keeps the existing independent-support gates, and admission additionally
+requires a matching targeted PASS receipt. Local deltas remain separately
+identified by scope.
+
+The immutable base owns global, competition, pairwise, and existing-profile
+calibration. A delta contributes phase evidence but cannot replace those
+energy scales. New delta-only profiles start at the base global threshold.
+This prevents a narrow shard from globally recalibrating the broad corpus.
+
+Delta pair centers remain independent runtime subcenters. They are not forced
+back through the cold package's 16-center bank, because a full base bank would
+silently discard a newly learned directional mode. Composite runtime permits
+up to 64 centers per pair direction; reaching that bound is a compaction
+signal, not permission to overwrite the immutable base during ordinary
+learning.
+
+Compaction is not part of ordinary learning. It is recommended only when:
+
+```text
+delta_count >= 32
+or total_delta_bytes >= 16 MiB
+```
+
+It writes a new base path first and flips the manifest afterward. It refuses
+to overwrite the current immutable base in place.
+
+### Incremental Contour Checkpoint: 2026-07-28
+
+Tested:
+
+```text
+library and lay-nanda-wave-train compile check    PASS
+base package rewritten during admission           no, unit contract
+delta schema and byte-size validation             implemented
+matching targeted PASS receipt required           implemented
+runtime memory swap                               implemented
+full base corpus recompiled                       no
+```
+
+Not tested in this checkpoint:
+
+```text
+L3 quality on the 80k fixed heldout corpus
+daemon live reload wiring
+```
+
+Verdict scope: implementation checkpoint only. Runtime text-edit authority did
+not change, and no delta was promoted. The quality gate remains separate and
+must not be inferred from package/manifest parity.
+
+### Persistent Online Worker Checkpoint: 2026-07-28
+
+The online owner is a separate low-priority user service:
+
+```text
+double-Shift visible undo succeeds
+-> record complete accepted contextual transition
+-> append word_usage_events.jsonl
+-> lay-l3-online.service polls appended bytes only
+-> require exactly one changed tail token
+-> require 2 independent scenes for rejected -> expected
+-> one-pass targeted delta compile
+-> changed-scene proof + 5 safety sentinels
+-> PASS and false_supports=0: atomically append manifest
+-> WATCH: retain bounded pending evidence, leave runtime unchanged
+```
+
+Ownership and bounds:
+
+```text
+worker                         src/bin/lay_nanda_wave_train/l3_online.rs
+double-Shift receipt           src/bin/lay_ibus_engine/committed_tail.rs
+service                        systemd/lay-l3-online.service
+poll interval                  5,000 ms
+minimum independent scenes     2
+maximum scenes per relation    8
+maximum pending relations      128
+retry scene counts             2, 4, 8
+service Nice                   10
+service CPUWeight              20
+service IOWeight               20
+```
+
+Persistent runtime paths:
+
+```text
+~/.local/share/lay/nanda_wave/word_usage_events.jsonl
+~/.local/share/lay/nanda_wave/l3-online/state.json
+~/.local/share/lay/nanda_wave/l3-online/delta-*.nwpc
+~/.local/share/lay/nanda_wave/l3_context_phase.runtime.json
+```
+
+Measured isolated schema-1 smoke:
+
+```text
+installed immutable base bytes             12,939,828
+installed base SHA-256              d7ca1280e41424c058f5395f9da871d193429d536fa1f4bc146dfb38306326ba
+installed signature schema                          1
+historical events replayed                      false
+independent scenes                                  4
+corpus passes                                       1
+delta bytes                                      2,912
+wall                                             5.83 s
+peak RSS                                      148,052 KiB
+worker CPU during small compile                    99%
+false supports                                       0
+verdict                                          WATCH
+manifest byte identity before/after                true
+admitted deltas                                       0
+base rewritten                                    false
+```
+
+The first two-scene attempt was also `WATCH`: one pass, `1,488 B` delta,
+schema 1, zero false supports, and byte-identical manifest. This is expected
+safe behavior, not a quality PASS. The pending relation remains durable and is
+retried only when its independent scene count reaches the next power of two.
+
+Tested:
+
+```text
+trainer build                                             PASS
+worker acceptance and bounded targeted-case tests          3/3
+legacy schema inheritance                                  PASS
+double-Shift full-context feedback                         PASS
+WATCH admission gate                                       PASS
+schema-1 end-to-end isolated smoke                         PASS
+one-pass compile                                            yes
+immutable base rewritten                                    no
+runtime authority changed                                   no
+```
+
+Not tested in this checkpoint:
+
+```text
+automatic PASS admission from real user traffic
+long-running service stability over multiple days
+80k fixed heldout quality after a promoted delta
+in-process reload latency after PASS
+```
+
+Exact receipt:
+
+```text
+docs/structural_gates/receipts/L3_ONLINE_SCHEMA1_WORKER_2026-07-28.json
+```
+
+The repository schema-4 candidate is not installable at this checkpoint.
+`data/lexicon/l3_context_phase_v1.nwpc` is `30,698,796 B` with SHA-256
+`a71d58a0a01f9c5f8fae4328e1e5011043f3e95ac1d5ee760a0dc56b81cd9ad7`,
+while its manifest declares `18,016,360 B` and SHA-256
+`11bc615ede0dd87f52748dd5eababa5d4eaece54a47bb36f3fb0f09fd30006bd`.
+Installation must retain the proven installed schema-1 base until that
+artifact and receipt are rebuilt consistently. The installer now verifies
+declared byte size, SHA-256, and heldout `PASS` before creating any runtime
+temporary file. An isolated mismatch test exited with status 1 and preserved
+the existing destination byte-for-byte.
+
+### Payment Relation Delta Experiment: 2026-07-28
+
+Remote host: `e@192.168.3.94`, 20 hardware threads. Immutable base:
+`l3_context_phase_v1.nwpc`. The delta corpus contained 64 payment relation
+scenes with varied entities and no `Apple` training row.
+
+Measured compile:
+
+```text
+corpus fragments                         64
+corpus passes                             1
+L2 probe workers                         20
+wall                                  0.14 s
+artifact                            68,516 B
+peak RSS                            80,504 KiB
+base loaded                            false
+base rewritten                         false
+full 80k corpus replayed                false
+```
+
+Targeted proof used one requested payment scene and five safety sentinels:
+
+```text
+target: ... оплатить Apple b -> и
+safety: wave / a / GitHub / compiler ... / Apple
+false supports                              0
+target unary margin before             100,893
+target unary margin after              401,151
+target threshold                        87,277
+target competition margin              294,782
+pair high candidate                          и
+pair high score                        401,151
+pair threshold                         412,246
+pair local / bank support               5 / 29
+pair outcome                               Tie
+target disposition                     Neutral
+verdict                                  WATCH
+```
+
+The experiment proved that incremental compilation is operational and cheap,
+but it did not prove the requested contextual correction. The shard was not
+admitted. A direct admission attempt rejected the WATCH receipt with
+`InvalidData`; the runtime manifest remained at zero deltas.
+
+The first implementation defect found by this experiment was fixed: a narrow
+delta had been able to replace base calibration during generic merge. Base now
+owns all global energy scales. The second defect was also fixed: a full
+16-center cold pair bank had discarded new delta modes. Composite runtime now
+retains delta pair subcenters independently. Neither fix changed text-edit
+authority.
+
+Remaining measured limitation: the generalized relation scene still contains
+strong exact-token energy. Across unseen entity names, the payment direction
+improves unary evidence but does not yet cross the existing pairwise
+directional certificate. Relaxing that certificate would trade away tied-basin
+safety and is not accepted by this experiment.
+
 ## Proof And Publication
 
 ### Pairwise Full-Winner Certificate

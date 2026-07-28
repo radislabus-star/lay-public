@@ -46,6 +46,7 @@ pub(super) fn handle_pending_auto_undo(
             log(&format!(
                 "⚠ auto-undo IME blocked before dispatch: {ime_reason}; secondary backend blocked"
             ));
+            buf.restore_pending_auto_undo(undo);
             return None;
         };
         let dispatch = try_ime_replace_tail(ime_authorized, "auto-undo");
@@ -66,12 +67,18 @@ pub(super) fn handle_pending_auto_undo(
                 "⚠ auto-undo IME dispatch ended without apply: {}; secondary backend blocked",
                 dispatch.reason()
             ));
+            buf.restore_pending_auto_undo(undo);
             return None;
         }
+        log(&format!(
+            "· auto-undo IME did not mutate visible text: {}; selecting explicit daemon fallback",
+            dispatch.reason()
+        ));
     }
 
     let Some(kbd) = virtual_kbd else {
         log("⚠ auto-undo: нет uinput device");
+        buf.restore_pending_auto_undo(undo);
         return None;
     };
     let daemon_backend_action = lay::text_edit::authorize_backend_edit(
@@ -88,6 +95,7 @@ pub(super) fn handle_pending_auto_undo(
             undo.replacement,
             undo.original
         ));
+        buf.restore_pending_auto_undo(undo);
         return None;
     };
 

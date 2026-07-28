@@ -8,7 +8,7 @@ use std::thread;
 use serde::Serialize;
 
 use super::online::{
-    l2_lattice_competitors, L2ProbePool, OnlineContextPhaseConfig, OnlineContextPhaseLearner,
+    l2_lattice_probe, L2ProbePool, OnlineContextPhaseConfig, OnlineContextPhaseLearner,
     L2_PROBE_BATCH_FRAGMENTS,
 };
 use super::{ContextPhaseDisposition, ContextPhaseMode, ContextPhasePackage, SurfaceMutationField};
@@ -32,6 +32,22 @@ pub(crate) struct ContextPhaseCounterexample {
     pub(crate) false_winner_hash: u64,
     pub(crate) target_margin_micro: i64,
     pub(crate) false_margin_micro: i64,
+    pub(crate) target_profile_present: bool,
+    pub(crate) target_signature_profile_present: bool,
+    pub(crate) target_positive_micro: i64,
+    pub(crate) target_anti_micro: i64,
+    pub(crate) target_pairwise_known_edges: u16,
+    pub(crate) target_pairwise_unknown_edges: u16,
+    pub(crate) target_pairwise_blocked: bool,
+    pub(crate) target_pairwise_certified: bool,
+    pub(crate) false_profile_present: bool,
+    pub(crate) false_signature_profile_present: bool,
+    pub(crate) false_positive_micro: i64,
+    pub(crate) false_anti_micro: i64,
+    pub(crate) false_pairwise_known_edges: u16,
+    pub(crate) false_pairwise_unknown_edges: u16,
+    pub(crate) false_pairwise_blocked: bool,
+    pub(crate) false_pairwise_certified: bool,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -42,9 +58,16 @@ pub(crate) struct ContextPhaseProofReport {
     pub(crate) heldout_passes: u8,
     pub(crate) train_fragments: usize,
     pub(crate) heldout_fragments: usize,
+    pub(crate) training_l2_lattice_probes: u64,
+    pub(crate) training_l2_lattice_negative_examples: u64,
+    pub(crate) training_l2_lattice_empty_results: u64,
+    pub(crate) training_l2_lattice_max_competitors: u32,
+    pub(crate) training_l2_probe_workers: usize,
+    pub(crate) training_l2_target_not_retained: u64,
     /// Fixed denominator: every heldout transition where L2 produced a real
     /// lattice. This remains comparable across package variants.
     pub(crate) lattice_transitions: usize,
+    pub(crate) l2_target_not_retained: usize,
     /// A missing target profile is a coverage miss, not a reason to erase the
     /// transition from the proof denominator.
     pub(crate) target_profile_missing: usize,
@@ -143,6 +166,7 @@ pub(crate) struct ContextPhaseProofReport {
 #[derive(Default)]
 struct ProofTotals {
     lattice_transitions: usize,
+    l2_target_not_retained: usize,
     target_profile_missing: usize,
     evaluated: usize,
     context_evidence_cases: usize,
@@ -215,6 +239,7 @@ struct ProofTotals {
 impl ProofTotals {
     fn merge(&mut self, other: Self) {
         self.lattice_transitions += other.lattice_transitions;
+        self.l2_target_not_retained += other.l2_target_not_retained;
         self.target_profile_missing += other.target_profile_missing;
         self.evaluated += other.evaluated;
         self.context_evidence_cases += other.context_evidence_cases;
@@ -424,13 +449,20 @@ where
     let train_fragments = train_stats
         .accepted_fragments
         .saturating_sub(heldout_fragments);
-    let report = report_from_totals(
+    let mut report = report_from_totals(
         totals,
         train_fragments,
         heldout_fragments,
         config.min_profile_support,
         1,
     );
+    let training_stats = learner.stats();
+    report.training_l2_lattice_probes = training_stats.l2_lattice_probes;
+    report.training_l2_lattice_negative_examples = training_stats.l2_lattice_negative_examples;
+    report.training_l2_lattice_empty_results = training_stats.l2_lattice_empty_results;
+    report.training_l2_lattice_max_competitors = training_stats.l2_lattice_max_competitors;
+    report.training_l2_probe_workers = l2_pool.worker_count();
+    report.training_l2_target_not_retained = training_stats.l2_target_not_retained;
     Ok((package, report))
 }
 
@@ -507,12 +539,16 @@ fn evaluate_fragment(
 ) {
     for index in 1..tokens.len() {
         let target = &tokens[index];
-        let competitors =
-            l2_lattice_competitors(&tokens[..index], target, MAX_COMPETITORS, surface_field);
-        if competitors.is_empty() {
+        let lattice = l2_lattice_probe(&tokens[..index], target, MAX_COMPETITORS, surface_field);
+        if lattice.competitors.is_empty() {
             continue;
         }
         totals.lattice_transitions = totals.lattice_transitions.saturating_add(1);
+        if !lattice.target_retained {
+            totals.l2_target_not_retained = totals.l2_target_not_retained.saturating_add(1);
+            continue;
+        }
+        let competitors = lattice.competitors;
         let mut candidates = Vec::with_capacity(competitors.len() + 1);
         candidates.push(target.as_str());
         candidates.extend(competitors.iter().map(String::as_str));
@@ -654,7 +690,7 @@ fn evaluate_fragment(
         totals.hard_pairwise_worsened_cases += (!full_correct && no_hard_pairwise_correct) as usize;
 
         let mut permutation = candidates.clone();
-        permutation.sort_by_key(|candidate| super::super::phase_field::hash_text(candidate));
+        permutation.sort_by_key(|candidate| super::context_exact_hash(candidate));
         let permuted = package.score_candidates_with_mode(
             &tokens[..index],
             &permutation,
@@ -707,7 +743,7 @@ fn classify_false_winner(
     let correct = &full[0];
     if totals.counterexamples.len() < MAX_COUNTEREXAMPLES {
         let scene_hash = context.iter().fold(0_u64, |state, token| {
-            crate::stable_hash::mix64_golden(state ^ super::super::phase_field::hash_text(token))
+            crate::stable_hash::mix64_golden(state ^ super::context_exact_hash(token))
         });
         totals.counterexamples.push(ContextPhaseCounterexample {
             context_tail: context
@@ -723,10 +759,26 @@ fn classify_false_winner(
             target: target.to_string(),
             false_winner: candidates[false_index].to_string(),
             scene_hash,
-            target_hash: super::super::phase_field::hash_text(target),
-            false_winner_hash: super::super::phase_field::hash_text(candidates[false_index]),
+            target_hash: super::context_exact_hash(target),
+            false_winner_hash: super::context_exact_hash(candidates[false_index]),
             target_margin_micro: correct.margin_micro,
             false_margin_micro: false_winner.margin_micro,
+            target_profile_present: correct.profile_present,
+            target_signature_profile_present: correct.signature_profile_present,
+            target_positive_micro: correct.positive_micro,
+            target_anti_micro: correct.anti_micro,
+            target_pairwise_known_edges: correct.pairwise_known_edges,
+            target_pairwise_unknown_edges: correct.pairwise_unknown_edges,
+            target_pairwise_blocked: correct.pairwise_blocked,
+            target_pairwise_certified: correct.pairwise_certified,
+            false_profile_present: false_winner.profile_present,
+            false_signature_profile_present: false_winner.signature_profile_present,
+            false_positive_micro: false_winner.positive_micro,
+            false_anti_micro: false_winner.anti_micro,
+            false_pairwise_known_edges: false_winner.pairwise_known_edges,
+            false_pairwise_unknown_edges: false_winner.pairwise_unknown_edges,
+            false_pairwise_blocked: false_winner.pairwise_blocked,
+            false_pairwise_certified: false_winner.pairwise_certified,
         });
     }
     if correct.disposition == ContextPhaseDisposition::Support {
@@ -771,7 +823,13 @@ fn classify_false_winner(
     } else {
         totals.full_false_top1_separated_competition += 1;
     }
-    let context_ready = correct.context_known_tokens >= 2
+    let minimum_known_tokens = if package.signature_schema >= super::SIGNATURE_SCHEMA_RELATION_ROLES
+    {
+        1
+    } else {
+        2
+    };
+    let context_ready = usize::from(correct.context_known_tokens) >= minimum_known_tokens
         && usize::from(correct.context_known_tokens) * 2 >= usize::from(correct.context_tokens);
     if context_ready {
         totals.full_false_top1_context_ready += 1;
@@ -844,7 +902,14 @@ fn report_from_totals(
         heldout_passes: 1,
         train_fragments,
         heldout_fragments,
+        training_l2_lattice_probes: 0,
+        training_l2_lattice_negative_examples: 0,
+        training_l2_lattice_empty_results: 0,
+        training_l2_lattice_max_competitors: 0,
+        training_l2_probe_workers: 0,
+        training_l2_target_not_retained: 0,
         lattice_transitions: totals.lattice_transitions,
+        l2_target_not_retained: totals.l2_target_not_retained,
         target_profile_missing: totals.target_profile_missing,
         evaluated_transitions: totals.evaluated,
         context_evidence_cases: totals.context_evidence_cases,

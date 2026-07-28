@@ -9,11 +9,11 @@ use super::super::phase_field::{
     phase_center_from_sum, phase_micro, PhaseCell, PhaseCenter,
 };
 use super::{
-    candidate_l2_signature, canonical_scene_wave, ContextCandidateProfile, ContextPairPhaseProfile,
-    ContextPhaseMode, ContextPhasePackage, PairKey, SurfaceMutationField, TokenSemanticState,
-    CELLS, MAX_CONTEXT_TOKENS, MAX_EXACT_PAIR_PROFILES, MAX_HARD_PAIR_CENTERS_PER_BANK,
-    MAX_PAIR_CENTERS_PER_BANK, MAX_PAIR_PROFILES, MAX_RELATION_PAIR_PROFILES,
-    MAX_SIGNATURE_PROFILES,
+    canonical_relation_scene_wave, canonical_scene_wave, ContextCandidateProfile,
+    ContextPairPhaseProfile, ContextPhaseMode, ContextPhasePackage, PairKey, SurfaceMutationField,
+    TokenSemanticState, CELLS, MAX_CONTEXT_ATOMS, MAX_CONTEXT_TOKENS, MAX_EXACT_PAIR_PROFILES,
+    MAX_HARD_PAIR_CENTERS_PER_BANK, MAX_PAIR_CENTERS_PER_BANK, MAX_PAIR_PROFILES,
+    MAX_RELATION_PAIR_PROFILES, MAX_SIGNATURE_PROFILES,
 };
 
 const MAX_POSITIVE_CENTERS: usize = 8;
@@ -26,11 +26,12 @@ const PROFILE_CALIBRATION_SAMPLES: usize = 32;
 const COMPETITION_CALIBRATION_SAMPLES: usize = 2_048;
 const ADMISSION_SKETCH_LANES: usize = 2;
 const ADMISSION_SKETCH_WIDTH: usize = 1 << 16;
-pub(super) const L2_PROBE_BATCH_FRAGMENTS: usize = 16;
+pub(super) const L2_PROBE_BATCH_FRAGMENTS: usize = 128;
 
 #[derive(Clone, Copy, Debug)]
 pub(super) struct OnlineContextPhaseConfig {
     pub(super) min_profile_support: u32,
+    pub(super) signature_schema: u32,
     pub(super) max_semantic_states: usize,
     pub(super) max_profiles: usize,
     pub(super) max_positive_phase_centers: usize,
@@ -40,8 +41,19 @@ pub(super) struct OnlineContextPhaseConfig {
 
 impl OnlineContextPhaseConfig {
     pub(super) fn production(min_profile_support: u32) -> Self {
+        Self::production_with_signature_schema(
+            min_profile_support,
+            super::SIGNATURE_SCHEMA_RELATION_ROLES,
+        )
+    }
+
+    pub(super) fn production_with_signature_schema(
+        min_profile_support: u32,
+        signature_schema: u32,
+    ) -> Self {
         Self {
             min_profile_support: min_profile_support.max(2),
+            signature_schema,
             max_semantic_states: 32_768,
             max_profiles: 16_384,
             max_positive_phase_centers: 65_536,
@@ -57,6 +69,9 @@ pub(super) struct OnlineContextPhaseStats {
     pub(super) transitions: u64,
     pub(super) l2_lattice_probes: u64,
     pub(super) l2_lattice_negative_examples: u64,
+    pub(super) l2_lattice_empty_results: u64,
+    pub(super) l2_lattice_max_competitors: u32,
+    pub(super) l2_target_not_retained: u64,
     pub(super) hard_negative_false_winners: u64,
     pub(super) positive_reinforcements: u64,
     pub(super) positive_splits: u64,
@@ -161,25 +176,40 @@ struct ScalarReservoir {
 #[derive(Clone, Copy)]
 struct CompetitionCalibrationCase {
     target_hash: u64,
-    context_hashes: [u64; MAX_CONTEXT_TOKENS],
+    target_relation_role: bool,
+    context_hashes: [u64; MAX_CONTEXT_ATOMS],
     context_len: u8,
     competitor_hashes: [u64; MAX_COMPETITORS],
+    competitor_relation_roles: [bool; MAX_COMPETITORS],
     competitor_len: u8,
 }
 
 impl CompetitionCalibrationCase {
-    fn new(target_hash: u64, context_hashes: &[u64], competitor_hashes: &[u64]) -> Self {
-        let mut context = [0_u64; MAX_CONTEXT_TOKENS];
-        let context_len = context_hashes.len().min(MAX_CONTEXT_TOKENS);
+    fn new(
+        target_hash: u64,
+        target_relation_role: bool,
+        context_hashes: &[u64],
+        competitor_entries: &[(u64, bool)],
+    ) -> Self {
+        let mut context = [0_u64; MAX_CONTEXT_ATOMS];
+        let context_len = context_hashes.len().min(MAX_CONTEXT_ATOMS);
         context[..context_len].copy_from_slice(&context_hashes[..context_len]);
-        let mut competitors = [0_u64; MAX_COMPETITORS];
-        let competitor_len = competitor_hashes.len().min(MAX_COMPETITORS);
-        competitors[..competitor_len].copy_from_slice(&competitor_hashes[..competitor_len]);
+        let mut competitor_hashes = [0_u64; MAX_COMPETITORS];
+        let mut competitor_relation_roles = [false; MAX_COMPETITORS];
+        let competitor_len = competitor_entries.len().min(MAX_COMPETITORS);
+        for (index, (hash, relation_role)) in
+            competitor_entries[..competitor_len].iter().enumerate()
+        {
+            competitor_hashes[index] = *hash;
+            competitor_relation_roles[index] = *relation_role;
+        }
         Self {
             target_hash,
+            target_relation_role,
             context_hashes: context,
             context_len: context_len as u8,
-            competitor_hashes: competitors,
+            competitor_hashes,
+            competitor_relation_roles,
             competitor_len: competitor_len as u8,
         }
     }
@@ -190,6 +220,10 @@ impl CompetitionCalibrationCase {
 
     fn competitors(&self) -> &[u64] {
         &self.competitor_hashes[..usize::from(self.competitor_len)]
+    }
+
+    fn competitor_relation_role(&self, index: usize) -> bool {
+        self.competitor_relation_roles[index]
     }
 }
 
@@ -315,15 +349,18 @@ pub(super) struct L2ProbeRequest {
     target_hash: u64,
     context_hashes: Vec<u64>,
     target_margin_before_update: Option<i64>,
+    signature_schema: u32,
     surface_field: Arc<SurfaceMutationField>,
 }
 
 pub(super) struct L2ProbeResult {
     target_hash: u64,
     target_signature: u64,
+    target_relation_role: bool,
     context_hashes: Vec<u64>,
     target_margin_before_update: Option<i64>,
-    competitors: Vec<(u64, u64)>,
+    target_retained: bool,
+    competitors: Vec<(u64, u64, bool)>,
 }
 
 type ProbeJob = (usize, L2ProbeRequest);
@@ -489,25 +526,30 @@ impl OnlineContextPhaseLearner {
             return Vec::new();
         }
         self.stats.fragments = self.stats.fragments.saturating_add(1);
-        let hashes = tokens
+        let exact_hashes = tokens
             .iter()
-            .map(|token| hash_text(token))
+            .map(|token| super::context_exact_hash(token))
             .collect::<Vec<_>>();
-        let frequencies = hashes
+        let frequencies = exact_hashes
             .iter()
             .map(|token_hash| self.admission_frequency.observe(*token_hash))
             .collect::<Vec<_>>();
-        self.update_semantic_states(&hashes, &frequencies);
+        self.update_semantic_states(&exact_hashes, &frequencies);
         let mut requests = Vec::new();
 
         for index in 1..tokens.len() {
-            let target_hash = hashes[index];
+            let target_hash = exact_hashes[index];
             if !self.ensure_profile(target_hash, frequencies[index]) {
                 continue;
             }
             let start = index.saturating_sub(MAX_CONTEXT_TOKENS);
-            let context_hashes = &hashes[start..index];
-            let target_vector = self.relation_vector(context_hashes, target_hash);
+            let context_hashes =
+                super::context_atom_hashes(&tokens[start..index], self.config.signature_schema);
+            let target_relation_role = self.config.signature_schema
+                >= super::SIGNATURE_SCHEMA_RELATION_ROLES
+                && super::relation_role_candidate(&tokens[index]);
+            let target_vector =
+                self.relation_vector(&context_hashes, target_hash, target_relation_role);
             let target_margin_before_update = self
                 .profiles
                 .get(&target_hash)
@@ -552,8 +594,9 @@ impl OnlineContextPhaseLearner {
                 context_tokens: tokens[start..index].to_vec(),
                 target: tokens[index].clone(),
                 target_hash,
-                context_hashes: context_hashes.to_vec(),
+                context_hashes,
                 target_margin_before_update,
+                signature_schema: self.config.signature_schema,
                 surface_field: Arc::clone(&self.surface_field),
             });
         }
@@ -575,14 +618,34 @@ impl OnlineContextPhaseLearner {
         let L2ProbeResult {
             target_hash,
             target_signature,
+            target_relation_role,
             context_hashes,
             target_margin_before_update,
+            target_retained,
             competitors,
         } = result;
+        if !target_retained {
+            self.stats.l2_target_not_retained = self.stats.l2_target_not_retained.saturating_add(1);
+        }
         let observations = competitors
             .into_iter()
-            .map(|(hash, signature)| (hash, signature, self.relation_vector(&context_hashes, hash)))
+            .map(|(hash, signature, relation_role)| {
+                (
+                    hash,
+                    signature,
+                    relation_role,
+                    self.relation_vector(&context_hashes, hash, relation_role),
+                )
+            })
             .collect::<Vec<_>>();
+        if observations.is_empty() {
+            self.stats.l2_lattice_empty_results =
+                self.stats.l2_lattice_empty_results.saturating_add(1);
+        }
+        self.stats.l2_lattice_max_competitors = self
+            .stats
+            .l2_lattice_max_competitors
+            .max(observations.len().min(u32::MAX as usize) as u32);
         self.stats.l2_lattice_negative_examples = self
             .stats
             .l2_lattice_negative_examples
@@ -593,31 +656,42 @@ impl OnlineContextPhaseLearner {
 
         let competitor_hashes = observations
             .iter()
-            .map(|(hash, _, _)| *hash)
+            .map(|(hash, _, relation_role, _)| (*hash, *relation_role))
             .collect::<Vec<_>>();
         self.competition_calibration.observe(
-            CompetitionCalibrationCase::new(target_hash, &context_hashes, &competitor_hashes),
+            CompetitionCalibrationCase::new(
+                target_hash,
+                target_relation_role,
+                &context_hashes,
+                &competitor_hashes,
+            ),
             target_hash ^ self.stats.transitions.rotate_left(17),
         );
-        let scene = self.relation_vector(&context_hashes, 0);
+        let relation_scene = target_relation_role
+            || observations
+                .iter()
+                .any(|(_, _, relation_role, _)| *relation_role);
+        let scene = self.relation_vector(&context_hashes, 0, relation_scene);
         // The signature key already carries the candidate's L2 state. Its
         // center must therefore encode only the surrounding scene; adding a
         // lexical target rotation here would make the alleged transfer field
         // another exact-word memory in disguise.
         self.update_signature_positive(target_signature, &scene);
-        for (hash, signature, _) in &observations {
+        for (hash, signature, _, _) in &observations {
             // The same compact morphology/L2 state can be correct in one
             // scene and wrong in another. Keep the losing scene in a separate
             // anti-bank so signature transfer is interference, not a global
             // suffix preference.
-            self.update_signature_negative(*signature, &scene);
+            if relation_scene {
+                self.update_signature_negative(*signature, &scene);
+            }
             self.update_pair_winner(target_hash, *hash, &scene, false);
             self.update_pair_relation(target_hash, target_signature, *hash, *signature, &scene);
         }
         let false_winner = target_margin_before_update.and_then(|target_margin_before_update| {
             observations
                 .iter()
-                .filter_map(|(hash, _, vector)| {
+                .filter_map(|(hash, _, _, vector)| {
                     let profile = self.profiles.get(hash)?;
                     if profile.positive_examples < self.config.min_profile_support {
                         return None;
@@ -632,20 +706,6 @@ impl OnlineContextPhaseLearner {
         });
         if let Some(hash) = false_winner {
             self.update_pair_winner(target_hash, hash, &scene, true);
-            if let Some((_, _, vector)) = observations
-                .iter()
-                .find(|(candidate_hash, _, _)| *candidate_hash == hash)
-            {
-                // A false winner is stronger evidence than an ordinary L2
-                // competitor: retain its candidate-local phase as a hard
-                // anti-center. This is train-only feedback; heldout never
-                // writes into the package it evaluates.
-                self.update_hard_negative_relation(hash, vector);
-            }
-        }
-
-        for (hash, _, vector) in &observations {
-            self.update_negative_relation(*hash, vector);
         }
     }
 
@@ -870,7 +930,7 @@ impl OnlineContextPhaseLearner {
             global_threshold_micro,
             competition_threshold_micro,
             pairwise_threshold_micro: competition_threshold_micro,
-            signature_schema: super::SIGNATURE_SCHEMA_MORPHOLOGY_PHASE,
+            signature_schema: self.config.signature_schema,
         }
     }
 
@@ -1259,13 +1319,46 @@ impl OnlineContextPhaseLearner {
         false
     }
 
-    fn relation_vector(&self, context_hashes: &[u64], candidate_hash: u64) -> Vec<PhaseCell> {
-        let mut vector = canonical_scene_wave(context_hashes, ContextPhaseMode::Full, |hash| {
-            self.semantic
-                .get(&hash)
-                .filter(|state| state.support >= 2)
-                .map(|state| (state.center.as_slice(), state.support))
-        });
+    fn relation_vector(
+        &self,
+        context_hashes: &[u64],
+        candidate_hash: u64,
+        relation_roles: bool,
+    ) -> Vec<PhaseCell> {
+        let projected_hashes;
+        let scene_hashes = if relation_roles {
+            context_hashes
+        } else {
+            projected_hashes = context_hashes
+                .iter()
+                .step_by(2)
+                .copied()
+                .collect::<Vec<_>>();
+            &projected_hashes
+        };
+        let mut vector = if relation_roles {
+            canonical_relation_scene_wave(
+                scene_hashes,
+                ContextPhaseMode::Full,
+                |atom_index, hash| {
+                    (atom_index % 2 == 0)
+                        .then(|| {
+                            self.semantic
+                                .get(&hash)
+                                .filter(|state| state.support >= 2)
+                                .map(|state| (state.center.as_slice(), state.support))
+                        })
+                        .flatten()
+                },
+            )
+        } else {
+            canonical_scene_wave(scene_hashes, ContextPhaseMode::Full, |_, hash| {
+                self.semantic
+                    .get(&hash)
+                    .filter(|state| state.support >= 2)
+                    .map(|state| (state.center.as_slice(), state.support))
+            })
+        };
         if let Some(state) = self
             .semantic
             .get(&candidate_hash)
@@ -1344,7 +1437,8 @@ impl OnlineContextPhaseLearner {
         let mut correct_gaps = Vec::with_capacity(self.competition_calibration.cases.len());
         let mut wrong_gaps = Vec::new();
         for case in &self.competition_calibration.cases {
-            let target_vector = self.relation_vector(case.context(), case.target_hash);
+            let target_vector =
+                self.relation_vector(case.context(), case.target_hash, case.target_relation_role);
             let Some(target_margin) = self.profile_margin_micro(case.target_hash, &target_vector)
             else {
                 continue;
@@ -1352,8 +1446,13 @@ impl OnlineContextPhaseLearner {
             let strongest_competitor = case
                 .competitors()
                 .iter()
-                .filter_map(|hash| {
-                    let vector = self.relation_vector(case.context(), *hash);
+                .enumerate()
+                .filter_map(|(index, hash)| {
+                    let vector = self.relation_vector(
+                        case.context(),
+                        *hash,
+                        case.competitor_relation_role(index),
+                    );
                     self.profile_margin_micro(*hash, &vector)
                 })
                 .max();
@@ -1415,30 +1514,48 @@ fn execute_l2_probe(request: L2ProbeRequest) -> L2ProbeResult {
         target_hash,
         context_hashes,
         target_margin_before_update,
+        signature_schema,
         surface_field,
     } = request;
     let mut seen = BTreeSet::new();
-    let competitors = l2_lattice_competitors(
+    let target_relation_role = signature_schema >= super::SIGNATURE_SCHEMA_RELATION_ROLES
+        && super::relation_role_candidate(&target);
+    let lattice = l2_lattice_probe(
         &context_tokens,
         &target,
         MAX_COMPETITORS,
         surface_field.as_ref(),
-    )
-    .into_iter()
-    .filter_map(|competitor| {
-        let token = crate::word_reader::last_text_word(&competitor).unwrap_or_default();
-        let competitor_hash = hash_text(&token.to_lowercase());
-        (competitor_hash != target_hash && seen.insert(competitor_hash))
-            .then(|| (competitor_hash, candidate_l2_signature(&competitor)))
-    })
-    .collect();
+    );
+    let competitors = lattice
+        .competitors
+        .into_iter()
+        .filter_map(|competitor| {
+            let token = crate::word_reader::last_text_word(&competitor).unwrap_or_default();
+            let competitor_hash = hash_text(&token.to_lowercase());
+            (competitor_hash != target_hash && seen.insert(competitor_hash)).then(|| {
+                (
+                    competitor_hash,
+                    super::candidate_l2_signature_for_schema(&competitor, signature_schema),
+                    signature_schema >= super::SIGNATURE_SCHEMA_RELATION_ROLES
+                        && super::relation_role_candidate(&competitor),
+                )
+            })
+        })
+        .collect();
     L2ProbeResult {
         target_hash,
-        target_signature: candidate_l2_signature(&target),
+        target_signature: super::candidate_l2_signature_for_schema(&target, signature_schema),
+        target_relation_role,
         context_hashes,
         target_margin_before_update,
+        target_retained: lattice.target_retained,
         competitors,
     }
+}
+
+pub(super) struct L2LatticeProbe {
+    pub(super) competitors: Vec<String>,
+    pub(super) target_retained: bool,
 }
 
 pub(super) fn l2_lattice_competitors(
@@ -1447,32 +1564,114 @@ pub(super) fn l2_lattice_competitors(
     limit: usize,
     surface_field: &SurfaceMutationField,
 ) -> Vec<String> {
+    l2_lattice_probe(context, target, limit, surface_field).competitors
+}
+
+pub(super) fn l2_lattice_probe(
+    context: &[String],
+    target: &str,
+    limit: usize,
+    surface_field: &SurfaceMutationField,
+) -> L2LatticeProbe {
     if limit == 0 {
-        return Vec::new();
+        return L2LatticeProbe {
+            competitors: Vec::new(),
+            target_retained: false,
+        };
     }
     let context_prefix = context.join(" ");
+    let normalized_target = target.to_lowercase();
     // The corpus target is a teacher label. It may generate a damaged surface,
     // but it must never rank the resulting L2 candidates: ordering them by
     // distance to `target` would leak the answer into both learning and proof.
     // Keep the bounded, deterministic order emitted by the real L2 readout.
     let mut seen = BTreeSet::new();
     let mut competitors = Vec::with_capacity(limit);
-    for damaged in surface_field.damaged_surfaces(target, MAX_L2_TRAINING_SURFACES) {
+    let probe_surfaces = surface_field.damaged_surfaces(target, MAX_L2_TRAINING_SURFACES);
+    if target.chars().count() == 1 && target.chars().all(char::is_alphabetic) {
+        let direction = if target.chars().all(crate::keyboard::is_cyrillic_letter) {
+            crate::dict::Direction::Ru2Us
+        } else if target.is_ascii() {
+            crate::dict::Direction::Us2Ru
+        } else {
+            return L2LatticeProbe {
+                competitors,
+                target_retained: true,
+            };
+        };
+        let projected = crate::dict::convert(target, direction).to_lowercase();
+        if projected != normalized_target && seen.insert(projected.clone()) {
+            competitors.push(projected);
+        }
+        return L2LatticeProbe {
+            competitors,
+            target_retained: true,
+        };
+    }
+    if std::env::var_os("LAY_L3_REAL_L2_PROBE").is_some() {
+        return real_l2_lattice_competitors(
+            &context_prefix,
+            &normalized_target,
+            probe_surfaces,
+            limit,
+            |context_prefix, damaged| {
+                crate::nanda_wave::l2_field::cold_probe_surfaces(context_prefix, damaged)
+            },
+        );
+    }
+    for damaged in probe_surfaces {
         for candidate in crate::nanda_wave::l2::correction_l2_word_candidates(
             &context_prefix,
             &damaged,
             limit.saturating_mul(4),
         ) {
             let candidate = candidate.surface.to_lowercase();
-            if candidate != target && seen.insert(candidate.clone()) {
+            if candidate != normalized_target && seen.insert(candidate.clone()) {
                 competitors.push(candidate);
                 if competitors.len() >= limit {
-                    return competitors;
+                    return L2LatticeProbe {
+                        competitors,
+                        target_retained: true,
+                    };
                 }
             }
         }
     }
-    competitors
+    L2LatticeProbe {
+        competitors,
+        target_retained: true,
+    }
+}
+
+fn real_l2_lattice_competitors<F>(
+    context_prefix: &str,
+    normalized_target: &str,
+    probe_surfaces: Vec<String>,
+    limit: usize,
+    mut probe: F,
+) -> L2LatticeProbe
+where
+    F: FnMut(&str, &str) -> Vec<String>,
+{
+    let mut seen = BTreeSet::new();
+    let mut competitors = Vec::with_capacity(limit);
+    let mut target_retained = false;
+    'surfaces: for damaged in probe_surfaces {
+        for candidate in probe(context_prefix, &damaged) {
+            if candidate == normalized_target {
+                target_retained = true;
+            } else if competitors.len() < limit && seen.insert(candidate.clone()) {
+                competitors.push(candidate);
+            }
+        }
+        if target_retained && competitors.len() >= limit {
+            break 'surfaces;
+        }
+    }
+    L2LatticeProbe {
+        competitors,
+        target_retained,
+    }
 }
 
 fn percentile_i32(values: &[i32], percentile: usize) -> Option<i32> {
@@ -1528,6 +1727,7 @@ mod tests {
     fn l2_probe_schedule_covers_new_modes_without_probing_singletons() {
         let learner = OnlineContextPhaseLearner::new(OnlineContextPhaseConfig {
             min_profile_support: 2,
+            signature_schema: super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
             max_semantic_states: 8,
             max_profiles: 8,
             max_positive_phase_centers: 8,
@@ -1557,6 +1757,24 @@ mod tests {
     }
 
     #[test]
+    fn pair_bank_retains_multiple_incompatible_sentence_scenes() {
+        let mut learner = OnlineContextPhaseLearner::new(OnlineContextPhaseConfig::production(2));
+        let first_scene = phase_vector(73);
+        let second_scene = phase_vector(991);
+        learner.update_pair_winner(11, 19, &first_scene, false);
+        learner.update_pair_winner(11, 19, &second_scene, false);
+
+        let package = learner.snapshot();
+        let profile = package.pair_profiles.first().expect("pair profile");
+        let winner_bank = if profile.low_hash == 11 {
+            &profile.low_wins
+        } else {
+            &profile.high_wins
+        };
+        assert_eq!(winner_bank.len(), 2);
+    }
+
+    #[test]
     fn incompatible_mode_never_blurs_a_full_bank() {
         let first = phase_vector(11);
         let second = phase_vector(29);
@@ -1576,6 +1794,7 @@ mod tests {
     fn learner_state_is_bounded_and_snapshot_is_sorted() {
         let mut learner = OnlineContextPhaseLearner::new(OnlineContextPhaseConfig {
             min_profile_support: 2,
+            signature_schema: super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
             max_semantic_states: 3,
             max_profiles: 2,
             max_positive_phase_centers: 2,
@@ -1610,6 +1829,7 @@ mod tests {
     fn late_repeated_token_displaces_only_unproven_entries() {
         let mut learner = OnlineContextPhaseLearner::new(OnlineContextPhaseConfig {
             min_profile_support: 2,
+            signature_schema: super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
             max_semantic_states: 3,
             max_profiles: 2,
             max_positive_phase_centers: 4,
@@ -1648,6 +1868,7 @@ mod tests {
     fn one_off_tokens_stay_in_the_compact_field_until_a_second_surface() {
         let mut learner = OnlineContextPhaseLearner::new(OnlineContextPhaseConfig {
             min_profile_support: 2,
+            signature_schema: super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
             max_semantic_states: 16,
             max_profiles: 16,
             max_positive_phase_centers: 16,
@@ -1667,13 +1888,20 @@ mod tests {
         let pool = L2ProbePool::with_worker_count(4);
         let requests = ["дождь", "машина", "работа", "память"]
             .into_iter()
-            .map(|target| L2ProbeRequest {
-                context_tokens: super::super::super::llmwave::tokenize("сегодня на улице"),
-                target: target.to_string(),
-                target_hash: hash_text(target),
-                context_hashes: vec![hash_text("сегодня"), hash_text("на"), hash_text("улице")],
-                target_margin_before_update: Some(0),
-                surface_field: Arc::new(SurfaceMutationField::default()),
+            .map(|target| {
+                let context_tokens = super::super::super::llmwave::tokenize("сегодня на улице");
+                L2ProbeRequest {
+                    context_hashes: super::super::context_atom_hashes(
+                        &context_tokens,
+                        super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
+                    ),
+                    context_tokens,
+                    target: target.to_string(),
+                    target_hash: hash_text(target),
+                    target_margin_before_update: Some(0),
+                    signature_schema: super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
+                    surface_field: Arc::new(SurfaceMutationField::default()),
+                }
             })
             .collect::<Vec<_>>();
         let expected = requests
@@ -1693,9 +1921,52 @@ mod tests {
     }
 
     #[test]
+    fn one_letter_layout_competition_is_visible_to_l3_learning() {
+        let context = super::super::super::llmwave::tokenize("выбрали Apple");
+        let latin = l2_lattice_competitors(
+            &context,
+            "b",
+            MAX_COMPETITORS,
+            &SurfaceMutationField::default(),
+        );
+        let cyrillic = l2_lattice_competitors(
+            &context,
+            "и",
+            MAX_COMPETITORS,
+            &SurfaceMutationField::default(),
+        );
+
+        assert!(latin.iter().any(|candidate| candidate == "и"), "{latin:?}");
+        assert!(
+            cyrillic.iter().any(|candidate| candidate == "b"),
+            "{cyrillic:?}"
+        );
+    }
+
+    #[test]
+    fn l2_training_lattice_deduplicates_case_only_target_surfaces() {
+        let surface = SurfaceMutationField::from_corrections_jsonl(
+            "{\"from\":\"аллаа\",\"to\":\"аллаха\"}\n\
+             {\"from\":\"аллаа\",\"to\":\"аллаха\"}\n",
+            2,
+        )
+        .unwrap();
+        let context = super::super::super::llmwave::tokenize("нет бога кроме");
+        let competitors = l2_lattice_competitors(&context, "Аллаха", MAX_COMPETITORS, &surface);
+
+        assert!(
+            competitors
+                .iter()
+                .all(|candidate| candidate.to_lowercase() != "аллаха"),
+            "{competitors:?}"
+        );
+    }
+
+    #[test]
     fn semantic_anchor_freezes_when_it_first_becomes_usable() {
         let mut learner = OnlineContextPhaseLearner::new(OnlineContextPhaseConfig {
             min_profile_support: 2,
+            signature_schema: super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
             max_semantic_states: 16,
             max_profiles: 8,
             max_positive_phase_centers: 8,
@@ -1719,6 +1990,7 @@ mod tests {
     fn pending_anti_wave_never_grants_authority_and_survives_profile_admission() {
         let mut learner = OnlineContextPhaseLearner::new(OnlineContextPhaseConfig {
             min_profile_support: 2,
+            signature_schema: super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
             max_semantic_states: 8,
             max_profiles: 8,
             max_positive_phase_centers: 8,
@@ -1757,6 +2029,7 @@ mod tests {
     fn full_negative_bank_cannot_starve_positive_subcenters() {
         let mut learner = OnlineContextPhaseLearner::new(OnlineContextPhaseConfig {
             min_profile_support: 2,
+            signature_schema: super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
             max_semantic_states: 8,
             max_profiles: 8,
             max_positive_phase_centers: 2,
@@ -1779,6 +2052,7 @@ mod tests {
     fn generic_negative_is_calibration_only_and_hard_evidence_is_pairwise() {
         let mut learner = OnlineContextPhaseLearner::new(OnlineContextPhaseConfig {
             min_profile_support: 2,
+            signature_schema: super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
             max_semantic_states: 8,
             max_profiles: 8,
             max_positive_phase_centers: 8,
@@ -1834,5 +2108,38 @@ mod tests {
         assert_eq!(first, second);
         assert!(first.len() <= 4);
         assert!(first.iter().all(|candidate| candidate != "дождь"));
+    }
+
+    #[test]
+    fn real_l2_probe_keeps_standalone_survivor_order_without_teacher_ranking() {
+        let mut observed = Vec::new();
+        let lattice = real_l2_lattice_competitors(
+            "на улице",
+            "дождь",
+            vec!["дожь".to_string(), "дожд".to_string()],
+            4,
+            |context, damaged| {
+                observed.push((context.to_string(), damaged.to_string()));
+                match damaged {
+                    "дожь" => vec![
+                        "дожди".to_string(),
+                        "дождь".to_string(),
+                        "дождя".to_string(),
+                    ],
+                    "дожд" => vec!["дождя".to_string(), "дождик".to_string()],
+                    _ => Vec::new(),
+                }
+            },
+        );
+
+        assert_eq!(
+            observed,
+            vec![
+                ("на улице".to_string(), "дожь".to_string()),
+                ("на улице".to_string(), "дожд".to_string()),
+            ]
+        );
+        assert_eq!(lattice.competitors, ["дожди", "дождя", "дождик"]);
+        assert!(lattice.target_retained);
     }
 }

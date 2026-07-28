@@ -12,4 +12,4 @@ mod state;
 
 pub(crate) use keys::*;
 pub(crate) use modifiers::has_command_modifier;
-pub(crate) use state::{Shared, SharedState};
+pub(crate) use state::{PendingImeAutoUndo, Shared, SharedState};

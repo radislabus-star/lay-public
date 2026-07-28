@@ -205,7 +205,7 @@ pub(crate) fn warm_up_word_boundary() {
             correction_safety: CorrectionSafety::Experimental,
             typing_assist_pipeline: &pipeline,
             nanda_autocorrect: false,
-            nanda_candidate_route: CandidateReadoutRoute::CompactL2,
+            nanda_candidate_route: CandidateReadoutRoute::live_default(),
             nanda_wave_options: WaveOptions::default(),
             correction_mode: CorrectionMode::DeterministicOnly,
         });

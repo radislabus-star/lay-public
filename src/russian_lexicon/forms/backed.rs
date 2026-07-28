@@ -103,7 +103,10 @@ pub(super) fn is_backed_russian_imperative_i_form(
     let Some(stem) = word.strip_suffix('и') else {
         return false;
     };
-    stem.chars().count() >= 4 && contains(&format!("{stem}ить"))
+    stem.chars().count() >= 4
+        && ["ить", "еть"]
+            .into_iter()
+            .any(|lemma_suffix| contains(&format!("{stem}{lemma_suffix}")))
 }
 
 pub(super) fn is_backed_russian_imperative_y_form(

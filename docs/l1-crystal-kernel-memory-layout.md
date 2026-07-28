@@ -2251,6 +2251,92 @@ runtime views in a new process. It is not the hot readout latency measured by
 the fixed proof. This smoke tested one installed-package query; it did not test
 daemon integration, a persistent package server or mmap startup optimization.
 
+#### Local L1.1 sidecar route
+
+A local sidecar service has now been implemented so that L1.1 can be loaded
+once and reused by the CLI and the daemon's shared correction route without
+changing runtime authority. IME preedit authority is unchanged and does not
+query this service:
+
+```text
+binary                               lay-l1.1-serve
+transport                            Unix socket
+default socket                       $XDG_RUNTIME_DIR/lay-l11.sock
+admin commands                       run / health / stats / reload
+client route                         lay-l1.1-restore --socket ...
+direct fallback                      lay-l1.1-restore --memory ...
+authority                            unchanged / false
+```
+
+The service binds its socket immediately and warms the package in a background
+thread. While the package is loading, `health` and `stats` report
+`status=warming` and `restore` returns a typed error instead of blocking the
+caller invisibly. The daemon now discovers the installed shadow package from:
+
+```text
+/home/ubu/.local/share/lay/nanda_wave/l1.1/*.installed.json
+```
+
+and starts or reloads `lay-l1.1-serve` during startup warmup without waiting
+for full package readiness.
+
+Measured socket smoke on the existing 10k package:
+
+```text
+package                    data/lexical_grokking/l1_l11_multimodal_restoration_10k.bin
+service health             ready
+terminal_count             10,000
+requests_served            3
+socket restore             врмея -> время
+restore route              lay-l1.1-restore --socket /tmp/lay-l11-test.sock врмея
+```
+
+The live correction hook is now:
+
+```text
+typing assist boundary
+-> correction_core::nanda_text_candidates_for_route()
+-> hot_l2_text_candidates()
+-> local L1.1 sidecar winner as extra shared candidate source
+-> TransitionDecisionCore
+-> AuthorizedEdit or no-op
+```
+
+The sidecar candidate is inserted only on the shared `CompactL2` correction
+path. It uses:
+
+```text
+origin                    CandidateOrigin::L2Surface
+source_id                 L11SurfaceRestore
+default timeout           12 ms
+fallback on missing/
+warming/error             skip candidate, keep existing route
+runtime authority         unchanged / false
+```
+
+Measured facts in this integration change:
+
+```text
+cargo-guard check                         OK
+lib test l11_sidecar_candidate*          2/2 OK
+lib test authority parse                  1/1 OK
+lib test installed package discovery      1/1 OK
+lay-daemon warmup plan tests              4/4 OK
+```
+
+Not tested in this change:
+
+```text
+full 835,410-package ready-state warmup time inside the sidecar
+live daemon end-to-end typing session against the installed release binary
+IME preedit behavior, because IME authority must remain separate
+mmap-backed hot-image startup optimization
+```
+
+This proves the local sidecar contract, the shared JSON protocol, the
+correction_core insertion point and the daemon warmup hook. It does not
+promote runtime authority or change the IME route.
+
 Exact receipts:
 
 ```text
@@ -2268,9 +2354,10 @@ Exact remote reports:
 /home/e/build/lay-l1-shadow/artifacts/l11-final-depth0-v2-835410-2026-07-26/proof-en-20k.log
 ```
 
-The measured verdict is `PASS_SHADOW_ONLY`. This experiment did not test or
-change daemon authority, IME authority, `AuthorizedEdit`, or L2/L3 contextual
-selection.
+The measured verdict is `PASS_SHADOW_ONLY`. This experiment did not promote or
+change daemon authority, IME authority, or the ownership of `AuthorizedEdit`.
+It only made L1.1 available as a shadow extra candidate inside the existing
+shared correction decision path.
 
 ## 10. Ambiguity Contract
 

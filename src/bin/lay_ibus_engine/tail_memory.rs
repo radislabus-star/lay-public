@@ -1,10 +1,57 @@
 use super::engine::{
     LayIbusEngine, PendingImeCompletionLearning, PendingSystemOutcomeFeedback, SystemOutcomeKind,
 };
+use super::protocol::PendingImeAutoUndo;
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
-use std::time::Instant;
+use std::time::{Duration, Instant};
+
+const IME_AUTO_UNDO_MAX_AGE: Duration = Duration::from_secs(30);
 
 impl LayIbusEngine {
+    pub(super) fn remember_pending_ime_auto_undo(&self, original: String, replacement: String) {
+        let Ok(mut state) = self.shared.lock() else {
+            return;
+        };
+        state.pending_auto_undo = (original != replacement
+            && !original.trim().is_empty()
+            && !replacement.trim().is_empty())
+        .then_some(PendingImeAutoUndo {
+            original,
+            replacement,
+            recorded_at: Instant::now(),
+        });
+    }
+
+    pub(super) fn take_pending_ime_auto_undo(&self) -> Option<PendingImeAutoUndo> {
+        let Ok(mut state) = self.shared.lock() else {
+            return None;
+        };
+        let pending = state.pending_auto_undo.take()?;
+        if pending.recorded_at.elapsed() > IME_AUTO_UNDO_MAX_AGE
+            || !self.tail_buffer.ends_with(&pending.replacement)
+        {
+            return None;
+        }
+        Some(pending)
+    }
+
+    pub(super) fn restore_pending_ime_auto_undo(&self, pending: PendingImeAutoUndo) {
+        if pending.recorded_at.elapsed() > IME_AUTO_UNDO_MAX_AGE {
+            return;
+        }
+        let Ok(mut state) = self.shared.lock() else {
+            return;
+        };
+        state.pending_auto_undo = Some(pending);
+    }
+
+    pub(super) fn clear_pending_ime_auto_undo(&self) {
+        let Ok(mut state) = self.shared.lock() else {
+            return;
+        };
+        state.pending_auto_undo = None;
+    }
+
     pub(super) fn arm_pending_ime_completion_learning(
         &mut self,
         context_tail: String,
@@ -75,12 +122,12 @@ impl LayIbusEngine {
 
     pub(super) fn observe_visible_postcondition(&mut self) {
         const OBSERVATION_TIMEOUT_MS: u128 = 1500;
+        const SETTLE_GRACE_MS: u128 = 500;
         let Some(pending) = self.pending_visible_postcondition.take() else {
             return;
         };
-        if pending.dispatched_at.elapsed().as_millis() > OBSERVATION_TIMEOUT_MS
-            || pending.dispatched_epoch != self.tail_epoch
-        {
+        let elapsed_ms = pending.dispatched_at.elapsed().as_millis();
+        if elapsed_ms > OBSERVATION_TIMEOUT_MS || pending.dispatched_epoch != self.tail_epoch {
             record_causal_outcome("censored", &pending, self.tail_epoch);
             return;
         }
@@ -94,10 +141,14 @@ impl LayIbusEngine {
             self.record_observed_system_outcome(pending.feedback.as_ref());
             record_causal_outcome("confirmed_positive", &pending, self.tail_epoch);
             "observed"
+        } else if elapsed_ms <= SETTLE_GRACE_MS {
+            record_causal_outcome("pending_stale_observation", &pending, self.tail_epoch);
+            self.pending_visible_postcondition = Some(pending);
+            "pending"
         } else {
-            // A missing IBus observation proves that our execution lease is stale,
-            // not that the phase-selected candidate was semantically wrong.
-            // Explicit undo/reject routes provide the negative learning signal.
+            // The compositor may report the pre-commit surrounding text once
+            // before publishing the committed value. Only quarantine after the
+            // bounded settle window has elapsed.
             self.quarantine_visible_postcondition_mismatch();
             record_causal_outcome("censored", &pending, self.tail_epoch);
             "mismatch"
@@ -205,6 +256,7 @@ impl LayIbusEngine {
         state.handoff_focus_receipt = None;
         state.suppress_next_committed_tail_autocorrect = false;
         state.preserve_active_path_until = None;
+        state.pending_auto_undo = None;
     }
 
     fn quarantine_visible_postcondition_mismatch(&mut self) {
@@ -225,6 +277,7 @@ impl LayIbusEngine {
             state.handoff_focus_receipt = None;
             state.suppress_next_committed_tail_autocorrect = false;
             state.preserve_active_path_until = None;
+            state.pending_auto_undo = None;
         };
     }
 
@@ -448,7 +501,7 @@ mod tests {
         engine.suppress_next_committed_tail_autocorrect = true;
         engine.publish_tail_handoff();
         let epoch = engine.tail_epoch;
-        engine.arm_visible_postcondition(Instant::now());
+        engine.arm_visible_postcondition(Instant::now() - Duration::from_millis(501));
         engine.surrounding_text_snapshot = Some(
             super::super::engine::SurroundingTextSnapshot::new("ghjdt! ".to_string(), 7, 7),
         );
@@ -486,7 +539,7 @@ mod tests {
         engine.tail_buffer = "ghbdtn ".to_string();
         engine.publish_tail_handoff();
         let stale_epoch = engine.tail_epoch;
-        engine.arm_visible_postcondition(Instant::now());
+        engine.arm_visible_postcondition(Instant::now() - Duration::from_millis(501));
         engine.surrounding_text_snapshot = Some(
             super::super::engine::SurroundingTextSnapshot::new("ghjdt! ".to_string(), 7, 7),
         );
@@ -518,6 +571,83 @@ mod tests {
                 action: None
             } if expected == stale_epoch && actual == engine.tail_epoch
         ));
+    }
+
+    #[test]
+    fn early_stale_postcondition_waits_for_committed_surrounding_text() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            shared.clone(),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.surrounding_text_supported = true;
+        engine.tail_buffer = "вот ".to_string();
+        engine.publish_tail_handoff();
+        let epoch = engine.tail_epoch;
+        engine.arm_visible_postcondition(Instant::now());
+        engine.surrounding_text_snapshot = Some(
+            super::super::engine::SurroundingTextSnapshot::new("djn".to_string(), 3, 3),
+        );
+
+        engine.observe_visible_postcondition();
+
+        assert!(engine.pending_visible_postcondition.is_some());
+        assert_eq!(engine.tail_buffer, "вот ");
+        assert_eq!(engine.tail_epoch, epoch);
+        assert_eq!(
+            shared
+                .lock()
+                .expect("lay ime state poisoned")
+                .handoff_tail_buffer,
+            "вот "
+        );
+
+        engine.surrounding_text_snapshot = Some(
+            super::super::engine::SurroundingTextSnapshot::new("вот ".to_string(), 4, 4),
+        );
+        engine.observe_visible_postcondition();
+
+        assert!(engine.pending_visible_postcondition.is_none());
+        assert_eq!(engine.tail_buffer, "вот ");
+        assert_eq!(engine.tail_epoch, epoch);
+    }
+
+    #[test]
+    fn pending_ime_auto_undo_restores_exact_original_surface() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.tail_buffer = "проверка ".to_string();
+        engine.remember_pending_ime_auto_undo("проверрка ".to_string(), "проверка ".to_string());
+
+        let pending = engine
+            .take_pending_ime_auto_undo()
+            .expect("exact autocorrect undo");
+
+        assert_eq!(pending.original, "проверрка ");
+        assert_eq!(pending.replacement, "проверка ");
+    }
+
+    #[test]
+    fn pending_ime_auto_undo_rejects_a_changed_visible_tail() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.tail_buffer = "проверка дальше".to_string();
+        engine.remember_pending_ime_auto_undo("проверрка ".to_string(), "проверка ".to_string());
+
+        assert!(engine.take_pending_ime_auto_undo().is_none());
     }
 
     #[test]

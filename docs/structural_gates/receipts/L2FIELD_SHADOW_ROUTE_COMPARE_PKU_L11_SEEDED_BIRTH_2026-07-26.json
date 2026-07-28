@@ -1,0 +1,175 @@
+{
+  "kind": "candidate_route_compare",
+  "reference_route": "compact-l2",
+  "sample_count": 1,
+  "samples": [
+    {
+      "input": "пку ",
+      "input_class": "composite-typo",
+      "reference": {
+        "candidate_count": 8,
+        "candidates": [
+          {
+            "error_class": "adjacent-transposition",
+            "gate_action": "Eligible",
+            "gate_reason": "class_allows_apply",
+            "replacement": "кпу ",
+            "source": "Nanda",
+            "source_id": "L2LexicalPhaseCell32"
+          },
+          {
+            "error_class": "adjacent-transposition",
+            "gate_action": "Eligible",
+            "gate_reason": "class_allows_apply",
+            "replacement": "пук ",
+            "source": "Nanda",
+            "source_id": "L2LexicalPhaseCell32"
+          },
+          {
+            "error_class": "missing-letter",
+            "gate_action": "Eligible",
+            "gate_reason": "class_allows_apply",
+            "replacement": "пеку ",
+            "source": "Nanda",
+            "source_id": "L2LexicalPhaseCell32"
+          },
+          {
+            "error_class": "missing-letter",
+            "gate_action": "Eligible",
+            "gate_reason": "class_allows_apply",
+            "replacement": "пику ",
+            "source": "Nanda",
+            "source_id": "L2LexicalPhaseCell32"
+          },
+          {
+            "error_class": "missing-letter",
+            "gate_action": "Eligible",
+            "gate_reason": "class_allows_apply",
+            "replacement": "паку ",
+            "source": "Nanda",
+            "source_id": "L2LexicalPhaseCell32"
+          },
+          {
+            "error_class": "missing-letter",
+            "gate_action": "Eligible",
+            "gate_reason": "class_allows_apply",
+            "replacement": "пуку ",
+            "source": "Nanda",
+            "source_id": "L2LexicalPhaseCell32"
+          },
+          {
+            "error_class": "composite-typo",
+            "gate_action": "SuggestOnly",
+            "gate_reason": "unexplained_signal_loss",
+            "replacement": "по ",
+            "source": "Nanda",
+            "source_id": "L2LexicalPhaseCell32"
+          },
+          {
+            "error_class": "composite-typo",
+            "gate_action": "SuggestOnly",
+            "gate_reason": "unexplained_signal_loss",
+            "replacement": "у ",
+            "source": "Nanda",
+            "source_id": "L2LexicalPhaseCell32"
+          }
+        ],
+        "route": "compact-l2",
+        "scoreboard": {
+          "apply_candidates": 0,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 8,
+          "total_candidates": 8,
+          "veto_candidates": 0
+        },
+        "selected": null
+      },
+      "selected_gate_diverged": false,
+      "selected_provenance_diverged": false,
+      "selected_surface_diverged": false,
+      "target": {
+        "candidate_count": 8,
+        "candidates": [
+          {
+            "error_class": "adjacent-transposition",
+            "gate_action": "Eligible",
+            "gate_reason": "class_allows_apply",
+            "replacement": "кпу ",
+            "source": "Nanda",
+            "source_id": "L2FieldShadowSurface"
+          },
+          {
+            "error_class": "adjacent-transposition",
+            "gate_action": "Eligible",
+            "gate_reason": "class_allows_apply",
+            "replacement": "пук ",
+            "source": "Nanda",
+            "source_id": "L2FieldShadowSurface"
+          },
+          {
+            "error_class": "missing-letter",
+            "gate_action": "Eligible",
+            "gate_reason": "class_allows_apply",
+            "replacement": "пеку ",
+            "source": "Nanda",
+            "source_id": "L2FieldShadowSurface"
+          },
+          {
+            "error_class": "missing-letter",
+            "gate_action": "Eligible",
+            "gate_reason": "class_allows_apply",
+            "replacement": "пику ",
+            "source": "Nanda",
+            "source_id": "L2FieldShadowSurface"
+          },
+          {
+            "error_class": "missing-letter",
+            "gate_action": "Eligible",
+            "gate_reason": "class_allows_apply",
+            "replacement": "паку ",
+            "source": "Nanda",
+            "source_id": "L2FieldShadowSurface"
+          },
+          {
+            "error_class": "missing-letter",
+            "gate_action": "Eligible",
+            "gate_reason": "class_allows_apply",
+            "replacement": "пуку ",
+            "source": "Nanda",
+            "source_id": "L2FieldShadowSurface"
+          },
+          {
+            "error_class": "composite-typo",
+            "gate_action": "SuggestOnly",
+            "gate_reason": "unexplained_signal_loss",
+            "replacement": "по ",
+            "source": "Nanda",
+            "source_id": "L2FieldShadowSurface"
+          },
+          {
+            "error_class": "composite-typo",
+            "gate_action": "SuggestOnly",
+            "gate_reason": "unexplained_signal_loss",
+            "replacement": "у ",
+            "source": "Nanda",
+            "source_id": "L2FieldShadowSurface"
+          }
+        ],
+        "route": "l2-field-shadow",
+        "scoreboard": {
+          "apply_candidates": 0,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 8,
+          "total_candidates": 8,
+          "veto_candidates": 0
+        },
+        "selected": null
+      }
+    }
+  ],
+  "selected_gate_diverged": 0,
+  "selected_provenance_diverged": 0,
+  "selected_surface_diverged": 0,
+  "selected_surface_identical": 1,
+  "target_route": "l2-field-shadow"
+}

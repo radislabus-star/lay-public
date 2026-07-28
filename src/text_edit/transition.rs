@@ -245,17 +245,28 @@ impl VisibleFieldState {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TextTransitionIntent {
     ImeAutocorrect,
+    ImeAutoUndo,
     ImeManualToggle,
     DaemonBridge,
 }
 
 impl TextTransitionIntent {
     pub(crate) const fn operator(self) -> TransitionOperator {
-        TransitionOperator::VisibleTail
+        match self {
+            Self::ImeAutoUndo => TransitionOperator::Undo,
+            Self::ImeAutocorrect | Self::ImeManualToggle | Self::DaemonBridge => {
+                TransitionOperator::VisibleTail
+            }
+        }
     }
 
     pub(crate) const fn proof(self) -> TransitionProof {
-        TransitionProof::VisibleState
+        match self {
+            Self::ImeAutoUndo => TransitionProof::UndoRecord,
+            Self::ImeAutocorrect | Self::ImeManualToggle | Self::DaemonBridge => {
+                TransitionProof::VisibleState
+            }
+        }
     }
 }
 
@@ -362,6 +373,59 @@ mod tests {
             TextTransitionIntent::ImeAutocorrect,
             None,
         )
+    }
+
+    #[test]
+    fn ime_auto_undo_uses_recorded_undo_authority() {
+        assert_eq!(
+            TextTransitionIntent::ImeAutoUndo.operator(),
+            TransitionOperator::Undo
+        );
+        assert_eq!(
+            TextTransitionIntent::ImeAutoUndo.proof(),
+            crate::text_edit::TransitionProof::UndoRecord
+        );
+    }
+
+    #[test]
+    fn ime_auto_undo_produces_an_executable_recorded_undo() {
+        let state = VisibleFieldState::committed_tail("проверка ", Some("/test".to_string()));
+        let request = LatentTextTransitionCandidate::new(
+            VisibleTailSource::ImeCommittedTail,
+            "проверка ".chars().count() as u32,
+            "проверрка ",
+            TextTransitionIntent::ImeAutoUndo,
+            Some(VisibleTailSnapshot::new(
+                VisibleTailSource::ImeCommittedTail,
+                "проверка ",
+                Some("/test".to_string()),
+                0,
+            )),
+        );
+
+        let decision = decide_text_transition(&state, request);
+
+        match decision {
+            TextTransitionDecision::Apply { action, .. } => {
+                assert!(action.allow_apply(), "action={action:?}");
+                assert_eq!(
+                    action.transition().operator(),
+                    Some(TransitionOperator::Undo)
+                );
+                assert_eq!(
+                    action.transition().proof(),
+                    Some(crate::text_edit::TransitionProof::UndoRecord)
+                );
+                assert!(
+                    crate::text_edit::authorize_backend_edit(
+                        crate::text_edit::TextEditBackend::Ime,
+                        action,
+                    )
+                    .allow_execute
+                );
+            }
+            other => panic!("unexpected decision: {other:?}"),
+        }
     }
 
     #[test]

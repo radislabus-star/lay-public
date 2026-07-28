@@ -177,11 +177,15 @@ def run_case(
         )
         if config.get("enter_autocorrect"):
             runtime_env["LAY_EXPERIMENTAL_ENTER_AUTOCORRECT"] = "1"
+    dialog_env = dict_env()
+    if ime_engine:
+        dialog_env["GTK_IM_MODULE"] = "ibus"
     dialog_proc = subprocess.Popen(
         dialog_args(dialog, case),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
+        env=dialog_env,
     )
     time.sleep(focus_delay)
 

@@ -1,0 +1,40 @@
+{
+  "kind": "l2_field_shadow_live_owner_gate",
+  "status": "ok",
+  "read_as": "live IME and daemon local correction now route through one L2FieldShadow local field above bounded L1.1 evidence; standalone canonical L2 packaging is still separately gated",
+  "date": "2026-07-26",
+  "commands": [
+    {
+      "cmd": "scripts/cargo-guard.sh test --lib ime_correction",
+      "result": "ok",
+      "passed": 25,
+      "failed": 0
+    },
+    {
+      "cmd": "scripts/cargo-guard.sh test --lib l2_field",
+      "result": "ok",
+      "passed": 9,
+      "failed": 0
+    },
+    {
+      "cmd": "scripts/cargo-guard.sh check --bin lay",
+      "result": "ok"
+    },
+    {
+      "cmd": "scripts/cargo-guard.sh check --bin lay-daemon",
+      "result": "ok"
+    }
+  ],
+  "runtime": {
+    "live_default_route": "L2FieldShadow",
+    "boundary_source_id": "L2FieldShadowBoundary",
+    "shadow_donor_winner_weight": 5
+  },
+  "not_tested": [
+    "fixed heldout L2 proof for the live local owner route",
+    "standalone L2 package latency, RSS, and cold-load budget",
+    "broader donor families beyond same-lemma morphology and near-neighbor lexical competition",
+    "final standalone packaged L2 promotion"
+  ],
+  "runtime_authority_changed": true
+}

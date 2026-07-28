@@ -1,6 +1,7 @@
 use super::*;
 use crate::correction_memory_runtime::{
-    remember_manual_text_correction, ManualTextCorrectionMemory,
+    remember_assisted_text_correction, remember_manual_text_correction, AssistedCorrectionMemory,
+    ManualTextCorrectionMemory,
 };
 
 fn smart_insert_decision_case(id: &str) -> Vec<String> {
@@ -172,4 +173,33 @@ fn manual_text_correction_keeps_pending_full_undo() {
             0,
         )
     );
+}
+
+#[test]
+fn typing_assist_layout_autocorrect_keeps_pending_full_undo_for_double_shift() {
+    let case = SmartInsertMemoryCase::load("manual_full_undo");
+    let mut buffer = case.buffer();
+    let (events, _) = buffer.what_to_replay(case.scope).expect("two-word tail");
+    let original = map_original_events(&events);
+    let replacement = case.replacement.clone();
+    let plan = plan_text_replacement(&original, &replacement).expect("minimal plan");
+
+    remember_assisted_text_correction(
+        &mut buffer,
+        AssistedCorrectionMemory {
+            events: &events,
+            plan: &plan,
+            original: &original,
+            replacement: &replacement,
+            kind: "typing-assist",
+            rule_id: Some(lay::typing_assist::NANDA_WAVE_RULE_ID),
+            replace_words: case.scope,
+            words: case.scope,
+            cursor_offset: 0,
+        },
+    );
+
+    let undo = buffer.take_pending_auto_undo().expect("pending undo");
+    assert_eq!(undo.original, case.original);
+    assert_eq!(undo.replacement, case.replacement);
 }

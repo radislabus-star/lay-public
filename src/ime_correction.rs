@@ -51,7 +51,7 @@ pub fn decide_active_composition_autocorrect(
         correction_safety: gate_config.correction_safety,
         typing_assist_pipeline: &request.config.typing_assist_pipeline,
         nanda_autocorrect: gate_config.nanda_autocorrect,
-        nanda_candidate_route: crate::correction_core::CandidateReadoutRoute::CompactL2,
+        nanda_candidate_route: crate::correction_core::CandidateReadoutRoute::live_default(),
         nanda_wave_options: request.config.active_nanda_wave_options(),
         correction_mode: gate_config.correction_mode(),
     });
@@ -67,7 +67,8 @@ pub fn decide_active_composition_autocorrect(
     let replacement = if active_prefix.is_empty() {
         replacement.clone()
     } else {
-        replacement.strip_prefix(&active_prefix)?.to_string()
+        let stripped = replacement.strip_prefix(&active_prefix)?;
+        stripped.to_string()
     };
     let (action_from_text, plan) = if let Some(projection) =
         physical_committed_tail_projection_plan(request.text, request.committed_tail, &replacement)
@@ -341,7 +342,10 @@ mod tests {
         .expect("boundary decision");
 
         assert_eq!(decision.replacement, "то есть ");
-        assert_eq!(decision.action.selected_source_id(), Some("BoundaryCell32"));
+        assert_eq!(
+            decision.action.selected_source_id(),
+            Some("L2FieldShadowBoundary")
+        );
         assert!(
             decision.action.allow_apply(),
             "action={:?}",
@@ -365,7 +369,10 @@ mod tests {
         .expect("boundary decision");
 
         assert_eq!(decision.replacement, "то есть ");
-        assert_eq!(decision.action.selected_source_id(), Some("BoundaryCell32"));
+        assert_eq!(
+            decision.action.selected_source_id(),
+            Some("L2FieldShadowBoundary")
+        );
         assert!(
             decision.action.allow_apply(),
             "action={:?}",
@@ -386,7 +393,10 @@ mod tests {
         assert_eq!(decision.replacement, "то есть ");
         assert_eq!(decision.action.from_text(), "тоесть");
         assert_eq!(decision.action.to_text(), "то есть ");
-        assert_eq!(decision.action.selected_source_id(), Some("BoundaryCell32"));
+        assert_eq!(
+            decision.action.selected_source_id(),
+            Some("L2FieldShadowBoundary")
+        );
         assert!(
             decision.action.allow_apply(),
             "action={:?}",
@@ -443,6 +453,75 @@ mod tests {
                 decision.action
             );
         }
+    }
+
+    #[test]
+    fn committed_tail_space_route_defaults_to_shadow_live_owner_for_l11_seeded_restore() {
+        let cfg = config();
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "врмея ",
+            committed_tail: "врмея",
+            config: &cfg,
+        })
+        .expect("shadow live-owner decision");
+
+        assert_eq!(decision.replacement, "время ");
+        assert!(
+            decision
+                .action
+                .selected_source_id()
+                .is_some_and(|source_id| source_id.starts_with("L2FieldShadow")),
+            "selected_source_id={:?} action={:?}",
+            decision.action.selected_source_id(),
+            decision.action
+        );
+    }
+
+    #[test]
+    fn committed_tail_space_route_keeps_short_ambiguous_signal_unapplied() {
+        let cfg = config();
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "пку ",
+            committed_tail: "пку",
+            config: &cfg,
+        });
+
+        assert!(
+            decision.is_none(),
+            "short ambiguous token must stay abstained on live route: {:?}",
+            decision
+                .as_ref()
+                .map(|value| (&value.replacement, value.action.selected_source_id()))
+        );
+    }
+
+    #[test]
+    fn committed_tail_space_route_does_not_extend_known_imperative_to_infinitive() {
+        let previous_policy = crate::hot_field::process_policy();
+        crate::hot_field::set_process_policy(
+            crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
+                crate::text_backend::TextBackendPreference::Ime,
+            ),
+        );
+
+        for correction_safety in ["normal", "experimental"] {
+            let mut cfg = live_l2_phase_config();
+            cfg.correction_safety = correction_safety.to_string();
+            let decision =
+                decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+                    text: "посмотри ",
+                    committed_tail: "давай там посмотри",
+                    config: &cfg,
+                });
+
+            assert!(
+                decision.is_none(),
+                "known imperative must not auto-grow into infinitive on Space: safety={correction_safety} replacement={:?}",
+                decision.as_ref().map(|value| value.replacement.as_str())
+            );
+        }
+
+        crate::hot_field::set_process_policy(previous_policy);
     }
 
     #[test]

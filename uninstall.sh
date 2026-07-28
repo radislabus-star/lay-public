@@ -36,7 +36,7 @@ run_runtime_cleanup() {
     if [ "$TEST_MODE" = "1" ]; then
         return
     fi
-    for unit in lay-daemon.service lay-kde-tray.service lay-host-vm-guard.service lay-ibus-engine.service; do
+    for unit in lay-daemon.service lay-l3-online.service lay-kde-tray.service lay-host-vm-guard.service lay-ibus-engine.service; do
         systemctl --user disable --now "$unit" >/dev/null 2>&1 || true
     done
     pkill -x lay-daemon >/dev/null 2>&1 || true
@@ -107,6 +107,7 @@ rm -f \
     "$HOME/.local/bin/lay-nanda-loop"
 rm -f \
     "$HOME/.config/systemd/user/lay-daemon.service" \
+    "$HOME/.config/systemd/user/lay-l3-online.service" \
     "$HOME/.config/systemd/user/lay-kde-tray.service" \
     "$HOME/.config/systemd/user/lay-host-vm-guard.service" \
     "$HOME/.config/systemd/user/lay-ibus-engine.service" \

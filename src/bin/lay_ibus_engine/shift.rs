@@ -13,6 +13,12 @@ impl LayIbusEngine {
         &mut self,
         emitter: &SignalEmitter<'_>,
     ) -> fdo::Result<Option<bool>> {
+        // PROTECTED USER CONTRACT: an immediate double Shift after autocorrect
+        // restores the exact recorded input before any layout/manual toggle.
+        // Keep this first; typing_transition_authority_contract enforces order.
+        if let Some(target_layout_is_ru) = self.undo_last_ime_autocorrect(emitter).await? {
+            return Ok(Some(target_layout_is_ru));
+        }
         match self.manual_toggle_authority() {
             ManualToggleAuthority::DaemonWordBuffer => {
                 self.defer_committed_tail_manual_toggle_to_daemon();

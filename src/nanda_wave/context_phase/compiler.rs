@@ -23,6 +23,7 @@ pub(crate) struct ContextPhaseCompileInput<'a> {
 pub(crate) struct ContextPhaseCompileReport {
     pub(crate) kind: &'static str,
     pub(crate) architecture: &'static str,
+    pub(crate) signature_schema: u32,
     pub(crate) corpus_passes: u8,
     pub(crate) raw_words_stored: bool,
     pub(crate) corpus_fragments: usize,
@@ -305,6 +306,30 @@ pub(crate) fn compile_context_phase_reader_with_surface_field<R, F>(
     min_profile_support: u32,
     snapshot_every_fragments: usize,
     surface_field: Arc<SurfaceMutationField>,
+    snapshot: F,
+) -> io::Result<(ContextPhasePackage, ContextPhaseCompileReport)>
+where
+    R: Read,
+    F: FnMut(&ContextPhasePackage, &ContextPhaseProgressReport) -> io::Result<()>,
+{
+    compile_context_phase_reader_with_surface_field_and_schema(
+        reader,
+        max_fragments,
+        min_profile_support,
+        snapshot_every_fragments,
+        super::SIGNATURE_SCHEMA_RELATION_ROLES,
+        surface_field,
+        snapshot,
+    )
+}
+
+pub(crate) fn compile_context_phase_reader_with_surface_field_and_schema<R, F>(
+    reader: R,
+    max_fragments: usize,
+    min_profile_support: u32,
+    snapshot_every_fragments: usize,
+    signature_schema: u32,
+    surface_field: Arc<SurfaceMutationField>,
     mut snapshot: F,
 ) -> io::Result<(ContextPhasePackage, ContextPhaseCompileReport)>
 where
@@ -312,7 +337,10 @@ where
     F: FnMut(&ContextPhasePackage, &ContextPhaseProgressReport) -> io::Result<()>,
 {
     let started = Instant::now();
-    let config = super::online::OnlineContextPhaseConfig::production(min_profile_support);
+    let config = super::online::OnlineContextPhaseConfig::production_with_signature_schema(
+        min_profile_support,
+        signature_schema,
+    );
     let mut learner =
         super::online::OnlineContextPhaseLearner::new_with_surface_field(config, surface_field);
     let l2_pool = super::online::L2ProbePool::new();
@@ -344,7 +372,8 @@ where
     let stats = learner.stats();
     let report = ContextPhaseCompileReport {
         kind: "l3_context_phase_compile",
-        architecture: "online_relation_phase_v3_pairwise_lattice",
+        architecture: "online_relation_phase_v4_role_scene_lattice",
+        signature_schema: package.signature_schema,
         corpus_passes: 1,
         raw_words_stored: false,
         corpus_fragments: stream_stats.accepted_fragments,
@@ -619,10 +648,40 @@ mod tests {
         assert_eq!(snapshots, vec![(2, 2), (4, 4)]);
         assert_eq!(
             report.architecture,
-            "online_relation_phase_v3_pairwise_lattice"
+            "online_relation_phase_v4_role_scene_lattice"
         );
         assert_eq!(report.corpus_passes, 1);
         assert!(!report.raw_words_stored);
+    }
+
+    #[test]
+    fn delta_compiler_inherits_legacy_base_signature_schema() {
+        let corpus = concat!(
+            "обновлять модель по ходу. ",
+            "изменять поле на ходу. ",
+            "обновлять модель по ходу. ",
+            "изменять поле на ходу."
+        );
+        let (package, report) = compile_context_phase_reader_with_surface_field_and_schema(
+            corpus.as_bytes(),
+            0,
+            2,
+            0,
+            super::super::SIGNATURE_SCHEMA_LEGACY,
+            Arc::new(SurfaceMutationField::default()),
+            |_, _| Ok(()),
+        )
+        .unwrap();
+
+        assert_eq!(
+            package.signature_schema,
+            super::super::SIGNATURE_SCHEMA_LEGACY
+        );
+        assert_eq!(
+            report.signature_schema,
+            super::super::SIGNATURE_SCHEMA_LEGACY
+        );
+        assert_eq!(report.corpus_passes, 1);
     }
 
     #[test]

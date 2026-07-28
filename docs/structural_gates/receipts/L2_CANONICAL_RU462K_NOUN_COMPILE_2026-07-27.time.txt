@@ -1,0 +1,23 @@
+	Command being timed: "target/release/lay-nanda-wave-train --compile-canonical-l2 data/morphology/lay_ru_noun_morph_462k_shadow_v1.tsv --memory data/lexical_grokking/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v2.v7.bin --out data/l2/LAY-L2-RU462K-NOUN-v1.bin"
+	User time (seconds): 461.13
+	System time (seconds): 0.78
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 7:42.03
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 2173976
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 575754
+	Voluntary context switches: 582
+	Involuntary context switches: 2065
+	Swaps: 0
+	File system inputs: 135176
+	File system outputs: 37600
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

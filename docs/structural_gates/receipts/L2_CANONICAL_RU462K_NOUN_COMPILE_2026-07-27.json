@@ -1,0 +1,21 @@
+{
+  "admitted_forms": 462314,
+  "competition_edges": 6140,
+  "context_modes": 46,
+  "heldout_scenes": 554148,
+  "kind": "canonical_l2_compile",
+  "l1_corpus_fingerprint": 4241917926771877127,
+  "l1_package": "data/lexical_grokking/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v2.v7.bin",
+  "l1_terminal_count": 835410,
+  "lemma_centers": 47766,
+  "missing_l1_forms": 0,
+  "morph_bindings": 633016,
+  "morphology_corpus": "data/morphology/lay_ru_noun_morph_462k_shadow_v1.tsv",
+  "neighbor_couplings": 1548,
+  "output": "data/l2/LAY-L2-RU462K-NOUN-v1.bin",
+  "package_bytes": 19243068,
+  "runtime_authority_changed": false,
+  "slot_centers": 51,
+  "source_forms": 633016,
+  "train_scenes": 1548
+}

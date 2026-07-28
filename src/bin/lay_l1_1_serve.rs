@@ -4,7 +4,8 @@ use std::os::unix::fs::PermissionsExt;
 use std::os::unix::net::{UnixListener, UnixStream};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::{Arc, RwLock};
+use std::sync::mpsc::{sync_channel, Receiver};
+use std::sync::{Arc, Mutex, RwLock};
 use std::thread;
 use std::time::Instant;
 
@@ -73,18 +74,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
     match args.command {
         Command::Run { memory, socket } => run_server(&memory, &socket)?,
-        Command::Health { socket } => print_response(
-            lay::nanda_wave::send_l11_service_request(&socket, &lay::nanda_wave::L1ServiceRequest::Health)?,
-        )?,
-        Command::Stats { socket } => print_response(
-            lay::nanda_wave::send_l11_service_request(&socket, &lay::nanda_wave::L1ServiceRequest::Stats)?,
-        )?,
-        Command::Reload { memory, socket } => print_response(
-            lay::nanda_wave::send_l11_service_request(
+        Command::Health { socket } => print_response(lay::nanda_wave::send_l11_service_request(
+            &socket,
+            &lay::nanda_wave::L1ServiceRequest::Health,
+        )?)?,
+        Command::Stats { socket } => print_response(lay::nanda_wave::send_l11_service_request(
+            &socket,
+            &lay::nanda_wave::L1ServiceRequest::Stats,
+        )?)?,
+        Command::Reload { memory, socket } => {
+            print_response(lay::nanda_wave::send_l11_service_request(
                 &socket,
                 &lay::nanda_wave::L1ServiceRequest::Reload { memory },
-            )?,
-        )?,
+            )?)?
+        }
     }
     Ok(())
 }
@@ -104,20 +107,60 @@ fn run_server(memory: &Path, socket_path: &Path) -> io::Result<()> {
         host: Arc::clone(&host),
     });
     spawn_background_load(host, memory.to_path_buf());
+    let worker_count = service_worker_count();
+    let (sender, receiver) = sync_channel::<UnixStream>(worker_count.saturating_mul(4));
+    let receiver = Arc::new(Mutex::new(receiver));
+    for worker_id in 0..worker_count {
+        spawn_service_worker(worker_id, Arc::clone(&receiver), Arc::clone(&state))?;
+    }
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
-                let state = Arc::clone(&state);
-                thread::spawn(move || {
-                    if let Err(error) = handle_client(stream, &state) {
-                        eprintln!("lay-l1.1-serve client error: {error}");
-                    }
-                });
+                if sender.send(stream).is_err() {
+                    return Err(io::Error::new(
+                        io::ErrorKind::BrokenPipe,
+                        "L1.1 service worker pool stopped",
+                    ));
+                }
             }
             Err(error) => eprintln!("lay-l1.1-serve accept failed: {error}"),
         }
     }
     Ok(())
+}
+
+fn service_worker_count() -> usize {
+    std::env::var("LAY_L11_SERVICE_WORKERS")
+        .ok()
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or_else(|| {
+            thread::available_parallelism()
+                .map(usize::from)
+                .unwrap_or(1)
+        })
+        .clamp(1, 32)
+}
+
+fn spawn_service_worker(
+    worker_id: usize,
+    receiver: Arc<Mutex<Receiver<UnixStream>>>,
+    state: Arc<ServiceState>,
+) -> io::Result<()> {
+    thread::Builder::new()
+        .name(format!("lay-l11-{worker_id}"))
+        .spawn(move || loop {
+            let stream = {
+                let receiver = receiver.lock().expect("L1.1 service receiver lock");
+                receiver.recv()
+            };
+            let Ok(stream) = stream else {
+                break;
+            };
+            if let Err(error) = handle_client(stream, &state) {
+                eprintln!("lay-l1.1-serve client error: {error}");
+            }
+        })
+        .map(|_| ())
 }
 
 fn spawn_background_load(host: Arc<RwLock<HostedMemory>>, package_path: PathBuf) {
@@ -186,12 +229,81 @@ fn handle_request(
                 HostedMemory::Ready(host) => lay::nanda_wave::L1ServiceResponse::Restore {
                     report: host.restore(&surface, limit),
                 },
-                HostedMemory::Loading { package_path } => lay::nanda_wave::L1ServiceResponse::Error {
+                HostedMemory::Loading { package_path } => {
+                    lay::nanda_wave::L1ServiceResponse::Error {
+                        message: format!(
+                            "L1.1 host is still warming for {}",
+                            package_path.display()
+                        ),
+                    }
+                }
+                HostedMemory::Failed {
+                    package_path,
+                    message,
+                } => lay::nanda_wave::L1ServiceResponse::Error {
                     message: format!(
-                        "L1.1 host is still warming for {}",
+                        "L1.1 host failed to load {}: {message}",
                         package_path.display()
                     ),
                 },
+            }
+        }
+        lay::nanda_wave::L1ServiceRequest::Lattice { surface, limit } => {
+            let host = state.host.read().expect("L1.1 host read lock");
+            match &*host {
+                HostedMemory::Ready(host) => lay::nanda_wave::L1ServiceResponse::Lattice {
+                    seeds: host
+                        .lattice_seed_rows(&surface, limit)
+                        .into_iter()
+                        .map(|(terminal_id, surface, score_milli)| {
+                            lay::nanda_wave::L11SeedSurface {
+                                terminal_id: Some(terminal_id),
+                                surface,
+                                authority: false,
+                                score_milli,
+                            }
+                        })
+                        .collect(),
+                },
+                HostedMemory::Loading { package_path } => {
+                    lay::nanda_wave::L1ServiceResponse::Error {
+                        message: format!(
+                            "L1.1 host is still warming for {}",
+                            package_path.display()
+                        ),
+                    }
+                }
+                HostedMemory::Failed {
+                    package_path,
+                    message,
+                } => lay::nanda_wave::L1ServiceResponse::Error {
+                    message: format!(
+                        "L1.1 host failed to load {}: {message}",
+                        package_path.display()
+                    ),
+                },
+            }
+        }
+        lay::nanda_wave::L1ServiceRequest::Decode { terminal_ids } => {
+            let host = state.host.read().expect("L1.1 host read lock");
+            match &*host {
+                HostedMemory::Ready(host) => lay::nanda_wave::L1ServiceResponse::Decode {
+                    surfaces: terminal_ids
+                        .into_iter()
+                        .filter_map(|terminal_id| {
+                            host.decode_terminal(terminal_id)
+                                .map(|surface| (terminal_id, surface))
+                        })
+                        .collect(),
+                },
+                HostedMemory::Loading { package_path } => {
+                    lay::nanda_wave::L1ServiceResponse::Error {
+                        message: format!(
+                            "L1.1 host is still warming for {}",
+                            package_path.display()
+                        ),
+                    }
+                }
                 HostedMemory::Failed {
                     package_path,
                     message,
@@ -229,26 +341,24 @@ fn handle_request(
                 HostedMemory::Loading { .. } => lay::nanda_wave::L1ServiceResponse::Error {
                     message: "L1.1 host is still warming; reload is not available yet".to_string(),
                 },
-                HostedMemory::Failed { .. } => match lay::nanda_wave::L1RestorationHost::load(&memory)
-                {
-                    Ok(next) => {
-                        let report = next.stats();
-                        *host = HostedMemory::Ready(next);
-                        lay::nanda_wave::L1ServiceResponse::Reload { report }
+                HostedMemory::Failed { .. } => {
+                    match lay::nanda_wave::L1RestorationHost::load(&memory) {
+                        Ok(next) => {
+                            let report = next.stats();
+                            *host = HostedMemory::Ready(next);
+                            lay::nanda_wave::L1ServiceResponse::Reload { report }
+                        }
+                        Err(error) => lay::nanda_wave::L1ServiceResponse::Error {
+                            message: error.to_string(),
+                        },
                     }
-                    Err(error) => lay::nanda_wave::L1ServiceResponse::Error {
-                        message: error.to_string(),
-                    },
-                },
+                }
             }
         }
     }
 }
 
-fn health_report(
-    state: &ServiceState,
-    host: &HostedMemory,
-) -> lay::nanda_wave::L1ServiceHealth {
+fn health_report(state: &ServiceState, host: &HostedMemory) -> lay::nanda_wave::L1ServiceHealth {
     let requests_served = state.request_count.load(Ordering::Relaxed);
     let uptime_ms = state.started_at.elapsed().as_millis() as u64;
     match host {

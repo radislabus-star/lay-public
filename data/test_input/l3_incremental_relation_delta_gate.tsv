@@ -1,0 +1,7 @@
+# kind	context	candidates	expected
+improve	Нужно посмотреть через MTC можно оплатить Apple	и|b	и
+safety	wave	и|b	b
+safety	a	и|b	b
+safety	GitHub	и|b	b
+safety	compiler сохранил Quasar	и|b	b
+safety	Apple	и|b	-

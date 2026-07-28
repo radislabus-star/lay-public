@@ -54,6 +54,32 @@ fn visible_tail_bridge_carries_focus_and_epoch_to_the_transition_core() {
 }
 
 #[test]
+fn double_shift_exact_auto_undo_is_a_protected_first_priority_contract() {
+    let shift = read("src/bin/lay_ibus_engine/shift.rs");
+    let verifier = read("src/text_edit/structural_verifier.rs");
+    let transition = read("src/text_edit/transition.rs");
+
+    let undo = shift
+        .find("undo_last_ime_autocorrect(emitter)")
+        .expect("double Shift exact undo route");
+    let manual = shift
+        .find("self.manual_toggle_authority()")
+        .expect("manual toggle fallback");
+
+    assert!(
+        undo < manual && shift.contains("PROTECTED USER CONTRACT"),
+        "double Shift must attempt exact autocorrect undo before any manual/layout toggle"
+    );
+    assert!(
+        verifier.contains("plan_recorded_undo_edit")
+            && verifier.contains("TextTransitionIntent::ImeAutoUndo")
+            && transition.contains("Self::ImeAutoUndo => TransitionOperator::Undo")
+            && transition.contains("Self::ImeAutoUndo => TransitionProof::UndoRecord"),
+        "exact autocorrect undo must retain RecordedUndo authority and UndoRecord proof"
+    );
+}
+
+#[test]
 fn ime_target_continuity_and_bridge_replay_share_state_transition_contracts() {
     let preedit = read("src/bin/lay_ibus_engine/preedit.rs");
     let engine = read("src/bin/lay_ibus_engine/engine.rs");
@@ -331,23 +357,22 @@ fn input_gate_logs_candidate_admission_separately_from_final_outcome() {
 }
 
 #[test]
-fn compact_l2_uses_the_l2_owned_layout_candidate() {
+fn live_l2_field_shadow_uses_the_l2_owned_layout_candidate() {
     let l2 = read("src/nanda_wave/l2.rs");
-    let candidate_sources = read("src/correction_core/candidate_sources.rs");
+    let bridge = read("src/nanda_wave/l2_field/bridge.rs");
     let layout = read("src/nanda_wave/l2/layout_adapter.rs");
 
     assert!(
         l2.contains("pub(crate) fn hot_layout_candidate")
             && l2.contains("hot_layout_candidate_with_noisy_projection(original, true)")
             && l2.contains("layout_adapter::layout_candidate_with_projection_policy")
-            && candidate_sources.contains("crate::nanda_wave::l2::hot_layout_candidate(original)"),
-        "CompactL2 must keep layout candidate production in the shared L2 owner"
+            && bridge.contains("crate::nanda_wave::l2::hot_layout_candidate(original)"),
+        "L2FieldShadow must keep layout candidate production inside the shared L2 owner"
     );
     assert!(
         !layout.contains("TransitionDecisionCore")
-            && !candidate_sources
-                .contains("hot_layout_candidate(original).map(|candidate| candidate.text"),
-        "the compact layout bridge may propose a candidate but must not choose or apply it"
+            && !bridge.contains("hot_layout_candidate(original).map(|candidate| candidate.text"),
+        "the live shadow layout bridge may propose a candidate but must not choose or apply it"
     );
 }
 

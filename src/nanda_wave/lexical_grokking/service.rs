@@ -21,6 +21,14 @@ pub struct InstalledL11Package {
     pub artifact_path: PathBuf,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct L11SeedSurface {
+    pub terminal_id: Option<u32>,
+    pub surface: String,
+    pub authority: bool,
+    pub score_milli: u32,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum L11ServiceEnsureReport {
     Ready {
@@ -49,15 +57,12 @@ struct InstalledL11Receipt {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum L1ServiceRequest {
-    Restore {
-        surface: String,
-        limit: usize,
-    },
+    Restore { surface: String, limit: usize },
+    Lattice { surface: String, limit: usize },
+    Decode { terminal_ids: Vec<u32> },
     Health,
     Stats,
-    Reload {
-        memory: PathBuf,
-    },
+    Reload { memory: PathBuf },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
@@ -85,21 +90,13 @@ pub struct L1ServiceStats {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum L1ServiceResponse {
-    Restore {
-        report: serde_json::Value,
-    },
-    Health {
-        report: L1ServiceHealth,
-    },
-    Stats {
-        report: L1ServiceStats,
-    },
-    Reload {
-        report: L1RestorationHostStats,
-    },
-    Error {
-        message: String,
-    },
+    Restore { report: serde_json::Value },
+    Lattice { seeds: Vec<L11SeedSurface> },
+    Decode { surfaces: Vec<(u32, String)> },
+    Health { report: L1ServiceHealth },
+    Stats { report: L1ServiceStats },
+    Reload { report: L1RestorationHostStats },
+    Error { message: String },
 }
 
 pub fn default_l11_socket_path() -> PathBuf {
@@ -181,12 +178,7 @@ pub fn discover_installed_l11_package() -> io::Result<Option<InstalledL11Package
         installed.push((modified, path, receipt));
     }
 
-    installed.sort_by(|left, right| {
-        right
-            .0
-            .cmp(&left.0)
-            .then_with(|| right.1.cmp(&left.1))
-    });
+    installed.sort_by(|left, right| right.0.cmp(&left.0).then_with(|| right.1.cmp(&left.1)));
 
     Ok(installed
         .into_iter()
@@ -239,6 +231,42 @@ pub fn authoritative_restore_surface(report: &serde_json::Value) -> Option<&str>
     result.get("candidate")?.get("surface")?.as_str()
 }
 
+pub fn l11_seed_surfaces(report: &serde_json::Value, limit: usize) -> Vec<L11SeedSurface> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let Some(result) = report.get("result") else {
+        return Vec::new();
+    };
+    let authority = result
+        .get("authority")
+        .and_then(serde_json::Value::as_bool)
+        .unwrap_or(false);
+    let mut seeds = Vec::new();
+    if let Some(candidate) = result.get("candidate") {
+        push_l11_seed_surface(&mut seeds, candidate, authority);
+    }
+    if let Some(candidates) = result
+        .get("candidates")
+        .and_then(serde_json::Value::as_array)
+    {
+        for candidate in candidates {
+            push_l11_seed_surface(&mut seeds, candidate, false);
+        }
+    }
+    seeds.sort_by(|left, right| {
+        right
+            .score_milli
+            .cmp(&left.score_milli)
+            .then_with(|| right.authority.cmp(&left.authority))
+            .then_with(|| left.surface.cmp(&right.surface))
+    });
+    let mut dedup = BTreeSet::new();
+    seeds.retain(|candidate| dedup.insert(candidate.surface.to_lowercase()));
+    seeds.truncate(limit);
+    seeds
+}
+
 pub fn request_l11_authoritative_surface(
     socket_path: &Path,
     surface: &str,
@@ -264,6 +292,103 @@ pub fn request_l11_authoritative_surface(
     }
 }
 
+pub fn request_l11_seed_surfaces(
+    socket_path: &Path,
+    surface: &str,
+    limit: usize,
+    timeout: Duration,
+) -> io::Result<Vec<L11SeedSurface>> {
+    match send_l11_service_request_with_timeout(
+        socket_path,
+        &L1ServiceRequest::Lattice {
+            surface: surface.to_string(),
+            limit,
+        },
+        Some(timeout),
+    )? {
+        L1ServiceResponse::Lattice { mut seeds } => {
+            seeds.truncate(limit);
+            Ok(seeds)
+        }
+        L1ServiceResponse::Error { .. } => Ok(Vec::new()),
+        other => Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            format!("unexpected L1.1 response for restore request: {other:?}"),
+        )),
+    }
+}
+
+pub fn request_l11_decoded_surfaces(
+    socket_path: &Path,
+    terminal_ids: &[u32],
+    timeout: Duration,
+) -> io::Result<Vec<(u32, String)>> {
+    match send_l11_service_request_with_timeout(
+        socket_path,
+        &L1ServiceRequest::Decode {
+            terminal_ids: terminal_ids.to_vec(),
+        },
+        Some(timeout),
+    )? {
+        L1ServiceResponse::Decode { surfaces } => Ok(surfaces),
+        L1ServiceResponse::Error { .. } => Ok(Vec::new()),
+        other => Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            format!("unexpected L1.1 response for decode request: {other:?}"),
+        )),
+    }
+}
+
+fn push_l11_seed_surface(
+    seeds: &mut Vec<L11SeedSurface>,
+    candidate: &serde_json::Value,
+    authority: bool,
+) {
+    let Some(surface) = candidate.get("surface").and_then(serde_json::Value::as_str) else {
+        return;
+    };
+    seeds.push(L11SeedSurface {
+        terminal_id: candidate
+            .get("terminal_id")
+            .and_then(serde_json::Value::as_u64)
+            .and_then(|value| u32::try_from(value).ok()),
+        surface: surface.to_string(),
+        authority,
+        score_milli: l11_seed_score(candidate),
+    });
+}
+
+fn l11_seed_score(candidate: &serde_json::Value) -> u32 {
+    let evidence = candidate.get("evidence").or(Some(candidate));
+    let geometry_distance = evidence
+        .and_then(|evidence| evidence.get("geometry_distance"))
+        .and_then(serde_json::Value::as_u64)
+        .unwrap_or(8)
+        .min(255);
+    let positive = evidence_u64(evidence, "positive_milli");
+    let backward = evidence_u64(evidence, "backward_milli");
+    let anti = evidence_u64(evidence, "anti_milli");
+    let hard_negative = evidence_u64(evidence, "hard_negative_milli");
+    let ambiguity = evidence_u64(evidence, "ambiguity_milli");
+    let crystallization_margin = evidence_u64(evidence, "crystallization_margin_milli");
+    let geometry_bonus = 256_u64.saturating_sub(geometry_distance.saturating_mul(24));
+    let score = positive
+        .saturating_add(backward)
+        .saturating_add(crystallization_margin)
+        .saturating_add(geometry_bonus)
+        .saturating_sub(anti)
+        .saturating_sub(hard_negative)
+        .saturating_sub(ambiguity / 2);
+    score.min(u64::from(u32::MAX)) as u32
+}
+
+fn evidence_u64(evidence: Option<&serde_json::Value>, key: &str) -> u64 {
+    evidence
+        .and_then(|evidence| evidence.get(key))
+        .and_then(serde_json::Value::as_u64)
+        .unwrap_or(0)
+}
+
 pub fn ensure_l11_service_started() -> io::Result<Option<L11ServiceEnsureReport>> {
     let Some(package) = discover_installed_l11_package()? else {
         return Ok(None);
@@ -278,13 +403,15 @@ pub fn ensure_l11_service_started() -> io::Result<Option<L11ServiceEnsureReport>
         ) {
             Ok(L1ServiceResponse::Health { report }) => {
                 if report.status == "ready" && report.package_path != package.artifact_path {
-                    if let Ok(L1ServiceResponse::Reload { .. }) = send_l11_service_request_with_timeout(
-                        &socket,
-                        &L1ServiceRequest::Reload {
-                            memory: package.artifact_path.clone(),
-                        },
-                        Some(Duration::from_millis(250)),
-                    ) {
+                    if let Ok(L1ServiceResponse::Reload { .. }) =
+                        send_l11_service_request_with_timeout(
+                            &socket,
+                            &L1ServiceRequest::Reload {
+                                memory: package.artifact_path.clone(),
+                            },
+                            Some(Duration::from_millis(250)),
+                        )
+                    {
                         return Ok(Some(L11ServiceEnsureReport::Reloaded {
                             socket,
                             package_path: package.artifact_path,
@@ -380,7 +507,9 @@ mod tests {
 
     fn env_lock() -> std::sync::MutexGuard<'static, ()> {
         static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
-        LOCK.get_or_init(|| Mutex::new(())).lock().expect("env lock")
+        LOCK.get_or_init(|| Mutex::new(()))
+            .lock()
+            .expect("env lock")
     }
 
     #[test]

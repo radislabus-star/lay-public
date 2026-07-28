@@ -61,7 +61,9 @@ pub(crate) fn evaluate_context_candidates_default(
 ) -> Vec<Option<L3PhraseGateReport>> {
     reports_from_phase_readouts(
         context_tokens.len(),
-        super::context_phase::default_memory().score_candidates(context_tokens, next_tokens),
+        super::context_phase::with_default_memory(|memory| {
+            memory.score_candidates(context_tokens, next_tokens)
+        }),
     )
 }
 

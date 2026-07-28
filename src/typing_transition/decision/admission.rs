@@ -32,6 +32,8 @@ pub(super) fn candidate_has_apply_authority(
                 )))
             || (hidden_rejection_deferred_to_verified_l2_repair(reason)
                 && verified_l2_center_repair)
+            || (hidden_rejection_deferred_to_verified_deterministic_repair(reason, signals)
+                && verified_current_token_deterministic_typo_repair(event, candidate, evaluation))
         {
             // L4 ambiguity protects lexical choice operators from guessing. A
             // verifier-proven boundary edit or strongly separated
@@ -118,6 +120,7 @@ pub(super) fn candidate_has_apply_authority(
         return false;
     }
     if ambiguous_l2_surface_repair_requires_context(source_role, signals)
+        && !context_state_support
         && !signals.l3_pairwise_certified
         && signals.l3_phrase_milli < CURRENT.l3_strong_milli
         && signals.l4_signed_milli < CURRENT.l4_strong_milli
@@ -142,6 +145,19 @@ pub(super) fn candidate_has_apply_authority(
         debug_decision_reject(
             candidate,
             "known_form_drift_needs_state_proof",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
+    if preposition_governed_inflection_deletion_requires_context(event, candidate)
+        && !signals.l3_pairwise_certified
+        && signals.l3_phrase_milli < CURRENT.l3_strong_milli
+        && !exact_positive_transition
+    {
+        debug_decision_reject(
+            candidate,
+            "preposition_inflection_deletion_needs_context",
             bayes.posterior,
             bayes.risk,
         );
@@ -391,6 +407,43 @@ fn known_form_drift_requires_state_proof(
     known_observed_lexical_state(&original) && known_lexical_state_or_form(&replacement)
 }
 
+fn preposition_governed_inflection_deletion_requires_context(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+) -> bool {
+    if candidate.origin.source_role() != CorrectionSourceRole::L2Surface
+        || candidate.error_class != TypingErrorClass::ExtraLetter
+    {
+        return false;
+    }
+    let words =
+        crate::typing_transition::proposal_admission::normalized_correction_words(&event.original);
+    let Some(previous) = words
+        .len()
+        .checked_sub(2)
+        .and_then(|index| words.get(index))
+        .map(|word| word.to_lowercase())
+    else {
+        return false;
+    };
+    if !crate::lexicon::is_ru_short_preposition(&previous)
+        && !matches!(previous.as_str(), "в" | "к" | "с" | "о")
+    {
+        return false;
+    }
+    let Some((original, replacement)) = current_and_replacement_words(event, candidate) else {
+        return false;
+    };
+    let original_chars = original.chars().collect::<Vec<_>>();
+    let replacement_chars = replacement.chars().collect::<Vec<_>>();
+    original_chars.len() >= 4
+        && original_chars.len() == replacement_chars.len() + 1
+        && original_chars[..replacement_chars.len()] == replacement_chars
+        && original_chars
+            .last()
+            .is_some_and(|ch| crate::russian_chars::is_russian_vowel(*ch))
+}
+
 fn current_and_replacement_words(
     event: &TypingErrorEvent,
     candidate: &UnifiedCorrectionCandidate,
@@ -413,6 +466,7 @@ fn known_lexical_state_or_form(word: &str) -> bool {
 fn known_observed_lexical_state(word: &str) -> bool {
     let field = crate::hot_field::HotFieldSnapshot::current();
     field.input_surface_readout(word).has_phase_authority()
+        || field.form_readout(word).has_structural_center()
         || crate::lexicon::is_common_ru_word(word)
         || crate::lexicon::is_ru_live_protected_word(word)
         || crate::lexicon::is_user_protected_word(word)
@@ -465,7 +519,7 @@ mod known_word_transposition_tests {
             replacement,
             CorrectionDecisionSource::Nanda,
             CandidateOrigin::L2Surface,
-            "L2LexicalPhaseCell32",
+            "L2FieldShadowSurface",
             TypingErrorClass::AdjacentTransposition,
             CandidateGateDecision {
                 action: CandidateGateAction::Eligible,
@@ -627,6 +681,16 @@ fn hidden_rejection_deferred_to_verified_l2_repair(reason: &str) -> bool {
     reason == "unobserved"
 }
 
+fn hidden_rejection_deferred_to_verified_deterministic_repair(
+    reason: &str,
+    signals: &CandidateDecisionSignals,
+) -> bool {
+    reason == "unobserved"
+        && signals.l4_hidden_probe
+            == crate::nanda_wave::l4_active_disambiguation::L4WitnessProbe::OperatorConsensus
+                .as_str()
+}
+
 fn verified_current_token_l2_center_repair(
     event: &TypingErrorEvent,
     candidate_index: usize,
@@ -673,8 +737,50 @@ fn verified_current_token_l2_center_repair(
             || phase_center_separates_candidate(event, candidate_index, candidates, evaluations))
 }
 
+fn verified_current_token_deterministic_typo_repair(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+    evaluation: &CandidateDecisionEvaluation,
+) -> bool {
+    if candidate.origin.source_role() != CorrectionSourceRole::DeterministicTypo
+        || !matches!(
+            candidate.error_class,
+            TypingErrorClass::MissingLetter
+                | TypingErrorClass::LetterSubstitution
+                | TypingErrorClass::ExtraLetter
+                | TypingErrorClass::RepeatedLetter
+                | TypingErrorClass::AdjacentTransposition
+                | TypingErrorClass::CompositeTypo
+        )
+        || !evaluation.action.verifier_passed
+        || evaluation.action.left_context_changed
+        || evaluation.action.changed_tokens != 1
+        || evaluation.action.edit_operator != verifier::EditTransitionOperator::ReplaceCurrentWord
+    {
+        return false;
+    }
+    let Some((original, replacement)) = current_and_replacement_words(event, candidate) else {
+        return false;
+    };
+    if !cyrillic_letters_only(&original)
+        || !cyrillic_letters_only(&replacement)
+        || original == replacement
+        || stable_observed_lexical_word_blocks_repair(&original)
+        || !known_lexical_state_or_form(&replacement)
+    {
+        return false;
+    }
+    let distance = damerau_levenshtein(&original, &replacement);
+    distance <= 1
+        || crate::text_metrics::sparse_internal_omission_count(&original, &replacement).is_some()
+        || (candidate.error_class == TypingErrorClass::CompositeTypo && distance <= 2)
+}
+
 fn stable_observed_lexical_word_blocks_repair(word: &str) -> bool {
-    crate::lexicon::is_common_ru_word(word)
+    crate::hot_field::HotFieldSnapshot::current()
+        .form_readout(word)
+        .has_structural_center()
+        || crate::lexicon::is_common_ru_word(word)
         || crate::lexicon::is_ru_live_protected_word(word)
         || crate::lexicon::is_user_protected_word(word)
         || crate::russian_lexicon::is_center_backed_russian_form(word)

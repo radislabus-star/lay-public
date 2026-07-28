@@ -4,6 +4,7 @@ use crate::keyboard::{
 };
 use crate::typing_assist_test_fixtures::{fixture_rows, parse_bool_fixture};
 use evdev::KeyCode;
+use std::time::Duration;
 
 fn push_text_as_layout(buffer: &mut WordBuffer, text: &str, layout_is_ru: bool) {
     for event in text_events(text, layout_is_ru) {
@@ -159,4 +160,43 @@ fn learning_feedback_requires_user_delete_and_retype() {
 
     assert_eq!(correction.from, "смотрин ");
     assert_eq!(correction.to, "смотри ");
+}
+
+#[test]
+fn pending_auto_undo_readiness_does_not_consume_fresh_undo() {
+    let mut buffer = WordBuffer::new();
+    buffer.remember_pending_auto_undo("typing-assist", "посмотри", "посмотреть", 1, 1);
+
+    assert!(buffer.pending_auto_undo_ready());
+    assert!(buffer.take_pending_auto_undo().is_some());
+}
+
+#[test]
+fn expired_pending_auto_undo_does_not_steal_manual_toggle() {
+    let mut buffer = WordBuffer::new();
+    buffer.remember_pending_auto_undo("typing-assist", "посмотри", "посмотреть", 1, 1);
+    buffer
+        .pending_auto_undo
+        .as_mut()
+        .expect("pending undo")
+        .started_at = Instant::now()
+        .checked_sub(Duration::from_secs(
+            LEARNING_FEEDBACK_MAX_AGE_SECS.saturating_add(1),
+        ))
+        .expect("valid test instant");
+
+    assert!(!buffer.pending_auto_undo_ready());
+    assert!(buffer.take_pending_auto_undo().is_none());
+}
+
+#[test]
+fn failed_backend_can_restore_unconsumed_pending_auto_undo() {
+    let mut buffer = WordBuffer::new();
+    buffer.remember_pending_auto_undo("typing-assist", "проверрка ", "проверка ", 1, 1);
+    let undo = buffer.take_pending_auto_undo().expect("pending undo");
+
+    buffer.restore_pending_auto_undo(undo);
+
+    assert!(buffer.pending_auto_undo_ready());
+    assert!(buffer.take_pending_auto_undo().is_some());
 }

@@ -1,0 +1,48 @@
+{
+  "kind": "l3_online_schema1_worker_checkpoint",
+  "date": "2026-07-28",
+  "verdict": "PASS_implementation_watch_quality",
+  "installed_base": {
+    "path": "/home/ubu/.local/share/lay/nanda_wave/l3_context_phase.nwpc",
+    "bytes": 12939828,
+    "sha256": "d7ca1280e41424c058f5395f9da871d193429d536fa1f4bc146dfb38306326ba",
+    "signature_schema": 1,
+    "rewritten": false
+  },
+  "isolated_smoke": {
+    "historical_events_replayed": false,
+    "independent_scenes": 4,
+    "corpus_passes": 1,
+    "delta_bytes": 2912,
+    "delta_signature_schema": 1,
+    "wall_seconds": 5.83,
+    "peak_rss_kib": 148052,
+    "cpu_percent": 99,
+    "false_supports": 0,
+    "verdict": "WATCH",
+    "manifest_byte_identity_before_after": true,
+    "admitted_delta_count": 0
+  },
+  "tests": {
+    "l3_online_worker_tests": "3 passed",
+    "legacy_schema_inheritance": "passed",
+    "double_shift_full_context_feedback": "passed"
+  },
+  "runtime_authority_changed": false,
+  "not_tested": [
+    "automatic PASS admission from real user traffic",
+    "long-running service stability over multiple days",
+    "80k fixed heldout quality after a promoted delta",
+    "in-process reload latency after PASS"
+  ],
+  "repository_schema4_artifact": {
+    "path": "/home/ubu/projects/lay/data/lexicon/l3_context_phase_v1.nwpc",
+    "actual_bytes": 30698796,
+    "actual_sha256": "a71d58a0a01f9c5f8fae4328e1e5011043f3e95ac1d5ee760a0dc56b81cd9ad7",
+    "manifest_bytes": 18016360,
+    "manifest_sha256": "11bc615ede0dd87f52748dd5eababa5d4eaece54a47bb36f3fb0f09fd30006bd",
+    "installable": false,
+    "installer_mismatch_exit": 1,
+    "existing_destination_preserved": true
+  }
+}

@@ -9,6 +9,16 @@ import time
 from pathlib import Path
 
 
+def stop_all_lay_ibus_engines() -> None:
+    # Linux comm truncates names to 15 bytes, so `pkill -x lay-ibus-engine`
+    # cannot match this binary. Match the executable argv without touching IBus.
+    subprocess.run(
+        ["pkill", "-TERM", "-f", r"(^|/)lay-ibus-engine( |$)"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+
 @contextlib.contextmanager
 def managed_ime_session(root: Path, ibus_engine_bin: Path | None):
     if ibus_engine_bin is None:
@@ -30,11 +40,7 @@ def managed_ime_session(root: Path, ibus_engine_bin: Path | None):
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        subprocess.run(
-            ["pkill", "-x", "lay-ibus-engine"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
+        stop_all_lay_ibus_engines()
 
         config_path = Path(temp_dir.name) / "config.json"
         write_managed_ime_config(config_path)
@@ -76,11 +82,7 @@ def stop_managed_ime(engine: subprocess.Popen[str] | None) -> None:
         except subprocess.TimeoutExpired:
             engine.kill()
             engine.communicate()
-    subprocess.run(
-        ["pkill", "-x", "lay-ibus-engine"],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
+    stop_all_lay_ibus_engines()
 
 
 def write_managed_ime_config(path: Path) -> None:

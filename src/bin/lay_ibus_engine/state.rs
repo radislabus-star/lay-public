@@ -111,6 +111,20 @@ impl CommittedTailReplaceRequest {
         }
     }
 
+    pub(crate) fn ime_auto_undo(backspaces: u32, text: String) -> Self {
+        Self {
+            source: VisibleTailSource::ImeCommittedTail,
+            backspaces,
+            text,
+            intent: TextTransitionIntent::ImeAutoUndo,
+            suppress_next_autocorrect: true,
+            expected_tail: None,
+            winner_action: None,
+            outcome_feedback: None,
+            layout_postcondition_owner: LayoutPostconditionOwner::Ime,
+        }
+    }
+
     pub(crate) fn daemon_bridge(
         backspaces: u32,
         text: String,
@@ -286,6 +300,13 @@ impl LayIbusEngine {
         }
         let source = request.source;
         let backspaces = request.backspaces;
+        let intent = request.intent;
+        if !matches!(
+            intent,
+            TextTransitionIntent::ImeAutocorrect | TextTransitionIntent::ImeAutoUndo
+        ) {
+            self.clear_pending_ime_auto_undo();
+        }
         let suppress_next_autocorrect = request.suppress_next_autocorrect;
         let ime_owns_layout_postcondition = request.ime_owns_layout_postcondition();
         let winner_action = request.winner_action.clone();
@@ -309,7 +330,7 @@ impl LayIbusEngine {
             source,
             backspaces,
             request.text,
-            request.intent,
+            intent,
             request.expected_tail,
         );
         let (plan, structural_action) =
@@ -333,7 +354,7 @@ impl LayIbusEngine {
                         );
                         trace::record_committed_tail_replace(
                             source,
-                            action.safety_reason(),
+                            rejection.reason(),
                             backspaces,
                             action.to_text(),
                         );
@@ -602,6 +623,15 @@ mod tests {
         assert!(request.suppress_next_autocorrect);
         assert!(request.expected_tail.is_none());
         assert!(request.ime_owns_layout_postcondition());
+    }
+
+    #[test]
+    fn ime_auto_undo_request_keeps_recorded_undo_transition() {
+        let request = CommittedTailReplaceRequest::ime_auto_undo(9, "проверрка ".to_string());
+
+        assert_eq!(request.source, VisibleTailSource::ImeCommittedTail);
+        assert_eq!(request.intent, TextTransitionIntent::ImeAutoUndo);
+        assert!(request.suppress_next_autocorrect);
     }
 
     #[test]

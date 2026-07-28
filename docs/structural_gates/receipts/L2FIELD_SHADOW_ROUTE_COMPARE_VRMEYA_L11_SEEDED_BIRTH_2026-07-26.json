@@ -1,0 +1,125 @@
+{
+  "kind": "candidate_route_compare",
+  "reference_route": "compact-l2",
+  "sample_count": 1,
+  "samples": [
+    {
+      "input": "врмея ",
+      "input_class": "composite-typo",
+      "reference": {
+        "candidate_count": 7,
+        "candidates": [
+          {
+            "error_class": "adjacent-transposition",
+            "gate_action": "Eligible",
+            "gate_reason": "class_allows_apply",
+            "replacement": "время ",
+            "source": "Nanda",
+            "source_id": "L2LexicalPhaseCell32"
+          },
+          {
+            "error_class": "composite-typo",
+            "gate_action": "SuggestOnly",
+            "gate_reason": "unexplained_signal_loss",
+            "replacement": "армия ",
+            "source": "Nanda",
+            "source_id": "L2LexicalPhaseCell32"
+          },
+          {
+            "error_class": "composite-typo",
+            "gate_action": "SuggestOnly",
+            "gate_reason": "unexplained_signal_loss",
+            "replacement": "вред ",
+            "source": "Nanda",
+            "source_id": "L2LexicalPhaseCell32"
+          },
+          {
+            "error_class": "composite-typo",
+            "gate_action": "SuggestOnly",
+            "gate_reason": "unexplained_signal_loss",
+            "replacement": "в ",
+            "source": "Nanda",
+            "source_id": "L2LexicalPhaseCell32"
+          },
+          {
+            "error_class": "composite-typo",
+            "gate_action": "SuggestOnly",
+            "gate_reason": "unexplained_signal_loss",
+            "replacement": "камея ",
+            "source": "Nanda",
+            "source_id": "L2LexicalPhaseCell32"
+          },
+          {
+            "error_class": "composite-typo",
+            "gate_action": "SuggestOnly",
+            "gate_reason": "unexplained_signal_loss",
+            "replacement": "змея ",
+            "source": "Nanda",
+            "source_id": "L2LexicalPhaseCell32"
+          },
+          {
+            "error_class": "composite-typo",
+            "gate_action": "SuggestOnly",
+            "gate_reason": "unexplained_signal_loss",
+            "replacement": "демея ",
+            "source": "Nanda",
+            "source_id": "L2LexicalPhaseCell32"
+          }
+        ],
+        "route": "compact-l2",
+        "scoreboard": {
+          "apply_candidates": 1,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 6,
+          "total_candidates": 7,
+          "veto_candidates": 0
+        },
+        "selected": {
+          "error_class": "adjacent-transposition",
+          "gate_action": "Eligible",
+          "gate_reason": "class_allows_apply",
+          "replacement": "время ",
+          "source": "Nanda",
+          "source_id": "L2LexicalPhaseCell32"
+        }
+      },
+      "selected_gate_diverged": false,
+      "selected_provenance_diverged": true,
+      "selected_surface_diverged": false,
+      "target": {
+        "candidate_count": 1,
+        "candidates": [
+          {
+            "error_class": "adjacent-transposition",
+            "gate_action": "Eligible",
+            "gate_reason": "class_allows_apply",
+            "replacement": "время ",
+            "source": "Nanda",
+            "source_id": "L2FieldShadowReadout"
+          }
+        ],
+        "route": "l2-field-shadow",
+        "scoreboard": {
+          "apply_candidates": 1,
+          "keep_original_candidates": 0,
+          "suggest_only_candidates": 0,
+          "total_candidates": 1,
+          "veto_candidates": 0
+        },
+        "selected": {
+          "error_class": "adjacent-transposition",
+          "gate_action": "Eligible",
+          "gate_reason": "class_allows_apply",
+          "replacement": "время ",
+          "source": "Nanda",
+          "source_id": "L2FieldShadowReadout"
+        }
+      }
+    }
+  ],
+  "selected_gate_diverged": 0,
+  "selected_provenance_diverged": 1,
+  "selected_surface_diverged": 0,
+  "selected_surface_identical": 1,
+  "target_route": "l2-field-shadow"
+}

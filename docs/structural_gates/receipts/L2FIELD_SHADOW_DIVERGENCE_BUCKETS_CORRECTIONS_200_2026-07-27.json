@@ -1,0 +1,227 @@
+{
+  "kind": "l2_field_shadow_divergence_buckets",
+  "status": "ok",
+  "date": "2026-07-27",
+  "read_as": "rerun the live FullWave vs L2FieldShadow compare on the same 200-line corrections.jsonl window after legacy lexical-route removal, then bucket only selected-surface or selected-gate divergences into concrete L2 fix classes",
+  "command": "scripts/cargo-guard.sh run --bin lay-nanda-wave-eval -- --l2-route-compare-report --limit 200 --examples 200",
+  "window": {
+    "source": "/home/ubu/.local/share/lay/corrections.jsonl",
+    "records_seen": 2939,
+    "records_used": 134,
+    "limit": 200
+  },
+  "selected": {
+    "surface_diverged": 19,
+    "gate_diverged": 19,
+    "provenance_diverged": 33,
+    "surface_identical": 115,
+    "reference_apply": 27,
+    "shadow_apply": 30
+  },
+  "user_target_match": {
+    "reference": 7,
+    "shadow": 8,
+    "both": 5
+  },
+  "buckets": [
+    {
+      "bucket": "shadow_false_apply_or_false_suggest_after_reference_abstain",
+      "count": 8,
+      "meaning": "Highest-priority live L2 safety problem. FullWave abstains, but L2FieldShadow still births and selects a local winner or suggestion that does not match the user target.",
+      "cases": [
+        {
+          "input": " слои ",
+          "reference_replacement": null,
+          "reference_gate": null,
+          "shadow_replacement": " слови ",
+          "shadow_gate": "Eligible",
+          "target": " слои "
+        },
+        {
+          "input": "докурчиват ",
+          "reference_replacement": null,
+          "reference_gate": null,
+          "shadow_replacement": "докручивает ",
+          "shadow_gate": "Eligible",
+          "target": "докуричивать "
+        },
+        {
+          "input": "еше ",
+          "reference_replacement": null,
+          "reference_gate": null,
+          "shadow_replacement": "хешке ",
+          "shadow_gate": "Eligible",
+          "target": "не "
+        },
+        {
+          "input": " структрирован! ",
+          "reference_replacement": null,
+          "reference_gate": null,
+          "shadow_replacement": " структурирован! ",
+          "shadow_gate": "Eligible",
+          "target": " структурирован. "
+        },
+        {
+          "input": "ктаким ",
+          "reference_replacement": null,
+          "reference_gate": null,
+          "shadow_replacement": "катаклизм ",
+          "shadow_gate": "Eligible",
+          "target": "таким "
+        },
+        {
+          "input": "смеа ",
+          "reference_replacement": null,
+          "reference_gate": null,
+          "shadow_replacement": "смета ",
+          "shadow_gate": "Eligible",
+          "target": "стема "
+        },
+        {
+          "input": "сли, ",
+          "reference_replacement": null,
+          "reference_gate": null,
+          "shadow_replacement": "соли, ",
+          "shadow_gate": "Eligible",
+          "target": "слои, "
+        },
+        {
+          "input": " зди ",
+          "reference_replacement": null,
+          "reference_gate": null,
+          "shadow_replacement": " зуди ",
+          "shadow_gate": "Eligible",
+          "target": " plb "
+        }
+      ]
+    },
+    {
+      "bucket": "shadow_found_target_while_reference_abstained",
+      "count": 3,
+      "meaning": "Positive shadow-only wins. Keep these while tightening the field.",
+      "cases": [
+        {
+          "input": "неработает ",
+          "reference_replacement": null,
+          "reference_gate": null,
+          "shadow_replacement": "наработает ",
+          "shadow_gate": "SuggestOnly",
+          "target": "наработает "
+        },
+        {
+          "input": "производтелем. ",
+          "reference_replacement": null,
+          "reference_gate": null,
+          "shadow_replacement": "производителем. ",
+          "shadow_gate": "Eligible",
+          "target": "производителем. "
+        },
+        {
+          "input": " корое ",
+          "reference_replacement": null,
+          "reference_gate": null,
+          "shadow_replacement": " короче ",
+          "shadow_gate": "SuggestOnly",
+          "target": " короче "
+        }
+      ]
+    },
+    {
+      "bucket": "shadow_missed_reference_target",
+      "count": 3,
+      "meaning": "FullWave hits the user target, but L2FieldShadow collapses to abstain. This is the main recall gap after the safety bucket above.",
+      "cases": [
+        {
+          "input": "хояот ",
+          "reference_replacement": "хотят ",
+          "reference_gate": "SuggestOnly",
+          "shadow_replacement": null,
+          "shadow_gate": null,
+          "target": "хотят "
+        },
+        {
+          "input": "РЕЬД ",
+          "reference_replacement": "HTML ",
+          "reference_gate": "Eligible",
+          "shadow_replacement": null,
+          "shadow_gate": null,
+          "target": "Html "
+        },
+        {
+          "input": " помщи ",
+          "reference_replacement": " помощи ",
+          "reference_gate": "Eligible",
+          "shadow_replacement": null,
+          "shadow_gate": null,
+          "target": " помощи "
+        }
+      ]
+    },
+    {
+      "bucket": "reference_offtarget_shadow_abstained",
+      "count": 4,
+      "meaning": "Not a shadow regression. FullWave also picks the wrong winner while shadow abstains. Useful for baseline cleanup, but not the first live L2 safety blocker.",
+      "cases": [
+        {
+          "input": "дает ",
+          "reference_replacement": "далее ",
+          "reference_gate": "Eligible",
+          "shadow_replacement": null,
+          "shadow_gate": null,
+          "target": "даёт "
+        },
+        {
+          "input": "Всем ",
+          "reference_replacement": "Cctv ",
+          "reference_gate": "Eligible",
+          "shadow_replacement": null,
+          "shadow_gate": null,
+          "target": "Всем "
+        },
+        {
+          "input": "весм ",
+          "reference_replacement": "вест ",
+          "reference_gate": "Eligible",
+          "shadow_replacement": null,
+          "shadow_gate": null,
+          "target": "всем "
+        },
+        {
+          "input": " скин ",
+          "reference_replacement": " cray ",
+          "reference_gate": "Eligible",
+          "shadow_replacement": null,
+          "shadow_gate": null,
+          "target": " скрин "
+        }
+      ]
+    },
+    {
+      "bucket": "competing_offtarget_winners",
+      "count": 1,
+      "meaning": "Both routes commit to different wrong winners. This is a pure tied-basin failure.",
+      "cases": [
+        {
+          "input": "ЯДРА ",
+          "reference_replacement": "ЯДРОА ",
+          "reference_gate": "Eligible",
+          "shadow_replacement": "ЯДРО ",
+          "shadow_gate": "Eligible",
+          "target": "ЯЛРА "
+        }
+      ]
+    }
+  ],
+  "next_fix_order": [
+    "1) teach L2FieldShadow to emit tied lattice or abstain on the 8 shadow false-apply cases",
+    "2) restore the 3 shadow missed-target cases without reopening the false-apply bucket",
+    "3) preserve the 3 positive shadow wins",
+    "4) treat the 4 reference-offtarget cases and the 1 competing-offtarget case as secondary baseline cleanup"
+  ],
+  "not_tested": [
+    "fixed heldout proof after applying any bucket-specific fixes",
+    "full IME/daemon replay of these exact 19 cases",
+    "package/RSS/latency changes after tightening local readout"
+  ],
+  "runtime_authority_changed": false
+}

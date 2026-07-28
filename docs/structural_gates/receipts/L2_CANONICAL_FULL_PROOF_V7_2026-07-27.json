@@ -1,0 +1,5863 @@
+{
+  "cold_load_us": 121895,
+  "evaluated": 651029,
+  "failure_examples": [
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "абой",
+          "terminal_id": 629
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "абою",
+          "terminal_id": 1052
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аба",
+          "terminal_id": 18
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "абе",
+          "terminal_id": 346
+        },
+        {
+          "competition": 0,
+          "features": [
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "абу",
+          "terminal_id": 1985
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "абы",
+          "terminal_id": 2076
+        }
+      ],
+      "context": "пользуюсь _",
+      "context_mode_id": 50,
+      "expected": "абой",
+      "feature_mask": 4113,
+      "lemma": "аба",
+      "seed_terminals": [
+        18,
+        346,
+        629,
+        1052,
+        1985,
+        2076
+      ],
+      "verdict": "Tied { terminal_ids: [629, 1052] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаров",
+          "terminal_id": 2601
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаром",
+          "terminal_id": 2603
+        }
+      ],
+      "context": "_ находится здесь",
+      "context_mode_id": 27,
+      "expected": "аватар",
+      "feature_mask": 273,
+      "lemma": "аватар",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2601,
+        2603,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2593, 2594] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватару",
+          "terminal_id": 2605
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаров",
+          "terminal_id": 2601
+        }
+      ],
+      "context": "вижу _",
+      "context_mode_id": 69,
+      "expected": "аватар",
+      "feature_mask": 2065,
+      "lemma": "аватар",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2601,
+        2603,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2593, 2605] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватары",
+          "terminal_id": 2606
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаров",
+          "terminal_id": 2601
+        }
+      ],
+      "context": "нет _",
+      "context_mode_id": 72,
+      "expected": "аватара",
+      "feature_mask": 529,
+      "lemma": "аватар",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2601,
+        2603,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2594, 2606] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватаров",
+          "terminal_id": 2601
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаром",
+          "terminal_id": 2603
+        }
+      ],
+      "context": "несколько _",
+      "context_mode_id": 30,
+      "expected": "аватаров",
+      "feature_mask": 545,
+      "lemma": "аватар",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2601,
+        2603,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2593, 2601] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватару",
+          "terminal_id": 2605
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаров",
+          "terminal_id": 2601
+        }
+      ],
+      "context": "иду к _",
+      "context_mode_id": 58,
+      "expected": "аватару",
+      "feature_mask": 1041,
+      "lemma": "аватар",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2601,
+        2603,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2598, 2605] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватары",
+          "terminal_id": 2606
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарой",
+          "terminal_id": 2602
+        }
+      ],
+      "context": "_ уже готов",
+      "context_mode_id": 120,
+      "expected": "аватара",
+      "feature_mask": 273,
+      "lemma": "аватара",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2602,
+        2604,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2593, 2594, 2606] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватару",
+          "terminal_id": 2605
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарой",
+          "terminal_id": 2602
+        }
+      ],
+      "context": "подошел к _",
+      "context_mode_id": 78,
+      "expected": "аватаре",
+      "feature_mask": 1041,
+      "lemma": "аватара",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2602,
+        2604,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2598, 2605] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватарой",
+          "terminal_id": 2602
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватарою",
+          "terminal_id": 2604
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        }
+      ],
+      "context": "пользуюсь _",
+      "context_mode_id": 50,
+      "expected": "аватарой",
+      "feature_mask": 4113,
+      "lemma": "аватара",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2602,
+        2604,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2602, 2604] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватару",
+          "terminal_id": 2605
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарой",
+          "terminal_id": 2602
+        }
+      ],
+      "context": "посетил _",
+      "context_mode_id": 28,
+      "expected": "аватару",
+      "feature_mask": 2065,
+      "lemma": "аватара",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2602,
+        2604,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2593, 2605] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватары",
+          "terminal_id": 2606
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарой",
+          "terminal_id": 2602
+        }
+      ],
+      "context": "_ уже готовы",
+      "context_mode_id": 120,
+      "expected": "аватары",
+      "feature_mask": 289,
+      "lemma": "аватара",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2602,
+        2604,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2593, 2594, 2606] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватары",
+          "terminal_id": 2606
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарой",
+          "terminal_id": 2602
+        }
+      ],
+      "context": "без _",
+      "context_mode_id": 84,
+      "expected": "аватары",
+      "feature_mask": 529,
+      "lemma": "аватара",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2602,
+        2604,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2594, 2606] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "августинец",
+          "terminal_id": 2660
+        },
+        {
+          "competition": 0,
+          "features": [
+            289
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "августинцы",
+          "terminal_id": 2684
+        },
+        {
+          "competition": 0,
+          "features": [
+            529,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинца",
+          "terminal_id": 2676
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинцам",
+          "terminal_id": 2677
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинцами",
+          "terminal_id": 2678
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинцах",
+          "terminal_id": 2679
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинце",
+          "terminal_id": 2680
+        },
+        {
+          "competition": 0,
+          "features": [
+            545,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинцев",
+          "terminal_id": 2681
+        }
+      ],
+      "context": "_ уже готов",
+      "context_mode_id": 120,
+      "expected": "августинец",
+      "feature_mask": 273,
+      "lemma": "августинец",
+      "seed_terminals": [
+        2660,
+        2676,
+        2677,
+        2678,
+        2679,
+        2680,
+        2681,
+        2682,
+        2683,
+        2684
+      ],
+      "verdict": "Tied { terminal_ids: [2660, 2684] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "августинец",
+          "terminal_id": 2660
+        },
+        {
+          "competition": 0,
+          "features": [
+            289
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "августинцы",
+          "terminal_id": 2684
+        },
+        {
+          "competition": 0,
+          "features": [
+            529,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинца",
+          "terminal_id": 2676
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинцам",
+          "terminal_id": 2677
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинцами",
+          "terminal_id": 2678
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинцах",
+          "terminal_id": 2679
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинце",
+          "terminal_id": 2680
+        },
+        {
+          "competition": 0,
+          "features": [
+            545,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинцев",
+          "terminal_id": 2681
+        }
+      ],
+      "context": "_ уже готовы",
+      "context_mode_id": 120,
+      "expected": "августинцы",
+      "feature_mask": 289,
+      "lemma": "августинец",
+      "seed_terminals": [
+        2660,
+        2676,
+        2677,
+        2678,
+        2679,
+        2680,
+        2681,
+        2682,
+        2683,
+        2684
+      ],
+      "verdict": "Tied { terminal_ids: [2660, 2684] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиабаза",
+          "terminal_id": 2847
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиабазы",
+          "terminal_id": 2855
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабаз",
+          "terminal_id": 2846
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазам",
+          "terminal_id": 2848
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазами",
+          "terminal_id": 2849
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазах",
+          "terminal_id": 2850
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазе",
+          "terminal_id": 2851
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазой",
+          "terminal_id": 2852
+        }
+      ],
+      "context": "_ уже готов",
+      "context_mode_id": 120,
+      "expected": "авиабаза",
+      "feature_mask": 273,
+      "lemma": "авиабаза",
+      "seed_terminals": [
+        2846,
+        2847,
+        2848,
+        2849,
+        2850,
+        2851,
+        2852,
+        2853,
+        2854,
+        2855
+      ],
+      "verdict": "Tied { terminal_ids: [2847, 2855] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиабазой",
+          "terminal_id": 2852
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиабазою",
+          "terminal_id": 2853
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабаз",
+          "terminal_id": 2846
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабаза",
+          "terminal_id": 2847
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазам",
+          "terminal_id": 2848
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазами",
+          "terminal_id": 2849
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазах",
+          "terminal_id": 2850
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазе",
+          "terminal_id": 2851
+        }
+      ],
+      "context": "пользуюсь _",
+      "context_mode_id": 50,
+      "expected": "авиабазой",
+      "feature_mask": 4113,
+      "lemma": "авиабаза",
+      "seed_terminals": [
+        2846,
+        2847,
+        2848,
+        2849,
+        2850,
+        2851,
+        2852,
+        2853,
+        2854,
+        2855
+      ],
+      "verdict": "Tied { terminal_ids: [2852, 2853] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиабаза",
+          "terminal_id": 2847
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиабазы",
+          "terminal_id": 2855
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабаз",
+          "terminal_id": 2846
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазам",
+          "terminal_id": 2848
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазами",
+          "terminal_id": 2849
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазах",
+          "terminal_id": 2850
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазе",
+          "terminal_id": 2851
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазой",
+          "terminal_id": 2852
+        }
+      ],
+      "context": "_ уже готовы",
+      "context_mode_id": 120,
+      "expected": "авиабазы",
+      "feature_mask": 289,
+      "lemma": "авиабаза",
+      "seed_terminals": [
+        2846,
+        2847,
+        2848,
+        2849,
+        2850,
+        2851,
+        2852,
+        2853,
+        2854,
+        2855
+      ],
+      "verdict": "Tied { terminal_ids: [2847, 2855] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиабомбой",
+          "terminal_id": 2882
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиабомбою",
+          "terminal_id": 2883
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабомб",
+          "terminal_id": 2876
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабомба",
+          "terminal_id": 2877
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабомбам",
+          "terminal_id": 2878
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабомбами",
+          "terminal_id": 2879
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабомбах",
+          "terminal_id": 2880
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабомбе",
+          "terminal_id": 2881
+        }
+      ],
+      "context": "любуюсь _",
+      "context_mode_id": 26,
+      "expected": "авиабомбой",
+      "feature_mask": 4113,
+      "lemma": "авиабомба",
+      "seed_terminals": [
+        2876,
+        2877,
+        2878,
+        2879,
+        2880,
+        2881,
+        2882,
+        2883,
+        2884,
+        2885
+      ],
+      "verdict": "Tied { terminal_ids: [2882, 2883] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиагоризонт",
+          "terminal_id": 2887
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиагоризонты",
+          "terminal_id": 2896
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонта",
+          "terminal_id": 2888
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонтам",
+          "terminal_id": 2889
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонтами",
+          "terminal_id": 2890
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонтах",
+          "terminal_id": 2891
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонте",
+          "terminal_id": 2892
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонтов",
+          "terminal_id": 2893
+        }
+      ],
+      "context": "_ уже готов",
+      "context_mode_id": 120,
+      "expected": "авиагоризонт",
+      "feature_mask": 273,
+      "lemma": "авиагоризонт",
+      "seed_terminals": [
+        2887,
+        2888,
+        2889,
+        2890,
+        2891,
+        2892,
+        2893,
+        2894,
+        2895,
+        2896
+      ],
+      "verdict": "Tied { terminal_ids: [2887, 2896] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиагоризонт",
+          "terminal_id": 2887
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиагоризонты",
+          "terminal_id": 2896
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонта",
+          "terminal_id": 2888
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонтам",
+          "terminal_id": 2889
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонтами",
+          "terminal_id": 2890
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонтах",
+          "terminal_id": 2891
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонте",
+          "terminal_id": 2892
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонтов",
+          "terminal_id": 2893
+        }
+      ],
+      "context": "_ уже готовы",
+      "context_mode_id": 120,
+      "expected": "авиагоризонты",
+      "feature_mask": 289,
+      "lemma": "авиагоризонт",
+      "seed_terminals": [
+        2887,
+        2888,
+        2889,
+        2890,
+        2891,
+        2892,
+        2893,
+        2894,
+        2895,
+        2896
+      ],
+      "verdict": "Tied { terminal_ids: [2887, 2896] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиазавод",
+          "terminal_id": 2961
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиазаводы",
+          "terminal_id": 2970
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазавода",
+          "terminal_id": 2962
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводам",
+          "terminal_id": 2963
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводами",
+          "terminal_id": 2964
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводах",
+          "terminal_id": 2965
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводе",
+          "terminal_id": 2966
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводов",
+          "terminal_id": 2967
+        }
+      ],
+      "context": "_ уже готов",
+      "context_mode_id": 120,
+      "expected": "авиазавод",
+      "feature_mask": 273,
+      "lemma": "авиазавод",
+      "seed_terminals": [
+        2961,
+        2962,
+        2963,
+        2964,
+        2965,
+        2966,
+        2967,
+        2968,
+        2969,
+        2970
+      ],
+      "verdict": "Tied { terminal_ids: [2961, 2970] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиазавод",
+          "terminal_id": 2961
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиазаводы",
+          "terminal_id": 2970
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазавода",
+          "terminal_id": 2962
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводам",
+          "terminal_id": 2963
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводами",
+          "terminal_id": 2964
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводах",
+          "terminal_id": 2965
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводе",
+          "terminal_id": 2966
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводов",
+          "terminal_id": 2967
+        }
+      ],
+      "context": "_ уже готовы",
+      "context_mode_id": 120,
+      "expected": "авиазаводы",
+      "feature_mask": 289,
+      "lemma": "авиазавод",
+      "seed_terminals": [
+        2961,
+        2962,
+        2963,
+        2964,
+        2965,
+        2966,
+        2967,
+        2968,
+        2969,
+        2970
+      ],
+      "verdict": "Tied { terminal_ids: [2961, 2970] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиакатастрофой",
+          "terminal_id": 2978
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиакатастрофою",
+          "terminal_id": 2979
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакатастроф",
+          "terminal_id": 2972
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакатастрофа",
+          "terminal_id": 2973
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакатастрофам",
+          "terminal_id": 2974
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакатастрофами",
+          "terminal_id": 2975
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакатастрофах",
+          "terminal_id": 2976
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакатастрофе",
+          "terminal_id": 2977
+        }
+      ],
+      "context": "управляю _",
+      "context_mode_id": 116,
+      "expected": "авиакатастрофой",
+      "feature_mask": 4113,
+      "lemma": "авиакатастрофа",
+      "seed_terminals": [
+        2972,
+        2973,
+        2974,
+        2975,
+        2976,
+        2977,
+        2978,
+        2979,
+        2980,
+        2981
+      ],
+      "verdict": "Tied { terminal_ids: [2978, 2979] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиакомпанией",
+          "terminal_id": 2983
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиакомпаниею",
+          "terminal_id": 2984
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            1041,
+            2081,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакомпании",
+          "terminal_id": 2985
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакомпаний",
+          "terminal_id": 2986
+        },
+        {
+          "competition": 0,
+          "features": [
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакомпанию",
+          "terminal_id": 2987
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакомпания",
+          "terminal_id": 2988
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакомпаниям",
+          "terminal_id": 2989
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакомпаниями",
+          "terminal_id": 2990
+        }
+      ],
+      "context": "доволен _",
+      "context_mode_id": 83,
+      "expected": "авиакомпанией",
+      "feature_mask": 4113,
+      "lemma": "авиакомпания",
+      "seed_terminals": [
+        2983,
+        2984,
+        2985,
+        2986,
+        2987,
+        2988,
+        2989,
+        2990,
+        2991
+      ],
+      "verdict": "Tied { terminal_ids: [2983, 2984] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиаконструктора",
+          "terminal_id": 2994
+        },
+        {
+          "competition": 0,
+          "features": [
+            289
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиаконструкторы",
+          "terminal_id": 3002
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаконструктор",
+          "terminal_id": 2993
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаконструкторам",
+          "terminal_id": 2995
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаконструкторами",
+          "terminal_id": 2996
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаконструкторах",
+          "terminal_id": 2997
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаконструкторе",
+          "terminal_id": 2998
+        },
+        {
+          "competition": 0,
+          "features": [
+            545,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаконструкторов",
+          "terminal_id": 2999
+        }
+      ],
+      "context": "_ находятся здесь",
+      "context_mode_id": 114,
+      "expected": "авиаконструктора",
+      "feature_mask": 289,
+      "lemma": "авиаконструктор",
+      "seed_terminals": [
+        2993,
+        2994,
+        2995,
+        2996,
+        2997,
+        2998,
+        2999,
+        3000,
+        3001,
+        3002
+      ],
+      "verdict": "Tied { terminal_ids: [2994, 3002] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиалайнер",
+          "terminal_id": 3017
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиалайнеры",
+          "terminal_id": 3026
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнера",
+          "terminal_id": 3018
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнерам",
+          "terminal_id": 3019
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнерами",
+          "terminal_id": 3020
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнерах",
+          "terminal_id": 3021
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнере",
+          "terminal_id": 3022
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнеров",
+          "terminal_id": 3023
+        }
+      ],
+      "context": "_ уже готов",
+      "context_mode_id": 120,
+      "expected": "авиалайнер",
+      "feature_mask": 273,
+      "lemma": "авиалайнер",
+      "seed_terminals": [
+        3017,
+        3018,
+        3019,
+        3020,
+        3021,
+        3022,
+        3023,
+        3024,
+        3025,
+        3026
+      ],
+      "verdict": "Tied { terminal_ids: [3017, 3026] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиалайнер",
+          "terminal_id": 3017
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиалайнеры",
+          "terminal_id": 3026
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнера",
+          "terminal_id": 3018
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнерам",
+          "terminal_id": 3019
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнерами",
+          "terminal_id": 3020
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнерах",
+          "terminal_id": 3021
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнере",
+          "terminal_id": 3022
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнеров",
+          "terminal_id": 3023
+        }
+      ],
+      "context": "_ уже готовы",
+      "context_mode_id": 120,
+      "expected": "авиалайнеры",
+      "feature_mask": 289,
+      "lemma": "авиалайнер",
+      "seed_terminals": [
+        3017,
+        3018,
+        3019,
+        3020,
+        3021,
+        3022,
+        3023,
+        3024,
+        3025,
+        3026
+      ],
+      "verdict": "Tied { terminal_ids: [3017, 3026] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиалинией",
+          "terminal_id": 3028
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиалиниею",
+          "terminal_id": 3029
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            1041,
+            2081,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалинии",
+          "terminal_id": 3030
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалиний",
+          "terminal_id": 3031
+        },
+        {
+          "competition": 0,
+          "features": [
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалинию",
+          "terminal_id": 3032
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалиния",
+          "terminal_id": 3033
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалиниям",
+          "terminal_id": 3034
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалиниями",
+          "terminal_id": 3035
+        }
+      ],
+      "context": "управляю _",
+      "context_mode_id": 116,
+      "expected": "авиалинией",
+      "feature_mask": 4113,
+      "lemma": "авиалиния",
+      "seed_terminals": [
+        3028,
+        3029,
+        3030,
+        3031,
+        3032,
+        3033,
+        3034,
+        3035,
+        3036
+      ],
+      "verdict": "Tied { terminal_ids: [3028, 3029] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиаматкой",
+          "terminal_id": 3043
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиаматкою",
+          "terminal_id": 3044
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаматка",
+          "terminal_id": 3037
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаматкам",
+          "terminal_id": 3038
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаматками",
+          "terminal_id": 3039
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаматках",
+          "terminal_id": 3040
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаматке",
+          "terminal_id": 3041
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаматки",
+          "terminal_id": 3042
+        }
+      ],
+      "context": "доволен _",
+      "context_mode_id": 83,
+      "expected": "авиаматкой",
+      "feature_mask": 4113,
+      "lemma": "авиаматка",
+      "seed_terminals": [
+        3037,
+        3038,
+        3039,
+        3040,
+        3041,
+        3042,
+        3043,
+        3044,
+        3045,
+        3046
+      ],
+      "verdict": "Tied { terminal_ids: [3043, 3044] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиаметеостанцией",
+          "terminal_id": 3049
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиаметеостанциею",
+          "terminal_id": 3050
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            1041,
+            2081,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаметеостанции",
+          "terminal_id": 3051
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаметеостанций",
+          "terminal_id": 3052
+        },
+        {
+          "competition": 0,
+          "features": [
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаметеостанцию",
+          "terminal_id": 3053
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаметеостанция",
+          "terminal_id": 3054
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаметеостанциям",
+          "terminal_id": 3055
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаметеостанциями",
+          "terminal_id": 3056
+        }
+      ],
+      "context": "любуюсь _",
+      "context_mode_id": 26,
+      "expected": "авиаметеостанцией",
+      "feature_mask": 4113,
+      "lemma": "авиаметеостанция",
+      "seed_terminals": [
+        3049,
+        3050,
+        3051,
+        3052,
+        3053,
+        3054,
+        3055,
+        3056,
+        3057
+      ],
+      "verdict": "Tied { terminal_ids: [3049, 3050] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиамоделизм",
+          "terminal_id": 3061
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиамоделизмы",
+          "terminal_id": 3070
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизма",
+          "terminal_id": 3062
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизмам",
+          "terminal_id": 3063
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизмами",
+          "terminal_id": 3064
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизмах",
+          "terminal_id": 3065
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизме",
+          "terminal_id": 3066
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизмов",
+          "terminal_id": 3067
+        }
+      ],
+      "context": "_ уже готов",
+      "context_mode_id": 120,
+      "expected": "авиамоделизм",
+      "feature_mask": 273,
+      "lemma": "авиамоделизм",
+      "seed_terminals": [
+        3061,
+        3062,
+        3063,
+        3064,
+        3065,
+        3066,
+        3067,
+        3068,
+        3069,
+        3070
+      ],
+      "verdict": "Tied { terminal_ids: [3061, 3070] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиамоделизм",
+          "terminal_id": 3061
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиамоделизмы",
+          "terminal_id": 3070
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизма",
+          "terminal_id": 3062
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизмам",
+          "terminal_id": 3063
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизмами",
+          "terminal_id": 3064
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизмах",
+          "terminal_id": 3065
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизме",
+          "terminal_id": 3066
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизмов",
+          "terminal_id": 3067
+        }
+      ],
+      "context": "_ уже готовы",
+      "context_mode_id": 120,
+      "expected": "авиамоделизмы",
+      "feature_mask": 289,
+      "lemma": "авиамоделизм",
+      "seed_terminals": [
+        3061,
+        3062,
+        3063,
+        3064,
+        3065,
+        3066,
+        3067,
+        3068,
+        3069,
+        3070
+      ],
+      "verdict": "Tied { terminal_ids: [3061, 3070] }"
+    }
+  ],
+  "false_authority_examples": [],
+  "heldout_available": 2501613,
+  "hot_p50_us": 6,
+  "hot_p99_us": 19,
+  "kind": "canonical_l2_fixed_heldout_proof",
+  "l1_package": "data/lexical_grokking/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v2.v7.bin",
+  "l2_package": "data/l2/LAY-L2-RU-FULL-v4.bin",
+  "morphology_corpus": "data/morphology/lay_ru_l2_full_pos_v3.tsv",
+  "morphology_slot": {
+    "abstain": 24,
+    "false_authority": 0,
+    "false_authority_percent": 0.0,
+    "target_coverage_percent": 99.996313528276,
+    "tied_contains": 118199,
+    "total": 651029,
+    "winner_correct": 532806,
+    "winner_top1_percent": 81.84059389059473
+  },
+  "near_neighbor": {
+    "abstain": 0,
+    "false_authority": 0,
+    "false_authority_percent": 0.0,
+    "target_coverage_percent": 100.0,
+    "tied_contains": 0,
+    "total": 18,
+    "winner_correct": 18,
+    "winner_top1_percent": 100.0
+  },
+  "near_neighbor_failure_examples": [],
+  "near_neighbor_tested": true,
+  "package_bytes": 23359260,
+  "per_feature_mask": {
+    "1041": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 8105,
+      "total": 47379,
+      "winner_correct": 39274,
+      "winner_top1_percent": 82.89326494860592
+    },
+    "1048": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "1049112": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "1049624": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "1050648": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "1052696": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "1056792": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "1057": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 4709,
+      "total": 44848,
+      "winner_correct": 40139,
+      "winner_top1_percent": 89.5000891901534
+    },
+    "1060": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 165,
+      "total": 2485,
+      "winner_correct": 2320,
+      "winner_top1_percent": 93.36016096579476
+    },
+    "1073741860": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 6,
+      "total": 365,
+      "winner_correct": 359,
+      "winner_top1_percent": 98.35616438356165
+    },
+    "1073872916": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 30,
+      "total": 1404,
+      "winner_correct": 1374,
+      "winner_top1_percent": 97.86324786324786
+    },
+    "1074003988": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 478,
+      "winner_correct": 478,
+      "winner_top1_percent": 100.0
+    },
+    "1074266132": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 3,
+      "total": 2274,
+      "winner_correct": 2271,
+      "winner_top1_percent": 99.86807387862797
+    },
+    "131348": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 558,
+      "total": 13835,
+      "winner_correct": 13277,
+      "winner_top1_percent": 95.96675099385617
+    },
+    "131604": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 167,
+      "total": 2490,
+      "winner_correct": 2323,
+      "winner_top1_percent": 93.29317269076306
+    },
+    "132116": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 164,
+      "total": 2430,
+      "winner_correct": 2266,
+      "winner_top1_percent": 93.25102880658436
+    },
+    "133140": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 2368,
+      "total": 5273,
+      "winner_correct": 2905,
+      "winner_top1_percent": 55.091978001137875
+    },
+    "1342177282": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 31,
+      "total": 7527,
+      "winner_correct": 7496,
+      "winner_top1_percent": 99.58814932908197
+    },
+    "1350565924": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 4,
+      "total": 45,
+      "winner_correct": 41,
+      "winner_top1_percent": 91.11111111111111
+    },
+    "1350696980": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 13,
+      "total": 108,
+      "winner_correct": 95,
+      "winner_top1_percent": 87.96296296296296
+    },
+    "1350828052": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 53,
+      "winner_correct": 53,
+      "winner_top1_percent": 100.0
+    },
+    "1351090196": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 19,
+      "winner_correct": 19,
+      "winner_top1_percent": 100.0
+    },
+    "135188": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 164,
+      "total": 2485,
+      "winner_correct": 2321,
+      "winner_top1_percent": 93.40040241448692
+    },
+    "139284": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 167,
+      "total": 2682,
+      "winner_correct": 2515,
+      "winner_top1_percent": 93.77330350484714
+    },
+    "1610612738": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 12,
+      "total": 7123,
+      "winner_correct": 7111,
+      "winner_top1_percent": 99.83153165800927
+    },
+    "1619001380": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 2,
+      "total": 35,
+      "winner_correct": 33,
+      "winner_top1_percent": 94.28571428571429
+    },
+    "1619132436": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 13,
+      "total": 57,
+      "winner_correct": 44,
+      "winner_top1_percent": 77.19298245614036
+    },
+    "1619263508": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 3,
+      "total": 42,
+      "winner_correct": 39,
+      "winner_top1_percent": 92.85714285714286
+    },
+    "1619525652": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 4,
+      "winner_correct": 4,
+      "winner_top1_percent": 100.0
+    },
+    "1627389988": {
+      "abstain": 3,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 0.0,
+      "tied_contains": 0,
+      "total": 3,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "1627521044": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 13,
+      "total": 28,
+      "winner_correct": 15,
+      "winner_top1_percent": 53.57142857142857
+    },
+    "1627652116": {
+      "abstain": 3,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 40.0,
+      "tied_contains": 0,
+      "total": 5,
+      "winner_correct": 2,
+      "winner_top1_percent": 40.0
+    },
+    "1627914260": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 7,
+      "winner_correct": 7,
+      "winner_top1_percent": 100.0
+    },
+    "16401": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 501,
+      "winner_correct": 501,
+      "winner_top1_percent": 100.0
+    },
+    "2065": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 8693,
+      "total": 47379,
+      "winner_correct": 38686,
+      "winner_top1_percent": 81.65220878448258
+    },
+    "2072": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "2081": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 6376,
+      "total": 44848,
+      "winner_correct": 38472,
+      "winner_top1_percent": 85.78308954691403
+    },
+    "2084": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 2390,
+      "total": 2621,
+      "winner_correct": 231,
+      "winner_top1_percent": 8.813429988553986
+    },
+    "2097432": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "2097688": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "2098200": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 1,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "2099224": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "2101272": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 1,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "2105368": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 1,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "2147483652": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 12,
+      "total": 77,
+      "winner_correct": 65,
+      "winner_top1_percent": 84.41558441558442
+    },
+    "2491416578": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 138,
+      "winner_correct": 137,
+      "winner_top1_percent": 99.27536231884058
+    },
+    "262420": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 7,
+      "total": 372,
+      "winner_correct": 365,
+      "winner_top1_percent": 98.11827956989248
+    },
+    "262676": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 5,
+      "total": 1351,
+      "winner_correct": 1346,
+      "winner_top1_percent": 99.6299037749815
+    },
+    "263188": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 4,
+      "total": 1351,
+      "winner_correct": 1347,
+      "winner_top1_percent": 99.7039230199852
+    },
+    "264212": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 3,
+      "total": 236,
+      "winner_correct": 233,
+      "winner_top1_percent": 98.72881355932203
+    },
+    "266260": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 260,
+      "total": 1351,
+      "winner_correct": 1091,
+      "winner_top1_percent": 80.75499629903776
+    },
+    "270356": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 4,
+      "total": 1351,
+      "winner_correct": 1347,
+      "winner_top1_percent": 99.7039230199852
+    },
+    "273": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 17438,
+      "total": 47379,
+      "winner_correct": 29941,
+      "winner_top1_percent": 63.19466430275016
+    },
+    "2759852034": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 3,
+      "total": 25,
+      "winner_correct": 22,
+      "winner_top1_percent": 88.0
+    },
+    "2768240642": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 3,
+      "total": 260,
+      "winner_correct": 257,
+      "winner_top1_percent": 98.84615384615384
+    },
+    "276824356": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 54,
+      "total": 298,
+      "winner_correct": 244,
+      "winner_top1_percent": 81.87919463087249
+    },
+    "276824612": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 54,
+      "total": 298,
+      "winner_correct": 244,
+      "winner_top1_percent": 81.87919463087249
+    },
+    "276825124": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 54,
+      "total": 296,
+      "winner_correct": 242,
+      "winner_top1_percent": 81.75675675675676
+    },
+    "276826148": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 298,
+      "total": 298,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "276828196": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 54,
+      "total": 298,
+      "winner_correct": 244,
+      "winner_top1_percent": 81.87919463087249
+    },
+    "276832292": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 54,
+      "total": 298,
+      "winner_correct": 244,
+      "winner_top1_percent": 81.87919463087249
+    },
+    "276955412": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 448,
+      "total": 1371,
+      "winner_correct": 923,
+      "winner_top1_percent": 67.32312180889862
+    },
+    "276955668": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 54,
+      "total": 298,
+      "winner_correct": 244,
+      "winner_top1_percent": 81.87919463087249
+    },
+    "276956180": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 54,
+      "total": 296,
+      "winner_correct": 242,
+      "winner_top1_percent": 81.75675675675676
+    },
+    "276957204": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 296,
+      "total": 298,
+      "winner_correct": 2,
+      "winner_top1_percent": 0.6711409395973155
+    },
+    "276959252": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 54,
+      "total": 296,
+      "winner_correct": 242,
+      "winner_top1_percent": 81.75675675675676
+    },
+    "276963348": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 54,
+      "total": 296,
+      "winner_correct": 242,
+      "winner_top1_percent": 81.75675675675676
+    },
+    "277086484": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 5,
+      "winner_correct": 5,
+      "winner_top1_percent": 100.0
+    },
+    "277086740": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 2,
+      "winner_correct": 2,
+      "winner_top1_percent": 100.0
+    },
+    "277087252": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 2,
+      "winner_correct": 2,
+      "winner_top1_percent": 100.0
+    },
+    "277090324": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 2,
+      "winner_correct": 2,
+      "winner_top1_percent": 100.0
+    },
+    "277094420": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 2,
+      "winner_correct": 2,
+      "winner_top1_percent": 100.0
+    },
+    "277348628": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 7,
+      "winner_correct": 6,
+      "winner_top1_percent": 85.71428571428571
+    },
+    "277348884": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 54,
+      "total": 298,
+      "winner_correct": 244,
+      "winner_top1_percent": 81.87919463087249
+    },
+    "277349396": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 54,
+      "total": 296,
+      "winner_correct": 242,
+      "winner_top1_percent": 81.75675675675676
+    },
+    "277350420": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 7,
+      "winner_correct": 6,
+      "winner_top1_percent": 85.71428571428571
+    },
+    "277352468": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 54,
+      "total": 296,
+      "winner_correct": 242,
+      "winner_top1_percent": 81.75675675675676
+    },
+    "277356564": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 54,
+      "total": 296,
+      "winner_correct": 242,
+      "winner_top1_percent": 81.75675675675676
+    },
+    "289": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 14753,
+      "total": 44848,
+      "winner_correct": 30095,
+      "winner_top1_percent": 67.10444166963967
+    },
+    "292": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 166,
+      "total": 2622,
+      "winner_correct": 2456,
+      "winner_top1_percent": 93.66895499618612
+    },
+    "32785": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 283,
+      "winner_correct": 283,
+      "winner_top1_percent": 100.0
+    },
+    "343932962": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 23,
+      "winner_correct": 22,
+      "winner_top1_percent": 95.65217391304348
+    },
+    "344064018": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 56,
+      "total": 346,
+      "winner_correct": 290,
+      "winner_top1_percent": 83.81502890173411
+    },
+    "344195090": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 77,
+      "winner_correct": 77,
+      "winner_top1_percent": 100.0
+    },
+    "344457234": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 37,
+      "winner_correct": 37,
+      "winner_top1_percent": 100.0
+    },
+    "369098770": {
+      "abstain": 4,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 33.333333333333336,
+      "tied_contains": 0,
+      "total": 6,
+      "winner_correct": 2,
+      "winner_top1_percent": 33.333333333333336
+    },
+    "370147346": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 6,
+      "total": 451,
+      "winner_correct": 445,
+      "winner_top1_percent": 98.66962305986696
+    },
+    "370147362": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 81,
+      "winner_correct": 80,
+      "winner_top1_percent": 98.76543209876543
+    },
+    "371195922": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 23,
+      "total": 56,
+      "winner_correct": 33,
+      "winner_top1_percent": 58.92857142857143
+    },
+    "371195938": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 2,
+      "total": 120,
+      "winner_correct": 118,
+      "winner_top1_percent": 98.33333333333333
+    },
+    "373293074": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 51,
+      "total": 236,
+      "winner_correct": 185,
+      "winner_top1_percent": 78.38983050847457
+    },
+    "373293090": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 4,
+      "total": 130,
+      "winner_correct": 126,
+      "winner_top1_percent": 96.92307692307692
+    },
+    "402653266": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 75,
+      "winner_correct": 74,
+      "winner_top1_percent": 98.66666666666667
+    },
+    "402653282": {
+      "abstain": 2,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 33.333333333333336,
+      "tied_contains": 1,
+      "total": 3,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "402653330": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 39,
+      "total": 645,
+      "winner_correct": 606,
+      "winner_top1_percent": 93.95348837209302
+    },
+    "402653346": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 2,
+      "total": 63,
+      "winner_correct": 61,
+      "winner_top1_percent": 96.82539682539682
+    },
+    "4113": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 19432,
+      "total": 47379,
+      "winner_correct": 27947,
+      "winner_top1_percent": 58.986048671352286
+    },
+    "4120": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 1,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "4129": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 4711,
+      "total": 44848,
+      "winner_correct": 40137,
+      "winner_top1_percent": 89.49562968248306
+    },
+    "4132": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 165,
+      "total": 2468,
+      "winner_correct": 2303,
+      "winner_top1_percent": 93.31442463533226
+    },
+    "4194600": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "4194856": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 1,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "4195368": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 1,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "4196392": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 1,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "4198440": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 1,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "4202536": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "4718872": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "4719128": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 1,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "4719640": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 1,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "4720664": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 1,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "4722712": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 1,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "4726808": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "524564": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 5,
+      "total": 273,
+      "winner_correct": 268,
+      "winner_top1_percent": 98.16849816849818
+    },
+    "524568": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 2,
+      "winner_correct": 1,
+      "winner_top1_percent": 50.0
+    },
+    "524820": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 167,
+      "total": 2490,
+      "winner_correct": 2323,
+      "winner_top1_percent": 93.29317269076306
+    },
+    "524824": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 3,
+      "winner_correct": 2,
+      "winner_top1_percent": 66.66666666666667
+    },
+    "525332": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 164,
+      "total": 2430,
+      "winner_correct": 2266,
+      "winner_top1_percent": 93.25102880658436
+    },
+    "525336": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 3,
+      "winner_correct": 3,
+      "winner_top1_percent": 100.0
+    },
+    "526356": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 5,
+      "total": 272,
+      "winner_correct": 267,
+      "winner_top1_percent": 98.16176470588235
+    },
+    "526360": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1,
+      "total": 2,
+      "winner_correct": 1,
+      "winner_top1_percent": 50.0
+    },
+    "528404": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 164,
+      "total": 2485,
+      "winner_correct": 2321,
+      "winner_top1_percent": 93.40040241448692
+    },
+    "528408": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 3,
+      "winner_correct": 3,
+      "winner_top1_percent": 100.0
+    },
+    "529": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 8032,
+      "total": 47379,
+      "winner_correct": 39347,
+      "winner_top1_percent": 83.0473416492539
+    },
+    "532500": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 167,
+      "total": 2682,
+      "winner_correct": 2515,
+      "winner_top1_percent": 93.77330350484714
+    },
+    "532504": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 3,
+      "winner_correct": 3,
+      "winner_top1_percent": 100.0
+    },
+    "536": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "545": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 1522,
+      "total": 44848,
+      "winner_correct": 43326,
+      "winner_top1_percent": 96.60631466286122
+    },
+    "545259812": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 45,
+      "total": 162,
+      "winner_correct": 117,
+      "winner_top1_percent": 72.22222222222223
+    },
+    "545260068": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 45,
+      "total": 162,
+      "winner_correct": 117,
+      "winner_top1_percent": 72.22222222222223
+    },
+    "545260580": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 45,
+      "total": 162,
+      "winner_correct": 117,
+      "winner_top1_percent": 72.22222222222223
+    },
+    "545261604": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 162,
+      "total": 162,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "545263652": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 45,
+      "total": 163,
+      "winner_correct": 118,
+      "winner_top1_percent": 72.39263803680981
+    },
+    "545267748": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 45,
+      "total": 162,
+      "winner_correct": 117,
+      "winner_top1_percent": 72.22222222222223
+    },
+    "545390868": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 815,
+      "total": 984,
+      "winner_correct": 169,
+      "winner_top1_percent": 17.17479674796748
+    },
+    "545391124": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 45,
+      "total": 162,
+      "winner_correct": 117,
+      "winner_top1_percent": 72.22222222222223
+    },
+    "545391636": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 45,
+      "total": 162,
+      "winner_correct": 117,
+      "winner_top1_percent": 72.22222222222223
+    },
+    "545392660": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 162,
+      "total": 162,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "545394708": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 45,
+      "total": 162,
+      "winner_correct": 117,
+      "winner_top1_percent": 72.22222222222223
+    },
+    "545398804": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 45,
+      "total": 162,
+      "winner_correct": 117,
+      "winner_top1_percent": 72.22222222222223
+    },
+    "545522196": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "545522708": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "545525780": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "545529876": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "545784340": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 45,
+      "total": 162,
+      "winner_correct": 117,
+      "winner_top1_percent": 72.22222222222223
+    },
+    "545784852": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 45,
+      "total": 162,
+      "winner_correct": 117,
+      "winner_top1_percent": 72.22222222222223
+    },
+    "545787924": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 45,
+      "total": 162,
+      "winner_correct": 117,
+      "winner_top1_percent": 72.22222222222223
+    },
+    "545792020": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 45,
+      "total": 162,
+      "winner_correct": 117,
+      "winner_top1_percent": 72.22222222222223
+    },
+    "548": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 166,
+      "total": 2488,
+      "winner_correct": 2322,
+      "winner_top1_percent": 93.32797427652733
+    },
+    "553648420": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 51,
+      "total": 101,
+      "winner_correct": 50,
+      "winner_top1_percent": 49.504950495049506
+    },
+    "553648676": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 51,
+      "total": 96,
+      "winner_correct": 45,
+      "winner_top1_percent": 46.875
+    },
+    "553649188": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 51,
+      "total": 96,
+      "winner_correct": 45,
+      "winner_top1_percent": 46.875
+    },
+    "553650212": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 96,
+      "total": 101,
+      "winner_correct": 5,
+      "winner_top1_percent": 4.9504950495049505
+    },
+    "553652260": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 51,
+      "total": 98,
+      "winner_correct": 47,
+      "winner_top1_percent": 47.95918367346939
+    },
+    "553656356": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 51,
+      "total": 96,
+      "winner_correct": 45,
+      "winner_top1_percent": 46.875
+    },
+    "553779476": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 729,
+      "total": 1149,
+      "winner_correct": 420,
+      "winner_top1_percent": 36.55352480417755
+    },
+    "553779732": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 51,
+      "total": 105,
+      "winner_correct": 54,
+      "winner_top1_percent": 51.42857142857143
+    },
+    "553780244": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 51,
+      "total": 98,
+      "winner_correct": 47,
+      "winner_top1_percent": 47.95918367346939
+    },
+    "553781268": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 99,
+      "total": 105,
+      "winner_correct": 6,
+      "winner_top1_percent": 5.714285714285714
+    },
+    "553783316": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 51,
+      "total": 96,
+      "winner_correct": 45,
+      "winner_top1_percent": 46.875
+    },
+    "553787412": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 51,
+      "total": 99,
+      "winner_correct": 48,
+      "winner_top1_percent": 48.484848484848484
+    },
+    "553910548": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 3,
+      "winner_correct": 3,
+      "winner_top1_percent": 100.0
+    },
+    "553910804": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 3,
+      "winner_correct": 3,
+      "winner_top1_percent": 100.0
+    },
+    "553911316": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 3,
+      "winner_correct": 3,
+      "winner_top1_percent": 100.0
+    },
+    "553914388": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 2,
+      "total": 3,
+      "winner_correct": 1,
+      "winner_top1_percent": 33.333333333333336
+    },
+    "553918484": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 3,
+      "winner_correct": 3,
+      "winner_top1_percent": 100.0
+    },
+    "554172692": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 7,
+      "winner_correct": 7,
+      "winner_top1_percent": 100.0
+    },
+    "554172948": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 51,
+      "total": 105,
+      "winner_correct": 54,
+      "winner_top1_percent": 51.42857142857143
+    },
+    "554173460": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 51,
+      "total": 98,
+      "winner_correct": 47,
+      "winner_top1_percent": 47.95918367346939
+    },
+    "554174484": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 7,
+      "winner_correct": 7,
+      "winner_top1_percent": 100.0
+    },
+    "554176532": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 51,
+      "total": 96,
+      "winner_correct": 45,
+      "winner_top1_percent": 46.875
+    },
+    "554180628": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 51,
+      "total": 99,
+      "winner_correct": 48,
+      "winner_top1_percent": 48.484848484848484
+    },
+    "612368418": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 7,
+      "total": 23,
+      "winner_correct": 16,
+      "winner_top1_percent": 69.56521739130434
+    },
+    "612499474": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 32,
+      "total": 141,
+      "winner_correct": 109,
+      "winner_top1_percent": 77.30496453900709
+    },
+    "612630546": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 3,
+      "total": 73,
+      "winner_correct": 70,
+      "winner_top1_percent": 95.89041095890411
+    },
+    "612892690": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 45,
+      "winner_correct": 45,
+      "winner_top1_percent": 100.0
+    },
+    "620757010": {
+      "abstain": 8,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 0.0,
+      "tied_contains": 0,
+      "total": 8,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "621805586": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 6,
+      "total": 232,
+      "winner_correct": 226,
+      "winner_top1_percent": 97.41379310344827
+    },
+    "621805602": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 80,
+      "winner_correct": 80,
+      "winner_top1_percent": 100.0
+    },
+    "622854162": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 15,
+      "total": 25,
+      "winner_correct": 10,
+      "winner_top1_percent": 40.0
+    },
+    "622854178": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 3,
+      "total": 53,
+      "winner_correct": 50,
+      "winner_top1_percent": 94.33962264150944
+    },
+    "624951314": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 33,
+      "total": 227,
+      "winner_correct": 194,
+      "winner_top1_percent": 85.46255506607929
+    },
+    "624951330": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 11,
+      "total": 126,
+      "winner_correct": 115,
+      "winner_top1_percent": 91.26984126984127
+    },
+    "638582818": {
+      "abstain": 1,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 0.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "65553": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 2,
+      "winner_correct": 2,
+      "winner_top1_percent": 100.0
+    },
+    "671088722": {
+      "abstain": 2,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 0.0,
+      "tied_contains": 0,
+      "total": 2,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "671088738": {
+      "abstain": 1,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 0.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 0,
+      "winner_top1_percent": 0.0
+    },
+    "671088786": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 49,
+      "total": 394,
+      "winner_correct": 345,
+      "winner_top1_percent": 87.56345177664974
+    },
+    "671088802": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 3,
+      "total": 29,
+      "winner_correct": 26,
+      "winner_top1_percent": 89.65517241379311
+    },
+    "8209": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 6384,
+      "total": 47379,
+      "winner_correct": 40995,
+      "winner_top1_percent": 86.52567593237511
+    },
+    "8216": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "8225": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 4711,
+      "total": 44848,
+      "winner_correct": 40137,
+      "winner_top1_percent": 89.49562968248306
+    },
+    "8228": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 166,
+      "total": 2488,
+      "winner_correct": 2322,
+      "winner_top1_percent": 93.32797427652733
+    }
+  },
+  "per_pos": {
+    "adjective": {
+      "abstain": 6,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 99.99230325187608,
+      "tied_contains": 12919,
+      "total": 77955,
+      "winner_correct": 65030,
+      "winner_top1_percent": 83.41992174972741
+    },
+    "noun": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 104866,
+      "total": 554148,
+      "winner_correct": 449282,
+      "winner_top1_percent": 81.07617459595632
+    },
+    "pronoun": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 15,
+      "total": 44,
+      "winner_correct": 29,
+      "winner_top1_percent": 65.9090909090909
+    },
+    "verb": {
+      "abstain": 18,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 99.90467111534795,
+      "tied_contains": 399,
+      "total": 18882,
+      "winner_correct": 18465,
+      "winner_top1_percent": 97.79154750556086
+    }
+  },
+  "proof_workers": 20,
+  "runtime_authority_changed": false,
+  "same_lemma": {
+    "abstain": 24,
+    "false_authority": 0,
+    "false_authority_percent": 0.0,
+    "target_coverage_percent": 99.996313528276,
+    "tied_contains": 118199,
+    "total": 651029,
+    "winner_correct": 532806,
+    "winner_top1_percent": 81.84059389059473
+  },
+  "unresolved": 1850584
+}

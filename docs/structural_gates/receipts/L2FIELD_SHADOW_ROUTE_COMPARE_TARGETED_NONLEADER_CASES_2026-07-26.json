@@ -1,0 +1,69 @@
+{
+  "kind": "candidate_route_compare_targeted_cases",
+  "read_as": "spot checks for real nonleader near-neighbor and local-readout regressions after tightening winner admission in L2FieldShadow",
+  "target_route": "l2-field-shadow",
+  "cases": [
+    {
+      "input": "докурчиват ",
+      "selected_surface_diverged": false,
+      "selected_gate_diverged": false,
+      "selected_provenance_diverged": false,
+      "compact_selected": null,
+      "shadow_selected": null
+    },
+    {
+      "input": "ЯДРА ",
+      "selected_surface_diverged": false,
+      "selected_gate_diverged": false,
+      "selected_provenance_diverged": false,
+      "compact_selected": null,
+      "shadow_selected": null
+    },
+    {
+      "input": "ене ",
+      "selected_surface_diverged": false,
+      "selected_gate_diverged": false,
+      "selected_provenance_diverged": false,
+      "compact_selected": null,
+      "shadow_selected": null
+    },
+    {
+      "input": "смеа ",
+      "selected_surface_diverged": false,
+      "selected_gate_diverged": false,
+      "selected_provenance_diverged": true,
+      "compact_selected": "смета ",
+      "shadow_selected": "смета "
+    },
+    {
+      "input": "сделам ",
+      "selected_surface_diverged": false,
+      "selected_gate_diverged": false,
+      "selected_provenance_diverged": true,
+      "compact_selected": "сделай ",
+      "shadow_selected": "сделай "
+    },
+    {
+      "input": "сли, ",
+      "selected_surface_diverged": false,
+      "selected_gate_diverged": false,
+      "selected_provenance_diverged": true,
+      "compact_selected": "соли, ",
+      "shadow_selected": "соли, "
+    },
+    {
+      "input": "вошеьные ",
+      "selected_surface_diverged": false,
+      "selected_gate_diverged": false,
+      "selected_provenance_diverged": false,
+      "compact_selected": null,
+      "shadow_selected": null
+    }
+  ],
+  "summary": {
+    "cases": 7,
+    "surface_diverged": 0,
+    "gate_diverged": 0,
+    "provenance_diverged": 3
+  }
+}

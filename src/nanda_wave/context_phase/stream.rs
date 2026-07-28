@@ -106,7 +106,7 @@ where
             return Ok(());
         }
     };
-    let tokens = super::super::llmwave::tokenize(text);
+    let tokens = super::tokenize_context_text(text);
     fragment.clear();
     if !(3..=MAX_FRAGMENT_TOKENS).contains(&tokens.len()) {
         stats.rejected_token_count = stats.rejected_token_count.saturating_add(1);

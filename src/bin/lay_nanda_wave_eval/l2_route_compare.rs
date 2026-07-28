@@ -38,9 +38,9 @@ fn report_json(path: &Path, limit: usize, max_examples: usize) -> io::Result<Val
     let mut surface_diverged = 0usize;
     let mut gate_diverged = 0usize;
     let mut provenance_diverged = 0usize;
-    let mut compact_apply = 0usize;
+    let mut reference_apply = 0usize;
     let mut shadow_apply = 0usize;
-    let mut compact_matches_target = 0usize;
+    let mut reference_matches_target = 0usize;
     let mut shadow_matches_target = 0usize;
     let mut both_match_target = 0usize;
     let mut examples = Vec::new();
@@ -55,41 +55,43 @@ fn report_json(path: &Path, limit: usize, max_examples: usize) -> io::Result<Val
         if input.trim().is_empty() {
             continue;
         }
-        let compact = resolve_with_route(input, &cfg, CandidateReadoutRoute::CompactL2);
+        let reference = resolve_with_route(input, &cfg, CandidateReadoutRoute::FullWave);
         let shadow = resolve_with_route(input, &cfg, CandidateReadoutRoute::L2FieldShadow);
         let target = full_user_target(&value);
 
         let surface_changed =
-            selected_surface_diverged(compact.selected.as_ref(), shadow.selected.as_ref());
-        let gate_changed = selected_gate_diverged(compact.selected.as_ref(), shadow.selected.as_ref());
+            selected_surface_diverged(reference.selected.as_ref(), shadow.selected.as_ref());
+        let gate_changed =
+            selected_gate_diverged(reference.selected.as_ref(), shadow.selected.as_ref());
         let provenance_changed =
-            selected_provenance_diverged(compact.selected.as_ref(), shadow.selected.as_ref());
+            selected_provenance_diverged(reference.selected.as_ref(), shadow.selected.as_ref());
 
         surface_diverged += usize::from(surface_changed);
         gate_diverged += usize::from(gate_changed);
         provenance_diverged += usize::from(provenance_changed);
-        compact_apply += usize::from(selected_apply(&compact));
+        reference_apply += usize::from(selected_apply(&reference));
         shadow_apply += usize::from(selected_apply(&shadow));
 
-        let compact_target_match = target
+        let reference_target_match = target
             .as_deref()
-            .is_some_and(|target| selected_matches_target(compact.selected.as_ref(), target));
+            .is_some_and(|target| selected_matches_target(reference.selected.as_ref(), target));
         let shadow_target_match = target
             .as_deref()
             .is_some_and(|target| selected_matches_target(shadow.selected.as_ref(), target));
-        compact_matches_target += usize::from(compact_target_match);
+        reference_matches_target += usize::from(reference_target_match);
         shadow_matches_target += usize::from(shadow_target_match);
-        both_match_target += usize::from(compact_target_match && shadow_target_match);
+        both_match_target += usize::from(reference_target_match && shadow_target_match);
         records_used += 1;
 
-        if examples.len() < max_examples && (surface_changed || gate_changed || provenance_changed) {
+        if examples.len() < max_examples && (surface_changed || gate_changed || provenance_changed)
+        {
             examples.push(json!({
                 "input": input,
                 "user_target": target,
                 "selected_surface_diverged": surface_changed,
                 "selected_gate_diverged": gate_changed,
                 "selected_provenance_diverged": provenance_changed,
-                "compact": resolution_summary_json(CandidateReadoutRoute::CompactL2, &compact),
+                "reference": resolution_summary_json(CandidateReadoutRoute::FullWave, &reference),
                 "shadow": resolution_summary_json(CandidateReadoutRoute::L2FieldShadow, &shadow),
             }));
         }
@@ -109,16 +111,16 @@ fn report_json(path: &Path, limit: usize, max_examples: usize) -> io::Result<Val
             "surface_identical": records_used.saturating_sub(surface_diverged),
             "gate_diverged": gate_diverged,
             "provenance_diverged": provenance_diverged,
-            "compact_apply": compact_apply,
+            "reference_apply": reference_apply,
             "shadow_apply": shadow_apply,
         },
         "user_target_match": {
-            "compact": compact_matches_target,
+            "reference": reference_matches_target,
             "shadow": shadow_matches_target,
             "both": both_match_target,
         },
         "examples": examples,
-        "read_as": "compare compact-l2 and l2-field-shadow on real lay_from inputs from corrections.jsonl; surface and gate parity matter more than provenance",
+        "read_as": "compare full-wave and l2-field-shadow on real lay_from inputs from corrections.jsonl after lexical-route removal; surface and gate parity matter more than provenance",
     }))
 }
 
@@ -148,11 +150,9 @@ fn selected_apply(resolution: &CorrectionResolution) -> bool {
         .is_some_and(|candidate| candidate.gate.action == CandidateGateAction::Eligible)
 }
 
-fn selected_matches_target(
-    candidate: Option<&UnifiedCorrectionCandidate>,
-    target: &str,
-) -> bool {
-    candidate.is_some_and(|candidate| normalized_text(&candidate.replacement) == normalized_text(target))
+fn selected_matches_target(candidate: Option<&UnifiedCorrectionCandidate>, target: &str) -> bool {
+    candidate
+        .is_some_and(|candidate| normalized_text(&candidate.replacement) == normalized_text(target))
 }
 
 fn selected_surface_diverged(
@@ -194,7 +194,10 @@ fn selected_provenance_diverged(
     }
 }
 
-fn resolution_summary_json(route: CandidateReadoutRoute, resolution: &CorrectionResolution) -> Value {
+fn resolution_summary_json(
+    route: CandidateReadoutRoute,
+    resolution: &CorrectionResolution,
+) -> Value {
     json!({
         "route": route_name(route),
         "candidate_count": resolution.candidates.len(),
@@ -222,7 +225,6 @@ fn candidate_summary_json(candidate: &UnifiedCorrectionCandidate) -> Value {
 
 fn route_name(route: CandidateReadoutRoute) -> &'static str {
     match route {
-        CandidateReadoutRoute::CompactL2 => "compact-l2",
         CandidateReadoutRoute::L2FieldShadow => "l2-field-shadow",
         CandidateReadoutRoute::FullWave => "full-wave",
     }
@@ -235,7 +237,12 @@ fn input_path(args: &[String]) -> io::Result<PathBuf> {
     std::env::var_os("HOME")
         .map(PathBuf::from)
         .map(|home| home.join(DEFAULT_CORRECTIONS_PATH))
-        .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "HOME is not set and no input path was provided"))
+        .ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::NotFound,
+                "HOME is not set and no input path was provided",
+            )
+        })
 }
 
 fn arg_value<'a>(args: &'a [String], name: &str) -> Option<&'a str> {

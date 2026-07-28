@@ -1,0 +1,119 @@
+{
+  "kind": "l11_l2_socket_pool_and_lattice_budget_experiment",
+  "date": "2026-07-27",
+  "remote_host": "e@192.168.3.94",
+  "remote_checkout": "/home/e/projects/lay-l2-build",
+  "l1_package": "data/lexical_grokking/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v2.v7.bin",
+  "l2_package": "data/l2/LAY-L2-RU-FULL-v4.bin",
+  "probe": {
+    "input": "звгрузи",
+    "required_l1_seed": "загрузить",
+    "required_l2_output": "загрузи"
+  },
+  "posting_budget_experiment": [
+    {
+      "atoms_per_channel": 1,
+      "birth_atoms": 10,
+      "birth_postings": 10219,
+      "touched_centers": 7493,
+      "prepare_us_single_trace": 4765,
+      "required_seed_rank": 0,
+      "verdict": "FAIL_retention"
+    },
+    {
+      "atoms_per_channel": 2,
+      "birth_atoms": 20,
+      "birth_postings": 28094,
+      "touched_centers": 20199,
+      "prepare_us_single_trace": 9107,
+      "required_seed_rank": 5,
+      "verdict": "PASS_probe_retention"
+    },
+    {
+      "atoms_per_channel": 2,
+      "posting_budget": 20000,
+      "selected_birth_atoms": 18,
+      "selected_birth_postings": 17374,
+      "touched_centers": 13489,
+      "required_seed_rank": 5,
+      "verdict": "PASS_probe_retention_only"
+    }
+  ],
+  "compact_lattice_transport": {
+    "fields": [
+      "terminal_id",
+      "surface",
+      "authority",
+      "score_milli"
+    ],
+    "limit_16_response_bytes": 1410,
+    "limit_64_response_bytes": 5573,
+    "full_phase_frontier": 128,
+    "limit_16_hot_p50_us": 4711,
+    "limit_16_hot_p99_us": 5443,
+    "latency_gate_us": 5000,
+    "verdict": "FAIL_latency_by_443us"
+  },
+  "rejected_phase_frontier_experiment": {
+    "phase_frontier": 64,
+    "limit": 16,
+    "hot_p50_us": 4018,
+    "hot_p99_us": 4810,
+    "l1_required_seed_rank": 5,
+    "l2_required_output_present": false,
+    "verdict": "REJECT_quality_regression"
+  },
+  "service_worker_pool": {
+    "workers": 20,
+    "queue_capacity": 80,
+    "before_requests": 20000,
+    "before_seconds": 21.342,
+    "before_requests_per_second": 937.1,
+    "after_requests": 20000,
+    "after_seconds": 3.582,
+    "after_requests_per_second": 5582.9,
+    "throughput_gain": 5.96,
+    "long_run_requests": 100000,
+    "long_run_seconds": 16.86,
+    "long_run_requests_per_second": 5931.3,
+    "cpu_sample_requests": 40000,
+    "cpu_sample_wall_seconds": 6.415,
+    "cpu_sample_service_cpu_seconds": 110.09,
+    "cpu_sample_average_service_cores": 17.16,
+    "cpu_sample_requests_per_second": 6235.4,
+    "required_seed_retained": 100000,
+    "required_seed_evaluated": 100000,
+    "verdict": "PASS_throughput_and_retention_probe"
+  },
+  "canonical_l2_blocker": {
+    "corpus_has_required_binding": true,
+    "required_binding": "F\\tзагрузить\\tзагрузи\\tverb:imp_excl:sg:imp:perf",
+    "l1_l2_fingerprint_match": true,
+    "required_l1_surface_present": false,
+    "exact_l1_probe": {
+      "input": "загрузи",
+      "verdict": "abstain",
+      "returned_surface": "загрузки",
+      "geometry_distance": 1
+    },
+    "observed_verdict": "Abstain",
+    "observed_wrong_lemma_cohort": "загрузка",
+    "causes": [
+      "the current L1.1 package does not contain the required загрузи WordCenter, so canonical L2 cannot decode it",
+      "strongest_lemma_count lets a larger noun seed cohort suppress the weaker verb lemma before contextual settlement"
+    ],
+    "verdict": "FAIL_canonical_l2_route"
+  },
+  "not_tested": [
+    "fixed heldout percentages for every L1 damage class under the experimental posting budget",
+    "full ambiguity and false-certainty proof under the compact transport",
+    "complete canonical L2 heldout proof after replacing strongest_lemma_count",
+    "production daemon latency after installation"
+  ],
+  "protected_regressions": {
+    "l11_service_tests": "5/5 PASS",
+    "known_case_ending_v_kode": "PASS",
+    "double_shift_exact_auto_undo_contract": "PASS"
+  },
+  "runtime_authority_changed": false
+}

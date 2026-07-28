@@ -69,6 +69,23 @@ impl WordBuffer {
         Some(undo)
     }
 
+    pub fn pending_auto_undo_ready(&mut self) -> bool {
+        let Some(undo) = self.pending_auto_undo.as_ref() else {
+            return false;
+        };
+        if undo.started_at.elapsed() > Duration::from_secs(LEARNING_FEEDBACK_MAX_AGE_SECS) {
+            self.pending_auto_undo = None;
+            return false;
+        }
+        true
+    }
+
+    pub fn restore_pending_auto_undo(&mut self, undo: PendingAutoUndo) {
+        if undo.started_at.elapsed() <= Duration::from_secs(LEARNING_FEEDBACK_MAX_AGE_SECS) {
+            self.pending_auto_undo = Some(undo);
+        }
+    }
+
     pub fn note_learning_backspace(&mut self) {
         let Some(pending) = self.pending_learning.as_mut() else {
             return;

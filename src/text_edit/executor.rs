@@ -71,6 +71,14 @@ impl BackendDispatchReceipt {
         matches!(self, Self::NotDispatched { .. })
     }
 
+    /// True only when the backend proved that no visible mutation happened.
+    ///
+    /// Explicit rollback may use this stronger receipt to select a fallback
+    /// backend. Indeterminate and dispatched outcomes must remain single-shot.
+    pub const fn confirmed_no_mutation(&self) -> bool {
+        matches!(self, Self::NotDispatched { .. } | Self::Rejected { .. })
+    }
+
     pub fn reason(&self) -> &str {
         match self {
             Self::NotDispatched { reason, .. } | Self::Rejected { reason, .. } => reason,
@@ -233,6 +241,10 @@ mod tests {
         assert!(!rejected.permits_backend_reselection());
         assert!(!indeterminate.permits_backend_reselection());
         assert!(!dispatched.permits_backend_reselection());
+        assert!(not_dispatched.confirmed_no_mutation());
+        assert!(rejected.confirmed_no_mutation());
+        assert!(!indeterminate.confirmed_no_mutation());
+        assert!(!dispatched.confirmed_no_mutation());
         assert!(dispatched.was_dispatched());
         assert_eq!(dispatched.reason(), "dispatched");
     }

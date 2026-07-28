@@ -1,0 +1,116 @@
+{
+  "kind": "l2_field_shadow_legacy_route_removal",
+  "status": "ok",
+  "date": "2026-07-26",
+  "read_as": "the live local route now keeps L2FieldShadow as the only executable local-field owner for IME and daemon correction; the old CompactL2 route and L2LexicalPhaseCell32 source path are removed from runtime/public route selection, while FullWave remains the compare reference",
+  "commands": [
+    {
+      "cmd": "graphify query \"What currently owns the live local correction route from L1.1 through L2 and where do CompactL2 or L2LexicalPhaseCell32 still survive in executable code paths?\"",
+      "result": "ok"
+    },
+    {
+      "cmd": "rg -n \"CompactL2|compact-l2|L2LexicalPhaseCell32|uses_peak_context\" src tests src/bin",
+      "result": "ok",
+      "matches": 0
+    },
+    {
+      "cmd": "scripts/cargo-guard.sh test --lib correction_core",
+      "result": "failed",
+      "passed": 95,
+      "failed": 14,
+      "note": "broad correction_core remains outside this gate; current failing set includes local-parity and general correction cases"
+    },
+    {
+      "cmd": "scripts/cargo-guard.sh test --lib l2_field_shadow_route_uses_shadow_surface_source_ids",
+      "result": "ok",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "cmd": "scripts/cargo-guard.sh test --lib l2_field_shadow_route_self_prepares_l11_candidate_without_peak_context",
+      "result": "ok",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "cmd": "scripts/cargo-guard.sh test --lib live_l2_field_shadow_route_births_nanda_candidates_without_full_wave_authority",
+      "result": "ok",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "cmd": "scripts/cargo-guard.sh test --lib hidden_state_blocks_live_known_form_drifts_from_logs",
+      "result": "ok",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "cmd": "scripts/cargo-guard.sh test --lib ambiguous_known_to_known_swap_requires_relation_proof",
+      "result": "ok",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "cmd": "scripts/cargo-guard.sh test --lib gate_authorizes_same_transition_behind_unchanged_right_context",
+      "result": "ok",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "cmd": "scripts/cargo-guard.sh check --bin lay",
+      "result": "ok"
+    },
+    {
+      "cmd": "scripts/cargo-guard.sh check --bin lay-daemon",
+      "result": "ok"
+    },
+    {
+      "cmd": "scripts/cargo-guard.sh check --bin lay-nanda-wave-eval",
+      "result": "ok"
+    },
+    {
+      "cmd": "scripts/cargo-guard.sh run --bin lay -- --help",
+      "result": "ok",
+      "candidate_routes": [
+        "l2-field-shadow",
+        "full-wave"
+      ]
+    },
+    {
+      "cmd": "scripts/cargo-guard.sh run --bin lay-nanda-wave-eval -- --l2-route-compare-report --limit 200 --examples 0",
+      "result": "ok",
+      "records_used": 134,
+      "surface_diverged": 18,
+      "gate_diverged": 18,
+      "provenance_diverged": 32,
+      "reference_apply": 27,
+      "shadow_apply": 29,
+      "reference_target_match": 7,
+      "shadow_target_match": 8,
+      "both_target_match": 5
+    }
+  ],
+  "runtime": {
+    "live_default_route": "L2FieldShadow",
+    "compare_reference_route": "FullWave",
+    "public_candidate_routes": [
+      "l2-field-shadow",
+      "full-wave"
+    ],
+    "legacy_route_present_in_src_tests_bin": false
+  },
+  "measured_facts": [
+    "CandidateReadoutRoute no longer exposes CompactL2; live_default points to L2FieldShadow and compare_reference points to FullWave.",
+    "No CompactL2, compact-l2, uses_peak_context, or L2LexicalPhaseCell32 matches remain in src/, tests/, or src/bin/.",
+    "Focused route-removal tests and binary checks pass.",
+    "Post-removal compare on corrections.jsonl is no longer parity-clean versus FullWave: 18/134 selected surface divergences and 18/134 selected gate divergences."
+  ],
+  "not_tested": [
+    "fixed heldout standalone L2 proof",
+    "live IME typing session replay after this exact removal patch",
+    "standalone packaged L2 cold-load, RSS, and latency budgets",
+    "resolution of the 14 broader correction_core failures observed during the broad lib run"
+  ],
+  "verdict_scope": "Legacy lexical route removal is complete for executable route selection and public CLI surface. This receipt does not promote standalone L2 packaging and does not claim FullWave parity after removal.",
+  "runtime_authority_changed": true
+}

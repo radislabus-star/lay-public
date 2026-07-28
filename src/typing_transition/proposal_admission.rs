@@ -344,6 +344,24 @@ fn structural_context_gate(
             reason: "same_tail_single_consonant_drift",
         });
     }
+    if stable_known_form_grows_into_infinitive_overreach(original, replacement, error_class, origin)
+    {
+        return Some(CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "known_form_to_infinitive_overreach",
+        });
+    }
+    if protected_current_surface_rewrite_requires_context_authority(
+        original,
+        replacement,
+        error_class,
+        origin,
+    ) {
+        return Some(CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "protected_current_surface_rewrite_requires_context_authority",
+        });
+    }
     if origin != CandidateOrigin::L3Context
         && known_russian_word_rewritten_to_different_known_word(original, replacement, error_class)
     {
@@ -481,6 +499,121 @@ fn known_current_word_gets_unproven_surface_drift(
 
     damerau_levenshtein(&original_lower, &replacement_lower) <= 1
         || inserted_char_position_for_missing_letter(&original_lower, &replacement_lower).is_some()
+}
+
+fn stable_known_form_grows_into_infinitive_overreach(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+) -> bool {
+    if matches!(
+        error_class,
+        TypingErrorClass::WrongLayout
+            | TypingErrorClass::PartialLayout
+            | TypingErrorClass::SplitWord
+            | TypingErrorClass::GluedWords
+            | TypingErrorClass::CaseNoise
+            | TypingErrorClass::RepeatedLetter
+            | TypingErrorClass::AdjacentTransposition
+            | TypingErrorClass::GrammarAgreement
+            | TypingErrorClass::TechnicalToken
+            | TypingErrorClass::ProtectedToken
+            | TypingErrorClass::CompletionOnly
+            | TypingErrorClass::Unknown
+    ) {
+        return false;
+    }
+    if matches!(
+        origin.source_role(),
+        CorrectionSourceRole::Layout
+            | CorrectionSourceRole::Boundary
+            | CorrectionSourceRole::Technical
+    ) {
+        return false;
+    }
+    if candidate_changes_non_last_word(original, replacement) {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return false;
+    };
+    if !is_cyrillic_letters_only(&original_word) || !is_cyrillic_letters_only(&replacement_word) {
+        return false;
+    }
+
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    if original_lower == replacement_lower
+        || !protected_current_surface_token(&original_lower)
+        || !known_russian_autocorrect_token(&replacement_lower)
+    {
+        return false;
+    }
+    let original_len = original_lower.chars().count();
+    let replacement_len = replacement_lower.chars().count();
+    if replacement_len <= original_len
+        || replacement_len > original_len + 4
+        || russian_infinitive_like_tail(&original_lower)
+        || !russian_infinitive_like_tail(&replacement_lower)
+    {
+        return false;
+    }
+
+    common_prefix_chars(&original_lower, &replacement_lower) >= original_len.saturating_sub(2)
+}
+
+fn protected_current_surface_rewrite_requires_context_authority(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+) -> bool {
+    if origin != CandidateOrigin::L2Surface {
+        return false;
+    }
+    if matches!(
+        error_class,
+        TypingErrorClass::WrongLayout
+            | TypingErrorClass::PartialLayout
+            | TypingErrorClass::SplitWord
+            | TypingErrorClass::GluedWords
+            | TypingErrorClass::BoundaryShift
+            | TypingErrorClass::CaseNoise
+            | TypingErrorClass::TechnicalToken
+            | TypingErrorClass::ProtectedToken
+            | TypingErrorClass::CompletionOnly
+            | TypingErrorClass::Unknown
+    ) {
+        return false;
+    }
+    if candidate_changes_non_last_word(original, replacement) {
+        return false;
+    }
+    let Some(original_word) = last_text_word(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return false;
+    };
+    if !is_cyrillic_letters_only(&original_word) || !is_cyrillic_letters_only(&replacement_word) {
+        return false;
+    }
+
+    let original_lower = original_word.to_lowercase();
+    let replacement_lower = replacement_word.to_lowercase();
+    if original_lower == replacement_lower
+        || !protected_current_surface_token(&original_lower)
+        || original_lower.chars().count() < 4
+        || replacement_lower.chars().count() < 4
+    {
+        return false;
+    }
+
+    true
 }
 
 fn verified_surface_to_lexical_center_repair(
@@ -665,12 +798,37 @@ fn unproven_inflection_tail_vowel_to_consonant(original: &str, replacement: &str
 }
 
 fn protected_current_surface_token(lower: &str) -> bool {
+    let field = crate::hot_field::HotFieldSnapshot::current();
     known_russian_autocorrect_token(lower)
         || crate::phrase_lexicon::is_known_russian_phrase_part(lower)
+        || field.input_surface_readout(lower).has_phase_authority()
+        || field.word_readout(lower).is_known()
+        || crate::nanda_wave::l2::l2_surface_foundation_contains(lower)
         || crate::nanda_wave::l2::l2_surface_foundation_has_authority(lower)
+        || crate::russian_lexicon::is_reference_backed_russian_form(lower)
         || crate::russian_lexicon::is_center_backed_russian_form(lower)
+        || crate::russian_lexicon::is_reference_known_russian_word_or_form(lower)
         || crate::russian_lexicon::russian_dictionary().contains(lower)
         || crate::russian_lexicon::russian_short_dictionary().contains(lower)
+}
+
+fn russian_infinitive_like_tail(lower: &str) -> bool {
+    matches!(
+        lower,
+        word if word.ends_with("ться")
+            || word.ends_with("тись")
+            || word.ends_with("чься")
+            || word.ends_with("ть")
+            || word.ends_with("ти")
+            || word.ends_with("чь")
+    )
+}
+
+fn common_prefix_chars(left: &str, right: &str) -> usize {
+    left.chars()
+        .zip(right.chars())
+        .take_while(|(left, right)| left == right)
+        .count()
 }
 
 fn boundary_operator_changes_non_whitespace_surface(
@@ -1144,6 +1302,10 @@ fn known_russian_word_rewritten_to_different_known_word(
         TypingErrorClass::CompositeTypo
             | TypingErrorClass::BoundaryShift
             | TypingErrorClass::MissingLetter
+            | TypingErrorClass::SparseInternalMultiOmission
+            | TypingErrorClass::ExtraLetter
+            | TypingErrorClass::RepeatedLetter
+            | TypingErrorClass::AdjacentTransposition
             | TypingErrorClass::LetterSubstitution
             | TypingErrorClass::GrammarAgreement
     ) {
@@ -1173,6 +1335,9 @@ fn known_russian_autocorrect_token(lower: &str) -> bool {
     crate::lexicon::is_common_ru_word(lower)
         || crate::lexicon::is_ru_live_protected_word(lower)
         || crate::lexicon::is_user_protected_word(lower)
+        || crate::nanda_wave::l2::l2_surface_foundation_contains(lower)
+        || crate::russian_lexicon::is_reference_backed_russian_form(lower)
+        || crate::russian_lexicon::is_reference_known_russian_word_or_form(lower)
         || crate::russian_lexicon::is_known_russian_word_or_form(lower)
         || crate::russian_lexicon::is_known_russian_adverb_o_form(lower)
         || crate::russian_lexicon::is_known_russian_ka_oblique_form(lower)
@@ -1492,8 +1657,12 @@ fn short_layout_candidate_lacks_phrase_context(
     let has_ascii_context = previous_words
         .iter()
         .any(|word| word.chars().any(|ch| ch.is_ascii_alphabetic()));
+    let immediate_entity_context = previous_words.last().is_some_and(|word| {
+        crate::word_recognizer::is_ascii_titlecase_token(word)
+            || crate::word_recognizer::is_ascii_technical_or_brand_token(word)
+    });
 
-    has_ascii_context && !has_cyrillic_context
+    has_ascii_context && !has_cyrillic_context && !immediate_entity_context
 }
 
 fn short_cyrillic_word_switches_to_ascii_layout(
@@ -1732,6 +1901,46 @@ pub(crate) fn should_prefer_composite_after_repeated_repair(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn l2_cannot_delete_a_known_inflection_without_context_authority() {
+        let gate = gate_candidate_with_origin(
+            "в коде ",
+            "в код ",
+            TypingErrorClass::ExtraLetter,
+            CandidateOrigin::L2Surface,
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "known_current_word_surface_drift");
+    }
+
+    #[test]
+    fn l2_cannot_rewrite_known_russian_surfaces_from_live_log() {
+        for (original, replacement, error_class) in [
+            ("закинем ", "закон ", TypingErrorClass::CompositeTypo),
+            ("китайцы ", "китайы ", TypingErrorClass::ExtraLetter),
+            ("ходу ", "ход ", TypingErrorClass::ExtraLetter),
+            ("делаем ", "деваем ", TypingErrorClass::LetterSubstitution),
+        ] {
+            let gate = gate_candidate_with_origin(
+                original,
+                replacement,
+                error_class,
+                CandidateOrigin::L2Surface,
+            );
+
+            assert_eq!(
+                gate.action,
+                CandidateGateAction::SuggestOnly,
+                "{original:?} -> {replacement:?}: {gate:?}"
+            );
+            assert_ne!(
+                gate.reason, "class_allows_apply",
+                "{original:?} -> {replacement:?}: {gate:?}"
+            );
+        }
+    }
 
     #[test]
     fn boundary_shift_tail_pair_full_text_is_eligible() {

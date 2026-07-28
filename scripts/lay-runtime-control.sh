@@ -60,6 +60,11 @@ sync_ibus_engine() {
     return 1
 }
 
+stop_lay_ibus_engine() {
+    # Linux comm is limited to 15 bytes; match the full executable argv.
+    pkill -TERM -f '(^|/)lay-ibus-engine( |$)' 2>/dev/null || true
+}
+
 select_lay_ime() {
     local layout="${1:?layout required}"
     if activate_gnome_layout "$layout"; then
@@ -104,7 +109,7 @@ start_ime() {
         fallback=lay-ime-us
     fi
     systemctl --user stop lay-ibus-engine.service >/dev/null 2>&1 || true
-    pkill -x lay-ibus-engine || true
+    stop_lay_ibus_engine
     select_lay_ime "$preferred" \
         || select_lay_ime "$fallback" \
         || true
@@ -113,8 +118,7 @@ start_ime() {
 stop_ime() {
     select_xkb
     systemctl --user stop lay-ibus-engine.service >/dev/null 2>&1 || true
-    pkill -TERM -x lay-ibus-engine || true
-    pkill -x lay-ibus-engine || true
+    stop_lay_ibus_engine
     select_xkb
 }
 

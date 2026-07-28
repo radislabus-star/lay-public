@@ -355,11 +355,16 @@ fn verified_operator_consensus_witness(
     let action = evaluation.action;
     let exact_transposition = verified_mass_preserving_transposition(candidate, evaluation);
     let exact_l2_transition = verified_mass_preserving_l2_transition(candidate, evaluation);
+    let shadow_local_field_evidence = candidate.has_source_id("L2FieldShadowReadout")
+        || candidate.has_source_id("L2FieldShadowMorphology")
+        || candidate.has_source_id("L2FieldShadowNearNeighbor");
     let independent_operator_evidence = (candidate
         .has_origin(crate::candidate_contract::CandidateOrigin::DeterministicTypo)
         && candidate.has_origin(crate::candidate_contract::CandidateOrigin::L2Surface))
+        || shadow_local_field_evidence
         || exact_l2_transition;
     let learned_field_evidence = exact_transposition
+        || strong_l2_wave_peak_support(&evaluation.signals)
         || (evaluation.signals.l2_transition_phase_verdict
             == crate::nanda_wave::PhaseVerdict::Support
             && evaluation.signals.l2_lexical_phase_competition_ready);

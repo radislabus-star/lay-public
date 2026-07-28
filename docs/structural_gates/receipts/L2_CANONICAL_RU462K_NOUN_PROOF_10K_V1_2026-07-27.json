@@ -1,0 +1,180 @@
+{
+  "cold_load_us": 105546,
+  "evaluated": 10000,
+  "heldout_available": 554148,
+  "hot_p50_us": 2,
+  "hot_p99_us": 4,
+  "kind": "canonical_l2_fixed_heldout_proof",
+  "l1_package": "data/lexical_grokking/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v2.v7.bin",
+  "l2_package": "data/l2/LAY-L2-RU462K-NOUN-v1.bin",
+  "morphology_corpus": "data/morphology/lay_ru_noun_morph_462k_shadow_v1.tsv",
+  "morphology_slot": {
+    "abstain": 409,
+    "false_authority": 180,
+    "false_authority_percent": 1.8,
+    "target_coverage_percent": 94.11,
+    "tied_contains": 707,
+    "total": 10000,
+    "winner_correct": 8704,
+    "winner_top1_percent": 87.04
+  },
+  "near_neighbor": {
+    "reason": "current fixed corpus contains same-lemma morphology scenes only",
+    "tested": false
+  },
+  "package_bytes": 19243068,
+  "per_feature_mask": {
+    "1041": {
+      "abstain": 0,
+      "false_authority": 3,
+      "false_authority_percent": 0.3546099290780142,
+      "target_coverage_percent": 99.64539007092199,
+      "tied_contains": 65,
+      "total": 846,
+      "winner_correct": 778,
+      "winner_top1_percent": 91.96217494089835
+    },
+    "1057": {
+      "abstain": 0,
+      "false_authority": 1,
+      "false_authority_percent": 0.12195121951219512,
+      "target_coverage_percent": 99.8780487804878,
+      "tied_contains": 31,
+      "total": 820,
+      "winner_correct": 788,
+      "winner_top1_percent": 96.09756097560975
+    },
+    "16401": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 3,
+      "winner_correct": 3,
+      "winner_top1_percent": 100.0
+    },
+    "2065": {
+      "abstain": 0,
+      "false_authority": 13,
+      "false_authority_percent": 1.5366430260047281,
+      "target_coverage_percent": 98.46335697399527,
+      "tied_contains": 14,
+      "total": 846,
+      "winner_correct": 819,
+      "winner_top1_percent": 96.80851063829788
+    },
+    "2081": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 53,
+      "total": 820,
+      "winner_correct": 767,
+      "winner_top1_percent": 93.53658536585365
+    },
+    "273": {
+      "abstain": 0,
+      "false_authority": 18,
+      "false_authority_percent": 2.127659574468085,
+      "target_coverage_percent": 97.87234042553192,
+      "tied_contains": 74,
+      "total": 846,
+      "winner_correct": 754,
+      "winner_top1_percent": 89.12529550827423
+    },
+    "289": {
+      "abstain": 0,
+      "false_authority": 130,
+      "false_authority_percent": 15.853658536585366,
+      "target_coverage_percent": 84.14634146341463,
+      "tied_contains": 97,
+      "total": 820,
+      "winner_correct": 593,
+      "winner_top1_percent": 72.3170731707317
+    },
+    "32785": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 1,
+      "winner_correct": 1,
+      "winner_top1_percent": 100.0
+    },
+    "4113": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 208,
+      "total": 846,
+      "winner_correct": 638,
+      "winner_top1_percent": 75.41371158392435
+    },
+    "4129": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 33,
+      "total": 820,
+      "winner_correct": 787,
+      "winner_top1_percent": 95.97560975609755
+    },
+    "529": {
+      "abstain": 0,
+      "false_authority": 1,
+      "false_authority_percent": 0.1182033096926714,
+      "target_coverage_percent": 99.88179669030733,
+      "tied_contains": 67,
+      "total": 846,
+      "winner_correct": 778,
+      "winner_top1_percent": 91.96217494089835
+    },
+    "545": {
+      "abstain": 0,
+      "false_authority": 13,
+      "false_authority_percent": 1.5853658536585367,
+      "target_coverage_percent": 98.41463414634147,
+      "tied_contains": 7,
+      "total": 820,
+      "winner_correct": 800,
+      "winner_top1_percent": 97.5609756097561
+    },
+    "8209": {
+      "abstain": 0,
+      "false_authority": 1,
+      "false_authority_percent": 0.1182033096926714,
+      "target_coverage_percent": 99.88179669030733,
+      "tied_contains": 39,
+      "total": 846,
+      "winner_correct": 806,
+      "winner_top1_percent": 95.27186761229315
+    },
+    "8225": {
+      "abstain": 409,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 50.1219512195122,
+      "tied_contains": 19,
+      "total": 820,
+      "winner_correct": 392,
+      "winner_top1_percent": 47.80487804878049
+    }
+  },
+  "runtime_authority_changed": false,
+  "same_lemma": {
+    "abstain": 409,
+    "false_authority": 180,
+    "false_authority_percent": 1.8,
+    "target_coverage_percent": 94.11,
+    "tied_contains": 707,
+    "total": 10000,
+    "winner_correct": 8704,
+    "winner_top1_percent": 87.04
+  },
+  "unresolved": 0
+}

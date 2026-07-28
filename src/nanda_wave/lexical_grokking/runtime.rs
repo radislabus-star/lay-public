@@ -30,7 +30,8 @@ const MAX_RECONSTRUCTION_TAIL: usize = 32;
 const MAX_GEOMETRY_SCAN: usize = 1_024;
 const DEFAULT_BIRTH_ATOMS_PER_CHANNEL: usize = 4;
 const MAX_BIRTH_ATOMS_PER_CHANNEL: usize = 32;
-const MAX_BIRTH_POSTINGS: usize = 131_072;
+const DEFAULT_BIRTH_POSTING_BUDGET: usize = 131_072;
+const MAX_BIRTH_POSTING_BUDGET: usize = 131_072;
 const SETTLING_ITERATIONS: u8 = 3;
 const MAX_ANCHOR_SEQUENCE: usize = 32;
 const MAX_EXACT_COLLISION_OPERATOR_CHARS: usize = 16;
@@ -70,6 +71,28 @@ pub fn restore_surface(
 ) -> io::Result<serde_json::Value> {
     let host = L1RestorationHost::load(package_path)?;
     Ok(host.restore(surface, limit))
+}
+
+pub fn inspect_package_header(package_path: &Path) -> io::Result<serde_json::Value> {
+    use std::io::Read;
+
+    let mut file = std::fs::File::open(package_path)?;
+    let mut header = [0_u8; 192];
+    file.read_exact(&mut header)?;
+    let (corpus_fingerprint, terminal_count, declared_bytes) =
+        super::format::inspect_header(&header).map_err(io::Error::other)?;
+    let actual_bytes = file.metadata()?.len();
+    if declared_bytes != actual_bytes {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            format!("L1.1 package size mismatch: header={declared_bytes} actual={actual_bytes}"),
+        ));
+    }
+    Ok(serde_json::json!({
+        "corpus_fingerprint": corpus_fingerprint,
+        "terminal_count": terminal_count,
+        "package_bytes": actual_bytes,
+    }))
 }
 
 fn restoration_candidate_json(
@@ -199,6 +222,17 @@ fn birth_atoms_per_channel() -> usize {
     })
 }
 
+fn birth_posting_budget() -> usize {
+    static VALUE: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
+    *VALUE.get_or_init(|| {
+        std::env::var("LAY_L11_BIRTH_POSTING_BUDGET")
+            .ok()
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(DEFAULT_BIRTH_POSTING_BUDGET)
+            .clamp(1, MAX_BIRTH_POSTING_BUDGET)
+    })
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum ReadoutMode {
     Full,
@@ -306,6 +340,7 @@ type BirthAtom = (usize, u32, ObservedAtom);
 fn select_birth_atoms(
     birth_by_channel: &mut [Vec<BirthAtom>],
     atoms_per_channel: usize,
+    posting_budget: usize,
 ) -> Vec<BirthAtom> {
     let mut eligible = Vec::new();
     for atoms in birth_by_channel {
@@ -327,7 +362,7 @@ fn select_birth_atoms(
     let mut posting_count = 0_usize;
     for atom in eligible {
         let next = posting_count.saturating_add(atom.0);
-        if !selected.is_empty() && next > MAX_BIRTH_POSTINGS {
+        if !selected.is_empty() && next > posting_budget {
             continue;
         }
         posting_count = next;
@@ -501,7 +536,11 @@ impl LexicalGrokkingMemory {
                 *atom,
             ));
         }
-        let birth_atoms = select_birth_atoms(&mut birth_by_channel, birth_atoms_per_channel());
+        let birth_atoms = select_birth_atoms(
+            &mut birth_by_channel,
+            birth_atoms_per_channel(),
+            birth_posting_budget(),
+        );
         let birth_postings = birth_atoms
             .iter()
             .map(|(degree, _, _)| *degree)
@@ -726,16 +765,9 @@ impl LexicalGrokkingMemory {
     }
 
     fn exact_singleton_readout(&self, surface: &str) -> Option<GrokkingCandidate> {
+        let terminal_id = self.exact_terminal_for_surface(surface)?;
         let observed = self.resolve_surface(surface);
-        if observed.is_empty() {
-            return None;
-        }
         let character_sequence = observed_sequence(&observed, AtomChannel::CharacterAnchor);
-        let exact_terminals = self.exact_terminals(character_sequence.as_slice());
-        if exact_terminals.len() != 1 {
-            return None;
-        }
-        let terminal_id = *exact_terminals.first()?;
         let center = *self.package.centers.get(terminal_id as usize)?;
         let reverse = self.reverse_couplings(center);
         let observed_char_count = normalize_lexical_surface(surface)
@@ -805,6 +837,16 @@ impl LexicalGrokkingMemory {
             &mut candidates,
         );
         candidates.into_iter().next()
+    }
+
+    fn exact_terminal_for_surface(&self, surface: &str) -> Option<u32> {
+        let observed = self.resolve_surface(surface);
+        if observed.is_empty() {
+            return None;
+        }
+        let character_sequence = observed_sequence(&observed, AtomChannel::CharacterAnchor);
+        let exact_terminals = self.exact_terminals(character_sequence.as_slice());
+        (exact_terminals.len() == 1).then(|| *exact_terminals.first().expect("one terminal"))
     }
 
     fn finish_readout(
@@ -1799,8 +1841,26 @@ impl L1RestorationHost {
         &self.package_path
     }
 
+    pub fn corpus_fingerprint(&self) -> u64 {
+        self.memory.package.corpus_hash
+    }
+
+    pub fn terminal_count(&self) -> u32 {
+        self.memory.package.terminal_count()
+    }
+
+    pub fn decode_terminal(&self, terminal_id: u32) -> Option<String> {
+        self.memory.decode_terminal(terminal_id)
+    }
+
+    pub fn terminal_for_exact_surface(&self, surface: &str) -> Option<u32> {
+        self.memory.exact_terminal_for_surface(surface)
+    }
+
     pub fn restore(&self, surface: &str, limit: usize) -> serde_json::Value {
-        let mut candidates = self.memory.readout(surface, limit.max(1), ReadoutMode::Full);
+        let mut candidates = self
+            .memory
+            .readout(surface, limit.max(1), ReadoutMode::Full);
         let readout = self.memory.classify_restoration(
             surface,
             &mut candidates,
@@ -1863,6 +1923,41 @@ impl L1RestorationHost {
         })
     }
 
+    pub fn lattice(&self, surface: &str, limit: usize) -> serde_json::Value {
+        let candidates = self
+            .memory
+            .readout(surface, limit.max(1), ReadoutMode::Full)
+            .into_iter()
+            .map(|candidate| candidate_json(&self.memory, candidate))
+            .collect::<Vec<_>>();
+        serde_json::json!({
+            "package": self.package_path,
+            "input": surface,
+            "terminal_count": self.memory.package.terminal_count(),
+            "result": {
+                "verdict": "lattice",
+                "authority": false,
+                "candidates": candidates,
+            },
+        })
+    }
+
+    pub fn lattice_seed_rows(&self, surface: &str, limit: usize) -> Vec<(u32, String, u32)> {
+        self.memory
+            .readout(surface, limit.max(1), ReadoutMode::Full)
+            .into_iter()
+            .map(|candidate| {
+                (
+                    candidate.terminal_id,
+                    self.memory
+                        .decode_terminal(candidate.terminal_id)
+                        .unwrap_or_default(),
+                    lattice_seed_score(candidate),
+                )
+            })
+            .collect()
+    }
+
     pub fn stats(&self) -> L1RestorationHostStats {
         L1RestorationHostStats {
             package_path: self.package_path.clone(),
@@ -1875,6 +1970,19 @@ impl L1RestorationHost {
             character_anchor_count: self.memory.character_anchors.len(),
         }
     }
+}
+
+fn lattice_seed_score(candidate: GrokkingCandidate) -> u32 {
+    let geometry_bonus =
+        256_u64.saturating_sub(u64::from(candidate.geometry_distance).saturating_mul(24));
+    u64::from(candidate.positive_milli)
+        .saturating_add(u64::from(candidate.backward_milli))
+        .saturating_add(u64::from(candidate.crystallization_margin_milli))
+        .saturating_add(geometry_bonus)
+        .saturating_sub(u64::from(candidate.anti_milli))
+        .saturating_sub(u64::from(candidate.hard_negative_milli))
+        .saturating_sub(u64::from(candidate.ambiguity_milli) / 2)
+        .min(u64::from(u32::MAX)) as u32
 }
 
 fn expanded_pair_residual_wave(
@@ -2724,7 +2832,11 @@ mod tests {
             })
             .collect();
 
-        let selected = select_birth_atoms(&mut channels, DEFAULT_BIRTH_ATOMS_PER_CHANNEL);
+        let selected = select_birth_atoms(
+            &mut channels,
+            DEFAULT_BIRTH_ATOMS_PER_CHANNEL,
+            DEFAULT_BIRTH_POSTING_BUDGET,
+        );
 
         assert_eq!(DEFAULT_BIRTH_ATOMS_PER_CHANNEL, 4);
         assert_eq!(selected.len(), 4);
@@ -2751,10 +2863,10 @@ mod tests {
                 .collect();
         }
 
-        let selected = select_birth_atoms(&mut channels, 4);
+        let selected = select_birth_atoms(&mut channels, 4, DEFAULT_BIRTH_POSTING_BUDGET);
 
         assert_eq!(selected.len(), 2);
-        assert!(selected.iter().map(|atom| atom.0).sum::<usize>() <= MAX_BIRTH_POSTINGS);
+        assert!(selected.iter().map(|atom| atom.0).sum::<usize>() <= DEFAULT_BIRTH_POSTING_BUDGET);
     }
 
     #[test]

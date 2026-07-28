@@ -4,11 +4,14 @@ use super::super::trigger_dispatch::{
 };
 use super::context::ManualTriggerFireContext;
 use super::ime::run_ime_manual_toggle;
+use lay::word_buffer::WordBuffer;
 
 pub(crate) fn fire_configured_manual_trigger(ctx: ManualTriggerFireContext<'_>) {
-    if let Some(result) = run_ime_manual_toggle() {
-        complete_manual_trigger_with_result(Some(result), ctx);
-        return;
+    if should_try_ime_manual_toggle(ctx.buffer) {
+        if let Some(result) = run_ime_manual_toggle() {
+            complete_manual_trigger_with_result(Some(result), ctx);
+            return;
+        }
     }
     let correction_result = run_configured_manual_correction(
         ctx.buffer,
@@ -26,9 +29,11 @@ pub(crate) fn fire_scoped_manual_trigger(
     events_since_word_start: u32,
     reason: &str,
 ) {
-    if let Some(result) = run_ime_manual_toggle() {
-        complete_manual_trigger_with_result(Some(result), ctx);
-        return;
+    if should_try_ime_manual_toggle(ctx.buffer) {
+        if let Some(result) = run_ime_manual_toggle() {
+            complete_manual_trigger_with_result(Some(result), ctx);
+            return;
+        }
     }
     let correction_result = run_scoped_manual_correction(
         ScopedManualCorrectionContext {
@@ -43,6 +48,10 @@ pub(crate) fn fire_scoped_manual_trigger(
         reason,
     );
     complete_manual_trigger_with_result(correction_result, ctx);
+}
+
+fn should_try_ime_manual_toggle(buffer: &mut WordBuffer) -> bool {
+    !buffer.pending_auto_undo_ready()
 }
 
 fn complete_manual_trigger_with_result(
@@ -64,4 +73,25 @@ fn complete_manual_trigger_with_result(
             clear_on_next_typing: ctx.clear_on_next_typing,
         },
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn valid_pending_auto_undo_bypasses_ime_first_route_without_consuming_undo() {
+        let mut buffer = WordBuffer::new();
+        buffer.remember_pending_auto_undo("typing-assist", "посмотри", "посмотреть", 1, 1);
+
+        assert!(!should_try_ime_manual_toggle(&mut buffer));
+        assert!(buffer.take_pending_auto_undo().is_some());
+    }
+
+    #[test]
+    fn absent_pending_auto_undo_keeps_ime_first_route() {
+        let mut buffer = WordBuffer::new();
+
+        assert!(should_try_ime_manual_toggle(&mut buffer));
+    }
 }

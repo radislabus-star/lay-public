@@ -215,6 +215,7 @@ fn decode_package_owned(backing: Arc<[u8]>) -> io::Result<ContextPhasePackage> {
         && signature_schema != super::SIGNATURE_SCHEMA_LEGACY
         && signature_schema != super::SIGNATURE_SCHEMA_MORPHOLOGY_ENDING
         && signature_schema != super::SIGNATURE_SCHEMA_MORPHOLOGY_PHASE
+        && signature_schema != super::SIGNATURE_SCHEMA_RELATION_ROLES
     {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
@@ -535,7 +536,7 @@ mod tests {
             global_threshold_micro: 10_000,
             competition_threshold_micro: 20_000,
             pairwise_threshold_micro: 20_000,
-            signature_schema: super::super::SIGNATURE_SCHEMA_MORPHOLOGY_PHASE,
+            signature_schema: super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
         };
         let dir = std::env::temp_dir().join(format!("lay-l3-phase-{}", std::process::id()));
         let path = dir.join("memory.nwpc");
@@ -552,7 +553,7 @@ mod tests {
         assert_eq!(decoded.signature_profiles[0].token_hash, 99);
         assert_eq!(
             decoded.signature_schema,
-            super::super::SIGNATURE_SCHEMA_MORPHOLOGY_PHASE
+            super::super::SIGNATURE_SCHEMA_RELATION_ROLES
         );
         assert_eq!(decoded.profiles[0].hard_negative.len(), 1);
         assert_eq!(decoded.pair_profiles.len(), 1);

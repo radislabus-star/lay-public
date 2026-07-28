@@ -191,6 +191,14 @@ pub fn is_known_russian_word_or_form(word: &str) -> bool {
         || crate::lexicon::is_ru_technical_loanword(word)
 }
 
+pub(crate) fn is_reference_known_russian_word_or_form(word: &str) -> bool {
+    full_russian_dictionary().contains(word)
+        || (full_generated_forms_enabled()
+            && full_russian_generated_form_dictionary().contains(word))
+        || forms::is_known_russian_form(word)
+        || crate::lexicon::is_ru_technical_loanword(word)
+}
+
 fn empty_word_set() -> &'static WordSet {
     EMPTY_WORD_SET.get_or_init(|| WordSet::from_words(Default::default()))
 }

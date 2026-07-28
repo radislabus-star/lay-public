@@ -1,0 +1,17 @@
+[Unit]
+Description=Lay L3 bounded online phase-field learner
+After=graphical-session.target lay-daemon.service
+Wants=lay-daemon.service
+
+[Service]
+Type=simple
+Environment=MALLOC_ARENA_MAX=2
+ExecStart=%h/.local/bin/lay-nanda-wave-train --watch-l3-context-online --poll-ms 5000
+Restart=on-failure
+RestartSec=5
+Nice=10
+CPUWeight=20
+IOWeight=20
+
+[Install]
+WantedBy=default.target

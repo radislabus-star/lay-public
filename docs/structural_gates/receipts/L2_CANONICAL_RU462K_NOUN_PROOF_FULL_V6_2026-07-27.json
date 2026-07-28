@@ -1,0 +1,4043 @@
+{
+  "cold_load_us": 852717,
+  "evaluated": 554148,
+  "failure_examples": [
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "абой",
+          "terminal_id": 629
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "абою",
+          "terminal_id": 1052
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аба",
+          "terminal_id": 18
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "абе",
+          "terminal_id": 346
+        },
+        {
+          "competition": 0,
+          "features": [
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "абу",
+          "terminal_id": 1985
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "абы",
+          "terminal_id": 2076
+        }
+      ],
+      "context": "пользуюсь _",
+      "context_mode_id": 23,
+      "expected": "абой",
+      "feature_mask": 4113,
+      "lemma": "аба",
+      "seed_terminals": [
+        18,
+        346,
+        629,
+        1052,
+        1985,
+        2076
+      ],
+      "verdict": "Tied { terminal_ids: [629, 1052] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаров",
+          "terminal_id": 2601
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаром",
+          "terminal_id": 2603
+        }
+      ],
+      "context": "_ находится здесь",
+      "context_mode_id": 11,
+      "expected": "аватар",
+      "feature_mask": 273,
+      "lemma": "аватар",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2601,
+        2603,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2593, 2594] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватару",
+          "terminal_id": 2605
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаров",
+          "terminal_id": 2601
+        }
+      ],
+      "context": "вижу _",
+      "context_mode_id": 34,
+      "expected": "аватар",
+      "feature_mask": 2065,
+      "lemma": "аватар",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2601,
+        2603,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2593, 2605] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватары",
+          "terminal_id": 2606
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаров",
+          "terminal_id": 2601
+        }
+      ],
+      "context": "нет _",
+      "context_mode_id": 35,
+      "expected": "аватара",
+      "feature_mask": 529,
+      "lemma": "аватар",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2601,
+        2603,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2594, 2606] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватаров",
+          "terminal_id": 2601
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаром",
+          "terminal_id": 2603
+        }
+      ],
+      "context": "несколько _",
+      "context_mode_id": 14,
+      "expected": "аватаров",
+      "feature_mask": 545,
+      "lemma": "аватар",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2601,
+        2603,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2593, 2601] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватару",
+          "terminal_id": 2605
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаров",
+          "terminal_id": 2601
+        }
+      ],
+      "context": "иду к _",
+      "context_mode_id": 28,
+      "expected": "аватару",
+      "feature_mask": 1041,
+      "lemma": "аватар",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2601,
+        2603,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2598, 2605] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 760,
+          "neighbor": 0,
+          "score": 1888,
+          "slot": 1128,
+          "surface": "аватаров",
+          "terminal_id": 2601
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарой",
+          "terminal_id": 2602
+        }
+      ],
+      "context": "много _",
+      "context_mode_id": 40,
+      "expected": "аватар",
+      "feature_mask": 545,
+      "lemma": "аватара",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2602,
+        2604,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2593, 2601] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватары",
+          "terminal_id": 2606
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарой",
+          "terminal_id": 2602
+        }
+      ],
+      "context": "_ уже готов",
+      "context_mode_id": 58,
+      "expected": "аватара",
+      "feature_mask": 273,
+      "lemma": "аватара",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2602,
+        2604,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2593, 2594, 2606] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватару",
+          "terminal_id": 2605
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарой",
+          "terminal_id": 2602
+        }
+      ],
+      "context": "подошел к _",
+      "context_mode_id": 39,
+      "expected": "аватаре",
+      "feature_mask": 1041,
+      "lemma": "аватара",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2602,
+        2604,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2598, 2605] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватарой",
+          "terminal_id": 2602
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватарою",
+          "terminal_id": 2604
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 760,
+          "neighbor": 0,
+          "score": 1888,
+          "slot": 1128,
+          "surface": "аватаром",
+          "terminal_id": 2603
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        }
+      ],
+      "context": "пользуюсь _",
+      "context_mode_id": 23,
+      "expected": "аватарой",
+      "feature_mask": 4113,
+      "lemma": "аватара",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2602,
+        2604,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2602, 2604] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватару",
+          "terminal_id": 2605
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарой",
+          "terminal_id": 2602
+        }
+      ],
+      "context": "посетил _",
+      "context_mode_id": 12,
+      "expected": "аватару",
+      "feature_mask": 2065,
+      "lemma": "аватара",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2602,
+        2604,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2593, 2605] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватары",
+          "terminal_id": 2606
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарой",
+          "terminal_id": 2602
+        }
+      ],
+      "context": "_ уже готовы",
+      "context_mode_id": 58,
+      "expected": "аватары",
+      "feature_mask": 289,
+      "lemma": "аватара",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2602,
+        2604,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2593, 2594, 2606] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватара",
+          "terminal_id": 2594
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "аватары",
+          "terminal_id": 2606
+        },
+        {
+          "competition": 0,
+          "features": [
+            273,
+            545,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватар",
+          "terminal_id": 2593
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарам",
+          "terminal_id": 2595
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарами",
+          "terminal_id": 2596
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарах",
+          "terminal_id": 2597
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватаре",
+          "terminal_id": 2598
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "аватарой",
+          "terminal_id": 2602
+        }
+      ],
+      "context": "без _",
+      "context_mode_id": 43,
+      "expected": "аватары",
+      "feature_mask": 529,
+      "lemma": "аватара",
+      "seed_terminals": [
+        2593,
+        2594,
+        2595,
+        2596,
+        2597,
+        2598,
+        2602,
+        2604,
+        2605,
+        2606
+      ],
+      "verdict": "Tied { terminal_ids: [2594, 2606] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "августинец",
+          "terminal_id": 2660
+        },
+        {
+          "competition": 0,
+          "features": [
+            289
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "августинцы",
+          "terminal_id": 2684
+        },
+        {
+          "competition": 0,
+          "features": [
+            529,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинца",
+          "terminal_id": 2676
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинцам",
+          "terminal_id": 2677
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинцами",
+          "terminal_id": 2678
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинцах",
+          "terminal_id": 2679
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинце",
+          "terminal_id": 2680
+        },
+        {
+          "competition": 0,
+          "features": [
+            545,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинцев",
+          "terminal_id": 2681
+        }
+      ],
+      "context": "_ уже готов",
+      "context_mode_id": 58,
+      "expected": "августинец",
+      "feature_mask": 273,
+      "lemma": "августинец",
+      "seed_terminals": [
+        2660,
+        2676,
+        2677,
+        2678,
+        2679,
+        2680,
+        2681,
+        2682,
+        2683,
+        2684
+      ],
+      "verdict": "Tied { terminal_ids: [2660, 2684] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "августинец",
+          "terminal_id": 2660
+        },
+        {
+          "competition": 0,
+          "features": [
+            289
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "августинцы",
+          "terminal_id": 2684
+        },
+        {
+          "competition": 0,
+          "features": [
+            529,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинца",
+          "terminal_id": 2676
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинцам",
+          "terminal_id": 2677
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинцами",
+          "terminal_id": 2678
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинцах",
+          "terminal_id": 2679
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинце",
+          "terminal_id": 2680
+        },
+        {
+          "competition": 0,
+          "features": [
+            545,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "августинцев",
+          "terminal_id": 2681
+        }
+      ],
+      "context": "_ уже готовы",
+      "context_mode_id": 58,
+      "expected": "августинцы",
+      "feature_mask": 289,
+      "lemma": "августинец",
+      "seed_terminals": [
+        2660,
+        2676,
+        2677,
+        2678,
+        2679,
+        2680,
+        2681,
+        2682,
+        2683,
+        2684
+      ],
+      "verdict": "Tied { terminal_ids: [2660, 2684] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиабаза",
+          "terminal_id": 2847
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиабазы",
+          "terminal_id": 2855
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабаз",
+          "terminal_id": 2846
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазам",
+          "terminal_id": 2848
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазами",
+          "terminal_id": 2849
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазах",
+          "terminal_id": 2850
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазе",
+          "terminal_id": 2851
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазой",
+          "terminal_id": 2852
+        }
+      ],
+      "context": "_ уже готов",
+      "context_mode_id": 58,
+      "expected": "авиабаза",
+      "feature_mask": 273,
+      "lemma": "авиабаза",
+      "seed_terminals": [
+        2846,
+        2847,
+        2848,
+        2849,
+        2850,
+        2851,
+        2852,
+        2853,
+        2854,
+        2855
+      ],
+      "verdict": "Tied { terminal_ids: [2847, 2855] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиабазой",
+          "terminal_id": 2852
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиабазою",
+          "terminal_id": 2853
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабаз",
+          "terminal_id": 2846
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабаза",
+          "terminal_id": 2847
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазам",
+          "terminal_id": 2848
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазами",
+          "terminal_id": 2849
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазах",
+          "terminal_id": 2850
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазе",
+          "terminal_id": 2851
+        }
+      ],
+      "context": "пользуюсь _",
+      "context_mode_id": 23,
+      "expected": "авиабазой",
+      "feature_mask": 4113,
+      "lemma": "авиабаза",
+      "seed_terminals": [
+        2846,
+        2847,
+        2848,
+        2849,
+        2850,
+        2851,
+        2852,
+        2853,
+        2854,
+        2855
+      ],
+      "verdict": "Tied { terminal_ids: [2852, 2853] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиабаза",
+          "terminal_id": 2847
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиабазы",
+          "terminal_id": 2855
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабаз",
+          "terminal_id": 2846
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазам",
+          "terminal_id": 2848
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазами",
+          "terminal_id": 2849
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазах",
+          "terminal_id": 2850
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазе",
+          "terminal_id": 2851
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабазой",
+          "terminal_id": 2852
+        }
+      ],
+      "context": "_ уже готовы",
+      "context_mode_id": 58,
+      "expected": "авиабазы",
+      "feature_mask": 289,
+      "lemma": "авиабаза",
+      "seed_terminals": [
+        2846,
+        2847,
+        2848,
+        2849,
+        2850,
+        2851,
+        2852,
+        2853,
+        2854,
+        2855
+      ],
+      "verdict": "Tied { terminal_ids: [2847, 2855] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиабомбой",
+          "terminal_id": 2882
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиабомбою",
+          "terminal_id": 2883
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабомб",
+          "terminal_id": 2876
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабомба",
+          "terminal_id": 2877
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабомбам",
+          "terminal_id": 2878
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабомбами",
+          "terminal_id": 2879
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабомбах",
+          "terminal_id": 2880
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиабомбе",
+          "terminal_id": 2881
+        }
+      ],
+      "context": "любуюсь _",
+      "context_mode_id": 10,
+      "expected": "авиабомбой",
+      "feature_mask": 4113,
+      "lemma": "авиабомба",
+      "seed_terminals": [
+        2876,
+        2877,
+        2878,
+        2879,
+        2880,
+        2881,
+        2882,
+        2883,
+        2884,
+        2885
+      ],
+      "verdict": "Tied { terminal_ids: [2882, 2883] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиагоризонт",
+          "terminal_id": 2887
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиагоризонты",
+          "terminal_id": 2896
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонта",
+          "terminal_id": 2888
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонтам",
+          "terminal_id": 2889
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонтами",
+          "terminal_id": 2890
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонтах",
+          "terminal_id": 2891
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонте",
+          "terminal_id": 2892
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонтов",
+          "terminal_id": 2893
+        }
+      ],
+      "context": "_ уже готов",
+      "context_mode_id": 58,
+      "expected": "авиагоризонт",
+      "feature_mask": 273,
+      "lemma": "авиагоризонт",
+      "seed_terminals": [
+        2887,
+        2888,
+        2889,
+        2890,
+        2891,
+        2892,
+        2893,
+        2894,
+        2895,
+        2896
+      ],
+      "verdict": "Tied { terminal_ids: [2887, 2896] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиагоризонт",
+          "terminal_id": 2887
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиагоризонты",
+          "terminal_id": 2896
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонта",
+          "terminal_id": 2888
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонтам",
+          "terminal_id": 2889
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонтами",
+          "terminal_id": 2890
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонтах",
+          "terminal_id": 2891
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонте",
+          "terminal_id": 2892
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиагоризонтов",
+          "terminal_id": 2893
+        }
+      ],
+      "context": "_ уже готовы",
+      "context_mode_id": 58,
+      "expected": "авиагоризонты",
+      "feature_mask": 289,
+      "lemma": "авиагоризонт",
+      "seed_terminals": [
+        2887,
+        2888,
+        2889,
+        2890,
+        2891,
+        2892,
+        2893,
+        2894,
+        2895,
+        2896
+      ],
+      "verdict": "Tied { terminal_ids: [2887, 2896] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиазавод",
+          "terminal_id": 2961
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиазаводы",
+          "terminal_id": 2970
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазавода",
+          "terminal_id": 2962
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводам",
+          "terminal_id": 2963
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводами",
+          "terminal_id": 2964
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводах",
+          "terminal_id": 2965
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводе",
+          "terminal_id": 2966
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводов",
+          "terminal_id": 2967
+        }
+      ],
+      "context": "_ уже готов",
+      "context_mode_id": 58,
+      "expected": "авиазавод",
+      "feature_mask": 273,
+      "lemma": "авиазавод",
+      "seed_terminals": [
+        2961,
+        2962,
+        2963,
+        2964,
+        2965,
+        2966,
+        2967,
+        2968,
+        2969,
+        2970
+      ],
+      "verdict": "Tied { terminal_ids: [2961, 2970] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиазавод",
+          "terminal_id": 2961
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиазаводы",
+          "terminal_id": 2970
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазавода",
+          "terminal_id": 2962
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводам",
+          "terminal_id": 2963
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводами",
+          "terminal_id": 2964
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводах",
+          "terminal_id": 2965
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводе",
+          "terminal_id": 2966
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиазаводов",
+          "terminal_id": 2967
+        }
+      ],
+      "context": "_ уже готовы",
+      "context_mode_id": 58,
+      "expected": "авиазаводы",
+      "feature_mask": 289,
+      "lemma": "авиазавод",
+      "seed_terminals": [
+        2961,
+        2962,
+        2963,
+        2964,
+        2965,
+        2966,
+        2967,
+        2968,
+        2969,
+        2970
+      ],
+      "verdict": "Tied { terminal_ids: [2961, 2970] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиакатастрофой",
+          "terminal_id": 2978
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиакатастрофою",
+          "terminal_id": 2979
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакатастроф",
+          "terminal_id": 2972
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакатастрофа",
+          "terminal_id": 2973
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакатастрофам",
+          "terminal_id": 2974
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакатастрофами",
+          "terminal_id": 2975
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакатастрофах",
+          "terminal_id": 2976
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакатастрофе",
+          "terminal_id": 2977
+        }
+      ],
+      "context": "управляю _",
+      "context_mode_id": 55,
+      "expected": "авиакатастрофой",
+      "feature_mask": 4113,
+      "lemma": "авиакатастрофа",
+      "seed_terminals": [
+        2972,
+        2973,
+        2974,
+        2975,
+        2976,
+        2977,
+        2978,
+        2979,
+        2980,
+        2981
+      ],
+      "verdict": "Tied { terminal_ids: [2978, 2979] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиакомпанией",
+          "terminal_id": 2983
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиакомпаниею",
+          "terminal_id": 2984
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            1041,
+            2081,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакомпании",
+          "terminal_id": 2985
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакомпаний",
+          "terminal_id": 2986
+        },
+        {
+          "competition": 0,
+          "features": [
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакомпанию",
+          "terminal_id": 2987
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакомпания",
+          "terminal_id": 2988
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакомпаниям",
+          "terminal_id": 2989
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиакомпаниями",
+          "terminal_id": 2990
+        }
+      ],
+      "context": "доволен _",
+      "context_mode_id": 42,
+      "expected": "авиакомпанией",
+      "feature_mask": 4113,
+      "lemma": "авиакомпания",
+      "seed_terminals": [
+        2983,
+        2984,
+        2985,
+        2986,
+        2987,
+        2988,
+        2989,
+        2990,
+        2991
+      ],
+      "verdict": "Tied { terminal_ids: [2983, 2984] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиаконструктора",
+          "terminal_id": 2994
+        },
+        {
+          "competition": 0,
+          "features": [
+            289
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиаконструкторы",
+          "terminal_id": 3002
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаконструктор",
+          "terminal_id": 2993
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаконструкторам",
+          "terminal_id": 2995
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаконструкторами",
+          "terminal_id": 2996
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаконструкторах",
+          "terminal_id": 2997
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаконструкторе",
+          "terminal_id": 2998
+        },
+        {
+          "competition": 0,
+          "features": [
+            545,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаконструкторов",
+          "terminal_id": 2999
+        }
+      ],
+      "context": "_ находятся здесь",
+      "context_mode_id": 53,
+      "expected": "авиаконструктора",
+      "feature_mask": 289,
+      "lemma": "авиаконструктор",
+      "seed_terminals": [
+        2993,
+        2994,
+        2995,
+        2996,
+        2997,
+        2998,
+        2999,
+        3000,
+        3001,
+        3002
+      ],
+      "verdict": "Tied { terminal_ids: [2994, 3002] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиалайнер",
+          "terminal_id": 3017
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиалайнеры",
+          "terminal_id": 3026
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнера",
+          "terminal_id": 3018
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнерам",
+          "terminal_id": 3019
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнерами",
+          "terminal_id": 3020
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнерах",
+          "terminal_id": 3021
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнере",
+          "terminal_id": 3022
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнеров",
+          "terminal_id": 3023
+        }
+      ],
+      "context": "_ уже готов",
+      "context_mode_id": 58,
+      "expected": "авиалайнер",
+      "feature_mask": 273,
+      "lemma": "авиалайнер",
+      "seed_terminals": [
+        3017,
+        3018,
+        3019,
+        3020,
+        3021,
+        3022,
+        3023,
+        3024,
+        3025,
+        3026
+      ],
+      "verdict": "Tied { terminal_ids: [3017, 3026] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиалайнер",
+          "terminal_id": 3017
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиалайнеры",
+          "terminal_id": 3026
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнера",
+          "terminal_id": 3018
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнерам",
+          "terminal_id": 3019
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнерами",
+          "terminal_id": 3020
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнерах",
+          "terminal_id": 3021
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнере",
+          "terminal_id": 3022
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалайнеров",
+          "terminal_id": 3023
+        }
+      ],
+      "context": "_ уже готовы",
+      "context_mode_id": 58,
+      "expected": "авиалайнеры",
+      "feature_mask": 289,
+      "lemma": "авиалайнер",
+      "seed_terminals": [
+        3017,
+        3018,
+        3019,
+        3020,
+        3021,
+        3022,
+        3023,
+        3024,
+        3025,
+        3026
+      ],
+      "verdict": "Tied { terminal_ids: [3017, 3026] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиалинией",
+          "terminal_id": 3028
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиалиниею",
+          "terminal_id": 3029
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            1041,
+            2081,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалинии",
+          "terminal_id": 3030
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалиний",
+          "terminal_id": 3031
+        },
+        {
+          "competition": 0,
+          "features": [
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалинию",
+          "terminal_id": 3032
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалиния",
+          "terminal_id": 3033
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалиниям",
+          "terminal_id": 3034
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиалиниями",
+          "terminal_id": 3035
+        }
+      ],
+      "context": "управляю _",
+      "context_mode_id": 55,
+      "expected": "авиалинией",
+      "feature_mask": 4113,
+      "lemma": "авиалиния",
+      "seed_terminals": [
+        3028,
+        3029,
+        3030,
+        3031,
+        3032,
+        3033,
+        3034,
+        3035,
+        3036
+      ],
+      "verdict": "Tied { terminal_ids: [3028, 3029] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиаматкой",
+          "terminal_id": 3043
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиаматкою",
+          "terminal_id": 3044
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаматка",
+          "terminal_id": 3037
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаматкам",
+          "terminal_id": 3038
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаматками",
+          "terminal_id": 3039
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаматках",
+          "terminal_id": 3040
+        },
+        {
+          "competition": 0,
+          "features": [
+            1041,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаматке",
+          "terminal_id": 3041
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаматки",
+          "terminal_id": 3042
+        }
+      ],
+      "context": "доволен _",
+      "context_mode_id": 42,
+      "expected": "авиаматкой",
+      "feature_mask": 4113,
+      "lemma": "авиаматка",
+      "seed_terminals": [
+        3037,
+        3038,
+        3039,
+        3040,
+        3041,
+        3042,
+        3043,
+        3044,
+        3045,
+        3046
+      ],
+      "verdict": "Tied { terminal_ids: [3043, 3044] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиаметеостанцией",
+          "terminal_id": 3049
+        },
+        {
+          "competition": 0,
+          "features": [
+            4113
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиаметеостанциею",
+          "terminal_id": 3050
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            529,
+            1041,
+            2081,
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаметеостанции",
+          "terminal_id": 3051
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаметеостанций",
+          "terminal_id": 3052
+        },
+        {
+          "competition": 0,
+          "features": [
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаметеостанцию",
+          "terminal_id": 3053
+        },
+        {
+          "competition": 0,
+          "features": [
+            273
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаметеостанция",
+          "terminal_id": 3054
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаметеостанциям",
+          "terminal_id": 3055
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиаметеостанциями",
+          "terminal_id": 3056
+        }
+      ],
+      "context": "любуюсь _",
+      "context_mode_id": 10,
+      "expected": "авиаметеостанцией",
+      "feature_mask": 4113,
+      "lemma": "авиаметеостанция",
+      "seed_terminals": [
+        3049,
+        3050,
+        3051,
+        3052,
+        3053,
+        3054,
+        3055,
+        3056,
+        3057
+      ],
+      "verdict": "Tied { terminal_ids: [3049, 3050] }"
+    },
+    {
+      "candidates": [
+        {
+          "competition": 0,
+          "features": [
+            273,
+            2065
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиамоделизм",
+          "terminal_id": 3061
+        },
+        {
+          "competition": 0,
+          "features": [
+            289,
+            2081
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 2128,
+          "slot": 1128,
+          "surface": "авиамоделизмы",
+          "terminal_id": 3070
+        },
+        {
+          "competition": 0,
+          "features": [
+            529
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизма",
+          "terminal_id": 3062
+        },
+        {
+          "competition": 0,
+          "features": [
+            1057
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизмам",
+          "terminal_id": 3063
+        },
+        {
+          "competition": 0,
+          "features": [
+            4129
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизмами",
+          "terminal_id": 3064
+        },
+        {
+          "competition": 0,
+          "features": [
+            8225
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизмах",
+          "terminal_id": 3065
+        },
+        {
+          "competition": 0,
+          "features": [
+            8209
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизме",
+          "terminal_id": 3066
+        },
+        {
+          "competition": 0,
+          "features": [
+            545
+          ],
+          "l1": 1000,
+          "neighbor": 0,
+          "score": 1000,
+          "slot": 0,
+          "surface": "авиамоделизмов",
+          "terminal_id": 3067
+        }
+      ],
+      "context": "_ уже готов",
+      "context_mode_id": 58,
+      "expected": "авиамоделизм",
+      "feature_mask": 273,
+      "lemma": "авиамоделизм",
+      "seed_terminals": [
+        3061,
+        3062,
+        3063,
+        3064,
+        3065,
+        3066,
+        3067,
+        3068,
+        3069,
+        3070
+      ],
+      "verdict": "Tied { terminal_ids: [3061, 3070] }"
+    }
+  ],
+  "false_authority_examples": [],
+  "heldout_available": 554148,
+  "hot_p50_us": 68,
+  "hot_p99_us": 152,
+  "kind": "canonical_l2_fixed_heldout_proof",
+  "l1_package": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v2.v7.bin",
+  "l2_package": "data/l2/LAY-L2-RU462K-NOUN-v1.bin",
+  "morphology_corpus": "data/morphology/lay_ru_noun_morph_462k_shadow_v1.tsv",
+  "morphology_slot": {
+    "abstain": 0,
+    "false_authority": 0,
+    "false_authority_percent": 0.0,
+    "target_coverage_percent": 100.0,
+    "tied_contains": 103376,
+    "total": 554148,
+    "winner_correct": 450772,
+    "winner_top1_percent": 81.34505583345965
+  },
+  "near_neighbor": {
+    "reason": "current fixed corpus contains same-lemma morphology scenes only",
+    "tested": false
+  },
+  "package_bytes": 19244056,
+  "per_feature_mask": {
+    "1041": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 7885,
+      "total": 47379,
+      "winner_correct": 39494,
+      "winner_top1_percent": 83.35760569028473
+    },
+    "1057": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 4473,
+      "total": 44848,
+      "winner_correct": 40375,
+      "winner_top1_percent": 90.02631109525508
+    },
+    "16401": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 501,
+      "winner_correct": 501,
+      "winner_top1_percent": 100.0
+    },
+    "2065": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 8569,
+      "total": 47379,
+      "winner_correct": 38810,
+      "winner_top1_percent": 81.91392811161063
+    },
+    "2081": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 6368,
+      "total": 44848,
+      "winner_correct": 38480,
+      "winner_top1_percent": 85.80092757759543
+    },
+    "273": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 17372,
+      "total": 47379,
+      "winner_correct": 30007,
+      "winner_top1_percent": 63.33396652525381
+    },
+    "289": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 14616,
+      "total": 44848,
+      "winner_correct": 30232,
+      "winner_top1_percent": 67.40991794505887
+    },
+    "32785": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 283,
+      "winner_correct": 283,
+      "winner_top1_percent": 100.0
+    },
+    "4113": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 19206,
+      "total": 47379,
+      "winner_correct": 28173,
+      "winner_top1_percent": 59.46305325144051
+    },
+    "4129": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 4472,
+      "total": 44848,
+      "winner_correct": 40376,
+      "winner_top1_percent": 90.02854084909026
+    },
+    "529": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 7774,
+      "total": 47379,
+      "winner_correct": 39605,
+      "winner_top1_percent": 83.59188670085904
+    },
+    "545": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 2005,
+      "total": 44848,
+      "winner_correct": 42843,
+      "winner_top1_percent": 95.52934356047092
+    },
+    "65553": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 0,
+      "total": 2,
+      "winner_correct": 2,
+      "winner_top1_percent": 100.0
+    },
+    "8209": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 6158,
+      "total": 47379,
+      "winner_correct": 41221,
+      "winner_top1_percent": 87.00268051246333
+    },
+    "8225": {
+      "abstain": 0,
+      "false_authority": 0,
+      "false_authority_percent": 0.0,
+      "target_coverage_percent": 100.0,
+      "tied_contains": 4478,
+      "total": 44848,
+      "winner_correct": 40370,
+      "winner_top1_percent": 90.0151623260792
+    }
+  },
+  "runtime_authority_changed": false,
+  "same_lemma": {
+    "abstain": 0,
+    "false_authority": 0,
+    "false_authority_percent": 0.0,
+    "target_coverage_percent": 100.0,
+    "tied_contains": 103376,
+    "total": 554148,
+    "winner_correct": 450772,
+    "winner_top1_percent": 81.34505583345965
+  },
+  "unresolved": 0
+}

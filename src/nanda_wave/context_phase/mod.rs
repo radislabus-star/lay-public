@@ -5,16 +5,17 @@
 //! support and learned thresholds; it stores no raw phrase or word strings.
 
 mod compiler;
+mod composite;
 mod format;
 mod online;
 mod proof;
 mod stream;
 mod surface_field;
 
-use std::env;
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::OnceLock;
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+use std::sync::{Arc, OnceLock, RwLock};
+use std::{env, io};
 
 use super::phase_field::{
     add_hashed_atom, add_phase_vector, add_rotated_vector, empty_vector, hash_text,
@@ -25,10 +26,13 @@ use crate::stable_hash::mix64_golden;
 
 pub(crate) use compiler::{
     apply_feedback_overlay, build_feedback_corpus, compile_context_phase_reader,
-    compile_context_phase_reader_with_surface_field, surface_field_from_corrections_path,
+    compile_context_phase_reader_with_surface_field,
+    compile_context_phase_reader_with_surface_field_and_schema,
+    surface_field_from_corrections_path,
 };
 #[cfg(test)]
 pub(crate) use compiler::{compile_context_phase, ContextPhaseCompileInput};
+pub(crate) use composite::{admit_delta, compact_manifest, initialize_manifest, L3CompositeMemory};
 pub(crate) use format::{read_package, write_package};
 pub(crate) use proof::build_and_prove_context_phase_path_with_surface_field;
 pub(crate) use proof::{
@@ -39,13 +43,15 @@ pub(crate) use surface_field::SurfaceMutationField;
 pub(crate) const MAGIC: &[u8; 8] = b"LAYL3P01";
 pub(crate) const CELLS: usize = 64;
 pub(crate) const MAX_CONTEXT_TOKENS: usize = 16;
+pub(crate) const MAX_CONTEXT_ATOMS: usize = MAX_CONTEXT_TOKENS * 2;
 const MAX_PAIR_CANDIDATES: usize = 8;
 pub(super) const SIGNATURE_SCHEMA_LEGACY: u32 = 1;
 const SIGNATURE_SCHEMA_MORPHOLOGY_ENDING: u32 = 2;
 pub(super) const SIGNATURE_SCHEMA_MORPHOLOGY_PHASE: u32 = 3;
+pub(super) const SIGNATURE_SCHEMA_RELATION_ROLES: u32 = 4;
 // Pairwise memory is keyed by compact hashes and bounded phase banks, never
-// text. Preserve a broad relation vocabulary, but hold one phase mode per
-// direction: runtime needs a compact attractor, not training-history detail.
+// text. One candidate pair can be valid in several incompatible sentence
+// scenes, so each direction retains a small multimodal attractor bank.
 pub(super) const MAX_EXACT_PAIR_PROFILES: usize = 65_536;
 pub(super) const MAX_RELATION_PAIR_PROFILES: usize = 16_384;
 pub(crate) const MAX_PAIR_PROFILES: usize = MAX_EXACT_PAIR_PROFILES + MAX_RELATION_PAIR_PROFILES;
@@ -53,8 +59,8 @@ pub(crate) const MAX_PAIR_PROFILES: usize = MAX_EXACT_PAIR_PROFILES + MAX_RELATI
 /// They let L3 transfer context evidence across words with the same observed
 /// surface state while keeping exact word profiles as the only support owner.
 pub(crate) const MAX_SIGNATURE_PROFILES: usize = 16_384;
-pub(crate) const MAX_PAIR_CENTERS_PER_BANK: usize = 1;
-pub(crate) const MAX_HARD_PAIR_CENTERS_PER_BANK: usize = 1;
+pub(crate) const MAX_PAIR_CENTERS_PER_BANK: usize = 16;
+pub(crate) const MAX_HARD_PAIR_CENTERS_PER_BANK: usize = 4;
 const PAIR_CENTER_SPLIT_COHERENCE: f32 = 0.76;
 
 fn semantic_relation_weights(support: u32) -> (f32, f32) {
@@ -292,6 +298,13 @@ impl ContextPhasePackage {
         min_surface_support: u32,
     ) -> (Self, SurfaceConsensusMergeReport) {
         shards.sort_by_key(|package| (package.corpus_fragments, package.transitions));
+        let signature_schema = shards
+            .first()
+            .map(|package| package.signature_schema)
+            .unwrap_or_default();
+        debug_assert!(shards
+            .iter()
+            .all(|package| package.signature_schema == signature_schema));
         let surface_count = u32::try_from(shards.len()).unwrap_or(u32::MAX);
         let required = min_surface_support.clamp(1, surface_count.max(1));
         let mut profile_surfaces = std::collections::BTreeMap::<u64, u32>::new();
@@ -313,6 +326,7 @@ impl ContextPhasePackage {
             }
         }
         let mut merged = Self::default();
+        merged.signature_schema = signature_schema;
         for shard in shards {
             merged.transitions = merged.transitions.saturating_add(shard.transitions);
             merged.corpus_fragments = merged
@@ -501,12 +515,34 @@ impl ContextPhasePackage {
         if self.is_empty() || context_tokens.is_empty() {
             return vec![ContextPhaseReadout::default(); candidates.len()];
         }
-        let scene = self.context_vector(context_tokens, mode);
+        let relation_competition = self.signature_schema >= SIGNATURE_SCHEMA_RELATION_ROLES
+            && candidates
+                .iter()
+                .any(|candidate| relation_role_candidate(candidate));
+        let scene =
+            self.context_vector_for_relation_roles(context_tokens, mode, relation_competition);
+        let exact_scene = (relation_competition
+            && candidates
+                .iter()
+                .any(|candidate| !relation_role_candidate(candidate)))
+        .then(|| self.context_vector_for_relation_roles(context_tokens, mode, false));
         let mut readouts = candidates
             .iter()
             .map(|candidate| {
                 let vector = self.candidate_relation_vector(context_tokens, candidate, mode);
-                self.raw_readout(&vector, &scene, candidate, mode)
+                let signature_scene = if relation_competition && !relation_role_candidate(candidate)
+                {
+                    exact_scene.as_deref().unwrap_or(&scene)
+                } else {
+                    &scene
+                };
+                self.raw_readout(
+                    &vector,
+                    signature_scene,
+                    candidate,
+                    mode,
+                    relation_script_mismatch(context_tokens, candidate),
+                )
             })
             .collect::<Vec<_>>();
         let context_known_tokens =
@@ -517,7 +553,13 @@ impl ContextPhasePackage {
             readout.context_known_tokens = context_known_tokens;
         }
 
-        let pairwise = if self.pair_profiles.is_empty() || !mode.pairwise_enabled() {
+        // A single preceding token cannot define the direction of an
+        // otherwise tied pair. Keep its unary ranking, but defer pairwise
+        // authority until the scene has at least two tokens.
+        let pairwise = if self.pair_profiles.is_empty()
+            || !mode.pairwise_enabled()
+            || context_tokens.len() < 2
+        {
             PairwiseDominance::default()
         } else {
             let mut pair_candidates = std::collections::BTreeMap::<u64, (i64, u64)>::new();
@@ -577,6 +619,23 @@ impl ContextPhasePackage {
             .unwrap_or_default();
         let unary_competition_ready = unary_ranked.len() == 1
             || unary_competition_margin >= i64::from(self.competition_threshold_micro.max(1));
+        let all_candidate_profiles_known = readouts
+            .iter()
+            .all(|readout| readout.profile_present || readout.signature_profile_present);
+        let exact_candidate_profiles = readouts
+            .iter()
+            .filter(|readout| readout.profile_present)
+            .count();
+        let active_candidate_basins = readouts
+            .iter()
+            .filter(|readout| {
+                readout.profile_present
+                    && readout.positive_center_support > 0
+                    && readout.positive_micro > readout.anti_micro
+            })
+            .count();
+        let all_exact_candidate_profiles_known =
+            readouts.iter().all(|readout| readout.profile_present);
         let best_support_ready = best.is_some_and(|(index, _)| {
             let readout = &readouts[index];
             let competition_threshold = i64::from(self.competition_threshold_micro.max(1));
@@ -599,9 +658,14 @@ impl ContextPhasePackage {
             // the unary relative evidence that made a survivor admissible.
             let pairwise_certified = pairwise_certificate
                 .is_some_and(|winner| winner == candidate_token_hash(candidates[index]));
-            (pairwise_certified && readout.positive_examples >= 2 && !provisional_conflict)
+            (pairwise_certified
+                && (unary_competition_ready || context_tokens.len() >= 3)
+                && readout.positive_examples >= 2
+                && readout.positive_center_support >= 2
+                && !provisional_conflict)
                 || (unary_competition_ready
                     && readout.positive_examples >= 2
+                    && readout.positive_center_support >= 2
                     && !provisional_conflict
                     && (absolute_support_ready
                         || (relative_competition_ready
@@ -621,14 +685,27 @@ impl ContextPhasePackage {
                 best.map(|(_, score)| readout.margin_micro.saturating_sub(score))
                     .unwrap_or_default()
             };
-            let context_ready = readout.context_known_tokens >= 2
+            let minimum_known_tokens = if self.signature_schema >= SIGNATURE_SCHEMA_RELATION_ROLES {
+                1
+            } else {
+                2
+            };
+            let context_ready = usize::from(readout.context_known_tokens) >= minimum_known_tokens
                 && usize::from(readout.context_known_tokens) * 2
-                    >= usize::from(readout.context_tokens);
+                    >= usize::from(readout.context_tokens)
+                && (!relation_competition || usize::from(readout.context_tokens) >= 2);
             let anti_margin_ready = readout.anti_micro.saturating_sub(readout.positive_micro)
                 >= i64::from(self.competition_threshold_micro.max(1));
             let pair_blocked = pairwise.blocks(candidate_token_hash(candidates[index]));
             let pairwise_certified = pairwise_certificate
                 .is_some_and(|winner| winner == candidate_token_hash(candidates[index]));
+            // Two active basins always need directional pair evidence. A quiet
+            // learned basin also remains unresolved when the exact lexical
+            // field is incomplete; signature-only presence is not enough to
+            // certify ordinary word competition.
+            let competition_resolved = pairwise_certified
+                || (active_candidate_basins <= 1
+                    && (exact_candidate_profiles <= 1 || all_exact_candidate_profiles_known));
             readout.pairwise_blocked = pair_blocked;
             readout.pairwise_certified = pairwise_certified;
             readout.pairwise_conflict = pairwise
@@ -637,23 +714,73 @@ impl ContextPhasePackage {
             readout.pairwise_known_edges = pairwise.known_edges;
             readout.pairwise_unknown_edges = pairwise.unknown_edges;
             readout.pairwise_cycle_members = pairwise.cycle_members;
-            readout.disposition =
-                if is_best_token && best_support_ready && context_ready && !pair_blocked {
-                    ContextPhaseDisposition::Support
-                } else if context_ready
-                    && (anti_margin_ready
-                        || (best_support_ready
-                            && best.is_some_and(|(_, score)| {
-                                score.saturating_sub(readout.margin_micro)
-                                    >= i64::from(self.competition_threshold_micro.max(1))
-                            })))
-                {
-                    ContextPhaseDisposition::Suppress
-                } else {
-                    ContextPhaseDisposition::Neutral
-                };
+            readout.disposition = if is_best_token
+                && best_support_ready
+                && context_ready
+                && (!relation_competition || all_candidate_profiles_known)
+                && competition_resolved
+                && !pair_blocked
+            {
+                ContextPhaseDisposition::Support
+            } else if context_ready
+                && (anti_margin_ready
+                    || (best_support_ready
+                        && best.is_some_and(|(_, score)| {
+                            score.saturating_sub(readout.margin_micro)
+                                >= i64::from(self.competition_threshold_micro.max(1))
+                        })))
+            {
+                ContextPhaseDisposition::Suppress
+            } else {
+                ContextPhaseDisposition::Neutral
+            };
         }
         readouts
+    }
+
+    pub(crate) fn pair_debug(
+        &self,
+        context_tokens: &[String],
+        candidates: &[&str],
+    ) -> serde_json::Value {
+        if candidates.len() != 2 {
+            return serde_json::json!({"available": false});
+        }
+        let left_hash = candidate_token_hash(candidates[0]);
+        let right_hash = candidate_token_hash(candidates[1]);
+        let Some(key) = PairKey::new(left_hash, right_hash) else {
+            return serde_json::json!({"available": false});
+        };
+        let Some(profile) = self.pair_profile(key) else {
+            return serde_json::json!({"available": false, "key": [key.low_hash, key.high_hash]});
+        };
+        let relation_competition = candidates
+            .iter()
+            .any(|candidate| relation_role_candidate(candidate));
+        let scene = self.context_vector_for_relation_roles(
+            context_tokens,
+            ContextPhaseMode::Full,
+            relation_competition,
+        );
+        let low = strongest_center_with_min_support(&scene, &profile.low_wins, 2);
+        let high = strongest_center_with_min_support(&scene, &profile.high_wins, 2);
+        serde_json::json!({
+            "available": true,
+            "low_hash": key.low_hash,
+            "high_hash": key.high_hash,
+            "low_candidate": if left_hash == key.low_hash { candidates[0] } else { candidates[1] },
+            "high_candidate": if left_hash == key.high_hash { candidates[0] } else { candidates[1] },
+            "low_score_ppm": low.map(|(score, _)| phase_micro(score)).unwrap_or_default(),
+            "high_score_ppm": high.map(|(score, _)| phase_micro(score)).unwrap_or_default(),
+            "low_local_support": low.map(|(_, support)| support).unwrap_or_default(),
+            "high_local_support": high.map(|(_, support)| support).unwrap_or_default(),
+            "low_bank_support": bank_support(&profile.low_wins),
+            "high_bank_support": bank_support(&profile.high_wins),
+            "low_centers": profile.low_wins.len(),
+            "high_centers": profile.high_wins.len(),
+            "pairwise_threshold_micro": self.pairwise_threshold_micro,
+            "outcome": format!("{:?}", self.pair_edge_for_profile(&scene, profile, true)),
+        })
     }
 
     fn pair_edge(
@@ -853,6 +980,7 @@ impl ContextPhasePackage {
         scene: &[PhaseCell],
         candidate: &str,
         mode: ContextPhaseMode,
+        relation_script_mismatch: bool,
     ) -> ContextPhaseReadout {
         let token = crate::word_reader::last_text_word(candidate).unwrap_or_default();
         let token_hash = hash_text(&token.to_lowercase());
@@ -932,7 +1060,19 @@ impl ContextPhasePackage {
             // must never become a unary veto on the word everywhere else.
             // The only candidate-local destructive authority is a witnessed
             // false winner, retained in the hard bank below.
-            strongest_center(vector, &profile.hard_negative).unwrap_or_default()
+            let hard = strongest_center(vector, &profile.hard_negative).unwrap_or_default();
+            let relation = relation_script_mismatch
+                .then(|| {
+                    signature_profile
+                        .and_then(|profile| strongest_center(scene, &profile.negative))
+                        .unwrap_or_default()
+                })
+                .unwrap_or_default();
+            if relation.0 > hard.0 {
+                relation
+            } else {
+                hard
+            }
         };
         let margin = positive - anti;
         let margin_micro = phase_micro(margin);
@@ -979,14 +1119,37 @@ impl ContextPhasePackage {
         context_tokens: &[String],
         mode: ContextPhaseMode,
     ) -> Vec<PhaseCell> {
-        let hashes = context_tokens
-            .iter()
-            .map(|token| hash_text(token))
-            .collect::<Vec<_>>();
-        canonical_scene_wave(&hashes, mode, |hash| {
-            self.semantic_state(hash)
-                .map(|state| (state.center.as_slice(), state.support))
-        })
+        self.context_vector_for_relation_roles(context_tokens, mode, false)
+    }
+
+    fn context_vector_for_relation_roles(
+        &self,
+        context_tokens: &[String],
+        mode: ContextPhaseMode,
+        relation_roles: bool,
+    ) -> Vec<PhaseCell> {
+        let relation_scene =
+            relation_roles && self.signature_schema >= SIGNATURE_SCHEMA_RELATION_ROLES;
+        let hashes = if relation_scene {
+            context_atom_hashes(context_tokens, SIGNATURE_SCHEMA_RELATION_ROLES)
+        } else {
+            context_atom_hashes(context_tokens, SIGNATURE_SCHEMA_MORPHOLOGY_PHASE)
+        };
+        if relation_scene {
+            canonical_relation_scene_wave(&hashes, mode, |atom_index, hash| {
+                (atom_index % 2 == 0)
+                    .then(|| {
+                        self.semantic_state(hash)
+                            .map(|state| (state.center.as_slice(), state.support))
+                    })
+                    .flatten()
+            })
+        } else {
+            canonical_scene_wave(&hashes, mode, |_, hash| {
+                self.semantic_state(hash)
+                    .map(|state| (state.center.as_slice(), state.support))
+            })
+        }
     }
 
     pub(super) fn candidate_relation_vector(
@@ -995,7 +1158,11 @@ impl ContextPhasePackage {
         candidate: &str,
         mode: ContextPhaseMode,
     ) -> Vec<PhaseCell> {
-        let mut vector = self.context_vector(context_tokens, mode);
+        let mut vector = self.context_vector_for_relation_roles(
+            context_tokens,
+            mode,
+            relation_role_candidate(candidate),
+        );
         if mode != ContextPhaseMode::NoSemanticState {
             let token = crate::word_reader::last_text_word(candidate).unwrap_or_default();
             let token_hash = hash_text(&token.to_lowercase());
@@ -1063,18 +1230,53 @@ pub(crate) struct SurfaceConsensusMergeReport {
 pub(super) fn canonical_scene_wave<'a, F>(
     context_hashes: &[u64],
     mode: ContextPhaseMode,
+    semantic_lookup: F,
+) -> Vec<PhaseCell>
+where
+    F: FnMut(usize, u64) -> Option<(&'a [PhaseCell], u32)>,
+{
+    canonical_scene_wave_scaled(context_hashes, mode, 1, 1.0, semantic_lookup)
+}
+
+pub(super) fn canonical_relation_scene_wave<'a, F>(
+    context_hashes: &[u64],
+    mode: ContextPhaseMode,
+    semantic_lookup: F,
+) -> Vec<PhaseCell>
+where
+    F: FnMut(usize, u64) -> Option<(&'a [PhaseCell], u32)>,
+{
+    canonical_scene_wave_scaled(context_hashes, mode, 2, 0.5, semantic_lookup)
+}
+
+fn canonical_scene_wave_scaled<'a, F>(
+    context_hashes: &[u64],
+    mode: ContextPhaseMode,
+    atoms_per_token: usize,
+    role_weight: f32,
     mut semantic_lookup: F,
 ) -> Vec<PhaseCell>
 where
-    F: FnMut(u64) -> Option<(&'a [PhaseCell], u32)>,
+    F: FnMut(usize, u64) -> Option<(&'a [PhaseCell], u32)>,
 {
     let mut vector = empty_vector(CELLS);
-    let start = context_hashes.len().saturating_sub(MAX_CONTEXT_TOKENS);
-    for (offset, token_hash) in context_hashes[start..].iter().rev().copied().enumerate() {
-        let position = offset as u64 + 1;
+    let start = context_hashes.len().saturating_sub(MAX_CONTEXT_ATOMS);
+    for (offset, (atom_index, token_hash)) in context_hashes[start..]
+        .iter()
+        .copied()
+        .enumerate()
+        .rev()
+        .enumerate()
+    {
+        let position = (offset / atoms_per_token.max(1)) as u64 + 1;
         let recency = 1.0 / (position as f32).sqrt();
+        let lane_weight = if atoms_per_token > 1 && atom_index % atoms_per_token != 0 {
+            role_weight
+        } else {
+            1.0
+        };
         let semantic_state = (mode != ContextPhaseMode::NoSemanticState)
-            .then(|| semantic_lookup(token_hash))
+            .then(|| semantic_lookup(atom_index, token_hash))
             .flatten();
         let (surface_weight, semantic_weight) = semantic_state
             .map(|(_, support)| semantic_relation_weights(support))
@@ -1083,7 +1285,7 @@ where
             &mut vector,
             token_hash ^ 0x0043_4f4e_5445_5854,
             position ^ token_hash.rotate_left(13),
-            recency * surface_weight,
+            recency * surface_weight * lane_weight,
         );
         if let Some((center, _)) = semantic_state {
             add_rotated_vector(
@@ -1092,6 +1294,14 @@ where
                 position ^ 0x0053_454d_414e_5449,
                 recency * semantic_weight,
             );
+            if atoms_per_token > 1 && atom_index % atoms_per_token == 0 {
+                add_rotated_vector(
+                    &mut vector,
+                    center,
+                    0x0047_4c4f_4241_4c53,
+                    semantic_weight * 0.45,
+                );
+            }
         }
     }
     phase_center_from_sum(&vector)
@@ -1303,6 +1513,33 @@ fn candidate_token_hash(candidate: &str) -> u64 {
     hash_text(&token.to_lowercase())
 }
 
+fn relation_role_candidate(candidate: &str) -> bool {
+    let token = crate::word_reader::last_text_word(candidate).unwrap_or_default();
+    token.chars().count() == 1 && token.chars().all(char::is_alphabetic)
+}
+
+fn relation_script_mismatch(context_tokens: &[String], candidate: &str) -> bool {
+    if !relation_role_candidate(candidate) {
+        return false;
+    }
+    let (mut cyrillic, mut latin) = (0_usize, 0_usize);
+    for character in context_tokens.iter().flat_map(|token| token.chars()) {
+        if matches!(character, '\u{0400}'..='\u{052f}') {
+            cyrillic += 1;
+        } else if character.is_ascii_alphabetic() {
+            latin += 1;
+        }
+    }
+    let candidate = crate::word_reader::last_text_word(candidate).unwrap_or_default();
+    let candidate_is_cyrillic = candidate
+        .chars()
+        .all(|character| matches!(character, '\u{0400}'..='\u{052f}'));
+    let candidate_is_latin = candidate
+        .chars()
+        .all(|character| character.is_ascii_alphabetic());
+    (candidate_is_cyrillic && latin > cyrillic) || (candidate_is_latin && cyrillic > latin)
+}
+
 /// A bounded observation of the candidate's L2 field and terminal shape.
 /// The final two graphemes are a morphology projection, not lexical identity:
 /// forms such as `проверки` and `перезагрузки` can share contextual evidence
@@ -1381,8 +1618,86 @@ fn compact_surface_phase_class(token: &str) -> u64 {
 fn context_tokens_for_authority(package: &ContextPhasePackage, context_tokens: &[String]) -> usize {
     context_tokens
         .iter()
-        .filter(|token| package.semantic_state(hash_text(token)).is_some())
+        .filter(|token| {
+            package.semantic_state(context_exact_hash(token)).is_some()
+                || (package.signature_schema >= SIGNATURE_SCHEMA_RELATION_ROLES
+                    && package
+                        .semantic_state(context_role_hash(token))
+                        .is_some_and(|state| state.support >= 2))
+        })
         .count()
+}
+
+pub(super) fn context_exact_hash(token: &str) -> u64 {
+    if token.chars().any(char::is_uppercase) {
+        hash_text(&token.to_lowercase())
+    } else {
+        hash_text(token)
+    }
+}
+
+pub(super) fn context_atom_hashes(tokens: &[String], schema: u32) -> Vec<u64> {
+    let start = tokens.len().saturating_sub(MAX_CONTEXT_TOKENS);
+    let tokens = &tokens[start..];
+    let atoms_per_token = if schema >= SIGNATURE_SCHEMA_RELATION_ROLES {
+        2
+    } else {
+        1
+    };
+    let mut hashes = Vec::with_capacity(tokens.len() * atoms_per_token);
+    for token in tokens {
+        hashes.push(context_exact_hash(token));
+        if schema >= SIGNATURE_SCHEMA_RELATION_ROLES {
+            hashes.push(context_role_hash(token));
+        }
+    }
+    hashes
+}
+
+pub(super) fn context_role_hash(token: &str) -> u64 {
+    let core = token.trim_matches(|ch: char| {
+        ch.is_ascii_punctuation() || matches!(ch, '«' | '»' | '“' | '”' | '„' | '…')
+    });
+    let has_cyrillic = core.chars().any(crate::keyboard::is_cyrillic_letter);
+    let has_ascii_alpha = core.chars().any(|ch| ch.is_ascii_alphabetic());
+    let has_digit = core.chars().any(|ch| ch.is_ascii_digit());
+    let class = if has_cyrillic && has_ascii_alpha {
+        8
+    } else if has_cyrillic {
+        let letters = core
+            .chars()
+            .filter(|ch| crate::keyboard::is_cyrillic_letter(*ch))
+            .count();
+        if letters == 1 {
+            1
+        } else if letters <= 3 {
+            2
+        } else {
+            3
+        }
+    } else if crate::word_recognizer::is_ascii_titlecase_token(core) {
+        4
+    } else if crate::word_recognizer::is_ascii_technical_or_brand_token(core) {
+        5
+    } else if has_ascii_alpha && core.is_ascii() {
+        6
+    } else if has_digit && core.chars().all(|ch| ch.is_ascii_digit()) {
+        7
+    } else {
+        9
+    };
+    mix64_golden(0x4c33_524f_4c45_0000_u64 ^ class)
+}
+
+pub(super) fn tokenize_context_text(text: &str) -> Vec<String> {
+    text.split_whitespace()
+        .filter_map(|token| {
+            let token = token.trim_matches(|ch: char| {
+                ch.is_ascii_punctuation() || matches!(ch, '«' | '»' | '“' | '”' | '„' | '…')
+            });
+            (!token.is_empty()).then(|| token.to_string())
+        })
+        .collect()
 }
 
 fn relation_class(token_hash: u64, margin_micro: i64) -> u64 {
@@ -1401,30 +1716,108 @@ pub(crate) fn default_memory_path() -> PathBuf {
         })
 }
 
-static DEFAULT_MEMORY: OnceLock<ContextPhasePackage> = OnceLock::new();
+pub(crate) fn default_manifest_path() -> PathBuf {
+    env::var_os("LAY_NANDA_L3_CONTEXT_MANIFEST")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| default_memory_path().with_extension("runtime.json"))
+}
+
+static DEFAULT_MEMORY: OnceLock<RwLock<Arc<L3CompositeMemory>>> = OnceLock::new();
 static DEFAULT_MEMORY_WARM: AtomicBool = AtomicBool::new(false);
+static DEFAULT_MEMORY_REFRESH_CHECK_MS: AtomicU64 = AtomicU64::new(0);
 
 pub(crate) fn warm_default_memory() {
-    let _ = default_memory();
+    let _ = default_memory_lock();
 }
 
 pub(crate) fn default_memory_is_warm() -> bool {
     DEFAULT_MEMORY_WARM.load(Ordering::Acquire)
 }
 
-pub(crate) fn default_memory() -> &'static ContextPhasePackage {
+fn load_default_composite() -> L3CompositeMemory {
+    let manifest_path = default_manifest_path();
+    if manifest_path.is_file() {
+        if let Ok(memory) = L3CompositeMemory::load_manifest(&manifest_path) {
+            return memory;
+        }
+    }
+    L3CompositeMemory::from_package(&default_memory_path())
+        .unwrap_or_else(|_| L3CompositeMemory::empty(default_memory_path()))
+}
+
+fn default_memory_lock() -> &'static RwLock<Arc<L3CompositeMemory>> {
     DEFAULT_MEMORY.get_or_init(|| {
-        let memory = read_package(&default_memory_path()).unwrap_or_default();
+        let memory = load_default_composite();
         DEFAULT_MEMORY_WARM.store(true, Ordering::Release);
-        memory
+        RwLock::new(Arc::new(memory))
     })
+}
+
+pub(crate) fn with_default_memory<T>(read: impl FnOnce(&ContextPhasePackage) -> T) -> T {
+    maybe_reload_default_memory();
+    let memory = default_memory_lock()
+        .read()
+        .unwrap_or_else(|error| error.into_inner());
+    read(memory.package())
+}
+
+fn maybe_reload_default_memory() {
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis()
+        .min(u128::from(u64::MAX)) as u64;
+    let previous = DEFAULT_MEMORY_REFRESH_CHECK_MS.load(Ordering::Relaxed);
+    if now.saturating_sub(previous) < 1_000
+        || DEFAULT_MEMORY_REFRESH_CHECK_MS
+            .compare_exchange(previous, now, Ordering::AcqRel, Ordering::Relaxed)
+            .is_err()
+    {
+        return;
+    }
+    let manifest_path = default_manifest_path();
+    let Ok(stamp) = composite::file_stamp(&manifest_path) else {
+        return;
+    };
+    {
+        let current = default_memory_lock()
+            .read()
+            .unwrap_or_else(|error| error.into_inner());
+        if current.manifest_stamp == stamp {
+            return;
+        }
+    }
+    let Ok(memory) = L3CompositeMemory::load_manifest(&manifest_path) else {
+        return;
+    };
+    let mut current = default_memory_lock()
+        .write()
+        .unwrap_or_else(|error| error.into_inner());
+    if current.manifest_stamp != memory.manifest_stamp {
+        *current = Arc::new(memory);
+    }
+}
+
+pub(crate) fn reload_default_memory() -> io::Result<serde_json::Value> {
+    let manifest_path = default_manifest_path();
+    let memory = if manifest_path.is_file() {
+        L3CompositeMemory::load_manifest(&manifest_path)?
+    } else {
+        L3CompositeMemory::from_package(&default_memory_path())?
+    };
+    let report = memory.report();
+    let mut current = default_memory_lock()
+        .write()
+        .unwrap_or_else(|error| error.into_inner());
+    *current = Arc::new(memory);
+    Ok(report)
 }
 
 pub(crate) fn readout_default_candidates(
     original: &str,
     replacements: &[&str],
 ) -> Vec<ContextPhaseReadout> {
-    readout_candidates_with_package(default_memory(), original, replacements)
+    with_default_memory(|package| readout_candidates_with_package(package, original, replacements))
 }
 
 /// Scores context-preserving candidate surfaces against one explicit package.
@@ -1437,7 +1830,11 @@ pub(crate) fn readout_candidates_with_package(
     original: &str,
     replacements: &[&str],
 ) -> Vec<ContextPhaseReadout> {
-    let original_tokens = super::llmwave::tokenize(original);
+    let original_tokens = if package.signature_schema >= SIGNATURE_SCHEMA_RELATION_ROLES {
+        tokenize_context_text(original)
+    } else {
+        super::llmwave::tokenize(original)
+    };
     let mut context = original_tokens.clone();
     context.pop();
     let candidate_tokens = replacements
@@ -1479,6 +1876,7 @@ pub(crate) fn package_report(path: &Path) -> serde_json::Value {
             "loaded": true,
             "raw_words_stored": false,
             "cells": CELLS,
+            "signature_schema": package.signature_schema,
             "semantic_states": package.semantic_states.len(),
             "candidate_profiles": package.profiles.len(),
             "pair_profiles": package.pair_profiles.len(),

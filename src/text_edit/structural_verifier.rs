@@ -1,5 +1,5 @@
 use super::action::DecisionTransitionEditInput;
-use super::gate::plan_decision_transition_edit;
+use super::gate::{plan_decision_transition_edit, plan_recorded_undo_edit};
 use super::mutation::TransitionAudit;
 use super::transition::{
     LatentTextTransitionCandidate, TextTransitionDecision, TextTransitionRejection,
@@ -87,23 +87,30 @@ pub(crate) fn verify_visible_text_transition(
             1,
         ),
     );
-    let action = plan_decision_transition_edit(
-        DecisionTransitionEditInput {
-            source: "ibus-committed-tail",
-            confidence_milli: 1000,
-            from_text: &original_text,
-            to_text: &candidate.insert_text,
-            plan: plan.clone(),
-            selected_source_id: Some(candidate.source.source_id()),
-            selected_error_class: None,
-        },
-        &receipt,
-    );
-    if !action.allow_apply() {
-        return TextTransitionDecision::Reject {
-            rejection: TextTransitionRejection::UnsafeEdit {
-                reason: action.safety_reason(),
+    // PROTECTED USER CONTRACT: exact autocorrect rollback is recorded user
+    // intent, never an automatic correction decision.
+    let action = if candidate.intent == super::transition::TextTransitionIntent::ImeAutoUndo {
+        plan_recorded_undo_edit(&original_text, &candidate.insert_text, plan.clone(), 1)
+    } else {
+        plan_decision_transition_edit(
+            DecisionTransitionEditInput {
+                source: "ibus-committed-tail",
+                confidence_milli: 1000,
+                from_text: &original_text,
+                to_text: &candidate.insert_text,
+                plan: plan.clone(),
+                selected_source_id: Some(candidate.source.source_id()),
+                selected_error_class: None,
             },
+            &receipt,
+        )
+    };
+    if !action.allow_apply() {
+        let reason = action
+            .execution_rejection_reason()
+            .unwrap_or_else(|| action.safety_reason());
+        return TextTransitionDecision::Reject {
+            rejection: TextTransitionRejection::UnsafeEdit { reason },
             action: Some(action),
         };
     }

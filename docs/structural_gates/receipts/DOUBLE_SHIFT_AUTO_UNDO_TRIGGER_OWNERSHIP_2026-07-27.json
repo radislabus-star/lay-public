@@ -1,0 +1,172 @@
+{
+  "gate": "double_shift_auto_undo_trigger_ownership",
+  "date": "2026-07-27",
+  "old_route": [
+    "double_shift",
+    "ime_manual_toggle",
+    "daemon_manual_correction_only_if_ime_declines"
+  ],
+  "new_route": {
+    "fresh_pending_auto_undo": [
+      "double_shift",
+      "daemon_handle_double_shift",
+      "consume_pending_auto_undo",
+      "restore_original"
+    ],
+    "absent_or_expired_pending_auto_undo": [
+      "double_shift",
+      "ime_manual_toggle",
+      "daemon_manual_correction_only_if_ime_declines"
+    ]
+  },
+  "tests": [
+    {
+      "command": "scripts/cargo-guard.sh test --lib pending_auto_undo",
+      "passed": 2,
+      "failed": 0
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --bin lay-daemon pending_auto_undo",
+      "passed": 3,
+      "failed": 0
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --bin lay-daemon typing_assist_layout_autocorrect_keeps_pending_full_undo_for_double_shift",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --bin lay-daemon manual_text_correction_keeps_pending_full_undo",
+      "passed": 1,
+      "failed": 0
+    }
+  ],
+  "not_tested": [
+    "physical double Shift in a live focused browser field",
+    "visual restoration across every supported desktop backend"
+  ],
+  "runtime_authority_changed": true,
+  "live_runtime_installed": true,
+  "installed_version": "0.2.324",
+  "active_runtime": {
+    "lay_daemon": true,
+    "lay_ibus_engine": true,
+    "ibus_engine": "lay-ime-ru"
+  },
+  "first_live_check": {
+    "verdict": "FAIL",
+    "observed_original": "проверрка ",
+    "observed_replacement": "проверка ",
+    "ime_guard_reason": "stale_visible_tail",
+    "ime_expected": "проверка ",
+    "ime_actual": "",
+    "root_cause": "the IME proved no mutation but the daemon consumed the pending undo and prohibited explicit rollback fallback"
+  },
+  "followup_source_change": {
+    "ime_dispatched": "no fallback",
+    "ime_indeterminate": "no fallback",
+    "ime_rejected_or_not_dispatched": "explicit daemon auto-undo fallback",
+    "fallback_unavailable": "restore pending undo without refreshing its age",
+    "tests": {
+      "dispatch_receipt_contract": "1/1 PASS",
+      "pending_undo_memory": "3/3 PASS",
+      "daemon_pending_undo_route": "3/3 PASS"
+    }
+  },
+  "followup_runtime": {
+    "installed": true,
+    "version": "0.2.324",
+    "lay_daemon_active": true,
+    "lay_ibus_engine_reloaded": true,
+    "ibus_engine": "lay-ime-ru"
+  },
+  "second_live_check": {
+    "verdict": "FAIL",
+    "scenario": "djn + Space -> вот -> immediate double Shift",
+    "root_cause": "layout sync changed the IME engine path and bind_focus_path cleared the committed-tail handoff before rollback",
+    "evidence": [
+      "ibus_space_autocorrect authorized",
+      "ime_committed_tail djn -> вот",
+      "ibus_layout_sync target_is_ru=true",
+      "focus_in receipt=new_path",
+      "double_shift_defer_to_daemon tail_chars=0",
+      "stale_visible_tail expected=djn actual=empty"
+    ]
+  },
+  "engine_path_handoff_fix": {
+    "fresh_preserve_lease": "hydrate handoff tail, epoch, and focus receipt on the new engine path",
+    "expired_or_absent_preserve_lease": "quarantine the old handoff",
+    "tests": {
+      "fresh_and_expired_layout_switch": "2/2 PASS",
+      "ordinary_changed_path_quarantine": "1/1 PASS"
+    },
+    "installed_version": "0.2.324",
+    "old_engine_pid": 86834,
+    "new_engine_pid": 1073690,
+    "global_ibus_restarted": false,
+    "lay_daemon_restarted": false
+  },
+  "delayed_surrounding_text_fix": {
+    "root_cause": "the first post-commit SetSurroundingText still described the pre-commit value and immediate mismatch quarantine cleared the valid handoff",
+    "settle_grace_ms": 500,
+    "within_grace": "retain pending postcondition and handoff without authorizing a new edit",
+    "matching_observation": "confirm positive",
+    "mismatch_after_grace": "quarantine",
+    "tests": {
+      "existing_visible_postcondition": "4/4 PASS",
+      "stale_then_confirmed": "1/1 PASS"
+    }
+  },
+  "automated_live_gtk_check": {
+    "scenario": "djn + Space -> вот -> double Shift -> file -> Enter",
+    "rollback_observed": "вот -> djn",
+    "ime_route": "double_shift_committed_tail",
+    "full_result": "djn",
+    "full_expected": "djn file",
+    "rollback_verdict": "PASS",
+    "continuation_verdict": "FAIL",
+    "continuation_scope": "the cold isolated daemon handled the trigger after 2814 ms and the short-lived virtual input device closed before queued continuation events were consumed"
+  },
+  "not_tested_after_delayed_surrounding_text_fix": [
+    "physical double Shift rollback on the persistent system keyboard",
+    "immediate continued typing after physical rollback"
+  ],
+  "generic_exact_ime_auto_undo": {
+    "verdict": "PASS",
+    "scenario": "доллора + Space -> доллара -> immediate double Shift -> доллора -> Enter",
+    "captured_result": "доллора",
+    "captured_expected": "доллора",
+    "root_cause_fixed": "ImeAutoUndo projected Undo plus UndoRecord but structural verification attempted to seal it through AutomaticDecision instead of RecordedUndo authority",
+    "source_contract": {
+      "operator": "undo",
+      "proof": "undo_record",
+      "authority": "recorded_undo"
+    },
+    "tests": {
+      "ime_auto_undo_authority": "2/2 PASS",
+      "pending_ime_auto_undo": "2/2 PASS",
+      "release_build": "PASS",
+      "automated_live_gtk": "PASS"
+    },
+    "runtime_evidence": [
+      "ibus_space_autocorrect status=authorized",
+      "ime_committed_tail text=доллара",
+      "ime_committed_tail text=доллора",
+      "ibus_auto_undo status=restored_exact_original",
+      "double_shift_auto_undo handled=true"
+    ],
+    "harness_requirements": [
+      "GTK_IM_MODULE=ibus for the GTK dialog",
+      "wait for asynchronous double-Shift edit before Enter"
+    ],
+    "installed_version": "0.2.324",
+    "global_ibus_restarted": false,
+    "lay_daemon_restarted": false,
+    "active_ibus_engine_after_proof": "lay-ime-ru",
+    "not_tested": [
+      "persistent physical keyboard across every supported browser and toolkit",
+      "non-IME uinput exact undo"
+    ]
+  },
+  "verdict": "AUTOMATED_LIVE_GENERIC_EXACT_AUTO_UNDO_PASS_PHYSICAL_INPUT_PENDING"
+}

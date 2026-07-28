@@ -85,6 +85,9 @@ impl LayIbusEngine {
                 }),
             )
             .await?;
+        if handled {
+            self.remember_pending_ime_auto_undo(boundary_text, replacement);
+        }
         Ok(handled)
     }
 
@@ -193,6 +196,48 @@ impl LayIbusEngine {
         Ok(handled.then_some(plan.target_layout_is_ru))
     }
 
+    pub(super) async fn undo_last_ime_autocorrect(
+        &mut self,
+        emitter: &SignalEmitter<'_>,
+    ) -> fdo::Result<Option<bool>> {
+        let Some(pending) = self.take_pending_ime_auto_undo() else {
+            return Ok(None);
+        };
+        let (rejected_context, accepted_context) =
+            ime_auto_undo_contexts(&self.tail_buffer, &pending.original, &pending.replacement);
+        let target_layout_is_ru =
+            lay::keyboard::preferred_layout_for_text(&pending.original, self.layout_is_ru);
+        let expected_tail = VisibleTailSnapshot::new(
+            VisibleTailSource::ImeCommittedTail,
+            pending.replacement.clone(),
+            Some(self.path.clone()),
+            self.tail_epoch,
+        );
+        let handled = self
+            .replace_committed_tail(
+                emitter,
+                CommittedTailReplaceRequest::ime_auto_undo(
+                    pending.replacement.chars().count() as u32,
+                    pending.original.clone(),
+                )
+                .with_expected_tail(expected_tail),
+            )
+            .await?;
+        if handled {
+            lay::typing_cpu::TypingCpu::record_user_correction(
+                &rejected_context,
+                &rejected_context,
+                &accepted_context,
+                "ime_auto_undo",
+            );
+            trace::record(r#"{"kind":"ibus_auto_undo","status":"restored_exact_original"}"#);
+            self.trace_key("double_shift_auto_undo", 0, 0, true, None);
+            return Ok(Some(target_layout_is_ru));
+        }
+        self.restore_pending_ime_auto_undo(pending);
+        Ok(None)
+    }
+
     fn committed_tail_toggle_plan(&self) -> Option<lay::manual_toggle::ManualTogglePlan> {
         plan_manual_toggle(ManualToggleRequest {
             visible_tail: VisibleTail::ime_committed_tail(&self.tail_buffer),
@@ -207,6 +252,32 @@ impl LayIbusEngine {
         let suppress = self.suppress_next_committed_tail_autocorrect || shared_suppression;
         self.suppress_next_committed_tail_autocorrect = false;
         suppress
+    }
+}
+
+fn ime_auto_undo_contexts(
+    visible_tail: &str,
+    original: &str,
+    replacement: &str,
+) -> (String, String) {
+    let rejected = visible_tail.to_string();
+    let accepted = rejected
+        .strip_suffix(replacement)
+        .map(|prefix| format!("{prefix}{original}"))
+        .unwrap_or_else(|| original.to_string());
+    (rejected, accepted)
+}
+
+#[cfg(test)]
+mod auto_undo_feedback_tests {
+    use super::ime_auto_undo_contexts;
+
+    #[test]
+    fn undo_feedback_keeps_phrase_context_and_restores_only_tail() {
+        let (rejected, accepted) =
+            ime_auto_undo_contexts("обновлять модель по ход ", "ходу ", "ход ");
+        assert_eq!(rejected, "обновлять модель по ход ");
+        assert_eq!(accepted, "обновлять модель по ходу ");
     }
 }
 

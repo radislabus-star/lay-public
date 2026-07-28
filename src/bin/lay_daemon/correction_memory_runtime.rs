@@ -77,17 +77,12 @@ pub(super) fn remember_assisted_text_correction(
     if !remembered && correction.cursor_offset == 0 {
         buf.reset_all();
     }
-    if typing_correction_should_skip_auto_undo(
+    let _skip_auto_undo = typing_correction_should_skip_auto_undo(
         correction.rule_id,
         correction.original(),
         correction.replacement(),
-    ) {
-        // Layout-only typing assists are intentionally not auto-undone on the
-        // next edit, but explicit manual double-Shift remains a real user
-        // command and must use the normal replay path.
-    } else {
-        remember_pending_auto_undo(buf, &correction);
-    }
+    );
+    remember_pending_auto_undo(buf, &correction);
 }
 
 trait PendingUndoCorrection {

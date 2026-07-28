@@ -38,6 +38,30 @@ const L11_EXTENSION_HEADER_BYTES: usize = 40;
 const CENTER_PHASE_PROFILE_BYTES: usize = 24;
 const MAX_REVERSE_LEXICAL_COUPLINGS: usize = 96;
 
+pub(super) fn inspect_header(bytes: &[u8]) -> Result<(u64, u32, u64), String> {
+    if bytes.len() < HEADER_BYTES {
+        return Err("truncated L1 crystal header".to_string());
+    }
+    let version = read_u32(bytes, 8)?;
+    let valid_magic = match version {
+        VERSION_V2 => bytes.get(..8) == Some(MAGIC_V2.as_slice()),
+        VERSION_V3 => bytes.get(..8) == Some(MAGIC_V3.as_slice()),
+        VERSION_V4 => bytes.get(..8) == Some(MAGIC_V4.as_slice()),
+        VERSION_V5 => bytes.get(..8) == Some(MAGIC_V5.as_slice()),
+        VERSION_V6 => bytes.get(..8) == Some(MAGIC_V6.as_slice()),
+        VERSION_V7 => bytes.get(..8) == Some(MAGIC_V7.as_slice()),
+        _ => false,
+    };
+    if !valid_magic || read_u32(bytes, 12)? as usize != HEADER_BYTES {
+        return Err("invalid L1 crystal header".to_string());
+    }
+    Ok((
+        read_u64(bytes, 24)?,
+        read_u32(bytes, 36)?,
+        read_u64(bytes, 16)?,
+    ))
+}
+
 pub(super) fn encode(package: &LexicalGrokkingPackage) -> Result<Vec<u8>, String> {
     let version = if package.center_phase_profiles.is_empty() {
         VERSION_V4

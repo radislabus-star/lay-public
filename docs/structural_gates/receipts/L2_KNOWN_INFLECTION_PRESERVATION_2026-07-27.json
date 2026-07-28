@@ -1,0 +1,45 @@
+{
+  "gate": "l2_known_inflection_preservation",
+  "date": "2026-07-27",
+  "regression": {
+    "input": "в коде ",
+    "unsafe_candidate": "в код ",
+    "source_id": "L2FieldShadowReadout",
+    "error_class": "extra-letter"
+  },
+  "root_cause": [
+    "the production IME hot snapshot did not expose коде as an exact authoritative input center",
+    "a strong L2 peak could therefore authorize deletion of the final case vowel while L3 remained neutral"
+  ],
+  "contract": {
+    "known_form_drift": "compact morphology form centers are stable observed lexical states",
+    "preposition_case": "L2 may not delete a final Russian vowel after a preposition without pairwise L3 or exact state proof",
+    "scope": "generic Russian inflection protection; no phrase-specific replacement rule"
+  },
+  "tests": {
+    "l2_field_route": "1/1 PASS",
+    "known_form_decision_admission": "1/1 PASS",
+    "proposal_admission": "1/1 PASS",
+    "double_shift_contract": "1/1 PASS",
+    "live_gtk_known_inflection": "got='в коде' expected='в коде' PASS",
+    "live_gtk_double_shift_undo": "got='доллора' expected='доллора' PASS"
+  },
+  "installed_runtime": {
+    "version": "0.2.324",
+    "lay_ibus_engine": true,
+    "lay_daemon": true,
+    "global_ibus_restarted": false
+  },
+  "lifecycle_fix": {
+    "old_match": "pkill -x lay-ibus-engine",
+    "failure": "Linux comm truncates process names to 15 bytes and left an old deleted inode running",
+    "new_match": "full executable argv; only lay-ibus-engine is terminated"
+  },
+  "not_tested": [
+    "all Russian preposition and case combinations",
+    "persistent physical input in every browser and toolkit",
+    "non-IME uinput path"
+  ],
+  "runtime_authority_changed": true,
+  "verdict": "LIVE_IME_PASS"
+}
