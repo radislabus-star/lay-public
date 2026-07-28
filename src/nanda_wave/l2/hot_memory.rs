@@ -12,13 +12,19 @@ use std::sync::{
 
 static IME_WORD_CANDIDATE_MEMORY_READY: AtomicBool = AtomicBool::new(false);
 static IME_WORD_CANDIDATE_MEMORY_WARMUP: OnceLock<()> = OnceLock::new();
-const IME_HOT_MATERIAL_LIMIT: usize = 48;
-const IME_BOOTSTRAP_PREFIXES: &[&str] = &[
+// English asks for 12 display candidates and Russian asks for a 24-candidate
+// donor field. The live gate doubles each request, then ime_readout retains
+// four lexical competitors per gate candidate. Warm both exact cache keys.
+const IME_EN_HOT_MATERIAL_LIMIT: usize = 96;
+const IME_RU_HOT_MATERIAL_LIMIT: usize = 192;
+const IME_RU_BOOTSTRAP_PREFIXES: &[&str] = &[
     "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с",
-    "т", "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я", "a", "b", "c", "d", "e",
-    "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x",
-    "y", "z", "пр", "ст", "по", "на", "за", "вы", "об", "до", "от", "не", "ко", "ра", "re", "co",
-    "de", "in", "ex", "un", "pr",
+    "т", "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я", "пр", "ст", "по", "на",
+    "за", "вы", "об", "до", "от", "не", "ко", "ра",
+];
+const IME_EN_BOOTSTRAP_PREFIXES: &[&str] = &[
+    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s",
+    "t", "u", "v", "w", "x", "y", "z", "re", "co", "de", "in", "ex", "un", "pr",
 ];
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize)]
@@ -46,13 +52,18 @@ pub(crate) fn warm_up_surface_motif_memory() {
 
 pub(crate) fn warm_up_ime_word_candidate_memory() {
     IME_WORD_CANDIDATE_MEMORY_WARMUP.get_or_init(|| {
-        let prefixes = IME_BOOTSTRAP_PREFIXES
-            .iter()
-            .map(|prefix| (*prefix).to_string())
-            .collect::<Vec<_>>();
-        super::ime_readout::warm_up_lexical_readout_cache(&prefixes, IME_HOT_MATERIAL_LIMIT);
+        warm_up_prefixes(IME_RU_BOOTSTRAP_PREFIXES, IME_RU_HOT_MATERIAL_LIMIT);
+        warm_up_prefixes(IME_EN_BOOTSTRAP_PREFIXES, IME_EN_HOT_MATERIAL_LIMIT);
         IME_WORD_CANDIDATE_MEMORY_READY.store(true, Ordering::Release);
     });
+}
+
+fn warm_up_prefixes(prefixes: &[&str], material_limit: usize) {
+    let prefixes = prefixes
+        .iter()
+        .map(|prefix| (*prefix).to_string())
+        .collect::<Vec<_>>();
+    super::ime_readout::warm_up_lexical_readout_cache(&prefixes, material_limit);
 }
 
 pub fn ime_word_candidate_memory_is_warm() -> bool {

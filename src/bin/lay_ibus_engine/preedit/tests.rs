@@ -1569,9 +1569,15 @@ fn precognition_candidate_generation_stays_under_budget() {
         for ch in sample.chars() {
             engine.push_tail_char(ch);
         }
+        let cold_stages = measured_precognition_stages(&engine);
         let cold_started = Instant::now();
         engine.refresh_precognition_candidates();
-        cold_timings.push((sample, cold_started.elapsed().as_micros() as u64));
+        let cold_elapsed = cold_started.elapsed().as_micros() as u64;
+        eprintln!(
+            "precognition cold sample {:?}: first_refresh_after_stages={}us stages={:?}",
+            sample, cold_elapsed, cold_stages
+        );
+        cold_timings.push((sample, cold_elapsed));
         for _ in 0..2 {
             engine.refresh_precognition_candidates();
         }

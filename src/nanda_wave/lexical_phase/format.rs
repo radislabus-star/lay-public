@@ -1,4 +1,6 @@
-use crate::lexical_surface_atoms::{surface_atom_projection, EncodedSurfaceField};
+use crate::lexical_surface_atoms::{
+    surface_atom_projection, visit_surface_atoms, EncodedSurfaceField,
+};
 use crate::stable_hash::mix64_golden;
 
 pub(super) const MAGIC: &[u8; 8] = b"LAYLPH02";
@@ -141,6 +143,28 @@ pub(super) fn surface_phase(field: &EncodedSurfaceField) -> ([i8; PHASE_CELLS], 
         *target = value.clamp(i8::MIN as i16, i8::MAX as i16) as i8;
     }
     (phase, field.atoms().len().min(u16::MAX as usize) as u16)
+}
+
+pub(super) fn surface_phase_and_atom_center_keys(text: &str) -> ([i8; PHASE_CELLS], u16, Vec<u64>) {
+    let mut sums = [0i16; PHASE_CELLS];
+    let mut keys = Vec::new();
+    let mut atom_count = 0usize;
+    visit_surface_atoms(text, |position, bytes| {
+        atom_count = atom_count.saturating_add(1);
+        keys.push(atom_key(0x4c31_504f_5349_5449, position, bytes));
+        keys.push(atom_key(0x4c31_5245_4c41_5845, 0, bytes));
+        for trit in surface_atom_projection(position, bytes) {
+            let cell = usize::from(trit.lane) % PHASE_CELLS;
+            sums[cell] = sums[cell].saturating_add(i16::from(trit.value));
+        }
+    });
+    keys.sort_unstable();
+    keys.dedup();
+    let mut phase = [0i8; PHASE_CELLS];
+    for (target, value) in phase.iter_mut().zip(sums) {
+        *target = value.clamp(i8::MIN as i16, i8::MAX as i16) as i8;
+    }
+    (phase, atom_count.min(u16::MAX as usize) as u16, keys)
 }
 
 pub(super) fn phase_coherence_milli(left: &[i8; PHASE_CELLS], right: &[i8; PHASE_CELLS]) -> u16 {
@@ -378,4 +402,24 @@ fn read_u64(bytes: &[u8], offset: usize) -> Result<u64, String> {
     Ok(u64::from_le_bytes([
         raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6], raw[7],
     ]))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lexical_surface_atoms::SurfaceFieldEncoder;
+
+    #[test]
+    fn streaming_surface_summary_matches_materialized_atoms() {
+        for surface in ["п", "пров", "перезагрузки", "file", "don't", "слово-форма"]
+        {
+            let field = SurfaceFieldEncoder::encode(surface);
+            let expected_phase = surface_phase(&field);
+            let expected_keys = atom_center_keys(&field);
+            let (phase, atom_count, keys) = surface_phase_and_atom_center_keys(surface);
+
+            assert_eq!((phase, atom_count), expected_phase, "surface={surface}");
+            assert_eq!(keys, expected_keys, "surface={surface}");
+        }
+    }
 }

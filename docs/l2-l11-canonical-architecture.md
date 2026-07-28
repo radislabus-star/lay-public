@@ -305,17 +305,19 @@ bootstrap only, material 48, cache 64
 The accepted configuration and loader behavior are:
 
 ```text
-curated preload prefixes                      79
+curated preload prefixes                      78
 preload mode                      CompletionOnly
-preload/live material limit                    48
+Russian preload/live cache key                192
+English preload/live cache key                 96
 maximum cache entries                         128
 zero-delta L3 manifest              direct base load
 L3 shard reduce when deltas == 0          disabled
 ```
 
 The curated set contains all `33` Russian letters, all `26` English letters,
-and `20` common RU/EN two-letter prefixes. The cache key now matches the live
-IME material limit. A non-empty L3 delta list still uses the existing
+and `19` common RU/EN two-letter prefixes. Russian preedit requests `24`
+candidates and therefore uses `24 * 2 * 4 = 192`; English requests `12` and
+uses `12 * 2 * 4 = 96`. A non-empty L3 delta list still uses the existing
 composite reducer.
 
 Measured on the same T480 after a managed child-engine restart:
@@ -332,7 +334,8 @@ swap                           0 KiB        0 KiB        0 KiB        0 KiB
 At five minutes this is `-56.1%` RSS, `-63.9%` PSS, and `-76.6%` anonymous
 PSS against the warm baseline. The rejected two-minute rebound did not recur.
 
-Candidate-generation timing:
+The first timing table below was produced by an unoptimized debug test. It is
+retained as diagnostic evidence, not presented as production latency:
 
 ```text
 hot samples                                      140
@@ -344,14 +347,46 @@ cold "file"                                    1,035 us
 cold sentence ending "д"                      55,616 us
 ```
 
-The cold figures are reported, not hidden by the hot aggregate. They remain a
-separate DAFSA readout optimization target and are not a blocker for accepting
-the steady-state memory fix.
+The cache-key mismatch and cold DAFSA path were corrected in `0.2.327`.
+Production release measurements on the same fixed samples:
+
+```text
+sample                         before       after
+Russian "п"                    7,990 us      788 us
+Russian "пр"                     455 us      491 us
+Russian "пров"                 8,077 us    6,597 us
+English "file"                   116 us      174 us
+English sentence ending "d"    2,690 us      275 us
+Russian sentence ending "д"   11,431 us    2,085 us
+Russian long context "при"     1,944 us    1,081 us
+hot p99                           22 us       12 us
+```
+
+The remaining `6.6 ms` case is a genuinely new four-letter decoded-form basin,
+not a cache-key miss. It retains the complete `1,152`-surface material lane.
+The runtime now visits atoms without allocating one `Vec<u8>` per byte n-gram,
+computes phase and center keys in one pass, carries DAFSA character depth
+through recursion, and reuses the terminal character count.
+
+The exact RU `192` / EN `96` preload raises the bounded steady footprint
+relative to the earlier mismatched `48` preload, but does not restore the old
+memory growth:
+
+```text
+0.2.327 live checkpoint          8 sec       2 min
+RSS                         106,284 KiB  118,500 KiB
+PSS                          76,203 KiB   88,581 KiB
+anonymous PSS                41,500 KiB   51,504 KiB
+file PSS                     34,703 KiB   37,077 KiB
+swap                              0 KiB        0 KiB
+```
 
 Tested:
 
 - `precognition_candidate_generation_stays_under_budget`: PASS;
 - lexical cache projection regression: PASS;
+- streaming atom summary parity against materialized atoms: PASS;
+- lexical phase runtime completion tests: `9 / 9` PASS;
 - zero-delta L3 composite fast-path regression: PASS;
 - `scripts/check-lay-changed.sh`: PASS;
 - release `lay-ibus-engine 0.2.326` built and loaded;

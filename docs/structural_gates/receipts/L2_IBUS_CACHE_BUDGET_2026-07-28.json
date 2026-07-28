@@ -1,7 +1,7 @@
 {
   "kind": "l2_ibus_cache_budget",
   "date": "2026-07-28",
-  "version": "0.2.326",
+  "version": "0.2.327",
   "verdict": "PASS_runtime_memory_5m",
   "baseline": {
     "lexical_package_bytes": 62424748,
@@ -13,10 +13,12 @@
     "zero_delta_l3_reduce": true
   },
   "accepted_configuration": {
-    "preload_prefixes": 79,
+    "preload_prefixes": 78,
     "preload_mode": "CompletionOnly",
-    "preload_material_limit": 48,
-    "live_material_limit": 48,
+    "russian_preload_material_limit": 192,
+    "russian_live_material_limit": 192,
+    "english_preload_material_limit": 96,
+    "english_live_material_limit": 96,
     "cache_capacity": 128,
     "zero_delta_l3_reduce": false,
     "nonempty_delta_l3_reduce": true
@@ -68,7 +70,7 @@
       "swap": 0
     }
   },
-  "latency_us": {
+  "debug_latency_us": {
     "hot_samples": 140,
     "hot_p50": 29,
     "hot_p90": 36,
@@ -84,9 +86,49 @@
       "long_pri": 7916
     }
   },
+  "release_latency_us": {
+    "before": {
+      "russian_p": 7990,
+      "russian_pr": 455,
+      "russian_prov": 8077,
+      "english_file": 116,
+      "english_sentence_d": 2690,
+      "russian_sentence_d": 11431,
+      "russian_long_pri": 1944,
+      "hot_p99": 22
+    },
+    "after": {
+      "russian_p": 788,
+      "russian_pr": 491,
+      "russian_prov": 6597,
+      "english_file": 174,
+      "english_sentence_d": 275,
+      "russian_sentence_d": 2085,
+      "russian_long_pri": 1081,
+      "hot_p99": 12
+    }
+  },
+  "version_0_2_327_memory_kib": {
+    "after_8s": {
+      "rss": 106284,
+      "pss": 76203,
+      "anonymous_pss": 41500,
+      "file_pss": 34703,
+      "swap": 0
+    },
+    "after_2m": {
+      "rss": 118500,
+      "pss": 88581,
+      "anonymous_pss": 51504,
+      "file_pss": 37077,
+      "swap": 0
+    }
+  },
   "tests": {
     "precognition_candidate_generation": "PASS",
     "cache_projection": "PASS",
+    "streaming_atom_summary_parity": "PASS",
+    "lexical_phase_runtime_completion_tests": "9/9 PASS",
     "zero_delta_l3_composite_fast_path": "PASS",
     "check_lay_changed": "PASS",
     "release_binary_loaded": true,

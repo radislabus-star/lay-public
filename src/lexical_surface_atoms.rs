@@ -37,8 +37,13 @@ impl SurfaceFieldEncoder {
     #[must_use]
     pub(crate) fn encode(text: &str) -> EncodedSurfaceField {
         let symbols = text.chars().collect::<Vec<_>>();
-        let mut atoms = raw_byte_atoms(text.as_bytes());
-        append_boundary_atoms(text, &mut atoms);
+        let mut atoms = Vec::new();
+        visit_surface_atoms(text, |position, bytes| {
+            atoms.push(SurfaceAtom {
+                position,
+                bytes: bytes.to_vec(),
+            });
+        });
         EncodedSurfaceField { symbols, atoms }
     }
 }
@@ -49,21 +54,14 @@ pub(crate) struct SurfaceWaveTrit {
     pub(crate) value: i8,
 }
 
-fn raw_byte_atoms(bytes: &[u8]) -> Vec<SurfaceAtom> {
-    if bytes.len() < SURFACE_WAVE_NGRAM {
-        return Vec::new();
+pub(crate) fn visit_surface_atoms(text: &str, mut visit: impl FnMut(u64, &[u8])) {
+    for (position, gram) in text.as_bytes().windows(SURFACE_WAVE_NGRAM).enumerate() {
+        visit(position as u64, gram);
     }
-    bytes
-        .windows(SURFACE_WAVE_NGRAM)
-        .enumerate()
-        .map(|(position, gram)| SurfaceAtom {
-            position: position as u64,
-            bytes: gram.to_vec(),
-        })
-        .collect()
+    visit_boundary_atoms(text, &mut visit);
 }
 
-fn append_boundary_atoms(text: &str, atoms: &mut Vec<SurfaceAtom>) {
+fn visit_boundary_atoms(text: &str, visit: &mut impl FnMut(u64, &[u8])) {
     for raw_token in text.split_whitespace() {
         let chars = lower_token_chars(raw_token);
         if chars.is_empty() {
@@ -86,26 +84,22 @@ fn append_boundary_atoms(text: &str, atoms: &mut Vec<SurfaceAtom>) {
             {
                 continue;
             }
-            atoms.push(SurfaceAtom {
-                position: local_position as u64,
-                bytes: encode_boundary_atom(window),
-            });
+            let bytes = encode_boundary_atom(window);
+            visit(local_position as u64, &bytes);
         }
 
-        append_short_token_identity_atoms(&normalize_surface_token(raw_token), atoms);
+        visit_short_token_identity_atoms(&normalize_surface_token(raw_token), visit);
     }
 }
 
-fn append_short_token_identity_atoms(token: &str, atoms: &mut Vec<SurfaceAtom>) {
+fn visit_short_token_identity_atoms(token: &str, visit: &mut impl FnMut(u64, &[u8])) {
     if token.is_empty() || token.chars().count() >= SURFACE_WAVE_NGRAM {
         return;
     }
 
     for salt in 0..SHORT_TOKEN_IDENTITY_ATOMS {
-        atoms.push(SurfaceAtom {
-            position: 0,
-            bytes: encode_short_token_identity_atom(token, salt as u8),
-        });
+        let bytes = encode_short_token_identity_atom(token, salt as u8);
+        visit(0, &bytes);
     }
 }
 
