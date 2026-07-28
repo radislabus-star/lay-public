@@ -13,7 +13,9 @@
     "zero_delta_l3_reduce": true
   },
   "accepted_configuration": {
-    "preload_prefixes": 78,
+    "preload_prefixes": 2,
+    "russian_bootstrap_prefixes": ["пр"],
+    "english_bootstrap_prefixes": ["ex"],
     "preload_mode": "CompletionOnly",
     "russian_preload_material_limit": 192,
     "russian_live_material_limit": 192,
@@ -38,9 +40,18 @@
         "sentence_d": 80742
       },
       "verdict": "REJECT_cold_latency"
+    },
+    {
+      "configuration": "78 prefixes, Russian material 192, English material 96, cache 128",
+      "after_8s_rss_kib": 106284,
+      "after_2m_rss_kib": 118500,
+      "after_5m_rss_kib": 226904,
+      "after_5m_pss_kib": 196794,
+      "after_5m_anonymous_pss_kib": 159028,
+      "verdict": "REJECT_delayed_allocator_growth"
     }
   ],
-  "memory_kib": {
+  "version_0_2_326_memory_kib": {
     "baseline": {
       "rss": 245812,
       "pss": 215609,
@@ -86,7 +97,7 @@
       "long_pri": 7916
     }
   },
-  "release_latency_us": {
+  "streaming_78_prefix_release_latency_us": {
     "before": {
       "russian_p": 7990,
       "russian_pr": 455,
@@ -108,21 +119,39 @@
       "hot_p99": 12
     }
   },
-  "version_0_2_327_memory_kib": {
+  "version_0_2_327_minimal_bootstrap_memory_kib": {
     "after_8s": {
-      "rss": 106284,
-      "pss": 76203,
-      "anonymous_pss": 41500,
-      "file_pss": 34703,
+      "actual_elapsed_seconds": 16,
+      "rss": 105376,
+      "pss": 75374,
+      "anonymous_pss": 40580,
+      "file_pss": 34795,
       "swap": 0
     },
     "after_2m": {
-      "rss": 118500,
-      "pss": 88581,
-      "anonymous_pss": 51504,
-      "file_pss": 37077,
+      "rss": 105376,
+      "pss": 75373,
+      "anonymous_pss": 40580,
+      "file_pss": 34793,
+      "swap": 0
+    },
+    "after_5m": {
+      "rss": 105376,
+      "pss": 75375,
+      "anonymous_pss": 40580,
+      "file_pss": 34795,
       "swap": 0
     }
+  },
+  "minimal_bootstrap_release_latency_us": {
+    "russian_p": 6908,
+    "russian_pr": 829,
+    "russian_prov": 6726,
+    "english_file": 152,
+    "english_sentence_d": 2237,
+    "russian_sentence_d": 8067,
+    "russian_long_pri": 2344,
+    "hot_p99": 10
   },
   "tests": {
     "precognition_candidate_generation": "PASS",
@@ -132,8 +161,9 @@
     "zero_delta_l3_composite_fast_path": "PASS",
     "check_lay_changed": "PASS",
     "release_binary_loaded": true,
-    "live_pid": 3024249,
-    "watchdog_fallback": "PASS"
+    "live_pid": 3236279,
+    "global_ibus_restart": false,
+    "xkb_fallback_armed_during_restart": true
   },
   "not_tested": [
     "multi-day cache churn",

@@ -287,7 +287,7 @@ file PSS                       37,837 KiB
 swap                                0 KiB
 ```
 
-Two intermediate configurations were rejected:
+Three intermediate configurations were rejected:
 
 ```text
 256 prefixes, material 32, cache 256
@@ -300,12 +300,22 @@ bootstrap only, material 48, cache 64
   cold "пров"                      55,898 us
   cold sentence ending "д"         80,742 us
   verdict                      REJECT: cold latency regression
+
+78-prefix warmup, RU 192 / EN 96, cache 128
+  8-second RSS                  106,284 KiB
+  2-minute RSS                 118,500 KiB
+  5-minute RSS                 226,904 KiB
+  5-minute PSS                 196,794 KiB
+  5-minute anonymous PSS       159,028 KiB
+  verdict                      REJECT: delayed allocator growth
 ```
 
 The accepted configuration and loader behavior are:
 
 ```text
-curated preload prefixes                      78
+bootstrap preload prefixes                     2
+Russian bootstrap prefix                    "пр"
+English bootstrap prefix                    "ex"
 preload mode                      CompletionOnly
 Russian preload/live cache key                192
 English preload/live cache key                 96
@@ -314,25 +324,27 @@ zero-delta L3 manifest              direct base load
 L3 shard reduce when deltas == 0          disabled
 ```
 
-The curated set contains all `33` Russian letters, all `26` English letters,
-and `19` common RU/EN two-letter prefixes. Russian preedit requests `24`
-candidates and therefore uses `24 * 2 * 4 = 192`; English requests `12` and
-uses `12 * 2 * 4 = 96`. A non-empty L3 delta list still uses the existing
-composite reducer.
+Russian preedit requests `24` candidates and therefore uses
+`24 * 2 * 4 = 192`; English requests `12` and uses `12 * 2 * 4 = 96`.
+Those exact cache keys are unchanged. Only speculative startup materialization
+was narrowed: rare prefixes still traverse the complete optimized DAFSA lane
+on first use, and no candidate, posting, or decoded-surface frontier was cut.
+A non-empty L3 delta list still uses the existing composite reducer.
 
 Measured on the same T480 after a managed child-engine restart:
 
 ```text
-metric                      before       8 sec       2 min       5 min
-RSS                     245,812 KiB  105,784 KiB  105,404 KiB  107,844 KiB
-PSS                     215,609 KiB   75,848 KiB   75,472 KiB   77,913 KiB
-anonymous PSS           177,772 KiB   41,440 KiB   41,440 KiB   41,516 KiB
-file PSS                 37,837 KiB   34,408 KiB   34,032 KiB   36,397 KiB
+metric                      baseline      16 sec       2 min       5 min
+RSS                     245,812 KiB  105,376 KiB  105,376 KiB  105,376 KiB
+PSS                     215,609 KiB   75,374 KiB   75,373 KiB   75,375 KiB
+anonymous PSS           177,772 KiB   40,580 KiB   40,580 KiB   40,580 KiB
+file PSS                 37,837 KiB   34,795 KiB   34,793 KiB   34,795 KiB
 swap                           0 KiB        0 KiB        0 KiB        0 KiB
 ```
 
-At five minutes this is `-56.1%` RSS, `-63.9%` PSS, and `-76.6%` anonymous
-PSS against the warm baseline. The rejected two-minute rebound did not recur.
+At five minutes this is `-57.1%` RSS, `-65.0%` PSS, and `-77.2%` anonymous
+PSS against the original warm baseline. More importantly, the delayed
+five-minute rebound of the rejected 78-prefix configuration did not recur.
 
 The first timing table below was produced by an unoptimized debug test. It is
 retained as diagnostic evidence, not presented as production latency:
@@ -348,38 +360,26 @@ cold sentence ending "д"                      55,616 us
 ```
 
 The cache-key mismatch and cold DAFSA path were corrected in `0.2.327`.
-Production release measurements on the same fixed samples:
+Production release measurements for the final two-prefix bootstrap on the same
+fixed samples:
 
 ```text
-sample                         before       after
-Russian "п"                    7,990 us      788 us
-Russian "пр"                     455 us      491 us
-Russian "пров"                 8,077 us    6,597 us
-English "file"                   116 us      174 us
-English sentence ending "d"    2,690 us      275 us
-Russian sentence ending "д"   11,431 us    2,085 us
-Russian long context "при"     1,944 us    1,081 us
-hot p99                           22 us       12 us
+sample                         before       final
+Russian "п"                    7,990 us    6,908 us
+Russian "пр"                     455 us      829 us
+Russian "пров"                 8,077 us    6,726 us
+English "file"                   116 us      152 us
+English sentence ending "d"    2,690 us    2,237 us
+Russian sentence ending "д"   11,431 us    8,067 us
+Russian long context "при"     1,944 us    2,344 us
+hot p99                           22 us       10 us
 ```
 
-The remaining `6.6 ms` case is a genuinely new four-letter decoded-form basin,
-not a cache-key miss. It retains the complete `1,152`-surface material lane.
-The runtime now visits atoms without allocating one `Vec<u8>` per byte n-gram,
-computes phase and center keys in one pass, carries DAFSA character depth
-through recursion, and reuses the terminal character count.
-
-The exact RU `192` / EN `96` preload raises the bounded steady footprint
-relative to the earlier mismatched `48` preload, but does not restore the old
-memory growth:
-
-```text
-0.2.327 live checkpoint          8 sec       2 min
-RSS                         106,284 KiB  118,500 KiB
-PSS                          76,203 KiB   88,581 KiB
-anonymous PSS                41,500 KiB   51,504 KiB
-file PSS                     34,703 KiB   37,077 KiB
-swap                              0 KiB        0 KiB
-```
+The remaining `6.7-8.1 ms` rare cold cases are genuinely new decoded-form
+basins, not cache-key misses. They retain the complete `1,152`-surface material
+lane. The runtime now visits atoms without allocating one `Vec<u8>` per byte
+n-gram, computes phase and center keys in one pass, carries DAFSA character
+depth through recursion, and reuses the terminal character count.
 
 Tested:
 
@@ -389,10 +389,10 @@ Tested:
 - lexical phase runtime completion tests: `9 / 9` PASS;
 - zero-delta L3 composite fast-path regression: PASS;
 - `scripts/check-lay-changed.sh`: PASS;
-- release `lay-ibus-engine 0.2.326` built and loaded;
-- live process PID `3024249` used the installed release;
-- watchdog fallback restored `xkb:us::eng` after five minutes without user
-  confirmation;
+- release `lay-ibus-engine 0.2.327` built and loaded;
+- live process PID `3236279` used the installed release;
+- managed child-engine restart retained an `xkb:ru::rus` fallback and did not
+  restart the global IBus daemon;
 - no IBus daemon restart and no swap.
 
 Not tested in this checkpoint:

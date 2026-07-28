@@ -17,15 +17,8 @@ static IME_WORD_CANDIDATE_MEMORY_WARMUP: OnceLock<()> = OnceLock::new();
 // four lexical competitors per gate candidate. Warm both exact cache keys.
 const IME_EN_HOT_MATERIAL_LIMIT: usize = 96;
 const IME_RU_HOT_MATERIAL_LIMIT: usize = 192;
-const IME_RU_BOOTSTRAP_PREFIXES: &[&str] = &[
-    "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с",
-    "т", "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я", "пр", "ст", "по", "на",
-    "за", "вы", "об", "до", "от", "не", "ко", "ра",
-];
-const IME_EN_BOOTSTRAP_PREFIXES: &[&str] = &[
-    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s",
-    "t", "u", "v", "w", "x", "y", "z", "re", "co", "de", "in", "ex", "un", "pr",
-];
+const IME_RU_BOOTSTRAP_PREFIXES: &[&str] = &["пр"];
+const IME_EN_BOOTSTRAP_PREFIXES: &[&str] = &["ex"];
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize)]
 pub struct L2SurfaceMemoryStatus {

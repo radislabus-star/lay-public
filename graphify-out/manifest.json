@@ -3080,8 +3080,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/hot_memory.rs": {
-    "mtime": 1785272653.6287727,
-    "ast_hash": "87ba8c5df2d3a922088048de46b16e8d",
+    "mtime": 1785273999.7990415,
+    "ast_hash": "49fe378a0a1256dced065825ccc4647b",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/phase.rs": {
@@ -4695,8 +4695,8 @@
     "semantic_hash": ""
   },
   "docs/l2-l11-canonical-architecture.md": {
-    "mtime": 1785273220.8840747,
-    "ast_hash": "d64044aeff9a013ef0a2814beee30da7",
+    "mtime": 1785274904.7131913,
+    "ast_hash": "ca5db94a5f37a9316fe733c6100298e0",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/bridge.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L2_IBUS_CACHE_BUDGET_2026-07-28.json": {
-    "mtime": 1785273233.3102274,
-    "ast_hash": "1829abbbc9a45d418599346fd1cd0c4a",
+    "mtime": 1785274972.7320971,
+    "ast_hash": "98e8b174038dd5c8bb2983eb4642b1fa",
     "semantic_hash": ""
   }
 }
