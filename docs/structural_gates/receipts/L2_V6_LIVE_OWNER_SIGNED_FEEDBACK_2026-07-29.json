@@ -1,0 +1,107 @@
+{
+  "receipt": "L2_V6_LIVE_OWNER_SIGNED_FEEDBACK_2026-07-29",
+  "date": "2026-07-29",
+  "scope": "isolated full L1.1 V8 to L2 V6 to L3 to verifier replay over real correction receipts",
+  "route": {
+    "reference": "CandidateReadoutRoute::FullWave",
+    "owner": "CandidateReadoutRoute::L2FieldShadow",
+    "l1_package": "/home/e/build/lay-runtime-replay/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v3.v8.bin",
+    "l2_package": "/home/e/build/lay-runtime-replay/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v6.bin",
+    "l2_package_sha256": "b9b0d43c17dfd55562a42d325ff529d5d070c571dd1ca046ca5135f8b7f0093d",
+    "explicit_l2_package_override": false
+  },
+  "feedback_compile": {
+    "source": "/home/e/build/lay-runtime-replay/.local/share/lay/corrections.jsonl",
+    "source_bytes": 389480,
+    "correction_receipts": 975,
+    "correction_events": 2021,
+    "accepted_transitions": 5641,
+    "rejected_transitions": 7990,
+    "surface_anti_states": 342,
+    "schema_version": 14
+  },
+  "full_route_replay": {
+    "records_seen": 2945,
+    "records_used": 975,
+    "workers": 20,
+    "selected_surface_diverged": 71,
+    "selected_gate_diverged": 76,
+    "selected_provenance_diverged": 101,
+    "reference_apply": 70,
+    "reference_apply_matches_user_target": 68,
+    "reference_false_authority": 2,
+    "owner_apply": 28,
+    "owner_apply_matches_user_target": 28,
+    "owner_false_authority": 0,
+    "wall_seconds": 9.77,
+    "average_cpu_percent": 1569,
+    "peak_rss_kib": 543608
+  },
+  "mechanism": {
+    "word_specific_rules": 0,
+    "signed_state_identity": "complete normalized phrase with case and punctuation preserved",
+    "signed_target_identity": "complete normalized target with case and punctuation preserved",
+    "automatic_positive_feedback_sources_excluded": [
+      "autocorrect",
+      "layout"
+    ],
+    "derived_cache_invalidation": "usage snapshot schema 13 to 14"
+  },
+  "tests": {
+    "targeted_total": {
+      "passed": 72,
+      "failed": 0
+    },
+    "nanda_wave_usage_prior": {
+      "passed": 31,
+      "failed": 0
+    },
+    "nanda_wave_l2_field": {
+      "passed": 29,
+      "failed": 0
+    },
+    "nanda_wave_l4_signed_memory": {
+      "passed": 6,
+      "failed": 0
+    },
+    "transition_relation": {
+      "passed": 6,
+      "failed": 0
+    },
+    "wide_nanda_wave": {
+      "current_passed": 541,
+      "current_failed": 8,
+      "head_baseline_passed": 529,
+      "head_baseline_failed": 8,
+      "new_failure_names": 0,
+      "verdict": "WATCH_INHERITED_BASELINE_FAILURES"
+    }
+  },
+  "gates": {
+    "owner_false_authority_zero": "PASS",
+    "default_installed_l2_discovery": "PASS",
+    "targeted_release_tests": "PASS_72_OF_72",
+    "wide_nanda_wave": "WATCH_8_INHERITED_BASELINE_FAILURES",
+    "all_source_lemmas_reachable": "WATCH_17172_UNSEEDED_LEMMAS",
+    "global_desktop_restart": "NOT_TESTED"
+  },
+  "not_tested": [
+    "restart of the user's global IBus engine or running daemon",
+    "runtime behavior for source lemmas without an L1.1 seed",
+    "correction-quality promotion outside the measured user-target receipts"
+  ],
+  "authority": {
+    "source_default_changed": true,
+    "running_ibus_authority_changed": false,
+    "global_ibus_restarted": false
+  },
+  "verdict": "PASS_ISOLATED_FULL_ROUTE_ZERO_FALSE_AUTHORITY",
+  "evidence": [
+    "/home/e/build/lay-runtime-replay/v6-default-full-owner-schema14.json",
+    "/home/e/build/lay-runtime-replay/v6-default-full-owner-schema14.time",
+    "/home/e/build/lay-runtime-replay/baseline-0.2.328-nanda-wave.log",
+    "/home/e/build/lay-runtime-replay/current-0.2.329-nanda-wave.log",
+    "/home/e/build/lay-l1-shadow/artifacts/l2-v6-evidence-authority-2026-07-29/proof-final-zero-authority.json",
+    "/home/ubu/projects/lay/docs/structural_gates/receipts/L2_CANONICAL_RU_FULL_V6_EVIDENCE_AUTHORITY_2026-07-29.json"
+  ]
+}

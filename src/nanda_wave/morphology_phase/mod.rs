@@ -158,6 +158,28 @@ pub(crate) fn same_inclusive_imperative_family(left: u32, right: u32) -> bool {
         && left & ASPECT_MASK == right & ASPECT_MASK
 }
 
+pub(crate) fn same_finite_agreement_family(left: u32, right: u32) -> bool {
+    let finite_person = |features: u32| {
+        let explicit = features & PERSON_MASK;
+        if explicit == 0 && features & MOOD_IMPERATIVE != 0 && features & IMPERATIVE_EXCLUSIVE != 0
+        {
+            PERSON_SECOND
+        } else {
+            explicit
+        }
+    };
+    let left_person = finite_person(left);
+    let right_person = finite_person(right);
+    let left_number = left & NUMBER_MASK;
+    let right_number = right & NUMBER_MASK;
+    left & POS_MASK == POS_VERB
+        && right & POS_MASK == POS_VERB
+        && left_person != 0
+        && left_person == right_person
+        && left_number != 0
+        && left_number == right_number
+}
+
 fn valid_feature_shape(features: u32) -> bool {
     let at_most_one = |mask: u32| (features & mask).count_ones() <= 1;
     if !at_most_one(NUMBER_MASK)
@@ -270,5 +292,16 @@ mod tests {
             contextual_slot_features(third_plural)
         );
         assert_ne!(first_singular, third_plural);
+    }
+
+    #[test]
+    fn finite_agreement_family_ignores_tense_and_mood() {
+        let future = parse_features("verb:fut:ind:p2:sg:imperf").expect("future second singular");
+        let imperative = parse_features("verb:imp:imp_excl:sg:imperf")
+            .expect("exclusive imperative second singular");
+        let first_person =
+            parse_features("verb:fut:ind:p1:sg:imperf").expect("future first singular");
+        assert!(same_finite_agreement_family(future, imperative));
+        assert!(!same_finite_agreement_family(future, first_person));
     }
 }

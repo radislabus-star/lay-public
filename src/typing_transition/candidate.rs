@@ -10,6 +10,7 @@ pub(crate) struct L2CandidateLattice {
     event: TypingErrorEvent,
     candidates: Vec<UnifiedCorrectionCandidate>,
     policy: TransitionDecisionPolicy,
+    l2_field_authority: crate::nanda_wave::l2_field::L2FieldAuthority,
 }
 
 impl L2CandidateLattice {
@@ -19,6 +20,7 @@ impl L2CandidateLattice {
             event,
             candidates: Vec::new(),
             policy: TransitionDecisionPolicy::default(),
+            l2_field_authority: crate::nanda_wave::l2_field::L2FieldAuthority::Unavailable,
         }
     }
 
@@ -29,6 +31,7 @@ impl L2CandidateLattice {
             policy: TransitionDecisionPolicy {
                 l2_phase_apply: options.l2_phase_apply(),
             },
+            l2_field_authority: crate::nanda_wave::l2_field::L2FieldAuthority::Unavailable,
         }
     }
 
@@ -45,6 +48,13 @@ impl L2CandidateLattice {
         for candidate in candidates {
             self.push(candidate);
         }
+    }
+
+    pub(crate) fn set_l2_field_authority(
+        &mut self,
+        authority: crate::nanda_wave::l2_field::L2FieldAuthority,
+    ) {
+        self.l2_field_authority = authority;
     }
 
     fn push(&mut self, candidate: UnifiedCorrectionCandidate) {

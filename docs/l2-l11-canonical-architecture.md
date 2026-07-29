@@ -258,6 +258,257 @@ Runtime authority changed:
 
 - `false`
 
+## 13. 2026-07-29 Standalone RU L2 V6 Evidence Authority
+
+### 13.1 Kernel Ownership
+
+The accepted standalone package route is:
+
+```text
+L1.1 bounded terminal lattice
+-> up to 4 evidence-ranked lemma hypotheses
+-> L2-owned generated-form decoder
+-> global morphology-slot phase
+-> lemma-specific neighbor pressure
+-> directional competition
+-> Winner | bounded Tied lattice | Abstain
+-> L3
+-> verifier
+```
+
+The package stores generated UTF-8 surfaces itself. A form absent from L1.1 has
+`l1_terminal_id = u32::MAX` and a valid `decoder_ref` in the L2 decoder. L1.1
+therefore owns lexical seed birth, while L2 owns morphology materialization.
+
+Competition provenance is part of the evidence contract:
+
+- ordinary morphology competition may settle forms inside one lemma;
+- only an explicit near-neighbor teacher edge may independently authorize a
+  cross-lemma competition transition;
+- global morphology-slot evidence identifies a grammatical slot, but is not
+  independent evidence for lexical lemma identity;
+- if cross-lemma evidence is insufficient, the readout preserves the bounded
+  candidate lattice instead of manufacturing a singleton;
+- finite verb forms with the same person and number remain tied across
+  underdetermined tense or mood when no lemma-specific evidence separates them.
+
+No word-specific exception list or target surface rule was added.
+
+### 13.2 Compiled Package
+
+Measured on `e@192.168.3.94`:
+
+```text
+source morphology bindings       3,255,785
+source unique surfaces           1,875,032
+source lemmas                       93,672
+
+admitted lemma centers              76,500
+unseeded lemmas                     17,172
+admitted forms                   1,410,190
+L1.1-bound forms                   500,085
+L2-materialized forms              910,105
+morphology bindings              2,405,261
+context modes                         123
+slot centers                          225
+neighbor couplings                  11,847
+competition edges                   40,491
+decoder bytes                   31,824,107
+
+package bytes                   96,594,655
+package MiB                          92.12
+compile wall seconds                  19.09
+compile average CPU                  351%
+compile peak RSS KiB             3,511,952
+compile swap bytes                       0
+```
+
+Artifact:
+
+```text
+/home/e/build/lay-l1-shadow/artifacts/l2-v6-evidence-authority-2026-07-29/LAY-L2-RU-FULL-v6.bin
+SHA-256 b9b0d43c17dfd55562a42d325ff529d5d070c571dd1ca046ca5135f8b7f0093d
+```
+
+### 13.3 Fixed Heldout Proof
+
+Proof artifact:
+
+```text
+/home/e/build/lay-l1-shadow/artifacts/l2-v6-evidence-authority-2026-07-29/proof-final-zero-authority.json
+```
+
+Measured facts:
+
+```text
+heldout scenes available          2,501,613
+evaluated with at least one seed  1,847,790  73.863943%
+unresolved without any L1 seed      653,823  26.136057%
+
+resolvable target coverage          99.997078%
+resolvable winner top-1             46.463072%
+resolvable false authority                   0
+resolvable abstain                          51
+
+POS          evaluated     target coverage     false authority
+noun           554,148        100.000000%                     0
+adjective    1,041,226        100.000000%                     0
+verb           252,370         99.978603%                     0
+pronoun             46        100.000000%                     0
+
+near-neighbor scenes                    20
+near-neighbor top-1               100.000%
+near-neighbor false authority             0
+
+cold load                           347.807 ms
+hot p50                                  20 us
+hot p99                                  92 us
+proof workers                                20
+proof wall seconds                       16.31
+proof average CPU                         431%
+proof peak RSS KiB                   3,785,392
+proof swap bytes                              0
+```
+
+The proof passes the decision contract on the resolvable domain. It does not
+prove the `17,172` lemmas that have no L1.1-bound form. Those lemmas cannot be
+born from the current L1.1 terminal lattice and remain an explicit corpus
+boundary, not a hidden failure inside the evaluated denominator.
+
+### 13.4 Rejected Safety Experiments
+
+The following experiments were rejected:
+
+1. seed-count readout majority:
+   removed false singletons but also blocked legitimate context-driven
+   lower-support lemma transitions;
+2. global slot-only tie:
+   removed false authority but collapsed winner top-1 to `0.339054%`;
+3. treating ordinary within-lemma competition as cross-lemma authority:
+   produced `25` false-authority winners on the first full V5 proof.
+
+The accepted rules are structural evidence rules. They do not reference
+individual words from the failure set.
+
+### 13.5 Verdict And Authority
+
+```text
+standalone package build                         PASS
+resolvable per-POS target coverage >=99%         PASS
+resolvable false authority = 0                   PASS
+near-neighbor top-1 and false authority          PASS
+package format and size                          PASS
+hot-path latency                                 PASS
+all-source-lemma reachability                    WATCH 17,172 unseeded lemmas
+isolated full-route V6 compare                   PASS 0 false authority
+source default package changed                   true
+running IME/daemon authority changed             false
+```
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_CANONICAL_RU_FULL_V6_EVIDENCE_AUTHORITY_2026-07-29.json
+```
+
+### 13.6 Full L1.1 -> L2 -> L3 -> Verifier Replay
+
+What was tested:
+
+- the complete isolated correction route with the installed L1.1 V8 package,
+  canonical RU L2 V6 package, L3, decision core, and verifier;
+- both `FullWave` reference and `L2FieldShadow` live-owner routes over every
+  correction receipt that contains `lay_from`;
+- package discovery through the normal installed path, without an explicit
+  `LAY_L2_PACKAGE` override;
+- parallel deterministic replay with `20` workers;
+- persisted usage-memory rebuild after changing the accepted-event projection.
+
+Measured facts:
+
+```text
+correction log records seen                  2,945
+records with a replayable lay_from             975
+workers                                          20
+
+reference eligible applies                      70
+reference applies matching user target          68
+reference false authority                        2
+
+L2 V6 owner eligible applies                    28
+L2 V6 owner applies matching user target        28
+L2 V6 owner false authority                      0
+
+selected surface divergences                    71
+selected gate divergences                       76
+selected provenance divergences                101
+
+wall time                                    9.77 s
+average CPU                                  1,569%
+peak RSS                                  543,608 KiB
+
+targeted release tests                         72 PASS
+targeted release failures                       0
+wide nanda_wave current                    541 PASS / 8 FAIL
+wide nanda_wave HEAD baseline              529 PASS / 8 FAIL
+```
+
+The final two false-authority cases were not repaired with word-specific
+conditions. They exposed a derived-cache compatibility error:
+
+1. automatic `autocorrect` and `layout` applies were already excluded from new
+   positive feedback;
+2. old schema-13 usage snapshots still contained counts compiled before that
+   exclusion;
+3. usage snapshot schema `14` invalidates those derived counts and rebuilds them
+   from the raw event log;
+4. signed-memory state and target IDs cover the complete normalized phrase,
+   preserve case and punctuation, and therefore do not collapse unrelated
+   scenes onto the last token.
+
+Concrete surfaces from the failure log occur only in regression tests. The
+production rule checks event provenance and signed state identity; there is no
+word allowlist, denylist, or hardcoded replacement.
+
+What was not tested:
+
+- a restart of the user's global IBus engine or running desktop daemon;
+- runtime behavior for the `17,172` source lemmas with no L1.1 seed;
+- a claim that the smaller number of eligible V6 applies is a complete
+  correction-quality improvement outside the measured user-target receipts.
+
+The wide `nanda_wave` gate is not green, but it did not introduce a new failing
+test. The same eight test names fail on `HEAD 0.2.328` and on this change. They
+cover stale tracked L3 schema fixtures, historical `LayoutWordCell32` ownership,
+legacy FullWave trace expectations, one language-quality fixture, and two
+environment-sensitive completion checks. They remain a separate `WATCH`; the
+focused L2, signed-memory, transition-identity, and usage-projection tests pass
+`72/72`.
+
+Verdict scope:
+
+- the isolated installed-package route passes the zero-false-authority gate on
+  all `975` replayable real correction receipts;
+- source and release discovery may select L2 V6 by default;
+- the already running desktop authority is unchanged until a separate safe
+  daemon/IBus restart;
+- the package remains bounded by the standalone V6 proof in section 13.3.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V6_LIVE_OWNER_SIGNED_FEEDBACK_2026-07-29.json
+```
+
+Remote replay evidence:
+
+```text
+/home/e/build/lay-runtime-replay/v6-default-full-owner-schema14.json
+/home/e/build/lay-runtime-replay/v6-default-full-owner-schema14.time
+/home/e/build/lay-runtime-replay/baseline-0.2.328-nanda-wave.log
+/home/e/build/lay-runtime-replay/current-0.2.329-nanda-wave.log
+```
+
 ## 13. 2026-07-28 IBus L2 Cache Budget
 
 The initial attribution to the L2 lexical cache alone was wrong. The compact

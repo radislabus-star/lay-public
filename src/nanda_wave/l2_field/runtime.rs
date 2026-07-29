@@ -5,7 +5,13 @@ use crate::correction_core::UnifiedCorrectionCandidate;
 
 use super::context::{context_mode, scene_wave};
 use super::format::decode_package;
-use super::model::{L2FieldPackage, MorphBinding, SlotPhaseCenter, TieCalibration, L2_PHASE_CELLS};
+use super::model::{
+    L2FieldPackage, MorphBinding, SlotPhaseCenter, TieCalibration,
+    COMPETITION_FLAG_EXPLICIT_NEIGHBOR, L2_PHASE_CELLS, NO_L1_TERMINAL,
+};
+
+const MAX_ACTIVE_LEMMAS: usize = 4;
+const INHERITED_L1_ATTENUATION_MILLI: i32 = 240;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum L2FieldBridgeKind {
@@ -32,15 +38,33 @@ impl L2FieldBridgeKind {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub(crate) struct L2FieldShadowReadout {
     pub(crate) candidates: Vec<UnifiedCorrectionCandidate>,
+    pub(crate) authority: L2FieldAuthority,
 }
 
 impl L2FieldShadowReadout {
-    pub(crate) fn new(candidates: Vec<UnifiedCorrectionCandidate>) -> Self {
-        Self { candidates }
+    pub(crate) fn new(
+        candidates: Vec<UnifiedCorrectionCandidate>,
+        authority: L2FieldAuthority,
+    ) -> Self {
+        Self {
+            candidates,
+            authority,
+        }
     }
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub(crate) enum L2FieldAuthority {
+    #[default]
+    Unavailable,
+    Winner {
+        surface: String,
+    },
+    Tied,
+    Abstain,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -51,11 +75,14 @@ pub(crate) struct L2LexicalSeed {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct L2LocalCandidate {
-    pub(crate) terminal_id: u32,
+    pub(crate) form_ref: u32,
+    pub(crate) l1_terminal_id: Option<u32>,
+    pub(crate) surface: String,
     pub(crate) l1_evidence_milli: i32,
     pub(crate) slot_phase_milli: i32,
     pub(crate) neighbor_pressure: i32,
     pub(crate) competition_pressure: i32,
+    pub(crate) explicit_competition_pressure: i32,
     pub(crate) local_score: i32,
     pub(crate) lemma_ids: Vec<u32>,
     pub(crate) feature_masks: Vec<u32>,
@@ -63,8 +90,8 @@ pub(crate) struct L2LocalCandidate {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) enum L2LocalVerdict {
-    Winner { terminal_id: u32 },
-    Tied { terminal_ids: Vec<u32> },
+    Winner { form_ref: u32 },
+    Tied { form_refs: Vec<u32> },
     Abstain,
 }
 
@@ -100,6 +127,9 @@ impl StandaloneL2Field {
     pub(crate) fn from_package(package: L2FieldPackage) -> Result<Self, String> {
         let mut form_by_terminal = BTreeMap::new();
         for (form_ref, form) in package.form_refs.iter().enumerate() {
+            if form.l1_terminal_id == NO_L1_TERMINAL {
+                continue;
+            }
             if form_by_terminal
                 .insert(form.l1_terminal_id, form_ref as u32)
                 .is_some()
@@ -160,20 +190,38 @@ impl StandaloneL2Field {
         self.package.l1_package_fingerprint
     }
 
-    pub(crate) fn package_counts(&self) -> (usize, usize, usize, usize) {
+    pub(crate) fn package_counts(&self) -> (usize, usize, usize, usize, usize, usize) {
         (
             self.package.form_refs.len(),
+            self.form_by_terminal.len(),
             self.package.lemma_centers.len(),
             self.package.morph_bindings.len(),
             self.package.competition_edges.len(),
+            self.package.decoder_bytes.len(),
         )
     }
 
-    pub(crate) fn form_terminal_ids(&self) -> impl Iterator<Item = u32> + '_ {
+    pub(crate) fn bound_form_refs(&self) -> impl Iterator<Item = (u32, u32)> + '_ {
         self.package
             .form_refs
             .iter()
-            .map(|form| form.l1_terminal_id)
+            .enumerate()
+            .filter_map(|(form_ref, form)| {
+                (form.l1_terminal_id != NO_L1_TERMINAL)
+                    .then_some((u32::try_from(form_ref).ok()?, form.l1_terminal_id))
+            })
+    }
+
+    pub(crate) fn form_ref_for_surface(&self, surface: &str) -> Option<u32> {
+        self.package
+            .form_refs
+            .binary_search_by(|form| self.decode_form(*form).unwrap_or_default().cmp(surface))
+            .ok()
+            .and_then(|index| u32::try_from(index).ok())
+    }
+
+    pub(crate) fn decode_form_ref(&self, form_ref: u32) -> Option<&str> {
+        self.decode_form(*self.package.form_refs.get(form_ref as usize)?)
     }
 
     pub(crate) fn readout(
@@ -195,24 +243,65 @@ impl StandaloneL2Field {
             })
             .collect::<BTreeMap<_, _>>();
         let mut active_forms = seed_evidence.keys().copied().collect::<BTreeSet<_>>();
-        let mut lemma_seed_counts = BTreeMap::<u32, usize>::new();
+        let mut lemma_seed_evidence = BTreeMap::<u32, (i32, u16, u16)>::new();
         for form_ref in &active_forms {
-            for lemma_id in self.bindings_by_form[*form_ref as usize]
-                .iter()
-                .map(|binding| binding.lemma_center_id)
-                .collect::<BTreeSet<_>>()
-            {
-                *lemma_seed_counts.entry(lemma_id).or_default() += 1;
+            let evidence = seed_evidence.get(form_ref).copied().unwrap_or_default();
+            let mut form_lemmas = BTreeMap::<u32, u16>::new();
+            for binding in &self.bindings_by_form[*form_ref as usize] {
+                form_lemmas
+                    .entry(binding.lemma_center_id)
+                    .and_modify(|support| *support = (*support).max(binding.support))
+                    .or_insert(binding.support);
+            }
+            for (lemma_id, binding_support) in form_lemmas {
+                let hypothesis = lemma_seed_evidence
+                    .entry(lemma_id)
+                    .or_insert((i32::MIN, 0, 0));
+                hypothesis.0 = hypothesis.0.max(evidence);
+                hypothesis.1 = hypothesis.1.max(binding_support);
+                hypothesis.2 = hypothesis.2.saturating_add(1);
             }
         }
-        let strongest_lemma_count = lemma_seed_counts
-            .values()
-            .copied()
-            .max()
-            .unwrap_or_default();
-        let seed_lemmas = lemma_seed_counts
+        let mut lemma_hypotheses = lemma_seed_evidence
             .into_iter()
-            .filter_map(|(lemma_id, count)| (count == strongest_lemma_count).then_some(lemma_id))
+            .map(
+                |(lemma_id, (seed_evidence, binding_support, seed_support))| {
+                    let context_evidence =
+                        self.best_lemma_context_evidence(lemma_id, context_mode_id, &wave);
+                    (
+                        lemma_id,
+                        seed_evidence.saturating_add(context_evidence),
+                        seed_evidence,
+                        context_evidence,
+                        binding_support,
+                        seed_support,
+                    )
+                },
+            )
+            .collect::<Vec<_>>();
+        lemma_hypotheses.sort_by(
+            |(left_id, left_total, left_seed, left_context, left_support, left_seed_support),
+             (
+                right_id,
+                right_total,
+                right_seed,
+                right_context,
+                right_support,
+                right_seed_support,
+            )| {
+                right_total
+                    .cmp(left_total)
+                    .then_with(|| right_context.cmp(left_context))
+                    .then_with(|| right_seed.cmp(left_seed))
+                    .then_with(|| right_seed_support.cmp(left_seed_support))
+                    .then_with(|| right_support.cmp(left_support))
+                    .then_with(|| left_id.cmp(right_id))
+            },
+        );
+        let seed_lemmas = lemma_hypotheses
+            .into_iter()
+            .take(MAX_ACTIVE_LEMMAS)
+            .map(|(lemma_id, ..)| lemma_id)
             .collect::<BTreeSet<_>>();
         for lemma_id in &seed_lemmas {
             active_forms.extend(
@@ -246,7 +335,7 @@ impl StandaloneL2Field {
             .map(|seed| seed.evidence_milli)
             .max()
             .unwrap_or_default()
-            .saturating_sub(240);
+            .saturating_sub(INHERITED_L1_ATTENUATION_MILLI);
         let mut candidates = active_forms
             .into_iter()
             .filter_map(|form_ref| {
@@ -266,7 +355,7 @@ impl StandaloneL2Field {
                 .local_score
                 .cmp(&left.local_score)
                 .then_with(|| right.slot_phase_milli.cmp(&left.slot_phase_milli))
-                .then_with(|| left.terminal_id.cmp(&right.terminal_id))
+                .then_with(|| left.form_ref.cmp(&right.form_ref))
         });
         candidates.truncate(candidate_limit.max(1));
         let verdict = classify_local(&candidates, self.package.calibration);
@@ -285,6 +374,7 @@ impl StandaloneL2Field {
         l1_evidence_milli: i32,
     ) -> Option<L2LocalCandidate> {
         let form = self.package.form_refs.get(form_ref as usize)?;
+        let surface = self.decode_form(*form)?.to_string();
         let bindings = self.bindings_by_form.get(form_ref as usize)?;
         let lemma_ids = bindings
             .iter()
@@ -340,8 +430,17 @@ impl StandaloneL2Field {
                     .unwrap_or_default()
             })
             .unwrap_or_default();
-        let competition_pressure = context_mode_id
+        let (competition_pressure, explicit_competition_pressure) = context_mode_id
             .map(|context_mode_id| {
+                let competition_unit = INHERITED_L1_ATTENUATION_MILLI
+                    .saturating_add(
+                        self.package
+                            .calibration
+                            .minimum_margin
+                            .max(self.package.calibration.tie_window)
+                            .max(1),
+                    )
+                    .saturating_add(1);
                 lemma_ids
                     .iter()
                     .filter_map(|lemma_id| self.package.lemma_centers.get(*lemma_id as usize))
@@ -354,27 +453,41 @@ impl StandaloneL2Field {
                             .unwrap_or_default()
                             .iter()
                             .filter(|edge| edge.context_mode_id == context_mode_id)
-                            .map(|edge| {
-                                if edge.left_form_ref == form_ref {
-                                    i32::from(edge.support_delta) * 24
+                            .fold((0_i32, 0_i32), |(total, explicit), edge| {
+                                let pressure = if edge.left_form_ref == form_ref {
+                                    i32::from(edge.support_delta.min(16))
+                                        .saturating_mul(competition_unit)
                                 } else if edge.right_form_ref == form_ref {
-                                    -i32::from(edge.anti_delta) * 24
+                                    -i32::from(edge.anti_delta.min(16))
+                                        .saturating_mul(competition_unit)
                                 } else {
                                     0
-                                }
+                                };
+                                (
+                                    total.saturating_add(pressure),
+                                    explicit.saturating_add(
+                                        if edge.flags & COMPETITION_FLAG_EXPLICIT_NEIGHBOR != 0 {
+                                            pressure
+                                        } else {
+                                            0
+                                        },
+                                    ),
+                                )
                             })
-                            .sum::<i32>()
                     })
-                    .max()
+                    .max_by_key(|(total, explicit)| (*total, *explicit))
                     .unwrap_or_default()
             })
             .unwrap_or_default();
         Some(L2LocalCandidate {
-            terminal_id: form.l1_terminal_id,
+            form_ref,
+            l1_terminal_id: (form.l1_terminal_id != NO_L1_TERMINAL).then_some(form.l1_terminal_id),
+            surface,
             l1_evidence_milli,
             slot_phase_milli,
             neighbor_pressure,
             competition_pressure,
+            explicit_competition_pressure,
             local_score: l1_evidence_milli
                 .saturating_add(slot_phase_milli)
                 .saturating_add(neighbor_pressure)
@@ -382,6 +495,45 @@ impl StandaloneL2Field {
             lemma_ids,
             feature_masks,
         })
+    }
+
+    fn best_lemma_context_evidence(
+        &self,
+        lemma_id: u32,
+        context_mode_id: Option<u32>,
+        wave: &[i8; L2_PHASE_CELLS],
+    ) -> i32 {
+        let Some(context_mode_id) = context_mode_id else {
+            return 0;
+        };
+        self.forms_by_lemma
+            .get(lemma_id as usize)
+            .into_iter()
+            .flatten()
+            .flat_map(|form_ref| &self.bindings_by_form[*form_ref as usize])
+            .filter(|binding| binding.lemma_center_id == lemma_id)
+            .flat_map(|binding| {
+                let slot_features = crate::nanda_wave::morphology_phase::contextual_slot_features(
+                    binding.feature_mask,
+                );
+                self.slot_centers_by_mode_feature
+                    .get(&(context_mode_id, slot_features))
+                    .into_iter()
+                    .flatten()
+                    .filter_map(|index| self.package.slot_centers.get(*index as usize))
+            })
+            .map(|center| slot_center_score(center, wave))
+            .max()
+            .unwrap_or_default()
+    }
+
+    fn decode_form(&self, form: super::model::FormCenterRef) -> Option<&str> {
+        let tail = self
+            .package
+            .decoder_bytes
+            .get(form.decoder_ref as usize..)?;
+        let length = tail.iter().position(|byte| *byte == 0)?;
+        std::str::from_utf8(&tail[..length]).ok()
     }
 }
 
@@ -398,6 +550,11 @@ fn classify_local(candidates: &[L2LocalCandidate], calibration: TieCalibration) 
         < calibration.minimum_positive
     {
         return L2LocalVerdict::Abstain;
+    }
+    if let Some(verdict) =
+        cross_lemma_authority_safety_verdict(candidates, winner, MAX_SUPPORT_UNCERTAINTY)
+    {
+        return verdict;
     }
     let equivalent_slot = candidates
         .iter()
@@ -419,14 +576,35 @@ fn classify_local(candidates: &[L2LocalCandidate], calibration: TieCalibration) 
                         )
                     })
                 });
-            same_lemma && (equivalent_positive_slot || inclusive_imperative_tie)
+            let finite_agreement_tie = winner.neighbor_pressure <= 0
+                && winner.competition_pressure == 0
+                && candidate.feature_masks.iter().any(|candidate_features| {
+                    winner.feature_masks.iter().any(|winner_features| {
+                        crate::nanda_wave::morphology_phase::same_finite_agreement_family(
+                            *winner_features,
+                            *candidate_features,
+                        )
+                    })
+                });
+            same_lemma
+                && (equivalent_positive_slot || inclusive_imperative_tie || finite_agreement_tie)
         })
-        .map(|candidate| candidate.terminal_id)
+        .map(|candidate| candidate.form_ref)
         .collect::<Vec<_>>();
     if equivalent_slot.len() > 1 {
-        return L2LocalVerdict::Tied {
-            terminal_ids: equivalent_slot,
-        };
+        let mut form_refs = equivalent_slot;
+        for form_ref in candidates
+            .iter()
+            .take_while(|candidate| {
+                winner.local_score.saturating_sub(candidate.local_score) <= calibration.tie_window
+            })
+            .map(|candidate| candidate.form_ref)
+        {
+            if !form_refs.contains(&form_ref) {
+                form_refs.push(form_ref);
+            }
+        }
+        return L2LocalVerdict::Tied { form_refs };
     }
     let margin = winner.local_score.saturating_sub(
         candidates
@@ -436,19 +614,57 @@ fn classify_local(candidates: &[L2LocalCandidate], calibration: TieCalibration) 
     );
     if margin <= calibration.tie_window.max(calibration.minimum_margin - 1) {
         return L2LocalVerdict::Tied {
-            terminal_ids: candidates
+            form_refs: candidates
                 .iter()
                 .take_while(|candidate| {
                     winner.local_score.saturating_sub(candidate.local_score)
                         <= calibration.tie_window
                 })
-                .map(|candidate| candidate.terminal_id)
+                .map(|candidate| candidate.form_ref)
                 .collect(),
         };
     }
     L2LocalVerdict::Winner {
-        terminal_id: winner.terminal_id,
+        form_ref: winner.form_ref,
     }
+}
+
+fn cross_lemma_authority_safety_verdict(
+    candidates: &[L2LocalCandidate],
+    winner: &L2LocalCandidate,
+    support_uncertainty: i32,
+) -> Option<L2LocalVerdict> {
+    if winner.explicit_competition_pressure > 0 {
+        return None;
+    }
+    let independent_score = |candidate: &L2LocalCandidate| {
+        candidate
+            .l1_evidence_milli
+            .saturating_add(candidate.neighbor_pressure)
+    };
+    let winner_independent = independent_score(winner);
+    let strongest_foreign = candidates
+        .iter()
+        .filter(|candidate| {
+            !candidate
+                .lemma_ids
+                .iter()
+                .any(|lemma_id| winner.lemma_ids.contains(lemma_id))
+        })
+        .map(independent_score)
+        .max()?;
+    if winner_independent.saturating_sub(strongest_foreign) > support_uncertainty {
+        return None;
+    }
+    let form_refs = candidates
+        .iter()
+        .map(|candidate| candidate.form_ref)
+        .collect::<Vec<_>>();
+    Some(if form_refs.len() > 1 {
+        L2LocalVerdict::Tied { form_refs }
+    } else {
+        L2LocalVerdict::Abstain
+    })
 }
 
 fn slot_center_score(center: &SlotPhaseCenter, wave: &[i8; L2_PHASE_CELLS]) -> i32 {
@@ -510,8 +726,78 @@ mod standalone_tests {
         );
 
         assert_eq!(field.l1_package_fingerprint(), 99);
-        assert_eq!(readout.verdict, L2LocalVerdict::Winner { terminal_id: 23 });
-        assert_eq!(readout.candidates[0].terminal_id, 23);
+        assert_eq!(readout.verdict, L2LocalVerdict::Winner { form_ref: 1 });
+        assert_eq!(readout.candidates[0].surface, "дома");
+    }
+
+    #[test]
+    fn standalone_field_materializes_a_form_that_is_absent_from_l1() {
+        let corpus = L2TeacherCorpus::parse_tsv(
+            "F\tдом\tдом\tnoun:nom:sg\n\
+             F\tдом\tдома\tnoun:gen:sg\n\
+             T\tдом\tдом\tnoun:nom:sg\t_ стоит\n\
+             T\tдом\tдома\tnoun:gen:sg\tнет _\n\
+             H\tдом\tдома\tnoun:gen:sg\tоколо _\n",
+        )
+        .expect("teacher");
+        let (package, report) =
+            compile_l2_package(&corpus, 99, |surface| (surface == "дом").then_some(17))
+                .expect("compile");
+        assert_eq!(report.l1_bound_forms, 1);
+        assert_eq!(report.admitted_forms, 2);
+        let field = StandaloneL2Field::from_package(package).expect("load");
+        let readout = field.readout(
+            "нет _",
+            &[L2LexicalSeed {
+                terminal_id: 17,
+                evidence_milli: 900,
+            }],
+            8,
+        );
+
+        let L2LocalVerdict::Winner { form_ref } = readout.verdict else {
+            panic!("context should settle the generated form");
+        };
+        let winner = readout
+            .candidates
+            .iter()
+            .find(|candidate| candidate.form_ref == form_ref)
+            .expect("winner candidate");
+        assert_eq!(winner.surface, "дома");
+        assert_eq!(winner.l1_terminal_id, None);
+    }
+
+    #[test]
+    fn learned_competition_overcomes_one_reconstruction_attenuation() {
+        let corpus = L2TeacherCorpus::parse_tsv(
+            "F\tпосмотреть\tпосмотреть\tverb:inf:perf\n\
+             F\tпосмотреть\tпосмотри\tverb:imp_excl:sg:imp:perf\n\
+             F\tпросмотреть\tпросмотреть\tverb:inf:perf\n\
+             F\tпросмотреть\tпросмотри\tverb:imp_excl:sg:imp:perf\n\
+             T\tпосмотреть\tпосмотреть\tverb:inf:perf\tхочу _\n\
+             H\tпосмотреть\tпосмотри\tverb:imp_excl:sg:imp:perf\t_ сюда\n\
+             NT\tпосмотреть\tпосмотри\tverb:imp_excl:sg:imp:perf\t_ сюда\tпросмотри\n\
+             NH\tпосмотреть\tпосмотри\tverb:imp_excl:sg:imp:perf\t_ сюда\tпросмотри\n",
+        )
+        .expect("teacher");
+        let terminals = BTreeMap::from([("посмотреть", 17), ("просмотреть", 23)]);
+        let (package, _) =
+            compile_l2_package(&corpus, 99, |surface| terminals.get(surface).copied())
+                .expect("compile");
+        let field = StandaloneL2Field::from_package(package).expect("load");
+        let readout = field.readout(
+            "_ сюда",
+            &[L2LexicalSeed {
+                terminal_id: 17,
+                evidence_milli: 1_000,
+            }],
+            8,
+        );
+
+        let L2LocalVerdict::Winner { form_ref } = readout.verdict else {
+            panic!("learned competition should settle one reconstruction: {readout:#?}");
+        };
+        assert_eq!(field.decode_form_ref(form_ref), Some("посмотри"));
     }
 
     #[test]
@@ -540,13 +826,14 @@ mod standalone_tests {
     }
 
     #[test]
-    fn homonymous_seed_does_not_expand_a_weaker_foreign_lemma() {
+    fn contextual_multi_lemma_birth_can_select_a_weaker_seeded_lemma() {
         let corpus = L2TeacherCorpus::parse_tsv(
             "F\tдом\tдом\tnoun:nom:sg\n\
              F\tдом\tдома\tnoun:gen:sg\n\
-             F\tдома\tdома\tnoun:nom:sg\n\
+             F\tдома\tдома\tnoun:nom:sg\n\
              F\tдома\tдомик\tnoun:acc:sg\n\
              T\tдома\tдомик\tnoun:acc:sg\tвижу _\n\
+             NT\tдома\tдомик\tnoun:acc:sg\tвижу _\tдома\n\
              H\tдом\tдома\tnoun:gen:sg\tнет _\n",
         )
         .expect("teacher");
@@ -570,31 +857,51 @@ mod standalone_tests {
             8,
         );
 
-        assert!(readout
-            .candidates
-            .iter()
-            .all(|candidate| candidate.terminal_id != 31));
+        assert!(
+            readout
+                .candidates
+                .iter()
+                .any(|candidate| candidate.surface == "домик"),
+            "{readout:#?}"
+        );
+        let L2LocalVerdict::Winner { form_ref } = readout.verdict else {
+            panic!("contextual slot should settle the weaker seeded lemma");
+        };
+        assert_eq!(
+            readout
+                .candidates
+                .iter()
+                .find(|candidate| candidate.form_ref == form_ref)
+                .map(|candidate| candidate.surface.as_str()),
+            Some("домик")
+        );
     }
 
     #[test]
     fn equal_slot_evidence_within_one_lemma_cannot_become_false_singleton() {
         let candidates = vec![
             L2LocalCandidate {
-                terminal_id: 17,
+                form_ref: 17,
+                l1_terminal_id: Some(17),
+                surface: "первый".to_string(),
                 l1_evidence_milli: 1_000,
                 slot_phase_milli: 1_128,
                 neighbor_pressure: 0,
                 competition_pressure: 128,
+                explicit_competition_pressure: 0,
                 local_score: 2_256,
                 lemma_ids: vec![3, 7],
                 feature_masks: vec![11],
             },
             L2LocalCandidate {
-                terminal_id: 23,
+                form_ref: 23,
+                l1_terminal_id: Some(23),
+                surface: "второй".to_string(),
                 l1_evidence_milli: 1_000,
                 slot_phase_milli: 1_128,
                 neighbor_pressure: 0,
                 competition_pressure: 0,
+                explicit_competition_pressure: 0,
                 local_score: 2_128,
                 lemma_ids: vec![7],
                 feature_masks: vec![11],
@@ -609,10 +916,57 @@ mod standalone_tests {
                     minimum_margin: 1,
                     tie_window: 1,
                     ..TieCalibration::default()
-                }
+                },
             ),
             L2LocalVerdict::Tied {
-                terminal_ids: vec![17, 23]
+                form_refs: vec![17, 23]
+            }
+        );
+    }
+
+    #[test]
+    fn competition_alone_cannot_create_cross_lemma_authority() {
+        let candidates = vec![
+            L2LocalCandidate {
+                form_ref: 17,
+                l1_terminal_id: Some(17),
+                surface: "чужая".to_string(),
+                l1_evidence_milli: 1_000,
+                slot_phase_milli: 1_000,
+                neighbor_pressure: 0,
+                competition_pressure: 500,
+                explicit_competition_pressure: 0,
+                local_score: 2_500,
+                lemma_ids: vec![2],
+                feature_masks: vec![11],
+            },
+            L2LocalCandidate {
+                form_ref: 23,
+                l1_terminal_id: Some(23),
+                surface: "целевая".to_string(),
+                l1_evidence_milli: 1_000,
+                slot_phase_milli: 1_000,
+                neighbor_pressure: 0,
+                competition_pressure: 0,
+                explicit_competition_pressure: 0,
+                local_score: 2_000,
+                lemma_ids: vec![1],
+                feature_masks: vec![11],
+            },
+        ];
+
+        assert_eq!(
+            classify_local(
+                &candidates,
+                TieCalibration {
+                    minimum_positive: 1,
+                    minimum_margin: 1,
+                    tie_window: 1,
+                    ..TieCalibration::default()
+                },
+            ),
+            L2LocalVerdict::Tied {
+                form_refs: vec![17, 23]
             }
         );
     }
@@ -627,21 +981,27 @@ mod standalone_tests {
                 .expect("inclusive plural");
         let candidates = vec![
             L2LocalCandidate {
-                terminal_id: 17,
+                form_ref: 17,
+                l1_terminal_id: Some(17),
+                surface: "первый".to_string(),
                 l1_evidence_milli: 1_000,
                 slot_phase_milli: 1_088,
                 neighbor_pressure: 0,
                 competition_pressure: 0,
+                explicit_competition_pressure: 0,
                 local_score: 2_088,
                 lemma_ids: vec![7],
                 feature_masks: vec![inclusive_singular],
             },
             L2LocalCandidate {
-                terminal_id: 23,
+                form_ref: 23,
+                l1_terminal_id: Some(23),
+                surface: "второй".to_string(),
                 l1_evidence_milli: 1_000,
                 slot_phase_milli: 0,
                 neighbor_pressure: 0,
                 competition_pressure: 0,
+                explicit_competition_pressure: 0,
                 local_score: 1_000,
                 lemma_ids: vec![7],
                 feature_masks: vec![inclusive_plural],
@@ -656,10 +1016,10 @@ mod standalone_tests {
                     minimum_margin: 1,
                     tie_window: 1,
                     ..TieCalibration::default()
-                }
+                },
             ),
             L2LocalVerdict::Tied {
-                terminal_ids: vec![17, 23]
+                form_refs: vec![17, 23]
             }
         );
     }

@@ -25,13 +25,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1785310396.1549406,
-    "ast_hash": "2aded3761ec37d690d4c6234b137f427",
+    "mtime": 1785337590.76986,
+    "ast_hash": "c7787b00080291e51e2186d023443181",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1785310964.7610044,
-    "ast_hash": "dd7ed01cf4206e18132ca7cdfe7c5048",
+    "mtime": 1785337590.77086,
+    "ast_hash": "23337ac19f8f2d3522c16c94ff2fa0a7",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1785310964.7620044,
-    "ast_hash": "f7e41309049318e2b0ecb1757e34fbdf",
+    "mtime": 1785337590.77086,
+    "ast_hash": "9a033dcc39bd16455e04cf58633198e7",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1785310396.2469416,
-    "ast_hash": "b50b17e442710335fe0cdd926ab25f4c",
+    "mtime": 1785337590.7718601,
+    "ast_hash": "07704be6664ca130fc53de44b9c92f8b",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -1005,8 +1005,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_eval.rs": {
-    "mtime": 1785091480.725433,
-    "ast_hash": "da39ccbf0c28137a5b8fd29697374026",
+    "mtime": 1785337682.7577398,
+    "ast_hash": "5e45b8c295d6c59cb6246fb89f6f8410",
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_eval/candidate_quality.rs": {
@@ -1050,8 +1050,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_train.rs": {
-    "mtime": 1785289005.9319537,
-    "ast_hash": "df87322c828de480e84bb6a7b069e2d9",
+    "mtime": 1785332004.2826493,
+    "ast_hash": "b5942f553e8b9195c99b94fd695f778a",
     "semantic_hash": ""
   },
   "src/bin/lay_ngram_corpus.rs": {
@@ -1150,8 +1150,8 @@
     "semantic_hash": "1403d59d3fc06c7ea4c1520d6a036e37"
   },
   "src/correction_bayes.rs": {
-    "mtime": 1784710714.6307302,
-    "ast_hash": "5dafc7d1713180ec54609ece6ec6daaf",
+    "mtime": 1785338354.2398431,
+    "ast_hash": "6f8049f40c6ac56568d7c157dcf9336a",
     "semantic_hash": ""
   },
   "src/correction_core.rs": {
@@ -1485,8 +1485,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/candidate_gate.rs": {
-    "mtime": 1784641845.3500974,
-    "ast_hash": "87d3915072a0640dab79aaa7e3fe8834",
+    "mtime": 1785338354.2438433,
+    "ast_hash": "57243999996ec6f328eda72a24b7192c",
     "semantic_hash": ""
   },
   "src/nanda_wave/cell32.rs": {
@@ -1555,8 +1555,8 @@
     "semantic_hash": "f565d5ef8e08563ce8b8714f96fee83f"
   },
   "src/nanda_wave/l4_signed_memory.rs": {
-    "mtime": 1784592322.4639933,
-    "ast_hash": "d3bf62bc47324474287fc4157a1ef353",
+    "mtime": 1785338494.9261408,
+    "ast_hash": "dc7baad068b3aff8723a56bc6054c6f1",
     "semantic_hash": ""
   },
   "src/nanda_wave/learned.rs": {
@@ -1575,8 +1575,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/mod.rs": {
-    "mtime": 1785289014.7330527,
-    "ast_hash": "84f8b5a3c730a2839590ee85c698389a",
+    "mtime": 1785332004.2816494,
+    "ast_hash": "907894a4c6b7c671c4247da698687e02",
     "semantic_hash": ""
   },
   "src/nanda_wave/mode.rs": {
@@ -1635,8 +1635,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/usage_prior.rs": {
-    "mtime": 1784592403.6958947,
-    "ast_hash": "7009e53c7736ee21077ec938b2d10197",
+    "mtime": 1785339064.3149908,
+    "ast_hash": "a19fe41d7c160d7ca938aed2a982d872",
     "semantic_hash": ""
   },
   "src/ngram.rs": {
@@ -2235,8 +2235,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/candidate.rs": {
-    "mtime": 1784152602.6537035,
-    "ast_hash": "ee260c1b5fc3cde27447ac70fb62db28",
+    "mtime": 1785335805.2402885,
+    "ast_hash": "b3a01ec879ec08dd1b5895dabb9004ea",
     "semantic_hash": ""
   },
   "src/typing_transition/decision.rs": {
@@ -2515,8 +2515,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1785096185.5823927,
-    "ast_hash": "af7bacf33699845f4cfea5df650d2d4a",
+    "mtime": 1785337590.77886,
+    "ast_hash": "72d8ce3787c9d389874aafa832114b35",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3100,13 +3100,13 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/surface.rs": {
-    "mtime": 1784690069.157085,
-    "ast_hash": "a685d96cb6b924ef98f54106c62a0a51",
+    "mtime": 1785338354.2448432,
+    "ast_hash": "f96a6ce0bcfad23d9d1623f51584dd6e",
     "semantic_hash": ""
   },
   "src/correction_core/candidate_sources.rs": {
-    "mtime": 1785231914.8609478,
-    "ast_hash": "e222ec07fcb8cf203f65e123c970d7ff",
+    "mtime": 1785335805.3452897,
+    "ast_hash": "791f8ebd4a60607903873add5e101e4a",
     "semantic_hash": ""
   },
   "src/correction_core/tests.rs": {
@@ -3115,13 +3115,13 @@
     "semantic_hash": ""
   },
   "src/typing_transition/candidate_resolution.rs": {
-    "mtime": 1784152602.6537035,
-    "ast_hash": "f168a5a7fca4e2b0ff7536a20bc5445d",
+    "mtime": 1785335805.3442898,
+    "ast_hash": "21bf1940f79d3a65f17f480c1afa5adc",
     "semantic_hash": ""
   },
   "src/typing_transition/decision_signals.rs": {
-    "mtime": 1785105694.748089,
-    "ast_hash": "497e70983d07baa3e973d05078a30af8",
+    "mtime": 1785338397.195567,
+    "ast_hash": "f0dd45af6cc9b29cc35e468def047e71",
     "semantic_hash": ""
   },
   "docs/structural_gates/lay-live-transition-gate.profile.json": {
@@ -3155,8 +3155,8 @@
     "semantic_hash": ""
   },
   "src/transition_relation.rs": {
-    "mtime": 1784591661.9096138,
-    "ast_hash": "b0e4315da12886c57049402dae89d5b1",
+    "mtime": 1785338397.0445645,
+    "ast_hash": "eaf2f2a4a39c8e45fcef1abf712d4bb4",
     "semantic_hash": ""
   },
   "docs/structural_gates/structural/routes/l2_transition_phase.md": {
@@ -3400,13 +3400,13 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/usage_prior/hot.rs": {
-    "mtime": 1784284869.661941,
-    "ast_hash": "d7f5167b7f4f1214c96512b50b008bdd",
+    "mtime": 1785338396.9725633,
+    "ast_hash": "d5d23e0199e8d0f53403999f11b30a34",
     "semantic_hash": ""
   },
   "src/nanda_wave/usage_prior/projection.rs": {
-    "mtime": 1784591820.6822956,
-    "ast_hash": "76615151329466cb94abee655d843cd2",
+    "mtime": 1785338759.9030123,
+    "ast_hash": "751727a91b94a7cb24dca0431fd571db",
     "semantic_hash": ""
   },
   "tests/test_architecture_graph_gate.py": {
@@ -3430,8 +3430,8 @@
     "semantic_hash": ""
   },
   "scripts/install-release-binaries.sh": {
-    "mtime": 1785155953.665026,
-    "ast_hash": "f2d884665f044776217ee07085f55091",
+    "mtime": 1785337529.967284,
+    "ast_hash": "d0c63a523e19eb911e80d6d11e659f57",
     "semantic_hash": ""
   },
   "src/nanda_wave/l3_context_metrics.rs": {
@@ -3740,8 +3740,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/mod.rs": {
-    "mtime": 1785289014.576051,
-    "ast_hash": "c6aedd3a75e1d5ea7f4ffae4f74039ba",
+    "mtime": 1785324246.6438727,
+    "ast_hash": "efe1fc47d82064fff49fd7206e75df34",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/model.rs": {
@@ -3750,13 +3750,13 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/proof.rs": {
-    "mtime": 1785284978.1992526,
-    "ast_hash": "92f6f1654504d4d3088b29152511ae73",
+    "mtime": 1785324467.828171,
+    "ast_hash": "ea25024e2cf946541ce92a03c4654be5",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/runtime.rs": {
-    "mtime": 1785298072.8076687,
-    "ast_hash": "b8bad5cf4758e5b86241888616371266",
+    "mtime": 1785331191.5902956,
+    "ast_hash": "39d383d09ed6f4a8cde96423ee2820a0",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/tests.rs": {
@@ -3785,8 +3785,8 @@
     "semantic_hash": ""
   },
   "docs/l1-crystal-kernel-memory-layout.md": {
-    "mtime": 1785299440.2011871,
-    "ast_hash": "04f5a267f909eead80b20e718ae3aa5b",
+    "mtime": 1785330196.4293113,
+    "ast_hash": "9180cfe51547985b877da80643e9e6ab",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_CRYSTAL_KERNEL_V23_2026-07-22.json": {
@@ -4150,8 +4150,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/morphology_phase/mod.rs": {
-    "mtime": 1785232273.2474608,
-    "ast_hash": "fc140329354960ba8d4d8ae4fef75151",
+    "mtime": 1785334293.2572489,
+    "ast_hash": "2028935c59e2ff84e0462706f5837e61",
     "semantic_hash": ""
   },
   "src/nanda_wave/morphology_phase/proof.rs": {
@@ -4665,8 +4665,8 @@
     "semantic_hash": ""
   },
   "scripts/install-l11-shadow-package.sh": {
-    "mtime": 1785059616.1458893,
-    "ast_hash": "226106f58327c8395580a2e4acf64f20",
+    "mtime": 1785330196.348311,
+    "ast_hash": "442b3786cebee28f6b0bed130b4b3cd4",
     "semantic_hash": ""
   },
   "data/lexical_grokking/lay_l11_ru_composite_en300k_shadow_v2.txt": {
@@ -4680,8 +4680,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_l1_1_serve.rs": {
-    "mtime": 1785293016.5917635,
-    "ast_hash": "9fac11bcbfaa1b5ce5e486cbee28502f",
+    "mtime": 1785329946.324458,
+    "ast_hash": "629b718a2c315fe6626923a2767d47e8",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/service.rs": {
@@ -4695,33 +4695,33 @@
     "semantic_hash": ""
   },
   "docs/l2-l11-canonical-architecture.md": {
-    "mtime": 1785274904.7131913,
-    "ast_hash": "ca5db94a5f37a9316fe733c6100298e0",
+    "mtime": 1785339405.6871204,
+    "ast_hash": "00316da612abe0a5296b2ac6d0ed3873",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/bridge.rs": {
-    "mtime": 1785248270.6677148,
-    "ast_hash": "aced8cf99326450b3db238301ae022c6",
+    "mtime": 1785336179.834534,
+    "ast_hash": "c47a9268cac95de921a335b44c13a676",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/format.rs": {
-    "mtime": 1785146355.157213,
-    "ast_hash": "723b95ec0ca733f95aa64cdba3a93013",
+    "mtime": 1785330987.195563,
+    "ast_hash": "20cdbc339c21265544ea074f99ffb31b",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/mod.rs": {
-    "mtime": 1785232272.9334571,
-    "ast_hash": "50310c410c3637d2a334b59522ef4af9",
+    "mtime": 1785337529.8852832,
+    "ast_hash": "f610a63574d96ef25233e1b6aa9b616c",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/proof.rs": {
-    "mtime": 1785232272.9404573,
-    "ast_hash": "b2ad063bd6fd52c10a9100749e222b21",
+    "mtime": 1785333583.1353145,
+    "ast_hash": "ffe31458d486248c5fd9969f84977710",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/runtime.rs": {
-    "mtime": 1785232272.9494574,
-    "ast_hash": "834f194990a3150d22e284f91b842990",
+    "mtime": 1785336234.036145,
+    "ast_hash": "be7b65b3430a655d611652d68798fa51",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/teacher.rs": {
@@ -4750,8 +4750,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_eval/l2_route_compare.rs": {
-    "mtime": 1785232272.426451,
-    "ast_hash": "67be0d47d4324a0a4dc88ea3d14ac872",
+    "mtime": 1785337688.736797,
+    "ast_hash": "a21590fc7e1581a8798b2dce8277175d",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_CORRECTIONS_200_SAME_LEMMA_MORPHOLOGY_2026-07-26.json": {
@@ -4865,8 +4865,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/compiler.rs": {
-    "mtime": 1785232272.924457,
-    "ast_hash": "5d22b9b44823515af9cf972174a54ba3",
+    "mtime": 1785333542.1748838,
+    "ast_hash": "3aaff86daf46a0d28c29acd88e7f4829",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/context.rs": {
@@ -4875,8 +4875,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/model.rs": {
-    "mtime": 1785146355.157213,
-    "ast_hash": "737f9688b242ffc4c6ffc67f5f6997e6",
+    "mtime": 1785333542.1748838,
+    "ast_hash": "80274add794a08aa5184616a49b33f87",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L2_CANONICAL_RU462K_NOUN_COMPILE_2026-07-27.time.txt": {
@@ -4940,8 +4940,28 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/v8.rs": {
-    "mtime": 1785290322.9492397,
-    "ast_hash": "a2dacec9b4fa40b842c694991e8ea707",
+    "mtime": 1785331191.6162956,
+    "ast_hash": "41dfafb41ac86a6098a0af5588faba64",
+    "semantic_hash": ""
+  },
+  "data/lexical_grokking/lay_l11_ru_composite_en300k_shadow_v3.manifest.json": {
+    "mtime": 1785330196.348311,
+    "ast_hash": "442288ac1d1b7caf018d01201262da50",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_V8_SHARD1_BATCH_RUNTIME_2026-07-29.json": {
+    "mtime": 1785330196.349311,
+    "ast_hash": "76f3f130f9065ca11372c202939626f6",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_CANONICAL_RU_FULL_V6_EVIDENCE_AUTHORITY_2026-07-29.json": {
+    "mtime": 1785334586.0735087,
+    "ast_hash": "a47531e3d0989b760022ae886c2ee45d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_V6_LIVE_OWNER_SIGNED_FEEDBACK_2026-07-29.json": {
+    "mtime": 1785339405.6871204,
+    "ast_hash": "90d3023b2d0a4ed7f58cffd6c007481b",
     "semantic_hash": ""
   }
 }

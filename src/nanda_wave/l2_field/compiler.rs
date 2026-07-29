@@ -3,7 +3,8 @@ use std::collections::{BTreeMap, BTreeSet};
 use super::context::{context_mode, scene_wave};
 use super::model::{
     CompetitionEdge, FormCenterRef, L2FieldPackage, LemmaCenter, LocalContextMode, MorphBinding,
-    NeighborCoupling, SlotPhaseCenter, TieCalibration, L2_PHASE_CELLS,
+    NeighborCoupling, SlotPhaseCenter, TieCalibration, COMPETITION_FLAG_EXPLICIT_NEIGHBOR,
+    L2_PHASE_CELLS, NO_L1_TERMINAL,
 };
 use super::teacher::{L2TeacherCorpus, TeacherNeighborScene, TeacherScene};
 
@@ -13,8 +14,11 @@ const MAX_COMPETITORS_PER_SCENE: usize = 4;
 pub(crate) struct L2CompileReport {
     pub(crate) source_forms: usize,
     pub(crate) source_unique_surfaces: usize,
+    pub(crate) source_lemmas: usize,
     pub(crate) admitted_forms: usize,
+    pub(crate) l1_bound_forms: usize,
     pub(crate) missing_l1_forms: usize,
+    pub(crate) unseeded_lemmas: usize,
     pub(crate) lemma_centers: usize,
     pub(crate) morph_bindings: usize,
     pub(crate) context_modes: usize,
@@ -32,6 +36,12 @@ pub(crate) fn compile_l2_package(
 ) -> Result<(L2FieldPackage, L2CompileReport), String> {
     let mut report = L2CompileReport {
         source_forms: corpus.forms.len(),
+        source_lemmas: corpus
+            .forms
+            .iter()
+            .map(|form| form.lemma.as_str())
+            .collect::<BTreeSet<_>>()
+            .len(),
         train_scenes: corpus.scenes.iter().filter(|scene| !scene.heldout).count()
             + corpus
                 .neighbor_scenes
@@ -76,22 +86,39 @@ pub(crate) fn compile_l2_package(
         .enumerate()
         .map(|(index, lemma)| (lemma, index as u32))
         .collect::<BTreeMap<_, _>>();
-    let form_ids = terminal_by_surface
+    report.unseeded_lemmas = report.source_lemmas.saturating_sub(lemma_ids.len());
+    let admitted_surfaces = corpus
+        .forms
+        .iter()
+        .filter(|form| lemma_ids.contains_key(&form.lemma))
+        .map(|form| form.surface.clone())
+        .collect::<BTreeSet<_>>();
+    let form_ids = admitted_surfaces
         .iter()
         .enumerate()
-        .map(|(index, (surface, _))| (surface.clone(), index as u32))
+        .map(|(index, surface)| (surface.clone(), index as u32))
         .collect::<BTreeMap<_, _>>();
-    let form_refs = terminal_by_surface
+    let mut decoder_bytes = Vec::new();
+    let form_refs = admitted_surfaces
         .iter()
-        .map(|(surface, terminal_id)| FormCenterRef {
-            l1_terminal_id: *terminal_id,
-            decoder_ref: *terminal_id,
-            script_flags: script_flags(surface),
-            length_bucket: surface.chars().count().min(u8::MAX as usize) as u8,
-            flags: 0,
-            reserved: 0,
+        .map(|surface| {
+            let decoder_ref = u32::try_from(decoder_bytes.len())
+                .map_err(|_| "L2 decoder exceeds u32 address space".to_string())?;
+            decoder_bytes.extend_from_slice(surface.as_bytes());
+            decoder_bytes.push(0);
+            Ok(FormCenterRef {
+                l1_terminal_id: terminal_by_surface
+                    .get(surface)
+                    .copied()
+                    .unwrap_or(NO_L1_TERMINAL),
+                decoder_ref,
+                script_flags: script_flags(surface),
+                length_bucket: surface.chars().count().min(u8::MAX as usize) as u8,
+                flags: 0,
+                reserved: 0,
+            })
         })
-        .collect::<Vec<_>>();
+        .collect::<Result<Vec<_>, String>>()?;
 
     let mut morph_bindings = corpus
         .forms
@@ -154,11 +181,12 @@ pub(crate) fn compile_l2_package(
         &neighbor_couplings,
         &competition_lemma_ids,
     );
-    let calibration = calibrate_from_evidence(corpus, &terminal_by_surface);
+    let calibration = calibrate_from_evidence(corpus, &form_ids);
 
     let package = L2FieldPackage {
         l1_package_fingerprint,
         form_refs,
+        decoder_bytes,
         lemma_centers,
         morph_bindings,
         context_modes,
@@ -168,6 +196,7 @@ pub(crate) fn compile_l2_package(
         calibration,
     };
     report.admitted_forms = package.form_refs.len();
+    report.l1_bound_forms = terminal_by_surface.len();
     report.lemma_centers = package.lemma_centers.len();
     report.morph_bindings = package.morph_bindings.len();
     report.context_modes = package.context_modes.len();
@@ -345,7 +374,7 @@ fn compile_competition_edges(
         forms.sort_unstable();
         forms.dedup();
     }
-    let mut evidence = BTreeMap::<(u32, u32, u32, u32), u32>::new();
+    let mut evidence = BTreeMap::<(u32, u32, u32, u32), (u32, u16)>::new();
     for scene in scenes {
         let Some(lemma_id) = lemma_ids.get(&scene.lemma).copied() else {
             continue;
@@ -368,7 +397,7 @@ fn compile_competition_edges(
             let count = evidence
                 .entry((lemma_id, winner, competitor, context_mode_id))
                 .or_default();
-            *count = count.saturating_add(1);
+            count.0 = count.0.saturating_add(1);
         }
     }
     let mut lemmas_by_form = BTreeMap::<u32, BTreeSet<u32>>::new();
@@ -407,14 +436,15 @@ fn compile_competition_edges(
                 let count = evidence
                     .entry((owner, winner, competitor, context_mode_id))
                     .or_default();
-                *count = count.saturating_add(1);
+                count.0 = count.0.saturating_add(1);
+                count.1 |= COMPETITION_FLAG_EXPLICIT_NEIGHBOR;
             }
         }
     }
     let compiled = evidence
         .into_iter()
         .map(
-            |((lemma_id, left_form_ref, right_form_ref, context_mode_id), evidence)| {
+            |((lemma_id, left_form_ref, right_form_ref, context_mode_id), (evidence, flags))| {
                 (
                     lemma_id,
                     CompetitionEdge {
@@ -424,7 +454,7 @@ fn compile_competition_edges(
                         support_delta: evidence.min(i16::MAX as u32) as i16,
                         anti_delta: evidence.min(i16::MAX as u32) as i16,
                         evidence,
-                        flags: 0,
+                        flags,
                         reserved: 0,
                     },
                 )

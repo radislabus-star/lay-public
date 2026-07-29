@@ -5,7 +5,7 @@ use std::mem;
 use crate::typing_memory::{normalize_memory_word, normalized_words};
 
 use super::projection::{UsageEventProjection, TRANSITION_ANY};
-use super::{UsageCounts, UsageEvent};
+use super::{UsageCounts, UsageEvent, UsageEventKind};
 
 pub(super) const CONTEXT_WORDS: usize = 5;
 pub(super) const MIN_CONTEXT_NGRAM: usize = 1;
@@ -215,6 +215,18 @@ impl UsageHotState {
                 transition_weight: projected.transition_weight,
                 record_transition: true,
             });
+            if matches!(event.kind, UsageEventKind::RejectedCandidate)
+                && projected.state_word != TRANSITION_ANY
+            {
+                add_hot_state_authority_repel(
+                    &mut self.transition_repel,
+                    &projected.transition_context,
+                    projected.source,
+                    projected.operation,
+                    &projected.state_word,
+                    projected.transition_weight,
+                );
+            }
             return;
         }
 
@@ -363,7 +375,7 @@ impl UsageHotState {
         if lower.is_empty() {
             return UsageHotReadout::default();
         }
-        let transition_target = crate::transition_relation::transition_target_id(candidate_text);
+        let transition_target = crate::transition_relation::signed_memory_target_id(candidate_text);
         let context_ids = context.context_ids.as_slice();
         UsageHotReadout {
             word_prior: word_prior_from_hot_count(self.words.get_text(&lower)),
@@ -565,6 +577,21 @@ fn add_hot_transition_counts(
     }
 }
 
+fn add_hot_state_authority_repel(
+    target: &mut UsageHotCountMap<UsageTransitionKey>,
+    _context: &[String],
+    source: &str,
+    operation: &str,
+    state_word: &str,
+    weight: u32,
+) {
+    for key in
+        transition_lookup_keys_from_context_ids(&[], source, operation, state_word, TRANSITION_ANY)
+    {
+        target.increment(key, weight);
+    }
+}
+
 fn word_prior_from_count(count: u32) -> f32 {
     ((count as f32 + 1.0).ln() * 0.036).clamp(0.0, 0.22)
 }
@@ -625,7 +652,18 @@ fn transition_signal_from_hot_for_word(
     let exact_keys =
         transition_lookup_keys_from_context_ids(context_ids, source, operation, state_word, word);
     let (mut attract_count, mut repel_count) = transition_counts_for_hot_keys(hot, &exact_keys);
-    let state_specific = state_word != TRANSITION_ANY && (attract_count > 0 || repel_count > 0);
+    let mut state_specific = state_word != TRANSITION_ANY && (attract_count > 0 || repel_count > 0);
+    if attract_count == 0 && repel_count == 0 && state_word != TRANSITION_ANY {
+        let authority_barrier_keys = transition_lookup_keys_from_context_ids(
+            &[],
+            source,
+            operation,
+            state_word,
+            TRANSITION_ANY,
+        );
+        (attract_count, repel_count) = transition_counts_for_hot_keys(hot, &authority_barrier_keys);
+        state_specific = attract_count > 0 || repel_count > 0;
+    }
     if attract_count == 0 && repel_count == 0 && state_word != TRANSITION_ANY {
         let fallback_keys = transition_lookup_keys_from_context_ids(
             context_ids,

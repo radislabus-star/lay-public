@@ -182,7 +182,7 @@ pub fn live_completion_candidates(
     let l3_memory_warm = super::context_phase::default_memory_is_warm();
     let usage_snapshot = super::usage_prior::cached_usage_prior_snapshot();
     let usage_context = usage_snapshot.prepare_hot_context(&context_tokens);
-    let state_id = crate::transition_relation::transition_state_id(&partial);
+    let state_id = crate::transition_relation::signed_memory_state_id(&partial);
     let hidden_state_before = crate::stable_hash::mix64_golden(
         crate::nanda_wave::phase_field::hash_text(&cache_key.context_tail)
             ^ crate::nanda_wave::phase_field::hash_text(&partial).rotate_left(19),

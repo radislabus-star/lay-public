@@ -1,0 +1,40 @@
+{
+  "package_id": "LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v3",
+  "layer": "L1.1 bilingual lexical source",
+  "status": "CRYSTALLIZED_V8_WORKING_GATE_PASS_AUTHORITY_WATCH",
+  "runtime_authority": false,
+  "corpus_artifact": "data/lexical_grokking/lay_l11_ru_composite_en300k_shadow_v2.txt",
+  "corpus_bytes": 13838244,
+  "corpus_sha256": "162f1471f6a1f635aec634e2644123597ae60a46158314d7d9765474c552ee65",
+  "unique_surfaces": 835410,
+  "ru_surfaces": 535410,
+  "en_surfaces": 300000,
+  "cross_source_duplicates": 0,
+  "ru_terminal_range": [
+    0,
+    535410
+  ],
+  "en_terminal_range": [
+    535410,
+    835410
+  ],
+  "source_packages": [
+    "LAY-RU-LEXICON-COMPOSITE-SHADOW-v2",
+    "LAY-EN-LEXICON-300K-SHADOW-v1"
+  ],
+  "l1_1_crystallized": true,
+  "crystal_format": "V8 lazy-sharded-postings",
+  "crystal_artifact": "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard-sweep-2026-07-29/shard-1/package.v8.bin",
+  "crystal_bytes": 198233790,
+  "crystal_sha256": "03e320857cafc7d661a1893f728f8777c5e0b755ee01214502548779fbee6494",
+  "proof_receipt": "docs/structural_gates/receipts/L1_L11_V8_SHARD1_BATCH_RUNTIME_2026-07-29.json",
+  "proof_verdict": "PASS_shadow",
+  "split_language_proof": {
+    "ru_receipt": "docs/structural_gates/receipts/L1_L11_COMPOSITE_V2_V7_RU535410_2026-07-26.json",
+    "ru_verdict": "PASS_shadow",
+    "en_receipt": "docs/structural_gates/receipts/L1_L11_COMPOSITE_V2_V7_EN300000_2026-07-26.json",
+    "en_verdict": "PASS_shadow"
+  },
+  "release_shadow_installable": true,
+  "promotion_verdict": "PASS_SHADOW_RUNTIME_ONLY_MODEL_AUTHORITY_WATCH"
+}

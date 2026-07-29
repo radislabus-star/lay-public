@@ -473,17 +473,12 @@
   "471": "keyboard_io.rs",
   "472": "is_russian_vowel",
   "473": ".manual_toggle_active_text_target",
-  "474": "print_json",
-  "475": "CorrectionMode",
   "476": "hot_memory.rs",
   "477": "populate_sampled_ambiguity",
   "478": "convert",
-  "479": "Manifest",
   "480": "LayIbusEngine",
   "481": "runtime_flags.rs",
   "482": "gate_candidate",
-  "483": "learning_deltas",
-  "484": "l1.rs",
   "485": "L2FieldBridgeKind",
   "486": "apply_l2_phase_shadow"
 }

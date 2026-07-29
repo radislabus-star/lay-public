@@ -31,6 +31,34 @@ pub(crate) fn transition_state_id(text: &str) -> String {
     format!("{:016x}", transition_hash(&bytes))
 }
 
+/// Exact source identity for signed user feedback.
+///
+/// Authority memory must distinguish case, punctuation, and the complete
+/// phrase. Lexical and morphology states intentionally remain normalized via
+/// `transition_state_id`; this identity is only for accepting or rejecting an
+/// automatic edit the user actually observed.
+pub(crate) fn signed_memory_state_id(text: &str) -> String {
+    exact_transition_id("state", text)
+}
+
+pub(crate) fn signed_memory_target_id(text: &str) -> String {
+    exact_transition_id("target", text)
+}
+
+fn exact_transition_id(kind: &str, text: &str) -> String {
+    let mut bytes = Vec::new();
+    for token in text.split_whitespace() {
+        if !bytes.is_empty() {
+            bytes.push(0x1f);
+        }
+        bytes.extend(token.as_bytes());
+    }
+    if bytes.is_empty() {
+        return format!("{kind}-empty");
+    }
+    format!("{kind}-{:016x}", transition_hash(&bytes))
+}
+
 /// Compact identity of the complete proposed text state.
 ///
 /// Unlike `transition_state_id`, this intentionally keeps every normalized
@@ -711,6 +739,23 @@ mod tests {
         assert!(split.starts_with("target-"));
         assert!(!split.contains("мы"));
         assert!(!split.contains("слов"));
+    }
+
+    #[test]
+    fn signed_memory_identity_preserves_full_case_and_punctuation_state() {
+        assert_ne!(signed_memory_state_id("мзт"), signed_memory_state_id("МЗТ"));
+        assert_ne!(
+            signed_memory_state_id("readme сщвуч"),
+            signed_memory_state_id("сщвуч")
+        );
+        assert_ne!(
+            signed_memory_target_id("\"Это"),
+            signed_memory_target_id("это")
+        );
+        assert_eq!(
+            signed_memory_target_id("  OpenAI   и  Lay "),
+            signed_memory_target_id("OpenAI и Lay")
+        );
     }
 
     #[test]

@@ -7,10 +7,11 @@ mod proof;
 mod runtime;
 mod teacher;
 
-pub(crate) use bridge::{cold_probe_surfaces, shadow_text_candidates};
+pub(crate) use bridge::{cold_probe_surfaces, shadow_text_candidates, shadow_text_readout};
+pub(crate) use runtime::L2FieldAuthority;
 
 const DEFAULT_L2_MODEL_DIR_SUFFIX: &str = ".local/share/lay/nanda_wave/l2";
-const DEFAULT_L2_PACKAGE_NAME: &str = "LAY-L2-RU-FULL-v4.bin";
+const DEFAULT_L2_PACKAGE_NAME: &str = "LAY-L2-RU-FULL-v6.bin";
 
 pub fn default_l2_model_dir() -> std::path::PathBuf {
     if let Some(explicit) = std::env::var_os("LAY_L2_MODEL_DIR") {
@@ -61,12 +62,16 @@ pub fn canonical_l2_status() -> serde_json::Value {
         .map(|path| path.display().to_string());
     match installed_l2_field() {
         Ok(field) => {
-            let (forms, lemmas, bindings, competition_edges) = field.package_counts();
+            let (forms, l1_bound_forms, lemmas, bindings, competition_edges, decoder_bytes) =
+                field.package_counts();
             serde_json::json!({
                 "status": "ready",
                 "package": package,
                 "l1_package_fingerprint": field.l1_package_fingerprint(),
                 "forms": forms,
+                "l1_bound_forms": l1_bound_forms,
+                "l2_materialized_forms": forms.saturating_sub(l1_bound_forms),
+                "decoder_bytes": decoder_bytes,
                 "lemmas": lemmas,
                 "morph_bindings": bindings,
                 "competition_edges": competition_edges,
@@ -94,20 +99,84 @@ pub fn prove_canonical_l2_package(
     )
 }
 
+pub fn query_canonical_l2_package(
+    l1_package_path: &std::path::Path,
+    l2_package_path: &std::path::Path,
+    context: &str,
+    seed_surfaces: &[String],
+    limit: usize,
+) -> std::io::Result<serde_json::Value> {
+    let l1 = crate::nanda_wave::L1RestorationHost::load(l1_package_path)?;
+    let field = runtime::StandaloneL2Field::load(l2_package_path).map_err(std::io::Error::other)?;
+    if field.l1_package_fingerprint() != l1.corpus_fingerprint() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidData,
+            "L2 package was compiled for a different L1.1 corpus fingerprint",
+        ));
+    }
+    let resolved_seeds = seed_surfaces
+        .iter()
+        .filter_map(|surface| Some((surface, l1.terminal_for_exact_surface(surface)?)))
+        .collect::<Vec<_>>();
+    let seeds = resolved_seeds
+        .iter()
+        .map(|(_, terminal_id)| runtime::L2LexicalSeed {
+            terminal_id: *terminal_id,
+            evidence_milli: 1_000,
+        })
+        .collect::<Vec<_>>();
+    let readout = field.readout(context, &seeds, limit.max(1));
+    let verdict = match &readout.verdict {
+        runtime::L2LocalVerdict::Winner { form_ref } => serde_json::json!({
+            "kind": "winner",
+            "form_refs": [form_ref],
+        }),
+        runtime::L2LocalVerdict::Tied { form_refs } => serde_json::json!({
+            "kind": "tied",
+            "form_refs": form_refs,
+        }),
+        runtime::L2LocalVerdict::Abstain => serde_json::json!({
+            "kind": "abstain",
+            "form_refs": [],
+        }),
+    };
+    Ok(serde_json::json!({
+        "kind": "canonical_l2_query",
+        "l1_package": l1_package_path,
+        "l2_package": l2_package_path,
+        "context": context,
+        "requested_seed_surfaces": seed_surfaces,
+        "resolved_seeds": resolved_seeds.iter().map(|(surface, terminal_id)| serde_json::json!({
+            "surface": surface,
+            "terminal_id": terminal_id,
+        })).collect::<Vec<_>>(),
+        "verdict": verdict,
+        "context_mode_id": readout.context_mode_id,
+        "candidates": readout.candidates.iter().map(|candidate| serde_json::json!({
+            "form_ref": candidate.form_ref,
+            "surface": candidate.surface,
+            "l1_terminal_id": candidate.l1_terminal_id,
+            "l1_evidence_milli": candidate.l1_evidence_milli,
+            "slot_phase_milli": candidate.slot_phase_milli,
+            "neighbor_pressure": candidate.neighbor_pressure,
+            "competition_pressure": candidate.competition_pressure,
+            "explicit_competition_pressure": candidate.explicit_competition_pressure,
+            "local_score": candidate.local_score,
+            "lemma_ids": candidate.lemma_ids,
+            "feature_masks": candidate.feature_masks,
+        })).collect::<Vec<_>>(),
+        "runtime_authority_changed": false,
+    }))
+}
+
 pub fn compile_canonical_l2_package(
     l1_package_path: &std::path::Path,
     morphology_corpus_path: &std::path::Path,
     output_path: &std::path::Path,
 ) -> std::io::Result<serde_json::Value> {
-    let l1_header = crate::nanda_wave::inspect_l1_package_header(l1_package_path)?;
-    let l1_fingerprint = l1_header
-        .get("corpus_fingerprint")
-        .and_then(serde_json::Value::as_u64)
-        .ok_or_else(|| std::io::Error::other("L1.1 header omitted corpus fingerprint"))?;
-    let l1_terminal_count = l1_header
-        .get("terminal_count")
-        .and_then(serde_json::Value::as_u64)
-        .unwrap_or_default();
+    let l1 = crate::nanda_wave::L1RestorationHost::load(l1_package_path)?;
+    let l1_fingerprint = l1.corpus_fingerprint();
+    let l1_terminal_count = u64::from(l1.terminal_count());
     let source = std::fs::read_to_string(morphology_corpus_path)?;
     let corpus = teacher::L2TeacherCorpus::parse_tsv(&source).map_err(std::io::Error::other)?;
     let unique_surfaces = corpus
@@ -132,6 +201,7 @@ pub fn compile_canonical_l2_package(
                         .into_iter()
                         .map(|form| form.l1_terminal_id),
                 )
+                .filter(|(_, terminal_id)| *terminal_id != model::NO_L1_TERMINAL)
                 .collect::<std::collections::BTreeMap<_, _>>()
         });
     let resolver_workers = std::thread::available_parallelism()
@@ -141,7 +211,6 @@ pub fn compile_canonical_l2_package(
     let terminal_map = if let Some(terminals) = reusable_terminals.as_ref() {
         terminals.clone()
     } else {
-        let l1 = crate::nanda_wave::L1RestorationHost::load(l1_package_path)?;
         let surfaces = unique_surfaces.into_iter().collect::<Vec<_>>();
         let chunk_size = surfaces.len().div_ceil(resolver_workers);
         std::thread::scope(|scope| {
@@ -189,9 +258,14 @@ pub fn compile_canonical_l2_package(
         "source_bindings": report.source_forms,
         "source_forms": report.source_forms,
         "source_unique_surfaces": report.source_unique_surfaces,
+        "source_lemmas": report.source_lemmas,
         "admitted_forms": report.admitted_forms,
+        "l1_bound_forms": report.l1_bound_forms,
+        "l2_materialized_forms": report.admitted_forms.saturating_sub(report.l1_bound_forms),
         "missing_unique_surfaces": report.missing_l1_forms,
         "missing_l1_forms": report.missing_l1_forms,
+        "unseeded_lemmas": report.unseeded_lemmas,
+        "decoder_bytes": package.decoder_bytes.len(),
         "lemma_centers": report.lemma_centers,
         "morph_bindings": report.morph_bindings,
         "context_modes": report.context_modes,

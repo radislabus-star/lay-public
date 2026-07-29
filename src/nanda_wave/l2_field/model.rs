@@ -1,4 +1,6 @@
 pub(crate) const L2_PHASE_CELLS: usize = 60;
+pub(crate) const NO_L1_TERMINAL: u32 = u32::MAX;
+pub(crate) const COMPETITION_FLAG_EXPLICIT_NEIGHBOR: u16 = 1 << 0;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -119,6 +121,7 @@ pub(crate) struct TieCalibration {
 pub(crate) struct L2FieldPackage {
     pub(crate) l1_package_fingerprint: u64,
     pub(crate) form_refs: Vec<FormCenterRef>,
+    pub(crate) decoder_bytes: Vec<u8>,
     pub(crate) lemma_centers: Vec<LemmaCenter>,
     pub(crate) morph_bindings: Vec<MorphBinding>,
     pub(crate) context_modes: Vec<LocalContextMode>,

@@ -4,7 +4,7 @@ use super::model::{
 };
 
 const MAGIC: &[u8; 8] = b"LAYL2F01";
-const VERSION: u32 = 1;
+const VERSION: u32 = 2;
 const HEADER_BYTES: usize = 128;
 
 pub(crate) fn encode_package(package: &L2FieldPackage) -> Result<Vec<u8>, String> {
@@ -13,6 +13,7 @@ pub(crate) fn encode_package(package: &L2FieldPackage) -> Result<Vec<u8>, String
     for value in &package.form_refs {
         put_form_ref(&mut body, *value);
     }
+    body.extend_from_slice(&package.decoder_bytes);
     for value in &package.lemma_centers {
         put_lemma_center(&mut body, *value);
     }
@@ -45,6 +46,7 @@ pub(crate) fn encode_package(package: &L2FieldPackage) -> Result<Vec<u8>, String
     put_u64(&mut bytes, package.l1_package_fingerprint);
     for count in [
         package.form_refs.len(),
+        package.decoder_bytes.len(),
         package.lemma_centers.len(),
         package.morph_bindings.len(),
         package.context_modes.len(),
@@ -93,6 +95,7 @@ pub(crate) fn decode_package(bytes: &[u8]) -> Result<L2FieldPackage, String> {
         header.u32()? as usize,
         header.u32()? as usize,
         header.u32()? as usize,
+        header.u32()? as usize,
     ];
     let body = &bytes[HEADER_BYTES..];
     if checksum64(body) != expected_checksum {
@@ -102,12 +105,13 @@ pub(crate) fn decode_package(bytes: &[u8]) -> Result<L2FieldPackage, String> {
     let package = L2FieldPackage {
         l1_package_fingerprint,
         form_refs: read_many(counts[0], || read_form_ref(&mut cursor))?,
-        lemma_centers: read_many(counts[1], || read_lemma_center(&mut cursor))?,
-        morph_bindings: read_many(counts[2], || read_morph_binding(&mut cursor))?,
-        context_modes: read_many(counts[3], || read_context_mode(&mut cursor))?,
-        slot_centers: read_many(counts[4], || read_slot_center(&mut cursor))?,
-        neighbor_couplings: read_many(counts[5], || read_neighbor_coupling(&mut cursor))?,
-        competition_edges: read_many(counts[6], || read_competition_edge(&mut cursor))?,
+        decoder_bytes: cursor.bytes(counts[1])?.to_vec(),
+        lemma_centers: read_many(counts[2], || read_lemma_center(&mut cursor))?,
+        morph_bindings: read_many(counts[3], || read_morph_binding(&mut cursor))?,
+        context_modes: read_many(counts[4], || read_context_mode(&mut cursor))?,
+        slot_centers: read_many(counts[5], || read_slot_center(&mut cursor))?,
+        neighbor_couplings: read_many(counts[6], || read_neighbor_coupling(&mut cursor))?,
+        competition_edges: read_many(counts[7], || read_competition_edge(&mut cursor))?,
         calibration: read_calibration(&mut cursor)?,
     };
     if cursor.remaining() != 0 {
@@ -121,6 +125,17 @@ pub(crate) fn decode_package(bytes: &[u8]) -> Result<L2FieldPackage, String> {
 }
 
 fn validate_package(package: &L2FieldPackage) -> Result<(), String> {
+    let mut previous_surface = None;
+    for (index, form) in package.form_refs.iter().enumerate() {
+        let surface = decoder_surface(&package.decoder_bytes, form.decoder_ref)
+            .map_err(|error| format!("form {index} {error}"))?;
+        if previous_surface.is_some_and(|previous| previous >= surface) {
+            return Err(format!(
+                "form {index} decoder surfaces are not strictly ordered"
+            ));
+        }
+        previous_surface = Some(surface);
+    }
     for (index, binding) in package.morph_bindings.iter().enumerate() {
         if binding.form_center_ref as usize >= package.form_refs.len() {
             return Err(format!("binding {index} references missing form"));
@@ -144,6 +159,22 @@ fn validate_package(package: &L2FieldPackage) -> Result<(), String> {
         }
     }
     Ok(())
+}
+
+fn decoder_surface(decoder: &[u8], decoder_ref: u32) -> Result<&str, String> {
+    let start = decoder_ref as usize;
+    let tail = decoder
+        .get(start..)
+        .ok_or_else(|| "decoder reference is out of range".to_string())?;
+    let length = tail
+        .iter()
+        .position(|byte| *byte == 0)
+        .ok_or_else(|| "decoder surface is not terminated".to_string())?;
+    if length == 0 {
+        return Err("decoder surface is empty".to_string());
+    }
+    std::str::from_utf8(&tail[..length])
+        .map_err(|error| format!("decoder surface is not UTF-8: {error}"))
 }
 
 fn read_many<T>(
@@ -424,6 +455,19 @@ impl<'a> Cursor<'a> {
         Ok(u64::from_le_bytes(self.take()?))
     }
 
+    fn bytes(&mut self, length: usize) -> Result<&'a [u8], String> {
+        let end = self
+            .offset
+            .checked_add(length)
+            .ok_or_else(|| "L2 package offset overflow".to_string())?;
+        let bytes = self
+            .bytes
+            .get(self.offset..end)
+            .ok_or_else(|| "truncated L2 package section".to_string())?;
+        self.offset = end;
+        Ok(bytes)
+    }
+
     fn remaining(&self) -> usize {
         self.bytes.len().saturating_sub(self.offset)
     }
@@ -439,17 +483,18 @@ mod tests {
             form_refs: vec![
                 FormCenterRef {
                     l1_terminal_id: 7,
-                    decoder_ref: 7,
+                    decoder_ref: 0,
                     length_bucket: 4,
                     ..FormCenterRef::default()
                 },
                 FormCenterRef {
                     l1_terminal_id: 9,
-                    decoder_ref: 9,
+                    decoder_ref: 11,
                     length_bucket: 5,
                     ..FormCenterRef::default()
                 },
             ],
+            decoder_bytes: "альфа\0бета\0".as_bytes().to_vec(),
             lemma_centers: vec![LemmaCenter {
                 form_count: 2,
                 ..LemmaCenter::default()

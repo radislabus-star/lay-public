@@ -26,6 +26,7 @@ if manifest.get("release_shadow_installable") is not True:
 print(manifest["package_id"])
 print(manifest["crystal_bytes"])
 print(manifest["crystal_sha256"])
+print(manifest["crystal_format"])
 PY
 )
 
@@ -34,6 +35,16 @@ EXPECTED_BYTES="${metadata[1]}"
 EXPECTED_SHA256="${metadata[2]}"
 ACTUAL_BYTES="$(stat -c '%s' "$PACKAGE")"
 ACTUAL_SHA256="$(sha256sum "$PACKAGE" | awk '{print $1}')"
+CRYSTAL_FORMAT="${metadata[3]}"
+
+case "$CRYSTAL_FORMAT" in
+  V8*) PACKAGE_EXTENSION="v8.bin" ;;
+  V7*) PACKAGE_EXTENSION="v7.bin" ;;
+  *)
+    echo "unsupported L1.1 crystal format: $CRYSTAL_FORMAT" >&2
+    exit 1
+    ;;
+esac
 
 if [[ "$ACTUAL_BYTES" != "$EXPECTED_BYTES" ]]; then
   echo "L1.1 package size mismatch: expected=$EXPECTED_BYTES actual=$ACTUAL_BYTES" >&2
@@ -45,9 +56,9 @@ if [[ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]]; then
 fi
 
 mkdir -p "$INSTALL_DIR"
-DESTINATION="$INSTALL_DIR/$PACKAGE_ID.v7.bin"
+DESTINATION="$INSTALL_DIR/$PACKAGE_ID.$PACKAGE_EXTENSION"
 RECEIPT="$INSTALL_DIR/$PACKAGE_ID.installed.json"
-TEMPORARY="$INSTALL_DIR/.$PACKAGE_ID.v7.bin.tmp.$$"
+TEMPORARY="$INSTALL_DIR/.$PACKAGE_ID.$PACKAGE_EXTENSION.tmp.$$"
 
 install -m 0644 "$PACKAGE" "$TEMPORARY"
 mv -f "$TEMPORARY" "$DESTINATION"

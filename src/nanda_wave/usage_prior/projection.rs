@@ -32,7 +32,7 @@ impl<'a> UsageEventProjection<'a> {
         // An automatic apply is an observation, not user acceptance. Older
         // runtimes wrote it as positive feedback; ignore that poisoned lane.
         if matches!(event.kind, UsageEventKind::AcceptedFix)
-            && event.source.as_deref() == Some("autocorrect")
+            && matches!(event.source.as_deref(), Some("autocorrect" | "layout"))
         {
             return None;
         }
@@ -114,11 +114,11 @@ fn event_word_is_changed_target(event: &UsageEvent, word: &str) -> bool {
 
 fn event_transition_target(event: &UsageEvent, fallback_word: &str) -> String {
     let target = match (event.from.as_deref(), event.to.as_deref()) {
-        (Some(from), Some(to)) => crate::typing_memory::transition_target_text(from, to),
+        (Some(_), Some(to)) => to.to_string(),
         (_, Some(to)) => to.to_string(),
         _ => fallback_word.to_string(),
     };
-    crate::transition_relation::transition_target_id(&target)
+    crate::transition_relation::signed_memory_target_id(&target)
 }
 
 fn event_transition_context(event: &UsageEvent) -> Vec<String> {
@@ -146,7 +146,7 @@ fn event_state_word(event: &UsageEvent) -> String {
     event
         .from
         .as_deref()
-        .map(crate::transition_relation::transition_state_id)
+        .map(crate::transition_relation::signed_memory_state_id)
         .unwrap_or_else(|| TRANSITION_ANY.to_string())
 }
 

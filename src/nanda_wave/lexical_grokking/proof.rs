@@ -587,6 +587,75 @@ pub fn prove_l1_lexical_grokking_scale_package_range(
     )
 }
 
+pub fn export_l1_fixed_latency_surfaces(
+    corpus_path: &Path,
+    output_path: &Path,
+    max_words: usize,
+    heldout_per_class: usize,
+    sample_count: usize,
+) -> io::Result<serde_json::Value> {
+    if heldout_per_class == 0 || sample_count == 0 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "latency surface heldout and sample counts must be positive",
+        ));
+    }
+    let text = std::fs::read_to_string(corpus_path)?;
+    let words = corpus_words_from_lines(&text, max_words);
+    let policy = ScaleProofPolicy {
+        heldout_per_class,
+        training_surfaces_per_word: 0,
+        training_surface_policy: ScaleTrainingSurfacePolicy::LegacyAlphabetical,
+        maximum_rss_mib: DEFAULT_TRAINING_RSS_MIB,
+    };
+    let (reservoir, _) = prepare_scale_heldout(&words, policy, 0)?;
+    let mut heldout = Vec::new();
+    for (class, heap) in reservoir {
+        heldout.extend(
+            heap.into_iter()
+                .map(|(_, terminal_id, surface)| (terminal_id, class, surface)),
+        );
+    }
+    heldout.sort_unstable_by(|left, right| {
+        left.1
+            .cmp(right.1)
+            .then_with(|| left.0.cmp(&right.0))
+            .then_with(|| left.2.cmp(&right.2))
+    });
+    heldout.truncate(sample_count);
+    if heldout.len() != sample_count {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            format!(
+                "fixed heldout produced {} latency surfaces, expected {sample_count}",
+                heldout.len()
+            ),
+        ));
+    }
+    let mut encoded = String::new();
+    let mut classes = BTreeMap::<&str, usize>::new();
+    for (_, class, surface) in &heldout {
+        *classes.entry(class).or_default() += 1;
+        encoded.push_str(surface);
+        encoded.push('\n');
+    }
+    if let Some(parent) = output_path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    let temporary = output_path.with_extension("tmp");
+    std::fs::write(&temporary, encoded.as_bytes())?;
+    std::fs::rename(&temporary, output_path)?;
+    Ok(serde_json::json!({
+        "corpus": corpus_path,
+        "source_words": words.len(),
+        "heldout_per_class": heldout_per_class,
+        "sample_count": heldout.len(),
+        "classes": classes,
+        "output": output_path,
+        "output_bytes": encoded.len(),
+    }))
+}
+
 fn prove_l1_lexical_grokking_with_policy(
     corpus_path: &Path,
     output_path: &Path,
@@ -1149,10 +1218,7 @@ fn prepare_scale_training_corpus(
     words: &[String],
     policy: ScaleProofPolicy,
 ) -> io::Result<(TrainingCorpus, HeldoutReservoir, usize)> {
-    let workers = thread::available_parallelism()
-        .map(usize::from)
-        .unwrap_or(1)
-        .min(words.len().max(1));
+    let workers = proof_worker_count(words.len());
     let chunk_size = words.len().div_ceil(workers);
     eprintln!(
         "l11_training_surface_preparation words={} workers={workers} chunk_size={chunk_size}",
@@ -1595,9 +1661,15 @@ fn evaluate_parallel(
 }
 
 fn proof_worker_count(case_count: usize) -> usize {
-    thread::available_parallelism()
-        .map(usize::from)
-        .unwrap_or(1)
+    std::env::var("LAY_L11_PROOF_WORKERS")
+        .ok()
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or_else(|| {
+            thread::available_parallelism()
+                .map(usize::from)
+                .unwrap_or(1)
+        })
+        .clamp(1, 32)
         .min(case_count.max(1))
 }
 

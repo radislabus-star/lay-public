@@ -159,15 +159,13 @@ fn l4_signed_memory_readout(
 ) -> crate::nanda_wave::l4_signed_memory::L4SignedMemorySignal {
     let context =
         crate::typing_memory::transition_context_words(&event.original, &candidate.replacement);
-    let transition_target =
-        crate::typing_memory::transition_target_text(&event.original, &candidate.replacement);
-    if transition_target.is_empty() {
+    if candidate.replacement.trim().is_empty() {
         return crate::nanda_wave::l4_signed_memory::l4_signed_memory_signal_from_readout(
             crate::nanda_wave::usage_prior::UsageHotReadout::default(),
             crate::nanda_wave::usage_prior::UsageSurfaceCoverage::default(),
         );
     }
-    let state_id = crate::transition_relation::transition_state_id(&event.original);
+    let state_id = crate::transition_relation::signed_memory_state_id(&event.original);
     let operator = crate::typing_memory::transition_learning_key(
         &event.original,
         &candidate.replacement,
@@ -178,7 +176,7 @@ fn l4_signed_memory_readout(
         source: candidate.origin.memory_key(),
         operation: &operator,
         state_word: &state_id,
-        candidate_text: &transition_target,
+        candidate_text: &candidate.replacement,
         usage,
         surface: Some(surface),
     })
@@ -488,7 +486,8 @@ fn transition_rank_bonus(
             {
                 0.20
             } else if candidate.has_origin(crate::candidate_contract::CandidateOrigin::L2Surface)
-                && action.operator == crate::language_action::LanguageActionOperator::RestoreMissingLetter
+                && action.operator
+                    == crate::language_action::LanguageActionOperator::RestoreMissingLetter
             {
                 0.12
             } else if candidate.has_origin(crate::candidate_contract::CandidateOrigin::L2Surface)

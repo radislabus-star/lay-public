@@ -9,20 +9,74 @@ use std::fs::{self, File};
 use std::io;
 use std::path::Path;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, OnceLock};
 
 use super::model::{LexicalGrokkingPackage, WaveCoupling};
 use super::{format, posting_codec};
+use rayon::prelude::*;
 
 const MAGIC: [u8; 8] = *b"LAYL1V8\0";
 const VERSION: u32 = 8;
 const HEADER_BYTES: usize = 128;
 const INDEX_ENTRY_BYTES: usize = 16;
 const SHARD_ENTRY_BYTES: usize = 16;
-const ATOMS_PER_SHARD: usize = 32;
+const DEFAULT_ATOMS_PER_SHARD: usize = 1;
+const MAX_ATOMS_PER_SHARD: usize = 4_096;
 const CHECKSUM_OFFSET: usize = 88;
-const DEFAULT_POSTING_CACHE_BYTES: usize = 32 * 1024 * 1024;
-const DEFAULT_SHARD_CACHE_BYTES: usize = 32 * 1024 * 1024;
+const DEFAULT_POSTING_CACHE_MIB: usize = 32;
+const DEFAULT_SHARD_CACHE_MIB: usize = 0;
+const MAX_RUNTIME_CACHE_MIB: usize = 128;
+const MAX_PREFETCH_WORKERS: usize = 32;
+
+pub(super) fn runtime_pool_install<OP, R>(operation: OP) -> R
+where
+    OP: FnOnce() -> R + Send,
+    R: Send,
+{
+    static POOL: OnceLock<rayon::ThreadPool> = OnceLock::new();
+    POOL.get_or_init(|| {
+        let workers = std::env::var("LAY_L11_RUNTIME_WORKERS")
+            .ok()
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or_else(|| {
+                std::thread::available_parallelism()
+                    .map(usize::from)
+                    .unwrap_or(1)
+                    .saturating_sub(1)
+                    .max(1)
+                    .min(14)
+            })
+            .clamp(1, MAX_PREFETCH_WORKERS);
+        rayon::ThreadPoolBuilder::new()
+            .num_threads(workers)
+            .thread_name(|index| format!("lay-l11-v8-{index}"))
+            .build()
+            .expect("build L1.1 V8 runtime worker pool")
+    })
+    .install(operation)
+}
+
+fn runtime_cache_bytes(variable: &str, default_mib: usize) -> usize {
+    std::env::var(variable)
+        .ok()
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(default_mib)
+        .min(MAX_RUNTIME_CACHE_MIB)
+        .saturating_mul(1024 * 1024)
+}
+
+fn posting_cache_bytes() -> usize {
+    static BYTES: OnceLock<usize> = OnceLock::new();
+    *BYTES.get_or_init(|| {
+        runtime_cache_bytes("LAY_L11_V8_POSTING_CACHE_MIB", DEFAULT_POSTING_CACHE_MIB)
+    })
+}
+
+fn shard_cache_bytes() -> usize {
+    static BYTES: OnceLock<usize> = OnceLock::new();
+    *BYTES
+        .get_or_init(|| runtime_cache_bytes("LAY_L11_V8_SHARD_CACHE_MIB", DEFAULT_SHARD_CACHE_MIB))
+}
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub(super) struct V8PostingIndex {
@@ -114,12 +168,19 @@ impl V8Artifact {
     }
 
     pub(super) fn posting(&self, atom_id: u32) -> Result<Arc<[WaveCoupling]>, String> {
-        if let Ok(cache) = self.posting_cache.lock() {
-            if let Some(posting) = cache.entries.get(&atom_id) {
-                return Ok(Arc::clone(posting));
+        let cache_budget = posting_cache_bytes();
+        if cache_budget != 0 {
+            if let Ok(cache) = self.posting_cache.lock() {
+                if let Some(posting) = cache.entries.get(&atom_id) {
+                    return Ok(Arc::clone(posting));
+                }
             }
         }
+        let posting = self.decode_posting_uncached(atom_id)?;
+        self.admit_posting(atom_id, posting, cache_budget)
+    }
 
+    fn decode_posting_uncached(&self, atom_id: u32) -> Result<Arc<[WaveCoupling]>, String> {
         let item = read_index(self.bytes.as_slice(), self.header, atom_id)?;
         let shard = self.shard(item.shard_id)?;
         let start = item.offset as usize;
@@ -130,11 +191,19 @@ impl V8Artifact {
                 .ok_or_else(|| "invalid V8 posting range inside shard".to_string())?,
             item.relation_count as usize,
         )?;
-        let posting: Arc<[WaveCoupling]> = decoded.into();
+        Ok(decoded.into())
+    }
+
+    fn admit_posting(
+        &self,
+        atom_id: u32,
+        posting: Arc<[WaveCoupling]>,
+        cache_budget: usize,
+    ) -> Result<Arc<[WaveCoupling]>, String> {
         let posting_bytes = posting
             .len()
             .saturating_mul(std::mem::size_of::<WaveCoupling>());
-        if posting_bytes <= DEFAULT_POSTING_CACHE_BYTES {
+        if posting_bytes <= cache_budget {
             let mut cache = self
                 .posting_cache
                 .lock()
@@ -142,7 +211,7 @@ impl V8Artifact {
             if let Some(existing) = cache.entries.get(&atom_id) {
                 return Ok(Arc::clone(existing));
             }
-            while cache.bytes.saturating_add(posting_bytes) > DEFAULT_POSTING_CACHE_BYTES {
+            while cache.bytes.saturating_add(posting_bytes) > cache_budget {
                 let Some(evicted_id) = cache.order.pop_front() else {
                     break;
                 };
@@ -162,10 +231,92 @@ impl V8Artifact {
         Ok(posting)
     }
 
+    pub(super) fn postings(&self, atom_ids: &[u32]) -> Result<Vec<Arc<[WaveCoupling]>>, String> {
+        if atom_ids.len() <= 1 {
+            return atom_ids
+                .iter()
+                .map(|atom_id| self.posting(*atom_id))
+                .collect();
+        }
+        let cache_budget = posting_cache_bytes();
+        let mut resolved = vec![None; atom_ids.len()];
+        if cache_budget != 0 {
+            let cache = self
+                .posting_cache
+                .lock()
+                .map_err(|_| "V8 posting cache is poisoned".to_string())?;
+            for (index, atom_id) in atom_ids.iter().copied().enumerate() {
+                if let Some(posting) = cache.entries.get(&atom_id) {
+                    resolved[index] = Some(Arc::clone(posting));
+                }
+            }
+        }
+        let missing = atom_ids
+            .iter()
+            .copied()
+            .enumerate()
+            .filter(|(index, _)| resolved[*index].is_none())
+            .collect::<Vec<_>>();
+        let decoded = runtime_pool_install(|| {
+            missing
+                .par_iter()
+                .map(|(index, atom_id)| {
+                    self.decode_posting_uncached(*atom_id)
+                        .map(|posting| (*index, *atom_id, posting))
+                })
+                .collect::<Result<Vec<_>, _>>()
+        })?;
+        if cache_budget == 0 {
+            for (index, _, posting) in decoded {
+                resolved[index] = Some(posting);
+            }
+        } else {
+            let mut cache = self
+                .posting_cache
+                .lock()
+                .map_err(|_| "V8 posting cache is poisoned".to_string())?;
+            for (index, atom_id, posting) in decoded {
+                if let Some(existing) = cache.entries.get(&atom_id) {
+                    resolved[index] = Some(Arc::clone(existing));
+                    continue;
+                }
+                let posting_bytes = posting
+                    .len()
+                    .saturating_mul(std::mem::size_of::<WaveCoupling>());
+                if posting_bytes <= cache_budget {
+                    while cache.bytes.saturating_add(posting_bytes) > cache_budget {
+                        let Some(evicted_id) = cache.order.pop_front() else {
+                            break;
+                        };
+                        let Some(evicted) = cache.entries.remove(&evicted_id) else {
+                            continue;
+                        };
+                        cache.bytes = cache.bytes.saturating_sub(
+                            evicted
+                                .len()
+                                .saturating_mul(std::mem::size_of::<WaveCoupling>()),
+                        );
+                    }
+                    cache.bytes = cache.bytes.saturating_add(posting_bytes);
+                    cache.order.push_back(atom_id);
+                    cache.entries.insert(atom_id, Arc::clone(&posting));
+                }
+                resolved[index] = Some(posting);
+            }
+        }
+        resolved
+            .into_iter()
+            .map(|posting| posting.ok_or_else(|| "V8 posting batch is incomplete".to_string()))
+            .collect()
+    }
+
     fn shard(&self, shard_id: u32) -> Result<Arc<[u8]>, String> {
-        if let Ok(cache) = self.shard_cache.lock() {
-            if let Some(shard) = cache.entries.get(&shard_id) {
-                return Ok(Arc::clone(shard));
+        let cache_budget = shard_cache_bytes();
+        if cache_budget != 0 {
+            if let Ok(cache) = self.shard_cache.lock() {
+                if let Some(shard) = cache.entries.get(&shard_id) {
+                    return Ok(Arc::clone(shard));
+                }
             }
         }
         let _shard_guard = self
@@ -174,29 +325,27 @@ impl V8Artifact {
             .ok_or_else(|| "V8 shard ID exceeds lock table".to_string())?
             .lock()
             .map_err(|_| "V8 shard lock is poisoned".to_string())?;
-        if let Ok(cache) = self.shard_cache.lock() {
-            if let Some(shard) = cache.entries.get(&shard_id) {
-                return Ok(Arc::clone(shard));
+        if cache_budget != 0 {
+            if let Ok(cache) = self.shard_cache.lock() {
+                if let Some(shard) = cache.entries.get(&shard_id) {
+                    return Ok(Arc::clone(shard));
+                }
             }
         }
         let item = read_shard_index(self.bytes.as_slice(), self.header, shard_id)?;
         let compressed = compressed_shard_bytes(self.bytes.as_slice(), self.header, item)?;
         let decoded = zstd::bulk::decompress(compressed, item.raw_len as usize)
             .map_err(|error| format!("V8 shard decompression failed: {error}"))?;
-        self.bytes.discard_range(
-            self.header.postings_offset.saturating_add(item.offset),
-            u64::from(item.compressed_len),
-        );
         if decoded.len() != item.raw_len as usize {
             return Err("V8 shard raw length mismatch".to_string());
         }
         let shard: Arc<[u8]> = decoded.into();
-        if shard.len() <= DEFAULT_SHARD_CACHE_BYTES {
+        if shard.len() <= cache_budget {
             let mut cache = self
                 .shard_cache
                 .lock()
                 .map_err(|_| "V8 shard cache is poisoned".to_string())?;
-            while cache.bytes.saturating_add(shard.len()) > DEFAULT_SHARD_CACHE_BYTES {
+            while cache.bytes.saturating_add(shard.len()) > cache_budget {
                 let Some(evicted_id) = cache.order.pop_front() else {
                     break;
                 };
@@ -218,12 +367,29 @@ pub(super) fn is_v8(bytes: &[u8]) -> bool {
 }
 
 pub fn build_lazy_v8_package(input: &Path, output: &Path) -> io::Result<serde_json::Value> {
+    build_lazy_v8_package_with_shard_size(input, output, DEFAULT_ATOMS_PER_SHARD)
+}
+
+pub fn build_lazy_v8_package_with_shard_size(
+    input: &Path,
+    output: &Path,
+    atoms_per_shard: usize,
+) -> io::Result<serde_json::Value> {
+    if !(1..=MAX_ATOMS_PER_SHARD).contains(&atoms_per_shard) {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            format!("atoms per V8 shard must be in 1..={MAX_ATOMS_PER_SHARD}"),
+        ));
+    }
     let base = fs::read(input)?;
     let package = format::decode(&base).map_err(io::Error::other)?;
     let mut index = Vec::with_capacity(package.atoms.len());
     let mut postings = Vec::new();
     let mut shards = Vec::new();
-    for (shard_id, built) in build_shards_parallel(&package)?.into_iter().enumerate() {
+    for (shard_id, built) in build_shards_parallel(&package, atoms_per_shard)?
+        .into_iter()
+        .enumerate()
+    {
         index.extend(built.index);
         shards.push(V8ShardIndex {
             offset: postings.len() as u64,
@@ -234,7 +400,7 @@ pub fn build_lazy_v8_package(input: &Path, output: &Path) -> io::Result<serde_js
         debug_assert!(index
             .iter()
             .rev()
-            .take(package.atoms.len().min(ATOMS_PER_SHARD))
+            .take(package.atoms.len().min(atoms_per_shard))
             .all(|item| item.shard_id <= shard_id as u32));
         postings.extend_from_slice(&built.compressed);
     }
@@ -297,7 +463,7 @@ pub fn build_lazy_v8_package(input: &Path, output: &Path) -> io::Result<serde_js
         "forward_relations": package.forward_couplings.len(),
         "base_bytes": base.len(),
         "posting_index_bytes": index.len() * INDEX_ENTRY_BYTES,
-        "atoms_per_shard": ATOMS_PER_SHARD,
+        "atoms_per_shard": atoms_per_shard,
         "posting_shards": shards.len(),
         "posting_shard_index_bytes": shards.len() * SHARD_ENTRY_BYTES,
         "compressed_posting_bytes": postings.len(),
@@ -316,44 +482,64 @@ struct BuiltShard {
     raw_len: u32,
 }
 
-fn build_shards_parallel(package: &LexicalGrokkingPackage) -> io::Result<Vec<BuiltShard>> {
-    let shard_count = package.atoms.len().div_ceil(ATOMS_PER_SHARD);
-    let next = AtomicUsize::new(0);
-    let results = Mutex::new(
-        (0..shard_count)
-            .map(|_| None)
-            .collect::<Vec<Option<io::Result<BuiltShard>>>>(),
-    );
-    let workers = std::thread::available_parallelism()
-        .map(usize::from)
-        .unwrap_or(1)
-        .saturating_sub(1)
-        .max(1)
+fn build_shards_parallel(
+    package: &LexicalGrokkingPackage,
+    atoms_per_shard: usize,
+) -> io::Result<Vec<BuiltShard>> {
+    let shard_count = package.atoms.len().div_ceil(atoms_per_shard);
+    let workers = std::env::var("LAY_L11_BUILD_WORKERS")
+        .ok()
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or_else(|| {
+            std::thread::available_parallelism()
+                .map(usize::from)
+                .unwrap_or(1)
+                .saturating_sub(1)
+                .max(1)
+        })
+        .clamp(1, MAX_PREFETCH_WORKERS)
         .min(shard_count.max(1));
-    std::thread::scope(|scope| {
-        for _ in 0..workers {
-            scope.spawn(|| loop {
-                let shard_id = next.fetch_add(1, Ordering::Relaxed);
-                if shard_id >= shard_count {
-                    break;
-                }
-                let built = build_shard(package, shard_id);
-                results.lock().expect("V8 shard results poisoned")[shard_id] = Some(built);
-            });
-        }
-    });
-    results
-        .into_inner()
-        .map_err(|_| io::Error::other("V8 shard results poisoned"))?
-        .into_iter()
-        .map(|result| result.ok_or_else(|| io::Error::other("V8 shard was not built"))?)
-        .collect()
+    let next = AtomicUsize::new(0);
+    let partial = std::thread::scope(|scope| {
+        (0..workers)
+            .map(|_| {
+                scope.spawn(|| {
+                    let mut built = Vec::new();
+                    loop {
+                        let shard_id = next.fetch_add(1, Ordering::Relaxed);
+                        if shard_id >= shard_count {
+                            break;
+                        }
+                        built.push((shard_id, build_shard(package, shard_id, atoms_per_shard)?));
+                    }
+                    Ok::<_, io::Error>(built)
+                })
+            })
+            .collect::<Vec<_>>()
+            .into_iter()
+            .map(|handle| {
+                handle
+                    .join()
+                    .map_err(|_| io::Error::other("V8 shard worker panicked"))?
+            })
+            .collect::<io::Result<Vec<_>>>()
+    })?;
+    let mut built = partial.into_iter().flatten().collect::<Vec<_>>();
+    built.sort_unstable_by_key(|(shard_id, _)| *shard_id);
+    if built.len() != shard_count {
+        return Err(io::Error::other("V8 shard build is incomplete"));
+    }
+    Ok(built.into_iter().map(|(_, shard)| shard).collect())
 }
 
-fn build_shard(package: &LexicalGrokkingPackage, shard_id: usize) -> io::Result<BuiltShard> {
-    let atom_start = shard_id.saturating_mul(ATOMS_PER_SHARD);
+fn build_shard(
+    package: &LexicalGrokkingPackage,
+    shard_id: usize,
+    atoms_per_shard: usize,
+) -> io::Result<BuiltShard> {
+    let atom_start = shard_id.saturating_mul(atoms_per_shard);
     let atom_end = atom_start
-        .saturating_add(ATOMS_PER_SHARD)
+        .saturating_add(atoms_per_shard)
         .min(package.atoms.len());
     let mut raw = Vec::new();
     let mut index = Vec::with_capacity(atom_end.saturating_sub(atom_start));
@@ -618,18 +804,6 @@ impl ArtifactBytes {
             mapped.discard_resident_pages();
         }
     }
-
-    fn discard_range(&self, offset: u64, len: u64) {
-        #[cfg(target_os = "linux")]
-        {
-            let Self::Mapped(mapped) = self;
-            mapped.discard_range(offset, len);
-        }
-        #[cfg(not(target_os = "linux"))]
-        {
-            let _ = (offset, len);
-        }
-    }
 }
 
 #[cfg(target_os = "linux")]
@@ -678,24 +852,6 @@ impl MappedFile {
     fn discard_resident_pages(&self) {
         unsafe {
             libc::madvise(self.ptr, self.len, libc::MADV_DONTNEED);
-        }
-    }
-
-    fn discard_range(&self, offset: u64, len: u64) {
-        let page_bytes = 4096_u64;
-        let start = offset / page_bytes * page_bytes;
-        let end =
-            offset.saturating_add(len).saturating_add(page_bytes - 1) / page_bytes * page_bytes;
-        let bounded_end = end.min(self.len as u64);
-        if bounded_end <= start {
-            return;
-        }
-        unsafe {
-            libc::madvise(
-                self.ptr.cast::<u8>().add(start as usize).cast(),
-                (bounded_end - start) as usize,
-                libc::MADV_DONTNEED,
-            );
         }
     }
 }
@@ -751,6 +907,8 @@ mod tests {
         assert_eq!(base.centers.len(), package.centers.len());
         assert!(base.forward_couplings.is_empty());
         let artifact = V8Artifact::load(&output).expect("load mmap V8 fixture");
+        let atom_ids = (0..header.index_count).collect::<Vec<_>>();
+        artifact.postings(&atom_ids).expect("load V8 postings");
         let mut decoded_relations = 0_usize;
         for atom_id in 0..header.index_count {
             let item = read_index(&bytes, header, atom_id).expect("read V8 index");

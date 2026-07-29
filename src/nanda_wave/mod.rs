@@ -46,17 +46,17 @@ pub use l2_candidate_phase::L2PhaseTrainingEntry;
 pub(crate) use l2_candidate_phase::{PhaseReadout, PhaseVerdict};
 pub use l2_field::{
     canonical_l2_status, compile_canonical_l2_package, default_l2_model_dir,
-    discover_installed_l2_package, prove_canonical_l2_package,
+    discover_installed_l2_package, prove_canonical_l2_package, query_canonical_l2_package,
 };
 pub use lexical_grokking::{
     admit_l11_delta, admit_l11_tombstone, analyze_l1_forward_compression,
-    authoritative_restore_surface, benchmark_l1_lexical_grokking, build_lazy_v8_package,
-    compact_depth0_package, crystallize_l1_lexical_grokking,
-    crystallize_l1_lexical_grokking_with_rss_budget,
+    authoritative_restore_surface, benchmark_l1_diverse_restoration, benchmark_l1_lexical_grokking,
+    build_lazy_v8_package, build_lazy_v8_package_with_shard_size, compact_depth0_package,
+    crystallize_l1_lexical_grokking, crystallize_l1_lexical_grokking_with_rss_budget,
     crystallize_l1_lexical_grokking_with_surface_policy, default_l11_model_dir,
     default_l11_socket_path, discover_installed_l11_package, ensure_l11_service_started,
-    initialize_l11_composite_manifest, inspect_l1_package_header, l11_seed_surfaces,
-    prove_l1_lexical_grokking, prove_l1_lexical_grokking_complete_postings,
+    export_l1_fixed_latency_surfaces, initialize_l11_composite_manifest, inspect_l1_package_header,
+    l11_seed_surfaces, prove_l1_lexical_grokking, prove_l1_lexical_grokking_complete_postings,
     prove_l1_lexical_grokking_package, prove_l1_lexical_grokking_scale_package,
     prove_l1_lexical_grokking_scale_package_range, query_l1_lexical_grokking,
     request_l11_authoritative_surface, request_l11_decoded_surfaces, request_l11_seed_surfaces,

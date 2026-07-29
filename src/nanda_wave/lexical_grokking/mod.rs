@@ -32,11 +32,13 @@ pub use corruption::ScaleTrainingSurfacePolicy;
 pub use posting_codec::analyze_package as analyze_l1_forward_compression;
 pub use proof::{
     crystallize_l1_lexical_grokking, crystallize_l1_lexical_grokking_with_rss_budget,
-    crystallize_l1_lexical_grokking_with_surface_policy, prove_l1_lexical_grokking,
-    prove_l1_lexical_grokking_complete_postings, prove_l1_lexical_grokking_package,
-    prove_l1_lexical_grokking_scale_package, prove_l1_lexical_grokking_scale_package_range,
+    crystallize_l1_lexical_grokking_with_surface_policy, export_l1_fixed_latency_surfaces,
+    prove_l1_lexical_grokking, prove_l1_lexical_grokking_complete_postings,
+    prove_l1_lexical_grokking_package, prove_l1_lexical_grokking_scale_package,
+    prove_l1_lexical_grokking_scale_package_range,
 };
 pub use runtime::{
+    benchmark_diverse_restoration as benchmark_l1_diverse_restoration,
     benchmark_package as benchmark_l1_lexical_grokking,
     inspect_package_header as inspect_l1_package_header,
     query_package as query_l1_lexical_grokking, restore_surface as restore_l1_surface,
@@ -50,7 +52,7 @@ pub use service::{
     L11SeedSurface, L11ServiceEnsureReport, L1ServiceHealth, L1ServiceRequest, L1ServiceResponse,
     L1ServiceStats,
 };
-pub use v8::build_lazy_v8_package;
+pub use v8::{build_lazy_v8_package, build_lazy_v8_package_with_shard_size};
 
 #[cfg(test)]
 mod tests;

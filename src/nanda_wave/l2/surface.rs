@@ -453,7 +453,7 @@ pub(super) fn form_attractor_word_candidates(
     let context_tokens = llmwave::tokenize(prefix);
     let usage = usage_prior::cached_usage_prior_snapshot();
     let transition_state =
-        crate::transition_relation::transition_state_id(&format!("{prefix}{token}"));
+        crate::transition_relation::signed_memory_state_id(&format!("{prefix}{token}"));
     let surface_candidates = surface_motif_memory().surface_candidates(&normalized, 32);
     let phase_deltas = l2_birth_phase_deltas(&normalized, &surface_candidates, options);
     let mut out = surface_candidates

@@ -3,9 +3,13 @@
 // typing-transition API.
 
 fn resolve_l2_lattice(
-    lattice: L2CandidateLattice,
+    mut lattice: L2CandidateLattice,
     peak_context: Option<&crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext>,
 ) -> CorrectionResolution {
+    crate::nanda_wave::l2_field::bridge::apply_authority_to_candidate_lattice(
+        &mut lattice.candidates,
+        &lattice.l2_field_authority,
+    );
     let decision_batch = TransitionDecisionCore::evaluate_candidates(
         &lattice.event,
         &lattice.candidates,

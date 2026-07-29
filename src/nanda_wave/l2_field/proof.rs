@@ -31,10 +31,12 @@ struct ProofShard {
     aggregate: SlotScore,
     per_slot: BTreeMap<u32, SlotScore>,
     per_pos: BTreeMap<u16, SlotScore>,
+    unresolved_per_pos: BTreeMap<u16, usize>,
     latency_us: Vec<u64>,
     unresolved: usize,
     evaluated: usize,
     failure_examples: Vec<serde_json::Value>,
+    coverage_failure_examples: Vec<serde_json::Value>,
     false_authority_examples: Vec<serde_json::Value>,
 }
 
@@ -47,11 +49,17 @@ impl ProofShard {
         for (pos, score) in other.per_pos {
             self.per_pos.entry(pos).or_default().merge(score);
         }
+        for (pos, unresolved) in other.unresolved_per_pos {
+            *self.unresolved_per_pos.entry(pos).or_default() += unresolved;
+        }
         self.latency_us.extend(other.latency_us);
         self.unresolved += other.unresolved;
         self.evaluated += other.evaluated;
         self.failure_examples.extend(other.failure_examples);
         self.failure_examples.truncate(32);
+        self.coverage_failure_examples
+            .extend(other.coverage_failure_examples);
+        self.coverage_failure_examples.truncate(32);
         self.false_authority_examples
             .extend(other.false_authority_examples);
         self.false_authority_examples.truncate(32);
@@ -67,11 +75,8 @@ pub(crate) fn prove_package(
     let cold_started = Instant::now();
     let field = StandaloneL2Field::load(l2_package_path).map_err(io::Error::other)?;
     let cold_load_us = cold_started.elapsed().as_micros() as u64;
-    let l1_header = crate::nanda_wave::inspect_l1_package_header(l1_package_path)?;
-    let l1_fingerprint = l1_header
-        .get("corpus_fingerprint")
-        .and_then(serde_json::Value::as_u64)
-        .ok_or_else(|| io::Error::other("L1.1 header omitted corpus fingerprint"))?;
+    let l1 = crate::nanda_wave::L1RestorationHost::load(l1_package_path)?;
+    let l1_fingerprint = l1.corpus_fingerprint();
     if field.l1_package_fingerprint() != l1_fingerprint {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
@@ -80,23 +85,26 @@ pub(crate) fn prove_package(
     }
     let source = std::fs::read_to_string(morphology_corpus_path)?;
     let corpus = L2TeacherCorpus::parse_tsv(&source).map_err(io::Error::other)?;
-    let terminal_ids = field.form_terminal_ids().collect::<Vec<_>>();
-    let l1 = crate::nanda_wave::L1RestorationHost::load(l1_package_path)?;
+    let bound_forms = field.bound_form_refs().collect::<Vec<_>>();
     let resolver_workers = std::thread::available_parallelism()
         .map(usize::from)
         .unwrap_or(1)
-        .min(terminal_ids.len().max(1));
-    let chunk_size = terminal_ids.len().div_ceil(resolver_workers);
+        .min(bound_forms.len().max(1));
+    let chunk_size = bound_forms.len().div_ceil(resolver_workers);
     let decoded = std::thread::scope(|scope| {
-        let handles = terminal_ids
+        let handles = bound_forms
             .chunks(chunk_size.max(1))
             .map(|chunk| {
                 let l1 = &l1;
+                let field = &field;
                 scope.spawn(move || {
                     chunk
                         .iter()
-                        .filter_map(|terminal_id| {
-                            Some((l1.decode_terminal(*terminal_id)?, *terminal_id))
+                        .filter_map(|(form_ref, terminal_id)| {
+                            let l1_surface = l1.decode_terminal(*terminal_id)?;
+                            let l2_surface = field.decode_form_ref(*form_ref)?;
+                            (l1_surface == l2_surface)
+                                .then(|| (l2_surface.to_string(), *terminal_id))
                         })
                         .collect::<Vec<_>>()
                 })
@@ -107,10 +115,10 @@ pub(crate) fn prove_package(
             .flat_map(|handle| handle.join().expect("L2 proof decoder worker"))
             .collect::<BTreeMap<_, _>>()
     });
-    if decoded.len() != terminal_ids.len() {
+    if decoded.len() != bound_forms.len() {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
-            "L2 package contains undecodable L1.1 terminal IDs",
+            "L2 package contains undecodable or surface-mismatched L1.1 terminal IDs",
         ));
     }
     let teacher_surfaces = corpus
@@ -128,10 +136,6 @@ pub(crate) fn prove_package(
         ));
     }
     let terminal_by_surface = decoded;
-    let surface_by_terminal = terminal_by_surface
-        .iter()
-        .map(|(surface, terminal_id)| (*terminal_id, surface.as_str()))
-        .collect::<BTreeMap<_, _>>();
     let seeds_by_lemma = corpus
         .forms
         .iter()
@@ -164,19 +168,9 @@ pub(crate) fn prove_package(
             .chunks(proof_chunk_size)
             .map(|scenes| {
                 let field = &field;
-                let terminal_by_surface = &terminal_by_surface;
-                let surface_by_terminal = &surface_by_terminal;
                 let seeds_by_lemma = &seeds_by_lemma;
-                scope.spawn(move || {
-                    evaluate_morphology_scenes(
-                        scenes,
-                        field,
-                        terminal_by_surface,
-                        surface_by_terminal,
-                        seeds_by_lemma,
-                        limit,
-                    )
-                })
+                scope
+                    .spawn(move || evaluate_morphology_scenes(scenes, field, seeds_by_lemma, limit))
             })
             .collect::<Vec<_>>()
             .into_iter()
@@ -194,22 +188,31 @@ pub(crate) fn prove_package(
         aggregate,
         per_slot,
         per_pos,
+        unresolved_per_pos,
         mut latency_us,
         unresolved,
         evaluated,
         failure_examples,
+        coverage_failure_examples,
         false_authority_examples,
     } = proof;
     let mut near_neighbor = SlotScore::default();
     let mut near_neighbor_examples = Vec::new();
     for scene in corpus.neighbor_scenes.iter().filter(|scene| scene.heldout) {
-        let Some(target) = terminal_by_surface.get(&scene.surface).copied() else {
+        let Some(target) = field.form_ref_for_surface(&scene.surface) else {
             continue;
         };
         let mut terminals = std::iter::once(scene.surface.as_str())
             .chain(scene.competitors.iter().map(String::as_str))
             .filter_map(|surface| terminal_by_surface.get(surface).copied())
             .collect::<Vec<_>>();
+        terminals.extend(
+            seeds_by_lemma
+                .get(&scene.lemma)
+                .into_iter()
+                .flatten()
+                .copied(),
+        );
         terminals.sort_unstable();
         terminals.dedup();
         let seeds = terminals
@@ -222,8 +225,8 @@ pub(crate) fn prove_package(
         let readout = field.readout(&scene.context, &seeds, 32);
         score_verdict(&mut near_neighbor, &readout.verdict, target);
         let target_retained = match &readout.verdict {
-            L2LocalVerdict::Winner { terminal_id } => *terminal_id == target,
-            L2LocalVerdict::Tied { terminal_ids } => terminal_ids.contains(&target),
+            L2LocalVerdict::Winner { form_ref } => *form_ref == target,
+            L2LocalVerdict::Tied { form_refs } => form_refs.contains(&target),
             L2LocalVerdict::Abstain => false,
         };
         if !target_retained && near_neighbor_examples.len() < 32 {
@@ -235,12 +238,14 @@ pub(crate) fn prove_package(
                 "verdict": format!("{:?}", readout.verdict),
                 "candidates": readout.candidates.iter().take(16).map(|candidate| {
                     serde_json::json!({
-                        "terminal_id": candidate.terminal_id,
-                        "surface": surface_by_terminal.get(&candidate.terminal_id),
+                        "form_ref": candidate.form_ref,
+                        "l1_terminal_id": candidate.l1_terminal_id,
+                        "surface": candidate.surface,
                         "score": candidate.local_score,
                         "slot": candidate.slot_phase_milli,
                         "neighbor": candidate.neighbor_pressure,
                         "competition": candidate.competition_pressure,
+                        "explicit_competition": candidate.explicit_competition_pressure,
                     })
                 }).collect::<Vec<_>>(),
             }));
@@ -270,6 +275,19 @@ pub(crate) fn prove_package(
             (name.to_string(), serde_json::json!(score_json(&score)))
         })
         .collect::<serde_json::Map<_, _>>();
+    let unresolved_per_pos = unresolved_per_pos
+        .into_iter()
+        .map(|(pos, unresolved)| {
+            let name = match pos {
+                1 => "noun",
+                2 => "verb",
+                3 => "adjective",
+                4 => "pronoun",
+                _ => "unknown",
+            };
+            (name.to_string(), serde_json::json!(unresolved))
+        })
+        .collect::<serde_json::Map<_, _>>();
     Ok(serde_json::json!({
         "kind": "canonical_l2_fixed_heldout_proof",
         "l1_package": l1_package_path,
@@ -278,11 +296,13 @@ pub(crate) fn prove_package(
         "heldout_available": corpus.scenes.iter().filter(|scene| scene.heldout).count(),
         "evaluated": evaluated,
         "unresolved": unresolved,
+        "unresolved_per_pos": unresolved_per_pos,
         "same_lemma": score_json(&aggregate),
         "morphology_slot": score_json(&aggregate),
         "per_pos": per_pos,
         "per_feature_mask": per_slot,
         "failure_examples": failure_examples,
+        "coverage_failure_examples": coverage_failure_examples,
         "false_authority_examples": false_authority_examples,
         "near_neighbor": score_json(&near_neighbor),
         "near_neighbor_tested": near_neighbor.total > 0,
@@ -299,8 +319,6 @@ pub(crate) fn prove_package(
 fn evaluate_morphology_scenes(
     scenes: &[&TeacherScene],
     field: &StandaloneL2Field,
-    terminal_by_surface: &BTreeMap<String, u32>,
-    surface_by_terminal: &BTreeMap<u32, &str>,
     seeds_by_lemma: &BTreeMap<String, Vec<u32>>,
     limit: usize,
 ) -> ProofShard {
@@ -310,10 +328,16 @@ fn evaluate_morphology_scenes(
             break;
         }
         let (Some(target), Some(seed_terminals)) = (
-            terminal_by_surface.get(&scene.surface).copied(),
+            field.form_ref_for_surface(&scene.surface),
             seeds_by_lemma.get(&scene.lemma),
         ) else {
             shard.unresolved += 1;
+            *shard
+                .unresolved_per_pos
+                .entry(crate::nanda_wave::morphology_phase::feature_primary_pos(
+                    scene.feature_mask,
+                ))
+                .or_default() += 1;
             continue;
         };
         let mut seed_terminals = seed_terminals.clone();
@@ -349,8 +373,13 @@ fn evaluate_morphology_scenes(
         );
         let correct = matches!(
             &readout.verdict,
-            L2LocalVerdict::Winner { terminal_id } if *terminal_id == target
+            L2LocalVerdict::Winner { form_ref } if *form_ref == target
         );
+        let target_retained = correct
+            || matches!(
+                &readout.verdict,
+                L2LocalVerdict::Tied { form_refs } if form_refs.contains(&target)
+            );
         if !correct && shard.failure_examples.len() < 32 {
             shard.failure_examples.push(serde_json::json!({
                 "lemma": scene.lemma,
@@ -362,19 +391,47 @@ fn evaluate_morphology_scenes(
                 "context_mode_id": readout.context_mode_id,
                 "candidates": readout.candidates.iter().take(8).map(|candidate| {
                     serde_json::json!({
-                        "terminal_id": candidate.terminal_id,
-                        "surface": surface_by_terminal.get(&candidate.terminal_id),
+                        "form_ref": candidate.form_ref,
+                        "l1_terminal_id": candidate.l1_terminal_id,
+                        "surface": candidate.surface,
                         "score": candidate.local_score,
                         "l1": candidate.l1_evidence_milli,
                         "slot": candidate.slot_phase_milli,
                         "neighbor": candidate.neighbor_pressure,
                         "competition": candidate.competition_pressure,
+                        "explicit_competition": candidate.explicit_competition_pressure,
                         "features": candidate.feature_masks,
                     })
                 }).collect::<Vec<_>>(),
             }));
         }
-        if matches!(&readout.verdict, L2LocalVerdict::Winner { terminal_id } if *terminal_id != target)
+        if !target_retained && shard.coverage_failure_examples.len() < 32 {
+            shard.coverage_failure_examples.push(serde_json::json!({
+                "lemma": scene.lemma,
+                "expected": scene.surface,
+                "feature_mask": scene.feature_mask,
+                "context": scene.context,
+                "seed_terminals": seed_terminals,
+                "verdict": format!("{:?}", readout.verdict),
+                "context_mode_id": readout.context_mode_id,
+                "candidates": readout.candidates.iter().take(16).map(|candidate| {
+                    serde_json::json!({
+                        "form_ref": candidate.form_ref,
+                        "l1_terminal_id": candidate.l1_terminal_id,
+                        "surface": candidate.surface,
+                        "score": candidate.local_score,
+                        "l1": candidate.l1_evidence_milli,
+                        "slot": candidate.slot_phase_milli,
+                        "neighbor": candidate.neighbor_pressure,
+                        "competition": candidate.competition_pressure,
+                        "explicit_competition": candidate.explicit_competition_pressure,
+                        "features": candidate.feature_masks,
+                        "lemmas": candidate.lemma_ids,
+                    })
+                }).collect::<Vec<_>>(),
+            }));
+        }
+        if matches!(&readout.verdict, L2LocalVerdict::Winner { form_ref } if *form_ref != target)
             && shard.false_authority_examples.len() < 32
         {
             shard.false_authority_examples.push(serde_json::json!({
@@ -385,10 +442,15 @@ fn evaluate_morphology_scenes(
                 "verdict": format!("{:?}", readout.verdict),
                 "candidates": readout.candidates.iter().take(16).map(|candidate| {
                     serde_json::json!({
-                        "terminal_id": candidate.terminal_id,
-                        "surface": surface_by_terminal.get(&candidate.terminal_id),
+                        "form_ref": candidate.form_ref,
+                        "l1_terminal_id": candidate.l1_terminal_id,
+                        "surface": candidate.surface,
                         "score": candidate.local_score,
+                        "l1": candidate.l1_evidence_milli,
                         "slot": candidate.slot_phase_milli,
+                        "neighbor": candidate.neighbor_pressure,
+                        "competition": candidate.competition_pressure,
+                        "explicit_competition": candidate.explicit_competition_pressure,
                         "features": candidate.feature_masks,
                         "lemmas": candidate.lemma_ids,
                     })
@@ -402,13 +464,13 @@ fn evaluate_morphology_scenes(
 fn score_verdict(score: &mut SlotScore, verdict: &L2LocalVerdict, target: u32) {
     score.total += 1;
     match verdict {
-        L2LocalVerdict::Winner { terminal_id } if *terminal_id == target => {
+        L2LocalVerdict::Winner { form_ref } if *form_ref == target => {
             score.winner_correct += 1;
         }
         L2LocalVerdict::Winner { .. } => {
             score.false_authority += 1;
         }
-        L2LocalVerdict::Tied { terminal_ids } if terminal_ids.contains(&target) => {
+        L2LocalVerdict::Tied { form_refs } if form_refs.contains(&target) => {
             score.tied_contains += 1;
         }
         L2LocalVerdict::Tied { .. } => {}

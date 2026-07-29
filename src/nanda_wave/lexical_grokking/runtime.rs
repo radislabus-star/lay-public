@@ -6,6 +6,7 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
+use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use crate::stable_hash::mix64_golden;
@@ -38,7 +39,7 @@ const MAX_BIRTH_POSTING_BUDGET: usize = 131_072;
 const SETTLING_ITERATIONS: u8 = 3;
 const MAX_ANCHOR_SEQUENCE: usize = 32;
 const MAX_EXACT_COLLISION_OPERATOR_CHARS: usize = 16;
-const REVERSE_CACHE_BYTES: usize = 16 * 1024 * 1024;
+const DEFAULT_REVERSE_CACHE_MIB: usize = 16;
 pub(super) const RECONSTRUCTION_MODE_DELETION: u8 = 1;
 pub(super) const RECONSTRUCTION_MODE_DELETION_TRANSPOSITION: u8 = 2;
 pub(super) const RECONSTRUCTION_MODE_SUFFIX_TRUNCATION: u8 = 4;
@@ -158,6 +159,74 @@ pub fn benchmark_package(
     }))
 }
 
+pub fn benchmark_diverse_restoration(
+    package_path: &Path,
+    surfaces_path: &Path,
+    limit: usize,
+) -> io::Result<serde_json::Value> {
+    let memory = LexicalGrokkingMemory::load(package_path).map_err(io::Error::other)?;
+    let surfaces = std::fs::read_to_string(surfaces_path)?
+        .lines()
+        .map(str::trim)
+        .filter(|surface| !surface.is_empty())
+        .map(str::to_string)
+        .collect::<Vec<_>>();
+    if surfaces.is_empty() {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "diverse restoration benchmark requires at least one surface",
+        ));
+    }
+    for surface in surfaces.iter().take(32) {
+        std::hint::black_box(memory.readout(surface, limit, ReadoutMode::Full));
+    }
+    let mut readout_elapsed_us = surfaces
+        .iter()
+        .map(|surface| {
+            let started = Instant::now();
+            std::hint::black_box(memory.readout(surface, limit, ReadoutMode::Full));
+            started.elapsed().as_micros() as u64
+        })
+        .collect::<Vec<_>>();
+    readout_elapsed_us.sort_unstable();
+    for surface in surfaces.iter().take(32) {
+        let mut candidates = memory.readout(surface, limit, ReadoutMode::Full);
+        std::hint::black_box(memory.classify_restoration(
+            surface,
+            &mut candidates,
+            memory.package.restoration_calibration,
+        ));
+    }
+    let mut elapsed_us = surfaces
+        .iter()
+        .map(|surface| {
+            let started = Instant::now();
+            let mut candidates = memory.readout(surface, limit, ReadoutMode::Full);
+            std::hint::black_box(memory.classify_restoration(
+                surface,
+                &mut candidates,
+                memory.package.restoration_calibration,
+            ));
+            started.elapsed().as_micros() as u64
+        })
+        .collect::<Vec<_>>();
+    elapsed_us.sort_unstable();
+    Ok(serde_json::json!({
+        "package": package_path,
+        "surfaces": surfaces_path,
+        "sample_count": surfaces.len(),
+        "limit": limit,
+        "readout_p50_us": percentile(&readout_elapsed_us, 50),
+        "readout_p90_us": percentile(&readout_elapsed_us, 90),
+        "readout_p99_us": percentile(&readout_elapsed_us, 99),
+        "readout_max_us": readout_elapsed_us.last().copied().unwrap_or_default(),
+        "p50_us": percentile(&elapsed_us, 50),
+        "p90_us": percentile(&elapsed_us, 90),
+        "p99_us": percentile(&elapsed_us, 99),
+        "max_us": elapsed_us.last().copied().unwrap_or_default(),
+    }))
+}
+
 fn benchmark_host_once(host: &L1RestorationHost, surface: &str, limit: usize) -> u64 {
     if host.overlays.is_empty() && host.tombstones.is_empty() {
         let candidates = host.memory.readout(surface, limit, ReadoutMode::Full);
@@ -269,6 +338,18 @@ fn birth_posting_budget() -> usize {
     })
 }
 
+fn reverse_cache_bytes() -> usize {
+    static BYTES: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
+    *BYTES.get_or_init(|| {
+        std::env::var("LAY_L11_V8_REVERSE_CACHE_MIB")
+            .ok()
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(DEFAULT_REVERSE_CACHE_MIB)
+            .min(128)
+            .saturating_mul(1024 * 1024)
+    })
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum ReadoutMode {
     Full,
@@ -356,6 +437,7 @@ struct PreparedReadout {
     surface_im: [i32; WAVE_DIMENSION],
     max_forward: u64,
     frontier: Vec<(u32, ForwardActivation)>,
+    frontier_reverse: Option<Vec<Arc<[WaveCoupling]>>>,
     geometry_reserve_ids: BTreeSet<u32>,
     reconstruction_only_ids: BTreeSet<u32>,
 }
@@ -574,33 +656,8 @@ impl LexicalGrokkingMemory {
         let Some(prepared) = self.prepare_readout(surface, limit) else {
             return vec![Vec::new(); modes.len()];
         };
-        let mut invariant_candidates = prepared
-            .frontier
-            .iter()
-            .copied()
-            .filter_map(|(terminal_id, activation)| {
-                self.settle_candidate(
-                    terminal_id,
-                    activation,
-                    prepared.max_forward,
-                    &prepared.observed,
-                    &prepared.surface_re,
-                    &prepared.surface_im,
-                    &prepared.character_sequence,
-                    prepared.observed_char_count,
-                    ReadoutMode::Full,
-                )
-            })
-            .map(|mut candidate| {
-                candidate.ambiguity_shell = prepared
-                    .geometry_reserve_ids
-                    .contains(&candidate.terminal_id);
-                candidate.reconstruction_only = prepared
-                    .reconstruction_only_ids
-                    .contains(&candidate.terminal_id);
-                candidate
-            })
-            .collect::<Vec<_>>();
+        let mut invariant_candidates =
+            self.settle_prepared_candidates(&prepared, ReadoutMode::Full);
         self.apply_restoration_geometry(surface, &mut invariant_candidates);
         modes
             .iter()
@@ -657,6 +714,12 @@ impl LexicalGrokkingMemory {
             .iter()
             .map(|(degree, _, _)| *degree)
             .sum::<usize>();
+        let birth_atom_ids = birth_atoms
+            .iter()
+            .map(|(_, atom_id, _)| *atom_id)
+            .collect::<Vec<_>>();
+        let birth_couplings = self.forward_coupling_views(&birth_atom_ids);
+        let prefetch_us = trace_started.elapsed().as_micros();
         let (surface_re, surface_im, mut frontier) = FORWARD_SCRATCH.with_borrow_mut(|scratch| {
             if scratch.activations.len() != self.package.terminal_count() as usize {
                 scratch.activations =
@@ -687,10 +750,10 @@ impl LexicalGrokkingMemory {
                     i32::from(atom.weight),
                 );
             }
-            for (_, atom_id, atom) in &birth_atoms {
+            for ((_, _, atom), couplings) in birth_atoms.iter().zip(&birth_couplings) {
                 let atom_weight = u64::from(atom.weight);
                 let keyboard_channel = is_keyboard_channel(atom.channel);
-                for coupling in self.forward_couplings(*atom_id).iter() {
+                for coupling in couplings.iter() {
                     let contribution = u64::from(coupling.strength)
                         * atom_weight
                         * u64::from(position_coherence(atom.position, coupling.position_mode));
@@ -831,10 +894,23 @@ impl LexicalGrokkingMemory {
                 .into_iter()
                 .filter(|(terminal_id, _)| retained.insert(*terminal_id)),
         );
-        for (terminal_id, activation) in &mut frontier {
-            *activation = self.activation_for_terminal(*terminal_id, &lexical_observed);
+        let mut frontier_reverse =
+            self.refresh_frontier_activations(&mut frontier, &lexical_observed);
+        let activation_us = trace_started.elapsed().as_micros();
+        if let Some(reverse) = frontier_reverse.take() {
+            let mut retained_frontier = Vec::with_capacity(frontier.len());
+            let mut retained_reverse = Vec::with_capacity(reverse.len());
+            for (candidate, relations) in frontier.into_iter().zip(reverse) {
+                if candidate.1.hits != 0 {
+                    retained_frontier.push(candidate);
+                    retained_reverse.push(relations);
+                }
+            }
+            frontier = retained_frontier;
+            frontier_reverse = Some(retained_reverse);
+        } else {
+            frontier.retain(|(_, activation)| activation.hits != 0);
         }
-        frontier.retain(|(_, activation)| activation.hits != 0);
         let max_forward = frontier
             .iter()
             .map(|(_, activation)| activation.mass)
@@ -843,14 +919,16 @@ impl LexicalGrokkingMemory {
             .max(1);
         if readout_trace_enabled() {
             eprintln!(
-                "l11_readout_trace resolve_us={resolve_us} forward_us={} operator_us={} \
-                 reconstruction_us={} geometry_us={} prepare_us={} touched={} retained={} \
+                "l11_readout_trace resolve_us={resolve_us} prefetch_us={} forward_us={} operator_us={} \
+                 reconstruction_us={} geometry_us={} activation_us={} prepare_us={} touched={} retained={} \
                  operator_reserve={} reconstruction_reserve={} geometry_reserve={} birth_atoms={} \
                  birth_postings={}",
-                forward_us.saturating_sub(resolve_us),
+                prefetch_us.saturating_sub(resolve_us),
+                forward_us.saturating_sub(prefetch_us),
                 operator_us.saturating_sub(forward_us),
                 reconstruction_us.saturating_sub(operator_us),
                 geometry_us.saturating_sub(reconstruction_us),
+                activation_us.saturating_sub(geometry_us),
                 trace_started.elapsed().as_micros(),
                 touched_count,
                 retained.len(),
@@ -869,6 +947,7 @@ impl LexicalGrokkingMemory {
             surface_im,
             max_forward,
             frontier,
+            frontier_reverse,
             geometry_reserve_ids,
             reconstruction_only_ids,
         })
@@ -966,33 +1045,7 @@ impl LexicalGrokkingMemory {
         mode: ReadoutMode,
         prepared: &PreparedReadout,
     ) -> Vec<GrokkingCandidate> {
-        let mut candidates = prepared
-            .frontier
-            .iter()
-            .copied()
-            .filter_map(|(terminal_id, activation)| {
-                self.settle_candidate(
-                    terminal_id,
-                    activation,
-                    prepared.max_forward,
-                    &prepared.observed,
-                    &prepared.surface_re,
-                    &prepared.surface_im,
-                    &prepared.character_sequence,
-                    prepared.observed_char_count,
-                    mode,
-                )
-            })
-            .map(|mut candidate| {
-                candidate.ambiguity_shell = prepared
-                    .geometry_reserve_ids
-                    .contains(&candidate.terminal_id);
-                candidate.reconstruction_only = prepared
-                    .reconstruction_only_ids
-                    .contains(&candidate.terminal_id);
-                candidate
-            })
-            .collect::<Vec<_>>();
+        let mut candidates = self.settle_prepared_candidates(prepared, mode);
         self.finalize_candidates(
             surface,
             limit,
@@ -1002,6 +1055,69 @@ impl LexicalGrokkingMemory {
             &mut candidates,
         );
         candidates
+    }
+
+    fn settle_prepared_candidates(
+        &self,
+        prepared: &PreparedReadout,
+        mode: ReadoutMode,
+    ) -> Vec<GrokkingCandidate> {
+        let settle = |(index, (terminal_id, activation)): (usize, &(u32, ForwardActivation))| {
+            let mut candidate = if let Some(reverse) = prepared
+                .frontier_reverse
+                .as_ref()
+                .and_then(|relations| relations.get(index))
+            {
+                self.settle_candidate_with_reverse(
+                    *terminal_id,
+                    *activation,
+                    prepared.max_forward,
+                    &prepared.observed,
+                    &prepared.surface_re,
+                    &prepared.surface_im,
+                    &prepared.character_sequence,
+                    prepared.observed_char_count,
+                    mode,
+                    reverse,
+                )
+            } else {
+                self.settle_candidate(
+                    *terminal_id,
+                    *activation,
+                    prepared.max_forward,
+                    &prepared.observed,
+                    &prepared.surface_re,
+                    &prepared.surface_im,
+                    &prepared.character_sequence,
+                    prepared.observed_char_count,
+                    mode,
+                )
+            }?;
+            candidate.ambiguity_shell = prepared
+                .geometry_reserve_ids
+                .contains(&candidate.terminal_id);
+            candidate.reconstruction_only = prepared
+                .reconstruction_only_ids
+                .contains(&candidate.terminal_id);
+            Some(candidate)
+        };
+        if matches!(self.relations, RelationStore::LazyV8(_)) {
+            v8::runtime_pool_install(|| {
+                prepared
+                    .frontier
+                    .par_iter()
+                    .enumerate()
+                    .filter_map(settle)
+                    .collect()
+            })
+        } else {
+            prepared
+                .frontier
+                .iter()
+                .enumerate()
+                .filter_map(settle)
+                .collect()
+        }
     }
 
     fn finalize_candidates(
@@ -1314,10 +1430,19 @@ impl LexicalGrokkingMemory {
         terminal_id: u32,
         observed: &BTreeMap<u32, ObservedAtom>,
     ) -> ForwardActivation {
+        let reverse = self.reverse_couplings(terminal_id);
+        self.activation_for_terminal_with_reverse(terminal_id, observed, &reverse)
+    }
+
+    fn activation_for_terminal_with_reverse(
+        &self,
+        terminal_id: u32,
+        observed: &BTreeMap<u32, ObservedAtom>,
+        reverse: &[WaveCoupling],
+    ) -> ForwardActivation {
         let Some(_) = self.package.centers.get(terminal_id as usize) else {
             return ForwardActivation::default();
         };
-        let reverse = self.reverse_couplings(terminal_id);
         let mut activation = ForwardActivation::default();
         for coupling in reverse.iter().filter(|coupling| coupling.flags == 0) {
             let Some(atom) = observed.get(&coupling.peer_id) else {
@@ -1781,8 +1906,36 @@ impl LexicalGrokkingMemory {
         observed_char_count: u8,
         mode: ReadoutMode,
     ) -> Option<GrokkingCandidate> {
-        let center = *self.package.centers.get(terminal_id as usize)?;
         let reverse = self.reverse_couplings(terminal_id);
+        self.settle_candidate_with_reverse(
+            terminal_id,
+            activation,
+            max_forward,
+            observed,
+            surface_re,
+            surface_im,
+            character_sequence,
+            observed_char_count,
+            mode,
+            &reverse,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn settle_candidate_with_reverse(
+        &self,
+        terminal_id: u32,
+        activation: ForwardActivation,
+        max_forward: u64,
+        observed: &BTreeMap<u32, ObservedAtom>,
+        surface_re: &[i32; WAVE_DIMENSION],
+        surface_im: &[i32; WAVE_DIMENSION],
+        character_sequence: &AnchorSequence,
+        observed_char_count: u8,
+        mode: ReadoutMode,
+        reverse: &[WaveCoupling],
+    ) -> Option<GrokkingCandidate> {
+        let center = *self.package.centers.get(terminal_id as usize)?;
         let expected_char_count = center.surface_len;
         let anchors_cover_surface =
             character_sequence.as_slice().len() == usize::from(observed_char_count);
@@ -1896,6 +2049,58 @@ impl LexicalGrokkingMemory {
         })
     }
 
+    fn forward_coupling_views(&self, atom_ids: &[u32]) -> Vec<CouplingView<'_>> {
+        match &self.relations {
+            RelationStore::Eager => atom_ids
+                .iter()
+                .map(|atom_id| self.forward_couplings(*atom_id))
+                .collect(),
+            RelationStore::LazyV8(artifact) => artifact
+                .postings(atom_ids)
+                .unwrap_or_else(|_| {
+                    atom_ids
+                        .iter()
+                        .map(|_| Arc::from(Vec::<WaveCoupling>::new()))
+                        .collect()
+                })
+                .into_iter()
+                .map(CouplingView::Shared)
+                .collect(),
+        }
+    }
+
+    fn refresh_frontier_activations(
+        &self,
+        frontier: &mut [(u32, ForwardActivation)],
+        observed: &BTreeMap<u32, ObservedAtom>,
+    ) -> Option<Vec<Arc<[WaveCoupling]>>> {
+        if matches!(self.relations, RelationStore::Eager) || frontier.len() < 2 {
+            for (terminal_id, activation) in frontier {
+                *activation = self.activation_for_terminal(*terminal_id, observed);
+            }
+            return None;
+        }
+        let refreshed = v8::runtime_pool_install(|| {
+            frontier
+                .par_iter()
+                .map(|(terminal_id, _)| {
+                    let reverse = self.reverse_couplings_shared(*terminal_id);
+                    let activation =
+                        self.activation_for_terminal_with_reverse(*terminal_id, observed, &reverse);
+                    (activation, reverse)
+                })
+                .collect::<Vec<_>>()
+        });
+        let mut reverse = Vec::with_capacity(refreshed.len());
+        for ((_, activation), (refreshed_activation, relations)) in
+            frontier.iter_mut().zip(refreshed)
+        {
+            *activation = refreshed_activation;
+            reverse.push(relations);
+        }
+        Some(reverse)
+    }
+
     fn forward_couplings(&self, atom_id: u32) -> CouplingView<'_> {
         match &self.relations {
             RelationStore::Eager => {
@@ -1959,9 +2164,16 @@ impl LexicalGrokkingMemory {
                     .unwrap_or_default(),
             );
         }
-        if let Ok(cache) = self.reverse_cache.lock() {
-            if let Some(relations) = cache.entries.get(&terminal_id) {
-                return CouplingView::Shared(Arc::clone(relations));
+        CouplingView::Shared(self.reverse_couplings_shared(terminal_id))
+    }
+
+    fn reverse_couplings_shared(&self, terminal_id: u32) -> Arc<[WaveCoupling]> {
+        let cache_budget = reverse_cache_bytes();
+        if cache_budget != 0 {
+            if let Ok(cache) = self.reverse_cache.lock() {
+                if let Some(relations) = cache.entries.get(&terminal_id) {
+                    return Arc::clone(relations);
+                }
             }
         }
         let relations: Arc<[WaveCoupling]> =
@@ -1971,9 +2183,12 @@ impl LexicalGrokkingMemory {
         let relation_bytes = relations
             .len()
             .saturating_mul(std::mem::size_of::<WaveCoupling>());
-        if relation_bytes <= REVERSE_CACHE_BYTES {
+        if relation_bytes <= cache_budget {
             if let Ok(mut cache) = self.reverse_cache.lock() {
-                while cache.bytes.saturating_add(relation_bytes) > REVERSE_CACHE_BYTES {
+                if let Some(existing) = cache.entries.get(&terminal_id) {
+                    return Arc::clone(existing);
+                }
+                while cache.bytes.saturating_add(relation_bytes) > cache_budget {
                     let Some(evicted_id) = cache.order.pop_front() else {
                         break;
                     };
@@ -1991,7 +2206,7 @@ impl LexicalGrokkingMemory {
                 cache.entries.insert(terminal_id, Arc::clone(&relations));
             }
         }
-        CouplingView::Shared(relations)
+        relations
     }
 
     fn apply_pairwise_interference(

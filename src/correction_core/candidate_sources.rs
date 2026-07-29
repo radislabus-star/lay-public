@@ -28,7 +28,14 @@ impl L2CandidateSource {
                 lattice.extend_source(deterministic_text_candidates(req));
             }
             Self::Nanda => {
-                let candidates = nanda_text_candidates(req, l2_peak_context);
+                let candidates = if req.nanda_candidate_route == CandidateReadoutRoute::L2FieldShadow
+                {
+                    let readout = crate::nanda_wave::l2_field::shadow_text_readout(req.text);
+                    lattice.set_l2_field_authority(readout.authority);
+                    readout.candidates
+                } else {
+                    nanda_text_candidates(req, l2_peak_context)
+                };
                 if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
                     eprintln!(
                         "candidate-lattice source=nanda count={} replacements={:?}",

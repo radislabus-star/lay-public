@@ -70,6 +70,31 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    if let Some(l2_package) = arg_path(&args, "--query-canonical-l2") {
+        let l1_package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let context = arg_string(&args, "--context")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--context is required"))?;
+        let seeds = arg_string(&args, "--seeds")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--seeds is required"))?
+            .split(',')
+            .map(str::trim)
+            .filter(|surface| !surface.is_empty())
+            .map(str::to_string)
+            .collect::<Vec<_>>();
+        let report = lay::nanda_wave::query_canonical_l2_package(
+            &l1_package,
+            &l2_package,
+            &context,
+            &seeds,
+            arg_usize(&args, "--limit").unwrap_or(16),
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if let Some(morphology_corpus) = arg_path(&args, "--compile-canonical-l2") {
         let l1_package = arg_path(&args, "--memory")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
@@ -97,7 +122,42 @@ fn main() -> io::Result<()> {
     if let Some(package) = arg_path(&args, "--build-l1-v8") {
         let output = arg_path(&args, "--out")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
-        let report = lay::nanda_wave::build_lazy_v8_package(&package, &output)?;
+        let atoms_per_shard = arg_usize(&args, "--atoms-per-shard").unwrap_or(32);
+        let report = lay::nanda_wave::build_lazy_v8_package_with_shard_size(
+            &package,
+            &output,
+            atoms_per_shard,
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(corpus) = arg_path(&args, "--export-l1-latency-surfaces") {
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report = lay::nanda_wave::export_l1_fixed_latency_surfaces(
+            &corpus,
+            &output,
+            arg_usize(&args, "--max-words").unwrap_or(0),
+            arg_usize(&args, "--heldout-per-class").unwrap_or(20_000),
+            arg_usize(&args, "--samples").unwrap_or(512),
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(package) = arg_path(&args, "--bench-l1-diverse-restoration") {
+        let surfaces = arg_path(&args, "--surfaces")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--surfaces is required"))?;
+        let report = lay::nanda_wave::benchmark_l1_diverse_restoration(
+            &package,
+            &surfaces,
+            arg_usize(&args, "--limit").unwrap_or(64),
+        )?;
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?

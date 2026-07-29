@@ -35,7 +35,7 @@ const USAGE_FEEDBACK_COUNTS_PATH: &str =
 const LEGACY_USAGE_PRIOR_PATH: &str = ".local/share/lay/learning_candidates.json";
 const USAGE_EVENTS_MAX_BYTES: u64 = 500 * 1024;
 const USAGE_EVENTS_FULL_REBUILD_MAX_BYTES: u64 = 8 * 1024 * 1024;
-const USAGE_COUNTS_SCHEMA_VERSION: u32 = 11;
+const USAGE_COUNTS_SCHEMA_VERSION: u32 = 14;
 const USAGE_COUNTS_MAX_WORDS: usize = 10_000;
 const USAGE_COUNTS_MAX_ACCEPTED_WORDS: usize = 5_000;
 const USAGE_COUNTS_MAX_CONTEXT_WORDS: usize = 12_000;
@@ -84,6 +84,24 @@ struct UsageEvent {
     layout_scope: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     outcome: Option<String>,
+}
+
+#[derive(Debug, Default, serde::Deserialize)]
+struct CorrectionFeedbackReceipt {
+    #[serde(default)]
+    kind: String,
+    #[serde(default)]
+    lay_kind: String,
+    #[serde(default)]
+    lay_from: String,
+    #[serde(default)]
+    lay_to: String,
+    #[serde(default)]
+    from: String,
+    #[serde(default)]
+    to: String,
+    #[serde(default)]
+    user_target: Option<String>,
 }
 
 impl UsageEvent {
@@ -836,6 +854,18 @@ fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
                 record_transition: true,
             },
         );
+        if matches!(event.kind, UsageEventKind::RejectedCandidate)
+            && projected.state_word != TRANSITION_ANY
+        {
+            add_state_authority_repel(
+                &mut counts.transition_repel,
+                &projected.transition_context,
+                projected.source,
+                projected.operation,
+                &projected.state_word,
+                projected.transition_weight,
+            );
+        }
         return;
     }
     if let Some(surface) = projected.surface {
@@ -1248,6 +1278,12 @@ pub fn compile_usage_feedback_snapshot(
     let text = std::fs::read_to_string(input)?;
     let mut counts = UsageCounts::default();
     add_usage_event_counts(&mut counts, &text);
+    let correction_events = correction_feedback_events_from_jsonl(&text);
+    for event in &correction_events {
+        add_usage_event_count(&mut counts, event);
+    }
+    let usage_event_count = usage_events_from_jsonl(&text).count();
+    let correction_receipt_count = correction_feedback_receipts_from_jsonl(&text).count();
     persist_usage_counts_snapshot_to_path(output, &counts, text.len() as u64)?;
     let hot = UsageHotState::from_counts(&counts);
     Ok(serde_json::json!({
@@ -1256,13 +1292,70 @@ pub fn compile_usage_feedback_snapshot(
         "input": input.display().to_string(),
         "output": output.display().to_string(),
         "source_bytes": text.len(),
-        "parsed_events": usage_events_from_jsonl(&text).count(),
+        "parsed_events": usage_event_count.saturating_add(correction_events.len()),
+        "usage_events": usage_event_count,
+        "correction_receipts": correction_receipt_count,
+        "correction_events": correction_events.len(),
         "accepted_transitions": counts.transition_attract.len(),
         "rejected_transitions": counts.transition_repel.len(),
         "surface_anti_states": counts.surface_repel.len(),
         "hot_logical_payload_bytes": hot.logical_payload_bytes(),
         "authority": "signed-memory evidence only; TransitionDecisionCore and verifier retain edit authority"
     }))
+}
+
+fn correction_feedback_events_from_jsonl(text: &str) -> Vec<UsageEvent> {
+    let mut events = Vec::new();
+    for receipt in correction_feedback_receipts_from_jsonl(text) {
+        let user_target = receipt.user_target.clone().or_else(|| {
+            crate::word_buffer::reconstruct_user_correction_target(
+                &receipt.lay_to,
+                &receipt.from,
+                &receipt.to,
+            )
+        });
+        let Some(user_target) = user_target else {
+            continue;
+        };
+        if receipt.lay_from.trim().is_empty()
+            || receipt.lay_to.trim().is_empty()
+            || user_target.trim().is_empty()
+        {
+            continue;
+        }
+        let operation = if receipt.lay_kind.trim().is_empty() {
+            "replacement"
+        } else {
+            receipt.lay_kind.as_str()
+        };
+        if user_target != receipt.lay_to {
+            events.extend(
+                TypingMemoryEvent::rejected_candidate(
+                    &receipt.lay_from,
+                    &receipt.lay_to,
+                    "user_correction",
+                    operation,
+                )
+                .iter()
+                .map(UsageEvent::from_typing_memory_event),
+            );
+        }
+        events.extend(
+            TypingMemoryEvent::accepted_fix(&receipt.lay_from, &user_target)
+                .iter()
+                .map(UsageEvent::from_typing_memory_event),
+        );
+    }
+    events
+}
+
+fn correction_feedback_receipts_from_jsonl(
+    text: &str,
+) -> impl Iterator<Item = CorrectionFeedbackReceipt> + '_ {
+    text.lines()
+        .filter(|line| !line.trim().is_empty())
+        .filter_map(|line| serde_json::from_str::<CorrectionFeedbackReceipt>(line).ok())
+        .filter(|receipt| receipt.kind == "user-correction")
 }
 
 fn compact_usage_counts_for_persist(counts: &UsageCounts) -> UsageCounts {
@@ -1383,6 +1476,25 @@ fn add_transition_counts(
     weight: u32,
 ) {
     for key in transition_record_keys(context, source, operation, state_word, word) {
+        *target.entry(key.clone()).or_default() = target
+            .get(&key)
+            .copied()
+            .unwrap_or_default()
+            .saturating_add(weight);
+    }
+}
+
+fn add_state_authority_repel(
+    target: &mut HashMap<String, u32>,
+    _context: &[String],
+    source: &str,
+    operation: &str,
+    state_word: &str,
+    weight: u32,
+) {
+    for key in
+        transition_lookup_keys_from_context_keys(&[], source, operation, state_word, TRANSITION_ANY)
+    {
         *target.entry(key.clone()).or_default() = target
             .get(&key)
             .copied()
@@ -1823,13 +1935,14 @@ mod tests {
 "#,
         );
         let context = ["мы"].map(String::from);
+        let state = crate::transition_relation::signed_memory_state_id("мы отвравим");
         let signal = usage
             .hot_readout(
                 &context,
                 "SemanticWordCell32",
                 "replacement",
-                "отвравим",
-                "отравим",
+                &state,
+                "мы отравим",
             )
             .transition;
 
@@ -1842,12 +1955,17 @@ mod tests {
     fn automatic_apply_is_not_positive_feedback() {
         let usage = snapshot_from_usage_events_for_tests(
             r#"{"ts":1,"kind":"accepted_fix","word":"lfdfq","from":"давай","to":"lfdfq","source":"autocorrect","operation":"replacement"}
+{"ts":2,"kind":"accepted_fix","word":"vpn","from":"МЗТ","to":"VPN","source":"layout","operation":"replacement"}
 "#,
         );
         let signal = usage.hot_readout(&[], "autocorrect", "replacement", "давай", "lfdfq");
+        let layout_state = crate::transition_relation::signed_memory_state_id("МЗТ");
+        let layout = usage.hot_readout(&[], "layout", "replacement", &layout_state, "VPN");
 
         assert_eq!(signal.accepted_count, 0);
         assert_eq!(signal.transition.attraction, 0.0);
+        assert_eq!(layout.accepted_count, 0);
+        assert_eq!(layout.transition.attraction, 0.0);
     }
 
     #[test]
@@ -2002,7 +2120,7 @@ mod tests {
                 &context,
                 "L2LiveCandidateGate32",
                 "completion",
-                &crate::transition_relation::transition_state_id("ну исходник"),
+                &crate::transition_relation::signed_memory_state_id("ну исходник"),
                 "даша",
             )
             .transition;
@@ -2033,21 +2151,22 @@ mod tests {
 "#,
         );
         let context = ["можно".to_string()];
+        let state = crate::transition_relation::signed_memory_state_id("можно проврить");
 
         let good = usage.hot_readout(
             &context,
             "autocorrect",
             "replacement",
-            "проврить",
-            "проверить",
+            &state,
+            "можно проверить",
         );
         let prepared = usage.prepare_hot_context(&context);
         let prepared_good = usage.hot_readout_prepared(
             &prepared,
             "autocorrect",
             "replacement",
-            "проврить",
-            "проверить",
+            &state,
+            "можно проверить",
         );
         let bad = usage.hot_readout(&context, "autocorrect", "auto_undo", "*", "проврить");
 
@@ -2067,8 +2186,8 @@ mod tests {
 "#,
         );
 
-        let rejected_state = crate::transition_relation::transition_state_id("nfr");
-        let fallback_state = crate::transition_relation::transition_state_id("новый");
+        let rejected_state = crate::transition_relation::signed_memory_state_id("nfr");
+        let fallback_state = crate::transition_relation::signed_memory_state_id("новый");
         let rejected = usage.hot_readout(&[], "layout", "replacement", &rejected_state, "так");
         let fallback = usage.hot_readout(&[], "layout", "replacement", &fallback_state, "так");
 
@@ -2085,15 +2204,16 @@ mod tests {
 {"ts":2,"kind":"rejected_candidate","word":"проверь","context":["gfzvnm"],"from":"gfzvnm ghjdthm","to":"gfzvnm проверь","source":"typing-assist","operation":"mixed_layout"}
 "#,
         );
-        let state = crate::transition_relation::transition_state_id("ghjdthm");
+        let state = crate::transition_relation::signed_memory_state_id("ghjdthm");
+        let contextual_state = crate::transition_relation::signed_memory_state_id("gfzvnm ghjdthm");
 
         let empty = usage.hot_readout(&[], "layout", "layout", &state, "проверь");
         let contextual = usage.hot_readout(
             &["gfzvnm".to_string()],
             "layout",
             "mixed_layout",
-            &state,
-            "проверь",
+            &contextual_state,
+            "gfzvnm проверь",
         );
 
         assert!(empty.transition.attraction > empty.transition.repulsion);
@@ -2142,13 +2262,128 @@ mod tests {
         let report = compile_usage_feedback_snapshot(&input, &output).unwrap();
         let counts = load_persisted_usage_counts(&output, None).unwrap();
         let usage = usage_snapshot_from_counts(counts);
-        let state = crate::transition_relation::transition_state_id("nfr");
+        let state = crate::transition_relation::signed_memory_state_id("nfr");
         let readout = usage.hot_readout(&[], "layout", "replacement", &state, "так");
 
         assert_eq!(report["parsed_events"], 1);
         assert_eq!(report["surface_anti_states"], 1);
         assert!(readout.transition.state_specific);
         assert!(readout.transition.repulsion > readout.transition.attraction);
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn compiled_feedback_snapshot_accepts_auto_undo_correction_receipt() {
+        let dir = std::env::temp_dir().join(format!(
+            "lay-l4-correction-feedback-snapshot-{}",
+            std::process::id()
+        ));
+        let input = dir.join("corrections.jsonl");
+        let output = dir.join("feedback-counts.json");
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(
+            &input,
+            r#"{"ts":1,"kind":"user-correction","lay_kind":"typing-assist","lay_from":"проверрка ","lay_to":"проверка ","from":"проверка ","to":"проверрка ","user_target":"проверрка "}
+"#,
+        )
+        .unwrap();
+
+        let report = compile_usage_feedback_snapshot(&input, &output).unwrap();
+        let counts = load_persisted_usage_counts(&output, None).unwrap();
+        let usage = usage_snapshot_from_counts(counts);
+        let state = crate::transition_relation::signed_memory_state_id("проверрка");
+        let readout =
+            usage.hot_readout(&[], "user_correction", "typing-assist", &state, "проверка");
+        let unseen = usage.hot_readout(
+            &[],
+            "new_runtime_source",
+            "new_operator",
+            &state,
+            "проверит",
+        );
+
+        assert_eq!(report["usage_events"], 0);
+        assert_eq!(report["correction_receipts"], 1);
+        assert_eq!(report["correction_events"], 2);
+        assert!(readout.transition.state_specific);
+        assert!(readout.transition.repulsion > readout.transition.attraction);
+        assert!(unseen.transition.state_specific);
+        assert!(unseen.transition.repulsion > unseen.transition.attraction);
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn corrected_state_repels_unseen_future_candidate_but_accepts_user_target() {
+        let dir = std::env::temp_dir().join(format!(
+            "lay-l4-correction-state-barrier-{}",
+            std::process::id()
+        ));
+        let input = dir.join("corrections.jsonl");
+        let output = dir.join("feedback-counts.json");
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(
+            &input,
+            r#"{"ts":1,"kind":"user-correction","lay_kind":"typing-assist","lay_from":"cltkftv ","lay_to":"сделкаем ","from":"ем ","to":"м ","user_target":"сделкам "}
+"#,
+        )
+        .unwrap();
+
+        compile_usage_feedback_snapshot(&input, &output).unwrap();
+        let counts = load_persisted_usage_counts(&output, None).unwrap();
+        let usage = usage_snapshot_from_counts(counts);
+        let state = crate::transition_relation::signed_memory_state_id("cltkftv");
+        let unseen = usage.hot_readout(
+            &[],
+            "future_deterministic_source",
+            "future_operator",
+            &state,
+            "седлаем",
+        );
+        let accepted = usage.hot_readout(
+            &[],
+            "future_deterministic_source",
+            "future_operator",
+            &state,
+            "сделкам",
+        );
+
+        assert!(unseen.transition.state_specific);
+        assert!(unseen.transition.repulsion > unseen.transition.attraction);
+        assert!(accepted.transition.state_specific);
+        assert!(accepted.transition.attraction > accepted.transition.repulsion);
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn corrected_multiword_state_repels_candidate_with_a_different_context_split() {
+        let dir = std::env::temp_dir().join(format!(
+            "lay-l4-correction-multiword-state-{}",
+            std::process::id()
+        ));
+        let input = dir.join("corrections.jsonl");
+        let output = dir.join("feedback-counts.json");
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(
+            &input,
+            r#"{"ts":1,"kind":"user-correction","lay_kind":"typing-assist","lay_from":"Ye cltkf","lay_to":"Ye сделай","from":"сделай","to":"сделНу","user_target":"Ye сделНу"}
+"#,
+        )
+        .unwrap();
+
+        compile_usage_feedback_snapshot(&input, &output).unwrap();
+        let counts = load_persisted_usage_counts(&output, None).unwrap();
+        let usage = usage_snapshot_from_counts(counts);
+        let state = crate::transition_relation::signed_memory_state_id("Ye cltkf");
+        let unseen = usage.hot_readout(
+            &[],
+            "future_layout_source",
+            "future_layout_operator",
+            &state,
+            "Ну сделай",
+        );
+
+        assert!(unseen.transition.state_specific);
+        assert!(unseen.transition.repulsion > unseen.transition.attraction);
         let _ = std::fs::remove_dir_all(dir);
     }
 

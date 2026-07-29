@@ -137,6 +137,7 @@ fn service_worker_count() -> usize {
             thread::available_parallelism()
                 .map(usize::from)
                 .unwrap_or(1)
+                .min(4)
         })
         .clamp(1, 32)
 }

@@ -1,0 +1,153 @@
+{
+  "receipt": "L1_L11_V8_SHARD1_BATCH_RUNTIME_2026-07-29",
+  "date": "2026-07-29",
+  "scope": "full RU535410+EN300000 V8 working gate and bounded shadow service runtime",
+  "artifact": {
+    "path": "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard-sweep-2026-07-29/shard-1/package.v8.bin",
+    "sha256": "03e320857cafc7d661a1893f728f8777c5e0b755ee01214502548779fbee6494",
+    "bytes": 198233790,
+    "mib": 189.05,
+    "word_centers": 835410,
+    "atoms": 218387,
+    "forward_relations": 108156559,
+    "reverse_relations": 86120980,
+    "relations_removed": 0,
+    "atoms_per_shard": 1,
+    "posting_shards": 218387
+  },
+  "runtime_configuration": {
+    "runtime_workers": 14,
+    "service_workers": 4,
+    "posting_cache_mib": 32,
+    "shard_cache_mib": 0,
+    "reverse_cache_mib": 16,
+    "forward_loading": "one cache lookup batch, parallel miss decode, one admission batch",
+    "reverse_loading": "fused reverse reconstruction and frontier activation",
+    "mmap_posting_pages": "reclaimable Linux file-backed pages without per-posting MADV_DONTNEED"
+  },
+  "fixed_proof": {
+    "cases": 260000,
+    "cases_per_class": 20000,
+    "workers": 20,
+    "wall_seconds": 404.69,
+    "proof_seconds": 340.722,
+    "heldout_evaluation_seconds": 321.913,
+    "average_cpu_percent": 1323,
+    "peak_rss_kib": 1136644,
+    "swap_bytes": 0,
+    "clean_preservation_percent": 100.0,
+    "false_authority": 0,
+    "false_singleton": 0,
+    "heldout_top1_percent": 86.58692307692307,
+    "heldout_top8_percent": 96.49423076923077,
+    "heldout_top64_percent": 99.9223076923077,
+    "classes": {
+      "adjacent_transposition": {
+        "unique_top1_percent": 99.96406970477274,
+        "lattice_coverage_percent": 99.995
+      },
+      "double_substitution": {
+        "unique_top1_percent": 97.85171600733561,
+        "lattice_coverage_percent": 100.0
+      },
+      "extra_letter": {
+        "unique_top1_percent": 98.88710595786532,
+        "lattice_coverage_percent": 100.0
+      },
+      "layout_projection": {
+        "unique_top1_percent": 98.30587989991659,
+        "lattice_coverage_percent": 99.905
+      },
+      "letter_substitution": {
+        "unique_top1_percent": 99.95624350489526,
+        "lattice_coverage_percent": 99.995
+      },
+      "missing_letter": {
+        "unique_top1_percent": 99.26212227687984,
+        "lattice_coverage_percent": 99.85
+      },
+      "non_adjacent_transposition": {
+        "unique_top1_percent": 97.19504240052186,
+        "lattice_coverage_percent": 100.0
+      },
+      "omission_transposition": {
+        "unique_top1_percent": 97.03181152668708,
+        "lattice_coverage_percent": 99.55
+      },
+      "prefix_truncation": {
+        "unique_top1_percent": 98.31846530354464,
+        "lattice_coverage_percent": 99.99
+      },
+      "punctuation_suffix": {
+        "unique_top1_percent": 100.0,
+        "lattice_coverage_percent": 100.0
+      },
+      "repeated_fragment": {
+        "unique_top1_percent": 98.8128456191974,
+        "lattice_coverage_percent": 100.0
+      },
+      "sparse_multi_omission": {
+        "unique_top1_percent": 96.62777461582242,
+        "lattice_coverage_percent": 99.705
+      },
+      "suffix_truncation": {
+        "unique_top1_percent": 99.0578734858681,
+        "lattice_coverage_percent": 100.0
+      }
+    }
+  },
+  "latency": {
+    "cold_load_ms": 622,
+    "readout_p50_us": 3077,
+    "readout_p99_us": 4547,
+    "readout_max_us": 4986,
+    "readout_plus_restoration_p50_us": 3369,
+    "readout_plus_restoration_p99_us": 6265,
+    "readout_plus_restoration_max_us": 7624
+  },
+  "service": {
+    "cold_ready_rss_kib": 125932,
+    "steady_requests": 800,
+    "steady_failures": 0,
+    "steady_elapsed_ms": 825,
+    "steady_throughput_requests_per_second": 969,
+    "steady_rss_kib": 214484,
+    "reload_concurrent_requests": 4000,
+    "reload_concurrent_failures": 0,
+    "reload_seconds": 0.65,
+    "post_reload_rss_kib": 211532
+  },
+  "rejected_runtime_experiments": [
+    "fill-only posting and reverse caches: p99 regressed to 8.4-14.4 ms",
+    "CPU-pinned runtime workers: p99 regressed to 10-11 ms",
+    "separate batch reverse decode and activation: readout median p99 regressed to 6.606 ms"
+  ],
+  "gates": {
+    "package_le_195_mib": "PASS",
+    "cold_load_lt_1_second": "PASS",
+    "service_steady_rss_150_to_350_mib": "PASS",
+    "readout_hot_p99_le_5_ms": "PASS_4_547_MS",
+    "readout_plus_restoration_p99_le_5_ms": "WATCH_6_265_MS",
+    "all_forward_relations_retained": "PASS",
+    "fixed_unique_top1_gt_95_each_class": "PASS_13_OF_13",
+    "fixed_lattice_coverage_ge_99_each_class": "PASS_13_OF_13",
+    "clean_preservation_ge_99_9": "PASS",
+    "false_certainty_zero": "PASS",
+    "concurrent_reload": "PASS"
+  },
+  "not_tested": [
+    "live daemon or IME model authority",
+    "fixed 13 x 20000 proof with a real admitted delta",
+    "cross-package pairwise phase interference",
+    "delta compaction into a replacement V8 base"
+  ],
+  "runtime_authority_changed": false,
+  "verdict": "PASS_SHADOW_RUNTIME_MODEL_AUTHORITY_WATCH",
+  "evidence": [
+    "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard-sweep-2026-07-29/shard-1/build-report.json",
+    "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard1-final-2026-07-29/proof-full-batch/report.json",
+    "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard1-final-2026-07-29/proof-full-batch/run.log",
+    "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard1-final-2026-07-29/proof-full-batch/time.txt",
+    "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard1-final-2026-07-29/batch-cache/"
+  ]
+}

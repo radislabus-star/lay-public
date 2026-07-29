@@ -2903,3 +2903,125 @@ exact damage episodes stored    0
 
 No daemon, IME or `AuthorizedEdit` route may load this model until the shadow
 gate passes. L1 proof cannot use L2, L3, L4, Bayes or a hidden target label.
+
+### Canonical V8 shard-1 shadow runtime, 2026-07-29
+
+The shard-32 package above remains valid historical evidence. A second runtime
+experiment changed only the lossless V8 posting representation and readout
+implementation. The learned field, terminal IDs, couplings, calibration and
+fixed heldout set did not change.
+
+Canonical package and runtime parameters:
+
+```text
+WordCenter                               835,410
+AtomId                                   218,387
+forward relations                       108,156,559, retained losslessly
+reverse relations                        86,120,980
+atoms per compressed shard                        1
+compressed posting shards                  218,387
+package bytes                           198,233,790 = 189.05 MiB
+package SHA-256                         03e320857cafc7d661a1893f728f8777c5e0b755ee01214502548779fbee6494
+
+runtime workers                                  14 maximum
+service request workers                           4 default
+posting cache                                    32 MiB
+decoded shard cache                               0 MiB
+reverse cache                                    16 MiB
+```
+
+The runtime executes one posting-cache lookup batch, decodes only misses in the
+persistent Rayon pool, and performs one deterministic admission batch. Reverse
+reconstruction and exact frontier activation remain fused in one parallel
+stage. Splitting those two operations was measured and rejected.
+
+#### Fixed proof
+
+```text
+corpus                                   RU 535,410 + EN 300,000
+fixed heldout                            13 x 20,000 = 260,000
+proof workers                            20
+wall                                     6m 44.69s
+average CPU                              1323%
+peak proof RSS                           1,136,644 KiB
+swap                                     0
+clean preservation                       100.000%
+false authority                          0
+false singleton                          0
+working unique top-1 gate                PASS 13/13
+lattice >=99% gate                       PASS 13/13
+```
+
+| Damage class | Unique top-1 | Lattice |
+|---|---:|---:|
+| adjacent transposition | 99.964% | 99.995% |
+| double substitution | 97.852% | 100.000% |
+| extra letter | 98.887% | 100.000% |
+| layout projection | 98.306% | 99.905% |
+| letter substitution | 99.956% | 99.995% |
+| missing letter | 99.262% | 99.850% |
+| non-adjacent transposition | 97.195% | 100.000% |
+| omission + transposition | 97.032% | 99.550% |
+| prefix truncation | 98.318% | 99.990% |
+| punctuation suffix | 100.000% | 100.000% |
+| repeated fragment | 98.813% | 100.000% |
+| sparse multi-omission | 96.628% | 99.705% |
+| suffix truncation | 99.058% | 100.000% |
+
+Latency from that same full proof:
+
+```text
+cold load                                622 ms
+readout p50 / p99 / max                  3.077 / 4.547 / 4.986 ms
+readout gate <=5 ms                      PASS
+readout + restoration p50 / p99 / max    3.369 / 6.265 / 7.624 ms
+restoration authority                    WATCH
+```
+
+The distinction is mandatory. The bounded L1.1 lattice/readout passes its live
+shadow runtime gate. The authority classifier still abstains on most cases and
+its complete restoration path exceeds 5 ms at p99. Therefore the V8 package may
+replace the heavy V7 package as the shadow lattice source, but it may not become
+model authority.
+
+#### Shadow service
+
+The service used four external request workers because each worker owns a dense
+scratch array over all terminals. Twenty external workers allocated about
+`20 x 17 MiB` of scratch and raised RSS to about `515 MiB`. Four workers share
+the 14-thread internal runtime pool and produced:
+
+```text
+cold-ready RSS                           125,932 KiB
+800 concurrent restore requests          800 success, 0 errors
+wall                                     825 ms
+throughput                               about 969 requests/s
+steady RSS                               214,484 KiB
+
+reload with concurrent requests           4,000 success, 0 errors
+reload wall                               0.65s
+post-reload RSS                           211,532 KiB
+```
+
+Measured rejected variants:
+
+```text
+fill-only caches                         p99 8.4-14.4 ms; rejected
+CPU-pinned runtime workers               p99 10-11 ms; rejected
+separate reverse decode/activation       median readout p99 6.606 ms; rejected
+```
+
+Not tested by this experiment:
+
+```text
+live IME model authority
+full proof with an admitted append-only delta
+cross-package pairwise interference
+delta compaction into a replacement V8 base
+```
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_V8_SHARD1_BATCH_RUNTIME_2026-07-29.json
+```

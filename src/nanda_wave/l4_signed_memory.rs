@@ -211,13 +211,14 @@ mod tests {
 "#,
         );
         let context = ["мы"].map(String::from);
+        let state = crate::transition_relation::signed_memory_state_id("мы отвравим");
 
         let bad = l4_signed_memory_signal(L4SignedMemoryInput {
             context: &context,
             source: "autocorrect",
             operation: "replacement",
-            state_word: "отвравим",
-            candidate_text: "отвравим",
+            state_word: &state,
+            candidate_text: "мы отвравим",
             usage: &usage,
             surface: None,
         });
@@ -225,8 +226,8 @@ mod tests {
             context: &context,
             source: "autocorrect",
             operation: "replacement",
-            state_word: "отвравим",
-            candidate_text: "отравим",
+            state_word: &state,
+            candidate_text: "мы отравим",
             usage: &usage,
             surface: None,
         });
@@ -242,7 +243,7 @@ mod tests {
             r#"{"ts":1,"kind":"rejected_candidate","word":"нас","from":"yfc","to":"нас","source":"layout","operation":"replacement"}
 "#,
         );
-        let state = crate::transition_relation::transition_state_id("yfc");
+        let state = crate::transition_relation::signed_memory_state_id("yfc");
         let signal = l4_signed_memory_signal(L4SignedMemoryInput {
             context: &[],
             source: "layout",
@@ -264,7 +265,7 @@ mod tests {
             r#"{"ts":1,"kind":"rejected_candidate","word":"нас","from":"yfc","to":"нас","source":"layout","operation":"replacement","operator":"layout_projection:en_to_ru:current_token","layout_direction":"en_to_ru","layout_scope":"current_token"}
 "#,
         );
-        let state = crate::transition_relation::transition_state_id("yfc");
+        let state = crate::transition_relation::signed_memory_state_id("yfc");
         let signal = l4_signed_memory_signal(L4SignedMemoryInput {
             context: &[],
             source: "layout",
@@ -289,13 +290,15 @@ mod tests {
             "{{\"ts\":1,\"kind\":\"rejected_candidate\",\"word\":\"проврить\",\"context\":[\"можно\"],\"from\":\"можно проверить\",\"to\":\"можно проврить\",\"source\":\"autocorrect\",\"operation\":\"replacement\",\"surface\":\"{surface}\"}}\n"
         ));
         let context = ["можно".to_string()];
+        let covered_state = crate::transition_relation::signed_memory_state_id("можно проврить");
+        let repelled_state = crate::transition_relation::signed_memory_state_id("можно проверить");
 
         let covered = l4_signed_memory_signal(L4SignedMemoryInput {
             context: &context,
             source: "autocorrect",
             operation: "replacement",
-            state_word: "проврить",
-            candidate_text: "проверить",
+            state_word: &covered_state,
+            candidate_text: "можно проверить",
             usage: &covered_usage,
             surface: Some(surface),
         });
@@ -303,8 +306,8 @@ mod tests {
             context: &context,
             source: "autocorrect",
             operation: "replacement",
-            state_word: "проверить",
-            candidate_text: "проврить",
+            state_word: &repelled_state,
+            candidate_text: "можно проврить",
             usage: &repelled_usage,
             surface: Some(surface),
         });
@@ -314,12 +317,12 @@ mod tests {
     }
 
     #[test]
-    fn signed_memory_addresses_complete_multiword_transition() {
+    fn signed_memory_addresses_multiword_transition_and_blocks_unseen_alternative() {
         let usage = usage_from_events(
             r#"{"ts":1,"kind":"rejected_candidate","word":"слов","from":"мыслов","to":"мы слов","source":"typing-assist","operation":"boundary"}
 "#,
         );
-        let state = crate::transition_relation::transition_state_id("мыслов");
+        let state = crate::transition_relation::signed_memory_state_id("мыслов");
 
         let split = l4_signed_memory_signal(L4SignedMemoryInput {
             context: &[],
@@ -343,6 +346,7 @@ mod tests {
         assert!(split.transition_state_specific);
         assert!(split.transition_repulsion > split.transition_attraction);
         assert_eq!(split.reason, L4SignedMemoryReason::TransitionRepels);
-        assert_eq!(unrelated_tail.transition_repel_count, 0);
+        assert!(unrelated_tail.transition_state_specific);
+        assert!(unrelated_tail.transition_repulsion > unrelated_tail.transition_attraction);
     }
 }

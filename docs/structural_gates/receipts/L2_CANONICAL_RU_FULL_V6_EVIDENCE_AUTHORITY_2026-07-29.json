@@ -1,0 +1,115 @@
+{
+  "receipt": "L2_CANONICAL_RU_FULL_V6_EVIDENCE_AUTHORITY_2026-07-29",
+  "date": "2026-07-29",
+  "scope": "standalone RU L2 V6 package and fixed heldout proof over the L1.1-resolvable domain",
+  "artifact": {
+    "path": "/home/e/build/lay-l1-shadow/artifacts/l2-v6-evidence-authority-2026-07-29/LAY-L2-RU-FULL-v6.bin",
+    "sha256": "b9b0d43c17dfd55562a42d325ff529d5d070c571dd1ca046ca5135f8b7f0093d",
+    "bytes": 96594655,
+    "mib": 92.12,
+    "source_bindings": 3255785,
+    "source_unique_surfaces": 1875032,
+    "source_lemmas": 93672,
+    "admitted_lemma_centers": 76500,
+    "unseeded_lemmas": 17172,
+    "admitted_forms": 1410190,
+    "l1_bound_forms": 500085,
+    "l2_materialized_forms": 910105,
+    "morph_bindings": 2405261,
+    "context_modes": 123,
+    "slot_centers": 225,
+    "neighbor_couplings": 11847,
+    "competition_edges": 40491,
+    "decoder_bytes": 31824107
+  },
+  "compile": {
+    "workers": 20,
+    "wall_seconds": 19.09,
+    "average_cpu_percent": 351,
+    "peak_rss_kib": 3511952,
+    "swap_bytes": 0
+  },
+  "fixed_proof": {
+    "heldout_available": 2501613,
+    "evaluated": 1847790,
+    "evaluated_percent": 73.86394298398673,
+    "unresolved": 653823,
+    "unresolved_percent": 26.136057016013268,
+    "unresolved_per_pos": {
+      "adjective": 550899,
+      "verb": 102924
+    },
+    "winner_correct": 858540,
+    "winner_top1_percent": 46.463072102349294,
+    "tied_contains": 989196,
+    "abstain": 51,
+    "target_coverage_percent": 99.99707758998588,
+    "false_authority": 0,
+    "per_pos": {
+      "noun": {
+        "total": 554148,
+        "target_coverage_percent": 100.0,
+        "false_authority": 0
+      },
+      "adjective": {
+        "total": 1041226,
+        "target_coverage_percent": 100.0,
+        "false_authority": 0
+      },
+      "verb": {
+        "total": 252370,
+        "target_coverage_percent": 99.97860284502913,
+        "false_authority": 0
+      },
+      "pronoun": {
+        "total": 46,
+        "target_coverage_percent": 100.0,
+        "false_authority": 0
+      }
+    },
+    "near_neighbor_total": 20,
+    "near_neighbor_top1_percent": 100.0,
+    "near_neighbor_false_authority": 0,
+    "workers": 20,
+    "wall_seconds": 16.31,
+    "average_cpu_percent": 431,
+    "peak_rss_kib": 3785392,
+    "swap_bytes": 0,
+    "cold_load_us": 347807,
+    "hot_p50_us": 20,
+    "hot_p99_us": 92
+  },
+  "evidence_contract": {
+    "word_specific_rules": 0,
+    "ordinary_competition_scope": "within lemma",
+    "cross_lemma_authority": "explicit near-neighbor evidence only",
+    "global_slot_scope": "morphology slot, not lemma identity",
+    "underdetermined_finite_verbs": "tie same-lemma person-number family across tense or mood"
+  },
+  "rejected_experiments": [
+    "seed-count readout majority blocked legitimate context-driven lower-support lemma transitions",
+    "global slot-only tie collapsed winner top-1 to 0.339054 percent",
+    "ordinary competition as cross-lemma authority produced 25 false-authority winners"
+  ],
+  "gates": {
+    "resolvable_per_pos_target_coverage_ge_99": "PASS",
+    "resolvable_false_authority_zero": "PASS",
+    "near_neighbor_top1_100": "PASS",
+    "package_and_latency": "PASS",
+    "all_source_lemmas_reachable": "WATCH_17172_UNSEEDED_LEMMAS",
+    "live_ime_daemon_compare": "NOT_TESTED"
+  },
+  "not_tested": [
+    "live IME or daemon authority with the V6 package",
+    "runtime behavior for source lemmas without any L1.1 seed",
+    "L3 and verifier compare after a V6 package install"
+  ],
+  "runtime_authority_changed": false,
+  "verdict": "PASS_RESOLVABLE_DOMAIN_SHADOW_CORPUS_BOUNDARY_WATCH",
+  "evidence": [
+    "/home/e/build/lay-l1-shadow/artifacts/l2-v6-evidence-authority-2026-07-29/compile.json",
+    "/home/e/build/lay-l1-shadow/artifacts/l2-v6-evidence-authority-2026-07-29/compile.time",
+    "/home/e/build/lay-l1-shadow/artifacts/l2-v6-evidence-authority-2026-07-29/proof-final-zero-authority.json",
+    "/home/e/build/lay-l1-shadow/artifacts/l2-v6-evidence-authority-2026-07-29/proof-final-zero-authority.time"
+  ]
+}
