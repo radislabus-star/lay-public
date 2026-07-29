@@ -193,6 +193,17 @@ fn encode_version(package: &LexicalGrokkingPackage, version: u32) -> Result<Vec<
 }
 
 pub(super) fn decode(bytes: &[u8]) -> Result<LexicalGrokkingPackage, String> {
+    decode_with_compact_views(bytes, true)
+}
+
+pub(super) fn decode_compact_base(bytes: &[u8]) -> Result<LexicalGrokkingPackage, String> {
+    decode_with_compact_views(bytes, false)
+}
+
+fn decode_with_compact_views(
+    bytes: &[u8],
+    rebuild_compact_views: bool,
+) -> Result<LexicalGrokkingPackage, String> {
     if bytes.len() < HEADER_BYTES {
         return Err("invalid L1 crystal package magic".to_string());
     }
@@ -288,7 +299,7 @@ pub(super) fn decode(bytes: &[u8]) -> Result<LexicalGrokkingPackage, String> {
         ambiguity_subcenters,
         keyboard_geometry_units,
         restoration_calibration,
-    ) = if version == VERSION_V7 {
+    ) = if version == VERSION_V7 && rebuild_compact_views {
         let restoration_calibration = read_compact_depth0_extension(bytes, base_bytes)?;
         let (rebuilt_forward, rebuilt_reverse, rebuilt_profiles, rebuilt_keyboard_geometry) =
             rebuild_compact_depth0_views(&graph, &mut atoms, &mut centers, &decoder_nodes)?;
@@ -302,6 +313,16 @@ pub(super) fn decode(bytes: &[u8]) -> Result<LexicalGrokkingPackage, String> {
             Vec::new(),
             rebuilt_keyboard_geometry,
             restoration_calibration,
+        )
+    } else if version == VERSION_V7 {
+        (
+            Vec::new(),
+            Vec::new(),
+            Vec::new(),
+            Vec::new(),
+            Vec::new(),
+            Vec::new(),
+            read_compact_depth0_extension(bytes, base_bytes)?,
         )
     } else if version >= VERSION_V5 {
         read_l11_extension(bytes, base_bytes, centers.len(), atoms.len())?
@@ -1118,7 +1139,7 @@ fn rebuild_compact_depth0_views(
     Ok((forward, reverse, profiles, keyboard_geometry))
 }
 
-fn decode_center_surface(
+pub(super) fn decode_center_surface(
     center: WordCenter64,
     decoder_nodes: &[DecoderNode],
 ) -> Result<String, String> {
@@ -1136,6 +1157,61 @@ fn decode_center_surface(
     }
     symbols.reverse();
     Ok(symbols.into_iter().collect())
+}
+
+pub(super) fn reconstruct_compact_center_reverse(
+    package: &LexicalGrokkingPackage,
+    terminal_id: u32,
+) -> Result<Vec<WaveCoupling>, String> {
+    let center = *package
+        .centers
+        .get(terminal_id as usize)
+        .ok_or_else(|| "compact depth-0 terminal is invalid".to_string())?;
+    let surface = decode_center_surface(center, &package.decoder_nodes)?;
+    let resolved = encode_wave_surface(&surface)
+        .into_iter()
+        .filter_map(|atom| {
+            package
+                .graph
+                .atom_id(atom.key)
+                .map(|atom_id| (atom_id, atom.position, atom.key.channel))
+        })
+        .collect::<Vec<_>>();
+    let mut stats = BTreeMap::<u32, (u32, u64, AtomChannel)>::new();
+    for (atom_id, position, channel) in &resolved {
+        let entry = stats.entry(*atom_id).or_insert((0, 0, *channel));
+        entry.0 = entry.0.saturating_add(1);
+        entry.1 = entry.1.saturating_add(u64::from(*position));
+    }
+    let mut reverse = resolved
+        .into_iter()
+        .map(|(atom_id, position, channel)| {
+            let observation_count = stats.get(&atom_id).map(|item| item.0).unwrap_or_default();
+            let position_mode = (position / 257).min(255) as u8;
+            WaveCoupling {
+                peer_id: atom_id,
+                strength: reconstructed_coupling_strength(
+                    observation_count,
+                    u32::from(package.atoms[atom_id as usize].support),
+                    package.centers.len(),
+                ),
+                phase_relation: position_phase(position_mode),
+                position_mode,
+                flags: if channel == AtomChannel::CharacterAnchor {
+                    COUPLING_FLAG_CHARACTER_ANCHOR
+                } else {
+                    0
+                },
+            }
+        })
+        .collect::<Vec<_>>();
+    reverse.sort_unstable_by(coupling_order);
+    let anchor_count = reverse
+        .iter()
+        .take_while(|relation| relation.flags != 0)
+        .count();
+    reverse.truncate(anchor_count.saturating_add(MAX_REVERSE_LEXICAL_COUPLINGS));
+    Ok(reverse)
 }
 
 fn reconstructed_coupling_strength(observations: u32, atom_support: u32, word_count: usize) -> u8 {

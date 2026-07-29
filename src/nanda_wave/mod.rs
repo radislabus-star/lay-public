@@ -49,19 +49,21 @@ pub use l2_field::{
     discover_installed_l2_package, prove_canonical_l2_package,
 };
 pub use lexical_grokking::{
-    analyze_l1_forward_compression, authoritative_restore_surface, benchmark_l1_lexical_grokking,
+    admit_l11_delta, admit_l11_tombstone, analyze_l1_forward_compression,
+    authoritative_restore_surface, benchmark_l1_lexical_grokking, build_lazy_v8_package,
     compact_depth0_package, crystallize_l1_lexical_grokking,
     crystallize_l1_lexical_grokking_with_rss_budget,
     crystallize_l1_lexical_grokking_with_surface_policy, default_l11_model_dir,
     default_l11_socket_path, discover_installed_l11_package, ensure_l11_service_started,
-    inspect_l1_package_header, l11_seed_surfaces, prove_l1_lexical_grokking,
-    prove_l1_lexical_grokking_complete_postings, prove_l1_lexical_grokking_package,
-    prove_l1_lexical_grokking_scale_package, prove_l1_lexical_grokking_scale_package_range,
-    query_l1_lexical_grokking, request_l11_authoritative_surface, request_l11_decoded_surfaces,
-    request_l11_seed_surfaces, restore_l1_surface, send_l11_service_request,
-    send_l11_service_request_with_timeout, InstalledL11Package, L11SeedSurface,
-    L11ServiceEnsureReport, L1RestorationHost, L1RestorationHostStats, L1ServiceHealth,
-    L1ServiceRequest, L1ServiceResponse, L1ServiceStats, ScaleTrainingSurfacePolicy,
+    initialize_l11_composite_manifest, inspect_l1_package_header, l11_seed_surfaces,
+    prove_l1_lexical_grokking, prove_l1_lexical_grokking_complete_postings,
+    prove_l1_lexical_grokking_package, prove_l1_lexical_grokking_scale_package,
+    prove_l1_lexical_grokking_scale_package_range, query_l1_lexical_grokking,
+    request_l11_authoritative_surface, request_l11_decoded_surfaces, request_l11_seed_surfaces,
+    restore_l1_surface, send_l11_service_request, send_l11_service_request_with_timeout,
+    InstalledL11Package, L11SeedSurface, L11ServiceEnsureReport, L1RestorationHost,
+    L1RestorationHostStats, L1ServiceHealth, L1ServiceRequest, L1ServiceResponse, L1ServiceStats,
+    ScaleTrainingSurfacePolicy,
 };
 pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
 pub use morphology_phase::{

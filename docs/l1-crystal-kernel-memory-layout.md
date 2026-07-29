@@ -2359,6 +2359,381 @@ change daemon authority, IME authority, or the ownership of `AuthorizedEdit`.
 It only made L1.1 available as a shadow extra candidate inside the existing
 shared correction decision path.
 
+### V8 lossless lazy runtime, 2026-07-29
+
+V8 is a runtime representation of the accepted RU535,410 + EN300,000 depth-0
+V7 crystal. It is not a new corpus crystallization and does not remove,
+truncate or retrain a relation:
+
+```text
+V7 immutable compact base
+-> mmap
+-> complete forward-posting index
+-> independently compressed posting shards
+-> bounded posting/shard caches
+-> reverse relations reconstructed only for active WordCenter
+-> bounded reverse cache
+```
+
+Measured full-field identity:
+
+```text
+WordCenter                                  835,410
+atoms                                       218,387
+forward relations                       108,156,559
+reverse relations                        86,120,980
+relations removed                                  0
+V7 compact base                         76,246,568 B
+posting index                            3,494,192 B
+```
+
+The first measured V8 package used 54 shards with 4,096 atoms per shard:
+
+```text
+compressed postings                     99,728,649 B
+package                                179,470,401 B = 171.16 MiB
+SHA-256                 738c2a5ee25237c5bb5513f108fc9298b38488aa93076491531d9217b294726e
+вреям hot p50 / p99                   3.139 / 3.527 ms
+steady RSS                                167.95 MiB
+```
+
+The V7/V8 exact relation and readout test passed for every fixture relation and
+for `время`, `вреям`, `работат` and `downlod`. The initial fixed-proof attempt
+did not run because its reuse-package branch still called the V7-only decoder.
+That ownership error was fixed by routing reused packages through the common
+path-based V7/V8 loader.
+
+A `1,000 centers x 100 cases x 13 classes` smoke then exposed a different
+runtime problem. The proof reached the real V8 readout and preserved the
+strict unique-class gate in all 13 smoke denominators, but large shards could
+be decompressed concurrently by several proof workers:
+
+```text
+proof cases                                      1,300
+clean preservation                             100.000%
+minimum unique top-1                             96.939%
+minimum lattice coverage                         99.000%
+false authority                                       0
+false singleton                                       0
+proof peak RSS                                  2.622 GiB
+reported diverse-surface p99                 2,229.263 ms
+```
+
+This smoke is not the fixed quality proof and its latency is not the accepted
+hot latency measurement. Its scope was to expose runtime behavior under
+diverse concurrent queries. It found duplicate in-flight shard decompression
+and a shard working set too coarse for the 32 MiB cache.
+
+The first corrected V8 layout used 256 atoms per shard and one lock per shard.
+Different shards still decompressed concurrently; the same shard was decoded
+once and then shared:
+
+```text
+atoms per shard                                      256
+posting shards                                       854
+compressed postings                     102,044,350 B
+package                                181,798,902 B = 173.38 MiB
+bytes per forward relation                        0.9435
+SHA-256                 ddfd42cf85832664c7c89bf15264f3267a7c931d4a3ffffada48697a3f75d82d
+repack wall time                                  50.31 s
+repack peak RSS                               3,618,812 KiB
+repack average CPU                                  462%
+cold query wall time                               1.00 s
+cold query peak RSS                             192,000 KiB
+вреям hot p50 / p99                   3.425 / 4.134 ms
+```
+
+Measured gates for this corrected representation:
+
+```text
+package <= 195 MiB                                  PASS
+cold process peak <= 250 MiB                        PASS
+вреям hot p99 <= 5 ms                               PASS
+all forward relations retained                      PASS
+fixed 13 x 20,000 per-class proof                   NOT TESTED
+diverse concurrent proof RSS/latency                FAIL
+append-only live delta overlay                      NOT IMPLEMENTED
+runtime authority                                   UNCHANGED
+```
+
+The 256-atom smoke preserved exactly the same quality counters and measured:
+
+```text
+smoke wall time                                  4m 38.31s
+smoke peak RSS                               1,693,664 KiB
+diverse first-touch p99                         319.194 ms
+heldout evaluation                                38.725 s
+```
+
+This was a large improvement over 4,096 atoms per shard but still left
+first-touch latency too high. The next bounded experiment used 32 atoms per
+shard:
+
+```text
+atoms per shard                                       32
+posting shards                                     6,825
+compressed postings                     104,976,781 B
+package                                184,826,869 B = 176.27 MiB
+bytes per forward relation                        0.9706
+SHA-256                 05ff08798cb1ff04db4ce9e233941732f3f859e9db0c69b6b34a42beebdd37d7
+repack wall time                                  47.27 s
+repack peak RSS                               3,281,704 KiB
+repack average CPU                                  483%
+cold query wall time                               0.91 s
+cold query peak RSS                             152,884 KiB
+вреям hot p50 / p99                   3.220 / 3.510 ms
+smoke wall time                                  4m 05.80s
+smoke peak RSS                               1,256,220 KiB
+diverse first-touch p99                         238.719 ms
+heldout evaluation                                37.125 s
+```
+
+The 32-atom representation is the current V8 candidate because it remains
+inside the package and process-RSS gates and dominates the larger shards on
+first-touch behavior. It does not yet pass the diverse first-touch latency
+gate. The fixed `13 x 20,000` proof is running against this exact artifact.
+
+The reconstruction lane was then changed to obtain V8 character anchors
+directly from `DecoderGraph`. The previous lazy path rebuilt complete reverse
+byte/character/keyboard relation vectors for up to 8,192 centers merely to
+read ordered character anchors. Fixture parity now checks every center:
+
+```text
+eager V7 reverse-anchor sequence
+==
+lazy V8 DecoderGraph-derived anchor sequence              PASS
+
+V7/V8 complete forward relation addressability            PASS
+V7/V8 readout parity on fixed fixture surfaces             PASS
+full-package post-change first-touch p99                   NOT MEASURED
+```
+
+The running fixed full proof started before this optimization and therefore
+proves package quality with the previous process image. Its latency audit is
+not evidence for the new DecoderGraph-anchor path. Latency is measured
+separately after that proof completes.
+
+The following cannot yet be claimed:
+
+```text
+final V8 quality PASS
+full-corpus diverse-query p99 <= 5 ms
+bounded RSS during the fixed parallel proof
+production-scale delta latency and reload continuity
+promotion into daemon, IME or AuthorizedEdit ownership
+```
+
+Exact remote evidence:
+
+```text
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-full-2026-07-29/package.v8.bin
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-full-2026-07-29/proof-smoke/report.json
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-full-2026-07-29/proof-smoke/run.log
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard256-v2-2026-07-29/package.v8.bin
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard256-v2-2026-07-29/build-report.json
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard256-v2-2026-07-29/build.log
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/package.v8.bin
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/build-report.json
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/build.log
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/proof-smoke/report.json
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/proof-smoke/run.log
+```
+
+### Append-only V8 composite overlay, 2026-07-29
+
+The immutable V8 base no longer has to be rebuilt for every local lexical
+addition or removal. The first append-only composite contract is:
+
+```text
+lay-l11-composite-v1 manifest
+-> immutable V8/V7 base
+-> zero or more proof-receipted delta packages
+-> normalized surface tombstones
+-> generation counter
+-> temp file + atomic rename on every manifest change
+```
+
+Each delta is a normal small L1.1 package. It may contain new atoms,
+WordCenter, positive subcenters, anti subcenters and ambiguity evidence. The
+base file is not rewritten. Runtime assigns every delta a disjoint global
+terminal-ID range:
+
+```text
+base terminal IDs                         0 .. base_count
+delta 1 terminal IDs             base_count .. base_count + delta_1_count
+delta N terminal IDs             preceding end .. composite terminal_count
+```
+
+Readout resolves every package independently, converts local terminal IDs to
+global IDs, removes tombstoned surfaces, sorts by evidence score and
+deduplicates equal normalized surfaces. This retains new atoms that do not
+exist in the base `NGramGraph`; they are resolved by the delta graph rather
+than forced into the immutable base graph.
+
+Manifest tombstones use the same lexical normalization function as atom
+encoding and runtime readout, including terminal punctuation stripping. There
+is no second tombstone-only normalization rule.
+
+The safety contract is deliberately conservative:
+
+```text
+base package calibration remains immutable
+delta admission requires an existing proof receipt
+tombstone admission requires an existing proof receipt
+receipt verdict must begin with PASS
+composite Winner authority                         disabled
+composite output                                   lattice / abstain
+runtime authority                                  unchanged
+```
+
+This prevents a tiny delta corpus from treating its narrow local calibration
+as authority over the 835,410-center base. L2 can consume the merged bounded
+lattice immediately, but `AuthorizedEdit` cannot be promoted by the overlay.
+The same rule applies before the first delta: a generation-1 manifest with
+zero deltas and zero tombstones returns a non-authoritative lattice, not the
+standalone base package's winner contract.
+
+Service snapshot replacement was also corrected:
+
+```text
+old:
+  acquire write lock
+  -> load and validate complete replacement
+  -> swap
+  -> release write lock
+
+new:
+  keep serving current immutable host
+  -> load and validate replacement outside the lock
+  -> acquire write lock
+  -> one host-pointer-sized ownership flip
+  -> release write lock
+```
+
+Manifest writers use a private `flock` sidecar around the complete
+read/validate/mutate/rename transaction. Atomic rename protects readers from a
+partial JSON file; the writer lock separately prevents two simultaneous
+admissions from reading the same generation and losing one update. Before the
+rename, the temporary file is flushed with `fsync`; after the rename, the
+parent directory is flushed. Thus a successful admission is also bounded
+against immediate process or host failure, rather than only being atomically
+visible in page cache.
+
+The service health response carries `manifest_generation`. Reusing the same
+manifest path after an append is not treated as ready when the daemon still
+serves an older generation. `ensure_l11_service_started()` requests a reload
+when generations differ. The reload response timeout is 5 seconds; the former
+250 ms limit was below the measured 0.91-second V8 cold-load time.
+
+Manifest parsing performs structural, file-size and receipt checks. It does
+not checksum/decode the complete V8 and then ask the package loader to repeat
+the same work. The package loader remains the single checksum/decode owner on
+runtime load. Package/manifest detection reads one byte first; an ordinary
+176 MiB binary V8 is not copied into a temporary `Vec` merely to determine
+that it is not JSON.
+
+Defensive format bounds:
+
+```text
+manifest bytes                              <= 8 MiB
+delta packages                              <= 64
+compaction recommendation                   >= 32 deltas or >= 32 MiB
+tombstones                                  <= 100,000
+normalized tombstone length                 <= 128 characters
+```
+
+These are storage/runtime safety bounds, not learned field coefficients.
+
+Measured local integration fixture:
+
+```text
+base representation                                    V8
+base centers                                            13
+delta centers                                             1
+composite centers                                        14
+empty generation-1 composite restore authority         false
+empty generation-1 composite verdict                 lattice
+new exact surface resolved with global terminal ID      PASS
+base file rewritten                                    false
+composite restore authority                            false
+tombstone removed base exact lookup                     PASS
+tombstone removed base decode                           PASS
+tombstone removed candidate from lattice                PASS
+manifest delta/tombstone counters                       PASS
+failed proof receipt rejected                            PASS
+manifest generation after delta + tombstone                3
+composite benchmark route                               PASS
+old snapshot readable during blocked replacement load   1,000 / 1,000
+new snapshot visible after ownership flip               PASS
+reload during initial warming rejected                  PASS
+parallel tombstone admissions retained                  2 / 2
+generation after two concurrent admissions              3 -> 5
+```
+
+Exact tests:
+
+```text
+nanda_wave::lexical_grokking::tests::
+append_only_manifest_adds_centers_and_applies_tombstones_without_rewriting_base
+
+lay-l11-serve::
+replacement_load_does_not_block_current_snapshot_readers
+reload_during_initial_warmup_cannot_race_background_owner
+
+nanda_wave::lexical_grokking::composite::tests::
+manifest_writer_lock_serializes_independent_transactions
+```
+
+The following has not yet been proved:
+
+```text
+full fixed 13 x 20,000 quality proof with a real admitted delta
+cross-package pairwise phase interference between base and delta centers
+delta compaction into a new immutable V8 base
+authority promotion of any composite snapshot
+```
+
+Implementation ownership:
+
+```text
+/home/ubu/projects/lay/src/nanda_wave/lexical_grokking/composite.rs
+/home/ubu/projects/lay/src/nanda_wave/lexical_grokking/runtime.rs
+/home/ubu/projects/lay/src/bin/lay_l1_1_serve.rs
+/home/ubu/projects/lay/src/bin/lay_nanda_wave_train.rs
+```
+
+Operator route:
+
+```bash
+lay-nanda-wave-train \
+  --init-l11-composite \
+  --manifest /absolute/path/l11.runtime.json \
+  --base /absolute/path/package.v8.bin
+
+lay-nanda-wave-train \
+  --admit-l11-delta \
+  --manifest /absolute/path/l11.runtime.json \
+  --delta /absolute/path/proved-delta.bin \
+  --proof-receipt /absolute/path/delta-proof.json \
+  --scope local-lexical-addition
+
+lay-nanda-wave-train \
+  --admit-l11-tombstone \
+  --manifest /absolute/path/l11.runtime.json \
+  --surface obsolete-surface \
+  --proof-receipt /absolute/path/tombstone-proof.json \
+  --scope local-lexical-removal
+
+lay-l11-serve reload \
+  --memory /absolute/path/l11.runtime.json \
+  --socket "$XDG_RUNTIME_DIR/lay-l11.sock"
+```
+
+`--bench-l1-lexical-grokking` accepts either a single package or the composite
+manifest. Single-package measurements retain the original direct readout path,
+so historical V8 p50/p99 remains comparable. Composite measurements report
+generation, delta count and tombstone count and exercise the merged lattice.
+
 ## 10. Ambiguity Contract
 
 Some damaged surfaces genuinely match more than one valid word. For example,
@@ -2400,9 +2775,116 @@ The accepted working gate is strict and conjunctive:
 unique top-1 > 95.0% in every damage class
 ```
 
-An aggregate percentage cannot hide a failing class. The current fixed 10k v3
-baseline passes this working gate in 4 of 13 classes; all nine remaining
-classes are blockers.
+An aggregate percentage cannot hide a failing class. The historical fixed 10k
+v3 baseline passed this working gate in 4 of 13 classes.
+
+### Final V8 working-gate proof, 2026-07-29
+
+The fixed `20,000 x 13` proof was repeated after two runtime corrections:
+
+```text
+DecoderGraph anchor reconstruction per candidate
+-> one compact offsets + AtomId anchor table built during load
+
+raw layout surface
+-> layout projection before punctuation normalization
+-> exact projected candidate enters the geometry shell
+-> bounded top-64 preserves geometry-shell evidence
+```
+
+The compact anchor table retains every center sequence. It changes no package
+bytes and removed repeated DecoderGraph traversal and allocation from the hot
+path. Raw projection is required because the physical `,` and `.` keys encode
+Russian `б` and `ю`; trimming those keys before projection destroyed valid
+layout evidence.
+
+Fixed proof:
+
+| Damage class | Unique top-1 | Lattice |
+|---|---:|---:|
+| adjacent transposition | 99.964% | 99.995% |
+| double substitution | 97.852% | 100.000% |
+| extra letter | 98.887% | 100.000% |
+| layout projection | 98.306% | 99.905% |
+| letter substitution | 99.956% | 99.995% |
+| missing letter | 99.262% | 99.850% |
+| non-adjacent transposition | 97.195% | 100.000% |
+| omission + transposition | 97.032% | 99.550% |
+| prefix truncation | 98.318% | 99.990% |
+| punctuation suffix | 100.000% | 100.000% |
+| repeated fragment | 98.813% | 100.000% |
+| sparse multi-omission | 96.628% | 99.705% |
+| suffix truncation | 99.058% | 100.000% |
+
+```text
+cases                                      260,000
+working unique top-1 gate                  PASS 13/13
+lattice >= 99% gate                        PASS 13/13
+clean preservation                         100.000%
+false authority                            0
+false singleton                            0
+heldout top-1 / top-8 / top-64             86.587 / 96.494 / 99.922%
+proof wall                                 13m 07.13s
+heldout evaluation                         694.498s
+average CPU                                1601%
+peak RSS                                   1,709,668 KiB
+swap                                       0
+package                                    184,826,869 B = 176.27 MiB
+package SHA-256                            05ff08798cb1ff04db4ce9e233941732f3f859e9db0c69b6b34a42beebdd37d7
+runtime authority changed                  false
+```
+
+Standalone final runtime:
+
+```text
+cold startup                               0.64s
+cold RSS                                   158,344 KiB
+hot surface                                вреям
+hot iterations                             2,000
+hot p50 / p90 / p99                        2.160 / 2.188 / 2.294 ms
+hot max                                    3.276 ms
+hot RSS                                    169,168 KiB
+```
+
+The repeated-surface hot gate passes. The proof's diverse first-touch
+restoration p99 is still `24.365 ms`; this is a separate stricter target and
+must not be reported as the hot repeated-surface result.
+
+Append-only overlay scaling:
+
+| Deltas | Manifest B | Cold | Cold RSS KiB | Hot RSS KiB | p50 ms | p99 ms |
+|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 186 | 0.71s | 158,580 | 169,380 | 2.149 | 2.262 |
+| 1 | 535 | 0.72s | 158,140 | 169,300 | 2.853 | 3.414 |
+| 2 | 882 | 0.73s | 158,256 | 169,624 | 2.909 | 3.376 |
+| 4 | 1,576 | 0.74s | 158,800 | 169,724 | 3.016 | 3.469 |
+| 8 | 2,964 | 0.74s | 158,648 | 169,980 | 3.202 | 3.718 |
+
+Each measured delta is a proved `56,600 B` package. No base relation was
+removed or rewritten.
+
+Full-V8 shadow service reload under concurrent Unix-socket traffic:
+
+```text
+workers                                     8 request producers / 20 service workers
+lattice requests                            800
+successful lattice responses                800
+errors                                      0
+reload wall                                 0.85s
+post-reload service state                   ready
+live daemon or IBus touched                 false
+```
+
+Exact evidence:
+
+```text
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/proof-full-anchor-layout/report.json
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/proof-full-anchor-layout/run.log
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/runtime-final/hot-vreyam-2000.json
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/runtime-final/hot-vreyam-2000.time
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/overlay-scale/
+/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/service-reload-v2/
+```
 
 The stricter formal target remains:
 

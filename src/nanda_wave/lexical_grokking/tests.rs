@@ -643,6 +643,30 @@ fn physical_keyboard_geometry_preserves_layout_punctuation_keys() {
 }
 
 #[test]
+fn raw_layout_projection_preserves_leading_punctuation_keys() {
+    let words = ["бикс", "brc", "brcc"]
+        .into_iter()
+        .enumerate()
+        .map(|(terminal_id, word)| TrainingWord {
+            terminal_id: terminal_id as u32,
+            surface: word.to_string(),
+            training_surfaces: Vec::new(),
+        })
+        .collect::<Vec<_>>();
+    let package = compile(&words).expect("compile leading layout punctuation fixture");
+    let memory = LexicalGrokkingMemory::from_package(package);
+    let candidates = memory.readout(",brc", 64, ReadoutMode::Full);
+    assert_eq!(
+        candidates
+            .iter()
+            .find(|candidate| candidate.terminal_id == 0)
+            .map(|candidate| candidate.geometry_distance),
+        Some(0),
+        "the comma key must remain available as the Russian letter б"
+    );
+}
+
+#[test]
 fn backward_reconstruction_contains_only_clean_reference_atoms() {
     let words = fixture_words();
     let package = compile(&words).expect("compile fixture package");
@@ -673,6 +697,138 @@ fn shadow_query_reads_terminal_ids_without_a_string_table() {
         .is_some_and(|items| !items.is_empty()));
     assert_eq!(report["candidates"][0]["surface"], "время");
     let _ = std::fs::remove_file(path);
+}
+
+#[test]
+fn append_only_manifest_adds_centers_and_applies_tombstones_without_rewriting_base() {
+    let root = std::env::temp_dir().join(format!(
+        "lay-l11-composite-{}-{}",
+        std::process::id(),
+        crate::stable_hash::mix64_golden(0x11c0_ffee)
+    ));
+    std::fs::create_dir_all(&root).expect("create composite fixture root");
+    let base_source_path = root.join("base.v7.bin");
+    let base_path = root.join("base.v8.bin");
+    let delta_path = root.join("delta.bin");
+    let receipt_path = root.join("proof.json");
+    let failed_receipt_path = root.join("failed-proof.json");
+    let manifest_path = root.join("runtime.json");
+
+    let mut base_words = fixture_words();
+    for word in &mut base_words {
+        word.training_surfaces.clear();
+    }
+    std::fs::write(
+        &base_source_path,
+        format::encode_compact_depth0(&compile(&base_words).expect("compile base"))
+            .expect("encode compact base"),
+    )
+    .expect("write compact base");
+    super::v8::build_lazy_v8_package(&base_source_path, &base_path).expect("build V8 base");
+    let (training, _) = split_damages("кристаллизатор");
+    let delta_words = vec![TrainingWord {
+        terminal_id: 0,
+        surface: "кристаллизатор".to_string(),
+        training_surfaces: training.into_iter().map(|item| item.surface).collect(),
+    }];
+    std::fs::write(
+        &delta_path,
+        format::encode(&compile(&delta_words).expect("compile delta")).expect("encode delta"),
+    )
+    .expect("write delta");
+    std::fs::write(&receipt_path, b"{\"verdict\":\"PASS\"}\n").expect("write proof receipt");
+    std::fs::write(&failed_receipt_path, b"{\"verdict\":\"FAIL\"}\n")
+        .expect("write failed proof receipt");
+
+    super::composite::initialize_manifest(&manifest_path, &base_path).expect("initialize manifest");
+    let empty_composite =
+        super::runtime::L1RestorationHost::load(&manifest_path).expect("load empty composite");
+    assert_eq!(
+        empty_composite.restore("время", 8)["result"]["authority"],
+        false
+    );
+    assert_eq!(
+        empty_composite.restore("время", 8)["result"]["verdict"],
+        "lattice"
+    );
+    assert!(super::composite::admit_delta(
+        &manifest_path,
+        &delta_path,
+        &failed_receipt_path,
+        Some("rejected fixture"),
+    )
+    .is_err());
+    super::composite::admit_delta(&manifest_path, &delta_path, &receipt_path, Some("fixture"))
+        .expect("admit delta");
+    let host = super::runtime::L1RestorationHost::load(&manifest_path).expect("load composite");
+    assert_eq!(host.terminal_count(), base_words.len() as u32 + 1);
+    assert_eq!(
+        host.terminal_for_exact_surface("кристаллизатор"),
+        Some(base_words.len() as u32)
+    );
+    assert_eq!(
+        host.restore("кристаллизатор", 8)["result"]["authority"],
+        false
+    );
+    let benchmark = super::runtime::benchmark_package(&manifest_path, "кристаллизатор", 3, 8)
+        .expect("benchmark composite");
+    assert_eq!(benchmark["delta_count"], 1);
+    assert_eq!(benchmark["manifest_generation"], 2);
+
+    super::composite::admit_tombstone(&manifest_path, "время", &receipt_path, Some("fixture"))
+        .expect("admit tombstone");
+    assert_eq!(
+        super::composite::manifest_generation(&manifest_path).expect("read generation"),
+        Some(3)
+    );
+    let host = super::runtime::L1RestorationHost::load(&manifest_path)
+        .expect("reload composite with tombstone");
+    assert_eq!(host.terminal_for_exact_surface("время"), None);
+    assert_eq!(host.decode_terminal(0), None);
+    assert!(host
+        .lattice_seed_rows("врмея", 8)
+        .iter()
+        .all(|(_, surface, _)| surface != "время"));
+    assert_eq!(host.stats().delta_count, 1);
+    assert_eq!(host.stats().tombstone_count, 1);
+
+    let first_manifest = manifest_path.clone();
+    let first_receipt = receipt_path.clone();
+    let first = std::thread::spawn(move || {
+        super::composite::admit_tombstone(
+            &first_manifest,
+            "когда",
+            &first_receipt,
+            Some("concurrent fixture"),
+        )
+    });
+    let second_manifest = manifest_path.clone();
+    let second_receipt = receipt_path.clone();
+    let second = std::thread::spawn(move || {
+        super::composite::admit_tombstone(
+            &second_manifest,
+            "куда",
+            &second_receipt,
+            Some("concurrent fixture"),
+        )
+    });
+    first
+        .join()
+        .expect("first admission thread")
+        .expect("first admission");
+    second
+        .join()
+        .expect("second admission thread")
+        .expect("second admission");
+    assert_eq!(
+        super::composite::manifest_generation(&manifest_path).expect("read final generation"),
+        Some(5)
+    );
+    let host = super::runtime::L1RestorationHost::load(&manifest_path)
+        .expect("reload composite after concurrent admissions");
+    assert_eq!(host.stats().tombstone_count, 3);
+
+    let _ = std::fs::remove_dir_all(root);
 }
 
 #[test]

@@ -73,6 +73,8 @@ pub struct L1ServiceHealth {
     pub package_path: PathBuf,
     pub package_bytes: Option<usize>,
     pub terminal_count: Option<u32>,
+    #[serde(default)]
+    pub manifest_generation: u64,
     pub requests_served: u64,
     pub uptime_ms: u64,
 }
@@ -402,14 +404,23 @@ pub fn ensure_l11_service_started() -> io::Result<Option<L11ServiceEnsureReport>
             Some(Duration::from_millis(50)),
         ) {
             Ok(L1ServiceResponse::Health { report }) => {
-                if report.status == "ready" && report.package_path != package.artifact_path {
+                let expected_generation =
+                    super::composite::manifest_generation(&package.artifact_path)
+                        .ok()
+                        .flatten()
+                        .unwrap_or_default();
+                let stale_generation =
+                    expected_generation != 0 && report.manifest_generation != expected_generation;
+                if report.status == "ready"
+                    && (report.package_path != package.artifact_path || stale_generation)
+                {
                     if let Ok(L1ServiceResponse::Reload { .. }) =
                         send_l11_service_request_with_timeout(
                             &socket,
                             &L1ServiceRequest::Reload {
                                 memory: package.artifact_path.clone(),
                             },
-                            Some(Duration::from_millis(250)),
+                            Some(Duration::from_secs(5)),
                         )
                     {
                         return Ok(Some(L11ServiceEnsureReport::Reloaded {

@@ -7,6 +7,7 @@ mod anti_postings;
 mod atoms;
 mod compaction;
 mod compiler;
+mod composite;
 mod corruption;
 mod crystal;
 mod format;
@@ -21,9 +22,12 @@ mod runtime;
 mod service;
 mod training_budget;
 mod training_corpus;
+mod v8;
 mod wave_basis;
 
 pub use compaction::compact_depth0_package;
+pub use composite::initialize_manifest as initialize_l11_composite_manifest;
+pub use composite::{admit_delta as admit_l11_delta, admit_tombstone as admit_l11_tombstone};
 pub use corruption::ScaleTrainingSurfacePolicy;
 pub use posting_codec::analyze_package as analyze_l1_forward_compression;
 pub use proof::{
@@ -46,6 +50,7 @@ pub use service::{
     L11SeedSurface, L11ServiceEnsureReport, L1ServiceHealth, L1ServiceRequest, L1ServiceResponse,
     L1ServiceStats,
 };
+pub use v8::build_lazy_v8_package;
 
 #[cfg(test)]
 mod tests;

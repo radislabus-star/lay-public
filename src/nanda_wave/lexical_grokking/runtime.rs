@@ -1,7 +1,9 @@
 use std::cell::RefCell;
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 use std::io;
+use std::ops::Deref;
 use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
 use serde::{Deserialize, Serialize};
@@ -17,6 +19,7 @@ use super::model::{
     LexicalGrokkingPackage, WaveCoupling, CENTER_PHASE_FLAG_PHYSICAL_KEY_GEOMETRY,
     COUPLING_FLAG_CHARACTER_ANCHOR,
 };
+use super::v8::{self, V8Artifact};
 use super::wave_basis::{
     complex_coherence_milli, expand_atom, expand_word, pair_residual_atoms, positioned_atom_code,
 };
@@ -35,6 +38,7 @@ const MAX_BIRTH_POSTING_BUDGET: usize = 131_072;
 const SETTLING_ITERATIONS: u8 = 3;
 const MAX_ANCHOR_SEQUENCE: usize = 32;
 const MAX_EXACT_COLLISION_OPERATOR_CHARS: usize = 16;
+const REVERSE_CACHE_BYTES: usize = 16 * 1024 * 1024;
 pub(super) const RECONSTRUCTION_MODE_DELETION: u8 = 1;
 pub(super) const RECONSTRUCTION_MODE_DELETION_TRANSPOSITION: u8 = 2;
 pub(super) const RECONSTRUCTION_MODE_SUFFIX_TRUNCATION: u8 = 4;
@@ -49,8 +53,7 @@ pub fn query_package(
     surface: &str,
     limit: usize,
 ) -> io::Result<serde_json::Value> {
-    let bytes = std::fs::read(package_path)?;
-    let memory = LexicalGrokkingMemory::from_bytes(&bytes).map_err(io::Error::other)?;
+    let memory = LexicalGrokkingMemory::load(package_path).map_err(io::Error::other)?;
     let candidates = memory
         .readout(surface, limit, ReadoutMode::Full)
         .into_iter()
@@ -79,6 +82,18 @@ pub fn inspect_package_header(package_path: &Path) -> io::Result<serde_json::Val
     let mut file = std::fs::File::open(package_path)?;
     let mut header = [0_u8; 192];
     file.read_exact(&mut header)?;
+    if v8::is_v8(&header) {
+        let artifact = V8Artifact::load(package_path).map_err(io::Error::other)?;
+        let package = artifact.decode_base().map_err(io::Error::other)?;
+        return Ok(serde_json::json!({
+            "format": "V8",
+            "corpus_fingerprint": package.corpus_hash,
+            "terminal_count": package.terminal_count(),
+            "package_bytes": file.metadata()?.len(),
+            "forward_relations": artifact.forward_relation_count(),
+            "reverse_relations": artifact.reverse_relation_count(),
+        }));
+    }
     let (corpus_fingerprint, terminal_count, declared_bytes) =
         super::format::inspect_header(&header).map_err(io::Error::other)?;
     let actual_bytes = file.metadata()?.len();
@@ -112,34 +127,55 @@ pub fn benchmark_package(
     iterations: usize,
     limit: usize,
 ) -> io::Result<serde_json::Value> {
-    let bytes = std::fs::read(package_path)?;
-    let memory = LexicalGrokkingMemory::from_bytes(&bytes).map_err(io::Error::other)?;
+    let host = L1RestorationHost::load(package_path)?;
     for _ in 0..16 {
-        std::hint::black_box(memory.readout(surface, limit, ReadoutMode::Full));
+        std::hint::black_box(benchmark_host_once(&host, surface, limit));
     }
     let mut elapsed_us = Vec::with_capacity(iterations);
     let mut checksum = 0_u64;
     for _ in 0..iterations {
         let started = Instant::now();
-        let candidates = memory.readout(surface, limit, ReadoutMode::Full);
+        let first_terminal = benchmark_host_once(&host, surface, limit);
         elapsed_us.push(started.elapsed().as_micros() as u64);
-        checksum ^= candidates
-            .first()
-            .map(|candidate| u64::from(candidate.terminal_id))
-            .unwrap_or_default();
+        checksum ^= first_terminal;
     }
     elapsed_us.sort_unstable();
+    let stats = host.stats();
     Ok(serde_json::json!({
+        "package": package_path,
         "surface": surface,
         "iterations": iterations,
         "limit": limit,
-        "terminal_count": memory.package.terminal_count(),
+        "terminal_count": host.terminal_count(),
+        "manifest_generation": stats.manifest_generation,
+        "delta_count": stats.delta_count,
+        "tombstone_count": stats.tombstone_count,
         "p50_us": percentile(&elapsed_us, 50),
         "p90_us": percentile(&elapsed_us, 90),
         "p99_us": percentile(&elapsed_us, 99),
         "max_us": elapsed_us.last().copied().unwrap_or_default(),
         "checksum": checksum,
     }))
+}
+
+fn benchmark_host_once(host: &L1RestorationHost, surface: &str, limit: usize) -> u64 {
+    if host.overlays.is_empty() && host.tombstones.is_empty() {
+        let candidates = host.memory.readout(surface, limit, ReadoutMode::Full);
+        std::hint::black_box(
+            candidates
+                .first()
+                .map(|candidate| u64::from(candidate.terminal_id))
+                .unwrap_or_default(),
+        )
+    } else {
+        let candidates = host.lattice_seed_rows(surface, limit);
+        std::hint::black_box(
+            candidates
+                .first()
+                .map(|candidate| u64::from(candidate.0))
+                .unwrap_or_default(),
+        )
+    }
 }
 
 fn candidate_json(
@@ -386,7 +422,38 @@ impl AnchorSequence {
 pub(super) struct LexicalGrokkingMemory {
     pub(super) package: LexicalGrokkingPackage,
     exact_surface_index: Vec<(u64, u32)>,
-    character_anchors: Vec<Vec<u32>>,
+    character_anchor_offsets: Vec<u32>,
+    character_anchor_atoms: Vec<u32>,
+    relations: RelationStore,
+    reverse_cache: Mutex<ReverseCache>,
+}
+
+enum RelationStore {
+    Eager,
+    LazyV8(V8Artifact),
+}
+
+enum CouplingView<'a> {
+    Borrowed(&'a [WaveCoupling]),
+    Shared(Arc<[WaveCoupling]>),
+}
+
+impl Deref for CouplingView<'_> {
+    type Target = [WaveCoupling];
+
+    fn deref(&self) -> &Self::Target {
+        match self {
+            Self::Borrowed(relations) => relations,
+            Self::Shared(relations) => relations,
+        }
+    }
+}
+
+#[derive(Default)]
+struct ReverseCache {
+    bytes: usize,
+    order: VecDeque<u32>,
+    entries: HashMap<u32, Arc<[WaveCoupling]>>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -399,22 +466,36 @@ pub struct L1RestorationHostStats {
     pub reverse_relations: usize,
     pub exact_surface_count: usize,
     pub character_anchor_count: usize,
+    pub manifest_generation: u64,
+    pub delta_count: usize,
+    pub tombstone_count: usize,
 }
 
 pub struct L1RestorationHost {
     package_path: PathBuf,
     package_bytes: usize,
     memory: LexicalGrokkingMemory,
+    overlays: Vec<L1OverlayMemory>,
+    tombstones: BTreeSet<String>,
+    manifest_generation: u64,
+}
+
+struct L1OverlayMemory {
+    terminal_offset: u32,
+    memory: LexicalGrokkingMemory,
 }
 
 impl LexicalGrokkingMemory {
     pub(super) fn from_package(package: LexicalGrokkingPackage) -> Self {
-        let character_anchors = compile_character_anchors(&package);
-        let exact_surface_index = compile_exact_surface_index(&character_anchors);
+        let (exact_surface_index, character_anchor_offsets, character_anchor_atoms) =
+            compile_surface_indices(&package);
         Self {
             package,
             exact_surface_index,
-            character_anchors,
+            character_anchor_offsets,
+            character_anchor_atoms,
+            relations: RelationStore::Eager,
+            reverse_cache: Mutex::new(ReverseCache::default()),
         }
     }
 
@@ -427,7 +508,38 @@ impl LexicalGrokkingMemory {
     }
 
     pub(super) fn from_bytes(bytes: &[u8]) -> Result<Self, String> {
+        if v8::is_v8(bytes) {
+            return Err("L1.1 V8 must be loaded from a path for mmap access".to_string());
+        }
         Ok(Self::from_package(format::decode(bytes)?))
+    }
+
+    pub(super) fn load(path: &Path) -> Result<Self, String> {
+        let mut prefix = [0_u8; 8];
+        {
+            use std::io::Read;
+            let mut file = std::fs::File::open(path)
+                .map_err(|error| format!("{}: {error}", path.display()))?;
+            file.read_exact(&mut prefix)
+                .map_err(|error| format!("{}: {error}", path.display()))?;
+        }
+        if !v8::is_v8(&prefix) {
+            let bytes =
+                std::fs::read(path).map_err(|error| format!("{}: {error}", path.display()))?;
+            return Self::from_bytes(&bytes);
+        }
+        let artifact = V8Artifact::load(path)?;
+        let package = artifact.decode_base()?;
+        let (exact_surface_index, character_anchor_offsets, character_anchor_atoms) =
+            compile_surface_indices(&package);
+        Ok(Self {
+            package,
+            exact_surface_index,
+            character_anchor_offsets,
+            character_anchor_atoms,
+            relations: RelationStore::LazyV8(artifact),
+            reverse_cache: Mutex::new(ReverseCache::default()),
+        })
     }
 
     pub(super) fn readout(
@@ -531,7 +643,7 @@ impl LexicalGrokkingMemory {
         let mut birth_by_channel: [Vec<BirthAtom>; 12] = std::array::from_fn(|_| Vec::new());
         for (atom_id, atom) in &lexical_observed {
             birth_by_channel[atom.channel as usize].push((
-                self.forward_couplings(*atom_id).len(),
+                self.forward_degree(*atom_id),
                 *atom_id,
                 *atom,
             ));
@@ -578,7 +690,7 @@ impl LexicalGrokkingMemory {
             for (_, atom_id, atom) in &birth_atoms {
                 let atom_weight = u64::from(atom.weight);
                 let keyboard_channel = is_keyboard_channel(atom.channel);
-                for coupling in self.forward_couplings(*atom_id) {
+                for coupling in self.forward_couplings(*atom_id).iter() {
                     let contribution = u64::from(coupling.strength)
                         * atom_weight
                         * u64::from(position_coherence(atom.position, coupling.position_mode));
@@ -632,11 +744,9 @@ impl LexicalGrokkingMemory {
                 })
                 .unwrap_or_default();
             let full_activation = self.activation_for_terminal(trace_terminal, &lexical_observed);
-            let reconstruction_modes = self
-                .character_anchors
-                .get(trace_terminal as usize)
-                .map(|expected| reconstruction_modes(character_sequence.as_slice(), expected))
-                .unwrap_or_default();
+            let expected = self.character_anchors(trace_terminal);
+            let reconstruction_modes =
+                reconstruction_modes(character_sequence.as_slice(), expected);
             let selected_support_atoms = birth_atoms
                 .iter()
                 .filter(|(_, atom_id, _)| {
@@ -768,8 +878,8 @@ impl LexicalGrokkingMemory {
         let terminal_id = self.exact_terminal_for_surface(surface)?;
         let observed = self.resolve_surface(surface);
         let character_sequence = observed_sequence(&observed, AtomChannel::CharacterAnchor);
-        let center = *self.package.centers.get(terminal_id as usize)?;
-        let reverse = self.reverse_couplings(center);
+        self.package.centers.get(terminal_id as usize)?;
+        let reverse = self.reverse_couplings(terminal_id);
         let observed_char_count = normalize_lexical_surface(surface)
             .chars()
             .count()
@@ -975,8 +1085,7 @@ impl LexicalGrokkingMemory {
         self.exact_surface_index[start..end]
             .iter()
             .filter_map(|(_, terminal)| {
-                (self.character_anchors.get(*terminal as usize)?.as_slice() == observed)
-                    .then_some(*terminal)
+                (self.character_anchors(*terminal) == observed).then_some(*terminal)
             })
             .collect()
     }
@@ -1013,11 +1122,7 @@ impl LexicalGrokkingMemory {
             self.exact_surface_index[start..end]
                 .iter()
                 .filter_map(|(_, terminal_id)| {
-                    (self
-                        .character_anchors
-                        .get(*terminal_id as usize)
-                        .is_some_and(|expected| expected.as_slice() == anchors))
-                    .then_some(*terminal_id)
+                    (self.character_anchors(*terminal_id) == anchors).then_some(*terminal_id)
                 })
         {
             candidates
@@ -1035,8 +1140,8 @@ impl LexicalGrokkingMemory {
         let mut reserve = frontier
             .iter()
             .filter_map(|(terminal_id, activation)| {
-                let expected = self.character_anchors.get(*terminal_id as usize)?;
-                let modes = reconstruction_modes(observed, expected);
+                let expected = self.character_anchors(*terminal_id);
+                let modes = reconstruction_modes(observed, &expected);
                 (modes != 0).then_some((modes, *terminal_id, *activation))
             })
             .collect::<Vec<_>>();
@@ -1067,6 +1172,15 @@ impl LexicalGrokkingMemory {
         }
 
         let mut ranked = BTreeMap::<u32, u8>::new();
+        let raw_projected = crate::dict::convert(
+            surface.trim(),
+            crate::dict::detect_direction(surface.trim()),
+        );
+        let raw_projected = normalize_lexical_surface(&raw_projected);
+        let raw_projected_chars = raw_projected.chars().collect::<Vec<_>>();
+        if raw_projected_chars != chars {
+            self.record_exact_operator_candidates(&raw_projected_chars, 0, &mut ranked);
+        }
         let projected =
             crate::dict::convert(&normalized, crate::dict::detect_direction(&normalized));
         let projected_chars = projected.chars().collect::<Vec<_>>();
@@ -1125,6 +1239,14 @@ impl LexicalGrokkingMemory {
         }
         if expand_inverse_lattice && chars.len() <= MAX_EXACT_COLLISION_OPERATOR_CHARS {
             self.record_inverse_operator_candidates(&chars, &mut ranked);
+        }
+        if let Some(trace_terminal) = readout_trace_terminal() {
+            eprintln!(
+                "l11_trace_operator terminal={} raw_projected={} ranked={:?}",
+                trace_terminal,
+                raw_projected,
+                ranked.get(&trace_terminal),
+            );
         }
 
         let mut reserve = ranked
@@ -1192,10 +1314,10 @@ impl LexicalGrokkingMemory {
         terminal_id: u32,
         observed: &BTreeMap<u32, ObservedAtom>,
     ) -> ForwardActivation {
-        let Some(center) = self.package.centers.get(terminal_id as usize).copied() else {
+        let Some(_) = self.package.centers.get(terminal_id as usize) else {
             return ForwardActivation::default();
         };
-        let reverse = self.reverse_couplings(center);
+        let reverse = self.reverse_couplings(terminal_id);
         let mut activation = ForwardActivation::default();
         for coupling in reverse.iter().filter(|coupling| coupling.flags == 0) {
             let Some(atom) = observed.get(&coupling.peer_id) else {
@@ -1228,13 +1350,11 @@ impl LexicalGrokkingMemory {
         let mut minimum_distance = usize::MAX;
         let mut measured = Vec::new();
         for (terminal_id, activation) in frontier {
-            let Some(expected) = self.character_anchors.get(*terminal_id as usize) else {
-                continue;
-            };
+            let expected = self.character_anchors(*terminal_id);
             if expected.len().abs_diff(observed.len()) > maximum_distance {
                 continue;
             }
-            let distance = damerau_distance(observed, expected);
+            let distance = damerau_distance(observed, &expected);
             if distance > maximum_distance {
                 continue;
             }
@@ -1361,19 +1481,15 @@ impl LexicalGrokkingMemory {
                 if geometry_linked_competitors.contains(&center.decoder_terminal) {
                     continue;
                 }
-                let Some(owner_center) = self.package.centers.get(candidate.terminal_id as usize)
-                else {
+                let Some(_) = self.package.centers.get(candidate.terminal_id as usize) else {
                     continue;
                 };
-                let Some(competitor_center) =
-                    self.package.centers.get(center.decoder_terminal as usize)
-                else {
+                let Some(_) = self.package.centers.get(center.decoder_terminal as usize) else {
                     continue;
                 };
-                let competitor_character_sequence = expected_sequence(
-                    self.reverse_couplings(*competitor_center),
-                    COUPLING_FLAG_CHARACTER_ANCHOR,
-                );
+                let competitor_reverse = self.reverse_couplings(center.decoder_terminal);
+                let competitor_character_sequence =
+                    expected_sequence(&competitor_reverse, COUPLING_FLAG_CHARACTER_ANCHOR);
                 let competitor_geometry = damerau_distance(
                     observed_character_sequence.as_slice(),
                     competitor_character_sequence.as_slice(),
@@ -1394,12 +1510,14 @@ impl LexicalGrokkingMemory {
                 if threshold == 0 {
                     continue;
                 }
+                let owner_reverse = self.reverse_couplings(candidate.terminal_id);
+                let competitor_reverse = self.reverse_couplings(center.decoder_terminal);
                 let (residual_re, residual_im) = expanded_pair_residual_wave(
                     &observed,
                     &self.package.atoms,
                     &self.package.basis,
-                    self.reverse_couplings(*owner_center),
-                    self.reverse_couplings(*competitor_center),
+                    &owner_reverse,
+                    &competitor_reverse,
                 );
                 let (center_re, center_im) = expand_word(&self.package.basis, *center);
                 let coherence =
@@ -1453,9 +1571,6 @@ impl LexicalGrokkingMemory {
     }
 
     fn apply_restoration_geometry(&self, surface: &str, candidates: &mut [GrokkingCandidate]) {
-        if self.package.center_phase_profiles.is_empty() {
-            return;
-        }
         let observed = self.resolve_surface(surface);
         let observed_character_sequence =
             observed_sequence(&observed, AtomChannel::CharacterAnchor);
@@ -1469,16 +1584,13 @@ impl LexicalGrokkingMemory {
             let Some(center) = self.package.centers.get(candidate.terminal_id as usize) else {
                 continue;
             };
-            let Some(profile) = self
+            let profile = self
                 .package
                 .center_phase_profiles
-                .get(candidate.terminal_id as usize)
-            else {
-                continue;
-            };
-            let reverse = self.reverse_couplings(*center);
+                .get(candidate.terminal_id as usize);
+            let reverse = self.reverse_couplings(candidate.terminal_id);
             let expected_character_sequence =
-                expected_sequence(reverse, COUPLING_FLAG_CHARACTER_ANCHOR);
+                expected_sequence(&reverse, COUPLING_FLAG_CHARACTER_ANCHOR);
             candidate.reconstruction_modes = if character_anchors_cover_surface {
                 reconstruction_modes(
                     observed_character_sequence.as_slice(),
@@ -1487,9 +1599,10 @@ impl LexicalGrokkingMemory {
             } else {
                 0
             };
-            if let Some(expected_surface) = self.decode_terminal(candidate.terminal_id) {
+            let expected_surface = self.decode_terminal(candidate.terminal_id);
+            if let Some(expected_surface) = expected_surface.as_deref() {
                 candidate.reconstruction_modes |=
-                    surface_operator_reconstruction_modes(surface, &expected_surface);
+                    surface_operator_reconstruction_modes(surface, expected_surface);
             }
             let cross_script = center.flags != 0
                 && observed_script_flags != 0
@@ -1497,16 +1610,28 @@ impl LexicalGrokkingMemory {
             if !cross_script {
                 continue;
             }
-            let start = profile.keyboard_geometry_start as usize;
-            let end = start.saturating_add(profile.keyboard_geometry_count as usize);
-            let Some(expected) = self.package.keyboard_geometry_units.get(start..end) else {
-                continue;
+            let generated_geometry;
+            let (expected, uses_physical_keys) = if let Some(profile) = profile {
+                let start = profile.keyboard_geometry_start as usize;
+                let end = start.saturating_add(profile.keyboard_geometry_count as usize);
+                let Some(expected) = self.package.keyboard_geometry_units.get(start..end) else {
+                    continue;
+                };
+                (
+                    expected,
+                    profile.flags & CENTER_PHASE_FLAG_PHYSICAL_KEY_GEOMETRY != 0,
+                )
+            } else {
+                let Some(expected_surface) = expected_surface.as_deref() else {
+                    continue;
+                };
+                generated_geometry = physical_key_sequence(expected_surface);
+                (generated_geometry.as_slice(), true)
             };
             if expected.is_empty() {
                 continue;
             }
-            let observed_geometry = if profile.flags & CENTER_PHASE_FLAG_PHYSICAL_KEY_GEOMETRY != 0
-            {
+            let observed_geometry = if uses_physical_keys {
                 observed_physical_keys.as_slice()
             } else {
                 observed_keyboard_sequence.as_slice()
@@ -1539,7 +1664,7 @@ impl LexicalGrokkingMemory {
             .iter()
             .filter(|candidate| candidate.geometry_distance == minimum_geometry)
         {
-            let Some(owner_center) = self.package.centers.get(owner.terminal_id as usize) else {
+            let Some(_) = self.package.centers.get(owner.terminal_id as usize) else {
                 continue;
             };
             let Some(profile) = self
@@ -1559,19 +1684,21 @@ impl LexicalGrokkingMemory {
                 .iter()
                 .enumerate()
             {
-                let Some(competitor_center) = self
+                let Some(_) = self
                     .package
                     .centers
                     .get(relation_center.decoder_terminal as usize)
                 else {
                     continue;
                 };
+                let owner_reverse = self.reverse_couplings(owner.terminal_id);
+                let competitor_reverse = self.reverse_couplings(relation_center.decoder_terminal);
                 let (residual_re, residual_im) = expanded_pair_residual_wave(
                     &observed,
                     &self.package.atoms,
                     &self.package.basis,
-                    self.reverse_couplings(*owner_center),
-                    self.reverse_couplings(*competitor_center),
+                    &owner_reverse,
+                    &competitor_reverse,
                 );
                 let (center_re, center_im) = expand_word(&self.package.basis, *relation_center);
                 let coherence =
@@ -1610,6 +1737,19 @@ impl LexicalGrokkingMemory {
         Some(symbols.into_iter().collect())
     }
 
+    pub(super) fn character_anchors(&self, terminal_id: u32) -> &[u32] {
+        let index = terminal_id as usize;
+        let Some(&start) = self.character_anchor_offsets.get(index) else {
+            return &[];
+        };
+        let Some(&end) = self.character_anchor_offsets.get(index.saturating_add(1)) else {
+            return &[];
+        };
+        self.character_anchor_atoms
+            .get(start as usize..end as usize)
+            .unwrap_or_default()
+    }
+
     fn resolve_surface(&self, surface: &str) -> Vec<(u32, ObservedAtom)> {
         encode_wave_surface(surface)
             .into_iter()
@@ -1642,18 +1782,18 @@ impl LexicalGrokkingMemory {
         mode: ReadoutMode,
     ) -> Option<GrokkingCandidate> {
         let center = *self.package.centers.get(terminal_id as usize)?;
-        let reverse = self.reverse_couplings(center);
+        let reverse = self.reverse_couplings(terminal_id);
         let expected_char_count = center.surface_len;
         let anchors_cover_surface =
             character_sequence.as_slice().len() == usize::from(observed_char_count);
         let legacy_sequence_milli =
             if observed_char_count < expected_char_count && anchors_cover_surface {
-                legacy_reconstruction_sequence_milli(reverse, character_sequence)
+                legacy_reconstruction_sequence_milli(&reverse, character_sequence)
             } else {
                 750
             };
         let expected_character_sequence =
-            expected_sequence(reverse, COUPLING_FLAG_CHARACTER_ANCHOR);
+            expected_sequence(&reverse, COUPLING_FLAG_CHARACTER_ANCHOR);
         let character_distance = damerau_distance(
             character_sequence.as_slice(),
             expected_character_sequence.as_slice(),
@@ -1677,7 +1817,7 @@ impl LexicalGrokkingMemory {
             ReadoutMode::LegacySequence => legacy_sequence_milli,
             _ if anchors_cover_surface && activation.surface_hits > activation.keyboard_hits => {
                 legacy_sequence_milli
-                    .max(reconstruction_sequence_milli(reverse, character_sequence))
+                    .max(reconstruction_sequence_milli(&reverse, character_sequence))
             }
             _ => legacy_sequence_milli,
         };
@@ -1756,25 +1896,102 @@ impl LexicalGrokkingMemory {
         })
     }
 
-    fn forward_couplings(&self, atom_id: u32) -> &[WaveCoupling] {
-        let Some(record) = self.package.atoms.get(atom_id as usize) else {
-            return &[];
-        };
-        let start = record.coupling_start as usize;
-        let end = start.saturating_add(record.coupling_count as usize);
-        self.package
-            .forward_couplings
-            .get(start..end)
-            .unwrap_or_default()
+    fn forward_couplings(&self, atom_id: u32) -> CouplingView<'_> {
+        match &self.relations {
+            RelationStore::Eager => {
+                let Some(record) = self.package.atoms.get(atom_id as usize) else {
+                    return CouplingView::Borrowed(&[]);
+                };
+                let start = record.coupling_start as usize;
+                let end = start.saturating_add(record.coupling_count as usize);
+                CouplingView::Borrowed(
+                    self.package
+                        .forward_couplings
+                        .get(start..end)
+                        .unwrap_or_default(),
+                )
+            }
+            RelationStore::LazyV8(artifact) => CouplingView::Shared(
+                artifact
+                    .posting(atom_id)
+                    .unwrap_or_else(|_| Arc::from(Vec::<WaveCoupling>::new())),
+            ),
+        }
     }
 
-    fn reverse_couplings(&self, center: super::crystal::WordCenter64) -> &[WaveCoupling] {
-        let start = center.coupling_start as usize;
-        let end = start.saturating_add(center.coupling_count as usize);
-        self.package
-            .reverse_couplings
-            .get(start..end)
-            .unwrap_or_default()
+    pub(super) fn forward_degree(&self, atom_id: u32) -> usize {
+        match &self.relations {
+            RelationStore::Eager => self
+                .package
+                .atoms
+                .get(atom_id as usize)
+                .map(|record| record.coupling_count as usize)
+                .unwrap_or_default(),
+            RelationStore::LazyV8(artifact) => artifact.posting_degree(atom_id),
+        }
+    }
+
+    pub(super) fn forward_relation_count(&self) -> usize {
+        match &self.relations {
+            RelationStore::Eager => self.package.forward_couplings.len(),
+            RelationStore::LazyV8(artifact) => artifact.forward_relation_count(),
+        }
+    }
+
+    pub(super) fn reverse_relation_count(&self) -> usize {
+        match &self.relations {
+            RelationStore::Eager => self.package.reverse_couplings.len(),
+            RelationStore::LazyV8(artifact) => artifact.reverse_relation_count(),
+        }
+    }
+
+    fn reverse_couplings(&self, terminal_id: u32) -> CouplingView<'_> {
+        if matches!(self.relations, RelationStore::Eager) {
+            let Some(center) = self.package.centers.get(terminal_id as usize) else {
+                return CouplingView::Borrowed(&[]);
+            };
+            let start = center.coupling_start as usize;
+            let end = start.saturating_add(center.coupling_count as usize);
+            return CouplingView::Borrowed(
+                self.package
+                    .reverse_couplings
+                    .get(start..end)
+                    .unwrap_or_default(),
+            );
+        }
+        if let Ok(cache) = self.reverse_cache.lock() {
+            if let Some(relations) = cache.entries.get(&terminal_id) {
+                return CouplingView::Shared(Arc::clone(relations));
+            }
+        }
+        let relations: Arc<[WaveCoupling]> =
+            format::reconstruct_compact_center_reverse(&self.package, terminal_id)
+                .unwrap_or_default()
+                .into();
+        let relation_bytes = relations
+            .len()
+            .saturating_mul(std::mem::size_of::<WaveCoupling>());
+        if relation_bytes <= REVERSE_CACHE_BYTES {
+            if let Ok(mut cache) = self.reverse_cache.lock() {
+                while cache.bytes.saturating_add(relation_bytes) > REVERSE_CACHE_BYTES {
+                    let Some(evicted_id) = cache.order.pop_front() else {
+                        break;
+                    };
+                    let Some(evicted) = cache.entries.remove(&evicted_id) else {
+                        continue;
+                    };
+                    cache.bytes = cache.bytes.saturating_sub(
+                        evicted
+                            .len()
+                            .saturating_mul(std::mem::size_of::<WaveCoupling>()),
+                    );
+                }
+                cache.bytes = cache.bytes.saturating_add(relation_bytes);
+                cache.order.push_back(terminal_id);
+                cache.entries.insert(terminal_id, Arc::clone(&relations));
+            }
+        }
+        CouplingView::Shared(relations)
     }
 
     fn apply_pairwise_interference(
@@ -1822,13 +2039,44 @@ impl LexicalGrokkingMemory {
 
 impl L1RestorationHost {
     pub fn load(package_path: &Path) -> io::Result<Self> {
-        let bytes = std::fs::read(package_path)?;
-        let package_bytes = bytes.len();
-        let memory = LexicalGrokkingMemory::from_bytes(&bytes).map_err(io::Error::other)?;
+        let Some(spec) = super::composite::load_spec(package_path)? else {
+            let package_bytes = std::fs::metadata(package_path)?.len() as usize;
+            let memory = LexicalGrokkingMemory::load(package_path).map_err(io::Error::other)?;
+            return Ok(Self {
+                package_path: package_path.to_path_buf(),
+                package_bytes,
+                memory,
+                overlays: Vec::new(),
+                tombstones: BTreeSet::new(),
+                manifest_generation: 0,
+            });
+        };
+        let memory = LexicalGrokkingMemory::load(&spec.base_path).map_err(io::Error::other)?;
+        let mut terminal_offset = memory.package.terminal_count();
+        let mut package_bytes =
+            spec.manifest_bytes as usize + std::fs::metadata(&spec.base_path)?.len() as usize;
+        let mut overlays = Vec::with_capacity(spec.delta_paths.len());
+        for delta_path in &spec.delta_paths {
+            let delta = LexicalGrokkingMemory::load(delta_path).map_err(io::Error::other)?;
+            let next_offset = terminal_offset
+                .checked_add(delta.package.terminal_count())
+                .ok_or_else(|| io::Error::other("L1.1 composite terminal ID overflow"))?;
+            package_bytes = package_bytes
+                .checked_add(std::fs::metadata(delta_path)?.len() as usize)
+                .ok_or_else(|| io::Error::other("L1.1 composite byte count overflow"))?;
+            overlays.push(L1OverlayMemory {
+                terminal_offset,
+                memory: delta,
+            });
+            terminal_offset = next_offset;
+        }
         Ok(Self {
             package_path: package_path.to_path_buf(),
             package_bytes,
             memory,
+            overlays,
+            tombstones: spec.tombstones,
+            manifest_generation: spec.generation,
         })
     }
 
@@ -1846,18 +2094,77 @@ impl L1RestorationHost {
     }
 
     pub fn terminal_count(&self) -> u32 {
-        self.memory.package.terminal_count()
+        self.overlays
+            .last()
+            .map(|overlay| {
+                overlay
+                    .terminal_offset
+                    .saturating_add(overlay.memory.package.terminal_count())
+            })
+            .unwrap_or_else(|| self.memory.package.terminal_count())
     }
 
     pub fn decode_terminal(&self, terminal_id: u32) -> Option<String> {
-        self.memory.decode_terminal(terminal_id)
+        let surface = if terminal_id < self.memory.package.terminal_count() {
+            self.memory.decode_terminal(terminal_id)
+        } else {
+            self.overlays.iter().find_map(|overlay| {
+                let local_id = terminal_id.checked_sub(overlay.terminal_offset)?;
+                (local_id < overlay.memory.package.terminal_count())
+                    .then(|| overlay.memory.decode_terminal(local_id))
+                    .flatten()
+            })
+        }?;
+        (!self.is_tombstoned(&surface)).then_some(surface)
     }
 
     pub fn terminal_for_exact_surface(&self, surface: &str) -> Option<u32> {
-        self.memory.exact_terminal_for_surface(surface)
+        if self.is_tombstoned(surface) {
+            return None;
+        }
+        self.overlays
+            .iter()
+            .rev()
+            .find_map(|overlay| {
+                overlay
+                    .memory
+                    .exact_terminal_for_surface(surface)
+                    .and_then(|terminal_id| overlay.terminal_offset.checked_add(terminal_id))
+            })
+            .or_else(|| self.memory.exact_terminal_for_surface(surface))
     }
 
     pub fn restore(&self, surface: &str, limit: usize) -> serde_json::Value {
+        if self.is_composite() {
+            let candidates = self
+                .lattice_seed_rows(surface, limit.max(1))
+                .into_iter()
+                .map(|(terminal_id, surface, score_milli)| {
+                    serde_json::json!({
+                        "terminal_id": terminal_id,
+                        "surface": surface,
+                        "score_milli": score_milli,
+                    })
+                })
+                .collect::<Vec<_>>();
+            let verdict = if candidates.is_empty() {
+                "abstain"
+            } else {
+                "lattice"
+            };
+            return serde_json::json!({
+                "package": self.package_path,
+                "input": surface,
+                "terminal_count": self.terminal_count(),
+                "manifest_generation": self.manifest_generation,
+                "result": {
+                    "verdict": verdict,
+                    "authority": false,
+                    "reason": "append_only_overlay_requires_composite_proof",
+                    "candidates": candidates,
+                },
+            });
+        }
         let mut candidates = self
             .memory
             .readout(surface, limit.max(1), ReadoutMode::Full);
@@ -1924,6 +2231,30 @@ impl L1RestorationHost {
     }
 
     pub fn lattice(&self, surface: &str, limit: usize) -> serde_json::Value {
+        if self.is_composite() {
+            let candidates = self
+                .lattice_seed_rows(surface, limit.max(1))
+                .into_iter()
+                .map(|(terminal_id, surface, score_milli)| {
+                    serde_json::json!({
+                        "terminal_id": terminal_id,
+                        "surface": surface,
+                        "score_milli": score_milli,
+                    })
+                })
+                .collect::<Vec<_>>();
+            return serde_json::json!({
+                "package": self.package_path,
+                "input": surface,
+                "terminal_count": self.terminal_count(),
+                "manifest_generation": self.manifest_generation,
+                "result": {
+                    "verdict": "lattice",
+                    "authority": false,
+                    "candidates": candidates,
+                },
+            });
+        }
         let candidates = self
             .memory
             .readout(surface, limit.max(1), ReadoutMode::Full)
@@ -1943,33 +2274,93 @@ impl L1RestorationHost {
     }
 
     pub fn lattice_seed_rows(&self, surface: &str, limit: usize) -> Vec<(u32, String, u32)> {
-        self.memory
-            .readout(surface, limit.max(1), ReadoutMode::Full)
-            .into_iter()
-            .map(|candidate| {
-                (
-                    candidate.terminal_id,
-                    self.memory
-                        .decode_terminal(candidate.terminal_id)
-                        .unwrap_or_default(),
-                    lattice_seed_score(candidate),
-                )
-            })
-            .collect()
+        let limit = limit.max(1);
+        let mut rows = memory_seed_rows(&self.memory, 0, surface, limit);
+        for overlay in &self.overlays {
+            rows.extend(memory_seed_rows(
+                &overlay.memory,
+                overlay.terminal_offset,
+                surface,
+                limit,
+            ));
+        }
+        rows.retain(|(_, candidate_surface, _)| !self.is_tombstoned(candidate_surface));
+        rows.sort_unstable_by(|left, right| {
+            right
+                .2
+                .cmp(&left.2)
+                .then_with(|| left.1.cmp(&right.1))
+                .then_with(|| left.0.cmp(&right.0))
+        });
+        let mut seen = BTreeSet::new();
+        rows.retain(|(_, candidate_surface, _)| {
+            seen.insert(normalize_lexical_surface(candidate_surface))
+        });
+        rows.truncate(limit);
+        rows
     }
 
     pub fn stats(&self) -> L1RestorationHostStats {
         L1RestorationHostStats {
             package_path: self.package_path.clone(),
             package_bytes: self.package_bytes,
-            terminal_count: self.memory.package.terminal_count(),
-            atom_count: self.memory.package.atoms.len(),
-            forward_relations: self.memory.package.forward_couplings.len(),
-            reverse_relations: self.memory.package.reverse_couplings.len(),
-            exact_surface_count: self.memory.exact_surface_index.len(),
-            character_anchor_count: self.memory.character_anchors.len(),
+            terminal_count: self.terminal_count(),
+            atom_count: self.memory.package.atoms.len()
+                + self
+                    .overlays
+                    .iter()
+                    .map(|overlay| overlay.memory.package.atoms.len())
+                    .sum::<usize>(),
+            forward_relations: self.memory.forward_relation_count()
+                + self
+                    .overlays
+                    .iter()
+                    .map(|overlay| overlay.memory.forward_relation_count())
+                    .sum::<usize>(),
+            reverse_relations: self.memory.reverse_relation_count()
+                + self
+                    .overlays
+                    .iter()
+                    .map(|overlay| overlay.memory.reverse_relation_count())
+                    .sum::<usize>(),
+            exact_surface_count: self.memory.exact_surface_index.len()
+                + self
+                    .overlays
+                    .iter()
+                    .map(|overlay| overlay.memory.exact_surface_index.len())
+                    .sum::<usize>(),
+            character_anchor_count: self.terminal_count() as usize,
+            manifest_generation: self.manifest_generation,
+            delta_count: self.overlays.len(),
+            tombstone_count: self.tombstones.len(),
         }
     }
+
+    fn is_tombstoned(&self, surface: &str) -> bool {
+        self.tombstones
+            .contains(&normalize_lexical_surface(surface))
+    }
+
+    fn is_composite(&self) -> bool {
+        self.manifest_generation != 0
+    }
+}
+
+fn memory_seed_rows(
+    memory: &LexicalGrokkingMemory,
+    terminal_offset: u32,
+    surface: &str,
+    limit: usize,
+) -> Vec<(u32, String, u32)> {
+    memory
+        .readout(surface, limit, ReadoutMode::Full)
+        .into_iter()
+        .filter_map(|candidate| {
+            let terminal_id = terminal_offset.checked_add(candidate.terminal_id)?;
+            let surface = memory.decode_terminal(candidate.terminal_id)?;
+            Some((terminal_id, surface, lattice_seed_score(candidate)))
+        })
+        .collect()
 }
 
 fn lattice_seed_score(candidate: GrokkingCandidate) -> u32 {
@@ -2455,7 +2846,7 @@ fn truncate_with_reconstruction_tail(candidates: &mut Vec<GrokkingCandidate>, li
     }
     let mut reserve = candidates[limit..]
         .iter()
-        .filter(|candidate| candidate.reconstruction_modes != 0)
+        .filter(|candidate| candidate.reconstruction_modes != 0 || candidate.ambiguity_shell)
         .copied()
         .collect::<Vec<_>>();
     reserve.sort_unstable_by(|left, right| {
@@ -2475,7 +2866,8 @@ fn truncate_with_reconstruction_tail(candidates: &mut Vec<GrokkingCandidate>, li
         .enumerate()
         .rev()
         .filter_map(|(index, candidate)| {
-            (index != 0 && candidate.reconstruction_modes == 0).then_some(index)
+            (index != 0 && candidate.reconstruction_modes == 0 && !candidate.ambiguity_shell)
+                .then_some(index)
         })
         .take(reserve.len())
         .collect::<BTreeSet<_>>();
@@ -2493,34 +2885,39 @@ fn should_expand_operator_lattice(exact_terminal_count: usize, limit: usize) -> 
     exact_terminal_count == 0 || limit > exact_terminal_count
 }
 
-fn compile_character_anchors(package: &LexicalGrokkingPackage) -> Vec<Vec<u32>> {
-    package
-        .centers
-        .iter()
-        .map(|center| {
-            let start = center.coupling_start as usize;
-            let end = start.saturating_add(center.coupling_count as usize);
-            expected_sequence(
-                package
-                    .reverse_couplings
-                    .get(start..end)
-                    .unwrap_or_default(),
-                COUPLING_FLAG_CHARACTER_ANCHOR,
-            )
-            .as_slice()
-            .to_vec()
-        })
-        .collect()
-}
-
-fn compile_exact_surface_index(character_anchors: &[Vec<u32>]) -> Vec<(u64, u32)> {
-    let mut index = character_anchors
-        .iter()
-        .enumerate()
-        .map(|(terminal, anchors)| (anchor_sequence_hash(anchors), terminal as u32))
-        .collect::<Vec<_>>();
+fn compile_surface_indices(
+    package: &LexicalGrokkingPackage,
+) -> (Vec<(u64, u32)>, Vec<u32>, Vec<u32>) {
+    let mut index = Vec::with_capacity(package.centers.len());
+    let mut offsets = Vec::with_capacity(package.centers.len().saturating_add(1));
+    let mut atoms = Vec::new();
+    offsets.push(0);
+    for (terminal, center) in package.centers.iter().enumerate() {
+        let mut anchors = AnchorSequence::default();
+        let mut complete = false;
+        if let Ok(surface) = format::decode_center_surface(*center, &package.decoder_nodes) {
+            complete = true;
+            for (position, ch) in surface.chars().take(MAX_ANCHOR_SEQUENCE).enumerate() {
+                let Some(atom_id) = package.graph.atom_id(NGramKey {
+                    channel: AtomChannel::CharacterAnchor,
+                    len: 1,
+                    units: [ch as u32, 0, 0, 0],
+                }) else {
+                    complete = false;
+                    break;
+                };
+                anchors.atoms[position] = atom_id;
+                anchors.len = anchors.len.saturating_add(1);
+            }
+        }
+        if complete && !anchors.as_slice().is_empty() {
+            index.push((anchor_sequence_hash(anchors.as_slice()), terminal as u32));
+            atoms.extend_from_slice(anchors.as_slice());
+        }
+        offsets.push(atoms.len() as u32);
+    }
     index.sort_unstable();
-    index
+    (index, offsets, atoms)
 }
 
 fn anchor_sequence_hash(sequence: &[u32]) -> u64 {
@@ -2871,8 +3268,27 @@ mod tests {
 
     #[test]
     fn geometry_reserve_keeps_the_nearest_basin_and_ambiguity_shell() {
+        let anchor_sequences = [[1_u32, 9, 9], [1, 2, 4], [1, 2, 5]];
+        let reverse_couplings = anchor_sequences
+            .iter()
+            .flatten()
+            .map(|atom_id| WaveCoupling {
+                peer_id: *atom_id,
+                flags: COUPLING_FLAG_CHARACTER_ANCHOR,
+                ..WaveCoupling::default()
+            })
+            .collect::<Vec<_>>();
+        let centers = (0..anchor_sequences.len())
+            .map(|terminal_id| super::super::crystal::WordCenter64 {
+                coupling_start: (terminal_id * 3) as u32,
+                coupling_count: 3,
+                ..Default::default()
+            })
+            .collect();
         let memory = LexicalGrokkingMemory {
             package: LexicalGrokkingPackage {
+                centers,
+                reverse_couplings,
                 restoration_calibration: super::super::restoration::RestorationCalibration {
                     max_geometry_distance: 2,
                     ..Default::default()
@@ -2880,7 +3296,10 @@ mod tests {
                 ..Default::default()
             },
             exact_surface_index: Vec::new(),
-            character_anchors: vec![vec![1, 9, 9], vec![1, 2, 4], vec![1, 2, 5]],
+            character_anchor_offsets: vec![0, 3, 6, 9],
+            character_anchor_atoms: anchor_sequences.into_iter().flatten().collect(),
+            relations: RelationStore::Eager,
+            reverse_cache: Mutex::new(ReverseCache::default()),
         };
         let frontier = vec![
             (
@@ -3121,6 +3540,26 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec![0, 1, 4, 5]
         );
+    }
+
+    #[test]
+    fn geometry_shell_evidence_survives_bounded_lattice() {
+        let mut candidates = (0..6)
+            .map(|terminal_id| GrokkingCandidate {
+                terminal_id,
+                ambiguity_shell: terminal_id == 5,
+                geometry_distance: if terminal_id == 5 { 0 } else { 1 },
+                settled_energy: 1_000 - terminal_id as i32,
+                ..Default::default()
+            })
+            .collect::<Vec<_>>();
+
+        truncate_with_reconstruction_tail(&mut candidates, 4);
+
+        assert_eq!(candidates.len(), 4);
+        assert!(candidates
+            .iter()
+            .any(|candidate| candidate.terminal_id == 5));
     }
 
     #[test]

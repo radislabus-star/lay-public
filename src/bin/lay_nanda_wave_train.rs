@@ -94,6 +94,74 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    if let Some(package) = arg_path(&args, "--build-l1-v8") {
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report = lay::nanda_wave::build_lazy_v8_package(&package, &output)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--init-l11-composite") {
+        let manifest = arg_path(&args, "--manifest")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--manifest is required"))?;
+        let base = arg_path(&args, "--base")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--base is required"))?;
+        let report = lay::nanda_wave::initialize_l11_composite_manifest(&manifest, &base)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--admit-l11-delta") {
+        let manifest = arg_path(&args, "--manifest")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--manifest is required"))?;
+        let delta = arg_path(&args, "--delta")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--delta is required"))?;
+        let proof_receipt = arg_path(&args, "--proof-receipt").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--proof-receipt is required for delta admission",
+            )
+        })?;
+        let report = lay::nanda_wave::admit_l11_delta(
+            &manifest,
+            &delta,
+            &proof_receipt,
+            arg_string(&args, "--scope").as_deref(),
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--admit-l11-tombstone") {
+        let manifest = arg_path(&args, "--manifest")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--manifest is required"))?;
+        let surface = arg_string(&args, "--surface")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--surface is required"))?;
+        let proof_receipt = arg_path(&args, "--proof-receipt").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--proof-receipt is required for tombstone admission",
+            )
+        })?;
+        let report = lay::nanda_wave::admit_l11_tombstone(
+            &manifest,
+            &surface,
+            &proof_receipt,
+            arg_string(&args, "--scope").as_deref(),
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if let Some(l1_package) = arg_path(&args, "--bench-l1-lexical-grokking") {
         let surface = arg_string(&args, "--surface")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--surface is required"))?;

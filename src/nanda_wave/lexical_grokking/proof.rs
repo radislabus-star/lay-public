@@ -766,28 +766,40 @@ fn prove_l1_lexical_grokking_with_policy(
         .as_ref()
         .map(TrainingCorpus::span_bytes)
         .unwrap_or_default();
-    let (source_package, artifact_bytes, compile_ms, diagnostics) =
+    let (memory, artifact_bytes, compile_ms, diagnostics, memory_load_ms) =
         if let Some(package_path) = reuse_package {
-            let bytes = std::fs::read(package_path)?;
-            let package = format::decode(&bytes).map_err(io::Error::other)?;
-            let max_forward_degree = package
+            let memory_load_started = Instant::now();
+            let memory = LexicalGrokkingMemory::load(package_path).map_err(io::Error::other)?;
+            let max_forward_degree = memory
+                .package
                 .atoms
                 .iter()
-                .map(|atom| atom.coupling_count as usize)
+                .enumerate()
+                .map(|(atom_id, _)| memory.forward_degree(atom_id as u32))
                 .max()
                 .unwrap_or_default();
             let diagnostics = CompileDiagnostics {
-                forward_relations_before_policy: package.forward_couplings.len(),
+                forward_relations_before_policy: memory.forward_relation_count(),
                 forward_relations_dropped: 0,
-                forward_atoms_above_baseline_cap: package
+                forward_atoms_above_baseline_cap: memory
+                    .package
                     .atoms
                     .iter()
-                    .filter(|atom| atom.coupling_count as usize > BASELINE_FORWARD_COUPLINGS)
+                    .enumerate()
+                    .filter(|(atom_id, _)| {
+                        memory.forward_degree(*atom_id as u32) > BASELINE_FORWARD_COUPLINGS
+                    })
                     .count(),
                 max_forward_degree,
             };
-            let artifact_bytes = bytes.len();
-            (package, artifact_bytes, 0, diagnostics)
+            let artifact_bytes = std::fs::metadata(package_path)?.len() as usize;
+            (
+                memory,
+                artifact_bytes,
+                0,
+                diagnostics,
+                memory_load_started.elapsed().as_millis(),
+            )
         } else {
             let compile_started = Instant::now();
             let compiled = compile_training_corpus_with_policy_in(
@@ -809,14 +821,20 @@ fn prove_l1_lexical_grokking_with_policy(
             std::fs::rename(&temporary, output_path)?;
             let artifact_bytes = bytes.len();
             drop(bytes);
-            (package, artifact_bytes, compile_ms, compiled.diagnostics)
+            let memory_load_started = Instant::now();
+            let memory = LexicalGrokkingMemory::from_package(package);
+            let memory_load_ms = memory_load_started.elapsed().as_millis();
+            (
+                memory,
+                artifact_bytes,
+                compile_ms,
+                compiled.diagnostics,
+                memory_load_ms,
+            )
         };
     drop(training_corpus);
 
     let proof_started = Instant::now();
-    let memory_load_started = Instant::now();
-    let memory = LexicalGrokkingMemory::from_package(source_package);
-    let memory_load_ms = memory_load_started.elapsed().as_millis();
     eprintln!(
         "l11_proof stage=memory_ready elapsed_ms={} stage_elapsed_ms={} workers={}",
         proof_started.elapsed().as_millis(),

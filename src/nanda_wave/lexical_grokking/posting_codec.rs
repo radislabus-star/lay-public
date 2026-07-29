@@ -213,7 +213,7 @@ pub(super) fn decode_posting(
     Ok(relations)
 }
 
-fn canonical_relations(relations: &[WaveCoupling]) -> Vec<WaveCoupling> {
+pub(super) fn canonical_relations(relations: &[WaveCoupling]) -> Vec<WaveCoupling> {
     let mut canonical = relations.to_vec();
     canonical.sort_unstable_by_key(|item| item.peer_id);
     canonical

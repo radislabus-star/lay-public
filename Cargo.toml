@@ -1,6 +1,6 @@
 [package]
 name = "lay"
-version = "0.2.327"
+version = "0.2.328"
 edition = "2021"
 description = "Typing correction and RU/EN layout switching for Linux desktops"
 license-file = "LICENSE"
@@ -81,6 +81,7 @@ evdev = "0.13"
 zbus = "5.15.0"
 x11rb = { version = "0.13", features = ["xkb"] }
 libc = "0.2"
+zstd = "0.13"
 niri-ipc = "26"
 llama_cpp = { version = "0.3.2", optional = true }
 

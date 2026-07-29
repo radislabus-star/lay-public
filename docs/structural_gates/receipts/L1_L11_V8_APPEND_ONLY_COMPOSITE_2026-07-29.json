@@ -1,0 +1,129 @@
+{
+  "receipt": "L1_L11_V8_APPEND_ONLY_COMPOSITE_2026-07-29",
+  "date": "2026-07-29",
+  "scope": "append-only L1.1 manifest, additive package ranges, tombstones, overlay scaling and atomic service replacement",
+  "tested": {
+    "unit_integration_verdict": "PASS",
+    "base_representation": "V8",
+    "empty_manifest_authority": false,
+    "empty_manifest_verdict": "lattice",
+    "new_exact_surface_global_id": "PASS",
+    "base_rewritten": false,
+    "composite_authority": false,
+    "tombstone_exact_lookup": "PASS",
+    "tombstone_decode": "PASS",
+    "tombstone_lattice_filter": "PASS",
+    "failed_proof_receipt_rejected": "PASS",
+    "shared_runtime_tombstone_normalization": "PASS",
+    "composite_benchmark_route": "PASS",
+    "replacement_load_reader_continuity": "PASS_1000_OF_1000",
+    "replacement_visible_after_atomic_flip": "PASS",
+    "reload_during_initial_warming": "PASS_REJECTED",
+    "parallel_manifest_admissions_retained": "PASS_2_OF_2",
+    "parallel_manifest_generation": "PASS_3_TO_5",
+    "second_writer_blocked_until_first_unlock": "PASS_DETERMINISTIC"
+  },
+  "overlay_measurement": {
+    "base_bytes": 184826869,
+    "delta_bytes_each": 56600,
+    "surface": "вреям",
+    "iterations": 2000,
+    "rows": [
+      {
+        "delta_count": 0,
+        "manifest_bytes": 186,
+        "cold_wall_seconds": 0.71,
+        "cold_rss_kib": 158580,
+        "hot_rss_kib": 169380,
+        "p50_us": 2149,
+        "p99_us": 2262,
+        "max_us": 2508
+      },
+      {
+        "delta_count": 1,
+        "manifest_bytes": 535,
+        "cold_wall_seconds": 0.72,
+        "cold_rss_kib": 158140,
+        "hot_rss_kib": 169300,
+        "p50_us": 2853,
+        "p99_us": 3414,
+        "max_us": 5128
+      },
+      {
+        "delta_count": 2,
+        "manifest_bytes": 882,
+        "cold_wall_seconds": 0.73,
+        "cold_rss_kib": 158256,
+        "hot_rss_kib": 169624,
+        "p50_us": 2909,
+        "p99_us": 3376,
+        "max_us": 4278
+      },
+      {
+        "delta_count": 4,
+        "manifest_bytes": 1576,
+        "cold_wall_seconds": 0.74,
+        "cold_rss_kib": 158800,
+        "hot_rss_kib": 169724,
+        "p50_us": 3016,
+        "p99_us": 3469,
+        "max_us": 3754
+      },
+      {
+        "delta_count": 8,
+        "manifest_bytes": 2964,
+        "cold_wall_seconds": 0.74,
+        "cold_rss_kib": 158648,
+        "hot_rss_kib": 169980,
+        "p50_us": 3202,
+        "p99_us": 3718,
+        "max_us": 3981
+      }
+    ]
+  },
+  "concurrent_full_v8_reload": {
+    "base_path": "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/package.v8.bin",
+    "request_producers": 8,
+    "service_workers": 20,
+    "lattice_requests": 800,
+    "lattice_responses": 800,
+    "errors": 0,
+    "reload_wall_seconds": 0.85,
+    "post_reload_status": "ready",
+    "live_daemon_or_ibus_touched": false,
+    "verdict": "PASS_SHADOW"
+  },
+  "measured_facts": [
+    "manifest mutations use temporary-file plus rename",
+    "manifest read-modify-write transactions are serialized by a private flock sidecar",
+    "successful manifest mutation fsyncs the temporary file and parent directory",
+    "delta and tombstone admission require an existing JSON proof receipt with a PASS verdict",
+    "delta WordCenter IDs occupy disjoint global ranges after the immutable base",
+    "service replacement loads and validates outside the write lock",
+    "the write lock protects only the ready-host ownership flip",
+    "service health exposes manifest generation and rejects stale generations",
+    "runtime manifest parsing does not duplicate package checksum and decode",
+    "binary package detection reads one byte and does not pre-read the complete V8",
+    "manifest and entry counts have explicit bounded runtime limits",
+    "zero through eight proved tiny deltas remain below the five millisecond hot p99 gate"
+  ],
+  "not_tested": [
+    "full fixed 13 x 20000 quality proof with a real admitted delta",
+    "cross-package pairwise phase interference",
+    "delta compaction into a replacement V8 base",
+    "live daemon or IME authority"
+  ],
+  "verdict_scope": "PASS_SHADOW_RUNTIME_NOT_PROMOTED",
+  "runtime_authority_changed": false,
+  "architecture_document": "/home/ubu/projects/lay/docs/l1-crystal-kernel-memory-layout.md",
+  "evidence": [
+    "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/overlay-scale/",
+    "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/service-reload-v2/"
+  ],
+  "source": [
+    "/home/ubu/projects/lay/src/nanda_wave/lexical_grokking/composite.rs",
+    "/home/ubu/projects/lay/src/nanda_wave/lexical_grokking/runtime.rs",
+    "/home/ubu/projects/lay/src/bin/lay_l1_1_serve.rs",
+    "/home/ubu/projects/lay/src/bin/lay_nanda_wave_train.rs"
+  ]
+}

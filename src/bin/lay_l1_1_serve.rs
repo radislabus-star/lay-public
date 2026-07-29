@@ -328,34 +328,73 @@ fn handle_request(
             }
         }
         lay::nanda_wave::L1ServiceRequest::Reload { memory } => {
-            let mut host = state.host.write().expect("L1.1 host write lock");
-            match &mut *host {
-                HostedMemory::Ready(host) => match host.reload(&memory) {
-                    Ok(()) => lay::nanda_wave::L1ServiceResponse::Reload {
-                        report: host.stats(),
-                    },
-                    Err(error) => lay::nanda_wave::L1ServiceResponse::Error {
-                        message: error.to_string(),
-                    },
-                },
-                HostedMemory::Loading { .. } => lay::nanda_wave::L1ServiceResponse::Error {
+            if matches!(
+                &*state.host.read().expect("L1.1 host read lock"),
+                HostedMemory::Loading { .. }
+            ) {
+                return lay::nanda_wave::L1ServiceResponse::Error {
                     message: "L1.1 host is still warming; reload is not available yet".to_string(),
-                },
-                HostedMemory::Failed { .. } => {
-                    match lay::nanda_wave::L1RestorationHost::load(&memory) {
-                        Ok(next) => {
+                };
+            }
+            // Keep serving the current immutable snapshot while the replacement
+            // is loaded and validated. The write lock protects only the flip.
+            match load_validate_replace(
+                &state.host,
+                || {
+                    lay::nanda_wave::L1RestorationHost::load(&memory)
+                        .map(|next| {
                             let report = next.stats();
-                            *host = HostedMemory::Ready(next);
-                            lay::nanda_wave::L1ServiceResponse::Reload { report }
-                        }
-                        Err(error) => lay::nanda_wave::L1ServiceResponse::Error {
-                            message: error.to_string(),
-                        },
+                            (HostedMemory::Ready(next), report)
+                        })
+                        .map_err(|error| error.to_string())
+                },
+                |current, next| {
+                    let (HostedMemory::Ready(current), HostedMemory::Ready(next)) = (current, next)
+                    else {
+                        return Ok(());
+                    };
+                    let current = current.stats();
+                    let next = next.stats();
+                    if is_stale_manifest_reload(
+                        &current.package_path,
+                        current.manifest_generation,
+                        &next.package_path,
+                        next.manifest_generation,
+                    ) {
+                        return Err(format!(
+                            "refusing stale L1.1 manifest generation {}",
+                            next.manifest_generation
+                        ));
                     }
-                }
+                    Ok(())
+                },
+            ) {
+                Ok(report) => lay::nanda_wave::L1ServiceResponse::Reload { report },
+                Err(message) => lay::nanda_wave::L1ServiceResponse::Error { message },
             }
         }
     }
+}
+
+fn load_validate_replace<T, R, E>(
+    slot: &RwLock<T>,
+    load: impl FnOnce() -> Result<(T, R), E>,
+    validate: impl FnOnce(&T, &T) -> Result<(), E>,
+) -> Result<R, E> {
+    let (next, report) = load()?;
+    let mut current = slot.write().expect("L1.1 host write lock");
+    validate(&current, &next)?;
+    *current = next;
+    Ok(report)
+}
+
+fn is_stale_manifest_reload(
+    current_path: &Path,
+    current_generation: u64,
+    next_path: &Path,
+    next_generation: u64,
+) -> bool {
+    current_path == next_path && next_generation != 0 && current_generation > next_generation
 }
 
 fn health_report(state: &ServiceState, host: &HostedMemory) -> lay::nanda_wave::L1ServiceHealth {
@@ -371,6 +410,7 @@ fn health_report(state: &ServiceState, host: &HostedMemory) -> lay::nanda_wave::
                 package_path: stats.package_path,
                 package_bytes: Some(stats.package_bytes),
                 terminal_count: Some(stats.terminal_count),
+                manifest_generation: stats.manifest_generation,
                 requests_served,
                 uptime_ms,
             }
@@ -382,6 +422,7 @@ fn health_report(state: &ServiceState, host: &HostedMemory) -> lay::nanda_wave::
             package_path: package_path.clone(),
             package_bytes: None,
             terminal_count: None,
+            manifest_generation: 0,
             requests_served,
             uptime_ms,
         },
@@ -395,6 +436,7 @@ fn health_report(state: &ServiceState, host: &HostedMemory) -> lay::nanda_wave::
             package_path: package_path.clone(),
             package_bytes: None,
             terminal_count: None,
+            manifest_generation: 0,
             requests_served,
             uptime_ms,
         },
@@ -444,4 +486,82 @@ fn print_response(response: lay::nanda_wave::L1ServiceResponse) -> io::Result<()
         serde_json::to_string_pretty(&response).map_err(io::Error::other)?
     );
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::mpsc;
+
+    #[test]
+    fn manifest_reload_generation_is_monotonic_for_the_same_path() {
+        let path = Path::new("/tmp/l11.runtime.json");
+        assert!(is_stale_manifest_reload(path, 4, path, 3));
+        assert!(!is_stale_manifest_reload(path, 4, path, 4));
+        assert!(!is_stale_manifest_reload(path, 4, path, 5));
+        assert!(!is_stale_manifest_reload(
+            path,
+            4,
+            Path::new("/tmp/other.runtime.json"),
+            3,
+        ));
+        assert!(!is_stale_manifest_reload(path, 4, path, 0));
+    }
+
+    #[test]
+    fn replacement_load_does_not_block_current_snapshot_readers() {
+        let slot = Arc::new(RwLock::new(1_u8));
+        let thread_slot = Arc::clone(&slot);
+        let (started_tx, started_rx) = mpsc::channel();
+        let (release_tx, release_rx) = mpsc::channel();
+
+        let replacement = thread::spawn(move || {
+            load_validate_replace(
+                &thread_slot,
+                || {
+                    started_tx.send(()).expect("announce replacement load");
+                    release_rx.recv().expect("release replacement load");
+                    Ok::<_, ()>((2_u8, ()))
+                },
+                |current, next| {
+                    assert_eq!((*current, *next), (1, 2));
+                    Ok(())
+                },
+            )
+        });
+
+        started_rx.recv().expect("replacement load started");
+        for _ in 0..1_000 {
+            assert_eq!(*slot.read().expect("read current snapshot"), 1);
+        }
+        release_tx.send(()).expect("finish replacement load");
+        replacement
+            .join()
+            .expect("replacement thread")
+            .expect("replacement succeeds");
+        assert_eq!(*slot.read().expect("read replacement snapshot"), 2);
+    }
+
+    #[test]
+    fn reload_during_initial_warmup_cannot_race_background_owner() {
+        let state = Arc::new(ServiceState {
+            started_at: Instant::now(),
+            socket_path: PathBuf::from("/tmp/lay-l11-warmup-test.sock"),
+            request_count: AtomicU64::new(0),
+            host: Arc::new(RwLock::new(HostedMemory::Loading {
+                package_path: PathBuf::from("/tmp/initial.v8.bin"),
+            })),
+        });
+        let response = handle_request(
+            lay::nanda_wave::L1ServiceRequest::Reload {
+                memory: PathBuf::from("/tmp/replacement.v8.bin"),
+            },
+            &state,
+        );
+        assert!(matches!(
+            response,
+            lay::nanda_wave::L1ServiceResponse::Error { message }
+                if message.contains("still warming")
+        ));
+    }
 }
