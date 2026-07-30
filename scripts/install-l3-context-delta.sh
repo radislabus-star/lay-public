@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TRAINER="${LAY_NANDA_WAVE_TRAIN:-$HOME/.local/lib/lay/bin/lay-nanda-wave-train}"
-BASE="${LAY_L3_CONTEXT_BASE:-$HOME/.local/share/lay/nanda_wave/l3_context_phase_v1.nwpc}"
+BASE="${LAY_L3_CONTEXT_BASE:-$HOME/.local/share/lay/nanda_wave/l3_context_phase.nwpc}"
 MANIFEST="${LAY_L3_CONTEXT_MANIFEST:-$HOME/.local/share/lay/nanda_wave/l3_context_phase.runtime.json}"
 DELTA_DIR="${LAY_L3_CONTEXT_DELTA_DIR:-$HOME/.local/share/lay/nanda_wave/l3-context-deltas}"
 
