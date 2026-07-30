@@ -218,6 +218,29 @@ mod tests {
     }
 
     #[test]
+    fn stable_layout_projection_precedes_secondary_typo_repair_from_logs() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolution = resolve_text_correction(request(
+            "cnjq ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        ));
+
+        let selected = resolution
+            .selected
+            .as_ref()
+            .unwrap_or_else(|| panic!("resolution={resolution:#?}"));
+        assert_eq!(selected.replacement, "стой ");
+        assert!(
+            resolution
+                .candidates
+                .iter()
+                .all(|candidate| candidate.replacement != "сотой "),
+            "stable raw projection must not enter a second typo pass: {resolution:#?}"
+        );
+    }
+
+    #[test]
     fn verified_duplicate_evidence_cannot_override_keep_or_veto() {
         for protected_action in [CandidateGateAction::KeepOriginal, CandidateGateAction::Veto] {
             let mut protected = UnifiedCorrectionCandidate::new(
@@ -997,15 +1020,33 @@ mod tests {
     #[test]
     fn short_russian_word_does_not_autoswitch_to_ascii_from_logs() {
         let pipeline = default_typing_assist_pipeline();
-        let resolution =
-            resolve_text_correction(request("ой ", &pipeline, CorrectionMode::DeterministicOnly));
+        for (input, bad_replacement) in [("40 000 р ", "40 000 h "), ("Екб ", "Tr, ")] {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicOnly,
+            ));
 
-        assert_eq!(resolution.decision, None);
-        assert!(resolution.candidates.iter().any(|candidate| {
-            candidate.replacement == "jq "
-                && candidate.gate.action == CandidateGateAction::SuggestOnly
-                && candidate.gate.reason == "short_cyrillic_to_ascii_layout"
-        }));
+            assert_eq!(resolution.decision, None, "input={input:?}");
+            let matching = resolution
+                .candidates
+                .iter()
+                .filter(|candidate| candidate.replacement == bad_replacement)
+                .collect::<Vec<_>>();
+            assert!(
+                matching.iter().all(|candidate| {
+                    candidate.gate.action == CandidateGateAction::KeepOriginal
+                        && candidate.gate.reason == "short_cyrillic_to_ascii_layout"
+                }),
+                "input={input:?} resolution={resolution:#?}"
+            );
+            if input == "Екб " {
+                assert!(
+                    !matching.is_empty(),
+                    "three-letter log case must reach the structural gate: {resolution:#?}"
+                );
+            }
+        }
     }
 
     #[test]

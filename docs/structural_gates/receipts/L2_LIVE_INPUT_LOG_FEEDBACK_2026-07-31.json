@@ -1,0 +1,134 @@
+{
+  "format": "lay-structural-gate-receipt-v1",
+  "gate": "L2_LIVE_INPUT_LOG_FEEDBACK",
+  "date": "2026-07-31",
+  "runtime_version_observed": "0.2.333",
+  "target_release": "0.2.334",
+  "sources": [
+    "/home/ubu/.local/share/lay/recent_actions.jsonl",
+    "/home/ubu/.local/share/lay/nanda_wave/word_usage_events.jsonl",
+    "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl",
+    "/home/ubu/.local/share/lay/nanda_wave/l3-online/state.json"
+  ],
+  "measured": {
+    "recent_actions_valid_records": 142,
+    "word_usage_valid_records": 2708,
+    "word_usage_confirmed_prediction_matches": 871,
+    "word_usage_explicit_completion_accepts": 12,
+    "word_usage_completion_rejects": 134,
+    "word_usage_auto_undo_rejections": 2,
+    "l3_online_source_offset_bytes": 511831,
+    "l3_online_generation": 0,
+    "l3_online_pending_relations": 0,
+    "sequential_correction_core_tests_passed": 84,
+    "sequential_correction_core_tests_failed": 21
+  },
+  "counterexamples": [
+    {
+      "input": "40 000 р",
+      "applied": "40 000 h",
+      "source": "layout_ru_to_en",
+      "observed_result": "user_auto_undo"
+    },
+    {
+      "input": "Екб",
+      "applied": "Tr,",
+      "source": "layout_ru_to_en",
+      "observed_result": "user_auto_undo"
+    },
+    {
+      "input": "cnjq",
+      "preedit_projection": "стой",
+      "after_space_applied": "сотой",
+      "source": "layout_then_missing_letter",
+      "observed_result": "conflicting_runtime_routes"
+    }
+  ],
+  "change": {
+    "short_cyrillic_ru_to_en_max_chars": 3,
+    "short_cyrillic_ru_to_en_gate": "keep_original",
+    "stable_raw_layout_projection_precedes_secondary_typo_repair": true
+  },
+  "targeted_tests": [
+    {
+      "name": "typing_transition::proposal_admission::tests::short_cyrillic_to_ascii_layout_is_never_applyable_from_logs",
+      "result": "PASS"
+    },
+    {
+      "name": "correction_core::tests::short_russian_word_does_not_autoswitch_to_ascii_from_logs",
+      "result": "PASS"
+    },
+    {
+      "name": "correction_core::tests::stable_layout_projection_precedes_secondary_typo_repair_from_logs",
+      "result": "PASS"
+    }
+  ],
+  "route_contracts": [
+    {
+      "name": "typing_transition_authority_contract",
+      "passed": 20,
+      "failed": 0
+    },
+    {
+      "name": "text_mutation_monopoly_contract",
+      "passed": 15,
+      "failed": 0
+    },
+    {
+      "name": "input_gate",
+      "passed": 6,
+      "failed": 0
+    }
+  ],
+  "baseline_controls": [
+    {
+      "name": "deterministic_mode_corrects_multiword_wrong_layout_tail",
+      "unchanged_0_2_333": "FAIL",
+      "changed_code": "FAIL"
+    },
+    {
+      "name": "unique_transposition_certificate_repairs_short_word",
+      "unchanged_0_2_333": "FAIL",
+      "changed_code": "FAIL"
+    }
+  ],
+  "source_built_probes": [
+    {
+      "input": "40 000 р",
+      "selected": null,
+      "result": "PASS"
+    },
+    {
+      "input": "Екб",
+      "selected": null,
+      "result": "PASS"
+    },
+    {
+      "input": "cnjq",
+      "selected": "стой",
+      "result": "PASS"
+    }
+  ],
+  "not_tested_yet": [
+    "full correction-core baseline repair",
+    "post-install multi-hour live input window"
+  ],
+  "installation": {
+    "installed_version": "0.2.334",
+    "lay_sha256": "ca8e3eef3db5a5d2ec41ab9560d78c93f9b36e3bd9873d302daceb670bda2382",
+    "lay_daemon_sha256": "264095a01c4c7837a36bad21bd47c137822c066e7893f1571c9bbca860ba3fd8",
+    "lay_ibus_engine_sha256": "d769b59c18d6c1770e34c5c9abbb99a03c7f82fe1af8fb5af75b1da271f00333",
+    "lay_daemon_active": true,
+    "l3_online_active": true,
+    "gnome_extension_active": true,
+    "ibus_daemon_pid_before": 3793,
+    "ibus_daemon_pid_after": 3793,
+    "ibus_engine_pid_before": 3236279,
+    "ibus_engine_pid_after": 2989683,
+    "ibus_engine_mode_restored": "lay-ime-us",
+    "ibus_engine_dbus_ping": "PASS"
+  },
+  "runtime_authority_changed": true,
+  "runtime_authority_scope": "short_ru_to_en_keep_original_and_stable_raw_layout_projection",
+  "verdict": "PROMOTED_TARGETED_PASS_BROAD_BASELINE_WATCH"
+}

@@ -308,25 +308,25 @@ fn layout_then_typo_candidate(
     }
 
     let converted_text = replace_last_text_word(req.text, &converted_word)?;
-    let explanation = explain_typing_assist_with_pipeline(&converted_text, false, pipeline);
-    if explanation.chosen.is_none() && is_protected_known_english_layout_word(&current_word) {
-        return None;
-    }
-    let final_replacement = explanation.output.unwrap_or_else(|| {
-        if crate::layout_autoswitch::is_russian_layout_surface_authority_word(&converted_word) {
-            converted_text.clone()
-        } else {
-            String::new()
+    let raw_projection_stable =
+        crate::layout_autoswitch::is_russian_layout_surface_authority_word(&converted_word);
+    let (final_replacement, source_id) = if raw_projection_stable {
+        (converted_text, "layout_then_known_word".to_string())
+    } else {
+        let explanation = explain_typing_assist_with_pipeline(&converted_text, false, pipeline);
+        if explanation.chosen.is_none() && is_protected_known_english_layout_word(&current_word) {
+            return None;
         }
-    });
+        let source_id = explanation
+            .chosen
+            .as_ref()
+            .map(|candidate| format!("layout_then_{}", candidate.rule_id))
+            .unwrap_or_else(|| "layout_then_unknown_word".to_string());
+        (explanation.output.unwrap_or_default(), source_id)
+    };
     if final_replacement.is_empty() || final_replacement == req.text {
         return None;
     }
-    let source_id = explanation
-        .chosen
-        .as_ref()
-        .map(|candidate| format!("layout_then_{}", candidate.rule_id))
-        .unwrap_or_else(|| "layout_then_known_word".to_string());
     let origin = CandidateOrigin::LayoutThenTypo;
     let gate = TransitionDecisionCore::admit_candidate_proposal(
         req.text,

@@ -357,22 +357,22 @@ fn input_gate_logs_candidate_admission_separately_from_final_outcome() {
 }
 
 #[test]
-fn live_l2_field_shadow_uses_the_l2_owned_layout_candidate() {
+fn live_canonical_l2_uses_the_l2_owned_short_layout_candidates() {
     let l2 = read("src/nanda_wave/l2.rs");
     let bridge = read("src/nanda_wave/l2_field/bridge.rs");
     let layout = read("src/nanda_wave/l2/layout_adapter.rs");
 
     assert!(
-        l2.contains("pub(crate) fn hot_layout_candidate")
-            && l2.contains("hot_layout_candidate_with_noisy_projection(original, true)")
-            && l2.contains("layout_adapter::layout_candidate_with_projection_policy")
-            && bridge.contains("crate::nanda_wave::l2::hot_layout_candidate(original)"),
-        "L2FieldShadow must keep layout candidate production inside the shared L2 owner"
+        l2.contains("pub(crate) fn hot_short_layout_candidates")
+            && l2.contains("layout_adapter::short_token_candidates")
+            && bridge.contains("crate::nanda_wave::l2::hot_short_layout_candidates(original)"),
+        "canonical L2 must keep short layout candidate production inside the shared L2 owner"
     );
     assert!(
         !layout.contains("TransitionDecisionCore")
-            && !bridge.contains("hot_layout_candidate(original).map(|candidate| candidate.text"),
-        "the live shadow layout bridge may propose a candidate but must not choose or apply it"
+            && !bridge.contains("CorrectionDecision {")
+            && !bridge.contains("CandidateGateAction::Apply"),
+        "the live canonical layout bridge may propose candidates but must not choose or apply edits"
     );
 }
 

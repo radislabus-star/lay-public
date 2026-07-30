@@ -378,7 +378,7 @@ fn structural_context_gate(
     }
     if short_cyrillic_word_switches_to_ascii_layout(original, replacement, error_class) {
         return Some(CandidateGateDecision {
-            action: CandidateGateAction::SuggestOnly,
+            action: CandidateGateAction::KeepOriginal,
             reason: "short_cyrillic_to_ascii_layout",
         });
     }
@@ -1679,7 +1679,7 @@ fn short_cyrillic_word_switches_to_ascii_layout(
     let Some(replacement_word) = last_text_word(replacement) else {
         return false;
     };
-    original_word.chars().count() <= 2
+    original_word.chars().count() <= 3
         && original_word
             .chars()
             .any(|ch| matches!(ch, 'а'..='я' | 'ё' | 'А'..='Я' | 'Ё'))
@@ -1901,6 +1901,16 @@ pub(crate) fn should_prefer_composite_after_repeated_repair(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn short_cyrillic_to_ascii_layout_is_never_applyable_from_logs() {
+        for (original, replacement) in [("40 000 р ", "40 000 h "), ("Екб ", "Tr, ")] {
+            let gate = gate_candidate(original, replacement, TypingErrorClass::WrongLayout);
+
+            assert_eq!(gate.action, CandidateGateAction::KeepOriginal);
+            assert_eq!(gate.reason, "short_cyrillic_to_ascii_layout");
+        }
+    }
 
     #[test]
     fn l2_cannot_delete_a_known_inflection_without_context_authority() {

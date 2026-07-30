@@ -833,8 +833,7 @@ fn next_token_context_rejects_candidates_that_rewrite_the_left_context() {
 
 #[test]
 fn relation_schema_preserves_mixed_case_left_context_at_runtime_boundary() {
-    let original =
-        tokenize_context_text("Нужно посмотреть через MTC можно оплатить Apple b");
+    let original = tokenize_context_text("Нужно посмотреть через MTC можно оплатить Apple b");
     let context = &original[..original.len() - 1];
 
     assert_eq!(

@@ -258,6 +258,95 @@ Runtime authority changed:
 
 - `false`
 
+## 16. 2026-07-31 Live Input Log Feedback Gate
+
+What was inspected:
+
+- `/home/ubu/.local/share/lay/recent_actions.jsonl`;
+- `/home/ubu/.local/share/lay/nanda_wave/word_usage_events.jsonl`;
+- `/home/ubu/.local/share/lay/ibus_engine_debug.jsonl`;
+- `/home/ubu/.local/share/lay/nanda_wave/l3-online/state.json`.
+
+Measured facts:
+
+- `142` valid recent action records;
+- `2,708` valid usage events;
+- `871` manually completed visible prediction matches;
+- `12` explicit completion accepts and `134` completion rejects;
+- `2` double-`Shift` auto-undo rejections;
+- the online L3 reader consumed `511,831` source bytes but still had
+  `generation = 0` and no pending relation.
+
+Three concrete runtime failures were separated by mechanism:
+
+- `40 000 р -> 40 000 h` and `Екб -> Tr,` were short Cyrillic-to-ASCII
+  layout candidates that received apply authority and were then explicitly
+  undone by the user;
+- `cnjq` had the correct raw projection `стой` in the IME prediction path,
+  while the after-space correction path performed a second typo pass and
+  applied `сотой`.
+
+Canonical correction:
+
+- a one-to-three-character Cyrillic-to-ASCII layout candidate is
+  `KeepOriginal`; learned state may not promote it to an automatic edit;
+- once the raw layout projection is an established Russian surface, it
+  settles before any secondary typo repair.
+
+What was not tested at the time of recording:
+
+- repair of the full correction-core baseline;
+- a post-install multi-hour live input window.
+
+Verification update:
+
+- focused structural gate:
+  `short_cyrillic_to_ascii_layout_is_never_applyable_from_logs` -> `PASS`;
+- focused correction-core gate:
+  `short_russian_word_does_not_autoswitch_to_ascii_from_logs` -> `PASS`;
+- focused raw-projection gate:
+  `stable_layout_projection_precedes_secondary_typo_repair_from_logs` -> `PASS`;
+- source-built probes:
+  `40 000 р -> None`,
+  `Екб -> None`,
+  `cnjq -> стой`;
+- route contracts:
+  `typing_transition_authority_contract = 20/20`,
+  `text_mutation_monopoly_contract = 15/15`,
+  `input_gate = 6/6`;
+- the wider sequential correction-core run was `84/105 PASS`; its remaining
+  `21` authority failures are therefore recorded as `WATCH`, not hidden by
+  the focused result;
+- two representative failures,
+  `deterministic_mode_corrects_multiword_wrong_layout_tail` and
+  `unique_transposition_certificate_repairs_short_word`, also failed against
+  the unchanged `0.2.333` source in an A/B control. The wider red set is
+  baseline debt; it is not promoted to PASS by this experiment.
+
+Exact receipt:
+
+- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2_LIVE_INPUT_LOG_FEEDBACK_2026-07-31.json`.
+
+Runtime authority changed:
+
+- `true`, limited to release `0.2.334`:
+  short Cyrillic-to-ASCII candidates are kept original and stable raw layout
+  projections settle before secondary typo repair.
+
+Installation verification:
+
+- installed `lay 0.2.334`;
+- `lay-daemon`, `lay-l3-online`, the GNOME extension and the L1.1 service are
+  active;
+- the IBus daemon retained PID `3793`;
+- the Lay engine changed from PID `3236279` to PID `2989683`, matched the
+  release SHA-256 and answered its D-Bus health probe;
+- the previous engine mode `lay-ime-us` was restored;
+- installed probes remained:
+  `40 000 р -> None`,
+  `Екб -> None`,
+  `cnjq -> стой`.
+
 ## 13. Standalone Full-Neighbor V13, 2026-07-30
 
 V13 closes the cold standalone `L2` package over the final global `L1.1`
