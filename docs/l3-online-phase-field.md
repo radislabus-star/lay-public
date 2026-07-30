@@ -1229,3 +1229,133 @@ Exact receipt:
 ```text
 /home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_CAUSAL_FEEDBACK_FULL_GATE_2026-07-31.json
 ```
+
+## Same-inode journal compaction cursor, 2026-07-31
+
+Release `0.2.335` proved the causal reducer and admission gates, but its byte
+offset cursor was not compatible with the actual bounded journal writer.
+`usage_prior` caps `word_usage_events.jsonl` at `500 * 1024` bytes by opening
+the same file with `truncate(true)` and writing the retained complete-line
+tail. The inode therefore stays unchanged while both content and size move.
+
+The incorrect rule was:
+
+```text
+new length < old offset
+-> set offset to zero
+-> read the entire retained journal again
+```
+
+Live logs exposed the result before any delta was admitted:
+
+```text
+poll interval                                  5 s
+parsed events after repeated scans          49,406
+causal observations after repeated scans     1,569
+pending relations                                87
+admitted deltas                                   0
+runtime manifest SHA before/after          identical
+```
+
+The contaminated counters and pending set were not retained. Their state was
+archived, and the worker was rebuilt from the clean state saved before the
+first live replay.
+
+Release `0.2.336` replaces the byte-only cursor with:
+
+```text
+device + inode
++ complete-line byte offset
++ hashes of the last 32 complete JSONL lines
++ stable snapshot check:
+   size + mtime before read
+   size + mtime after read
+   5 ms settle
+   up to 5 attempts
+```
+
+Every poll reads at most the bounded `500 KiB` journal. At the default
+five-second interval this is about `100 KiB/s` of sequential local reads.
+After append or same-inode truncate, the worker finds the longest retained
+suffix of its 32-line cursor and parses only lines after that overlap.
+
+If no overlap exists, the worker reanchors without training. This can lose a
+feedback event under a hostile multi-writer race, but it cannot replay old
+events or grant false authority. An unstable snapshot returns `WouldBlock`;
+the service keeps the old cursor and retries on the next poll.
+
+Current ownership:
+
+```text
+src/bin/lay_nanda_wave_train/l3_online.rs
+    orchestration and persisted state I/O                         321 lines
+
+src/bin/lay_nanda_wave_train/l3_online/feedback.rs
+    causal reducer and bounded candidate relations                412 lines
+
+src/bin/lay_nanda_wave_train/l3_online/journal.rs
+    stable snapshot, overlap cursor and compaction handling        313 lines
+
+src/bin/lay_nanda_wave_train/l3_online/proof_chain.rs
+    mini-delta compile, targeted/full proof and admission           300 lines
+```
+
+The controlled same-inode smoke used a copy of the real bounded journal:
+
+```text
+append events                                      1
+same-inode truncate + append events                1
+total parsed events                                2
+compactions                                        1
+overlap lines                                     32
+reanchors without overlap                          0
+next empty-cycle output bytes                      0
+```
+
+The final installed replay and 25-second live observation measured:
+
+```text
+replay source bytes                          511,876
+replay parsed events                           2,480
+causal observations                               84
+pending relations                                 84
+ready relations                                    0
+admitted deltas                                    0
+events parsed after replay                        45
+same-inode compactions                             2
+reanchors without overlap                          0
+runtime manifest SHA before/after          identical
+IBus engine PID before/after         2,989,683 / 2,989,683
+```
+
+Tested:
+
+- first append after an empty journal;
+- normal append with an incomplete trailing line;
+- atomic rename compaction;
+- actual same-inode truncate compaction;
+- fail-closed rotation with no overlap;
+- controlled copy of the real `500 KiB` journal;
+- final live replay and two compaction cycles;
+- remote `11/11` online tests.
+
+Not tested:
+
+- multi-day cursor stability;
+- recovery of feedback when concurrent writers produce no shared tail;
+- an automatically admitted real-feedback delta.
+
+Verdict scope:
+
+- `0.2.335` byte-offset cursor: `FAIL`, superseded;
+- `0.2.336` bounded overlap cursor: `PASS`;
+- L3 quality field changed: `false`;
+- runtime authority changed: `false`;
+- L3 base or manifest changed: `false`;
+- global IBus restarted: `false`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_JOURNAL_CURSOR_2026-07-31.json
+```

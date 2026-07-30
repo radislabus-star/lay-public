@@ -1,0 +1,126 @@
+{
+  "receipt": "L3_ONLINE_JOURNAL_CURSOR_2026-07-31",
+  "date": "2026-07-31",
+  "release": "0.2.336",
+  "supersedes": {
+    "release": "0.2.335",
+    "component": "L3 online byte-offset journal cursor",
+    "verdict": "FAIL"
+  },
+  "cause": {
+    "journal_path": "/home/ubu/.local/share/lay/nanda_wave/word_usage_events.jsonl",
+    "maximum_bytes": 512000,
+    "writer_operation": "same-inode truncate and retained-tail rewrite",
+    "incorrect_reader_operation": "reset offset to zero when current length is below old offset",
+    "poll_millis": 5000
+  },
+  "detected_live_failure": {
+    "parsed_events": 49406,
+    "causal_ime_choice_observations": 1569,
+    "stored_ime_rejections": 2506,
+    "expired_ime_rejections": 937,
+    "pending_relations": 87,
+    "admitted_deltas": 0,
+    "manifest_sha256": "b635ff5b68eac55c508549503b727c5066c281144f5473b67627ab5dc520d546",
+    "runtime_authority_changed": false,
+    "contaminated_state_backup": "/home/ubu/.local/share/lay/nanda_wave/l3-online/state.json.contaminated-20260731-0143",
+    "clean_state_backup": "/home/ubu/.local/share/lay/nanda_wave/l3-online/state.json.backup-20260731-013554"
+  },
+  "cursor": {
+    "device_and_inode": true,
+    "complete_line_offset": true,
+    "tail_line_hashes": 32,
+    "hash": "FNV-1a 64-bit",
+    "maximum_snapshot_bytes": 512000,
+    "snapshot_attempts": 5,
+    "snapshot_settle_millis": 5,
+    "snapshot_stamp_fields": [
+      "device",
+      "inode",
+      "length",
+      "mtime seconds",
+      "mtime nanoseconds"
+    ],
+    "no_overlap_behavior": "reanchor without training",
+    "unstable_snapshot_behavior": "WouldBlock and retry next poll"
+  },
+  "controlled_same_inode_smoke": {
+    "home": "/tmp/lay-l3-journal-smoke-v2.tD7ssF",
+    "inode_preserved": true,
+    "append_events": 1,
+    "truncate_compaction_append_events": 1,
+    "parsed_events": 2,
+    "journal_compactions": 1,
+    "overlap_lines": 32,
+    "journal_reanchors_without_overlap": 0,
+    "empty_cycle_output_bytes": 0,
+    "verdict": "PASS"
+  },
+  "final_live_replay": {
+    "log": "/tmp/lay-l3-online-live-replay-0.2.336-final.jsonl",
+    "source_bytes": 511876,
+    "parsed_events": 2480,
+    "causal_ime_choice_observations": 84,
+    "pending_relations": 84,
+    "ready_relations": 0,
+    "admitted_deltas": 0
+  },
+  "live_observation_25_seconds": {
+    "new_parsed_events": 45,
+    "causal_observations_before": 84,
+    "causal_observations_after": 84,
+    "journal_compactions": 2,
+    "journal_reanchors_without_overlap": 0,
+    "manifest_sha256_before_after": "b635ff5b68eac55c508549503b727c5066c281144f5473b67627ab5dc520d546",
+    "ibus_engine_pid_before": 2989683,
+    "ibus_engine_pid_after": 2989683,
+    "verdict": "PASS"
+  },
+  "tests": {
+    "local_online_tests": {
+      "passed": 11,
+      "failed": 0
+    },
+    "remote_online_tests": {
+      "host": "e@192.168.3.94",
+      "passed": 11,
+      "failed": 0,
+      "cargo_jobs": 20
+    }
+  },
+  "module_lines": {
+    "src/bin/lay_nanda_wave_train/l3_online.rs": 321,
+    "src/bin/lay_nanda_wave_train/l3_online/feedback.rs": 412,
+    "src/bin/lay_nanda_wave_train/l3_online/journal.rs": 313,
+    "src/bin/lay_nanda_wave_train/l3_online/proof_chain.rs": 300
+  },
+  "release_binaries_sha256": {
+    "lay": "c724249ce538cf7cce45dd96c509b735d22dd4cf77b50799311804facb8e90ae",
+    "lay-daemon": "c4cc069e10b94025cedf2702e0b30b51a69119469c8049171a5a3fafc81103c2",
+    "lay-ibus-engine": "2f034e46db5f88e6ee30a73ac7b5f25f94aea0275c292b131a6d15db8afce408",
+    "lay-l11-serve": "47566a7c0ab6562c7a2b7d8ba48c1bede2977b8ba4324f65e2714e621ecd6aae",
+    "lay-nanda-wave-eval": "5ca4ade7a4bcbf47388df26fc22853aca928869c8b9b275bfdae33fe786a206f",
+    "lay-nanda-wave-train": "6c5698f81218b00d4750c82dbc985d8739e81bd8a89d2c7d0516bcbf8e09578d"
+  },
+  "tested": [
+    "first append after empty journal",
+    "normal append with incomplete trailing line",
+    "atomic rename compaction",
+    "same-inode truncate compaction",
+    "fail-closed no-overlap rotation",
+    "controlled copy of the real bounded journal",
+    "final live replay",
+    "two live compaction cycles",
+    "remote online tests"
+  ],
+  "not_tested": [
+    "multi-day cursor stability",
+    "lossless recovery when concurrent writers have no shared retained tail",
+    "automatic admission of a real feedback delta"
+  ],
+  "l3_quality_field_changed": false,
+  "runtime_authority_changed": false,
+  "runtime_manifest_changed": false,
+  "global_ibus_restarted": false,
+  "verdict": "PASS"
+}

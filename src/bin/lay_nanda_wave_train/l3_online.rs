@@ -1,5 +1,7 @@
 #[path = "l3_online/feedback.rs"]
 mod feedback;
+#[path = "l3_online/journal.rs"]
+mod journal;
 #[path = "l3_online/proof_chain.rs"]
 mod proof_chain;
 
@@ -9,7 +11,7 @@ use feedback::{
 };
 use proof_chain::attempt_relation;
 use std::fs;
-use std::io::{self, Read, Seek, SeekFrom};
+use std::io;
 use std::path::{Path, PathBuf};
 use std::thread;
 use std::time::Duration;
@@ -60,13 +62,14 @@ pub(super) fn run(args: &[String]) -> io::Result<()> {
     let state_exists = paths.state.is_file();
     let mut state = load_state(&paths.state)?;
 
-    if initialize_source_offset(&paths, &mut state, state_exists)? {
+    if initialize_source_cursor(&paths, &mut state, state_exists)? {
         println!(
             "{}",
             serde_json::json!({
                 "kind": "l3_online_initialized",
                 "manifest": paths.manifest,
                 "source_offset": state.source_offset,
+                "source_inode": state.source_inode,
                 "historical_events_replayed": false,
             })
         );
@@ -87,27 +90,38 @@ pub(super) fn run(args: &[String]) -> io::Result<()> {
     }
 }
 
-fn initialize_source_offset(
+fn initialize_source_cursor(
     paths: &Paths,
     state: &mut OnlineState,
     state_exists: bool,
 ) -> io::Result<bool> {
-    if state_exists {
+    if state_exists && state.source_inode != 0 {
         return Ok(false);
     }
-    state.source_offset = fs::metadata(&paths.usage_events)
-        .map(|metadata| metadata.len())
-        .unwrap_or_default();
+    journal::initialize_cursor(&paths.usage_events, state)?;
     save_state(&paths.state, state)?;
     Ok(true)
 }
 
 fn process_once(paths: &Paths, state: &mut OnlineState) -> io::Result<()> {
-    let appended = read_appended_text(&paths.usage_events, &mut state.source_offset)?;
+    let batch = journal::read_new_events(&paths.usage_events, state)?;
+    match batch.mode {
+        journal::JournalReadMode::Append => {}
+        journal::JournalReadMode::Compacted => {
+            state.feedback.journal_compactions =
+                state.feedback.journal_compactions.saturating_add(1);
+        }
+        journal::JournalReadMode::Reanchored => {
+            state.feedback.journal_reanchors_without_overlap = state
+                .feedback
+                .journal_reanchors_without_overlap
+                .saturating_add(1);
+        }
+    }
     let mut observations = 0_usize;
     let mut direct_observations = 0_usize;
     let mut ime_choice_observations = 0_usize;
-    for line in appended.lines() {
+    for line in batch.text.lines() {
         let Ok(event) = serde_json::from_str::<UsageEvent>(line) else {
             continue;
         };
@@ -134,11 +148,13 @@ fn process_once(paths: &Paths, state: &mut OnlineState) -> io::Result<()> {
             .then(|| key.clone())
     });
     let Some(key) = ready else {
-        if observations > 0 {
+        if observations > 0 || batch.mode != journal::JournalReadMode::Append {
             println!(
                 "{}",
                 serde_json::json!({
                     "kind": "l3_online_feedback_recorded",
+                    "journal_mode": format!("{:?}", batch.mode),
+                    "journal_overlap_lines": batch.overlap_lines,
                     "new_observations": observations,
                     "direct_correction_observations": direct_observations,
                     "causal_ime_choice_observations": ime_choice_observations,
@@ -179,11 +195,8 @@ fn replay_existing_feedback(
             "runtime_authority": false,
         }));
     }
-    let text = match fs::read_to_string(&paths.usage_events) {
-        Ok(text) => text,
-        Err(error) if error.kind() == io::ErrorKind::NotFound => String::new(),
-        Err(error) => return Err(error),
-    };
+    let snapshot = journal::read_full_snapshot(&paths.usage_events)?;
+    let text = snapshot.text();
     let mut parsed_events = 0_usize;
     let mut observations = 0_usize;
     let mut direct_observations = 0_usize;
@@ -209,7 +222,8 @@ fn replay_existing_feedback(
         insert_relation_observation(state, observation);
     }
     enforce_relation_bound(state);
-    state.replayed_source_bytes = text.len() as u64;
+    state.replayed_source_bytes = snapshot.complete_bytes();
+    snapshot.anchor(state);
     Ok(serde_json::json!({
         "kind": "l3_online_feedback_replay",
         "status": "completed",
@@ -236,23 +250,6 @@ fn ensure_manifest(paths: &Paths) -> io::Result<()> {
     }
     lay::nanda_wave::initialize_l3_context_composite_manifest(&paths.manifest, &paths.base)?;
     Ok(())
-}
-
-fn read_appended_text(path: &Path, offset: &mut u64) -> io::Result<String> {
-    let mut file = match fs::File::open(path) {
-        Ok(file) => file,
-        Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(String::new()),
-        Err(error) => return Err(error),
-    };
-    let len = file.metadata()?.len();
-    if len < *offset {
-        *offset = 0;
-    }
-    file.seek(SeekFrom::Start(*offset))?;
-    let mut bytes = Vec::new();
-    file.read_to_end(&mut bytes)?;
-    *offset = len;
-    Ok(String::from_utf8_lossy(&bytes).into_owned())
 }
 
 fn load_state(path: &Path) -> io::Result<OnlineState> {
@@ -309,17 +306,16 @@ mod tests {
         };
         fs::write(&paths.usage_events, []).unwrap();
         let mut state = OnlineState::default();
-        assert!(initialize_source_offset(&paths, &mut state, false).unwrap());
+        assert!(initialize_source_cursor(&paths, &mut state, false).unwrap());
         assert_eq!(state.source_offset, 0);
 
         fs::write(&paths.usage_events, b"{\"kind\":\"accepted_fix\"}\n").unwrap();
-        assert!(!initialize_source_offset(&paths, &mut state, true).unwrap());
+        assert!(!initialize_source_cursor(&paths, &mut state, true).unwrap());
         assert_eq!(state.source_offset, 0);
-        assert!(
-            !read_appended_text(&paths.usage_events, &mut state.source_offset)
-                .unwrap()
-                .is_empty()
-        );
+        assert!(!journal::read_new_events(&paths.usage_events, &mut state)
+            .unwrap()
+            .text
+            .is_empty());
         let _ = fs::remove_dir_all(root);
     }
 }

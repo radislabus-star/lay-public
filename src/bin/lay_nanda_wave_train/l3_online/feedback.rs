@@ -52,12 +52,20 @@ pub(super) struct OnlineFeedbackStats {
     expired_ime_rejections: u64,
     evicted_relations: u64,
     pub(super) replayed_events: u64,
+    pub(super) journal_compactions: u64,
+    pub(super) journal_reanchors_without_overlap: u64,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub(super) struct OnlineState {
     pub(super) format: String,
     pub(super) source_offset: u64,
+    #[serde(default)]
+    pub(super) source_device: u64,
+    #[serde(default)]
+    pub(super) source_inode: u64,
+    #[serde(default)]
+    pub(super) source_tail_hashes: Vec<u64>,
     pub(super) generation: u64,
     #[serde(default)]
     pub(super) pending: BTreeMap<String, PendingRelation>,
@@ -78,6 +86,9 @@ impl Default for OnlineState {
         Self {
             format: STATE_FORMAT.to_string(),
             source_offset: 0,
+            source_device: 0,
+            source_inode: 0,
+            source_tail_hashes: Vec::new(),
             generation: 0,
             pending: BTreeMap::new(),
             event_ordinal: 0,

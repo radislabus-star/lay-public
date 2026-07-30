@@ -25,13 +25,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1785450562.124671,
-    "ast_hash": "9d0ea6cf9872f798323af0e8465b4e72",
+    "mtime": 1785451648.2084467,
+    "ast_hash": "d66a1ed8d69cff92277038a9929794e2",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1785450562.124671,
-    "ast_hash": "fc7c730d78b7cc896302584df9e39af8",
+    "mtime": 1785451648.2094467,
+    "ast_hash": "b9134545d9916df455276dcb83da9eba",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1785450562.1256711,
-    "ast_hash": "ab083a8fd1f9dd66483c69ecca2674dd",
+    "mtime": 1785451648.2094467,
+    "ast_hash": "5bf66f6219491fefece7f1f2b45969c2",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1785450562.1256711,
-    "ast_hash": "47c9962e816d255afaa3f425d5d2d35c",
+    "mtime": 1785451648.2104468,
+    "ast_hash": "4329a41934e01dfe0cf5d168d3bc815c",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -3650,8 +3650,8 @@
     "semantic_hash": ""
   },
   "docs/l3-online-phase-field.md": {
-    "mtime": 1785451292.254595,
-    "ast_hash": "c90dc9c2acaa4e58c006fa10a5c3c9ae",
+    "mtime": 1785452325.5197694,
+    "ast_hash": "c11626a66240328ff3bfa2b74a12ab16",
     "semantic_hash": ""
   },
   "src/nanda_wave/context_phase/surface_field.rs": {
@@ -4905,8 +4905,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_train/l3_online.rs": {
-    "mtime": 1785449977.2272537,
-    "ast_hash": "ebd6dcf3d448fa71781ee3a96101c9b7",
+    "mtime": 1785451566.8135662,
+    "ast_hash": "f1b5413b9c41bcac718623ad939fc256",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L2_IBUS_CACHE_BUDGET_2026-07-28.json": {
@@ -5030,13 +5030,23 @@
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_train/l3_online/feedback.rs": {
-    "mtime": 1785449890.670292,
-    "ast_hash": "520f9c363c3c5cb6a1d9d5742d22235e",
+    "mtime": 1785451550.6763916,
+    "ast_hash": "3a90a3218a19f835ce0f2c2d2ed2a39c",
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_train/l3_online/proof_chain.rs": {
     "mtime": 1785449890.670292,
     "ast_hash": "91bca697defe6744601d321fd9a408e8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L3_ONLINE_JOURNAL_CURSOR_2026-07-31.json": {
+    "mtime": 1785452325.5197694,
+    "ast_hash": "5a985cc2c1215849fb68883415214cd8",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_nanda_wave_train/l3_online/journal.rs": {
+    "mtime": 1785452110.296443,
+    "ast_hash": "fb7dcc1e682594e16736f6aaf48e101b",
     "semantic_hash": ""
   }
 }
