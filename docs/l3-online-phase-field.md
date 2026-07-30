@@ -1032,3 +1032,200 @@ Exact receipt:
 ```text
 /home/ubu/projects/lay/docs/structural_gates/receipts/L3_SELF_TEACHER_APPEND_ONLY_DELTA_2026-07-30.json
 ```
+
+## Causal live-feedback reducer and mandatory full gate, 2026-07-31
+
+Release `0.2.335` closes the missing route between actual IME decisions and
+append-only L3 deltas. The journal is discovery evidence, not authority. No
+word pair, product name, correction result, or phrase replacement is encoded
+in the runtime.
+
+The accepted route is:
+
+```text
+word_usage_events.jsonl append
+-> bounded causal reducer
+   -> direct accepted_fix with one changed tail token
+   -> or rejected_ime followed by a confirmed IME choice
+      with the exact same normalized context within 16 events
+-> rejected -> expected candidate relation
+-> at least 2 distinct scenes
+-> one-pass mini-delta compile
+-> targeted improvement + safety proof
+-> frozen 80k full transition differential
+-> append to runtime manifest only when all gates PASS
+-> immutable base remains byte-identical
+```
+
+The reducer is deliberately bounded:
+
+```text
+recent rejected IME events                    32
+maximum event gap                             16
+pending candidate relations                  128
+distinct scenes per relation                   8
+first compile threshold                        2
+later retry thresholds                         4 / 8
+full proof corpus                         80,000 lines
+full proof minimum surface support              2
+```
+
+Eviction is by oldest observed relation, not lexical order. Replaying old
+traffic is an explicit one-time operation:
+
+```text
+--watch-l3-context-online --once --replay-existing-feedback
+```
+
+The number of source bytes already replayed is persisted. A normal fresh
+worker starts at the current end of the journal and does not silently train on
+historical input.
+
+The admission receipt chain is now stored in the manifest:
+
+```text
+delta
++ targeted_proof_receipt
++ full_proof_receipt
+```
+
+The full receipt is bound to the composite manifest, canonical delta path, and
+exact delta byte count. Admission requires:
+
+```text
+targeted verdict                         PASS
+targeted false supports                     0
+full differential verdict                PASS
+lost target profiles                        0
+lost supports                               0
+lost top-1                                  0
+new false supports                          0
+new false top-1                             0
+```
+
+If targeted proof returns `WATCH`, full proof is not run and the report
+contains `full_proof_receipt: null`. If frozen proof sources are unavailable,
+the worker writes a bound `WATCH` receipt and cannot admit the delta.
+
+Ownership was split so the online worker is no longer a monolithic file:
+
+```text
+src/bin/lay_nanda_wave_train/l3_online.rs
+    orchestration, paths, journal offset and state I/O             325 lines
+
+src/bin/lay_nanda_wave_train/l3_online/feedback.rs
+    causal event reducer, bounds and candidate relations           401 lines
+
+src/bin/lay_nanda_wave_train/l3_online/proof_chain.rs
+    mini-delta compile, targeted/full proof and admission           300 lines
+```
+
+### Isolated journal snapshot replay
+
+An isolated replay of the pre-install journal snapshot produced:
+
+```text
+source bytes                            511,829
+parsed events                             2,670
+causal IME choice observations               62
+unique pending relations                     61
+relations with 2 independent scenes           1
+attempted relation               как -> контейнер
+targeted verdict                           WATCH
+admitted deltas                                0
+runtime manifest SHA before/after       identical
+runtime authority changed                  false
+```
+
+This is a quality result, not a failure of the mechanism. The reducer found
+possible feedback, but the field did not demonstrate the requested
+improvement, so the relation remained pending and could not change the live
+model.
+
+The installed `0.2.335` worker then replayed the live journal after its normal
+tail compaction:
+
+```text
+source bytes                            511,948
+parsed events                             2,614
+causal IME choice observations               82
+unique pending relations                     82
+relations with 2 independent scenes           0
+attempted relations                            0
+admitted deltas                                0
+runtime manifest SHA before/after       identical
+IBus engine PID before/after     2,989,683 / 2,989,683
+```
+
+The differing event and relation counts are separate snapshots of the bounded
+journal, not contradictory denominators. The live replay is the installed
+state of record.
+
+### Frozen full-proof control
+
+The frozen sources installed outside the repository are:
+
+```text
+/home/ubu/.local/share/lay/nanda_wave/l3-proof/fixed-base-corpus-80k.txt
+    80,000 lines
+    5,638,191 bytes
+    SHA-256 56243b510c93930632c069d440d49c49a5ec58422d622523a0d5130dd085eac7
+
+/home/ubu/.local/share/lay/nanda_wave/l3-proof/surface-geometry-exact.jsonl
+    2,349 rows
+    181,668 bytes
+    SHA-256 9aef85b94831ea72e5027816f9a8258ef3039d218bfc20459a664259cd120673
+```
+
+A release-mode zero control using `baseline == candidate` measured:
+
+```text
+lattice transitions                       50,592
+compared transitions                      41,064
+all five regression counters                   0
+verdict                                      PASS
+wall time                                  26.77 s
+average CPU                                1,421%
+peak RSS                              219,248 KiB
+```
+
+This full cost is paid only after a relation has accumulated enough
+independent evidence and passed targeted proof. Ordinary journal appends only
+run the bounded reducer.
+
+Tested:
+
+- direct user-correction extraction;
+- causal rejected-IME to confirmed-choice pairing;
+- accepted-IME prefix removal from sentence context;
+- unrelated-context rejection;
+- bounded historical replay;
+- targeted WATCH with no manifest mutation;
+- zero-regression full-receipt validation;
+- regression receipt rejection;
+- storage of both proof receipts in the manifest;
+- frozen 80k release-mode differential control;
+- remote test execution and release build with 20 Cargo jobs.
+
+Not tested:
+
+- a real live-feedback relation that passes both gates;
+- multi-day accumulation and automatic admission;
+- runtime reload after an automatically admitted live-feedback delta.
+
+Verdict scope:
+
+- causal feedback reducer: `PASS`;
+- append-only proof chain: `PASS`;
+- current journal candidate quality: `WATCH`, no admission;
+- runtime authority changed: `false`;
+- L3 base rewritten: `false`;
+- installed CLI and GNOME extension: `0.2.335`;
+- model services reloaded: `true`;
+- global IBus restarted: `false`, PID unchanged.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_CAUSAL_FEEDBACK_FULL_GATE_2026-07-31.json
+```

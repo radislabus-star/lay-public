@@ -442,13 +442,24 @@ fn main() -> io::Result<()> {
                 "--proof-receipt is required for delta admission",
             )
         })?;
+        let full_proof_receipt = arg_path(&args, "--full-proof-receipt");
         let scope = arg_string(&args, "--scope");
-        let report = lay::nanda_wave::admit_l3_context_delta(
-            &manifest,
-            &delta,
-            Some(&proof_receipt),
-            scope.as_deref(),
-        )?;
+        let report = if let Some(full_proof_receipt) = full_proof_receipt {
+            lay::nanda_wave::admit_l3_context_delta_with_full_proof(
+                &manifest,
+                &delta,
+                &proof_receipt,
+                &full_proof_receipt,
+                scope.as_deref(),
+            )?
+        } else {
+            lay::nanda_wave::admit_l3_context_delta(
+                &manifest,
+                &delta,
+                Some(&proof_receipt),
+                scope.as_deref(),
+            )?
+        };
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?

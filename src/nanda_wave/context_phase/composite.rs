@@ -23,6 +23,8 @@ pub(crate) struct L3DeltaEntry {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) proof_receipt: Option<PathBuf>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) full_proof_receipt: Option<PathBuf>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) scope: Option<String>,
 }
 
@@ -353,6 +355,16 @@ pub(crate) fn admit_delta(
     proof_receipt: Option<&Path>,
     scope: Option<&str>,
 ) -> io::Result<serde_json::Value> {
+    admit_delta_with_full_proof(manifest_path, delta_path, proof_receipt, None, scope)
+}
+
+pub(crate) fn admit_delta_with_full_proof(
+    manifest_path: &Path,
+    delta_path: &Path,
+    proof_receipt: Option<&Path>,
+    full_proof_receipt: Option<&Path>,
+    scope: Option<&str>,
+) -> io::Result<serde_json::Value> {
     let mut manifest = read_manifest(manifest_path)?;
     let root = manifest_path.parent().unwrap_or_else(|| Path::new("."));
     let base = read_package(&resolve(root, &manifest.base))?;
@@ -381,6 +393,7 @@ pub(crate) fn admit_delta(
         bytes,
         admitted_unix_ms: unix_time_ms(),
         proof_receipt: proof_receipt.map(|path| path_for_manifest(root, path)),
+        full_proof_receipt: full_proof_receipt.map(|path| path_for_manifest(root, path)),
         scope: scope.map(str::to_owned),
     });
     write_manifest(manifest_path, &manifest)?;
@@ -393,6 +406,8 @@ pub(crate) fn admit_delta(
         "delta_bytes": bytes,
         "delta_count": manifest.deltas.len(),
         "total_delta_bytes": total_delta_bytes,
+        "targeted_proof_receipt": proof_receipt,
+        "full_proof_receipt": full_proof_receipt,
         "compaction_recommended": manifest.deltas.len() >= COMPACT_DELTA_COUNT
             || total_delta_bytes >= COMPACT_DELTA_BYTES,
         "runtime_authority": false,
@@ -543,6 +558,54 @@ mod tests {
         snapshot_manifest(&manifest_path, &snapshot_path).unwrap();
         assert_eq!(fs::read(&manifest_path).unwrap(), manifest_before);
         assert_eq!(read_package(&snapshot_path).unwrap().transitions, 10);
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn manifest_keeps_targeted_and_full_proof_receipts_for_delta() {
+        let root = std::env::temp_dir().join(format!(
+            "lay-l3-composite-proof-{}-{}",
+            std::process::id(),
+            unix_time_ms()
+        ));
+        fs::create_dir_all(&root).unwrap();
+        let base_path = root.join("base.nwpc");
+        let delta_path = root.join("delta.nwpc");
+        let targeted_path = root.join("targeted.json");
+        let full_path = root.join("full.json");
+        let manifest_path = root.join("manifest.json");
+        let package = ContextPhasePackage {
+            signature_schema: super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
+            ..ContextPhasePackage::default()
+        };
+        write_package(&base_path, &package).unwrap();
+        write_package(&delta_path, &package).unwrap();
+        fs::write(&targeted_path, b"{}").unwrap();
+        fs::write(&full_path, b"{}").unwrap();
+
+        initialize_manifest(&manifest_path, &base_path).unwrap();
+        admit_delta_with_full_proof(
+            &manifest_path,
+            &delta_path,
+            Some(&targeted_path),
+            Some(&full_path),
+            Some("online-test"),
+        )
+        .unwrap();
+        let manifest = read_manifest(&manifest_path).unwrap();
+
+        assert_eq!(manifest.deltas.len(), 1);
+        assert_eq!(
+            resolve(&root, manifest.deltas[0].proof_receipt.as_ref().unwrap()),
+            targeted_path
+        );
+        assert_eq!(
+            resolve(
+                &root,
+                manifest.deltas[0].full_proof_receipt.as_ref().unwrap()
+            ),
+            full_path
+        );
         let _ = fs::remove_dir_all(root);
     }
 

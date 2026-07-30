@@ -25,13 +25,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1785447562.7644358,
-    "ast_hash": "a7588038e96df30867af3ebbcdb35196",
+    "mtime": 1785450562.124671,
+    "ast_hash": "9d0ea6cf9872f798323af0e8465b4e72",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1785447562.765436,
-    "ast_hash": "4c3c41d284eb2a44ce096ce30799e8ae",
+    "mtime": 1785450562.124671,
+    "ast_hash": "fc7c730d78b7cc896302584df9e39af8",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1785447562.765436,
-    "ast_hash": "e92c006a7b60a8a294a9f2b0348cff78",
+    "mtime": 1785450562.1256711,
+    "ast_hash": "ab083a8fd1f9dd66483c69ecca2674dd",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1785447562.765436,
-    "ast_hash": "f3addcd49a0cca2a7d4f6757ba556f1a",
+    "mtime": 1785450562.1256711,
+    "ast_hash": "47c9962e816d255afaa3f425d5d2d35c",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -1050,8 +1050,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_train.rs": {
-    "mtime": 1785431196.5997338,
-    "ast_hash": "cc17fbc452a7d78df561180fe57e961d",
+    "mtime": 1785450041.1119606,
+    "ast_hash": "483825abfddb6218243ceda49705b458",
     "semantic_hash": ""
   },
   "src/bin/lay_ngram_corpus.rs": {
@@ -1575,8 +1575,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/mod.rs": {
-    "mtime": 1785431196.5987337,
-    "ast_hash": "9efa5f3735acf06e085a887ac5af6190",
+    "mtime": 1785451105.0085669,
+    "ast_hash": "fcf937a6e76c9700ce31a31ab081a853",
     "semantic_hash": ""
   },
   "src/nanda_wave/mode.rs": {
@@ -3470,8 +3470,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/context_phase/mod.rs": {
-    "mtime": 1785431196.5977337,
-    "ast_hash": "46bc8766f1f302e77267cce9e6dcb53f",
+    "mtime": 1785449379.0304723,
+    "ast_hash": "291bd58fdeb3aee8280b2651f8dad7b2",
     "semantic_hash": ""
   },
   "src/nanda_wave/context_phase/tests.rs": {
@@ -3650,8 +3650,8 @@
     "semantic_hash": ""
   },
   "docs/l3-online-phase-field.md": {
-    "mtime": 1785432021.230558,
-    "ast_hash": "2c6f161cf6351395fc7ce26afe60ddb3",
+    "mtime": 1785451292.254595,
+    "ast_hash": "c90dc9c2acaa4e58c006fa10a5c3c9ae",
     "semantic_hash": ""
   },
   "src/nanda_wave/context_phase/surface_field.rs": {
@@ -4890,8 +4890,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/context_phase/composite.rs": {
-    "mtime": 1785431253.7881613,
-    "ast_hash": "8d615e4d2a3428ec676f12f782f6f271",
+    "mtime": 1785450041.1129606,
+    "ast_hash": "d224c46baacf954f75664bc84a5c12d1",
     "semantic_hash": ""
   },
   "data/lexicon/l3_relation_roles_teacher_v1.txt": {
@@ -4905,8 +4905,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_train/l3_online.rs": {
-    "mtime": 1785412179.9610064,
-    "ast_hash": "bd75b976fdf48f62e0404dff7acc8087",
+    "mtime": 1785449977.2272537,
+    "ast_hash": "ebd6dcf3d448fa71781ee3a96101c9b7",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L2_IBUS_CACHE_BUDGET_2026-07-28.json": {
@@ -5022,6 +5022,21 @@
   "docs/structural_gates/receipts/L2_LIVE_INPUT_LOG_FEEDBACK_2026-07-31.json": {
     "mtime": 1785448031.1564627,
     "ast_hash": "d2ed3552d26b8ef80978a5df2071f2a9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L3_ONLINE_CAUSAL_FEEDBACK_FULL_GATE_2026-07-31.json": {
+    "mtime": 1785451292.254595,
+    "ast_hash": "b50f39c9ca39f431de0e185656cd0863",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_nanda_wave_train/l3_online/feedback.rs": {
+    "mtime": 1785449890.670292,
+    "ast_hash": "520f9c363c3c5cb6a1d9d5742d22235e",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_nanda_wave_train/l3_online/proof_chain.rs": {
+    "mtime": 1785449890.670292,
+    "ast_hash": "91bca697defe6744601d321fd9a408e8",
     "semantic_hash": ""
   }
 }

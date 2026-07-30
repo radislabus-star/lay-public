@@ -1,0 +1,157 @@
+{
+  "receipt": "L3_ONLINE_CAUSAL_FEEDBACK_FULL_GATE_2026-07-31",
+  "date": "2026-07-31",
+  "release": "0.2.335",
+  "scope": "causal IME feedback reducer, proof-gated append-only L3 mini-deltas, and atomic manifest admission",
+  "feedback_contract": {
+    "hardcoded_word_or_phrase_rules": 0,
+    "recent_ime_rejections": 32,
+    "maximum_event_gap": 16,
+    "maximum_pending_relations": 128,
+    "maximum_scenes_per_relation": 8,
+    "minimum_independent_scenes": 2,
+    "retry_scene_counts": [
+      4,
+      8
+    ],
+    "historical_replay_explicit": true,
+    "source_is_authority": false
+  },
+  "proof_contract": {
+    "delta_corpus_passes": 1,
+    "targeted_false_supports_max": 0,
+    "full_proof_fragments": 80000,
+    "full_proof_min_surface_support": 2,
+    "lost_target_profiles_max": 0,
+    "lost_supports_max": 0,
+    "lost_top1_max": 0,
+    "new_false_supports_max": 0,
+    "new_false_top1_max": 0,
+    "manifest_path_bound": true,
+    "delta_path_bound": true,
+    "delta_byte_count_bound": true,
+    "base_rewritten": false
+  },
+  "frozen_sources": {
+    "corpus": {
+      "local_path": "/home/ubu/.local/share/lay/nanda_wave/l3-proof/fixed-base-corpus-80k.txt",
+      "remote_path": "/home/e/build/lay-l1-shadow/artifacts/l3-layout-lattice-v2-20260730/fixed-base-corpus-80k.txt",
+      "lines": 80000,
+      "bytes": 5638191,
+      "sha256": "56243b510c93930632c069d440d49c49a5ec58422d622523a0d5130dd085eac7"
+    },
+    "surface_evidence": {
+      "local_path": "/home/ubu/.local/share/lay/nanda_wave/l3-proof/surface-geometry-exact.jsonl",
+      "remote_path": "/home/e/build/lay-l1-shadow/artifacts/l3-layout-lattice-v2-20260730/surface-geometry-exact.jsonl",
+      "rows": 2349,
+      "bytes": 181668,
+      "sha256": "9aef85b94831ea72e5027816f9a8258ef3039d218bfc20459a664259cd120673"
+    }
+  },
+  "isolated_real_journal_replay": {
+    "home": "/tmp/lay-l3-online-replay.4MehFP",
+    "source_bytes": 511829,
+    "parsed_events": 2670,
+    "direct_correction_observations": 0,
+    "causal_ime_choice_observations": 62,
+    "pending_relations": 61,
+    "ready_relations": 1,
+    "attempted_relation": {
+      "rejected": "как",
+      "expected": "контейнер",
+      "independent_scenes": 2,
+      "targeted_verdict": "WATCH",
+      "full_proof_receipt": null,
+      "admission": null
+    },
+    "admitted_deltas": 0,
+    "manifest_sha_before_after_identical": true,
+    "runtime_authority": false
+  },
+  "installed_live_journal_replay": {
+    "state_backup": "/home/ubu/.local/share/lay/nanda_wave/l3-online/state.json.backup-20260731-013554",
+    "log": "/tmp/lay-l3-online-live-replay-20260731-013554.jsonl",
+    "source_bytes": 511948,
+    "parsed_events": 2614,
+    "direct_correction_observations": 0,
+    "causal_ime_choice_observations": 82,
+    "pending_relations": 82,
+    "ready_relations": 0,
+    "attempted_relations": 0,
+    "admitted_deltas": 0,
+    "manifest_sha256_before_after": "b635ff5b68eac55c508549503b727c5066c281144f5473b67627ab5dc520d546",
+    "runtime_authority": false
+  },
+  "release_zero_control": {
+    "host": "e@192.168.3.94",
+    "baseline_equals_candidate": true,
+    "lattice_transitions": 50592,
+    "compared_transitions": 41064,
+    "lost_target_profiles": 0,
+    "lost_supports": 0,
+    "lost_top1": 0,
+    "new_false_supports": 0,
+    "new_false_top1": 0,
+    "wall_seconds": 26.77,
+    "cpu_percent": 1421,
+    "peak_rss_kib": 219248,
+    "verdict": "PASS",
+    "remote_receipt": "/tmp/l3-online-zero-full-proof-release.json"
+  },
+  "tests": {
+    "l3_online": {
+      "passed": 7,
+      "failed": 0
+    },
+    "full_receipt_validator": {
+      "passed": 1,
+      "failed": 0
+    },
+    "composite_manifest": {
+      "passed": 4,
+      "failed": 0
+    },
+    "remote_cargo_jobs": 20,
+    "release_build_seconds": 110
+  },
+  "module_lines": {
+    "src/bin/lay_nanda_wave_train/l3_online.rs": 325,
+    "src/bin/lay_nanda_wave_train/l3_online/feedback.rs": 401,
+    "src/bin/lay_nanda_wave_train/l3_online/proof_chain.rs": 300
+  },
+  "release_binaries_sha256": {
+    "lay": "e2f7e7d522fb129adb72e05be32270cd12e22c9bbdc19ec82f9facff87b375c7",
+    "lay-daemon": "679bb07a7e3574658a37945069b8d3733f4e052a9a11e7ba4c74a9ca40db0515",
+    "lay-ibus-engine": "dcff67693141ee78f5871185b49e951f8e4d441d587b96f472d8241444babe64",
+    "lay-l11-serve": "dad88bd68fcaa84818d6b4c47f3fa24148dd89048086a73ef4729a41a94f7bff",
+    "lay-nanda-wave-eval": "b7afbf708361ff3744c1a794a6a55c6b17c1ad2b25f682793fcfb74c7ede1e6d",
+    "lay-nanda-wave-train": "f85de0b0ffa6ddbbd8443c8c0b35b47c590c28a5a59e47fc37b4ed2f25161b00"
+  },
+  "tested": [
+    "direct accepted correction extraction",
+    "causal rejected IME to confirmed choice pairing",
+    "accepted IME prefix removal",
+    "unrelated context rejection",
+    "bounded historical replay",
+    "targeted WATCH without manifest mutation",
+    "full zero-regression receipt validation",
+    "regression receipt rejection",
+    "targeted and full receipt persistence",
+    "frozen 80k release differential control",
+    "remote release build"
+  ],
+  "not_tested": [
+    "real live feedback relation passing both gates",
+    "multi-day automatic admission",
+    "runtime reload after an automatically admitted live feedback delta"
+  ],
+  "runtime_authority_changed": false,
+  "runtime_manifest_changed": false,
+  "installed_lay_version": "0.2.335",
+  "loaded_extension_version": "0.2.335",
+  "model_services_reloaded": true,
+  "ibus_engine_pid_before": 2989683,
+  "ibus_engine_pid_after": 2989683,
+  "global_ibus_restarted": false,
+  "verdict": "PASS_infrastructure_WATCH_current_feedback"
+}

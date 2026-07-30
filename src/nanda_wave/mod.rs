@@ -353,27 +353,59 @@ pub fn admit_l3_context_delta(
     proof_receipt: Option<&std::path::Path>,
     scope: Option<&str>,
 ) -> std::io::Result<serde_json::Value> {
-    if proof_receipt.is_none() {
+    let Some(proof_receipt) = proof_receipt else {
         return Err(std::io::Error::new(
             std::io::ErrorKind::InvalidInput,
             "L3 delta admission requires a targeted proof receipt",
         ));
-    }
-    if !proof_receipt.is_some_and(std::path::Path::is_file) {
+    };
+    validate_l3_targeted_proof_receipt(manifest_path, delta_path, proof_receipt)?;
+    context_phase::admit_delta(manifest_path, delta_path, Some(proof_receipt), scope)
+}
+
+pub fn admit_l3_context_delta_with_full_proof(
+    manifest_path: &std::path::Path,
+    delta_path: &std::path::Path,
+    targeted_proof_receipt: &std::path::Path,
+    full_proof_receipt: &std::path::Path,
+    scope: Option<&str>,
+) -> std::io::Result<serde_json::Value> {
+    validate_l3_targeted_proof_receipt(manifest_path, delta_path, targeted_proof_receipt)?;
+    validate_l3_full_proof_receipt(manifest_path, delta_path, full_proof_receipt)?;
+    context_phase::admit_delta_with_full_proof(
+        manifest_path,
+        delta_path,
+        Some(targeted_proof_receipt),
+        Some(full_proof_receipt),
+        scope,
+    )
+}
+
+fn validate_l3_targeted_proof_receipt(
+    manifest_path: &std::path::Path,
+    delta_path: &std::path::Path,
+    proof_receipt: &std::path::Path,
+) -> std::io::Result<()> {
+    if !proof_receipt.is_file() {
         return Err(std::io::Error::new(
             std::io::ErrorKind::NotFound,
             "L3 targeted proof receipt does not exist",
         ));
     }
-    let receipt_path = proof_receipt.expect("checked above");
     let receipt: serde_json::Value =
-        serde_json::from_slice(&std::fs::read(receipt_path)?).map_err(std::io::Error::other)?;
+        serde_json::from_slice(&std::fs::read(proof_receipt)?).map_err(std::io::Error::other)?;
     let receipt_delta = receipt
         .get("delta")
         .and_then(serde_json::Value::as_str)
         .map(std::path::PathBuf::from);
+    let receipt_manifest = receipt
+        .get("manifest")
+        .and_then(serde_json::Value::as_str)
+        .map(std::path::PathBuf::from);
     let delta_matches = receipt_delta.and_then(|path| std::fs::canonicalize(path).ok())
         == std::fs::canonicalize(delta_path).ok();
+    let manifest_matches = receipt_manifest.and_then(|path| std::fs::canonicalize(path).ok())
+        == std::fs::canonicalize(manifest_path).ok();
     let valid_receipt = receipt.get("kind").and_then(serde_json::Value::as_str)
         == Some("l3_context_delta_targeted_proof")
         && receipt.get("verdict").and_then(serde_json::Value::as_str) == Some("PASS")
@@ -381,6 +413,7 @@ pub fn admit_l3_context_delta(
             .get("false_supports")
             .and_then(serde_json::Value::as_u64)
             == Some(0)
+        && manifest_matches
         && delta_matches;
     if !valid_receipt {
         return Err(std::io::Error::new(
@@ -388,7 +421,123 @@ pub fn admit_l3_context_delta(
             "L3 delta admission requires a matching PASS targeted proof receipt",
         ));
     }
-    context_phase::admit_delta(manifest_path, delta_path, proof_receipt, scope)
+    Ok(())
+}
+
+fn validate_l3_full_proof_receipt(
+    manifest_path: &std::path::Path,
+    delta_path: &std::path::Path,
+    proof_receipt: &std::path::Path,
+) -> std::io::Result<()> {
+    if !proof_receipt.is_file() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::NotFound,
+            "L3 full differential proof receipt does not exist",
+        ));
+    }
+    let receipt: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(proof_receipt)?).map_err(std::io::Error::other)?;
+    let receipt_delta = receipt
+        .get("delta")
+        .and_then(serde_json::Value::as_str)
+        .map(std::path::PathBuf::from);
+    let receipt_manifest = receipt
+        .get("manifest")
+        .and_then(serde_json::Value::as_str)
+        .map(std::path::PathBuf::from);
+    let delta_matches = receipt_delta.and_then(|path| std::fs::canonicalize(path).ok())
+        == std::fs::canonicalize(delta_path).ok();
+    let manifest_matches = receipt_manifest.and_then(|path| std::fs::canonicalize(path).ok())
+        == std::fs::canonicalize(manifest_path).ok();
+    let byte_count_matches = receipt
+        .get("delta_bytes")
+        .and_then(serde_json::Value::as_u64)
+        == std::fs::metadata(delta_path)
+            .ok()
+            .map(|metadata| metadata.len());
+    let zero_regressions = [
+        "lost_target_profiles",
+        "lost_supports",
+        "lost_top1",
+        "new_false_supports",
+        "new_false_top1",
+    ]
+    .into_iter()
+    .all(|field| receipt.get(field).and_then(serde_json::Value::as_u64) == Some(0));
+    let valid_receipt = receipt.get("kind").and_then(serde_json::Value::as_str)
+        == Some("l3_context_phase_full_differential_proof")
+        && receipt.get("verdict").and_then(serde_json::Value::as_str) == Some("PASS")
+        && zero_regressions
+        && manifest_matches
+        && delta_matches
+        && byte_count_matches;
+    if !valid_receipt {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidData,
+            "L3 delta admission requires a matching zero-regression full differential receipt",
+        ));
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod l3_delta_admission_tests {
+    use super::*;
+    use std::fs;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    fn unique_root() -> std::path::PathBuf {
+        let stamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        std::env::temp_dir().join(format!(
+            "lay-l3-delta-admission-{}-{stamp}",
+            std::process::id()
+        ))
+    }
+
+    #[test]
+    fn full_receipt_requires_matching_delta_and_zero_regressions() {
+        let root = unique_root();
+        fs::create_dir_all(&root).unwrap();
+        let delta = root.join("delta.nwpc");
+        let manifest = root.join("manifest.json");
+        let receipt = root.join("full.json");
+        fs::write(&delta, b"delta-bytes").unwrap();
+        fs::write(&manifest, b"{}").unwrap();
+        let write_receipt = |lost_supports: u64| {
+            fs::write(
+                &receipt,
+                serde_json::to_vec(&serde_json::json!({
+                    "kind": "l3_context_phase_full_differential_proof",
+                    "verdict": "PASS",
+                    "manifest": manifest,
+                    "delta": delta,
+                    "delta_bytes": 11,
+                    "lost_target_profiles": 0,
+                    "lost_supports": lost_supports,
+                    "lost_top1": 0,
+                    "new_false_supports": 0,
+                    "new_false_top1": 0,
+                }))
+                .unwrap(),
+            )
+            .unwrap();
+        };
+
+        write_receipt(0);
+        validate_l3_full_proof_receipt(&manifest, &delta, &receipt).unwrap();
+        let other_manifest = root.join("other-manifest.json");
+        fs::write(&other_manifest, b"{}").unwrap();
+        assert!(
+            validate_l3_full_proof_receipt(&other_manifest, &delta, &receipt).is_err(),
+            "a receipt from another composite manifest must not open admission"
+        );
+        write_receipt(1);
+        assert!(validate_l3_full_proof_receipt(&manifest, &delta, &receipt).is_err());
+        let _ = fs::remove_dir_all(root);
+    }
 }
 
 pub fn compact_l3_context_composite(

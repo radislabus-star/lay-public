@@ -32,7 +32,8 @@ pub(crate) use compiler::{
 #[cfg(test)]
 pub(crate) use compiler::{compile_context_phase, ContextPhaseCompileInput};
 pub(crate) use composite::{
-    admit_delta, compact_manifest, initialize_manifest, snapshot_manifest, L3CompositeMemory,
+    admit_delta, admit_delta_with_full_proof, compact_manifest, initialize_manifest,
+    snapshot_manifest, L3CompositeMemory,
 };
 pub(crate) use format::{read_package, write_package};
 pub(crate) use proof::build_and_prove_context_phase_path_with_surface_field;
