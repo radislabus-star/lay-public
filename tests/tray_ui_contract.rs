@@ -212,21 +212,26 @@ fn runtime_restart_preserves_the_visible_layout() {
 }
 
 #[test]
-fn version_refresh_activates_the_live_gnome_source_before_ibus_sync() {
+fn version_refresh_reloads_model_services_without_restarting_ibus() {
     let bump = std::fs::read_to_string(Path::new(ROOT).join("scripts/bump-lay-version.sh"))
         .expect("version bump script");
-    let selection = nearby(&bump, "select_lay_input_source() {", 2600);
+    let promotion =
+        std::fs::read_to_string(Path::new(ROOT).join("scripts/l3-self-teacher-promotion-gate.sh"))
+            .expect("L3 promotion script");
+    let reload =
+        std::fs::read_to_string(Path::new(ROOT).join("scripts/reload-lay-model-services.sh"))
+            .expect("model-service reload script");
 
-    assert!(selection.contains("io.github.radislabus_star.LayDaemon.ActivateLayout"));
-    assert!(selection.contains("current_gnome_layout"));
-    assert!(selection.contains("$layout"));
-    assert!(
-        selection.find("ActivateLayout") < selection.find("gsettings set"),
-        "live GNOME DBus authority must run before the GSettings fallback"
-    );
-    assert!(bump.contains("preserved_layout=\"$(current_gnome_layout || true)\""));
-    assert!(bump.contains("select_lay_input_source \"$preserved_layout\""));
-    assert!(bump.contains("layout restore failed: expected=$preserved_layout"));
+    for source in [&bump, &promotion] {
+        assert!(source.contains("reload-lay-model-services.sh"));
+        assert!(!source.contains("pkill -x lay-ibus-engine"));
+        assert!(!source.contains("ibus restart"));
+    }
+    assert!(reload.contains("ibus_pids_before="));
+    assert!(reload.contains("ibus_pids_after="));
+    assert!(reload.contains("systemctl --user restart lay-daemon.service"));
+    assert!(!reload.contains("pkill"));
+    assert!(!reload.contains("ibus restart"));
 }
 
 #[test]

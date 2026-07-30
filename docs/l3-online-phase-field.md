@@ -941,3 +941,94 @@ Exact receipt:
 ```text
 /home/ubu/projects/lay/docs/structural_gates/receipts/L3_LAYOUT_RUNTIME_CLOSURE_2026-07-30.json
 ```
+
+## Append-only self-teacher promotion gate, 2026-07-30
+
+The self-teacher promotion route is now append-only. It snapshots the current
+composite field for proof, compiles a small delta, runs targeted and full
+differential proofs, and only then may append the delta to the runtime
+manifest. The immutable base is not rewritten.
+
+Two implementation defects were closed while proving this route:
+
+1. proof snapshot used the destructive compaction command and could flip the
+   supplied manifest;
+2. composite pair banks allowed 64 centers while the binary format accepted
+   only 16 normal or 4 hard centers.
+
+The new `--snapshot-l3-context-composite` command is read-only. Composite
+runtime and serialized package limits are now identical. Incoming evidence is
+phase-merged into the closest bounded center instead of producing an unreadable
+package or being silently discarded.
+
+The first self-teacher candidate contained the broad 964-case shadow package.
+Targeted proof passed, but full proof rejected it:
+
+```text
+delta bytes                              288,076
+targeted improve                           37/37
+targeted safety                              5/5
+lost supports                                 107
+lost top-1                                    103
+full verdict                                WATCH
+```
+
+The teacher was then split into a broad discovery shadow and a publishable
+delta compiled only from the 37 selected improvement scenes:
+
+```text
+filtered delta bytes                       21,192
+candidate profiles                             29
+pair profiles / centers                    53 / 61
+positive centers                                36
+training transitions                            88
+
+targeted improve                           37 / 37
+targeted false supports                          0
+targeted safety                              5 / 5
+targeted verdict                              PASS
+
+full lattice transitions                    50,592
+full compared transitions                   41,065
+base -> candidate supports            1,665 -> 1,635
+gained / lost supports                     24 / 54
+base -> candidate top-1              1,616 -> 1,591
+gained / lost top-1                        28 / 53
+new false supports / top-1                   0 / 0
+full verdict                                WATCH
+```
+
+This is a useful negative result. A targeted improvement is not sufficient
+evidence for online admission: positive and pairwise centers can perturb
+previously correct basins without creating an obvious false winner. The full
+transition-by-transition differential remains a mandatory conjunctive gate.
+
+What was tested:
+
+- clean/self-generated discovery without live feedback;
+- broad shadow scoring over 964 cases;
+- filtered one-pass delta compile;
+- 37 targeted improvements and five safety sentinels;
+- full fixed 80k differential proof;
+- transition replay and unsafe-edit scoreboard;
+- immutable manifest snapshot;
+- bounded pair-bank serialization.
+
+What was not tested:
+
+- a greedily selected subset of the 37 scenes that passes the full proof;
+- automatic promotion from live feedback;
+- multi-day behavior after self-teacher admission.
+
+Verdict scope:
+
+- append-only infrastructure: `PASS`;
+- current self-teacher delta: `WATCH`, rejected;
+- runtime authority changed: `false`;
+- no daemon, IBus or runtime manifest was reloaded.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SELF_TEACHER_APPEND_ONLY_DELTA_2026-07-30.json
+```

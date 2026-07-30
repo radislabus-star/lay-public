@@ -49,6 +49,14 @@ fn main() -> io::Result<()> {
     if args.iter().any(|arg| arg == "--watch-l3-context-online") {
         return l3_online::run(&args);
     }
+    if args.iter().any(|arg| arg == "--canonical-l2-status") {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&lay::nanda_wave::canonical_l2_status())
+                .map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if let Some(l2_package) = arg_path(&args, "--prove-canonical-l2") {
         let l1_package = arg_path(&args, "--memory")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
@@ -477,6 +485,21 @@ fn main() -> io::Result<()> {
         let out = arg_path(&args, "--out")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
         let report = lay::nanda_wave::compact_l3_context_composite(&manifest, &out)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if args
+        .iter()
+        .any(|arg| arg == "--snapshot-l3-context-composite")
+    {
+        let manifest = arg_path(&args, "--manifest")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--manifest is required"))?;
+        let out = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report = lay::nanda_wave::snapshot_l3_context_composite(&manifest, &out)?;
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?

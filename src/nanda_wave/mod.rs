@@ -398,6 +398,13 @@ pub fn compact_l3_context_composite(
     context_phase::compact_manifest(manifest_path, output_base)
 }
 
+pub fn snapshot_l3_context_composite(
+    manifest_path: &std::path::Path,
+    output_base: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    context_phase::snapshot_manifest(manifest_path, output_base)
+}
+
 pub fn reload_l3_context_composite() -> std::io::Result<serde_json::Value> {
     context_phase::reload_default_memory()
 }

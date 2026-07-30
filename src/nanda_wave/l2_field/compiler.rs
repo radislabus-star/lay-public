@@ -441,23 +441,59 @@ fn compile_competition_edges(
             }
         }
     }
-    let compiled = evidence
+    let mut pair_evidence = BTreeMap::<(u32, u32, u32, u32), (u32, u32, u16)>::new();
+    for ((lemma_id, winner_form_ref, competitor_form_ref, context_mode_id), (count, flags)) in
+        evidence
+    {
+        let (low_form_ref, high_form_ref, low_wins) = if winner_form_ref < competitor_form_ref {
+            (winner_form_ref, competitor_form_ref, true)
+        } else {
+            (competitor_form_ref, winner_form_ref, false)
+        };
+        let residual = pair_evidence
+            .entry((lemma_id, low_form_ref, high_form_ref, context_mode_id))
+            .or_default();
+        if low_wins {
+            residual.0 = residual.0.saturating_add(count);
+        } else {
+            residual.1 = residual.1.saturating_add(count);
+        }
+        residual.2 |= flags;
+    }
+    let compiled = pair_evidence
         .into_iter()
-        .map(
-            |((lemma_id, left_form_ref, right_form_ref, context_mode_id), (evidence, flags))| {
-                (
+        .filter_map(
+            |(
+                (lemma_id, low_form_ref, high_form_ref, context_mode_id),
+                (low_support, high_support, flags),
+            )| {
+                let (left_form_ref, right_form_ref, residual) = match low_support.cmp(&high_support)
+                {
+                    std::cmp::Ordering::Greater => (
+                        low_form_ref,
+                        high_form_ref,
+                        low_support.saturating_sub(high_support),
+                    ),
+                    std::cmp::Ordering::Less => (
+                        high_form_ref,
+                        low_form_ref,
+                        high_support.saturating_sub(low_support),
+                    ),
+                    std::cmp::Ordering::Equal => return None,
+                };
+                Some((
                     lemma_id,
                     CompetitionEdge {
                         left_form_ref,
                         right_form_ref,
                         context_mode_id,
-                        support_delta: evidence.min(i16::MAX as u32) as i16,
-                        anti_delta: evidence.min(i16::MAX as u32) as i16,
-                        evidence,
+                        support_delta: residual.min(i16::MAX as u32) as i16,
+                        anti_delta: residual.min(i16::MAX as u32) as i16,
+                        evidence: low_support.saturating_add(high_support),
                         flags,
                         reserved: 0,
                     },
-                )
+                ))
             },
         )
         .collect::<Vec<_>>();
@@ -577,5 +613,25 @@ mod tests {
         assert!(!package.competition_edges.is_empty());
         let encoded = encode_package(&package).expect("encode");
         assert_eq!(decode_package(&encoded), Ok(package));
+    }
+
+    #[test]
+    fn compiler_cancels_equal_opposing_neighbor_evidence() {
+        let corpus = L2TeacherCorpus::parse_tsv(
+            "F\tвнимать\tвнимает\tverb:sg:p3:pres:ind:imperf\n\
+             F\tвникать\tвникает\tverb:sg:p3:pres:ind:imperf\n\
+             T\tвнимать\tвнимает\tverb:sg:p3:pres:ind:imperf\tона _ внимательно\n\
+             H\tвникать\tвникает\tverb:sg:p3:pres:ind:imperf\tон _ глубоко\n\
+             NT\tвнимать\tвнимает\tverb:sg:p3:pres:ind:imperf\tкогда душа _ верит\tвникает\n\
+             NT\tвникать\tвникает\tverb:sg:p3:pres:ind:imperf\tкогда душа _ верит\tвнимает\n\
+             NH\tвнимать\tвнимает\tverb:sg:p3:pres:ind:imperf\tона _ внимательно\tвникает\n",
+        )
+        .expect("teacher");
+        let terminals = BTreeMap::from([("внимает", 17), ("вникает", 23)]);
+        let (package, _) =
+            compile_l2_package(&corpus, 99, |surface| terminals.get(surface).copied())
+                .expect("compile");
+
+        assert!(package.competition_edges.is_empty());
     }
 }

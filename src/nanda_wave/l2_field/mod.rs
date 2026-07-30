@@ -11,7 +11,7 @@ pub(crate) use bridge::{cold_probe_surfaces, shadow_text_candidates, shadow_text
 pub(crate) use runtime::L2FieldAuthority;
 
 const DEFAULT_L2_MODEL_DIR_SUFFIX: &str = ".local/share/lay/nanda_wave/l2";
-const DEFAULT_L2_PACKAGE_NAME: &str = "LAY-L2-RU-FULL-v7.bin";
+const DEFAULT_L2_PACKAGE_NAME: &str = "LAY-L2-RU-FULL-v13.bin";
 
 pub fn default_l2_model_dir() -> std::path::PathBuf {
     if let Some(explicit) = std::env::var_os("LAY_L2_MODEL_DIR") {

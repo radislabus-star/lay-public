@@ -1,0 +1,108 @@
+{
+  "kind": "l2_canonical_ruslit_full_neighbors_v13",
+  "date": "2026-07-30",
+  "verdict": "PASS_standalone_field",
+  "runtime_authority_changed": true,
+  "cold_experiment_runtime_authority_changed": false,
+  "artifact": {
+    "remote_path": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-ruslit-full-neighbors-2026-07-30/LAY-L2-RU-FULL-v13.bin",
+    "bytes": 135121803,
+    "mib": 128.86,
+    "sha256": "bbe67a772b684e0f187483796fca248ac0b10576195b1aa524f0b2bde0f6601e"
+  },
+  "field": {
+    "forms": 1875032,
+    "l1_bound_forms": 517257,
+    "l2_materialized_forms": 1357775,
+    "lemma_centers": 93672,
+    "morph_bindings": 3255785,
+    "context_modes": 41967,
+    "slot_centers": 225,
+    "neighbor_couplings": 15922,
+    "competition_edges": 215121,
+    "train_scenes": 58117,
+    "heldout_scenes": 2543808
+  },
+  "proof": {
+    "workers": 20,
+    "same_lemma_total": 2501613,
+    "same_lemma_target_coverage_percent": 99.99808123798525,
+    "same_lemma_false_authority": 0,
+    "near_neighbor_total": 42195,
+    "near_neighbor_target_coverage_percent": 100.0,
+    "near_neighbor_false_authority": 0,
+    "near_neighbor_tied": 41832,
+    "near_neighbor_correct_winners": 363,
+    "per_pos_target_coverage_percent": {
+      "noun": 100.0,
+      "adjective": 100.0,
+      "pronoun": 100.0,
+      "verb": 99.98649006175168
+    },
+    "cold_load_us": 477477,
+    "hot_p50_us": 22,
+    "hot_p99_us": 97
+  },
+  "cold_work": {
+    "corpus_wall_seconds": 69.41,
+    "corpus_cpu_percent": 99,
+    "corpus_peak_rss_kib": 1972860,
+    "compile_wall_seconds": 20.72,
+    "compile_cpu_percent": 332,
+    "compile_peak_rss_kib": 3557868,
+    "proof_wall_seconds": 20.03,
+    "proof_cpu_percent": 489,
+    "proof_peak_rss_kib": 3928852
+  },
+  "product_probe": {
+    "context": "сокольим глазком _",
+    "seed": "посмотреть",
+    "winner": "посмотри",
+    "winner_l1_evidence_milli": 760,
+    "winner_explicit_competition_pressure": 486,
+    "winner_local_score": 1246,
+    "seed_local_score": 1000
+  },
+  "release_install": {
+    "version": "0.2.333",
+    "installed_package": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+    "installed_sha256": "bbe67a772b684e0f187483796fca248ac0b10576195b1aa524f0b2bde0f6601e",
+    "canonical_status": "ready",
+    "ibus_pid_before": 3236279,
+    "ibus_pid_after": 3236279,
+    "tray_version": "0.2.333",
+    "daemon_service": "active",
+    "l3_online_service": "active",
+    "daemon_cgroup_memory_mib": 331,
+    "daemon_process_rss_kib": 161668,
+    "ibus_process_rss_kib": 130340,
+    "live_probes": {
+      "full_sentence_apple_b": "selected Apple и",
+      "apple_b": "no selection",
+      "v_kode": "no correction-core selection",
+      "vrmeya": "selected время"
+    },
+    "double_shift_contract_tests": 2,
+    "physical_keyboard_events_injected": false
+  },
+  "tested": [
+    "standalone package decode and status",
+    "full same-lemma and near-neighbor heldout proof",
+    "per-POS target coverage",
+    "zero false authority",
+    "L1.1 fingerprint binding",
+    "bounded hot latency",
+    "context-driven same-lemma product query"
+  ],
+  "not_tested": [
+    "all unrestricted semantic distinctions",
+    "multi-day live daemon stability",
+    "discourse context beyond the local L2 window"
+  ],
+  "remote_evidence": {
+    "compile": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-ruslit-full-neighbors-2026-07-30/compile.json",
+    "proof": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-ruslit-full-neighbors-2026-07-30/proof.json",
+    "compile_time": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-ruslit-full-neighbors-2026-07-30/compile.time",
+    "proof_time": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-ruslit-full-neighbors-2026-07-30/proof.time"
+  }
+}

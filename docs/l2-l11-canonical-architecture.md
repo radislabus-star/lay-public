@@ -258,6 +258,164 @@ Runtime authority changed:
 
 - `false`
 
+## 13. Standalone Full-Neighbor V13, 2026-07-30
+
+V13 closes the cold standalone `L2` package over the final global `L1.1`
+field. It does not recompile `L1.1` and does not store a second lexical
+restorer. The package binds existing `L1.1` terminal identities to a larger
+materialized morphology field and local context competition.
+
+```text
+L1.1 bounded lattice
+-> StandaloneL2Field
+   -> terminal/surface form binding
+   -> same-lemma expansion
+   -> morphology-slot centers
+   -> document-split near-neighbor couplings
+   -> directional competition edges
+-> Winner | Tied | Abstain
+-> L3
+-> verifier
+```
+
+The context teacher was built from a public Russian literature corpus with an
+80/20 document-level split. A surface is admitted to the neighbor proof only
+when an independent heldout document exists. No surface, lemma, product or
+phrase-specific runtime rule was added.
+
+Measured package facts:
+
+```text
+source unique surfaces                  1,875,032
+L1.1-bound forms                          517,257
+L2-materialized forms                   1,357,775
+lemma centers                              93,672
+morphology bindings                    3,255,785
+context modes                              41,967
+slot centers                                  225
+neighbor couplings                         15,922
+directional competition edges             215,121
+train scenes                                58,117
+heldout scenes                           2,543,808
+package bytes                         135,121,803
+package size                              128.86 MiB
+package SHA-256
+bbe67a772b684e0f187483796fca248ac0b10576195b1aa524f0b2bde0f6601e
+```
+
+Fixed heldout proof:
+
+```text
+same-lemma total                         2,501,613
+same-lemma target coverage              99.998081%
+same-lemma false authority                       0
+
+noun target coverage                    100.000000%
+adjective target coverage               100.000000%
+pronoun target coverage                 100.000000%
+verb target coverage                     99.986490%
+
+near-neighbor total                        42,195
+near-neighbor target coverage            100.000000%
+near-neighbor false authority                      0
+near-neighbor tied                         41,832
+near-neighbor correct winners                 363
+
+cold load                                  477,477 us
+hot p50 / p99                                22 / 97 us
+proof workers                                     20
+```
+
+The high tied count is intentional: an unseen local scene does not acquire
+fake authority merely because several forms share one lemma. The proof gate is
+target retention plus zero false authority, not winner count in scenes that
+remain linguistically underdetermined.
+
+Product query:
+
+```text
+context                 сокольим глазком _
+L1.1 seed               посмотреть, evidence 1000
+L2 form                 посмотри, evidence 760 + explicit competition 486
+L2 local score          1246
+readout                 Winner(посмотри)
+```
+
+This result comes from corpus evidence keyed by context mode and morphology
+features. The executable contains no `посмотреть -> посмотри` branch.
+
+Cold build measurements:
+
+```text
+corpus preparation       69.41 s, 99% CPU, 1,972,860 KiB peak RSS
+package compile          20.72 s, 332% CPU, 3,557,868 KiB peak RSS
+fixed proof              20.03 s, 489% CPU, 3,928,852 KiB peak RSS
+```
+
+What was tested:
+
+- full final package decode and standalone status;
+- complete same-lemma and near-neighbor heldout denominators;
+- per-POS target coverage and false authority;
+- exact `L1.1` package fingerprint binding;
+- bounded runtime latency;
+- a context-driven same-lemma form movement from `посмотреть` to `посмотри`.
+
+What was not tested:
+
+- every possible semantic distinction in unrestricted Russian text;
+- multi-day live daemon stability with V13;
+- broad discourse meaning beyond the local L2 context window.
+
+Verdict scope:
+
+- `PASS_standalone_field` for packaged local morphology/context competition;
+- runtime authority did not change during the cold experiment;
+- release installation still requires the common daemon/IME verifier smoke.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_CANONICAL_RUSLIT_FULL_NEIGHBORS_V13_2026-07-30.json
+```
+
+### 13.1 Release cutover 0.2.333
+
+The proven V13 package and matching binaries were installed atomically after
+an isolated installation check. Only `lay-daemon.service` and
+`lay-l3-online.service` were restarted. The GNOME extension was reloaded to
+show the new version; the managed IBus engine was not restarted.
+
+```text
+installed version                         0.2.333
+installed package        LAY-L2-RU-FULL-v13.bin
+installed SHA-256
+bbe67a772b684e0f187483796fca248ac0b10576195b1aa524f0b2bde0f6601e
+installed package status                    ready
+IBus PID before / after         3236279 / 3236279
+tray reported version                     0.2.333
+daemon / L3-online service          active / active
+daemon cgroup memory after reload           331 MiB
+daemon process RSS                      161,668 KiB
+IBus process RSS                        130,340 KiB
+```
+
+Installed live probes:
+
+```text
+Нужно ... Apple b  -> Apple и       selected
+Apple b            -> no selection
+в коде             -> no correction-core selection
+врмея              -> время         selected
+```
+
+The double-Shift exact autocorrect rollback contract passed both its static
+authority contract and daemon pending-undo runtime test. No physical keyboard
+event was injected during release verification.
+
+Runtime authority changed in release `0.2.333`: `true`, only through the
+existing L2 local readout, L3 context and transition verifier chain.
+
 ## 13. Pairwise Context Witness Boundary
 
 The canonical live local route is:

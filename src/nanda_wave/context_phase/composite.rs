@@ -5,12 +5,14 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use serde::{Deserialize, Serialize};
 
-use super::{read_package, ContextPairPhaseProfile, ContextPhasePackage, MAX_PAIR_PROFILES};
+use super::{
+    read_package, ContextPairPhaseProfile, ContextPhasePackage, MAX_HARD_PAIR_CENTERS_PER_BANK,
+    MAX_PAIR_CENTERS_PER_BANK, MAX_PAIR_PROFILES,
+};
 
 pub(crate) const COMPOSITE_FORMAT: &str = "lay-l3-composite-v1";
 pub(crate) const COMPACT_DELTA_COUNT: usize = 32;
 pub(crate) const COMPACT_DELTA_BYTES: u64 = 16 * 1024 * 1024;
-const MAX_COMPOSITE_PAIR_CENTERS_PER_BANK: usize = 64;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -222,12 +224,55 @@ fn append_composite_pair_profile(
     match profiles.binary_search_by_key(&key, |profile| (profile.low_hash, profile.high_hash)) {
         Ok(index) => {
             let existing = &mut profiles[index];
-            append_center_bank(&mut existing.low_wins, incoming.low_wins);
-            append_center_bank(&mut existing.high_wins, incoming.high_wins);
-            append_center_bank(&mut existing.hard_low_wins, incoming.hard_low_wins);
-            append_center_bank(&mut existing.hard_high_wins, incoming.hard_high_wins);
+            append_center_bank(
+                &mut existing.low_wins,
+                incoming.low_wins,
+                MAX_PAIR_CENTERS_PER_BANK,
+            );
+            append_center_bank(
+                &mut existing.high_wins,
+                incoming.high_wins,
+                MAX_PAIR_CENTERS_PER_BANK,
+            );
+            append_center_bank(
+                &mut existing.hard_low_wins,
+                incoming.hard_low_wins,
+                MAX_HARD_PAIR_CENTERS_PER_BANK,
+            );
+            append_center_bank(
+                &mut existing.hard_high_wins,
+                incoming.hard_high_wins,
+                MAX_HARD_PAIR_CENTERS_PER_BANK,
+            );
         }
-        Err(index) if profiles.len() < MAX_PAIR_PROFILES => profiles.insert(index, incoming),
+        Err(index) if profiles.len() < MAX_PAIR_PROFILES => {
+            let mut bounded = ContextPairPhaseProfile {
+                low_hash: incoming.low_hash,
+                high_hash: incoming.high_hash,
+                ..ContextPairPhaseProfile::default()
+            };
+            append_center_bank(
+                &mut bounded.low_wins,
+                incoming.low_wins,
+                MAX_PAIR_CENTERS_PER_BANK,
+            );
+            append_center_bank(
+                &mut bounded.high_wins,
+                incoming.high_wins,
+                MAX_PAIR_CENTERS_PER_BANK,
+            );
+            append_center_bank(
+                &mut bounded.hard_low_wins,
+                incoming.hard_low_wins,
+                MAX_HARD_PAIR_CENTERS_PER_BANK,
+            );
+            append_center_bank(
+                &mut bounded.hard_high_wins,
+                incoming.hard_high_wins,
+                MAX_HARD_PAIR_CENTERS_PER_BANK,
+            );
+            profiles.insert(index, bounded);
+        }
         Err(_) => {}
     }
 }
@@ -235,19 +280,37 @@ fn append_composite_pair_profile(
 fn append_center_bank(
     target: &mut Vec<super::super::phase_field::PhaseCenter>,
     incoming: Vec<super::super::phase_field::PhaseCenter>,
+    max_centers: usize,
 ) {
-    target.extend(incoming);
-    if target.len() > MAX_COMPOSITE_PAIR_CENTERS_PER_BANK {
-        target.sort_by(|left, right| {
-            right.support.cmp(&left.support).then_with(|| {
-                right
-                    .center
-                    .first()
-                    .map(|cell| cell.re.to_bits())
-                    .cmp(&left.center.first().map(|cell| cell.re.to_bits()))
+    for mut center in incoming {
+        center.materialize_sum();
+        if target.len() < max_centers {
+            target.push(center);
+            continue;
+        }
+        let Some(index) = target
+            .iter_mut()
+            .enumerate()
+            .map(|(index, current)| {
+                current.materialize_sum();
+                (
+                    index,
+                    super::vector_phase_coherence(&center.center, &current.center),
+                )
             })
-        });
-        target.truncate(MAX_COMPOSITE_PAIR_CENTERS_PER_BANK);
+            .max_by(|left, right| {
+                left.1
+                    .total_cmp(&right.1)
+                    .then_with(|| right.0.cmp(&left.0))
+            })
+            .map(|(index, _)| index)
+        else {
+            continue;
+        };
+        let current = &mut target[index];
+        super::add_phase_vector(&mut current.sum, &center.sum);
+        current.center = super::phase_center_from_sum(&current.sum);
+        current.support = current.support.saturating_add(center.support);
     }
 }
 
@@ -360,6 +423,24 @@ pub(crate) fn compact_manifest(
     }))
 }
 
+pub(crate) fn snapshot_manifest(
+    manifest_path: &Path,
+    output_base: &Path,
+) -> io::Result<serde_json::Value> {
+    let memory = L3CompositeMemory::load_manifest(manifest_path)?;
+    let output_base = absolute_path(output_base)?;
+    super::write_package(&output_base, memory.package())?;
+    Ok(serde_json::json!({
+        "kind": "l3_composite_snapshot",
+        "manifest": manifest_path,
+        "output_base": output_base,
+        "included_deltas": memory.delta_paths.len(),
+        "included_delta_bytes": memory.delta_bytes,
+        "manifest_rewritten": false,
+        "runtime_authority": false,
+    }))
+}
+
 fn write_manifest(path: &Path, manifest: &L3CompositeManifest) -> io::Result<()> {
     let mut bytes = serde_json::to_vec_pretty(manifest).map_err(io::Error::other)?;
     bytes.push(b'\n');
@@ -456,6 +537,12 @@ mod tests {
         assert_eq!(memory.package().transitions, 10);
         assert_eq!(memory.delta_paths.len(), 1);
         assert_eq!(fs::read(&base_path).unwrap(), before);
+
+        let manifest_before = fs::read(&manifest_path).unwrap();
+        let snapshot_path = root.join("snapshot.nwpc");
+        snapshot_manifest(&manifest_path, &snapshot_path).unwrap();
+        assert_eq!(fs::read(&manifest_path).unwrap(), manifest_before);
+        assert_eq!(read_package(&snapshot_path).unwrap().transitions, 10);
         let _ = fs::remove_dir_all(root);
     }
 
@@ -539,10 +626,13 @@ mod tests {
 
         let composed = compose_base_with_deltas(base, vec![delta]);
 
-        assert_eq!(composed.pair_profiles[0].low_wins.len(), 17);
+        assert_eq!(
+            composed.pair_profiles[0].low_wins.len(),
+            MAX_PAIR_CENTERS_PER_BANK
+        );
         assert!(composed.pair_profiles[0]
             .low_wins
             .iter()
-            .any(|value| value.center[0].re == 1.0));
+            .any(|value| value.support == 4));
     }
 }

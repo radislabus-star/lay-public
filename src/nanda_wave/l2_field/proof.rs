@@ -202,24 +202,16 @@ pub(crate) fn prove_package(
         let Some(target) = field.form_ref_for_surface(&scene.surface) else {
             continue;
         };
-        let mut terminals = std::iter::once(scene.surface.as_str())
+        let mut seed_surfaces = std::iter::once(scene.surface.as_str())
             .chain(scene.competitors.iter().map(String::as_str))
-            .filter_map(|surface| terminal_by_surface.get(surface).copied())
             .collect::<Vec<_>>();
-        terminals.extend(
-            seeds_by_lemma
-                .get(&scene.lemma)
-                .into_iter()
-                .flatten()
-                .copied(),
-        );
-        terminals.sort_unstable();
-        terminals.dedup();
-        let seeds = terminals
+        seed_surfaces.sort_unstable();
+        seed_surfaces.dedup();
+        let seeds = seed_surfaces
             .iter()
-            .map(|terminal_id| L2LexicalSeed {
-                terminal_id: Some(*terminal_id),
-                surface: None,
+            .map(|surface| L2LexicalSeed {
+                terminal_id: terminal_by_surface.get(*surface).copied(),
+                surface: Some((*surface).to_string()),
                 evidence_milli: 1_000,
             })
             .collect::<Vec<_>>();

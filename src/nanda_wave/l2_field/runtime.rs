@@ -242,6 +242,18 @@ impl StandaloneL2Field {
                 .and_modify(|evidence| *evidence = (*evidence).max(seed.evidence_milli))
                 .or_insert(seed.evidence_milli);
         }
+        let mut direct_seed_common_lemmas = None::<BTreeSet<u32>>;
+        for form_ref in seed_evidence.keys() {
+            let form_lemmas = self.bindings_by_form[*form_ref as usize]
+                .iter()
+                .map(|binding| binding.lemma_center_id)
+                .collect::<BTreeSet<_>>();
+            direct_seed_common_lemmas = Some(match direct_seed_common_lemmas {
+                Some(common) => common.intersection(&form_lemmas).copied().collect(),
+                None => form_lemmas,
+            });
+        }
+        let direct_seed_common_lemmas = direct_seed_common_lemmas.unwrap_or_default();
         let mut active_forms = seed_evidence.keys().copied().collect::<BTreeSet<_>>();
         let mut lemma_seed_evidence = BTreeMap::<u32, (i32, u16, u16)>::new();
         for form_ref in &active_forms {
@@ -343,6 +355,8 @@ impl StandaloneL2Field {
                     form_ref,
                     context_mode_id,
                     &wave,
+                    &seed_evidence,
+                    &direct_seed_common_lemmas,
                     seed_evidence
                         .get(&form_ref)
                         .copied()
@@ -371,6 +385,8 @@ impl StandaloneL2Field {
         form_ref: u32,
         context_mode_id: Option<u32>,
         wave: &[i8; L2_PHASE_CELLS],
+        direct_seed_evidence: &BTreeMap<u32, i32>,
+        direct_seed_common_lemmas: &BTreeSet<u32>,
         l1_evidence_milli: i32,
     ) -> Option<L2LocalCandidate> {
         let form = self.package.form_refs.get(form_ref as usize)?;
@@ -454,6 +470,21 @@ impl StandaloneL2Field {
                             .iter()
                             .filter(|edge| edge.context_mode_id == context_mode_id)
                             .fold((0_i32, 0_i32), |(total, explicit), edge| {
+                                let opposing_form_ref = if edge.left_form_ref == form_ref {
+                                    edge.right_form_ref
+                                } else if edge.right_form_ref == form_ref {
+                                    edge.left_form_ref
+                                } else {
+                                    return (total, explicit);
+                                };
+                                let unambiguous_lemma_support = lemma_ids
+                                    .iter()
+                                    .any(|lemma_id| direct_seed_common_lemmas.contains(lemma_id));
+                                if !direct_seed_evidence.contains_key(&opposing_form_ref)
+                                    && !unambiguous_lemma_support
+                                {
+                                    return (total, explicit);
+                                }
                                 let pressure = if edge.left_form_ref == form_ref {
                                     i32::from(edge.support_delta.min(16))
                                         .saturating_mul(competition_unit)
@@ -549,7 +580,17 @@ fn classify_local(candidates: &[L2LocalCandidate], calibration: TieCalibration) 
         .max(winner.competition_pressure)
         < calibration.minimum_positive
     {
-        return L2LocalVerdict::Abstain;
+        let lexical_peak = winner.l1_evidence_milli;
+        let form_refs = candidates
+            .iter()
+            .take_while(|candidate| candidate.l1_evidence_milli == lexical_peak)
+            .map(|candidate| candidate.form_ref)
+            .collect::<Vec<_>>();
+        return if form_refs.len() > 1 {
+            L2LocalVerdict::Tied { form_refs }
+        } else {
+            L2LocalVerdict::Abstain
+        };
     }
     if let Some(verdict) =
         cross_lemma_authority_safety_verdict(candidates, winner, MAX_SUPPORT_UNCERTAINTY)
@@ -634,7 +675,19 @@ fn cross_lemma_authority_safety_verdict(
     winner: &L2LocalCandidate,
     support_uncertainty: i32,
 ) -> Option<L2LocalVerdict> {
-    if winner.explicit_competition_pressure > 0 {
+    let strongest_lexical_seed = candidates
+        .iter()
+        .map(|candidate| candidate.l1_evidence_milli)
+        .max()
+        .unwrap_or_default();
+    let winner_has_independent_lemma_seed = candidates.iter().any(|candidate| {
+        candidate.l1_evidence_milli == strongest_lexical_seed
+            && candidate
+                .lemma_ids
+                .iter()
+                .any(|lemma_id| winner.lemma_ids.contains(lemma_id))
+    });
+    if winner.explicit_competition_pressure > 0 && winner_has_independent_lemma_seed {
         return None;
     }
     let independent_score = |candidate: &L2LocalCandidate| {
@@ -860,6 +913,46 @@ mod standalone_tests {
     }
 
     #[test]
+    fn unknown_context_keeps_multiple_direct_surface_seeds_tied() {
+        let corpus = L2TeacherCorpus::parse_tsv(
+            "F\tкод\tкод\tnoun:nom:sg\n\
+             F\tкот\tкот\tnoun:nom:sg\n\
+             T\tкод\tкод\tnoun:nom:sg\t_ работает\n\
+             T\tкот\tкот\tnoun:nom:sg\t_ спит\n\
+             H\tкод\tкод\tnoun:nom:sg\tпроверяю _\n",
+        )
+        .expect("teacher");
+        let terminals = BTreeMap::from([("код", 17), ("кот", 23)]);
+        let (package, _) =
+            compile_l2_package(&corpus, 99, |surface| terminals.get(surface).copied())
+                .expect("compile");
+        let field = StandaloneL2Field::from_package(package).expect("load");
+        let readout = field.readout(
+            "совсем неизвестная сцена _",
+            &[
+                L2LexicalSeed {
+                    terminal_id: None,
+                    surface: Some("код".to_string()),
+                    evidence_milli: 1_000,
+                },
+                L2LexicalSeed {
+                    terminal_id: None,
+                    surface: Some("кот".to_string()),
+                    evidence_milli: 1_000,
+                },
+            ],
+            8,
+        );
+
+        assert_eq!(
+            readout.verdict,
+            L2LocalVerdict::Tied {
+                form_refs: vec![0, 1]
+            }
+        );
+    }
+
+    #[test]
     fn contextual_multi_lemma_birth_can_select_a_weaker_seeded_lemma() {
         let corpus = L2TeacherCorpus::parse_tsv(
             "F\tдом\tдом\tnoun:nom:sg\n\
@@ -973,6 +1066,53 @@ mod standalone_tests {
                 competition_pressure: 500,
                 explicit_competition_pressure: 0,
                 local_score: 2_500,
+                lemma_ids: vec![2],
+                feature_masks: vec![11],
+            },
+            L2LocalCandidate {
+                form_ref: 23,
+                l1_terminal_id: Some(23),
+                surface: "целевая".to_string(),
+                l1_evidence_milli: 1_000,
+                slot_phase_milli: 1_000,
+                neighbor_pressure: 0,
+                competition_pressure: 0,
+                explicit_competition_pressure: 0,
+                local_score: 2_000,
+                lemma_ids: vec![1],
+                feature_masks: vec![11],
+            },
+        ];
+
+        assert_eq!(
+            classify_local(
+                &candidates,
+                TieCalibration {
+                    minimum_positive: 1,
+                    minimum_margin: 1,
+                    tie_window: 1,
+                    ..TieCalibration::default()
+                },
+            ),
+            L2LocalVerdict::Tied {
+                form_refs: vec![17, 23]
+            }
+        );
+    }
+
+    #[test]
+    fn explicit_competition_without_a_winner_lemma_seed_stays_tied() {
+        let candidates = vec![
+            L2LocalCandidate {
+                form_ref: 17,
+                l1_terminal_id: None,
+                surface: "чужая".to_string(),
+                l1_evidence_milli: 760,
+                slot_phase_milli: 1_000,
+                neighbor_pressure: 0,
+                competition_pressure: 500,
+                explicit_competition_pressure: 500,
+                local_score: 2_260,
                 lemma_ids: vec![2],
                 feature_masks: vec![11],
             },

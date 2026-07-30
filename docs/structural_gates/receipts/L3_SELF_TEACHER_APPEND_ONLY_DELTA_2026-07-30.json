@@ -1,0 +1,83 @@
+{
+  "kind": "l3_self_teacher_append_only_delta",
+  "date": "2026-07-30",
+  "verdict": "WATCH",
+  "gate_pass": false,
+  "runtime_authority_changed": false,
+  "runtime_installed": false,
+  "base_rewritten": false,
+  "infrastructure": {
+    "append_only_manifest": true,
+    "read_only_snapshot": true,
+    "normal_pair_centers_per_bank": 16,
+    "hard_pair_centers_per_bank": 4,
+    "verdict": "PASS"
+  },
+  "broad_candidate": {
+    "bytes": 288076,
+    "targeted_improve": 37,
+    "targeted_cases": 37,
+    "safety_cases": 5,
+    "lost_supports": 107,
+    "lost_top1": 103,
+    "verdict": "WATCH"
+  },
+  "filtered_candidate": {
+    "remote_path": "/home/e/build/lay-l1-shadow/artifacts/l3-self-teacher-delta-v3-2026-07-30/20260730-201525/self-teacher/l3_self_teacher_delta.nwpc",
+    "bytes": 21192,
+    "sha256": "5cf0a3fcca92601b8f693b56277e732b144e261dda56f1baa0f670256a880a12",
+    "candidate_profiles": 29,
+    "pair_profiles": 53,
+    "pair_centers": 61,
+    "positive_centers": 36,
+    "training_transitions": 88
+  },
+  "targeted_proof": {
+    "improved": 37,
+    "improve_cases": 37,
+    "safety_cases": 5,
+    "false_supports": 0,
+    "verdict": "PASS"
+  },
+  "full_differential_proof": {
+    "heldout_fragments": 15704,
+    "lattice_transitions": 50592,
+    "compared_transitions": 41065,
+    "baseline_supports": 1665,
+    "candidate_supports": 1635,
+    "gained_supports": 24,
+    "lost_supports": 54,
+    "baseline_top1": 1616,
+    "candidate_top1": 1591,
+    "gained_top1": 28,
+    "lost_top1": 53,
+    "new_false_supports": 0,
+    "new_false_top1": 0,
+    "verdict": "WATCH"
+  },
+  "live_shadow": {
+    "transition_replay": "PASS-shadow",
+    "unsafe_gate": "PASS",
+    "gate_failures": 0
+  },
+  "tested": [
+    "clean self-generated broad shadow",
+    "filtered one-pass delta compile",
+    "targeted delta proof",
+    "full fixed differential proof",
+    "transition replay",
+    "unsafe edit gate",
+    "immutable manifest snapshot",
+    "bounded pair-bank serialization"
+  ],
+  "not_tested": [
+    "safe greedy subset of selected scenes",
+    "automatic promotion from live feedback",
+    "multi-day runtime after self-teacher admission"
+  ],
+  "remote_evidence": {
+    "promotion_receipt": "/home/e/build/lay-l1-shadow/artifacts/l3-self-teacher-delta-v3-2026-07-30/20260730-201525/promotion-receipt.json",
+    "targeted_proof": "/home/e/build/lay-l1-shadow/artifacts/l3-self-teacher-delta-v3-2026-07-30/20260730-201525/targeted-proof.json",
+    "full_differential_proof": "/home/e/build/lay-l1-shadow/artifacts/l3-self-teacher-delta-v3-2026-07-30/20260730-201525/full-differential-proof.json"
+  }
+}

@@ -470,8 +470,17 @@
   "468": "composition_commit.rs",
   "469": ".new",
   "470": "desktop.rs",
+  "471": "types.rs",
   "472": "is_russian_vowel",
   "473": ".manual_toggle_active_text_target",
+  "474": "config_path",
+  "475": "LayConfig",
   "476": "hot_memory.rs",
-  "481": "runtime_flags.rs"
+  "477": "l2_transition_phase_shadow_readout",
+  "478": "apply_l2_phase_shadow",
+  "479": ".new",
+  "480": "merge_l3_context_phase_shards",
+  "481": "runtime_flags.rs",
+  "482": "13. Standalone Full-Neighbor V13, 2026-07-30",
+  "483": "reload-lay-model-services.sh"
 }

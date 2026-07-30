@@ -15,6 +15,9 @@ pub(crate) fn print_json(args: &[String]) -> io::Result<()> {
         config.usage_events = Some(PathBuf::from(path));
         config.include_default_live_feedback = true;
     }
+    if let Some(path) = super::arg_value(args, "--runtime-manifest") {
+        config.runtime_manifest = Some(PathBuf::from(path));
+    }
     if args.iter().any(|arg| arg == "--no-live-feedback") {
         config.include_default_live_feedback = false;
     }

@@ -58,7 +58,7 @@ fn bounded_context_tokens(context: &str) -> Vec<&str> {
         return vec!["_"];
     };
     let start = slot.saturating_sub(2);
-    let end = (slot + 2).min(tokens.len());
+    let end = (slot + 3).min(tokens.len());
     tokens[start..end].to_vec()
 }
 
@@ -135,5 +135,11 @@ mod tests {
             context_mode("сосредоточен на _")
         );
         assert_ne!(context_mode("двигаюсь к _"), context_mode("подошел к _"));
+    }
+
+    #[test]
+    fn context_mode_keeps_two_tokens_after_the_slot() {
+        assert_ne!(context_mode("_ его тащи"), context_mode("_ его в"));
+        assert_ne!(scene_wave("_ его тащи"), scene_wave("_ его в"));
     }
 }

@@ -20,6 +20,7 @@ pub struct LaySelfTeacherL3Config {
     pub output_dir: PathBuf,
     pub clean_corpus: Option<PathBuf>,
     pub usage_events: Option<PathBuf>,
+    pub runtime_manifest: Option<PathBuf>,
     pub include_default_live_feedback: bool,
     pub max_phrases: usize,
     pub max_pairs: usize,
@@ -34,6 +35,7 @@ impl Default for LaySelfTeacherL3Config {
             output_dir: default_output_dir(),
             clean_corpus: None,
             usage_events: default_usage_events_path().filter(|path| path.exists()),
+            runtime_manifest: None,
             include_default_live_feedback: true,
             max_phrases: DEFAULT_MAX_PHRASES,
             max_pairs: DEFAULT_MAX_PAIRS,
@@ -131,6 +133,10 @@ pub fn build_lay_self_teacher_l3_report(
     let surface_evidence_path = config.output_dir.join("surface_evidence.jsonl");
     let eval_cases_path = config.output_dir.join("dirty_eval_cases.jsonl");
     let package_path = config.output_dir.join("l3_self_teacher_shadow.nwpc");
+    let delta_corpus_path = config.output_dir.join("delta_context_corpus.txt");
+    let delta_surface_evidence_path = config.output_dir.join("delta_surface_evidence.jsonl");
+    let delta_package_path = config.output_dir.join("l3_self_teacher_delta.nwpc");
+    let delta_gate_cases_path = config.output_dir.join("delta_gate_cases.tsv");
     let corpus_support_repeats = corpus_support_repeats(config.min_profile_support);
 
     write_clean_corpus(&clean_corpus_path, &clean_phrases, corpus_support_repeats)?;
@@ -148,6 +154,106 @@ pub fn build_lay_self_teacher_l3_report(
     let package = context_phase::read_package(&package_path)?;
     let shadow = shadow_metrics(&package, &clean_phrases, &dirty_examples);
     let verdict = shadow_verdict(&shadow);
+    let mut delta_compile = None;
+    let delta_gate = if let Some(manifest_path) = config.runtime_manifest.as_deref() {
+        let baseline = context_phase::L3CompositeMemory::load_manifest(manifest_path)?;
+        let broad_candidate = baseline.compose_delta_path(&package_path)?;
+        let selection = select_delta_examples(
+            baseline.package(),
+            &broad_candidate,
+            &clean_phrases,
+            &dirty_examples,
+        );
+        write_delta_corpus(
+            &delta_corpus_path,
+            &selection.examples,
+            corpus_support_repeats,
+        )?;
+        write_surface_evidence(&delta_surface_evidence_path, &selection.examples)?;
+        let report = super::compile_l3_context_phase_memory_with_surface_evidence(
+            &delta_corpus_path,
+            &delta_surface_evidence_path,
+            &delta_package_path,
+            config.max_fragments,
+            config.min_profile_support,
+            config.min_surface_support,
+        )?;
+        delta_compile = Some(report);
+        let candidate = baseline.compose_delta_path(&delta_package_path)?;
+        Some(write_delta_gate_cases(
+            &delta_gate_cases_path,
+            baseline.package(),
+            &candidate,
+            &clean_phrases,
+            &selection.examples,
+            selection.considered,
+            selection.unsafe_improvements,
+        )?)
+    } else {
+        None
+    };
+    let artifacts = json!({
+        "clean_context_corpus": clean_corpus_path,
+        "surface_evidence": surface_evidence_path,
+        "dirty_eval_cases": eval_cases_path,
+        "shadow_package": package_path,
+        "delta_context_corpus": delta_gate
+            .as_ref()
+            .map(|_| delta_corpus_path.as_path()),
+        "delta_surface_evidence": delta_gate
+            .as_ref()
+            .map(|_| delta_surface_evidence_path.as_path()),
+        "delta_package": delta_gate
+            .as_ref()
+            .map(|_| delta_package_path.as_path()),
+        "delta_gate_cases": delta_gate
+            .as_ref()
+            .map(|_| delta_gate_cases_path.as_path()),
+    });
+    let report_config = json!({
+        "output_dir": config.output_dir,
+        "clean_corpus": config.clean_corpus,
+        "usage_events": config.usage_events,
+        "runtime_manifest": config.runtime_manifest,
+        "include_default_live_feedback": config.include_default_live_feedback,
+        "max_phrases": config.max_phrases,
+        "max_pairs": config.max_pairs,
+        "max_fragments": config.max_fragments,
+        "min_profile_support": config.min_profile_support,
+        "min_surface_support": config.min_surface_support,
+        "corpus_support_repeats": corpus_support_repeats,
+        "project_clean_seed": PROJECT_CLEAN_SEED,
+    });
+    let shadow_report = json!({
+        "verdict": verdict,
+        "cases": shadow.cases,
+        "skipped_context_too_short": shadow.skipped_context_too_short,
+        "evidence_hit": shadow.evidence_hit,
+        "evidence_hit_percent": percent(shadow.evidence_hit, shadow.cases),
+        "signature_hit": shadow.signature_hit,
+        "signature_hit_percent": percent(shadow.signature_hit, shadow.cases),
+        "authority": shadow.authority,
+        "authority_percent": percent(shadow.authority, shadow.cases),
+        "output_changed": shadow.output_changed,
+        "output_changed_percent": percent(shadow.output_changed, shadow.cases),
+        "target_top1": shadow.target_top1,
+        "target_top1_percent": percent(shadow.target_top1, shadow.cases),
+        "false_top1": shadow.false_top1,
+        "false_top1_percent": percent(shadow.false_top1, shadow.cases),
+        "support_target_top1": shadow.support_target_top1,
+        "support_target_top1_percent": percent(shadow.support_target_top1, shadow.cases),
+        "support_false_top1": shadow.support_false_top1,
+        "support_false_top1_percent": percent(shadow.support_false_top1, shadow.cases),
+        "false_authority": shadow.false_authority,
+        "false_authority_percent": percent(shadow.false_authority, shadow.cases),
+        "pairwise_certified": shadow.pairwise_certified,
+        "pairwise_blocked_wrong": shadow.pairwise_blocked_wrong,
+        "candidate_order_stable": shadow.candidate_order_stable,
+        "candidate_order_changed": shadow.candidate_order_changed,
+        "support_candidate_order_stable": shadow.support_candidate_order_stable,
+        "support_candidate_order_changed": shadow.support_candidate_order_changed,
+        "false_top1_examples": shadow.false_top1_examples,
+    });
 
     Ok(json!({
         "kind": "lay_self_teacher_l3_report",
@@ -157,61 +263,17 @@ pub fn build_lay_self_teacher_l3_report(
         "external_llm_used": false,
         "raw_words_stored_in_hot_package": false,
         "read_as": "offline teacher/proof artifact; never live authority until a separate promotion gate passes",
-        "config": {
-            "output_dir": config.output_dir,
-            "clean_corpus": config.clean_corpus,
-            "usage_events": config.usage_events,
-            "include_default_live_feedback": config.include_default_live_feedback,
-            "max_phrases": config.max_phrases,
-            "max_pairs": config.max_pairs,
-            "max_fragments": config.max_fragments,
-            "min_profile_support": config.min_profile_support,
-            "min_surface_support": config.min_surface_support,
-            "corpus_support_repeats": corpus_support_repeats,
-            "project_clean_seed": PROJECT_CLEAN_SEED,
-        },
+        "config": report_config,
         "teacher": {
             "clean_phrases": clean_phrases.len(),
             "dirty_pairs": dirty_examples.len(),
             "by_error_class": by_error_class,
         },
-        "artifacts": {
-            "clean_context_corpus": clean_corpus_path,
-            "surface_evidence": surface_evidence_path,
-            "dirty_eval_cases": eval_cases_path,
-            "shadow_package": package_path,
-        },
+        "artifacts": artifacts,
         "compile": compile_report,
-        "shadow": {
-            "verdict": verdict,
-            "cases": shadow.cases,
-            "skipped_context_too_short": shadow.skipped_context_too_short,
-            "evidence_hit": shadow.evidence_hit,
-            "evidence_hit_percent": percent(shadow.evidence_hit, shadow.cases),
-            "signature_hit": shadow.signature_hit,
-            "signature_hit_percent": percent(shadow.signature_hit, shadow.cases),
-            "authority": shadow.authority,
-            "authority_percent": percent(shadow.authority, shadow.cases),
-            "output_changed": shadow.output_changed,
-            "output_changed_percent": percent(shadow.output_changed, shadow.cases),
-            "target_top1": shadow.target_top1,
-            "target_top1_percent": percent(shadow.target_top1, shadow.cases),
-            "false_top1": shadow.false_top1,
-            "false_top1_percent": percent(shadow.false_top1, shadow.cases),
-            "support_target_top1": shadow.support_target_top1,
-            "support_target_top1_percent": percent(shadow.support_target_top1, shadow.cases),
-            "support_false_top1": shadow.support_false_top1,
-            "support_false_top1_percent": percent(shadow.support_false_top1, shadow.cases),
-            "false_authority": shadow.false_authority,
-            "false_authority_percent": percent(shadow.false_authority, shadow.cases),
-            "pairwise_certified": shadow.pairwise_certified,
-            "pairwise_blocked_wrong": shadow.pairwise_blocked_wrong,
-            "candidate_order_stable": shadow.candidate_order_stable,
-            "candidate_order_changed": shadow.candidate_order_changed,
-            "support_candidate_order_stable": shadow.support_candidate_order_stable,
-            "support_candidate_order_changed": shadow.support_candidate_order_changed,
-            "false_top1_examples": shadow.false_top1_examples,
-        },
+        "delta_compile": delta_compile,
+        "delta_gate": delta_gate,
+        "shadow": shadow_report,
         "promotion_gate": {
             "package_published": false,
             "requires": [
@@ -224,6 +286,167 @@ pub fn build_lay_self_teacher_l3_report(
             ],
         },
     }))
+}
+
+fn write_delta_gate_cases(
+    path: &Path,
+    baseline: &context_phase::ContextPhasePackage,
+    candidate: &context_phase::ContextPhasePackage,
+    clean_phrases: &[String],
+    examples: &[DirtyExample],
+    considered: usize,
+    unsafe_improvements: usize,
+) -> io::Result<serde_json::Value> {
+    const SAFETY_ROWS: &[&str] = &[
+        "safety\twave\tи|в\t-",
+        "safety\ta\tи|в\t-",
+        "safety\tGitHub\tи|в\t-",
+        "safety\tcompiler сохранил Quasar\tи|в\t-",
+        "safety\tApple\tи|в\t-",
+    ];
+
+    let vocabulary = clean_vocabulary(clean_phrases);
+    let mut rows = vec!["# kind\tcontext\tcandidates\texpected".to_string()];
+    let mut seen = BTreeSet::new();
+    for example in examples {
+        let (Some(target), Some(dirty), Some(index)) = (
+            example.clean_token.as_deref(),
+            example.dirty_token.as_deref(),
+            example.token_index,
+        ) else {
+            continue;
+        };
+        let clean_tokens = super::llmwave::tokenize(&example.clean_phrase);
+        if index < 2 || index >= clean_tokens.len() {
+            continue;
+        }
+        let context = clean_tokens[..index].to_vec();
+        let candidates = shadow_candidates(target, dirty, &vocabulary);
+        let candidate_refs = candidates.iter().map(String::as_str).collect::<Vec<_>>();
+        let baseline_readouts = baseline.score_candidates(&context, &candidate_refs);
+        let candidate_readouts = candidate.score_candidates(&context, &candidate_refs);
+        let Some(target_index) = candidates
+            .iter()
+            .position(|candidate| candidate_matches_target(candidate, target))
+        else {
+            continue;
+        };
+        let before = baseline_readouts[target_index];
+        let after = candidate_readouts[target_index];
+        let wrong_support = candidate_readouts
+            .iter()
+            .zip(&candidates)
+            .any(|(readout, surface)| {
+                !candidate_matches_target(surface, target)
+                    && readout.disposition == ContextPhaseDisposition::Support
+            });
+        if wrong_support {
+            continue;
+        }
+        let improved = after.disposition == ContextPhaseDisposition::Support
+            && (before.disposition != ContextPhaseDisposition::Support
+                || after.margin_micro > before.margin_micro);
+        if !improved {
+            continue;
+        }
+        let row = format!(
+            "improve\t{}\t{}\t{}",
+            context.join(" "),
+            candidates.join("|"),
+            target
+        );
+        if seen.insert(row.clone()) {
+            rows.push(row);
+        }
+    }
+    let improve_cases = rows.len().saturating_sub(1);
+    rows.extend(SAFETY_ROWS.iter().map(|row| (*row).to_string()));
+    let mut text = rows.join("\n");
+    text.push('\n');
+    fs::write(path, text)?;
+    Ok(json!({
+        "manifest_scoped": true,
+        "considered": considered,
+        "improve_cases": improve_cases,
+        "safety_cases": SAFETY_ROWS.len(),
+        "unsafe_improvements_excluded": unsafe_improvements,
+        "verdict": if improve_cases > 0 { "READY" } else { "WATCH" },
+    }))
+}
+
+#[derive(Clone, Debug)]
+struct DeltaSelection {
+    examples: Vec<DirtyExample>,
+    considered: usize,
+    unsafe_improvements: usize,
+}
+
+fn select_delta_examples(
+    baseline: &context_phase::ContextPhasePackage,
+    candidate: &context_phase::ContextPhasePackage,
+    clean_phrases: &[String],
+    examples: &[DirtyExample],
+) -> DeltaSelection {
+    const MAX_IMPROVE_CASES: usize = 64;
+
+    let vocabulary = clean_vocabulary(clean_phrases);
+    let mut selected = Vec::new();
+    let mut seen = BTreeSet::new();
+    let mut considered = 0_usize;
+    let mut unsafe_improvements = 0_usize;
+    for example in examples {
+        let (Some(target), Some(dirty), Some(index)) = (
+            example.clean_token.as_deref(),
+            example.dirty_token.as_deref(),
+            example.token_index,
+        ) else {
+            continue;
+        };
+        let clean_tokens = super::llmwave::tokenize(&example.clean_phrase);
+        if index < 2 || index >= clean_tokens.len() {
+            continue;
+        }
+        considered += 1;
+        let context = clean_tokens[..index].to_vec();
+        let candidates = shadow_candidates(target, dirty, &vocabulary);
+        let candidate_refs = candidates.iter().map(String::as_str).collect::<Vec<_>>();
+        let baseline_readouts = baseline.score_candidates(&context, &candidate_refs);
+        let candidate_readouts = candidate.score_candidates(&context, &candidate_refs);
+        let Some(target_index) = candidates
+            .iter()
+            .position(|candidate| candidate_matches_target(candidate, target))
+        else {
+            continue;
+        };
+        let before = baseline_readouts[target_index];
+        let after = candidate_readouts[target_index];
+        let wrong_support = candidate_readouts
+            .iter()
+            .zip(&candidates)
+            .any(|(readout, surface)| {
+                !candidate_matches_target(surface, target)
+                    && readout.disposition == ContextPhaseDisposition::Support
+            });
+        if wrong_support {
+            unsafe_improvements += 1;
+            continue;
+        }
+        let improved = after.disposition == ContextPhaseDisposition::Support
+            && (before.disposition != ContextPhaseDisposition::Support
+                || after.margin_micro > before.margin_micro);
+        let key = (context.join(" "), target.to_string(), dirty.to_string());
+        if improved && seen.insert(key) {
+            selected.push(example.clone());
+        }
+        if selected.len() >= MAX_IMPROVE_CASES {
+            break;
+        }
+    }
+    DeltaSelection {
+        examples: selected,
+        considered,
+        unsafe_improvements,
+    }
 }
 
 fn default_output_dir() -> PathBuf {
@@ -315,6 +538,24 @@ fn write_clean_corpus(path: &Path, phrases: &[String], repeats: usize) -> io::Re
         }
     }
     fs::write(path, text)
+}
+
+fn write_delta_corpus(path: &Path, examples: &[DirtyExample], repeats: usize) -> io::Result<()> {
+    let mut scenes = BTreeSet::new();
+    for example in examples {
+        let (Some(index), Some(target)) = (example.token_index, example.clean_token.as_deref())
+        else {
+            continue;
+        };
+        let tokens = super::llmwave::tokenize(&example.clean_phrase);
+        if index < 2 || index >= tokens.len() {
+            continue;
+        }
+        let mut scene = tokens[..index].to_vec();
+        scene.push(target.to_string());
+        scenes.insert(scene.join(" "));
+    }
+    write_clean_corpus(path, &scenes.into_iter().collect::<Vec<_>>(), repeats)
 }
 
 fn corpus_support_repeats(min_profile_support: u32) -> usize {
@@ -1080,6 +1321,30 @@ mod tests {
         assert_eq!(corpus_support_repeats(1), 3);
         assert_eq!(corpus_support_repeats(2), 3);
         assert_eq!(corpus_support_repeats(3), 5);
+    }
+
+    #[test]
+    fn delta_corpus_contains_only_selected_context_through_target() {
+        let path = std::env::temp_dir().join(format!(
+            "lay-self-teacher-delta-corpus-{}.txt",
+            std::process::id()
+        ));
+        let examples = vec![DirtyExample {
+            class: "missing_letter",
+            dirty_phrase: "нужно быстро проврить старый пакет".to_string(),
+            clean_phrase: "нужно быстро проверить старый пакет".to_string(),
+            dirty_token: Some("проврить".to_string()),
+            clean_token: Some("проверить".to_string()),
+            token_index: Some(2),
+        }];
+
+        write_delta_corpus(&path, &examples, 2).unwrap();
+
+        assert_eq!(
+            fs::read_to_string(&path).unwrap(),
+            "нужно быстро проверить\nнужно быстро проверить\n"
+        );
+        let _ = fs::remove_file(path);
     }
 
     #[test]
