@@ -868,3 +868,76 @@ Exact receipt:
 ```text
 /home/ubu/projects/lay/docs/structural_gates/receipts/L3_LAYOUT_PAIRWISE_DELTA_2026-07-30.json
 ```
+
+## Mixed-case runtime closure, 2026-07-30
+
+The accepted pairwise delta was present in the runtime manifest, but the first
+end-to-end probe still abstained. The package proof and the runtime adapter did
+not use the same tokenizer at their boundary:
+
+```text
+schema-4 context       -> case-preserving tokens
+candidate replacement -> lowercased legacy tokens
+prefix equality       -> false for mixed-case sentences
+L3 report             -> discarded before scoring
+```
+
+The schema-aware adapter now tokenizes both sides with the schema-4 relation
+tokenizer. The resulting directed pair certificate is carried into L4 as its
+own context witness. Broad L2 context support remains separate and cannot
+erase the directed L3 winner. The certificate narrows the candidate field; it
+does not bypass the transition verifier and does not create a candidate.
+
+Measured release probe:
+
+```text
+input       Нужно посмотреть через MTC можно оплатить Apple b
+L2 lattice и | в
+L3 winner   и
+L3 pairwise true
+L4 state    witnessed
+L4 probe    context_relation
+verifier    passed
+selected    Нужно посмотреть через MTC можно оплатить Apple и
+remote tests context/L4/L2/undo = 75/22/8/1 passed
+release build                           110 s
+```
+
+Safety probes with no selected candidate:
+
+```text
+Apple b
+wave b
+a b
+b
+GitHub b
+compiler сохранил Quasar b
+```
+
+The immutable schema-4 base and the `2,192` byte pairwise delta are unchanged.
+No product-specific branch, phrase replacement table, or direct L3 apply
+authority was added.
+
+Tested:
+
+- mixed-case schema-4 adapter parity;
+- pairwise context witness over two broadly supported L2 states;
+- unresolved one-symbol safety scenes;
+- context-phase, L4 hidden-state, correction-core and double-Shift regression
+  suites;
+- installed release smoke without restarting IBus.
+
+Not tested:
+
+- multi-day daemon stability;
+- every possible mixed-script sentence;
+- automatic admission from unreviewed user traffic.
+
+Runtime authority changed in release `0.2.332`: `true`, only for a verifier-
+passed winner carrying a directed pairwise context certificate.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_LAYOUT_RUNTIME_CLOSURE_2026-07-30.json
+```

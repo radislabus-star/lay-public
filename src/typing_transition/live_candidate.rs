@@ -63,6 +63,7 @@ impl TransitionDecisionCore {
                     verifier_passed: true,
                     rank_milli: crate::text_metrics::score_to_milli(proposal.rank_score),
                     context_support: proposal.l3_memory_supported || proposal.completed_state_known,
+                    pairwise_context_witness: false,
                     eligible: Self::admit_live_completion(proposal).visible(),
                     witness_attract: proposal.l4_transition_attract_count,
                     witness_repel: proposal.l4_transition_repel_count,

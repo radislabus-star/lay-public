@@ -258,6 +258,35 @@ Runtime authority changed:
 
 - `false`
 
+## 13. Pairwise Context Witness Boundary
+
+The canonical live local route is:
+
+```text
+L1.1 bounded lattice
+-> L2 candidate field
+-> L3 directed pair certificate
+-> L4 witness resolution
+-> transition verifier
+-> one selected edit or ABSTAIN
+```
+
+L2 context support and an L3 pairwise certificate are different signals. L2
+may keep several candidates alive; only the directed L3 certificate identifies
+which contextual relation won. L4 must preserve that distinction instead of
+merging both signals into one boolean support flag.
+
+The certificate does not manufacture text and does not grant direct apply
+authority. It only removes losing semantic classes from the already bounded
+L2 lattice. The verifier remains the sole owner of whether the selected edit
+may mutate visible text.
+
+Receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_LAYOUT_RUNTIME_CLOSURE_2026-07-30.json
+```
+
 ## 13. Canonical V7 full-lemma package, 2026-07-30
 
 The final L1.1 base contains one seed for every admitted Russian lemma. The

@@ -41,6 +41,7 @@ pub(crate) struct L4HiddenCandidateInput {
     pub(crate) verifier_passed: bool,
     pub(crate) rank_milli: i16,
     pub(crate) context_support: bool,
+    pub(crate) pairwise_context_witness: bool,
     pub(crate) eligible: bool,
     pub(crate) witness_attract: u32,
     pub(crate) witness_repel: u32,
@@ -75,6 +76,7 @@ struct SemanticClass {
     operator_class: u64,
     verifier_passed: bool,
     context_support: bool,
+    pairwise_context_witness: bool,
     witness_attract: u32,
     witness_repel: u32,
     witness_state_specific: bool,
@@ -98,6 +100,7 @@ pub(crate) fn estimate_hidden_typing_state(
         class.operator_class = merge_identity(class.operator_class, candidate.operator_class);
         class.verifier_passed |= candidate.verifier_passed;
         class.context_support |= candidate.context_support;
+        class.pairwise_context_witness |= candidate.pairwise_context_witness;
         if candidate.witness_state_specific {
             class.witness_state_specific = true;
             class.witness_attract = class
@@ -145,6 +148,7 @@ pub(crate) fn estimate_hidden_typing_state(
             operator_class: class.operator_class,
             verifier_passed: class.verifier_passed,
             context_support: class.context_support,
+            pairwise_context_witness: class.pairwise_context_witness,
             witness_attract: class.witness_attract,
             witness_repel: class.witness_repel,
             witness_state_specific: class.witness_state_specific,
@@ -178,6 +182,7 @@ pub(crate) fn estimate_hidden_typing_state(
         && ranked.iter().any(|(_, class)| {
             class.witness_state_specific
                 || class.phase_witness_supported
+                || class.pairwise_context_witness
                 || class.operator_consensus_witness
         });
 
@@ -281,6 +286,7 @@ mod tests {
             verifier_passed: true,
             rank_milli: rank,
             context_support: true,
+            pairwise_context_witness: false,
             eligible: true,
             witness_attract: 0,
             witness_repel: 0,

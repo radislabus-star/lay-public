@@ -302,6 +302,7 @@ fn settle_l4_hidden_state(
                             .signals
                             .l2_wave_peak_positive_milli
                             .saturating_sub(evaluation.signals.l2_wave_peak_negative_milli)),
+            pairwise_context_witness: evaluation.signals.l3_pairwise_certified,
             eligible: candidate.gate.action == CandidateGateAction::Eligible,
             witness_attract: evaluation.signals.l4_transition_attract_count,
             witness_repel: evaluation.signals.l4_transition_repel_count,

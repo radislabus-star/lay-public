@@ -98,7 +98,7 @@ impl TransitionDecisionCore {
         if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
             for (candidate, evaluation) in candidates.iter().zip(&evaluations) {
                 eprintln!(
-                    "decision-core-candidate origin={:?} source_id={} class={} gate={:?} rank={:.3} posterior={:.3} risk={:.3} explain={} opfit={} lost={} field={} attract={} repel={} uncertainty={} phase_competition={} lexical_ready={} operator_consensus={} usage={:.3} context={:.3} l3={} l4={} l4_state_specific={} l4_attract={} l4_repel={} hidden={} hidden_classes={} hidden_selected={} hidden_probe={} hidden_certificate={} replacement={:?}",
+                    "decision-core-candidate origin={:?} source_id={} class={} gate={:?} rank={:.3} posterior={:.3} risk={:.3} explain={} opfit={} lost={} field={} attract={} repel={} uncertainty={} phase_competition={} lexical_ready={} operator_consensus={} usage={:.3} context={:.3} l3={} l3_disposition={} l3_pairwise={} l3_relation={} l4={} l4_state_specific={} l4_attract={} l4_repel={} l4_phase={} l4_phase_supported={} hidden={} hidden_classes={} hidden_selected={} hidden_probe={} hidden_certificate={} replacement={:?}",
                     candidate.origin,
                     candidate.source_id,
                     candidate.error_class.as_str(),
@@ -121,10 +121,15 @@ impl TransitionDecisionCore {
                     evaluation.bayes.usage_prior,
                     evaluation.bayes.context_prior,
                     evaluation.signals.l3_phrase_milli,
+                    evaluation.signals.l3_phrase_decision.as_str(),
+                    evaluation.signals.l3_pairwise_certified,
+                    evaluation.signals.l3_relation_class,
                     evaluation.signals.l4_signed_milli,
                     evaluation.signals.l4_transition_state_specific,
                     evaluation.signals.l4_transition_attract_count,
                     evaluation.signals.l4_transition_repel_count,
+                    evaluation.signals.l4_phase_witness_milli,
+                    evaluation.signals.l4_phase_witness_supported,
                     evaluation.signals.l4_hidden_disposition.as_str(),
                     evaluation.signals.l4_hidden_semantic_classes,
                     evaluation.signals.l4_hidden_selected_class,

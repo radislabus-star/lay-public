@@ -1838,9 +1838,12 @@ pub(crate) fn readout_candidates_with_package(
     };
     let mut context = original_tokens.clone();
     context.pop();
+    let relation_schema = package.signature_schema >= SIGNATURE_SCHEMA_RELATION_ROLES;
     let candidate_tokens = replacements
         .iter()
-        .map(|replacement| context_preserving_candidate_token(&context, replacement))
+        .map(|replacement| {
+            context_preserving_candidate_token(&context, replacement, relation_schema)
+        })
         .collect::<Vec<_>>();
     let valid_tokens = candidate_tokens
         .iter()
@@ -1859,8 +1862,16 @@ pub(crate) fn readout_candidates_with_package(
         .collect()
 }
 
-fn context_preserving_candidate_token(context: &[String], replacement: &str) -> Option<String> {
-    let tokens = super::llmwave::tokenize(replacement);
+fn context_preserving_candidate_token(
+    context: &[String],
+    replacement: &str,
+    relation_schema: bool,
+) -> Option<String> {
+    let tokens = if relation_schema {
+        tokenize_context_text(replacement)
+    } else {
+        super::llmwave::tokenize(replacement)
+    };
     let (candidate, prefix) = tokens.split_last()?;
     if prefix.is_empty() || prefix == context {
         Some(candidate.clone())

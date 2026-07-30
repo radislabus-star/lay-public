@@ -48,6 +48,7 @@ pub(crate) struct L4ActiveHypothesis {
     pub(crate) operator_class: u64,
     pub(crate) verifier_passed: bool,
     pub(crate) context_support: bool,
+    pub(crate) pairwise_context_witness: bool,
     pub(crate) witness_attract: u32,
     pub(crate) witness_repel: u32,
     pub(crate) witness_state_specific: bool,
@@ -95,6 +96,7 @@ struct HypothesisClass {
     operator_class: u64,
     verifier_passed: bool,
     context_support: bool,
+    pairwise_context_witness: bool,
     witness_attract: u32,
     witness_repel: u32,
     witness_state_specific: bool,
@@ -232,6 +234,7 @@ fn normalize_classes(hypotheses: &[L4ActiveHypothesis]) -> BTreeMap<u64, Hypothe
         class.operator_class = merge_identity(class.operator_class, hypothesis.operator_class);
         class.verifier_passed |= hypothesis.verifier_passed;
         class.context_support |= hypothesis.context_support;
+        class.pairwise_context_witness |= hypothesis.pairwise_context_witness;
         if hypothesis.witness_state_specific {
             class.witness_state_specific = true;
             class.witness_attract = class
@@ -356,7 +359,17 @@ fn observe_probe(
                 .then_some(id)
         }),
         L4WitnessProbe::ContextRelation => unique_outcome(active, classes, |_, class| {
-            (class.context_support && class.relation_class != 0).then_some(class.relation_class)
+            let pairwise_present = active.iter().any(|id| {
+                classes
+                    .get(id)
+                    .is_some_and(|class| class.pairwise_context_witness)
+            });
+            ((if pairwise_present {
+                class.pairwise_context_witness
+            } else {
+                class.context_support
+            }) && class.relation_class != 0)
+                .then_some(class.relation_class)
         }),
         L4WitnessProbe::VerifierResult => active
             .iter()
@@ -394,6 +407,7 @@ mod tests {
             operator_class: 7,
             verifier_passed: true,
             context_support: false,
+            pairwise_context_witness: false,
             witness_attract: 0,
             witness_repel: 0,
             witness_state_specific: false,
@@ -430,6 +444,20 @@ mod tests {
         assert_eq!(resolved.status, L4ActiveResolutionStatus::Witnessed);
         assert_eq!(resolved.selected_class, Some(20));
         assert!(resolved.receipts.len() <= MAX_WITNESSES);
+    }
+
+    #[test]
+    fn pairwise_context_witness_resolves_broadly_supported_lattice() {
+        let mut candidates = [hypothesis(10), hypothesis(20)];
+        candidates[0].context_support = true;
+        candidates[1].context_support = true;
+        candidates[1].pairwise_context_witness = true;
+
+        let resolved = resolve_active_hypotheses(&candidates);
+
+        assert_eq!(resolved.status, L4ActiveResolutionStatus::Witnessed);
+        assert_eq!(resolved.selected_class, Some(20));
+        assert!(resolved.certificate_valid);
     }
 
     #[test]

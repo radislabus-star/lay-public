@@ -1,0 +1,94 @@
+{
+  "receipt": "L3_LAYOUT_RUNTIME_CLOSURE_2026-07-30",
+  "date": "2026-07-30",
+  "release": "0.2.332",
+  "scope": "schema-4 mixed-case runtime parity and pairwise context witness ownership",
+  "cause": {
+    "runtime_context_tokenizer": "schema-4 case-preserving",
+    "runtime_candidate_tokenizer_before": "legacy lowercase",
+    "effect": "equal mixed-case left context was rejected before L3 scoring"
+  },
+  "change": {
+    "candidate_tokenizer": "selected by package signature schema",
+    "l3_pairwise_signal": "independent L4 context witness",
+    "candidate_birth_owner": "L2",
+    "apply_owner": "transition verifier",
+    "product_specific_rules": 0
+  },
+  "package": {
+    "base_rewritten": false,
+    "delta_rewritten": false,
+    "delta_bytes": 2192,
+    "delta_sha256": "1fb40b13b968108dd0e31756fb25b325cbecd472b03dfbd4262cff4ae30b878b"
+  },
+  "positive_probe": {
+    "input": "Нужно посмотреть через MTC можно оплатить Apple b ",
+    "candidate_lattice": [
+      "и",
+      "в"
+    ],
+    "selected": "Нужно посмотреть через MTC можно оплатить Apple и ",
+    "l3_pairwise_certified": true,
+    "l4_disposition": "witnessed",
+    "l4_probe": "context_relation",
+    "verifier_passed": true
+  },
+  "safety_probes": {
+    "inputs": [
+      "Apple b ",
+      "wave b ",
+      "a b ",
+      "b ",
+      "GitHub b ",
+      "compiler сохранил Quasar b "
+    ],
+    "selected_candidates": 0
+  },
+  "remote_gate": {
+    "host": "e@192.168.3.94",
+    "workers_requested": 20,
+    "context_phase_tests": {
+      "passed": 75,
+      "failed": 0
+    },
+    "l4_tests": {
+      "passed": 22,
+      "failed": 0
+    },
+    "l2_candidate_source_tests": {
+      "passed": 8,
+      "failed": 0,
+      "canonical_l1_l2_dependencies_loaded": true
+    },
+    "double_shift_tests": {
+      "passed": 1,
+      "failed": 0
+    },
+    "release_build_seconds": 110,
+    "release_build_jobs": 20
+  },
+  "release_binaries_sha256": {
+    "lay": "ecc4f4681702981cde2a7cdf2e9238f49432167498fa6df2b68087e76712d204",
+    "lay-daemon": "9303c7b7d613872ba493a58817958e39768199461ae55b676fceba4a9e06d5e4",
+    "lay-ibus-engine": "58f2b561fea9ab62cdc442486aabc2c29fc72b33a02046f47a16a8e1ec3f1996",
+    "lay-l11-serve": "d921cae518ff3da614064fa2fad6ca63fe08577b65f93ccb190ae7338781fb62",
+    "lay-nanda-wave-eval": "4c3c4b28cc3b5d47a3e12141f9bebe6fa713e6c833a97f8947d9e48d2959bfaf",
+    "lay-nanda-wave-train": "98ba5b95e8a10ba897f6fb110c9f8d9885602b5be376b9e8cb16976c04acbb18"
+  },
+  "tested": [
+    "schema-4 mixed-case runtime adapter",
+    "pairwise witness resolution over broadly supported L2 states",
+    "unresolved one-symbol safety scenes",
+    "context-phase and L4 hidden-state unit suites",
+    "correction-core and double-Shift regression suites",
+    "installed release smoke without IBus restart"
+  ],
+  "not_tested": [
+    "multi-day daemon stability",
+    "all possible mixed-script sentences",
+    "automatic admission from unreviewed user traffic"
+  ],
+  "direct_l3_apply_authority": false,
+  "runtime_field_changed": true,
+  "verdict": "PASS"
+}

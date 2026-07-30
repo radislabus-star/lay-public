@@ -818,15 +818,39 @@ fn next_token_context_rejects_candidates_that_rewrite_the_left_context() {
     let context = super::super::llmwave::tokenize("у нас");
 
     assert_eq!(
-        context_preserving_candidate_token(&context, "у нас есть"),
+        context_preserving_candidate_token(&context, "у нас есть", false),
         Some("есть".to_string())
     );
     assert_eq!(
-        context_preserving_candidate_token(&context, "есть"),
+        context_preserving_candidate_token(&context, "есть", false),
         Some("есть".to_string())
     );
     assert_eq!(
-        context_preserving_candidate_token(&context, "ун ас есть"),
+        context_preserving_candidate_token(&context, "ун ас есть", false),
+        None
+    );
+}
+
+#[test]
+fn relation_schema_preserves_mixed_case_left_context_at_runtime_boundary() {
+    let original =
+        tokenize_context_text("Нужно посмотреть через MTC можно оплатить Apple b");
+    let context = &original[..original.len() - 1];
+
+    assert_eq!(
+        context_preserving_candidate_token(
+            context,
+            "Нужно посмотреть через MTC можно оплатить Apple и",
+            true,
+        ),
+        Some("и".to_string())
+    );
+    assert_eq!(
+        context_preserving_candidate_token(
+            context,
+            "нужно посмотреть через MTC можно оплатить Apple и",
+            true,
+        ),
         None
     );
 }
